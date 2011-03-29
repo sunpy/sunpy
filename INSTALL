@@ -1,0 +1,14 @@
+SunPy currently does not yet have support for a standard installation.
+Support should be added at the time of our first official release (v0.1).
+
+In the mean time you can test SunPy by simply downloading the code (which you
+probably already have if you are reading this) and then importing the module.
+
+Example Usage:
+
+>>> import sunpy
+>>> sunpy.Sun.radius()
+961.48218632473686
+>>> sunpy.dev.plot_fits()
+>>> sunpy.dev.plot_fits('aia.fits')
+
