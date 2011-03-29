@@ -7,6 +7,7 @@
 #
 """Test function for plotting an AIA FITS image."""
 
+import os
 import datetime
 import pyfits
 import matplotlib.pyplot as plt
@@ -24,8 +25,13 @@ from sunpy import Sun
 #
 #  Are milliseconds parsed correctly for fitsDatetime?
 #
-def plot_fits(filepath='sunpy/dev/sample-data/AIA20110319_105400_0171.fits'):
+AIA_SAMPLE_IMAGE = 'sample-data/AIA20110319_105400_0171.fits'
+
+def plot_fits(filepath=None):
     '''Plots an AIA image.'''
+
+    if filepath is None:
+        filepath = os.path.join(os.path.dirname(__file__), AIA_SAMPLE_IMAGE)
 
     # Load fits file
     fits = pyfits.open(filepath)
