@@ -1,3 +1,12 @@
+#-*- coding:utf-8 -*-
+#
+# Author: Steven Christe <steven.d.christe@nasa.gov>
+# Written: 2011/03/30
+#
+# <License info will go here...>
+#
+"""Equivalent of time_test3.pro in IDL """
+
 import time as tick
 
 timer_common= 0.0
@@ -7,6 +16,14 @@ total_time = 0.0
 geom_time = 0.0 
 ntest = 0.0
 demomode = True
+
+#
+# Notes:
+# Steven Christe (30-Mar-2011)
+#
+# This module is not yet finished. The code in the comments below are what remains to be implemented.
+#
+#BUG: In Line 78, the equality statement becomes false above 256 though the values must be equal.
 
 def time_test_timer(name = None, mode = True):
  global timer_common, time, lunno, total_time, geom_time, ntest, demomode
@@ -23,51 +40,9 @@ def time_test_timer(name = None, mode = True):
   print lunno, ntest, float(tt), ' ', name 
  time = tick.time()
 
-def time_test3
-	#  ;	Time test procedure.. Print values of commonly used timings.
-	# pro time_test_timer, name	;Print timing information, name = descriptive
-	# ;	string for message.
-	# 
-	# COMPILE_OPT hidden, strictarr
-	# common timer_common, time, lunno, total_time, geom_time, ntest, demomode
-	# 
-	# t = systime(1)		;Get current time.
-	# ntest = ntest + 1
-	# tt = t - time
-	# total_time = total_time + tt
-	# geom_time = geom_time + alog(tt > (machar()).xmin)
-	# 
-	# IF (demomode) THEN print, ntest, float(tt), ' ', name $
-	# ELSE printf, lunno, ntest, float(tt), ' ',name
-	# 
-	# time = systime(1)	;Starting time for next test
-	# end
-	# 
-	# pro time_test_init,file	;Initialize timer, file = optional param
-	# ;	containing name of file to write info to
-	# COMPILE_OPT hidden, strictarr
-	# common timer_common, time, lunno, total_time, geom_time, ntest, demomode
-	# 
-	# on_error,2              ;Return to caller if an error occurs
-	# 
-	# total_time = 0.
-	# geom_time = 0.
-	# ntest = 0
-	# 
-	# quiet=!quiet
-	# !quiet=1
-	# demomode=LMGR(/DEMO)
-	# !quiet=quiet
-	# 
-	# if (n_params(0) ge 1) AND (NOT demomode) then begin
-	# 	get_lun, lunno	;Get a lun
-	# 	openw,lunno,file
-	#   end else lunno = -1	;Set to stdout
-	# time = systime(1)
-	# return
-	# end
+
+def time_test3(fact=1):
 	
-	fact = 1
 	#initialize time
 	time = tick.time()
 	
