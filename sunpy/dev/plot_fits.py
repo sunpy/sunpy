@@ -64,7 +64,7 @@ def plot_fits(filepath=None):
     extent = [xmin, xmax, ymin, ymax]
     
     # Draw image
-    cm = sunpy.dev.cm.log_adaptive(data)
+    cm = sunpy.dev.cm.log_adaptive(data, vmin=10)
     imgplot = plt.imshow(data, cmap=cm, origin='lower', extent=extent)
 
     plt.colorbar()
