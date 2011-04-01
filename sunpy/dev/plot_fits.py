@@ -16,16 +16,8 @@ import matplotlib.cm as cm
 import matplotlib.colors as colors
 from matplotlib.patches import Circle
 from sunpy import Sun
+import sunpy.dev.cm
 
-#
-# Notes:
-#
-# Keith (2011/03/29)
-#  Need to figure out a better way to reference sample-data: right now it will
-#  only work if you import sunpy from it's parent directory.
-#
-#  Are milliseconds parsed correctly for fitsDatetime?
-#
 AIA_SAMPLE_IMAGE = 'sample-data/AIA20110319_105400_0171.fits'
 
 def plot_fits(filepath=None):
@@ -41,7 +33,6 @@ def plot_fits(filepath=None):
 
     # Get useful header information
     date  = header['date-obs']
-    #fitsDatetime = datetime.datetime(date[0:4], date[5:7], date[8:10], date[11:13], date[14:16], date[17:19])
     fitsDatetime = datetime.datetime.strptime(date, "%Y-%m-%dT%H:%M:%S.%f")
     instr = header['instrume']
     rSun  = header['r_sun']
@@ -66,14 +57,15 @@ def plot_fits(filepath=None):
         
     # Determine extent
     xmin = -(centerX - 1) * scaleX
-    xmax =  (centerX - 1) * scaleX
+    xmax = (centerX - 1) * scaleX
     ymin = -(centerY - 1) * scaleY
-    ymax =  (centerY - 1) * scaleY
+    ymax = (centerY - 1) * scaleY
     
     extent = [xmin, xmax, ymin, ymax]
     
     # Draw image
-    imgplot = plt.imshow(data, cmap=cm.Greys_r, origin='lower', extent=extent)
+    cm = sunpy.dev.cm.log_adaptive(data)
+    imgplot = plt.imshow(data, cmap=cm, origin='lower', extent=extent)
 
     plt.colorbar()
     
