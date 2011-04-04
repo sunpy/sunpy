@@ -7,9 +7,11 @@
 #
 """Equivalent of time_test3.pro in IDL """
 
+import math
+import numpy
 import time as tick
 
-timer_common= 0.0
+timer_common = 0.0
 time = 0.0
 lunno = 0.0
 total_time = 0.0
@@ -23,63 +25,100 @@ demomode = True
 #
 # This module is not yet finished. The code in the comments below are what remains to be implemented.
 #
-#BUG: In Line 78, the equality statement becomes false above 256 though the values must be equal.
+def time_test_timer(name=None, mode=True):
+    global timer_common, time, lunno, total_time, geom_time, ntest, demomode
 
-def time_test_timer(name = None, mode = True):
- global timer_common, time, lunno, total_time, geom_time, ntest, demomode
- #Get current time
- t = tick.time()
- ntest = ntest + 1
- tt = t - time
- total_time = total_time + tt
- geom_time = geom_time
+    #Get current time
+    t = tick.time()
+    ntest = ntest + 1
+    tt = t - time
+    total_time = total_time + tt
+    geom_time = geom_time
  
- if mode: 
-  print ntest, float(tt), ' ', name
- else:
-  print lunno, ntest, float(tt), ' ', name 
- time = tick.time()
+    if mode: 
+        print ntest, float(tt), ' ', name
+    else:
+        print lunno, ntest, float(tt), ' ', name 
+    time = tick.time()
 
 
 def time_test3(fact=1):
-	
-	#initialize time
-	time = tick.time()
-	
-	# Empty For loop
-	nrep = 2000000 * fact
-	nrepArray = range(nrep)
-	for i in range(nrep): 
-	 pass
-	
-	time_test_timer("Empty For loop " + str(nrep) + " times.")
-	
-	def time_test_dummy(n = None):
-	 return 0
-	 
-	nrep = 1000000 * fact
-	for i in range(nrep): 
-	 time_test_dummy(1)
-	 
-	time_test_timer("Call empty procedure (1 param)" + str(nrep) + " times.")
-	
-	# Add 200000 scalar ints:...
-	nrep = 2000000 * fact
-	for i in range(nrep):
-	 a = i + 1
-	
-	time_test_timer("Add " +str(nrep) + " integer scalars and store")
-	
-	# Scalar arithmetic loop:
-	# Add 200000 scalar ints:...
-	# schriste - screws up at > 256, not sure why...
-	nrep = 50000 * fact
-	for i in range(1000):
-	 a = i + i - 2
-	 b = a/2 + 1
-	 if b is not i: print "You screwed up", i, a, b
-	
-	time_test_timer( str(nrep) + " scalar loops each of 5 ops, 2 =, 1 if")
+    
+    #initialize time
+    time = tick.time()
+    
+    # Empty For loop
+    nrep = 2000000 * fact
+    nrepArray = xrange(nrep)
+    for i in xrange(nrep): 
+        pass
+
+    time_test_timer("Empty For loop %d times." % nrep)
+    
+    def time_test_dummy(n=None):
+        return 0
+     
+    nrep = 1000000 * fact
+    for i in xrange(nrep): 
+        time_test_dummy(1)
+     
+    time_test_timer("Call empty procedure (1 param) %d times." % nrep)
+    
+    # Add 200000 scalar ints:...
+    nrep = 2000000 * fact
+    for i in range(nrep):
+        a = i + 1
+    
+    time_test_timer("Add %d integer scalars and store" % nrep)
+    
+    # Scalar arithmetic loop:
+    # Add 200000 scalar ints:...
+    nrep = 50000 * fact
+    for i in xrange(1000):
+        a = i + i - 2
+        b = a / 2 + 1
+        if b !== i:
+            print "You screwed up", i, a, b
+    
+    time_test_timer("%d scalar loops each of 5 ops, 2 =, 1 if" % nrep)
+
+
+def time_test3_cuda(fact=1):
+    """PyCUDA port of time_test3.pro"""
+    import pycuda.autoinit
+    import pycuda.driver as cuda
+    import pycuda.gpuarray as gpuarray
+    import pycuda.curandom as curandom
+    import scikits.cuda.linalg
+    
+    #
+    # khughitt (2011/04/04): Non-CUDA tests from above will go here...
+    #
+    # Perhaps each test should have its own function? Overhead added would
+    # likely be small compared to time it takes to run the tests themselves.
+    #
+
+    # Initialize linear algebra extensions to PyCUDA
+    scikits.cuda.linalg.init()
+    
+    #
+    # Begin CUDA tests
+    #
+    siz = int(384 * math.sqrt(fact))
+    
+    # Using numpy
+    # numpy.random.randn(siz,siz).astype(numpy.int32)
+    
+    # Hmm... scikits.cuda.linalg.transpose doesn't currently support int32
+    # May need to find another way to do this
+    # a = curandom.rand((siz,siz), dtype=numpy.int32)
+    a = curandom.rand((siz,siz))
+
+    for i in xrange(100):
+        b = scikits.cuda.linalg.transpose(a, pycuda.autoinit.device)
+
+    time_test_timer('Transpose %d^2 byte, TRANSPOSE function x 100')
+    
 
 # ;    Scalar arithmetic loop:
 # nrep = long(fact * 50000)
