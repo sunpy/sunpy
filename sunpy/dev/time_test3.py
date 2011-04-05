@@ -77,11 +77,20 @@ def time_test3(fact=1):
     for i in xrange(1000):
         a = i + i - 2
         b = a / 2 + 1
-        if b !== i:
+        if b != i:
             print "You screwed up", i, a, b
     
     time_test_timer("%d scalar loops each of 5 ops, 2 =, 1 if" % nrep)
+    
+    
+    # Matrix transposition (a.T is pre-computed so using numpy.transpose)
+    siz = int(384 * math.sqrt(fact))
+    
+    a = numpy.random.randn(siz,siz).astype(numpy.int32)
 
+    for i in xrange(100):
+        b = numpy.transpose(a)
+    time_test_timer('Transpose %d^2 byte, TRANSPOSE function x 100')
 
 def time_test3_cuda(fact=1):
     """PyCUDA port of time_test3.pro"""
@@ -105,10 +114,7 @@ def time_test3_cuda(fact=1):
     # Begin CUDA tests
     #
     siz = int(384 * math.sqrt(fact))
-    
-    # Using numpy
-    # numpy.random.randn(siz,siz).astype(numpy.int32)
-    
+
     # Hmm... scikits.cuda.linalg.transpose doesn't currently support int32
     # May need to find another way to do this
     # a = curandom.rand((siz,siz), dtype=numpy.int32)
