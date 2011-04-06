@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #-*- coding:utf-8 -*-
 #
 # <License info will go here...>
@@ -49,6 +50,7 @@ import datetime
 import platform
 import math
 import random
+import sys
 from scipy import fftpack
 from scipy import linalg
 from scipy import ndimage
@@ -61,18 +63,22 @@ geom_time = 0.0
 ntest = 0
 nofileio = True
 
-def time_test_timer(test_summary=None):
+def main(argv):
+    """Main application"""
+    time_test3()
+
+def time_test_timer(output):
     '''Print out a string with time taken for test'''
     global time, total_time, geom_time, ntest
     
     #Get current time
     t = tick.time()
     ntest = ntest + 1
-    tt = t - time
-    total_time = total_time + tt
-    geom_time = geom_time + math.log(tt)
+    test_time = t - time
+    total_time = total_time + test_time
+    geom_time = geom_time + math.log(test_time)
     
-    output = '\t%d\t%f\t%s' % (ntest, tt, test_summary)
+    output = '\t%d\t%f\t%s' % (ntest, test_time, output)
     print(output)
 
     time = tick.time()
@@ -82,7 +88,7 @@ def time_test_reset():
     global time
     time = tick.time()
 
-def time_test3(fact=1):
+def time_test3(scale_factor=1):
     '''Go through each test and print out the results'''
     global nofileio
     
@@ -93,7 +99,7 @@ def time_test3(fact=1):
     time_test_reset()   
     
     #Test 1 - Empty For loop
-    nrep = 2000000 * fact
+    nrep = 2000000 * scale_factor
     for i in xrange(nrep):
         pass
     time_test_timer("Empty For loop %d times." % nrep)
@@ -101,19 +107,19 @@ def time_test3(fact=1):
     #Test 2 - Empty procedure    
     time_test_dummy = lambda x: 0
  
-    nrep = 1000000 * fact
+    nrep = 1000000 * scale_factor
     for i in xrange(nrep):
         time_test_dummy(1)
     time_test_timer("Call empty procedure (1 param) %d times." % nrep)
     
     #Test 3 - Add 200000 scalar ints
-    nrep = 2000000 * fact
+    nrep = 2000000 * scale_factor
     for i in xrange(nrep):
         a = i + 1
     time_test_timer("Add %d integer scalars and store" % nrep)
     
     #Test 4 - Scalar arithmetic loop
-    nrep = 50000 * fact
+    nrep = 50000 * scale_factor
     for i in xrange(nrep):
         a = i + i - 2
         b = a / 2 + 1
@@ -126,25 +132,25 @@ def time_test3(fact=1):
     time_test_reset()
     
     #Test 6 - Mult 512 by 512 byte by constant and store
-    nrep = 30 * fact
+    nrep = 30 * scale_factor
     for i in xrange(nrep):
         b = a * 2
     time_test_timer('Mult 512 by 512 byte by constant and store, %d times.' % nrep)
     
     #Test 7 - Shift 512 by 512 byte and store
-    nrep = 300 * fact
+    nrep = 300 * scale_factor
     for i in xrange(nrep):
         c = np.roll(np.roll(b, 10, axis=0), 10, axis=1)
     time_test_timer('Shift 512 by 512 byte and store, %d times.' % nrep)
  
     #Test 8 - Add constant to 512x512 byte array
-    nrep = 100 * fact
+    nrep = 100 * scale_factor
     for i in xrange(nrep):
         b = a + 3
     time_test_timer('Add constant to 512x512 byte array, %d times' % nrep)
 
     #Test 9 - Add two 512 by 512 byte arrays and store
-    nrep = 80 * fact
+    nrep = 80 * scale_factor
     for i in xrange(nrep):
         b = a + b
     time_test_timer('Add two 512 by 512 byte arrays and store, %d times' % nrep)
@@ -159,20 +165,20 @@ def time_test3(fact=1):
     time_test_reset()
     
     #Test 10 - Mult 512 by 512 floating by constant
-    nrep = 30 * fact
+    nrep = 30 * scale_factor
     for i in xrange(nrep):
         b = a * 2
     time_test_timer('Mult 512 by 512 floating by constant, %d times.' % nrep)
 
     #Test 11 - Shift 512 x 512 array
-    nrep = 60 * fact
+    nrep = 60 * scale_factor
     for i in xrange(nrep):
         c = np.roll(np.roll(b, 10, axis=0), 10, axis=1)
     #for i in xrange(nrep): c = d.rotate(
     time_test_timer('Shift 512 x 512 array, %d times' % nrep)
     
     #Test 12 - Add two 512 by 512 floating images
-    nrep = 40 * fact
+    nrep = 40 * scale_factor
     for i in xrange(nrep):
         b = a + b
     time_test_timer('Add two 512 by 512 floating images, %d times.' % nrep)
@@ -180,12 +186,12 @@ def time_test3(fact=1):
     time_test_reset()
 
     #Test 13 - Generate random numbers
-    nrep = 10 * fact  
+    nrep = 10 * scale_factor  
     for i in xrange(nrep): 
         a = np.random.uniform(0, 1, 100000)
     time_test_timer('Generated %d random numbers' % (nrep * 100000))
 
-    siz = int(math.sqrt(fact) * 192)
+    siz = int(math.sqrt(scale_factor) * 192)
     a = np.random.uniform(0, 1, (siz, siz)).astype(np.float32)
     time_test_reset()
 
@@ -199,7 +205,7 @@ def time_test3(fact=1):
     linalg.lu(a)
     time_test_timer('LU Decomposition of a %d^2 random matrix' % siz)
 
-    siz = int(384 * math.sqrt(fact))
+    siz = int(384 * math.sqrt(scale_factor))
 
     #this following line is not quite right, yields an array 
     #filled differently than the IDL version
@@ -228,7 +234,7 @@ def time_test3(fact=1):
         b = a.transpose()
     time_test_timer('Transpose %d^2 byte, TRANSPOSE function x 100' % siz)
 
-    siz = 100000 * fact
+    siz = 100000 * scale_factor
     a = np.arange(siz, dtype=np.float32) + 1
     b = np.arange(siz, dtype=np.float32) + 1
 
@@ -245,7 +251,7 @@ def time_test3(fact=1):
 
     time_test_timer('Log of %d numbers, vector ops 10 times' % siz)
 
-    n = 2**(17 * fact)
+    n = 2**(17 * scale_factor)
     a = np.arange(n, dtype=np.float32)
     time_test_reset()
     
@@ -254,7 +260,7 @@ def time_test3(fact=1):
     b = fftpack.ifft(b)
     time_test_timer('%d point forward plus inverse FFT' % n)
  
-    nrep = 10 * fact
+    nrep = 10 * scale_factor
     a = np.zeros([512, 512], dtype=np.uint8)
     a[200:250, 200:250] = 10
 
@@ -266,7 +272,7 @@ def time_test3(fact=1):
     time_test_timer('Smooth 512 by 512 byte array, 5x5 boxcar, %d times' % nrep)
  
  	#Test 23 - Smooth 512 by 512 floating point array, 5x5 boxcar
-    nrep = 5 * fact
+    nrep = 5 * scale_factor
     a = np.zeros([512, 512], dtype=np.float32)
     a[200:250, 200:250] = 10.0
     time_test_reset()
@@ -279,7 +285,7 @@ def time_test3(fact=1):
 
     # aa =assoc(1,a)
     time_test_reset()
-    nrep = 40 * fact
+    nrep = 40 * scale_factor
 
     #Test 24 - Write and read 512 by 512 byte array
     if (not nofileio):
@@ -294,7 +300,7 @@ def time_test3(fact=1):
         time_test_timer('Write and read 512 by 512 byte array x ' + str(nrep))
         fp.close()
     else:
-        print('\t\t\tSkipped read/write test')
+        print('\t\t\t\tSkipped read/write test')
             
     # Print results
     print_summary()             
@@ -315,7 +321,7 @@ def print_sysinfo():
     )
 
     #Display header information
-        print header
+    print header
         
 def print_summary():
     """Prints a summary of the test results"""
@@ -328,7 +334,7 @@ def print_summary():
 
     print(summary) 
 
-def time_test3_cuda(fact=1):
+def time_test3_cuda(scale_factor=1):
     """PyCUDA port of time_test3.pro"""
     import pycuda.autoinit
     import pycuda.driver as cuda
@@ -349,7 +355,7 @@ def time_test3_cuda(fact=1):
     #
     # Begin CUDA tests
     #
-    siz = int(384 * math.sqrt(fact))
+    siz = int(384 * math.sqrt(scale_factor))
 
     # Hmm... scikits.cuda.linalg.transpose doesn't currently support int32
     # May need to find another way to do this
@@ -360,3 +366,7 @@ def time_test3_cuda(fact=1):
         b = scikits.cuda.linalg.transpose(a, pycuda.autoinit.device)
 
     time_test_timer('Transpose %d^2 byte, TRANSPOSE function x 100')
+    
+if __name__ == '__main__':
+    sys.exit(main(sys.argv))
+
