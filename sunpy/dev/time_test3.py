@@ -48,8 +48,10 @@ import numpy as np
 import datetime
 import platform
 import math
-import scipy
 import random
+from scipy import fftpack
+from scipy import linalg
+from scipy import ndimage
 
 #from collections import deque
 
@@ -87,27 +89,10 @@ def time_test_reset():
 
 def time_test3(fact=1):
     '''Go through each test and print out the results'''
-    global total_time, geom_time, ntest, demomode, nofileio, output_file
-
-    ntest = 0
-
-    currentTime = datetime.datetime.today()
+    global demomode, nofileio, output_file
     
-    # Header
-    header = ("|TIME_TEST3 performance for Python %s (%s)\n"
-              "|\tOS_FAMILY=%s, OS=%s, ARCH=%s %s\n"
-              "|\t%s") % (
-        platform.python_version(), platform.python_build()[0], 
-        platform.system(), " ".join(platform.dist()), 
-        platform.processor(), platform.architecture()[0], 
-        currentTime.ctime()
-    )
-
-    #Display header information
-    if demomode:
-        print header
-    else:
-        f.write(header)
+    #Print system information   
+    print_sysinfo(output_file)
         
     #initialize time
     time_test_reset()   
@@ -169,7 +154,7 @@ def time_test3(fact=1):
     time_test_timer('Add two 512 by 512 byte arrays and store, %d times' % nrep)
     
     #a = [[random.random(0, 1) for s in xrange(512)] for s in xrange(512)]
-    a = numpy.random.uniform(0, 1, (512, 512))
+    a = np.random.uniform(0, 1, (512, 512))
     
     #using roll is very inefficient for shifting a float array, 
     #may want to use collections instead instead, need to implement this
@@ -201,21 +186,21 @@ def time_test3(fact=1):
     #Test 13 - Generate random numbers
     nrep = 10 * fact  
     for i in xrange(nrep): 
-        a = numpy.random.uniform(0, 1, 100000)
+        a = np.random.uniform(0, 1, 100000)
     time_test_timer('Generated %d random numbers' % (nrep * 100000))
 
     siz = int(math.sqrt(fact) * 192)
-    a = numpy.random.uniform(0, 1, (siz, siz))
+    a = np.random.uniform(0, 1, (siz, siz))
     time_test_reset()
 
     #Test 14 - Invert random matrix
-    b = numpy.linalg.inv(a)
+    b = np.linalg.inv(a)
     time_test_timer('Invert a %d^2 random matrix' % siz)
  
     time_test_reset()
     
     #Test 15 - LU Decomposition of random matrix
-    numpy.linalg.lu(a)
+    linalg.lu(a)
     time_test_timer('LU Decomposition of a %d^2 random matrix' % siz)
 
     siz = int(384 * math.sqrt(fact))
@@ -265,8 +250,8 @@ def time_test3(fact=1):
     time_test_reset()
     
     #Test 21 - Forward and inverse FFT
-    b = scipy.fftpack.fft(a)
-    b = scipy.fftpack.ifft(b)
+    b = fftpack.fft(a)
+    b = fftpack.ifft(b)
     time_test_timer('%d point forward plus inverse FFT' % n)
  
     nrep = 10 * fact
@@ -277,7 +262,7 @@ def time_test3(fact=1):
     
     #Test 21 - Smooth 512 by 512 byte array, 5x5 boxcar
     for i in xrange(nrep):
-        b = scipy.ndimage.filters.median_filter(a, size=(5, 5))
+        b = ndimage.filters.median_filter(a, size=(5, 5))
     time_test_timer('Smooth 512 by 512 byte array, 5x5 boxcar, %d times' % nrep)
  
  	#Test 23 - Smooth 512 by 512 floating point array, 5x5 boxcar
@@ -287,7 +272,7 @@ def time_test3(fact=1):
     time_test_reset()
     #need to check to see if this is the same as an IDL smooth
     for i in xrange(nrep):
-        b = scipy.ndimage.filters.median_filter(a, size=(5, 5))
+        b = ndimage.filters.median_filter(a, size=(5, 5))
     time_test_timer('Smooth 512 by 512 floating array, 5x5 boxcar, %d times' % nrep)
     
     a = np.arange(512**2, dtype=np.uint8) 
@@ -315,16 +300,8 @@ def time_test3(fact=1):
         else:
             print('                      Skipped read/write test in demo mode')
             
-    # Print summary               
-    geom_mean = math.exp(geom_time/ntest)
-    summary = ("\t%f=Total Time,"
-               "\t%f=Geometric mean,"
-               "\t%d tests.") % (total_time, geom_mean, ntest)
-
-    if demomode:
-        print(summary)
-    else:
-        f.write(summary)
+    # Print results
+    print_summary()             
 
     # Remove the data file
     if ((not demomode) and (not nofileio)):
@@ -332,7 +309,38 @@ def time_test3(fact=1):
 
     if type(output_file) is not type(1.0):
         output_file.close()
-    
+        
+def print_sysinfo(output_file=None):
+    """Prints the output header containing system and time information"""
+    header = ("|TIME_TEST3 performance for Python %s (%s)\n"
+              "|\tOS_FAMILY=%s, OS=%s, ARCH=%s %s\n"
+              "|\t%s") % (
+        platform.python_version(), platform.python_build()[0], 
+        platform.system(), " ".join(platform.dist()), 
+        platform.processor(), platform.machine(), 
+        datetime.datetime.today().ctime()
+    )
+
+    #Display header information
+    if not output_file:
+        print header
+    else:
+        output_file.write(header)
+        
+def print_summary(output_file=None):
+    """Prints a summary of the test results"""
+    global total_time, geom_time, ntest
+
+    geom_mean = math.exp(geom_time / ntest)
+    summary = ("\t%f=Total Time,"
+               "\t%f=Geometric mean,"
+               "\t%d tests.") % (total_time, geom_mean, ntest)
+
+    if not output_file:
+        print(summary)
+    else:
+        output_file.write(summary)    
+
 def time_test3_cuda(fact=1):
     """PyCUDA port of time_test3.pro"""
     import pycuda.autoinit
