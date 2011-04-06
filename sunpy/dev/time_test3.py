@@ -44,16 +44,12 @@
 '''
 
 import time as tick
-import platform
 import numpy as np
+import datetime
+import platform
 import math
-import numpy.matlib as matrix
-from scipy import fftpack
 import scipy
 import random
-import datetime
-from scipy import ndimage
-from scipy import linalg
 
 #from collections import deque
 
@@ -119,7 +115,6 @@ def time_test3(fact=1):
     nrep = 2000000 * fact
     for i in xrange(nrep):
         pass
-
     time_test_timer("Empty For loop %d times." % nrep)
 
     #Test 2 - Empty procedure    
@@ -127,23 +122,21 @@ def time_test3(fact=1):
     nrep = 1000000 * fact
     for i in xrange(nrep):
         time_test_dummy(1)
-
     time_test_timer("Call empty procedure (1 param) %d times." % nrep)
     
     #Test 3 - Add 200000 scalar ints
     nrep = 2000000 * fact
     for i in xrange(nrep):
         a = i + 1
-
     time_test_timer("Add %d integer scalars and store" % nrep)
     
     #Test 4 - Scalar arithmetic loop
     nrep = 50000 * fact
     for i in xrange(nrep):
-     a = i + i - 2
-     b = a/2 + 1
-     if b != i: print "You screwed up", i, a, b
-
+        a = i + i - 2
+        b = a / 2 + 1
+        if b != i:
+            print "You screwed up", i, a, b
     time_test_timer("%d scalar loops each of 5 ops, 2 =, 1 if" % nrep)
 
     #Test 5 - Create a 512x512 array filled with bytes(2)
@@ -163,16 +156,20 @@ def time_test3(fact=1):
     time_test_timer('Shift 512 by 512 byte and store, %d times.' % nrep)
  
     #Test 8 - Add constant to 512x512 byte array
-    nrep = 100*fact
-    for i in xrange(nrep): b = a + 3
-    time_test_timer('Add constant to 512x512 byte array, ' + str(nrep) + ' times')
+    nrep = 100 * fact
+    for i in xrange(nrep):
+        b = a + 3
+    time_test_timer('Add constant to 512x512 byte array, %d times' % nrep)
 
     #Test 9 - Add two 512 by 512 byte arrays and store
-    nrep = 80*fact
-    for i in xrange(nrep): b = a + b
-    time_test_timer('Add two 512 by 512 byte arrays and store, ' + str(nrep) + ' times')
+    nrep = 80 * fact
+    for i in xrange(nrep):
+        b = a + b
+    time_test_timer('Add two 512 by 512 byte arrays and store, %d times' % nrep)
     
-    a = [[random.uniform(0,1) for s in xrange(512)] for s in xrange(512)]
+    #a = [[random.random(0, 1) for s in xrange(512)] for s in xrange(512)]
+    a = numpy.random.uniform(0, 1, (512, 512))
+    
     #using roll is very inefficient for shifting a float array, 
     #may want to use collections instead instead, need to implement this
     #d = deque(a)
@@ -180,92 +177,97 @@ def time_test3(fact=1):
     time_test_reset()
     
     #Test 10 - Mult 512 by 512 floating by constant
-    nrep = 30*fact
-    for i in xrange(nrep): b = a * 2
-    time_test_timer('Mult 512 by 512 floating by constant, ' + str(nrep) + ' times.')
+    nrep = 30 * fact
+    for i in xrange(nrep):
+        b = a * 2
+    time_test_timer('Mult 512 by 512 floating by constant, %d times.' % nrep)
 
     #Test 11 - Shift 512 x 512 array
-    nrep = 60*fact
-    for i in xrange(nrep): c = np.roll(np.roll(b,10,axis=0),10,axis=1)
+    nrep = 60 * fact
+    for i in xrange(nrep):
+        c = np.roll(np.roll(b, 10, axis=0), 10, axis=1)
     #for i in xrange(nrep): c = d.rotate(
-    time_test_timer('Shift 512 x 512 array, ' +str(nrep) + ' times')
+    time_test_timer('Shift 512 x 512 array, %d times' % nrep)
     
     #Test 12 - Add two 512 by 512 floating images
-    nrep = 40*fact
-    for i in xrange(nrep): b = a + b
-    time_test_timer('Add two 512 by 512 floating images, ' + str(nrep) + ' times.')
+    nrep = 40 * fact
+    for i in xrange(nrep):
+        b = a + b
+    time_test_timer('Add two 512 by 512 floating images, %d times.' % nrep)
 
     time_test_reset()
 
     #Test 13 - Generate random numbers
-    nrep = 10*fact  
+    nrep = 10 * fact  
     for i in xrange(nrep): 
-        a = [[random.uniform(0,1) for s in xrange(100000)]]
-    time_test_timer('Generate ' + str(nrep*100000) + ' random numbers')
+        a = numpy.random.uniform(0, 1, 100000)
+    time_test_timer('Generated %d random numbers' % (nrep * 100000))
 
-    siz = math.sqrt(fact) * 192
-    a = [[random.uniform(0,1) for s in xrange(int(siz))] for s in xrange(int(siz))]
-
+    siz = int(math.sqrt(fact) * 192)
+    a = numpy.random.uniform(0, 1, (siz, siz))
     time_test_reset()
 
     #Test 14 - Invert random matrix
-    a = matrix.matrix(a)
-    b = a.I
-    time_test_timer('Invert a '+str(int(siz)) +'^2 random matrix')
+    b = numpy.linalg.inv(a)
+    time_test_timer('Invert a %d^2 random matrix' % siz)
  
     time_test_reset()
     
     #Test 15 - LU Decomposition of random matrix
-    linalg.lu(a)
-    time_test_timer('LU Decomposition of a ' + str(siz) +'^2 random matrix')
+    numpy.linalg.lu(a)
+    time_test_timer('LU Decomposition of a %d^2 random matrix' % siz)
+
     siz = int(384 * math.sqrt(fact))
-    a = np.arange(siz**2,dtype = np.uint8) 
-    #this following line is not quite right, yields an array filled differently than the IDL version
-    a = a.reshape((siz,siz))
+    a = np.arange(siz**2, dtype=np.uint8) 
+    #this following line is not quite right, yields an array 
+    #filled differently than the IDL version
+    a = a.reshape((siz, siz))
     b = a
     time_test_reset()
-    
+
     #Test 16 - Transpose byte array with FOR loop
     for i in xrange(siz):
         for j in xrange(siz):
             b[j,i] = a[i,j]
-    time_test_timer('Transpose ' + str(siz) +'^2 byte, FOR loops')
+    time_test_timer('Transpose %d^2 byte, FOR loops' % siz)
     
     #Test 17 - Transpose byte array, row and column ops
     for j in xrange(10):
         for i in xrange(siz):
             b[:][i] = a[i][:].transpose()
-    time_test_timer('Transpose '+str(siz)+'^2 byte, row and column ops x 10')
+    time_test_timer('Transpose %d^2 byte, row and column ops x 10' % siz)
   
-    #Test 18 - Transpose byte array, TRANSPOE function
-    for i in xrange(100): b = a.transpose()
-    time_test_timer('Transpose ' + str(siz)+ '^2 byte, TRANSPOSE function x 100')
+    #Test 18 - Transpose byte array, TRANSPOSE function
+    for i in xrange(100):
+        b = a.transpose()
+    time_test_timer('Transpose %d^2 byte, TRANSPOSE function x 100' % siz)
 
-    siz = 100000*fact
+    siz = 100000 * fact
     a = np.arange(siz) + 1
-    c = a
-    b = a
+    b = np.arange(siz) + 1
+
     time_test_reset()
     
     #Test 18 - Log of numbers, FOR loop
-    for i in xrange(siz): b[i] = math.log(a[i])
-    time_test_timer('Log of ' + str(siz) + ' numbers, FOR loop')
-	#need to reset a as the elements have been changed, not sure why
-    a = np.arange(siz) + 1
+    for i in xrange(siz):
+        b[i] = math.log(a[i])
+    time_test_timer('Log of %d numbers, FOR loop' % siz)
+
 	#Test 20 - Log of numbers, vector op
-    for i in xrange(10): b = np.log(a)
+    for i in xrange(10):
+        b = np.log(a)
 
-    time_test_timer('Log of ' + str(siz) + ' numbers, vector ops 10 times')
+    time_test_timer('Log of %d numbers, vector ops 10 times' % siz)
 
-    n = 2**(17*fact)
+    n = 2**(17 * fact)
     a = np.arange(n)
     time_test_reset()
     
     #Test 21 - Forward and inverse FFT
-    b = fftpack.fft(a)
-    b = fftpack.ifft(b)
-# b = fft(a,1)
-# b = fft(b,-1)
+    b = scipy.fftpack.fft(a)
+    b = scipy.fftpack.ifft(b)
+    # b = fft(a,1)
+    # b = fft(b,-1)
     time_test_timer(str(n) + ' point forward plus inverse FFT')
  
     nrep = 10L*fact
@@ -275,7 +277,7 @@ def time_test3(fact=1):
     time_test_reset()
     
     #Test 21 - Smooth 512 by 512 byte array, 5x5 boxcar
-    for i in xrange(nrep): b = ndimage.filters.median_filter(a, size = (5,5))
+    for i in xrange(nrep): b = scipy.ndimage.filters.median_filter(a, size = (5,5))
     time_test_timer('Smooth 512 by 512 byte array, 5x5 boxcar, ' + str(nrep) + ' times')
  
  	#Test 23 - Smooth 512 by 512 floating array, 5x5 boxcar
@@ -284,7 +286,7 @@ def time_test3(fact=1):
     a[200:250,200:250] = 10.0
     time_test_reset()
     #need to check to see if this is the same as an IDL smooth
-    for i in xrange(nrep): b = ndimage.filters.median_filter(a, size = (5,5))
+    for i in xrange(nrep): b = scipy.ndimage.filters.median_filter(a, size = (5,5))
     time_test_timer('Smooth 512 by 512 floating array, 5x5 boxcar, ' + str(nrep) + ' times')
     
     a = np.arange(512**2,dtype = np.uint8) 
@@ -346,7 +348,7 @@ def time_test3_cuda(fact=1):
 
     # Hmm... scikits.cuda.linalg.transpose doesn't currently support int32
     # May need to find another way to do this
-    # a = curandom.rand((siz,siz), dtype=numpy.int32)
+    # a = curandom.rand((siz,siz), dtype=np.int32)
     a = curandom.rand((siz,siz))
 
     for i in xrange(100):
