@@ -10,7 +10,7 @@
 # are what remains to be implemented.
 #
 # TODO:
-# 1] Implement File IO test (demomode = False means to output to file) (Test 24)
+# 1] Implement File IO test (Test 24)
 # 2] Implement smooth test
 # 7] Check implementation of fft test
 # 8] Check implementation of smooth test
@@ -59,13 +59,11 @@ time = 0.0
 total_time = 0.0
 geom_time = 0.0 
 ntest = 0
-demomode = True
 nofileio = True
-output_file = None
 
 def time_test_timer(test_summary=None):
     '''Print out a string with time taken for test'''
-    global time, total_time, geom_time, ntest, demomode, output_file
+    global time, total_time, geom_time, ntest
     
     #Get current time
     t = tick.time()
@@ -75,11 +73,8 @@ def time_test_timer(test_summary=None):
     geom_time = geom_time + math.log(tt)
     
     output = '\t%d\t%f\t%s' % (ntest, tt, test_summary)
+    print(output)
 
-    if demomode:
-        print(output)
-    else:
-        output_file.write(output) 
     time = tick.time()
 
 def time_test_reset():
@@ -89,10 +84,10 @@ def time_test_reset():
 
 def time_test3(fact=1):
     '''Go through each test and print out the results'''
-    global demomode, nofileio, output_file
+    global nofileio
     
     #Print system information   
-    print_sysinfo(output_file)
+    print_sysinfo()
         
     #initialize time
     time_test_reset()   
@@ -287,7 +282,7 @@ def time_test3(fact=1):
     nrep = 40 * fact
 
     #Test 24 - Write and read 512 by 512 byte array
-    if ((not demomode) and (not nofileio)):
+    if (not nofileio):
         # openw, 1, FILEPATH('test.dat', /TMP), 512, $
         fp = open('/tmp/test.dat', 'r+b') 
 
@@ -299,22 +294,16 @@ def time_test3(fact=1):
         time_test_timer('Write and read 512 by 512 byte array x ' + str(nrep))
         fp.close()
     else:
-        if (nofileio and not demomode):
-            print('                      Skipped read/write test')
-        else:
-            print('                      Skipped read/write test in demo mode')
+        print('\t\t\tSkipped read/write test')
             
     # Print results
     print_summary()             
 
     # Remove the data file
-    if ((not demomode) and (not nofileio)):
+    if (not nofileio):
         os.remove('/tmp/test.dat')       
-
-    if output_file:
-        output_file.close()
         
-def print_sysinfo(output_file=None):
+def print_sysinfo():
     """Prints the output header containing system and time information"""
     header = ("|TIME_TEST3 performance for Python %s (%s)\n"
               "|\tOS_FAMILY=%s, OS=%s, ARCH=%s %s\n"
@@ -326,12 +315,9 @@ def print_sysinfo(output_file=None):
     )
 
     #Display header information
-    if not output_file:
         print header
-    else:
-        output_file.write(header)
         
-def print_summary(output_file=None):
+def print_summary():
     """Prints a summary of the test results"""
     global total_time, geom_time, ntest
 
@@ -340,10 +326,7 @@ def print_summary(output_file=None):
                "\t%f=Geometric mean,"
                "\t%d tests.") % (total_time, geom_mean, ntest)
 
-    if not output_file:
-        print(summary)
-    else:
-        output_file.write(summary)    
+    print(summary) 
 
 def time_test3_cuda(fact=1):
     """PyCUDA port of time_test3.pro"""
