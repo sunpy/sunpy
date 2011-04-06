@@ -1,96 +1,345 @@
 #-*- coding:utf-8 -*-
 #
-# Author: Steven Christe <steven.d.christe@nasa.gov>
-# Written: 2011/03/30
-#
 # <License info will go here...>
 #
-"""Equivalent of time_test3.pro in IDL """
+# Written:
+# Steven Christe <steven.d.christe@nasa.gov> (5-Mar-2011)
+# Keith Hughitt <keith.hughitt@nasa.gov>
+#
+# This module is not yet finished. The code in the comments below 
+# are what remains to be implemented.
+#
+# TODO:
+# 1] Implement File IO test (demomode = False means to output to file) (Test 24)
+# 2] Implement smooth test
+# 7] Check implementation of fft test
+# 8] Check implementation of smooth test
+# 9] Need to optimize shifting code for float arrays. Roll is very inefficient!
+'''Equivalent of time_test3.pro, a performance test, in IDL
 
-import math
-import numpy
+    The tests are 
+    Test 1 - Empty For Loop
+    Test 2 - Empty procedure
+    Test 3 - Add 200000 scalar ints
+    Test 4 - Scalar arithmetic loop
+    Test 5 - Create a 512x512 array filled with bytes(2)
+    Test 6 - Mult 512 by 512 byte by constant and store
+    Test 7 - Shift 512 by 512 byte and store
+    Test 8 - Add constant to 512x512 byte array
+    Test 9 - Add two 512 by 512 byte arrays and store
+    Test 10 - Mult 512 by 512 floating by constant
+    Test 11 - Shift 512 x 512 array
+    Test 12 - Add two 512 by 512 floating images
+    Test 13 - Generate random numbers
+    Test 14 - Invert random matrix
+    Test 15 - LU Decomposition of random matrix
+    Test 16 - Transpose byte array with FOR loop
+    Test 17 - Transpose byte array, row and column ops
+    Test 18 - Transpose byte array, TRANSPOSE function
+	Test 20 - Log of numbers, vector op
+    Test 20 - Forward and inverse FFT
+    Test 21 - Smooth 512 by 512 byte array, 5x5 boxcar
+ 	Test 23 - Smooth 512 by 512 floating array, 5x5 boxcar
+    Test 24 - Write and read 512 by 512 byte array
+'''
+
 import time as tick
+import numpy as np
+import datetime
+import platform
+import math
+import random
+from scipy import fftpack
+from scipy import linalg
+from scipy import ndimage
 
-timer_common = 0.0
+#from collections import deque
+
 time = 0.0
-lunno = 0.0
+output_file = 0.0
 total_time = 0.0
 geom_time = 0.0 
-ntest = 0.0
+ntest = 0
 demomode = True
+nofileio = True
 
-#
-# Notes:
-# Steven Christe (30-Mar-2011)
-#
-# This module is not yet finished. The code in the comments below are what remains to be implemented.
-#
-def time_test_timer(name=None, mode=True):
-    global timer_common, time, lunno, total_time, geom_time, ntest, demomode
-
+def time_test_timer(test_summary=None):
+    '''Print out a string with time taken for test'''
+    global time, total_time, geom_time, ntest, demomode, output_file
+    
     #Get current time
     t = tick.time()
     ntest = ntest + 1
     tt = t - time
     total_time = total_time + tt
-    geom_time = geom_time
- 
-    if mode: 
-        print ntest, float(tt), ' ', name
+    geom_time = geom_time + math.log(tt)
+    
+    output = '\t%d\t%f\t%s' % (ntest, tt, test_summary)
+
+    if demomode:
+        print(output)
     else:
-        print lunno, ntest, float(tt), ' ', name 
+        output_file.write(output) 
     time = tick.time()
 
+def time_test_reset():
+    '''Reset the global clock'''
+    global time
+    time = tick.time()
 
 def time_test3(fact=1):
+    '''Go through each test and print out the results'''
+    global demomode, nofileio, output_file
     
+    #Print system information   
+    print_sysinfo(output_file)
+        
     #initialize time
-    time = tick.time()
+    time_test_reset()   
     
-    # Empty For loop
+    #Test 1 - Empty For loop
     nrep = 2000000 * fact
-    nrepArray = xrange(nrep)
-    for i in xrange(nrep): 
+    for i in xrange(nrep):
         pass
-
     time_test_timer("Empty For loop %d times." % nrep)
-    
-    def time_test_dummy(n=None):
-        return 0
-     
+
+    #Test 2 - Empty procedure    
+    time_test_dummy = lambda x: 0     
     nrep = 1000000 * fact
-    for i in xrange(nrep): 
+    for i in xrange(nrep):
         time_test_dummy(1)
-     
     time_test_timer("Call empty procedure (1 param) %d times." % nrep)
     
-    # Add 200000 scalar ints:...
+    #Test 3 - Add 200000 scalar ints
     nrep = 2000000 * fact
-    for i in range(nrep):
+    for i in xrange(nrep):
         a = i + 1
-    
     time_test_timer("Add %d integer scalars and store" % nrep)
     
-    # Scalar arithmetic loop:
-    # Add 200000 scalar ints:...
+    #Test 4 - Scalar arithmetic loop
     nrep = 50000 * fact
-    for i in xrange(1000):
+    for i in xrange(nrep):
         a = i + i - 2
         b = a / 2 + 1
         if b != i:
             print "You screwed up", i, a, b
-    
     time_test_timer("%d scalar loops each of 5 ops, 2 =, 1 if" % nrep)
-    
-    
-    # Matrix transposition (a.T is pre-computed so using numpy.transpose)
-    siz = int(384 * math.sqrt(fact))
-    
-    a = numpy.random.randn(siz,siz).astype(numpy.int32)
 
+    #Test 5 - Create a 512x512 array filled with bytes(2)
+    a = 2 * np.ones([512, 512], dtype=np.uint8)    
+    time_test_reset()
+    
+    #Test 6 - Mult 512 by 512 byte by constant and store
+    nrep = 30 * fact
+    for i in xrange(nrep):
+        b = a * 2
+    time_test_timer('Mult 512 by 512 byte by constant and store, %d times.' % nrep)
+    
+    #Test 7 - Shift 512 by 512 byte and store
+    nrep = 300 * fact
+    for i in xrange(nrep):
+        c = np.roll(np.roll(b, 10, axis=0), 10, axis=1)
+    time_test_timer('Shift 512 by 512 byte and store, %d times.' % nrep)
+ 
+    #Test 8 - Add constant to 512x512 byte array
+    nrep = 100 * fact
+    for i in xrange(nrep):
+        b = a + 3
+    time_test_timer('Add constant to 512x512 byte array, %d times' % nrep)
+
+    #Test 9 - Add two 512 by 512 byte arrays and store
+    nrep = 80 * fact
+    for i in xrange(nrep):
+        b = a + b
+    time_test_timer('Add two 512 by 512 byte arrays and store, %d times' % nrep)
+    
+    #a = [[random.random(0, 1) for s in xrange(512)] for s in xrange(512)]
+    a = np.random.uniform(0, 1, (512, 512))
+    
+    #using roll is very inefficient for shifting a float array, 
+    #may want to use collections instead instead, need to implement this
+    #d = deque(a)
+
+    time_test_reset()
+    
+    #Test 10 - Mult 512 by 512 floating by constant
+    nrep = 30 * fact
+    for i in xrange(nrep):
+        b = a * 2
+    time_test_timer('Mult 512 by 512 floating by constant, %d times.' % nrep)
+
+    #Test 11 - Shift 512 x 512 array
+    nrep = 60 * fact
+    for i in xrange(nrep):
+        c = np.roll(np.roll(b, 10, axis=0), 10, axis=1)
+    #for i in xrange(nrep): c = d.rotate(
+    time_test_timer('Shift 512 x 512 array, %d times' % nrep)
+    
+    #Test 12 - Add two 512 by 512 floating images
+    nrep = 40 * fact
+    for i in xrange(nrep):
+        b = a + b
+    time_test_timer('Add two 512 by 512 floating images, %d times.' % nrep)
+
+    time_test_reset()
+
+    #Test 13 - Generate random numbers
+    nrep = 10 * fact  
+    for i in xrange(nrep): 
+        a = np.random.uniform(0, 1, 100000)
+    time_test_timer('Generated %d random numbers' % (nrep * 100000))
+
+    siz = int(math.sqrt(fact) * 192)
+    a = np.random.uniform(0, 1, (siz, siz))
+    time_test_reset()
+
+    #Test 14 - Invert random matrix
+    b = np.linalg.inv(a)
+    time_test_timer('Invert a %d^2 random matrix' % siz)
+ 
+    time_test_reset()
+    
+    #Test 15 - LU Decomposition of random matrix
+    linalg.lu(a)
+    time_test_timer('LU Decomposition of a %d^2 random matrix' % siz)
+
+    siz = int(384 * math.sqrt(fact))
+    a = np.arange(siz**2, dtype=np.uint8) 
+    #this following line is not quite right, yields an array 
+    #filled differently than the IDL version
+    a = a.reshape((siz, siz))
+    b = a
+    time_test_reset()
+
+    #Test 16 - Transpose byte array with FOR loop
+    for i in xrange(siz):
+        for j in xrange(siz):
+            b[j,i] = a[i,j]
+    time_test_timer('Transpose %d^2 byte, FOR loops' % siz)
+    
+    #Test 17 - Transpose byte array, row and column ops
+    for j in xrange(10):
+        for i in xrange(siz):
+            b[:][i] = a[i][:].transpose()
+    time_test_timer('Transpose %d^2 byte, row and column ops x 10' % siz)
+  
+    #Test 18 - Transpose byte array, TRANSPOSE function
     for i in xrange(100):
-        b = numpy.transpose(a)
-    time_test_timer('Transpose %d^2 byte, TRANSPOSE function x 100')
+        b = a.transpose()
+    time_test_timer('Transpose %d^2 byte, TRANSPOSE function x 100' % siz)
+
+    siz = 100000 * fact
+    a = np.arange(siz) + 1
+    b = np.arange(siz) + 1
+
+    time_test_reset()
+    
+    #Test 18 - Log of numbers, FOR loop
+    for i in xrange(siz):
+        b[i] = math.log(a[i])
+    time_test_timer('Log of %d numbers, FOR loop' % siz)
+
+	#Test 20 - Log of numbers, vector op
+    for i in xrange(10):
+        b = np.log(a)
+
+    time_test_timer('Log of %d numbers, vector ops 10 times' % siz)
+
+    n = 2**(17 * fact)
+    a = np.arange(n)
+    time_test_reset()
+    
+    #Test 21 - Forward and inverse FFT
+    b = fftpack.fft(a)
+    b = fftpack.ifft(b)
+    time_test_timer('%d point forward plus inverse FFT' % n)
+ 
+    nrep = 10 * fact
+    a = np.zeros([512, 512], dtype=np.uint8)
+    a[200:250, 200:250] = 10
+
+    time_test_reset()
+    
+    #Test 21 - Smooth 512 by 512 byte array, 5x5 boxcar
+    for i in xrange(nrep):
+        b = ndimage.filters.median_filter(a, size=(5, 5))
+    time_test_timer('Smooth 512 by 512 byte array, 5x5 boxcar, %d times' % nrep)
+ 
+ 	#Test 23 - Smooth 512 by 512 floating point array, 5x5 boxcar
+    nrep = 5 * fact
+    a = np.zeros([512, 512], dtype=np.float32)
+    a[200:250, 200:250] = 10.0
+    time_test_reset()
+    #need to check to see if this is the same as an IDL smooth
+    for i in xrange(nrep):
+        b = ndimage.filters.median_filter(a, size=(5, 5))
+    time_test_timer('Smooth 512 by 512 floating array, 5x5 boxcar, %d times' % nrep)
+    
+    a = np.arange(512**2, dtype=np.uint8) 
+    a = a.reshape((512, 512))
+
+    # aa =assoc(1,a)
+    time_test_reset()
+    nrep = 40 * fact
+
+    #Test 24 - Write and read 512 by 512 byte array
+    if ((not demomode) and (not nofileio)):
+        # openw, 1, FILEPATH('test.dat', /TMP), 512, $
+        fp = open('/tmp/test.dat', 'r+b') 
+
+        initial = 512 * nrep
+        for i in xrange(nrep):
+            aa[i] = a
+        for i in xrange(nrep):
+            a = aa[i]
+        time_test_timer('Write and read 512 by 512 byte array x ' + str(nrep))
+        fp.close()
+    else:
+        if (nofileio and not demomode):
+            print('                      Skipped read/write test')
+        else:
+            print('                      Skipped read/write test in demo mode')
+            
+    # Print results
+    print_summary()             
+
+    # Remove the data file
+    if ((not demomode) and (not nofileio)):
+        os.remove('/tmp/test.dat')       
+
+    if type(output_file) is not type(1.0):
+        output_file.close()
+        
+def print_sysinfo(output_file=None):
+    """Prints the output header containing system and time information"""
+    header = ("|TIME_TEST3 performance for Python %s (%s)\n"
+              "|\tOS_FAMILY=%s, OS=%s, ARCH=%s %s\n"
+              "|\t%s") % (
+        platform.python_version(), platform.python_build()[0], 
+        platform.system(), " ".join(platform.dist()), 
+        platform.processor(), platform.machine(), 
+        datetime.datetime.today().ctime()
+    )
+
+    #Display header information
+    if not output_file:
+        print header
+    else:
+        output_file.write(header)
+        
+def print_summary(output_file=None):
+    """Prints a summary of the test results"""
+    global total_time, geom_time, ntest
+
+    geom_mean = math.exp(geom_time / ntest)
+    summary = ("\t%f=Total Time,"
+               "\t%f=Geometric mean,"
+               "\t%d tests.") % (total_time, geom_mean, ntest)
+
+    if not output_file:
+        print(summary)
+    else:
+        output_file.write(summary)    
 
 def time_test3_cuda(fact=1):
     """PyCUDA port of time_test3.pro"""
@@ -117,152 +366,10 @@ def time_test3_cuda(fact=1):
 
     # Hmm... scikits.cuda.linalg.transpose doesn't currently support int32
     # May need to find another way to do this
-    # a = curandom.rand((siz,siz), dtype=numpy.int32)
+    # a = curandom.rand((siz,siz), dtype=np.int32)
     a = curandom.rand((siz,siz))
 
     for i in xrange(100):
         b = scikits.cuda.linalg.transpose(a, pycuda.autoinit.device)
 
     time_test_timer('Transpose %d^2 byte, TRANSPOSE function x 100')
-    
-
-# ;    Scalar arithmetic loop:
-# nrep = long(fact * 50000)
-# for i=1L, nrep do begin
-#     a = i + i -2
-#     b = a / 2 + 1
-#     if b ne i then print,'You screwed up',i,a,b
-#     endfor
-# time_test_timer, strtrim(nrep,2) + ' scalar loops each of 5 ops, 2 =, 1 if)'
-# 
-# a=replicate(2b,512,512)
-# time_test_reset
-# nrep = long(30L*fact)
-# for i=1,nrep do b=a*2b
-# time_test_timer,'Mult 512 by 512 byte by constant and store, 
-# '+strtrim(nrep,2)+' times'
-# nrep = long(300L*fact)
-# for i=1,nrep do c = shift(b,10,10)
-# time_test_timer,'Shift 512 by 512 byte and store, '+strtrim(nrep,2)+' times'
-# 
-# nrep = long(100L*fact)
-# for i=1,nrep do b=a+3b
-# time_test_timer,'Add constant to 512x512 byte array, '+strtrim(nrep,2)+' 
-# times'
-# 
-# nrep = long(80L*fact)
-# for i=1, nrep do b=a+b
-# time_test_timer,'Add two 512 by 512 byte arrays and store, 
-# '+strtrim(nrep,2)+' times'
-# 
-# a = randomu(seed, 512,512)
-# time_test_reset
-# nrep = long(30L*fact)
-# for i=1, nrep do b=a*2b
-# time_test_timer,'Mult 512 by 512 floating by constant, 
-# '+strtrim(nrep,2)+' times'
-# 
-# nrep = long(60L*fact)
-# for i=1,nrep do c = shift(b,10,10)
-# time_test_timer,'Shift 512 x 512 array, '+strtrim(nrep,2)+' times'
-# 
-# nrep = long(40L*fact)
-# for i=1, nrep do b=a+b
-# time_test_timer,'Add two 512 by 512 floating images, '+strtrim(nrep,2)+' 
-# times'
-# 
-# time_test_reset
-# nrep = long(10L*fact)
-# for i=1, nrep do a=randomu(qqq, 100000L)    ;Random number matrix
-# time_test_timer, 'Generate '+strtrim(100000L*nrep,2)+' random numbers'
-# 
-# siz = long(sqrt(fact) * 192)
-# a = randomu(seed, siz, siz)
-# time_test_reset
-# b = invert(a)
-# time_test_timer,'Invert a '+strtrim(siz,2)+'^2 random matrix'
-# 
-# time_test_reset
-# ludc, a, index
-# time_test_timer, 'LU Decomposition of a '+strtrim(siz,2)+'^2 random matrix'
-# 
-# siz = long(384 * sqrt(fact))
-# a=bindgen(siz,siz) & b=a
-# time_test_reset
-# for i=0,(siz-1) do for j=0,(siz-1) do b[j,i]=a[i,j]
-# time_test_timer,'Transpose '+strtrim(siz,2)+'^2 byte, FOR loops'
-# for j=1,10 do for i=0,(siz-1) do begin
-#     b[0,i] = transpose(a[i,*])
-#     end
-# time_test_timer,'Transpose '+strtrim(siz,2)+'^2 byte, row and column ops 
-# x 10'
-# for i=1,100 do b=transpose(a)
-# time_test_timer,'Transpose '+strtrim(siz,2)+'^2 byte, TRANSPOSE function 
-# x 100'
-# 
-# siz = long(100000L*fact)
-# a=findgen(siz)+1
-# c=a
-# b = a
-# time_test_reset
-# for i=0L, n_elements(a)-1 do b[i] = alog(a[i])
-# time_test_timer,'Log of '+strtrim(siz,2)+' numbers, FOR loop'
-# for i=1,10 do b = alog(a)
-# time_test_timer,'Log of '+strtrim(siz,2)+' numbers, vector ops 10 times'
-# 
-# n = 2L^long(17*fact)
-# a = findgen(n)
-# time_test_reset
-# b = fft(a,1)
-# b = fft(b,-1)
-# time_test_timer,strtrim(n,2) + ' point forward plus inverse FFT'
-# 
-# nrep = long(10L*fact)
-# a=bytarr(512,512)
-# a[200:250,200:250]=10b
-# time_test_reset
-# for i=1,nrep do b=smooth(a,5)
-# time_test_timer,'Smooth 512 by 512 byte array, 5x5 boxcar, 
-# '+strtrim(nrep,2)+' times'
-# 
-# nrep = long(5L*fact)
-# a=float(a)
-# time_test_reset
-# for i=1,nrep do b=smooth(a,5)
-# time_test_timer,'Smooth 512 by 512 floating array, 5x5 boxcar, 
-# '+strtrim(nrep,2)+' times'
-# 
-# a=bindgen(512,512)
-# aa =assoc(1,a)
-# time_test_reset
-# nrep = long(40L*fact)
-# 
-# 
-# IF ((NOT demomode) AND (NOT nofileio)) THEN BEGIN
-#     openw, 1, FILEPATH('test.dat', /TMP), 512, $
-#         initial = 512L*nrep ;Must be changed for vax
-#     FOR i=0, nrep-1 DO aa[i] = a
-#     FOR i=0, nrep-1 DO a=aa[i]
-#     time_test_timer, 'Write and read 512 by 512 byte array x 
-# '+strtrim(nrep, 2)
-#     close, 1
-# END ELSE BEGIN
-#     IF (nofileio) AND (NOT demomode) THEN $
-#           PRINT,'                      Skipped read/write test' $
-#     ELSE $
-#           PRINT,'                      Skipped read/write test in demo 
-# mode'
-# ENDELSE
-# 
-# IF (demomode) THEN $
-#   print, float(total_time),'=Total Time, ', $
-#     exp(geom_time / ntest), '=Geometric mean,',ntest,' tests.' $
-# ELSE printf, lunno, float(total_time),'=Total Time, ', $
-#     exp(geom_time / ntest), '=Geometric mean,',ntest,' tests.'
-# 
-# ;  Remove the data file
-# IF ((NOT demomode) AND (NOT nofileio)) THEN BEGIN
-#     openw, 2, FILEPATH('test.dat', /TMP), /DELETE
-#     close, 2
-# ENDIF
-# if lunno gt 0 then free_lun,lunno
