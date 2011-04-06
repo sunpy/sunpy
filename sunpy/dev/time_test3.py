@@ -53,7 +53,6 @@ import random
 
 #from collections import deque
 
-timer_common = 0.0
 time = 0.0
 output_file = 0.0
 total_time = 0.0
@@ -62,9 +61,10 @@ ntest = 0
 demomode = True
 nofileio = True
 
-def time_test_timer(name=None):
+def time_test_timer(test_summary=None):
     '''Print out a string with time taken for test'''
-    global timer_common, time, lunno, total_time, geom_time, ntest, demomode, output_file
+    global time, total_time, geom_time, ntest, demomode, output_file
+    
     #Get current time
     t = tick.time()
     ntest = ntest + 1
@@ -72,21 +72,22 @@ def time_test_timer(name=None):
     total_time = total_time + tt
     geom_time = geom_time + math.log(tt)
     
+    output = '\t%d\t%f\t%s' % (ntest, tt, test_summary)
+
     if demomode:
-        print '\t%d\t%f\t%s' % (ntest, tt, name)
-        #print '\t' + str(ntest) + '\t' + str(float(tt)) + '\t' + name
+        print(output)
     else:
-        output_file.write('\t' + str(ntest) + '\t' + str(float(tt)), '\t', name) 
+        output_file.write(output) 
     time = tick.time()
 
-def time_test_reset(n = None):
+def time_test_reset():
     '''Reset the global clock'''
     global time
     time = tick.time()
 
 def time_test3(fact=1):
     '''Go through each test and print out the results'''
-    global timer_common, time, lunno, total_time, geom_time, ntest, demomode, output_file, nofileio
+    global total_time, geom_time, ntest, demomode, nofileio, output_file
 
     ntest = 0
 
@@ -266,62 +267,71 @@ def time_test3(fact=1):
     #Test 21 - Forward and inverse FFT
     b = scipy.fftpack.fft(a)
     b = scipy.fftpack.ifft(b)
-    # b = fft(a,1)
-    # b = fft(b,-1)
-    time_test_timer(str(n) + ' point forward plus inverse FFT')
+    time_test_timer('%d point forward plus inverse FFT' % n)
  
-    nrep = 10L*fact
-    a = np.zeros([512, 512],dtype = np.uint8)
+    nrep = 10 * fact
+    a = np.zeros([512, 512], dtype=np.uint8)
     a[200:250, 200:250] = 10
 
     time_test_reset()
     
     #Test 21 - Smooth 512 by 512 byte array, 5x5 boxcar
-    for i in xrange(nrep): b = scipy.ndimage.filters.median_filter(a, size = (5,5))
-    time_test_timer('Smooth 512 by 512 byte array, 5x5 boxcar, ' + str(nrep) + ' times')
+    for i in xrange(nrep):
+        b = scipy.ndimage.filters.median_filter(a, size=(5, 5))
+    time_test_timer('Smooth 512 by 512 byte array, 5x5 boxcar, %d times' % nrep)
  
- 	#Test 23 - Smooth 512 by 512 floating array, 5x5 boxcar
-    nrep = 5*fact
-    a = np.zeros([512,512],dtype = np.float32)
-    a[200:250,200:250] = 10.0
+ 	#Test 23 - Smooth 512 by 512 floating point array, 5x5 boxcar
+    nrep = 5 * fact
+    a = np.zeros([512, 512], dtype=np.float32)
+    a[200:250, 200:250] = 10.0
     time_test_reset()
     #need to check to see if this is the same as an IDL smooth
-    for i in xrange(nrep): b = scipy.ndimage.filters.median_filter(a, size = (5,5))
-    time_test_timer('Smooth 512 by 512 floating array, 5x5 boxcar, ' + str(nrep) + ' times')
+    for i in xrange(nrep):
+        b = scipy.ndimage.filters.median_filter(a, size=(5, 5))
+    time_test_timer('Smooth 512 by 512 floating array, 5x5 boxcar, %d times' % nrep)
     
-    a = np.arange(512**2,dtype = np.uint8) 
+    a = np.arange(512**2, dtype=np.uint8) 
     a = a.reshape((512, 512))
-# aa =assoc(1,a)
+
+    # aa =assoc(1,a)
     time_test_reset()
-    nrep = 40*fact
+    nrep = 40 * fact
 
     #Test 24 - Write and read 512 by 512 byte array
-# IF ((NOT demomode) AND (NOT nofileio)) THEN BEGIN
-    if (demomode and not nofileio):
-        f.open('test.dat', 'b')
-#     openw, 1, FILEPATH('test.dat', /TMP), 512, $
-        initial = 512*nrep #Must be changed for vax
-        for i in xrange(nrep): aa[i] = a
-        for i in xrange(nrep): a = aa[i]
-#     FOR i=0, nrep-1 DO aa[i] = a
-#     FOR i=0, nrep-1 DO a=aa[i]
+    if ((not demomode) and (not nofileio)):
+        # openw, 1, FILEPATH('test.dat', /TMP), 512, $
+        fp = open('/tmp/test.dat', 'r+b') 
+
+        initial = 512 * nrep
+        for i in xrange(nrep):
+            aa[i] = a
+        for i in xrange(nrep):
+            a = aa[i]
         time_test_timer('Write and read 512 by 512 byte array x ' + str(nrep))
-#     close, 1
+        fp.close()
     else:
         if (nofileio and not demomode):
             print('                      Skipped read/write test')
         else:
             print('                      Skipped read/write test in demo mode')
+            
+    # Print summary               
+    geom_mean = math.exp(geom_time/ntest)
+    summary = ("\t%f=Total Time,"
+               "\t%f=Geometric mean,"
+               "\t%d tests.") % (total_time, geom_mean, ntest)
 
     if demomode:
-        print('\t' + str(total_time) + '=Total Time, \t' + str(math.exp(geom_time/ntest)) + '=Geometric mean,\t' + str(ntest) + ' tests.')
+        print(summary)
     else:
-        f.write('\t' + str(total_time) + '=Total Time, \t' + str(math.exp(geom_time/ntest)) + '=Geometric mean,\t' + str(ntest) + ' tests.')
-# ;  Remove the data file
-    if (not demomode and not nofileio):
-        os.remove('test.dat')       
+        f.write(summary)
 
-    if type(output_file) is not type(1.0): output_file.close()
+    # Remove the data file
+    if ((not demomode) and (not nofileio)):
+        os.remove('/tmp/test.dat')       
+
+    if type(output_file) is not type(1.0):
+        output_file.close()
     
 def time_test3_cuda(fact=1):
     """PyCUDA port of time_test3.pro"""
