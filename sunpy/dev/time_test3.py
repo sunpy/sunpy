@@ -56,12 +56,12 @@ from scipy import ndimage
 #from collections import deque
 
 time = 0.0
-output_file = 0.0
 total_time = 0.0
 geom_time = 0.0 
 ntest = 0
 demomode = True
 nofileio = True
+output_file = None
 
 def time_test_timer(test_summary=None):
     '''Print out a string with time taken for test'''
@@ -104,7 +104,8 @@ def time_test3(fact=1):
     time_test_timer("Empty For loop %d times." % nrep)
 
     #Test 2 - Empty procedure    
-    time_test_dummy = lambda x: 0     
+    time_test_dummy = lambda x: 0
+ 
     nrep = 1000000 * fact
     for i in xrange(nrep):
         time_test_dummy(1)
@@ -154,7 +155,7 @@ def time_test3(fact=1):
     time_test_timer('Add two 512 by 512 byte arrays and store, %d times' % nrep)
     
     #a = [[random.random(0, 1) for s in xrange(512)] for s in xrange(512)]
-    a = np.random.uniform(0, 1, (512, 512))
+    a = np.random.uniform(0, 1, (512, 512)).astype(np.float32)
     
     #using roll is very inefficient for shifting a float array, 
     #may want to use collections instead instead, need to implement this
@@ -190,7 +191,7 @@ def time_test3(fact=1):
     time_test_timer('Generated %d random numbers' % (nrep * 100000))
 
     siz = int(math.sqrt(fact) * 192)
-    a = np.random.uniform(0, 1, (siz, siz))
+    a = np.random.uniform(0, 1, (siz, siz)).astype(np.float32)
     time_test_reset()
 
     #Test 14 - Invert random matrix
@@ -204,11 +205,15 @@ def time_test3(fact=1):
     time_test_timer('LU Decomposition of a %d^2 random matrix' % siz)
 
     siz = int(384 * math.sqrt(fact))
-    a = np.arange(siz**2, dtype=np.uint8) 
+
     #this following line is not quite right, yields an array 
     #filled differently than the IDL version
-    a = a.reshape((siz, siz))
-    b = a
+    #
+    # khughitt 2011/04/06: Try now. Before a and b both referenced
+    # same underlying object when indexing
+    a = np.arange(siz**2, dtype=np.uint8).reshape(siz, siz)
+    b = np.arange(siz**2, dtype=np.uint8).reshape(siz, siz)
+
     time_test_reset()
 
     #Test 16 - Transpose byte array with FOR loop
@@ -229,8 +234,8 @@ def time_test3(fact=1):
     time_test_timer('Transpose %d^2 byte, TRANSPOSE function x 100' % siz)
 
     siz = 100000 * fact
-    a = np.arange(siz) + 1
-    b = np.arange(siz) + 1
+    a = np.arange(siz, dtype=np.float32) + 1
+    b = np.arange(siz, dtype=np.float32) + 1
 
     time_test_reset()
     
@@ -246,7 +251,7 @@ def time_test3(fact=1):
     time_test_timer('Log of %d numbers, vector ops 10 times' % siz)
 
     n = 2**(17 * fact)
-    a = np.arange(n)
+    a = np.arange(n, dtype=np.float32)
     time_test_reset()
     
     #Test 21 - Forward and inverse FFT
@@ -275,8 +280,7 @@ def time_test3(fact=1):
         b = ndimage.filters.median_filter(a, size=(5, 5))
     time_test_timer('Smooth 512 by 512 floating array, 5x5 boxcar, %d times' % nrep)
     
-    a = np.arange(512**2, dtype=np.uint8) 
-    a = a.reshape((512, 512))
+    a = np.arange(512**2, dtype=np.uint8).reshape(512, 512)
 
     # aa =assoc(1,a)
     time_test_reset()
@@ -307,7 +311,7 @@ def time_test3(fact=1):
     if ((not demomode) and (not nofileio)):
         os.remove('/tmp/test.dat')       
 
-    if type(output_file) is not type(1.0):
+    if output_file:
         output_file.close()
         
 def print_sysinfo(output_file=None):
