@@ -7,6 +7,8 @@ import time
 import datetime
 import platform
 import math
+from optparse import OptionParser
+from optparse import IndentedHelpFormatter
 
 class BenchmarkTimer:
     def __init__(self):
@@ -35,6 +37,18 @@ class BenchmarkTimer:
     def reset(self):
         """Reset the timer"""
         self.start_time = time.time()
+        
+    def parse_arguments(self):
+        ''' Gets command-line arguments and handles validation '''
+        parser = OptionParser("%prog [options]", formatter=IndentedHelpFormatter(4,80))
+        parser.add_option("-s", "--scale-factor", dest="scale_factor", type="int",
+                          help="factor to scale tests by", metavar="NUM", default=1)
+
+        options, args = parser.parse_args()
+        
+        options.scale_factor
+
+        return options
             
     def print_header(self, title):
         """Prints the output header containing system and time information"""
