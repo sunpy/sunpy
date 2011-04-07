@@ -52,22 +52,23 @@ import benchmark
 from scipy import fftpack
 from scipy import linalg
 from scipy import ndimage
-from optparse import OptionParser
-from optparse import IndentedHelpFormatter
 
 #from collections import deque
 
 def main(argv):
     """Main application"""
-    options = parse_arguments()
-    run_tests(options.scale_factor)
+    timer = benchmark.BenchmarkTimer()
+    
+    options = timer.parse_arguments()
+    timer.print_header("TIME_TEST3")
+    
+    run_tests(timer, options.scale_factor)
+    
+    timer.print_summary()
 
-def run_tests(scale_factor):
+def run_tests(timer, scale_factor):
     '''Go through each test and print out the results'''
     nofileio = True
-    
-    timer = benchmark.BenchmarkTimer()
-    timer.print_header("TIME_TEST3")
 
     #initialize time
     timer.reset()   
@@ -280,20 +281,6 @@ def run_tests(scale_factor):
     if (not nofileio):
         os.remove('/tmp/test.dat')
         
-    timer.print_summary()
-    
-def parse_arguments():
-    ''' Gets command-line arguments and handles validation '''
-    parser = OptionParser("%prog [options]", formatter=IndentedHelpFormatter(4,80))
-    parser.add_option("-s", "--scale-factor", dest="scale_factor", type="int",
-                      help="factor to scale tests by", metavar="NUM", default=1)
-
-    options, args = parser.parse_args()
-    
-    options.scale_factor
-
-    return options
-    
 if __name__ == '__main__':
     sys.exit(main(sys.argv))
 
