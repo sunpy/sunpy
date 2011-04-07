@@ -101,29 +101,29 @@ def run_tests(scale_factor):
             print "You screwed up", i, a, b
     timer.log("%d scalar loops each of 5 ops, 2 =, 1 if" % nrep)
 
-    #Test 5 - Create a 512x512 array filled with bytes(2)
+    # Create a 512x512 array filled with bytes
     a = 2 * np.ones([512, 512], dtype=np.uint8)    
     timer.reset()
     
-    #Test 6 - Mult 512 by 512 byte by constant and store
+    #Test 5 - Mult 512 by 512 byte by constant and store
     nrep = 30 * scale_factor
     for i in xrange(nrep):
         b = a * 2
     timer.log('Mult 512 by 512 byte by constant and store, %d times.' % nrep)
     
-    #Test 7 - Shift 512 by 512 byte and store
+    #Test 6 - Shift 512 by 512 byte and store
     nrep = 300 * scale_factor
     for i in xrange(nrep):
         c = np.roll(np.roll(b, 10, axis=0), 10, axis=1)
     timer.log('Shift 512 by 512 byte and store, %d times.' % nrep)
  
-    #Test 8 - Add constant to 512x512 byte array
+    #Test 7 - Add constant to 512x512 byte array
     nrep = 100 * scale_factor
     for i in xrange(nrep):
         b = a + 3
     timer.log('Add constant to 512x512 byte array, %d times' % nrep)
 
-    #Test 9 - Add two 512 by 512 byte arrays and store
+    #Test 8 - Add two 512 by 512 byte arrays and store
     nrep = 80 * scale_factor
     for i in xrange(nrep):
         b = a + b
@@ -138,20 +138,20 @@ def run_tests(scale_factor):
 
     timer.reset()
     
-    #Test 10 - Mult 512 by 512 floating by constant
+    #Test 9 - Mult 512 by 512 floating by constant
     nrep = 30 * scale_factor
     for i in xrange(nrep):
         b = a * 2
     timer.log('Mult 512 by 512 floating by constant, %d times.' % nrep)
 
-    #Test 11 - Shift 512 x 512 array
+    #Test 10 - Shift 512 x 512 array
     nrep = 60 * scale_factor
     for i in xrange(nrep):
         c = np.roll(np.roll(b, 10, axis=0), 10, axis=1)
     #for i in xrange(nrep): c = d.rotate(
     timer.log('Shift 512 x 512 array, %d times' % nrep)
     
-    #Test 12 - Add two 512 by 512 floating images
+    #Test 11 - Add two 512 by 512 floating images
     nrep = 40 * scale_factor
     for i in xrange(nrep):
         b = a + b
@@ -159,7 +159,7 @@ def run_tests(scale_factor):
 
     timer.reset()
 
-    #Test 13 - Generate random numbers
+    #Test 12 - Generate random numbers
     nrep = 10 * scale_factor  
     for i in xrange(nrep): 
         a = np.random.uniform(0, 1, 100000)
@@ -169,13 +169,13 @@ def run_tests(scale_factor):
     a = np.random.uniform(0, 1, (siz, siz)).astype(np.float32)
     timer.reset()
 
-    #Test 14 - Invert random matrix
+    #Test 13 - Invert random matrix
     b = np.linalg.inv(a)
     timer.log('Invert a %d^2 random matrix' % siz)
  
     timer.reset()
     
-    #Test 15 - LU Decomposition of random matrix
+    #Test 14 - LU Decomposition of random matrix
     linalg.lu(a)
     timer.log('LU Decomposition of a %d^2 random matrix' % siz)
 
@@ -191,19 +191,19 @@ def run_tests(scale_factor):
 
     timer.reset()
 
-    #Test 16 - Transpose byte array with FOR loop
+    #Test 15 - Transpose byte array with FOR loop
     for i in xrange(siz):
         for j in xrange(siz):
             b[j,i] = a[i,j]
     timer.log('Transpose %d^2 byte, FOR loops' % siz)
     
-    #Test 17 - Transpose byte array, row and column ops
+    #Test 16 - Transpose byte array, row and column ops
     for j in xrange(10):
         for i in xrange(siz):
             b[:][i] = a[i][:].transpose()
     timer.log('Transpose %d^2 byte, row and column ops x 10' % siz)
   
-    #Test 18 - Transpose byte array, TRANSPOSE function
+    #Test 17 - Transpose byte array, TRANSPOSE function
     for i in xrange(100):
         b = a.transpose()
     timer.log('Transpose %d^2 byte, TRANSPOSE function x 100' % siz)
@@ -219,7 +219,7 @@ def run_tests(scale_factor):
         b[i] = math.log(a[i])
     timer.log('Log of %d numbers, FOR loop' % siz)
 
-	#Test 20 - Log of numbers, vector op
+	#Test 19 - Log of numbers, vector op
     for i in xrange(10):
         b = np.log(a)
 
@@ -229,7 +229,7 @@ def run_tests(scale_factor):
     a = np.arange(n, dtype=np.float32)
     timer.reset()
     
-    #Test 21 - Forward and inverse FFT
+    #Test 20 - Forward and inverse FFT
     b = fftpack.fft(a)
     b = fftpack.ifft(b)
     timer.log('%d point forward plus inverse FFT' % n)
@@ -245,7 +245,7 @@ def run_tests(scale_factor):
         b = ndimage.filters.median_filter(a, size=(5, 5))
     timer.log('Smooth 512 by 512 byte array, 5x5 boxcar, %d times' % nrep)
  
- 	#Test 23 - Smooth 512 by 512 floating point array, 5x5 boxcar
+ 	#Test 22 - Smooth 512 by 512 floating point array, 5x5 boxcar
     nrep = 5 * scale_factor
     a = np.zeros([512, 512], dtype=np.float32)
     a[200:250, 200:250] = 10.0
@@ -261,7 +261,7 @@ def run_tests(scale_factor):
     timer.reset()
     nrep = 40 * scale_factor
 
-    #Test 24 - Write and read 512 by 512 byte array
+    #Test 23 - Write and read 512 by 512 byte array
     if (not nofileio):
         # openw, 1, FILEPATH('test.dat', /TMP), 512, $
         fp = open('/tmp/test.dat', 'r+b') 
