@@ -80,11 +80,11 @@ def run_tests(timer, scale_factor):
     timer.log("Empty For loop %d times." % nrep)
 
     #Test 2 - Empty procedure    
-    time_test_dummy = lambda x: 0
+    trash = lambda x: 0
  
     nrep = 1000000 * scale_factor
     for i in xrange(nrep):
-        time_test_dummy(1)
+        trash(i)
     timer.log("Call empty procedure (1 param) %d times." % nrep)
     
     #Test 3 - Add 200000 scalar ints
