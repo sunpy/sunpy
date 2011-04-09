@@ -39,7 +39,7 @@ def plot_fits(filepath=None):
     wavelength = header['wavelnth']
     
     centerX = header['crpix1']
-    centerY = header['crpix1']
+    centerY = header['crpix2']
     scaleX = header['cdelt1']
     scaleY = header['cdelt2']
     
