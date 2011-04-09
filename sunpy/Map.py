@@ -1,12 +1,24 @@
 """Definition for a Python Map Object
 
 Author: Keith Hughitt <keith.hughitt@nasa.gov>
+Author: Steven Christe <steven.d.christe@nasa.gov>
+
+Questions:
+    1. what is better? centerX & centerY or center[0] and center[1], or?
+    2. map.wavelength, map.meas or? (use hv/vso/etc conventions?)
+    3. Are self.r_sun and radius below different?
 
 See: http://docs.scipy.org/doc/numpy/reference/arrays.classes.html
 """
 
 import numpy as np
 import pyfits
+import matplotlib.pyplot as plt
+import matplotlib.cm as cm
+import matplotlib.colors as colors
+import matplotlib.patches as patches
+import dev.cm
+import Sun
 from datetime import datetime
 
 class Map(np.ndarray):
@@ -18,6 +30,23 @@ class Map(np.ndarray):
         ----------
         input_ : {filepath, data array}
             The data source used to create the map object
+            
+        Examples
+        --------
+        >>>map = sunpy.Map('sunpy/dev/sample-data/AIA20110319_105400_0171.fits')
+        >>>map.T
+        Map([[ 0.3125,  1.    , -1.1875, ..., -0.625 ,  0.5625,  0.5   ],
+        [-0.0625,  0.1875,  0.375 , ...,  0.0625,  0.0625, -0.125 ],
+        [-0.125 , -0.8125, -0.5   , ..., -0.3125,  0.5625,  0.4375],
+        ..., 
+        [ 0.625 ,  0.625 , -0.125 , ...,  0.125 , -0.0625,  0.6875],
+        [-0.625 , -0.625 , -0.625 , ...,  0.125 , -0.0625,  0.6875],
+        [ 0.    ,  0.    , -1.1875, ...,  0.125 ,  0.    ,  0.6875]])
+        >>>map.header['cunit1']
+        'arcsec'
+        >>>map.plot()
+        >>>map.plot(cm=cm.hot, norm=colors.Normalize(1, 2048))
+
         """
         if isinstance(input_, str):
             try:
@@ -29,6 +58,11 @@ class Map(np.ndarray):
             obj = np.asarray(fits[0].data).view(cls)
             
             obj.header = fits[0].header
+            
+            obj.centerX = obj.header['crpix1']
+            obj.centerY = obj.header['crpix2']
+            obj.scaleX = obj.header['cdelt1']
+            obj.scaleY = obj.header['cdelt2']
             
             norm_header = parse_header(obj.header)
             
@@ -50,6 +84,38 @@ class Map(np.ndarray):
     def __array_finalize__(self, obj):
         """Finishes instantiation of the new map object"""
         if obj is None: return
+        
+    def plot(self, cm=None, draw_limb=True, norm=None):
+        """Plots the map object using matplotlib"""
+        # Create a figure and add title and axes
+        fig = plt.figure()
+        
+        ax = fig.add_subplot(111)
+        ax.set_title("%s %s" % (self.inst, self.date))
+        ax.set_xlabel('X-postion (arcseconds)')
+        ax.set_ylabel('Y-postion (arcseconds)')
+        
+        # Draw circle at solar limb
+        if draw_limb:
+            circ = patches.Circle([0, 0], radius=Sun.radius(self.date), 
+                fill=False, color='white')
+            ax.add_artist(circ)
+
+        # Determine extent
+        xmin = -(self.centerX - 1) * self.scaleX
+        xmax = (self.centerX - 1) * self.scaleX
+        ymin = -(self.centerY - 1) * self.scaleY
+        ymax = (self.centerY - 1) * self.scaleY
+        
+        extent = [xmin, xmax, ymin, ymax]
+        
+        # Use adaptive grayscale colormap if no cm was specified
+        if cm is None:
+            cm = dev.cm.log_adaptive(self, vmin=10)
+            
+        plt.imshow(self, cmap=cm, origin='lower', extent=extent, norm=norm)
+        plt.colorbar()
+        plt.show()        
 
 #
 # External functions - These should be moved to a separate file or files
@@ -95,8 +161,8 @@ def get_norm_header_tags(header, type_):
             "date": datetime.strptime(header['date-obs'], date_fmt1),
             "det": "AIA",
             "inst": "AIA",
-            "meas": 171,
+            "meas": header['wavelnth'],
             "obs": "SDO",
-            "name": "AIA %s" % header['wave_str'][0:3],
+            "name": "AIA %s" % header['wavelnth'],
             "r_sun": header['r_sun']
         }
