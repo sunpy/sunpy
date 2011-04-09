@@ -9,6 +9,8 @@ Questions:
     3. Are self.r_sun and radius below different?
 
 See: http://docs.scipy.org/doc/numpy/reference/arrays.classes.html
+     http://docs.scipy.org/doc/numpy/user/basics.subclassing.html
+     http://www.scipy.org/Subclasses
 """
 
 import numpy as np
@@ -22,14 +24,45 @@ import Sun
 from datetime import datetime
 
 class Map(np.ndarray):
-    """A spatially-aware data array"""
-    def __new__(cls, input_):
-        """Creates a new Map instance
-        
+    """Map(input)
+    
+        A spatially-aware data array based on the SolarSoft Map object
+    
+        Attributes
+        ----------
+        header : dict
+            A dictionary representation of the image header
+        date : datetime
+            Image observation time
+        det: str
+            Detector name
+        inst : str
+            Instrument name
+        meas : str, int
+            Measurement name. For AIA this is the wavelength of image
+        obs : str
+            Observatory name
+        r_sun : float
+            Radius of the sun
+        name : str
+            Nickname for the image type (e.g. "AIA 171")
+        centerX : float
+            X-coordinate for the center of the sun in arcseconds
+        centerY : float
+            Y-coordinate for the center of the sun in arcseconds
+        scaleX : float
+            Image scale along the x-axis in arcseconds/pixel
+        scaleY : float
+            Image scale along the y-axis in arcseconds/pixel
+    
         Parameters
         ----------
-        input_ : {filepath, data array}
+        input_ : filepath, data array
             The data source used to create the map object
+            
+        See Also:
+        ---------
+        numpy.ndarray Parent class for the Map object
             
         Examples
         --------
@@ -46,8 +79,9 @@ class Map(np.ndarray):
         'arcsec'
         >>>map.plot()
         >>>map.plot(cm=cm.hot, norm=colors.Normalize(1, 2048))
-
-        """
+    """
+    def __new__(cls, input_):
+        """Creates a new Map instance"""
         if isinstance(input_, str):
             try:
                 fits = pyfits.open(input_)
@@ -86,7 +120,18 @@ class Map(np.ndarray):
         if obj is None: return
         
     def plot(self, cm=None, draw_limb=True, norm=None):
-        """Plots the map object using matplotlib"""
+        """Plots the map object using matplotlib
+        
+        Parameters
+        ----------
+        cm : matplotlib.colors.Colormap
+            Colormap to apply to the image. Defaults to a adaptive logarithmic
+            grayscale colormap.
+        draw_limb: bool
+            Whether a circle should be drawn around the solar limb
+        norm: matplotlib.colors.Normalize
+            Normalization method to use on the data when plotting
+        """
         # Create a figure and add title and axes
         fig = plt.figure()
         
@@ -129,8 +174,8 @@ def parse_header(header):
 
     Parameters
     ----------
-    header : {dict} A dictionary container the header keywords from the file 
-        being read in
+    header : dict
+        A dictionary container the header keywords from the file being read in
     """
     # AIA
     if header['telescop'] == 'SDO/AIA':
@@ -146,13 +191,15 @@ def get_norm_header_tags(header, type_):
     
     Parameters
     ----------
-    header : {dict} A dictionary container the header keywords from the file 
-        being read in
-    type_: A short string describing the type of data being mapped
+    header : dict
+        A dictionary container the header keywords from the file being read in
+    type_ : str
+        A short string describing the type of data being mapped
     
     Returns
     -------
-    out: {dict} A new mapped dictionary of useful header values
+    out: dict
+        A new mapped dictionary of useful header values
     """
     date_fmt1 = "%Y-%m-%dT%H:%M:%S.%f"
     
