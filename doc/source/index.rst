@@ -1,7 +1,15 @@
-SunPy Manual
-============
+.. title:: Overview
+
+===================
+SunPy Documentation
+===================
+
+Overview
+--------
+Welcome! Here you can find documentation relating to SunPy.
 
 Contents:
+---------
 
 .. toctree::
    :maxdepth: 2
@@ -9,7 +17,7 @@ Contents:
    guide/index
    reference/index
    gallery/index
-   dev/index
+   dev
    release
    about
    bugs
