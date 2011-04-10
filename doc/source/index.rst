@@ -8,7 +8,7 @@ Overview
 --------
 Welcome! Here you can find documentation relating to SunPy.
 
-Contents:
+Contents
 ---------
 
 .. toctree::

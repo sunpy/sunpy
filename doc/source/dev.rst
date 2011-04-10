@@ -15,6 +15,10 @@ System (VCS) <http://bazaar.canonical.com/en/'>`_. Code branches are hosted on
 `Launchpad.net <http://launchpad.net/sunpy>`_, a free project hosting  website 
 for Open-Source software.
 
+Download the latest version of SunPy using Bazaar: ::
+
+    bzr branch lp:sunpy
+
 Collaboration
 ^^^^^^^^^^^^^
 
@@ -43,14 +47,20 @@ Documentation
 
 Code should be documented following the guidelines in `PEP 8 
 <http://www.python.org/dev/peps/pep-0008/>`_ and `PEP 257 (Docstring 
-conventions) <http://www.python.org/dev/peps/pep-0257/>`_. `Sphinx 
-<http://sphinx.pocoo.org/>`_ is used to automatically generate documentation.
+conventions) <http://www.python.org/dev/peps/pep-0257/>`_. Documentation for 
+modules, classes, and functions should follow the `NumPy/SciPy documentation 
+style guide 
+<https://github.com/numpy/numpy/blob/master/doc/HOWTO_DOCUMENT.rst.txt>`_
 
-Files
------
 
-Each file should begin with a docstring describing the overall purpose of the 
-module. Below that meta-tags containing author, license, email and credits 
+`Sphinx <http://sphinx.pocoo.org/>`_ is used to automatically generate 
+documentation.
+
+Module
+^^^^^^
+
+Each module should begin with a docstring describing its overall purpose and
+functioning. Below that meta-tags containing author, license, email and credits 
 information should be listed.
 
 Example: ::
@@ -68,8 +78,13 @@ Example: ::
     __email__ = "keith.hughitt@nasa.gov"
     __license__ = "MPL 1.0"
 
+For details about what sections can be included, see the section on `documenting
+modules 
+<https://github.com/numpy/numpy/blob/master/doc/HOWTO_DOCUMENT.rst.txt>`_ in the
+NumPy/SciPy style guide.
+
 Functions
----------
+^^^^^^^^^
 
 Functions should include a clear and concise docstring explaining the overall 
 purpose of the function, required and optional input parameters, and the return 
@@ -123,9 +138,15 @@ Example (`numpy.matlib.ones
         a.fill(1)
         return a
         
+For details about what sections can be included, see the section on `documenting
+functions 
+<https://github.com/numpy/numpy/blob/master/doc/HOWTO_DOCUMENT.rst.txt>`_ in the
+NumPy/SciPy style guide.
+        
 Testing
 -------
-Unit tests should be written as often as possible using unittest. See the 
-Unit Testing section of Dive into Python 3 for more information about unit
-testing in Python.
+Unit tests should be written as often as possible using `unittest 
+<http://docs.python.org/release/3.1.3/library/unittest.html>`_. See the 
+`Unit Testing section <http://diveintopython3.org/unit-testing.html>`_ of 
+Dive into Python 3 for more information about unit testing in Python.
 
