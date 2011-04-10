@@ -3,14 +3,18 @@
 | Author: Keith Hughitt <keith.hughitt@nasa.gov>
 | Author: Steven Christe <steven.d.christe@nasa.gov>
 
-Questions:
+Questions
+---------
     1. what is better? centerX & centerY or center[0] and center[1], or?
     2. map.wavelength, map.meas or? (use hv/vso/etc conventions?)
     3. Are self.r_sun and radius below different?
+    4. Should default cmap and normalization settings be chosen for each image?
 
-See: http://docs.scipy.org/doc/numpy/reference/arrays.classes.html
-     http://docs.scipy.org/doc/numpy/user/basics.subclassing.html
-     http://www.scipy.org/Subclasses
+References
+----------
+| http://docs.scipy.org/doc/numpy/reference/arrays.classes.html
+| http://docs.scipy.org/doc/numpy/user/basics.subclassing.html
+| http://www.scipy.org/Subclasses
 """
 
 import numpy as np
@@ -19,7 +23,6 @@ import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import matplotlib.colors as colors
 import matplotlib.patches as patches
-import dev.cm
 import Sun
 from datetime import datetime
 
@@ -78,7 +81,7 @@ class Map(np.ndarray):
         >>>map.header['cunit1']
         'arcsec'
         >>>map.plot()
-        >>>map.plot(cm=cm.hot, norm=colors.Normalize(1, 2048))
+        >>>map.plot(cmap=cm.hot, norm=colors.Normalize(1, 2048))
     """
     def __new__(cls, input_):
         """Creates a new Map instance"""
@@ -100,6 +103,8 @@ class Map(np.ndarray):
             
             norm_header = parse_header(obj.header)
             
+            obj.cmap = norm_header['cmap']
+            obj.norm = norm_header['norm']
             obj.date = norm_header['date']
             obj.det = norm_header['det']
             obj.inst = norm_header['inst']
@@ -119,18 +124,18 @@ class Map(np.ndarray):
         """Finishes instantiation of the new map object"""
         if obj is None: return
         
-    def plot(self, cm=None, draw_limb=True, norm=None):
+    def plot(self, cmap=None, norm=None, draw_limb=True):
         """Plots the map object using matplotlib
         
         Parameters
         ----------
-        cm : matplotlib.colors.Colormap
+        cmap : matplotlib.colors.Colormap
             Colormap to apply to the image. Defaults to a adaptive logarithmic
             grayscale colormap.
-        draw_limb: bool
-            Whether a circle should be drawn around the solar limb
-        norm: matplotlib.colors.Normalize
+        norm : matplotlib.colors.Normalize
             Normalization method to use on the data when plotting
+        draw_limb : bool
+            Whether a circle should be drawn around the solar limb
         """
         # Create a figure and add title and axes
         fig = plt.figure()
@@ -154,11 +159,13 @@ class Map(np.ndarray):
         
         extent = [xmin, xmax, ymin, ymax]
         
-        # Use adaptive grayscale colormap if no cm was specified
-        if cm is None:
-            cm = dev.cm.log_adaptive(self, vmin=10)
+        # Use default cmap and norm values if none set
+        if cmap is None:
+            cmap = self.cmap
+        if norm is None:
+            norm = self.norm
             
-        plt.imshow(self, cmap=cm, origin='lower', extent=extent, norm=norm)
+        plt.imshow(self, cmap=cmap, origin='lower', extent=extent, norm=norm)
         plt.colorbar()
         plt.show()        
 
@@ -180,6 +187,10 @@ def parse_header(header):
     # AIA
     if header['telescop'] == 'SDO/AIA':
         return get_norm_header_tags(header, "aia")
+        
+    # HMI
+    elif header['telescop'] == 'SDO/HMI':
+        return get_norm_header_tags(header, "hmi")
 
 def get_norm_header_tags(header, type_):
     """Returns a normalized dictionary of header values
@@ -195,6 +206,11 @@ def get_norm_header_tags(header, type_):
         A dictionary container the header keywords from the file being read in
     type_ : str
         A short string describing the type of data being mapped
+        
+    TODO
+    ----
+    Rename method to reflect the fact that is now does more than just map
+    header values (i.e. cmap, norm)
     
     Returns
     -------
@@ -205,11 +221,25 @@ def get_norm_header_tags(header, type_):
     
     if type_ == "aia":
         return {
+            "cmap": cm.gray,
+            "norm": colors.Normalize(5, 1024, True),
             "date": datetime.strptime(header['date-obs'], date_fmt1),
             "det": "AIA",
             "inst": "AIA",
             "meas": header['wavelnth'],
             "obs": "SDO",
             "name": "AIA %s" % header['wavelnth'],
+            "r_sun": header['r_sun']
+        }
+    elif type_ == "hmi":
+        return {
+            "cmap": None,
+            "norm": None,
+            "date": datetime.strptime(header['date-obs'], date_fmt1),
+            "det": "HMI",
+            "inst": "HMI",
+            "meas": header['content'].lower(),
+            "obs": "SDO",
+            "name": "HMI %s" % header['content'].lower(),
             "r_sun": header['r_sun']
         }
