@@ -1,2 +1,3 @@
 SunPy User Guide
 ----------------
+Coming soon...
