@@ -1,7 +1,7 @@
 """Definition for a Python Map Object
 
-Author: Keith Hughitt <keith.hughitt@nasa.gov>
-Author: Steven Christe <steven.d.christe@nasa.gov>
+| Author: Keith Hughitt <keith.hughitt@nasa.gov>
+| Author: Steven Christe <steven.d.christe@nasa.gov>
 
 Questions:
     1. what is better? centerX & centerY or center[0] and center[1], or?

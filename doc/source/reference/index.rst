@@ -2,7 +2,7 @@ SunPy Reference
 ===============
 Currently SunPy development is broken up between work on foundational classes
 and routines such as the :class:`sunpy.Map` class, and a lose collection of
-experimental code in the :module:`sunpy.dev` module.
+experimental code in the :mod:`sunpy.dev` module.
 
 Classes
 -------
@@ -28,7 +28,7 @@ that this module will be dropped altogether.
 
  Users should not write code for the main SunPy namespace that depends on
  functionality in the dev module. There is no guarantee that functions in the
- dev module will be available in future versions of SunPy.
+ :mod:`sunpy.dev` module will be available in future versions of SunPy.
 
 .. automodule:: sunpy.dev
     :members:
