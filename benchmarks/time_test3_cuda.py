@@ -1,14 +1,27 @@
 #!/usr/bin/env python
 #-*- coding:utf-8 -*-
-
+#
+# <License info will go here...>
+#
+# Author: Keith Hughitt <keith.hughitt@nasa.gov>
+# Author: Steven Christe <steven.d.christe@nasa.gov>
+#
 import sys
+import math
+import numpy as np
 import benchmark
 import pycuda.autoinit
 import pycuda.driver as cuda
 import pycuda.gpuarray as gpuarray
 import pycuda.curandom as curandom
 import scikits.cuda.linalg
-
+import scikits.cuda.fft
+"""
+Notes:
+   2011/04/04
+   scikits.cuda.linalg.transpose doesn't currently support int32, may need to 
+   find another way to do this
+"""
 def main(argv):
     """Main application"""
     timer = benchmark.BenchmarkTimer()
@@ -23,6 +36,9 @@ def main(argv):
 def run_tests(timer, scale_factor):
     """PyCUDA port of time_test3.pro"""
     nofileio = True
+    
+    # Initialize linear algebra extensions to PyCUDA
+    scikits.cuda.linalg.init()
 
     #initialize time
     timer.reset()   
@@ -30,27 +46,30 @@ def run_tests(timer, scale_factor):
     #
     # khughitt (2011/04/04): Non-CUDA tests from above will go here...
     #
-    # Perhaps each test should have its own function? Overhead added would
-    # likely be small compared to time it takes to run the tests themselves.
-    #
-
-    # Initialize linear algebra extensions to PyCUDA
-    scikits.cuda.linalg.init()
     
     #
     # Begin CUDA tests
     #
     siz = int(384 * math.sqrt(scale_factor))
 
-    # Hmm... scikits.cuda.linalg.transpose doesn't currently support int32
-    # May need to find another way to do this
     # a = curandom.rand((siz,siz), dtype=np.int32)
     a = curandom.rand((siz,siz))
 
+    timer.reset()
+
+    #Test 17 - Transpose byte array, TRANSPOSE function
     for i in xrange(100):
         b = scikits.cuda.linalg.transpose(a, pycuda.autoinit.device)
-
-    time_test_timer('Transpose %d^2 byte, TRANSPOSE function x 100')
+    timer.log('Transpose %d^2 byte, TRANSPOSE function x 100' % siz)
+    
+    n = 2**(17 * scale_factor)
+    a  = gpuarray.arange(n, dtype=np.float32)
+    timer.reset()
+    
+    #Test 20 - Forward and inverse FFT
+    b = scikits.cuda.fft.fft(a)
+    b = scikits.cuda.fft.ifft(b)
+    timer.log('%d point forward plus inverse FFT' % n)
     
 if __name__ == '__main__':
     sys.exit(main(sys.argv))
