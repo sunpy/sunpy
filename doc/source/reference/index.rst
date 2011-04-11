@@ -38,5 +38,7 @@ that this module will be dropped altogether.
 
 .. automodule:: sunpy.dev
     :members:
+    
+.. automodule:: sunpy.dev.cm
+    :members:
     :show-inheritance:
-

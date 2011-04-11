@@ -1,13 +1,11 @@
-#-*- coding:utf-8 -*-
-#
-# Author: Keith Hughitt <keith.hughitt@nasa.gov>
-# Author: Jack Ireland <jack.ireland@nasa.gov>
-#
-# Written: 2011/04/01
-#
-# <License info will go here...>
-#
-"""A module for dealing with static and dynamically-generated colormaps"""
+"""A module for dealing with static and dynamically-generated colormaps
+
+| Author: `Keith Hughitt <keith.hughitt@nasa.gov>`_
+| Written: 2011/04/01
+| Last Modified: 2011/04/11
+"""
+__author__ = "Keith Hughitt"
+__email__ = "keith.hughitt@nasa.gov"
 
 import matplotlib.colors
 import operator
@@ -20,15 +18,37 @@ import numpy
 def log_adaptive(data, bits=12, vmin=1, vmax=2000):
     """Creates a custom log-scaled color map scaled to the specified image data.
     
-       In order increase contrast in those pixel ranges which occur
-       frequently a histogram is created for the log of the data and
-       those values which occur most often are given unique colors.
+    In order increase contrast in those pixel ranges which occur
+    frequently a histogram is created for the log of the data and
+    those values which occur most often are given unique colors.
+    
+    The method needs to be tested on other AIA, etc. data. For the sample
+    image the color maps generated tend favor detail in the corona.
+    
+    So far little tweaking has been done though and there are probably
+    things that could improved. Feel free to try!
        
-       The method needs to be tested on other AIA, etc. data. For the sample
-       image the color maps generated tend favor detail in the corona.
-       
-       So far little tweaking has been done though and there are probably
-       things that could improved. Feel free to try!
+    Parameters
+    ----------
+    data : numpy.ndarray
+        Image data
+    bits : int
+        Number of bits to use per pixel
+    vmin : int
+        Minimum data clip value
+    vmax : int
+        Maximum data clip value
+    
+    Returns
+    -------
+    out : matplotlib.colors.LinearSegmentedColormap
+        A logarithmic grayscale color map normalized to the image data
+        
+    Examples
+    --------
+    >>> map = sunpy.Map('sunpy/dev/sample-data/AIA20110319_105400_0171.fits')
+    >>> cmap = sunpy.dev.cm.log_adaptive(map)
+    >>> map.plot(cmap=cmap)    
     """
     
     # Number of entries in the color map
@@ -58,7 +78,7 @@ def _generate_cdict_for_indices(indices, cmap_size):
     """Converts a list of indice values to an RGB color dictionary needed 
        to generate a linear segmented colormap
        
-       See: http://matplotlib.sourceforge.net/api/colors_api.html#matplotlib.colors.LinearSegmentedColormap
+       See: http://matplotlib.sourceforge.net/api/colors_api.html
     """
     step = 1. / cmap_size
     cdict = {'red': [], 'green': [], 'blue': []}
@@ -108,4 +128,3 @@ def _get_pixel_counts(data, cmap_size):
     
     # Return as a list of tuples sorted by frequency
     return sorted(a.iteritems(), key=operator.itemgetter(1), reverse=True)
-
