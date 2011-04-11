@@ -6,11 +6,17 @@ experimental code in the :mod:`sunpy.dev` module.
 
 Classes
 -------
-SunPy currently includes classes for:
 
+SunPy current provides two classes: Map and Sun.
+
+Map
+^^^
 .. automodule:: sunpy.Map
    :members:
    :show-inheritance:
+   
+Sun
+^^^
 
 .. automodule:: sunpy.Sun
    :members:
