@@ -7,7 +7,7 @@ Questions
 ---------
     1. what is better? centerX & centerY or center[0] and center[1], or?
     2. map.wavelength, map.meas or? (use hv/vso/etc conventions?)
-    3. Are self.r_sun and radius below different?
+    3. Are self.r_sun and radius below different? (rsun or rsun_obs for AIA?)
     4. Should default cmap and normalization settings be chosen for each image?
 
 References
@@ -186,11 +186,25 @@ def parse_header(header):
     """
     # AIA
     if header['telescop'] == 'SDO/AIA':
-        return get_norm_header_tags(header, "aia")
+        datatype = "aia"
         
     # HMI
     elif header['telescop'] == 'SDO/HMI':
-        return get_norm_header_tags(header, "hmi")
+        datatype = "hmi"
+
+    # EIT        
+    elif header['instrume'] == 'EIT':
+        datatype = "eit"
+        
+    # LASCO
+    elif header['instrume'] == 'LASCO':
+        datatype = "lasco"
+        
+    # MDI
+    elif header['instrume'] == 'MDI':
+        datatype = "mdi"
+        
+    return get_norm_header_tags(header, datatype) 
 
 def get_norm_header_tags(header, type_):
     """Returns a normalized dictionary of header values
@@ -218,6 +232,7 @@ def get_norm_header_tags(header, type_):
         A new mapped dictionary of useful header values
     """
     date_fmt1 = "%Y-%m-%dT%H:%M:%S.%f"
+    date_fmt2 = "%Y-%m-%dT%H:%M:%S.%fZ"
     
     if type_ == "aia":
         return {
@@ -229,7 +244,7 @@ def get_norm_header_tags(header, type_):
             "meas": header['wavelnth'],
             "obs": "SDO",
             "name": "AIA %s" % header['wavelnth'],
-            "r_sun": header['r_sun']
+            "r_sun": header['rsun_obs']
         }
     elif type_ == "hmi":
         return {
@@ -241,5 +256,52 @@ def get_norm_header_tags(header, type_):
             "meas": header['content'].lower(),
             "obs": "SDO",
             "name": "HMI %s" % header['content'].lower(),
+            "r_sun": header['rsun_obs']
+        }
+    elif type_ == "eit":
+        return {
+            "cmap": cm.gray,
+            "norm": colors.Normalize(5, 1024, True),
+            "date": datetime.strptime(header['date-obs'], date_fmt1),
+            "det": "EIT",
+            "inst": "EIT",
+            "meas": header['wavelnth'],
+            "obs": "SOHO",
+            "name": "EIT %s" % header['wavelnth'],
+            "r_sun": header['solar_r']
+        }
+    elif type_ == "lasco":
+        datestr = "%sT%s" % (header['date_obs'], header['time_obs'])
+        return {
+            "cmap": cm.gray,
+            "norm": colors.Normalize(5, 1024, True),
+            "date": datetime.strptime(datestr, date_fmt1),
+            "det": header['detector'],
+            "inst": "LASCO",
+            "meas": header['wavelnth'],
+            "obs": "SOHO",
+            "name": "LASCO %s" % header['detector'],
+            "r_sun": None
+        }
+    elif type_ == "mdi":
+        datestr = header['date_obs']
+            
+        # MDI sometimes has an "60" in seconds field
+        if datestr[17:19] == "60":
+            datestr = datestr[:17] + "30" + datestr[19:]
+        
+        # Measurement
+        dpcobsr = header['dpc_obsr']
+        meas = "Magnetogram" if dpcobsr.find('Mag') != -1 else "Continuum"
+        
+        return {
+            "cmap": None,
+            "norm": colors.Normalize(5, 1024, True),
+            "date": datetime.strptime(datestr, date_fmt2),
+            "det": "MDI",
+            "inst": "MDI",
+            "meas": meas,
+            "obs": "SOHO",
+            "name": "MDI %s" % meas,
             "r_sun": header['r_sun']
         }
