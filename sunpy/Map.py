@@ -105,7 +105,7 @@ class Map(np.ndarray):
             obj.scaleX = obj.header['cdelt1']
             obj.scaleY = obj.header['cdelt2']
             
-            norm_header = parse_header(obj.header)
+            norm_header = _parse_header(obj.header)
             
             obj.cmap = norm_header['cmap']
             obj.norm = norm_header['norm']
@@ -177,7 +177,7 @@ class Map(np.ndarray):
 # External functions - These should be moved to a separate file or files
 # once an appropriate location is determined
 #         
-def parse_header(header):
+def _parse_header(header):
     """Parses a FITS, etc image header
     
     Attempts to detect the type of data (e.g. AIA) based on values in the 
@@ -208,9 +208,9 @@ def parse_header(header):
     elif header['instrume'] == 'MDI':
         datatype = "mdi"
         
-    return get_norm_header_tags(header, datatype) 
+    return _get_norm_header_tags(header, datatype) 
 
-def get_norm_header_tags(header, type_):
+def _get_norm_header_tags(header, type_):
     """Returns a normalized dictionary of header values
     
     A normalized mapping of important header values is created and returned.
@@ -232,7 +232,7 @@ def get_norm_header_tags(header, type_):
     
     Returns
     -------
-    out: dict
+    out : dict
         A new mapped dictionary of useful header values
     """
     date_fmt1 = "%Y-%m-%dT%H:%M:%S.%f"
