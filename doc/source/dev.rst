@@ -2,8 +2,8 @@
 Developer's Guide
 =================
 
-Getting Started
----------------
+Overview
+--------
 This article describes the guidelines to be followed by developers working on
 SunPy.
 
