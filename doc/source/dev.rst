@@ -37,6 +37,72 @@ user should keep a copy of the trunk on their own machine. Each day, the
 programmer can use "bzr pull" on the trunk followed by "bzr merge" on their 
 development branch to include any recent changes made by other developers.
 
+Example Workflow
+^^^^^^^^^^^^^^^^
+
+*Before we get started*
+Here is an example workflow for a SunPy developer on any given day. Before
+beginning this tutorial, follow the above instructions to grab a copy of the
+SunPy trunk code and to set up your own branch. This tutorial assumes that you
+have copies of both reposities on your computer. The personal branch will be
+refered to simply as ``sunpy`` and the trunk will be refered to as 
+``sunpy-trunk``.
+
+*Grabbing other people's changes*
+The first thing you want to do before you start coding anything new is to pull
+in the latest code that others have written since you last did any coding. To
+do this, change directories to ``sunpy-trunk`` and run bzr pull: ::
+
+    bzr pull
+    
+If no changes were made since the last time you worked on SunPy then you don't
+need to do anything else and can begin coding again. If other people have pushed
+code since you last worked on SunPy then these changes will be fetched and you
+will need to merge them into your development branch. To do this, enter your
+personal branch and merge the changes from the trunk in: ::
+
+    bzr merge ../sunpy-trunk
+    
+Make a quick commit in your branch to isolate the merge from any work you do.
+    
+*Code away*
+Assuming there are no merge conflicts (which shouldn't happen unless two people
+are working on the same part of the same file), then you are ready to begin
+coding.
+
+*Push your changes to Launchpad*
+Once you have made your desired changes, and commited and pushed your personal
+branch, you need to decide whether or not to merge those changes back into the
+trunk. If the changes you made are finished and have been tested and proven
+stable, then they can be merged into the trunk. If you are not finished making
+with making your changes or broke some important functionality, then you will
+probably want to wait before merging those changes into the trunk. For now, lets
+assume that your changes are complete and they are ready to be added to the
+trunk.
+
+The first thing you will want to do is go into the trunk and run bzr pull once
+more to see if any new changes have been made since you started coding: ::
+
+    bzr pull
+
+If there are new changes, then go ahead once more and merge those changes into
+your personal branch and commit.
+
+Next, change directories to the trunk and do a merge on your personal branch: ::
+
+    bzr merge ../sunpy
+    
+This will pull the chnages you made into the trunk. Now all that remains is to
+commit and push your changes back to Launchpad. While still in ``sunpy-trunk``,
+run: ::
+
+    bzr commit -m "description of your changes"
+    bzr push
+
+And that's it! It may seem like a lot at first but once you go through the
+motions a few times it becomes very quick.
+
+
 Coding Standards
 ----------------
 All code that is part of the SunPy project should follow The Syle Guide for 

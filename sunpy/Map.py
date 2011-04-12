@@ -195,6 +195,14 @@ def _parse_header(header):
     # HMI
     elif header['telescop'] == 'SDO/HMI':
         datatype = "hmi"
+        
+    # EUVI
+    elif header['detector'] == 'EUVI':
+        datetype = "euvi"
+        
+    # COR1/2
+    elif (header['detector'] == 'COR1') or (header['detector'] == 'COR2'):
+        datatype = "cor"
 
     # EIT        
     elif header['instrume'] == 'EIT':
@@ -252,7 +260,7 @@ def _get_norm_header_tags(header, type_):
         }
     elif type_ == "hmi":
         return {
-            "cmap": None,
+            "cmap": cm.gray,
             "norm": None,
             "date": datetime.strptime(header['date-obs'], date_fmt1),
             "det": "HMI",
@@ -261,6 +269,30 @@ def _get_norm_header_tags(header, type_):
             "obs": "SDO",
             "name": "HMI %s" % header['content'].lower(),
             "r_sun": header['rsun_obs']
+        }
+    elif type_ == "euvi":
+        return {
+            "cmap": cm.gray,
+            "norm": None,
+            "date": datetime.strptime(header['date_obs'], date_fmt1),
+            "det": "EUVI",
+            "inst": "SECCHI",
+            "meas": header['wavelnth'],
+            "obs": header['obsrvtry'],
+            "name": "EUVI %s" % header['wavelnth'],
+            "r_sun": header['rsun']
+        }
+    elif type_ == "cor":
+        return {
+            "cmap": cm.gray,
+            "norm": None,
+            "date": datetime.strptime(header['date_obs'], date_fmt1),
+            "det": header['detector'],
+            "inst": "SECCHI",
+            "meas": header['wavelnth'],
+            "obs": header['obsrvtry'],
+            "name": "SECCHI %s" % header['detector'],
+            "r_sun": header['rsun']
         }
     elif type_ == "eit":
         return {
