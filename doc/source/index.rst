@@ -16,11 +16,11 @@ Contents
    
    guide/index
    reference/index
-   gallery/index
    dev
    release
    about
    bugs
+..   gallery/index
 ..   license
 ..   glossary
 

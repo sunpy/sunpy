@@ -1,3 +1,4 @@
+===============
 SunPy Reference
 ===============
 Currently SunPy development is broken up between work on foundational classes
@@ -38,5 +39,9 @@ that this module will be dropped altogether.
 
 .. automodule:: sunpy.dev
     :members:
-    :show-inheritance:
+    
+cm
+^^
 
+.. automodule:: sunpy.dev.cm
+    :members:

@@ -1,3 +1,15 @@
+================
 SunPy User Guide
-----------------
-Coming soon...
+================
+
+.. note::
+
+   This is where the SunPy user guide will go once an initial release has been
+   made. In the mean-time check out the :doc:`/reference/index`.
+
+.. toctree::
+   :maxdepth: 2
+   
+   start/index.rst
+.. overview
+    
