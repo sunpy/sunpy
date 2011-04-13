@@ -8,8 +8,9 @@ SunPy User Guide
    made. In the mean-time check out the :doc:`/reference/index`.
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    
-   start/index.rst
+   installation
+   tutorial
 .. overview
     
