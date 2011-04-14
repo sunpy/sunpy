@@ -114,7 +114,7 @@ def run_tests(timer, scale_factor):
     #Test 6 - Shift 512 by 512 byte and store
     a = 1e6 * np.random.uniform(0, 1, 1e6).astype(np.float32)
     c = 1e6 * np.random.uniform(0, 1, 1e6).astype(np.float32)
-    nrep = 100 * scale_factor
+    nrep = 1000 * scale_factor
     timer.reset()
     
     for i in xrange(nrep):
@@ -123,11 +123,11 @@ def run_tests(timer, scale_factor):
     timer.log('Shifting 1 million elements %d times' % nrep)
  
     #Test 7 - Cosine 1 million elements 100*scale_factor times
-    nrep = 10 * scale_factor
+    nrep = 100 * scale_factor
     a = 1e6 * np.random.uniform(0, 1, 1e6).astype(np.float32)
     timer.reset()
     
-    for i in xrange(nrep):
+    for i in xrange(nrep*10):
         c = np.cos(a)
     timer.log('Cosine 1 million elements %d times' % nrep)
 
@@ -140,7 +140,7 @@ def run_tests(timer, scale_factor):
     #Test 9 - Alog 1 million elements 100*scale_factor
     a = np.arange(1e6).astype(np.uint8)
     b = np.zeros(1e6).astype(np.uint8)
-    nrep = 100 * scale_factor
+    nrep = 1000 * scale_factor
     timer.reset()
 
     for i in xrange(nrep):
