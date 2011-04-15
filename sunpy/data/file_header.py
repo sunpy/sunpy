@@ -80,13 +80,15 @@ def _get_normalized_header(header, type_):
         A new mapped dictionary of useful header values
     """
     date_fmt1 = "%Y-%m-%dT%H:%M:%S.%f"
-    date_fmt2 = "%Y-%m-%dT%H:%M:%S.%fZ"
+    date_fmt2 = "%Y/%m/%dT%H:%M:%S.%f"
+    date_fmt3 = "%Y-%m-%dT%H:%M:%S.%fZ"
     
     if type_ == "aia":
+        # Note: Trailing "Z" in date was dropped on 2010/12/07 
         return {
             "cmap": cm.gray,
             "norm": colors.Normalize(5, 1024, True),
-            "date": datetime.strptime(header['date-obs'], date_fmt1),
+            "date": datetime.strptime(header['date-obs'][0:22], date_fmt1),
             "det": "AIA",
             "inst": "AIA",
             "meas": header['wavelnth'],
@@ -95,15 +97,16 @@ def _get_normalized_header(header, type_):
             "r_sun": header['rsun_obs']
         }
     elif type_ == "hmi":
+        meas = header['content'].split(" ")[0].lower()
         return {
             "cmap": cm.gray,
             "norm": None,
-            "date": datetime.strptime(header['date-obs'], date_fmt1),
+            "date": datetime.strptime(header['date-obs'], date_fmt3),
             "det": "HMI",
             "inst": "HMI",
-            "meas": header['content'].lower(),
+            "meas": meas,
             "obs": "SDO",
-            "name": "HMI %s" % header['content'].lower(),
+            "name": "HMI %s" % meas,
             "r_sun": header['rsun_obs']
         }
     elif type_ == "euvi":
@@ -147,7 +150,7 @@ def _get_normalized_header(header, type_):
         return {
             "cmap": cm.gray,
             "norm": colors.Normalize(5, 1024, True),
-            "date": datetime.strptime(datestr, date_fmt1),
+            "date": datetime.strptime(datestr, date_fmt2),
             "det": header['detector'],
             "inst": "LASCO",
             "meas": header['wavelnth'],
@@ -164,12 +167,12 @@ def _get_normalized_header(header, type_):
         
         # Measurement
         dpcobsr = header['dpc_obsr']
-        meas = "Magnetogram" if dpcobsr.find('Mag') != -1 else "Continuum"
+        meas = "magnetogram" if dpcobsr.find('Mag') != -1 else "continuum"
         
         return {
             "cmap": None,
             "norm": colors.Normalize(5, 1024, True),
-            "date": datetime.strptime(datestr, date_fmt2),
+            "date": datetime.strptime(datestr, date_fmt3),
             "det": "MDI",
             "inst": "MDI",
             "meas": meas,
