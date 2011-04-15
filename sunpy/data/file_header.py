@@ -24,12 +24,23 @@ def parse(header):
     header : dict
         A dictionary container the header keywords from the file being read in
     """
+    datatype = _detect_image_type(header)
+
+    if datatype is None:
+        raise "Unfamiliar data format"
+
+    return _get_normalized_header(header, datatype)
+    
+def _detect_image_type(header):
+    datatype = None
+
+    """Attempts to detect the file type"""
     # AIA
     if header['telescop'] == 'SDO/AIA':
         datatype = "aia"
         
     # HMI
-    elif header['telescop'] == 'SDO/HMI':
+    elif instrumu[0:3] == 'HMI':
         datatype = "hmi"
         
     # EUVI
@@ -52,7 +63,7 @@ def parse(header):
     elif header['instrume'] == 'MDI':
         datatype = "mdi"
         
-    return _get_normalized_header(header, datatype)
+    return datatype
 
 def _get_normalized_header(header, type_):
     """Returns a normalized dictionary of header values
@@ -97,11 +108,12 @@ def _get_normalized_header(header, type_):
             "r_sun": header['rsun_obs']
         }
     elif type_ == "hmi":
+        # Note: Trailing "Z" in date was dropped on 2010/12/07
         meas = header['content'].split(" ")[0].lower()
         return {
             "cmap": cm.gray,
             "norm": None,
-            "date": datetime.strptime(header['date-obs'], date_fmt3),
+            "date": datetime.strptime(header['date-obs'][0:22], date_fmt1),
             "det": "HMI",
             "inst": "HMI",
             "meas": meas,
@@ -137,7 +149,7 @@ def _get_normalized_header(header, type_):
         return {
             "cmap": cm.gray,
             "norm": colors.Normalize(5, 1024, True),
-            "date": datetime.strptime(header['date-obs'], date_fmt1),
+            "date": datetime.strptime(header['date_obs'], date_fmt3),
             "det": "EIT",
             "inst": "EIT",
             "meas": header['wavelnth'],
