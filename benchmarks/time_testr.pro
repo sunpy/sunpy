@@ -1,4 +1,4 @@
-PRO richard_time_test, NREP = nrep
+PRO time_testr, NREP = nrep
 ;
 ; Purpose: To test IDL, the Richard Schwartz way.
 ;   I'll be testing matrix multiplication,
