@@ -23,8 +23,8 @@ import numpy as np
 import pyfits
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
-import Sun
-import data.reader
+import file_header
+from sunpy import Sun
 
 class Map(np.ndarray):
     """
@@ -103,7 +103,7 @@ class Map(np.ndarray):
             obj.scaleX = obj.header['cdelt1']
             obj.scaleY = obj.header['cdelt2']
             
-            norm_header = data.reader.parse_header(obj.header)
+            norm_header = file_header.parse(obj.header)
             
             obj.cmap = norm_header['cmap']
             obj.norm = norm_header['norm']

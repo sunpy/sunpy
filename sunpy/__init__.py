@@ -25,6 +25,6 @@ data
 import dev
 import data
 import Sun
-from Map import Map
-from MapCube import MapCube
+from data.Map import Map
+from data.MapCube import MapCube
 
