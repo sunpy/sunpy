@@ -1,4 +1,4 @@
-"""Methods relating to the handling of solar data formats
+"""Methods relating to the handling of headers tags for solar data formats
 
 Authors: `Keith Hughitt <keith.hughitt@nasa.gov>`_
 """
@@ -13,8 +13,8 @@ import matplotlib.colors as colors
 # Note 2011/04/13: Would it make more sense to instead create a generic class
 # which both Map and MapCube inherit from that handles header mapping, etc?
 #
-def parse_header(header):
-    """Parses a FITS, etc image header
+def parse(header):
+    """Parses a FITS, etc file header
     
     Attempts to detect the type of data (e.g. AIA) based on values in the 
     file header and returns a mapped dictionary of of some important values.
@@ -52,9 +52,9 @@ def parse_header(header):
     elif header['instrume'] == 'MDI':
         datatype = "mdi"
         
-    return _get_norm_header_tags(header, datatype) 
+    return _get_normalized_header(header, datatype)
 
-def _get_norm_header_tags(header, type_):
+def _get_normalized_header(header, type_):
     """Returns a normalized dictionary of header values
     
     A normalized mapping of important header values is created and returned.
