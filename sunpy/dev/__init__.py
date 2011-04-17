@@ -1,2 +1,2 @@
-from plot_eve import plot_eve
-from cm import log_adaptive
+from sunpy.dev.plot_eve import plot_eve
+from sunpy.dev.cm import log_adaptive

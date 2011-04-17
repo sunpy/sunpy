@@ -62,7 +62,7 @@ class BenchmarkTimer:
         )
 
         #Display header information
-        print header
+        print(header)
             
     def print_summary(self):
         """Prints a summary of the test results"""
