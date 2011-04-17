@@ -29,17 +29,10 @@
 
 '''
 import numpy as np
-import random
 import sys
 import benchmark
 import os
 import sys
-from scipy import fftpack
-from scipy import linalg
-from scipy import ndimage
-from optparse import OptionParser
-from optparse import IndentedHelpFormatter
-
 
 def main(argv):
     """Main application"""
@@ -112,22 +105,22 @@ def run_tests(timer, scale_factor):
     timer.log('Indirect addressing 1 million elements %d times' % nrep)
     
     #Test 6 - Shift 512 by 512 byte and store
-    a = 1e6 * np.random.uniform(0, 1, 1e6).astype(np.float32)
-    c = 1e6 * np.random.uniform(0, 1, 1e6).astype(np.float32)
+    a = np.random.randint(2**32, size=1e6)
+    c = np.zeros(1e6, dtype=np.uint32)
     nrep = 1000 * scale_factor
     timer.reset()
     
     for i in xrange(nrep):
-        #c = np.roll(b, 12, axis=0)
         c = np.roll(a, 12, axis=0)
     timer.log('Shifting 1 million elements %d times' % nrep)
  
     #Test 7 - Cosine 1 million elements 100*scale_factor times
     nrep = 100 * scale_factor
     a = 1e6 * np.random.uniform(0, 1, 1e6).astype(np.float32)
+    c = np.zeros(1e6, dtype=np.float32)
     timer.reset()
     
-    for i in xrange(nrep*10):
+    for i in xrange(nrep * 10):
         c = np.cos(a)
     timer.log('Cosine 1 million elements %d times' % nrep)
 
@@ -151,18 +144,6 @@ def run_tests(timer, scale_factor):
     os.remove('test.npy')
 
     timer.print_summary()
-    
-def parse_arguments():
-    ''' Gets command-line arguments and handles validation '''
-    parser = OptionParser("%prog [options]", formatter=IndentedHelpFormatter(4,80))
-    parser.add_option("-s", "--scale-factor", dest="scale_factor", type="int",
-                      help="factor to scale tests by", metavar="NUM", default=1)
-
-    options, args = parser.parse_args()
-    
-    options.scale_factor
-
-    return options
     
 if __name__ == '__main__':
     sys.exit(main(sys.argv))
