@@ -16,17 +16,22 @@ date_format = "%Y-%m-%dT%H:%M:%S.%f"
 class AIAMap(BaseMap):
     """AIA Image Map definition"""
     def __new__(self, data, header):
-        self.cmap = cm.gray
-        self.norm = colors.Normalize(5, 1024, True)
-        self.date = datetime.strptime(header['date-obs'][0:22], date_format)
-        self.det = "AIA"
-        self.inst = "AIA"
-        self.meas = header['wavelnth']
-        self.obs = "SDO"
-        self.name = "AIA %s" % header['wavelnth']
-        self.r_sun = header['rsun_obs']
-        
         return BaseMap.__new__(self, data, header)
+
+    @classmethod
+    def get_properties(self, header):
+        """Returns the default and normalized values to use for the Map"""
+        return {
+            'cmap': cm.gray,
+            'norm': colors.Normalize(5, 1024, True),
+            'date': datetime.strptime(header['date-obs'][0:22], date_format),
+            'det': "AIA",
+            'inst': "AIA",
+            'meas': header['wavelnth'],
+            'obs': "SDO",
+            'name': "AIA %s" % header['wavelnth'],
+            'r_sun': header['rsun_obs']
+        }
         
     @classmethod
     def is_datasource_for(self, header):
@@ -35,19 +40,25 @@ class AIAMap(BaseMap):
         
 class AIAMap(BaseMap):
     """AIA Image Map definition"""
-    def __new__(self, data, header):
-        meas = header['content'].split(" ")[0].lower()
-        self.cmap = cm.gray
-        self.norm = None
-        self.date = datetime.strptime(header['date-obs'][0:22], date_format)
-        self.det = "HMI"
-        self.inst = "HMI"
-        self.meas = meas
-        self.obs = "SDO"
-        self.name = "HMI %s" % meas
-        self.r_sun = header['rsun_obs']
-        
+    def __new__(self, data, header):        
         return BaseMap.__new__(self, data, header)
+        
+    @classmethod
+    def get_properties(self, header):
+        """Returns the default and normalized values to use for the Map"""
+        meas = header['content'].split(" ")[0].lower()
+        
+        return {
+            "cmap": cm.gray,
+            "norm": None,
+            "date": datetime.strptime(header['date-obs'][0:22], date_format),
+            "det": "HMI",
+            "inst": "HMI",
+            "meas": meas,
+            "obs": "SDO",
+            "name": "HMI %s" % meas,
+            "r_sun": header['rsun_obs']
+        }
         
     @classmethod
     def is_datasource_for(self, header):
