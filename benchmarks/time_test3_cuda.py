@@ -58,7 +58,7 @@ def run_tests(timer, scale_factor):
     timer.reset()
 
     #Test 17 - Transpose byte array, TRANSPOSE function
-    for i in xrange(100):
+    for i in range(100):
         b = scikits.cuda.linalg.transpose(a, pycuda.autoinit.device)
     timer.log('Transpose %d^2 byte, TRANSPOSE function x 100' % siz)
     

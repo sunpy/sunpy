@@ -22,6 +22,9 @@ __email__ = "keith.hughitt@nasa.gov"
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
+import matplotlib.colors as colors
+import matplotlib.cm as cm
+from datetime import datetime
 from sunpy import Sun
 
 class BaseMap(np.ndarray):
@@ -108,7 +111,21 @@ class BaseMap(np.ndarray):
         if obj is None: return
         
     @classmethod
-    def as_slice(self, header):
+    def get_properties(cls):
+        """Returns default map properties"""
+        return {
+            'cmap': cm.gray,
+            'norm': colors.Normalize(5, 1024, True),
+            'date': datetime.today(),
+            'det': "None",
+            'inst': "None",
+            'meas': "None",
+            'obs': "None",
+            'name': "Default Map",
+            'r_sun': None
+        }
+    @classmethod
+    def as_slice(cls, header):
         """Returns a data-less Map object.
         
         Dynamically create a class which contains only the original and
@@ -131,8 +148,8 @@ class BaseMap(np.ndarray):
         See Also: http://docs.python.org/library/functions.html#type
         """
         #name = self.__class__.__name__ + "Slice"
-        name = str(self).split(".")[-1][:-2] + "Slice"
-        return type(name, (object,), self.get_properties(header))
+        name = str(cls).split(".")[-1][:-2] + "Slice"
+        return type(name, (object,), cls.get_properties(header))
         
     def plot(self, cmap=None, norm=None, draw_limb=True):
         """Plots the map object using matplotlib
