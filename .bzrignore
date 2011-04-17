@@ -1,3 +1,4 @@
 .DS_Store
 doc/source/_build/*
 .pydevproject
+.settings
