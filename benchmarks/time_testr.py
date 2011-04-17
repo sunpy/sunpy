@@ -58,7 +58,7 @@ def run_tests(timer, scale_factor):
 
     #Test 1 - Matrix Multiplication Large Arrays (500,500) 10*scale_factor times
     nrep = 10 * scale_factor
-    for i in xrange(nrep):
+    for i in range(nrep):
         c = np.dot(a, b)
     timer.log("Matrix Multiplication Large Arrays (500,500) %d times" % nrep)
 
@@ -69,7 +69,7 @@ def run_tests(timer, scale_factor):
     nrep = 10000 * scale_factor
     
     timer.reset()
-    for i in xrange(nrep):
+    for i in range(nrep):
         c = np.dot(a,b) 
     timer.log("Matrix Multiplication Small Array (50,50) %d times" % nrep)
     
@@ -78,7 +78,7 @@ def run_tests(timer, scale_factor):
     a = [np.random.uniform(0, 1, 1e6).astype(np.float32) for i in range(nrep)]
     timer.reset()
 
-    for i in xrange(nrep):
+    for i in range(nrep):
         a[i].sort()
     timer.log("Sorting 1 million elements %d times" % nrep)
     
@@ -88,7 +88,7 @@ def run_tests(timer, scale_factor):
     nrep = 1000 * scale_factor
     timer.reset()
     
-    for i in xrange(nrep):
+    for i in range(nrep):
         c = a    
     timer.log("Moving 1 million elements %d times" % nrep)
 
@@ -100,7 +100,7 @@ def run_tests(timer, scale_factor):
     nrep = 100 * scale_factor
     timer.reset()
     
-    for i in xrange(nrep):
+    for i in range(nrep):
         c = a[b]
     timer.log('Indirect addressing 1 million elements %d times' % nrep)
     
@@ -110,7 +110,7 @@ def run_tests(timer, scale_factor):
     nrep = 1000 * scale_factor
     timer.reset()
     
-    for i in xrange(nrep):
+    for i in range(nrep):
         c = np.roll(a, 12, axis=0)
     timer.log('Shifting 1 million elements %d times' % nrep)
  
@@ -120,13 +120,13 @@ def run_tests(timer, scale_factor):
     c = np.zeros(1e6, dtype=np.float32)
     timer.reset()
     
-    for i in xrange(nrep * 10):
+    for i in range(nrep * 10):
         c = np.cos(a)
     timer.log('Cosine 1 million elements %d times' % nrep)
 
     #Test 8 - Alog 1 million elements 100*scale_factor
     nrep = 100 * scale_factor
-    for i in xrange(nrep):
+    for i in range(nrep):
         np.log(a)
     timer.log(' Alog 1 million elements %d times' % nrep)
 
@@ -136,7 +136,7 @@ def run_tests(timer, scale_factor):
     nrep = 1000 * scale_factor
     timer.reset()
 
-    for i in xrange(nrep):
+    for i in range(nrep):
         np.save('test.npy', a)
         b = np.load('test.npy')
     

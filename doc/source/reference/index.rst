@@ -8,11 +8,24 @@ experimental code in the :mod:`sunpy.dev` module.
 Classes
 -------
 
-SunPy current provides two classes: Map and Sun.
-
 Map
 ^^^
-.. automodule:: sunpy.Map
+Maps are created in SunPy using the `Map()` function, which accepts either a
+filename or a data array as input and returns either a generic Map object 
+(BaseMap) or a subclass of BaseMap which deals with a specific type of data,
+e.g. "AIAMap" or "LASCOMap".
+
+.. automodule:: sunpy.data.map
+.. automodule:: sunpy.data.BaseMap
+   :members:
+   :show-inheritance:
+
+MapCube
+^^^^^^^
+MapCubes are similar to Map object except that they contain multiple 2d data
+arrays, referred to as 'slices.'
+
+.. automodule:: sunpy.data.MapCube
    :members:
    :show-inheritance:
    
@@ -42,6 +55,7 @@ that this module will be dropped altogether.
     
 cm
 ^^
+Experimental colormap functions
 
 .. automodule:: sunpy.dev.cm
     :members:
