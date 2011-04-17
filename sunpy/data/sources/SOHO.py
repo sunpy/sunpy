@@ -15,19 +15,24 @@ date_format = "%Y-%m-%dT%H:%M:%S.%f"
 class EITMap(BaseMap):
     """EIT Image Map definition"""
     def __new__(self, data, header):
+        return BaseMap.__new__(self, data, header)
+        
+    @classmethod
+    def get_properties(self, header):
+        """Returns the default and normalized values to use for the Map"""
         date_format = "%Y-%m-%dT%H:%M:%S.%fZ"
         
-        self.cmap = cm.gray
-        self.norm = colors.Normalize(5, 1024, True)
-        self.date = datetime.strptime(header['date_obs'], date_format)
-        self.det = "EIT"
-        self.inst = "EIT"
-        self.meas = header['wavelnth']
-        self.obs = "SOHO"
-        self.name = "EIT %s" % header['wavelnth']
-        self.r_sun = header['solar_r']
-        
-        return BaseMap.__new__(self, data, header)
+        return {
+            "cmap": cm.gray,
+            "norm": colors.Normalize(5, 1024, True),
+            "date": datetime.strptime(header['date_obs'], date_format),
+            "det": "EIT",
+            "inst": "EIT",
+            "meas": header['wavelnth'],
+            "obs": "SOHO",
+            "name": "EIT %s" % header['wavelnth'],
+            "r_sun": header['solar_r']
+        }
         
     @classmethod
     def is_datasource_for(self, header):
@@ -37,19 +42,24 @@ class EITMap(BaseMap):
 class LASCOMap(BaseMap):
     """LASCO Image Map definition"""
     def __new__(self, data, header):
-        datestr = "%sT%s" % (header['date_obs'], header['time_obs'])
-        
-        self.cmap = cm.gray
-        self.norm = colors.Normalize(5, 1024, True)
-        self.date = datetime.strptime(datestr, "%Y/%m/%dT%H:%M:%S.%f")
-        self.det = header['detector']
-        self.inst = "LASCO"
-        self.meas = header['wavelnth']
-        self.obs = "SOHO"
-        self.name = "LASCO %s" % header['detector']
-        self.r_sun = None
-        
         return BaseMap.__new__(self, data, header)
+        
+    @classmethod
+    def get_properties(self, header):
+        """Returns the default and normalized values to use for the Map"""
+        datestr = "%sT%s" % (header['date_obs'], header['time_obs'])
+
+        return {
+            "cmap": cm.gray,
+            "norm": colors.Normalize(5, 1024, True),
+            "date": datetime.strptime(datestr, "%Y/%m/%dT%H:%M:%S.%f"),
+            "det": header['detector'],
+            "inst": "LASCO",
+            "meas": header['wavelnth'],
+            "obs": "SOHO",
+            "name": "LASCO %s" % header['detector'],
+            "r_sun": None
+        }
         
     @classmethod
     def is_datasource_for(self, header):
@@ -59,6 +69,11 @@ class LASCOMap(BaseMap):
 class MDIMap(BaseMap):
     """MDI Image Map definition"""
     def __new__(self, data, header):
+        return BaseMap.__new__(self, data, header)
+        
+    @classmethod
+    def get_properties(self, header):
+        """Returns the default and normalized values to use for the Map"""
         # MDI sometimes has an "60" in seconds field
         datestr = header['date_obs']
 
@@ -69,17 +84,17 @@ class MDIMap(BaseMap):
         dpcobsr = header['dpc_obsr']
         meas = "magnetogram" if dpcobsr.find('Mag') != -1 else "continuum"
         
-        self.cmap = cm.gray
-        self.norm = colors.Normalize(5, 1024, True)
-        self.date = datetime.strptime(datestr, "%Y-%m-%dT%H:%M:%S.%fZ"),
-        self.det = "MDI"
-        self.inst = "MDI"
-        self.meas = meas
-        self.obs = "SOHO"
-        self.name = "MDI %s" % meas
-        self.r_sun = header['r_sun']
-        
-        return BaseMap.__new__(self, data, header)
+        return {
+            "cmap": cm.gray,
+            "norm": colors.Normalize(5, 1024, True),
+            "date": datetime.strptime(datestr, "%Y-%m-%dT%H:%M:%S.%fZ"),
+            "det": "MDI",
+            "inst": "MDI",
+            "meas": meas,
+            "obs": "SOHO",
+            "name": "MDI %s" % meas,
+            "r_sun": header['r_sun']
+        }
         
     @classmethod
     def is_datasource_for(self, header):
