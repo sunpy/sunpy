@@ -24,9 +24,9 @@ data
 """
 __version__ = 0.01
 
-import dev
-import data
-import Sun
-from data.map import Map
-from data.MapCube import MapCube
+import sunpy.dev
+import sunpy.data
+import sunpy.Sun
+from sunpy.data.map import Map
+from sunpy.data.MapCube import MapCube
 
