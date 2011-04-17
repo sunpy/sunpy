@@ -64,5 +64,5 @@ class HMIMap(BaseMap):
     @classmethod
     def is_datasource_for(self, header):
         """Determines if header corresponds to an HMI image"""
-        return header['instrumu'][0:3] == 'HMI'
+        return header['instrume'][0:3] == 'HMI'
 
