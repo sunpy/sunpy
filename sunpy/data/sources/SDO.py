@@ -21,9 +21,8 @@ class AIAMap(BaseMap):
     @classmethod
     def get_properties(self, header):
         """Returns the default and normalized values to use for the Map"""
-        return {
-            'cmap': cm.gray,
-            'norm': colors.Normalize(5, 1024, True),
+        properties = BaseMap.get_properties()
+        properties.update({
             'date': datetime.strptime(header['date-obs'][0:22], date_format),
             'det': "AIA",
             'inst': "AIA",
@@ -31,15 +30,16 @@ class AIAMap(BaseMap):
             'obs': "SDO",
             'name': "AIA %s" % header['wavelnth'],
             'r_sun': header['rsun_obs']
-        }
+        })
+        return properties
         
     @classmethod
     def is_datasource_for(self, header):
         """Determines if header corresponds to an AIA image"""
         return header['telescop'] == 'SDO/AIA'
         
-class AIAMap(BaseMap):
-    """AIA Image Map definition"""
+class HMIMap(BaseMap):
+    """HMI Image Map definition"""
     def __new__(self, data, header):        
         return BaseMap.__new__(self, data, header)
         
@@ -48,8 +48,8 @@ class AIAMap(BaseMap):
         """Returns the default and normalized values to use for the Map"""
         meas = header['content'].split(" ")[0].lower()
         
-        return {
-            "cmap": cm.gray,
+        properties = BaseMap.get_properties()
+        properties.update({
             "norm": None,
             "date": datetime.strptime(header['date-obs'][0:22], date_format),
             "det": "HMI",
@@ -58,7 +58,8 @@ class AIAMap(BaseMap):
             "obs": "SDO",
             "name": "HMI %s" % meas,
             "r_sun": header['rsun_obs']
-        }
+        })
+        return properties
         
     @classmethod
     def is_datasource_for(self, header):

@@ -22,9 +22,8 @@ class EITMap(BaseMap):
         """Returns the default and normalized values to use for the Map"""
         date_format = "%Y-%m-%dT%H:%M:%S.%fZ"
         
-        return {
-            "cmap": cm.gray,
-            "norm": colors.Normalize(5, 1024, True),
+        properties = BaseMap.get_properties()
+        properties.update({
             "date": datetime.strptime(header['date_obs'], date_format),
             "det": "EIT",
             "inst": "EIT",
@@ -32,7 +31,8 @@ class EITMap(BaseMap):
             "obs": "SOHO",
             "name": "EIT %s" % header['wavelnth'],
             "r_sun": header['solar_r']
-        }
+        })
+        return properties
         
     @classmethod
     def is_datasource_for(self, header):
@@ -49,9 +49,8 @@ class LASCOMap(BaseMap):
         """Returns the default and normalized values to use for the Map"""
         datestr = "%sT%s" % (header['date_obs'], header['time_obs'])
 
-        return {
-            "cmap": cm.gray,
-            "norm": colors.Normalize(5, 1024, True),
+        properties = BaseMap.get_properties()
+        properties.update({
             "date": datetime.strptime(datestr, "%Y/%m/%dT%H:%M:%S.%f"),
             "det": header['detector'],
             "inst": "LASCO",
@@ -59,7 +58,8 @@ class LASCOMap(BaseMap):
             "obs": "SOHO",
             "name": "LASCO %s" % header['detector'],
             "r_sun": None
-        }
+        })
+        return properties
         
     @classmethod
     def is_datasource_for(self, header):
@@ -84,9 +84,8 @@ class MDIMap(BaseMap):
         dpcobsr = header['dpc_obsr']
         meas = "magnetogram" if dpcobsr.find('Mag') != -1 else "continuum"
         
-        return {
-            "cmap": cm.gray,
-            "norm": colors.Normalize(5, 1024, True),
+        properties = BaseMap.get_properties()        
+        properties.update({
             "date": datetime.strptime(datestr, "%Y-%m-%dT%H:%M:%S.%fZ"),
             "det": "MDI",
             "inst": "MDI",
@@ -94,7 +93,8 @@ class MDIMap(BaseMap):
             "obs": "SOHO",
             "name": "MDI %s" % meas,
             "r_sun": header['r_sun']
-        }
+        })
+        return properties
         
     @classmethod
     def is_datasource_for(self, header):
