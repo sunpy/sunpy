@@ -1,4 +1,4 @@
-"""A Python Map Object
+"""A Generic Python Map Object
 
 Authors: `Keith Hughitt <keith.hughitt@nasa.gov>`_ and `Steven Christe 
 <steven.d.christe@nasa.gov>`_
@@ -20,15 +20,13 @@ __author__ = "Keith Hughitt and Steven Christe"
 __email__ = "keith.hughitt@nasa.gov"
 
 import numpy as np
-import pyfits
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
-import Sun
-import data.reader
+from sunpy import Sun
 
-class Map(np.ndarray):
+class BaseMap(np.ndarray):
     """
-    Map(input)
+    BaseMap(data, header)
     
     A spatially-aware data array based on the SolarSoft Map object
 
@@ -61,9 +59,10 @@ class Map(np.ndarray):
 
     Parameters
     ----------
-    input_ : filepath, data array
-        The data source used to create the map object. This can be either a
-        filepath to an image, a 2d list, or an ndarray.
+    data : numpy.ndarray, list
+        A 2d list or ndarray containing the map data
+    header : dict
+        A dictionary of the original image header tags
         
     See Also:
     ---------
@@ -85,46 +84,55 @@ class Map(np.ndarray):
     >>> map.plot()
     >>> map.plot(cmap=cm.hot, norm=colors.Normalize(1, 2048))
     """
-    def __new__(cls, input_):
-        """Creates a new Map instance"""
-        if isinstance(input_, str):
-            try:
-                fits = pyfits.open(input_)
-            except IOError:
-                sys.exit("Unable to read the file %s" % input_)
+    def __new__(cls, data, header=None):
+        """Creates a new BaseMap instance"""        
+        if isinstance(data, np.ndarray):
+            obj = data.view(cls)
+        elif isinstance(data, list):
+            obj = np.asarray(data).view(cls)
 
-            #np.ndarray.__new__(self, fits[0].data)
-            obj = np.asarray(fits[0].data).view(cls)
-            
-            obj.header = fits[0].header
-            
-            obj.centerX = obj.header['crpix1']
-            obj.centerY = obj.header['crpix2']
-            obj.scaleX = obj.header['cdelt1']
-            obj.scaleY = obj.header['cdelt2']
-            
-            norm_header = data.reader.parse_header(obj.header)
-            
-            obj.cmap = norm_header['cmap']
-            obj.norm = norm_header['norm']
-            obj.date = norm_header['date']
-            obj.det = norm_header['det']
-            obj.inst = norm_header['inst']
-            obj.meas = norm_header['meas']
-            obj.obs = norm_header['obs']
-            obj.name = norm_header['name']
-            obj.r_sun = norm_header['r_sun']
+        if header:
+            for attr, value in obj.get_properties(header).items():
+                setattr(obj, attr, value)
+        
+            obj.header = header
+            obj.centerX = header['crpix1']
+            obj.centerY = header['crpix2']
+            obj.scaleX = header['cdelt1']
+            obj.scaleY = header['cdelt2']
 
-        elif isinstance(input_, list):
-            obj = np.asarray(input_).view(cls)
-        elif isinstance(input_, np.ndarray):
-            obj = input_
-            
         return obj
             
     def __array_finalize__(self, obj):
         """Finishes instantiation of the new map object"""
         if obj is None: return
+        
+    @classmethod
+    def as_slice(self, header):
+        """Returns a data-less Map object.
+        
+        Dynamically create a class which contains only the original and
+        normalized header fields and default settings for the map. This is
+        useful for Map collections (e.g. MapCube) in order to maintain a
+        separate record of the metainformation for a given layer or "slice"
+        of the cube without having to keep the data separate.
+        
+        Parameters
+        ----------
+        header : dict
+            A dictionary of the original image header tag
+            
+        Returns
+        -------
+        out : MapSlice
+            An empty container object with only meta information and default
+            choices pertaining to the header specified.
+        
+        See Also: http://docs.python.org/library/functions.html#type
+        """
+        #name = self.__class__.__name__ + "Slice"
+        name = str(self).split(".")[-1][:-2] + "Slice"
+        return type(name, (object,), self.get_properties(header))
         
     def plot(self, cmap=None, norm=None, draw_limb=True):
         """Plots the map object using matplotlib
@@ -169,5 +177,5 @@ class Map(np.ndarray):
             
         plt.imshow(self, cmap=cmap, origin='lower', extent=extent, norm=norm)
         plt.colorbar()
-        plt.show()        
+        plt.show()      
 

@@ -22,9 +22,11 @@ data
     Methods relating to the parsing of common solar data formats
 
 """
+__version__ = 0.01
+
 import dev
 import data
 import Sun
-from Map import Map
-from MapCube import MapCube
+from data.map import Map
+from data.MapCube import MapCube
 
