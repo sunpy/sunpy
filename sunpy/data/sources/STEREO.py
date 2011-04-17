@@ -15,17 +15,22 @@ date_format = "%Y-%m-%dT%H:%M:%S.%f"
 class EUVIMap(BaseMap):
     """EUVI Image Map definition"""
     def __new__(self, data, header):
-        self.cmap = cm.gray
-        self.norm = colors.Normalize(5, 1024, True)
-        self.date = datetime.strptime(header['date_obs'], date_format)
-        self.det = "EUVI"
-        self.inst = "SECCHI"
-        self.meas = header['wavelnth']
-        self.obs = header['obsrvtry']
-        self.name = "EUVI %s" % header['wavelnth']
-        self.r_sun = header['rsun']
-        
         return BaseMap.__new__(self, data, header)
+        
+    @classmethod
+    def get_properties(self, header):
+        """Returns the default and normalized values to use for the Map"""
+        return {
+            "cmap": cm.gray,
+            "norm": colors.Normalize(5, 1024, True),
+            "date": datetime.strptime(header['date_obs'], date_format),
+            "det": "EUVI",
+            "inst": "SECCHI",
+            "meas": header['wavelnth'],
+            "obs": header['obsrvtry'],
+            "name": "EUVI %s" % header['wavelnth'],
+            "r_sun": header['rsun']
+        }
         
     @classmethod
     def is_datasource_for(self, header):
@@ -35,17 +40,23 @@ class EUVIMap(BaseMap):
 class CORMap(BaseMap):
     """COR Image Map definition"""
     def __new__(self, data, header):
-        self.cmap = cm.gray
-        self.norm = colors.Normalize(5, 1024, True)
-        self.date = datetime.strptime(header['date_obs'], date_format)
-        self.det = header['detector']
-        self.inst = "SECCHI"
-        self.meas = header['wavelnth']
-        self.obs = header['obsrvtry']
-        self.name = "SECCHI %s" % header['detector']
-        self.r_sun = header['rsun']
-        
         return BaseMap.__new__(self, data, header)
+        
+    @classmethod
+    def get_properties(self, header):
+        """Returns the default and normalized values to use for the Map"""
+
+        return {
+            "cmap": cm.gray,
+            "norm": colors.Normalize(5, 1024, True),
+            "date": datetime.strptime(header['date_obs'], date_format),
+            "det": header['detector'],
+            "inst": "SECCHI",
+            "meas": header['wavelnth'],
+            "obs": header['obsrvtry'],
+            "name": "SECCHI %s" % header['detector'],
+            "r_sun": header['rsun']
+        }
         
     @classmethod
     def is_datasource_for(self, header):

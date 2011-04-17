@@ -92,6 +92,9 @@ class BaseMap(np.ndarray):
             obj = np.asarray(data).view(cls)
 
         if header:
+            for attr, value in obj.get_properties(header).items():
+                setattr(obj, attr, value)
+        
             obj.header = header
             obj.centerX = header['crpix1']
             obj.centerY = header['crpix2']
@@ -103,6 +106,33 @@ class BaseMap(np.ndarray):
     def __array_finalize__(self, obj):
         """Finishes instantiation of the new map object"""
         if obj is None: return
+        
+    @classmethod
+    def as_slice(self, header):
+        """Returns a data-less Map object.
+        
+        Dynamically create a class which contains only the original and
+        normalized header fields and default settings for the map. This is
+        useful for Map collections (e.g. MapCube) in order to maintain a
+        separate record of the metainformation for a given layer or "slice"
+        of the cube without having to keep the data separate.
+        
+        Parameters
+        ----------
+        header : dict
+            A dictionary of the original image header tag
+            
+        Returns
+        -------
+        out : MapSlice
+            An empty container object with only meta information and default
+            choices pertaining to the header specified.
+        
+        See Also: http://docs.python.org/library/functions.html#type
+        """
+        #name = self.__class__.__name__ + "Slice"
+        name = str(self).split(".")[-1][:-2] + "Slice"
+        return type(name, (object,), self.get_properties(header))
         
     def plot(self, cmap=None, norm=None, draw_limb=True):
         """Plots the map object using matplotlib
