@@ -20,9 +20,8 @@ class EUVIMap(BaseMap):
     @classmethod
     def get_properties(self, header):
         """Returns the default and normalized values to use for the Map"""
-        return {
-            "cmap": cm.gray,
-            "norm": colors.Normalize(5, 1024, True),
+        properties = BaseMap.get_properties()
+        properties.update({
             "date": datetime.strptime(header['date_obs'], date_format),
             "det": "EUVI",
             "inst": "SECCHI",
@@ -30,7 +29,8 @@ class EUVIMap(BaseMap):
             "obs": header['obsrvtry'],
             "name": "EUVI %s" % header['wavelnth'],
             "r_sun": header['rsun']
-        }
+        })
+        return properties
         
     @classmethod
     def is_datasource_for(self, header):
@@ -45,10 +45,8 @@ class CORMap(BaseMap):
     @classmethod
     def get_properties(self, header):
         """Returns the default and normalized values to use for the Map"""
-
-        return {
-            "cmap": cm.gray,
-            "norm": colors.Normalize(5, 1024, True),
+        properties = BaseMap.get_properties()
+        properties.update({
             "date": datetime.strptime(header['date_obs'], date_format),
             "det": header['detector'],
             "inst": "SECCHI",
@@ -56,7 +54,8 @@ class CORMap(BaseMap):
             "obs": header['obsrvtry'],
             "name": "SECCHI %s" % header['detector'],
             "r_sun": header['rsun']
-        }
+        })
+        return properties
         
     @classmethod
     def is_datasource_for(self, header):
