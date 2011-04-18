@@ -8,6 +8,7 @@ __email__ = "keith.hughitt@nasa.gov"
 
 import pyfits
 from BaseMap import BaseMap
+from BaseMap import UnrecognizedDataSouce
 from sources import *
 
 def Map(input_):
@@ -47,7 +48,4 @@ def Map(input_):
 
     else:
         return BaseMap(input_)
-    
-class UnrecognizedDataSouce(ValueError):
-    """Exception to raise when an unknown datasource is encountered"""
-    pass
+ 

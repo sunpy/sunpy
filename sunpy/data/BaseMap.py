@@ -196,3 +196,7 @@ class BaseMap(np.ndarray):
     def __array_finalize__(self, obj):
         """Finishes instantiation of the new map object"""
         if obj is None: return
+
+class UnrecognizedDataSouce(ValueError):
+    """Exception to raise when an unknown datasource is encountered"""
+    pass
