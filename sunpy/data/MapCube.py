@@ -1,6 +1,6 @@
 """A Python MapCube Object
 
-Authors: `Keith Hughitt <keith.hughitt@nasa.gov>`
+Author: `Keith Hughitt <keith.hughitt@nasa.gov>`
 """
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
@@ -24,12 +24,13 @@ class MapCube(np.ndarray):
     
     A spatially-aware data array based on the SolarSoft Map object.
     Reads in the files at the specified location, stores their headers, and
-    creates a 3d array from their contents
+    creates a 3d array from their contents.
 
     Attributes
     ----------
-    headers : list
-        a list of dictionaries for each image header in the collection
+    slices : list
+        a list of :class:`sunpy.data.MapSlice` objects corresponding to the
+        images that were used to build the MapCube.
 
     Parameters
     ----------
@@ -37,6 +38,10 @@ class MapCube(np.ndarray):
         The data source used to create the map object. This can be either a
         filepath to a directory containing the images you wish to include, a 2d 
         list, or an ndarray.
+    coalign : bool
+        Whether the data should be coaligned
+    derotate : bool
+        Whether the data should be derotated
         
     See Also:
     ---------
@@ -74,7 +79,7 @@ class MapCube(np.ndarray):
         if coalign:
             obj._coalign()
         if derotate:
-            obj.derotate()
+            obj._derotate()
             
         return obj
     
@@ -86,7 +91,12 @@ class MapCube(np.ndarray):
         provided. MapSlice instances (e.g. AIAMapSlice) are basically just
         empty (data-less) Map objects. This provides a way to keep track of
         the meta-information for each of the images that were used to build
-        the MapCube separately from the data. 
+        the MapCube separately from the data.
+        
+        Parameters
+        ----------
+        header : dict
+            The image header for which a MapSlice should be built
         """
         for cls in BaseMap.__subclasses__():
             if cls.is_datasource_for(header):
@@ -97,7 +107,7 @@ class MapCube(np.ndarray):
         """Coaligns the layers in the MapCube"""
         pass
     
-    def derotate(self):
+    def _derotate(self):
         """Derotates the layers in the MapCube"""
         pass
             
