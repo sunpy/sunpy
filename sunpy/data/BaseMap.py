@@ -163,16 +163,16 @@ class BaseMap(np.ndarray):
         # Create a figure and add title and axes
         fig = plt.figure()
         
-        ax = fig.add_subplot(111)
-        ax.set_title("%s %s" % (self.name, self.date))
-        ax.set_xlabel('X-postion (arcseconds)')
-        ax.set_ylabel('Y-postion (arcseconds)')
+        axes = fig.add_subplot(111)
+        axes.set_title("%s %s" % (self.name, self.date))
+        axes.set_xlabel('X-postion (arcseconds)')
+        axes.set_ylabel('Y-postion (arcseconds)')
         
         # Draw circle at solar limb
         if draw_limb:
             circ = patches.Circle([0, 0], radius=Sun.radius(self.date), 
                 fill=False, color='white')
-            ax.add_artist(circ)
+            axes.add_artist(circ)
 
         # Determine extent
         xmin = -(self.centerX - 1) * self.scaleX
@@ -195,8 +195,9 @@ class BaseMap(np.ndarray):
 
     def __array_finalize__(self, obj):
         """Finishes instantiation of the new map object"""
-        if obj is None: return
+        if obj is None:
+            return
 
-class UnrecognizedDataSouce(ValueError):
+class UnrecognizedDataSouceError(ValueError):
     """Exception to raise when an unknown datasource is encountered"""
     pass
