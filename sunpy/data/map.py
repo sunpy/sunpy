@@ -8,7 +8,7 @@ __email__ = "keith.hughitt@nasa.gov"
 
 import sys
 import pyfits
-import sunpy.data.sources
+from sunpy.data.sources import *
 from sunpy.data.BaseMap import BaseMap
 from sunpy.data.BaseMap import UnrecognizedDataSouceError
 
