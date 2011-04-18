@@ -1,7 +1,12 @@
-"""Map class creation functions
+"""
+SunPy Map objects are constructed using the special `Map()` function. ::
 
-Author: `Keith Hughitt <keith.hughitt@nasa.gov>`_
+>>> map = sunpy.Map('file.fits')
 
+The result of a call to `Map` will be either a generic 
+:class:`sunpy.data.BaseMap` object, or a sublcass of :class:`sunpy.data.BaseMap` 
+which deals with a specific type of data, e.g. :class:`AIAMap` or 
+:class:`LASCOMap`.
 """
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
@@ -30,8 +35,8 @@ def Map(input_):
     out : BaseMap
         Returns a BaseMap or BaseMap subclass instance
     
-    See Also
-    --------
+    References
+    ----------
     http://stackoverflow.com/questions/456672/class-factory-in-python
     """
     if isinstance(input_, str):
