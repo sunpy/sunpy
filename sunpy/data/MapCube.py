@@ -5,8 +5,13 @@ Authors: `Keith Hughitt <keith.hughitt@nasa.gov>`
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
-import numpy as np
+import sys
+import os
 import pyfits
+import numpy as np
+from sunpy.data.sources import *
+from sunpy.data.BaseMap import BaseMap
+from sunpy.data.BaseMap import UnrecognizedDataSouceError
 
 #
 # 2011/04/13: Should Map be broken up into Map and MapHeader classes? This way
@@ -17,7 +22,9 @@ class MapCube(np.ndarray):
     """
     MapCube(input)
     
-    A spatially-aware data array based on the SolarSoft Map object
+    A spatially-aware data array based on the SolarSoft Map object.
+    Reads in the files at the specified location, stores their headers, and
+    creates a 3d array from their contents
 
     Attributes
     ----------
@@ -39,43 +46,61 @@ class MapCube(np.ndarray):
     Examples
     --------
     >>> mapcube = sunpy.MapCube('images/')
-
+    >>> mapcube.slices[0].header['crpix1']
+    2050.6599120000001
     """
-    def __new__(cls, input_):
+    def __new__(cls, input_, coalign=False, derotate=False):
         """Creates a new Map instance"""
         if isinstance(input_, str):
-            headers, data = self._parseFiles(input_)
+            data = []
+            slices = []
+            
+            for filename in os.listdir(input_):
+                try:
+                    fits = pyfits.open(os.path.join(input_, filename))
+                    data.append(fits[0].data)
+                    slices.append(cls.parse_header(fits[0].header))
+                except IOError:
+                    sys.exit("Unable to read the file %s" % filename)
 
             obj = np.asarray(data).view(cls)
-            obj.headers = headers
+            obj.slices = slices
             
         elif isinstance(input_, list):
             obj = np.asarray(input_).view(cls)
         elif isinstance(input_, np.ndarray):
             obj = input_
             
+        if coalign:
+            obj._coalign()
+        if derotate:
+            obj.derotate()
+            
         return obj
+    
+    @classmethod
+    def parse_header(cls, header):
+        """Returns a MapSlice instance corresponding to an image header.
         
-    def _parseFiles(self, directory):
-        """Parses files in the specified directory
-        
-        Reads in the files at the specified location, stores their headers,
-        and creates a 3d array from their contents
+        Attempts to construct a MapSlice instance using the header information
+        provided. MapSlice instances (e.g. AIAMapSlice) are basically just
+        empty (data-less) Map objects. This provides a way to keep track of
+        the meta-information for each of the images that were used to build
+        the MapCube separately from the data. 
         """
-        data    = []
-        headers = []
-        
-        for input_ in os.listdir(directory):
-            try:
-                fits = pyfits.open(input_)
-                data.append(fits[0].data)
-                headers.append(fits[0].header)
-            except IOError:
-                sys.exit("Unable to read the file %s" % input_)
-                
-        return headers, data
+        for cls in BaseMap.__subclasses__():
+            if cls.is_datasource_for(header):
+                return cls.as_slice(header)
+        raise UnrecognizedDataSouceError
+    
+    def _coalign(self):
+        """Coaligns the layers in the MapCube"""
+        pass
+    
+    def derotate(self):
+        """Derotates the layers in the MapCube"""
+        pass
             
     def __array_finalize__(self, obj):
         """Finishes instantiation of the new map object"""
         if obj is None: return
-
