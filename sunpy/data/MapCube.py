@@ -2,7 +2,7 @@
 
 Authors: `Keith Hughitt <keith.hughitt@nasa.gov>`
 """
-__author__ = "Keith Hughitt and Steven Christe"
+__author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
 import numpy as np
