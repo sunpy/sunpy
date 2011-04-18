@@ -33,7 +33,7 @@ class EUVIMap(BaseMap):
     @classmethod
     def is_datasource_for(cls, header):
         """Determines if header corresponds to an EUVI image"""
-        return header['detector'] == 'EUVI'
+        return header.get('detector') == 'EUVI'
         
 class CORMap(BaseMap):
     """COR Image Map definition"""
@@ -60,4 +60,5 @@ class CORMap(BaseMap):
     @classmethod
     def is_datasource_for(cls, header):
         """Determines if header corresponds to an COR image"""
-        return (header['detector'] == 'COR1') or (header['detector'] == 'COR2')
+        return header.get('detector') and header.get('detector')[0:3] == "COR"
+
