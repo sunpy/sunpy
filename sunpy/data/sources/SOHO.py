@@ -5,20 +5,16 @@ Author: `Keith Hughitt <keith.hughitt@nasa.gov>`
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
-from sunpy.data.map import BaseMap
+from sunpy.data.BaseMap import BaseMap
 from datetime import datetime
-import matplotlib.colors as colors
-import matplotlib.cm as cm
-
-date_format = "%Y-%m-%dT%H:%M:%S.%f"
 
 class EITMap(BaseMap):
     """EIT Image Map definition"""
-    def __new__(self, data, header):
-        return BaseMap.__new__(self, data, header)
+    def __new__(cls, data, header):
+        return BaseMap.__new__(cls, data, header)
         
     @classmethod
-    def get_properties(self, header):
+    def get_properties(cls, header):
         """Returns the default and normalized values to use for the Map"""
         date_format = "%Y-%m-%dT%H:%M:%S.%fZ"
         
@@ -35,17 +31,17 @@ class EITMap(BaseMap):
         return properties
         
     @classmethod
-    def is_datasource_for(self, header):
+    def is_datasource_for(cls, header):
         """Determines if header corresponds to an EIT image"""
         return header['instrume'] == 'EIT'
 
 class LASCOMap(BaseMap):
     """LASCO Image Map definition"""
-    def __new__(self, data, header):
-        return BaseMap.__new__(self, data, header)
+    def __new__(cls, data, header):
+        return BaseMap.__new__(cls, data, header)
         
     @classmethod
-    def get_properties(self, header):
+    def get_properties(cls, header):
         """Returns the default and normalized values to use for the Map"""
         datestr = "%sT%s" % (header['date_obs'], header['time_obs'])
 
@@ -62,17 +58,17 @@ class LASCOMap(BaseMap):
         return properties
         
     @classmethod
-    def is_datasource_for(self, header):
+    def is_datasource_for(cls, header):
         """Determines if header corresponds to an LASCO image"""
         return header['instrume'] == 'LASCO'
         
 class MDIMap(BaseMap):
     """MDI Image Map definition"""
-    def __new__(self, data, header):
-        return BaseMap.__new__(self, data, header)
+    def __new__(cls, data, header):
+        return BaseMap.__new__(cls, data, header)
         
     @classmethod
-    def get_properties(self, header):
+    def get_properties(cls, header):
         """Returns the default and normalized values to use for the Map"""
         # MDI sometimes has an "60" in seconds field
         datestr = header['date_obs']
@@ -97,7 +93,7 @@ class MDIMap(BaseMap):
         return properties
         
     @classmethod
-    def is_datasource_for(self, header):
+    def is_datasource_for(cls, header):
         """Determines if header corresponds to an MDI image"""
         return header['instrume'] == 'MDI'
 

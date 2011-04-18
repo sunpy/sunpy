@@ -5,22 +5,20 @@ Author: `Keith Hughitt <keith.hughitt@nasa.gov>`
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
-from sunpy.data.map import BaseMap
+from sunpy.data.BaseMap import BaseMap
 from datetime import datetime
-import matplotlib.colors as colors
-import matplotlib.cm as cm
-
-# Note: Trailing "Z" in date was dropped on 2010/12/07
-date_format = "%Y-%m-%dT%H:%M:%S.%f"
 
 class AIAMap(BaseMap):
     """AIA Image Map definition"""
-    def __new__(self, data, header):
-        return BaseMap.__new__(self, data, header)
+    def __new__(cls, data, header):
+        return BaseMap.__new__(cls, data, header)
 
     @classmethod
-    def get_properties(self, header):
+    def get_properties(cls, header):
         """Returns the default and normalized values to use for the Map"""
+        # Note: Trailing "Z" in date was dropped on 2010/12/07
+        date_format = "%Y-%m-%dT%H:%M:%S.%f"
+        
         properties = BaseMap.get_properties()
         properties.update({
             'date': datetime.strptime(header['date-obs'][0:22], date_format),
@@ -34,18 +32,21 @@ class AIAMap(BaseMap):
         return properties
         
     @classmethod
-    def is_datasource_for(self, header):
+    def is_datasource_for(cls, header):
         """Determines if header corresponds to an AIA image"""
         return header['telescop'] == 'SDO/AIA'
         
 class HMIMap(BaseMap):
     """HMI Image Map definition"""
-    def __new__(self, data, header):        
-        return BaseMap.__new__(self, data, header)
+    def __new__(cls, data, header):        
+        return BaseMap.__new__(cls, data, header)
         
     @classmethod
-    def get_properties(self, header):
+    def get_properties(cls, header):
         """Returns the default and normalized values to use for the Map"""
+        # Note: Trailing "Z" in date was dropped on 2010/12/07
+        date_format = "%Y-%m-%dT%H:%M:%S.%f"
+
         meas = header['content'].split(" ")[0].lower()
         
         properties = BaseMap.get_properties()
@@ -62,7 +63,7 @@ class HMIMap(BaseMap):
         return properties
         
     @classmethod
-    def is_datasource_for(self, header):
+    def is_datasource_for(cls, header):
         """Determines if header corresponds to an HMI image"""
         return header['instrume'][0:3] == 'HMI'
 
