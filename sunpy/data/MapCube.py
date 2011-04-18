@@ -5,11 +5,13 @@ Authors: `Keith Hughitt <keith.hughitt@nasa.gov>`
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
-import numpy as np
+import sys
+import os
 import pyfits
-from BaseMap import BaseMap
-from BaseMap import UnrecognizedDataSouce
-from sources import *
+import numpy as np
+import sunpy.data.sources
+from sunpy.data.BaseMap import BaseMap
+from sunpy.data.BaseMap import UnrecognizedDataSouceError
 
 #
 # 2011/04/13: Should Map be broken up into Map and MapHeader classes? This way
@@ -47,7 +49,7 @@ class MapCube(np.ndarray):
     def __new__(cls, input_, coalign=False, derotate=False):
         """Creates a new Map instance"""
         if isinstance(input_, str):
-            headers, data = self._parseFiles(input_)
+            slices, data = self._parseFiles(input_)
 
             obj = np.asarray(data).view(cls)
             obj.slices = slices
@@ -58,9 +60,9 @@ class MapCube(np.ndarray):
             obj = input_
             
         if coalign:
-            self._coalign()
+            obj._coalign()
         if derotate:
-            self.derotate()
+            obj.derotate()
             
         return obj
         
@@ -77,13 +79,13 @@ class MapCube(np.ndarray):
             try:
                 fits = pyfits.open(input_)
                 data.append(fits[0].data)
-                slices.append(self._parse_header(fits[0].header))                
+                slices.append(self._parse_header(fits[0].header))
             except IOError:
                 sys.exit("Unable to read the file %s" % input_)
                 
         return slices, data
     
-    def _parse_header(self):
+    def _parse_header(self, header):
         """Returns a MapSlice instance corresponding to an image header.
         
         Attempts to construct a MapSlice instance using the header information
@@ -93,9 +95,9 @@ class MapCube(np.ndarray):
         the MapCube separately from the data. 
         """
         for cls in BaseMap.__subclasses__():
-            if cls.is_datasource_for(fits[0].header):
+            if cls.is_datasource_for(header):
                 return cls.as_slice(header)
-        raise UnrecognizedDataSouce
+        raise UnrecognizedDataSouceError
     
     def _coalign(self):
         """Coaligns the layers in the MapCube"""
