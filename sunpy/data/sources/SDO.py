@@ -34,7 +34,7 @@ class AIAMap(BaseMap):
     @classmethod
     def is_datasource_for(cls, header):
         """Determines if header corresponds to an AIA image"""
-        return header['telescop'] == 'SDO/AIA'
+        return header.get('instrume') and header.get('instrume')[0:3] == 'AIA'
         
 class HMIMap(BaseMap):
     """HMI Image Map definition"""
@@ -65,5 +65,5 @@ class HMIMap(BaseMap):
     @classmethod
     def is_datasource_for(cls, header):
         """Determines if header corresponds to an HMI image"""
-        return header['instrume'][0:3] == 'HMI'
+        return header.get('instrume') and header.get('instrume')[0:3] == 'HMI'
 

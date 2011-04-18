@@ -101,10 +101,10 @@ class BaseMap(np.ndarray):
                 setattr(obj, attr, value)
         
             obj.header = header
-            obj.centerX = header['crpix1']
-            obj.centerY = header['crpix2']
-            obj.scaleX = header['cdelt1']
-            obj.scaleY = header['cdelt2']
+            obj.centerX = header.get('crpix1')
+            obj.centerY = header.get('crpix2')
+            obj.scaleX = header.get('cdelt1')
+            obj.scaleY = header.get('cdelt2')
 
         return obj
             
