@@ -149,18 +149,16 @@ class BaseMap(np.ndarray):
         name = str(cls).split(".")[-1][:-2] + "Slice"
         return type(name, (object,), cls.get_properties(header))
         
-    def plot(self, draw_limb=True, **matplot_user_args):
+    def plot(self, draw_limb=True, **matplot_args):
         """Plots the map object using matplotlib
         
         Parameters
         ----------
-        cmap : matplotlib.colors.Colormap
-            Colormap to apply to the image. Defaults to a adaptive logarithmic
-            grayscale colormap.
-        norm : matplotlib.colors.Normalize
-            Normalization method to use on the data when plotting
         draw_limb : bool
-            Whether a circle should be drawn around the solar limb
+            Whether a circle should be drawn around the solar limb.
+        **matplot_args : dict
+            Matplotlib Any additional im_show arguments that should be used
+            when plotting the image.
         """
         # Create a figure and add title and axes
         fig = plt.figure()
@@ -185,13 +183,13 @@ class BaseMap(np.ndarray):
         extent = [xmin, xmax, ymin, ymax]
         
         # Matplotlib arguments
-        matplot_args = {
+        params = {
             "cmap": self.cmap,
             "norm": self.norm
         }
-        matplot_args.update(matplot_user_args)
+        params.update(matplot_args)
             
-        plt.imshow(self, origin='lower', extent=extent, **matplot_args)
+        plt.imshow(self, origin='lower', extent=extent, **params)
         plt.colorbar()
         plt.show()
 
