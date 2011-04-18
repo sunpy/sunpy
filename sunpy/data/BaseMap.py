@@ -85,6 +85,8 @@ class BaseMap(np.ndarray):
     >>> map.header['cunit1']
     'arcsec'
     >>> map.plot()
+    >>> import matplotlib.cm as cm
+    >>> import matplotlib.colors as colors
     >>> map.plot(cmap=cm.hot, norm=colors.Normalize(1, 2048))
     """
     def __new__(cls, data, header=None):
@@ -106,10 +108,6 @@ class BaseMap(np.ndarray):
 
         return obj
             
-    def __array_finalize__(self, obj):
-        """Finishes instantiation of the new map object"""
-        if obj is None: return
-        
     @classmethod
     def get_properties(cls):
         """Returns default map properties"""
@@ -151,7 +149,7 @@ class BaseMap(np.ndarray):
         name = str(cls).split(".")[-1][:-2] + "Slice"
         return type(name, (object,), cls.get_properties(header))
         
-    def plot(self, cmap=None, norm=None, draw_limb=True):
+    def plot(self, draw_limb=True, **matplot_user_args):
         """Plots the map object using matplotlib
         
         Parameters
@@ -186,13 +184,17 @@ class BaseMap(np.ndarray):
         
         extent = [xmin, xmax, ymin, ymax]
         
-        # Use default cmap and norm values if none set
-        if cmap is None:
-            cmap = self.cmap
-        if norm is None:
-            norm = self.norm
+        # Matplotlib arguments
+        matplot_args = {
+            "cmap": self.cmap,
+            "norm": self.norm
+        }
+        matplot_args.update(matplot_user_args)
             
-        plt.imshow(self, cmap=cmap, origin='lower', extent=extent, norm=norm)
+        plt.imshow(self, origin='lower', extent=extent, **matplot_args)
         plt.colorbar()
-        plt.show()      
+        plt.show()
 
+    def __array_finalize__(self, obj):
+        """Finishes instantiation of the new map object"""
+        if obj is None: return
