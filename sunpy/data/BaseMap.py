@@ -147,7 +147,9 @@ class BaseMap(np.ndarray):
         """
         #name = self.__class__.__name__ + "Slice"
         name = str(cls).split(".")[-1][:-2] + "Slice"
-        return type(name, (object,), cls.get_properties(header))
+        properties = cls.get_properties(header)
+        properties['header'] = header
+        return type(name, (object,), properties)
         
     def plot(self, draw_limb=True, **matplot_args):
         """Plots the map object using matplotlib

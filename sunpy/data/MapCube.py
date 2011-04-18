@@ -9,7 +9,7 @@ import sys
 import os
 import pyfits
 import numpy as np
-import sunpy.data.sources
+from sunpy.data.sources import *
 from sunpy.data.BaseMap import BaseMap
 from sunpy.data.BaseMap import UnrecognizedDataSouceError
 
@@ -22,7 +22,9 @@ class MapCube(np.ndarray):
     """
     MapCube(input)
     
-    A spatially-aware data array based on the SolarSoft Map object
+    A spatially-aware data array based on the SolarSoft Map object.
+    Reads in the files at the specified location, stores their headers, and
+    creates a 3d array from their contents
 
     Attributes
     ----------
@@ -44,12 +46,22 @@ class MapCube(np.ndarray):
     Examples
     --------
     >>> mapcube = sunpy.MapCube('images/')
-
+    >>> mapcube.slices[0].header['crpix1']
+    2050.6599120000001
     """
     def __new__(cls, input_, coalign=False, derotate=False):
         """Creates a new Map instance"""
         if isinstance(input_, str):
-            slices, data = self._parseFiles(input_)
+            data = []
+            slices = []
+            
+            for filename in os.listdir(input_):
+                try:
+                    fits = pyfits.open(os.path.join(input_, filename))
+                    data.append(fits[0].data)
+                    slices.append(cls.parse_header(fits[0].header))
+                except IOError:
+                    sys.exit("Unable to read the file %s" % filename)
 
             obj = np.asarray(data).view(cls)
             obj.slices = slices
@@ -65,27 +77,9 @@ class MapCube(np.ndarray):
             obj.derotate()
             
         return obj
-        
-    def _parseFiles(self, directory):
-        """Parses files in the specified directory
-        
-        Reads in the files at the specified location, stores their headers,
-        and creates a 3d array from their contents
-        """
-        data = []
-        slices = []
-        
-        for input_ in os.listdir(directory):
-            try:
-                fits = pyfits.open(input_)
-                data.append(fits[0].data)
-                slices.append(self._parse_header(fits[0].header))
-            except IOError:
-                sys.exit("Unable to read the file %s" % input_)
-                
-        return slices, data
     
-    def _parse_header(self, header):
+    @classmethod
+    def parse_header(cls, header):
         """Returns a MapSlice instance corresponding to an image header.
         
         Attempts to construct a MapSlice instance using the header information

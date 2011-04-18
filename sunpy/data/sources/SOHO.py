@@ -5,7 +5,7 @@ Author: `Keith Hughitt <keith.hughitt@nasa.gov>`
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
-from sunpy.data.map import BaseMap
+from sunpy.data.BaseMap import BaseMap
 from datetime import datetime
 
 class EITMap(BaseMap):
