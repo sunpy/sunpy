@@ -6,9 +6,11 @@ Author: `Keith Hughitt <keith.hughitt@nasa.gov>`_
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
+import sys
 import pyfits
-from BaseMap import BaseMap
-from sources import *
+from sunpy.data.sources import *
+from sunpy.data.BaseMap import BaseMap
+from sunpy.data.BaseMap import UnrecognizedDataSouceError
 
 def Map(input_):
     """Map class factory
@@ -43,11 +45,8 @@ def Map(input_):
         for cls in BaseMap.__subclasses__():
             if cls.is_datasource_for(header):
                 return cls(data, header)
-        raise UnrecognizedDataSouce
+        raise UnrecognizedDataSouceError
 
     else:
         return BaseMap(input_)
-    
-class UnrecognizedDataSouce(ValueError):
-    """Exception to raise when an unknown datasource is encountered"""
-    pass
+
