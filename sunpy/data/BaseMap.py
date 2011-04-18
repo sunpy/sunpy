@@ -1,20 +1,10 @@
-"""A Generic Python Map Object
+"""
+BaseMap
+-------
+BaseMap is a generic Map class from which all other Map classes inherit from.
 
 Authors: `Keith Hughitt <keith.hughitt@nasa.gov>`_ and `Steven Christe 
 <steven.d.christe@nasa.gov>`_
-
-Questions
----------
-1. Which is better? centerX & centerY or center[0] and center[1], or?
-2. map.wavelength, map.meas or? (use hv/vso/etc conventions?)
-3. Are self.r_sun and radius below different? (rsun or rsun_obs for AIA?)
-4. Should default cmap and normalization settings be chosen for each image?
-
-References
-----------
-| http://docs.scipy.org/doc/numpy/reference/arrays.classes.html
-| http://docs.scipy.org/doc/numpy/user/basics.subclassing.html
-| http://www.scipy.org/Subclasses
 """
 __author__ = "Keith Hughitt and Steven Christe"
 __email__ = "keith.hughitt@nasa.gov"
@@ -27,11 +17,27 @@ import matplotlib.cm as cm
 from datetime import datetime
 from sunpy import Sun
 
+"""
+Questions
+---------
+1. Which is better? centerX & centerY or center[0] and center[1], or?
+2. map.wavelength, map.meas or? (use hv/vso/etc conventions?)
+3. Are self.r_sun and radius below different? (rsun or rsun_obs for AIA?)
+4. Should default cmap and normalization settings be chosen for each image?
+"""
+
 class BaseMap(np.ndarray):
     """
     BaseMap(data, header)
     
     A spatially-aware data array based on the SolarSoft Map object
+    
+    Parameters
+    ----------
+    data : numpy.ndarray, list
+        A 2d list or ndarray containing the map data
+    header : dict
+        A dictionary of the original image header tags
 
     Attributes
     ----------
@@ -60,17 +66,6 @@ class BaseMap(np.ndarray):
     scaleY : float
         Image scale along the y-axis in arcseconds/pixel
 
-    Parameters
-    ----------
-    data : numpy.ndarray, list
-        A 2d list or ndarray containing the map data
-    header : dict
-        A dictionary of the original image header tags
-        
-    See Also:
-    ---------
-    numpy.ndarray Parent class for the Map object
-        
     Examples
     --------
     >>> map = sunpy.Map('sunpy/dev/sample-data/AIA20110319_105400_0171.fits')
@@ -88,6 +83,17 @@ class BaseMap(np.ndarray):
     >>> import matplotlib.cm as cm
     >>> import matplotlib.colors as colors
     >>> map.plot(cmap=cm.hot, norm=colors.Normalize(1, 2048))
+    
+    See Also:
+    ---------
+    numpy.ndarray Parent class for the Map object
+    
+    References
+    ----------
+    | http://docs.scipy.org/doc/numpy/reference/arrays.classes.html
+    | http://docs.scipy.org/doc/numpy/user/basics.subclassing.html
+    | http://www.scipy.org/Subclasses
+
     """
     def __new__(cls, data, header=None):
         """Creates a new BaseMap instance"""        
