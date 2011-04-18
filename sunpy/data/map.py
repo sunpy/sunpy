@@ -43,7 +43,11 @@ def Map(input_):
         for cls in BaseMap.__subclasses__():
             if cls.is_datasource_for(header):
                 return cls(data, header)
-        raise ValueError
+        raise UnrecognizedDataSouce
 
     else:
         return BaseMap(input_)
+    
+class UnrecognizedDataSouce(ValueError):
+    """Exception to raise when an unknown datasource is encountered"""
+    pass
