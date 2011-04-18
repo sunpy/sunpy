@@ -33,7 +33,7 @@ class EITMap(BaseMap):
     @classmethod
     def is_datasource_for(cls, header):
         """Determines if header corresponds to an EIT image"""
-        return header['instrume'] == 'EIT'
+        return header.get('instrume') == 'EIT'
 
 class LASCOMap(BaseMap):
     """LASCO Image Map definition"""
@@ -60,7 +60,7 @@ class LASCOMap(BaseMap):
     @classmethod
     def is_datasource_for(cls, header):
         """Determines if header corresponds to an LASCO image"""
-        return header['instrume'] == 'LASCO'
+        return header.get('instrume') == 'LASCO'
         
 class MDIMap(BaseMap):
     """MDI Image Map definition"""
@@ -95,5 +95,5 @@ class MDIMap(BaseMap):
     @classmethod
     def is_datasource_for(cls, header):
         """Determines if header corresponds to an MDI image"""
-        return header['instrume'] == 'MDI'
+        return header.get('instrume') == 'MDI'
 
