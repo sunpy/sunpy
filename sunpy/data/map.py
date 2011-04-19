@@ -34,10 +34,22 @@ def Map(input_):
     -------
     out : BaseMap
         Returns a BaseMap or BaseMap subclass instance
+        
+    Notes
+    -----
+    PyFITS
+        Due to the way PyFITS works with images the header dictionary may
+        differ depending on whether is accessed before or after the fits[0].data
+        is requested. If the header is read before the data then the original
+        header will be returned. If the header is read after the data has been
+        accessed then the data will have been scaled and a modified header
+        reflecting these changes will be returned: BITPIX may differ and
+        BSCALE and B_ZERO may be dropped in the modified version.
     
     References
     ----------
     http://stackoverflow.com/questions/456672/class-factory-in-python
+    http://stsdas.stsci.edu/download/wikidocs/The_PyFITS_Handbook.pdf
     """
     if isinstance(input_, str):
         try:
