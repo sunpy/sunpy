@@ -48,8 +48,8 @@ def Map(input_):
     
     References
     ----------
-    http://stackoverflow.com/questions/456672/class-factory-in-python
-    http://stsdas.stsci.edu/download/wikidocs/The_PyFITS_Handbook.pdf
+    | http://stackoverflow.com/questions/456672/class-factory-in-python
+    | http://stsdas.stsci.edu/download/wikidocs/The_PyFITS_Handbook.pdf
     """
     if isinstance(input_, str):
         try:
