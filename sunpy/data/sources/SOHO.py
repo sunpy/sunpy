@@ -88,7 +88,7 @@ class MDIMap(BaseMap):
             "meas": meas,
             "obs": "SOHO",
             "name": "MDI %s" % meas,
-            "r_sun": header['r_sun']
+            "r_sun": header['radius']
         })
         return properties
         
