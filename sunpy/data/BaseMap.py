@@ -105,7 +105,7 @@ class BaseMap(np.ndarray):
         if header:
             for attr, value in obj.get_properties(header).items():
                 setattr(obj, attr, value)
-        
+
             obj.header = header
             obj.centerX = header.get('crpix1')
             obj.centerY = header.get('crpix2')
