@@ -1,8 +1,7 @@
-#-*- coding:utf-8 -*-
-#
-# Author: Keith Hughitt <keith.hughitt@nasa.gov>
-# Author: Steven Christe <steven.d.christe@nasa.gov>
-# 
+"""Benchmark timing class"""
+__author__ = "Keith Hughitt and Steven Christe"
+__email__ = "keith.hughitt@nasa.gov"
+
 import time
 import datetime
 import platform
@@ -11,6 +10,7 @@ from optparse import OptionParser
 from optparse import IndentedHelpFormatter
 
 class BenchmarkTimer:
+    """A simple benchmark timer class"""
     def __init__(self):
         """Instantiates a new BenchmarkTimer"""
         self.start_time = 0.0
@@ -24,12 +24,12 @@ class BenchmarkTimer:
         
         self.test_num += 1
         
-        t = end_time - self.start_time
+        elapsed_time = end_time - self.start_time
         
-        self.total_time += t
-        self.geom_time += math.log(t)
+        self.total_time += elapsed_time
+        self.geom_time += math.log(elapsed_time)
         
-        output = '\t%d\t%f\t%s' % (self.test_num, t, msg)
+        output = '\t%d\t%f\t%s' % (self.test_num, elapsed_time, msg)
         print(output)
 
         self.start_time = time.time()
@@ -40,13 +40,13 @@ class BenchmarkTimer:
         
     def parse_arguments(self):
         ''' Gets command-line arguments and handles validation '''
-        parser = OptionParser("%prog [options]", formatter=IndentedHelpFormatter(4,80))
-        parser.add_option("-s", "--scale-factor", dest="scale_factor", type="int",
-                          help="factor to scale tests by", metavar="NUM", default=1)
+        parser = OptionParser("%prog [options]", 
+                              formatter=IndentedHelpFormatter(4, 80))
+        parser.add_option("-s", "--scale-factor", dest="scale_factor", 
+                          type="int", help="factor to scale tests by", 
+                          metavar="NUM", default=1)
 
         options, args = parser.parse_args()
-        
-        options.scale_factor
 
         return options
             
@@ -66,8 +66,6 @@ class BenchmarkTimer:
             
     def print_summary(self):
         """Prints a summary of the test results"""
-        global total_time, geom_time, ntest
-
         geom_mean = math.exp(self.geom_time / self.test_num)
         summary = ("\t%f=Total Time,"
                    "\t%f=Geometric mean,"
