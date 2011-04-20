@@ -5,19 +5,79 @@
 #
 # <License info will go here...>
 #
-"""AIA Color map creation test"""
+"""Test function for plotting an AIA FITS image."""
 
+import os
+import datetime
+import pyfits
+import matplotlib.pyplot as plt
+import matplotlib.cm as cm
 import matplotlib.colors as colors
+from matplotlib.patches import Circle
+#from sunpy import Sun
 import numpy as np
-import sunpy
 
-def plot(filepath='sunpy/dev/sample-data/AIA20110319_105400_0171.fits'):
-    '''Tests AIA color map creation'''
-    aia = sunpy.Map(filepath)
-    cmap = _aia_color_table(aia.header['wavelnth'])
-    aia.plot(cmap=cmap, norm=colors.Normalize(2, 2048))
+AIA_SAMPLE_IMAGE = 'sample-data/AIA20110319_105400_0171.fits'
 
-def _aia_color_table(wavelength = None):
+def plot_fits(filepath=None):
+    '''Plots an AIA image.'''
+
+    if filepath is None:
+        filepath = os.path.join(os.path.dirname(__file__), AIA_SAMPLE_IMAGE)
+
+    # Load fits file
+    fits = pyfits.open(filepath)
+    header = fits[0].header
+    data = fits[0].data
+
+    #show all of the header items
+    # header.items
+
+    # Get useful header information
+    date  = header.get('date-obs')
+    #fitsDatetime = datetime.datetime(date[0:4], date[5:7], date[8:10], date[11:13], date[14:16], date[17:19])
+    fitsDatetime = datetime.datetime.strptime(date, "%Y-%m-%dT%H:%M:%S.%f")
+    instr = header['instrume']
+    rSun  = header['r_sun']
+    wavelength = header['wavelnth']
+    
+    centerX = header['crpix1']
+    centerY = header['crpix1']
+    scaleX = header['cdelt1']
+    scaleY = header['cdelt2']
+    
+    # Create a figure and add title and axes
+    fig = plt.figure()
+    
+    ax = fig.add_subplot(111)
+    ax.set_title(instr + ' ' + str(wavelength) + '$\AA$' + ' ' + date)
+    ax.set_xlabel('X-postion (arcseconds)')
+    ax.set_ylabel('Y-postion (arcseconds)')
+    
+    # Draw circle at solar limb
+    #circ = Circle([0, 0], radius=Sun.radius(fitsDatetime), fill=False, color='white')
+    #ax.add_artist(circ)
+        
+    # Determine extent
+    xmin = -(centerX - 1) * scaleX
+    xmax =  (centerX - 1) * scaleX
+    ymin = -(centerY - 1) * scaleY
+    ymax =  (centerY - 1) * scaleY
+    
+    extent = [xmin, xmax, ymin, ymax]
+    
+    color_map = aia_color_table(wavelength)
+    
+    # Draw image
+    #imgplot = plt.imshow(data, cmap=cm.Greys_r, origin='lower', extent=extent)
+    imgplot = plt.imshow(data, cmap=color_map, origin='lower', extent=extent)
+
+    plt.colorbar()
+    
+    # Show figure
+    plt.show()
+
+def aia_color_table(wavelength = None):
     '''Returns a color table for SDO AIA images'''
     # Based on aia_lct.pro by Karl Schriver (2010/04/12)
 
