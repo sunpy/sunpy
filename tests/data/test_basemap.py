@@ -18,9 +18,13 @@ class TestBaseMap(unittest.TestCase):
                          'data not preserved')
     def test_fits_header_comparison(self):
         fits = pyfits.open(self.file)
+        
+        # Access fits data once to apply scaling-related changes and update
+        # header information in fits[0].header
+        fits[0].data
+
         self.assertEqual(self.map.header.keys(), fits[0].header.keys(),
                          'header not preserved')
 
-print(os.path.realpath('sunpy/dev/sample-data/AIA20110319_105400_0171.fits'))
 suite = unittest.TestLoader().loadTestsFromTestCase(TestBaseMap)
 unittest.TextTestRunner(verbosity=2).run(suite)
