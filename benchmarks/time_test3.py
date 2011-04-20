@@ -55,7 +55,7 @@ from scipy import ndimage
 
 #from collections import deque
 
-def main(argv):
+def main():
     """Main application"""
     timer = benchmark.BenchmarkTimer()
     
@@ -195,7 +195,7 @@ def run_tests(timer, scale_factor):
     #Test 15 - Transpose byte array with FOR loop
     for i in range(siz):
         for j in range(siz):
-            b[j,i] = a[i,j]
+            b[j, i] = a[i, j]
     timer.log('Transpose %d^2 byte, FOR loops' % siz)
     
     #Test 16 - Transpose byte array, row and column ops
@@ -282,5 +282,5 @@ def run_tests(timer, scale_factor):
         os.remove('/tmp/test.dat')
         
 if __name__ == '__main__':
-    sys.exit(main(sys.argv))
+    sys.exit(main())
 
