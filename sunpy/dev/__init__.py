@@ -1,1 +1,3 @@
-__all__ = ['cm', 'aia_cm', 'plot_eve']
+__all__ = ['cm', 'plot_fits', 'plot_eve']
+from plot_fits import plot_fits
+from plot_eve import plot_eve
