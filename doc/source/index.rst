@@ -1,15 +1,19 @@
 .. title:: Overview
 
-===================
-SunPy Documentation
-===================
+=====
+SunPy
+=====
 
-Overview
---------
-Welcome! Here you can find documentation relating to SunPy.
+welcome! here you can find documentation relating to sunpy.
 
-Contents
----------
+Requirements
+------------
+* `NumPy <http://numpy.scipy.org/>`_
+* `Matplotlib <http://matplotlib.sourceforge.net/>`_
+* `PyFITS <http://www.stsci.edu/resources/software_hardware/pyfits>`_
+
+Documentation
+-------------
 
 .. toctree::
    :maxdepth: 2
