@@ -1,7 +1,4 @@
-"""A Python MapCube Object
-
-Author: `Keith Hughitt <keith.hughitt@nasa.gov>`
-"""
+"""A Python MapCube Object"""
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
@@ -87,8 +84,8 @@ class MapCube(np.ndarray):
     def parse_header(cls, header):
         """Returns a MapSlice instance corresponding to an image header.
         
-        Attempts to construct a MapSlice instance using the header information
-        provided. MapSlice instances (e.g. AIAMapSlice) are basically just
+        Attempts to construct a `MapSlice` instance using the header information
+        provided. `MapSlice` instances (e.g. `AIAMapSlice`) are basically just
         empty (data-less) Map objects. This provides a way to keep track of
         the meta-information for each of the images that were used to build
         the MapCube separately from the data.
@@ -96,7 +93,7 @@ class MapCube(np.ndarray):
         Parameters
         ----------
         header : dict
-            The image header for which a MapSlice should be built
+            The image header for which a `MapSlice` should be built
         """
         for cls in BaseMap.__subclasses__():
             if cls.is_datasource_for(header):
