@@ -2,9 +2,6 @@
 BaseMap
 -------
 BaseMap is a generic Map class from which all other Map classes inherit from.
-
-Authors: `Keith Hughitt <keith.hughitt@nasa.gov>`_ and `Steven Christe 
-<steven.d.christe@nasa.gov>`_
 """
 __author__ = "Keith Hughitt and Steven Christe"
 __email__ = "keith.hughitt@nasa.gov"

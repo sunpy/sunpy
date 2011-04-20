@@ -1,9 +1,9 @@
-===
-Map
-===
-
+====
 Maps
-----
+====
+
+Map
+---
 
 .. automodule:: sunpy.data.map
    :members:
