@@ -28,4 +28,5 @@ import sunpy.data
 import sunpy.Sun
 from sunpy.data.map import Map
 from sunpy.data.MapCube import MapCube
+from sunpy.data.CompositeMap import CompositeMap
 from sunpy.dev import *

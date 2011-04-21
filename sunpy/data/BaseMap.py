@@ -65,7 +65,7 @@ class BaseMap(np.ndarray):
 
     Examples
     --------
-    >>> map = sunpy.Map('sunpy/dev/sample-data/AIA20110319_105400_0171.fits')
+    >>> map = sunpy.Map('doc/sample-data/AIA20110319_105400_0171.fits')
     >>> map.T
     Map([[ 0.3125,  1.    , -1.1875, ..., -0.625 ,  0.5625,  0.5   ],
     [-0.0625,  0.1875,  0.375 , ...,  0.0625,  0.0625, -0.125 ],
