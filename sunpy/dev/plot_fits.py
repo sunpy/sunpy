@@ -17,7 +17,7 @@ from matplotlib.patches import Circle
 #from sunpy import Sun
 import numpy as np
 
-AIA_SAMPLE_IMAGE = 'sample-data/AIA20110319_105400_0171.fits'
+AIA_SAMPLE_IMAGE = 'doc/sample-data/AIA20110319_105400_0171.fits'
 
 def plot_fits(filepath=None):
     '''Plots an AIA image.'''

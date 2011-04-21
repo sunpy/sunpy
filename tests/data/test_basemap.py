@@ -6,7 +6,7 @@ import os
 
 class TestBaseMap(unittest.TestCase):
     def setUp(self):
-        self.file = 'sunpy/dev/sample-data/AIA20110319_105400_0171.fits'
+        self.file = 'doc/sample-data/AIA20110319_105400_0171.fits'
         self.map = sunpy.Map(self.file) 
 
     def tearDown(self):
