@@ -23,23 +23,23 @@ class MapCube(np.ndarray):
     Reads in the files at the specified location, stores their headers, and
     creates a 3d array from their contents.
 
-    Attributes
-    ----------
-    slices : list
-        a list of :class:`sunpy.data.MapSlice` objects corresponding to the
-        images that were used to build the MapCube.
-
     Parameters
     ----------
     input_ : directory, data array
         The data source used to create the map object. This can be either a
         filepath to a directory containing the images you wish to include, a 2d 
         list, or an ndarray.
-    coalign : bool
-        Whether the data should be coaligned
+    coalign : [ None | 'diff' ]
+        Method to use for coalignment. If None, no coalignment will be done.
     derotate : bool
         Whether the data should be derotated
-        
+
+    Attributes
+    ----------
+    slices : list
+        a list of :class:`sunpy.data.MapSlice` objects corresponding to the
+        images that were used to build the MapCube.
+
     See Also:
     ---------
     numpy.ndarray Parent class for the MapCube object
@@ -51,7 +51,7 @@ class MapCube(np.ndarray):
     >>> mapcube.slices[0].header['crpix1']
     2050.6599120000001
     """
-    def __new__(cls, input_, coalign=False, derotate=False):
+    def __new__(cls, input_, *args):
         """Creates a new Map instance"""
         if isinstance(input_, str):
             data = []
@@ -72,13 +72,17 @@ class MapCube(np.ndarray):
             obj = np.asarray(input_).view(cls)
         elif isinstance(input_, np.ndarray):
             obj = input_
-            
-        if coalign:
-            obj._coalign()
+
+        return obj
+    
+    def __init__(self, input_, coalign=False, derotate=False):
+        # Coalignment
+        if coalign and hasattr(self, '_coalign_%s' % coalign):
+            getattr(self, '_coalign_%s' % coalign)()
+
         if derotate:
             obj._derotate()
-            
-        return obj
+        
     
     @classmethod
     def parse_header(cls, header):
@@ -100,10 +104,6 @@ class MapCube(np.ndarray):
                 return cls.as_slice(header)
         raise UnrecognizedDataSouceError
     
-    def _coalign(self):
-        """Coaligns the layers in the MapCube"""
-        pass
-    
     def _derotate(self):
         """Derotates the layers in the MapCube"""
         pass
@@ -111,3 +111,30 @@ class MapCube(np.ndarray):
     def __array_finalize__(self, obj):
         """Finishes instantiation of the new map object"""
         if obj is None: return
+        
+    # Coalignment methods
+    def _coalign_diff(self):
+        """Difference-based coalignment
+        
+        Coaligns data by minimizing the difference between subsequent images
+        before and after shifting the images one to several pixels in each
+        direction.
+        
+        pseudo-code:
+        
+        for i len(self):
+            min_diff = {'value': (), 'offset': (0, 0)} # () is pos infinity
+            
+            # try shifting 1 pixel in each direction
+            for x in (-1, 0, 1):
+                for y in (-1, 0, 1):
+                    # calculate difference for intersecting pixels
+                    # if < min_diff['value'], store new value/offset
+                    
+            # shift image
+            if min_diff['offset'] != (0, 0):
+                # shift and clip image
+
+        """
+        pass
+    
