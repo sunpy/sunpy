@@ -11,6 +11,14 @@ import paver.doctools
 from paver.setuputils import setup
 
 #
+# Options
+#
+options(
+    sphinx=Bunch(docroot='doc/source', builddir="_build"),
+    pylint = Bunch(quiet=False)
+)
+
+#
 # Packaging
 #
 DOCLINES = __doc__.split("\n")
@@ -41,7 +49,7 @@ setup(
     maintainer="SunPy Developers",
     maintainer_email="sunpy@googlegroups.com",
     name="sunpy",
-    packages=['sunpy'],
+    packages=['sunpy', 'sunpy.map', 'sunpy.map.sources', 'sunpy.dev'],
     platforms=["Windows", "Linux", "Solaris", "Mac OS-X", "Unix"],
     url="http://www.sunpy.org/",
     version="0.01"
@@ -57,10 +65,6 @@ def sdist():
 #
 # Documentation
 #
-options(
-    sphinx=Bunch(docroot='doc/source', builddir="_build")
-)
-
 @task
 @needs('paver.doctools.html')
 def html(options):
@@ -70,13 +74,31 @@ def html(options):
     if os.path.exists(destdir):
         shutil.rmtree(destdir)
     shutil.move(sourcedir, destdir)
+    
+#
+# PyLint
+#
+@task
+@cmdopts([('quiet', 'q', 'Run PyLint in quiet mode')])
+def pylint(options):
+    """Checks the code using PyLint"""
+    from pylint import lint
+    
+    arguments = ['--rcfile=tools/pylint/pylintrc']
+    
+    if options.quiet:
+        arguments.extend(["-rn"])
+        
+    arguments.extend(["sunpy/",  "tests/"])
+    lint.Run(arguments)
+    
 #
 # Cleanup
 #
 @task
 def clean():
     """Cleans up build files"""
-    print("Removing build and sunpy.egg-info folders")
+    print("Removing build files")
     for dir_ in ['dist', 'sunpy.egg-info']:
         if os.path.exists(dir_):
             shutil.rmtree(dir_)
