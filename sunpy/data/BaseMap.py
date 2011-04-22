@@ -1,6 +1,4 @@
 """
-BaseMap
--------
 BaseMap is a generic Map class from which all other Map classes inherit from.
 """
 __author__ = "Keith Hughitt and Steven Christe"

@@ -9,8 +9,8 @@ that this module will be dropped altogether.
 .. warning::
 
  Users should not write code for the main SunPy namespace that depends on
- functionality in the dev module. There is no guarantee that functions in the
- :mod:`sunpy.dev` module will be available in future versions of SunPy.
+ functionality in the  :mod:`sunpy.dev` module. There is no guarantee that 
+ functions in the sunpy.dev module will be available in future versions of SunPy.
 
 .. automodule:: sunpy.dev
     :members:
