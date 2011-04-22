@@ -1,0 +1,6 @@
+include doc/sample-data
+recursive-include docs *
+recursive-include sunpy *.py
+include *.txt
+include setup.py
+include pavement.py
