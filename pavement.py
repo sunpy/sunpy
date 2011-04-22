@@ -64,7 +64,7 @@ setup(
 @needs('prepare_docs', 'generate_setup', 'setuptools.command.sdist')
 def sdist():
     """Overrides sdist to make sure that our setup.py is generated."""
-    shutil.rmtree('docs')
+    shutil.rmtree('doc/html')
     pass
 
 #
@@ -75,7 +75,8 @@ def sdist():
 def prepare_docs(options):
     """Prepares the SunPy HTML documentation for packaging"""
     sourcedir = 'doc/source/_build/html'
-    destdir = 'docs'
+    sampledir = 'doc/sample-data'
+    destdir = 'doc/html'
     if os.path.exists(destdir):
         shutil.rmtree(destdir)
     shutil.move(sourcedir, destdir)
@@ -111,10 +112,11 @@ def pylint(options):
 # Cleanup
 #
 @task
+@needs('paver.doctools.doc_clean')
 def clean():
     """Cleans up build files"""
     print("Removing build files")
-    for dir_ in ['docs', 'dist', 'sunpy.egg-info']:
+    for dir_ in ['doc/html', 'dist', 'sunpy.egg-info']:
         if os.path.exists(dir_):
             shutil.rmtree(dir_)
 
