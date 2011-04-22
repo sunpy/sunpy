@@ -1,11 +1,8 @@
-"""SDO Map subclass definitions
-
-Author: `Keith Hughitt <keith.hughitt@nasa.gov>`
-"""
+"""SDO Map subclass definitions"""
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
-from sunpy.data.BaseMap import BaseMap
+from sunpy.map.BaseMap import BaseMap
 from datetime import datetime
 
 class AIAMap(BaseMap):

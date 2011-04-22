@@ -6,9 +6,9 @@ import sys
 import os
 import pyfits
 import numpy as np
-from sunpy.data.sources import *
-from sunpy.data.BaseMap import BaseMap
-from sunpy.data.BaseMap import UnrecognizedDataSouceError
+from sunpy.map.sources import *
+from sunpy.map.BaseMap import BaseMap
+from sunpy.map.BaseMap import UnrecognizedDataSouceError
 
 #
 # 2011/04/13: Should Map be broken up into Map and MapHeader classes? This way
@@ -37,7 +37,7 @@ class MapCube(np.ndarray):
     Attributes
     ----------
     slices : list
-        a list of :class:`sunpy.data.MapSlice` objects corresponding to the
+        a list of :class:`sunpy.map.MapSlice` objects corresponding to the
         images that were used to build the MapCube.
 
     See Also:
