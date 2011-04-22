@@ -3,3 +3,6 @@ doc/source/_build/*
 .pydevproject
 .settings
 .project
+dist
+sunpy.egg-info
+setup.py
