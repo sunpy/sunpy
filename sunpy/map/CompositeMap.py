@@ -5,7 +5,7 @@ Author: `Keith Hughitt <keith.hughitt@nasa.gov>`
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
-from sunpy.data.MapCube import MapCube
+from sunpy.map.MapCube import MapCube
 
 class CompositeMap(MapCube):
     """

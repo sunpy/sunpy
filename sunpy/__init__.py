@@ -18,15 +18,15 @@ Available subpackages
 ---------------------
 dev
     Experimental functions not meant for use in production
-data
-    Methods relating to the parsing of common solar data formats
+map
+    Methods relating to the solar maps
 
 """
 __version__ = 0.01
 
-import sunpy.data
+import sunpy.map
 import sunpy.Sun
-from sunpy.data.map import Map
-from sunpy.data.MapCube import MapCube
-from sunpy.data.CompositeMap import CompositeMap
+from sunpy.map.map import Map
+from sunpy.map.MapCube import MapCube
+from sunpy.map.CompositeMap import CompositeMap
 from sunpy.dev import *
