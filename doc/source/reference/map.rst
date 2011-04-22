@@ -4,11 +4,11 @@ Map
 
 Creating Map Objects
 ^^^^^^^^^^^^^^^^^^^^
-.. automodule:: sunpy.data.map
+.. automodule:: sunpy.map.map
    :members:
    
 BaseMap Class
 ^^^^^^^^^^^^^
-.. automodule:: sunpy.data.BaseMap
+.. automodule:: sunpy.map.BaseMap
    :members:
    :show-inheritance:
