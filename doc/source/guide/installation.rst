@@ -11,11 +11,11 @@ SunPy stands on the shoulders of giants:
 
 Linux
 -----
-Installation instructions for linux.
+Installation instructions for Linux.
 
 Ubuntu
 ^^^^^^
-To begin, install the pre-requisites for SunPy using apt-get: ::
+To begin, install the pre-requisites for SunPy using :command:`apt-get`: ::
 
     sudo apt-get install python-numpy python-matplotlib python-pyfits python-scipy bzr ipython
 
@@ -27,7 +27,7 @@ Next, use Bazaar to download a copy of the latest version of SunPy: ::
     bzr branch lp:sunpy
 
 Done! To see if everything went okay, start a Python session and try importing
-sunpy:
+SunPy:
 
 >>> import sunpy
 >>> sunpy.Map(‘sunpy/dev/sample-data/AIA20110319_105400_0171.fits’).plot()
