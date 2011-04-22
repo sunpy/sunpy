@@ -14,6 +14,11 @@ from paver.setuputils import setup
 # Options
 #
 options(
+    deploy = Bunch(
+        htmldir = path('doc/source/_build/html'),
+        host = 'sunpy.org',
+        hostpath = 'doc'
+    ),
     sphinx=Bunch(docroot='doc/source', builddir="_build"),
     pylint = Bunch(quiet=False)
 )
@@ -56,7 +61,7 @@ setup(
 )
 
 @task
-@needs('html', 'generate_setup', 'setuptools.command.sdist')
+@needs('prepare_docs', 'generate_setup', 'setuptools.command.sdist')
 def sdist():
     """Overrides sdist to make sure that our setup.py is generated."""
     shutil.rmtree('docs')
@@ -67,14 +72,24 @@ def sdist():
 #
 @task
 @needs('paver.doctools.html')
-def html(options):
-    """Build SunPy documentation"""
+def prepare_docs(options):
+    """Prepares the SunPy HTML documentation for packaging"""
     sourcedir = 'doc/source/_build/html'
     destdir = 'docs'
     if os.path.exists(destdir):
         shutil.rmtree(destdir)
     shutil.move(sourcedir, destdir)
     
+@task
+@needs('paver.doctools.html')
+@cmdopts([('username=', 'u', 'Username')])
+def deploy(options):
+    """Update the docs on sunpy.org"""
+    if "username" not in options:
+        options.username = raw_input("Username: ")
+    sh("rsync -avz -e ssh %s/ %s@%s:%s/" % (options.htmldir,
+        options.username, options.host, options.hostpath))
+
 #
 # PyLint
 #
@@ -99,7 +114,7 @@ def pylint(options):
 def clean():
     """Cleans up build files"""
     print("Removing build files")
-    for dir_ in ['dist', 'sunpy.egg-info']:
+    for dir_ in ['docs', 'dist', 'sunpy.egg-info']:
         if os.path.exists(dir_):
             shutil.rmtree(dir_)
 
