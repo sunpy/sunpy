@@ -6,3 +6,4 @@ doc/source/_build/*
 dist
 sunpy.egg-info
 setup.py
+docs
