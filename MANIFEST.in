@@ -1,5 +1,5 @@
-include doc/sample-data
-recursive-include docs *
+recursive-include doc/sample-data *
+recursive-include doc/html *
 recursive-include sunpy *.py
 include *.txt
 include setup.py
