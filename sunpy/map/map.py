@@ -1,10 +1,11 @@
 """
-SunPy Map objects are constructed using the special `Map()` function. ::
+SunPy Map objects are constructed using the special :function:`Map()`
+function. ::
 
 >>> map = sunpy.Map('file.fits')
 
 The result of a call to `Map` will be either a generic 
-:class:`sunpy.data.BaseMap` object, or a sublcass of :class:`sunpy.data.BaseMap` 
+:class:`sunpy.map.BaseMap` object, or a subclass of :class:`sunpy.map.BaseMap` 
 which deals with a specific type of data, e.g. :class:`AIAMap` or 
 :class:`LASCOMap`.
 """
@@ -13,9 +14,9 @@ __email__ = "keith.hughitt@nasa.gov"
 
 import sys
 import pyfits
-from sunpy.data.sources import *
-from sunpy.data.BaseMap import BaseMap
-from sunpy.data.BaseMap import UnrecognizedDataSouceError
+from sunpy.map.sources import *
+from sunpy.map.BaseMap import BaseMap
+from sunpy.map.BaseMap import UnrecognizedDataSouceError
 
 def Map(input_):
     """Map class factory
