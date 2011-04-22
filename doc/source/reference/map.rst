@@ -4,7 +4,7 @@ Map
 
 Creating Map Objects
 ^^^^^^^^^^^^^^^^^^^^
-.. automodule:: sunpy.map.map
+.. automodule:: sunpy.map
    :members:
    
 BaseMap Class
