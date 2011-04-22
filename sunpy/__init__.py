@@ -26,7 +26,7 @@ __version__ = 0.01
 
 import sunpy.map
 import sunpy.Sun
-from sunpy.map.map import Map
+from sunpy.map import Map
 from sunpy.map.MapCube import MapCube
 from sunpy.map.CompositeMap import CompositeMap
 from sunpy.dev import *
