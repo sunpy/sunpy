@@ -15,7 +15,7 @@ from sunpy import Sun
 """
 Questions
 ---------
-1. Which is better? centerX & centerY or center[0] and center[1], or?
+1. Which is better? center['x'] & center['y'] or center[0] and center[1], or?
 2. map.wavelength, map.meas or? (use hv/vso/etc conventions?)
 3. Are self.r_sun and radius below different? (rsun or rsun_obs for AIA?)
 4. Should default cmap and normalization settings be chosen for each image?
@@ -52,14 +52,10 @@ class BaseMap(np.ndarray):
         Radius of the sun
     name : str
         Nickname for the image type (e.g. "AIA 171")
-    centerX : float
-        X-coordinate for the center of the sun in arcseconds
-    centerY : float
-        Y-coordinate for the center of the sun in arcseconds
-    scaleX : float
-        Image scale along the x-axis in arcseconds/pixel
-    scaleY : float
-        Image scale along the y-axis in arcseconds/pixel
+    center : dict
+        X and Y coordinate for the center of the sun in arcseconds
+    scale: dict
+        Image scale along the x and y axes in arcseconds/pixel
 
     Examples
     --------
@@ -90,24 +86,35 @@ class BaseMap(np.ndarray):
     | http://www.scipy.org/Subclasses
 
     """
-    def __new__(cls, data, header=None):
+    def __new__(cls, data):
         """Creates a new BaseMap instance"""        
         if isinstance(data, np.ndarray):
             obj = data.view(cls)
         elif isinstance(data, list):
             obj = np.asarray(data).view(cls)
-
-        if header:
-            for attr, value in obj.get_properties(header).items():
-                setattr(obj, attr, value)
-
-            obj.header = header
-            obj.centerX = header.get('crpix1')
-            obj.centerY = header.get('crpix2')
-            obj.scaleX = header.get('cdelt1')
-            obj.scaleY = header.get('cdelt2')
-
         return obj
+    
+    def __init__(self, data, header=None):
+        """BaseMap constructor"""
+        if header:
+            self.header = header
+            self.date = None
+            self.name = None
+            self.cmap = None
+            self.norm = None
+            
+            # Set object attributes dynamically
+            for attr, value in self.get_properties(header).items():
+                setattr(self, attr, value)
+
+            self.center = {
+                "x": header.get('crpix1'),
+                "y": header.get('crpix2')
+            }
+            self.scale = {
+                "x": header.get('cdelt1'),
+                "y": header.get('cdelt2')
+            }
             
     @classmethod
     def get_properties(cls):
@@ -178,10 +185,10 @@ class BaseMap(np.ndarray):
             axes.add_artist(circ)
 
         # Determine extent
-        xmin = -(self.centerX - 1) * self.scaleX
-        xmax = (self.centerX - 1) * self.scaleX
-        ymin = -(self.centerY - 1) * self.scaleY
-        ymax = (self.centerY - 1) * self.scaleY
+        xmin = -(self.center['x'] - 1) * self.scale['x']
+        xmax = (self.center['x'] - 1) * self.scale['x']
+        ymin = -(self.center['y'] - 1) * self.scale['y']
+        ymax = (self.center['y'] - 1) * self.scale['y']
         
         extent = [xmin, xmax, ymin, ymax]
         

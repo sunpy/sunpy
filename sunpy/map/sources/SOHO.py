@@ -8,7 +8,7 @@ from datetime import datetime
 class EITMap(BaseMap):
     """EIT Image Map definition"""
     def __new__(cls, data, header):
-        return BaseMap.__new__(cls, data, header)
+        return BaseMap.__new__(cls, data)
         
     @classmethod
     def get_properties(cls, header):
@@ -35,7 +35,7 @@ class EITMap(BaseMap):
 class LASCOMap(BaseMap):
     """LASCO Image Map definition"""
     def __new__(cls, data, header):
-        return BaseMap.__new__(cls, data, header)
+        return BaseMap.__new__(cls, data)
         
     @classmethod
     def get_properties(cls, header):
@@ -62,7 +62,7 @@ class LASCOMap(BaseMap):
 class MDIMap(BaseMap):
     """MDI Image Map definition"""
     def __new__(cls, data, header):
-        return BaseMap.__new__(cls, data, header)
+        return BaseMap.__new__(cls, data)
         
     @classmethod
     def get_properties(cls, header):
