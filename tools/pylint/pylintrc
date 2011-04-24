@@ -43,8 +43,8 @@ load-plugins=
 #           you're using those strings as documentation, instead of comments.
 # R0201:    Method could be a function Used when a method doesn't use its bound
 #           instance, and so could be written as a function.
-#
-disable=W0105,R0201
+# W0142     Used * or ** magic
+disable=W0105,R0201,W0142
 
 
 [REPORTS]

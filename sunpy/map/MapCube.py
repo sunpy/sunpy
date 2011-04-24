@@ -51,7 +51,7 @@ class MapCube(np.ndarray):
     >>> mapcube.slices[0].header['crpix1']
     2050.6599120000001
     """
-    def __new__(cls, input_, *args):
+    def __new__(cls, input_):
         """Creates a new Map instance"""
         if isinstance(input_, str):
             data = []
@@ -81,7 +81,7 @@ class MapCube(np.ndarray):
             getattr(self, '_coalign_%s' % coalign)()
 
         if derotate:
-            obj._derotate()
+            self._derotate()
         
     
     @classmethod
@@ -110,7 +110,8 @@ class MapCube(np.ndarray):
             
     def __array_finalize__(self, obj):
         """Finishes instantiation of the new map object"""
-        if obj is None: return
+        if obj is None:
+            return
         
     # Coalignment methods
     def _coalign_diff(self):

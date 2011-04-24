@@ -46,7 +46,7 @@ class BenchmarkTimer:
                           type="int", help="factor to scale tests by", 
                           metavar="NUM", default=1)
 
-        options, args = parser.parse_args()
+        options, args = parser.parse_args() # pylint: disable=W0612
 
         return options
             
