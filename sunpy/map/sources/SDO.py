@@ -8,7 +8,7 @@ from datetime import datetime
 class AIAMap(BaseMap):
     """AIA Image Map definition"""
     def __new__(cls, data, header):
-        return BaseMap.__new__(cls, data, header)
+        return BaseMap.__new__(cls, data)
 
     @classmethod
     def get_properties(cls, header):
@@ -36,7 +36,7 @@ class AIAMap(BaseMap):
 class HMIMap(BaseMap):
     """HMI Image Map definition"""
     def __new__(cls, data, header):        
-        return BaseMap.__new__(cls, data, header)
+        return BaseMap.__new__(cls, data)
         
     @classmethod
     def get_properties(cls, header):
