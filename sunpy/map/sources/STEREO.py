@@ -8,7 +8,7 @@ from datetime import datetime
 class EUVIMap(BaseMap):
     """EUVI Image Map definition"""
     def __new__(cls, data, header):
-        return BaseMap.__new__(cls, data, header)
+        return BaseMap.__new__(cls, data)
         
     @classmethod
     def get_properties(cls, header):
@@ -35,7 +35,7 @@ class EUVIMap(BaseMap):
 class CORMap(BaseMap):
     """COR Image Map definition"""
     def __new__(cls, data, header):
-        return BaseMap.__new__(cls, data, header)
+        return BaseMap.__new__(cls, data)
         
     @classmethod
     def get_properties(cls, header):

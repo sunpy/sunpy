@@ -33,7 +33,18 @@ load-plugins=
 # can either give multiple identifier separated by comma (,) or put this option
 # multiple time (only on the command line, not in the configuration file where
 # it should appear only once).
-#disable=
+
+
+# Disabled
+#
+# W0105:    String statement has no effect Used when a string is used as a 
+#           statement (which of course has no effect). This is a particular case 
+#           of W0104  with its own message so you can easily disable it if 
+#           you're using those strings as documentation, instead of comments.
+# R0201:    Method could be a function Used when a method doesn't use its bound
+#           instance, and so could be written as a function.
+#
+disable=W0105,R0201
 
 
 [REPORTS]
