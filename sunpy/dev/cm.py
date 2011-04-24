@@ -71,7 +71,8 @@ def log_adaptive(data, bits=12, vmin=1, vmax=2000):
     # Create a matplotlib-formatted color dictionary
     cdict = _generate_cdict_for_indices(indices, cmap_size)
     
-    return matplotlib.colors.LinearSegmentedColormap('automap', cdict, cmap_size)
+    return matplotlib.colors.LinearSegmentedColormap('automap', cdict, 
+                                                     cmap_size)
 
 
 def _generate_cdict_for_indices(indices, cmap_size):
@@ -86,10 +87,10 @@ def _generate_cdict_for_indices(indices, cmap_size):
     value = 0
     
     for i in indices:
-        t = (i, value, value)
-        cdict['red'].append(t)
-        cdict['green'].append(t)
-        cdict['blue'].append(t)
+        cmap_value = (i, value, value)
+        cdict['red'].append(cmap_value)
+        cdict['green'].append(cmap_value)
+        cdict['blue'].append(cmap_value)
         value += step
         
     # cmap values must range from 0 to 1
@@ -118,13 +119,13 @@ def _get_pixel_counts(data, cmap_size):
     # Bin the data
     hist, bins = numpy.histogram(data, bins=cmap_size)
     
-    a = {}
+    counts = {}
     i = 0
     
     # Create a dictionary which maps from mean bin values to counts
     for freq in hist:
-        a[(bins[i] + bins[i + 1]) / 2] = freq
+        counts[(bins[i] + bins[i + 1]) / 2] = freq
         i += 1
     
     # Return as a list of tuples sorted by frequency
-    return sorted(a.iteritems(), key=operator.itemgetter(1), reverse=True)
+    return sorted(counts.iteritems(), key=operator.itemgetter(1), reverse=True)
