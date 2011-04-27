@@ -1,7 +1,7 @@
 """
 BaseMap is a generic Map class from which all other Map classes inherit from.
 """
-__author__ = "Keith Hughitt and Steven Christe"
+__authors__ = ["Keith Hughitt, Steven Christe"]
 __email__ = "keith.hughitt@nasa.gov"
 
 import numpy as np

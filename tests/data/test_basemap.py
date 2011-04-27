@@ -1,4 +1,16 @@
-"""BaseMap tests"""
+"""
+BaseMap tests
+
+Example usage:
+
+  `python2.7 -m unittest tests.data.test_basemap`
+  
+  or
+  
+  `python2.7 -m unittest tests.data.test_basemap`
+"""
+#pylint: disable=C0103,R0904
+
 import unittest
 import sunpy
 import pyfits
@@ -23,10 +35,7 @@ class TestBaseMap(unittest.TestCase):
         
         # Access fits data once to apply scaling-related changes and update
         # header information in fits[0].header
-        fits[0].data
+        fits[0].data #pylint: disable=W0104
 
         self.assertEqual(self.map.header.keys(), fits[0].header.keys(),
                          'header not preserved')
-
-suite = unittest.TestLoader().loadTestsFromTestCase(TestBaseMap)
-unittest.TextTestRunner(verbosity=2).run(suite)
