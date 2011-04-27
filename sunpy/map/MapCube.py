@@ -1,4 +1,6 @@
 """A Python MapCube Object"""
+#pylint: disable=W0401,W0614
+
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
@@ -75,6 +77,7 @@ class MapCube(np.ndarray):
 
         return obj
     
+    #pylint: disable=W0613,E1101
     def __init__(self, input_, coalign=False, derotate=False):
         # Coalignment
         if coalign and hasattr(self, '_coalign_%s' % coalign):
@@ -82,8 +85,7 @@ class MapCube(np.ndarray):
 
         if derotate:
             self._derotate()
-        
-    
+
     @classmethod
     def parse_header(cls, header):
         """Returns a MapSlice instance corresponding to an image header.
@@ -103,6 +105,10 @@ class MapCube(np.ndarray):
             if cls.is_datasource_for(header):
                 return cls.as_slice(header)
         raise UnrecognizedDataSouceError
+    
+    def plot(self):
+        """A basic plot method (not yet implemented)"""
+        pass
     
     def _derotate(self):
         """Derotates the layers in the MapCube"""
