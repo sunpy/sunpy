@@ -1,5 +1,3 @@
-__all__ = ["sources", "Map", "MapCube"]
-
 """
 SunPy Map objects are constructed using the special :function:`Map()`
 function. ::
@@ -11,6 +9,9 @@ The result of a call to `Map` will be either a generic
 which deals with a specific type of data, e.g. :class:`AIAMap` or 
 :class:`LASCOMap`.
 """
+#pylint: disable=W0401
+
+__all__ = ["sources", "Map", "MapCube"]
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
@@ -20,6 +21,7 @@ from sunpy.map.sources import *
 from sunpy.map.BaseMap import BaseMap
 from sunpy.map.BaseMap import UnrecognizedDataSouceError
 
+#pylint: disable=C0103,E1101
 def Map(input_):
     """Map class factory
     

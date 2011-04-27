@@ -8,7 +8,7 @@ from datetime import datetime
 class AIAMap(BaseMap):
     """AIA Image Map definition"""
     def __new__(cls, data, header):
-        return BaseMap.__new__(cls, data)
+        return BaseMap.__new__(cls, data, header)
 
     @classmethod
     def get_properties(cls, header):
