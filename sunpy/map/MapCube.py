@@ -1,4 +1,6 @@
 """A Python MapCube Object"""
+#pylint: disable=W0401,W0614
+
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
@@ -51,7 +53,7 @@ class MapCube(np.ndarray):
     >>> mapcube.slices[0].header['crpix1']
     2050.6599120000001
     """
-    def __new__(cls, input_, *args):
+    def __new__(cls, input_):
         """Creates a new Map instance"""
         if isinstance(input_, str):
             data = []
@@ -75,15 +77,15 @@ class MapCube(np.ndarray):
 
         return obj
     
+    #pylint: disable=W0613,E1101
     def __init__(self, input_, coalign=False, derotate=False):
         # Coalignment
         if coalign and hasattr(self, '_coalign_%s' % coalign):
             getattr(self, '_coalign_%s' % coalign)()
 
         if derotate:
-            obj._derotate()
-        
-    
+            self._derotate()
+
     @classmethod
     def parse_header(cls, header):
         """Returns a MapSlice instance corresponding to an image header.
@@ -104,13 +106,18 @@ class MapCube(np.ndarray):
                 return cls.as_slice(header)
         raise UnrecognizedDataSouceError
     
+    def plot(self):
+        """A basic plot method (not yet implemented)"""
+        pass
+    
     def _derotate(self):
         """Derotates the layers in the MapCube"""
         pass
             
     def __array_finalize__(self, obj):
         """Finishes instantiation of the new map object"""
-        if obj is None: return
+        if obj is None:
+            return
         
     # Coalignment methods
     def _coalign_diff(self):

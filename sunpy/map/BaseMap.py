@@ -1,7 +1,7 @@
 """
 BaseMap is a generic Map class from which all other Map classes inherit from.
 """
-__author__ = "Keith Hughitt and Steven Christe"
+__authors__ = ["Keith Hughitt, Steven Christe"]
 __email__ = "keith.hughitt@nasa.gov"
 
 import numpy as np
@@ -86,7 +86,7 @@ class BaseMap(np.ndarray):
     | http://www.scipy.org/Subclasses
 
     """
-    def __new__(cls, data):
+    def __new__(cls, data, header):
         """Creates a new BaseMap instance"""        
         if isinstance(data, np.ndarray):
             obj = data.view(cls)
@@ -155,9 +155,9 @@ class BaseMap(np.ndarray):
         """
         #name = self.__class__.__name__ + "Slice"
         name = str(cls).split(".")[-1][:-2] + "Slice"
-        properties = cls.get_properties(header)
+        properties = cls.get_properties(header) # pylint: disable=E1121
         properties['header'] = header
-        return type(name, (object,), properties)
+        return type(name, (object,), properties) # pylint: disable=E1121
         
     def plot(self, draw_limb=True, **matplot_args):
         """Plots the map object using matplotlib
