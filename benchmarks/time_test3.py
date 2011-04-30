@@ -17,6 +17,8 @@
 # 7] Check implementation of fft test
 # 8] Check implementation of smooth test
 # 9] Need to optimize shifting code for float arrays. Roll is very inefficient!
+#
+#pylint: disable=C0103,R0912,R0915
 '''Equivalent of time_test3.pro, a performance test, in IDL
 
     The tests are 
@@ -38,20 +40,18 @@
     Test 16 - Transpose byte array with FOR loop
     Test 17 - Transpose byte array, row and column ops
     Test 18 - Transpose byte array, TRANSPOSE function
-	Test 20 - Log of numbers, vector op
+    Test 20 - Log of numbers, vector op
     Test 20 - Forward and inverse FFT
     Test 21 - Smooth 512 by 512 byte array, 5x5 boxcar
- 	Test 23 - Smooth 512 by 512 floating array, 5x5 boxcar
+     Test 23 - Smooth 512 by 512 floating array, 5x5 boxcar
     Test 24 - Write and read 512 by 512 byte array
 '''
 import numpy as np
+import scipy
 import math
-import random
 import sys
+import os
 import benchmark
-from scipy import fftpack
-from scipy import linalg
-from scipy import ndimage
 
 #from collections import deque
 
@@ -115,7 +115,7 @@ def run_tests(timer, scale_factor):
     #Test 6 - Shift 512 by 512 byte and store
     nrep = 300 * scale_factor
     for i in range(nrep):
-        c = np.roll(np.roll(b, 10, axis=0), 10, axis=1)
+        c = np.roll(np.roll(b, 10, axis=0), 10, axis=1) #pylint: disable=W0612
     timer.log('Shift 512 by 512 byte and store, %d times.' % nrep)
  
     #Test 7 - Add constant to 512x512 byte array
@@ -177,7 +177,7 @@ def run_tests(timer, scale_factor):
     timer.reset()
     
     #Test 14 - LU Decomposition of random matrix
-    linalg.lu(a)
+    scipy.linalg.lu(a) #pylint: disable=E1101
     timer.log('LU Decomposition of a %d^2 random matrix' % siz)
 
     siz = int(384 * math.sqrt(scale_factor))
@@ -220,7 +220,7 @@ def run_tests(timer, scale_factor):
         b[i] = math.log(a[i])
     timer.log('Log of %d numbers, FOR loop' % siz)
 
-	#Test 19 - Log of numbers, vector op
+    #Test 19 - Log of numbers, vector op
     for i in range(10):
         b = np.log(a)
 
@@ -231,8 +231,8 @@ def run_tests(timer, scale_factor):
     timer.reset()
     
     #Test 20 - Forward and inverse FFT
-    b = fftpack.fft(a)
-    b = fftpack.ifft(b)
+    b = scipy.fftpack.fft(a)
+    b = scipy.fftpack.ifft(b)
     timer.log('%d point forward plus inverse FFT' % n)
  
     nrep = 10 * scale_factor
@@ -243,17 +243,17 @@ def run_tests(timer, scale_factor):
     
     #Test 21 - Smooth 512 by 512 byte array, 5x5 boxcar
     for i in range(nrep):
-        b = ndimage.filters.median_filter(a, size=(5, 5))
+        b = scipy.ndimage.filters.median_filter(a, size=(5, 5))
     timer.log('Smooth 512 by 512 byte array, 5x5 boxcar, %d times' % nrep)
  
- 	#Test 22 - Smooth 512 by 512 floating point array, 5x5 boxcar
+    #Test 22 - Smooth 512 by 512 floating point array, 5x5 boxcar
     nrep = 5 * scale_factor
     a = np.zeros([512, 512], dtype=np.float32)
     a[200:250, 200:250] = 10.0
     timer.reset()
     #need to check to see if this is the same as an IDL smooth
     for i in range(nrep):
-        b = ndimage.filters.median_filter(a, size=(5, 5))
+        b = scipy.ndimage.filters.median_filter(a, size=(5, 5))
     timer.log('Smooth 512 by 512 floating array, 5x5 boxcar, %d times' % nrep)
     
     a = np.arange(512**2, dtype=np.uint8).reshape(512, 512)
@@ -263,19 +263,19 @@ def run_tests(timer, scale_factor):
     nrep = 40 * scale_factor
 
     #Test 23 - Write and read 512 by 512 byte array
-    if (not nofileio):
-        # openw, 1, FILEPATH('test.dat', /TMP), 512, $
-        fp = open('/tmp/test.dat', 'r+b') 
-
-        initial = 512 * nrep
-        for i in range(nrep):
-            aa[i] = a
-        for i in range(nrep):
-            a = aa[i]
-        timer.log('Write and read 512 by 512 byte array x ' + str(nrep))
-        fp.close()
-    else:
-        print('\t\t\t\tSkipped read/write test')
+#    if (not nofileio):
+#        # openw, 1, FILEPATH('test.dat', /TMP), 512, $
+#        fp = open('/tmp/test.dat', 'r+b') 
+#
+#        initial = 512 * nrep
+#        for i in range(nrep):
+#            aa[i] = a
+#        for i in range(nrep):
+#            a = aa[i]
+#        timer.log('Write and read 512 by 512 byte array x ' + str(nrep))
+#        fp.close()
+#    else:
+#        print('\t\t\t\tSkipped read/write test')
 
     # Remove the data file
     if (not nofileio):

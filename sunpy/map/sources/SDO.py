@@ -1,4 +1,6 @@
 """SDO Map subclass definitions"""
+#pylint: disable=W0221
+
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
@@ -8,7 +10,7 @@ from datetime import datetime
 class AIAMap(BaseMap):
     """AIA Image Map definition"""
     def __new__(cls, data, header):
-        return BaseMap.__new__(cls, data, header)
+        return BaseMap.__new__(cls, data)
 
     @classmethod
     def get_properties(cls, header):
