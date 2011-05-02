@@ -1,4 +1,6 @@
 """SOHO Map subclass definitions"""
+#pylint: disable=W0221
+
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
