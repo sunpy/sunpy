@@ -22,6 +22,8 @@ map
     Methods relating to the solar maps
 
 """
+#pylint: disable=W0401
+
 __version__ = 0.01
 
 import sunpy.map
