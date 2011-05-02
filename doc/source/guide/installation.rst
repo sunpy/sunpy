@@ -30,7 +30,7 @@ Done! To see if everything went okay, start a Python session and try importing
 SunPy:
 
 >>> import sunpy
->>> sunpy.Map(‘sunpy/dev/sample-data/AIA20110319_105400_0171.fits’).plot()
+>>> sunpy.Map('sunpy/dev/sample-data/AIA20110319_105400_0171.fits').plot()
 
 Mac
 ---
@@ -115,7 +115,7 @@ that Python can find it.
 To test it all out, open a new Python shell and try typing: ::
 
 >>> import sunpy
->>> sunpy.Map(‘sunpy/dev/sample-data/AIA20110319_105400_0171.fits’).plot()
+>>> sunpy.Map('doc/sample-data/AIA20110319_105400_0171.fits').plot()
 
 
 
