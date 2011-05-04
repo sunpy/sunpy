@@ -45,7 +45,7 @@ class HMIMap(BaseMap):
         """Returns the default and normalized values to use for the Map"""
         # Note: Trailing "Z" in date was dropped on 2010/12/07
         date_format = "%Y-%m-%dT%H:%M:%S.%f"
-
+    
         meas = header['content'].split(" ")[0].lower()
         
         properties = BaseMap.get_properties()
