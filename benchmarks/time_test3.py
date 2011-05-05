@@ -47,7 +47,9 @@
     Test 24 - Write and read 512 by 512 byte array
 '''
 import numpy as np
-import scipy
+import scipy.fftpack
+import scipy.ndimage
+import scipy.linalg
 import math
 import sys
 import os

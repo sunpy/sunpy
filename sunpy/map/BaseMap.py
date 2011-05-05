@@ -86,7 +86,7 @@ class BaseMap(np.ndarray):
     | http://www.scipy.org/Subclasses
 
     """
-    def __new__(cls, data, header):
+    def __new__(cls, data, header=None):
         """Creates a new BaseMap instance"""        
         if isinstance(data, np.ndarray):
             obj = data.view(cls)
