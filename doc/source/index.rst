@@ -4,7 +4,7 @@
 SunPy
 =====
 
-welcome! here you can find documentation relating to sunpy.
+Welcome! here you can find documentation relating to sunpy.
 
 Requirements
 ------------
