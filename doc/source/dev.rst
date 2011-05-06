@@ -225,16 +225,53 @@ modules, classes, and functions should follow the `NumPy/SciPy documentation
 style guide 
 <https://github.com/numpy/numpy/blob/master/doc/HOWTO_DOCUMENT.rst.txt>`_
 
-
-`Sphinx <http://sphinx.pocoo.org/>`_ is used to automatically generate 
-documentation.
-
-Module
+Sphinx
 ^^^^^^
 
-Each module should begin with a docstring describing its overall purpose and
-functioning. Below that meta-tags containing author, license, email and credits 
-information should be listed.
+**Overview**
+
+`Sphinx <http://sphinx.pocoo.org/>`_ is tool for generating high-quality 
+documentation in various formats (HTML, pdf, etc) and is especially well-suited
+for documenting Python projects. Sphinx works by parsing files written using a 
+`a Mediawiki-like syntax 
+<http://docutils.sourceforge.net/docs/user/rst/quickstart.html>`_ called 
+`reStructuredText <http://docutils.sourceforge.net/rst.html>`_. In addition 
+to parsing static files of reStructuredText, Sphinx can also be told to parse
+code comments. In fact, in addition to what you are reading right now, the
+`Python documenation <http://www.python.org/doc/>`_ was also created using
+Sphinx.
+
+**Usage**
+
+All of the SunPy documentation is contained in the ``doc/source`` folder and code
+comments. To generate the documentation you must have Sphinx installed
+on your computer (`easy_install sphinx`). Enter the ``doc/source`` folder and
+run: ::
+
+    make html
+
+This will generate HTML documentation for SunPy.
+
+Additionally, there is a `paver <http://paver.github.com/paver/>`_ command that
+can be used to accomplish the same thing: ::
+
+    paver build_sphinx
+
+For more information on how to use Sphinx, consult the `Sphinx documentation 
+<http://sphinx.pocoo.org/contents.html>`_.
+
+The rest of this section will describe how to document the SunPy code in order
+to guarantee that well-formatted documentation will be created.
+
+Examples
+^^^^^^^^
+
+Modules
+"""""""
+
+Each module or package should begin with a docstring describing its overall 
+purpose and functioning. Below that meta-tags containing author, license, email 
+and credits information may also be listed.
 
 Example: ::
 
@@ -245,19 +282,94 @@ Example: ::
     """
     #
     # TODO
-    #  Developer notes and todo items can be listed here
+    #  Developer notes and todo items can be listed here and will not be
+    #  included in the documentation.
     #
-    __author__ = "Keith Hughitt, Steven Christe, Jack Ireland and Alex Young"
+    __authors__ = ["Keith Hughitt", "Steven Christe", "Jack Ireland", "Alex Young"]
     __email__ = "keith.hughitt@nasa.gov"
-    __license__ = "MPL 1.0"
+    __license__ = "xxx"
 
 For details about what sections can be included, see the section on `documenting
 modules 
 <https://github.com/numpy/numpy/blob/master/doc/HOWTO_DOCUMENT.rst.txt>`_ in the
 NumPy/SciPy style guide.
 
+Classes
+"""""""
+
+Class docstrings should include a clear and concise docstring explaining the 
+overall purpose of the class, required and optional input parameters, and the 
+return value. Additionally, notes, references and examples are encouraged.
+
+Example (:class:`sunpy.map.BaseMap`) ::
+
+    """
+    BaseMap(data, header)
+    
+    A spatially-aware data array based on the SolarSoft Map object
+    
+    Parameters
+    ----------
+    data : numpy.ndarray, list
+        A 2d list or ndarray containing the map data
+    header : dict
+        A dictionary of the original image header tags
+
+    Attributes
+    ----------
+    header : dict
+        A dictionary representation of the image header
+    date : datetime
+        Image observation time
+    det : str
+        Detector name
+    inst : str
+        Instrument name
+    meas : str, int
+        Measurement name. For AIA this is the wavelength of image
+    obs : str
+        Observatory name
+    r_sun : float
+        Radius of the sun
+    name : str
+        Nickname for the image type (e.g. "AIA 171")
+    center : dict
+        X and Y coordinate for the center of the sun in arcseconds
+    scale: dict
+        Image scale along the x and y axes in arcseconds/pixel
+
+    Examples
+    --------
+    >>> map = sunpy.Map('doc/sample-data/AIA20110319_105400_0171.fits')
+    >>> map.T
+    Map([[ 0.3125,  1.    , -1.1875, ..., -0.625 ,  0.5625,  0.5   ],
+    [-0.0625,  0.1875,  0.375 , ...,  0.0625,  0.0625, -0.125 ],
+    [-0.125 , -0.8125, -0.5   , ..., -0.3125,  0.5625,  0.4375],
+    ..., 
+    [ 0.625 ,  0.625 , -0.125 , ...,  0.125 , -0.0625,  0.6875],
+    [-0.625 , -0.625 , -0.625 , ...,  0.125 , -0.0625,  0.6875],
+    [ 0.    ,  0.    , -1.1875, ...,  0.125 ,  0.    ,  0.6875]])
+    >>> map.header['cunit1']
+    'arcsec'
+    >>> map.plot()
+    >>> import matplotlib.cm as cm
+    >>> import matplotlib.colors as colors
+    >>> map.plot(cmap=cm.hot, norm=colors.Normalize(1, 2048))
+    
+    See Also:
+    ---------
+    numpy.ndarray Parent class for the Map object
+    
+    References
+    ----------
+    | http://docs.scipy.org/doc/numpy/reference/arrays.classes.html
+    | http://docs.scipy.org/doc/numpy/user/basics.subclassing.html
+    | http://www.scipy.org/Subclasses
+
+    """
+
 Functions
-^^^^^^^^^
+"""""""""
 
 Functions should include a clear and concise docstring explaining the overall 
 purpose of the function, required and optional input parameters, and the return 
