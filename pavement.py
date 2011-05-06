@@ -16,8 +16,8 @@ from paver.setuputils import setup
 options(
     deploy = Bunch(
         htmldir = path('doc/source/_build/html'),
-        host = 'sunpy.org',
-        hostpath = 'doc'
+        host = 'sipwork.org',
+        hostpath = 'www/sunpy/doc'
     ),
     sphinx=Bunch(docroot='doc/source', builddir="_build"),
     pylint = Bunch(quiet=False)
