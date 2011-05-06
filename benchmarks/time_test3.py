@@ -48,6 +48,9 @@
 '''
 import numpy as np
 import scipy
+import scipy.linalg
+import scipy.fftpack
+import scipy.ndimage
 import math
 import sys
 import os
