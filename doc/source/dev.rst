@@ -223,7 +223,7 @@ which agreed. You can check the differences between the two files by using a uti
 	diff file.py.THIS file.py.OTHER
 
 Though you might want to use a more graphical tool for this such as 
-`Meld http://meld.sourceforge.net/install.html`. Put your final code into file.py. Once you have
+`Meld http://meld.sourceforge.net/install.html`. On Mac OS X, if you have installed XCode then you can use the terminal command opendiff which will open an application called FileMerge. Put your final code into file.py. Once you have
 done this just type: ::
 
     bzr resolve
