@@ -10,7 +10,7 @@ import matplotlib.patches as patches
 import matplotlib.colors as colors
 import matplotlib.cm as cm
 from datetime import datetime
-from sunpy import Sun
+from sunpy.Sun import Sun
 
 """
 Questions
@@ -118,9 +118,9 @@ class BaseMap(np.ndarray):
             
     @classmethod
     def get_properties(cls):
-        """Returns default map properties"""
+        """Returns default map properties""" 
         return {
-            'cmap': cm.gray,
+            'cmap': cm.gray, #@UndefinedVariable
             'norm': colors.Normalize(5, 1024, True),
             'date': datetime.today(),
             'det': "None",
