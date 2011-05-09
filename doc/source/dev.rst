@@ -207,6 +207,33 @@ run: ::
 And that's it! It may seem like a lot at first but once you go through the
 motions a few times it becomes very quick.
 
+**Conflict resolution**
+It may happen that two people have been working on the same section of code which will
+cause the merge command some problems. In such cases, the merge command will issue a conflict
+warning and will then expect you do the merge yourself. You can type: ::
+
+    bzr conflict
+    
+to list the outstanding conflicts. For example it might say something like 
+"Text conflict in file.py". If you go into the directory with the conflicted file
+you will see multiple versions of the file; file.py.THIS is your version of the file,
+file.py.OTHER is the version you are attempting to merge in, and file.py.BASE is the last version
+which agreed. You can check the differences between the two files by using a utility such as: ::
+
+	diff file.py.THIS file.py.OTHER
+
+Though you might want to use a more graphical tool for this such as 
+`Meld http://meld.sourceforge.net/install.html`. On Mac OS X, if you have installed XCode then you can use the terminal command opendiff which will open an application called FileMerge. Put your final code into file.py. Once you have
+done this just type: ::
+
+    bzr resolve
+    
+This will officially resolve the conflict and will also delete the extra files the conflict created.
+Finally you should then commit your changes, in this case the resolution of the conflict with: ::
+
+   bzr commit -m "Resolved conflict between with my version of file.py"
+
+You can then proceed to push this change up to your branch.
 
 Coding Standards
 ----------------
