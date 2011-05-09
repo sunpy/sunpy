@@ -5,6 +5,7 @@ and a dictionary of these dictionaries.
 """
 
 import numpy as np
+import matplotlib.colors as colors
 
 def __aia_color_table__(wavelength = None):
     '''Returns one of the fundamental color tables for SDO AIA images.
