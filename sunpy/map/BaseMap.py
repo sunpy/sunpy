@@ -104,7 +104,7 @@ class BaseMap(np.ndarray):
             self.norm = None
             
             # Set object attributes dynamically
-            for attr, value in self.get_properties(header).items():
+            for attr, value in list(self.get_properties(header).items()):
                 setattr(self, attr, value)
 
             self.center = {
