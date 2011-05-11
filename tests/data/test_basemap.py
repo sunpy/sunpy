@@ -37,5 +37,5 @@ class TestBaseMap(unittest.TestCase):
         # header information in fits[0].header
         fits[0].data #pylint: disable=W0104
 
-        self.assertEqual(self.map.header.keys(), fits[0].header.keys(),
+        self.assertEqual(list(self.map.header.keys()), list(fits[0].header.keys()),
                          'header not preserved')
