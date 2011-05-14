@@ -101,7 +101,7 @@ def run_tests(timer, scale_factor):
         a = i + i - 2
         b = a / 2 + 1
         if b != i:
-            print("You screwed up", i, a, b)
+            print(("You screwed up", i, a, b))
     timer.log("%d scalar loops each of 5 ops, 2 =, 1 if" % nrep)
 
     # Create a 512x512 array filled with bytes

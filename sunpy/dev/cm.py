@@ -128,4 +128,4 @@ def _get_pixel_counts(data, cmap_size):
         i += 1
     
     # Return as a list of tuples sorted by frequency
-    return sorted(counts.iteritems(), key=operator.itemgetter(1), reverse=True)
+    return sorted(iter(counts.items()), key=operator.itemgetter(1), reverse=True)

@@ -7,7 +7,7 @@
 
 import datetime
 import math
-import constants
+import sunpy.Sun.constants
 
 def radius(t=None):
     """Returns the apparent radius of the Sun in arcsec.
