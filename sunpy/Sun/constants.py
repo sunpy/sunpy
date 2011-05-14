@@ -1,46 +1,216 @@
 """
-Collection of solar physical constants and conversion factors.
+Fundamental Solar Physical Constants
+------------------------------
+These constants are taken from various sources. This module is heavily based on
+(if not directly copied from) SciPy constants module.
 
-All constants are in SI units.
+Object
+------
+physical_constants : dict
+    A dictionary containing physical constants. Keys are the names
+    of physical constants, values are tuples (value, units, precision).
 
-The list is not meant to be comprehensive, but just a convenient list for everyday use.
-"""
+Functions
+---------
+value(key):
+    Returns the value of the physical constant(key).
+unit(key):
+    Returns the units of the physical constant(key).
+precision(key):
+    Returns the relative precision of the physical constant(key).
+find(sub):
+    Prints or returns list of keys containing the string sub,
+    default is all.
 
-"""
-Written: Steven Christe (7-May-2011)
-Modified: 
+Source
+------
+Constants are imported from Review of Particle Physics 2010 (page 102), 
+and NASA's Sun Fact Sheet as well as other sources.
 
-physical constants: imported from Review of Particle Physics 2010 (page 102), NASA Sun Fact Sheet
-(http://nssdc.gsfc.nasa.gov/planetary/factsheet/sunfact.html), and 
-Wikipedia (http://en.wikipedia.org/wiki/Sun)
-Use at own risk:
-TODO: References should be to published or standard sources (i.e. NOT websites)
+Websites
+-------
+http://nssdc.gsfc.nasa.gov/planetary/factsheet/sunfact.html
+
+To Do
+----------
+Need better sources as well as error values.
+
 """
 
 import scipy.constants as _cd
+import _constants as _con
+
+physical_constants = _con.physical_constants
 
 au = astronomical_unit = _cd.au
 
-mass = 1.9884e30
-equatorial_radius = radius = 6.9551e8
-equatorial_diameter = 2*radius
-volume = 1.412e18
-surface_area = 6.0877e12
-average_density = density = 1.408e3
-center_density = 1.622e5
-equatorial_surface_gravity = surface_gravity = 274
-mean_intensity = intensity = 2.009e7
-effective_temperature = 5778
-center_temperature = 1.57e7
-luminosity = 3.8427e26
+# The following functions (value, precision, unit, find) are copied directly from Scipy constants
+def value(key) :
+    """
+    Value in physical_constants indexed by key
+
+    Parameters
+    ----------
+    key : Python string or unicode
+        Key in dictionary `physical_constants`
+
+    Returns
+    -------
+    value : float
+        Value in `physical_constants` corresponding to `key`
+
+    See Also
+    --------
+    _constants : Contains the description of `physical_constants`, which, as a
+        dictionary literal object, does not itself possess a docstring.
+
+    Examples
+    --------
+    >>> from sunpy.Sun import constants
+    >>> constants.precision('mass')
+        1.9884e30
+
+    """
+    return physical_constants[key][0]
+
+def unit(key) :
+    """
+    Unit in physical_constants indexed by key
+
+    Parameters
+    ----------
+    key : Python string or unicode
+        Key in dictionary `physical_constants`
+
+    Returns
+    -------
+    unit : Python string
+        Unit in `physical_constants` corresponding to `key`
+
+    See Also
+    --------
+    _constants : Contains the description of `physical_constants`, which, as a
+        dictionary literal object, does not itself possess a docstring.
+
+    Examples
+    --------
+    >>> from sunpy.Sun import constants
+    >>> constants.precision('mass')
+    'kg'
+
+    """
+    return physical_constants[key][1]
+
+def precision(key) :
+    """
+    Relative precision in physical_constants indexed by key
+
+    Parameters
+    ----------
+    key : Python string or unicode
+        Key in dictionary `physical_constants`
+
+    Returns
+    -------
+    prec : float
+        Relative precision in `physical_constants` corresponding to `key`
+
+    See Also
+    --------
+    _constants : Contains the description of `physical_constants`, which, as a
+        dictionary literal object, does not itself possess a docstring.
+
+    Examples
+    --------
+    >>> from sunpy.Sun import constants
+    >>> constants.precision('mass')
+    
+
+    """
+    return physical_constants[key][2] / physical_constants[key][0]
+
+def find(sub=None, disp=False):
+    """
+    Return list of physical_constant keys containing a given string
+
+    Parameters
+    ----------
+    sub : str, unicode
+        Sub-string to search keys for.  By default, return all keys.
+    disp : bool
+        If True, print the keys that are found, and return None.
+        Otherwise, return the list of keys without printing anything.
+
+    Returns
+    -------
+    keys : None or list
+        If `disp` is False, the list of keys is returned. Otherwise, None
+        is returned.
+
+    See Also
+    --------
+    _constants : Contains the description of `physical_constants`, which, as a
+        dictionary literal object, does not itself possess a docstring.
+
+    """
+    if sub is None:
+        result = physical_constants.keys()
+    else:
+        result = [key for key in physical_constants \
+                 if sub.lower() in key.lower()]
+
+    result.sort()
+    if disp:
+        for key in result:
+            print key
+        return
+    else:
+        return result
+
+
+def print_all(key = None):
+    """
+    Prints out the complete list of physical_constant to the screen or
+    one single value
+    
+    Parameters
+    ----------
+    key : Python string or unicode
+        Key in dictionary `physical_constants`
+
+    Returns
+    -------
+    None
+
+    See Also
+    --------
+    _constants : Contains the description of `physical_constants`, which, as a
+        dictionary literal object, does not itself possess a docstring.
+
+    """
+    print('Name\tValue\tUnit\tPrecision')
+    if key is None:
+        for key in physical_constants:
+            print(key + '\t' + str(value(key)) + unit(key) + '\t' + str(precision(key))) 
+    else: 
+        print(key + '\t' + str(value(key)) + unit(key) + '\t' + str(precision(key))) 
+
 spectral_classification = 'G2V'
-absolute_magnitude = 4.83
-visual_brightness = -26.74
-# kg/s
-mass_conversion_rate = 4300e6
-# J/kg
-mean_energy_production = 0.1937e-3
-escape_velocity = 617.6e3
-ellipticity = 0.00005
-# km^3/s^2
-GM = 132712e6
+equatorial_radius = radius = value('radius')
+equatorial_diameter = value('diameter')
+volume = value('volume')
+surface_area = value('surface area')
+average_density = density = value('average density')
+center_density = value('center density')
+equatorial_surface_gravity = surface_gravity = value('surface gravity')
+mean_intensity = intensity = value('intensity')
+effective_temperature = value('effective temperature')
+center_temperature = value('center temperature')
+luminosity = value('luminosity')
+absolute_magnitude = value('absolute magnitude')
+visual_magnitude = value('visual magnitude')
+mass_conversion_rate = value('mass conversion rate')
+mean_energy_production = value('mean energy production')
+escape_velocity = value('escape velocity')
+ellipticity = value('ellipticity')
+GM = value('GM')
