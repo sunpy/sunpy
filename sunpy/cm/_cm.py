@@ -5,6 +5,7 @@ and a dictionary of these dictionaries.
 """
 
 import numpy as np
+import matplotlib.colors as colors
 
 def __aia_color_table__(wavelength = None):
     '''Returns one of the fundamental color tables for SDO AIA images.
@@ -68,11 +69,11 @@ def __aia_color_table__(wavelength = None):
     # Now create the color tuples
     i = np.arange(r0.size,dtype = 'f')/r0.size
     
-    rtuple = zip(i,r/255.0,r/255.0)
+    rtuple = list(zip(i,r/255.0,r/255.0))
     rtuple.append((1.0,r[-1],r[-1]))
-    gtuple = zip(i,g/255.0,g/255.0)
+    gtuple = list(zip(i,g/255.0,g/255.0))
     gtuple.append((1.0,g[-1]/255.0,g[-1]/255.0))
-    btuple = zip(i,b/255.0,b/255.0)
+    btuple = list(zip(i,b/255.0,b/255.0))
     btuple.append((1.0,b[-1]/255.0,b[-1]/255.0))
     
     cdict = {'red':rtuple, 'green':gtuple, 'blue': btuple}    
