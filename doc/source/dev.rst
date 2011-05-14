@@ -223,7 +223,7 @@ which agreed. You can check the differences between the two files by using a uti
 	diff file.py.THIS file.py.OTHER
 
 Though you might want to use a more graphical tool for this such as 
-`Meld http://meld.sourceforge.net/install.html`. On Mac OS X, if you have installed XCode then you can use the terminal command opendiff which will open an application called FileMerge. Put your final code into file.py. Once you have
+`Meld <http://meld.sourceforge.net/install.html>`_. On Mac OS X, if you have installed XCode then you can use the terminal command opendiff which will open an application called FileMerge. Put your final code into file.py. Once you have
 done this just type: ::
 
     bzr resolve
@@ -231,9 +231,10 @@ done this just type: ::
 This will officially resolve the conflict and will also delete the extra files the conflict created.
 Finally you should then commit your changes, in this case the resolution of the conflict with: ::
 
-   bzr commit -m "Resolved conflict between with my version of file.py"
+   bzr commit -m "Resolved conflict between my and online version of file.py"
 
-You can then proceed to push this change up to your branch.
+You can then proceed to push this change up to your branch. More information 
+about conflict resolution and bazaar is `available <http://doc.bazaar.canonical.com/bzr.0.92/en/user-guide/conflicts.html>`_.
 
 Coding Standards
 ----------------
@@ -327,8 +328,8 @@ Sphinx.
 **Usage**
 
 All of the SunPy documentation is contained in the ``doc/source`` folder and code
-comments. To generate the documentation you must have Sphinx installed
-on your computer (`easy_install sphinx`). Enter the ``doc/source`` folder and
+comments. To generate the documentation you must have Sphinx (as well as Numpydoc) installed
+on your computer (`easy_install sphinx` and `easy_install numpydoc`). Enter the ``doc/source`` folder and
 run: ::
 
     make html
