@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'rgb_composite.ui'
 #
-# Created: Mon Jun 20 14:59:53 2011
+# Created: Mon Jun 20 15:03:48 2011
 #      by: PyQt4 UI code generator 4.8.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -30,10 +30,11 @@ class Ui_RGBComposite(object):
         self.verticalLayoutWidget.setObjectName(_fromUtf8("verticalLayoutWidget"))
         self.outerContainer = QtGui.QVBoxLayout(self.verticalLayoutWidget)
         self.outerContainer.setSizeConstraint(QtGui.QLayout.SetDefaultConstraint)
-        self.outerContainer.setMargin(10)
+        self.outerContainer.setMargin(0)
         self.outerContainer.setMargin(0)
         self.outerContainer.setObjectName(_fromUtf8("outerContainer"))
         self.previewImageContainer = QtGui.QHBoxLayout()
+        self.previewImageContainer.setContentsMargins(-1, 10, -1, -1)
         self.previewImageContainer.setObjectName(_fromUtf8("previewImageContainer"))
         spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.previewImageContainer.addItem(spacerItem)
@@ -51,6 +52,7 @@ class Ui_RGBComposite(object):
         self.previewImageContainer.addItem(spacerItem1)
         self.outerContainer.addLayout(self.previewImageContainer)
         self.dateForm = QtGui.QHBoxLayout()
+        self.dateForm.setContentsMargins(10, -1, 10, -1)
         self.dateForm.setObjectName(_fromUtf8("dateForm"))
         self.label = QtGui.QLabel(self.verticalLayoutWidget)
         self.label.setObjectName(_fromUtf8("label"))
@@ -62,6 +64,7 @@ class Ui_RGBComposite(object):
         self.dateForm.addItem(spacerItem2)
         self.outerContainer.addLayout(self.dateForm)
         self.wavelengthForm = QtGui.QHBoxLayout()
+        self.wavelengthForm.setMargin(10)
         self.wavelengthForm.setObjectName(_fromUtf8("wavelengthForm"))
         self.redContainer = QtGui.QVBoxLayout()
         self.redContainer.setObjectName(_fromUtf8("redContainer"))
