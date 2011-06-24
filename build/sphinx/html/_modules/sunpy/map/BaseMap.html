@@ -1,0 +1,318 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>sunpy.map.BaseMap &mdash; SunPy v0.01 documentation</title>
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.01',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../../../about.html" />
+    <link rel="top" title="SunPy v0.01 documentation" href="../../../index.html" />
+    <link rel="up" title="sunpy.map" href="../map.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">SunPy v0.01 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../map.html" accesskey="U">sunpy.map</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for sunpy.map.BaseMap</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">BaseMap is a generic Map class from which all other Map classes inherit from.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="n">__authors__</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;Keith Hughitt, Steven Christe&quot;</span><span class="p">]</span>
+<span class="n">__email__</span> <span class="o">=</span> <span class="s">&quot;keith.hughitt@nasa.gov&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">matplotlib.patches</span> <span class="kn">as</span> <span class="nn">patches</span>
+<span class="kn">import</span> <span class="nn">matplotlib.colors</span> <span class="kn">as</span> <span class="nn">colors</span>
+<span class="kn">import</span> <span class="nn">matplotlib.cm</span> <span class="kn">as</span> <span class="nn">cm</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">sunpy.Sun</span> <span class="kn">import</span> <span class="n">Sun</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Questions</span>
+<span class="sd">---------</span>
+<span class="sd">1. Which is better? center[&#39;x&#39;] &amp; center[&#39;y&#39;] or center[0] and center[1], or?</span>
+<span class="sd">2. map.wavelength, map.meas or? (use hv/vso/etc conventions?)</span>
+<span class="sd">3. Are self.r_sun and radius below different? (rsun or rsun_obs for AIA?)</span>
+<span class="sd">4. Should default cmap and normalization settings be chosen for each image?</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="BaseMap"><a class="viewcode-back" href="../../../reference/map.html#sunpy.map.BaseMap.BaseMap">[docs]</a><span class="k">class</span> <span class="nc">BaseMap</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    BaseMap(data, header)</span>
+<span class="sd">    </span>
+<span class="sd">    A spatially-aware data array based on the SolarSoft Map object</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data : numpy.ndarray, list</span>
+<span class="sd">        A 2d list or ndarray containing the map data</span>
+<span class="sd">    header : dict</span>
+<span class="sd">        A dictionary of the original image header tags</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    header : dict</span>
+<span class="sd">        A dictionary representation of the image header</span>
+<span class="sd">    date : datetime</span>
+<span class="sd">        Image observation time</span>
+<span class="sd">    det : str</span>
+<span class="sd">        Detector name</span>
+<span class="sd">    inst : str</span>
+<span class="sd">        Instrument name</span>
+<span class="sd">    meas : str, int</span>
+<span class="sd">        Measurement name. For AIA this is the wavelength of image</span>
+<span class="sd">    obs : str</span>
+<span class="sd">        Observatory name</span>
+<span class="sd">    r_sun : float</span>
+<span class="sd">        Radius of the sun</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Nickname for the image type (e.g. &quot;AIA 171&quot;)</span>
+<span class="sd">    center : dict</span>
+<span class="sd">        X and Y coordinate for the center of the sun in arcseconds</span>
+<span class="sd">    scale: dict</span>
+<span class="sd">        Image scale along the x and y axes in arcseconds/pixel</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; map = sunpy.Map(&#39;doc/sample-data/AIA20110319_105400_0171.fits&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; map.T</span>
+<span class="sd">    Map([[ 0.3125,  1.    , -1.1875, ..., -0.625 ,  0.5625,  0.5   ],</span>
+<span class="sd">    [-0.0625,  0.1875,  0.375 , ...,  0.0625,  0.0625, -0.125 ],</span>
+<span class="sd">    [-0.125 , -0.8125, -0.5   , ..., -0.3125,  0.5625,  0.4375],</span>
+<span class="sd">    ..., </span>
+<span class="sd">    [ 0.625 ,  0.625 , -0.125 , ...,  0.125 , -0.0625,  0.6875],</span>
+<span class="sd">    [-0.625 , -0.625 , -0.625 , ...,  0.125 , -0.0625,  0.6875],</span>
+<span class="sd">    [ 0.    ,  0.    , -1.1875, ...,  0.125 ,  0.    ,  0.6875]])</span>
+<span class="sd">    &gt;&gt;&gt; map.header[&#39;cunit1&#39;]</span>
+<span class="sd">    &#39;arcsec&#39;</span>
+<span class="sd">    &gt;&gt;&gt; map.plot()</span>
+<span class="sd">    &gt;&gt;&gt; import matplotlib.cm as cm</span>
+<span class="sd">    &gt;&gt;&gt; import matplotlib.colors as colors</span>
+<span class="sd">    &gt;&gt;&gt; map.plot(cmap=cm.hot, norm=colors.Normalize(1, 2048))</span>
+<span class="sd">    </span>
+<span class="sd">    See Also:</span>
+<span class="sd">    ---------</span>
+<span class="sd">    numpy.ndarray Parent class for the Map object</span>
+<span class="sd">    </span>
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    | http://docs.scipy.org/doc/numpy/reference/arrays.classes.html</span>
+<span class="sd">    | http://docs.scipy.org/doc/numpy/user/basics.subclassing.html</span>
+<span class="sd">    | http://www.scipy.org/Subclasses</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__new__</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Creates a new BaseMap instance&quot;&quot;&quot;</span>        
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">cls</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">cls</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">obj</span>
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;BaseMap constructor&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">header</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">header</span> <span class="o">=</span> <span class="n">header</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">date</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmap</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">norm</span> <span class="o">=</span> <span class="bp">None</span>
+            
+            <span class="c"># Set object attributes dynamically</span>
+            <span class="k">for</span> <span class="n">attr</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_properties</span><span class="p">(</span><span class="n">header</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">center</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s">&quot;x&quot;</span><span class="p">:</span> <span class="n">header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;crpix1&#39;</span><span class="p">),</span>
+                <span class="s">&quot;y&quot;</span><span class="p">:</span> <span class="n">header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;crpix2&#39;</span><span class="p">)</span>
+            <span class="p">}</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scale</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s">&quot;x&quot;</span><span class="p">:</span> <span class="n">header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;cdelt1&#39;</span><span class="p">),</span>
+                <span class="s">&quot;y&quot;</span><span class="p">:</span> <span class="n">header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;cdelt2&#39;</span><span class="p">)</span>
+            <span class="p">}</span>
+            
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="BaseMap.get_properties"><a class="viewcode-back" href="../../../reference/map.html#sunpy.map.BaseMap.BaseMap.get_properties">[docs]</a>    <span class="k">def</span> <span class="nf">get_properties</span><span class="p">(</span><span class="n">cls</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns default map properties&quot;&quot;&quot;</span> 
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s">&#39;cmap&#39;</span><span class="p">:</span> <span class="n">cm</span><span class="o">.</span><span class="n">gray</span><span class="p">,</span> <span class="c">#@UndefinedVariable</span>
+            <span class="s">&#39;norm&#39;</span><span class="p">:</span> <span class="n">colors</span><span class="o">.</span><span class="n">Normalize</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">1024</span><span class="p">,</span> <span class="bp">True</span><span class="p">),</span>
+            <span class="s">&#39;date&#39;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">today</span><span class="p">(),</span>
+            <span class="s">&#39;det&#39;</span><span class="p">:</span> <span class="s">&quot;None&quot;</span><span class="p">,</span>
+            <span class="s">&#39;inst&#39;</span><span class="p">:</span> <span class="s">&quot;None&quot;</span><span class="p">,</span>
+            <span class="s">&#39;meas&#39;</span><span class="p">:</span> <span class="s">&quot;None&quot;</span><span class="p">,</span>
+            <span class="s">&#39;obs&#39;</span><span class="p">:</span> <span class="s">&quot;None&quot;</span><span class="p">,</span>
+            <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&quot;Default Map&quot;</span><span class="p">,</span>
+            <span class="s">&#39;r_sun&#39;</span><span class="p">:</span> <span class="bp">None</span>
+        <span class="p">}</span></div>
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="BaseMap.as_slice"><a class="viewcode-back" href="../../../reference/map.html#sunpy.map.BaseMap.BaseMap.as_slice">[docs]</a>    <span class="k">def</span> <span class="nf">as_slice</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">header</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns a data-less Map object.</span>
+<span class="sd">        </span>
+<span class="sd">        Dynamically create a class which contains only the original and</span>
+<span class="sd">        normalized header fields and default settings for the map. This is</span>
+<span class="sd">        useful for Map collections (e.g. MapCube) in order to maintain a</span>
+<span class="sd">        separate record of the metainformation for a given layer or &quot;slice&quot;</span>
+<span class="sd">        of the cube without having to keep the data separate.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        header : dict</span>
+<span class="sd">            A dictionary of the original image header tag</span>
+<span class="sd">            </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        out : MapSlice</span>
+<span class="sd">            An empty container object with only meta information and default</span>
+<span class="sd">            choices pertaining to the header specified.</span>
+<span class="sd">        </span>
+<span class="sd">        See Also: http://docs.python.org/library/functions.html#type</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c">#name = self.__class__.__name__ + &quot;Slice&quot;</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">cls</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">][:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="s">&quot;Slice&quot;</span>
+        <span class="n">properties</span> <span class="o">=</span> <span class="n">cls</span><span class="o">.</span><span class="n">get_properties</span><span class="p">(</span><span class="n">header</span><span class="p">)</span> <span class="c"># pylint: disable=E1121</span>
+        <span class="n">properties</span><span class="p">[</span><span class="s">&#39;header&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">header</span>
+        <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="p">(</span><span class="nb">object</span><span class="p">,),</span> <span class="n">properties</span><span class="p">)</span> <span class="c"># pylint: disable=E1121</span>
+        </div>
+<div class="viewcode-block" id="BaseMap.plot"><a class="viewcode-back" href="../../../reference/map.html#sunpy.map.BaseMap.BaseMap.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">draw_limb</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="o">**</span><span class="n">matplot_args</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Plots the map object using matplotlib</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        draw_limb : bool</span>
+<span class="sd">            Whether a circle should be drawn around the solar limb.</span>
+<span class="sd">        **matplot_args : dict</span>
+<span class="sd">            Matplotlib Any additional im_show arguments that should be used</span>
+<span class="sd">            when plotting the image.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># Create a figure and add title and axes</span>
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+        
+        <span class="n">axes</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">)</span>
+        <span class="n">axes</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="p">))</span>
+        <span class="n">axes</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s">&#39;X-postion (arcseconds)&#39;</span><span class="p">)</span>
+        <span class="n">axes</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s">&#39;Y-postion (arcseconds)&#39;</span><span class="p">)</span>
+        
+        <span class="c"># Draw circle at solar limb</span>
+        <span class="k">if</span> <span class="n">draw_limb</span><span class="p">:</span>
+            <span class="n">circ</span> <span class="o">=</span> <span class="n">patches</span><span class="o">.</span><span class="n">Circle</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">radius</span><span class="o">=</span><span class="n">Sun</span><span class="o">.</span><span class="n">radius</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="p">),</span> 
+                <span class="n">fill</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s">&#39;white&#39;</span><span class="p">)</span>
+            <span class="n">axes</span><span class="o">.</span><span class="n">add_artist</span><span class="p">(</span><span class="n">circ</span><span class="p">)</span>
+
+        <span class="c"># Determine extent</span>
+        <span class="n">xmin</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">center</span><span class="p">[</span><span class="s">&#39;x&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">[</span><span class="s">&#39;x&#39;</span><span class="p">]</span>
+        <span class="n">xmax</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">center</span><span class="p">[</span><span class="s">&#39;x&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">[</span><span class="s">&#39;x&#39;</span><span class="p">]</span>
+        <span class="n">ymin</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">center</span><span class="p">[</span><span class="s">&#39;y&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">[</span><span class="s">&#39;y&#39;</span><span class="p">]</span>
+        <span class="n">ymax</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">center</span><span class="p">[</span><span class="s">&#39;y&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">[</span><span class="s">&#39;y&#39;</span><span class="p">]</span>
+        
+        <span class="n">extent</span> <span class="o">=</span> <span class="p">[</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span><span class="p">]</span>
+        
+        <span class="c"># Matplotlib arguments</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s">&quot;cmap&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmap</span><span class="p">,</span>
+            <span class="s">&quot;norm&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">norm</span>
+        <span class="p">}</span>
+        <span class="n">params</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">matplot_args</span><span class="p">)</span>
+            
+        <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s">&#39;lower&#39;</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="n">extent</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</div>
+    <span class="k">def</span> <span class="nf">__array_finalize__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Finishes instantiation of the new map object&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">obj</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="UnrecognizedDataSouceError"><a class="viewcode-back" href="../../../reference/map.html#sunpy.map.BaseMap.UnrecognizedDataSouceError">[docs]</a><span class="k">class</span> <span class="nc">UnrecognizedDataSouceError</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Exception to raise when an unknown datasource is encountered&quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/sunpy_logo_135x135.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">SunPy v0.01 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../map.html" >sunpy.map</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, SunPy Community.
+      Last updated on May 14, 2011.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,364 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Map &mdash; SunPy v0.01 documentation</title>
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.01',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="top" title="SunPy v0.01 documentation" href="../index.html" />
+    <link rel="up" title="SunPy Reference" href="index.html" />
+    <link rel="next" title="MapCube" href="mapcube.html" />
+    <link rel="prev" title="SunPy Reference" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="mapcube.html" title="MapCube"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="SunPy Reference"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">SunPy v0.01 documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">SunPy Reference</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="map">
+<h1>Map<a class="headerlink" href="#map" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-sunpy.map">
+<span id="creating-map-objects"></span><h2>Creating Map Objects<a class="headerlink" href="#module-sunpy.map" title="Permalink to this headline">¶</a></h2>
+<p>SunPy Map objects are constructed using the special <a href="#id1"><span class="problematic" id="id2">:function:`Map()`</span></a>
+function.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="nb">map</span> <span class="o">=</span> <span class="n">sunpy</span><span class="o">.</span><span class="n">Map</span><span class="p">(</span><span class="s">&#39;file.fits&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The result of a call to <cite>Map</cite> will be either a generic 
+<a class="reference internal" href="#module-sunpy.map.BaseMap" title="sunpy.map.BaseMap"><tt class="xref py py-class docutils literal"><span class="pre">sunpy.map.BaseMap</span></tt></a> object, or a subclass of <a class="reference internal" href="#module-sunpy.map.BaseMap" title="sunpy.map.BaseMap"><tt class="xref py py-class docutils literal"><span class="pre">sunpy.map.BaseMap</span></tt></a> 
+which deals with a specific type of data, e.g. <tt class="xref py py-class docutils literal"><span class="pre">AIAMap</span></tt> or 
+<tt class="xref py py-class docutils literal"><span class="pre">LASCOMap</span></tt>.</p>
+<dl class="function">
+<dt id="sunpy.map.Map">
+<tt class="descclassname">sunpy.map.</tt><tt class="descname">Map</tt><big>(</big><em>input_</em><big>)</big><a class="reference internal" href="../_modules/sunpy/map.html#Map"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sunpy.map.Map" title="Permalink to this definition">¶</a></dt>
+<dd><p>Map class factory</p>
+<p>Attempts to determine the type of data associated with input and returns
+an instance of either the generic BaseMap class or a subclass of BaseMap
+such as AIAMap, EUVIMap, etc.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>input_</strong> : filepath, data array</p>
+<blockquote>
+<div><p>The data source used to create the map object. This can be either a
+filepath to an image, a 2d list, or an ndarray.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>out</strong> : BaseMap</p>
+<blockquote class="last">
+<div><p>Returns a BaseMap or BaseMap subclass instance</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<dl class="docutils">
+<dt>PyFITS</dt>
+<dd>Due to the way PyFITS works with images the header dictionary may
+differ depending on whether is accessed before or after the fits[0].data
+is requested. If the header is read before the data then the original
+header will be returned. If the header is read after the data has been
+accessed then the data will have been scaled and a modified header
+reflecting these changes will be returned: BITPIX may differ and
+BSCALE and B_ZERO may be dropped in the modified version.</dd>
+</dl>
+<p class="rubric">References</p>
+<div class="line-block">
+<div class="line"><a class="reference external" href="http://stackoverflow.com/questions/456672/class-factory-in-python">http://stackoverflow.com/questions/456672/class-factory-in-python</a></div>
+<div class="line"><a class="reference external" href="http://stsdas.stsci.edu/download/wikidocs/The_PyFITS_Handbook.pdf">http://stsdas.stsci.edu/download/wikidocs/The_PyFITS_Handbook.pdf</a></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="module-sunpy.map.BaseMap">
+<span id="basemap-class"></span><h2>BaseMap Class<a class="headerlink" href="#module-sunpy.map.BaseMap" title="Permalink to this headline">¶</a></h2>
+<p>BaseMap is a generic Map class from which all other Map classes inherit from.</p>
+<dl class="class">
+<dt id="sunpy.map.BaseMap.BaseMap">
+<em class="property">class </em><tt class="descclassname">sunpy.map.BaseMap.</tt><tt class="descname">BaseMap</tt><big>(</big><em>data</em>, <em>header</em><big>)</big><a class="reference internal" href="../_modules/sunpy/map/BaseMap.html#BaseMap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sunpy.map.BaseMap.BaseMap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt></p>
+<p>A spatially-aware data array based on the SolarSoft Map object</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>data</strong> : numpy.ndarray, list</p>
+<blockquote>
+<div><p>A 2d list or ndarray containing the map data</p>
+</div></blockquote>
+<p><strong>header</strong> : dict</p>
+<blockquote class="last">
+<div><p>A dictionary of the original image header tags</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">References</p>
+<div class="line-block">
+<div class="line"><a class="reference external" href="http://docs.scipy.org/doc/numpy/reference/arrays.classes.html">http://docs.scipy.org/doc/numpy/reference/arrays.classes.html</a></div>
+<div class="line"><a class="reference external" href="http://docs.scipy.org/doc/numpy/user/basics.subclassing.html">http://docs.scipy.org/doc/numpy/user/basics.subclassing.html</a></div>
+<div class="line"><a class="reference external" href="http://www.scipy.org/Subclasses">http://www.scipy.org/Subclasses</a></div>
+</div>
+<p class="rubric">Examples</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="nb">map</span> <span class="o">=</span> <span class="n">sunpy</span><span class="o">.</span><span class="n">Map</span><span class="p">(</span><span class="s">&#39;doc/sample-data/AIA20110319_105400_0171.fits&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">map</span><span class="o">.</span><span class="n">T</span>
+<span class="go">Map([[ 0.3125,  1.    , -1.1875, ..., -0.625 ,  0.5625,  0.5   ],</span>
+<span class="go">[-0.0625,  0.1875,  0.375 , ...,  0.0625,  0.0625, -0.125 ],</span>
+<span class="go">[-0.125 , -0.8125, -0.5   , ..., -0.3125,  0.5625,  0.4375],</span>
+<span class="go">..., </span>
+<span class="go">[ 0.625 ,  0.625 , -0.125 , ...,  0.125 , -0.0625,  0.6875],</span>
+<span class="go">[-0.625 , -0.625 , -0.625 , ...,  0.125 , -0.0625,  0.6875],</span>
+<span class="go">[ 0.    ,  0.    , -1.1875, ...,  0.125 ,  0.    ,  0.6875]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">map</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s">&#39;cunit1&#39;</span><span class="p">]</span>
+<span class="go">&#39;arcsec&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">map</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">matplotlib.cm</span> <span class="kn">as</span> <span class="nn">cm</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">matplotlib.colors</span> <span class="kn">as</span> <span class="nn">colors</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">map</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">cmap</span><span class="o">=</span><span class="n">cm</span><span class="o">.</span><span class="n">hot</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">colors</span><span class="o">.</span><span class="n">Normalize</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2048</span><span class="p">))</span>
+</pre></div>
+</div>
+<p class="rubric">Attributes</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="14%" />
+<col width="10%" />
+<col width="75%" />
+</colgroup>
+<tbody valign="top">
+<tr><td>header</td>
+<td>dict</td>
+<td>A dictionary representation of the image header</td>
+</tr>
+<tr><td>date</td>
+<td>datetime</td>
+<td>Image observation time</td>
+</tr>
+<tr><td>det</td>
+<td>str</td>
+<td>Detector name</td>
+</tr>
+<tr><td>inst</td>
+<td>str</td>
+<td>Instrument name</td>
+</tr>
+<tr><td>meas</td>
+<td>str, int</td>
+<td>Measurement name. For AIA this is the wavelength of image</td>
+</tr>
+<tr><td>obs</td>
+<td>str</td>
+<td>Observatory name</td>
+</tr>
+<tr><td>r_sun</td>
+<td>float</td>
+<td>Radius of the sun</td>
+</tr>
+<tr><td>name</td>
+<td>str</td>
+<td>Nickname for the image type (e.g. &#8220;AIA 171&#8221;)</td>
+</tr>
+<tr><td>center</td>
+<td>dict</td>
+<td>X and Y coordinate for the center of the sun in arcseconds</td>
+</tr>
+<tr><td>scale: dict</td>
+<td>&nbsp;</td>
+<td>Image scale along the x and y axes in arcseconds/pixel</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Methods</p>
+<dl class="classmethod">
+<dt id="sunpy.map.BaseMap.BaseMap.as_slice">
+<em class="property">classmethod </em><tt class="descname">as_slice</tt><big>(</big><em>header</em><big>)</big><a class="reference internal" href="../_modules/sunpy/map/BaseMap.html#BaseMap.as_slice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sunpy.map.BaseMap.BaseMap.as_slice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a data-less Map object.</p>
+<p>Dynamically create a class which contains only the original and
+normalized header fields and default settings for the map. This is
+useful for Map collections (e.g. MapCube) in order to maintain a
+separate record of the metainformation for a given layer or &#8220;slice&#8221;
+of the cube without having to keep the data separate.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>header</strong> : dict</p>
+<blockquote>
+<div><p>A dictionary of the original image header tag</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>out</strong> : MapSlice</p>
+<blockquote>
+<div><p>An empty container object with only meta information and default
+choices pertaining to the header specified.</p>
+</div></blockquote>
+<p class="last"><strong>See Also: http://docs.python.org/library/functions.html#type</strong> :</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="sunpy.map.BaseMap.BaseMap.get_properties">
+<em class="property">classmethod </em><tt class="descname">get_properties</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/sunpy/map/BaseMap.html#BaseMap.get_properties"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sunpy.map.BaseMap.BaseMap.get_properties" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns default map properties</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="sunpy.map.BaseMap.BaseMap.plot">
+<tt class="descname">plot</tt><big>(</big><em>draw_limb=True</em>, <em>**matplot_args</em><big>)</big><a class="reference internal" href="../_modules/sunpy/map/BaseMap.html#BaseMap.plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sunpy.map.BaseMap.BaseMap.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plots the map object using matplotlib</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>draw_limb</strong> : bool</p>
+<blockquote>
+<div><p>Whether a circle should be drawn around the solar limb.</p>
+</div></blockquote>
+<p><strong>**matplot_args</strong> : dict</p>
+<blockquote class="last">
+<div><p>Matplotlib Any additional im_show arguments that should be used
+when plotting the image.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="sunpy.map.BaseMap.UnrecognizedDataSouceError">
+<em class="property">exception </em><tt class="descclassname">sunpy.map.BaseMap.</tt><tt class="descname">UnrecognizedDataSouceError</tt><a class="reference internal" href="../_modules/sunpy/map/BaseMap.html#UnrecognizedDataSouceError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sunpy.map.BaseMap.UnrecognizedDataSouceError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">exceptions.ValueError</span></tt></p>
+<p>Exception to raise when an unknown datasource is encountered</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/sunpy_logo_135x135.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Map</a><ul>
+<li><a class="reference internal" href="#module-sunpy.map">Creating Map Objects</a></li>
+<li><a class="reference internal" href="#module-sunpy.map.BaseMap">BaseMap Class</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">SunPy Reference</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="mapcube.html"
+                        title="next chapter">MapCube</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/reference/map.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="mapcube.html" title="MapCube"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="SunPy Reference"
+             >previous</a> |</li>
+        <li><a href="../index.html">SunPy v0.01 documentation</a> &raquo;</li>
+          <li><a href="index.html" >SunPy Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, SunPy Community.
+      Last updated on May 14, 2011.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

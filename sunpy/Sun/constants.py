@@ -195,7 +195,9 @@ def print_all(key = None):
     else: 
         print(key + '\t' + str(value(key)) + unit(key) + '\t' + str(precision(key))) 
 
+# spectral class is not included in physical constants since it is not a number
 spectral_classification = 'G2V'
+
 equatorial_radius = radius = value('radius')
 equatorial_diameter = value('diameter')
 volume = value('volume')
