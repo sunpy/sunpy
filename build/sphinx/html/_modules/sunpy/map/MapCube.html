@@ -1,0 +1,252 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>sunpy.map.MapCube &mdash; SunPy v0.01 documentation</title>
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.01',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../../../about.html" />
+    <link rel="top" title="SunPy v0.01 documentation" href="../../../index.html" />
+    <link rel="up" title="sunpy.map" href="../map.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">SunPy v0.01 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../map.html" accesskey="U">sunpy.map</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for sunpy.map.MapCube</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;A Python MapCube Object&quot;&quot;&quot;</span>
+<span class="c">#pylint: disable=W0401,W0614</span>
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s">&quot;Keith Hughitt&quot;</span>
+<span class="n">__email__</span> <span class="o">=</span> <span class="s">&quot;keith.hughitt@nasa.gov&quot;</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">pyfits</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">sunpy.map.sources</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">sunpy.map.BaseMap</span> <span class="kn">import</span> <span class="n">BaseMap</span>
+<span class="kn">from</span> <span class="nn">sunpy.map.BaseMap</span> <span class="kn">import</span> <span class="n">UnrecognizedDataSouceError</span>
+
+<span class="c">#</span>
+<span class="c"># 2011/04/13: Should Map be broken up into Map and MapHeader classes? This way</span>
+<span class="c"># mapped header values can be used in MapCube without having to keep extra</span>
+<span class="c"># copies of the data..</span>
+<span class="c">#</span>
+<div class="viewcode-block" id="MapCube"><a class="viewcode-back" href="../../../reference/mapcube.html#sunpy.map.MapCube.MapCube">[docs]</a><span class="k">class</span> <span class="nc">MapCube</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    MapCube(input)</span>
+<span class="sd">    </span>
+<span class="sd">    A spatially-aware data array based on the SolarSoft Map object.</span>
+<span class="sd">    Reads in the files at the specified location, stores their headers, and</span>
+<span class="sd">    creates a 3d array from their contents.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    input_ : directory, data array</span>
+<span class="sd">        The data source used to create the map object. This can be either a</span>
+<span class="sd">        filepath to a directory containing the images you wish to include, a 2d </span>
+<span class="sd">        list, or an ndarray.</span>
+<span class="sd">    coalign : [ None | &#39;diff&#39; ]</span>
+<span class="sd">        Method to use for coalignment. If None, no coalignment will be done.</span>
+<span class="sd">    derotate : bool</span>
+<span class="sd">        Whether the data should be derotated</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    slices : list</span>
+<span class="sd">        a list of :class:`sunpy.map.MapSlice` objects corresponding to the</span>
+<span class="sd">        images that were used to build the MapCube.</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">    ---------</span>
+<span class="sd">    numpy.ndarray Parent class for the MapCube object</span>
+<span class="sd">    :class:`sunpy.Map`</span>
+<span class="sd">        </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; mapcube = sunpy.MapCube(&#39;images/&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; mapcube.slices[0].header[&#39;crpix1&#39;]</span>
+<span class="sd">    2050.6599120000001</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__new__</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">input_</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Creates a new Map instance&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">slices</span> <span class="o">=</span> <span class="p">[]</span>
+            
+            <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">input_</span><span class="p">):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">fits</span> <span class="o">=</span> <span class="n">pyfits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">input_</span><span class="p">,</span> <span class="n">filename</span><span class="p">))</span>
+                    <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fits</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+                    <span class="n">slices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cls</span><span class="o">.</span><span class="n">parse_header</span><span class="p">(</span><span class="n">fits</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">header</span><span class="p">))</span>
+                <span class="k">except</span> <span class="ne">IOError</span><span class="p">:</span>
+                    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s">&quot;Unable to read the file </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">filename</span><span class="p">)</span>
+
+            <span class="n">obj</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">cls</span><span class="p">)</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">slices</span> <span class="o">=</span> <span class="n">slices</span>
+            
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">input_</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">cls</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="n">input_</span>
+
+        <span class="k">return</span> <span class="n">obj</span>
+    
+    <span class="c">#pylint: disable=W0613,E1101</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_</span><span class="p">,</span> <span class="n">coalign</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">derotate</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="c"># Coalignment</span>
+        <span class="k">if</span> <span class="n">coalign</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s">&#39;_coalign_</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">coalign</span><span class="p">):</span>
+            <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s">&#39;_coalign_</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">coalign</span><span class="p">)()</span>
+
+        <span class="k">if</span> <span class="n">derotate</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_derotate</span><span class="p">()</span>
+
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="MapCube.parse_header"><a class="viewcode-back" href="../../../reference/mapcube.html#sunpy.map.MapCube.MapCube.parse_header">[docs]</a>    <span class="k">def</span> <span class="nf">parse_header</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">header</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns a MapSlice instance corresponding to an image header.</span>
+<span class="sd">        </span>
+<span class="sd">        Attempts to construct a `MapSlice` instance using the header information</span>
+<span class="sd">        provided. `MapSlice` instances (e.g. `AIAMapSlice`) are basically just</span>
+<span class="sd">        empty (data-less) Map objects. This provides a way to keep track of</span>
+<span class="sd">        the meta-information for each of the images that were used to build</span>
+<span class="sd">        the MapCube separately from the data.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        header : dict</span>
+<span class="sd">            The image header for which a `MapSlice` should be built</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">cls</span> <span class="ow">in</span> <span class="n">BaseMap</span><span class="o">.</span><span class="n">__subclasses__</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">cls</span><span class="o">.</span><span class="n">is_datasource_for</span><span class="p">(</span><span class="n">header</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">cls</span><span class="o">.</span><span class="n">as_slice</span><span class="p">(</span><span class="n">header</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">UnrecognizedDataSouceError</span>
+    </div>
+<div class="viewcode-block" id="MapCube.plot"><a class="viewcode-back" href="../../../reference/mapcube.html#sunpy.map.MapCube.MapCube.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;A basic plot method (not yet implemented)&quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+    </div>
+    <span class="k">def</span> <span class="nf">_derotate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Derotates the layers in the MapCube&quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+            
+    <span class="k">def</span> <span class="nf">__array_finalize__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Finishes instantiation of the new map object&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">obj</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span>
+        
+    <span class="c"># Coalignment methods</span>
+    <span class="k">def</span> <span class="nf">_coalign_diff</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Difference-based coalignment</span>
+<span class="sd">        </span>
+<span class="sd">        Coaligns data by minimizing the difference between subsequent images</span>
+<span class="sd">        before and after shifting the images one to several pixels in each</span>
+<span class="sd">        direction.</span>
+<span class="sd">        </span>
+<span class="sd">        pseudo-code:</span>
+<span class="sd">        </span>
+<span class="sd">        for i len(self):</span>
+<span class="sd">            min_diff = {&#39;value&#39;: (), &#39;offset&#39;: (0, 0)} # () is pos infinity</span>
+<span class="sd">            </span>
+<span class="sd">            # try shifting 1 pixel in each direction</span>
+<span class="sd">            for x in (-1, 0, 1):</span>
+<span class="sd">                for y in (-1, 0, 1):</span>
+<span class="sd">                    # calculate difference for intersecting pixels</span>
+<span class="sd">                    # if &lt; min_diff[&#39;value&#39;], store new value/offset</span>
+<span class="sd">                    </span>
+<span class="sd">            # shift image</span>
+<span class="sd">            if min_diff[&#39;offset&#39;] != (0, 0):</span>
+<span class="sd">                # shift and clip image</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+    </div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/sunpy_logo_135x135.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">SunPy v0.01 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../map.html" >sunpy.map</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, SunPy Community.
+      Last updated on May 14, 2011.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>
