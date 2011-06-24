@@ -1,0 +1,176 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>sunpy.map &mdash; SunPy v0.01 documentation</title>
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.01',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../../about.html" />
+    <link rel="top" title="SunPy v0.01 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">SunPy v0.01 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for sunpy.map</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">SunPy Map objects are constructed using the special :function:`Map()`</span>
+<span class="sd">function. ::</span>
+
+<span class="sd">&gt;&gt;&gt; map = sunpy.Map(&#39;file.fits&#39;)</span>
+
+<span class="sd">The result of a call to `Map` will be either a generic </span>
+<span class="sd">:class:`sunpy.map.BaseMap` object, or a subclass of :class:`sunpy.map.BaseMap` </span>
+<span class="sd">which deals with a specific type of data, e.g. :class:`AIAMap` or </span>
+<span class="sd">:class:`LASCOMap`.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c">#pylint: disable=W0401</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;sources&quot;</span><span class="p">,</span> <span class="s">&quot;Map&quot;</span><span class="p">,</span> <span class="s">&quot;MapCube&quot;</span><span class="p">]</span>
+<span class="n">__author__</span> <span class="o">=</span> <span class="s">&quot;Keith Hughitt&quot;</span>
+<span class="n">__email__</span> <span class="o">=</span> <span class="s">&quot;keith.hughitt@nasa.gov&quot;</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">pyfits</span>
+<span class="kn">from</span> <span class="nn">sunpy.map.sources</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">sunpy.map.BaseMap</span> <span class="kn">import</span> <span class="n">BaseMap</span>
+<span class="kn">from</span> <span class="nn">sunpy.map.BaseMap</span> <span class="kn">import</span> <span class="n">UnrecognizedDataSouceError</span>
+
+<span class="c">#pylint: disable=C0103,E1101</span>
+<div class="viewcode-block" id="Map"><a class="viewcode-back" href="../../reference/map.html#sunpy.map.Map">[docs]</a><span class="k">def</span> <span class="nf">Map</span><span class="p">(</span><span class="n">input_</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Map class factory</span>
+<span class="sd">    </span>
+<span class="sd">    Attempts to determine the type of data associated with input and returns</span>
+<span class="sd">    an instance of either the generic BaseMap class or a subclass of BaseMap</span>
+<span class="sd">    such as AIAMap, EUVIMap, etc.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    input_ : filepath, data array</span>
+<span class="sd">        The data source used to create the map object. This can be either a</span>
+<span class="sd">        filepath to an image, a 2d list, or an ndarray.</span>
+<span class="sd">        </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : BaseMap</span>
+<span class="sd">        Returns a BaseMap or BaseMap subclass instance</span>
+<span class="sd">        </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    PyFITS</span>
+<span class="sd">        Due to the way PyFITS works with images the header dictionary may</span>
+<span class="sd">        differ depending on whether is accessed before or after the fits[0].data</span>
+<span class="sd">        is requested. If the header is read before the data then the original</span>
+<span class="sd">        header will be returned. If the header is read after the data has been</span>
+<span class="sd">        accessed then the data will have been scaled and a modified header</span>
+<span class="sd">        reflecting these changes will be returned: BITPIX may differ and</span>
+<span class="sd">        BSCALE and B_ZERO may be dropped in the modified version.</span>
+<span class="sd">    </span>
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    | http://stackoverflow.com/questions/456672/class-factory-in-python</span>
+<span class="sd">    | http://stsdas.stsci.edu/download/wikidocs/The_PyFITS_Handbook.pdf</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">fits</span> <span class="o">=</span> <span class="n">pyfits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">input_</span><span class="p">)</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">fits</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+            <span class="n">header</span> <span class="o">=</span> <span class="n">fits</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">header</span>
+        <span class="k">except</span> <span class="ne">IOError</span><span class="p">:</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s">&quot;Unable to read the file </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">input_</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">cls</span> <span class="ow">in</span> <span class="n">BaseMap</span><span class="o">.</span><span class="n">__subclasses__</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">cls</span><span class="o">.</span><span class="n">is_datasource_for</span><span class="p">(</span><span class="n">header</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">cls</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">header</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">UnrecognizedDataSouceError</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">BaseMap</span><span class="p">(</span><span class="n">input_</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/sunpy_logo_135x135.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">SunPy v0.01 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, SunPy Community.
+      Last updated on May 14, 2011.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>
