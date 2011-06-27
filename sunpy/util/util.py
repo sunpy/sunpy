@@ -54,9 +54,9 @@ def julian_day(t=None):
     JULIAN_DAY_ON_NOON01JAN1900 = 2415020.5
     DAYS_IN_YEAR = 36525.0
     SECONDS_IN_DAY = 60*60*24.0
-    jul = anytim(t) - datetime.datetime(1900, 1, 1, 0, 0, 0)
-    result = jul.days + jul.seconds/SECONDS_IN_DAY
-    return result + JULIAN_DAY_ON_NOON01JAN1900
+    jul = day_of_year(t)
+    result = jul.days + jul.seconds/SECONDS_IN_DAY + JULIAN_DAY_ON_NOON01JAN1900
+    return result
 
 def julian_centuries(t=None):
     """Returns the number of Julian centuries since 1900 January 0.5"""
@@ -76,17 +76,21 @@ def day_of_year(t=None):
     return result
 
 def degrees_to_hours(angle):
-    """Convert an angle from the degree notation to the hour, arcmin, arcsec 
-    notation (return as a tuple)."""
+    """Converts an angle from the degree notation to the hour, arcmin, arcsec 
+    notation (returned as a tuple)."""
     hour = int(np.floor(angle / 15))
     remainder = angle / 15.0 - hour
-    print(remainder)
     arcminute = int(np.floor(remainder * 60))
     remainder =  remainder*60 - arcminute
-    print(remainder)
     arcsecond = remainder * 60.0
-    remainder = remainder * 60.0 - arcsecond
-    print(remainder)
-    print(hour*15 + arcminute/60.0 + arcsecond/(60*60.0))
     return [hour, arcminute, arcsecond]
 
+def degrees_to_arc(angle):
+    """Converts decimal degrees to degree, arcminute, 
+    arcsecond (returned as a tuple)."""
+    degree = int(np.floor(angle))
+    remainder = angle - degree
+    arcminute = int(np.floor(remainder * 60))
+    remainder =  remainder*60 - arcminute
+    arcsecond = remainder * 60.0
+    return [degree, arcminute, arcsecond]
