@@ -6,6 +6,7 @@ __email__ = "keith.hughitt@nasa.gov"
 
 from sunpy.map.BaseMap import BaseMap
 from datetime import datetime
+from sunpy.cm import cm
 
 class AIAMap(BaseMap):
     """AIA Image Map definition"""
@@ -26,8 +27,10 @@ class AIAMap(BaseMap):
             'meas': header['wavelnth'],
             'obs': "SDO",
             'name': "AIA %s" % header['wavelnth'],
-            'r_sun': header['rsun_obs']
+            'r_sun': header['rsun_obs'],
+            'cmap': cm.get_cmap(name = 'sdoaia' + str(header['wavelnth']))
         })
+        print(header['date-obs'][0:22])
         return properties
         
     @classmethod
