@@ -15,7 +15,6 @@
 import datetime
 import numpy as np
 
-
 def anytim(time_string = None):
     """Given a time string will parse and return a datetime object.
     If no string is given then returns the datetime object for the current time.
@@ -23,6 +22,8 @@ def anytim(time_string = None):
     """
     if time_string is None:
         time = datetime.datetime.now()
+    if type(time_string) is type(datetime.datetime.now()):
+        time = time_string
     else:
         # Expects the following input
         # 2011/04/04 00:00:00
@@ -52,10 +53,8 @@ def julian_day(t=None):
     # The number of days between Jan 1 1900 and the Julian
     # reference date of 12:00 noon Jan 1, 4713 BC
     JULIAN_DAY_ON_NOON01JAN1900 = 2415020.5
-    DAYS_IN_YEAR = 36525.0
-    SECONDS_IN_DAY = 60*60*24.0
-    jul = day_of_year(t)
-    result = jul.days + jul.seconds/SECONDS_IN_DAY + JULIAN_DAY_ON_NOON01JAN1900
+    days = day_of_year(t)
+    result = days + JULIAN_DAY_ON_NOON01JAN1900
     return result
 
 def julian_centuries(t=None):
@@ -69,10 +68,11 @@ def julian_centuries(t=None):
 
 def day_of_year(t=None):
     """Returns the day of year."""
+    SECONDS_IN_DAY = 60*60*24.0
     time = anytim(t)
     year = time.year
     time_diff = anytim(t) - datetime.datetime(time.year, 1, 1, 0, 0, 0)
-    result = time_diff.days
+    result = time_diff.days + time_diff.seconds/SECONDS_IN_DAY
     return result
 
 def degrees_to_hours(angle):

@@ -21,12 +21,16 @@ import datetime
 import math
 import cmath
 import numpy as np
-import sunpy.util as util
+#TODO: why do i need to use util.util?
+import sunpy.util.util as util
+
+def radius(t=None):
+    return angular_size(t)
 
 def angular_size(t=None):
     """Return the angular size of the Sun as a function of 
     time as viewed from Earth (in arcsec)"""
-    result = 959.63 / sunearth_distance(util.anytim(t))
+    result = 959.63 / sunearth_distance(t)
     return result
 
 def position(t=None):
@@ -37,47 +41,47 @@ def position(t=None):
     
 def eccentricity_SunEarth_orbit(t=None):
 	"""Returns the eccentricity of the Sun Earth Orbit."""
-	T = julian_centuries(util.anytim(t))
+	T = util.julian_centuries(t)
 	result = 0.016751040 - 0.00004180 * T - 0.0000001260 * T ** 2
 	return result
 
 def mean_ecliptic_longitude(t=None):
     """Returns the mean ecliptic longitude."""
-    T = julian_centuries(util.anytim(t))
+    T = util.julian_centuries(t)
     result = 279.696680 + 36000.76892 * T + 0.0003025 * T ** 2
     result = result % 360.0
     return result
 
 def longitude_Sun_perigee(t=None):
     """Insert text here"""
-    T = julian_centuries(util.anytim(t))
+    T = util.julian_centuries(t)
     return 1
 	
 def mean_anomaly(t=None):
     """Returns the mean anomaly (the angle through which the Sun has moved
     assuming a circular orbit) as a function of time."""
-    T = julian_centuries(util.anytim(t))
+    T = util.julian_centuries(t)
     result = 358.475830 + 35999.049750 * T - 0.0001500 * T ** 2 - 0.00000330 * T ** 3
     result = result % 360.0
     return result
 
 def carrington_rotation_number(t=None):
     """Return the Carrington Rotation number"""
-    jd = julian_day(util.anytim(t))
+    jd = julian_day(t)
     result = (1. / 27.2753) * (jd - 2398167.0) + 1.0
     return result
 
 def geometric_mean_longitude(t=None):
     """Returns the geometric mean longitude (in degrees)"""   
-    T = julian_centuries(util.anytim(t))
+    T = util.julian_centuries(t)
     result = 279.696680 + 36000.76892 * T + 0.0003025 * T ** 2
     result = result % 360.0
     return result
   
 def equation_of_center(t=None):
     """Returns the Sun's equation of center (in degrees)"""
-    T = julian_centuries(util.anytim(t))
-    mna = mean_anomaly(util.anytim(t)) 
+    T = util.julian_centuries(t)
+    mna = mean_anomaly(t) 
     result = ((1.9194600 - 0.0047890 * T - 0.0000140 * T
     ** 2) * np.sin(np.radians(mna) + (0.0200940 - 0.0001000 * T) *
     np.sin(np.radians(2 * mna)) + 0.0002930 * np.sin(np.radians(3 * mna))))
@@ -87,8 +91,7 @@ def geometric_longitude(t=None):
     """Returns the Sun's true geometric longitude (in degrees) 
     (Refered to the mean equinox of date.  Question: Should the higher
     accuracy terms from which app_long is derived be added to true_long?)"""
-    t = util.anytim(t)
-    result = (equation_of_center(util.anytim(t) + mean_anomaly(t))) % 360.0
+    result = (equation_of_center(util.anytitomaly(t))) % 360.0
     return result
 
 def true_anomaly(t=None):
@@ -105,7 +108,7 @@ def sunearth_distance(t=None):
 
 def apparent_longitude(t=None):
     """Returns the apparent longitude of the Sun."""
-    T = julian_centuries(t)
+    T = util.julian_centuries(t)
     omega = 259.18 - 1934.142*T
     true_long = geometric_longitude(t)        
     result = true_long - 0.00569 - 0.00479*math.sin(np.radian(omega))
@@ -118,7 +121,7 @@ def apparent_latitude(t=None):
     return 0
 
 def true_obliquity_of_ecliptic(t=None):
-    T = julian_centuries(util.anytim(t))
+    T = util.julian_centuries(t)
     result = 23.452294 - 0.0130125 * T - 0.00000164 * T ** 2 + 0.000000503 * t ** 3
     return result
 
@@ -150,7 +153,7 @@ def apparent_declination(t=None):
 def solar_north(t=None):
     """Returns the position of the Solar north pole in degrees."""
     jd = julian_day(t)
-    T = julian_centuries(t)
+    T = util.julian_centuries(t)
 
     theta = (jd - 2398220)*360/25.38
     # in degrees
@@ -167,7 +170,7 @@ def solar_north(t=None):
 def heliographic_solar_center(t=None):
     """Returns the position of the solar center in heliographic coordinates."""
     jd = julian_day(t)
-    T = julian_centuries(t)
+    T = util.julian_centuries(t)
     # Heliographic coordinates in degrees
     theta = (jd - 2398220)*360/25.38
     i = 7.25
