@@ -7,6 +7,7 @@ __email__ = "keith.hughitt@nasa.gov"
 from sunpy.map.BaseMap import BaseMap
 from datetime import datetime
 from sunpy.cm import cm
+import sunpy.util.util as util
 
 class AIAMap(BaseMap):
     """AIA Image Map definition"""
@@ -16,12 +17,10 @@ class AIAMap(BaseMap):
     @classmethod
     def get_properties(cls, header):
         """Returns the default and normalized values to use for the Map"""
-        # Note: Trailing "Z" in date was dropped on 2010/12/07
-        date_format = "%Y-%m-%dT%H:%M:%S.%f"
-        
+        # Note: Trailing "Z" in date was dropped on 2010/12/07        
         properties = BaseMap.get_properties()
         properties.update({
-            'date': datetime.strptime(header['date-obs'][0:22], date_format),
+            'date': util.anytim(header['date-obs'][0:22]),
             'det': "AIA",
             'inst': "AIA",
             'meas': header['wavelnth'],
@@ -30,7 +29,6 @@ class AIAMap(BaseMap):
             'r_sun': header['rsun_obs'],
             'cmap': cm.get_cmap(name = 'sdoaia' + str(header['wavelnth']))
         })
-        print(header['date-obs'][0:22])
         return properties
         
     @classmethod
@@ -46,15 +44,13 @@ class HMIMap(BaseMap):
     @classmethod
     def get_properties(cls, header):
         """Returns the default and normalized values to use for the Map"""
-        # Note: Trailing "Z" in date was dropped on 2010/12/07
-        date_format = "%Y-%m-%dT%H:%M:%S.%f"
-    
+        # Note: Trailing "Z" in date was dropped on 2010/12/07    
         meas = header['content'].split(" ")[0].lower()
         
         properties = BaseMap.get_properties()
         properties.update({
             "norm": None,
-            "date": datetime.strptime(header['date-obs'][0:22], date_format),
+            "date": util.anytim(header['date-obs'][0:22]),
             "det": "HMI",
             "inst": "HMI",
             "meas": meas,
