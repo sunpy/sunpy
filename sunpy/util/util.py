@@ -12,41 +12,45 @@
 
 """
 
-import datetime
+from datetime import datetime
 import numpy as np
 
-def anytim(time_string = None):
+def anytim(time_string=None):
     """Given a time string will parse and return a datetime object.
     If no string is given then returns the datetime object for the current time.
-    (Right now this function does nothing but return the current datetime object).
+    If a datetime object is passed in by mistake then it returns it without an error.
     """
     if time_string is None:
-        time = datetime.datetime.now()
-    if type(time_string) is type(datetime.datetime.now()):
+        time = datetime.now()
+    if type(time_string) is type(datetime.now()):
         time = time_string
-    else:
-        # Expects the following input
-        # 2011/04/04 00:00:00
-        # TODO: add code to parse more time string!
-        year = int(time_string[0:4])
-        month = int(time_string[5:7])
-        day = int(time_string[8:10])
-        if len(time_string) >= 11:
-            hour = int(time_string[11:13])
-            minute = int(time_string[14:16])
-        else:
-            hour = minute = 0
-        if len(time_string) >= 20:
-            second = int(time_string[17:19])
-        else:
-            second = 0
-        if len(time_string) == 23:
-            millisecond = int(time_string[20:24])
-            microsecond = 1000*millisecond
-        else:
-            microsecond = millisecond = 0
-        time = datetime.datetime(year,month,day,hour,minute,second,microsecond)
-    return time
+    else:        
+        try: # Example 2007-05-04T21:08:12.1000000
+            return datetime.strptime(time_string, "%Y-%m-%dT%H:%M:%S.%f")
+        except:
+            pass
+    
+        try: # Example 2007/05/04 21:08:12
+            return datetime.strptime(time_string, "%Y/%m/%d %H:%M:%S")
+        except:
+            pass
+    
+        try: # Example 2007/05/04 21:08:12.1000000
+            return datetime.strptime(time_string, "%Y-%m-%d %H:%M:%S.%f")
+        except:
+            pass
+    
+        try: # Example 2007-05-04 21:08:12
+            return datetime.strptime(time_string, "%Y-%m-%d %H:%M:%S")
+        except:
+            pass
+    
+        try: # Example 2007-May-04 21:08:12
+            return datetime.strptime(time_string, "%Y-%b-%d %H:%M:%S")
+        except:
+            pass
+    
+        raise ValueError("Not a valid time string!")
 
 def julian_day(t=None):
     """Returns the (fractional) Julian day."""
@@ -71,7 +75,7 @@ def day_of_year(t=None):
     SECONDS_IN_DAY = 60*60*24.0
     time = anytim(t)
     year = time.year
-    time_diff = anytim(t) - datetime.datetime(time.year, 1, 1, 0, 0, 0)
+    time_diff = anytim(t) - datetime(time.year, 1, 1, 0, 0, 0)
     result = time_diff.days + time_diff.seconds/SECONDS_IN_DAY
     return result
 
@@ -94,3 +98,8 @@ def degrees_to_arc(angle):
     remainder =  remainder*60 - arcminute
     arcsecond = remainder * 60.0
     return [degree, arcminute, arcsecond]
+
+def anytim2(time_string):
+
+    
+    return 1
