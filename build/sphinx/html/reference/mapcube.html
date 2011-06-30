@@ -1,0 +1,225 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>MapCube &mdash; SunPy v0.01 documentation</title>
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.01',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="top" title="SunPy v0.01 documentation" href="../index.html" />
+    <link rel="up" title="SunPy Reference" href="index.html" />
+    <link rel="next" title="Sun" href="sun.html" />
+    <link rel="prev" title="Map" href="map.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="sun.html" title="Sun"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="map.html" title="Map"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">SunPy v0.01 documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">SunPy Reference</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="mapcube">
+<h1>MapCube<a class="headerlink" href="#mapcube" title="Permalink to this headline">¶</a></h1>
+<p>MapCubes are similar to Map object except that they contain multiple 2d data
+arrays, referred to as &#8216;slices.&#8217;</p>
+<span class="target" id="module-sunpy.map.MapCube"></span><p>A Python MapCube Object</p>
+<dl class="class">
+<dt id="sunpy.map.MapCube.MapCube">
+<em class="property">class </em><tt class="descclassname">sunpy.map.MapCube.</tt><tt class="descname">MapCube</tt><big>(</big><em>input</em><big>)</big><a class="reference internal" href="../_modules/sunpy/map/MapCube.html#MapCube"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sunpy.map.MapCube.MapCube" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt></p>
+<p>A spatially-aware data array based on the SolarSoft Map object.
+Reads in the files at the specified location, stores their headers, and
+creates a 3d array from their contents.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>input_</strong> : directory, data array</p>
+<blockquote>
+<div><p>The data source used to create the map object. This can be either a
+filepath to a directory containing the images you wish to include, a 2d 
+list, or an ndarray.</p>
+</div></blockquote>
+<p><strong>coalign</strong> : [ None | &#8216;diff&#8217; ]</p>
+<blockquote>
+<div><p>Method to use for coalignment. If None, no coalignment will be done.</p>
+</div></blockquote>
+<p><strong>derotate</strong> : bool</p>
+<blockquote class="last">
+<div><p>Whether the data should be derotated</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">mapcube</span> <span class="o">=</span> <span class="n">sunpy</span><span class="o">.</span><span class="n">MapCube</span><span class="p">(</span><span class="s">&#39;images/&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mapcube</span><span class="o">.</span><span class="n">slices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s">&#39;crpix1&#39;</span><span class="p">]</span>
+<span class="go">2050.6599120000001</span>
+</pre></div>
+</div>
+<p class="rubric">Attributes</p>
+<p class="rubric">Methods</p>
+<dl class="classmethod">
+<dt id="sunpy.map.MapCube.MapCube.parse_header">
+<em class="property">classmethod </em><tt class="descname">parse_header</tt><big>(</big><em>header</em><big>)</big><a class="reference internal" href="../_modules/sunpy/map/MapCube.html#MapCube.parse_header"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sunpy.map.MapCube.MapCube.parse_header" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a MapSlice instance corresponding to an image header.</p>
+<p>Attempts to construct a <cite>MapSlice</cite> instance using the header information
+provided. <cite>MapSlice</cite> instances (e.g. <cite>AIAMapSlice</cite>) are basically just
+empty (data-less) Map objects. This provides a way to keep track of
+the meta-information for each of the images that were used to build
+the MapCube separately from the data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>header</strong> : dict</p>
+<blockquote class="last">
+<div><p>The image header for which a <cite>MapSlice</cite> should be built</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="sunpy.map.MapCube.MapCube.plot">
+<tt class="descname">plot</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/sunpy/map/MapCube.html#MapCube.plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sunpy.map.MapCube.MapCube.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>A basic plot method (not yet implemented)</p>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-sunpy.map.CompositeMap"></span><p>A Composite Map class</p>
+<p>Author: <cite>Keith Hughitt &lt;keith.hughitt&#64;nasa.gov&gt;</cite></p>
+<dl class="class">
+<dt id="sunpy.map.CompositeMap.CompositeMap">
+<em class="property">class </em><tt class="descclassname">sunpy.map.CompositeMap.</tt><tt class="descname">CompositeMap</tt><big>(</big><em>input_</em>, <em>coalign='diff'</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../_modules/sunpy/map/CompositeMap.html#CompositeMap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sunpy.map.CompositeMap.CompositeMap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#sunpy.map.MapCube.MapCube" title="sunpy.map.MapCube.MapCube"><tt class="xref py py-class docutils literal"><span class="pre">sunpy.map.MapCube.MapCube</span></tt></a></p>
+<p>A subclass of MapCube for dealing with composite or stacked map data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters :</th><td class="field-body"><strong>coalign</strong> : [ None | &#8216;diff&#8217; ]</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Methods</p>
+<dl class="method">
+<dt id="sunpy.map.CompositeMap.CompositeMap.plot">
+<tt class="descname">plot</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/sunpy/map/CompositeMap.html#CompositeMap.plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sunpy.map.CompositeMap.CompositeMap.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>TODO: implement plot method for composite maps</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/sunpy_logo_135x135.png" alt="Logo"/>
+            </a></p>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="map.html"
+                        title="previous chapter">Map</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="sun.html"
+                        title="next chapter">Sun</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/reference/mapcube.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="sun.html" title="Sun"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="map.html" title="Map"
+             >previous</a> |</li>
+        <li><a href="../index.html">SunPy v0.01 documentation</a> &raquo;</li>
+          <li><a href="index.html" >SunPy Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, SunPy Community.
+      Last updated on May 14, 2011.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>
