@@ -1,0 +1,242 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Installation &mdash; SunPy v0.01 documentation</title>
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.01',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="top" title="SunPy v0.01 documentation" href="../index.html" />
+    <link rel="up" title="SunPy User Guide" href="index.html" />
+    <link rel="next" title="A Quick Tutorial" href="tutorial.html" />
+    <link rel="prev" title="SunPy User Guide" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="tutorial.html" title="A Quick Tutorial"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="SunPy User Guide"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">SunPy v0.01 documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">SunPy User Guide</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="pre-requisites">
+<h2>Pre-requisites<a class="headerlink" href="#pre-requisites" title="Permalink to this headline">¶</a></h2>
+<p>SunPy stands on the shoulders of giants:</p>
+<ul class="simple">
+<li><a class="reference external" href="http://numpy.scipy.org/">NumPy</a></li>
+<li><a class="reference external" href="http://matplotlib.sourceforge.net/">Matplotlib</a></li>
+<li><a class="reference external" href="http://www.stsci.edu/resources/software_hardware/pyfits">PyFITS</a></li>
+</ul>
+</div>
+<div class="section" id="linux">
+<h2>Linux<a class="headerlink" href="#linux" title="Permalink to this headline">¶</a></h2>
+<p>Installation instructions for Linux.</p>
+<div class="section" id="ubuntu">
+<h3>Ubuntu<a class="headerlink" href="#ubuntu" title="Permalink to this headline">¶</a></h3>
+<p>To begin, install the pre-requisites for SunPy using <strong class="command">apt-get</strong>:</p>
+<div class="highlight-python"><pre>sudo apt-get install python-numpy python-matplotlib python-pyfits python-scipy bzr ipython</pre>
+</div>
+<p>The <tt class="docutils literal"><span class="pre">ipython</span></tt> package in the above list installs the <a class="reference external" href="http://ipython.scipy.org/moin/">IPython enhanced console</a> and is optional but recommended.</p>
+<p>Next, use Bazaar to download a copy of the latest version of SunPy:</p>
+<div class="highlight-python"><pre>bzr branch lp:sunpy</pre>
+</div>
+<p>Done! To see if everything went okay, start a Python session and try importing
+SunPy:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">sunpy</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sunpy</span><span class="o">.</span><span class="n">Map</span><span class="p">(</span><span class="s">&#39;sunpy/dev/sample-data/AIA20110319_105400_0171.fits&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="mac">
+<h2>Mac<a class="headerlink" href="#mac" title="Permalink to this headline">¶</a></h2>
+<p>Installation instructions for Mac.</p>
+</div>
+<div class="section" id="windows">
+<h2>Windows<a class="headerlink" href="#windows" title="Permalink to this headline">¶</a></h2>
+<p>Installation instructions for Windows.</p>
+<p><strong>1. Install Python</strong></p>
+<p>To begin, grab the latest version of the Python 2.x for Windows from the
+<a class="reference external" href="http://www.python.org/getit/">Python downloads page</a>.  Run the installer
+and follow the instructions on screen.</p>
+<p>Next, in order to enable Python to find libraries installed on your computer
+you need to update the <tt class="docutils literal"><span class="pre">PATH</span></tt> environmental variable on your machine:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li>Click <tt class="docutils literal"><span class="pre">Start</span></tt>-&gt; <tt class="docutils literal"><span class="pre">Control</span> <span class="pre">Panel</span></tt> -&gt; <tt class="docutils literal"><span class="pre">System</span></tt> -&gt; <tt class="docutils literal"><span class="pre">Advanced</span> <span class="pre">system</span> <span class="pre">settings</span></tt> -&gt; <tt class="docutils literal"><span class="pre">Environment</span> <span class="pre">variables</span></tt></li>
+<li>Find the <tt class="docutils literal"><span class="pre">PATH</span></tt> environmental variable under either user or system variables and the filepath to your Python installation (e.g. &#8220;C:Python27&#8221;).</li>
+</ol>
+</div></blockquote>
+<p><strong>2. Install SciPy, NumPy, Matplotlib, and IPython</strong></p>
+<p>Next we will install <a class="reference external" href="http://numpy.scipy.org/">NumPy</a>, <a class="reference external" href="http://www.scipy.org/">SciPy</a>, <a class="reference external" href="http://matplotlib.sourceforge.net/">Matplotlib</a>,
+and <a class="reference external" href="http://ipython.scipy.org/moin/">IPython</a>. Install each package by running
+the corresponding downloaded executable.  They should  automatically find the
+location of the Python installation.</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li>To begin, download and install the latest <a class="reference external" href="http://sourceforge.net/projects/numpy/files/NumPy/1.6.0b2/numpy-1.6.0b2-win32-superpack-python2.7.exe/download">NumPy Windows binary</a>.</li>
+<li>Next, download and install the latest version of the <a class="reference external" href="http://sourceforge.net/projects/scipy/files/scipy/0.9.0/scipy-0.9.0-win32-superpack-python2.7.exe/download">SciPy Windows binary</a></li>
+<li>Download and install the latest version of <a class="reference external" href="http://sourceforge.net/projects/matplotlib/files/matplotlib/matplotlib-1.0.1/matplotlib-1.0.1.win32-py2.7.exe/download">Matplotlib for Windows</a>.</li>
+<li>Finally, as an option (but recommended step), download and install <a class="reference external" href="http://ipython.scipy.org/dist/0.10.1/ipython-0.10.1.win32-setup.exe">IPython for Windows</a>.</li>
+</ol>
+</div></blockquote>
+<p><strong>3. Install PyFITS</strong></p>
+<p>Finally, SunPy uses the PyFITS library to read
+<a class="reference external" href="http://en.wikipedia.org/wiki/FITS">FITS</a> files. PyFITS does
+not offer a Windows binrary, so we will need to install it some other way.
+Fortunately, there is a great tool for Python called <tt class="docutils literal"><span class="pre">easy_install</span></tt> which
+makes installing many libraries very trivial. EasyInstall is part of the
+Setuptools package.</p>
+<p>To install <a class="reference external" href="http://pypi.python.org/pypi/setuptools">Setuptools</a>, simply download and run the <a class="reference external" href="http://pypi.python.org/packages/2.7/s/setuptools/setuptools-0.6c11.win32-py2.7.exe">latest
+windows installer</a>.</p>
+<p>To install PyFITS, open a console and call <tt class="docutils literal"><span class="pre">easy_install.exe</span> <span class="pre">pyfits</span></tt> from
+inside the <tt class="docutils literal"><span class="pre">scripts</span></tt> directory of your Python installation:</p>
+<div class="highlight-python"><pre>cd C:\Python27\Scripts
+easy_install.exe pyfits</pre>
+</div>
+<p><strong>4. Install Bazaar</strong></p>
+<p>Once you have Python 2.7 installed, download and run the <a class="reference external" href="http://wiki.bazaar.canonical.com/WindowsDownloads">Bazaar Python 2.7
+Windows Installer</a>. We are
+now ready to grab the latest version of SunPy.</p>
+<p>To begin open a Bazaar command-prompt (<tt class="docutils literal"><span class="pre">Start</span></tt> -&gt; <tt class="docutils literal"><span class="pre">Bazaar</span></tt> -&gt; <tt class="docutils literal"><span class="pre">Bazaar</span>
+<span class="pre">command-prompt</span></tt>) and run:</p>
+<div class="highlight-python"><pre>bzr branch lp:sunpy</pre>
+</div>
+<p>This will download the latest version of SunPy. You then need to copy the
+folder sunpy (from inside the root sunpy directory) to <tt class="docutils literal"><span class="pre">C:\Python27\Lib</span></tt> so
+that Python can find it.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">By default, the bzr command will only execute if you are in
+<tt class="docutils literal"><span class="pre">C:\Python27\Scripts</span></tt> so any libraries or code you wish you be able to call
+globally should be placed in here.</p>
+</div>
+<p>To test it all out, open a new Python shell and try typing:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">sunpy</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sunpy</span><span class="o">.</span><span class="n">Map</span><span class="p">(</span><span class="s">&#39;doc/sample-data/AIA20110319_105400_0171.fits&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/sunpy_logo_135x135.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Installation</a><ul>
+<li><a class="reference internal" href="#pre-requisites">Pre-requisites</a></li>
+<li><a class="reference internal" href="#linux">Linux</a><ul>
+<li><a class="reference internal" href="#ubuntu">Ubuntu</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#mac">Mac</a></li>
+<li><a class="reference internal" href="#windows">Windows</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">SunPy User Guide</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="tutorial.html"
+                        title="next chapter">A Quick Tutorial</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/guide/installation.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="tutorial.html" title="A Quick Tutorial"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="SunPy User Guide"
+             >previous</a> |</li>
+        <li><a href="../index.html">SunPy v0.01 documentation</a> &raquo;</li>
+          <li><a href="index.html" >SunPy User Guide</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, SunPy Community.
+      Last updated on May 14, 2011.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>
