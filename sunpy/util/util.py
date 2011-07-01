@@ -21,34 +21,21 @@ def anytim(time_string=None):
     If a datetime object is passed in by mistake then it returns it without an error.
     """
     if time_string is None:
-        time = datetime.now()
+        return datetime.now()
     if type(time_string) is type(datetime.now()):
-        time = time_string
-    else:        
-        try: # Example 2007-05-04T21:08:12.1000000
-            return datetime.strptime(time_string, "%Y-%m-%dT%H:%M:%S.%f")
-        except:
-            pass
-    
-        try: # Example 2007/05/04 21:08:12
-            return datetime.strptime(time_string, "%Y/%m/%d %H:%M:%S")
-        except:
-            pass
-    
-        try: # Example 2007/05/04 21:08:12.1000000
-            return datetime.strptime(time_string, "%Y-%m-%d %H:%M:%S.%f")
-        except:
-            pass
-    
-        try: # Example 2007-05-04 21:08:12
-            return datetime.strptime(time_string, "%Y-%m-%d %H:%M:%S")
-        except:
-            pass
-    
-        try: # Example 2007-May-04 21:08:12
-            return datetime.strptime(time_string, "%Y-%b-%d %H:%M:%S")
-        except:
-            pass
+        return time_string
+    else:
+        time_format_list = \
+            ["%Y-%m-%dT%H:%M:%S.%f",    # Example 2007-05-04T21:08:12.1000000
+             "%Y/%m/%d %H:%M:%S",       # Example 2007/05/04 21:08:12
+             "%Y-%m-%d %H:%M:%S.%f",    # Example 2007/05/04 21:08:12.1000000
+             "%Y-%m-%d %H:%M:%S",       # Example 2007-05-04 21:08:12
+             "%Y-%b-%d %H:%M:%S"]       # Example 2007-May-04 21:08:12 
+        for time_format in time_format_list: 
+            try: 
+                return datetime.strptime(time_string, time_format)
+            except:
+                pass
     
         raise ValueError("Not a valid time string!")
 
@@ -98,8 +85,3 @@ def degrees_to_arc(angle):
     remainder =  remainder*60 - arcminute
     arcsecond = remainder * 60.0
     return [degree, arcminute, arcsecond]
-
-def anytim2(time_string):
-
-    
-    return 1
