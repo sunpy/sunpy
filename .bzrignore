@@ -8,3 +8,5 @@ sunpy.egg-info
 setup.py
 paver-minilib.zip
 docs
+build
+paver-minilib.zip
