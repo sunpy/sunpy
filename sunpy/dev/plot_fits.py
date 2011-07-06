@@ -15,7 +15,8 @@ import matplotlib.cm as cm
 import matplotlib.colors as colors
 from matplotlib.patches import Circle
 
-from sunpy.util.util import util
+#from sunpy.util.util import util
+from sunpy.util import util
 #from sunpy import Sun
 import numpy as np
 
@@ -40,8 +41,12 @@ def plot_rhessi_fits(filepath=None):
     header.keys()
 
     # Get useful header information
-    date_obs  = header.get('date_obs')
-    fitsDatetime = datetime.datetime.strptime(date_obs, "%Y-%m-%dT%H:%M:%S.%f")
+    date_obs_str  = header.get('date_obs')
+    image_start = datetime.datetime.strptime(date_obs, "%Y-%m-%dT%H:%M:%S.%f")
+    date_end_str = header.get('date_end')
+    image_end = datetime.datetime.strptime(date_obs_str, "%Y-%m-%dT%H:%M:%S.%f")
+    image_integration_time = image_end - image_start
+
     instr = header.get('instrume')
     # Energy range is only for the 'last' image. Missing the 4-10 keV and 10-15 keV
     energy_range  = [header.get('energy_l'), header.get('energy_h')] 
