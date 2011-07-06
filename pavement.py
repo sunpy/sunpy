@@ -61,7 +61,7 @@ setup(
 )
 
 @task
-@needs('prepare_docs', 'generate_setup', 'setuptools.command.sdist')
+@needs('prepare_docs', 'generate_setup', 'minilib', 'setuptools.command.sdist')
 def sdist():
     """Overrides sdist to make sure that our setup.py is generated."""
     shutil.rmtree('doc/html')
@@ -119,4 +119,4 @@ def clean():
     for dir_ in ['doc/html', 'dist', 'sunpy.egg-info']:
         if os.path.exists(dir_):
             shutil.rmtree(dir_)
-
+    os.remove('paver-minilib.zip')
