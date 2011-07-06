@@ -14,10 +14,79 @@ import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import matplotlib.colors as colors
 from matplotlib.patches import Circle
+
+#from sunpy.util.util import util
+from sunpy.util import util
 #from sunpy import Sun
 import numpy as np
 
 AIA_SAMPLE_IMAGE = 'doc/sample-data/AIA20110319_105400_0171.fits'
+RHESSI_SAMPLE_IMAGE = 'doc/sample-data/hsi_image_20110110_072142_072342_1__4_10_10_15_15_30keV_clean.fits'
+
+def plot_rhessi_fits(filepath=None):
+    '''Plots an AIA image.'''
+
+    if filepath is None:
+        filepath = os.path.join(os.path.dirname(__file__), RHESSI_SAMPLE_IMAGE)
+
+    # Load fits file
+    fits = pyfits.open(filepath)
+    # Looks like there is only one header though there are 2 images in this file.
+    header = fits[0].header
+    data = fits[0].data
+    # this shows how many images are in the fits file
+    len(data)
+
+    # show all of the header keys
+    header.keys()
+
+    # Get useful header information
+    date_obs_str  = header.get('date_obs')
+    image_start = datetime.datetime.strptime(date_obs, "%Y-%m-%dT%H:%M:%S.%f")
+    date_end_str = header.get('date_end')
+    image_end = datetime.datetime.strptime(date_obs_str, "%Y-%m-%dT%H:%M:%S.%f")
+    image_integration_time = image_end - image_start
+
+    instr = header.get('instrume')
+    # Energy range is only for the 'last' image. Missing the 4-10 keV and 10-15 keV
+    energy_range  = [header.get('energy_l'), header.get('energy_h')] 
+    
+    
+    centerX = header['crpix1']
+    centerY = header['crpix1']
+    scaleX = header['cdelt1']
+    scaleY = header['cdelt2']
+    
+    # Create a figure and add title and axes
+    fig = plt.figure()
+    
+    ax = fig.add_subplot(111)
+    ax.set_title(instr + ' ' + str(wavelength) + '$\AA$' + ' ' + date)
+    ax.set_xlabel('X-postion (arcseconds)')
+    ax.set_ylabel('Y-postion (arcseconds)')
+    
+    # Draw circle at solar limb
+    #circ = Circle([0, 0], radius=Sun.radius(fitsDatetime), fill=False, color='white')
+    #ax.add_artist(circ)
+        
+    # Determine extent
+    xmin = -(centerX - 1) * scaleX
+    xmax =  (centerX - 1) * scaleX
+    ymin = -(centerY - 1) * scaleY
+    ymax =  (centerY - 1) * scaleY
+    
+    extent = [xmin, xmax, ymin, ymax]
+    
+    color_map = aia_color_table(wavelength)
+    
+    # Draw image
+    #imgplot = plt.imshow(data, cmap=cm.Greys_r, origin='lower', extent=extent)
+    imgplot = plt.imshow(data, cmap=color_map, origin='lower', extent=extent)
+
+    plt.colorbar()
+    
+    # Show figure
+    plt.show()
 
 def plot_fits(filepath=None):
     '''Plots an AIA image.'''
