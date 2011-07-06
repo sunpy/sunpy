@@ -7,7 +7,7 @@ __email__ = "keith.hughitt@nasa.gov"
 from sunpy.map.BaseMap import BaseMap
 from datetime import datetime
 from sunpy.cm import cm
-import sunpy.util.util as util
+from sunpy.util import util as util
 
 class AIAMap(BaseMap):
     """AIA Image Map definition"""
