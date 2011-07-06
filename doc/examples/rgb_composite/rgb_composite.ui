@@ -107,7 +107,11 @@
         </widget>
        </item>
        <item>
-        <widget class="QDateTimeEdit" name="dateTimeEdit"/>
+        <widget class="QDateTimeEdit" name="dateTimeEdit">
+         <property name="calendarPopup">
+          <bool>true</bool>
+         </property>
+        </widget>
        </item>
        <item>
         <spacer name="horizontalSpacer">
