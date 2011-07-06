@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'rgb_composite.ui'
 #
-# Created: Mon Jun 20 15:03:48 2011
+# Created: Fri Jun 24 10:42:15 2011
 #      by: PyQt4 UI code generator 4.8.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -58,6 +58,7 @@ class Ui_RGBComposite(object):
         self.label.setObjectName(_fromUtf8("label"))
         self.dateForm.addWidget(self.label)
         self.dateTimeEdit = QtGui.QDateTimeEdit(self.verticalLayoutWidget)
+        self.dateTimeEdit.setCalendarPopup(True)
         self.dateTimeEdit.setObjectName(_fromUtf8("dateTimeEdit"))
         self.dateForm.addWidget(self.dateTimeEdit)
         spacerItem2 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
