@@ -14,9 +14,7 @@ import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import matplotlib.colors as colors
 from matplotlib.patches import Circle
-
-#from sunpy.util.util import util
-from sunpy.util import util
+from sunpy.util import util as util
 #from sunpy import Sun
 import numpy as np
 
