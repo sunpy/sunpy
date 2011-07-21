@@ -30,7 +30,9 @@ def anytim(time_string=None):
              "%Y/%m/%d %H:%M:%S",       # Example 2007/05/04 21:08:12
              "%Y-%m-%d %H:%M:%S.%f",    # Example 2007/05/04 21:08:12.1000000
              "%Y-%m-%d %H:%M:%S",       # Example 2007-05-04 21:08:12
-             "%Y-%b-%d %H:%M:%S"]       # Example 2007-May-04 21:08:12 
+             "%Y-%m-%d %H:%M",          # Example 2007-05-04 21:08
+             "%Y-%b-%d %H:%M:%S"]       # Example 2007-May-04 21:08:12
+             
         for time_format in time_format_list: 
             try: 
                 return datetime.strptime(time_string, time_format)
@@ -41,11 +43,21 @@ def anytim(time_string=None):
 
 def julian_day(t=None):
     """Returns the (fractional) Julian day."""
+    """from http://www.tondering.dk/claus/cal/node3.html#sec-calcjd"""
+    """Note that in Python 3 the datetime object has a julian day method."""
+    """datetime.JulianDay()"""
+    time = anytim(t)
+    a = (14 - time.month)/12
+    y = time.year + 4800 - a
+    m = time.month + 12 * a - 3
+    fraction_of_day = (time.hour * 60 * 60 + time.minute * 60 + time.second)/(24.0*60*60) - 0.5
+    result = time.day + (153 * m + 2) / 5 + 365 * y + y/4 - y/100 + y/400 - 32045 + fraction_of_day
     # The number of days between Jan 1 1900 and the Julian
     # reference date of 12:00 noon Jan 1, 4713 BC
-    JULIAN_DAY_ON_NOON01JAN1900 = 2415020.5
-    days = day_of_year(t)
-    result = days + JULIAN_DAY_ON_NOON01JAN1900
+    #JULIAN_DAY_ON_NOON01JAN1900 = 2415020.5
+    #days = day_of_year(t)
+    #tdiff = anytim(t) - datetime(1900,1,1,12,0,0)
+    #result = days + JULIAN_DAY_ON_NOON01JAN1900 + tdiff.days
     return result
 
 def julian_centuries(t=None):

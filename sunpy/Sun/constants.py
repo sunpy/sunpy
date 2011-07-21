@@ -198,6 +198,8 @@ def print_all(key = None):
 # spectral class is not included in physical constants since it is not a number
 spectral_classification = 'G2V'
 
+# The following variables from _constants are brough out by making them accessible 
+# through a call such as Sun.volume
 equatorial_radius = radius = value('radius')
 equatorial_diameter = value('diameter')
 volume = value('volume')
