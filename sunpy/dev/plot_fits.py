@@ -15,7 +15,6 @@ import matplotlib.cm as cm
 import matplotlib.colors as colors
 from matplotlib.patches import Circle
 from sunpy.util import util as util
-#from sunpy import Sun
 import numpy as np
 
 AIA_SAMPLE_IMAGE = 'doc/sample-data/AIA20110319_105400_0171.fits'
@@ -64,7 +63,7 @@ def plot_rhessi_fits(filepath=None):
     ax.set_ylabel('Y-postion (arcseconds)')
     
     # Draw circle at solar limb
-    #circ = Circle([0, 0], radius=Sun.radius(fitsDatetime), fill=False, color='white')
+    #circ = Circle([0, 0], radius=sun.radius(fitsDatetime), fill=False, color='white')
     #ax.add_artist(circ)
         
     # Determine extent
@@ -122,7 +121,7 @@ def plot_fits(filepath=None):
     ax.set_ylabel('Y-postion (arcseconds)')
     
     # Draw circle at solar limb
-    #circ = Circle([0, 0], radius=Sun.radius(fitsDatetime), fill=False, color='white')
+    #circ = Circle([0, 0], radius=sun.radius(fitsDatetime), fill=False, color='white')
     #ax.add_artist(circ)
         
     # Determine extent
