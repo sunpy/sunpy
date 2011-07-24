@@ -11,15 +11,15 @@ which deals with a specific type of data, e.g. :class:`AIAMap` or
 """
 #pylint: disable=W0401
 
-__all__ = ["sources", "Map", "MapCube"]
+__all__ = ["sources", "map", "mapcube"]
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
 import sys
 import pyfits
 from sunpy.map.sources import *
-from sunpy.map.BaseMap import BaseMap
-from sunpy.map.BaseMap import UnrecognizedDataSouceError
+from sunpy.map.basemap import BaseMap
+from sunpy.map.basemap import UnrecognizedDataSouceError
 
 #pylint: disable=C0103,E1101
 def Map(input_):
