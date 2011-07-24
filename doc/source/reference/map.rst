@@ -9,6 +9,6 @@ Creating Map Objects
    
 BaseMap Class
 ^^^^^^^^^^^^^
-.. automodule:: sunpy.map.BaseMap
+.. automodule:: sunpy.map.basemap
    :members:
    :show-inheritance:
