@@ -10,7 +10,7 @@ import matplotlib.patches as patches
 import matplotlib.colors as colors
 import matplotlib.cm as cm
 from datetime import datetime
-from sunpy.Sun import Sun
+from sunpy.sun import Sun
 
 """
 Questions
