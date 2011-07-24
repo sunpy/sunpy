@@ -10,7 +10,7 @@ import matplotlib.patches as patches
 import matplotlib.colors as colors
 import matplotlib.cm as cm
 from datetime import datetime
-from sunpy.sun import Sun
+from sunpy.sun import sun
 
 """
 Questions
@@ -180,7 +180,7 @@ class BaseMap(np.ndarray):
         
         # Draw circle at solar limb
         if draw_limb:
-            circ = patches.Circle([0, 0], radius=Sun.radius(self.date), 
+            circ = patches.Circle([0, 0], radius=sun.radius(self.date), 
                 fill=False, color='white')
             axes.add_artist(circ)
 
