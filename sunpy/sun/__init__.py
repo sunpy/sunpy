@@ -1,1 +1,1 @@
-__all__ = ['Sun', 'constants']
+__all__ = ['sun', 'constants']
