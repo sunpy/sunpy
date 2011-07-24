@@ -3,4 +3,5 @@ recursive-include doc/html *
 recursive-include sunpy *.py
 include *.txt
 include setup.py
+include paver-minilib.zip
 include pavement.py
