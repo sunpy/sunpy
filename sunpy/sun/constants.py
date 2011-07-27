@@ -66,7 +66,7 @@ def value(key) :
 
     Examples
     --------
-    >>> from sunpy.Sun import constants
+    >>> from sunpy.sun import constants
     >>> constants.precision('mass')
         1.9884e30
 
@@ -94,7 +94,7 @@ def unit(key) :
 
     Examples
     --------
-    >>> from sunpy.Sun import constants
+    >>> from sunpy.sun import constants
     >>> constants.precision('mass')
     'kg'
 
@@ -122,7 +122,7 @@ def precision(key) :
 
     Examples
     --------
-    >>> from sunpy.Sun import constants
+    >>> from sunpy.sun import constants
     >>> constants.precision('mass')
     
 
@@ -198,6 +198,8 @@ def print_all(key = None):
 # spectral class is not included in physical constants since it is not a number
 spectral_classification = 'G2V'
 
+# The following variables from _constants are brough out by making them accessible 
+# through a call such as sun.volume
 equatorial_radius = radius = value('radius')
 equatorial_diameter = value('diameter')
 volume = value('volume')

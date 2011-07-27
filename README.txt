@@ -18,6 +18,8 @@ To find out more information about the project visit:
 
 REQUIREMENTS:
 
+    * Python (2.7+)
     * pyfits
     * numpy
     * matplotlib
+    * scipy
