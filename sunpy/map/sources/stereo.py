@@ -4,7 +4,7 @@
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
-from sunpy.map.BaseMap import BaseMap
+from sunpy.map.basemap import BaseMap
 from datetime import datetime
 
 class EUVIMap(BaseMap):

@@ -9,8 +9,8 @@ import os
 import pyfits
 import numpy as np
 from sunpy.map.sources import *
-from sunpy.map.BaseMap import BaseMap
-from sunpy.map.BaseMap import UnrecognizedDataSouceError
+from sunpy.map.basemap import BaseMap
+from sunpy.map.basemap import UnrecognizedDataSouceError
 
 #
 # 2011/04/13: Should Map be broken up into Map and MapHeader classes? This way
