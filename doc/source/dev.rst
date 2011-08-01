@@ -212,7 +212,7 @@ It may happen that two people have been working on the same section of code whic
 cause the merge command some problems. In such cases, the merge command will issue a conflict
 warning and will then expect you do the merge yourself. You can type: ::
 
-    bzr conflict
+    bzr conflicts
     
 to list the outstanding conflicts. For example it might say something like 
 "Text conflict in file.py". If you go into the directory with the conflicted file
@@ -220,7 +220,7 @@ you will see multiple versions of the file; file.py.THIS is your version of the 
 file.py.OTHER is the version you are attempting to merge in, and file.py.BASE is the last version
 which agreed. You can check the differences between the two files by using a utility such as: ::
 
-	diff file.py.THIS file.py.OTHER
+    diff file.py.THIS file.py.OTHER
 
 Though you might want to use a more graphical tool for this such as 
 `Meld <http://meld.sourceforge.net/install.html>`_. On Mac OS X, if you have installed XCode then you can use the terminal command opendiff which will open an application called FileMerge. Put your final code into file.py. Once you have
@@ -424,8 +424,8 @@ Example (:class:`sunpy.map.BaseMap`) ::
 
     Examples
     --------
-    >>> map = sunpy.Map('doc/sample-data/AIA20110319_105400_0171.fits')
-    >>> map.T
+    >>> aia = sunpy.Map('doc/sample-data/AIA20110319_105400_0171.fits')
+    >>> aia.T
     Map([[ 0.3125,  1.    , -1.1875, ..., -0.625 ,  0.5625,  0.5   ],
     [-0.0625,  0.1875,  0.375 , ...,  0.0625,  0.0625, -0.125 ],
     [-0.125 , -0.8125, -0.5   , ..., -0.3125,  0.5625,  0.4375],
@@ -433,12 +433,12 @@ Example (:class:`sunpy.map.BaseMap`) ::
     [ 0.625 ,  0.625 , -0.125 , ...,  0.125 , -0.0625,  0.6875],
     [-0.625 , -0.625 , -0.625 , ...,  0.125 , -0.0625,  0.6875],
     [ 0.    ,  0.    , -1.1875, ...,  0.125 ,  0.    ,  0.6875]])
-    >>> map.header['cunit1']
+    >>> aia.header['cunit1']
     'arcsec'
-    >>> map.plot()
+    >>> aia.plot()
     >>> import matplotlib.cm as cm
     >>> import matplotlib.colors as colors
-    >>> map.plot(cmap=cm.hot, norm=colors.Normalize(1, 2048))
+    >>> aia.plot(cmap=cm.hot, norm=colors.Normalize(1, 2048))
     
     See Also:
     ---------
