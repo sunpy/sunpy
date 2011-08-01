@@ -10,7 +10,11 @@ from sunpy.cm import cm
 from sunpy.util import util as util
 
 class AIAMap(BaseMap):
-    """AIA Image Map definition"""
+    """AIA Image Map definition
+    
+    For a description of AIA headers
+    http://jsoc.stanford.edu/doc/keywords/AIA/AIA02840_A_AIA-SDO_FITS_Keyword_Documents.pdf
+    """
     def __new__(cls, data, header):
         return BaseMap.__new__(cls, data)
 
