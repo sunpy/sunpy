@@ -32,7 +32,7 @@ CLASSIFIERS = [
     'Development Status :: 2 - Pre-Alpha',
     'Intended Audience :: Science/Research',
     'Intended Audience :: Developers',
-    'License :: OSI Approved :: GNU General Public License (GPL)',
+    'License :: OSI Approved :: BSD License',
     'Programming Language :: Python',
     'Programming Language :: Python :: 3',
     'Topic :: Software Development',
@@ -61,7 +61,7 @@ setup(
 )
 
 @task
-@needs('prepare_docs', 'generate_setup', 'setuptools.command.sdist')
+@needs('prepare_docs', 'generate_setup', 'minilib', 'setuptools.command.sdist')
 def sdist():
     """Overrides sdist to make sure that our setup.py is generated."""
     shutil.rmtree('doc/html')
@@ -119,4 +119,4 @@ def clean():
     for dir_ in ['doc/html', 'dist', 'sunpy.egg-info']:
         if os.path.exists(dir_):
             shutil.rmtree(dir_)
-
+    os.remove('paver-minilib.zip')
