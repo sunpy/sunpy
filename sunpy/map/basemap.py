@@ -59,8 +59,8 @@ class BaseMap(np.ndarray):
 
     Examples
     --------
-    >>> map = sunpy.Map('doc/sample-data/AIA20110319_105400_0171.fits')
-    >>> map.T
+    >>> aia = sunpy.Map('doc/sample-data/AIA20110319_105400_0171.fits')
+    >>> aia.T
     Map([[ 0.3125,  1.    , -1.1875, ..., -0.625 ,  0.5625,  0.5   ],
     [-0.0625,  0.1875,  0.375 , ...,  0.0625,  0.0625, -0.125 ],
     [-0.125 , -0.8125, -0.5   , ..., -0.3125,  0.5625,  0.4375],
@@ -68,12 +68,12 @@ class BaseMap(np.ndarray):
     [ 0.625 ,  0.625 , -0.125 , ...,  0.125 , -0.0625,  0.6875],
     [-0.625 , -0.625 , -0.625 , ...,  0.125 , -0.0625,  0.6875],
     [ 0.    ,  0.    , -1.1875, ...,  0.125 ,  0.    ,  0.6875]])
-    >>> map.header['cunit1']
+    >>> aia.header.get('cunit1')
     'arcsec'
-    >>> map.plot()
+    >>> aia.plot()
     >>> import matplotlib.cm as cm
     >>> import matplotlib.colors as colors
-    >>> map.plot(cmap=cm.hot, norm=colors.Normalize(1, 2048))
+    >>> aia.plot(cmap=cm.hot, norm=colors.Normalize(1, 2048))
     
     See Also:
     ---------
@@ -83,6 +83,7 @@ class BaseMap(np.ndarray):
     ----------
     | http://docs.scipy.org/doc/numpy/reference/arrays.classes.html
     | http://docs.scipy.org/doc/numpy/user/basics.subclassing.html
+    | http://docs.scipy.org/doc/numpy/reference/ufuncs.html
     | http://www.scipy.org/Subclasses
 
     """
@@ -119,50 +120,31 @@ class BaseMap(np.ndarray):
             }
     
     def __add__(self, other):
-        """Add two maps. Currently does not take into account the alignment between the 
-        two maps. Copies the 'info' params from the first map to the result"""
-        
-        # Use ndarray to add the maps
+        """Add two maps. Currently does not take into account the alignment  
+        between the two maps."""
         result = np.ndarray.__add__(self, other)
              
-        # Copy the 'info' params from the first map into the result
-        result.header = self.header
-        result.date = self.date
-        result.name = self.name
-        result.cmap = cm.gray
-        result.center = self.center
-        result.scale = self.scale
-        #result.exptime = self.exptime
+        result.cmap = cm.gray  #@UndefinedVariable
         
         return result
     
     def __sub__(self, other):
-        """Add two maps. Currently does not take into account the alignment between the 
-        two maps. Copies the 'info' params from the first map to the result"""
-        
-        # Use ndarray to add the maps
+        """Add two maps. Currently does not take into account the alignment 
+        between the two maps."""
         result = np.ndarray.__sub__(self, other)
-        
+
         minmax = np.array([abs(result.min()), abs(result.max())]).max()
-        
-        # Copy the 'info' params from the first map into the result
-        result.header = self.header
-        result.date = self.date
-        result.name = self.name
-        result.cmap = cm.gray
         result.norm = colors.Normalize(-minmax, minmax, True)
-        result.center = self.center
-        result.scale = self.scale
-        #result.exptime = result.exptime
+        
+        result.cmap = cm.gray  #@UndefinedVariable
         
         return result
-        
     
     @classmethod
     def get_properties(cls):
         """Returns default map properties""" 
         return {
-            'cmap': cm.gray, #@UndefinedVariable
+            'cmap': cm.gray,  #@UndefinedVariable
             'norm': colors.Normalize(5, 1024, True),
             'date': datetime.today(),
             'det': "None",
@@ -249,6 +231,20 @@ class BaseMap(np.ndarray):
         """Finishes instantiation of the new map object"""
         if obj is None:
             return
+
+        if hasattr(obj, 'header'):
+            self.header = obj.header
+
+            properties = self.get_properties(obj.header)
+            for attr, value in list(properties.items()):
+                setattr(self, attr, getattr(obj, attr, value))
+                
+            self.center = obj.center
+            self.scale = obj.scale
+        
+    def __array_wrap__(self, out_arr, context=None):
+        """Returns a wrapped instance of a Map object"""
+        return np.ndarray.__array_wrap__(self, out_arr, context)
 
 class UnrecognizedDataSouceError(ValueError):
     """Exception to raise when an unknown datasource is encountered"""
