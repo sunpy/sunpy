@@ -92,6 +92,7 @@ class BaseMap(np.ndarray):
             obj = data.view(cls)
         elif isinstance(data, list):
             obj = np.asarray(data).view(cls)
+        
         return obj
     
     def __init__(self, data, header=None):
@@ -102,6 +103,7 @@ class BaseMap(np.ndarray):
             self.name = None
             self.cmap = None
             self.norm = None
+            #self.exptime = None
             
             # Set object attributes dynamically
             for attr, value in list(self.get_properties(header).items()):
@@ -115,7 +117,47 @@ class BaseMap(np.ndarray):
                 "x": header.get('cdelt1'),
                 "y": header.get('cdelt2')
             }
-            
+    
+    def __add__(self, other):
+        """Add two maps. Currently does not take into account the alignment between the 
+        two maps. Copies the 'info' params from the first map to the result"""
+        
+        # Use ndarray to add the maps
+        result = np.ndarray.__add__(self, other)
+             
+        # Copy the 'info' params from the first map into the result
+        result.header = self.header
+        result.date = self.date
+        result.name = self.name
+        result.cmap = cm.gray
+        result.center = self.center
+        result.scale = self.scale
+        #result.exptime = self.exptime
+        
+        return result
+    
+    def __sub__(self, other):
+        """Add two maps. Currently does not take into account the alignment between the 
+        two maps. Copies the 'info' params from the first map to the result"""
+        
+        # Use ndarray to add the maps
+        result = np.ndarray.__sub__(self, other)
+        
+        minmax = np.array([abs(result.min()), abs(result.max())]).max()
+        
+        # Copy the 'info' params from the first map into the result
+        result.header = self.header
+        result.date = self.date
+        result.name = self.name
+        result.cmap = cm.gray
+        result.norm = colors.Normalize(-minmax, minmax, True)
+        result.center = self.center
+        result.scale = self.scale
+        #result.exptime = result.exptime
+        
+        return result
+        
+    
     @classmethod
     def get_properties(cls):
         """Returns default map properties""" 
