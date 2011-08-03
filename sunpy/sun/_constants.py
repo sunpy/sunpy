@@ -16,9 +16,8 @@ References:
     NASA Sun Fact Sheet (http://nssdc.gsfc.nasa.gov/planetary/factsheet/sunfact.html)
     Wikipedia (http://en.wikipedia.org/wiki/Sun)
 
-To do:
-    References should be to published or standard sources, NOT websites.
-    Add solar atmosphere values to standard model.
+TODO: References should be to published or standard sources, NOT websites.
+TODO: Add solar atmosphere values to standard model.
 """
 
 physical_constants = {}
