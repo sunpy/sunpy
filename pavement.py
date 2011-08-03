@@ -19,7 +19,10 @@ options(
         host = 'sipwork.org',
         hostpath = 'www/sunpy/doc'
     ),
-    sphinx=Bunch(docroot='doc/source', builddir="_build"),
+    minilib = Bunch(
+        extra_files=['doctools']
+    ),
+    sphinx = Bunch(docroot='doc/source', builddir="_build"),
     pylint = Bunch(quiet=False)
 )
 
@@ -54,7 +57,8 @@ setup(
     maintainer="SunPy Developers",
     maintainer_email="sunpy@googlegroups.com",
     name="sunpy",
-    packages=['sunpy', 'sunpy.map', 'sunpy.map.sources', 'sunpy.dev'],
+    packages=['sunpy', 'sunpy.cm', 'sunpy.dev', 'sunpy.map', 
+              'sunpy.map.sources', 'sunpy.sun', 'sunpy.util'],
     platforms=["Windows", "Linux", "Solaris", "Mac OS-X", "Unix"],
     url="http://www.sunpy.org/",
     version="0.01"
