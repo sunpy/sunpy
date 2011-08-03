@@ -103,7 +103,7 @@ class BaseMap(np.ndarray):
             self.name = None
             self.cmap = None
             self.norm = None
-            self.exptime = None
+            #self.exptime = None
             
             # Set object attributes dynamically
             for attr, value in list(self.get_properties(header).items()):
@@ -132,7 +132,7 @@ class BaseMap(np.ndarray):
         result.cmap = cm.gray
         result.center = self.center
         result.scale = self.scale
-        result.exptime = self.exptime
+        #result.exptime = self.exptime
         
         return result
     
@@ -153,7 +153,7 @@ class BaseMap(np.ndarray):
         result.norm = colors.Normalize(-minmax, minmax, True)
         result.center = self.center
         result.scale = self.scale
-        result.exptime = result.exptime
+        #result.exptime = result.exptime
         
         return result
         
