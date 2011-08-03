@@ -212,7 +212,7 @@ It may happen that two people have been working on the same section of code whic
 cause the merge command some problems. In such cases, the merge command will issue a conflict
 warning and will then expect you do the merge yourself. You can type: ::
 
-    bzr conflict
+    bzr conflicts
     
 to list the outstanding conflicts. For example it might say something like 
 "Text conflict in file.py". If you go into the directory with the conflicted file
