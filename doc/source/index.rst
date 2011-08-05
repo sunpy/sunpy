@@ -24,6 +24,7 @@ Documentation
    release
    about
    bugs
+..   solarsoft_to_sunpy
 ..   gallery/index
 ..   license
 ..   glossary
