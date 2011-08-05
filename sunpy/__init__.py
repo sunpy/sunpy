@@ -32,4 +32,3 @@ from sunpy.map.mapcube import MapCube
 from sunpy.map.compositemap import CompositeMap
 from sunpy.dev import *
 from sunpy.cm import *
-#from sunpy.util import util
