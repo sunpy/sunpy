@@ -34,9 +34,10 @@ def system_info():
         distro = " ".join(platform.linux_distribution())
         print("OS: %s (Linux %s %s)" %  (distro, platform.release(), proc))
     elif system == "Darwin":
-        print("OS: Mac OS X %s (%s)" %  (platform.mac_ver(), proc))
+        print("OS: Mac OS X %s (%s)" %  (platform.mac_ver()[0], proc))
     elif system == "Windows":
-        print("OS: Windows %s (%s)" %  (platform.win32_ver(), proc))
+        print("OS: Windows %s %s (%s)" %  (platform.release(), 
+                                        platform.version(), proc))
     else:
         print ("Unknown OS (%s)" % proc)
         
