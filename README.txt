@@ -8,7 +8,7 @@ is not much to see just yet.
 
 To request a new feature or to report a bug, visit 
   
-    https://launchpad.net/sunpy
+    https://github.com/sunpy/sunpy
 
 To find out more information about the project visit:
   

@@ -1,12 +1,11 @@
 .DS_Store
-doc/source/_build/*
 .pydevproject
 .settings
 .project
-dist
-sunpy.egg-info
-setup.py
-paver-minilib.zip
-docs
 build
+dist
+setup.py
+sunpy.egg-info
 paver-minilib.zip
+doc/source/_build/*
+docs

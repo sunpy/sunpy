@@ -2,4 +2,4 @@
 Reporting bugs
 ==============
 Bugs and feature-requests relating to the SunPy project should be reported
-using the `Launchpad bug tracker <https://bugs.launchpad.net/sunpy>`_.
+using the `GitHub issue tracker <https://github.com/sunpy/sunpy/issues>`_.
