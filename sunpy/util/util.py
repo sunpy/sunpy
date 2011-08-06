@@ -19,6 +19,8 @@ def anytim(time_string=None):
     """Given a time string will parse and return a datetime object.
     If no string is given then returns the datetime object for the current time.
     If a datetime object is passed in by mistake then it returns it without an error.
+    
+    TODO: add ability to parse tai (International Atomic Time seconds since Jan 1, 1958)
     """
     if time_string is None:
         return datetime.now()
