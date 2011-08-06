@@ -17,14 +17,14 @@ Ubuntu
 ^^^^^^
 To begin, install the pre-requisites for SunPy using :command:`apt-get`: ::
 
-    sudo apt-get install python-numpy python-matplotlib python-pyfits python-scipy bzr ipython
+    sudo apt-get install python-numpy python-matplotlib python-pyfits python-scipy git-core ipython
 
 The ``ipython`` package in the above list installs the `IPython enhanced console 
 <http://ipython.scipy.org/moin/>`_ and is optional but recommended.
 
-Next, use Bazaar to download a copy of the latest version of SunPy: ::
+Next, use Git to download a copy of the latest version of SunPy: ::
 
-    bzr branch lp:sunpy
+    git clone git@github.com:sunpy/sunpy.git
 
 Done! To see if everything went okay, start a Python session and try importing
 SunPy:
@@ -91,26 +91,17 @@ inside the ``scripts`` directory of your Python installation: ::
     easy_install.exe pyfits
 
 
-**4. Install Bazaar**
+**4. Install Git**
 
-Once you have Python 2.7 installed, download and run the `Bazaar Python 2.7 
-Windows Installer <http://wiki.bazaar.canonical.com/WindowsDownloads>`_. We are
-now ready to grab the latest version of SunPy. 
+TODO
 
+To begin, open a command-line shell and run the following command:
 
-To begin open a Bazaar command-prompt (``Start`` -> ``Bazaar`` -> ``Bazaar 
-command-prompt``) and run: ::
-
-    bzr branch lp:sunpy
+    git clone git@github.com:sunpy/sunpy.git
 
 This will download the latest version of SunPy. You then need to copy the 
 folder sunpy (from inside the root sunpy directory) to ``C:\Python27\Lib`` so 
 that Python can find it.
-
-.. Note::
- By default, the bzr command will only execute if you are in 
- ``C:\Python27\Scripts`` so any libraries or code you wish you be able to call
- globally should be placed in here.
 
 To test it all out, open a new Python shell and try typing: ::
 
