@@ -3,4 +3,4 @@ Releases
 ========
 There have not been any official releases of SunPy yet. If you wish to try out
 SunPy before an initial release is made you can grab the latest code from
-`Launchpad <https://launchpad.net/sunpy>`_.
+`GitHub <https://github.com/sunpy/sunpy>`_.
