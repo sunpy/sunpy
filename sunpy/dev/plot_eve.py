@@ -11,8 +11,9 @@ import csv
 import urllib
 import matplotlib
 import matplotlib.pyplot as plt
-from datetime import datetime, date, time	
-	#
+from datetime import datetime, date, time
+
+#
 # Notes:
 #
 # Steven (2011/03/30)
@@ -80,7 +81,13 @@ def plot_latest_goes():
 	dates = matplotlib.dates.date2num(ts)
 	
 	goes_plot(dates, xrsa, xrsa)
-	
+
+def get_eve_l2_data(t):
+
+	url = 'http://lasp.colorado.edu/eve/data_access/evewebdataproducts/level2/'
+
+	return 1
+
 def goes_plot(t, xrsa, xrsb, title=""):
 	"""Create a standard GOES plot"""
 	#now plot!
