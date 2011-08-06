@@ -19,6 +19,11 @@ Questions
 2. map.wavelength, map.meas or? (use hv/vso/etc conventions?)
 3. Are self.r_sun and radius below different? (rsun or rsun_obs for AIA?)
 4. Should default cmap and normalization settings be chosen for each image?
+
+Requests
+--------
+1. Would be nice to be able to easily extract the data as a ndarray from the map.
+2. Need to provide a way to get a sub map.
 """
 
 class BaseMap(np.ndarray):
