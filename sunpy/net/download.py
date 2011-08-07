@@ -8,6 +8,7 @@ import socket
 import threading
 import itertools
 
+from functools import partial
 from collections import defaultdict, deque
 
 class IDPool(object):
@@ -114,33 +115,27 @@ class Reactor(object):
             self._call_tcalls()
             for fd in ret:
                 try:
-                    fun, args, kwargs = self.callb[fd]
+                    fun = self.callb[fd]
                 except KeyError:
                     continue
-                fun(*args, **kwargs)
+                fun()
     
     def poll(self):
         raise NotImplementedError
     
-    def call_sync(self, fun, args=None, kwargs=None):
-        self.call.append(
-            (fun,
-             [] if args is None else args,
-             {} if kwargs is None else kwargs
-             )
-        )
+    def call_sync(self, fun):
+        self.call.append(fun)
         self.synce.send('m')
     
     def _call_tcalls(self):
-        for call in list(self.tcalls.itervalues()):
-            fun, args, kwargs = call
-            fun(*args, **kwargs)
+        for fun in list(self.tcalls.itervalues()):
+            fun()
     
-    def add_tcall(self, fun, args=None, kwargs=None):
-        id_ = self.ids.get()
-        self.tcalls[id_] = (
-            fun, [] if args is None else args, {} if kwargs is None else kwargs
-        )
+    def get_tid(self):
+        return self.ids.get()
+    
+    def add_tcall(self, id_, fun):
+        self.tcalls[id_] = fun
         return id_
     
     def rem_tcall(self, id_):
@@ -148,18 +143,13 @@ class Reactor(object):
         self.ids.release(id_)
     
     def _call_calls(self):
-        for call in self.call:
-            fun, args, kwargs = call
-            fun(*args, **kwargs)
+        for fun in self.call:
+            fun()
             self.syncr.recv(1)
         self.call = []
     
-    def add_fd(self, fd, callback, args=None, kwargs=None):
-        self.callb[fd] = (
-            callback,
-            [] if args is None else args,
-            {} if kwargs is None else kwargs
-        )
+    def add_fd(self, fd, callback):
+        self.callb[fd] = callback
     
     def rem_fd(self, fd):
         del self.callb[fd]
@@ -175,8 +165,8 @@ class SelectReactor(Reactor):
     def poll(self, timeout=None):
         return select.select(self.fds, [], [], timeout)[0]
     
-    def add_fd(self, fd, callback, args=None, kwargs=None):
-        super(SelectReactor, self).add_fd(fd, callback, args, kwargs)
+    def add_fd(self, fd, callback):
+        super(SelectReactor, self).add_fd(fd, callback)
         self.fds.add(fd)
         
     def rem_fd(self, fd):
@@ -203,10 +193,10 @@ class PollReactor(Reactor):
             timeout = int(timeout * 1000)
         return (fileno for fileno, flags in self.poller.poll(timeout))
     
-    def add_fd(self, fd, callback, args=None, kwargs=None):
+    def add_fd(self, fd, callback):
         fd = fd.fileno()
         
-        super(PollReactor, self).add_fd(fd, callback, args, kwargs)
+        super(PollReactor, self).add_fd(fd, callback)
         self.poller.register(
             fd,
             select.POLLERR | select.POLLHUP | select.POLLNVAL | select.POLLIN
@@ -238,10 +228,10 @@ class EPollReactor(Reactor):
             timeout = -1
         return (fileno for fileno, flags in self.poller.poll(timeout))
     
-    def add_fd(self, fd, callback, args=None, kwargs=None):
+    def add_fd(self, fd, callback):
         fd = fd.fileno()
         
-        super(EPollReactor, self).add_fd(fd, callback, args, kwargs)
+        super(EPollReactor, self).add_fd(fd, callback)
         self.poller.register(
             fd,
             select.EPOLLERR | select.EPOLLHUP | select.POLLNVAL | select.EPOLLIN
@@ -264,7 +254,8 @@ for reactor in [SelectReactor, PollReactor, EPollReactor]:
         DReactor = reactor
 
 if DReactor is None:
-    raise EnvironmentError
+    # This really should not be happening.
+    raise EnvironmentError('No suitable function in select module.')
 
 
 def default_name(path, sock, url):
@@ -287,8 +278,7 @@ class Downloader(object):
     def _download(self, sock, fd, callback, id_=None):
         rec = sock.read(self.buf)
         if not rec:
-            fun, args, kwargs = callback
-            fun(*args, **kwargs)
+            callback()
             
             if id_ is not None:
                 self.reactor.rem_tcall(id_)
@@ -309,7 +299,7 @@ class Downloader(object):
         
         args = [
                 sock, open(fullname, 'w'),
-                (self._close, [callback, [{'path': fullname}], server], {}),
+                partial(self._close, callback, [{'path': fullname}], server),
         ]
         
         try:
@@ -318,10 +308,12 @@ class Downloader(object):
             # Don't ask me.
             sock.fileno()
         except AttributeError:
-            id_ = self.reactor.add_tcall(self._download, args)
-            args.append(id_)
+            id_ = self.reactor.get_tid()
+            self.reactor.add_tcall(
+                id_, partial(self._download, *args + [id_])
+            )
         else:
-            self.reactor.add_fd(sock, self._download, args)
+            self.reactor.add_fd(sock, partial(self._download, *args))
     
     def _attempt_download(self, url, path, callback):
         server = url.split('/')[0]
@@ -358,7 +350,6 @@ class Downloader(object):
 
 if __name__ == '__main__':
     import tempfile
-    from functools import partial
     
     def wait_for(n):
         c = iter(xrange(n - 1))
