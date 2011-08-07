@@ -351,21 +351,21 @@ class Downloader(object):
 if __name__ == '__main__':
     import tempfile
     
-    def wait_for(n):
-        c = iter(xrange(n - 1))
+    def wait_for(n, callback):
+        items = []
         def _fun(handler):
-            print 'Hello', repr(handler)
-            if next(c, None) is None:
-                print 'Bye'
-                dw.reactor.stop()
+            items.append(handler)
+            if len(items) == 4:
+                callback(items)
         return _fun
     
     
-    callb = wait_for(4)
-    
-    path_fun = partial(default_name, tempfile.mkdtemp())
+    tmp = tempfile.mkdtemp()
+    print tmp
+    path_fun = partial(default_name, tmp)
     
     dw = Downloader(1, 2)
+    callb = wait_for(4, lambda _: dw.reactor.stop())
     dw.download('ftp://speedtest.inode.at/speedtest-5mb', path_fun, callb)
     dw.download('ftp://speedtest.inode.at/speedtest-20mb', path_fun, callb)
     dw.download('https://bitsrc.org', path_fun, callb)
