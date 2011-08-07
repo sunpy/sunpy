@@ -243,23 +243,16 @@ class Downloader(object):
             nofileno = True
         else:
             nofileno = False
-        
+            
+        args = [
+                sock, open(fullname, 'w'),
+                (self._close, [callback, [{'path': fullname}], server], {}),
+        ]
         if nofileno:
-            args = [
-                    sock, open(fullname, 'w'),
-                    (self._close, [callback, [{'path': fullname}], server], {}),
-                ]
             id_ = self.reactor.add_tcall(self._download, args)
             args.append(id_)
         else:
-            self.reactor.add_fd(
-                sock,
-                self._download, 
-                [
-                    sock, open(fullname, 'w'),
-                    (self._close, [callback, [{'path': fullname}], server], {})
-                ]
-            )
+            self.reactor.add_fd(sock, self._download, args)
     
     def _attempt_download(self, url, path, callback):
         server = url.split('/')[0]
