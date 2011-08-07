@@ -39,11 +39,11 @@ class MainWindow(QMainWindow):
 
         # Setup File actions toolbar
         file_toolbar = self.addToolBar("File")
-        open_plot = self.create_action(slot=self.open_plot, icon="icons/open_plot.png",
+        open_plot = self.create_action(slot=self.open_plot, icon_path="icons/open_plot.png",
                                        tip="Open a FITS file for plotting...")
-        save_plot = self.create_action(slot=self.save_plot, icon="icons/save_plot.png", 
+        save_plot = self.create_action(slot=self.save_plot, icon_path="icons/save_plot.png",
                                        tip="Save plot to PNG file...")
-        exit_app = self.create_action(slot=SLOT('close()'), icon="icons/exit.png",
+        exit_app = self.create_action(slot=SLOT('close()'), icon_path="icons/exit.png",
                                       tip="Exit SunPy PlotMan GUI.")
         # Should be able to use addActions here... couldn't get it to work ATM.
         file_toolbar.addAction(open_plot)
@@ -52,12 +52,12 @@ class MainWindow(QMainWindow):
 
         # Setup Plot actions toolbar
         plot_toolbar = self.addToolBar("Plot")
-        tip = "Change the Map's color-map"
-        change_cm = self.create_action(slot=self.change_cm, icon="icons/change_cm.png", tip=tip)
+        change_cm = self.create_action(slot=self.change_cm, icon_path="icons/change_cm.png",
+                    tip="Change the Map's color-map")
         plot_toolbar.addAction(change_cm)
 
     def create_action(self, signal=SIGNAL('triggered()'), slot=None, text=None,
-                        icon=None, tip=None, shortcut=None):
+                        icon_path=None, tip=None, shortcut=None):
         """ Helper function for creating useful QAction objects"""
 
         action = QAction(self)
@@ -68,11 +68,11 @@ class MainWindow(QMainWindow):
         if tip is not None:
             action.setStatusTip(tip)
             action.setToolTip(tip)
-        if icon is not None:
-            if os.path.exists(icon):
-                action.setIcon(QIcon(icon))
+        if icon_path is not None:
+            if os.path.exists(icon_path):
+                action.setIcon(QIcon(icon_path))
             else:
-                IOError("Icon could not be set, " + path + " does not exist")
+                IOError("Icon could not be set, " + icon_path + " does not exist")
         if shortcut is not None:
             action.setShortcut(shortcut)
         return action
