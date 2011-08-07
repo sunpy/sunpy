@@ -197,6 +197,11 @@ if DReactor is None:
     raise EnvironmentError
 
 
+def default_name(path, sock, url):
+    name = sock.headers.get('Content-Disposition', url.rsplit('/', 1)[-1])
+    return os.path.join(path, name)
+
+
 class Downloader(object):
     def __init__(self, max_conn=5, max_total=20):
         self.max_conn = max_conn
@@ -209,7 +214,7 @@ class Downloader(object):
         self.reactor = DReactor()
         self.buf = 9096
     
-    def download(self, sock, fd, callback, id_=None):
+    def _download(self, sock, fd, callback, id_=None):
         rec = sock.read(self.buf)
         if not rec:
             fun, args, kwargs = callback
@@ -223,16 +228,14 @@ class Downloader(object):
         else:
             fd.write(rec)
     
-    def _start_download(self, url, path, callback=None):
+    def _start_download(self, url, path, callback):
         server = url.split('/')[0]
         
         self.connections[server] += 1
         self.conns += 1
         
         sock = urllib2.urlopen(url)
-        sock.setblocking = lambda x: None
-        name = sock.headers.get('Content-Disposition', url.rsplit('/', 1)[-1])
-        fullname = os.path.join(path, name)
+        fullname = path(sock, url)
         
         try:
             sock.fileno()
@@ -244,21 +247,21 @@ class Downloader(object):
         if nofileno:
             args = [
                     sock, open(fullname, 'w'),
-                    (self.close, [callback, {'path': fullname}, server], {}),
+                    (self._close, [callback, [{'path': fullname}], server], {}),
                 ]
-            id_ = self.reactor.add_tcall(self.download, args)
+            id_ = self.reactor.add_tcall(self._download, args)
             args.append(id_)
         else:
             self.reactor.add_fd(
                 sock,
-                self.download, 
+                self._download, 
                 [
                     sock, open(fullname, 'w'),
-                    (self.close, [callback, {'path': fullname}, server], {})
+                    (self._close, [callback, [{'path': fullname}], server], {})
                 ]
             )
     
-    def _attempt_download(self, url, path, callback=None):
+    def _attempt_download(self, url, path, callback):
         server = url.split('/')[0]
         
         if self.connections[server] < self.max_conn and self.conns < self.max_total:
@@ -266,13 +269,13 @@ class Downloader(object):
             return True
         return False
 
-    def download_topath(self, url, path, callback=None):
+    def download(self, url, path, callback=None):
         server = url.split('/')[0]
         
         if not self._attempt_download(url, path, callback):
             self.q[server].append((url, path, callback))
     
-    def close(self, callback, args, server):
+    def _close(self, callback, args, server):
         callback(*args)
         
         if self.q[server]:
@@ -293,24 +296,29 @@ class Downloader(object):
 
 
 if __name__ == '__main__':
-    def foo(handler):
-        print 'Hello'
-        foo.n += 1
-        if foo.n == 3:
-            dw.reactor.stop()
-    
-    foo.n = 0
-    
     import tempfile
+    from functools import partial
     
-    dir_ = tempfile.mkdtemp()
-    print dir_
+    def wait_for(n):
+        c = [0]
+        def _fun(handler):
+            print 'Hello', repr(handler)
+            c[0] += 1
+            if c[0] == n:
+                print 'Bye'
+                dw.reactor.stop()
+        return _fun
+    
+    
+    callb = wait_for(4)
+    
+    path_fun = partial(default_name, tempfile.mkdtemp())
     
     dw = Downloader(1, 2)
-    dw.download_topath('ftp://speedtest.inode.at/speedtest-5mb', dir_, foo)
-    dw.download_topath('ftp://speedtest.inode.at/speedtest-20mb', dir_, foo)
-    dw.download_topath('https://bitsrc.org', dir_, foo)
-    dw.download_topath('ftp://speedtest.inode.at/speedtest-100mb', dir_, foo)
+    dw.download('ftp://speedtest.inode.at/speedtest-5mb', path_fun, callb)
+    dw.download('ftp://speedtest.inode.at/speedtest-20mb', path_fun, callb)
+    dw.download('https://bitsrc.org', path_fun, callb)
+    dw.download('ftp://speedtest.inode.at/speedtest-100mb', path_fun, callb)
     
     print dw.conns
     
