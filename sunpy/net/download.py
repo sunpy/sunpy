@@ -284,7 +284,6 @@ class Downloader(object):
             self.connections[server] -= 1
             self.conns -= 1
             
-            
             for k, v in self.q.iteritems():
                 while v:
                     if self._attempt_download(*v[0]):
