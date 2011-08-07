@@ -349,7 +349,7 @@ class Downloader(object):
             for k, v in self.q.iteritems():
                 while v:
                     if self._attempt_download(*v[0]):
-                        v.pop()
+                        v.popleft()
                         if self.conns == self.max_total:
                             return
                     else:
