@@ -307,18 +307,17 @@ class Downloader(object):
         sock = urllib2.urlopen(url)
         fullname = path(sock, url)
         
-        try:
-            sock.fileno()
-        except AttributeError:
-            nofileno = True
-        else:
-            nofileno = False
-            
         args = [
                 sock, open(fullname, 'w'),
                 (self._close, [callback, [{'path': fullname}], server], {}),
         ]
-        if nofileno:
+        
+        try:
+            # hasattr does not work because HTTPResponse objects have a
+            # fileno method that raises AttributeError when called.
+            # Don't ask me.
+            sock.fileno()
+        except AttributeError:
             id_ = self.reactor.add_tcall(self._download, args)
             args.append(id_)
         else:
