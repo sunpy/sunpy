@@ -152,7 +152,7 @@ class Reactor(object):
             fun, args, kwargs = call
             fun(*args, **kwargs)
             self.syncr.recv(1)
-        self.calls = []
+        self.call = []
     
     def add_fd(self, fd, callback, args=None, kwargs=None):
         self.callb[fd] = (
@@ -169,15 +169,15 @@ class SelectReactor(Reactor):
     avail = hasattr(select, 'select')
     def __init__(self, fds=None):
         Reactor.__init__(self)
-        self.fds = [] if fds is None else fds
-        self.fds.append(self.syncr)
+        self.fds = set() if fds is None else fds
+        self.fds.add(self.syncr)
     
     def poll(self):
         return select.select(self.fds, [], [])[0]
     
     def add_fd(self, fd, callback, args=None, kwargs=None):
         super(SelectReactor, self).add_fd(fd, callback, args, kwargs)
-        self.fds.append(fd)
+        self.fds.add(fd)
         
     def rem_fd(self, fd):
         super(SelectReactor, self).rem_fd(fd)
@@ -299,11 +299,10 @@ if __name__ == '__main__':
     from functools import partial
     
     def wait_for(n):
-        c = [0]
+        c = iter(xrange(n - 1))
         def _fun(handler):
             print 'Hello', repr(handler)
-            c[0] += 1
-            if c[0] == n:
+            if next(c, None) is None:
                 print 'Bye'
                 dw.reactor.stop()
         return _fun
