@@ -172,8 +172,8 @@ class SelectReactor(Reactor):
         self.fds = set() if fds is None else fds
         self.fds.add(self.syncr)
     
-    def poll(self):
-        return select.select(self.fds, [], [])[0]
+    def poll(self, timeout=None):
+        return select.select(self.fds, [], [], timeout)[0]
     
     def add_fd(self, fd, callback, args=None, kwargs=None):
         super(SelectReactor, self).add_fd(fd, callback, args, kwargs)
@@ -187,9 +187,79 @@ class SelectReactor(Reactor):
         pass
 
 
-# FIXME: Add [E]PollReactor and KQueueReactor.
+class PollReactor(Reactor):
+    avail = hasattr(select, 'poll')
+    def __init__(self, fds=None):
+        Reactor.__init__(self)
+        self.poller = select.poll()
+        
+        self.poller.register(
+            self.syncr,
+            select.POLLERR | select.POLLHUP | select.POLLNVAL | select.POLLIN
+        )
+    
+    def poll(self, timeout=None):
+        if timeout is not None:
+            timeout = int(timeout * 1000)
+        return (fileno for fileno, flags in self.poller.poll(timeout))
+    
+    def add_fd(self, fd, callback, args=None, kwargs=None):
+        fd = fd.fileno()
+        
+        super(PollReactor, self).add_fd(fd, callback, args, kwargs)
+        self.poller.register(
+            fd,
+            select.POLLERR | select.POLLHUP | select.POLLNVAL | select.POLLIN
+        )
+        
+    def rem_fd(self, fd):
+        fd = fd.fileno()
+        
+        super(PollReactor, self).rem_fd(fd)
+        self.poller.unregister(fd)
+    
+    def close(self):
+        self.poller.close()
+
+
+class EPollReactor(Reactor):
+    avail = hasattr(select, 'epoll')
+    def __init__(self, fds=None):
+        Reactor.__init__(self)
+        self.poller = select.epoll()
+        
+        self.poller.register(
+            self.syncr,
+            select.POLLERR | select.POLLHUP | select.POLLNVAL | select.POLLIN
+        )
+    
+    def poll(self, timeout=None):
+        if timeout is None:
+            timeout = -1
+        return (fileno for fileno, flags in self.poller.poll(timeout))
+    
+    def add_fd(self, fd, callback, args=None, kwargs=None):
+        fd = fd.fileno()
+        
+        super(EPollReactor, self).add_fd(fd, callback, args, kwargs)
+        self.poller.register(
+            fd,
+            select.EPOLLERR | select.EPOLLHUP | select.POLLNVAL | select.EPOLLIN
+        )
+        
+    def rem_fd(self, fd):
+        fd = fd.fileno()
+        
+        super(EPollReactor, self).rem_fd(fd)
+        self.poller.unregister(fd)
+    
+    def close(self):
+        self.poller.close()
+
+
+# FIXME: Add KQueueReactor.
 DReactor = None
-for reactor in [SelectReactor]:
+for reactor in [SelectReactor, PollReactor, EPollReactor]:
     if reactor.avail:
         DReactor = reactor
 
