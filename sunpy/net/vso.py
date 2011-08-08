@@ -7,7 +7,7 @@ from collections import defaultdict
 
 from suds import client
 
-DEFAULT_URL = 'file://' + os.path.abspath('./VSOi_rpc_literal.wsdl')
+DEFAULT_URL = 'http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl'
 TIMEFORMAT = '%Y%m%d%H%M%S'
 
 
@@ -206,8 +206,7 @@ class API(object):
     def by_provider(response):
         map_ = defaultdict(list)
         for prov_item in a.provideritem:
-            for record_item in prov_item.record.recorditem:
-                map_[record_item.provider].append(record_item)
+            map_[prov_item.provider].extend(prov_item.record.recorditem)
         return map_
     
     def multiple_choices(self, choices, response):
