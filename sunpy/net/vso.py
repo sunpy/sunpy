@@ -174,8 +174,7 @@ class API(object):
             elif code == '300' or code == '412':
                 files = []
                 for dataitem in dresponse.getdataitem.dataitem:
-                    for fileid in dataitem.fileiditem.fileid:
-                        files.append(fileid)
+                    files.extend(dataitem.fileiditem.fileid)
                 if code == '300':
                     try:
                         methods = self.multiple_choices(
