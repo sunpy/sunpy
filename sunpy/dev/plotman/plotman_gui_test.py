@@ -22,8 +22,6 @@ Author: Matt Earnshaw <matt@earnshaw.org.uk>
 
 import os
 import sys
-
-sys.path.append("../../..") # urgh
 import sunpy
 import qrc_resources
 from PyQt4.QtGui import *
