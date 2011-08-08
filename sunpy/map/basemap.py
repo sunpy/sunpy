@@ -19,7 +19,7 @@ Questions
 2. map.wavelength, map.meas or? (use hv/vso/etc conventions?)
 3. Are self.r_sun and radius below different? (rsun or rsun_obs for AIA?)
 4. Should default cmap and normalization settings be chosen for each image?
-5. How should the plotting interface be designed? Display to screen by default or not?
+
 Requests
 --------
 1. Would be nice to be able to easily extract the data as a ndarray from the map.
@@ -188,7 +188,7 @@ class BaseMap(np.ndarray):
         properties['header'] = header
         return type(name, (object,), properties) # pylint: disable=E1121
         
-    def plot(self, draw_limb=True, show_plot=False, **matplot_args):
+    def plot(self, draw_limb=True, **matplot_args):
         """Plots the map object using matplotlib
         
         Parameters
@@ -230,10 +230,7 @@ class BaseMap(np.ndarray):
             
         plt.imshow(self, origin='lower', extent=extent, **params)
         plt.colorbar()
-        if show_plot:
-            plt.show()
-        else:
-            return fig
+        plt.show()
 
     def __array_finalize__(self, obj):
         """Finishes instantiation of the new map object"""
