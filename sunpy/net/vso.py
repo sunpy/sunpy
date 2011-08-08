@@ -216,7 +216,7 @@ class API(object):
     
     def missing_information(self, info, field):
         print info, field
-        return {'EMAIL': 'segfaulthunter@gmail.com'}
+        return {'email': 'segfaulthunter@gmail.com'}
 
 
 # TODO: class InteractiveAPI(API)
@@ -230,6 +230,6 @@ if __name__ == '__main__':
     )
     
     print api.download_all(
-        api.api.service.GetData(api.make_getdatarequest(a, ['URL'])),
+        api.api.service.GetData(api.make_getdatarequest(a, ['STAGING-ZIP'])),
         ['STAGING-ZIP']
     )
