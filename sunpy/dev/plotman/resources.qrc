@@ -1,0 +1,10 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+<qresource>
+<file alias="open_plot.png">icons/open_plot.png</file>
+<file alias="save_plot.png">icons/save_plot.png</file>
+<file alias="change_cm.png">icons/change_cm.png</file>
+<file alias="exit.png">icons/exit.png</file>
+</qresource>
+</RCC>
+
