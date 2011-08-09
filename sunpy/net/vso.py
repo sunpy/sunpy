@@ -3,6 +3,7 @@
 
 import os
 import sys
+import tempfile
 import threading
 
 from functools import partial
@@ -120,10 +121,11 @@ for elem in ['provider', 'source', 'instrument', 'physobs', 'pixels',
 # ----------------------------------------
 
 class Results(object):
-    def __init__(self, callback, n=0):
+    def __init__(self, callback, n=0, done=None):
         self.callback = callback
         self.n = n
         self.map_ = {}
+        self.done = done
         self.evt = threading.Event()
     
     def submit(self, keys, value):
@@ -134,12 +136,18 @@ class Results(object):
     def poke(self):
         self.n -= 1
         if not self.n:
+            if self.done is not None:
+                self.map_ = self.done(self.map_)
             self.callback(self.map_)
             self.evt.set()
     
     def require(self, keys):
         self.n += 1
         return partial(self.submit, keys)
+    
+    def wait(self):
+        self.evt.wait()
+        return self.map_
 
 
 def mk_filename(pattern, response, sock, url):
@@ -186,6 +194,38 @@ class API(object):
                 item = item[elem]
             item[lst] = v
         return self.api.service.Query(queryreq)
+    
+    def get(self, query_response, path=None, downloader=None, methods=['URL-FILE']):
+        if downloader is None:
+            downloader = download.Downloader(1)
+            threading.Thread(target=downloader.reactor.run).start()
+            res = Results(
+                lambda _: downloader.reactor.stop(), 1,
+                lambda mp: self.link(qr, mp)
+            )
+        else:
+            res = Results(
+                lambda _: None, 1, lambda mp: self.link(qr, mp)
+            )
+        if path is None:
+            path = os.path.join(tempfile.mkdtemp(), '{file}')
+        self.download_all(
+            api.api.service.GetData(
+                api.make_getdatarequest(query_response, methods)
+                ),
+            methods, downloader, path,
+            API.by_fileid(query_response), res
+        )
+        res.poke()
+        return res
+    
+    @staticmethod
+    def link(query_response, map_):
+        ret = []
+        for prov_item in query_response.provideritem:
+            for record_item in prov_item.record.recorditem:
+                ret.append(Blah(record_item, map_[record_item.fileid]['path']))
+        return ret
     
     def make_getdatarequest(self, response, methods=None):
         if methods is None:
@@ -302,33 +342,16 @@ class Blah(object):
 
 if __name__ == '__main__':
     from datetime import datetime
-    
-    dw = download.Downloader(1)
-    threading.Thread(target=dw.reactor.run).start()
-    
     api = API()
-    print api.api.factory.create('QueryRequest')
     
-    print api.query_legacy(0, 1, instrument='eit', extent_x=1, wave_min=2)
+    qr = api.query_legacy(
+        datetime(2010, 1, 1), datetime(2010, 1, 1, 1),
+        instrument='eit'
+    )
     
-    a = api.query(
+    qr = api.query(
         Time(datetime(2010, 1, 1), datetime(2010, 1, 1, 1)) & Instrument('eit')
     )
-    
-    res = Results(lambda _: dw.reactor.stop(), 1)
-        
-    api.download_all(
-        api.api.service.GetData(api.make_getdatarequest(a, ['URL'])),
-        ['URL'], dw, '/home/segfaulthunter/test/{instrument}/{file}',
-        API.by_fileid(a), res
-    )
-    
-    res.poke()
-    res.evt.wait()
-    
-    ret = []
-    for prov_item in a.provideritem:
-        for record_item in prov_item.record.recorditem:
-            ret.append(Blah(record_item, res.map_[record_item.fileid]['path']))
-    
-    ret[0].to_map().plot()
+    res = api.get(qr, methods=['URL']).wait()
+    res[0].to_map().plot()
+
