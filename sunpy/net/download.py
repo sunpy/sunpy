@@ -107,10 +107,10 @@ class Reactor(object):
     def stop(self):
         self.call_sync(self._unset_running)
     
-    def run(self):
+    def run(self, tcallfreq=0):
         self.running = True
         while self.running:
-            ret = self.poll()
+            ret = self.poll(tcallfreq if self.tcalls else None)
             self._call_calls()
             self._call_tcalls()
             for fd in ret:
