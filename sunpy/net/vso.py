@@ -263,14 +263,18 @@ class API(object):
             )
             if code == '200':
                 for dataitem in dresponse.getdataitem.dataitem:
-                    location = self.download(
-                        dresponse.method.methodtype[0],
-                        dataitem.url,
-                        dw,
-                        res.require(map(str, dataitem.fileiditem.fileid)),
-                        path,
-                        qr[dataitem.fileiditem.fileid[0]]
-                    )
+                    try:
+                        self.download(
+                            dresponse.method.methodtype[0],
+                            dataitem.url,
+                            dw,
+                            res.require(map(str, dataitem.fileiditem.fileid)),
+                            path,
+                            qr[dataitem.fileiditem.fileid[0]]
+                        )
+                    except ValueError:
+                        # TODO: Log
+                        continue
             elif code == '300' or code == '412':
                 files = []
                 for dataitem in dresponse.getdataitem.dataitem:
@@ -284,9 +288,13 @@ class API(object):
                         # TODO: Log.
                         continue
                 elif code == '412':
-                    info = self.missing_information(
-                        info, dresponse.info
-                    )
+                    try:
+                        info = self.missing_information(
+                            info, dresponse.info
+                        )
+                    except ValueError:
+                        # TODO: Log.
+                        continue
                 request = self.create_getdatarequest(
                     {dresponse.provider: files}, methods, info
                 )
@@ -302,6 +310,7 @@ class API(object):
                 partial(dw.download, url, partial(mk_filename, *args),
                         callback)
             )
+        raise ValueError
     
     @staticmethod
     def by_provider(response):
@@ -325,8 +334,7 @@ class API(object):
         raise ValueError
     
     def missing_information(self, info, field):
-        print info, field
-        return {'email': 'segfaulthunter@gmail.com'}
+        raise ValueError
 
 
 # TODO: class InteractiveAPI(API)
