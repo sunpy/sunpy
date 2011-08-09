@@ -1,11 +1,15 @@
 # -*- coding: utf-8 -*-
 # Author: Florian Mayer <florian.mayer@bitsrc.org>
 
-import sys
 import os
+import sys
+import threading
+
+from functools import partial
 from collections import defaultdict
 
 from suds import client
+from sunpy.net import download
 
 DEFAULT_URL = 'http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl'
 TIMEFORMAT = '%Y%m%d%H%M%S'
@@ -114,6 +118,40 @@ for elem in ['provider', 'source', 'instrument', 'physobs', 'pixels',
 
 # ----------------------------------------
 
+class Results(object):
+    def __init__(self, callback, n=0):
+        self.callback = callback
+        self.n = n
+        self.map_ = {}
+        self.evt = threading.Event()
+    
+    def submit(self, keys, value):
+        for key in keys:
+            self.map_[key] = value
+        self.poke()
+    
+    def poke(self):
+        self.n -= 1
+        if not self.n:
+            self.callback(self.map_)
+            self.evt.set()
+    
+    def require(self, keys):
+        self.n += 1
+        return partial(self.submit, keys)
+
+
+def mk_filename(pattern, response, sock, url):
+    # FIXME: not name
+    name = sock.headers.get(
+        'Content-Disposition', url.rstrip('/').rsplit('/', 1)[-1]
+    )
+    name = pattern.format(file=name, **dict(response))
+    dir_ = os.path.dirname(name)
+    if not os.path.exists(dir_):
+        os.makedirs(os.path.dirname(name))
+    return name
+
 
 class API(object):
     method_order = [
@@ -157,20 +195,21 @@ class API(object):
         
         return request
     
-    def download_all(self, response, methods, info=None):
-        map_ = {}
+    def download_all(self, response, methods, dw, path, qr, res, info=None):
         for dresponse in response.getdataresponseitem:
             code = (
                 dresponse.status[5:8] if hasattr(dresponse, 'status') else '200'
             )
             if code == '200':
                 for dataitem in dresponse.getdataitem.dataitem:
-                    path = self.download(
+                    location = self.download(
                         dresponse.method.methodtype[0],
-                        dataitem.url
+                        dataitem.url,
+                        dw,
+                        res.require(map(str, dataitem.fileiditem.fileid)),
+                        path,
+                        qr[dataitem.fileiditem.fileid[0]]
                     )
-                    for fileid in dataitem.fileiditem.fileid:
-                        map_[fileid] = path
             elif code == '300' or code == '412':
                 files = []
                 for dataitem in dresponse.getdataitem.dataitem:
@@ -191,15 +230,17 @@ class API(object):
                     {dresponse.provider: files}, methods, info
                 )
                 
-                map_.update(
-                    self.download_all(
-                        self.api.service.GetData(request), methods, info
-                    )
+                self.download_all(
+                    self.api.service.GetData(request), methods, dw, path,
+                    qr, res, info
                 )
-        return map_
     
-    def download(self, method, url):
-        print method, url
+    def download(self, method, url, dw, callback, *args):
+        if method.startswith('URL'):
+            dw.reactor.call_sync(
+                partial(dw.download, url, partial(mk_filename, *args),
+                        callback)
+            )
     
     @staticmethod
     def by_provider(response):
@@ -231,13 +272,24 @@ class API(object):
 
 if __name__ == '__main__':
     from datetime import datetime
+    
+    dw = download.Downloader(1)
+    threading.Thread(target=dw.reactor.run).start()
+    
     api = API()
     
     a = api.query(
         Time(datetime(2010, 1, 1), datetime(2010, 1, 1, 1)) & Instrument('eit')
     )
     
-    print api.download_all(
-        api.api.service.GetData(api.make_getdatarequest(a, ['STAGING-ZIP'])),
-        ['STAGING-ZIP']
+    res = Results(lambda _: dw.reactor.stop(), 1)
+        
+    api.download_all(
+        api.api.service.GetData(api.make_getdatarequest(a, ['URL'])),
+        ['URL'], dw, '/home/segfaulthunter/test/{instrument}/{file}',
+        API.by_fileid(a), res
     )
+    
+    res.poke()
+    res.evt.wait()
+    print res.map_
