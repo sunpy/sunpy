@@ -167,6 +167,24 @@ class API(object):
         query.apply(queryreq.block)
         return self.api.service.Query(queryreq)
     
+    def query_legacy(self, time_start, time_end, **kwargs):
+        ALIASES = {'wave_min': 'wave_wavemin', 'wave_max': 'wave_wavemax',
+                   'wave_type': 'wave_wavetype', 'wave_unit': 'wave_waveunit'}
+        kwargs.update({'time_start': time_start, 'time_end': time_end})
+        
+        queryreq = self.api.factory.create('QueryRequest')
+        for k, v in kwargs.iteritems():
+            k = ALIASES.get(k, k)
+            attr = k.split('_')
+            lst = attr[-1]
+            rest = attr[:-1]
+            
+            item = queryreq.block
+            for elem in rest:
+                item = item[elem]
+            item[lst] = v
+        return queryreq
+    
     def make_getdatarequest(self, response, methods=None):
         if methods is None:
             methods = self.method_order + ['URL']
@@ -287,6 +305,9 @@ if __name__ == '__main__':
     threading.Thread(target=dw.reactor.run).start()
     
     api = API()
+    print api.api.factory.create('QueryRequest')
+    
+    print api.query_legacy(0, 1, instrument='eit', extent_x=1, wave_min=2)
     
     a = api.query(
         Time(datetime(2010, 1, 1), datetime(2010, 1, 1, 1)) & Instrument('eit')
