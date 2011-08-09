@@ -155,6 +155,17 @@ class Reactor(object):
         del self.callb[fd]
 
 
+class DummyReactor(Reactor): 
+    def run(self, tcallfreq=0):
+        self.running = True
+        while self.running:
+            select.select(
+                [self.syncr], [], [], tcallfreq if self.tcalls else None
+            )
+            self._call_calls()
+            self._call_tcalls()
+    
+
 class SelectReactor(Reactor):
     avail = hasattr(select, 'select')
     def __init__(self, fds=None):
@@ -272,7 +283,7 @@ class Downloader(object):
         self.connections = defaultdict(int) # int() -> 0
         self.q = defaultdict(deque)
         
-        self.reactor = DReactor()
+        self.reactor = DummyReactor()
         self.buf = 9096
     
     def _download(self, sock, fd, callback, id_=None):
@@ -307,6 +318,8 @@ class Downloader(object):
             # fileno method that raises AttributeError when called.
             # Don't ask me.
             sock.fileno()
+            # Due to caching it's not save to use select.
+            raise AttributeError
         except AttributeError:
             id_ = self.reactor.get_tid()
             self.reactor.add_tcall(
