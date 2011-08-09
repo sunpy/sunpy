@@ -9,6 +9,7 @@ from functools import partial
 from collections import defaultdict
 
 from suds import client
+import sunpy
 from sunpy.net import download
 
 DEFAULT_URL = 'http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl'
@@ -270,6 +271,15 @@ class API(object):
 
 # TODO: class InteractiveAPI(API)
 
+class Blah(object):
+    def __init__(self, recorditem, path):
+        self.recorditem = recorditem
+        self.path = path
+    
+    def to_map(self):
+        return sunpy.Map(self.path)
+
+
 if __name__ == '__main__':
     from datetime import datetime
     
@@ -292,4 +302,10 @@ if __name__ == '__main__':
     
     res.poke()
     res.evt.wait()
-    print res.map_
+    
+    ret = []
+    for prov_item in a.provideritem:
+        for record_item in prov_item.record.recorditem:
+            ret.append(Blah(record_item, res.map_[record_item.fileid]['path']))
+    
+    ret[0].to_map().plot()
