@@ -10,33 +10,32 @@ SunPy.
 Version Control
 ---------------
 
-Source-code for SunPy is managed using the `Bazaar Distributed Version Control 
-System (VCS) <http://bazaar.canonical.com/en/'>`_. Code branches are hosted on 
-`Launchpad.net <http://launchpad.net/sunpy>`_, a free project hosting  website 
+Source-code for SunPy is managed using `Git, a Distributed Version Control system  <http://git-scm.com>`_. Code branches are hosted on 
+`GitHub.com <http://github.com/sunpy>`_, a free project hosting  website 
 for Open-Source software.
 
-Download the latest version of SunPy using Bazaar: ::
+Download the latest version of SunPy using git: ::
 
-    bzr branch lp:sunpy
+    git clone git@github.com:sunpy/sunpy.git 
 
-Creating Your Own Branch
+Creating Your Own Repo 
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 **Overview**
 
-Each person contributing to SunPy should have their own development branch. This
+Each person contributing to SunPy should have their own development repo. This
 is where most of the actual coding is done. Only when you have tested your
 changes and are confident they are working properly and ready to be used by
-others do they get pushed to the trunk.
+others do they get pushed to the main repo.
 
-Creating your own branch on Launchpad is pretty straight-forward. If you haven't
-already done so, install Bazaar and `create an account on Launchpad 
-<https://help.launchpad.net/YourAccount/NewAccount>`_. Next, you need to tell
-Bazaar who you are. This is where the most difficult step of the process comes
-in: in order to upload any code to Launchpad you need to create a public SSH key
-and associate it with your launchpad account. For instructions on how this is 
-done, see the article on Launchpad on `creating an SSH key pair 
-<https://help.launchpad.net/YourAccount/CreatingAnSSHKeyPair>`_. Fortunately,
+Creating your own repo on GitHub is pretty straight-forward. If you haven't
+already done so, install git and `create an account on GitHub 
+<https://github.com/signup/free>`_. Next, you need to tell
+GitHub who you are. This is where the most difficult step of the process comes
+in: in order to push any code to GitHub you need to create a public SSH key
+and associate it with your GitHub account. For instructions on how this is 
+done, see the article on GitHub on `Setting up git
+<http://help.github.com/set-up-git-redirect>`_ under "Set Up SSH Keys". Fortunately,
 you will only need to do this once, although if you plan to work from multiple
 computers you will need to go through the process for each computer you wish to
 work on. Once you have created your account and associated a public SSH key it,
@@ -44,97 +43,81 @@ you are ready to go.
 
 **Identifying yourself**
 
-Begin by identifying yourself to Bazaar and logging in to
-Launchpad: :: 
+Begin by identifying yourself to GitHub and logging in to
+GitHub: :: 
 
- bzr whoami "John Doe <john.doe@gmail.com>"
- bzr launchpad-login user-name
+ git config --global user.name "Firstname Lastname"
+ git config --global user.email "your_email@youremail.com"
  
-Next, grab a copy of the SunPy trunk: ::
+Next, fork the main SunPy repo on GitHub by clicking `Fork` on the 
+`SunPy project page <https://github.com/sunpy/sunpy>`_
 
- bzr branch lp:sunpy sunpy-trunk
+Then clone the fork to your local machine: ::
+
+ git clone git@github.com:your_username/sunpy.git 
  
-This is the main branch where people's code gets merged together once it is
-ready. For the most part, however, you won't be making changes to the trunk,
-except to run an occasional `bzr pull` to keep it up to date.
+By default your fork of the repo on GitHub is identified by the name `origin`.
+In order to keep the fork up to date with the main repo, it is useful to add it
+as a `remote` in git: ::
 
-**Branching from the trunk**
+ git remote add upstream git://github.com/sunpy/sunpy.git
 
-Next, let's branch from the trunk to create your own branch: ::
+The latest version can then be grabbed by running: ::
 
- bzr branch sunpy-trunk sunpy-dev
+ git fetch upstream
+
+**Making changes and pushing them to GitHub**
+
+Enter the directory for local repo you just created
+with git and run this command to push the code to GitHub: ::
+
+ git push origin master
  
-We could have also done `bzr branch lp:sunpy sunpy-dev`, but since we already
-have a copy of the entire trunk on our computer we can just branch from that:
-this is just a `small <http://www.joelonsoftware.com/items/2010/03/17.html>`_ 
-`taste 
-<http://doc.bazaar.canonical.com/migration/en/why-switch-to-bazaar.html>`_ of 
-the benefits distrubted version control systems offer!
-
-**Registering your branch on Launchpad**
-
-Next, open up Launchpad and pull up the `SunPy code page 
-<https://code.launchpad.net/sunpy>`_. On the right-hand side there should be
-an a "Register a branch" option: click it. Give your branch a name that
-identifies it as belonging to you (e.g. "jdoe") and choose "hosted" as the
-branch type. Leave everything else as it is and hit "register branch" to create
-your branch.
-
-**Making changes and pushing them to Launchpad**
-
-Once you have registered your branch on your Launch you will be taken to its
-page. At the top of the page you will see a bzr command specifying how to push
-to your new branch which should look something like `bzr push --use-existing 
-lp:~john-doe/sunpy/jdoe`. Enter the directory for the branch you just created
-with bzr and run this command to push the code to Launchpad: ::
-
- cd sunpy-dev
- bzr push --use-existing lp:~john-doe/sunpy/jdoe
- 
-If all goes well the changes should show up on Launchpad in a matter of seconds.
-Right now our personal branch is just a copy of the trunk, which is not too
+If all goes well the changes should show up on GitHub in a matter of seconds.
+Right now our personal repo is just a copy of the main repo, which is not too
 exciting. To make sure everything is setup correctly, let's make some changes
-to our personal branch and push those to Launchpad. Go ahead and modify one
-of the files, or create a new file (and then run `bzr add`) to the branch to
-differentiate it from the trunk.
+to our personal repo and push those to GitHub. Go ahead and modify one
+of the files, or create a new file (and then run :command:`git add`). 
 
-Commit and push the changes to Launchpad: ::
+Commit and push the changes to GitHub: ::
 
- bzr commit -m "My first commit"
- bzr push
-
-Bazaar will remember the location you pushed to so you don't need to specify
-the it again. Refresh the branch overview page on Launchpad and you should see
-your changes reflected there once more.
+ git commit -a -m "My first commit"
+ git push
 
 **Conclusion**
 
-That's it! You now have your own personal SunPy branch to develop on. You could
-hack away at it to your heart's content, pushing changes to Launchpad to share
+That's it! You now have your own personal SunPy repo to develop on. You could
+hack away at it to your heart's content, pushing changes to GitHub to share
 with others and to ensure that you have a backup online. Further, by issuing a
-`bzr pull` command on the sunpy-trunk branch and then merging those changes into
-your personal branch you can also stay up to date with changes made by others.
+:command:`git fetch upstream` command then merging those changes into
+your personal branch, :command:`git merge upstream/master`,  you can also stay up to date
+with changes made by others.
 
-But what happens when you want to start contributing back to the SunPy trunk?
+But what happens when you want to start contributing back to the main SunPy repo?
 That is the topic of the next section.
 
 Collaboration
 ^^^^^^^^^^^^^
 
-When multiple people are working on SunPy at the same time, the methods 
-described by the `Team Collaboration/Distributed Development 
-<http://doc.bazaar.canonical.com/latest/en/user-guide/distributed_intro.html>`_ 
-article should be used as defined in the `Bazar User Guide 
-<http://doc.bazaar.canonical.com/latest/en/user-guide/>`_.
+Developers should create branches within their repos for most of their main coding.
+Every repo starts with a single branch called `master`, which seldom needs to be used.
+To create a new branch run: ::
+ 
+ git branch branchname
 
-Each developer should has his or her own personal development branch (e.g. 
-"john-dev") where all of the main coding is done. When they have finished making
-changes and the code has been tested and verified to be working well, the code 
-can be merged back into the main trunk. When multiple developers are working on 
-SunPy at the same time, care should be taken to avoid merging problems. Each 
-user should keep a copy of the trunk on their own machine. Each day, the 
-programmer can use :command:`bzr pull` on the trunk followed by 
-:command:`bzr merge` on their development branch to include any recent changes
+To switch to the new branch: ::
+
+ git checkout branchname
+
+(or alternatively, :command:`git checkout -b branchname` will accomplish the above).
+
+Developers should create new branches for the features they are working on. 
+When they have finished making changes and the code has been tested and 
+verified to be working well, the code can be merged back into the main trunk.
+When multiple developers are working on SunPy at the same time, care should
+be taken to avoid merging problems. Each user should keep a copy of the trunk
+on their own machine. Each day, the programmer can use :command:`git fetch upstream`
+followed by :command:`git merge upstream/master` to include any recent changes
 made by other developers.
 
 Example Workflow
@@ -144,28 +127,24 @@ Example Workflow
 
 Here is an example workflow for a SunPy developer on any given day. Before
 beginning this tutorial, follow the above instructions to grab a copy of the
-SunPy trunk code and to set up your own branch. This tutorial assumes that you
-have copies of both reposities on your computer. The personal branch will be
-refered to as ``sunpy-dev`` and the trunk will be refered to as 
-``sunpy-trunk``.
+SunPy repo.
 
 **Grabbing other people's changes**
 
 The first thing you want to do before you start coding anything new is to pull
 in the latest code that others have written since you last did any coding. To
-do this, change directories to ``sunpy-trunk`` and run :command:`bzr pull`: ::
+do this, run :command:`git fetch`: ::
 
-    bzr pull
+    git fetch 
     
 If no changes were made since the last time you worked on SunPy then you don't
 need to do anything else and can begin coding again. If other people have pushed
 code since you last worked on SunPy then these changes will be fetched and you
-will need to merge them into your development branch. To do this, enter your
-personal branch and merge the changes from the trunk in: ::
+will need to merge them: ::
 
-    bzr merge ../sunpy-trunk
+    git merge upstream/branch_name
     
-Make a quick commit in your branch to isolate the merge from any work you do.
+Make a quick commit to isolate the merge from any work you do.
     
 **Code away**
 
@@ -173,36 +152,29 @@ Assuming there are no merge conflicts (which shouldn't happen unless two people
 are working on the same part of the same file), then you are ready to begin
 coding.
 
-**Push your changes to Launchpad**
+**Push your changes to GitHub**
 
 Once you have made your desired changes, and committed and pushed your personal
 branch, you need to decide whether or not to merge those changes back into the
 trunk. If the changes you made are finished and have been tested and proven
-stable, then they can be merged into the trunk. If you are not finished making
-with making your changes or broke some important functionality, then you will
-probably want to wait before merging those changes into the trunk. For now, lets
-assume that your changes are complete and they are ready to be added to the
-trunk.
+stable, then they can be merged into the main repo. If you are not finished with 
+making your changes or broke some important functionality, then you will
+probably want to wait before merging those changes. For now, lets assume that
+your changes are complete and they are ready to be added to the main repo.
 
-The first thing you will want to do is go into the trunk and run :command:`bzr 
-pull` once more to see if any new changes have been made since you started 
-coding: ::
+The first thing you will want to do is run :command:`git fetch` once 
+more to see if any new changes have been made since you started coding: ::
 
-    bzr pull
+    git fetch
 
 If there are new changes, then go ahead once more and merge those changes into
-your personal branch and commit.
+your branch and commit.
 
-Next, change directories to the trunk and do a merge on your personal branch: ::
+Now all that remains is to commit and push your changes back to GitHub. 
+While still in ``sunpy-trunk``, run: ::
 
-    bzr merge ../sunpy-dev
-    
-This will pull the changes you made into the trunk. Now all that remains is to
-commit and push your changes back to Launchpad. While still in ``sunpy-trunk``,
-run: ::
-
-    bzr commit -m "description of your changes"
-    bzr push
+    git commit -m "description of your changes"
+    git push origin mybranch
 
 And that's it! It may seem like a lot at first but once you go through the
 motions a few times it becomes very quick.
@@ -212,7 +184,6 @@ It may happen that two people have been working on the same section of code whic
 cause the merge command some problems. In such cases, the merge command will issue a conflict
 warning and will then expect you do the merge yourself. You can type: ::
 
-    bzr conflicts
     
 to list the outstanding conflicts. For example it might say something like 
 "Text conflict in file.py". If you go into the directory with the conflicted file
@@ -226,15 +197,13 @@ Though you might want to use a more graphical tool for this such as
 `Meld <http://meld.sourceforge.net/install.html>`_. On Mac OS X, if you have installed XCode then you can use the terminal command opendiff which will open an application called FileMerge. Put your final code into file.py. Once you have
 done this just type: ::
 
-    bzr resolve
     
 This will officially resolve the conflict and will also delete the extra files the conflict created.
 Finally you should then commit your changes, in this case the resolution of the conflict with: ::
 
-   bzr commit -m "Resolved conflict between my and online version of file.py"
+   git commit -m "Resolved conflict between my and online version of file.py"
 
-You can then proceed to push this change up to your branch. More information 
-about conflict resolution and bazaar is `available <http://doc.bazaar.canonical.com/bzr.0.92/en/user-guide/conflicts.html>`_.
+You can then proceed to push this change up to your branch.
 
 Coding Standards
 ----------------
