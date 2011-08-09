@@ -204,7 +204,7 @@ class API(object):
     @staticmethod
     def by_provider(response):
         map_ = defaultdict(list)
-        for prov_item in a.provideritem:
+        for prov_item in response.provideritem:
             map_[prov_item.provider].extend(prov_item.record.recorditem)
         return map_
     
