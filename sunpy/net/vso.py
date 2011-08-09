@@ -175,6 +175,8 @@ class API(object):
         queryreq = self.api.factory.create('QueryRequest')
         for k, v in kwargs.iteritems():
             k = ALIASES.get(k, k)
+            if k.startswith('time'):
+                v = v.strftime(TIMEFORMAT)
             attr = k.split('_')
             lst = attr[-1]
             rest = attr[:-1]
@@ -183,7 +185,7 @@ class API(object):
             for elem in rest:
                 item = item[elem]
             item[lst] = v
-        return queryreq
+        return self.api.service.Query(queryreq)
     
     def make_getdatarequest(self, response, methods=None):
         if methods is None:
