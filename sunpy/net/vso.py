@@ -349,9 +349,6 @@ if __name__ == '__main__':
         instrument='eit'
     )
     
-    qr = api.query(
-        Time(datetime(2010, 1, 1), datetime(2010, 1, 1, 1)) & Instrument('eit')
-    )
-    res = api.get(qr, methods=['URL']).wait()
+    res = api.get(qr).wait()
     res[0].to_map().plot()
 
