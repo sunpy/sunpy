@@ -208,6 +208,14 @@ class API(object):
             map_[prov_item.provider].extend(prov_item.record.recorditem)
         return map_
     
+    @staticmethod
+    def by_fileid(response):
+        map_ = {}
+        for prov_item in response.provideritem:
+            for record_item in prov_item.record.recorditem:
+                map_[record_item.fileid] = record_item
+        return map_
+    
     def multiple_choices(self, choices, response):
         for elem in self.method_order:
             if elem in choices:
