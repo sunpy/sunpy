@@ -15,15 +15,13 @@ Notes and To-Do
 - Use the builtin matplotlib navigation toolbar?
 - More file formats for saving
 - Restrict file types in open dialog
-- Handle expections
+- Handle exceptions
 
 Author: Matt Earnshaw <matt@earnshaw.org.uk>
 """
 
 import os
 import sys
-
-sys.path.append("../../..") # urgh
 import sunpy
 import qrc_resources
 from PyQt4.QtGui import *
@@ -52,7 +50,7 @@ class MainWindow(QMainWindow):
 
         QMainWindow.__init__(self, parent)
         self.setGeometry(0, 0, 800, 800)
-        self.setWindowTitle("SunPy PlotMan GUI - Pathfinding Prototype -")
+        self.setWindowTitle("SunPy PlotMan GUI - Pathfinding Prototype")
 
         # Setup matplotlib figure canvas with test data
         self.canvas = PlotWidget()
