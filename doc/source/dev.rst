@@ -10,36 +10,40 @@ SunPy.
 Version Control
 ---------------
 
-Source-code for SunPy is managed using `Git, a Distributed Version Control system  <http://git-scm.com>`_. Code branches are hosted on 
-`GitHub.com <http://github.com/sunpy>`_, a free project hosting  website 
+Source-code for SunPy is managed using `Git <http://git-scm.com>`_, 
+a Distributed Version Control system. Code branches are hosted on 
+`GitHub.com <http://github.com/sunpy/sunpy>`_, a free project hosting  website 
 for Open-Source software.
-
-Download the latest version of SunPy using git: ::
-
-    git clone git@github.com:sunpy/sunpy.git 
 
 Creating Your Own Repo 
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 **Overview**
 
-Each person contributing to SunPy should have their own development repo. This
-is where most of the actual coding is done. Only when you have tested your
-changes and are confident they are working properly and ready to be used by
-others do they get pushed to the main repo.
+Each person contributing to SunPy should create their own code repository on
+GitHub by forking the master repository.All development is then done on that 
+fork, using topic branches to isolate work on different features. New 
+contributers can then initiate pull requests to have their code incorporated 
+into the SunPy master repo. Regular contributers can become members of the 
+SunPy team <https://github.com/sunpy>`_ on GitHub and push code directly to 
+the master repo.
 
-Creating your own repo on GitHub is pretty straight-forward. If you haven't
-already done so, install git and `create an account on GitHub 
-<https://github.com/signup/free>`_. Next, you need to tell
-GitHub who you are. This is where the most difficult step of the process comes
-in: in order to push any code to GitHub you need to create a public SSH key
-and associate it with your GitHub account. For instructions on how this is 
-done, see the article on GitHub on `Setting up git
-<http://help.github.com/set-up-git-redirect>`_ under "Set Up SSH Keys". Fortunately,
-you will only need to do this once, although if you plan to work from multiple
-computers you will need to go through the process for each computer you wish to
-work on. Once you have created your account and associated a public SSH key it,
-you are ready to go.
+**Getting Started**
+
+Creating your own repo on GitHub is easy to do. If you haven't already done so, 
+`install git <http://git-scm.com/download>`_ and `create an account on 
+GitHub <https://github.com/signup/free>`_.
+
+**Adding an SSH key to GitHub**
+
+Next, you need to tell GitHub who you are. In order to push any code to GitHub 
+you need to create a public SSH key and associate it with your GitHub account. 
+For instructions on how this is done, see the article on GitHub on 
+`Setting up git <http://help.github.com/set-up-git-redirect>`_ under 
+"Set Up SSH Keys". You only need to do this once, although if you plan to 
+work from multiple computers you will need to go through the process for each 
+computer you wish to work on. Once you have created your account and 
+associated a public SSH key it, you are ready to go.
 
 **Identifying yourself**
 
@@ -49,10 +53,23 @@ GitHub: ::
  git config --global user.name "Firstname Lastname"
  git config --global user.email "your_email@youremail.com"
  
-Next, fork the main SunPy repo on GitHub by clicking `Fork` on the 
-`SunPy project page <https://github.com/sunpy/sunpy>`_
+**Forking SunPy**
 
-Then clone the fork to your local machine: ::
+Each contributer to SunPy has their own copy of the SunPy master repo. When
+working on the code, changes are made to this copied repo, and only when the
+changes are completed, and have been verified to work, are they pushed back
+to the master repo. GitHub provides a simple mechanism to setup your own
+personal repo by providing an option to `fork a repository 
+<http://help.github.com/fork-a-repo/>`_. When you create a fork of a GitHub
+project, a copy of the repo will automatically be created for you, and a link
+will be provided which you can use to download the code to your machine and
+begin working on it.
+
+To begin, fork the main SunPy repo on GitHub by clicking on the `Fork` button 
+on the `SunPy project page <https://github.com/sunpy/sunpy>`_
+
+Next, you need to download the forked repository. Then clone the fork to your 
+local machine, edit and run: ::
 
  git clone git@github.com:your_username/sunpy.git 
  
@@ -62,17 +79,12 @@ as a `remote` in git: ::
 
  git remote add upstream git://github.com/sunpy/sunpy.git
 
-The latest version can then be grabbed by running: ::
+To stay up to date you can grab the latest changes to the SunPy master using
+the commands: ::
 
  git fetch upstream
+ git merge upstream/master
 
-**Making changes and pushing them to GitHub**
-
-Enter the directory for local repo you just created
-with git and run this command to push the code to GitHub: ::
-
- git push origin master
- 
 If all goes well the changes should show up on GitHub in a matter of seconds.
 Right now our personal repo is just a copy of the main repo, which is not too
 exciting. To make sure everything is setup correctly, let's make some changes
@@ -88,19 +100,23 @@ Commit and push the changes to GitHub: ::
 
 That's it! You now have your own personal SunPy repo to develop on. You could
 hack away at it to your heart's content, pushing changes to GitHub to share
-with others and to ensure that you have a backup online. Further, by issuing a
-:command:`git fetch upstream` command then merging those changes into
-your personal branch, :command:`git merge upstream/master`,  you can also stay up to date
-with changes made by others.
+with others and to ensure that you have a backup online.
 
-But what happens when you want to start contributing back to the main SunPy repo?
+But what happens when you want to start contributing back to the main SunPy 
+repo?
+
 That is the topic of the next section.
 
 Collaboration
 ^^^^^^^^^^^^^
 
-Developers should create branches within their repos for most of their main coding.
-Every repo starts with a single branch called `master`, which seldom needs to be used.
+Developers should create topic branches within their repos for most of their 
+main coding. Every repo starts with a single branch called `master`, which 
+seldom needs to be used. Instead, work on any particular feature, bug, or
+portion of the code is done in its own separate branch. This way changes on
+any particular issue are isolated from other unrelated changes. Users can even
+work on several different branches simultaneously. 
+
 To create a new branch run: ::
  
  git branch branchname
@@ -109,16 +125,16 @@ To switch to the new branch: ::
 
  git checkout branchname
 
-(or alternatively, :command:`git checkout -b branchname` will accomplish the above).
+(or alternatively, :command:`git checkout -b branchname` will accomplish 
+the above).
 
 Developers should create new branches for the features they are working on. 
 When they have finished making changes and the code has been tested and 
-verified to be working well, the code can be merged back into the main trunk.
-When multiple developers are working on SunPy at the same time, care should
-be taken to avoid merging problems. Each user should keep a copy of the trunk
-on their own machine. Each day, the programmer can use :command:`git fetch upstream`
-followed by :command:`git merge upstream/master` to include any recent changes
-made by other developers.
+verified to be working well, the code can be merged back into the SunPy master 
+repo. When multiple developers are working on SunPy at the same time, care 
+should be taken to avoid merging problems. Each day, the programmer can use 
+:command:`git fetch upstream` followed by :command:`git merge upstream/master` 
+to include any recent changes made by other developers.
 
 Example Workflow
 ^^^^^^^^^^^^^^^^
@@ -144,8 +160,6 @@ will need to merge them: ::
 
     git merge upstream/branch_name
     
-Make a quick commit to isolate the merge from any work you do.
-    
 **Code away**
 
 Assuming there are no merge conflicts (which shouldn't happen unless two people
@@ -170,36 +184,39 @@ more to see if any new changes have been made since you started coding: ::
 If there are new changes, then go ahead once more and merge those changes into
 your branch and commit.
 
-Now all that remains is to commit and push your changes back to GitHub. 
-While still in ``sunpy-trunk``, run: ::
+Now all that remains is to commit and push your changes back to GitHub: ::
 
-    git commit -m "description of your changes"
+    git commit -a -m "description of your changes"
     git push origin mybranch
 
 And that's it! It may seem like a lot at first but once you go through the
 motions a few times it becomes very quick.
 
 **Conflict resolution**
-It may happen that two people have been working on the same section of code which will
-cause the merge command some problems. In such cases, the merge command will issue a conflict
-warning and will then expect you do the merge yourself. You can type: ::
+It may happen that two people have been working on the same section of code 
+which will cause the merge command some problems. In such cases, the merge 
+command will issue a conflict warning and will then expect you do the merge 
+yourself. You can type: ::
 
     
 to list the outstanding conflicts. For example it might say something like 
-"Text conflict in file.py". If you go into the directory with the conflicted file
-you will see multiple versions of the file; file.py.THIS is your version of the file,
-file.py.OTHER is the version you are attempting to merge in, and file.py.BASE is the last version
-which agreed. You can check the differences between the two files by using a utility such as: ::
+"Text conflict in file.py". If you go into the directory with the conflicted 
+file you will see multiple versions of the file; file.py.THIS is your version 
+of the file, file.py.OTHER is the version you are attempting to merge in, and 
+file.py.BASE is the last version which agreed. You can check the differences 
+between the two files by using a utility such as: ::
 
     diff file.py.THIS file.py.OTHER
 
 Though you might want to use a more graphical tool for this such as 
-`Meld <http://meld.sourceforge.net/install.html>`_. On Mac OS X, if you have installed XCode then you can use the terminal command opendiff which will open an application called FileMerge. Put your final code into file.py. Once you have
+`Meld <http://meld.sourceforge.net/install.html>`_. On Mac OS X, if you have 
+installed XCode then you can use the terminal command opendiff which will open 
+an application called FileMerge. Put your final code into file.py. Once you have
 done this just type: ::
-
     
-This will officially resolve the conflict and will also delete the extra files the conflict created.
-Finally you should then commit your changes, in this case the resolution of the conflict with: ::
+This will officially resolve the conflict and will also delete the extra files 
+the conflict created. Finally you should then commit your changes, in this case 
+the resolution of the conflict with: ::
 
    git commit -m "Resolved conflict between my and online version of file.py"
 
