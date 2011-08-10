@@ -17,15 +17,8 @@ DEFAULT_URL = 'http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl'
 TIMEFORMAT = '%Y%m%d%H%M%S'
 
 
-from suds.transport import Reply
-from suds.transport.https import HttpAuthenticated
-
-class LoopbackTransport(HttpAuthenticated):
-    def send(self, request):
-        return Reply(200, {}, request.message)
-
-
-loopback = client.Client(DEFAULT_URL, transport=LoopbackTransport(), retxml=True)
+class _Str(str):
+    pass
 
 
 class _Attr(object):
@@ -152,6 +145,7 @@ class Results(object):
 
 def mk_filename(pattern, response, sock, url):
     # FIXME: not name
+    # FIXME: os.path.exists(name)
     name = sock.headers.get(
         'Content-Disposition', url.rstrip('/').rsplit('/', 1)[-1]
     )
@@ -210,8 +204,8 @@ class API(object):
         if path is None:
             path = os.path.join(tempfile.mkdtemp(), '{file}')
         self.download_all(
-            api.api.service.GetData(
-                api.make_getdatarequest(query_response, methods)
+            self.api.service.GetData(
+                self.make_getdatarequest(query_response, methods)
                 ),
             methods, downloader, path,
             API.by_fileid(query_response), res
@@ -224,7 +218,9 @@ class API(object):
         ret = []
         for prov_item in query_response.provideritem:
             for record_item in prov_item.record.recorditem:
-                ret.append(Blah(record_item, map_[record_item.fileid]['path']))
+                item = _Str(map_[record_item.fileid]['path'])
+                item.meta = record_item
+                ret.append(item)
         return ret
     
     def make_getdatarequest(self, response, methods=None):
@@ -337,15 +333,6 @@ class API(object):
         raise ValueError
 
 
-# TODO: class InteractiveAPI(API)
-
-class Blah(object):
-    def __init__(self, recorditem, path):
-        self.recorditem = recorditem
-        self.path = path
-    
-    def to_map(self):
-        return sunpy.Map(self.path)
 
 
 if __name__ == '__main__':
@@ -358,5 +345,4 @@ if __name__ == '__main__':
     )
     
     res = api.get(qr).wait()
-    res[0].to_map().plot()
-
+    sunpy.Map(res[0]).plot()
