@@ -195,7 +195,7 @@ class API(object):
             threading.Thread(target=downloader.reactor.run).start()
             res = Results(
                 lambda _: downloader.reactor.stop(), 1,
-                lambda mp: self.link(qr, mp)
+                lambda mp: self.link(query_response, mp)
             )
         else:
             res = Results(
