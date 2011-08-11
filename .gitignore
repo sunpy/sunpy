@@ -2,6 +2,7 @@
 .pydevproject
 .settings
 .project
+*.pyc
 build
 dist
 setup.py
