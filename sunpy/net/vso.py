@@ -191,7 +191,7 @@ class API(object):
     
     def get(self, query_response, path=None, downloader=None, methods=['URL-FILE']):
         if downloader is None:
-            downloader = download.Downloader(1)
+            downloader = download.Downloader()
             threading.Thread(target=downloader.reactor.run).start()
             res = Results(
                 lambda _: downloader.reactor.stop(), 1,
@@ -333,6 +333,21 @@ class API(object):
         raise ValueError
 
 
+class InteractiveAPI(API):
+    def multiple_choices(self, choices, response):
+        while True:
+            for n, elem in enumerate(choices):
+                print "(%d) %s" % (n + 1, elem)
+            choice = raw_input("Method number: ")
+            try:
+                return [choices[int(choice) - 1]]
+            except ValueError, IndexError:
+                continue
+            except KeyboardInterrupt:
+                return
+        
+    def missing_information(self, info, field):
+        return raw_input(field + ': ')
 
 
 if __name__ == '__main__':
@@ -340,7 +355,7 @@ if __name__ == '__main__':
     api = API()
     
     qr = api.query_legacy(
-        datetime(2010, 1, 1), datetime(2010, 1, 1, 1),
+        datetime(2009, 12, 1), datetime(2010, 1, 1, 1),
         instrument='eit'
     )
     
