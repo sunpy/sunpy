@@ -58,9 +58,11 @@ class BaseMap(np.ndarray):
     name : str
         Nickname for the image type (e.g. "AIA 171")
     center : dict
-        X and Y coordinate for the center of the sun in arcseconds
+        X and Y coordinate for the center of the sun in units
     scale: dict
-        Image scale along the x and y axes in arcseconds/pixel
+        Image scale along the x and y axes in units/pixel
+    units: dict
+        Image coordinate units along the x and y axes
 
     Examples
     --------
@@ -116,20 +118,23 @@ class BaseMap(np.ndarray):
                 setattr(self, attr, value)
 
             self.center = {
-                "x": header.get('crpix1'),
-                "y": header.get('crpix2')
+                "x": header.get('cdelt1')*data.shape[0]/2 + header.get('crval1') - header.get('crpix1')*header.get('cdelt1'),
+                "y": header.get('cdelt2')*data.shape[1]/2 + header.get('crval2') - header.get('crpix2')*header.get('cdelt2')
             }
             self.scale = {
                 "x": header.get('cdelt1'),
                 "y": header.get('cdelt2')
             }
-    
+            self.units = {
+                "x": header.get('cunit1'), 
+                "y": header.get('cunit2')
+            }
+            self.rsun = header.get('r_sun')
+                
     def __add__(self, other):
         """Add two maps. Currently does not take into account the alignment  
         between the two maps."""
         result = np.ndarray.__add__(self, other)
-             
-        result.cmap = cm.gray  #@UndefinedVariable
         
         return result
     
@@ -188,6 +193,51 @@ class BaseMap(np.ndarray):
         properties['header'] = header
         return type(name, (object,), properties) # pylint: disable=E1121
         
+    def get_xrange(self):
+        """Return the X range of the image in arcsec."""        
+        xmin = self.center['x'] - self.shape[0]/2*self.scale['x']
+        xmax = self.center['x'] + self.shape[0]/2*self.scale['x']
+        return [xmin,xmax]
+        
+    def get_yrange(self):
+        """Return the Y range of the image in arcsec."""
+        ymin = self.center['y'] - self.shape[1]/2*self.scale['y']
+        ymax = self.center['y'] + self.shape[1]/2*self.scale['y']
+        return [ymin,ymax]
+    
+    def _transform_pixel_to_coord(self, pixel, axis):    
+        """Given a pixel number return the coordinate value of that pixel."""
+        pixels = np.array(pixel)
+        if axis == 'x': n = self.shape[0]
+        if axis == 'y': n = self.shape[1]
+        return self.scale[axis] * pixels + self.center[axis] - n / 2.0 * self.scale[axis]
+        
+    def _transform_coord_to_pixel(self, coord, axis):
+        """Given a data coordinate return the pixel value (not necessarily an integer)."""
+        coords = np.array(coord)
+        if axis == 'x': n = self.shape[0]
+        if axis == 'y': n = self.shape[1]
+        return 1 / self.scale[axis] * (coords + n / 2.0 * self.scale[axis] - self.center[axis])
+
+    def submap(self, xrange, yrange):        
+        #convert data coordinates to pixel coordinates        
+        xrange_pixelcoord = self._transform_coord_to_pixel(xrange, 'x')
+        yrange_pixelcoord = self._transform_coord_to_pixel(yrange, 'y')
+
+        xrange_pixelcoord = xrange_pixelcoord.astype('int')
+        yrange_pixelcoord = xrange_pixelcoord.astype('int')
+        
+        dpixel = [0.5*(xrange_pixelcoord[1] - xrange_pixelcoord[0]), 0.5*(yrange_pixelcoord[1] - yrange_pixelcoord[0])]
+        
+        xcenter_datacoord = self._transform_pixel_to_coord(xrange_pixelcoord[0] + dpixel[0], 'x')
+        ycenter_datacoord = self._transform_pixel_to_coord(yrange_pixelcoord[0] + dpixel[1], 'y')
+        
+        self.center['x'] = xcenter_datacoord
+        self.center['y'] = ycenter_datacoord
+        
+        self = self[xrange_pixelcoord[0]:xrange_pixelcoord[1], yrange_pixelcoord[0]:yrange_pixelcoord[1]]
+        return self
+        
     def plot(self, draw_limb=True, **matplot_args):
         """Plots the map object using matplotlib
         
@@ -209,17 +259,12 @@ class BaseMap(np.ndarray):
         
         # Draw circle at solar limb
         if draw_limb:
-            circ = patches.Circle([0, 0], radius=sun.radius(self.date), 
+            circ = patches.Circle([0, 0], radius=self.radius(self.date), 
                 fill=False, color='white')
             axes.add_artist(circ)
 
         # Determine extent
-        xmin = -(self.center['x'] - 1) * self.scale['x']
-        xmax = (self.center['x'] - 1) * self.scale['x']
-        ymin = -(self.center['y'] - 1) * self.scale['y']
-        ymax = (self.center['y'] - 1) * self.scale['y']
-        
-        extent = [xmin, xmax, ymin, ymax]
+        extent = self.get_xrange() + self.get_yrange()
         
         # Matplotlib arguments
         params = {
