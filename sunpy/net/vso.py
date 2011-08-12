@@ -488,7 +488,7 @@ class InteractiveAPI(API):
             except ValueError, IndexError:
                 continue
             except KeyboardInterrupt:
-                return
+                raise ValueError
         
     def missing_information(self, info, field):
         return raw_input(field + ': ')
