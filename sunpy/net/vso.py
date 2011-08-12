@@ -220,6 +220,8 @@ class Wave(_ComplexAttr):
         if type_ == 'energy':
             k = n / (ANGSTROM / 1e-2)
             return k * (1 / (8065.53 * max_)), k * (1 / (8065.53 * min_))
+        else:
+            raise ValueError('Unable to convert %s to Angstrom' % type_)
 
 
 class Time(_ComplexAttr):
