@@ -23,7 +23,20 @@ class _Str(str):
 
 class _Attr(object):
     def __and__(self, other):
+        if isinstance(other, _AttrOr):
+            return _AttrOr([elem & self for elem in other.attrs])
         return _AttrAnd([self, other])
+    
+    def __or__(self, other):
+        return _AttrOr([self, other])
+
+
+class _DummyAttr(_Attr):
+    def __and__(self, other):
+        return other
+    
+    def __or__(self, other):
+        return other
 
 
 class _AttrAnd(_Attr):
@@ -31,11 +44,57 @@ class _AttrAnd(_Attr):
         self.attrs = attrs
     
     def __and__(self, other):
+        if isinstance(other, _AttrAnd):
+            return _AttrAnd(self.attrs + other.attrs)
+        if isinstance(other, _AttrOr):
+            return _AttrOr([elem & self for elem in other.attrs])
         return _AttrAnd(self.attrs + [other])
+    
+    __rand__ = __and__
     
     def apply(self, queryblock):
         for attr in self.attrs:
             attr.apply(queryblock)
+    
+    def create(self, api):
+        # TODO: Prove that we can assume that only _SimpleAttr and
+        # _ComplexAttr can possibly exist here.
+        value = api.factory.create('QueryRequestBlock')
+        self.apply(value)
+        return [value]
+    
+    def __repr__(self):
+        return "<_AttrAnd(%r)>" % self.attrs
+
+
+class _AttrOr(_Attr):
+    def __init__(self, attrs):
+        self.attrs = attrs
+    
+    def __or__(self, other):
+        if isinstance(other, _AttrOr):
+            return _AttrOr(self.attrs + other.attrs)
+        return _AttrOr(self.attrs + [other])
+    
+    __ror__ = __or__
+    
+    def __and__(self, other):
+        return _AttrOr([elem & other for elem in self.attrs])
+    
+    __rand__ = __and__
+    
+    def apply(self, queryblock):
+        # TODO: Prove this is unreachable.
+        raise NotImplementedError
+    
+    def create(self, api):
+        blocks = []
+        for attr in self.attrs:
+            blocks.extend(attr.create(api))
+        return blocks
+    
+    def __repr__(self):
+        return "<_AttrOr(%r)>" % self.attrs
 
 
 class _ComplexAttr(_Attr):
@@ -49,6 +108,14 @@ class _ComplexAttr(_Attr):
         
         for k, v in self.attrs.iteritems():
             queryblock[k] = v
+    
+    def create(self, api):
+        value = factory.create('QueryRequestBlock')
+        self.apply(value)
+        return [value]
+    
+    def __repr__(self):
+        return "<_ComplexAttr(%r, %r)>" % (self.attr, self.attrs)
 
 
 class _SimpleAttr(_Attr):
@@ -58,25 +125,59 @@ class _SimpleAttr(_Attr):
     
     def apply(self, queryblock):
         queryblock[self.field] = self.value
+    
+    def create(self, api):
+        value = factory.create('QueryRequestBlock')
+        self.apply(value)
+        return value
+    
+    def __repr__(self):
+        return "<_SimpleAttr(%r, %r)>" % (self.field, self.value)
 
 # ----------------------------------------
 
 class Wave(_ComplexAttr):
     def __init__(self, wavemin, wavemax, waveunit):
+        self.min = wavemin
+        self.max = wavemax
+        self.unit = waveunit
+        
         _ComplexAttr.__init__(self, ['wave'], {
             'wavemin': wavemin,
             'wavemax': wavemax,
             'waveunit': waveunit,
         })
+    
+    def __sub__(self, other):
+        if self.unit != other.unit:
+            return NotImplemented
+        new = _DummyAttr()
+        if self.min < other.min:            
+            new |= Wave(self.min, other.min, self.unit)
+        if other.max < self.max:
+            new |= Wave(other.max, self.max, self.unit)
+        return new
 
 
 class Time(_ComplexAttr):
     def __init__(self, start, end, near=None):
+        self.start = start
+        self.end = end
+        self.near = near
+        
         _ComplexAttr.__init__(self, ['time'], {
             'start': start.strftime(TIMEFORMAT),
             'end': end.strftime(TIMEFORMAT),
             'near': near.strftime(TIMEFORMAT) if near is not None else '',
         })
+    
+    def __sub__(self, other):
+        new = _DummyAttr()
+        if self.start < other.start:            
+            new |= Time(self.start, other.start)
+        if to < self.end:
+            new |= Time(other.stop, self.end)
+        return new
 
 
 class Extent(_ComplexAttr):
@@ -156,6 +257,12 @@ def mk_filename(pattern, response, sock, url):
     return name
 
 
+def _mk_queryreq(api, block):
+    queryreq = api.factory.create('QueryRequest')
+    queryreq.block = block
+    return queryreq
+
+
 class API(object):
     method_order = [
         'URL-TAR_GZ', 'URL-ZIP', 'URL-TAR', 'URL-FILE', 'URL-packaged'
@@ -166,8 +273,37 @@ class API(object):
     
     def query(self, query):
         queryreq = self.api.factory.create('QueryRequest')
-        query.apply(queryreq.block)
-        return self.api.service.Query(queryreq)
+        query.create(self.api)
+        return self.merge(
+            self.api.service.Query(_mk_queryreq(self.api, block))
+            for block in query.create(self.api)
+        )
+    
+    def merge(self, queryresponses):      
+        fileids = set()
+        providers = {}
+        
+        for queryresponse in queryresponses:
+            for provideritem in queryresponse.provideritem:
+                provider = provideritem.provider
+                if not provideritem.provider in providers:
+                    providers[provider] = provideritem
+                    fileids |= set(
+                        record_item.fileid
+                        for record_item in provideritem.record.recorditem
+                    )
+                else:
+                    for record_item in provideritem.record.recorditem:
+                        if record_item.fileid not in fileids:
+                            fileids.add(record_item.fileid)
+                            providers[provider].record.recorditem.append(
+                                record_item
+                            )
+                            providers[provider].no_of_records_found += 1
+                            providers[provider].no_of_records_returned += 1
+        response = self.api.factory.create('QueryResponse')
+        response.provideritem = providers.values()
+        return response
     
     def query_legacy(self, time_start, time_end, **kwargs):
         ALIASES = {'wave_min': 'wave_wavemin', 'wave_max': 'wave_wavemax',
