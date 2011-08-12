@@ -149,7 +149,37 @@ class _SimpleAttr(_Attr):
 # ----------------------------------------
 
 class Wave(_ComplexAttr):
+    wavelength = {
+        'angstrom': 1e-10,
+        'nm': 1e-9,
+        'micron': 1e-6,
+        'mm': 1e-3,
+        'cm': 1e-2,
+        'm': 1e-6,
+    }
+    energy = {
+        'ev': 1,
+        'kev': 1e3,
+        'mev': 1e6,
+    }
+    frequency = {
+        'hz': 1,
+        'khz': 1e3,
+        'mhz': 1e6,
+        'ghz': 1e9,
+    }
+    units = {}
+    for k, v in wavelength.iteritems():
+        units[k] = ('wavelength', v)
+    for k, v in energy.iteritems():
+        units[k] = ('energy', v)
+    for k, v in frequency.iteritems():
+        units[k] = ('frequency', v)
+    
     def __init__(self, wavemin, wavemax, waveunit):
+        wavemin, wavemax = self.to_angstrom(wavemin, wavemax, waveunit)
+        waveunit = 'Angstrom'
+        
         self.min = wavemin
         self.max = wavemax
         self.unit = waveunit
@@ -164,11 +194,32 @@ class Wave(_ComplexAttr):
         if self.unit != other.unit:
             return NotImplemented
         new = _DummyAttr()
-        if self.min < other.min:            
+        if self.min < other.min:
             new |= Wave(self.min, min(other.min, self.max), self.unit)
         if other.max < self.max:
             new |= Wave(other.max, self.max, self.unit)
         return new
+    
+    @classmethod
+    def to_angstrom(cls, min_, max_, unit):
+        # Speed of light in m/s.
+        C = 299792458
+        ANGSTROM = cls.units['angstrom'][1]
+        
+        try:
+            type_, n = cls.units[unit.lower()]
+        except KeyError:
+            raise ValueError('Cannot convert %s to Angstrom' % unit)
+        
+        if type_ == 'wavelength':
+            k = n / ANGSTROM
+            return (min_ / k, self.max_ / k)
+        if type_ == 'frequency':
+            k = n / ANGSTROM
+            return k * (C / max_), k * (C / min_)
+        if type_ == 'energy':
+            k = n / (ANGSTROM / 1e-2)
+            return k * (1 / (8065.53 * max_)), k * (1 / (8065.53 * min_))
 
 
 class Time(_ComplexAttr):
