@@ -251,16 +251,18 @@ class Results(object):
 
 
 def mk_filename(pattern, response, sock, url):
-    # FIXME: not name
     # FIXME: os.path.exists(name)
     name = sock.headers.get(
         'Content-Disposition', url.rstrip('/').rsplit('/', 1)[-1]
     )
-    name = pattern.format(file=name, **dict(response))
-    dir_ = os.path.dirname(name)
+    if not name:
+        name = response.fileid.replace('/', '_')
+    
+    fname = pattern.format(file=name, **dict(response))
+    dir_ = os.path.dirname(fname)
     if not os.path.exists(dir_):
-        os.makedirs(os.path.dirname(name))
-    return name
+        os.makedirs(os.path.dirname(fname))
+    return fname
 
 
 def _mk_queryreq(api, block):
