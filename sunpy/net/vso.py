@@ -6,11 +6,11 @@ import sys
 import tempfile
 import threading
 
+from datetime import datetime
 from functools import partial
 from collections import defaultdict
 
 from suds import client
-import sunpy
 from sunpy.net import download
 
 DEFAULT_URL = 'http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl'
@@ -178,6 +178,12 @@ class Time(_ComplexAttr):
         if to < self.end:
             new |= Time(other.stop, self.end)
         return new
+    
+    @classmethod
+    def dt(cls, start, end, near=None):
+        if near is not None:
+            near = datetime(*near)
+        return cls(datetime(*start), datetime(*end), near)
 
 
 class Extent(_ComplexAttr):
@@ -487,7 +493,7 @@ class InteractiveAPI(API):
 
 
 if __name__ == '__main__':
-    from datetime import datetime
+    import sunpy
     api = API()
     
     qr = api.query_legacy(
