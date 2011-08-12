@@ -89,6 +89,12 @@ class _AttrOr(_Attr):
     
     __rand__ = __and__
     
+    def __xor__(self, other):
+        new = _DummyAttr()
+        for elem in self.attrs:
+            new |= elem ^ other
+        return new
+    
     def apply(self, queryblock):
         # TODO: Prove this is unreachable.
         raise NotImplementedError
@@ -154,12 +160,12 @@ class Wave(_ComplexAttr):
             'waveunit': waveunit,
         })
     
-    def __sub__(self, other):
+    def __xor__(self, other):
         if self.unit != other.unit:
             return NotImplemented
         new = _DummyAttr()
         if self.min < other.min:            
-            new |= Wave(self.min, other.min, self.unit)
+            new |= Wave(self.min, min(other.min, self.max), self.unit)
         if other.max < self.max:
             new |= Wave(other.max, self.max, self.unit)
         return new
@@ -177,12 +183,12 @@ class Time(_ComplexAttr):
             'near': near.strftime(TIMEFORMAT) if near is not None else '',
         })
     
-    def __sub__(self, other):
+    def __xor__(self, other):
         new = _DummyAttr()
         if self.start < other.start:            
-            new |= Time(self.start, other.start)
-        if to < self.end:
-            new |= Time(other.stop, self.end)
+            new |= Time(self.start, min(other.start, self.end))
+        if other.end < self.end:
+            new |= Time(other.end, self.end)
         return new
     
     @classmethod
