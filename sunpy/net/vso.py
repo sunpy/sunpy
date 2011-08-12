@@ -37,6 +37,12 @@ class _DummyAttr(_Attr):
     
     def __or__(self, other):
         return other
+    
+    def apply(self, queryblock):
+        pass
+    
+    def create(self, api):
+        return api.factory.create('QueryRequestBlock')
 
 
 class _AttrAnd(_Attr):
