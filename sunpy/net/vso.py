@@ -14,6 +14,7 @@ from suds import client
 from sunpy.net import download
 
 DEFAULT_URL = 'http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl'
+DEFAULT_PORT = 'nsoVSOi'
 TIMEFORMAT = '%Y%m%d%H%M%S'
 
 
@@ -340,9 +341,11 @@ class API(object):
     method_order = [
         'URL-TAR_GZ', 'URL-ZIP', 'URL-TAR', 'URL-FILE', 'URL-packaged'
     ]
-    def __init__(self, url=DEFAULT_URL, *args):
-        self.api = client.Client(url, *args)
-        self.api.set_options(port='nsoVSOi')
+    def __init__(self, api=None):
+        if api is None:
+            api = client.Client(DEFAULT_URL)
+            api.set_options(port=DEFAULT_PORT)
+        self.api = api
     
     def query(self, query):
         queryreq = self.api.factory.create('QueryRequest')
@@ -564,7 +567,7 @@ if __name__ == '__main__':
     api = API()
     
     qr = api.query_legacy(
-        datetime(2009, 12, 1), datetime(2010, 1, 1, 1),
+        datetime(2010, 1, 1), datetime(2010, 1, 1, 1),
         instrument='eit'
     )
     
