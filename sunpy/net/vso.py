@@ -149,31 +149,31 @@ class _SimpleAttr(_Attr):
 # ----------------------------------------
 
 class Wave(_ComplexAttr):
-    wavelength = {
-        'angstrom': 1e-10,
-        'nm': 1e-9,
-        'micron': 1e-6,
-        'mm': 1e-3,
-        'cm': 1e-2,
-        'm': 1e-6,
-    }
-    energy = {
-        'ev': 1,
-        'kev': 1e3,
-        'mev': 1e6,
-    }
-    frequency = {
-        'hz': 1,
-        'khz': 1e3,
-        'mhz': 1e6,
-        'ghz': 1e9,
-    }
+    wavelength = [
+        ('angstrom', 1e-10),
+        ('nm', 1e-9),
+        ('micron', 1e-6),
+        ('mm', 1e-3),
+        ('cm', 1e-2),
+        ('m', 1e-6),
+    ]
+    energy = [
+        ('ev', 1),
+        ('kev', 1e3),
+        ('mev', 1e6),
+    ]
+    frequency = [
+        ('hz', 1),
+        ('khz', 1e3),
+        ('mhz', 1e6),
+        ('ghz', 1e9),
+    ]
     units = {}
-    for k, v in wavelength.iteritems():
+    for k, v in wavelength:
         units[k] = ('wavelength', v)
-    for k, v in energy.iteritems():
+    for k, v in energy:
         units[k] = ('energy', v)
-    for k, v in frequency.iteritems():
+    for k, v in frequency:
         units[k] = ('frequency', v)
     
     def __init__(self, wavemin, wavemax, waveunit):
