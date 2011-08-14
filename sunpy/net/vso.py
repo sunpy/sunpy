@@ -26,6 +26,11 @@ class _Attr(object):
     def __and__(self, other):
         if isinstance(other, _AttrOr):
             return _AttrOr([elem & self for elem in other.attrs])
+        if isinstance(other, self.__class__):
+            # A record cannot match two different values
+            # for the same attribute.
+            # TODO: Error?
+            return NotImplemented
         return _AttrAnd([self, other])
     
     def __or__(self, other):
@@ -55,6 +60,12 @@ class _AttrAnd(_Attr):
             return _AttrAnd(self.attrs + other.attrs)
         if isinstance(other, _AttrOr):
             return _AttrOr([elem & self for elem in other.attrs])
+        for elem in self.attrs:
+            if isinstance(other, elem.__class__):
+                # A record cannot match two different values
+                # for the same attribute.
+                # TODO: Error?
+                return NotImplemented
         return _AttrAnd(self.attrs + [other])
     
     __rand__ = __and__
