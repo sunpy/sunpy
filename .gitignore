@@ -5,8 +5,8 @@
 *.pyc
 build
 dist
-setup.py
 sunpy.egg-info
 paver-minilib.zip
 doc/source/_build/*
 docs
+.tox/
