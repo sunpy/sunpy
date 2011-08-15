@@ -44,8 +44,6 @@ def install(setup):
     )
 
 
-install.DEBUG = 1
-
 if __name__ == '__main__':
     from distutils.core import setup
     install(setup)
