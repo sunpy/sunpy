@@ -19,9 +19,7 @@ options(
         host = 'sipwork.org',
         hostpath = 'www/sunpy/doc'
     ),
-    minilib = Bunch(
-        extra_files=['doctools']
-    ),
+
     sphinx = Bunch(docroot='doc/source', builddir="_build"),
     pylint = Bunch(quiet=False)
 )
@@ -65,9 +63,9 @@ setup(
 )
 
 @task
-@needs('prepare_docs', 'generate_setup', 'minilib', 'setuptools.command.sdist')
+@needs('prepare_docs', 'setuptools.command.sdist')
 def sdist():
-    """Overrides sdist to make sure that our setup.py is generated."""
+    """Generated HTML docs and builds a tarball."""
     shutil.rmtree('doc/html')
     pass
 
@@ -79,7 +77,6 @@ def sdist():
 def prepare_docs(options):
     """Prepares the SunPy HTML documentation for packaging"""
     sourcedir = 'doc/source/_build/html'
-    sampledir = 'doc/sample-data'
     destdir = 'doc/html'
     if os.path.exists(destdir):
         shutil.rmtree(destdir)
@@ -123,4 +120,6 @@ def clean():
     for dir_ in ['doc/html', 'dist', 'sunpy.egg-info']:
         if os.path.exists(dir_):
             shutil.rmtree(dir_)
-    os.remove('paver-minilib.zip')
+    for file_ in ['MANIFEST']:
+        if os.path.exists(file_):
+            os.remove(file_)
