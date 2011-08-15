@@ -3,6 +3,7 @@
 .settings
 .project
 *.pyc
+MANIFEST
 build
 dist
 sunpy.egg-info
