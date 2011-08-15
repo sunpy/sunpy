@@ -27,8 +27,7 @@ class TestBaseMap(unittest.TestCase):
     def test_fits_data_comparison(self):
         """Make sure the data is the same in pyfits and SunPy"""
         fits = pyfits.open(self.file)
-        self.assertEqual(self.map.tolist(), fits[0].data.tolist(),
-                         'data not preserved')
+        self.assertTrue((self.map == fits[0].data).all(), 'data not preserved')
     def test_fits_header_comparison(self):
         """Make sure the header is the same in pyfits and SunPy"""
         fits = pyfits.open(self.file)
