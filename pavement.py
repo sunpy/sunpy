@@ -5,10 +5,15 @@ The SunPy project is an effort to create an open-source software library for
 solar physics using the Python programming language.
 """
 import os
+import imp
 import shutil
 from paver.easy import *
 import paver.doctools
 from paver.setuputils import setup
+
+# This is not pretty, but necessary
+install = imp.load_source(
+    'setup', os.path.join(os.path.dirname(__file__), 'setup.py')).install
 
 #
 # Options
@@ -27,40 +32,8 @@ options(
 #
 # Packaging
 #
-DOCLINES = __doc__.split("\n")
 
-CLASSIFIERS = [
-    'Development Status :: 2 - Pre-Alpha',
-    'Intended Audience :: Science/Research',
-    'Intended Audience :: Developers',
-    'License :: OSI Approved :: BSD License',
-    'Programming Language :: Python',
-    'Programming Language :: Python :: 3',
-    'Topic :: Software Development',
-    'Topic :: Scientific/Engineering',
-    'Topic :: Scientific/Engineering :: Physics',
-    'Operating System :: Microsoft :: Windows',
-    'Operating System :: POSIX',
-    'Operating System :: Unix',
-    'Operating System :: MacOS'
-]
-setup(
-    author="Steven Christe, Keith Hughitt, Jack Ireland and Alex Young",
-    author_email="keith.hughitt@nasa.gov",
-    classifiers=CLASSIFIERS,
-    description=DOCLINES[0],
-    download_url="http://www.sunpy.org/download/",
-    license="",
-    long_description="\n".join(DOCLINES[2:]),
-    maintainer="SunPy Developers",
-    maintainer_email="sunpy@googlegroups.com",
-    name="sunpy",
-    packages=['sunpy', 'sunpy.cm', 'sunpy.dev', 'sunpy.map', 
-              'sunpy.map.sources', 'sunpy.sun', 'sunpy.util'],
-    platforms=["Windows", "Linux", "Solaris", "Mac OS-X", "Unix"],
-    url="http://www.sunpy.org/",
-    version="0.01"
-)
+install(setup)
 
 @task
 @needs('prepare_docs', 'setuptools.command.sdist')

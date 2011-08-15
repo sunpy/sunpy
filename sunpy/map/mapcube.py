@@ -60,12 +60,9 @@ class MapCube(np.ndarray):
             slices = []
             
             for filename in os.listdir(input_):
-                try:
-                    fits = pyfits.open(os.path.join(input_, filename))
-                    data.append(fits[0].data)
-                    slices.append(cls.parse_header(fits[0].header))
-                except IOError:
-                    sys.exit("Unable to read the file %s" % filename)
+                fits = pyfits.open(os.path.join(input_, filename))
+                data.append(fits[0].data)
+                slices.append(cls.parse_header(fits[0].header))
 
             obj = np.asarray(data).view(cls)
             obj.slices = slices
