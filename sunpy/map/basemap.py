@@ -160,14 +160,14 @@ class BaseMap(np.ndarray):
             'r_sun': None
         }
     @classmethod
-    def as_slice(cls, header):
-        """Returns a data-less Map object.
+    def get_header(cls, orig_header):
+        """Returns a normalized MapHeader.
         
         Dynamically create a class which contains only the original and
         normalized header fields and default settings for the map. This is
         useful for Map collections (e.g. MapCube) in order to maintain a
-        separate record of the meta information for a given layer or "slice"
-        of the cube without having to keep the data separate.
+        separate record of the meta information for a given layer in the cube 
+        without having to keep the data separate.
         
         Parameters
         ----------
@@ -176,16 +176,16 @@ class BaseMap(np.ndarray):
             
         Returns
         -------
-        out : MapSlice
+        out : MapHeader
             An empty container object with only meta information and default
             choices pertaining to the header specified.
         
         See Also: http://docs.python.org/library/functions.html#type
         """
-        #name = self.__class__.__name__ + "Slice"
-        name = str(cls).split(".")[-1][:-2] + "Slice"
-        properties = cls.get_properties(header) # pylint: disable=E1121
-        properties['header'] = header
+        #name = self.__class__.__name__ + "MetaInformation"
+        name = str(cls).split(".")[-1][:-2] + "Header"
+        properties = cls.get_properties(orig_header) # pylint: disable=E1121
+        properties['header'] = orig_header
         return type(name, (object,), properties) # pylint: disable=E1121
         
     def plot(self, draw_limb=True, **matplot_args):
