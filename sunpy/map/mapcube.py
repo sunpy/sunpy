@@ -37,7 +37,7 @@ class MapCube(np.ndarray):
 
     Attributes
     ----------
-    slices : list
+    headers : list
         a list of :class:`sunpy.map.MapSlice` objects corresponding to the
         images that were used to build the MapCube.
 
@@ -49,7 +49,7 @@ class MapCube(np.ndarray):
     Examples
     --------
     >>> mapcube = sunpy.MapCube('images/')
-    >>> mapcube.slices[0].header['crpix1']
+    >>> mapcube.headers[0].header['crpix1']
     2050.6599120000001
     """
     def __new__(cls, input_):
@@ -58,7 +58,7 @@ class MapCube(np.ndarray):
         if isinstance(input_, basestring):
             filepaths = []
             data = []
-            slices = []
+            headers = []
 
             # directory
             if os.path.isdir(input_):
@@ -74,10 +74,10 @@ class MapCube(np.ndarray):
             for filepath in filepaths:
                 fits = pyfits.open(filepath)
                 data.append(fits[0].data)
-                slices.append(cls.parse_header(fits[0].header))
+                headers.append(cls.parse_header(fits[0].header))
 
             obj = np.asarray(data).view(cls)
-            obj.slices = slices
+            obj.headers = headers
 
         # List of data or filepaths
         elif isinstance(input_, list):
@@ -99,7 +99,7 @@ class MapCube(np.ndarray):
             self._derotate()
 
     @classmethod
-    def parse_header(cls, header):
+    def parse_header(cls, orig_header):
         """Returns a MapSlice instance corresponding to an image header.
         
         Attempts to construct a `MapSlice` instance using the header information
@@ -114,8 +114,8 @@ class MapCube(np.ndarray):
             The image header for which a `MapSlice` should be built
         """
         for cls in BaseMap.__subclasses__():
-            if cls.is_datasource_for(header):
-                return cls.as_slice(header)
+            if cls.is_datasource_for(orig_header):
+                return cls.get_header(orig_header)
         raise UnrecognizedDataSouceError
     
     def plot(self):
