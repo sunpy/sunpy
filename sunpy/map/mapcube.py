@@ -4,12 +4,11 @@
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
+from sunpy.map.basemap import BaseMap, UnrecognizedDataSouceError
+from sunpy.map.sources import *
+import numpy as np
 import os
 import pyfits
-import numpy as np
-from sunpy.map.sources import *
-from sunpy.map.basemap import BaseMap
-from sunpy.map.basemap import UnrecognizedDataSouceError
 
 #
 # 2011/04/13: Should Map be broken up into Map and MapHeader classes? This way
@@ -38,18 +37,19 @@ class MapCube(np.ndarray):
     Attributes
     ----------
     headers : list
-        a list of :class:`sunpy.map.MapSlice` objects corresponding to the
-        images that were used to build the MapCube.
+        a list of dictionaries containing the original and normalized header
+        tags for the files used to build the MapCube.
 
     See Also:
     ---------
     numpy.ndarray Parent class for the MapCube object
-    :class:`sunpy.Map`
+    :class:`sunpy.map.BaseMap`
         
     Examples
     --------
     >>> mapcube = sunpy.MapCube('images/')
-    >>> mapcube.headers[0].header['crpix1']
+    >>> mapcube[0].plot()
+    >>> mapcube[3].header.get('crpix1')
     2050.6599120000001
     """
     def __new__(cls, input_):
@@ -74,10 +74,10 @@ class MapCube(np.ndarray):
             for filepath in filepaths:
                 fits = pyfits.open(filepath)
                 data.append(fits[0].data)
-                headers.append(cls.parse_header(fits[0].header))
+                headers.append(fits[0].header)
 
             obj = np.asarray(data).view(cls)
-            obj.headers = headers
+            obj._headers = headers
 
         # List of data or filepaths
         elif isinstance(input_, list):
@@ -97,39 +97,34 @@ class MapCube(np.ndarray):
 
         if derotate:
             self._derotate()
+            
+    def __getitem__(self, key):
+        """Overiding indexing operation"""
+        if isinstance(key, int):
+            data = np.ndarray.__getitem__(self, key)
+            header = self._headers[key]
+            for cls in BaseMap.__subclasses__():
+                if cls.is_datasource_for(header):
+                    return cls(data, header)
+            raise UnrecognizedDataSouceError
+        else:
+            return np.ndarray.__getitem__(self, key)
 
-    @classmethod
-    def parse_header(cls, orig_header):
-        """Returns a MapSlice instance corresponding to an image header.
-        
-        Attempts to construct a `MapSlice` instance using the header information
-        provided. `MapSlice` instances (e.g. `AIAMapSlice`) are basically just
-        empty (data-less) Map objects. This provides a way to keep track of
-        the meta-information for each of the images that were used to build
-        the MapCube separately from the data.
-        
-        Parameters
-        ----------
-        header : dict
-            The image header for which a `MapSlice` should be built
-        """
-        for cls in BaseMap.__subclasses__():
-            if cls.is_datasource_for(orig_header):
-                return cls.get_header(orig_header)
-        raise UnrecognizedDataSouceError
-    
-    def plot(self):
-        """A basic plot method (not yet implemented)"""
-        pass
-    
     def _derotate(self):
         """Derotates the layers in the MapCube"""
         pass
             
     def __array_finalize__(self, obj):
-        """Finishes instantiation of the new map object"""
+        """Finishes instantiation of the new MapCube object"""
         if obj is None:
             return
+
+        if hasattr(obj, '_headers'):
+            self._headers = obj._headers
+        
+    def __array_wrap__(self, out_arr, context=None):
+        """Returns a wrapped instance of a MapCube object"""
+        return np.ndarray.__array_wrap__(self, out_arr, context)
         
     # Coalignment methods
     def _coalign_diff(self):
@@ -157,3 +152,6 @@ class MapCube(np.ndarray):
         """
         pass
     
+    def plot(self):
+        """A basic plot method (not yet implemented)"""
+        pass
