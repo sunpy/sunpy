@@ -166,7 +166,7 @@ class BaseMap(np.ndarray):
         Dynamically create a class which contains only the original and
         normalized header fields and default settings for the map. This is
         useful for Map collections (e.g. MapCube) in order to maintain a
-        separate record of the metainformation for a given layer or "slice"
+        separate record of the meta information for a given layer or "slice"
         of the cube without having to keep the data separate.
         
         Parameters
