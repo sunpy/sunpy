@@ -1,21 +1,25 @@
 # -*- coding: utf-8 -*-
 # Author: Florian Mayer <florian.mayer@bitsrc.org>
 
+import re
 import os
 import sys
 import tempfile
 import threading
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from functools import partial
 from collections import defaultdict
 
 from suds import client
+
 from sunpy.net import download
+from sunpy.util.util import anytim
 
 DEFAULT_URL = 'http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl'
 DEFAULT_PORT = 'nsoVSOi'
 TIMEFORMAT = '%Y%m%d%H%M%S'
+RANGE = re.compile(r'(\d+)(\s*-\s*(\d+))?(\s*([a-zA-Z]+))?')
 
 
 class _Str(str):
@@ -348,6 +352,24 @@ def _mk_queryreq(api, block):
     return queryreq
 
 
+def _single_dict(key, value):
+    return {key: value}
+
+
+def _parse_waverange(string):
+    min_, max_, unit = RANGE.match(string)[::2]
+    return {
+        'wave_wavemin': min_,
+        'wave_wavemax': min_ if max_ is None else max_,
+        'wave_waveunit': 'Angstrom' if unit is None else unit,
+    }
+
+
+def _parse_date(string):
+    start, end = string.split(' - ')
+    return {'time_start': start.strip(), 'time_end': end.strip()}
+
+
 class API(object):
     method_order = [
         'URL-TAR_GZ', 'URL-ZIP', 'URL-TAR', 'URL-FILE', 'URL-packaged'
@@ -394,25 +416,49 @@ class API(object):
         response.provideritem = providers.values()
         return response
     
-    def query_legacy(self, time_start, time_end, **kwargs):
-        ALIASES = {'wave_min': 'wave_wavemin', 'wave_max': 'wave_wavemax',
-                   'wave_type': 'wave_wavetype', 'wave_unit': 'wave_waveunit'}
-        kwargs.update({'time_start': time_start, 'time_end': time_end})
+    def query_legacy(self, tstart=None, tend=None, **kwargs):
+        sdk = lambda key: partial(_single_dict, key)
+        ALIASES = {
+            'wave_min': sdk('wave_wavemin'),
+            'wave_max': sdk('wave_wavemax'),
+            'wave_type': sdk('wave_wavetype'),
+            'wave_unit': sdk('wave_waveunit'),
+            'wave': _parse_waverange,
+            'inst': sdk('instrument'),
+            'telescope': sdk('instrument'),
+            'spacecraft': sdk('source'),
+            'observatory': sdk('source'),
+            'start_date': sdk('time_start'),
+            'end_date': sdk('time_end'),
+            'start': sdk('time_start'),
+            'end': sdk('time_end'),
+            'date': _parse_date,
+        }
+        kwargs.update({'time_start': tstart, 'time_end': tend})
         
         queryreq = self.api.factory.create('QueryRequest')
-        for k, v in kwargs.iteritems():
-            k = ALIASES.get(k, k)
-            if k.startswith('time'):
-                v = v.strftime(TIMEFORMAT)
-            attr = k.split('_')
-            lst = attr[-1]
-            rest = attr[:-1]
-            
-            item = queryreq.block
-            for elem in rest:
-                item = item[elem]
-            item[lst] = v
+        for key, value in kwargs.iteritems():
+            if key.startswith('time'):
+                value = anytim(value).strftime(TIMEFORMAT)
+            for k, v in ALIASES.get(key, sdk(key))(value).iteritems():
+                attr = k.split('_')
+                lst = attr[-1]
+                rest = attr[:-1]
+                
+                item = queryreq.block
+                for elem in rest:
+                    item = item[elem]
+                if item[lst]:
+                    raise ValueError("Got multiple values for %s." % k)
+                item[lst] = v
         return self.api.service.Query(queryreq)
+    
+    def latest(self):
+        return self.query_legacy(
+            datetime.utcnow(),
+            datetime.utcnow() - timedelta(7),
+            time_near=datetime.utcnow()
+        )
     
     def get(self, query_response, path=None, downloader=None, methods=['URL-FILE']):
         if downloader is None:
