@@ -164,34 +164,6 @@ class BaseMap(np.ndarray):
             'name': "Default Map",
             'r_sun': None
         }
-    @classmethod
-    def as_slice(cls, header):
-        """Returns a data-less Map object.
-        
-        Dynamically create a class which contains only the original and
-        normalized header fields and default settings for the map. This is
-        useful for Map collections (e.g. MapCube) in order to maintain a
-        separate record of the metainformation for a given layer or "slice"
-        of the cube without having to keep the data separate.
-        
-        Parameters
-        ----------
-        header : dict
-            A dictionary of the original image header tag
-            
-        Returns
-        -------
-        out : MapSlice
-            An empty container object with only meta information and default
-            choices pertaining to the header specified.
-        
-        See Also: http://docs.python.org/library/functions.html#type
-        """
-        #name = self.__class__.__name__ + "Slice"
-        name = str(cls).split(".")[-1][:-2] + "Slice"
-        properties = cls.get_properties(header) # pylint: disable=E1121
-        properties['header'] = header
-        return type(name, (object,), properties) # pylint: disable=E1121
         
     def get_xrange(self):
         """Return the X range of the image in arcsec."""        
