@@ -373,6 +373,8 @@ class API(object):
         for queryresponse in queryresponses:
             for provideritem in queryresponse.provideritem:
                 provider = provideritem.provider
+                if not hasattr(provideritem.record, 'recorditem'):
+                    continue
                 if not provideritem.provider in providers:
                     providers[provider] = provideritem
                     fileids |= set(
