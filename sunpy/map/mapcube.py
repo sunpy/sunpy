@@ -4,7 +4,6 @@
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
-import sys
 import os
 import pyfits
 import numpy as np
@@ -27,10 +26,10 @@ class MapCube(np.ndarray):
 
     Parameters
     ----------
-    input_ : directory, data array
+    input_ : directory, glob string, data array, 
         The data source used to create the map object. This can be either a
-        filepath to a directory containing the images you wish to include, a 2d 
-        list, or an ndarray.
+        filepath to a directory containing the images you wish to include, a
+        globbable string such as "data/*.fits", a 2d list, or an ndarray.
     coalign : [ None | 'diff' ]
         Method to use for coalignment. If None, no coalignment will be done.
     derotate : bool
@@ -55,20 +54,36 @@ class MapCube(np.ndarray):
     """
     def __new__(cls, input_):
         """Creates a new Map instance"""
-        if isinstance(input_, str):
+        # Directory of files
+        if isinstance(input_, basestring):
+            filepaths = []
             data = []
             slices = []
-            
-            for filename in os.listdir(input_):
-                fits = pyfits.open(os.path.join(input_, filename))
+
+            # directory
+            if os.path.isdir(input_):
+                for filename in os.listdir(input_):
+                    filepaths.append(os.path.join(input_, filename))
+
+            # glob string
+            else:
+                from glob import glob
+                filepaths = glob(input_)
+                
+            # read in files
+            for filepath in filepaths:
+                fits = pyfits.open(filepath)
                 data.append(fits[0].data)
                 slices.append(cls.parse_header(fits[0].header))
 
             obj = np.asarray(data).view(cls)
             obj.slices = slices
-            
+
+        # List of data or filepaths
         elif isinstance(input_, list):
             obj = np.asarray(input_).view(cls)
+
+        # ndarray
         elif isinstance(input_, np.ndarray):
             obj = input_
 
