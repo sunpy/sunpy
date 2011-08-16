@@ -8,7 +8,7 @@ Installation
 
 To begin, installing the following requirements if you don't already have them:
 
- * [Python]([Python](http://www.python.org) (2.7+)
+ * [Python]([Python](http://www.python.org) (2.6+)
  * [PyFITS](http://www.stsci.edu/resources/software_hardware/pyfits)
  * [NumPy](http://numpy.scipy.org/)
  * [Matplotlib](http://matplotlib.sourceforge.net/)
