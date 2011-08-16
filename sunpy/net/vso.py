@@ -428,6 +428,10 @@ class API(object):
             )
         if path is None:
             path = os.path.join(tempfile.mkdtemp(), '{file}')
+        fileids = API.by_fileid(query_response)
+        if not fileids:
+            res.poke()
+            return res
         self.download_all(
             self.api.service.GetData(
                 self.make_getdatarequest(query_response, methods)
@@ -440,6 +444,8 @@ class API(object):
     
     @staticmethod
     def link(query_response, map_):
+        if not map_:
+            return []
         ret = []
         for prov_item in query_response.provideritem:
             for record_item in prov_item.record.recorditem:
@@ -537,6 +543,9 @@ class API(object):
     def by_provider(response):
         map_ = defaultdict(list)
         for prov_item in response.provideritem:
+            if not hasattr(prov_item, 'record') or not str(prov_item.record):
+                # TODO: Log.
+                continue
             map_[prov_item.provider].extend(prov_item.record.recorditem)
         return map_
     
@@ -544,6 +553,9 @@ class API(object):
     def by_fileid(response):
         map_ = {}
         for prov_item in response.provideritem:
+            if not hasattr(prov_item, 'record') or not str(prov_item.record):
+                # TODO: Log.
+                continue
             for record_item in prov_item.record.recorditem:
                 map_[record_item.fileid] = record_item
         return map_
