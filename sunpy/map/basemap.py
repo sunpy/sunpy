@@ -254,8 +254,8 @@ class BaseMap(np.ndarray):
         
         axes = fig.add_subplot(111)
         axes.set_title("%s %s" % (self.name, self.date))
-        axes.set_xlabel('X-postion (arcseconds)')
-        axes.set_ylabel('Y-postion (arcseconds)')
+        axes.set_xlabel('X-postion [' + self.units['x'] + ']')
+        axes.set_ylabel('Y-postion [' + self.units['y'] + ']')
         
         # Draw circle at solar limb
         if draw_limb:
