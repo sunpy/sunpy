@@ -134,7 +134,7 @@ class _ComplexAttr(_Attr):
             queryblock[k] = v
     
     def create(self, api):
-        value = factory.create('QueryRequestBlock')
+        value = api.factory.create('QueryRequestBlock')
         self.apply(value)
         return [value]
     
@@ -151,7 +151,7 @@ class _SimpleAttr(_Attr):
         queryblock[self.field] = self.value
     
     def create(self, api):
-        value = factory.create('QueryRequestBlock')
+        value = api.factory.create('QueryRequestBlock')
         self.apply(value)
         return value
     
