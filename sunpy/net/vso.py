@@ -225,7 +225,7 @@ class Wave(_ComplexAttr):
         
         if type_ == 'wavelength':
             k = n / ANGSTROM
-            return (min_ / k, self.max_ / k)
+            return (min_ / k, max_ / k)
         if type_ == 'frequency':
             k = n / ANGSTROM
             return k * (C / max_), k * (C / min_)
