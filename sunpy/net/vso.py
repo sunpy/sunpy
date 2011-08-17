@@ -351,12 +351,6 @@ def mk_filename(pattern, response, sock, url):
     return fname
 
 
-def _mk_queryreq(api, block):
-    queryreq = api.factory.create('QueryRequest')
-    queryreq.block = block
-    return queryreq
-
-
 def _single_dict(key, value):
     return {key: value}
 
@@ -385,11 +379,22 @@ class API(object):
             api.set_options(port=DEFAULT_PORT)
         self.api = api
     
+    def make(self, type_, **kwargs):
+        obj = self.api.factory.create(type_)
+        for k, v in kwargs.iteritems():
+            split = k.split('__')
+            tip = split[-1]
+            rest = split[:-1]
+            
+            item = obj
+            for elem in rest:
+                item = item[elem]
+            item[tip] = v
+        return obj
+    
     def query(self, query):
-        queryreq = self.api.factory.create('QueryRequest')
-        query.create(self.api)
         return self.merge(
-            self.api.service.Query(_mk_queryreq(self.api, block))
+            self.api.service.Query(self.make('QueryRequest', block=block))
             for block in query.create(self.api)
         )
     
@@ -417,9 +422,7 @@ class API(object):
                             )
                             providers[provider].no_of_records_found += 1
                             providers[provider].no_of_records_returned += 1
-        response = self.api.factory.create('QueryResponse')
-        response.provideritem = providers.values()
-        return response
+        return self.make('QueryResponse', provideritem=providers.values())
     
     def query_legacy(self, tstart=None, tend=None, **kwargs):
         sdk = lambda key: partial(_single_dict, key)
@@ -503,6 +506,7 @@ class API(object):
         if not map_:
             return []
         ret = []
+        # TODO: FIXME
         for prov_item in query_response.provideritem:
             for record_item in prov_item.record.recorditem:
                 item = _Str(map_[record_item.fileid]['path'])
@@ -532,10 +536,9 @@ class API(object):
             r.info[k] = v
         
         for k, v in map_.iteritems():
-            datarequest = self.api.factory.create('DataRequestItem')
-            datarequest.provider = k
-            datarequest.fileiditem.fileid = v
-            r.datacontainer.datarequestitem.append(datarequest)
+            r.datacontainer.datarequestitem.append(
+                self.make('DataRequestItem', provider=k, fileiditem__fileid=[v])
+            )
         
         return request
     
