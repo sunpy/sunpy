@@ -8,7 +8,7 @@ Welcome! here you can find documentation relating to sunpy.
 
 Requirements
 ------------
-* `NumPy <http://numpy.scipy.org/>`_
+* `NumPy/SciPy <http://numpy.scipy.org/>`_
 * `Matplotlib <http://matplotlib.sourceforge.net/>`_
 * `PyFITS <http://www.stsci.edu/resources/software_hardware/pyfits>`_
 

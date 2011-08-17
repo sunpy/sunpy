@@ -46,7 +46,7 @@ def log_adaptive(data, bits=12, vmin=1, vmax=2000):
         
     Examples
     --------
-    >>> map = sunpy.Map('doc/sample-data/AIA20110319_105400_0171.fits')
+    >>> map = sunpy.Map(sunpy.data.sample.AIA_171_IMAGE)
     >>> cmap = sunpy.dev.cm.log_adaptive(map)
     >>> map.plot(cmap=cmap)    
     """
