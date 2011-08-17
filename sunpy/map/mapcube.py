@@ -133,7 +133,7 @@ class MapCube(np.ndarray):
     
     def __getitem__(self, key):
         """Overiding indexing operation"""
-        if isinstance(key, int):
+        if self.ndim is 3 and isinstance(key, int):
             data = np.ndarray.__getitem__(self, key)
             header = self._headers[key]
             for cls in BaseMap.__subclasses__():
@@ -184,4 +184,9 @@ class MapCube(np.ndarray):
         """A basic plot method (not yet implemented)"""
         pass
     
-
+if __name__ == "__main__":
+    import sunpy
+    m = sunpy.MapCube("/home/hughitt1/Dropbox/eitwave")
+    #print(m[0,0:5,0:5])
+    #print()
+    repr(m[2].base)
