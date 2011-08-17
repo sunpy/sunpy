@@ -52,11 +52,13 @@ class MapCube(np.ndarray):
     >>> mapcube[3].header.get('crpix1')
     2050.6599120000001
     """
-    def __new__(cls, input_):
+    def __new__(cls, input_, sortby="date"):
         """Creates a new Map instance"""
+        
         # Directory of files
         if isinstance(input_, basestring):
             filepaths = []
+            fits_arr = []
             data = []
             headers = []
 
@@ -73,6 +75,25 @@ class MapCube(np.ndarray):
             # read in files
             for filepath in filepaths:
                 fits = pyfits.open(filepath)
+                
+                # append normalized header tags for use during sorting
+                found_header_match = False
+                
+                for subcls in BaseMap.__subclasses__():
+                    if subcls.is_datasource_for(fits[0].header):
+                        found_header_match = True
+                        fits.norm_header = subcls.get_properties(fits[0].header)
+                if not found_header_match:
+                    raise UnrecognizedDataSouceError
+
+                fits_arr.append(fits)
+
+            # sort data
+            if sortby and hasattr(cls, '_sort_by_%s' % sortby):
+                fits_arr.sort(key=getattr(cls, '_sort_by_%s' % sortby)())
+
+            # create data cube
+            for fits in fits_arr:
                 data.append(fits[0].data)
                 headers.append(fits[0].header)
 
@@ -98,22 +119,6 @@ class MapCube(np.ndarray):
         if derotate:
             self._derotate()
             
-    def __getitem__(self, key):
-        """Overiding indexing operation"""
-        if isinstance(key, int):
-            data = np.ndarray.__getitem__(self, key)
-            header = self._headers[key]
-            for cls in BaseMap.__subclasses__():
-                if cls.is_datasource_for(header):
-                    return cls(data, header)
-            raise UnrecognizedDataSouceError
-        else:
-            return np.ndarray.__getitem__(self, key)
-
-    def _derotate(self):
-        """Derotates the layers in the MapCube"""
-        pass
-            
     def __array_finalize__(self, obj):
         """Finishes instantiation of the new MapCube object"""
         if obj is None:
@@ -125,6 +130,18 @@ class MapCube(np.ndarray):
     def __array_wrap__(self, out_arr, context=None):
         """Returns a wrapped instance of a MapCube object"""
         return np.ndarray.__array_wrap__(self, out_arr, context)
+    
+    def __getitem__(self, key):
+        """Overiding indexing operation"""
+        if isinstance(key, int):
+            data = np.ndarray.__getitem__(self, key)
+            header = self._headers[key]
+            for cls in BaseMap.__subclasses__():
+                if cls.is_datasource_for(header):
+                    return cls(data, header)
+            raise UnrecognizedDataSouceError
+        else:
+            return np.ndarray.__getitem__(self, key)
         
     # Coalignment methods
     def _coalign_diff(self):
@@ -152,6 +169,19 @@ class MapCube(np.ndarray):
         """
         pass
     
+    # Sorting methods
+    @classmethod
+    def _sort_by_date(cls):
+        #from operator import attrgetter
+        #return attrgetter("norm_header.date")
+        return lambda fits: fits.norm_header.get("date")
+    
+    def _derotate(self):
+        """Derotates the layers in the MapCube"""
+        pass
+    
     def plot(self):
         """A basic plot method (not yet implemented)"""
         pass
+    
+
