@@ -534,19 +534,15 @@ class API(object):
         if info is None:
             info = {}
         
-        request = self.api.factory.create('VSOGetDataRequest')
-        r = request.request
-        r.method.methodtype.extend(methods)
-        
-        for k, v in info.iteritems():
-            r.info[k] = v
-        
-        for k, v in map_.iteritems():
-            r.datacontainer.datarequestitem.append(
+        return self.make(
+            'VSOGetDataRequest',
+            request__method__methodtype=methods, 
+            request__info=info,
+            request__datacontainer__datarequestitem=[
                 self.make('DataRequestItem', provider=k, fileiditem__fileid=[v])
-            )
-        
-        return request
+                for k, v in map_.iteritems()
+            ]
+        )
     
     def download_all(self, response, methods, dw, path, qr, res, info=None):
         for dresponse in response.getdataresponseitem:
