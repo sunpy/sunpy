@@ -389,7 +389,13 @@ class API(object):
             item = obj
             for elem in rest:
                 item = item[elem]
-            item[tip] = v
+            
+            if isinstance(v, dict):
+                # Do not throw away type information for dicts.
+                for k, v in v.iteritems():
+                    item[tip][k] = v
+            else:
+                item[tip] = v
         return obj
     
     def query(self, query):
