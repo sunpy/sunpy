@@ -514,6 +514,9 @@ class API(object):
         ret = []
         # TODO: FIXME
         for prov_item in query_response.provideritem:
+            if not hasattr(prov_item, 'record') or not str(prov_item.record):
+                continue
+            
             for record_item in prov_item.record.recorditem:
                 item = _Str(map_[record_item.fileid]['path'])
                 item.meta = record_item
@@ -591,6 +594,9 @@ class API(object):
                     self.api.service.GetData(request), methods, dw, path,
                     qr, res, info
                 )
+            else:
+                # TODO
+                pass
     
     def download(self, method, url, dw, callback, *args):
         if method.startswith('URL'):
