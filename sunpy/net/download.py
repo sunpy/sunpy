@@ -120,7 +120,7 @@ class Reactor(object):
                     continue
                 fun()
     
-    def poll(self):
+    def poll(self, timeout=None):
         raise NotImplementedError
     
     def call_sync(self, fun):
