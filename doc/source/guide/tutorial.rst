@@ -7,7 +7,7 @@ A simple example of how to plot a map::
 	import sunpy
 	import matplotlib.cm as cm
 	import matplotlib.colors as colors
-	map = sunpy.Map(“doc/sample-data/AIA20110319_105400_0171.fits”)
+	map = sunpy.Map(sunpy.data.sample.AIA_171_IMAGE)
 	map.plot(cmap=cm.hot, norm=colors.Normalize(1, 2048))
 
 and there you go!
