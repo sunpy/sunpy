@@ -447,7 +447,12 @@ class API(object):
                 
                 item = queryreq.block
                 for elem in rest:
-                    item = item[elem]
+                    try:
+                        item = item[elem]
+                    except KeyError:
+                        raise ValueError("Unexpected argument %s." % key)
+                if lst not in item:
+                    raise ValueError("Unexpected argument %s." % key)
                 if item[lst]:
                     raise ValueError("Got multiple values for %s." % k)
                 item[lst] = v
