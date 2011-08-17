@@ -22,6 +22,11 @@ TIMEFORMAT = '%Y%m%d%H%M%S'
 RANGE = re.compile(r'(\d+)(\s*-\s*(\d+))?(\s*([a-zA-Z]+))?')
 
 
+# TODO: Name
+class NoData(Exception):
+    pass
+
+
 class _Str(str):
     pass
 
@@ -550,7 +555,7 @@ class API(object):
                             path,
                             qr[dataitem.fileiditem.fileid[0]]
                         )
-                    except ValueError:
+                    except NoData:
                         # TODO: Log
                         continue
             elif code == '300' or code == '412':
@@ -562,7 +567,7 @@ class API(object):
                         methods = self.multiple_choices(
                             dresponse.method.methodtype, dresponse
                         )
-                    except ValueError:
+                    except NoData:
                         # TODO: Log.
                         continue
                 elif code == '412':
@@ -570,7 +575,7 @@ class API(object):
                         info = self.missing_information(
                             info, dresponse.info
                         )
-                    except ValueError:
+                    except NoData:
                         # TODO: Log.
                         continue
                 request = self.create_getdatarequest(
@@ -588,7 +593,7 @@ class API(object):
                 partial(dw.download, url, partial(mk_filename, *args),
                         callback)
             )
-        raise ValueError
+        raise NoData
     
     @staticmethod
     def by_provider(response):
@@ -615,10 +620,10 @@ class API(object):
         for elem in self.method_order:
             if elem in choices:
                 return [elem]
-        raise ValueError
+        raise NoData
     
     def missing_information(self, info, field):
-        raise ValueError
+        raise NoData
 
 
 class InteractiveAPI(API):
@@ -632,7 +637,7 @@ class InteractiveAPI(API):
             except ValueError, IndexError:
                 continue
             except KeyboardInterrupt:
-                raise ValueError
+                raise NoData
         
     def missing_information(self, info, field):
         return raw_input(field + ': ')
