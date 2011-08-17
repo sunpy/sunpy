@@ -43,8 +43,6 @@ def install(setup):
         version="0.01"
     )
 
-
 if __name__ == '__main__':
     from distutils.core import setup
     install(setup)
-
