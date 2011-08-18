@@ -581,9 +581,19 @@ class API(object):
         )
     
     def download_all(self, response, methods, dw, path, qr, res, info=None):
+        GET_VERSION = [
+            ('0.8', (5, 8)),
+            ('0.7', (1, 4)),
+            ('0.6', (0, 3)),
+        ]
         for dresponse in response.getdataresponseitem:
+            for version, (from_, to) in GET_VERSION:
+                if dresponse.version >= version:
+                    break
+            
             code = (
-                dresponse.status[5:8] if hasattr(dresponse, 'status') else '200'
+                dresponse.status[from_:to]
+                if hasattr(dresponse, 'status') else '200'
             )
             if code == '200':
                 for dataitem in dresponse.getdataitem.dataitem:
