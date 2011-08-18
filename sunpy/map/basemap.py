@@ -130,7 +130,6 @@ class BaseMap(np.ndarray):
                 "x": header.get('cunit1'), 
                 "y": header.get('cunit2')
             }
-            self.rsun = header.get('r_sun')
                 
     def __add__(self, other):
         """Add two maps. Currently does not take into account the alignment  
@@ -258,12 +257,14 @@ class BaseMap(np.ndarray):
         if hasattr(obj, 'header'):
             self.header = obj.header
 
+            # preserve object properties
             properties = self.get_properties(obj.header)
             for attr, value in list(properties.items()):
                 setattr(self, attr, getattr(obj, attr, value))
                 
             self.center = obj.center
             self.scale = obj.scale
+            self.units = obj.units
         
     def __array_wrap__(self, out_arr, context=None):
         """Returns a wrapped instance of a Map object"""
