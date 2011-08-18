@@ -420,7 +420,7 @@ class UnknownVersion(Exception):
 class UnknownStatus(Exception):
     pass
 
-class API(object):
+class VSOClient(object):
     method_order = [
         'URL-TAR_GZ', 'URL-ZIP', 'URL-TAR', 'URL-FILE', 'URL-packaged'
     ]
@@ -705,7 +705,7 @@ class API(object):
         raise NoData
 
 
-class InteractiveAPI(API):
+class InteractiveVSOClient(VSOClient):
     def multiple_choices(self, choices, response):
         while True:
             for n, elem in enumerate(choices):
@@ -724,7 +724,7 @@ class InteractiveAPI(API):
 
 if __name__ == '__main__':
     import sunpy
-    api = API()
+    api = VSOClient()
     
     qr = api.query_legacy(
         datetime(2010, 1, 1), datetime(2010, 1, 1, 1),
