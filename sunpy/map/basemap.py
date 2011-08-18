@@ -197,7 +197,7 @@ class BaseMap(np.ndarray):
         yrange_pixelcoord = self._transform_coord_to_pixel(yrange, 'y')
 
         xrange_pixelcoord = xrange_pixelcoord.astype('int')
-        yrange_pixelcoord = xrange_pixelcoord.astype('int')
+        yrange_pixelcoord = yrange_pixelcoord.astype('int')
         
         dpixel = [0.5*(xrange_pixelcoord[1] - xrange_pixelcoord[0]), 0.5*(yrange_pixelcoord[1] - yrange_pixelcoord[0])]
         
@@ -231,7 +231,7 @@ class BaseMap(np.ndarray):
         
         # Draw circle at solar limb
         if draw_limb:
-            circ = patches.Circle([0, 0], radius=self.radius(self.date), 
+            circ = patches.Circle([0, 0], radius=sun.radius(self.date), 
                 fill=False, color='white')
             axes.add_artist(circ)
 
