@@ -5,6 +5,7 @@ BaseMap is a generic Map class from which all other Map classes inherit from.
 __authors__ = ["Keith Hughitt, Steven Christe"]
 __email__ = "keith.hughitt@nasa.gov"
 
+import copy
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
@@ -191,24 +192,27 @@ class BaseMap(np.ndarray):
         if axis == 'y': n = self.shape[1]
         return 1 / self.scale[axis] * (coords + n / 2.0 * self.scale[axis] - self.center[axis])
 
-    def submap(self, x_range, y_range):        
-        #convert data coordinates to pixel coordinates        
-        xrange_pixelcoord = self._transform_coord_to_pixel(x_range, 'x')
-        yrange_pixelcoord = self._transform_coord_to_pixel(y_range, 'y')
+    def submap(self, x_range, y_range):
+        """Returns a submap of the map with the specified range"""
+        
+        # Convert data coordinates to pixel coordinates        
+        x_pixels = self._transform_coord_to_pixel(x_range, 'x').astype('int')
+        y_pixels = self._transform_coord_to_pixel(y_range, 'y').astype('int')
 
-        xrange_pixelcoord = xrange_pixelcoord.astype('int')
-        yrange_pixelcoord = yrange_pixelcoord.astype('int')
         
-        dpixel = [0.5*(xrange_pixelcoord[1] - xrange_pixelcoord[0]), 0.5*(yrange_pixelcoord[1] - yrange_pixelcoord[0])]
+        dpixel = [0.5 * (x_pixels[1] - x_pixels[0]), 
+                  0.5 * (y_pixels[1] - y_pixels[0])]
+
+        # Make a copy of the header with updated centering information        
+        header = copy.deepcopy(self.header)
+        header['crpix1'] = self._transform_pixel_to_coord(x_pixels[0] + dpixel[0], 'x')
+        header['crpix2'] = self._transform_pixel_to_coord(y_pixels[0] + dpixel[1], 'y')
         
-        xcenter_datacoord = self._transform_pixel_to_coord(xrange_pixelcoord[0] + dpixel[0], 'x')
-        ycenter_datacoord = self._transform_pixel_to_coord(yrange_pixelcoord[0] + dpixel[1], 'y')
-        
-        self.center['x'] = xcenter_datacoord
-        self.center['y'] = ycenter_datacoord
-        
-        self = self[xrange_pixelcoord[0]:xrange_pixelcoord[1], yrange_pixelcoord[0]:yrange_pixelcoord[1]]
-        return self
+        # Get ndarray representation of submap
+        data = np.asarray(self[x_pixels[0]:x_pixels[1], 
+                               y_pixels[0]:y_pixels[1]])
+
+        return self.__class__(data, header)
         
     def plot(self, draw_limb=True, **matplot_args):
         """Plots the map object using matplotlib
