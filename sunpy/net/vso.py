@@ -335,6 +335,9 @@ class Results(object):
     def wait(self):
         self.evt.wait()
         return self.map_
+    
+    def add_error(self, exception):
+        self.errors.append(exception)
 
 
 def mk_filename(pattern, response, sock, url):
@@ -606,7 +609,7 @@ class API(object):
                 if dresponse.version >= version:
                     break
             else:
-                res.errors.append(UnknownVersion(dresponse))
+                res.add_error(UnknownVersion(dresponse))
                 continue
             
             code = (
@@ -625,7 +628,7 @@ class API(object):
                             qr[dataitem.fileiditem.fileid[0]]
                         )
                     except NoData:
-                        res.errors.append(DownloadFailed(dresponse))
+                        res.add_error(DownloadFailed(dresponse))
                         continue
             elif code == '300' or code == '412' or code == '405':
                 if code == '300':
@@ -634,7 +637,7 @@ class API(object):
                             dresponse.method.methodtype, dresponse
                         )
                     except NoData:
-                        res.errors.append(MultipleChoices(dresponse))
+                        res.add_error(MultipleChoices(dresponse))
                         continue
                 elif code == '412':
                     try:
@@ -642,13 +645,13 @@ class API(object):
                             info, dresponse.info
                         )
                     except NoData:
-                        res.errors.append(MissingInformation(dresponse))
+                        res.add_error(MissingInformation(dresponse))
                         continue
                 elif code == '405':
                     try:
                         methods = self.unknown_method(dresponse)
                     except NoData:
-                        res.errors.append(UnknownMethod(dresponse))
+                        res.add_error(UnknownMethod(dresponse))
                         continue
                 
                 files = []
@@ -664,7 +667,7 @@ class API(object):
                     qr, res, info
                 )
             else:
-                res.errors.append(UnknownStatus(dresponse))
+                res.add_error(UnknownStatus(dresponse))
     
     def download(self, method, url, dw, callback, *args):
         if method.startswith('URL'):
