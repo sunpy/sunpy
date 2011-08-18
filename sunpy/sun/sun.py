@@ -37,11 +37,9 @@ import numpy as np
 from sunpy.util import util as util
 
 def solar_cycle_number(t=None):
-    time = anytim(t)
+    time = util.anytim(t)
     result = (time.year + 8) % 28 + 1
     return result
-
-
 
 def radius(t=None):
     return angular_size(t)
