@@ -1,6 +1,7 @@
 """
 BaseMap is a generic Map class from which all other Map classes inherit from.
 """
+#pylint: disable=E1101,E1121
 __authors__ = ["Keith Hughitt, Steven Christe"]
 __email__ = "keith.hughitt@nasa.gov"
 
@@ -66,7 +67,7 @@ class BaseMap(np.ndarray):
 
     Examples
     --------
-    >>> aia = sunpy.Map(sunpy.data.sample.AIA_171_IMAGE)
+    >>> aia = sunpy.Map(sunpy.AIA_171_IMAGE)
     >>> aia.T
     Map([[ 0.3125,  1.    , -1.1875, ..., -0.625 ,  0.5625,  0.5   ],
     [-0.0625,  0.1875,  0.375 , ...,  0.0625,  0.0625, -0.125 ],
@@ -94,7 +95,7 @@ class BaseMap(np.ndarray):
     | http://www.scipy.org/Subclasses
 
     """
-    def __new__(cls, data, header=None):
+    def __new__(cls, data, header=None): #pylint: disable=W0613
         """Creates a new BaseMap instance"""        
         if isinstance(data, np.ndarray):
             obj = data.view(cls)
@@ -146,7 +147,7 @@ class BaseMap(np.ndarray):
         minmax = np.array([abs(result.min()), abs(result.max())]).max()
         result.norm = colors.Normalize(-minmax, minmax, True)
         
-        result.cmap = cm.gray  #@UndefinedVariable
+        result.cmap = cm.gray #@UndefinedVariable 
         
         return result
     
@@ -191,13 +192,13 @@ class BaseMap(np.ndarray):
         if axis == 'y': n = self.shape[1]
         return 1 / self.scale[axis] * (coords + n / 2.0 * self.scale[axis] - self.center[axis])
 
-    def submap(self, xrange, yrange):        
+    def submap(self, x_range, y_range):        
         #convert data coordinates to pixel coordinates        
-        xrange_pixelcoord = self._transform_coord_to_pixel(xrange, 'x')
-        yrange_pixelcoord = self._transform_coord_to_pixel(yrange, 'y')
+        xrange_pixelcoord = self._transform_coord_to_pixel(x_range, 'x')
+        yrange_pixelcoord = self._transform_coord_to_pixel(y_range, 'y')
 
         xrange_pixelcoord = xrange_pixelcoord.astype('int')
-        yrange_pixelcoord = xrange_pixelcoord.astype('int')
+        yrange_pixelcoord = yrange_pixelcoord.astype('int')
         
         dpixel = [0.5*(xrange_pixelcoord[1] - xrange_pixelcoord[0]), 0.5*(yrange_pixelcoord[1] - yrange_pixelcoord[0])]
         
@@ -231,7 +232,7 @@ class BaseMap(np.ndarray):
         
         # Draw circle at solar limb
         if draw_limb:
-            circ = patches.Circle([0, 0], radius=self.radius(self.date), 
+            circ = patches.Circle([0, 0], radius=sun.radius(self.date), 
                 fill=False, color='white')
             axes.add_artist(circ)
 
