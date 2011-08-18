@@ -313,6 +313,7 @@ class Results(object):
         self.map_ = {}
         self.done = done
         self.evt = threading.Event()
+        self.errors = []
     
     def submit(self, keys, value):
         for key in keys:
@@ -397,6 +398,24 @@ class QueryResponse(object):
             max(record.time.end for record in iter_records(self.response))
         )
 
+
+class DownloadFailed(Exception):
+    pass
+
+class MissingInformation(Exception):
+    pass
+
+class UnknownMethod(Exception):
+    pass
+
+class MultipleChoices(Exception):
+    pass
+
+class UnknownVersion(Exception):
+    pass
+
+class UnknownStatus(Exception):
+    pass
 
 class API(object):
     method_order = [
@@ -587,7 +606,7 @@ class API(object):
                 if dresponse.version >= version:
                     break
             else:
-                # TODO
+                res.errors.append(UnknownVersion(dresponse))
                 continue
             
             code = (
@@ -606,19 +625,16 @@ class API(object):
                             qr[dataitem.fileiditem.fileid[0]]
                         )
                     except NoData:
-                        # TODO: Log
+                        res.errors.append(DownloadFailed(dresponse))
                         continue
             elif code == '300' or code == '412' or code == '405':
-                files = []
-                for dataitem in dresponse.getdataitem.dataitem:
-                    files.extend(dataitem.fileiditem.fileid)
                 if code == '300':
                     try:
                         methods = self.multiple_choices(
                             dresponse.method.methodtype, dresponse
                         )
                     except NoData:
-                        # TODO: Log.
+                        res.errors.append(MultipleChoices(dresponse))
                         continue
                 elif code == '412':
                     try:
@@ -626,14 +642,19 @@ class API(object):
                             info, dresponse.info
                         )
                     except NoData:
-                        # TODO: Log.
+                        res.errors.append(MissingInformation(dresponse))
                         continue
                 elif code == '405':
                     try:
                         methods = self.unknown_method(dresponse)
                     except NoData:
-                        # TODO: Log.
+                        res.errors.append(UnknownMethod(dresponse))
                         continue
+                
+                files = []
+                for dataitem in dresponse.getdataitem.dataitem:
+                    files.extend(dataitem.fileiditem.fileid)
+                
                 request = self.create_getdatarequest(
                     {dresponse.provider: files}, methods, info
                 )
@@ -643,8 +664,7 @@ class API(object):
                     qr, res, info
                 )
             else:
-                # TODO
-                pass
+                res.errors.append(UnknownStatus(dresponse))
     
     def download(self, method, url, dw, callback, *args):
         if method.startswith('URL'):
