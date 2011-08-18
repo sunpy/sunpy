@@ -369,6 +369,39 @@ def _parse_date(string):
     return {'time_start': start.strip(), 'time_end': end.strip()}
 
 
+def iter_records(response):
+    for prov_item in response.provideritem:
+        if not hasattr(prov_item, 'record') or not prov_item.record:
+            continue
+        for record_item in prov_item.record.recorditem:
+            yield record_item
+
+
+def iter_errors(response):
+    for prov_item in response.provideritem:
+        if not hasattr(prov_item, 'record') or not prov_item.record:
+            yield prov_item
+
+
+class QueryResponse(object):
+    def __init__(self, response=None):
+        self.response = response
+    
+    def total_size(self):
+        return sum(
+            record_item.size for record_item in iter_records(self.response)
+        )
+    
+    def no_records(self):
+        return sum(1 for _ in iter_records(self.response))
+    
+    def time_range(self):
+        return (
+            min(record.time.start for record in iter_records(self.response)),
+            max(record.time.end for record in iter_records(self.response))
+        )
+
+
 class API(object):
     method_order = [
         'URL-TAR_GZ', 'URL-ZIP', 'URL-TAR', 'URL-FILE', 'URL-packaged'
@@ -512,9 +545,9 @@ class API(object):
         if not map_:
             return []
         ret = []
-        # TODO: FIXME
+        
         for prov_item in query_response.provideritem:
-            if not hasattr(prov_item, 'record') or not str(prov_item.record):
+            if not hasattr(prov_item, 'record') or not prov_item.record:
                 continue
             
             for record_item in prov_item.record.recorditem:
@@ -611,21 +644,15 @@ class API(object):
         map_ = defaultdict(list)
         for prov_item in response.provideritem:
             if not hasattr(prov_item, 'record') or not str(prov_item.record):
-                # TODO: Log.
                 continue
             map_[prov_item.provider].extend(prov_item.record.recorditem)
         return map_
     
     @staticmethod
     def by_fileid(response):
-        map_ = {}
-        for prov_item in response.provideritem:
-            if not hasattr(prov_item, 'record') or not str(prov_item.record):
-                # TODO: Log.
-                continue
-            for record_item in prov_item.record.recorditem:
-                map_[record_item.fileid] = record_item
-        return map_
+        return dict(
+            (record.fileid, record) for record in iter_records(response)
+        )
     
     def multiple_choices(self, choices, response):
         for elem in self.method_order:
