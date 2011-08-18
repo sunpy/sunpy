@@ -351,10 +351,6 @@ def mk_filename(pattern, response, sock, url):
     return fname
 
 
-def _single_dict(key, value):
-    return {key: value}
-
-
 def _parse_waverange(string):
     min_, max_, unit = RANGE.match(string)[::2]
     return {
@@ -464,7 +460,7 @@ class API(object):
         return self.make('QueryResponse', provideritem=providers.values())
     
     def query_legacy(self, tstart=None, tend=None, **kwargs):
-        sdk = lambda key: partial(_single_dict, key)
+        sdk = lambda key: lambda value: {key: value}
         ALIASES = {
             'wave_min': sdk('wave_wavemin'),
             'wave_max': sdk('wave_wavemax'),
