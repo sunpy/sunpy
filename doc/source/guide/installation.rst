@@ -30,7 +30,7 @@ Done! To see if everything went okay, start a Python session and try importing
 SunPy:
 
 >>> import sunpy
->>> sunpy.Map(sunpy.data.sample.AIA_171_IMAGE).plot()
+>>> sunpy.Map(sunpy.AIA_171_IMAGE).plot()
 
 Mac
 ---
@@ -106,7 +106,7 @@ that Python can find it.
 To test it all out, open a new Python shell and try typing: ::
 
 >>> import sunpy
->>> sunpy.Map(sunpy.data.sample.AIA_171_IMAGE).plot()
+>>> sunpy.Map(sunpy.AIA_171_IMAGE).plot()
 
 
 

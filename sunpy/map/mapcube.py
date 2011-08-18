@@ -1,11 +1,11 @@
 """A Python MapCube Object"""
-#pylint: disable=W0401,W0614
+#pylint: disable=W0401,W0614,W0201,W0212,W0404
 
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
 from sunpy.map.basemap import BaseMap, UnrecognizedDataSouceError
-from sunpy.map.sources import *
+from sunpy.map.sources import * #@UnusedWildImport
 import numpy as np
 import os
 import pyfits
@@ -79,7 +79,7 @@ class MapCube(np.ndarray):
                 # append normalized header tags for use during sorting
                 found_header_match = False
                 
-                for subcls in BaseMap.__subclasses__():
+                for subcls in BaseMap.__subclasses__(): #pylint: disable=E1101
                     if subcls.is_datasource_for(fits[0].header):
                         found_header_match = True
                         fits.norm_header = subcls.get_properties(fits[0].header)
