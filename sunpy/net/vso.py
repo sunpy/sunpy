@@ -599,7 +599,7 @@ class API(object):
                     except NoData:
                         # TODO: Log
                         continue
-            elif code == '300' or code == '412':
+            elif code == '300' or code == '412' or code == '405':
                 files = []
                 for dataitem in dresponse.getdataitem.dataitem:
                     files.extend(dataitem.fileiditem.fileid)
@@ -616,6 +616,12 @@ class API(object):
                         info = self.missing_information(
                             info, dresponse.info
                         )
+                    except NoData:
+                        # TODO: Log.
+                        continue
+                elif code == '405':
+                    try:
+                        methods = self.unknown_method(dresponse)
                     except NoData:
                         # TODO: Log.
                         continue
@@ -661,6 +667,9 @@ class API(object):
         raise NoData
     
     def missing_information(self, info, field):
+        raise NoData
+    
+    def unknown_method(self, response):
         raise NoData
 
 
