@@ -33,3 +33,6 @@ from map.mapcube import MapCube
 from map.compositemap import CompositeMap
 from dev import *
 from cm import *
+
+# Sample data
+from data.sample import AIA_171_IMAGE, RHESSI_HSI

@@ -21,7 +21,7 @@ def plot_rhessi_fits(filepath=None):
     '''Plots an AIA image.'''
 
     if filepath is None:
-        filepath = os.path.join(os.path.dirname(__file__), sunpy.data.sample.RHESSI_HSI)
+        filepath = os.path.join(os.path.dirname(__file__), sunpy.RHESSI_HSI)
 
     # Load fits file
     fits = pyfits.open(filepath)
@@ -86,7 +86,7 @@ def plot_fits(filepath=None):
     '''Plots an AIA image.'''
 
     if filepath is None:
-        filepath = os.path.join(os.path.dirname(__file__), sunpy.data.sample.AIA_171_IMAGE)
+        filepath = os.path.join(os.path.dirname(__file__), sunpy.AIA_171_IMAGE)
 
     # Load fits file
     fits = pyfits.open(filepath)
