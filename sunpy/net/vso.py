@@ -590,6 +590,9 @@ class API(object):
             for version, (from_, to) in GET_VERSION:
                 if dresponse.version >= version:
                     break
+            else:
+                # TODO
+                continue
             
             code = (
                 dresponse.status[from_:to]
