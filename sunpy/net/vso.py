@@ -720,6 +720,20 @@ class InteractiveVSOClient(VSOClient):
         
     def missing_information(self, info, field):
         return raw_input(field + ': ')
+    
+    def search(self, tstart=None, tend=None, **kwargs):
+        if isinstance(tstart, _Attr):
+            return self.query(tstart)
+        else:
+            return self.query_legacy(tstart, tend, **kwargs)
+
+
+g_client = None
+def search(tstart=None, tend=None, **kwargs):
+    global g_client
+    if g_client is None:
+        g_client = InteractiveVSOClient()
+    return g_client.search(tstart=None, tend=None, **kwargs)
 
 
 if __name__ == '__main__':
