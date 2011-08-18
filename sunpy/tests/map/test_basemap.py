@@ -8,7 +8,7 @@ import pyfits
 class TestBaseMap:
     """Tests the BaseMap class"""
     def setup_class(self):
-        self.file = sunpy.data.sample.AIA_171_IMAGE
+        self.file = sunpy.AIA_171_IMAGE
         self.map = sunpy.Map(self.file)
         self.fits = pyfits.open(self.file)
 
