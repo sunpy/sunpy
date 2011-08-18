@@ -544,7 +544,7 @@ class VSOClient(object):
             )
         if path is None:
             path = os.path.join(tempfile.mkdtemp(), '{file}')
-        fileids = API.by_fileid(query_response)
+        fileids = VSOClient.by_fileid(query_response)
         if not fileids:
             res.poke()
             return res
@@ -553,7 +553,7 @@ class VSOClient(object):
                 self.make_getdatarequest(query_response, methods)
                 ),
             methods, downloader, path,
-            API.by_fileid(query_response), res
+            VSOClient.by_fileid(query_response), res
         )
         res.poke()
         return res
