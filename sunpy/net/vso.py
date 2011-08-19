@@ -488,12 +488,78 @@ class VSOClient(object):
         return self.make('QueryResponse', provideritem=providers.values())
     
     def query_legacy(self, tstart=None, tend=None, **kwargs):
+        """
+        Query data from the VSO mocking the IDL API as close as possible.
+        Either tstart and tend or date_start and date_end or date have
+        to be supplied.
+        
+        Parameters
+        ----------
+        tstart : datetime.datetime
+            Start of the time-range in which records are searched.
+        tend : datetime.datetime
+            Start of the time-range in which records are searched.
+        date : str
+            (start date) - (end date)
+        start_date : datetime
+            the start date
+        end_date : datetime
+            the end date
+        wave : str
+            (min) - (max) (unit)
+        min_wave : str
+            minimum spectral range
+        max_wave : str
+            maximum spectral range
+        unit_wave : str
+            spectral range units (Angstrom, GHz, keV)
+        extent : str
+            VSO 'extent type' ... (FULLDISK, CORONA, LIMB, etc)
+        physobj : str
+            VSO 'physical observable'
+        provider : str
+            VSO ID for the data provider (SDAC, NSO, SHA, MSU, etc)
+        source : str
+            spacecraft or observatory (SOHO, YOHKOH, BBSO, etc)
+            synonyms : spacecraft, observatory
+        instrument : str
+            instrument ID (EIT, SXI-0, SXT, etc)
+            synonyms : telescope, inst
+        detector : str
+            detector ID (C3, EUVI, COR2, etc.)
+        layout : str
+            layout of the data (image, spectrum, time_series, etc.)
+
+        level : str 
+            level of the data product (numeric range, see below)
+        pixels : str
+            number of pixels (numeric range, see below)
+        resolution : str
+            effective resolution (1 = full, 0.5 = 2x2 binned, etc)
+            numeric range, see below.
+        pscale : str
+            pixel scale, in arcseconds (numeric range, see below)
+        near_time : datetime
+            return record closest to the time.  See below.
+        sample : int
+            attempt to return only one record per SAMPLE seconds.  See below.
+        
+        Numeric Ranges:
+        * May be entered as a string or any numeric type for equality matching
+        * May be a string of the format '(min) - (max)' for range matching
+        * May be a string of the form '(operator) (number)' where operator
+            is one of: lt gt le ge < > <= >=
+        """
         sdk = lambda key: lambda value: {key: value}
         ALIASES = {
             'wave_min': sdk('wave_wavemin'),
             'wave_max': sdk('wave_wavemax'),
             'wave_type': sdk('wave_wavetype'),
             'wave_unit': sdk('wave_waveunit'),
+            'min_wave': sdk('wave_wavemin'),
+            'max_wave': sdk('wave_wavemax'),
+            'type_wave': sdk('wave_wavetype'),
+            'unit_wave': sdk('wave_waveunit'),
             'wave': _parse_waverange,
             'inst': sdk('instrument'),
             'telescope': sdk('instrument'),
@@ -503,7 +569,9 @@ class VSOClient(object):
             'end_date': sdk('time_end'),
             'start': sdk('time_start'),
             'end': sdk('time_end'),
+            'near_time': sdk('time_near'),
             'date': _parse_date,
+            'layout': sdk('datatype'),
         }
         kwargs.update({'time_start': tstart, 'time_end': tend})
         
@@ -530,6 +598,7 @@ class VSOClient(object):
         return QueryResponse.create(self.api.service.Query(queryreq))
     
     def latest(self):
+        """ Return newest record (limited to last week). """
         return self.query_legacy(
             datetime.utcnow()  - timedelta(7),
             datetime.utcnow(),
@@ -537,6 +606,24 @@ class VSOClient(object):
         )
     
     def get(self, query_response, path=None, methods=['URL-FILE'], downloader=None):
+        """
+        Download data specified in the query_response.
+        
+        Parameters
+        ----------
+        query_response : sunpy.net.vso.QueryResponse
+            QueryResponse containing the items to be downloaded.
+        path : str
+            Specify where the data is to be downloaded. Can refer to arbitrary
+            fields of the QueryResponseItem (instrument, source, time, ...) via
+            string formatting, moreover the file-name of the file downloaded can
+            be refered to as file, e.g.
+            "{source}/{instrument}/{time.start}/{file}".
+        methods : {list of str}
+            Methods acceptable to user.
+        downloader : sunpy.net.downloader.Downloader
+            Downloader used to download the data.
+        """
         if downloader is None:
             downloader = download.Downloader()
             threading.Thread(target=downloader.reactor.run).start()
@@ -740,30 +827,12 @@ def search(tstart=None, tend=None, **kwargs):
 
 
 def get(query_response, path=None, methods=['URL-FILE'], downloader=None):
-    """
-    Download data specified in the query_response.
-    
-    Parameters
-    ----------
-    query_response : sunpy.net.vso.QueryResponse
-        QueryResponse containing the items to be downloaded.
-    path : str
-        Specify where the data is to be downloaded. Can refer to arbitrary
-        fields of the QueryResponseItem (instrument, source, time, ...) via
-        string formatting, moreover the file-name of the file downloaded can
-        be refered to as file, e.g.
-        "{source}/{instrument}/{time.start}/{file}".
-    methods : {list of str}
-        Methods acceptable to user.
-    downloader : sunpy.net.downloader.Downloader
-        Downloader used to download the data.
-    
-    """
     global g_client
     if g_client is None:
         g_client = InteractiveVSOClient()
     return g_client.get(query_response, path, methods, downloader)
 
+get.__doc__ = VSOClient.get.__doc__
 
 # Add latest?
 if __name__ == '__main__':
