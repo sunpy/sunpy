@@ -24,7 +24,7 @@ The ``ipython`` package in the above list installs the `IPython enhanced console
 
 Next, use Git to download a copy of the latest version of SunPy: ::
 
-    git clone git@github.com:sunpy/sunpy.git
+    git clone git://git@github.com/sunpy/sunpy.git
 
 Done! To see if everything went okay, start a Python session and try importing
 SunPy:
@@ -97,7 +97,7 @@ TODO
 
 To begin, open a command-line shell and run the following command:
 
-    git clone git@github.com:sunpy/sunpy.git
+    git clone git://github.com/sunpy/sunpy.git
 
 This will download the latest version of SunPy. You then need to copy the 
 folder sunpy (from inside the root sunpy directory) to ``C:\Python27\Lib`` so 
