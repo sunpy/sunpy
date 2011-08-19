@@ -43,6 +43,9 @@ class _Attr(object):
         return _AttrAnd([self, other])
     
     def __or__(self, other):
+        # Optimization.
+        if self == other:
+            return self
         return _AttrOr([self, other])
 
 
@@ -92,6 +95,14 @@ class _AttrAnd(_Attr):
     
     def __repr__(self):
         return "<_AttrAnd(%r)>" % self.attrs
+    
+    def __eq__(self, other):
+        if not isinstance(other, _AttrAnd):
+            return False
+        return set(self.attrs) == set(other.attrs)
+    
+    def __hash__(self):
+        return hash(frozenset(self.attrs))
 
 
 class _AttrOr(_Attr):
@@ -128,6 +139,14 @@ class _AttrOr(_Attr):
     
     def __repr__(self):
         return "<_AttrOr(%r)>" % self.attrs
+    
+    def __eq__(self, other):
+        if not isinstance(other, _AttrOr):
+            return False
+        return set(self.attrs) == set(other.attrs)
+    
+    def __hash__(self):
+        return hash(frozenset(self.attrs))
 
 
 class _ComplexAttr(_Attr):
@@ -137,7 +156,7 @@ class _ComplexAttr(_Attr):
     
     def apply(self, queryblock):
         for name in self.attr:
-            queryblock = getattr(queryblock, name)
+            queryblock = queryblock[name]
         
         for k, v in self.attrs.iteritems():
             queryblock[k] = v
@@ -149,6 +168,14 @@ class _ComplexAttr(_Attr):
     
     def __repr__(self):
         return "<_ComplexAttr(%r, %r)>" % (self.attr, self.attrs)
+    
+    def __eq__(self, other):
+        if not isinstance(other, _ComplexAttr):
+            return False
+        return self.attr == other.attr and self.attrs == other.attrs
+    
+    def __hash__(self):
+        return hash(self.attr, frozenset(self.attrs.iteritems()))
 
 
 class _SimpleAttr(_Attr):
@@ -162,10 +189,18 @@ class _SimpleAttr(_Attr):
     def create(self, api):
         value = api.factory.create('QueryRequestBlock')
         self.apply(value)
-        return value
+        return [value]
     
     def __repr__(self):
         return "<_SimpleAttr(%r, %r)>" % (self.field, self.value)
+    
+    def __eq__(self, other):
+        if not isinstance(other, _SimpleAttr):
+            return False
+        return self.field == other.field and self.value == other.value
+    
+    def __hash__(self):
+        return hash((self.field, self.value))
 
 # ----------------------------------------
 
