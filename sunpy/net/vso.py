@@ -383,22 +383,29 @@ def iter_errors(response):
             yield prov_item
 
 
-class QueryResponse(object):
-    def __init__(self, response=None):
-        self.response = response
+class QueryResponse(list):
+    def __init__(self, lst, queryresult=None):
+        super(QueryResponse, self).__init__(lst)
+        self.queryresult = queryresult
+    
+    @classmethod
+    def create(cls, queryresult):
+        return cls(iter_records(queryresult), queryresult)
     
     def total_size(self):
         return sum(
-            record_item.size for record_item in iter_records(self.response)
+            record.size for record in self
         )
     
     def no_records(self):
-        return sum(1 for _ in iter_records(self.response))
+        return sum(1 for _ in self)
     
     def time_range(self):
         return (
-            min(record.time.start for record in iter_records(self.response)),
-            max(record.time.end for record in iter_records(self.response))
+            datetime.strptime(
+                min(record.time.start for record in self), TIMEFORMAT),
+            datetime.strptime(
+                max(record.time.end for record in self), TIMEFORMAT)
         )
 
 
@@ -450,10 +457,10 @@ class VSOClient(object):
         return obj
     
     def query(self, query):
-        return self.merge(
+        return QueryResponse.create(self.merge(
             self.api.service.Query(self.make('QueryRequest', block=block))
             for block in query.create(self.api)
-        )
+        ))
     
     def merge(self, queryresponses):      
         fileids = set()
@@ -521,7 +528,7 @@ class VSOClient(object):
                 if item[lst]:
                     raise ValueError("Got multiple values for %s." % k)
                 item[lst] = v
-        return self.api.service.Query(queryreq)
+        return QueryResponse.create(self.api.service.Query(queryreq))
     
     def latest(self):
         return self.query_legacy(
@@ -530,7 +537,7 @@ class VSOClient(object):
             time_near=datetime.utcnow()
         )
     
-    def get(self, query_response, path=None, downloader=None, methods=['URL-FILE']):
+    def get(self, query_response, path=None, methods=['URL-FILE'], downloader=None):
         if downloader is None:
             downloader = download.Downloader()
             threading.Thread(target=downloader.reactor.run).start()
@@ -564,14 +571,10 @@ class VSOClient(object):
             return []
         ret = []
         
-        for prov_item in query_response.provideritem:
-            if not hasattr(prov_item, 'record') or not prov_item.record:
-                continue
-            
-            for record_item in prov_item.record.recorditem:
-                item = _Str(map_[record_item.fileid]['path'])
-                item.meta = record_item
-                ret.append(item)
+        for record_item in query_response:
+            item = _Str(map_[record_item.fileid]['path'])
+            item.meta = record_item
+            ret.append(item)
         return ret
     
     def make_getdatarequest(self, response, methods=None):
@@ -680,16 +683,14 @@ class VSOClient(object):
     @staticmethod
     def by_provider(response):
         map_ = defaultdict(list)
-        for prov_item in response.provideritem:
-            if not hasattr(prov_item, 'record') or not str(prov_item.record):
-                continue
-            map_[prov_item.provider].extend(prov_item.record.recorditem)
+        for record in response:
+            map_[record.provider].append(record)
         return map_
     
     @staticmethod
     def by_fileid(response):
         return dict(
-            (record.fileid, record) for record in iter_records(response)
+            (record.fileid, record) for record in response
         )
     
     def multiple_choices(self, choices, response):
@@ -730,20 +731,49 @@ class InteractiveVSOClient(VSOClient):
 
 g_client = None
 def search(tstart=None, tend=None, **kwargs):
+    """ When passed a single _Attr object, perform new-style query;
+    otherwise, perform legacy query.
+    """
     global g_client
     if g_client is None:
         g_client = InteractiveVSOClient()
     return g_client.search(tstart, tend, **kwargs)
 
 
+def get(query_response, path=None, methods=['URL-FILE'], downloader=None):
+    """
+    Download data specified in the query_response.
+    
+    Parameters
+    ----------
+    query_response : sunpy.net.vso.QueryResponse
+        QueryResponse containing the items to be downloaded.
+    path : str
+        Specify where the data is to be downloaded. Can refer to arbitrary
+        fields of the QueryResponseItem (instrument, source, time, …) via
+        string formatting, moreover the file-name of the file downloaded can
+        be refered to as file, e.g.
+        "{source}/{instrument}/{time.start}/{file}".
+    methods : {list of str}
+        Methods acceptable to user.
+    downloader : sunpy.net.downloader.Downloader
+        Downloader used to download the data.
+    
+    """
+    global g_client
+    if g_client is None:
+        g_client = InteractiveVSOClient()
+    return g_client.get(query_response, path, methods, downloader)
+
+
 if __name__ == '__main__':
     import sunpy
-    api = VSOClient()
-    
-    qr = api.query_legacy(
+    qr = search(
         datetime(2010, 1, 1), datetime(2010, 1, 1, 1),
         instrument='eit'
     )
     
-    res = api.get(qr).wait()
+    res = get(qr).wait()
+    
+    print res[0]
     sunpy.Map(res[0]).plot()
