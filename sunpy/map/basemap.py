@@ -113,15 +113,14 @@ class BaseMap(np.ndarray):
             self.name = None
             self.cmap = None
             self.norm = None
-            #self.exptime = None
             
             # Set object attributes dynamically
             for attr, value in list(self.get_properties(header).items()):
                 setattr(self, attr, value)
 
             self.center = {
-                "x": header.get('cdelt1')*data.shape[0]/2 + header.get('crval1') - header.get('crpix1')*header.get('cdelt1'),
-                "y": header.get('cdelt2')*data.shape[1]/2 + header.get('crval2') - header.get('crpix2')*header.get('cdelt2')
+                "x": header.get('cdelt1') * data.shape[1] / 2 + header.get('crval1') - header.get('crpix1') * header.get('cdelt1'),
+                "y": header.get('cdelt2') * data.shape[0] / 2 + header.get('crval2') - header.get('crpix2') * header.get('cdelt2')
             }
             self.scale = {
                 "x": header.get('cdelt1'),
@@ -168,49 +167,36 @@ class BaseMap(np.ndarray):
         
     def get_xrange(self):
         """Return the X range of the image in arcsec."""        
-        xmin = self.center['x'] - self.shape[0]/2*self.scale['x']
-        xmax = self.center['x'] + self.shape[0]/2*self.scale['x']
+        xmin = self.center['x'] - self.shape[1] / 2 * self.scale['x']
+        xmax = self.center['x'] + self.shape[1] / 2 * self.scale['x']
         return [xmin,xmax]
         
     def get_yrange(self):
         """Return the Y range of the image in arcsec."""
-        ymin = self.center['y'] - self.shape[1]/2*self.scale['y']
-        ymax = self.center['y'] + self.shape[1]/2*self.scale['y']
+        ymin = self.center['y'] - self.shape[0] / 2 * self.scale['y']
+        ymax = self.center['y'] + self.shape[0] / 2 * self.scale['y']
         return [ymin,ymax]
-    
-    def _transform_pixel_to_coord(self, pixel, axis):    
-        """Given a pixel number return the coordinate value of that pixel."""
-        pixels = np.array(pixel)
-        if axis == 'x': n = self.shape[0]
-        if axis == 'y': n = self.shape[1]
-        return self.scale[axis] * pixels + self.center[axis] - n / 2.0 * self.scale[axis]
-        
-    def _transform_coord_to_pixel(self, coord, axis):
-        """Given a data coordinate return the pixel value (not necessarily an integer)."""
-        coords = np.array(coord)
-        if axis == 'x': n = self.shape[0]
-        if axis == 'y': n = self.shape[1]
-        return 1 / self.scale[axis] * (coords + n / 2.0 * self.scale[axis] - self.center[axis])
 
     def submap(self, x_range, y_range):
-        """Returns a submap of the map with the specified range"""
+        """Returns a submap of the map with the specified range
         
-        # Convert data coordinates to pixel coordinates        
-        x_pixels = self._transform_coord_to_pixel(x_range, 'x').astype('int')
-        y_pixels = self._transform_coord_to_pixel(y_range, 'y').astype('int')
-
-        
-        dpixel = [0.5 * (x_pixels[1] - x_pixels[0]), 
-                  0.5 * (y_pixels[1] - y_pixels[0])]
+        Keith [08/19/2011]
+         * Slicing in numpy expects [y, x]. Should we break convention here? 
+        """
+        #
+        # x_px = (x / cdelt1) + (width / 2)
+        #
+        x_pixels = (np.array(x_range) / self.scale['x']) + (self.shape[1] / 2)
+        y_pixels = (np.array(y_range) / self.scale['y']) + (self.shape[0] / 2)
 
         # Make a copy of the header with updated centering information        
         header = copy.deepcopy(self.header)
-        header['crpix1'] = self._transform_pixel_to_coord(x_pixels[0] + dpixel[0], 'x')
-        header['crpix2'] = self._transform_pixel_to_coord(y_pixels[0] + dpixel[1], 'y')
+        header['crpix1'] = header['crpix1'] - x_pixels[0]
+        header['crpix2'] = header['crpix2'] - y_pixels[0]
         
         # Get ndarray representation of submap
-        data = np.asarray(self[x_pixels[0]:x_pixels[1], 
-                               y_pixels[0]:y_pixels[1]])
+        data = np.asarray(self[y_pixels[0]:y_pixels[1], 
+                               x_pixels[0]:x_pixels[1]])
 
         return self.__class__(data, header)
         
@@ -241,6 +227,8 @@ class BaseMap(np.ndarray):
 
         # Determine extent
         extent = self.get_xrange() + self.get_yrange()
+        
+        print extent
         
         # Matplotlib arguments
         params = {
