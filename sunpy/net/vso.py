@@ -394,7 +394,7 @@ class QueryResponse(list):
     
     def total_size(self):
         # Warn about -1 values?
-        return sum(abs(record.size) for record in self)
+        return sum(record.size for record in self if record.size > 0)
     
     def no_records(self):
         return sum(1 for _ in self)
@@ -765,6 +765,7 @@ def get(query_response, path=None, methods=['URL-FILE'], downloader=None):
     return g_client.get(query_response, path, methods, downloader)
 
 
+# Add latest?
 if __name__ == '__main__':
     import sunpy
     qr = search(
