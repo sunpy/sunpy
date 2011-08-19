@@ -532,8 +532,8 @@ class VSOClient(object):
     
     def latest(self):
         return self.query_legacy(
+            datetime.utcnow()  - timedelta(7),
             datetime.utcnow(),
-            datetime.utcnow() - timedelta(7),
             time_near=datetime.utcnow()
         )
     
