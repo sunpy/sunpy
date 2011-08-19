@@ -393,9 +393,8 @@ class QueryResponse(list):
         return cls(iter_records(queryresult), queryresult)
     
     def total_size(self):
-        return sum(
-            record.size for record in self
-        )
+        # Warn about -1 values?
+        return sum(abs(record.size) for record in self)
     
     def no_records(self):
         return sum(1 for _ in self)
