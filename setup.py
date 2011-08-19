@@ -38,7 +38,7 @@ def install(setup):
         packages=['sunpy', 'sunpy.cm', 'sunpy.dev', 'sunpy.map',
                   'sunpy.map.sources', 'sunpy.sun', 'sunpy.util',
                   'sunpy.tests', 'sunpy.tests.map', 'sunpy.tests.net',
-                  'sunpy.data', 'sunpy.data.sample',],
+                  'sunpy.data', 'sunpy.data.sample', 'sunpy.net',],
         platforms=["Windows", "Linux", "Solaris", "Mac OS-X", "Unix"],
         url="http://www.sunpy.org/",
         version="0.01",
