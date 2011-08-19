@@ -733,7 +733,7 @@ def search(tstart=None, tend=None, **kwargs):
     global g_client
     if g_client is None:
         g_client = InteractiveVSOClient()
-    return g_client.search(tstart=None, tend=None, **kwargs)
+    return g_client.search(tstart, tend, **kwargs)
 
 
 if __name__ == '__main__':
