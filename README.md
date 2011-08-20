@@ -13,6 +13,7 @@ To begin, installing the following requirements if you don't already have them:
  * [NumPy](http://numpy.scipy.org/)
  * [Matplotlib](http://matplotlib.sourceforge.net/)
  * [SciPy](http://www.scipy.org/)
+ * [Suds](https://fedorahosted.org/suds)
 
 Next, use git to grab the latest version of SunPy:
 
