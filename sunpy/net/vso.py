@@ -206,23 +206,24 @@ class _SimpleAttr(_Attr):
 
 class Wave(_ComplexAttr):
     wavelength = [
-        ('angstrom', 1e-10),
+        ('Angstrom', 1e-10),
         ('nm', 1e-9),
         ('micron', 1e-6),
+        ('micrometer', 1e-6),
         ('mm', 1e-3),
         ('cm', 1e-2),
         ('m', 1e-6),
     ]
     energy = [
-        ('ev', 1),
-        ('kev', 1e3),
-        ('mev', 1e6),
+        ('eV', 1),
+        ('keV', 1e3),
+        ('MeV', 1e6),
     ]
     frequency = [
-        ('hz', 1),
-        ('khz', 1e3),
-        ('mhz', 1e6),
-        ('ghz', 1e9),
+        ('Hz', 1),
+        ('kHz', 1e3),
+        ('MHz', 1e6),
+        ('GHz', 1e9),
     ]
     units = {}
     for k, v in wavelength:
@@ -260,10 +261,10 @@ class Wave(_ComplexAttr):
     def to_angstrom(cls, min_, max_, unit):
         # Speed of light in m/s.
         C = 299792458
-        ANGSTROM = cls.units['angstrom'][1]
+        ANGSTROM = cls.units['Angstrom'][1]
         
         try:
-            type_, n = cls.units[unit.lower()]
+            type_, n = cls.units[unit]
         except KeyError:
             raise ValueError('Cannot convert %s to Angstrom' % unit)
         
@@ -271,10 +272,10 @@ class Wave(_ComplexAttr):
             k = n / ANGSTROM
             return (min_ / k, max_ / k)
         if type_ == 'frequency':
-            k = n / ANGSTROM
+            k = 1 / ANGSTROM / n
             return k * (C / max_), k * (C / min_)
         if type_ == 'energy':
-            k = n / (ANGSTROM / 1e-2)
+            k = 1 / (ANGSTROM / 1e-2) / n
             return k * (1 / (8065.53 * max_)), k * (1 / (8065.53 * min_))
         else:
             raise ValueError('Unable to convert %s to Angstrom' % type_)

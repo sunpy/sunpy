@@ -82,3 +82,22 @@ def test_attror_and():
     )
     assert one == other
 
+
+def test_wave_toangstrom():
+    for name, factor in vso.Wave.energy:
+        w = vso.Wave(62 / factor, 62 / factor, name)
+        assert int(w.min) == 199
+    
+    w = vso.Wave(62, 62, 'eV')
+    assert int(w.min) == 199
+    w = vso.Wave(62e-3, 62e-3, 'keV')
+    assert int(w.min) == 199
+
+    for name, factor in vso.Wave.frequency:
+        w = vso.Wave(1.506e16 / factor, 1.506e16 / factor, name)
+        assert int(w.min) == 199
+    
+    w = vso.Wave(1.506e16, 1.506e16, 'Hz')
+    assert int(w.min) == 199
+    w = vso.Wave(1.506e7, 1.506e7, 'GHz')
+    assert int(w.min) == 199
