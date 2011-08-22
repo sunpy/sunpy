@@ -74,9 +74,8 @@ class _AttrAnd(_Attr):
         self.attrs = attrs
     
     def __and__(self, other):
-        for elem in self.attrs:
-            if other.collides(elem):
-                return NotImplemented
+        if any(other.collides(elem) for elem in self.attrs):
+            return NotImplemented
         if isinstance(other, _AttrAnd):
             return _AttrAnd(self.attrs + other.attrs)
         if isinstance(other, _AttrOr):
