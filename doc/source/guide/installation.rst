@@ -40,6 +40,39 @@ Windows
 -------
 Installation instructions for Windows.
 
+Recommended method
+^^^^^^^^^^^^^^^^^^
+
+**1. Install Python(x,y)**
+
+**2. Install additional modules**
+
+Finally, SunPy uses the PyFITS library to read 
+`FITS <http://en.wikipedia.org/wiki/FITS>`_ files. PyFITS does
+not offer a Windows binrary, so we will need to install it some other way.
+Fortunately, there is a great tool for Python called ``easy_install`` which 
+makes installing many libraries very trivial. EasyInstall is part of the
+Setuptools package.
+
+
+
+Install paver
+
+**4. Install Git**
+
+TODO
+
+To begin, open a command-line shell and run the following command:
+
+    git clone git://github.com/sunpy/sunpy.git
+
+This will download the latest version of SunPy. You then need to copy the 
+folder sunpy (from inside the root sunpy directory) to ``C:\Python27\Lib`` so 
+that Python can find it.
+
+
+Alternate method
+^^^^^^^^^^^^^^^^
 
 **1. Install Python**
 
@@ -55,7 +88,7 @@ you need to update the ``PATH`` environmental variable on your machine:
     2. Find the ``PATH`` environmental variable under either user or system variables and the filepath to your Python installation (e.g. "C:\Python27").
     
 
-**2. Install SciPy, NumPy, Matplotlib, and IPython**
+**2. Install additional modules**
 
 Next we will install `NumPy <http://numpy.scipy.org/>`_, `SciPy 
 <http://www.scipy.org/>`_, `Matplotlib <http://matplotlib.sourceforge.net/>`_, 
@@ -69,16 +102,6 @@ location of the Python installation.
     4. Finally, as an option (but recommended step), download and install `IPython for Windows <http://ipython.scipy.org/dist/0.10.1/ipython-0.10.1.win32-setup.exe>`_.
     
 
-**3. Install PyFITS**
-
-Finally, SunPy uses the PyFITS library to read 
-`FITS <http://en.wikipedia.org/wiki/FITS>`_ files. PyFITS does
-not offer a Windows binrary, so we will need to install it some other way.
-Fortunately, there is a great tool for Python called ``easy_install`` which 
-makes installing many libraries very trivial. EasyInstall is part of the
-Setuptools package.
-
-
 To install `Setuptools 
 <http://pypi.python.org/pypi/setuptools>`_, simply download and run the `latest
 windows installer 
@@ -90,18 +113,11 @@ inside the ``scripts`` directory of your Python installation: ::
     cd C:\Python27\Scripts
     easy_install.exe pyfits
 
+**3. Continue with recommended approach**
 
-**4. Install Git**
 
-TODO
-
-To begin, open a command-line shell and run the following command:
-
-    git clone git://github.com/sunpy/sunpy.git
-
-This will download the latest version of SunPy. You then need to copy the 
-folder sunpy (from inside the root sunpy directory) to ``C:\Python27\Lib`` so 
-that Python can find it.
+Test installation
+^^^^^^^^^^^^^^^^^
 
 To test it all out, open a new Python shell and try typing: ::
 
@@ -109,5 +125,8 @@ To test it all out, open a new Python shell and try typing: ::
 >>> sunpy.Map(sunpy.AIA_171_IMAGE).plot()
 
 
+C++ compiler
+^^^^^^^^^^^^
 
-
+MinGW
+distutils.cfg
