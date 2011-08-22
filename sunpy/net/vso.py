@@ -47,6 +47,9 @@ class _Attr(object):
         if self == other:
             return self
         return _AttrOr([self, other])
+    
+    def collides(self, other):
+        raise NotImplementedError
 
 
 class _DummyAttr(_Attr):
@@ -61,6 +64,9 @@ class _DummyAttr(_Attr):
     
     def create(self, api):
         return api.factory.create('QueryRequestBlock')
+    
+    def collides(self, other):
+        return False
 
 
 class _AttrAnd(_Attr):
@@ -68,16 +74,13 @@ class _AttrAnd(_Attr):
         self.attrs = attrs
     
     def __and__(self, other):
+        for elem in self.attrs:
+            if other.collides(elem):
+                return NotImplemented
         if isinstance(other, _AttrAnd):
             return _AttrAnd(self.attrs + other.attrs)
         if isinstance(other, _AttrOr):
             return _AttrOr([elem & self for elem in other.attrs])
-        for elem in self.attrs:
-            if isinstance(other, elem.__class__):
-                # A record cannot match two different values
-                # for the same attribute.
-                # TODO: Error?
-                return NotImplemented
         return _AttrAnd(self.attrs + [other])
     
     __rand__ = __and__
@@ -103,6 +106,9 @@ class _AttrAnd(_Attr):
     
     def __hash__(self):
         return hash(frozenset(self.attrs))
+    
+    def collides(self, other):
+        return any(elem.collides(other) for elem in self)
 
 
 class _AttrOr(_Attr):
@@ -147,6 +153,9 @@ class _AttrOr(_Attr):
     
     def __hash__(self):
         return hash(frozenset(self.attrs))
+    
+    def collides(self, other):
+        return all(elem.collides(other) for elem in self)
 
 
 class _ComplexAttr(_Attr):
@@ -176,6 +185,11 @@ class _ComplexAttr(_Attr):
     
     def __hash__(self):
         return hash(self.attr, frozenset(self.attrs.iteritems()))
+    
+    def collides(self, other):
+        if not isinstance(other, _ComplexAttr):
+            return False
+        return self.attr == other.attr
 
 
 class _SimpleAttr(_Attr):
@@ -201,6 +215,11 @@ class _SimpleAttr(_Attr):
     
     def __hash__(self):
         return hash((self.field, self.value))
+    
+    def collides(self, other):
+        if not isinstance(other, _SimpleAttr):
+            return False
+        return self.field == other.field
 
 # ----------------------------------------
 

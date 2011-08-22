@@ -31,6 +31,11 @@ def test_simpleattr_and_duplicate():
     pytest.raises(TypeError, lambda: attr & vso.Instrument('bar'))
     attr |= vso.Source('foo')
     pytest.raises(TypeError, lambda: attr & vso.Instrument('bar'))
+    otherattr = vso.Instrument('foo') | vso.Source('foo')
+    pytest.raises(TypeError, lambda: attr & otherattr)
+    pytest.raises(TypeError, lambda: (attr | otherattr) & vso.Instrument('bar'))
+    tst = vso.Instrument('foo') & vso.Source('foo')
+    pytest.raises(TypeError, lambda: tst & tst)
 
 
 def test_simpleattr_or_eq():
