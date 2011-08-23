@@ -368,7 +368,7 @@ class VSOClient(object):
     def query(self, query):
         return QueryResponse.create(self.merge(
             self.api.service.Query(self.make('QueryRequest', block=block))
-            for block in query.create(self.api)
+            for block in walker.create(query, self.api)
         ))
     
     def merge(self, queryresponses):      
