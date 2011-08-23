@@ -15,6 +15,7 @@ from suds import client
 
 from sunpy.net import download
 from sunpy.util.util import anytim
+from sunpy.net.attr import ValueAttr
 
 DEFAULT_URL = 'http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl'
 DEFAULT_PORT = 'nsoVSOi'
@@ -30,199 +31,9 @@ class NoData(Exception):
 class _Str(str):
     pass
 
-
-class _Attr(object):
-    def __and__(self, other):
-        if isinstance(other, _AttrOr):
-            return _AttrOr([elem & self for elem in other.attrs])
-        if isinstance(other, self.__class__):
-            # A record cannot match two different values
-            # for the same attribute.
-            # TODO: Error?
-            return NotImplemented
-        return _AttrAnd([self, other])
-    
-    def __or__(self, other):
-        # Optimization.
-        if self == other:
-            return self
-        return _AttrOr([self, other])
-    
-    def collides(self, other):
-        raise NotImplementedError
-
-
-class _DummyAttr(_Attr):
-    def __and__(self, other):
-        return other
-    
-    def __or__(self, other):
-        return other
-    
-    def apply(self, queryblock):
-        pass
-    
-    def create(self, api):
-        return api.factory.create('QueryRequestBlock')
-    
-    def collides(self, other):
-        return False
-
-
-class _AttrAnd(_Attr):
-    def __init__(self, attrs):
-        self.attrs = attrs
-    
-    def __and__(self, other):
-        if any(other.collides(elem) for elem in self.attrs):
-            return NotImplemented
-        if isinstance(other, _AttrAnd):
-            return _AttrAnd(self.attrs + other.attrs)
-        if isinstance(other, _AttrOr):
-            return _AttrOr([elem & self for elem in other.attrs])
-        return _AttrAnd(self.attrs + [other])
-    
-    __rand__ = __and__
-    
-    def apply(self, queryblock):
-        for attr in self.attrs:
-            attr.apply(queryblock)
-    
-    def create(self, api):
-        # TODO: Prove that we can assume that only _SimpleAttr and
-        # _ComplexAttr can possibly exist here.
-        value = api.factory.create('QueryRequestBlock')
-        self.apply(value)
-        return [value]
-    
-    def __repr__(self):
-        return "<_AttrAnd(%r)>" % self.attrs
-    
-    def __eq__(self, other):
-        if not isinstance(other, _AttrAnd):
-            return False
-        return set(self.attrs) == set(other.attrs)
-    
-    def __hash__(self):
-        return hash(frozenset(self.attrs))
-    
-    def collides(self, other):
-        return any(elem.collides(other) for elem in self)
-
-
-class _AttrOr(_Attr):
-    def __init__(self, attrs):
-        self.attrs = attrs
-    
-    def __or__(self, other):
-        if isinstance(other, _AttrOr):
-            return _AttrOr(self.attrs + other.attrs)
-        return _AttrOr(self.attrs + [other])
-    
-    __ror__ = __or__
-    
-    def __and__(self, other):
-        return _AttrOr([elem & other for elem in self.attrs])
-    
-    __rand__ = __and__
-    
-    def __xor__(self, other):
-        new = _DummyAttr()
-        for elem in self.attrs:
-            new |= elem ^ other
-        return new
-    
-    def apply(self, queryblock):
-        # TODO: Prove this is unreachable.
-        raise NotImplementedError
-    
-    def create(self, api):
-        blocks = []
-        for attr in self.attrs:
-            blocks.extend(attr.create(api))
-        return blocks
-    
-    def __repr__(self):
-        return "<_AttrOr(%r)>" % self.attrs
-    
-    def __eq__(self, other):
-        if not isinstance(other, _AttrOr):
-            return False
-        return set(self.attrs) == set(other.attrs)
-    
-    def __hash__(self):
-        return hash(frozenset(self.attrs))
-    
-    def collides(self, other):
-        return all(elem.collides(other) for elem in self)
-
-
-class _ComplexAttr(_Attr):
-    def __init__(self, attr, attrs):
-        self.attr = attr
-        self.attrs = attrs
-    
-    def apply(self, queryblock):
-        for name in self.attr:
-            queryblock = queryblock[name]
-        
-        for k, v in self.attrs.iteritems():
-            queryblock[k] = v
-    
-    def create(self, api):
-        value = api.factory.create('QueryRequestBlock')
-        self.apply(value)
-        return [value]
-    
-    def __repr__(self):
-        return "<_ComplexAttr(%r, %r)>" % (self.attr, self.attrs)
-    
-    def __eq__(self, other):
-        if not isinstance(other, _ComplexAttr):
-            return False
-        return self.attr == other.attr and self.attrs == other.attrs
-    
-    def __hash__(self):
-        return hash(self.attr, frozenset(self.attrs.iteritems()))
-    
-    def collides(self, other):
-        if not isinstance(other, _ComplexAttr):
-            return False
-        return self.attr == other.attr
-
-
-class _SimpleAttr(_Attr):
-    def __init__(self, field, value):
-        self.field = field
-        self.value = value
-    
-    def apply(self, queryblock):
-        queryblock[self.field] = self.value
-    
-    def create(self, api):
-        value = api.factory.create('QueryRequestBlock')
-        self.apply(value)
-        return [value]
-    
-    def __repr__(self):
-        return "<_SimpleAttr(%r, %r)>" % (self.field, self.value)
-    
-    def __eq__(self, other):
-        if not isinstance(other, _SimpleAttr):
-            return False
-        return self.field == other.field and self.value == other.value
-    
-    def __hash__(self):
-        return hash((self.field, self.value))
-    
-    def collides(self, other):
-        if not isinstance(other, _SimpleAttr):
-            return False
-        return self.field == other.field
-
 # ----------------------------------------
 
-class Wave(_ComplexAttr):
+class Wave(ValueAttr):
     wavelength = [
         ('Angstrom', 1e-10),
         ('nm', 1e-9),
@@ -259,10 +70,10 @@ class Wave(_ComplexAttr):
         self.max = wavemax
         self.unit = waveunit
         
-        _ComplexAttr.__init__(self, ['wave'], {
-            'wavemin': wavemin,
-            'wavemax': wavemax,
-            'waveunit': waveunit,
+        ValueAttr.__init__(self, {
+            ('wave', 'wavemin'): wavemin,
+            ('wave', 'wavemax'): wavemax,
+            ('wave', 'waveunit'): waveunit,
         })
     
     def __xor__(self, other):
@@ -299,16 +110,16 @@ class Wave(_ComplexAttr):
             raise ValueError('Unable to convert %s to Angstrom' % type_)
 
 
-class Time(_ComplexAttr):
+class Time(ValueAttr):
     def __init__(self, start, end, near=None):
         self.start = start
         self.end = end
         self.near = near
         
-        _ComplexAttr.__init__(self, ['time'], {
-            'start': start.strftime(TIMEFORMAT),
-            'end': end.strftime(TIMEFORMAT),
-            'near': near.strftime(TIMEFORMAT) if near is not None else '',
+        ValueAttr.__init__(self, {
+            ('time', 'start'): start.strftime(TIMEFORMAT),
+            ('time', 'end'): end.strftime(TIMEFORMAT),
+            ('time', 'near'): near.strftime(TIMEFORMAT) if near is not None else '',
         })
     
     def __xor__(self, other):
@@ -326,29 +137,29 @@ class Time(_ComplexAttr):
         return cls(datetime(*start), datetime(*end), near)
 
 
-class Extent(_ComplexAttr):
+class Extent(ValueAttr):
     def __init__(self, x, y, width, length, type_):
-        _ComplexAttr.__init__(self, ['extent'], {
-            'x': x,
-            'y': y,
-            'width': width,
-            'length': length,
-            'type': type_,
+        ValueAttr.__init__(self, {
+            ('extent', 'x'): x,
+            ('extent', 'y'): y,
+            ('extent', 'width'): width,
+            ('extent', 'length'): length,
+            ('extent', 'type'): type_,
         })
 
 
-class Field(_ComplexAttr):
+class Field(ValueAttr):
     def __init__(self, fielditem):
-        _ComplexAttr.__init__(self, ['field'], {
-            'fielditem': fielditem
+        ValueAttr.__init__(self, {
+            ['field', 'fielditem']: fielditem
         })
 
 
 def  _mk_simpleattr(field):
     """ Create a _SimpleField class for field. """
-    class _foo(_SimpleAttr):
+    class _foo(ValueAttr):
         def __init__(self, arg):
-            _SimpleAttr.__init__(self, field, arg)
+            ValueAttr.__init__(self, {(field, ): arg})
     _foo.__name__ = field.capitalize()
     return _foo
 
