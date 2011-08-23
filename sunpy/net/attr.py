@@ -26,12 +26,6 @@ class DummyAttr(Attr):
     def __or__(self, other):
         return other
     
-    def apply(self, queryblock):
-        pass
-    
-    def create(self, api):
-        return api.factory.create('QueryRequestBlock')
-    
     def collides(self, other):
         return False
 
@@ -50,17 +44,6 @@ class AttrAnd(Attr):
         return AttrAnd(self.attrs + [other])
     
     __rand__ = __and__
-    
-    def apply(self, queryblock):
-        for attr in self.attrs:
-            attr.apply(queryblock)
-    
-    def create(self, api):
-        # TODO: Prove that we can assume that only _SimpleAttr and
-        # _ComplexAttr can possibly exist here.
-        value = api.factory.create('QueryRequestBlock')
-        self.apply(value)
-        return [value]
     
     def __repr__(self):
         return "<AttrAnd(%r)>" % self.attrs
@@ -99,16 +82,6 @@ class AttrOr(Attr):
             new |= elem ^ other
         return new
     
-    def apply(self, queryblock):
-        # TODO: Prove this is unreachable.
-        raise NotImplementedError
-    
-    def create(self, api):
-        blocks = []
-        for attr in self.attrs:
-            blocks.extend(attr.create(api))
-        return blocks
-    
     def __repr__(self):
         return "<AttrOr(%r)>" % self.attrs
     
@@ -128,21 +101,6 @@ class ValueAttr(Attr):
     def __init__(self, attrs):
         self.attrs = attrs
     
-    def apply(self, queryblock):       
-        for k, v in self.attrs.iteritems():
-            lst = k[-1]
-            rest = k[:-1]
-            
-            block = queryblock
-            for elem in rest:
-                block = block[elem]
-            block[lst] = v
-    
-    def create(self, api):
-        value = api.factory.create('QueryRequestBlock')
-        self.apply(value)
-        return [value]
-    
     def __repr__(self):
         return "<ValueAttr(%r, %r)>" % (self.attr, self.attrs)
     
@@ -158,3 +116,36 @@ class ValueAttr(Attr):
         if not isinstance(other, ValueAttr):
             return False
         return any(k in other.attrs for k in self.attrs)
+
+
+class AttrWalker(object):
+    def __init__(self, appliers=None, creators=None):
+        self.appliers = {} if appliers is None else appliers
+        self.creators = {} if creators is None else creators
+    
+    def get_item(self, obj, dct):
+        for cls in obj.__class__.__mro__:
+            if cls in dct:
+                return dct[cls]
+        raise KeyError
+    
+    def add_creator(self, type_):
+        def _dec(fun):
+            self.creators[type_] = fun
+            return fun
+        return _dec
+    
+    def add_applier(self, type_):
+        def _dec(fun):
+            self.appliers[type_] = fun
+            return fun
+        return _dec
+    
+    def create(self, root, *args, **kwargs):
+        return self.get_item(root, self.creators)(self, root, *args, **kwargs)
+
+    def apply(self, root, *args, **kwargs):
+        return self.get_item(root, self.appliers)(self, root, *args, **kwargs)
+    
+    def __copy__(self):
+        return AttrWalker(self.appliers.copy(), self.creators.copy())
