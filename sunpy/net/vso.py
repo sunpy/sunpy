@@ -15,7 +15,7 @@ from suds import client
 
 from sunpy.net import download
 from sunpy.util.util import anytim
-from sunpy.net.attr import ValueAttr
+from sunpy.net.attr import Attr, ValueAttr, AttrWalker, AttrAnd, AttrOr, DummyAttr
 
 DEFAULT_URL = 'http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl'
 DEFAULT_PORT = 'nsoVSOi'
@@ -32,6 +32,51 @@ class _Str(str):
     pass
 
 # ----------------------------------------
+
+walker = AttrWalker()
+
+@walker.add_creator(ValueAttr)
+def _c(walker, root, api):
+    value = api.factory.create('QueryRequestBlock')
+    walker.apply(root, api, value)
+    return [value]
+
+@walker.add_applier(ValueAttr)
+def _a(walker, root, api, queryblock):
+    for k, v in root.attrs.iteritems():
+        lst = k[-1]
+        rest = k[:-1]
+        
+        block = queryblock
+        for elem in rest:
+            block = block[elem]
+        block[lst] = v
+
+@walker.add_creator(AttrAnd)
+def _c(walker, root, api):
+    value = api.factory.create('QueryRequestBlock')
+    walker.apply(root, api, value)
+    return [value]
+
+@walker.add_applier(AttrAnd)
+def _a(walker, root, api, queryblock):
+    for attr in root.attrs:
+        walker.apply(attr, api, queryblock)
+
+@walker.add_creator(AttrOr)
+def _c(walker, root, api):
+    blocks = []
+    for attr in self.attrs:
+        blocks.extend(walker.create(attr, api))
+    return blocks
+
+@walker.add_creator(DummyAttr)
+def _c(walker, root, api):
+    return api.factory.create('QueryRequestBlock')
+
+@walker.add_applier(DummyAttr)
+def _a(walker, root, api, queryblock):
+    pass
 
 class Wave(ValueAttr):
     wavelength = [
@@ -674,7 +719,7 @@ class InteractiveVSOClient(VSOClient):
         return raw_input(field + ': ')
     
     def search(self, tstart=None, tend=None, **kwargs):
-        if isinstance(tstart, _Attr):
+        if isinstance(tstart, Attr):
             return self.query(tstart)
         else:
             return self.query_legacy(tstart, tend, **kwargs)
