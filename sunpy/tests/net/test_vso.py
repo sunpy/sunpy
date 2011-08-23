@@ -15,14 +15,14 @@ def pytest_funcarg__iclient(request):
 
 
 def test_simpleattr_apply():
-    attr = vso._SimpleAttr('test', 1)
+    attr = vso.ValueAttr({('test', ): 1})
     dct = {}
     attr.apply(dct)
     assert dct['test'] == 1
 
 
 def test_simpleattr_create(client):
-    attr = vso._SimpleAttr('instrument', 'eit')
+    attr = vso.ValueAttr({('instrument', ): 'eit'})
     assert attr.create(client.api)[0].instrument == 'eit'
 
 
@@ -46,15 +46,15 @@ def test_simpleattr_or_eq():
 
 
 def test_complexattr_apply():
-    tst = {'foo': 'a', 'bar': 'b'}
-    attr = vso._ComplexAttr(['test'], tst)
+    tst = {('test', 'foo'): 'a', ('test', 'bar'): 'b'}
+    attr = vso.ValueAttr(tst)
     dct = {'test': {}}
     attr.apply(dct)
-    assert dct['test'] == tst
+    assert dct['test'] == {'foo': 'a', 'bar': 'b'}
 
 
 def test_complexattr_create(client):
-    attr = vso._ComplexAttr(['time'], {'start': 'test'})
+    attr = vso.ValueAttr({('time', 'start'): 'test'})
     assert attr.create(client.api)[0].time.start == 'test'
 
 
