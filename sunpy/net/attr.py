@@ -2,10 +2,7 @@ class Attr(object):
     def __and__(self, other):
         if isinstance(other, AttrOr):
             return AttrOr([elem & self for elem in other.attrs])
-        if isinstance(other, self.__class__):
-            # A record cannot match two different values
-            # for the same attribute.
-            # TODO: Error?
+        if self.collides(other):
             return NotImplemented
         return AttrAnd([self, other])
     
