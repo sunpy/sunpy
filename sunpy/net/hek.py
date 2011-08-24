@@ -29,7 +29,32 @@ class BoolParamAttr(ParamAttr):
         return BoolParamAttr(self.name)
 
 
+class ListAttr(attr.Attr):
+    def __init__(self, key, item):
+        attr.Attr.__init__(self)
+        
+        self.key = key
+        self.item = item
+    
+    def collides(self, other):
+        return False
+
+
 walker = attr.AttrWalker()
+
+@walker.add_creator(ListAttr)
+def _c(walker, root, id_):
+    value = {}
+    walker.apply(root, id_, value)
+    return [value]
+
+@walker.add_applier(ListAttr)
+def _a(walker, root, id_, dct):
+    if root.key in dct:
+        dct[root.key] += ',%s' % root.item
+    else:
+        dct[root.key] = root.item
+    return dct
 
 @walker.add_creator(ParamAttr)
 def _c(walker, root, id_):
