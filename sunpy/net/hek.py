@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 # Author: Florian Mayer <florian.mayer@bitsrc.org>
 
+import sys
+
 from urllib2 import urlopen
 from urllib import urlencode
 
@@ -174,6 +176,14 @@ class ListAttrWrapper(object):
         return ListAttr(self.name, other)
 
 
+EVENTS = [
+    'AR', 'CE', 'CD', 'CH', 'CW', 'FI', 'FE', 'FA', 'FL', 'LP', 'OS', 'SS',
+    'EF', 'CJ', 'PG', 'OT', 'NR', 'SG', 'SP', 'CR', 'CC', 'ER', 'TO'
+]
+for elem in EVENTS:
+    setattr(sys.modules[__name__], elem, ListAttr('event_type', elem.lower()))
+
+    
 class HEKClient(object):
     fields = {
         'FRM_Name': StringParamAttrWrapper,
@@ -214,5 +224,5 @@ if __name__ == '__main__':
     c = HEKClient()
     print c.query(
         Time.dt((2010, 1, 1), (2010, 1, 1, 1)),
-        c['event_type'] + 'ar',
+        AR,
     ).read()
