@@ -72,7 +72,7 @@ class SpartialRegion(attr.Attr):
 
 walker = attr.AttrWalker()
 
-@walker.add_creator(Time, SpartialRegion, ListAttr, ParamAttr, attr.AttrAn)
+@walker.add_creator(Time, SpartialRegion, ListAttr, ParamAttr, attr.AttrAnd)
 def _c(walker, root, id_):
     value = {}
     walker.apply(root, id_, value)
