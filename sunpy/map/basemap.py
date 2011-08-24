@@ -5,6 +5,7 @@ BaseMap is a generic Map class from which all other Map classes inherit from.
 __authors__ = ["Keith Hughitt, Steven Christe"]
 __email__ = "keith.hughitt@nasa.gov"
 
+import copy
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
@@ -112,15 +113,14 @@ class BaseMap(np.ndarray):
             self.name = None
             self.cmap = None
             self.norm = None
-            #self.exptime = None
             
             # Set object attributes dynamically
             for attr, value in list(self.get_properties(header).items()):
                 setattr(self, attr, value)
 
             self.center = {
-                "x": header.get('cdelt1')*data.shape[0]/2 + header.get('crval1') - header.get('crpix1')*header.get('cdelt1'),
-                "y": header.get('cdelt2')*data.shape[1]/2 + header.get('crval2') - header.get('crpix2')*header.get('cdelt2')
+                "x": header.get('cdelt1') * data.shape[1] / 2 + header.get('crval1') - header.get('crpix1') * header.get('cdelt1'),
+                "y": header.get('cdelt2') * data.shape[0] / 2 + header.get('crval2') - header.get('crpix2') * header.get('cdelt2')
             }
             self.scale = {
                 "x": header.get('cdelt1'),
@@ -130,7 +130,6 @@ class BaseMap(np.ndarray):
                 "x": header.get('cunit1'), 
                 "y": header.get('cunit2')
             }
-            self.rsun = header.get('r_sun')
                 
     def __add__(self, other):
         """Add two maps. Currently does not take into account the alignment  
@@ -168,48 +167,38 @@ class BaseMap(np.ndarray):
         
     def get_xrange(self):
         """Return the X range of the image in arcsec."""        
-        xmin = self.center['x'] - self.shape[0]/2*self.scale['x']
-        xmax = self.center['x'] + self.shape[0]/2*self.scale['x']
+        xmin = self.center['x'] - self.shape[1] / 2 * self.scale['x']
+        xmax = self.center['x'] + self.shape[1] / 2 * self.scale['x']
         return [xmin,xmax]
         
     def get_yrange(self):
         """Return the Y range of the image in arcsec."""
-        ymin = self.center['y'] - self.shape[1]/2*self.scale['y']
-        ymax = self.center['y'] + self.shape[1]/2*self.scale['y']
+        ymin = self.center['y'] - self.shape[0] / 2 * self.scale['y']
+        ymax = self.center['y'] + self.shape[0] / 2 * self.scale['y']
         return [ymin,ymax]
-    
-    def _transform_pixel_to_coord(self, pixel, axis):    
-        """Given a pixel number return the coordinate value of that pixel."""
-        pixels = np.array(pixel)
-        if axis == 'x': n = self.shape[0]
-        if axis == 'y': n = self.shape[1]
-        return self.scale[axis] * pixels + self.center[axis] - n / 2.0 * self.scale[axis]
-        
-    def _transform_coord_to_pixel(self, coord, axis):
-        """Given a data coordinate return the pixel value (not necessarily an integer)."""
-        coords = np.array(coord)
-        if axis == 'x': n = self.shape[0]
-        if axis == 'y': n = self.shape[1]
-        return 1 / self.scale[axis] * (coords + n / 2.0 * self.scale[axis] - self.center[axis])
 
-    def submap(self, x_range, y_range):        
-        #convert data coordinates to pixel coordinates        
-        xrange_pixelcoord = self._transform_coord_to_pixel(x_range, 'x')
-        yrange_pixelcoord = self._transform_coord_to_pixel(y_range, 'y')
+    def submap(self, x_range, y_range):
+        """Returns a submap of the map with the specified range
+        
+        Keith [08/19/2011]
+         * Slicing in numpy expects [y, x]. Should we break convention here? 
+        """
+        #
+        # x_px = (x / cdelt1) + (width / 2)
+        #
+        x_pixels = (np.array(x_range) / self.scale['x']) + (self.shape[1] / 2)
+        y_pixels = (np.array(y_range) / self.scale['y']) + (self.shape[0] / 2)
 
-        xrange_pixelcoord = xrange_pixelcoord.astype('int')
-        yrange_pixelcoord = yrange_pixelcoord.astype('int')
+        # Make a copy of the header with updated centering information        
+        header = copy.deepcopy(self.header)
+        header['crpix1'] = header['crpix1'] - x_pixels[0]
+        header['crpix2'] = header['crpix2'] - y_pixels[0]
         
-        dpixel = [0.5*(xrange_pixelcoord[1] - xrange_pixelcoord[0]), 0.5*(yrange_pixelcoord[1] - yrange_pixelcoord[0])]
-        
-        xcenter_datacoord = self._transform_pixel_to_coord(xrange_pixelcoord[0] + dpixel[0], 'x')
-        ycenter_datacoord = self._transform_pixel_to_coord(yrange_pixelcoord[0] + dpixel[1], 'y')
-        
-        self.center['x'] = xcenter_datacoord
-        self.center['y'] = ycenter_datacoord
-        
-        self = self[xrange_pixelcoord[0]:xrange_pixelcoord[1], yrange_pixelcoord[0]:yrange_pixelcoord[1]]
-        return self
+        # Get ndarray representation of submap
+        data = np.asarray(self[y_pixels[0]:y_pixels[1], 
+                               x_pixels[0]:x_pixels[1]])
+
+        return self.__class__(data, header)
         
     def plot(self, draw_limb=True, **matplot_args):
         """Plots the map object using matplotlib
@@ -239,6 +228,8 @@ class BaseMap(np.ndarray):
         # Determine extent
         extent = self.get_xrange() + self.get_yrange()
         
+        print extent
+        
         # Matplotlib arguments
         params = {
             "cmap": self.cmap,
@@ -258,12 +249,14 @@ class BaseMap(np.ndarray):
         if hasattr(obj, 'header'):
             self.header = obj.header
 
+            # preserve object properties
             properties = self.get_properties(obj.header)
             for attr, value in list(properties.items()):
                 setattr(self, attr, getattr(obj, attr, value))
                 
             self.center = obj.center
             self.scale = obj.scale
+            self.units = obj.units
         
     def __array_wrap__(self, out_arr, context=None):
         """Returns a wrapped instance of a Map object"""
