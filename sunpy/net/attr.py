@@ -132,21 +132,24 @@ class AttrWalker(object):
                 return dct[cls]
         raise KeyError
     
-    def add_creator(self, type_):
+    def add_creator(self, *types):
         def _dec(fun):
-            self.creators[type_] = fun
+            for type_ in types:
+                self.creators[type_] = fun
             return fun
         return _dec
     
-    def add_applier(self, type_):
+    def add_applier(self, *types):
         def _dec(fun):
-            self.appliers[type_] = fun
+            for type_ in types:
+                self.appliers[type_] = fun
             return fun
         return _dec
     
-    def add_converter(self, type_):
+    def add_converter(self, *types):
         def _dec(fun):
-            self.converters[type_] = fun
+            for type_ in types:
+                self.converters[type_] = fun
             return fun
         return _dec
     

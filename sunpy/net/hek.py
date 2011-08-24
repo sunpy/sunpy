@@ -42,7 +42,62 @@ class ListAttr(attr.Attr):
         return False
 
 
+
+class Time(attr.Attr):
+    def __init__(self, start, end):
+        attr.Attr.__init__(self)
+        self.start = start
+        self.end = end
+    
+    def collides(self, other):
+        return isinstance(other, Time)
+    
+    @classmethod
+    def dt(cls, start, end):
+        return cls(datetime(*start), datetime(*end))
+
+
+class SpartialRegion(attr.Attr):
+    def __init__(
+        self, x1=-1200, y1=-1200, x2=1200, y2=1200, sys='helioprojective'):
+        self.x1 = x1
+        self.y1 = y1
+        self.x2 = x2
+        self.y2 = y2
+        self.sys = sys
+    
+    def collides(self, other):
+        return isinstance(other, SpartialRegion)
+
+
 walker = attr.AttrWalker()
+
+@walker.add_creator(Time)
+def _c(walker, root, id_):
+    value = {}
+    walker.apply(root, id_, value)
+    return [value]
+
+@walker.add_applier(Time)
+def _a(walker, root, id_, dct):
+    dct['event_starttime'] = root.start.strftime('%Y-%m-%dT%H:%M:%S')
+    dct['event_endtime'] = root.end.strftime('%Y-%m-%dT%H:%M:%S')
+    return dct
+
+@walker.add_creator(SpartialRegion)
+def _c(walker, root, id_):
+    value = {}
+    walker.apply(root, id_, value)
+    return [value]
+
+@walker.add_applier(SpartialRegion)
+def _a(walker, root, id_, dct):
+    dct['x1'] = root.x1
+    dct['y1'] = root.y1
+    dct['x2'] = root.x2
+    dct['y2'] = root.y2
+    dct['event_coordsys'] = root.sys
+    return dct
 
 @walker.add_creator(ListAttr)
 def _c(walker, root, id_):
@@ -131,25 +186,57 @@ class StringParamAttrWrapper(ComparisonParamAttrWrapper):
         return ParamAttr(self.name, 'like', other)
 
 
-class NumerParamAttrWrapper(ComparisonParamAttrWrapper):
+class NumberParamAttrWrapper(ComparisonParamAttrWrapper):
     pass
 
 
+class ListAttrWrapper(object):
+    def __init__(self, name):
+        self.name = name
+    
+    def __add__(self, other):
+        return ListAttr(self.name, other)
+
+
 class HEKClient(object):
+    fields = {
+        'FRM_Name': StringParamAttrWrapper,
+        'FRM_HUMANFLAG': BoolParamAttr,
+        'event_type': ListAttrWrapper,
+    }
+    
+    default = {
+        'cosec': '2',
+        'cmd': 'search',
+        'type': 'column',
+        'event_type': '**',
+    }
+    walker.apply(SpartialRegion(), [], default)
+    
     def __init__(self, url=DEFAULT_URL):
         self.url = url
     
-    def query(self, query):
-        return urlopen(self, url, urlencode(walker.create(attrs, [0])[0]))
+    def query(self, *query):
+        if len(query) > 1:
+            query = attr.and_(*query)
+        
+        data = walker.create(query, [0])
+        ndata = []
+        for elem in data:
+            new = self.default.copy()
+            new.update(elem)
+            ndata.append(new)
+        
+        return urlopen(self.url, urlencode(ndata[0]))
+    
+    def __getitem__(self, name):
+        return self.fields[name](name)
 
 
 if __name__ == '__main__':
-    FRM_Name = StringParamAttrWrapper('FRM_Name')
-    FRM_HUMANFLAG = BoolParamAttr('FRM_HUMANFLAG')
-    
-    print walker.create(FRM_Name.like('Hello%'), [0])[0]
-    print walker.create(FRM_Name < 'Hello', [0])[0]
-    
-    attrs = attr.and_(FRM_Name < 'Hello', -FRM_HUMANFLAG)
-    print attrs
-    print urlencode(walker.create(attrs, [0])[0])
+    from datetime import datetime
+    c = HEKClient()
+    print c.query(
+        Time.dt((2010, 1, 1), (2010, 1, 1, 1)),
+        c['event_type'] + 'ar',
+    ).read()
