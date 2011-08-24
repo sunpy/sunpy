@@ -73,7 +73,7 @@ def _a(walker, root, id_, dct):
     pass
 
 
-class StringParamAttrWrapper(object):
+class ComparisonParamAttrWrapper(object):
     def __init__(self, name):
         self.name = name
     
@@ -94,32 +94,18 @@ class StringParamAttrWrapper(object):
     
     def __neq__(self, other):
         return ParamAttr(self.name, '!=', other)
+
+
+class StringParamAttrWrapper(ComparisonParamAttrWrapper):
+    def __init__(self, name):
+        self.name = name
     
     def like(self, other):
         return ParamAttr(self.name, 'like', other)
 
 
-class NumberParamAttrWrapper(object):
-    def __init__(self, name):
-        self.name = name
-    
-    def __lt__(self, other):
-        return ParamAttr(self.name, '<', other)
-    
-    def __le__(self, other):
-        return ParamAttr(self.name, '<=', other)
-    
-    def __gt__(self, other):
-        return ParamAttr(self.name, '>', other)
-    
-    def __ge__(self, other):
-        return ParamAttr(self.name, '>=', other)
-    
-    def __eq__(self, other):
-        return ParamAttr(self.name, '=', other)
-    
-    def __neq__(self, other):
-        return ParamAttr(self.name, '!=', other)
+class NumerParamAttrWrapper(ComparisonParamAttrWrapper):
+    pass
 
 
 if __name__ == '__main__':
