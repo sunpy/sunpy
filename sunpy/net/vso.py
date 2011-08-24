@@ -15,7 +15,9 @@ from suds import client
 
 from sunpy.net import download
 from sunpy.util.util import anytim
-from sunpy.net.attr import Attr, ValueAttr, AttrWalker, AttrAnd, AttrOr, DummyAttr
+from sunpy.net.attr import (
+    Attr, ValueAttr, AttrWalker, AttrAnd, AttrOr, DummyAttr, and_
+)
 
 DEFAULT_URL = 'http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl'
 DEFAULT_PORT = 'nsoVSOi'
@@ -363,7 +365,9 @@ class VSOClient(object):
                 item[tip] = v
         return obj
     
-    def query(self, query):
+    def query(self, *query):
+        if len(query) > 1:
+            query = and_(*query)
         return QueryResponse.create(self.merge(
             self.api.service.Query(self.make('QueryRequest', block=block))
             for block in walker.create(query, self.api)
