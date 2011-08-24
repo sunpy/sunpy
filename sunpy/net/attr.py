@@ -99,7 +99,7 @@ class ValueAttr(Attr):
         self.attrs = attrs
     
     def __repr__(self):
-        return "<ValueAttr(%r, %r)>" % (self.attr, self.attrs)
+        return "<ValueAttr(%r)>" % (self.attrs)
     
     def __eq__(self, other):
         if not isinstance(other, ValueAttr):
@@ -116,11 +116,17 @@ class ValueAttr(Attr):
 
 
 class AttrWalker(object):
-    def __init__(self, appliers=None, creators=None):
+    def __init__(self, appliers=None, creators=None, converters=None):
         self.appliers = {} if appliers is None else appliers
         self.creators = {} if creators is None else creators
+        self.converters = {} if converters is None else converters
     
     def get_item(self, obj, dct):
+        for cls in obj.__class__.__mro__:
+            if cls in self.converters:
+                obj = dct[cls]()
+                break
+        
         for cls in obj.__class__.__mro__:
             if cls in dct:
                 return dct[cls]
@@ -138,6 +144,12 @@ class AttrWalker(object):
             return fun
         return _dec
     
+    def add_converter(self, type_):
+        def _dec(fun):
+            self.converters[type_] = fun
+            return fun
+        return _dec
+    
     def create(self, root, *args, **kwargs):
         return self.get_item(root, self.creators)(self, root, *args, **kwargs)
 
@@ -146,3 +158,24 @@ class AttrWalker(object):
     
     def __copy__(self):
         return AttrWalker(self.appliers.copy(), self.creators.copy())
+
+
+def and_(*args):
+    """ Trick operator precendence. 
+    
+    and_(foo < bar, bar < baz)
+    """
+    value = DummyAttr()
+    for elem in args:
+        value &= elem
+    return value
+
+def or_(*args):
+    """ Trick operator precendence. 
+    
+    or_(foo < bar, bar < baz)
+    """
+    value = DummyAttr()
+    for elem in args:
+        value |= elem
+    return value
