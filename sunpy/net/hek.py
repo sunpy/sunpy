@@ -44,6 +44,14 @@ class ListAttr(attr.Attr):
     
     def collides(self, other):
         return False
+    
+    def __eq__(self, other):
+        if not isinstance(other, ListAttr):
+            return False
+        return self.key == other.key and self.item == other.item
+    
+    def __hash__(self):
+        return hash((self.key, self.item))
 
 
 
@@ -55,6 +63,14 @@ class Time(attr.Attr):
     
     def collides(self, other):
         return isinstance(other, Time)
+    
+    def __eq__(self, other):
+        if not isinstance(other, ListAttr):
+            return False
+        return self.start == other.start and self.end == other.end
+    
+    def __hash__(self):
+        return hash((self.start, self.end))
     
     @classmethod
     def dt(cls, start, end):
