@@ -5,6 +5,7 @@ import sys
 
 from urllib2 import urlopen
 from urllib import urlencode
+from datetime import datetime
 
 from sunpy.net import attr
 
@@ -220,7 +221,6 @@ class HEKClient(object):
 
 
 if __name__ == '__main__':
-    from datetime import datetime
     c = HEKClient()
     print c.query(
         Time.dt((2010, 1, 1), (2010, 1, 1, 1)),
