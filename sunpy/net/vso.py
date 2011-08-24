@@ -25,24 +25,32 @@ RANGE = re.compile(r'(\d+)(\s*-\s*(\d+))?(\s*([a-zA-Z]+))?')
 
 # TODO: Name
 class NoData(Exception):
+    """ Raisen for callbacks of VSOClient that are unable to supply
+    information for the request. """
     pass
 
 
 class _Str(str):
+    """ Subclass of string that contains a meta attribute for the
+    record_item associated with the file. """
     pass
 
 # ----------------------------------------
 
+# The walker specifies how the Attr-tree is converted to a query the
+# server can handle.
 walker = AttrWalker()
 
 @walker.add_creator(ValueAttr)
-def _c(walker, root, api):
+def _create(walker, root, api):
+    """ Implementation detail. """
     value = api.factory.create('QueryRequestBlock')
     walker.apply(root, api, value)
     return [value]
 
 @walker.add_applier(ValueAttr)
-def _a(walker, root, api, queryblock):
+def _apply(walker, root, api, queryblock):
+    """ Implementation detail. """
     for k, v in root.attrs.iteritems():
         lst = k[-1]
         rest = k[:-1]
@@ -53,29 +61,34 @@ def _a(walker, root, api, queryblock):
         block[lst] = v
 
 @walker.add_creator(AttrAnd)
-def _c(walker, root, api):
+def _create(walker, root, api):
+    """ Implementation detail. """
     value = api.factory.create('QueryRequestBlock')
     walker.apply(root, api, value)
     return [value]
 
 @walker.add_applier(AttrAnd)
-def _a(walker, root, api, queryblock):
+def _apply(walker, root, api, queryblock):
+    """ Implementation detail. """
     for attr in root.attrs:
         walker.apply(attr, api, queryblock)
 
 @walker.add_creator(AttrOr)
-def _c(walker, root, api):
+def _create(walker, root, api):
+    """ Implementation detail. """
     blocks = []
     for attr in self.attrs:
         blocks.extend(walker.create(attr, api))
     return blocks
 
 @walker.add_creator(DummyAttr)
-def _c(walker, root, api):
+def _create(walker, root, api):
+    """ Implementation detail. """
     return api.factory.create('QueryRequestBlock')
 
 @walker.add_applier(DummyAttr)
-def _a(walker, root, api, queryblock):
+def _apply(walker, root, api, queryblock):
+    """ Implementation detail. """
     pass
 
 class Wave(ValueAttr):
@@ -250,21 +263,6 @@ class Results(object):
         self.errors.append(exception)
 
 
-def mk_filename(pattern, response, sock, url):
-    # FIXME: os.path.exists(name)
-    name = sock.headers.get(
-        'Content-Disposition', url.rstrip('/').rsplit('/', 1)[-1]
-    )
-    if not name:
-        name = response.fileid.replace('/', '_')
-    
-    fname = pattern.format(file=name, **dict(response))
-    dir_ = os.path.dirname(fname)
-    if not os.path.exists(dir_):
-        os.makedirs(os.path.dirname(fname))
-    return fname
-
-
 def _parse_waverange(string):
     min_, max_, unit = RANGE.match(string)[::2]
     return {
@@ -396,6 +394,21 @@ class VSOClient(object):
                             providers[provider].no_of_records_found += 1
                             providers[provider].no_of_records_returned += 1
         return self.make('QueryResponse', provideritem=providers.values())
+    
+    @staticmethod
+    def mk_filename(pattern, response, sock, url):
+        # FIXME: os.path.exists(name)
+        name = sock.headers.get(
+            'Content-Disposition', url.rstrip('/').rsplit('/', 1)[-1]
+        )
+        if not name:
+            name = response.fileid.replace('/', '_')
+        
+        fname = pattern.format(file=name, **dict(response))
+        dir_ = os.path.dirname(fname)
+        if not os.path.exists(dir_):
+            os.makedirs(os.path.dirname(fname))
+        return fname
     
     def query_legacy(self, tstart=None, tend=None, **kwargs):
         """
@@ -671,7 +684,7 @@ class VSOClient(object):
     def download(self, method, url, dw, callback, *args):
         if method.startswith('URL'):
             dw.reactor.call_sync(
-                partial(dw.download, url, partial(mk_filename, *args),
+                partial(dw.download, url, partial(self.mk_filename, *args),
                         callback)
             )
         raise NoData
