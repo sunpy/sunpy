@@ -9,7 +9,7 @@ from sunpy.net import attr
 
 class ParamAttr(attr.ValueAttr):
     def __init__(self, name, op, value):
-        attr.ValueAttr.__init__(self, [name])
+        attr.ValueAttr.__init__(self, [(name, op)])
         self.name = name
         self.op = op
         self.value = value
@@ -97,6 +97,29 @@ class StringParamAttrWrapper(object):
     
     def like(self, other):
         return ParamAttr(self.name, 'like', other)
+
+
+class NumberParamAttrWrapper(object):
+    def __init__(self, name):
+        self.name = name
+    
+    def __lt__(self, other):
+        return ParamAttr(self.name, '<', other)
+    
+    def __le__(self, other):
+        return ParamAttr(self.name, '<=', other)
+    
+    def __gt__(self, other):
+        return ParamAttr(self.name, '>', other)
+    
+    def __ge__(self, other):
+        return ParamAttr(self.name, '>=', other)
+    
+    def __eq__(self, other):
+        return ParamAttr(self.name, '=', other)
+    
+    def __neq__(self, other):
+        return ParamAttr(self.name, '!=', other)
 
 
 if __name__ == '__main__':
