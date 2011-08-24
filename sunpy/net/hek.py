@@ -15,6 +15,20 @@ class ParamAttr(attr.ValueAttr):
         self.value = value
 
 
+class BoolParamAttr(ParamAttr):
+    def __init__(self, name, value='true'):
+        ParamAttr.__init__(self, name, '=', value)
+    
+    def __neg__(self):
+        if self.value == 'true':
+            return BoolParamAttr(self.name, 'false')
+        else:
+            return BoolParamAttr(self.name)
+    
+    def __pos__(self):
+        return BoolParamAttr(self.name)
+
+
 walker = attr.AttrWalker()
 
 @walker.add_creator(ParamAttr)
@@ -59,6 +73,39 @@ def _a(walker, root, id_, dct):
     pass
 
 
+class StringParamAttrWrapper(object):
+    def __init__(self, name):
+        self.name = name
+    
+    def __lt__(self, other):
+        return ParamAttr(self.name, '<', other)
+    
+    def __le__(self, other):
+        return ParamAttr(self.name, '<=', other)
+    
+    def __gt__(self, other):
+        return ParamAttr(self.name, '>', other)
+    
+    def __ge__(self, other):
+        return ParamAttr(self.name, '>=', other)
+    
+    def __eq__(self, other):
+        return ParamAttr(self.name, '=', other)
+    
+    def __neq__(self, other):
+        return ParamAttr(self.name, '!=', other)
+    
+    def like(self, other):
+        return ParamAttr(self.name, 'like', other)
+
+
 if __name__ == '__main__':
-    attrs = ParamAttr('FRM_Name', '=', 'Karel Schrijver') & ParamAttr('FL_GOESCls', '>', 'X')
+    FRM_Name = StringParamAttrWrapper('FRM_Name')
+    FRM_HUMANFLAG = BoolParamAttr('FRM_HUMANFLAG')
+    
+    print walker.create(FRM_Name.like('Hello%'), [0])[0]
+    print walker.create(FRM_Name < 'Hello', [0])[0]
+    
+    attrs = attr.and_(FRM_Name < 'Hello', -FRM_HUMANFLAG)
+    print attrs
     print urlencode(walker.create(attrs, [0])[0])
