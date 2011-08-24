@@ -190,6 +190,7 @@ class HEKClient(object):
         'type': 'column',
         'event_type': '**',
     }
+    # Default to full disk.
     walker.apply(SpartialRegion(), [], default)
     
     def __init__(self, url=DEFAULT_URL):
