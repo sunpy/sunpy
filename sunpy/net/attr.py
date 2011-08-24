@@ -25,6 +25,12 @@ class DummyAttr(Attr):
     
     def collides(self, other):
         return False
+    
+    def __hash__(self):
+        return hash(None)
+    
+    def __eq__(self, other):
+        return isinstance(other, DummyAttr)
 
 
 class AttrAnd(Attr):
