@@ -72,7 +72,7 @@ class SpartialRegion(attr.Attr):
 
 walker = attr.AttrWalker()
 
-@walker.add_creator(Time)
+@walker.add_creator(Time, SpartialRegion, ListAttr, ParamAttr, attr.AttrAn)
 def _c(walker, root, id_):
     value = {}
     walker.apply(root, id_, value)
@@ -84,12 +84,6 @@ def _a(walker, root, id_, dct):
     dct['event_endtime'] = root.end.strftime('%Y-%m-%dT%H:%M:%S')
     return dct
 
-@walker.add_creator(SpartialRegion)
-def _c(walker, root, id_):
-    value = {}
-    walker.apply(root, id_, value)
-    return [value]
-
 @walker.add_applier(SpartialRegion)
 def _a(walker, root, id_, dct):
     dct['x1'] = root.x1
@@ -99,12 +93,6 @@ def _a(walker, root, id_, dct):
     dct['event_coordsys'] = root.sys
     return dct
 
-@walker.add_creator(ListAttr)
-def _c(walker, root, id_):
-    value = {}
-    walker.apply(root, id_, value)
-    return [value]
-
 @walker.add_applier(ListAttr)
 def _a(walker, root, id_, dct):
     if root.key in dct:
@@ -112,12 +100,6 @@ def _a(walker, root, id_, dct):
     else:
         dct[root.key] = root.item
     return dct
-
-@walker.add_creator(ParamAttr)
-def _c(walker, root, id_):
-    value = {}
-    walker.apply(root, id_, value)
-    return [value]
 
 @walker.add_applier(ParamAttr)
 def _a(walker, root, id_, dct):
@@ -127,12 +109,6 @@ def _a(walker, root, id_, dct):
     dct['value%d' % nid] = root.value
     id_[0] += 1
     return dct
-
-@walker.add_creator(attr.AttrAnd)
-def _c(walker, root, id_):
-    value = {}
-    walker.apply(root, id_, value)
-    return [value]
 
 @walker.add_applier(attr.AttrAnd)
 def _a(walker, root, id_, dct):
