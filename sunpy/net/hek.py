@@ -168,15 +168,6 @@ class StringParamAttrWrapper(ComparisonParamAttrWrapper):
 class NumberParamAttrWrapper(ComparisonParamAttrWrapper):
     pass
 
-
-class ListAttrWrapper(object):
-    def __init__(self, name):
-        self.name = name
-    
-    def __add__(self, other):
-        return ListAttr(self.name, other)
-
-
 EVENTS = [
     'AR', 'CE', 'CD', 'CH', 'CW', 'FI', 'FE', 'FA', 'FL', 'LP', 'OS', 'SS',
     'EF', 'CJ', 'PG', 'OT', 'NR', 'SG', 'SP', 'CR', 'CC', 'ER', 'TO'
@@ -189,7 +180,6 @@ class HEKClient(object):
     fields = {
         'FRM_Name': StringParamAttrWrapper,
         'FRM_HUMANFLAG': BoolParamAttr,
-        'event_type': ListAttrWrapper,
     }
     
     default = {
@@ -221,8 +211,10 @@ class HEKClient(object):
 
 
 if __name__ == '__main__':
+    import json
+    import pprint
     c = HEKClient()
-    print c.query(
+    pprint.pprint(json.load(c.query(
         Time.dt((2010, 1, 1), (2010, 1, 1, 1)),
         AR,
-    ).read()
+    )))
