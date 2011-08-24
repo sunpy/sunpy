@@ -6,6 +6,8 @@ from urllib import urlencode
 
 from sunpy.net import attr
 
+DEFAULT_URL = 'http://www.lmsal.com/hek/her'
+
 
 class ParamAttr(attr.ValueAttr):
     def __init__(self, name, op, value):
@@ -131,6 +133,14 @@ class StringParamAttrWrapper(ComparisonParamAttrWrapper):
 
 class NumerParamAttrWrapper(ComparisonParamAttrWrapper):
     pass
+
+
+class HEKClient(object):
+    def __init__(self, url=DEFAULT_URL):
+        self.url = url
+    
+    def query(self, query):
+        return urlopen(self, url, urlencode(walker.create(attrs, [0])[0]))
 
 
 if __name__ == '__main__':
