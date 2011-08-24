@@ -15,7 +15,7 @@ DEFAULT_URL = 'http://www.lmsal.com/hek/her'
 
 class ParamAttr(attr.ValueAttr):
     def __init__(self, name, op, value):
-        attr.ValueAttr.__init__(self, [(name, op)])
+        attr.ValueAttr.__init__(self, {(name, op) : value})
         self.name = name
         self.op = op
         self.value = value
