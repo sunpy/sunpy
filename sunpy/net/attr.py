@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 class Attr(object):
     def __and__(self, other):
         if isinstance(other, AttrOr):
@@ -123,34 +125,37 @@ class ValueAttr(Attr):
 
 class AttrWalker(object):
     def __init__(self, appliers=None, creators=None, converters=None):
-        self.appliers = {} if appliers is None else appliers
-        self.creators = {} if creators is None else creators
-        self.converters = {} if converters is None else converters
+        self.methods = defaultdict(dict)
+        self.cache = defaultdict(dict)
     
-    def get_item(self, obj, dct, super_=False):
-        for cls in obj.__class__.__mro__[super_:]:
-            if cls in self.converters:
-                obj = dct[cls]()
-                break
+    def get_item(self, obj, method, super_=False):
+        ocls = obj.__class__
         
-        for cls in obj.__class__.__mro__[super_:]:
-            if cls in dct:
-                return dct[cls]
+        cached = self.cache[method].get(ocls, None)
+        if cached is not None:
+            return cached
+        
+        dct = self.methods[method]
+        for cls in ocls.__mro__[super_:]:
+            meth = dct.get(cls, None)
+            if meth is not None:
+                self.cache[method][ocls] = meth
+                return meth
         raise KeyError
     
-    def add_creator(self, *types):
+    def add(self, method, *types):
+        self.cache[method] = {}
         def _dec(fun):
             for type_ in types:
-                self.creators[type_] = fun
+                self.methods[method][type_] = fun
             return fun
         return _dec
     
+    def add_creator(self, *types):
+        return self.add('create', *types)
+    
     def add_applier(self, *types):
-        def _dec(fun):
-            for type_ in types:
-                self.appliers[type_] = fun
-            return fun
-        return _dec
+        return self.add('apply', *types)
     
     def add_converter(self, *types):
         def _dec(fun):
@@ -159,19 +164,24 @@ class AttrWalker(object):
             return fun
         return _dec
     
-    def create(self, root, *args, **kwargs):
-        return self.get_item(root, self.creators)(self, root, *args, **kwargs)
+    def call(self, method, root, *args, **kwargs):
+        return self.get_item(root, method)(self, root, *args, **kwargs)
+    
+    def super(self, method, root, *args, **kwargs):
+        return self.get_item(root, method, True)(
+            self, root, *args, **kwargs)
+    
+    def create(self, *args, **kwargs):
+        return self.call('create', *args, **kwargs)
 
-    def apply(self, root, *args, **kwargs):
-        return self.get_item(root, self.appliers)(self, root, *args, **kwargs)
+    def apply(self, *args, **kwargs):
+        return self.call('apply', *args, **kwargs)
     
     def super_create(self, root, *args, **kwargs):
-        return self.get_item(root, self.creators, True)(
-            self, root, *args, **kwargs)
+        return self.super('create', *args, **kwargs)
 
     def super_apply(self, root, *args, **kwargs):
-        return self.get_item(root, self.appliers, True)(
-            self, root, *args, **kwargs)
+        return self.super('apply', *args, **kwargs)
     
     def __copy__(self):
         return AttrWalker(self.appliers.copy(), self.creators.copy())
