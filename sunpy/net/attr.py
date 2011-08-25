@@ -1,4 +1,4 @@
-from collections import defaultdict
+from sunpy.util.multimethod import MultiMethod
 
 class Attr(object):
     def __and__(self, other):
@@ -122,68 +122,25 @@ class ValueAttr(Attr):
             return False
         return any(k in other.attrs for k in self.attrs)
 
-
-class MultiMethod(object):
-    def __init__(self, n=None, key=None):
-        if n is not None and key is not None:
-            raise ValueError
-        elif n is None and key is None:
-            raise ValueError
-        
-        self.n = n
-        self.key = key
-        
-        self.methods = {}
-        self.cache = {}
-    
-    def add(self, *types):
-        self.cache = {}
-        def _dec(fun):
-            for type_ in types:
-                self.methods[type_] = fun
-            return fun
-        return _dec
-    
-    def get_item(self, obj, super_=False):
-        ocls = obj.__class__
-        
-        cached = self.cache.get(ocls, None)
-        if cached is not None:
-            return cached
-        
-        dct = self.methods
-        for cls in ocls.__mro__[super_:]:
-            meth = dct.get(cls, None)
-            if meth is not None:
-                self.cache[ocls] = meth
-                return meth
-        raise KeyError
-    
-    def __call__(self, *args, **kwargs):
-        if self.n is not None:
-            obj = args[self.n]
-        else:
-            obj = kwargs[self.key]
-        return self.get_item(obj)(*args, **kwargs)
-    
-    def super(self, *args, **kwargs):
-        if self.n is not None:
-            obj = args[self.n]
-        else:
-            obj = kwargs[self.key]
-        return self.get_item(obj, True)(*args, **kwargs)
-        
     
 class AttrWalker(object):
     def __init__(self):
-        self.applymm = MultiMethod(1)
-        self.createmm = MultiMethod(1)
+        self.applymm = MultiMethod(lambda *a, **kw: (a[1], ))
+        self.createmm = MultiMethod(lambda *a, **kw: (a[1], ))
     
     def add_creator(self, *types):
-        return self.createmm.add(*types)
+        def _dec(fun):
+            for type_ in types:
+                self.createmm.add(fun, (type_, ))
+            return fun
+        return _dec
     
     def add_applier(self, *types):
-        return self.applymm.add(*types)
+        def _dec(fun):
+            for type_ in types:
+                self.applymm.add(fun, (type_, ))
+            return fun
+        return _dec
     
     def create(self, *args, **kwargs):
         return self.createmm(self, *args, **kwargs)
