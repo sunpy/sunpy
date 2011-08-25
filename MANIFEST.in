@@ -1,7 +1,7 @@
-recursive-include doc/sample-data *
 recursive-include doc/html *
 recursive-include sunpy *.py
+recursive-include sunpy/data/sample *
 include *.txt
+include *.md
 include setup.py
-include paver-minilib.zip
 include pavement.py

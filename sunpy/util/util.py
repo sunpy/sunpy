@@ -32,7 +32,10 @@ def anytim(time_string=None):
              "%Y/%m/%d %H:%M:%S",       # Example 2007/05/04 21:08:12
              "%Y-%m-%d %H:%M:%S.%f",    # Example 2007/05/04 21:08:12.1000000
              "%Y-%m-%d %H:%M:%S",       # Example 2007-05-04 21:08:12
-             "%Y-%b-%d %H:%M:%S"]       # Example 2007-May-04 21:08:12 
+             "%Y-%b-%d %H:%M:%S",       # Example 2007-May-04 21:08:12
+             "%Y-%b-%d",                # Example 2007-May-04
+             "%Y-%m-%d",                # Example 2007-05-03
+             "%Y/%m/%d"]                # Example 2007/05/04
         for time_format in time_format_list: 
             try: 
                 return datetime.strptime(time_string, time_format)
