@@ -127,13 +127,13 @@ class AttrWalker(object):
         self.creators = {} if creators is None else creators
         self.converters = {} if converters is None else converters
     
-    def get_item(self, obj, dct):
-        for cls in obj.__class__.__mro__:
+    def get_item(self, obj, dct, super_=False):
+        for cls in obj.__class__.__mro__[super_:]:
             if cls in self.converters:
                 obj = dct[cls]()
                 break
         
-        for cls in obj.__class__.__mro__:
+        for cls in obj.__class__.__mro__[super_:]:
             if cls in dct:
                 return dct[cls]
         raise KeyError
@@ -164,6 +164,14 @@ class AttrWalker(object):
 
     def apply(self, root, *args, **kwargs):
         return self.get_item(root, self.appliers)(self, root, *args, **kwargs)
+    
+    def super_create(self, root, *args, **kwargs):
+        return self.get_item(root, self.creators, True)(
+            self, root, *args, **kwargs)
+
+    def super_apply(self, root, *args, **kwargs):
+        return self.get_item(root, self.appliers, True)(
+            self, root, *args, **kwargs)
     
     def __copy__(self):
         return AttrWalker(self.appliers.copy(), self.creators.copy())
