@@ -17,14 +17,11 @@ from matplotlib.patches import Circle
 from sunpy.util import util as util
 import numpy as np
 
-AIA_SAMPLE_IMAGE = 'doc/sample-data/AIA20110319_105400_0171.fits'
-RHESSI_SAMPLE_IMAGE = 'doc/sample-data/hsi_image_20110110_072142_072342_1__4_10_10_15_15_30keV_clean.fits'
-
 def plot_rhessi_fits(filepath=None):
     '''Plots an AIA image.'''
 
     if filepath is None:
-        filepath = os.path.join(os.path.dirname(__file__), RHESSI_SAMPLE_IMAGE)
+        filepath = os.path.join(os.path.dirname(__file__), sunpy.RHESSI_HSI)
 
     # Load fits file
     fits = pyfits.open(filepath)
@@ -89,7 +86,7 @@ def plot_fits(filepath=None):
     '''Plots an AIA image.'''
 
     if filepath is None:
-        filepath = os.path.join(os.path.dirname(__file__), AIA_SAMPLE_IMAGE)
+        filepath = os.path.join(os.path.dirname(__file__), sunpy.AIA_171_IMAGE)
 
     # Load fits file
     fits = pyfits.open(filepath)

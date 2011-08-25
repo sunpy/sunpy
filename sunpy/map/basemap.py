@@ -1,9 +1,11 @@
 """
 BaseMap is a generic Map class from which all other Map classes inherit from.
 """
+#pylint: disable=E1101,E1121
 __authors__ = ["Keith Hughitt, Steven Christe"]
 __email__ = "keith.hughitt@nasa.gov"
 
+import copy
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
@@ -58,13 +60,15 @@ class BaseMap(np.ndarray):
     name : str
         Nickname for the image type (e.g. "AIA 171")
     center : dict
-        X and Y coordinate for the center of the sun in arcseconds
+        X and Y coordinate for the center of the sun in units
     scale: dict
-        Image scale along the x and y axes in arcseconds/pixel
+        Image scale along the x and y axes in units/pixel
+    units: dict
+        Image coordinate units along the x and y axes
 
     Examples
     --------
-    >>> aia = sunpy.Map('doc/sample-data/AIA20110319_105400_0171.fits')
+    >>> aia = sunpy.Map(sunpy.AIA_171_IMAGE)
     >>> aia.T
     Map([[ 0.3125,  1.    , -1.1875, ..., -0.625 ,  0.5625,  0.5   ],
     [-0.0625,  0.1875,  0.375 , ...,  0.0625,  0.0625, -0.125 ],
@@ -92,7 +96,7 @@ class BaseMap(np.ndarray):
     | http://www.scipy.org/Subclasses
 
     """
-    def __new__(cls, data, header=None):
+    def __new__(cls, data, header=None): #pylint: disable=W0613
         """Creates a new BaseMap instance"""        
         if isinstance(data, np.ndarray):
             obj = data.view(cls)
@@ -109,27 +113,28 @@ class BaseMap(np.ndarray):
             self.name = None
             self.cmap = None
             self.norm = None
-            #self.exptime = None
             
             # Set object attributes dynamically
             for attr, value in list(self.get_properties(header).items()):
                 setattr(self, attr, value)
 
             self.center = {
-                "x": header.get('crpix1'),
-                "y": header.get('crpix2')
+                "x": header.get('cdelt1') * data.shape[1] / 2 + header.get('crval1') - header.get('crpix1') * header.get('cdelt1'),
+                "y": header.get('cdelt2') * data.shape[0] / 2 + header.get('crval2') - header.get('crpix2') * header.get('cdelt2')
             }
             self.scale = {
                 "x": header.get('cdelt1'),
                 "y": header.get('cdelt2')
             }
-    
+            self.units = {
+                "x": header.get('cunit1'), 
+                "y": header.get('cunit2')
+            }
+                
     def __add__(self, other):
         """Add two maps. Currently does not take into account the alignment  
         between the two maps."""
         result = np.ndarray.__add__(self, other)
-             
-        result.cmap = cm.gray  #@UndefinedVariable
         
         return result
     
@@ -141,7 +146,7 @@ class BaseMap(np.ndarray):
         minmax = np.array([abs(result.min()), abs(result.max())]).max()
         result.norm = colors.Normalize(-minmax, minmax, True)
         
-        result.cmap = cm.gray  #@UndefinedVariable
+        result.cmap = cm.gray #@UndefinedVariable 
         
         return result
     
@@ -159,34 +164,41 @@ class BaseMap(np.ndarray):
             'name': "Default Map",
             'r_sun': None
         }
-    @classmethod
-    def as_slice(cls, header):
-        """Returns a data-less Map object.
         
-        Dynamically create a class which contains only the original and
-        normalized header fields and default settings for the map. This is
-        useful for Map collections (e.g. MapCube) in order to maintain a
-        separate record of the metainformation for a given layer or "slice"
-        of the cube without having to keep the data separate.
+    def get_xrange(self):
+        """Return the X range of the image in arcsec."""        
+        xmin = self.center['x'] - self.shape[1] / 2 * self.scale['x']
+        xmax = self.center['x'] + self.shape[1] / 2 * self.scale['x']
+        return [xmin,xmax]
         
-        Parameters
-        ----------
-        header : dict
-            A dictionary of the original image header tag
-            
-        Returns
-        -------
-        out : MapSlice
-            An empty container object with only meta information and default
-            choices pertaining to the header specified.
+    def get_yrange(self):
+        """Return the Y range of the image in arcsec."""
+        ymin = self.center['y'] - self.shape[0] / 2 * self.scale['y']
+        ymax = self.center['y'] + self.shape[0] / 2 * self.scale['y']
+        return [ymin,ymax]
+
+    def submap(self, x_range, y_range):
+        """Returns a submap of the map with the specified range
         
-        See Also: http://docs.python.org/library/functions.html#type
+        Keith [08/19/2011]
+         * Slicing in numpy expects [y, x]. Should we break convention here? 
         """
-        #name = self.__class__.__name__ + "Slice"
-        name = str(cls).split(".")[-1][:-2] + "Slice"
-        properties = cls.get_properties(header) # pylint: disable=E1121
-        properties['header'] = header
-        return type(name, (object,), properties) # pylint: disable=E1121
+        #
+        # x_px = (x / cdelt1) + (width / 2)
+        #
+        x_pixels = (np.array(x_range) / self.scale['x']) + (self.shape[1] / 2)
+        y_pixels = (np.array(y_range) / self.scale['y']) + (self.shape[0] / 2)
+
+        # Make a copy of the header with updated centering information        
+        header = copy.deepcopy(self.header)
+        header['crpix1'] = header['crpix1'] - x_pixels[0]
+        header['crpix2'] = header['crpix2'] - y_pixels[0]
+        
+        # Get ndarray representation of submap
+        data = np.asarray(self[y_pixels[0]:y_pixels[1], 
+                               x_pixels[0]:x_pixels[1]])
+
+        return self.__class__(data, header)
         
     def plot(self, draw_limb=True, **matplot_args):
         """Plots the map object using matplotlib
@@ -204,8 +216,8 @@ class BaseMap(np.ndarray):
         
         axes = fig.add_subplot(111)
         axes.set_title("%s %s" % (self.name, self.date))
-        axes.set_xlabel('X-postion (arcseconds)')
-        axes.set_ylabel('Y-postion (arcseconds)')
+        axes.set_xlabel('X-postion [' + self.units['x'] + ']')
+        axes.set_ylabel('Y-postion [' + self.units['y'] + ']')
         
         # Draw circle at solar limb
         if draw_limb:
@@ -214,12 +226,9 @@ class BaseMap(np.ndarray):
             axes.add_artist(circ)
 
         # Determine extent
-        xmin = -(self.center['x'] - 1) * self.scale['x']
-        xmax = (self.center['x'] - 1) * self.scale['x']
-        ymin = -(self.center['y'] - 1) * self.scale['y']
-        ymax = (self.center['y'] - 1) * self.scale['y']
+        extent = self.get_xrange() + self.get_yrange()
         
-        extent = [xmin, xmax, ymin, ymax]
+        print extent
         
         # Matplotlib arguments
         params = {
@@ -240,12 +249,14 @@ class BaseMap(np.ndarray):
         if hasattr(obj, 'header'):
             self.header = obj.header
 
+            # preserve object properties
             properties = self.get_properties(obj.header)
             for attr, value in list(properties.items()):
                 setattr(self, attr, getattr(obj, attr, value))
                 
             self.center = obj.center
             self.scale = obj.scale
+            self.units = obj.units
         
     def __array_wrap__(self, out_arr, context=None):
         """Returns a wrapped instance of a Map object"""
