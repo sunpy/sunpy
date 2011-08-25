@@ -21,28 +21,13 @@ Author: Matt Earnshaw <matt@earnshaw.org.uk>
 
 import sys
 import sunpy
-import qrc_resources
-from PyQt4.QtGui import (QApplication, QWidget, QMainWindow, QSizePolicy,
+from resources import qrc_resources
+from PyQt4.QtGui import (QApplication, QWidget, QMainWindow, 
                         QAction, QIcon, QFileDialog, QVBoxLayout)
 from PyQt4.QtCore import SIGNAL, SLOT, QSettings, QVariant
-from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg as MPLToolBar
-from matplotlib.figure import Figure
 import matplotlib.cm as cm
-
-class BasePlot(FigureCanvas):
-    """ Base plot object, resizes to fit window """
-
-    def __init__(self, parent=None, width=5, height=4, dpi=100):
-        self.fig = Figure(figsize=(width, height), dpi=dpi)
-        self.axes = self.fig.add_subplot(111)
-        self.axes.hold(False)
-        FigureCanvas.__init__(self, self.fig)
-        FigureCanvas.setSizePolicy(self,
-                                   QSizePolicy.Expanding,
-                                   QSizePolicy.Expanding)
-        FigureCanvas.updateGeometry(self)
-
+from widgets.plot import BasePlot
 
 class MainWindow(QMainWindow):
 
@@ -68,6 +53,7 @@ class MainWindow(QMainWindow):
         # Setup toolbars
         mpl_toolbar = MPLToolBar(self.canvas, None) # Instantiate a MPL built-in toolbar so we can reuse the actions
         plot_toolbar = self.addToolBar("Plot")
+
         # The alternative here is to subclass the toolbar and solely add our custom actions, which is slightly less flexible
         # with respect to custom icons, tooltips, button placement, etc.
         open_plot = self.create_action(slot=self.open_plot, icon="open_plot", tip="Open a FITS file for plotting...")
@@ -85,7 +71,6 @@ class MainWindow(QMainWindow):
         plot_toolbar.insertSeparator(home)
         plot_toolbar.insertSeparator(exit)
 
-        layout.addWidget(plot_toolbar)
         
 
     def create_action(self, signal=SIGNAL('triggered()'), slot=None, text=None,
