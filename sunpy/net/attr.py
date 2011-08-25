@@ -123,68 +123,79 @@ class ValueAttr(Attr):
         return any(k in other.attrs for k in self.attrs)
 
 
-class AttrWalker(object):
-    def __init__(self, appliers=None, creators=None, converters=None):
-        self.methods = defaultdict(dict)
-        self.cache = defaultdict(dict)
+class MultiMethod(object):
+    def __init__(self, n=None, key=None):
+        if n is not None and key is not None:
+            raise ValueError
+        elif n is None and key is None:
+            raise ValueError
+        
+        self.n = n
+        self.key = key
+        
+        self.methods = {}
+        self.cache = {}
     
-    def get_item(self, obj, method, super_=False):
+    def add(self, *types):
+        self.cache = {}
+        def _dec(fun):
+            for type_ in types:
+                self.methods[type_] = fun
+            return fun
+        return _dec
+    
+    def get_item(self, obj, super_=False):
         ocls = obj.__class__
         
-        cached = self.cache[method].get(ocls, None)
+        cached = self.cache.get(ocls, None)
         if cached is not None:
             return cached
         
-        dct = self.methods[method]
+        dct = self.methods
         for cls in ocls.__mro__[super_:]:
             meth = dct.get(cls, None)
             if meth is not None:
-                self.cache[method][ocls] = meth
+                self.cache[ocls] = meth
                 return meth
         raise KeyError
     
-    def add(self, method, *types):
-        self.cache[method] = {}
-        def _dec(fun):
-            for type_ in types:
-                self.methods[method][type_] = fun
-            return fun
-        return _dec
+    def __call__(self, *args, **kwargs):
+        if self.n is not None:
+            obj = args[self.n]
+        else:
+            obj = kwargs[self.key]
+        return self.get_item(obj)(*args, **kwargs)
+    
+    def super(self, *args, **kwargs):
+        if self.n is not None:
+            obj = args[self.n]
+        else:
+            obj = kwargs[self.key]
+        return self.get_item(obj, True)(*args, **kwargs)
+        
+    
+class AttrWalker(object):
+    def __init__(self):
+        self.applymm = MultiMethod(1)
+        self.createmm = MultiMethod(1)
     
     def add_creator(self, *types):
-        return self.add('create', *types)
+        return self.createmm.add(*types)
     
     def add_applier(self, *types):
-        return self.add('apply', *types)
-    
-    def add_converter(self, *types):
-        def _dec(fun):
-            for type_ in types:
-                self.converters[type_] = fun
-            return fun
-        return _dec
-    
-    def call(self, method, root, *args, **kwargs):
-        return self.get_item(root, method)(self, root, *args, **kwargs)
-    
-    def super(self, method, root, *args, **kwargs):
-        return self.get_item(root, method, True)(
-            self, root, *args, **kwargs)
+        return self.applymm.add(*types)
     
     def create(self, *args, **kwargs):
-        return self.call('create', *args, **kwargs)
+        return self.createmm(self, *args, **kwargs)
 
     def apply(self, *args, **kwargs):
-        return self.call('apply', *args, **kwargs)
+        return self.applymm(self, *args, **kwargs)
     
-    def super_create(self, root, *args, **kwargs):
-        return self.super('create', *args, **kwargs)
+    def super_create(self, *args, **kwargs):
+        return self.createmm.super(self, *args, **kwargs)
 
-    def super_apply(self, root, *args, **kwargs):
-        return self.super('apply', *args, **kwargs)
-    
-    def __copy__(self):
-        return AttrWalker(self.appliers.copy(), self.creators.copy())
+    def super_apply(self, *args, **kwargs):
+        return self.applymm.super(self, *args, **kwargs)
 
 
 def and_(*args):
