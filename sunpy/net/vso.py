@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 # Author: Florian Mayer <florian.mayer@bitsrc.org>
 
+"""
+This module provides a wrapper around the VSO API.
+"""
+
 import re
 import os
 import sys
@@ -232,6 +236,9 @@ for elem in ['provider', 'source', 'instrument', 'physobs', 'pixels',
 # ----------------------------------------
 
 class Results(object):
+    """ Returned by VSOClient.get. Use .wait to wait
+    for completion of download.
+    """
     def __init__(self, callback, n=0, done=None):
         self.callback = callback
         self.n = n
@@ -258,6 +265,7 @@ class Results(object):
         return partial(self.submit, keys)
     
     def wait(self):
+        """ Wait for result to be complete and return it. """
         self.evt.wait()
         return self.map_
     
@@ -303,13 +311,17 @@ class QueryResponse(list):
         return cls(iter_records(queryresult), queryresult)
     
     def total_size(self):
+        """ Total size of data in KB. May be less than the actual
+        size because of inaccurate data providers. """
         # Warn about -1 values?
         return sum(record.size for record in self if record.size > 0)
     
     def no_records(self):
-        return sum(1 for _ in self)
+        """ Return number of records. """
+        return len(self)
     
     def time_range(self):
+        """ Return total time-range all records span across. """
         return (
             datetime.strptime(
                 min(record.time.start for record in self), TIMEFORMAT),
@@ -366,6 +378,20 @@ class VSOClient(object):
         return obj
     
     def query(self, *query):
+        """ Query data from the VSO with the new API. Takes a variable number
+        of attributes as parameter, which are chained together using AND.
+        
+        The new query language allows complex queries to be easily formed.
+        
+        Examples
+        --------
+        Query all data from eit or aia between 2010-01-01T00:00 and
+        2010-01-01T01:00.
+        >>> client.query(
+        ...    vso.Time(datetime(2010, 1, 1), datetime(2010, 1, 1, 1)),
+        ...    vso.Instrument('eit') | vso.Instrument('aia')
+        ... )
+        """
         if len(query) > 1:
             query = and_(*query)
         return QueryResponse.create(self.merge(
@@ -476,6 +502,13 @@ class VSOClient(object):
         * May be a string of the format '(min) - (max)' for range matching
         * May be a string of the form '(operator) (number)' where operator
             is one of: lt gt le ge < > <= >=
+        
+        Examples
+        --------
+        Query all data from eit between 2010-01-01T00:00 and
+        2010-01-01T01:00.
+        >>> qr = client.query_legacy(
+        ...     datetime(2010, 1, 1), datetime(2010, 1, 1, 1), instrument='eit')
         """
         sdk = lambda key: lambda value: {key: value}
         ALIASES = {
@@ -686,6 +719,7 @@ class VSOClient(object):
                 res.add_error(UnknownStatus(dresponse))
     
     def download(self, method, url, dw, callback, *args):
+        """ Override to costumize download action. """
         if method.startswith('URL'):
             dw.reactor.call_sync(
                 partial(dw.download, url, partial(self.mk_filename, *args),
@@ -707,15 +741,18 @@ class VSOClient(object):
         )
     
     def multiple_choices(self, choices, response):
+        """ Override to pick between multiple download choices. """
         for elem in self.method_order:
             if elem in choices:
                 return [elem]
         raise NoData
     
     def missing_information(self, info, field):
+        """ Override to provide missing information. """
         raise NoData
     
     def unknown_method(self, response):
+        """ Override to pick a new method if the current one is unknown. """
         raise NoData
 
 
