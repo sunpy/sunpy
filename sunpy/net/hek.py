@@ -46,13 +46,17 @@ class ListAttr(attr.Attr):
         return False
     
     def __eq__(self, other):
-        if not isinstance(other, ListAttr):
+        if not isinstance(other, self.__class__):
             return False
-        return self.key == other.key and self.item == other.item
+        return vars(self) == vars(other)
     
     def __hash__(self):
-        return hash((self.key, self.item))
+        return hash(tuple(vars(self).itervalues()))
 
+
+class EventType(ListAttr):
+    def __init__(self, item):
+        ListAttr.__init__(self, 'event_type', item)
 
 
 class Time(attr.Attr):
@@ -65,12 +69,12 @@ class Time(attr.Attr):
         return isinstance(other, Time)
     
     def __eq__(self, other):
-        if not isinstance(other, ListAttr):
+        if not isinstance(other, self.__class__):
             return False
-        return self.start == other.start and self.end == other.end
+        return vars(self) == vars(other)
     
     def __hash__(self):
-        return hash((self.start, self.end))
+        return hash(tuple(vars(self).itervalues()))
     
     @classmethod
     def dt(cls, start, end):
@@ -88,24 +92,62 @@ class SpartialRegion(attr.Attr):
     
     def collides(self, other):
         return isinstance(other, SpartialRegion)
+    
+    def __eq__(self, other):
+        if not isinstance(other, self.__class__):
+            return False
+        return vars(self) == vars(other)
+    
+    def __hash__(self):
+        return hash(tuple(vars(self).itervalues()))
+
+
+class Contains(attr.Attr):
+    def __init__(self, *types):
+        self.types = types
+    
+    def collides(self, other):
+        return False
+    
+    def __eq__(self, other):
+        if not isinstance(other, self.__class__):
+            return False
+        return vars(self) == vars(other)
+    
+    def __hash__(self):
+        return hash(tuple(vars(self).itervalues()))
 
 
 walker = attr.AttrWalker()
 
-@walker.add_creator(Time, SpartialRegion, ListAttr, ParamAttr, attr.AttrAnd)
-def _c(walker, root, id_):
+
+@walker.add_applier(Contains)
+def _a(walker, root, state, dct):
+    dct['type'] = 'contains'
+    if not Contains in state:
+        state[Contains] = 1
+    
+    nid = state[Contains]
+    for n, type_ in enumerate(root.types):
+        dct['event_type%d' % (nid + n)] = type_
+    state[Contains] += n
+    return dct
+
+@walker.add_creator(
+    Time, SpartialRegion, ListAttr, ParamAttr, attr.AttrAnd, Contains)
+def _c(walker, root, state):
     value = {}
-    walker.apply(root, id_, value)
+    walker.apply(root, state, value)
     return [value]
 
 @walker.add_applier(Time)
-def _a(walker, root, id_, dct):
+def _a(walker, root, state, dct):
     dct['event_starttime'] = root.start.strftime('%Y-%m-%dT%H:%M:%S')
     dct['event_endtime'] = root.end.strftime('%Y-%m-%dT%H:%M:%S')
     return dct
 
 @walker.add_applier(SpartialRegion)
-def _a(walker, root, id_, dct):
+def _a(walker, root, state, dct):
     dct['x1'] = root.x1
     dct['y1'] = root.y1
     dct['x2'] = root.x2
@@ -114,40 +156,50 @@ def _a(walker, root, id_, dct):
     return dct
 
 @walker.add_applier(ListAttr)
-def _a(walker, root, id_, dct):
+def _a(walker, root, state, dct):
     if root.key in dct:
         dct[root.key] += ',%s' % root.item
     else:
         dct[root.key] = root.item
     return dct
 
+@walker.add_applier(EventType)
+def _a(walker, root, state, dct):
+    if dct.get('type', None) == 'contains':
+        raise ValueError
+    
+    return walker.super_apply(root, state, dct)
+
 @walker.add_applier(ParamAttr)
-def _a(walker, root, id_, dct):
-    nid = id_[0]
+def _a(walker, root, state, dct):
+    if not ParamAttr in state:
+        state[ParamAttr] = 0
+    
+    nid = state[ParamAttr]
     dct['param%d' % nid] = root.name
     dct['op%d' % nid] = root.op
     dct['value%d' % nid] = root.value
-    id_[0] += 1
+    state[ParamAttr] += 1
     return dct
 
 @walker.add_applier(attr.AttrAnd)
-def _a(walker, root, id_, dct):
+def _a(walker, root, state, dct):
     for attr in root.attrs:
-        walker.apply(attr, id_, dct)
+        walker.apply(attr, state, dct)
 
 @walker.add_creator(attr.AttrOr)
-def _c(walker, root, id_):
+def _c(walker, root, state):
     blocks = []
     for attr in self.attrs:
-        blocks.extend(walker.create(attr, id_))
+        blocks.extend(walker.create(attr, state))
     return blocks
 
 @walker.add_creator(attr.DummyAttr)
-def _c(walker, root, id_):
+def _c(walker, root, state):
     return {}
 
 @walker.add_applier(attr.DummyAttr)
-def _a(walker, root, id_, dct):
+def _a(walker, root, state, dct):
     pass
 
 
@@ -216,7 +268,7 @@ class HEKClient(object):
         if len(query) > 1:
             query = attr.and_(*query)
         
-        data = walker.create(query, [0])
+        data = walker.create(query, {})
         ndata = []
         for elem in data:
             new = self.default.copy()
