@@ -31,7 +31,7 @@ RANGE = re.compile(r'(\d+)(\s*-\s*(\d+))?(\s*([a-zA-Z]+))?')
 
 # TODO: Name
 class NoData(Exception):
-    """ Raisen for callbacks of VSOClient that are unable to supply
+    """ Risen for callbacks of VSOClient that are unable to supply
     information for the request. """
     pass
 
@@ -222,6 +222,7 @@ class Field(ValueAttr):
 def  _mk_simpleattr(field):
     """ Create a _SimpleField class for field. """
     class _foo(ValueAttr):
+        """ Attribute to query by %s. """ % field
         def __init__(self, arg):
             ValueAttr.__init__(self, {(field, ): arg})
     _foo.__name__ = field.capitalize()
@@ -349,6 +350,7 @@ class UnknownStatus(Exception):
     pass
 
 class VSOClient(object):
+    """ Main VSO Client. """
     method_order = [
         'URL-TAR_GZ', 'URL-ZIP', 'URL-TAR', 'URL-FILE', 'URL-packaged'
     ]
@@ -387,10 +389,16 @@ class VSOClient(object):
         --------
         Query all data from eit or aia between 2010-01-01T00:00 and
         2010-01-01T01:00.
+        
         >>> client.query(
         ...    vso.Time(datetime(2010, 1, 1), datetime(2010, 1, 1, 1)),
         ...    vso.Instrument('eit') | vso.Instrument('aia')
         ... )
+        
+        Returns
+        -------
+        out : :ref:`QueryResult` (enhanced list) of matched items. Return value
+        of same type as the one of :ref:`VSOClient.query`.
         """
         if len(query) > 1:
             query = and_(*query)
@@ -498,17 +506,23 @@ class VSOClient(object):
             attempt to return only one record per SAMPLE seconds.  See below.
         
         Numeric Ranges:
-        * May be entered as a string or any numeric type for equality matching
-        * May be a string of the format '(min) - (max)' for range matching
-        * May be a string of the form '(operator) (number)' where operator
-            is one of: lt gt le ge < > <= >=
+        
+            - May be entered as a string or any numeric type for equality matching
+            - May be a string of the format '(min) - (max)' for range matching
+            - May be a string of the form '(operator) (number)' where operator is one of: lt gt le ge < > <= >=
+        
         
         Examples
         --------
         Query all data from eit between 2010-01-01T00:00 and
         2010-01-01T01:00.
+        
         >>> qr = client.query_legacy(
         ...     datetime(2010, 1, 1), datetime(2010, 1, 1, 1), instrument='eit')
+        
+        Returns
+        -------
+        out : :ref:`QueryResult` (enhanced list) of matched items. Return value of same type as the one of :ref:`VSOClient.query`.
         """
         sdk = lambda key: lambda value: {key: value}
         ALIASES = {
@@ -757,6 +771,7 @@ class VSOClient(object):
 
 
 class InteractiveVSOClient(VSOClient):
+    """ Client for use in the REPL. Prompts user for data if required. """
     def multiple_choices(self, choices, response):
         while True:
             for n, elem in enumerate(choices):
@@ -772,14 +787,14 @@ class InteractiveVSOClient(VSOClient):
     def missing_information(self, info, field):
         return raw_input(field + ': ')
     
-    def search(self, tstart=None, tend=None, **kwargs):
-        """ When passed a single _Attr object, perform new-style query;
+    def search(self, *args, **kwargs):
+        """ When passed an Attr object, perform new-style query;
         otherwise, perform legacy query.
         """
-        if isinstance(tstart, Attr):
-            return self.query(tstart)
+        if isinstance(args[0], Attr):
+            return self.query(*args)
         else:
-            return self.query_legacy(tstart, tend, **kwargs)
+            return self.query_legacy(*args, **kwargs)
 
 
 g_client = None
