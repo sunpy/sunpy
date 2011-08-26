@@ -805,11 +805,11 @@ class InteractiveVSOClient(VSOClient):
 
 
 g_client = None
-def search(tstart=None, tend=None, **kwargs):
+def search(*args, **kwargs):
     global g_client
     if g_client is None:
         g_client = InteractiveVSOClient()
-    return g_client.search(tstart, tend, **kwargs)
+    return g_client.search(*args **kwargs)
 
 search.__doc__ = InteractiveVSOClient.search.__doc__
 
