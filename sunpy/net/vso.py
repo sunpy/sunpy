@@ -397,8 +397,7 @@ class VSOClient(object):
         
         Returns
         -------
-        out : :ref:`QueryResult` (enhanced list) of matched items. Return value
-        of same type as the one of :ref:`VSOClient.query`.
+        out : :py:class:`QueryResult` (enhanced list) of matched items. Return value of same type as the one of :py:meth:`VSOClient.query`.
         """
         if len(query) > 1:
             query = and_(*query)
@@ -522,7 +521,7 @@ class VSOClient(object):
         
         Returns
         -------
-        out : :ref:`QueryResult` (enhanced list) of matched items. Return value of same type as the one of :ref:`VSOClient.query`.
+        out : :py:class:`QueryResult` (enhanced list) of matched items. Return value of same type as the one of :py:class:`VSOClient.query`.
         """
         sdk = lambda key: lambda value: {key: value}
         ALIASES = {
@@ -597,6 +596,14 @@ class VSOClient(object):
             Methods acceptable to user.
         downloader : sunpy.net.downloader.Downloader
             Downloader used to download the data.
+        
+        Returns
+        -------
+        out : :py:class:`Results` object that supplies a list of filenames with meta attributes containing the respective QueryResponse.
+        
+        Examples
+        --------
+        >>> res = get(qr).wait()
         """
         if downloader is None:
             downloader = download.Downloader()
