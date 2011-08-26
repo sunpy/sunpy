@@ -168,7 +168,7 @@ def _a(walker, root, state, dct):
     if dct.get('type', None) == 'contains':
         raise ValueError
     
-    return walker.super_apply(root, state, dct)
+    return walker.super_apply(super(EventType, root), state, dct)
 
 @walker.add_applier(ParamAttr)
 def _a(walker, root, state, dct):
