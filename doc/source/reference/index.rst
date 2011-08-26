@@ -14,3 +14,4 @@ collection of experimental code in the :mod:`sunpy.dev` module.
    mapcube
    sun
    experimental
+   vso
