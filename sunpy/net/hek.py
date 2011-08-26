@@ -190,7 +190,7 @@ def _a(walker, root, state, dct):
 @walker.add_creator(attr.AttrOr)
 def _c(walker, root, state):
     blocks = []
-    for attr in self.attrs:
+    for attr in root.attrs:
         blocks.extend(walker.create(attr, state))
     return blocks
 
