@@ -773,6 +773,9 @@ class InteractiveVSOClient(VSOClient):
         return raw_input(field + ': ')
     
     def search(self, tstart=None, tend=None, **kwargs):
+        """ When passed a single _Attr object, perform new-style query;
+        otherwise, perform legacy query.
+        """
         if isinstance(tstart, Attr):
             return self.query(tstart)
         else:
@@ -781,14 +784,12 @@ class InteractiveVSOClient(VSOClient):
 
 g_client = None
 def search(tstart=None, tend=None, **kwargs):
-    """ When passed a single _Attr object, perform new-style query;
-    otherwise, perform legacy query.
-    """
     global g_client
     if g_client is None:
         g_client = InteractiveVSOClient()
     return g_client.search(tstart, tend, **kwargs)
 
+search.__doc__ = InteractiveVSOClient.search.__doc__
 
 def get(query_response, path=None, methods=['URL-FILE'], downloader=None):
     global g_client
