@@ -3,16 +3,25 @@
 
 """
 Plot widgets for the PlotMan
-Subclassed from the matplotlib FigureCanvasQTAgg 
+subclassed from the matplotlib FigureCanvasQTAgg 
+
 Author: Matt Earnshaw <matt@earnshaw.org.uk>
+
+To-do and Notes
+===============
+- data xy plots
+- ut plots (time series)
+- image plots
+- spectrogram plots
+
 """
 
 from matplotlib.figure import Figure
 from PyQt4.QtGui import QSizePolicy
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg
 
-class BasePlot(FigureCanvasQTAgg):
-    """ Base plot object, resizes to fit window """
+class BaseFigureCanvas(FigureCanvasQTAgg):
+    """ Base canvas object, resizes to fit window """
 
     def __init__(self, parent=None, width=5, height=4, dpi=100):
         self.fig = Figure(figsize=(width, height), dpi=dpi)
