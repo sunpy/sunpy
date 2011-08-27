@@ -9,6 +9,9 @@ and provides tools for graphical plot manipulation
 
 Notes and To-Do
 ===============
+- Migrate completely to using Qt Designer
+- Tabbed interface for seperate FigureCanvases (?)
+- Dynamic subplot adding
 - Overlaying plots, drag-drop, opacity etc.
 - Restrict file types in open dialog
 - Handle exceptions
@@ -22,12 +25,13 @@ Author: Matt Earnshaw <matt@earnshaw.org.uk>
 import sys
 import sunpy
 from resources import qrc_resources
-from PyQt4.QtGui import (QApplication, QWidget, QMainWindow, 
+from PyQt4.QtGui import (QApplication, QWidget, QMainWindow,
                         QAction, QIcon, QFileDialog, QVBoxLayout)
 from PyQt4.QtCore import SIGNAL, SLOT, QSettings, QVariant
-from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg as MPLToolBar
+from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg
 import matplotlib.cm as cm
-from widgets.plot import BasePlot
+from widgets.figure_canvas import BaseFigureCanvas
+from dialogs import cmselector
 
 class MainWindow(QMainWindow):
 
@@ -42,36 +46,74 @@ class MainWindow(QMainWindow):
         # Setup central widget and layout
         self.main_widget = QWidget(self)
         layout = QVBoxLayout(self.main_widget)
-        self.canvas = BasePlot()
-        layout.addWidget(self.canvas)
         self.setCentralWidget(self.main_widget)
+        self.canvas = BaseFigureCanvas()
+        layout.addWidget(self.canvas)
 
         # Setup status bar
         self.status_bar = self.statusBar()
         self.status_bar.showMessage("Ready.")
 
         # Setup toolbars
-        mpl_toolbar = MPLToolBar(self.canvas, None) # Instantiate a MPL built-in toolbar so we can reuse the actions
-        plot_toolbar = self.addToolBar("Plot")
+        # Instantiate a MPL built-in toolbar so we can reuse the actions
+        mpl_toolbar = NavigationToolbar2QTAgg(self.canvas, None)
+        self.general_toolbar = self.addToolBar("General")
+        self.plot_toolbar = self.addToolBar("Plot")
 
-        # The alternative here is to subclass the toolbar and solely add our custom actions, which is slightly less flexible
-        # with respect to custom icons, tooltips, button placement, etc.
-        open_plot = self.create_action(slot=self.open_plot, icon="open_plot", tip="Open a FITS file for plotting...")
-        save_plot = self.create_action(slot=mpl_toolbar.save_figure, icon="save_plot", tip="Save plot to PNG...")
-        home = self.create_action(slot=mpl_toolbar.home, icon="home", tip="Reset original view")
-        forward = self.create_action(slot=mpl_toolbar.forward, icon="forward", tip="Forward to next view")
-        back = self.create_action(slot=mpl_toolbar.back, icon="back", tip="Back to previous view")
-        pan = self.create_action(slot=mpl_toolbar.pan, icon="move", tip="Pan axes with left mouse, zoom with right")
-        config_subplots = self.create_action(slot=mpl_toolbar.configure_subplots, icon="subplots", tip="Configure subplots")
-        zoom = self.create_action(slot=mpl_toolbar.zoom, icon="zoom_to_rect", tip="Zoom to rectangle")
-        change_cm = self.create_action(slot=self.change_cm, icon="change_cm", tip="Change plot colour map...")
-        exit = self.create_action(slot=SLOT('close()'), icon="exit", tip="Exit SunPy PlotMan.")
+        open_plot = self.create_action(
+                        slot=self.open_plot,
+                        icon="open_plot",
+                        tip="Open a FITS file for plotting..."
+                    )
+        save_plot = self.create_action(
+                        slot=mpl_toolbar.save_figure,
+                        icon="save_plot",
+                        tip="Save plot to PNG..."
+                    )
+        home = self.create_action(
+                        slot=mpl_toolbar.home,
+                        icon="home",
+                        tip="Reset original view."
+                    )
+        forward = self.create_action(
+                        slot=mpl_toolbar.forward,
+                        icon="forward",
+                        tip="Forward to next view."
+                    )
+        back = self.create_action(
+                        slot=mpl_toolbar.back,
+                        icon="back",
+                        tip="Back to previous view."
+                    )
+        pan = self.create_action(
+                        slot=mpl_toolbar.pan,
+                        icon="move",
+                        tip="Pan axes with left mouse, zoom with right."
+                    )
+        config_subplots = self.create_action(
+                        slot=mpl_toolbar.configure_subplots,
+                        icon="subplots",
+                        tip="Configure subplots."
+                    )
+        zoom = self.create_action(
+                        slot=mpl_toolbar.zoom,
+                        icon="zoom_to_rect",
+                        tip="Zoom to rectangle."
+                    )
+        change_cm = self.create_action(
+                        slot=self.change_cm,
+                        icon="change_cm",
+                        tip="Change plot colour map..."
+                    )
+        exit = self.create_action(
+                        slot=SLOT('close()'),
+                        icon="exit",
+                        tip="Exit SunPy PlotMan."
+                    )
 
-        plot_toolbar.addActions([open_plot, save_plot, home, back, forward, pan, config_subplots, zoom, change_cm, exit])
-        plot_toolbar.insertSeparator(home)
-        plot_toolbar.insertSeparator(exit)
-
-        
+        self.general_toolbar.addActions([open_plot, exit])
+        self.plot_toolbar.addActions([home, back, forward, pan, config_subplots, zoom, change_cm, save_plot])
+        self.updateUi()
 
     def create_action(self, signal=SIGNAL('triggered()'), slot=None, text=None,
                         icon=None, tip=None, shortcut=None):
@@ -98,12 +140,15 @@ class MainWindow(QMainWindow):
         self.fig = sunpy.Map(file_path)
         self.canvas.axes.imshow(self.fig)
         self.canvas.draw()
+        self.updateUi()
 
     def change_cm(self):
-        """ Change the colour-map of the plot """
-        self.canvas.axes.imshow(self.fig, cmap=cm.hot)
-        self.canvas.draw()
-        self.status_bar.showMessage("Color-map changed.", 3000)
+        """ Display color map selector dialog """
+        cm_selector = cmselector.CMSelectorDlg(self)
+        cm_selector.exec_()
+
+    def updateUi(self):
+        self.plot_toolbar.setEnabled(hasattr(self, "fig"))
 
     def closeEvent(self, event):
         """ Save the current settings (window size, position, etc.) when the GUI is closed. """
