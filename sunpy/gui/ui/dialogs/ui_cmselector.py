@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/matt/programming/sunpy/sunpy/gui/ui/dialogs/cmselector.ui'
 #
-# Created: Fri Aug 26 19:05:40 2011
+# Created: Sat Aug 27 23:54:41 2011
 #      by: PyQt4 UI code generator 4.8.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -17,7 +17,7 @@ except AttributeError:
 class Ui_CMSelectorDlg(object):
     def setupUi(self, CMSelectorDlg):
         CMSelectorDlg.setObjectName(_fromUtf8("CMSelectorDlg"))
-        CMSelectorDlg.resize(391, 188)
+        CMSelectorDlg.resize(364, 177)
         CMSelectorDlg.setLocale(QtCore.QLocale(QtCore.QLocale.English, QtCore.QLocale.UnitedKingdom))
         self.verticalLayout_2 = QtGui.QVBoxLayout(CMSelectorDlg)
         self.verticalLayout_2.setObjectName(_fromUtf8("verticalLayout_2"))
