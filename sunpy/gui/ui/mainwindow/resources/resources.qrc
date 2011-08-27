@@ -1,0 +1,17 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+<qresource>
+<file alias="main.png">icons/main.png</file>
+<file alias="open_plot.png">icons/open_plot.png</file>
+<file alias="save_plot.png">icons/save_plot.png</file>
+<file alias="home.png">icons/home.png</file>
+<file alias="forward.png">icons/forward.png</file>
+<file alias="back.png">icons/back.png</file>
+<file alias="subplots.png">icons/subplots.png</file>
+<file alias="zoom_to_rect.png">icons/zoom_to_rect.png</file>
+<file alias="move.png">icons/move.png</file>
+<file alias="change_cm.png">icons/change_cm.png</file>
+<file alias="exit.png">icons/exit.png</file>
+</qresource>
+</RCC>
+
