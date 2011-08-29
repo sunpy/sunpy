@@ -410,7 +410,7 @@ Example (:class:`sunpy.map.BaseMap`) ::
 
     Examples
     --------
-    >>> aia = sunpy.Map('doc/sample-data/AIA20110319_105400_0171.fits')
+    >>> aia = sunpy.Map(sunpy.AIA_171_IMAGE)
     >>> aia.T
     Map([[ 0.3125,  1.    , -1.1875, ..., -0.625 ,  0.5625,  0.5   ],
     [-0.0625,  0.1875,  0.375 , ...,  0.0625,  0.0625, -0.125 ],
@@ -505,3 +505,23 @@ Unit tests should be written as often as possible using `unittest
 `Unit Testing section <http://diveintopython3.org/unit-testing.html>`_ of 
 Dive into Python 3 for more information about unit testing in Python.
 
+SunPy uses `tox <http://tox.testrun.org/>`_ to automate testing with
+multiple versions of Python. The test environments are isolated and thus
+all dependencies will need to be built; this requires the build dependencies
+of those Python packages to be present on the system. These call be installed
+by calling `sudo aptitude build-dep python-numpy python-scipy python-matplotlib python-pyfits`
+on a distribution that derives from Debian. `tox` itself it also required and
+can be installed by `pip install tox` (pip is a part of `python-distribute`).
+
+The tests can then be run by running `tox` in the project directory.
+This will take a very long time on the first run because it will
+have to build all dependencies. Subsequent runs will take significantly
+less time.
+
+
+Virtualenv
+----------
+`virtualenv <http://www.virtualenv.org/>`_ allows multiple isolated Python
+environments to live on the same system. The `--no-site-packages` option
+completely isolates it from the system Python installation; without it
+packages installed on the system Python may also be used in the virtualenv.
