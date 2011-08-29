@@ -11,6 +11,7 @@ import matplotlib.colors as colors
 import matplotlib.cm as cm
 from datetime import datetime
 from sunpy.sun import sun
+from sunpy.solwcs import solwcs as wcs
 
 """
 Questions
@@ -118,18 +119,18 @@ class BaseMap(np.ndarray):
                 setattr(self, attr, value)
 
             self.center = {
-                "x": header.get('cdelt1')*data.shape[0]/2 + header.get('crval1') - header.get('crpix1')*header.get('cdelt1'),
-                "y": header.get('cdelt2')*data.shape[1]/2 + header.get('crval2') - header.get('crpix2')*header.get('cdelt2')
+                "x": wcs.get_center(header, axis = 'x'),
+                "y": wcs.get_center(header, axis = 'y')
             }
             self.scale = {
                 "x": header.get('cdelt1'),
                 "y": header.get('cdelt2')
             }
             self.units = {
-                "x": header.get('cunit1'), 
-                "y": header.get('cunit2')
+                "x": wcs.get_units(header, axis = 'x'), 
+                "y": wcs.get_units(header, axis = 'y')
             }
-            self.rsun = header.get('r_sun')
+            self.rsun = wcs.solar_limb(header)
                 
     def __add__(self, other):
         """Add two maps. Currently does not take into account the alignment  
@@ -231,7 +232,7 @@ class BaseMap(np.ndarray):
         
         # Draw circle at solar limb
         if draw_limb:
-            circ = patches.Circle([0, 0], radius=self.radius(self.date), 
+            circ = patches.Circle([0, 0], radius=self.rsun, 
                 fill=False, color='white')
             axes.add_artist(circ)
 
