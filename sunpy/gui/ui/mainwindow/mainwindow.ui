@@ -22,25 +22,13 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
-     <widget class="QTabWidget" name="tabWidget">
-      <property name="currentIndex">
-       <number>0</number>
+     <widget class="CustomTabWidget" name="tabWidget">
+      <property name="tabPosition">
+       <enum>QTabWidget::South</enum>
       </property>
-      <widget class="QWidget" name="tab">
-       <attribute name="title">
-        <string>Tab 1</string>
-       </attribute>
-       <layout class="QHBoxLayout" name="horizontalLayout_2">
-        <item>
-         <widget class="QWidget" name="widget" native="true"/>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="tab_2">
-       <attribute name="title">
-        <string>Tab 2</string>
-       </attribute>
-      </widget>
+      <property name="currentIndex">
+       <number>-1</number>
+      </property>
      </widget>
     </item>
    </layout>
@@ -56,14 +44,14 @@
    </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
-     <string>File</string>
+     <string>&amp;File</string>
     </property>
     <addaction name="actionOpen_file"/>
     <addaction name="actionExit_PlotMan"/>
    </widget>
    <widget class="QMenu" name="menuPlot">
     <property name="title">
-     <string>Plot</string>
+     <string>&amp;Plot</string>
     </property>
     <widget class="QMenu" name="menuView">
      <property name="title">
@@ -95,7 +83,7 @@
     <enum>TopToolBarArea</enum>
    </attribute>
    <attribute name="toolBarBreak">
-    <bool>true</bool>
+    <bool>false</bool>
    </attribute>
    <addaction name="actionOpen_file"/>
    <addaction name="actionExit_PlotMan"/>
@@ -128,7 +116,7 @@
   </widget>
   <action name="actionOpen_file">
    <property name="icon">
-    <iconset resource="../../resources/resources.qrc">
+    <iconset resource="resources/resources.qrc">
      <normaloff>:/open_plot.png</normaloff>:/open_plot.png</iconset>
    </property>
    <property name="text">
@@ -146,7 +134,7 @@
   </action>
   <action name="actionReset_view">
    <property name="icon">
-    <iconset resource="../../resources/resources.qrc">
+    <iconset resource="resources/resources.qrc">
      <normaloff>:/home.png</normaloff>:/home.png</iconset>
    </property>
    <property name="text">
@@ -161,7 +149,7 @@
   </action>
   <action name="actionPrevious_view">
    <property name="icon">
-    <iconset resource="../../resources/resources.qrc">
+    <iconset resource="resources/resources.qrc">
      <normaloff>:/back.png</normaloff>:/back.png</iconset>
    </property>
    <property name="text">
@@ -176,7 +164,7 @@
   </action>
   <action name="actionNext_view">
    <property name="icon">
-    <iconset resource="../../resources/resources.qrc">
+    <iconset resource="resources/resources.qrc">
      <normaloff>:/forward.png</normaloff>:/forward.png</iconset>
    </property>
    <property name="text">
@@ -191,7 +179,7 @@
   </action>
   <action name="actionPan">
    <property name="icon">
-    <iconset resource="../../resources/resources.qrc">
+    <iconset resource="resources/resources.qrc">
      <normaloff>:/move.png</normaloff>:/move.png</iconset>
    </property>
    <property name="text">
@@ -206,7 +194,7 @@
   </action>
   <action name="actionConfigure_subplots">
    <property name="icon">
-    <iconset resource="../../resources/resources.qrc">
+    <iconset resource="resources/resources.qrc">
      <normaloff>:/subplots.png</normaloff>:/subplots.png</iconset>
    </property>
    <property name="text">
@@ -221,7 +209,7 @@
   </action>
   <action name="actionZoom">
    <property name="icon">
-    <iconset resource="../../resources/resources.qrc">
+    <iconset resource="resources/resources.qrc">
      <normaloff>:/zoom_to_rect.png</normaloff>:/zoom_to_rect.png</iconset>
    </property>
    <property name="text">
@@ -236,7 +224,7 @@
   </action>
   <action name="actionChange_color_map">
    <property name="icon">
-    <iconset resource="../../resources/resources.qrc">
+    <iconset resource="resources/resources.qrc">
      <normaloff>:/change_cm.png</normaloff>:/change_cm.png</iconset>
    </property>
    <property name="text">
@@ -251,7 +239,7 @@
   </action>
   <action name="actionSave_plot">
    <property name="icon">
-    <iconset resource="../../resources/resources.qrc">
+    <iconset resource="resources/resources.qrc">
      <normaloff>:/save_plot.png</normaloff>:/save_plot.png</iconset>
    </property>
    <property name="text">
@@ -269,7 +257,7 @@
   </action>
   <action name="actionExit_PlotMan">
    <property name="icon">
-    <iconset resource="../../resources/resources.qrc">
+    <iconset resource="resources/resources.qrc">
      <normaloff>:/exit.png</normaloff>:/exit.png</iconset>
    </property>
    <property name="text">
@@ -283,8 +271,16 @@
    </property>
   </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>CustomTabWidget</class>
+   <extends>QTabWidget</extends>
+   <header>custom_tab_widget.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources>
-  <include location="../../resources/resources.qrc"/>
+  <include location="resources/resources.qrc"/>
  </resources>
  <connections>
   <connection>
