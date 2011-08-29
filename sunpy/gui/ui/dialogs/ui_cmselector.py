@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/matt/programming/sunpy/sunpy/gui/ui/dialogs/cmselector.ui'
 #
-# Created: Sat Aug 27 23:54:41 2011
+# Created: Mon Aug 29 17:08:24 2011
 #      by: PyQt4 UI code generator 4.8.3
 #
 # WARNING! All changes made in this file will be lost!

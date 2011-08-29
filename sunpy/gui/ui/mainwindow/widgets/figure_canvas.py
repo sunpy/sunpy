@@ -20,7 +20,7 @@ from matplotlib.figure import Figure
 from PyQt4.QtGui import QSizePolicy
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg
 
-class BaseFigureCanvas(FigureCanvasQTAgg):
+class FigureCanvas(FigureCanvasQTAgg):
     """ Base canvas object, resizes to fit window """
 
     def __init__(self, parent=None, width=5, height=4, dpi=100):

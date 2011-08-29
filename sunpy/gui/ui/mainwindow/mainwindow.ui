@@ -10,8 +10,11 @@
     <height>615</height>
    </rect>
   </property>
+  <property name="cursor">
+   <cursorShape>ArrowCursor</cursorShape>
+  </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>SunPy PlotMan</string>
   </property>
   <property name="windowOpacity">
    <double>1.000000000000000</double>
@@ -19,10 +22,13 @@
   <property name="layoutDirection">
    <enum>Qt::LeftToRight</enum>
   </property>
+  <property name="toolButtonStyle">
+   <enum>Qt::ToolButtonIconOnly</enum>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
-     <widget class="CustomTabWidget" name="tabWidget">
+     <widget class="QTabWidget" name="tabWidget">
       <property name="tabPosition">
        <enum>QTabWidget::South</enum>
       </property>
@@ -33,6 +39,7 @@
     </item>
    </layout>
   </widget>
+  <widget class="QStatusBar" name="statusbar"/>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
@@ -49,29 +56,8 @@
     <addaction name="actionOpen_file"/>
     <addaction name="actionExit_PlotMan"/>
    </widget>
-   <widget class="QMenu" name="menuPlot">
-    <property name="title">
-     <string>&amp;Plot</string>
-    </property>
-    <widget class="QMenu" name="menuView">
-     <property name="title">
-      <string>View</string>
-     </property>
-     <addaction name="actionNext_view"/>
-     <addaction name="actionPrevious_view"/>
-     <addaction name="actionReset_view"/>
-    </widget>
-    <addaction name="menuView"/>
-    <addaction name="actionPan"/>
-    <addaction name="actionZoom"/>
-    <addaction name="actionChange_color_map"/>
-    <addaction name="actionConfigure_subplots"/>
-    <addaction name="actionSave_plot"/>
-   </widget>
    <addaction name="menuFile"/>
-   <addaction name="menuPlot"/>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
   <widget class="QToolBar" name="fileToolBar">
    <property name="windowTitle">
     <string>File</string>
@@ -79,40 +65,20 @@
    <property name="layoutDirection">
     <enum>Qt::LeftToRight</enum>
    </property>
+   <property name="iconSize">
+    <size>
+     <width>22</width>
+     <height>22</height>
+    </size>
+   </property>
    <attribute name="toolBarArea">
     <enum>TopToolBarArea</enum>
    </attribute>
    <attribute name="toolBarBreak">
-    <bool>false</bool>
+    <bool>true</bool>
    </attribute>
    <addaction name="actionOpen_file"/>
    <addaction name="actionExit_PlotMan"/>
-  </widget>
-  <widget class="QToolBar" name="plotToolBar">
-   <property name="windowTitle">
-    <string>Plot</string>
-   </property>
-   <property name="windowOpacity">
-    <double>1.000000000000000</double>
-   </property>
-   <property name="layoutDirection">
-    <enum>Qt::LeftToRight</enum>
-   </property>
-   <attribute name="toolBarArea">
-    <enum>TopToolBarArea</enum>
-   </attribute>
-   <attribute name="toolBarBreak">
-    <bool>false</bool>
-   </attribute>
-   <addaction name="actionReset_view"/>
-   <addaction name="actionPrevious_view"/>
-   <addaction name="actionNext_view"/>
-   <addaction name="actionPan"/>
-   <addaction name="actionConfigure_subplots"/>
-   <addaction name="actionZoom"/>
-   <addaction name="actionChange_color_map"/>
-   <addaction name="separator"/>
-   <addaction name="actionSave_plot"/>
   </widget>
   <action name="actionOpen_file">
    <property name="icon">
@@ -271,14 +237,6 @@
    </property>
   </action>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>CustomTabWidget</class>
-   <extends>QTabWidget</extends>
-   <header>custom_tab_widget.h</header>
-   <container>1</container>
-  </customwidget>
- </customwidgets>
  <resources>
   <include location="resources/resources.qrc"/>
  </resources>
