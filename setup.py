@@ -37,10 +37,12 @@ def install(setup):
         name="sunpy",
         packages=['sunpy', 'sunpy.cm', 'sunpy.dev', 'sunpy.map',
                   'sunpy.map.sources', 'sunpy.sun', 'sunpy.util',
-                  'sunpy.tests', 'sunpy.tests.map'],
+                  'sunpy.tests', 'sunpy.tests.map',
+                  'sunpy.data', 'sunpy.data.sample',],
         platforms=["Windows", "Linux", "Solaris", "Mac OS-X", "Unix"],
         url="http://www.sunpy.org/",
-        version="0.01"
+        version="0.01",
+        package_data={'': ['*.fits']},
     )
 
 if __name__ == '__main__':
