@@ -49,12 +49,12 @@ Download and install `Python(x,y) <https://code.google.com/p/pythonxy/wiki/Downl
 
 **2. Install additional modules**
 
-Install PyFITS, which is used to read FITS files.  It is highly likely you will see a warning message that an optional extension module ``pyfits.pyfitsComp`` failed to build.  If you do not require the ability to read compressed image data from FITS files, then you can ignore this message.  Otherwise, see the section below.
+Install PyFITS, which is used to read FITS files.  It is highly likely you will see a warning message that an optional extension module ``pyfits.pyfitsComp`` failed to build.  If you do not require the ability to read compressed image data from FITS files, then you can ignore this message.  Otherwise, see the section below. ::
 
     cd C:\Python26\Scripts\
     easy_install pyfits
 
-Install Paver, which is used to link symbolically to the SunPy code
+Install Paver, which is used to link symbolically to the SunPy code. ::
 
     cd C:\Python26\Scripts\
     easy_install paver
@@ -63,16 +63,16 @@ Install Paver, which is used to link symbolically to the SunPy code
 
 Download and install `Git <https://code.google.com/p/msysgit/downloads/list?can=3>`_.  Git is used to retrieve the SunPy code.
 
-**4. Download and install SunPy
+**4. Download and install SunPy**
 
-The following assumes that you will download SunPy to ``C:\sunpy``.  If you wish to download SunPy elsewhere, modify these commands accordingly.
+The following assumes that you will download SunPy to ``C:\sunpy``.  If you wish to download SunPy elsewhere, modify these commands accordingly. ::
 
     cd C:\
     %ProgramFiles%\Git\bin\git clone git://github.com/sunpy/sunpy.git
     cd C:\sunpy\
     paver develop
 
-In the future, to update SunPy to the latest version:
+In the future, to update SunPy to the latest version: ::
 
     cd C:\sunpy\
     %ProgramFiles%\Git\bin\git pull
@@ -106,9 +106,9 @@ Download and install `setuptools
 <http://pypi.python.org/packages/2.7/s/setuptools/setuptools-0.6c11.win32-py2.7.exe>`_.
 
 
-**2–4. The remaining steps**
+**2-4. The remaining steps**
 
-You have now performed the equivalent of step 1 of the recommended method.  Perform steps 2–4 of that method to complete your installation.  The only difference is that you should type ``C:\Python27\`` in commands rather than ``C:\Python26\``
+You have now performed the equivalent of step 1 of the recommended method.  Perform steps 2-4 of that method to complete your installation.  The only difference is that you should type ``C:\Python27\`` in commands rather than ``C:\Python26\``
 
 
 Test your installation
@@ -127,7 +127,7 @@ This error (and any others like it) are likely due to Python being unable to fin
 
 Our suggested compiler is the `MinGW <http://www.mingw.org/>`_ compiler.  If you have followed the "recommended method" of installation, then you already have such a compiler (MinGW), and in fact it is already in your path.  However, Python is not configured to use MinGW by default.
 
-To configure Python to use MinGW by default, create the file ``C:\Python26\lib\distutils\distutils.cfg`` containing these lines:
+To configure Python to use MinGW by default, create or modfiy the file ``C:\Python26\lib\distutils\distutils.cfg`` to contain these lines: ::
 
     [build]
     compiler=mingw32
