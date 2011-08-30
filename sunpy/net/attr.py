@@ -1,3 +1,5 @@
+from itertools import chain, repeat
+
 from sunpy.util.multimethod import MultiMethod
 
 class Attr(object):
@@ -102,12 +104,12 @@ class AttrOr(Attr):
         return all(elem.collides(other) for elem in self)
 
 
-class ValueAttr(Attr):
+class KeysAttr(Attr):
     def __init__(self, attrs):
         self.attrs = attrs
     
     def __repr__(self):
-        return "<ValueAttr(%r)>" % (self.attrs)
+        return "<KeysAttr(%r)>" % (self.attrs)
     
     def __eq__(self, other):
         if not isinstance(other, ValueAttr):
@@ -115,12 +117,36 @@ class ValueAttr(Attr):
         return self.attrs == other.attrs
     
     def __hash__(self):
-        return hash(frozenset(self.attrs.iteritems()))
+        return hash(frozenset(self.attrs))
     
     def collides(self, other):
         if not isinstance(other, ValueAttr):
             return False
         return any(k in other.attrs for k in self.attrs)
+
+
+class ValueAttr(KeysAttr):
+    def __init__(self, attrs):
+        KeysAttr.__init__(self, attrs)
+        
+        self.attrs = attrs
+    
+    def __repr__(self):
+        return "<ValueAttr(%r)>" % (self.attrs)
+
+    def __hash__(self):
+        return hash(frozenset(self.attrs.iteritems()))
+    
+    @classmethod
+    def from_attrs(cls, attrs, defaults={}, conv={}, convall=lambda x: x):
+        def _fun(obj):
+            convert = defaultdict(repeat(convall).next, conv)
+            
+            return cls(
+                dict((k, convert(getattr(obj, v))) for k, v in
+                     chain(defaults.iteritems(), attrs.iteritems()))
+            )
+        return _fun
 
     
 class AttrWalker(object):
