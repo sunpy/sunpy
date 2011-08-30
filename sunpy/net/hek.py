@@ -13,9 +13,9 @@ from sunpy.net import attr
 DEFAULT_URL = 'http://www.lmsal.com/hek/her'
 
 
-class ParamAttr(attr.ValueAttr):
+class ParamAttr(attr.KeysAttr):
     def __init__(self, name, op, value):
-        attr.ValueAttr.__init__(self, {(name, op) : value})
+        attr.KeysAttr.__init__(self, [(name, op)])
         self.name = name
         self.op = op
         self.value = value
