@@ -1,6 +1,6 @@
 import pytest
 
-from sunpy.util.multimethod import MultiMethod, FAIL
+from sunpy.util.multimethod import MultiMethod, FAIL, WARN, TypeWarning
 
 def test_super():
     class String(str):
@@ -20,7 +20,7 @@ def test_super():
     assert mm(String('foo'), 'bar') == ('Fancy', 'String')
 
 
-def test_override():
+def test_override(recwarn):
     class String(str):
         pass
     
@@ -33,3 +33,6 @@ def test_override():
     pytest.raises(
         TypeError, mm.add_dec(String, str, override=FAIL), lambda x, y: None
     )
+    
+    mm.add_dec(String, str, override=WARN)(lambda x, y: None)
+    w = recwarn.pop(TypeWarning)
