@@ -47,7 +47,7 @@ class _Str(str):
 # server can handle.
 walker = AttrWalker()
 
-@walker.add_creator(ValueAttr)
+@walker.add_creator(ValueAttr, AttrAnd)
 def _create(walker, root, api):
     """ Implementation detail. """
     value = api.factory.create('QueryRequestBlock')
@@ -65,13 +65,6 @@ def _apply(walker, root, api, queryblock):
         for elem in rest:
             block = block[elem]
         block[lst] = v
-
-@walker.add_creator(AttrAnd)
-def _create(walker, root, api):
-    """ Implementation detail. """
-    value = api.factory.create('QueryRequestBlock')
-    walker.apply(root, api, value)
-    return [value]
 
 @walker.add_applier(AttrAnd)
 def _apply(walker, root, api, queryblock):
