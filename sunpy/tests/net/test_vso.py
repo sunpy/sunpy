@@ -108,7 +108,7 @@ def test_wave_toangstrom():
     w = vso.Wave(1.506e7, 1.506e7, 'GHz')
     assert int(w.min) == 199
 
-def test_time():
+def test_time_xor():
     one = vso.Time.dt((2010, 1, 1), (2010, 1, 2))
     a = one ^ vso.Time.dt((2010, 1, 1, 1), (2010, 1, 1, 2))
     
