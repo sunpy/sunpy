@@ -112,7 +112,7 @@ class KeysAttr(Attr):
         return "<KeysAttr(%r)>" % (self.attrs)
     
     def __eq__(self, other):
-        if not isinstance(other, ValueAttr):
+        if not isinstance(other, self.__class__):
             return False
         return self.attrs == other.attrs
     
@@ -167,6 +167,26 @@ class AttrWalker(object):
                 self.applymm.add(fun, (type_, ))
             return fun
         return _dec
+    
+    def add_converter(self, *types):
+        def _dec(fun):
+            for type_ in types:                
+                self.applymm.add(self.cv_apply(fun), (type_, ))
+                self.createmm.add(self.cv_create(fun), (type_, ))
+            return fun
+        return _dec
+    
+    def cv_apply(self, fun):
+        def _fun(*args, **kwargs):
+            nargs, nkwargs = fun(*args, **kwargs)
+            return self.apply(*nargs, **nkwargs)
+        return _fun
+    
+    def cv_create(self, fun):
+        def _fun(*args, **kwargs):
+            nargs, nkwargs = fun(*args, **kwargs)
+            return self.create(*nargs, **nkwargs)
+        return _fun
     
     def create(self, *args, **kwargs):
         return self.createmm(self, *args, **kwargs)
