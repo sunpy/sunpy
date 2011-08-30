@@ -28,6 +28,11 @@ FAIL = 2
 def _fmt_t(types):
     return ', '.join(type_.__name__ for type_ in types)
 
+
+class TypeWarning(UserWarning):
+    pass
+
+
 class MultiMethod(object):
     def __init__(self, get):
         self.get = get
@@ -47,6 +52,7 @@ class MultiMethod(object):
             warn(
                 'Definition (%s) overrides prior definition (%s).' %
                 (_fmt_t(types), _fmt_t(signature)),
+                TypeWarning,
                 stacklevel=3
             )
         elif overriden:
