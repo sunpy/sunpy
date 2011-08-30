@@ -36,3 +36,7 @@ def test_override(recwarn):
     
     mm.add_dec(String, str, override=WARN)(lambda x, y: None)
     w = recwarn.pop(TypeWarning)
+    assert (
+        'Definition (String, str)'
+        ' overrides prior definition (str, str).' in w.message
+    )
