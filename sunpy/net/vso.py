@@ -136,7 +136,7 @@ class Wave(ValueAttr):
     def __xor__(self, other):
         if self.unit != other.unit:
             return NotImplemented
-        new = _DummyAttr()
+        new = DummyAttr()
         if self.min < other.min:
             new |= Wave(self.min, min(other.min, self.max), self.unit)
         if other.max < self.max:
@@ -180,7 +180,7 @@ class Time(ValueAttr):
         })
     
     def __xor__(self, other):
-        new = _DummyAttr()
+        new = DummyAttr()
         if self.start < other.start:            
             new |= Time(self.start, min(other.start, self.end))
         if other.end < self.end:

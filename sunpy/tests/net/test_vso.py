@@ -1,6 +1,7 @@
 import pytest
 
 from sunpy.net import vso
+from sunpy.net import attr
 
 def pytest_funcarg__eit(request):
     return vso.Instrument('eit')
@@ -106,3 +107,13 @@ def test_wave_toangstrom():
     assert int(w.min) == 199
     w = vso.Wave(1.506e7, 1.506e7, 'GHz')
     assert int(w.min) == 199
+
+def test_time():
+    one = vso.Time.dt((2010, 1, 1), (2010, 1, 2))
+    a = one ^ vso.Time.dt((2010, 1, 1, 1), (2010, 1, 1, 2))
+    
+    assert a == attr.AttrOr(
+        [vso.Time.dt((2010, 1, 1), (2010, 1, 1, 1)),
+         vso.Time.dt((2010, 1, 1, 2), (2010, 1, 2))]
+    )
+    
