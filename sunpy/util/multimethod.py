@@ -80,7 +80,7 @@ class MultiMethod(object):
             if all(issubclass(ty, sig) for ty, sig in zip(types, signature)):
                 self.cache[types] = fun
                 return fun(*args, **kwargs)
-        raise TypeError
+        raise TypeError('%r' % types)
     
     def super(self, *args, **kwargs):
         objs = self.get(*args, **kwargs)
