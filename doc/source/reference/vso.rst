@@ -22,7 +22,10 @@ be used to do both legacy and standard queries with one method.
 Standard Queries
 ^^^^^^^^^^^^^^^^
 :py:meth:`VSOClient.query` takes an arbitrary amount of Attrs which are
-automatically ANDed together for convenience. 
+automatically ANDed together for convenience::
+
+   client = vso.VSOClient()
+   client.query(vso.Time.dt((2010, 1, 1), (2010, 1, 1, 1)), vso.Instrument('eit') | vso.Instrument('ait'))
 
 Legacy Queries
 ^^^^^^^^^^^^^^
