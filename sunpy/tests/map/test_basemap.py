@@ -1,9 +1,10 @@
 """
 BaseMap tests
 """
-#pylint: disable=C0103,R0904
+#pylint: disable=C0103,R0904,W0201,W0232
 import sunpy
 import pyfits
+import numpy as np
 
 class TestBaseMap:
     """Tests the BaseMap class"""
@@ -15,7 +16,29 @@ class TestBaseMap:
     def teardown_class(self):
         self.map = None
         self.fits = None
+        
+    def test_submap(self):
+        """Check data and header information for a submap"""
+        width = self.map.shape[1]
+        height = self.map.shape[0]
 
+        # Create a submap of the top-right quadrant of the image
+        submap = self.map[height/2:height, width/2:width]
+        
+        # Expected offset for center
+        offset = {
+            "x": self.map.header.get('crpix1') - width / 2,
+            "y": self.map.header.get('crpix2') - height / 2,
+        }
+        
+        # Check to see if submap header was updated properly
+        assert submap.header.get('crpix1') == offset['x'] 
+        assert submap.header.get('crpix1') == offset['y']
+        
+        # Check data
+        assert (np.asarray(self.map)[height/2:height, 
+                                     width/2:width] == submap).all()
+        
     def test_fits_data_comparison(self):
         """Make sure the data is the same in pyfits and SunPy"""
         assert (self.map == self.fits[0].data).all()
@@ -38,4 +61,3 @@ class TestBaseMap:
         # isn't done in BaseMap, the test cannot be performed.
         
         #assert dict(self.map.header) == dict(self.fits[0].header)
-        pass

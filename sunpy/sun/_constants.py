@@ -23,9 +23,8 @@ TODO: Add solar atmosphere values to standard model.
 physical_constants = {}
 
 # physical_constants[name] = (val, units, uncert)
-
 physical_constants['mass'] = (1.9884e30, 'kg', -1)
-physical_constants['radius'] = (6.9551e8, 'm', -1)
+physical_constants['radius'] = (6.95508e8, 'm', -1)
 physical_constants['diameter'] = (6.9551e8*2.0, 'm', -1)
 physical_constants['volume'] = (1.412e18, 'm^3', -1)
 physical_constants['surface area'] = (6.0877e12, 'm^2', -1)
