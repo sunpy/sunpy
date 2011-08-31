@@ -179,14 +179,16 @@ class AttrWalker(object):
     
     def cv_apply(self, fun):
         def _fun(*args, **kwargs):
-            nargs, nkwargs = fun(*args, **kwargs)
-            return self.apply(*nargs, **nkwargs)
+            args = list(args)
+            args[1] = fun(args[1])
+            return self.applymm(*args, **kwargs)
         return _fun
     
     def cv_create(self, fun):
         def _fun(*args, **kwargs):
-            nargs, nkwargs = fun(*args, **kwargs)
-            return self.create(*nargs, **nkwargs)
+            args = list(args)
+            args[1] = fun(args[1])
+            return self.createmm(*args, **kwargs)
         return _fun
     
     def create(self, *args, **kwargs):
