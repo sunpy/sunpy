@@ -227,6 +227,8 @@ class BaseMap(np.ndarray):
         header = copy.deepcopy(self.header)
         header['crpix1'] = header['crpix1'] - x_pixels[0]
         header['crpix2'] = header['crpix2'] - y_pixels[0]
+        header['naxis1'] = x_pixels[1] - x_pixels[0]
+        header['naxis2'] = y_pixels[1] - y_pixels[0]
         
         # Get ndarray representation of submap
         data = np.asarray(self)[y_pixels[0]:y_pixels[1], 
