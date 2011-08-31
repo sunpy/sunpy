@@ -8,6 +8,7 @@ from sunpy.map.basemap import BaseMap
 from datetime import datetime
 from sunpy.cm import cm
 from sunpy.util import util as util
+from sunpy.solwcs import solwcs as wcs
 
 class AIAMap(BaseMap):
     """AIA Image Map definition
@@ -32,7 +33,6 @@ class AIAMap(BaseMap):
             'meas': header['wavelnth'],
             'obs': "SDO",
             'name': "AIA %s" % header['wavelnth'],
-            'r_sun': header['rsun_obs'],
             'cmap': cm.get_cmap(name = 'sdoaia' + str(header['wavelnth']))
         })
         return properties
