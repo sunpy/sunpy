@@ -132,14 +132,9 @@ class Time(ValueAttr, Range):
         self.start = start
         self.end = end
         self.near = near
-        
-        ValueAttr.__init__(self, {
-            ('time', 'start'): start.strftime(TIMEFORMAT),
-            ('time', 'end'): end.strftime(TIMEFORMAT),
-            ('time', 'near'): near.strftime(TIMEFORMAT) if near is not None else '',
-        })
-        
+
         Range.__init__(self, start, end, self.__class__)
+        ValueAttr.__init__(self, dict(vars(self)))
     
     def __xor__(self, other):
         if not isinstance(other, self.__class__):
@@ -153,17 +148,35 @@ class Time(ValueAttr, Range):
         if near is not None:
             near = datetime(*near)
         return cls(datetime(*start), datetime(*end), near)
+    
+    def __repr__(self):
+        return '<Time(%r, %r, %r)>' % (self.start, self.end, self.near)
 
 
-class Extent(ValueAttr):
+walker.add_converter(Time)(
+    lambda x: ValueAttr({
+            ('time', 'start'): x.start.strftime(TIMEFORMAT),
+            ('time', 'end'): x.end.strftime(TIMEFORMAT) ,
+            ('time', 'near'): (
+                x.near.strftime(TIMEFORMAT) if x.near is not None else ''),
+    })
+)
+
+
+class Extent(Attr):
     def __init__(self, x, y, width, length, type_):
-        ValueAttr.__init__(self, {
-            ('extent', 'x'): x,
-            ('extent', 'y'): y,
-            ('extent', 'width'): width,
-            ('extent', 'length'): length,
-            ('extent', 'type'): type_,
-        })
+        self.x = x
+        self.y = y
+        self.width = width
+        self.length = length
+        self.type = type_
+
+
+walker.add_converter(Extent)(
+    lambda x: ValueAttr(
+        dict((('extent', k), v) for k, v in vars(x).iteritems())
+    )
+)
 
 
 class Field(ValueAttr):
