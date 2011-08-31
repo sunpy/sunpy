@@ -776,7 +776,7 @@ def search(*args, **kwargs):
     global g_client
     if g_client is None:
         g_client = InteractiveVSOClient()
-    return g_client.search(*args **kwargs)
+    return g_client.search(*args, **kwargs)
 
 search.__doc__ = InteractiveVSOClient.search.__doc__
 
