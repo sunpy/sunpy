@@ -18,14 +18,12 @@ from collections import defaultdict
 from suds import client, TypeNotFound
 
 from sunpy.net import download
+from sunpy.net.attr import and_
+from sunpy.net.vso.attrs import walker
 from sunpy.util.util import anytim, to_angstrom
-from sunpy.net.attr import (
-    Attr, ValueAttr, AttrWalker, AttrAnd, AttrOr, DummyAttr, and_
-)
 
 DEFAULT_URL = 'http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl'
 DEFAULT_PORT = 'nsoVSOi'
-TIMEFORMAT = '%Y%m%d%H%M%S'
 RANGE = re.compile(r'(\d+)(\s*-\s*(\d+))?(\s*([a-zA-Z]+))?')
 
 
@@ -41,165 +39,6 @@ class _Str(str):
     record_item associated with the file. """
     pass
 
-# ----------------------------------------
-
-# The walker specifies how the Attr-tree is converted to a query the
-# server can handle.
-walker = AttrWalker()
-
-@walker.add_creator(ValueAttr, AttrAnd)
-def _create(walker, root, api):
-    """ Implementation detail. """
-    value = api.factory.create('QueryRequestBlock')
-    walker.apply(root, api, value)
-    return [value]
-
-@walker.add_applier(ValueAttr)
-def _apply(walker, root, api, queryblock):
-    """ Implementation detail. """
-    for k, v in root.attrs.iteritems():
-        lst = k[-1]
-        rest = k[:-1]
-        
-        block = queryblock
-        for elem in rest:
-            block = block[elem]
-        block[lst] = v
-
-@walker.add_applier(AttrAnd)
-def _apply(walker, root, api, queryblock):
-    """ Implementation detail. """
-    for attr in root.attrs:
-        walker.apply(attr, api, queryblock)
-
-@walker.add_creator(AttrOr)
-def _create(walker, root, api):
-    """ Implementation detail. """
-    blocks = []
-    for attr in root.attrs:
-        blocks.extend(walker.create(attr, api))
-    return blocks
-
-@walker.add_creator(DummyAttr)
-def _create(walker, root, api):
-    """ Implementation detail. """
-    return api.factory.create('QueryRequestBlock')
-
-@walker.add_applier(DummyAttr)
-def _apply(walker, root, api, queryblock):
-    """ Implementation detail. """
-    pass
-
-
-class Range(object):
-    def __init__(self, min_, max_, create):
-        self.min = min_
-        self.max = max_
-        self.create = create
-    
-    def __xor__(self, other):
-        if not isinstance(other, self.__class__):
-            return NotImplemented
-        
-        new = DummyAttr()
-        if self.min < other.min:            
-            new |= self.create(self.min, min(other.min, self.max))
-        if other.max < self.max:
-            new |= self.create(other.max, self.max)
-        return new
-    
-    def __contains__(self, other):
-        return self.min <= other.min and self.max >= other.max
-
-
-class Wave(ValueAttr, Range): 
-    def __init__(self, wavemin, wavemax, waveunit='Angstrom'):        
-        self.min, self.max = sorted(
-            to_angstrom(v, waveunit) for v in [wavemin, wavemax]
-        )
-        self.unit = 'Angstrom'
-        
-        ValueAttr.__init__(self, {
-            ('wave', 'wavemin'): self.min,
-            ('wave', 'wavemax'): self.max,
-            ('wave', 'waveunit'): self.unit,
-        })
-        Range.__init__(self, self.min, self.max, self.__class__)
-
-
-class Time(ValueAttr, Range):
-    def __init__(self, start, end, near=None):
-        self.start = start
-        self.end = end
-        self.near = near
-
-        Range.__init__(self, start, end, self.__class__)
-        ValueAttr.__init__(self, dict(vars(self)))
-    
-    def __xor__(self, other):
-        if not isinstance(other, self.__class__):
-            raise TypeError
-        if self.near is not None or other.near is not None:
-            raise TypeError
-        return Range.__xor__(self, other)
-    
-    @classmethod
-    def dt(cls, start, end, near=None):
-        if near is not None:
-            near = datetime(*near)
-        return cls(datetime(*start), datetime(*end), near)
-    
-    def __repr__(self):
-        return '<Time(%r, %r, %r)>' % (self.start, self.end, self.near)
-
-
-walker.add_converter(Time)(
-    lambda x: ValueAttr({
-            ('time', 'start'): x.start.strftime(TIMEFORMAT),
-            ('time', 'end'): x.end.strftime(TIMEFORMAT) ,
-            ('time', 'near'): (
-                x.near.strftime(TIMEFORMAT) if x.near is not None else ''),
-    })
-)
-
-
-class Extent(Attr):
-    def __init__(self, x, y, width, length, type_):
-        self.x = x
-        self.y = y
-        self.width = width
-        self.length = length
-        self.type = type_
-
-
-walker.add_converter(Extent)(
-    lambda x: ValueAttr(
-        dict((('extent', k), v) for k, v in vars(x).iteritems())
-    )
-)
-
-
-class Field(ValueAttr):
-    def __init__(self, fielditem):
-        ValueAttr.__init__(self, {
-            ['field', 'fielditem']: fielditem
-        })
-
-
-def  _mk_simpleattr(field):
-    """ Create a _SimpleField class for field. """
-    class _foo(ValueAttr):
-        """ Attribute to query by %s. """ % field
-        def __init__(self, arg):
-            ValueAttr.__init__(self, {(field, ): arg})
-    _foo.__name__ = field.capitalize()
-    return _foo
-
-
-for elem in ['provider', 'source', 'instrument', 'physobs', 'pixels',
-             'level', 'resolution', 'detector', 'filter', 'sample',
-             'quicklook', 'pscale']:
-    setattr(sys.modules[__name__], elem.capitalize(), _mk_simpleattr(elem))
 
 # ----------------------------------------
 
