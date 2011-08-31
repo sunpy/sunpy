@@ -49,7 +49,7 @@ Download and install `Python(x,y) <https://code.google.com/p/pythonxy/wiki/Downl
 
 **2. Install additional modules**
 
-Install PyFITS, which is used to read FITS files.  It is highly likely you will see a warning message that an optional extension module called ``pyfits.pyfitsComp`` failed to build.  If you do not require the ability to read compressed image data from FITS files, then you can safely ignore this message.  Otherwise, see the section below. ::
+Install PyFITS, which is used to read FITS files.  (On some configurations, there currently may be a bug where you will not be able to read compressed image data from FITS files.  We are working to resolve this bug.) ::
 
     easy_install pyfits
 
@@ -59,21 +59,34 @@ Install Paver, which is used to link symbolically to the SunPy code. ::
 
 **3. Install Git**
 
-Download and install `Git <https://code.google.com/p/msysgit/downloads/list?can=3>`_.  Git is used to retrieve the SunPy code.
+Download and install `Git <https://code.google.com/p/msysgit/downloads/list?can=3>`_ (the first file listed).  Git is used to retrieve the SunPy code.
 
 **4. Download and install SunPy**
 
-The following will download SunPy to ``C:\sunpy``.  If you wish to download SunPy elsewhere, modify these commands accordingly. ::
+The following will download SunPy to ``C:\sunpy``.  If you wish to download SunPy elsewhere, modify these and later commands accordingly. ::
 
     cd C:\
-    %ProgramFiles%\Git\bin\git clone git://github.com/sunpy/sunpy.git
+    "%ProgramFiles%\Git\bin\git" clone git://github.com/sunpy/sunpy.git
+
+If you get the error ``The system cannot find the path specified``, try using these commands: ::
+
+    cd C:\
+    "%ProgramFiles(x86)%\Git\bin\git" clone git://github.com/sunpy/sunpy.git
+
+Now that SunPy is downloaded, you can create a symbolic link for Python to find the SunPy code. ::
+
     cd C:\sunpy\
     paver develop
 
 In the future, to update SunPy to the latest version: ::
 
     cd C:\sunpy\
-    %ProgramFiles%\Git\bin\git pull
+    "%ProgramFiles%\Git\bin\git" pull
+
+As before, if you get the error ``The system cannot find the path specified``, try using these commands: ::
+
+    cd C:\sunpy\
+    "%ProgramFiles(x86)%\Git\bin\git" pull
 
 
 Alternate method
@@ -100,7 +113,7 @@ Download and install `SciPy <http://sourceforge.net/projects/scipy/files/scipy/0
 Download and install `matplotlib <http://sourceforge.net/projects/matplotlib/files/matplotlib/matplotlib-1.0.1/matplotlib-1.0.1.win32-py2.7.exe/download>`_.
 
 Download and install `setuptools 
-<http://pypi.python.org/packages/2.7/s/setuptools/setuptools-0.6c11.win32-py2.7.exe>`_.
+<http://pypi.python.org/packages/2.7/s/setuptools/setuptools-0.6c11.win32-py2.7.exe>`_.  If you installed the 64-bit version of Python, please follow the instructions `here <http://pypi.python.org/pypi/setuptools>`_.
 
 
 **2-4. The remaining steps**
@@ -115,25 +128,3 @@ To test it all out, open a new Python shell and try typing: ::
 
 >>> import sunpy
 >>> sunpy.Map(sunpy.AIA_171_IMAGE).plot()
-
-
-"pyfits.pyfitsComp failed to build"?
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-This error (and any others like it) are likely due to Python being unable to find a compatible C++ compiler in your path.  Resolving this error may not be for the faint-of-heart.
-
-Our suggested compiler is the `MinGW <http://www.mingw.org/>`_ compiler.  If you have followed the "recommended method" of installation, then you already have this compiler, and in fact it is already in your path.  However, Python is not configured to use MinGW by default.
-
-To configure Python to use MinGW by default, create or modfiy the file ``C:\Python26\lib\distutils\distutils.cfg`` to contain these lines: ::
-
-    [build]
-    compiler=mingw32
-    [build_ext]
-    compiler=mingw32
-
-If you have not previously attempted to install PyFITS (i.e., you have not started "Step 2"), then ``pyfits.pyfitsComp`` should build successfully.  Otherwise, you will first need to uninstall PyFITS by typing these lines: ::
-
-    easy_install -m pyfits
-    del C:\Python26\Lib\site-packages\pyfits-2.4.0-py2.6-win32.egg
-
-Now you can return to "Step 2" and install PyFITS properly.
