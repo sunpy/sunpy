@@ -86,8 +86,20 @@ class AttrOr(Attr):
     def __xor__(self, other):
         new = AttrOr([])
         for elem in self.attrs:
-            new |= elem ^ other
+            try:
+                new |= elem ^ other
+            except TypeError:
+                pass
         return new
+    
+    def __contains__(self, other):
+        for elem in self.attrs:
+            try:
+                if other in elem:
+                    return True
+            except TypeError:
+                pass
+        return False
     
     def __repr__(self):
         return "<AttrOr(%r)>" % self.attrs
