@@ -6,7 +6,6 @@
 - Disambiguate plots with identical names, numerical suffix (?)
 - Dynamic subplot adding
 - Overlaying plots, drag-drop, opacity etc.
-- Restrict file types in open dialog
 - Handle exceptions ?
 - Displaying mapcube animations
 - Is gui.ui necessary?
