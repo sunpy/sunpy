@@ -119,7 +119,13 @@ def test_time_xor():
         [vso.Time.dt((2010, 1, 1), (2010, 1, 1, 1)),
          vso.Time.dt((2010, 1, 1, 2), (2010, 1, 2))]
     )
-
+    
+    a ^= vso.Time.dt((2010, 1, 1, 4), (2010, 1, 1, 5))
+    assert a == attr.AttrOr(
+        [vso.Time.dt((2010, 1, 1), (2010, 1, 1, 1)),
+         vso.Time.dt((2010, 1, 1, 2), (2010, 1, 1, 4)),
+         vso.Time.dt((2010, 1, 1, 5), (2010, 1, 2))]
+    )
 
 def test_wave_xor():
     one = vso.Wave(0, 1000)
