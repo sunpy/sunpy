@@ -12,7 +12,6 @@ import matplotlib.patches as patches
 import matplotlib.colors as colors
 import matplotlib.cm as cm
 from datetime import datetime
-from sunpy.sun import sun
 from sunpy.solwcs import solwcs as wcs
 
 """
@@ -21,12 +20,6 @@ Questions
 1. Which is better? center['x'] & center['y'] or center[0] and center[1], or?
 2. map.wavelength, map.meas or? (use hv/vso/etc conventions?)
 3. Are self.r_sun and radius below different? (rsun or rsun_obs for AIA?)
-4. Should default cmap and normalization settings be chosen for each image?
-
-Requests
---------
-1. Would be nice to be able to easily extract the data as a ndarray from the map.
-2. Need to provide a way to get a sub map.
 """
 
 class BaseMap(np.ndarray):
@@ -106,7 +99,7 @@ class BaseMap(np.ndarray):
         
         return obj
     
-    def __init__(self, data, header=None):
+    def __init__(self, data, header=None): #pylint: disable=W0613
         """BaseMap constructor"""
         if header:
             self.header = header
@@ -120,18 +113,39 @@ class BaseMap(np.ndarray):
                 setattr(self, attr, value)
 
             self.center = {
-                "x": wcs.get_center(header, axis = 'x'),
-                "y": wcs.get_center(header, axis = 'y')
+                "x": wcs.get_center(header, axis='x'),
+                "y": wcs.get_center(header, axis='y')
             }
             self.scale = {
                 "x": header.get('cdelt1'),
                 "y": header.get('cdelt2')
             }
             self.units = {
-                "x": wcs.get_units(header, axis = 'x'), 
-                "y": wcs.get_units(header, axis = 'y')
+                "x": wcs.get_units(header, axis='x'), 
+                "y": wcs.get_units(header, axis='y')
             }
             self.rsun = wcs.solar_limb(header)
+            
+    def __array_finalize__(self, obj):
+        """Finishes instantiation of the new map object"""
+        if obj is None:
+            return
+
+        if hasattr(obj, 'header'):
+            self.header = obj.header
+
+            # preserve object properties
+            properties = self.get_properties(obj.header)
+            for attr, value in list(properties.items()):
+                setattr(self, attr, getattr(obj, attr, value))
+                
+            self.center = obj.center
+            self.scale = obj.scale
+            self.units = obj.units
+        
+    def __array_wrap__(self, out_arr, context=None):
+        """Returns a wrapped instance of a Map object"""
+        return np.ndarray.__array_wrap__(self, out_arr, context)
                 
     def __add__(self, other):
         """Add two maps. Currently does not take into account the alignment  
@@ -141,7 +155,7 @@ class BaseMap(np.ndarray):
         return result
     
     def __sub__(self, other):
-        """Add two maps. Currently does not take into account the alignment 
+        """Subtract two maps. Currently does not take into account the alignment 
         between the two maps."""
         result = np.ndarray.__sub__(self, other)
 
@@ -171,13 +185,13 @@ class BaseMap(np.ndarray):
         """Return the X range of the image in arcsec."""        
         xmin = self.center['x'] - self.shape[1] / 2 * self.scale['x']
         xmax = self.center['x'] + self.shape[1] / 2 * self.scale['x']
-        return [xmin,xmax]
+        return [xmin, xmax]
         
     def get_yrange(self):
         """Return the Y range of the image in arcsec."""
         ymin = self.center['y'] - self.shape[0] / 2 * self.scale['y']
         ymax = self.center['y'] + self.shape[0] / 2 * self.scale['y']
-        return [ymin,ymax]
+        return [ymin, ymax]
 
     def submap(self, x_range, y_range):
         """Returns a submap of the map with the specified range
@@ -229,9 +243,7 @@ class BaseMap(np.ndarray):
 
         # Determine extent
         extent = self.get_xrange() + self.get_yrange()
-        
-        print extent
-        
+
         # Matplotlib arguments
         params = {
             "cmap": self.cmap,
@@ -242,27 +254,6 @@ class BaseMap(np.ndarray):
         plt.imshow(self, origin='lower', extent=extent, **params)
         plt.colorbar()
         plt.show()
-
-    def __array_finalize__(self, obj):
-        """Finishes instantiation of the new map object"""
-        if obj is None:
-            return
-
-        if hasattr(obj, 'header'):
-            self.header = obj.header
-
-            # preserve object properties
-            properties = self.get_properties(obj.header)
-            for attr, value in list(properties.items()):
-                setattr(self, attr, getattr(obj, attr, value))
-                
-            self.center = obj.center
-            self.scale = obj.scale
-            self.units = obj.units
-        
-    def __array_wrap__(self, out_arr, context=None):
-        """Returns a wrapped instance of a Map object"""
-        return np.ndarray.__array_wrap__(self, out_arr, context)
 
 class UnrecognizedDataSouceError(ValueError):
     """Exception to raise when an unknown datasource is encountered"""
