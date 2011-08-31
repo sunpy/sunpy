@@ -34,6 +34,8 @@ class TestBaseMap:
         # Check to see if submap header was updated properly
         assert submap.header.get('crpix1') == offset['x'] 
         assert submap.header.get('crpix1') == offset['y']
+        assert submap.header.get('naxis1') == width / 2
+        assert submap.header.get('naxis2') == height / 2
         
         # Check data
         assert (np.asarray(self.map)[height/2:height, 
