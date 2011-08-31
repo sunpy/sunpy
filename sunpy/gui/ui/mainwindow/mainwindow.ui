@@ -16,6 +16,10 @@
   <property name="windowTitle">
    <string>SunPy PlotMan</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="resources/resources.qrc">
+    <normaloff>:/main.png</normaloff>:/main.png</iconset>
+  </property>
   <property name="windowOpacity">
    <double>1.000000000000000</double>
   </property>
@@ -75,7 +79,7 @@
     <enum>TopToolBarArea</enum>
    </attribute>
    <attribute name="toolBarBreak">
-    <bool>true</bool>
+    <bool>false</bool>
    </attribute>
    <addaction name="actionOpen_file"/>
    <addaction name="actionExit_PlotMan"/>
@@ -96,129 +100,6 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+O</string>
-   </property>
-  </action>
-  <action name="actionReset_view">
-   <property name="icon">
-    <iconset resource="resources/resources.qrc">
-     <normaloff>:/home.png</normaloff>:/home.png</iconset>
-   </property>
-   <property name="text">
-    <string>Reset view</string>
-   </property>
-   <property name="toolTip">
-    <string>Reset original view.</string>
-   </property>
-   <property name="statusTip">
-    <string>Reset original view.</string>
-   </property>
-  </action>
-  <action name="actionPrevious_view">
-   <property name="icon">
-    <iconset resource="resources/resources.qrc">
-     <normaloff>:/back.png</normaloff>:/back.png</iconset>
-   </property>
-   <property name="text">
-    <string>Previous view</string>
-   </property>
-   <property name="toolTip">
-    <string>Go back to the previous view.</string>
-   </property>
-   <property name="statusTip">
-    <string>Show subplot configurator</string>
-   </property>
-  </action>
-  <action name="actionNext_view">
-   <property name="icon">
-    <iconset resource="resources/resources.qrc">
-     <normaloff>:/forward.png</normaloff>:/forward.png</iconset>
-   </property>
-   <property name="text">
-    <string>Next view</string>
-   </property>
-   <property name="toolTip">
-    <string>Go forward to the next view.</string>
-   </property>
-   <property name="statusTip">
-    <string>Show subplot configurator</string>
-   </property>
-  </action>
-  <action name="actionPan">
-   <property name="icon">
-    <iconset resource="resources/resources.qrc">
-     <normaloff>:/move.png</normaloff>:/move.png</iconset>
-   </property>
-   <property name="text">
-    <string>Pan</string>
-   </property>
-   <property name="toolTip">
-    <string>Pan axes with left mouse, zoom with right.</string>
-   </property>
-   <property name="statusTip">
-    <string>Show subplot configurator</string>
-   </property>
-  </action>
-  <action name="actionConfigure_subplots">
-   <property name="icon">
-    <iconset resource="resources/resources.qrc">
-     <normaloff>:/subplots.png</normaloff>:/subplots.png</iconset>
-   </property>
-   <property name="text">
-    <string>Configure subplots...</string>
-   </property>
-   <property name="toolTip">
-    <string>Show subplot configurator.</string>
-   </property>
-   <property name="statusTip">
-    <string>Show subplot configurator.</string>
-   </property>
-  </action>
-  <action name="actionZoom">
-   <property name="icon">
-    <iconset resource="resources/resources.qrc">
-     <normaloff>:/zoom_to_rect.png</normaloff>:/zoom_to_rect.png</iconset>
-   </property>
-   <property name="text">
-    <string>Zoom</string>
-   </property>
-   <property name="toolTip">
-    <string>Zoom to rectangle.</string>
-   </property>
-   <property name="statusTip">
-    <string>Zoom to rectangle.</string>
-   </property>
-  </action>
-  <action name="actionChange_color_map">
-   <property name="icon">
-    <iconset resource="resources/resources.qrc">
-     <normaloff>:/change_cm.png</normaloff>:/change_cm.png</iconset>
-   </property>
-   <property name="text">
-    <string>Change color map...</string>
-   </property>
-   <property name="toolTip">
-    <string>Show color map selector...</string>
-   </property>
-   <property name="statusTip">
-    <string>Show color map selector...</string>
-   </property>
-  </action>
-  <action name="actionSave_plot">
-   <property name="icon">
-    <iconset resource="resources/resources.qrc">
-     <normaloff>:/save_plot.png</normaloff>:/save_plot.png</iconset>
-   </property>
-   <property name="text">
-    <string>Save plot...</string>
-   </property>
-   <property name="toolTip">
-    <string>Save plot to PNG...</string>
-   </property>
-   <property name="statusTip">
-    <string>Save plot to PNG...</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+S</string>
    </property>
   </action>
   <action name="actionExit_PlotMan">
