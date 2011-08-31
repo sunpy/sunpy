@@ -18,6 +18,9 @@ class Attr(object):
     
     def collides(self, other):
         raise NotImplementedError
+    
+    def __eq__(self, other):
+        return dict(vars(self)) == dict(vars(other))
 
 
 class DummyAttr(Attr):
