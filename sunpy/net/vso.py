@@ -353,12 +353,20 @@ class VSOClient(object):
         -------
         out : :py:class:`QueryResult` (enhanced list) of matched items. Return value of same type as the one of :py:meth:`VSOClient.query`.
         """
-        if len(query) > 1:
-            query = and_(*query)
-        return QueryResponse.create(self.merge(
-            self.api.service.Query(self.make('QueryRequest', block=block))
-            for block in walker.create(query, self.api)
-        ))
+        query = and_(*query)
+        
+        responses = []
+        for block in walker.create(query, self.api):
+            try:
+                responses.append(
+                    self.api.service.Query(
+                        self.make('QueryRequest', block=block)
+                    )
+                )
+            except TypeNotFound:
+                pass
+        
+        return QueryResponse.create(self.merge(responses))
     
     def merge(self, queryresponses):      
         fileids = set()
