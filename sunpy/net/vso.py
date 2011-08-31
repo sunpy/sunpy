@@ -18,7 +18,7 @@ from collections import defaultdict
 from suds import client
 
 from sunpy.net import download
-from sunpy.util.util import anytim
+from sunpy.util.util import anytim, to_angstrom
 from sunpy.net.attr import (
     Attr, ValueAttr, AttrWalker, AttrAnd, AttrOr, DummyAttr, and_
 )
@@ -90,84 +90,44 @@ def _apply(walker, root, api, queryblock):
     """ Implementation detail. """
     pass
 
-class Wave(ValueAttr):
-    wavelength = [
-        ('Angstrom', 1e-10),
-        ('nm', 1e-9),
-        ('micron', 1e-6),
-        ('micrometer', 1e-6),
-        ('mm', 1e-3),
-        ('cm', 1e-2),
-        ('m', 1e-6),
-    ]
-    energy = [
-        ('eV', 1),
-        ('keV', 1e3),
-        ('MeV', 1e6),
-    ]
-    frequency = [
-        ('Hz', 1),
-        ('kHz', 1e3),
-        ('MHz', 1e6),
-        ('GHz', 1e9),
-    ]
-    units = {}
-    for k, v in wavelength:
-        units[k] = ('wavelength', v)
-    for k, v in energy:
-        units[k] = ('energy', v)
-    for k, v in frequency:
-        units[k] = ('frequency', v)
-    
-    def __init__(self, wavemin, wavemax, waveunit):
-        wavemin, wavemax = self.to_angstrom(wavemin, wavemax, waveunit)
-        waveunit = 'Angstrom'
-        
-        self.min = wavemin
-        self.max = wavemax
-        self.unit = waveunit
-        
-        ValueAttr.__init__(self, {
-            ('wave', 'wavemin'): wavemin,
-            ('wave', 'wavemax'): wavemax,
-            ('wave', 'waveunit'): waveunit,
-        })
+
+class Range(object):
+    def __init__(self, min_, max_, create):
+        self.min = min_
+        self.max = max_
+        self.create = create
     
     def __xor__(self, other):
-        if self.unit != other.unit:
+        if not isinstance(other, self.__class__):
             return NotImplemented
+        
         new = DummyAttr()
-        if self.min < other.min:
-            new |= Wave(self.min, min(other.min, self.max), self.unit)
+        if self.min < other.min:            
+            new |= self.create(self.min, min(other.min, self.max))
         if other.max < self.max:
-            new |= Wave(other.max, self.max, self.unit)
+            new |= self.create(other.max, self.max)
         return new
     
-    @classmethod
-    def to_angstrom(cls, min_, max_, unit):
-        # Speed of light in m/s.
-        C = 299792458
-        ANGSTROM = cls.units['Angstrom'][1]
-        
-        try:
-            type_, n = cls.units[unit]
-        except KeyError:
-            raise ValueError('Cannot convert %s to Angstrom' % unit)
-        
-        if type_ == 'wavelength':
-            k = n / ANGSTROM
-            return (min_ / k, max_ / k)
-        if type_ == 'frequency':
-            k = 1 / ANGSTROM / n
-            return k * (C / max_), k * (C / min_)
-        if type_ == 'energy':
-            k = 1 / (ANGSTROM / 1e-2) / n
-            return k * (1 / (8065.53 * max_)), k * (1 / (8065.53 * min_))
-        else:
-            raise ValueError('Unable to convert %s to Angstrom' % type_)
+    def __contains__(self, other):
+        return self.min <= other.min and self.max >= other.max
 
 
-class Time(ValueAttr):
+class Wave(ValueAttr, Range): 
+    def __init__(self, wavemin, wavemax, waveunit='Angstrom'):        
+        self.min, self.max = sorted(
+            to_angstrom(v, waveunit) for v in [wavemin, wavemax]
+        )
+        self.unit = 'Angstrom'
+        
+        ValueAttr.__init__(self, {
+            ('wave', 'wavemin'): self.min,
+            ('wave', 'wavemax'): self.max,
+            ('wave', 'waveunit'): self.unit,
+        })
+        Range.__init__(self, self.min, self.max, self.__class__)
+
+
+class Time(ValueAttr, Range):
     def __init__(self, start, end, near=None):
         self.start = start
         self.end = end
@@ -178,14 +138,15 @@ class Time(ValueAttr):
             ('time', 'end'): end.strftime(TIMEFORMAT),
             ('time', 'near'): near.strftime(TIMEFORMAT) if near is not None else '',
         })
+        
+        Range.__init__(self, start, end, self.__class__)
     
     def __xor__(self, other):
-        new = DummyAttr()
-        if self.start < other.start:            
-            new |= Time(self.start, min(other.start, self.end))
-        if other.end < self.end:
-            new |= Time(other.end, self.end)
-        return new
+        if not isinstance(other, self.__class__):
+            raise TypeError
+        if self.near is not None or other.near is not None:
+            raise TypeError
+        return Range.__xor__(self, other)
     
     @classmethod
     def dt(cls, start, end, near=None):
