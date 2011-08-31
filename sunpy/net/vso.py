@@ -15,7 +15,7 @@ from datetime import datetime, timedelta
 from functools import partial
 from collections import defaultdict
 
-from suds import client
+from suds import client, TypeNotFound
 
 from sunpy.net import download
 from sunpy.util.util import anytim, to_angstrom
