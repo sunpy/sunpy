@@ -16,8 +16,6 @@ MapCube
 
 Available subpackages
 ---------------------
-dev
-    Experimental functions not meant for use in production
 map
     Methods relating to the solar maps
 
@@ -31,7 +29,6 @@ import data.sample
 from map import Map
 from map.mapcube import MapCube
 from map.compositemap import CompositeMap
-from dev import *
 from cm import *
 
 # Sample data
