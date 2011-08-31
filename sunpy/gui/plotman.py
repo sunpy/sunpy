@@ -16,6 +16,7 @@ Notes and To-Do
 - Displaying mapcube animations
 - Connect to VSO and other data services
 - Is gui.ui necessary?
+- Integrate colormap changer into main window for more immediate access
 
 Author: Matt Earnshaw <matt@earnshaw.org.uk>
 """
@@ -26,19 +27,26 @@ from PyQt4.QtGui import QMainWindow, QFileDialog, QVBoxLayout, QWidget
 from sunpy.gui.ui.mainwindow import ui_mainwindow
 from sunpy.gui.ui.mainwindow.widgets.tab_page import TabPage
 
+
 class MainWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
 
     def __init__(self, parent=None):
         QMainWindow.__init__(self, parent)
         self.setupUi(self)
-    
+
     @pyqtSignature("")
     def on_actionOpen_file_triggered(self):
-        file_info = QFileInfo(QFileDialog.getOpenFileName(self, 'Open plot...'))
-        file_path = str(file_info.filePath())
 
-        tab_page = TabPage()
-        tab_page.fig = sunpy.Map(file_path)
+        # For testing purposes... yes, it's horrible, sorry.
+        if __name__ == "__main__":
+            file_path = sunpy.AIA_171_IMAGE
+            file_info = QFileInfo(file_path)
+        else:
+            file_info = QFileInfo(QFileDialog.getOpenFileName(self, 'Open plot...'))
+            file_path = str(file_info.filePath())
+
+        figure = sunpy.Map(file_path)
+        tab_page = TabPage(figure, self.tabWidget)
         tab_page.canvas.axes.imshow(tab_page.fig)
 
         tab_page.canvas.draw()

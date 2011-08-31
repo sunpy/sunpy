@@ -1,6 +1,5 @@
 from PyQt4.QtCore import SIGNAL
 from PyQt4.QtGui import QIcon, QAction
-from sunpy.gui.ui.dialogs import cmselector
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg
 
 class PlotToolBar(NavigationToolbar2QTAgg):
@@ -8,28 +7,37 @@ class PlotToolBar(NavigationToolbar2QTAgg):
 
     def __init__(self, canvas, parent=None, coordinates=True):
         NavigationToolbar2QTAgg.__init__(self, canvas, parent, coordinates)
+        self.parent = parent
 
     def _init_toolbar(self):
-        NavigationToolbar2QTAgg._init_toolbar(self)
-        change_cm = self.create_action(
-                        slot=self.change_cm,
+        show_cm_selector = self.create_action(
+                        slot=self.show_cm_selector,
+                        signal=SIGNAL('toggled(bool)'),
+                        checkable=True,
                         icon="change_cm",
-                        tip="Change plot colour map..."
+                        text="Show color map selector",
+                        tip="Show color map selector"
                     )
-        self.addAction(change_cm)
+        self.addAction(show_cm_selector)
+        self.addSeparator()
+
+        NavigationToolbar2QTAgg._init_toolbar(self)
+
+        # Set status tip for all matplotlib actions
+        for action in self.actions():
+            action.setStatusTip(action.toolTip())
     
-    def change_cm(self):
+    def show_cm_selector(self, toggled):
         # cm_selector probably shouldn't be an attribute of a PlotToolBar instance
         # but rather of the mainwindow...
-        if not hasattr(self, "cm_selector"):
-            parent = self.window()
-            self.cm_selector = cmselector.CMSelectorDlg(parent)
-        self.cm_selector.show()
-        self.cm_selector.raise_()
-        self.cm_selector.activateWindow()
-    
+        if toggled:
+            self.parent.cmComboBox.show()
+        else:
+            self.parent.cmComboBox.hide()
+
+    # Move this to a gui.util module?
     def create_action(self, signal=SIGNAL('triggered()'), slot=None, text=None,
-                        icon=None, tip=None, shortcut=None):
+                        icon=None, tip=None, shortcut=None, checkable=None):
         """ Helper function for creating useful QAction objects"""
 
         action = QAction(self)
@@ -44,6 +52,8 @@ class PlotToolBar(NavigationToolbar2QTAgg):
             action.setIcon(QIcon(":/%s.png" % icon))
         if shortcut is not None:
             action.setShortcut(shortcut)
+        if checkable is not None:
+            action.setCheckable(checkable)
 
         return action
 
