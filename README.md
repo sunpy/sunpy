@@ -33,7 +33,7 @@ Here is a quick example of plotting an AIA image:
 >>> import sunpy
 >>> import matplotlib.cm as cm
 >>> import matplotlib.colors as colors
->>> map = sunpy.Map("doc/sample-data/AIA20110319_105400_0171.fits")
+>>> map = sunpy.Map(sunpy.AIA_171_IMAGE)
 >>> map.plot(cmap=cm.hot, norm=colors.Normalize(1, 2048))
 ```
 
@@ -50,10 +50,11 @@ Contributing
 ------------
 
 If you would like to get involved, start by joining the 
-[SunPy mailing list](https://groups.google.com/forum/#!forum/sunpy) and #sunpy,
-and reading the [Developer's Guide](http://www.sunpy.org/doc/dev.html) section 
-of the SunPy docs. Help is always welcome so let us know what you like to work
+[SunPy mailing list](https://groups.google.com/forum/#!forum/sunpy)
+and check out the [Developer's Guide](http://www.sunpy.org/doc/dev.html) section 
+of the SunPy docs. Stop by our IRC chat room named #sunpy on irc.freenode.net if you have any questions. 
+Help is always welcome so let us know what you like to work
 on, or check out the [issues page](https://github.com/sunpy/sunpy/issues) for
-a list of some known items.
+a list of some known outstanding items.
 
 

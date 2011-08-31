@@ -35,7 +35,7 @@ def install(setup):
         maintainer="SunPy Developers",
         maintainer_email="sunpy@googlegroups.com",
         name="sunpy",
-        packages=['sunpy', 'sunpy.cm', 'sunpy.dev', 'sunpy.map',
+        packages=['sunpy', 'sunpy.cm', 'sunpy.map',
                   'sunpy.map.sources', 'sunpy.sun', 'sunpy.util',
                   'sunpy.tests', 'sunpy.tests.map', 'sunpy.tests.net',
                   'sunpy.data', 'sunpy.data.sample', 'sunpy.net',],
