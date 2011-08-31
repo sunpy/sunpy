@@ -84,7 +84,7 @@ class AttrOr(Attr):
     __rand__ = __and__
     
     def __xor__(self, other):
-        new = _DummyAttr()
+        new = AttrOr([])
         for elem in self.attrs:
             new |= elem ^ other
         return new

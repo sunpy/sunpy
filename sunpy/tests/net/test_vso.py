@@ -3,6 +3,8 @@ import pytest
 from sunpy.net import vso
 from sunpy.net import attr
 
+from sunpy.util.util import energy, frequency, wavelength
+
 def pytest_funcarg__eit(request):
     return vso.Instrument('eit')
 
@@ -90,7 +92,7 @@ def test_attror_and():
 
 
 def test_wave_toangstrom():
-    for name, factor in vso.Wave.energy:
+    for name, factor in energy:
         w = vso.Wave(62 / factor, 62 / factor, name)
         assert int(w.min) == 199
     
@@ -99,7 +101,7 @@ def test_wave_toangstrom():
     w = vso.Wave(62e-3, 62e-3, 'keV')
     assert int(w.min) == 199
 
-    for name, factor in vso.Wave.frequency:
+    for name, factor in frequency:
         w = vso.Wave(1.506e16 / factor, 1.506e16 / factor, name)
         assert int(w.min) == 199
     
@@ -107,6 +109,7 @@ def test_wave_toangstrom():
     assert int(w.min) == 199
     w = vso.Wave(1.506e7, 1.506e7, 'GHz')
     assert int(w.min) == 199
+
 
 def test_time_xor():
     one = vso.Time.dt((2010, 1, 1), (2010, 1, 2))
@@ -116,4 +119,15 @@ def test_time_xor():
         [vso.Time.dt((2010, 1, 1), (2010, 1, 1, 1)),
          vso.Time.dt((2010, 1, 1, 2), (2010, 1, 2))]
     )
+
+
+def test_wave_xor():
+    one = vso.Wave(0, 1000)
+    a = one ^ vso.Wave(200, 400)
     
+    assert a == attr.AttrOr([vso.Wave(0, 200), vso.Wave(400, 1000)])
+    
+    a ^= vso.Wave(600, 800)
+    
+    assert a == attr.AttrOr(
+        [vso.Wave(0, 200), vso.Wave(400, 600), vso.Wave(800, 1000)])
