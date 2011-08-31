@@ -10,6 +10,9 @@ class Attr(object):
             return NotImplemented
         return AttrAnd([self, other])
     
+    def __hash__(self):
+        return hash(frozenset(vars(self).iteritems()))
+    
     def __or__(self, other):
         # Optimization.
         if self == other:
@@ -135,7 +138,7 @@ class KeysAttr(Attr):
         return hash(frozenset(self.attrs))
     
     def collides(self, other):
-        if not isinstance(other, ValueAttr):
+        if not isinstance(other, self.__class__):
             return False
         return any(k in other.attrs for k in self.attrs)
 
