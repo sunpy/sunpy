@@ -368,13 +368,18 @@ class VSOClient(object):
         
         return QueryResponse.create(self.merge(responses))
     
-    def merge(self, queryresponses):      
+    def merge(self, queryresponses):
+        if len(queryresponses) == 1:
+            return queryresponses[0]
+        
         fileids = set()
         providers = {}
         
         for queryresponse in queryresponses:
             for provideritem in queryresponse.provideritem:
                 provider = provideritem.provider
+                if not hasattr(provideritem, 'record'):
+                    continue
                 if not hasattr(provideritem.record, 'recorditem'):
                     continue
                 if not provideritem.provider in providers:
