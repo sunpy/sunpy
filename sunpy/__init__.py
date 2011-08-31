@@ -32,4 +32,4 @@ from map.compositemap import CompositeMap
 from cm import *
 
 # Sample data
-from data.sample import AIA_171_IMAGE, RHESSI_HSI
+from data.sample import AIA_171_IMAGE, RHESSI_IMAGE
