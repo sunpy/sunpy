@@ -154,6 +154,16 @@ class BaseMap(np.ndarray):
         
         return result
     
+    def __getitem__(self, key):
+        """Overiding indexing operation to ensure that header is updated"""
+        if isinstance(key, tuple):
+            x_range = [key[1].start, key[1].stop]
+            y_range = [key[0].start, key[0].stop]
+
+            return self.submap(x_range, y_range, units="pixels")
+        else:
+            return np.ndarray.__getitem__(self, key)
+    
     def __sub__(self, other):
         """Subtract two maps. Currently does not take into account the alignment 
         between the two maps."""
@@ -193,17 +203,25 @@ class BaseMap(np.ndarray):
         ymax = self.center['y'] + self.shape[0] / 2 * self.scale['y']
         return [ymin, ymax]
 
-    def submap(self, x_range, y_range):
+    def submap(self, x_range, y_range, units="arcseconds"):
         """Returns a submap of the map with the specified range
         
         Keith [08/19/2011]
          * Slicing in numpy expects [y, x]. Should we break convention here? 
         """
+        height = self.shape[0]
+        width = self.shape[1]
+        
+        # Arcseconds => Pixels
+        #  x_px = (x / cdelt1) + (width / 2)
         #
-        # x_px = (x / cdelt1) + (width / 2)
-        #
-        x_pixels = (np.array(x_range) / self.scale['x']) + (self.shape[1] / 2)
-        y_pixels = (np.array(y_range) / self.scale['y']) + (self.shape[0] / 2)
+        if units is "arcseconds":
+            x_pixels = (np.array(x_range) / self.scale['x']) + (width / 2)
+            y_pixels = (np.array(y_range) / self.scale['y']) + (height / 2)
+
+        elif units is "pixels":
+            x_pixels = x_range
+            y_pixels = y_range
 
         # Make a copy of the header with updated centering information        
         header = copy.deepcopy(self.header)
@@ -211,11 +229,11 @@ class BaseMap(np.ndarray):
         header['crpix2'] = header['crpix2'] - y_pixels[0]
         
         # Get ndarray representation of submap
-        data = np.asarray(self[y_pixels[0]:y_pixels[1], 
-                               x_pixels[0]:x_pixels[1]])
+        data = np.asarray(self)[y_pixels[0]:y_pixels[1], 
+                                x_pixels[0]:x_pixels[1]]
 
         return self.__class__(data, header)
-        
+   
     def plot(self, draw_limb=True, **matplot_args):
         """Plots the map object using matplotlib
         
