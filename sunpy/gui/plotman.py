@@ -21,21 +21,16 @@ class MainWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
     def __init__(self, parent=None):
         QMainWindow.__init__(self, parent)
         self.setupUi(self)
-    
+ 
     @pyqtSignature("int")
     def on_tabWidget_tabCloseRequested(self, i):
         self.tabWidget.removeTab(i)
 
     @pyqtSignature("")
     def on_actionOpen_file_triggered(self):
-
-        # For testing purposes... yes, it's horrible, sorry.
-        if __name__ == "__main__":
-            file_path = sunpy.AIA_171_IMAGE
-            file_info = QFileInfo(file_path)
-        else:
-            file_info = QFileInfo(QFileDialog.getOpenFileName(self, 'Open plot...'))
-            file_path = str(file_info.filePath())
+        file_info = QFileInfo(QFileDialog.getOpenFileName(self, self.tr("Open file..."), 
+                    filter=self.tr("FITS files (*.fit *.dst *.fits *.fts *.lilo *.lihi *.silo *.sihi *.mxlo *.mxhi *.rilo *.rihi *.vdlo *.vdhi)")))
+        file_path = str(file_info.filePath())
 
         figure = sunpy.Map(file_path)
         tab_page = TabPage(figure, self.tabWidget)
