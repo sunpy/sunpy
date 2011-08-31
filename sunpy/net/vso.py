@@ -76,7 +76,7 @@ def _apply(walker, root, api, queryblock):
 def _create(walker, root, api):
     """ Implementation detail. """
     blocks = []
-    for attr in self.attrs:
+    for attr in root.attrs:
         blocks.extend(walker.create(attr, api))
     return blocks
 
