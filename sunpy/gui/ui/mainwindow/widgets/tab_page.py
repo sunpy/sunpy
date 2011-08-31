@@ -2,11 +2,6 @@
 TabPage Widget
 
 Author: Matt Earnshaw <matt@earnshaw.org.uk>
-
-Notes and To-do
-===============
-- Let Qt Designer do the work on this.
-
 """
 
 import matplotlib.pyplot as plt

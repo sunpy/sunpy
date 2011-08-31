@@ -6,14 +6,6 @@ Plot widgets for the PlotMan
 subclassed from the matplotlib FigureCanvasQTAgg 
 
 Author: Matt Earnshaw <matt@earnshaw.org.uk>
-
-To-do and Notes
-===============
-- data xy plots
-- ut plots (time series)
-- image plots
-- spectrogram plots
-
 """
 
 from matplotlib.figure import Figure
