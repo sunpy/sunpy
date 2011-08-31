@@ -136,17 +136,6 @@ class ValueAttr(KeysAttr):
 
     def __hash__(self):
         return hash(frozenset(self.attrs.iteritems()))
-    
-    @classmethod
-    def from_attrs(cls, attrs, defaults={}, conv={}, convall=lambda x: x):
-        def _fun(obj):
-            convert = defaultdict(repeat(convall).next, conv)
-            
-            return cls(
-                dict((k, convert(getattr(obj, v))) for k, v in
-                     chain(defaults.iteritems(), attrs.iteritems()))
-            )
-        return _fun
 
     
 class AttrWalker(object):
