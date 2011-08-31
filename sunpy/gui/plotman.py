@@ -1,22 +1,10 @@
 # -*- coding:utf-8 -*-
 
 """
-Prototype GUI Plot Manager
+SunPy PlotMan GUI
 
 Plots FITS data using sunpy.Map in a Qt interface,
-and provides tools for graphical plot manipulation
-
-Notes and To-Do
-===============
-- Disambiguate plots with identical names (for cmselector etc.), numerical suffix (?)
-- Dynamic subplot adding
-- Overlaying plots, drag-drop, opacity etc.
-- Restrict file types in open dialog
-- Handle exceptions
-- Displaying mapcube animations
-- Connect to VSO and other data services
-- Is gui.ui necessary?
-- Integrate colormap changer into main window for more immediate access
+and provides tools for graphical plot manipulation.
 
 Author: Matt Earnshaw <matt@earnshaw.org.uk>
 """
@@ -33,6 +21,10 @@ class MainWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
     def __init__(self, parent=None):
         QMainWindow.__init__(self, parent)
         self.setupUi(self)
+    
+    @pyqtSignature("int")
+    def on_tabWidget_tabCloseRequested(self, i):
+        self.tabWidget.removeTab(i)
 
     @pyqtSignature("")
     def on_actionOpen_file_triggered(self):

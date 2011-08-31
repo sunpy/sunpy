@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/matt/programming/sunpy/sunpy/gui/ui/mainwindow/mainwindow.ui'
 #
-# Created: Tue Aug 30 17:48:19 2011
+# Created: Wed Aug 31 18:27:07 2011
 #      by: PyQt4 UI code generator 4.8.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -31,6 +31,9 @@ class Ui_MainWindow(object):
         self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
         self.tabWidget = QtGui.QTabWidget(self.centralwidget)
         self.tabWidget.setTabPosition(QtGui.QTabWidget.South)
+        self.tabWidget.setElideMode(QtCore.Qt.ElideNone)
+        self.tabWidget.setTabsClosable(True)
+        self.tabWidget.setMovable(True)
         self.tabWidget.setObjectName(_fromUtf8("tabWidget"))
         self.horizontalLayout.addWidget(self.tabWidget)
         MainWindow.setCentralWidget(self.centralwidget)
@@ -38,7 +41,7 @@ class Ui_MainWindow(object):
         self.statusbar.setObjectName(_fromUtf8("statusbar"))
         MainWindow.setStatusBar(self.statusbar)
         self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 662, 25))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 662, 23))
         self.menubar.setObjectName(_fromUtf8("menubar"))
         self.menuFile = QtGui.QMenu(self.menubar)
         self.menuFile.setObjectName(_fromUtf8("menuFile"))
