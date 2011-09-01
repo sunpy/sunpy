@@ -214,6 +214,7 @@ And that's it! It may seem like a lot at first but once you go through the
 motions a few times it becomes very quick.
 
 **Conflict resolution**
+
 It may so happen that when you try to sync with the main repo there is a conflict error.
 This means that someone else has been working on the same section of code 
 that you have. In such cases, the merge 
