@@ -27,14 +27,15 @@ information (as a dictionary) and a URL or id which can be used to retrieve
 the image data.
     
 """
+#pylint: disable=E1101,F0401,W0231
 __author__ = ["Keith Hughitt"]
 __email__ = "keith.hughitt@nasa.gov"
 
 try:
-    import urllib.request
-    import urllib.parse
+    import urllib.request #pylint: disable=E0611
+    import urllib.parse   #pylint: disable=E0611
 except ImportError:
-    import urllib
+    import urllib #pylint: disable=W0404
     import urllib2
 
 # Helioviewer API URL
@@ -100,9 +101,9 @@ def _request(url, params):
     out : String containing the result of the request
     """
     try:
-        response = urllib.request.urlopen(url + "?" + 
+        response = urllib.request.urlopen(url + "?" +
                                           urllib.parse.urlencode(params))
-    except:
+    except NameError:
         response = urllib2.urlopen(url, urllib.urlencode(params))
         
     return response.read()
@@ -110,9 +111,9 @@ def _request(url, params):
 # Keith 2011/06/26: this will eventually be moved to the utilities module
 # http://code.activestate.com/recipes/410469-xml-as-dictionary/
 try:
-    import cElementTree as ElementTree
+    import cElementTree as ElementTree #pylint: disable=W0611
 except ImportError:
-    import xml.etree.ElementTree as ElementTree
+    import xml.etree.ElementTree as ElementTree #pylint: disable=W0404
 
 class XmlListConfig(list):
     def __init__(self, aList):
