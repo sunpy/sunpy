@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Author: Florian Mayer <florian.mayer@bitsrc.org>
 
-import sys
+# pylint: disable=C0103,R0903
 
 from urllib2 import urlopen
 from urllib import urlencode
@@ -81,9 +81,12 @@ class Time(attr.Attr):
         return cls(datetime(*start), datetime(*end))
 
 
+# pylint: disable=R0913
 class SpartialRegion(attr.Attr):
     def __init__(
         self, x1=-1200, y1=-1200, x2=1200, y2=1200, sys='helioprojective'):
+        attr.Attr.__init__(self)
+        
         self.x1 = x1
         self.y1 = y1
         self.x2 = x2
@@ -104,6 +107,7 @@ class SpartialRegion(attr.Attr):
 
 class Contains(attr.Attr):
     def __init__(self, *types):
+        attr.Attr.__init__(self)
         self.types = types
     
     def collides(self, other):
@@ -120,34 +124,38 @@ class Contains(attr.Attr):
 
 walker = attr.AttrWalker()
 
-
+# pylint: disable=E0102,C0103,W0613
 @walker.add_applier(Contains)
-def _a(walker, root, state, dct):
+def _a(wlk, root, state, dct):
     dct['type'] = 'contains'
     if not Contains in state:
         state[Contains] = 1
     
     nid = state[Contains]
+    n = 0
     for n, type_ in enumerate(root.types):
         dct['event_type%d' % (nid + n)] = type_
     state[Contains] += n
     return dct
 
+# pylint: disable=E0102,C0103,W0613
 @walker.add_creator(
     Time, SpartialRegion, ListAttr, ParamAttr, attr.AttrAnd, Contains)
-def _c(walker, root, state):
+def _c(wlk, root, state):
     value = {}
-    walker.apply(root, state, value)
+    wlk.apply(root, state, value)
     return [value]
 
+# pylint: disable=E0102,C0103,W0613
 @walker.add_applier(Time)
-def _a(walker, root, state, dct):
+def _a(wlk, root, state, dct):
     dct['event_starttime'] = root.start.strftime('%Y-%m-%dT%H:%M:%S')
     dct['event_endtime'] = root.end.strftime('%Y-%m-%dT%H:%M:%S')
     return dct
 
+# pylint: disable=E0102,C0103,W0613
 @walker.add_applier(SpartialRegion)
-def _a(walker, root, state, dct):
+def _a(wlk, root, state, dct):
     dct['x1'] = root.x1
     dct['y1'] = root.y1
     dct['x2'] = root.x2
@@ -155,23 +163,26 @@ def _a(walker, root, state, dct):
     dct['event_coordsys'] = root.sys
     return dct
 
+# pylint: disable=E0102,C0103,W0613
 @walker.add_applier(ListAttr)
-def _a(walker, root, state, dct):
+def _a(wlk, root, state, dct):
     if root.key in dct:
         dct[root.key] += ',%s' % root.item
     else:
         dct[root.key] = root.item
     return dct
 
+# pylint: disable=E0102,C0103,W0613
 @walker.add_applier(EventType)
-def _a(walker, root, state, dct):
+def _a(wlk, root, state, dct):
     if dct.get('type', None) == 'contains':
         raise ValueError
     
-    return walker.super_apply(super(EventType, root), state, dct)
+    return wlk.super_apply(super(EventType, root), state, dct)
 
+# pylint: disable=E0102,C0103,W0613
 @walker.add_applier(ParamAttr)
-def _a(walker, root, state, dct):
+def _a(wlk, root, state, dct):
     if not ParamAttr in state:
         state[ParamAttr] = 0
     
@@ -182,24 +193,28 @@ def _a(walker, root, state, dct):
     state[ParamAttr] += 1
     return dct
 
+# pylint: disable=E0102,C0103,W0613
 @walker.add_applier(attr.AttrAnd)
-def _a(walker, root, state, dct):
-    for attr in root.attrs:
-        walker.apply(attr, state, dct)
+def _a(wlk, root, state, dct):
+    for attribute in root.attrs:
+        wlk.apply(attribute, state, dct)
 
+# pylint: disable=E0102,C0103,W0613
 @walker.add_creator(attr.AttrOr)
-def _c(walker, root, state):
+def _c(wlk, root, state):
     blocks = []
-    for attr in root.attrs:
-        blocks.extend(walker.create(attr, state))
+    for attribute in root.attrs:
+        blocks.extend(wlk.create(attribute, state))
     return blocks
 
+# pylint: disable=E0102,C0103,W0613
 @walker.add_creator(attr.DummyAttr)
-def _c(walker, root, state):
+def _c(wlk, root, state):
     return {}
 
+# pylint: disable=E0102,C0103,W0613
 @walker.add_applier(attr.DummyAttr)
-def _a(walker, root, state, dct):
+def _a(wlk, root, state, dct):
     pass
 
 
@@ -227,9 +242,6 @@ class ComparisonParamAttrWrapper(object):
 
 
 class StringParamAttrWrapper(ComparisonParamAttrWrapper):
-    def __init__(self, name):
-        self.name = name
-    
     def like(self, other):
         return ParamAttr(self.name, 'like', other)
 
@@ -246,186 +258,186 @@ EVENTS = [
 class HEKClient(object):
     # FIXME: Types!
     fields = {
-        'AR_CompactnessCls': StringParamWrapper,
-        'AR_IntensKurt': StringParamWrapper,
-        'AR_IntensMax': StringParamWrapper,
-        'AR_IntensMean': StringParamWrapper,
-        'AR_IntensMin': StringParamWrapper,
-        'AR_IntensSkew': StringParamWrapper,
-        'AR_IntensTotal': StringParamWrapper,
-        'AR_IntensUnit': StringParamWrapper,
-        'AR_IntensVar': StringParamWrapper,
-        'AR_McIntoshCls': StringParamWrapper,
-        'AR_MtWilsonCls': StringParamWrapper,
-        'AR_NOAANum': StringParamWrapper,
-        'AR_NOAAclass': StringParamWrapper,
-        'AR_NumSpots': StringParamWrapper,
-        'AR_PenumbraCls': StringParamWrapper,
-        'AR_Polarity': StringParamWrapper,
-        'AR_SpotAreaRaw': StringParamWrapper,
-        'AR_SpotAreaRawUncert': StringParamWrapper,
-        'AR_SpotAreaRawUnit': StringParamWrapper,
-        'AR_SpotAreaRepr': StringParamWrapper,
-        'AR_SpotAreaReprUncert': StringParamWrapper,
-        'AR_SpotAreaReprUnit': StringParamWrapper,
-        'AR_ZurichCls': StringParamWrapper,
-        'Area_AtDiskCenter': StringParamWrapper,
-        'Area_AtDiskCenterUncert': StringParamWrapper,
-        'Area_Raw': StringParamWrapper,
-        'Area_Uncert': StringParamWrapper,
-        'Area_Unit': StringParamWrapper,
-        'BoundBox_C1LL': StringParamWrapper,
-        'BoundBox_C1UR': StringParamWrapper,
-        'BoundBox_C2LL': StringParamWrapper,
-        'BoundBox_C2UR': StringParamWrapper,
-        'Bound_CCNsteps': StringParamWrapper,
-        'Bound_CCStartC1': StringParamWrapper,
-        'Bound_CCStartC2': StringParamWrapper,
-        'CC_AxisUnit': StringParamWrapper,
-        'CC_MajorAxis': StringParamWrapper,
-        'CC_MinorAxis': StringParamWrapper,
-        'CC_TiltAngleMajorFromRadial': StringParamWrapper,
-        'CC_TiltAngleUnit': StringParamWrapper,
-        'CD_Area': StringParamWrapper,
-        'CD_AreaUncert': StringParamWrapper,
-        'CD_AreaUnit': StringParamWrapper,
-        'CD_Mass': StringParamWrapper,
-        'CD_MassUncert': StringParamWrapper,
-        'CD_MassUnit': StringParamWrapper,
-        'CD_Volume': StringParamWrapper,
-        'CD_VolumeUncert': StringParamWrapper,
-        'CD_VolumeUnit': StringParamWrapper,
-        'CME_Accel': StringParamWrapper,
-        'CME_AccelUncert': StringParamWrapper,
-        'CME_AccelUnit': StringParamWrapper,
-        'CME_AngularWidth': StringParamWrapper,
-        'CME_AngularWidthUnit': StringParamWrapper,
-        'CME_Mass': StringParamWrapper,
-        'CME_MassUncert': StringParamWrapper,
-        'CME_MassUnit': StringParamWrapper,
-        'CME_RadialLinVel': StringParamWrapper,
-        'CME_RadialLinVelMax': StringParamWrapper,
-        'CME_RadialLinVelMin': StringParamWrapper,
-        'CME_RadialLinVelStddev': StringParamWrapper,
-        'CME_RadialLinVelUncert': StringParamWrapper,
-        'CME_RadialLinVelUnit': StringParamWrapper,
-        'EF_AspectRatio': StringParamWrapper,
-        'EF_AxisLength': StringParamWrapper,
-        'EF_AxisOrientation': StringParamWrapper,
-        'EF_AxisOrientationUnit': StringParamWrapper,
-        'EF_FluxUnit': StringParamWrapper,
-        'EF_LengthUnit': StringParamWrapper,
-        'EF_NegEquivRadius': StringParamWrapper,
-        'EF_NegPeakFluxOnsetRate': StringParamWrapper,
-        'EF_OnsetRateUnit': StringParamWrapper,
-        'EF_PosEquivRadius': StringParamWrapper,
-        'EF_PosPeakFluxOnsetRate': StringParamWrapper,
-        'EF_ProximityRatio': StringParamWrapper,
-        'EF_SumNegSignedFlux': StringParamWrapper,
-        'EF_SumPosSignedFlux': StringParamWrapper,
-        'Event_C1Error': StringParamWrapper,
-        'Event_C2Error': StringParamWrapper,
-        'Event_ClippedSpatial': StringParamWrapper,
-        'Event_ClippedTemporal': StringParamWrapper,
-        'Event_Coord1': StringParamWrapper,
-        'Event_Coord2': StringParamWrapper,
-        'Event_Coord3': StringParamWrapper,
-        'Event_CoordSys': StringParamWrapper,
-        'Event_CoordUnit': StringParamWrapper,
-        'Event_MapURL': StringParamWrapper,
-        'Event_MaskURL': StringParamWrapper,
-        'Event_Npixels': StringParamWrapper,
-        'Event_PixelUnit': StringParamWrapper,
-        'Event_Probability': StringParamWrapper,
-        'Event_TestFlag': StringParamWrapper,
-        'Event_Type': StringParamWrapper,
-        'FI_BarbsL': StringParamWrapper,
-        'FI_BarbsR': StringParamWrapper,
-        'FI_BarbsTot': StringParamWrapper,
-        'FI_Chirality': StringParamWrapper,
-        'FI_Length': StringParamWrapper,
-        'FI_LengthUnit': StringParamWrapper,
-        'FI_Tilt': StringParamWrapper,
-        'FL_EFoldTime': StringParamWrapper,
-        'FL_EFoldTimeUnit': StringParamWrapper,
-        'FL_Fluence': StringParamWrapper,
-        'FL_FluenceUnit': StringParamWrapper,
-        'FL_GOESCls': StringParamWrapper,
-        'FL_PeakEM': StringParamWrapper,
-        'FL_PeakEMUnit': StringParamWrapper,
-        'FL_PeakFlux': StringParamWrapper,
-        'FL_PeakFluxUnit': StringParamWrapper,
-        'FL_PeakTemp': StringParamWrapper,
-        'FL_PeakTempUnit': StringParamWrapper,
-        'FRM_Contact': StringParamWrapper,
-        'FRM_HumanFlag': StringParamWrapper,
-        'FRM_Identifier': StringParamWrapper,
-        'FRM_Institute': StringParamWrapper,
-        'FRM_Name': StringParamWrapper,
-        'FRM_ParamSet': StringParamWrapper,
-        'FRM_SpecificID': StringParamWrapper,
-        'FRM_URL': StringParamWrapper,
-        'FRM_VersionNumber': StringParamWrapper,
-        'FreqMaxRange': StringParamWrapper,
-        'FreqMinRange': StringParamWrapper,
-        'FreqPeakPower': StringParamWrapper,
-        'FreqUnit': StringParamWrapper,
-        'IntensMaxAmpl': StringParamWrapper,
-        'IntensMinAmpl': StringParamWrapper,
-        'IntensUnit': StringParamWrapper,
-        'KB_Archivist': StringParamWrapper,
-        'MaxMagFieldStrength': StringParamWrapper,
-        'MaxMagFieldStrengthUnit': StringParamWrapper,
-        'OBS_ChannelID': StringParamWrapper,
-        'OBS_DataPrepURL': StringParamWrapper,
-        'OBS_FirstProcessingDate': StringParamWrapper,
-        'OBS_IncludesNRT': StringParamWrapper,
-        'OBS_Instrument': StringParamWrapper,
-        'OBS_LastProcessingDate': StringParamWrapper,
-        'OBS_LevelNum': StringParamWrapper,
-        'OBS_MeanWavel': StringParamWrapper,
-        'OBS_Observatory': StringParamWrapper,
-        'OBS_Title': StringParamWrapper,
-        'OBS_WavelUnit': StringParamWrapper,
-        'OscillNPeriods': StringParamWrapper,
-        'OscillNPeriodsUncert': StringParamWrapper,
-        'Outflow_Length': StringParamWrapper,
-        'Outflow_LengthUnit': StringParamWrapper,
-        'Outflow_OpeningAngle': StringParamWrapper,
-        'Outflow_Speed': StringParamWrapper,
-        'Outflow_SpeedUnit': StringParamWrapper,
-        'Outflow_TransSpeed': StringParamWrapper,
-        'Outflow_Width': StringParamWrapper,
-        'Outflow_WidthUnit': StringParamWrapper,
-        'PeakPower': StringParamWrapper,
-        'PeakPowerUnit': StringParamWrapper,
-        'RasterScanType': StringParamWrapper,
-        'SG_AspectRatio': StringParamWrapper,
-        'SG_Chirality': StringParamWrapper,
-        'SG_MeanContrast': StringParamWrapper,
-        'SG_Orientation': StringParamWrapper,
-        'SG_PeakContrast': StringParamWrapper,
-        'SG_Shape': StringParamWrapper,
-        'SS_SpinRate': StringParamWrapper,
-        'SS_SpinRateUnit': StringParamWrapper,
-        'Skel_Curvature': StringParamWrapper,
-        'Skel_Nsteps': StringParamWrapper,
-        'Skel_StartC1': StringParamWrapper,
-        'Skel_StartC2': StringParamWrapper,
-        'TO_Shape': StringParamWrapper,
-        'VelocMaxAmpl': StringParamWrapper,
-        'VelocMaxPower': StringParamWrapper,
-        'VelocMaxPowerUncert': StringParamWrapper,
-        'VelocMinAmpl': StringParamWrapper,
-        'VelocUnit': StringParamWrapper,
-        'WaveDisplMaxAmpl': StringParamWrapper,
-        'WaveDisplMinAmpl': StringParamWrapper,
-        'WaveDisplUnit': StringParamWrapper,
-        'WavelMaxPower': StringParamWrapper,
-        'WavelMaxPowerUncert': StringParamWrapper,
-        'WavelMaxRange': StringParamWrapper,
-        'WavelMinRange': StringParamWrapper,
-        'WavelUnit': StringParamWrapper
+        'AR_CompactnessCls': StringParamAttrWrapper,
+        'AR_IntensKurt': StringParamAttrWrapper,
+        'AR_IntensMax': StringParamAttrWrapper,
+        'AR_IntensMean': StringParamAttrWrapper,
+        'AR_IntensMin': StringParamAttrWrapper,
+        'AR_IntensSkew': StringParamAttrWrapper,
+        'AR_IntensTotal': StringParamAttrWrapper,
+        'AR_IntensUnit': StringParamAttrWrapper,
+        'AR_IntensVar': StringParamAttrWrapper,
+        'AR_McIntoshCls': StringParamAttrWrapper,
+        'AR_MtWilsonCls': StringParamAttrWrapper,
+        'AR_NOAANum': StringParamAttrWrapper,
+        'AR_NOAAclass': StringParamAttrWrapper,
+        'AR_NumSpots': StringParamAttrWrapper,
+        'AR_PenumbraCls': StringParamAttrWrapper,
+        'AR_Polarity': StringParamAttrWrapper,
+        'AR_SpotAreaRaw': StringParamAttrWrapper,
+        'AR_SpotAreaRawUncert': StringParamAttrWrapper,
+        'AR_SpotAreaRawUnit': StringParamAttrWrapper,
+        'AR_SpotAreaRepr': StringParamAttrWrapper,
+        'AR_SpotAreaReprUncert': StringParamAttrWrapper,
+        'AR_SpotAreaReprUnit': StringParamAttrWrapper,
+        'AR_ZurichCls': StringParamAttrWrapper,
+        'Area_AtDiskCenter': StringParamAttrWrapper,
+        'Area_AtDiskCenterUncert': StringParamAttrWrapper,
+        'Area_Raw': StringParamAttrWrapper,
+        'Area_Uncert': StringParamAttrWrapper,
+        'Area_Unit': StringParamAttrWrapper,
+        'BoundBox_C1LL': StringParamAttrWrapper,
+        'BoundBox_C1UR': StringParamAttrWrapper,
+        'BoundBox_C2LL': StringParamAttrWrapper,
+        'BoundBox_C2UR': StringParamAttrWrapper,
+        'Bound_CCNsteps': StringParamAttrWrapper,
+        'Bound_CCStartC1': StringParamAttrWrapper,
+        'Bound_CCStartC2': StringParamAttrWrapper,
+        'CC_AxisUnit': StringParamAttrWrapper,
+        'CC_MajorAxis': StringParamAttrWrapper,
+        'CC_MinorAxis': StringParamAttrWrapper,
+        'CC_TiltAngleMajorFromRadial': StringParamAttrWrapper,
+        'CC_TiltAngleUnit': StringParamAttrWrapper,
+        'CD_Area': StringParamAttrWrapper,
+        'CD_AreaUncert': StringParamAttrWrapper,
+        'CD_AreaUnit': StringParamAttrWrapper,
+        'CD_Mass': StringParamAttrWrapper,
+        'CD_MassUncert': StringParamAttrWrapper,
+        'CD_MassUnit': StringParamAttrWrapper,
+        'CD_Volume': StringParamAttrWrapper,
+        'CD_VolumeUncert': StringParamAttrWrapper,
+        'CD_VolumeUnit': StringParamAttrWrapper,
+        'CME_Accel': StringParamAttrWrapper,
+        'CME_AccelUncert': StringParamAttrWrapper,
+        'CME_AccelUnit': StringParamAttrWrapper,
+        'CME_AngularWidth': StringParamAttrWrapper,
+        'CME_AngularWidthUnit': StringParamAttrWrapper,
+        'CME_Mass': StringParamAttrWrapper,
+        'CME_MassUncert': StringParamAttrWrapper,
+        'CME_MassUnit': StringParamAttrWrapper,
+        'CME_RadialLinVel': StringParamAttrWrapper,
+        'CME_RadialLinVelMax': StringParamAttrWrapper,
+        'CME_RadialLinVelMin': StringParamAttrWrapper,
+        'CME_RadialLinVelStddev': StringParamAttrWrapper,
+        'CME_RadialLinVelUncert': StringParamAttrWrapper,
+        'CME_RadialLinVelUnit': StringParamAttrWrapper,
+        'EF_AspectRatio': StringParamAttrWrapper,
+        'EF_AxisLength': StringParamAttrWrapper,
+        'EF_AxisOrientation': StringParamAttrWrapper,
+        'EF_AxisOrientationUnit': StringParamAttrWrapper,
+        'EF_FluxUnit': StringParamAttrWrapper,
+        'EF_LengthUnit': StringParamAttrWrapper,
+        'EF_NegEquivRadius': StringParamAttrWrapper,
+        'EF_NegPeakFluxOnsetRate': StringParamAttrWrapper,
+        'EF_OnsetRateUnit': StringParamAttrWrapper,
+        'EF_PosEquivRadius': StringParamAttrWrapper,
+        'EF_PosPeakFluxOnsetRate': StringParamAttrWrapper,
+        'EF_ProximityRatio': StringParamAttrWrapper,
+        'EF_SumNegSignedFlux': StringParamAttrWrapper,
+        'EF_SumPosSignedFlux': StringParamAttrWrapper,
+        'Event_C1Error': StringParamAttrWrapper,
+        'Event_C2Error': StringParamAttrWrapper,
+        'Event_ClippedSpatial': StringParamAttrWrapper,
+        'Event_ClippedTemporal': StringParamAttrWrapper,
+        'Event_Coord1': StringParamAttrWrapper,
+        'Event_Coord2': StringParamAttrWrapper,
+        'Event_Coord3': StringParamAttrWrapper,
+        'Event_CoordSys': StringParamAttrWrapper,
+        'Event_CoordUnit': StringParamAttrWrapper,
+        'Event_MapURL': StringParamAttrWrapper,
+        'Event_MaskURL': StringParamAttrWrapper,
+        'Event_Npixels': StringParamAttrWrapper,
+        'Event_PixelUnit': StringParamAttrWrapper,
+        'Event_Probability': StringParamAttrWrapper,
+        'Event_TestFlag': StringParamAttrWrapper,
+        'Event_Type': StringParamAttrWrapper,
+        'FI_BarbsL': StringParamAttrWrapper,
+        'FI_BarbsR': StringParamAttrWrapper,
+        'FI_BarbsTot': StringParamAttrWrapper,
+        'FI_Chirality': StringParamAttrWrapper,
+        'FI_Length': StringParamAttrWrapper,
+        'FI_LengthUnit': StringParamAttrWrapper,
+        'FI_Tilt': StringParamAttrWrapper,
+        'FL_EFoldTime': StringParamAttrWrapper,
+        'FL_EFoldTimeUnit': StringParamAttrWrapper,
+        'FL_Fluence': StringParamAttrWrapper,
+        'FL_FluenceUnit': StringParamAttrWrapper,
+        'FL_GOESCls': StringParamAttrWrapper,
+        'FL_PeakEM': StringParamAttrWrapper,
+        'FL_PeakEMUnit': StringParamAttrWrapper,
+        'FL_PeakFlux': StringParamAttrWrapper,
+        'FL_PeakFluxUnit': StringParamAttrWrapper,
+        'FL_PeakTemp': StringParamAttrWrapper,
+        'FL_PeakTempUnit': StringParamAttrWrapper,
+        'FRM_Contact': StringParamAttrWrapper,
+        'FRM_HumanFlag': StringParamAttrWrapper,
+        'FRM_Identifier': StringParamAttrWrapper,
+        'FRM_Institute': StringParamAttrWrapper,
+        'FRM_Name': StringParamAttrWrapper,
+        'FRM_ParamSet': StringParamAttrWrapper,
+        'FRM_SpecificID': StringParamAttrWrapper,
+        'FRM_URL': StringParamAttrWrapper,
+        'FRM_VersionNumber': StringParamAttrWrapper,
+        'FreqMaxRange': StringParamAttrWrapper,
+        'FreqMinRange': StringParamAttrWrapper,
+        'FreqPeakPower': StringParamAttrWrapper,
+        'FreqUnit': StringParamAttrWrapper,
+        'IntensMaxAmpl': StringParamAttrWrapper,
+        'IntensMinAmpl': StringParamAttrWrapper,
+        'IntensUnit': StringParamAttrWrapper,
+        'KB_Archivist': StringParamAttrWrapper,
+        'MaxMagFieldStrength': StringParamAttrWrapper,
+        'MaxMagFieldStrengthUnit': StringParamAttrWrapper,
+        'OBS_ChannelID': StringParamAttrWrapper,
+        'OBS_DataPrepURL': StringParamAttrWrapper,
+        'OBS_FirstProcessingDate': StringParamAttrWrapper,
+        'OBS_IncludesNRT': StringParamAttrWrapper,
+        'OBS_Instrument': StringParamAttrWrapper,
+        'OBS_LastProcessingDate': StringParamAttrWrapper,
+        'OBS_LevelNum': StringParamAttrWrapper,
+        'OBS_MeanWavel': StringParamAttrWrapper,
+        'OBS_Observatory': StringParamAttrWrapper,
+        'OBS_Title': StringParamAttrWrapper,
+        'OBS_WavelUnit': StringParamAttrWrapper,
+        'OscillNPeriods': StringParamAttrWrapper,
+        'OscillNPeriodsUncert': StringParamAttrWrapper,
+        'Outflow_Length': StringParamAttrWrapper,
+        'Outflow_LengthUnit': StringParamAttrWrapper,
+        'Outflow_OpeningAngle': StringParamAttrWrapper,
+        'Outflow_Speed': StringParamAttrWrapper,
+        'Outflow_SpeedUnit': StringParamAttrWrapper,
+        'Outflow_TransSpeed': StringParamAttrWrapper,
+        'Outflow_Width': StringParamAttrWrapper,
+        'Outflow_WidthUnit': StringParamAttrWrapper,
+        'PeakPower': StringParamAttrWrapper,
+        'PeakPowerUnit': StringParamAttrWrapper,
+        'RasterScanType': StringParamAttrWrapper,
+        'SG_AspectRatio': StringParamAttrWrapper,
+        'SG_Chirality': StringParamAttrWrapper,
+        'SG_MeanContrast': StringParamAttrWrapper,
+        'SG_Orientation': StringParamAttrWrapper,
+        'SG_PeakContrast': StringParamAttrWrapper,
+        'SG_Shape': StringParamAttrWrapper,
+        'SS_SpinRate': StringParamAttrWrapper,
+        'SS_SpinRateUnit': StringParamAttrWrapper,
+        'Skel_Curvature': StringParamAttrWrapper,
+        'Skel_Nsteps': StringParamAttrWrapper,
+        'Skel_StartC1': StringParamAttrWrapper,
+        'Skel_StartC2': StringParamAttrWrapper,
+        'TO_Shape': StringParamAttrWrapper,
+        'VelocMaxAmpl': StringParamAttrWrapper,
+        'VelocMaxPower': StringParamAttrWrapper,
+        'VelocMaxPowerUncert': StringParamAttrWrapper,
+        'VelocMinAmpl': StringParamAttrWrapper,
+        'VelocUnit': StringParamAttrWrapper,
+        'WaveDisplMaxAmpl': StringParamAttrWrapper,
+        'WaveDisplMinAmpl': StringParamAttrWrapper,
+        'WaveDisplUnit': StringParamAttrWrapper,
+        'WavelMaxPower': StringParamAttrWrapper,
+        'WavelMaxPowerUncert': StringParamAttrWrapper,
+        'WavelMaxRange': StringParamAttrWrapper,
+        'WavelMinRange': StringParamAttrWrapper,
+        'WavelUnit': StringParamAttrWrapper
     }
     
     for elem in EVENTS:
@@ -438,14 +450,13 @@ class HEKClient(object):
         'event_type': '**',
     }
     # Default to full disk.
-    walker.apply(SpartialRegion(), [], default)
+    walker.apply(SpartialRegion(), {}, default)
     
     def __init__(self, url=DEFAULT_URL):
         self.url = url
     
     def query(self, *query):
-        if len(query) > 1:
-            query = attr.and_(*query)
+        query = attr.and_(*query)
         
         data = walker.create(query, {})
         ndata = []
