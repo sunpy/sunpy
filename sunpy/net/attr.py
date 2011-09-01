@@ -1,8 +1,9 @@
-from itertools import chain, repeat
-
-from sunpy.util.multimethod import MultiMethod
+# -*- coding: utf-8 -*-
+# Author: Florian Mayer <florian.mayer@bitsrc.org>
 
 # pylint: disable=C0103,R0903
+
+from sunpy.util.multimethod import MultiMethod
 
 class Attr(object):
     def __and__(self, other):
