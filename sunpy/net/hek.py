@@ -124,8 +124,8 @@ class Contains(attr.Attr):
 
 walker = attr.AttrWalker()
 
-# pylint: disable=E0102,C0103,W0613
 @walker.add_applier(Contains)
+# pylint: disable=E0102,C0103,W0613
 def _a(wlk, root, state, dct):
     dct['type'] = 'contains'
     if not Contains in state:
@@ -138,23 +138,23 @@ def _a(wlk, root, state, dct):
     state[Contains] += n
     return dct
 
-# pylint: disable=E0102,C0103,W0613
 @walker.add_creator(
     Time, SpartialRegion, ListAttr, ParamAttr, attr.AttrAnd, Contains)
+# pylint: disable=E0102,C0103,W0613
 def _c(wlk, root, state):
     value = {}
     wlk.apply(root, state, value)
     return [value]
 
-# pylint: disable=E0102,C0103,W0613
 @walker.add_applier(Time)
+# pylint: disable=E0102,C0103,W0613
 def _a(wlk, root, state, dct):
     dct['event_starttime'] = root.start.strftime('%Y-%m-%dT%H:%M:%S')
     dct['event_endtime'] = root.end.strftime('%Y-%m-%dT%H:%M:%S')
     return dct
 
-# pylint: disable=E0102,C0103,W0613
 @walker.add_applier(SpartialRegion)
+# pylint: disable=E0102,C0103,W0613
 def _a(wlk, root, state, dct):
     dct['x1'] = root.x1
     dct['y1'] = root.y1
@@ -163,8 +163,8 @@ def _a(wlk, root, state, dct):
     dct['event_coordsys'] = root.sys
     return dct
 
-# pylint: disable=E0102,C0103,W0613
 @walker.add_applier(ListAttr)
+# pylint: disable=E0102,C0103,W0613
 def _a(wlk, root, state, dct):
     if root.key in dct:
         dct[root.key] += ',%s' % root.item
@@ -172,16 +172,16 @@ def _a(wlk, root, state, dct):
         dct[root.key] = root.item
     return dct
 
-# pylint: disable=E0102,C0103,W0613
 @walker.add_applier(EventType)
+# pylint: disable=E0102,C0103,W0613
 def _a(wlk, root, state, dct):
     if dct.get('type', None) == 'contains':
         raise ValueError
     
     return wlk.super_apply(super(EventType, root), state, dct)
 
-# pylint: disable=E0102,C0103,W0613
 @walker.add_applier(ParamAttr)
+# pylint: disable=E0102,C0103,W0613
 def _a(wlk, root, state, dct):
     if not ParamAttr in state:
         state[ParamAttr] = 0
@@ -193,27 +193,27 @@ def _a(wlk, root, state, dct):
     state[ParamAttr] += 1
     return dct
 
-# pylint: disable=E0102,C0103,W0613
 @walker.add_applier(attr.AttrAnd)
+# pylint: disable=E0102,C0103,W0613
 def _a(wlk, root, state, dct):
     for attribute in root.attrs:
         wlk.apply(attribute, state, dct)
 
-# pylint: disable=E0102,C0103,W0613
 @walker.add_creator(attr.AttrOr)
+# pylint: disable=E0102,C0103,W0613
 def _c(wlk, root, state):
     blocks = []
     for attribute in root.attrs:
         blocks.extend(wlk.create(attribute, state))
     return blocks
 
-# pylint: disable=E0102,C0103,W0613
 @walker.add_creator(attr.DummyAttr)
+# pylint: disable=E0102,C0103,W0613
 def _c(wlk, root, state):
     return {}
 
-# pylint: disable=E0102,C0103,W0613
 @walker.add_applier(attr.DummyAttr)
+# pylint: disable=E0102,C0103,W0613
 def _a(wlk, root, state, dct):
     pass
 
