@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+# Author: Florian Mayer <florian.mayer@bitsrc.org>
+
 from sunpy.net import attr
 
 def test_dummyattr():
