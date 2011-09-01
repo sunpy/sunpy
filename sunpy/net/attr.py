@@ -122,31 +122,9 @@ class AttrOr(Attr):
         return all(elem.collides(other) for elem in self)
 
 
-class KeysAttr(Attr):
+class ValueAttr(Attr):
     def __init__(self, attrs):
-        self.attrs = attrs
-    
-    def __repr__(self):
-        return "<KeysAttr(%r)>" % (self.attrs)
-    
-    def __eq__(self, other):
-        if not isinstance(other, self.__class__):
-            return False
-        return self.attrs == other.attrs
-    
-    def __hash__(self):
-        return hash(frozenset(self.attrs))
-    
-    def collides(self, other):
-        if not isinstance(other, self.__class__):
-            return False
-        return any(k in other.attrs for k in self.attrs)
-
-
-class ValueAttr(KeysAttr):
-    def __init__(self, attrs):
-        KeysAttr.__init__(self, attrs)
-        
+        Attr.__init__(self)
         self.attrs = attrs
     
     def __repr__(self):
@@ -154,8 +132,18 @@ class ValueAttr(KeysAttr):
 
     def __hash__(self):
         return hash(frozenset(self.attrs.iteritems()))
-
     
+    def __eq__(self, other):
+        if not isinstance(other, self.__class__):
+            return False
+        return self.attrs == other.attrs
+    
+    def collides(self, other):
+        if not isinstance(other, self.__class__):
+            return False
+        return any(k in other.attrs for k in self.attrs)
+
+
 class AttrWalker(object):
     def __init__(self):
         self.applymm = MultiMethod(lambda *a, **kw: (a[1], ))
