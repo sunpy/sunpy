@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+# Author: Florian Mayer <florian.mayer@bitsrc.org>
+
 import pytest
 
 from sunpy.util.multimethod import MultiMethod, FAIL, WARN, TypeWarning
