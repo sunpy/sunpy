@@ -2,6 +2,8 @@ from itertools import chain, repeat
 
 from sunpy.util.multimethod import MultiMethod
 
+# pylint: disable=C0103,R0903
+
 class Attr(object):
     def __and__(self, other):
         if isinstance(other, AttrOr):
@@ -45,6 +47,7 @@ class DummyAttr(Attr):
 
 class AttrAnd(Attr):
     def __init__(self, attrs):
+        Attr.__init__(self)
         self.attrs = attrs
     
     def __and__(self, other):
@@ -75,6 +78,7 @@ class AttrAnd(Attr):
 
 class AttrOr(Attr):
     def __init__(self, attrs):
+        Attr.__init__(self)
         self.attrs = attrs
     
     def __or__(self, other):

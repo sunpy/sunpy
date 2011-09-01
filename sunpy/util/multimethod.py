@@ -49,6 +49,7 @@ class MultiMethod(object):
         if overriden and override == FAIL:
             raise TypeError
         elif overriden and override == WARN:
+            # pylint: disable=W0631
             warn(
                 'Definition (%s) overrides prior definition (%s).' %
                 (_fmt_t(types), _fmt_t(signature)),
@@ -69,6 +70,7 @@ class MultiMethod(object):
     def __call__(self, *args, **kwargs):
         objs = self.get(*args, **kwargs)
         
+        # pylint: disable=W0141
         types = tuple(map(type, objs))
         
         # This code is duplicate for performace reasons.
