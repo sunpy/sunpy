@@ -3,7 +3,7 @@
 from datetime import datetime
 
 from sunpy.net.attr import (
-    Attr, ValueAttr, AttrWalker, AttrAnd, AttrOr, DummyAttr, and_, KeysAttr
+    Attr, ValueAttr, AttrWalker, AttrAnd, AttrOr, DummyAttr, and_, ValueAttr
 )
 from sunpy.util.util import to_angstrom
 
@@ -44,14 +44,17 @@ class Wave(Attr, Range):
         return isinstance(other, self.__class__)
 
 
-class Time(KeysAttr, Range):
+class Time(Attr, Range):
     def __init__(self, start, end, near=None):
         self.start = start
         self.end = end
         self.near = near
 
         Range.__init__(self, start, end, self.__class__)
-        KeysAttr.__init__(self, dict(vars(self)))
+        Attr.__init__(self)
+    
+    def collides(self, other):
+        return isinstance(other, self.__class__)
     
     def __xor__(self, other):
         if not isinstance(other, self.__class__):

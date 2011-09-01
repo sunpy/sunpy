@@ -13,12 +13,17 @@ from sunpy.net import attr
 DEFAULT_URL = 'http://www.lmsal.com/hek/her'
 
 
-class ParamAttr(attr.KeysAttr):
+class ParamAttr(attr.Attr):
     def __init__(self, name, op, value):
-        attr.KeysAttr.__init__(self, [(name, op)])
+        attr.Attr.__init__(self)
         self.name = name
         self.op = op
         self.value = value
+    
+    def collides(self, other):
+        if not isinstance(other, self.__class__):
+            return False
+        return self.op == other.op and self.name == other.name
 
 
 class BoolParamAttr(ParamAttr):
