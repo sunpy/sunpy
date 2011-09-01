@@ -12,7 +12,6 @@ import matplotlib.patches as patches
 import matplotlib.colors as colors
 import matplotlib.cm as cm
 from datetime import datetime
-from sunpy.sun import sun
 from sunpy.solwcs import solwcs as wcs
 
 """
@@ -21,12 +20,6 @@ Questions
 1. Which is better? center['x'] & center['y'] or center[0] and center[1], or?
 2. map.wavelength, map.meas or? (use hv/vso/etc conventions?)
 3. Are self.r_sun and radius below different? (rsun or rsun_obs for AIA?)
-4. Should default cmap and normalization settings be chosen for each image?
-
-Requests
---------
-1. Would be nice to be able to easily extract the data as a ndarray from the map.
-2. Need to provide a way to get a sub map.
 """
 
 class BaseMap(np.ndarray):
@@ -106,7 +99,7 @@ class BaseMap(np.ndarray):
         
         return obj
     
-    def __init__(self, data, header=None):
+    def __init__(self, data, header=None): #pylint: disable=W0613
         """BaseMap constructor"""
         if header:
             self.header = header
@@ -120,18 +113,39 @@ class BaseMap(np.ndarray):
                 setattr(self, attr, value)
 
             self.center = {
-                "x": wcs.get_center(header, axis = 'x'),
-                "y": wcs.get_center(header, axis = 'y')
+                "x": wcs.get_center(header, axis='x'),
+                "y": wcs.get_center(header, axis='y')
             }
             self.scale = {
                 "x": header.get('cdelt1'),
                 "y": header.get('cdelt2')
             }
             self.units = {
-                "x": wcs.get_units(header, axis = 'x'), 
-                "y": wcs.get_units(header, axis = 'y')
+                "x": wcs.get_units(header, axis='x'), 
+                "y": wcs.get_units(header, axis='y')
             }
             self.rsun = wcs.solar_limb(header)
+            
+    def __array_finalize__(self, obj):
+        """Finishes instantiation of the new map object"""
+        if obj is None:
+            return
+
+        if hasattr(obj, 'header'):
+            self.header = obj.header
+
+            # preserve object properties
+            properties = self.get_properties(obj.header)
+            for attr, value in list(properties.items()):
+                setattr(self, attr, getattr(obj, attr, value))
+                
+            self.center = obj.center
+            self.scale = obj.scale
+            self.units = obj.units
+        
+    def __array_wrap__(self, out_arr, context=None):
+        """Returns a wrapped instance of a Map object"""
+        return np.ndarray.__array_wrap__(self, out_arr, context)
                 
     def __add__(self, other):
         """Add two maps. Currently does not take into account the alignment  
@@ -140,8 +154,18 @@ class BaseMap(np.ndarray):
         
         return result
     
+    def __getitem__(self, key):
+        """Overiding indexing operation to ensure that header is updated"""
+        if isinstance(key, tuple):
+            x_range = [key[1].start, key[1].stop]
+            y_range = [key[0].start, key[0].stop]
+
+            return self.submap(x_range, y_range, units="pixels")
+        else:
+            return np.ndarray.__getitem__(self, key)
+    
     def __sub__(self, other):
-        """Add two maps. Currently does not take into account the alignment 
+        """Subtract two maps. Currently does not take into account the alignment 
         between the two maps."""
         result = np.ndarray.__sub__(self, other)
 
@@ -171,37 +195,47 @@ class BaseMap(np.ndarray):
         """Return the X range of the image in arcsec."""        
         xmin = self.center['x'] - self.shape[1] / 2 * self.scale['x']
         xmax = self.center['x'] + self.shape[1] / 2 * self.scale['x']
-        return [xmin,xmax]
+        return [xmin, xmax]
         
     def get_yrange(self):
         """Return the Y range of the image in arcsec."""
         ymin = self.center['y'] - self.shape[0] / 2 * self.scale['y']
         ymax = self.center['y'] + self.shape[0] / 2 * self.scale['y']
-        return [ymin,ymax]
+        return [ymin, ymax]
 
-    def submap(self, x_range, y_range):
+    def submap(self, x_range, y_range, units="arcseconds"):
         """Returns a submap of the map with the specified range
         
         Keith [08/19/2011]
          * Slicing in numpy expects [y, x]. Should we break convention here? 
         """
+        height = self.shape[0]
+        width = self.shape[1]
+        
+        # Arcseconds => Pixels
+        #  x_px = (x / cdelt1) + (width / 2)
         #
-        # x_px = (x / cdelt1) + (width / 2)
-        #
-        x_pixels = (np.array(x_range) / self.scale['x']) + (self.shape[1] / 2)
-        y_pixels = (np.array(y_range) / self.scale['y']) + (self.shape[0] / 2)
+        if units is "arcseconds":
+            x_pixels = (np.array(x_range) / self.scale['x']) + (width / 2)
+            y_pixels = (np.array(y_range) / self.scale['y']) + (height / 2)
+
+        elif units is "pixels":
+            x_pixels = x_range
+            y_pixels = y_range
 
         # Make a copy of the header with updated centering information        
         header = copy.deepcopy(self.header)
         header['crpix1'] = header['crpix1'] - x_pixels[0]
         header['crpix2'] = header['crpix2'] - y_pixels[0]
+        header['naxis1'] = x_pixels[1] - x_pixels[0]
+        header['naxis2'] = y_pixels[1] - y_pixels[0]
         
         # Get ndarray representation of submap
-        data = np.asarray(self[y_pixels[0]:y_pixels[1], 
-                               x_pixels[0]:x_pixels[1]])
+        data = np.asarray(self)[y_pixels[0]:y_pixels[1], 
+                                x_pixels[0]:x_pixels[1]]
 
         return self.__class__(data, header)
-        
+   
     def plot(self, draw_limb=True, **matplot_args):
         """Plots the map object using matplotlib
         
@@ -229,9 +263,7 @@ class BaseMap(np.ndarray):
 
         # Determine extent
         extent = self.get_xrange() + self.get_yrange()
-        
-        print extent
-        
+
         # Matplotlib arguments
         params = {
             "cmap": self.cmap,
@@ -242,27 +274,6 @@ class BaseMap(np.ndarray):
         plt.imshow(self, origin='lower', extent=extent, **params)
         plt.colorbar()
         plt.show()
-
-    def __array_finalize__(self, obj):
-        """Finishes instantiation of the new map object"""
-        if obj is None:
-            return
-
-        if hasattr(obj, 'header'):
-            self.header = obj.header
-
-            # preserve object properties
-            properties = self.get_properties(obj.header)
-            for attr, value in list(properties.items()):
-                setattr(self, attr, getattr(obj, attr, value))
-                
-            self.center = obj.center
-            self.scale = obj.scale
-            self.units = obj.units
-        
-    def __array_wrap__(self, out_arr, context=None):
-        """Returns a wrapped instance of a Map object"""
-        return np.ndarray.__array_wrap__(self, out_arr, context)
 
 class UnrecognizedDataSouceError(ValueError):
     """Exception to raise when an unknown datasource is encountered"""
