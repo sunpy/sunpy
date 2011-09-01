@@ -460,6 +460,19 @@ class HEKClient(object):
     def __init__(self, url=DEFAULT_URL):
         self.url = url
     
+    def _download(self, data):
+        page = 1        
+        results = []
+        
+        while True:
+            data['page'] = page
+            result = json.load(urlopen(self.url, urlencode(data)))
+            results.extend(result['result'])
+            
+            if not result['overmax']:
+                return results
+            page += 1
+    
     def query(self, *query):
         query = attr.and_(*query)
         
@@ -470,7 +483,13 @@ class HEKClient(object):
             new.update(elem)
             ndata.append(new)
         
-        return urlopen(self.url, urlencode(ndata[0]))
+        if len(ndata) == 1:
+            return self._download(ndata[0])
+        else:
+            return self.merge(self._download(data) for data in ndata)
+    
+    def merge(self, responses):
+        return responses
     
     def __getitem__(self, name):
         return self.fields[name](name)
@@ -480,7 +499,7 @@ if __name__ == '__main__':
     import json
     import pprint
     c = HEKClient()
-    pprint.pprint(json.load(c.query(
-        Time.dt((2010, 1, 1), (2010, 1, 1, 1)),
-        c['AR'],
-    )))
+    print len(c.query(
+        Time.dt((2010, 1, 1), (2010, 1, 23, 23)),
+        c['AR'], c['FL']
+    ))
