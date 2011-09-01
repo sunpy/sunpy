@@ -450,7 +450,7 @@ class VSOClient(object):
                 self.make_getdatarequest(query_response, methods)
                 ),
             methods, downloader, path,
-            VSOClient.by_fileid(query_response), res
+            fileids, res
         )
         res.poke()
         return res
