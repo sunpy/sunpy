@@ -462,7 +462,10 @@ class VSOClient(object):
         ret = []
         
         for record_item in query_response:
-            item = _Str(map_[record_item.fileid]['path'])
+            try:
+                item = _Str(map_[record_item.fileid]['path'])
+            except KeyError:
+                continue
             # pylint: disable=W0201
             item.meta = record_item
             ret.append(item)
@@ -614,16 +617,29 @@ class InteractiveVSOClient(VSOClient):
         while True:
             for n, elem in enumerate(choices):
                 print "(%d) %s" % (n + 1, elem)
-            choice = raw_input("Method number: ")
             try:
-                return [choices[int(choice) - 1]]
-            except (ValueError, IndexError):
-                continue
+                choice = raw_input("Method number: ")
             except KeyboardInterrupt:
                 raise NoData
+            if not choice:
+                raise NoData
+            try:
+                choice = int(choice) - 1
+            except ValueError:
+                continue
+            if choice == -1:
+                raise NoData
+            elif choice >= 0:
+                try:
+                    return [choices[choice]]
+                except IndexError:
+                    continue
         
     def missing_information(self, info, field):
-        return raw_input(field + ': ')
+        choice = raw_input(field + ': ')
+        if not choice:
+            raise NoData
+        return choice
     
     def search(self, *args, **kwargs):
         """ When passed an Attr object, perform new-style query;
