@@ -1,3 +1,5 @@
+# pylint: disable=C0103,R0903
+
 from datetime import datetime
 
 from sunpy.net.attr import (
@@ -37,6 +39,9 @@ class Wave(Attr, Range):
         
         Attr.__init__(self)
         Range.__init__(self, self.min, self.max, self.__class__)
+    
+    def collides(self, other):
+        return isinstance(other, self.__class__)
 
 
 class Time(KeysAttr, Range):
@@ -66,12 +71,18 @@ class Time(KeysAttr, Range):
 
 
 class Extent(Attr):
+    # pylint: disable=R0913
     def __init__(self, x, y, width, length, type_):
+        Attr.__init__(self)
+        
         self.x = x
         self.y = y
         self.width = width
         self.length = length
         self.type = type_
+    
+    def collides(self, other):
+        return isinstance(other, self.__class__)
 
 
 class Field(ValueAttr):
@@ -83,6 +94,8 @@ class Field(ValueAttr):
 
 class SimpleAttr(Attr):
     def __init__(self, value):
+        Attr.__init__(self)
+        
         self.value = value
     
     def collides(self, other):
@@ -142,14 +155,16 @@ class PScale(SimpleAttr):
 walker = AttrWalker()
 
 @walker.add_creator(ValueAttr, AttrAnd)
-def _create(walker, root, api):
+# pylint: disable=E0102,C0103,W0613
+def _create(wlk, root, api):
     """ Implementation detail. """
     value = api.factory.create('QueryRequestBlock')
-    walker.apply(root, api, value)
+    wlk.apply(root, api, value)
     return [value]
 
 @walker.add_applier(ValueAttr)
-def _apply(walker, root, api, queryblock):
+# pylint: disable=E0102,C0103,W0613
+def _apply(wlk, root, api, queryblock):
     """ Implementation detail. """
     for k, v in root.attrs.iteritems():
         lst = k[-1]
@@ -161,26 +176,30 @@ def _apply(walker, root, api, queryblock):
         block[lst] = v
 
 @walker.add_applier(AttrAnd)
-def _apply(walker, root, api, queryblock):
+# pylint: disable=E0102,C0103,W0613
+def _apply(wlk, root, api, queryblock):
     """ Implementation detail. """
     for attr in root.attrs:
-        walker.apply(attr, api, queryblock)
+        wlk.apply(attr, api, queryblock)
 
 @walker.add_creator(AttrOr)
-def _create(walker, root, api):
+# pylint: disable=E0102,C0103,W0613
+def _create(wlk, root, api):
     """ Implementation detail. """
     blocks = []
     for attr in root.attrs:
-        blocks.extend(walker.create(attr, api))
+        blocks.extend(wlk.create(attr, api))
     return blocks
 
 @walker.add_creator(DummyAttr)
-def _create(walker, root, api):
+# pylint: disable=E0102,C0103,W0613
+def _create(wlk, root, api):
     """ Implementation detail. """
     return api.factory.create('QueryRequestBlock')
 
 @walker.add_applier(DummyAttr)
-def _apply(walker, root, api, queryblock):
+# pylint: disable=E0102,C0103,W0613
+def _apply(wlk, root, api, queryblock):
     """ Implementation detail. """
     pass
 
