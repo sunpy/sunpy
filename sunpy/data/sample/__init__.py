@@ -15,4 +15,4 @@ AIA_171_IMAGE = os.path.join(rootdir, "AIA20110319_105400_0171.fits")
 #
 # hsi_image_20101016_191218.fits
 #
-RHESSI_HSI = os.path.join(rootdir, "hsi_image_20101016_191218.fits")
+RHESSI_IMAGE = os.path.join(rootdir, "hsi_image_20101016_191218.fits")
