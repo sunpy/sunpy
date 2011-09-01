@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 # Author: Florian Mayer <florian.mayer@bitsrc.org>
 
+#pylint: disable=W0401,C0103,R0904,W0141
+
 """
 This module provides a wrapper around the VSO API.
 """
@@ -18,8 +20,8 @@ from collections import defaultdict
 from suds import client, TypeNotFound
 
 from sunpy.net import download
-from sunpy.net.attr import and_
-from sunpy.net.vso.attrs import walker
+from sunpy.net.attr import and_, Attr
+from sunpy.net.vso.attrs import walker, TIMEFORMAT
 from sunpy.util.util import anytim, to_angstrom
 
 DEFAULT_URL = 'http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl'
@@ -266,6 +268,7 @@ class VSOClient(object):
             os.makedirs(os.path.dirname(fname))
         return fname
     
+    # pylint: disable=R0914
     def query_legacy(self, tstart=None, tend=None, **kwargs):
         """
         Query data from the VSO mocking the IDL API as close as possible.
@@ -376,6 +379,7 @@ class VSOClient(object):
                 lst = attr[-1]
                 rest = attr[:-1]
                 
+                # pylint: disable=E1103
                 item = queryreq.block
                 for elem in rest:
                     try:
@@ -397,7 +401,7 @@ class VSOClient(object):
             time_near=datetime.utcnow()
         )
     
-    def get(self, query_response, path=None, methods=['URL-FILE'], downloader=None):
+    def get(self, query_response, path=None, methods=('URL-FILE',), downloader=None):
         """
         Download data specified in the query_response.
         
@@ -433,7 +437,7 @@ class VSOClient(object):
             )
         else:
             res = Results(
-                lambda _: None, 1, lambda mp: self.link(qr, mp)
+                lambda _: None, 1, lambda mp: self.link(query_response, mp)
             )
         if path is None:
             path = os.path.join(tempfile.mkdtemp(), '{file}')
@@ -459,6 +463,7 @@ class VSOClient(object):
         
         for record_item in query_response:
             item = _Str(map_[record_item.fileid]['path'])
+            # pylint: disable=W0201
             item.meta = record_item
             ret.append(item)
         return ret
@@ -487,6 +492,7 @@ class VSOClient(object):
             ]
         )
     
+    # pylint: disable=R0913,R0912
     def download_all(self, response, methods, dw, path, qr, res, info=None):
         GET_VERSION = [
             ('0.8', (5, 8)),
@@ -501,6 +507,9 @@ class VSOClient(object):
                 res.add_error(UnknownVersion(dresponse))
                 continue
             
+            # If from_ and to are uninitialized, the else block of the loop
+            # continues the outer loop and thus this code is never reached.
+            # pylint: disable=W0631
             code = (
                 dresponse.status[from_:to]
                 if hasattr(dresponse, 'status') else '200'
@@ -580,6 +589,7 @@ class VSOClient(object):
             (record.fileid, record) for record in response
         )
     
+    # pylint: disable=W0613
     def multiple_choices(self, choices, response):
         """ Override to pick between multiple download choices. """
         for elem in self.method_order:
@@ -587,10 +597,12 @@ class VSOClient(object):
                 return [elem]
         raise NoData
     
+    # pylint: disable=W0613
     def missing_information(self, info, field):
         """ Override to provide missing information. """
         raise NoData
     
+    # pylint: disable=W0613
     def unknown_method(self, response):
         """ Override to pick a new method if the current one is unknown. """
         raise NoData
@@ -605,7 +617,7 @@ class InteractiveVSOClient(VSOClient):
             choice = raw_input("Method number: ")
             try:
                 return [choices[int(choice) - 1]]
-            except ValueError, IndexError:
+            except (ValueError, IndexError):
                 continue
             except KeyboardInterrupt:
                 raise NoData
@@ -625,6 +637,7 @@ class InteractiveVSOClient(VSOClient):
 
 g_client = None
 def search(*args, **kwargs):
+    # pylint: disable=W0603
     global g_client
     if g_client is None:
         g_client = InteractiveVSOClient()
@@ -632,23 +645,11 @@ def search(*args, **kwargs):
 
 search.__doc__ = InteractiveVSOClient.search.__doc__
 
-def get(query_response, path=None, methods=['URL-FILE'], downloader=None):
+def get(query_response, path=None, methods=('URL-FILE',), downloader=None):
+    # pylint: disable=W0603
     global g_client
     if g_client is None:
         g_client = InteractiveVSOClient()
     return g_client.get(query_response, path, methods, downloader)
 
 get.__doc__ = VSOClient.get.__doc__
-
-# Add latest?
-if __name__ == '__main__':
-    import sunpy
-    qr = search(
-        datetime(2010, 1, 1), datetime(2010, 1, 1, 1),
-        instrument='eit'
-    )
-    
-    res = get(qr).wait()
-    
-    print res[0]
-    sunpy.Map(res[0]).plot()
