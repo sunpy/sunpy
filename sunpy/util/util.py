@@ -24,8 +24,10 @@ def anytim(time_string=None):
     """
     if time_string is None:
         return datetime.now()
-    if type(time_string) is type(datetime.now()):
+    if isinstance(time_string, datetime):
         return time_string
+    if isinstance(time_string, tuple):
+        return datetime(*time_string)
     else:
         time_format_list = \
             ["%Y-%m-%dT%H:%M:%S.%f",    # Example 2007-05-04T21:08:12.1000000
