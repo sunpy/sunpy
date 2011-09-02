@@ -1,15 +1,12 @@
 """RHESSI Map subclass definitions"""
-#pylint: disable=W0221
+#pylint: disable=W0221,W0222
 
 __author__ = "Steven Christe"
 __email__ = "steven.d.christe@nasa.gov"
 
 from sunpy.map.basemap import BaseMap
-from datetime import datetime
 from sunpy.cm import cm
 from sunpy.util import util as util
-from sunpy.solwcs import solwcs as wcs
-import matplotlib as mpl
 
 class RHESSIMap(BaseMap):
     """RHESSI Image Map definition
@@ -18,7 +15,7 @@ class RHESSIMap(BaseMap):
     ---------
     For a description of RHESSI image fits headers
     ???
-    
+
     TODO
     ----
     Currently (8/29/2011), cannot read fits files containing more than one image (schriste)

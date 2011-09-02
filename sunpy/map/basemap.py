@@ -17,9 +17,8 @@ from sunpy.solwcs import solwcs as wcs
 """
 Questions
 ---------
-1. Which is better? center['x'] & center['y'] or center[0] and center[1], or?
-2. map.wavelength, map.meas or? (use hv/vso/etc conventions?)
-3. Are self.r_sun and radius below different? (rsun or rsun_obs for AIA?)
+1. map.wavelength, map.meas or? (use hv/vso/etc conventions?)
+2. Are self.r_sun and radius below different? (rsun or rsun_obs for AIA?)
 """
 
 class BaseMap(np.ndarray):
@@ -49,7 +48,7 @@ class BaseMap(np.ndarray):
         Measurement name. For AIA this is the wavelength of image
     obs : str
         Observatory name
-    r_sun : float
+    rsun : float
         Radius of the sun
     name : str
         Nickname for the image type (e.g. "AIA 171")

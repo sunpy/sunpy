@@ -85,8 +85,13 @@ the commands: ::
  git fetch upstream
  git merge upstream/master
 
-Right now our local copy of your personal repo is just a copy of the main repo.
-This is the same command you will use in the future to keep yourself syncronized with the
+You can also do this in one line with: ::
+
+ git pull upstream/master
+
+This will merge the upstream code automatically. After running either of these commands, 
+your local copy of your personal repo is just a copy of the main repo.
+This is the same procedure that you will use in the future to keep yourself syncronized with the
 main repo. To make sure everything is setup correctly, let's make some changes
 to our personal local repo and push those to our personal repo on GitHub. Go ahead and modify one
 of the files, or create a new file (and then run :command:`git add`). 
@@ -110,7 +115,7 @@ repo?
 That is the topic of the next section.
 
 Branches
-^^^^^^^^^^^^^
+^^^^^^^^
 
 Developers should create topic branches within their repos for most of their 
 main coding. Every repo starts with a single branch called `master`, which 

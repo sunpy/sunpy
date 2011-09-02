@@ -11,14 +11,14 @@
 # This module is not yet finished. The code in the comments below 
 # are what remains to be implemented.
 #
-# TODO:
+# TODO
 # 1] Implement File IO test (Test 24)
 # 2] Implement smooth test
 # 7] Check implementation of fft test
 # 8] Check implementation of smooth test
 # 9] Need to optimize shifting code for float arrays. Roll is very inefficient!
 #
-#pylint: disable=C0103,R0912,R0915
+#pylint: disable=C0103,R0912,R0915,W0404
 '''Equivalent of time_test3.pro, a performance test, in IDL
 
     The tests are 
