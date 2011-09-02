@@ -6,12 +6,13 @@
 # Author: Keith Hughitt <keith.hughitt@nasa.gov>
 # Author: Steven Christe <steven.d.christe@nasa.gov>
 #
+#pylint: disable=F0401,W0612
 import sys
 import math
 import numpy as np
 import benchmark
 import pycuda.autoinit
-import pycuda.driver as cuda
+#import pycuda.driver as cuda
 import pycuda.gpuarray as gpuarray
 import pycuda.curandom as curandom
 import scikits.cuda.linalg
@@ -22,7 +23,7 @@ Notes:
    scikits.cuda.linalg.transpose doesn't currently support int32, may need to 
    find another way to do this
 """
-def main(argv):
+def main():
     """Main application"""
     timer = benchmark.BenchmarkTimer()
     
@@ -35,7 +36,7 @@ def main(argv):
 
 def run_tests(timer, scale_factor):
     """PyCUDA port of time_test3.pro"""
-    nofileio = True
+    #nofileio = True
     
     # Initialize linear algebra extensions to PyCUDA
     scikits.cuda.linalg.init()
@@ -72,4 +73,4 @@ def run_tests(timer, scale_factor):
     timer.log('%d point forward plus inverse FFT' % n)
     
 if __name__ == '__main__':
-    sys.exit(main(sys.argv))
+    sys.exit(main())

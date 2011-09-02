@@ -23,7 +23,7 @@ CLASSIFIERS = [
     'Operating System :: MacOS'
 ]
 
-def install(setup):
+def install(setup): #pylint: disable=W0621
     setup(
         author="Steven Christe, Keith Hughitt, Jack Ireland and Alex Young",
         author_email="keith.hughitt@nasa.gov",
@@ -38,7 +38,7 @@ def install(setup):
         packages=['sunpy', 'sunpy.cm', 'sunpy.map',
                   'sunpy.map.sources', 'sunpy.sun', 'sunpy.util',
                   'sunpy.tests', 'sunpy.tests.map',
-                  'sunpy.data', 'sunpy.data.sample',],
+                  'sunpy.data', 'sunpy.data.sample', 'sunpy.solwcs'],
         platforms=["Windows", "Linux", "Solaris", "Mac OS-X", "Unix"],
         url="http://www.sunpy.org/",
         version="0.01",
