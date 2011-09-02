@@ -92,7 +92,7 @@ As before, if you get the error ``The system cannot find the path specified``, t
 Alternate method
 ^^^^^^^^^^^^^^^^
 
-Please use this method only if you are experienced with computers and cannot use the recommended method.  Possible reasons include having very little disk space or wanting to have the most up-to-date versions of modules.
+Please use this method only if you are experienced with computers and cannot use the recommended method.  Possible reasons include having very little disk space or needing to have the most up-to-date versions of modules.
 
 **1a. Install Python**
 
@@ -124,7 +124,7 @@ You have now performed the required elements of step 1 of the recommended method
 Test your installation
 ^^^^^^^^^^^^^^^^^^^^^^
 
-Now you can test your installation. Open a new Python shell by typing :command`python` in ``Command Prompt``, and type these commands: ::
+Now you can test your installation. Open a new Python shell by typing :command:`python` in ``Command Prompt``, and type these commands: ::
 
 >>> import sunpy
 >>> sunpy.Map(sunpy.AIA_171_IMAGE).plot()
