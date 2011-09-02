@@ -1,14 +1,12 @@
 """SDO Map subclass definitions"""
-#pylint: disable=W0221
+#pylint: disable=W0221,W0222
 
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
 from sunpy.map.basemap import BaseMap
-from datetime import datetime
 from sunpy.cm import cm
 from sunpy.util import util as util
-from sunpy.solwcs import solwcs as wcs
 
 class AIAMap(BaseMap):
     """AIA Image Map definition
