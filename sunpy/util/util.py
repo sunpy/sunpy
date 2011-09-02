@@ -39,7 +39,7 @@ def anytim(time_string=None):
         for time_format in time_format_list: 
             try: 
                 return datetime.strptime(time_string, time_format)
-            except:
+            except ValueError:
                 pass
     
         raise ValueError("Not a valid time string!")
