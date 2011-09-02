@@ -12,6 +12,7 @@ class TestBaseMap:
         self.file = sunpy.AIA_171_IMAGE
         self.map = sunpy.Map(self.file)
         self.fits = pyfits.open(self.file)
+        self.fits.verify('silentfix')
 
     def teardown_class(self):
         self.map = None
@@ -51,15 +52,5 @@ class TestBaseMap:
         # Access fits data once to apply scaling-related changes and update
         # header information in fits[0].header
         self.fits[0].data #pylint: disable=W0104
-
-        # 2011/08/15: 
-        # What we really want to do here is cast self.map.header
-        # and self.fits[0].header to dicts and compare the results, however,
-        # pyfits complains about certain keys when attemping this, e.g.:
-        # 
-        # ValueError: Unparsable card (X0_LF), fix it first with .verify('fix').
-        #
-        # After calling fits.verifty('fix'), the casting works, but since this
-        # isn't done in BaseMap, the test cannot be performed.
         
-        #assert dict(self.map.header) == dict(self.fits[0].header)
+        assert dict(self.map.header) == dict(self.fits[0].header)
