@@ -137,3 +137,17 @@ def to_angstrom(value, unit):
         return k * (1 / (8065.53 * value))
     else:
         raise ValueError('Unable to convert %s to Angstrom' % type_)
+
+def unique(itr, key=None):
+    items = set()
+    if key is None:
+        for elem in itr:
+            if elem not in items:
+                yield elem
+                items.add(elem)
+    else:
+        for elem in itr:
+            k = key(elem)
+            if k not in items:
+                yield elem
+                items.add(k)

@@ -3,12 +3,14 @@
 
 # pylint: disable=C0103,R0903
 
+from itertools import chain
 from urllib2 import urlopen
 from urllib import urlencode
 from datetime import datetime
 from functools import partial
 
 from sunpy.net import attr
+from sunpy.util.util import unique
 
 DEFAULT_URL = 'http://www.lmsal.com/hek/her'
 
@@ -259,7 +261,15 @@ EVENTS = [
     'EF', 'CJ', 'PG', 'OT', 'NR', 'SG', 'SP', 'CR', 'CC', 'ER', 'TO'
 ]
 
-    
+def _freeze(obj):
+    """ Create hashable representation of result dict. """
+    if isinstance(obj, dict):
+        return tuple((k, _freeze(v)) for k, v in obj.iteritems())
+    if isinstance(obj, list):
+        return tuple(_freeze(elem) for elem in obj)
+    return obj
+
+
 class HEKClient(object):
     # FIXME: Types!
     fields = {
@@ -489,7 +499,7 @@ class HEKClient(object):
             return self.merge(self._download(data) for data in ndata)
     
     def merge(self, responses):
-        return responses
+        return list(unique(chain.from_iterable(responses), _freeze))
     
     def __getitem__(self, name):
         return self.fields[name](name)
@@ -500,6 +510,6 @@ if __name__ == '__main__':
     import pprint
     c = HEKClient()
     print len(c.query(
-        Time.dt((2010, 1, 1), (2010, 1, 23, 23)),
+        Time.dt((2010, 1, 1), (2010, 1, 2)) | Time.dt((2010, 1, 1, 1), (2010, 1, 2)) | Time.dt((2010, 1, 3), (2010, 1, 4)),
         c['AR'], c['FL']
     ))
