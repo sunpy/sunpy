@@ -20,7 +20,7 @@ map
     Methods relating to the solar maps
 
 """
-#pylint: disable=W0401
+#pylint: disable=W0401,W0622
 
 __version__ = 0.01
 

@@ -24,25 +24,31 @@ def anytim(time_string=None):
     """
     if time_string is None:
         return datetime.now()
-    if type(time_string) is type(datetime.now()):
+    if isinstance(time_string, datetime):
         return time_string
+    if isinstance(time_string, tuple):
+        return datetime(*time_string)
     else:
         time_format_list = \
-            ["%Y-%m-%dT%H:%M:%S.%f",    # Example 2007-05-04T21:08:12.1000000
+            ["%Y-%m-%dT%H:%M:%S.%f",    # Example 2007-05-04T21:08:12.999999
+             "%Y%m%dT%H%M%S.%f",        # Example 20070504T210812.999999
              "%Y/%m/%d %H:%M:%S",       # Example 2007/05/04 21:08:12
-             "%Y-%m-%d %H:%M:%S.%f",    # Example 2007/05/04 21:08:12.1000000
+             "%Y/%m/%d %H:%M:%S.%f",    # Example 2007/05/04 21:08:12.999999
+             "%Y-%m-%d %H:%M:%S.%f",    # Example 2007-05-04 21:08:12.999999
              "%Y-%m-%d %H:%M:%S",       # Example 2007-05-04 21:08:12
+             "%Y-%m-%dT%H:%M:%S",       # Example 2007-05-04T21:08:12
+             "%Y%m%dT%H%M%S",           # Example 20070504T210812
              "%Y-%b-%d %H:%M:%S",       # Example 2007-May-04 21:08:12
              "%Y-%b-%d",                # Example 2007-May-04
-             "%Y-%m-%d",                # Example 2007-05-03
+             "%Y-%m-%d",                # Example 2007-05-04
              "%Y/%m/%d"]                # Example 2007/05/04
         for time_format in time_format_list: 
             try: 
                 return datetime.strptime(time_string, time_format)
-            except:
+            except ValueError:
                 pass
     
-        raise ValueError("Not a valid time string!")
+        raise ValueError("%s is not a valid time string!" % time_string)
 
 def julian_day(t=None):
     """Returns the (fractional) Julian day."""
