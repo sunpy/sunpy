@@ -263,7 +263,7 @@ class BaseMap(np.ndarray):
 
         return self.__class__(data, header)
    
-    def plot(self, draw_limb=True, **matplot_args):
+    def plot(self, draw_limb=False, **matplot_args):
         """Plots the map object using matplotlib
         
         Parameters
@@ -271,7 +271,7 @@ class BaseMap(np.ndarray):
         draw_limb : bool
             Whether a circle should be drawn around the solar limb.
         **matplot_args : dict
-            Matplotlib Any additional im_show arguments that should be used
+            Matplotlib Any additional imshow arguments that should be used
             when plotting the image.
         """
         # Create a figure and add title and axes
