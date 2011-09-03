@@ -5,7 +5,6 @@ BaseMap is a generic Map class from which all other Map classes inherit from.
 __authors__ = ["Keith Hughitt, Steven Christe"]
 __email__ = "keith.hughitt@nasa.gov"
 
-import copy
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
@@ -252,7 +251,7 @@ class BaseMap(np.ndarray):
             y_pixels = range_a
 
         # Make a copy of the header with updated centering information        
-        header = copy.deepcopy(self.header)
+        header = self.header.copy()
         header['crpix1'] = header['crpix1'] - x_pixels[0]
         header['crpix2'] = header['crpix2'] - y_pixels[0]
         header['naxis1'] = x_pixels[1] - x_pixels[0]
