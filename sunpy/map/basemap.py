@@ -155,7 +155,7 @@ class BaseMap(np.ndarray):
     
     def __getitem__(self, key):
         """Overiding indexing operation to ensure that header is updated"""
-        if isinstance(key, tuple):
+        if isinstance(key, tuple) and type(key[0]) is slice:
             x_range = [key[1].start, key[1].stop]
             y_range = [key[0].start, key[0].stop]
 
