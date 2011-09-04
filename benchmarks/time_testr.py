@@ -13,7 +13,7 @@
 # TODO
 # 1] In Test 3, sort works in place so the second sort does not need to do
 #    any work. Need to give it more arrays to sort.
-
+#pylint: disable=W0404
 '''Richard Schwartz's time test (equivalent of time_testr.pro)
 
     The tests are 
@@ -34,7 +34,7 @@ import benchmark
 import os
 import sys
 
-def main(argv):
+def main():
     """Main application"""
     timer = benchmark.BenchmarkTimer()
    
@@ -47,7 +47,7 @@ def main(argv):
 
 def run_tests(timer, scale_factor):
     '''Go through each test and print out the results'''
-    nofileio = True
+    #nofileio = True
 
     siz = 500
     a = np.arange(siz**2, dtype=np.float32).reshape(siz, siz)
@@ -59,7 +59,7 @@ def run_tests(timer, scale_factor):
     #Test 1 - Matrix Multiplication Large Arrays (500,500) 10*scale_factor times
     nrep = 10 * scale_factor
     for i in range(nrep):
-        c = np.dot(a, b)
+        c = np.dot(a, b) #pylint: disable=W0612
     timer.log("Matrix Multiplication Large Arrays (500,500) %d times" % nrep)
 
     #Test 2 - Matrix Multiplication Small Array (50,50) 10000*scale_factor times
@@ -146,5 +146,4 @@ def run_tests(timer, scale_factor):
     timer.print_summary()
     
 if __name__ == '__main__':
-    sys.exit(main(sys.argv))
-
+    sys.exit(main())

@@ -5,7 +5,6 @@ BaseMap is a generic Map class from which all other Map classes inherit from.
 __authors__ = ["Keith Hughitt, Steven Christe"]
 __email__ = "keith.hughitt@nasa.gov"
 
-import copy
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
@@ -17,9 +16,8 @@ from sunpy.solwcs import solwcs as wcs
 """
 Questions
 ---------
-1. Which is better? center['x'] & center['y'] or center[0] and center[1], or?
-2. map.wavelength, map.meas or? (use hv/vso/etc conventions?)
-3. Are self.r_sun and radius below different? (rsun or rsun_obs for AIA?)
+1. map.wavelength, map.meas or? (use hv/vso/etc conventions?)
+2. Are self.r_sun and radius below different? (rsun or rsun_obs for AIA?)
 """
 
 class BaseMap(np.ndarray):
@@ -49,7 +47,7 @@ class BaseMap(np.ndarray):
         Measurement name. For AIA this is the wavelength of image
     obs : str
         Observatory name
-    r_sun : float
+    rsun : float
         Radius of the sun
     name : str
         Nickname for the image type (e.g. "AIA 171")
@@ -64,7 +62,7 @@ class BaseMap(np.ndarray):
     --------
     >>> aia = sunpy.Map(sunpy.AIA_171_IMAGE)
     >>> aia.T
-    Map([[ 0.3125,  1.    , -1.1875, ..., -0.625 ,  0.5625,  0.5   ],
+    AIAMap([[ 0.3125,  1.    , -1.1875, ..., -0.625 ,  0.5625,  0.5   ],
     [-0.0625,  0.1875,  0.375 , ...,  0.0625,  0.0625, -0.125 ],
     [-0.125 , -0.8125, -0.5   , ..., -0.3125,  0.5625,  0.4375],
     ..., 
@@ -156,11 +154,11 @@ class BaseMap(np.ndarray):
     
     def __getitem__(self, key):
         """Overiding indexing operation to ensure that header is updated"""
-        if isinstance(key, tuple):
+        if isinstance(key, tuple) and type(key[0]) is slice:
             x_range = [key[1].start, key[1].stop]
             y_range = [key[0].start, key[0].stop]
 
-            return self.submap(x_range, y_range, units="pixels")
+            return self.submap(y_range, x_range, units="pixels")
         else:
             return np.ndarray.__getitem__(self, key)
     
@@ -203,28 +201,57 @@ class BaseMap(np.ndarray):
         ymax = self.center['y'] + self.shape[0] / 2 * self.scale['y']
         return [ymin, ymax]
 
-    def submap(self, x_range, y_range, units="arcseconds"):
+    def submap(self, range_a, range_b, units="arcseconds"):
         """Returns a submap of the map with the specified range
         
-        Keith [08/19/2011]
-         * Slicing in numpy expects [y, x]. Should we break convention here? 
-        """
-        height = self.shape[0]
-        width = self.shape[1]
+        Parameters
+        ----------
+        range_a : list
+            The range of data to select across either the x axis (if
+            units='arcseconds') or the y axis (if units='pixels').
+        range_b : list
+            The range of data to select across either the y axis (if
+            units='arcseconds') or the x axis (if units='pixels').
+        units : {'arcseconds' | 'pixels'}, optional
+            The units for which the submap region has been specified.
+            
+        Returns
+        -------
+        out : BaseMap
+            A new map instance is returned representing to specified sub-region.
         
+        Examples
+        --------
+        >>> aia.submap([-5,5],[-5,5])
+        AIAMap([[ 341.3125,  266.5   ,  329.375 ,  330.5625,  298.875 ],
+        [ 347.1875,  273.4375,  247.4375,  303.5   ,  305.3125],
+        [ 322.8125,  302.3125,  298.125 ,  299.    ,  261.5   ],
+        [ 334.875 ,  289.75  ,  269.25  ,  256.375 ,  242.3125],
+        [ 273.125 ,  241.75  ,  248.8125,  263.0625,  249.0625]])
+        
+        >>> aia.submap([0,5],[0,5], units='pixels')
+        AIAMap([[ 0.3125, -0.0625, -0.125 ,  0.    , -0.375 ],
+        [ 1.    ,  0.1875, -0.8125,  0.125 ,  0.3125],
+        [-1.1875,  0.375 , -0.5   ,  0.25  , -0.4375],
+        [-0.6875, -0.3125,  0.8125,  0.0625,  0.1875],
+        [-0.875 ,  0.25  ,  0.1875,  0.    , -0.6875]])
+        """
         # Arcseconds => Pixels
         #  x_px = (x / cdelt1) + (width / 2)
         #
         if units is "arcseconds":
-            x_pixels = (np.array(x_range) / self.scale['x']) + (width / 2)
-            y_pixels = (np.array(y_range) / self.scale['y']) + (height / 2)
+            height = self.shape[0]
+            width = self.shape[1]
+
+            x_pixels = (np.array(range_a) / self.scale['x']) + (width / 2)
+            y_pixels = (np.array(range_b) / self.scale['y']) + (height / 2)
 
         elif units is "pixels":
-            x_pixels = x_range
-            y_pixels = y_range
+            x_pixels = range_b
+            y_pixels = range_a
 
         # Make a copy of the header with updated centering information        
-        header = copy.deepcopy(self.header)
+        header = self.header.copy()
         header['crpix1'] = header['crpix1'] - x_pixels[0]
         header['crpix2'] = header['crpix2'] - y_pixels[0]
         header['naxis1'] = x_pixels[1] - x_pixels[0]
@@ -236,7 +263,7 @@ class BaseMap(np.ndarray):
 
         return self.__class__(data, header)
    
-    def plot(self, draw_limb=True, **matplot_args):
+    def plot(self, draw_limb=False, **matplot_args):
         """Plots the map object using matplotlib
         
         Parameters
@@ -244,7 +271,7 @@ class BaseMap(np.ndarray):
         draw_limb : bool
             Whether a circle should be drawn around the solar limb.
         **matplot_args : dict
-            Matplotlib Any additional im_show arguments that should be used
+            Matplotlib Any additional imshow arguments that should be used
             when plotting the image.
         """
         # Create a figure and add title and axes

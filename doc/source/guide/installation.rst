@@ -38,7 +38,7 @@ Installation instructions for Mac.
 
 Windows
 -------
-There are many ways to get SunPy up and running on Windows, and we describe the recommended method and an alternate method below.  Lines in text boxes should be typed into ``Command Prompt``, which can be started from the Start menu or in Start->Run by typing ``cmd``.
+There are many ways to get SunPy up and running on Windows, and we describe the recommended method and an alternate method below.  Lines in text boxes should be typed into ``Command Prompt``, which can be started from the Start menu or in Start->Run by typing :command:`cmd`.
 
 Recommended method
 ^^^^^^^^^^^^^^^^^^
@@ -59,7 +59,7 @@ Install Paver, which is used to link symbolically to the SunPy code. ::
 
 **3. Install Git**
 
-Download and install `Git <https://code.google.com/p/msysgit/downloads/list?can=3>`_ (the first file listed).  Git is used to retrieve the SunPy code.
+Download and install `Git <https://code.google.com/p/msysgit/downloads/list?can=3>`_ (choose the first file listed).  Git is used to retrieve the SunPy code.
 
 **4. Download and install SunPy**
 
@@ -92,11 +92,11 @@ As before, if you get the error ``The system cannot find the path specified``, t
 Alternate method
 ^^^^^^^^^^^^^^^^
 
-Please use this method only if you are experienced with computers and cannot use the recommended method (e.g., you require the most up-to-date versions of modules or you have very little free disk space).
+Please use this method only if you are experienced with computers and cannot use the recommended method.  Possible reasons include having very little disk space or needing to have the most up-to-date versions of modules.
 
 **1a. Install Python**
 
-Download and install the latest version of Python 2.7 from the `official page <http://www.python.org/getit/>`_.
+Download and install `Python 2.7 <http://www.python.org/ftp/python/2.7.2/python-2.7.2.msi>`_ (32-bit).  Note that even if you are on a 64-bit system, you are installing a 32-bit version of Python to be able to use precompiled binaries.
 
 You should update the ``PATH`` environment variable so that Python executables and associated scripts can be found:
 
@@ -113,7 +113,7 @@ Download and install `SciPy <http://sourceforge.net/projects/scipy/files/scipy/0
 Download and install `matplotlib <http://sourceforge.net/projects/matplotlib/files/matplotlib/matplotlib-1.0.1/matplotlib-1.0.1.win32-py2.7.exe/download>`_.
 
 Download and install `setuptools 
-<http://pypi.python.org/packages/2.7/s/setuptools/setuptools-0.6c11.win32-py2.7.exe>`_.  If you installed the 64-bit version of Python, please follow the instructions `here <http://pypi.python.org/pypi/setuptools>`_.
+<http://pypi.python.org/packages/2.7/s/setuptools/setuptools-0.6c11.win32-py2.7.exe>`_.
 
 
 **2-4. The remaining steps**
@@ -124,7 +124,7 @@ You have now performed the required elements of step 1 of the recommended method
 Test your installation
 ^^^^^^^^^^^^^^^^^^^^^^
 
-To test it all out, open a new Python shell and try typing: ::
+Now you can test your installation. Open a new Python shell by typing :command:`python` in ``Command Prompt``, and type these commands: ::
 
 >>> import sunpy
 >>> sunpy.Map(sunpy.AIA_171_IMAGE).plot()

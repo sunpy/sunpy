@@ -23,7 +23,7 @@ CLASSIFIERS = [
     'Operating System :: MacOS'
 ]
 
-def install(setup):
+def install(setup): #pylint: disable=W0621
     setup(
         author="Steven Christe, Keith Hughitt, Jack Ireland and Alex Young",
         author_email="keith.hughitt@nasa.gov",
