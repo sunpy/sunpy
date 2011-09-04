@@ -33,7 +33,7 @@ class Range(object):
         return self.min <= other.min and self.max >= other.max
 
 
-class Wave(Attr, Range): 
+class Wave(Attr, Range):
     def __init__(self, wavemin, wavemax, waveunit='Angstrom'):        
         self.min, self.max = sorted(
             to_angstrom(v, waveunit) for v in [wavemin, wavemax]
