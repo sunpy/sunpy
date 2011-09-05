@@ -303,7 +303,7 @@ class BaseMap(np.ndarray):
             
         plt.imshow(self, origin='lower', extent=extent, **params)
         plt.colorbar()
-        return plt
+        return fig
     
     def show(self, draw_limb=False, **matplot_args):
         self.plot(draw_limb, **matplot_args).show()
