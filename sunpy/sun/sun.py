@@ -3,6 +3,9 @@
 # Author: Steven Christe <steven.d.christe@nasa.gov>
 #
 # <License info will go here...>
+
+from __future__ import absolute_import
+
 """Provides Sun-related parameters
 
     The following code is heavily based on IDL function get_sun.pro

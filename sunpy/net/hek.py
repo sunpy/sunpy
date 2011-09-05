@@ -3,6 +3,8 @@
 
 # pylint: disable=C0103,R0903
 
+from __future__ import absolute_import
+
 import json
 
 from itertools import chain
