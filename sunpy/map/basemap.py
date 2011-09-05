@@ -1,6 +1,9 @@
+from __future__ import absolute_import
+
 """
 BaseMap is a generic Map class from which all other Map classes inherit from.
 """
+
 #pylint: disable=E1101,E1121
 __authors__ = ["Keith Hughitt, Steven Christe"]
 __email__ = "keith.hughitt@nasa.gov"
