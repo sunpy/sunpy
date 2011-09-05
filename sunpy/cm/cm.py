@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+
 """
 This module provides a set of colormaps specific to solar data (e.g. SDO/AIA color maps), 
 functions for getting a colormap by name.

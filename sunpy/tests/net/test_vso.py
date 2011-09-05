@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 # Author: Florian Mayer <florian.mayer@bitsrc.org>
 
+from __future__ import absolute_import
+
 import pytest
 
 from sunpy.net import vso
