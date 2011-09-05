@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+
 """A Python MapCube Object"""
 #pylint: disable=W0401,W0614,W0201,W0212,W0404
 
