@@ -3,6 +3,8 @@
 
 # pylint: disable=C0103,R0903
 
+import json
+
 from itertools import chain
 from urllib2 import urlopen
 from urllib import urlencode
@@ -506,7 +508,6 @@ class HEKClient(object):
 
 
 if __name__ == '__main__':
-    import json
     import pprint
     c = HEKClient()
     print len(c.query(
