@@ -4,11 +4,11 @@ SunPy: Python for Solar Physics
 The SunPy project is an effort to create an open-source software library for
 solar physics using the Python programming language.
 """
+#pylint: disable=W0404,W0621
 import os
 import imp
 import shutil
 from paver.easy import *
-import paver.doctools
 from paver.setuputils import setup
 
 # This is not pretty, but necessary
@@ -24,7 +24,6 @@ options(
         host = 'sipwork.org',
         hostpath = 'www/sunpy/doc'
     ),
-
     sphinx = Bunch(docroot='doc/source', builddir="_build"),
     pylint = Bunch(quiet=False)
 )
@@ -40,14 +39,13 @@ install(setup)
 def sdist():
     """Generated HTML docs and builds a tarball."""
     shutil.rmtree('doc/html')
-    pass
 
 #
 # Documentation
 #
 @task
 @needs('paver.doctools.html')
-def prepare_docs(options):
+def prepare_docs():
     """Prepares the SunPy HTML documentation for packaging"""
     sourcedir = 'doc/source/_build/html'
     destdir = 'doc/html'
@@ -90,7 +88,7 @@ def pylint(options):
 def clean():
     """Cleans up build files"""
     print("Removing build files")
-    for dir_ in ['doc/html', 'dist', 'sunpy.egg-info']:
+    for dir_ in ['doc/html', 'doc/source/_build', 'build', 'dist', 'sunpy.egg-info']:
         if os.path.exists(dir_):
             shutil.rmtree(dir_)
     for file_ in ['MANIFEST']:
