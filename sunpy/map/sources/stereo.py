@@ -1,5 +1,5 @@
 """STEREO Map subclass definitions"""
-#pylint: disable=W0221
+#pylint: disable=W0221,W0222
 
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"

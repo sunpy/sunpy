@@ -11,5 +11,5 @@ Example Usage:
 >>> import matplotlib.colors as colors
 >>> aia = sunpy.Map('doc/sample-data/AIA20110319_105400_0171.fits')
 >>> aia.header['crpix1']
->>> aia.plot(cm=cm.hot, norm=colors.Normalize(1, 2048))
+>>> aia.show(cm=cm.hot, norm=colors.Normalize(1, 2048))
 

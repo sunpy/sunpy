@@ -24,25 +24,31 @@ def anytim(time_string=None):
     """
     if time_string is None:
         return datetime.now()
-    if type(time_string) is type(datetime.now()):
+    if isinstance(time_string, datetime):
         return time_string
+    if isinstance(time_string, tuple):
+        return datetime(*time_string)
     else:
         time_format_list = \
-            ["%Y-%m-%dT%H:%M:%S.%f",    # Example 2007-05-04T21:08:12.1000000
+            ["%Y-%m-%dT%H:%M:%S.%f",    # Example 2007-05-04T21:08:12.999999
+             "%Y%m%dT%H%M%S.%f",        # Example 20070504T210812.999999
              "%Y/%m/%d %H:%M:%S",       # Example 2007/05/04 21:08:12
-             "%Y-%m-%d %H:%M:%S.%f",    # Example 2007/05/04 21:08:12.1000000
+             "%Y/%m/%d %H:%M:%S.%f",    # Example 2007/05/04 21:08:12.999999
+             "%Y-%m-%d %H:%M:%S.%f",    # Example 2007-05-04 21:08:12.999999
              "%Y-%m-%d %H:%M:%S",       # Example 2007-05-04 21:08:12
+             "%Y-%m-%dT%H:%M:%S",       # Example 2007-05-04T21:08:12
+             "%Y%m%dT%H%M%S",           # Example 20070504T210812
              "%Y-%b-%d %H:%M:%S",       # Example 2007-May-04 21:08:12
              "%Y-%b-%d",                # Example 2007-May-04
-             "%Y-%m-%d",                # Example 2007-05-03
+             "%Y-%m-%d",                # Example 2007-05-04
              "%Y/%m/%d"]                # Example 2007/05/04
         for time_format in time_format_list: 
             try: 
                 return datetime.strptime(time_string, time_format)
-            except:
+            except ValueError:
                 pass
     
-        raise ValueError("Not a valid time string!")
+        raise ValueError("%s is not a valid time string!" % time_string)
 
 def julian_day(t=None):
     """Returns the (fractional) Julian day."""
@@ -89,3 +95,65 @@ def degrees_to_arc(angle):
     remainder =  remainder*60 - arcminute
     arcsecond = remainder * 60.0
     return [degree, arcminute, arcsecond]
+
+wavelength = [
+    ('Angstrom', 1e-10),
+    ('nm', 1e-9),
+    ('micron', 1e-6),
+    ('micrometer', 1e-6),
+    ('mm', 1e-3),
+    ('cm', 1e-2),
+    ('m', 1e-6),
+]
+energy = [
+    ('eV', 1),
+    ('keV', 1e3),
+    ('MeV', 1e6),
+]
+frequency = [
+    ('Hz', 1),
+    ('kHz', 1e3),
+    ('MHz', 1e6),
+    ('GHz', 1e9),
+]
+units = {}
+for k, v in wavelength:
+    units[k] = ('wavelength', v)
+for k, v in energy:
+    units[k] = ('energy', v)
+for k, v in frequency:
+    units[k] = ('frequency', v)
+
+def to_angstrom(value, unit):
+    C = 299792458
+    ANGSTROM = units['Angstrom'][1]  
+    try:
+        type_, n = units[unit]
+    except KeyError:
+        raise ValueError('Cannot convert %s to Angstrom' % unit)
+    
+    if type_ == 'wavelength':
+        k = n / ANGSTROM
+        return value / k
+    if type_ == 'frequency':
+        k = 1 / ANGSTROM / n
+        return k * (C / value)
+    if type_ == 'energy':
+        k = 1 / (ANGSTROM / 1e-2) / n
+        return k * (1 / (8065.53 * value))
+    else:
+        raise ValueError('Unable to convert %s to Angstrom' % type_)
+
+def unique(itr, key=None):
+    items = set()
+    if key is None:
+        for elem in itr:
+            if elem not in items:
+                yield elem
+                items.add(elem)
+    else:
+        for elem in itr:
+            k = key(elem)
+            if k not in items:
+                yield elem
+                items.add(k)

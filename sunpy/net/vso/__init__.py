@@ -1,6 +1,12 @@
 # -*- coding: utf-8 -*-
 # Author: Florian Mayer <florian.mayer@bitsrc.org>
 
+#pylint: disable=W0401,C0103,R0904,W0141
+
+"""
+This module provides a wrapper around the VSO API.
+"""
+
 import re
 import os
 import sys
@@ -11,23 +17,21 @@ from datetime import datetime, timedelta
 from functools import partial
 from collections import defaultdict
 
-from suds import client
+from suds import client, TypeNotFound
 
 from sunpy.net import download
-from sunpy.util.util import anytim
-from sunpy.net.attr import (
-    Attr, ValueAttr, AttrWalker, AttrAnd, AttrOr, DummyAttr, and_
-)
+from sunpy.net.attr import and_, Attr
+from sunpy.net.vso.attrs import walker, TIMEFORMAT
+from sunpy.util.util import anytim, to_angstrom
 
 DEFAULT_URL = 'http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl'
 DEFAULT_PORT = 'nsoVSOi'
-TIMEFORMAT = '%Y%m%d%H%M%S'
 RANGE = re.compile(r'(\d+)(\s*-\s*(\d+))?(\s*([a-zA-Z]+))?')
 
 
 # TODO: Name
 class NoData(Exception):
-    """ Raisen for callbacks of VSOClient that are unable to supply
+    """ Risen for callbacks of VSOClient that are unable to supply
     information for the request. """
     pass
 
@@ -37,201 +41,13 @@ class _Str(str):
     record_item associated with the file. """
     pass
 
-# ----------------------------------------
-
-# The walker specifies how the Attr-tree is converted to a query the
-# server can handle.
-walker = AttrWalker()
-
-@walker.add_creator(ValueAttr)
-def _create(walker, root, api):
-    """ Implementation detail. """
-    value = api.factory.create('QueryRequestBlock')
-    walker.apply(root, api, value)
-    return [value]
-
-@walker.add_applier(ValueAttr)
-def _apply(walker, root, api, queryblock):
-    """ Implementation detail. """
-    for k, v in root.attrs.iteritems():
-        lst = k[-1]
-        rest = k[:-1]
-        
-        block = queryblock
-        for elem in rest:
-            block = block[elem]
-        block[lst] = v
-
-@walker.add_creator(AttrAnd)
-def _create(walker, root, api):
-    """ Implementation detail. """
-    value = api.factory.create('QueryRequestBlock')
-    walker.apply(root, api, value)
-    return [value]
-
-@walker.add_applier(AttrAnd)
-def _apply(walker, root, api, queryblock):
-    """ Implementation detail. """
-    for attr in root.attrs:
-        walker.apply(attr, api, queryblock)
-
-@walker.add_creator(AttrOr)
-def _create(walker, root, api):
-    """ Implementation detail. """
-    blocks = []
-    for attr in self.attrs:
-        blocks.extend(walker.create(attr, api))
-    return blocks
-
-@walker.add_creator(DummyAttr)
-def _create(walker, root, api):
-    """ Implementation detail. """
-    return api.factory.create('QueryRequestBlock')
-
-@walker.add_applier(DummyAttr)
-def _apply(walker, root, api, queryblock):
-    """ Implementation detail. """
-    pass
-
-class Wave(ValueAttr):
-    wavelength = [
-        ('Angstrom', 1e-10),
-        ('nm', 1e-9),
-        ('micron', 1e-6),
-        ('micrometer', 1e-6),
-        ('mm', 1e-3),
-        ('cm', 1e-2),
-        ('m', 1e-6),
-    ]
-    energy = [
-        ('eV', 1),
-        ('keV', 1e3),
-        ('MeV', 1e6),
-    ]
-    frequency = [
-        ('Hz', 1),
-        ('kHz', 1e3),
-        ('MHz', 1e6),
-        ('GHz', 1e9),
-    ]
-    units = {}
-    for k, v in wavelength:
-        units[k] = ('wavelength', v)
-    for k, v in energy:
-        units[k] = ('energy', v)
-    for k, v in frequency:
-        units[k] = ('frequency', v)
-    
-    def __init__(self, wavemin, wavemax, waveunit):
-        wavemin, wavemax = self.to_angstrom(wavemin, wavemax, waveunit)
-        waveunit = 'Angstrom'
-        
-        self.min = wavemin
-        self.max = wavemax
-        self.unit = waveunit
-        
-        ValueAttr.__init__(self, {
-            ('wave', 'wavemin'): wavemin,
-            ('wave', 'wavemax'): wavemax,
-            ('wave', 'waveunit'): waveunit,
-        })
-    
-    def __xor__(self, other):
-        if self.unit != other.unit:
-            return NotImplemented
-        new = _DummyAttr()
-        if self.min < other.min:
-            new |= Wave(self.min, min(other.min, self.max), self.unit)
-        if other.max < self.max:
-            new |= Wave(other.max, self.max, self.unit)
-        return new
-    
-    @classmethod
-    def to_angstrom(cls, min_, max_, unit):
-        # Speed of light in m/s.
-        C = 299792458
-        ANGSTROM = cls.units['Angstrom'][1]
-        
-        try:
-            type_, n = cls.units[unit]
-        except KeyError:
-            raise ValueError('Cannot convert %s to Angstrom' % unit)
-        
-        if type_ == 'wavelength':
-            k = n / ANGSTROM
-            return (min_ / k, max_ / k)
-        if type_ == 'frequency':
-            k = 1 / ANGSTROM / n
-            return k * (C / max_), k * (C / min_)
-        if type_ == 'energy':
-            k = 1 / (ANGSTROM / 1e-2) / n
-            return k * (1 / (8065.53 * max_)), k * (1 / (8065.53 * min_))
-        else:
-            raise ValueError('Unable to convert %s to Angstrom' % type_)
-
-
-class Time(ValueAttr):
-    def __init__(self, start, end, near=None):
-        self.start = start
-        self.end = end
-        self.near = near
-        
-        ValueAttr.__init__(self, {
-            ('time', 'start'): start.strftime(TIMEFORMAT),
-            ('time', 'end'): end.strftime(TIMEFORMAT),
-            ('time', 'near'): near.strftime(TIMEFORMAT) if near is not None else '',
-        })
-    
-    def __xor__(self, other):
-        new = _DummyAttr()
-        if self.start < other.start:            
-            new |= Time(self.start, min(other.start, self.end))
-        if other.end < self.end:
-            new |= Time(other.end, self.end)
-        return new
-    
-    @classmethod
-    def dt(cls, start, end, near=None):
-        if near is not None:
-            near = datetime(*near)
-        return cls(datetime(*start), datetime(*end), near)
-
-
-class Extent(ValueAttr):
-    def __init__(self, x, y, width, length, type_):
-        ValueAttr.__init__(self, {
-            ('extent', 'x'): x,
-            ('extent', 'y'): y,
-            ('extent', 'width'): width,
-            ('extent', 'length'): length,
-            ('extent', 'type'): type_,
-        })
-
-
-class Field(ValueAttr):
-    def __init__(self, fielditem):
-        ValueAttr.__init__(self, {
-            ['field', 'fielditem']: fielditem
-        })
-
-
-def  _mk_simpleattr(field):
-    """ Create a _SimpleField class for field. """
-    class _foo(ValueAttr):
-        def __init__(self, arg):
-            ValueAttr.__init__(self, {(field, ): arg})
-    _foo.__name__ = field.capitalize()
-    return _foo
-
-
-for elem in ['provider', 'source', 'instrument', 'physobs', 'pixels',
-             'level', 'resolution', 'detector', 'filter', 'sample',
-             'quicklook', 'pscale']:
-    setattr(sys.modules[__name__], elem.capitalize(), _mk_simpleattr(elem))
 
 # ----------------------------------------
 
 class Results(object):
+    """ Returned by VSOClient.get. Use .wait to wait
+    for completion of download.
+    """
     def __init__(self, callback, n=0, done=None):
         self.callback = callback
         self.n = n
@@ -258,6 +74,7 @@ class Results(object):
         return partial(self.submit, keys)
     
     def wait(self):
+        """ Wait for result to be complete and return it. """
         self.evt.wait()
         return self.map_
     
@@ -303,13 +120,17 @@ class QueryResponse(list):
         return cls(iter_records(queryresult), queryresult)
     
     def total_size(self):
+        """ Total size of data in KB. May be less than the actual
+        size because of inaccurate data providers. """
         # Warn about -1 values?
         return sum(record.size for record in self if record.size > 0)
     
     def no_records(self):
-        return sum(1 for _ in self)
+        """ Return number of records. """
+        return len(self)
     
     def time_range(self):
+        """ Return total time-range all records span across. """
         return (
             datetime.strptime(
                 min(record.time.start for record in self), TIMEFORMAT),
@@ -337,6 +158,7 @@ class UnknownStatus(Exception):
     pass
 
 class VSOClient(object):
+    """ Main VSO Client. """
     method_order = [
         'URL-TAR_GZ', 'URL-ZIP', 'URL-TAR', 'URL-FILE', 'URL-packaged'
     ]
@@ -366,20 +188,52 @@ class VSOClient(object):
         return obj
     
     def query(self, *query):
-        if len(query) > 1:
-            query = and_(*query)
-        return QueryResponse.create(self.merge(
-            self.api.service.Query(self.make('QueryRequest', block=block))
-            for block in walker.create(query, self.api)
-        ))
+        """ Query data from the VSO with the new API. Takes a variable number
+        of attributes as parameter, which are chained together using AND.
+        
+        The new query language allows complex queries to be easily formed.
+        
+        Examples
+        --------
+        Query all data from eit or aia between 2010-01-01T00:00 and
+        2010-01-01T01:00.
+        
+        >>> client.query(
+        ...    vso.Time(datetime(2010, 1, 1), datetime(2010, 1, 1, 1)),
+        ...    vso.Instrument('eit') | vso.Instrument('aia')
+        ... )
+        
+        Returns
+        -------
+        out : :py:class:`QueryResult` (enhanced list) of matched items. Return value of same type as the one of :py:meth:`VSOClient.query`.
+        """
+        query = and_(*query)
+        
+        responses = []
+        for block in walker.create(query, self.api):
+            try:
+                responses.append(
+                    self.api.service.Query(
+                        self.make('QueryRequest', block=block)
+                    )
+                )
+            except TypeNotFound:
+                pass
+        
+        return QueryResponse.create(self.merge(responses))
     
-    def merge(self, queryresponses):      
+    def merge(self, queryresponses):
+        if len(queryresponses) == 1:
+            return queryresponses[0]
+        
         fileids = set()
         providers = {}
         
         for queryresponse in queryresponses:
             for provideritem in queryresponse.provideritem:
                 provider = provideritem.provider
+                if not hasattr(provideritem, 'record'):
+                    continue
                 if not hasattr(provideritem.record, 'recorditem'):
                     continue
                 if not provideritem.provider in providers:
@@ -414,6 +268,7 @@ class VSOClient(object):
             os.makedirs(os.path.dirname(fname))
         return fname
     
+    # pylint: disable=R0914
     def query_legacy(self, tstart=None, tend=None, **kwargs):
         """
         Query data from the VSO mocking the IDL API as close as possible.
@@ -472,10 +327,23 @@ class VSOClient(object):
             attempt to return only one record per SAMPLE seconds.  See below.
         
         Numeric Ranges:
-        * May be entered as a string or any numeric type for equality matching
-        * May be a string of the format '(min) - (max)' for range matching
-        * May be a string of the form '(operator) (number)' where operator
-            is one of: lt gt le ge < > <= >=
+        
+            - May be entered as a string or any numeric type for equality matching
+            - May be a string of the format '(min) - (max)' for range matching
+            - May be a string of the form '(operator) (number)' where operator is one of: lt gt le ge < > <= >=
+        
+        
+        Examples
+        --------
+        Query all data from eit between 2010-01-01T00:00 and
+        2010-01-01T01:00.
+        
+        >>> qr = client.query_legacy(
+        ...     datetime(2010, 1, 1), datetime(2010, 1, 1, 1), instrument='eit')
+        
+        Returns
+        -------
+        out : :py:class:`QueryResult` (enhanced list) of matched items. Return value of same type as the one of :py:class:`VSOClient.query`.
         """
         sdk = lambda key: lambda value: {key: value}
         ALIASES = {
@@ -511,6 +379,7 @@ class VSOClient(object):
                 lst = attr[-1]
                 rest = attr[:-1]
                 
+                # pylint: disable=E1103
                 item = queryreq.block
                 for elem in rest:
                     try:
@@ -532,7 +401,7 @@ class VSOClient(object):
             time_near=datetime.utcnow()
         )
     
-    def get(self, query_response, path=None, methods=['URL-FILE'], downloader=None):
+    def get(self, query_response, path=None, methods=('URL-FILE',), downloader=None):
         """
         Download data specified in the query_response.
         
@@ -550,6 +419,14 @@ class VSOClient(object):
             Methods acceptable to user.
         downloader : sunpy.net.downloader.Downloader
             Downloader used to download the data.
+        
+        Returns
+        -------
+        out : :py:class:`Results` object that supplies a list of filenames with meta attributes containing the respective QueryResponse.
+        
+        Examples
+        --------
+        >>> res = get(qr).wait()
         """
         if downloader is None:
             downloader = download.Downloader()
@@ -560,7 +437,7 @@ class VSOClient(object):
             )
         else:
             res = Results(
-                lambda _: None, 1, lambda mp: self.link(qr, mp)
+                lambda _: None, 1, lambda mp: self.link(query_response, mp)
             )
         if path is None:
             path = os.path.join(tempfile.mkdtemp(), '{file}')
@@ -573,7 +450,7 @@ class VSOClient(object):
                 self.make_getdatarequest(query_response, methods)
                 ),
             methods, downloader, path,
-            VSOClient.by_fileid(query_response), res
+            fileids, res
         )
         res.poke()
         return res
@@ -585,7 +462,11 @@ class VSOClient(object):
         ret = []
         
         for record_item in query_response:
-            item = _Str(map_[record_item.fileid]['path'])
+            try:
+                item = _Str(map_[record_item.fileid]['path'])
+            except KeyError:
+                continue
+            # pylint: disable=W0201
             item.meta = record_item
             ret.append(item)
         return ret
@@ -614,6 +495,7 @@ class VSOClient(object):
             ]
         )
     
+    # pylint: disable=R0913,R0912
     def download_all(self, response, methods, dw, path, qr, res, info=None):
         GET_VERSION = [
             ('0.8', (5, 8)),
@@ -628,6 +510,9 @@ class VSOClient(object):
                 res.add_error(UnknownVersion(dresponse))
                 continue
             
+            # If from_ and to are uninitialized, the else block of the loop
+            # continues the outer loop and thus this code is never reached.
+            # pylint: disable=W0631
             code = (
                 dresponse.status[from_:to]
                 if hasattr(dresponse, 'status') else '200'
@@ -686,6 +571,7 @@ class VSOClient(object):
                 res.add_error(UnknownStatus(dresponse))
     
     def download(self, method, url, dw, callback, *args):
+        """ Override to costumize download action. """
         if method.startswith('URL'):
             dw.reactor.call_sync(
                 partial(dw.download, url, partial(self.mk_filename, *args),
@@ -706,70 +592,80 @@ class VSOClient(object):
             (record.fileid, record) for record in response
         )
     
+    # pylint: disable=W0613
     def multiple_choices(self, choices, response):
+        """ Override to pick between multiple download choices. """
         for elem in self.method_order:
             if elem in choices:
                 return [elem]
         raise NoData
     
+    # pylint: disable=W0613
     def missing_information(self, info, field):
+        """ Override to provide missing information. """
         raise NoData
     
+    # pylint: disable=W0613
     def unknown_method(self, response):
+        """ Override to pick a new method if the current one is unknown. """
         raise NoData
 
 
 class InteractiveVSOClient(VSOClient):
+    """ Client for use in the REPL. Prompts user for data if required. """
     def multiple_choices(self, choices, response):
         while True:
             for n, elem in enumerate(choices):
                 print "(%d) %s" % (n + 1, elem)
-            choice = raw_input("Method number: ")
             try:
-                return [choices[int(choice) - 1]]
-            except ValueError, IndexError:
-                continue
+                choice = raw_input("Method number: ")
             except KeyboardInterrupt:
                 raise NoData
+            if not choice:
+                raise NoData
+            try:
+                choice = int(choice) - 1
+            except ValueError:
+                continue
+            if choice == -1:
+                raise NoData
+            elif choice >= 0:
+                try:
+                    return [choices[choice]]
+                except IndexError:
+                    continue
         
     def missing_information(self, info, field):
-        return raw_input(field + ': ')
+        choice = raw_input(field + ': ')
+        if not choice:
+            raise NoData
+        return choice
     
-    def search(self, tstart=None, tend=None, **kwargs):
-        if isinstance(tstart, Attr):
-            return self.query(tstart)
+    def search(self, *args, **kwargs):
+        """ When passed an Attr object, perform new-style query;
+        otherwise, perform legacy query.
+        """
+        if isinstance(args[0], Attr):
+            return self.query(*args)
         else:
-            return self.query_legacy(tstart, tend, **kwargs)
+            return self.query_legacy(*args, **kwargs)
 
 
 g_client = None
-def search(tstart=None, tend=None, **kwargs):
-    """ When passed a single _Attr object, perform new-style query;
-    otherwise, perform legacy query.
-    """
+def search(*args, **kwargs):
+    # pylint: disable=W0603
     global g_client
     if g_client is None:
         g_client = InteractiveVSOClient()
-    return g_client.search(tstart, tend, **kwargs)
+    return g_client.search(*args, **kwargs)
 
+search.__doc__ = InteractiveVSOClient.search.__doc__
 
-def get(query_response, path=None, methods=['URL-FILE'], downloader=None):
+def get(query_response, path=None, methods=('URL-FILE',), downloader=None):
+    # pylint: disable=W0603
     global g_client
     if g_client is None:
         g_client = InteractiveVSOClient()
     return g_client.get(query_response, path, methods, downloader)
 
 get.__doc__ = VSOClient.get.__doc__
-
-# Add latest?
-if __name__ == '__main__':
-    import sunpy
-    qr = search(
-        datetime(2010, 1, 1), datetime(2010, 1, 1, 1),
-        instrument='eit'
-    )
-    
-    res = get(qr).wait()
-    
-    print res[0]
-    sunpy.Map(res[0]).plot()

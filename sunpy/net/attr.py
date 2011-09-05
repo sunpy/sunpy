@@ -1,4 +1,9 @@
-from collections import defaultdict
+# -*- coding: utf-8 -*-
+# Author: Florian Mayer <florian.mayer@bitsrc.org>
+
+# pylint: disable=C0103,R0903
+
+from sunpy.util.multimethod import MultiMethod
 
 class Attr(object):
     def __and__(self, other):
@@ -8,6 +13,9 @@ class Attr(object):
             return NotImplemented
         return AttrAnd([self, other])
     
+    def __hash__(self):
+        return hash(frozenset(vars(self).iteritems()))
+    
     def __or__(self, other):
         # Optimization.
         if self == other:
@@ -16,6 +24,9 @@ class Attr(object):
     
     def collides(self, other):
         raise NotImplementedError
+    
+    def __eq__(self, other):
+        return dict(vars(self)) == dict(vars(other))
 
 
 class DummyAttr(Attr):
@@ -37,6 +48,7 @@ class DummyAttr(Attr):
 
 class AttrAnd(Attr):
     def __init__(self, attrs):
+        Attr.__init__(self)
         self.attrs = attrs
     
     def __and__(self, other):
@@ -67,6 +79,7 @@ class AttrAnd(Attr):
 
 class AttrOr(Attr):
     def __init__(self, attrs):
+        Attr.__init__(self)
         self.attrs = attrs
     
     def __or__(self, other):
@@ -82,10 +95,22 @@ class AttrOr(Attr):
     __rand__ = __and__
     
     def __xor__(self, other):
-        new = _DummyAttr()
+        new = AttrOr([])
         for elem in self.attrs:
-            new |= elem ^ other
+            try:
+                new |= elem ^ other
+            except TypeError:
+                pass
         return new
+    
+    def __contains__(self, other):
+        for elem in self.attrs:
+            try:
+                if other in elem:
+                    return True
+            except TypeError:
+                pass
+        return False
     
     def __repr__(self):
         return "<AttrOr(%r)>" % self.attrs
@@ -104,86 +129,66 @@ class AttrOr(Attr):
 
 class ValueAttr(Attr):
     def __init__(self, attrs):
+        Attr.__init__(self)
         self.attrs = attrs
     
     def __repr__(self):
         return "<ValueAttr(%r)>" % (self.attrs)
-    
-    def __eq__(self, other):
-        if not isinstance(other, ValueAttr):
-            return False
-        return self.attrs == other.attrs
-    
+
     def __hash__(self):
         return hash(frozenset(self.attrs.iteritems()))
     
+    def __eq__(self, other):
+        if not isinstance(other, self.__class__):
+            return False
+        return self.attrs == other.attrs
+    
     def collides(self, other):
-        if not isinstance(other, ValueAttr):
+        if not isinstance(other, self.__class__):
             return False
         return any(k in other.attrs for k in self.attrs)
 
 
-class MultiMethod(object):
-    def __init__(self, n=None, key=None):
-        if n is not None and key is not None:
-            raise ValueError
-        elif n is None and key is None:
-            raise ValueError
-        
-        self.n = n
-        self.key = key
-        
-        self.methods = {}
-        self.cache = {}
+class AttrWalker(object):
+    def __init__(self):
+        self.applymm = MultiMethod(lambda *a, **kw: (a[1], ))
+        self.createmm = MultiMethod(lambda *a, **kw: (a[1], ))
     
-    def add(self, *types):
-        self.cache = {}
+    def add_creator(self, *types):
         def _dec(fun):
             for type_ in types:
-                self.methods[type_] = fun
+                self.createmm.add(fun, (type_, ))
             return fun
         return _dec
     
-    def get_item(self, obj, super_=False):
-        ocls = obj.__class__
-        
-        cached = self.cache.get(ocls, None)
-        if cached is not None:
-            return cached
-        
-        dct = self.methods
-        for cls in ocls.__mro__[super_:]:
-            meth = dct.get(cls, None)
-            if meth is not None:
-                self.cache[ocls] = meth
-                return meth
-        raise KeyError
-    
-    def __call__(self, *args, **kwargs):
-        if self.n is not None:
-            obj = args[self.n]
-        else:
-            obj = kwargs[self.key]
-        return self.get_item(obj)(*args, **kwargs)
-    
-    def super(self, *args, **kwargs):
-        if self.n is not None:
-            obj = args[self.n]
-        else:
-            obj = kwargs[self.key]
-        return self.get_item(obj, True)(*args, **kwargs)
-        
-    
-class AttrWalker(object):
-    def __init__(self):
-        self.applymm = MultiMethod(1)
-        self.createmm = MultiMethod(1)
-    
-    def add_creator(self, *types):
-        return self.createmm.add(*types)
-    
     def add_applier(self, *types):
-        return self.applymm.add(*types)
+        def _dec(fun):
+            for type_ in types:
+                self.applymm.add(fun, (type_, ))
+            return fun
+        return _dec
+    
+    def add_converter(self, *types):
+        def _dec(fun):
+            for type_ in types:                
+                self.applymm.add(self.cv_apply(fun), (type_, ))
+                self.createmm.add(self.cv_create(fun), (type_, ))
+            return fun
+        return _dec
+    
+    def cv_apply(self, fun):
+        def _fun(*args, **kwargs):
+            args = list(args)
+            args[1] = fun(args[1])
+            return self.applymm(*args, **kwargs)
+        return _fun
+    
+    def cv_create(self, fun):
+        def _fun(*args, **kwargs):
+            args = list(args)
+            args[1] = fun(args[1])
+            return self.createmm(*args, **kwargs)
+        return _fun
     
     def create(self, *args, **kwargs):
         return self.createmm(self, *args, **kwargs)
