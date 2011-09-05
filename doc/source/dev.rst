@@ -85,16 +85,23 @@ the commands: ::
  git fetch upstream
  git merge upstream/master
 
-If all goes well the changes should show up on GitHub in a matter of seconds.
-Right now our personal repo is just a copy of the main repo, which is not too
-exciting. To make sure everything is setup correctly, let's make some changes
-to our personal repo and push those to GitHub. Go ahead and modify one
+You can also do this in one line with: ::
+
+ git pull upstream/master
+
+This will merge the upstream code automatically. After running either of these commands, 
+your local copy of your personal repo is just a copy of the main repo.
+This is the same procedure that you will use in the future to keep yourself syncronized with the
+main repo. To make sure everything is setup correctly, let's make some changes
+to our personal local repo and push those to our personal repo on GitHub. Go ahead and modify one
 of the files, or create a new file (and then run :command:`git add`). 
 
 Commit and push the changes to GitHub: ::
 
  git commit -a -m "My first commit"
  git push
+
+You repo is now synced with GitHub and ahead of the main repo as it contains your personal contribution.
 
 **Conclusion**
 
@@ -107,8 +114,8 @@ repo?
 
 That is the topic of the next section.
 
-Collaboration
-^^^^^^^^^^^^^
+Branches
+^^^^^^^^
 
 Developers should create topic branches within their repos for most of their 
 main coding. Every repo starts with a single branch called `master`, which 
@@ -131,10 +138,7 @@ the above).
 Developers should create new branches for the features they are working on. 
 When they have finished making changes and the code has been tested and 
 verified to be working well, the code can be merged back into the SunPy master 
-repo. When multiple developers are working on SunPy at the same time, care 
-should be taken to avoid merging problems. Each day, the programmer can use 
-:command:`git fetch upstream` followed by :command:`git merge upstream/master` 
-to include any recent changes made by other developers.
+repo. This is usually done through something called a pull request. 
 
 Example Workflow
 ^^^^^^^^^^^^^^^^
@@ -164,58 +168,73 @@ will need to merge them: ::
 
 Assuming there are no merge conflicts (which shouldn't happen unless two people
 are working on the same part of the same file), then you are ready to begin
-coding.
+coding. If there are conflicts check out our conflicts section.
 
 **Push your changes to GitHub**
 
+As you code away on your local repo, you will need to keep git aware of what you are doing 
+and also your remote copy up to date.
+
+To add a file, create the file then run: ::
+
+    git add <yourfilename>
+
+If you delete a file run: ::
+
+    git rm <yourfilename>
+
+To move a file, copy the file and then run a git rm and then a git add. To check to see if git is happy
+run: ::
+
+    git status
+
+which will give you a report of what has happened so far. Once you are at a good stopping point you should
+"commit" your changes. This will provide you an opportunity to describe what you have done so far. To do this type: ::
+
+    git commit -a -m "description of your changes"
+
+After doing this you are ready to push your changes to your repo online with the command: ::
+
+    git push
+
+The local and remote copies of your repo are now synced.
+
+**Contributing to the main repo**
+
 Once you have made your desired changes, and committed and pushed your personal
 branch, you need to decide whether or not to merge those changes back into the
-trunk. If the changes you made are finished and have been tested and proven
+main repo. If the changes you made are finished and have been tested and proven
 stable, then they can be merged into the main repo. If you are not finished with 
 making your changes or broke some important functionality, then you will
 probably want to wait before merging those changes. For now, lets assume that
-your changes are complete and they are ready to be added to the main repo.
-
-The first thing you will want to do is run :command:`git fetch` once 
-more to see if any new changes have been made since you started coding: ::
-
-    git fetch
-
-If there are new changes, then go ahead once more and merge those changes into
-your branch and commit.
-
-Now all that remains is to commit and push your changes back to GitHub: ::
-
-    git commit -a -m "description of your changes"
-    git push origin mybranch
+your changes are complete and they are ready to be added to the main repo. The most
+polite way to do this is to initiate a "pull request". To do this go to the github
+website and to your repo (remember to select the branch) then click on the "Pull
+Request" button (in the upper right hand corner next to the Fork button which you've
+used before). This will submit your code to a review by the members of the SunPy dev
+team. Once a member of the SunPy dev team approves it then your code is now part of
+the main SunPy code. Congratulations!
 
 And that's it! It may seem like a lot at first but once you go through the
 motions a few times it becomes very quick.
 
 **Conflict resolution**
-It may happen that two people have been working on the same section of code 
-which will cause the merge command some problems. In such cases, the merge 
+
+It may so happen that when you try to sync with the main repo there is a conflict error.
+This means that someone else has been working on the same section of code 
+that you have. In such cases, the merge 
 command will issue a conflict warning and will then expect you do the merge 
 yourself. You can type: ::
 
-    
-to list the outstanding conflicts. For example it might say something like 
-"Text conflict in file.py". If you go into the directory with the conflicted 
-file you will see multiple versions of the file; file.py.THIS is your version 
-of the file, file.py.OTHER is the version you are attempting to merge in, and 
-file.py.BASE is the last version which agreed. You can check the differences 
-between the two files by using a utility such as: ::
+   git mergetools
 
-    diff file.py.THIS file.py.OTHER
+to go through the conflicts. This command will likely open some merging tools
+which are already available on your computer. For example, on Mac OS X, it will open
+FileMerge (if you have XCode installed). You can check on your progress by typing: ::
 
-Though you might want to use a more graphical tool for this such as 
-`Meld <http://meld.sourceforge.net/install.html>`_. On Mac OS X, if you have 
-installed XCode then you can use the terminal command opendiff which will open 
-an application called FileMerge. Put your final code into file.py. Once you have
-done this just type: ::
-    
-This will officially resolve the conflict and will also delete the extra files 
-the conflict created. Finally you should then commit your changes, in this case 
+   git status
+
+Once you are done, you should then commit your changes, in this case 
 the resolution of the conflict with: ::
 
    git commit -m "Resolved conflict between my and online version of file.py"
@@ -421,10 +440,10 @@ Example (:class:`sunpy.map.BaseMap`) ::
     [ 0.    ,  0.    , -1.1875, ...,  0.125 ,  0.    ,  0.6875]])
     >>> aia.header['cunit1']
     'arcsec'
-    >>> aia.plot()
+    >>> aia.show()
     >>> import matplotlib.cm as cm
     >>> import matplotlib.colors as colors
-    >>> aia.plot(cmap=cm.hot, norm=colors.Normalize(1, 2048))
+    >>> aia.show(cmap=cm.hot, norm=colors.Normalize(1, 2048))
     
     See Also:
     ---------
