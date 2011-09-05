@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+
 """
 Nothing here but dictionaries for generating LinearSegmentedColormaps,
 and a dictionary of these dictionaries.
