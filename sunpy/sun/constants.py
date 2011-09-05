@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+
 """
 Fundamental Solar Physical Constants
 ------------------------------
@@ -38,7 +40,7 @@ Need better sources as well as error values.
 """
 
 import scipy.constants as _cd
-import _constants as _con
+from . import _constants as _con
 
 physical_constants = _con.physical_constants
 
