@@ -301,8 +301,8 @@ class BaseMap(np.ndarray):
         }
         params.update(matplot_args)
             
-        plt.imshow(self, origin='lower', extent=extent, **params)
-        plt.colorbar()
+        im = axes.imshow(self, origin='lower', extent=extent, **params)
+        fig.colorbar(im)
         return fig
     
     def show(self, draw_limb=False, **matplot_args):
