@@ -30,7 +30,7 @@ Done! To see if everything went okay, start a Python session and try importing
 SunPy:
 
 >>> import sunpy
->>> sunpy.Map(sunpy.AIA_171_IMAGE).plot()
+>>> sunpy.Map(sunpy.AIA_171_IMAGE).show()
 
 Mac
 ---
@@ -127,4 +127,4 @@ Test your installation
 Now you can test your installation. Open a new Python shell by typing :command:`python` in ``Command Prompt``, and type these commands: ::
 
 >>> import sunpy
->>> sunpy.Map(sunpy.AIA_171_IMAGE).plot()
+>>> sunpy.Map(sunpy.AIA_171_IMAGE).show()
