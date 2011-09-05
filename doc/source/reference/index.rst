@@ -8,3 +8,5 @@ SunPy Reference
    map
    mapcube
    sun
+
+   vso

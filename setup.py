@@ -37,8 +37,10 @@ def install(setup): #pylint: disable=W0621
         name="sunpy",
         packages=['sunpy', 'sunpy.cm', 'sunpy.map',
                   'sunpy.map.sources', 'sunpy.sun', 'sunpy.util',
-                  'sunpy.tests', 'sunpy.tests.map',
-                  'sunpy.data', 'sunpy.data.sample', 'sunpy.solwcs'],
+                  'sunpy.tests', 'sunpy.tests.map', 'sunpy.tests.net',
+                  'sunpy.tests.util',
+                  'sunpy.data', 'sunpy.data.sample', 'sunpy.net', 'sunpy.solwcs'
+                  'sunpy.net.vso'],
         platforms=["Windows", "Linux", "Solaris", "Mac OS-X", "Unix"],
         url="http://www.sunpy.org/",
         version="0.01",
