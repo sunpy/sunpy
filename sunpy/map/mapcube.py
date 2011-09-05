@@ -48,7 +48,7 @@ class MapCube(np.ndarray):
     Examples
     --------
     >>> mapcube = sunpy.MapCube('images/')
-    >>> mapcube[0].plot()
+    >>> mapcube[0].show()
     >>> mapcube[3].header.get('crpix1')
     2050.6599120000001
     """
