@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+
 """
 Collection of solar physical constants. Most constants are in SI units.
 

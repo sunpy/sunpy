@@ -1,6 +1,9 @@
+from __future__ import absolute_import
+
 """
 BaseMap tests
 """
+
 #pylint: disable=C0103,R0904,W0201,W0232
 import sunpy
 import pyfits
