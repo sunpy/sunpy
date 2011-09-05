@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+
 """
 SunPy Map objects are constructed using the special :function:`Map()`
 function. ::
