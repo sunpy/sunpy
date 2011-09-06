@@ -13,7 +13,7 @@ which deals with a specific type of data, e.g. :class:`AIAMap` or
 """
 #pylint: disable=W0401
 
-__all__ = ["sources", "map", "mapcube"]
+__all__ = ["sources", "mapcube"]
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
