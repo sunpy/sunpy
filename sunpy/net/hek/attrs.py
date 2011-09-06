@@ -4,6 +4,7 @@
 
 from datetime import datetime
 from sunpy.net import attr
+from sunpy.util.util import anytim
 
 class ParamAttr(attr.Attr):
     def __init__(self, name, op, value):
@@ -178,8 +179,8 @@ def _c(wlk, root, state):
 @walker.add_applier(Time)
 # pylint: disable=E0102,C0103,W0613
 def _a(wlk, root, state, dct):
-    dct['event_starttime'] = root.start.strftime('%Y-%m-%dT%H:%M:%S')
-    dct['event_endtime'] = root.end.strftime('%Y-%m-%dT%H:%M:%S')
+    dct['event_starttime'] = anytim(root.start).strftime('%Y-%m-%dT%H:%M:%S')
+    dct['event_endtime'] = anytim(root.end).strftime('%Y-%m-%dT%H:%M:%S')
     return dct
 
 @walker.add_applier(SpartialRegion)
@@ -416,7 +417,7 @@ class TO(ListAttr):
             ListAttr.__init__(self, "event_type", 'to')
 
 @apply
-class Wave(ListAttr):
+class Wave(object):
     DisplMaxAmpl = StringParamAttrWrapper('WaveDisplMaxAmpl')
     DisplMinAmpl = StringParamAttrWrapper('WaveDisplMinAmpl')
     DisplUnit = StringParamAttrWrapper('WaveDisplUnit')
@@ -428,7 +429,7 @@ class Wave(ListAttr):
 
 
 @apply
-class Veloc(ListAttr):
+class Veloc(object):
     MaxAmpl = StringParamAttrWrapper('VelocMaxAmpl')
     MaxPower = StringParamAttrWrapper('VelocMaxPower')
     MaxPowerUncert = StringParamAttrWrapper('VelocMaxPowerUncert')
@@ -437,7 +438,7 @@ class Veloc(ListAttr):
 
 
 @apply
-class Freq(ListAttr):
+class Freq(object):
     MaxRange = StringParamAttrWrapper('FreqMaxRange')
     MinRange = StringParamAttrWrapper('FreqMinRange')
     PeakPower = StringParamAttrWrapper('FreqPeakPower')
@@ -445,14 +446,14 @@ class Freq(ListAttr):
 
 
 @apply
-class Intens(ListAttr):
+class Intens(object):
     MaxAmpl = StringParamAttrWrapper('IntensMaxAmpl')
     MinAmpl = StringParamAttrWrapper('IntensMinAmpl')
     Unit = StringParamAttrWrapper('IntensUnit')
 
 
 @apply
-class Area(ListAttr):
+class Area(object):
     AtDiskCenter = StringParamAttrWrapper('Area_AtDiskCenter')
     AtDiskCenterUncert = StringParamAttrWrapper('Area_AtDiskCenterUncert')
     Raw = StringParamAttrWrapper('Area_Raw')
@@ -461,7 +462,7 @@ class Area(ListAttr):
 
 
 @apply
-class BoundBox(ListAttr):
+class BoundBox(object):
     C1LL = StringParamAttrWrapper('BoundBox_C1LL')
     C1UR = StringParamAttrWrapper('BoundBox_C1UR')
     C2LL = StringParamAttrWrapper('BoundBox_C2LL')
@@ -469,7 +470,7 @@ class BoundBox(ListAttr):
 
 
 @apply
-class Bound(ListAttr):
+class Bound(object):
     ox_C1LL = StringParamAttrWrapper('BoundBox_C1LL')
     ox_C1UR = StringParamAttrWrapper('BoundBox_C1UR')
     ox_C2LL = StringParamAttrWrapper('BoundBox_C2LL')
@@ -480,7 +481,7 @@ class Bound(ListAttr):
 
 
 @apply
-class OBS(ListAttr):
+class OBS(object):
     ChannelID = StringParamAttrWrapper('OBS_ChannelID')
     DataPrepURL = StringParamAttrWrapper('OBS_DataPrepURL')
     FirstProcessingDate = StringParamAttrWrapper('OBS_FirstProcessingDate')
@@ -495,7 +496,7 @@ class OBS(ListAttr):
 
 
 @apply
-class Skel(ListAttr):
+class Skel(object):
     Curvature = StringParamAttrWrapper('Skel_Curvature')
     Nsteps = StringParamAttrWrapper('Skel_Nsteps')
     StartC1 = StringParamAttrWrapper('Skel_StartC1')
@@ -503,7 +504,7 @@ class Skel(ListAttr):
 
 
 @apply
-class FRM(ListAttr):
+class FRM(object):
     Contact = StringParamAttrWrapper('FRM_Contact')
     HumanFlag = StringParamAttrWrapper('FRM_HumanFlag')
     Identifier = StringParamAttrWrapper('FRM_Identifier')
@@ -516,7 +517,7 @@ class FRM(ListAttr):
 
 
 @apply
-class Event(ListAttr):
+class Event(object):
     C1Error = StringParamAttrWrapper('Event_C1Error')
     C2Error = StringParamAttrWrapper('Event_C2Error')
     ClippedSpatial = StringParamAttrWrapper('Event_ClippedSpatial')
@@ -536,7 +537,7 @@ class Event(ListAttr):
 
 
 @apply
-class Outflow(ListAttr):
+class Outflow(object):
     Length = StringParamAttrWrapper('Outflow_Length')
     LengthUnit = StringParamAttrWrapper('Outflow_LengthUnit')
     OpeningAngle = StringParamAttrWrapper('Outflow_OpeningAngle')
