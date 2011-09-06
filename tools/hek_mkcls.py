@@ -2,10 +2,19 @@ import shutil
 import sys
 import os
 
+from collections import defaultdict
+
 EVENTS = [
-    'AR', 'CE', 'CD', 'CH', 'CW', 'FI', 'FE', 'FA', 'FL', 'LP', 'OS', 'SS',
+    'AR', 'CME', 'CD', 'CH', 'CW', 'FI', 'FE', 'FA', 'FL', 'LP', 'OS', 'SS',
     'EF', 'CJ', 'PG', 'OT', 'NR', 'SG', 'SP', 'CR', 'CC', 'ER', 'TO'
 ]
+
+NAMES = defaultdict(lambda: None, {
+    'CME': 'CE'
+})
+
+OTHER = ['Area', 'BoundBox', 'Bound', 'OBS', 'Skel', 'FRM', 'Event', 'Outflow']
+OTHER_NOPAD = ['Wave', 'Veloc', 'Freq', 'Intens']
 
 fields = {
     'AR_CompactnessCls': 'StringParamAttrWrapper',
@@ -197,7 +206,10 @@ def mk_gen(rest):
         ret += '    %s = %s(%r)\n' %(elem, fields[elem], elem)
     return ret
 
-def mk_cls(key, used, pad=1, nokeys=True, init=True):
+def mk_cls(key, used, pad=1, nokeys=True, init=True, name=None):
+    if name is None:
+        name = key
+    
     keys = sorted(
         [(k, v) for k, v in fields.iteritems() if k.startswith(key)]
     )
@@ -205,14 +217,14 @@ def mk_cls(key, used, pad=1, nokeys=True, init=True):
     if not keys:
         if not nokeys:
             raise ValueError
-        return '%s = ListAttr("event_type", %r)' % (key, key.lower())
+        return '%s = ListAttr("event_type", %r)' % (key, name.lower())
     ret = ''
-    ret += '@apply\nclass %s(ListAttr):\n' % key
+    ret += '@apply\nclass %s(ListAttr):\n' % name
     for k, v in keys:
         ret += '    %s = %s(%r)\n' % (k[len(key) + pad:], v, k)
     if init:
         ret += '''    def __init__(self):
-            ListAttr.__init__(self, "event_type", %r)''' % key.lower()
+            ListAttr.__init__(self, "event_type", %r)''' % name.lower()
     return ret
 
 if __name__ == '__main__':
@@ -248,7 +260,11 @@ if __name__ == '__main__':
         fd.write(buf)
     
     fd.write('\n\n')
-    fd.write('\n\n'.join(mk_cls(evt, used) for evt in EVENTS))
+    fd.write('\n\n'.join(mk_cls(evt, used, name=NAMES[evt]) for evt in EVENTS))
+    fd.write('\n\n')
+    fd.write('\n\n'.join(mk_cls(evt, used, 0, 0, 0, name=NAMES[evt]) for evt in OTHER_NOPAD))
+    fd.write('\n\n')
+    fd.write('\n\n'.join(mk_cls(evt, used, 1, 0, 0, name=NAMES[evt]) for evt in OTHER))
     fd.write('\n\n')
     fd.write(mk_gen(set(fields) - used))
     
