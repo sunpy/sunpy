@@ -1,4 +1,7 @@
+from __future__ import absolute_import
+
 """SunPy sample data files"""
+
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
