@@ -445,8 +445,8 @@ Example (:class:`sunpy.map.BaseMap`) ::
     >>> import matplotlib.colors as colors
     >>> aia.show(cmap=cm.hot, norm=colors.Normalize(1, 2048))
     
-    See Also:
-    ---------
+    See Also
+    --------
     numpy.ndarray Parent class for the Map object
     
     References
