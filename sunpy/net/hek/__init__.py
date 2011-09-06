@@ -80,8 +80,10 @@ class HEKClient(object):
 
 if __name__ == '__main__':
     import pprint
+    from sunpy.net.hek import attrs as a
+
     c = HEKClient()
-    print len(c.query(
-        Time.dt((2010, 1, 1), (2010, 1, 2)) | Time.dt((2010, 1, 1, 1), (2010, 1, 2)) | Time.dt((2010, 1, 3), (2010, 1, 4)),
-        c['AR'], c['FL']
+    len(c.query(
+        a.Time((2010, 1, 1), (2010, 1, 2)) | a.Time((2010, 1, 3), (2010, 1, 4)),
+        a.AR, a.FL
     ))
