@@ -13,6 +13,7 @@ To begin, installing the following requirements if you don't already have them:
  * [NumPy](http://numpy.scipy.org/)
  * [Matplotlib](http://matplotlib.sourceforge.net/)
  * [SciPy](http://www.scipy.org/)
+ * [Suds](https://fedorahosted.org/suds)
 
 Next, use git to grab the latest version of SunPy:
 
@@ -33,7 +34,7 @@ Here is a quick example of plotting an AIA image:
 >>> import matplotlib.cm as cm
 >>> import matplotlib.colors as colors
 >>> map = sunpy.Map(sunpy.AIA_171_IMAGE)
->>> map.plot(cmap=cm.hot, norm=colors.Normalize(1, 2048))
+>>> map.show(cmap=cm.hot, norm=colors.Normalize(1, 2048))
 ```
 
 Getting Help

@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+
 import sunpy
 import matplotlib.colors as colors
 
@@ -9,4 +11,4 @@ map2 = sunpy.Map(f2)
 
 dmap = map2 - map1
 
-dmap.plot(norm = colors.Normalize(-5,5,True))
+dmap.show(norm = colors.Normalize(-5,5,True))

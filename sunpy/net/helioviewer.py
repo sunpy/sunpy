@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+
 """
 This module provides a wrapper around the Helioviewer API.
 
@@ -27,6 +29,7 @@ information (as a dictionary) and a URL or id which can be used to retrieve
 the image data.
     
 """
+
 #pylint: disable=E1101,F0401,W0231
 __author__ = ["Keith Hughitt"]
 __email__ = "keith.hughitt@nasa.gov"
