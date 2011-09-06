@@ -83,7 +83,7 @@ if __name__ == '__main__':
     from sunpy.net.hek import attrs as a
 
     c = HEKClient()
-    len(c.query(
+    print len(c.query(
         a.Time((2010, 1, 1), (2010, 1, 2)) | a.Time((2010, 1, 3), (2010, 1, 4)),
         a.AR, a.FL
     ))
