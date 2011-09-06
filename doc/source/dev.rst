@@ -440,10 +440,10 @@ Example (:class:`sunpy.map.BaseMap`) ::
     [ 0.    ,  0.    , -1.1875, ...,  0.125 ,  0.    ,  0.6875]])
     >>> aia.header['cunit1']
     'arcsec'
-    >>> aia.plot()
+    >>> aia.show()
     >>> import matplotlib.cm as cm
     >>> import matplotlib.colors as colors
-    >>> aia.plot(cmap=cm.hot, norm=colors.Normalize(1, 2048))
+    >>> aia.show(cmap=cm.hot, norm=colors.Normalize(1, 2048))
     
     See Also
     --------
