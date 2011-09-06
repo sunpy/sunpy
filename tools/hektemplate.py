@@ -2,6 +2,7 @@
 
 from datetime import datetime
 from sunpy.net import attr
+from sunpy.util.util import anytim
 
 class ParamAttr(attr.Attr):
     def __init__(self, name, op, value):
@@ -176,8 +177,8 @@ def _c(wlk, root, state):
 @walker.add_applier(Time)
 # pylint: disable=E0102,C0103,W0613
 def _a(wlk, root, state, dct):
-    dct['event_starttime'] = root.start.strftime('%Y-%m-%dT%H:%M:%S')
-    dct['event_endtime'] = root.end.strftime('%Y-%m-%dT%H:%M:%S')
+    dct['event_starttime'] = anytim(root.start).strftime('%Y-%m-%dT%H:%M:%S')
+    dct['event_endtime'] = anytim(root.end).strftime('%Y-%m-%dT%H:%M:%S')
     return dct
 
 @walker.add_applier(SpartialRegion)
