@@ -4,7 +4,6 @@
 
 from datetime import datetime
 from sunpy.net import attr
-from sunpy.util import util
 
 class ParamAttr(attr.Attr):
     def __init__(self, name, op, value):
@@ -179,8 +178,8 @@ def _c(wlk, root, state):
 @walker.add_applier(Time)
 # pylint: disable=E0102,C0103,W0613
 def _a(wlk, root, state, dct):
-    dct['event_starttime'] = util.anytim(root.start).strftime('%Y-%m-%dT%H:%M:%S')
-    dct['event_endtime'] = util.anytim(root.end).strftime('%Y-%m-%dT%H:%M:%S')
+    dct['event_starttime'] = root.start.strftime('%Y-%m-%dT%H:%M:%S')
+    dct['event_endtime'] = root.end.strftime('%Y-%m-%dT%H:%M:%S')
     return dct
 
 @walker.add_applier(SpartialRegion)
@@ -276,7 +275,24 @@ class AR(ListAttr):
     def __init__(self):
             ListAttr.__init__(self, "event_type", 'ar')
 
-CE = ListAttr("event_type", 'ce')
+@apply
+class CE(ListAttr):
+    Accel = StringParamAttrWrapper('CME_Accel')
+    AccelUncert = StringParamAttrWrapper('CME_AccelUncert')
+    AccelUnit = StringParamAttrWrapper('CME_AccelUnit')
+    AngularWidth = StringParamAttrWrapper('CME_AngularWidth')
+    AngularWidthUnit = StringParamAttrWrapper('CME_AngularWidthUnit')
+    Mass = StringParamAttrWrapper('CME_Mass')
+    MassUncert = StringParamAttrWrapper('CME_MassUncert')
+    MassUnit = StringParamAttrWrapper('CME_MassUnit')
+    RadialLinVel = StringParamAttrWrapper('CME_RadialLinVel')
+    RadialLinVelMax = StringParamAttrWrapper('CME_RadialLinVelMax')
+    RadialLinVelMin = StringParamAttrWrapper('CME_RadialLinVelMin')
+    RadialLinVelStddev = StringParamAttrWrapper('CME_RadialLinVelStddev')
+    RadialLinVelUncert = StringParamAttrWrapper('CME_RadialLinVelUncert')
+    RadialLinVelUnit = StringParamAttrWrapper('CME_RadialLinVelUnit')
+    def __init__(self):
+            ListAttr.__init__(self, "event_type", 'ce')
 
 @apply
 class CD(ListAttr):
@@ -399,106 +415,144 @@ class TO(ListAttr):
     def __init__(self):
             ListAttr.__init__(self, "event_type", 'to')
 
+@apply
+class Wave(ListAttr):
+    DisplMaxAmpl = StringParamAttrWrapper('WaveDisplMaxAmpl')
+    DisplMinAmpl = StringParamAttrWrapper('WaveDisplMinAmpl')
+    DisplUnit = StringParamAttrWrapper('WaveDisplUnit')
+    lMaxPower = StringParamAttrWrapper('WavelMaxPower')
+    lMaxPowerUncert = StringParamAttrWrapper('WavelMaxPowerUncert')
+    lMaxRange = StringParamAttrWrapper('WavelMaxRange')
+    lMinRange = StringParamAttrWrapper('WavelMinRange')
+    lUnit = StringParamAttrWrapper('WavelUnit')
+
+
+@apply
+class Veloc(ListAttr):
+    MaxAmpl = StringParamAttrWrapper('VelocMaxAmpl')
+    MaxPower = StringParamAttrWrapper('VelocMaxPower')
+    MaxPowerUncert = StringParamAttrWrapper('VelocMaxPowerUncert')
+    MinAmpl = StringParamAttrWrapper('VelocMinAmpl')
+    Unit = StringParamAttrWrapper('VelocUnit')
+
+
+@apply
+class Freq(ListAttr):
+    MaxRange = StringParamAttrWrapper('FreqMaxRange')
+    MinRange = StringParamAttrWrapper('FreqMinRange')
+    PeakPower = StringParamAttrWrapper('FreqPeakPower')
+    Unit = StringParamAttrWrapper('FreqUnit')
+
+
+@apply
+class Intens(ListAttr):
+    MaxAmpl = StringParamAttrWrapper('IntensMaxAmpl')
+    MinAmpl = StringParamAttrWrapper('IntensMinAmpl')
+    Unit = StringParamAttrWrapper('IntensUnit')
+
+
+@apply
+class Area(ListAttr):
+    AtDiskCenter = StringParamAttrWrapper('Area_AtDiskCenter')
+    AtDiskCenterUncert = StringParamAttrWrapper('Area_AtDiskCenterUncert')
+    Raw = StringParamAttrWrapper('Area_Raw')
+    Uncert = StringParamAttrWrapper('Area_Uncert')
+    Unit = StringParamAttrWrapper('Area_Unit')
+
+
+@apply
+class BoundBox(ListAttr):
+    C1LL = StringParamAttrWrapper('BoundBox_C1LL')
+    C1UR = StringParamAttrWrapper('BoundBox_C1UR')
+    C2LL = StringParamAttrWrapper('BoundBox_C2LL')
+    C2UR = StringParamAttrWrapper('BoundBox_C2UR')
+
+
+@apply
+class Bound(ListAttr):
+    ox_C1LL = StringParamAttrWrapper('BoundBox_C1LL')
+    ox_C1UR = StringParamAttrWrapper('BoundBox_C1UR')
+    ox_C2LL = StringParamAttrWrapper('BoundBox_C2LL')
+    ox_C2UR = StringParamAttrWrapper('BoundBox_C2UR')
+    CCNsteps = StringParamAttrWrapper('Bound_CCNsteps')
+    CCStartC1 = StringParamAttrWrapper('Bound_CCStartC1')
+    CCStartC2 = StringParamAttrWrapper('Bound_CCStartC2')
+
+
+@apply
+class OBS(ListAttr):
+    ChannelID = StringParamAttrWrapper('OBS_ChannelID')
+    DataPrepURL = StringParamAttrWrapper('OBS_DataPrepURL')
+    FirstProcessingDate = StringParamAttrWrapper('OBS_FirstProcessingDate')
+    IncludesNRT = StringParamAttrWrapper('OBS_IncludesNRT')
+    Instrument = StringParamAttrWrapper('OBS_Instrument')
+    LastProcessingDate = StringParamAttrWrapper('OBS_LastProcessingDate')
+    LevelNum = StringParamAttrWrapper('OBS_LevelNum')
+    MeanWavel = StringParamAttrWrapper('OBS_MeanWavel')
+    Observatory = StringParamAttrWrapper('OBS_Observatory')
+    Title = StringParamAttrWrapper('OBS_Title')
+    WavelUnit = StringParamAttrWrapper('OBS_WavelUnit')
+
+
+@apply
+class Skel(ListAttr):
+    Curvature = StringParamAttrWrapper('Skel_Curvature')
+    Nsteps = StringParamAttrWrapper('Skel_Nsteps')
+    StartC1 = StringParamAttrWrapper('Skel_StartC1')
+    StartC2 = StringParamAttrWrapper('Skel_StartC2')
+
+
+@apply
+class FRM(ListAttr):
+    Contact = StringParamAttrWrapper('FRM_Contact')
+    HumanFlag = StringParamAttrWrapper('FRM_HumanFlag')
+    Identifier = StringParamAttrWrapper('FRM_Identifier')
+    Institute = StringParamAttrWrapper('FRM_Institute')
+    Name = StringParamAttrWrapper('FRM_Name')
+    ParamSet = StringParamAttrWrapper('FRM_ParamSet')
+    SpecificID = StringParamAttrWrapper('FRM_SpecificID')
+    URL = StringParamAttrWrapper('FRM_URL')
+    VersionNumber = StringParamAttrWrapper('FRM_VersionNumber')
+
+
+@apply
+class Event(ListAttr):
+    C1Error = StringParamAttrWrapper('Event_C1Error')
+    C2Error = StringParamAttrWrapper('Event_C2Error')
+    ClippedSpatial = StringParamAttrWrapper('Event_ClippedSpatial')
+    ClippedTemporal = StringParamAttrWrapper('Event_ClippedTemporal')
+    Coord1 = StringParamAttrWrapper('Event_Coord1')
+    Coord2 = StringParamAttrWrapper('Event_Coord2')
+    Coord3 = StringParamAttrWrapper('Event_Coord3')
+    CoordSys = StringParamAttrWrapper('Event_CoordSys')
+    CoordUnit = StringParamAttrWrapper('Event_CoordUnit')
+    MapURL = StringParamAttrWrapper('Event_MapURL')
+    MaskURL = StringParamAttrWrapper('Event_MaskURL')
+    Npixels = StringParamAttrWrapper('Event_Npixels')
+    PixelUnit = StringParamAttrWrapper('Event_PixelUnit')
+    Probability = StringParamAttrWrapper('Event_Probability')
+    TestFlag = StringParamAttrWrapper('Event_TestFlag')
+    Type = StringParamAttrWrapper('Event_Type')
+
+
+@apply
+class Outflow(ListAttr):
+    Length = StringParamAttrWrapper('Outflow_Length')
+    LengthUnit = StringParamAttrWrapper('Outflow_LengthUnit')
+    OpeningAngle = StringParamAttrWrapper('Outflow_OpeningAngle')
+    Speed = StringParamAttrWrapper('Outflow_Speed')
+    SpeedUnit = StringParamAttrWrapper('Outflow_SpeedUnit')
+    TransSpeed = StringParamAttrWrapper('Outflow_TransSpeed')
+    Width = StringParamAttrWrapper('Outflow_Width')
+    WidthUnit = StringParamAttrWrapper('Outflow_WidthUnit')
+
+
 class Misc(object):
-    Area_AtDiskCenter = StringParamAttrWrapper('Area_AtDiskCenter')
-    Area_AtDiskCenterUncert = StringParamAttrWrapper('Area_AtDiskCenterUncert')
-    Area_Raw = StringParamAttrWrapper('Area_Raw')
-    Area_Uncert = StringParamAttrWrapper('Area_Uncert')
-    Area_Unit = StringParamAttrWrapper('Area_Unit')
-    BoundBox_C1LL = StringParamAttrWrapper('BoundBox_C1LL')
-    BoundBox_C1UR = StringParamAttrWrapper('BoundBox_C1UR')
-    BoundBox_C2LL = StringParamAttrWrapper('BoundBox_C2LL')
-    BoundBox_C2UR = StringParamAttrWrapper('BoundBox_C2UR')
-    Bound_CCNsteps = StringParamAttrWrapper('Bound_CCNsteps')
-    Bound_CCStartC1 = StringParamAttrWrapper('Bound_CCStartC1')
-    Bound_CCStartC2 = StringParamAttrWrapper('Bound_CCStartC2')
-    CME_Accel = StringParamAttrWrapper('CME_Accel')
-    CME_AccelUncert = StringParamAttrWrapper('CME_AccelUncert')
-    CME_AccelUnit = StringParamAttrWrapper('CME_AccelUnit')
-    CME_AngularWidth = StringParamAttrWrapper('CME_AngularWidth')
-    CME_AngularWidthUnit = StringParamAttrWrapper('CME_AngularWidthUnit')
-    CME_Mass = StringParamAttrWrapper('CME_Mass')
-    CME_MassUncert = StringParamAttrWrapper('CME_MassUncert')
-    CME_MassUnit = StringParamAttrWrapper('CME_MassUnit')
-    CME_RadialLinVel = StringParamAttrWrapper('CME_RadialLinVel')
-    CME_RadialLinVelMax = StringParamAttrWrapper('CME_RadialLinVelMax')
-    CME_RadialLinVelMin = StringParamAttrWrapper('CME_RadialLinVelMin')
-    CME_RadialLinVelStddev = StringParamAttrWrapper('CME_RadialLinVelStddev')
-    CME_RadialLinVelUncert = StringParamAttrWrapper('CME_RadialLinVelUncert')
-    CME_RadialLinVelUnit = StringParamAttrWrapper('CME_RadialLinVelUnit')
-    Event_C1Error = StringParamAttrWrapper('Event_C1Error')
-    Event_C2Error = StringParamAttrWrapper('Event_C2Error')
-    Event_ClippedSpatial = StringParamAttrWrapper('Event_ClippedSpatial')
-    Event_ClippedTemporal = StringParamAttrWrapper('Event_ClippedTemporal')
-    Event_Coord1 = StringParamAttrWrapper('Event_Coord1')
-    Event_Coord2 = StringParamAttrWrapper('Event_Coord2')
-    Event_Coord3 = StringParamAttrWrapper('Event_Coord3')
-    Event_CoordSys = StringParamAttrWrapper('Event_CoordSys')
-    Event_CoordUnit = StringParamAttrWrapper('Event_CoordUnit')
-    Event_MapURL = StringParamAttrWrapper('Event_MapURL')
-    Event_MaskURL = StringParamAttrWrapper('Event_MaskURL')
-    Event_Npixels = StringParamAttrWrapper('Event_Npixels')
-    Event_PixelUnit = StringParamAttrWrapper('Event_PixelUnit')
-    Event_Probability = StringParamAttrWrapper('Event_Probability')
-    Event_TestFlag = StringParamAttrWrapper('Event_TestFlag')
-    Event_Type = StringParamAttrWrapper('Event_Type')
-    FRM_Contact = StringParamAttrWrapper('FRM_Contact')
-    FRM_HumanFlag = StringParamAttrWrapper('FRM_HumanFlag')
-    FRM_Identifier = StringParamAttrWrapper('FRM_Identifier')
-    FRM_Institute = StringParamAttrWrapper('FRM_Institute')
-    FRM_Name = StringParamAttrWrapper('FRM_Name')
-    FRM_ParamSet = StringParamAttrWrapper('FRM_ParamSet')
-    FRM_SpecificID = StringParamAttrWrapper('FRM_SpecificID')
-    FRM_URL = StringParamAttrWrapper('FRM_URL')
-    FRM_VersionNumber = StringParamAttrWrapper('FRM_VersionNumber')
-    FreqMaxRange = StringParamAttrWrapper('FreqMaxRange')
-    FreqMinRange = StringParamAttrWrapper('FreqMinRange')
-    FreqPeakPower = StringParamAttrWrapper('FreqPeakPower')
-    FreqUnit = StringParamAttrWrapper('FreqUnit')
-    IntensMaxAmpl = StringParamAttrWrapper('IntensMaxAmpl')
-    IntensMinAmpl = StringParamAttrWrapper('IntensMinAmpl')
-    IntensUnit = StringParamAttrWrapper('IntensUnit')
     KB_Archivist = StringParamAttrWrapper('KB_Archivist')
     MaxMagFieldStrength = StringParamAttrWrapper('MaxMagFieldStrength')
     MaxMagFieldStrengthUnit = StringParamAttrWrapper('MaxMagFieldStrengthUnit')
-    OBS_ChannelID = StringParamAttrWrapper('OBS_ChannelID')
-    OBS_DataPrepURL = StringParamAttrWrapper('OBS_DataPrepURL')
-    OBS_FirstProcessingDate = StringParamAttrWrapper('OBS_FirstProcessingDate')
-    OBS_IncludesNRT = StringParamAttrWrapper('OBS_IncludesNRT')
-    OBS_Instrument = StringParamAttrWrapper('OBS_Instrument')
-    OBS_LastProcessingDate = StringParamAttrWrapper('OBS_LastProcessingDate')
-    OBS_LevelNum = StringParamAttrWrapper('OBS_LevelNum')
-    OBS_MeanWavel = StringParamAttrWrapper('OBS_MeanWavel')
-    OBS_Observatory = StringParamAttrWrapper('OBS_Observatory')
-    OBS_Title = StringParamAttrWrapper('OBS_Title')
-    OBS_WavelUnit = StringParamAttrWrapper('OBS_WavelUnit')
     OscillNPeriods = StringParamAttrWrapper('OscillNPeriods')
     OscillNPeriodsUncert = StringParamAttrWrapper('OscillNPeriodsUncert')
-    Outflow_Length = StringParamAttrWrapper('Outflow_Length')
-    Outflow_LengthUnit = StringParamAttrWrapper('Outflow_LengthUnit')
-    Outflow_OpeningAngle = StringParamAttrWrapper('Outflow_OpeningAngle')
-    Outflow_Speed = StringParamAttrWrapper('Outflow_Speed')
-    Outflow_SpeedUnit = StringParamAttrWrapper('Outflow_SpeedUnit')
-    Outflow_TransSpeed = StringParamAttrWrapper('Outflow_TransSpeed')
-    Outflow_Width = StringParamAttrWrapper('Outflow_Width')
-    Outflow_WidthUnit = StringParamAttrWrapper('Outflow_WidthUnit')
     PeakPower = StringParamAttrWrapper('PeakPower')
     PeakPowerUnit = StringParamAttrWrapper('PeakPowerUnit')
     RasterScanType = StringParamAttrWrapper('RasterScanType')
-    Skel_Curvature = StringParamAttrWrapper('Skel_Curvature')
-    Skel_Nsteps = StringParamAttrWrapper('Skel_Nsteps')
-    Skel_StartC1 = StringParamAttrWrapper('Skel_StartC1')
-    Skel_StartC2 = StringParamAttrWrapper('Skel_StartC2')
-    VelocMaxAmpl = StringParamAttrWrapper('VelocMaxAmpl')
-    VelocMaxPower = StringParamAttrWrapper('VelocMaxPower')
-    VelocMaxPowerUncert = StringParamAttrWrapper('VelocMaxPowerUncert')
-    VelocMinAmpl = StringParamAttrWrapper('VelocMinAmpl')
-    VelocUnit = StringParamAttrWrapper('VelocUnit')
-    WaveDisplMaxAmpl = StringParamAttrWrapper('WaveDisplMaxAmpl')
-    WaveDisplMinAmpl = StringParamAttrWrapper('WaveDisplMinAmpl')
-    WaveDisplUnit = StringParamAttrWrapper('WaveDisplUnit')
-    WavelMaxPower = StringParamAttrWrapper('WavelMaxPower')
-    WavelMaxPowerUncert = StringParamAttrWrapper('WavelMaxPowerUncert')
-    WavelMaxRange = StringParamAttrWrapper('WavelMaxRange')
-    WavelMinRange = StringParamAttrWrapper('WavelMinRange')
-    WavelUnit = StringParamAttrWrapper('WavelUnit')
