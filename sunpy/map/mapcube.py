@@ -30,7 +30,7 @@ class MapCube(np.ndarray):
     input_ : directory, glob string, data array, 
         The data source used to create the map object. This can be either a
         filepath to a directory containing the images you wish to include, a
-        globbable string such as "data/*.fits", a 2d list, or an ndarray.
+        globbable string such as ``"data/*.fits"``, a 2d list, or an ndarray.
     coalign : [ None | 'diff' ]
         Method to use for coalignment. If None, no coalignment will be done.
     derotate : bool
