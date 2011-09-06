@@ -1,6 +1,9 @@
+from __future__ import absolute_import
+
 """
 BaseMap is a generic Map class from which all other Map classes inherit from.
 """
+
 #pylint: disable=E1101,E1121
 __authors__ = ["Keith Hughitt, Steven Christe"]
 __email__ = "keith.hughitt@nasa.gov"
@@ -302,9 +305,9 @@ class BaseMap(np.ndarray):
         }
         params.update(matplot_args)
             
-        plt.imshow(self, origin='lower', extent=extent, **params)
-        plt.colorbar()
-        return plt
+        im = axes.imshow(self, origin='lower', extent=extent, **params)
+        fig.colorbar(im)
+        return fig
     
     def show(self, draw_limb=False, **matplot_args):
         self.plot(draw_limb, **matplot_args).show()
