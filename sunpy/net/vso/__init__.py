@@ -3,6 +3,8 @@
 
 #pylint: disable=W0401,C0103,R0904,W0141
 
+from __future__ import absolute_import
+
 """
 This module provides a wrapper around the VSO API.
 """

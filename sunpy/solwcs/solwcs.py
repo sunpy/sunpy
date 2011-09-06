@@ -1,6 +1,9 @@
+from __future__ import absolute_import
+
 """
 Solar WCS provides functions to parse a World Coordinate System (WCS) fits header.
 """
+
 __authors__ = ["Steven Christe"]
 __email__ = "steven.d.christe@nasa.gov"
 

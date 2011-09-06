@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+
 """
 SunPy
 =====
@@ -24,12 +26,12 @@ map
 
 __version__ = 0.01
 
-import map
-import data.sample
-from map import Map
-from map.mapcube import MapCube
-from map.compositemap import CompositeMap
-from cm import *
+import sunpy.map
+import sunpy.data.sample
+from sunpy.map import Map
+from sunpy.map.mapcube import MapCube
+from sunpy.map.compositemap import CompositeMap
+from sunpy.cm import *
 
 # Sample data
-from data.sample import AIA_171_IMAGE, RHESSI_IMAGE, EIT_195_IMAGE
+from sunpy.data.sample import AIA_171_IMAGE, RHESSI_IMAGE
