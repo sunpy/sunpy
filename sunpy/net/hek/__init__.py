@@ -15,6 +15,7 @@ from functools import partial
 
 from sunpy.net import attr
 from sunpy.net.hek import attrs
+from sunpy.net.vso import attrs as v_attrs
 from sunpy.util.util import unique
 
 DEFAULT_URL = 'http://www.lmsal.com/hek/her'
@@ -53,7 +54,7 @@ class HEKClient(object):
             results.extend(result['result'])
             
             if not result['overmax']:
-                return results
+                return map(Response, results)
             page += 1
     
     def query(self, *query):
@@ -73,9 +74,14 @@ class HEKClient(object):
     
     def merge(self, responses):
         return list(unique(chain.from_iterable(responses), _freeze))
-    
-    def __getitem__(self, name):
-        return self.fields[name](name)
+
+
+class Response(dict):
+    def to_vso(self):
+        return v_attrs.Time(
+            datetime.strptime(self['event_starttime'], "%Y-%m-%dT%H:%M:%S"),
+            datetime.strptime(self['event_endtime'], "%Y-%m-%dT%H:%M:%S")
+        )
 
 
 if __name__ == '__main__':
