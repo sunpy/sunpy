@@ -40,8 +40,8 @@ class MapCube(np.ndarray):
         a list of dictionaries containing the original and normalized header
         tags for the files used to build the MapCube.
 
-    See Also:
-    ---------
+    See Also
+    --------
     numpy.ndarray Parent class for the MapCube object
     :class:`sunpy.map.BaseMap`
         
