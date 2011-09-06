@@ -76,8 +76,8 @@ class BaseMap(np.ndarray):
     >>> import matplotlib.colors as colors
     >>> aia.plot(cmap=cm.hot, norm=colors.Normalize(1, 2048))
     
-    See Also:
-    ---------
+    See Also
+    --------
     numpy.ndarray Parent class for the Map object
     
     References
