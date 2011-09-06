@@ -74,9 +74,6 @@ class HEKClient(object):
     
     def merge(self, responses):
         return list(unique(chain.from_iterable(responses), _freeze))
-    
-    def __getitem__(self, name):
-        return self.fields[name](name)
 
 
 class Response(dict):
