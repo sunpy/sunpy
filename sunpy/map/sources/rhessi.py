@@ -35,6 +35,7 @@ class RHESSIMap(BaseMap):
             'obs': header.get('telescop'),
             'name': "RHESSI " + str(header.get('energy_l')) + '-' + str(header.get('energy_h')) + ' keV',
             'cmap': cm.get_cmap(name = 'rhessi'),
+            'exptime': (util.anytim(header.get('date_end')) - util.anytim(header.get('date_obs'))).seconds
             # 'norm': mpl.colors.Normalize(vmin=cls.min(), vmax=cls.max())
         })
         return properties

@@ -49,6 +49,8 @@ class BaseMap(np.ndarray):
         Observatory name
     rsun : float
         Radius of the sun
+    exptime: float
+        Exposure time of the image in seconds.
     name : str
         Nickname for the image type (e.g. "AIA 171")
     center : dict
@@ -105,6 +107,7 @@ class BaseMap(np.ndarray):
             self.name = None
             self.cmap = None
             self.norm = None
+            self.exptime = None
             
             # Set object attributes dynamically
             for attr, value in list(self.get_properties(header).items()):
@@ -185,6 +188,7 @@ class BaseMap(np.ndarray):
             'inst': "None",
             'meas': "None",
             'obs': "None",
+            'exptime': "None", 
             'name': "Default Map",
             'r_sun': None
         }
@@ -269,7 +273,7 @@ class BaseMap(np.ndarray):
         Parameters
         ----------
         draw_limb : bool
-            Whether a circle should be drawn around the solar limb.
+            Whether the solar limb should be plotted.
         **matplot_args : dict
             Matplotlib Any additional imshow arguments that should be used
             when plotting the image.
