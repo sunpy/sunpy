@@ -206,7 +206,7 @@ def mk_gen(rest):
         ret += '    %s = %s(%r)\n' %(elem, fields[elem], elem)
     return ret
 
-def mk_cls(key, used, pad=1, nokeys=True, init=True, name=None):
+def mk_cls(key, used, pad=1, nokeys=True, init=True, name=None, base='ListAttr'):
     if name is None:
         name = key
     
@@ -219,7 +219,7 @@ def mk_cls(key, used, pad=1, nokeys=True, init=True, name=None):
             raise ValueError
         return '%s = ListAttr("event_type", %r)' % (key, name.lower())
     ret = ''
-    ret += '@apply\nclass %s(ListAttr):\n' % name
+    ret += '@apply\nclass %s(%s):\n' % (name, base)
     for k, v in keys:
         ret += '    %s = %s(%r)\n' % (k[len(key) + pad:], v, k)
     if init:
@@ -262,9 +262,9 @@ if __name__ == '__main__':
     fd.write('\n\n')
     fd.write('\n\n'.join(mk_cls(evt, used, name=NAMES[evt]) for evt in EVENTS))
     fd.write('\n\n')
-    fd.write('\n\n'.join(mk_cls(evt, used, 0, 0, 0, name=NAMES[evt]) for evt in OTHER_NOPAD))
+    fd.write('\n\n'.join(mk_cls(evt, used, 0, 0, 0, NAMES[evt], 'object') for evt in OTHER_NOPAD))
     fd.write('\n\n')
-    fd.write('\n\n'.join(mk_cls(evt, used, 1, 0, 0, name=NAMES[evt]) for evt in OTHER))
+    fd.write('\n\n'.join(mk_cls(evt, used, 1, 0, 0, NAMES[evt], 'object') for evt in OTHER))
     fd.write('\n\n')
     fd.write(mk_gen(set(fields) - used))
     
