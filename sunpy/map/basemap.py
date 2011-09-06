@@ -1,6 +1,9 @@
+from __future__ import absolute_import
+
 """
 BaseMap is a generic Map class from which all other Map classes inherit from.
 """
+
 #pylint: disable=E1101,E1121
 __authors__ = ["Keith Hughitt, Steven Christe"]
 __email__ = "keith.hughitt@nasa.gov"
@@ -71,10 +74,10 @@ class BaseMap(np.ndarray):
     [ 0.    ,  0.    , -1.1875, ...,  0.125 ,  0.    ,  0.6875]])
     >>> aia.header.get('cunit1')
     'arcsec'
-    >>> aia.plot()
+    >>> aia.show()
     >>> import matplotlib.cm as cm
     >>> import matplotlib.colors as colors
-    >>> aia.plot(cmap=cm.hot, norm=colors.Normalize(1, 2048))
+    >>> aia.show(cmap=cm.hot, norm=colors.Normalize(1, 2048))
     
     See Also
     --------
@@ -298,9 +301,13 @@ class BaseMap(np.ndarray):
         }
         params.update(matplot_args)
             
-        plt.imshow(self, origin='lower', extent=extent, **params)
-        plt.colorbar()
-        plt.show()
+        im = axes.imshow(self, origin='lower', extent=extent, **params)
+        fig.colorbar(im)
+        return fig
+    
+    def show(self, draw_limb=False, **matplot_args):
+        self.plot(draw_limb, **matplot_args).show()
+
 
 class UnrecognizedDataSouceError(ValueError):
     """Exception to raise when an unknown datasource is encountered"""
