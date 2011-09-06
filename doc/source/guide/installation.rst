@@ -5,7 +5,7 @@ Pre-requisites
 --------------
 SunPy stands on the shoulders of giants:
 
-* `NumPy <http://numpy.scipy.org/>`_
+* `NumPy/SciPy <http://numpy.scipy.org/>`_
 * `Matplotlib <http://matplotlib.sourceforge.net/>`_
 * `PyFITS <http://www.stsci.edu/resources/software_hardware/pyfits>`_
 
@@ -32,9 +32,6 @@ SunPy:
 >>> import sunpy
 >>> sunpy.Map(sunpy.AIA_171_IMAGE).show()
 
-Mac
----
-Installation instructions for Mac.
 
 Windows
 -------
