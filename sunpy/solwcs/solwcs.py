@@ -144,7 +144,7 @@ def convert_data_to_coord(header, pixel_index = None):
         
     return coord
 
-def test(x, y):
+def test(x, y, hpln, hplt):
     
     fits = pyfits.open(sunpy.AIA_171_IMAGE)
     header = fits[0].header
@@ -154,10 +154,11 @@ def test(x, y):
     
     r = convert_hpc_hcc(header, x,y)
     print(r)
+    r = convert_hcc_hpc(header, hpln, hplt)
+    print(r)
     
 def convert_hpc_hcc(header, hpln, hplt, distance = None):
-    """This routine converts Helioprojective-Cartesian (HPC) coordinates into Heliocentric-Cartesian (HCC) coordinates,
-        using equations 15 in Thompson (2006), A&A, 449, 791-803."""
+    """This routine converts Helioprojective-Cartesian (HPC) coordinates into Heliocentric-Cartesian (HCC) coordinates, using equations 15 in Thompson (2006), A&A, 449, 791-803."""
     
     cx = convert_ang_units(unit = get_units(header, axis = 'x'))
     cy = convert_ang_units(unit = get_units(header, axis = 'y'))
@@ -187,8 +188,27 @@ def convert_hpc_hcc(header, hpln, hplt, distance = None):
     x = distance * cosy * sinx
     y = distance * siny
     z = dsun - distance * cosy * cosx
-    print(distance)
     return [x,y,z]
+
+def convert_hcc_hpc(header, x, y, distance = None):
+    """Convert Heliocentric-Cartesian (HCC) to angular Helioprojective-Cartesian (HPC) coordinates (in degrees)."""
+    
+    dsun = header.get('dsun_obs')
+    # Should we use the rsun_ref defined in the fits file or our local (possibly different/more correct) definition
+    rsun = header.get('rsun_ref')
+    
+    # Calculate the z coordinate by assuming that it is on the surface of the Sun
+    z = rsun ** 2 - x ** 2 - y ** 2
+    z = np.sqrt( z )
+    
+    zeta = dsun - z
+    distance = np.sqrt(x ** 2 + y ** 2 + zeta ** 2)
+    hpln = np.arctan(x / zeta)
+    hplt = np.arcsin(y / distance)
+    
+    # convert the results to degrees
+    result = np.rad2deg([hpln, hplt])
+    return result
 
 def proj_tan(header, coord, force = False):
     """Applies the gnomonic (TAN) projection to intermediate relative coordinates."""
