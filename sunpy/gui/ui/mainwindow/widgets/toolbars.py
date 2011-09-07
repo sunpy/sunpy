@@ -6,6 +6,7 @@ Author: Matt Earnshaw <matt@earnshaw.org.uk>
 
 from PyQt4.QtCore import SIGNAL
 from PyQt4.QtGui import QIcon, QAction
+from matplotlib import pyplot as plt
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg
 
 class PlotToolBar(NavigationToolbar2QTAgg):
@@ -33,17 +34,23 @@ class PlotToolBar(NavigationToolbar2QTAgg):
         for action in self.actions():
             action.setStatusTip(action.toolTip())
     
-    def show_cm_selector(self, toggled):
-        # cm_selector probably shouldn't be an attribute of a PlotToolBar instance
-        # but rather of the mainwindow...
-        if toggled:
+    def show_cm_selector(self, toggled):        
+       
+        if toggled: 
+            # Add colormaps to selector
+            maps = sorted(m for m in plt.cm.datad if not m.endswith("_r"))
+            for map in maps:
+                self.parent.cmComboBox.addItem(map)
+
+            hide_tip = "Hide color map selector"
+            self.actionCm_selector.setToolTip(hide_tip)
+            self.actionCm_selector.setStatusTip(hide_tip)
             self.parent.cmComboBox.show()
-            self.actionCm_selector.setToolTip("Hide color map selector")
-            self.actionCm_selector.setStatusTip("Hide color map selector")
         else:
+            show_tip = "Show color map selector"
+            self.actionCm_selector.setToolTip(show_tip)
+            self.actionCm_selector.setStatusTip(show_tip)
             self.parent.cmComboBox.hide()
-            self.actionCm_selector.setToolTip("Show color map selector")
-            self.actionCm_selector.setStatusTip("Show color map selector")
 
     # Move this to a gui.util module?
     def create_action(self, signal=SIGNAL('triggered()'), slot=None, text=None,

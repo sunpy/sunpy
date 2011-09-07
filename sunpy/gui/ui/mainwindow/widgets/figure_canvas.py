@@ -3,27 +3,22 @@
 
 """
 Plot widgets for the PlotMan
-subclassed from the matplotlib FigureCanvasQTAgg 
+subclassed from the matplotlib FigureCanvasQTAgg
 
 Author: Matt Earnshaw <matt@earnshaw.org.uk>
 """
 
-from matplotlib.figure import Figure
 from PyQt4.QtGui import QSizePolicy
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg
+
 
 class FigureCanvas(FigureCanvasQTAgg):
     """ Base canvas object, resizes to fit window """
 
-    def __init__(self, parent=None, width=5, height=4, dpi=100):
-        self.fig = Figure(figsize=(width, height), dpi=dpi)
-        self.axes = self.fig.add_subplot(111)
-        self.axes.hold(False)
-        FigureCanvasQTAgg.__init__(self, self.fig)
+    def __init__(self, figure, parent=None):
+        self.figure = figure
+        FigureCanvasQTAgg.__init__(self, self.figure)
         FigureCanvasQTAgg.setSizePolicy(self,
                                    QSizePolicy.Expanding,
                                    QSizePolicy.Expanding)
         FigureCanvasQTAgg.updateGeometry(self)
-
-
-
