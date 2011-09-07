@@ -11,7 +11,7 @@ Author: Matt Earnshaw <matt@earnshaw.org.uk>
 
 import sunpy
 from PyQt4.QtCore import pyqtSignature, QFileInfo
-from PyQt4.QtGui import QMainWindow, QFileDialog, QVBoxLayout, QWidget
+from PyQt4.QtGui import QMainWindow, QFileDialog
 from sunpy.gui.ui.mainwindow import ui_mainwindow
 from sunpy.gui.ui.mainwindow.widgets.tab_page import TabPage
 
@@ -32,11 +32,7 @@ class MainWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
                     filter=self.tr("FITS files (*.fit *.dst *.fits *.fts *.lilo *.lihi *.silo *.sihi *.mxlo *.mxhi *.rilo *.rihi *.vdlo *.vdhi)")))
         file_path = str(file_info.filePath())
 
-        figure = sunpy.Map(file_path)
-        tab_page = TabPage(figure, self.tabWidget)
-        tab_page.canvas.axes.imshow(tab_page.fig)
-
-        tab_page.canvas.draw()
+        tab_page = TabPage(sunpy.Map(file_path), self.tabWidget)
         self.tabWidget.addTab(tab_page, file_info.fileName())
 
 if __name__ == "__main__":
