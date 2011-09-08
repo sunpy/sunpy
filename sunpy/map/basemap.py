@@ -117,8 +117,6 @@ class BaseMap(np.ndarray):
             for attr, value in list(self.get_properties(header).items()):
                 setattr(self, attr, value)
 
-            self.norm = colors.Normalize(data.min(), data.max())
-
             self.center = {
                 "x": wcs.get_center(header, axis='x'),
                 "y": wcs.get_center(header, axis='y')
