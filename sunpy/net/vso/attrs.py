@@ -68,11 +68,8 @@ class Time(Attr, _Range):
             raise TypeError
         return _Range.__xor__(self, other)
     
-    @classmethod
-    def dt(cls, start, end, near=None):
-        if near is not None:
-            near = datetime(*near)
-        return cls(datetime(*start), datetime(*end), near)
+    def pad(self, timedelta):
+        return Time(self.start - timedelta, self.start + timedelta)
     
     def __repr__(self):
         return '<Time(%r, %r, %r)>' % (self.start, self.end, self.near)
@@ -108,6 +105,9 @@ class _SimpleAttr(Attr):
     
     def collides(self, other):
         return isinstance(other, self.__class__)
+    
+    def __repr__(self):
+        return "<%s(%r)>" % (self.__class__.__name__, self.value)
 
 
 class Provider(_SimpleAttr):
