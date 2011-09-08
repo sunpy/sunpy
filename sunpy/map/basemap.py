@@ -52,10 +52,13 @@ class BaseMap(np.ndarray):
         Observatory name
     rsun : float
         Radius of the sun
+    exptime: float
+        Exposure time of the image in seconds.
     name : str
         Nickname for the image type (e.g. "AIA 171")
     center : dict
-        X and Y coordinate for the center of the sun in units
+        X and Y coordinate of the center of the map in units. Usually represents the offset
+        between the center of the Sun and the center of the map.
     scale: dict
         Image scale along the x and y axes in units/pixel
     units: dict
@@ -108,10 +111,13 @@ class BaseMap(np.ndarray):
             self.name = None
             self.cmap = None
             self.norm = None
+            self.exptime = None
             
             # Set object attributes dynamically
             for attr, value in list(self.get_properties(header).items()):
                 setattr(self, attr, value)
+
+            self.norm = colors.Normalize(data.min(), data.max())
 
             self.center = {
                 "x": wcs.get_center(header, axis='x'),
@@ -182,12 +188,12 @@ class BaseMap(np.ndarray):
         """Returns default map properties""" 
         return {
             'cmap': cm.gray,  #@UndefinedVariable
-            'norm': colors.Normalize(5, 1024, True),
             'date': datetime.today(),
             'det': "None",
             'inst': "None",
             'meas': "None",
             'obs': "None",
+            'exptime': "None", 
             'name': "Default Map",
             'r_sun': None
         }
@@ -272,7 +278,7 @@ class BaseMap(np.ndarray):
         Parameters
         ----------
         draw_limb : bool
-            Whether a circle should be drawn around the solar limb.
+            Whether the solar limb should be plotted.
         **matplot_args : dict
             Matplotlib Any additional imshow arguments that should be used
             when plotting the image.
