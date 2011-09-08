@@ -272,13 +272,15 @@ class BaseMap(np.ndarray):
 
         return self.__class__(data, header)
    
-    def plot(self, draw_limb=False, **matplot_args):
+    def plot(self, draw_limb=False, gamma=1.0, **matplot_args):
         """Plots the map object using matplotlib
         
         Parameters
         ----------
         draw_limb : bool
             Whether the solar limb should be plotted.
+        gamma : float
+            Gamma value to use for the color map
         **matplot_args : dict
             Matplotlib Any additional imshow arguments that should be used
             when plotting the image.
@@ -299,6 +301,9 @@ class BaseMap(np.ndarray):
 
         # Determine extent
         extent = self.get_xrange() + self.get_yrange()
+        
+        # Apply gamma value to color map
+        self.cmap.set_gamma(gamma)
 
         # Matplotlib arguments
         params = {
@@ -311,8 +316,9 @@ class BaseMap(np.ndarray):
         fig.colorbar(im)
         return fig
     
-    def show(self, draw_limb=False, **matplot_args):
-        self.plot(draw_limb, **matplot_args).show()
+    def show(self, draw_limb=False, gamma=1.0, **matplot_args):
+        """Displays map on screen. Arguments are same as plot()."""
+        self.plot(draw_limb, gamma, **matplot_args).show()
 
 
 class UnrecognizedDataSouceError(ValueError):
