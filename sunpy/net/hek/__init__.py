@@ -77,11 +77,22 @@ class HEKClient(object):
 
 
 class Response(dict):
-    def to_vso(self):
+    @property
+    def vso_time(self):
         return v_attrs.Time(
             datetime.strptime(self['event_starttime'], "%Y-%m-%dT%H:%M:%S"),
             datetime.strptime(self['event_endtime'], "%Y-%m-%dT%H:%M:%S")
         )
+    
+    @property
+    def vso_instrument(self):
+        if self['obs_instrument'] == 'HEK':
+            raise ValueError("No instrument contained.")
+        return v_attrs.Instrument(self['obs_instrument'])
+    
+    @property
+    def vso_all(self):
+        return attr.and_(self.vso_time, self.vso_instrument)
 
 
 if __name__ == '__main__':
@@ -89,7 +100,8 @@ if __name__ == '__main__':
     from sunpy.net.hek import attrs as a
 
     c = HEKClient()
-    print len(c.query(
+    b = c.query(
         a.Time((2010, 1, 1), (2010, 1, 2)) | a.Time((2010, 1, 3), (2010, 1, 4)),
         a.AR, a.FL
-    ))
+    )
+    print b[0].vso_all
