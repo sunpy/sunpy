@@ -6,6 +6,7 @@ __email__ = "keith.hughitt@nasa.gov"
 
 from sunpy.map.basemap import BaseMap
 from datetime import datetime
+from sunpy.util import util
 
 class EITMap(BaseMap):
     """EIT Image Map definition"""
@@ -19,13 +20,14 @@ class EITMap(BaseMap):
         
         properties = BaseMap.get_properties()
         properties.update({
-            "date": datetime.strptime(header['date_obs'], date_format),
+            "date": util.anytim(header.get('date_obs')),
             "det": "EIT",
             "inst": "EIT",
-            "meas": header['wavelnth'],
+            "meas": header.get('wavelnth'),
             "obs": "SOHO",
-            "name": "EIT %s" % header['wavelnth'],
-            "r_sun": header['solar_r']
+            "name": "EIT %s" % header.get('wavelnth'),
+            "exptime": header.get('exptime'),
+            "r_sun": header.get('solar_r')
         })
         return properties
         
@@ -46,12 +48,13 @@ class LASCOMap(BaseMap):
 
         properties = BaseMap.get_properties()
         properties.update({
-            "date": datetime.strptime(datestr, "%Y/%m/%dT%H:%M:%S.%f"),
-            "det": header['detector'],
+            "date": util.anytim(datestr),
+            "det": header.get('detector'),
             "inst": "LASCO",
-            "meas": header['wavelnth'],
+            "meas": header.get('wavelnth'),
             "obs": "SOHO",
-            "name": "LASCO %s" % header['detector'],
+            "name": "LASCO %s" % header.get('detector'),
+            "exptime": header.get("exptime"),
             "r_sun": None
         })
         return properties
@@ -76,18 +79,19 @@ class MDIMap(BaseMap):
             datestr = datestr[:17] + "30" + datestr[19:]
         
         # Determine measurement
-        dpcobsr = header['dpc_obsr']
+        dpcobsr = header.get('dpc_obsr')
         meas = "magnetogram" if dpcobsr.find('Mag') != -1 else "continuum"
         
         properties = BaseMap.get_properties()        
         properties.update({
-            "date": datetime.strptime(datestr, "%Y-%m-%dT%H:%M:%S.%fZ"),
+            "date": util.anytim(datestr),
             "det": "MDI",
             "inst": "MDI",
             "meas": meas,
             "obs": "SOHO",
             "name": "MDI %s" % meas,
-            "r_sun": header['radius']
+            "exptime": header.get('exptime'),
+            "r_sun": header.get('radius')
         })
         return properties
         
