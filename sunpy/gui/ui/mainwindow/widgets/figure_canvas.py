@@ -19,6 +19,6 @@ class FigureCanvas(FigureCanvasQTAgg):
         self.figure = figure
         FigureCanvasQTAgg.__init__(self, self.figure)
         FigureCanvasQTAgg.setSizePolicy(self,
-                                   QSizePolicy.Expanding,
-                                   QSizePolicy.Expanding)
+                                   QSizePolicy.MinimumExpanding,
+                                   QSizePolicy.MinimumExpanding)
         FigureCanvasQTAgg.updateGeometry(self)

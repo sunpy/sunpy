@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/matt/programming/sunpy/sunpy/gui/ui/mainwindow/mainwindow.ui'
 #
-# Created: Wed Aug 31 18:27:07 2011
+# Created: Thu Sep  8 17:25:24 2011
 #      by: PyQt4 UI code generator 4.8.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -51,6 +51,25 @@ class Ui_MainWindow(object):
         self.fileToolBar.setIconSize(QtCore.QSize(22, 22))
         self.fileToolBar.setObjectName(_fromUtf8("fileToolBar"))
         MainWindow.addToolBar(QtCore.Qt.TopToolBarArea, self.fileToolBar)
+        self.dockWidget = QtGui.QDockWidget(MainWindow)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.dockWidget.sizePolicy().hasHeightForWidth())
+        self.dockWidget.setSizePolicy(sizePolicy)
+        self.dockWidget.setFloating(False)
+        self.dockWidget.setFeatures(QtGui.QDockWidget.DockWidgetFloatable|QtGui.QDockWidget.DockWidgetMovable)
+        self.dockWidget.setObjectName(_fromUtf8("dockWidget"))
+        self.dockWidgetContents = QtGui.QWidget()
+        self.dockWidgetContents.setObjectName(_fromUtf8("dockWidgetContents"))
+        self.horizontalLayout_2 = QtGui.QHBoxLayout(self.dockWidgetContents)
+        self.horizontalLayout_2.setObjectName(_fromUtf8("horizontalLayout_2"))
+        self.widget = ColorOptions(self.dockWidgetContents)
+        self.widget.setAutoFillBackground(False)
+        self.widget.setObjectName(_fromUtf8("widget"))
+        self.horizontalLayout_2.addWidget(self.widget)
+        self.dockWidget.setWidget(self.dockWidgetContents)
+        MainWindow.addDockWidget(QtCore.Qt.DockWidgetArea(2), self.dockWidget)
         self.actionOpen_file = QtGui.QAction(MainWindow)
         icon1 = QtGui.QIcon()
         icon1.addPixmap(QtGui.QPixmap(_fromUtf8(":/open_plot.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
@@ -76,6 +95,7 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "SunPy PlotMan", None, QtGui.QApplication.UnicodeUTF8))
         self.menuFile.setTitle(QtGui.QApplication.translate("MainWindow", "&File", None, QtGui.QApplication.UnicodeUTF8))
         self.fileToolBar.setWindowTitle(QtGui.QApplication.translate("MainWindow", "File", None, QtGui.QApplication.UnicodeUTF8))
+        self.dockWidget.setWindowTitle(QtGui.QApplication.translate("MainWindow", "Color options", None, QtGui.QApplication.UnicodeUTF8))
         self.actionOpen_file.setText(QtGui.QApplication.translate("MainWindow", "Open file...", None, QtGui.QApplication.UnicodeUTF8))
         self.actionOpen_file.setToolTip(QtGui.QApplication.translate("MainWindow", "Open a FITS file for plotting...", None, QtGui.QApplication.UnicodeUTF8))
         self.actionOpen_file.setStatusTip(QtGui.QApplication.translate("MainWindow", "Open a FITS file for plotting...", None, QtGui.QApplication.UnicodeUTF8))
@@ -84,4 +104,5 @@ class Ui_MainWindow(object):
         self.actionExit_PlotMan.setToolTip(QtGui.QApplication.translate("MainWindow", "Close the application.", None, QtGui.QApplication.UnicodeUTF8))
         self.actionExit_PlotMan.setStatusTip(QtGui.QApplication.translate("MainWindow", "Close the application.", None, QtGui.QApplication.UnicodeUTF8))
 
+from widgets.coloroptions import ColorOptions
 from resources import qrc_resources

@@ -1,5 +1,10 @@
 /plotman.py
 ----------
+- Keep track of plot's options for each tab to restore to color options widget
+- Replacement for MPL Tk Viewer (?)
+- Colormap hierarchy
+- Colormap names (?)
+- Fix canvas scaling
 - Implement contour plotting / overlays
 - Connect to VSO and other data services
 - Use sunpy.Plot and provide interface for its options
