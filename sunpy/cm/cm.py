@@ -14,16 +14,16 @@ import matplotlib.cbook as cbook
 from sunpy.cm import _cm
 import matplotlib.cm as cm
 
-sdoaia94 = _cm.__aia_color_table__(wavelength = 94)
-sdoaia131 = _cm.__aia_color_table__(wavelength = 131)
-sdoaia171 = _cm.__aia_color_table__(wavelength = 171)
-sdoaia193 = _cm.__aia_color_table__(wavelength = 193)
-sdoaia211 = _cm.__aia_color_table__(wavelength = 211)
-sdoaia304 = _cm.__aia_color_table__(wavelength = 304)
-sdoaia335 = _cm.__aia_color_table__(wavelength = 335)
-sdoaia1600 = _cm.__aia_color_table__(wavelength = 1600)
-sdoaia1700 = _cm.__aia_color_table__(wavelength = 1700)
-sdoaia4500 = _cm.__aia_color_table__(wavelength = 4500)
+sdoaia94 = _cm.aia_color_table(94)
+sdoaia131 = _cm.aia_color_table(131)
+sdoaia171 = _cm.aia_color_table(171)
+sdoaia193 = _cm.aia_color_table(193)
+sdoaia211 = _cm.aia_color_table(211)
+sdoaia304 = _cm.aia_color_table(304)
+sdoaia335 = _cm.aia_color_table(335)
+sdoaia1600 = _cm.aia_color_table(1600)
+sdoaia1700 = _cm.aia_color_table(1700)
+sdoaia4500 = _cm.aia_color_table(4500)
 
 cmlist = {
           'sdoaia94': sdoaia94,
@@ -39,22 +39,18 @@ cmlist = {
           'rhessi': cm.jet
           }
 
-def get_cmap(name=None, lut=None):
+def get_cmap(name='sdoaia94', lut=None):
     """
     Get a colormap instance.
 
     """
-    if name is None:
-        name = 'sdoaia94'
-
     if name in cmlist:
         return cmlist.get(name)
     else:
         raise ValueError("Colormap %s is not recognized" % name)
 
 def show_colormaps(cm = None):
-
-    maps = sorted(m for m in cmlist)
+    maps = sorted(cmlist)
     nmaps = len(maps) + 1
     
     a = np.linspace(0, 1, 256).reshape(1,-1)
@@ -72,11 +68,11 @@ def show_colormaps(cm = None):
     plt.show()
 
 
-def test_equalize(data):
+def test_equalize():
     '''Test'''
 
     dfile = cbook.get_sample_data('s1045.ima', asfileobj=False)
-
+    
     im = np.fromstring(file(dfile, 'rb').read(), np.uint16).astype(float)
     im.shape = 256, 256
 
@@ -98,3 +94,6 @@ def test_equalize(data):
     pylab.imshow(im, cmap=histeq_cmap)
     pylab.title('histeq')
     pylab.show()
+
+if __name__ == '__main__':
+    test_equalize()
