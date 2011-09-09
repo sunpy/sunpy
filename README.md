@@ -32,9 +32,8 @@ Here is a quick example of plotting an AIA image:
 ```python
 >>> import sunpy
 >>> import matplotlib.cm as cm
->>> import matplotlib.colors as colors
->>> map = sunpy.Map(sunpy.AIA_171_IMAGE)
->>> map.show(cmap=cm.hot, norm=colors.Normalize(1, 2048))
+>>> m = sunpy.Map(sunpy.AIA_171_IMAGE)
+>>> m.show(cmap=cm.hot)
 ```
 
 Getting Help

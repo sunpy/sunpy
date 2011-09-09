@@ -67,6 +67,16 @@ def system_info():
         from pyfits import __version__ as pyfits_version
     except ImportError:
         pyfits_version = "NOT INSTALLED"
+        
+    try:
+        from suds import __version__ as suds_version
+    except ImportError:
+        suds_version = "NOT INSTALLED"
+        
+    try:
+        from PyQt4.QtCore import PYQT_VERSION_STR as pyqt_version
+    except ImportError:
+        pyqt_version = "NOT INSTALLED"
 
     print("###########")
     print(" Libraries")
@@ -76,4 +86,6 @@ def system_info():
     print("NumPy: %s" % numpy_version)
     print("SciPy: %s" % scipy_version)
     print("Matplotlib: %s" % matplotlib_version)
-    print("PyFITS: %s\n" % pyfits_version)
+    print("PyFITS: %s" % pyfits_version)
+    print("SUDS: %s" % suds_version)
+    print("PyQt: %s\n" % pyqt_version)
