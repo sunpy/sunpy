@@ -38,13 +38,14 @@ def anytim(time_string=None):
              "%Y/%m/%d %H:%M:%S",       # Example 2007/05/04 21:08:12
              "%Y/%m/%d %H:%M:%S.%f",    # Example 2007/05/04 21:08:12.999999
              "%Y-%m-%d %H:%M:%S.%f",    # Example 2007-05-04 21:08:12.999999
+             "%Y-%m-%dT%H:%M:%S.%fZ",   # Example 2007-05-04T21:08:12.999Z
              "%Y-%m-%d %H:%M:%S",       # Example 2007-05-04 21:08:12
              "%Y-%m-%dT%H:%M:%S",       # Example 2007-05-04T21:08:12
              "%Y%m%dT%H%M%S",           # Example 20070504T210812
              "%Y-%b-%d %H:%M:%S",       # Example 2007-May-04 21:08:12
              "%Y-%b-%d",                # Example 2007-May-04
              "%Y-%m-%d",                # Example 2007-05-04
-             "%Y/%m/%d"]                # Example 2007/05/04
+             "%Y/%m/%d"]                # Example 2007/05/04 
         for time_format in time_format_list: 
             try: 
                 return datetime.strptime(time_string, time_format)
