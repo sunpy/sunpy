@@ -5,8 +5,8 @@ Pre-requisites
 --------------
 SunPy stands on the shoulders of giants:
 
-* `NumPy <http://numpy.scipy.org/>`_
-* `Matplotlib <http://matplotlib.sourceforge.net/>`_
+* `NumPy <http://numpy.scipy.org/>`__
+* `Matplotlib <http://matplotlib.sourceforge.net/>`__
 * `PyFITS <http://www.stsci.edu/resources/software_hardware/pyfits>`_
 
 Linux
@@ -106,11 +106,11 @@ You should update the ``PATH`` environment variable so that Python executables a
 
 **1b. Install packaged modules**
 
-Download and install `NumPy <http://sourceforge.net/projects/numpy/files/NumPy/1.6.1/numpy-1.6.1-win32-superpack-python2.7.exe/download>`_.
+Download and install `NumPy <http://sourceforge.net/projects/numpy/files/NumPy/1.6.1/numpy-1.6.1-win32-superpack-python2.7.exe/download>`__.
 
 Download and install `SciPy <http://sourceforge.net/projects/scipy/files/scipy/0.9.0/scipy-0.9.0-win32-superpack-python2.7.exe/download>`_.
 
-Download and install `matplotlib <http://sourceforge.net/projects/matplotlib/files/matplotlib/matplotlib-1.0.1/matplotlib-1.0.1.win32-py2.7.exe/download>`_.
+Download and install `matplotlib <http://sourceforge.net/projects/matplotlib/files/matplotlib/matplotlib-1.0.1/matplotlib-1.0.1.win32-py2.7.exe/download>`__.
 
 Download and install `setuptools 
 <http://pypi.python.org/packages/2.7/s/setuptools/setuptools-0.6c11.win32-py2.7.exe>`_.
