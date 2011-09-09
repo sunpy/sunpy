@@ -49,7 +49,7 @@ def get_cmap(name='sdoaia94', lut=None):
     else:
         raise ValueError("Colormap %s is not recognized" % name)
 
-def show_colormaps(cm = None):
+def show_colormaps():
     maps = sorted(cmlist)
     nmaps = len(maps) + 1
     
