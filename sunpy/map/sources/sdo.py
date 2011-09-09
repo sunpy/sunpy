@@ -7,6 +7,7 @@ __email__ = "keith.hughitt@nasa.gov"
 from sunpy.map.basemap import BaseMap
 from sunpy.cm import cm
 from sunpy.util import util as util
+from matplotlib import colors
 
 class AIAMap(BaseMap):
     """AIA Image Map definition
@@ -25,13 +26,15 @@ class AIAMap(BaseMap):
         # Note: Trailing "Z" in date was dropped on 2010/12/07        
         properties = BaseMap.get_properties()
         properties.update({
-            'date': util.anytim(header['date-obs'][0:22]),
+            'date': util.anytim(header.get('date-obs')),
             'det': "AIA",
             'inst': "AIA",
-            'meas': header['wavelnth'],
+            'meas': header.get('wavelnth'),
             'obs': "SDO",
-            'name': "AIA %s" % header['wavelnth'],
-            'cmap': cm.get_cmap(name = 'sdoaia' + str(header['wavelnth']))
+            'name': "AIA %s" % header.get('wavelnth'),
+            'norm': colors.Normalize(0, 1024),
+            'cmap': cm.get_cmap(name = 'sdoaia' + str(header.get('wavelnth'))),
+            'exptime': header.get('exptime')
         })
         return properties
         
@@ -53,14 +56,14 @@ class HMIMap(BaseMap):
         
         properties = BaseMap.get_properties()
         properties.update({
-            "norm": None,
-            "date": util.anytim(header['date-obs'][0:22]),
+            "date": util.anytim(header.get('date-obs')),
             "det": "HMI",
             "inst": "HMI",
             "meas": meas,
             "obs": "SDO",
             "name": "HMI %s" % meas,
-            "r_sun": header['rsun_obs']
+            "r_sun": header.get('rsun_obs'),
+            "exptime": header.get('exptime')
         })
         return properties
         

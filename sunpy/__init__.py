@@ -34,4 +34,4 @@ from sunpy.map.compositemap import CompositeMap
 from sunpy.cm import *
 
 # Sample data
-from sunpy.data.sample import AIA_171_IMAGE, RHESSI_IMAGE
+from sunpy.data.sample import AIA_171_IMAGE, RHESSI_IMAGE, EIT_195_IMAGE
