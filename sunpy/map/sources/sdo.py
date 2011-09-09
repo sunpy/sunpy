@@ -7,6 +7,7 @@ __email__ = "keith.hughitt@nasa.gov"
 from sunpy.map.basemap import BaseMap
 from sunpy.cm import cm
 from sunpy.util import util as util
+from matplotlib import colors
 
 class AIAMap(BaseMap):
     """AIA Image Map definition
@@ -31,6 +32,7 @@ class AIAMap(BaseMap):
             'meas': header.get('wavelnth'),
             'obs': "SDO",
             'name': "AIA %s" % header.get('wavelnth'),
+            'norm': colors.Normalize(0, 1024),
             'cmap': cm.get_cmap(name = 'sdoaia' + str(header.get('wavelnth'))),
             'exptime': header.get('exptime')
         })
@@ -54,7 +56,6 @@ class HMIMap(BaseMap):
         
         properties = BaseMap.get_properties()
         properties.update({
-            "norm": None,
             "date": util.anytim(header.get('date-obs')),
             "det": "HMI",
             "inst": "HMI",
