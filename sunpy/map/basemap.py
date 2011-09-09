@@ -23,6 +23,15 @@ Questions
 2. Are self.r_sun and radius below different? (rsun or rsun_obs for AIA?)
 """
 
+
+def draw_limb(map_, fig, axes):
+    circ = patches.Circle([0, 0], radius=map_.rsun, 
+        fill=False, color='white')
+    axes.add_artist(circ)
+    return fig, axes
+_draw_limb = draw_limb
+
+
 class BaseMap(np.ndarray):
     """
     BaseMap(data, header)
@@ -97,6 +106,8 @@ class BaseMap(np.ndarray):
             obj = data.view(cls)
         elif isinstance(data, list):
             obj = np.asarray(data).view(cls)
+        else:
+            raise TypeError('Invalid data')
         
         return obj
     
@@ -191,18 +202,27 @@ class BaseMap(np.ndarray):
             'name': "Default Map",
             'r_sun': None
         }
-        
-    def get_xrange(self):
+    
+    @property
+    def xrange(self):
         """Return the X range of the image in arcsec."""        
         xmin = self.center['x'] - self.shape[1] / 2 * self.scale['x']
         xmax = self.center['x'] + self.shape[1] / 2 * self.scale['x']
         return [xmin, xmax]
-        
-    def get_yrange(self):
+    
+    @property
+    def yrange(self):
         """Return the Y range of the image in arcsec."""
         ymin = self.center['y'] - self.shape[0] / 2 * self.scale['y']
         ymax = self.center['y'] + self.shape[0] / 2 * self.scale['y']
         return [ymin, ymax]
+    
+    def arcsecs_to_pixels(self, value, dim):
+        if dim not in ['x', 'y']:
+            raise ValueError("Invalid dimension. Must be one of 'x' or 'y'.")
+        size = self.shape[dim == 'y'] # 0 if dim == 'x', 1 if dim == 'y'.
+        
+        return value / self.scale[dim] + (size / 2)
 
     def submap(self, range_a, range_b, units="arcseconds"):
         """Returns a submap of the map with the specified range
@@ -243,15 +263,14 @@ class BaseMap(np.ndarray):
         #  x_px = (x / cdelt1) + (width / 2)
         #
         if units is "arcseconds":
-            height = self.shape[0]
-            width = self.shape[1]
-
-            x_pixels = (np.array(range_a) / self.scale['x']) + (width / 2)
-            y_pixels = (np.array(range_b) / self.scale['y']) + (height / 2)
-
+            x_pixels = [self.arcsecs_to_pixels(elem, 'x') for elem in range_a]
+            y_pixels = [self.arcsecs_to_pixels(elem, 'y') for elem in range_b]
         elif units is "pixels":
             x_pixels = range_b
             y_pixels = range_a
+        else:
+            raise ValueError(
+                "Invalid unit. Must be one of 'arcseconds' or 'pixels'")
 
         # Make a copy of the header with updated centering information        
         header = self.header.copy()
@@ -266,7 +285,7 @@ class BaseMap(np.ndarray):
 
         return self.__class__(data, header)
    
-    def plot(self, draw_limb=False, **matplot_args):
+    def plot(self, overlays=[], draw_limb=False, **matplot_args):
         """Plots the map object using matplotlib
         
         Parameters
@@ -277,6 +296,8 @@ class BaseMap(np.ndarray):
             Matplotlib Any additional imshow arguments that should be used
             when plotting the image.
         """
+        if draw_limb:
+            overlays = overlays + [_draw_limb]
         # Create a figure and add title and axes
         fig = plt.figure()
         
@@ -284,15 +305,9 @@ class BaseMap(np.ndarray):
         axes.set_title("%s %s" % (self.name, self.date))
         axes.set_xlabel('X-postion [' + self.units['x'] + ']')
         axes.set_ylabel('Y-postion [' + self.units['y'] + ']')
-        
-        # Draw circle at solar limb
-        if draw_limb:
-            circ = patches.Circle([0, 0], radius=self.rsun, 
-                fill=False, color='white')
-            axes.add_artist(circ)
 
         # Determine extent
-        extent = self.get_xrange() + self.get_yrange()
+        extent = self.xrange + self.yrange
 
         # Matplotlib arguments
         params = {
@@ -303,10 +318,13 @@ class BaseMap(np.ndarray):
             
         im = axes.imshow(self, origin='lower', extent=extent, **params)
         fig.colorbar(im)
+        
+        for overlay in overlays:
+            fig, axes = overlay(self, fig, axes)
         return fig
     
-    def show(self, draw_limb=False, **matplot_args):
-        self.plot(draw_limb, **matplot_args).show()
+    def show(self, overlays=[], **matplot_args):
+        return self.plot(overlays, **matplot_args).show()
 
 
 class UnrecognizedDataSouceError(ValueError):
