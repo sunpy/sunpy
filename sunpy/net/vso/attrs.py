@@ -14,7 +14,7 @@ from sunpy.util.util import to_angstrom
 
 TIMEFORMAT = '%Y%m%d%H%M%S'
 
-class Range(object):
+class _Range(object):
     def __init__(self, min_, max_, create):
         self.min = min_
         self.max = max_
@@ -35,7 +35,7 @@ class Range(object):
         return self.min <= other.min and self.max >= other.max
 
 
-class Wave(Attr, Range):
+class Wave(Attr, _Range):
     def __init__(self, wavemin, wavemax, waveunit='Angstrom'):        
         self.min, self.max = sorted(
             to_angstrom(v, waveunit) for v in [wavemin, wavemax]
@@ -43,19 +43,19 @@ class Wave(Attr, Range):
         self.unit = 'Angstrom'
         
         Attr.__init__(self)
-        Range.__init__(self, self.min, self.max, self.__class__)
+        _Range.__init__(self, self.min, self.max, self.__class__)
     
     def collides(self, other):
         return isinstance(other, self.__class__)
 
 
-class Time(Attr, Range):
+class Time(Attr, _Range):
     def __init__(self, start, end, near=None):
         self.start = start
         self.end = end
         self.near = near
 
-        Range.__init__(self, start, end, self.__class__)
+        _Range.__init__(self, start, end, self.__class__)
         Attr.__init__(self)
     
     def collides(self, other):
@@ -66,13 +66,10 @@ class Time(Attr, Range):
             raise TypeError
         if self.near is not None or other.near is not None:
             raise TypeError
-        return Range.__xor__(self, other)
+        return _Range.__xor__(self, other)
     
-    @classmethod
-    def dt(cls, start, end, near=None):
-        if near is not None:
-            near = datetime(*near)
-        return cls(datetime(*start), datetime(*end), near)
+    def pad(self, timedelta):
+        return Time(self.start - timedelta, self.start + timedelta)
     
     def __repr__(self):
         return '<Time(%r, %r, %r)>' % (self.start, self.end, self.near)
@@ -100,7 +97,7 @@ class Field(ValueAttr):
         })
 
 
-class SimpleAttr(Attr):
+class _SimpleAttr(Attr):
     def __init__(self, value):
         Attr.__init__(self)
         
@@ -108,53 +105,56 @@ class SimpleAttr(Attr):
     
     def collides(self, other):
         return isinstance(other, self.__class__)
+    
+    def __repr__(self):
+        return "<%s(%r)>" % (self.__class__.__name__, self.value)
 
 
-class Provider(SimpleAttr):
+class Provider(_SimpleAttr):
     pass
 
 
-class Source(SimpleAttr):
+class Source(_SimpleAttr):
     pass
 
 
-class Instrument(SimpleAttr):
+class Instrument(_SimpleAttr):
     pass
 
 
-class Physobj(SimpleAttr):
+class Physobj(_SimpleAttr):
     pass
 
 
-class Pixels(SimpleAttr):
+class Pixels(_SimpleAttr):
     pass
 
 
-class Level(SimpleAttr):
+class Level(_SimpleAttr):
     pass
 
 
-class Resolution(SimpleAttr):
+class Resolution(_SimpleAttr):
     pass
 
 
-class Detector(SimpleAttr):
+class Detector(_SimpleAttr):
     pass
 
 
-class Filter(SimpleAttr):
+class Filter(_SimpleAttr):
     pass
 
 
-class Sample(SimpleAttr):
+class Sample(_SimpleAttr):
     pass
 
 
-class Quicklook(SimpleAttr):
+class Quicklook(_SimpleAttr):
     pass
 
 
-class PScale(SimpleAttr):
+class PScale(_SimpleAttr):
     pass
 
 
@@ -226,6 +226,6 @@ walker.add_converter(Time)(
     })
 )
 
-walker.add_converter(SimpleAttr)(
+walker.add_converter(_SimpleAttr)(
     lambda x: ValueAttr({(x.__class__.__name__.lower(), ): x.value})
 )
