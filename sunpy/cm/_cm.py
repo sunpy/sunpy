@@ -36,10 +36,10 @@ r0 = np.array(paden([0,1,2,4,5,7,8,10,11,13,14,15,17,18,20,21,23,24,26,27,28,30,
 g0 = np.array(padfr(_mkx(1, xrange(17, 256, 17), 2), 256))
 b0 = np.array(padfr(_mkx(3, xrange(51, 256, 51), 4), 256))
     
-c0 = np.arange(256, dtype = 'f')
-c1 = (np.sqrt(c0)*np.sqrt(255.0)).astype('f')
-c2 = (np.arange(256)**2/255.0).astype('f')
-c3 = ((c1+c2/2.0)*255.0/(c1.max() + c2.max()/2.0)).astype('f')
+c0 = np.arange(256, dtype='f')
+c1 = (np.sqrt(c0) * np.sqrt(255.0)).astype('f')
+c2 = (np.arange(256)**2 / 255.0).astype('f')
+c3 = ((c1 + c2/2.0) * 255.0 / (c1.max() + c2.max()/2.0)).astype('f')
 
 def aia_color_table(wavelength):
     '''Returns one of the fundamental color tables for SDO AIA images.
@@ -47,7 +47,7 @@ def aia_color_table(wavelength):
     '''
     try:
         r, g, b = {
-            1600: (c3, c3, c2), 1700: (c1, c0, c0), 4500: (c0, c0, b0 / 2.0),
+            1600: (c3, c3, c2), 1700: (c1, c0, c0), 4500: (c0, c0, b0/2.0),
             94: (c2, c3, c0), 131: (g0, r0, r0), 171: (r0, c0, b0),
             193: (c1, c0, c2), 211: (c1, c0, c3), 304: (r0, g0, b0),
             335: (c2, c0, c1)
