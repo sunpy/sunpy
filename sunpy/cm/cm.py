@@ -22,6 +22,11 @@ sdoaia1600 = _cm.aia_color_table(1600)
 sdoaia1700 = _cm.aia_color_table(1700)
 sdoaia4500 = _cm.aia_color_table(4500)
 
+sohoeit171 = _cm.eit_color_table(171)
+sohoeit195 = _cm.eit_color_table(195)
+sohoeit284 = _cm.eit_color_table(284)
+sohoeit304 = _cm.eit_color_table(304)
+
 cmlist = {
           'sdoaia94': sdoaia94,
           'sdoaia131': sdoaia131,
@@ -33,6 +38,10 @@ cmlist = {
           'sdoaia1600': sdoaia1600,
           'sdoaia1700': sdoaia1700,
           'sdoaia4500': sdoaia4500,
+          'sohoeit171': sohoeit171,
+          'sohoeit195': sohoeit195,
+          'sohoeit284': sohoeit284,
+          'sohoeit304': sohoeit304,
           'rhessi': cm.jet #pylint: disable=E1101
           }
 

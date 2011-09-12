@@ -2,7 +2,7 @@ from __future__ import absolute_import
 import numpy as np
 
 """
-Position of the Sun.
+Position of the Sun in the sky as seen from Earth.
 """
 
 #pylint: disable=E1101,E1121
@@ -192,8 +192,8 @@ def pos(jd, radian = False):
     dec = np.arcsin( np.sin(l*dtor) * np.sin(oblt*dtor) )
 
     if radian:
-        oblt = oblt*dtor 
-        longmed = longmed*dtor
+        oblt = np.deg2rad(oblt) 
+        longmed = np.deg2rad(longmed)
     else:
         ra = ra/dtor
         dec = dec/dtor
