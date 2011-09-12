@@ -1,18 +1,15 @@
 from __future__ import absolute_import
-
 """
-This module provides a set of colormaps specific to solar data (e.g. SDO/AIA color maps), 
-functions for getting a colormap by name.
-
+This module provides a set of colormaps specific to solar data (e.g. SDO/AIA 
+color maps), functions for getting a colormap by name.
 """
 
-import matplotlib.colors as colors
 import numpy as np
+import matplotlib.colors as colors
 import matplotlib.pyplot as plt
-import pylab
 import matplotlib.cbook as cbook
-from sunpy.cm import _cm
 import matplotlib.cm as cm
+from sunpy.cm import _cm
 
 sdoaia94 = _cm.aia_color_table(94)
 sdoaia131 = _cm.aia_color_table(131)
@@ -36,40 +33,39 @@ cmlist = {
           'sdoaia1600': sdoaia1600,
           'sdoaia1700': sdoaia1700,
           'sdoaia4500': sdoaia4500,
-          'rhessi': cm.jet
+          'rhessi': cm.jet #pylint: disable=E1101
           }
 
-def get_cmap(name='sdoaia94', lut=None):
-    """
-    Get a colormap instance.
-
-    """
+def get_cmap(name='sdoaia94'):
+    """Get a colormap instance."""
     if name in cmlist:
         return cmlist.get(name)
     else:
         raise ValueError("Colormap %s is not recognized" % name)
 
 def show_colormaps():
+    """Displays custom color maps supported in SunPy"""
     maps = sorted(cmlist)
     nmaps = len(maps) + 1
     
-    a = np.linspace(0, 1, 256).reshape(1,-1)
-    a = np.vstack((a,a))
+    a = np.linspace(0, 1, 256).reshape(1, -1) #pylint: disable=E1103
+    a = np.vstack((a, a))
     
-    fig = plt.figure(figsize=(5,10))
+    fig = plt.figure(figsize=(5, 10))
     fig.subplots_adjust(top=0.99, bottom=0.01, left=0.2, right=0.99)
     for i,name in enumerate(maps):
-        ax = plt.subplot(nmaps, 1, i+1)
+        ax = plt.subplot(nmaps, 1, i + 1)
         plt.axis("off")
         plt.imshow(a, aspect='auto', cmap=get_cmap(name), origin='lower')
         pos = list(ax.get_position().bounds)
-        fig.text(pos[0] - 0.01, pos[1], name, fontsize=10, horizontalalignment='right')
+        fig.text(pos[0] - 0.01, pos[1], name, fontsize=10, 
+                 horizontalalignment='right')
 
     plt.show()
 
-
 def test_equalize():
     '''Test'''
+    import pylab
 
     dfile = cbook.get_sample_data('s1045.ima', asfileobj=False)
     
@@ -86,9 +82,9 @@ def test_equalize():
     num_steps = float(len(steps))
     interps = [(s, idx/num_steps, idx/num_steps) for idx, s in enumerate(steps)]
     interps.append((1, 1, 1))
-    cdict = {'red' : interps,
-             'green' : interps,
-             'blue' : interps}
+    cdict = {'red': interps,
+             'green': interps,
+             'blue': interps}
     histeq_cmap = colors.LinearSegmentedColormap('HistEq', cdict)
     pylab.figure()
     pylab.imshow(im, cmap=histeq_cmap)
