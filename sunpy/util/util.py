@@ -27,9 +27,9 @@ def anytim(time_string=None):
     """
     if time_string is None:
         return datetime.now()
-    if isinstance(time_string, datetime):
+    elif isinstance(time_string, datetime):
         return time_string
-    if isinstance(time_string, tuple):
+    elif isinstance(time_string, tuple):
         return datetime(*time_string)
     else:
         time_format_list = \
@@ -86,7 +86,7 @@ def degrees_to_hours(angle):
     hour = int(np.floor(angle / 15))
     remainder = angle / 15.0 - hour
     arcminute = int(np.floor(remainder * 60))
-    remainder =  remainder*60 - arcminute
+    remainder =  remainder * 60 - arcminute
     arcsecond = remainder * 60.0
     return [hour, arcminute, arcsecond]
 
@@ -96,7 +96,7 @@ def degrees_to_arc(angle):
     degree = int(np.floor(angle))
     remainder = angle - degree
     arcminute = int(np.floor(remainder * 60))
-    remainder =  remainder*60 - arcminute
+    remainder =  remainder * 60 - arcminute
     arcsecond = remainder * 60.0
     return [degree, arcminute, arcsecond]
 
@@ -137,14 +137,14 @@ def to_angstrom(value, unit):
         raise ValueError('Cannot convert %s to Angstrom' % unit)
     
     if type_ == 'wavelength':
-        k = n / ANGSTROM
-        return value / k
-    if type_ == 'frequency':
-        k = 1 / ANGSTROM / n
-        return k * (C / value)
-    if type_ == 'energy':
-        k = 1 / (ANGSTROM / 1e-2) / n
-        return k * (1 / (8065.53 * value))
+        x = n / ANGSTROM
+        return value / x
+    elif type_ == 'frequency':
+        x = 1 / ANGSTROM / n
+        return x * (C / value)
+    elif type_ == 'energy':
+        x = 1 / (ANGSTROM / 1e-2) / n
+        return x * (1 / (8065.53 * value))
     else:
         raise ValueError('Unable to convert %s to Angstrom' % type_)
 
@@ -157,7 +157,7 @@ def unique(itr, key=None):
                 items.add(elem)
     else:
         for elem in itr:
-            k = key(elem)
-            if k not in items:
+            x = key(elem)
+            if x not in items:
                 yield elem
-                items.add(k)
+                items.add(x)
