@@ -11,6 +11,7 @@ SunPy User Guide
    :maxdepth: 1
    
    installation
+   osx_installation
    tutorial
 .. overview
     
