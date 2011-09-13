@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file '/home/matt/programming/sunpy/sunpy/gui/ui/dialogs/datepicker.ui'
 #
-# Created: Thu Sep  8 15:48:32 2011
-#      by: PyQt4 UI code generator 4.8.3
+# Created: Tue Sep 13 14:11:26 2011
+#      by: PyQt4 UI code generator 4.8.5
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -18,6 +18,7 @@ class Ui_DatePickerDlg(object):
     def setupUi(self, DatePickerDlg):
         DatePickerDlg.setObjectName(_fromUtf8("DatePickerDlg"))
         DatePickerDlg.resize(322, 223)
+        DatePickerDlg.setWindowTitle(QtGui.QApplication.translate("DatePickerDlg", "Select date", None, QtGui.QApplication.UnicodeUTF8))
         self.verticalLayout = QtGui.QVBoxLayout(DatePickerDlg)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
         self.calendarWidget = QtGui.QCalendarWidget(DatePickerDlg)
@@ -32,5 +33,5 @@ class Ui_DatePickerDlg(object):
         QtCore.QMetaObject.connectSlotsByName(DatePickerDlg)
 
     def retranslateUi(self, DatePickerDlg):
-        DatePickerDlg.setWindowTitle(QtGui.QApplication.translate("DatePickerDlg", "Select date", None, QtGui.QApplication.UnicodeUTF8))
+        pass
 
