@@ -22,3 +22,9 @@ class FigureCanvas(FigureCanvasQTAgg):
                                    QSizePolicy.MinimumExpanding,
                                    QSizePolicy.MinimumExpanding)
         FigureCanvasQTAgg.updateGeometry(self)
+
+    def update_figure(self, figure):
+        self.figure = figure
+        self.updateGeometry()
+        self.resize(1, 1)
+        self.draw()

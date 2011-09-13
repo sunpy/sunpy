@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file '/home/matt/programming/sunpy/sunpy/gui/ui/mainwindow/widgets/tabpage.ui'
 #
-# Created: Thu Sep  8 15:48:32 2011
-#      by: PyQt4 UI code generator 4.8.3
+# Created: Tue Sep 13 14:11:26 2011
+#      by: PyQt4 UI code generator 4.8.5
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -24,6 +24,7 @@ class Ui_TabPage(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(TabPage.sizePolicy().hasHeightForWidth())
         TabPage.setSizePolicy(sizePolicy)
+        TabPage.setWindowTitle(QtGui.QApplication.translate("TabPage", "Form", None, QtGui.QApplication.UnicodeUTF8))
         self.horizontalLayout_2 = QtGui.QHBoxLayout(TabPage)
         self.horizontalLayout_2.setObjectName(_fromUtf8("horizontalLayout_2"))
         self.verticalLayout = QtGui.QVBoxLayout()
@@ -32,6 +33,7 @@ class Ui_TabPage(object):
         self.FigureCanvas.setObjectName(_fromUtf8("FigureCanvas"))
         self.pushButton = QtGui.QPushButton(self.FigureCanvas)
         self.pushButton.setGeometry(QtCore.QRect(110, 110, 97, 27))
+        self.pushButton.setText(QtGui.QApplication.translate("TabPage", "PushButton", None, QtGui.QApplication.UnicodeUTF8))
         self.pushButton.setCheckable(True)
         self.pushButton.setObjectName(_fromUtf8("pushButton"))
         self.verticalLayout.addWidget(self.FigureCanvas)
@@ -50,6 +52,5 @@ class Ui_TabPage(object):
         QtCore.QMetaObject.connectSlotsByName(TabPage)
 
     def retranslateUi(self, TabPage):
-        TabPage.setWindowTitle(QtGui.QApplication.translate("TabPage", "Form", None, QtGui.QApplication.UnicodeUTF8))
-        self.pushButton.setText(QtGui.QApplication.translate("TabPage", "PushButton", None, QtGui.QApplication.UnicodeUTF8))
+        pass
 
