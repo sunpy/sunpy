@@ -13,15 +13,16 @@ which deals with a specific type of data, e.g. :class:`AIAMap` or
 """
 #pylint: disable=W0401
 
-__all__ = ["sources", "mapcube"]
+__all__ = ["header", "mapcube", "sources"]
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
 import sys
 import pyfits
-from sunpy.map.sources import *
 from sunpy.map.basemap import BaseMap
 from sunpy.map.basemap import UnrecognizedDataSouceError
+from sunpy.map.header import MapHeader
+from sunpy.map.sources import *
 
 #pylint: disable=C0103,E1101
 def Map(input_):
@@ -64,10 +65,11 @@ def Map(input_):
     | http://stsdas.stsci.edu/download/wikidocs/The_PyFITS_Handbook.pdf
     """
     if isinstance(input_, basestring):
+        # TODO: Add logic to determine filetype instead of assuming FITS
         fits = pyfits.open(input_)
         fits.verify('silentfix')        
         data = fits[0].data
-        header = fits[0].header
+        header = MapHeader(fits[0].header)
 
         for cls in BaseMap.__subclasses__():
             if cls.is_datasource_for(header):
