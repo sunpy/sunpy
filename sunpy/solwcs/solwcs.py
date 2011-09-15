@@ -18,8 +18,6 @@ __authors__ = ["Steven Christe"]
 __email__ = "steven.d.christe@nasa.gov"
 
 import numpy as np
-import pyfits
-import sunpy
 from sunpy.sun import constants as con
 
 def get_solar_limb(header):
@@ -82,7 +80,7 @@ def get_solar_b0(header):
             header.get('CRLT_OBS') or
             header.get('SOLAR_B0', 0))
 
-def get_solar_l0(header, carrington = False):
+def get_solar_l0(header, carrington=False):
     """Return the Carrington heliographic longitude of the observer."""
     if carrington is False:
         return header.get('hgln_obs', 0)    
@@ -119,8 +117,6 @@ def get_shape(header):
 
 def convert_data_to_coord(header, pixel_index=None):
     """This procedure takes a WCS-compliant header, and calculates the data coordinates at each pixel position."""
-    if pixel_index is not None:
-        pixel_index = np.array(pixel_index)
 
     naxis = np.array(get_shape(header))
     cdelt = np.array(get_platescale(header))
@@ -128,12 +124,11 @@ def convert_data_to_coord(header, pixel_index=None):
     
     # first assume that coord is just [x,y]
     if pixel_index is not None:
-        coord = ( pixel_index - (crpix - 1) ) * cdelt
-        
-    if pixel_index is None:
-        coord = np.zeros((naxis[0],naxis[1], 2))
-        # this can def be done better, it is also slow
-        # TODO: make this more efficient!
+        pixel_index = np.array(pixel_index)
+        coord = (pixel_index - (crpix - 1)) * cdelt
+    else:
+        coord = np.zeros((naxis[0], naxis[1], 2))
+        # TODO: make the following code more efficient! too slow!
         for x in range(naxis[0]):
             for y in range(naxis[1]):
                 coord[x,y,:] = ( np.array([x,y]) - (crpix - 1) ) * cdelt
@@ -146,8 +141,7 @@ def convert_data_to_coord(header, pixel_index=None):
     return coord
 
 def convert_hpc_hcc(header, hpln, hplt, distance=None):
-    """
-    This routine converts Helioprojective-Cartesian (HPC) coordinates into 
+    """This routine converts Helioprojective-Cartesian (HPC) coordinates into 
     Heliocentric-Cartesian (HCC) coordinates, using equations 15 in 
     Thompson (2006), A&A, 449, 791-803.
     """
