@@ -18,7 +18,8 @@ class RHESSIMap(BaseMap):
 
     TODO
     ----
-    Currently (8/29/2011), cannot read fits files containing more than one image (schriste)
+    Currently (8/29/2011), cannot read fits files containing more than one 
+    image (schriste)
     """
     def __new__(cls, data, header):
         return BaseMap.__new__(cls, data)
@@ -33,10 +34,11 @@ class RHESSIMap(BaseMap):
             'inst': header.get('telescop'),
             'meas': [header.get('energy_l'), header.get('energy_h')],
             'obs': header.get('telescop'),
-            'name': "RHESSI " + str(header.get('energy_l')) + '-' + str(header.get('energy_h')) + ' keV',
+            'name': "RHESSI " + str(header.get('energy_l')) + '-' + 
+                    str(header.get('energy_h')) + ' keV',
             'cmap': cm.get_cmap(name = 'rhessi'),
-            'exptime': (util.anytim(header.get('date_end')) - util.anytim(header.get('date_obs'))).seconds
-            # 'norm': mpl.colors.Normalize(vmin=cls.min(), vmax=cls.max())
+            'exptime': (util.anytim(header.get('date_end')) - 
+                        util.anytim(header.get('date_obs'))).seconds
         })
         return properties
         
