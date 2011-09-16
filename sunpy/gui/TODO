@@ -4,10 +4,8 @@
 - Replacement for MPL Tk Viewer (?)
 - Colormap hierarchy
 - Colormap names (?)
-- Fix canvas scaling
 - Implement contour plotting / overlays
 - Connect to VSO and other data services
-- Use sunpy.Plot and provide interface for its options
 - Disambiguate plots with identical names, numerical suffix (?)
 - Dynamic subplot adding
 - Overlaying plots, drag-drop, opacity etc.
@@ -22,6 +20,6 @@
 - image plots
 - spectrogram plots
 
-/mainwindow/widgets/figure_canvas.py
+/mainwindow/widgets/tab_page.py
 ------------------------------------
 - Let Qt Designer do the work.
