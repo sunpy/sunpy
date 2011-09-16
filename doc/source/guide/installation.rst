@@ -32,9 +32,6 @@ SunPy:
 >>> import sunpy
 >>> sunpy.Map(sunpy.AIA_171_IMAGE).show()
 
-Mac
----
-Installation instructions for Mac.
 
 Windows
 -------
