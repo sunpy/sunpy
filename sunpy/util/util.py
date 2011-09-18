@@ -75,6 +75,7 @@ def julian_centuries(t=None):
     # reference date of 12:00 noon Jan 1, 4713 BC
     JULIAN_DAY_ON_NOON01JAN1900 = 2415020.5
     DAYS_IN_YEAR = 36525.0
+
     result = (julian_day(t) - JULIAN_DAY_ON_NOON01JAN1900) / DAYS_IN_YEAR
     return result
 
