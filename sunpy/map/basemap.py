@@ -314,9 +314,6 @@ class BaseMap(np.ndarray):
 
         # Determine extent
         extent = self.xrange + self.yrange
-        
-        # Apply gamma value to color map
-        self.cmap.set_gamma(gamma)
 
         # Matplotlib arguments
         params = {
@@ -324,7 +321,7 @@ class BaseMap(np.ndarray):
             "norm": self.norm
         }
         params.update(matplot_args)
-            
+        params['cmap'].set_gamma(gamma) 
         im = axes.imshow(self, origin='lower', extent=extent, **params)
         fig.colorbar(im)
         
