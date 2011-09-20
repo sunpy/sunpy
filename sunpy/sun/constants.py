@@ -220,3 +220,7 @@ mean_energy_production = value('mean energy production')
 escape_velocity = value('escape velocity')
 ellipticity = value('ellipticity')
 GM = value('GM')
+
+# Observable parameters
+# Solar radius measured outside earth's atmosphere in arcseconds
+average_angular_size = 961.07064
