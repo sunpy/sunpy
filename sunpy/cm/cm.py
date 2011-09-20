@@ -74,8 +74,6 @@ def show_colormaps():
 
 def test_equalize():
     '''Test'''
-    import pylab
-
     dfile = cbook.get_sample_data('s1045.ima', asfileobj=False)
     
     im = np.fromstring(file(dfile, 'rb').read(), np.uint16).astype(float)
