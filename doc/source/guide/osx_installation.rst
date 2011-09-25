@@ -84,7 +84,15 @@ To install packages that are not in macports make sure to use: ::
 
   python setup.py install --user
 
-(Run this command as written from the directory that contains the package in question.)  This will install the packages in ~/Library/Python/2.7/lib/python/site-packages where they will automatically recognized by Python. This will maintain the integrity of the the MacPorts file structure. In general, do not install anything into /opt/local without using the ports command.
+(Run this command as written from the directory that contains the package in question.)  
+This will install the packages in ~/Library/Python/2.7/lib/python/site-packages where they will automatically recognized by Python. This will maintain the integrity of the the MacPorts file structure. In general, do not install anything into /opt/local without using the ports command.
+
+If you would like to use easy_install then remember to set the directory manually 
+so that it installs the library into your local directory. Here is an example for installing pIDLy: ::
+
+  easy_install --install-dir='~/Library/Python/2.7/lib/python/site-packages' pidly
+
+It is not necessary to use sudo for this command.
 
 Problem Solving
 ---------------
