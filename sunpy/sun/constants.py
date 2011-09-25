@@ -33,10 +33,10 @@ Websites
 -------
 http://nssdc.gsfc.nasa.gov/planetary/factsheet/sunfact.html
 
-To Do
+TODO: 
 ----------
 Need better sources as well as error values.
-
+Create a cheat sheet function which prints out key solar values
 """
 
 import scipy.constants as _cd
@@ -220,6 +220,8 @@ mean_energy_production = value('mean energy production')
 escape_velocity = value('escape velocity')
 ellipticity = value('ellipticity')
 GM = value('GM')
+
+sfu = value('solar flux unit')
 
 # Observable parameters
 # Solar radius measured outside earth's atmosphere in arcseconds
