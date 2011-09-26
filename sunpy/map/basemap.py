@@ -8,6 +8,8 @@ BaseMap is a generic Map class from which all other Map classes inherit from.
 __authors__ = ["Keith Hughitt, Steven Christe"]
 __email__ = "keith.hughitt@nasa.gov"
 
+from copy import copy
+
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
@@ -293,7 +295,7 @@ class BaseMap(np.ndarray):
 
         return self.__class__(data, header)
    
-    def plot(self, overlays=[], draw_limb=False, gamma=1.0, **matplot_args):
+    def plot(self, overlays=[], draw_limb=False, gamma=None, **matplot_args):
         """Plots the map object using matplotlib
         
         Parameters
@@ -325,7 +327,9 @@ class BaseMap(np.ndarray):
             "norm": self.norm
         }
         params.update(matplot_args)
-        params['cmap'].set_gamma(gamma) 
+        if gamma is not None:
+            params['cmap'] = copy(params['cmap'])
+            params['cmap'].set_gamma(gamma) 
         im = axes.imshow(self, origin='lower', extent=extent, **params)
         fig.colorbar(im)
         
