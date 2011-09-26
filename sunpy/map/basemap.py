@@ -194,6 +194,10 @@ class BaseMap(np.ndarray):
         
         return result
     
+    def std(self, *args, **kwargs):
+        """overide np.ndarray.std()"""
+        return np.array(self, copy=False, subok=False).std(*args, **kwargs)
+    
     @classmethod
     def get_properties(cls):
         """Returns default map properties""" 
