@@ -105,7 +105,7 @@ def run_tests(timer, scale_factor):
     timer.log('Indirect addressing 1 million elements %d times' % nrep)
     
     #Test 6 - Shift 512 by 512 byte and store
-    a = np.random.randint(2**32, size=1e6)
+    a = np.random.randint(1, 1e6, size=1e6).astype(np.uint32)
     c = np.zeros(1e6, dtype=np.uint32)
     nrep = 1000 * scale_factor
     timer.reset()
