@@ -91,13 +91,13 @@ def run_tests(timer, scale_factor):
     
     #Test 3 - Add 200000 scalar ints
     nrep = 2000000 * scale_factor
-    for i in range(nrep):
+    for i in xrange(nrep):
         a = i + 1
     timer.log("Add %d integer scalars and store" % nrep)
     
     #Test 4 - Scalar arithmetic loop
     nrep = 50000 * scale_factor
-    for i in range(nrep):
+    for i in xrange(nrep):
         a = i + i - 2
         b = a / 2 + 1
         if b != i:
@@ -110,29 +110,29 @@ def run_tests(timer, scale_factor):
     
     #Test 5 - Mult 512 by 512 byte by constant and store
     nrep = 30 * scale_factor
-    for i in range(nrep):
+    for i in xrange(nrep):
         b = a * 2
     timer.log('Mult 512 by 512 byte by constant and store, %d times.' % nrep)
     
     #Test 6 - Shift 512 by 512 byte and store
     nrep = 300 * scale_factor
-    for i in range(nrep):
+    for i in xrange(nrep):
         c = np.roll(np.roll(b, 10, axis=0), 10, axis=1) #pylint: disable=W0612
     timer.log('Shift 512 by 512 byte and store, %d times.' % nrep)
  
     #Test 7 - Add constant to 512x512 byte array
     nrep = 100 * scale_factor
-    for i in range(nrep):
+    for i in xrange(nrep):
         b = a + 3
     timer.log('Add constant to 512x512 byte array, %d times' % nrep)
 
     #Test 8 - Add two 512 by 512 byte arrays and store
     nrep = 80 * scale_factor
-    for i in range(nrep):
+    for i in xrange(nrep):
         b = a + b
     timer.log('Add two 512 by 512 byte arrays and store, %d times' % nrep)
     
-    #a = [[random.random(0, 1) for s in range(512)] for s in range(512)]
+    #a = [[random.random(0, 1) for s in xrange(512)] for s in xrange(512)]
     a = np.random.uniform(0, 1, (512, 512)).astype(np.float32)
     
     #using roll is very inefficient for shifting a float array, 
@@ -143,20 +143,20 @@ def run_tests(timer, scale_factor):
     
     #Test 9 - Mult 512 by 512 floating by constant
     nrep = 30 * scale_factor
-    for i in range(nrep):
+    for i in xrange(nrep):
         b = a * 2
     timer.log('Mult 512 by 512 floating by constant, %d times.' % nrep)
 
     #Test 10 - Shift 512 x 512 array
     nrep = 60 * scale_factor
-    for i in range(nrep):
+    for i in xrange(nrep):
         c = np.roll(np.roll(b, 10, axis=0), 10, axis=1)
-    #for i in range(nrep): c = d.rotate(
+    #for i in xrange(nrep): c = d.rotate(
     timer.log('Shift 512 x 512 array, %d times' % nrep)
     
     #Test 11 - Add two 512 by 512 floating images
     nrep = 40 * scale_factor
-    for i in range(nrep):
+    for i in xrange(nrep):
         b = a + b
     timer.log('Add two 512 by 512 floating images, %d times.' % nrep)
 
@@ -164,7 +164,7 @@ def run_tests(timer, scale_factor):
 
     #Test 12 - Generate random numbers
     nrep = 10 * scale_factor  
-    for i in range(nrep): 
+    for i in xrange(nrep): 
         a = np.random.uniform(0, 1, 100000)
     timer.log('Generated %d random numbers' % (nrep * 100000))
 
@@ -195,19 +195,19 @@ def run_tests(timer, scale_factor):
     timer.reset()
 
     #Test 15 - Transpose byte array with FOR loop
-    for i in range(siz):
-        for j in range(siz):
+    for i in xrange(siz):
+        for j in xrange(siz):
             b[j, i] = a[i, j]
     timer.log('Transpose %d^2 byte, FOR loops' % siz)
     
     #Test 16 - Transpose byte array, row and column ops
-    for j in range(10):
-        for i in range(siz):
+    for j in xrange(10):
+        for i in xrange(siz):
             b[:][i] = a[i][:].transpose()
     timer.log('Transpose %d^2 byte, row and column ops x 10' % siz)
   
     #Test 17 - Transpose byte array, TRANSPOSE function
-    for i in range(100):
+    for i in xrange(100):
         b = a.transpose()
     timer.log('Transpose %d^2 byte, TRANSPOSE function x 100' % siz)
 
@@ -218,12 +218,12 @@ def run_tests(timer, scale_factor):
     timer.reset()
     
     #Test 18 - Log of numbers, FOR loop
-    for i in range(siz):
+    for i in xrange(siz):
         b[i] = math.log(a[i])
     timer.log('Log of %d numbers, FOR loop' % siz)
 
     #Test 19 - Log of numbers, vector op
-    for i in range(10):
+    for i in xrange(10):
         b = np.log(a)
 
     timer.log('Log of %d numbers, vector ops 10 times' % siz)
@@ -244,7 +244,7 @@ def run_tests(timer, scale_factor):
     timer.reset()
     
     #Test 21 - Smooth 512 by 512 byte array, 5x5 boxcar
-    for i in range(nrep):
+    for i in xrange(nrep):
         b = scipy.ndimage.filters.median_filter(a, size=(5, 5))
     timer.log('Smooth 512 by 512 byte array, 5x5 boxcar, %d times' % nrep)
  
@@ -254,8 +254,8 @@ def run_tests(timer, scale_factor):
     a[200:250, 200:250] = 10.0
     timer.reset()
     #need to check to see if this is the same as an IDL smooth
-    for i in range(nrep):
-        b = scipy.ndimage.filters.median_filter(a, size=(5, 5))
+    for i in xrange(nrep):
+        b = scipy.ndimage.filters.uniform_filter(a, size=(5, 5))
     timer.log('Smooth 512 by 512 floating array, 5x5 boxcar, %d times' % nrep)
     
     a = np.arange(512**2, dtype=np.uint8).reshape(512, 512)
@@ -270,9 +270,9 @@ def run_tests(timer, scale_factor):
 #        fp = open('/tmp/test.dat', 'r+b') 
 #
 #        initial = 512 * nrep
-#        for i in range(nrep):
+#        for i in xrange(nrep):
 #            aa[i] = a
-#        for i in range(nrep):
+#        for i in xrange(nrep):
 #            a = aa[i]
 #        timer.log('Write and read 512 by 512 byte array x ' + str(nrep))
 #        fp.close()
