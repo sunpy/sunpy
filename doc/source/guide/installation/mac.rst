@@ -1,6 +1,6 @@
-============================
-Installing Python on Mac OSx
-============================
+========
+Mac OS X
+========
 
 Using Macports
 --------------
@@ -135,3 +135,12 @@ and then run the last command again: ::
   sudo port install py27-scipy
 
 This should now install without any problems. Now move onto the next step (sudo port install py27-pyfits)...
+
+Testing your installation
+-------------------------
+
+Now you can test your installation. Open a new Python shell by typing 
+:command:`python` in ``Command Prompt``, and type these commands: ::
+
+>>> import sunpy
+>>> sunpy.Map(sunpy.AIA_171_IMAGE).show()
