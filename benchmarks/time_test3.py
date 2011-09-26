@@ -84,13 +84,13 @@ def run_tests(timer, scale_factor):
     #Test 2 - Empty procedure    
     trash = lambda x: 0
  
-    nrep = 1000000 * scale_factor
+    nrep = 100000 * scale_factor
     for i in xrange(nrep):
         trash(i)
     timer.log("Call empty procedure (1 param) %d times." % nrep)
     
     #Test 3 - Add 200000 scalar ints
-    nrep = 2000000 * scale_factor
+    nrep = 200000 * scale_factor
     for i in xrange(nrep):
         a = i + 1
     timer.log("Add %d integer scalars and store" % nrep)
