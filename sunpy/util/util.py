@@ -57,9 +57,11 @@ def anytim(time_string=None):
         raise ValueError("%s is not a valid time string!" % time_string)
 
 def julian_day(t=None):
-    """Returns the (fractional) Julian day."""
-    # The number of days between Jan 1 1900 and the Julian
-    # reference date of 12:00 noon Jan 1, 4713 BC
+    """Returns the (fractional) Julian day defined as the number of days between the queried day and 
+    the reference date of 12:00 (noon) Jan 1, 4713 BC."""
+    # Good online reference for fractional julian day
+    # http://www.stevegs.com/jd_calc/jd_calc.htm
+    
     JULIAN_DAY_ON_NOON01JAN1900 = 2415020.5
     JULIAN_REF_DAY = anytim('1900/1/1 12:00:00')
     time = anytim(t)
