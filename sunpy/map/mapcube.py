@@ -145,6 +145,10 @@ class MapCube(np.ndarray):
         else:
             return np.ndarray.__getitem__(self, key)
         
+    def std(self, *args, **kwargs):
+        """overide np.ndarray.std()"""
+        return np.array(self, copy=False, subok=False).std(*args, **kwargs)
+        
     # Coalignment methods
     def _coalign_diff(self):
         """Difference-based coalignment
