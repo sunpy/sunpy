@@ -59,8 +59,14 @@ def julian_day(t=None):
     # The number of days between Jan 1 1900 and the Julian
     # reference date of 12:00 noon Jan 1, 4713 BC
     JULIAN_DAY_ON_NOON01JAN1900 = 2415020.5
-    days = day_of_year(t)
-    result = days + JULIAN_DAY_ON_NOON01JAN1900
+    JULIAN_REF_DAY = anytim('1900/1/1 12:00:00')
+    time = anytim(t)
+    hr = time.hour
+    tdiff = time - JULIAN_REF_DAY
+ 
+    julian = tdiff.days + JULIAN_DAY_ON_NOON01JAN1900 + 1
+   
+    result = julian + (hr/24.0)
     return result
 
 def julian_centuries(t=None):
@@ -69,6 +75,7 @@ def julian_centuries(t=None):
     # reference date of 12:00 noon Jan 1, 4713 BC
     JULIAN_DAY_ON_NOON01JAN1900 = 2415020.5
     DAYS_IN_YEAR = 36525.0
+
     result = (julian_day(t) - JULIAN_DAY_ON_NOON01JAN1900) / DAYS_IN_YEAR
     return result
 

@@ -44,8 +44,8 @@ def solar_cycle_number(t=None):
     result = (time.year + 8) % 28 + 1
     return result
 
-def radius(t=None):
-    return angular_size(t)
+#def radius(t=None):
+#    return angular_size(t)
 
 def angular_size(t=None):
     """Return the angular size of the Sun as a function of 

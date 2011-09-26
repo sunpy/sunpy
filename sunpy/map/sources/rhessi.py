@@ -16,9 +16,7 @@ class RHESSIMap(BaseMap):
     For a description of RHESSI image fits headers
     ???
 
-    TODO
-    ----
-    Currently (8/29/2011), cannot read fits files containing more than one 
+    TODO: Currently (8/29/2011), cannot read fits files containing more than one 
     image (schriste)
     """
     def __new__(cls, data, header):
