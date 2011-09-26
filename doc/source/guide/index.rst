@@ -8,10 +8,9 @@ SunPy User Guide
    made. In the mean-time check out the :doc:`/reference/index`.
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    
-   installation
-   osx_installation
+   installation/index
    tutorial
 .. overview
     
