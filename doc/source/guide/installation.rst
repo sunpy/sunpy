@@ -46,7 +46,7 @@ Download and install `Python(x,y) <https://code.google.com/p/pythonxy/wiki/Downl
 
 **2. Install PyFITS**
 
-Download and install `PyFITS <http://hesperia.gsfc.nasa.gov/~ayshih/sunpy/pyfits-3.0.1.win32-py2.6-sunpy.exe>`_, which is used to read FITS files.  (Disclosure: this installer is built by the SunPy team because the official PyFITS installer for Python 2.6 currently has a bug.)
+Download and install `PyFITS <http://hesperia.gsfc.nasa.gov/~ayshih/sunpy/pyfits-3.0.2.win32-py2.6-sunpy.exe>`_, which is used to read FITS files.  (Disclosure: this installer is built by the SunPy team because the official PyFITS installer for Python 2.6 currently has a bug.)
 
 **3. Install additional modules**
 
