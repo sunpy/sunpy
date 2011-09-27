@@ -49,10 +49,10 @@ get you started: ::
 Anytim and Utilities
 --------------------
 SunPy also contains a number of utility functions which may be useful in general. To grab those import them as such: ::
-    from sunpy.util import util as util
+	from sunpy.util import util as util
 For example, parsing a standard time strings: ::
-    t = util.anytim('2004/02/05 12:00')
+	util.anytim('2004/02/05 12:00')
 This returns a datetime object. All SunPy functions which require time as an input sanitize the input using util.anytim. To get the day of year: ::
-    doy = util.day_of_year('2004-Jul-05 12:00:02')
+	util.day_of_year('2004-Jul-05 12:00:02')
 or the julian day: ::
-    jd = util.julian_day((2010,4,30))
+	util.julian_day((2010,4,30))
