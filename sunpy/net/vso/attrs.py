@@ -10,7 +10,7 @@ from datetime import datetime
 from sunpy.net.attr import (
     Attr, ValueAttr, AttrWalker, AttrAnd, AttrOr, DummyAttr, ValueAttr
 )
-from sunpy.util.util import to_angstrom
+from sunpy.util.util import to_angstrom, anytim
 
 TIMEFORMAT = '%Y%m%d%H%M%S'
 
@@ -51,9 +51,9 @@ class Wave(Attr, _Range):
 
 class Time(Attr, _Range):
     def __init__(self, start, end, near=None):
-        self.start = start
-        self.end = end
-        self.near = near
+        self.start = anytim(start)
+        self.end = anytim(end)
+        self.near = None if near is None else anytim(near)
 
         _Range.__init__(self, start, end, self.__class__)
         Attr.__init__(self)
