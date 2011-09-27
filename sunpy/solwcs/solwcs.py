@@ -115,7 +115,7 @@ def get_shape(header):
     """Return the shape of the data array."""
     return [header.get('naxis1'), header.get('naxis2')]
 
-def convert_pixel_to_coord(header, pixel_index=None):
+def convert_pixel_to_data(header, pixel_index=None):
     """This procedure takes a WCS-compliant header, and calculates the data coordinates at each pixel position."""
 
     naxis = np.array(get_shape(header))
@@ -127,11 +127,10 @@ def convert_pixel_to_coord(header, pixel_index=None):
         pixel_index = np.array(pixel_index)
         coord = (pixel_index - (crpix - 1)) * cdelt
     else:
-        coord = np.zeros((naxis[0], naxis[1], 2))
-        # TODO: make the following code more efficient! too slow!
-        for x in range(naxis[0]):
-            for y in range(naxis[1]):
-                coord[x,y,:] = ( np.array([x,y]) - (crpix - 1) ) * cdelt
+        tempa = (np.arange(naxis[0]*naxis[1]) %  naxis[0])
+        tempb = tempa.reshape(naxis[0],naxis[1]).transpose().reshape(naxis[0]*naxis[1])
+        pixel = np.array(zip(tempa,tempb))
+        coord = (pixel - (crpix - 1) )* cdelt
             
     # check to see what projection is being used
     projection = get_projection(header)
@@ -140,26 +139,21 @@ def convert_pixel_to_coord(header, pixel_index=None):
         
     return coord
 
-def convert_coord_to_pixel(header, coord, pixel_index=None):
+def convert_data_to_pixel(header, coord, pixel_index=None):
+    '''This procedure takes a WCS-compliant header, and calculates the pixel coordinates for given data coordinates.'''
     naxis = np.array(get_shape(header))
     cdelt = np.array(get_platescale(header))
     crpix = np.array([header.get('crpix1'), header.get('crpix2')])
     # De-apply any tabular projections.
     # coord = inv_proj_tan(header,coord)
     
-    coord[x,y,:] = ( np.array([x,y]) - (crpix - 1) ) * cdelt
+    pixel = coord/cdelt + crpix - 1
 
 def convert_hpc_hcc(header, coord, distance=None):
     """This routine converts Helioprojective-Cartesian (HPC) coordinates into 
     Heliocentric-Cartesian (HCC) coordinates, using equations 15 in 
     Thompson (2006), A&A, 449, 791-803.
     """
-    if len(coord.shape) is 2:
-        hpln = coord[0,:]
-        hplt = coord[1,:]
-    else:
-        hpln = coord[0]
-        hplt = coord[1]
     
     cx = convert_ang_units(unit=get_units(header, axis='x'))
     cy = convert_ang_units(unit=get_units(header, axis='y'))
@@ -279,7 +273,7 @@ def convert_to_coord( header, x, y, fromcoord = 'hpc', tocoord = 'hg'):
     """Apply a coordinate transform to coordinate in header 
     to coordinate coord. Right now can only do hpc to hcc to hg"""
     
-    #coord = np.array(convert_pixel_to_coord(header))
+    #coord = np.array(convert_pixel_to_data(header))
     print(coord.shape)
     #temp = np.array(convert_hpc_hcc(header, coord[:,:,0], coord[:,:,1]))
     print(temp.shape)
