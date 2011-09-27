@@ -52,7 +52,7 @@ SunPy also contains a number of utility functions which may be useful in general
 	from sunpy.util import util as util
 	# parsing a standard time strings
 	util.anytim('2004/02/05 12:00')
-	# This returns a datetime object. All SunPy functions which require time as an input sanitize the input using util.anytim. 
+	# This returns a datetime object. All SunPy functions which require time as an input sanitize the input using util.anytim. 	
 	util.day_of_year('2004-Jul-05 12:00:02')
-	# the julian day: ::
+	# the julian day
 	util.julian_day((2010,4,30))
