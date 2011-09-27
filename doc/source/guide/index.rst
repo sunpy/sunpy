@@ -5,7 +5,7 @@ SunPy User Guide
 Welcome to the SunPy User Guide!
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    
    installation/index
    tutorial
