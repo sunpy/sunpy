@@ -48,6 +48,7 @@ get you started: ::
 
 Anytim and Utilities
 --------------------
+
 SunPy also contains a number of utility functions which may be useful in general. Here is a short example: ::
 	from sunpy.util import util as util
 	# parsing a standard time strings
