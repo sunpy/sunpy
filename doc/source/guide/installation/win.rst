@@ -1,40 +1,7 @@
-------------
-Installation
-------------
-Pre-requisites
---------------
-SunPy stands on the shoulders of giants:
-
-* `NumPy <http://numpy.scipy.org/>`__
-* `Matplotlib <http://matplotlib.sourceforge.net/>`__
-* `PyFITS <http://www.stsci.edu/resources/software_hardware/pyfits>`_
-
-Linux
------
-Installation instructions for Linux.
-
-Ubuntu
-^^^^^^
-To begin, install the pre-requisites for SunPy using :command:`apt-get`: ::
-
-    sudo apt-get install python-numpy python-matplotlib python-pyfits python-scipy git-core ipython
-
-The ``ipython`` package in the above list installs the `IPython enhanced console 
-<http://ipython.scipy.org/moin/>`_ and is optional but recommended.
-
-Next, use Git to download a copy of the latest version of SunPy: ::
-
-    git clone git://git@github.com/sunpy/sunpy.git
-
-Done! To see if everything went okay, start a Python session and try importing
-SunPy:
-
->>> import sunpy
->>> sunpy.Map(sunpy.AIA_171_IMAGE).show()
-
-
+=======
 Windows
--------
+=======
+
 There are many ways to get SunPy up and running on Windows, and we describe the recommended method and an alternate method below.  Lines in text boxes should be typed into ``Command Prompt``, which can be started from the Start menu or in Start->Run by typing :command:`cmd`.
 
 Recommended method
@@ -117,11 +84,11 @@ Download and install `setuptools
 
 You have now performed the required elements of step 1 of the recommended method.  Now perform steps 2-4 of that method to complete your installation.
 
+Testing your installation
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Test your installation
-^^^^^^^^^^^^^^^^^^^^^^
-
-Now you can test your installation. Open a new Python shell by typing :command:`python` in ``Command Prompt``, and type these commands: ::
+Now you can test your installation. Open a new Python shell by typing 
+:command:`python` in ``Command Prompt``, and type these commands: ::
 
 >>> import sunpy
 >>> sunpy.Map(sunpy.AIA_171_IMAGE).show()
