@@ -2,10 +2,7 @@
 SunPy User Guide
 ================
 
-.. note::
-
-   This is where the SunPy user guide will go once an initial release has been
-   made. In the mean-time check out the :doc:`/reference/index`.
+Welcome to the SunPy User Guide!
 
 .. toctree::
    :maxdepth: 2
