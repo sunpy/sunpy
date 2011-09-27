@@ -47,6 +47,9 @@ physical_constants['GM'] = ( 132712e6, 'km^3/s^2', -1)
 physical_constants['sunspot cycle'] = ( 11.4, 'years', -1)
 physical_constants['metallicity'] = ( 0.0122, '', -1)
 
+# A solar flux unit (sfu) is traditional measure of solar radio flux.
+physical_constants['solar flux unit'] = (1e-22, u"W/m^2 Hz^1", -1)
+
 # Standard Model - Interior Structure
 # adapted from Turck-Chiese et al. (1988)
 # Composition X = 0.7046, Y = 0.2757, Z = 0.0197
