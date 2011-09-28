@@ -12,20 +12,12 @@ from sunpy.gui.ui.mainwindow.widgets.toolbars import PlotToolBar
 class TabPage(QWidget):
     """ Custom widget for tab pages with canvas and plot toolbar """
 
-    def __init__(self, _map, parent=None):
-        """ 
-        _map: sunpy.Map object
-        """
+    def __init__(self, map_, parent=None):
         QWidget.__init__(self, parent)
 
         # Initialize canvas and toolbar
-        self._map = _map
-        self.figure = _map.plot()
-        self.canvas = FigureCanvas(self.figure)
-
-        # We pass self to PlotToolBar so it becomes a parent
-        # of TabPage and can refer to its widgets... clumsy?
-        self.plot_toolbar = PlotToolBar(self.canvas, self)
+        self.canvas = FigureCanvas(map_, parent=self)
+        self.plot_toolbar = PlotToolBar(self.canvas, parent=self)
        
         # Setup the page layout
         layout = QVBoxLayout(self)
