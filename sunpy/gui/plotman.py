@@ -1,5 +1,7 @@
 # -*- coding:utf-8 -*-
 
+from __future__ import absolute_import
+
 """
 SunPy PlotMan GUI
 
@@ -10,7 +12,6 @@ Author: Matt Earnshaw <matt@earnshaw.org.uk>
 """
 
 import sunpy
-import matplotlib.cm
 from matplotlib import pyplot as plt
 from PyQt4.QtCore import pyqtSignature, QFileInfo
 from PyQt4.QtGui import QMainWindow, QFileDialog
@@ -23,32 +24,62 @@ class MainWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
     def __init__(self, parent=None):
         QMainWindow.__init__(self, parent)
         self.setupUi(self)
-
-    @pyqtSignature("int")
-    def on_tabWidget_tabCloseRequested(self, i):
-        self.tabWidget.removeTab(i)
+        self.colorOptionsDockWidget.hide()
 
     @pyqtSignature("")
     def on_actionOpen_file_triggered(self):
         file_info = QFileInfo(QFileDialog.getOpenFileName(self, self.tr("Open file..."), 
                     filter=self.tr("FITS files (*.fit *.dst *.fits *.fts *.lilo *.lihi *.silo *.sihi *.mxlo *.mxhi *.rilo *.rihi *.vdlo *.vdhi)")))
         file_path = str(file_info.filePath())
+        self.add_tab(sunpy.Map(file_path), file_info.fileName())
 
-        tab_page = TabPage(sunpy.Map(file_path), self.tabWidget)
-        self.tabWidget.addTab(tab_page, file_info.fileName())
+    @pyqtSignature("int")
+    def on_tabWidget_currentChanged(self):
+        self.refresh_color_options()
+
+    @pyqtSignature("int")
+    def on_tabWidget_tabCloseRequested(self, i):
+        self.tabWidget.removeTab(i)
+        if self.tabWidget.count() == 0:
+            self.colorOptionsDockWidget.hide()
+
+    @pyqtSignature("")
+    def on_clipMinDoubleSpinBox_editingFinished(self):
+        vmin = self.clipMinDoubleSpinBox.value()
+        self.current_tab.canvas.update_figure(vmin=vmin)
+        self.refresh_color_options()
+
+    @pyqtSignature("")
+    def on_clipMaxDoubleSpinBox_editingFinished(self):
+        vmax = self.clipMaxDoubleSpinBox.value()
+        self.current_tab.canvas.update_figure(vmax=vmax)
+        self.refresh_color_options()
+
+    @pyqtSignature("QString")
+    def on_scalingComboBox_currentIndexChanged(self, scaling):
+        self.current_tab.canvas.update_figure(scaling=scaling)
+        self.refresh_color_options()
+  
+    @pyqtSignature("QString")
+    def on_cmListWidget_currentTextChanged(self, cmap_name):
+        self.current_tab.canvas.update_figure(cmap_name=str(cmap_name))
+
+    def add_tab(self, map_object, tab_title):
+        """ Adds a new tab having title 'tab_title' containing a
+            TabPage widget whose FigureCanvas displays 'map_object' """
+        tab_page = TabPage(map_object, self.tabWidget)
+        self.tabWidget.addTab(tab_page, tab_title)
         # Focus new tab
         self.tabWidget.setCurrentIndex(self.tabWidget.count() - 1)
-
-        self.update_color_options()
-
-    def update_color_options(self):
-        self.populate_cm_widget()
-        self.set_clip_values()
-
-    def set_clip_values(self):
-        pass
-
-    def populate_cm_widget(self):
+        # Set color options dialog appropriately
+        self.initialize_color_options()
+        if self.tabWidget.count() == 1:
+            self.colorOptionsDockWidget.show()
+          
+    def initialize_color_options(self):
+        """ Perform a first time initialisation of color 
+            option widgets when a new plot is opened. """
+        
         # Populate list widget with SunPy colormaps
         for cmap in sunpy.cm.cmlist:
             self.cmListWidget.addItem(cmap)
@@ -57,29 +88,30 @@ class MainWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
         self.mpl_cmaps = sorted(m for m in plt.cm.datad if not m.endswith("_r"))
         for cmap in self.mpl_cmaps:
             self.cmListWidget.addItem(cmap)
-    
-    @pyqtSignature("int")
-    def on_gammaSlider_valueChanged(self, value):
-        pass
 
-    @pyqtSignature("QString")
-    def on_cmListWidget_currentTextChanged(self, current_text):
-        """ Changes color map of figure when one is selected, assumes the name
-            of the colormap is identical to the name shown in the list. """
-
-        # Check if the selected cmap belongs to MPL or SunPy and act accordingly
-        cm_name = str(current_text)
-        if cm_name in self.mpl_cmaps:
-            new_cmap = matplotlib.cm.get_cmap(cm_name)
+        if self.current_tab.canvas.map_.norm is not None:
+            # If pre-normalised, get inital clips from the matplotlib norm
+            self.clipMinDoubleSpinBox.setValue(self.current_tab.canvas.map_.norm.vmin)
+            self.clipMaxDoubleSpinBox.setValue(self.current_tab.canvas.map_.norm.vmax)
         else:
-            new_cmap = sunpy.cm.get_cmap(cm_name)
+            # Otherwise, get initial clips from the map data directly.
+            self.clipMinDoubleSpinBox.setValue(self.current_tab.canvas.map_.min())
+            self.clipMaxDoubleSpinBox.setValue(self.current_tab.canvas.map_.max())
 
-        fig = self.current_tab._map.plot(cmap=new_cmap)
-        self.current_tab.canvas.update_figure(fig)
+    # This method should be combined with the above to avoid code duplication.
+    def refresh_color_options(self):
+        """ Set widgets according to focused plot's properties. """
+        self.clipMinDoubleSpinBox.setValue(self.current_tab.canvas.vmin)
+        self.clipMaxDoubleSpinBox.setValue(self.current_tab.canvas.vmax)
 
+        # ... NOT a good solution
+        if self.current_tab.canvas.scaling == "Linear":
+            self.scalingComboBox.setCurrentIndex(0)
+        else:
+            self.scalingComboBox.setCurrentIndex(1)
+ 
     @property
     def current_tab(self):
-        """ Return the TabPage which is currently focused """
         return self.tabWidget.currentWidget()
 
 
