@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>662</width>
+    <width>768</width>
     <height>615</height>
    </rect>
   </property>
@@ -58,7 +58,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>662</width>
+     <width>768</width>
      <height>19</height>
     </rect>
    </property>
@@ -145,7 +145,7 @@
                 <number>2</number>
                </property>
                <property name="minimum">
-                <double>0.000000000000000</double>
+                <double>-99999.000000000000000</double>
                </property>
                <property name="maximum">
                 <double>99999.000000000000000</double>
@@ -172,7 +172,7 @@
              <item>
               <widget class="QDoubleSpinBox" name="clipMaxDoubleSpinBox">
                <property name="minimum">
-                <double>0.000000000000000</double>
+                <double>-99999.000000000000000</double>
                </property>
                <property name="maximum">
                 <double>99999.000000000000000</double>
@@ -228,6 +228,13 @@
           </widget>
          </item>
         </layout>
+       </item>
+       <item>
+        <widget class="QLabel" name="colorErrorLabel">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
        </item>
       </layout>
      </item>
