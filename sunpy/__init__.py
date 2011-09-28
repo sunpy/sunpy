@@ -35,3 +35,6 @@ from sunpy.cm import *
 
 # Sample data
 from sunpy.data.sample import AIA_171_IMAGE, RHESSI_IMAGE, EIT_195_IMAGE, RHESSI_EVENT_LIST
+
+# Plotman
+from sunpy.gui import Plotman
