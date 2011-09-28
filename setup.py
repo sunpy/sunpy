@@ -42,16 +42,16 @@ def install(setup): #pylint: disable=W0621
                   'sunpy.data', 'sunpy.data.sample', 'sunpy.net', 'sunpy.solwcs',
                   'sunpy.net.vso', 'sunpy.net.hek'],
         platforms=["Windows", "Linux", "Solaris", "Mac OS-X", "Unix"],
-        install_requires=[
-            'NumPy',
-            'PyFITS',
-            'SciPy',
-            'Matplotlib>=1.0',            
-        ],
-        extra_requires={
-            "Plotman": ['PyQt4'],
-            "VSO/HEK": ['suds']
-        },
+        #install_requires=[
+        #    'NumPy',
+        #    'PyFITS',
+        #    'SciPy',
+        #    'Matplotlib>=1.0',            
+        #],
+        #extra_requires={
+        #    "Plotman": ['PyQt4'],
+        #    "VSO/HEK": ['suds']
+        #},
         url="http://www.sunpy.org/",
         version="0.01",
         package_data={'': ['*.fits']},
