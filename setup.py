@@ -40,7 +40,9 @@ def install(setup): #pylint: disable=W0621
                   'sunpy.tests', 'sunpy.tests.map', 'sunpy.tests.net',
                   'sunpy.tests.util',
                   'sunpy.data', 'sunpy.data.sample', 'sunpy.net', 'sunpy.solwcs',
-                  'sunpy.net.vso', 'sunpy.net.hek'],
+                  'sunpy.net.vso', 'sunpy.net.hek',
+                  'sunpy.gui', 'sunpy.gui.ui', 'sunpy.gui.ui.mainwindow',
+                  'sunpy.gui.ui.mainwindow.resources', 'sunpy.gui.ui.mainwindow.widgets'],
         platforms=["Windows", "Linux", "Solaris", "Mac OS-X", "Unix"],
         #install_requires=[
         #    'NumPy',
