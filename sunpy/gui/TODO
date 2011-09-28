@@ -1,6 +1,6 @@
 /plotman.py
-----------
-- Keep track of plot's options for each tab to restore to color options widget
+-----------
+- Review canvas.update_figure - is this appropriate?
 - Replacement for MPL Tk Viewer (?)
 - Colormap hierarchy
 - Colormap names (?)

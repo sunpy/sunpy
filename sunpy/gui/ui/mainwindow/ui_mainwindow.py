@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/home/matt/programming/sunpy/sunpy/gui/ui/mainwindow/mainwindow.ui'
+# Form implementation generated from reading ui file '/home/matt/sunpy/sunpy/gui/ui/mainwindow/mainwindow.ui'
 #
-# Created: Tue Sep 13 14:13:09 2011
+# Created: Wed Sep 28 04:22:11 2011
 #      by: PyQt4 UI code generator 4.8.5
 #
 # WARNING! All changes made in this file will be lost!
@@ -42,7 +42,7 @@ class Ui_MainWindow(object):
         self.statusbar.setObjectName(_fromUtf8("statusbar"))
         MainWindow.setStatusBar(self.statusbar)
         self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 662, 27))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 662, 19))
         self.menubar.setObjectName(_fromUtf8("menubar"))
         self.menuFile = QtGui.QMenu(self.menubar)
         self.menuFile.setTitle(QtGui.QApplication.translate("MainWindow", "&File", None, QtGui.QApplication.UnicodeUTF8))
@@ -89,9 +89,10 @@ class Ui_MainWindow(object):
         self.horizontalLayout_5.addWidget(self.label_2)
         self.clipMinDoubleSpinBox = QtGui.QDoubleSpinBox(self.dockWidgetContents)
         self.clipMinDoubleSpinBox.setDecimals(2)
-        self.clipMinDoubleSpinBox.setMinimum(0.01)
-        self.clipMinDoubleSpinBox.setMaximum(2000.0)
-        self.clipMinDoubleSpinBox.setSingleStep(0.01)
+        self.clipMinDoubleSpinBox.setMinimum(0.0)
+        self.clipMinDoubleSpinBox.setMaximum(99999.0)
+        self.clipMinDoubleSpinBox.setSingleStep(5.0)
+        self.clipMinDoubleSpinBox.setProperty("value", 0.0)
         self.clipMinDoubleSpinBox.setObjectName(_fromUtf8("clipMinDoubleSpinBox"))
         self.horizontalLayout_5.addWidget(self.clipMinDoubleSpinBox)
         self.horizontalLayout_3.addLayout(self.horizontalLayout_5)
@@ -102,8 +103,10 @@ class Ui_MainWindow(object):
         self.label_3.setObjectName(_fromUtf8("label_3"))
         self.horizontalLayout_6.addWidget(self.label_3)
         self.clipMaxDoubleSpinBox = QtGui.QDoubleSpinBox(self.dockWidgetContents)
-        self.clipMaxDoubleSpinBox.setMinimum(0.01)
-        self.clipMaxDoubleSpinBox.setMaximum(2000.0)
+        self.clipMaxDoubleSpinBox.setMinimum(0.0)
+        self.clipMaxDoubleSpinBox.setMaximum(99999.0)
+        self.clipMaxDoubleSpinBox.setSingleStep(5.0)
+        self.clipMaxDoubleSpinBox.setProperty("value", 0.0)
         self.clipMaxDoubleSpinBox.setObjectName(_fromUtf8("clipMaxDoubleSpinBox"))
         self.horizontalLayout_6.addWidget(self.clipMaxDoubleSpinBox)
         self.horizontalLayout_3.addLayout(self.horizontalLayout_6)
@@ -125,18 +128,6 @@ class Ui_MainWindow(object):
         self.scalingComboBox.setItemText(1, QtGui.QApplication.translate("MainWindow", "Logarithmic", None, QtGui.QApplication.UnicodeUTF8))
         self.horizontalLayout_7.addWidget(self.scalingComboBox)
         self.verticalLayout_3.addLayout(self.horizontalLayout_7)
-        self.horizontalLayout_8 = QtGui.QHBoxLayout()
-        self.horizontalLayout_8.setObjectName(_fromUtf8("horizontalLayout_8"))
-        self.label_5 = QtGui.QLabel(self.dockWidgetContents)
-        self.label_5.setText(QtGui.QApplication.translate("MainWindow", "Gamma:", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_5.setObjectName(_fromUtf8("label_5"))
-        self.horizontalLayout_8.addWidget(self.label_5)
-        self.gammaSlider = QtGui.QSlider(self.dockWidgetContents)
-        self.gammaSlider.setOrientation(QtCore.Qt.Horizontal)
-        self.gammaSlider.setTickPosition(QtGui.QSlider.NoTicks)
-        self.gammaSlider.setObjectName(_fromUtf8("gammaSlider"))
-        self.horizontalLayout_8.addWidget(self.gammaSlider)
-        self.verticalLayout_3.addLayout(self.horizontalLayout_8)
         self.verticalLayout.addLayout(self.verticalLayout_3)
         self.colorOptionsDockWidget.setWidget(self.dockWidgetContents)
         MainWindow.addDockWidget(QtCore.Qt.DockWidgetArea(2), self.colorOptionsDockWidget)

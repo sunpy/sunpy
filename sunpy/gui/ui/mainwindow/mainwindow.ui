@@ -59,7 +59,7 @@
      <x>0</x>
      <y>0</y>
      <width>662</width>
-     <height>27</height>
+     <height>19</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -145,13 +145,16 @@
                 <number>2</number>
                </property>
                <property name="minimum">
-                <double>0.010000000000000</double>
+                <double>0.000000000000000</double>
                </property>
                <property name="maximum">
-                <double>2000.000000000000000</double>
+                <double>99999.000000000000000</double>
                </property>
                <property name="singleStep">
-                <double>0.010000000000000</double>
+                <double>5.000000000000000</double>
+               </property>
+               <property name="value">
+                <double>0.000000000000000</double>
                </property>
               </widget>
              </item>
@@ -169,10 +172,16 @@
              <item>
               <widget class="QDoubleSpinBox" name="clipMaxDoubleSpinBox">
                <property name="minimum">
-                <double>0.010000000000000</double>
+                <double>0.000000000000000</double>
                </property>
                <property name="maximum">
-                <double>2000.000000000000000</double>
+                <double>99999.000000000000000</double>
+               </property>
+               <property name="singleStep">
+                <double>5.000000000000000</double>
+               </property>
+               <property name="value">
+                <double>0.000000000000000</double>
                </property>
               </widget>
              </item>
@@ -216,27 +225,6 @@
              <string>Logarithmic</string>
             </property>
            </item>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_8">
-         <item>
-          <widget class="QLabel" name="label_5">
-           <property name="text">
-            <string>Gamma:</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QSlider" name="gammaSlider">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="tickPosition">
-            <enum>QSlider::NoTicks</enum>
-           </property>
           </widget>
          </item>
         </layout>
