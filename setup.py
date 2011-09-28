@@ -53,7 +53,7 @@ def install(setup): #pylint: disable=W0621
         #    "VSO/HEK": ['suds']
         #},
         url="http://www.sunpy.org/",
-        version="0.01",
+        version="0.1",
         package_data={'': ['*.fits']},
     )
 
