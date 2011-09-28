@@ -1,7 +1,7 @@
 ===============
 Latest Unstable
 ===============
-You can install the latest "nightly build" version of SunPy from `GitHub <http://github.com//sunpy/sunpy>`.
+You can install the latest "nightly build" version of SunPy from `GitHub <http://github.com//sunpy/sunpy/>`.
 GitHub provides a convienient download link. It may be easier in the long run to grab SunPy 
 using `Git <http://git-scm.com/download>`, a light and easy version control system: ::
 
