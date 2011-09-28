@@ -35,19 +35,18 @@ Python(x,y) is a distribution that include not only Python, but also a large
 variety of Python modules and development tools.  Please note that this 
 installer is rather large (~400 MB) and thus may take a while to download.
 
-**2. Install PyFITS**
+**2. Install other required modules**
 
-Download and install `PyFITS <http://hesperia.gsfc.nasa.gov/~ayshih/sunpy/pyfits-3.0.2.win32-py2.7-sunpy.exe>`_, which is used to read FITS files.  (Note: this installer is built by the SunPy team.)
+Download and install `PyFITS <http://hesperia.gsfc.nasa.gov/~ayshih/sunpy/pyfits-3.0.2.win32-py2.7-sunpy.exe>`_.  (Note: this installer is built by the SunPy team.)
 
-**3. Install additional modules**
+**3. Install optional modules**
 
-Install additional modules: ::
+Install optional modules: ::
 
-    easy_install paver
-    easy_install suds
+    pip install suds
+    pip install paver
 
 * Paver is used to link symbolically to the SunPy code
-* Suds is used for web-based requests (e.g., for VSO interactions)
 
 **4. Install Git**
 
@@ -106,7 +105,7 @@ and associated scripts can be found:
     2. Find the ``PATH`` environment variable, under either user or system variables, and append ``C:\Python27`` and ``C:\Python27\Scripts``, separated by semicolons.
     
 
-**1b. Install packaged modules**
+**1b. Install required and optional modules included in Python(x,y)**
 
 Download and install `NumPy <http://sourceforge.net/projects/numpy/files/NumPy/1.6.1/numpy-1.6.1-win32-superpack-python2.7.exe/download>`_.
 
@@ -116,8 +115,9 @@ Download and install `matplotlib <http://sourceforge.net/projects/matplotlib/fil
 
 Download and install `PyQt4 <http://www.riverbankcomputing.co.uk/static/Downloads/PyQt4/PyQt-Py2.7-x86-gpl-4.8.5-1.exe>`_.
 
-Download and install `setuptools 
-<http://pypi.python.org/packages/2.7/s/setuptools/setuptools-0.6c11.win32-py2.7.exe>`_.
+Download and install `distribute <http://pythonxy.googlecode.com/files/distribute-0.6.21_py27.exe>`_.  (Note: this installer is built by the Python(x,y) team.)
+
+Download and install `pip <http://pythonxy.googlecode.com/files/pip-1.0.2_py27.exe>`_.  (Note: this installer is built by the Python(x,y) team.)
 
 **2-5. The remaining steps**
 
