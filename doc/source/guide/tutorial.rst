@@ -46,3 +46,15 @@ get you started: ::
 	# or you can use the following convinience method to list them all
 	con.print_all()
 
+Anytim and Utilities
+--------------------
+
+SunPy also contains a number of utility functions which may be useful in general. Here is a short example: ::
+
+	from sunpy.util import util as util
+	# parsing a standard time strings
+	util.anytim('2004/02/05 12:00')
+	# This returns a datetime object. All SunPy functions which require time as an input sanitize the input using util.anytim. 	
+	util.day_of_year('2004-Jul-05 12:00:02')
+	# the julian day
+	util.julian_day((2010,4,30))
