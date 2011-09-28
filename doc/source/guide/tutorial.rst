@@ -2,7 +2,20 @@
 A Quick Tutorial
 ----------------
 
-A simple example of how to plot a map::
+Welcome to the SunPy tutorial! This brief tutorial will walk you through some 
+of the functionality currently offered by SunPy. Start by reading this tutorial
+and trying out some of the examples demonstrated. Once you've completed the
+tutorial check out the :doc:`code reference</reference/index>` for a more
+thorough look at the functionality available.
+
+1. Plotting
+-----------
+
+Let's begin by creating a simple plot of an AIA image. To make things easy,
+SunPy includes several example files which are used throughout the docs. These
+files have names like `sunpy.AIA_171_IMAGE` and `sunpy.RHESSI_IMAGE`.
+
+Try typing the below example into your interactive Python shell::
 
 	import sunpy
 	from matplotlib import cm
@@ -10,10 +23,22 @@ A simple example of how to plot a map::
 	aia = sunpy.Map(sunpy.AIA_171_IMAGE)
 	aia.show(cmap=cm.hot, norm=colors.Normalize(1, 2048))
 
-and there you go!
+If everything has been configured properly you should see a standard-looking
+AIA 171 image with a colorbar on the right-hand side and a title and some 
+labels.
 
-Colormaps
----------
+There is lot going on here, but we will walk you through the example. Briefly,
+in the first few lines we are just importing SunPy and a couple other plotting
+related modules that we will use in the example. On the fourth line we create a
+SunPy Map object which is basically just a spatially-aware image or data array.
+On the last line we then plot the map object, adding a couple additional
+parameters to specify a color map to use and how we wish to scale the image.
+
+Over the next few sections we will explain some of these features in more depth
+and then move onto more other modules included in SunPy.
+
+Specifying a Colormap
+^^^^^^^^^^^^^^^^^^^^^
 
 There are a number of color maps defined in SunPy which are used for data from particular missions (e.g. SDO/AIA). 
 A simple example on how to use the color maps provided by SunPy: ::
