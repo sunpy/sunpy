@@ -1,15 +1,17 @@
-====================
-Latest Unstable (Git)
-====================
-To install the latest version of SunPy from GitHub, use Git: ::
+===============
+Latest Unstable
+===============
+You can install the latest "nightly build" version of SunPy from `GitHub <http://github.com//sunpy/sunpy>`.
+GitHub provides a convienient download link. It may be easier in the long run to grab SunPy 
+using `Git <http://git-scm.com/download>`, a light and easy version control system: ::
 
     git clone git://git@github.com/sunpy/sunpy.git
-    
-Next, use `paver <http://paver.github.com/>`__ to create a link to the SunPy 
+
+In either case you can now use `paver <http://paver.github.com/>`__ to create a link to the SunPy 
 directory you just downloaded in a location that is accessible to Python: ::
 
     sudo paver develop
     
-Done! You should now be able to import SunPy from anywhere on your system.
+This will make it make possible to import and use SunPy from anywhere on your system.
 Alternatively, if you would prefer you can also skip the paver step and simply
-include sunpy locally by starting Python from the root SunPy directory.
+include SunPy locally by starting an interactive Python session from the root SunPy directory.

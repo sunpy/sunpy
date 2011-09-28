@@ -19,6 +19,7 @@ __email__ = "steven.d.christe@nasa.gov"
 
 import numpy as np
 from sunpy.sun import constants as con
+from decimal import *
 
 def get_solar_limb(header):
     """Return the angular size of the Sun viewed from Earth (in arcsec)"""
@@ -139,7 +140,7 @@ def convert_pixel_to_data(header, pixel_index=None):
         
     return coord
 
-def convert_data_to_pixel(header, coord, pixel_index=None):
+def convert_data_to_pixel(header, coord):
     '''This procedure takes a WCS-compliant header, and calculates the pixel coordinates for given data coordinates.'''
     naxis = np.array(get_shape(header))
     cdelt = np.array(get_platescale(header))
@@ -149,51 +150,43 @@ def convert_data_to_pixel(header, coord, pixel_index=None):
     
     pixel = coord/cdelt + crpix - 1
 
+    return pixel
+
 def convert_hpc_hcc(header, coord, distance=None):
     """This routine converts Helioprojective-Cartesian (HPC) coordinates into 
     Heliocentric-Cartesian (HCC) coordinates, using equations 15 in 
     Thompson (2006), A&A, 449, 791-803.
     """
     
-    cx = convert_ang_units(unit=get_units(header, axis='x'))
-    cy = convert_ang_units(unit=get_units(header, axis='y'))
-    
-    lon = cx * hpln
-    lat = cy * hplt
-    #print(cx,cy)
-    # Calculate the sines and cosines.
-    cosx = np.cos(lon)
-    sinx = np.sin(lon)
-    cosy = np.cos(lat)
-    siny = np.sin(lat)
-    
-    #print(cosx, sinx, cosy, siny)
-    
-    # get the distance to the Sun
+    c = np.array([convert_ang_units(unit=get_units(header, axis='x')), 
+                  convert_ang_units(unit=get_units(header, axis='y'))])
+
+    res = coord * c
+
+    cosx = np.cos(coord[:,0])
+    sinx = np.sin(coord[:,0])
+    cosy = np.cos(coord[:,1])
+    siny = np.sin(coord[:,1])
+
     dsun = header.get('dsun_obs')
-    # Should we use the rsun_ref defined in the fits file or our local (possibly different/more correct) definition
     rsun = header.get('rsun_ref')
-    
-    #print(dsun, rsun)
+
     if distance is None: 
         q = dsun * cosy * cosx
         distance = q ** 2 - dsun ** 2 + rsun ** 2
-        # Need to check if there are values which are negative and get rid of them
-        # IDL code
-        # w = where(distance lt 0, count)
-        # if count gt 0 then flag_missing, distance, 
-        distance = q - np.sqrt(distance) 
-    
+        distance[np.where(distance < 0)] = Decimal('Nan')
+
     x = distance * cosy * sinx
     y = distance * siny
     z = dsun - distance * cosy * cosx
-    # agrees to at least three digits
-    return [x, y]
 
-def convert_hcc_hpc(header, x, y, distance=None):
+    return np.array([x,y]).T
+
+def convert_hcc_hpc(header, coord, distance=None):
     """Convert Heliocentric-Cartesian (HCC) to angular 
     Helioprojective-Cartesian (HPC) coordinates (in degrees)."""
-    
+    x = coord[:,0]
+    y = coord[:,1]
     #Distance to the Sun but should we use our own?
     dsun = header.get('dsun_obs')
     # Should we use the rsun_ref defined in the fits file or our local (possibly different/more correct) definition
@@ -209,15 +202,19 @@ def convert_hcc_hpc(header, x, y, distance=None):
     hplt = np.arcsin(y / distance)
     
     # convert the results to degrees
-    result = np.rad2deg([hpln, hplt])
+    result = np.rad2deg([hpln, hplt]).T
     return result
 
-def convert_hcc_hg(header, x, y):
+def convert_hcc_hg(header, coord):
     '''Convert Heliocentric-Cartesian to Heliographic coordinates (given in degrees).'''
     
+    x = coord[:,0]
+    y = coord[:,1]
+
     rsun = header.get('rsun_ref')
 
     z = np.sqrt(rsun ** 2 - x ** 2 - y ** 2)
+    z[np.where(z < 0)] = Decimal('Nan')
 
     b0 = get_solar_b0(header)
     l0 = get_solar_l0(header)
@@ -228,11 +225,14 @@ def convert_hcc_hg(header, x, y):
     hgln = np.arctan(x / (z*cosb - y*sinb)) + l0
     hglt = np.arcsin( (y*cosb + z*sinb) / hecr )
     
-    return np.rad2deg([hgln, hglt])
+    return np.rad2deg(np.array([hgln,hglt]).T)
 
-def convert_hg_hcc(header, hgln, hglt):
+def convert_hg_hcc(header, coord):
     """Convert Heliographic coordinates (given in degrees) to Heliocentric-Cartesian."""
     # using equations 11 in Thompson (2006), A&A, 449, 791-803
+    hgln = coord[:,0]
+    hglt = coord[:,1]
+    
     cx = np.deg2rad(1)
     cy = np.deg2rad(1)
     
@@ -259,7 +259,7 @@ def convert_hg_hcc(header, hgln, hglt):
     y = hecr * (siny*cosb - cosy*cosx*sinb)
     z = hecr * (siny*sinb + cosy*cosx*cosb)
 
-    return [x,y]
+    return np.array([x,y]).T
 
 def proj_tan(header, coord, force=False):
     """Applies the gnomonic (TAN) projection to intermediate relative 
