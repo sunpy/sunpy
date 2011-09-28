@@ -37,7 +37,7 @@ installer is rather large (~400 MB) and thus may take a while to download.
 
 **2. Install PyFITS**
 
-Download and install `PyFITS <http://pypi.python.org/packages/2.7/p/pyfits/pyfits-3.0.1.win32-py2.7.exe>`_, which is used to read FITS files.
+Download and install `PyFITS <http://hesperia.gsfc.nasa.gov/~ayshih/sunpy/pyfits-3.0.2.win32-py2.7-sunpy.exe>`_, which is used to read FITS files.  (Note: this installer is built by the SunPy team.)
 
 **3. Install additional modules**
 
