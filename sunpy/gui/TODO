@@ -1,0 +1,25 @@
+/plotman.py
+-----------
+- Review canvas.update_figure - is this appropriate?
+- Replacement for MPL Tk Viewer (?)
+- Colormap hierarchy
+- Colormap names (?)
+- Implement contour plotting / overlays
+- Connect to VSO and other data services
+- Disambiguate plots with identical names, numerical suffix (?)
+- Dynamic subplot adding
+- Overlaying plots, drag-drop, opacity etc.
+- Handle exceptions ?
+- Displaying mapcube animations
+- Is gui.ui necessary?
+
+/mainwindow/widgets/figure_canvas.py (?)
+------------------------------------
+- data xy plots
+- ut plots (time series)
+- image plots
+- spectrogram plots
+
+/mainwindow/widgets/tab_page.py
+------------------------------------
+- Let Qt Designer do the work.
