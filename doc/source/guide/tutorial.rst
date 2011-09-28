@@ -40,46 +40,97 @@ and then move onto more other modules included in SunPy.
 Specifying a Colormap
 ^^^^^^^^^^^^^^^^^^^^^
 
-There are a number of color maps defined in SunPy which are used for data from particular missions (e.g. SDO/AIA). 
+There are a number of color maps defined in SunPy which are used for data from 
+particular missions (e.g. SDO/AIA). 
 A simple example on how to use the color maps provided by SunPy: ::
 
 	import sunpy.cm as cm
+	
 	# cmlist is a dictionary with all of the color tables
 	# to list all of the keys of the dictionary
 	cm.cmlist.keys()
+
 	# to grab a particular colortable then
 	cmap = cm.cmlist.get('sdoaia94')
+
 	# you can also get a visual representation of all of the color tables 
 	cm.show_colormaps()
 
-Solar Physical Constants
-------------------------
+2. Solar Physical Constants
+---------------------------
 
-SunPy contains a convienient list of solar-related physical constants. Here is a short bit of code to
-get you started: ::
+SunPy contains a convienient list of solar-related physical constants. Here is 
+a short bit of code to get you started: ::
 	
 	from sunpy.sun import constants as con
+
 	# one astronomical unit (the average distance between the Sun and Earth)
 	print(con.au)
+
 	# the solar radius
 	print(con.radius)
+
 	# not all constants have a shortcut assigned to them (as above)
 	# the rest of the constants are stored in a dictionary
 	solar_constants = con.physical_constants
+
 	# to get a list of all of the values stored in this dictionary
 	solar_constants.keys()
+	
 	# or you can use the following convinience method to list them all
 	con.print_all()
 
-Anytim and Utilities
---------------------
+3. Anytim and Utilities
+-----------------------
 
-SunPy also contains a number of utility functions which may be useful in general. Here is a short example: ::
+SunPy also contains a number of utility functions which may be useful in 
+general. Here is a short example: ::
 
 	from sunpy.util import util as util
+	
 	# parsing a standard time strings
 	util.anytim('2004/02/05 12:00')
-	# This returns a datetime object. All SunPy functions which require time as an input sanitize the input using util.anytim. 	
+	
+	# This returns a datetime object. All SunPy functions which require 
+	# time as an input sanitize the input using util.anytim. 	
 	util.day_of_year('2004-Jul-05 12:00:02')
+	
 	# the julian day
 	util.julian_day((2010,4,30))
+	
+4. Querying the VSO
+-------------------
+There are a couple different ways to query and download data from the VSO using
+SunPy. The method you should use depends first on your preference with respect
+to query style: the main method of querying uses a syntax that is unique to
+SunPy and may require some getting used to, but is extremely flexible and
+powerful. To make it easy for people coming from SSW to get started, a second
+"legacy" API also exists which works is very much the same way as VSO_GET in
+IDL.
+
+Further, for each of the two query APIs there are interactive and
+non-interactive versions available, depending on the type of work you are doing.
+
+The below example demonstrates a simple query for STEREO EUVI data using the
+non-interactive version of the main API::
+
+    from sunpy.net import vso
+    
+    # create a new VSOClient instance
+    client = vso.VSOClient()
+    
+    # build our query
+    result = client.query(
+        vso.attrs.Time((2011, 9, 20), (2011, 9, 21)),
+        vso.attrs.Instrument('euvi')
+    )
+    
+    # print the number of matches
+    print("Number of records found: %d " % result.no_records())
+   
+    # download matches to /download/path
+    res = client.get(result, path="/download/path").wait()
+
+Note that specifying a path is optional and if you do not specify one the files
+will simply be downloaded into a temporary directory (e.g. /tmp/xyz).
+
