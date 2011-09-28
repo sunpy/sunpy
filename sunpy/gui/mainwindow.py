@@ -28,9 +28,11 @@ class MainWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
 
     @pyqtSignature("")
     def on_actionOpen_file_triggered(self):
-        file_info = QFileInfo(QFileDialog.getOpenFileName(self, self.tr("Open file..."), 
-                    filter=self.tr("FITS files (*.fit *.dst *.fits *.fts *.lilo *.lihi *.silo *.sihi *.mxlo *.mxhi *.rilo *.rihi *.vdlo *.vdhi)")))
-        if file_info.fileName():
+        file_dialog = QFileDialog(self, self.tr("Open file..."), 
+                    filter=self.tr("FITS files (*.fit *.dst *.fits *.fts *.lilo *.lihi *.silo *.sihi *.mxlo *.mxhi *.rilo *.rihi *.vdlo *.vdhi)"))
+        file_name = file_dialog.getOpenFileName()
+        if file_name:
+            file_info = QFileInfo(file_name)
             file_path = str(file_info.filePath())
             self.add_tab(sunpy.Map(file_path), file_info.fileName())
 
