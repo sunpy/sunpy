@@ -37,6 +37,8 @@ installer is rather large (~400 MB) and thus may take a while to download.
 
 **2. Install other required modules**
 
+Download and install `pip <http://pythonxy.googlecode.com/files/pip-1.0.2_py27.exe>`_.  (Note: this installer is built by the Python(x,y) team.)
+
 Download and install `PyFITS <http://hesperia.gsfc.nasa.gov/~ayshih/sunpy/pyfits-3.0.2.win32-py2.7-sunpy.exe>`_.  (Note: this installer is built by the SunPy team.)
 
 **3. Install optional modules**
@@ -116,8 +118,6 @@ Download and install `matplotlib <http://sourceforge.net/projects/matplotlib/fil
 Download and install `PyQt4 <http://www.riverbankcomputing.co.uk/static/Downloads/PyQt4/PyQt-Py2.7-x86-gpl-4.8.5-1.exe>`_.
 
 Download and install `distribute <http://pythonxy.googlecode.com/files/distribute-0.6.21_py27.exe>`_.  (Note: this installer is built by the Python(x,y) team.)
-
-Download and install `pip <http://pythonxy.googlecode.com/files/pip-1.0.2_py27.exe>`_.  (Note: this installer is built by the Python(x,y) team.)
 
 **2-5. The remaining steps**
 
