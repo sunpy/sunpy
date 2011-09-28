@@ -61,21 +61,25 @@ class FigureCanvas(FigureCanvasQTAgg):
                 return matplotlib.colors.Normalize(vmin=self.vmin,
                                                    vmax=self.vmax)
             elif self.scaling == "Logarithmic":
-                if self.vmin == 0:
-                    self.vmin = 0.01
-                return matplotlib.colors.LogNorm(vmin=self.vmin,
-                                                 vmax=self.vmax)
+                if self.vmin <= 0:
+                    # Cannot log scale 0 or negative data
+                    self.window().colorErrorLabel.setText("Cannot log scale zero or negative data!")
+                    return self.params["norm"]
+                else:
+                    return matplotlib.colors.LogNorm(vmin=self.vmin,
+                                                     vmax=self.vmax)
         else:
-            self.window().statusBar().showMessage(
-                "Min clip value must not exceed max clip value!", 6000
-            )
+            self.window().colorErrorLabel.setText("Min clip value must not exceed max clip value!")
             return self.params["norm"]
 
 
     def update_figure(self, cmap_name=None, vmin=None, vmax=None, scaling=None):
         # Destroy any previous figures
         matplotlib.pyplot.close()
-        
+
+        # Clear error messages
+        self.window().colorErrorLabel.clear()        
+
         if cmap_name is not None:
             self.params.update({"cmap": self.get_cmap(cmap_name)})
         elif vmax is not None:
