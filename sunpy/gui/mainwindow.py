@@ -30,8 +30,9 @@ class MainWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
     def on_actionOpen_file_triggered(self):
         file_info = QFileInfo(QFileDialog.getOpenFileName(self, self.tr("Open file..."), 
                     filter=self.tr("FITS files (*.fit *.dst *.fits *.fts *.lilo *.lihi *.silo *.sihi *.mxlo *.mxhi *.rilo *.rihi *.vdlo *.vdhi)")))
-        file_path = str(file_info.filePath())
-        self.add_tab(sunpy.Map(file_path), file_info.fileName())
+        if file_info.fileName():
+            file_path = str(file_info.filePath())
+            self.add_tab(sunpy.Map(file_path), file_info.fileName())
 
     @pyqtSignature("int")
     def on_tabWidget_currentChanged(self):
