@@ -8,6 +8,8 @@ BaseMap is a generic Map class from which all other Map classes inherit from.
 __authors__ = ["Keith Hughitt, Steven Christe"]
 __email__ = "keith.hughitt@nasa.gov"
 
+from copy import copy
+
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
@@ -140,7 +142,7 @@ class BaseMap(np.ndarray):
                 "x": wcs.get_units(header, axis='x'), 
                 "y": wcs.get_units(header, axis='y')
             }
-            self.rsun = wcs.solar_limb(header)
+            self.rsun = wcs.get_solar_limb(header)
             
     def __array_finalize__(self, obj):
         """Finishes instantiation of the new map object"""
@@ -191,6 +193,10 @@ class BaseMap(np.ndarray):
         result.cmap = cm.gray #@UndefinedVariable 
         
         return result
+    
+    def std(self, *args, **kwargs):
+        """overide np.ndarray.std()"""
+        return np.array(self, copy=False, subok=False).std(*args, **kwargs)
     
     @classmethod
     def get_properties(cls):
@@ -289,7 +295,7 @@ class BaseMap(np.ndarray):
 
         return self.__class__(data, header)
    
-    def plot(self, overlays=[], draw_limb=False, gamma=1.0, **matplot_args):
+    def plot(self, overlays=[], draw_limb=False, gamma=None, **matplot_args):
         """Plots the map object using matplotlib
         
         Parameters
@@ -309,8 +315,8 @@ class BaseMap(np.ndarray):
         
         axes = fig.add_subplot(111)
         axes.set_title("%s %s" % (self.name, self.date))
-        axes.set_xlabel('X-postion [' + self.units['x'] + ']')
-        axes.set_ylabel('Y-postion [' + self.units['y'] + ']')
+        axes.set_xlabel('X-position [' + self.units['x'] + ']')
+        axes.set_ylabel('Y-position [' + self.units['y'] + ']')
 
         # Determine extent
         extent = self.xrange + self.yrange
@@ -321,7 +327,9 @@ class BaseMap(np.ndarray):
             "norm": self.norm
         }
         params.update(matplot_args)
-        params['cmap'].set_gamma(gamma) 
+        if gamma is not None:
+            params['cmap'] = copy(params['cmap'])
+            params['cmap'].set_gamma(gamma) 
         im = axes.imshow(self, origin='lower', extent=extent, **params)
         fig.colorbar(im)
         
