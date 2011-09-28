@@ -142,7 +142,7 @@ class BaseMap(np.ndarray):
                 "x": wcs.get_units(header, axis='x'), 
                 "y": wcs.get_units(header, axis='y')
             }
-            self.rsun = wcs.solar_limb(header)
+            self.rsun = wcs.get_solar_limb(header)
             
     def __array_finalize__(self, obj):
         """Finishes instantiation of the new map object"""
@@ -315,8 +315,8 @@ class BaseMap(np.ndarray):
         
         axes = fig.add_subplot(111)
         axes.set_title("%s %s" % (self.name, self.date))
-        axes.set_xlabel('X-postion [' + self.units['x'] + ']')
-        axes.set_ylabel('Y-postion [' + self.units['y'] + ']')
+        axes.set_xlabel('X-position [' + self.units['x'] + ']')
+        axes.set_ylabel('Y-position [' + self.units['y'] + ']')
 
         # Determine extent
         extent = self.xrange + self.yrange
