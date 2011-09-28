@@ -3,20 +3,15 @@ import numpy as np
 
 """
 Position of the Sun in the sky as seen from Earth.
-"""
 
-#pylint: disable=E1101,E1121
-__authors__ = ["Jack Ireland"]
-__email__ = "jack.ireland@nasa.gov"
-
-
-
-"""
 Questions
 ---------
 1. should the output always be an ndarray?
 """
 
+#pylint: disable=E1101,E1121
+__authors__ = ["Jack Ireland"]
+__email__ = "jack.ireland@nasa.gov"
 
 def pos(jd, radian = False):
     """
@@ -120,10 +115,10 @@ def pos(jd, radian = False):
     if np.isscalar(jd):
         jd = jd + np.zeros([1])
     # degrees to radians
-    dtor = np.pi/180.0
+    dtor = np.deg2rad(1)
     # form time in Julian centuries from 1900.0
     t = (jd - 2415020.0)/36525.0
-
+    print(t)
     #  form sun's mean longitude
     l = (279.696678 + np.mod( 36000.768925*t, 360.0 ))*3600.0
     
