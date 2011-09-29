@@ -245,7 +245,7 @@ def run_tests(timer, scale_factor):
     
     #Test 21 - Smooth 512 by 512 byte array, 5x5 boxcar
     for i in xrange(nrep):
-        b = scipy.ndimage.filters.median_filter(a, size=(5, 5))
+        b = scipy.ndimage.filters.uniform_filter(a, size=(5, 5))
     timer.log('Smooth 512 by 512 byte array, 5x5 boxcar, %d times' % nrep)
  
     #Test 22 - Smooth 512 by 512 floating point array, 5x5 boxcar
