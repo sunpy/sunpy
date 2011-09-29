@@ -37,8 +37,10 @@ class MainWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
             self.add_tab(sunpy.Map(file_path), file_info.fileName())
 
     @pyqtSignature("int")
-    def on_tabWidget_currentChanged(self):
-        self.refresh_color_options()
+    def on_tabWidget_currentChanged(self, index):
+        # index is -1 when the are no tabs
+        if index > 0:
+            self.refresh_color_options()
 
     @pyqtSignature("int")
     def on_tabWidget_tabCloseRequested(self, i):
