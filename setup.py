@@ -8,7 +8,7 @@ solar physics using the Python programming language.
 DOCLINES = __doc__.split("\n")
 
 CLASSIFIERS = [
-    'Development Status :: 2 - Pre-Alpha',
+    'Development Status :: 3 - Alpha',
     'Intended Audience :: Science/Research',
     'Intended Audience :: Developers',
     'License :: OSI Approved :: BSD License',
@@ -40,20 +40,22 @@ def install(setup): #pylint: disable=W0621
                   'sunpy.tests', 'sunpy.tests.map', 'sunpy.tests.net',
                   'sunpy.tests.util',
                   'sunpy.data', 'sunpy.data.sample', 'sunpy.net', 'sunpy.solwcs',
-                  'sunpy.net.vso', 'sunpy.net.hek'],
+                  'sunpy.net.vso', 'sunpy.net.hek',
+                  'sunpy.gui', 'sunpy.gui.ui', 'sunpy.gui.ui.mainwindow',
+                  'sunpy.gui.ui.mainwindow.resources', 'sunpy.gui.ui.mainwindow.widgets'],
         platforms=["Windows", "Linux", "Solaris", "Mac OS-X", "Unix"],
-        install_requires=[
-            'NumPy',
-            'PyFITS',
-            'SciPy',
-            'Matplotlib>=1.0',            
-        ],
-        extra_requires={
-            "Plotman": ['PyQt4'],
-            "VSO/HEK": ['suds']
-        },
+        #install_requires=[
+        #    'NumPy',
+        #    'PyFITS',
+        #    'SciPy',
+        #    'Matplotlib>=1.0',            
+        #],
+        #extra_requires={
+        #    "Plotman": ['PyQt4'],
+        #    "VSO/HEK": ['suds']
+        #},
         url="http://www.sunpy.org/",
-        version="0.01",
+        version="0.1",
         package_data={'': ['*.fits']},
     )
 
