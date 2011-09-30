@@ -396,7 +396,7 @@ class VSOClient(object):
         try:
             return QueryResponse.create(self.api.service.Query(queryreq))
         except TypeNotFound:
-            return []
+            return QueryResponse([])
     
     def latest(self):
         """ Return newest record (limited to last week). """
@@ -536,6 +536,8 @@ class VSOClient(object):
                     except NoData:
                         res.add_error(DownloadFailed(dresponse))
                         continue
+                    except Exception, e:
+                        res.add_error(DownloadFailed(dresponse))
             elif code == '300' or code == '412' or code == '405':
                 if code == '300':
                     try:
@@ -578,10 +580,11 @@ class VSOClient(object):
     def download(self, method, url, dw, callback, *args):
         """ Override to costumize download action. """
         if method.startswith('URL'):
-            dw.reactor.call_sync(
-                partial(dw.download, url, partial(self.mk_filename, *args),
-                        callback)
-            )
+            try:
+                dw.reactor.call_sync(
+                    partial(dw.download, url, partial(self.mk_filename, *args),
+                            callback)
+                )
         raise NoData
     
     @staticmethod
