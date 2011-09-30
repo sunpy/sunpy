@@ -24,7 +24,7 @@ map
 """
 #pylint: disable=W0401,W0622
 
-__version__ = 0.01
+__version__ = 0.1
 
 import sunpy.map
 import sunpy.data.sample
