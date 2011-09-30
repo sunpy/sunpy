@@ -39,6 +39,12 @@ install(setup)
 def sdist():
     """Generated HTML docs and builds a tarball."""
     shutil.rmtree('doc/html')
+    
+@task
+@needs('prepare_docs', 'setuptools.command.bdist_wininst')
+def bdist():
+    """Generated HTML docs and builds a windows binary."""
+    shutil.rmtree('doc/html')
 
 #
 # Documentation
