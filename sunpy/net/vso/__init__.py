@@ -580,11 +580,10 @@ class VSOClient(object):
     def download(self, method, url, dw, callback, *args):
         """ Override to costumize download action. """
         if method.startswith('URL'):
-            try:
-                dw.reactor.call_sync(
-                    partial(dw.download, url, partial(self.mk_filename, *args),
-                            callback)
-                )
+            dw.reactor.call_sync(
+                partial(dw.download, url, partial(self.mk_filename, *args),
+                        callback)
+            )
         raise NoData
     
     @staticmethod
