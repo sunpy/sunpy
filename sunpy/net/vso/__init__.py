@@ -393,7 +393,10 @@ class VSOClient(object):
                 if item[lst]:
                     raise ValueError("Got multiple values for %s." % k)
                 item[lst] = v
-        return QueryResponse.create(self.api.service.Query(queryreq))
+        try:
+            return QueryResponse.create(self.api.service.Query(queryreq))
+        except TypeNotFound:
+            return []
     
     def latest(self):
         """ Return newest record (limited to last week). """
