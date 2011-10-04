@@ -6,15 +6,15 @@ from sunpy.map.io import fits, jp2
 
 # File formats supported by SunPy
 _known_formats = {
-    ('fts', 'fits'): fits,
-    ('jp2'): jp2
+    ('fts', 'fits'): fits.read,
+    ('jp2'): jp2.read
 }
 
 def read_file(filepath):
     """Determines the filetype and reads in the file"""
     for extension, reader in _known_formats.items():
         if filepath.endswith(extension):
-            return reader.read(filepath)
+            return reader(filepath)
 
     # Raise an error if an unsupported filetype is encountered
     raise UnrecognizedFileTypeError
