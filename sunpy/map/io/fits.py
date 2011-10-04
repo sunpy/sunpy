@@ -1,6 +1,6 @@
 from __future__ import absolute_import
 """
-FITS reader implementation
+FITS File Reader
 
 Notes
 -----
