@@ -57,4 +57,5 @@ def Map(input_):
     
 if __name__ == "__main__":
     import sunpy
-    aia = sunpy.Map(sunpy.AIA_171_IMAGE)
+    #aia = sunpy.Map(sunpy.AIA_171_IMAGE)
+    t = sunpy.Map("/home/hughitt1/Desktop/2010_09_04__22_08_31_715__SDO_AIA_AIA_1700.jp2")

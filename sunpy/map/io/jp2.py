@@ -5,14 +5,16 @@ JPEG 2000 File Reader
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
+import os
+import subprocess
+import tempfile
+from matplotlib.image import imread
 from xml.dom.minidom import parseString
-import numpy as np
 
 def read(filepath):
     """Reads in the file at the specified location"""
-    # TODO: Implement initially as a cmd-line wrapper for j2k_to_image
     header = get_header(filepath)
-    data = np.zeros((1024, 1024)) #TMP
+    data = get_data(filepath)
     
     return data, header 
 
@@ -29,6 +31,28 @@ def get_header(filepath):
             xmldict[k] = float(v)
             
     return xmldict
+
+def get_data(filepath):
+    """Extracts the data portion of a JPEG 2000 image
+    
+    Uses the OpenJPEG j2k_to_image command, if available, to extract the data
+    portion of a JPEG 2000 image. The image is first converted to a temporary
+    intermediate file (PGM) and then read back in and stored an as ndarray.
+    """
+    jp2filename = os.path.basename(filepath)
+    
+    tmpname = "".join(os.path.splitext(jp2filename)[0:-1]) + ".pgm"
+    tmpfile = os.path.join(tempfile.mkdtemp(), tmpname)
+    
+    fnull = open(os.devnull, 'w') 
+    subprocess.call(["j2k_to_image", "-i", filepath, "-o", tmpfile], 
+                    stdout=fnull, stderr=fnull)
+    fnull.close()
+    
+    data = imread(tmpfile)    
+    os.remove(tmpfile)
+    
+    return data
 
 def read_xmlbox(filepath, root):
     """
