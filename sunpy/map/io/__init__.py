@@ -14,3 +14,10 @@ def read_file(filepath):
     for extension, reader in _known_formats.items():
         if filepath.endswith(extension):
             return reader.read(filepath)
+
+    # Raise an error if an unsupported filetype is encountered
+    raise UnrecognizedFileTypeError
+
+class UnrecognizedFileTypeError(IOError):
+    """Exception to raise when an unknown file type is encountered"""
+    pass
