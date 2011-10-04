@@ -57,4 +57,4 @@ def Map(input_):
     
 if __name__ == "__main__":
     import sunpy
-    t = sunpy.Map(sunpy.AIA_171_IMAGE)
+    aia = sunpy.Map(sunpy.AIA_171_IMAGE)
