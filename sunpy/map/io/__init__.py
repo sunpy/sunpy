@@ -2,11 +2,12 @@ from __future__ import absolute_import
 """
 File input and output functions
 """
-from sunpy.map.io import fits
+from sunpy.map.io import fits, jp2
 
 # File formats supported by SunPy
 _known_formats = {
-    ('fts', 'fits'): fits
+    ('fts', 'fits'): fits,
+    ('jp2'): jp2
 }
 
 def read_file(filepath):
