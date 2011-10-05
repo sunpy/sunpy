@@ -1,5 +1,5 @@
 """SDO Map subclass definitions"""
-#pylint: disable=W0221,W0222
+#pylint: disable=W0221,W0222,E1101
 
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
@@ -32,7 +32,6 @@ class AIAMap(BaseMap):
             'meas': header.get('wavelnth'),
             'obs': "SDO",
             'name': "AIA %s" % header.get('wavelnth'),
-            'norm': colors.Normalize(0, 1024),
             'cmap': cm.get_cmap(name = 'sdoaia' + str(header.get('wavelnth'))),
             'exptime': header.get('exptime')
         })
@@ -42,6 +41,19 @@ class AIAMap(BaseMap):
     def is_datasource_for(cls, header):
         """Determines if header corresponds to an AIA image"""
         return header.get('instrume') and header.get('instrume')[0:3] == 'AIA'
+    
+    def norm(self):
+        """Returns a Normalize object to be used with AIA data"""
+        mean = self.mean()
+        std = self.std()
+        
+        vmin = max(0, mean - 3 * std)
+        vmax = min(self.max(), mean + 3 * std)
+        
+        # 8-bit images are probably from Helioviewer and are already scaled
+        vmax = max(255, vmax)
+        
+        return colors.Normalize(vmin, vmax)
         
 class HMIMap(BaseMap):
     """HMI Image Map definition"""
