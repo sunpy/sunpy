@@ -116,6 +116,7 @@ class QueryResponse(list):
     def __init__(self, lst, queryresult=None):
         super(QueryResponse, self).__init__(lst)
         self.queryresult = queryresult
+        self.errors = []
     
     @classmethod
     def create(cls, queryresult):
@@ -140,6 +141,8 @@ class QueryResponse(list):
                 max(record.time.end for record in self), TIMEFORMAT)
         )
 
+    def add_error(self, exception):
+        self.errors.append(exception)
 
 class DownloadFailed(Exception):
     pass
@@ -221,6 +224,11 @@ class VSOClient(object):
                 )
             except TypeNotFound:
                 pass
+            except Exception as ex:
+                print("Error: Invalid response recieved from VSO request.")
+                response = QueryResponse.create(self.merge(responses))
+                response.add_error(ex)
+                return response
         
         return QueryResponse.create(self.merge(responses))
     
@@ -676,3 +684,4 @@ def get(query_response, path=None, methods=('URL-FILE',), downloader=None):
     return g_client.get(query_response, path, methods, downloader)
 
 get.__doc__ = VSOClient.get.__doc__
+

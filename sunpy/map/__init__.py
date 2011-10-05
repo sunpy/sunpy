@@ -54,9 +54,3 @@ def Map(input_):
         raise UnrecognizedDataSouceError
     else:
         return BaseMap(input_)
-    
-if __name__ == "__main__":
-    import sunpy
-    #aia = sunpy.Map(sunpy.AIA_171_IMAGE)
-    header = sunpy.map.MapHeader(sunpy.AIA_171_IMAGE)
-
