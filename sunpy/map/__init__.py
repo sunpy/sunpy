@@ -57,5 +57,6 @@ def Map(input_):
     
 if __name__ == "__main__":
     import sunpy
-    aia = sunpy.Map(sunpy.AIA_171_IMAGE)
-    aia.show()
+    #aia = sunpy.Map(sunpy.AIA_171_IMAGE)
+    header = sunpy.map.MapHeader(sunpy.AIA_171_IMAGE)
+
