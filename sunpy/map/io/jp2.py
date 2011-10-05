@@ -21,16 +21,16 @@ def read(filepath):
 def get_header(filepath):
     """Reads the header in and saves it as a dictionary"""
     xmlstring = read_xmlbox(filepath, "fits")
-    xmldict = xml_to_dict(xmlstring)["fits"]
+    pydict = xml_to_dict(xmlstring)["fits"]
     
     #Fix types
-    for k, v in xmldict.items():
+    for k, v in pydict.items():
         if v.isdigit():
-            xmldict[k] = int(v)
+            pydict[k] = int(v)
         elif is_float(v):
-            xmldict[k] = float(v)
+            pydict[k] = float(v)
             
-    return xmldict
+    return pydict
 
 def get_data(filepath):
     """Extracts the data portion of a JPEG 2000 image

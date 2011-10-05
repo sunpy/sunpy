@@ -33,4 +33,11 @@ def read(filepath):
     hdulist = pyfits.open(filepath)
     hdulist.verify('silentfix')
             
-    return hdulist[0].data, hdulist[0].header 
+    return hdulist[0].data, hdulist[0].header
+
+def get_header(filepath):
+    """Returns the header for a given file"""
+    hdulist = pyfits.open(filepath)
+    hdulist.verify('silentfix')
+            
+    return hdulist[0].header
