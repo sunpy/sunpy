@@ -685,3 +685,12 @@ def get(query_response, path=None, methods=('URL-FILE',), downloader=None):
 
 get.__doc__ = VSOClient.get.__doc__
 
+if __name__ == "__main__":
+    from sunpy.net import vso
+    
+    client = VSOClient()
+    result = client.query(
+        vso.attrs.Time((2011, 1, 1), (2011, 1, 1, 10)),
+        vso.attrs.Instrument('aia')
+    )
+    #res = client.get(result, path="/download/path").wait()
