@@ -27,8 +27,7 @@ map
 __version__ = 0.1
 
 import sunpy.map
-import sunpy.data.sample
-from sunpy.map import Map
+from sunpy.map import Map, MapHeader
 from sunpy.map.mapcube import MapCube
 from sunpy.map.compositemap import CompositeMap
 from sunpy.cm import *
