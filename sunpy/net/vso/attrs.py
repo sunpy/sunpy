@@ -222,7 +222,7 @@ walker.add_converter(Time)(
             ('time', 'start'): x.start.strftime(TIMEFORMAT),
             ('time', 'end'): x.end.strftime(TIMEFORMAT) ,
             ('time', 'near'): (
-                x.near.strftime(TIMEFORMAT) if x.near is not None else ''),
+                x.near.strftime(TIMEFORMAT) if x.near is not None else None),
     })
 )
 
