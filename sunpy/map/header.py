@@ -21,7 +21,14 @@ class MapHeader(dict):
     """
     def __init__(self, *args, **kwargs):
         """Creates a new MapHeader instance"""
-        dict.__init__(self, *args, **kwargs)
+        if isinstance(args[0], basestring):
+            # filepath
+            from sunpy.map.io import read_header
+            #dict.__init__(self, dict(read_header(args[0])), **kwargs)
+            dict.__init__(self, read_header(args[0]), **kwargs)
+        else:
+            # dictionary
+            dict.__init__(self, *args, **kwargs)
         
     def __getitem__(self, key):
         """Overide [] indexing"""
