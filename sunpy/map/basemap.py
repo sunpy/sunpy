@@ -123,7 +123,6 @@ class BaseMap(np.ndarray):
             self.date = None
             self.name = None
             self.cmap = None
-            self.norm = None
             self.exptime = None
             
             # Set object attributes dynamically
@@ -187,8 +186,8 @@ class BaseMap(np.ndarray):
         between the two maps."""
         result = np.ndarray.__sub__(self, other)
 
-        minmax = np.array([abs(result.min()), abs(result.max())]).max()
-        result.norm = colors.Normalize(-minmax, minmax, True)
+        #minmax = np.array([abs(result.min()), abs(result.max())]).max()
+        #result.norm = colors.Normalize(-minmax, minmax, True)
         
         result.cmap = cm.gray #@UndefinedVariable 
         
@@ -324,18 +323,23 @@ class BaseMap(np.ndarray):
         # Matplotlib arguments
         params = {
             "cmap": self.cmap,
-            "norm": self.norm
+            "norm": self.norm()
         }
         params.update(matplot_args)
         if gamma is not None:
             params['cmap'] = copy(params['cmap'])
-            params['cmap'].set_gamma(gamma) 
+            params['cmap'].set_gamma(gamma)
+
         im = axes.imshow(self, origin='lower', extent=extent, **params)
         fig.colorbar(im)
         
         for overlay in overlays:
             fig, axes = overlay(self, fig, axes)
         return fig
+    
+    def norm(self):
+        """Default normalizion method"""
+        return None
     
     def show(self, overlays=[], draw_limb=False, gamma=1.0, **matplot_args):
         """Displays map on screen. Arguments are same as plot()."""
