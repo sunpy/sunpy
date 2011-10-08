@@ -18,3 +18,8 @@ class PlotToolBar(NavigationToolbar2QTAgg):
         # Set status tip for all matplotlib actions
         for action in self.actions():
             action.setStatusTip(action.toolTip())
+
+    def home(self):
+        """ Reset everything to default, including colormap when home pressed. """
+        NavigationToolbar2QTAgg.home(self)
+        self.parent.canvas.reset_figure() 
