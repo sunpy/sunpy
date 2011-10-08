@@ -301,7 +301,7 @@ class Downloader(object):
         else:
             fd.write(rec)
     
-    def _start_download(self, url, path, callback):
+    def _start_download(self, url, path, callback, errback):
         server = url.split('/')[0]
         
         self.connections[server] += 1
@@ -310,10 +310,13 @@ class Downloader(object):
         sock = urllib2.urlopen(url)
         fullname = path(sock, url)
         
-        args = [
-                sock, open(fullname, 'wb'),
-                partial(self._close, callback, [{'path': fullname}], server),
-        ]
+        try:
+            args = [
+                    sock, open(fullname, 'wb'),
+                    partial(self._close, callback, [{'path': fullname}], server),
+            ]
+        except IOError, e:
+            return errback(e)
         
         try:
             # hasattr does not work because HTTPResponse objects have a
@@ -330,19 +333,19 @@ class Downloader(object):
         else:
             self.reactor.add_fd(sock, partial(self._download, *args))
     
-    def _attempt_download(self, url, path, callback):
+    def _attempt_download(self, url, path, callback, errback):
         server = url.split('/')[0]
         
         if self.connections[server] < self.max_conn and self.conns < self.max_total:
-            self._start_download(url, path, callback)
+            self._start_download(url, path, callback, errback)
             return True
         return False
 
-    def download(self, url, path, callback=None):
+    def download(self, url, path, callback, errback):
         server = url.split('/')[0]
         
-        if not self._attempt_download(url, path, callback):
-            self.q[server].append((url, path, callback))
+        if not self._attempt_download(url, path, callback, errback):
+            self.q[server].append((url, path, callback, errback))
     
     def _close(self, callback, args, server):
         callback(*args)
