@@ -28,7 +28,7 @@ class MainWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
 
     @pyqtSignature("")
     def on_actionOpen_file_triggered(self):
-        file_dialog = QFileDialog(self, self.tr("Open file..."), 
+        file_dialog = QFileDialog(self, self.tr("Open file or folder..."), 
                     filter=self.tr("FITS files (*.fit *.dst *.fits *.fts *.lilo *.lihi *.silo *.sihi *.mxlo *.mxhi *.rilo *.rihi *.vdlo *.vdhi)"))
         file_name = file_dialog.getOpenFileName()
         if file_name:
@@ -46,7 +46,7 @@ class MainWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
     def on_tabWidget_tabCloseRequested(self, index):
         self.tabWidget.removeTab(index)
         # Hide the color options dockable if last tab closed
-        if index == 0:
+        if self.tabWidget.count() == 0:
             self.colorOptionsDockWidget.hide()
 
     @pyqtSignature("")
@@ -95,10 +95,10 @@ class MainWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
         for cmap in self.mpl_cmaps:
             self.cmListWidget.addItem(cmap)
 
-        if self.current_tab.canvas.map_.norm is not None:
+        if self.current_tab.canvas.map_.norm() is not None:
             # If pre-normalised, get inital clips from the matplotlib norm
-            self.clipMinDoubleSpinBox.setValue(self.current_tab.canvas.map_.norm.vmin)
-            self.clipMaxDoubleSpinBox.setValue(self.current_tab.canvas.map_.norm.vmax)
+            self.clipMinDoubleSpinBox.setValue(self.current_tab.canvas.map_.norm().vmin)
+            self.clipMaxDoubleSpinBox.setValue(self.current_tab.canvas.map_.norm().vmax)
         else:
             # Otherwise, get initial clips from the map data directly.
             self.clipMinDoubleSpinBox.setValue(self.current_tab.canvas.map_.min())

@@ -22,10 +22,10 @@ class FigureCanvas(FigureCanvasQTAgg):
         self.figure = self.map_.plot()
 
         # Code duplication from plotman.py!
-        if self.map_.norm is not None:
+        if self.map_.norm() is not None:
             # If pre-normalised, get inital clips from the matplotlib norm
-            self.vmin = self.map_.norm.vmin
-            self.vmax = self.map_.norm.vmax
+            self.vmin = self.map_.norm().vmin
+            self.vmax = self.map_.norm().vmax
         else:
             # Otherwise, get initial clips from the map data directly.
             self.vmin = self.map_.min()
@@ -36,7 +36,7 @@ class FigureCanvas(FigureCanvasQTAgg):
         # Matplotlib kwargs
         self.params = {
                         "cmap": self.map_.cmap,
-                        "norm": self.map_.norm,
+                        "norm": self.map_.norm(),
                       }
 
         FigureCanvasQTAgg.__init__(self, self.figure)
@@ -93,8 +93,21 @@ class FigureCanvas(FigureCanvasQTAgg):
             self.params.update({"norm": self.get_norm()})
 
         self.figure = self.map_.plot(**self.params)
+        self.resize_figure() 
 
-        # This is required to get plot to size correctly
+    def reset_figure(self):
+        self.figure = self.map_.plot()
+        self.resize_figure()
+
+    def resize_figure(self):
         self.updateGeometry()
-        self.resize(1, 1)
+        self.resize(1, 1) # It works, OK?
         self.draw()
+
+    @property
+    def cmap(self):
+        return self.params["cmap"]
+
+    @property
+    def norm(self):
+        return self.params["norm"]

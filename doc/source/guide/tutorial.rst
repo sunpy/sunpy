@@ -134,3 +134,23 @@ non-interactive version of the main API::
 Note that specifying a path is optional and if you do not specify one the files
 will simply be downloaded into a temporary directory (e.g. /tmp/xyz).
 
+5. Graphical plot manipulation
+------------------------------
+
+SunPy provides a basic GUI for plot manipulation which can be invoked interactively::
+        
+        from sunpy.gui import Plotman
+        
+        # Create a plotman instance with all plots in a directory
+        plots = Plotman('data/examples')
+        plots.show()
+
+        # Create an instance with a single plot and show window.
+        plot = Plotman(sunpy.AIA_171_IMAGE).show() 
+
+.. image:: ../images/plotman.png
+   :alt: Plotman screenshot
+
+Any of the built-in SunPy or matplotlib colormaps may be applied to the image, scaled linearly or logarithmically and clipped as appropriate. The range of matplotlib built-in functions is also available including panning, zooming, saving, axis and subplot configuration etc.
+
+Multiple plots are handled in a tabbed interface within a single window.
