@@ -538,6 +538,7 @@ class VSOClient(object):
                             dataitem.url,
                             dw,
                             res.require(map(str, dataitem.fileiditem.fileid)),
+                            res.add_error,
                             path,
                             qr[dataitem.fileiditem.fileid[0]]
                         )
@@ -585,12 +586,12 @@ class VSOClient(object):
             else:
                 res.add_error(UnknownStatus(dresponse))
     
-    def download(self, method, url, dw, callback, *args):
+    def download(self, method, url, dw, callback, errback, *args):
         """ Override to costumize download action. """
         if method.startswith('URL'):
             dw.reactor.call_sync(
                 partial(dw.download, url, partial(self.mk_filename, *args),
-                        callback)
+                        callback, errback)
             )
         raise NoData
     
