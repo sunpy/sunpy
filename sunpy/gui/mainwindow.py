@@ -14,7 +14,7 @@ Author: Matt Earnshaw <matt@earnshaw.org.uk>
 import sunpy
 from matplotlib import pyplot as plt
 from PyQt4.QtCore import pyqtSignature, QFileInfo
-from PyQt4.QtGui import QMainWindow, QFileDialog
+from PyQt4.QtGui import QMainWindow, QFileDialog, QMessageBox
 from sunpy.gui.ui.mainwindow import ui_mainwindow
 from sunpy.gui.ui.mainwindow.widgets.tab_page import TabPage
 
@@ -28,18 +28,25 @@ class MainWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
 
     @pyqtSignature("")
     def on_actionOpen_file_triggered(self):
-        file_dialog = QFileDialog(self, self.tr("Open file or folder..."), 
+        file_dialog = QFileDialog(self, self.tr("Open file(s)..."),
                     filter=self.tr("FITS files (*.fit *.dst *.fits *.fts *.lilo *.lihi *.silo *.sihi *.mxlo *.mxhi *.rilo *.rihi *.vdlo *.vdhi)"))
-        file_name = file_dialog.getOpenFileName()
-        if file_name:
-            file_info = QFileInfo(file_name)
-            file_path = str(file_info.filePath())
-            self.add_tab(sunpy.Map(file_path), file_info.fileName())
+        file_dialog.setFileMode(QFileDialog.ExistingFile)
+        files = file_dialog.getOpenFileNames()
+        if files:
+            for file_ in files:
+                file_info = QFileInfo(file_)
+                file_path = str(file_info.filePath())
+                try:
+                    self.add_tab(sunpy.Map(file_path), file_info.fileName())
+                except TypeError, e:
+                    file_err = QMessageBox()
+                    file_err.setText(str(e) + '\n' + file_path)
+                    file_err.exec_()
 
     @pyqtSignature("int")
     def on_tabWidget_currentChanged(self, index):
         # index is -1 when the are no tabs
-        if index > 0:
+        if index >= 0:
             self.refresh_color_options()
 
     @pyqtSignature("int")
@@ -65,7 +72,7 @@ class MainWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
     def on_scalingComboBox_currentIndexChanged(self, scaling):
         self.current_tab.canvas.update_figure(scaling=scaling)
         self.refresh_color_options()
-  
+
     @pyqtSignature("QString")
     def on_cmListWidget_currentTextChanged(self, cmap_name):
         self.current_tab.canvas.update_figure(cmap_name=str(cmap_name))
@@ -81,11 +88,11 @@ class MainWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
         self.initialize_color_options()
         if self.tabWidget.count() == 1:
             self.colorOptionsDockWidget.show()
-          
+
     def initialize_color_options(self):
-        """ Perform a first time initialisation of color 
+        """ Perform a first time initialisation of color
             option widgets when a new plot is opened. """
-        
+
         # Populate list widget with SunPy colormaps
         for cmap in sunpy.cm.cmlist:
             self.cmListWidget.addItem(cmap)
@@ -104,6 +111,10 @@ class MainWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
             self.clipMinDoubleSpinBox.setValue(self.current_tab.canvas.map_.min())
             self.clipMaxDoubleSpinBox.setValue(self.current_tab.canvas.map_.max())
 
+        self.scalingComboBox.setCurrentIndex(0)  # Set to linear...
+        # Ideally we should set selection to the new appropriate colormap
+        self.cmListWidget.clearSelection()
+
     # This method should be combined with the above to avoid code duplication.
     def refresh_color_options(self):
         """ Set widgets according to focused plot's properties. """
@@ -115,7 +126,7 @@ class MainWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
             self.scalingComboBox.setCurrentIndex(0)
         else:
             self.scalingComboBox.setCurrentIndex(1)
- 
+
     @property
     def current_tab(self):
         return self.tabWidget.currentWidget()

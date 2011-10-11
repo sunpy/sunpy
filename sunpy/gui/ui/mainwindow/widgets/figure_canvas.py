@@ -98,6 +98,7 @@ class FigureCanvas(FigureCanvasQTAgg):
     def reset_figure(self):
         self.figure = self.map_.plot()
         self.resize_figure()
+        self.window().initialize_color_options()
 
     def resize_figure(self):
         self.updateGeometry()
