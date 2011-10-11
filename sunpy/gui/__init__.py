@@ -14,8 +14,8 @@ class Plotman(object):
 
         Example
         -------
-        import sunpy
-        plots = sunpy.Plotman("data/examples")
+        from sunpy.gui import Plotman
+        plots = Plotman("data/examples")
         plots.show()
     """
 
@@ -43,7 +43,7 @@ class Plotman(object):
         self.app.exec_()
 
 if __name__=="__main__":
-    import sunpy
-    plots = sunpy.Plotman(sunpy.AIA_171_IMAGE)
+    from sunpy.gui import Plotman
+    plots = Plotman(sunpy.AIA_171_IMAGE)
     plots.show()
     
