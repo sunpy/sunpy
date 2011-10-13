@@ -39,7 +39,7 @@ installer is rather large (~400 MB) and thus may take a while to download.
 
 Download and install `pip <http://pythonxy.googlecode.com/files/pip-1.0.2_py27.exe>`_.  (Note: this installer is built by the Python(x,y) team.)
 
-Download and install `PyFITS <http://hesperia.gsfc.nasa.gov/~ayshih/sunpy/pyfits-3.0.2.win32-py2.7-sunpy.exe>`_.  (Note: this installer is built by the SunPy team.)
+Download and install `PyFITS <http://pypi.python.org/packages/2.7/p/pyfits/pyfits-3.0.3.win32-py2.7.exe>`_.
 
 **3. Install optional modules**
 
