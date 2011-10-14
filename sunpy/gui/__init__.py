@@ -7,6 +7,7 @@ import sys
 import sunpy
 from PyQt4.QtGui import QApplication
 from sunpy.gui.mainwindow import MainWindow
+from sunpy.map.io import UnrecognizedFileTypeError
 
 
 class Plotman(object):
@@ -29,12 +30,18 @@ class Plotman(object):
     def open_paths(self, paths):
         for path in paths:
             if os.path.isfile(path):
-                self.main.add_tab(sunpy.Map(path), os.path.basename(path))
+                try:
+                    self.main.add_tab(path, os.path.basename(path))
+                except UnrecognizedFileTypeError:
+                    pass
             elif os.path.isdir(path):
-                for file in os.listdir(path):
+                for file_ in os.listdir(path):
                     if path[-1] != os.path.sep:
                         path += os.path.sep
-                    self.main.add_tab(sunpy.Map(path + file), file)
+                    try:
+                        self.main.add_tab(path + file_, file_)
+                    except UnrecognizedFileTypeError:
+                        pass
             else:
                 raise IOError("Path " + path + " does not exist.")
 
