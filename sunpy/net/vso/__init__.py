@@ -275,7 +275,7 @@ class VSOClient(object):
         fname = pattern.format(file=name, **dict(response))
         dir_ = os.path.dirname(fname)
         if not os.path.exists(dir_):
-            os.makedirs(os.path.dirname(fname))
+            os.makedirs(dir_)
         return fname
     
     # pylint: disable=R0914
@@ -665,6 +665,13 @@ class InteractiveVSOClient(VSOClient):
             return self.query(*args)
         else:
             return self.query_legacy(*args, **kwargs)
+    
+    def get(self, query_response, path=None, methods=('URL-FILE',), downloader=None):
+        if path is not None:
+            path = os.path.abspath(os.path.expanduser(path))
+            if os.path.exists(path) and os.path.isdir(path):
+                path = os.path.join(path, '{file}')
+        return VSOClient.get(self, query_response, path, methods, downloader)
 
 
 g_client = None
