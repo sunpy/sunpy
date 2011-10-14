@@ -36,12 +36,7 @@ class MainWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
             for file_ in files:
                 file_info = QFileInfo(file_)
                 file_path = str(file_info.filePath())
-                try:
-                    self.add_tab(sunpy.Map(file_path), file_info.fileName())
-                except TypeError, e:
-                    file_err = QMessageBox()
-                    file_err.setText(str(e) + '\n' + file_path)
-                    file_err.exec_()
+                self.add_tab(file_path, file_info.fileName())
 
     @pyqtSignature("int")
     def on_tabWidget_currentChanged(self, index):
@@ -77,17 +72,24 @@ class MainWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
     def on_cmListWidget_currentTextChanged(self, cmap_name):
         self.current_tab.canvas.update_figure(cmap_name=str(cmap_name))
 
-    def add_tab(self, map_object, tab_title):
+    def add_tab(self, file_path, tab_title):
         """ Adds a new tab having title 'tab_title' containing a
-            TabPage widget whose FigureCanvas displays 'map_object' """
-        tab_page = TabPage(map_object, self.tabWidget)
-        self.tabWidget.addTab(tab_page, tab_title)
-        # Focus new tab
-        self.tabWidget.setCurrentIndex(self.tabWidget.count() - 1)
-        # Set color options dialog appropriately
-        self.initialize_color_options()
-        if self.tabWidget.count() == 1:
-            self.colorOptionsDockWidget.show()
+            TabPage widget whose FigureCanvas displays the data in 'file_path' """
+
+        try:
+            map_object = sunpy.Map(file_path)
+            tab_page = TabPage(map_object, self.tabWidget)
+            self.tabWidget.addTab(tab_page, tab_title)
+            # Focus new tab
+            self.tabWidget.setCurrentIndex(self.tabWidget.count() - 1)
+            # Set color options dialog appropriately
+            self.initialize_color_options()
+            if self.tabWidget.count() == 1:
+                self.colorOptionsDockWidget.show()
+        except TypeError, e:
+            file_err = QMessageBox()
+            file_err.setText(str(e) + '\n' + file_path)
+            file_err.exec_()
 
     def initialize_color_options(self):
         """ Perform a first time initialisation of color
