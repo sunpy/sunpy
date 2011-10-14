@@ -29,6 +29,10 @@ class MapHeader(dict):
         else:
             # dictionary
             dict.__init__(self, *args, **kwargs)
+            
+    def copy(self):
+        """Overide copy operator"""
+        return type(self)(dict.copy(self))
         
     def __getitem__(self, key):
         """Overide [] indexing"""
@@ -37,4 +41,9 @@ class MapHeader(dict):
     def get(self, key, default=None):
         """Overide .get() indexing"""
         return dict.get(self, key.upper(), default)
+    
+if __name__ == "__main__":
+    import sunpy
+    aia = sunpy.Map(sunpy.AIA_171_IMAGE)
+    print(aia[0:500,0:500])
         
