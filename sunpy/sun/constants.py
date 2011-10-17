@@ -215,7 +215,7 @@ surface_area = value('surface area')
 average_density = density = value('average density')
 center_density = value('center density')
 equatorial_surface_gravity = surface_gravity = value('surface gravity')
-mean_intensity = intensity = value('intensity')
+mean_intensity = intensity = value('mean intensity')
 effective_temperature = value('effective temperature')
 center_temperature = value('center temperature')
 luminosity = value('luminosity')
@@ -230,5 +230,4 @@ GM = value('GM')
 sfu = value('solar flux unit')
 
 # Observable parameters
-# Solar radius measured outside earth's atmosphere in arcseconds
-average_angular_size = 961.07064
+average_angular_size = value('average_angular_size')
