@@ -82,6 +82,7 @@ class Results(object):
     
     def add_error(self, exception):
         self.errors.append(exception)
+        self.poke()
 
 
 def _parse_waverange(string):
