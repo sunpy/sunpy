@@ -190,12 +190,18 @@ def print_all(key = None):
         dictionary literal object, does not itself possess a docstring.
 
     """
-    print('Name\tValue\tUnit\tPrecision')
+    column_width = [25,20,20,20]
+    number_of_columns = 4
+    table_width = column_width[0] + column_width[1] + column_width[2] + column_width[3]
+    format_string = '{0:<' + str(column_width[0]) + '}' + '{1:>' + str(column_width[1]) + '}' + '{2:>' + str(column_width[2]) + '}' + '{3:>' + str(column_width[3]) + '}'
+    print(format_string.format('Name' ,'Value', 'Units', 'Precision'))
+    print(('{:-^' + str(table_width) + '}').format(''))
+
     if key is None:
         for key in physical_constants:
-            print(key + '\t' + str(value(key)) + unit(key) + '\t' + str(precision(key))) 
+            print(format_string.format(key, str(value(key)), unit(key), str(precision(key))))
     else: 
-        print(key + '\t' + str(value(key)) + unit(key) + '\t' + str(precision(key))) 
+            print(format_string.format(key, str(value(key)), unit(key), str(precision(key))))
 
 # spectral class is not included in physical constants since it is not a number
 spectral_classification = 'G2V'
