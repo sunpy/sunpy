@@ -47,7 +47,8 @@ def anytim(time_string=None):
              "%Y-%b-%d %H:%M",          # Example 2007-May-04 21:08
              "%Y-%b-%d",                # Example 2007-May-04
              "%Y-%m-%d",                # Example 2007-05-04
-             "%Y/%m/%d"]                # Example 2007/05/04 
+             "%Y/%m/%d",                # Example 2007/05/04
+             "%Y%m%d_%H%M%S"]           # Example 20070504_210812
         for time_format in time_format_list: 
             try: 
                 return datetime.strptime(time_string, time_format)
@@ -89,6 +90,13 @@ def day_of_year(t=None):
     time = anytim(t)
     time_diff = anytim(t) - datetime(time.year, 1, 1, 0, 0, 0)
     result = time_diff.days + time_diff.seconds/SECONDS_IN_DAY
+    return result
+
+def break_time(t=None):
+    """Given a time returns a string. Useful for naming files."""
+    #TODO: should be able to handle a time range
+    time = anytim(t)
+    result = t.strftime("%Y%m%d_%H%M%S")
     return result
 
 def degrees_to_hours(angle):

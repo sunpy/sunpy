@@ -3,17 +3,18 @@ from __future__ import absolute_import
 """
 Collection of solar physical constants. Most constants are in SI units.
 
-The list is not meant to be comprehensive, but just a convenient list for everyday use.
-Use at own risk.
+The list is not meant to be comprehensive, but just a convenient list for 
+everyday use. All derived values (e.g. escape velocity, average density) 
+are calculated. Use at own risk.
 
 References:
     Review of Particle Physics 2010 (page 102)
-    NASA Sun Fact Sheet (http://nssdc.gsfc.nasa.gov/planetary/factsheet/sunfact.html)
+    NASA Sun Fact Sheet 
+    (http://nssdc.gsfc.nasa.gov/planetary/factsheet/sunfact.html)
     Wikipedia (http://en.wikipedia.org/wiki/Sun)
 
 TODO: References should be to published or standard sources, NOT websites.
 TODO: Add solar atmosphere values to standard model.
-TODO: Derived parameters should be calculated and not stated (e.g. average angular size, escape velocity)
 """
 
 import scipy.constants as _cd
@@ -22,27 +23,28 @@ import numpy as np
 physical_constants = {}
 
 # physical_constants[name] = (val, units, uncert)
-physical_constants['mass'] = (1.9884e30, 'kg',0)
-physical_constants['radius'] = (6.95508e8, 'm',0)
-physical_constants['diameter'] = (physical_constants['radius'][0]*2.0, 'm',0)
-physical_constants['volume'] = (4/3.*np.pi*physical_constants['radius'][0]**3, 'm^3',0)
-physical_constants['surface area'] = (4*np.pi*hysical_constants['radius'][0]**2, 'm^2',0)
-physical_constants['average density'] = ( 1.408e3, 'kg m^-3',0)
-physical_constants['center density'] = ( 1.622e5, 'kg m^-3',0)
-physical_constants['surface gravity'] = ( 274.0, 'kg/m^3',0)
-physical_constants['mean intensity'] = ( 2.009e7, 'W m^-2 sr^-1',0)
-physical_constants['effective temperature'] = ( 5778.0, 'K',0)
-physical_constants['center temperature'] = ( 1.57e7, 'K',0)
-physical_constants['luminosity'] = ( 3.8427e26, 'J s^-1',0)
-physical_constants['absolute magnitude'] = ( 4.83, 'None',0)
-physical_constants['visual magnitude'] = ( -26.74, 'None',0)
-physical_constants['mass conversion rate'] = ( 4300e6, 'kg s^-1',0)
-physical_constants['mean energy production'] = ( 0.1937, 'J kg^-1',0)
-physical_constants['ellipticity'] = ( 0.00005, 'None',0)
-physical_constants['GM'] = ( _cd.G*physical_constants['mass'][0], 'm^3 s^-2',0)
-physical_constants['escape velocity'] = ( 1e-3*np.sqrt(2*physical_constants['GM'][0]/physical_constants['radius'][0]), 'km s^-1',0)
-physical_constants['sunspot cycle'] = ( 11.4, 'years',0)
-physical_constants['metallicity'] = ( 0.0122, 'None',0)
+physical_constants['mass'] = (1.9884e30, 'kg', 0)
+physical_constants['radius'] = (6.95508e8, 'm', 0)
+physical_constants['diameter'] = (physical_constants['radius'][0]*2.0, 'm', 0)
+physical_constants['volume'] = (4 / 3.*np.pi * physical_constants['radius'][0]**3, 'm^3', 0)
+physical_constants['surface area'] = (4 * np.pi * physical_constants['radius'][0]**2, 'm^2', 0)
+physical_constants['average density'] = (physical_constants['mass'][0] / physical_constants['volume'][0], 'kg m^-3', 0)
+physical_constants['center density'] = (1.622e5, 'kg m^-3', 0)
+physical_constants['mean intensity'] = (2.009e7, 'W m^-2 sr^-1', 0)
+physical_constants['effective temperature'] = (5778.0, 'K', 0)
+physical_constants['center temperature'] = (1.57e7, 'K', 0)
+physical_constants['luminosity'] = (3.8427e26, 'J s^-1', 0)
+physical_constants['absolute magnitude'] = (4.83, 'None', 0)
+physical_constants['visual magnitude'] = (-26.74, 'None', 0)
+physical_constants['mass conversion rate'] = (4300e6, 'kg s^-1', 0)
+physical_constants['mean energy production'] = (0.1937, 'J kg^-1', 0)
+physical_constants['ellipticity'] = (0.00005, 'None', 0)
+physical_constants['GM'] = (_cd.G * physical_constants['mass'][0], 'm^3 s^-2', 0)
+physical_constants['surface gravity'] = (physical_constants['GM'][0] / physical_constants['radius'][0]**2, 'kg m^-3', 0)
+physical_constants['escape velocity'] = (1e-3 * np.sqrt(2 * physical_constants['GM'][0] / physical_constants['radius'][0]), 'km s^-1', 0)
+physical_constants['sunspot cycle'] = (11.4, 'years', 0)
+physical_constants['metallicity'] = (0.0122, 'None', 0)
+
 
 # A solar flux unit (sfu) is traditional measure of solar radio flux.
 physical_constants['solar flux unit'] = (1e-22, 'W m^-2 Hz^-1',0)
