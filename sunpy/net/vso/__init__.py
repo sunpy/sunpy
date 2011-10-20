@@ -547,6 +547,7 @@ class VSOClient(object):
                         res.add_error(DownloadFailed(dresponse))
                         continue
                     except Exception, e:
+                        # FIXME: Is this a good idea?
                         res.add_error(DownloadFailed(dresponse))
             elif code == '300' or code == '412' or code == '405':
                 if code == '300':
@@ -590,7 +591,7 @@ class VSOClient(object):
     def download(self, method, url, dw, callback, errback, *args):
         """ Override to costumize download action. """
         if method.startswith('URL'):
-            dw.reactor.call_sync(
+            return dw.reactor.call_sync(
                 partial(dw.download, url, partial(self.mk_filename, *args),
                         callback, errback)
             )
