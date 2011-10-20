@@ -15,6 +15,7 @@ from __future__ import absolute_import
 
 """
 
+from matplotlib import pyplot
 from datetime import datetime
 import numpy as np
 
@@ -25,7 +26,6 @@ def toggle_pylab(fn):
         Toggles the value of matplotlib.pyplot.isinteractive() to preserve the
         users' expections of pylab's behaviour in general. """
 
-    from matplotlib import pyplot
     if pyplot.isinteractive():
         def fn_itoggle(*args, **kwargs):
             pyplot.ioff()
