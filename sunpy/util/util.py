@@ -18,6 +18,24 @@ from __future__ import absolute_import
 from datetime import datetime
 import numpy as np
 
+def toggle_pylab(fn):
+    """ A decorator to prevent functions from opening matplotlib windows
+        unexpectedly when sunpy is run in interactive shells like ipython --pylab. 
+
+        Toggles the value of matplotlib.pyplot.isinteractive() to preserve the
+        users' expections of pylab's behaviour in general. """
+
+    from matplotlib import pyplot
+    if pyplot.isinteractive():
+        def fn_itoggle(*args, **kwargs):
+            pyplot.ioff()
+            ret = fn(*args, **kwargs)
+            pyplot.ion()
+            return ret
+        return fn_itoggle
+    else:
+        return fn
+
 def anytim(time_string=None):
     """Given a time string will parse and return a datetime object.
     If no string is given then returns the datetime object for the current time.
