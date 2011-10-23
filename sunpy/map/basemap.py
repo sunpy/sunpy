@@ -17,6 +17,8 @@ import matplotlib.colors as colors
 import matplotlib.cm as cm
 from datetime import datetime
 from sunpy.solwcs import solwcs as wcs
+from sunpy.util.util import toggle_pylab
+        
 
 """
 Questions
@@ -294,6 +296,7 @@ class BaseMap(np.ndarray):
 
         return self.__class__(data, header)
    
+    @toggle_pylab
     def plot(self, overlays=[], draw_limb=False, gamma=None, **matplot_args):
         """Plots the map object using matplotlib
         
