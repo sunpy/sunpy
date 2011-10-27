@@ -23,7 +23,7 @@ class MapHeader(dict):
         """Creates a new MapHeader instance"""
         if isinstance(args[0], basestring):
             # filepath
-            from sunpy.map.io import read_header
+            from sunpy.io import read_header
             #dict.__init__(self, dict(read_header(args[0])), **kwargs)
             dict.__init__(self, read_header(args[0]), **kwargs)
         else:

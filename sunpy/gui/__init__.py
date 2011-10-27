@@ -7,7 +7,7 @@ import sys
 import sunpy
 from PyQt4.QtGui import QApplication
 from sunpy.gui.mainwindow import MainWindow
-from sunpy.map.io import UnrecognizedFileTypeError
+from sunpy.io import UnrecognizedFileTypeError 
 
 
 class Plotman(object):
