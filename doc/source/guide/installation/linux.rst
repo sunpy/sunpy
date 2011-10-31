@@ -19,6 +19,7 @@ optional dependencies which are only needed for certain features.
 
 * `PyQt4 <http://www.riverbankcomputing.co.uk/software/pyqt/download>`__ (SunPy Plotman)
 * `Suds <https://fedorahosted.org/suds/>`__ (VSO/HEK support)
+* `OpenJPEG <http://www.openjpeg.org/>`__ and `PIL <http://www.pythonware.com/products/pil/>`__ (JPEG 2000 support) 
 
 In general, it is very easy to install Python and the prereqs needed for SunPy
 on Linux systems. Almost all versions of Linux ship with a recent enough version
@@ -33,7 +34,7 @@ Ubuntu
 ------
 On Ubuntu, all of the prereqs can be install using :command:`apt-get`: ::
 
-    sudo apt-get install python-numpy python-matplotlib python-pyfits python-qt4 python-scipy python-suds python-pip git-core ipython
+    sudo apt-get install python-numpy python-matplotlib python-pyfits python-qt4 python-scipy python-suds python-imaging python-pip openjpeg-tools git-core ipython
 
 The above command will install the recommended set of libraries and tools 
 including both the required and optional dependencies, and also IPython and Git.
