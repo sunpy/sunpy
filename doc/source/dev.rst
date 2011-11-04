@@ -226,7 +226,7 @@ that you have. In such cases, the merge
 command will issue a conflict warning and will then expect you do the merge 
 yourself. You can type: ::
 
-   git mergetools
+   git mergetool
 
 to go through the conflicts. This command will likely open some merging tools
 which are already available on your computer. For example, on Mac OS X, it will open
