@@ -19,6 +19,7 @@ optional dependencies which are only needed for certain features.
 
 * `PyQt4 <http://www.riverbankcomputing.co.uk/software/pyqt/download>`__ (SunPy Plotman)
 * `Suds <https://fedorahosted.org/suds/>`__ (VSO/HEK support)
+* `OpenJPEG <http://www.openjpeg.org/>`__ and `PIL <http://www.pythonware.com/products/pil/>`__ (JPEG 2000 support)
 
 Using Macports
 --------------
