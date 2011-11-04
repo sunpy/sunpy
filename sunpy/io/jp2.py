@@ -32,20 +32,28 @@ def get_header(filepath):
             
     return pydict
 
-def get_data(filepath):
+def get_data(filepath, j2k_to_image="j2k_to_image"):
     """Extracts the data portion of a JPEG 2000 image
     
     Uses the OpenJPEG j2k_to_image command, if available, to extract the data
     portion of a JPEG 2000 image. The image is first converted to a temporary
     intermediate file (PGM) and then read back in and stored an as ndarray.
+    
+    NOTE: PIL is also required for Matplotlib to read in PGM images.
     """
+    if j2k_to_image == "j2k_to_image" and os.name is "nt":
+        j2k_to_image = "j2k_to_image.exe"
+
+    if which(j2k_to_image) is None:
+        raise MissingOpenJPEGBinaryError()
+    
     jp2filename = os.path.basename(filepath)
     
     tmpname = "".join(os.path.splitext(jp2filename)[0:-1]) + ".pgm"
     tmpfile = os.path.join(tempfile.mkdtemp(), tmpname)
     
     fnull = open(os.devnull, 'w') 
-    subprocess.call(["j2k_to_image", "-i", filepath, "-o", tmpfile], 
+    subprocess.call([j2k_to_image, "-i", filepath, "-o", tmpfile], 
                     stdout=fnull, stderr=fnull)
     fnull.close()
     
@@ -82,6 +90,27 @@ def is_float(s):
         return True
     except ValueError:
         return False
+    
+def which(program):
+    """Checks for existence of executable
+    
+    Source: http://stackoverflow.com/questions/377017/test-if-executable-exists-in-python/377028#377028
+    """
+    def is_exe(fpath):
+        return os.path.exists(fpath) and os.access(fpath, os.X_OK)
+
+    fpath, fname = os.path.split(program)
+
+    if fpath:
+        if is_exe(program):
+            return program
+    else:
+        for path in os.environ["PATH"].split(os.pathsep):
+            exe_file = os.path.join(path, program)
+            if is_exe(exe_file):
+                return exe_file
+
+    return None
 
 #
 # Converting XML to a Dictionary
@@ -147,3 +176,9 @@ def get_node_text(node):
         else:
             raise NotTextNodeError
     return t
+
+class MissingOpenJPEGBinaryError(OSError):
+    """Unable to find OpenJPEG. Please ensure that OpenJPEG binaries are installed in a 
+       location within your system's search PATH, or specify the location manually.
+    """
+    pass

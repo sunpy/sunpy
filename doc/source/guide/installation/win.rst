@@ -19,6 +19,7 @@ optional dependencies which are only needed for certain features.
 
 * `PyQt4 <http://www.riverbankcomputing.co.uk/software/pyqt/download>`_ (SunPy Plotman)
 * `Suds <https://fedorahosted.org/suds/>`_ (VSO/HEK support)
+* `OpenJPEG <http://www.openjpeg.org/>`__ and `PIL <http://www.pythonware.com/products/pil/>`__ (JPEG 2000 support)
 
 There are many ways to get SunPy up and running on Windows, and we describe the 
 recommended method and an alternate method below.  Lines in text boxes should 
