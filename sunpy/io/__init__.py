@@ -2,7 +2,7 @@ from __future__ import absolute_import
 """
 File input and output functions
 """
-from sunpy.map.io import fits, jp2
+from sunpy.io import fits, jp2
 
 # File formats supported by SunPy
 _known_formats = {

@@ -18,7 +18,7 @@ __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
 import sys
-from sunpy.map.io import read_file
+from sunpy.io import read_file
 from sunpy.map.basemap import BaseMap
 from sunpy.map.basemap import UnrecognizedDataSouceError
 from sunpy.map.header import MapHeader
