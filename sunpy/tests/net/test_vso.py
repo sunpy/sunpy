@@ -68,23 +68,23 @@ def test_complexattr_create(client):
 
 
 def test_complexattr_and_duplicate():
-    attr = va.Time.dt((2011, 1, 1), (2011, 1, 1, 1))
+    attr = va.Time((2011, 1, 1), (2011, 1, 1, 1))
     pytest.raises(
         TypeError,
-        lambda: attr & va.Time.dt((2011, 2, 1), (2011, 2, 1, 1))
+        lambda: attr & va.Time((2011, 2, 1), (2011, 2, 1, 1))
     )
     attr |= va.Source('foo')
     pytest.raises(
         TypeError,
-        lambda: attr & va.Time.dt((2011, 2, 1), (2011, 2, 1, 1))
+        lambda: attr & va.Time((2011, 2, 1), (2011, 2, 1, 1))
     )
 
 
 def test_complexattr_or_eq():
-    attr = va.Time.dt((2011, 1, 1), (2011, 1, 1, 1))
+    attr = va.Time((2011, 1, 1), (2011, 1, 1, 1))
     
     assert attr | attr == attr
-    assert attr | va.Time.dt((2011, 1, 1), (2011, 1, 1, 1)) == attr
+    assert attr | va.Time((2011, 1, 1), (2011, 1, 1, 1)) == attr
 
 
 def test_attror_and():
@@ -118,19 +118,19 @@ def test_wave_toangstrom():
 
 
 def test_time_xor():
-    one = va.Time.dt((2010, 1, 1), (2010, 1, 2))
-    a = one ^ va.Time.dt((2010, 1, 1, 1), (2010, 1, 1, 2))
+    one = va.Time((2010, 1, 1), (2010, 1, 2))
+    a = one ^ va.Time((2010, 1, 1, 1), (2010, 1, 1, 2))
     
     assert a == attr.AttrOr(
-        [va.Time.dt((2010, 1, 1), (2010, 1, 1, 1)),
-         va.Time.dt((2010, 1, 1, 2), (2010, 1, 2))]
+        [va.Time((2010, 1, 1), (2010, 1, 1, 1)),
+         va.Time((2010, 1, 1, 2), (2010, 1, 2))]
     )
     
-    a ^= va.Time.dt((2010, 1, 1, 4), (2010, 1, 1, 5))
+    a ^= va.Time((2010, 1, 1, 4), (2010, 1, 1, 5))
     assert a == attr.AttrOr(
-        [va.Time.dt((2010, 1, 1), (2010, 1, 1, 1)),
-         va.Time.dt((2010, 1, 1, 2), (2010, 1, 1, 4)),
-         va.Time.dt((2010, 1, 1, 5), (2010, 1, 2))]
+        [va.Time((2010, 1, 1), (2010, 1, 1, 1)),
+         va.Time((2010, 1, 1, 2), (2010, 1, 1, 4)),
+         va.Time((2010, 1, 1, 5), (2010, 1, 2))]
     )
 
 def test_wave_xor():
