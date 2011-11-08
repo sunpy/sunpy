@@ -122,7 +122,7 @@ class Instrument(_SimpleAttr):
     pass
 
 
-class Physobj(_SimpleAttr):
+class Physobs(_SimpleAttr):
     pass
 
 
