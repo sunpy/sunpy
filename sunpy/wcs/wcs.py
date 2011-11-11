@@ -1,15 +1,37 @@
 from __future__ import absolute_import
 
 """
-Solar WCS provides functions to parse a World Coordinate System (WCS) fits 
-header.
+The WCS package provides functions to parse a World Coordinate System (WCS) fits 
+header for solar images as well as convert between various solar coordinate
+systems. The solar coordinates supported are
 
-                       Helioprojective-Cartesian       (HPC)
-                       Helioprojective-Radial          (HPR)
-                       Heliocentric-Cartesian          (HCC)
-                       Heliocentric-Radial             (HCR)
-                       Stonyhurst-Heliographic         (HG)
-                       Carrington-Heliographic         (HG, /CARRINGTON)
+* Helioprojective-Cartesian (HPC): The most often used solar coordinate system.
+    Describes positions on the Sun as angles measured from the center of the 
+    solar disk (usually in arcseconds) using cartesian coordinates (X, Y)
+* Helioprojective-Radial (HPR): Describes positions on the Sun using angles, 
+    similar to HPC, but uses a radial coordinate (rho, psi) system centered on
+    solar disk where psi is measured in the counter clock wise direction.
+* Heliocentric-Cartesian (HCC): The same as HPC but with positions expressed in
+    true (deprojected) physical distances instead of angles on the celestial 
+    sphere.
+* Heliocentric-Radial (HCR): The same as HPR but with rho expressed in
+    true (deprojected) physical distances instead of angles on the celestial 
+    sphere.
+* Stonyhurst-Heliographic (HG): Expressed positions on the Sun using longitude 
+    and latitude on the solar sphere but with the origin which is at the 
+    intersection of the solar equator and the central meridian as seen from Earth. 
+    This means that the coordinate system remains fixed with respect to Earth 
+    while the Sun rotates underneath it.
+* Carrington-Heliographic (HG, /CARRINGTON): Carrington longitude is offset 
+        from Stonyhurst longitude by a time-dependent scalar value, L0. At the 
+        start of each Carrington rotation, L0 = 360, and steadily decreases 
+        until it reaches L0 = 0, at which point the next Carrington 
+        rotation starts. 
+
+References
+----------
+* `Thompson (2006), A&A, 449, 791 <http://www.aanda.org/index.php?option=com_article&access=doi&doi=10.1051/0004-6361:20054262&Itemid=129>` 
+    `PDF <http://fits.gsfc.nasa.gov/wcs/coordinates.pdf>`
 
 Note that SOLAR_B0, HGLT_OBS, and CRLT_OBS are all synonyms.
 """
@@ -89,7 +111,7 @@ def get_solar_l0(header, carrington=False):
         return header.get('CRLN_OBS', 0)
     
 def convert_ang_units(type='hpc', unit='arcsec'):
-    '''Determine the conversion factor between the data and radians.'''
+    """Determine the conversion factor between the data and radians."""
     
     if unit == 'arcmin':
         return np.deg2rad(1) / 60.0
@@ -141,7 +163,7 @@ def convert_pixel_to_data(header, pixel_index=None):
     return coord
 
 def convert_data_to_pixel(header, coord):
-    '''This procedure takes a WCS-compliant header, and calculates the pixel coordinates for given data coordinates.'''
+    """This procedure takes a WCS-compliant header, and calculates the pixel coordinates for given data coordinates."""
     naxis = np.array(get_shape(header))
     cdelt = np.array(get_platescale(header))
     crpix = np.array([header.get('crpix1'), header.get('crpix2')])
@@ -152,7 +174,7 @@ def convert_data_to_pixel(header, coord):
 
     return pixel
 
-def convert_hpc_hcc(header, coord, distance=None):
+def convert_hpc_hcc(header, hp_longitude, hp_latitude, distance=None):
     """This routine converts Helioprojective-Cartesian (HPC) coordinates into 
     Heliocentric-Cartesian (HCC) coordinates, using equations 15 in 
     Thompson (2006), A&A, 449, 791-803.
@@ -161,12 +183,13 @@ def convert_hpc_hcc(header, coord, distance=None):
     c = np.array([convert_ang_units(unit=get_units(header, axis='x')), 
                   convert_ang_units(unit=get_units(header, axis='y'))])
 
-    res = coord * c
+    longitude = hp_longitude * c[0]
+    latitude = hp_latitude * c[1]
 
-    cosx = np.cos(coord[:,0])
-    sinx = np.sin(coord[:,0])
-    cosy = np.cos(coord[:,1])
-    siny = np.sin(coord[:,1])
+    cosx = np.cos(longitude)
+    sinx = np.sin(longitude)
+    cosy = np.cos(latitude)
+    siny = np.sin(latitude)
 
     dsun = header.get('dsun_obs')
     rsun = header.get('rsun_ref')
@@ -174,7 +197,8 @@ def convert_hpc_hcc(header, coord, distance=None):
     if distance is None: 
         q = dsun * cosy * cosx
         distance = q ** 2 - dsun ** 2 + rsun ** 2
-        distance[np.where(distance < 0)] = Decimal('Nan')
+        # distance[np.where(distance < 0)] = np.sqrt(-1)
+        distance = q - np.sqrt(distance)
 
     x = distance * cosy * sinx
     y = distance * siny
@@ -182,11 +206,10 @@ def convert_hpc_hcc(header, coord, distance=None):
 
     return np.array([x,y]).T
 
-def convert_hcc_hpc(header, coord, distance=None):
+def convert_hcc_hpc(header, x, y, distance=None):
     """Convert Heliocentric-Cartesian (HCC) to angular 
     Helioprojective-Cartesian (HPC) coordinates (in degrees)."""
-    x = coord[:,0]
-    y = coord[:,1]
+
     #Distance to the Sun but should we use our own?
     dsun = header.get('dsun_obs')
     # Should we use the rsun_ref defined in the fits file or our local (possibly different/more correct) definition
@@ -205,16 +228,13 @@ def convert_hcc_hpc(header, coord, distance=None):
     result = np.rad2deg([hpln, hplt]).T
     return result
 
-def convert_hcc_hg(header, coord):
-    '''Convert Heliocentric-Cartesian to Heliographic coordinates (given in degrees).'''
-    
-    x = coord[:,0]
-    y = coord[:,1]
+def convert_hcc_hg(header, x, y):
+    """Convert Heliocentric-Cartesian (HCC) to Heliographic coordinates HG (given in degrees)."""
 
     rsun = header.get('rsun_ref')
 
     z = np.sqrt(rsun ** 2 - x ** 2 - y ** 2)
-    z[np.where(z < 0)] = Decimal('Nan')
+    # z[np.where(z < 0)] = Decimal('Nan')
 
     b0 = get_solar_b0(header)
     l0 = get_solar_l0(header)
@@ -227,12 +247,10 @@ def convert_hcc_hg(header, coord):
     
     return np.rad2deg(np.array([hgln,hglt]).T)
 
-def convert_hg_hcc(header, coord):
+def convert_hg_hcc(header, hgln, hglt):
     """Convert Heliographic coordinates (given in degrees) to Heliocentric-Cartesian."""
     # using equations 11 in Thompson (2006), A&A, 449, 791-803
-    hgln = coord[:,0]
-    hglt = coord[:,1]
-    
+
     cx = np.deg2rad(1)
     cy = np.deg2rad(1)
     
@@ -260,6 +278,14 @@ def convert_hg_hcc(header, coord):
     z = hecr * (siny*sinb + cosy*cosx*cosb)
 
     return np.array([x,y]).T
+
+def convert_hg_hpc(header, hglon, hglat):
+    """Convert Helioprojective-Cartesian (HPC) to Heliographic coordinates 
+    (HG)"""
+    temp_result = convert_hg_hcc(header, hglon, hglat)
+    result = convert_hcc_hpc(header, temp_result[0], temp_result[1])
+
+    return result
 
 def proj_tan(header, coord, force=False):
     """Applies the gnomonic (TAN) projection to intermediate relative 
