@@ -5,6 +5,7 @@
 # <License info will go here...>
 
 from __future__ import absolute_import
+from scipy.constants import constants as con
 
 """Provides utility programs.
 
@@ -65,7 +66,8 @@ def anytim(time_string=None):
              "%Y-%b-%d %H:%M",          # Example 2007-May-04 21:08
              "%Y-%b-%d",                # Example 2007-May-04
              "%Y-%m-%d",                # Example 2007-05-04
-             "%Y/%m/%d"]                # Example 2007/05/04 
+             "%Y/%m/%d",                # Example 2007/05/04
+             "%Y%m%d_%H%M%S"]           # Example 20070504_210812
         for time_format in time_format_list: 
             try: 
                 return datetime.strptime(time_string, time_format)
@@ -107,6 +109,13 @@ def day_of_year(t=None):
     time = anytim(t)
     time_diff = anytim(t) - datetime(time.year, 1, 1, 0, 0, 0)
     result = time_diff.days + time_diff.seconds/SECONDS_IN_DAY
+    return result
+
+def break_time(t=None):
+    """Given a time returns a string. Useful for naming files."""
+    #TODO: should be able to handle a time range
+    time = anytim(t)
+    result = t.strftime("%Y%m%d_%H%M%S")
     return result
 
 def degrees_to_hours(angle):
@@ -176,6 +185,16 @@ def to_angstrom(value, unit):
         return x * (1 / (8065.53 * value))
     else:
         raise ValueError('Unable to convert %s to Angstrom' % type_)
+
+def kelvin_to_keV(temperature):
+    """Convert from temperature expressed in Kelvin to a 
+    temperature expressed in keV"""
+    return temperature / (con.e / con.k * 1000.0) 
+
+def keV_to_kelvin(temperature):
+    """Convert from temperature expressed in keV to a temperature 
+    expressed in Kelvin"""
+    return temperature * (con.e / con.k * 1000.0) 
 
 def unique(itr, key=None):
     items = set()
