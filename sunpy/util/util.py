@@ -5,6 +5,7 @@
 # <License info will go here...>
 
 from __future__ import absolute_import
+from scipy.constants import constants as con
 
 """Provides utility programs.
 
@@ -184,6 +185,16 @@ def to_angstrom(value, unit):
         return x * (1 / (8065.53 * value))
     else:
         raise ValueError('Unable to convert %s to Angstrom' % type_)
+
+def kelvin_to_keV(temperature):
+    """Convert from temperature expressed in Kelvin to a 
+    temperature expressed in keV"""
+    return temperature / (con.e / con.k * 1000.0) 
+
+def keV_to_kelvin(temperature):
+    """Convert from temperature expressed in keV to a temperature 
+    expressed in Kelvin"""
+    return temperature * (con.e / con.k * 1000.0) 
 
 def unique(itr, key=None):
     items = set()
