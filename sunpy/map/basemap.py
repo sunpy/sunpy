@@ -43,16 +43,17 @@ def draw_grid(map_, fig, axes, grid_spacing = 20):
 
     # draw the latitude lines
     for lat in hg_latitude_deg:
-        hg_longitude_deg_mesh, hg_latitude_deg_mesh = np.meshgrid(hg_longitude_deg, lat * np.ones(num_points)*lat)
-        x, y = 60*60*wcs.convert_hg_hpc(map_.header, hg_longitude_deg_mesh, hg_latitude_deg_mesh)
+        hg_latitude_deg_mesh, hg_longitude_deg_mesh = np.meshgrid(lat * np.ones(num_points), hg_longitude_deg)
+        x, y = wcs.convert_hg_hpc(map_.header, hg_longitude_deg_mesh, hg_latitude_deg_mesh, units = 'arcsec')
         axes.plot(x,y,color = 'white', linestyle = 'dotted')
     
     hg_longitude_deg = np.arange(-90,90, grid_spacing)
     hg_latitude_deg = np.linspace(-90,90, num = num_points)
+
     # draw the longitude lines
     for lon in hg_longitude_deg:
-        hg_longitude_deg_mesh, hg_latitude_deg_mesh = np.meshgrid(lon, hg_latitude_deg)
-        x, y = 60*60*wcs.convert_hg_hpc(map_.header, hg_longitude_deg_mesh, hg_latitude_deg_mesh)
+        hg_longitude_deg_mesh, hg_latitude_deg_mesh = np.meshgrid(lon * np.ones(num_points), hg_latitude_deg)
+        x, y = wcs.convert_hg_hpc(map_.header, hg_longitude_deg_mesh, hg_latitude_deg_mesh, units = 'arcsec')
         axes.plot(x,y,color = 'white', linestyle = 'dotted')        
     
     return fig, axes
