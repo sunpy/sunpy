@@ -40,17 +40,20 @@ def draw_grid(map_, fig, axes, grid_spacing = 20):
     num_points = 20
     hg_longitude_deg = np.linspace(-90,90, num = num_points)
     hg_latitude_deg = np.arange(-90,90, grid_spacing)
+
     # draw the latitude lines
     for lat in hg_latitude_deg:
-        a = np.array([60*60*wcs.convert_hg_hpc(map_.header, hglon, lat) for hglon in hg_longitude_deg])
-        axes.plot(a[:,0],a[:,1],color = 'white', linestyle = 'dotted')
+        hg_longitude_deg_mesh, hg_latitude_deg_mesh = np.meshgrid(hg_longitude_deg, lat * np.ones(num_points)*lat)
+        x, y = 60*60*wcs.convert_hg_hpc(map_.header, hg_longitude_deg_mesh, hg_latitude_deg_mesh)
+        axes.plot(x,y,color = 'white', linestyle = 'dotted')
     
     hg_longitude_deg = np.arange(-90,90, grid_spacing)
     hg_latitude_deg = np.linspace(-90,90, num = num_points)
     # draw the longitude lines
     for lon in hg_longitude_deg:
-        a = np.array([60*60*wcs.convert_hg_hpc(map_.header, lon, hglat) for hglat in hg_latitude_deg])
-        axes.plot(a[:,0],a[:,1],color = 'white', linestyle = 'dotted')
+        hg_longitude_deg_mesh, hg_latitude_deg_mesh = np.meshgrid(lon, hg_latitude_deg)
+        x, y = 60*60*wcs.convert_hg_hpc(map_.header, hg_longitude_deg_mesh, hg_latitude_deg_mesh)
+        axes.plot(x,y,color = 'white', linestyle = 'dotted')        
     
     return fig, axes
 _draw_grid = draw_grid
@@ -301,14 +304,21 @@ class BaseMap(np.ndarray):
         else:
             raise ValueError(
                 "Invalid unit. Must be one of 'arcseconds' or 'pixels'")
-
+        print(x_pixels)
+        print(y_pixels)
         # Make a copy of the header with updated centering information        
         header = self.header.copy()
         header['crpix1'] = header['crpix1'] - x_pixels[0]
         header['crpix2'] = header['crpix2'] - y_pixels[0]
         header['naxis1'] = x_pixels[1] - x_pixels[0]
         header['naxis2'] = y_pixels[1] - y_pixels[0]
-        
+
+        self.center = {
+                "x": wcs.get_center(header, axis='x'),
+                "y": wcs.get_center(header, axis='y')
+        }
+        print(wcs.get_center(header, axis='x'))
+        print(self.center)
         # Get ndarray representation of submap
         data = np.asarray(self)[y_pixels[0]:y_pixels[1], 
                                 x_pixels[0]:x_pixels[1]]
@@ -316,7 +326,7 @@ class BaseMap(np.ndarray):
         return self.__class__(data, header)
    
     @toggle_pylab
-    def plot(self, overlays=[], draw_limb=True, gamma=None, draw_grid = True, grid_spacing = 30, **matplot_args):
+    def plot(self, overlays=[], draw_limb=True, gamma=None, draw_grid = False, **matplot_args):
         """Plots the map object using matplotlib
         
         Parameters
@@ -335,6 +345,8 @@ class BaseMap(np.ndarray):
         """
         if draw_limb:
             overlays = overlays + [_draw_limb]
+        # TODO: need to be able to pass the grid spacing to _draw_grid from the 
+        # plot command.
         if draw_grid:
             overlays = overlays + [_draw_grid]
         # Create a figure and add title and axes
