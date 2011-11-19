@@ -251,6 +251,18 @@ def convert_hcc_hg(header, x, y):
 
 def convert_hg_hcc(header, hgln, hglt, occultation = False):
     """Convert Heliographic coordinates (given in degrees) to Heliocentric-Cartesian."""
+    x, y, z = convert_hg_hcc_xyz(header, hgln, hglt)
+    
+    if occultation:
+        index = (z < 0)
+        x[index] = np.nan
+        y[index] = np.nan
+    
+    return x, y
+
+
+def convert_hg_hcc_xyz(header, hgln, hglt):
+    """Convert Heliographic coordinates (given in degrees) to Heliocentric-Cartesian."""
     # using equations 11 in Thompson (2006), A&A, 449, 791-803
 
     cx = np.deg2rad(1)
@@ -279,12 +291,7 @@ def convert_hg_hcc(header, hgln, hglt, occultation = False):
     y = hecr * (siny*cosb - cosy*cosx*sinb)
     z = hecr * (siny*sinb + cosy*cosx*cosb)
     
-    if occultation:
-        index = (z < 0)
-        x[index] = np.nan
-        y[index] = np.nan
-    
-    return x, y
+    return x, y, z
 
 def test():
     # number of points in the line
