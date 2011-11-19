@@ -223,7 +223,7 @@ class BaseMap(np.ndarray):
         return np.array(self, copy=False, subok=False).std(*args, **kwargs)
     
     @classmethod
-    def get_properties(cls):
+    def get_properties(cls, header=None):
         """Returns default map properties""" 
         return {
             'cmap': cm.gray,  #@UndefinedVariable
