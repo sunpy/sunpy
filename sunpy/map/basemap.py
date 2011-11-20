@@ -17,7 +17,6 @@ from datetime import datetime
 from sunpy.wcs import wcs as wcs
 from sunpy.util.util import toggle_pylab
         
-
 """
 Questions
 ---------
@@ -192,7 +191,7 @@ class BaseMap(np.ndarray):
     def get_properties(cls, header=None): #pylint: disable=W0613
         """Returns default map properties""" 
         return {
-            'cmap': cm.gray,  #@UndefinedVariable
+            'cmap': cm.gray,
             'date': datetime.today(),
             'det': "None",
             'inst': "None",
@@ -265,95 +264,101 @@ class BaseMap(np.ndarray):
         -----------
         | http://www.scipy.org/Cookbook/Rebinning (Original source, 2011/11/19)
         """
-        import scipy.interpolate
-        import scipy.ndimage
-        
-        data = self.copy()
-        
-        if not data.dtype in [np.float64, np.float32]:
-            data = np.cast[float](data)
-    
-        m1 = np.cast[int](minusone)
-        ofs = np.cast[int](center) * 0.5
-        old = np.array(data.shape)
-        ndims = len(data.shape)
+        orig = self.copy()
         
         # Verify that number dimensions requested matches original shape
-        if len(dimensions) != ndims:
-            print ("[congrid] dimensions error. This routine currently only" 
-                   "supports rebinning to the same number of dimensions.")
-            return None
+        if len(dimensions) != orig.ndim:
+            raise UnequalNumDimensions
 
-        dimensions = np.asarray(dimensions, dtype=float)
-        dimlist = []
+        if not orig.dtype in [np.float64, np.float32]:
+            orig = orig.astype(np.float64)
+
+        dimensions = np.asarray(dimensions, dtype=np.float64)
+        m1 = np.array(minusone, dtype=np.int64) # array(0) or array(1)
+        offset = np.float64(center * 0.5)       # float64(0.) or float64(0.5)
     
-        # Neighbor interpolation
+        # Resample data
         if method == 'neighbor':
-            for i in xrange(ndims):
-                base = np.indices(dimensions)[i]
-                dimlist.append((old[i] - m1) / (dimensions[i] - m1) *
-                               (base + ofs) - ofs)
-            cd = np.array(dimlist).round().astype(int)
-            
-            new_data = data[list(cd)]
-            return new_data
-    
-        # Nearest and linear interpolation
+            newmap = self._resample_neighbor(orig, dimensions, offset, m1)
         elif method in ['nearest','linear']:
-            # calculate new dims
-            for i in range(ndims):
-                base = np.arange(dimensions[i])
-                dimlist.append((old[i] - m1) / (dimensions[i] - m1) *
-                               (base + ofs) - ofs)
-            # specify old dims
-            olddims = [np.arange(i, dtype=np.float) for i in data.shape]
-    
-            # first interpolation - for ndims = any
-            mint = scipy.interpolate.interp1d(olddims[-1], data, kind=method)
-            new_data = mint(dimlist[-1])
-    
-            trorder = [ndims - 1] + range(ndims - 1)
-            for i in xrange(ndims - 2, -1, -1):
-                new_data = new_data.transpose(trorder)
-    
-                mint = scipy.interpolate.interp1d(olddims[i], new_data, 
-                                                  kind=method)
-                new_data = mint(dimlist[i])
-    
-            if ndims > 1:
-                # need one more transpose to return to original dimensions
-                new_data = new_data.transpose(trorder)
-    
-            return new_data
-        
-        # Spline interpolation
-        elif method in ['spline']:
-            oslices = [slice(0, j) for j in old]
-            oldcoords = np.ogrid[oslices] #pylint: disable=W0612
-            nslices = [slice(0, j) for j in list(dimensions)]
-            newcoords = np.mgrid[nslices]
-    
-            newcoords_dims = range(np.rank(newcoords))
-            
-            #make first index last
-            newcoords_dims.append(newcoords_dims.pop(0))
-            newcoords_tr = newcoords.transpose(newcoords_dims) #pylint: disable=W0612
-
-            # makes a view that affects newcoords
-            newcoords_tr += ofs
-    
-            deltas = (np.asarray(old) - m1) / (dimensions - m1)
-            newcoords_tr *= deltas
-    
-            newcoords_tr -= ofs
-    
-            new_data = scipy.ndimage.map_coordinates(data, newcoords)
-            return new_data
+            newmap = self._resample_nearest_linear(orig, dimensions, method, 
+                                                     offset, m1)
+        elif method == 'spline':
+            newmap = self._resample_spline(orig, dimensions, offset, m1)
         else:
-            print ("Congrid error: Unrecognized interpolation type.\n "
-                   "Currently only 'neighbor', 'nearest','linear' and " 
-                   "'spline' are supported") 
-            return None
+            raise UnrecognizedInterpolationMethod
+
+        return newmap
+
+    def _resample_nearest_linear(self, orig, dimensions, method, offset, m1):
+        """Resample Map using either linear or nearest interpolation"""
+        import scipy.interpolate
+
+        dimlist = []
+        
+        # calculate new dims
+        for i in range(orig.ndim):
+            base = np.arange(dimensions[i])
+            dimlist.append((orig.shape[i] - m1) / (dimensions[i] - m1) *
+                           (base + offset) - offset)
+
+        # specify old coordinates
+        old_coords = [np.arange(i, dtype=np.float) for i in orig.shape]
+
+        # first interpolation - for ndims = any
+        mint = scipy.interpolate.interp1d(old_coords[-1], orig, kind=method)
+        new_data = mint(dimlist[-1])
+
+        trorder = [orig.ndim - 1] + range(orig.ndim - 1)
+        for i in xrange(orig.ndim - 2, -1, -1):
+            new_data = new_data.transpose(trorder)
+
+            mint = scipy.interpolate.interp1d(old_coords[i], new_data, 
+                                              kind=method)
+            new_data = mint(dimlist[i])
+
+        if orig.ndim > 1:
+            # need one more transpose to return to original dimensions
+            new_data = new_data.transpose(trorder)
+
+        return new_data
+    
+    def _resample_neighbor(self, orig, dimensions, offset, m1):
+        """Resample Map using closest-value interpolation"""
+        dimlist = []
+        
+        for i in xrange(orig.ndim):
+            base = np.indices(dimensions)[i]
+            dimlist.append((orig.shape[i] - m1) / (dimensions[i] - m1) *
+                           (base + offset) - offset)
+        cd = np.array(dimlist).round().astype(int)
+        
+        return orig[list(cd)]
+    
+    def _resample_spline(self, orig, dimensions, offset, m1):
+        """Resample Map using spline-based interpolation"""
+        import scipy.ndimage
+        
+        oslices = [slice(0, j) for j in orig.shape]
+        old_coords = np.ogrid[oslices] #pylint: disable=W0612
+        nslices = [slice(0, j) for j in list(dimensions)]
+        newcoords = np.mgrid[nslices]
+
+        newcoords_dims = range(np.rank(newcoords))
+        
+        #make first index last
+        newcoords_dims.append(newcoords_dims.pop(0))
+        newcoords_tr = newcoords.transpose(newcoords_dims) #pylint: disable=W0612
+
+        # makes a view that affects newcoords
+        newcoords_tr += offset
+
+        deltas = (np.asarray(orig.shape) - m1) / (dimensions - m1)
+        newcoords_tr *= deltas
+
+        newcoords_tr -= offset
+
+        return scipy.ndimage.map_coordinates(orig, newcoords)
 
     def submap(self, range_a, range_b, units="arcseconds"):
         """Returns a submap of the map with the specified range
@@ -525,4 +530,12 @@ class BaseMap(np.ndarray):
 
 class UnrecognizedDataSouceError(ValueError):
     """Exception to raise when an unknown datasource is encountered"""
+    pass
+
+class UnrecognizedInterpolationMethod(ValueError):
+    """Unrecognized interpolation method specified."""
+    pass
+
+class UnequalNumDimensions(ValueError):
+    """Number of dimensions does not match input array"""
     pass
