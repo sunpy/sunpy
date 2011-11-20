@@ -1,10 +1,9 @@
-from __future__ import absolute_import
-
 """
 BaseMap is a generic Map class from which all other Map classes inherit from.
 """
+from __future__ import absolute_import
 
-#pylint: disable=E1101,E1121
+#pylint: disable=E1101,E1121,W0404
 __authors__ = ["Keith Hughitt, Steven Christe"]
 __email__ = "keith.hughitt@nasa.gov"
 
@@ -13,7 +12,6 @@ from copy import copy
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
-import matplotlib.colors as colors
 import matplotlib.cm as cm
 from datetime import datetime
 from sunpy.wcs import wcs as wcs
@@ -175,7 +173,7 @@ class BaseMap(np.ndarray):
             return np.ndarray.__getitem__(self, key)
     
     def __sub__(self, other):
-        """Subtract two maps. Currently does not take into account the alignment 
+        """Subtract two maps. Currently does not take into account the alignment
         between the two maps."""
         result = np.ndarray.__sub__(self, other)
 
@@ -191,7 +189,7 @@ class BaseMap(np.ndarray):
         return np.array(self, copy=False, subok=False).std(*args, **kwargs)
     
     @classmethod
-    def get_properties(cls, header=None):
+    def get_properties(cls, header=None): #pylint: disable=W0613
         """Returns default map properties""" 
         return {
             'cmap': cm.gray,  #@UndefinedVariable
@@ -220,6 +218,7 @@ class BaseMap(np.ndarray):
         return [ymin, ymax]
     
     def arcsecs_to_pixels(self, value, dim):
+        """Convert arcsecond coordinates to pixel values"""
         if dim not in ['x', 'y']:
             raise ValueError("Invalid dimension. Must be one of 'x' or 'y'.")
         size = self.shape[dim == 'y'] # 0 if dim == 'x', 1 if dim == 'y'.
@@ -330,7 +329,7 @@ class BaseMap(np.ndarray):
         # Spline interpolation
         elif method in ['spline']:
             oslices = [slice(0, j) for j in old]
-            oldcoords = np.ogrid[oslices]
+            oldcoords = np.ogrid[oslices] #pylint: disable=W0612
             nslices = [slice(0, j) for j in list(dimensions)]
             newcoords = np.mgrid[nslices]
     
@@ -338,7 +337,7 @@ class BaseMap(np.ndarray):
             
             #make first index last
             newcoords_dims.append(newcoords_dims.pop(0))
-            newcoords_tr = newcoords.transpose(newcoords_dims)
+            newcoords_tr = newcoords.transpose(newcoords_dims) #pylint: disable=W0612
 
             # makes a view that affects newcoords
             newcoords_tr += ofs
@@ -348,7 +347,7 @@ class BaseMap(np.ndarray):
     
             newcoords_tr -= ofs
     
-            new_data = scipy.ndimage.map_coordinates(a, newcoords)
+            new_data = scipy.ndimage.map_coordinates(data, newcoords)
             return new_data
         else:
             print ("Congrid error: Unrecognized interpolation type.\n "
@@ -425,11 +424,14 @@ class BaseMap(np.ndarray):
         return self.__class__(data, header)
    
     @toggle_pylab
-    def plot(self, overlays=[], draw_limb=True, gamma=None, draw_grid = False, **matplot_args):
+    def plot(self, overlays=None, draw_limb=True, gamma=None, draw_grid=False, 
+             **matplot_args):
         """Plots the map object using matplotlib
         
         Parameters
         ----------
+        overlays : list
+            List of overlays to include in the plot
         draw_limb : bool
             Whether the solar limb should be plotted.
         draw_grid : bool
@@ -442,6 +444,8 @@ class BaseMap(np.ndarray):
             Matplotlib Any additional imshow arguments that should be used
             when plotting the image.
         """
+        if overlays is None:
+            overlays = []
         if draw_limb:
             overlays = overlays + [self._draw_limb]
         # TODO: need to be able to pass the grid spacing to _draw_grid from the 
@@ -480,17 +484,19 @@ class BaseMap(np.ndarray):
         """Default normalizion method"""
         return None
     
-    def show(self, overlays=[], draw_limb=False, gamma=1.0, **matplot_args):
+    def show(self, overlays=None, draw_limb=False, gamma=1.0, **matplot_args):
         """Displays map on screen. Arguments are same as plot()."""
         self.plot(overlays, draw_limb, gamma, **matplot_args).show()
         
     def _draw_limb(self, fig, axes):
+        """Draws a circle representing the solar limb"""
         circ = patches.Circle([0, 0], radius=self.rsun, fill=False, 
                               color='white')
         axes.add_artist(circ)
         return fig, axes
     
     def _draw_grid(self, fig, axes, grid_spacing=20):
+        """Draws a grid over the surface of the Sun"""
         # define the number of points for each latitude or longitude line
         num_points = 20
         hg_longitude_deg = np.linspace(-90, 90, num=num_points)
