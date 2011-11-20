@@ -1,5 +1,3 @@
-from __future__ import absolute_import
-
 """
 SunPy Map objects are constructed using the special :function:`Map()`
 function. ::
@@ -11,6 +9,7 @@ The result of a call to `Map` will be either a generic
 which deals with a specific type of data, e.g. :class:`AIAMap` or 
 :class:`LASCOMap`.
 """
+from __future__ import absolute_import
 #pylint: disable=W0401
 
 __all__ = ["header", "mapcube", "sources"]

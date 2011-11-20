@@ -1,9 +1,8 @@
-from __future__ import absolute_import
-import numpy as np
 """
 Position of the Sun.
 """
-
+from __future__ import absolute_import
+import numpy as np
 #pylint: disable=E1101,E1121
 __authors__ = ["Jack Ireland"]
 __email__ = "jack.ireland@nasa.gov"
