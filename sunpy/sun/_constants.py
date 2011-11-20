@@ -1,5 +1,3 @@
-from __future__ import absolute_import
-
 """
 Collection of solar physical constants. Most constants are in SI units.
 
@@ -16,6 +14,7 @@ References:
 TODO: References should be to published or standard sources, NOT websites.
 TODO: Add solar atmosphere values to standard model.
 """
+from __future__ import absolute_import
 
 import scipy.constants as _cd
 import numpy as np
