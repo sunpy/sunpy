@@ -27,38 +27,6 @@ Questions
 2. Are self.r_sun and radius below different? (rsun or rsun_obs for AIA?)
 """
 
-
-def draw_limb(map_, fig, axes):
-    circ = patches.Circle([0, 0], radius=map_.rsun, 
-        fill=False, color='white')
-    axes.add_artist(circ)
-    return fig, axes
-_draw_limb = draw_limb
-
-def draw_grid(map_, fig, axes, grid_spacing = 20):
-    # define the number of points for each latitude or longitude line
-    num_points = 20
-    hg_longitude_deg = np.linspace(-90,90, num = num_points)
-    hg_latitude_deg = np.arange(-90,90, grid_spacing)
-
-    # draw the latitude lines
-    for lat in hg_latitude_deg:
-        hg_latitude_deg_mesh, hg_longitude_deg_mesh = np.meshgrid(lat * np.ones(num_points), hg_longitude_deg)
-        x, y = wcs.convert_hg_hpc(map_.header, hg_longitude_deg_mesh, hg_latitude_deg_mesh, units = 'arcsec')
-        axes.plot(x,y,color = 'white', linestyle = 'dotted')
-    
-    hg_longitude_deg = np.arange(-90,90, grid_spacing)
-    hg_latitude_deg = np.linspace(-90,90, num = num_points)
-
-    # draw the longitude lines
-    for lon in hg_longitude_deg:
-        hg_longitude_deg_mesh, hg_latitude_deg_mesh = np.meshgrid(lon * np.ones(num_points), hg_latitude_deg)
-        x, y = wcs.convert_hg_hpc(map_.header, hg_longitude_deg_mesh, hg_latitude_deg_mesh, units = 'arcsec')
-        axes.plot(x,y,color = 'white', linestyle = 'dotted')        
-    
-    return fig, axes
-_draw_grid = draw_grid
-
 class BaseMap(np.ndarray):
     """
     BaseMap(data, header)
@@ -345,11 +313,11 @@ class BaseMap(np.ndarray):
             when plotting the image.
         """
         if draw_limb:
-            overlays = overlays + [_draw_limb]
+            overlays = overlays + [self._draw_limb]
         # TODO: need to be able to pass the grid spacing to _draw_grid from the 
         # plot command.
         if draw_grid:
-            overlays = overlays + [_draw_grid]
+            overlays = overlays + [self._draw_grid]
         # Create a figure and add title and axes
         fig = plt.figure()
         
@@ -385,7 +353,34 @@ class BaseMap(np.ndarray):
     def show(self, overlays=[], draw_limb=False, gamma=1.0, **matplot_args):
         """Displays map on screen. Arguments are same as plot()."""
         self.plot(overlays, draw_limb, gamma, **matplot_args).show()
-
+        
+    def _draw_limb(self, fig, axes):
+        circ = patches.Circle([0, 0], radius=self.rsun, fill=False, color='white')
+        axes.add_artist(circ)
+        return fig, axes
+    
+    def _draw_grid(self, fig, axes, grid_spacing = 20):
+        # define the number of points for each latitude or longitude line
+        num_points = 20
+        hg_longitude_deg = np.linspace(-90,90, num = num_points)
+        hg_latitude_deg = np.arange(-90,90, grid_spacing)
+    
+        # draw the latitude lines
+        for lat in hg_latitude_deg:
+            hg_latitude_deg_mesh, hg_longitude_deg_mesh = np.meshgrid(lat * np.ones(num_points), hg_longitude_deg)
+            x, y = wcs.convert_hg_hpc(self.header, hg_longitude_deg_mesh, hg_latitude_deg_mesh, units = 'arcsec')
+            axes.plot(x,y,color = 'white', linestyle = 'dotted')
+        
+        hg_longitude_deg = np.arange(-90,90, grid_spacing)
+        hg_latitude_deg = np.linspace(-90,90, num = num_points)
+    
+        # draw the longitude lines
+        for lon in hg_longitude_deg:
+            hg_longitude_deg_mesh, hg_latitude_deg_mesh = np.meshgrid(lon * np.ones(num_points), hg_latitude_deg)
+            x, y = wcs.convert_hg_hpc(self.header, hg_longitude_deg_mesh, hg_latitude_deg_mesh, units = 'arcsec')
+            axes.plot(x,y,color = 'white', linestyle = 'dotted')        
+        
+        return fig, axes
 
 class UnrecognizedDataSouceError(ValueError):
     """Exception to raise when an unknown datasource is encountered"""
