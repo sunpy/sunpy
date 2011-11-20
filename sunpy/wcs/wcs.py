@@ -1,5 +1,3 @@
-from __future__ import absolute_import
-
 """
 The WCS package provides functions to parse a World Coordinate System (WCS) fits 
 header for solar images as well as convert between various solar coordinate
@@ -35,6 +33,7 @@ References
 
 Note that SOLAR_B0, HGLT_OBS, and CRLT_OBS are all synonyms.
 """
+from __future__ import absolute_import
 
 __authors__ = ["Steven Christe"]
 __email__ = "steven.d.christe@nasa.gov"
