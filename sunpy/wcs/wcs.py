@@ -281,7 +281,7 @@ def convert_hg_hcc(header, hgln, hglt):
 
     return x, y
 
-def test():
+def test(): 
     # number of points in the line
     grid_spacing = 10
     hg_longitude_deg = np.arange(-90,90, grid_spacing, dtype = 'float')
