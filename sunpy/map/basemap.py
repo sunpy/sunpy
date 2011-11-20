@@ -225,6 +225,136 @@ class BaseMap(np.ndarray):
         size = self.shape[dim == 'y'] # 0 if dim == 'x', 1 if dim == 'y'.
         
         return value / self.scale[dim] + (size / 2)
+    
+    def resample(self, dimensions, method='linear', center=False, minusone=False):
+        """Returns a new Map that has been resampled up or down
+        
+        Arbitrary resampling of source array to new dimension sizes.
+        Currently only supports maintaining the same number of dimensions.
+        To use 1-D arrays, first promote them to shape (x,1).
+        
+        Uses the same parameters and creates the same co-ordinate lookup points
+        as IDL''s congrid routine, which apparently originally came from a 
+        VAX/VMS routine of the same name.
+        
+        Parameters
+        ----------
+        dimensions : tuple
+            Dimensions that new Map should have.
+        method: {'neighbor' | 'nearest' | 'linear' | 'spline'}
+            Method to use for resampling interpolation.
+            * neighbor - Closest value from original data
+            * nearest and linear - Uses n x 1-D interpolations using
+              scipy.interpolate.interp1d
+            * spline - Uses ndimage.map_coordinates
+        center: bool
+            If True, interpolation points are at the centers of the bins,
+            otherwise points are at the front edge of the bin.
+        minusone: bool
+            For inarray.shape = (i,j) & new dimensions = (x,y), if set to False
+            inarray is resampled by factors of (i/x) * (j/y), otherwise inarray 
+            is resampled by(i-1)/(x-1) * (j-1)/(y-1)
+            This prevents extrapolation one element beyond bounds of input 
+            array.
+        
+        Returns:
+        --------
+        out : Map         
+            A new Map which has been resampled to the desired dimensions.
+        
+        References:
+        -----------
+        | http://www.scipy.org/Cookbook/Rebinning (Original source, 2011/11/19)
+        """
+        import scipy.interpolate
+        import scipy.ndimage
+        
+        data = self.copy()
+        
+        if not data.dtype in [np.float64, np.float32]:
+            data = np.cast[float](data)
+    
+        m1 = np.cast[int](minusone)
+        ofs = np.cast[int](center) * 0.5
+        old = np.array(data.shape)
+        ndims = len(data.shape)
+        
+        # Verify that number dimensions requested matches original shape
+        if len(dimensions) != ndims:
+            print ("[congrid] dimensions error. This routine currently only" 
+                   "supports rebinning to the same number of dimensions.")
+            return None
+
+        dimensions = np.asarray(dimensions, dtype=float)
+        dimlist = []
+    
+        # Neighbor interpolation
+        if method == 'neighbor':
+            for i in xrange(ndims):
+                base = np.indices(dimensions)[i]
+                dimlist.append((old[i] - m1) / (dimensions[i] - m1) *
+                               (base + ofs) - ofs)
+            cd = np.array(dimlist).round().astype(int)
+            
+            new_data = data[list(cd)]
+            return new_data
+    
+        # Nearest and linear interpolation
+        elif method in ['nearest','linear']:
+            # calculate new dims
+            for i in range(ndims):
+                base = np.arange(dimensions[i])
+                dimlist.append((old[i] - m1) / (dimensions[i] - m1) *
+                               (base + ofs) - ofs)
+            # specify old dims
+            olddims = [np.arange(i, dtype=np.float) for i in data.shape]
+    
+            # first interpolation - for ndims = any
+            mint = scipy.interpolate.interp1d(olddims[-1], data, kind=method)
+            new_data = mint(dimlist[-1])
+    
+            trorder = [ndims - 1] + range(ndims - 1)
+            for i in xrange(ndims - 2, -1, -1):
+                new_data = new_data.transpose(trorder)
+    
+                mint = scipy.interpolate.interp1d(olddims[i], new_data, 
+                                                  kind=method)
+                new_data = mint(dimlist[i])
+    
+            if ndims > 1:
+                # need one more transpose to return to original dimensions
+                new_data = new_data.transpose(trorder)
+    
+            return new_data
+        
+        # Spline interpolation
+        elif method in ['spline']:
+            oslices = [slice(0, j) for j in old]
+            oldcoords = np.ogrid[oslices]
+            nslices = [slice(0, j) for j in list(dimensions)]
+            newcoords = np.mgrid[nslices]
+    
+            newcoords_dims = range(np.rank(newcoords))
+            
+            #make first index last
+            newcoords_dims.append(newcoords_dims.pop(0))
+            newcoords_tr = newcoords.transpose(newcoords_dims)
+
+            # makes a view that affects newcoords
+            newcoords_tr += ofs
+    
+            deltas = (np.asarray(old) - m1) / (dimensions - m1)
+            newcoords_tr *= deltas
+    
+            newcoords_tr -= ofs
+    
+            new_data = scipy.ndimage.map_coordinates(a, newcoords)
+            return new_data
+        else:
+            print ("Congrid error: Unrecognized interpolation type.\n "
+                   "Currently only 'neighbor', 'nearest','linear' and " 
+                   "'spline' are supported") 
+            return None
 
     def submap(self, range_a, range_b, units="arcseconds"):
         """Returns a submap of the map with the specified range
@@ -242,7 +372,7 @@ class BaseMap(np.ndarray):
             
         Returns
         -------
-        out : BaseMap
+        out : Map
             A new map instance is returned representing to specified sub-region.
         
         Examples
@@ -355,30 +485,35 @@ class BaseMap(np.ndarray):
         self.plot(overlays, draw_limb, gamma, **matplot_args).show()
         
     def _draw_limb(self, fig, axes):
-        circ = patches.Circle([0, 0], radius=self.rsun, fill=False, color='white')
+        circ = patches.Circle([0, 0], radius=self.rsun, fill=False, 
+                              color='white')
         axes.add_artist(circ)
         return fig, axes
     
-    def _draw_grid(self, fig, axes, grid_spacing = 20):
+    def _draw_grid(self, fig, axes, grid_spacing=20):
         # define the number of points for each latitude or longitude line
         num_points = 20
-        hg_longitude_deg = np.linspace(-90,90, num = num_points)
-        hg_latitude_deg = np.arange(-90,90, grid_spacing)
+        hg_longitude_deg = np.linspace(-90, 90, num=num_points)
+        hg_latitude_deg = np.arange(-90, 90, grid_spacing)
     
         # draw the latitude lines
         for lat in hg_latitude_deg:
-            hg_latitude_deg_mesh, hg_longitude_deg_mesh = np.meshgrid(lat * np.ones(num_points), hg_longitude_deg)
-            x, y = wcs.convert_hg_hpc(self.header, hg_longitude_deg_mesh, hg_latitude_deg_mesh, units = 'arcsec')
-            axes.plot(x,y,color = 'white', linestyle = 'dotted')
+            hg_latitude_deg_mesh, hg_longitude_deg_mesh = np.meshgrid(
+                lat * np.ones(num_points), hg_longitude_deg)
+            x, y = wcs.convert_hg_hpc(self.header, hg_longitude_deg_mesh, 
+                                      hg_latitude_deg_mesh, units='arcsec')
+            axes.plot(x, y, color='white', linestyle='dotted')
         
-        hg_longitude_deg = np.arange(-90,90, grid_spacing)
-        hg_latitude_deg = np.linspace(-90,90, num = num_points)
+        hg_longitude_deg = np.arange(-90, 90, grid_spacing)
+        hg_latitude_deg = np.linspace(-90, 90, num=num_points)
     
         # draw the longitude lines
         for lon in hg_longitude_deg:
-            hg_longitude_deg_mesh, hg_latitude_deg_mesh = np.meshgrid(lon * np.ones(num_points), hg_latitude_deg)
-            x, y = wcs.convert_hg_hpc(self.header, hg_longitude_deg_mesh, hg_latitude_deg_mesh, units = 'arcsec')
-            axes.plot(x,y,color = 'white', linestyle = 'dotted')        
+            hg_longitude_deg_mesh, hg_latitude_deg_mesh = np.meshgrid(
+                lon * np.ones(num_points), hg_latitude_deg)
+            x, y = wcs.convert_hg_hpc(self.header, hg_longitude_deg_mesh, 
+                                      hg_latitude_deg_mesh, units='arcsec')
+            axes.plot(x, y, color='white', linestyle='dotted')        
         
         return fig, axes
 
