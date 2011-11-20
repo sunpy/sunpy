@@ -58,8 +58,8 @@ class BaseMap(np.ndarray):
     name : str
         Nickname for the image type (e.g. "AIA 171")
     center : dict
-        X and Y coordinate of the center of the map in units. Usually represents the offset
-        between the center of the Sun and the center of the map.
+        X and Y coordinate of the center of the map in units. Usually represents
+        the offset between the center of the Sun and the center of the map.
     scale: dict
         Image scale along the x and y axes in units/pixel
     units: dict
@@ -264,14 +264,15 @@ class BaseMap(np.ndarray):
         -----------
         | http://www.scipy.org/Cookbook/Rebinning (Original source, 2011/11/19)
         """
-        orig = self.copy()
+        orig_data = np.asarray(self).copy()
         
         # Verify that number dimensions requested matches original shape
-        if len(dimensions) != orig.ndim:
+        if len(dimensions) != self.ndim:
             raise UnequalNumDimensions
 
-        if not orig.dtype in [np.float64, np.float32]:
-            orig = orig.astype(np.float64)
+        #@note: will this be okay for integer (e.g. JPEG 2000) data?
+        if not orig_data.dtype in [np.float64, np.float32]:
+            orig_data = orig_data.astype(np.float64)
 
         dimensions = np.asarray(dimensions, dtype=np.float64)
         m1 = np.array(minusone, dtype=np.int64) # array(0) or array(1)
@@ -279,16 +280,29 @@ class BaseMap(np.ndarray):
     
         # Resample data
         if method == 'neighbor':
-            newmap = self._resample_neighbor(orig, dimensions, offset, m1)
+            data = self._resample_neighbor(orig_data, dimensions, offset, m1)
         elif method in ['nearest','linear']:
-            newmap = self._resample_nearest_linear(orig, dimensions, method, 
-                                                     offset, m1)
+            data = self._resample_nearest_linear(orig_data, dimensions, method, 
+                                                 offset, m1)
         elif method == 'spline':
-            newmap = self._resample_spline(orig, dimensions, offset, m1)
+            data = self._resample_spline(orig_data, dimensions, offset, m1)
         else:
             raise UnrecognizedInterpolationMethod
+        
+        # Update image scale and number of pixels
+        header = self.header.copy()
 
-        return newmap
+        scale_factor_x = (self.shape[0] / dimensions[0]) 
+        scale_factor_y = (self.shape[1] / dimensions[1])
+        
+        header['naxis1'] = int(dimensions[0])
+        header['naxis2'] = int(dimensions[1])
+        header['cdelt1'] *= scale_factor_x
+        header['cdelt2'] *= scale_factor_y
+        header['crpix1'] /= scale_factor_x
+        header['crpix2'] /= scale_factor_y
+
+        return self.__class__(data, header)
 
     def _resample_nearest_linear(self, orig, dimensions, method, offset, m1):
         """Resample Map using either linear or nearest interpolation"""
@@ -407,8 +421,7 @@ class BaseMap(np.ndarray):
         else:
             raise ValueError(
                 "Invalid unit. Must be one of 'arcseconds' or 'pixels'")
-        print(x_pixels)
-        print(y_pixels)
+
         # Make a copy of the header with updated centering information        
         header = self.header.copy()
         header['crpix1'] = header['crpix1'] - x_pixels[0]
@@ -416,12 +429,11 @@ class BaseMap(np.ndarray):
         header['naxis1'] = x_pixels[1] - x_pixels[0]
         header['naxis2'] = y_pixels[1] - y_pixels[0]
 
-        self.center = {
-                "x": wcs.get_center(header, axis='x'),
-                "y": wcs.get_center(header, axis='y')
-        }
-        print(wcs.get_center(header, axis='x'))
-        print(self.center)
+#        self.center = {
+#            "x": wcs.get_center(header, axis='x'),
+#            "y": wcs.get_center(header, axis='y')
+#        }
+
         # Get ndarray representation of submap
         data = np.asarray(self)[y_pixels[0]:y_pixels[1], 
                                 x_pixels[0]:x_pixels[1]]
@@ -539,3 +551,7 @@ class UnrecognizedInterpolationMethod(ValueError):
 class UnequalNumDimensions(ValueError):
     """Number of dimensions does not match input array"""
     pass
+
+if __name__ == "__main__":
+    import sunpy
+    sunpy.Map(sunpy.AIA_171_IMAGE).resample((512, 512))
