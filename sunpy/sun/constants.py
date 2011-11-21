@@ -1,5 +1,3 @@
-from __future__ import absolute_import
-
 """
 Fundamental Solar Physical Constants
 ------------------------------
@@ -38,6 +36,7 @@ TODO:
 Need better sources as well as error values.
 Create a cheat sheet function which prints out key solar values
 """
+from __future__ import absolute_import
 
 import scipy.constants as _cd
 from . import _constants as _con

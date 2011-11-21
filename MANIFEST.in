@@ -4,4 +4,5 @@ recursive-include sunpy/data/sample *
 include *.txt
 include *.md
 include setup.py
+include distribute_setup.py
 include pavement.py
