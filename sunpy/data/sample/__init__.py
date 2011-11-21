@@ -1,12 +1,10 @@
-from __future__ import absolute_import
-
 """SunPy sample data files"""
+from __future__ import absolute_import
+import sunpy
+import os
 
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
-
-import sunpy
-import os
 
 rootdir = os.path.join(os.path.dirname(sunpy.__file__), "data/sample") 
 

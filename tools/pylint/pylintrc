@@ -47,7 +47,8 @@ load-plugins=
 # W0401     Wildcard import
 # W0511     TODO
 # W0614     Unused import from wildcard import
-disable=R0201,W0105,W0142,W0401,W0511,W0614
+# C0103     Invalid name "x" (should match [a-z_][a-z0-9_]{2,30}$)
+disable=R0201,W0105,W0142,W0401,W0511,W0614,C0103
 
 
 [REPORTS]

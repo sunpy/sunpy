@@ -1,4 +1,3 @@
-from __future__ import absolute_import
 """
 FITS File Reader
 
@@ -23,10 +22,11 @@ References
 | http://stackoverflow.com/questions/456672/class-factory-in-python
 | http://stsdas.stsci.edu/download/wikidocs/The_PyFITS_Handbook.pdf
 """
+from __future__ import absolute_import
+import pyfits
+
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
-
-import pyfits
 
 def read(filepath):
     """Reads in the file at the specified location"""

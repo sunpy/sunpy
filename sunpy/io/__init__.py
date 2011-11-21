@@ -1,7 +1,5 @@
+"""File input and output functions"""
 from __future__ import absolute_import
-"""
-File input and output functions
-"""
 from sunpy.io import fits, jp2
 
 # File formats supported by SunPy

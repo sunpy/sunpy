@@ -1,10 +1,9 @@
-from __future__ import absolute_import
-
 """
 BaseMap is a generic Map class from which all other Map classes inherit from.
 """
+from __future__ import absolute_import
 
-#pylint: disable=E1101,E1121
+#pylint: disable=E1101,E1121,W0404
 __authors__ = ["Keith Hughitt, Steven Christe"]
 __email__ = "keith.hughitt@nasa.gov"
 
@@ -13,51 +12,17 @@ from copy import copy
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
-import matplotlib.colors as colors
 import matplotlib.cm as cm
 from datetime import datetime
 from sunpy.wcs import wcs as wcs
 from sunpy.util.util import toggle_pylab
         
-
 """
 Questions
 ---------
 1. map.wavelength, map.meas or? (use hv/vso/etc conventions?)
 2. Are self.r_sun and radius below different? (rsun or rsun_obs for AIA?)
 """
-
-
-def draw_limb(map_, fig, axes):
-    circ = patches.Circle([0, 0], radius=map_.rsun, 
-        fill=False, color='white')
-    axes.add_artist(circ)
-    return fig, axes
-_draw_limb = draw_limb
-
-def draw_grid(map_, fig, axes, grid_spacing = 20):
-    # define the number of points for each latitude or longitude line
-    num_points = 20
-    hg_longitude_deg = np.linspace(-90,90, num = num_points)
-    hg_latitude_deg = np.arange(-90,90, grid_spacing)
-
-    # draw the latitude lines
-    for lat in hg_latitude_deg:
-        hg_latitude_deg_mesh, hg_longitude_deg_mesh = np.meshgrid(lat * np.ones(num_points), hg_longitude_deg)
-        x, y = wcs.convert_hg_hpc(map_.header, hg_longitude_deg_mesh, hg_latitude_deg_mesh, units = 'arcsec')
-        axes.plot(x,y,color = 'white', linestyle = 'dotted')
-    
-    hg_longitude_deg = np.arange(-90,90, grid_spacing)
-    hg_latitude_deg = np.linspace(-90,90, num = num_points)
-
-    # draw the longitude lines
-    for lon in hg_longitude_deg:
-        hg_longitude_deg_mesh, hg_latitude_deg_mesh = np.meshgrid(lon * np.ones(num_points), hg_latitude_deg)
-        x, y = wcs.convert_hg_hpc(map_.header, hg_longitude_deg_mesh, hg_latitude_deg_mesh, units = 'arcsec')
-        axes.plot(x,y,color = 'white', linestyle = 'dotted')        
-    
-    return fig, axes
-_draw_grid = draw_grid
 
 class BaseMap(np.ndarray):
     """
@@ -93,8 +58,8 @@ class BaseMap(np.ndarray):
     name : str
         Nickname for the image type (e.g. "AIA 171")
     center : dict
-        X and Y coordinate of the center of the map in units. Usually represents the offset
-        between the center of the Sun and the center of the map.
+        X and Y coordinate of the center of the map in units. Usually represents
+        the offset between the center of the Sun and the center of the map.
     scale: dict
         Image scale along the x and y axes in units/pixel
     units: dict
@@ -207,7 +172,7 @@ class BaseMap(np.ndarray):
             return np.ndarray.__getitem__(self, key)
     
     def __sub__(self, other):
-        """Subtract two maps. Currently does not take into account the alignment 
+        """Subtract two maps. Currently does not take into account the alignment
         between the two maps."""
         result = np.ndarray.__sub__(self, other)
 
@@ -223,10 +188,10 @@ class BaseMap(np.ndarray):
         return np.array(self, copy=False, subok=False).std(*args, **kwargs)
     
     @classmethod
-    def get_properties(cls, header=None):
+    def get_properties(cls, header=None): #pylint: disable=W0613
         """Returns default map properties""" 
         return {
-            'cmap': cm.gray,  #@UndefinedVariable
+            'cmap': cm.gray,
             'date': datetime.today(),
             'det': "None",
             'inst': "None",
@@ -252,11 +217,162 @@ class BaseMap(np.ndarray):
         return [ymin, ymax]
     
     def arcsecs_to_pixels(self, value, dim):
+        """Convert arcsecond coordinates to pixel values"""
         if dim not in ['x', 'y']:
             raise ValueError("Invalid dimension. Must be one of 'x' or 'y'.")
         size = self.shape[dim == 'y'] # 0 if dim == 'x', 1 if dim == 'y'.
         
         return value / self.scale[dim] + (size / 2)
+    
+    def resample(self, dimensions, method='linear', center=False, minusone=False):
+        """Returns a new Map that has been resampled up or down
+        
+        Arbitrary resampling of source array to new dimension sizes.
+        Currently only supports maintaining the same number of dimensions.
+        To use 1-D arrays, first promote them to shape (x,1).
+        
+        Uses the same parameters and creates the same co-ordinate lookup points
+        as IDL''s congrid routine, which apparently originally came from a 
+        VAX/VMS routine of the same name.
+        
+        Parameters
+        ----------
+        dimensions : tuple
+            Dimensions that new Map should have.
+        method: {'neighbor' | 'nearest' | 'linear' | 'spline'}
+            Method to use for resampling interpolation.
+            * neighbor - Closest value from original data
+            * nearest and linear - Uses n x 1-D interpolations using
+              scipy.interpolate.interp1d
+            * spline - Uses ndimage.map_coordinates
+        center: bool
+            If True, interpolation points are at the centers of the bins,
+            otherwise points are at the front edge of the bin.
+        minusone: bool
+            For inarray.shape = (i,j) & new dimensions = (x,y), if set to False
+            inarray is resampled by factors of (i/x) * (j/y), otherwise inarray 
+            is resampled by(i-1)/(x-1) * (j-1)/(y-1)
+            This prevents extrapolation one element beyond bounds of input 
+            array.
+        
+        Returns:
+        --------
+        out : Map         
+            A new Map which has been resampled to the desired dimensions.
+        
+        References:
+        -----------
+        | http://www.scipy.org/Cookbook/Rebinning (Original source, 2011/11/19)
+        """
+        orig_data = np.asarray(self).copy()
+        
+        # Verify that number dimensions requested matches original shape
+        if len(dimensions) != self.ndim:
+            raise UnequalNumDimensions
+
+        #@note: will this be okay for integer (e.g. JPEG 2000) data?
+        if not orig_data.dtype in [np.float64, np.float32]:
+            orig_data = orig_data.astype(np.float64)
+
+        dimensions = np.asarray(dimensions, dtype=np.float64)
+        m1 = np.array(minusone, dtype=np.int64) # array(0) or array(1)
+        offset = np.float64(center * 0.5)       # float64(0.) or float64(0.5)
+    
+        # Resample data
+        if method == 'neighbor':
+            data = self._resample_neighbor(orig_data, dimensions, offset, m1)
+        elif method in ['nearest','linear']:
+            data = self._resample_nearest_linear(orig_data, dimensions, method, 
+                                                 offset, m1)
+        elif method == 'spline':
+            data = self._resample_spline(orig_data, dimensions, offset, m1)
+        else:
+            raise UnrecognizedInterpolationMethod
+        
+        # Update image scale and number of pixels
+        header = self.header.copy()
+
+        scale_factor_x = (self.shape[0] / dimensions[0]) 
+        scale_factor_y = (self.shape[1] / dimensions[1])
+        
+        header['naxis1'] = int(dimensions[0])
+        header['naxis2'] = int(dimensions[1])
+        header['cdelt1'] *= scale_factor_x
+        header['cdelt2'] *= scale_factor_y
+        header['crpix1'] /= scale_factor_x
+        header['crpix2'] /= scale_factor_y
+
+        return self.__class__(data, header)
+
+    def _resample_nearest_linear(self, orig, dimensions, method, offset, m1):
+        """Resample Map using either linear or nearest interpolation"""
+        import scipy.interpolate
+
+        dimlist = []
+        
+        # calculate new dims
+        for i in range(orig.ndim):
+            base = np.arange(dimensions[i])
+            dimlist.append((orig.shape[i] - m1) / (dimensions[i] - m1) *
+                           (base + offset) - offset)
+
+        # specify old coordinates
+        old_coords = [np.arange(i, dtype=np.float) for i in orig.shape]
+
+        # first interpolation - for ndims = any
+        mint = scipy.interpolate.interp1d(old_coords[-1], orig, kind=method)
+        new_data = mint(dimlist[-1])
+
+        trorder = [orig.ndim - 1] + range(orig.ndim - 1)
+        for i in xrange(orig.ndim - 2, -1, -1):
+            new_data = new_data.transpose(trorder)
+
+            mint = scipy.interpolate.interp1d(old_coords[i], new_data, 
+                                              kind=method)
+            new_data = mint(dimlist[i])
+
+        if orig.ndim > 1:
+            # need one more transpose to return to original dimensions
+            new_data = new_data.transpose(trorder)
+
+        return new_data
+    
+    def _resample_neighbor(self, orig, dimensions, offset, m1):
+        """Resample Map using closest-value interpolation"""
+        dimlist = []
+        
+        for i in xrange(orig.ndim):
+            base = np.indices(dimensions)[i]
+            dimlist.append((orig.shape[i] - m1) / (dimensions[i] - m1) *
+                           (base + offset) - offset)
+        cd = np.array(dimlist).round().astype(int)
+        
+        return orig[list(cd)]
+    
+    def _resample_spline(self, orig, dimensions, offset, m1):
+        """Resample Map using spline-based interpolation"""
+        import scipy.ndimage
+        
+        oslices = [slice(0, j) for j in orig.shape]
+        old_coords = np.ogrid[oslices] #pylint: disable=W0612
+        nslices = [slice(0, j) for j in list(dimensions)]
+        newcoords = np.mgrid[nslices]
+
+        newcoords_dims = range(np.rank(newcoords))
+        
+        #make first index last
+        newcoords_dims.append(newcoords_dims.pop(0))
+        newcoords_tr = newcoords.transpose(newcoords_dims) #pylint: disable=W0612
+
+        # makes a view that affects newcoords
+        newcoords_tr += offset
+
+        deltas = (np.asarray(orig.shape) - m1) / (dimensions - m1)
+        newcoords_tr *= deltas
+
+        newcoords_tr -= offset
+
+        return scipy.ndimage.map_coordinates(orig, newcoords)
 
     def submap(self, range_a, range_b, units="arcseconds"):
         """Returns a submap of the map with the specified range
@@ -274,7 +390,7 @@ class BaseMap(np.ndarray):
             
         Returns
         -------
-        out : BaseMap
+        out : Map
             A new map instance is returned representing to specified sub-region.
         
         Examples
@@ -305,8 +421,7 @@ class BaseMap(np.ndarray):
         else:
             raise ValueError(
                 "Invalid unit. Must be one of 'arcseconds' or 'pixels'")
-        print(x_pixels)
-        print(y_pixels)
+
         # Make a copy of the header with updated centering information        
         header = self.header.copy()
         header['crpix1'] = header['crpix1'] - x_pixels[0]
@@ -314,12 +429,11 @@ class BaseMap(np.ndarray):
         header['naxis1'] = x_pixels[1] - x_pixels[0]
         header['naxis2'] = y_pixels[1] - y_pixels[0]
 
-        self.center = {
-                "x": wcs.get_center(header, axis='x'),
-                "y": wcs.get_center(header, axis='y')
-        }
-        print(wcs.get_center(header, axis='x'))
-        print(self.center)
+#        self.center = {
+#            "x": wcs.get_center(header, axis='x'),
+#            "y": wcs.get_center(header, axis='y')
+#        }
+
         # Get ndarray representation of submap
         data = np.asarray(self)[y_pixels[0]:y_pixels[1], 
                                 x_pixels[0]:x_pixels[1]]
@@ -327,11 +441,14 @@ class BaseMap(np.ndarray):
         return self.__class__(data, header)
    
     @toggle_pylab
-    def plot(self, overlays=[], draw_limb=True, gamma=None, draw_grid = False, **matplot_args):
+    def plot(self, overlays=None, draw_limb=True, gamma=None, draw_grid=False, 
+             **matplot_args):
         """Plots the map object using matplotlib
         
         Parameters
         ----------
+        overlays : list
+            List of overlays to include in the plot
         draw_limb : bool
             Whether the solar limb should be plotted.
         draw_grid : bool
@@ -344,12 +461,14 @@ class BaseMap(np.ndarray):
             Matplotlib Any additional imshow arguments that should be used
             when plotting the image.
         """
+        if overlays is None:
+            overlays = []
         if draw_limb:
-            overlays = overlays + [_draw_limb]
+            overlays = overlays + [self._draw_limb]
         # TODO: need to be able to pass the grid spacing to _draw_grid from the 
         # plot command.
         if draw_grid:
-            overlays = overlays + [_draw_grid]
+            overlays = overlays + [self._draw_grid]
         # Create a figure and add title and axes
         fig = plt.figure()
         
@@ -382,11 +501,57 @@ class BaseMap(np.ndarray):
         """Default normalizion method"""
         return None
     
-    def show(self, overlays=[], draw_limb=False, gamma=1.0, **matplot_args):
+    def show(self, overlays=None, draw_limb=False, gamma=1.0, **matplot_args):
         """Displays map on screen. Arguments are same as plot()."""
         self.plot(overlays, draw_limb, gamma, **matplot_args).show()
-
+        
+    def _draw_limb(self, fig, axes):
+        """Draws a circle representing the solar limb"""
+        circ = patches.Circle([0, 0], radius=self.rsun, fill=False, 
+                              color='white')
+        axes.add_artist(circ)
+        return fig, axes
+    
+    def _draw_grid(self, fig, axes, grid_spacing=20):
+        """Draws a grid over the surface of the Sun"""
+        # define the number of points for each latitude or longitude line
+        num_points = 20
+        hg_longitude_deg = np.linspace(-90, 90, num=num_points)
+        hg_latitude_deg = np.arange(-90, 90, grid_spacing)
+    
+        # draw the latitude lines
+        for lat in hg_latitude_deg:
+            hg_latitude_deg_mesh, hg_longitude_deg_mesh = np.meshgrid(
+                lat * np.ones(num_points), hg_longitude_deg)
+            x, y = wcs.convert_hg_hpc(self.header, hg_longitude_deg_mesh, 
+                                      hg_latitude_deg_mesh, units='arcsec')
+            axes.plot(x, y, color='white', linestyle='dotted')
+        
+        hg_longitude_deg = np.arange(-90, 90, grid_spacing)
+        hg_latitude_deg = np.linspace(-90, 90, num=num_points)
+    
+        # draw the longitude lines
+        for lon in hg_longitude_deg:
+            hg_longitude_deg_mesh, hg_latitude_deg_mesh = np.meshgrid(
+                lon * np.ones(num_points), hg_latitude_deg)
+            x, y = wcs.convert_hg_hpc(self.header, hg_longitude_deg_mesh, 
+                                      hg_latitude_deg_mesh, units='arcsec')
+            axes.plot(x, y, color='white', linestyle='dotted')        
+        
+        return fig, axes
 
 class UnrecognizedDataSouceError(ValueError):
     """Exception to raise when an unknown datasource is encountered"""
     pass
+
+class UnrecognizedInterpolationMethod(ValueError):
+    """Unrecognized interpolation method specified."""
+    pass
+
+class UnequalNumDimensions(ValueError):
+    """Number of dimensions does not match input array"""
+    pass
+
+if __name__ == "__main__":
+    import sunpy
+    sunpy.Map(sunpy.AIA_171_IMAGE).resample((512, 512))
