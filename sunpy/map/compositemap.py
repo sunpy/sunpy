@@ -1,9 +1,8 @@
-from __future__ import absolute_import
-
 """A Composite Map class
 
 Author: `Keith Hughitt <keith.hughitt@nasa.gov>`
 """
+from __future__ import absolute_import
 
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"

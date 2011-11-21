@@ -1,6 +1,5 @@
-from __future__ import absolute_import
-
 """A Python MapCube Object"""
+from __future__ import absolute_import
 #pylint: disable=W0401,W0614,W0201,W0212,W0404
 
 __author__ = "Keith Hughitt"
