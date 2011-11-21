@@ -6,6 +6,10 @@ SunPy
 
 Welcome! here you can find documentation relating to sunpy.
 
+Documentation versions:
+ * `Stable <http://www.sunpy.org/doc>`_
+ * `Nightly <http://sunpy.readthedocs.org/en/latest/index.html>`_
+
 Requirements
 ------------
 * `NumPy/SciPy <http://numpy.scipy.org/>`_

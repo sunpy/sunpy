@@ -1,7 +1,4 @@
 # -*- coding:utf-8 -*-
-
-from __future__ import absolute_import
-
 """
 SunPy PlotMan GUI
 
@@ -10,6 +7,7 @@ and provides tools for graphical plot manipulation.
 
 Author: Matt Earnshaw <matt@earnshaw.org.uk>
 """
+from __future__ import absolute_import
 
 import sunpy
 from matplotlib import pyplot as plt
