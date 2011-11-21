@@ -16,7 +16,7 @@ import matplotlib.patches as patches
 import matplotlib.colors as colors
 import matplotlib.cm as cm
 from datetime import datetime
-from sunpy.solwcs import solwcs as wcs
+from sunpy.wcs import wcs as wcs
 from sunpy.util.util import toggle_pylab
         
 
@@ -35,6 +35,29 @@ def draw_limb(map_, fig, axes):
     return fig, axes
 _draw_limb = draw_limb
 
+def draw_grid(map_, fig, axes, grid_spacing = 20):
+    # define the number of points for each latitude or longitude line
+    num_points = 20
+    hg_longitude_deg = np.linspace(-90,90, num = num_points)
+    hg_latitude_deg = np.arange(-90,90, grid_spacing)
+
+    # draw the latitude lines
+    for lat in hg_latitude_deg:
+        hg_latitude_deg_mesh, hg_longitude_deg_mesh = np.meshgrid(lat * np.ones(num_points), hg_longitude_deg)
+        x, y = wcs.convert_hg_hpc(map_.header, hg_longitude_deg_mesh, hg_latitude_deg_mesh, units = 'arcsec')
+        axes.plot(x,y,color = 'white', linestyle = 'dotted')
+    
+    hg_longitude_deg = np.arange(-90,90, grid_spacing)
+    hg_latitude_deg = np.linspace(-90,90, num = num_points)
+
+    # draw the longitude lines
+    for lon in hg_longitude_deg:
+        hg_longitude_deg_mesh, hg_latitude_deg_mesh = np.meshgrid(lon * np.ones(num_points), hg_latitude_deg)
+        x, y = wcs.convert_hg_hpc(map_.header, hg_longitude_deg_mesh, hg_latitude_deg_mesh, units = 'arcsec')
+        axes.plot(x,y,color = 'white', linestyle = 'dotted')        
+    
+    return fig, axes
+_draw_grid = draw_grid
 
 class BaseMap(np.ndarray):
     """
@@ -200,7 +223,7 @@ class BaseMap(np.ndarray):
         return np.array(self, copy=False, subok=False).std(*args, **kwargs)
     
     @classmethod
-    def get_properties(cls):
+    def get_properties(cls, header=None):
         """Returns default map properties""" 
         return {
             'cmap': cm.gray,  #@UndefinedVariable
@@ -282,14 +305,21 @@ class BaseMap(np.ndarray):
         else:
             raise ValueError(
                 "Invalid unit. Must be one of 'arcseconds' or 'pixels'")
-
+        print(x_pixels)
+        print(y_pixels)
         # Make a copy of the header with updated centering information        
         header = self.header.copy()
         header['crpix1'] = header['crpix1'] - x_pixels[0]
         header['crpix2'] = header['crpix2'] - y_pixels[0]
         header['naxis1'] = x_pixels[1] - x_pixels[0]
         header['naxis2'] = y_pixels[1] - y_pixels[0]
-        
+
+        self.center = {
+                "x": wcs.get_center(header, axis='x'),
+                "y": wcs.get_center(header, axis='y')
+        }
+        print(wcs.get_center(header, axis='x'))
+        print(self.center)
         # Get ndarray representation of submap
         data = np.asarray(self)[y_pixels[0]:y_pixels[1], 
                                 x_pixels[0]:x_pixels[1]]
@@ -297,13 +327,17 @@ class BaseMap(np.ndarray):
         return self.__class__(data, header)
    
     @toggle_pylab
-    def plot(self, overlays=[], draw_limb=False, gamma=None, **matplot_args):
+    def plot(self, overlays=[], draw_limb=True, gamma=None, draw_grid = False, **matplot_args):
         """Plots the map object using matplotlib
         
         Parameters
         ----------
         draw_limb : bool
             Whether the solar limb should be plotted.
+        draw_grid : bool
+            Whether solar meridians and parallels
+        grid_spacing : float
+            Set the spacing between meridians and parallels for the grid
         gamma : float
             Gamma value to use for the color map
         **matplot_args : dict
@@ -312,6 +346,10 @@ class BaseMap(np.ndarray):
         """
         if draw_limb:
             overlays = overlays + [_draw_limb]
+        # TODO: need to be able to pass the grid spacing to _draw_grid from the 
+        # plot command.
+        if draw_grid:
+            overlays = overlays + [_draw_grid]
         # Create a figure and add title and axes
         fig = plt.figure()
         
