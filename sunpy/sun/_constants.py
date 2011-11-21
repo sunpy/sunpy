@@ -4,16 +4,9 @@ from __future__ import absolute_import
 Collection of solar physical constants. Most constants are in SI units.
 
 The list is not meant to be comprehensive, but just a convenient list for 
-everyday use. Use at own risk.
-"""
+everyday use. All derived values (e.g. escape velocity, average density) 
+are calculated. Use at own risk.
 
-"""
-Written: 
-    Steven Christe (7-May-2011)
-Modified: 
-    Added standard model values (interior and evolution) 
-    - Steven Christe (18-Jul-2011)
-    
 References:
     Review of Particle Physics 2010 (page 102)
     NASA Sun Fact Sheet 
@@ -24,33 +17,50 @@ TODO: References should be to published or standard sources, NOT websites.
 TODO: Add solar atmosphere values to standard model.
 """
 
+import scipy.constants as _cd
+import numpy as np
+
 physical_constants = {}
 
 # physical_constants[name] = (val, units, uncert)
 physical_constants['mass'] = (1.9884e30, 'kg', -1)
 physical_constants['radius'] = (6.95508e8, 'm', -1)
-physical_constants['diameter'] = (6.9551e8*2.0, 'm', -1)
-physical_constants['volume'] = (1.412e18, 'm^3', -1)
-physical_constants['surface area'] = (6.0877e12, 'm^2', -1)
-physical_constants['average density'] = (1.408e3, 'kg/m^3', -1)
-physical_constants['center density'] = (1.622e5, 'kg/m^3', -1)
-physical_constants['surface gravity'] = (274, 'kg/m^3', -1)
-physical_constants['intensity'] = (2.009e7, 'W/m^2 sr^-1', -1)
-physical_constants['effective temperature'] = (5778, 'K', -1)
+physical_constants['diameter'] = (physical_constants['radius'][0]*2.0, 'm', -1)
+physical_constants['volume'] = (4 / 3.*np.pi * 
+                                physical_constants['radius'][0]**3, 'm^3', -1)
+physical_constants['surface area'] = (4 * np.pi * 
+                                      physical_constants['radius'][0]**2, 
+                                      'm^2', -1)
+physical_constants['average density'] = (physical_constants['mass'][0] / 
+                                         physical_constants['volume'][0], 
+                                         'kg m^-3', -1)
+physical_constants['center density'] = (1.622e5, 'kg m^-3', -1)
+physical_constants['mean intensity'] = (2.009e7, 'W m^-2 sr^-1', -1)
+physical_constants['effective temperature'] = (5778.0, 'K', -1)
 physical_constants['center temperature'] = (1.57e7, 'K', -1)
-physical_constants['luminosity'] = (3.8427e26, 'J/s', -1)
-physical_constants['absolute magnitude'] = (4.83, '', -1)
-physical_constants['visual magnitude'] = (-26.74, '', -1)
-physical_constants['mass conversion rate'] = (4300e6, 'kg/s', -1)
-physical_constants['mean energy production'] = (0.1937, 'J/kg', -1)
-physical_constants['escape velocity'] = (617.6, 'km/s', -1)
-physical_constants['ellipticity'] = (0.00005, '', -1)
-physical_constants['GM'] = (132712e6, 'km^3/s^2', -1)
+physical_constants['luminosity'] = (3.8427e26, 'J s^-1', -1)
+physical_constants['absolute magnitude'] = (4.83, 'None', -1)
+physical_constants['visual magnitude'] = (-26.74, 'None', -1)
+physical_constants['mass conversion rate'] = (4300e6, 'kg s^-1', -1)
+physical_constants['mean energy production'] = (0.1937, 'J kg^-1', -1)
+physical_constants['ellipticity'] = (0.00005, 'None', -1)
+physical_constants['GM'] = (_cd.G * physical_constants['mass'][0], 'm^3 s^-2', 
+                            -1)
+physical_constants['surface gravity'] = (physical_constants['GM'][0] / 
+                                         physical_constants['radius'][0]**2, 
+                                         'kg m^-3', -1)
+physical_constants['escape velocity'] = (1e-3 * np.sqrt(2 * 
+                                         physical_constants['GM'][0] / 
+                                         physical_constants['radius'][0]), 
+                                         'km s^-1', -1)
 physical_constants['sunspot cycle'] = (11.4, 'years', -1)
-physical_constants['metallicity'] = (0.0122, '', -1)
+physical_constants['metallicity'] = (0.0122, 'None', -1)
 
 # A solar flux unit (sfu) is traditional measure of solar radio flux.
-physical_constants['solar flux unit'] = (1e-22, u"W/m^2 Hz^1", -1)
+physical_constants['solar flux unit'] = (1e-22, 'W m^-2 Hz^-1', 0)
+
+# Solar radius measured outside earth's atmosphere in arcseconds
+physical_constants['average_angular_size'] = (961.07064, 'arcsec', -1)
 
 # Standard Model - Interior Structure
 # adapted from Turck-Chieze et al. (1988)
