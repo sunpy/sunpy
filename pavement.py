@@ -25,6 +25,7 @@ options(
         hostpath = 'www/sunpy/doc'
     ),
     sphinx = Bunch(docroot='doc/source', builddir="_build"),
+    upload_docs = Bunch(upload_dir='doc/html'),
     pylint = Bunch(quiet=False)
 )
 
@@ -60,7 +61,7 @@ def prepare_docs():
     shutil.move(sourcedir, destdir)
     
 @task
-@needs('paver.doctools.html')
+@needs('paver.doctools.html', 'upload_docs')
 @cmdopts([('username=', 'u', 'Username')])
 def deploy(options):
     """Update the docs on sunpy.org"""
