@@ -33,6 +33,7 @@ def test_anytim_ISO():
         ('2007-May-04', datetime(2007, 5, 4)),
         ('2007-05-04', datetime(2007, 5, 4)),
         ('2007/05/04', datetime(2007, 5, 4)),
+        ('20070504_210812', datetime(2007, 5, 4, 21, 8, 12)),
     ]
     
     for k, v in lst:
@@ -41,3 +42,6 @@ def test_anytim_ISO():
 def test_julian_day():
     assert util.julian_day('2000-03-01 15:30:26') == 2451605.1461111
     assert util.julian_day(LANDING) == 2439159.5
+    
+def test_break_time():
+    assert util.break_time(datetime(2007, 5, 4, 21, 8, 12)) == '20070504_210812'
