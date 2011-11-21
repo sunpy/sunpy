@@ -5,8 +5,6 @@
 
 from __future__ import absolute_import
 
-from datetime import datetime
-
 from sunpy.net.attr import (
     Attr, ValueAttr, AttrWalker, AttrAnd, AttrOr, DummyAttr, ValueAttr
 )
