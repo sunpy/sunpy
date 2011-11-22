@@ -53,16 +53,16 @@ class BaseMap(np.ndarray):
         Observatory name
     rsun : float
         Radius of the sun
-    exptime: float
+    exptime : float
         Exposure time of the image in seconds.
     name : str
         Nickname for the image type (e.g. "AIA 171")
     center : dict
-        X and Y coordinate of the center of the map in units. Usually represents
+        X and Y coordinate of the center of the map in units. Usually represents \
         the offset between the center of the Sun and the center of the map.
-    scale: dict
+    scale : dict
         Image scale along the x and y axes in units/pixel
-    units: dict
+    units : dict
         Image coordinate units along the x and y axes
 
     Examples
@@ -239,29 +239,29 @@ class BaseMap(np.ndarray):
         ----------
         dimensions : tuple
             Dimensions that new Map should have.
-        method: {'neighbor' | 'nearest' | 'linear' | 'spline'}
+        method : {'neighbor' | 'nearest' | 'linear' | 'spline'}
             Method to use for resampling interpolation.
-            * neighbor - Closest value from original data
-            * nearest and linear - Uses n x 1-D interpolations using
-              scipy.interpolate.interp1d
-            * spline - Uses ndimage.map_coordinates
-        center: bool
+                * neighbor - Closest value from original data
+                * nearest and linear - Uses n x 1-D interpolations using
+                  scipy.interpolate.interp1d
+                * spline - Uses ndimage.map_coordinates
+        center : bool
             If True, interpolation points are at the centers of the bins,
             otherwise points are at the front edge of the bin.
-        minusone: bool
+        minusone : bool
             For inarray.shape = (i,j) & new dimensions = (x,y), if set to False
             inarray is resampled by factors of (i/x) * (j/y), otherwise inarray 
             is resampled by(i-1)/(x-1) * (j-1)/(y-1)
             This prevents extrapolation one element beyond bounds of input 
             array.
-        
-        Returns:
-        --------
-        out : Map         
+
+        Returns
+        -------
+        out : Map
             A new Map which has been resampled to the desired dimensions.
         
-        References:
-        -----------
+        References
+        ----------
         | http://www.scipy.org/Cookbook/Rebinning (Original source, 2011/11/19)
         """
         orig_data = np.asarray(self).copy()
