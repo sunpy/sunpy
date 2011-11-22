@@ -494,7 +494,7 @@ class BaseMap(np.ndarray):
         fig.colorbar(im)
         
         for overlay in overlays:
-            fig, axes = overlay(self, fig, axes)
+            fig, axes = overlay(fig, axes)
         return fig
     
     def norm(self):
