@@ -24,8 +24,9 @@ sys.path.append(os.path.abspath('../../'))
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.todo',
-              'sphinx.ext.pngmath', 'sphinx.ext.viewcode', 'numpydoc']
+extensions = ['sphinx.ext.autodoc', 'numpydoc', 'sphinx.ext.todo',
+              'sphinx.ext.pngmath', 'sphinx.ext.viewcode', 
+              'sphinx.ext.autosummary']
 
 # Note: numpydoc extension is required and can be found at
 # is available with the numpy source code
@@ -75,6 +76,7 @@ exclude_trees = ['_build']
 
 # The reST default role (used for this markup: `text`) to use for all documents.
 #default_role = None
+default_role = "autolink"
 
 # If true, '()' will be appended to :func: etc. cross-reference text.
 #add_function_parentheses = True
@@ -199,3 +201,7 @@ latex_documents = [
 
 # If false, no module index is generated.
 #latex_use_modindex = True
+
+# Autosummary
+import glob
+autosummary_generate = glob.glob("reference/*.rst")
