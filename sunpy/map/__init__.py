@@ -1,5 +1,5 @@
 """
-SunPy Map objects are constructed using the special :function:`Map()`
+SunPy Map objects are constructed using the special function `Map()`
 function. ::
 
 >>> map = sunpy.Map('file.fits')

@@ -8,17 +8,17 @@ Overview
 
 For its basic functioning, SunPy requires several libraries:
 
-* `NumPy <http://numpy.scipy.org/>`_
-* `Matplotlib <http://matplotlib.sourceforge.net/>`_
-* `PyFITS <http://www.stsci.edu/resources/software_hardware/pyfits>`_
+* `NumPy <http://numpy.scipy.org/>`__
+* `Matplotlib <http://matplotlib.sourceforge.net/>`__
+* `PyFITS <http://www.stsci.edu/resources/software_hardware/pyfits>`__
 
 **Optional**
 
 In addition to the required libraries listed above, there are a couple other
 optional dependencies which are only needed for certain features.
 
-* `PyQt4 <http://www.riverbankcomputing.co.uk/software/pyqt/download>`_ (SunPy Plotman)
-* `Suds <https://fedorahosted.org/suds/>`_ (VSO/HEK support)
+* `PyQt4 <http://www.riverbankcomputing.co.uk/software/pyqt/download>`__ (SunPy Plotman)
+* `Suds <https://fedorahosted.org/suds/>`__ (VSO/HEK support)
 * `OpenJPEG <http://www.openjpeg.org/>`__ and `PIL <http://www.pythonware.com/products/pil/>`__ (JPEG 2000 support)
 
 There are many ways to get SunPy up and running on Windows, and we describe the 
@@ -40,7 +40,7 @@ installer is rather large (~400 MB) and thus may take a while to download.
 
 Download and install `pip <http://pythonxy.googlecode.com/files/pip-1.0.2_py27.exe>`_.  (Note: this installer is built by the Python(x,y) team.)
 
-Download and install `PyFITS <http://pypi.python.org/packages/2.7/p/pyfits/pyfits-3.0.3.win32-py2.7.exe>`_.
+Download and install `PyFITS <http://pypi.python.org/packages/2.7/p/pyfits/pyfits-3.0.3.win32-py2.7.exe>`__.
 
 **3. Install optional modules**
 
@@ -110,13 +110,13 @@ and associated scripts can be found:
 
 **1b. Install required and optional modules included in Python(x,y)**
 
-Download and install `NumPy <http://sourceforge.net/projects/numpy/files/NumPy/1.6.1/numpy-1.6.1-win32-superpack-python2.7.exe/download>`_.
+Download and install `NumPy <http://sourceforge.net/projects/numpy/files/NumPy/1.6.1/numpy-1.6.1-win32-superpack-python2.7.exe/download>`__.
 
-Download and install `SciPy <http://sourceforge.net/projects/scipy/files/scipy/0.9.0/scipy-0.9.0-win32-superpack-python2.7.exe/download>`_.
+Download and install `SciPy <http://sourceforge.net/projects/scipy/files/scipy/0.9.0/scipy-0.9.0-win32-superpack-python2.7.exe/download>`__.
 
-Download and install `matplotlib <http://sourceforge.net/projects/matplotlib/files/matplotlib/matplotlib-1.0.1/matplotlib-1.0.1.win32-py2.7.exe/download>`_.
+Download and install `matplotlib <http://sourceforge.net/projects/matplotlib/files/matplotlib/matplotlib-1.0.1/matplotlib-1.0.1.win32-py2.7.exe/download>`__.
 
-Download and install `PyQt4 <http://www.riverbankcomputing.co.uk/static/Downloads/PyQt4/PyQt-Py2.7-x86-gpl-4.8.5-1.exe>`_.
+Download and install `PyQt4 <http://www.riverbankcomputing.co.uk/static/Downloads/PyQt4/PyQt-Py2.7-x86-gpl-4.8.5-1.exe>`__.
 
 Download and install `distribute <http://pythonxy.googlecode.com/files/distribute-0.6.21_py27.exe>`_.  (Note: this installer is built by the Python(x,y) team.)
 
