@@ -10,3 +10,4 @@ SunPy Reference
    sun
 
    vso
+   wcs
