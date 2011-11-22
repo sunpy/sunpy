@@ -1,6 +1,6 @@
+.. _sun:
+
 Sun
 ===
 
-.. automodule:: sunpy.sun
-   :members:
-   :show-inheritance:
+.. currentmodule:: sunpy
