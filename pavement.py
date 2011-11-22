@@ -84,7 +84,7 @@ def pylint(options):
     if options.quiet:
         arguments.extend(["-rn"])
         
-    arguments.extend(["sunpy/",  "tests/"])
+    arguments.extend(["sunpy/"])
     lint.Run(arguments)
     
 #

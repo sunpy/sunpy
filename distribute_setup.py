@@ -13,6 +13,7 @@ the appropriate options to ``use_setuptools()``.
 
 This file can also be run as a script to install or upgrade setuptools.
 """
+#pylint: disable=E0012,E0611,W0212,W0613,W0622,W0631,F0401
 import os
 import sys
 import time
