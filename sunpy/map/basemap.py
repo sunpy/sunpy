@@ -58,8 +58,7 @@ class BaseMap(np.ndarray):
     name : str
         Nickname for the image type (e.g. "AIA 171")
     center : dict
-        X and Y coordinate of the center of the map in units. Usually represents \
-        the offset between the center of the Sun and the center of the map.
+        X and Y coordinate of the center of the map in units. Usually represents the offset between the center of the Sun and the center of the map.
     scale : dict
         Image scale along the x and y axes in units/pixel
     units : dict

@@ -1,14 +1,21 @@
+.. _map:
+
 ===
 Map
 ===
 
+.. currentmodule:: sunpy
+
 Creating Map Objects
 ^^^^^^^^^^^^^^^^^^^^
-.. automodule:: sunpy.map
-   :members:
+.. autosummary::
+   :toctree: generated/
+
+   map
    
 BaseMap Class
 ^^^^^^^^^^^^^
-.. automodule:: sunpy.map.basemap
-   :members:
-   :show-inheritance:
+.. autosummary::
+   :toctree: generated/
+
+    map.basemap

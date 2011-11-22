@@ -1,6 +1,10 @@
+.. _vso:
+
 ===
 VSO
 ===
+
+.. currentmodule:: sunpy
 
 Introduction
 ^^^^^^^^^^^^
@@ -35,10 +39,7 @@ automatically ANDed together for convenience, `a | b` can be used for OR::
 
 Available attributes
 --------------------
-.. automodule:: sunpy.net.vso.attrs
-   :members:
-   :undoc-members:
-   :exclude-members: Range
+
 
 Legacy Queries
 ^^^^^^^^^^^^^^
@@ -46,5 +47,4 @@ See :py:meth:`sunpy.net.vso.VSOClient.query_legacy`
 
 Module documentation
 ^^^^^^^^^^^^^^^^^^^^
-.. automodule:: sunpy.net.vso
-   :members:
+

@@ -538,8 +538,9 @@ the URL.
 **ERROR: Malformed table. Column span alignment problem at line offset n**
 
 Make sure there is a space before and after each colon in your class and
-function docs (e.g. attribute : type, instead of attribute: type) and that
-any description longer than one line uses "\" to break up the text.
+function docs (e.g. attribute : type, instead of attribute: type). Also, for
+some sections (e.g. Attributes) numpydoc seems to complain when a description
+spans more than one line.
 
 **WARNING: Block quote ends without a blank line; unexpected unindent.**
 Lists should be indented one level from their parents.
