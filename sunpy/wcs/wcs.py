@@ -66,11 +66,11 @@ def get_observer_position(header):
 
 def get_center(header, axis=None):
     """Return the center of the map."""
-    x = (header.get('cdelt1') * header.get('naxis1') / 2 + 
-         header.get('crval1') - header.get('crpix1') * header.get('cdelt1'))
+    x = (header.get('cdelt1') * (header.get('naxis1') - 1) / 2 + 
+         header.get('crval1') - (header.get('crpix1') - 1) * header.get('cdelt1'))
     
-    y = (header.get('cdelt2') * header.get('naxis2') / 2 + 
-         header.get('crval2') - header.get('crpix2') * header.get('cdelt2'))
+    y = (header.get('cdelt2') * (header.get('naxis2') - 1) / 2 + 
+         header.get('crval2') - (header.get('crpix2') - 1) * header.get('cdelt2'))
     
     if axis is 'x':
         return x
@@ -147,9 +147,9 @@ def get_shape(header):
     """Return the shape of the data array."""
     return [header.get('naxis1'), header.get('naxis2')]
 
-def convert_pixel_to_data(header, x = None, y = None, center = False):
+def convert_pixel_to_data(header, x = None, y = None):
     """This procedure takes a WCS-compliant header, and calculates the 
-        data coordinates at each x and y pixels. If no x and y are given
+        data coordinates at each x and y pixel centers. If no x and y are given
         then return the entire detector."""
 
     naxis = np.array(get_shape(header))
@@ -161,12 +161,9 @@ def convert_pixel_to_data(header, x = None, y = None, center = False):
     if (x is None) and (y is None):
         x, y = np.meshgrid(np.arange(get_shape(header)[0]), np.arange(get_shape(header)[1]))
 
-    coordx = (x - crpix[0] ) * cdelt[0] + crval[0]
-    coordy = (y - crpix[1] ) * cdelt[1] + crval[1]
-    
-    if center:
-        coordx += cdelt[0]/2.
-        coordy += cdelt[1]/2.
+    # note that crpix[] counts pixels starting at 1
+    coordx = (x - (crpix[0] - 1) ) * cdelt[0] + crval[0]
+    coordy = (y - (crpix[1] - 1) ) * cdelt[1] + crval[1]
     
     # check to see what projection is being used
     projection = get_projection(header)
@@ -186,8 +183,9 @@ def convert_data_to_pixel(header, x, y):
     # De-apply any tabular projections.
     # coord = inv_proj_tan(header,coord)
     
-    pixelx = (x - crval[0])/cdelt[0] + crpix[1]
-    pixely = (y - crval[1])/cdelt[1] + crpix[1]
+    # note that crpix[] counts pixels starting at 1
+    pixelx = (x - crval[0])/cdelt[0] + (crpix[1] - 1)
+    pixely = (y - crval[1])/cdelt[1] + (crpix[1] - 1)
 
     return pixelx, pixely
 
