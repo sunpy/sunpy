@@ -147,7 +147,7 @@ def get_shape(header):
     """Return the shape of the data array."""
     return [header.get('naxis1'), header.get('naxis2')]
 
-def convert_pixel_to_data(header, x = None, y = None):
+def convert_pixel_to_data(header, x = None, y = None, center = False):
     """This procedure takes a WCS-compliant header, and calculates the 
         data coordinates at each x and y pixels. If no x and y are given
         then return the entire detector."""
@@ -163,7 +163,11 @@ def convert_pixel_to_data(header, x = None, y = None):
 
     coordx = (x - crpix[0] ) * cdelt[0] + crval[0]
     coordy = (y - crpix[1] ) * cdelt[1] + crval[1]
-            
+    
+    if center:
+        coordx += cdelt[0]/2.
+        coordy += cdelt[1]/2.
+    
     # check to see what projection is being used
     projection = get_projection(header)
     if  projection.count('TAN'):    
