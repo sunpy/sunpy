@@ -11,5 +11,8 @@ SunPy Reference
 
    map
    mapcube
+   gui
+   io
    sun
    vso
+   wcs
