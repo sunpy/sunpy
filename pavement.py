@@ -93,13 +93,17 @@ def pylint(options):
 @task
 @needs('paver.doctools.doc_clean')
 def clean():
-    import glob
-
     """Cleans up build files"""
-    print("Removing build files")
-    for dir_ in ['doc/html', 'doc/source/_build', 'build', 'dist', 'sunpy.egg-info']:
+    from glob import glob
+    
+    dirs = (['doc/html', 'doc/source/_build', 'build', 'dist', 'sunpy.egg-info'] + 
+             glob('doc/source/reference/generated') + 
+             glob('doc/source/reference/*/generated'))
+
+    for dir_ in dirs:
         if os.path.exists(dir_):
             shutil.rmtree(dir_)
-    for file_ in glob.glob('distribute-*') + ['MANIFEST']:
+
+    for file_ in glob('distribute-*') + ['MANIFEST']:
         if os.path.exists(file_):
             os.remove(file_)
