@@ -346,9 +346,9 @@ can be used to accomplish the same thing: ::
 
     paver build_sphinx
     
-Which is a shortcut for the sphinx command:
+Which is a shortcut for the sphinx command: ::
 
-     sphinx-build source/ html/
+    sphinx-build source/ html/
 
 For more information on how to use Sphinx, consult the `Sphinx documentation 
 <http://sphinx.pocoo.org/contents.html>`_.
