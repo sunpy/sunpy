@@ -8,9 +8,10 @@ Overview
 
 For its basic functioning, SunPy requires several libraries:
 
-* `NumPy <http://numpy.scipy.org/>`__
-* `Matplotlib <http://matplotlib.sourceforge.net/>`__
-* `PyFITS <http://www.stsci.edu/resources/software_hardware/pyfits>`__
+* NumPy_
+* SciPy_
+* Matplotlib_
+* PyFITS_
 
 **Optional**
 
@@ -124,3 +125,8 @@ Download and install `distribute <http://pythonxy.googlecode.com/files/distribut
 
 You have now performed the required elements of step 1 of the recommended 
 method.  Now perform steps 2-5 of that method to complete your installation.
+
+.. _NumPy: http://numpy.scipy.org/
+.. _SciPy: http://www.scipy.org/
+.. _Matplotlib: http://matplotlib.sourceforge.net/>
+.. _PyFITS: http://www.stsci.edu/resources/software_hardware/pyfits>

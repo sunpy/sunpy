@@ -26,10 +26,11 @@ Documentation
    guide/index
    reference/index
    dev
+   ssw
    release
    about
    bugs
-..   ssw
+
 ..   gallery/index
 ..   license
 ..   glossary
