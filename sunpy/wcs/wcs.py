@@ -145,13 +145,14 @@ def convert_pixel_to_data(header, x = None, y = None):
     naxis = np.array(get_shape(header))
     cdelt = np.array(get_platescale(header))
     crpix = np.array([header.get('crpix1'), header.get('crpix2')])
+    crval = np.array([header.get('crval1'), header.get('crval2')])
     
     # first assume that coord is just [x,y]
     if (x is None) and (y is None):
         x, y = np.meshgrid(np.arange(get_shape(header)[0]), np.arange(get_shape(header)[1]))
 
-    coordx = (x - (crpix[0] - 1) ) * cdelt[0]
-    coordy = (y - (crpix[1] - 1) ) * cdelt[1]
+    coordx = (x - crpix[0] ) * cdelt[0] + crval[0]
+    coordy = (y - crpix[1] ) * cdelt[1] + crval[1]
             
     # check to see what projection is being used
     projection = get_projection(header)
@@ -167,11 +168,12 @@ def convert_data_to_pixel(header, x, y):
     naxis = np.array(get_shape(header))
     cdelt = np.array(get_platescale(header))
     crpix = np.array([header.get('crpix1'), header.get('crpix2')])
+    crval = np.array([header.get('crval1'), header.get('crval2')])
     # De-apply any tabular projections.
     # coord = inv_proj_tan(header,coord)
     
-    pixelx = x/cdelt[0] + crpix[1] - 1
-    pixely = y/cdelt[1] + crpix[1] - 1
+    pixelx = (x - crval[0])/cdelt[0] + crpix[1]
+    pixely = (y - crval[1])/cdelt[1] + crpix[1]
 
     return pixelx, pixely
 
