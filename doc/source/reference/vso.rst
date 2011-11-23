@@ -37,14 +37,13 @@ automatically ANDed together for convenience, `a | b` can be used for OR::
       vso.attrs.Instrument('eit') | vso.attrs.Instrument('ait')
    )
 
-Available attributes
---------------------
-
-
 Legacy Queries
 ^^^^^^^^^^^^^^
 See :py:meth:`sunpy.net.vso.VSOClient.query_legacy`
 
 Module documentation
 ^^^^^^^^^^^^^^^^^^^^
+.. autosummary::
+   :toctree: generated/
 
+   net.vso
