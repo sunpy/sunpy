@@ -35,6 +35,16 @@ Note that SOLAR_B0, HGLT_OBS, and CRLT_OBS are all synonyms.
 """
 from __future__ import absolute_import
 
+__all__ = ["get_solar_limb", "get_observer_position", "get_center",
+           "get_units", "get_platescale", "get_solar_b0", "get_solar_l0",
+           "convert_angle_units", "get_projection", "get_shape",
+           "convert_pixel_to_data", "convert_data_to_pixel",
+           "convert_hpc_hcc", "convert_hcc_hpc",
+           "convert_hcc_hg", "convert_hg_hcc", "convert_hg_hcc_xyz",
+           "test",
+           "convert_hg_hpc",
+           "proj_tan", "convert_to_coord"]
+
 __authors__ = ["Steven Christe"]
 __email__ = "steven.d.christe@nasa.gov"
 
