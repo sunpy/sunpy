@@ -216,13 +216,13 @@ class BaseMap(np.ndarray):
         ymax = self.center['y'] + self.shape[0] / 2 * self.scale['y']
         return [ymin, ymax]
     
-    def arcsecs_to_pixels(self, value, dim):
-        """Convert arcsecond coordinates to pixel values"""
+    def data_to_pixel(self, value, dim):
+        """Convert pixel-center data coordinates to pixel values"""
         if dim not in ['x', 'y']:
             raise ValueError("Invalid dimension. Must be one of 'x' or 'y'.")
-        size = self.shape[dim == 'y'] # 0 if dim == 'x', 1 if dim == 'y'.
+        size = self.shape[dim == 'x'] # 1 if dim == 'x', 0 if dim == 'y'.
         
-        return value / self.scale[dim] + (size / 2)
+        return (value - self.center[dim]) / self.scale[dim] + ((size - 1) / 2.)
     
     def resample(self, dimensions, method='linear', center=False, minusone=False):
         """Returns a new Map that has been resampled up or down
@@ -374,18 +374,18 @@ class BaseMap(np.ndarray):
 
         return scipy.ndimage.map_coordinates(orig, newcoords)
 
-    def submap(self, range_a, range_b, units="arcseconds"):
+    def submap(self, range_a, range_b, units="data"):
         """Returns a submap of the map with the specified range
         
         Parameters
         ----------
         range_a : list
             The range of data to select across either the x axis (if
-            units='arcseconds') or the y axis (if units='pixels').
+            units='data') or the y axis (if units='pixels').
         range_b : list
             The range of data to select across either the y axis (if
-            units='arcseconds') or the x axis (if units='pixels').
-        units : {'arcseconds' | 'pixels'}, optional
+            units='data') or the x axis (if units='pixels').
+        units : {'data' | 'pixels'}, optional
             The units for which the submap region has been specified.
             
         Returns
@@ -409,18 +409,15 @@ class BaseMap(np.ndarray):
         [-0.6875, -0.3125,  0.8125,  0.0625,  0.1875],
         [-0.875 ,  0.25  ,  0.1875,  0.    , -0.6875]])
         """
-        # Arcseconds => Pixels
-        #  x_px = (x / cdelt1) + (width / 2)
-        #
-        if units is "arcseconds":
-            x_pixels = [self.arcsecs_to_pixels(elem, 'x') for elem in range_a]
-            y_pixels = [self.arcsecs_to_pixels(elem, 'y') for elem in range_b]
+        if units is "data":
+            x_pixels = [self.data_to_pixel(elem, 'x') for elem in range_a]
+            y_pixels = [self.data_to_pixel(elem, 'y') for elem in range_b]
         elif units is "pixels":
             x_pixels = range_b
             y_pixels = range_a
         else:
             raise ValueError(
-                "Invalid unit. Must be one of 'arcseconds' or 'pixels'")
+                "Invalid unit. Must be one of 'data' or 'pixels'")
 
         # Make a copy of the header with updated centering information        
         header = self.header.copy()
