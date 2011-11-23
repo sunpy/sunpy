@@ -46,7 +46,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'SunPy'
-copyright = u'2011, SunPy Community'
+copyright = u'2011, SunPy Community' #pylint: disable=W0622
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -204,4 +204,5 @@ latex_documents = [
 
 # Autosummary
 import glob
-autosummary_generate = glob.glob("reference/*.rst")
+autosummary_generate = (glob.glob("reference/*.rst") + 
+                        glob.glob("reference/*/*.rst"))
