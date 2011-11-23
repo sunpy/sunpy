@@ -29,7 +29,7 @@ Documentation
    release
    about
    bugs
-..   solarsoft_to_sunpy
+..   ssw
 ..   gallery/index
 ..   license
 ..   glossary
