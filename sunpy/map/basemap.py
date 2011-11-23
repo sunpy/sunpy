@@ -410,8 +410,12 @@ class BaseMap(np.ndarray):
         [-0.875 ,  0.25  ,  0.1875,  0.    , -0.6875]])
         """
         if units is "data":
-            x_pixels = [self.data_to_pixel(elem, 'x') for elem in range_a]
-            y_pixels = [self.data_to_pixel(elem, 'y') for elem in range_b]
+            #x_pixels = [self.data_to_pixel(elem, 'x') for elem in range_a]
+            x_pixels = [np.ceil(self.data_to_pixel(range_a[0], 'x')),
+                        np.floor(self.data_to_pixel(range_a[1], 'x')) + 1]
+            #y_pixels = [self.data_to_pixel(elem, 'y') for elem in range_b]
+            y_pixels = [np.ceil(self.data_to_pixel(range_b[0], 'y')),
+                        np.floor(self.data_to_pixel(range_b[1], 'y')) + 1]
         elif units is "pixels":
             x_pixels = range_b
             y_pixels = range_a
