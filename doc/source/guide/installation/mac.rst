@@ -194,3 +194,19 @@ and then run the last command again: ::
 
 This should now install without any problems. Now move onto the next step (sudo 
 port install py27-pyfits)...
+
+Updating
+--------
+
+As new versions of matplotlib or scipy are released every once in a while it is necessary to update. Thankfully
+macports is built to make this easy. You can do a full upgrade of all of the software that macports installed with 
+the following command: ::
+
+  port upgrade installed
+
+and make sure to get yourself a cup of coffee after hitting return as this will probably run for a while. You can also
+upgrade individual packages (and their dependencies) with a similar line of code, namely: ::
+
+  port upgrade packagename
+
+You may have to precede those commands with sudo depending on what level of privileges you have on your system. 
