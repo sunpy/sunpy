@@ -345,6 +345,10 @@ Additionally, there is a `paver <http://paver.github.com/paver/>`_ command that
 can be used to accomplish the same thing: ::
 
     paver build_sphinx
+    
+Which is a shortcut for the sphinx command: ::
+
+    sphinx-build source/ html/
 
 For more information on how to use Sphinx, consult the `Sphinx documentation 
 <http://sphinx.pocoo.org/contents.html>`_.
@@ -516,6 +520,30 @@ For details about what sections can be included, see the section on `documenting
 functions 
 <https://github.com/numpy/numpy/blob/master/doc/HOWTO_DOCUMENT.rst.txt>`_ in the
 NumPy/SciPy style guide.
+
+Trouble-shooting
+^^^^^^^^^^^^^^^^
+Sphinx can be very particular about formatting, and the warnings and errors
+outputted aren't always obvious.
+
+Below are some commonly-encountered warning/error messages along with a
+human-readable translation:
+
+**WARNING: Duplicate explicit target name: "xxx".**
+
+If you reference the same URL, etc more than once in the same document sphinx
+will complain. To avoid, use double-underscores instead of single ones after
+the URL.
+
+**ERROR: Malformed table. Column span alignment problem at line offset n**
+
+Make sure there is a space before and after each colon in your class and
+function docs (e.g. attribute : type, instead of attribute: type). Also, for
+some sections (e.g. Attributes) numpydoc seems to complain when a description
+spans more than one line.
+
+**WARNING: Block quote ends without a blank line; unexpected unindent.**
+Lists should be indented one level from their parents.
         
 Testing
 -------

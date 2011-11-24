@@ -26,10 +26,11 @@ Documentation
    guide/index
    reference/index
    dev
+   ssw
    release
    about
    bugs
-..   solarsoft_to_sunpy
+
 ..   gallery/index
 ..   license
 ..   glossary

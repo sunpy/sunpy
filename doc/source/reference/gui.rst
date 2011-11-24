@@ -1,12 +1,12 @@
-.. _sun:
+.. _gui:
 
-===
-Sun
-===
+=======
+Plotman
+=======
 
 .. currentmodule:: sunpy
 
 .. autosummary::
    :toctree: generated/
 
-   sun.sun
+   gui
