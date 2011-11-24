@@ -1,7 +1,7 @@
-.. _sun:
+.. _wcs:
 
 ===
-Sun
+WCS
 ===
 
 .. currentmodule:: sunpy
@@ -9,4 +9,4 @@ Sun
 .. autosummary::
    :toctree: generated/
 
-   sun.sun
+   wcs.wcs
