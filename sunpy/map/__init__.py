@@ -1,14 +1,4 @@
-"""
-SunPy Map objects are constructed using the special :function:`Map()`
-function. ::
-
->>> map = sunpy.Map('file.fits')
-
-The result of a call to `Map` will be either a generic 
-:class:`sunpy.map.BaseMap` object, or a subclass of :class:`sunpy.map.BaseMap` 
-which deals with a specific type of data, e.g. :class:`AIAMap` or 
-:class:`LASCOMap`.
-"""
+"""SunPy Maps"""
 from __future__ import absolute_import
 #pylint: disable=W0401
 
