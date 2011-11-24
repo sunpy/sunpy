@@ -112,7 +112,9 @@ def get_solar_l0(header, carrington=False):
 def convert_angle_units(type='hpc', unit='arcsec'):
     """Determine the conversion factor between the data and radians."""
     
-    if unit == 'arcmin':
+    if unit == 'deg':
+        return np.deg2rad(1)
+    elif unit == 'arcmin':
         return np.deg2rad(1) / 60.0
     elif unit == 'arcsec':
         return np.deg2rad(1) / (60 * 60.0)
@@ -145,13 +147,14 @@ def convert_pixel_to_data(header, x = None, y = None):
     naxis = np.array(get_shape(header))
     cdelt = np.array(get_platescale(header))
     crpix = np.array([header.get('crpix1'), header.get('crpix2')])
+    crval = np.array([header.get('crval1'), header.get('crval2')])
     
     # first assume that coord is just [x,y]
     if (x is None) and (y is None):
         x, y = np.meshgrid(np.arange(get_shape(header)[0]), np.arange(get_shape(header)[1]))
 
-    coordx = (x - (crpix[0] - 1) ) * cdelt[0]
-    coordy = (y - (crpix[1] - 1) ) * cdelt[1]
+    coordx = (x - (crpix[0] - 1) ) * cdelt[0] + crval[0]
+    coordy = (y - (crpix[1] - 1) ) * cdelt[1] + crval[1]
             
     # check to see what projection is being used
     projection = get_projection(header)
@@ -303,8 +306,7 @@ def test():
     return xx, yy
 
 def convert_hg_hpc(header, hglon, hglat, units = None, occultation = False):
-    """Convert Helioprojective-Cartesian (HPC) to Heliographic coordinates 
-    (HG)"""
+    """Convert Heliographic coordinates (HG) to Helioprojective-Cartesian (HPC)"""
     tempx, tempy = convert_hg_hcc(header, hglon, hglat, occultation)
     x, y = convert_hcc_hpc(header, tempx, tempy)
 
@@ -313,6 +315,12 @@ def convert_hg_hpc(header, hglon, hglat, units = None, occultation = False):
         y = 60*60*y
 
     return x, y
+
+def convert_hpc_hg(header, x, y):
+    """Convert Helioprojective-Cartesian (HPC) to Heliographic coordinates (HG)"""
+    tempx, tempy = convert_hpc_hcc(header, x, y)
+    lon, lat = convert_hcc_hg(header, tempx, tempy)
+    return lon, lat
 
 def proj_tan(header, x, y, force=False):
     """Applies the gnomonic (TAN) projection to intermediate relative 
