@@ -22,19 +22,29 @@ class TestBaseMap:
         
     def test_data_to_pixel(self):
         """Make sure conversion from data units to pixels is accurate"""
-        # Convert center coords (not FITS starts from 1,1)
-        assert self.map.data_to_pixel(0, 'x') == self.map.header['crpix1'] - 1
-        assert self.map.data_to_pixel(0, 'y') == self.map.header['crpix2'] - 1
+        # Check conversion of reference pixel
+        # Note: FITS pixels starts from 1,1
+        assert self.map.data_to_pixel(self.map.header['crval1'], 'x') == self.map.header['crpix1'] - 1
+        assert self.map.data_to_pixel(self.map.header['crval2'], 'y') == self.map.header['crpix2'] - 1
         
-        # TODO: also check data value that should map to pixel 1023, 1023
+        # Check conversion of map center
+        assert self.map.data_to_pixel(self.map.center['x'], 'x') == (self.map.header['naxis1'] - 1) / 2.
+        assert self.map.data_to_pixel(self.map.center['y'], 'y') == (self.map.header['naxis2'] - 1) / 2.
         
+        # Check conversion of map edges
+        # Note: data coords are at pixel centers, so edges are 0.5 pixels wider
+        assert self.map.data_to_pixel(self.map.xrange[0], 'x') == 0. - 0.5
+        assert self.map.data_to_pixel(self.map.yrange[0], 'y') == 0. - 0.5
+        assert self.map.data_to_pixel(self.map.xrange[1], 'x') == (self.map.header['naxis1'] - 1) + 0.5
+        assert self.map.data_to_pixel(self.map.yrange[1], 'y') == (self.map.header['naxis2'] - 1) + 0.5
+    
     def test_data_range(self):
         """Make sure xrange and yrange work"""
-        xmax = self.map.header['cdelt1'] * self.map.header['naxis1'] / 2
-        ymax = self.map.header['cdelt2'] * self.map.header['naxis2'] / 2
+        assert self.map.xrange[1] - self.map.xrange[0] == self.map.header['cdelt1'] * self.map.header['naxis1']
+        assert self.map.yrange[1] - self.map.yrange[0] == self.map.header['cdelt2'] * self.map.header['naxis2']
         
-        assert (np.array([-1, 1]) * xmax == self.map.xrange).all()
-        assert (np.array([-1, 1]) * ymax == self.map.yrange).all()
+        assert np.average(self.map.xrange) == self.map.center['x']
+        assert np.average(self.map.yrange) == self.map.center['y']
         
     def test_submap(self):
         """Check data and header information for a submap"""
