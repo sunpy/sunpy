@@ -24,8 +24,9 @@ sys.path.append(os.path.abspath('../../'))
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.todo',
-              'sphinx.ext.pngmath', 'sphinx.ext.viewcode', 'numpydoc']
+extensions = ['sphinx.ext.autodoc', 'numpydoc', 'sphinx.ext.todo',
+              'sphinx.ext.pngmath', 'sphinx.ext.viewcode', 
+              'sphinx.ext.autosummary']
 
 # Note: numpydoc extension is required and can be found at
 # is available with the numpy source code
@@ -45,7 +46,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'SunPy'
-copyright = u'2011, SunPy Community'
+copyright = u'2011, SunPy Community' #pylint: disable=W0622
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -75,6 +76,7 @@ exclude_trees = ['_build']
 
 # The reST default role (used for this markup: `text`) to use for all documents.
 #default_role = None
+default_role = "autolink"
 
 # If true, '()' will be appended to :func: etc. cross-reference text.
 #add_function_parentheses = True
@@ -154,7 +156,7 @@ html_last_updated_fmt = '%b %d, %Y'
 #html_split_index = False
 
 # If true, links to the reST sources are added to the pages.
-#html_show_sourcelink = True
+html_show_sourcelink = True
 
 # If true, an OpenSearch description file will be output, and all pages will
 # contain a <link> tag referring to it.  The value of this option must be the
@@ -199,3 +201,8 @@ latex_documents = [
 
 # If false, no module index is generated.
 #latex_use_modindex = True
+
+# Autosummary
+import glob
+autosummary_generate = (glob.glob("reference/*.rst") + 
+                        glob.glob("reference/*/*.rst"))
