@@ -20,6 +20,22 @@ class TestBaseMap:
         self.map = None
         self.fits = None
         
+    def test_data_to_pixel(self):
+        """Make sure conversion from data units to pixels is accurate"""
+        # Convert center coords (not FITS starts from 1,1)
+        assert self.map.data_to_pixel(0, 'x') == self.map.header['crpix1'] - 1
+        assert self.map.data_to_pixel(0, 'y') == self.map.header['crpix2'] - 1
+        
+        # TODO: also check data value that should map to pixel 1023, 1023
+        
+    def test_data_range(self):
+        """Make sure xrange and yrange work"""
+        xmax = self.map.header['cdelt1'] * self.map.header['naxis1'] / 2
+        ymax = self.map.header['cdelt2'] * self.map.header['naxis2'] / 2
+        
+        assert (np.array([-1, 1]) * xmax == self.map.xrange).all()
+        assert (np.array([-1, 1]) * ymax == self.map.yrange).all()
+        
     def test_submap(self):
         """Check data and header information for a submap"""
         width = self.map.shape[1]
