@@ -224,21 +224,49 @@ class BaseMap(np.ndarray):
         return (value - self.center[dim]) / self.scale[dim] + ((size - 1) / 2.)
     
     def resample(self, dimensions, method='linear', center=False, minusone=False):
-        """Returns a new Map that has been resampled up or down.
+        """Returns a new Map that has been resampled up or down
         
+        Arbitrary resampling of source array to new dimension sizes.
+        Currently only supports maintaining the same number of dimensions.
+        To use 1-D arrays, first promote them to shape (x,1).
+        
+        Uses the same parameters and creates the same co-ordinate lookup points
+        as IDL''s congrid routine, which apparently originally came from a 
+        VAX/VMS routine of the same name.
+        
+        Parameters
+        ----------
+        dimensions : tuple
+            Dimensions that new Map should have.
+        method : {'neighbor' | 'nearest' | 'linear' | 'spline'}
+            Method to use for resampling interpolation.
+                * neighbor - Closest value from original data
+                * nearest and linear - Uses n x 1-D interpolations using
+                  scipy.interpolate.interp1d
+                * spline - Uses ndimage.map_coordinates
+        center : bool
+            If True, interpolation points are at the centers of the bins,
+            otherwise points are at the front edge of the bin.
+        minusone : bool
+            For inarray.shape = (i,j) & new dimensions = (x,y), if set to False
+            inarray is resampled by factors of (i/x) * (j/y), otherwise inarray 
+            is resampled by(i-1)/(x-1) * (j-1)/(y-1)
+            This prevents extrapolation one element beyond bounds of input 
+            array.
+    
         Returns
         -------
         out : Map
             A new Map which has been resampled to the desired dimensions.
         
-        See Also
-        --------
-        `sunpy.image.resample`
+        References
+        ----------
+        | http://www.scipy.org/Cookbook/Rebinning (Original source, 2011/11/19)
         """
-        import sunpy.image.resample
+        from sunpy.image import resample
 
         # Make a copy of the original data and perform resample
-        data = sunpy.image.resample(np.asarray(self).copy(), dimensions, 
+        data = resample(np.asarray(self).copy(), dimensions, 
                                     method, center, minusone)
         
         # Update image scale and number of pixels
