@@ -21,6 +21,7 @@ References
 ----------
 | http://stackoverflow.com/questions/456672/class-factory-in-python
 | http://stsdas.stsci.edu/download/wikidocs/The_PyFITS_Handbook.pdf
+
 """
 from __future__ import absolute_import
 import pyfits
