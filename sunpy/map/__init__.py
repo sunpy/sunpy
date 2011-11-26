@@ -9,6 +9,7 @@ __email__ = "keith.hughitt@nasa.gov"
 import sys
 from sunpy.io import read_file
 from sunpy.map.basemap import BaseMap
+from sunpy.map.compositemap import CompositeMap
 from sunpy.map.basemap import UnrecognizedDataSouceError
 from sunpy.map.header import MapHeader
 from sunpy.map.sources import *
