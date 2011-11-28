@@ -223,7 +223,7 @@ class BaseMap(np.ndarray):
         
         return (value - self.center[dim]) / self.scale[dim] + ((size - 1) / 2.)
     
-    def resample(self, dimensions, method='linear', center=False, minusone=False):
+    def resample(self, dimensions, method='linear', center=True, minusone=False):
         """Returns a new Map that has been resampled up or down
         
         Arbitrary resampling of source array to new dimension sizes.
@@ -238,6 +238,8 @@ class BaseMap(np.ndarray):
         ----------
         dimensions : tuple
             Dimensions that new Map should have.
+            Note: the first argument corresponds to the 'x' axis and the second
+            argument corresponds to the 'y' axis.
         method : {'neighbor' | 'nearest' | 'linear' | 'spline'}
             Method to use for resampling interpolation.
                 * neighbor - Closest value from original data
@@ -247,6 +249,7 @@ class BaseMap(np.ndarray):
         center : bool
             If True, interpolation points are at the centers of the bins,
             otherwise points are at the front edge of the bin.
+            Note: the default is True
         minusone : bool
             For inarray.shape = (i,j) & new dimensions = (x,y), if set to False
             inarray is resampled by factors of (i/x) * (j/y), otherwise inarray 
@@ -265,24 +268,33 @@ class BaseMap(np.ndarray):
         """
         from sunpy.image import resample
 
+        # Note: because the underlying ndarray is transposed in sense when
+        #   compared to the Map, the ndarray is transposed, resampled, then
+        #   transposed back
+        # Note: "center" defaults to True in this function because data
+        #   coordinates in a Map are at pixel centers
+
         # Make a copy of the original data and perform resample
-        data = resample(np.asarray(self).copy(), dimensions, 
-                                    method, center, minusone)
+        data = resample(np.asarray(self).copy().T, dimensions,
+                        method, center, minusone)
         
         # Update image scale and number of pixels
         header = self.header.copy()
 
-        scale_factor_x = (self.shape[0] / dimensions[0]) 
-        scale_factor_y = (self.shape[1] / dimensions[1])
+        # Note that 'x' and 'y' correspond to 1 and 0 in self.shape, respectively
+        scale_factor_x = (float(self.shape[1]) / dimensions[0])
+        scale_factor_y = (float(self.shape[0]) / dimensions[1])
         
         header['naxis1'] = int(dimensions[0])
         header['naxis2'] = int(dimensions[1])
         header['cdelt1'] *= scale_factor_x
         header['cdelt2'] *= scale_factor_y
-        header['crpix1'] /= scale_factor_x
-        header['crpix2'] /= scale_factor_y
+        header['crpix1'] = (dimensions[0] + 1) / 2.
+        header['crval1'] = self.center['x']
+        header['crpix2'] = (dimensions[1] + 1) / 2.
+        header['crval2'] = self.center['y']
 
-        return self.__class__(data, header)
+        return self.__class__(data.T, header)
 
     def submap(self, range_a, range_b, units="data"):
         """Returns a submap of the map with the specified range
@@ -290,13 +302,11 @@ class BaseMap(np.ndarray):
         Parameters
         ----------
         range_a : list
-            The range of data to select across either the x axis (if
-            units='data') or the y axis (if units='pixels').
+            The range of the Map to select across either the x axis.
         range_b : list
-            The range of data to select across either the y axis (if
-            units='data') or the x axis (if units='pixels').
+            The range of the Map to select across either the y axis.
         units : {'data' | 'pixels'}, optional
-            The units for which the submap region has been specified.
+            The units for the supplied ranges.
             
         Returns
         -------
@@ -327,8 +337,8 @@ class BaseMap(np.ndarray):
             y_pixels = [np.ceil(self.data_to_pixel(range_b[0], 'y')),
                         np.floor(self.data_to_pixel(range_b[1], 'y')) + 1]
         elif units is "pixels":
-            x_pixels = range_b
-            y_pixels = range_a
+            x_pixels = range_a
+            y_pixels = range_b
         else:
             raise ValueError(
                 "Invalid unit. Must be one of 'data' or 'pixels'")
