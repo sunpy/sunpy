@@ -13,24 +13,55 @@ __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
 class CompositeMap:
-    """Class representing a stack of several Maps"""    
-    def __init__(self, *args):
+    """
+    CompositeMap(map1, map2,.., alphas=[alpha1,..], zorders=[zorder1,..])
+    
+    Parameters
+    ----------
+    args : *{sunpy.map, string}
+        One or more map of filepaths
+    alphas : list
+        List of alpha values to use for the input maps. Alpha values will be
+        applied from left to right
+    zorders : list
+        List of z-orders to use for the input maps. z-orders will be applied 
+        from left to right
+    
+    Examples
+    --------
+    >>> import sunpy
+    >>> sunpy.CompositeMap(sunpy.AIA_171_IMAGE, sunpy.RHESSI_IMAGE).show()
+        
+    >>> comp_map = sunpy.CompositeMap(sunpy.AIA_171_IMAGE, sunpy.EIT_195_IMAGE, alphas=[1, 0.5])    
+    >>> comp_map.add_map(sunpy.RHESSI_IMAGE)
+    >>> comp_map.show()
+    
+    """    
+    def __init__(self, *args, **kwargs):
         self._maps = []
         
-        # Parse input Maps/filepaths
-        zorder = 0
+        # Default alpha and zorder values
+        alphas = [1] * len(args)
+        zorders = range(0, 10 * len(args), 10) 
         
-        for input_ in args:
+        # Override default zorder and alpha values with user-specified ones
+        for i, x in enumerate(kwargs.get("zorders", [])):
+            zorders[i] = x
+        for i, x in enumerate(kwargs.get("alphas", [])):
+            alphas[i] = x
+        
+        
+        # Parse input Maps/filepaths        
+        for i, input_ in enumerate(args):
             # Parse map
             m = sunpy.Map(input_)
             
-            # Give the map a z-order and alpha
-            m.zorder = zorder
-            m.alpha = 1
+            # Set z-order and alpha values for the map
+            m.zorder = zorders[i]
+            m.alpha = alphas[i]
 
+            # Add map
             self._maps.append(m)
-            
-            zorder += 10
 
     def add_map(self, input_, zorder=None, alpha=1):
         """Adds a map to the CompositeMap
@@ -100,6 +131,7 @@ class CompositeMap:
         
         # Plot layers of composite map
         for m in self._maps:
+            # Parameters for plotting
             params = {
                 "origin": "lower",
                 "extent": m.xrange + m.yrange,
@@ -116,6 +148,7 @@ class CompositeMap:
             else:
                 plt.imshow(m, **params)
         
+        # Adjust axes extents to include all data
         axes.axis('image')
         
         for overlay in overlays:
