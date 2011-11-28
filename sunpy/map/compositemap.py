@@ -7,6 +7,7 @@ from __future__ import absolute_import
 import sunpy
 import numpy as np
 import matplotlib.pyplot as plt
+from sunpy.map.sources.rhessi import RHESSIMap
 
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
@@ -95,11 +96,25 @@ class CompositeMap:
         axes.set_xlabel('X-position [' + self._maps[0].units['x'] + ']')
         axes.set_ylabel('Y-position [' + self._maps[0].units['y'] + ']')
         
+        # TODO: if isinstance(x, RHESSIMap): use contour()...
+        
         # Plot layers of composite map
         for m in self._maps:
-            plt.imshow(m, origin='lower', extent=m.xrange + m.yrange, 
-                       cmap=m.cmap, norm=m.norm(), alpha=m.alpha, 
-                       zorder=m.zorder, **matplot_args)
+            params = {
+                "origin": "lower",
+                "extent": m.xrange + m.yrange,
+                "cmap": m.cmap,
+                "norm": m.norm(),
+                "alpha": m.alpha,
+                "zorder": m.zorder
+            }
+            params.update(matplot_args)
+            
+            # Use contour for contour data, and imshow otherwise
+            if isinstance(m, RHESSIMap):
+                plt.contourf(m, **params)
+            else:
+                plt.imshow(m, **params)
         
         axes.axis('image')
         
