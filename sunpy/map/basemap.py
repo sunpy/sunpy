@@ -223,12 +223,10 @@ class BaseMap(np.ndarray):
         
         return (value - self.center[dim]) / self.scale[dim] + ((size - 1) / 2.)
     
-    def resample(self, dimensions, method='linear', center=True, minusone=False):
+    def resample(self, dimensions, method='linear'):
         """Returns a new Map that has been resampled up or down
         
-        Arbitrary resampling of source array to new dimension sizes.
-        Currently only supports maintaining the same number of dimensions.
-        To use 1-D arrays, first promote them to shape (x,1).
+        Arbitrary resampling of the Map to new dimension sizes.
         
         Uses the same parameters and creates the same co-ordinate lookup points
         as IDL''s congrid routine, which apparently originally came from a 
@@ -246,16 +244,6 @@ class BaseMap(np.ndarray):
                 * nearest and linear - Uses n x 1-D interpolations using
                   scipy.interpolate.interp1d
                 * spline - Uses ndimage.map_coordinates
-        center : bool
-            If True, interpolation points are at the centers of the bins,
-            otherwise points are at the front edge of the bin.
-            Note: the default is True
-        minusone : bool
-            For inarray.shape = (i,j) & new dimensions = (x,y), if set to False
-            inarray is resampled by factors of (i/x) * (j/y), otherwise inarray 
-            is resampled by(i-1)/(x-1) * (j-1)/(y-1)
-            This prevents extrapolation one element beyond bounds of input 
-            array.
     
         Returns
         -------
@@ -276,7 +264,7 @@ class BaseMap(np.ndarray):
 
         # Make a copy of the original data and perform resample
         data = resample(np.asarray(self).copy().T, dimensions,
-                        method, center, minusone)
+                        method, center = True)
         
         # Update image scale and number of pixels
         header = self.header.copy()
