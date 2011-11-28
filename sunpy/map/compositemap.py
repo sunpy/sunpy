@@ -5,7 +5,6 @@ Author: `Keith Hughitt <keith.hughitt@nasa.gov>`
 from __future__ import absolute_import
 
 import sunpy
-import numpy as np
 import matplotlib.pyplot as plt
 from sunpy.map.sources.rhessi import RHESSIMap
 
