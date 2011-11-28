@@ -450,12 +450,3 @@ class BaseMap(np.ndarray):
             axes.plot(x, y, color='white', linestyle='dotted')        
         
         return fig, axes
-
-class UnrecognizedDataSouceError(ValueError):
-    """Exception to raise when an unknown datasource is encountered"""
-    pass
-
-if __name__ == "__main__":
-    import sunpy
-    a = sunpy.Map(sunpy.AIA_171_IMAGE)
-    a.resample((256, 256))
