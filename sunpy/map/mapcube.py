@@ -5,7 +5,8 @@ from __future__ import absolute_import
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
-from sunpy.map.basemap import BaseMap, UnrecognizedDataSouceError
+from sunpy.map import UnrecognizedDataSouceError
+from sunpy.map.basemap import BaseMap
 from sunpy.map.sources import * #@UnusedWildImport
 import numpy as np
 import os
