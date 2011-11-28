@@ -1,6 +1,12 @@
+.. _sun:
+
+===
 Sun
 ===
 
-.. automodule:: sunpy.sun
-   :members:
-   :show-inheritance:
+.. currentmodule:: sunpy
+
+.. autosummary::
+   :toctree: generated/
+
+   sun.sun
