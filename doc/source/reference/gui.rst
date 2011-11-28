@@ -1,12 +1,12 @@
-.. _wcs:
+.. _gui:
 
-===
-WCS
-===
+=======
+Plotman
+=======
 
 .. currentmodule:: sunpy
 
 .. autosummary::
    :toctree: generated/
 
-   wcs.wcs
+   gui

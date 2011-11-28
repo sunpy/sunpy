@@ -38,8 +38,7 @@ class MapCube(np.ndarray):
     Attributes
     ----------
     headers : list
-        a list of dictionaries containing the original and normalized header
-        tags for the files used to build the MapCube.
+        a list of dictionaries containing the original and normalized header tags for the files used to build the MapCube.
 
     See Also
     --------
