@@ -32,7 +32,7 @@ class AIAMap(BaseMap):
             'meas': header.get('wavelnth'),
             'obs': "SDO",
             'name': "AIA %s" % header.get('wavelnth'),
-            'cmap': cm.get_cmap(name = 'sdoaia' + str(header.get('wavelnth'))),
+            'cmap': cm.get_cmap(name='sdoaia' + str(header.get('wavelnth'))),
             'exptime': header.get('exptime')
         })
         return properties

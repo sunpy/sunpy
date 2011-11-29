@@ -9,7 +9,7 @@ __email__ = "keith.hughitt@nasa.gov"
 import sys
 from sunpy.io import read_file
 from sunpy.map.basemap import BaseMap
-from sunpy.map.basemap import UnrecognizedDataSouceError
+from sunpy.map.compositemap import CompositeMap
 from sunpy.map.header import MapHeader
 from sunpy.map.sources import *
 
@@ -41,5 +41,17 @@ def Map(input_):
             if cls.is_datasource_for(header):
                 return cls(data, header)
         raise UnrecognizedDataSouceError
+    elif isinstance(input_, BaseMap):
+        return input_
     else:
-        return BaseMap(input_)
+        raise InvalidMapInput
+    
+
+class UnrecognizedDataSouceError(ValueError):
+    """Exception to raise when an unknown datasource is encountered"""
+    pass
+
+class InvalidMapInput(ValueError):
+    """Exception to raise when input variable is not a Map instance and does
+    not point to a valid Map input file. """
+    pass

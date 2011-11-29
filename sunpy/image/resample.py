@@ -18,7 +18,7 @@ def resample(orig, dimensions, method='linear', center=False, minusone=False):
     Parameters
     ----------
     dimensions : tuple
-        Dimensions that new Map should have.
+        Dimensions that new ndarray should have.
     method : {'neighbor' | 'nearest' | 'linear' | 'spline'}
         Method to use for resampling interpolation.
             * neighbor - Closest value from original data
