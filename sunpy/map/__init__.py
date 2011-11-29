@@ -1,57 +1,92 @@
 """SunPy Maps"""
 from __future__ import absolute_import
-#pylint: disable=W0401
 
-__all__ = ["header", "mapcube", "sources"]
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
-import sys
-from sunpy.io import read_file
 from sunpy.map.basemap import BaseMap
+from sunpy.map.mapcube import MapCube
 from sunpy.map.compositemap import CompositeMap
-from sunpy.map.header import MapHeader
-from sunpy.map.sources import *
 
-#pylint: disable=C0103,E1101
-def Map(input_):
-    """Map class factory
-    
-    Attempts to determine the type of data associated with input and returns
-    an instance of either the generic BaseMap class or a subclass of BaseMap
-    such as AIAMap, EUVIMap, etc.
+def make_map(*args, **kwargs):
+    """Processes one or more inputs and returns a Map, MapCube, or CompositeMap
+    instance.
     
     Parameters
     ----------
-    input_ : filepath, data array
+    args : filepath(s), data array
         The data source used to create the map object. This can be either a
         filepath to an image, a 2d list, or an ndarray.
+    type : {'composite' | 'cube'}
+        Type of multimap to construct when passed more than one input. The
+        default choice is a CompositeMap which is more lenient with respect
+        to how similar the input data is.
         
     Returns
     -------
-    out : BaseMap
-        Returns a BaseMap or BaseMap subclass instance
-    """
-    if isinstance(input_, basestring):
-        data, dict_header = read_file(input_)
+    out : Map, MapCube, CompositeMap
+        Returns a  subclass instance
         
-        header = MapHeader(dict_header)
+    Examples
+    --------
+    >>> import sunpy
+    >>> sunpy.make_map("file.fts")
+    >>> sunpy.make_map("file1.fts", "file2.fts",..)
+    >>> sunpy.make_map(["file1.fts", "file2.fts",..])
+    >>> sunpy.make_map("path/to/files/*.fts")
+    >>> sunpy.make_map(Map)
+    >>> sunpy.make_map(Map1, Map2,..)
 
-        for cls in BaseMap.__subclasses__():
-            if cls.is_datasource_for(header):
-                return cls(data, header)
-        raise UnrecognizedDataSouceError
-    elif isinstance(input_, BaseMap):
-        return input_
+    """
+    # Single Map or wildcard string
+    if len(args) == 1:
+        # String
+        if isinstance(args[0], basestring):
+            # Wildcard string
+            if args[0].find("*") != -1:
+                import glob
+                maps = glob.glob(args[0])
+            else:
+                # Filepath
+                return BaseMap.map_from_filepath(args[0])
+
+        # Map/MapCube/CompositeMap
+        elif (isinstance(args[0], BaseMap) or 
+              isinstance(args[0], CompositeMap) or 
+              isinstance(args[0], MapCube)):
+            return args[0]
+        
+        # List of filepaths or Maps
+        elif isinstance(args[0], list):
+            maps = args[0]
+
+        # Unrecognized input
+        else:
+            raise InvalidMapInput
     else:
-        raise InvalidMapInput
+        maps = args
+        
+    mtype = kwargs.get("type", "composite")
+        
+    # MapCube
+    if mtype == "cube":
+        return MapCube(*maps)
+    # CompositeMap (default)
+    elif mtype == "composite":
+        return CompositeMap(*maps)
+    else:
+        raise InvalidMapType
     
-
-class UnrecognizedDataSouceError(ValueError):
-    """Exception to raise when an unknown datasource is encountered"""
-    pass
-
 class InvalidMapInput(ValueError):
     """Exception to raise when input variable is not a Map instance and does
     not point to a valid Map input file. """
     pass
+
+class InvalidMapType(ValueError):
+    """Exception to raise when an invalid type of map is requested with make_map
+    """
+    pass
+
+if __name__ == "__main__":
+    import sunpy
+    sunpy.make_map(sunpy.AIA_171_IMAGE, sunpy.RHESSI_IMAGE).show()
