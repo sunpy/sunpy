@@ -187,6 +187,37 @@ class BaseMap(np.ndarray):
         return np.array(self, copy=False, subok=False).std(*args, **kwargs)
     
     @classmethod
+    def map_from_filepath(cls, filepath):
+        """Map class factory
+    
+        Attempts to determine the type of data associated with input and returns
+        an instance of either the generic BaseMap class or a subclass of BaseMap
+        such as AIAMap, EUVIMap, etc.
+        
+        Parameters
+        ----------
+        filepath : string
+            Path to a valid FITS or JPEG 2000 file of a type supported by SunPy.
+            
+        Returns
+        -------
+        out : Map
+            Returns a Map instance for the particular type of data loaded.
+        """
+        from sunpy.io import read_file
+        from sunpy.map.header import MapHeader
+        from sunpy.map.sources import * #pylint: disable=W0612
+        
+        data, dict_header = read_file(filepath)
+        
+        header = MapHeader(dict_header)
+
+        for cls in BaseMap.__subclasses__():
+            if cls.is_datasource_for(header):
+                return cls(data, header)
+        raise UnrecognizedDataSouceError
+    
+    @classmethod
     def get_properties(cls, header=None): #pylint: disable=W0613
         """Returns default map properties""" 
         return {
@@ -448,3 +479,7 @@ class BaseMap(np.ndarray):
             axes.plot(x, y, color='white', linestyle='dotted')        
         
         return fig, axes
+    
+class UnrecognizedDataSouceError(ValueError):
+    """Exception to raise when an unknown datasource is encountered"""
+    pass
