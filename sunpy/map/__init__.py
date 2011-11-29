@@ -4,6 +4,7 @@ from __future__ import absolute_import
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
+import os
 from sunpy.map.basemap import BaseMap
 from sunpy.map.mapcube import MapCube
 from sunpy.map.compositemap import CompositeMap
@@ -46,8 +47,12 @@ def make_map(*args, **kwargs):
             if args[0].find("*") != -1:
                 import glob
                 maps = glob.glob(args[0])
+            # Directory (use all files)
+            elif os.path.isdir(args[0]):
+                maps = os.listdir(args[0])
+                
+            # Filepath
             else:
-                # Filepath
                 return BaseMap.map_from_filepath(args[0])
 
         # Map/MapCube/CompositeMap
@@ -66,6 +71,10 @@ def make_map(*args, **kwargs):
     else:
         maps = args
         
+    # Make sure we found some data
+    if len(maps) is 0:
+        raise NoMapsFound
+        
     mtype = kwargs.get("type", "composite")
         
     # MapCube
@@ -79,7 +88,7 @@ def make_map(*args, **kwargs):
     
 class InvalidMapInput(ValueError):
     """Exception to raise when input variable is not a Map instance and does
-    not point to a valid Map input file. """
+    not point to a valid Map input file."""
     pass
 
 class InvalidMapType(ValueError):
@@ -87,6 +96,7 @@ class InvalidMapType(ValueError):
     """
     pass
 
-if __name__ == "__main__":
-    import sunpy
-    sunpy.make_map(sunpy.AIA_171_IMAGE, sunpy.RHESSI_IMAGE).show()
+class NoMapsFound(ValueError):
+    """Exception to raise when input does not point to any valid maps or files 
+    """
+    pass
