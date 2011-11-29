@@ -5,7 +5,7 @@ from __future__ import absolute_import
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
-from sunpy.map import UnrecognizedDataSouceError
+from sunpy.map.basemap import UnrecognizedDataSouceError
 from sunpy.map.basemap import BaseMap
 from sunpy.map.sources import * #@UnusedWildImport
 import numpy as np
@@ -188,10 +188,3 @@ class MapCube(np.ndarray):
     def plot(self):
         """A basic plot method (not yet implemented)"""
         pass
-    
-if __name__ == "__main__":
-    import sunpy
-    m = sunpy.MapCube("/home/hughitt1/Dropbox/eitwave")
-    #print(m[0,0:5,0:5])
-    #print()
-    repr(m[2].base)
