@@ -1,12 +1,13 @@
 """SOHO Map subclass definitions"""
-#pylint: disable=W0221,W0222
+#pylint: disable=W0221,W0222,E1101
 
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
 from sunpy.map.basemap import BaseMap
-from datetime import datetime
+from sunpy.cm import cm
 from sunpy.util import util
+from matplotlib import colors
 
 class EITMap(BaseMap):
     """EIT Image Map definition"""
@@ -16,7 +17,7 @@ class EITMap(BaseMap):
     @classmethod
     def get_properties(cls, header):
         """Returns the default and normalized values to use for the Map"""
-        date_format = "%Y-%m-%dT%H:%M:%S.%fZ"
+        #date_format = "%Y-%m-%dT%H:%M:%S.%fZ"
         
         properties = BaseMap.get_properties()
         properties.update({
@@ -27,6 +28,7 @@ class EITMap(BaseMap):
             "obs": "SOHO",
             "name": "EIT %s" % header.get('wavelnth'),
             "exptime": header.get('exptime'),
+            'cmap': cm.get_cmap(name='sohoeit' + str(header.get('wavelnth'))),
             "r_sun": header.get('solar_r')
         })
         return properties
@@ -35,6 +37,20 @@ class EITMap(BaseMap):
     def is_datasource_for(cls, header):
         """Determines if header corresponds to an EIT image"""
         return header.get('instrume') == 'EIT'
+    
+    
+    def norm(self):
+        """Returns a Normalize object to be used with AIA data"""
+        mean = self.mean()
+        std = self.std()
+        
+        vmin = 1
+        vmax = min(self.max(), mean + 5 * std)
+        
+        # 8-bit images are probably from Helioviewer and are already scaled
+        vmax = max(255, vmax)
+        
+        return colors.LogNorm(vmin, vmax)
 
 class LASCOMap(BaseMap):
     """LASCO Image Map definition"""
@@ -100,3 +116,6 @@ class MDIMap(BaseMap):
         """Determines if header corresponds to an MDI image"""
         return header.get('instrume') == 'MDI'
 
+if __name__ == "__main__":
+    import sunpy
+    sunpy.Map(sunpy.EIT_195_IMAGE).show()
