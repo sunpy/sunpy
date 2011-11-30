@@ -383,8 +383,18 @@ class BaseMap(np.ndarray):
         
         axes = fig.add_subplot(111)
         axes.set_title("%s %s" % (self.name, self.date))
-        axes.set_xlabel('X-position [' + self.units['x'] + ']')
-        axes.set_ylabel('Y-position [' + self.units['y'] + ']')
+        
+        if self.header.get('CTYPE1') == 'HPLT-TAN':
+            axes.set_xlabel('X-position [' + self.units['x'] + ']')
+        
+        if self.header.get('CTYPE1') == 'HG':
+            axes.set_xlabel('Longitude [' + self.units['x'] + ']')
+        
+        if self.header.get('CTYPE2') == 'HPLT-TAN':
+            axes.set_ylabel('Y-position [' + self.units['y'] + ']')
+
+        if self.header.get('CTYPE2') == 'HG':
+            axes.set_ylabel('Latitude [' + self.units['y'] + ']')
 
         # Determine extent
         extent = self.xrange + self.yrange
