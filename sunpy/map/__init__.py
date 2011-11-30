@@ -67,13 +67,15 @@ def make_map(*args, **kwargs):
 
         # Unrecognized input
         else:
-            raise InvalidMapInput
+            raise InvalidMapInput("Invalid input for make_map. Please specify "
+                                  "one or more filepaths, Maps, directories, "
+                                  "or wildcard expressions.")
     else:
         maps = args
         
     # Make sure we found some data
     if len(maps) is 0:
-        raise NoMapsFound
+        raise NoMapsFound("Specified path contains no valid files.")
         
     mtype = kwargs.get("type", "composite")
         
@@ -84,7 +86,8 @@ def make_map(*args, **kwargs):
     elif mtype == "composite":
         return CompositeMap(*maps)
     else:
-        raise InvalidMapType
+        raise InvalidMapType("Invalid multi-map type specified. Please choose "
+                             "between 'composite' or 'cube'.")
     
 class InvalidMapInput(ValueError):
     """Exception to raise when input variable is not a Map instance and does

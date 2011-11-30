@@ -45,7 +45,8 @@ def resample(orig, dimensions, method='linear', center=False, minusone=False):
 
     # Verify that number dimensions requested matches original shape
     if len(dimensions) != orig.ndim:
-        raise UnequalNumDimensions
+        raise UnequalNumDimensions("Number of dimensions must remain the same "
+                                   "when calling resample.")
 
     #@note: will this be okay for integer (e.g. JPEG 2000) data?
     if not orig.dtype in [np.float64, np.float32]:
@@ -64,7 +65,8 @@ def resample(orig, dimensions, method='linear', center=False, minusone=False):
     elif method == 'spline':
         data = _resample_spline(orig, dimensions, offset, m1)
     else:
-        raise UnrecognizedInterpolationMethod
+        raise UnrecognizedInterpolationMethod("Unrecognized interpolation "
+                                              "method requested.")
     
     return data
     

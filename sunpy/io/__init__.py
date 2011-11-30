@@ -62,7 +62,8 @@ def detect_filetype(filepath):
             raise InvalidJPEG2000FileExtension
         
     # Raise an error if an unsupported filetype is encountered
-    raise UnrecognizedFileTypeError
+    raise UnrecognizedFileTypeError("The requested filetype is not currently "
+                                    "supported by SunPy.")
 
 class UnrecognizedFileTypeError(IOError):
     """Exception to raise when an unknown file type is encountered"""
