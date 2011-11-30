@@ -108,7 +108,8 @@ class MapCube(np.ndarray):
             for cls in BaseMap.__subclasses__():
                 if cls.is_datasource_for(header):
                     return cls(data, header)
-            raise UnrecognizedDataSouceError
+            raise UnrecognizedDataSouceError("File header not recognized by "
+                                             "SunPy.")
         else:
             return np.ndarray.__getitem__(self, key)
         

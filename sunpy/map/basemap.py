@@ -100,7 +100,7 @@ class BaseMap(np.ndarray):
         elif isinstance(data, list):
             obj = np.asarray(data).view(cls)
         else:
-            raise TypeError('Invalid data')
+            raise TypeError('Invalid input')
         
         return obj
     
@@ -213,7 +213,7 @@ class BaseMap(np.ndarray):
         for cls in BaseMap.__subclasses__():
             if cls.is_datasource_for(header):
                 return cls(data, header)
-        raise UnrecognizedDataSouceError
+        raise UnrecognizedDataSouceError("File header not recognized by SunPy.")
     
     @classmethod
     def get_properties(cls, header=None): #pylint: disable=W0613
