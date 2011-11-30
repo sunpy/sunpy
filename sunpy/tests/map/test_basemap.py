@@ -12,7 +12,7 @@ class TestBaseMap:
     """Tests the BaseMap class"""
     def setup_class(self):
         self.file = sunpy.AIA_171_IMAGE
-        self.map = sunpy.Map(self.file)
+        self.map = sunpy.make_map(self.file)
         self.fits = pyfits.open(self.file)
         self.fits.verify('silentfix')
 

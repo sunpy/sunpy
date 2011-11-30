@@ -32,7 +32,7 @@ Here is a quick example of plotting an AIA image:
 ```python
 >>> import sunpy
 >>> import matplotlib.cm as cm
->>> m = sunpy.Map(sunpy.AIA_171_IMAGE)
+>>> m = sunpy.make_map(sunpy.AIA_171_IMAGE)
 >>> m.show(cmap=cm.hot)
 ```
 

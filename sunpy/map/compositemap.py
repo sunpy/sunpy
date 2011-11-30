@@ -6,6 +6,7 @@ from __future__ import absolute_import
 
 import sunpy
 import matplotlib.pyplot as plt
+from sunpy.map.basemap import BaseMap
 from sunpy.map.sources.rhessi import RHESSIMap
 
 __author__ = "Keith Hughitt"
@@ -13,47 +14,37 @@ __email__ = "keith.hughitt@nasa.gov"
 
 class CompositeMap:
     """
-    CompositeMap(map1, map2,.., alphas=[alpha1,..], zorders=[zorder1,..])
+    CompositeMap(map1 [,map2,..])
     
     Parameters
     ----------
     args : *{sunpy.map, string}
         One or more map of filepaths
-    alphas : list
-        List of alpha values to use for the input maps. Alpha values will be
-        applied from left to right
-    zorders : list
-        List of z-orders to use for the input maps. z-orders will be applied 
-        from left to right
     
     Examples
     --------
     >>> import sunpy
     >>> sunpy.CompositeMap(sunpy.AIA_171_IMAGE, sunpy.RHESSI_IMAGE).show()
         
-    >>> comp_map = sunpy.CompositeMap(sunpy.AIA_171_IMAGE, sunpy.EIT_195_IMAGE, alphas=[1, 0.5])    
+    >>> comp_map = sunpy.CompositeMap(sunpy.AIA_171_IMAGE, sunpy.EIT_195_IMAGE)    
     >>> comp_map.add_map(sunpy.RHESSI_IMAGE)
     >>> comp_map.show()
     
     """    
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args):
         self._maps = []
         
         # Default alpha and zorder values
         alphas = [1] * len(args)
         zorders = range(0, 10 * len(args), 10) 
         
-        # Override default zorder and alpha values with user-specified ones
-        for i, x in enumerate(kwargs.get("zorders", [])):
-            zorders[i] = x
-        for i, x in enumerate(kwargs.get("alphas", [])):
-            alphas[i] = x
-        
-        
         # Parse input Maps/filepaths        
-        for i, input_ in enumerate(args):
+        for i, item in enumerate(args):
             # Parse map
-            m = sunpy.Map(input_)
+            if isinstance(item, BaseMap):
+                m = item
+            else:
+                m = BaseMap.map_from_filepath(item)
             
             # Set z-order and alpha values for the map
             m.zorder = zorders[i]
@@ -82,7 +73,7 @@ class CompositeMap:
         if zorder is None:
             zorder = max([m.zorder for m in self._maps]) + 10
         
-        m = sunpy.Map(input_)
+        m = BaseMap.map_from_filepath(input_)
         m.zorder = zorder
         m.alpha = alpha
         
@@ -95,6 +86,29 @@ class CompositeMap:
     def list_maps(self):
         """Prints a list of the currently included maps"""
         print [m.__class__ for m in self._maps]
+        
+    def get_alpha(self, index):
+        """Gets the alpha-channel value for a layer in the composite image"""
+        return self._maps[index].alpha
+        
+    def get_zorder(self, index):
+        """Gets the layering preference (z-order) for a map within the
+        composite.
+        """
+        return self._maps[index].zorder
+
+    def set_alpha(self, index, alpha):
+        """Sets the alpha-channel value for a layer in the composite image"""
+        if 0 <= alpha <= 1:
+            self._maps[index].alpha = alpha
+        else:
+            raise OutOfRangeAlphaValue("Alpha value must be between 0 and 1.")
+        
+    def set_zorder(self, index, zorder):
+        """Set the layering preference (z-order) for a map within the
+        composite.
+        """
+        self._maps[index].zorder = zorder
 
     def plot(self, title="SunPy Plot", overlays=None, **matplot_args):
         """Plots the composite map object using matplotlib
@@ -169,3 +183,9 @@ class CompositeMap:
             when plotting the image.
         """
         self.plot(title, overlays, **matplot_args).show()
+        
+class OutOfRangeAlphaValue(ValueError):
+    """Exception to raise when an alpha value outside of the range 0-1 is
+    requested.
+    """
+    pass
