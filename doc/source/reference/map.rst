@@ -19,7 +19,7 @@ Creating Map Objects
 ^^^^^^^^^^^^^^^^^^^^
 SunPy Map objects are constructed using the special function :func:`Map`: ::
 
->>> x = sunpy.Map('file.fits')
+>>> x = sunpy.make_map('file.fits')
 
 The result of a call to `Map` will be either a generic `BaseMap` object, or a 
 subclass of `BaseMap` which deals with a specific type of data, e.g. 
