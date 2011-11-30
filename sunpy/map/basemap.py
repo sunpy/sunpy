@@ -8,7 +8,6 @@ __authors__ = ["Keith Hughitt, Steven Christe"]
 __email__ = "keith.hughitt@nasa.gov"
 
 from copy import copy
-
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
@@ -206,7 +205,6 @@ class BaseMap(np.ndarray):
         """
         from sunpy.io import read_file
         from sunpy.map.header import MapHeader
-        from sunpy.map.sources import * #pylint: disable=W0612
         
         data, dict_header = read_file(filepath)
         

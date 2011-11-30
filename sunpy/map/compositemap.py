@@ -86,6 +86,29 @@ class CompositeMap:
     def list_maps(self):
         """Prints a list of the currently included maps"""
         print [m.__class__ for m in self._maps]
+        
+    def get_alpha(self, index):
+        """Gets the alpha-channel value for a layer in the composite image"""
+        return self._maps[index].alpha
+        
+    def get_zorder(self, index):
+        """Gets the layering preference (z-order) for a map within the
+        composite.
+        """
+        return self._maps[index].zorder
+
+    def set_alpha(self, index, alpha):
+        """Sets the alpha-channel value for a layer in the composite image"""
+        if 0 <= alpha <= 1:
+            self._maps[index].alpha = alpha
+        else:
+            raise OutOfRangeAlphaValue("Alpha value must be between 0 and 1.")
+        
+    def set_zorder(self, index, zorder):
+        """Set the layering preference (z-order) for a map within the
+        composite.
+        """
+        self._maps[index].zorder = zorder
 
     def plot(self, title="SunPy Plot", overlays=None, **matplot_args):
         """Plots the composite map object using matplotlib
@@ -160,3 +183,9 @@ class CompositeMap:
             when plotting the image.
         """
         self.plot(title, overlays, **matplot_args).show()
+        
+class OutOfRangeAlphaValue(ValueError):
+    """Exception to raise when an alpha value outside of the range 0-1 is
+    requested.
+    """
+    pass
