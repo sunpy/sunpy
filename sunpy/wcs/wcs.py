@@ -41,9 +41,8 @@ __all__ = ["get_solar_limb", "get_observer_position", "get_center",
            "convert_pixel_to_data", "convert_data_to_pixel",
            "convert_hpc_hcc", "convert_hcc_hpc",
            "convert_hcc_hg", "convert_hg_hcc", "convert_hg_hcc_xyz",
-           "test",
            "convert_hg_hpc",
-           "proj_tan", "convert_to_coord"]
+           "proj_tan", "convert_to_coord", "convert_hpc_hcc_xyz"]
 
 __authors__ = ["Steven Christe"]
 __email__ = "steven.d.christe@nasa.gov"
@@ -105,7 +104,7 @@ def get_platescale(header, axis=None):
         return [xscale,yscale]
     
 def get_solar_b0(header):
-    """Return the solar B0 angle which is simply the heliographic latitude of 
+    """Return the solar B0 angle which is the heliographic latitude of 
     the observer."""
     
     return (header.get('HGLT_OBS') or
@@ -113,16 +112,18 @@ def get_solar_b0(header):
             header.get('SOLAR_B0', 0))
 
 def get_solar_l0(header, carrington=False):
-    """Return the Carrington heliographic longitude of the observer."""
+    """Return the (Carrington) heliographic longitude of the observer."""
     if carrington is False:
-        return header.get('hgln_obs', 0)    
+        return header.get('HGLN_OBS', 0)    
     if carrington is True:
         return header.get('CRLN_OBS', 0)
     
 def convert_angle_units(type='hpc', unit='arcsec'):
     """Determine the conversion factor between the data and radians."""
     
-    if unit == 'arcmin':
+    if unit == 'deg':
+        return np.deg2rad(1)
+    elif unit == 'arcmin':
         return np.deg2rad(1) / 60.0
     elif unit == 'arcsec':
         return np.deg2rad(1) / (60 * 60.0)
@@ -189,22 +190,27 @@ def convert_data_to_pixel(header, x, y):
 
     return pixelx, pixely
 
-def convert_hpc_hcc(header, hp_longitude, hp_latitude, distance=None):
+def convert_hpc_hcc(header, hpx, hpy, distance=None):
     """This routine converts Helioprojective-Cartesian (HPC) coordinates into 
     Heliocentric-Cartesian (HCC) coordinates, using equations 15 in 
     Thompson (2006), A&A, 449, 791-803.
     """
-    
+    x, y, z = convert_hpc_hcc_xyz(header, hpx, hpy)
+    return x, y
+
+def convert_hpc_hcc_xyz(header, hpx, hpy, distance=None):
+    """This routine converts Helioprojective-Cartesian (HPC) coordinates into 
+    Heliocentric-Cartesian (HCC) coordinates, using equations 15 in 
+    Thompson (2006), A&A, 449, 791-803.
+    """
+
     c = np.array([convert_angle_units(unit=get_units(header, axis='x')), 
                   convert_angle_units(unit=get_units(header, axis='y'))])
 
-    longitude = hp_longitude * c[0]
-    latitude = hp_latitude * c[1]
-
-    cosx = np.cos(longitude)
-    sinx = np.sin(longitude)
-    cosy = np.cos(latitude)
-    siny = np.sin(latitude)
+    cosx = np.cos(hpx* c[0])
+    sinx = np.sin(hpx* c[0])
+    cosy = np.cos(hpy* c[1])
+    siny = np.sin(hpy* c[1])
 
     dsun = header.get('dsun_obs')
     rsun = header.get('rsun_ref')
@@ -219,9 +225,9 @@ def convert_hpc_hcc(header, hp_longitude, hp_latitude, distance=None):
     y = distance * siny
     z = dsun - distance * cosy * cosx
 
-    return x, y
+    return x, y, z
 
-def convert_hcc_hpc(header, x, y, distance=None):
+def convert_hcc_hpc(header, x, y, units = None, distance=None):
     """Convert Heliocentric-Cartesian (HCC) to angular 
     Helioprojective-Cartesian (HPC) coordinates (in degrees)."""
 
@@ -236,28 +242,32 @@ def convert_hcc_hpc(header, x, y, distance=None):
     
     zeta = dsun - z
     distance = np.sqrt(x ** 2 + y ** 2 + zeta ** 2)
-    hpln = np.arctan(x / zeta)
-    hplt = np.arcsin(y / distance)
+    hpcx = np.rad2deg(np.arctan2(x, zeta))
+    hpcy = np.rad2deg(np.arcsin(y / distance))
     
-    # convert the results to degrees
-    return np.rad2deg(hpln), np.rad2deg(hplt)
+    if units == 'arcsec':
+        hpcx = 60*60*hpcx
+        hpcy = 60*60*hpcy
+    
+    return hpcx, hpcy
 
-def convert_hcc_hg(header, x, y):
-    """Convert Heliocentric-Cartesian (HCC) to Heliographic coordinates HG 
+def convert_hcc_hg(header, x, y, z = None):
+    """Convert Heliocentric-Cartesian (HCC) to Heliographic coordinates (HG) 
     (given in degrees)."""
 
     rsun = header.get('rsun_ref')
 
-    z = np.sqrt(rsun ** 2 - x ** 2 - y ** 2)
-    # z[np.where(z < 0)] = Decimal('Nan')
+    if z is None:
+        z = np.sqrt(rsun ** 2 - x ** 2 - y ** 2)
+    # z[z < 0] = np.NAN
 
-    b0 = get_solar_b0(header)
-    l0 = get_solar_l0(header)
-    cosb = np.cos(np.deg2rad(b0))
-    sinb = np.sin(np.deg2rad(b0))
+    b0 = np.deg2rad(get_solar_b0(header))
+    l0 = np.deg2rad(get_solar_l0(header))
+    cosb = np.cos(b0)
+    sinb = np.sin(b0)
 
     hecr = np.sqrt(x ** 2 + y ** 2 + z ** 2)
-    hgln = np.arctan(x / (z*cosb - y*sinb)) + l0
+    hgln = np.arctan2(x, z*cosb - y*sinb) + l0
     hglt = np.arcsin( (y*cosb + z*sinb) / hecr )
     
     return np.rad2deg(hgln), np.rad2deg(hglt)
@@ -273,7 +283,6 @@ def convert_hg_hcc(header, hgln, hglt, occultation = False):
     
     return x, y
 
-
 def convert_hg_hcc_xyz(header, hgln, hglt):
     """Convert Heliographic coordinates (given in degrees) to Heliocentric-Cartesian."""
     # using equations 11 in Thompson (2006), A&A, 449, 791-803
@@ -286,11 +295,11 @@ def convert_hg_hcc_xyz(header, hgln, hglt):
     lon = cx * hgln
     lat = cy * hglt
     
-    b0 = get_solar_b0(header)
-    l0 = get_solar_l0(header)
+    b0 = np.deg2rad(get_solar_b0(header))
+    l0 = np.deg2rad(get_solar_l0(header))
 
-    cosb = np.cos(np.deg2rad(b0))
-    sinb = np.sin(np.deg2rad(b0))
+    cosb = np.cos(b0)
+    sinb = np.sin(b0)
 
     lon = lon - l0
 
@@ -306,40 +315,30 @@ def convert_hg_hcc_xyz(header, hgln, hglt):
     
     return x, y, z
 
-def test():
-    # number of points in the line
-    grid_spacing = 10
-    hg_longitude_deg = np.arange(-90,90, grid_spacing, dtype = 'float')
-    hg_latitude_deg = np.arange(-90, 90, grid_spacing, dtype = 'float')
-
-    xx, yy = np.meshgrid(hg_longitude_deg, hg_latitude_deg)
-
-    return xx, yy
-
 def convert_hg_hpc(header, hglon, hglat, units = None, occultation = False):
-    """Convert Helioprojective-Cartesian (HPC) to Heliographic coordinates 
-    (HG)"""
+    """Convert Heliographic coordinates (HG) to Helioprojective-Cartesian (HPC)"""
     tempx, tempy = convert_hg_hcc(header, hglon, hglat, occultation)
-    x, y = convert_hcc_hpc(header, tempx, tempy)
-
-    if units == 'arcsec':
-        x = 60*60*x
-        y = 60*60*y
-
+    x, y = convert_hcc_hpc(header, tempx, tempy, units = units)
     return x, y
+
+def convert_hpc_hg(header, x, y):
+    """Convert Helioprojective-Cartesian (HPC) to Heliographic coordinates (HG)"""
+    tempx, tempy = convert_hpc_hcc(header, x, y)
+    lon, lat = convert_hcc_hg(header, tempx, tempy)
+    return lon, lat
 
 def proj_tan(header, x, y, force=False):
     """Applies the gnomonic (TAN) projection to intermediate relative 
     coordinates."""
     # if pixels are within 3 degrees of the Sun then skip the calculatin unless 
     # force is True. This applies to all sdo images so this function is just 
-    # here as a place holder
+    # here as a place holder for the future
     return x, y
     
-def convert_to_coord( header, x, y, fromcoord = 'hpc', tocoord = 'hg'):
+def convert_to_coord( header, x, y, fromto):
     """Apply a coordinate transform to coordinates in header 
     to coordinate coord. Right now can only do hpc to hcc to hg"""
-     
+    
     #coord = np.array(convert_pixel_to_data(header))
     #temp = np.array(convert_hpc_hcc(header, coord[:,:,0], coord[:,:,1]))
     x, y = convert_hcc_hg(header, x, y)
