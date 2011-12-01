@@ -8,7 +8,6 @@ __authors__ = ["Keith Hughitt, Steven Christe"]
 __email__ = "keith.hughitt@nasa.gov"
 
 from copy import copy
-
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
@@ -101,7 +100,7 @@ class BaseMap(np.ndarray):
         elif isinstance(data, list):
             obj = np.asarray(data).view(cls)
         else:
-            raise TypeError('Invalid data')
+            raise TypeError('Invalid input')
         
         return obj
     
@@ -185,6 +184,36 @@ class BaseMap(np.ndarray):
     def std(self, *args, **kwargs):
         """overide np.ndarray.std()"""
         return np.array(self, copy=False, subok=False).std(*args, **kwargs)
+    
+    @classmethod
+    def map_from_filepath(cls, filepath):
+        """Map class factory
+    
+        Attempts to determine the type of data associated with input and returns
+        an instance of either the generic BaseMap class or a subclass of BaseMap
+        such as AIAMap, EUVIMap, etc.
+        
+        Parameters
+        ----------
+        filepath : string
+            Path to a valid FITS or JPEG 2000 file of a type supported by SunPy.
+            
+        Returns
+        -------
+        out : Map
+            Returns a Map instance for the particular type of data loaded.
+        """
+        from sunpy.io import read_file
+        from sunpy.map.header import MapHeader
+        
+        data, dict_header = read_file(filepath)
+        
+        header = MapHeader(dict_header)
+
+        for cls in BaseMap.__subclasses__():
+            if cls.is_datasource_for(header):
+                return cls(data, header)
+        raise UnrecognizedDataSouceError("File header not recognized by SunPy.")
     
     @classmethod
     def get_properties(cls, header=None): #pylint: disable=W0613
@@ -458,3 +487,7 @@ class BaseMap(np.ndarray):
             axes.plot(x, y, color='white', linestyle='dotted')        
         
         return fig, axes
+    
+class UnrecognizedDataSouceError(ValueError):
+    """Exception to raise when an unknown datasource is encountered"""
+    pass

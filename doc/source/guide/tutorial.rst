@@ -20,7 +20,7 @@ Try typing the below example into your interactive Python shell::
 	import sunpy
 	from matplotlib import cm
 	from matplotlib import colors
-	aia = sunpy.Map(sunpy.AIA_171_IMAGE)
+	aia = sunpy.make_map(sunpy.AIA_171_IMAGE)
 	aia.show(cmap=cm.hot, norm=colors.Normalize(1, 2048))
 
 If everything has been configured properly you should see a standard-looking

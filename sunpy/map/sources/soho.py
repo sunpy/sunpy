@@ -115,7 +115,3 @@ class MDIMap(BaseMap):
     def is_datasource_for(cls, header):
         """Determines if header corresponds to an MDI image"""
         return header.get('instrume') == 'MDI'
-
-if __name__ == "__main__":
-    import sunpy
-    sunpy.Map(sunpy.EIT_195_IMAGE).show()

@@ -5,12 +5,10 @@ from __future__ import absolute_import
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
-from sunpy.map import UnrecognizedDataSouceError
+from sunpy.map.basemap import UnrecognizedDataSouceError
 from sunpy.map.basemap import BaseMap
-from sunpy.map.sources import * #@UnusedWildImport
+from sunpy.map.sources import *
 import numpy as np
-import os
-import pyfits
 
 #
 # 2011/04/13: Should Map be broken up into Map and MapHeader classes? This way
@@ -27,14 +25,10 @@ class MapCube(np.ndarray):
 
     Parameters
     ----------
-    input_ : directory, glob string, data array, 
-        The data source used to create the map object. This can be either a
-        filepath to a directory containing the images you wish to include, a
-        globbable string such as ``"data/*.fits"``, a 2d list, or an ndarray.
-    coalign : [ None | 'diff' ]
-        Method to use for coalignment. If None, no coalignment will be done.
-    derotate : bool
-        Whether the data should be derotated
+    args : {string | Map}* 
+        Map instances or filepaths from which MapCube should be built.
+    sortby : {"date"}
+        Method by which the MapCube should be sorted along the z-axis.
 
     Attributes
     ----------
@@ -48,71 +42,45 @@ class MapCube(np.ndarray):
         
     Examples
     --------
-    >>> mapcube = sunpy.MapCube('images/')
+    >>> mapcube = sunpy.make_map('images/')
     >>> mapcube[0].show()
     >>> mapcube[3].header.get('crpix1')
     2050.6599120000001
     """
-    def __new__(cls, input_, sortby="date"):
+    def __new__(cls, *args, **kwargs):
         """Creates a new Map instance"""
         
-        # Directory of files
-        if isinstance(input_, basestring):
-            filepaths = []
-            fits_arr = []
-            data = []
-            headers = []
-
-            # directory
-            if os.path.isdir(input_):
-                for filename in os.listdir(input_):
-                    filepaths.append(os.path.join(input_, filename))
-
-            # glob string
+        maps = []
+        data = []
+        headers = []
+    
+        # convert input to maps
+        for item in args:
+            if isinstance(item, BaseMap):
+                maps.append(item)
             else:
-                from glob import glob
-                filepaths = glob(input_)
-                
-            # read in files
-            for filepath in filepaths:
-                fits = pyfits.open(filepath)
-                
-                # append normalized header tags for use during sorting
-                found_header_match = False
-                
-                for subcls in BaseMap.__subclasses__(): #pylint: disable=E1101
-                    if subcls.is_datasource_for(fits[0].header):
-                        found_header_match = True
-                        fits.norm_header = subcls.get_properties(fits[0].header)
-                if not found_header_match:
-                    raise UnrecognizedDataSouceError
+                maps.append(BaseMap.map_from_filepath(item))
 
-                fits_arr.append(fits)
+        # sort data
+        sortby = kwargs.get("sortby", "date")
+        if hasattr(cls, '_sort_by_%s' % sortby):
+            maps.sort(key=getattr(cls, '_sort_by_%s' % sortby)())
 
-            # sort data
-            if sortby and hasattr(cls, '_sort_by_%s' % sortby):
-                fits_arr.sort(key=getattr(cls, '_sort_by_%s' % sortby)())
+        # create data cube
+        for map_ in maps:
+            data.append(np.array(map_))
+            headers.append(map_.header)
 
-            # create data cube
-            for fits in fits_arr:
-                data.append(fits[0].data)
-                headers.append(fits[0].header)
-
-            obj = np.asarray(data).view(cls)
-            obj._headers = headers
-
-        # List of data or filepaths
-        elif isinstance(input_, list):
-            obj = np.asarray(input_).view(cls)
-
-        # ndarray
-        elif isinstance(input_, np.ndarray):
-            obj = input_
+        obj = np.asarray(data).view(cls)
+        obj._headers = headers
 
         return obj
     
     #pylint: disable=W0613,E1101
-    def __init__(self, input_, coalign=False, derotate=False):
+    def __init__(self, *args, **kwargs):
+        coalign = kwargs.get("coalign", False)
+        derotate = kwargs.get("derotate", False)
+        
         # Coalignment
         if coalign and hasattr(self, '_coalign_%s' % coalign):
             getattr(self, '_coalign_%s' % coalign)()
@@ -140,7 +108,8 @@ class MapCube(np.ndarray):
             for cls in BaseMap.__subclasses__():
                 if cls.is_datasource_for(header):
                     return cls(data, header)
-            raise UnrecognizedDataSouceError
+            raise UnrecognizedDataSouceError("File header not recognized by "
+                                             "SunPy.")
         else:
             return np.ndarray.__getitem__(self, key)
         
@@ -177,9 +146,7 @@ class MapCube(np.ndarray):
     # Sorting methods
     @classmethod
     def _sort_by_date(cls):
-        #from operator import attrgetter
-        #return attrgetter("norm_header.date")
-        return lambda fits: fits.norm_header.get("date")
+        return lambda m: m.date # maps.sort(key=attrgetter('date'))
     
     def _derotate(self):
         """Derotates the layers in the MapCube"""
@@ -188,10 +155,3 @@ class MapCube(np.ndarray):
     def plot(self):
         """A basic plot method (not yet implemented)"""
         pass
-    
-if __name__ == "__main__":
-    import sunpy
-    m = sunpy.MapCube("/home/hughitt1/Dropbox/eitwave")
-    #print(m[0,0:5,0:5])
-    #print()
-    repr(m[2].base)
