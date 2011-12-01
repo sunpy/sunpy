@@ -9,7 +9,7 @@ Example Usage:
 >>> import sunpy
 >>> import matplotlib.cm as cm
 >>> import matplotlib.colors as colors
->>> aia = sunpy.Map('doc/sample-data/AIA20110319_105400_0171.fits')
+>>> aia = sunpy.make_map('doc/sample-data/AIA20110319_105400_0171.fits')
 >>> aia.header['crpix1']
 >>> aia.show(cm=cm.hot, norm=colors.Normalize(1, 2048))
 
