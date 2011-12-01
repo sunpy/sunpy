@@ -5,6 +5,7 @@ __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
 import os
+from sunpy.map.header import MapHeader
 from sunpy.map.basemap import BaseMap
 from sunpy.map.mapcube import MapCube
 from sunpy.map.compositemap import CompositeMap
