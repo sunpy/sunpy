@@ -35,14 +35,15 @@ Note that SOLAR_B0, HGLT_OBS, and CRLT_OBS are all synonyms.
 """
 from __future__ import absolute_import
 
-__all__ = ["get_solar_limb", "get_observer_position", "get_center",
+__all__ = ["get_solar_limb", "get_center",
            "get_units", "get_platescale", "get_solar_b0", "get_solar_l0",
            "convert_angle_units", "get_projection", "get_shape",
            "convert_pixel_to_data", "convert_data_to_pixel",
            "convert_hpc_hcc", "convert_hcc_hpc",
            "convert_hcc_hg", "convert_hg_hcc", "convert_hg_hcc_xyz",
            "convert_hg_hpc",
-           "proj_tan", "convert_to_coord", "convert_hpc_hcc_xyz"]
+           "proj_tan", "convert_to_coord", "convert_hpc_hcc_xyz", 
+           "convert_hpc_hg", "get_obs_distance", "get_solar_radius"]
 
 __authors__ = ["Steven Christe"]
 __email__ = "steven.d.christe@nasa.gov"
@@ -59,9 +60,15 @@ def get_solar_limb(header):
             header.get('SOLAR_R') or 
             header.get('RADIUS', con.average_angular_size))
 
-def get_observer_position(header):
+def get_solar_radius(header):
+    """Return the solar radius of the Sun"""
+    return (header.get('RSUN_REF') or con.radius)
+
+def get_obs_distance(header):
     """Return the observer distance from the Sun."""
-    return header.get('DSUN_OBS')
+    # TODO should try to calculate this instead of defaulting to a constant
+    return (header.get('DSUN_OBS') or 
+            con.au)
 
 def get_center(header, axis=None):
     """Return the center of the map."""
@@ -80,8 +87,18 @@ def get_center(header, axis=None):
     
 def get_units(header, axis=None):
     """Return the units used for crpix, crdelt in the header."""
-    xunits = header.get('cunit1', header.get('ctype1'))
-    yunits = header.get('cunit2', header.get('ctype2'))
+    # Not sure about the following code and the optional arguments but it
+    # fails for EIT images as it returns Solar-X and Solar-Y
+    # which are not units
+    # xunits = header.get('cunit1', header.get('ctype1'))
+    # yunits = header.get('cunit2', header.get('ctype2'))
+    xunits = header.get('cunit1')
+    yunits = header.get('cunit2')
+    # default to arcsec if found None
+    if xunits is None:
+        xunits = 'arcsec'
+    if yunits is None:
+        yunits = 'arcsec'
     
     if axis is 'x':
         return xunits
@@ -118,7 +135,7 @@ def get_solar_l0(header, carrington=False):
     if carrington is True:
         return header.get('CRLN_OBS', 0)
     
-def convert_angle_units(type='hpc', unit='arcsec'):
+def convert_angle_units(unit='arcsec'):
     """Determine the conversion factor between the data and radians."""
     
     if unit == 'deg':
@@ -207,13 +224,13 @@ def convert_hpc_hcc_xyz(header, hpx, hpy, distance=None):
     c = np.array([convert_angle_units(unit=get_units(header, axis='x')), 
                   convert_angle_units(unit=get_units(header, axis='y'))])
 
-    cosx = np.cos(hpx* c[0])
-    sinx = np.sin(hpx* c[0])
-    cosy = np.cos(hpy* c[1])
-    siny = np.sin(hpy* c[1])
+    cosx = np.cos(hpx * c[0])
+    sinx = np.sin(hpx * c[0])
+    cosy = np.cos(hpy * c[1])
+    siny = np.sin(hpy * c[1])
 
-    dsun = header.get('dsun_obs')
-    rsun = header.get('rsun_ref')
+    dsun = get_obs_distance(header)
+    rsun = get_solar_radius(header)
 
     if distance is None: 
         q = dsun * cosy * cosx
@@ -231,10 +248,10 @@ def convert_hcc_hpc(header, x, y, units = None, distance=None):
     """Convert Heliocentric-Cartesian (HCC) to angular 
     Helioprojective-Cartesian (HPC) coordinates (in degrees)."""
 
-    #Distance to the Sun but should we use our own?
-    dsun = header.get('dsun_obs')
+    # Distance to the Sun but should we use our own?
+    dsun = get_obs_distance(header)
     # Should we use the rsun_ref defined in the fits file or our local (possibly different/more correct) definition
-    rsun = header.get('rsun_ref')
+    rsun = get_solar_radius(header)
     
     # Calculate the z coordinate by assuming that it is on the surface of the Sun
     z = rsun ** 2 - x ** 2 - y ** 2
@@ -255,7 +272,7 @@ def convert_hcc_hg(header, x, y, z = None):
     """Convert Heliocentric-Cartesian (HCC) to Heliographic coordinates (HG) 
     (given in degrees)."""
 
-    rsun = header.get('rsun_ref')
+    rsun = get_solar_radius(header)
 
     if z is None:
         z = np.sqrt(rsun ** 2 - x ** 2 - y ** 2)
@@ -290,7 +307,7 @@ def convert_hg_hcc_xyz(header, hgln, hglt):
     cx = np.deg2rad(1)
     cy = np.deg2rad(1)
     
-    hecr = header.get('rsun_ref')
+    hecr = get_solar_radius(header)
     
     lon = cx * hgln
     lat = cy * hglt
