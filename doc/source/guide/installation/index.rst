@@ -39,6 +39,6 @@ Now you can test your installation. Open a new Python shell and type these
 commands: ::
 
 >>> import sunpy
->>> sunpy.Map(sunpy.AIA_171_IMAGE).show()
+>>> sunpy.make_map(sunpy.AIA_171_IMAGE).show()
 
 If all goes well you should see an AIA 171 image on your screen.

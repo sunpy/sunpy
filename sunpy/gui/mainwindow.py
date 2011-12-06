@@ -2,7 +2,7 @@
 """
 SunPy PlotMan GUI
 
-Plots FITS data using sunpy.Map in a Qt interface,
+Plots FITS data using sunpy.make_map in a Qt interface,
 and provides tools for graphical plot manipulation.
 
 Author: Matt Earnshaw <matt@earnshaw.org.uk>
@@ -75,7 +75,7 @@ class MainWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
             TabPage widget whose FigureCanvas displays the data in 'file_path' """
 
         try:
-            map_object = sunpy.Map(file_path)
+            map_object = sunpy.make_map(file_path)
             tab_page = TabPage(map_object, self.tabWidget)
             self.tabWidget.addTab(tab_page, tab_title)
             # Focus new tab

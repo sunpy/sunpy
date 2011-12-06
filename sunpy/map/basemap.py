@@ -8,7 +8,6 @@ __authors__ = ["Keith Hughitt, Steven Christe"]
 __email__ = "keith.hughitt@nasa.gov"
 
 from copy import copy
-
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
@@ -101,7 +100,7 @@ class BaseMap(np.ndarray):
         elif isinstance(data, list):
             obj = np.asarray(data).view(cls)
         else:
-            raise TypeError('Invalid data')
+            raise TypeError('Invalid input')
         
         return obj
     
@@ -187,6 +186,36 @@ class BaseMap(np.ndarray):
         return np.array(self, copy=False, subok=False).std(*args, **kwargs)
     
     @classmethod
+    def map_from_filepath(cls, filepath):
+        """Map class factory
+    
+        Attempts to determine the type of data associated with input and returns
+        an instance of either the generic BaseMap class or a subclass of BaseMap
+        such as AIAMap, EUVIMap, etc.
+        
+        Parameters
+        ----------
+        filepath : string
+            Path to a valid FITS or JPEG 2000 file of a type supported by SunPy.
+            
+        Returns
+        -------
+        out : Map
+            Returns a Map instance for the particular type of data loaded.
+        """
+        from sunpy.io import read_file
+        from sunpy.map.header import MapHeader
+        
+        data, dict_header = read_file(filepath)
+        
+        header = MapHeader(dict_header)
+
+        for cls in BaseMap.__subclasses__():
+            if cls.is_datasource_for(header):
+                return cls(data, header)
+        raise UnrecognizedDataSouceError("File header not recognized by SunPy.")
+    
+    @classmethod
     def get_properties(cls, header=None): #pylint: disable=W0613
         """Returns default map properties""" 
         return {
@@ -223,38 +252,66 @@ class BaseMap(np.ndarray):
         
         return (value - self.center[dim]) / self.scale[dim] + ((size - 1) / 2.)
     
-    def resample(self, dimensions, method='linear', center=False, minusone=False):
-        """Returns a new Map that has been resampled up or down.
+    def resample(self, dimensions, method='linear'):
+        """Returns a new Map that has been resampled up or down
         
+        Arbitrary resampling of the Map to new dimension sizes.
+        
+        Uses the same parameters and creates the same co-ordinate lookup points
+        as IDL''s congrid routine, which apparently originally came from a 
+        VAX/VMS routine of the same name.
+        
+        Parameters
+        ----------
+        dimensions : tuple
+            Dimensions that new Map should have.
+            Note: the first argument corresponds to the 'x' axis and the second
+            argument corresponds to the 'y' axis.
+        method : {'neighbor' | 'nearest' | 'linear' | 'spline'}
+            Method to use for resampling interpolation.
+                * neighbor - Closest value from original data
+                * nearest and linear - Uses n x 1-D interpolations using
+                  scipy.interpolate.interp1d
+                * spline - Uses ndimage.map_coordinates
+    
         Returns
         -------
         out : Map
             A new Map which has been resampled to the desired dimensions.
         
-        See Also
-        --------
-        `sunpy.image.resample`
+        References
+        ----------
+        | http://www.scipy.org/Cookbook/Rebinning (Original source, 2011/11/19)
         """
-        import sunpy.image.resample
+        from sunpy.image import resample
+
+        # Note: because the underlying ndarray is transposed in sense when
+        #   compared to the Map, the ndarray is transposed, resampled, then
+        #   transposed back
+        # Note: "center" defaults to True in this function because data
+        #   coordinates in a Map are at pixel centers
 
         # Make a copy of the original data and perform resample
-        data = sunpy.image.resample(np.asarray(self).copy(), dimensions, 
-                                    method, center, minusone)
+        data = resample(np.asarray(self).copy().T, dimensions,
+                        method, center = True)
         
         # Update image scale and number of pixels
         header = self.header.copy()
 
-        scale_factor_x = (self.shape[0] / dimensions[0]) 
-        scale_factor_y = (self.shape[1] / dimensions[1])
+        # Note that 'x' and 'y' correspond to 1 and 0 in self.shape, respectively
+        scale_factor_x = (float(self.shape[1]) / dimensions[0])
+        scale_factor_y = (float(self.shape[0]) / dimensions[1])
         
         header['naxis1'] = int(dimensions[0])
         header['naxis2'] = int(dimensions[1])
         header['cdelt1'] *= scale_factor_x
         header['cdelt2'] *= scale_factor_y
-        header['crpix1'] /= scale_factor_x
-        header['crpix2'] /= scale_factor_y
+        header['crpix1'] = (dimensions[0] + 1) / 2.
+        header['crval1'] = self.center['x']
+        header['crpix2'] = (dimensions[1] + 1) / 2.
+        header['crval2'] = self.center['y']
 
-        return self.__class__(data, header)
+        return self.__class__(data.T, header)
 
     def submap(self, range_a, range_b, units="data"):
         """Returns a submap of the map with the specified range
@@ -262,13 +319,11 @@ class BaseMap(np.ndarray):
         Parameters
         ----------
         range_a : list
-            The range of data to select across either the x axis (if
-            units='data') or the y axis (if units='pixels').
+            The range of the Map to select across either the x axis.
         range_b : list
-            The range of data to select across either the y axis (if
-            units='data') or the x axis (if units='pixels').
+            The range of the Map to select across either the y axis.
         units : {'data' | 'pixels'}, optional
-            The units for which the submap region has been specified.
+            The units for the supplied ranges.
             
         Returns
         -------
@@ -299,8 +354,8 @@ class BaseMap(np.ndarray):
             y_pixels = [np.ceil(self.data_to_pixel(range_b[0], 'y')),
                         np.floor(self.data_to_pixel(range_b[1], 'y')) + 1]
         elif units is "pixels":
-            x_pixels = range_b
-            y_pixels = range_a
+            x_pixels = range_a
+            y_pixels = range_b
         else:
             raise ValueError(
                 "Invalid unit. Must be one of 'data' or 'pixels'")
@@ -357,8 +412,18 @@ class BaseMap(np.ndarray):
         
         axes = fig.add_subplot(111)
         axes.set_title("%s %s" % (self.name, self.date))
-        axes.set_xlabel('X-position [' + self.units['x'] + ']')
-        axes.set_ylabel('Y-position [' + self.units['y'] + ']')
+        
+        if self.header.get('CTYPE1') == 'HPLN-TAN':
+            axes.set_xlabel('X-position [' + self.units['x'] + ']')
+        
+        if self.header.get('CTYPE1') == 'HG':
+            axes.set_xlabel('Longitude [' + self.units['x'] + ']')
+        
+        if self.header.get('CTYPE2') == 'HPLT-TAN':
+            axes.set_ylabel('Y-position [' + self.units['y'] + ']')
+
+        if self.header.get('CTYPE2') == 'HG':
+            axes.set_ylabel('Latitude [' + self.units['y'] + ']')
 
         # Determine extent
         extent = self.xrange + self.yrange
@@ -422,12 +487,7 @@ class BaseMap(np.ndarray):
             axes.plot(x, y, color='white', linestyle='dotted')        
         
         return fig, axes
-
+    
 class UnrecognizedDataSouceError(ValueError):
     """Exception to raise when an unknown datasource is encountered"""
     pass
-
-if __name__ == "__main__":
-    import sunpy
-    a = sunpy.Map(sunpy.AIA_171_IMAGE)
-    a.resample((256, 256))
