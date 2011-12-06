@@ -44,7 +44,9 @@ def get_data(filepath, j2k_to_image="j2k_to_image"):
         j2k_to_image = "j2k_to_image.exe"
 
     if which(j2k_to_image) is None:
-        raise MissingOpenJPEGBinaryError()
+        raise MissingOpenJPEGBinaryError("You must first install the OpenJPEG "
+                                         "binaries before using this "
+                                         "funcitonality")
     
     jp2filename = os.path.basename(filepath)
     
