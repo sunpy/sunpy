@@ -167,7 +167,7 @@ for k, v in frequency:
     units[k] = ('frequency', v)
 
 def to_angstrom(value, unit):
-    C = 299792458
+    C = 299792458.
     ANGSTROM = units['Angstrom'][1]  
     try:
         type_, n = units[unit]
