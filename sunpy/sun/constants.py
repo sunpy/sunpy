@@ -191,13 +191,12 @@ def print_all(key = None):
 
     """
     column_width = [25, 20, 20, 20]
-    number_of_columns = 4
-    table_width = column_width[0] + column_width[1] + column_width[2] + 
-                  column_width[3]
-    format_string = '{0:<' + str(column_width[0]) + '}' + '{1:>' + 
+    table_width = (column_width[0] + column_width[1] + column_width[2] 
+                   + column_width[3])
+    format_string = ('{0:<' + str(column_width[0]) + '}' + '{1:>' + 
                     str(column_width[1]) + '}' + '{2:>' + str(column_width[2]) 
-                    + '}' + '{3:>' + str(column_width[3]) + '}'
-    print(format_string.format('Name' ,'Value', 'Units', 'Precision'))
+                    + '}' + '{3:>' + str(column_width[3]) + '}')
+    print(format_string.format('Name', 'Value', 'Units', 'Precision'))
     print(('{:-^' + str(table_width) + '}').format(''))
 
     if key is None:
