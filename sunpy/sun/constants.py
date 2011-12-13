@@ -34,7 +34,7 @@ http://nssdc.gsfc.nasa.gov/planetary/factsheet/sunfact.html
 TODO: 
 ----------
 Need better sources as well as error values.
-Create a cheat sheet function which prints out key solar values
+Create a cheat sheet function which prints out key solar values.
 """
 from __future__ import absolute_import
 
@@ -133,7 +133,7 @@ def precision(key) :
 
 def find(sub=None, disp=False):
     """
-    Return list of physical_constant keys containing a given string
+    Return list of physical_constants keys containing a given string
 
     Parameters
     ----------
@@ -172,7 +172,7 @@ def find(sub=None, disp=False):
 
 def print_all(key = None):
     """
-    Prints out the complete list of physical_constant to the screen or
+    Prints out the complete list of physical_constants to the screen or
     one single value
     
     Parameters
