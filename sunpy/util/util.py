@@ -22,7 +22,8 @@ import numpy as np
 
 def toggle_pylab(fn):
     """ A decorator to prevent functions from opening matplotlib windows
-        unexpectedly when sunpy is run in interactive shells like ipython --pylab. 
+        unexpectedly when sunpy is run in interactive shells like ipython 
+        --pylab. 
 
         Toggles the value of matplotlib.pyplot.isinteractive() to preserve the
         users' expections of pylab's behaviour in general. """
@@ -40,9 +41,11 @@ def toggle_pylab(fn):
 def anytim(time_string=None):
     """Given a time string will parse and return a datetime object.
     If no string is given then returns the datetime object for the current time.
-    If a datetime object is passed in by mistake then it returns it without an error.
+    If a datetime object is passed in by mistake then it returns it without an 
+    error.
     
-    TODO: add ability to parse tai (International Atomic Time seconds since Jan 1, 1958)
+    TODO: add ability to parse tai (International Atomic Time seconds since 
+    Jan 1, 1958)
     """
     if time_string is None:
         return datetime.now()
@@ -61,6 +64,7 @@ def anytim(time_string=None):
              "%Y-%m-%dT%H:%M:%S.%fZ",   # Example 2007-05-04T21:08:12.999Z
              "%Y-%m-%d %H:%M:%S",       # Example 2007-05-04 21:08:12
              "%Y-%m-%dT%H:%M:%S",       # Example 2007-05-04T21:08:12
+             "%Y-%m-%d %H:%M",          # Example 2007-05-04 21:08
              "%Y%m%dT%H%M%S",           # Example 20070504T210812
              "%Y-%b-%d %H:%M:%S",       # Example 2007-May-04 21:08:12
              "%Y-%b-%d %H:%M",          # Example 2007-May-04 21:08
@@ -77,8 +81,9 @@ def anytim(time_string=None):
         raise ValueError("%s is not a valid time string!" % time_string)
 
 def julian_day(t=None):
-    """Returns the (fractional) Julian day defined as the number of days between the queried day and 
-    the reference date of 12:00 (noon) Jan 1, 4713 BC."""
+    """Returns the (fractional) Julian day defined as the number of days 
+    between the queried day and the reference date of 12:00 (noon) Jan 1, 4713 
+    BC."""
     # Good online reference for fractional julian day
     # http://www.stevegs.com/jd_calc/jd_calc.htm
     
@@ -90,11 +95,12 @@ def julian_day(t=None):
  
     julian = tdiff.days + JULIAN_DAY_ON_NOON01JAN1900 + 1
    
-    result = julian + 1/24.*(time.hour + time.minute/60.0 + time.second/(60.*60.))
+    result = julian + 1/24.*(time.hour + time.minute/60.0 + 
+                             time.second/(60.*60.))
     return result
 
 def julian_centuries(t=None):
-    """Returns the number of Julian centuries since 1900 January 0.5"""
+    """Returns the number of Julian centuries since 1900 January 0.5."""
     # The number of days between Jan 1 1900 and the Julian
     # reference date of 12:00 noon Jan 1, 4713 BC
     JULIAN_DAY_ON_NOON01JAN1900 = 2415020.5
