@@ -41,6 +41,7 @@ def test_anytim_ISO():
         
 def test_julian_day():
     assert util.julian_day('2000-03-01 15:30:26') == 2451605.1461111
+    assert util.julian_day('1900-01-01 12:00') == 2415021.0
     assert util.julian_day(LANDING) == 2439159.5
     
 def test_break_time():

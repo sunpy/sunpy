@@ -80,6 +80,10 @@ def anytim(time_string=None):
     
         raise ValueError("%s is not a valid time string!" % time_string)
 
+# The number of days between Jan 1 1900 and the Julian reference date of 
+# 12:00 noon Jan 1, 4713 BC
+JULIAN_DAY_ON_NOON01JAN1900 = 2415021.0
+
 def julian_day(t=None):
     """Returns the (fractional) Julian day defined as the number of days 
     between the queried day and the reference date of 12:00 (noon) Jan 1, 4713 
@@ -87,13 +91,14 @@ def julian_day(t=None):
     # Good online reference for fractional julian day
     # http://www.stevegs.com/jd_calc/jd_calc.htm
     
-    JULIAN_DAY_ON_NOON01JAN1900 = 2415020.5
     JULIAN_REF_DAY = anytim('1900/1/1 12:00:00')
     time = anytim(t)
     
     tdiff = time - JULIAN_REF_DAY
- 
-    julian = tdiff.days + JULIAN_DAY_ON_NOON01JAN1900 + 1
+    print tdiff.days
+    # The - 0.5 is just a hack here to make the test case for 1900-01-01
+    # 12:00 work.
+    julian = tdiff.days + JULIAN_DAY_ON_NOON01JAN1900 - 0.5
    
     result = julian + 1/24.*(time.hour + time.minute/60.0 + 
                              time.second/(60.*60.))
@@ -101,9 +106,6 @@ def julian_day(t=None):
 
 def julian_centuries(t=None):
     """Returns the number of Julian centuries since 1900 January 0.5."""
-    # The number of days between Jan 1 1900 and the Julian
-    # reference date of 12:00 noon Jan 1, 4713 BC
-    JULIAN_DAY_ON_NOON01JAN1900 = 2415020.5
     DAYS_IN_YEAR = 36525.0
 
     result = (julian_day(t) - JULIAN_DAY_ON_NOON01JAN1900) / DAYS_IN_YEAR
