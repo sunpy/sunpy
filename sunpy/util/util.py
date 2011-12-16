@@ -95,13 +95,19 @@ def julian_day(t=None):
     time = anytim(t)
     
     tdiff = time - JULIAN_REF_DAY
-    print tdiff.days
-    # The - 0.5 is just a hack here to make the test case for 1900-01-01
-    # 12:00 work.
-    julian = tdiff.days + JULIAN_DAY_ON_NOON01JAN1900 - 0.5
+    
+    julian = tdiff.days + JULIAN_DAY_ON_NOON01JAN1900
    
     result = julian + 1/24.*(time.hour + time.minute/60.0 + 
                              time.second/(60.*60.))
+
+    # This is because the days in datetime objects start at 00:00, 
+    # not 12:00 as for Julian days.
+    if time.hour >= 12:
+        result = result - 0.5
+    else:
+        result = result + 0.5
+
     return result
 
 def julian_centuries(t=None):
