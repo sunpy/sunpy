@@ -1,6 +1,6 @@
 """
-The WCS package provides functions to parse a World Coordinate System (WCS) fits 
-header for solar images as well as convert between various solar coordinate
+The WCS package provides functions to parse a World Coordinate System (WCS) 
+FITS header for solar images as well as convert between various solar coordinate
 systems. The solar coordinates supported are
 
 * Helioprojective-Cartesian (HPC): The most often used solar coordinate system.
@@ -17,19 +17,19 @@ systems. The solar coordinates supported are
     sphere.
 * Stonyhurst-Heliographic (HG): Expressed positions on the Sun using longitude 
     and latitude on the solar sphere but with the origin which is at the 
-    intersection of the solar equator and the central meridian as seen from Earth. 
-    This means that the coordinate system remains fixed with respect to Earth 
-    while the Sun rotates underneath it.
+    intersection of the solar equator and the central meridian as seen from 
+    Earth. This means that the coordinate system remains fixed with respect to 
+    Earth while the Sun rotates underneath it.
 * Carrington-Heliographic (HG, /CARRINGTON): Carrington longitude is offset 
-        from Stonyhurst longitude by a time-dependent scalar value, L0. At the 
-        start of each Carrington rotation, L0 = 360, and steadily decreases 
-        until it reaches L0 = 0, at which point the next Carrington 
-        rotation starts. 
+    from Stonyhurst longitude by a time-dependent scalar value, L0. At the 
+    start of each Carrington rotation, L0 = 360, and steadily decreases 
+    until it reaches L0 = 0, at which point the next Carrington rotation 
+    starts. 
 
 References
 ----------
-* `Thompson (2006), A&A, 449, 791 <http://www.aanda.org/index.php?option=com_article&access=doi&doi=10.1051/0004-6361:20054262&Itemid=129>` 
-    `PDF <http://fits.gsfc.nasa.gov/wcs/coordinates.pdf>`
+* Thompson (2006), A&A, 449, 791 <http://dx.doi.org/10.1051/0004-6361:20054262>
+* PDF <http://fits.gsfc.nasa.gov/wcs/coordinates.pdf>
 
 Note that SOLAR_B0, HGLT_OBS, and CRLT_OBS are all synonyms.
 """
@@ -66,10 +66,12 @@ def get_observer_position(header):
 def get_center(header, axis=None):
     """Return the center of the map."""
     x = (header.get('cdelt1') * (header.get('naxis1') - 1) / 2 + 
-         header.get('crval1') - (header.get('crpix1') - 1) * header.get('cdelt1'))
+         header.get('crval1') - (header.get('crpix1') - 1) * 
+         header.get('cdelt1'))
     
     y = (header.get('cdelt2') * (header.get('naxis2') - 1) / 2 + 
-         header.get('crval2') - (header.get('crpix2') - 1) * header.get('cdelt2'))
+         header.get('crval2') - (header.get('crpix2') - 1) * 
+         header.get('cdelt2'))
     
     if axis is 'x':
         return x
@@ -160,7 +162,8 @@ def convert_pixel_to_data(header, x = None, y = None):
     
     # first assume that coord is just [x,y]
     if (x is None) and (y is None):
-        x, y = np.meshgrid(np.arange(get_shape(header)[0]), np.arange(get_shape(header)[1]))
+        x, y = np.meshgrid(np.arange(get_shape(header)[0]), 
+                           np.arange(get_shape(header)[1]))
 
     # note that crpix[] counts pixels starting at 1
     coordx = (x - (crpix[0] - 1) ) * cdelt[0] + crval[0]
@@ -207,10 +210,10 @@ def convert_hpc_hcc_xyz(header, hpx, hpy, distance=None):
     c = np.array([convert_angle_units(unit=get_units(header, axis='x')), 
                   convert_angle_units(unit=get_units(header, axis='y'))])
 
-    cosx = np.cos(hpx* c[0])
-    sinx = np.sin(hpx* c[0])
-    cosy = np.cos(hpy* c[1])
-    siny = np.sin(hpy* c[1])
+    cosx = np.cos(hpx * c[0])
+    sinx = np.sin(hpx * c[0])
+    cosy = np.cos(hpy * c[1])
+    siny = np.sin(hpy * c[1])
 
     dsun = header.get('dsun_obs')
     rsun = header.get('rsun_ref')
@@ -233,10 +236,12 @@ def convert_hcc_hpc(header, x, y, units = None, distance=None):
 
     #Distance to the Sun but should we use our own?
     dsun = header.get('dsun_obs')
-    # Should we use the rsun_ref defined in the fits file or our local (possibly different/more correct) definition
+    # Should we use the rsun_ref defined in the FITS file or our local 
+    # (possibly different/more correct) definition?
     rsun = header.get('rsun_ref')
     
-    # Calculate the z coordinate by assuming that it is on the surface of the Sun
+    # Calculate the z coordinate by assuming that it is on the surface of the 
+    # Sun
     z = rsun ** 2 - x ** 2 - y ** 2
     z = np.sqrt( z )
     
@@ -273,7 +278,8 @@ def convert_hcc_hg(header, x, y, z = None):
     return np.rad2deg(hgln), np.rad2deg(hglt)
 
 def convert_hg_hcc(header, hgln, hglt, occultation = False):
-    """Convert Heliographic coordinates (given in degrees) to Heliocentric-Cartesian."""
+    """Convert Heliographic coordinates (given in degrees) to 
+    Heliocentric-Cartesian."""
     x, y, z = convert_hg_hcc_xyz(header, hgln, hglt)
     
     if occultation:
@@ -284,7 +290,8 @@ def convert_hg_hcc(header, hgln, hglt, occultation = False):
     return x, y
 
 def convert_hg_hcc_xyz(header, hgln, hglt):
-    """Convert Heliographic coordinates (given in degrees) to Heliocentric-Cartesian."""
+    """Convert Heliographic coordinates (given in degrees) to 
+    Heliocentric-Cartesian."""
     # using equations 11 in Thompson (2006), A&A, 449, 791-803
 
     cx = np.deg2rad(1)
@@ -316,13 +323,15 @@ def convert_hg_hcc_xyz(header, hgln, hglt):
     return x, y, z
 
 def convert_hg_hpc(header, hglon, hglat, units = None, occultation = False):
-    """Convert Heliographic coordinates (HG) to Helioprojective-Cartesian (HPC)"""
+    """Convert Heliographic coordinates (HG) to Helioprojective-Cartesian 
+    (HPC)"""
     tempx, tempy = convert_hg_hcc(header, hglon, hglat, occultation)
     x, y = convert_hcc_hpc(header, tempx, tempy, units = units)
     return x, y
 
 def convert_hpc_hg(header, x, y):
-    """Convert Helioprojective-Cartesian (HPC) to Heliographic coordinates (HG)"""
+    """Convert Helioprojective-Cartesian (HPC) to Heliographic coordinates 
+    (HG)"""
     tempx, tempy = convert_hpc_hcc(header, x, y)
     lon, lat = convert_hcc_hg(header, tempx, tempy)
     return lon, lat
