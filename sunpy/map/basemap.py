@@ -413,7 +413,7 @@ class BaseMap(np.ndarray):
         axes = fig.add_subplot(111)
         axes.set_title("%s %s" % (self.name, self.date))
         
-        if self.header.get('CTYPE1') == 'HPLT-TAN':
+        if self.header.get('CTYPE1') == 'HPLN-TAN':
             axes.set_xlabel('X-position [' + self.units['x'] + ']')
         
         if self.header.get('CTYPE1') == 'HG':

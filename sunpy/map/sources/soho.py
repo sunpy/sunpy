@@ -8,7 +8,6 @@ from sunpy.map.basemap import BaseMap
 from sunpy.cm import cm
 from sunpy.util import util
 from matplotlib import colors
-import sunpy.wcs as wcs
 
 class EITMap(BaseMap):
     """EIT Image Map definition"""
