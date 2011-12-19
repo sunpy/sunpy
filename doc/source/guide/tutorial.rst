@@ -111,7 +111,7 @@ IDL.
 Further, for each of the two query APIs there are interactive and
 non-interactive versions available, depending on the type of work you are doing.
 
-The below example demonstrates a simple query for STEREO EUVI data using the
+The below example demonstrates a simple query for SOHO EIT data using the
 non-interactive version of the main API::
 
     from sunpy.net import vso
@@ -121,15 +121,15 @@ non-interactive version of the main API::
     
     # build our query
     result = client.query(
-        vso.attrs.Time((2011, 9, 20), (2011, 9, 21)),
-        vso.attrs.Instrument('euvi')
+        vso.attrs.Time((2001, 9, 20, 8), (2011, 9, 20, 9)),
+        vso.attrs.Instrument('eit')
     )
     
     # print the number of matches
     print("Number of records found: %d " % result.no_records())
    
     # download matches to /download/path
-    res = client.get(result, path="/download/path").wait()
+    res = client.get(result, path="/download/path/{file}").wait()
 
 Note that specifying a path is optional and if you do not specify one the files
 will simply be downloaded into a temporary directory (e.g. /tmp/xyz).

@@ -1,8 +1,8 @@
 from __future__ import absolute_import
 
 from datetime import datetime
-
 from sunpy.util import util
+from numpy.testing import assert_almost_equal
 
 LANDING = datetime(1966, 2, 3)
 
@@ -40,8 +40,11 @@ def test_anytim_ISO():
         assert util.anytim(k) == v
         
 def test_julian_day():
-    assert util.julian_day('2000-03-01 15:30:26') == 2451605.1461111
+    assert util.julian_day('1900-01-01 12:00') == 2415021.0
     assert util.julian_day(LANDING) == 2439159.5
+    result = util.julian_day('2000-03-01 15:30:26')
+    assert_almost_equal(result, 2451605.1461111, decimal=3)
+
     
 def test_break_time():
     assert util.break_time(datetime(2007, 5, 4, 21, 8, 12)) == '20070504_210812'
