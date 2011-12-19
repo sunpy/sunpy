@@ -34,18 +34,19 @@ http://nssdc.gsfc.nasa.gov/planetary/factsheet/sunfact.html
 TODO: 
 ----------
 Need better sources as well as error values.
-Create a cheat sheet function which prints out key solar values
+Create a cheat sheet function which prints out key solar values.
 """
 from __future__ import absolute_import
 
 import scipy.constants as _cd
-from . import _constants as _con
+from . import _si as _con
 
 physical_constants = _con.physical_constants
 
 au = astronomical_unit = _cd.au
 
-# The following functions (value, precision, unit, find) are copied directly from Scipy constants
+# The following functions (value, precision, unit, find) are copied directly 
+# from SciPy constants.
 def value(key) :
     """
     Value in physical_constants indexed by key
@@ -132,7 +133,7 @@ def precision(key) :
 
 def find(sub=None, disp=False):
     """
-    Return list of physical_constant keys containing a given string
+    Return list of physical_constants keys containing a given string
 
     Parameters
     ----------
@@ -171,7 +172,7 @@ def find(sub=None, disp=False):
 
 def print_all(key = None):
     """
-    Prints out the complete list of physical_constant to the screen or
+    Prints out the complete list of physical_constants to the screen or
     one single value
     
     Parameters
@@ -189,24 +190,28 @@ def print_all(key = None):
         dictionary literal object, does not itself possess a docstring.
 
     """
-    column_width = [25,20,20,20]
-    number_of_columns = 4
-    table_width = column_width[0] + column_width[1] + column_width[2] + column_width[3]
-    format_string = '{0:<' + str(column_width[0]) + '}' + '{1:>' + str(column_width[1]) + '}' + '{2:>' + str(column_width[2]) + '}' + '{3:>' + str(column_width[3]) + '}'
-    print(format_string.format('Name' ,'Value', 'Units', 'Precision'))
+    column_width = [25, 20, 20, 20]
+    table_width = (column_width[0] + column_width[1] + column_width[2] 
+                   + column_width[3])
+    format_string = ('{0:<' + str(column_width[0]) + '}' + '{1:>' + 
+                    str(column_width[1]) + '}' + '{2:>' + str(column_width[2]) 
+                    + '}' + '{3:>' + str(column_width[3]) + '}')
+    print(format_string.format('Name', 'Value', 'Units', 'Precision'))
     print(('{:-^' + str(table_width) + '}').format(''))
 
     if key is None:
         for key in physical_constants:
-            print(format_string.format(key, str(value(key)), unit(key), str(precision(key))))
+            print(format_string.format(key, str(value(key)), unit(key), 
+                                       str(precision(key))))
     else: 
-            print(format_string.format(key, str(value(key)), unit(key), str(precision(key))))
+            print(format_string.format(key, str(value(key)), unit(key), 
+                                       str(precision(key))))
 
-# spectral class is not included in physical constants since it is not a number
+# Spectral class is not included in physical constants since it is not a number
 spectral_classification = 'G2V'
 
-# The following variables from _constants are brough out by making them accessible 
-# through a call such as sun.volume
+# The following variables from _constants are brought out by making them 
+# accessible through a call such as sun.volume
 equatorial_radius = radius = value('radius')
 equatorial_diameter = value('diameter')
 volume = value('volume')
