@@ -128,6 +128,8 @@ class CompositeMap:
         out : matplotlib.figure.Figure
             A Matplotlib figure instance representing the composite map plot
         """
+        import numpy as np
+
         if overlays is None:
             overlays = []
 
@@ -139,8 +141,6 @@ class CompositeMap:
         
         axes.set_xlabel('X-position [' + self._maps[0].units['x'] + ']')
         axes.set_ylabel('Y-position [' + self._maps[0].units['y'] + ']')
-        
-        # TODO: if isinstance(x, RHESSIMap): use contour()...
         
         # Plot layers of composite map
         for m in self._maps:
@@ -157,7 +157,9 @@ class CompositeMap:
             
             # Use contour for contour data, and imshow otherwise
             if isinstance(m, RHESSIMap):
-                plt.contourf(m, **params)
+                # Set data with values <= 0 to transparent
+                contour_data = np.ma.masked_array(m, mask=(m <= 0))
+                plt.contourf(contour_data, **params)
             else:
                 plt.imshow(m, **params)
         
