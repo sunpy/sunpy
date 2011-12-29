@@ -24,11 +24,12 @@ physical_constants = {}
 # physical_constants[name] = (val, units, uncert)
 physical_constants['mass'] = (1.9884e30, 'kg', -1)
 physical_constants['radius'] = (6.95508e8, 'm', -1)
-physical_constants['diameter'] = (physical_constants['radius'][0]*2.0, 'm', -1)
-physical_constants['volume'] = (4 / 3.*np.pi * 
-                                physical_constants['radius'][0]**3, 'm^3', -1)
+physical_constants['diameter'] = (physical_constants['radius'][0] * 2.0, 
+                                  'm', -1)
+physical_constants['volume'] = (4 / 3. * np.pi * 
+                                physical_constants['radius'][0] ** 3, 'm^3', -1)
 physical_constants['surface area'] = (4 * np.pi * 
-                                      physical_constants['radius'][0]**2, 
+                                      physical_constants['radius'][0] ** 2, 
                                       'm^2', -1)
 physical_constants['average density'] = (physical_constants['mass'][0] / 
                                          physical_constants['volume'][0], 
@@ -46,7 +47,7 @@ physical_constants['ellipticity'] = (0.00005, 'None', -1)
 physical_constants['GM'] = (_cd.G * physical_constants['mass'][0], 'm^3 s^-2', 
                             -1)
 physical_constants['surface gravity'] = (physical_constants['GM'][0] / 
-                                         physical_constants['radius'][0]**2, 
+                                         physical_constants['radius'][0] ** 2, 
                                          'kg m^-3', -1)
 physical_constants['escape velocity'] = (1e-3 * np.sqrt(2 * 
                                          physical_constants['GM'][0] / 
