@@ -12,7 +12,7 @@ from __future__ import absolute_import
 
 # TODO: The image is not in the right orientation
 # TODO: Check to see if the code is correct for finding out what detectors are included in the fits file
-# TODO: The result of backprojection should be a map, probably
+# TODO: The result of backprojection should be a map
 
 import numpy as np
 import pyfits
@@ -22,7 +22,7 @@ import sunpy
 grid_pitch = [4.52467, 7.85160, 13.5751, 23.5542, 40.7241, 70.5309, 122.164, 211.609, 366.646]
 grid_orientation = [3.53547, 2.75007, 3.53569, 2.74962, 3.92596, 2.35647, 0.786083, 0.00140674, 1.57147]
 
-def backproject(calibrated_event_list, detector=8, pixel_size=[1.,1.], image_dim=[64,64]):
+def _backproject(calibrated_event_list, detector=8, pixel_size=[1.,1.], image_dim=[64,64]):
     """Given a stacked calibrated event list fits file create a back projection image for an individual detectors."""
     fits = pyfits.open(calibrated_event_list)
     control_parameters = fits[1]
@@ -60,8 +60,15 @@ def backproject(calibrated_event_list, detector=8, pixel_size=[1.,1.], image_dim
 
 def backprojection(calibrated_event_list, pixel_size=[1.,1.], image_dim=[64,64]):
     """Given a stacked calibrated event list fits file create a back projection image."""
+    import sunpy.sun.constants as sun
+    from sunpy.sun.sun import angular_size
+    from sunpy.sun.sun import sunearth_distance
+    
     calibrated_event_list = sunpy.RHESSI_EVENT_LIST
     fits = pyfits.open(calibrated_event_list)
+    info_parameters = fits[2]
+    xyoffset = info_parameters.data.field('USED_XYOFFSET')[0]
+    
     image = np.zeros(image_dim)
     
     #find out what detectors were used
@@ -69,6 +76,29 @@ def backprojection(calibrated_event_list, pixel_size=[1.,1.], image_dim=[64,64])
     detector_list = (np.arange(9)+1) * np.array(det_index_mask)
     for detector in detector_list:
         if detector > 0:
-            image = image + backproject(calibrated_event_list, detector=detector, pixel_size=pixel_size, image_dim=image_dim)
+            image = image + _backproject(calibrated_event_list, detector=detector, pixel_size=pixel_size, image_dim=image_dim)
+    
+    dict_header = {
+        "CDELT1": pixel_size[0],
+        "NAXIS1": image_dim[0],
+        "CRVAL1": xyoffset[0],
+        "CRPIX1": image_dim[0]/2 + 0.5, 
+        "CUNIT1": "arcsec",
+        "CTYPE1": "HPLN-TAN",
+        "CDELT2": pixel_size[1],
+        "NAXIS2": image_dim[1],
+        "CRVAL2": xyoffset[1],
+        "CRPIX2": image_dim[0]/2 + 0.5,
+        "CUNIT2": "arcsec",
+        "CTYPE2": "HPLT-TAN",
+        "HGLT_OBS": 0,
+        "HGLN_OBS": 0,
+        "RSUN_OBS": 963.879683,
+        "RSUN_REF": sun.radius,
+        "DSUN_OBS": 148940609626.98
+    }
+    
+    header = sunpy.map.MapHeader(dict_header)
+    map = sunpy.map.BaseMap(image, header)
             
-    return image        
+    return map
