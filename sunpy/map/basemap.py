@@ -186,7 +186,19 @@ class BaseMap(np.ndarray):
         return np.array(self, copy=False, subok=False).std(*args, **kwargs)
     
     @classmethod
-    def map_from_filepath(cls, filepath):
+    def parse_file(cls, filepath):
+        """Reads in a map file and returns a header and data array"""
+        from sunpy.io import read_file
+        from sunpy.map.header import MapHeader
+        
+        data, dict_header = read_file(filepath)
+        
+        header = MapHeader(dict_header)
+        
+        return header, data
+    
+    @classmethod
+    def read(cls, filepath):
         """Map class factory
     
         Attempts to determine the type of data associated with input and returns
@@ -203,12 +215,10 @@ class BaseMap(np.ndarray):
         out : Map
             Returns a Map instance for the particular type of data loaded.
         """
-        from sunpy.io import read_file
-        from sunpy.map.header import MapHeader
-        
-        data, dict_header = read_file(filepath)
-        
-        header = MapHeader(dict_header)
+        header, data = cls.parse_file(filepath)
+ 
+        if cls.__name__ is not "BaseMap":
+            return cls(data, header)
 
         for cls in BaseMap.__subclasses__():
             if cls.is_datasource_for(header):
