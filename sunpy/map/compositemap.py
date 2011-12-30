@@ -44,7 +44,7 @@ class CompositeMap:
             if isinstance(item, BaseMap):
                 m = item
             else:
-                m = BaseMap.map_from_filepath(item)
+                m = BaseMap.read(item)
             
             # Set z-order and alpha values for the map
             m.zorder = zorders[i]
@@ -73,7 +73,7 @@ class CompositeMap:
         if zorder is None:
             zorder = max([m.zorder for m in self._maps]) + 10
         
-        m = BaseMap.map_from_filepath(input_)
+        m = BaseMap.read(input_)
         m.zorder = zorder
         m.alpha = alpha
         
