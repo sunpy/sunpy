@@ -3,8 +3,8 @@ Contains astronomical and physical constants for use in SunPy or other
 places.
 
 The package contains a `~sunpy.sun._cgs` and `~sunpy.sun._si`
-module that define constants in CGS and SI units, respectively.  A typical use
-case might be::
+module that define constants in CGS and SI units, respectively.  
+A typical use case might be::
 
     from sunpy.sun._cgs import physical_constants as con
 

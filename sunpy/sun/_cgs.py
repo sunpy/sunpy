@@ -3,7 +3,6 @@ CGS values of solar physics constants.
 """
 from __future__ import absolute_import
 
-import scipy.constants as _cd
 import numpy as np
 from . import _si
 
