@@ -6,7 +6,7 @@
     --------
     To make a GOES plot
     >>> import sunpy.instr.goes as goes
-    >>> goes.get_goes_file(['2011/04/04', '2011/04/05'])
+    >>> f = goes.get_goes_file(['2011/04/04', '2011/04/05'])
     >>> data = sunpy.instr.goes.parse_goes(f[0])
     >>> goes.show(res.get('time_tag'), res.get('A_FLUX'), res.get('B_FLUX'))
     
