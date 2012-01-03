@@ -129,7 +129,7 @@ class QueryResponse(list):
         # Warn about -1 values?
         return sum(record.size for record in self if record.size > 0)
     
-    def no_records(self):
+    def num_records(self):
         """ Return number of records. """
         return len(self)
     
@@ -141,6 +141,16 @@ class QueryResponse(list):
             datetime.strptime(
                 max(record.time.end for record in self), TIMEFORMAT)
         )
+
+    def show(self):
+        """Print out human-readable summary of records retreived"""
+        print('Start time,End time,Source,Instrument,Type')
+        for record in self:
+            print(str(datetime.strptime(record.time.start, TIMEFORMAT)) + '\t' + 
+                  str(datetime.strptime(record.time.end, TIMEFORMAT)) + '\t' + 
+                  record.source + '\t' +
+                  record.instrument + '\t' + 
+                  record.extent.type)
 
     def add_error(self, exception):
         self.errors.append(exception)
