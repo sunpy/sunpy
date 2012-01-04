@@ -1,22 +1,8 @@
-# -*- coding: utf-8 -*-
-#
-# Author: Steven Christe <steven.d.christe@nasa.gov>
-#
-# <License info will go here...>
-
-from __future__ import absolute_import
-
 """Provides Sun-related parameters
 
-    The following code is heavily based on IDL function get_sun.pro
-    which itself is based on algorithms presented in the book
-    Astronomical Formulae for Calculators, by Jean Meeus.
-
-    Notes:
-
-    Keith (2011/03/29)
-     If possible, it might be helpful to encode some of the magic
-     numbers as constant, e.g. CONSTANT_NAME = 12345.6
+The following code is heavily based on IDL function get_sun.pro which itself 
+is based on algorithms presented in the book Astronomical Formulae for 
+Calculators, by Jean Meeus.
 
 A correct answer set to compare to
 
@@ -33,6 +19,10 @@ Position angle of north pole in deg = 2.0102649
 Carrington Rotation Number = 1971.4091        check!
 
 """
+from __future__ import absolute_import
+
+__authors__ = ["Steven Christe"]
+__email__ = "steven.d.christe@nasa.gov"
 
 import math
 import cmath

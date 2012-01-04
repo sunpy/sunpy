@@ -5,6 +5,7 @@
 # <License info will go here...>
 
 from __future__ import absolute_import
+from scipy.constants import constants as con
 
 """Provides utility programs.
 
@@ -21,7 +22,8 @@ import numpy as np
 
 def toggle_pylab(fn):
     """ A decorator to prevent functions from opening matplotlib windows
-        unexpectedly when sunpy is run in interactive shells like ipython --pylab. 
+        unexpectedly when sunpy is run in interactive shells like ipython 
+        --pylab. 
 
         Toggles the value of matplotlib.pyplot.isinteractive() to preserve the
         users' expections of pylab's behaviour in general. """
@@ -39,9 +41,11 @@ def toggle_pylab(fn):
 def anytim(time_string=None):
     """Given a time string will parse and return a datetime object.
     If no string is given then returns the datetime object for the current time.
-    If a datetime object is passed in by mistake then it returns it without an error.
+    If a datetime object is passed in by mistake then it returns it without an 
+    error.
     
-    TODO: add ability to parse tai (International Atomic Time seconds since Jan 1, 1958)
+    TODO: add ability to parse tai (International Atomic Time seconds since 
+    Jan 1, 1958)
     """
     if time_string is None:
         return datetime.now()
@@ -60,12 +64,14 @@ def anytim(time_string=None):
              "%Y-%m-%dT%H:%M:%S.%fZ",   # Example 2007-05-04T21:08:12.999Z
              "%Y-%m-%d %H:%M:%S",       # Example 2007-05-04 21:08:12
              "%Y-%m-%dT%H:%M:%S",       # Example 2007-05-04T21:08:12
+             "%Y-%m-%d %H:%M",          # Example 2007-05-04 21:08
              "%Y%m%dT%H%M%S",           # Example 20070504T210812
              "%Y-%b-%d %H:%M:%S",       # Example 2007-May-04 21:08:12
              "%Y-%b-%d %H:%M",          # Example 2007-May-04 21:08
              "%Y-%b-%d",                # Example 2007-May-04
              "%Y-%m-%d",                # Example 2007-05-04
-             "%Y/%m/%d"]                # Example 2007/05/04 
+             "%Y/%m/%d",                # Example 2007/05/04
+             "%Y%m%d_%H%M%S"]           # Example 20070504_210812
         for time_format in time_format_list: 
             try: 
                 return datetime.strptime(time_string, time_format)
@@ -74,28 +80,38 @@ def anytim(time_string=None):
     
         raise ValueError("%s is not a valid time string!" % time_string)
 
+# The number of days between Jan 1 1900 and the Julian reference date of 
+# 12:00 noon Jan 1, 4713 BC
+JULIAN_DAY_ON_NOON01JAN1900 = 2415021.0
+
 def julian_day(t=None):
-    """Returns the (fractional) Julian day defined as the number of days between the queried day and 
-    the reference date of 12:00 (noon) Jan 1, 4713 BC."""
+    """Returns the (fractional) Julian day defined as the number of days 
+    between the queried day and the reference date of 12:00 (noon) Jan 1, 4713 
+    BC."""
     # Good online reference for fractional julian day
     # http://www.stevegs.com/jd_calc/jd_calc.htm
     
-    JULIAN_DAY_ON_NOON01JAN1900 = 2415020.5
     JULIAN_REF_DAY = anytim('1900/1/1 12:00:00')
     time = anytim(t)
     
     tdiff = time - JULIAN_REF_DAY
- 
-    julian = tdiff.days + JULIAN_DAY_ON_NOON01JAN1900 + 1
+    
+    julian = tdiff.days + JULIAN_DAY_ON_NOON01JAN1900
    
-    result = julian + 1/24.*(time.hour + time.minute/60.0 + time.second/(60.*60.))
+    result = julian + 1/24.*(time.hour + time.minute/60.0 + 
+                             time.second/(60.*60.))
+
+    # This is because the days in datetime objects start at 00:00, 
+    # not 12:00 as for Julian days.
+    if time.hour >= 12:
+        result = result - 0.5
+    else:
+        result = result + 0.5
+
     return result
 
 def julian_centuries(t=None):
-    """Returns the number of Julian centuries since 1900 January 0.5"""
-    # The number of days between Jan 1 1900 and the Julian
-    # reference date of 12:00 noon Jan 1, 4713 BC
-    JULIAN_DAY_ON_NOON01JAN1900 = 2415020.5
+    """Returns the number of Julian centuries since 1900 January 0.5."""
     DAYS_IN_YEAR = 36525.0
 
     result = (julian_day(t) - JULIAN_DAY_ON_NOON01JAN1900) / DAYS_IN_YEAR
@@ -107,6 +123,13 @@ def day_of_year(t=None):
     time = anytim(t)
     time_diff = anytim(t) - datetime(time.year, 1, 1, 0, 0, 0)
     result = time_diff.days + time_diff.seconds/SECONDS_IN_DAY
+    return result
+
+def break_time(t=None):
+    """Given a time returns a string. Useful for naming files."""
+    #TODO: should be able to handle a time range
+    time = anytim(t)
+    result = t.strftime("%Y%m%d_%H%M%S")
     return result
 
 def degrees_to_hours(angle):
@@ -158,7 +181,7 @@ for k, v in frequency:
     units[k] = ('frequency', v)
 
 def to_angstrom(value, unit):
-    C = 299792458
+    C = 299792458.
     ANGSTROM = units['Angstrom'][1]  
     try:
         type_, n = units[unit]
@@ -176,6 +199,16 @@ def to_angstrom(value, unit):
         return x * (1 / (8065.53 * value))
     else:
         raise ValueError('Unable to convert %s to Angstrom' % type_)
+
+def kelvin_to_keV(temperature):
+    """Convert from temperature expressed in Kelvin to a 
+    temperature expressed in keV"""
+    return temperature / (con.e / con.k * 1000.0) 
+
+def keV_to_kelvin(temperature):
+    """Convert from temperature expressed in keV to a temperature 
+    expressed in Kelvin"""
+    return temperature * (con.e / con.k * 1000.0) 
 
 def unique(itr, key=None):
     items = set()

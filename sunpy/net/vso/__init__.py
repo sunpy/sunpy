@@ -546,7 +546,7 @@ class VSOClient(object):
                     except NoData:
                         res.add_error(DownloadFailed(dresponse))
                         continue
-                    except Exception, e:
+                    except Exception:
                         # FIXME: Is this a good idea?
                         res.add_error(DownloadFailed(dresponse))
             elif code == '300' or code == '412' or code == '405':

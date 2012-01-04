@@ -1,5 +1,3 @@
-from __future__ import absolute_import
-
 """
 This module provides a wrapper around the Helioviewer API.
 
@@ -27,8 +25,8 @@ such as writing a wrapper around the OpenJPEG library. An alternative solution
 might be to add a new method to the Helioviewer API which returns the header
 information (as a dictionary) and a URL or id which can be used to retrieve
 the image data.
-    
 """
+from __future__ import absolute_import
 
 #pylint: disable=E1101,F0401,W0231
 __author__ = ["Keith Hughitt"]

@@ -1,7 +1,6 @@
+"""JPEG 2000 File Reader"""
 from __future__ import absolute_import
-"""
-JPEG 2000 File Reader
-"""
+
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
@@ -45,7 +44,9 @@ def get_data(filepath, j2k_to_image="j2k_to_image"):
         j2k_to_image = "j2k_to_image.exe"
 
     if which(j2k_to_image) is None:
-        raise MissingOpenJPEGBinaryError()
+        raise MissingOpenJPEGBinaryError("You must first install the OpenJPEG "
+                                         "binaries before using this "
+                                         "funcitonality")
     
     jp2filename = os.path.basename(filepath)
     
@@ -99,7 +100,7 @@ def which(program):
     def is_exe(fpath):
         return os.path.exists(fpath) and os.access(fpath, os.X_OK)
 
-    fpath, fname = os.path.split(program)
+    fpath, fname = os.path.split(program) #pylint: disable=W0612
 
     if fpath:
         if is_exe(program):
