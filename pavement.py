@@ -25,6 +25,7 @@ options(
         hostpath = 'www/sunpy/doc'
     ),
     sphinx = Bunch(docroot='doc/source', builddir="_build"),
+    upload_docs = Bunch(upload_dir='doc/html'),
     pylint = Bunch(quiet=False)
 )
 
@@ -60,7 +61,7 @@ def prepare_docs():
     shutil.move(sourcedir, destdir)
     
 @task
-@needs('paver.doctools.html')
+@needs('paver.doctools.html', 'upload_docs')
 @cmdopts([('username=', 'u', 'Username')])
 def deploy(options):
     """Update the docs on sunpy.org"""
@@ -83,7 +84,7 @@ def pylint(options):
     if options.quiet:
         arguments.extend(["-rn"])
         
-    arguments.extend(["sunpy/",  "tests/"])
+    arguments.extend(["sunpy/"])
     lint.Run(arguments)
     
 #
@@ -93,10 +94,16 @@ def pylint(options):
 @needs('paver.doctools.doc_clean')
 def clean():
     """Cleans up build files"""
-    print("Removing build files")
-    for dir_ in ['doc/html', 'doc/source/_build', 'build', 'dist', 'sunpy.egg-info']:
+    from glob import glob
+    
+    dirs = (['doc/html', 'doc/source/_build', 'build', 'dist', 'sunpy.egg-info'] + 
+             glob('doc/source/reference/generated') + 
+             glob('doc/source/reference/*/generated'))
+
+    for dir_ in dirs:
         if os.path.exists(dir_):
             shutil.rmtree(dir_)
-    for file_ in ['MANIFEST']:
+
+    for file_ in glob('distribute-*') + ['MANIFEST']:
         if os.path.exists(file_):
             os.remove(file_)
