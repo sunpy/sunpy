@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 # Author: Florian Mayer <florian.mayer@bitsrc.org>
 
+#pylint: disable=W0613
+
 from __future__ import absolute_import
 
 import pytest
@@ -9,7 +11,7 @@ from sunpy.net import vso
 from sunpy.net.vso import attrs as va
 from sunpy.net import attr
 
-from sunpy.util.util import energy, frequency, wavelength
+from sunpy.util.util import energy, frequency
 
 def pytest_funcarg__eit(request):
     return va.Instrument('eit')
