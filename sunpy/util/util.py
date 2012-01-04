@@ -12,7 +12,8 @@ from scipy.constants import constants as con
 
 __all__ = ["toggle_pylab", "anytim", "julian_day", "julian_centuries", 
            "day_of_year", "break_time", "degrees_to_hours", "degrees_to_arc",
-           "kelvin_to_keV", "keV_to_kelvin", "unique"]
+           "kelvin_to_keV", "keV_to_kelvin", "unique", "print_table", 
+           "to_angstrom"]
 
 from matplotlib import pyplot
 from datetime import datetime
