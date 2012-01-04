@@ -24,7 +24,7 @@ from suds import client, TypeNotFound
 from sunpy.net import download
 from sunpy.net.attr import and_, Attr
 from sunpy.net.vso.attrs import walker, TIMEFORMAT
-from sunpy.util.util import anytim, to_angstrom
+from sunpy.util.util import anytim, to_angstrom, print_table
 
 DEFAULT_URL = 'http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl'
 DEFAULT_PORT = 'nsoVSOi'
@@ -144,14 +144,17 @@ class QueryResponse(list):
 
     def show(self):
         """Print out human-readable summary of records retreived"""
-        print('Start time,End time,Source,Instrument,Type')
-        for record in self:
-            print(str(datetime.strptime(record.time.start, TIMEFORMAT)) + '\t' + 
-                  str(datetime.strptime(record.time.end, TIMEFORMAT)) + '\t' + 
-                  record.source + '\t' +
-                  record.instrument + '\t' + 
-                  record.extent.type)
 
+        table = [[str(datetime.strptime(record.time.start, TIMEFORMAT)), 
+          str(datetime.strptime(record.time.end, TIMEFORMAT)), 
+          record.source,
+          record.instrument,
+          record.extent.type] for record in self]
+        table.insert(0, ['----------','--------','------','----------','----'])        
+        table.insert(0, ['Start time','End time','Source','Instrument','Type'])
+
+        print(print_table(table, colsep = '  ', linesep='\n'))
+            
     def add_error(self, exception):
         self.errors.append(exception)
 

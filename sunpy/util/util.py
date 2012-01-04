@@ -18,6 +18,7 @@ from matplotlib import pyplot
 from datetime import datetime
 from datetime import timedelta
 import numpy as np
+from itertools import izip, imap
 
 # The number of days between Jan 1 1900 and the Julian reference date of 
 # 12:00 noon Jan 1, 4713 BC
@@ -224,3 +225,11 @@ def unique(itr, key=None):
             if x not in items:
                 yield elem
                 items.add(x)
+
+def print_table(lst, colsep=' ', linesep='\n'):
+    width = [max(imap(len, col)) for col in izip(*lst)]
+    return linesep.join(
+        colsep.join(
+            col.ljust(n) for n, col in izip(width, row)
+        ) for row in lst
+    )
