@@ -10,7 +10,8 @@ import csv
 from datetime import datetime, date, time  
 import sunpy.util
 
-"""Provides programs to process and analyze EVE data.
+"""
+    Provides programs to process and analyze EVE data.
 
 """  
 
