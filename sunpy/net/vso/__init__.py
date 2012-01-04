@@ -518,7 +518,7 @@ class VSOClient(object):
         ]
         for dresponse in response.getdataresponseitem:
             for version, (from_, to) in GET_VERSION:
-                if dresponse.version >= version:
+                if getattr(dresponse, version, '0.6') >= version:
                     break
             else:
                 res.add_error(UnknownVersion(dresponse))
