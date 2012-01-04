@@ -32,8 +32,7 @@ import matplotlib.pyplot as plt
 import matplotlib.dates
 from datetime import datetime
 from sunpy.time import TimeRange
-from sunpy.util.util import break_time
-from sunpy.util.util import anytim
+from sunpy.util import break_time, anytim
 import urllib
 import csv
 

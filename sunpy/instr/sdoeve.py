@@ -8,7 +8,7 @@ from __future__ import absolute_import
 import urllib
 import csv
 from datetime import datetime, date, time  
-import sunpy.util
+from sunpy.util import anytim
 
 """
     Provides programs to process and analyze EVE data.
@@ -59,7 +59,6 @@ def get_l0cs_data(time_range):
     return 0
     
 def get_l0cs_date(date, kind = None):
-    from sunpy.util.util import anytim
     
     url_root = 'http://lasp.colorado.edu/eve/data/quicklook/L0CS/SpWx/'
     _date = anytim(date)
