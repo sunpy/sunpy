@@ -17,6 +17,7 @@ from __future__ import absolute_import
 import numpy as np
 import pyfits
 import sunpy
+from sunpy.util import anytim
 
 # Measured fixed grid parameters
 grid_pitch = [4.52467, 7.85160, 13.5751, 23.5542, 40.7241, 70.5309, 122.164, 211.609, 366.646]
@@ -63,11 +64,13 @@ def backprojection(calibrated_event_list, pixel_size=[1.,1.], image_dim=[64,64])
     import sunpy.sun.constants as sun
     from sunpy.sun.sun import angular_size
     from sunpy.sun.sun import sunearth_distance
+    from sunpy.time.util import TimeRange
     
     calibrated_event_list = sunpy.RHESSI_EVENT_LIST
     fits = pyfits.open(calibrated_event_list)
     info_parameters = fits[2]
     xyoffset = info_parameters.data.field('USED_XYOFFSET')[0]
+    time_range = TimeRange(info_parameters.data.field('ABSOLUTE_TIME_RANGE')[0])
     
     image = np.zeros(image_dim)
     
@@ -79,6 +82,7 @@ def backprojection(calibrated_event_list, pixel_size=[1.,1.], image_dim=[64,64])
             image = image + _backproject(calibrated_event_list, detector=detector, pixel_size=pixel_size, image_dim=image_dim)
     
     dict_header = {
+        "DATE-OBS": time_range.center().strftime("%Y-%m-%d %H:%M:%S"), 
         "CDELT1": pixel_size[0],
         "NAXIS1": image_dim[0],
         "CRVAL1": xyoffset[0],
@@ -93,9 +97,9 @@ def backprojection(calibrated_event_list, pixel_size=[1.,1.], image_dim=[64,64])
         "CTYPE2": "HPLT-TAN",
         "HGLT_OBS": 0,
         "HGLN_OBS": 0,
-        "RSUN_OBS": 963.879683,
+        "RSUN_OBS": angular_size(time_range.center()),
         "RSUN_REF": sun.radius,
-        "DSUN_OBS": 148940609626.98
+        "DSUN_OBS": sunearth_distance(time_range.center()) * sunpy.sun.constants.au
     }
     
     header = sunpy.map.MapHeader(dict_header)

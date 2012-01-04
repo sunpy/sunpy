@@ -24,7 +24,7 @@ from suds import client, TypeNotFound
 from sunpy.net import download
 from sunpy.net.attr import and_, Attr
 from sunpy.net.vso.attrs import walker, TIMEFORMAT
-from sunpy.util.util import anytim, to_angstrom, print_table
+from sunpy.util import anytim, to_angstrom, print_table
 
 DEFAULT_URL = 'http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl'
 DEFAULT_PORT = 'nsoVSOi'

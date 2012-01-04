@@ -3,7 +3,7 @@ from __future__ import absolute_import
 __all__ = ["TimeRange"]
 
 import datetime
-from sunpy.util.util import anytim
+from sunpy.util import anytim
 
 class TimeRange:
     """
@@ -24,9 +24,13 @@ class TimeRange:
     t1 : datetime
         The start time of the time range
     t2 : datetime
-        The end time fo the time range
+        The end time of the time range
+    center: datetime
+        The center of the time range
     dt : timediff
         The difference in time between the start time and end time
+    show : str
+        Display the time string in a human readable format
     days : float
         Number of days in the time range
     minutes: float
@@ -51,26 +55,28 @@ class TimeRange:
     """
     def __init__(self, a, b = None):
         if b is None:
-            if type(a[0]) == type('string'):
+            if isinstance(a[0],str) or isinstance(a[0], float):
                 self.t1 = anytim(a[0])
-            if type(a[1]) == type('string'):
+            if isinstance(a[1],str) or isinstance(a[1], float):
                 self.t2 = anytim(a[1])
             if type(a[1]) == type(datetime.timedelta(1)):
                 self.t2 = self.t1 + a[1]
-            if type(a[1]) == type(1):
-                self.t2 = self.t1 + datetime.timedelta(0,b)
+            if isinstance(a[1], int):
+                self.t2 = self.t1 + datetime.timedelta(0,a[1])                
         else:            
-            if type(a) == type('string'):
+            if isinstance(a,str) or isinstance(a, float):
                 self.t1 = anytim(a)
-            if type(b) == type('string'):
+            if isinstance(b,str) or isinstance(b, float):
                 self.t2 = anytim(b)
             if type(b) == type(datetime.timedelta(1)):
                 self.t2 = self.t1 + b
-            if type(b) == type(1):
-                self.t2 = self.t1 + datetime.timedelta(0,b)
-            
+            if isinstance(b, int):
+                self.t2 = self.t1 + datetime.timedelta(0,b) 
         self.dt = self.t2 - self.t1
-            
+    
+    def center(self):
+        return self.t1 + self.dt/2
+    
     def days(self):
         return self.dt.days
     
@@ -79,3 +85,7 @@ class TimeRange:
     
     def minutes(self):
         return self.dt.total_seconds()/60.0
+    
+    def show(self):
+        print(self.t1.strftime("%Y/%m/%d %H:%M:%S") + ' ' + 
+              self.t2.strftime("%Y/%m/%d %H:%M:%S"))
