@@ -74,7 +74,6 @@ class HMIMap(BaseMap):
             "meas": meas,
             "obs": "SDO",
             "name": "HMI %s" % meas,
-            "r_sun": header.get('rsun_obs'),
             "exptime": header.get('exptime')
         })
         return properties

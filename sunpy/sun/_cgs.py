@@ -3,9 +3,8 @@ CGS values of solar physics constants.
 """
 from __future__ import absolute_import
 
-import scipy.constants as _cd
 import numpy as np
-from . import _constants as _si
+from . import _si
 
 # This is really just to make the name shorter, so we can stick to a 
 # maximum of 79 characters per line.
