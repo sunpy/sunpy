@@ -37,9 +37,9 @@ def get_latest_l0cs_goes_data():
             if i == 0:
                 d = date(int(row[0]),int(row[2]),int(row[3]))
             else:
-                 t.append(time(int(row[0][0:2]),int(row[0][2:4])))
-                 xrsb.append(float(row[1]))
-                 xrsa.append(float(row[2])) 
+                t.append(time(int(row[0][0:2]),int(row[0][2:4])))
+                xrsb.append(float(row[1]))
+                xrsa.append(float(row[2])) 
             i = i + 1
            
     ts = [datetime.combine(d,s) for s in t]
@@ -58,14 +58,13 @@ def show_latest_l0cs_goes_data():
 def get_l0cs_data(time_range):
     return 0
     
-def get_l0cs_date(date, kind = None):
+def get_l0cs_date(request_date):
     
     url_root = 'http://lasp.colorado.edu/eve/data/quicklook/L0CS/SpWx/'
-    _date = anytim(date)
+    _date = anytim(request_date)
     
     url = url_root + _date.strftime('%Y/%Y%m%d') + '_EVE_L0CS_DIODES_1m.txt'
-    url_counts = url_root + _date.strftime('%Y/%Y%m%d') + 
-        '_EVE_L0CS_DIODES_1m_counts.txt'
+    url_counts = url_root + _date.strftime('%Y/%Y%m%d') + '_EVE_L0CS_DIODES_1m_counts.txt'
     
     f = urllib.urlretrieve(url)
     reader = csv.reader(open(f[0], "rb"), delimiter = ' ', skipinitialspace = True)
@@ -75,15 +74,17 @@ def get_l0cs_date(date, kind = None):
                    'q0esp', 'q1esp', 'q3esp', 'cmlat', 'cmlon')
     
     t = []
-
+    xrsb = []
+    xrsa = []
+    i = 0
     for row in reader:
         if row[0][0] != ';':
             #read the date line
             if i == 0:
                 d = date(int(row[0]),int(row[2]),int(row[3]))
             else:
-                 t.append(time(int(row[0][0:2]),int(row[0][2:4])))
-                 xrsb.append(float(row[1]))
-                 xrsa.append(float(row[2])) 
+                t.append(time(int(row[0][0:2]),int(row[0][2:4])))
+                xrsb.append(float(row[1]))
+                xrsa.append(float(row[2])) 
             i = i + 1
    
