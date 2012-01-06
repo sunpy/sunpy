@@ -29,7 +29,6 @@ class EITMap(BaseMap):
             "name": "EIT %s" % header.get('wavelnth'),
             "exptime": header.get('exptime'),
             'cmap': cm.get_cmap(name='sohoeit' + str(header.get('wavelnth'))),
-            "r_sun": header.get('solar_r')
         })
         return properties
         
@@ -71,7 +70,6 @@ class LASCOMap(BaseMap):
             "obs": "SOHO",
             "name": "LASCO %s" % header.get('detector'),
             "exptime": header.get("exptime"),
-            "r_sun": None
         })
         return properties
         

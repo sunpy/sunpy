@@ -1,0 +1,23 @@
+#!/bin/csh -f
+
+############################################################################
+# USAGE:
+#	sswidl - starts command line version of idl
+#	sswidl de - starts idlde version 
+############################################################################
+
+# set your OS below
+setenv OS OSX
+
+# set the location of IDL
+setenv IDL_DIR /Applications/itt/idl
+
+source $HOME/Dropbox/.idl/ssw_env
+
+set nicevalue = 18
+
+if ($#argv == 0) then
+	eval nice +$nicevalue $SSW/gen/setup/ssw_idl nox
+else
+	eval nice +$nicevalue $SSW/gen/setup/ssw_idl$argv[1] nox
+endif

@@ -87,15 +87,47 @@ class CompositeMap:
         """Prints a list of the currently included maps"""
         print [m.__class__ for m in self._maps]
         
-    def get_alpha(self, index):
+    def get_alpha(self, index=None):
         """Gets the alpha-channel value for a layer in the composite image"""
-        return self._maps[index].alpha
+        if index is None:
+            return [_map.alpha for _map in self._maps]
+        else:
+            return self._maps[index].alpha
         
-    def get_zorder(self, index):
+    def get_zorder(self, index = None):
         """Gets the layering preference (z-order) for a map within the
         composite.
         """
-        return self._maps[index].zorder
+        if index is None:
+            return [_map.zorder for _map in self._maps]
+        else:
+            return self._maps[index].zorder
+
+    def get_colors(self, index = None):
+        """Gets the colors for a map within the
+        composite.
+        """
+        if index is None:
+            return [_map.cmap for _map in self._maps]
+        else:
+            return self._maps[index].cmap
+
+    def get_norm(self, index = None):
+        """Gets the normalization for a map within the
+        composite.
+        """
+        if index is None:
+            return [_map.norm for _map in self._maps]
+        else:
+            return self._maps[index].norm
+
+    def set_norm(self, index, norm):
+        """Sets the norm for a layer in the composite image"""
+        self._maps[index].norm = norm
+
+    def set_colors(self, index, cm):
+        """Sets the color map for a layer in the composite image"""
+        self._maps[index].cmap = cm
 
     def set_alpha(self, index, alpha):
         """Sets the alpha-channel value for a layer in the composite image"""
@@ -156,7 +188,7 @@ class CompositeMap:
             params.update(matplot_args)
             
             # Use contour for contour data, and imshow otherwise
-            if isinstance(m, RHESSIMap):
+            if (isinstance(m, RHESSIMap) or (m.alpha == 0)):
                 plt.contourf(m, **params)
             else:
                 plt.imshow(m, **params)
