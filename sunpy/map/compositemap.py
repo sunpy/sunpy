@@ -87,7 +87,7 @@ class CompositeMap:
         """Prints a list of the currently included maps"""
         print [m.__class__ for m in self._maps]
         
-    def get_alpha(self, index = None):
+    def get_alpha(self, index=None):
         """Gets the alpha-channel value for a layer in the composite image"""
         if index is None:
             return [_map.alpha for _map in self._maps]

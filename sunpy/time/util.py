@@ -3,7 +3,7 @@ from __future__ import absolute_import
 __all__ = ["TimeRange"]
 
 import datetime
-from sunpy.util import anytim
+from sunpy.util.util import anytim
 
 class TimeRange:
     """
@@ -29,14 +29,18 @@ class TimeRange:
         The center of the time range
     dt : timediff
         The difference in time between the start time and end time
-    show : str
-        Display the time string in a human readable format
     days : float
         Number of days in the time range
     minutes: float
         Number of minutes in the time range
     seconds: float
         Number of seconds in the time range
+    next : None
+        Shift the start time (t1) and end time (t2) by adding dt in 
+        the current instance
+    previous : None
+        Shift the start time (t1) and end time (t2) by subtracting dt in 
+        the current instance
    
     Examples
     --------
@@ -74,6 +78,15 @@ class TimeRange:
                 self.t2 = self.t1 + datetime.timedelta(0,b) 
         self.dt = self.t2 - self.t1
     
+    def __repr__(self):
+        TIME_FORMAT = "%Y/%m/%d %H:%M:%S"
+        print('\tStart time: ' + self.t1.strftime(TIME_FORMAT) + '\n' + 
+              '\tEnd time: ' + self.t2.strftime(TIME_FORMAT) + '\n' + 
+              '\tCenter time: ' + self.center().strftime(TIME_FORMAT) + '\n' + 
+              '\tDuration: ' + str(self.days()) + ' days or\n\t' + 
+                            str(self.minutes()) + ' min or\n\t' + 
+                            str(self.seconds()) + ' seconds')
+
     def center(self):
         return self.t1 + self.dt/2
     
@@ -86,6 +99,10 @@ class TimeRange:
     def minutes(self):
         return self.dt.total_seconds()/60.0
     
-    def show(self):
-        print(self.t1.strftime("%Y/%m/%d %H:%M:%S") + ' ' + 
-              self.t2.strftime("%Y/%m/%d %H:%M:%S"))
+    def next(self):
+        self.t1 = self.t1 + self.dt
+        self.t2 = self.t2 + self.dt
+    
+    def previous(self):
+        self.t1 = self.t1 - self.dt
+        self.t2 = self.t2 - self.dt

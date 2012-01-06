@@ -199,10 +199,8 @@ def apparent_declination(t=None):
 
 def solar_north(t=None):
     """Returns the position of the Solar north pole in degrees."""
-    jd = util.julian_day(t)
     T = util.julian_centuries(t)
     ob1 = true_obliquity_of_ecliptic(t)
-    theta = (jd - 2398220)*360/25.38
     # in degrees
     i = 7.25
     k = 74.3646 + 1.395833 * T

@@ -172,7 +172,6 @@ def convert_pixel_to_data(header, x = None, y = None):
         data coordinates at each x and y pixel centers. If no x and y are given
         then return the entire detector."""
 
-    naxis = np.array(get_shape(header))
     cdelt = np.array(get_platescale(header))
     crpix = np.array([header.get('crpix1'), header.get('crpix2')])
     crval = np.array([header.get('crval1'), header.get('crval2')])
@@ -358,6 +357,7 @@ def proj_tan(header, x, y, force=False):
     # if pixels are within 3 degrees of the Sun then skip the calculatin unless 
     # force is True. This applies to all sdo images so this function is just 
     # here as a place holder for the future
+    # TODO: write proj_tan function
     return x, y
     
 def convert_to_coord( header, x, y, fromto):
