@@ -1,12 +1,3 @@
-# -*- coding: utf-8 -*-
-#
-# Author: Steven Christe <steven.d.christe@nasa.gov>
-#
-# <License info will go here...>
-
-from __future__ import absolute_import
-from scipy.constants import constants as con
-
 """Provides utility programs.
 
     Notes: 
@@ -16,9 +7,23 @@ from scipy.constants import constants as con
 
 """
 
+from __future__ import absolute_import
+from scipy.constants import constants as con
+
+__all__ = ["toggle_pylab", "anytim", "julian_day", "julian_centuries", 
+           "day_of_year", "break_time", "degrees_to_hours", "degrees_to_arc",
+           "kelvin_to_keV", "keV_to_kelvin", "unique", "print_table", 
+           "to_angstrom"]
+
 from matplotlib import pyplot
 from datetime import datetime
+from datetime import timedelta
 import numpy as np
+from itertools import izip, imap
+
+# The number of days between Jan 1 1900 and the Julian reference date of 
+# 12:00 noon Jan 1, 4713 BC
+JULIAN_DAY_ON_NOON01JAN1900 = 2415021.0
 
 def toggle_pylab(fn):
     """ A decorator to prevent functions from opening matplotlib windows
@@ -53,6 +58,8 @@ def anytim(time_string=None):
         return time_string
     elif isinstance(time_string, tuple):
         return datetime(*time_string)
+    elif isinstance(time_string, int) or isinstance(time_string, float):
+        return datetime(1979, 1, 1) + timedelta(0, time_string)
     else:
         time_format_list = \
             ["%Y-%m-%dT%H:%M:%S.%f",    # Example 2007-05-04T21:08:12.999999
@@ -79,10 +86,6 @@ def anytim(time_string=None):
                 pass
     
         raise ValueError("%s is not a valid time string!" % time_string)
-
-# The number of days between Jan 1 1900 and the Julian reference date of 
-# 12:00 noon Jan 1, 4713 BC
-JULIAN_DAY_ON_NOON01JAN1900 = 2415021.0
 
 def julian_day(t=None):
     """Returns the (fractional) Julian day defined as the number of days 
@@ -129,7 +132,7 @@ def break_time(t=None):
     """Given a time returns a string. Useful for naming files."""
     #TODO: should be able to handle a time range
     time = anytim(t)
-    result = t.strftime("%Y%m%d_%H%M%S")
+    result = time.strftime("%Y%m%d_%H%M%S")
     return result
 
 def degrees_to_hours(angle):
@@ -223,3 +226,11 @@ def unique(itr, key=None):
             if x not in items:
                 yield elem
                 items.add(x)
+
+def print_table(lst, colsep=' ', linesep='\n'):
+    width = [max(imap(len, col)) for col in izip(*lst)]
+    return linesep.join(
+        colsep.join(
+            col.ljust(n) for n, col in izip(width, row)
+        ) for row in lst
+    )

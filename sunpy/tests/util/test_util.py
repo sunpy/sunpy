@@ -9,6 +9,10 @@ LANDING = datetime(1966, 2, 3)
 def test_anytim_tuple():
     assert util.anytim((1966, 2, 3)) == LANDING
 
+def test_anytim_int():
+    assert util.anytim(765548612.0) == datetime(2003, 4, 5, 12, 23, 32)
+    assert util.anytim(1009685652.0) == datetime(2010, 12, 30, 4, 14, 12)
+
 def test_anytim_ISO():
     assert util.anytim('1966-02-03') == LANDING
     assert (
@@ -38,7 +42,7 @@ def test_anytim_ISO():
     
     for k, v in lst:
         assert util.anytim(k) == v
-        
+
 def test_julian_day():
     assert util.julian_day('1900-01-01 12:00') == 2415021.0
     assert util.julian_day(LANDING) == 2439159.5
