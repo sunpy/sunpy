@@ -32,7 +32,7 @@ import matplotlib.pyplot as plt
 import matplotlib.dates
 from datetime import datetime
 from sunpy.time import TimeRange
-from sunpy.util import break_time, anytim
+from sunpy.util import break_time
 import urllib
 import csv
 
@@ -50,10 +50,10 @@ def get_goes_file(time_range):
 
     return f
 
-def parse_goes(file):
+def parse_goes(filename):
     """Parse a goes file"""
     
-    reader = csv.reader(open(file, "rb"), delimiter = ',', skipinitialspace = True)
+    reader = csv.reader(open(filename, "rb"), delimiter = ',', skipinitialspace = True)
     headerline = reader.next()
     
     t = []

@@ -1,7 +1,5 @@
 from __future__ import absolute_import
 
-from datetime import datetime
-
 import sunpy.sun as sun
 from numpy.testing import assert_array_almost_equal
 

@@ -17,20 +17,17 @@ from __future__ import absolute_import
 import numpy as np
 import pyfits
 import sunpy
-from sunpy.util import anytim
 
 # Measured fixed grid parameters
-grid_pitch = [4.52467, 7.85160, 13.5751, 23.5542, 40.7241, 70.5309, 122.164, 211.609, 366.646]
-grid_orientation = [3.53547, 2.75007, 3.53569, 2.74962, 3.92596, 2.35647, 0.786083, 0.00140674, 1.57147]
+grid_pitch = (4.52467, 7.85160, 13.5751, 23.5542, 40.7241, 70.5309, 122.164, 211.609, 366.646)
+grid_orientation = (3.53547, 2.75007, 3.53569, 2.74962, 3.92596, 2.35647, 0.786083, 0.00140674, 1.57147)
 
-def _backproject(calibrated_event_list, detector=8, pixel_size=[1.,1.], image_dim=[64,64]):
+def _backproject(calibrated_event_list, detector=8, pixel_size=(1.,1.), image_dim=(64,64)):
     """Given a stacked calibrated event list fits file create a back projection image for an individual detectors."""
     fits = pyfits.open(calibrated_event_list)
-    control_parameters = fits[1]
     info_parameters = fits[2]
     
     detector_efficiency = info_parameters.data.field('cbe_det_eff$$REL')    
-    xyoffset = control_parameters.data.field('xyoffset')
     fits = pyfits.open(calibrated_event_list)
 
     fits_detector_index = detector + 2
@@ -39,8 +36,6 @@ def _backproject(calibrated_event_list, detector=8, pixel_size=[1.,1.], image_di
     harm_ang_pitch = grid_pitch[detector_index]/1
 
     phase_map_center = fits[fits_detector_index].data.field('phase_map_ctr')
-    this_detector_efficiency = detector_efficiency[0][detector_index]
-    this_livetime = fits[fits_detector_index].data.field('livetime')
     this_roll_angle = fits[fits_detector_index].data.field('roll_angle')
     modamp = fits[fits_detector_index].data.field('modamp')
     grid_transmission = fits[fits_detector_index].data.field('gridtran')
@@ -59,7 +54,7 @@ def _backproject(calibrated_event_list, detector=8, pixel_size=[1.,1.], image_di
         
     return bproj_image
 
-def backprojection(calibrated_event_list, pixel_size=[1.,1.], image_dim=[64,64]):
+def backprojection(calibrated_event_list, pixel_size=(1.,1.), image_dim=(64,64)):
     """Given a stacked calibrated event list fits file create a back projection image."""
     import sunpy.sun.constants as sun
     from sunpy.sun.sun import angular_size
@@ -103,6 +98,6 @@ def backprojection(calibrated_event_list, pixel_size=[1.,1.], image_dim=[64,64])
     }
     
     header = sunpy.map.MapHeader(dict_header)
-    map = sunpy.map.BaseMap(image, header)
+    result_map = sunpy.map.BaseMap(image, header)
             
-    return map
+    return result_map
