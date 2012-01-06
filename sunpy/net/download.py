@@ -8,7 +8,6 @@ import urllib2
 import select
 import socket
 import threading
-import itertools
 
 from functools import partial
 from collections import defaultdict, deque
