@@ -3,10 +3,13 @@
 ===
 Sun
 ===
+.. automodule:: sunpy.sun
 
-.. currentmodule:: sunpy
+.. currentmodule:: sunpy.sun
 
 .. autosummary::
    :toctree: generated/
 
-   sun.sun
+   constants
+   pos
+   sun
