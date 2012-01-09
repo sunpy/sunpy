@@ -59,7 +59,7 @@ class MapCube(np.ndarray):
             if isinstance(item, BaseMap):
                 maps.append(item)
             else:
-                maps.append(BaseMap.map_from_filepath(item))
+                maps.append(BaseMap.read(item))
 
         # sort data
         sortby = kwargs.get("sortby", "date")
