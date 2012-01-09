@@ -44,7 +44,7 @@ class CompositeMap:
             if isinstance(item, BaseMap):
                 m = item
             else:
-                m = BaseMap.map_from_filepath(item)
+                m = BaseMap.read(item)
             
             # Set z-order and alpha values for the map
             m.zorder = zorders[i]
@@ -73,7 +73,7 @@ class CompositeMap:
         if zorder is None:
             zorder = max([m.zorder for m in self._maps]) + 10
         
-        m = BaseMap.map_from_filepath(input_)
+        m = BaseMap.read(input_)
         m.zorder = zorder
         m.alpha = alpha
         
@@ -160,6 +160,8 @@ class CompositeMap:
         out : matplotlib.figure.Figure
             A Matplotlib figure instance representing the composite map plot
         """
+        import numpy as np
+
         if overlays is None:
             overlays = []
 
@@ -171,8 +173,6 @@ class CompositeMap:
         
         axes.set_xlabel('X-position [' + self._maps[0].units['x'] + ']')
         axes.set_ylabel('Y-position [' + self._maps[0].units['y'] + ']')
-        
-        # TODO: if isinstance(x, RHESSIMap): use contour()...
         
         # Plot layers of composite map
         for m in self._maps:
@@ -188,8 +188,10 @@ class CompositeMap:
             params.update(matplot_args)
             
             # Use contour for contour data, and imshow otherwise
-            if (isinstance(m, RHESSIMap) or (m.alpha == 0)):
-                plt.contourf(m, **params)
+            if isinstance(m, RHESSIMap) or (m.alpha == 0):
+                # Set data with values <= 0 to transparent
+                contour_data = np.ma.masked_array(m, mask=(m <= 0))
+                plt.contourf(contour_data, **params)
             else:
                 plt.imshow(m, **params)
         
