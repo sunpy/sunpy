@@ -521,15 +521,4 @@ class BaseMap(np.ndarray):
 class UnrecognizedDataSouceError(ValueError):
     """Exception to raise when an unknown datasource is encountered"""
     pass
-
-if __name__ == "__main__":
-    import sunpy
-    import os
-    os.chdir('/var/www/jp2/AIA/171/2011/10/19')
-    x = sunpy.make_map('2011_10_19__00_01_00_35__SDO_AIA_AIA_171.jp2')
-    y = sunpy.make_map('2011_10_19__00_01_36_34__SDO_AIA_AIA_171.jp2')
-    
-    z = y - x
-    z.plot()
-    
     
