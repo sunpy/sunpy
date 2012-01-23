@@ -63,6 +63,7 @@ def anytim(time_string=None):
     else:
         time_format_list = \
             ["%Y-%m-%dT%H:%M:%S.%f",    # Example 2007-05-04T21:08:12.999999
+             "%Y/%m/%dT%H:%M:%S.%f",    # Example 2007/05/04T21:08:12.999999
              "%Y%m%dT%H%M%S.%f",        # Example 20070504T210812.999999
              "%Y/%m/%d %H:%M:%S",       # Example 2007/05/04 21:08:12
              "%Y/%m/%d %H:%M",          # Example 2007/05/04 21:08

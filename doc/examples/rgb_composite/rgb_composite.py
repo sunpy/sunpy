@@ -16,6 +16,10 @@ class RGBCompositeImageApp(QtGui.QMainWindow):
         QtGui.QMainWindow.__init__(self)
         self.ui = Ui_RGBComposite.Ui_RGBComposite()
         self.ui.setupUi(self)
+        
+    def _load_defaults(self):
+        """Downloads and displays latest images for default wavelengths"""
+        pass
 
 if __name__ == '__main__':
     sys.exit(main())
