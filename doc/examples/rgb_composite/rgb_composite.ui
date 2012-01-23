@@ -31,7 +31,7 @@
     </property>
     <layout class="QVBoxLayout" name="outerContainer">
      <property name="sizeConstraint">
-      <enum>QLayout::SetDefaultConstraint</enum>
+      <enum>QLayout::SetMinimumSize</enum>
      </property>
      <property name="margin">
       <number>0</number>
@@ -219,7 +219,27 @@
             </widget>
            </item>
            <item>
-            <widget class="QComboBox" name="redWavelengthSelect"/>
+            <widget class="QComboBox" name="redWavelengthSelect">
+             <property name="minimumSize">
+              <size>
+               <width>130</width>
+               <height>0</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_8">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>30</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
            </item>
           </layout>
          </item>
@@ -341,7 +361,27 @@
             </widget>
            </item>
            <item>
-            <widget class="QComboBox" name="greenWavelengthSelect"/>
+            <widget class="QComboBox" name="greenWavelengthSelect">
+             <property name="minimumSize">
+              <size>
+               <width>130</width>
+               <height>0</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_9">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
            </item>
           </layout>
          </item>
@@ -463,7 +503,27 @@
             </widget>
            </item>
            <item>
-            <widget class="QComboBox" name="blueWavelengthSelect_2"/>
+            <widget class="QComboBox" name="blueWavelengthSelect_2">
+             <property name="minimumSize">
+              <size>
+               <width>130</width>
+               <height>0</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_10">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
            </item>
           </layout>
          </item>
