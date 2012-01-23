@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'rgb_composite.ui'
 #
-# Created: Mon Jan 23 14:05:13 2012
+# Created: Mon Jan 23 16:01:10 2012
 #      by: PyQt4 UI code generator 4.8.5
 #
 # WARNING! All changes made in this file will be lost!
@@ -60,7 +60,11 @@ class Ui_RGBComposite(object):
         self.label.setObjectName(_fromUtf8("label"))
         self.dateForm.addWidget(self.label)
         self.dateTimeEdit = QtGui.QDateTimeEdit(self.verticalLayoutWidget)
+        self.dateTimeEdit.setMinimumSize(QtCore.QSize(220, 0))
+        self.dateTimeEdit.setTime(QtCore.QTime(0, 0, 0))
+        self.dateTimeEdit.setDisplayFormat(QtGui.QApplication.translate("RGBComposite", "yyyy/MM/dd HH:mm:ss UT", None, QtGui.QApplication.UnicodeUTF8))
         self.dateTimeEdit.setCalendarPopup(True)
+        self.dateTimeEdit.setTimeSpec(QtCore.Qt.UTC)
         self.dateTimeEdit.setObjectName(_fromUtf8("dateTimeEdit"))
         self.dateForm.addWidget(self.dateTimeEdit)
         spacerItem2 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
@@ -227,10 +231,10 @@ class Ui_RGBComposite(object):
         self.blueWavelengthLabel_2.setText(QtGui.QApplication.translate("RGBComposite", "Wavelength: ", None, QtGui.QApplication.UnicodeUTF8))
         self.blueWavelengthLabel_2.setObjectName(_fromUtf8("blueWavelengthLabel_2"))
         self.blueWavelength_2.addWidget(self.blueWavelengthLabel_2)
-        self.blueWavelengthSelect_2 = QtGui.QComboBox(self.verticalLayoutWidget)
-        self.blueWavelengthSelect_2.setMinimumSize(QtCore.QSize(130, 0))
-        self.blueWavelengthSelect_2.setObjectName(_fromUtf8("blueWavelengthSelect_2"))
-        self.blueWavelength_2.addWidget(self.blueWavelengthSelect_2)
+        self.blueWavelengthSelect = QtGui.QComboBox(self.verticalLayoutWidget)
+        self.blueWavelengthSelect.setMinimumSize(QtCore.QSize(130, 0))
+        self.blueWavelengthSelect.setObjectName(_fromUtf8("blueWavelengthSelect"))
+        self.blueWavelength_2.addWidget(self.blueWavelengthSelect)
         spacerItem11 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.blueWavelength_2.addItem(spacerItem11)
         self.blueContainer.addLayout(self.blueWavelength_2)
