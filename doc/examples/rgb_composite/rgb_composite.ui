@@ -108,8 +108,27 @@
        </item>
        <item>
         <widget class="QDateTimeEdit" name="dateTimeEdit">
+         <property name="minimumSize">
+          <size>
+           <width>220</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="time">
+          <time>
+           <hour>0</hour>
+           <minute>0</minute>
+           <second>0</second>
+          </time>
+         </property>
+         <property name="displayFormat">
+          <string>yyyy/MM/dd HH:mm:ss UT</string>
+         </property>
          <property name="calendarPopup">
           <bool>true</bool>
+         </property>
+         <property name="timeSpec">
+          <enum>Qt::UTC</enum>
          </property>
         </widget>
        </item>
@@ -266,6 +285,12 @@
            </item>
            <item>
             <widget class="QSlider" name="redWeightSlider">
+             <property name="maximum">
+              <number>100</number>
+             </property>
+             <property name="value">
+              <number>100</number>
+             </property>
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
              </property>
@@ -408,6 +433,12 @@
            </item>
            <item>
             <widget class="QSlider" name="greenWeightSlider">
+             <property name="maximum">
+              <number>100</number>
+             </property>
+             <property name="value">
+              <number>100</number>
+             </property>
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
              </property>
@@ -503,7 +534,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QComboBox" name="blueWavelengthSelect_2">
+            <widget class="QComboBox" name="blueWavelengthSelect">
              <property name="minimumSize">
               <size>
                <width>130</width>
@@ -538,6 +569,12 @@
            </item>
            <item>
             <widget class="QSlider" name="blueWeightSlider">
+             <property name="maximum">
+              <number>100</number>
+             </property>
+             <property name="value">
+              <number>100</number>
+             </property>
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
              </property>
