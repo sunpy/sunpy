@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1031</width>
-    <height>922</height>
+    <width>1080</width>
+    <height>972</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -37,7 +37,7 @@
       <number>0</number>
      </property>
      <item>
-      <layout class="QHBoxLayout" name="previewImageContainer">
+      <layout class="QHBoxLayout" name="compositeContainer">
        <property name="topMargin">
         <number>10</number>
        </property>
@@ -521,7 +521,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1031</width>
+     <width>1080</width>
      <height>25</height>
     </rect>
    </property>

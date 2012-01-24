@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'rgb_composite.ui'
 #
-# Created: Tue Jan 24 11:29:03 2012
+# Created: Tue Jan 24 15:08:28 2012
 #      by: PyQt4 UI code generator 4.8.5
 #
 # WARNING! All changes made in this file will be lost!
@@ -17,7 +17,7 @@ except AttributeError:
 class Ui_RGBComposite(object):
     def setupUi(self, RGBComposite):
         RGBComposite.setObjectName(_fromUtf8("RGBComposite"))
-        RGBComposite.resize(1031, 922)
+        RGBComposite.resize(1080, 972)
         RGBComposite.setWindowTitle(QtGui.QApplication.translate("RGBComposite", "SunPy - RGB Composite Image Demo", None, QtGui.QApplication.UnicodeUTF8))
         self.centralwidget = QtGui.QWidget(RGBComposite)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
@@ -34,11 +34,9 @@ class Ui_RGBComposite(object):
         self.outerContainer.setMargin(0)
         self.outerContainer.setMargin(0)
         self.outerContainer.setObjectName(_fromUtf8("outerContainer"))
-        self.previewImageContainer = QtGui.QHBoxLayout()
-        self.previewImageContainer.setContentsMargins(-1, 10, -1, -1)
-        self.previewImageContainer.setObjectName(_fromUtf8("previewImageContainer"))
-        spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.previewImageContainer.addItem(spacerItem)
+        self.compositeContainer = QtGui.QHBoxLayout()
+        self.compositeContainer.setContentsMargins(-1, 10, -1, -1)
+        self.compositeContainer.setObjectName(_fromUtf8("compositeContainer"))
         self.compositePlaceholder = QtGui.QWidget(self.verticalLayoutWidget)
         self.compositePlaceholder.setEnabled(True)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
@@ -49,10 +47,8 @@ class Ui_RGBComposite(object):
         self.compositePlaceholder.setMinimumSize(QtCore.QSize(512, 512))
         self.compositePlaceholder.setMaximumSize(QtCore.QSize(512, 512))
         self.compositePlaceholder.setObjectName(_fromUtf8("compositePlaceholder"))
-        self.previewImageContainer.addWidget(self.compositePlaceholder)
-        spacerItem1 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.previewImageContainer.addItem(spacerItem1)
-        self.outerContainer.addLayout(self.previewImageContainer)
+        self.compositeContainer.addWidget(self.compositePlaceholder)
+        self.outerContainer.addLayout(self.compositeContainer)
         self.dateForm = QtGui.QHBoxLayout()
         self.dateForm.setContentsMargins(10, -1, 10, -1)
         self.dateForm.setObjectName(_fromUtf8("dateForm"))
@@ -68,8 +64,8 @@ class Ui_RGBComposite(object):
         self.dateTimeEdit.setTimeSpec(QtCore.Qt.UTC)
         self.dateTimeEdit.setObjectName(_fromUtf8("dateTimeEdit"))
         self.dateForm.addWidget(self.dateTimeEdit)
-        spacerItem2 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.dateForm.addItem(spacerItem2)
+        spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.dateForm.addItem(spacerItem)
         self.outerContainer.addLayout(self.dateForm)
         self.wavelengthForm = QtGui.QHBoxLayout()
         self.wavelengthForm.setMargin(10)
@@ -112,8 +108,8 @@ class Ui_RGBComposite(object):
         self.redWavelengthSelect.setMinimumSize(QtCore.QSize(130, 0))
         self.redWavelengthSelect.setObjectName(_fromUtf8("redWavelengthSelect"))
         self.redWavelength.addWidget(self.redWavelengthSelect)
-        spacerItem3 = QtGui.QSpacerItem(30, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.redWavelength.addItem(spacerItem3)
+        spacerItem1 = QtGui.QSpacerItem(30, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.redWavelength.addItem(spacerItem1)
         self.redContainer.addLayout(self.redWavelength)
         self.redWeight = QtGui.QHBoxLayout()
         self.redWeight.setObjectName(_fromUtf8("redWeight"))
@@ -173,8 +169,8 @@ class Ui_RGBComposite(object):
         self.greenWavelengthSelect.setMinimumSize(QtCore.QSize(130, 0))
         self.greenWavelengthSelect.setObjectName(_fromUtf8("greenWavelengthSelect"))
         self.greenWavelength.addWidget(self.greenWavelengthSelect)
-        spacerItem4 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.greenWavelength.addItem(spacerItem4)
+        spacerItem2 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.greenWavelength.addItem(spacerItem2)
         self.greenContainer.addLayout(self.greenWavelength)
         self.greenWeight = QtGui.QHBoxLayout()
         self.greenWeight.setObjectName(_fromUtf8("greenWeight"))
@@ -234,8 +230,8 @@ class Ui_RGBComposite(object):
         self.blueWavelengthSelect.setMinimumSize(QtCore.QSize(130, 0))
         self.blueWavelengthSelect.setObjectName(_fromUtf8("blueWavelengthSelect"))
         self.blueWavelength_2.addWidget(self.blueWavelengthSelect)
-        spacerItem5 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.blueWavelength_2.addItem(spacerItem5)
+        spacerItem3 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.blueWavelength_2.addItem(spacerItem3)
         self.blueContainer.addLayout(self.blueWavelength_2)
         self.blueWeight = QtGui.QHBoxLayout()
         self.blueWeight.setObjectName(_fromUtf8("blueWeight"))
@@ -257,7 +253,7 @@ class Ui_RGBComposite(object):
         self.statusbar.setObjectName(_fromUtf8("statusbar"))
         RGBComposite.setStatusBar(self.statusbar)
         self.menubar = QtGui.QMenuBar(RGBComposite)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1031, 25))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1080, 25))
         self.menubar.setObjectName(_fromUtf8("menubar"))
         self.menuFile = QtGui.QMenu(self.menubar)
         self.menuFile.setTitle(QtGui.QApplication.translate("RGBComposite", "File", None, QtGui.QApplication.UnicodeUTF8))
