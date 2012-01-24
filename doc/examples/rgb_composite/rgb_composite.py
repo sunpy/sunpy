@@ -8,8 +8,7 @@ import numpy as np
 from sunpy.net import helioviewer as hv
 from sunpy.map import BaseMap
 from sunpy.util.util import toggle_pylab
-from PyQt4 import QtGui
-from PyQt4.QtCore import QSize
+from PyQt4 import QtGui, QtCore
 from matplotlib import pyplot as plt
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 
@@ -30,9 +29,15 @@ class RGBCompositeImageApp(QtGui.QMainWindow):
         self.green = None
         self.blue = None
         
+        # Color channel weights
+        self._weights=[1., 1., 1.]
+        
         # Setup UI
         self._load_data_sources()
         self._load()
+        
+        # Initialize event handlers
+        self._initEvents()
         
     def _load_data_sources(self):
         """Downloads and displays latest images for default wavelengths"""
@@ -97,32 +102,57 @@ class RGBCompositeImageApp(QtGui.QMainWindow):
         self.ui.bluePlaceholder.close()
         self.ui.bluePreviewImage = SunPyPlot(self.blue, 256, 256)
         self.ui.bluePreview.addWidget(self.ui.bluePreviewImage, 1)
-        self.ui.bluePreview.update()        
+        self.ui.bluePreview.update()
+        
+    def _initEvents(self):
+        """Initialize event handlers"""
+        self.connect(self.ui.redWeightSlider, QtCore.SIGNAL('valueChanged(int)'), self.onRedWeightChange)
+        
+    def onRedWeightChange(self, value):
+        """Red channel weight changed"""
+        self._weights[0] = value / 100.
+        self.ui.compositeImage.update_figure((self._weights))        
 
 class SunPyPlot(FigureCanvas):
     """SunPy preview image"""
     def __init__(self, map_, width, height, parent=None, dpi=100):
-        self._widthHint = width
-        self._heightHint = height
-        self.figure = map_.resample((width, height)).plot_simple()
+        #self._widthHint = width
+        #self._heightHint = height
+        
+        self._origMap = map_
+        self._map = map_.resample((width, height))
+        
+        self.figure = self._map.plot_simple()
         FigureCanvas.__init__(self, self.figure)
+        
+        # How can we get the canvas to preserve its aspect ratio when expanding?
         #sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Preferred)
         #sizePolicy.setHeightForWidth(True)
         #self.setSizePolicy(sizePolicy)
+        
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         self.setSizePolicy(sizePolicy)
-        self.resize(512, 512)
+        self.setMinimumSize(QtCore.QSize(width, height))
+        self.setMaximumSize(QtCore.QSize(width, height))   
+        #FigureCanvas.updateGeometry(self)        
+
+    def update_figure(self, weights):
+        """Update RGB Composite image"""
+        weightArray = np.ones((self._map.shape[0], self._map.shape[1], 3))
         
-        #FigureCanvas.updateGeometry(self)
+        for i in range(3):
+            weightArray[:,:,i] *= weights[i]
         
+        self.figure = (self._map * weightArray).plot_simple()
+        self.draw()
     
-    def heightForWidth(self, width):
-        """Preserves 1:1 aspect ratio"""
-        return width
-    
-    def sizeHint(self):
-        """Preview image default size"""
-        return QSize(self._widthHint, self._heightHint)
+#    def heightForWidth(self, width):
+#        """Preserves 1:1 aspect ratio"""
+#        return width
+#    
+#    def sizeHint(self):
+#        """Preview image default size"""
+#        return QtCore.QSize(self._widthHint, self._heightHint)
     
 class RGBCompositeMap(sunpy.MapCube):
     """A composite map where each color channel is associated with a separate
