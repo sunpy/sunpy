@@ -475,6 +475,63 @@ class BaseMap(np.ndarray):
             fig, axes = overlay(fig, axes)
         return fig
     
+    @toggle_pylab
+    def plot_simple(self, overlays=None, draw_limb=False, gamma=None, 
+                    draw_grid=False, **matplot_args):
+        """Plots the map object using matplotlib
+        
+        Parameters
+        ----------
+        overlays : list
+            List of overlays to include in the plot
+        draw_limb : bool
+            Whether the solar limb should be plotted.
+        draw_grid : bool
+            Whether solar meridians and parallels
+        grid_spacing : float
+            Set the spacing between meridians and parallels for the grid
+        gamma : float
+            Gamma value to use for the color map
+        **matplot_args : dict
+            Matplotlib Any additional imshow arguments that should be used
+            when plotting the image.
+        """
+        if overlays is None:
+            overlays = []
+        if draw_limb:
+            overlays = overlays + [self._draw_limb]
+
+        # TODO: need to be able to pass the grid spacing to _draw_grid from the 
+        # plot command.
+        if draw_grid:
+            overlays = overlays + [self._draw_grid]
+
+        fig = plt.figure(frameon=False)
+        
+        axes = plt.Axes(fig, [0., 0., 1., 1.])
+        axes.set_axis_off()
+        fig.add_axes(axes)
+
+        # Determine extent
+        extent = self.xrange + self.yrange
+
+        # Matplotlib arguments
+        params = {
+            "cmap": self.cmap,
+            "norm": self.norm()
+        }
+        params.update(matplot_args)
+        
+        if gamma is not None:
+            params['cmap'] = copy(params['cmap'])
+            params['cmap'].set_gamma(gamma)
+
+        axes.imshow(self, origin='lower', extent=extent, aspect='normal', **params)
+        
+        for overlay in overlays:
+            fig, axes = overlay(fig, axes)
+        return fig
+    
     def norm(self):
         """Default normalization method"""
         return None
