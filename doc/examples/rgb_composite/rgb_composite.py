@@ -4,9 +4,13 @@ import sys
 import datetime
 import sunpy
 import Ui_RGBComposite
+import numpy as np
 from sunpy.net import helioviewer as hv
+from sunpy.map import BaseMap
+from sunpy.util.util import toggle_pylab
 from PyQt4 import QtGui
 from PyQt4.QtCore import QSize
+from matplotlib import pyplot as plt
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 
 def main():
@@ -60,12 +64,22 @@ class RGBCompositeImageApp(QtGui.QMainWindow):
         self._updateRedPreview()
         self._updateGreenPreview()
         self._updateBluePreview()
+        self._updateCompositeImage()
+        
+    def _updateCompositeImage(self):
+        """Updates the RGB composite image"""
+        rgb = RGBCompositeMap(self.red, self.green, self.blue)
+        self.ui.compositeContainer.removeWidget(self.ui.compositePlaceholder)
+        self.ui.compositePlaceholder.close()
+        self.ui.compositeImage = SunPyPlot(rgb, 512, 512)
+        self.ui.compositeContainer.addWidget(self.ui.compositeImage, 1)
+        self.ui.compositeContainer.update()
 
     def _updateRedPreview(self):
         """Updates the red preview image"""
         self.ui.redPreview.removeWidget(self.ui.redPlaceholder)
         self.ui.redPlaceholder.close()
-        self.ui.redPreviewImage = Miniplot(self.red)
+        self.ui.redPreviewImage = SunPyPlot(self.red, 256, 256)
         self.ui.redPreview.addWidget(self.ui.redPreviewImage, 1)
         self.ui.redPreview.update()
         
@@ -73,7 +87,7 @@ class RGBCompositeImageApp(QtGui.QMainWindow):
         """Updates the green preview image"""
         self.ui.greenPreview.removeWidget(self.ui.greenPlaceholder)
         self.ui.greenPlaceholder.close()
-        self.ui.greenPreviewImage = Miniplot(self.green)
+        self.ui.greenPreviewImage = SunPyPlot(self.green, 256, 256)
         self.ui.greenPreview.addWidget(self.ui.greenPreviewImage, 1)
         self.ui.greenPreview.update()
         
@@ -81,19 +95,26 @@ class RGBCompositeImageApp(QtGui.QMainWindow):
         """Updates the blue preview image"""
         self.ui.bluePreview.removeWidget(self.ui.bluePlaceholder)
         self.ui.bluePlaceholder.close()
-        self.ui.bluePreviewImage = Miniplot(self.blue)
+        self.ui.bluePreviewImage = SunPyPlot(self.blue, 256, 256)
         self.ui.bluePreview.addWidget(self.ui.bluePreviewImage, 1)
         self.ui.bluePreview.update()        
 
-class Miniplot(FigureCanvas):
-    """Ultimately, this is a QWidget (as well as a FigureCanvasAgg, etc.)."""
-    def __init__(self, map_, parent=None, width=1.28, height=1.28, dpi=100):
-        self.figure = map_.resample((256, 256)).plot_simple()
+class SunPyPlot(FigureCanvas):
+    """SunPy preview image"""
+    def __init__(self, map_, width, height, parent=None, dpi=100):
+        self._widthHint = width
+        self._heightHint = height
+        self.figure = map_.resample((width, height)).plot_simple()
         FigureCanvas.__init__(self, self.figure)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Preferred)
-        sizePolicy.setHeightForWidth(True)
-        FigureCanvas.setSizePolicy(self, sizePolicy)
-        FigureCanvas.updateGeometry(self)
+        #sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Preferred)
+        #sizePolicy.setHeightForWidth(True)
+        #self.setSizePolicy(sizePolicy)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+        self.setSizePolicy(sizePolicy)
+        self.resize(512, 512)
+        
+        #FigureCanvas.updateGeometry(self)
+        
     
     def heightForWidth(self, width):
         """Preserves 1:1 aspect ratio"""
@@ -101,7 +122,64 @@ class Miniplot(FigureCanvas):
     
     def sizeHint(self):
         """Preview image default size"""
-        return QSize(128, 128)
+        return QSize(self._widthHint, self._heightHint)
+    
+class RGBCompositeMap(sunpy.MapCube):
+    """A composite map where each color channel is associated with a separate
+       datasource."""
+    def __new__(cls, red, green, blue, **kwargs):
+        headers = []
+        data = np.zeros((red.shape[0], red.shape[1], 3), dtype=np.uint8)
+        
+        # convert input to maps
+        for i, item in enumerate([red, green, blue]):
+            if isinstance(item, BaseMap):
+                map_ = item
+            else:
+                map_ = BaseMap.read(item)
+                
+            data[:,:,i] = map_
+            headers.append(map_.header)
+
+        obj = np.asarray(data).view(cls)
+        obj._headers = headers
+
+        return obj
+
+    def __init__(self, *args, **kwargs):
+        sunpy.MapCube.__init__(self, args, kwargs)
+        
+    def resample(self, dimensions, method='linear'):
+        """Returns a new Map that has been resampled up or down
+        
+        See `sunpy.map.BaseMap.resample`
+        """
+        resampled = []
+        
+        for map_ in self.transpose(2, 0, 1):
+            resampled.append(map_.resample(dimensions, method))
+
+        return self.__class__(*resampled)
+        
+    @toggle_pylab
+    def plot_simple(self, **matplot_args):
+        """Plots the map object using matplotlib
+        
+        Parameters
+        ----------
+        **matplot_args : dict
+            Matplotlib Any additional imshow arguments that should be used
+            when plotting the image.
+        """
+        fig = plt.figure(frameon=False)
+        
+        axes = plt.Axes(fig, [0., 0., 1., 1.])
+        axes.set_axis_off()
+        fig.add_axes(axes)
+
+        axes.imshow(self, aspect='normal', **matplot_args)
+        return fig
+
 
 if __name__ == '__main__':
     sys.exit(main())
