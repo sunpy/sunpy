@@ -1,5 +1,31 @@
 #!/usr/bin/env python
 #-*- coding:utf-8 -*-
+"""
+RGB Composite Image Demo
+
+Last Update: Jan 25, 2012
+keith.hughitt@nasa.gov
+
+This example application demonstrates how SunPy can be used to build GUI
+applications using PyQt. The purpose of this simple application is to
+combine three JPEG 2000 images from Helioviewer.org into a single composite
+RGB image and provide a mechanism to control the contribution of each color
+channel to the final image.
+
+The GUI was built using Qt 4 Designer. To generate the Python code associated
+with rgb_composite.ui, use the pyuic4 tool, e.g.:
+
+  pyuic4 rgb_composite.ui > Ui_RGBComposite.py
+  
+TODO:
+    * Fix bug causing composite image plot to become distored when channel
+      weights are adjusted.
+    * Have file -> save call savefig() on the rgb image
+    * Show actual dates below each image.
+    * Wavelength/date adjustment support.
+    * Refactor/simplify
+    * Make all images expand to fill available space.
+"""
 import sys
 import datetime
 import sunpy
@@ -9,6 +35,7 @@ from sunpy.net import helioviewer as hv
 from sunpy.map import BaseMap
 from sunpy.util.util import toggle_pylab
 from PyQt4 import QtGui, QtCore
+from matplotlib import cm
 from matplotlib import pyplot as plt
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 
@@ -84,7 +111,7 @@ class RGBCompositeImageApp(QtGui.QMainWindow):
         """Updates the red preview image"""
         self.ui.redPreview.removeWidget(self.ui.redPlaceholder)
         self.ui.redPlaceholder.close()
-        self.ui.redPreviewImage = SunPyPlot(self.red, 256, 256)
+        self.ui.redPreviewImage = SunPyPlot(self.red, 256, 256, cmap=cm.Reds_r)
         self.ui.redPreview.addWidget(self.ui.redPreviewImage, 1)
         self.ui.redPreview.update()
         
@@ -92,7 +119,7 @@ class RGBCompositeImageApp(QtGui.QMainWindow):
         """Updates the green preview image"""
         self.ui.greenPreview.removeWidget(self.ui.greenPlaceholder)
         self.ui.greenPlaceholder.close()
-        self.ui.greenPreviewImage = SunPyPlot(self.green, 256, 256)
+        self.ui.greenPreviewImage = SunPyPlot(self.green, 256, 256, cmap=cm.Greens_r)
         self.ui.greenPreview.addWidget(self.ui.greenPreviewImage, 1)
         self.ui.greenPreview.update()
         
@@ -100,29 +127,41 @@ class RGBCompositeImageApp(QtGui.QMainWindow):
         """Updates the blue preview image"""
         self.ui.bluePreview.removeWidget(self.ui.bluePlaceholder)
         self.ui.bluePlaceholder.close()
-        self.ui.bluePreviewImage = SunPyPlot(self.blue, 256, 256)
+        self.ui.bluePreviewImage = SunPyPlot(self.blue, 256, 256, cmap=cm.Blues_r)
         self.ui.bluePreview.addWidget(self.ui.bluePreviewImage, 1)
         self.ui.bluePreview.update()
         
     def _initEvents(self):
         """Initialize event handlers"""
         self.connect(self.ui.redWeightSlider, QtCore.SIGNAL('valueChanged(int)'), self.onRedWeightChange)
+        self.connect(self.ui.greenWeightSlider, QtCore.SIGNAL('valueChanged(int)'), self.onGreenWeightChange)
+        self.connect(self.ui.blueWeightSlider, QtCore.SIGNAL('valueChanged(int)'), self.onBlueWeightChange)
         
     def onRedWeightChange(self, value):
         """Red channel weight changed"""
         self._weights[0] = value / 100.
-        self.ui.compositeImage.update_figure((self._weights))        
+        self.ui.compositeImage.update_figure((self._weights))
+        
+    def onGreenWeightChange(self, value):
+        """Green channel weight changed"""
+        self._weights[1] = value / 100.
+        self.ui.compositeImage.update_figure((self._weights))
+        
+    def onBlueWeightChange(self, value):
+        """Blue channel weight changed"""
+        self._weights[2] = value / 100.
+        self.ui.compositeImage.update_figure((self._weights))     
 
 class SunPyPlot(FigureCanvas):
     """SunPy preview image"""
-    def __init__(self, map_, width, height, parent=None, dpi=100):
+    def __init__(self, map_, width, height, parent=None, dpi=100, **matplot_args):
         #self._widthHint = width
         #self._heightHint = height
         
         self._origMap = map_
         self._map = map_.resample((width, height))
         
-        self.figure = self._map.plot_simple()
+        self.figure = self._map.plot_simple(**matplot_args)
         FigureCanvas.__init__(self, self.figure)
         
         # How can we get the canvas to preserve its aspect ratio when expanding?
@@ -143,7 +182,7 @@ class SunPyPlot(FigureCanvas):
         for i in range(3):
             weightArray[:,:,i] *= weights[i]
         
-        self.figure = (self._map * weightArray).plot_simple()
+        self.figure = (self._map * weightArray).astype(np.uint8).plot_simple()
         self.draw()
     
 #    def heightForWidth(self, width):
@@ -207,7 +246,7 @@ class RGBCompositeMap(sunpy.MapCube):
         axes.set_axis_off()
         fig.add_axes(axes)
 
-        axes.imshow(self, aspect='normal', **matplot_args)
+        axes.imshow(self, origin='lower', aspect='normal', **matplot_args)
         return fig
 
 
