@@ -1,29 +1,62 @@
 # -*- coding: utf-8 -*-
 #
-# Author: Steven Christe <steven.d.christe@nasa.gov>
 #
 # <License info will go here...>
+"""
+    Provides programs to process and analyze RHESSI data.
 
-from __future__ import absolute_import
-
-"""Provides programs to process and analyze RHESSI data.
+    .. warning:: This module is still in development!
 
 """
 
-# TODO: The image is not in the right orientation
-# TODO: Check to see if the code is correct for finding out what detectors are included in the fits file
-# TODO: The result of backprojection should be a map
-
+from __future__ import absolute_import
 import numpy as np
 import pyfits
 import sunpy
 
 # Measured fixed grid parameters
-grid_pitch = (4.52467, 7.85160, 13.5751, 23.5542, 40.7241, 70.5309, 122.164, 211.609, 366.646)
-grid_orientation = (3.53547, 2.75007, 3.53569, 2.74962, 3.92596, 2.35647, 0.786083, 0.00140674, 1.57147)
+grid_pitch = (4.52467, 7.85160, 13.5751, 23.5542, 40.7241, 70.5309, 122.164, 
+              211.609, 366.646)
+grid_orientation = (3.53547, 2.75007, 3.53569, 2.74962, 3.92596, 2.35647, 
+                    0.786083, 0.00140674, 1.57147)
 
 def _backproject(calibrated_event_list, detector=8, pixel_size=(1.,1.), image_dim=(64,64)):
-    """Given a stacked calibrated event list fits file create a back projection image for an individual detectors."""
+    """Given a stacked calibrated event list fits file create a back 
+    projection image for an individual detectors. This function is used by
+    backprojection.
+    
+    Parameters
+    ----------
+    calibrated_event_list : string
+        filename of a RHESSI calibrated event list
+    
+    detector : int
+        the detector number
+        
+    pixel_size : 2-tuple
+        the size of the pixels in arcseconds. Default is (1,1).
+        
+    image_dim : 2-tuple
+        the size of the output image in number of pixels
+        
+    Returns
+    -------
+    image : ndarray
+        Return a backprojection image.
+
+    See Also
+    --------
+
+    Examples
+    --------
+    >>> import sunpy.instr.rhessi as rhessi
+    >>> image = rhessi.get_latest_l0cs_goes_data(sunpy.RHESSI_EVENT_LIST, detector = 3)
+    
+    Reference
+    ---------
+    | 
+
+    """
     fits = pyfits.open(calibrated_event_list)
     info_parameters = fits[2]
     
@@ -55,7 +88,44 @@ def _backproject(calibrated_event_list, detector=8, pixel_size=(1.,1.), image_di
     return bproj_image
 
 def backprojection(calibrated_event_list, pixel_size=(1.,1.), image_dim=(64,64)):
-    """Given a stacked calibrated event list fits file create a back projection image."""
+    """Given a stacked calibrated event list fits file create a back 
+    projection image.
+    
+    .. warning:: The image is not in the right orientation!
+
+    Parameters
+    ----------
+    calibrated_event_list : string
+        filename of a RHESSI calibrated event list
+    
+    detector : int
+        the detector number
+        
+    pixel_size : 2-tuple
+        the size of the pixels in arcseconds. Default is (1,1).
+        
+    image_dim : 2-tuple
+        the size of the output image in number of pixels
+        
+    Returns
+    -------
+    map : RHESSImap
+        Return a backprojection map.
+
+    See Also
+    --------
+
+    Examples
+    --------
+    >>> import sunpy.instr.rhessi as rhessi
+    >>> map = rhessi.backprojection(sunpy.RHESSI_EVENT_LIST)
+    >>> map.show()
+    
+    Reference
+    ---------
+    | 
+
+    """
     import sunpy.sun.constants as sun
     from sunpy.sun.sun import angular_size
     from sunpy.sun.sun import sunearth_distance

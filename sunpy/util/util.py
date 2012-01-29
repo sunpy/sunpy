@@ -10,20 +10,13 @@
 from __future__ import absolute_import
 from scipy.constants import constants as con
 
-__all__ = ["toggle_pylab", "anytim", "julian_day", "julian_centuries", 
-           "day_of_year", "break_time", "degrees_to_hours", "degrees_to_arc",
+__all__ = ["toggle_pylab", "degrees_to_hours", "degrees_to_arc",
            "kelvin_to_keV", "keV_to_kelvin", "unique", "print_table", 
            "to_angstrom"]
 
 from matplotlib import pyplot
-from datetime import datetime
-from datetime import timedelta
 import numpy as np
 from itertools import izip, imap
-
-# The number of days between Jan 1 1900 and the Julian reference date of 
-# 12:00 noon Jan 1, 4713 BC
-JULIAN_DAY_ON_NOON01JAN1900 = 2415021.0
 
 def toggle_pylab(fn):
     """ A decorator to prevent functions from opening matplotlib windows
@@ -42,98 +35,6 @@ def toggle_pylab(fn):
         return fn_itoggle
     else:
         return fn
-
-def anytim(time_string=None):
-    """Given a time string will parse and return a datetime object.
-    If no string is given then returns the datetime object for the current time.
-    If a datetime object is passed in by mistake then it returns it without an 
-    error.
-    
-    TODO: add ability to parse tai (International Atomic Time seconds since 
-    Jan 1, 1958)
-    """
-    if time_string is None:
-        return datetime.now()
-    elif isinstance(time_string, datetime):
-        return time_string
-    elif isinstance(time_string, tuple):
-        return datetime(*time_string)
-    elif isinstance(time_string, int) or isinstance(time_string, float):
-        return datetime(1979, 1, 1) + timedelta(0, time_string)
-    else:
-        time_format_list = \
-            ["%Y-%m-%dT%H:%M:%S.%f",    # Example 2007-05-04T21:08:12.999999
-             "%Y%m%dT%H%M%S.%f",        # Example 20070504T210812.999999
-             "%Y/%m/%d %H:%M:%S",       # Example 2007/05/04 21:08:12
-             "%Y/%m/%d %H:%M",          # Example 2007/05/04 21:08
-             "%Y/%m/%d %H:%M:%S.%f",    # Example 2007/05/04 21:08:12.999999
-             "%Y-%m-%d %H:%M:%S.%f",    # Example 2007-05-04 21:08:12.999999
-             "%Y-%m-%dT%H:%M:%S.%fZ",   # Example 2007-05-04T21:08:12.999Z
-             "%Y-%m-%d %H:%M:%S",       # Example 2007-05-04 21:08:12
-             "%Y-%m-%dT%H:%M:%S",       # Example 2007-05-04T21:08:12
-             "%Y-%m-%d %H:%M",          # Example 2007-05-04 21:08
-             "%Y%m%dT%H%M%S",           # Example 20070504T210812
-             "%Y-%b-%d %H:%M:%S",       # Example 2007-May-04 21:08:12
-             "%Y-%b-%d %H:%M",          # Example 2007-May-04 21:08
-             "%Y-%b-%d",                # Example 2007-May-04
-             "%Y-%m-%d",                # Example 2007-05-04
-             "%Y/%m/%d",                # Example 2007/05/04
-             "%Y%m%d_%H%M%S"]           # Example 20070504_210812
-        for time_format in time_format_list: 
-            try: 
-                return datetime.strptime(time_string, time_format)
-            except ValueError:
-                pass
-    
-        raise ValueError("%s is not a valid time string!" % time_string)
-
-def julian_day(t=None):
-    """Returns the (fractional) Julian day defined as the number of days 
-    between the queried day and the reference date of 12:00 (noon) Jan 1, 4713 
-    BC."""
-    # Good online reference for fractional julian day
-    # http://www.stevegs.com/jd_calc/jd_calc.htm
-    
-    JULIAN_REF_DAY = anytim('1900/1/1 12:00:00')
-    time = anytim(t)
-    
-    tdiff = time - JULIAN_REF_DAY
-    
-    julian = tdiff.days + JULIAN_DAY_ON_NOON01JAN1900
-   
-    result = julian + 1/24.*(time.hour + time.minute/60.0 + 
-                             time.second/(60.*60.))
-
-    # This is because the days in datetime objects start at 00:00, 
-    # not 12:00 as for Julian days.
-    if time.hour >= 12:
-        result = result - 0.5
-    else:
-        result = result + 0.5
-
-    return result
-
-def julian_centuries(t=None):
-    """Returns the number of Julian centuries since 1900 January 0.5."""
-    DAYS_IN_YEAR = 36525.0
-
-    result = (julian_day(t) - JULIAN_DAY_ON_NOON01JAN1900) / DAYS_IN_YEAR
-    return result
-
-def day_of_year(t=None):
-    """Returns the day of year."""
-    SECONDS_IN_DAY = 60*60*24.0
-    time = anytim(t)
-    time_diff = anytim(t) - datetime(time.year, 1, 1, 0, 0, 0)
-    result = time_diff.days + time_diff.seconds/SECONDS_IN_DAY
-    return result
-
-def break_time(t=None):
-    """Given a time returns a string. Useful for naming files."""
-    #TODO: should be able to handle a time range
-    time = anytim(t)
-    result = time.strftime("%Y%m%d_%H%M%S")
-    return result
 
 def degrees_to_hours(angle):
     """Converts an angle from the degree notation to the hour, arcmin, arcsec 
