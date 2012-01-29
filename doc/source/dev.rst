@@ -549,7 +549,7 @@ Testing
 -------
 
 This is a brief tutorial on how to write and run SunPy unit tests. To work
-with the contents of this document, you will need to install the 
+with the contents of this section, you will need to install the 
 `pytest <http://pytest.org>`_ package, which can be found on 
 `PyPI <http://pypi.python.org/pypi>`_.
 
