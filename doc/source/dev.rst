@@ -547,23 +547,74 @@ Lists should be indented one level from their parents.
         
 Testing
 -------
-Unit tests should be written as often as possible using `unittest 
-<http://docs.python.org/release/3.1.3/library/unittest.html>`_. See the 
-`Unit Testing section <http://diveintopython3.org/unit-testing.html>`_ of 
-Dive into Python 3 for more information about unit testing in Python.
 
-SunPy uses `tox <http://tox.testrun.org/>`_ to automate testing with
-multiple versions of Python. The test environments are isolated and thus
-all dependencies will need to be built; this requires the build dependencies
-of those Python packages to be present on the system. These call be installed
-by calling `sudo aptitude build-dep python-numpy python-scipy python-matplotlib python-pyfits`
-on a distribution that derives from Debian. `tox` itself it also required and
-can be installed by `pip install tox` (pip is a part of `python-distribute`).
+This is a brief tutorial on how to write and run SunPy unit tests. To work
+with the contents of this document, you will need to install the 
+`pytest <http://pytest.org>`_ package, which can be found on 
+`PyPI <http://pypi.python.org/pypi>`_.
 
-The tests can then be run by running `tox` in the project directory.
-This will take a very long time on the first run because it will
-have to build all dependencies. Subsequent runs will take significantly
-less time.
+**Writing a unit test**
+
+Consider a simple module `stuff.py` that contains the simple function shown
+below.::
+
+   def double(x):
+       return 2 * x
+
+We can write a test case for this function by defining a new function 
+containing the test (or tests) we want to perform. Suppose we want to check
+that the correct behaviour occurs when we pass a value of 5 to `double()`. We
+would write the test function like this: ::
+
+  def test_answer():
+      assert double(5) == 10
+
+There are two things to note here. Firstly, names of test cases should always 
+begin with `test_`. This is because `pytest` searches for test cases named this
+way. Secondly, we use `assert` to assert our expectation of what the result of
+the test should be. In this example, the test returns true and so the test 
+passes.
+
+The example given above is one in which the function and test reside in the
+same module. In SunPy, functions and tests are separated and the latter can be
+found in the `sunpy/tests` directory, organised by module. The convention is
+to have one test module per science module, with the names for the test modules
+being the same as those for the science modules prefixed with `test_`. For 
+example, the modules `util.py` and `multimethod.py` in `sunpy/util` have 
+corresponding test modules `test_util.py` and `test_multimethod.py`.
+
+**Running unit tests**
+
+To find and run all the SunPy unit tests, simply run ::
+
+  py.test
+
+from the root of the SunPy tree (i.e. the directory containing `INSTALL.TXT`,
+`sunpy`, `doc`, etc.). This will produce a lot of output and you'll probably 
+want to run only selected test modules at a time. This is done by specifying
+the module on the command line, e.g.::
+
+ py.test sunpy/tests/util/test_util.py
+
+for the tests for `sunpy.util.util`.
+
+.. Unit tests should be written as often as possible using `unittest 
+.. <http://docs.python.org/release/3.1.3/library/unittest.html>`_. See the 
+.. `Unit Testing section <http://diveintopython3.org/unit-testing.html>`_ of 
+.. Dive into Python 3 for more information about unit testing in Python.
+
+.. SunPy uses `tox <http://tox.testrun.org/>`_ to automate testing with
+.. multiple versions of Python. The test environments are isolated and thus
+.. all dependencies will need to be built; this requires the build dependencies
+.. of those Python packages to be present on the system. These call be installed
+.. by calling `sudo aptitude build-dep python-numpy python-scipy python-matplotlib python-pyfits`
+.. on a distribution that derives from Debian. `tox` itself it also required and
+.. can be installed by `pip install tox` (pip is a part of `python-distribute`).
+
+.. The tests can then be run by running `tox` in the project directory.
+.. This will take a very long time on the first run because it will
+.. have to build all dependencies. Subsequent runs will take significantly
+.. less time.
 
 
 Virtualenv
