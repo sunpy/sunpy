@@ -1,6 +1,6 @@
 """
 Fundamental Solar Physical Constants
-------------------------------
+------------------------------------
 These constants are taken from various sources. This module is heavily based on
 (if not directly copied from) SciPy constants module.
 
@@ -28,14 +28,17 @@ Constants are imported from Review of Particle Physics 2010 (page 102),
 and NASA's Sun Fact Sheet as well as other sources.
 
 Websites
--------
+--------
 http://nssdc.gsfc.nasa.gov/planetary/factsheet/sunfact.html
 
-TODO: 
-----------
-Need better sources as well as error values.
-Create a cheat sheet function which prints out key solar values.
+.. todo:: Need better sources as well as error values.
+
+.. todo:: Create a cheat sheet function which prints out key solar values.
+
 """
+#TODO: Need better sources as well as error values.
+#TODO: Create a cheat sheet function which prints out key solar values.
+
 from __future__ import absolute_import
 
 import scipy.constants as _cd

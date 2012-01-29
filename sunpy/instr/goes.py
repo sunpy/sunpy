@@ -1,57 +1,90 @@
+# -*- coding: utf-8 -*-
+#
+#
+# <License info will go here...>
 """
-    Provides programs to process and analyze GOES data. This module is
-    currently in development.
-   
-    Examples
-    --------
-    To make a GOES plot
-    >>> import sunpy.instr.goes as goes
-    >>> f = goes.get_goes_file(['2011/04/04', '2011/04/05'])
-    >>> data = sunpy.instr.goes.parse_goes(f[0])
-    >>> goes.show(res.get('time_tag'), res.get('A_FLUX'), res.get('B_FLUX'))
+    Provides programs to process and analyze GOES data. 
     
-    To Do
-    -----
-    * An object should be developed to encapsulate all of goes functionality
-    * It currently looks like the GOES API only allows for downloading an entire
-        days worth of data at full cadence. This is a lot of data to work with.
-        Plotting it takes too long. Should probably sparsify it.
+    .. warning:: This module is still in development!
     
-    See Also
-    --------
-    For current data plots see http://www.swpc.noaa.gov/rt_plots/xray_5m.html
+    .. todo:: An object should be developed to encapsulate all of goes functionality
     
-    References
-    ----------
-    | http://www.ngdc.noaa.gov/goes/sem/getData
-
-    """
+    .. todo:: The current GOES API can only provide a full day worth of data.
+    
+"""
 
 from __future__ import absolute_import
 import matplotlib.pyplot as plt
 import matplotlib.dates
 from datetime import datetime
 from sunpy.time import TimeRange
-from sunpy.util import break_time
 import urllib
 import csv
 
-def get_goes_file(time_range):
-    """Get the goes data"""
+def get_file(time_range):
+    """Download the GOES data through the GOES SEM - DataService Web API. 
+    
+    Parameters
+    ----------
+    time_range : A TimeRange or time range compatible string
+
+    Returns
+    -------
+    value : tuple
+        Return a tuple (filename, headers) where filename is the local file 
+        name under which the object can be found, and headers is 
+        whatever the info() method of the object returned by urlopen.
+
+    See Also
+    --------
+
+    Examples
+    --------
+    >>> import sunpy.instr.goes as goes
+    >>> goes.get_file(('2011/04/04', '2011/04/05'))
+    
+    Reference
+    ---------
+    | http://www.ngdc.noaa.gov/goes/sem/getData
+    
+    .. note:: This API is currently limited to providing data from 
+    whole days only.
+
+    """
     
     _time_range = TimeRange(time_range)
     
     url_root = 'http://www.ngdc.noaa.gov/goes/sem/getData/goes15/xrs_2s.csv?fromDate='
     
-    url = url_root + break_time(_time_range.t1)[0:8] + '&toDate=' + break_time(_time_range.t2)[0:8]
+    url = url_root + _time_range.t1.strftime("%Y%m%d") + '&toDate=' + _time_range.t2.strftime("%Y%m%d")
     url = url + '&file=true'
     print('Downloading file: ' + url)
     f = urllib.urlretrieve(url)
 
     return f
 
-def parse_goes(filename):
-    """Parse a goes file"""
+def parse_file(filename):
+    """Parse a GOES file.
+    
+    Parameters
+    ----------
+    filename : The filename of a GOES csv file.
+
+    Returns
+    -------
+    value : dict
+        Returns a dictionary.
+
+    See Also
+    --------
+
+    Examples
+    --------
+    >>> import sunpy.instr.goes as goes
+    >>> f = goes.get_file(('2011/04/04', '2011/04/05'))
+    >>> goes.parse_file(f[0])
+
+    """
     
     reader = csv.reader(open(filename, "rb"), delimiter = ',', skipinitialspace = True)
     headerline = reader.next()
@@ -83,7 +116,35 @@ def parse_goes(filename):
     return result
 
 def show(t, xrsa, xrsb, title = 'GOES Xray Flux'):
-    """Plot the standard GOES plot."""
+    """Plot a standard GOES plot.
+    
+    Parameters
+    ----------
+    t : tuple
+        A tuple containing the times of the measurements.
+    xrsa : tuple
+        A tuple containing the GOES low energy channel .
+    xrsb : tuple
+        A tuple containing the GOES high energy channel.
+    title : string
+        The title of the plot
+
+    Returns
+    -------
+    value : dict
+        Returns a dictionary.
+
+    See Also
+    --------
+
+    Examples
+    --------
+    >>> import sunpy.instr.goes as goes
+    >>> f = goes.get_file(('2011/04/04', '2011/04/05'))
+    >>> data = goes.parse_file(f[0])
+    >>> goes.show(data.get('time_tag'), data.get('A_FLUX'), data.get('B_FLUX'))
+
+    """
         
     fig = plt.figure()
     ax = fig.add_subplot(111)
