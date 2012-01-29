@@ -6,7 +6,5 @@ WCS
 
 .. currentmodule:: sunpy
 
-   .. autosummary::
-      :toctree: generated/
-	  
-	  Map
+.. automodule:: wcs
+   :members:
