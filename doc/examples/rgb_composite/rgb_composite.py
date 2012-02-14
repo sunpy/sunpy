@@ -3,7 +3,7 @@
 """
 RGB Composite Image Demo
 
-Last Update: Jan 25, 2012
+Last Update: Feb 13, 2012
 keith.hughitt@nasa.gov
 
 This example application demonstrates how SunPy can be used to build GUI
@@ -22,7 +22,7 @@ TODO:
       weights are adjusted.
     * Have file -> save call savefig() on the rgb image
     * Show actual dates below each image.
-    * Wavelength/date adjustment support.
+    * Wavelength adjustment support.
     * Refactor/simplify
     * Make all images expand to fill available space.
 """
@@ -61,7 +61,11 @@ class RGBCompositeImageApp(QtGui.QMainWindow):
         
         # Setup UI
         self._load_data_sources()
-        self._load()
+        
+        # Load initial data
+        now = datetime.datetime.utcnow()
+        self.ui.dateTimeEdit.setDateTime(now)
+        self._load(now)
         
         # Initialize event handlers
         self._initEvents()
@@ -81,52 +85,68 @@ class RGBCompositeImageApp(QtGui.QMainWindow):
         self.ui.greenWavelengthSelect.setCurrentIndex(3)
         self.ui.blueWavelengthSelect.setCurrentIndex(2)
         
-    def _load(self):
-        """Finish UI initialization and load default RGB composite image"""
-        # Default to the current date
-        self.ui.dateTimeEdit.setDateTime(datetime.datetime.utcnow())
-        
-        now = datetime.datetime.utcnow()
-        
-        # Load initial RGB image
-        self.red = sunpy.make_map(hv.get_jp2_image(now, sourceId=self._datasources['304']['sourceId']))
-        self.green = sunpy.make_map(hv.get_jp2_image(now, sourceId=self._datasources['193']['sourceId']))
-        self.blue = sunpy.make_map(hv.get_jp2_image(now, sourceId=self._datasources['171']['sourceId']))
+    def _load(self, dtime):
+        """Update thumbnails RGB composite image"""
+        self.red = sunpy.make_map(hv.get_jp2_image(dtime, sourceId=self._datasources['304']['sourceId']))
+        self.green = sunpy.make_map(hv.get_jp2_image(dtime, sourceId=self._datasources['193']['sourceId']))
+        self.blue = sunpy.make_map(hv.get_jp2_image(dtime, sourceId=self._datasources['171']['sourceId']))
         
         self._updateRedPreview()
         self._updateGreenPreview()
         self._updateBluePreview()
+
         self._updateCompositeImage()
         
     def _updateCompositeImage(self):
         """Updates the RGB composite image"""
+        if hasattr(self.ui, "compositeImage"):
+            self.ui.compositeImage.update_figure(self._weights)
+        else:
+            self._createCompositeImage()            
+        
+    def _createCompositeImage(self):
         rgb = RGBCompositeMap(self.red, self.green, self.blue)
         self.ui.compositeContainer.removeWidget(self.ui.compositePlaceholder)
         self.ui.compositePlaceholder.close()
-        self.ui.compositeImage = SunPyPlot(rgb, 512, 512)
+        self.ui.compositeImage = RGBCompositePlot(rgb, 512, 512)
         self.ui.compositeContainer.addWidget(self.ui.compositeImage, 1)
         self.ui.compositeContainer.update()
 
     def _updateRedPreview(self):
         """Updates the red preview image"""
-        self.ui.redPreview.removeWidget(self.ui.redPlaceholder)
-        self.ui.redPlaceholder.close()
+        if hasattr(self.ui, "redPreviewImage"):
+            self.ui.redPreview.removeWidget(self.ui.redPreviewImage)
+            self.ui.redPreviewImage.close()
+        else:
+            self.ui.redPreview.removeWidget(self.ui.redPlaceholder)
+            self.ui.redPlaceholder.close()
+            
         self.ui.redPreviewImage = SunPyPlot(self.red, 256, 256, cmap=cm.Reds_r)
         self.ui.redPreview.addWidget(self.ui.redPreviewImage, 1)
         self.ui.redPreview.update()
         
     def _updateGreenPreview(self):
         """Updates the green preview image"""
-        self.ui.greenPreview.removeWidget(self.ui.greenPlaceholder)
-        self.ui.greenPlaceholder.close()
+        if hasattr(self.ui, "greenPreviewImage"):
+            self.ui.greenPreview.removeWidget(self.ui.greenPreviewImage)
+            self.ui.greenPreviewImage.close()
+        else:
+            self.ui.greenPreview.removeWidget(self.ui.greenPlaceholder)
+            self.ui.greenPlaceholder.close()
+
         self.ui.greenPreviewImage = SunPyPlot(self.green, 256, 256, cmap=cm.Greens_r)
         self.ui.greenPreview.addWidget(self.ui.greenPreviewImage, 1)
         self.ui.greenPreview.update()
         
     def _updateBluePreview(self):
         """Updates the blue preview image"""
-        self.ui.bluePreview.removeWidget(self.ui.bluePlaceholder)
-        self.ui.bluePlaceholder.close()
+        if hasattr(self.ui, "bluePreviewImage"):
+            self.ui.bluePreview.removeWidget(self.ui.bluePreviewImage)
+            self.ui.bluePreviewImage.close() 
+        else:
+            self.ui.bluePreview.removeWidget(self.ui.bluePlaceholder)
+            self.ui.bluePlaceholder.close()    
+        
         self.ui.bluePreviewImage = SunPyPlot(self.blue, 256, 256, cmap=cm.Blues_r)
         self.ui.bluePreview.addWidget(self.ui.bluePreviewImage, 1)
         self.ui.bluePreview.update()
@@ -136,6 +156,7 @@ class RGBCompositeImageApp(QtGui.QMainWindow):
         self.connect(self.ui.redWeightSlider, QtCore.SIGNAL('valueChanged(int)'), self.onRedWeightChange)
         self.connect(self.ui.greenWeightSlider, QtCore.SIGNAL('valueChanged(int)'), self.onGreenWeightChange)
         self.connect(self.ui.blueWeightSlider, QtCore.SIGNAL('valueChanged(int)'), self.onBlueWeightChange)
+        self.connect(self.ui.dateTimeEdit, QtCore.SIGNAL('dateTimeChanged(QDateTime)'), self.onDateChange)
         
     def onRedWeightChange(self, value):
         """Red channel weight changed"""
@@ -150,7 +171,11 @@ class RGBCompositeImageApp(QtGui.QMainWindow):
     def onBlueWeightChange(self, value):
         """Blue channel weight changed"""
         self._weights[2] = value / 100.
-        self.ui.compositeImage.update_figure((self._weights))     
+        self.ui.compositeImage.update_figure((self._weights))
+        
+    def onDateChange(self, qdatetime):
+        """Updates the images when the date is changed"""
+        self._load(qdatetime.toPyDateTime())
 
 class SunPyPlot(FigureCanvas):
     """SunPy preview image"""
@@ -175,14 +200,24 @@ class SunPyPlot(FigureCanvas):
         self.setMaximumSize(QtCore.QSize(width, height))   
         #FigureCanvas.updateGeometry(self)        
 
+class PreviewImagePlot(SunPyPlot):
+    """Qt representation of a preview thumbnail"""
+    def __init__(self, map_, width, height, parent=None, dpi=100, **matplot_args):
+        SunPyPlot.__init__(self, map_, width, height, parent=None, dpi=100, **matplot_args)
+        
+class RGBCompositePlot(SunPyPlot):
+    """Qt representation of an RGB composite image"""
+    def __init__(self, map_, width, height, parent=None, dpi=100, **matplot_args):
+        SunPyPlot.__init__(self, map_, width, height, parent=None, dpi=100, **matplot_args)
+    
     def update_figure(self, weights):
         """Update RGB Composite image"""
         weightArray = np.ones((self._map.shape[0], self._map.shape[1], 3))
         
         for i in range(3):
             weightArray[:,:,i] *= weights[i]
-        
-        self.figure = (self._map * weightArray).astype(np.uint8).plot_simple()
+
+        self.figure.get_axes()[0].imshow((self._map * weightArray).astype(np.uint8))
         self.draw()
     
 #    def heightForWidth(self, width):
