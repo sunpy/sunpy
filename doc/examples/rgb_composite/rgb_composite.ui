@@ -93,7 +93,7 @@
          </property>
          <property name="time">
           <time>
-           <hour>10</hour>
+           <hour>15</hour>
            <minute>0</minute>
            <second>0</second>
           </time>
@@ -530,7 +530,7 @@
    </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
-     <string>File</string>
+     <string>&amp;File</string>
     </property>
     <addaction name="actionSave"/>
    </widget>
@@ -538,7 +538,10 @@
   </widget>
   <action name="actionSave">
    <property name="text">
-    <string>Save</string>
+    <string>&amp;Save</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
    </property>
   </action>
  </widget>

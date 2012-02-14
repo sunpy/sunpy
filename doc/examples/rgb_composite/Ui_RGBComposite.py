@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'rgb_composite.ui'
 #
-# Created: Tue Feb 14 10:40:04 2012
+# Created: Tue Feb 14 13:31:49 2012
 #      by: PyQt4 UI code generator 4.8.5
 #
 # WARNING! All changes made in this file will be lost!
@@ -58,7 +58,7 @@ class Ui_RGBComposite(object):
         self.dateForm.addWidget(self.label)
         self.dateTimeEdit = QtGui.QDateTimeEdit(self.verticalLayoutWidget)
         self.dateTimeEdit.setMinimumSize(QtCore.QSize(220, 0))
-        self.dateTimeEdit.setTime(QtCore.QTime(10, 0, 0))
+        self.dateTimeEdit.setTime(QtCore.QTime(15, 0, 0))
         self.dateTimeEdit.setDisplayFormat(QtGui.QApplication.translate("RGBComposite", "yyyy/MM/dd HH:mm:ss UT", None, QtGui.QApplication.UnicodeUTF8))
         self.dateTimeEdit.setCalendarPopup(True)
         self.dateTimeEdit.setTimeSpec(QtCore.Qt.UTC)
@@ -257,11 +257,12 @@ class Ui_RGBComposite(object):
         self.menubar.setGeometry(QtCore.QRect(0, 0, 1080, 25))
         self.menubar.setObjectName(_fromUtf8("menubar"))
         self.menuFile = QtGui.QMenu(self.menubar)
-        self.menuFile.setTitle(QtGui.QApplication.translate("RGBComposite", "File", None, QtGui.QApplication.UnicodeUTF8))
+        self.menuFile.setTitle(QtGui.QApplication.translate("RGBComposite", "&File", None, QtGui.QApplication.UnicodeUTF8))
         self.menuFile.setObjectName(_fromUtf8("menuFile"))
         RGBComposite.setMenuBar(self.menubar)
         self.actionSave = QtGui.QAction(RGBComposite)
-        self.actionSave.setText(QtGui.QApplication.translate("RGBComposite", "Save", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionSave.setText(QtGui.QApplication.translate("RGBComposite", "&Save", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionSave.setShortcut(QtGui.QApplication.translate("RGBComposite", "Ctrl+S", None, QtGui.QApplication.UnicodeUTF8))
         self.actionSave.setObjectName(_fromUtf8("actionSave"))
         self.menuFile.addAction(self.actionSave)
         self.menubar.addAction(self.menuFile.menuAction())
