@@ -169,6 +169,8 @@ class RGBCompositeImageApp(QtGui.QMainWindow):
         self.connect(self.ui.greenWeightSlider, QtCore.SIGNAL('valueChanged(int)'), self.onGreenWeightChange)
         self.connect(self.ui.blueWeightSlider, QtCore.SIGNAL('valueChanged(int)'), self.onBlueWeightChange)
         self.connect(self.ui.dateTimeEdit, QtCore.SIGNAL('dateTimeChanged(QDateTime)'), self.onDateChange)
+        self.connect(self.ui.dateTimeEdit, QtCore.SIGNAL('dateTimeChanged(QDateTime)'), self.onDateChange)
+        self.connect(self.ui.actionSave, QtCore.SIGNAL('activated()'), self.onSaveClick)
         
     def onRedWeightChange(self, value):
         """Red channel weight changed"""
@@ -202,6 +204,11 @@ class RGBCompositeImageApp(QtGui.QMainWindow):
         self._updateBluePreview()
 
         self._updateCompositeImage()
+        
+    def onSaveClick(self):
+        """Save the composite image"""
+        filename = QtGui.QFileDialog.getSaveFileName(self, "Save image", "composite.png")
+        self.ui.compositeImage.figure.savefig(str(filename))
 
 class SunPyPlot(FigureCanvas):
     """SunPy preview image"""
