@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'rgb_composite.ui'
 #
-# Created: Tue Jan 24 15:08:28 2012
+# Created: Tue Feb 14 10:40:04 2012
 #      by: PyQt4 UI code generator 4.8.5
 #
 # WARNING! All changes made in this file will be lost!
@@ -58,7 +58,7 @@ class Ui_RGBComposite(object):
         self.dateForm.addWidget(self.label)
         self.dateTimeEdit = QtGui.QDateTimeEdit(self.verticalLayoutWidget)
         self.dateTimeEdit.setMinimumSize(QtCore.QSize(220, 0))
-        self.dateTimeEdit.setTime(QtCore.QTime(5, 0, 0))
+        self.dateTimeEdit.setTime(QtCore.QTime(10, 0, 0))
         self.dateTimeEdit.setDisplayFormat(QtGui.QApplication.translate("RGBComposite", "yyyy/MM/dd HH:mm:ss UT", None, QtGui.QApplication.UnicodeUTF8))
         self.dateTimeEdit.setCalendarPopup(True)
         self.dateTimeEdit.setTimeSpec(QtCore.Qt.UTC)
@@ -125,6 +125,7 @@ class Ui_RGBComposite(object):
         self.redWeight.addWidget(self.redWeightLabel)
         self.redWeightSlider = QtGui.QSlider(self.verticalLayoutWidget)
         self.redWeightSlider.setMaximum(100)
+        self.redWeightSlider.setSingleStep(5)
         self.redWeightSlider.setProperty("value", 100)
         self.redWeightSlider.setOrientation(QtCore.Qt.Horizontal)
         self.redWeightSlider.setObjectName(_fromUtf8("redWeightSlider"))

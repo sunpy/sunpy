@@ -93,7 +93,7 @@
          </property>
          <property name="time">
           <time>
-           <hour>5</hour>
+           <hour>10</hour>
            <minute>0</minute>
            <second>0</second>
           </time>
@@ -247,6 +247,9 @@
             <widget class="QSlider" name="redWeightSlider">
              <property name="maximum">
               <number>100</number>
+             </property>
+             <property name="singleStep">
+              <number>5</number>
              </property>
              <property name="value">
               <number>100</number>
