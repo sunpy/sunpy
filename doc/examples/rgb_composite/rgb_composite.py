@@ -63,9 +63,7 @@ class RGBCompositeImageApp(QtGui.QMainWindow):
         self._load_data_sources()
         
         # Load initial data
-        now = datetime.datetime.utcnow()
-        self.ui.dateTimeEdit.setDateTime(now)
-        self._load(now)
+        self._load_defaults()
         
         # Initialize event handlers
         self._initEvents()
@@ -85,26 +83,40 @@ class RGBCompositeImageApp(QtGui.QMainWindow):
         self.ui.greenWavelengthSelect.setCurrentIndex(3)
         self.ui.blueWavelengthSelect.setCurrentIndex(2)
         
-    def _load(self, dtime):
-        """Update thumbnails RGB composite image"""
-        self.red = sunpy.make_map(hv.get_jp2_image(dtime, sourceId=self._datasources['304']['sourceId']))
-        self.green = sunpy.make_map(hv.get_jp2_image(dtime, sourceId=self._datasources['193']['sourceId']))
-        self.blue = sunpy.make_map(hv.get_jp2_image(dtime, sourceId=self._datasources['171']['sourceId']))
+    def _load_defaults(self):
+        """Load initial images"""
+        now = datetime.datetime.utcnow()
+        self.ui.dateTimeEdit.setDateTime(now)
+        
+        r = hv.get_jp2_image(now, sourceId=self._datasources['304']['sourceId'])
+        g = hv.get_jp2_image(now, sourceId=self._datasources['193']['sourceId'])
+        b = hv.get_jp2_image(now, sourceId=self._datasources['171']['sourceId'])
+        
+        self.red = sunpy.make_map(r)
+        self.green = sunpy.make_map(g)
+        self.blue = sunpy.make_map(b)
         
         self._updateRedPreview()
         self._updateGreenPreview()
         self._updateBluePreview()
-
-        self._updateCompositeImage()
+        
+        self._createCompositeImage()
         
     def _updateCompositeImage(self):
-        """Updates the RGB composite image"""
-        if hasattr(self.ui, "compositeImage"):
-            self.ui.compositeImage.update_figure(self._weights)
-        else:
-            self._createCompositeImage()            
+        """Updates the composite image"""
+        # Remove old composite
+        rgb = RGBCompositeMap(self.red, self.green, self.blue)
+        self.ui.compositeContainer.removeWidget(self.ui.compositeImage)
+        self.ui.compositeImage.close()
+        
+        # Plot new one
+        self.ui.compositeImage = RGBCompositePlot(rgb, 512, 512)
+        self.ui.compositeImage.set_rgb_weights(self._weights)
+        self.ui.compositeContainer.addWidget(self.ui.compositeImage, 1)
+        self.ui.compositeContainer.update()
         
     def _createCompositeImage(self):
+        """Creates an initial composite image plot"""
         rgb = RGBCompositeMap(self.red, self.green, self.blue)
         self.ui.compositeContainer.removeWidget(self.ui.compositePlaceholder)
         self.ui.compositePlaceholder.close()
@@ -121,7 +133,7 @@ class RGBCompositeImageApp(QtGui.QMainWindow):
             self.ui.redPreview.removeWidget(self.ui.redPlaceholder)
             self.ui.redPlaceholder.close()
             
-        self.ui.redPreviewImage = SunPyPlot(self.red, 256, 256, cmap=cm.Reds_r)
+        self.ui.redPreviewImage = SunPyPlot(self.red, 256, 256) #cmap=cm.Reds_r
         self.ui.redPreview.addWidget(self.ui.redPreviewImage, 1)
         self.ui.redPreview.update()
         
@@ -134,7 +146,7 @@ class RGBCompositeImageApp(QtGui.QMainWindow):
             self.ui.greenPreview.removeWidget(self.ui.greenPlaceholder)
             self.ui.greenPlaceholder.close()
 
-        self.ui.greenPreviewImage = SunPyPlot(self.green, 256, 256, cmap=cm.Greens_r)
+        self.ui.greenPreviewImage = SunPyPlot(self.green, 256, 256) #cmap=cm.Greens_r
         self.ui.greenPreview.addWidget(self.ui.greenPreviewImage, 1)
         self.ui.greenPreview.update()
         
@@ -147,7 +159,7 @@ class RGBCompositeImageApp(QtGui.QMainWindow):
             self.ui.bluePreview.removeWidget(self.ui.bluePlaceholder)
             self.ui.bluePlaceholder.close()    
         
-        self.ui.bluePreviewImage = SunPyPlot(self.blue, 256, 256, cmap=cm.Blues_r)
+        self.ui.bluePreviewImage = SunPyPlot(self.blue, 256, 256) #cmap=cm.Blues_r
         self.ui.bluePreview.addWidget(self.ui.bluePreviewImage, 1)
         self.ui.bluePreview.update()
         
@@ -161,21 +173,35 @@ class RGBCompositeImageApp(QtGui.QMainWindow):
     def onRedWeightChange(self, value):
         """Red channel weight changed"""
         self._weights[0] = value / 100.
-        self.ui.compositeImage.update_figure((self._weights))
+        self.ui.compositeImage.set_rgb_weights((self._weights))
         
     def onGreenWeightChange(self, value):
         """Green channel weight changed"""
         self._weights[1] = value / 100.
-        self.ui.compositeImage.update_figure((self._weights))
+        self.ui.compositeImage.set_rgb_weights((self._weights))
         
     def onBlueWeightChange(self, value):
         """Blue channel weight changed"""
         self._weights[2] = value / 100.
-        self.ui.compositeImage.update_figure((self._weights))
+        self.ui.compositeImage.set_rgb_weights((self._weights))
         
     def onDateChange(self, qdatetime):
         """Updates the images when the date is changed"""
-        self._load(qdatetime.toPyDateTime())
+        dt = qdatetime.toPyDateTime()
+
+        r = hv.get_jp2_image(dt, sourceId=self._datasources['304']['sourceId'])
+        g = hv.get_jp2_image(dt, sourceId=self._datasources['193']['sourceId'])
+        b = hv.get_jp2_image(dt, sourceId=self._datasources['171']['sourceId'])
+        
+        self.red = sunpy.make_map(r)
+        self.green = sunpy.make_map(g)
+        self.blue = sunpy.make_map(b)
+        
+        self._updateRedPreview()
+        self._updateGreenPreview()
+        self._updateBluePreview()
+
+        self._updateCompositeImage()
 
 class SunPyPlot(FigureCanvas):
     """SunPy preview image"""
@@ -210,16 +236,20 @@ class RGBCompositePlot(SunPyPlot):
     def __init__(self, map_, width, height, parent=None, dpi=100, **matplot_args):
         SunPyPlot.__init__(self, map_, width, height, parent=None, dpi=100, **matplot_args)
     
-    def update_figure(self, weights):
-        """Update RGB Composite image"""
+    def set_rgb_weights(self, weights):
+        """Update RGB Composite image weights"""
         weightArray = np.ones((self._map.shape[0], self._map.shape[1], 3))
         
+        # Rescale data using new weights
         for i in range(3):
             weightArray[:,:,i] *= weights[i]
-
-        self.figure.get_axes()[0].imshow((self._map * weightArray).astype(np.uint8))
+        new_data = (self._map * weightArray).astype(np.uint8)
+        
+        # Update AxesImage data (faster than calling imshow again)
+        ax = self.figure.get_axes()[0].images[0] 
+        ax.set_data(new_data)
         self.draw()
-    
+
 #    def heightForWidth(self, width):
 #        """Preserves 1:1 aspect ratio"""
 #        return width
