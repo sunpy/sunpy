@@ -9,6 +9,7 @@ from sunpy.map.header import MapHeader
 from sunpy.map.basemap import BaseMap
 from sunpy.map.mapcube import MapCube
 from sunpy.map.compositemap import CompositeMap
+from sunpy.map.sources import *
 
 def make_map(*args, **kwargs):
     """Processes one or more inputs and returns a Map, MapCube, or CompositeMap
@@ -54,7 +55,7 @@ def make_map(*args, **kwargs):
                 
             # Filepath
             else:
-                return BaseMap.map_from_filepath(args[0])
+                return BaseMap.read(args[0])
 
         # Map/MapCube/CompositeMap
         elif (isinstance(args[0], BaseMap) or 
@@ -110,7 +111,7 @@ def Map(filepath):
     warnings.warn("sunpy.Map is deprecated: use sunpy.make_map instead.", DeprecationWarning)
     
     if isinstance(filepath, basestring):
-        return BaseMap.map_from_filepath(filepath)
+        return BaseMap.read(filepath)
     else:
         raise InvalidMapInput("Invalid input for make_map. Please specify "
                               "one or more filepaths, Maps, directories, "

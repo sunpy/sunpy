@@ -137,16 +137,13 @@ class BaseMap(np.ndarray):
             return
 
         if hasattr(obj, 'header'):
-            self.header = obj.header
-
-            # preserve object properties
+            # Preserve object properties
             properties = self.get_properties(obj.header)
             for attr, value in list(properties.items()):
                 setattr(self, attr, getattr(obj, attr, value))
                 
-            self.center = obj.center
-            self.scale = obj.scale
-            self.units = obj.units
+            for x in ['header', 'center', 'scale', 'units', 'rsun']:
+                setattr(self, x, getattr(obj, x, value))
         
     def __array_wrap__(self, out_arr, context=None):
         """Returns a wrapped instance of a Map object"""
@@ -171,12 +168,35 @@ class BaseMap(np.ndarray):
     
     def __sub__(self, other):
         """Subtract two maps. Currently does not take into account the alignment
-        between the two maps."""
-        result = np.ndarray.__sub__(self, other)
-
-        #minmax = np.array([abs(result.min()), abs(result.max())]).max()
-        #result.norm = colors.Normalize(-minmax, minmax, True)
+        between the two maps.
         
+        numpy dtype nums:
+            1    int8
+            2    uint8
+            3    int16
+            4    uint16
+        """
+        from matplotlib import colors
+        
+        # if data is stored as unsigned, cast up (e.g. uint8 => int16)
+        if self.dtype.kind == "u":
+            dtype = "int%d" % (int(self.dtype.name[4:]) * 2)
+            self = self.astype(np.dtype(dtype))
+        if other.dtype.kind == "u":
+            dtype = "int%d" % (int(other.dtype.name[4:]) * 2)
+            other = other.astype(np.dtype(dtype))
+
+        result = np.ndarray.__sub__(self, other)
+            
+        def norm():
+            mean = result.mean()
+            std = result.std()
+            vmin = max(result.min(), mean - 6 * std)
+            vmax = min(result.max(), mean + 6 * std)
+            
+            return colors.Normalize(vmin, vmax)
+        
+        result.norm = norm
         result.cmap = cm.gray #@UndefinedVariable 
         
         return result
@@ -186,7 +206,19 @@ class BaseMap(np.ndarray):
         return np.array(self, copy=False, subok=False).std(*args, **kwargs)
     
     @classmethod
-    def map_from_filepath(cls, filepath):
+    def parse_file(cls, filepath):
+        """Reads in a map file and returns a header and data array"""
+        from sunpy.io import read_file
+        from sunpy.map.header import MapHeader
+        
+        data, dict_header = read_file(filepath)
+        
+        header = MapHeader(dict_header)
+        
+        return header, data
+    
+    @classmethod
+    def read(cls, filepath):
         """Map class factory
     
         Attempts to determine the type of data associated with input and returns
@@ -203,12 +235,10 @@ class BaseMap(np.ndarray):
         out : Map
             Returns a Map instance for the particular type of data loaded.
         """
-        from sunpy.io import read_file
-        from sunpy.map.header import MapHeader
-        
-        data, dict_header = read_file(filepath)
-        
-        header = MapHeader(dict_header)
+        header, data = cls.parse_file(filepath)
+ 
+        if cls.__name__ is not "BaseMap":
+            return cls(data, header)
 
         for cls in BaseMap.__subclasses__():
             if cls.is_datasource_for(header):
@@ -446,7 +476,7 @@ class BaseMap(np.ndarray):
         return fig
     
     def norm(self):
-        """Default normalizion method"""
+        """Default normalization method"""
         return None
     
     def show(self, overlays=None, draw_limb=False, gamma=1.0, **matplot_args):
@@ -491,3 +521,4 @@ class BaseMap(np.ndarray):
 class UnrecognizedDataSouceError(ValueError):
     """Exception to raise when an unknown datasource is encountered"""
     pass
+    
