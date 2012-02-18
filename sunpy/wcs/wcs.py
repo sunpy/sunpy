@@ -1,48 +1,49 @@
 """
-The WCS package provides functions to parse a World Coordinate System (WCS) 
-FITS header for solar images as well as convert between various solar coordinate
-systems. The solar coordinates supported are
+    The WCS package provides functions to parse a World Coordinate System (WCS) 
+    FITS header for solar images as well as convert between various solar coordinate
+    systems. The solar coordinates supported are
 
-* Helioprojective-Cartesian (HPC): The most often used solar coordinate system.
-    Describes positions on the Sun as angles measured from the center of the 
-    solar disk (usually in arcseconds) using cartesian coordinates (X, Y)
-* Helioprojective-Radial (HPR): Describes positions on the Sun using angles, 
-    similar to HPC, but uses a radial coordinate (rho, psi) system centered on
-    solar disk where psi is measured in the counter clock wise direction.
-* Heliocentric-Cartesian (HCC): The same as HPC but with positions expressed in
-    true (deprojected) physical distances instead of angles on the celestial 
-    sphere.
-* Heliocentric-Radial (HCR): The same as HPR but with rho expressed in
-    true (deprojected) physical distances instead of angles on the celestial 
-    sphere.
-* Stonyhurst-Heliographic (HG): Expressed positions on the Sun using longitude 
-    and latitude on the solar sphere but with the origin which is at the 
-    intersection of the solar equator and the central meridian as seen from 
-    Earth. This means that the coordinate system remains fixed with respect to 
-    Earth while the Sun rotates underneath it.
-* Carrington-Heliographic (HG, /CARRINGTON): Carrington longitude is offset 
-    from Stonyhurst longitude by a time-dependent scalar value, L0. At the 
-    start of each Carrington rotation, L0 = 360, and steadily decreases 
-    until it reaches L0 = 0, at which point the next Carrington rotation 
-    starts. 
+    * Helioprojective-Cartesian (HPC): The most often used solar coordinate system.
+        Describes positions on the Sun as angles measured from the center of the 
+        solar disk (usually in arcseconds) using cartesian coordinates (X, Y)
+    * Helioprojective-Radial (HPR): Describes positions on the Sun using angles, 
+        similar to HPC, but uses a radial coordinate (rho, psi) system centered on
+        solar disk where psi is measured in the counter clock wise direction.
+    * Heliocentric-Cartesian (HCC): The same as HPC but with positions expressed in
+        true (deprojected) physical distances instead of angles on the celestial 
+        sphere.
+    * Heliocentric-Radial (HCR): The same as HPR but with rho expressed in
+        true (deprojected) physical distances instead of angles on the celestial 
+        sphere.
+    * Stonyhurst-Heliographic (HG): Expressed positions on the Sun using longitude 
+        and latitude on the solar sphere but with the origin which is at the 
+        intersection of the solar equator and the central meridian as seen from 
+        Earth. This means that the coordinate system remains fixed with respect to 
+        Earth while the Sun rotates underneath it.
+    * Carrington-Heliographic (HG, /CARRINGTON): Carrington longitude is offset 
+        from Stonyhurst longitude by a time-dependent scalar value, L0. At the 
+        start of each Carrington rotation, L0 = 360, and steadily decreases 
+        until it reaches L0 = 0, at which point the next Carrington rotation 
+        starts. 
 
-References
-----------
-* Thompson (2006), A&A, 449, 791 <http://dx.doi.org/10.1051/0004-6361:20054262>
-* PDF <http://fits.gsfc.nasa.gov/wcs/coordinates.pdf>
+    Note that SOLAR_B0, HGLT_OBS, and CRLT_OBS are all synonyms.
 
-Note that SOLAR_B0, HGLT_OBS, and CRLT_OBS are all synonyms.
+    References
+    ----------
+    * Thompson (2006), A&A, 449, 791 <http://dx.doi.org/10.1051/0004-6361:20054262>
+    * PDF <http://fits.gsfc.nasa.gov/wcs/coordinates.pdf>
 """
 from __future__ import absolute_import
 
-__all__ = ["get_solar_limb", "get_observer_position", "get_center",
+__all__ = ["get_solar_limb", "get_center",
            "get_units", "get_platescale", "get_solar_b0", "get_solar_l0",
            "convert_angle_units", "get_projection", "get_shape",
            "convert_pixel_to_data", "convert_data_to_pixel",
            "convert_hpc_hcc", "convert_hcc_hpc",
            "convert_hcc_hg", "convert_hg_hcc", "convert_hg_hcc_xyz",
            "convert_hg_hpc",
-           "proj_tan", "convert_to_coord", "convert_hpc_hcc_xyz"]
+           "proj_tan", "convert_to_coord", "convert_hpc_hcc_xyz", 
+           "convert_hpc_hg", "get_obs_distance", "get_solar_radius"]
 
 __authors__ = ["Steven Christe"]
 __email__ = "steven.d.christe@nasa.gov"
@@ -59,9 +60,15 @@ def get_solar_limb(header):
             header.get('SOLAR_R') or 
             header.get('RADIUS', con.average_angular_size))
 
-def get_observer_position(header):
+def get_solar_radius(header):
+    """Return the solar radius of the Sun"""
+    return (header.get('RSUN_REF') or con.radius)
+
+def get_obs_distance(header):
     """Return the observer distance from the Sun."""
-    return header.get('DSUN_OBS')
+    # TODO should try to calculate this instead of defaulting to a constant
+    return (header.get('DSUN_OBS') or 
+            con.au)
 
 def get_center(header, axis=None):
     """Return the center of the map."""
@@ -82,8 +89,18 @@ def get_center(header, axis=None):
     
 def get_units(header, axis=None):
     """Return the units used for crpix, crdelt in the header."""
-    xunits = header.get('cunit1', header.get('ctype1'))
-    yunits = header.get('cunit2', header.get('ctype2'))
+    # Not sure about the following code and the optional arguments but it
+    # fails for EIT images as it returns Solar-X and Solar-Y
+    # which are not units
+    # xunits = header.get('cunit1', header.get('ctype1'))
+    # yunits = header.get('cunit2', header.get('ctype2'))
+    xunits = header.get('cunit1')
+    yunits = header.get('cunit2')
+    # default to arcsec if found None
+    if xunits is None:
+        xunits = 'arcsec'
+    if yunits is None:
+        yunits = 'arcsec'
     
     if axis is 'x':
         return xunits
@@ -120,7 +137,7 @@ def get_solar_l0(header, carrington=False):
     if carrington is True:
         return header.get('CRLN_OBS', 0)
     
-def convert_angle_units(type='hpc', unit='arcsec'):
+def convert_angle_units(unit='arcsec'):
     """Determine the conversion factor between the data and radians."""
     
     if unit == 'deg':
@@ -155,7 +172,6 @@ def convert_pixel_to_data(header, x = None, y = None):
         data coordinates at each x and y pixel centers. If no x and y are given
         then return the entire detector."""
 
-    naxis = np.array(get_shape(header))
     cdelt = np.array(get_platescale(header))
     crpix = np.array([header.get('crpix1'), header.get('crpix2')])
     crval = np.array([header.get('crval1'), header.get('crval2')])
@@ -215,8 +231,8 @@ def convert_hpc_hcc_xyz(header, hpx, hpy, distance=None):
     cosy = np.cos(hpy * c[1])
     siny = np.sin(hpy * c[1])
 
-    dsun = header.get('dsun_obs')
-    rsun = header.get('rsun_ref')
+    dsun = get_obs_distance(header)
+    rsun = get_solar_radius(header)
 
     if distance is None: 
         q = dsun * cosy * cosx
@@ -234,11 +250,10 @@ def convert_hcc_hpc(header, x, y, units = None, distance=None):
     """Convert Heliocentric-Cartesian (HCC) to angular 
     Helioprojective-Cartesian (HPC) coordinates (in degrees)."""
 
-    #Distance to the Sun but should we use our own?
-    dsun = header.get('dsun_obs')
-    # Should we use the rsun_ref defined in the FITS file or our local 
-    # (possibly different/more correct) definition?
-    rsun = header.get('rsun_ref')
+    # Distance to the Sun but should we use our own?
+    dsun = get_obs_distance(header)
+    # Should we use the rsun_ref defined in the fits file or our local (possibly different/more correct) definition
+    rsun = get_solar_radius(header)
     
     # Calculate the z coordinate by assuming that it is on the surface of the 
     # Sun
@@ -260,7 +275,7 @@ def convert_hcc_hg(header, x, y, z = None):
     """Convert Heliocentric-Cartesian (HCC) to Heliographic coordinates (HG) 
     (given in degrees)."""
 
-    rsun = header.get('rsun_ref')
+    rsun = get_solar_radius(header)
 
     if z is None:
         z = np.sqrt(rsun ** 2 - x ** 2 - y ** 2)
@@ -297,7 +312,7 @@ def convert_hg_hcc_xyz(header, hgln, hglt):
     cx = np.deg2rad(1)
     cy = np.deg2rad(1)
     
-    hecr = header.get('rsun_ref')
+    hecr = get_solar_radius(header)
     
     lon = cx * hgln
     lat = cy * hglt
@@ -342,6 +357,7 @@ def proj_tan(header, x, y, force=False):
     # if pixels are within 3 degrees of the Sun then skip the calculatin unless 
     # force is True. This applies to all sdo images so this function is just 
     # here as a place holder for the future
+    # TODO: write proj_tan function
     return x, y
     
 def convert_to_coord( header, x, y, fromto):

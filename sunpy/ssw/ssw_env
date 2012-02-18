@@ -1,0 +1,72 @@
+# PURPOSE: Stores all of the environment variables for IDL
+#           used by myidl script and for psh_ssl_sswbatch
+#
+# CREATED:  Steven Christe (20-Nov-2009)
+# MODIFIED: 
+#           Reduced the number of instruments to reduce probably of bugs
+#               S. Christe (24-Nov-2009)
+#           modified for laptop and no local RHESSI data 
+#               S. Christe (22-Aug-2010)
+#           Added some output to the screen
+#               S. Christe (23-Oct-2011)
+
+# SSWIDL settings
+setenv SSW /Users/schriste/ssw
+
+setenv SSW_INSTR "gen hessi xray spex chianti goes eit spvm pfss ontology stereo aia eve mjastereo"
+
+echo '-----------------------------------------------------------------'
+echo ' Setting SSW Environment variables (sourcing ~/.idl/ssw_env)'
+echo ' '
+echo ' SSW Instrument list (#SSW_INSTR) is'
+echo $SSW_INSTR
+echo '-----------------------------------------------------------------'
+
+source $SSW/gen/setup/setup.ssw /quiet
+
+setenv SSWDB $SSW/sswdb
+
+setenv IDL_START_DIR ~/hessi/
+setenv IDL_STARTUP ~/idlpro/schriste/idl_startup.pro
+
+#setenv ZDBASE_USER +$HOME/planning_db
+
+#source ~/hessi/setup.hessi_env
+#setenv GOES_FITS $SSWDB/goes/fits
+#setenv CDS_FITS_DATA $HOME/cds_fits
+#setenv IDL_PATH +$HOME/idl::"<IDL_DEFAULT>"
+#setenv RAPP_IDL_ROOT /home/shilaire/psh_idl_lib
+
+#setenv USER_SYNOP_DATA /disks/sunlight/home/shilaire/instr_data/TEMP
+#setenv PHOENIX_DATA_ARCHIVE /home/shilaire/data/Phoenix-2
+#setenv HINODE_DATA ~/local/data/hinode
+
+# WIND/WAVES
+#source /usr/local/setup/setup_wind3dp
+
+# YOHKOH
+#setenv ys $SSW/yohkoh
+
+# RHESSI 
+setenv HESSI_PATH $SSW/hessi
+setenv SSW_HESSI $SSW/hessi
+setenv SSWDB_HESSI $SSW/hessi/dbase
+
+setenv HSI_QLOOK_PLOT_ARCHIVE /Volumes/data1/hessidata/metadata
+setenv HSI_QLOOK_IMAGE_FILE_ARCHIVE /Volumes/data1/hessidata/metadata/qlook_image
+
+setenv HSI_FILEDB_ARCHIVE $SSW/hessi/dbase
+setenv HSI_FLARE_LIST_ARCHIVE $SSW/hessi/dbase
+setenv HSI_CATALOG_ARCHIVE $SSW/sswdb/hessi
+
+setenv HSI_DATA_USER /Users/schriste/data/hessi
+
+if (`hostname` == 'gs671-icarus.local') then               
+	setenv HSI_ARCHIVE_MOUNTED true
+	setenv HSI_DATA_ARCHIVE /Volumes/data1/hessidata/
+endif
+
+if (`hostname` == 'daedulus.local') then               
+	setenv HSI_ARCHIVE_MOUNTED false
+	setenv HSI_DATA_ARCHIVE /Users/schriste/hessi
+endif

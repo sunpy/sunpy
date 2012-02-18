@@ -4,9 +4,11 @@
 WCS
 ===
 
-.. currentmodule:: sunpy
+.. automodule:: sunpy.wcs
+
+.. currentmodule:: sunpy.wcs
 
 .. autosummary::
    :toctree: generated/
-
-   wcs.wcs
+	  
+   wcs
