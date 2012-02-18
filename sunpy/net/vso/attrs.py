@@ -5,10 +5,13 @@
 
 from __future__ import absolute_import
 
+from datetime import datetime
+
 from sunpy.net.attr import (
     Attr, ValueAttr, AttrWalker, AttrAnd, AttrOr, DummyAttr, ValueAttr
 )
 from sunpy.util.util import to_angstrom, anytim
+from sunpy.util.multimethod import MultiMethod
 
 TIMEFORMAT = '%Y%m%d%H%M%S'
 
@@ -34,7 +37,7 @@ class _Range(object):
 
 
 class Wave(Attr, _Range):
-    def __init__(self, wavemin, wavemax, waveunit='Angstrom'):        
+    def __init__(self, wavemin, wavemax, waveunit='Angstrom'):
         self.min, self.max = sorted(
             to_angstrom(v, waveunit) for v in [wavemin, wavemax]
         )
@@ -53,7 +56,7 @@ class Time(Attr, _Range):
         self.end = anytim(end)
         self.near = None if near is None else anytim(near)
 
-        _Range.__init__(self, start, end, self.__class__)
+        _Range.__init__(self, self.start, self.end, self.__class__)
         Attr.__init__(self)
     
     def collides(self, other):
@@ -91,11 +94,11 @@ class Extent(Attr):
 class Field(ValueAttr):
     def __init__(self, fielditem):
         ValueAttr.__init__(self, {
-            ['field', 'fielditem']: fielditem
+            ('field', 'fielditem'): fielditem
         })
 
 
-class _SimpleAttr(Attr):
+class _VSOSimpleAttr(Attr):
     def __init__(self, value):
         Attr.__init__(self)
         
@@ -108,51 +111,51 @@ class _SimpleAttr(Attr):
         return "<%s(%r)>" % (self.__class__.__name__, self.value)
 
 
-class Provider(_SimpleAttr):
+class Provider(_VSOSimpleAttr):
     pass
 
 
-class Source(_SimpleAttr):
+class Source(_VSOSimpleAttr):
     pass
 
 
-class Instrument(_SimpleAttr):
+class Instrument(_VSOSimpleAttr):
     pass
 
 
-class Physobs(_SimpleAttr):
+class Physobs(_VSOSimpleAttr):
     pass
 
 
-class Pixels(_SimpleAttr):
+class Pixels(_VSOSimpleAttr):
     pass
 
 
-class Level(_SimpleAttr):
+class Level(_VSOSimpleAttr):
     pass
 
 
-class Resolution(_SimpleAttr):
+class Resolution(_VSOSimpleAttr):
     pass
 
 
-class Detector(_SimpleAttr):
+class Detector(_VSOSimpleAttr):
     pass
 
 
-class Filter(_SimpleAttr):
+class Filter(_VSOSimpleAttr):
     pass
 
 
-class Sample(_SimpleAttr):
+class Sample(_VSOSimpleAttr):
     pass
 
 
-class Quicklook(_SimpleAttr):
+class Quicklook(_VSOSimpleAttr):
     pass
 
 
-class PScale(_SimpleAttr):
+class PScale(_VSOSimpleAttr):
     pass
 
 
@@ -224,6 +227,67 @@ walker.add_converter(Time)(
     })
 )
 
-walker.add_converter(_SimpleAttr)(
+walker.add_converter(_VSOSimpleAttr)(
     lambda x: ValueAttr({(x.__class__.__name__.lower(), ): x.value})
 )
+
+filter_results = MultiMethod(lambda *a, **kw: (a[0], ))
+
+@filter_results.add_dec(AttrAnd)
+def _(attr, results):
+    res = set(results)
+    for elem in attr.attrs:
+        res &= filter_results(elem, res)
+    return res
+
+@filter_results.add_dec(AttrOr)
+def _(attr, results):
+    res = set()
+    for elem in attr.attrs:
+        res |= filter_results(elem, results)
+    return res
+
+@filter_results.add_dec(_VSOSimpleAttr)
+def _(attr, results):
+    attrname = attr.__class__.__name__.lower()
+    return set(
+        item for item in results
+        # Some servers seem to obmit some fields. No way to filter there.
+        if not hasattr(item, attrname) or
+        getattr(item, attrname).lower() == attr.value.lower()
+    )
+
+@filter_results.add_dec(DummyAttr, Field)
+def _(attr, results):
+    return set(results)
+
+
+@filter_results.add_dec(Wave)
+def _(attr, results):
+    return set(
+        it for it in results
+        # FIXME: <= or <?
+        if
+        attr.min <= to_angstrom(it.wave.wavemin, it.wave.waveunit) <= attr.max
+        and
+        attr.min <= to_angstrom(it.wave.wavemax, it.wave.waveunit) <= attr.max
+    )
+
+@filter_results.add_dec(Time)
+def _(attr, results):
+    return set(
+        it for it in results
+        # FIXME: <= or <?
+        if
+        attr.min <= datetime.strptime(it.time.start, TIMEFORMAT) <= attr.max
+        and
+        attr.min <= datetime.strptime(it.time.end, TIMEFORMAT) <= attr.max
+    )
+
+@filter_results.add_dec(Extent)
+def _(attr, results):
+    return set(
+        it for it in results
+        if all(not hasattr(it, k) or getattr(it, k).lower() == v.lower()
+               for k, v in vars(attr).iteritems())
+    )
