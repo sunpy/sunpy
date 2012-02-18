@@ -119,6 +119,12 @@ class QueryResponse(list):
         self.queryresult = queryresult
         self.errors = []
     
+    def query(self, *query):
+        query = and_(*query)
+        return QueryResponse(
+            attrs.filter_results(query, self), self.queryresult
+        )
+    
     @classmethod
     def create(cls, queryresult):
         return cls(iter_records(queryresult), queryresult)
