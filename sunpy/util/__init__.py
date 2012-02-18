@@ -1,7 +1,9 @@
 """SunPy utility functions"""
 from __future__ import absolute_import
+from . util import *
 
-__all__ = ['util']
+__all__ = []
+__all__ += util.__all__
 
 def system_info():
     """Prints system information.

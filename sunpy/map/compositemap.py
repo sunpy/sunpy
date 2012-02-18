@@ -44,7 +44,7 @@ class CompositeMap:
             if isinstance(item, BaseMap):
                 m = item
             else:
-                m = BaseMap.map_from_filepath(item)
+                m = BaseMap.read(item)
             
             # Set z-order and alpha values for the map
             m.zorder = zorders[i]
@@ -73,7 +73,7 @@ class CompositeMap:
         if zorder is None:
             zorder = max([m.zorder for m in self._maps]) + 10
         
-        m = BaseMap.map_from_filepath(input_)
+        m = BaseMap.read(input_)
         m.zorder = zorder
         m.alpha = alpha
         
@@ -87,15 +87,47 @@ class CompositeMap:
         """Prints a list of the currently included maps"""
         print [m.__class__ for m in self._maps]
         
-    def get_alpha(self, index):
+    def get_alpha(self, index=None):
         """Gets the alpha-channel value for a layer in the composite image"""
-        return self._maps[index].alpha
+        if index is None:
+            return [_map.alpha for _map in self._maps]
+        else:
+            return self._maps[index].alpha
         
-    def get_zorder(self, index):
+    def get_zorder(self, index = None):
         """Gets the layering preference (z-order) for a map within the
         composite.
         """
-        return self._maps[index].zorder
+        if index is None:
+            return [_map.zorder for _map in self._maps]
+        else:
+            return self._maps[index].zorder
+
+    def get_colors(self, index = None):
+        """Gets the colors for a map within the
+        composite.
+        """
+        if index is None:
+            return [_map.cmap for _map in self._maps]
+        else:
+            return self._maps[index].cmap
+
+    def get_norm(self, index = None):
+        """Gets the normalization for a map within the
+        composite.
+        """
+        if index is None:
+            return [_map.norm for _map in self._maps]
+        else:
+            return self._maps[index].norm
+
+    def set_norm(self, index, norm):
+        """Sets the norm for a layer in the composite image"""
+        self._maps[index].norm = norm
+
+    def set_colors(self, index, cm):
+        """Sets the color map for a layer in the composite image"""
+        self._maps[index].cmap = cm
 
     def set_alpha(self, index, alpha):
         """Sets the alpha-channel value for a layer in the composite image"""
@@ -128,6 +160,8 @@ class CompositeMap:
         out : matplotlib.figure.Figure
             A Matplotlib figure instance representing the composite map plot
         """
+        import numpy as np
+
         if overlays is None:
             overlays = []
 
@@ -139,8 +173,6 @@ class CompositeMap:
         
         axes.set_xlabel('X-position [' + self._maps[0].units['x'] + ']')
         axes.set_ylabel('Y-position [' + self._maps[0].units['y'] + ']')
-        
-        # TODO: if isinstance(x, RHESSIMap): use contour()...
         
         # Plot layers of composite map
         for m in self._maps:
@@ -156,8 +188,10 @@ class CompositeMap:
             params.update(matplot_args)
             
             # Use contour for contour data, and imshow otherwise
-            if isinstance(m, RHESSIMap):
-                plt.contourf(m, **params)
+            if isinstance(m, RHESSIMap) or (m.alpha == 0):
+                # Set data with values <= 0 to transparent
+                contour_data = np.ma.masked_array(m, mask=(m <= 0))
+                plt.contourf(contour_data, **params)
             else:
                 plt.imshow(m, **params)
         

@@ -4,7 +4,7 @@
 SunPy
 =====
 
-Welcome! here you can find documentation relating to sunpy.
+SunPy is an open-source Python library for solar physics data analysis.
 
 Documentation versions:
  * `Stable <http://www.sunpy.org/doc>`_
@@ -27,6 +27,7 @@ Documentation
    reference/index
    dev
    ssw
+   resources
    release
    about
    bugs
