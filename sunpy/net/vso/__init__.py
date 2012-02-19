@@ -239,10 +239,8 @@ class VSOClient(object):
             except TypeNotFound:
                 pass
             except Exception as ex:
-                print("Error: Invalid response recieved from VSO request.")
                 response = QueryResponse.create(self.merge(responses))
                 response.add_error(ex)
-                return response
         
         return QueryResponse.create(self.merge(responses))
     
