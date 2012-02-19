@@ -266,24 +266,23 @@ def _(attr, results):
 def _(attr, results):
     return set(
         it for it in results
-        # FIXME: <= or <?
         if
-        attr.min <= to_angstrom(it.wave.wavemin, it.wave.waveunit) <= attr.max
+        attr.min <= to_angstrom(it.wave.wavemax, it.wave.waveunit)
         and
-        attr.min <= to_angstrom(it.wave.wavemax, it.wave.waveunit) <= attr.max
+        attr.max >= to_angstrom(it.wave.wavemin, it.wave.waveunit)
     )
 
 @filter_results.add_dec(Time)
 def _(attr, results):
     return set(
         it for it in results
-        # FIXME: <= or <?
         if
-        attr.min <= datetime.strptime(it.time.start, TIMEFORMAT) <= attr.max
+        attr.min <= datetime.strptime(it.time.end, TIMEFORMAT)
         and
-        attr.min <= datetime.strptime(it.time.end, TIMEFORMAT) <= attr.max
+        attr.max >= datetime.strptime(it.time.start, TIMEFORMAT)
     )
 
+# FIXME: Match correctly.
 @filter_results.add_dec(Extent)
 def _(attr, results):
     return set(
