@@ -282,7 +282,6 @@ def _(attr, results):
         attr.max >= datetime.strptime(it.time.start, TIMEFORMAT)
     )
 
-# FIXME: Match correctly.
 @filter_results.add_dec(Extent)
 def _(attr, results):
     return set(
