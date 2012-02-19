@@ -287,6 +287,5 @@ def _(attr, results):
 def _(attr, results):
     return set(
         it for it in results
-        if all(not hasattr(it, k) or getattr(it, k).lower() == v.lower()
-               for k, v in vars(attr).iteritems())
+        if it.extent.type.lower() == attr.type.lower()
     )
