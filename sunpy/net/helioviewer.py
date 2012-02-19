@@ -32,15 +32,21 @@ from __future__ import absolute_import
 __author__ = ["Keith Hughitt"]
 __email__ = "keith.hughitt@nasa.gov"
 
-try:
-    import urllib.request #pylint: disable=E0611
-    import urllib.parse   #pylint: disable=E0611
-except ImportError:
-    import urllib #pylint: disable=W0404
-    import urllib2
+import os
+import json
+import urllib
+import urllib2
+from sunpy.util import util
 
 # Helioviewer API URL
 __BASE_API_URL__ = "http://helioviewer.org/api/"
+
+def get_data_sources(**kwargs):
+    """Returns a structured list of datasources available at Helioviewer.org"""
+    params = {"action": "getDataSources"}
+    params.update(kwargs)
+    
+    return json.loads(_request(params))    
 
 def get_closest_image(date, observatory, instrument, detector, measurement):
     """Finds the closest image available for the specified source and date.
@@ -51,8 +57,8 @@ def get_closest_image(date, observatory, instrument, detector, measurement):
     
     Parameters
     ----------
-    date : DateTime
-        The desired date of the image
+    date : mixed
+        A string or datetime object for the desired date of the image
     observatory : string
         The observatory to match
     instrument : string
@@ -79,21 +85,60 @@ def get_closest_image(date, observatory, instrument, detector, measurement):
     """
     # TODO 06/26/2011 Input validation
     params = {
-        "date": date,
+        "date": util.anytim(date),
         "observatory": observatory,
         "instrument": instrument,
         "detector": detector,
         "measurement": measurement
     }
-    return _request(__BASE_API_URL__, params)
-    
-def _request(url, params):
-    """Simple wrapper to handle differences between 2.x and 3.x requests.
+    return _request(params)
+
+def get_jp2_image(date, directory=None, **kwargs):
+    """
+    Downloads the JPEG 2000 that most closely matches the specified time and 
+    data source.
     
     Parameters
     ----------
-    url : string 
-        URL to query
+    date : mixed
+        A string or datetime object for the desired date of the image
+        
+    Returns
+    -------
+    string : The filepath to the JP2 image or a URL if the jpip parameter was
+        set to True.
+    """
+    params = {
+        "action": "getJP2Image",
+        "date": util.anytim(date).strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + "Z"
+    }
+    params.update(kwargs)
+    
+    # Submit request
+    response = urllib2.urlopen(__BASE_API_URL__, urllib.urlencode(params))
+    
+    # JPIP URL response
+    if 'jpip' in kwargs:
+        return response.read()
+    
+    # JPEG 2000 image response
+    if directory is None:
+        import tempfile
+        directory = tempfile.gettempdir()
+    
+    filename = response.info()['Content-Disposition'][22:-1]
+    filepath = os.path.join(directory, filename)
+    
+    f = open(filepath, 'wb')
+    f.write(response.read())
+    
+    return filepath
+
+def _request(params):
+    """Sends an API request and returns the result
+    
+    Parameters
+    ----------
     params : dict
         Parameters to send
         
@@ -101,11 +146,7 @@ def _request(url, params):
     -------
     out : String containing the result of the request
     """
-    try:
-        response = urllib.request.urlopen(url + "?" +
-                                          urllib.parse.urlencode(params))
-    except NameError:
-        response = urllib2.urlopen(url, urllib.urlencode(params))
+    response = urllib2.urlopen(__BASE_API_URL__, urllib.urlencode(params))
         
     return response.read()
 
