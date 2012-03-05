@@ -126,7 +126,7 @@ non-interactive version of the main API::
     )
     
     # print the number of matches
-    print("Number of records found: %d " % result.no_records())
+    print("Number of records found: %d " % result.num_records())
    
     # download matches to /download/path
     res = client.get(result, path="/download/path/{file}").wait()
@@ -137,7 +137,9 @@ will simply be downloaded into a temporary directory (e.g. /tmp/xyz).
 5. Graphical plot manipulation
 ------------------------------
 
-SunPy provides a basic GUI for plot manipulation which can be invoked interactively::
+SunPy provides a basic GUI for plot manipulation which can be invoked interactively.
+Note that the GUI requires PyQt and all its necessary dependencies to be installed
+before it can be used::
         
         from sunpy.gui import Plotman
         
