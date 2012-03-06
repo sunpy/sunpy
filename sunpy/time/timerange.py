@@ -3,7 +3,7 @@ __all__ = ["TimeRange"]
 
 class TimeRange:
     """
-    Timerange(a, b) or Timerange((a,b))
+    Timerange(a, b) or Timerange((a, b))
 
     An object to handle time ranges.
     
@@ -42,7 +42,7 @@ class TimeRange:
     --------
     >>> time_range = TimeRange('2010/03/04 00:10', '2010/03/04 00:20')
     >>> time_range = TimeRange('2010/03/04 00:10', 400)
-    >>> time_range = TimeRange(['2010/03/04 00:10', '2010/03/04 00:20'])
+    >>> time_range = TimeRange(('2010/03/04 00:10', '2010/03/04 00:20'))
     >>> time_range = TimeRange(['2010/03/04 00:10', 400])
     
     See Also
@@ -55,25 +55,28 @@ class TimeRange:
     """
     def __init__(self, a, b = None):
         from sunpy.time import parse_time
-
+        
+        # Normalize different input types
         if b is None:
-            if isinstance(a[0],str) or isinstance(a[0], float):
-                self.t1 = parse_time(a[0])
-            if isinstance(a[1],str) or isinstance(a[1], float):
-                self.t2 = parse_time(a[1])
-            if type(a[1]) == type(timedelta(1)):
-                self.t2 = self.t1 + a[1]
-            if isinstance(a[1], int):
-                self.t2 = self.t1 + timedelta(0,a[1])                
-        else:            
-            if isinstance(a,str) or isinstance(a, float):
-                self.t1 = parse_time(a)
-            if isinstance(b,str) or isinstance(b, float):
-                self.t2 = parse_time(b)
-            if type(b) == type(timedelta(1)):
-                self.t2 = self.t1 + b
-            if isinstance(b, int):
-                self.t2 = self.t1 + timedelta(0,b) 
+            x = a[0]
+            y = a[1]
+        else:
+            x = a
+            y = b
+
+        # Start time
+        self.t1 = parse_time(x)
+
+        # End date
+        if isinstance(y, str) or isinstance(y, float):
+            self.t2 = parse_time(y)
+        # Timedelta
+        if type(y) == type(timedelta(1)):
+            self.t2 = self.t1 + y
+        # Seconds offset
+        if isinstance(y, int):
+            self.t2 = self.t1 + timedelta(0, y) 
+            
         self.dt = self.t2 - self.t1
     
     def __repr__(self):
@@ -86,7 +89,7 @@ class TimeRange:
                             str(self.seconds()) + ' seconds')
 
     def center(self):
-        return self.t1 + self.dt/2
+        return self.t1 + self.dt / 2
     
     def days(self):
         return self.dt.days
@@ -95,7 +98,7 @@ class TimeRange:
         return self.dt.total_seconds()
     
     def minutes(self):
-        return self.dt.total_seconds()/60.0
+        return self.dt.total_seconds() / 60.0
     
     def next(self):
         self.t1 = self.t1 + self.dt
