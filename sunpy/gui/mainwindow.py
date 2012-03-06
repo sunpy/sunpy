@@ -133,12 +133,3 @@ class MainWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
     @property
     def current_tab(self):
         return self.tabWidget.currentWidget()
-
-
-if __name__ == "__main__":
-    import sunpy
-    import matplotlib
-    print matplotlib.__version__
-    from sunpy.gui import Plotman
-    plots = Plotman(sunpy.AIA_171_IMAGE)
-    plots.show()
