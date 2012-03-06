@@ -24,7 +24,8 @@ from suds import client, TypeNotFound
 from sunpy.net import download
 from sunpy.net.attr import and_, Attr
 from sunpy.net.vso.attrs import walker, TIMEFORMAT
-from sunpy.util.util import anytim, to_angstrom, print_table
+from sunpy.util.util import to_angstrom, print_table
+from sunpy.time import parse_time
 
 DEFAULT_URL = 'http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl'
 DEFAULT_PORT = 'nsoVSOi'
@@ -395,7 +396,7 @@ class VSOClient(object):
         queryreq = self.api.factory.create('QueryRequest')
         for key, value in kwargs.iteritems():
             if key.startswith('time'):
-                value = anytim(value).strftime(TIMEFORMAT)
+                value = parse_time(value).strftime(TIMEFORMAT)
             for k, v in ALIASES.get(key, sdk(key))(value).iteritems():
                 attr = k.split('_')
                 lst = attr[-1]
