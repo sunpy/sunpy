@@ -1,0 +1,6 @@
+==
+CM
+==
+
+.. automodule:: cm
+   :members:
