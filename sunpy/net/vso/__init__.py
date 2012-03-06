@@ -239,10 +239,8 @@ class VSOClient(object):
             except TypeNotFound:
                 pass
             except Exception as ex:
-                print("Error: Invalid response recieved from VSO request.")
                 response = QueryResponse.create(self.merge(responses))
                 response.add_error(ex)
-                return response
         
         return QueryResponse.create(self.merge(responses))
     
@@ -531,7 +529,7 @@ class VSOClient(object):
         ]
         for dresponse in response.getdataresponseitem:
             for version, (from_, to) in GET_VERSION:
-                if dresponse.version >= version:
+                if getattr(dresponse, version, '0.6') >= version:
                     break
             else:
                 res.add_error(UnknownVersion(dresponse))
