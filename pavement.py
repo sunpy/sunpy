@@ -61,7 +61,7 @@ def prepare_docs():
     shutil.move(sourcedir, destdir)
     
 @task
-@needs('paver.doctools.html', 'upload_docs')
+@needs('prepare_docs', 'upload_docs')
 @cmdopts([('username=', 'u', 'Username')])
 def deploy(options):
     """Update the docs on sunpy.org"""

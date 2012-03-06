@@ -44,7 +44,7 @@ There are a number of color maps defined in SunPy which are used for data from
 particular missions (e.g. SDO/AIA). 
 A simple example on how to use the color maps provided by SunPy: ::
 
-	import sunpy.cm as cm
+	from sunpy.cm import cm
 	
 	# cmlist is a dictionary with all of the color tables
 	# to list all of the keys of the dictionary
@@ -97,6 +97,10 @@ and times. Here is a short example: ::
 	
 	# the julian day
 	julian_day((2010,4,30))
+	
+	# TimeRange objects are useful for representing ranges of time
+	time_range = TimeRange('2010/03/04 00:10', '2010/03/04 00:20')
+	time_range.center()	
 	
 4. Querying the VSO
 -------------------
