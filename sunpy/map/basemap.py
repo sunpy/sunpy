@@ -406,7 +406,7 @@ class BaseMap(np.ndarray):
         data = np.asarray(self)[y_pixels[0]:y_pixels[1], 
                                 x_pixels[0]:x_pixels[1]]
 
-        return self.__class__(data, header)
+        return self.__class__(data.copy(), header)
    
     @toggle_pylab
     def plot(self, overlays=None, draw_limb=True, gamma=None, draw_grid=False, 
