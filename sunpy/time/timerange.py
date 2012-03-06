@@ -1,4 +1,6 @@
 from __future__ import absolute_import
+from datetime import timedelta
+
 __all__ = ["TimeRange"]
 
 class TimeRange:
@@ -54,6 +56,7 @@ class TimeRange:
 
     """
     def __init__(self, a, b = None):
+        """Creates a new TimeRange instance"""
         from sunpy.time import parse_time
         
         # Normalize different input types
@@ -80,30 +83,42 @@ class TimeRange:
         self.dt = self.t2 - self.t1
     
     def __repr__(self):
+        """Returns a human-readable representation of the TimeRange instance."""
         TIME_FORMAT = "%Y/%m/%d %H:%M:%S"
-        print('\tStart time: ' + self.t1.strftime(TIME_FORMAT) + '\n' + 
-              '\tEnd time: ' + self.t2.strftime(TIME_FORMAT) + '\n' + 
-              '\tCenter time: ' + self.center().strftime(TIME_FORMAT) + '\n' + 
-              '\tDuration: ' + str(self.days()) + ' days or\n\t' + 
-                            str(self.minutes()) + ' min or\n\t' + 
-                            str(self.seconds()) + ' seconds')
+        
+        t1 = self.t1.strftime(TIME_FORMAT)
+        t2 = self.t2.strftime(TIME_FORMAT)
+        center = self.center().strftime(TIME_FORMAT)
+       
+        return ('\tStart:'.ljust(11) + t1 + 
+                '\n\tEnd:'.ljust(12) + t2 + 
+                '\n\tCenter:'.ljust(12) + center + 
+                '\n\tDuration:'.ljust(12) + str(self.days()) + ' days or' + 
+                '\n\t'.ljust(12) +  str(self.minutes()) + ' minutes or' + 
+                '\n\t'.ljust(12) +  str(self.seconds()) + ' seconds')
 
     def center(self):
+        """Gets the center of the TimeRange instance"""
         return self.t1 + self.dt / 2
     
     def days(self):
+        """Gets the number of days ellapsed."""
         return self.dt.days
     
     def seconds(self):
+        """Gets the number of seconds ellapsed."""
         return self.dt.total_seconds()
     
     def minutes(self):
+        """Gets the number of minutes ellapsed."""
         return self.dt.total_seconds() / 60.0
     
     def next(self):
+        """Shift the time range forward by the amount of time ellapsed"""
         self.t1 = self.t1 + self.dt
         self.t2 = self.t2 + self.dt
     
     def previous(self):
+        """Shift the time range backward by the amount of time ellapsed"""
         self.t1 = self.t1 - self.dt
         self.t2 = self.t2 - self.dt
