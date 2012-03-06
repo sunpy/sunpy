@@ -35,7 +35,7 @@ from matplotlib import pyplot as plt
 import urllib,os, copy
 from sgmllib import SGMLParser
 from sunpy.time import parse_time
-from sunpy.time.util import TimeRange
+from sunpy.time import TimeRange
 import numpy as np
 
 """
