@@ -34,7 +34,7 @@ import datetime
 from matplotlib import pyplot as plt
 import urllib,os, copy
 from sgmllib import SGMLParser
-from sunpy.util.util import anytim
+from sunpy.time import parse_time
 from sunpy.time.util import TimeRange
 import numpy as np
 
@@ -65,7 +65,7 @@ class lyra:
         self.downloadto = os.path.expanduser('~')+os.sep
         self.location = 'http://proba2.oma.be/lyra/data/bsd/'
         self.prefix = 'lyra_'
-        self.time = anytim(time)
+        self.time = parse_time(time)
         self.tstart = self.time
         self.tend = self.tstart + datetime.timedelta(days = 1)
         self.nt = None
@@ -73,7 +73,7 @@ class lyra:
     def download(self):
         """ Function to download LYRA data, and/or set the filename where it can be found"""
 
-        self.time = anytim(self.time)
+        self.time = parse_time(self.time)
 
         # date-based subdirectory
         dateLocation = self.time.strftime('%Y/%m/%d/')
