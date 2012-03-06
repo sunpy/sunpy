@@ -1,10 +1,12 @@
 """Time related functionality"""
 from datetime import datetime
 from datetime import timedelta
-from . util import *
+from sunpy.time.timerange import TimeRange
+from sunpy.time.julian import *
 
-__all__ = []
-__all__ += util.__all__
+__all__ = ["parse_time", "day_of_year", "break_time"]
+__all__ += julian.__all__
+__all__ += timerange.__all__
 
 def parse_time(time_string=None):
     """Given a time string will parse and return a datetime object.
@@ -28,10 +30,6 @@ def parse_time(time_string=None):
     --------
     >>> import sunpy.instr.goes as goes
     >>> goes.get_file(('2011/04/04', '2011/04/05'))
-    
-    Reference
-    ---------
-    | 
     
     .. todo:: add ability to parse tai (International Atomic Time seconds since 
     Jan 1, 1958)
@@ -72,3 +70,16 @@ def parse_time(time_string=None):
                 pass
     
         raise ValueError("%s is not a valid time string!" % time_string)
+    
+def day_of_year(t=None):
+    """Returns the day of year."""
+    SECONDS_IN_DAY = 60 * 60 * 24.0
+    time = parse_time(t)
+    time_diff = parse_time(t) - datetime(time.year, 1, 1, 0, 0, 0)
+    result = time_diff.days + time_diff.seconds / SECONDS_IN_DAY
+    return result
+
+def break_time(t=None):
+    """Given a time returns a string. Useful for naming files."""
+    #TODO: should be able to handle a time range
+    return parse_time(t).strftime("%Y%m%d_%H%M%S")
