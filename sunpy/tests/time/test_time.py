@@ -1,7 +1,7 @@
 from __future__ import absolute_import
 
 from datetime import datetime
-from sunpy.util import util
+from sunpy.time import util
 from numpy.testing import assert_almost_equal
 
 LANDING = datetime(1966, 2, 3)
