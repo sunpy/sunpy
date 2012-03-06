@@ -1,10 +1,12 @@
+"""
+This module provides a set of colormaps specific for solar data.
+"""
 from __future__ import absolute_import
-"""
-This module provides a set of colormaps specific to solar data (e.g. SDO/AIA 
-color maps), functions for getting a colormap by name.
-"""
 
+__all__ = ["get_cmap", "show_colormaps", "test_equalize"]
+           
 import numpy as np
+from matplotlib import pylab
 import matplotlib.colors as colors
 import matplotlib.pyplot as plt
 import matplotlib.cbook as cbook
@@ -46,14 +48,58 @@ cmlist = {
           }
 
 def get_cmap(name='sdoaia94'):
-    """Get a colormap instance."""
+    """Get a colormap.
+
+    Parameters
+    ----------
+    name : string
+        The name of a color map.
+
+    Returns
+    -------
+    value : matplotlib colormap
+
+    See Also
+    --------
+
+    Examples
+    --------
+    >>> import sunpy.cm as cm
+    >>> colormap = cm.get_cmap(name = 'sdoaia94')
+    
+    Reference
+    ---------
+    | http://matplotlib.sourceforge.net/api/cm_api.html
+
+    """
     if name in cmlist:
         return cmlist.get(name)
     else:
         raise ValueError("Colormap %s is not recognized" % name)
 
 def show_colormaps():
-    """Displays custom color maps supported in SunPy"""
+    """Displays a plot of the custom color maps supported in SunPy.
+
+    Parameters
+    ----------
+    None : none
+
+    Returns
+    -------
+    None : none
+
+    See Also
+    --------
+
+    Examples
+    --------
+    >>> import sunpy.cm as cm
+    >>> cm.show_colormaps()
+    
+    Reference
+    ---------
+
+    """
     maps = sorted(cmlist)
     nmaps = len(maps) + 1
     
@@ -72,8 +118,34 @@ def show_colormaps():
 
     plt.show()
 
-def test_equalize():
-    '''Test'''
+def test_equalize(data):
+    """Returns a color map which performs histogram equalization on the data.
+
+    Parameters
+    ----------
+    data : ndarray
+
+    Returns
+    -------
+    value : matplotlib colormap
+
+    See Also
+    --------
+
+    Examples
+    --------
+    >>> import sunpy.cm as cm
+    >>> cm.test_equalize()
+    
+    Reference
+    ---------
+    | http://matplotlib.sourceforge.net/api/cm_api.html
+    
+    .. warning:: this function is under development
+    
+    .. todo:: finish coding this function!
+
+    """
     dfile = cbook.get_sample_data('s1045.ima', asfileobj=False)
     
     im = np.fromstring(file(dfile, 'rb').read(), np.uint16).astype(float)
@@ -98,5 +170,3 @@ def test_equalize():
     pylab.title('histeq')
     pylab.show()
 
-if __name__ == '__main__':
-    test_equalize()

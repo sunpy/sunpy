@@ -1,7 +1,7 @@
 .. _reference:
 
 ===============
-SunPy Reference
+SunPy Code Reference
 ===============
 
 .. module:: sunpy
@@ -9,6 +9,7 @@ SunPy Reference
 .. toctree::
    :maxdepth: 2
 
+   cm
    map
    mapcube
    gui
@@ -16,3 +17,5 @@ SunPy Reference
    sun
    vso
    wcs
+   instr
+   time
