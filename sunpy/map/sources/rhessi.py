@@ -6,7 +6,7 @@ __email__ = "steven.d.christe@nasa.gov"
 
 from sunpy.map.basemap import BaseMap
 from sunpy.cm import cm
-from sunpy.util import util as util
+from sunpy.time import parse_time
 
 class RHESSIMap(BaseMap):
     """RHESSI Image Map definition
@@ -27,7 +27,7 @@ class RHESSIMap(BaseMap):
         """Returns the default and normalized values to use for the Map"""
         properties = BaseMap.get_properties()
         properties.update({
-            'date': util.anytim(header.get('date_obs')),
+            'date': parse_time(header.get('date_obs')),
             'det': header.get('telescop'),
             'inst': header.get('telescop'),
             'meas': [header.get('energy_l'), header.get('energy_h')],
@@ -35,8 +35,8 @@ class RHESSIMap(BaseMap):
             'name': "RHESSI " + str(header.get('energy_l')) + '-' + 
                     str(header.get('energy_h')) + ' keV',
             'cmap': cm.get_cmap(name = 'rhessi'),
-            'exptime': (util.anytim(header.get('date_end')) - 
-                        util.anytim(header.get('date_obs'))).seconds
+            'exptime': (parse_time(header.get('date_end')) - 
+                        parse_time(header.get('date_obs'))).seconds
         })
         return properties
         

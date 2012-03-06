@@ -44,7 +44,7 @@ There are a number of color maps defined in SunPy which are used for data from
 particular missions (e.g. SDO/AIA). 
 A simple example on how to use the color maps provided by SunPy: ::
 
-	import sunpy.cm as cm
+	from sunpy.cm import cm
 	
 	# cmlist is a dictionary with all of the color tables
 	# to list all of the keys of the dictionary
@@ -80,23 +80,27 @@ a short bit of code to get you started: ::
 	# or you can use the following convinience method to list them all
 	con.print_all()
 
-3. Anytim and Utilities
------------------------
+3. Working with Times
+---------------------
 
-SunPy also contains a number of utility functions which may be useful in 
-general. Here is a short example: ::
+SunPy also contains a number of convenience functions for working with dates
+and times. Here is a short example: ::
 
-	from sunpy.util import util as util
+	from sunpy.time import *
 	
 	# parsing a standard time strings
-	util.anytim('2004/02/05 12:00')
+	parse_time('2004/02/05 12:00')
 	
 	# This returns a datetime object. All SunPy functions which require 
-	# time as an input sanitize the input using util.anytim. 	
-	util.day_of_year('2004-Jul-05 12:00:02')
+	# time as an input sanitize the input using parse_time. 	
+	day_of_year('2004-Jul-05 12:00:02')
 	
 	# the julian day
-	util.julian_day((2010,4,30))
+	julian_day((2010,4,30))
+	
+	# TimeRange objects are useful for representing ranges of time
+	time_range = TimeRange('2010/03/04 00:10', '2010/03/04 00:20')
+	time_range.center()	
 	
 4. Querying the VSO
 -------------------

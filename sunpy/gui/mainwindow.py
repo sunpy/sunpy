@@ -78,8 +78,10 @@ class MainWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
             map_object = sunpy.make_map(file_path)
             tab_page = TabPage(map_object, self.tabWidget)
             self.tabWidget.addTab(tab_page, tab_title)
+            
             # Focus new tab
             self.tabWidget.setCurrentIndex(self.tabWidget.count() - 1)
+            
             # Set color options dialog appropriately
             self.initialize_color_options()
             if self.tabWidget.count() == 1:
@@ -92,9 +94,10 @@ class MainWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
     def initialize_color_options(self):
         """ Perform a first time initialisation of color
             option widgets when a new plot is opened. """
+        from sunpy.cm import cm
 
         # Populate list widget with SunPy colormaps
-        for cmap in sunpy.cm.cmlist:
+        for cmap in cm.cmlist:
             self.cmListWidget.addItem(cmap)
 
         # Populate list widget with MPL colormaps
@@ -130,12 +133,3 @@ class MainWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
     @property
     def current_tab(self):
         return self.tabWidget.currentWidget()
-
-
-if __name__ == "__main__":
-    import sys
-    from PyQt4.QtGui import QApplication
-    app = QApplication(sys.argv)
-    main = MainWindow()
-    main.show()
-    app.exec_()
