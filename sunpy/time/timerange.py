@@ -117,8 +117,12 @@ class TimeRange:
         """Shift the time range forward by the amount of time ellapsed"""
         self.t1 = self.t1 + self.dt
         self.t2 = self.t2 + self.dt
+        
+        return self
     
     def previous(self):
         """Shift the time range backward by the amount of time ellapsed"""
         self.t1 = self.t1 - self.dt
         self.t2 = self.t2 - self.dt
+        
+        return self
