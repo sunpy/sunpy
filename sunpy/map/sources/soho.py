@@ -6,7 +6,7 @@ __email__ = "keith.hughitt@nasa.gov"
 
 from sunpy.map.basemap import BaseMap
 from sunpy.cm import cm
-from sunpy.util import util
+from sunpy.time import parse_time
 from matplotlib import colors
 
 class EITMap(BaseMap):
@@ -21,7 +21,7 @@ class EITMap(BaseMap):
         
         properties = BaseMap.get_properties()
         properties.update({
-            "date": util.anytim(header.get('date_obs')),
+            "date": parse_time(header.get('date_obs')),
             "det": "EIT",
             "inst": "EIT",
             "meas": header.get('wavelnth'),
@@ -63,7 +63,7 @@ class LASCOMap(BaseMap):
 
         properties = BaseMap.get_properties()
         properties.update({
-            "date": util.anytim(datestr),
+            "date": parse_time(datestr),
             "det": header.get('detector'),
             "inst": "LASCO",
             "meas": header.get('wavelnth'),
@@ -98,7 +98,7 @@ class MDIMap(BaseMap):
         
         properties = BaseMap.get_properties()        
         properties.update({
-            "date": util.anytim(datestr),
+            "date": parse_time(datestr),
             "det": "MDI",
             "inst": "MDI",
             "meas": meas,

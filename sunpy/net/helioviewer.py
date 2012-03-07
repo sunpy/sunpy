@@ -36,7 +36,7 @@ import os
 import json
 import urllib
 import urllib2
-from sunpy.util import util
+from sunpy.time import parse_time
 
 # Helioviewer API URL
 __BASE_API_URL__ = "http://helioviewer.org/api/"
@@ -85,7 +85,7 @@ def get_closest_image(date, observatory, instrument, detector, measurement):
     """
     # TODO 06/26/2011 Input validation
     params = {
-        "date": util.anytim(date),
+        "date": parse_time(date),
         "observatory": observatory,
         "instrument": instrument,
         "detector": detector,
@@ -110,7 +110,7 @@ def get_jp2_image(date, directory=None, **kwargs):
     """
     params = {
         "action": "getJP2Image",
-        "date": util.anytim(date).strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + "Z"
+        "date": parse_time(date).strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + "Z"
     }
     params.update(kwargs)
     
