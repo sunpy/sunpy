@@ -8,6 +8,7 @@ from sunpy.map.basemap import BaseMap
 from sunpy.cm import cm
 from sunpy.util import util as util
 from matplotlib import colors
+from sunpy.time import anytim
 
 class AIAMap(BaseMap):
     """AIA Image Map definition
@@ -26,7 +27,7 @@ class AIAMap(BaseMap):
         # Note: Trailing "Z" in date was dropped on 2010/12/07        
         properties = BaseMap.get_properties()
         properties.update({
-            'date': util.anytim(header.get('date-obs')),
+            'date': anytim(header.get('date-obs')),
             'det': "AIA",
             'inst': "AIA",
             'meas': header.get('wavelnth'),
@@ -68,7 +69,7 @@ class HMIMap(BaseMap):
         
         properties = BaseMap.get_properties()
         properties.update({
-            "date": util.anytim(header.get('date-obs')),
+            "date": anytim(header.get('date-obs')),
             "det": "HMI",
             "inst": "HMI",
             "meas": meas,
