@@ -26,8 +26,8 @@ class Plotman(object):
         self.main = MainWindow()
         self.open_files(paths)
 
-    def open_files(self, *inputs):
-        VALID_EXTENSIONS = ["jp2", "fits", "fts"]
+    def open_files(self, inputs):
+        VALID_EXTENSIONS = [".jp2", ".fits", ".fts"]
         
         to_open = []
         
@@ -45,7 +45,7 @@ class Plotman(object):
         for filepath in to_open:
             name, ext = os.path.splitext(filepath)
             
-            if ext in VALID_EXTENSIONS:
+            if ext.lower() in VALID_EXTENSIONS:
                 try:
                     self.main.add_tab(filepath, os.path.basename(filepath))
                 except UnrecognizedFileTypeError:
