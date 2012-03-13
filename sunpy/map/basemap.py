@@ -409,7 +409,7 @@ class BaseMap(np.ndarray):
         return self.__class__(data.copy(), header)
    
     @toggle_pylab
-    def plot(self, overlays=None, draw_limb=True, gamma=None, draw_grid=False, 
+    def plot(self, figure=None, overlays=None, draw_limb=True, gamma=None, draw_grid=False, 
              **matplot_args):
         """Plots the map object using matplotlib
         
@@ -437,10 +437,12 @@ class BaseMap(np.ndarray):
         # plot command.
         if draw_grid:
             overlays = overlays + [self._draw_grid]
+            
         # Create a figure and add title and axes
-        fig = plt.figure()
+        if figure is None:
+            figure = plt.figure()
         
-        axes = fig.add_subplot(111)
+        axes = figure.add_subplot(111)
         axes.set_title("%s %s" % (self.name, self.date))
         
         if self.header.get('CTYPE1') == 'HPLN-TAN':
@@ -469,14 +471,14 @@ class BaseMap(np.ndarray):
             params['cmap'].set_gamma(gamma)
 
         im = axes.imshow(self, origin='lower', extent=extent, **params)
-        fig.colorbar(im)
+        figure.colorbar(im)
         
         for overlay in overlays:
-            fig, axes = overlay(fig, axes)
-        return fig
+            figure, axes = overlay(figure, axes)
+        return figure
     
     @toggle_pylab
-    def plot_simple(self, overlays=None, draw_limb=False, gamma=None, 
+    def plot_simple(self, figure=None, overlays=None, draw_limb=False, gamma=None, 
                     draw_grid=False, **matplot_args):
         """Plots the map object using matplotlib
         
@@ -506,11 +508,12 @@ class BaseMap(np.ndarray):
         if draw_grid:
             overlays = overlays + [self._draw_grid]
 
-        fig = plt.figure(frameon=False)
+        if figure is None:
+            figure = plt.figure(frameon=False)
         
-        axes = plt.Axes(fig, [0., 0., 1., 1.])
+        axes = plt.Axes(figure, [0., 0., 1., 1.])
         axes.set_axis_off()
-        fig.add_axes(axes)
+        figure.add_axes(axes)
 
         # Determine extent
         extent = self.xrange + self.yrange
@@ -529,8 +532,8 @@ class BaseMap(np.ndarray):
         axes.imshow(self, origin='lower', extent=extent, aspect='normal', **params)
         
         for overlay in overlays:
-            fig, axes = overlay(fig, axes)
-        return fig
+            figure, axes = overlay(figure, axes)
+        return figure
     
     def norm(self):
         """Default normalization method"""

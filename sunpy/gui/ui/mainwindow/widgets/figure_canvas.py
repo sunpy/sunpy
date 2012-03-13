@@ -12,6 +12,7 @@ import sunpy
 import matplotlib
 from PyQt4.QtGui import QSizePolicy
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg
+from matplotlib.figure import Figure
 
 class FigureCanvas(FigureCanvasQTAgg):
     """ General plot widget, resizes to fit window """
@@ -19,7 +20,9 @@ class FigureCanvas(FigureCanvasQTAgg):
     def __init__(self, map_, parent=None):
         self.parent = parent
         self.map_ = map_
-        self.figure = self.map_.plot()
+        self.figure = Figure()
+        self.map_.plot(figure=self.figure)
+        self.axes = self.figure.gca()
 
         # Code duplication from plotman.py!
         if self.map_.norm() is not None:
@@ -92,11 +95,17 @@ class FigureCanvas(FigureCanvasQTAgg):
             self.scaling = scaling
             self.params.update({"norm": self.get_norm()})
 
-        self.figure = self.map_.plot(**self.params)
+        self.figure = Figure()
+        self.map_.plot(figure=self.figure, **self.params)
+        self.axes = self.figure.gca()
+        
         self.resize_figure() 
 
     def reset_figure(self):
-        self.figure = self.map_.plot()
+        self.figure = Figure()
+        self.map_.plot(figure=self.figure)
+        self.axes = self.figure.gca()
+        
         self.resize_figure()
         self.window().initialize_color_options()
 
