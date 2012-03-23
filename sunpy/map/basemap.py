@@ -7,11 +7,12 @@ from __future__ import absolute_import
 __authors__ = ["Keith Hughitt, Steven Christe"]
 __email__ = "keith.hughitt@nasa.gov"
 
-from copy import copy
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.patches as patches
-import matplotlib.cm as cm
+from matplotlib import patches
+from matplotlib import colors
+from matplotlib import cm
+from copy import copy
 from datetime import datetime
 from sunpy.wcs import wcs as wcs
 from sunpy.util.util import toggle_pylab
@@ -59,7 +60,9 @@ class BaseMap(np.ndarray):
     name : str
         Nickname for the image type (e.g. "AIA 171")
     center : dict
-        X and Y coordinate of the center of the map in units. Usually represents the offset between the center of the Sun and the center of the map.
+        X and Y coordinate of the center of the map in units. 
+        Usually represents the offset between the center of the Sun and the 
+        center of the map.
     scale : dict
         Image scale along the x and y axes in units/pixel
     units : dict
@@ -118,20 +121,6 @@ class BaseMap(np.ndarray):
             # Set object attributes dynamically
             for attr, value in list(self.get_properties(header).items()):
                 setattr(self, attr, value)
-
-            self.center = {
-                "x": wcs.get_center(header, axis='x'),
-                "y": wcs.get_center(header, axis='y')
-            }
-            self.scale = {
-                "x": header.get('cdelt1'),
-                "y": header.get('cdelt2')
-            }
-            self.units = {
-                "x": wcs.get_units(header, axis='x'), 
-                "y": wcs.get_units(header, axis='y')
-            }
-            self.rsun = wcs.get_solar_limb(header)
             
     def __array_finalize__(self, obj):
         """Finishes instantiation of the new map object"""
@@ -143,9 +132,8 @@ class BaseMap(np.ndarray):
             properties = self.get_properties(obj.header)
             for attr, value in list(properties.items()):
                 setattr(self, attr, getattr(obj, attr, value))
-                
-            for x in ['header', 'center', 'scale', 'units', 'rsun']:
-                setattr(self, x, getattr(obj, x, value))
+            
+            self.header = obj.header
         
     def __array_wrap__(self, out_arr, context=None):
         """Returns a wrapped instance of a Map object"""
@@ -178,8 +166,6 @@ class BaseMap(np.ndarray):
             3    int16
             4    uint16
         """
-        from matplotlib import colors
-        
         # if data is stored as unsigned, cast up (e.g. uint8 => int16)
         if self.dtype.kind == "u":
             dtype = "int%d" % (int(self.dtype.name[4:]) * 2)
@@ -257,7 +243,7 @@ class BaseMap(np.ndarray):
                 return cls.get_properties(header)
     
     @classmethod
-    def get_properties(cls, header=None): #pylint: disable=W0613
+    def get_properties(cls, header): #pylint: disable=W0613
         """Returns default map properties""" 
         return {
             'cmap': cm.gray,
@@ -267,8 +253,20 @@ class BaseMap(np.ndarray):
             'meas': "None",
             'obs': "None",
             'exptime': "None", 
-            'name': "Default Map",
-            'r_sun': None
+            'name': "SunPy Map",
+            'rsun': wcs.get_solar_limb(header),
+            'center': {
+                "x": wcs.get_center(header, axis='x'),
+                "y": wcs.get_center(header, axis='y')
+            },
+            'scale': {
+                "x": header.get('cdelt1'),
+                "y": header.get('cdelt2')
+            },
+            'units': {
+                "x": wcs.get_units(header, axis='x'), 
+                "y": wcs.get_units(header, axis='y')
+            }
         }
     
     @property
@@ -334,7 +332,7 @@ class BaseMap(np.ndarray):
 
         # Make a copy of the original data and perform resample
         data = resample(np.asarray(self).copy().T, dimensions,
-                        method, center = True)
+                        method, center=True)
         
         # Update image scale and number of pixels
         header = self.header.copy()
@@ -523,7 +521,7 @@ class BaseMap(np.ndarray):
             figure = plt.figure(frameon=False)
         
         axes = plt.Axes(figure, [0., 0., 1., 1.])
-        axes.set_axis_off()
+        axes.set_axis_off() 
         figure.add_axes(axes)
 
         # Determine extent
@@ -550,9 +548,9 @@ class BaseMap(np.ndarray):
         """Default normalization method"""
         return None
     
-    def show(self, overlays=None, draw_limb=False, gamma=1.0, **matplot_args):
+    def show(self, figure=None, overlays=None, draw_limb=False, gamma=1.0, **matplot_args):
         """Displays map on screen. Arguments are same as plot()."""
-        self.plot(overlays, draw_limb, gamma, **matplot_args).show()
+        self.plot(figure, overlays, draw_limb, gamma, **matplot_args).show()
         
     def _draw_limb(self, fig, axes):
         """Draws a circle representing the solar limb"""
@@ -592,4 +590,3 @@ class BaseMap(np.ndarray):
 class UnrecognizedDataSouceError(ValueError):
     """Exception to raise when an unknown datasource is encountered"""
     pass
-    
