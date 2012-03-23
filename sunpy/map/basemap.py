@@ -24,6 +24,7 @@ Questions
 ---------
 * Should we use Helioviewer or VSO's data model? (e.g. map.meas, map.wavelength
 or something else?)
+* Should 'center' be renamed to 'offset' and crpix1 & 2 be used for 'center'?
 """
 
 class BaseMap(np.ndarray):
@@ -431,6 +432,7 @@ class BaseMap(np.ndarray):
             "norm": self.norm()
         }
         params.update(matplot_args)
+
         if gamma is not None:
             params['cmap'] = copy(params['cmap'])
             params['cmap'].set_gamma(gamma)
@@ -572,6 +574,7 @@ class BaseMap(np.ndarray):
             'exptime': "None", 
             'name': "SunPy Map",
             'rsun': wcs.get_solar_limb(header),
+            'dsun': None,
             'center': {
                 "x": wcs.get_center(header, axis='x'),
                 "y": wcs.get_center(header, axis='y')
