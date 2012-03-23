@@ -7,6 +7,7 @@ __email__ = "keith.hughitt@nasa.gov"
 from sunpy.map.basemap import BaseMap
 from sunpy.cm import cm
 from sunpy.time import parse_time
+from sunpy.sun import constants
 from matplotlib import colors
 
 class AIAMap(BaseMap):
@@ -67,6 +68,9 @@ class HMIMap(BaseMap):
         # Note: Trailing "Z" in date was dropped on 2010/12/07    
         meas = header['content'].split(" ")[0].lower()
         
+        # HMI continuum images may have DSUN = 0.00
+        dsun = header.get('dsun_obs') or constants.au
+        
         properties = BaseMap.get_properties(header)
         properties.update({
             "date": parse_time(header.get('date-obs')),
@@ -74,6 +78,7 @@ class HMIMap(BaseMap):
             "inst": "HMI",
             "meas": meas,
             "obs": "SDO",
+            'dsun': dsun,
             "name": "HMI %s" % meas,
             "exptime": header.get('exptime')
         })

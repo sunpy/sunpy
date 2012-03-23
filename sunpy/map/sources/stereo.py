@@ -51,6 +51,7 @@ class CORMap(BaseMap):
             "inst": "SECCHI",
             "meas": header['wavelnth'],
             "obs": header['obsrvtry'],
+            'dsun': header.get('dsun_obs'),
             "name": "SECCHI %s" % header['detector']
         })
         return properties
