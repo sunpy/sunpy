@@ -19,13 +19,14 @@ class EITMap(BaseMap):
         """Returns the default and normalized values to use for the Map"""
         #date_format = "%Y-%m-%dT%H:%M:%S.%fZ"
         
-        properties = BaseMap.get_properties()
+        properties = BaseMap.get_properties(header)
         properties.update({
             "date": parse_time(header.get('date_obs')),
             "det": "EIT",
             "inst": "EIT",
             "meas": header.get('wavelnth'),
             "obs": "SOHO",
+            
             "name": "EIT %s" % header.get('wavelnth'),
             "exptime": header.get('exptime'),
             'cmap': cm.get_cmap(name='sohoeit' + str(header.get('wavelnth'))),
@@ -61,7 +62,7 @@ class LASCOMap(BaseMap):
         """Returns the default and normalized values to use for the Map"""
         datestr = "%sT%s" % (header['date_obs'], header['time_obs'])
 
-        properties = BaseMap.get_properties()
+        properties = BaseMap.get_properties(header)
         properties.update({
             "date": parse_time(datestr),
             "det": header.get('detector'),
@@ -96,7 +97,7 @@ class MDIMap(BaseMap):
         dpcobsr = header.get('dpc_obsr')
         meas = "magnetogram" if dpcobsr.find('Mag') != -1 else "continuum"
         
-        properties = BaseMap.get_properties()        
+        properties = BaseMap.get_properties(header)        
         properties.update({
             "date": parse_time(datestr),
             "det": "MDI",
@@ -104,8 +105,7 @@ class MDIMap(BaseMap):
             "meas": meas,
             "obs": "SOHO",
             "name": "MDI %s" % meas,
-            "exptime": header.get('exptime'),
-            "r_sun": header.get('radius')
+            "exptime": header.get('exptime')
         })
         return properties
         

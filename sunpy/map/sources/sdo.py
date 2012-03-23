@@ -24,13 +24,14 @@ class AIAMap(BaseMap):
     def get_properties(cls, header):
         """Returns the default and normalized values to use for the Map"""
         # Note: Trailing "Z" in date was dropped on 2010/12/07        
-        properties = BaseMap.get_properties()
+        properties = BaseMap.get_properties(header)
         properties.update({
             'date': parse_time(header.get('date-obs')),
             'det': "AIA",
             'inst': "AIA",
             'meas': header.get('wavelnth'),
             'obs': "SDO",
+            'dsun': header.get('dsun_obs'),
             'name': "AIA %s" % header.get('wavelnth'),
             'cmap': cm.get_cmap(name='sdoaia' + str(header.get('wavelnth'))),
             'exptime': header.get('exptime')
@@ -66,7 +67,7 @@ class HMIMap(BaseMap):
         # Note: Trailing "Z" in date was dropped on 2010/12/07    
         meas = header['content'].split(" ")[0].lower()
         
-        properties = BaseMap.get_properties()
+        properties = BaseMap.get_properties(header)
         properties.update({
             "date": parse_time(header.get('date-obs')),
             "det": "HMI",
