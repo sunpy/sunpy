@@ -15,6 +15,8 @@ import matplotlib.cm as cm
 from datetime import datetime
 from sunpy.wcs import wcs as wcs
 from sunpy.util.util import toggle_pylab
+from sunpy.io import read_file, read_header
+from sunpy.map.header import MapHeader
         
 """
 Questions
@@ -208,9 +210,6 @@ class BaseMap(np.ndarray):
     @classmethod
     def parse_file(cls, filepath):
         """Reads in a map file and returns a header and data array"""
-        from sunpy.io import read_file
-        from sunpy.map.header import MapHeader
-        
         data, dict_header = read_file(filepath)
         
         header = MapHeader(dict_header)
@@ -244,6 +243,18 @@ class BaseMap(np.ndarray):
             if cls.is_datasource_for(header):
                 return cls(data, header)
         raise UnrecognizedDataSouceError("File header not recognized by SunPy.")
+    
+    @classmethod
+    def detect_properties(cls, filepath):
+        """Attempts to detect the datasource type and returns meta-information
+        for that particular datasource."""
+        dict_header = read_header(filepath)
+                
+        header = MapHeader(dict_header)
+        
+        for cls in BaseMap.__subclasses__():
+            if cls.is_datasource_for(header):
+                return cls.get_properties(header)
     
     @classmethod
     def get_properties(cls, header=None): #pylint: disable=W0613
