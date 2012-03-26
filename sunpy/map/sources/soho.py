@@ -80,7 +80,7 @@ class LASCOMap(BaseMap):
             "date": parse_time(datestr),
             "det": header.get('detector'),
             "inst": "LASCO",
-            "meas": header.get('wavelnth'),
+            "meas": "white-light",
             "obs": "SOHO",
             "dsun": dsun,
             "name": "LASCO %s" % header.get('detector'),

@@ -6,6 +6,7 @@ __email__ = "keith.hughitt@nasa.gov"
 
 from sunpy.map.basemap import BaseMap
 from datetime import datetime
+from sunpy.cm import cm
 
 class EUVIMap(BaseMap):
     """EUVI Image Map definition"""
@@ -24,8 +25,10 @@ class EUVIMap(BaseMap):
             "inst": "SECCHI",
             "meas": header['wavelnth'],
             "obs": header['obsrvtry'],
-            'dsun': header.get('dsun_obs'),
-            "name": "EUVI %s" % header['wavelnth']
+            "dsun": header.get('dsun_obs'),
+            "cmap": cm.get_cmap(name='sohoeit' + str(header.get('wavelnth'))),
+            "name": "EUVI %s" % header['wavelnth'],
+            "exptime": header.get('exptime')
         })
         return properties
         
@@ -52,7 +55,8 @@ class CORMap(BaseMap):
             "meas": header['wavelnth'],
             "obs": header['obsrvtry'],
             'dsun': header.get('dsun_obs'),
-            "name": "SECCHI %s" % header['detector']
+            "name": "SECCHI %s" % header['detector'],
+            "exptime": header.get('exptime')
         })
         return properties
         
