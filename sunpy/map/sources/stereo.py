@@ -23,7 +23,7 @@ class EUVIMap(BaseMap):
             "date": datetime.strptime(header['date_obs'], date_format),
             "det": "EUVI",
             "inst": "SECCHI",
-            "meas": 'header['wavelnth']',
+            "meas": header['wavelnth'],
             "obs": header['obsrvtry'],
             "dsun": header.get('dsun_obs'),
             "cmap": cm.get_cmap(name='sohoeit' + str(header.get('wavelnth'))),
