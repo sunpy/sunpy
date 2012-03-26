@@ -80,7 +80,7 @@ class HMIMap(BaseMap):
             "obs": "SDO",
             'dsun': dsun,
             "name": "HMI %s" % meas,
-            "exptime": header.get('exptime')
+            "exptime": header.get('exptime') #@TODO: Find valid measure
         })
         return properties
         
