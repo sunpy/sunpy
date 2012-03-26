@@ -142,7 +142,8 @@ class CompositeMap:
         """
         self._maps[index].zorder = zorder
 
-    def plot(self, title="SunPy Plot", overlays=None, **matplot_args):
+    def plot(self, figure=None, title="SunPy Plot", overlays=None, 
+             **matplot_args):
         """Plots the composite map object using matplotlib
         
         Parameters
@@ -166,9 +167,10 @@ class CompositeMap:
             overlays = []
 
         # Create a figure and add title and axes
-        fig = plt.figure()
+        if figure is None:
+            figure = plt.figure()
         
-        axes = fig.add_subplot(111)
+        axes = figure.add_subplot(111)
         axes.set_title(title)
         
         axes.set_xlabel('X-position [' + self._maps[0].units['x'] + ']')
@@ -199,9 +201,9 @@ class CompositeMap:
         axes.axis('image')
         
         for overlay in overlays:
-            fig, axes = overlay(fig, axes)
+            figure, axes = overlay(figure, axes)
 
-        return fig
+        return figure
 
     def show(self, title="SunPy Plot", overlays=None, **matplot_args):
         """Displays the composite map on the screen.

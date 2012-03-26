@@ -38,6 +38,7 @@ from PyQt4 import QtGui, QtCore
 from matplotlib import cm
 from matplotlib import pyplot as plt
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.figure import Figure
 
 def main():
     app = QtGui.QApplication(sys.argv)
@@ -219,7 +220,13 @@ class SunPyPlot(FigureCanvas):
         self._origMap = map_
         self._map = map_.resample((width, height))
         
-        self.figure = self._map.plot_simple(**matplot_args)
+        # Old way (segfaults in some environements)
+        #self.figure = self._map.plot_simple(**matplot_args)
+        #FigureCanvas.__init__(self, self.figure)
+        
+        self.figure = Figure()
+        self._map.plot_simple(figure=self.figure, **matplot_args)
+        self.axes = self.figure.gca()
         FigureCanvas.__init__(self, self.figure)
         
         # How can we get the canvas to preserve its aspect ratio when expanding?
@@ -303,7 +310,7 @@ class RGBCompositeMap(sunpy.MapCube):
         return self.__class__(*resampled)
         
     @toggle_pylab
-    def plot_simple(self, **matplot_args):
+    def plot_simple(self, figure=None, **matplot_args):
         """Plots the map object using matplotlib
         
         Parameters
@@ -312,14 +319,15 @@ class RGBCompositeMap(sunpy.MapCube):
             Matplotlib Any additional imshow arguments that should be used
             when plotting the image.
         """
-        fig = plt.figure(frameon=False)
+        if figure is None:
+            figure = plt.figure(frameon=False)
         
-        axes = plt.Axes(fig, [0., 0., 1., 1.])
+        axes = plt.Axes(figure, [0., 0., 1., 1.])
         axes.set_axis_off()
-        fig.add_axes(axes)
+        figure.add_axes(axes)
 
         axes.imshow(self, origin='lower', aspect='normal', **matplot_args)
-        return fig
+        return figure
 
 
 if __name__ == '__main__':
