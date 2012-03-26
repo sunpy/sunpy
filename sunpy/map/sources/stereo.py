@@ -23,7 +23,7 @@ class EUVIMap(BaseMap):
             "date": datetime.strptime(header['date_obs'], date_format),
             "det": "EUVI",
             "inst": "SECCHI",
-            "meas": header['wavelnth'],
+            "meas": 'header['wavelnth']',
             "obs": header['obsrvtry'],
             "dsun": header.get('dsun_obs'),
             "cmap": cm.get_cmap(name='sohoeit' + str(header.get('wavelnth'))),
@@ -48,11 +48,13 @@ class CORMap(BaseMap):
         properties = BaseMap.get_properties(header)
         date_format = "%Y-%m-%dT%H:%M:%S.%f"
 
+        # @TODO: Deal with invalid values for exptime. E.g. STEREO-B COR2
+        # on 2012/03/20 has -1 for some images.
         properties.update({
             "date": datetime.strptime(header['date_obs'], date_format),
             "det": header['detector'],
             "inst": "SECCHI",
-            "meas": header['wavelnth'],
+            "meas": "white-light",
             "obs": header['obsrvtry'],
             'dsun': header.get('dsun_obs'),
             "name": "SECCHI %s" % header['detector'],
