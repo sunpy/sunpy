@@ -129,7 +129,7 @@ def backprojection(calibrated_event_list, pixel_size=(1.,1.), image_dim=(64,64))
     import sunpy.sun.constants as sun
     from sunpy.sun.sun import angular_size
     from sunpy.sun.sun import sunearth_distance
-    from sunpy.time.util import TimeRange
+    from sunpy.time import TimeRange
     
     calibrated_event_list = sunpy.RHESSI_EVENT_LIST
     fits = pyfits.open(calibrated_event_list)
