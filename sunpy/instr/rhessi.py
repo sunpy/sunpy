@@ -20,6 +20,54 @@ grid_pitch = (4.52467, 7.85160, 13.5751, 23.5542, 40.7241, 70.5309, 122.164,
 grid_orientation = (3.53547, 2.75007, 3.53569, 2.74962, 3.92596, 2.35647, 
                     0.786083, 0.00140674, 1.57147)
 
+data_servers = ('http://hesperia.gsfc.nasa.gov/hessidata/', 
+                'http://hessi.ssl.berkeley.edu/hessidata/',
+                'http://soleil.i4ds.ch/hessidata/')
+
+def get_obssumm_file(time_range):
+    """Download the RHESSI observing summary data from one of the RHESSI 
+    servers. 
+    
+    Parameters
+    ----------
+    time_range : A TimeRange or time range compatible string
+
+    Returns
+    -------
+    value : tuple
+        Return a tuple (filename, headers) where filename is the local file 
+        name under which the object can be found, and headers is 
+        whatever the info() method of the object returned by urlopen.
+
+    See Also
+    --------
+
+    Examples
+    --------
+    >>> import sunpy.instr.rhessi as rhessi
+    >>> rhessi.get_obssumm_file(('2011/04/04', '2011/04/05'))
+    
+    Reference
+    ---------
+    | 
+    
+    .. note:: This API is currently limited to providing data from 
+    whole days only.
+
+    """
+    
+    _time_range = TimeRange(time_range)
+    
+    #TODO need to check which is the closest servers
+    url_root = data_servers[0]
+    
+    url = url_root + _time_range.t1.strftime("%Y/%m/%d")
+    print('Downloading file: ' + url)
+    #f = urllib.urlretrieve(url)
+
+    #return f
+
+
 def _backproject(calibrated_event_list, detector=8, pixel_size=(1.,1.), image_dim=(64,64)):
     """Given a stacked calibrated event list fits file create a back 
     projection image for an individual detectors. This function is used by
