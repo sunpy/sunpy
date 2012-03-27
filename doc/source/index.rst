@@ -23,6 +23,7 @@ Documentation
    reference/index
    dev
    ssw
+   resources
    release
    about
    bugs

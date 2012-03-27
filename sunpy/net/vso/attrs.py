@@ -8,7 +8,8 @@ from __future__ import absolute_import
 from sunpy.net.attr import (
     Attr, ValueAttr, AttrWalker, AttrAnd, AttrOr, DummyAttr, ValueAttr
 )
-from sunpy.util.util import to_angstrom, anytim
+from sunpy.util.util import to_angstrom
+from sunpy.time import parse_time
 
 TIMEFORMAT = '%Y%m%d%H%M%S'
 
@@ -49,9 +50,9 @@ class Wave(Attr, _Range):
 
 class Time(Attr, _Range):
     def __init__(self, start, end, near=None):
-        self.start = anytim(start)
-        self.end = anytim(end)
-        self.near = None if near is None else anytim(near)
+        self.start = parse_time(start)
+        self.end = parse_time(end)
+        self.near = None if near is None else parse_time(near)
 
         _Range.__init__(self, start, end, self.__class__)
         Attr.__init__(self)
