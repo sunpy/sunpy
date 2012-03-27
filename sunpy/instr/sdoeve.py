@@ -13,7 +13,7 @@ from __future__ import absolute_import
 import urllib
 import csv
 from datetime import datetime, date, time  
-from sunpy.time import anytim
+from sunpy.time import parse_time
 
 def get_latest_l0cs_goes_data():
     """Grab the latest EVE GOES Proxy data and plot it in a standard 
@@ -116,7 +116,7 @@ def get_l0cs_date(request_date):
 
     Parameters
     ----------
-    date : anytim compatible time string or datetime object
+    date : parse_time compatible time string or datetime object
 
     Returns
     -------
@@ -137,7 +137,7 @@ def get_l0cs_date(request_date):
     """
     
     url_root = 'http://lasp.colorado.edu/eve/data/quicklook/L0CS/SpWx/'
-    _date = anytim(request_date)
+    _date = parse_time(request_date)
     
     url = url_root + _date.strftime('%Y/%Y%m%d') + '_EVE_L0CS_DIODES_1m.txt'
     url_counts = url_root + _date.strftime('%Y/%Y%m%d') + '_EVE_L0CS_DIODES_1m_counts.txt'

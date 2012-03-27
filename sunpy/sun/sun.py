@@ -53,10 +53,11 @@ __email__ = "steven.d.christe@nasa.gov"
 import math
 import cmath
 import numpy as np
-from sunpy.util import util as util
+from sunpy.time import parse_time
+from sunpy.util import util
 
 def solar_cycle_number(t=None):
-    time = util.anytim(t)
+    time = parse_time(t)
     result = (time.year + 8) % 28 + 1
     return result
 
@@ -240,7 +241,7 @@ def heliographic_solar_center(t=None):
 
 def print_params(t=None):
     """Print out a summary of Solar ephemeris"""
-    time = util.anytim(t)
+    time = parse_time(t)
     print('Solar Ephemeris for ' + time.ctime())
     print('')
     print('Distance (AU) = ' + str(sunearth_distance(t)))
