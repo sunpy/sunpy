@@ -25,7 +25,7 @@ class RHESSIMap(BaseMap):
     @classmethod
     def get_properties(cls, header):
         """Returns the default and normalized values to use for the Map"""
-        properties = BaseMap.get_properties()
+        properties = BaseMap.get_properties(header)
         properties.update({
             'date': parse_time(header.get('date_obs')),
             'det': header.get('telescop'),
