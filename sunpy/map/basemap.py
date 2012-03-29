@@ -118,6 +118,9 @@ class BaseMap(np.ndarray):
             # Set object attributes dynamically
             for attr, value in list(self.get_properties(header).items()):
                 setattr(self, attr, value)
+                
+            # Validate map properties
+            self._validate()
             
     def __array_finalize__(self, obj):
         """Finishes instantiation of the new map object"""
@@ -220,6 +223,11 @@ class BaseMap(np.ndarray):
             axes.plot(x, y, color='white', linestyle='dotted')        
         
         return fig, axes
+    
+    def _validate(self):
+        """Validates the meta-information associated with a Map"""
+        if (self.dsun <= 0 or self.dsun >= 1.5e11):
+            raise InvalidHeaderInformation("Invalid value for DSUN")
     
     @property
     def xrange(self):
@@ -588,8 +596,13 @@ class BaseMap(np.ndarray):
                 "y": wcs.get_units(header, axis='y')
             }
         }
-
     
 class UnrecognizedDataSouceError(ValueError):
     """Exception to raise when an unknown datasource is encountered"""
+    pass
+
+    
+class InvalidHeaderInformation(ValueError):
+    """Exception to raise when an invalid header tag value is encountered for a
+    FITS/JPEG 2000 file."""
     pass
