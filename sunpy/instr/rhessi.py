@@ -13,6 +13,10 @@ from __future__ import absolute_import
 import numpy as np
 import pyfits
 import sunpy
+from datetime import datetime
+from datetime import timedelta
+import matplotlib.pyplot as plt
+import matplotlib.dates
 
 # Measured fixed grid parameters
 grid_pitch = (4.52467, 7.85160, 13.5751, 23.5542, 40.7241, 70.5309, 122.164, 
@@ -57,16 +61,113 @@ def get_obssumm_file(time_range):
     """
     
     _time_range = TimeRange(time_range)
+    data_location = '/metadata/catalog/'
     
     #TODO need to check which is the closest servers
-    url_root = data_servers[0]
+    url_root = data_servers[0] + data_location
+        
+    url = url_root + _time_range.t1.strftime("hsi_obssumm_%Y%m%d*.fits")
+    f = urllib.urlretrieve(url)
     
-    url = url_root + _time_range.t1.strftime("%Y/%m/%d")
     print('Downloading file: ' + url)
     #f = urllib.urlretrieve(url)
 
     #return f
 
+def parse_obssumm_file(filename):
+    """Parse a RHESSI observation summary file.
+    
+    Parameters
+    ----------
+    filename : The filename of a RHESSI fits file.
+
+    Returns
+    -------
+    value : dict
+        Returns a dictionary.
+
+    See Also
+    --------
+
+    Examples
+    --------
+    >>> import sunpy.instr.rhessi as rhessi
+    >>> f = rhessi.get_obssumm_file(('2011/04/04', '2011/04/05'))
+    >>> rhessi.parse_obssumm_file(f[0])
+
+    """
+
+    fits = pyfits.open(filename)
+    
+    reference_time_ut = sunpy.time.parse_time(fits[5].data.field('UT_REF')[0])
+    time_interval_sec = fits[5].data.field('TIME_INTV')[0]
+    label_unit = fits[5].data.field('DIM1_UNIT')[0]
+    labels = fits[5].data.field('DIM1_IDS')
+
+    lightcurve_data = fits[6].data.field('countrate')
+    y1 = np.array([a[0] for a in  lightcurve_data])
+    y2 = np.array([a[1] for a in  lightcurve_data])
+    y3 = np.array([a[2] for a in  lightcurve_data])
+    y4 = np.array([a[3] for a in  lightcurve_data])
+    y5 = np.array([a[4] for a in  lightcurve_data])
+    y6 = np.array([a[5] for a in  lightcurve_data])
+    y7 = np.array([a[6] for a in  lightcurve_data])
+    y8 = np.array([a[6] for a in  lightcurve_data])
+    
+    dim = np.array(y1).shape[0]
+ 
+    time_array = [reference_time_ut + timedelta(0,time_interval_sec*a) for a in np.arange(dim)]
+
+    #TODO generate the labels for the dict automatically from labels
+    result = {'time': time_array, 'lc_3to6keV': y1,
+              'lc_12to25keV': y2, 'lc_25to50keV': y3,
+              'lc_50to100keV': y4, 'lc_100to300keV': y5,
+              'lc_300to800keV': y6, 'lc_800to7000keV': y7, 
+              'lc_7000to2000keV': y8}
+       
+    return result
+
+def show_obssumm(data):
+    
+    t = data.get('time')
+    y1 = data.get('lc_3to6keV')
+    y2 = data.get('lc_12to25keV')
+    y3 = data.get('lc_50to100keV')
+    y4 = data.get('lc_100to300keV')
+    y5 = data.get('lc_300to800keV')
+    y6 = data.get('lc_800to7000keV')
+    y7 = data.get('lc_7000to2000keV')
+    
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    dates = matplotlib.dates.date2num(t)
+
+    ax.plot_date(dates, y1, '-', label = '3 to 6 keV', color = 'black', lw = 2)
+    ax.plot_date(dates, y2, '-', label = '6 to 12 keV', color = 'pink', lw = 2)
+    ax.plot_date(dates, y3, '-', label = '12 to 25 keV', color = 'green', lw = 2)
+    ax.plot_date(dates, y4, '-', label = '25 to 50 keV', color = 'blue', lw = 2)
+    #ax.plot_date(dates, y5, '-', label = '50 to 100 keV', color = 'brown', lw = 2)
+    #ax.plot_date(dates, y6, '-', label = '100 to 300 keV', color = 'red', lw = 2)
+    #ax.plot_date(dates, y7, '-', label = '300 to 800 keV', color = 'dark blue', lw = 2)
+    #ax.plot_date(dates, y7, '-', label = '800 to 7000 keV', color = 'orange', lw = 2)
+    #ax.plot_date(dates, y7, '-', label = '7000 to 20000 keV', color = 'green', lw = 2)
+
+    ax.set_yscale("log")
+
+    ax.set_title('RHESSI Observing Summary Count Rates, Corrected')
+    ax.set_ylabel('Corrected Count Rates s$^{-1}$ detector$^{-1}$')
+    ax.set_xlabel(datetime.isoformat(t[0])[0:10])
+        
+    ax.yaxis.grid(True, 'major')
+    ax.xaxis.grid(False, 'major')
+    ax.legend()
+    
+    formatter = matplotlib.dates.DateFormatter('%H:%M')
+    ax.xaxis.set_major_formatter(formatter)
+    
+    ax.fmt_xdata = matplotlib.dates.DateFormatter('%H:%M')
+    fig.autofmt_xdate()
+    fig.show()
 
 def _backproject(calibrated_event_list, detector=8, pixel_size=(1.,1.), image_dim=(64,64)):
     """Given a stacked calibrated event list fits file create a back 
