@@ -225,8 +225,13 @@ class BaseMap(np.ndarray):
         return fig, axes
     
     def _validate(self):
-        """Validates the meta-information associated with a Map"""
-        if (self.dsun <= 0 or self.dsun >= 1.5e11):
+        """Validates the meta-information associated with a Map.
+        
+        This function includes very basic validation checks which apply to
+        all of the kinds of files that SunPy can read. Datasource-specific
+        validation should be handled in the relevant file in the 
+        sunpy.map.sources package."""
+        if (self.dsun <= 0 or self.dsun >= 2.5e11):
             raise InvalidHeaderInformation("Invalid value for DSUN")
     
     @property
