@@ -7,7 +7,6 @@ __email__ = "keith.hughitt@nasa.gov"
 from sunpy.map.basemap import BaseMap
 from sunpy.cm import cm
 from sunpy.time import parse_time
-from sunpy.sun import constants
 from matplotlib import colors
 
 class SWAPMap(BaseMap):
@@ -37,13 +36,18 @@ class SWAPMap(BaseMap):
             'exptime': header.get('exptime')
         })
         return properties
+    
+    def norm(self):
+        """Returns a Normalize object to be used with SWAP data"""
+        mean = self.mean()
+        std = self.std()
+        
+        vmin = max(0, mean - 3 * std)
+        vmax = min(self.max(), mean + 3 * std)
+
+        return colors.Normalize(vmin, vmax)
         
     @classmethod
     def is_datasource_for(cls, header):
         """Determines if header corresponds to an SWAP image"""
         return header.get('instrume') and header.get('instrume') == 'SWAP'
-    
-if __name__ == "__main__":
-    import sunpy
-    sunpy.make_map("/home/hughitt1/Desktop/swap_lv1_20120330_000402.fits")
-
