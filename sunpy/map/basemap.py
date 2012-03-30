@@ -17,6 +17,7 @@ from datetime import datetime
 from sunpy.wcs import wcs as wcs
 from sunpy.util.util import toggle_pylab
 from sunpy.io import read_file, read_header
+from sunpy.sun import constants
 from sunpy.map.header import MapHeader
 
 """
@@ -118,6 +119,9 @@ class BaseMap(np.ndarray):
             # Set object attributes dynamically
             for attr, value in list(self.get_properties(header).items()):
                 setattr(self, attr, value)
+                
+            # Validate map properties
+            self._validate()
             
     def __array_finalize__(self, obj):
         """Finishes instantiation of the new map object"""
@@ -220,6 +224,16 @@ class BaseMap(np.ndarray):
             axes.plot(x, y, color='white', linestyle='dotted')        
         
         return fig, axes
+    
+    def _validate(self):
+        """Validates the meta-information associated with a Map.
+        
+        This function includes very basic validation checks which apply to
+        all of the kinds of files that SunPy can read. Datasource-specific
+        validation should be handled in the relevant file in the 
+        sunpy.map.sources package."""
+        if (self.dsun <= 0 or self.dsun >= 40 * constants.au):
+            raise InvalidHeaderInformation("Invalid value for DSUN")
     
     @property
     def xrange(self):
@@ -588,8 +602,13 @@ class BaseMap(np.ndarray):
                 "y": wcs.get_units(header, axis='y')
             }
         }
-
     
 class UnrecognizedDataSouceError(ValueError):
     """Exception to raise when an unknown datasource is encountered"""
+    pass
+
+    
+class InvalidHeaderInformation(ValueError):
+    """Exception to raise when an invalid header tag value is encountered for a
+    FITS/JPEG 2000 file."""
     pass
