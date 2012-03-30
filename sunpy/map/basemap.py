@@ -17,6 +17,7 @@ from datetime import datetime
 from sunpy.wcs import wcs as wcs
 from sunpy.util.util import toggle_pylab
 from sunpy.io import read_file, read_header
+from sunpy.sun import constants
 from sunpy.map.header import MapHeader
 
 """
@@ -231,7 +232,7 @@ class BaseMap(np.ndarray):
         all of the kinds of files that SunPy can read. Datasource-specific
         validation should be handled in the relevant file in the 
         sunpy.map.sources package."""
-        if (self.dsun <= 0 or self.dsun >= 2.5e11):
+        if (self.dsun <= 0 or self.dsun >= 40 * constants.au):
             raise InvalidHeaderInformation("Invalid value for DSUN")
     
     @property
