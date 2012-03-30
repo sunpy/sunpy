@@ -45,17 +45,19 @@ def make_map(*args, **kwargs):
     if len(args) == 1:
         # String
         if isinstance(args[0], basestring):
+            filepath = os.path.expanduser(args[0])
+            
             # Wildcard string
-            if args[0].find("*") != -1:
+            if filepath.find("*") != -1:
                 import glob
-                maps = glob.glob(args[0])
+                maps = glob.glob(filepath)
             # Directory (use all files)
-            elif os.path.isdir(args[0]):
-                maps = os.listdir(args[0])
+            elif os.path.isdir(filepath):
+                maps = os.listdir(filepath)
                 
             # Filepath
             else:
-                return BaseMap.read(args[0])
+                return BaseMap.read(filepath)
 
         # Map/MapCube/CompositeMap
         elif (isinstance(args[0], BaseMap) or 
