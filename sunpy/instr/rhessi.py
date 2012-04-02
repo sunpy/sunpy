@@ -13,10 +13,14 @@ from __future__ import absolute_import
 import numpy as np
 import pyfits
 import sunpy
+from sunpy.time import TimeRange
 from datetime import datetime
 from datetime import timedelta
 import matplotlib.pyplot as plt
 import matplotlib.dates
+import urllib
+import csv
+
 
 # Measured fixed grid parameters
 grid_pitch = (4.52467, 7.85160, 13.5751, 23.5542, 40.7241, 70.5309, 122.164, 
@@ -27,6 +31,151 @@ grid_orientation = (3.53547, 2.75007, 3.53569, 2.74962, 3.92596, 2.35647,
 data_servers = ('http://hesperia.gsfc.nasa.gov/hessidata/', 
                 'http://hessi.ssl.berkeley.edu/hessidata/',
                 'http://soleil.i4ds.ch/hessidata/')
+
+def get_obssumm_dbase_file(time_range):
+    """Download the RHESSI observing summary database file. This file lists the 
+    name of observing summary files for specific time ranges. 
+    
+    Parameters
+    ----------
+    time_range : A TimeRange or time range compatible string
+
+    Returns
+    -------
+    value : tuple
+        Return a tuple (filename, headers) where filename is the local file 
+        name under which the object can be found, and headers is 
+        whatever the info() method of the object returned by urlopen.
+        
+    See Also
+    --------
+
+    Examples
+    --------
+    >>> import sunpy.instr.rhessi as rhessi
+    >>> rhessi.get_obssumm_dbase_file(('2011/04/04', '2011/04/05'))
+    
+    Reference
+    ---------
+    | http://hesperia.gsfc.nasa.gov/ssw/hessi/doc/guides/hessi_data_access.htm#Observing Summary Data
+    
+    .. note:: This API is currently limited to providing data from 
+    whole days only.
+
+    """
+    
+    #    http://hesperia.gsfc.nasa.gov/hessidata/dbase/hsi_obssumm_filedb_200311.txt
+    
+    _time_range = TimeRange(time_range)
+    data_location = 'dbase/'
+    
+    url_root = data_servers[0] + data_location
+    url = url_root + _time_range.t1.strftime("hsi_obssumm_filedb_%Y%m.txt")
+    
+    f = urllib.urlretrieve(url)
+    
+    print('Downloading file: ' + url)
+    
+    return f
+      
+def parse_obssumm_dbase_file(filename):
+    """Parse the RHESSI observing summary database file. This file lists the 
+    name of observing summary files for specific time ranges along with other 
+    info
+    
+    Parameters
+    ----------
+    filename : The filename of the obssumm dbase file
+
+    Returns
+    -------
+    value : dict
+        Return a dict containing the parsed data in the dbase file
+        
+    See Also
+    --------
+
+    Examples
+    --------
+    >>> import sunpy.instr.rhessi as rhessi
+    >>> f = rhessi.get_obssumm_dbase_file(('2011/04/04', '2011/04/05'))
+    >>> rhessi.parse_obssumm_dbase_file(f[0])
+    
+    Reference
+    ---------
+    | http://hesperia.gsfc.nasa.gov/ssw/hessi/doc/guides/hessi_data_access.htm#Observing Summary Data
+    
+    .. note:: This API is currently limited to providing data from 
+    whole days only.
+
+    """
+    reader = csv.reader(open(filename, "rb"), delimiter = ' ', skipinitialspace = True)
+    headerline = reader.next()
+    headerline = reader.next()
+    headerline = reader.next()
+    headerline = reader.next()
+    
+    obssumm_filename = []
+    orbit_start = []
+    orbit_end = []
+    start_time = []
+    end_time = []
+    status_flag = []
+    number_of_packets = []
+    
+    for row in reader:
+        obssumm_filename.append(row[0])
+        orbit_start.append(int(row[1]))
+        orbit_end.append(int(row[2]))
+        start_time.append(datetime.strptime(row[3], '%d-%b-%y'))
+        end_time.append(datetime.strptime(row[5], '%d-%b-%y'))
+        status_flag.append(int(row[7]))
+        number_of_packets.append(int(row[8]))
+
+    return {headerline[0].lower(): obssumm_filename, headerline[1].lower(): orbit_start,
+            headerline[2].lower(): orbit_end, headerline[3].lower(): start_time, 
+            headerline[4].lower(): end_time, headerline[5].lower(): status_flag, 
+            headerline[6].lower(): number_of_packets}
+
+def get_obssum_filename(time_range):
+    """Download the RHESSI observing summary data from one of the RHESSI 
+    servers, parses it, and returns the name of the obssumm file relevant for
+    the time range
+    
+    Parameters
+    ----------
+    time_range : A TimeRange or time range compatible string
+
+    Returns
+    -------
+    value : string
+        Returns the filename of the observation summary file
+
+    See Also
+    --------
+
+    Examples
+    --------
+    >>> import sunpy.instr.rhessi as rhessi
+    >>> rhessi.get_obssumm_filename(('2011/04/04', '2011/04/05'))
+    
+    Reference
+    ---------
+    | 
+    
+    .. note:: This API is currently limited to providing data from 
+    whole days only.
+
+    """
+    # need to download and inspect the dbase file to determine the filename
+    # for the observing summary data
+    f = get_obssumm_dbase_file(time_range)
+    dict = parse_obssumm_dbase_file(f[0])
+    _time_range = TimeRange(time_range)
+   
+    index_number = int(_time_range.t1.strftime('%d')) - 1
+    
+    return dict.get('filename')[index_number]
 
 def get_obssumm_file(time_range):
     """Download the RHESSI observing summary data from one of the RHESSI 
@@ -61,18 +210,17 @@ def get_obssumm_file(time_range):
     """
     
     _time_range = TimeRange(time_range)
-    data_location = '/metadata/catalog/'
+    data_location = 'metadata/catalog/'
     
     #TODO need to check which is the closest servers
     url_root = data_servers[0] + data_location
         
-    url = url_root + _time_range.t1.strftime("hsi_obssumm_%Y%m%d*.fits")
-    f = urllib.urlretrieve(url)
+    url = url_root + get_obssum_filename(time_range) + 's'
     
     print('Downloading file: ' + url)
-    #f = urllib.urlretrieve(url)
-
-    #return f
+    f = urllib.urlretrieve(url)
+    
+    return f
 
 def parse_obssumm_file(filename):
     """Parse a RHESSI observation summary file.
