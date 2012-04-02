@@ -7,6 +7,7 @@ __email__ = "keith.hughitt@nasa.gov"
 from sunpy.map.basemap import BaseMap
 from sunpy.cm import cm
 from sunpy.time import parse_time
+from sunpy.sun import constants
 from matplotlib import colors
 
 class AIAMap(BaseMap):
@@ -24,13 +25,14 @@ class AIAMap(BaseMap):
     def get_properties(cls, header):
         """Returns the default and normalized values to use for the Map"""
         # Note: Trailing "Z" in date was dropped on 2010/12/07        
-        properties = BaseMap.get_properties()
+        properties = BaseMap.get_properties(header)
         properties.update({
             'date': parse_time(header.get('date-obs')),
             'det': "AIA",
             'inst': "AIA",
             'meas': header.get('wavelnth'),
             'obs': "SDO",
+            'dsun': header.get('dsun_obs'),
             'name': "AIA %s" % header.get('wavelnth'),
             'cmap': cm.get_cmap(name='sdoaia' + str(header.get('wavelnth'))),
             'exptime': header.get('exptime')
@@ -66,15 +68,19 @@ class HMIMap(BaseMap):
         # Note: Trailing "Z" in date was dropped on 2010/12/07    
         meas = header['content'].split(" ")[0].lower()
         
-        properties = BaseMap.get_properties()
+        # HMI continuum images may have DSUN = 0.00
+        dsun = header.get('dsun_obs') or constants.au
+        
+        properties = BaseMap.get_properties(header)
         properties.update({
             "date": parse_time(header.get('date-obs')),
             "det": "HMI",
             "inst": "HMI",
             "meas": meas,
             "obs": "SDO",
+            'dsun': dsun,
             "name": "HMI %s" % meas,
-            "exptime": header.get('exptime')
+            "exptime": header.get('exptime') #@TODO: Find valid measure
         })
         return properties
         

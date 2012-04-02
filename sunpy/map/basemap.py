@@ -7,20 +7,25 @@ from __future__ import absolute_import
 __authors__ = ["Keith Hughitt, Steven Christe"]
 __email__ = "keith.hughitt@nasa.gov"
 
-from copy import copy
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.patches as patches
-import matplotlib.cm as cm
+from matplotlib import patches
+from matplotlib import colors
+from matplotlib import cm
+from copy import copy
 from datetime import datetime
 from sunpy.wcs import wcs as wcs
 from sunpy.util.util import toggle_pylab
-        
+from sunpy.io import read_file, read_header
+from sunpy.sun import constants
+from sunpy.map.header import MapHeader
+
 """
 Questions
 ---------
-1. map.wavelength, map.meas or? (use hv/vso/etc conventions?)
-2. Are self.r_sun and radius below different? (rsun or rsun_obs for AIA?)
+* Should we use Helioviewer or VSO's data model? (e.g. map.meas, map.wavelength
+or something else?)
+* Should 'center' be renamed to 'offset' and crpix1 & 2 be used for 'center'?
 """
 
 class BaseMap(np.ndarray):
@@ -47,7 +52,7 @@ class BaseMap(np.ndarray):
     inst : str
         Instrument name
     meas : str, int
-        Measurement name. For AIA this is the wavelength of image
+        Measurement name. In some instances this is the wavelength of image
     obs : str
         Observatory name
     rsun : float
@@ -57,7 +62,9 @@ class BaseMap(np.ndarray):
     name : str
         Nickname for the image type (e.g. "AIA 171")
     center : dict
-        X and Y coordinate of the center of the map in units. Usually represents the offset between the center of the Sun and the center of the map.
+        X and Y coordinate of the center of the map in units. 
+        Usually represents the offset between the center of the Sun and the 
+        center of the map.
     scale : dict
         Image scale along the x and y axes in units/pixel
     units : dict
@@ -108,28 +115,13 @@ class BaseMap(np.ndarray):
         """BaseMap constructor"""
         if header:
             self.header = header
-            self.date = None
-            self.name = None
-            self.cmap = None
-            self.exptime = None
             
             # Set object attributes dynamically
             for attr, value in list(self.get_properties(header).items()):
                 setattr(self, attr, value)
-
-            self.center = {
-                "x": wcs.get_center(header, axis='x'),
-                "y": wcs.get_center(header, axis='y')
-            }
-            self.scale = {
-                "x": header.get('cdelt1'),
-                "y": header.get('cdelt2')
-            }
-            self.units = {
-                "x": wcs.get_units(header, axis='x'), 
-                "y": wcs.get_units(header, axis='y')
-            }
-            self.rsun = wcs.get_solar_limb(header)
+                
+            # Validate map properties
+            self._validate()
             
     def __array_finalize__(self, obj):
         """Finishes instantiation of the new map object"""
@@ -141,20 +133,12 @@ class BaseMap(np.ndarray):
             properties = self.get_properties(obj.header)
             for attr, value in list(properties.items()):
                 setattr(self, attr, getattr(obj, attr, value))
-                
-            for x in ['header', 'center', 'scale', 'units', 'rsun']:
-                setattr(self, x, getattr(obj, x, value))
+            
+            self.header = obj.header
         
     def __array_wrap__(self, out_arr, context=None):
         """Returns a wrapped instance of a Map object"""
         return np.ndarray.__array_wrap__(self, out_arr, context)
-                
-    def __add__(self, other):
-        """Add two maps. Currently does not take into account the alignment  
-        between the two maps."""
-        result = np.ndarray.__add__(self, other)
-        
-        return result
     
     def __getitem__(self, key):
         """Overiding indexing operation to ensure that header is updated"""
@@ -165,6 +149,13 @@ class BaseMap(np.ndarray):
             return self.submap(y_range, x_range, units="pixels")
         else:
             return np.ndarray.__getitem__(self, key)
+                
+    def __add__(self, other):
+        """Add two maps. Currently does not take into account the alignment  
+        between the two maps."""
+        result = np.ndarray.__add__(self, other)
+        
+        return result
     
     def __sub__(self, other):
         """Subtract two maps. Currently does not take into account the alignment
@@ -176,8 +167,6 @@ class BaseMap(np.ndarray):
             3    int16
             4    uint16
         """
-        from matplotlib import colors
-        
         # if data is stored as unsigned, cast up (e.g. uint8 => int16)
         if self.dtype.kind == "u":
             dtype = "int%d" % (int(self.dtype.name[4:]) * 2)
@@ -201,64 +190,50 @@ class BaseMap(np.ndarray):
         
         return result
     
-    def std(self, *args, **kwargs):
-        """overide np.ndarray.std()"""
-        return np.array(self, copy=False, subok=False).std(*args, **kwargs)
+    def _draw_limb(self, fig, axes):
+        """Draws a circle representing the solar limb"""
+        circ = patches.Circle([0, 0], radius=self.rsun, fill=False, 
+                              color='white')
+        axes.add_artist(circ)
+        return fig, axes
     
-    @classmethod
-    def parse_file(cls, filepath):
-        """Reads in a map file and returns a header and data array"""
-        from sunpy.io import read_file
-        from sunpy.map.header import MapHeader
-        
-        data, dict_header = read_file(filepath)
-        
-        header = MapHeader(dict_header)
-        
-        return header, data
+    def _draw_grid(self, fig, axes, grid_spacing=20):
+        """Draws a grid over the surface of the Sun"""
+        # define the number of points for each latitude or longitude line
+        num_points = 20
+        hg_longitude_deg = np.linspace(-90, 90, num=num_points)
+        hg_latitude_deg = np.arange(-90, 90, grid_spacing)
     
-    @classmethod
-    def read(cls, filepath):
-        """Map class factory
-    
-        Attempts to determine the type of data associated with input and returns
-        an instance of either the generic BaseMap class or a subclass of BaseMap
-        such as AIAMap, EUVIMap, etc.
+        # draw the latitude lines
+        for lat in hg_latitude_deg:
+            hg_latitude_deg_mesh, hg_longitude_deg_mesh = np.meshgrid(
+                lat * np.ones(num_points), hg_longitude_deg)
+            x, y = wcs.convert_hg_hpc(self.header, hg_longitude_deg_mesh, 
+                                      hg_latitude_deg_mesh, units='arcsec')
+            axes.plot(x, y, color='white', linestyle='dotted')
         
-        Parameters
-        ----------
-        filepath : string
-            Path to a valid FITS or JPEG 2000 file of a type supported by SunPy.
-            
-        Returns
-        -------
-        out : Map
-            Returns a Map instance for the particular type of data loaded.
-        """
-        header, data = cls.parse_file(filepath)
- 
-        if cls.__name__ is not "BaseMap":
-            return cls(data, header)
-
-        for cls in BaseMap.__subclasses__():
-            if cls.is_datasource_for(header):
-                return cls(data, header)
-        raise UnrecognizedDataSouceError("File header not recognized by SunPy.")
+        hg_longitude_deg = np.arange(-90, 90, grid_spacing)
+        hg_latitude_deg = np.linspace(-90, 90, num=num_points)
     
-    @classmethod
-    def get_properties(cls, header=None): #pylint: disable=W0613
-        """Returns default map properties""" 
-        return {
-            'cmap': cm.gray,
-            'date': datetime.today(),
-            'det': "None",
-            'inst': "None",
-            'meas': "None",
-            'obs': "None",
-            'exptime': "None", 
-            'name': "Default Map",
-            'r_sun': None
-        }
+        # draw the longitude lines
+        for lon in hg_longitude_deg:
+            hg_longitude_deg_mesh, hg_latitude_deg_mesh = np.meshgrid(
+                lon * np.ones(num_points), hg_latitude_deg)
+            x, y = wcs.convert_hg_hpc(self.header, hg_longitude_deg_mesh, 
+                                      hg_latitude_deg_mesh, units='arcsec')
+            axes.plot(x, y, color='white', linestyle='dotted')        
+        
+        return fig, axes
+    
+    def _validate(self):
+        """Validates the meta-information associated with a Map.
+        
+        This function includes very basic validation checks which apply to
+        all of the kinds of files that SunPy can read. Datasource-specific
+        validation should be handled in the relevant file in the 
+        sunpy.map.sources package."""
+        if (self.dsun <= 0 or self.dsun >= 40 * constants.au):
+            raise InvalidHeaderInformation("Invalid value for DSUN")
     
     @property
     def xrange(self):
@@ -273,6 +248,10 @@ class BaseMap(np.ndarray):
         ymin = self.center['y'] - self.shape[0] / 2 * self.scale['y']
         ymax = self.center['y'] + self.shape[0] / 2 * self.scale['y']
         return [ymin, ymax]
+    
+    def std(self, *args, **kwargs):
+        """overide np.ndarray.std()"""
+        return np.array(self, copy=False, subok=False).std(*args, **kwargs)
     
     def data_to_pixel(self, value, dim):
         """Convert pixel-center data coordinates to pixel values"""
@@ -323,12 +302,13 @@ class BaseMap(np.ndarray):
 
         # Make a copy of the original data and perform resample
         data = resample(np.asarray(self).copy().T, dimensions,
-                        method, center = True)
+                        method, center=True)
         
         # Update image scale and number of pixels
         header = self.header.copy()
 
-        # Note that 'x' and 'y' correspond to 1 and 0 in self.shape, respectively
+        # Note that 'x' and 'y' correspond to 1 and 0 in self.shape, 
+        # respectively
         scale_factor_x = (float(self.shape[1]) / dimensions[0])
         scale_factor_y = (float(self.shape[0]) / dimensions[1])
         
@@ -409,8 +389,8 @@ class BaseMap(np.ndarray):
         return self.__class__(data.copy(), header)
    
     @toggle_pylab
-    def plot(self, overlays=None, draw_limb=True, gamma=None, draw_grid=False, 
-             **matplot_args):
+    def plot(self, figure=None, overlays=None, draw_limb=True, gamma=None, 
+             draw_grid=False, **matplot_args):
         """Plots the map object using matplotlib
         
         Parameters
@@ -437,10 +417,12 @@ class BaseMap(np.ndarray):
         # plot command.
         if draw_grid:
             overlays = overlays + [self._draw_grid]
+            
         # Create a figure and add title and axes
-        fig = plt.figure()
+        if figure is None:
+            figure = plt.figure()
         
-        axes = fig.add_subplot(111)
+        axes = figure.add_subplot(111)
         axes.set_title("%s %s" % (self.name, self.date))
         
         if self.header.get('CTYPE1') == 'HPLN-TAN':
@@ -464,20 +446,21 @@ class BaseMap(np.ndarray):
             "norm": self.norm()
         }
         params.update(matplot_args)
+
         if gamma is not None:
             params['cmap'] = copy(params['cmap'])
             params['cmap'].set_gamma(gamma)
 
         im = axes.imshow(self, origin='lower', extent=extent, **params)
-        fig.colorbar(im)
+        figure.colorbar(im)
         
         for overlay in overlays:
-            fig, axes = overlay(fig, axes)
-        return fig
+            figure, axes = overlay(figure, axes)
+        return figure
     
     @toggle_pylab
-    def plot_simple(self, overlays=None, draw_limb=False, gamma=None, 
-                    draw_grid=False, **matplot_args):
+    def plot_simple(self, figure=None, overlays=None, draw_limb=False, 
+                    gamma=None, draw_grid=False, **matplot_args):
         """Plots the map object using matplotlib
         
         Parameters
@@ -506,11 +489,12 @@ class BaseMap(np.ndarray):
         if draw_grid:
             overlays = overlays + [self._draw_grid]
 
-        fig = plt.figure(frameon=False)
+        if figure is None:
+            figure = plt.figure(frameon=False)
         
-        axes = plt.Axes(fig, [0., 0., 1., 1.])
-        axes.set_axis_off()
-        fig.add_axes(axes)
+        axes = plt.Axes(figure, [0., 0., 1., 1.])
+        axes.set_axis_off() 
+        figure.add_axes(axes)
 
         # Determine extent
         extent = self.xrange + self.yrange
@@ -526,56 +510,105 @@ class BaseMap(np.ndarray):
             params['cmap'] = copy(params['cmap'])
             params['cmap'].set_gamma(gamma)
 
-        axes.imshow(self, origin='lower', extent=extent, aspect='normal', **params)
+        axes.imshow(self, origin='lower', extent=extent, aspect='normal', 
+                    **params)
         
         for overlay in overlays:
-            fig, axes = overlay(fig, axes)
-        return fig
+            figure, axes = overlay(figure, axes)
+        return figure
     
     def norm(self):
         """Default normalization method"""
         return None
     
-    def show(self, overlays=None, draw_limb=False, gamma=1.0, **matplot_args):
+    def show(self, figure=None, overlays=None, draw_limb=False, gamma=1.0, 
+             **matplot_args):
         """Displays map on screen. Arguments are same as plot()."""
-        self.plot(overlays, draw_limb, gamma, **matplot_args).show()
+        self.plot(figure, overlays, draw_limb, gamma, **matplot_args).show()
         
-    def _draw_limb(self, fig, axes):
-        """Draws a circle representing the solar limb"""
-        circ = patches.Circle([0, 0], radius=self.rsun, fill=False, 
-                              color='white')
-        axes.add_artist(circ)
-        return fig, axes
-    
-    def _draw_grid(self, fig, axes, grid_spacing=20):
-        """Draws a grid over the surface of the Sun"""
-        # define the number of points for each latitude or longitude line
-        num_points = 20
-        hg_longitude_deg = np.linspace(-90, 90, num=num_points)
-        hg_latitude_deg = np.arange(-90, 90, grid_spacing)
-    
-        # draw the latitude lines
-        for lat in hg_latitude_deg:
-            hg_latitude_deg_mesh, hg_longitude_deg_mesh = np.meshgrid(
-                lat * np.ones(num_points), hg_longitude_deg)
-            x, y = wcs.convert_hg_hpc(self.header, hg_longitude_deg_mesh, 
-                                      hg_latitude_deg_mesh, units='arcsec')
-            axes.plot(x, y, color='white', linestyle='dotted')
+    @classmethod
+    def parse_file(cls, filepath):
+        """Reads in a map file and returns a header and data array"""
+        data, dict_header = read_file(filepath)
         
-        hg_longitude_deg = np.arange(-90, 90, grid_spacing)
-        hg_latitude_deg = np.linspace(-90, 90, num=num_points)
-    
-        # draw the longitude lines
-        for lon in hg_longitude_deg:
-            hg_longitude_deg_mesh, hg_latitude_deg_mesh = np.meshgrid(
-                lon * np.ones(num_points), hg_latitude_deg)
-            x, y = wcs.convert_hg_hpc(self.header, hg_longitude_deg_mesh, 
-                                      hg_latitude_deg_mesh, units='arcsec')
-            axes.plot(x, y, color='white', linestyle='dotted')        
+        header = MapHeader(dict_header)
         
-        return fig, axes
+        return header, data
+    
+    @classmethod
+    def read(cls, filepath):
+        """Map class factory
+    
+        Attempts to determine the type of data associated with input and returns
+        an instance of either the generic BaseMap class or a subclass of BaseMap
+        such as AIAMap, EUVIMap, etc.
+        
+        Parameters
+        ----------
+        filepath : string
+            Path to a valid FITS or JPEG 2000 file of a type supported by SunPy.
+            
+        Returns
+        -------
+        out : Map
+            Returns a Map instance for the particular type of data loaded.
+        """
+        header, data = cls.parse_file(filepath)
+ 
+        if cls.__name__ is not "BaseMap":
+            return cls(data, header)
+
+        for cls in BaseMap.__subclasses__():
+            if cls.is_datasource_for(header):
+                return cls(data, header)
+        raise UnrecognizedDataSouceError("File header not recognized by SunPy.")
+    
+    @classmethod
+    def detect_properties(cls, filepath):
+        """Attempts to detect the datasource type and returns meta-information
+        for that particular datasource."""
+        dict_header = read_header(filepath)
+                
+        header = MapHeader(dict_header)
+        
+        for cls in BaseMap.__subclasses__():
+            if cls.is_datasource_for(header):
+                return cls.get_properties(header)
+    
+    @classmethod
+    def get_properties(cls, header): #pylint: disable=W0613
+        """Returns default map properties""" 
+        return {
+            'cmap': cm.gray,
+            'date': datetime.today(),
+            'det': "None",
+            'inst': "None",
+            'meas': "None",
+            'obs': "None",
+            'exptime': "None", 
+            'name': "SunPy Map",
+            'rsun': wcs.get_solar_limb(header),
+            'dsun': None,
+            'center': {
+                "x": wcs.get_center(header, axis='x'),
+                "y": wcs.get_center(header, axis='y')
+            },
+            'scale': {
+                "x": header.get('cdelt1'),
+                "y": header.get('cdelt2')
+            },
+            'units': {
+                "x": wcs.get_units(header, axis='x'), 
+                "y": wcs.get_units(header, axis='y')
+            }
+        }
     
 class UnrecognizedDataSouceError(ValueError):
     """Exception to raise when an unknown datasource is encountered"""
     pass
+
     
+class InvalidHeaderInformation(ValueError):
+    """Exception to raise when an invalid header tag value is encountered for a
+    FITS/JPEG 2000 file."""
+    pass
