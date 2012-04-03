@@ -28,6 +28,7 @@ from sunpy.map import Map
 from sunpy.map.header import MapHeader
 from sunpy.map.mapcube import MapCube
 from sunpy.map.compositemap import CompositeMap
+from sunpy.time import util
 from sunpy.cm import *
 
 # Sample data
