@@ -77,7 +77,11 @@ def read_xmlbox(filepath, root):
         xmlstr += line
         if line.find("</%s>" % root) != -1:
             break
-    xmlstr = xmlstr[xmlstr.find("<%s>" % root):]
+
+    start = xmlstr.find("<%s>" % root)
+    end = xmlstr.find("</%s>" % root) + len("</%s>" % root)
+    
+    xmlstr = xmlstr[start : end]
     
     fp.close()
 
