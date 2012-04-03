@@ -9,17 +9,20 @@ Overview
 For its basic functioning, SunPy requires several libraries:
 
 * `NumPy <http://numpy.scipy.org/>`__
+* `SciPy <http://www.scipy.org/>`__
 * `Matplotlib <http://matplotlib.sourceforge.net/>`__
 * `PyFITS <http://www.stsci.edu/resources/software_hardware/pyfits>`_
+* `Suds <https://fedorahosted.org/suds/>`__
+* `pandas <http://pandas.sourceforge.net/dsintro.html>`_
+* `PyQt4 <http://www.riverbankcomputing.co.uk/software/pyqt/download>`__
 
 **Optional**
 
-In addition to the required libraries listed above, there are a couple other
-optional dependencies which are only needed for certain features.
+In addition to the required libraries listed above, if you plan to work with
+JPEG 2000 data, you must also install:
 
-* `PyQt4 <http://www.riverbankcomputing.co.uk/software/pyqt/download>`__ (SunPy Plotman)
-* `Suds <https://fedorahosted.org/suds/>`__ (VSO/HEK support)
-* `OpenJPEG <http://www.openjpeg.org/>`__ and `PIL <http://www.pythonware.com/products/pil/>`__ (JPEG 2000 support)
+* `OpenJPEG <http://www.openjpeg.org/>`__
+* `PIL <http://www.pythonware.com/products/pil/>`__
 
 Using Macports
 --------------
