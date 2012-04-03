@@ -36,16 +36,6 @@ class SWAPMap(BaseMap):
             'exptime': header.get('exptime')
         })
         return properties
-    
-    def norm(self):
-        """Returns a Normalize object to be used with SWAP data"""
-        mean = self.mean()
-        std = self.std()
-        
-        vmin = max(0, mean - 3 * std)
-        vmax = min(self.max(), mean + 3 * std)
-
-        return colors.Normalize(vmin, vmax)
         
     @classmethod
     def is_datasource_for(cls, header):
