@@ -38,10 +38,12 @@ def install(setup): #pylint: disable=W0621
         #    "VSO/HEK": ['suds']
         #},
         install_requires=[
-            'NumPy',
-            'PyFITS',
-            'SciPy',
-            'Matplotlib>=1.0',            
+            'numpy',
+            'pyfits',
+            'scipy',
+            'suds',
+            'pandas',
+            'matplotlib>=1.0'
         ],
         license="BSD",
         long_description="\n".join(DOCLINES[2:]),
