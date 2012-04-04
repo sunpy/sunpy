@@ -2,16 +2,19 @@
 SunPy Documentation
 ===================
 
-Versions:
- * `Stable <http://www.sunpy.org/doc>`_
- * `Nightly <http://sunpy.readthedocs.org/en/latest/index.html>`_
+Documentation Versions:
+ * `0.1 <http://www.sunpy.org/doc>`_
+ * `git <http://sunpy.readthedocs.org/en/latest/index.html>`_
 
 Requirements
 ============
 * `Python 2.6+ <http://www.python.org/getit/releases/>`_
 * `NumPy/SciPy <http://numpy.scipy.org/>`_
-* `Matplotlib <http://matplotlib.sourceforge.net/>`_
+* `Matplotlib <http://matplotlib.sourceforge.net/>`__ (1.0+)
 * `PyFITS <http://www.stsci.edu/resources/software_hardware/pyfits>`_
+* `Suds <https://fedorahosted.org/suds/>`__
+* `pandas <http://pandas.sourceforge.net/dsintro.html>`_
+* `PyQt4 <http://www.riverbankcomputing.co.uk/software/pyqt/download>`__
 
 Documentation
 =============
