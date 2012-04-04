@@ -114,7 +114,7 @@ def parse_obssumm_dbase_file(filename):
     whole days only.
 
     """
-    reader = csv.reader(open(filename, "rb"), delimiter = ' ', skipinitialspace = True)
+    reader = csv.reader(open(filename, "rb"), delimiter=' ', skipinitialspace = True)
     headerline = reader.next()
     headerline = reader.next()
     headerline = reader.next()
