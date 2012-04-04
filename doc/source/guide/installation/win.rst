@@ -10,7 +10,7 @@ For its basic functioning, SunPy requires several libraries:
 
 * `NumPy <http://numpy.scipy.org/>`__
 * `SciPy <http://www.scipy.org/>`__
-* `Matplotlib <http://matplotlib.sourceforge.net/>`__
+* `Matplotlib <http://matplotlib.sourceforge.net/>`__ (1.0+)
 * `PyFITS <http://www.stsci.edu/resources/software_hardware/pyfits>`_
 * `Suds <https://fedorahosted.org/suds/>`__
 * `pandas <http://pandas.sourceforge.net/dsintro.html>`_
