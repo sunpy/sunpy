@@ -7,23 +7,27 @@ SunPy is an open-source Python library for solar physics data analysis.
 Installation
 ------------
 
-To begin, installing the following requirements if you don't already have them:
+To begin, install the following requirements:
 
  * [Python]([Python](http://www.python.org) (2.6+)
  * [PyFITS](http://www.stsci.edu/resources/software_hardware/pyfits)
  * [NumPy](http://numpy.scipy.org/)
- * [Matplotlib](http://matplotlib.sourceforge.net/)
  * [SciPy](http://www.scipy.org/)
+ * [Matplotlib](http://matplotlib.sourceforge.net/) (1.0+)
  * [Suds](https://fedorahosted.org/suds)
-
+ * [pandas](http://pandas.pydata.org/)
+ * [PyQt](http://www.riverbankcomputing.co.uk/software/pyqt/download)
+ 
 Next, use git to grab the latest version of SunPy:
 
     git clone git://github.com/sunpy/sunpy.git
+    cd sunpy
+    python setup.py install
 
-Done! In order to enable SunPy to be imported from any location you must make
-sure that the library is somewhere in your PYTHONPATH environmental variable.
-For now the easiest thing is to simply start Python from the directory you just
-downloaded. (TODO: Include setup.py in github)
+Done!
+
+For detailed installation instructions, see the [installation guide](http://www.sunpy.org/doc/guide/installation/index.html) 
+in the SunPy docs.
 
 Usage
 -----
