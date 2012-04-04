@@ -59,6 +59,10 @@ class TimeRange:
         """Creates a new TimeRange instance"""
         from sunpy.time import parse_time
         
+        # if already a timeRange object just return it
+        #if isinstance(a, TimeRange):
+        #    return a
+        
         # Normalize different input types
         if b is None:
             x = a[0]
