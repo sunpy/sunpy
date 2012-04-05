@@ -589,8 +589,9 @@ class BaseMap(np.ndarray):
             'obs': "None",
             'exptime': "None", 
             'name': "SunPy Map",
-            'dsun': constants.au,
-            'rsun': constants.average_angular_size,
+            'dsun': header.get('dsun_obs', constants.au),
+            'rsun': header.get('rsun_obs', header.get('solar_r', 
+                    header.get('radius', constants.average_angular_size))),
             'center': {
                 "x": wcs.get_center(header, axis='x'),
                 "y": wcs.get_center(header, axis='y')
