@@ -13,11 +13,11 @@ from matplotlib import patches
 from matplotlib import colors
 from matplotlib import cm
 from copy import copy
-from datetime import datetime
 from sunpy.wcs import wcs as wcs
 from sunpy.util.util import toggle_pylab
-from sunpy.io import read_file, read_header
+from sunpy.io import read_file #, read_header
 from sunpy.sun import constants
+from sunpy.time import parse_time
 from sunpy.map.header import MapHeader
 
 """
@@ -102,8 +102,8 @@ class BaseMap(np.ndarray):
     | http://www.scipy.org/Subclasses
 
     """
-    def __new__(cls, data, header=None): #pylint: disable=W0613
-        """Creates a new BaseMap instance"""        
+    def __new__(cls, data): #pylint: disable=W0613
+        """Creates a new BaseMap instance"""
         if isinstance(data, np.ndarray):
             obj = data.view(cls)
         elif isinstance(data, list):
@@ -113,30 +113,49 @@ class BaseMap(np.ndarray):
         
         return obj
     
-    def __init__(self, data, header=None): #pylint: disable=W0613
-        """BaseMap constructor"""
-        if header:
-            self.header = header
-            
-            # Set object attributes dynamically
-            for attr, value in list(self.get_properties(header).items()):
-                setattr(self, attr, value)
-                
-            # Validate map properties
-            self._validate()
-            
+    def __init__(self, header):
+        self.header = header
+        
+        # Set properties
+        self.cmap = cm.gray
+        self.date = parse_time(header.get('date-obs'))
+        self.det = None
+        self.dsun = header.get('dsun_obs', constants.au)
+        self.exptime = header.get('exptime')
+        self.inst = header.get('instrume')
+        self.meas = header.get('wavelnth')
+        self.obs = header.get('telescop')
+        self.name = header.get('telescop') + " " + str(header.get('wavelnth'))
+        self.rsun = header.get('rsun_obs', header.get('solar_r', 
+                    header.get('radius', constants.average_angular_size)))
+        self.center = {
+            "x": wcs.get_center(header, axis='x'),
+            "y": wcs.get_center(header, axis='y')
+        }
+        self.scale = {
+            "x": header.get('cdelt1'),
+            "y": header.get('cdelt2')
+        }
+        self.units = {
+            "x": wcs.get_units(header, axis='x'), 
+            "y": wcs.get_units(header, axis='y')
+        }
+
+        # Validate properties
+        self._validate()
+
     def __array_finalize__(self, obj):
         """Finishes instantiation of the new map object"""
         if obj is None:
             return
 
         if hasattr(obj, 'header'):
-            # Preserve object properties
-            properties = self.get_properties(obj.header)
-            for attr, value in list(properties.items()):
-                setattr(self, attr, getattr(obj, attr, value))
-            
-            self.header = obj.header
+            properties = ['header', 'cmap', 'date', 'det', 'dsun', 'exptime', 
+                          'inst', 'meas', 'obs', 'name', 'rsun', 'center', 
+                          'scale', 'units']
+
+            for attr in properties:
+                setattr(self, attr, getattr(obj, attr))
         
     def __array_wrap__(self, out_arr, context=None):
         """Returns a wrapped instance of a Map object"""
@@ -565,47 +584,18 @@ class BaseMap(np.ndarray):
                 return cls(data, header)
         raise UnrecognizedDataSouceError("File header not recognized by SunPy.")
     
-    @classmethod
-    def detect_properties(cls, filepath):
-        """Attempts to detect the datasource type and returns meta-information
-        for that particular datasource."""
-        dict_header = read_header(filepath)
-                
-        header = MapHeader(dict_header)
-        
-        for cls in BaseMap.__subclasses__():
-            if cls.is_datasource_for(header):
-                return cls.get_properties(header)
-    
-    @classmethod
-    def get_properties(cls, header): #pylint: disable=W0613
-        """Returns default map properties""" 
-        return {
-            'cmap': cm.gray,
-            'date': datetime.today(),
-            'det': None,
-            'dsun': header.get('dsun_obs', constants.au),
-            'exptime': header.get('exptime'),
-            'inst': header.get('instrume'),
-            'meas': header.get('wavelnth'),
-            'obs': header.get('telescop'),
-            'name': header.get('telescop') + " " + header.get('wavelnth'),
-            'rsun': header.get('rsun_obs', header.get('solar_r', 
-                    header.get('radius', constants.average_angular_size))),
-            'center': {
-                "x": wcs.get_center(header, axis='x'),
-                "y": wcs.get_center(header, axis='y')
-            },
-            'scale': {
-                "x": header.get('cdelt1'),
-                "y": header.get('cdelt2')
-            },
-            'units': {
-                "x": wcs.get_units(header, axis='x'), 
-                "y": wcs.get_units(header, axis='y')
-            }
-        }
-    
+#    @classmethod
+#    def detect_properties(cls, filepath):
+#        """Attempts to detect the datasource type and returns meta-information
+#        for that particular datasource."""
+#        dict_header = read_header(filepath)
+#                
+#        header = MapHeader(dict_header)
+#        
+#        for cls in BaseMap.__subclasses__():
+#            if cls.is_datasource_for(header):
+#                return cls.get_properties(header)
+#    
 class UnrecognizedDataSouceError(ValueError):
     """Exception to raise when an unknown datasource is encountered"""
     pass
