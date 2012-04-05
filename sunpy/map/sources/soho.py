@@ -35,6 +35,7 @@ class EITMap(BaseMap):
             "inst": "EIT",
             "meas": header.get('wavelnth'),
             "obs": "SOHO",
+            "rsun": rsun,
             "dsun": dsun,            
             "name": "EIT %s" % header.get('wavelnth'),
             "exptime": header.get('exptime'),

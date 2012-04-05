@@ -52,9 +52,11 @@ class BaseMap(np.ndarray):
     inst : str
         Instrument name
     meas : str, int
-        Measurement name. In some instances this is the wavelength of image
+        Measurement name. In some instances this is the wavelength of image.
     obs : str
         Observatory name
+    dsun : float
+        The observer distance from the Sun.
     rsun : float
         Radius of the sun
     exptime : float
@@ -587,8 +589,8 @@ class BaseMap(np.ndarray):
             'obs': "None",
             'exptime': "None", 
             'name': "SunPy Map",
-            'rsun': wcs.get_solar_limb(header),
-            'dsun': None,
+            'dsun': constants.au,
+            'rsun': constants.average_angular_size,
             'center': {
                 "x": wcs.get_center(header, axis='x'),
                 "y": wcs.get_center(header, axis='y')
