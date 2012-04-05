@@ -43,7 +43,7 @@ def install(setup): #pylint: disable=W0621
             'scipy',
             'suds',
             'pandas',
-            'pyqt',
+            'pyqt4',
             'matplotlib>=1.0'
         ],
         license="BSD",
