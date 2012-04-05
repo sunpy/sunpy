@@ -119,7 +119,7 @@ class BaseMap(np.ndarray):
         # Set properties
         self.cmap = cm.gray
         self.date = parse_time(header.get('date-obs'))
-        self.det = None
+        self.det = header.get('detector')
         self.dsun = header.get('dsun_obs', constants.au)
         self.exptime = header.get('exptime')
         self.inst = header.get('instrume')
