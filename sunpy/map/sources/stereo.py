@@ -25,7 +25,7 @@ class EUVIMap(BaseMap):
     @classmethod
     def is_datasource_for(cls, header):
         """Determines if header corresponds to an EUVI image"""
-        return header.get('detector') is 'EUVI'
+        return header.get('detector') == 'EUVI'
         
 class CORMap(BaseMap):
     """COR Image Map definition"""

@@ -38,4 +38,4 @@ class RHESSIMap(BaseMap):
     @classmethod
     def is_datasource_for(cls, header):
         """Determines if header corresponds to an AIA image"""
-        return header.get('instrume') is 'RHESSI'
+        return header.get('instrume') == 'RHESSI'
