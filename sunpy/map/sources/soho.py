@@ -26,7 +26,7 @@ class EITMap(BaseMap):
         
         self.date = parse_time(header.get('date_obs'))
         self.detector = "EIT"
-        self.dsun = (radius_1au / (self.rsun * scale)) * constants.au
+        self.dsun = (radius_1au / (self.rsun_arcseconds * scale)) * constants.au
         self.name = "EIT %s" % header.get('wavelnth')
         self.cmap = cm.get_cmap('sohoeit%d' % header.get('wavelnth'))
 

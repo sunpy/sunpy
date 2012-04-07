@@ -126,8 +126,10 @@ class BaseMap(np.ndarray):
         self.measurement = header.get('wavelnth')
         self.observatory = header.get('telescop')
         self.name = header.get('telescop') + " " + str(header.get('wavelnth'))
-        self.rsun = header.get('rsun_obs', header.get('solar_r', 
-                    header.get('radius', constants.average_angular_size)))
+        self.rsun_arcseconds = header.get('rsun_obs', header.get('solar_r', 
+                               header.get('radius', 
+                                          constants.average_angular_size)))
+        self.rsun_meters = header.get('RSUN_REF', constants.radius) 
         self.center = {
             "x": wcs.get_center(header, axis='x'),
             "y": wcs.get_center(header, axis='y')
@@ -213,7 +215,7 @@ class BaseMap(np.ndarray):
     
     def _draw_limb(self, fig, axes):
         """Draws a circle representing the solar limb"""
-        circ = patches.Circle([0, 0], radius=self.rsun, fill=False, 
+        circ = patches.Circle([0, 0], radius=self.rsun_arcseconds, fill=False, 
                               color='white')
         axes.add_artist(circ)
         return fig, axes
