@@ -43,17 +43,9 @@ __all__ = ["get_center",
            "convert_hcc_hg", "convert_hg_hcc", "convert_hg_hcc_xyz",
            "convert_hg_hpc",
            "proj_tan", "convert_to_coord", "convert_hpc_hcc_xyz", 
-           "convert_hpc_hg", "get_obs_distance"]
+           "convert_hpc_hg"]
 
 import numpy as np
-from sunpy.sun import constants as con
-#from decimal import *
-
-def get_obs_distance(header):
-    """Return the observer distance from the Sun."""
-    # TODO should try to calculate this instead of defaulting to a constant
-    return (header.get('DSUN_OBS') or 
-            con.au)
 
 def get_center(header, axis=None):
     """Return the center of the map."""
@@ -194,15 +186,15 @@ def convert_data_to_pixel(header, x, y):
 
     return pixelx, pixely
 
-def convert_hpc_hcc(header, rsun, hpx, hpy, distance=None):
+def convert_hpc_hcc(header, rsun, dsun, hpx, hpy, distance=None):
     """This routine converts Helioprojective-Cartesian (HPC) coordinates into 
     Heliocentric-Cartesian (HCC) coordinates, using equations 15 in 
     Thompson (2006), A&A, 449, 791-803.
     """
-    x, y, z = convert_hpc_hcc_xyz(header, rsun, hpx, hpy)
+    x, y, z = convert_hpc_hcc_xyz(header, rsun, dsun, hpx, hpy)
     return x, y
 
-def convert_hpc_hcc_xyz(header, rsun, hpx, hpy, distance=None):
+def convert_hpc_hcc_xyz(header, rsun, dsun, hpx, hpy, distance=None):
     """This routine converts Helioprojective-Cartesian (HPC) coordinates into 
     Heliocentric-Cartesian (HCC) coordinates, using equations 15 in 
     Thompson (2006), A&A, 449, 791-803.
@@ -216,8 +208,6 @@ def convert_hpc_hcc_xyz(header, rsun, hpx, hpy, distance=None):
     cosy = np.cos(hpy * c[1])
     siny = np.sin(hpy * c[1])
 
-    dsun = get_obs_distance(header)
-
     if distance is None: 
         q = dsun * cosy * cosx
         distance = q ** 2 - dsun ** 2 + rsun ** 2
@@ -230,12 +220,9 @@ def convert_hpc_hcc_xyz(header, rsun, hpx, hpy, distance=None):
 
     return x, y, z
 
-def convert_hcc_hpc(header, rsun, x, y, units = None, distance=None):
+def convert_hcc_hpc(header, rsun, dsun, x, y, units=None, distance=None):
     """Convert Heliocentric-Cartesian (HCC) to angular 
     Helioprojective-Cartesian (HPC) coordinates (in degrees)."""
-
-    # Distance to the Sun but should we use our own?
-    dsun = get_obs_distance(header)
 
     # Should we use the rsun_ref defined in the fits file or our 
     # local (possibly different/more correct) definition
@@ -270,12 +257,12 @@ def convert_hcc_hg(header, rsun, x, y, z=None):
     sinb = np.sin(b0)
 
     hecr = np.sqrt(x ** 2 + y ** 2 + z ** 2)
-    hgln = np.arctan2(x, z*cosb - y*sinb) + l0
-    hglt = np.arcsin( (y*cosb + z*sinb) / hecr )
+    hgln = np.arctan2(x, z * cosb - y * sinb) + l0
+    hglt = np.arcsin((y * cosb + z * sinb) / hecr)
     
     return np.rad2deg(hgln), np.rad2deg(hglt)
 
-def convert_hg_hcc(header, hgln, hglt, occultation = False):
+def convert_hg_hcc(header, hgln, hglt, occultation=False):
     """Convert Heliographic coordinates (given in degrees) to 
     Heliocentric-Cartesian."""
     x, y, z = convert_hg_hcc_xyz(header, hgln, hglt)
@@ -318,11 +305,12 @@ def convert_hg_hcc_xyz(header, rsun, hgln, hglt):
     
     return x, y, z
 
-def convert_hg_hpc(header, rsun, hglon, hglat, units = None, occultation = False):
+def convert_hg_hpc(header, rsun, dsun, hglon, hglat, units=None, 
+                   occultation=False):
     """Convert Heliographic coordinates (HG) to Helioprojective-Cartesian 
     (HPC)"""
     tempx, tempy = convert_hg_hcc(header, hglon, hglat, occultation)
-    x, y = convert_hcc_hpc(header, rsun, tempx, tempy, units = units)
+    x, y = convert_hcc_hpc(header, rsun, dsun, tempx, tempy, units = units)
     return x, y
 
 def convert_hpc_hg(header, rsun, x, y):
@@ -341,7 +329,7 @@ def proj_tan(header, x, y, force=False):
     # TODO: write proj_tan function
     return x, y
     
-def convert_to_coord( header, x, y, fromto):
+def convert_to_coord(header, x, y, fromto):
     """Apply a coordinate transform to coordinates in header 
     to coordinate coord. Right now can only do hpc to hcc to hg"""
     
