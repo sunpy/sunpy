@@ -22,9 +22,9 @@ class AIAMap(BaseMap):
     def __init__(self, data, header):
         BaseMap.__init__(self, header)
         
-        self.det = "AIA"
-        self.inst = "AIA"
-        self.obs = "SDO"
+        self.detector = "AIA"
+        self.instrument = "AIA"
+        self.observatory = "SDO"
         self.cmap = cm.get_cmap('sdoaia%d' % header.get('wavelnth'))
 
     def norm(self):
@@ -53,10 +53,10 @@ class HMIMap(BaseMap):
     def __init__(self, data, header):
         BaseMap.__init__(self, header)
         
-        self.det = "HMI"
-        self.inst = "HMI"
-        self.meas = header['content'].split(" ")[0].lower()
-        self.obs = "SDO"
+        self.detector = "HMI"
+        self.instrument = "HMI"
+        self.measurement = header['content'].split(" ")[0].lower()
+        self.observatory = "SDO"
         self.name = "HMI %s" % self.meas 
 
     @classmethod

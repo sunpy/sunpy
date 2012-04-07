@@ -16,9 +16,9 @@ class EUVIMap(BaseMap):
     def __init__(self, data, header):
         BaseMap.__init__(self, header)
         self.date = parse_time(header.get('date_obs'))
-        self.det = "EUVI"
-        self.inst = "SECCHI"
-        self.obs = header.get('obsrvtry')
+        self.detector = "EUVI"
+        self.instrument = "SECCHI"
+        self.observatory = header.get('obsrvtry')
         self.name = "EUVI %s" % self.meas
         self.cmap = cm.get_cmap('sohoeit%d' % header.get('wavelnth'))
 
@@ -37,10 +37,10 @@ class CORMap(BaseMap):
     def __init__(self, data, header):
         BaseMap.__init__(self, header)
         self.date = parse_time(header.get('date_obs'))
-        self.det = header.get('detector')
-        self.inst = "SECCHI"
-        self.obs = header.get('obsrvtry')
-        self.meas = "white-light"
+        self.detector = header.get('detector')
+        self.instrument = "SECCHI"
+        self.observatory = header.get('obsrvtry')
+        self.measurement = "white-light"
         self.name = "SECCHI %s" % header.get('detector')
         
     @classmethod

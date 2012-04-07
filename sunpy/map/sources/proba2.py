@@ -22,9 +22,9 @@ class SWAPMap(BaseMap):
     
     def __init__(self, data, header):
         BaseMap.__init__(self, header)
-        self.det = "SWAP"
-        self.inst = "SWAP"
-        self.obs = "PROBA2"
+        self.detector = "SWAP"
+        self.instrument = "SWAP"
+        self.observatory = "PROBA2"
         self.name = "SWAP %s" % header.get('wavelnth')
         self.cmap = cm.get_cmap(name='sdoaia171')
 
