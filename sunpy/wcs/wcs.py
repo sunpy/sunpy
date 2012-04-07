@@ -35,7 +35,7 @@
 """
 from __future__ import absolute_import
 
-__all__ = ["get_solar_limb", "get_center",
+__all__ = ["get_center",
            "get_units", "get_platescale", "get_solar_b0", "get_solar_l0",
            "convert_angle_units", "get_projection", "get_shape",
            "convert_pixel_to_data", "convert_data_to_pixel",
@@ -43,23 +43,11 @@ __all__ = ["get_solar_limb", "get_center",
            "convert_hcc_hg", "convert_hg_hcc", "convert_hg_hcc_xyz",
            "convert_hg_hpc",
            "proj_tan", "convert_to_coord", "convert_hpc_hcc_xyz", 
-           "convert_hpc_hg", "get_obs_distance", "get_solar_radius"]
+           "convert_hpc_hg", "get_obs_distance"]
 
 import numpy as np
 from sunpy.sun import constants as con
-from decimal import *
-
-def get_solar_limb(header):
-    """Return the angular size of the Sun viewed from Earth (in arcsec)"""
-    # khughitt: Perhaps rsun should be handled in source-specific logic, and
-    #           passed in?
-    return (header.get('RSUN_OBS') or 
-            header.get('SOLAR_R') or 
-            header.get('RADIUS', con.average_angular_size))
-
-def get_solar_radius(header):
-    """Return the solar radius of the Sun"""
-    return (header.get('RSUN_REF') or con.radius)
+#from decimal import *
 
 def get_obs_distance(header):
     """Return the observer distance from the Sun."""
@@ -206,15 +194,15 @@ def convert_data_to_pixel(header, x, y):
 
     return pixelx, pixely
 
-def convert_hpc_hcc(header, hpx, hpy, distance=None):
+def convert_hpc_hcc(header, rsun, hpx, hpy, distance=None):
     """This routine converts Helioprojective-Cartesian (HPC) coordinates into 
     Heliocentric-Cartesian (HCC) coordinates, using equations 15 in 
     Thompson (2006), A&A, 449, 791-803.
     """
-    x, y, z = convert_hpc_hcc_xyz(header, hpx, hpy)
+    x, y, z = convert_hpc_hcc_xyz(header, rsun, hpx, hpy)
     return x, y
 
-def convert_hpc_hcc_xyz(header, hpx, hpy, distance=None):
+def convert_hpc_hcc_xyz(header, rsun, hpx, hpy, distance=None):
     """This routine converts Helioprojective-Cartesian (HPC) coordinates into 
     Heliocentric-Cartesian (HCC) coordinates, using equations 15 in 
     Thompson (2006), A&A, 449, 791-803.
@@ -229,7 +217,6 @@ def convert_hpc_hcc_xyz(header, hpx, hpy, distance=None):
     siny = np.sin(hpy * c[1])
 
     dsun = get_obs_distance(header)
-    rsun = get_solar_radius(header)
 
     if distance is None: 
         q = dsun * cosy * cosx
@@ -243,14 +230,15 @@ def convert_hpc_hcc_xyz(header, hpx, hpy, distance=None):
 
     return x, y, z
 
-def convert_hcc_hpc(header, x, y, units = None, distance=None):
+def convert_hcc_hpc(header, rsun, x, y, units = None, distance=None):
     """Convert Heliocentric-Cartesian (HCC) to angular 
     Helioprojective-Cartesian (HPC) coordinates (in degrees)."""
 
     # Distance to the Sun but should we use our own?
     dsun = get_obs_distance(header)
-    # Should we use the rsun_ref defined in the fits file or our local (possibly different/more correct) definition
-    rsun = get_solar_radius(header)
+
+    # Should we use the rsun_ref defined in the fits file or our 
+    # local (possibly different/more correct) definition
     
     # Calculate the z coordinate by assuming that it is on the surface of the 
     # Sun
@@ -268,11 +256,9 @@ def convert_hcc_hpc(header, x, y, units = None, distance=None):
     
     return hpcx, hpcy
 
-def convert_hcc_hg(header, x, y, z = None):
+def convert_hcc_hg(header, rsun, x, y, z=None):
     """Convert Heliocentric-Cartesian (HCC) to Heliographic coordinates (HG) 
     (given in degrees)."""
-
-    rsun = get_solar_radius(header)
 
     if z is None:
         z = np.sqrt(rsun ** 2 - x ** 2 - y ** 2)
@@ -301,15 +287,13 @@ def convert_hg_hcc(header, hgln, hglt, occultation = False):
     
     return x, y
 
-def convert_hg_hcc_xyz(header, hgln, hglt):
+def convert_hg_hcc_xyz(header, rsun, hgln, hglt):
     """Convert Heliographic coordinates (given in degrees) to 
     Heliocentric-Cartesian."""
     # using equations 11 in Thompson (2006), A&A, 449, 791-803
 
     cx = np.deg2rad(1)
     cy = np.deg2rad(1)
-    
-    hecr = get_solar_radius(header)
     
     lon = cx * hgln
     lat = cy * hglt
@@ -328,23 +312,23 @@ def convert_hg_hcc_xyz(header, hgln, hglt):
     siny = np.sin(lat)
     
     # Perform the conversion.
-    x = hecr * cosy * sinx
-    y = hecr * (siny*cosb - cosy*cosx*sinb)
-    z = hecr * (siny*sinb + cosy*cosx*cosb)
+    x = rsun * cosy * sinx
+    y = rsun * (siny * cosb - cosy * cosx * sinb)
+    z = rsun * (siny * sinb + cosy * cosx * cosb)
     
     return x, y, z
 
-def convert_hg_hpc(header, hglon, hglat, units = None, occultation = False):
+def convert_hg_hpc(header, rsun, hglon, hglat, units = None, occultation = False):
     """Convert Heliographic coordinates (HG) to Helioprojective-Cartesian 
     (HPC)"""
     tempx, tempy = convert_hg_hcc(header, hglon, hglat, occultation)
-    x, y = convert_hcc_hpc(header, tempx, tempy, units = units)
+    x, y = convert_hcc_hpc(header, rsun, tempx, tempy, units = units)
     return x, y
 
-def convert_hpc_hg(header, x, y):
+def convert_hpc_hg(header, rsun, x, y):
     """Convert Helioprojective-Cartesian (HPC) to Heliographic coordinates 
     (HG)"""
-    tempx, tempy = convert_hpc_hcc(header, x, y)
+    tempx, tempy = convert_hpc_hcc(header, rsun, x, y)
     lon, lat = convert_hcc_hg(header, tempx, tempy)
     return lon, lat
 
@@ -362,7 +346,7 @@ def convert_to_coord( header, x, y, fromto):
     to coordinate coord. Right now can only do hpc to hcc to hg"""
     
     #coord = np.array(convert_pixel_to_data(header))
-    #temp = np.array(convert_hpc_hcc(header, coord[:,:,0], coord[:,:,1]))
+    #temp = np.array(convert_hpc_hcc(header, rsun, coord[:,:,0], coord[:,:,1]))
     x, y = convert_hcc_hg(header, x, y)
                 
     return x, y
