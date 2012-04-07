@@ -138,10 +138,8 @@ class BaseMap(np.ndarray):
             "x": header.get('cdelt1'),
             "y": header.get('cdelt2')
         }
-        self.units = {
-            "x": wcs.get_units(header, axis='x'), 
-            "y": wcs.get_units(header, axis='y')
-        }
+        self.units_x = header.get('cunit1', 'arcsec')
+        self.units_y = header.get('cunit2', 'arcsec')
 
         # Validate properties
         self._validate()
@@ -402,6 +400,7 @@ class BaseMap(np.ndarray):
         header['naxis1'] = x_pixels[1] - x_pixels[0]
         header['naxis2'] = y_pixels[1] - y_pixels[0]
 
+# @TODO: verify centering
 #        self.center = {
 #            "x": wcs.get_center(header, axis='x'),
 #            "y": wcs.get_center(header, axis='y')

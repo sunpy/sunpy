@@ -35,8 +35,7 @@
 """
 from __future__ import absolute_import
 
-__all__ = ["get_center",
-           "get_units", "get_platescale", "get_solar_b0", "get_solar_l0",
+__all__ = ["get_center", "get_platescale", "get_solar_b0", "get_solar_l0",
            "convert_angle_units", "get_projection", "get_shape",
            "convert_pixel_to_data", "convert_data_to_pixel",
            "convert_hpc_hcc", "convert_hcc_hpc",
@@ -63,28 +62,6 @@ def get_center(header, axis=None):
         return y
     else:
         return [x,y]
-    
-def get_units(header, axis=None):
-    """Return the units used for crpix, crdelt in the header."""
-    # Not sure about the following code and the optional arguments but it
-    # fails for EIT images as it returns Solar-X and Solar-Y
-    # which are not units
-    # xunits = header.get('cunit1', header.get('ctype1'))
-    # yunits = header.get('cunit2', header.get('ctype2'))
-    xunits = header.get('cunit1')
-    yunits = header.get('cunit2')
-    # default to arcsec if found None
-    if xunits is None:
-        xunits = 'arcsec'
-    if yunits is None:
-        yunits = 'arcsec'
-    
-    if axis is 'x':
-        return xunits
-    elif axis is 'y':
-        return yunits
-    else:
-        return [xunits,yunits]
     
 def get_platescale(header, axis=None):
     """Return the plate scale of the image, 
@@ -186,22 +163,25 @@ def convert_data_to_pixel(header, x, y):
 
     return pixelx, pixely
 
-def convert_hpc_hcc(header, rsun, dsun, hpx, hpy, distance=None):
+def convert_hpc_hcc(header, rsun, dsun, units_x, units_y, hpx, hpy, 
+                    distance=None):
     """This routine converts Helioprojective-Cartesian (HPC) coordinates into 
     Heliocentric-Cartesian (HCC) coordinates, using equations 15 in 
     Thompson (2006), A&A, 449, 791-803.
     """
-    x, y, z = convert_hpc_hcc_xyz(header, rsun, dsun, hpx, hpy)
+    x, y, z = convert_hpc_hcc_xyz(header, rsun, dsun, units_x, units_y, hpx, 
+                                  hpy)
     return x, y
 
-def convert_hpc_hcc_xyz(header, rsun, dsun, hpx, hpy, distance=None):
+def convert_hpc_hcc_xyz(header, rsun, dsun, units_x, units_y, hpx, hpy, 
+                        distance=None):
     """This routine converts Helioprojective-Cartesian (HPC) coordinates into 
     Heliocentric-Cartesian (HCC) coordinates, using equations 15 in 
     Thompson (2006), A&A, 449, 791-803.
     """
 
-    c = np.array([convert_angle_units(unit=get_units(header, axis='x')), 
-                  convert_angle_units(unit=get_units(header, axis='y'))])
+    c = np.array([convert_angle_units(unit=units_x), 
+                  convert_angle_units(unit=units_y)])
 
     cosx = np.cos(hpx * c[0])
     sinx = np.sin(hpx * c[0])
@@ -313,10 +293,10 @@ def convert_hg_hpc(header, rsun, dsun, hglon, hglat, units=None,
     x, y = convert_hcc_hpc(header, rsun, dsun, tempx, tempy, units = units)
     return x, y
 
-def convert_hpc_hg(header, rsun, x, y):
+def convert_hpc_hg(header, rsun, dsun, units_x, units_y, x, y):
     """Convert Helioprojective-Cartesian (HPC) to Heliographic coordinates 
     (HG)"""
-    tempx, tempy = convert_hpc_hcc(header, rsun, x, y)
+    tempx, tempy = convert_hpc_hcc(header, rsun, dsun, units_x, units_y, x, y)
     lon, lat = convert_hcc_hg(header, tempx, tempy)
     return lon, lat
 
