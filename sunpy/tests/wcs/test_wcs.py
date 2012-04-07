@@ -12,7 +12,8 @@ img = sunpy.make_map(sunpy.AIA_171_IMAGE)
 def test_conv_hpc_hcc():
     coord = [40.0, 32.0]
     result = wcs.convert_hpc_hcc(header, img.rsun_arcseconds, 
-                                 img.dsun, coord[0], coord[1])
+                                 img.dsun, img.units_x, img.units_y, 
+                                 coord[0], coord[1])
     assert_array_almost_equal(result, [28748691, 22998953], decimal=3)
  
 def test_conv_hcc_hpc():
