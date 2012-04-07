@@ -26,14 +26,14 @@ class RHESSIMap(BaseMap):
         BaseMap.__init__(self, header)
         
         self.date = parse_time(header.get('date_obs'))
-        self.det = header.get('telescop')
-        self.inst = header.get('telescop')
-        self.meas = [header.get('energy_l'), header.get('energy_h')]
+        self.detector = header.get('telescop')
+        self.instrument = header.get('telescop')
+        self.measurement = [header.get('energy_l'), header.get('energy_h')]
         self.name = "RHESSI %d - %d keV" % (header.get('energy_l'), 
                                             header.get('energy_h'))
         self.cmap = cm.get_cmap('rhessi')
-        self.exptime = (parse_time(header.get('date_end')) - 
-                        parse_time(header.get('date_obs'))).seconds
+        self.exposure_time = (parse_time(header.get('date_end')) - 
+                              parse_time(header.get('date_obs'))).seconds
 
     @classmethod
     def is_datasource_for(cls, header):

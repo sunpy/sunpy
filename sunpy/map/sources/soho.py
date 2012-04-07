@@ -25,8 +25,7 @@ class EITMap(BaseMap):
         scale = header.get("cdelt1")
         
         self.date = parse_time(header.get('date_obs'))
-        self.det = "EIT"
-        self.cmap = cm.get_cmap('sdoaia%d' % header.get('wavelnth'))
+        self.detector = "EIT"
         self.dsun = (radius_1au / (self.rsun * scale)) * constants.au
         self.name = "EIT %s" % header.get('wavelnth')
         self.cmap = cm.get_cmap('sohoeit%d' % header.get('wavelnth'))
@@ -60,7 +59,7 @@ class LASCOMap(BaseMap):
         datestr = "%sT%s" % (header.get('date_obs'), header.get('time_obs'))
         
         self.date = parse_time(datestr)
-        self.meas = "white-light"
+        self.measurement = "white-light"
         self.name = "LASCO %s" % header.get('detector')
         
     @classmethod
@@ -100,8 +99,8 @@ class MDIMap(BaseMap):
         meas = "magnetogram" if dpcobsr.find('Mag') != -1 else "continuum"
         
         self.date = parse_time(datestr)
-        self.det = "MDI"
-        self.meas = meas
+        self.detector = "MDI"
+        self.measurement = meas
         self.dsun = dsun
         self.name = "MDI %s" % meas
         
