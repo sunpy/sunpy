@@ -119,12 +119,12 @@ class BaseMap(np.ndarray):
         # Set properties
         self.cmap = cm.gray
         self.date = parse_time(header.get('date-obs'))
-        self.det = header.get('detector')
+        self.detector = header.get('detector')
         self.dsun = header.get('dsun_obs', constants.au)
-        self.exptime = header.get('exptime')
-        self.inst = header.get('instrume')
-        self.meas = header.get('wavelnth')
-        self.obs = header.get('telescop')
+        self.exposure_time = header.get('exptime')
+        self.instrument = header.get('instrume')
+        self.measurement = header.get('wavelnth')
+        self.observatory = header.get('telescop')
         self.name = header.get('telescop') + " " + str(header.get('wavelnth'))
         self.rsun = header.get('rsun_obs', header.get('solar_r', 
                     header.get('radius', constants.average_angular_size)))
