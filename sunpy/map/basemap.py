@@ -231,7 +231,8 @@ class BaseMap(np.ndarray):
         for lat in hg_latitude_deg:
             hg_latitude_deg_mesh, hg_longitude_deg_mesh = np.meshgrid(
                 lat * np.ones(num_points), hg_longitude_deg)
-            x, y = wcs.convert_hg_hpc(self.header, hg_longitude_deg_mesh, 
+            x, y = wcs.convert_hg_hpc(self.header, self.rsun_arcseconds, 
+                                      self.dsun, hg_longitude_deg_mesh, 
                                       hg_latitude_deg_mesh, units='arcsec')
             axes.plot(x, y, color='white', linestyle='dotted')
         
@@ -242,7 +243,8 @@ class BaseMap(np.ndarray):
         for lon in hg_longitude_deg:
             hg_longitude_deg_mesh, hg_latitude_deg_mesh = np.meshgrid(
                 lon * np.ones(num_points), hg_latitude_deg)
-            x, y = wcs.convert_hg_hpc(self.header, hg_longitude_deg_mesh, 
+            x, y = wcs.convert_hg_hpc(self.header, self.rsun_arcseconds, 
+                                      self.dsun, hg_longitude_deg_mesh, 
                                       hg_latitude_deg_mesh, units='arcsec')
             axes.plot(x, y, color='white', linestyle='dotted')        
         
