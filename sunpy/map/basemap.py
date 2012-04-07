@@ -134,10 +134,8 @@ class BaseMap(np.ndarray):
             "x": wcs.get_center(header, axis='x'),
             "y": wcs.get_center(header, axis='y')
         }
-        self.scale = {
-            "x": header.get('cdelt1'),
-            "y": header.get('cdelt2')
-        }
+        self.scale_x = header.get('cdelt1')
+        self.scale_y = header.get('cdelt2')
         self.units_x = header.get('cunit1', 'arcsec')
         self.units_y = header.get('cunit2', 'arcsec')
 
@@ -261,15 +259,15 @@ class BaseMap(np.ndarray):
     @property
     def xrange(self):
         """Return the X range of the image in arcsec from edge to edge."""        
-        xmin = self.center['x'] - self.shape[1] / 2 * self.scale['x']
-        xmax = self.center['x'] + self.shape[1] / 2 * self.scale['x']
+        xmin = self.center['x'] - self.shape[1] / 2 * self.scale_x
+        xmax = self.center['x'] + self.shape[1] / 2 * self.scale_x
         return [xmin, xmax]
     
     @property
     def yrange(self):
         """Return the Y range of the image in arcsec from edge to edge."""
-        ymin = self.center['y'] - self.shape[0] / 2 * self.scale['y']
-        ymax = self.center['y'] + self.shape[0] / 2 * self.scale['y']
+        ymin = self.center['y'] - self.shape[0] / 2 * self.scale_y
+        ymax = self.center['y'] + self.shape[0] / 2 * self.scale_y
         return [ymin, ymax]
     
     def std(self, *args, **kwargs):
@@ -282,7 +280,9 @@ class BaseMap(np.ndarray):
             raise ValueError("Invalid dimension. Must be one of 'x' or 'y'.")
         size = self.shape[dim == 'x'] # 1 if dim == 'x', 0 if dim == 'y'.
         
-        return (value - self.center[dim]) / self.scale[dim] + ((size - 1) / 2.)
+        scale = self.scale_x if dim is "x" else self.scale_y
+        
+        return (value - self.center[dim]) / scale + ((size - 1) / 2.)
     
     def resample(self, dimensions, method='linear'):
         """Returns a new Map that has been resampled up or down

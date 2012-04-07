@@ -35,7 +35,7 @@
 """
 from __future__ import absolute_import
 
-__all__ = ["get_center", "get_platescale", "get_solar_b0", "get_solar_l0",
+__all__ = ["get_center", "get_solar_b0", "get_solar_l0",
            "convert_angle_units", "get_projection", "get_shape",
            "convert_pixel_to_data", "convert_data_to_pixel",
            "convert_hpc_hcc", "convert_hcc_hpc",
@@ -62,19 +62,6 @@ def get_center(header, axis=None):
         return y
     else:
         return [x,y]
-    
-def get_platescale(header, axis=None):
-    """Return the plate scale of the image, 
-    i.e. the size of the pixels in unit."""
-    xscale = header.get('cdelt1')
-    yscale = header.get('cdelt2')
-     
-    if axis is 'x':
-        return xscale
-    elif axis is 'y':
-        return yscale
-    else:
-        return [xscale,yscale]
     
 def get_solar_b0(header):
     """Return the solar B0 angle which is the heliographic latitude of 
@@ -121,12 +108,12 @@ def get_shape(header):
     """Return the shape of the data array."""
     return [header.get('naxis1'), header.get('naxis2')]
 
-def convert_pixel_to_data(header, x = None, y = None):
+def convert_pixel_to_data(header, scale_x, scale_y, x=None, y=None):
     """This procedure takes a WCS-compliant header, and calculates the 
         data coordinates at each x and y pixel centers. If no x and y are given
         then return the entire detector."""
 
-    cdelt = np.array(get_platescale(header))
+    cdelt = np.array([scale_x, scale_y])
     crpix = np.array([header.get('crpix1'), header.get('crpix2')])
     crval = np.array([header.get('crval1'), header.get('crval2')])
     
@@ -146,12 +133,11 @@ def convert_pixel_to_data(header, x = None, y = None):
         
     return coordx, coordy
 
-def convert_data_to_pixel(header, x, y):
+def convert_data_to_pixel(header, scale_x, scale_y, x, y):
     """This procedure takes a WCS-compliant header, and calculates the pixel 
     coordinates for given data coordinates."""
     # TODO: Needs to check what coordinate system the data is given in
-    naxis = np.array(get_shape(header))
-    cdelt = np.array(get_platescale(header))
+    cdelt = np.array([scale_x, scale_y])
     crpix = np.array([header.get('crpix1'), header.get('crpix2')])
     crval = np.array([header.get('crval1'), header.get('crval2')])
     # De-apply any tabular projections.
