@@ -35,7 +35,7 @@
 """
 from __future__ import absolute_import
 
-__all__ = ["get_center", "convert_angle_units",
+__all__ = ["convert_angle_units",
            "convert_pixel_to_data", "convert_data_to_pixel",
            "convert_hpc_hcc", "convert_hcc_hpc",
            "convert_hcc_hg", "convert_hg_hcc", "convert_hg_hcc_xyz",
@@ -45,23 +45,6 @@ __all__ = ["get_center", "convert_angle_units",
 
 import numpy as np
 
-def get_center(header, axis=None):
-    """Return the center of the map."""
-    x = (header.get('cdelt1') * (header.get('naxis1') - 1) / 2 + 
-         header.get('crval1') - (header.get('crpix1') - 1) * 
-         header.get('cdelt1'))
-    
-    y = (header.get('cdelt2') * (header.get('naxis2') - 1) / 2 + 
-         header.get('crval2') - (header.get('crpix2') - 1) * 
-         header.get('cdelt2'))
-    
-    if axis is 'x':
-        return x
-    elif axis is 'y':
-        return y
-    else:
-        return [x,y]
-    
 def convert_angle_units(unit='arcsec'):
     """Determine the conversion factor between the data and radians."""
     
