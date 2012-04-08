@@ -35,7 +35,7 @@
 """
 from __future__ import absolute_import
 
-__all__ = ["get_center", "convert_angle_units", "get_projection",
+__all__ = ["get_center", "convert_angle_units",
            "convert_pixel_to_data", "convert_data_to_pixel",
            "convert_hpc_hcc", "convert_hcc_hpc",
            "convert_hcc_hg", "convert_hg_hcc", "convert_hg_hcc_xyz",
@@ -74,21 +74,7 @@ def convert_angle_units(unit='arcsec'):
     elif unit == 'mas':
         return np.deg2rad(1) / (60 * 60 * 1000.0)
 
-def get_projection(header, axis='x'):
-    """Return the projection that the data was taken in."""
-    xtype = header.get('ctype1')
-    ytype = header.get('ctype2')
-
-    # Assume that the projection is the same in both axis
-    # TODO: Remove assumption of same projection in both axis     
-    if axis is 'x':
-        return xtype
-    elif axis is 'y':
-        return ytype
-    else:
-        return xtype
-
-def convert_pixel_to_data(header, width, height, scale_x, scale_y, 
+def convert_pixel_to_data(header, width, height, scale_x, scale_y, projection,
                           x=None, y=None):
     """This procedure takes a WCS-compliant header, and calculates the 
         data coordinates at each x and y pixel centers. If no x and y are given
@@ -108,9 +94,8 @@ def convert_pixel_to_data(header, width, height, scale_x, scale_y,
     coordy = (y - (crpix[1] - 1) ) * cdelt[1] + crval[1]
     
     # check to see what projection is being used
-    projection = get_projection(header)
     if  projection.count('TAN'):    
-        coordx, coordy = proj_tan(header, coordx, coordy)
+        coordx, coordy = proj_tan(coordx, coordy)
         
     return coordx, coordy
 
@@ -122,7 +107,7 @@ def convert_data_to_pixel(header, scale_x, scale_y, x, y):
     crpix = np.array([header.get('crpix1'), header.get('crpix2')])
     crval = np.array([header.get('crval1'), header.get('crval2')])
     # De-apply any tabular projections.
-    # coord = inv_proj_tan(header,coord)
+    # coord = inv_proj_tan(coord)
     
     # note that crpix[] counts pixels starting at 1
     pixelx = (x - crval[0])/cdelt[0] + (crpix[1] - 1)
@@ -130,18 +115,17 @@ def convert_data_to_pixel(header, scale_x, scale_y, x, y):
 
     return pixelx, pixely
 
-def convert_hpc_hcc(header, rsun, dsun, units_x, units_y, hpx, hpy, 
+def convert_hpc_hcc(rsun, dsun, units_x, units_y, hpx, hpy, 
                     distance=None):
     """This routine converts Helioprojective-Cartesian (HPC) coordinates into 
     Heliocentric-Cartesian (HCC) coordinates, using equations 15 in 
     Thompson (2006), A&A, 449, 791-803.
     """
-    x, y, z = convert_hpc_hcc_xyz(header, rsun, dsun, units_x, units_y, hpx, 
+    x, y, z = convert_hpc_hcc_xyz(rsun, dsun, units_x, units_y, hpx, 
                                   hpy)
     return x, y
 
-def convert_hpc_hcc_xyz(header, rsun, dsun, units_x, units_y, hpx, hpy, 
-                        distance=None):
+def convert_hpc_hcc_xyz(rsun, dsun, units_x, units_y, hpx, hpy, distance=None):
     """This routine converts Helioprojective-Cartesian (HPC) coordinates into 
     Heliocentric-Cartesian (HCC) coordinates, using equations 15 in 
     Thompson (2006), A&A, 449, 791-803.
@@ -167,7 +151,7 @@ def convert_hpc_hcc_xyz(header, rsun, dsun, units_x, units_y, hpx, hpy,
 
     return x, y, z
 
-def convert_hcc_hpc(header, rsun, dsun, x, y, units=None, distance=None):
+def convert_hcc_hpc(rsun, dsun, x, y, units=None, distance=None):
     """Convert Heliocentric-Cartesian (HCC) to angular 
     Helioprojective-Cartesian (HPC) coordinates (in degrees)."""
 
@@ -176,17 +160,16 @@ def convert_hcc_hpc(header, rsun, dsun, x, y, units=None, distance=None):
     
     # Calculate the z coordinate by assuming that it is on the surface of the 
     # Sun
-    z = rsun ** 2 - x ** 2 - y ** 2
-    z = np.sqrt( z )
-    
+    z = np.sqrt(rsun ** 2 - x ** 2 - y ** 2)
+
     zeta = dsun - z
-    distance = np.sqrt(x ** 2 + y ** 2 + zeta ** 2)
+    distance = np.sqrt(x**2 + y**2 + zeta**2)
     hpcx = np.rad2deg(np.arctan2(x, zeta))
     hpcy = np.rad2deg(np.arcsin(y / distance))
     
     if units == 'arcsec':
-        hpcx = 60*60*hpcx
-        hpcy = 60*60*hpcy
+        hpcx = 60 * 60 * hpcx
+        hpcy = 60 * 60 * hpcy
     
     return hpcx, hpcy
 
@@ -252,22 +235,22 @@ def convert_hg_hcc_xyz(rsun, b0, l0, hgln, hglt):
     
     return x, y, z
 
-def convert_hg_hpc(header, rsun, dsun, hglon, hglat, units=None, 
+def convert_hg_hpc(rsun, dsun, hglon, hglat, units=None, 
                    occultation=False):
     """Convert Heliographic coordinates (HG) to Helioprojective-Cartesian 
     (HPC)"""
     tempx, tempy = convert_hg_hcc(rsun, dsun, hglon, hglat, occultation)
-    x, y = convert_hcc_hpc(header, rsun, dsun, tempx, tempy, units = units)
+    x, y = convert_hcc_hpc(rsun, dsun, tempx, tempy, units = units)
     return x, y
 
-def convert_hpc_hg(header, rsun, dsun, units_x, units_y, b0, l0, x, y):
+def convert_hpc_hg(rsun, dsun, units_x, units_y, b0, l0, x, y):
     """Convert Helioprojective-Cartesian (HPC) to Heliographic coordinates 
     (HG)"""
-    tempx, tempy = convert_hpc_hcc(header, rsun, dsun, units_x, units_y, x, y)
+    tempx, tempy = convert_hpc_hcc(rsun, dsun, units_x, units_y, x, y)
     lon, lat = convert_hcc_hg(rsun, b0, l0, tempx, tempy)
     return lon, lat
 
-def proj_tan(header, x, y, force=False):
+def proj_tan(x, y, force=False):
     """Applies the gnomonic (TAN) projection to intermediate relative 
     coordinates."""
     # if pixels are within 3 degrees of the Sun then skip the calculatin unless 
@@ -281,7 +264,7 @@ def convert_to_coord(x, y, rsun, b0, l0, fromto):
     to coordinate coord. Right now can only do hpc to hcc to hg"""
     
     #coord = np.array(convert_pixel_to_data(header))
-    #temp = np.array(convert_hpc_hcc(header, rsun, coord[:,:,0], coord[:,:,1]))
+    #temp = np.array(convert_hpc_hcc(rsun, coord[:,:,0], coord[:,:,1]))
     x, y = convert_hcc_hg(rsun, b0, l0, x, y)
                 
     return x, y

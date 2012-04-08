@@ -138,6 +138,10 @@ class BaseMap(np.ndarray):
         self.scale_y = header.get('cdelt2')
         self.units_x = header.get('cunit1', 'arcsec')
         self.units_y = header.get('cunit2', 'arcsec')
+        
+        #@NOTE (keith 04/2012)
+        # Should less frequently-used values (ctype, crval, b0, l0, etc) be 
+        # stored here as well?
 
         # Validate properties
         self._validate()
@@ -227,7 +231,7 @@ class BaseMap(np.ndarray):
         for lat in hg_latitude_deg:
             hg_latitude_deg_mesh, hg_longitude_deg_mesh = np.meshgrid(
                 lat * np.ones(num_points), hg_longitude_deg)
-            x, y = wcs.convert_hg_hpc(self.header, self.rsun_arcseconds, 
+            x, y = wcs.convert_hg_hpc(self.rsun_arcseconds, 
                                       self.dsun, hg_longitude_deg_mesh, 
                                       hg_latitude_deg_mesh, units='arcsec')
             axes.plot(x, y, color='white', linestyle='dotted')
@@ -239,7 +243,7 @@ class BaseMap(np.ndarray):
         for lon in hg_longitude_deg:
             hg_longitude_deg_mesh, hg_latitude_deg_mesh = np.meshgrid(
                 lon * np.ones(num_points), hg_latitude_deg)
-            x, y = wcs.convert_hg_hpc(self.header, self.rsun_arcseconds, 
+            x, y = wcs.convert_hg_hpc(self.rsun_arcseconds, 
                                       self.dsun, hg_longitude_deg_mesh, 
                                       hg_latitude_deg_mesh, units='arcsec')
             axes.plot(x, y, color='white', linestyle='dotted')        
