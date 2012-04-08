@@ -130,10 +130,6 @@ class BaseMap(np.ndarray):
                                header.get('radius', 
                                           constants.average_angular_size)))
         self.rsun_meters = header.get('RSUN_REF', constants.radius) 
-        self.center = {
-            "x": wcs.get_center(header, axis='x'),
-            "y": wcs.get_center(header, axis='y')
-        }
         self.scale_x = header.get('cdelt1')
         self.scale_y = header.get('cdelt2')
         self.units_x = header.get('cunit1', 'arcsec')
@@ -212,6 +208,31 @@ class BaseMap(np.ndarray):
         result.cmap = cm.gray #@UndefinedVariable 
         
         return result
+
+    @property
+    def xrange(self):
+        """Return the X range of the image in arcsec from edge to edge."""        
+        xmin = self.center_x - self.shape[1] / 2 * self.scale_x
+        xmax = self.center_x + self.shape[1] / 2 * self.scale_x
+        return [xmin, xmax]
+    
+    @property
+    def yrange(self):
+        """Return the Y range of the image in arcsec from edge to edge."""
+        ymin = self.center_y - self.shape[0] / 2 * self.scale_y
+        ymax = self.center_y + self.shape[0] / 2 * self.scale_y
+        return [ymin, ymax]
+    
+    @property
+    def center_x(self):
+        return (self.scale_x * (self.shape[0] - 1) / 
+                2 + self.header.get('crval1') - (self.header.get('crpix1') - 1) 
+                * self.scale_x)
+    @property
+    def center_y(self):
+        return (self.scale_y * (self.shape[1] - 1) / 
+                2 + self.header.get('crval2') - (self.header.get('crpix2') - 1)
+                * self.scale_y)
     
     def _draw_limb(self, fig, axes):
         """Draws a circle representing the solar limb"""
@@ -259,21 +280,7 @@ class BaseMap(np.ndarray):
         sunpy.map.sources package."""
         if (self.dsun <= 0 or self.dsun >= 40 * constants.au):
             raise InvalidHeaderInformation("Invalid value for DSUN")
-    
-    @property
-    def xrange(self):
-        """Return the X range of the image in arcsec from edge to edge."""        
-        xmin = self.center['x'] - self.shape[1] / 2 * self.scale_x
-        xmax = self.center['x'] + self.shape[1] / 2 * self.scale_x
-        return [xmin, xmax]
-    
-    @property
-    def yrange(self):
-        """Return the Y range of the image in arcsec from edge to edge."""
-        ymin = self.center['y'] - self.shape[0] / 2 * self.scale_y
-        ymax = self.center['y'] + self.shape[0] / 2 * self.scale_y
-        return [ymin, ymax]
-    
+
     def std(self, *args, **kwargs):
         """overide np.ndarray.std()"""
         return np.array(self, copy=False, subok=False).std(*args, **kwargs)
@@ -284,9 +291,10 @@ class BaseMap(np.ndarray):
             raise ValueError("Invalid dimension. Must be one of 'x' or 'y'.")
         size = self.shape[dim == 'x'] # 1 if dim == 'x', 0 if dim == 'y'.
         
-        scale = self.scale_x if dim is "x" else self.scale_y
-        
-        return (value - self.center[dim]) / scale + ((size - 1) / 2.)
+        if dim is "x":
+            return (value - self.center_x) / self.scale_x + ((size - 1) / 2.)
+        else:
+            return (value - self.center_y) / self.scale_y + ((size - 1) / 2.)
     
     def get_solar_b0(self):
         """Return the solar B0 angle which is the heliographic latitude of 
@@ -357,9 +365,9 @@ class BaseMap(np.ndarray):
         header['cdelt1'] *= scale_factor_x
         header['cdelt2'] *= scale_factor_y
         header['crpix1'] = (dimensions[0] + 1) / 2.
-        header['crval1'] = self.center['x']
+        header['crval1'] = self.center_x
         header['crpix2'] = (dimensions[1] + 1) / 2.
-        header['crval2'] = self.center['y']
+        header['crval2'] = self.center_y
 
         return self.__class__(data.T, header)
 
