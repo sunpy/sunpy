@@ -284,6 +284,19 @@ class BaseMap(np.ndarray):
         
         return (value - self.center[dim]) / scale + ((size - 1) / 2.)
     
+    def get_solar_b0(self):
+        """Return the solar B0 angle which is the heliographic latitude of 
+        the observer."""
+        return self.header.get('HGLT_OBS', self.header.get('CRLT_OBS',
+                                           self.header.get('SOLAR_B0', 0)))
+    
+    def get_solar_l0(self, carrington=False):
+        """Return the (Carrington) heliographic longitude of the observer."""
+        if carrington is False:
+            return self.header.get('HGLN_OBS', 0)    
+        else:
+            return self.header.get('CRLN_OBS', 0)
+    
     def resample(self, dimensions, method='linear'):
         """Returns a new Map that has been resampled up or down
         
