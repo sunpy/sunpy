@@ -36,7 +36,7 @@
 from __future__ import absolute_import
 
 __all__ = ["get_center", "get_solar_b0", "get_solar_l0",
-           "convert_angle_units", "get_projection", "get_shape",
+           "convert_angle_units", "get_projection",
            "convert_pixel_to_data", "convert_data_to_pixel",
            "convert_hpc_hcc", "convert_hcc_hpc",
            "convert_hcc_hg", "convert_hg_hcc", "convert_hg_hcc_xyz",
@@ -104,11 +104,8 @@ def get_projection(header, axis='x'):
     else:
         return xtype
 
-def get_shape(header):
-    """Return the shape of the data array."""
-    return [header.get('naxis1'), header.get('naxis2')]
-
-def convert_pixel_to_data(header, scale_x, scale_y, x=None, y=None):
+def convert_pixel_to_data(header, width, height, scale_x, scale_y, 
+                          x=None, y=None):
     """This procedure takes a WCS-compliant header, and calculates the 
         data coordinates at each x and y pixel centers. If no x and y are given
         then return the entire detector."""
@@ -119,8 +116,8 @@ def convert_pixel_to_data(header, scale_x, scale_y, x=None, y=None):
     
     # first assume that coord is just [x,y]
     if (x is None) and (y is None):
-        x, y = np.meshgrid(np.arange(get_shape(header)[0]), 
-                           np.arange(get_shape(header)[1]))
+        x, y = np.meshgrid(np.arange(width), 
+                           np.arange(height))
 
     # note that crpix[] counts pixels starting at 1
     coordx = (x - (crpix[0] - 1) ) * cdelt[0] + crval[0]
