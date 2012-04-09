@@ -160,7 +160,7 @@ def convert_hcc_hg(rsun, b0, l0, x, y, z=None):
     # z[z < 0] = np.NAN
 
     b0 = np.deg2rad(b0)
-    l0 = np.deg2rad(h0)
+    l0 = np.deg2rad(l0)
     cosb = np.cos(b0)
     sinb = np.sin(b0)
 
