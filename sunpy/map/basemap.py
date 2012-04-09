@@ -44,17 +44,17 @@ class BaseMap(np.ndarray):
 
     Attributes
     ----------
-    header : dict
-        A dictionary representation of the image header
+    fits_header : dict
+        Dictionary representation of the original FITS header
     date : datetime
         Image observation time
-    det : str
+    detector : str
         Detector name
-    inst : str
+    instrument : str
         Instrument name
-    meas : str, int
+    measurement : str, int
         Measurement name. In some instances this is the wavelength of image.
-    obs : str
+    observatory : str
         Observatory name
     dsun : float
         The observer distance from the Sun.
@@ -154,13 +154,6 @@ class BaseMap(np.ndarray):
             'y': header.get('cunit2', 'arcsec')
         }
         
-        self.center = {
-            'x': self.scale['x'] * (self.shape[0] - 1) / 2 + self.crval['x'] -
-                 (self.crpix['x'] - 1) * self.scale['x'],
-            'y': self.scale['y'] * (self.shape[1] - 1) / 2 + self.crval['y'] - 
-                 (self.crpix['y'] - 1) * self.scale['y']
-        }
-
         # Validate properties
         self._validate()
 
@@ -173,7 +166,7 @@ class BaseMap(np.ndarray):
             properties = ['header', 'cmap', 'date', 'detector', 'dsun',
                           'exposure_time', 'instrument', 'measurement', 'name',
                           'observatory', 'rsun_arcseconds', 'rsun_meters',
-                          'scale', 'units', 'crval', 'crpix']
+                          'scale', 'units', 'crval', 'crpix', 'center']
 
             for attr in properties:
                 setattr(self, attr, getattr(obj, attr))
@@ -245,6 +238,17 @@ class BaseMap(np.ndarray):
         ymin = self.center['y'] - self.shape[0] / 2 * self.scale['y']
         ymax = self.center['y'] + self.shape[0] / 2 * self.scale['y']
         return [ymin, ymax]
+    
+    @property
+    def center(self):
+        """Returns the offset between the center of the Sun and the center of 
+        the map."""
+        return {
+            'x': wcs.get_center(self.shape[0], self.scale['x'], 
+                                self.crpix['x'], self.crval['x']),
+            'y': wcs.get_center(self.shape[0], self.scale['y'], 
+                                self.crpix['y'], self.crval['y'])
+        }
 
     def _draw_limb(self, fig, axes):
         """Draws a circle representing the solar limb"""
@@ -374,16 +378,18 @@ class BaseMap(np.ndarray):
         scale_factor_x = (float(self.shape[1]) / dimensions[0])
         scale_factor_y = (float(self.shape[0]) / dimensions[1])
 
-        header['naxis1'] = int(dimensions[0])
-        header['naxis2'] = int(dimensions[1])
-        header['cdelt1'] *= scale_factor_x
-        header['cdelt2'] *= scale_factor_y
-        header['crpix1'] = (dimensions[0] + 1) / 2.
-        header['crval1'] = self.center_x
-        header['crpix2'] = (dimensions[1] + 1) / 2.
-        header['crval2'] = self.center_y
+        # Create new map instance
+        new_map = self.__class__(data.T, header)
 
-        return self.__class__(data.T, header)
+        # Update metadata
+        new_map.scale['x'] *= scale_factor_x
+        new_map.scale['y'] *= scale_factor_y
+        new_map.crpix['x'] = (dimensions[0] + 1) / 2.
+        new_map.crpix['y'] = (dimensions[1] + 1) / 2.
+        new_map.crval['x'] = self.center['x']
+        new_map.crval['y'] = self.center['x']
+
+        return new_map
 
     def submap(self, range_a, range_b, units="data"):
         """Returns a submap of the map with the specified range
@@ -434,22 +440,17 @@ class BaseMap(np.ndarray):
 
         # Make a copy of the header with updated centering information
         header = self.fits_header.copy()
-        header['crpix1'] = header['crpix1'] - x_pixels[0]
-        header['crpix2'] = header['crpix2'] - y_pixels[0]
-        header['naxis1'] = x_pixels[1] - x_pixels[0]
-        header['naxis2'] = y_pixels[1] - y_pixels[0]
-
-# @TODO: verify centering
-#        self.center = {
-#            "x": wcs.get_center(header, axis='x'),
-#            "y": wcs.get_center(header, axis='y')
-#        }
-
+        
         # Get ndarray representation of submap
         data = np.asarray(self)[y_pixels[0]:y_pixels[1],
                                 x_pixels[0]:x_pixels[1]]
+        
+        # Instantiate new instance and update metadata
+        new_map = self.__class__(data.copy(), header)
+        new_map.crpix['x'] = header['crpix1'] - x_pixels[0]
+        new_map.crpix['y'] = header['crpix2'] - y_pixels[0]
 
-        return self.__class__(data.copy(), header)
+        return new_map
 
     @toggle_pylab
     def plot(self, figure=None, overlays=None, draw_limb=True, gamma=None,
