@@ -86,7 +86,7 @@ class BaseMap(np.ndarray):
     [ 0.625 ,  0.625 , -0.125 , ...,  0.125 , -0.0625,  0.6875],
     [-0.625 , -0.625 , -0.625 , ...,  0.125 , -0.0625,  0.6875],
     [ 0.    ,  0.    , -1.1875, ...,  0.125 ,  0.    ,  0.6875]])
-    >>> aia.header.get('cunit1')
+    >>> aia.fits_header.get('cunit1')
     'arcsec'
     >>> aia.show()
     >>> import matplotlib.cm as cm
@@ -117,7 +117,7 @@ class BaseMap(np.ndarray):
         return obj
 
     def __init__(self, header):
-        self.header = header
+        self.fits_header = header
 
         # Set properties
         self.cmap = cm.gray  # @UndefinedVariable
@@ -313,15 +313,15 @@ class BaseMap(np.ndarray):
     def get_solar_b0(self):
         """Return the solar B0 angle which is the heliographic latitude of
         the observer."""
-        return self.header.get('HGLT_OBS', self.header.get('CRLT_OBS',
-                                           self.header.get('SOLAR_B0', 0)))
+        return self.fits_header.get('HGLT_OBS', self.fits_header.get('CRLT_OBS',
+                                    self.fits_header.get('SOLAR_B0', 0)))
 
     def get_solar_l0(self, carrington=False):
         """Return the (Carrington) heliographic longitude of the observer."""
         if carrington is False:
-            return self.header.get('HGLN_OBS', 0)
+            return self.fits_header.get('HGLN_OBS', 0)
         else:
-            return self.header.get('CRLN_OBS', 0)
+            return self.fits_header.get('CRLN_OBS', 0)
 
     def resample(self, dimensions, method='linear'):
         """Returns a new Map that has been resampled up or down
@@ -367,7 +367,7 @@ class BaseMap(np.ndarray):
                         method, center=True)
 
         # Update image scale and number of pixels
-        header = self.header.copy()
+        header = self.fits_header.copy()
 
         # Note that 'x' and 'y' correspond to 1 and 0 in self.shape,
         # respectively
@@ -433,7 +433,7 @@ class BaseMap(np.ndarray):
                 "Invalid unit. Must be one of 'data' or 'pixels'")
 
         # Make a copy of the header with updated centering information
-        header = self.header.copy()
+        header = self.fits_header.copy()
         header['crpix1'] = header['crpix1'] - x_pixels[0]
         header['crpix2'] = header['crpix2'] - y_pixels[0]
         header['naxis1'] = x_pixels[1] - x_pixels[0]
@@ -488,16 +488,16 @@ class BaseMap(np.ndarray):
         axes = figure.add_subplot(111)
         axes.set_title("%s %s" % (self.name, self.date))
 
-        if self.header.get('CTYPE1') == 'HPLN-TAN':
+        if self.fits_header.get('CTYPE1') == 'HPLN-TAN':
             axes.set_xlabel('X-position [' + self.units['x'] + ']')
 
-        if self.header.get('CTYPE1') == 'HG':
+        if self.fits_header.get('CTYPE1') == 'HG':
             axes.set_xlabel('Longitude [' + self.units['x'] + ']')
 
-        if self.header.get('CTYPE2') == 'HPLT-TAN':
+        if self.fits_header.get('CTYPE2') == 'HPLT-TAN':
             axes.set_ylabel('Y-position [' + self.units['y'] + ']')
 
-        if self.header.get('CTYPE2') == 'HG':
+        if self.fits_header.get('CTYPE2') == 'HG':
             axes.set_ylabel('Latitude [' + self.units['y'] + ']')
 
         # Determine extent
