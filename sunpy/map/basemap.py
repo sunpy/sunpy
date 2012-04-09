@@ -129,14 +129,24 @@ class BaseMap(np.ndarray):
         self.measurement = header.get('wavelnth')
         self.observatory = header.get('telescop')
         self.name = header.get('telescop') + " " + str(header.get('wavelnth'))
-        self.rsun_arcseconds = header.get('rsun_obs', header.get('solar_r',
-                               header.get('radius',
-                               constants.average_angular_size)))
-        self.rsun_meters = header.get('RSUN_REF', constants.radius)
         self.scale_x = header.get('cdelt1')
         self.scale_y = header.get('cdelt2')
         self.units_x = header.get('cunit1', 'arcsec')
         self.units_y = header.get('cunit2', 'arcsec')
+        self.rsun_meters = header.get('RSUN_REF', constants.radius)
+        self.rsun_arcseconds = header.get('rsun_obs', header.get('solar_r',
+                               header.get('radius',
+                               constants.average_angular_size)))
+
+        self.crval = {
+            'x': header.get('crval1'),
+            'y': header.get('crval2'),
+        }
+
+        self.crpix = {
+            'x': header.get('crpix1'),
+            'y': header.get('crpix2')
+        }
 
         #@NOTE (keith 04/2012)
         # Should less frequently-used values (ctype, crval, b0, l0, etc) be
@@ -154,7 +164,8 @@ class BaseMap(np.ndarray):
             properties = ['header', 'cmap', 'date', 'detector', 'dsun',
                           'exposure_time', 'instrument', 'measurement', 'name',
                           'observatory', 'rsun_arcseconds', 'rsun_meters',
-                          'scale_x', 'scale_y', 'units_x', 'units_y']
+                          'scale_x', 'scale_y', 'units_x', 'units_y', 'crval',
+                          'crpix']
 
             for attr in properties:
                 setattr(self, attr, getattr(obj, attr))
@@ -230,13 +241,13 @@ class BaseMap(np.ndarray):
     @property
     def center_x(self):
         return (self.scale_x * (self.shape[0] - 1) /
-                2 + self.header.get('crval1') - (self.header.get('crpix1') - 1)
+                2 + self.crval['x'] - (self.crpix['x'] - 1)
                 * self.scale_x)
 
     @property
     def center_y(self):
         return (self.scale_y * (self.shape[1] - 1) /
-                2 + self.header.get('crval2') - (self.header.get('crpix2') - 1)
+                2 + self.crval['y'] - (self.crpix['y'] - 1)
                 * self.scale_y)
 
     def _draw_limb(self, fig, axes):
