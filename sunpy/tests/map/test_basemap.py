@@ -28,8 +28,8 @@ class TestBaseMap:
         assert self.map.data_to_pixel(self.map.header['crval2'], 'y') == self.map.header['crpix2'] - 1
         
         # Check conversion of map center
-        assert self.map.data_to_pixel(self.map.center_x, 'x') == (self.map.header['naxis1'] - 1) / 2.
-        assert self.map.data_to_pixel(self.map.center_y, 'y') == (self.map.header['naxis2'] - 1) / 2.
+        assert self.map.data_to_pixel(self.map.center['x'], 'x') == (self.map.header['naxis1'] - 1) / 2.
+        assert self.map.data_to_pixel(self.map.center['y'], 'y') == (self.map.header['naxis2'] - 1) / 2.
         
         # Check conversion of map edges
         # Note: data coords are at pixel centers, so edges are 0.5 pixels wider
@@ -43,8 +43,8 @@ class TestBaseMap:
         assert self.map.xrange[1] - self.map.xrange[0] == self.map.header['cdelt1'] * self.map.header['naxis1']
         assert self.map.yrange[1] - self.map.yrange[0] == self.map.header['cdelt2'] * self.map.header['naxis2']
         
-        assert np.average(self.map.xrange) == self.map.center_x
-        assert np.average(self.map.yrange) == self.map.center_y
+        assert np.average(self.map.xrange) == self.map.center['x']
+        assert np.average(self.map.yrange) == self.map.center['y']
         
     def test_submap(self):
         """Check data and header information for a submap"""
