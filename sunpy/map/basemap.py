@@ -153,6 +153,13 @@ class BaseMap(np.ndarray):
             'x': header.get('cunit1', 'arcsec'),
             'y': header.get('cunit2', 'arcsec')
         }
+        
+        self.center = {
+            'x': self.scale['x'] * (self.shape[0] - 1) / 2 + self.crval['x'] -
+                 (self.crpix['x'] - 1) * self.scale['x'],
+            'y': self.scale['y'] * (self.shape[1] - 1) / 2 + self.crval['y'] - 
+                 (self.crpix['y'] - 1) * self.scale['y']
+        }
 
         # Validate properties
         self._validate()
@@ -228,28 +235,16 @@ class BaseMap(np.ndarray):
     @property
     def xrange(self):
         """Return the X range of the image in arcsec from edge to edge."""
-        xmin = self.center_x - self.shape[1] / 2 * self.scale['x']
-        xmax = self.center_x + self.shape[1] / 2 * self.scale['x']
+        xmin = self.center['x'] - self.shape[1] / 2 * self.scale['x']
+        xmax = self.center['x'] + self.shape[1] / 2 * self.scale['x']
         return [xmin, xmax]
 
     @property
     def yrange(self):
         """Return the Y range of the image in arcsec from edge to edge."""
-        ymin = self.center_y - self.shape[0] / 2 * self.scale['y']
-        ymax = self.center_y + self.shape[0] / 2 * self.scale['y']
+        ymin = self.center['y'] - self.shape[0] / 2 * self.scale['y']
+        ymax = self.center['y'] + self.shape[0] / 2 * self.scale['y']
         return [ymin, ymax]
-
-    @property
-    def center_x(self):
-        return (self.scale['x'] * (self.shape[0] - 1) /
-                2 + self.crval['x'] - (self.crpix['x'] - 1)
-                * self.scale['x'])
-
-    @property
-    def center_y(self):
-        return (self.scale['y'] * (self.shape[1] - 1) /
-                2 + self.crval['y'] - (self.crpix['y'] - 1)
-                * self.scale['y'])
 
     def _draw_limb(self, fig, axes):
         """Draws a circle representing the solar limb"""
@@ -310,12 +305,10 @@ class BaseMap(np.ndarray):
         """Convert pixel-center data coordinates to pixel values"""
         if dim not in ['x', 'y']:
             raise ValueError("Invalid dimension. Must be one of 'x' or 'y'.")
+
         size = self.shape[dim == 'x']  # 1 if dim == 'x', 0 if dim == 'y'.
 
-        if dim is "x":
-            return (value - self.center_x) / self.scale['x'] + ((size - 1) / 2.)
-        else:
-            return (value - self.center_y) / self.scale['y'] + ((size - 1) / 2.)
+        return (value - self.center[dim]) / self.scale[dim] + ((size - 1) / 2.)
 
     def get_solar_b0(self):
         """Return the solar B0 angle which is the heliographic latitude of
