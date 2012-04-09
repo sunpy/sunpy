@@ -25,7 +25,7 @@
 
 # the location of your IDL ssw directory. Will look here first for 
 # data before trying to download it
-# sswdir = '/Users/schriste/ssw'
+# sswdir = '/Users/username/ssw'
 
 # !!!The following is not yet implemented!!!!
 #
