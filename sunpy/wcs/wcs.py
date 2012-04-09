@@ -101,8 +101,7 @@ def convert_hpc_hcc(rsun, dsun, units_x, units_y, hpx, hpy,
     Heliocentric-Cartesian (HCC) coordinates, using equations 15 in 
     Thompson (2006), A&A, 449, 791-803.
     """
-    x, y, z = convert_hpc_hcc_xyz(rsun, dsun, units_x, units_y, hpx, 
-                                  hpy)
+    x, y, z = convert_hpc_hcc_xyz(rsun, dsun, units_x, units_y, hpx, hpy)
     return x, y
 
 def convert_hpc_hcc_xyz(rsun, dsun, units_x, units_y, hpx, hpy, distance=None):
@@ -110,7 +109,6 @@ def convert_hpc_hcc_xyz(rsun, dsun, units_x, units_y, hpx, hpy, distance=None):
     Heliocentric-Cartesian (HCC) coordinates, using equations 15 in 
     Thompson (2006), A&A, 449, 791-803.
     """
-
     c = np.array([convert_angle_units(unit=units_x), 
                   convert_angle_units(unit=units_y)])
 
@@ -156,9 +154,8 @@ def convert_hcc_hpc(rsun, dsun, x, y, units=None, distance=None):
 def convert_hcc_hg(rsun, b0, l0, x, y, z=None):
     """Convert Heliocentric-Cartesian (HCC) to Heliographic coordinates (HG) 
     (given in degrees)."""
-
     if z is None:
-        z = np.sqrt(rsun ** 2 - x ** 2 - y ** 2)
+        z = np.sqrt(rsun**2 - x**2 - y**2)
     # z[z < 0] = np.NAN
 
     b0 = np.deg2rad(b0)
@@ -166,7 +163,7 @@ def convert_hcc_hg(rsun, b0, l0, x, y, z=None):
     cosb = np.cos(b0)
     sinb = np.sin(b0)
 
-    hecr = np.sqrt(x ** 2 + y ** 2 + z ** 2)
+    hecr = np.sqrt(x**2 + y**2 + z**2)
     hgln = np.arctan2(x, z * cosb - y * sinb) + l0
     hglt = np.arcsin((y * cosb + z * sinb) / hecr)
     
@@ -215,12 +212,12 @@ def convert_hg_hcc_xyz(rsun, b0, l0, hgln, hglt):
     
     return x, y, z
 
-def convert_hg_hpc(rsun, dsun, hglon, hglat, units=None, 
+def convert_hg_hpc(rsun, dsun, b0, l0, hglon, hglat, units=None, 
                    occultation=False):
     """Convert Heliographic coordinates (HG) to Helioprojective-Cartesian 
     (HPC)"""
-    tempx, tempy = convert_hg_hcc(rsun, dsun, hglon, hglat, occultation)
-    x, y = convert_hcc_hpc(rsun, dsun, tempx, tempy, units = units)
+    tempx, tempy = convert_hg_hcc(rsun, b0, l0, hglon, hglat, occultation)
+    x, y = convert_hcc_hpc(rsun, dsun, tempx, tempy, units=units)
     return x, y
 
 def convert_hpc_hg(rsun, dsun, units_x, units_y, b0, l0, x, y):
