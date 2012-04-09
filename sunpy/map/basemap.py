@@ -129,10 +129,6 @@ class BaseMap(np.ndarray):
         self.measurement = header.get('wavelnth')
         self.observatory = header.get('telescop')
         self.name = header.get('telescop') + " " + str(header.get('wavelnth'))
-        self.scale_x = header.get('cdelt1')
-        self.scale_y = header.get('cdelt2')
-        self.units_x = header.get('cunit1', 'arcsec')
-        self.units_y = header.get('cunit2', 'arcsec')
         self.rsun_meters = header.get('RSUN_REF', constants.radius)
         self.rsun_arcseconds = header.get('rsun_obs', header.get('solar_r',
                                header.get('radius',
@@ -148,9 +144,15 @@ class BaseMap(np.ndarray):
             'y': header.get('crpix2')
         }
 
-        #@NOTE (keith 04/2012)
-        # Should less frequently-used values (ctype, crval, b0, l0, etc) be
-        # stored here as well?
+        self.scale = {
+            'x': header.get('cdelt1'),
+            'y': header.get('cdelt2'),
+        }
+
+        self.units = {
+            'x': header.get('cunit1', 'arcsec'),
+            'y': header.get('cunit2', 'arcsec')
+        }
 
         # Validate properties
         self._validate()
@@ -164,8 +166,7 @@ class BaseMap(np.ndarray):
             properties = ['header', 'cmap', 'date', 'detector', 'dsun',
                           'exposure_time', 'instrument', 'measurement', 'name',
                           'observatory', 'rsun_arcseconds', 'rsun_meters',
-                          'scale_x', 'scale_y', 'units_x', 'units_y', 'crval',
-                          'crpix']
+                          'scale', 'units', 'crval', 'crpix']
 
             for attr in properties:
                 setattr(self, attr, getattr(obj, attr))
@@ -227,28 +228,28 @@ class BaseMap(np.ndarray):
     @property
     def xrange(self):
         """Return the X range of the image in arcsec from edge to edge."""
-        xmin = self.center_x - self.shape[1] / 2 * self.scale_x
-        xmax = self.center_x + self.shape[1] / 2 * self.scale_x
+        xmin = self.center_x - self.shape[1] / 2 * self.scale['x']
+        xmax = self.center_x + self.shape[1] / 2 * self.scale['x']
         return [xmin, xmax]
 
     @property
     def yrange(self):
         """Return the Y range of the image in arcsec from edge to edge."""
-        ymin = self.center_y - self.shape[0] / 2 * self.scale_y
-        ymax = self.center_y + self.shape[0] / 2 * self.scale_y
+        ymin = self.center_y - self.shape[0] / 2 * self.scale['y']
+        ymax = self.center_y + self.shape[0] / 2 * self.scale['y']
         return [ymin, ymax]
 
     @property
     def center_x(self):
-        return (self.scale_x * (self.shape[0] - 1) /
+        return (self.scale['x'] * (self.shape[0] - 1) /
                 2 + self.crval['x'] - (self.crpix['x'] - 1)
-                * self.scale_x)
+                * self.scale['x'])
 
     @property
     def center_y(self):
-        return (self.scale_y * (self.shape[1] - 1) /
+        return (self.scale['y'] * (self.shape[1] - 1) /
                 2 + self.crval['y'] - (self.crpix['y'] - 1)
-                * self.scale_y)
+                * self.scale['y'])
 
     def _draw_limb(self, fig, axes):
         """Draws a circle representing the solar limb"""
@@ -312,9 +313,9 @@ class BaseMap(np.ndarray):
         size = self.shape[dim == 'x']  # 1 if dim == 'x', 0 if dim == 'y'.
 
         if dim is "x":
-            return (value - self.center_x) / self.scale_x + ((size - 1) / 2.)
+            return (value - self.center_x) / self.scale['x'] + ((size - 1) / 2.)
         else:
-            return (value - self.center_y) / self.scale_y + ((size - 1) / 2.)
+            return (value - self.center_y) / self.scale['y'] + ((size - 1) / 2.)
 
     def get_solar_b0(self):
         """Return the solar B0 angle which is the heliographic latitude of
@@ -495,16 +496,16 @@ class BaseMap(np.ndarray):
         axes.set_title("%s %s" % (self.name, self.date))
 
         if self.header.get('CTYPE1') == 'HPLN-TAN':
-            axes.set_xlabel('X-position [' + self.units_x + ']')
+            axes.set_xlabel('X-position [' + self.units['x'] + ']')
 
         if self.header.get('CTYPE1') == 'HG':
-            axes.set_xlabel('Longitude [' + self.units_x + ']')
+            axes.set_xlabel('Longitude [' + self.units['x'] + ']')
 
         if self.header.get('CTYPE2') == 'HPLT-TAN':
-            axes.set_ylabel('Y-position [' + self.units_y + ']')
+            axes.set_ylabel('Y-position [' + self.units['y'] + ']')
 
         if self.header.get('CTYPE2') == 'HG':
-            axes.set_ylabel('Latitude [' + self.units_y + ']')
+            axes.set_ylabel('Latitude [' + self.units['y'] + ']')
 
         # Determine extent
         extent = self.xrange + self.yrange
