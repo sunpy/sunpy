@@ -55,34 +55,32 @@ def convert_angle_units(unit='arcsec'):
     elif unit == 'mas':
         return np.deg2rad(1) / (60 * 60 * 1000.0)
 
-def convert_pixel_to_data(header, width, height, scale_x, scale_y, projection,
-                          x=None, y=None):
-    """This procedure takes a WCS-compliant header, and calculates the 
+def convert_pixel_to_data(width, height, scale_x, scale_y, crpix1, crpix2, 
+                          crval1, crval2, ctype, x=None, y=None):
+    """This procedure takes WCS-compliant header tags, and calculates the 
         data coordinates at each x and y pixel centers. If no x and y are given
         then return the entire detector."""
-
     cdelt = np.array([scale_x, scale_y])
-    crpix = np.array([header.get('crpix1'), header.get('crpix2')])
-    crval = np.array([header.get('crval1'), header.get('crval2')])
+    crpix = np.array([crpix1, crpix2])
+    crval = np.array([crval1, crval2])
     
     # first assume that coord is just [x,y]
     if (x is None) and (y is None):
-        x, y = np.meshgrid(np.arange(width), 
-                           np.arange(height))
+        x, y = np.meshgrid(np.arange(width), np.arange(height))
 
     # note that crpix[] counts pixels starting at 1
-    coordx = (x - (crpix[0] - 1) ) * cdelt[0] + crval[0]
-    coordy = (y - (crpix[1] - 1) ) * cdelt[1] + crval[1]
+    coordx = (x - (crpix[0] - 1)) * cdelt[0] + crval[0]
+    coordy = (y - (crpix[1] - 1)) * cdelt[1] + crval[1]
     
     # check to see what projection is being used
-    if  projection.count('TAN'):    
+    if ctype.count('TAN'):    
         coordx, coordy = proj_tan(coordx, coordy)
-        
+
     return coordx, coordy
 
 def convert_data_to_pixel(scale_x, scale_y, crpix1, crpix2, 
                           crval1, crval2, x, y):
-    """This procedure takes a WCS-compliant header, and calculates the pixel 
+    """This procedure takes WCS-compliant header tags, and calculates the pixel 
     coordinates for given data coordinates."""
     # TODO: Needs to check what coordinate system the data is given in
     cdelt = np.array([scale_x, scale_y])
@@ -245,7 +243,7 @@ def convert_to_coord(x, y, rsun, b0, l0, fromto):
     """Apply a coordinate transform to coordinates. Right now can only do hpc 
     to hcc to hg"""
     
-    #coord = np.array(convert_pixel_to_data(header))
+    #coord = np.array(convert_pixel_to_data(...))
     #temp = np.array(convert_hpc_hcc(rsun, coord[:,:,0], coord[:,:,1]))
     x, y = convert_hcc_hg(rsun, b0, l0, x, y)
                 
