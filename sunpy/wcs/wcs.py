@@ -1,25 +1,26 @@
 """
     The WCS package provides functions to parse a World Coordinate System (WCS) 
-    FITS header for solar images as well as convert between various solar coordinate
-    systems. The solar coordinates supported are
+    coordinates for solar images as well as convert between various solar 
+    coordinate systems. The solar coordinates supported are
 
-    * Helioprojective-Cartesian (HPC): The most often used solar coordinate system.
-        Describes positions on the Sun as angles measured from the center of the 
-        solar disk (usually in arcseconds) using cartesian coordinates (X, Y)
+    * Helioprojective-Cartesian (HPC): The most often used solar coordinate 
+        system. Describes positions on the Sun as angles measured from the 
+        center of the solar disk (usually in arcseconds) using cartesian 
+        coordinates (X, Y)
     * Helioprojective-Radial (HPR): Describes positions on the Sun using angles, 
-        similar to HPC, but uses a radial coordinate (rho, psi) system centered on
-        solar disk where psi is measured in the counter clock wise direction.
-    * Heliocentric-Cartesian (HCC): The same as HPC but with positions expressed in
-        true (deprojected) physical distances instead of angles on the celestial 
-        sphere.
+        similar to HPC, but uses a radial coordinate (rho, psi) system centered 
+        on solar disk where psi is measured in the counter clock wise direction.
+    * Heliocentric-Cartesian (HCC): The same as HPC but with positions expressed
+        in true (deprojected) physical distances instead of angles on the 
+        celestial sphere.
     * Heliocentric-Radial (HCR): The same as HPR but with rho expressed in
         true (deprojected) physical distances instead of angles on the celestial 
         sphere.
-    * Stonyhurst-Heliographic (HG): Expressed positions on the Sun using longitude 
-        and latitude on the solar sphere but with the origin which is at the 
-        intersection of the solar equator and the central meridian as seen from 
-        Earth. This means that the coordinate system remains fixed with respect to 
-        Earth while the Sun rotates underneath it.
+    * Stonyhurst-Heliographic (HG): Expressed positions on the Sun using 
+        longitude and latitude on the solar sphere but with the origin which is 
+        at the intersection of the solar equator and the central meridian as 
+        seen from Earth. This means that the coordinate system remains fixed 
+        with respect to Earth while the Sun rotates underneath it.
     * Carrington-Heliographic (HG, /CARRINGTON): Carrington longitude is offset 
         from Stonyhurst longitude by a time-dependent scalar value, L0. At the 
         start of each Carrington rotation, L0 = 360, and steadily decreases 
@@ -35,13 +36,10 @@
 """
 from __future__ import absolute_import
 
-__all__ = ["convert_angle_units",
-           "convert_pixel_to_data", "convert_data_to_pixel",
-           "convert_hpc_hcc", "convert_hcc_hpc",
-           "convert_hcc_hg", "convert_hg_hcc", "convert_hg_hcc_xyz",
-           "convert_hg_hpc",
-           "proj_tan", "convert_to_coord", "convert_hpc_hcc_xyz", 
-           "convert_hpc_hg"]
+__all__ = ["convert_angle_units", "convert_pixel_to_data", "convert_hpc_hg",
+           "convert_data_to_pixel", "convert_hpc_hcc", "convert_hcc_hpc",
+           "convert_hcc_hg", "convert_hg_hcc", "convert_hg_hcc_xyz", "proj_tan",
+           "convert_hg_hpc",  "convert_to_coord", "convert_hpc_hcc_xyz", ]
 
 import numpy as np
 
@@ -82,19 +80,20 @@ def convert_pixel_to_data(header, width, height, scale_x, scale_y, projection,
         
     return coordx, coordy
 
-def convert_data_to_pixel(header, scale_x, scale_y, x, y):
+def convert_data_to_pixel(scale_x, scale_y, crpix1, crpix2, 
+                          crval1, crval2, x, y):
     """This procedure takes a WCS-compliant header, and calculates the pixel 
     coordinates for given data coordinates."""
     # TODO: Needs to check what coordinate system the data is given in
     cdelt = np.array([scale_x, scale_y])
-    crpix = np.array([header.get('crpix1'), header.get('crpix2')])
-    crval = np.array([header.get('crval1'), header.get('crval2')])
+    crpix = np.array([crpix1, crpix2])
+    crval = np.array([crval1, crval2])
     # De-apply any tabular projections.
     # coord = inv_proj_tan(coord)
     
     # note that crpix[] counts pixels starting at 1
-    pixelx = (x - crval[0])/cdelt[0] + (crpix[1] - 1)
-    pixely = (y - crval[1])/cdelt[1] + (crpix[1] - 1)
+    pixelx = (x - crval[0]) / cdelt[0] + (crpix[1] - 1)
+    pixely = (y - crval[1]) / cdelt[1] + (crpix[1] - 1)
 
     return pixelx, pixely
 
@@ -243,8 +242,8 @@ def proj_tan(x, y, force=False):
     return x, y
     
 def convert_to_coord(x, y, rsun, b0, l0, fromto):
-    """Apply a coordinate transform to coordinates in header 
-    to coordinate coord. Right now can only do hpc to hcc to hg"""
+    """Apply a coordinate transform to coordinates. Right now can only do hpc 
+    to hcc to hg"""
     
     #coord = np.array(convert_pixel_to_data(header))
     #temp = np.array(convert_hpc_hcc(rsun, coord[:,:,0], coord[:,:,1]))
