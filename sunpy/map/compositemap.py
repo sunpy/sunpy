@@ -173,8 +173,8 @@ class CompositeMap:
         axes = figure.add_subplot(111)
         axes.set_title(title)
         
-        axes.set_xlabel('X-position [' + self._maps[0].units_x + ']')
-        axes.set_ylabel('Y-position [' + self._maps[0].units_y + ']')
+        axes.set_xlabel('X-position [' + self._maps[0].units['x'] + ']')
+        axes.set_ylabel('Y-position [' + self._maps[0].units['y'] + ']')
         
         # Plot layers of composite map
         for m in self._maps:
