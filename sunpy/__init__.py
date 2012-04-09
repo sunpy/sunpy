@@ -55,7 +55,6 @@ def _get_home():
     """Find user's home directory if possible.
     Otherwise raise error.
 
-    :see:  http://mail.python.org/pipermail/python-list/2005-February/263921.html
     """
     path=''
     try:
@@ -79,9 +78,8 @@ def _get_home():
 def get_configdir():
     """
     Return the string representing the configuration dir.
-
-    default is HOME/.matplotlib.  you can override this with the
-    MPLCONFIGDIR environment variable
+    The default is "HOME/.sunpy".  You can override this with the
+    SUNPY_CONFIGDIR environment variable
     """
 
     configdir = os.environ.get('SUNPY_CONFIGDIR')
