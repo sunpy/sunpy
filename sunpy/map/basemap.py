@@ -57,8 +57,10 @@ class BaseMap(np.ndarray):
         Observatory name
     dsun : float
         The observer distance from the Sun.
-    rsun : float
-        Radius of the sun
+    rsun_arcseconds : float
+        Radius of the sun in arcseconds
+    rsun_meters : float
+        Radius of the sun in meters
     exptime : float
         Exposure time of the image in seconds.
     name : str
@@ -68,9 +70,9 @@ class BaseMap(np.ndarray):
         Usually represents the offset between the center of the Sun and the 
         center of the map.
     scale : dict
-        Image scale along the x and y axes in units/pixel
+        Image scale along the x and y axes in units/pixel (cdelt1/2).
     units : dict
-        Image coordinate units along the x and y axes
+        Image coordinate units along the x and y axes (cunit1/2).
 
     Examples
     --------
@@ -128,7 +130,7 @@ class BaseMap(np.ndarray):
         self.name = header.get('telescop') + " " + str(header.get('wavelnth'))
         self.rsun_arcseconds = header.get('rsun_obs', header.get('solar_r', 
                                header.get('radius', 
-                                          constants.average_angular_size)))
+                               constants.average_angular_size)))
         self.rsun_meters = header.get('RSUN_REF', constants.radius) 
         self.scale_x = header.get('cdelt1')
         self.scale_y = header.get('cdelt2')
@@ -148,9 +150,10 @@ class BaseMap(np.ndarray):
             return
 
         if hasattr(obj, 'header'):
-            properties = ['header', 'cmap', 'date', 'det', 'dsun', 'exptime', 
-                          'inst', 'meas', 'obs', 'name', 'rsun', 'center', 
-                          'scale', 'units']
+            properties = ['header', 'cmap', 'date', 'detector', 'dsun', 
+                          'exposure_time', 'instrument', 'measurement', 'name',
+                          'observatory', 'rsun_arcseconds', 'rsun_meters',
+                          'scale_x', 'scale_y', 'units_x', 'units_y']
 
             for attr in properties:
                 setattr(self, attr, getattr(obj, attr))
@@ -475,16 +478,16 @@ class BaseMap(np.ndarray):
         axes.set_title("%s %s" % (self.name, self.date))
         
         if self.header.get('CTYPE1') == 'HPLN-TAN':
-            axes.set_xlabel('X-position [' + self.units['x'] + ']')
+            axes.set_xlabel('X-position [' + self.units_x + ']')
         
         if self.header.get('CTYPE1') == 'HG':
-            axes.set_xlabel('Longitude [' + self.units['x'] + ']')
+            axes.set_xlabel('Longitude [' + self.units_x + ']')
         
         if self.header.get('CTYPE2') == 'HPLT-TAN':
-            axes.set_ylabel('Y-position [' + self.units['y'] + ']')
+            axes.set_ylabel('Y-position [' + self.units_y + ']')
 
         if self.header.get('CTYPE2') == 'HG':
-            axes.set_ylabel('Latitude [' + self.units['y'] + ']')
+            axes.set_ylabel('Latitude [' + self.units_y + ']')
 
         # Determine extent
         extent = self.xrange + self.yrange
