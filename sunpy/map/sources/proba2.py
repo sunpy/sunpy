@@ -1,5 +1,5 @@
 """PROBA2 Map subclass definitions"""
-#pylint: disable=W0221,W0222,E1101
+#pylint: disable=W0221,W0222,E1101,E1121,W0613
 
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
@@ -19,25 +19,16 @@ class SWAPMap(BaseMap):
     """
     def __new__(cls, data, header):
         return BaseMap.__new__(cls, data)
+    
+    def __init__(self, data, header):
+        BaseMap.__init__(self, header)
+        self.detector = "SWAP"
+        self.instrument = "SWAP"
+        self.observatory = "PROBA2"
+        self.name = "SWAP %s" % header.get('wavelnth')
+        self.cmap = cm.get_cmap(name='sdoaia171')
 
-    @classmethod
-    def get_properties(cls, header):
-        """Returns the default and normalized values to use for the Map"""
-        properties = BaseMap.get_properties(header)
-        properties.update({
-            'date': parse_time(header.get('date-obs')),
-            'det': "SWAP",
-            'inst': "SWAP",
-            'meas': header.get('wavelnth'),
-            'obs': "PROBA2",
-            'dsun': header.get('dsun_obs'),
-            'name': "SWAP %s" % header.get('wavelnth'),
-            'cmap': cm.get_cmap(name='sdoaia171'),
-            'exptime': header.get('exptime')
-        })
-        return properties
-        
     @classmethod
     def is_datasource_for(cls, header):
         """Determines if header corresponds to an SWAP image"""
-        return header.get('instrume') and header.get('instrume') == 'SWAP'
+        return header.get('instrume') == 'SWAP'

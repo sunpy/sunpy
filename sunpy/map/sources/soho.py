@@ -1,5 +1,5 @@
 """SOHO Map subclass definitions"""
-#pylint: disable=W0221,W0222,E1101
+#pylint: disable=W0221,W0222,E1101,E1121,W0613
 
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
@@ -14,40 +14,27 @@ class EITMap(BaseMap):
     """EIT Image Map definition"""
     def __new__(cls, data, header):
         return BaseMap.__new__(cls, data)
-        
-    @classmethod
-    def get_properties(cls, header):
-        """Returns the default and normalized values to use for the Map"""
-        #date_format = "%Y-%m-%dT%H:%M:%S.%fZ"
+    
+    def __init__(self, data, header):
+        BaseMap.__init__(self, header)
         
         # Solar radius in arc-seconds at 1 au
         # @TODO: use sunpy.sun instead
         radius_1au = 959.644
         
-        rsun = header.get('solar_r')
         scale = header.get("cdelt1")
-        dsun = (radius_1au / (rsun * scale)) * constants.au
         
-        properties = BaseMap.get_properties(header)
-        properties.update({
-            "date": parse_time(header.get('date_obs')),
-            "det": "EIT",
-            "inst": "EIT",
-            "meas": header.get('wavelnth'),
-            "obs": "SOHO",
-            "dsun": dsun,            
-            "name": "EIT %s" % header.get('wavelnth'),
-            "exptime": header.get('exptime'),
-            'cmap': cm.get_cmap(name='sohoeit' + str(header.get('wavelnth'))),
-        })
-        return properties
-        
+        self.date = parse_time(header.get('date_obs'))
+        self.detector = "EIT"
+        self.dsun = (radius_1au / (self.rsun_arcseconds * scale)) * constants.au
+        self.name = "EIT %s" % header.get('wavelnth')
+        self.cmap = cm.get_cmap('sohoeit%d' % header.get('wavelnth'))
+
     @classmethod
     def is_datasource_for(cls, header):
         """Determines if header corresponds to an EIT image"""
         return header.get('instrume') == 'EIT'
-    
-    
+
     def norm(self):
         """Returns a Normalize object to be used with AIA data"""
         mean = self.mean()
@@ -65,28 +52,15 @@ class LASCOMap(BaseMap):
     """LASCO Image Map definition"""
     def __new__(cls, data, header):
         return BaseMap.__new__(cls, data)
+    
+    def __init__(self, data, header):
+        BaseMap.__init__(self, header)
         
-    @classmethod
-    def get_properties(cls, header):
-        """Returns the default and normalized values to use for the Map"""
-        datestr = "%sT%s" % (header['date_obs'], header['time_obs'])
+        datestr = "%sT%s" % (header.get('date_obs'), header.get('time_obs'))
         
-        # @TODO: Verify
-        # No rsun/dsun information in LASCO images?
-        dsun = constants.au
-
-        properties = BaseMap.get_properties(header)
-        properties.update({
-            "date": parse_time(datestr),
-            "det": header.get('detector'),
-            "inst": "LASCO",
-            "meas": "white-light",
-            "obs": "SOHO",
-            "dsun": dsun,
-            "name": "LASCO %s" % header.get('detector'),
-            "exptime": header.get("exptime"),
-        })
-        return properties
+        self.date = parse_time(datestr)
+        self.measurement = "white-light"
+        self.name = "LASCO %s" % header.get('detector')
         
     @classmethod
     def is_datasource_for(cls, header):
@@ -97,10 +71,10 @@ class MDIMap(BaseMap):
     """MDI Image Map definition"""
     def __new__(cls, data, header):
         return BaseMap.__new__(cls, data)
+    
+    def __init__(self, data, header):
+        BaseMap.__init__(self, header)
         
-    @classmethod
-    def get_properties(cls, header):
-        """Returns the default and normalized values to use for the Map"""
         # MDI sometimes has an "60" in seconds field
         datestr = header['date_obs']
 
@@ -119,23 +93,16 @@ class MDIMap(BaseMap):
         else:
             scale = header.get("cdelt1")
             dsun = (radius_1au / (rsun * scale)) * constants.au
-        
+            
         # Determine measurement
         dpcobsr = header.get('dpc_obsr')
         meas = "magnetogram" if dpcobsr.find('Mag') != -1 else "continuum"
         
-        properties = BaseMap.get_properties(header)        
-        properties.update({
-            "date": parse_time(datestr),
-            "det": "MDI",
-            "inst": "MDI",
-            "meas": meas,
-            "obs": "SOHO",
-            "dsun": dsun,
-            "name": "MDI %s" % meas,
-            "exptime": header.get('exptime')
-        })
-        return properties
+        self.date = parse_time(datestr)
+        self.detector = "MDI"
+        self.measurement = meas
+        self.dsun = dsun
+        self.name = "MDI %s" % meas
         
     @classmethod
     def is_datasource_for(cls, header):
