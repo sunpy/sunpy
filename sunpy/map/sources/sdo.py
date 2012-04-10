@@ -1,13 +1,11 @@
 """SDO Map subclass definitions"""
-#pylint: disable=W0221,W0222,E1101
+#pylint: disable=W0221,W0222,E1101,E1121,W0613
 
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
 from sunpy.map.basemap import BaseMap
 from sunpy.cm import cm
-from sunpy.time import parse_time
-from sunpy.sun import constants
 from matplotlib import colors
 
 class AIAMap(BaseMap):
@@ -21,29 +19,14 @@ class AIAMap(BaseMap):
     def __new__(cls, data, header):
         return BaseMap.__new__(cls, data)
 
-    @classmethod
-    def get_properties(cls, header):
-        """Returns the default and normalized values to use for the Map"""
-        # Note: Trailing "Z" in date was dropped on 2010/12/07        
-        properties = BaseMap.get_properties(header)
-        properties.update({
-            'date': parse_time(header.get('date-obs')),
-            'det': "AIA",
-            'inst': "AIA",
-            'meas': header.get('wavelnth'),
-            'obs': "SDO",
-            'dsun': header.get('dsun_obs'),
-            'name': "AIA %s" % header.get('wavelnth'),
-            'cmap': cm.get_cmap(name='sdoaia' + str(header.get('wavelnth'))),
-            'exptime': header.get('exptime')
-        })
-        return properties
+    def __init__(self, data, header):
+        BaseMap.__init__(self, header)
         
-    @classmethod
-    def is_datasource_for(cls, header):
-        """Determines if header corresponds to an AIA image"""
-        return header.get('instrume') and header.get('instrume')[0:3] == 'AIA'
-    
+        self.detector = "AIA"
+        self.instrument = "AIA"
+        self.observatory = "SDO"
+        self.cmap = cm.get_cmap('sdoaia%d' % header.get('wavelnth'))
+
     def norm(self):
         """Returns a Normalize object to be used with AIA data"""
         mean = self.mean()
@@ -56,36 +39,27 @@ class AIAMap(BaseMap):
         vmax = max(255, vmax)
         
         return colors.Normalize(vmin, vmax)
+    
+    @classmethod
+    def is_datasource_for(cls, header):
+        """Determines if header corresponds to an AIA image"""
+        return header.get('instrume', '').startswith('AIA')
         
 class HMIMap(BaseMap):
     """HMI Image Map definition"""
     def __new__(cls, data, header):        
         return BaseMap.__new__(cls, data)
+    
+    def __init__(self, data, header):
+        BaseMap.__init__(self, header)
         
-    @classmethod
-    def get_properties(cls, header):
-        """Returns the default and normalized values to use for the Map"""
-        # Note: Trailing "Z" in date was dropped on 2010/12/07    
-        meas = header['content'].split(" ")[0].lower()
-        
-        # HMI continuum images may have DSUN = 0.00
-        dsun = header.get('dsun_obs') or constants.au
-        
-        properties = BaseMap.get_properties(header)
-        properties.update({
-            "date": parse_time(header.get('date-obs')),
-            "det": "HMI",
-            "inst": "HMI",
-            "meas": meas,
-            "obs": "SDO",
-            'dsun': dsun,
-            "name": "HMI %s" % meas,
-            "exptime": header.get('exptime') #@TODO: Find valid measure
-        })
-        return properties
-        
+        self.detector = "HMI"
+        self.instrument = "HMI"
+        self.measurement = header['content'].split(" ")[0].lower()
+        self.observatory = "SDO"
+        self.name = "HMI %s" % self.meas 
+
     @classmethod
     def is_datasource_for(cls, header):
         """Determines if header corresponds to an HMI image"""
-        return header.get('instrume') and header.get('instrume')[0:3] == 'HMI'
-
+        return header.get('instrume', '').startswith('HMI') 
