@@ -150,8 +150,13 @@ class BaseMap(np.ndarray):
         }
 
         self.units = {
-            'x': header.get('cunit1', 'arcsec'),
-            'y': header.get('cunit2', 'arcsec')
+            'x': header.get('cunit1'),
+            'y': header.get('cunit2')
+        }
+        
+        self.coordinate_system = {
+            'x': header.get('ctype1'),
+            'y': header.get('ctype2')
         }
         
         # Validate properties
@@ -166,7 +171,8 @@ class BaseMap(np.ndarray):
             properties = ['header', 'cmap', 'date', 'detector', 'dsun',
                           'exposure_time', 'instrument', 'measurement', 'name',
                           'observatory', 'rsun_arcseconds', 'rsun_meters',
-                          'scale', 'units', 'crval', 'crpix', 'center']
+                          'scale', 'units', 'crval', 'crpix', 'center',
+                          'coordinate_system']
 
             for attr in properties:
                 setattr(self, attr, getattr(obj, attr))
@@ -488,18 +494,21 @@ class BaseMap(np.ndarray):
 
         axes = figure.add_subplot(111)
         axes.set_title("%s %s" % (self.name, self.date))
+        
+        # x-axis label
+        if self.coordinate_system['x'] == 'HPLN-TAN':
+            xlabel = 'X-position [%s]' % self.units['x']
+        elif self.coordinate_system['x'] == 'HG':
+            xlabel = 'Longitude [%s]' % self.units['x']
 
-        if self.fits_header.get('CTYPE1') == 'HPLN-TAN':
-            axes.set_xlabel('X-position [' + self.units['x'] + ']')
-
-        if self.fits_header.get('CTYPE1') == 'HG':
-            axes.set_xlabel('Longitude [' + self.units['x'] + ']')
-
-        if self.fits_header.get('CTYPE2') == 'HPLT-TAN':
-            axes.set_ylabel('Y-position [' + self.units['y'] + ']')
-
-        if self.fits_header.get('CTYPE2') == 'HG':
-            axes.set_ylabel('Latitude [' + self.units['y'] + ']')
+        # y-axis label
+        if self.coordinate_system['y'] == 'HPLT-TAN':
+            ylabel = 'Y-position [%s]' % self.units['y']
+        elif self.coordinate_system['y'] == 'HG':
+            ylabel = 'Latitude [%s]' % self.units['y']
+            
+        axes.set_xlabel(xlabel)
+        axes.set_ylabel(ylabel)
 
         # Determine extent
         extent = self.xrange + self.yrange
