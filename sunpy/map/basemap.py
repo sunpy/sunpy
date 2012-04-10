@@ -158,7 +158,14 @@ class BaseMap(np.ndarray):
             'x': header.get('ctype1'),
             'y': header.get('ctype2')
         }
+       
+        self.heliographic_latitude = header.get('hglt_obs', 
+                                     header.get('crlt_obs',
+                                     header.get('solar_b0', 0)))
         
+        self.heliographic_longitude = header.get('hgln_obs', 0)
+        self.carrington_longitude = header.get('crln_obs', 0)  
+
         # Validate properties
         self._validate()
 
@@ -171,8 +178,10 @@ class BaseMap(np.ndarray):
             properties = ['header', 'cmap', 'date', 'detector', 'dsun',
                           'exposure_time', 'instrument', 'measurement', 'name',
                           'observatory', 'rsun_arcseconds', 'rsun_meters',
-                          'scale', 'units', 'reference_coordinate', 
-                          'reference_pixel', 'center', 'coordinate_system']
+                          'scale', 'units', 'reference_coordinate', 'center',
+                          'reference_pixel', 'coordinate_system',
+                          'heliographic_latitude', 'heliographic_longitude',
+                          'carrington_longitude']
 
             for attr in properties:
                 setattr(self, attr, getattr(obj, attr))
@@ -277,8 +286,8 @@ class BaseMap(np.ndarray):
             hg_latitude_deg_mesh, hg_longitude_deg_mesh = np.meshgrid(
                 lat * np.ones(num_points), hg_longitude_deg)
             x, y = wcs.convert_hg_hpc(self.rsun_meters,
-                                      self.dsun, self.get_solar_b0(),
-                                      self.get_solar_l0(),
+                                      self.dsun, self.heliographic_latitude,
+                                      self.heliographic_longitude,
                                       hg_longitude_deg_mesh,
                                       hg_latitude_deg_mesh, units='arcsec')
             axes.plot(x, y, color='white', linestyle='dotted')
@@ -291,8 +300,8 @@ class BaseMap(np.ndarray):
             hg_longitude_deg_mesh, hg_latitude_deg_mesh = np.meshgrid(
                 lon * np.ones(num_points), hg_latitude_deg)
             x, y = wcs.convert_hg_hpc(self.rsun_meters,
-                                      self.dsun, self.get_solar_b0(),
-                                      self.get_solar_l0(),
+                                      self.dsun, self.heliographic_latitude,
+                                      self.heliographic_longitude,
                                       hg_longitude_deg_mesh,
                                       hg_latitude_deg_mesh, units='arcsec')
             axes.plot(x, y, color='white', linestyle='dotted')
@@ -321,19 +330,6 @@ class BaseMap(np.ndarray):
         size = self.shape[dim == 'x']  # 1 if dim == 'x', 0 if dim == 'y'.
 
         return (value - self.center[dim]) / self.scale[dim] + ((size - 1) / 2.)
-
-    def get_solar_b0(self):
-        """Return the solar B0 angle which is the heliographic latitude of
-        the observer."""
-        return self.fits_header.get('HGLT_OBS', self.fits_header.get('CRLT_OBS',
-                                    self.fits_header.get('SOLAR_B0', 0)))
-
-    def get_solar_l0(self, carrington=False):
-        """Return the (Carrington) heliographic longitude of the observer."""
-        if carrington is False:
-            return self.fits_header.get('HGLN_OBS', 0)
-        else:
-            return self.fits_header.get('CRLN_OBS', 0)
 
     def resample(self, dimensions, method='linear'):
         """Returns a new Map that has been resampled up or down
