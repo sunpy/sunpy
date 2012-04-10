@@ -44,7 +44,7 @@ class MapCube(np.ndarray):
     --------
     >>> mapcube = sunpy.make_map('images/')
     >>> mapcube[0].show()
-    >>> mapcube[3].header.get('crpix1')
+    >>> mapcube[3].fits_header.get('crpix1')
     2050.6599120000001
     """
     def __new__(cls, *args, **kwargs):
@@ -69,7 +69,7 @@ class MapCube(np.ndarray):
         # create data cube
         for map_ in maps:
             data.append(np.array(map_))
-            headers.append(map_.header)
+            headers.append(map_.fits_header)
 
         obj = np.asarray(data).view(cls)
         obj._headers = headers

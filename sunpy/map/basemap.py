@@ -13,11 +13,11 @@ from matplotlib import patches
 from matplotlib import colors
 from matplotlib import cm
 from copy import copy
-from datetime import datetime
 from sunpy.wcs import wcs as wcs
 from sunpy.util.util import toggle_pylab
-from sunpy.io import read_file, read_header
+from sunpy.io import read_file
 from sunpy.sun import constants
+from sunpy.time import parse_time
 from sunpy.map.header import MapHeader
 
 """
@@ -28,12 +28,13 @@ or something else?)
 * Should 'center' be renamed to 'offset' and crpix1 & 2 be used for 'center'?
 """
 
+
 class BaseMap(np.ndarray):
     """
     BaseMap(data, header)
-    
+
     A spatially-aware data array based on the SolarSoft Map object
-    
+
     Parameters
     ----------
     data : numpy.ndarray, list
@@ -43,32 +44,36 @@ class BaseMap(np.ndarray):
 
     Attributes
     ----------
-    header : dict
-        A dictionary representation of the image header
+    fits_header : dict
+        Dictionary representation of the original FITS header
     date : datetime
         Image observation time
-    det : str
+    detector : str
         Detector name
-    inst : str
+    instrument : str
         Instrument name
-    meas : str, int
-        Measurement name. In some instances this is the wavelength of image
-    obs : str
+    measurement : str, int
+        Measurement name. In some instances this is the wavelength of image.
+    observatory : str
         Observatory name
-    rsun : float
-        Radius of the sun
+    dsun : float
+        The observer distance from the Sun.
+    rsun_arcseconds : float
+        Radius of the sun in arcseconds
+    rsun_meters : float
+        Radius of the sun in meters
     exptime : float
         Exposure time of the image in seconds.
     name : str
         Nickname for the image type (e.g. "AIA 171")
     center : dict
-        X and Y coordinate of the center of the map in units. 
-        Usually represents the offset between the center of the Sun and the 
+        X and Y coordinate of the center of the map in units.
+        Usually represents the offset between the center of the Sun and the
         center of the map.
     scale : dict
-        Image scale along the x and y axes in units/pixel
+        Image scale along the x and y axes in units/pixel (cdelt1/2).
     units : dict
-        Image coordinate units along the x and y axes
+        Image coordinate units along the x and y axes (cunit1/2).
 
     Examples
     --------
@@ -77,21 +82,21 @@ class BaseMap(np.ndarray):
     AIAMap([[ 0.3125,  1.    , -1.1875, ..., -0.625 ,  0.5625,  0.5   ],
     [-0.0625,  0.1875,  0.375 , ...,  0.0625,  0.0625, -0.125 ],
     [-0.125 , -0.8125, -0.5   , ..., -0.3125,  0.5625,  0.4375],
-    ..., 
+    ...,
     [ 0.625 ,  0.625 , -0.125 , ...,  0.125 , -0.0625,  0.6875],
     [-0.625 , -0.625 , -0.625 , ...,  0.125 , -0.0625,  0.6875],
     [ 0.    ,  0.    , -1.1875, ...,  0.125 ,  0.    ,  0.6875]])
-    >>> aia.header.get('cunit1')
+    >>> aia.fits_header.get('cunit1')
     'arcsec'
     >>> aia.show()
     >>> import matplotlib.cm as cm
     >>> import matplotlib.colors as colors
     >>> aia.show(cmap=cm.hot, norm=colors.Normalize(1, 2048))
-    
+
     See Also
     --------
     numpy.ndarray Parent class for the Map object
-    
+
     References
     ----------
     | http://docs.scipy.org/doc/numpy/reference/arrays.classes.html
@@ -100,46 +105,91 @@ class BaseMap(np.ndarray):
     | http://www.scipy.org/Subclasses
 
     """
-    def __new__(cls, data, header=None): #pylint: disable=W0613
-        """Creates a new BaseMap instance"""        
+    def __new__(cls, data):  # pylint: disable=W0613
+        """Creates a new BaseMap instance"""
         if isinstance(data, np.ndarray):
             obj = data.view(cls)
         elif isinstance(data, list):
             obj = np.asarray(data).view(cls)
         else:
             raise TypeError('Invalid input')
-        
+
         return obj
-    
-    def __init__(self, data, header=None): #pylint: disable=W0613
-        """BaseMap constructor"""
-        if header:
-            self.header = header
-            
-            # Set object attributes dynamically
-            for attr, value in list(self.get_properties(header).items()):
-                setattr(self, attr, value)
-                
-            # Validate map properties
-            self._validate()
-            
+
+    def __init__(self, header):
+        self.fits_header = header
+
+        # Set properties
+        self.cmap = cm.gray  # @UndefinedVariable
+        self.date = parse_time(header.get('date-obs'))
+        self.detector = header.get('detector')
+        self.dsun = header.get('dsun_obs', constants.au)
+        self.exposure_time = header.get('exptime')
+        self.instrument = header.get('instrume')
+        self.measurement = header.get('wavelnth')
+        self.observatory = header.get('telescop')
+        self.name = header.get('telescop') + " " + str(header.get('wavelnth'))
+        self.rsun_meters = header.get('RSUN_REF', constants.radius)
+        self.rsun_arcseconds = header.get('rsun_obs', header.get('solar_r',
+                               header.get('radius',
+                               constants.average_angular_size)))
+
+        self.reference_coordinate = {
+            'x': header.get('crval1'),
+            'y': header.get('crval2'),
+        }
+
+        self.reference_pixel = {
+            'x': header.get('crpix1'),
+            'y': header.get('crpix2')
+        }
+
+        self.scale = {
+            'x': header.get('cdelt1'),
+            'y': header.get('cdelt2'),
+        }
+
+        self.units = {
+            'x': header.get('cunit1'),
+            'y': header.get('cunit2')
+        }
+        
+        self.coordinate_system = {
+            'x': header.get('ctype1'),
+            'y': header.get('ctype2')
+        }
+       
+        self.heliographic_latitude = header.get('hglt_obs', 
+                                     header.get('crlt_obs',
+                                     header.get('solar_b0', 0)))
+        
+        self.heliographic_longitude = header.get('hgln_obs', 0)
+        self.carrington_longitude = header.get('crln_obs', 0)  
+
+        # Validate properties
+        self._validate()
+
     def __array_finalize__(self, obj):
         """Finishes instantiation of the new map object"""
         if obj is None:
             return
 
         if hasattr(obj, 'header'):
-            # Preserve object properties
-            properties = self.get_properties(obj.header)
-            for attr, value in list(properties.items()):
-                setattr(self, attr, getattr(obj, attr, value))
-            
-            self.header = obj.header
-        
+            properties = ['header', 'cmap', 'date', 'detector', 'dsun',
+                          'exposure_time', 'instrument', 'measurement', 'name',
+                          'observatory', 'rsun_arcseconds', 'rsun_meters',
+                          'scale', 'units', 'reference_coordinate', 'center',
+                          'reference_pixel', 'coordinate_system',
+                          'heliographic_latitude', 'heliographic_longitude',
+                          'carrington_longitude']
+
+            for attr in properties:
+                setattr(self, attr, getattr(obj, attr))
+
     def __array_wrap__(self, out_arr, context=None):
         """Returns a wrapped instance of a Map object"""
         return np.ndarray.__array_wrap__(self, out_arr, context)
-    
+
     def __getitem__(self, key):
         """Overiding indexing operation to ensure that header is updated"""
         if isinstance(key, tuple) and type(key[0]) is slice:
@@ -149,18 +199,18 @@ class BaseMap(np.ndarray):
             return self.submap(y_range, x_range, units="pixels")
         else:
             return np.ndarray.__getitem__(self, key)
-                
+
     def __add__(self, other):
-        """Add two maps. Currently does not take into account the alignment  
+        """Add two maps. Currently does not take into account the alignment
         between the two maps."""
         result = np.ndarray.__add__(self, other)
-        
+
         return result
-    
+
     def __sub__(self, other):
-        """Subtract two maps. Currently does not take into account the alignment
-        between the two maps.
-        
+        """Subtract two maps. Currently does not take into account the
+        alignment between the two maps.
+
         numpy dtype nums:
             1    int8
             2    uint8
@@ -176,72 +226,27 @@ class BaseMap(np.ndarray):
             other = other.astype(np.dtype(dtype))
 
         result = np.ndarray.__sub__(self, other)
-            
+
         def norm():
             mean = result.mean()
             std = result.std()
             vmin = max(result.min(), mean - 6 * std)
             vmax = min(result.max(), mean + 6 * std)
-            
+
             return colors.Normalize(vmin, vmax)
-        
+
         result.norm = norm
-        result.cmap = cm.gray #@UndefinedVariable 
-        
+        result.cmap = cm.gray  # @UndefinedVariable
+
         return result
-    
-    def _draw_limb(self, fig, axes):
-        """Draws a circle representing the solar limb"""
-        circ = patches.Circle([0, 0], radius=self.rsun, fill=False, 
-                              color='white')
-        axes.add_artist(circ)
-        return fig, axes
-    
-    def _draw_grid(self, fig, axes, grid_spacing=20):
-        """Draws a grid over the surface of the Sun"""
-        # define the number of points for each latitude or longitude line
-        num_points = 20
-        hg_longitude_deg = np.linspace(-90, 90, num=num_points)
-        hg_latitude_deg = np.arange(-90, 90, grid_spacing)
-    
-        # draw the latitude lines
-        for lat in hg_latitude_deg:
-            hg_latitude_deg_mesh, hg_longitude_deg_mesh = np.meshgrid(
-                lat * np.ones(num_points), hg_longitude_deg)
-            x, y = wcs.convert_hg_hpc(self.header, hg_longitude_deg_mesh, 
-                                      hg_latitude_deg_mesh, units='arcsec')
-            axes.plot(x, y, color='white', linestyle='dotted')
-        
-        hg_longitude_deg = np.arange(-90, 90, grid_spacing)
-        hg_latitude_deg = np.linspace(-90, 90, num=num_points)
-    
-        # draw the longitude lines
-        for lon in hg_longitude_deg:
-            hg_longitude_deg_mesh, hg_latitude_deg_mesh = np.meshgrid(
-                lon * np.ones(num_points), hg_latitude_deg)
-            x, y = wcs.convert_hg_hpc(self.header, hg_longitude_deg_mesh, 
-                                      hg_latitude_deg_mesh, units='arcsec')
-            axes.plot(x, y, color='white', linestyle='dotted')        
-        
-        return fig, axes
-    
-    def _validate(self):
-        """Validates the meta-information associated with a Map.
-        
-        This function includes very basic validation checks which apply to
-        all of the kinds of files that SunPy can read. Datasource-specific
-        validation should be handled in the relevant file in the 
-        sunpy.map.sources package."""
-        if (self.dsun <= 0 or self.dsun >= 40 * constants.au):
-            raise InvalidHeaderInformation("Invalid value for DSUN")
-    
+
     @property
     def xrange(self):
-        """Return the X range of the image in arcsec from edge to edge."""        
+        """Return the X range of the image in arcsec from edge to edge."""
         xmin = self.center['x'] - self.shape[1] / 2 * self.scale['x']
         xmax = self.center['x'] + self.shape[1] / 2 * self.scale['x']
         return [xmin, xmax]
-    
+
     @property
     def yrange(self):
         """Return the Y range of the image in arcsec from edge to edge."""
@@ -249,27 +254,92 @@ class BaseMap(np.ndarray):
         ymax = self.center['y'] + self.shape[0] / 2 * self.scale['y']
         return [ymin, ymax]
     
+    @property
+    def center(self):
+        """Returns the offset between the center of the Sun and the center of 
+        the map."""
+        return {
+            'x': wcs.get_center(self.shape[0], self.scale['x'], 
+                                self.reference_pixel['x'], 
+                                self.reference_coordinate['x']),
+            'y': wcs.get_center(self.shape[0], self.scale['y'], 
+                                self.reference_pixel['y'], 
+                                self.reference_coordinate['y'])
+        }
+
+    def _draw_limb(self, fig, axes):
+        """Draws a circle representing the solar limb"""
+        circ = patches.Circle([0, 0], radius=self.rsun_arcseconds, fill=False,
+                              color='white')
+        axes.add_artist(circ)
+        return fig, axes
+
+    def _draw_grid(self, fig, axes, grid_spacing=20):
+        """Draws a grid over the surface of the Sun"""
+        # define the number of points for each latitude or longitude line
+        num_points = 20
+        hg_longitude_deg = np.linspace(-90, 90, num=num_points)
+        hg_latitude_deg = np.arange(-90, 90, grid_spacing)
+
+        # draw the latitude lines
+        for lat in hg_latitude_deg:
+            hg_latitude_deg_mesh, hg_longitude_deg_mesh = np.meshgrid(
+                lat * np.ones(num_points), hg_longitude_deg)
+            x, y = wcs.convert_hg_hpc(self.rsun_meters,
+                                      self.dsun, self.heliographic_latitude,
+                                      self.heliographic_longitude,
+                                      hg_longitude_deg_mesh,
+                                      hg_latitude_deg_mesh, units='arcsec')
+            axes.plot(x, y, color='white', linestyle='dotted')
+
+        hg_longitude_deg = np.arange(-90, 90, grid_spacing)
+        hg_latitude_deg = np.linspace(-90, 90, num=num_points)
+
+        # draw the longitude lines
+        for lon in hg_longitude_deg:
+            hg_longitude_deg_mesh, hg_latitude_deg_mesh = np.meshgrid(
+                lon * np.ones(num_points), hg_latitude_deg)
+            x, y = wcs.convert_hg_hpc(self.rsun_meters,
+                                      self.dsun, self.heliographic_latitude,
+                                      self.heliographic_longitude,
+                                      hg_longitude_deg_mesh,
+                                      hg_latitude_deg_mesh, units='arcsec')
+            axes.plot(x, y, color='white', linestyle='dotted')
+
+        return fig, axes
+
+    def _validate(self):
+        """Validates the meta-information associated with a Map.
+
+        This function includes very basic validation checks which apply to
+        all of the kinds of files that SunPy can read. Datasource-specific
+        validation should be handled in the relevant file in the
+        sunpy.map.sources package."""
+        if (self.dsun <= 0 or self.dsun >= 40 * constants.au):
+            raise InvalidHeaderInformation("Invalid value for DSUN")
+
     def std(self, *args, **kwargs):
         """overide np.ndarray.std()"""
         return np.array(self, copy=False, subok=False).std(*args, **kwargs)
-    
+
     def data_to_pixel(self, value, dim):
         """Convert pixel-center data coordinates to pixel values"""
         if dim not in ['x', 'y']:
             raise ValueError("Invalid dimension. Must be one of 'x' or 'y'.")
-        size = self.shape[dim == 'x'] # 1 if dim == 'x', 0 if dim == 'y'.
-        
+
+        size = self.shape[dim == 'x']  # 1 if dim == 'x', 0 if dim == 'y'.
+
         return (value - self.center[dim]) / self.scale[dim] + ((size - 1) / 2.)
-    
+
     def resample(self, dimensions, method='linear'):
         """Returns a new Map that has been resampled up or down
-        
+
         Arbitrary resampling of the Map to new dimension sizes.
-        
+
         Uses the same parameters and creates the same co-ordinate lookup points
-        as IDL''s congrid routine, which apparently originally came from a 
+        as IDL''s congrid routine, which apparently originally came from a
         VAX/VMS routine of the same name.
-        
+
         Parameters
         ----------
         dimensions : tuple
@@ -282,12 +352,12 @@ class BaseMap(np.ndarray):
                 * nearest and linear - Uses n x 1-D interpolations using
                   scipy.interpolate.interp1d
                 * spline - Uses ndimage.map_coordinates
-    
+
         Returns
         -------
         out : Map
             A new Map which has been resampled to the desired dimensions.
-        
+
         References
         ----------
         | http://www.scipy.org/Cookbook/Rebinning (Original source, 2011/11/19)
@@ -303,29 +373,31 @@ class BaseMap(np.ndarray):
         # Make a copy of the original data and perform resample
         data = resample(np.asarray(self).copy().T, dimensions,
                         method, center=True)
-        
-        # Update image scale and number of pixels
-        header = self.header.copy()
 
-        # Note that 'x' and 'y' correspond to 1 and 0 in self.shape, 
+        # Update image scale and number of pixels
+        header = self.fits_header.copy()
+
+        # Note that 'x' and 'y' correspond to 1 and 0 in self.shape,
         # respectively
         scale_factor_x = (float(self.shape[1]) / dimensions[0])
         scale_factor_y = (float(self.shape[0]) / dimensions[1])
-        
-        header['naxis1'] = int(dimensions[0])
-        header['naxis2'] = int(dimensions[1])
-        header['cdelt1'] *= scale_factor_x
-        header['cdelt2'] *= scale_factor_y
-        header['crpix1'] = (dimensions[0] + 1) / 2.
-        header['crval1'] = self.center['x']
-        header['crpix2'] = (dimensions[1] + 1) / 2.
-        header['crval2'] = self.center['y']
 
-        return self.__class__(data.T, header)
+        # Create new map instance
+        new_map = self.__class__(data.T, header)
+
+        # Update metadata
+        new_map.scale['x'] *= scale_factor_x
+        new_map.scale['y'] *= scale_factor_y
+        new_map.reference_pixel['x'] = (dimensions[0] + 1) / 2.
+        new_map.reference_pixel['y'] = (dimensions[1] + 1) / 2.
+        new_map.reference_coordinate['x'] = self.center['x']
+        new_map.reference_coordinate['y'] = self.center['x']
+
+        return new_map
 
     def submap(self, range_a, range_b, units="data"):
         """Returns a submap of the map with the specified range
-        
+
         Parameters
         ----------
         range_a : list
@@ -334,12 +406,12 @@ class BaseMap(np.ndarray):
             The range of the Map to select across either the y axis.
         units : {'data' | 'pixels'}, optional
             The units for the supplied ranges.
-            
+
         Returns
         -------
         out : Map
-            A new map instance is returned representing to specified sub-region.
-        
+            A new map instance is returned representing to specified sub-region
+
         Examples
         --------
         >>> aia.submap([-5,5],[-5,5])
@@ -348,7 +420,7 @@ class BaseMap(np.ndarray):
         [ 322.8125,  302.3125,  298.125 ,  299.    ,  261.5   ],
         [ 334.875 ,  289.75  ,  269.25  ,  256.375 ,  242.3125],
         [ 273.125 ,  241.75  ,  248.8125,  263.0625,  249.0625]])
-        
+
         >>> aia.submap([0,5],[0,5], units='pixels')
         AIAMap([[ 0.3125, -0.0625, -0.125 ,  0.    , -0.375 ],
         [ 1.    ,  0.1875, -0.8125,  0.125 ,  0.3125],
@@ -370,29 +442,25 @@ class BaseMap(np.ndarray):
             raise ValueError(
                 "Invalid unit. Must be one of 'data' or 'pixels'")
 
-        # Make a copy of the header with updated centering information        
-        header = self.header.copy()
-        header['crpix1'] = header['crpix1'] - x_pixels[0]
-        header['crpix2'] = header['crpix2'] - y_pixels[0]
-        header['naxis1'] = x_pixels[1] - x_pixels[0]
-        header['naxis2'] = y_pixels[1] - y_pixels[0]
-
-#        self.center = {
-#            "x": wcs.get_center(header, axis='x'),
-#            "y": wcs.get_center(header, axis='y')
-#        }
-
+        # Make a copy of the header with updated centering information
+        header = self.fits_header.copy()
+        
         # Get ndarray representation of submap
-        data = np.asarray(self)[y_pixels[0]:y_pixels[1], 
+        data = np.asarray(self)[y_pixels[0]:y_pixels[1],
                                 x_pixels[0]:x_pixels[1]]
+        
+        # Instantiate new instance and update metadata
+        new_map = self.__class__(data.copy(), header)
+        new_map.reference_pixel['x'] = self.reference_pixel['x'] - x_pixels[0]
+        new_map.reference_pixel['y'] = self.reference_pixel['y'] - y_pixels[0]
 
-        return self.__class__(data.copy(), header)
-   
+        return new_map
+
     @toggle_pylab
-    def plot(self, figure=None, overlays=None, draw_limb=True, gamma=None, 
+    def plot(self, figure=None, overlays=None, draw_limb=True, gamma=None,
              draw_grid=False, **matplot_args):
         """Plots the map object using matplotlib
-        
+
         Parameters
         ----------
         overlays : list
@@ -413,29 +481,32 @@ class BaseMap(np.ndarray):
             overlays = []
         if draw_limb:
             overlays = overlays + [self._draw_limb]
-        # TODO: need to be able to pass the grid spacing to _draw_grid from the 
+        # TODO: need to be able to pass the grid spacing to _draw_grid from the
         # plot command.
         if draw_grid:
             overlays = overlays + [self._draw_grid]
-            
+
         # Create a figure and add title and axes
         if figure is None:
             figure = plt.figure()
-        
+
         axes = figure.add_subplot(111)
         axes.set_title("%s %s" % (self.name, self.date))
         
-        if self.header.get('CTYPE1') == 'HPLN-TAN':
-            axes.set_xlabel('X-position [' + self.units['x'] + ']')
-        
-        if self.header.get('CTYPE1') == 'HG':
-            axes.set_xlabel('Longitude [' + self.units['x'] + ']')
-        
-        if self.header.get('CTYPE2') == 'HPLT-TAN':
-            axes.set_ylabel('Y-position [' + self.units['y'] + ']')
+        # x-axis label
+        if self.coordinate_system['x'] == 'HPLN-TAN':
+            xlabel = 'X-position [%s]' % self.units['x']
+        elif self.coordinate_system['x'] == 'HG':
+            xlabel = 'Longitude [%s]' % self.units['x']
 
-        if self.header.get('CTYPE2') == 'HG':
-            axes.set_ylabel('Latitude [' + self.units['y'] + ']')
+        # y-axis label
+        if self.coordinate_system['y'] == 'HPLT-TAN':
+            ylabel = 'Y-position [%s]' % self.units['y']
+        elif self.coordinate_system['y'] == 'HG':
+            ylabel = 'Latitude [%s]' % self.units['y']
+            
+        axes.set_xlabel(xlabel)
+        axes.set_ylabel(ylabel)
 
         # Determine extent
         extent = self.xrange + self.yrange
@@ -453,16 +524,16 @@ class BaseMap(np.ndarray):
 
         im = axes.imshow(self, origin='lower', extent=extent, **params)
         figure.colorbar(im)
-        
+
         for overlay in overlays:
             figure, axes = overlay(figure, axes)
         return figure
-    
+
     @toggle_pylab
-    def plot_simple(self, figure=None, overlays=None, draw_limb=False, 
+    def plot_simple(self, figure=None, overlays=None, draw_limb=False,
                     gamma=None, draw_grid=False, **matplot_args):
         """Plots the map object using matplotlib
-        
+
         Parameters
         ----------
         overlays : list
@@ -484,16 +555,16 @@ class BaseMap(np.ndarray):
         if draw_limb:
             overlays = overlays + [self._draw_limb]
 
-        # TODO: need to be able to pass the grid spacing to _draw_grid from the 
+        # TODO: need to be able to pass the grid spacing to _draw_grid from the
         # plot command.
         if draw_grid:
             overlays = overlays + [self._draw_grid]
 
         if figure is None:
             figure = plt.figure(frameon=False)
-        
+
         axes = plt.Axes(figure, [0., 0., 1., 1.])
-        axes.set_axis_off() 
+        axes.set_axis_off()
         figure.add_axes(axes)
 
         # Determine extent
@@ -505,109 +576,83 @@ class BaseMap(np.ndarray):
             "norm": self.norm()
         }
         params.update(matplot_args)
-        
+
         if gamma is not None:
             params['cmap'] = copy(params['cmap'])
             params['cmap'].set_gamma(gamma)
 
-        axes.imshow(self, origin='lower', extent=extent, aspect='normal', 
+        axes.imshow(self, origin='lower', extent=extent, aspect='normal',
                     **params)
-        
+
         for overlay in overlays:
             figure, axes = overlay(figure, axes)
         return figure
-    
+
     def norm(self):
         """Default normalization method"""
         return None
-    
-    def show(self, figure=None, overlays=None, draw_limb=False, gamma=1.0, 
+
+    def show(self, figure=None, overlays=None, draw_limb=False, gamma=1.0,
              **matplot_args):
         """Displays map on screen. Arguments are same as plot()."""
         self.plot(figure, overlays, draw_limb, gamma, **matplot_args).show()
-        
+
     @classmethod
     def parse_file(cls, filepath):
         """Reads in a map file and returns a header and data array"""
         data, dict_header = read_file(filepath)
-        
+
         header = MapHeader(dict_header)
-        
+
         return header, data
-    
+
     @classmethod
     def read(cls, filepath):
         """Map class factory
-    
-        Attempts to determine the type of data associated with input and returns
-        an instance of either the generic BaseMap class or a subclass of BaseMap
-        such as AIAMap, EUVIMap, etc.
-        
+
+        Attempts to determine the type of data associated with input and
+        returns an instance of either the generic BaseMap class or a subclass
+        of BaseMap such as AIAMap, EUVIMap, etc.
+
         Parameters
         ----------
         filepath : string
-            Path to a valid FITS or JPEG 2000 file of a type supported by SunPy.
-            
+            Path to a valid FITS or JPEG 2000 file of a type supported by SunPy
+
         Returns
         -------
         out : Map
             Returns a Map instance for the particular type of data loaded.
         """
         header, data = cls.parse_file(filepath)
- 
+
         if cls.__name__ is not "BaseMap":
             return cls(data, header)
 
         for cls in BaseMap.__subclasses__():
             if cls.is_datasource_for(header):
                 return cls(data, header)
-        raise UnrecognizedDataSouceError("File header not recognized by SunPy.")
-    
-    @classmethod
-    def detect_properties(cls, filepath):
-        """Attempts to detect the datasource type and returns meta-information
-        for that particular datasource."""
-        dict_header = read_header(filepath)
-                
-        header = MapHeader(dict_header)
-        
-        for cls in BaseMap.__subclasses__():
-            if cls.is_datasource_for(header):
-                return cls.get_properties(header)
-    
-    @classmethod
-    def get_properties(cls, header): #pylint: disable=W0613
-        """Returns default map properties""" 
-        return {
-            'cmap': cm.gray,
-            'date': datetime.today(),
-            'det': "None",
-            'inst': "None",
-            'meas': "None",
-            'obs': "None",
-            'exptime': "None", 
-            'name': "SunPy Map",
-            'rsun': wcs.get_solar_limb(header),
-            'dsun': None,
-            'center': {
-                "x": wcs.get_center(header, axis='x'),
-                "y": wcs.get_center(header, axis='y')
-            },
-            'scale': {
-                "x": header.get('cdelt1'),
-                "y": header.get('cdelt2')
-            },
-            'units': {
-                "x": wcs.get_units(header, axis='x'), 
-                "y": wcs.get_units(header, axis='y')
-            }
-        }
-    
+        raise UnrecognizedDataSouceError("File header not recognized by SunPy")
+
+#    @classmethod
+#    def detect_properties(cls, filepath):
+#        """Attempts to detect the datasource type and returns meta-information
+#        for that particular datasource."""
+#        dict_header = read_header(filepath)
+#
+#        header = MapHeader(dict_header)
+#
+#        for cls in BaseMap.__subclasses__():
+#            if cls.is_datasource_for(header):
+#                return cls.get_properties(header)
+#
+
+
 class UnrecognizedDataSouceError(ValueError):
     """Exception to raise when an unknown datasource is encountered"""
     pass
 
-    
+
 class InvalidHeaderInformation(ValueError):
     """Exception to raise when an invalid header tag value is encountered for a
     FITS/JPEG 2000 file."""
