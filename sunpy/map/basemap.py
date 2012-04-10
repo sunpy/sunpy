@@ -134,7 +134,7 @@ class BaseMap(np.ndarray):
                                header.get('radius',
                                constants.average_angular_size)))
 
-        self.crval = {
+        self.reference_coordinate = {
             'x': header.get('crval1'),
             'y': header.get('crval2'),
         }
@@ -171,8 +171,8 @@ class BaseMap(np.ndarray):
             properties = ['header', 'cmap', 'date', 'detector', 'dsun',
                           'exposure_time', 'instrument', 'measurement', 'name',
                           'observatory', 'rsun_arcseconds', 'rsun_meters',
-                          'scale', 'units', 'crval', 'reference_pixel', 'center',
-                          'coordinate_system']
+                          'scale', 'units', 'reference_coordinate', 
+                          'reference_pixel', 'center', 'coordinate_system']
 
             for attr in properties:
                 setattr(self, attr, getattr(obj, attr))
@@ -251,9 +251,11 @@ class BaseMap(np.ndarray):
         the map."""
         return {
             'x': wcs.get_center(self.shape[0], self.scale['x'], 
-                                self.reference_pixel['x'], self.crval['x']),
+                                self.reference_pixel['x'], 
+                                self.reference_coordinate['x']),
             'y': wcs.get_center(self.shape[0], self.scale['y'], 
-                                self.reference_pixel['y'], self.crval['y'])
+                                self.reference_pixel['y'], 
+                                self.reference_coordinate['y'])
         }
 
     def _draw_limb(self, fig, axes):
@@ -392,8 +394,8 @@ class BaseMap(np.ndarray):
         new_map.scale['y'] *= scale_factor_y
         new_map.reference_pixel['x'] = (dimensions[0] + 1) / 2.
         new_map.reference_pixel['y'] = (dimensions[1] + 1) / 2.
-        new_map.crval['x'] = self.center['x']
-        new_map.crval['y'] = self.center['x']
+        new_map.reference_coordinate['x'] = self.center['x']
+        new_map.reference_coordinate['y'] = self.center['x']
 
         return new_map
 
