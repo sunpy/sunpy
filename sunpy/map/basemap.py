@@ -139,7 +139,7 @@ class BaseMap(np.ndarray):
             'y': header.get('crval2'),
         }
 
-        self.crpix = {
+        self.reference_pixel = {
             'x': header.get('crpix1'),
             'y': header.get('crpix2')
         }
@@ -171,7 +171,7 @@ class BaseMap(np.ndarray):
             properties = ['header', 'cmap', 'date', 'detector', 'dsun',
                           'exposure_time', 'instrument', 'measurement', 'name',
                           'observatory', 'rsun_arcseconds', 'rsun_meters',
-                          'scale', 'units', 'crval', 'crpix', 'center',
+                          'scale', 'units', 'crval', 'reference_pixel', 'center',
                           'coordinate_system']
 
             for attr in properties:
@@ -251,9 +251,9 @@ class BaseMap(np.ndarray):
         the map."""
         return {
             'x': wcs.get_center(self.shape[0], self.scale['x'], 
-                                self.crpix['x'], self.crval['x']),
+                                self.reference_pixel['x'], self.crval['x']),
             'y': wcs.get_center(self.shape[0], self.scale['y'], 
-                                self.crpix['y'], self.crval['y'])
+                                self.reference_pixel['y'], self.crval['y'])
         }
 
     def _draw_limb(self, fig, axes):
@@ -390,8 +390,8 @@ class BaseMap(np.ndarray):
         # Update metadata
         new_map.scale['x'] *= scale_factor_x
         new_map.scale['y'] *= scale_factor_y
-        new_map.crpix['x'] = (dimensions[0] + 1) / 2.
-        new_map.crpix['y'] = (dimensions[1] + 1) / 2.
+        new_map.reference_pixel['x'] = (dimensions[0] + 1) / 2.
+        new_map.reference_pixel['y'] = (dimensions[1] + 1) / 2.
         new_map.crval['x'] = self.center['x']
         new_map.crval['y'] = self.center['x']
 
@@ -453,8 +453,8 @@ class BaseMap(np.ndarray):
         
         # Instantiate new instance and update metadata
         new_map = self.__class__(data.copy(), header)
-        new_map.crpix['x'] = header['crpix1'] - x_pixels[0]
-        new_map.crpix['y'] = header['crpix2'] - y_pixels[0]
+        new_map.reference_pixel['x'] = self.reference_pixel['x'] - x_pixels[0]
+        new_map.reference_pixel['y'] = self.reference_pixel['y'] - y_pixels[0]
 
         return new_map
 
