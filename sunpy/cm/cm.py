@@ -29,6 +29,9 @@ sohoeit195 = _cm.eit_color_table(195)
 sohoeit284 = _cm.eit_color_table(284)
 sohoeit304 = _cm.eit_color_table(304)
 
+soholasco2 = _cm.lasco_color_table(2)
+soholasco3 = _cm.lasco_color_table(3)
+
 cmlist = {
           'sdoaia94': sdoaia94,
           'sdoaia131': sdoaia131,
@@ -44,6 +47,8 @@ cmlist = {
           'sohoeit195': sohoeit195,
           'sohoeit284': sohoeit284,
           'sohoeit304': sohoeit304,
+          'soholasco2': soholasco2,
+          'soholasco3': soholasco3,
           'rhessi': cm.jet #pylint: disable=E1101
           }
 
