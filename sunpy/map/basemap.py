@@ -21,13 +21,16 @@ from sunpy.time import parse_time
 from sunpy.map.header import MapHeader
 
 """
+TODO
+----
+* Automatically include BaseMap docstring when displaying help for subclasses?
+
 Questions
 ---------
 * Should we use Helioviewer or VSO's data model? (e.g. map.meas, map.wavelength
 or something else?)
 * Should 'center' be renamed to 'offset' and crpix1 & 2 be used for 'center'?
 """
-
 
 class BaseMap(np.ndarray):
     """
@@ -46,30 +49,42 @@ class BaseMap(np.ndarray):
     ----------
     fits_header : dict
         Dictionary representation of the original FITS header
+    carrington_longitude : str
+        Carrington longitude (crln_obs)
+    center : dict
+        X and Y coordinate of the center of the map in units.
+        Usually represents the offset between the center of the Sun and the
+        center of the map.
+    cmap : matplotlib.colors.Colormap
+        A Matplotlib colormap to be applied to the data
+    coordinate_system : dict
+        Coordinate system used for x and y axes (ctype1/2)
     date : datetime
         Image observation time
     detector : str
         Detector name
+    dsun : float
+        The observer distance from the Sun.
+    exptime : float
+        Exposure time of the image in seconds.
+    heliographic_latitude : float
+        Heliographic latitude in degrees
+    heliographic_longitude : float
+        Heliographic longitude in degrees
     instrument : str
         Instrument name
     measurement : str, int
         Measurement name. In some instances this is the wavelength of image.
     observatory : str
         Observatory name
-    dsun : float
-        The observer distance from the Sun.
+    reference_coordinate : float
+        Reference point WCS axes in data units (crval1/2) 
+    reference_pixel : float
+        Reference point axes in pixels (crpix1/2)
     rsun_arcseconds : float
         Radius of the sun in arcseconds
     rsun_meters : float
         Radius of the sun in meters
-    exptime : float
-        Exposure time of the image in seconds.
-    name : str
-        Nickname for the image type (e.g. "AIA 171")
-    center : dict
-        X and Y coordinate of the center of the map in units.
-        Usually represents the offset between the center of the Sun and the
-        center of the map.
     scale : dict
         Image scale along the x and y axes in units/pixel (cdelt1/2).
     units : dict
@@ -133,6 +148,19 @@ class BaseMap(np.ndarray):
         self.rsun_arcseconds = header.get('rsun_obs', header.get('solar_r',
                                header.get('radius',
                                constants.average_angular_size)))
+        
+        self.coordinate_system = {
+            'x': header.get('ctype1'),
+            'y': header.get('ctype2')
+        }
+        
+        self.carrington_longitude = header.get('crln_obs', 0)
+        
+        self.heliographic_latitude = header.get('hglt_obs', 
+                                     header.get('crlt_obs',
+                                     header.get('solar_b0', 0)))
+        
+        self.heliographic_longitude = header.get('hgln_obs', 0)
 
         self.reference_coordinate = {
             'x': header.get('crval1'),
@@ -154,18 +182,6 @@ class BaseMap(np.ndarray):
             'y': header.get('cunit2')
         }
         
-        self.coordinate_system = {
-            'x': header.get('ctype1'),
-            'y': header.get('ctype2')
-        }
-       
-        self.heliographic_latitude = header.get('hglt_obs', 
-                                     header.get('crlt_obs',
-                                     header.get('solar_b0', 0)))
-        
-        self.heliographic_longitude = header.get('hgln_obs', 0)
-        self.carrington_longitude = header.get('crln_obs', 0)  
-
         # Validate properties
         self._validate()
 
