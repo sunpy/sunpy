@@ -458,7 +458,7 @@ class BaseMap(np.ndarray):
 
     @toggle_pylab
     def plot(self, figure=None, overlays=None, draw_limb=True, gamma=None,
-             draw_grid=False, **matplot_args):
+             draw_grid=False, colorbar=True, basic_plot=False, **matplot_args):
         """Plots the map object using matplotlib
 
         Parameters
@@ -473,6 +473,11 @@ class BaseMap(np.ndarray):
             Set the spacing between meridians and parallels for the grid
         gamma : float
             Gamma value to use for the color map
+        colorbar : bool
+            Whether to display a colorbar next to the plot
+        basic_plot : bool
+            If true, the data is plotted by itself at it's natural scale; no
+            title, labels, or axes are shown.
         **matplot_args : dict
             Matplotlib Any additional imshow arguments that should be used
             when plotting the image.
@@ -488,25 +493,33 @@ class BaseMap(np.ndarray):
 
         # Create a figure and add title and axes
         if figure is None:
-            figure = plt.figure()
+            figure = plt.figure(frameon=not basic_plot)
 
-        axes = figure.add_subplot(111)
-        axes.set_title("%s %s" % (self.name, self.date))
-        
-        # x-axis label
-        if self.coordinate_system['x'] == 'HPLN-TAN':
-            xlabel = 'X-position [%s]' % self.units['x']
-        elif self.coordinate_system['x'] == 'HG':
-            xlabel = 'Longitude [%s]' % self.units['x']
-
-        # y-axis label
-        if self.coordinate_system['y'] == 'HPLT-TAN':
-            ylabel = 'Y-position [%s]' % self.units['y']
-        elif self.coordinate_system['y'] == 'HG':
-            ylabel = 'Latitude [%s]' % self.units['y']
+        # Basic plot
+        if basic_plot:
+            axes = plt.Axes(figure, [0., 0., 1., 1.])
+            axes.set_axis_off()
+            figure.add_axes(axes)
             
-        axes.set_xlabel(xlabel)
-        axes.set_ylabel(ylabel)
+        # Normal plot
+        else:
+            axes = figure.add_subplot(111)
+            axes.set_title("%s %s" % (self.name, self.date))
+            
+            # x-axis label
+            if self.coordinate_system['x'] == 'HPLN-TAN':
+                xlabel = 'X-position [%s]' % self.units['x']
+            elif self.coordinate_system['x'] == 'HG':
+                xlabel = 'Longitude [%s]' % self.units['x']
+    
+            # y-axis label
+            if self.coordinate_system['y'] == 'HPLT-TAN':
+                ylabel = 'Y-position [%s]' % self.units['y']
+            elif self.coordinate_system['y'] == 'HG':
+                ylabel = 'Latitude [%s]' % self.units['y']
+                
+            axes.set_xlabel(xlabel)
+            axes.set_ylabel(ylabel)
 
         # Determine extent
         extent = self.xrange + self.yrange
@@ -523,79 +536,23 @@ class BaseMap(np.ndarray):
             params['cmap'].set_gamma(gamma)
 
         im = axes.imshow(self, origin='lower', extent=extent, **params)
-        figure.colorbar(im)
+        
+        if colorbar and not basic_plot:
+            figure.colorbar(im)
 
         for overlay in overlays:
             figure, axes = overlay(figure, axes)
         return figure
 
-    @toggle_pylab
-    def plot_simple(self, figure=None, overlays=None, draw_limb=False,
-                    gamma=None, draw_grid=False, **matplot_args):
-        """Plots the map object using matplotlib
-
-        Parameters
-        ----------
-        overlays : list
-            List of overlays to include in the plot
-        draw_limb : bool
-            Whether the solar limb should be plotted.
-        draw_grid : bool
-            Whether solar meridians and parallels
-        grid_spacing : float
-            Set the spacing between meridians and parallels for the grid
-        gamma : float
-            Gamma value to use for the color map
-        **matplot_args : dict
-            Matplotlib Any additional imshow arguments that should be used
-            when plotting the image.
-        """
-        if overlays is None:
-            overlays = []
-        if draw_limb:
-            overlays = overlays + [self._draw_limb]
-
-        # TODO: need to be able to pass the grid spacing to _draw_grid from the
-        # plot command.
-        if draw_grid:
-            overlays = overlays + [self._draw_grid]
-
-        if figure is None:
-            figure = plt.figure(frameon=False)
-
-        axes = plt.Axes(figure, [0., 0., 1., 1.])
-        axes.set_axis_off()
-        figure.add_axes(axes)
-
-        # Determine extent
-        extent = self.xrange + self.yrange
-
-        # Matplotlib arguments
-        params = {
-            "cmap": self.cmap,
-            "norm": self.norm()
-        }
-        params.update(matplot_args)
-
-        if gamma is not None:
-            params['cmap'] = copy(params['cmap'])
-            params['cmap'].set_gamma(gamma)
-
-        axes.imshow(self, origin='lower', extent=extent, aspect='normal',
-                    **params)
-
-        for overlay in overlays:
-            figure, axes = overlay(figure, axes)
-        return figure
-
+    def show(self, figure=None, overlays=None, draw_limb=False, gamma=1.0,
+             draw_grid=False, colorbar=True, basic_plot=False, **matplot_args):
+        """Displays map on screen. Arguments are same as plot()."""
+        self.plot(figure, overlays, draw_limb, gamma, draw_grid, colorbar, 
+                  basic_plot, **matplot_args).show()
+    
     def norm(self):
         """Default normalization method"""
         return None
-
-    def show(self, figure=None, overlays=None, draw_limb=False, gamma=1.0,
-             **matplot_args):
-        """Displays map on screen. Arguments are same as plot()."""
-        self.plot(figure, overlays, draw_limb, gamma, **matplot_args).show()
 
     @classmethod
     def parse_file(cls, filepath):
