@@ -9,5 +9,7 @@ Welcome to the SunPy User Guide!
    
    installation/index
    tutorial
+   customization
+   troubleshooting
 .. overview
     
