@@ -58,6 +58,7 @@ class LASCOMap(BaseMap):
         
         datestr = "%sT%s" % (header.get('date_obs'), header.get('time_obs'))
         
+        self.cmap = cm.get_cmap('soholasco%s' % self.detector[1])
         self.date = parse_time(datestr)
         self.measurement = "white-light"
         self.name = "LASCO %s" % header.get('detector')
