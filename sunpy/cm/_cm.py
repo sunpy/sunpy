@@ -175,3 +175,49 @@ def eit_color_table(wavelength):
     )
     
     return colors.LinearSegmentedColormap('mytable', cdict)
+
+lasco_c2_r = np.concatenate((np.array([0,1,2,5,8,11,14,17,20,23,26,28,31,34,37,42,44,47,50,55,57,60,65,68,70,75,78,82,85,88,92,95,99,102,107
+,110,114,117,121,124,128,133,136,140,143,147,152,155,159,163,166,170,175,178,182,186,189,194,198,201,205,210,214,217,221,226,230,233,237,241
+,246,250,253]), 255*np.ones(183)))
+
+lasco_c2_g = np.concatenate((np.zeros(52).astype('int'), np.array([1,5,11,17,20,26,32,35,41,47,52,56,62,68,73,77,83,88
+,94,100,103,109,115,120,126,130,136,141,147,153,158,164,168,173,179,185,190,196,202,207,213,217,222,228,234,239,245,251]), 255*np.ones(156)))
+
+lasco_c2_b = np.concatenate((np.zeros(78).astype('int'), np.array([7,19,31,43,54,66,74,86,98,109,121,133,145,156,168,176,188,200,211,223,235,247]),255*np.ones(156)))
+
+lasco_c3_r = np.concatenate((np.zeros(77).astype('int'), np.array([5,13,25,33,45,53,65,73,85,94,106,114,126,134,146,154,166,175,187,195,207,215,227,235,247]),255*np.ones(154)))
+
+lasco_c3_g = np.concatenate((np.zeros(39).astype('int'), np.array([4,7,12,15,20,23,28,31,36,39,44,47,52,55,60,63,68,71,76,79,84,87,92,95,100,103,108,111,116,119,124
+,127,132,135,140,143,148,151,156,159,164,167,172,175,180,183,188,191,196,199,204,207,212,215,220,223,228,231,236,239,244,247,252]),255*np.ones(154)))
+
+lasco_c3_b = np.concatenate((np.array([0,4,6,10,13,17,20,24,27,31,33,37,40,44,47,51,54,58,61,65,67,71,74,78,81,85,88,92,94,99,101,105,108,112,115
+,119,122,126,128,132,135,139,142,146,149,153,155,160,162,166,169,173,176,180,183,187,189,193,196,200,203,207,210,214,217,221,223,227,230,234
+,237,241,244,248,250]),255*np.ones(181)))
+
+def lasco_color_table(number):
+    '''Returns one of the fundamental color tables for SOHO LASCO images.'''
+    # SOHO EIT Color tables
+    # EIT 171 IDL Name EIT Dark Bot Blue
+    # EIT 195 IDL Name EIT Dark Bot Green
+    # EIT 284 IDL Name EIT Dark Bot Yellow
+    # EIT 304 IDL Name EIT Dark Bot Red
+    try:
+        r, g, b = {
+            2: (lasco_c2_r, lasco_c2_g, lasco_c2_b), 
+            3: (lasco_c3_r, lasco_c3_g, lasco_c3_b), 
+        }[number]
+    except KeyError:
+        raise ValueError(
+            "Invalid LASCO number. Valid values are "
+            "2, 3."
+        )
+
+    # Now create the color tuples
+    i = np.linspace(0, 1, r0.size)
+    
+    cdict = dict(
+        (name, list(zip(i, el/255.0, el/255.0)))
+        for el, name in [(r, 'red'),  (g, 'green'), (b, 'blue')]
+    )
+    
+    return colors.LinearSegmentedColormap('mytable', cdict)
