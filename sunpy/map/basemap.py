@@ -135,6 +135,7 @@ class BaseMap(np.ndarray):
         self.fits_header = header
 
         # Set properties
+        self.byte_scaled = self.dtype == np.uint8
         self.cmap = cm.gray  # @UndefinedVariable
         self.date = parse_time(header.get('date-obs'))
         self.detector = header.get('detector')
