@@ -169,8 +169,8 @@ class BaseMap(np.ndarray):
         }
 
         self.reference_pixel = {
-            'x': header.get('crpix1'),
-            'y': header.get('crpix2')
+            'x': header.get('crpix1', (self.shape[0] + 1) / 2.),
+            'y': header.get('crpix2', (self.shape[1] + 1) / 2.)
         }
 
         self.scale = {
