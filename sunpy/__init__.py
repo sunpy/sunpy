@@ -104,6 +104,19 @@ def get_configdir():
 
 #get_configdir = verbose.wrap('CONFIGDIR=%s', _get_configdir, always=False)
 
+
+def sunpy_configfile():
+    """
+    Give the name of the currently used configuration file.
+    """
+    config_path = get_configdir()
+    if os.path.exists(config_path + '/' + config_filename):    
+        return config_path + '/' + config_filename
+    else:
+        module_dir = os.path.dirname(sunpy.__file__)
+        return module_dir + '/data/sunpyrc'
+ 
+
 def read_configfile():
     """
     Read the sunpyrc configuration file. If one does not exists in the user's

@@ -4,12 +4,9 @@ This module provides a set of colormaps specific for solar data.
 from __future__ import absolute_import
 
 __all__ = ["get_cmap", "show_colormaps", "test_equalize"]
-           
+
 import numpy as np
-from matplotlib import pylab
-import matplotlib.colors as colors
 import matplotlib.pyplot as plt
-import matplotlib.cbook as cbook
 import matplotlib.cm as cm
 from sunpy.cm import _cm
 
@@ -49,8 +46,9 @@ cmlist = {
           'sohoeit304': sohoeit304,
           'soholasco2': soholasco2,
           'soholasco3': soholasco3,
-          'rhessi': cm.jet #pylint: disable=E1101
+          'rhessi': cm.jet  # pylint: disable=E1101
           }
+
 
 def get_cmap(name='sdoaia94'):
     """Get a colormap.
@@ -71,7 +69,7 @@ def get_cmap(name='sdoaia94'):
     --------
     >>> import sunpy.cm as cm
     >>> colormap = cm.get_cmap(name = 'sdoaia94')
-    
+
     Reference
     ---------
     | http://matplotlib.sourceforge.net/api/cm_api.html
@@ -81,6 +79,7 @@ def get_cmap(name='sdoaia94'):
         return cmlist.get(name)
     else:
         raise ValueError("Colormap %s is not recognized" % name)
+
 
 def show_colormaps():
     """Displays a plot of the custom color maps supported in SunPy.
@@ -100,78 +99,78 @@ def show_colormaps():
     --------
     >>> import sunpy.cm as cm
     >>> cm.show_colormaps()
-    
+
     Reference
     ---------
 
     """
     maps = sorted(cmlist)
     nmaps = len(maps) + 1
-    
-    a = np.linspace(0, 1, 256).reshape(1, -1) #pylint: disable=E1103
+
+    a = np.linspace(0, 1, 256).reshape(1, -1)  # pylint: disable=E1103
     a = np.vstack((a, a))
-    
+
     fig = plt.figure(figsize=(5, 10))
     fig.subplots_adjust(top=0.99, bottom=0.01, left=0.2, right=0.99)
-    for i,name in enumerate(maps):
+    for i, name in enumerate(maps):
         ax = plt.subplot(nmaps, 1, i + 1)
         plt.axis("off")
         plt.imshow(a, aspect='auto', cmap=get_cmap(name), origin='lower')
         pos = list(ax.get_position().bounds)
-        fig.text(pos[0] - 0.01, pos[1], name, fontsize=10, 
+        fig.text(pos[0] - 0.01, pos[1], name, fontsize=10,
                  horizontalalignment='right')
 
     plt.show()
 
-def test_equalize(data):
-    """Returns a color map which performs histogram equalization on the data.
-
-    Parameters
-    ----------
-    data : ndarray
-
-    Returns
-    -------
-    value : matplotlib colormap
-
-    See Also
-    --------
-
-    Examples
-    --------
-    >>> import sunpy.cm as cm
-    >>> cm.test_equalize()
-    
-    Reference
-    ---------
-    | http://matplotlib.sourceforge.net/api/cm_api.html
-    
-    .. warning:: this function is under development
-    
-    .. todo:: finish coding this function!
-
-    """
-    dfile = cbook.get_sample_data('s1045.ima', asfileobj=False)
-    
-    im = np.fromstring(file(dfile, 'rb').read(), np.uint16).astype(float)
-    im.shape = 256, 256
-
-    #imshow(im, ColormapJet(256))
-    #imshow(im, cmap=cm.jet)
-    
-    imvals = np.sort(im.flatten())
-    lo = imvals[0]
-    hi = imvals[-1]
-    steps = (imvals[::len(imvals)/256] - lo) / (hi - lo)
-    num_steps = float(len(steps))
-    interps = [(s, idx/num_steps, idx/num_steps) for idx, s in enumerate(steps)]
-    interps.append((1, 1, 1))
-    cdict = {'red': interps,
-             'green': interps,
-             'blue': interps}
-    histeq_cmap = colors.LinearSegmentedColormap('HistEq', cdict)
-    pylab.figure()
-    pylab.imshow(im, cmap=histeq_cmap)
-    pylab.title('histeq')
-    pylab.show()
-
+#def test_equalize(data):
+#    """Returns a color map which performs histogram equalization on the data.
+#
+#    Parameters
+#    ----------
+#    data : ndarray
+#
+#    Returns
+#    -------
+#    value : matplotlib colormap
+#
+#    See Also
+#    --------
+#
+#    Examples
+#    --------
+#    >>> import sunpy.cm as cm
+#    >>> cm.test_equalize()
+#
+#    Reference
+#    ---------
+#    | http://matplotlib.sourceforge.net/api/cm_api.html
+#
+#    .. warning:: this function is under development
+#
+#    .. todo:: finish coding this function!
+#
+#    """
+#    dfile = cbook.get_sample_data('s1045.ima', asfileobj=False)
+#
+#    im = np.fromstring(file(dfile, 'rb').read(), np.uint16).astype(float)
+#    im.shape = 256, 256
+#
+#    #imshow(im, ColormapJet(256))
+#    #imshow(im, cmap=cm.jet)
+#
+#    imvals = np.sort(im.flatten())
+#    lo = imvals[0]
+#    hi = imvals[-1]
+#    steps = (imvals[::len(imvals)/256] - lo) / (hi - lo)
+#    num_steps = float(len(steps))
+#    interps = [(s, idx/num_steps, idx/num_steps) for idx,
+#        s in enumerate(steps)]
+#    interps.append((1, 1, 1))
+#    cdict = {'red': interps,
+#             'green': interps,
+#             'blue': interps}
+#    histeq_cmap = colors.LinearSegmentedColormap('HistEq', cdict)
+#    pylab.figure()
+#    pylab.imshow(im, cmap=histeq_cmap)
+#    pylab.title('histeq')
+#    pylab.show()
