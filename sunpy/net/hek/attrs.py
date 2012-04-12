@@ -80,7 +80,7 @@ class Time(attr.Attr):
 
 
 # pylint: disable=R0913
-class SpartialRegion(attr.Attr):
+class SpatialRegion(attr.Attr):
     def __init__(
         self, x1=-1200, y1=-1200, x2=1200, y2=1200, sys='helioprojective'):
         attr.Attr.__init__(self)
@@ -92,7 +92,7 @@ class SpartialRegion(attr.Attr):
         self.sys = sys
     
     def collides(self, other):
-        return isinstance(other, SpartialRegion)
+        return isinstance(other, SpatialRegion)
     
     def __eq__(self, other):
         if not isinstance(other, self.__class__):
@@ -139,7 +139,7 @@ class ComparisonParamAttrWrapper(object):
     def __eq__(self, other):
         return _ParamAttr(self.name, '=', other)
     
-    def __neq__(self, other):
+    def __ne__(self, other):
         return _ParamAttr(self.name, '!=', other)
 
 
@@ -169,7 +169,7 @@ def _a(wlk, root, state, dct):
     return dct
 
 @walker.add_creator(
-    Time, SpartialRegion, _ListAttr, _ParamAttr, attr.AttrAnd, Contains)
+    Time, SpatialRegion, _ListAttr, _ParamAttr, attr.AttrAnd, Contains)
 # pylint: disable=E0102,C0103,W0613
 def _c(wlk, root, state):
     value = {}
@@ -183,7 +183,7 @@ def _a(wlk, root, state, dct):
     dct['event_endtime'] = parse_time(root.end).strftime('%Y-%m-%dT%H:%M:%S')
     return dct
 
-@walker.add_applier(SpartialRegion)
+@walker.add_applier(SpatialRegion)
 # pylint: disable=E0102,C0103,W0613
 def _a(wlk, root, state, dct):
     dct['x1'] = root.x1
