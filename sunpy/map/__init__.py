@@ -53,7 +53,7 @@ def make_map(*args, **kwargs):
                 maps = glob.glob(filepath)
             # Directory (use all files)
             elif os.path.isdir(filepath):
-                maps = os.listdir(filepath)
+                maps = [os.path.join(filepath, x) for x in os.listdir(filepath)]
                 
             # Filepath
             else:

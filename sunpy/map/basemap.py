@@ -135,6 +135,7 @@ class BaseMap(np.ndarray):
         self.fits_header = header
 
         # Set properties
+        self.byte_scaled = self.dtype == np.uint8
         self.cmap = cm.gray  # @UndefinedVariable
         self.date = parse_time(header.get('date-obs'))
         self.detector = header.get('detector')
@@ -163,13 +164,13 @@ class BaseMap(np.ndarray):
         self.heliographic_longitude = header.get('hgln_obs', 0)
 
         self.reference_coordinate = {
-            'x': header.get('crval1'),
-            'y': header.get('crval2'),
+            'x': header.get('crval1', 0),
+            'y': header.get('crval2', 0),
         }
 
         self.reference_pixel = {
-            'x': header.get('crpix1'),
-            'y': header.get('crpix2')
+            'x': header.get('crpix1', (self.shape[0] + 1) / 2.),
+            'y': header.get('crpix2', (self.shape[1] + 1) / 2.)
         }
 
         self.scale = {
@@ -523,13 +524,13 @@ class BaseMap(np.ndarray):
             axes.set_title("%s %s" % (self.name, self.date))
             
             # x-axis label
-            if self.coordinate_system['x'] == 'HPLN-TAN':
+            if self.coordinate_system['x'] in ['HPLN-TAN', 'SOLAR-X']:
                 xlabel = 'X-position [%s]' % self.units['x']
             elif self.coordinate_system['x'] == 'HG':
                 xlabel = 'Longitude [%s]' % self.units['x']
     
             # y-axis label
-            if self.coordinate_system['y'] == 'HPLT-TAN':
+            if self.coordinate_system['y'] in ['HPLT-TAN', 'SOLAR-Y']:
                 ylabel = 'Y-position [%s]' % self.units['y']
             elif self.coordinate_system['y'] == 'HG':
                 ylabel = 'Latitude [%s]' % self.units['y']
