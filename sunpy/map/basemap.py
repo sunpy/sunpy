@@ -164,8 +164,8 @@ class BaseMap(np.ndarray):
         self.heliographic_longitude = header.get('hgln_obs', 0)
 
         self.reference_coordinate = {
-            'x': header.get('crval1'),
-            'y': header.get('crval2'),
+            'x': header.get('crval1', 0),
+            'y': header.get('crval2', 0),
         }
 
         self.reference_pixel = {
