@@ -29,14 +29,15 @@ class AIAMap(BaseMap):
 
     def norm(self):
         """Returns a Normalize object to be used with AIA data"""
+        # byte-scaled images have most likely already been scaled
+        if self.byte_scaled:
+            return None
+
         mean = self.mean()
         std = self.std()
         
         vmin = max(0, mean - 3 * std)
         vmax = min(self.max(), mean + 3 * std)
-        
-        # 8-bit images are probably from Helioviewer and are already scaled
-        vmax = max(255, vmax)
         
         return colors.Normalize(vmin, vmax)
     

@@ -36,16 +36,17 @@ class EITMap(BaseMap):
         return header.get('instrume') == 'EIT'
 
     def norm(self):
-        """Returns a Normalize object to be used with AIA data"""
+        """Returns a Normalize object to be used with EIT data"""
+        # byte-scaled images have most likely already been scaled
+        if self.byte_scaled:
+            return None
+        
         mean = self.mean()
         std = self.std()
         
         vmin = 1
         vmax = min(self.max(), mean + 5 * std)
-        
-        # 8-bit images are probably from Helioviewer and are already scaled
-        vmax = max(255, vmax)
-        
+
         return colors.LogNorm(vmin, vmax)
 
 class LASCOMap(BaseMap):
@@ -58,6 +59,7 @@ class LASCOMap(BaseMap):
         
         datestr = "%sT%s" % (header.get('date_obs'), header.get('time_obs'))
         
+        self.cmap = cm.get_cmap('soholasco%s' % self.detector[1])
         self.date = parse_time(datestr)
         self.measurement = "white-light"
         self.name = "LASCO %s" % header.get('detector')
