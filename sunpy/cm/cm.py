@@ -3,7 +3,7 @@ This module provides a set of colormaps specific for solar data.
 """
 from __future__ import absolute_import
 
-__all__ = ["get_cmap", "show_colormaps", "test_equalize"]
+__all__ = ["get_cmap", "show_colormaps"]
 
 import numpy as np
 import matplotlib.pyplot as plt
