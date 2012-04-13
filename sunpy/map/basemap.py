@@ -223,6 +223,21 @@ class BaseMap(np.ndarray):
 
         return result
 
+    def __repr__(self):
+        output = "SunPy Map\n"
+        output += "---------\n"
+        output +=  "Observatory:\t" + self.observatory + "\n"
+        output += "Instrument:\t" + self.instrument + "\n"
+        output += "Detector:\t" + self.detector + "\n"
+        output += "Measurement:\t" + str(self.measurement) + "\n"
+        output += "Obs date:\t" + self.date.strftime("%Y-%m-%d %H:%M:%S") + "\n"
+        #output += "Coordinate System: " + self.coordinate_system + "\n"
+        output += "dt:\t\t" + str(self.exposure_time) + "\n"
+        output += "Dimension:\t[" + str(self.shape[0]) + ', ' + str(self.shape[1]) + "]\n"
+        output += "[dx, dy] =\t[" + str(self.scale['x']) + ', ' + str(self.scale['y']) + "]\n"
+        
+        return output + "\n" + super(BaseMap, self).__repr__()
+
     def __sub__(self, other):
         """Subtract two maps. Currently does not take into account the
         alignment between the two maps.
