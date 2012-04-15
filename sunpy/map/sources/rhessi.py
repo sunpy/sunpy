@@ -34,6 +34,10 @@ class RHESSIMap(BaseMap):
         self.cmap = cm.get_cmap('rhessi')
         self.exposure_time = (parse_time(header.get('date_end')) - 
                               parse_time(header.get('date_obs'))).seconds
+        self.coordinate_system = {
+            'x': 'HPLN-TAN',
+            'y': 'HPLT-TAN'
+        }
 
     @classmethod
     def is_datasource_for(cls, header):
