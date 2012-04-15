@@ -179,8 +179,8 @@ class BaseMap(np.ndarray):
         }
 
         self.units = {
-            'x': header.get('cunit1'),
-            'y': header.get('cunit2')
+            'x': header.get('cunit1', 'arcsec'),
+            'y': header.get('cunit2', 'arcsec')
         }
         
         # Validate properties
@@ -539,16 +539,16 @@ class BaseMap(np.ndarray):
             axes.set_title("%s %s" % (self.name, self.date))
             
             # x-axis label
-            if self.coordinate_system['x'] in ['HPLN-TAN', 'SOLAR-X']:
-                xlabel = 'X-position [%s]' % self.units['x']
-            elif self.coordinate_system['x'] == 'HG':
+            if self.coordinate_system['x'] == 'HG':
                 xlabel = 'Longitude [%s]' % self.units['x']
-    
+            else:
+                xlabel = 'X-position [%s]' % self.units['x']
+
             # y-axis label
-            if self.coordinate_system['y'] in ['HPLT-TAN', 'SOLAR-Y']:
-                ylabel = 'Y-position [%s]' % self.units['y']
-            elif self.coordinate_system['y'] == 'HG':
+            if self.coordinate_system['y'] == 'HG':
                 ylabel = 'Latitude [%s]' % self.units['y']
+            else:
+                ylabel = 'Y-position [%s]' % self.units['y']
                 
             axes.set_xlabel(xlabel)
             axes.set_ylabel(ylabel)
