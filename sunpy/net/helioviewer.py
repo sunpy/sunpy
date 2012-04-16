@@ -36,6 +36,7 @@ import os
 import json
 import urllib
 import urllib2
+import sunpy
 from sunpy.time import parse_time
 
 # Helioviewer API URL
@@ -46,7 +47,7 @@ def get_data_sources(**kwargs):
     params = {"action": "getDataSources"}
     params.update(kwargs)
     
-    return json.loads(_request(params))    
+    return json.loads(_request(params).read())    
 
 def get_closest_image(date, observatory, instrument, detector, measurement):
     """Finds the closest image available for the specified source and date.
@@ -91,7 +92,7 @@ def get_closest_image(date, observatory, instrument, detector, measurement):
         "detector": detector,
         "measurement": measurement
     }
-    return _request(params)
+    return _request(params).read()
 
 def get_jp2_image(date, directory=None, **kwargs):
     """
@@ -102,11 +103,13 @@ def get_jp2_image(date, directory=None, **kwargs):
     ----------
     date : mixed
         A string or datetime object for the desired date of the image
+    directory : string
+        Directory to download JPEG 2000 image to.
         
     Returns
     -------
-    string : The filepath to the JP2 image or a URL if the jpip parameter was
-        set to True.
+    mixed : Returns a map representation of the requested image or a URI if
+    "jpip" parameter is set to True.
     """
     params = {
         "action": "getJP2Image",
@@ -115,7 +118,7 @@ def get_jp2_image(date, directory=None, **kwargs):
     params.update(kwargs)
     
     # Submit request
-    response = urllib2.urlopen(__BASE_API_URL__, urllib.urlencode(params))
+    response = _request(params)
     
     # JPIP URL response
     if 'jpip' in kwargs:
@@ -131,8 +134,9 @@ def get_jp2_image(date, directory=None, **kwargs):
     
     f = open(filepath, 'wb')
     f.write(response.read())
+    f.close()
     
-    return filepath
+    return sunpy.make_map(filepath)
 
 def _request(params):
     """Sends an API request and returns the result
@@ -144,8 +148,8 @@ def _request(params):
         
     Returns
     -------
-    out : String containing the result of the request
+    out : result of request
     """
     response = urllib2.urlopen(__BASE_API_URL__, urllib.urlencode(params))
         
-    return response.read()
+    return response
