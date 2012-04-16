@@ -142,8 +142,8 @@ will simply be downloaded into a temporary directory (e.g. /tmp/xyz).
 ------------------------------
 
 SunPy provides a basic GUI for plot manipulation which can be invoked interactively.
-Note that the GUI requires PyQt and all its necessary dependencies to be installed
-before it can be used::
+Note that the GUI requires `PyQt4 <http://www.riverbankcomputing.co.uk/software/pyqt/download>`__ 
+and all its necessary dependencies to be installed before it can be used::
         
         from sunpy.gui import Plotman
         
