@@ -14,7 +14,6 @@ For its basic functioning, SunPy requires several libraries:
 * `PyFITS <http://www.stsci.edu/resources/software_hardware/pyfits>`_
 * `Suds <https://fedorahosted.org/suds/>`__
 * `pandas <http://pandas.pydata.org/>`_
-* `PyQt4 <http://www.riverbankcomputing.co.uk/software/pyqt/download>`__
 
 **Optional**
 
@@ -23,6 +22,10 @@ JPEG 2000 data, you must also install:
 
 * `OpenJPEG <http://www.openjpeg.org/>`__
 * `PIL <http://www.pythonware.com/products/pil/>`__
+
+For improved GUI support, install PyQt4:
+
+* `PyQt4 <http://www.riverbankcomputing.co.uk/software/pyqt/download>`__
 
 There are many ways to get SunPy up and running on Windows, and we describe the 
 recommended method and an alternate method below.  Lines in text boxes should 
@@ -118,8 +121,6 @@ Download and install `NumPy <http://sourceforge.net/projects/numpy/files/NumPy/1
 Download and install `SciPy <http://sourceforge.net/projects/scipy/files/scipy/0.9.0/scipy-0.9.0-win32-superpack-python2.7.exe/download>`__.
 
 Download and install `matplotlib <http://sourceforge.net/projects/matplotlib/files/matplotlib/matplotlib-1.0.1/matplotlib-1.0.1.win32-py2.7.exe/download>`__.
-
-Download and install `PyQt4 <http://www.riverbankcomputing.co.uk/static/Downloads/PyQt4/PyQt-Py2.7-x86-gpl-4.8.5-1.exe>`__.
 
 Download and install `distribute <http://pythonxy.googlecode.com/files/distribute-0.6.21_py27.exe>`_.  (Note: this installer is built by the Python(x,y) team.)
 
