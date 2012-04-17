@@ -1,5 +1,5 @@
 """STEREO Map subclass definitions"""
-#pylint: disable=W0221,W0222,E1121,W0613
+#pylint: disable=W0221,W0222,E1121
 
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
@@ -10,17 +10,19 @@ from sunpy.cm import cm
 
 class EUVIMap(BaseMap):
     """EUVI Image Map definition"""
-    def __new__(cls, data, header):
-        return BaseMap.__new__(cls, data)
-    
-    def __init__(self, data, header):
-        BaseMap.__init__(self, header)
-        self.date = parse_time(header.get('date_obs'))
-        self.detector = "EUVI"
-        self.instrument = "SECCHI"
-        self.observatory = header.get('obsrvtry')
-        self.name = "EUVI %s" % self.meas
-        self.cmap = cm.get_cmap('sohoeit%d' % header.get('wavelnth'))
+    @classmethod
+    def get_properties(cls, header):
+        """Parses EUVI image header"""
+        properties = BaseMap.get_properties(header)
+        
+        properties.update({
+            "date": parse_time(header.get('date_obs')),
+            "detector": "EUVI",
+            "instrument": "SECCHI",
+            "observatory": header.get('obsrvtry'),
+            "cmap": cm.get_cmap('sohoeit%d' % header.get('wavelnth'))
+        })
+        return properties
 
     @classmethod
     def is_datasource_for(cls, header):
@@ -29,20 +31,23 @@ class EUVIMap(BaseMap):
         
 class CORMap(BaseMap):
     """COR Image Map definition"""
-    def __new__(cls, data, header):
-        return BaseMap.__new__(cls, data)
-    
-    # @TODO: Deal with invalid values for exptime. E.g. STEREO-B COR2
-    # on 2012/03/20 has -1 for some images.
-    def __init__(self, data, header):
-        BaseMap.__init__(self, header)
-        self.date = parse_time(header.get('date_obs'))
-        self.detector = header.get('detector')
-        self.instrument = "SECCHI"
-        self.observatory = header.get('obsrvtry')
-        self.measurement = "white-light"
-        self.name = "SECCHI %s" % header.get('detector')
+    @classmethod
+    def get_properties(cls, header):
+        """Parses COR image header"""
+        properties = BaseMap.get_properties(header)
         
+        # @TODO: Deal with invalid values for exptime. E.g. STEREO-B COR2
+        # on 2012/03/20 has -1 for some images.
+        properties.update({
+            "date": parse_time(header.get('date_obs')),
+            "detector": header.get('detector'),
+            "instrument": "SECCHI",
+            "observatory": header.get('obsrvtry'),
+            "measurement": "white-light",
+            "name": "SECCHI %s" % header.get('detector')
+        })
+        return properties
+
     @classmethod
     def is_datasource_for(cls, header):
         """Determines if header corresponds to an COR image"""
