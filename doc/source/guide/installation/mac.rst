@@ -14,7 +14,6 @@ For its basic functioning, SunPy requires several libraries:
 * `PyFITS <http://www.stsci.edu/resources/software_hardware/pyfits>`_
 * `Suds <https://fedorahosted.org/suds/>`__
 * `pandas <http://pandas.pydata.org/>`_
-* `PyQt4 <http://www.riverbankcomputing.co.uk/software/pyqt/download>`__
 
 **Optional**
 
@@ -23,6 +22,10 @@ JPEG 2000 data, you must also install:
 
 * `OpenJPEG <http://www.openjpeg.org/>`__
 * `PIL <http://www.pythonware.com/products/pil/>`__
+
+For improved GUI support, you will need to install PyQt4:
+
+* `PyQt4 <http://www.riverbankcomputing.co.uk/software/pyqt/download>`__
 
 Using Macports
 --------------
