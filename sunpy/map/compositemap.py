@@ -142,8 +142,9 @@ class CompositeMap:
         """
         self._maps[index].zorder = zorder
 
-    def plot(self, figure=None, title="SunPy Plot", overlays=None, 
-             **matplot_args):
+    def plot(self, figure=None, overlays=None, draw_limb=False, gamma=1.0,
+             draw_grid=False, colorbar=True, basic_plot=False, 
+             title="SunPy Plot", **matplot_args):
         """Plots the composite map object using matplotlib
         
         Parameters
@@ -205,7 +206,9 @@ class CompositeMap:
 
         return figure
 
-    def show(self, title="SunPy Plot", overlays=None, **matplot_args):
+    def show(self, figure=None, overlays=None, draw_limb=False, gamma=1.0,
+             draw_grid=False, colorbar=True, basic_plot=False, 
+             title="SunPy Plot", **matplot_args):
         """Displays the composite map on the screen.
         
         Parameters
@@ -218,7 +221,8 @@ class CompositeMap:
             Matplotlib Any additional imshow arguments that should be used
             when plotting the image.
         """
-        self.plot(title, overlays, **matplot_args).show()
+        self.plot(figure, overlays, draw_limb, gamma, draw_grid, colorbar, 
+                  basic_plot, title, **matplot_args).show()
         
 class OutOfRangeAlphaValue(ValueError):
     """Exception to raise when an alpha value outside of the range 0-1 is

@@ -16,8 +16,7 @@ To begin, install the following requirements:
  * [Matplotlib](http://matplotlib.sourceforge.net/) (1.0+)
  * [Suds](https://fedorahosted.org/suds)
  * [pandas](http://pandas.pydata.org/)
- * [PyQt](http://www.riverbankcomputing.co.uk/software/pyqt/download)
- 
+
 Next, use git to grab the latest version of SunPy:
 
     git clone git://github.com/sunpy/sunpy.git

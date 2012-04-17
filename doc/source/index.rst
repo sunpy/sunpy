@@ -14,7 +14,6 @@ Requirements
 * `PyFITS <http://www.stsci.edu/resources/software_hardware/pyfits>`_
 * `Suds <https://fedorahosted.org/suds/>`__
 * `pandas <http://pandas.pydata.org/>`_
-* `PyQt4 <http://www.riverbankcomputing.co.uk/software/pyqt/download>`__
 
 Documentation
 =============
