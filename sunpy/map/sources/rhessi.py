@@ -1,5 +1,5 @@
 """RHESSI Map subclass definitions"""
-#pylint: disable=W0221,W0222,E1121,W0613
+#pylint: disable=W0221,W0222,E1121
 
 __author__ = "Steven Christe"
 __email__ = "steven.d.christe@nasa.gov"
@@ -19,25 +19,29 @@ class RHESSIMap(BaseMap):
     TODO: Currently (8/29/2011), cannot read fits files containing more than one 
     image (schriste)
     """
-    def __new__(cls, data, header):
-        return BaseMap.__new__(cls, data)
-    
-    def __init__(self, data, header):
-        BaseMap.__init__(self, header)
+    @classmethod
+    def get_properties(cls, header):
+        """Parses RHESSI image header"""
+        properties = BaseMap.get_properties(header)
         
-        self.date = parse_time(header.get('date_obs'))
-        self.detector = header.get('telescop')
-        self.instrument = header.get('telescop')
-        self.measurement = [header.get('energy_l'), header.get('energy_h')]
-        self.name = "RHESSI %d - %d keV" % (header.get('energy_l'), 
-                                            header.get('energy_h'))
-        self.cmap = cm.get_cmap('rhessi')
-        self.exposure_time = (parse_time(header.get('date_end')) - 
-                              parse_time(header.get('date_obs'))).seconds
-        self.coordinate_system = {
-            'x': 'HPLN-TAN',
-            'y': 'HPLT-TAN'
-        }
+        properties.update({
+            "date": parse_time(header.get('date_obs')),
+            
+            "detector": header.get('telescop'),
+            "instrument": header.get('telescop'),
+            "measurement": [header.get('energy_l'), header.get('energy_h')],
+            "observatory": "SDO",
+            "name": "RHESSI %d - %d keV" % (header.get('energy_l'), 
+                                            header.get('energy_h')),
+            "cmap": cm.get_cmap('rhessi'),
+            "exposure_time": (parse_time(header.get('date_end')) - 
+                              parse_time(header.get('date_obs'))).seconds,
+            "coordinate_system": {
+                'x': 'HPLN-TAN',
+                'y': 'HPLT-TAN'
+            }
+        })
+        return properties
 
     @classmethod
     def is_datasource_for(cls, header):
