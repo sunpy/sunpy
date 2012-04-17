@@ -24,8 +24,8 @@ class MapHeader(dict):
         """Creates a new MapHeader instance"""
         if isinstance(args[0], basestring):
             # filepath
-            from sunpy.io import read_header
-            tags = read_header(args[0])
+            from sunpy.io import read_file_header
+            tags = read_file_header(args[0])
         else:
             # dictionary
             tags = args[0]

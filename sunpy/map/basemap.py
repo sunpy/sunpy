@@ -15,7 +15,7 @@ from matplotlib import cm
 from copy import copy
 from sunpy.wcs import wcs as wcs
 from sunpy.util.util import toggle_pylab
-from sunpy.io import read_file, read_header
+from sunpy.io import read_file, read_file_header
 from sunpy.sun import constants
 from sunpy.time import parse_time
 from sunpy.map.header import MapHeader
@@ -629,10 +629,10 @@ Dimension:\t [%d, %d]
         raise UnrecognizedDataSouceError("File header not recognized by SunPy")
 
     @classmethod
-    def detect_properties(cls, filepath):
+    def read_header(cls, filepath):
         """Attempts to detect the datasource type and returns meta-information
         for that particular datasource."""
-        dict_header = read_header(filepath)
+        dict_header = read_file_header(filepath)
 
         header = MapHeader(dict_header)
 
