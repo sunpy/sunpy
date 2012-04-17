@@ -92,6 +92,10 @@ def make_map(*args, **kwargs):
     else:
         raise InvalidMapType("Invalid multi-map type specified. Please choose "
                              "between 'composite' or 'cube'.")
+        
+def read_header(filepath):
+    """Parses a file header and return some important parameters"""
+    return BaseMap.read_header(filepath)
     
 class InvalidMapInput(ValueError):
     """Exception to raise when input variable is not a Map instance and does
