@@ -40,7 +40,13 @@ install(setup)
 def sdist():
     """Generated HTML docs and builds a tarball."""
     shutil.rmtree('doc/html')
-    
+
+@task
+@needs('sdist', 'setuptools.command.upload')
+def upload():
+    """Generated HTML docs and builds a tarball."""
+    shutil.rmtree('doc/html')
+
 @task
 @needs('prepare_docs', 'setuptools.command.bdist_wininst')
 def bdist():
