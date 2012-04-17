@@ -225,19 +225,22 @@ class BaseMap(np.ndarray):
         return result
 
     def __repr__(self):
-        output = "SunPy Map\n"
-        output += "---------\n"
-        output +=  "Observatory:\t" + self.observatory + "\n"
-        output += "Instrument:\t" + self.instrument + "\n"
-        output += "Detector:\t" + self.detector + "\n"
-        output += "Measurement:\t" + str(self.measurement) + "\n"
-        output += "Obs date:\t" + self.date.strftime("%Y-%m-%d %H:%M:%S") + "\n"
-        #output += "Coordinate System: " + self.coordinate_system + "\n"
-        output += "dt:\t\t" + str(self.exposure_time) + "\n"
-        output += "Dimension:\t[" + str(self.shape[0]) + ', ' + str(self.shape[1]) + "]\n"
-        output += "[dx, dy] =\t[" + str(self.scale['x']) + ', ' + str(self.scale['y']) + "]\n"
-        
-        return output + "\n" + super(BaseMap, self).__repr__()
+        return (
+"""SunPy Map
+---------
+Observatory:\t %s
+Instrument:\t %s
+Detector:\t %s
+Measurement:\t %s
+Obs Date:\t %s
+dt:\t\t %f
+Dimension:\t [%d, %d] 
+[dx, dy] =\t [%f, %f]
+ 
+""" % (self.observatory, self.instrument, self.detector, self.measurement,
+       self.date.strftime("%Y-%m-%d %H:%M:%S"), self.exposure_time,
+       self.shape[0], self.shape[1], self.scale['x'], self.scale['y']) 
+     + np.ndarray.__repr__(self))
 
     def __sub__(self, other):
         """Subtract two maps. Currently does not take into account the
