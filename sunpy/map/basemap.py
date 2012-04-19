@@ -3,7 +3,7 @@ BaseMap is a generic Map class from which all other Map classes inherit from.
 """
 from __future__ import absolute_import
 
-#pylint: disable=E1101,E1121,W0404
+#pylint: disable=E1101,E1121,W0404,W0613
 __authors__ = ["Keith Hughitt, Steven Christe"]
 __email__ = "keith.hughitt@nasa.gov"
 
@@ -15,7 +15,7 @@ from matplotlib import cm
 from copy import copy
 from sunpy.wcs import wcs as wcs
 from sunpy.util.util import toggle_pylab
-from sunpy.io import read_file
+from sunpy.io import read_file, read_file_header
 from sunpy.sun import constants
 from sunpy.time import parse_time
 from sunpy.map.header import MapHeader
@@ -120,7 +120,7 @@ class BaseMap(np.ndarray):
     | http://www.scipy.org/Subclasses
 
     """
-    def __new__(cls, data):  # pylint: disable=W0613
+    def __new__(cls, data, header):
         """Creates a new BaseMap instance"""
         if isinstance(data, np.ndarray):
             obj = data.view(cls)
@@ -131,60 +131,62 @@ class BaseMap(np.ndarray):
 
         return obj
 
-    def __init__(self, header):
+    def __init__(self, data, header):
         self.fits_header = header
 
-        # Set properties
+        # Parse header and set map attributes
+        for attr, value in list(self.get_properties(header).items()):
+            setattr(self, attr, value)
+
+        # Addition properties based on data
         self.byte_scaled = self.dtype == np.uint8
-        self.cmap = cm.gray  # @UndefinedVariable
-        self.date = parse_time(header.get('date-obs'))
-        self.detector = header.get('detector')
-        self.dsun = header.get('dsun_obs', constants.au)
-        self.exposure_time = header.get('exptime')
-        self.instrument = header.get('instrume')
-        self.measurement = header.get('wavelnth')
-        self.observatory = header.get('telescop')
-        self.name = header.get('telescop') + " " + str(header.get('wavelnth'))
-        self.rsun_meters = header.get('RSUN_REF', constants.radius)
-        self.rsun_arcseconds = header.get('rsun_obs', header.get('solar_r',
-                               header.get('radius',
-                               constants.average_angular_size)))
-        
-        self.coordinate_system = {
-            'x': header.get('ctype1'),
-            'y': header.get('ctype2')
-        }
-        
-        self.carrington_longitude = header.get('crln_obs', 0)
-        
-        self.heliographic_latitude = header.get('hglt_obs', 
-                                     header.get('crlt_obs',
-                                     header.get('solar_b0', 0)))
-        
-        self.heliographic_longitude = header.get('hgln_obs', 0)
-
-        self.reference_coordinate = {
-            'x': header.get('crval1', 0),
-            'y': header.get('crval2', 0),
-        }
-
-        self.reference_pixel = {
-            'x': header.get('crpix1', (self.shape[0] + 1) / 2.),
-            'y': header.get('crpix2', (self.shape[1] + 1) / 2.)
-        }
-
-        self.scale = {
-            'x': header.get('cdelt1'),
-            'y': header.get('cdelt2'),
-        }
-
-        self.units = {
-            'x': header.get('cunit1', 'arcsec'),
-            'y': header.get('cunit2', 'arcsec')
-        }
         
         # Validate properties
         self._validate()
+        
+    @classmethod
+    def get_properties(cls, header):
+        """Parses a map header and determines default properties."""
+        return {
+            "cmap": cm.gray,  # @UndefinedVariable
+            "date": parse_time(header.get('date-obs')),
+            "detector": header.get('detector'),
+            "dsun": header.get('dsun_obs', constants.au),
+            "exposure_time": header.get('exptime'),
+            "instrument": header.get('instrume'),
+            "measurement": header.get('wavelnth'),
+            "observatory": header.get('telescop'),
+            "name": header.get('telescop') + " " + str(header.get('wavelnth')),
+            "rsun_meters": header.get('RSUN_REF', constants.radius),
+            "rsun_arcseconds": header.get('rsun_obs', header.get('solar_r',
+                               header.get('radius',
+                               constants.average_angular_size))),
+            "coordinate_system": {
+                'x': header.get('ctype1'),
+                'y': header.get('ctype2')
+            },
+            "carrington_longitude": header.get('crln_obs', 0),
+            "heliographic_latitude": header.get('hglt_obs', 
+                                     header.get('crlt_obs',
+                                     header.get('solar_b0', 0))),
+            "heliographic_longitude": header.get('hgln_obs', 0),
+            "reference_coordinate": {
+                'x': header.get('crval1', 0),
+                'y': header.get('crval2', 0),
+            },
+            "reference_pixel": {
+                'x': header.get('crpix1', (header.get('naxis1') + 1) / 2.),
+                'y': header.get('crpix2', (header.get('naxis2') + 1) / 2.)
+            },
+            "scale": {
+                'x': header.get('cdelt1'),
+                'y': header.get('cdelt2'),
+            },
+            "units": {
+                'x': header.get('cunit1', 'arcsec'),
+                'y': header.get('cunit2', 'arcsec')
+            }
+        }
 
     def __array_finalize__(self, obj):
         """Finishes instantiation of the new map object"""
@@ -225,19 +227,22 @@ class BaseMap(np.ndarray):
         return result
 
     def __repr__(self):
-        output = "SunPy Map\n"
-        output += "---------\n"
-        output +=  "Observatory:\t" + self.observatory + "\n"
-        output += "Instrument:\t" + self.instrument + "\n"
-        output += "Detector:\t" + self.detector + "\n"
-        output += "Measurement:\t" + str(self.measurement) + "\n"
-        output += "Obs date:\t" + self.date.strftime("%Y-%m-%d %H:%M:%S") + "\n"
-        #output += "Coordinate System: " + self.coordinate_system + "\n"
-        output += "dt:\t\t" + str(self.exposure_time) + "\n"
-        output += "Dimension:\t[" + str(self.shape[0]) + ', ' + str(self.shape[1]) + "]\n"
-        output += "[dx, dy] =\t[" + str(self.scale['x']) + ', ' + str(self.scale['y']) + "]\n"
-        
-        return output + "\n" + super(BaseMap, self).__repr__()
+        return (
+"""SunPy Map
+---------
+Observatory:\t %s
+Instrument:\t %s
+Detector:\t %s
+Measurement:\t %s
+Obs Date:\t %s
+dt:\t\t %f
+Dimension:\t [%d, %d] 
+[dx, dy] =\t [%f, %f]
+ 
+""" % (self.observatory, self.instrument, self.detector, self.measurement,
+       self.date.strftime("%Y-%m-%d %H:%M:%S"), self.exposure_time,
+       self.shape[0], self.shape[1], self.scale['x'], self.scale['y']) 
+     + np.ndarray.__repr__(self))
 
     def __sub__(self, other):
         """Subtract two maps. Currently does not take into account the
@@ -623,19 +628,17 @@ class BaseMap(np.ndarray):
                 return cls(data, header)
         raise UnrecognizedDataSouceError("File header not recognized by SunPy")
 
-#    @classmethod
-#    def detect_properties(cls, filepath):
-#        """Attempts to detect the datasource type and returns meta-information
-#        for that particular datasource."""
-#        dict_header = read_header(filepath)
-#
-#        header = MapHeader(dict_header)
-#
-#        for cls in BaseMap.__subclasses__():
-#            if cls.is_datasource_for(header):
-#                return cls.get_properties(header)
-#
+    @classmethod
+    def read_header(cls, filepath):
+        """Attempts to detect the datasource type and returns meta-information
+        for that particular datasource."""
+        dict_header = read_file_header(filepath)
 
+        header = MapHeader(dict_header)
+
+        for cls in BaseMap.__subclasses__():
+            if cls.is_datasource_for(header):
+                return cls.get_properties(header)
 
 class UnrecognizedDataSouceError(ValueError):
     """Exception to raise when an unknown datasource is encountered"""

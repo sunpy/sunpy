@@ -1,5 +1,7 @@
 from __future__ import absolute_import
 
+#pylint: disable=E1103
+
 import pyfits
 import sunpy
 from sunpy.wcs import wcs as wcs

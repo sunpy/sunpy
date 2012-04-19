@@ -18,7 +18,7 @@ def read_file(filepath):
     reader = detect_filetype(filepath)    
     return reader.read(filepath)
 
-def read_header(filepath):
+def read_file_header(filepath):
     """Reads the header from a given file"""
     for extension, reader in _known_formats.items():
         if filepath.endswith(extension):
