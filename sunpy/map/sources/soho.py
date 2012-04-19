@@ -1,5 +1,5 @@
 """SOHO Map subclass definitions"""
-#pylint: disable=W0221,W0222,E1101,E1121,W0613
+#pylint: disable=W0221,W0222,E1101,E1121
 
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
@@ -12,11 +12,10 @@ from matplotlib import colors
 
 class EITMap(BaseMap):
     """EIT Image Map definition"""
-    def __new__(cls, data, header):
-        return BaseMap.__new__(cls, data)
-    
-    def __init__(self, data, header):
-        BaseMap.__init__(self, header)
+    @classmethod
+    def get_properties(cls, header):
+        """Parses EIT image header"""
+        properties = BaseMap.get_properties(header)
         
         # Solar radius in arc-seconds at 1 au
         # @TODO: use sunpy.sun instead
@@ -24,11 +23,15 @@ class EITMap(BaseMap):
         
         scale = header.get("cdelt1")
         
-        self.date = parse_time(header.get('date_obs'))
-        self.detector = "EIT"
-        self.dsun = (radius_1au / (self.rsun_arcseconds * scale)) * constants.au
-        self.name = "EIT %s" % header.get('wavelnth')
-        self.cmap = cm.get_cmap('sohoeit%d' % header.get('wavelnth'))
+        properties.update({
+            "date": parse_time(header.get('date_obs')),
+            "detector": "EIT",
+            "dsun": ((radius_1au / 
+                      (properties['rsun_arcseconds'] * scale)) * constants.au),
+            "name": "EIT %s" % header.get('wavelnth'),
+            "cmap": cm.get_cmap('sohoeit%d' % header.get('wavelnth'))
+        })
+        return properties
 
     @classmethod
     def is_datasource_for(cls, header):
@@ -51,18 +54,20 @@ class EITMap(BaseMap):
 
 class LASCOMap(BaseMap):
     """LASCO Image Map definition"""
-    def __new__(cls, data, header):
-        return BaseMap.__new__(cls, data)
-    
-    def __init__(self, data, header):
-        BaseMap.__init__(self, header)
+    @classmethod
+    def get_properties(cls, header):
+        """Parses LASCO image header"""
+        properties = BaseMap.get_properties(header)
         
         datestr = "%sT%s" % (header.get('date_obs'), header.get('time_obs'))
         
-        self.cmap = cm.get_cmap('soholasco%s' % self.detector[1])
-        self.date = parse_time(datestr)
-        self.measurement = "white-light"
-        self.name = "LASCO %s" % header.get('detector')
+        properties.update({
+            "date": parse_time(datestr),
+            "measurement": "white-light",
+            "name": "LASCO %s" % header.get('detector'),
+            "cmap": cm.get_cmap('soholasco%s' % properties['detector'][1])
+        })
+        return properties
         
     @classmethod
     def is_datasource_for(cls, header):
@@ -71,11 +76,10 @@ class LASCOMap(BaseMap):
         
 class MDIMap(BaseMap):
     """MDI Image Map definition"""
-    def __new__(cls, data, header):
-        return BaseMap.__new__(cls, data)
-    
-    def __init__(self, data, header):
-        BaseMap.__init__(self, header)
+    @classmethod
+    def get_properties(cls, header):
+        """Parses MDI image header"""
+        properties = BaseMap.get_properties(header)
         
         # MDI sometimes has an "60" in seconds field
         datestr = header['date_obs']
@@ -100,11 +104,14 @@ class MDIMap(BaseMap):
         dpcobsr = header.get('dpc_obsr')
         meas = "magnetogram" if dpcobsr.find('Mag') != -1 else "continuum"
         
-        self.date = parse_time(datestr)
-        self.detector = "MDI"
-        self.measurement = meas
-        self.dsun = dsun
-        self.name = "MDI %s" % meas
+        properties.update({
+            "date": parse_time(datestr),
+            "detector": "MDI",
+            "measurement": meas,
+            "dsun": dsun,
+            "name": "MDI %s" % meas
+        })
+        return properties
         
     @classmethod
     def is_datasource_for(cls, header):

@@ -1,5 +1,5 @@
 """SDO Map subclass definitions"""
-#pylint: disable=W0221,W0222,E1101,E1121,W0613
+#pylint: disable=W0221,W0222,E1101,E1121
 
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
@@ -16,16 +16,18 @@ class AIAMap(BaseMap):
     For a description of AIA headers
     http://jsoc.stanford.edu/doc/keywords/AIA/AIA02840_A_AIA-SDO_FITS_Keyword_Documents.pdf
     """
-    def __new__(cls, data, header):
-        return BaseMap.__new__(cls, data)
-
-    def __init__(self, data, header):
-        BaseMap.__init__(self, header)
+    @classmethod
+    def get_properties(cls, header):
+        """Parses AIA image header"""
+        properties = BaseMap.get_properties(header)
         
-        self.detector = "AIA"
-        self.instrument = "AIA"
-        self.observatory = "SDO"
-        self.cmap = cm.get_cmap('sdoaia%d' % header.get('wavelnth'))
+        properties.update({
+            "detector": "AIA",
+            "instrument": "AIA",
+            "observatory": "SDO",
+            "cmap": cm.get_cmap('sdoaia%d' % header.get('wavelnth'))
+        })
+        return properties
 
     def norm(self):
         """Returns a Normalize object to be used with AIA data"""
@@ -48,17 +50,21 @@ class AIAMap(BaseMap):
         
 class HMIMap(BaseMap):
     """HMI Image Map definition"""
-    def __new__(cls, data, header):        
-        return BaseMap.__new__(cls, data)
-    
-    def __init__(self, data, header):
-        BaseMap.__init__(self, header)
+    @classmethod
+    def get_properties(cls, header):
+        """Parses HMI image header"""
+        properties = BaseMap.get_properties(header)
         
-        self.detector = "HMI"
-        self.instrument = "HMI"
-        self.measurement = header['content'].split(" ")[0].lower()
-        self.observatory = "SDO"
-        self.name = "HMI %s" % self.meas 
+        measurement = header['content'].split(" ")[0].lower()
+        
+        properties.update({
+            "detector": "HMI",
+            "instrument": "HMI",
+            "measurement": measurement,
+            "observatory": "SDO",
+            "name": "HMI %s" % measurement
+        })
+        return properties
 
     @classmethod
     def is_datasource_for(cls, header):
