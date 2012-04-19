@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 #-*- coding:utf-8 -*-
+#pylint: disable=W0223
 """
 RGB Composite Image Demo
 
@@ -35,7 +36,6 @@ from sunpy.net import helioviewer as hv
 from sunpy.map import BaseMap
 from sunpy.util.util import toggle_pylab
 from PyQt4 import QtGui, QtCore
-from matplotlib import cm
 from matplotlib import pyplot as plt
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
@@ -51,6 +51,8 @@ class RGBCompositeImageApp(QtGui.QMainWindow):
         QtGui.QMainWindow.__init__(self)
         self.ui = Ui_RGBComposite.Ui_RGBComposite()
         self.ui.setupUi(self)
+        
+        self._datasources = None
         
         # Loaded images
         self.red = None
@@ -213,7 +215,8 @@ class RGBCompositeImageApp(QtGui.QMainWindow):
 
 class SunPyPlot(FigureCanvas):
     """SunPy preview image"""
-    def __init__(self, map_, width, height, parent=None, dpi=100, **matplot_args):
+    def __init__(self, map_, width, height, parent=None, dpi=100, 
+                 **matplot_args): #pylint: disable=W0613
         #self._widthHint = width
         #self._heightHint = height
         
@@ -304,7 +307,7 @@ class RGBCompositeMap(sunpy.MapCube):
         """
         resampled = []
         
-        for map_ in self.transpose(2, 0, 1):
+        for map_ in self.transpose(2, 0, 1): #pylint: disable=E1101
             resampled.append(map_.resample(dimensions, method))
 
         return self.__class__(*resampled)

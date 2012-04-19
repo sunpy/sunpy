@@ -93,31 +93,9 @@ def make_map(*args, **kwargs):
         raise InvalidMapType("Invalid multi-map type specified. Please choose "
                              "between 'composite' or 'cube'.")
         
-def Map(filepath):
-    """Creates a map from specified file.
-    
-    .. deprecated:: 0.1
-        Use `make_map` instead.
-    
-    Parameters
-    ----------
-    filepath : string
-        Filepath to a FITs or JPEG 2000 file
-    
-    Returns
-    -------
-    out : Map
-        Creates a map instance using the specific file and return it
-    """
-    import warnings
-    warnings.warn("sunpy.Map is deprecated: use sunpy.make_map instead.", DeprecationWarning)
-    
-    if isinstance(filepath, basestring):
-        return BaseMap.read(filepath)
-    else:
-        raise InvalidMapInput("Invalid input for make_map. Please specify "
-                              "one or more filepaths, Maps, directories, "
-                              "or wildcard expressions.")
+def read_header(filepath):
+    """Parses a file header and return some important parameters"""
+    return BaseMap.read_header(filepath)
     
 class InvalidMapInput(ValueError):
     """Exception to raise when input variable is not a Map instance and does
