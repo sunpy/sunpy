@@ -44,7 +44,10 @@ Problem Solving section at the end. This method has been tested on Mac OSX 10.5,
 Before you start you'll need to install Xcode which is the freely available 
 developer environment provided by Apple. You can find it in the Mac App Store.  
 Just a warning, it is a rather large download but provides compilers which are 
-necessary for Macports. After installing Xcode you can go ahead, download and 
+necessary for Macports (Note that for Mac OS X Lion the compilers are not installed
+by default anymore. Fire up XCode. In the Downloads section of your preferences you'll 
+find a button to install the command line tools. A nice reference `exists <https://developer.apple.com/library/ios/#documentation/DeveloperTools/Conceptual/WhatsNewXcode/Articles/xcode_4_3.html>` on the
+Apple website). After installing Xcode you can go ahead, download and 
 install MacPorts. When that is done open a terminal and update the package index
 using the command: ::
 
