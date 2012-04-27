@@ -4,6 +4,7 @@ normalization.
 """
 from __future__ import absolute_import
 
+import pyfits
 
 class MapHeader(dict):
     """
@@ -47,6 +48,11 @@ class MapHeader(dict):
     def __setitem__(self, key, value):
         """Overide [] indexing"""
         return dict.__setitem__(self, key.upper(), value)
+    
+    def as_pyfits_header(self):
+        """Returns a PyFITS header instance of the header"""
+        cards = [pyfits.core.Card(k, v) for k, v in self.items()]
+        return pyfits.core.Header(cards)
 
     def copy(self):
         """Overide copy operator"""
