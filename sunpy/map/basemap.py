@@ -7,6 +7,8 @@ from __future__ import absolute_import
 __authors__ = ["Keith Hughitt, Steven Christe"]
 __email__ = "keith.hughitt@nasa.gov"
 
+import os
+import pyfits
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import patches
@@ -465,6 +467,22 @@ Dimension:\t [%d, %d]
         new_map.reference_coordinate['y'] = self.center['x']
 
         return new_map
+    
+    def save(self, filepath):
+        """Saves the SunPy Map object to a file.
+        
+        Currently SunPy can only save files in the FITS format. In the future
+        support will be added for saving to other formats.
+        
+        Parameters
+        ----------
+        filepath : string
+            Location to save file to.
+        """
+        pyfits_header = self.get_header().as_pyfits_header()
+        hdu = pyfits.PrimaryHDU(self, header=pyfits_header)
+        hdulist = pyfits.HDUList([hdu])
+        hdulist.writeto(os.path.expanduser(filepath))        
 
     def submap(self, range_a, range_b, units="data"):
         """Returns a submap of the map with the specified range
