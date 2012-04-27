@@ -367,6 +367,40 @@ Dimension:\t [%d, %d]
         size = self.shape[dim == 'x']  # 1 if dim == 'x', 0 if dim == 'y'.
 
         return (value - self.center[dim]) / self.scale[dim] + ((size - 1) / 2.)
+    
+    def get_header(self):
+        """Returns an updated MapHeader instance"""
+        header = self.fits_header.copy()
+        
+        # dsun
+        if header.has_key('dsun_obs'):
+            header['dsun_obs'] = self.dsun
+
+        # rsun_obs
+        if header.has_key('rsun_obs'):
+            header['rsun_obs'] = self.rsun_arcseconds
+        elif header.has_key('solar_r'):
+            header['solar_r'] = self.rsun_arcseconds
+        elif header.has_key('radius'):
+            header['radius'] = self.rsun_arcseconds
+            
+        # cdelt
+        header['cdelt1'] = self.scale['x']
+        header['cdelt2'] = self.scale['y']
+
+        # crpix
+        header['crval1'] = self.reference_coordinate['x']
+        header['crval2'] = self.reference_coordinate['y']
+        
+        # crval
+        header['crpix1'] = self.reference_pixel['x']
+        header['crpix2'] = self.reference_pixel['y']
+        
+        # naxis
+        header['naxis1'] = self.shape[0]
+        header['naxis2'] = self.shape[1]
+        
+        return header               
 
     def resample(self, dimensions, method='linear'):
         """Returns a new Map that has been resampled up or down
