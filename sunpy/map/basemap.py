@@ -690,7 +690,10 @@ Dimension:\t [%d, %d]
 
         for cls in BaseMap.__subclasses__():
             if cls.is_datasource_for(header):
-                return cls.get_properties(header)
+                properties = cls.get_properties(header)
+                properties['header'] = header
+                
+                return properties
 
 class UnrecognizedDataSouceError(ValueError):
     """Exception to raise when an unknown datasource is encountered"""
