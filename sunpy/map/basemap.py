@@ -229,6 +229,9 @@ class BaseMap(np.ndarray):
         return result
 
     def __repr__(self):
+        if not hasattr(self, 'observatory'):
+            return np.ndarray.__repr__(self)
+
         return (
 """SunPy Map
 ---------
@@ -360,6 +363,18 @@ Dimension:\t [%d, %d]
     def std(self, *args, **kwargs):
         """overide np.ndarray.std()"""
         return np.array(self, copy=False, subok=False).std(*args, **kwargs)
+    
+    def mean(self, *args, **kwargs):
+        """overide np.ndarray.mean()"""
+        return np.array(self, copy=False, subok=False).mean(*args, **kwargs)
+    
+    def min(self, *args, **kwargs):
+            """overide np.ndarray.min()"""
+            return np.array(self, copy=False, subok=False).min(*args, **kwargs)
+        
+    def max(self, *args, **kwargs):
+            """overide np.ndarray.max()"""
+            return np.array(self, copy=False, subok=False).max(*args, **kwargs)
 
     def data_to_pixel(self, value, dim):
         """Convert pixel-center data coordinates to pixel values"""
@@ -727,8 +742,5 @@ class InvalidHeaderInformation(ValueError):
 
 if __name__ == "__main__":
     import sunpy
-    import numpy.ma as ma
-    
     x = sunpy.make_map(sunpy.AIA_171_IMAGE)
-    #repr(ma.masked_less_equal(x, 0))
-    x[0:512,:]
+    repr(x.min())
