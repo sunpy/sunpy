@@ -518,6 +518,16 @@ Dimension:\t [%d, %d]
         [-0.875 ,  0.25  ,  0.1875,  0.    , -0.6875]])
         """
         if units is "data":
+            # Check edges (e.g. [:512,..] or [:,...])
+            if range_a[0] is None:
+                range_a[0] = self.xrange[0]
+            if range_a[1] is None:
+                range_a[1] = self.xrange[1]
+            if range_b[0] is None:
+                range_b[0] = self.yrange[0]
+            if range_b[1] is None:
+                range_b[1] = self.yrange[1]
+
             #x_pixels = [self.data_to_pixel(elem, 'x') for elem in range_a]
             x_pixels = [np.ceil(self.data_to_pixel(range_a[0], 'x')),
                         np.floor(self.data_to_pixel(range_a[1], 'x')) + 1]
@@ -525,6 +535,16 @@ Dimension:\t [%d, %d]
             y_pixels = [np.ceil(self.data_to_pixel(range_b[0], 'y')),
                         np.floor(self.data_to_pixel(range_b[1], 'y')) + 1]
         elif units is "pixels":
+            # Check edges
+            if range_a[0] is None:
+                range_a[0] = 0
+            if range_a[1] is None:
+                range_a[1] = self.shape[0]
+            if range_b[0] is None:
+                range_b[0] = 0
+            if range_b[1] is None:
+                range_b[1] = self.shape[0]
+                
             x_pixels = range_a
             y_pixels = range_b
         else:
@@ -704,3 +724,11 @@ class InvalidHeaderInformation(ValueError):
     """Exception to raise when an invalid header tag value is encountered for a
     FITS/JPEG 2000 file."""
     pass
+
+if __name__ == "__main__":
+    import sunpy
+    import numpy.ma as ma
+    
+    x = sunpy.make_map(sunpy.AIA_171_IMAGE)
+    #repr(ma.masked_less_equal(x, 0))
+    x[0:512,:]
