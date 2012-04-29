@@ -7,6 +7,8 @@ from __future__ import absolute_import
 __authors__ = ["Keith Hughitt, Steven Christe"]
 __email__ = "keith.hughitt@nasa.gov"
 
+import os
+import pyfits
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import patches
@@ -367,6 +369,40 @@ Dimension:\t [%d, %d]
         size = self.shape[dim == 'x']  # 1 if dim == 'x', 0 if dim == 'y'.
 
         return (value - self.center[dim]) / self.scale[dim] + ((size - 1) / 2.)
+    
+    def get_header(self):
+        """Returns an updated MapHeader instance"""
+        header = self.fits_header.copy()
+        
+        # dsun
+        if header.has_key('dsun_obs'):
+            header['dsun_obs'] = self.dsun
+
+        # rsun_obs
+        if header.has_key('rsun_obs'):
+            header['rsun_obs'] = self.rsun_arcseconds
+        elif header.has_key('solar_r'):
+            header['solar_r'] = self.rsun_arcseconds
+        elif header.has_key('radius'):
+            header['radius'] = self.rsun_arcseconds
+            
+        # cdelt
+        header['cdelt1'] = self.scale['x']
+        header['cdelt2'] = self.scale['y']
+
+        # crpix
+        header['crval1'] = self.reference_coordinate['x']
+        header['crval2'] = self.reference_coordinate['y']
+        
+        # crval
+        header['crpix1'] = self.reference_pixel['x']
+        header['crpix2'] = self.reference_pixel['y']
+        
+        # naxis
+        header['naxis1'] = self.shape[0]
+        header['naxis2'] = self.shape[1]
+        
+        return header               
 
     def resample(self, dimensions, method='linear'):
         """Returns a new Map that has been resampled up or down
@@ -431,6 +467,22 @@ Dimension:\t [%d, %d]
         new_map.reference_coordinate['y'] = self.center['x']
 
         return new_map
+    
+    def save(self, filepath):
+        """Saves the SunPy Map object to a file.
+        
+        Currently SunPy can only save files in the FITS format. In the future
+        support will be added for saving to other formats.
+        
+        Parameters
+        ----------
+        filepath : string
+            Location to save file to.
+        """
+        pyfits_header = self.get_header().as_pyfits_header()
+        hdu = pyfits.PrimaryHDU(self, header=pyfits_header)
+        hdulist = pyfits.HDUList([hdu])
+        hdulist.writeto(os.path.expanduser(filepath))        
 
     def submap(self, range_a, range_b, units="data"):
         """Returns a submap of the map with the specified range
@@ -638,7 +690,10 @@ Dimension:\t [%d, %d]
 
         for cls in BaseMap.__subclasses__():
             if cls.is_datasource_for(header):
-                return cls.get_properties(header)
+                properties = cls.get_properties(header)
+                properties['header'] = header
+                
+                return properties
 
 class UnrecognizedDataSouceError(ValueError):
     """Exception to raise when an unknown datasource is encountered"""
