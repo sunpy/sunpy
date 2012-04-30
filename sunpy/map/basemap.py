@@ -103,7 +103,7 @@ class BaseMap(np.ndarray):
     [ 0.625 ,  0.625 , -0.125 , ...,  0.125 , -0.0625,  0.6875],
     [-0.625 , -0.625 , -0.625 , ...,  0.125 , -0.0625,  0.6875],
     [ 0.    ,  0.    , -1.1875, ...,  0.125 ,  0.    ,  0.6875]])
-    >>> aia.fits_header.get('cunit1')
+    >>> aia.units['x']
     'arcsec'
     >>> aia.show()
     >>> import matplotlib.cm as cm
@@ -134,7 +134,7 @@ class BaseMap(np.ndarray):
         return obj
 
     def __init__(self, data, header):
-        self.fits_header = header
+        self._original_header = header
 
         # Parse header and set map attributes
         for attr, value in list(self.get_properties(header).items()):
@@ -387,7 +387,7 @@ Dimension:\t [%d, %d]
     
     def get_header(self):
         """Returns an updated MapHeader instance"""
-        header = self.fits_header.copy()
+        header = self._original_header.copy()
         
         # dsun
         if header.has_key('dsun_obs'):
@@ -463,7 +463,7 @@ Dimension:\t [%d, %d]
                         method, center=True)
 
         # Update image scale and number of pixels
-        header = self.fits_header.copy()
+        header = self._original_header.copy()
 
         # Note that 'x' and 'y' correspond to 1 and 0 in self.shape,
         # respectively
@@ -567,7 +567,7 @@ Dimension:\t [%d, %d]
                 "Invalid unit. Must be one of 'data' or 'pixels'")
 
         # Make a copy of the header with updated centering information
-        header = self.fits_header.copy()
+        header = self._original_header.copy()
         
         # Get ndarray representation of submap
         data = np.asarray(self)[y_pixels[0]:y_pixels[1],
