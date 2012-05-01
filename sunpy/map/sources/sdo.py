@@ -25,6 +25,7 @@ class AIAMap(BaseMap):
             "detector": "AIA",
             "instrument": "AIA",
             "observatory": "SDO",
+            "nickname": "AIA",
             "cmap": cm.get_cmap('sdoaia%d' % header.get('wavelnth'))
         })
         return properties
@@ -62,7 +63,8 @@ class HMIMap(BaseMap):
             "instrument": "HMI",
             "measurement": measurement,
             "observatory": "SDO",
-            "name": "HMI %s" % measurement
+            "name": "HMI %s" % measurement,
+            "nickname": "HMI"
         })
         return properties
 
