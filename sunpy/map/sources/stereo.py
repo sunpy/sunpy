@@ -20,7 +20,8 @@ class EUVIMap(BaseMap):
             "detector": "EUVI",
             "instrument": "SECCHI",
             "observatory": header.get('obsrvtry'),
-            "cmap": cm.get_cmap('sohoeit%d' % header.get('wavelnth'))
+            "cmap": cm.get_cmap('sohoeit%d' % header.get('wavelnth')),
+            "nickname": "EUVI-" + header.get('obsrvtry')[-1]
         })
         return properties
 
@@ -44,7 +45,9 @@ class CORMap(BaseMap):
             "instrument": "SECCHI",
             "observatory": header.get('obsrvtry'),
             "measurement": "white-light",
-            "name": "SECCHI %s" % header.get('detector')
+            "name": "SECCHI %s" % header.get('detector'),
+            "nickname": "%s-%s" % (header.get('detector'), 
+                                   header.get('obsrvtry')[-1])
         })
         return properties
 
