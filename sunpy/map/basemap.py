@@ -77,6 +77,11 @@ class BaseMap(np.ndarray):
         Instrument name
     measurement : str, int
         Measurement name. In some instances this is the wavelength of image.
+    name: str
+        Human-readable description of map-type
+    nickname: str
+        An abbreviated human-readable description of the map-type; part of
+        the Helioviewer data model
     observatory : str
         Observatory name
     reference_coordinate : float
@@ -159,6 +164,7 @@ class BaseMap(np.ndarray):
             "measurement": header.get('wavelnth'),
             "observatory": header.get('telescop'),
             "name": header.get('telescop') + " " + str(header.get('wavelnth')),
+            "nickname": header.get("detector"),
             "rsun_meters": header.get('RSUN_REF', constants.radius),
             "rsun_arcseconds": header.get('rsun_obs', header.get('solar_r',
                                header.get('radius',
