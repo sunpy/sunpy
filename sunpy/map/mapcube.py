@@ -5,7 +5,6 @@ from __future__ import absolute_import
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
-from sunpy.map.basemap import UnrecognizedDataSouceError
 from sunpy.map.basemap import BaseMap
 from sunpy.map.sources import *
 import numpy as np
@@ -108,8 +107,7 @@ class MapCube(np.ndarray):
             for cls in BaseMap.__subclasses__():
                 if cls.is_datasource_for(header):
                     return cls(data, header)
-            raise UnrecognizedDataSouceError("File header not recognized by "
-                                             "SunPy.")
+
         else:
             return np.ndarray.__getitem__(self, key)
         
