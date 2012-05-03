@@ -77,6 +77,11 @@ class BaseMap(np.ndarray):
         Instrument name
     measurement : str, int
         Measurement name. In some instances this is the wavelength of image.
+    name: str
+        Human-readable description of map-type
+    nickname: str
+        An abbreviated human-readable description of the map-type; part of
+        the Helioviewer data model
     observatory : str
         Observatory name
     reference_coordinate : float
@@ -103,7 +108,7 @@ class BaseMap(np.ndarray):
     [ 0.625 ,  0.625 , -0.125 , ...,  0.125 , -0.0625,  0.6875],
     [-0.625 , -0.625 , -0.625 , ...,  0.125 , -0.0625,  0.6875],
     [ 0.    ,  0.    , -1.1875, ...,  0.125 ,  0.    ,  0.6875]])
-    >>> aia.fits_header.get('cunit1')
+    >>> aia.units['x']
     'arcsec'
     >>> aia.show()
     >>> import matplotlib.cm as cm
@@ -134,7 +139,7 @@ class BaseMap(np.ndarray):
         return obj
 
     def __init__(self, data, header):
-        self.fits_header = header
+        self._original_header = header
 
         # Parse header and set map attributes
         for attr, value in list(self.get_properties(header).items()):
@@ -159,6 +164,7 @@ class BaseMap(np.ndarray):
             "measurement": header.get('wavelnth'),
             "observatory": header.get('telescop'),
             "name": header.get('telescop') + " " + str(header.get('wavelnth')),
+            "nickname": header.get("detector"),
             "rsun_meters": header.get('RSUN_REF', constants.radius),
             "rsun_arcseconds": header.get('rsun_obs', header.get('solar_r',
                                header.get('radius',
@@ -229,6 +235,9 @@ class BaseMap(np.ndarray):
         return result
 
     def __repr__(self):
+        if not hasattr(self, 'observatory'):
+            return np.ndarray.__repr__(self)
+
         return (
 """SunPy Map
 ---------
@@ -360,6 +369,18 @@ Dimension:\t [%d, %d]
     def std(self, *args, **kwargs):
         """overide np.ndarray.std()"""
         return np.array(self, copy=False, subok=False).std(*args, **kwargs)
+    
+    def mean(self, *args, **kwargs):
+        """overide np.ndarray.mean()"""
+        return np.array(self, copy=False, subok=False).mean(*args, **kwargs)
+    
+    def min(self, *args, **kwargs):
+            """overide np.ndarray.min()"""
+            return np.array(self, copy=False, subok=False).min(*args, **kwargs)
+        
+    def max(self, *args, **kwargs):
+            """overide np.ndarray.max()"""
+            return np.array(self, copy=False, subok=False).max(*args, **kwargs)
 
     def data_to_pixel(self, value, dim):
         """Convert pixel-center data coordinates to pixel values"""
@@ -372,7 +393,7 @@ Dimension:\t [%d, %d]
     
     def get_header(self):
         """Returns an updated MapHeader instance"""
-        header = self.fits_header.copy()
+        header = self._original_header.copy()
         
         # dsun
         if header.has_key('dsun_obs'):
@@ -448,7 +469,7 @@ Dimension:\t [%d, %d]
                         method, center=True)
 
         # Update image scale and number of pixels
-        header = self.fits_header.copy()
+        header = self._original_header.copy()
 
         # Note that 'x' and 'y' correspond to 1 and 0 in self.shape,
         # respectively
@@ -518,6 +539,16 @@ Dimension:\t [%d, %d]
         [-0.875 ,  0.25  ,  0.1875,  0.    , -0.6875]])
         """
         if units is "data":
+            # Check edges (e.g. [:512,..] or [:,...])
+            if range_a[0] is None:
+                range_a[0] = self.xrange[0]
+            if range_a[1] is None:
+                range_a[1] = self.xrange[1]
+            if range_b[0] is None:
+                range_b[0] = self.yrange[0]
+            if range_b[1] is None:
+                range_b[1] = self.yrange[1]
+
             #x_pixels = [self.data_to_pixel(elem, 'x') for elem in range_a]
             x_pixels = [np.ceil(self.data_to_pixel(range_a[0], 'x')),
                         np.floor(self.data_to_pixel(range_a[1], 'x')) + 1]
@@ -525,6 +556,16 @@ Dimension:\t [%d, %d]
             y_pixels = [np.ceil(self.data_to_pixel(range_b[0], 'y')),
                         np.floor(self.data_to_pixel(range_b[1], 'y')) + 1]
         elif units is "pixels":
+            # Check edges
+            if range_a[0] is None:
+                range_a[0] = 0
+            if range_a[1] is None:
+                range_a[1] = self.shape[0]
+            if range_b[0] is None:
+                range_b[0] = 0
+            if range_b[1] is None:
+                range_b[1] = self.shape[0]
+                
             x_pixels = range_a
             y_pixels = range_b
         else:
@@ -532,7 +573,7 @@ Dimension:\t [%d, %d]
                 "Invalid unit. Must be one of 'data' or 'pixels'")
 
         # Make a copy of the header with updated centering information
-        header = self.fits_header.copy()
+        header = self._original_header.copy()
         
         # Get ndarray representation of submap
         data = np.asarray(self)[y_pixels[0]:y_pixels[1],
@@ -704,3 +745,8 @@ class InvalidHeaderInformation(ValueError):
     """Exception to raise when an invalid header tag value is encountered for a
     FITS/JPEG 2000 file."""
     pass
+
+if __name__ == "__main__":
+    import sunpy
+    x = sunpy.make_map(sunpy.AIA_171_IMAGE)
+    repr(x.min())
