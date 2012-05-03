@@ -139,7 +139,13 @@ class BaseMap(np.ndarray):
         return obj
 
     def __init__(self, data, header):
-        self._original_header = header
+        self._original_header = MapHeader(header)
+        
+        # Set naxis1 and naxis2 if not specified
+        if header.get('naxis1') is None:
+            header['naxis1'] = self.shape[0]
+        if header.get('naxis2') is None:
+            header['naxis2'] = self.shape[1]
 
         # Parse header and set map attributes
         for attr, value in list(self.get_properties(header).items()):
@@ -156,39 +162,40 @@ class BaseMap(np.ndarray):
         """Parses a map header and determines default properties."""
         return {
             "cmap": cm.gray,  # @UndefinedVariable
-            "date": parse_time(header.get('date-obs')),
-            "detector": header.get('detector'),
+            "date": parse_time(header.get('date-obs', None)),
+            "detector": header.get('detector', ''),
             "dsun": header.get('dsun_obs', constants.au),
-            "exposure_time": header.get('exptime'),
-            "instrument": header.get('instrume'),
-            "measurement": header.get('wavelnth'),
-            "observatory": header.get('telescop'),
-            "name": header.get('telescop') + " " + str(header.get('wavelnth')),
-            "nickname": header.get("detector"),
-            "rsun_meters": header.get('RSUN_REF', constants.radius),
+            "exposure_time": header.get('exptime', 0.),
+            "instrument": header.get('instrume', ''),
+            "measurement": header.get('wavelnth', ''),
+            "observatory": header.get('telescop', ''),
+            "name": header.get('telescop', '') + " " + 
+                    str(header.get('wavelnth', '')),
+            "nickname": header.get('detector', ''),
+            "rsun_meters": header.get('rsun_ref', constants.radius),
             "rsun_arcseconds": header.get('rsun_obs', header.get('solar_r',
                                header.get('radius',
                                constants.average_angular_size))),
             "coordinate_system": {
-                'x': header.get('ctype1'),
-                'y': header.get('ctype2')
+                'x': header.get('ctype1', 'HPLN-TAN'),
+                'y': header.get('ctype2', 'HPLT-TAN')
             },
-            "carrington_longitude": header.get('crln_obs', 0),
+            "carrington_longitude": header.get('crln_obs', 0.),
             "heliographic_latitude": header.get('hglt_obs', 
                                      header.get('crlt_obs',
-                                     header.get('solar_b0', 0))),
-            "heliographic_longitude": header.get('hgln_obs', 0),
+                                     header.get('solar_b0', 0.))),
+            "heliographic_longitude": header.get('hgln_obs', 0.),
             "reference_coordinate": {
-                'x': header.get('crval1', 0),
-                'y': header.get('crval2', 0),
+                'x': header.get('crval1', 0.),
+                'y': header.get('crval2', 0.),
             },
             "reference_pixel": {
                 'x': header.get('crpix1', (header.get('naxis1') + 1) / 2.),
                 'y': header.get('crpix2', (header.get('naxis2') + 1) / 2.)
             },
             "scale": {
-                'x': header.get('cdelt1'),
-                'y': header.get('cdelt2'),
+                'x': header.get('cdelt1', 1.),
+                'y': header.get('cdelt2', 1.),
             },
             "units": {
                 'x': header.get('cunit1', 'arcsec'),
@@ -201,11 +208,11 @@ class BaseMap(np.ndarray):
         if obj is None:
             return
 
-        if hasattr(obj, 'header'):
-            properties = ['header', 'cmap', 'date', 'detector', 'dsun',
+        if hasattr(obj, '_original_header'):
+            properties = ['_original_header', 'cmap', 'date', 'detector', 'dsun',
                           'exposure_time', 'instrument', 'measurement', 'name',
                           'observatory', 'rsun_arcseconds', 'rsun_meters',
-                          'scale', 'units', 'reference_coordinate', 'center',
+                          'scale', 'units', 'reference_coordinate',
                           'reference_pixel', 'coordinate_system',
                           'heliographic_latitude', 'heliographic_longitude',
                           'carrington_longitude']
@@ -395,6 +402,27 @@ Dimension:\t [%d, %d]
         """Returns an updated MapHeader instance"""
         header = self._original_header.copy()
         
+        # Bit-depth
+        #
+        #   8    Character or unsigned binary integer
+        #  16    16-bit twos-complement binary integer
+        #  32    32-bit twos-complement binary integer
+        # -32    IEEE single precision floating point
+        # -64    IEEE double precision floating point
+        #
+        if not header.has_key('bitpix'):
+            bitdepth = 8 * self.dtype.itemsize
+            
+            if self.dtype.kind == "f":
+                bitdepth = - bitdepth
+                
+            header['bitpix'] = bitdepth
+
+        # naxis
+        header['naxis'] = self.ndim
+        header['naxis1'] = self.shape[0]
+        header['naxis2'] = self.shape[1]
+        
         # dsun
         if header.has_key('dsun_obs'):
             header['dsun_obs'] = self.dsun
@@ -418,10 +446,6 @@ Dimension:\t [%d, %d]
         # crval
         header['crpix1'] = self.reference_pixel['x']
         header['crpix2'] = self.reference_pixel['y']
-        
-        # naxis
-        header['naxis1'] = self.shape[0]
-        header['naxis2'] = self.shape[1]
         
         return header               
 
@@ -719,7 +743,8 @@ Dimension:\t [%d, %d]
         for cls in BaseMap.__subclasses__():
             if cls.is_datasource_for(header):
                 return cls(data, header)
-        raise UnrecognizedDataSouceError("File header not recognized by SunPy")
+        
+        return BaseMap(data, header)
 
     @classmethod
     def read_header(cls, filepath):
@@ -736,17 +761,7 @@ Dimension:\t [%d, %d]
                 
                 return properties
 
-class UnrecognizedDataSouceError(ValueError):
-    """Exception to raise when an unknown datasource is encountered"""
-    pass
-
-
 class InvalidHeaderInformation(ValueError):
     """Exception to raise when an invalid header tag value is encountered for a
     FITS/JPEG 2000 file."""
     pass
-
-if __name__ == "__main__":
-    import sunpy
-    x = sunpy.make_map(sunpy.AIA_171_IMAGE)
-    repr(x.min())
