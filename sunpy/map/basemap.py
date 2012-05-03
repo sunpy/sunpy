@@ -743,7 +743,8 @@ Dimension:\t [%d, %d]
         for cls in BaseMap.__subclasses__():
             if cls.is_datasource_for(header):
                 return cls(data, header)
-        raise UnrecognizedDataSouceError("File header not recognized by SunPy")
+        
+        return BaseMap(data, header)
 
     @classmethod
     def read_header(cls, filepath):
@@ -759,11 +760,6 @@ Dimension:\t [%d, %d]
                 properties['header'] = header
                 
                 return properties
-
-class UnrecognizedDataSouceError(ValueError):
-    """Exception to raise when an unknown datasource is encountered"""
-    pass
-
 
 class InvalidHeaderInformation(ValueError):
     """Exception to raise when an invalid header tag value is encountered for a
