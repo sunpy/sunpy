@@ -208,11 +208,11 @@ class BaseMap(np.ndarray):
         if obj is None:
             return
 
-        if hasattr(obj, 'header'):
-            properties = ['header', 'cmap', 'date', 'detector', 'dsun',
+        if hasattr(obj, '_original_header'):
+            properties = ['_original_header', 'cmap', 'date', 'detector', 'dsun',
                           'exposure_time', 'instrument', 'measurement', 'name',
                           'observatory', 'rsun_arcseconds', 'rsun_meters',
-                          'scale', 'units', 'reference_coordinate', 'center',
+                          'scale', 'units', 'reference_coordinate',
                           'reference_pixel', 'coordinate_system',
                           'heliographic_latitude', 'heliographic_longitude',
                           'carrington_longitude']
