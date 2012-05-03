@@ -29,6 +29,7 @@ class EITMap(BaseMap):
             "dsun": ((radius_1au / 
                       (properties['rsun_arcseconds'] * scale)) * constants.au),
             "name": "EIT %s" % header.get('wavelnth'),
+            "nickname": "EIT",
             "cmap": cm.get_cmap('sohoeit%d' % header.get('wavelnth'))
         })
         return properties
@@ -65,6 +66,7 @@ class LASCOMap(BaseMap):
             "date": parse_time(datestr),
             "measurement": "white-light",
             "name": "LASCO %s" % header.get('detector'),
+            "nickname": "LASCO-%s" % header.get('detector'),
             "cmap": cm.get_cmap('soholasco%s' % properties['detector'][1])
         })
         return properties
@@ -109,7 +111,8 @@ class MDIMap(BaseMap):
             "detector": "MDI",
             "measurement": meas,
             "dsun": dsun,
-            "name": "MDI %s" % meas
+            "name": "MDI %s" % meas,
+            "nickname": "MDI"
         })
         return properties
         
