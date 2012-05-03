@@ -25,6 +25,7 @@ class SWAPMap(BaseMap):
             "instrument": "SWAP",
             "observatory": "PROBA2",
             "name": "SWAP %s" % header.get('wavelnth'),
+            "nickname": "SWAP",
             "cmap": cm.get_cmap(name='sdoaia171')
         })
         return properties

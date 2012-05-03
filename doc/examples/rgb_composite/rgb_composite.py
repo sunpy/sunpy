@@ -290,7 +290,7 @@ class RGBCompositeMap(sunpy.MapCube):
                 map_ = BaseMap.read(item)
                 
             data[:,:,i] = map_
-            headers.append(map_.fits_header)
+            headers.append(map_._original_header)
 
         obj = np.asarray(data).view(cls)
         obj._headers = headers
