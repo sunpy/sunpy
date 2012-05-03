@@ -5,6 +5,7 @@ __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
 import os
+import numpy as np
 from sunpy.map.header import MapHeader
 from sunpy.map.basemap import BaseMap
 from sunpy.map.mapcube import MapCube
@@ -39,9 +40,37 @@ def make_map(*args, **kwargs):
     >>> sunpy.make_map("path/to/files/*.fts")
     >>> sunpy.make_map(Map)
     >>> sunpy.make_map(Map1, Map2,..)
+    >>> sunpy.make_map([[0, 1],[2, 3]], {'telescop': 'sunpy',..})
 
     """
-    # Single Map or wildcard string
+    if len(args) is 0:
+        raise TypeError("Invalid input.")
+    
+    # First check to see if data/header were passed in    
+    if isinstance(args[0], list) or isinstance(args[0], np.ndarray):
+        data = None
+
+        # n-dimensional list
+        if isinstance(args[0][0], list) or isinstance(args[0], np.ndarray):
+            data = args[0]
+        else:
+            try:
+                float(args[0][0])
+            except (ValueError, TypeError):
+                pass
+            else:
+                # 1-dimensional data
+                data = args[0]
+                
+        # if either of the above cases hold, then create a new BaseMap
+        if data is not None:
+            if len(args) > 1:
+                return BaseMap(args[0], args[1])
+            else:
+                return BaseMap(args[0], {})
+            
+        
+    # If not, check for one or more maps or filepaths
     if len(args) == 1:
         # String
         if isinstance(args[0], basestring):
@@ -65,8 +94,9 @@ def make_map(*args, **kwargs):
               isinstance(args[0], MapCube)):
             return args[0]
         
-        # List of filepaths or Maps
+        # List of filepaths, Maps
         elif isinstance(args[0], list):
+            # list of maps or filepaths
             maps = args[0]
 
         # Unrecognized input
