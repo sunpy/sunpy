@@ -16,6 +16,7 @@ SunPy Code Reference
    io
    sun
    vso
+   hek
    wcs
    instr
    time
