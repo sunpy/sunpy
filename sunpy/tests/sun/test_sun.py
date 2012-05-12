@@ -1,6 +1,6 @@
 from __future__ import absolute_import
 
-import sunpy.sun as sun
+from sunpy.sun import sun
 from numpy.testing import assert_array_almost_equal
 
 def test_sunearth_distance():
