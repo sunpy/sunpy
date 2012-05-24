@@ -274,10 +274,10 @@ Dimension:\t [%d, %d]
         """
         # if data is stored as unsigned, cast up (e.g. uint8 => int16)
         if self.dtype.kind == "u":
-            dtype = "int%d" % (int(self.dtype.name[4:]) * 2)
+            dtype = "int%d" % (max(int(self.dtype.name[4:]) * 2, 64))
             self = self.astype(np.dtype(dtype))
         if other.dtype.kind == "u":
-            dtype = "int%d" % (int(other.dtype.name[4:]) * 2)
+            dtype = "int%d" % (max(int(other.dtype.name[4:]) * 2, 64))
             other = other.astype(np.dtype(dtype))
 
         result = np.ndarray.__sub__(self, other)
@@ -551,10 +551,9 @@ Dimension:\t [%d, %d]
                                                   dimensions)
         if method == 'sum':
             data = reshaped.sum(axis=3).sum(axis=1)
-        
-        if method == 'average':
-            data = (reshaped.sum(axis=3).sum(axis=1))/\
-            np.float32(dimensions[0]*dimensions[1])
+        elif method == 'average':
+            data = ((reshaped.sum(axis=3).sum(axis=1)) /
+                    np.float32(dimensions[0] * dimensions[1]))
         
         
         #data = resample(np.asarray(self).copy().T, dimensions,
@@ -572,8 +571,8 @@ Dimension:\t [%d, %d]
         new_map = self.__class__(data.T, header)
 
         # Update metadata
-        new_map.scale['x'] = dimensions[0]*self.scale['x']
-        new_map.scale['y'] = dimensions[1]*self.scale['y']
+        new_map.scale['x'] = dimensions[0] * self.scale['x']
+        new_map.scale['y'] = dimensions[1] * self.scale['y']
         new_map.reference_pixel['x'] = (new_nx + 1) / 2.
         new_map.reference_pixel['y'] = (new_ny + 1) / 2.
         new_map.reference_coordinate['x'] = self.center['x']
