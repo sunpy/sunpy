@@ -94,7 +94,7 @@ def make_map(*args, **kwargs):
               isinstance(args[0], MapCube)):
             return args[0]
         
-        # List of filepaths, Maps
+        # List of filepaths or Maps
         elif isinstance(args[0], list):
             # list of maps or filepaths
             maps = args[0]
