@@ -7,6 +7,7 @@ __email__ = "keith.hughitt@nasa.gov"
 from sunpy.map.basemap import BaseMap
 from sunpy.cm import cm
 from matplotlib import colors
+import numpy as np
 
 class AIAMap(BaseMap):
     """AIA Image Map definition
@@ -33,7 +34,7 @@ class AIAMap(BaseMap):
     def norm(self):
         """Returns a Normalize object to be used with AIA data"""
         # byte-scaled images have most likely already been scaled
-        if self.byte_scaled:
+        if self.dtype == np.uint8:
             return None
 
         mean = self.mean()
