@@ -55,9 +55,9 @@ Contributing
 If you would like to get involved, start by joining the 
 [SunPy mailing list](https://groups.google.com/forum/#!forum/sunpy)
 and check out the [Developer's Guide](http://www.sunpy.org/doc/dev.html) section 
-of the SunPy docs. Stop by our IRC chat room named #sunpy on irc.freenode.net if you have any questions. 
-Help is always welcome so let us know what you like to work
-on, or check out the [issues page](https://github.com/sunpy/sunpy/issues) for
-a list of some known outstanding items.
+of the SunPy docs. Stop by our IRC chat room named #sunpy on irc.freenode.net 
+if you have any questions. Help is always welcome so let us know what you like 
+to work on, or check out the [issues page](https://github.com/sunpy/sunpy/issues) 
+for a list of some known outstanding items.
 
 
