@@ -150,9 +150,6 @@ class BaseMap(np.ndarray):
         # Parse header and set map attributes
         for attr, value in list(self.get_properties(header).items()):
             setattr(self, attr, value)
-
-        # Addition properties based on data
-        self.byte_scaled = self.dtype == np.uint8
         
         # Validate properties
         self._validate()
