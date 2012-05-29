@@ -271,10 +271,10 @@ Dimension:\t [%d, %d]
         """
         # if data is stored as unsigned, cast up (e.g. uint8 => int16)
         if self.dtype.kind == "u":
-            dtype = "int%d" % (int(self.dtype.name[4:]) * 2)
+            dtype = "int%d" % (max(int(self.dtype.name[4:]) * 2, 64))
             self = self.astype(np.dtype(dtype))
         if other.dtype.kind == "u":
-            dtype = "int%d" % (int(other.dtype.name[4:]) * 2)
+            dtype = "int%d" % (max(int(other.dtype.name[4:]) * 2, 64))
             other = other.astype(np.dtype(dtype))
 
         result = np.ndarray.__sub__(self, other)
@@ -506,7 +506,74 @@ Dimension:\t [%d, %d]
         new_map.reference_pixel['x'] = (dimensions[0] + 1) / 2.
         new_map.reference_pixel['y'] = (dimensions[1] + 1) / 2.
         new_map.reference_coordinate['x'] = self.center['x']
-        new_map.reference_coordinate['y'] = self.center['x']
+        new_map.reference_coordinate['y'] = self.center['y']
+
+        return new_map
+
+    def superpixel(self, dimensions, method='sum'):
+        """Returns a new map consisting of superpixels formed from the
+        original data.  Useful for increasing signal to noise ratio in images.
+
+        Parameters
+        ----------
+        dimensions : tuple
+            One superpixel in the new map is equal to (dimension[0],
+            dimension[1]) pixels of the original map
+            Note: the first argument corresponds to the 'x' axis and the second
+            argument corresponds to the 'y' axis.
+        method : {'sum' | 'average'}
+            What each superpixel represents compared to the original data
+                * sum - add up the original data
+                * average - average the sum over the number of original pixels
+
+        Returns
+        -------
+        out : Map
+            A new Map which has superpixels of the required size.
+
+        References
+        ----------
+        | http://mail.scipy.org/pipermail/numpy-discussion/2010-July/051760.html
+        """
+        from sunpy.image import reshape_image_to_4d_superpixel
+
+        # Note: because the underlying ndarray is transposed in sense when
+        #   compared to the Map, the ndarray is transposed, resampled, then
+        #   transposed back
+        # Note: "center" defaults to True in this function because data
+        #   coordinates in a Map are at pixel centers
+
+        # Make a copy of the original data and perform reshaping
+        reshaped = reshape_image_to_4d_superpixel(np.asarray(self).copy().T,
+                                                  dimensions)
+        if method == 'sum':
+            data = reshaped.sum(axis=3).sum(axis=1)
+        elif method == 'average':
+            data = ((reshaped.sum(axis=3).sum(axis=1)) /
+                    np.float32(dimensions[0] * dimensions[1]))
+        
+        
+        #data = resample(np.asarray(self).copy().T, dimensions,
+        #                method, center=True)
+
+        # Update image scale and number of pixels
+        header = self._original_header.copy()
+
+        # Note that 'x' and 'y' correspond to 1 and 0 in self.shape,
+        # respectively
+        new_nx = self.shape[1] / dimensions[0]
+        new_ny = self.shape[0] / dimensions[1]
+
+        # Create new map instance
+        new_map = self.__class__(data.T, header)
+
+        # Update metadata
+        new_map.scale['x'] = dimensions[0] * self.scale['x']
+        new_map.scale['y'] = dimensions[1] * self.scale['y']
+        new_map.reference_pixel['x'] = (new_nx + 1) / 2.
+        new_map.reference_pixel['y'] = (new_ny + 1) / 2.
+        new_map.reference_coordinate['x'] = self.center['x']
+        new_map.reference_coordinate['y'] = self.center['y']
 
         return new_map
     
