@@ -9,6 +9,7 @@ from sunpy.sun import constants
 from sunpy.cm import cm
 from sunpy.time import parse_time
 from matplotlib import colors
+import numpy as np
 
 class EITMap(BaseMap):
     """EIT Image Map definition"""
@@ -42,7 +43,7 @@ class EITMap(BaseMap):
     def norm(self):
         """Returns a Normalize object to be used with EIT data"""
         # byte-scaled images have most likely already been scaled
-        if self.byte_scaled:
+        if self.dtype == np.uint8:
             return None
         
         mean = self.mean()

@@ -95,6 +95,6 @@ def system_info():
     print("SciPy: %s" % scipy_version)
     print("Matplotlib: %s" % matplotlib_version)
     print("PyFITS: %s" % pyfits_version)
-    print("pansas: %s" % pandas_version)
+    print("pandas: %s" % pandas_version)
     print("SUDS: %s" % suds_version)
     print("PyQt: %s\n" % pyqt_version)
