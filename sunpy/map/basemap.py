@@ -143,9 +143,9 @@ class BaseMap(np.ndarray):
         
         # Set naxis1 and naxis2 if not specified
         if header.get('naxis1') is None:
-            header['naxis1'] = self.shape[0]
+            header['naxis1'] = self.shape[1]
         if header.get('naxis2') is None:
-            header['naxis2'] = self.shape[1]
+            header['naxis2'] = self.shape[0]
 
         # Parse header and set map attributes
         for attr, value in list(self.get_properties(header).items()):
@@ -256,7 +256,7 @@ Dimension:\t [%d, %d]
  
 """ % (self.observatory, self.instrument, self.detector, self.measurement,
        self.date.strftime("%Y-%m-%d %H:%M:%S"), self.exposure_time,
-       self.shape[0], self.shape[1], self.scale['x'], self.scale['y']) 
+       self.shape[1], self.shape[0], self.scale['x'], self.scale['y']) 
      + np.ndarray.__repr__(self))
 
     def __sub__(self, other):
@@ -311,7 +311,7 @@ Dimension:\t [%d, %d]
         """Returns the offset between the center of the Sun and the center of 
         the map."""
         return {
-            'x': wcs.get_center(self.shape[0], self.scale['x'], 
+            'x': wcs.get_center(self.shape[1], self.scale['x'], 
                                 self.reference_pixel['x'], 
                                 self.reference_coordinate['x']),
             'y': wcs.get_center(self.shape[0], self.scale['y'], 
@@ -417,8 +417,8 @@ Dimension:\t [%d, %d]
 
         # naxis
         header['naxis'] = self.ndim
-        header['naxis1'] = self.shape[0]
-        header['naxis2'] = self.shape[1]
+        header['naxis1'] = self.shape[1]
+        header['naxis2'] = self.shape[0]
         
         # dsun
         if header.has_key('dsun_obs'):
