@@ -97,6 +97,20 @@ class BaseMap(np.ndarray):
     units : dict
         Image coordinate units along the x and y axes (cunit1/2).
 
+    Methods
+    -------
+    std() : Return the standard deviation of the map data
+    mean() : Return the mean of the map data
+    min() : Return the minimum value of the map data
+    max() : Return the maximum value of the map data
+    resample(dimension, method) : Returns a new map that has been resampled up or down
+    superpixel(dimension, method) : Returns a new resized map consisting of superpixels formed from the
+        original data.
+    save() : Save the map to a fits file.
+    submap(range_a, range_b, units) : Returns a submap of the map with the specified range
+    plot() : Return a matplotlib plot figure object
+    show() : Display a matplotlib plot to the screen 
+
     Examples
     --------
     >>> aia = sunpy.Map(sunpy.AIA_171_IMAGE)
