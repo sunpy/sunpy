@@ -122,16 +122,16 @@ To list which maps are part of your composite map use::
 	my_maps.list_maps()
 
 Similar to all SunPy data objects, the composite map also has an associated show() method and a 
-number of associated methods to customize your plot. For example, the following code sets the
-transparancy of the second map to 50% and turns on contours at the 50% to 90% levels, and then 
-plots the result::
+number of associated methods to customize your plot. For example, the following code turns 
+adds a new map, sets its transparency to 25%, turns on contours from 50% to 90% for the second map, 
+and then plots the result::
 
-	my_maps.set_alpha(1,0.5)
-	my_maps.set_contours(1,[50,60,70,80,90])
+	my_maps.add_map(sunpy.AIA_171_IMAGE)
+	my_maps.set_alpha(2,0.5)
+	my_maps.set_levels(1,[50,60,70,80,90], percent = True)
 	my_maps.show()
 
-You can also add a map...
-
+This is not a particularly pretty plot but it shows what SunPy can do!
 
 5. Working with your map
 ------------------------
