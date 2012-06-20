@@ -36,7 +36,8 @@ class CompositeMap:
         
         # Default alpha and zorder values
         alphas = [1] * len(args)
-        zorders = range(0, 10 * len(args), 10) 
+        zorders = range(0, 10 * len(args), 10)
+        levels = [False] * len(args)
         
         # Parse input Maps/filepaths        
         for i, item in enumerate(args):
@@ -49,11 +50,12 @@ class CompositeMap:
             # Set z-order and alpha values for the map
             m.zorder = zorders[i]
             m.alpha = alphas[i]
+            m.levels = levels[i]
 
             # Add map
             self._maps.append(m)
 
-    def add_map(self, input_, zorder=None, alpha=1):
+    def add_map(self, input_, zorder=None, alpha=1, levels = False):
         """Adds a map to the CompositeMap
         
         Parameters
@@ -76,6 +78,7 @@ class CompositeMap:
         m = BaseMap.read(input_)
         m.zorder = zorder
         m.alpha = alpha
+        m.levels = levels
         
         self._maps.append(m)
         
@@ -120,10 +123,26 @@ class CompositeMap:
             return [_map.norm for _map in self._maps]
         else:
             return self._maps[index].norm
+            
+    def get_levels(self, index = None):
+        """Gets the list of contour levels for a map within the
+        composite.
+        """
+        if index is None:
+            return [_map.levels for _map in self._maps]
+        else:
+            return self._maps[index].levels
 
     def set_norm(self, index, norm):
         """Sets the norm for a layer in the composite image"""
         self._maps[index].norm = norm
+
+    def set_levels(self, index, levels, percent = False):
+        """Sets the contour levels for a layer in the composite image"""
+        if percent is False: 
+        	self._maps[index].levels = levels
+        else:
+        	self._maps[index].levels = [self._maps[index].max()*level/100.0 for level in levels]
 
     def set_colors(self, index, cm):
         """Sets the color map for a layer in the composite image"""
@@ -186,18 +205,19 @@ class CompositeMap:
                 "cmap": m.cmap,
                 "norm": m.norm(),
                 "alpha": m.alpha,
-                "zorder": m.zorder
+                "zorder": m.zorder,
             }
             params.update(matplot_args)
             
+            if m.levels is False:
+	            plt.imshow(m, **params)
+            
             # Use contour for contour data, and imshow otherwise
-            if isinstance(m, RHESSIMap) or (m.alpha == 0):
+            if m.levels is not False:
                 # Set data with values <= 0 to transparent
-                contour_data = np.ma.masked_array(m, mask=(m <= 0))
-                plt.contourf(contour_data, **params)
-            else:
-                plt.imshow(m, **params)
-        
+                # contour_data = np.ma.masked_array(m, mask=(m <= 0))
+                plt.contour(m, m.levels, **params)
+                
         # Adjust axes extents to include all data
         axes.axis('image')
         
