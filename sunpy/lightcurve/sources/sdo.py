@@ -13,42 +13,49 @@ from matplotlib import pyplot as plt
 class EVELightCurve(LightCurve):
     """SDO EVE light curve definition
     
+    Examples
+    --------
+    >>> import sunpy
+    >>> eve = sunpy.lightcurve.EVELightCurve()
+    >>> eve = sunpy.lightcurve.EVELightCurve('~/Downloads/EVE_Fe_IX_171_averages.csv')
+    >>> eve = sunpy.lightcurve.EVELightCurve('2012/06/20')
+    >>> eve = sunpy.lightcurve.EVELightCurve("http://lasp.colorado.edu/eve/data_access/quicklook/quicklook_data/L0CS/LATEST_EVE_L0CS_DIODES_1m.txt")
+    >>> 
+    >>> eve.show()
+    
     References
     ----------
     | http://lasp.colorado.edu/home/eve/data/data-access/
     """
-    def __init__(self, *args):
-        self._filepath = None
+    def __init__(self, *args, **kwargs):
+        LightCurve.__init__(self, *args, **kwargs)
 
-        # Filepath
-        if len(args) is 1 and isinstance(args[0], basestring):
-            self._filepath = args[0]
-            header, data = self._parse_csv(args[0])
-
-        # Start and end dates
-            
-        # Date range
-        
-        LightCurve.__init__(self, data, header)
-        
     def show(self, **kwargs):
         # Choose title if none was specified
         if not kwargs.has_key("title"):
             if len(self.data.columns) > 1:
                 kwargs['title'] = 'EVE GOES Proxy Xray Flux (1 minute data)'
             else:
-                if self._filepath is not None:
-                    base = os.path.basename(self._filepath).replace('_', ' ')
+                if self._filename is not None:
+                    base = self._filename.replace('_', ' ')
                     kwargs['title'] = os.path.splitext(base)[0]
                 else:
                     kwargs['title'] = 'EVE Averages'
 
         self.data.plot(**kwargs)
         plt.show()
+        
+    def _get_default_uri(self):
+        """Load latest level 0CS if no other data is specified"""
+        return "http://lasp.colorado.edu/eve/data_access/quicklook/quicklook_data/L0CS/LATEST_EVE_L0CS_DIODES_1m.txt"
     
-    def _parse_fits(self, filepath):
-        """Parses an EVE FITS file"""
-        pass
+    def _get_url_for_date(self, date):
+        """Returns a URL to the EVE data for the specified date
+        
+            @NOTE: currently only supports downloading level 0 data
+        """
+        base_url = 'http://lasp.colorado.edu/eve/data/quicklook/L0CS/SpWx/'
+        return base_url + date.strftime('%Y/%Y%m%d') + '_EVE_L0CS_DIODES_1m.txt'
     
     def _parse_csv(self, filepath):
         """Parses an EVE CSV file"""
