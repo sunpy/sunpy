@@ -4,7 +4,7 @@ inherit from.
 """
 from __future__ import absolute_import
 
-#pylint: disable=E1101,E1121,W0404,W0613
+#pylint: disable=E1101,E1121,W0404,W0612,W0613
 __authors__ = ["Keith Hughitt"]
 __email__ = "keith.hughitt@nasa.gov"
 
@@ -12,8 +12,7 @@ import os
 import pandas
 import sunpy
 import urllib2
-from warnings import warn
-from sunpy.io import read_file
+import numpy as np
 
 class LightCurve:
     """
@@ -44,6 +43,8 @@ class LightCurve:
     
     """
     def __init__(self, *args, **kwargs):
+        self._filename = ""
+
         # If no arguments specified, perform default action
         if len(args) is 0:
             args = (self._get_default_uri(),)
@@ -61,29 +62,46 @@ class LightCurve:
                     try:
                         filepath = self._download(url)
                     except (urllib2.HTTPError, urllib2.URLError, ValueError):
-                        warn("Unable to download data for specified date")
-                        return
+                        err = "Unable to download data for specified date"
+                        raise urllib2.URLError(err)
+
                 except ValueError:
                     # Otherwise, assume string input is a URL
                     try:
                         filepath = self._download(args[0])
                     except (urllib2.HTTPError, urllib2.URLError, ValueError):
-                        warn("Unable to read location. Did you specify "
-                                      "a valid filepath or URL?")
-                        return
+                        raise Exception("Unable to read location. Did you "
+                                        "specify a valid filepath or URL?")
 
             # Parse file
-            header, data = self._parse_csv(filepath)
+            filename, extension = os.path.splitext(filepath)
+            
+            if extension.lower() in ("csv", "txt"):
+                header, data = self._parse_csv(filepath)
+            else:
+                header, data = self._parse_fits(filepath)
+                
+        # @NOTE: should we also support inputting start and end dates or a
+        # date range?
 
-
-        # Start and end dates?
-        # Date range?
+        # Other light curve creation options (DataFrame, ndarray, etc)
+        header = ""
         
         # DataFrame
+        if isinstance(args[0], pandas.DataFrame):
+            data = args[0]
+        elif (isinstance(args[0], list) or isinstance(args[0], np.ndarray) or
+              # List, ndarray, or Series
+              isinstance(args[0], pandas.Series)):
+            data = pandas.DataFrame(args[0])
+        else:
+            raise TypeError("Unrecognized input for argument 1")
         
-        # Python list
-        
-        # ndarray
+        # Check for header
+        if (isinstance(args[1], basestring) or isinstance(args[1], dict)):
+            header = args[1]
+        else:
+            raise TypeError("Unrecognized input for argument 2")
         
         self.data = data
         self.header = header
@@ -100,51 +118,46 @@ class LightCurve:
 
     def _get_default_uri(self):
         """Default data to load when none is specified"""
-        warn("No default action set for %s" % self.__class__.__name__)
+        msg = "No default action set for %s"
+        raise NotImplementedError(msg % self.__class__.__name__)
         
     def _get_url_for_date(self, date):
         """Returns a URL to the data for the specified date"""
-        warn("Date-based downloads not supported for for %s" % 
-                      self.__class__.__name__)
-        
-    def parse_csv(self, filepath):
-        """CSV parsing support"""
-        warn("CSV support not yet implemented for %s" % 
-                      self.__class__.__name__)
+        msg = "Date-based downloads not supported for for %s"
+        raise NotImplementedError(msg % self.__class__.__name__)
     
-    @classmethod
-    def parse_file(cls, filepath):
-        """Reads in a map file and returns a header and data array"""
-        data, dict_header = read_file(filepath)
+#    @classmethod
+#    def parse_file(cls, filepath):
+#        """Reads in a map file and returns a header and data array"""
+#        data, dict_header = read_file(filepath)
+#
+#        return dict_header, data
+#
+#    @classmethod
+#    def read(cls, filepath):
+#        """LightCurve class factory
+#
+#        Attempts to determine the type of data associated with input and
+#        returns a LightCurve subclass instance. If the file format is not
+#        recognized a warning will be displayed.
+#
+#        Parameters
+#        ----------
+#        filepath : string
+#            Path to input file (FITS, CSV, etc.)
+#
+#        Returns
+#        -------
+#        out : LightCurve
+#            Returns a LightCurve instance.
+#        """
+#        header, data = cls.parse_file(filepath)
+#
+#        if cls.__name__ is not "LightCurve":
+#            return cls(filepath)
+#
+#        for cls in LightCurve.__subclasses__():
+#            if cls.is_datasource_for(header):
+#                return cls(data, header)
 
-        return dict_header, data
-
-    @classmethod
-    def read(cls, filepath):
-        """LightCurve class factory
-
-        Attempts to determine the type of data associated with input and
-        returns a LightCurve subclass instance. If the file format is not
-        recognized a warning will be displayed.
-
-        Parameters
-        ----------
-        filepath : string
-            Path to input file (FITS, CSV, etc.)
-
-        Returns
-        -------
-        out : LightCurve
-            Returns a LightCurve instance.
-        """
-        header, data = cls.parse_file(filepath)
-
-        if cls.__name__ is not "LightCurve":
-            return cls(filepath)
-
-        for cls in LightCurve.__subclasses__():
-            if cls.is_datasource_for(header):
-                return cls(data, header)
-        
-        # DISPLAY WARNING..
 
