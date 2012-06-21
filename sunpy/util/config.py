@@ -61,6 +61,21 @@ def _get_configdir():
 
     return p
 
+def _fix_types(config):
+    """Fixes types for non-string config parameters and expands filepaths"""
+    booleans = ['data.save']
+    filepaths = ['data.directory']
+    
+    # Fix bools
+    for b in booleans:
+        config[b] = bool(config[b])
+        
+    # Fix filepaths
+    for f in filepaths:
+        config[f] = os.path.abspath(os.path.expanduser(config[f]))
+        
+    return config
+
 def read_configfile():
     """
     Read the sunpyrc configuration file. If one does not exists in the user's
@@ -76,5 +91,7 @@ def read_configfile():
     else:
         module_dir = os.path.dirname(sunpy.__file__)
         config = ConfigObj(module_dir + '/data/sunpyrc')
+        
+    config = _fix_types(config)
         
     return config
