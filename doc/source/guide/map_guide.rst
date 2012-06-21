@@ -29,6 +29,19 @@ may vary. The list of files which are currently supported by SunPy can be found 
 documentation for make_map(). SunPy can also create maps from the jpg2000 files from
 `helioviewer.org <http://helioviewer.org/>`.
 
+2. Creating Custom Maps
+-----------------------
+It is also possible to create maps using custom data from a simulation for example. To do this you
+need to provide make_map() with both the data array as well as some basic header information. If no
+header is given then some default values as assumed. Here is a simple example::
+
+	import numpy as np
+	data = np.arange(0,100).reshape(10,10)
+	header = {'cdelt1': 10, 'cdelt2': 10, 'telescop':'sunpy'}
+	my_map = sunpy.make_map(data, header)
+
+The format of the header follows the fits standard.
+
 2. Inspecting maps
 ------------------
 A map contains a number of data-associated attributes. To get a quick look at your map simply
