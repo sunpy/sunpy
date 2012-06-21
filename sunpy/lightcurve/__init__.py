@@ -12,8 +12,9 @@ def make_lightcurve(*args, **kwargs):
     
     Parameters
     ----------
-    args : filepath
-        The data source used to create the lightcurve object.
+    args : filepath, url, or start and end dates
+        The input for a LightCurve object should either be a filepath, a URL,
+        or a date range to be queried for the particular instrument.
         
     Returns
     -------
@@ -27,5 +28,5 @@ def make_lightcurve(*args, **kwargs):
     """
     if len(args) is 0:
         raise TypeError("Invalid input.")
-
+    
     return LightCurve.read(args[0])
