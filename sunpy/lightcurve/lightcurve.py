@@ -13,6 +13,7 @@ import pandas
 import sunpy
 import urllib2
 import numpy as np
+import matplotlib.pyplot as plt
 
 class LightCurve:
     """
@@ -36,6 +37,12 @@ class LightCurve:
 
     Examples
     --------
+    >>> import sunpy
+    >>> import datetime
+    >>> base = datetime.datetime.today()
+    >>> dates = [base - datetime.timedelta(minutes=x) for x in range(0, 24 * 60)]
+    >>> light_curve = sunpy.lightcurve.LightCurve({"param1": range(24 * 60)}, index=dates)
+    >>> light_curve.show()
 
     References
     ----------
@@ -87,24 +94,38 @@ class LightCurve:
         # Other light curve creation options (DataFrame, ndarray, etc)
         header = ""
         
-        # DataFrame
+        # DataFrame Index
+        if "index" in kwargs:
+            index = kwargs["index"]
+        else:
+            index = None
+            
+        # DataFrame input
         if isinstance(args[0], pandas.DataFrame):
             data = args[0]
-        elif (isinstance(args[0], list) or isinstance(args[0], np.ndarray) or
-              # List, ndarray, or Series
+        elif (isinstance(args[0], list) or 
+              isinstance(args[0], dict) or 
+              isinstance(args[0], np.ndarray) or 
               isinstance(args[0], pandas.Series)):
-            data = pandas.DataFrame(args[0])
+            # list, dict, ndarray, or Series
+            data = pandas.DataFrame(args[0], index=index)
         else:
             raise TypeError("Unrecognized input for argument 1")
         
         # Check for header
-        if (isinstance(args[1], basestring) or isinstance(args[1], dict)):
-            header = args[1]
-        else:
-            raise TypeError("Unrecognized input for argument 2")
+        if len(args) > 1:
+            if (isinstance(args[1], basestring) or isinstance(args[1], dict)):
+                header = args[1]
+            else:
+                raise TypeError("Unrecognized input for argument 2")
         
         self.data = data
         self.header = header
+        
+    def show(self, **kwargs):
+        """Shows a plot of the light curve"""
+        self.data.plot(**kwargs)
+        plt.show()
         
     def _download(self, uri):
         """Attempts to download data at the specified URI"""

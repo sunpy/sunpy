@@ -5,10 +5,8 @@ from __future__ import absolute_import
 from sunpy.lightcurve import LightCurve
 
 import os
-import matplotlib.pyplot as plt
 from pandas.io.parsers import read_csv
 from datetime import datetime  
-from matplotlib import pyplot as plt
 
 class EVELightCurve(LightCurve):
     """SDO EVE light curve definition
@@ -42,8 +40,7 @@ class EVELightCurve(LightCurve):
                 else:
                     kwargs['title'] = 'EVE Averages'
 
-        self.data.plot(**kwargs)
-        plt.show()
+        LightCurve.show(kwargs)
         
     def _get_default_uri(self):
         """Load latest level 0CS if no other data is specified"""
