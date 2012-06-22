@@ -24,7 +24,7 @@ os.system('/usr/bin/ruby -e "$(/usr/bin/curl -fsSL https://raw.github.com/mxcl/h
 os.system('brew doctor')
 
 # Install main compilation reqs
-os.system('brew -v  install gfortran pkgconfig git openjpeg qt distribute pip')
+os.system('sudo brew -v  install gfortran pkgconfig git openjpeg qt distribute pip')
 
 # Install rest of SunPy dependencies
 os.system('sudo pip install --upgrade distribute')
