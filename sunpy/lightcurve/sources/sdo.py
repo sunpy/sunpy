@@ -40,7 +40,10 @@ class EVELightCurve(LightCurve):
                 else:
                     kwargs['title'] = 'EVE Averages'
 
-        LightCurve.show(kwargs)
+        #LightCurve.show(kwargs)
+        from matplotlib import pyplot as plt
+        self.data.plot(**kwargs)
+        plt.show()
         
     def _get_default_uri(self):
         """Load latest level 0CS if no other data is specified"""
