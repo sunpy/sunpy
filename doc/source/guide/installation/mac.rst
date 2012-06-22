@@ -35,10 +35,4 @@ Additionally, if you plan to work help with SunPy development, some additional d
 
  pip install pytest pylint paver tox sphinx numpydoc
 
-SunPy
------
-Use pip to install the latest version of SunPy: ::
-
- sudo pip install --upgrade git+git://github.com/sunpy/sunpy.git
-
 All done!
