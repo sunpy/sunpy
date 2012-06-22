@@ -16,11 +16,23 @@ Next, install and update `homebrew <http://mxcl.github.com/homebrew/>`_: ::
 
 Using homebrew, install Qt and some of the other dependencies needed for compilation later on by pip: ::
 
- brew -v  install gfortran pkgconfig git openjpeg qt distribute pip
+ brew -v  install gfortran pkgconfig git openjpeg qt
 
 Pip
 ---
-Use `pip <http://pypi.python.org/pypi/pip>`_ to install the remaining SunPy dependencies: ::
+Most Python distributions ship with a tool called `easy_install <http://pypi.python.org/pypi/setuptools>`_ 
+which assists with installing Python packages.
+
+Although `easy_install`_ is capable of installing most of
+the dependencies needed for SunPy itself, a more powerful tool called `pip <http://pypi.python.org/pypi/pip>`_
+provides a more flexible installation (including support for uninstalling, upgrading, and installing from
+remote sources such as GitHub) and should be used instead.
+
+To begin, use `easy_install`_ to install `pip`: ::
+
+ sudo easy_install pip
+
+Use to install the remaining SunPy dependencies: ::
 
  sudo pip install --upgrade distribute
  sudo pip install --upgrade ipython
