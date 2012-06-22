@@ -185,4 +185,11 @@ class LightCurve:
 #        for cls in LightCurve.__subclasses__():
 #            if cls.is_datasource_for(header):
 #                return cls(data, header)
+
+if __name__ == "__main__":
+    import sunpy
+    x=sunpy.lightcurve.EVELightCurve()
+    x.show()
+
+
  
