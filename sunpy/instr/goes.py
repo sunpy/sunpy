@@ -45,7 +45,7 @@ def get_file(time_range):
     
     Reference
     ---------
-    | http://www.ngdc.noaa.gov/goes/sem/getData
+    | http://www.ngdc.noaa.gov/goes/sem
     
     .. note:: This API is currently limited to providing data from 
     whole days only.
