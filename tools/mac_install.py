@@ -23,8 +23,11 @@ if os.system('which gcc') is not 0:
 os.system('/usr/bin/ruby -e "$(/usr/bin/curl -fsSL https://raw.github.com/mxcl/homebrew/master/Library/Contributions/install_homebrew.rb)"')
 os.system('brew doctor')
 
+# Install pip
+os.system('sudo easy_install pip')
+
 # Install main compilation reqs
-os.system('brew -v  install gfortran pkgconfig git openjpeg qt distribute pip')
+os.system('brew -v  install gfortran pkgconfig git openjpeg qt')
 
 # Install rest of SunPy dependencies
 os.system('sudo pip install --upgrade distribute')
