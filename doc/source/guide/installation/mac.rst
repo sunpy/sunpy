@@ -2,6 +2,8 @@
 Mac OS X
 ========
 
+This method has been tested on OS X "Lion".
+
 Python
 ------
 To begin, download and install the `latest 2.x version of Python <http://python.org/download/>`_
