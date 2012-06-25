@@ -129,8 +129,10 @@ class LightCurve:
         """Attempts to download data at the specified URI"""
         self._filename = os.path.basename(uri).split("?")[0]
         
+        download_dir = sunpy.config.get("downloads", "download_dir")
+        
         response = urllib2.urlopen(uri)
-        filepath = os.path.join(sunpy.config['data.directory'], self._filename)
+        filepath = os.path.join(download_dir, self._filename)
         fp = open(filepath, 'wb')
         fp.write(response.read())
         
