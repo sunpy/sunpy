@@ -1,54 +1,22 @@
-### SUNPYRC FORMAT
+;
+; SunPy Configuration
+;
+; This is a sample sunpy configuration file - you can find a copy
+; of it on your system in site-packages/sunpy/data/sunpyrc.  If you edit it
+; there, please note that it will be overridden in your next install.
+; If you want to keep a permanent local copy that will not be
+; over-written, place it in HOME/.sunpy/sunpyrc (unix/linux
+; like systems) and C:\Documents and Settings\yourname\.sunpy
+; (win32 systems).
+;
 
-# This is a sample sunpy configuration file - you can find a copy
-# of it on your system in
-# site-packages/sunpy/data/matplotlibrc.  If you edit it
-# there, please note that it will be overridden in your next install.
-# If you want to keep a permanent local copy that will not be
-# over-written, place it in HOME/.sunpy/sunpyrc (unix/linux
-# like systems) and C:\Documents and Settings\yourname\.sunpy
-# (win32 systems).
-#
-# This file is best viewed in a editor which supports python mode
-# syntax highlighting. Blank lines, or lines starting with a comment
-# symbol, are ignored, as are trailing comments.  Other lines must
-# have the format
-#    key = val # optional comment
-#
-
-#### CONFIGURATION BEGINS HERE
-
-# the location of your IDL ssw directory. Will look here first for 
-# data before trying to download it
-# sswdir = '/Users/username/ssw'
-
-# !!!The following is not yet implemented!!!!
-#
-# # Controls what to do with downloaded data.
-# The default is to download it to the system temporary directory which
-# means that it disapears eventually.
-# If you'd like to keep the data set data.save to True and set the directory
-# you'd like the data to download to.
-
-data.save = False  # False to bypass downloading mechanism
-data.directory = '~/Downloads'   # directory to download data to in if save is True
-
-# Set the verbose flags.  This controls how much information
-# sunpy gives you at runtime and where it goes.  The verbosity
-# levels are: silent, helpful, debug, debug-annoying.  Any level is
-# inclusive of all the levels below it.  If your setting is "debug",
-# you'll get all the debug and helpful messages.  When submitting
-# problems to the mailing-list, please set verbose to "helpful" or "debug"
-# and paste the output into your report.
-#
-# The "fileo" gives the destination for any calls to verbose.report.
-# These objects can a filename, or a filehandle like sys.stdout.
-#
-# You can override the rc default verbosity from the command line by
-# giving the flags --verbose-LEVEL where LEVEL is one of the legal
-# levels, eg --verbose-helpful.
-#
-# You can access the verbose instance in your code
-#   from matplotlib import verbose.
-#verbose.level  : silent      # one of silent, helpful, debug, debug-annoying
-#verbose.fileo  : sys.stdout  # a log filename, sys.stdout or sys.stderr
+;
+; DOWNLOAD OPTIONS
+;
+; By default, SunPy downloads all data to a temporary directory on your system
+; path. To save data to a more permanent location you can either specify a
+; filepath to use for the save_directory setting below, or specify a filepath
+; as a keyword argument for the command downloading the data.
+;
+[downloads]
+download_dir = /tmp
