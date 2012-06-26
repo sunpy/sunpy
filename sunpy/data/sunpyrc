@@ -31,7 +31,7 @@
 # you'd like the data to download to.
 
 data.save = False  # False to bypass downloading mechanism
-#data.directory = ''   # directory to download data to in if save is True
+data.directory = '~/Downloads'   # directory to download data to in if save is True
 
 # Set the verbose flags.  This controls how much information
 # sunpy gives you at runtime and where it goes.  The verbosity
