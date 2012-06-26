@@ -21,10 +21,8 @@ Installing SunPy
 ----------------
 Once you have successfully installed Python and the prereqs as described in the
 sections above you are ready to install SunPy itself. There are several 
-different methods for installing SunPy. In general, unless you require a more
-recent version or plan to contribute to the development of SunPy, it is 
-recommended that you use one of the methods for installing the latest stable
-version of SunPy.
+different methods for installing SunPy. Currently, as SunPy is in active development
+we recommend that you download the latest unstable version of SunPy.
 
 .. toctree::
    :maxdepth: 1
