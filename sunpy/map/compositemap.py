@@ -21,6 +21,28 @@ class CompositeMap:
     args : *{sunpy.map, string}
         One or more map of filepaths
     
+    Methods
+    -------
+    add_map(map, zorder=None, alpha=1, levels = False) : Adds a map to the CompositeMap
+	remove_map(index) : Removes and returns the map with the given index
+	list_maps() : Prints a list of the currently included maps
+	get_alpha(index=None) : Gets the alpha-channel value for a layer in the composite image
+	get_zorder(index=None) : Gets the layering preference (z-order) for a map within the
+        composite.
+    get_colors(index=None) : Gets the colors for a map within the compositemap.
+    get_norm(index=None) : Gets the normalization for a map within the CompositeMap.
+    get_levels(index=None): Gets the list of contour levels for a map within the
+        compositeMap
+    set_norm(self, index, norm): Sets the norm for a layer in the composite image
+    set_levels(index, levels, percent = False) : Sets the contour levels for a layer in the CompositeMap       
+    set_colors(index=None, cm) : Sets the color map for a layer in the CompositeMap
+    set_alpha(index=None, alpha) : Sets the alpha-channel value for a layer in the CompositeMap
+    set_zorder(index=None, zorder) : Set the layering preference (z-order) for a map within the
+        CompositeMap
+	plot(figure=None, overlays=None, draw_limb=False, gamma=1.0,
+             draw_grid=False, colorbar=True, basic_plot=False, 
+             title="SunPy Plot", **matplot_args): Plots the composite map object using matplotlib
+    
     Examples
     --------
     >>> import sunpy
@@ -107,9 +129,7 @@ class CompositeMap:
             return self._maps[index].zorder
 
     def get_colors(self, index = None):
-        """Gets the colors for a map within the
-        composite.
-        """
+        """Gets the colors for a map within the compositemap."""
         if index is None:
             return [_map.cmap for _map in self._maps]
         else:
