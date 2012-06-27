@@ -6,6 +6,7 @@ __email__ = "keith.hughitt@nasa.gov"
 
 from sunpy.lightcurve.lightcurve import LightCurve
 from sunpy.lightcurve.sources.sdo import *
+from sunpy.lightcurve.sources.goes import *
 
 #def make_lightcurve(*args, **kwargs):
 #    """Processes one or more inputs and returns a LightCurve instance.
