@@ -4,28 +4,6 @@ Linux
 
 Overview
 --------
-**Required**
-
-For its basic functioning, SunPy requires several libraries:
-
-* `NumPy <http://numpy.scipy.org/>`__
-* `SciPy <http://www.scipy.org/>`__
-* `Matplotlib <http://matplotlib.sourceforge.net/>`__ (1.0+)
-* `PyFITS <http://www.stsci.edu/resources/software_hardware/pyfits>`_
-* `Suds <https://fedorahosted.org/suds/>`__
-* `pandas <http://pandas.pydata.org/>`_
-
-**Optional**
-
-In addition to the required libraries listed above, if you plan to work with
-JPEG 2000 data, you must also install:
-
-* `OpenJPEG <http://www.openjpeg.org/>`__
-* `PIL <http://www.pythonware.com/products/pil/>`__
-
-For improved GUI support, you will need to install PyQt4:
-
-* `PyQt4 <http://www.riverbankcomputing.co.uk/software/pyqt/download>`__
 
 In general, it is very easy to install Python and the prereqs needed for SunPy
 on Linux systems. Almost all versions of Linux ship with a recent enough version
@@ -49,6 +27,3 @@ including both the required and optional dependencies, and also IPython and Git.
 Next, use pip to install pandas:
 
     sudo pip install pandas
-
-
-

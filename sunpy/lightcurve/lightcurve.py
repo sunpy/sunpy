@@ -83,36 +83,34 @@ class LightCurve:
             # Parse file
             filename, extension = os.path.splitext(filepath)
             
-            if extension.lower() in ("csv", "txt"):
+            if extension.lower() in (".csv", ".txt"):
                 header, data = self._parse_csv(filepath)
             else:
                 header, data = self._parse_fits(filepath)
                 
-        # @NOTE: should we also support inputting start and end dates or a
-        # date range?
-
         # Other light curve creation options (DataFrame, ndarray, etc)
-        header = ""
-        
-        # DataFrame Index
-        if "index" in kwargs:
-            index = kwargs["index"]
-        else:
-            index = None
-            
-        # DataFrame input
-        if isinstance(args[0], pandas.DataFrame):
+        elif isinstance(args[0], pandas.DataFrame):
             data = args[0]
         elif (isinstance(args[0], list) or 
               isinstance(args[0], dict) or 
               isinstance(args[0], np.ndarray) or 
               isinstance(args[0], pandas.Series)):
-            # list, dict, ndarray, or Series
+            # DataFrame Index
+            if "index" in kwargs:
+                index = kwargs["index"]
+            else:
+                index = None
+                
             data = pandas.DataFrame(args[0], index=index)
         else:
             raise TypeError("Unrecognized input for argument 1")
-        
+                
+        # @NOTE: should we also support inputting start and end dates or a
+        # date range?
+
         # Check for header
+        header = ""
+        
         if len(args) > 1:
             if (isinstance(args[1], basestring) or isinstance(args[1], dict)):
                 header = args[1]
@@ -129,12 +127,15 @@ class LightCurve:
         
     def _download(self, uri):
         """Attempts to download data at the specified URI"""
-        self._filename = os.path.basename(uri)
+        self._filename = os.path.basename(uri).split("?")[0]
+        
+        download_dir = sunpy.config.get("downloads", "download_dir")
         
         response = urllib2.urlopen(uri)
-        filepath = os.path.join(sunpy.config['data.directory'], self._filename)
+        filepath = os.path.join(download_dir, self._filename)
         fp = open(filepath, 'wb')
         fp.write(response.read())
+        
         return filepath
 
     def _get_default_uri(self):
@@ -146,6 +147,12 @@ class LightCurve:
         """Returns a URL to the data for the specified date"""
         msg = "Date-based downloads not supported for for %s"
         raise NotImplementedError(msg % self.__class__.__name__)
+    
+    def _parse_csv(self, filepath):
+        pass
+    
+    def _parse_fits(self, filepath):
+        pass
     
 #    @classmethod
 #    def parse_file(cls, filepath):
@@ -181,4 +188,10 @@ class LightCurve:
 #            if cls.is_datasource_for(header):
 #                return cls(data, header)
 
+if __name__ == "__main__":
+    import sunpy
+    x=sunpy.lightcurve.EVELightCurve()
+    x.show()
 
+
+ 
