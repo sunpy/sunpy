@@ -11,8 +11,8 @@ from sunpy.time import parse_time
 class RHESSIMap(BaseMap):
     """RHESSI Image Map definition
     
-    Reference
-    ---------
+    References
+    ----------
     For a description of RHESSI image fits headers
     ???
 

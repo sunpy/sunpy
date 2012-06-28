@@ -60,8 +60,8 @@ def get_obssumm_dbase_file(time_range):
     >>> import sunpy.instr.rhessi as rhessi
     >>> rhessi.get_obssumm_dbase_file(('2011/04/04', '2011/04/05'))
     
-    Reference
-    ---------
+    References
+    ----------
     | http://hesperia.gsfc.nasa.gov/ssw/hessi/doc/guides/hessi_data_access.htm#Observing Summary Data
     
     .. note:: This API is currently limited to providing data from 
@@ -106,8 +106,8 @@ def parse_obssumm_dbase_file(filename):
     >>> f = rhessi.get_obssumm_dbase_file(('2011/04/04', '2011/04/05'))
     >>> rhessi.parse_obssumm_dbase_file(f[0])
     
-    Reference
-    ---------
+    References
+    ----------
     | http://hesperia.gsfc.nasa.gov/ssw/hessi/doc/guides/hessi_data_access.htm#Observing Summary Data
     
     .. note:: This API is currently limited to providing data from 
@@ -164,8 +164,8 @@ def get_obssum_filename(time_range):
     >>> import sunpy.instr.rhessi as rhessi
     >>> rhessi.get_obssumm_filename(('2011/04/04', '2011/04/05'))
     
-    Reference
-    ---------
+    References
+    ----------
     | 
     
     .. note:: This API is currently limited to providing data from 
@@ -205,8 +205,8 @@ def get_obssumm_file(time_range):
     >>> import sunpy.instr.rhessi as rhessi
     >>> rhessi.get_obssumm_file(('2011/04/04', '2011/04/05'))
     
-    Reference
-    ---------
+    References
+    ----------
     | 
     
     .. note:: This API is currently limited to providing data from 
@@ -338,10 +338,10 @@ def _backproject(calibrated_event_list, detector=8, pixel_size=(1.,1.), image_di
     Examples
     --------
     >>> import sunpy.instr.rhessi as rhessi
-    >>> image = rhessi.get_latest_l0cs_goes_data(sunpy.RHESSI_EVENT_LIST, detector = 3)
+    >>>
     
-    Reference
-    ---------
+    References
+    ----------
     | 
 
     """
@@ -409,8 +409,8 @@ def backprojection(calibrated_event_list, pixel_size=(1.,1.), image_dim=(64,64))
     >>> map = rhessi.backprojection(sunpy.RHESSI_EVENT_LIST)
     >>> map.show()
     
-    Reference
-    ---------
+    References
+    ----------
     | 
 
     """
