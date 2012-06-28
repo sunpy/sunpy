@@ -9,6 +9,7 @@ __authors__ = ["Keith Hughitt"]
 __email__ = "keith.hughitt@nasa.gov"
 
 import os
+import datetime
 import pandas
 import sunpy
 import urllib2
@@ -56,37 +57,41 @@ class LightCurve:
         if len(args) is 0:
             args = (self._get_default_uri(),)
 
-        # If single string, could be a filepath, URL, or date string
-        if len(args) is 1 and isinstance(args[0], basestring):
-            # Filepath
-            if os.path.isfile(os.path.expanduser(args[0])):
-                filepath = os.path.expanduser(args[0])
-            else:
-                # Check to see if string is a valid date
-                try:
-                    date = sunpy.time.parse_time(args[0])
-                    url = self._get_url_for_date(date)
-                    try:
-                        filepath = self._download(url)
-                    except (urllib2.HTTPError, urllib2.URLError, ValueError):
-                        err = "Unable to download data for specified date"
-                        raise urllib2.URLError(err)
-
-                except ValueError:
+        # Single argument
+        if len(args) is 1:
+            # If single string, could be a filepath, URL, date, or TimeRange
+            if sunpy.time.is_time(args[0]):
+                date = sunpy.time.parse_time(args[0])
+                url = self._get_url_for_date(date)
+                err = "Unable to download data for specified date"
+                filepath = self._download(url, err)
+            elif isinstance(args[0], basestring):
+                # Filepath
+                if os.path.isfile(os.path.expanduser(args[0])):
+                    filepath = os.path.expanduser(args[0])
+                else:
                     # Otherwise, assume string input is a URL
                     try:
                         filepath = self._download(args[0])
                     except (urllib2.HTTPError, urllib2.URLError, ValueError):
-                        raise Exception("Unable to read location. Did you "
-                                        "specify a valid filepath or URL?")
+                        err = ("Unable to read location. Did you "
+                               "specify a valid filepath or URL?")
+                        raise ValueError(err)
+            elif isinstance(args[0], sunpy.time.TimeRange):
+                # TimeRange
+                url = self._get_url_for_date_range(args[0])
+                err = "Unable to download data for specified date range"
+                filepath = self._download(url, err)   
 
-            # Parse file
-            filename, extension = os.path.splitext(filepath)
+            # Parse resulting file
+            header, data = self._parse_filepath(filepath)
             
-            if extension.lower() in (".csv", ".txt"):
-                header, data = self._parse_csv(filepath)
-            else:
-                header, data = self._parse_fits(filepath)
+        # Date range
+        if (sunpy.time.is_time(args[0]) and sunpy.time.is_time(args[1])):
+            url = self._get_url_for_date_range(args[0], args[1])
+            err = "Unable to download data for specified date range"
+            filepath = self._download(url, err)
+            header, data = self._parse_filepath(filepath)  
                 
         # Other light curve creation options (DataFrame, ndarray, etc)
         elif isinstance(args[0], pandas.DataFrame):
@@ -125,13 +130,17 @@ class LightCurve:
         self.data.plot(**kwargs)
         plt.show()
         
-    def _download(self, uri):
+    def _download(self, uri, err='Unable to download data at specified URL'):
         """Attempts to download data at the specified URI"""
         self._filename = os.path.basename(uri).split("?")[0]
         
         download_dir = sunpy.config.get("downloads", "download_dir")
         
-        response = urllib2.urlopen(uri)
+        try:
+            response = urllib2.urlopen(uri)
+        except (urllib2.HTTPError, urllib2.URLError):
+            raise urllib2.URLError(err)
+            
         filepath = os.path.join(download_dir, self._filename)
         fp = open(filepath, 'wb')
         fp.write(response.read())
@@ -148,11 +157,24 @@ class LightCurve:
         msg = "Date-based downloads not supported for for %s"
         raise NotImplementedError(msg % self.__class__.__name__)
     
+    def _get_url_for_date_range(self, *args, **kwargs):
+        """Returns a URL to the data for the specified date range"""
+        msg = "Date-range based downloads not supported for for %s"
+        raise NotImplementedError(msg % self.__class__.__name__)
+    
     def _parse_csv(self, filepath):
         pass
     
     def _parse_fits(self, filepath):
         pass
+    
+    def _parse_filepath(self, filepath):
+        filename, extension = os.path.splitext(filepath)
+        
+        if extension.lower() in (".csv", ".txt"):
+            return self._parse_csv(filepath)
+        else:
+            return self._parse_fits(filepath)
     
 #    @classmethod
 #    def parse_file(cls, filepath):
@@ -187,11 +209,6 @@ class LightCurve:
 #        for cls in LightCurve.__subclasses__():
 #            if cls.is_datasource_for(header):
 #                return cls(data, header)
-
-if __name__ == "__main__":
-    import sunpy
-    x=sunpy.lightcurve.EVELightCurve()
-    x.show()
 
 
  

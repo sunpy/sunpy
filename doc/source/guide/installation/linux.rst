@@ -19,11 +19,19 @@ Ubuntu
 On Ubuntu, most of the pre-reqs are available in the Ubuntu software repos and
 can be installed using :command:`apt-get`: ::
 
-    sudo apt-get install python-numpy python-matplotlib python-pyfits python-qt4 python-scipy python-suds python-imaging python-pip openjpeg-tools git-core ipython
+    sudo apt-get update && sudo apt-get install python-numpy  \
+    python-matplotlib python-pyfits python-qt4 python-scipy python-suds \
+    python-imaging python-pip openjpeg-tools git-core ipython
 
 The above command will install the recommended set of libraries and tools 
 including both the required and optional dependencies, and also IPython and Git.
 
-Next, use pip to install pandas:
+Next, use pip to install pandas: ::
 
     sudo pip install pandas
+    
+Arch Linux
+----------
+The install the latest version of SunPy on Arch Linux, run: ::
+
+    yaourt sunpy

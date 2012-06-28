@@ -5,35 +5,10 @@ Installation
 Below are instructions for installation SunPy and its prerequisites on 
 different platforms.
 
-Overview
---------
-**Required**
-
-For its basic functioning, SunPy requires several libraries:
-
-* `NumPy <http://numpy.scipy.org/>`__
-* `SciPy <http://www.scipy.org/>`__
-* `Matplotlib <http://matplotlib.sourceforge.net/>`__ (1.0+)
-* `PyFITS <http://www.stsci.edu/resources/software_hardware/pyfits>`_
-* `Suds <https://fedorahosted.org/suds/>`__
-* `pandas <http://pandas.pydata.org/>`_
-
-**Optional**
-
-In addition to the required libraries listed above, if you plan to work with
-JPEG 2000 data, you must also install:
-
-* `OpenJPEG <http://www.openjpeg.org/>`__
-* `PIL <http://www.pythonware.com/products/pil/>`__
-
-For improved GUI support, you will need to install PyQt4:
-
-* `PyQt4 <http://www.riverbankcomputing.co.uk/software/pyqt/download>`__
-
 Installing Prerequisites
 ------------------------
-For instructions on installing these prereqs on your system, choose your OS from
-the list below.
+For instructions on installing the prereqs required by SunPy, choose your OS 
+from the list below.
 
 .. toctree::
    :maxdepth: 1
