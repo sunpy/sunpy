@@ -70,8 +70,8 @@ def get_cmap(name='sdoaia94'):
     >>> import sunpy.cm as cm
     >>> colormap = cm.get_cmap(name = 'sdoaia94')
 
-    Reference
-    ---------
+    References
+    ----------
     | http://matplotlib.sourceforge.net/api/cm_api.html
 
     """
@@ -100,8 +100,8 @@ def show_colormaps():
     >>> import sunpy.cm as cm
     >>> cm.show_colormaps()
 
-    Reference
-    ---------
+    References
+    ----------
 
     """
     maps = sorted(cmlist)
