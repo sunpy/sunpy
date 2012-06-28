@@ -4,11 +4,28 @@
 Light Curves
 ============
 
-.. currentmodule:: sunpy
+.. currentmodule:: sunpy.lightcurve
 
-.. autosummary::
-   :toctree: generated/
+Overview
+^^^^^^^^
+One of core classes in SunPy is a LightCurve...
 
-   lightcurve
-   lightcurve.sdo
-   lightcurve.goes
+Creating LightCurve Objects
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+SunPy LightCurve can be created either the generic LightCurve constructory, or
+any data-specific variant. ::
+   
+LightCurve Classes
+^^^^^^^^^^^^^^^^^^
+
+:class:`LightCurve`
+""""""""""""""""
+.. autoclass:: goes.GOESLightCurve
+
+:class:`GOESLightCurve`
+"""""""""""""""""""""""
+.. autoclass:: goes.GOESLightCurve
+
+:class:`EVELightCurve`
+""""""""""""""""""""""
+.. autoclass:: eve.EVELightCurve
