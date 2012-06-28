@@ -10,6 +10,4 @@ Instr
 .. autosummary::
    :toctree: generated/
 
-   goes
    rhessi
-   sdoeve
