@@ -15,8 +15,10 @@ class GOESLightCurve(LightCurve):
     Examples
     --------
     >>> import sunpy
-    >>> GOES = sunpy.lightcurve.GOESLightCurve()
-    >>> GOES.show()
+    >>> goes = sunpy.lightcurve.GOESLightCurve()
+    >>> goes = sunpy.lightcurve.GOESLightCurve('2012/06/01', '2012/06/05')
+    >>> 
+    >>> goes.show()
     
     References
     ----------
@@ -53,6 +55,7 @@ class GOESLightCurve(LightCurve):
         ax.xaxis.grid(False, 'major')
         ax.legend()
         
+        # @todo: display better tick labels for date range (e.g. 06/01 - 06/05)
         formatter = matplotlib.dates.DateFormatter('%H:%M')
         ax.xaxis.set_major_formatter(formatter)
         
@@ -109,15 +112,9 @@ class GOESLightCurve(LightCurve):
         return url
     
     def _parse_csv(self, filepath):
-        """Parses an EVE Averages file"""
+        """Parses an GOES CSV"""
         fp = open(filepath, 'rb')
         
         # @todo: check for:
         # "No-Data-Found for the time period requested..." error
-        
         return "", read_csv(fp, sep=",", index_col=0, parse_dates=True)
-    
-if __name__ == "__main__":
-    import sunpy
-    sunpy.lightcurve.GOESLightCurve().show()
-

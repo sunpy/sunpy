@@ -71,6 +71,20 @@ def parse_time(time_string=None):
     
         raise ValueError("%s is not a valid time string!" % time_string)
     
+def is_time(time):
+    """Returns true if the input is a valid date/time representation"""
+    if None:
+        return False
+    elif isinstance(time, datetime):
+        return True
+
+    try:
+        parse_time(time)
+    except ValueError:
+        return False
+    else:
+        return True
+
 def day_of_year(t=None):
     """Returns the day of year."""
     SECONDS_IN_DAY = 60 * 60 * 24.0
