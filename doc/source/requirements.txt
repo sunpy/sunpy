@@ -1,3 +1,4 @@
 sphinx
 numpy
 numpydoc
+pyfits
