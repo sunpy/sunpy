@@ -28,8 +28,7 @@ def parse_time(time_string=None):
 
     Examples
     --------
-    >>> import sunpy.instr.goes as goes
-    >>> goes.get_file(('2011/04/04', '2011/04/05'))
+    >>>
     
     .. todo:: add ability to parse tai (International Atomic Time seconds since 
     Jan 1, 1958)
