@@ -12,8 +12,8 @@ from sunpy.io import UnrecognizedFileTypeError
 class Plotman(object):
     """ Wraps a MainWindow so PlotMan instances can be created via the CLI.
 
-        Example
-        -------
+        Examples
+        --------
         from sunpy.gui import Plotman
         plots = Plotman("data/examples")
         plots.show()
