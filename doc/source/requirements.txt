@@ -1,0 +1,5 @@
+sphinx
+numpy
+numpydoc
+pyfits
+matplotlib

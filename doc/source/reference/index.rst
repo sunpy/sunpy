@@ -1,8 +1,8 @@
 .. _reference:
 
-===============
+====================
 SunPy Code Reference
-===============
+====================
 
 .. module:: sunpy
 
@@ -10,13 +10,15 @@ SunPy Code Reference
    :maxdepth: 2
 
    cm
+   gui
+   hek
+   instr
+   io
+   lightcurve
    map
    mapcube
-   gui
-   io
+   rhessi
    sun
-   vso
-   hek
-   wcs
-   instr
    time
+   vso
+   wcs
