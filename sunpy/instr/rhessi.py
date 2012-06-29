@@ -317,9 +317,10 @@ def _backproject(calibrated_event_list, detector=8, pixel_size=(1.,1.), image_di
 
     """
     fits = pyfits.open(calibrated_event_list)
-    info_parameters = fits[2]
     
-    detector_efficiency = info_parameters.data.field('cbe_det_eff$$REL')    
+    #info_parameters = fits[2]    
+    #detector_efficiency = info_parameters.data.field('cbe_det_eff$$REL')
+    
     fits = pyfits.open(calibrated_event_list)
 
     fits_detector_index = detector + 2

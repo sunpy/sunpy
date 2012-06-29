@@ -5,7 +5,7 @@ from __future__ import absolute_import
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
-from sunpy.map.Map import Map
+from sunpy.map import Map
 from sunpy.map.sources import *
 import numpy as np
 
