@@ -1,4 +1,4 @@
-.. _customizing-matplotlib:
+.. _customizing-sunpy:
 
 **********************
 Customizing sunpy
@@ -14,8 +14,7 @@ of properties. You can control a number of key features of sunpy such as
 where your data will download. sunpy looks for :file:`sunpy` in three
 locations, in the following order:
 
-1. :file:`.sunpy/sunprc`, for the user's default customizations. See
-   :ref:`locating-sunpy-config-dir`.
+1. :file:`.sunpy/sunprc`, for the user's default customizations.
 2. :file:`{INSTALL}/sunpy/data/sunprc`, where :file:`{INSTALL}`
    is something like :file:`/usr/lib/python2.5/site-packages` on Linux, and
    maybe :file:`C:\\Python25\\Lib\\site-packages` on Windows. Every time you
@@ -30,7 +29,7 @@ loaded from, one can do the following::
   >>> sunpy.sunpy_configfile()
   '/home/foo/.sunpy/sunpyrc'
 
-See below for a sample :ref:`sunpy file<sunpyrc-sample>`.
+See below for an example config file.
 
 .. _customizing-with-dynamic-settings:
 
@@ -56,4 +55,4 @@ A sample sunpyrc file
 
     `(download) <../_static/sunpyrc>`__
 
-.. literalinclude:: ../../lib/sunpy/data/sunpyrc
+.. literalinclude:: ../../../sunpy/data/sunpyrc

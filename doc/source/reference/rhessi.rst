@@ -3,6 +3,7 @@
 ======
 RHESSI
 ======
+RHESSI specific functionality
 
 .. currentmodule:: sunpy.instr
 
