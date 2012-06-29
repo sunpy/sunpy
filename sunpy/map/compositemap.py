@@ -5,7 +5,7 @@ Author: `Keith Hughitt <keith.hughitt@nasa.gov>`
 from __future__ import absolute_import
 
 import matplotlib.pyplot as plt
-from sunpy.map.basemap import BaseMap
+from sunpy.map.Map import Map
 
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
@@ -72,10 +72,10 @@ class CompositeMap:
         # Parse input Maps/filepaths        
         for i, item in enumerate(args):
             # Parse map
-            if isinstance(item, BaseMap):
+            if isinstance(item, Map):
                 m = item
             else:
-                m = BaseMap.read(item)
+                m = Map.read(item)
             
             # Set z-order and alpha values for the map
             m.zorder = zorders[i]
@@ -106,7 +106,7 @@ class CompositeMap:
         if zorder is None:
             zorder = max([m.zorder for m in self._maps]) + 10
         
-        m = BaseMap.read(input_)
+        m = Map.read(input_)
         m.zorder = zorder
         m.alpha = alpha
         m.levels = levels

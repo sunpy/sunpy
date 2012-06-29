@@ -7,7 +7,7 @@ __email__ = "keith.hughitt@nasa.gov"
 import os
 import numpy as np
 from sunpy.map.header import MapHeader
-from sunpy.map.basemap import BaseMap
+from sunpy.map.map import Map
 from sunpy.map.mapcube import MapCube
 from sunpy.map.compositemap import CompositeMap
 from sunpy.map.sources import *
@@ -62,12 +62,12 @@ def make_map(*args, **kwargs):
                 # 1-dimensional data
                 data = args[0]
                 
-        # if either of the above cases hold, then create a new BaseMap
+        # if either of the above cases hold, then create a new Map
         if data is not None:
             if len(args) > 1:
-                return BaseMap(args[0], args[1])
+                return Map(args[0], args[1])
             else:
-                return BaseMap(args[0], {})
+                return Map(args[0], {})
             
         
     # If not, check for one or more maps or filepaths
@@ -86,10 +86,10 @@ def make_map(*args, **kwargs):
                 
             # Filepath
             else:
-                return BaseMap.read(filepath)
+                return Map.read(filepath)
 
         # Map/MapCube/CompositeMap
-        elif (isinstance(args[0], BaseMap) or 
+        elif (isinstance(args[0], Map) or 
               isinstance(args[0], CompositeMap) or 
               isinstance(args[0], MapCube)):
             return args[0]
@@ -125,7 +125,7 @@ def make_map(*args, **kwargs):
         
 def read_header(filepath):
     """Parses a file header and return some important parameters"""
-    return BaseMap.read_header(filepath)
+    return Map.read_header(filepath)
     
 class InvalidMapInput(ValueError):
     """Exception to raise when input variable is not a Map instance and does

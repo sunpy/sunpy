@@ -4,16 +4,16 @@
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
-from sunpy.map.basemap import BaseMap
+from sunpy.map.Map import Map
 from sunpy.time import parse_time
 from sunpy.cm import cm
 
-class EUVIMap(BaseMap):
+class EUVIMap(Map):
     """EUVI Image Map definition"""
     @classmethod
     def get_properties(cls, header):
         """Parses EUVI image header"""
-        properties = BaseMap.get_properties(header)
+        properties = Map.get_properties(header)
         
         properties.update({
             "date": parse_time(header.get('date_obs')),
@@ -30,12 +30,12 @@ class EUVIMap(BaseMap):
         """Determines if header corresponds to an EUVI image"""
         return header.get('detector') == 'EUVI'
         
-class CORMap(BaseMap):
+class CORMap(Map):
     """COR Image Map definition"""
     @classmethod
     def get_properties(cls, header):
         """Parses COR image header"""
-        properties = BaseMap.get_properties(header)
+        properties = Map.get_properties(header)
         
         # @TODO: Deal with invalid values for exptime. E.g. STEREO-B COR2
         # on 2012/03/20 has -1 for some images.

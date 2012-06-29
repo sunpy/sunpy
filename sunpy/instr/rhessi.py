@@ -413,6 +413,6 @@ def backprojection(calibrated_event_list, pixel_size=(1.,1.), image_dim=(64,64))
     }
     
     header = sunpy.map.MapHeader(dict_header)
-    result_map = sunpy.map.BaseMap(image, header)
+    result_map = sunpy.map.Map(image, header)
             
     return result_map

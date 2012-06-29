@@ -4,12 +4,12 @@
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
-from sunpy.map.basemap import BaseMap
+from sunpy.map.Map import Map
 from sunpy.cm import cm
 from matplotlib import colors
 import numpy as np
 
-class AIAMap(BaseMap):
+class AIAMap(Map):
     """AIA Image Map definition
     
     References
@@ -20,7 +20,7 @@ class AIAMap(BaseMap):
     @classmethod
     def get_properties(cls, header):
         """Parses AIA image header"""
-        properties = BaseMap.get_properties(header)
+        properties = Map.get_properties(header)
         
         properties.update({
             "detector": "AIA",
@@ -50,12 +50,12 @@ class AIAMap(BaseMap):
         """Determines if header corresponds to an AIA image"""
         return header.get('instrume', '').startswith('AIA')
         
-class HMIMap(BaseMap):
+class HMIMap(Map):
     """HMI Image Map definition"""
     @classmethod
     def get_properties(cls, header):
         """Parses HMI image header"""
-        properties = BaseMap.get_properties(header)
+        properties = Map.get_properties(header)
         
         measurement = header['content'].split(" ")[0].lower()
         
