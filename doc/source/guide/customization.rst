@@ -1,4 +1,4 @@
-.. _customizing-matplotlib:
+.. _customizing-sunpy:
 
 **********************
 Customizing sunpy
@@ -56,4 +56,4 @@ A sample sunpyrc file
 
     `(download) <../_static/sunpyrc>`__
 
-.. literalinclude:: ../../lib/sunpy/data/sunpyrc
+.. literalinclude:: ../../../sunpy/data/sunpyrc
