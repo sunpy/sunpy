@@ -1,5 +1,5 @@
 """
-BaseMap tests
+Map tests
 """
 from __future__ import absolute_import
 
@@ -8,8 +8,8 @@ import sunpy
 import pyfits
 import numpy as np
 
-class TestBaseMap:
-    """Tests the BaseMap class"""
+class TestMap:
+    """Tests the Map class"""
     def setup_class(self):
         self.file = sunpy.AIA_171_IMAGE
         self.map = sunpy.make_map(self.file)
