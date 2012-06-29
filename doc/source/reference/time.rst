@@ -3,6 +3,7 @@
 ====
 Time
 ====
+Date and time related functionality.
 
 .. currentmodule:: sunpy.time
 

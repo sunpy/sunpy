@@ -17,11 +17,11 @@ files have names like `sunpy.AIA_171_IMAGE` and `sunpy.RHESSI_IMAGE`.
 
 Try typing the below example into your interactive Python shell::
 
-	import sunpy
-	from matplotlib import cm
-	from matplotlib import colors
-	aia = sunpy.make_map(sunpy.AIA_171_IMAGE)
-	aia.show(cmap=cm.hot, norm=colors.Normalize(1, 2048))
+    import sunpy
+    from matplotlib import cm
+    from matplotlib import colors
+    aia = sunpy.make_map(sunpy.AIA_171_IMAGE)
+    aia.show(cmap=cm.hot, norm=colors.Normalize(1, 2048))
 
 If everything has been configured properly you should see a standard-looking
 AIA 171 image with a colorbar on the right-hand side and a title and some 
@@ -44,41 +44,41 @@ There are a number of color maps defined in SunPy which are used for data from
 particular missions (e.g. SDO/AIA). 
 A simple example on how to use the color maps provided by SunPy: ::
 
-	from sunpy.cm import cm
-	
-	# cmlist is a dictionary with all of the color tables
-	# to list all of the keys of the dictionary
-	cm.cmlist.keys()
+    from sunpy.cm import cm
+    
+    # cmlist is a dictionary with all of the color tables
+    # to list all of the keys of the dictionary
+    cm.cmlist.keys()
 
-	# to grab a particular colortable then
-	cmap = cm.cmlist.get('sdoaia94')
+    # to grab a particular colortable then
+    cmap = cm.cmlist.get('sdoaia94')
 
-	# you can also get a visual representation of all of the color tables 
-	cm.show_colormaps()
+    # you can also get a visual representation of all of the color tables 
+    cm.show_colormaps()
 
 2. Solar Physical Constants
 ---------------------------
 
 SunPy contains a convienient list of solar-related physical constants. Here is 
 a short bit of code to get you started: ::
-	
-	from sunpy.sun import constants as con
+    
+    from sunpy.sun import constants as con
 
-	# one astronomical unit (the average distance between the Sun and Earth)
-	print(con.au)
+    # one astronomical unit (the average distance between the Sun and Earth)
+    print(con.au)
 
-	# the solar radius
-	print(con.radius)
+    # the solar radius
+    print(con.radius)
 
-	# not all constants have a shortcut assigned to them (as above)
-	# the rest of the constants are stored in a dictionary
-	solar_constants = con.physical_constants
+    # not all constants have a shortcut assigned to them (as above)
+    # the rest of the constants are stored in a dictionary
+    solar_constants = con.physical_constants
 
-	# to get a list of all of the values stored in this dictionary
-	solar_constants.keys()
-	
-	# or you can use the following convinience method to list them all
-	con.print_all()
+    # to get a list of all of the values stored in this dictionary
+    solar_constants.keys()
+    
+    # or you can use the following convinience method to list them all
+    con.print_all()
 
 3. Working with Times
 ---------------------
@@ -86,22 +86,22 @@ a short bit of code to get you started: ::
 SunPy also contains a number of convenience functions for working with dates
 and times. Here is a short example: ::
 
-	from sunpy.time import *
-	
-	# parsing a standard time strings
-	parse_time('2004/02/05 12:00')
-	
-	# This returns a datetime object. All SunPy functions which require 
-	# time as an input sanitize the input using parse_time. 	
-	day_of_year('2004-Jul-05 12:00:02')
-	
-	# the julian day
-	julian_day((2010,4,30))
-	
-	# TimeRange objects are useful for representing ranges of time
-	time_range = TimeRange('2010/03/04 00:10', '2010/03/04 00:20')
-	time_range.center()	
-	
+    from sunpy.time import *
+    
+    # parsing a standard time strings
+    parse_time('2004/02/05 12:00')
+    
+    # This returns a datetime object. All SunPy functions which require 
+    # time as an input sanitize the input using parse_time.
+    day_of_year('2004-Jul-05 12:00:02')
+    
+    # the julian day
+    julian_day((2010,4,30))
+    
+    # TimeRange objects are useful for representing ranges of time
+    time_range = TimeRange('2010/03/04 00:10', '2010/03/04 00:20')
+    time_range.center()
+    
 4. Querying the VSO
 -------------------
 There are a couple different ways to query and download data from the VSO using

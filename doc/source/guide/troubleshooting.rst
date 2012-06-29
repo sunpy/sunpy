@@ -55,8 +55,7 @@ settings directory by default::
 
 If you would like to use a different configuration directory, you can
 do so by specifying the location in your :envvar:`SUNPY_CONFIGDIR`
-environment variable -- see
-:ref:`setting-linux-osx-environment-variables`.
+environment variable.
 
 
 .. _reporting-problems:
@@ -81,7 +80,7 @@ If not, please provide the following information in your e-mail to the
   * where you obtained sunpy.
 
   * any customizations to your ``sunpyrc`` file (see
-    :ref:`customizing-sunpyrc`).
+    :ref:`customizing-sunpy`).
 
   * if the problem is reproducible, please try to provide a *minimal*,
     standalone Python script that demonstrates the problem.  This is
