@@ -42,7 +42,7 @@ http://nssdc.gsfc.nasa.gov/planetary/factsheet/sunfact.html
 from __future__ import absolute_import
 
 import scipy.constants as _cd
-import _si as _con
+from . import _si as _con # pylint: disable=E0611
 
 physical_constants = _con.physical_constants
 
