@@ -4,7 +4,7 @@
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
-from sunpy.map.Map import Map
+from sunpy.map import Map
 from sunpy.cm import cm
 
 class SWAPMap(Map):

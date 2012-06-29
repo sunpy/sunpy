@@ -4,11 +4,11 @@
 __author__ = "Steven Christe"
 __email__ = "steven.d.christe@nasa.gov"
 
-from sunpy.map.basemap import BaseMap
+from sunpy.map import Map
 from sunpy.cm import cm
 from sunpy.time import parse_time
 
-class RHESSIMap(BaseMap):
+class RHESSIMap(Map):
     """RHESSI Image Map definition
     
     References
@@ -22,7 +22,7 @@ class RHESSIMap(BaseMap):
     @classmethod
     def get_properties(cls, header):
         """Parses RHESSI image header"""
-        properties = BaseMap.get_properties(header)
+        properties = Map.get_properties(header)
         
         properties.update({
             "date": parse_time(header.get('date_obs')),

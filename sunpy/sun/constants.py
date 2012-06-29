@@ -42,7 +42,7 @@ http://nssdc.gsfc.nasa.gov/planetary/factsheet/sunfact.html
 from __future__ import absolute_import
 
 import scipy.constants as _cd
-from . import _si as _con
+import _si as _con
 
 physical_constants = _con.physical_constants
 
@@ -207,8 +207,8 @@ def print_all(key = None):
             print(format_string.format(key, str(value(key)), unit(key), 
                                        str(precision(key))))
     else: 
-            print(format_string.format(key, str(value(key)), unit(key), 
-                                       str(precision(key))))
+        print(format_string.format(key, str(value(key)), unit(key), 
+                                   str(precision(key))))
 
 # Spectral class is not included in physical constants since it is not a number
 spectral_classification = 'G2V'

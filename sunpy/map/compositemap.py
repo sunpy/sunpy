@@ -5,7 +5,7 @@ Author: `Keith Hughitt <keith.hughitt@nasa.gov>`
 from __future__ import absolute_import
 
 import matplotlib.pyplot as plt
-from sunpy.map.Map import Map
+from sunpy.map import Map
 
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
@@ -190,8 +190,8 @@ class CompositeMap:
         """
         self._maps[index].zorder = zorder
 
-    def plot(self, figure=None, overlays=None, draw_limb=False, gamma=1.0,
-             draw_grid=False, colorbar=True, basic_plot=False, 
+    def plot(self, figure=None, overlays=None, draw_limb=False, gamma=1.0, # pylint: disable=W0613
+             draw_grid=False, colorbar=True, basic_plot=False, # pylint: disable=W0613
              title="SunPy Plot", **matplot_args):
         """Plots the composite map object using matplotlib
         

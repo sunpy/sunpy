@@ -39,11 +39,11 @@ class Plotman(object):
                 for file_ in os.listdir(input_):
                     to_open.append(file_)
             else:
-                raise IOError("Path " + path + " does not exist.")
+                raise IOError("Path " + input_ + " does not exist.")
 
         # Load files
         for filepath in to_open:
-            name, ext = os.path.splitext(filepath)
+            name, ext = os.path.splitext(filepath) #pylint: disable=W0612
             
             if ext.lower() in VALID_EXTENSIONS:
                 try:
