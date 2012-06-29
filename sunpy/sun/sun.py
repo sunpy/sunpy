@@ -72,8 +72,8 @@ def angular_size(t=None):
 
 def position(t=None):
     """Returns the position of the Sun (right ascension and declination)
-	on the celestial sphere using the equatorial coordinate system in arcsec.
-	"""
+    on the celestial sphere using the equatorial coordinate system in arcsec.
+    """
     ra = true_rightascenscion(t)
     dec = true_declination(t)
     result = [ra,dec]

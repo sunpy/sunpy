@@ -27,7 +27,7 @@ sys.path.append(os.path.abspath('../../sunpy/'))
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = ['sphinx.ext.autodoc', 'numpydoc', 'sphinx.ext.todo',
               'sphinx.ext.pngmath', 'sphinx.ext.viewcode', 
-              'sphinx.ext.autosummary']
+              'sphinx.ext.autosummary', 'matplotlib.sphinxext.only_directives']
 
 # Note: numpydoc extension is required and can be found at
 # is available with the numpy source code

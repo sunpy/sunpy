@@ -1,8 +1,8 @@
 .. _reference:
 
-===============
+====================
 SunPy Code Reference
-===============
+====================
 
 .. module:: sunpy
 
@@ -17,6 +17,7 @@ SunPy Code Reference
    lightcurve
    map
    mapcube
+   rhessi
    sun
    time
    vso
