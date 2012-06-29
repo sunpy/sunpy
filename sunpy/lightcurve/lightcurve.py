@@ -31,8 +31,7 @@ class LightCurve:
     Attributes
     ----------
     data : pandas.DataFrame
-        An pandas DataFrame prepresenting one or more fields as they vary with
-        respect to time.
+        An pandas DataFrame prepresenting one or more fields as they vary with respect to time.
     header : string, dict
         The comment string or header associated with the light curve input
 
@@ -47,8 +46,8 @@ class LightCurve:
 
     References
     ----------
-    | http://pandas.pydata.org/pandas-docs/dev/dsintro.html#dataframe
-    
+    | http://pandas.pydata.org/pandas-docs/dev/dsintro.html
+
     """
     def __init__(self, *args, **kwargs):
         self._filename = ""
@@ -175,40 +174,3 @@ class LightCurve:
             return self._parse_csv(filepath)
         else:
             return self._parse_fits(filepath)
-    
-#    @classmethod
-#    def parse_file(cls, filepath):
-#        """Reads in a map file and returns a header and data array"""
-#        data, dict_header = read_file(filepath)
-#
-#        return dict_header, data
-#
-#    @classmethod
-#    def read(cls, filepath):
-#        """LightCurve class factory
-#
-#        Attempts to determine the type of data associated with input and
-#        returns a LightCurve subclass instance. If the file format is not
-#        recognized a warning will be displayed.
-#
-#        Parameters
-#        ----------
-#        filepath : string
-#            Path to input file (FITS, CSV, etc.)
-#
-#        Returns
-#        -------
-#        out : LightCurve
-#            Returns a LightCurve instance.
-#        """
-#        header, data = cls.parse_file(filepath)
-#
-#        if cls.__name__ is not "LightCurve":
-#            return cls(filepath)
-#
-#        for cls in LightCurve.__subclasses__():
-#            if cls.is_datasource_for(header):
-#                return cls(data, header)
-
-
- 
