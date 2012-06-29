@@ -19,7 +19,7 @@ LightCurve Classes
 ^^^^^^^^^^^^^^^^^^
 
 :class:`LightCurve`
-""""""""""""""""
+"""""""""""""""""""
 .. autoclass:: goes.GOESLightCurve
 
 :class:`GOESLightCurve`
