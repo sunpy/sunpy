@@ -174,3 +174,24 @@ class LightCurve:
             return self._parse_csv(filepath)
         else:
             return self._parse_fits(filepath)
+
+
+    def discrete_boxcar_average(self, seconds=1):
+        """Computes a discrete boxcar average for the DataFrame"""
+        date_range = pandas.DateRange(self.data.index[0], self.data.index[-1], 
+                                      offset=pandas.datetools.Second(seconds))
+        grouped = self.data.groupby(date_range.asof)
+        subsampled = grouped.mean()
+        
+        return LightCurve(subsampled, self.header.copy())
+    
+    def truncate(self, start=None, end=None):
+        """Returns a truncated version of the Lyra object"""
+        if start is None:
+            start = self.data.index[0]
+        if end is None:
+            end = self.data.index[-1]
+        
+        truncated = self.data.truncate(sunpy.time.parse_time(start),
+                                       sunpy.time.parse_time(end))
+        return LightCurve(truncated, self.header.copy())

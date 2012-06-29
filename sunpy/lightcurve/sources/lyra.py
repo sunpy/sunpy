@@ -7,6 +7,8 @@ from sunpy.lightcurve import LightCurve
 import os
 from pandas.io.parsers import read_csv
 from datetime import datetime  
+from matplotlib import pyplot as plt
+import urlparse
 
 class LYRALightCurve(LightCurve):
     """SDO EVE light curve definition
@@ -28,25 +30,48 @@ class LYRALightCurve(LightCurve):
     def __init__(self, *args, **kwargs):
         LightCurve.__init__(self, *args, **kwargs)
 
+        
     def show(self, **kwargs):
+        """Plots the LYRA data
+        
+        See: http://pandas.sourceforge.net/visualization.html
+        """
+        
         # Choose title if none was specified
         if not kwargs.has_key("title"):
             if len(self.data.columns) > 1:
-                kwargs['title'] = 'EVE GOES Proxy Xray Flux (1 minute data)'
+                kwargs['title'] = 'LYRA data'
             else:
                 if self._filename is not None:
-                    base = self._filename.replace('_', ' ')
+                    base = self._filename
                     kwargs['title'] = os.path.splitext(base)[0]
                 else:
-                    kwargs['title'] = 'EVE Averages'
+                    kwargs['title'] = 'LYRA data'
 
-        LightCurve.show(kwargs)
+        """Shows a plot of the light curve"""
+        axes = self.data.plot(subplots=True, sharex=True)       
+        plt.legend(loc='best')
+        
+        for i, name in enumerate(self.data.columns):
+            axes[i].set_ylabel("%s (%s" % (name, "UNITS"))
+            
+        axes[0].set_title("LYRA")
+        axes[-1].set_xlabel("Time")
+        self.data.plot(**kwargs)
+        plt.show()
     
     def _get_url_for_date(self, date):
         """Returns a URL to the LYRA data for the specified date
         """
-        base_url = 'http://lasp.colorado.edu/eve/data/quicklook/L0CS/SpWx/'
-        return base_url + date.strftime('%Y/%Y%m%d') + '_EVE_L0CS_DIODES_1m.txt'
+        dt = sunpy.time.parse_time(date or datetime.datetime.utcnow())
+
+        # Filename
+        filename = "lyra_%s000000_lev%d_%s.fits" % (dt.strftime('%Y%m%d-'),
+                                                    2, 'std')
+        # URL
+        base_url = "http://proba2.oma.be/lyra/data/bsd/"
+        url_path = urlparse.urljoin(dt.strftime('%Y/%m/%d/'), filename)
+        return urlparse.urljoin(base_url, url_path)
         
     def _get_default_uri(self):
         """Look for and download today's LYRA data"""
