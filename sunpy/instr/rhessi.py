@@ -43,7 +43,8 @@ def get_obssumm_dbase_file(time_range):
     
     Parameters
     ----------
-    time_range : A TimeRange or time range compatible string
+    time_range : str, TimeRange
+        A TimeRange or time range compatible string
 
     Returns
     -------
@@ -51,19 +52,16 @@ def get_obssumm_dbase_file(time_range):
         Return a tuple (filename, headers) where filename is the local file 
         name under which the object can be found, and headers is 
         whatever the info() method of the object returned by urlopen.
-        
-    See Also
-    --------
 
     Examples
     --------
     >>> import sunpy.instr.rhessi as rhessi
     >>> rhessi.get_obssumm_dbase_file(('2011/04/04', '2011/04/05'))
-    
-    Reference
-    ---------
+
+    References
+    ----------
     | http://hesperia.gsfc.nasa.gov/ssw/hessi/doc/guides/hessi_data_access.htm#Observing Summary Data
-    
+
     .. note:: This API is currently limited to providing data from 
     whole days only.
 
@@ -90,26 +88,24 @@ def parse_obssumm_dbase_file(filename):
     
     Parameters
     ----------
-    filename : The filename of the obssumm dbase file
+    filename : str
+        The filename of the obssumm dbase file
 
     Returns
     -------
-    value : dict
+    out : dict
         Return a dict containing the parsed data in the dbase file
-        
-    See Also
-    --------
 
     Examples
     --------
     >>> import sunpy.instr.rhessi as rhessi
     >>> f = rhessi.get_obssumm_dbase_file(('2011/04/04', '2011/04/05'))
     >>> rhessi.parse_obssumm_dbase_file(f[0])
-    
-    Reference
-    ---------
+
+    References
+    ----------
     | http://hesperia.gsfc.nasa.gov/ssw/hessi/doc/guides/hessi_data_access.htm#Observing Summary Data
-    
+
     .. note:: This API is currently limited to providing data from 
     whole days only.
 
@@ -146,28 +142,22 @@ def get_obssum_filename(time_range):
     """Download the RHESSI observing summary data from one of the RHESSI 
     servers, parses it, and returns the name of the obssumm file relevant for
     the time range
-    
+
     Parameters
     ----------
-    time_range : A TimeRange or time range compatible string
+    time_range : str, TimeRange 
+        A TimeRange or time range compatible string
 
     Returns
     -------
-    value : string
+    out : string
         Returns the filename of the observation summary file
-
-    See Also
-    --------
 
     Examples
     --------
     >>> import sunpy.instr.rhessi as rhessi
     >>> rhessi.get_obssumm_filename(('2011/04/04', '2011/04/05'))
-    
-    Reference
-    ---------
-    | 
-    
+
     .. note:: This API is currently limited to providing data from 
     whole days only.
 
@@ -185,30 +175,24 @@ def get_obssum_filename(time_range):
 def get_obssumm_file(time_range):
     """Download the RHESSI observing summary data from one of the RHESSI 
     servers. 
-    
+
     Parameters
     ----------
-    time_range : A TimeRange or time range compatible string
+    time_range : str, TimeRange
+        A TimeRange or time range compatible string
 
     Returns
     -------
-    value : tuple
+    out : tuple
         Return a tuple (filename, headers) where filename is the local file 
         name under which the object can be found, and headers is 
         whatever the info() method of the object returned by urlopen.
-
-    See Also
-    --------
 
     Examples
     --------
     >>> import sunpy.instr.rhessi as rhessi
     >>> rhessi.get_obssumm_file(('2011/04/04', '2011/04/05'))
-    
-    Reference
-    ---------
-    | 
-    
+
     .. note:: This API is currently limited to providing data from 
     whole days only.
 
@@ -229,18 +213,16 @@ def get_obssumm_file(time_range):
 
 def parse_obssumm_file(filename):
     """Parse a RHESSI observation summary file.
-    
+
     Parameters
     ----------
-    filename : The filename of a RHESSI fits file.
+    filename : str
+        The filename of a RHESSI fits file.
 
     Returns
     -------
-    value : dict
+    out : dict
         Returns a dictionary.
-
-    See Also
-    --------
 
     Examples
     --------
@@ -272,7 +254,7 @@ def parse_obssumm_file(filename):
     return result
 
 def show_obssumm(data_dict):
-    
+    """show_obssum"""
     t = data_dict.get('time')
     data = data_dict.get('data')
     labels = data_dict.get('labels')
@@ -312,37 +294,26 @@ def _backproject(calibrated_event_list, detector=8, pixel_size=(1.,1.), image_di
     """Given a stacked calibrated event list fits file create a back 
     projection image for an individual detectors. This function is used by
     backprojection.
-    
+
     Parameters
     ----------
     calibrated_event_list : string
         filename of a RHESSI calibrated event list
-    
     detector : int
         the detector number
-        
     pixel_size : 2-tuple
         the size of the pixels in arcseconds. Default is (1,1).
-        
     image_dim : 2-tuple
         the size of the output image in number of pixels
-        
+
     Returns
     -------
-    image : ndarray
+    out : ndarray
         Return a backprojection image.
-
-    See Also
-    --------
 
     Examples
     --------
     >>> import sunpy.instr.rhessi as rhessi
-    >>> image = rhessi.get_latest_l0cs_goes_data(sunpy.RHESSI_EVENT_LIST, detector = 3)
-    
-    Reference
-    ---------
-    | 
 
     """
     fits = pyfits.open(calibrated_event_list)
@@ -385,33 +356,23 @@ def backprojection(calibrated_event_list, pixel_size=(1.,1.), image_dim=(64,64))
     ----------
     calibrated_event_list : string
         filename of a RHESSI calibrated event list
-    
     detector : int
         the detector number
-        
     pixel_size : 2-tuple
         the size of the pixels in arcseconds. Default is (1,1).
-        
     image_dim : 2-tuple
         the size of the output image in number of pixels
-        
+
     Returns
     -------
-    map : RHESSImap
+    out : RHESSImap
         Return a backprojection map.
-
-    See Also
-    --------
 
     Examples
     --------
     >>> import sunpy.instr.rhessi as rhessi
     >>> map = rhessi.backprojection(sunpy.RHESSI_EVENT_LIST)
     >>> map.show()
-    
-    Reference
-    ---------
-    | 
 
     """
     

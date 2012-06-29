@@ -7,8 +7,8 @@ different platforms.
 
 Installing Prerequisites
 ------------------------
-For instructions on installing these prereqs on your system, choose your OS from
-the list below.
+For instructions on installing the prereqs required by SunPy, choose your OS 
+from the list below.
 
 .. toctree::
    :maxdepth: 1
