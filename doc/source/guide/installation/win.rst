@@ -4,28 +4,6 @@ Windows
 
 Overview
 --------
-**Required**
-
-For its basic functioning, SunPy requires several libraries:
-
-* `NumPy <http://numpy.scipy.org/>`__
-* `SciPy <http://www.scipy.org/>`__
-* `Matplotlib <http://matplotlib.sourceforge.net/>`__ (1.0+)
-* `PyFITS <http://www.stsci.edu/resources/software_hardware/pyfits>`_
-* `Suds <https://fedorahosted.org/suds/>`__
-* `pandas <http://pandas.pydata.org/>`_
-
-**Optional**
-
-In addition to the required libraries listed above, if you plan to work with
-JPEG 2000 data, you must also install:
-
-* `OpenJPEG <http://www.openjpeg.org/>`__
-* `PIL <http://www.pythonware.com/products/pil/>`__
-
-For improved GUI support, install PyQt4:
-
-* `PyQt4 <http://www.riverbankcomputing.co.uk/software/pyqt/download>`__
 
 There are many ways to get SunPy up and running on Windows, and we describe the 
 recommended method and an alternate method below.  Lines in text boxes should 

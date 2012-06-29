@@ -1,7 +1,8 @@
 """SunPy configuration file functionality"""
 import os
 import sunpy
-from configobj import ConfigObj
+import tempfile
+import ConfigParser
 
 def _is_writable_dir(p):
     """Checks to see if a directory is writable"""
@@ -61,37 +62,49 @@ def _get_configdir():
 
     return p
 
-def _fix_types(config):
-    """Fixes types for non-string config parameters and expands filepaths"""
-    booleans = ['data.save']
-    filepaths = ['data.directory']
-    
-    # Fix bools
-    for b in booleans:
-        config[b] = bool(config[b])
-        
-    # Fix filepaths
+def _fix_filepaths(config):
+    """Converts relative filepaths to absolute filepaths"""
+    # Filepath config parameters
+    filepaths = [('downloads', 'download_dir')]
+
     for f in filepaths:
-        config[f] = os.path.abspath(os.path.expanduser(config[f]))
+        val = config.get(*f)
         
-    return config
+        # Check for /tmp
+        if val == "/tmp":
+            val = tempfile.gettempdir()
+
+        # Expand filepaths
+        params = f + (os.path.abspath(os.path.expanduser(val)),)
+        config.set(*params)
 
 def read_configfile():
     """
     Read the sunpyrc configuration file. If one does not exists in the user's
     home directory then read in the defaults from module
     """
+    config = ConfigParser.ConfigParser()
+    
+    # determine location of config file
     config_filename = 'sunpyrc'
     config_path = _get_configdir()
     
     # check if to see if defaults have been customized 
     # if not read in the defaults from the module
-    if os.path.exists(config_path + '/' + config_filename):    
-        config = ConfigObj(config_path + '/' + config_filename)
+    if os.path.exists(config_path + '/' + config_filename):
+        filepath = config_path + '/' + config_filename
     else:
         module_dir = os.path.dirname(sunpy.__file__)
-        config = ConfigObj(module_dir + '/data/sunpyrc')
-        
-    config = _fix_types(config)
+        filepath = module_dir + '/data/sunpyrc'
+    
+    # Read in configuration
+    config.readfp(open(filepath))
+    
+    # Use absolute filepaths and adjust OS-dependent paths as needed
+    _fix_filepaths(config)
         
     return config
+
+if __name__ == "__main__":
+    import sunpy
+    sunpy.util.system_info()

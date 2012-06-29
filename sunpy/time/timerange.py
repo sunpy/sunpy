@@ -77,9 +77,11 @@ class TimeRange:
         # End date
         if isinstance(y, str) or isinstance(y, float):
             self.t2 = parse_time(y)
+            
         # Timedelta
         if type(y) == type(timedelta(1)):
             self.t2 = self.t1 + y
+            
         # Seconds offset
         if isinstance(y, int):
             self.t2 = self.t1 + timedelta(0, y) 
@@ -108,6 +110,14 @@ class TimeRange:
     def days(self):
         """Gets the number of days ellapsed."""
         return self.dt.days
+    
+    def start(self):
+        """Gets the start date"""
+        return self.t1
+    
+    def end(self):
+        """Gets the start date"""
+        return self.t2
     
     def seconds(self):
         """Gets the number of seconds ellapsed."""

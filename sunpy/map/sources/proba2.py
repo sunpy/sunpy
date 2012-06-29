@@ -10,8 +10,8 @@ from sunpy.cm import cm
 class SWAPMap(BaseMap):
     """SWAP Image Map definition
     
-    Reference
-    ---------
+    References
+    ----------
     For a description of SWAP headers
     http://proba2.oma.be/index.html/swap/swap-analysis-manual/article/data-products?menu=23
     """

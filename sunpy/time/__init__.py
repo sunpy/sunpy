@@ -11,29 +11,27 @@ __all__ += timerange.__all__
 def parse_time(time_string=None):
     """Given a time string will parse and return a datetime object.
     Similar to the anytim function in IDL.
-    
-    .. note :: If no input is given then returns the datetime for the 
+
+    .. note:: If no input is given then returns the datetime for the 
     current time.
-    
+
     Parameters
     ----------
     time_string : string
-        
+        Datestring to parse. Defaults to utcnow() if none specified.
+
     Returns
     -------
-    value : datetime
-
-    See Also
-    --------
+    out : datetime
+        DateTime corresponding to input date string
 
     Examples
     --------
-    >>> import sunpy.instr.goes as goes
-    >>> goes.get_file(('2011/04/04', '2011/04/05'))
-    
+    >>> sunpy.time.parse_time('2012/08/01')
+    >>> sunpy.time.parse_time('2005-08-04T00:01:02.000Z')
+
     .. todo:: add ability to parse tai (International Atomic Time seconds since 
     Jan 1, 1958)
-
     """
     if time_string is None:
         return datetime.now()
@@ -71,6 +69,20 @@ def parse_time(time_string=None):
     
         raise ValueError("%s is not a valid time string!" % time_string)
     
+def is_time(time):
+    """Returns true if the input is a valid date/time representation"""
+    if None:
+        return False
+    elif isinstance(time, datetime):
+        return True
+
+    try:
+        parse_time(time)
+    except ValueError:
+        return False
+    else:
+        return True
+
 def day_of_year(t=None):
     """Returns the day of year."""
     SECONDS_IN_DAY = 60 * 60 * 24.0
