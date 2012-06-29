@@ -34,8 +34,8 @@ Documentation
    release
    about
    bugs
-   test
 
+..   testing
 ..   gallery/index
 ..   license
 ..   glossary
