@@ -17,6 +17,7 @@ PyFITS
     Attempting to cast a pyfits header to a dictionary while it contains
     invalid header tags will result in an error so verifying it early on
     makes the header easier to work with later.
+
 References
 ----------
 | http://stackoverflow.com/questions/456672/class-factory-in-python

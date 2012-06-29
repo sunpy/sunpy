@@ -13,8 +13,8 @@ SunPy includes several example files which are used throughout the docs. These
 files have names like `sunpy.AIA_171_IMAGE` and `sunpy.RHESSI_IMAGE`.
 To create the sample AIA map type the following into your interactive Python shell::
 
-	import sunpy
-	my_map = sunpy.make_map(sunpy.AIA_171_IMAGE)
+    import sunpy
+    my_map = sunpy.make_map(sunpy.AIA_171_IMAGE)
 
 The variable my_map is a SunPy map. To create a map from a local fits file try
 something like the following ::
@@ -35,10 +35,10 @@ It is also possible to create maps using custom data from a simulation for examp
 need to provide make_map() with both the data array as well as some basic header information. If no
 header is given then some default values as assumed. Here is a simple example::
 
-	import numpy as np
-	data = np.arange(0,100).reshape(10,10)
-	header = {'cdelt1': 10, 'cdelt2': 10, 'telescop':'sunpy'}
-	my_map = sunpy.make_map(data, header)
+    import numpy as np
+    data = np.arange(0,100).reshape(10,10)
+    header = {'cdelt1': 10, 'cdelt2': 10, 'telescop':'sunpy'}
+    my_map = sunpy.make_map(data, header)
 
 The format of the header follows the fits standard.
 
@@ -62,8 +62,8 @@ other::
     
 To get a list of all of the attributes check the documentation by typing::
 
-	help(my_map)
-	
+    help(my_map)
+    
 The header of the map can be accessed by using the following method::
 
     my_map.get_header()
@@ -84,7 +84,7 @@ y direction while the second index is for the x direction! For more information 
 please refer to the `Numpy documentation < http://www.scipy.org/Tentative_NumPy_Tutorial#head-864862d3f2bb4c32f04260fac61eb4ef34788c4c>`.
 You can also check on the shape of the array with ::
 
-	my_map.shape
+    my_map.shape
 
 If you'd like to rip the data out of the SunPy map to use elsewhere
 you can use::
@@ -96,8 +96,8 @@ The variable var is now simply a NumPy ndarray. Fortunately this is not generall
 as the SunPy map inherits directly from the NumPy ndarray and therefore applying NumPy methods
 directly on the SunPy map is generally safe. So one could, for example, apply the following code::
 
-	import numpy as np
-	log_map = np.log(my_map)
+    import numpy as np
+    log_map = np.log(my_map)
 
 The np.log function will be applied on each element in the map data array as expected. A few NumPy
 ndarray methods are also directly available such as, for example, to find the maximum and mean 
@@ -113,8 +113,8 @@ This is the advantage of inheritance!
 The SunPy map object has its own built-in plot methods so that it is easy to
 quickly view your map on the screen. To create a plot just type::
 
-	my_map.show()
-	
+    my_map.show()
+    
 This will open a matplotlib plot right on your screen.
 In addition, to enable users to modify the plot it is possible to grab the
 matplotlib figure object by using the plot() command instead of the show() 
@@ -127,22 +127,22 @@ The make_map() method described above can also handle a list of maps. If the map
 of a different type (e.g. different instruments) than the result of make_map is 
 what we call a Composite Map. So for example to create a simple composite map::
 
-	my_maps = sunpy.make_map([sunpy.EIT_195_IMAGE, sunpy.RHESSI_IMAGE])
+    my_maps = sunpy.make_map([sunpy.EIT_195_IMAGE, sunpy.RHESSI_IMAGE])
 
 A Composite map is different from a regular map and therefore different associated methods.
 To list which maps are part of your composite map use::
 
-	my_maps.list_maps()
+    my_maps.list_maps()
 
 Similar to all SunPy data objects, the composite map also has an associated show() method and a 
 number of associated methods to customize your plot. For example, the following code turns 
 adds a new map, sets its transparency to 25%, turns on contours from 50% to 90% for the second map, 
 and then plots the result::
 
-	my_maps.add_map(sunpy.AIA_171_IMAGE)
-	my_maps.set_alpha(2,0.5)
-	my_maps.set_levels(1,[50,60,70,80,90], percent = True)
-	my_maps.show()
+    my_maps.add_map(sunpy.AIA_171_IMAGE)
+    my_maps.set_alpha(2,0.5)
+    my_maps.set_levels(1,[50,60,70,80,90], percent = True)
+    my_maps.show()
 
 This is not a particularly pretty plot but it shows what SunPy can do!
 
@@ -153,7 +153,7 @@ functionality that a scientist would want therefore a map also contains a number
 of map-specific methods such as resizing a map or grabbing a subview. To get 
 a list of the methods available for a map type::
 
-	help(my_map)
-	
+    help(my_map)
+    
 and check out the methods section!
 

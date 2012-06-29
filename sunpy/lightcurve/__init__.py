@@ -5,7 +5,7 @@ __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
 from sunpy.lightcurve.lightcurve import LightCurve
-from sunpy.lightcurve.sources.sdo import *
+from sunpy.lightcurve.sources.eve import *
 from sunpy.lightcurve.sources.goes import *
 
 #def make_lightcurve(*args, **kwargs):
