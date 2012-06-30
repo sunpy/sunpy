@@ -394,10 +394,10 @@ Class docstrings should include a clear and concise docstring explaining the
 overall purpose of the class, required and optional input parameters, and the 
 return value. Additionally, notes, references and examples are encouraged.
 
-Example (:class:`sunpy.map.BaseMap`) ::
+Example (:class:`sunpy.map.Map`) ::
 
     """
-    BaseMap(data, header)
+    Map(data, header)
     
     A spatially-aware data array based on the SolarSoft Map object
     

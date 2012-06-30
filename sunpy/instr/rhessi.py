@@ -317,9 +317,10 @@ def _backproject(calibrated_event_list, detector=8, pixel_size=(1.,1.), image_di
 
     """
     fits = pyfits.open(calibrated_event_list)
-    info_parameters = fits[2]
     
-    detector_efficiency = info_parameters.data.field('cbe_det_eff$$REL')    
+    #info_parameters = fits[2]    
+    #detector_efficiency = info_parameters.data.field('cbe_det_eff$$REL')
+    
     fits = pyfits.open(calibrated_event_list)
 
     fits_detector_index = detector + 2
@@ -413,6 +414,6 @@ def backprojection(calibrated_event_list, pixel_size=(1.,1.), image_dim=(64,64))
     }
     
     header = sunpy.map.MapHeader(dict_header)
-    result_map = sunpy.map.BaseMap(image, header)
+    result_map = sunpy.map.Map(image, header)
             
     return result_map

@@ -1,15 +1,15 @@
 """
-BaseMap tests
+Map tests
 """
 from __future__ import absolute_import
 
-#pylint: disable=C0103,R0904,W0201,W0232,E1103
+#pylint: disable=C0103,R0904,W0201,W0212,W0232,E1103
 import sunpy
 import pyfits
 import numpy as np
 
-class TestBaseMap:
-    """Tests the BaseMap class"""
+class TestMap:
+    """Tests the Map class"""
     def setup_class(self):
         self.file = sunpy.AIA_171_IMAGE
         self.map = sunpy.make_map(self.file)
@@ -63,8 +63,13 @@ class TestBaseMap:
         # Check to see if submap properties were updated properly
         assert submap.reference_pixel['x'] == offset['x'] 
         assert submap.reference_pixel['y'] == offset['y']
-        assert submap._original_header.shape[0] == width / 2
-        assert submap._original_header.shape[1] == height / 2
+        assert submap.shape[0] == width / 2
+        assert submap.shape[1] == height / 2
+        
+        # Check to see if header was updated
+        submap_header = submap.get_header()
+        assert submap_header.get('naxis1') == width / 2
+        assert submap_header.get('naxis2') == height / 2
         
         # Check data
         assert (np.asarray(self.map)[height/2:height, 

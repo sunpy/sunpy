@@ -4,10 +4,10 @@
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
-from sunpy.map.basemap import BaseMap
+from sunpy.map import Map
 from sunpy.cm import cm
 
-class SWAPMap(BaseMap):
+class SWAPMap(Map):
     """SWAP Image Map definition
     
     References
@@ -18,7 +18,7 @@ class SWAPMap(BaseMap):
     @classmethod
     def get_properties(cls, header):
         """Parses SWAP image header"""
-        properties = BaseMap.get_properties(header)
+        properties = Map.get_properties(header)
         
         properties.update({
             "detector": "SWAP",
