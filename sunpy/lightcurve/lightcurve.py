@@ -93,33 +93,33 @@ class LightCurve:
             header, data = self._parse_filepath(filepath)  
                 
         # Other light curve creation options (DataFrame, ndarray, etc)
-        elif isinstance(args[0], pandas.DataFrame):
-            data = args[0]
-        elif (isinstance(args[0], list) or 
-              isinstance(args[0], dict) or 
-              isinstance(args[0], np.ndarray) or 
-              isinstance(args[0], pandas.Series)):
-            # DataFrame Index
-            if "index" in kwargs:
-                index = kwargs["index"]
-            else:
-                index = None
-                
-            data = pandas.DataFrame(args[0], index=index)
-        else:
-            raise TypeError("Unrecognized input for argument 1")
+        #elif isinstance(args[0], pandas.DataFrame):
+        #    data = args[0]
+        #elif (isinstance(args[0], list) or 
+        #      isinstance(args[0], dict) or 
+        #      isinstance(args[0], np.ndarray) or 
+        #      isinstance(args[0], pandas.Series)):
+        #    # DataFrame Index
+        #    if "index" in kwargs:
+        #        index = kwargs["index"]
+        #    else:
+        #        index = None
+        #        
+        #    data = pandas.DataFrame(args[0], index=index)
+        #else:
+        #    raise TypeError("Unrecognized input for argument 1")
                 
         # @NOTE: should we also support inputting start and end dates or a
         # date range?
 
         # Check for header
-        header = ""
+        #header = ""
         
-        if len(args) > 1:
-            if (isinstance(args[1], basestring) or isinstance(args[1], dict)):
-                header = args[1]
-            else:
-                raise TypeError("Unrecognized input for argument 2")
+        #if len(args) > 1:
+        #    if (isinstance(args[1], basestring) or isinstance(args[1], dict)):
+        #        header = args[1]
+        #    else:
+        #        raise TypeError("Unrecognized input for argument 2")
         
         self.data = data
         self.header = header
