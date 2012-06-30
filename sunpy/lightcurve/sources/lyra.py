@@ -20,7 +20,7 @@ class LYRALightCurve(LightCurve):
     >>> lyra = sunpy.lightcurve.LYRALightCurve()
     >>> lyra = sunpy.lightcurve.LYRALightCurve('~/Data/lyra/lyra_20110810-000000_lev2_std.fits')
     >>> lyra = sunpy.lightcurve.LYRALightCurve('2011/08/10')
-    >>> lya = sunpy.lightcurve.LYRALightCurve("http://proba2.oma.be/lyra/data/bsd/2011/08/10/lyra_20110810-000000_lev2_std.fits")
+    >>> lyra = sunpy.lightcurve.LYRALightCurve("http://proba2.oma.be/lyra/data/bsd/2011/08/10/lyra_20110810-000000_lev2_std.fits")
     >>> 
     >>> lyra.show()
     
@@ -39,27 +39,27 @@ class LYRALightCurve(LightCurve):
         """
         
         # Choose title if none was specified
-        if not kwargs.has_key("title"):
-            if len(self.data.columns) > 1:
-                kwargs['title'] = 'LYRA data'
-            else:
-                if self._filename is not None:
-                    base = self._filename
-                    kwargs['title'] = os.path.splitext(base)[0]
-                else:
-                    kwargs['title'] = 'LYRA data'
+        #if not kwargs.has_key("title"):
+        #    if len(self.data.columns) > 1:
+        #        kwargs['title'] = 'LYRA data'
+        #    else:
+        #        if self._filename is not None:
+        #            base = self._filename
+        #            kwargs['title'] = os.path.splitext(base)[0]
+        #        else:
+        #            kwargs['title'] = 'LYRA data'
 
-        """Shows a plot of the light curve"""
-        axes = self.data.plot(subplots=True, sharex=True)       
-        plt.legend(loc='best')
+        """Shows a plot of all four light curves"""
+        axes = self.data.plot(subplots=True, sharex=True, **kwargs)       
+        #plt.legend(loc='best')
         
         for i, name in enumerate(self.data.columns):
-            axes[i].set_ylabel("%s (%s" % (name, "UNITS"))
-            
-        axes[0].set_title("LYRA")
+            axes[i].set_ylabel("%s (%s)" % (name, "W/m**2"))
+        
+        axes[0].set_title("LYRA ("+ self.data.index[0].strftime('%Y-%m-%d') +")")
         axes[-1].set_xlabel("Time")
-        self.data.plot(**kwargs)
         plt.show()
+
     
     def _get_url_for_date(self, date):
         """Returns a URL to the LYRA data for the specified date
@@ -83,6 +83,7 @@ class LYRALightCurve(LightCurve):
         # Open file with PyFITS
         hdulist = pyfits.open(filepath)
         fits_record = hdulist[1].data
+        #secondary_header = hdulist[1].header
 
         # Start and end dates
         start_str = hdulist[0].header['date-obs']
