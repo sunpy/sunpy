@@ -5,10 +5,11 @@ from __future__ import absolute_import
 from sunpy.lightcurve import LightCurve 
 
 import os
-from pandas.io.parsers import read_csv
-from datetime import datetime  
+import pandas
+import datetime  
 from matplotlib import pyplot as plt
 import urlparse
+import pyfits
 
 class LYRALightCurve(LightCurve):
     """SDO EVE light curve definition
@@ -17,9 +18,9 @@ class LYRALightCurve(LightCurve):
     --------
     >>> import sunpy
     >>> lyra = sunpy.lightcurve.LYRALightCurve()
-    >>> lyra = sunpy.lightcurve.LYRALightCurve('~/Downloads/EVE_Fe_IX_171_averages.csv')
-    >>> lyra = sunpy.lightcurve.LYRALightCurve('2012/06/20')
-    >>> lya = sunpy.lightcurve.LYRALightCurve("http://lasp.colorado.edu/eve/data_access/quicklook/quicklook_data/L0CS/LATEST_EVE_L0CS_DIODES_1m.txt")
+    >>> lyra = sunpy.lightcurve.LYRALightCurve('~/Data/lyra/lyra_20110810-000000_lev2_std.fits')
+    >>> lyra = sunpy.lightcurve.LYRALightCurve('2011/08/10')
+    >>> lya = sunpy.lightcurve.LYRALightCurve("http://proba2.oma.be/lyra/data/bsd/2011/08/10/lyra_20110810-000000_lev2_std.fits")
     >>> 
     >>> lyra.show()
     
@@ -76,49 +77,29 @@ class LYRALightCurve(LightCurve):
     def _get_default_uri(self):
         """Look for and download today's LYRA data"""
         return _get_url_for_date(self,datetime.utcnow())
-
-    def _parse_csv(self, filepath):
-        """Parses an EVE CSV file"""
-        fp = open(filepath, 'rb')
-        
-        # Determine type of EVE CSV file and parse
-        line1 = fp.readline()
-        fp.seek(0)
-
-        if line1.startswith("Date"):
-            return self._parse_average_csv(fp)
-        elif line1.startswith(";"):
-            return self._parse_level_0cs(fp)
     
-    def _parse_average_csv(self, fp):
-        """Parses an EVE Averages file"""
-        return "", read_csv(fp, sep=",", index_col=0, parse_dates=True)
-    
-    def _parse_level_0cs(self, fp):
-        """Parses and EVE Level 0CS file"""
-        header = ""
+    def _parse_fits(self,filepath):
+        """Loads LYRA data from a FITS file"""
+        # Open file with PyFITS
+        hdulist = pyfits.open(filepath)
+        fits_record = hdulist[1].data
+
+        # Start and end dates
+        start_str = hdulist[0].header['date-obs']
+        #end_str = hdulist[0].header['date-end']
         
-        fields = ('xrs-b', 'xrs-a', 'sem', 'ESPquad', 'esp171', 
-                  'esp257', 'esp304', 'esp366', 'espdark', 'megsp', 'megsdark', 
-                  'q0esp', 'q1esp', 'q2esp', 'q3esp', 'cmlat', 'cmlon')
-        
-        line = fp.readline()
-        
-        # Read comment at top of file
-        while line.startswith(";"):
-            header += line
-            line = fp.readline()
+        start = datetime.datetime.strptime(start_str, '%Y-%m-%dT%H:%M:%S.%f')
+        #end = datetime.datetime.strptime(end_str, '%Y-%m-%dT%H:%M:%S.%f')
+
+        # First column are times
+        times = [start + datetime.timedelta(0, n) for n in fits_record.field(0)]
+
+        # Rest of columns are the data
+        table = {}
+
+        for i, col in enumerate(fits_record.columns[1:-1]):
+            table[col.name] = fits_record.field(i + 1)
             
-        # Next line is YYYY DOY MM DD
-        parts = line.split(" ")
-                
-        year = int(parts[0])
-        month = int(parts[2])
-        day = int(parts[3])
+        # Return the header and the data
+        return hdulist[0].header, pandas.DataFrame(table, index=times)
         
-        # function to parse date column (HHMM)
-        parser = lambda x: datetime(year, month, day, int(x[0:2]), int(x[2:4]))
-
-        data = read_csv(fp, sep="\s*", names=fields, index_col=0, date_parser=parser)
-        
-        return header, data
