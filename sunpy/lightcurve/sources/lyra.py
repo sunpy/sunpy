@@ -10,6 +10,7 @@ import datetime
 from matplotlib import pyplot as plt
 import urlparse
 import pyfits
+import sunpy
 
 class LYRALightCurve(LightCurve):
     """SDO EVE light curve definition
@@ -85,8 +86,12 @@ class LYRALightCurve(LightCurve):
         fits_record = hdulist[1].data
         #secondary_header = hdulist[1].header
 
-        # Start and end dates
-        start_str = hdulist[0].header['date-obs']
+        # Start and end dates.  Different LYRA FITS files have
+        # different tags for the date obs.
+        if 'date-obs' in hdulist[0].header:
+            start_str = hdulist[0].header['date-obs']
+        elif 'date_obs' in hdulist[0].header:
+            start_str = hdulist[0].header['date_obs']
         #end_str = hdulist[0].header['date-end']
         
         start = datetime.datetime.strptime(start_str, '%Y-%m-%dT%H:%M:%S.%f')
