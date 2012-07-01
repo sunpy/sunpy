@@ -62,8 +62,7 @@ class LightCurve:
             if sunpy.time.is_time(args[0]):
                 date = sunpy.time.parse_time(args[0])
                 url = self._get_url_for_date(date)
-                err = "Unable to download data for specified date"
-                filepath = self._download(url, err)
+                filepath = self._download(url, kwargs, err = "Unable to download data for specified date")
             elif isinstance(args[0], basestring):
                 # Filepath
                 if os.path.isfile(os.path.expanduser(args[0])):
@@ -71,7 +70,7 @@ class LightCurve:
                 else:
                     # Otherwise, assume string input is a URL
                     try:
-                        filepath = self._download(args[0])
+                        filepath = self._download(args[0], kwargs)
                     except (urllib2.HTTPError, urllib2.URLError, ValueError):
                         err = ("Unable to read location. Did you "
                                "specify a valid filepath or URL?")
@@ -80,34 +79,35 @@ class LightCurve:
                 # TimeRange
                 url = self._get_url_for_date_range(args[0])
                 err = "Unable to download data for specified date range"
-                filepath = self._download(url, err)   
+                filepath = self._download(url, err, kwargs)   
 
             # Parse resulting file
             header, data = self._parse_filepath(filepath)
-            
-        # Date range
-        if (sunpy.time.is_time(args[0]) and sunpy.time.is_time(args[1])):
-            url = self._get_url_for_date_range(args[0], args[1])
-            err = "Unable to download data for specified date range"
-            filepath = self._download(url, err)
-            header, data = self._parse_filepath(filepath)  
+        
+        # Two arguments
+        if len(args) is 2:
+            # Date range
+            if (sunpy.time.is_time(args[0]) and sunpy.time.is_time(args[1])):
+                url = self._get_url_for_date_range(args[0], args[1])
+                filepath = self._download(url, kwargs, err = "Unable to download data for specified date range")
+                header, data = self._parse_filepath(filepath)  
                 
-        # Other light curve creation options (DataFrame, ndarray, etc)
-        #elif isinstance(args[0], pandas.DataFrame):
-        #    data = args[0]
-        #elif (isinstance(args[0], list) or 
-        #      isinstance(args[0], dict) or 
-        #      isinstance(args[0], np.ndarray) or 
-        #      isinstance(args[0], pandas.Series)):
-        #    # DataFrame Index
-        #    if "index" in kwargs:
-        #        index = kwargs["index"]
-        #    else:
-        #        index = None
-        #        
-        #    data = pandas.DataFrame(args[0], index=index)
-        #else:
-        #    raise TypeError("Unrecognized input for argument 1")
+            # Other light curve creation options (DataFrame, ndarray, etc)
+            elif isinstance(args[0], pandas.DataFrame):
+                data = args[0]
+            elif (isinstance(args[0], list) or 
+                  isinstance(args[0], dict) or 
+                  isinstance(args[0], np.ndarray) or 
+                  isinstance(args[0], pandas.Series)):
+            # DataFrame Index
+                if "index" in kwargs:
+                    index = kwargs["index"]
+                else:
+                    index = None
+                
+            data = pandas.DataFrame(args[0], index=index)
+        else:
+            raise TypeError("Both arguments passed are unrecognized.")
                 
         # @NOTE: should we also support inputting start and end dates or a
         # date range?
@@ -120,7 +120,10 @@ class LightCurve:
         #        header = args[1]
         #    else:
         #        raise TypeError("Unrecognized input for argument 2")
-        
+
+        if len(args) >= 2:
+            raise TypeError("Lightcurve takes a maximum of two arguments.")
+
         self.data = data
         self.header = header
         
@@ -129,20 +132,26 @@ class LightCurve:
         self.data.plot(**kwargs)
         plt.show()
         
-    def _download(self, uri, err='Unable to download data at specified URL'):
+    def _download(self, uri, kwargs, err='Unable to download data at specified URL'):
         """Attempts to download data at the specified URI"""
         self._filename = os.path.basename(uri).split("?")[0]
         
-        download_dir = sunpy.config.get("downloads", "download_dir")
+        # user specifies a download directory
+        if "directory" in kwargs:
+            download_dir = os.path.expanduser(kwargs["directory"])
+        else:
+            download_dir = sunpy.config.get("downloads", "download_dir")
         
-        try:
-            response = urllib2.urlopen(uri)
-        except (urllib2.HTTPError, urllib2.URLError):
-            raise urllib2.URLError(err)
-            
+        # If the file is not already there, download it
         filepath = os.path.join(download_dir, self._filename)
-        fp = open(filepath, 'wb')
-        fp.write(response.read())
+
+        if not(os.path.isfile(filepath)): 
+            try:
+                response = urllib2.urlopen(uri)
+            except (urllib2.HTTPError, urllib2.URLError):
+                raise urllib2.URLError(err)
+            fp = open(filepath, 'wb')
+            fp.write(response.read())
         
         return filepath
 
@@ -162,9 +171,11 @@ class LightCurve:
         raise NotImplementedError(msg % self.__class__.__name__)
     
     def _parse_csv(self, filepath):
+        """Place holder method to parse CSV files."""
         pass
     
     def _parse_fits(self, filepath):
+        """Place holder method to parse FITS files."""
         pass
     
     def _parse_filepath(self, filepath):
