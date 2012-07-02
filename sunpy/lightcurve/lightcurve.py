@@ -142,10 +142,16 @@ class LightCurve:
         else:
             download_dir = sunpy.config.get("downloads", "download_dir")
         
+        # overwrite the existing file if the keyword is present
+        if "overwrite" in kwargs:
+            overwrite = kwargs["overwrite"]
+        else:
+            overwrite = False
+        
         # If the file is not already there, download it
         filepath = os.path.join(download_dir, self._filename)
 
-        if not(os.path.isfile(filepath)): 
+        if not(os.path.isfile(filepath)) or (overwrite and os.path.isfile(filepath)): 
             try:
                 response = urllib2.urlopen(uri)
             except (urllib2.HTTPError, urllib2.URLError):
