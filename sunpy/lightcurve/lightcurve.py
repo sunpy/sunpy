@@ -53,11 +53,11 @@ class LightCurve:
         self._filename = ""
 
         # If no arguments specified, perform default action
-        if len(args) is 0:
+        if len(args) == 0:
             args = (self._get_default_uri(),)
 
         # Single argument
-        if len(args) is 1:
+        if len(args) == 1:
             # If single string, could be a filepath, URL, date, or TimeRange
             if sunpy.time.is_time(args[0]):
                 date = sunpy.time.parse_time(args[0])
@@ -85,7 +85,7 @@ class LightCurve:
             header, data = self._parse_filepath(filepath)
         
         # Two arguments
-        if len(args) is 2:
+        elif len(args) == 2:
             # Date range
             if (sunpy.time.is_time(args[0]) and sunpy.time.is_time(args[1])):
                 url = self._get_url_for_date_range(args[0], args[1])
@@ -104,10 +104,10 @@ class LightCurve:
                     index = kwargs["index"]
                 else:
                     index = None
-                
+            else:
+                raise TypeError("Both arguments passed are unrecognized.")
+
             data = pandas.DataFrame(args[0], index=index)
-        else:
-            raise TypeError("Both arguments passed are unrecognized.")
                 
         # @NOTE: should we also support inputting start and end dates or a
         # date range?
