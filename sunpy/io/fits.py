@@ -25,6 +25,7 @@ References
 
 """
 from __future__ import absolute_import
+from sunpy.map.header import MapHeader
 import pyfits
 
 __author__ = "Keith Hughitt"
@@ -34,12 +35,20 @@ def read(filepath):
     """Reads in the file at the specified location"""
     hdulist = pyfits.open(filepath)
     hdulist.verify('silentfix')
-            
-    return hdulist[0].data, hdulist[0].header
+    
+    comment = "".join(hdulist[0].header.get_comment()).strip()
+    header = MapHeader(hdulist[0].header)
+    header['comment'] = comment
+
+    return hdulist[0].data, header
 
 def get_header(filepath):
     """Returns the header for a given file"""
     hdulist = pyfits.open(filepath)
     hdulist.verify('silentfix')
+    
+    comment = "".join(hdulist[0].header.get_comment()).strip()
+    header = MapHeader(hdulist[0].header)
+    header['comment'] = comment
             
-    return hdulist[0].header
+    return header
