@@ -15,6 +15,10 @@ class TestMap:
         self.map = sunpy.make_map(self.file)
         self.fits = pyfits.open(self.file)
         self.fits.verify('silentfix')
+        
+        # include full comment
+        comment = "".join(self.fits[0].header.get_comment())
+        self.fits[0].header.update('COMMENT', comment)
 
     def teardown_class(self):
         self.map = None
@@ -85,5 +89,5 @@ class TestMap:
         # Access fits data once to apply scaling-related changes and update
         # header information in fits[0].header
         self.fits[0].data #pylint: disable=W0104
-        
+
         assert dict(self.map._original_header) == dict(self.fits[0].header)
