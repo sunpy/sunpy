@@ -149,19 +149,6 @@ All done!
 Trouble-shooting
 ================
 
-Failed installation of Pandas due to Numpy > 1.6 dependency
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Sometimes, the installation of Pandas using pip install will fail, with a
-message indicating that your version of NumPy must be at least 1.6. This 
-usually occurs on Macs running OS Lion, which ships with its own installation
-of Python and includes NumPy 1.5.1. In some cases, pip install is not finding
-the most up-to-date version of NumPy on your machine. 
-
-The simplest solution is to install a slightly older, more stable version of pandas: ::
-
- sudo pip install pandas=0.7
-
-Pandas 0.7 does not have the NumPy version dependency and should install correctly.
 
 
