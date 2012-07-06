@@ -62,7 +62,7 @@ class LightCurve:
             if sunpy.time.is_time(args[0]):
                 date = sunpy.time.parse_time(args[0])
                 url = self._get_url_for_date(date)
-                filepath = self._download(url, kwargs, err = "Unable to download data for specified date")
+                filepath = self._download(url, kwargs, err="Unable to download data for specified date")
             elif isinstance(args[0], basestring):
                 # Filepath
                 if os.path.isfile(os.path.expanduser(args[0])):
@@ -104,10 +104,9 @@ class LightCurve:
                     index = kwargs["index"]
                 else:
                     index = None
+                data = pandas.DataFrame(args[0], index=index)
             else:
                 raise TypeError("Both arguments passed are unrecognized.")
-
-            data = pandas.DataFrame(args[0], index=index)
                 
         # @NOTE: should we also support inputting start and end dates or a
         # date range?
@@ -121,7 +120,7 @@ class LightCurve:
         #    else:
         #        raise TypeError("Unrecognized input for argument 2")
 
-        if len(args) >= 2:
+        if len(args) > 2:
             raise TypeError("Lightcurve takes a maximum of two arguments.")
 
         self.data = data
