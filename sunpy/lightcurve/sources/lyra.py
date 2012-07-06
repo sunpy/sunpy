@@ -33,11 +33,13 @@ class LYRALightCurve(LightCurve):
         LightCurve.__init__(self, *args, **kwargs)
 
         
-    def show(self, **kwargs):
+    def show(self, names=3, **kwargs):
         """Plots the LYRA data
         
         See: http://pandas.sourceforge.net/visualization.html
         """
+        lyranames = (('Lyman alpha','Herzberg cont.','Al filter','Zr filter'),
+                 ('120-123nm','190-222nm','17-80nm + <5nm','6-20nm + <2nm'))
         
         # Choose title if none was specified
         #if not kwargs.has_key("title"):
@@ -55,6 +57,10 @@ class LYRALightCurve(LightCurve):
         #plt.legend(loc='best')
         
         for i, name in enumerate(self.data.columns):
+            if names < 3:
+                name = lyranames[names][i]
+            else:
+                name = lyranames[0][i] + ' (' + lyranames[1][i] + ')'
             axes[i].set_ylabel("%s (%s)" % (name, "W/m**2"))
         
         axes[0].set_title("LYRA ("+ self.data.index[0].strftime('%Y-%m-%d') +")")
