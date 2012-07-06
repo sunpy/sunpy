@@ -20,7 +20,6 @@ from sunpy.util.util import toggle_pylab
 from sunpy.io import read_file, read_file_header
 from sunpy.sun import constants
 from sunpy.time import parse_time
-from sunpy.map.header import MapHeader
 
 """
 TODO
@@ -163,7 +162,7 @@ class Map(np.ndarray):
         return obj
 
     def __init__(self, data, header):
-        self._original_header = MapHeader(header)
+        self._original_header = header
         
         # Set naxis1 and naxis2 if not specified
         if header.get('naxis1') is None:
@@ -803,11 +802,7 @@ Dimension:\t [%d, %d]
     @classmethod
     def parse_file(cls, filepath):
         """Reads in a map file and returns a header and data array"""
-        data, dict_header = read_file(filepath)
-
-        header = MapHeader(dict_header)
-
-        return header, data
+        return read_file(filepath)
 
     @classmethod
     def read(cls, filepath):
@@ -827,7 +822,7 @@ Dimension:\t [%d, %d]
         out : Map
             Returns a Map instance for the particular type of data loaded.
         """
-        header, data = cls.parse_file(filepath)
+        data, header = cls.parse_file(filepath)
 
         if cls.__name__ is not "Map":
             return cls(data, header)
@@ -842,9 +837,7 @@ Dimension:\t [%d, %d]
     def read_header(cls, filepath):
         """Attempts to detect the datasource type and returns meta-information
         for that particular datasource."""
-        dict_header = read_file_header(filepath)
-
-        header = MapHeader(dict_header)
+        header = read_file_header(filepath)
 
         for cls in Map.__subclasses__():
             if cls.is_datasource_for(header):
