@@ -188,6 +188,12 @@ class VSOClient(object):
             api.set_options(port=DEFAULT_PORT)
         self.api = api
     
+    @classmethod
+    def from_url(self, url, port):
+        api = client.Client(url)
+        api.set_options(port=port)
+        return cls(api)
+    
     def make(self, type_, **kwargs):
         obj = self.api.factory.create(type_)
         for k, v in kwargs.iteritems():
