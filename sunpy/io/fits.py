@@ -36,7 +36,8 @@ def read(filepath):
     hdulist = pyfits.open(filepath)
     hdulist.verify('silentfix')
     
-    comment = "".join(hdulist[0].header.get_comment()).strip()
+    comments = [card.value for card in hdulist[0].header.get_comment()]
+    comment = "".join(comments).strip()
     header = MapHeader(hdulist[0].header)
     header['comment'] = comment
 
