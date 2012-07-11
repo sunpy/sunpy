@@ -5,7 +5,6 @@ tarball from:
     
 Enter the top-level directory in the extracted files and run:
 
-    python setup.py build
     sudo python setup.py install
 
 Example Usage:
@@ -14,7 +13,7 @@ Example Usage:
 >>> import matplotlib.cm as cm
 >>> import matplotlib.colors as colors
 >>> aia = sunpy.make_map(sunpy.AIA_171_IMAGE)
->>> aia.header['crpix1']
+>>> aia.get_header()['crpix1']
 >>> aia.show(cm=cm.hot, norm=colors.Normalize(1, 2048))
 
 For detailed installation instructions, see:
