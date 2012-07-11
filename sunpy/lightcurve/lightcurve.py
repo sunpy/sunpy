@@ -118,20 +118,19 @@ class LightCurve:
         # @NOTE: should we also support inputting start and end dates or a
         # date range?
 
-        # Check for header
-        #header = ""
-        
-        if len(args) > 1:
-            if (isinstance(args[1], basestring) or isinstance(args[1], dict)):
-                header = args[1]
-            else:
-                raise TypeError("Unrecognized input for argument 2")
-
         if len(args) > 2:
             raise TypeError("Lightcurve takes a maximum of two arguments.")
 
+
+        # set the data and the header
         self.data = data
-        self.header = header
+        # allow for user to pass in their own header.
+        # could also do a type check to make sure either a dict or a string
+        # is passed to the header
+        if "header" in kwargs:
+            self.header = kwargs["header"]
+        else:
+            self.header = header
         
     def show(self, **kwargs):
         """Shows a plot of the light curve"""
