@@ -92,8 +92,7 @@ def mean_ecliptic_longitude(t=None):
     result = result % 360.0
     return result
 
-def longitude_Sun_perigee(t=None):
-    """Insert text here"""
+def longitude_Sun_perigee(t=None): # pylint: disable=W0613 
     # T = julian.julian_centuries(t)
     return 1
     
@@ -154,11 +153,12 @@ def apparent_longitude(t=None):
     result = true_long - 0.00569 - 0.00479*math.sin(np.radians(omega))
     return result
 
-def true_latitude(t=None):
-    '''Returns the true latitude. Never more than 1.2 arcsec from 0, set to 0 here.'''
+def true_latitude(t=None): # pylint: disable=W0613
+    '''Returns the true latitude. Never more than 1.2 arcsec from 0, 
+    set to 0 here.'''
     return 0.0
 
-def apparent_latitude(t=None):
+def apparent_latitude(t=None): # pylint: disable=W0613
     return 0
 
 def true_obliquity_of_ecliptic(t=None):
@@ -223,8 +223,8 @@ def heliographic_solar_center(t=None):
     i = 7.25
     k = 74.3646 + 1.395833 * T
     lamda = true_longitude(t) - 0.00569
-    omega = apparent_longitude(t)
-    lamda2 = lamda - 0.00479 * math.sin(np.radians(omega))
+    #omega = apparent_longitude(t)
+    #lamda2 = lamda - 0.00479 * math.sin(np.radians(omega))
     diff = np.radians(lamda - k)
     # Latitude at center of disk (deg):    
     he_lat = np.degrees(math.asin(math.sin(diff)*math.sin(np.radians(i))))
