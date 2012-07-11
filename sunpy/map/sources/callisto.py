@@ -311,6 +311,20 @@ class CallistoSpectrogram(np.ndarray):
         k = diff_s / td_s
         return round(k * self.t_res)
 
+    def clip_freq(self, minimum=None, maximum=None):
+        left = 0
+        if maximum is not None:
+            while self.freq_axis[left] > maximum:
+                left += 1
+
+        right = len(self.freq_axis) - 1
+
+        if minimum is not None:
+            while self.freq_axis[right] < minimum:
+                right -= 1
+
+        return self[left:right,:]
+
     @staticmethod
     def is_datasource_for(header):
         return header.get('instrument', '').startswith('BIR')
