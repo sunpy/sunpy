@@ -149,11 +149,6 @@ All done!
 Trouble-shooting
 ================
 
-Removing Python from OS X
--------------------------
-Sometimes it is useful before proceeding with the installation to remove all
-previous traces of Python from your system.
 
-(TO BE WRITTEN)
 
 

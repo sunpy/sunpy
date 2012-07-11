@@ -1,5 +1,6 @@
 """JPEG 2000 File Reader"""
 from __future__ import absolute_import
+from sunpy.map.header import MapHeader
 
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
@@ -29,7 +30,10 @@ def get_header(filepath):
         elif is_float(v):
             pydict[k] = float(v)
             
-    return pydict
+    # Remove newlines from comment
+    pydict['comment'] = pydict['comment'].replace("\n", "")
+            
+    return MapHeader(pydict)
 
 def get_data(filepath, j2k_to_image="j2k_to_image"):
     """Extracts the data portion of a JPEG 2000 image
