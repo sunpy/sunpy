@@ -82,12 +82,7 @@ as a `remote` in git: ::
 To stay up to date you can grab the latest changes to the SunPy master using
 the commands: ::
 
- git fetch upstream
- git merge upstream/master
-
-You can also do this in one line with: ::
-
- git pull upstream/master
+ git pull upstream master
 
 This will merge the upstream code automatically. After running either of these commands, 
 your local copy of your personal repo is just a copy of the main repo.
