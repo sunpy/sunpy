@@ -15,6 +15,8 @@ from matplotlib.ticker import FuncFormatter, MaxNLocator
 
 from sunpy.time import parse_time
 
+# This should not be necessary, as observations do not take more than a day
+# but it is used for completeness' and extendibility's sake.
 SECONDS_PER_DAY = 86400
 
 # Used for COPY_PROPERTIES
@@ -49,7 +51,31 @@ class CallistoSpectrogram(np.ndarray):
         ('f_label', REFERENCE),
         ('f_res', REFERENCE),
     ]
-        
+
+    def save(self, filepath):
+        main_header = self.get_header()
+        data = pyfits.PrimaryHDU(self, header=main_header)
+        ## XXX: Update axes header.
+
+        freq_col = pyfits.Column(name="frequency", format="D8.3", array=self.freq_axis)
+        time_col = pyfits.Column(name="time", format="D8.3", array=self.time_axis)
+        cols = pyfits.ColDefs([freq_col, time_col])
+        table = pyfits.new_table(cols, header=self.axes_header)
+
+        hdulist = pyfits.HDUList([data, table])
+        hdulist.writeto(filepath)   
+
+    def get_header(self):
+        header = self.header.copy()
+
+        if self.swapped:
+            header['NAXIS2'] = self.t_res
+            header['NAXIS1'] = self.f_res
+        else:
+            header['NAXIS1'] = self.t_res
+            header['NAXIS2'] = self.f_res
+        return header
+
     def __new__(cls, data, axes=None, header=None):
         if header is not None:
             # Always put time on the x-Axis.
@@ -74,6 +100,7 @@ class CallistoSpectrogram(np.ndarray):
         params = slice(y_range[0], y_range[1]), slice(x_range[0], x_range[1])
         data = super(CallistoSpectrogram, self).__getitem__(params)
         params = vars(self).copy()
+
         soffset = 0 if x_range[0] is None else x_range[0]
         eoffset = self.t_res if x_range[1] is None else x_range[1]
 
@@ -82,7 +109,7 @@ class CallistoSpectrogram(np.ndarray):
         
         params.update({
             'time_axis': self.time_axis[x_range[0]:x_range[1]],
-            'freq_axis': self.time_axis[y_range[0]:y_range[1]],
+            'freq_axis': self.freq_axis[y_range[0]:y_range[1]],
             'start': self.start + soffset * self.timedelta,
             'end': self.start + eoffset * self.timedelta,
             'f_init': self.freq_axis[fsoffset], # XXX: Handle case without
@@ -94,16 +121,25 @@ class CallistoSpectrogram(np.ndarray):
     def __init__(self, data, axes, header):
         self.header = header
         self.content = header["CONTENT"]
+
+        self.axes_header = axes.header
+        self.axes = axes
         
-        self.start = parse_header_time(header['DATE-OBS'], header.get('TIME-OBS'))
-        self.end = parse_header_time(header['DATE-END'], header.get('TIME-END'))
+        self.start = parse_header_time(
+            header['DATE-OBS'], header.get('TIME-OBS')
+        )
+        self.end = parse_header_time(
+            header['DATE-END'], header.get('TIME-END')
+        )
 
         # Starting time of the whole measurement, the time axis is relative
         # to this.
         self._gstart = self.start
         self._gend = self.end
+
+        self.swapped = "time" not in header["CTYPE1"].lower()
         
-        if "time" not in header["CTYPE1"].lower():
+        if self.swapped:
             self.t_res = header["NAXIS2"]
             self.t_delt = header["CDELT2"]
             self.t_init = header["CRVAL2"]
@@ -159,6 +195,8 @@ class CallistoSpectrogram(np.ndarray):
             self.freq_axis = np.linspace(0, self.f_res - 1) * self.f_delt + self.f_init
 
     def time_formatter(self, x, pos):
+        """ This returns the label for the tick of value x at
+        a specified pos on the axis. """
         try:
             return self.format_time(
                 self._gstart + datetime.timedelta(seconds=self.time_axis[int(x)])
@@ -175,6 +213,7 @@ class CallistoSpectrogram(np.ndarray):
     def __array_finalize__(self, obj):
         if self is obj:
             return
+
         for prop, cpy in self.COPY_PROPERTIES:
             elem = getattr(obj, prop, None)
             if cpy == 1:
