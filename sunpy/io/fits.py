@@ -35,8 +35,13 @@ def read(filepath):
     """Reads in the file at the specified location"""
     hdulist = pyfits.open(filepath)
     hdulist.verify('silentfix')
-    
-    comment = "".join(str(hdulist[0].header.get_comment())).strip()
+    #When hdulist[0].header.get_comment() returns a list of cards 
+    #(like AIA data) append the 80 chr long string to the comment.
+    fits_comment = hdulist[0].header.get_comment()
+    if type(fits_comment) is list:
+        comment = "".join(str(h) for h in fits_comment).strip()
+    else:
+        comment = "".join(str(hdulist[0].header.get_comment())).strip()
     header = MapHeader(hdulist[0].header)
     header['comment'] = comment
 
