@@ -23,6 +23,7 @@ from __future__ import absolute_import
 __version__ = 0.1
 
 import sunpy.map
+import sunpy.sun
 import sunpy.lightcurve
 from sunpy.map import make_map
 from sunpy.map import read_header

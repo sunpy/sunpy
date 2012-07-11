@@ -33,7 +33,7 @@ import sunpy
 import Ui_RGBComposite
 import numpy as np
 from sunpy.net import helioviewer as hv
-from sunpy.map import BaseMap
+from sunpy.map import Map
 from sunpy.util.util import toggle_pylab
 from PyQt4 import QtGui, QtCore
 from matplotlib import pyplot as plt
@@ -284,13 +284,13 @@ class RGBCompositeMap(sunpy.MapCube):
         
         # convert input to maps
         for i, item in enumerate([red, green, blue]):
-            if isinstance(item, BaseMap):
+            if isinstance(item, Map):
                 map_ = item
             else:
-                map_ = BaseMap.read(item)
+                map_ = Map.read(item)
                 
             data[:,:,i] = map_
-            headers.append(map_._original_header)
+            headers.append(map_.get_header(original=True))
 
         obj = np.asarray(data).view(cls)
         obj._headers = headers
@@ -303,7 +303,7 @@ class RGBCompositeMap(sunpy.MapCube):
     def resample(self, dimensions, method='linear'):
         """Returns a new Map that has been resampled up or down
         
-        See `sunpy.map.BaseMap.resample`
+        See `sunpy.map.Map.resample`
         """
         resampled = []
         
