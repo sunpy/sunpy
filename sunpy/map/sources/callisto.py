@@ -26,6 +26,7 @@ DEEPCOPY = 2
 
 
 def repeat_lines(data, times):
+    """ Simple lossless scaling method for integer factors """
     new = np.zeros((times * data.shape[0], data.shape[1]))
     for line in xrange(data.shape[0]):
         new[times * line: times * line + times, :] = data[line,:]
