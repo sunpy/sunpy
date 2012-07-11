@@ -78,7 +78,7 @@ class CallistoSpectrogram(np.ndarray):
 
     def __new__(cls, data, axes=None, header=None):
         if header is not None:
-            # Always put time on the x-Axis.
+            # Always put time on the x-axis.
             if "time" not in header["CTYPE1"].lower():
                 data = data.transpose()
         
@@ -112,7 +112,7 @@ class CallistoSpectrogram(np.ndarray):
             'freq_axis': self.freq_axis[y_range[0]:y_range[1]],
             'start': self.start + soffset * self.timedelta,
             'end': self.start + eoffset * self.timedelta,
-            'f_init': self.freq_axis[fsoffset], # XXX: Handle case without
+            'f_init': self.freq_axis[fsoffset],
             'f_res': feoffset - fsoffset,
             't_res': eoffset - soffset,
         })
@@ -277,6 +277,8 @@ class CallistoSpectrogram(np.ndarray):
     def time_to_x(self, time):
         # This is impossible for frequencies because that mapping
         # is not injective.
+        # XXX: This assumes time is linear. As we read it from the
+        # axes table, it might not be.
         diff = time - self.start
         diff_s = SECONDS_PER_DAY * diff.days + diff.seconds
         td_s = SECONDS_PER_DAY * self.timedelta.days  + self.timedelta.seconds
