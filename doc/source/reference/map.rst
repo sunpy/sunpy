@@ -21,8 +21,8 @@ SunPy Map objects are constructed using the special function :func:`make_map`: :
 
 >>> x = sunpy.make_map('file.fits')
 
-The result of a call to `make_map` will be either a generic `BaseMap` object, 
-or a subclass of `BaseMap` which deals with a specific type of data, e.g. 
+The result of a call to `make_map` will be either a generic `Map` object, 
+or a subclass of `Map` which deals with a specific type of data, e.g. 
 `AIAMap` or `LASCOMap`.
 
 .. autofunction:: make_map
@@ -30,11 +30,11 @@ or a subclass of `BaseMap` which deals with a specific type of data, e.g.
 Map Classes
 ^^^^^^^^^^^
 
-:class:`BaseMap`
+:class:`Map`
 """"""""""""""""
 The top-level class from which all other Maps inherit from.
 
-.. autoclass:: BaseMap
+.. autoclass:: Map
 
     
 :class:`MapHeader`

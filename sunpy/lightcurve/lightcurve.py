@@ -9,7 +9,6 @@ __authors__ = ["Keith Hughitt"]
 __email__ = "keith.hughitt@nasa.gov"
 
 import os
-import datetime
 import pandas
 import sunpy
 import urllib2

@@ -1,5 +1,5 @@
 """
-BaseMap is a generic Map class from which all other Map classes inherit from.
+Map is a generic Map class from which all other Map classes inherit from.
 """
 from __future__ import absolute_import
 
@@ -20,12 +20,11 @@ from sunpy.util.util import toggle_pylab
 from sunpy.io import read_file, read_file_header
 from sunpy.sun import constants
 from sunpy.time import parse_time
-from sunpy.map.header import MapHeader
 
 """
 TODO
 ----
-* Automatically include BaseMap docstring when displaying help for subclasses?
+* Automatically include Map docstring when displaying help for subclasses?
 
 Questions
 ---------
@@ -34,9 +33,9 @@ or something else?)
 * Should 'center' be renamed to 'offset' and crpix1 & 2 be used for 'center'?
 """
 
-class BaseMap(np.ndarray):
+class Map(np.ndarray):
     """
-    BaseMap(data, header)
+    Map(data, header)
 
     A spatially-aware data array based on the SolarSoft Map object
 
@@ -152,7 +151,7 @@ class BaseMap(np.ndarray):
 
     """
     def __new__(cls, data, header):
-        """Creates a new BaseMap instance"""
+        """Creates a new Map instance"""
         if isinstance(data, np.ndarray):
             obj = data.view(cls)
         elif isinstance(data, list):
@@ -163,7 +162,7 @@ class BaseMap(np.ndarray):
         return obj
 
     def __init__(self, data, header):
-        self._original_header = MapHeader(header)
+        self._original_header = header
         
         # Set naxis1 and naxis2 if not specified
         if header.get('naxis1') is None:
@@ -403,12 +402,12 @@ Dimension:\t [%d, %d]
         return np.array(self, copy=False, subok=False).mean(*args, **kwargs)
     
     def min(self, *args, **kwargs):
-            """overide np.ndarray.min()"""
-            return np.array(self, copy=False, subok=False).min(*args, **kwargs)
+        """overide np.ndarray.min()"""
+        return np.array(self, copy=False, subok=False).min(*args, **kwargs)
         
     def max(self, *args, **kwargs):
-            """overide np.ndarray.max()"""
-            return np.array(self, copy=False, subok=False).max(*args, **kwargs)
+        """overide np.ndarray.max()"""
+        return np.array(self, copy=False, subok=False).max(*args, **kwargs)
 
     def data_to_pixel(self, value, dim):
         """Convert pixel-center data coordinates to pixel values"""
@@ -419,9 +418,13 @@ Dimension:\t [%d, %d]
 
         return (value - self.center[dim]) / self.scale[dim] + ((size - 1) / 2.)
     
-    def get_header(self):
+    def get_header(self, original=False):
         """Returns an updated MapHeader instance"""
         header = self._original_header.copy()
+        
+        # If requested, return original header as-is
+        if original:
+            return header
         
         # Bit-depth
         #
@@ -799,19 +802,15 @@ Dimension:\t [%d, %d]
     @classmethod
     def parse_file(cls, filepath):
         """Reads in a map file and returns a header and data array"""
-        data, dict_header = read_file(filepath)
-
-        header = MapHeader(dict_header)
-
-        return header, data
+        return read_file(filepath)
 
     @classmethod
     def read(cls, filepath):
         """Map class factory
 
         Attempts to determine the type of data associated with input and
-        returns an instance of either the generic BaseMap class or a subclass
-        of BaseMap such as AIAMap, EUVIMap, etc.
+        returns an instance of either the generic Map class or a subclass
+        of Map such as AIAMap, EUVIMap, etc.
 
         Parameters
         ----------
@@ -823,26 +822,24 @@ Dimension:\t [%d, %d]
         out : Map
             Returns a Map instance for the particular type of data loaded.
         """
-        header, data = cls.parse_file(filepath)
+        data, header = cls.parse_file(filepath)
 
-        if cls.__name__ is not "BaseMap":
+        if cls.__name__ is not "Map":
             return cls(data, header)
 
-        for cls in BaseMap.__subclasses__():
+        for cls in Map.__subclasses__():
             if cls.is_datasource_for(header):
                 return cls(data, header)
         
-        return BaseMap(data, header)
+        return Map(data, header)
 
     @classmethod
     def read_header(cls, filepath):
         """Attempts to detect the datasource type and returns meta-information
         for that particular datasource."""
-        dict_header = read_file_header(filepath)
+        header = read_file_header(filepath)
 
-        header = MapHeader(dict_header)
-
-        for cls in BaseMap.__subclasses__():
+        for cls in Map.__subclasses__():
             if cls.is_datasource_for(header):
                 properties = cls.get_properties(header)
                 properties['header'] = header

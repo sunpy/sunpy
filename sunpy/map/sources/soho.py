@@ -4,19 +4,19 @@
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
-from sunpy.map.basemap import BaseMap
+from sunpy.map import Map
 from sunpy.sun import constants
 from sunpy.cm import cm
 from sunpy.time import parse_time
 from matplotlib import colors
 import numpy as np
 
-class EITMap(BaseMap):
+class EITMap(Map):
     """EIT Image Map definition"""
     @classmethod
     def get_properties(cls, header):
         """Parses EIT image header"""
-        properties = BaseMap.get_properties(header)
+        properties = Map.get_properties(header)
         
         # Solar radius in arc-seconds at 1 au
         # @TODO: use sunpy.sun instead
@@ -54,12 +54,12 @@ class EITMap(BaseMap):
 
         return colors.LogNorm(vmin, vmax)
 
-class LASCOMap(BaseMap):
+class LASCOMap(Map):
     """LASCO Image Map definition"""
     @classmethod
     def get_properties(cls, header):
         """Parses LASCO image header"""
-        properties = BaseMap.get_properties(header)
+        properties = Map.get_properties(header)
         
         datestr = "%sT%s" % (header.get('date_obs'), header.get('time_obs'))
         
@@ -77,12 +77,12 @@ class LASCOMap(BaseMap):
         """Determines if header corresponds to an LASCO image"""
         return header.get('instrume') == 'LASCO'
         
-class MDIMap(BaseMap):
+class MDIMap(Map):
     """MDI Image Map definition"""
     @classmethod
     def get_properties(cls, header):
         """Parses MDI image header"""
-        properties = BaseMap.get_properties(header)
+        properties = Map.get_properties(header)
         
         # MDI sometimes has an "60" in seconds field
         datestr = header['date_obs']
