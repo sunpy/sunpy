@@ -24,6 +24,14 @@ REFERENCE = 0
 COPY = 1
 DEEPCOPY = 2
 
+
+def repeat_lines(data, times):
+    new = np.zeros((times * data.shape[0], data.shape[1]))
+    for line in xrange(data.shape[0]):
+        new[times * line: times * line + times, :] = data[line,:]
+    return new
+
+
 def parse_header_time(date, time):
     if time is not None:
         date = date + 'T' + time
@@ -191,7 +199,7 @@ class CallistoSpectrogram(np.ndarray):
 
         if fq is not None:  
             self.freq_axis = np.squeeze(fq)
-        else:
+        else:   
             self.freq_axis = np.linspace(0, self.f_res - 1) * self.f_delt + self.f_init
 
     def time_formatter(self, x, pos):
@@ -232,8 +240,19 @@ class CallistoSpectrogram(np.ndarray):
     def format_freq(freq):
         """ Override to configure default plotting """
         return "%.2f" % freq
+
+    def good_ratio(self, ratio):
+        return self.shape[1] % (ratio * self.shape[0]) == 0
     
-    def plot(self, overlays=[], colorbar=True, **matplotlib_args):
+    def plot(self, overlays=[], colorbar=True, ratio=None, **matplotlib_args):
+        if ratio is not None:
+            size = self.shape[1] / ratio
+            times = size / self.shape[0]
+            data = repeat_lines(self, times)
+        else:
+            times= 1
+            data = self
+
         figure = plt.figure(frameon=True)
         axes = figure.add_subplot(111)
         
@@ -241,14 +260,19 @@ class CallistoSpectrogram(np.ndarray):
             'origin': 'lower',
         }
         params.update(matplotlib_args)
-        im = axes.imshow(self, **params)
+        im = axes.imshow(data, **params)
         
         xa = axes.get_xaxis()
         ya = axes.get_yaxis()
 
-        xa.set_major_formatter(FuncFormatter(self.time_formatter))
+        xa.set_major_formatter(
+            FuncFormatter(lambda x, pos: self.time_formatter(x // times, pos))
+        )
+
         ya.set_major_locator(MaxNLocator(integer=True, steps=[1, 5, 10]))
-        ya.set_major_formatter(FuncFormatter(self.freq_formatter))
+        ya.set_major_formatter(
+            FuncFormatter(lambda x, pos: self.freq_formatter(x // times, pos))
+        )
         
         axes.set_xlabel(self.t_label)
         axes.set_ylabel(self.f_label)
