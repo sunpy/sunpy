@@ -4,7 +4,7 @@ SunPy Documentation
 
 Documentation Versions:
  * `0.1 <http://www.sunpy.org/doc>`_
- * `git <http://sunpy.readthedocs.org/en/latest/index.html>`_
+ * `latest (recommended) <http://sunpy.readthedocs.org/en/latest/index.html>`_
 
 Requirements
 ============
