@@ -59,6 +59,7 @@ class CallistoSpectrogram(np.ndarray):
         ('f_init', REFERENCE),
         ('f_label', REFERENCE),
         ('f_res', REFERENCE),
+        ('content', REFERENCE)
     ]
 
     def save(self, filepath):
@@ -291,13 +292,15 @@ class CallistoSpectrogram(np.ndarray):
         return figure
 
     def __getitem__(self, key):
-        if isinstance(key, tuple) and isinstance(key[0], slice):
-            x_range = [key[1].start, key[1].stop]
-            y_range = [key[0].start, key[0].stop]
+        # XXX: Fix
+        if isinstance(key, tuple):
+            if isinstance(key[0], slice) and isinstance(key[1], slice):
+                x_range = [key[1].start, key[1].stop]
+                y_range = [key[0].start, key[0].stop]
 
-            return self.slice(y_range, x_range)
-        else:
-            return super(CallistoSpectrogram, self).__getitem__(key)
+                return self.slice(y_range, x_range)
+        
+        return super(CallistoSpectrogram, self).__getitem__(key)
 
     def time_to_x(self, time):
         # This is impossible for frequencies because that mapping
@@ -325,13 +328,37 @@ class CallistoSpectrogram(np.ndarray):
 
         return self[left:right,:]
 
+    def subtract_bg(self):
+        tmp = (self - np.average(self, 1).reshape(self.shape[0], 1))
+        sdevs = np.std(tmp, 0)
+
+        cand = sorted(xrange(self.shape[0]), key=lambda y: sdevs[y])
+        realcand = cand[:max(1, int(0.05 * len(cand)))]
+
+        bg = np.average(self[:, realcand], 1)
+
+        return self - bg.reshape(self.shape[0], 1)
+
     @staticmethod
     def is_datasource_for(header):
         return header.get('instrument', '').startswith('BIR')
 
+    def clip(self, minimum=None, maximum=None):
+        if minimum is None:
+            minimum = int(self.min())
+
+        if maximum is None:
+            maximum = int(self.max())
+
+        new = self.copy()
+        new[new < minimum] = minimum
+        new[new > maximum] = maximum
+
+        return new
+
 
 if __name__ == "__main__":
     fl = CallistoSpectrogram.read("callisto/BIR_20110922_103000_01.fit")
-    fl.plot().show()
+    fl.subtract_bg().clip(0).plot(ratio=2).show()
     print "Press return to exit"
     raw_input()
