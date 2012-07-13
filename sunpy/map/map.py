@@ -48,7 +48,7 @@ class Map(np.ndarray):
 
     Attributes
     ----------
-    fits_header : dict
+    original_header : dict
         Dictionary representation of the original FITS header
     carrington_longitude : str
         Carrington longitude (crln_obs)
