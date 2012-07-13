@@ -29,7 +29,7 @@ def repeat_lines(data, times):
     """ Simple lossless scaling method for integer factors """
     new = np.zeros((times * data.shape[0], data.shape[1]))
     for line in xrange(data.shape[0]):
-        new[times * line: times * line + times, :] = data[line,:]
+        new[times * line: times * line + times, :] = data[line, :]
     return new
 
 
@@ -41,6 +41,9 @@ def parse_header_time(date, time):
 
 # XXX: Probably make base class.
 class CallistoSpectrogram(np.ndarray):
+    # Contrary to what pylint may think, this is not an old-style class.
+    # pylint: disable=E1002,W0142,R0902
+
     # This needs to list all attributes that need to be
     # copied to maintain the object and how to handle them.
     COPY_PROPERTIES = [
@@ -67,8 +70,12 @@ class CallistoSpectrogram(np.ndarray):
         data = pyfits.PrimaryHDU(self, header=main_header)
         ## XXX: Update axes header.
 
-        freq_col = pyfits.Column(name="frequency", format="D8.3", array=self.freq_axis)
-        time_col = pyfits.Column(name="time", format="D8.3", array=self.time_axis)
+        freq_col = pyfits.Column(
+            name="frequency", format="D8.3", array=self.freq_axis
+        )
+        time_col = pyfits.Column(
+            name="time", format="D8.3", array=self.time_axis
+        )
         cols = pyfits.ColDefs([freq_col, time_col])
         table = pyfits.new_table(cols, header=self.axes_header)
 
@@ -87,6 +94,7 @@ class CallistoSpectrogram(np.ndarray):
         return header
 
     def __new__(cls, data, axes=None, header=None):
+        # pylint: disable=W0613
         if header is not None:
             # Always put time on the x-axis.
             if "time" not in header["CTYPE1"].lower():
@@ -129,6 +137,10 @@ class CallistoSpectrogram(np.ndarray):
         return self._new_with_params(data, params)
         
     def __init__(self, data, axes, header):
+        # Because of how object creation works, there is no avoiding
+        # unused arguments in this case.
+        # pylint: disable=W0613
+
         self.header = header
         self.content = header["CONTENT"]
 
@@ -197,24 +209,32 @@ class CallistoSpectrogram(np.ndarray):
             self.time_axis = np.squeeze(tm)
         else:
             # Otherwise, assume it's linear.
-            self.time_axis = np.linspace(0, self.t_res - 1) * self.t_delt + self.t_init
+            self.time_axis = \
+                np.linspace(0, self.t_res - 1) * self.t_delt + self.t_init
 
         if fq is not None:  
             self.freq_axis = np.squeeze(fq)
         else:   
-            self.freq_axis = np.linspace(0, self.f_res - 1) * self.f_delt + self.f_init
+            self.freq_axis = \
+                np.linspace(0, self.f_res - 1) * self.f_delt + self.f_init
 
     def time_formatter(self, x, pos):
         """ This returns the label for the tick of value x at
         a specified pos on the axis. """
+        # Callback, cannot avoid unused arguments.
+        # pylint: disable=W0613
         try:
             return self.format_time(
-                self._gstart + datetime.timedelta(seconds=self.time_axis[int(x)])
+                self._gstart + datetime.timedelta(
+                    seconds=self.time_axis[int(x)]
+                )
             )
         except IndexError:
             return None
 
     def freq_formatter(self, x, pos):
+        # Callback, cannot avoid unused arguments.
+        # pylint: disable=W0613
         try:
             return self.format_freq(self.freq_axis[x])
         except IndexError:
@@ -244,15 +264,18 @@ class CallistoSpectrogram(np.ndarray):
         return "%.2f" % freq
 
     def good_ratio(self, ratio):
+        # pylint: disable=E1101
         return self.shape[1] % (ratio * self.shape[0]) == 0
-    
+
     def plot(self, overlays=[], colorbar=True, ratio=None, **matplotlib_args):
+        # [] as default argument is okay here because it is only read.
+        # pylint: disable=W0102
         if ratio is not None:
-            size = self.shape[1] / ratio
-            times = size / self.shape[0]
+            size = self.shape[1] / ratio # pylint: disable=E1101
+            times = size / self.shape[0] # pylint: disable=E1101
             data = repeat_lines(self, times)
         else:
-            times= 1
+            times = 1
             data = np.array(self)
 
         figure = plt.figure(frameon=True)
@@ -329,6 +352,7 @@ class CallistoSpectrogram(np.ndarray):
         return self[left:right,:]
 
     def subtract_bg(self):
+        # pylint: disable=E1101,E1103
         tmp = (self - np.average(self, 1).reshape(self.shape[0], 1))
         sdevs = np.std(tmp, 0)
 
@@ -344,6 +368,7 @@ class CallistoSpectrogram(np.ndarray):
         return header.get('instrument', '').startswith('BIR')
 
     def clip(self, minimum=None, maximum=None):
+        # pylint: disable=E1101
         if minimum is None:
             minimum = int(self.min())
 
@@ -358,7 +383,7 @@ class CallistoSpectrogram(np.ndarray):
 
 
 if __name__ == "__main__":
-    fl = CallistoSpectrogram.read("callisto/BIR_20110922_103000_01.fit")
-    fl.subtract_bg().clip(0).plot(ratio=2).show()
+    opn = CallistoSpectrogram.read("callisto/BIR_20110922_103000_01.fit")
+    opn.subtract_bg().clip(0).plot().show()
     print "Press return to exit"
     raw_input()
