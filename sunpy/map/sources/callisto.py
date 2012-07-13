@@ -170,6 +170,7 @@ class CallistoSpectrogram(np.ndarray):
 
         self.swapped = "time" not in header["CTYPE1"].lower()
         
+        # Swap dimensions so x-axis is always time.
         if self.swapped:
             self.t_res = header["NAXIS2"]
             self.t_delt = header["CDELT2"]
@@ -283,6 +284,10 @@ class CallistoSpectrogram(np.ndarray):
     def plot(self, overlays=[], colorbar=True, ratio=None, **matplotlib_args):
         # [] as default argument is okay here because it is only read.
         # pylint: disable=W0102,R0914
+
+        # Resize the array to match the needed aspect ratio as good as
+        # possible. No interpolation is done, just frequency channels
+        # duplicated.
         if ratio is not None:
             size = self.shape[1] / ratio # pylint: disable=E1101
             times = size / self.shape[0] # pylint: disable=E1101
@@ -302,7 +307,7 @@ class CallistoSpectrogram(np.ndarray):
         
         xa = axes.get_xaxis()
         ya = axes.get_yaxis()
-
+        
         xa.set_major_formatter(
             FuncFormatter(lambda x, pos: self.time_formatter(x // times, pos))
         )
@@ -371,12 +376,18 @@ class CallistoSpectrogram(np.ndarray):
     def subtract_bg(self):
         """ Perform constant background subtraction. """
         # pylint: disable=E1101,E1103
+
+        # Subtract average value from every frequency channel.
         tmp = (self - np.average(self, 1).reshape(self.shape[0], 1))
+        # Get standard deviation at every point of time
         sdevs = np.std(tmp, 0)
 
+        # Get indices of values with lowest standard deviation.
         cand = sorted(xrange(self.shape[0]), key=lambda y: sdevs[y])
+        # Only consider the best 5 %.
         realcand = cand[:max(1, int(0.05 * len(cand)))]
 
+        # Average the best 5 %
         bg = np.average(self[:, realcand], 1)
 
         return self - bg.reshape(self.shape[0], 1)
@@ -407,6 +418,6 @@ class CallistoSpectrogram(np.ndarray):
 
 if __name__ == "__main__":
     opn = CallistoSpectrogram.read("callisto/BIR_20110922_103000_01.fit")
-    opn.subtract_bg().clip(0).plot().show()
+    opn.subtract_bg().clip(0).plot(ratio=2).show()
     print "Press return to exit"
     raw_input()
