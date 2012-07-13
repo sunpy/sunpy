@@ -301,9 +301,9 @@ class Downloader(object):
             fd.write(rec)
     
     def _start_download(self, url, path, callback, errback):
-        server = url.split('/')[0]
+        protocol = self._get_protocol(url)
         
-        self.connections[server] += 1
+        self.connections[protocol] += 1
         self.conns += 1
         
         sock = urllib2.urlopen(url)
@@ -312,7 +312,7 @@ class Downloader(object):
         try:
             args = [
                     sock, open(fullname, 'wb'),
-                    partial(self._close, callback, [{'path': fullname}], server),
+                    partial(self._close, callback, [{'path': fullname}], protocol),
             ]
         except IOError, e:
             return errback(e)
@@ -333,26 +333,57 @@ class Downloader(object):
             self.reactor.add_fd(sock, partial(self._download, *args))
     
     def _attempt_download(self, url, path, callback, errback):
-        server = url.split('/')[0]
+        num_connections = self.connections[self._get_protocol(url)]
         
-        if self.connections[server] < self.max_conn and self.conns < self.max_total:
+        # If max downloads has not been exceeded, begin downloading
+        if (num_connections < self.max_conn and self.conns < self.max_total):
             self._start_download(url, path, callback, errback)
             return True
         return False
 
-    def download(self, url, path, callback, errback):
-        server = url.split('/')[0]
+    def _get_protocol(self, url):
+        """Returns the protocol for a given URL"""
+        if url.find(":") == -1:
+            return "http"
+        else:
+            return url.split(':')[0]
         
+
+    def download(self, url, path=None, callback=None, errback=None):
+        """Downloads a file at a specified URL.
+        
+        Parameters
+        ----------
+        url : string
+            URL of file to download
+        path : string
+            Location to save file to. Defaults to directory specified in sunpy
+            configuration
+        callback : function
+            Function to call when download is successfully completed
+        errback : function
+            Function to call when download fails
+            
+        Returns
+        -------
+        out : None
+        """
+        # Load balancing?
+        # @todo: explain
+        protocol = self._get_protocol(url)
+        
+        # Attempt to download file from URL
         if not self._attempt_download(url, path, callback, errback):
-            self.q[server].append((url, path, callback, errback))
+            # If there are too many concurrent downloads, queue for later
+            self.q[protocol].append((url, path, callback, errback))
     
-    def _close(self, callback, args, server):
+    def _close(self, callback, args, protocol):
         callback(*args)
         
-        if self.q[server]:
-            self._start_download(*self.q[server].pop())
+        if self.q[protocol]:
+            self._start_download(*self.q[protocol].pop())
         else:
-            self.connections[server] -= 1
+            self.connections[protocol] -= 1
             self.conns -= 1
             
             for k, v in self.q.iteritems():
@@ -383,10 +414,10 @@ if __name__ == '__main__':
     
     dw = Downloader(1, 2)
     callb = wait_for(4, lambda _: dw.reactor.stop())
-    dw.download('ftp://speedtest.inode.at/speedtest-5mb', path_fun, callb)
-    dw.download('ftp://speedtest.inode.at/speedtest-20mb', path_fun, callb)
-    dw.download('https://bitsrc.org', path_fun, callb)
-    dw.download('ftp://speedtest.inode.at/speedtest-100mb', path_fun, callb)
+    dw.download('ftp://speedtest.inode.at/speedtest-5mb', path_fun, callb, None)
+    dw.download('ftp://speedtest.inode.at/speedtest-20mb', path_fun, callb, None)
+    dw.download('https://bitsrc.org', path_fun, callb, None)
+    dw.download('ftp://speedtest.inode.at/speedtest-100mb', path_fun, callb, None)
     
     print dw.conns
     
