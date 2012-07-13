@@ -136,10 +136,10 @@ class CallistoSpectrogram(np.ndarray):
         self.axes = axes
         
         self.start = parse_header_time(
-            header['DATE-OBS'], header.get('TIME-OBS')
+            header['DATE-OBS'], header.get('TIME-OBS', header.get('TIME$_OBS'))
         )
         self.end = parse_header_time(
-            header['DATE-END'], header.get('TIME-END')
+            header['DATE-END'], header.get('TIME-END', header.get('TIME$_END'))
         )
 
         # Starting time of the whole measurement, the time axis is relative
