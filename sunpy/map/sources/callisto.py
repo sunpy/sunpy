@@ -307,9 +307,11 @@ class CallistoSpectrogram(np.ndarray):
         
         xa = axes.get_xaxis()
         ya = axes.get_yaxis()
-        
+
+        # Set the tick labels to be looked up in the two axis arrays.
+        # If frequencies were scaled up, we need to reverse that here.
         xa.set_major_formatter(
-            FuncFormatter(lambda x, pos: self.time_formatter(x // times, pos))
+            FuncFormatter(lambda x, pos: self.time_formatter(x, pos))
         )
 
         ya.set_major_locator(MaxNLocator(integer=True, steps=[1, 5, 10]))
