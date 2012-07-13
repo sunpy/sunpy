@@ -422,13 +422,7 @@ class Downloader(object):
 
 if __name__ == '__main__':
     import tempfile
-    
-    from sunpy.net import download
-    d = download.Downloader()
-    u = "http://delphi.nascom.nasa.gov/jp2/AIA/2012/07/13/171/2012_07_13__00_03_50_51__SDO_AIA_AIA_171.jp2"
-    d.download(u)
 
-    
     def wait_for(n, callback): #pylint: disable=W0613
         items = []
         def _fun(handler):
