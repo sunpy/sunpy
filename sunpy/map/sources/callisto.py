@@ -253,7 +253,7 @@ class CallistoSpectrogram(np.ndarray):
             data = repeat_lines(self, times)
         else:
             times= 1
-            data = self
+            data = np.array(self)
 
         figure = plt.figure(frameon=True)
         axes = figure.add_subplot(111)
