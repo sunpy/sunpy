@@ -1,30 +1,5 @@
 """
 This module provides a wrapper around the Helioviewer API.
-
-Keith 2011/06/26:
-  
-Because the current Helioviewer.org API has been optimized for us in web
-applications, the currently provided methods are not ideal for use by
-SunPy. For example, an ideal usage would be to request an image and get
-read the result into a Map object. This requires both the image data,
-without any colormap applied, and the header information, preferably either
-in its original form or as a dictionary.
-
-In order to achieve this using the current API, you would be required to
-make at least three requests: the first one (getClosestImage) will find
-the best match for the requested date. Next, you would need to fetch the
-image data (e.g. getJP2Image) and header information (getJP2Header)
-separately. Finally, once you have all of that you need to convert the
-image to a bitmap and read it into an ndarray and convert the XML header 
-response to a dict.
-
-Ideally, the solution to this would be to add support to SunPy for working
-with JPEG 2000 images directly. Because of the lack of support for JPEG 2000
-in Python, however, this would likely require a significant amount of work,
-such as writing a wrapper around the OpenJPEG library. An alternative solution
-might be to add a new method to the Helioviewer API which returns the header
-information (as a dictionary) and a URL or id which can be used to retrieve
-the image data.
 """
 from __future__ import absolute_import
 
@@ -47,9 +22,9 @@ def get_data_sources(**kwargs):
     params = {"action": "getDataSources"}
     params.update(kwargs)
     
-    return json.loads(_request(params).read())    
+    return _get_json(params)    
 
-def get_closest_image(date, observatory, instrument, detector, measurement):
+def get_closest_image(date, **kwargs):
     """Finds the closest image available for the specified source and date.
     
     For more information on what types of requests are available and the
@@ -58,76 +33,107 @@ def get_closest_image(date, observatory, instrument, detector, measurement):
     
     Parameters
     ----------
-    date : mixed
+    date : datetime, string
         A string or datetime object for the desired date of the image
     observatory : string
-        The observatory to match
+        (Optional) Observatory name
     instrument : string
-        The instrument to match
+        (Optional) instrument name
     detector : string
-        The detector to match
+        (Optional) detector name
     measurement : string
+        (Optional) measurement name
+    sourceId : int
+        (Optional) data source id
         
     Returns
     -------
-    out : dict A dictionary including the following information:
-        filepath
-        filename
-        date
-        scale
-        width
-        height
-        sunCenterX
-        sunCenterY
+    out : dict
+        A dictionary containing metainformation for the closest image matched
         
     Examples
     --------
-    >>> 
+    >>> from sunpy.net import helioviewer
+    >>> metadata = helioviewer.get_closest_image('2012/01/01', sourceId=11)
+    >>> print(metadata['date'])
     """
-    # TODO 06/26/2011 Input validation
     params = {
-        "date": parse_time(date),
-        "observatory": observatory,
-        "instrument": instrument,
-        "detector": detector,
-        "measurement": measurement
+        "action": "getClosestImage",
+        "date": _format_date(date)
     }
-    return _request(params).read()
+    params.update(kwargs)
+    
+    return _get_json(params)
 
 def get_jp2_image(date, directory=None, **kwargs):
     """
     Downloads the JPEG 2000 that most closely matches the specified time and 
     data source.
     
+    The data source may be specified either using it's sourceId from the
+    get_data_sources query, or a combination of observatory, instrument,
+    detector and measurement. 
+    
     Parameters
     ----------
-    date : mixed
+    date : datetime, string
         A string or datetime object for the desired date of the image
     directory : string
         Directory to download JPEG 2000 image to.
+    observatory : string
+        (Optional) Observatory name
+    instrument : string
+        (Optional) instrument name
+    detector : string
+        (Optional) detector name
+    measurement : string
+        (Optional) measurement name
+    sourceId : int
+        (Optional) data source id
+    jpip : bool
+        (Optional) Returns a JPIP URI if set to True
         
     Returns
     -------
-    mixed : Returns a map representation of the requested image or a URI if
+    out : Returns a map representation of the requested image or a URI if
     "jpip" parameter is set to True.
+    
+    Examples
+    --------
+    >>> from sunpy.net import helioviewer
+    >>> aia = helioviewer.get_jp2_image('2012/07/03 14:30:00', observatory='SDO', instrument='AIA', detector='AIA', measurement='171')
+    >>> aia.show()
+    >>>
+    >>> data_sources = helioviewer.get_data_sources()
+    >>> lasco = helioviewer.get_jp2_image('2012/07/03 14:30:00', sourceId=data_sources['SOHO']['LASCO']['C2']['white-light']['sourceId'])
     """
     params = {
         "action": "getJP2Image",
-        "date": parse_time(date).strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + "Z"
+        "date": _format_date(date)
     }
     params.update(kwargs)
     
-    # Submit request
-    response = _request(params)
-    
     # JPIP URL response
     if 'jpip' in kwargs:
-        return response.read()
+        return _get_json(params)
+
+    filepath = _get_file(params, directory)
+
+    return sunpy.make_map(filepath)
+
+def _get_json(params):
+    """Returns a JSON result as a string"""
+    response = _request(params).read()
+    return json.loads(response)
+
+def _get_file(params, directory=None):
+    """Downloads a file and return the filepath to that file"""
+    # Query Helioviewer.org
+    response = _request(params)
     
     # JPEG 2000 image response
     if directory is None:
-        import tempfile
-        directory = tempfile.gettempdir()
+        directory = sunpy.config.get('downloads', 'download_dir')
     
     filename = response.info()['Content-Disposition'][22:-1]
     filepath = os.path.join(directory, filename)
@@ -136,7 +142,7 @@ def get_jp2_image(date, directory=None, **kwargs):
     f.write(response.read())
     f.close()
     
-    return sunpy.make_map(filepath)
+    return filepath
 
 def _request(params):
     """Sends an API request and returns the result
@@ -153,3 +159,10 @@ def _request(params):
     response = urllib2.urlopen(__BASE_API_URL__, urllib.urlencode(params))
         
     return response
+
+def _format_date(date):
+    """Formats a date for Helioviewer API requests"""
+    return parse_time(date).strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + "Z"
+
+if __name__ == "__main__":
+    get_closest_image('2012-07-11', 'sdo', 'aia', 'aia', '171')
