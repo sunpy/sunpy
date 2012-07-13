@@ -34,6 +34,7 @@ def repeat_lines(data, times):
 
 
 def parse_header_time(date, time):
+    """ Return datetime object from date and time fields of header. """
     if time is not None:
         date = date + 'T' + time
     return parse_time(date)
@@ -65,7 +66,10 @@ class CallistoSpectrogram(np.ndarray):
         ('content', REFERENCE)
     ]
 
+    INSTRUMENTS = set(['BIR'])
+
     def save(self, filepath):
+        """ Save modified spectrogram back to filepath. """
         main_header = self.get_header()
         data = pyfits.PrimaryHDU(self, header=main_header)
         ## XXX: Update axes header.
@@ -83,6 +87,7 @@ class CallistoSpectrogram(np.ndarray):
         hdulist.writeto(filepath)   
 
     def get_header(self):
+        """ Return updated header. """
         header = self.header.copy()
 
         if self.swapped:
@@ -104,6 +109,7 @@ class CallistoSpectrogram(np.ndarray):
     
     @classmethod
     def _new_with_params(cls, data, params):
+        """ Implementation detail. """
         obj = cls.__new__(cls, data)
         for key, value in params.iteritems():
             setattr(obj, key, value)
@@ -111,10 +117,13 @@ class CallistoSpectrogram(np.ndarray):
     
     @classmethod
     def read(cls, filename):
+        """ Read in FITS file and return a new CallistoSpectrogram. """
         fl = pyfits.open(filename)
         return cls(fl[0].data, fl[1], fl[0].header)
     
     def slice(self, y_range, x_range):
+        """ Return new spectrogram reduced to the values passed
+        as slices. """
         params = slice(y_range[0], y_range[1]), slice(x_range[0], x_range[1])
         data = super(CallistoSpectrogram, self).__getitem__(params)
         params = vars(self).copy()
@@ -220,7 +229,7 @@ class CallistoSpectrogram(np.ndarray):
 
     def time_formatter(self, x, pos):
         """ This returns the label for the tick of value x at
-        a specified pos on the axis. """
+        a specified pos on the time axis. """
         # Callback, cannot avoid unused arguments.
         # pylint: disable=W0613
         try:
@@ -233,6 +242,8 @@ class CallistoSpectrogram(np.ndarray):
             return None
 
     def freq_formatter(self, x, pos):
+        """ This returns the label for the tick of value x at
+        a specified pos on the frequency axis. """
         # Callback, cannot avoid unused arguments.
         # pylint: disable=W0613
         try:
@@ -264,12 +275,14 @@ class CallistoSpectrogram(np.ndarray):
         return "%.2f" % freq
 
     def good_ratio(self, ratio):
+        """ Check if ratio is possible by repeating the frequency axis
+        an integer time. """
         # pylint: disable=E1101
         return self.shape[1] % (ratio * self.shape[0]) == 0
 
     def plot(self, overlays=[], colorbar=True, ratio=None, **matplotlib_args):
         # [] as default argument is okay here because it is only read.
-        # pylint: disable=W0102
+        # pylint: disable=W0102,R0914
         if ratio is not None:
             size = self.shape[1] / ratio # pylint: disable=E1101
             times = size / self.shape[0] # pylint: disable=E1101
@@ -326,6 +339,8 @@ class CallistoSpectrogram(np.ndarray):
         return super(CallistoSpectrogram, self).__getitem__(key)
 
     def time_to_x(self, time):
+        """ Return x-coordinate in spectrogram that corresponds to the
+        passed datetime value. """
         # This is impossible for frequencies because that mapping
         # is not injective.
         # XXX: This assumes time is linear. As we read it from the
@@ -338,6 +353,8 @@ class CallistoSpectrogram(np.ndarray):
         return round(k * self.t_res)
 
     def clip_freq(self, minimum=None, maximum=None):
+        """ Return a new spectrogram only consisting of frequencies
+        in the interval [minimum, maximum]. """
         left = 0
         if maximum is not None:
             while self.freq_axis[left] > maximum:
@@ -349,9 +366,10 @@ class CallistoSpectrogram(np.ndarray):
             while self.freq_axis[right] < minimum:
                 right -= 1
 
-        return self[left:right,:]
+        return self[left:right, :]
 
     def subtract_bg(self):
+        """ Perform constant background subtraction. """
         # pylint: disable=E1101,E1103
         tmp = (self - np.average(self, 1).reshape(self.shape[0], 1))
         sdevs = np.std(tmp, 0)
@@ -363,11 +381,16 @@ class CallistoSpectrogram(np.ndarray):
 
         return self - bg.reshape(self.shape[0], 1)
 
-    @staticmethod
-    def is_datasource_for(header):
-        return header.get('instrument', '').startswith('BIR')
+    @classmethod
+    def is_datasource_for(cls, header):
+        """ Check if class supports data from the given FITS file. """
+        return header.get('instrument', '').strip() in cls.INSTRUMENTS
 
     def clip(self, minimum=None, maximum=None):
+        """ Clip values to be in the interval [minimum, maximum]. Any values
+        greater than the maximum will be assigned the maximum, any values
+        lower than the minimum will be assigned the minimum. If either is
+        left out or None, do not clip at that side of the interval. """
         # pylint: disable=E1101
         if minimum is None:
             minimum = int(self.min())
