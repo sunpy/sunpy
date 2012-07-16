@@ -4,6 +4,7 @@
 from __future__ import absolute_import
 
 import os
+import re
 import urllib2
 import select
 import socket
@@ -302,9 +303,9 @@ class Downloader(object):
             fd.write(rec)
     
     def _start_download(self, url, path, callback, errback):
-        protocol = self._get_protocol(url)
+        server = self._get_server(url)
         
-        self.connections[protocol] += 1
+        self.connections[server] += 1
         self.conns += 1
         
         sock = urllib2.urlopen(url)
@@ -313,7 +314,7 @@ class Downloader(object):
         try:
             args = [
                 sock, open(fullname, 'wb'),
-                partial(self._close, callback, [{'path': fullname}], protocol),
+                partial(self._close, callback, [{'path': fullname}], server),
             ]
         except IOError, e:
             if errback is not None:
@@ -335,7 +336,7 @@ class Downloader(object):
             self.reactor.add_fd(sock, partial(self._download, *args))
     
     def _attempt_download(self, url, path, callback, errback):
-        num_connections = self.connections[self._get_protocol(url)]
+        num_connections = self.connections[self._get_server(url)]
         
         # If max downloads has not been exceeded, begin downloading
         if (num_connections < self.max_conn and self.conns < self.max_total):
@@ -343,12 +344,12 @@ class Downloader(object):
             return True
         return False
 
-    def _get_protocol(self, url):
-        """Returns the protocol for a given URL"""
-        if url.find(":") == -1:
-            return "http"
-        else:
-            return url.split(':')[0]
+    def _get_server(self, url):
+        """Returns the server name for a given URL.
+        
+        Examples: http://server.com, server.org, ftp.server.org, etc.
+        """
+        return re.search('(\w+://)?([\w\.]+)', url).group(2)
         
     def _default_callback(self, *args):
         """Default callback to execute on a successfull download"""
@@ -380,7 +381,7 @@ class Downloader(object):
         """
         # Load balancing?
         # @todo: explain
-        protocol = self._get_protocol(url)
+        server = self._get_server(url)
         
         # Create function to compute the filepath to download to if not set
         default_dir = sunpy.config.get("downloads", "download_dir")
@@ -399,15 +400,15 @@ class Downloader(object):
         # Attempt to download file from URL
         if not self._attempt_download(url, path, callback, errback):
             # If there are too many concurrent downloads, queue for later
-            self.q[protocol].append((url, path, callback, errback))
+            self.q[server].append((url, path, callback, errback))
     
-    def _close(self, callback, args, protocol):
+    def _close(self, callback, args, server):
         callback(*args)
         
-        if self.q[protocol]:
-            self._start_download(*self.q[protocol].pop())
+        if self.q[server]:
+            self._start_download(*self.q[server].pop())
         else:
-            self.connections[protocol] -= 1
+            self.connections[server] -= 1
             self.conns -= 1
             
             for k, v in self.q.iteritems(): #pylint: disable=W0612
