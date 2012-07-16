@@ -178,9 +178,12 @@ approach: ::
 
     hv.take_screenshot('2099/01/01', 4.8, "[SDO,AIA,AIA,304,1,100]", x0=0, y0=0, width=512, height=512)
 
-Where 2.4 refers to the image resolution in arcseconds per pixel (larger values 
-mean lower resolution), x0 and y0 are the center points about which to focus
-and the width and height are the pixel values for the screenshot dimensions.
+Where 4.8 refers to the image resolution in arcseconds per pixel (larger values 
+mean lower resolution), the "1" and "100" in the layer string refer to the
+visibility (visible/hidden) and opacity, x0 and y0 are the center points about 
+which to focus and the width and height are the pixel values for the screenshot 
+dimensions.
+
 
 The result is:
 
@@ -210,8 +213,11 @@ The overall syntax is simila to the screenshot request, expect instead of
 specifying a single string to indicate which layers to use, here we
 can specify the values as separate keyword arguments: ::
 
-    aia = hv.get_jp2_image('2012/07/15 00:30:00', observatory='SDO', instrument='AIA', detector='AIA', measurement='171')
-    aia.show()
+    filepath = hv.get_jp2_image('2012/07/05 00:30:00', observatory='SDO', instrument='HMI', detector='HMI', measurement='continuum')
+    hmi = sunpy.make_map(filepath)
+    hmi.submap([200,550],[-400,-200]).show()
+
+.. image:: ../images/helioviewer_get_jp2_image_ex.png
 
 For more information about using querying Helioviewer.org, see the Helioviewer.org
 API documentation at: `http://helioviewer.org/api/ <http://helioviewer.org/api/>`__.
