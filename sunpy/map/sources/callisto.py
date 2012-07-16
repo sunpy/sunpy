@@ -124,19 +124,18 @@ class CallistoSpectrogram(np.ndarray):
     def slice(self, y_range, x_range):
         """ Return new spectrogram reduced to the values passed
         as slices. """
-        params = slice(y_range[0], y_range[1]), slice(x_range[0], x_range[1])
-        data = super(CallistoSpectrogram, self).__getitem__(params)
+        data = super(CallistoSpectrogram, self).__getitem__([x_range, y_range])
         params = vars(self).copy()
 
-        soffset = 0 if x_range[0] is None else x_range[0]
-        eoffset = self.t_res if x_range[1] is None else x_range[1]
+        soffset = 0 if x_range.start is None else x_range.start
+        eoffset = self.t_res if x_range.end is None else x_range.end
 
-        fsoffset = 0 if y_range[0] is None else y_range[0]
-        feoffset = self.f_res if y_range[1] is None else y_range[1]
+        fsoffset = 0 if y_range.start is None else y_range.start
+        feoffset = self.f_res if y_range.end is None else y_range.end
         
         params.update({
-            'time_axis': self.time_axis[x_range[0]:x_range[1]],
-            'freq_axis': self.freq_axis[y_range[0]:y_range[1]],
+            'time_axis': self.time_axis[x_range.start:x_range.end:x_range.step],
+            'freq_axis': self.freq_axis[y_range.start:y_range.end:y_range.step],
             'start': self.start + soffset * self.timedelta,
             'end': self.start + eoffset * self.timedelta,
             'f_init': self.freq_axis[fsoffset],
@@ -338,10 +337,7 @@ class CallistoSpectrogram(np.ndarray):
         # XXX: Fix step
         if isinstance(key, tuple):
             if isinstance(key[0], slice) and isinstance(key[1], slice):
-                x_range = [key[1].start, key[1].stop]
-                y_range = [key[0].start, key[0].stop]
-
-                return self.slice(y_range, x_range)
+                return self.slice(key[0], key[1])
         
         return super(CallistoSpectrogram, self).__getitem__(key)
 
