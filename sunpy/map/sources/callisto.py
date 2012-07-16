@@ -196,7 +196,7 @@ class CallistoSpectrogram(np.ndarray):
         d_secs = diff.days * SECONDS_PER_DAY + diff.seconds
 
         # In principle CDELT1, but unrounded.        
-        self.t_delt = d_secs / float(self.t_res - 1)
+        # self.t_delt = d_secs / float(self.t_res - 1)
         self.timedelta = datetime.timedelta(
             seconds=d_secs / float(self.t_res - 1)
         )
@@ -353,12 +353,16 @@ class CallistoSpectrogram(np.ndarray):
             data = data.join_spectro_time(elem)
         return data
 
+    @classmethod
+    def read_many(cls, names):
+        return cls.join_many(map(cls.read, names))
+
     def _internal_time_to_x(self, tme):
         return (tme - self.t_init) / self.t_delt
 
     def join_spectro_time(self, other):
         x = int(self._internal_time_to_x(other.t_init))
-        if not (0 <= x < self.t_res):
+        if not (0 <= x <= self.t_res):
             raise IndexError("Cannot stitch. %f" % x)
         
         # new = np.zeros((self.f_res, x + other.t_res), np.uint8)
@@ -369,7 +373,7 @@ class CallistoSpectrogram(np.ndarray):
         params = {
             'header': self.header, # XXX
             'time_axis': np.concatenate(
-                [self.time_axis, other.time_axis + self.t_delt * self.t_res]),
+                [self.time_axis[:x], other.time_axis + self.t_delt * self.t_res]),
             'freq_axis': self.freq_axis,
             'start': self.start,
             'end': other.end,
@@ -382,7 +386,8 @@ class CallistoSpectrogram(np.ndarray):
             'f_init': self.f_init,
             'f_label': self.f_label,
             'f_res': self.f_res, # XXX
-            'content': self.content
+            'content': self.content,
+            'timedelta': self.timedelta,
 
         }
 
