@@ -87,7 +87,7 @@ class HelioviewerClient:
         date : datetime, string
             A string or datetime object for the desired date of the image
         directory : string
-            Directory to download JPEG 2000 image to.
+            (Optional) Directory to download JPEG 2000 image to.
         observatory : string
             (Optional) Observatory name
         instrument : string
@@ -130,6 +130,84 @@ class HelioviewerClient:
     
         return sunpy.make_map(filepath)
     
+    def take_screenshot(self, date, image_scale, layers, directory=None, 
+                        **kwargs):
+        """Creates a screenshot using the Helioviewer.org API and saves
+        the image to the hard disk.
+        
+        Returns a single image containing all layers/image types requested. 
+        If an image is not available for the date requested the closest 
+        available image is returned. The region to be included in the 
+        screenshot may be specified using either the top-left and bottom-right 
+        coordinates in arc-seconds, or a center point in arc-seconds and a 
+        width and height in pixels. See the Helioviewer.org API Coordinates 
+        Appendix for more infomration about working with coordinates in 
+        Helioviewer.org.
+
+        Parameters
+        ----------
+        date : datetime, string
+            A string or datetime object for the desired date of the image
+        image_scale : float
+            The zoom scale of the image. Default scales that can be used are 
+            0.6, 1.2, 2.4, and so on, increasing or decreasing by a factor 
+            of 2. The full-res scale of an AIA image is 0.6.
+        layers : string
+            Each layer string is comma-separated with these values, e.g.:
+            "[sourceId,visible,opacity]" or "[obs,inst,det,meas,visible,opacity]"
+            Mulitple layer string are by commas: "[layer1],[layer2],[layer3]"
+        directory : string
+            (Optional)  Directory to download JPEG 2000 image to.
+        x1 : float
+            (Optional) The offset of the image's left boundary from the center 
+            of the sun, in arcseconds.        
+        y1 : float
+            (Optional) The offset of the image's top boundary from the center 
+            of the sun, in arcseconds.
+        x2 : float
+            (Optional) The offset of the image's right boundary from the 
+            center of the sun, in arcseconds.
+        y2 : float
+            (Optional) The offset of the image's bottom boundary from the 
+            center of the sun, in arcseconds.
+        x0 : float
+            (Optional) The horizontal offset from the center of the Sun.
+        y0 : float
+            (Optional) The vertical offset from the center of the Sun.
+        width : int
+            (Optional) Width of the screenshot in pixels (Maximum: 1920).
+        height : int
+            (Optional) Height of the screenshot in pixels (Maximum: 1200).
+        watermark
+            (Optional) Whether or not the include the timestamps and the 
+            Helioviewer.org logo in the screenshot (Default=True).
+            
+        Returns
+        -------
+        out : string
+            filepath to the screenshot
+            
+        Examples
+        --------
+        >>> from sunpy.net.helioviewer import HelioviewerClient
+        >>> hv = HelioviewerClient()
+        >>> hv.take_screenshot('2012/07/16 10:08:00', 2.4, "[SDO,AIA,AIA,171,1,100]", x0=0, y0=0, width=1024, height=1024)
+        '/home/user/sunpy/data/2012_07_16_10_08_00_AIA_171.png
+        >>> hv.take_screenshot('2012/07/16 10:08:00', 4.8, "[SDO,AIA,AIA,171,1,100],[SOHO,LASCO,C2,white-light,1,100]", x1=-2800, x2=2800, y1=-2800, y2=2800, directory='~/Desktop')
+        '/home/user/Desktop/2012_07_16_10_08_00_AIA_171__LASCO_C2.png'        
+        """
+        params = {
+            "action": "takeScreenshot",
+            "date": self._format_date(date),
+            "imageScale": image_scale,
+            "layers": layers,
+            "display": True
+        }
+        params.update(kwargs)
+        
+        return self._get_file(params, directory)
+        
+    
     def _get_json(self, params):
         """Returns a JSON result as a string"""
         response = self._request(params).read()
@@ -143,8 +221,12 @@ class HelioviewerClient:
         # JPEG 2000 image response
         if directory is None:
             directory = sunpy.config.get('downloads', 'download_dir')
-        
-        filename = response.info()['Content-Disposition'][22:-1]
+        else:
+            directory = os.path.abspath(os.path.expanduser(directory))
+
+        # Get filename
+        content = response.info()['Content-Disposition']
+        filename = content[content.find('filename=') + 10: -1]
         filepath = os.path.join(directory, filename)
         
         f = open(filepath, 'wb')
