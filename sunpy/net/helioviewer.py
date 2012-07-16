@@ -103,18 +103,21 @@ class HelioviewerClient:
             
         Returns
         -------
-        out : Returns a map representation of the requested image or a URI if
-        "jpip" parameter is set to True.
+        out : string
+            Returns a filepath to the downloaded JPEG 2000 image or a URL if
+            the "jpip" parameter is set to True.
         
         Examples
         --------
+        >>> import sunpy
         >>> from sunpy.net import helioviewer
-        >>> client = helioviewer.HelioviewerClient()
-        >>> aia = client.get_jp2_image('2012/07/03 14:30:00', observatory='SDO', instrument='AIA', detector='AIA', measurement='171')
+        >>> hv = helioviewer.HelioviewerClient()
+        >>> filepath = hv.get_jp2_image('2012/07/03 14:30:00', observatory='SDO', instrument='AIA', detector='AIA', measurement='171')
+        >>> aia = sunpy.make_map(filepath)
         >>> aia.show()
         >>>
-        >>> data_sources = client.get_data_sources()
-        >>> lasco = client.get_jp2_image('2012/07/03 14:30:00', sourceId=data_sources['SOHO']['LASCO']['C2']['white-light']['sourceId'])
+        >>> data_sources = hv.get_data_sources()
+        >>> hv.get_jp2_image('2012/07/03 14:30:00', sourceId=data_sources['SOHO']['LASCO']['C2']['white-light']['sourceId'])
         """
         params = {
             "action": "getJP2Image",
@@ -126,9 +129,7 @@ class HelioviewerClient:
         if 'jpip' in kwargs:
             return self._get_json(params)
     
-        filepath = self._get_file(params, directory)
-    
-        return sunpy.make_map(filepath)
+        return self._get_file(params, directory)
     
     def take_screenshot(self, date, image_scale, layers, directory=None, 
                         **kwargs):
