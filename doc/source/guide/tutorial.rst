@@ -23,9 +23,11 @@ Try typing the below example into your interactive Python shell::
     aia = sunpy.make_map(sunpy.AIA_171_IMAGE)
     aia.show(cmap=cm.hot, norm=colors.Normalize(1, 2048))
 
-If everything has been configured properly you should see a standard-looking
-AIA 171 image with a colorbar on the right-hand side and a title and some 
+If everything has been configured properly you should see an AIA image with
+a red colormap, a colorbar on the right-hand side and a title and some 
 labels.
+
+.. image:: ../images/plotting_ex1.png
 
 There is lot going on here, but we will walk you through the example. Briefly,
 in the first few lines we are just importing SunPy and a couple other plotting
@@ -54,6 +56,8 @@ A simple example on how to use the color maps provided by SunPy: ::
 
     # you can also get a visual representation of all of the color tables 
     cm.show_colormaps()
+
+.. image:: ../images/plotting_ex2.png
 
 2. Solar Physical Constants
 ---------------------------
