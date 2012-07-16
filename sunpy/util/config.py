@@ -65,25 +65,53 @@ def _get_configdir():
 def _fix_filepaths(config):
     """Converts relative filepaths to absolute filepaths"""
     # Filepath config parameters
-    filepaths = [('downloads', 'download_dir')]
-
+    filepaths = [
+        ('downloads', 'download_dir')
+    ]
+    
+    # Parse working_dir
+    working_dir = _expand_filepath(config.get("general", "working_dir"))
+    config.set('general', 'working_dir', working_dir)
+    
     for f in filepaths:
         val = config.get(*f)
         
-        # Check for /tmp
-        if val == "/tmp":
-            val = tempfile.gettempdir()
+        filepath = _expand_filepath(val, working_dir)
+        
+        # Create dir if it doesn't already exist
+        if not os.path.isdir(filepath):
+            os.makedirs(filepath)
 
-        # Expand filepaths
-        params = f + (os.path.abspath(os.path.expanduser(val)),)
+        # Replace config value with full filepath
+        params = f + (filepath,)
         config.set(*params)
+        
+def _expand_filepath(filepath, working_dir=""):
+    """Checks a filepath and expands it if necessary"""
+    # Expand home directory
+    if filepath[0] == "~":
+        return os.path.abspath(os.path.expanduser(filepath))
+    # Check for /tmp
+    elif filepath == "/tmp":
+        return tempfile.gettempdir()
+    # Relative filepaths
+    elif not filepath.startswith("/"):
+        return os.path.join(working_dir, filepath)    
+    # Absolute filepath
+    else:
+        return filepath
 
 def read_configfile():
     """
     Read the sunpyrc configuration file. If one does not exists in the user's
     home directory then read in the defaults from module
     """
-    config = ConfigParser.ConfigParser()
+    defaults = {
+        "working_dir": os.path.join(_get_home(), "sunpy"),
+        "download_dir": "data"
+    }
+    
+    config = ConfigParser.SafeConfigParser(defaults)
     
     # determine location of config file
     config_filename = 'sunpyrc'
@@ -102,7 +130,11 @@ def read_configfile():
     
     # Use absolute filepaths and adjust OS-dependent paths as needed
     _fix_filepaths(config)
-        
+    
+    # check for sunpy working directory and create it if it doesn't exist
+    if not os.path.isdir(config.get('downloads', 'download_dir')):
+        os.mkdir(config.get('downloads', 'download_dir'))
+
     return config
 
 if __name__ == "__main__":
