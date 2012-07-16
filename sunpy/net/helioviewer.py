@@ -66,7 +66,12 @@ class HelioviewerClient:
         }
         params.update(kwargs)
         
-        return self._get_json(params)
+        response = self._get_json(params)
+        
+        # Cast date string to DateTime
+        response['date'] = sunpy.time.parse_time(response['date'])
+        
+        return response
     
     def get_jp2_image(self, date, directory=None, **kwargs):
         """
