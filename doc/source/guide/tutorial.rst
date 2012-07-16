@@ -37,8 +37,7 @@ parameters to specify a color map to use and how we wish to scale the image.
 Over the next few sections we will explain some of these features in more depth
 and then move onto more other modules included in SunPy.
 
-Specifying a Colormap
-^^^^^^^^^^^^^^^^^^^^^
+**Specifying a Colormap**
 
 There are a number of color maps defined in SunPy which are used for data from 
 particular missions (e.g. SDO/AIA). 
@@ -151,11 +150,8 @@ the API using the same parameters one would use when making a web request.
 Nearly all requests require the user to specify the data they are interested in
 and this can be done using one of two methods:
 
-1. Call "get_data_sources()" to get a list of the data that
-is available, and use the source id numbers referenced in the result to
-refer to a particular dataset, or,
-2. Specify the four components of a Helioviewer.org data source or layer:
-observatory, instrument, detector and measurement.
+1. Call "get_data_sources()" to get a list of the data that is available, and use the source id numbers referenced in the result to refer to a particular dataset, or,
+2. Specify the four components of a Helioviewer.org data source or layer: *observatory*, *instrument*, *detector* and *measurement*.
 
 Let's begin by getting a list of data sources available on the server
 using the get_datasources method::
