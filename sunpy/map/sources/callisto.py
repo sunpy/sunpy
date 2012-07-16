@@ -345,6 +345,49 @@ class CallistoSpectrogram(np.ndarray):
         
         return super(CallistoSpectrogram, self).__getitem__(key)
 
+    @classmethod
+    def join_many(cls, spectrograms):
+        specs = sorted(spectrograms, key=lambda x: x.t_init)
+        data = specs[0]
+        for elem in specs[1:]:
+            data = data.join_spectro_time(elem)
+        return data
+
+    def _internal_time_to_x(self, tme):
+        return (tme - self.t_init) / self.t_delt
+
+    def join_spectro_time(self, other):
+        x = int(self._internal_time_to_x(other.t_init))
+        if not (0 <= x < self.t_res):
+            raise IndexError("Cannot stitch. %f" % x)
+        
+        # new = np.zeros((self.f_res, x + other.t_res), np.uint8)
+        # new[:, 0:x] = self[:, 0:x]
+        # new[:, x:] = other[:, :]
+
+        new = np.concatenate([self[:, 0:x], other], 1)
+        params = {
+            'header': self.header, # XXX
+            'time_axis': np.concatenate(
+                [self.time_axis, other.time_axis + self.t_delt * self.t_res]),
+            'freq_axis': self.freq_axis,
+            'start': self.start,
+            'end': other.end,
+            '_gstart': self._gstart,
+            't_delt': self.t_delt, # XXX
+            't_init': self.t_init,
+            't_label': self.t_label,
+            't_res': self.t_res + other.t_res, # XXX
+            'f_delt': self.f_delt, # XXX
+            'f_init': self.f_init,
+            'f_label': self.f_label,
+            'f_res': self.f_res, # XXX
+            'content': self.content
+
+        }
+
+        return self._new_with_params(new, params)
+
     def time_to_x(self, time):
         """ Return x-coordinate in spectrogram that corresponds to the
         passed datetime value. """
