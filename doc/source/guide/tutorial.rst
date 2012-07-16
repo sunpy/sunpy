@@ -138,7 +138,86 @@ non-interactive version of the main API::
 Note that specifying a path is optional and if you do not specify one the files
 will simply be downloaded into a temporary directory (e.g. /tmp/xyz).
 
-5. Graphical plot manipulation
+5. Querying Helioviewer.org
+---------------------------
+SunPy can be used to make several basic requests using the The `Helioviewer.org API <http://helioviewer.org/api/>`__
+including generating a PNG screenshot and downloading a `JPEG 2000 <http://wiki.helioviewer.org/wiki/JPEG_2000>`__
+image and loading it into a SunPy Map.
+
+To interact with the Helioviewer API, users first create a "HelioviewerClient"
+instance. The client instance can then be used to make various queries against
+the API using the same parameters one would use when making a web request.
+
+Nearly all requests require the user to specify the data they are interested in
+and this can be done using one of two methods:
+
+1. Call "get_data_sources()" to get a list of the data that
+is available, and use the source id numbers referenced in the result to
+refer to a particular dataset, or,
+2. Specify the four components of a Helioviewer.org data source or layer:
+observatory, instrument, detector and measurement.
+
+Let's begin by getting a list of data sources available on the server
+using the get_datasources method::
+
+    from sunpy.net.helioviewer import HelioviewerClient
+    
+    hv = HelioviewerClient()
+    datasources = hv.get_data_sources()
+    
+    # print a list of datasources and their associated ids
+    for observatory, instruments in datasources.items():
+        for inst, detectors in instruments.items():
+            for det, measurements in detectors.items():
+                for meas, params in measurements.items():
+                    print("%s %s: %d" % (observatory, params['nickname'], params['sourceId']))
+                    
+Suppose we next want to download a "screenshot" or preview image of the latest
+AIA 304 image available on Helioviewer.org. We could use the explicit 
+approach: ::
+
+    hv.take_screenshot('2099/01/01', 4.8, "[SDO,AIA,AIA,304,1,100]", x0=0, y0=0, width=512, height=512)
+
+Where 2.4 refers to the image resolution in arcseconds per pixel (larger values 
+mean lower resolution), x0 and y0 are the center points about which to focus
+and the width and height are the pixel values for the screenshot dimensions.
+
+The result is:
+
+.. image:: ../images/helioviewer_take_screenshot_ex1.png
+
+If we find that the source id for AIA 304 is is 13, we could make the same
+request using: ::
+    
+    hv.take_screenshot('2099/01/01', 4.8, "[13,1,100]", x0=0, y0=0, width=512, height=512)
+    
+Now suppose we wanted to create a composite screenshot with data from two 
+different AIA wavelengths and LASCO C2 coronagraph data. The layer string is
+extended to include the additional data sources, and opacity is throttled
+down for the second AIA layer so that it does not completely block out the
+lower layer: ::
+
+    hv.take_screenshot('2099/01/01', 6, "[SDO,AIA,AIA,304,1,100],[SDO,AIA,AIA,193,1,50],[SOHO,LASCO,C2,white-light,1,100]", x0=0, y0=0, width=768, height=768)
+
+The result looks like:
+
+.. image:: ../images/helioviewer_take_screenshot_ex2.png
+
+Next, let's see how we can download a JPEG 2000 image and load it into a SunPy
+Map object.
+
+The overall syntax is simila to the screenshot request, expect instead of
+specifying a single string to indicate which layers to use, here we
+can specify the values as separate keyword arguments: ::
+
+    aia = hv.get_jp2_image('2012/07/15 00:30:00', observatory='SDO', instrument='AIA', detector='AIA', measurement='171')
+    aia.show()
+
+For more information about using querying Helioviewer.org, see the Helioviewer.org
+API documentation at: `http://helioviewer.org/api/ <http://helioviewer.org/api/>`__.
+ 
+
+6. Graphical plot manipulation
 ------------------------------
 
 SunPy provides a basic GUI for plot manipulation which can be invoked interactively.
