@@ -328,7 +328,7 @@ class CallistoSpectrogram(np.ndarray):
             tl.set_rotation(30)
         figure.add_axes(axes)
         if colorbar:
-            figure.colorbar(im)
+            figure.colorbar(im).set_label("Intensity")
 
         for overlay in overlays:
             figure, axes = overlay(figure, axes)
