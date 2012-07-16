@@ -335,7 +335,7 @@ class CallistoSpectrogram(np.ndarray):
         return figure
 
     def __getitem__(self, key):
-        # XXX: Fix
+        # XXX: Fix step
         if isinstance(key, tuple):
             if isinstance(key[0], slice) and isinstance(key[1], slice):
                 x_range = [key[1].start, key[1].stop]
@@ -360,12 +360,20 @@ class CallistoSpectrogram(np.ndarray):
     def _internal_time_to_x(self, tme):
         return (tme - self.t_init) / self.t_delt
 
-    def join_spectro_time(self, other):
+    def join_spectro_time(self, other, unknown=None):
         x = int(self._internal_time_to_x(other.t_init))
-        if not (0 <= x <= self.t_res):
-            raise IndexError("Cannot stitch. %f" % x)
 
-        new = np.concatenate([self[:, 0:x], other], 1)
+        if not np.array_equal(self.freq_axis, other.freq_axis):
+            raise ValueError("Frequency axes do not agree.")
+
+        unknowns = max(0, x - self.t_res)
+        if unknowns and unknown is None:
+            raise ValueError("Times do not agree.")
+        
+        filler = np.zeros((self.f_res, unknowns))
+        filler[:] = unknown
+
+        new = np.concatenate([self[:, 0:x], filler, other], 1)
         params = {
             'header': self.header, # XXX
             'time_axis': np.concatenate(
