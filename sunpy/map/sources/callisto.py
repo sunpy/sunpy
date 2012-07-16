@@ -364,10 +364,6 @@ class CallistoSpectrogram(np.ndarray):
         x = int(self._internal_time_to_x(other.t_init))
         if not (0 <= x <= self.t_res):
             raise IndexError("Cannot stitch. %f" % x)
-        
-        # new = np.zeros((self.f_res, x + other.t_res), np.uint8)
-        # new[:, 0:x] = self[:, 0:x]
-        # new[:, x:] = other[:, :]
 
         new = np.concatenate([self[:, 0:x], other], 1)
         params = {
