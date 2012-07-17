@@ -358,16 +358,40 @@ class CallistoSpectrogram(np.ndarray):
         return super(CallistoSpectrogram, self).__getitem__(key)
 
     @classmethod
-    def join_many(cls, spectrograms):
+    def join_many(cls, spectrograms, arr=None):
+        if arr is None:
+            arr = np.array([], dtype=np.uint8)
         specs = sorted(spectrograms, key=lambda x: x.t_init)
         data = specs[0]
+        init = data.t_init
+
+        size = sum(sp.t_res for sp in specs)
+
+        xs = []
         for elem in specs[1:]:
-            data = data.join_spectro_time(elem)
-        return data
+            x = int((elem.t_init - init) / data.t_delt)
+            xs.append(x)
+            size -= (data.t_res - x)
+            init = elem.t_init
+
+        xs.append(specs[-1].shape[1])
+
+        arr.resize((data.shape[0], size))
+        sx = 0
+
+        for n, (x, elem) in enumerate(zip(xs, specs)):
+            if x > elem.shape[1]:
+                filler = np.zeros((data.f_res, x - elem.shape[1]))
+                filler[:] = 0
+                elem = np.concatenate([elem, filler], 1)
+            arr[:, sx:sx + x] = elem[:, :x]
+            sx += x
+        
+        return arr
 
     @classmethod
     def read_many(cls, names):
-        return cls.join_many(map(cls.read, names))
+        return map(cls.read, names)
 
     def _internal_time_to_x(self, tme):
         return (tme - self.t_init) / self.t_delt
