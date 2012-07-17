@@ -397,7 +397,7 @@ class CallistoSpectrogram(np.ndarray):
             't_delt': self.t_delt, # XXX
             't_init': self.t_init,
             't_label': self.t_label,
-            't_res': self.t_res + other.t_res, # XXX
+            't_res': x + other.t_res, # XXX
             'f_delt': self.f_delt, # XXX
             'f_init': self.f_init,
             'f_label': self.f_label,
