@@ -5,6 +5,7 @@ from __future__ import absolute_import
 
 import datetime
 
+from itertools import izip
 from copy import copy, deepcopy
 
 import numpy as np
@@ -286,20 +287,9 @@ class CallistoSpectrogram(np.ndarray):
     def show(self, *args, **kwargs):
         self.plot(*args, **kwargs).show()
 
-    def plot(self, overlays=[], colorbar=True, ratio=None, **matplotlib_args):
+    def plot(self, overlays=[], colorbar=True, **matplotlib_args):
         # [] as default argument is okay here because it is only read.
         # pylint: disable=W0102,R0914
-
-        # Resize the array to match the needed aspect ratio as good as
-        # possible. No interpolation is done, just frequency channels
-        # duplicated.
-        if ratio is not None:
-            size = self.shape[1] / ratio # pylint: disable=E1101
-            times = size / self.shape[0] # pylint: disable=E1101
-            data = repeat_lines(self, times)
-        else:
-            times = 1
-            data = np.array(self)
 
         figure = plt.figure(frameon=True)
         axes = figure.add_subplot(111)
@@ -366,15 +356,13 @@ class CallistoSpectrogram(np.ndarray):
         # XXX: This currently assumes all files are sampled with
         # the same sampling rate and have the same frequency
         # channels. Assumes time is linear.
-
-        # XXX: Make this return a spectrogram with the correct
-        # metadata.
-        if arr is None:
-            arr = np.array([], dtype=np.uint8)
-
         specs = sorted(spectrograms, key=lambda x: x.t_init)
         data = specs[0]
         init = data.t_init
+        
+        if arr is None:
+            arr = np.array([], dtype=max(sp.dtype for sp in specs)
+        )
 
         size = sum(sp.t_res for sp in specs)
 
@@ -400,9 +388,10 @@ class CallistoSpectrogram(np.ndarray):
         # We do that here so the user can pass a memory mapped
         # array if they'd like to.
         arr.resize((data.shape[0], size))
+        time_axis = np.zeros((size,))
         sx = 0
 
-        for n, (x, elem) in enumerate(zip(xs, specs)):
+        for x, elem in izip(xs, specs):
             if x > elem.shape[1]:
                 if nonlinear:
                     x = elem.shape[1]
@@ -413,9 +402,28 @@ class CallistoSpectrogram(np.ndarray):
                     filler[:] = 0
                     elem = np.concatenate([elem, filler], 1)
             arr[:, sx:sx + x] = elem[:, :x]
+            time_axis[sx:sx + x] = elem.time_axis[:x] + data.t_delt * sx
+            
             sx += x
-        
-        return arr
+        params = {
+            'header': data.header, # XXX
+            'time_axis': time_axis,
+            'freq_axis': data.freq_axis,
+            'start': data.start,
+            'end': specs[-1].end,
+            '_gstart': data._gstart,
+            't_delt': data.t_delt, # XXX
+            't_init': data.t_init,
+            't_label': data.t_label,
+            't_res': size, # XXX
+            'f_delt': data.f_delt, # XXX
+            'f_init': data.f_init,
+            'f_label': data.f_label,
+            'f_res': data.f_res, # XXX
+            'content': data.content,
+            'timedelta': data.timedelta,
+        }
+        return cls._new_with_params(arr, params)
 
     @classmethod
     def read_many(cls, names):
@@ -499,7 +507,7 @@ class CallistoSpectrogram(np.ndarray):
         tmp = (self - np.average(self, 1).reshape(self.shape[0], 1))
         # Get standard deviation at every point of time
         sdevs = np.asarray(np.std(tmp, 0))
-        
+
         # Get indices of values with lowest standard deviation.
         cand = sorted(xrange(self.shape[0]), key=lambda y: sdevs[y])
         # Only consider the best 5 %.
