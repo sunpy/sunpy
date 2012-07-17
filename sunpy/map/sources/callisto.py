@@ -128,14 +128,14 @@ class CallistoSpectrogram(np.ndarray):
         params = vars(self).copy()
 
         soffset = 0 if x_range.start is None else x_range.start
-        eoffset = self.t_res if x_range.end is None else x_range.end
+        eoffset = self.t_res if x_range.stop is None else x_range.stop
 
         fsoffset = 0 if y_range.start is None else y_range.start
-        feoffset = self.f_res if y_range.end is None else y_range.end
+        feoffset = self.f_res if y_range.stop is None else y_range.stop
         
         params.update({
-            'time_axis': self.time_axis[x_range.start:x_range.end:x_range.step],
-            'freq_axis': self.freq_axis[y_range.start:y_range.end:y_range.step],
+            'time_axis': self.time_axis[x_range.start:x_range.stop:x_range.step],
+            'freq_axis': self.freq_axis[y_range.start:y_range.stop:y_range.step],
             'start': self.start + soffset * self.timedelta,
             'end': self.start + eoffset * self.timedelta,
             'f_init': self.freq_axis[fsoffset],
