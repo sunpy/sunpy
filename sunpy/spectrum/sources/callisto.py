@@ -340,7 +340,6 @@ class CallistoSpectrogram(np.ndarray):
         return figure
 
     def __getitem__(self, key):
-        # XXX: Fix step
         if not isinstance(key, tuple):
             key = (key, slice(None, None, None))
 
@@ -499,8 +498,8 @@ class CallistoSpectrogram(np.ndarray):
         # Subtract average value from every frequency channel.
         tmp = (self - np.average(self, 1).reshape(self.shape[0], 1))
         # Get standard deviation at every point of time
-        sdevs = np.std(tmp, 0)
-
+        sdevs = np.asarray(np.std(tmp, 0))
+        
         # Get indices of values with lowest standard deviation.
         cand = sorted(xrange(self.shape[0]), key=lambda y: sdevs[y])
         # Only consider the best 5 %.
