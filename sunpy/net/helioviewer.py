@@ -73,7 +73,7 @@ class HelioviewerClient:
         
         return response
     
-    def get_jp2_image(self, date, directory=None, **kwargs):
+    def download_jp2(self, date, directory=None, **kwargs):
         """
         Downloads the JPEG 2000 that most closely matches the specified time and 
         data source.
@@ -103,18 +103,21 @@ class HelioviewerClient:
             
         Returns
         -------
-        out : Returns a map representation of the requested image or a URI if
-        "jpip" parameter is set to True.
+        out : string
+            Returns a filepath to the downloaded JPEG 2000 image or a URL if
+            the "jpip" parameter is set to True.
         
         Examples
         --------
+        >>> import sunpy
         >>> from sunpy.net import helioviewer
-        >>> client = helioviewer.HelioviewerClient()
-        >>> aia = client.get_jp2_image('2012/07/03 14:30:00', observatory='SDO', instrument='AIA', detector='AIA', measurement='171')
+        >>> hv = helioviewer.HelioviewerClient()
+        >>> filepath = hv.download_jp2('2012/07/03 14:30:00', observatory='SDO', instrument='AIA', detector='AIA', measurement='171')
+        >>> aia = sunpy.make_map(filepath)
         >>> aia.show()
         >>>
-        >>> data_sources = client.get_data_sources()
-        >>> lasco = client.get_jp2_image('2012/07/03 14:30:00', sourceId=data_sources['SOHO']['LASCO']['C2']['white-light']['sourceId'])
+        >>> data_sources = hv.get_data_sources()
+        >>> hv.download_jp2('2012/07/03 14:30:00', sourceId=data_sources['SOHO']['LASCO']['C2']['white-light']['sourceId'])
         """
         params = {
             "action": "getJP2Image",
@@ -126,19 +129,16 @@ class HelioviewerClient:
         if 'jpip' in kwargs:
             return self._get_json(params)
     
-        filepath = self._get_file(params, directory)
+        return self._get_file(params, directory)
     
-        return sunpy.make_map(filepath)
-    
-    def take_screenshot(self, date, image_scale, layers, directory=None, 
+    def download_png(self, date, image_scale, layers, directory=None, 
                         **kwargs):
-        """Creates a screenshot using the Helioviewer.org API and saves
-        the image to the hard disk.
+        """Downloads a PNG image using data from Helioviewer.org.
         
         Returns a single image containing all layers/image types requested. 
         If an image is not available for the date requested the closest 
         available image is returned. The region to be included in the 
-        screenshot may be specified using either the top-left and bottom-right 
+        image may be specified using either the top-left and bottom-right 
         coordinates in arc-seconds, or a center point in arc-seconds and a 
         width and height in pixels. See the Helioviewer.org API Coordinates 
         Appendix for more infomration about working with coordinates in 
@@ -175,25 +175,25 @@ class HelioviewerClient:
         y0 : float
             (Optional) The vertical offset from the center of the Sun.
         width : int
-            (Optional) Width of the screenshot in pixels (Maximum: 1920).
+            (Optional) Width of the image in pixels (Maximum: 1920).
         height : int
-            (Optional) Height of the screenshot in pixels (Maximum: 1200).
+            (Optional) Height of the image in pixels (Maximum: 1200).
         watermark
             (Optional) Whether or not the include the timestamps and the 
-            Helioviewer.org logo in the screenshot (Default=True).
+            Helioviewer.org logo in the image (Default=True).
             
         Returns
         -------
         out : string
-            filepath to the screenshot
+            filepath to the PNG image
             
         Examples
         --------
         >>> from sunpy.net.helioviewer import HelioviewerClient
         >>> hv = HelioviewerClient()
-        >>> hv.take_screenshot('2012/07/16 10:08:00', 2.4, "[SDO,AIA,AIA,171,1,100]", x0=0, y0=0, width=1024, height=1024)
+        >>> hv.download_png('2012/07/16 10:08:00', 2.4, "[SDO,AIA,AIA,171,1,100]", x0=0, y0=0, width=1024, height=1024)
         '/home/user/sunpy/data/2012_07_16_10_08_00_AIA_171.png
-        >>> hv.take_screenshot('2012/07/16 10:08:00', 4.8, "[SDO,AIA,AIA,171,1,100],[SOHO,LASCO,C2,white-light,1,100]", x1=-2800, x2=2800, y1=-2800, y2=2800, directory='~/Desktop')
+        >>> hv.download_png('2012/07/16 10:08:00', 4.8, "[SDO,AIA,AIA,171,1,100],[SOHO,LASCO,C2,white-light,1,100]", x1=-2800, x2=2800, y1=-2800, y2=2800, directory='~/Desktop')
         '/home/user/Desktop/2012_07_16_10_08_00_AIA_171__LASCO_C2.png'        
         """
         params = {

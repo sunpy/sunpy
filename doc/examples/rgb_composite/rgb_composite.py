@@ -32,7 +32,7 @@ import datetime
 import sunpy
 import Ui_RGBComposite
 import numpy as np
-from sunpy.net import helioviewer as hv
+from sunpy.net.helioviewer import HelioviewerClient
 from sunpy.map import Map
 from sunpy.util.util import toggle_pylab
 from PyQt4 import QtGui, QtCore
@@ -52,6 +52,8 @@ class RGBCompositeImageApp(QtGui.QMainWindow):
         self.ui = Ui_RGBComposite.Ui_RGBComposite()
         self.ui.setupUi(self)
         
+        # Helioviewer client
+        self._hv = HelioviewerClient()
         self._datasources = None
         
         # Loaded images
@@ -73,7 +75,7 @@ class RGBCompositeImageApp(QtGui.QMainWindow):
         
     def _load_data_sources(self):
         """Downloads and displays latest images for default wavelengths"""
-        self._datasources = hv.get_data_sources()['SDO']['AIA']['AIA']
+        self._datasources = self._hv.get_data_sources()['SDO']['AIA']['AIA']
         sorted_datasources = sorted(self._datasources, key=int)
         
         for wl in sorted_datasources:
@@ -91,9 +93,9 @@ class RGBCompositeImageApp(QtGui.QMainWindow):
         now = datetime.datetime.utcnow()
         self.ui.dateTimeEdit.setDateTime(now)
         
-        r = hv.get_jp2_image(now, sourceId=self._datasources['304']['sourceId'])
-        g = hv.get_jp2_image(now, sourceId=self._datasources['193']['sourceId'])
-        b = hv.get_jp2_image(now, sourceId=self._datasources['171']['sourceId'])
+        r = self._hv.download_jp2(now, sourceId=self._datasources['304']['sourceId'])
+        g = self._hv.download_jp2(now, sourceId=self._datasources['193']['sourceId'])
+        b = self._hv.download_jp2(now, sourceId=self._datasources['171']['sourceId'])
         
         self.red = sunpy.make_map(r)
         self.green = sunpy.make_map(g)
@@ -194,9 +196,9 @@ class RGBCompositeImageApp(QtGui.QMainWindow):
         """Updates the images when the date is changed"""
         dt = qdatetime.toPyDateTime()
 
-        r = hv.get_jp2_image(dt, sourceId=self._datasources['304']['sourceId'])
-        g = hv.get_jp2_image(dt, sourceId=self._datasources['193']['sourceId'])
-        b = hv.get_jp2_image(dt, sourceId=self._datasources['171']['sourceId'])
+        r = self._hv.download_jp2(dt, sourceId=self._datasources['304']['sourceId'])
+        g = self._hv.download_jp2(dt, sourceId=self._datasources['193']['sourceId'])
+        b = self._hv.download_jp2(dt, sourceId=self._datasources['171']['sourceId'])
         
         self.red = sunpy.make_map(r)
         self.green = sunpy.make_map(g)
@@ -228,7 +230,7 @@ class SunPyPlot(FigureCanvas):
         #FigureCanvas.__init__(self, self.figure)
         
         self.figure = Figure()
-        self._map.plot_simple(figure=self.figure, **matplot_args)
+        self._map.plot(figure=self.figure, basic_plot=True, **matplot_args)
         self.axes = self.figure.gca()
         FigureCanvas.__init__(self, self.figure)
         
@@ -313,7 +315,7 @@ class RGBCompositeMap(sunpy.MapCube):
         return self.__class__(*resampled)
         
     @toggle_pylab
-    def plot_simple(self, figure=None, **matplot_args):
+    def plot(self, figure=None, basic_plot=None, **matplot_args):
         """Plots the map object using matplotlib
         
         Parameters
