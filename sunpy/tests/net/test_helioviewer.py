@@ -38,11 +38,10 @@ class TestHelioviewerClient:
         
         assert im1 == im2
         
-    def test_get_jp2_image(self):
+    def test_download_jp2(self):
         """Tests getJP2Image API method"""
-        im = self.client.get_jp2_image('2020/01/01', observatory='SOHO', 
-                                       instrument='MDI', detector='MDI',
-                                       measurement='continuum')
-        
-        assert isinstance(im, sunpy.Map)
+        filepath = self.client.download_jp2('2020/01/01', observatory='SOHO', 
+                                            instrument='MDI', detector='MDI',
+                                            measurement='continuum')
+        assert isinstance(sunpy.make_map(filepath), sunpy.Map)
     
