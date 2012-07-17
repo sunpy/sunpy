@@ -336,21 +336,21 @@ class CallistoSpectrogram(np.ndarray):
 
     def __getitem__(self, key):
         # XXX: Fix step
-        if isinstance(key, tuple):
-            if isinstance(key[0], slice) and isinstance(key[1], slice):
-                return self.slice(key[0], key[1])
-            elif isinstance(key[1], slice):
-                return Spectrum( # XXX: Right class
-                    super(CallistoSpectrogram, self).__getitem__(key),
-                    self.time_axis[key[1].start:key[1].stop:key[1].step]
-                )
-            elif isinstance(key[0], slice):
-                return Spectrum(
-                    super(CallistoSpectrogram, self).__getitem__(key),
-                    self.freq_axis[key[0].start:key[0].stop:key[0].step]
-                )
+        if not isinstance(key, tuple):
+            key = (key, slice(None, None, None))
 
-
+        if isinstance(key[0], slice) and isinstance(key[1], slice):
+            return self.slice(key[0], key[1])
+        elif isinstance(key[1], slice):
+            return Spectrum( # XXX: Right class
+                super(CallistoSpectrogram, self).__getitem__(key),
+                self.time_axis[key[1].start:key[1].stop:key[1].step]
+            )
+        elif isinstance(key[0], slice):
+            return Spectrum(
+                super(CallistoSpectrogram, self).__getitem__(key),
+                self.freq_axis[key[0].start:key[0].stop:key[0].step]
+            )
         
         return super(CallistoSpectrogram, self).__getitem__(key)
 
