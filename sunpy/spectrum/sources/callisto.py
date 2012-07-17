@@ -281,6 +281,9 @@ class CallistoSpectrogram(np.ndarray):
         # pylint: disable=E1101
         return self.shape[1] % (ratio * self.shape[0]) == 0
 
+    def show(self, *args, **kwargs):
+        self.plot(*args, **kwargs).show()
+
     def plot(self, overlays=[], colorbar=True, ratio=None, **matplotlib_args):
         # [] as default argument is okay here because it is only read.
         # pylint: disable=W0102,R0914
