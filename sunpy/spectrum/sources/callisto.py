@@ -358,7 +358,7 @@ class CallistoSpectrogram(np.ndarray):
         return super(CallistoSpectrogram, self).__getitem__(key)
 
     @classmethod
-    def join_many(cls, spectrograms, arr=None):
+    def join_many(cls, spectrograms, arr=None, nonlinear=True):
         if arr is None:
             arr = np.array([], dtype=np.uint8)
         specs = sorted(spectrograms, key=lambda x: x.t_init)
@@ -371,7 +371,12 @@ class CallistoSpectrogram(np.ndarray):
         for elem in specs[1:]:
             x = int((elem.t_init - init) / data.t_delt)
             xs.append(x)
-            size -= (data.t_res - x)
+            diff = (data.t_res - x)
+            if nonlinear:
+                size -= max(0, diff)
+            else:
+                size -= diff
+            
             init = elem.t_init
 
         xs.append(specs[-1].shape[1])
@@ -381,9 +386,12 @@ class CallistoSpectrogram(np.ndarray):
 
         for n, (x, elem) in enumerate(zip(xs, specs)):
             if x > elem.shape[1]:
-                filler = np.zeros((data.f_res, x - elem.shape[1]))
-                filler[:] = 0
-                elem = np.concatenate([elem, filler], 1)
+                if nonlinear:
+                    x = elem.shape[1]
+                else:
+                    filler = np.zeros((data.f_res, x - elem.shape[1]))
+                    filler[:] = 0
+                    elem = np.concatenate([elem, filler], 1)
             arr[:, sx:sx + x] = elem[:, :x]
             sx += x
         
