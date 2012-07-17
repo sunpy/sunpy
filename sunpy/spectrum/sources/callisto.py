@@ -14,6 +14,7 @@ from matplotlib import pyplot as plt
 from matplotlib.ticker import FuncFormatter, MaxNLocator
 
 from sunpy.time import parse_time
+from sunpy.spectrum.spectrum import Spectrum
 
 # This should not be necessary, as observations do not take more than a day
 # but it is used for completeness' and extendibility's sake.
@@ -124,7 +125,7 @@ class CallistoSpectrogram(np.ndarray):
     def slice(self, y_range, x_range):
         """ Return new spectrogram reduced to the values passed
         as slices. """
-        data = super(CallistoSpectrogram, self).__getitem__([x_range, y_range])
+        data = super(CallistoSpectrogram, self).__getitem__([y_range, x_range])
         params = vars(self).copy()
 
         soffset = 0 if x_range.start is None else x_range.start
@@ -338,6 +339,18 @@ class CallistoSpectrogram(np.ndarray):
         if isinstance(key, tuple):
             if isinstance(key[0], slice) and isinstance(key[1], slice):
                 return self.slice(key[0], key[1])
+            elif isinstance(key[1], slice):
+                return Spectrum( # XXX: Right class
+                    super(CallistoSpectrogram, self).__getitem__(key),
+                    self.time_axis[key[1].start:key[1].stop:key[1].step]
+                )
+            elif isinstance(key[0], slice):
+                return Spectrum(
+                    super(CallistoSpectrogram, self).__getitem__(key),
+                    self.freq_axis[key[0].start:key[0].stop:key[0].step]
+                )
+
+
         
         return super(CallistoSpectrogram, self).__getitem__(key)
 
@@ -373,7 +386,7 @@ class CallistoSpectrogram(np.ndarray):
         params = {
             'header': self.header, # XXX
             'time_axis': np.concatenate(
-                [self.time_axis[:x], other.time_axis + self.t_delt * self.t_res]),
+                [self.time_axis[:x], other.time_axis + self.t_delt * x]),
             'freq_axis': self.freq_axis,
             'start': self.start,
             'end': other.end,
