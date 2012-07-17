@@ -10,8 +10,6 @@ from copy import copy, deepcopy
 import numpy as np
 import pyfits
 
-from scipy import interpolate
-
 from matplotlib import pyplot as plt
 from matplotlib.ticker import FuncFormatter, MaxNLocator
 
