@@ -56,8 +56,8 @@ A simple example on how to use the color maps provided by SunPy: ::
 
     # you can also get a visual representation of all of the color tables 
     cm.show_colormaps()
-
 .. image:: ../images/plotting_ex2.png
+
 
 2. Solar Physical Constants
 ---------------------------
