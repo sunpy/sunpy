@@ -10,6 +10,8 @@ from copy import copy, deepcopy
 import numpy as np
 import pyfits
 
+from scipy import interpolate
+
 from matplotlib import pyplot as plt
 from matplotlib.ticker import FuncFormatter, MaxNLocator
 
@@ -42,6 +44,8 @@ def parse_header_time(date, time):
 
 
 # XXX: Probably make base class.
+# XXX: t_res and f_res are probably redundant because they are in
+# .shape
 class CallistoSpectrogram(np.ndarray):
     # Contrary to what pylint may think, this is not an old-style class.
     # pylint: disable=E1002,W0142,R0902
@@ -359,8 +363,18 @@ class CallistoSpectrogram(np.ndarray):
 
     @classmethod
     def join_many(cls, spectrograms, arr=None, nonlinear=True):
+        # XXX: Only load header and load contents of files
+        # on demand.
+
+        # XXX: This currently assumes all files are sampled with
+        # the same sampling rate and have the same frequency
+        # channels. Assumes time is linear.
+
+        # XXX: Make this return a spectrogram with the correct
+        # metadata.
         if arr is None:
             arr = np.array([], dtype=np.uint8)
+
         specs = sorted(spectrograms, key=lambda x: x.t_init)
         data = specs[0]
         init = data.t_init
@@ -372,15 +386,22 @@ class CallistoSpectrogram(np.ndarray):
             x = int((elem.t_init - init) / data.t_delt)
             xs.append(x)
             diff = (data.t_res - x)
+
+            # If we leave out undefined values, we do not want to
+            # add values here if x > t_res.
             if nonlinear:
                 size -= max(0, diff)
             else:
                 size -= diff
-            
+
             init = elem.t_init
 
+        # The non existing element after the last one starts after
+        # the last one. Needed to keep implementation below sane.
         xs.append(specs[-1].shape[1])
 
+        # We do that here so the user can pass a memory mapped
+        # array if they'd like to.
         arr.resize((data.shape[0], size))
         sx = 0
 
@@ -389,6 +410,8 @@ class CallistoSpectrogram(np.ndarray):
                 if nonlinear:
                     x = elem.shape[1]
                 else:
+                    # If we want to stay linear, fill up the missing
+                    # pixels with placeholder zeros.
                     filler = np.zeros((data.f_res, x - elem.shape[1]))
                     filler[:] = 0
                     elem = np.concatenate([elem, filler], 1)
