@@ -13,17 +13,7 @@ import pyfits
 from bs4 import BeautifulSoup
 
 from sunpy.time import parse_time
-from sunpy.spectrum.spectrogram import LinearTimeSpectrogram
-
-# This should not be necessary, as observations do not take more than a day
-# but it is used for completeness' and extendibility's sake.
-SECONDS_PER_DAY = 86400
-
-# Used for COPY_PROPERTIES
-REFERENCE = 0
-COPY = 1
-DEEPCOPY = 2
-
+from sunpy.spectrum.spectrogram import LinearTimeSpectrogram, REFERENCE
 
 TIME_STR = "%Y%m%d%H%M%S"
 DEFAULT_URL = 'http://soleil.i4ds.ch/solarradio/data/2002-20yy_Callisto/'
