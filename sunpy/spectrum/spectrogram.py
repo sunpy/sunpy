@@ -61,7 +61,7 @@ class Spectrogram(np.ndarray):
     def slice(self, y_range, x_range):
         """ Return new spectrogram reduced to the values passed
         as slices. """
-        data = super(CallistoSpectrogram, self).__getitem__([y_range, x_range])
+        data = super(Spectrogram, self).__getitem__([y_range, x_range])
         params = vars(self).copy()
 
         soffset = 0 if x_range.start is None else x_range.start
@@ -294,29 +294,38 @@ class LinearTimeSpectrogram(Spectrogram):
 
         self.timedelta = datetime.timedelta(seconds=self.t_delt)
 
+    @staticmethod
+    def make_array(shape):
+        return np.zeros(shape)
+
+    @staticmethod
+    def memmap(filename):
+        return (
+            lambda shape: np.memmap(filename, mode="write", shape=shape)
+        )
+
     @classmethod
-    def join_many(cls, spectrograms, arr=None, nonlinear=True):
+    def join_many(cls, spectrograms, mk_arr=None, nonlinear=True):
         # XXX: Only load header and load contents of files
         # on demand.
 
         # XXX: This currently assumes all files are sampled with
         # the same sampling rate and have the same frequency
         # channels.
+        if mk_arr is None:
+            mk_arr = cls.make_array
+
         specs = sorted(spectrograms, key=lambda x: x.t_init)
         data = specs[0]
         init = data.t_init
         
-        if arr is None:
-            arr = np.array([], dtype=max(sp.dtype for sp in specs)
-        )
-
-        size = sum(sp.t_res for sp in specs)
+        size = sum(sp.shape[1] for sp in specs)
 
         xs = []
         for elem in specs[1:]:
             x = int((elem.t_init - init) / data.t_delt)
             xs.append(x)
-            diff = (data.t_res - x)
+            diff = (data.shape[1] - x)
 
             # If we leave out undefined values, we do not want to
             # add values here if x > t_res.
@@ -333,7 +342,7 @@ class LinearTimeSpectrogram(Spectrogram):
 
         # We do that here so the user can pass a memory mapped
         # array if they'd like to.
-        arr.resize((data.shape[0], size))
+        arr = mk_arr((data.shape[0], size))
         time_axis = np.zeros((size,))
         sx = 0
 
