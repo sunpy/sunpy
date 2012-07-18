@@ -31,9 +31,6 @@ COPY = 1
 DEEPCOPY = 2
 
 
-# XXX: Probably make base class.
-# XXX: t_res and f_res are probably redundant because they are in
-# .shape
 class Spectrogram(np.ndarray):
     # Contrary to what pylint may think, this is not an old-style class.
     # pylint: disable=E1002,W0142,R0902
@@ -78,8 +75,6 @@ class Spectrogram(np.ndarray):
             'freq_axis': self.freq_axis[y_range.start:y_range.stop:y_range.step],
             'start': self.start + soffset * self.timedelta,
             'end': self.start + eoffset * self.timedelta,
-            'f_init': self.freq_axis[fsoffset], # XXX
-
         })
         return self._new_with_params(data, params)
 
@@ -376,11 +371,8 @@ class LinearTimeSpectrogram(Spectrogram):
         passed datetime value. """
         # This is impossible for frequencies because that mapping
         # is not injective.
-        # XXX: This assumes time is linear. As we read it from the
-        # axes table, it might not be.
         diff = time - self.start
         diff_s = SECONDS_PER_DAY * diff.days + diff.seconds
         td_s = SECONDS_PER_DAY * self.timedelta.days  + self.timedelta.seconds
-        # time - start = k * timedelta
         k = diff_s / td_s
         return round(k * self.shape[1])
