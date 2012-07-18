@@ -126,19 +126,19 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         # Swap dimensions so x-axis is always time.
         if self.swapped:
             t_delt = header["CDELT2"]
-            t_init = header["CRVAL2"]
+            t_init = header["CRVAL2"] - t_delt * header["CRPIX2"]
             t_label = header["CTYPE2"]
 
             f_delt = header["CDELT1"]
-            f_init = header["CRVAL1"]
+            f_init = header["CRVAL1"] - t_delt * header["CRPIX1"]
             f_label = header["CTYPE1"]  
         else:
             t_delt = header["CDELT1"]
-            t_init = header["CRVAL1"]
+            t_init = header["CRVAL1"] - t_delt * header["CRPIX1"]
             t_label = header["CTYPE1"]
 
             f_delt = header["CDELT2"]
-            f_init = header["CRVAL2"]
+            f_init = header["CRVAL2"] - t_delt * header["CRPIX2"]
             f_label = header["CTYPE2"]
 
         # Table may contain the axes data. If it does, the other way of doing
