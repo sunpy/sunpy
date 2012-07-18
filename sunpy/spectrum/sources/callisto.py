@@ -6,20 +6,13 @@ from __future__ import absolute_import
 import datetime
 import urllib2
 
-from itertools import izip
-from copy import copy, deepcopy
 
 import numpy as np
 import pyfits
 
 from bs4 import BeautifulSoup
 
-from matplotlib import pyplot as plt
-from matplotlib.ticker import FuncFormatter, MaxNLocator
-
 from sunpy.time import parse_time
-from sunpy.util.util import to_signed
-from sunpy.spectrum.spectrum import Spectrum
 from sunpy.spectrum.spectrogram import LinearTimeSpectrogram
 
 # This should not be necessary, as observations do not take more than a day
@@ -68,9 +61,6 @@ def parse_header_time(date, time):
     return parse_time(date)
 
 
-# XXX: Probably make base class.
-# XXX: t_res and f_res are probably redundant because they are in
-# .shape
 class CallistoSpectrogram(LinearTimeSpectrogram):
     # Contrary to what pylint may think, this is not an old-style class.
     # pylint: disable=E1002,W0142,R0902
@@ -79,7 +69,8 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
     # copied to maintain the object and how to handle them.
     COPY_PROPERTIES = LinearTimeSpectrogram.COPY_PROPERTIES + [
         ('header', REFERENCE),
-        ('content', REFERENCE)
+        ('content', REFERENCE),
+        ('axes_header', REFERENCE)
     ]
 
     INSTRUMENTS = set(['BIR'])
@@ -107,11 +98,11 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         header = self.header.copy()
 
         if self.swapped:
-            header['NAXIS2'] = self.t_res
-            header['NAXIS1'] = self.f_res
+            header['NAXIS2'] = self.shape[1] # pylint: disable=E1101
+            header['NAXIS1'] = self.shape[0] # pylint: disable=E1101
         else:
-            header['NAXIS1'] = self.t_res
-            header['NAXIS2'] = self.f_res
+            header['NAXIS1'] = self.shape[1] # pylint: disable=E1101
+            header['NAXIS2'] = self.shape[0] # pylint: disable=E1101
         return header
 
     def __new__(cls, data, axes=None, header=None):
@@ -132,7 +123,7 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
     def __init__(self, data, axes, header):
         # Because of how object creation works, there is no avoiding
         # unused arguments in this case.
-        # pylint: disable=W0613        
+        # pylint: disable=W0613
         start = parse_header_time(
             header['DATE-OBS'], header.get('TIME-OBS', header.get('TIME$_OBS'))
         )
@@ -148,12 +139,16 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
             t_init = header["CRVAL2"]
             t_label = header["CTYPE2"]
 
+            f_delt = header["CDELT1"]
+            f_init = header["CRVAL1"]
             f_label = header["CTYPE1"]  
         else:
             t_delt = header["CDELT1"]
             t_init = header["CRVAL1"]
             t_label = header["CTYPE1"]
 
+            f_delt = header["CDELT2"]
+            f_init = header["CRVAL2"]
             f_label = header["CTYPE2"]
 
         # Table may contain the axes data. If it does, the other way of doing
@@ -175,13 +170,13 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         else:
             # Otherwise, assume it's linear.
             time_axis = \
-                np.linspace(0, self.t_res - 1) * self.t_delt + self.t_init
+                np.linspace(0, self.shape[1] - 1) * t_delt + t_init # pylint: disable=E1101
 
         if fq is not None:  
             freq_axis = np.squeeze(fq)
-        else:   
+        else:
             freq_axis = \
-                np.linspace(0, self.f_res - 1) * self.f_delt + self.f_init
+                np.linspace(0, self.shape[0] - 1) * f_delt + f_init # pylint: disable=E1101
 
         super(CallistoSpectrogram, self).__init__(
             data, time_axis, freq_axis, start, end,
@@ -190,7 +185,8 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         )
 
         self.header = header
-    
+        self.axes_header = axes.header
+
     @classmethod
     def is_datasource_for(cls, header):
         """ Check if class supports data from the given FITS file. """
