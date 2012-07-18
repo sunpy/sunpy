@@ -274,6 +274,21 @@ class Spectrogram(np.ndarray):
             (self.max() - self.min())
         )
 
+    def interpolate(self, time, frequency):
+        lfreq, lvalue = None, None
+        for freq, value in izip(self.freq_axis, self[:, time]):
+            if freq < frequency:
+                break
+            lfreq, lvalue = freq, value
+        else:
+            raise ValueError("Frequency not in interpolation range")
+        if lfreq is None:
+            raise ValueError("Frequency not in interpolation range")
+        diff = frequency - freq
+        ldiff = lfreq - frequency
+        return (ldiff * value + diff * lvalue) / (diff + ldiff)
+
+
 
 class LinearTimeSpectrogram(Spectrogram):
     COPY_PROPERTIES = Spectrogram.COPY_PROPERTIES + [
