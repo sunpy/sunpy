@@ -43,5 +43,11 @@ class TestHelioviewerClient:
         filepath = self.client.download_jp2('2020/01/01', observatory='SOHO', 
                                             instrument='MDI', detector='MDI',
                                             measurement='continuum')
-        assert isinstance(sunpy.make_map(filepath), sunpy.Map)
+        try:
+            map_ = sunpy.make_map(filepath)
+        except sunpy.io.jp2.MissingOpenJPEGBinaryError:
+            # We can't test JP2 decoding if binary is not available
+            pass
+        else:
+            assert isinstance(map_, sunpy.Map)
     
