@@ -4,12 +4,15 @@
 from __future__ import absolute_import
 
 import datetime
+import urllib2
 
 from itertools import izip
 from copy import copy, deepcopy
 
 import numpy as np
 import pyfits
+
+from bs4 import BeautifulSoup
 
 from matplotlib import pyplot as plt
 from matplotlib.ticker import FuncFormatter, MaxNLocator
@@ -25,6 +28,35 @@ SECONDS_PER_DAY = 86400
 REFERENCE = 0
 COPY = 1
 DEEPCOPY = 2
+
+
+TIME_STR = "%Y%m%d%H%M%S"
+DEFAULT_URL = 'http://soleil.i4ds.ch/solarradio/data/2002-20yy_Callisto/'
+_DAY = datetime.timedelta(days=1)
+
+def query(start, end, instrument=None, number=None, url=DEFAULT_URL):
+    day = datetime.datetime(start.year, start.month, start.day)
+    while day <= end:
+        directory = url + '%d/%02d/%02d/' % (day.year, day.month, day.day)
+        opn = urllib2.urlopen(directory)
+        soup = BeautifulSoup(opn)
+        for link in soup.find_all("a"):
+            href = link.get("href")
+            name = href.split('.')[0]
+            try:
+                inst, date, time, no = name.split('_')
+            except ValueError:
+                continue
+            point = datetime.datetime.strptime(date + time, TIME_STR)
+            if instrument is not None and instrument != inst:
+                continue
+
+            if number is not None and number != no:
+                continue
+
+            if start <= point <= end:
+                yield directory + href
+        day += _DAY
 
 
 def repeat_lines(data, times):
