@@ -537,7 +537,9 @@ class CallistoSpectrogram(np.ndarray):
 
         # Subtract average value from every frequency channel.
         tmp = (self - np.average(self, 1).reshape(self.shape[0], 1))
-        # Get standard deviation at every point of time
+        # Get standard deviation at every point of time.
+        # Need to convert because otherwise this class's __getitem__
+        # is used which assumes two-dimensionality.
         sdevs = np.asarray(np.std(tmp, 0))
 
         # Get indices of values with lowest standard deviation.
