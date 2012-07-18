@@ -18,6 +18,13 @@ from matplotlib import pyplot
 import numpy as np
 from itertools import izip, imap
 
+def to_signed(dtype):
+    if dtype.kind == "u":
+        if dtype.itemsize == 8:
+            raise ValueError("Cannot losslessy convert uint64 to int.")
+        dtype = "int%d" % (min(dtype.itemsize * 2 * 8, 64))
+    return np.dtype(dtype)
+
 def toggle_pylab(fn):
     """ A decorator to prevent functions from opening matplotlib windows
         unexpectedly when sunpy is run in interactive shells like ipython 
