@@ -115,9 +115,9 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         return np.asarray(data).view(cls)
     
     @classmethod
-    def read(cls, filename):
+    def read(cls, filename, **kwargs):
         """ Read in FITS file and return a new CallistoSpectrogram. """
-        fl = pyfits.open(filename)
+        fl = pyfits.open(filename, **kwargs)
         return cls(fl[0].data, fl[1], fl[0].header)
         
     def __init__(self, data, axes, header):
