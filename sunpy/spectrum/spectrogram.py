@@ -100,6 +100,8 @@ class Spectrogram(np.ndarray):
         self.time_axis = time_axis
         self.freq_axis = freq_axis
 
+        self.content = content
+
     def time_formatter(self, x, pos):
         """ This returns the label for the tick of value x at
         a specified pos on the time axis. """
@@ -167,8 +169,6 @@ class Spectrogram(np.ndarray):
         xa = axes.get_xaxis()
         ya = axes.get_yaxis()
 
-        # Set the tick labels to be looked up in the two axis arrays.
-        # If frequencies were scaled up, we need to reverse that here.
         xa.set_major_formatter(
             FuncFormatter(self.time_formatter)
         )
@@ -267,11 +267,11 @@ class Spectrogram(np.ndarray):
 
         return new
 
-    def normalize(self, min_, max_, dtype_=dtype('float32')):
+    def normalize(self, min_=0, max_=1, dtype_=np.dtype('float32')):
         data = self.astype(dtype_)
         return (
             min_ + (max_ - min_) * (data - self.min()) /
-            (self.max() - self.min()
+            (self.max() - self.min())
         )
 
 
