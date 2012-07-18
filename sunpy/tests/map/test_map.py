@@ -17,6 +17,8 @@ class TestMap:
         self.fits.verify('silentfix')
         
         # include full comment
+        fits_comment = self.fits[0].header.get_comment()
+        
         # PyFITS 2.x
         if isinstance(fits_comment[0], basestring):
             comments = [val for val in fits_comment]       
