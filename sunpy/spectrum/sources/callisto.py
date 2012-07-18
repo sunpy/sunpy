@@ -18,6 +18,7 @@ from matplotlib import pyplot as plt
 from matplotlib.ticker import FuncFormatter, MaxNLocator
 
 from sunpy.time import parse_time
+from sunpy.util.util import to_signed
 from sunpy.spectrum.spectrum import Spectrum
 
 # This should not be necessary, as observations do not take more than a day
@@ -330,7 +331,8 @@ class CallistoSpectrogram(np.ndarray):
             'origin': 'lower',
         }
         params.update(matplotlib_args)
-        im = axes.imshow(data, **params)
+        # XXX: This should not be necessary.
+        im = axes.imshow(np.array(self), **params)
         
         xa = axes.get_xaxis()
         ya = axes.get_yaxis()
@@ -338,12 +340,12 @@ class CallistoSpectrogram(np.ndarray):
         # Set the tick labels to be looked up in the two axis arrays.
         # If frequencies were scaled up, we need to reverse that here.
         xa.set_major_formatter(
-            FuncFormatter(lambda x, pos: self.time_formatter(x, pos))
+            FuncFormatter(self.time_formatter)
         )
 
         ya.set_major_locator(MaxNLocator(integer=True, steps=[1, 5, 10]))
         ya.set_major_formatter(
-            FuncFormatter(lambda x, pos: self.freq_formatter(x // times, pos))
+            FuncFormatter(self.freq_formatter)
         )
         
         axes.set_xlabel(self.t_label)
@@ -534,9 +536,9 @@ class CallistoSpectrogram(np.ndarray):
     def subtract_bg(self):
         """ Perform constant background subtraction. """
         # pylint: disable=E1101,E1103
-
+        data = self.astype(to_signed(self.dtype))
         # Subtract average value from every frequency channel.
-        tmp = (self - np.average(self, 1).reshape(self.shape[0], 1))
+        tmp = (data - np.average(self, 1).reshape(self.shape[0], 1))
         # Get standard deviation at every point of time.
         # Need to convert because otherwise this class's __getitem__
         # is used which assumes two-dimensionality.
