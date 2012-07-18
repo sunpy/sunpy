@@ -272,6 +272,13 @@ class Spectrogram(np.ndarray):
 
         return new
 
+    def normalize(self, min_, max_, dtype_=dtype('float32')):
+        data = self.astype(dtype_)
+        return (
+            min_ + (max_ - min_) * (data - self.min()) /
+            (self.max() - self.min()
+        )
+
 
 class LinearTimeSpectrogram(Spectrogram):
     COPY_PROPERTIES = Spectrogram.COPY_PROPERTIES + [
@@ -299,7 +306,7 @@ class LinearTimeSpectrogram(Spectrogram):
 
         # XXX: This currently assumes all files are sampled with
         # the same sampling rate and have the same frequency
-        # channels. Assumes time is linear.
+        # channels.
         specs = sorted(spectrograms, key=lambda x: x.t_init)
         data = specs[0]
         init = data.t_init
