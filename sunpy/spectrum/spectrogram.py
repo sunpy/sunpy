@@ -305,7 +305,8 @@ class LinearTimeSpectrogram(Spectrogram):
         )
 
     @classmethod
-    def join_many(cls, spectrograms, mk_arr=None, nonlinear=True):
+    def join_many(cls, spectrograms, mk_arr=None, nonlinear=True,
+        maxgap=None):
         # XXX: Only load header and load contents of files
         # on demand.
 
@@ -326,6 +327,9 @@ class LinearTimeSpectrogram(Spectrogram):
             x = int((elem.t_init - init) / data.t_delt)
             xs.append(x)
             diff = (data.shape[1] - x)
+
+            if maxgap is not None and diff > maxgap:
+                raise ValueError("Too large gap.")
 
             # If we leave out undefined values, we do not want to
             # add values here if x > t_res.
