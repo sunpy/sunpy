@@ -360,18 +360,22 @@ class LinearTimeSpectrogram(Spectrogram):
 
         specs = sorted(spectrograms, key=lambda x: x.t_init)
 
-        size = sum(sp.shape[1] for sp in specs)
         # Smallest time-delta becomes the common time-delta.
         min_delt = min(sp.t_delt for sp in specs)
+
+        specs = [sp.resample_time(min_delt) for sp in specs]
+        size = sum(sp.shape[1] for sp in specs)
 
         data = specs[0]
         init = data.t_init
 
         xs = []
+        last = data
         for elem in specs[1:]:
-            x = int((elem.t_init - init) / data.t_delt)
+            x = int((elem.t_init - last.t_init) / min_delt)
             xs.append(x)
-            diff = (data.shape[1] - x)
+            # XXX 
+            diff = (last.shape[1] - x)
 
             if maxgap is not None and diff > maxgap:
                 raise ValueError("Too large gap.")
@@ -383,7 +387,7 @@ class LinearTimeSpectrogram(Spectrogram):
             else:
                 size -= diff
 
-            init = elem.t_init
+            last = elem
 
         # The non existing element after the last one starts after
         # the last one. Needed to keep implementation below sane.
