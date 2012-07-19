@@ -86,7 +86,11 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         ('axes_header', REFERENCE)
     ]
 
-    INSTRUMENTS = set(['BIR'])
+    INSTRUMENTS = set([
+        'ALASKA', 'ALMATY', 'BIR', 'DARO', 'HB9SCT', 'HUMAIN',
+        'HURBANOVO', 'KASI', 'KENYA', 'KRIM', 'MALAYSIA', 'MRT1',
+        'MRT2', 'OOTY', 'OSRA', 'SWMC', 'TRIEST', 'UNAM'
+    ])
 
     def save(self, filepath):
         """ Save modified spectrogram back to filepath. """
