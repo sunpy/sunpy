@@ -14,7 +14,7 @@ import pyfits
 from bs4 import BeautifulSoup
 
 from sunpy.time import parse_time
-from sunpy.spectrum.spectrogram import LinearTimeSpectrogram, REFERENCE
+from sunpy.spectra.spectrogram import LinearTimeSpectrogram, REFERENCE
 
 TIME_STR = "%Y%m%d%H%M%S"
 DEFAULT_URL = 'http://soleil.i4ds.ch/solarradio/data/2002-20yy_Callisto/'
