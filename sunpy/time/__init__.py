@@ -63,6 +63,7 @@ def parse_time(time_string=None):
              "%Y-%b-%d",                # Example 2007-May-04
              "%Y-%m-%d",                # Example 2007-05-04
              "%Y/%m/%d",                # Example 2007/05/04
+             "%d-%b-%Y",                # Example 04-May-2007
              "%Y%m%d_%H%M%S"]           # Example 20070504_210812
         for time_format in time_format_list: 
             try: 

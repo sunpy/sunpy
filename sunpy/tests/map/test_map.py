@@ -17,7 +17,16 @@ class TestMap:
         self.fits.verify('silentfix')
         
         # include full comment
-        comment = "".join(self.fits[0].header.get_comment())
+        fits_comment = self.fits[0].header.get_comment()
+        
+        # PyFITS 2.x
+        if isinstance(fits_comment[0], basestring):
+            comments = [val for val in fits_comment]       
+        else:
+            # PyFITS 3.x
+            comments = [card.value for card in fits_comment]
+        comment = "".join(comments).strip()
+        
         self.fits[0].header.update('COMMENT', comment)
 
     def teardown_class(self):
