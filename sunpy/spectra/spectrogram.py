@@ -33,6 +33,7 @@ COPY = 1
 DEEPCOPY = 2
 
 
+# XXX: Find out why imshow(x) fails!
 class Spectrogram(np.ndarray):
     # Contrary to what pylint may think, this is not an old-style class.
     # pylint: disable=E1002,W0142,R0902
@@ -297,6 +298,59 @@ class Spectrogram(np.ndarray):
         ldiff = lfreq - frequency
         return (ldiff * value + diff * lvalue) / (diff + ldiff)
 
+    @staticmethod
+    def merge(items, key=lambda x: x):
+        indices = dict((n, 0) for n in xrange(len(items)))
+
+        while indices:
+            for n, idx in indices.iteritems():
+                item = items[n][idx]
+
+                value = key(item)
+
+                cur = (items[i][idx] for i, idx in indices.iteritems() if i != n)
+
+                # Value is biggest.
+                if all(value >= key(it) for it in cur):
+                    yield item
+                    indices[n] += 1
+                    break
+
+            if indices[n] == len(items[n]):
+                del indices[n]
+
+
+    def combine_frequencies(self, other):
+        delt = min(self.t_delt, other.t_delt)
+
+        one = self.resample_time(delt)
+        other = other.resample_time(delt)
+
+        x = (other.t_init - self.t_init) / delt
+
+        if x < 0:
+            other = other[:, -x:]
+        else:
+            one = one[:, x:]
+
+        length = min(one.shape[1], other.shape[1])
+        one = one[:, :length]
+        other = other[:, :length]
+
+        new = np.zeros((one.shape[0] + other.shape[0], length))
+
+        for n, (data, row) in enumerate(self.merge(
+            [
+                [(one, n) for n in xrange(one.shape[0])],
+                [(other, n) for n in xrange(other.shape[0])],
+            ],
+            key=lambda x: x[0].freq_axis[x[1]]
+        )):
+            new[n, :] = data[row, :]
+
+        # XXX: Add meta-data.
+        return new
+
 
 class LinearTimeSpectrogram(Spectrogram):
     # pylint: disable=E1002
@@ -438,3 +492,12 @@ class LinearTimeSpectrogram(Spectrogram):
         td_s = SECONDS_PER_DAY * self.timedelta.days  + self.timedelta.seconds
         k = diff_s / td_s
         return round(k * self.shape[1]) # pylint: disable=E1101
+
+    def slice(self, y_range, x_range):
+        """ Return new spectrogram reduced to the values passed
+        as slices. """
+        data = super(LinearTimeSpectrogram, self).slice(y_range, x_range)
+
+        soffset = 0 if x_range.start is None else x_range.start
+        data.t_init = data.t_init + data.t_delt * soffset
+        return data
