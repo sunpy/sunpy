@@ -19,7 +19,7 @@ from matplotlib.ticker import FuncFormatter, MaxNLocator
 
 from sunpy.time import parse_time
 from sunpy.util.util import to_signed
-from sunpy.spectrum.spectrum import Spectrum
+from sunpy.spectra.spectrum import Spectrum
 
 # This should not be necessary, as observations do not take more than a day
 # but it is used for completeness' and extendibility's sake.
