@@ -289,7 +289,6 @@ class Spectrogram(np.ndarray):
         return (ldiff * value + diff * lvalue) / (diff + ldiff)
 
 
-
 class LinearTimeSpectrogram(Spectrogram):
     COPY_PROPERTIES = Spectrogram.COPY_PROPERTIES + [
         ('t_delt', REFERENCE),
