@@ -14,6 +14,8 @@ import pyfits
 
 from bs4 import BeautifulSoup
 
+from scipy import ndimage
+
 from matplotlib import pyplot as plt
 from matplotlib.ticker import FuncFormatter, MaxNLocator
 
@@ -317,6 +319,27 @@ class LinearTimeSpectrogram(Spectrogram):
         return (
             lambda shape: np.memmap(filename, mode="write", shape=shape)
         )
+    
+    def resample_time(self, new_delt):
+        if self.t_delt == new_delt:
+            return self
+        factor = self.t_delt / new_delt
+        data = ndimage.zoom(self, (1, factor))
+        params = {
+            'time_axis': np.linspace(
+                self.time_axis[0], self.time_axis[-1], data.shape[1]),
+            'freq_axis': self.freq_axis,
+            'start': self.start,
+            'end': self.end,
+            '_gstart': self._gstart,
+            't_delt': new_delt,
+            't_init': self.t_init,
+            't_label': self.t_label,
+            'f_label': self.f_label,
+            'content': self.content,
+            'timedelta': datetime.timedelta(seconds=new_delt),
+        }
+        return self._new_with_params(data, params)
 
     @classmethod
     def join_many(cls, spectrograms, mk_arr=None, nonlinear=True,
@@ -335,6 +358,7 @@ class LinearTimeSpectrogram(Spectrogram):
         init = data.t_init
         
         size = sum(sp.shape[1] for sp in specs)
+        min_delt = min(sp.t_delt for sp in specs)
 
         xs = []
         for elem in specs[1:]:
