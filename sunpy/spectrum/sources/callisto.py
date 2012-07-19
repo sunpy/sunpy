@@ -3,6 +3,7 @@
 
 from __future__ import absolute_import
 
+import os
 import datetime
 import urllib2
 
@@ -19,6 +20,14 @@ TIME_STR = "%Y%m%d%H%M%S"
 DEFAULT_URL = 'http://soleil.i4ds.ch/solarradio/data/2002-20yy_Callisto/'
 _DAY = datetime.timedelta(days=1)
 
+def buffered_write(inp, outp, buffer_size):
+    while True:
+        read = inp.read(buffer_size)
+        if not read:
+            break
+        outp.write(read)
+
+
 def query(start, end, instrument=None, number=None, url=DEFAULT_URL):
     day = datetime.datetime(start.year, start.month, start.day)
     while day <= end:
@@ -33,6 +42,7 @@ def query(start, end, instrument=None, number=None, url=DEFAULT_URL):
             except ValueError:
                 continue
             point = datetime.datetime.strptime(date + time, TIME_STR)
+            opn.close()
             if instrument is not None and instrument != inst:
                 continue
 
@@ -43,6 +53,19 @@ def query(start, end, instrument=None, number=None, url=DEFAULT_URL):
                 yield directory + href
         day += _DAY
 
+
+def download(urls, directory):
+    paths = []
+    for url in urls:
+        _, filename = os.path.split(url)
+        path = os.path.join(directory, filename)
+        fd = open(path, 'w')
+        src = urllib2.urlopen(url)
+        buffered_write(src, fd, 4096)
+        fd.close()
+        src.close()
+        paths.append(path)
+    return paths
 
 def parse_header_time(date, time):
     """ Return datetime object from date and time fields of header. """
