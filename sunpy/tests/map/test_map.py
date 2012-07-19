@@ -27,6 +27,9 @@ class TestMap:
             comments = [card.value for card in fits_comment]
         comment = "".join(comments).strip()
         
+        # touch data to apply scaling up front
+        self.fits[0].data        
+        
         self.fits[0].header.update('COMMENT', comment)
 
     def teardown_class(self):
@@ -93,7 +96,18 @@ class TestMap:
         assert (self.map == self.fits[0].data).all()
 
     def test__original_header_comparison(self):
-        """Make sure the header is the same in pyfits and SunPy"""
+        """Make sure the header is the same in pyfits and SunPy.
+        
+        PyFITS makes a number of changes to the data and header when reading
+        it in including applying scaling and removing the comment from the
+        header cards to handle it separately.
+        
+        The manipulations in the setup_class method and here attempt to
+        level the playing field some so that the rest of the things that
+        should be the same can be tested.
+        
+        // Keith, July 2012
+        """
 
         # Access fits data once to apply scaling-related changes and update
         # header information in fits[0].header
@@ -108,9 +122,14 @@ class TestMap:
                 del fits_header[key]
             if key in map_header:
                 del map_header[key]
+                
+        # Remove empty field (newline?) that is added when data is accesed for first time
+        if '' in fits_header:
+            fits_header.pop('')
         
         for k,v in map_header.items():
             if v != fits_header[k]:
                 print k
-
+        
+        # NOTE: Fails if executed after other tests
         assert map_header == fits_header
