@@ -52,6 +52,11 @@ class Spectrogram(np.ndarray):
         ('timedelta', REFERENCE),
     ]
 
+    def get_params(self):
+        return dict(
+            (name, getattr(self, name)) for name, _ in self.COPY_PROPERTIES
+        )
+
     @classmethod
     def _new_with_params(cls, data, params):
         """ Implementation detail. """
@@ -64,10 +69,11 @@ class Spectrogram(np.ndarray):
         """ Return new spectrogram reduced to the values passed
         as slices. """
         data = super(Spectrogram, self).__getitem__([y_range, x_range])
-        params = vars(self).copy()
+        params = self.get_params()
 
         soffset = 0 if x_range.start is None else x_range.start
         eoffset = self.shape[1] if x_range.stop is None else x_range.stop # pylint: disable=E1101
+        eoffset -= 1
 
         fsoffset = 0 if y_range.start is None else y_range.start
         feoffset = self.shape[0] if y_range.stop is None else y_range.stop # pylint: disable=E1101
@@ -330,20 +336,14 @@ class LinearTimeSpectrogram(Spectrogram):
             return self
         factor = self.t_delt / new_delt
         data = ndimage.zoom(self, (1, factor))
-        params = {
+
+        params = self.get_params()
+        params.update({
             'time_axis': np.linspace(
                 self.time_axis[0], self.time_axis[-1], data.shape[1]),
-            'freq_axis': self.freq_axis,
-            'start': self.start,
-            'end': self.end,
-            '_gstart': self._gstart,
             't_delt': new_delt,
-            't_init': self.t_init,
-            't_label': self.t_label,
-            'f_label': self.f_label,
-            'content': self.content,
             'timedelta': datetime.timedelta(seconds=new_delt),
-        }
+        })
         return self._new_with_params(data, params)
 
     @classmethod
