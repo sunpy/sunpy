@@ -49,7 +49,6 @@ class Spectrogram(np.ndarray):
         ('t_label', REFERENCE),
         ('f_label', REFERENCE),
         ('content', REFERENCE),
-        ('timedelta', REFERENCE),
     ]
 
     def get_params(self):
@@ -304,6 +303,7 @@ class LinearTimeSpectrogram(Spectrogram):
     COPY_PROPERTIES = Spectrogram.COPY_PROPERTIES + [
         ('t_delt', REFERENCE),
         ('t_init', REFERENCE),
+        ('timedelta', REFERENCE),
     ]
      
     def __init__(self, data, time_axis, freq_axis, start, end,
