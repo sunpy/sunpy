@@ -300,24 +300,26 @@ class Spectrogram(np.ndarray):
 
     @staticmethod
     def merge(items, key=lambda x: x):
-        indices = dict((n, 0) for n in xrange(len(items)))
+        state = {}
+        for item in map(iter, items):
+            try:
+                first = item.next()
+            except StopIteration:
+                continue
+            else:
+                state[item] = (first, key(first))
 
-        while indices:
-            for n, idx in indices.iteritems():
-                item = items[n][idx]
-
-                value = key(item)
-
-                cur = (items[i][idx] for i, idx in indices.iteritems() if i != n)
-
+        while state:
+            for item, (value, tk) in state.iteritems():
                 # Value is biggest.
-                if all(value >= key(it) for it in cur):
-                    yield item
-                    indices[n] += 1
+                if all(tk >= k for it, (v, k) in state.iteritems() if it is not item):
+                    yield value
                     break
-
-            if indices[n] == len(items[n]):
-                del indices[n]
+            try:
+                n = item.next()
+                state[item] = (n, key(n))
+            except StopIteration:
+                del state[item]
 
 
     def combine_frequencies(self, other):
@@ -341,8 +343,8 @@ class Spectrogram(np.ndarray):
 
         for n, (data, row) in enumerate(self.merge(
             [
-                [(one, n) for n in xrange(one.shape[0])],
-                [(other, n) for n in xrange(other.shape[0])],
+                ((one, n) for n in xrange(one.shape[0])),
+                ((other, n) for n in xrange(other.shape[0])),
             ],
             key=lambda x: x[0].freq_axis[x[1]]
         )):
