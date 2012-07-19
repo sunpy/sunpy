@@ -131,5 +131,4 @@ class TestMap:
             if v != fits_header[k]:
                 print k
         
-        # NOTE: Fails if executed after other tests
         assert map_header == fits_header
