@@ -67,16 +67,18 @@ class Spectrogram(np.ndarray):
         params = vars(self).copy()
 
         soffset = 0 if x_range.start is None else x_range.start
-        eoffset = self.shape[1] if x_range.stop is None else x_range.stop
+        eoffset = self.shape[1] if x_range.stop is None else x_range.stop # pylint: disable=E1101
 
         fsoffset = 0 if y_range.start is None else y_range.start
-        feoffset = self.shape[0] if y_range.stop is None else y_range.stop
+        feoffset = self.shape[0] if y_range.stop is None else y_range.stop # pylint: disable=E1101
         
         params.update({
             'time_axis': self.time_axis[x_range.start:x_range.stop:x_range.step],
             'freq_axis': self.freq_axis[y_range.start:y_range.stop:y_range.step],
-            'start': self.start + soffset * self.timedelta,
-            'end': self.start + eoffset * self.timedelta,
+            'start': self.start + datetime.timedelta(
+                seconds=self.time_axis[soffset]),
+            'end': self.start + datetime.timedelta(
+                seconds=self.time_axis[eoffset]),
         })
         return self._new_with_params(data, params)
 
@@ -270,10 +272,10 @@ class Spectrogram(np.ndarray):
         return new
 
     def normalize(self, min_=0, max_=1, dtype_=np.dtype('float32')):
-        data = self.astype(dtype_)
+        data = self.astype(dtype_) # pylint: disable=E1101
         return (
-            min_ + (max_ - min_) * (data - self.min()) /
-            (self.max() - self.min())
+            min_ + (max_ - min_) * (data - self.min()) / # pylint: disable=E1101
+            (self.max() - self.min()) # pylint: disable=E1101
         )
 
     def interpolate(self, time, frequency):
@@ -292,6 +294,7 @@ class Spectrogram(np.ndarray):
 
 
 class LinearTimeSpectrogram(Spectrogram):
+    # pylint: disable=E1002
     COPY_PROPERTIES = Spectrogram.COPY_PROPERTIES + [
         ('t_delt', REFERENCE),
         ('t_init', REFERENCE),
@@ -321,6 +324,8 @@ class LinearTimeSpectrogram(Spectrogram):
         )
     
     def resample_time(self, new_delt):
+        """ Rescale image so that the difference in time between pixels is
+        new_delt seconds. """
         if self.t_delt == new_delt:
             return self
         factor = self.t_delt / new_delt
@@ -354,11 +359,13 @@ class LinearTimeSpectrogram(Spectrogram):
             mk_arr = cls.make_array
 
         specs = sorted(spectrograms, key=lambda x: x.t_init)
+
+        size = sum(sp.shape[1] for sp in specs)
+        # Smallest time-delta becomes the common time-delta.
+        min_delt = min(sp.t_delt for sp in specs)
+
         data = specs[0]
         init = data.t_init
-        
-        size = sum(sp.shape[1] for sp in specs)
-        min_delt = min(sp.t_delt for sp in specs)
 
         xs = []
         for elem in specs[1:]:
@@ -426,4 +433,4 @@ class LinearTimeSpectrogram(Spectrogram):
         diff_s = SECONDS_PER_DAY * diff.days + diff.seconds
         td_s = SECONDS_PER_DAY * self.timedelta.days  + self.timedelta.seconds
         k = diff_s / td_s
-        return round(k * self.shape[1])
+        return round(k * self.shape[1]) # pylint: disable=E1101
