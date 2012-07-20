@@ -460,9 +460,7 @@ class LinearTimeSpectrogram(Spectrogram):
         # is not injective.
         diff = time - self.start
         diff_s = SECONDS_PER_DAY * diff.days + diff.seconds
-        td_s = SECONDS_PER_DAY * self.timedelta.days  + self.timedelta.seconds
-        k = diff_s / td_s
-        return round(k * self.shape[1]) # pylint: disable=E1101
+        return diff_s // self.t_delt
 
     def combine_frequencies(self, other):
         delt = min(self.t_delt, other.t_delt)
