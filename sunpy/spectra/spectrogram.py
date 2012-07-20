@@ -79,7 +79,7 @@ class Spectrogram(np.ndarray):
         feoffset = self.shape[0] if y_range.stop is None else y_range.stop # pylint: disable=E1101
         
         params.update({
-            'time_axis': self.time_axis[x_range.start:x_range.stop:x_range.step],
+            'time_axis': self.time_axis[x_range.start:x_range.stop:x_range.step] - self.time_axis[soffset],
             'freq_axis': self.freq_axis[y_range.start:y_range.stop:y_range.step],
             'start': self.start + datetime.timedelta(
                 seconds=self.time_axis[soffset]),
