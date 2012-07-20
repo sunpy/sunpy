@@ -14,6 +14,7 @@ __all__ += julian.__all__
 __all__ += timerange.__all__
 
 
+# Mapping of time format codes to regular expressions.
 REGEX = {
     '%Y': '(?P<year>\d{4})',
     '%m': '(?P<month>\d{1,2})',
@@ -35,6 +36,9 @@ def _n_or_eq(a, b):
     return a is None or a == b
 
 def _regex_parse_time(inp, format):
+    # Parser for finding out the minute value so we can adjust the string
+    # from 24:00:00 to 00:00:00 the next day because strptime does not
+    # understand the former.
     for key, value in REGEX.iteritems():
         format = format.replace(key, value)
     match = re.match(format, inp)
