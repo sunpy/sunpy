@@ -31,6 +31,7 @@ def test_subtract_bg():
 
 def test_slice_time_axis():
 	spectrogram = mk_spec(np.zeros((200, 3600)))
-	new = spectrogram[:, 200:]
-	assert new.t_init == 200
-	assert np.array_equal(new.time_axis, np.linspace(0, 3399, 3400))
+	new = spectrogram[:, 59:]
+	assert new.t_init == 59
+	assert np.array_equal(new.time_axis, np.linspace(0, 3600 - 60, 3600 - 59))
+	assert new.start == datetime(2010, 10, 10, 0, 0, 59)
