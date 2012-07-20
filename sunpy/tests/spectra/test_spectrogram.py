@@ -32,17 +32,34 @@ def test_subtract_bg():
 
 
 def test_slice_time_axis():
-	spectrogram = mk_spec(np.zeros((200, 3600)))
+	rnd = np.random.rand(200, 3600)
+	spectrogram = mk_spec(rnd)
 	new = spectrogram[:, 59:]
+	assert new.shape == (200, 3600 - 59)
 	assert new.t_init == 59
 	assert np.array_equal(new.time_axis, np.linspace(0, 3600 - 60, 3600 - 59))
 	assert new.start == datetime(2010, 10, 10, 0, 0, 59)
+	assert np.array_equal(new, rnd[:, 59:])
 
 
 def test_slice_freq_axis():
-	spectrogram = mk_spec(np.zeros((200, 3600)))
+	rnd = np.random.rand(200, 3600)
+	spectrogram = mk_spec(rnd)
 	new = spectrogram[100:, :]
+	assert new.shape == (100, 3600)
 	assert np.array_equal(new.freq_axis, np.linspace(100, 199, 100))
+	assert np.array_equal(new, rnd[100:, :])
+
+def test_slice_both_axis():
+	rnd = np.random.rand(200, 3600)
+	spectrogram = mk_spec(rnd)
+	new = spectrogram[100:, 59:]
+	assert new.shape == (100, 3600 - 59)
+	assert new.t_init == 59
+	assert np.array_equal(new.time_axis, np.linspace(0, 3600 - 60, 3600 - 59))
+	assert new.start == datetime(2010, 10, 10, 0, 0, 59)
+	assert np.array_equal(new.freq_axis, np.linspace(100, 199, 100))
+	assert np.array_equal(new, rnd[100:, 59:])
 
 
 def test_time_to_x():
