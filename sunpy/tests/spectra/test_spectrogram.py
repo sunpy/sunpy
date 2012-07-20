@@ -34,21 +34,21 @@ def test_subtract_bg():
 def test_slice_time_axis():
 	rnd = np.random.rand(200, 3600)
 	spectrogram = mk_spec(rnd)
-	new = spectrogram[:, 59:]
-	assert new.shape == (200, 3600 - 59)
+	new = spectrogram[:, 59:3599]
+	assert new.shape == (200, 3600 - 59 - 1)
 	assert new.t_init == 59
-	assert np.array_equal(new.time_axis, np.linspace(0, 3600 - 60, 3600 - 59))
+	assert np.array_equal(new.time_axis, np.linspace(0, 3600 - 60 - 1, 3600 - 59 - 1))
 	assert new.start == datetime(2010, 10, 10, 0, 0, 59)
-	assert np.array_equal(new, rnd[:, 59:])
+	assert np.array_equal(new, rnd[:, 59:3599])
 
 
 def test_slice_freq_axis():
 	rnd = np.random.rand(200, 3600)
 	spectrogram = mk_spec(rnd)
-	new = spectrogram[100:, :]
-	assert new.shape == (100, 3600)
-	assert np.array_equal(new.freq_axis, np.linspace(100, 199, 100))
-	assert np.array_equal(new, rnd[100:, :])
+	new = spectrogram[100:150, :]
+	assert new.shape == (50, 3600)
+	assert np.array_equal(new.freq_axis, np.linspace(100, 149, 50))
+	assert np.array_equal(new, rnd[100:150, :])
 
 def test_slice_both_axis():
 	rnd = np.random.rand(200, 3600)
