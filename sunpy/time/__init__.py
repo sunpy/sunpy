@@ -16,11 +16,11 @@ __all__ += timerange.__all__
 
 REGEX = {
     '%Y': '(?P<year>\d{4})',
-    '%m': '(?P<month>\d{2})',
-    '%d': '(?P<day>\d{2})',
-    '%H': '(?P<hour>\d{2})',
-    '%M': '(?P<minute>\d{2})',
-    '%S': '(?P<second>\d{2})',
+    '%m': '(?P<month>\d{1,2})',
+    '%d': '(?P<day>\d{1,2})',
+    '%H': '(?P<hour>\d{1,2})',
+    '%M': '(?P<minute>\d{1,2})',
+    '%S': '(?P<second>\d{1,2})',
     '%f': '(?P<microsecond>\d+)',
     '%b': '(?P<month_str>[a-zA-Z]+)'
 }
@@ -40,6 +40,10 @@ def _regex_parse_time(inp, format):
     match = re.match(format, inp)
     if match is None:
         return None, None
+    try:
+        hour = match.group("hour")
+    except IndexError:
+        return inp, timedelta(days=0)
     if match.group("hour") == "24":
         if not all(_n_or_eq(_group_or_none(match, g), '00')
             for g in ["minute", "second", "microsecond"]
