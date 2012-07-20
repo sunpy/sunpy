@@ -45,11 +45,10 @@ class Spectrogram(np.ndarray):
         ('freq_axis', COPY),
         ('start', REFERENCE),
         ('end', REFERENCE),
-        ('_gstart', REFERENCE),
-        ('_gend', REFERENCE),
         ('t_label', REFERENCE),
         ('f_label', REFERENCE),
         ('content', REFERENCE),
+        ('t_init', REFERENCE),
     ]
 
     def get_params(self):
@@ -79,12 +78,16 @@ class Spectrogram(np.ndarray):
         feoffset = self.shape[0] if y_range.stop is None else y_range.stop # pylint: disable=E1101
         
         params.update({
-            'time_axis': self.time_axis[x_range.start:x_range.stop:x_range.step] - self.time_axis[soffset],
-            'freq_axis': self.freq_axis[y_range.start:y_range.stop:y_range.step],
+            'time_axis': self.time_axis[
+                x_range.start:x_range.stop:x_range.step
+            ] - self.time_axis[soffset],
+            'freq_axis': self.freq_axis[
+                y_range.start:y_range.stop:y_range.step],
             'start': self.start + datetime.timedelta(
                 seconds=self.time_axis[soffset]),
             'end': self.start + datetime.timedelta(
                 seconds=self.time_axis[eoffset]),
+            't_init': self.t_init + self.time_axis[soffset],
         })
         return self._new_with_params(data, params)
 
@@ -92,20 +95,17 @@ class Spectrogram(np.ndarray):
     def __new__(cls, data, *args, **kwargs):
         return np.asarray(data).view(cls)
 
-    def __init__(self, data, time_axis, freq_axis, start, end,
+    def __init__(self, data, time_axis, freq_axis, start, end, t_init,
         t_label="Time", f_label="Frequency", content=""):
         # Because of how object creation works, there is no avoiding
         # unused arguments in this case.
         self.start = start
         self.end = end
 
-        # Starting time of the whole measurement, the time axis is relative
-        # to this.
-        self._gstart = self.start
-        self._gend = self.end
-
         self.t_label = t_label
         self.f_label = f_label
+
+        self.t_init = t_init
 
         self.time_axis = time_axis
         self.freq_axis = freq_axis
@@ -119,7 +119,7 @@ class Spectrogram(np.ndarray):
         # pylint: disable=W0613
         try:
             return self.format_time(
-                self._gstart + datetime.timedelta(
+                self.start + datetime.timedelta(
                     seconds=self.time_axis[int(x)]
                 )
             )
@@ -322,38 +322,6 @@ class Spectrogram(np.ndarray):
                 del state[item]
 
 
-    def combine_frequencies(self, other):
-        delt = min(self.t_delt, other.t_delt)
-
-        one = self.resample_time(delt)
-        other = other.resample_time(delt)
-
-        x = (other.t_init - self.t_init) / delt
-
-        if x < 0:
-            other = other[:, -x:]
-        else:
-            one = one[:, x:]
-
-        length = min(one.shape[1], other.shape[1])
-        one = one[:, :length]
-        other = other[:, :length]
-
-        new = np.zeros((one.shape[0] + other.shape[0], length))
-
-        for n, (data, row) in enumerate(self.merge(
-            [
-                ((one, n) for n in xrange(one.shape[0])),
-                ((other, n) for n in xrange(other.shape[0])),
-            ],
-            key=lambda x: x[0].freq_axis[x[1]]
-        )):
-            new[n, :] = data[row, :]
-
-        # XXX: Add meta-data.
-        return new
-
-
 class LinearTimeSpectrogram(Spectrogram):
     # pylint: disable=E1002
     COPY_PROPERTIES = Spectrogram.COPY_PROPERTIES + [
@@ -366,11 +334,9 @@ class LinearTimeSpectrogram(Spectrogram):
         t_init, t_delt, t_label="Time", f_label="Frequency",
         content=""):
         super(LinearTimeSpectrogram, self).__init__(
-            data, time_axis, freq_axis, start, end, t_label, f_label,
+            data, time_axis, freq_axis, start, end, t_init, t_label, f_label,
             content
         )
-
-        self.t_init = t_init
         self.t_delt = t_delt
 
         self.timedelta = datetime.timedelta(seconds=self.t_delt)
@@ -474,7 +440,6 @@ class LinearTimeSpectrogram(Spectrogram):
             'freq_axis': data.freq_axis,
             'start': data.start,
             'end': specs[-1].end,
-            '_gstart': data._gstart,
             't_delt': data.t_delt, # XXX
             't_init': data.t_init,
             't_label': data.t_label,
@@ -495,11 +460,46 @@ class LinearTimeSpectrogram(Spectrogram):
         k = diff_s / td_s
         return round(k * self.shape[1]) # pylint: disable=E1101
 
-    def slice(self, y_range, x_range):
-        """ Return new spectrogram reduced to the values passed
-        as slices. """
-        data = super(LinearTimeSpectrogram, self).slice(y_range, x_range)
+    def combine_frequencies(self, other):
+        delt = min(self.t_delt, other.t_delt)
 
-        soffset = 0 if x_range.start is None else x_range.start
-        data.t_init = data.t_init + data.t_delt * soffset
-        return data
+        one = self.resample_time(delt)
+        other = other.resample_time(delt)
+
+        x = (other.t_init - self.t_init) / delt
+
+        if x < 0:
+            other = other[:, -x:]
+        else:
+            one = one[:, x:]
+
+        length = min(one.shape[1], other.shape[1])
+        one = one[:, :length]
+        other = other[:, :length]
+
+        new = np.zeros((one.shape[0] + other.shape[0], length))
+
+        freq_axis = np.zeros((one.shape[0] + other.shape[0],))
+
+        for n, (data, row) in enumerate(self.merge(
+            [
+                ((one, n) for n in xrange(one.shape[0])),
+                ((other, n) for n in xrange(other.shape[0])),
+            ],
+            key=lambda x: x[0].freq_axis[x[1]]
+        )):
+            new[n, :] = data[row, :]
+            freq_axis[n] = data.freq_axis[row]
+        params = {
+            'time_axis': one.time_axis, # Should be equal
+            'freq_axis': freq_axis,
+            'start': one.start,
+            'end': one.end,
+            't_delt': delt,
+            't_init': one.t_init,
+            't_label': one.t_label,
+            'f_label': one.f_label,
+            'content': one.content,
+            'timedelta': datetime.timedelta(seconds=delt),
+        }
+        return self.__class__._new_with_params(new, params)
