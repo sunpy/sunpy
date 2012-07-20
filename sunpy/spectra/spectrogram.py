@@ -25,6 +25,7 @@ from sunpy.spectra.spectrum import Spectrum
 
 # This should not be necessary, as observations do not take more than a day
 # but it is used for completeness' and extendibility's sake.
+# XXX: Leap second?
 SECONDS_PER_DAY = 86400
 
 # Used for COPY_PROPERTIES
