@@ -4,6 +4,14 @@ import numpy as np
 
 from sunpy.spectra.spectrogram import Spectrogram
 
+
+def mk_spec(image):
+	return Spectrogram(
+		image, np.linspace(0, image.shape[1] - 1, image.shape[1]),
+		np.linspace(0, image.shape[0] - 1, image.shape[0]),
+		datetime(2010, 10, 10), datetime(2010, 10, 10, 1), 0
+	)
+
 def test_subtract_bg():
 	bg = np.linspace(0, 200, 200).astype(np.uint16)
 	bg.shape = (200, 1)
@@ -15,11 +23,14 @@ def test_subtract_bg():
 	image = bg
 	image[:, 1800:] += signal
 
-	spectrogram = Spectrogram(
-		image, np.linspace(0, 3599, 3600), np.linspace(0, 199, 200),
-		datetime(2010, 10, 10), datetime(2010, 10, 10, 1), 5
-	)
+	spectrogram = mk_spec(image)
 	assert np.array_equal(
 		spectrogram.subtract_bg()[:, 1800:], signal
 	)
 
+
+def test_slice_time_axis():
+	spectrogram = mk_spec(np.zeros((200, 3600)))
+	new = spectrogram[:, 200:]
+	assert new.t_init == 200
+	assert np.array_equal(new.time_axis, np.linspace(0, 3399, 3400))
