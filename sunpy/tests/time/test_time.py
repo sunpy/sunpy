@@ -9,6 +9,9 @@ from sunpy.time import julian
 
 LANDING = datetime(1966, 2, 3)
 
+def test_parse_time_24():
+    assert parse_time("2010-10-10T24:00:00") == datetime(2010, 10, 11)
+
 def test_parse_time_tuple():
     assert parse_time((1966, 2, 3)) == LANDING
 
