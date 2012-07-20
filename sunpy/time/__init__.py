@@ -1,4 +1,7 @@
 """Time related functionality"""
+
+import re
+
 import julian
 import timerange
 from datetime import datetime
@@ -9,6 +12,43 @@ from sunpy.time.julian import *
 __all__ = ["parse_time", "day_of_year", "break_time"]
 __all__ += julian.__all__
 __all__ += timerange.__all__
+
+
+REGEX = {
+    '%Y': '(?P<year>\d{4})',
+    '%m': '(?P<month>\d{2})',
+    '%d': '(?P<day>\d{2})',
+    '%H': '(?P<hour>\d{2})',
+    '%M': '(?P<minute>\d{2})',
+    '%S': '(?P<second>\d{2})',
+    '%f': '(?P<microsecond>\d+)',
+    '%b': '(?P<month_str>[a-zA-Z]+)'
+}
+
+def _group_or_none(match, group):
+    try:
+        return match.group(group)
+    except IndexError:
+        return None
+
+def _n_or_eq(a, b):
+    return a is None or a == b
+
+def _regex_parse_time(inp, format):
+    for key, value in REGEX.iteritems():
+        format = format.replace(key, value)
+    match = re.match(format, inp)
+    if match is None:
+        return None, None
+    if match.group("hour") == "24":
+        if not all(_n_or_eq(_group_or_none(match, g), '00')
+            for g in ["minute", "second", "microsecond"]
+        ):
+            raise ValueError
+        from_, to = match.span("hour")
+        return inp[:from_] + "00" + inp[to:], timedelta(days=1)
+    return inp, timedelta(days=0)
+
 
 def parse_time(time_string=None):
     """Given a time string will parse and return a datetime object.
@@ -66,8 +106,11 @@ def parse_time(time_string=None):
              "%d-%b-%Y",                # Example 04-May-2007
              "%Y%m%d_%H%M%S"]           # Example 20070504_210812
         for time_format in time_format_list: 
-            try: 
-                return datetime.strptime(time_string, time_format)
+            try:
+                ts, time_delta = _regex_parse_time(time_string, time_format)
+                if ts is None:
+                    continue
+                return datetime.strptime(ts, time_format) + time_delta
             except ValueError:
                 pass
     

@@ -380,7 +380,7 @@ class LinearTimeSpectrogram(Spectrogram):
         if mk_arr is None:
             mk_arr = cls.make_array
 
-        specs = sorted(spectrograms, key=lambda x: x.t_init)
+        specs = sorted(spectrograms, key=lambda x: x.start)
 
         # Smallest time-delta becomes the common time-delta.
         min_delt = min(sp.t_delt for sp in specs)
@@ -390,11 +390,15 @@ class LinearTimeSpectrogram(Spectrogram):
 
         data = specs[0]
         init = data.t_init
+        start_day = data.start
 
         xs = []
         last = data
         for elem in specs[1:]:
-            x = int((elem.t_init - last.t_init) / min_delt)
+            e_init = (
+                SECONDS_PER_DAY * (elem.start.day - start_day.day) + elem.t_init
+            )
+            x = int((e_init - last.t_init) / min_delt)
             xs.append(x)
             # XXX 
             diff = (last.shape[1] - x)
