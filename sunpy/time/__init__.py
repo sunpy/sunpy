@@ -133,7 +133,7 @@ def is_time(time):
 
     try:
         parse_time(time)
-    except ValueError:
+    except (ValueError, TypeError):
         return False
     else:
         return True
