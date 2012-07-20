@@ -115,7 +115,10 @@ def parse_time(time_string=None):
              "%Y%m%d_%H%M%S"]           # Example 20070504_210812
         for time_format in time_format_list: 
             try:
-                ts, time_delta = _regex_parse_time(time_string, time_format)
+                try:
+                    ts, time_delta = _regex_parse_time(time_string, time_format)
+                except TypeError:
+                    break
                 if ts is None:
                     continue
                 return datetime.strptime(ts, time_format) + time_delta
@@ -133,7 +136,7 @@ def is_time(time):
 
     try:
         parse_time(time)
-    except (ValueError, TypeError):
+    except ValueError:
         return False
     else:
         return True
