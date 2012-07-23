@@ -129,7 +129,7 @@ def test_join():
 	# assert np.array_equal(z[:, 3598:], ndimage.zoom(other, (1, 2)))
 	assert z.start == one.start
 	assert z.end == other.end
-	assert_array_almost_equal(
+	assert np.array_equal(
 		z.time_axis, np.linspace(0, 0.5 * (z.shape[1] - 1), z.shape[1])
 	)
 
@@ -156,7 +156,7 @@ def test_join_midnight():
 	assert z.shape == (200, 3 * 3600 - 1)
 
 	assert np.array_equal(z[:, :3600], one)
-	assert_array_almost_equal(
+	assert np.array_equal(
 		z.time_axis, np.linspace(0, 0.5 * (z.shape[1] - 1), z.shape[1])
 	)
 
@@ -182,7 +182,7 @@ def test_join_month():
 	assert z.shape == (200, 3 * 3600 - 1)
 
 	assert np.array_equal(z[:, :3600], one)
-	assert_array_almost_equal(
+	assert np.array_equal(
 		z.time_axis, np.linspace(0, 0.5 * (z.shape[1] - 1), z.shape[1])
 	)
 
@@ -208,7 +208,7 @@ def test_join_year():
 	assert z.shape == (200, 3 * 3600 - 1)
 
 	assert np.array_equal(z[:, :3600], one)
-	assert_array_almost_equal(
+	assert np.array_equal(
 		z.time_axis, np.linspace(0, 0.5 * (z.shape[1] - 1), z.shape[1])
 	)
 
@@ -236,7 +236,7 @@ def test_join_over_midnight():
 
 	assert np.array_equal(z[:, :3600], one)
 	assert np.array_equal(z.time_axis[:3600], one.time_axis)
-	assert_array_almost_equal(
+	assert np.array_equal(
 		z.time_axis, np.linspace(0, 0.5 * (z.shape[1] - 1), z.shape[1])
 	)
 
@@ -289,7 +289,7 @@ def test_join_with_gap():
 
 	assert np.array_equal(z[:, :3600], one)
 	assert (z[:, 3600:3602] == 0).all()
-	assert_array_almost_equal(
+	assert np.array_equal(
 		z.time_axis, np.linspace(0, 0.5 * (z.shape[1] - 1), z.shape[1])
 	)
 
@@ -323,7 +323,7 @@ def test_join_nonlinear():
 	# assert np.array_equal(z[:, 3600:], ndimage.zoom(other, (1, 2)))
 	print oz.time_axis
 	assert np.array_equal(z.time_axis[:3600], one.time_axis)
-	assert_array_almost_equal(z.time_axis[3600:], oz.time_axis + 1801)
+	assert np.array_equal(z.time_axis[3600:], oz.time_axis + 1801)
 
 def test_auto_t_init():
 	image = np.random.rand(200, 3600)
