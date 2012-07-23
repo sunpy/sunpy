@@ -160,6 +160,7 @@ def test_join_midnight():
 		z.time_axis, np.linspace(0, 0.5 * (z.shape[1] - 1), z.shape[1])
 	)
 
+
 def test_join_month():
 	image = np.random.rand(200, 3600)
 	one = LinearTimeSpectrogram(
@@ -186,6 +187,7 @@ def test_join_month():
 		z.time_axis, np.linspace(0, 0.5 * (z.shape[1] - 1), z.shape[1])
 	)
 
+
 def test_join_year():
 	image = np.random.rand(200, 3600)
 	one = LinearTimeSpectrogram(
@@ -211,6 +213,7 @@ def test_join_year():
 	assert np.array_equal(
 		z.time_axis, np.linspace(0, 0.5 * (z.shape[1] - 1), z.shape[1])
 	)
+
 
 def test_join_over_midnight():
 	image = np.random.rand(200, 3600)
@@ -319,10 +322,9 @@ def test_join_nonlinear():
 	assert z.shape == (200, 3 * 3600 - 1)
 
 	assert np.array_equal(z[:, :3600], one)
-	# assert np.array_equal(z[:, 3600:], ndimage.zoom(other, (1, 2)))
-	print oz.time_axis
 	assert np.array_equal(z.time_axis[:3600], one.time_axis)
 	assert np.array_equal(z.time_axis[3600:], oz.time_axis + 1801)
+
 
 def test_auto_t_init():
 	image = np.random.rand(200, 3600)
