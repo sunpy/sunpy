@@ -4,7 +4,7 @@
 from __future__ import absolute_import
 
 from datetime import datetime
-
+from itertools import izip_longest
 import pytest
 
 import numpy as np
@@ -14,12 +14,27 @@ from scipy import ndimage
 from sunpy.spectra.spectrogram import Spectrogram, LinearTimeSpectrogram
 
 
+def dict_eq(one, other):
+	ks = set(one.keys())
+	if ks != set(other.keys()):
+		return False
+	for key in ks:
+		if isinstance(one[key], np.ndarray):
+			if not np.array_equal(one[key], other[key]):
+				return False
+		else:
+			if one[key] != other[key]:
+				return False
+	return True
+
+
 def mk_spec(image):
 	return Spectrogram(
 		image, np.linspace(0, image.shape[1] - 1, image.shape[1]),
 		np.linspace(0, image.shape[0] - 1, image.shape[0]),
 		datetime(2010, 10, 10), datetime(2010, 10, 10, 1), 0
 	)
+
 
 def test_subtract_bg():
 	bg = np.linspace(0, 200, 200).astype(np.uint16)
@@ -33,9 +48,12 @@ def test_subtract_bg():
 	image[:, 1800:] += signal
 
 	spectrogram = mk_spec(image)
+	sbg = spectrogram.subtract_bg()
 	assert np.array_equal(
 		spectrogram.subtract_bg()[:, 1800:], signal
 	)
+
+	assert dict_eq(spectrogram.get_params(), sbg.get_params())
 
 
 def test_slice_time_axis():
@@ -56,6 +74,7 @@ def test_slice_freq_axis():
 	assert new.shape == (50, 3600)
 	assert np.array_equal(new.freq_axis, np.linspace(100, 149, 50))
 	assert np.array_equal(new, rnd[100:150, :])
+
 
 def test_slice_both_axis():
 	rnd = np.random.rand(200, 3600)
@@ -79,6 +98,7 @@ def test_time_to_x():
 	ret = spectrogram.time_to_x(datetime(2010, 10, 10, 0, 0, 59))
 	assert isinstance(ret, int)
 	assert ret == 59
+
 
 def test_join():
 	image = np.random.rand(200, 3600)
@@ -125,6 +145,7 @@ def test_join_midnight():
 	assert np.array_equal(z[:, :3600], one)
 	assert np.array_equal(z[:, 3600:], ndimage.zoom(other, (1, 2)))
 
+
 def test_join_month():
 	image = np.random.rand(200, 3600)
 	one = LinearTimeSpectrogram(
@@ -145,6 +166,7 @@ def test_join_month():
 
 	assert np.array_equal(z[:, :3600], one)
 	assert np.array_equal(z[:, 3600:], ndimage.zoom(other, (1, 2)))
+
 
 def test_join_year():
 	image = np.random.rand(200, 3600)
@@ -167,6 +189,7 @@ def test_join_year():
 	assert np.array_equal(z[:, :3600], one)
 	assert np.array_equal(z[:, 3600:], ndimage.zoom(other, (1, 2)))
 
+
 def test_join_over_midnight():
 	image = np.random.rand(200, 3600)
 	one = LinearTimeSpectrogram(
@@ -187,6 +210,7 @@ def test_join_over_midnight():
 
 	assert np.array_equal(z[:, :3600], one)
 	assert np.array_equal(z[:, 3600:], ndimage.zoom(other, (1, 2)))
+
 
 def test_join_gap():
 	image = np.random.rand(200, 3600)
@@ -239,3 +263,18 @@ def test_auto_t_init():
 		datetime(2010, 1, 1, 0, 15),
 		datetime(2010, 1, 1, 0, 30)
 	).t_init == 900
+
+def test_normalize():
+	image = np.random.rand(200, 3600)
+	spec = Spectrogram(image,
+		np.linspace(0, image.shape[1] - 1, image.shape[1]),
+		np.linspace(0, image.shape[0] - 1, image.shape[0]),
+		datetime(2010, 1, 1, 0, 15),
+		datetime(2010, 1, 1, 0, 30)
+	)
+
+	nspec = spec.normalize()
+
+	assert dict_eq(spec.get_params(), nspec.get_params())
+	assert nspec.max() == 1
+	assert nspec.min() == 0
