@@ -395,7 +395,7 @@ def test_combine_freqs():
 	comb = spec.combine_frequencies(spec2)
 	stuff = [spec, spec2]
 
-	for freq in xrange(9, -1, -1):
+	for freq in xrange(10):
 		assert np.array_equal(
 			comb[9 - freq, :], stuff[freq % 2][4 - freq // 2, :]
 		)
