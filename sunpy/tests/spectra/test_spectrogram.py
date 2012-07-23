@@ -107,7 +107,7 @@ def test_time_to_x():
 def test_join():
 	image = np.random.rand(200, 3600)
 	one = LinearTimeSpectrogram(
-		image, np.linspace(0, image.shape[1] - 1, image.shape[1]),
+		image, np.linspace(0, 0.5 * (image.shape[1] - 1), image.shape[1]),
 		np.linspace(0, image.shape[0] - 1, image.shape[0]),
 		datetime(2010, 10, 10), datetime(2010, 10, 10, 0, 30), 0, 0.5,
 	)
@@ -129,12 +129,15 @@ def test_join():
 	# assert np.array_equal(z[:, 3598:], ndimage.zoom(other, (1, 2)))
 	assert z.start == one.start
 	assert z.end == other.end
+	assert_array_almost_equal(
+		z.time_axis, np.linspace(0, 0.5 * (z.shape[1] - 1), z.shape[1])
+	)
 
 
 def test_join_midnight():
 	image = np.random.rand(200, 3600)
 	one = LinearTimeSpectrogram(
-		image, np.linspace(0, image.shape[1] - 1, image.shape[1]),
+		image, np.linspace(0, 0.5 * (image.shape[1] - 1), image.shape[1]),
 		np.linspace(0, image.shape[0] - 1, image.shape[0]),
 		datetime(2010, 10, 10, 23, 30),
 		datetime(2010, 10, 10, 23, 59, 59), 84600, 0.5,
@@ -153,13 +156,14 @@ def test_join_midnight():
 	assert z.shape == (200, 3 * 3600 - 1)
 
 	assert np.array_equal(z[:, :3600], one)
-	# assert np.array_equal(z[:, 3600:], ndimage.zoom(other, (1, 2)))
-
+	assert_array_almost_equal(
+		z.time_axis, np.linspace(0, 0.5 * (z.shape[1] - 1), z.shape[1])
+	)
 
 def test_join_month():
 	image = np.random.rand(200, 3600)
 	one = LinearTimeSpectrogram(
-		image, np.linspace(0, image.shape[1] - 1, image.shape[1]),
+		image, np.linspace(0, 0.5 * (image.shape[1] - 1), image.shape[1]),
 		np.linspace(0, image.shape[0] - 1, image.shape[0]),
 		datetime(2012, 7, 31, 23, 30),
 		datetime(2012, 7, 31, 23, 59, 59), 84600, 0.5,
@@ -178,13 +182,14 @@ def test_join_month():
 	assert z.shape == (200, 3 * 3600 - 1)
 
 	assert np.array_equal(z[:, :3600], one)
-	# assert np.array_equal(z[:, 3600:], ndimage.zoom(other, (1, 2)))
-
+	assert_array_almost_equal(
+		z.time_axis, np.linspace(0, 0.5 * (z.shape[1] - 1), z.shape[1])
+	)
 
 def test_join_year():
 	image = np.random.rand(200, 3600)
 	one = LinearTimeSpectrogram(
-		image, np.linspace(0, image.shape[1] - 1, image.shape[1]),
+		image, np.linspace(0, 0.5 * (image.shape[1] - 1), image.shape[1]),
 		np.linspace(0, image.shape[0] - 1, image.shape[0]),
 		datetime(2012, 12, 31, 23, 30),
 		datetime(2013, 1, 1, 0, 0, 0), 84600, 0.5,
@@ -203,8 +208,9 @@ def test_join_year():
 	assert z.shape == (200, 3 * 3600 - 1)
 
 	assert np.array_equal(z[:, :3600], one)
-	# assert np.array_equal(z[:, 3600:], ndimage.zoom(other, (1, 2)))
-
+	assert_array_almost_equal(
+		z.time_axis, np.linspace(0, 0.5 * (z.shape[1] - 1), z.shape[1])
+	)
 
 def test_join_over_midnight():
 	image = np.random.rand(200, 3600)
@@ -238,7 +244,7 @@ def test_join_over_midnight():
 def test_join_gap():
 	image = np.random.rand(200, 3600)
 	one = LinearTimeSpectrogram(
-		image, np.linspace(0, image.shape[1] - 1, image.shape[1]),
+		image, np.linspace(0, 0.5 * (image.shape[1] - 1), image.shape[1]),
 		np.linspace(0, image.shape[0] - 1, image.shape[0]),
 		datetime(2010, 10, 10, 23, 45),
 		datetime(2010, 10, 11, 0, 15,), 85500, 0.5,
@@ -259,10 +265,11 @@ def test_join_gap():
 	assert excinfo.value.message == "Too large gap."
 
 
+
 def test_join_with_gap():
 	image = np.random.rand(200, 3600)
 	one = LinearTimeSpectrogram(
-		image, np.linspace(0, image.shape[1] - 1, image.shape[1]),
+		image, np.linspace(0, 0.5 * (image.shape[1] - 1), image.shape[1]),
 		np.linspace(0, image.shape[0] - 1, image.shape[0]),
 		datetime(2010, 10, 10, 23, 45),
 		datetime(2010, 10, 11, 0, 15,), 85500, 0.5,
@@ -282,13 +289,15 @@ def test_join_with_gap():
 
 	assert np.array_equal(z[:, :3600], one)
 	assert (z[:, 3600:3602] == 0).all()
-	# assert np.array_equal(z[:, 3602:], ndimage.zoom(other, (1, 2)))
+	assert_array_almost_equal(
+		z.time_axis, np.linspace(0, 0.5 * (z.shape[1] - 1), z.shape[1])
+	)
 
 
 def test_join_nonlinear():
 	image = np.random.rand(200, 3600)
 	one = LinearTimeSpectrogram(
-		image, np.linspace(0, 0.5 * image.shape[1] - 1, image.shape[1]),
+		image, np.linspace(0, 0.5 * (image.shape[1] - 1), image.shape[1]),
 		np.linspace(0, image.shape[0] - 1, image.shape[0]),
 		datetime(2010, 10, 10, 23, 45),
 		datetime(2010, 10, 11, 0, 15,), 85500, 0.5,
