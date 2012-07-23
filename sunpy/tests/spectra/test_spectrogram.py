@@ -265,7 +265,6 @@ def test_join_gap():
 	assert excinfo.value.message == "Too large gap."
 
 
-
 def test_join_with_gap():
 	image = np.random.rand(200, 3600)
 	one = LinearTimeSpectrogram(
@@ -372,3 +371,30 @@ def test_upsample():
 	)
 	r = spec.resample_time(2)
 	assert r.shape[1] == 2
+
+
+def test_combine_freqs():
+	image = np.random.rand(5, 3600)
+	spec = LinearTimeSpectrogram(image,
+		np.linspace(0, image.shape[1] - 1, image.shape[1]),
+		np.array([8, 6, 4, 2, 0]),
+		datetime(2010, 1, 1, 0, 15),
+		datetime(2010, 1, 1, 0, 30),
+		900,
+		0.25
+	)
+	image = np.random.rand(5, 3600)
+	spec2 = LinearTimeSpectrogram(image,
+		np.linspace(0, image.shape[1] - 1, image.shape[1]),
+		np.array([9, 7, 5, 3, 1]),
+		datetime(2010, 1, 1, 0, 15),
+		datetime(2010, 1, 1, 0, 30),
+		900,
+		0.25
+	)
+	comb = spec.combine_frequencies(spec2)
+	stuff = [spec, spec2]
+
+	print comb.freq_axis
+	for freq in xrange(9, -1, -1):
+		assert np.array_equal(comb[9 - freq, :], stuff[freq % 2][4 - freq // 2, :])
