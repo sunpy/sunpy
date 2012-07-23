@@ -434,6 +434,8 @@ class LinearTimeSpectrogram(Spectrogram):
         arr = mk_arr((data.shape[0], size))
         time_axis = np.zeros((size,))
         sx = 0
+        # Amount of pixels left out due to nonlinearity. Needs to be
+        # considered for correct time axes.
         sd = 0
         for x, elem in izip(xs, specs):
             diff = x - elem.shape[1]
