@@ -376,8 +376,8 @@ class LinearTimeSpectrogram(Spectrogram):
         return self._new_with_params(data, params)
 
     @classmethod
-    def join_many(cls, spectrograms, mk_arr=None, nonlinear=True,
-        maxgap=None):
+    def join_many(cls, spectrograms, mk_arr=None, nonlinear=False,
+        maxgap=0):
         # XXX: Only load header and load contents of files
         # on demand.
 
@@ -431,15 +431,15 @@ class LinearTimeSpectrogram(Spectrogram):
         arr = mk_arr((data.shape[0], size))
         time_axis = np.zeros((size,))
         sx = 0
-
+        sd = 0
         for x, elem in izip(xs, specs):
+            diff = x - elem.shape[1]
             if x > elem.shape[1]:
                 if nonlinear:
                     x = elem.shape[1]
                 else:
                     # If we want to stay linear, fill up the missing
                     # pixels with placeholder zeros.
-                    diff = x - elem.shape[1]
                     filler = np.zeros((data.shape[0], diff))
                     filler[:] = 0
                     minimum = elem.time_axis[-1]
@@ -458,8 +458,9 @@ class LinearTimeSpectrogram(Spectrogram):
                         )
                     )
             arr[:, sx:sx + x] = elem[:, :x]
-            time_axis[sx:sx + x] = elem.time_axis[:x] + data.t_delt * sx
-            
+            time_axis[sx:sx + x] = elem.time_axis[:x] + data.t_delt * (sx + sd)
+
+            sd += diff
             sx += x
         params = {
             'time_axis': time_axis,

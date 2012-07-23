@@ -9,6 +9,8 @@ import pytest
 
 import numpy as np
 
+from numpy.testing import assert_array_almost_equal
+
 from scipy import ndimage
 
 from sunpy.spectra.spectrogram import Spectrogram, LinearTimeSpectrogram
@@ -255,6 +257,33 @@ def test_join_with_gap():
 	assert np.array_equal(z[:, 3602:], ndimage.zoom(other, (1, 2)))
 
 
+def test_join_nonlinear():
+	image = np.random.rand(200, 3600)
+	one = LinearTimeSpectrogram(
+		image, np.linspace(0, image.shape[1] - 1, image.shape[1]),
+		np.linspace(0, image.shape[0] - 1, image.shape[0]),
+		datetime(2010, 10, 10, 23, 45), datetime(2010, 10, 11, 0, 15,), 85500, 0.5,
+	)
+
+	image = np.random.rand(200, 3600)
+	other = LinearTimeSpectrogram(
+		image, np.linspace(0, image.shape[1] - 1, image.shape[1]),
+		np.linspace(0, image.shape[0] - 1, image.shape[0]),
+		datetime(2010, 10, 11, 0, 15), datetime(2010, 10, 11, 1, 15), 901, 1,
+	)
+
+	oz = other.resample_time(0.5)
+
+	z = LinearTimeSpectrogram.join_many([one, other], nonlinear=True, maxgap=2)
+
+	assert z.shape == (200, 3 * 3600)
+
+	assert np.array_equal(z[:, :3600], one)
+	assert np.array_equal(z[:, 3600:], ndimage.zoom(other, (1, 2)))
+	print other.time_axis
+	assert np.array_equal(z.time_axis[:3600], one.time_axis)
+	assert_array_almost_equal(z.time_axis[3600:], oz.time_axis + 1801)
+
 def test_auto_t_init():
 	image = np.random.rand(200, 3600)
 	assert Spectrogram(image,
@@ -266,7 +295,7 @@ def test_auto_t_init():
 
 
 def test_normalize():
-	image = np.random.rand(200, 3600)
+	image = np.random.rand(200, 3600) * 43
 	spec = Spectrogram(image,
 		np.linspace(0, image.shape[1] - 1, image.shape[1]),
 		np.linspace(0, image.shape[0] - 1, image.shape[0]),
@@ -277,5 +306,5 @@ def test_normalize():
 	nspec = spec.normalize()
 
 	assert dict_eq(spec.get_params(), nspec.get_params())
-	assert nspec.max() == 1
+	assert_array_almost_equal(nspec.max(), 1)
 	assert nspec.min() == 0
