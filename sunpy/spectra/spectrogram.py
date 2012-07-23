@@ -367,8 +367,8 @@ class LinearTimeSpectrogram(Spectrogram):
         factor = self.t_delt / new_delt
 
         # The last data-point does not change!
-        new_size = (self.shape[1] - 1) * factor + 1
-        data = ndimage.zoom(self, (1, new_size / self.shape[1]))
+        new_size = (self.shape[1] - 1) * factor + 1 # pylint: disable=E1101
+        data = ndimage.zoom(self, (1, new_size / self.shape[1])) # pylint: disable=E1101
 
         params = self.get_params()
         params.update({
@@ -385,8 +385,7 @@ class LinearTimeSpectrogram(Spectrogram):
         # XXX: Only load header and load contents of files
         # on demand.
 
-        # XXX: This currently assumes all files are sampled with
-        # the same sampling rate and have the same frequency
+        # XXX: This currently assumes all files  have the same frequency
         # channels.
         if mk_arr is None:
             mk_arr = cls.make_array
@@ -492,7 +491,7 @@ class LinearTimeSpectrogram(Spectrogram):
         diff = time - self.start
         diff_s = SECONDS_PER_DAY * diff.days + diff.seconds
         result = diff_s // self.t_delt
-        if 0 <= result < self.shape[1]:
+        if 0 <= result < self.shape[1]: # pylint: disable=E1101
             return result
         raise ValueError("Out of range.")
 
@@ -509,7 +508,7 @@ class LinearTimeSpectrogram(Spectrogram):
         else:
             one = one[:, x:]
 
-        length = min(one.shape[1], other.shape[1])
+        length = min(one.shape[1], other.shape[1]) # pylint: disable=E1103
         one = one[:, :length]
         other = other[:, :length]
 
