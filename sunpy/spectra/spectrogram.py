@@ -364,12 +364,15 @@ class LinearTimeSpectrogram(Spectrogram):
         if self.t_delt == new_delt:
             return self
         factor = self.t_delt / new_delt
-        data = ndimage.zoom(self, (1, factor))
+
+        # The last data-point does not change!
+        new_size = (self.shape[1] - 1) * factor + 1
+        data = ndimage.zoom(self, (1, new_size / self.shape[1]))
 
         params = self.get_params()
         params.update({
             'time_axis': np.linspace(
-                self.time_axis[0], self.time_axis[-1], data.shape[1]),
+                self.time_axis[0], self.time_axis[-1], new_size),
             't_delt': new_delt,
             'timedelta': datetime.timedelta(seconds=new_delt),
         })
