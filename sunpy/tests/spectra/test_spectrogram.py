@@ -351,4 +351,16 @@ def test_resample():
 	)
 	r = spec.resample_time(0.5)
 	assert r.shape[1] == 5
+	print r.time_axis
 	assert np.array_equal(r.time_axis, np.linspace(0, 2, 5))
+
+
+def test_upsample():
+	image = np.array([[0, 1, 2, 3], [0, 1, 2, 3]])
+	spec = LinearTimeSpectrogram(
+		image, np.array([0, 1, 2]), np.array([0]),
+		datetime(2012, 1, 1), datetime(2012, 1, 1, 0, 0, 3),
+		0, 1
+	)
+	r = spec.resample_time(2)
+	assert r.shape[1] == 2
