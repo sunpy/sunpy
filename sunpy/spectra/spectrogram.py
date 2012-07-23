@@ -482,7 +482,10 @@ class LinearTimeSpectrogram(Spectrogram):
         # is not injective.
         diff = time - self.start
         diff_s = SECONDS_PER_DAY * diff.days + diff.seconds
-        return diff_s // self.t_delt
+        result = diff_s // self.t_delt
+        if 0 <= result < self.shape[1]:
+            return result
+        raise ValueError("Out of range.")
 
     def combine_frequencies(self, other):
         delt = min(self.t_delt, other.t_delt)
