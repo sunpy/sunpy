@@ -351,7 +351,6 @@ def test_resample():
 	)
 	r = spec.resample_time(0.5)
 	assert r.shape[1] == 5
-	print r.time_axis
 	assert np.array_equal(r.time_axis, np.linspace(0, 2, 5))
 
 
