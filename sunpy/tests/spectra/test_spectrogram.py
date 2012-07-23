@@ -186,7 +186,7 @@ def test_join_year():
 	)
 
 	z = LinearTimeSpectrogram.join_many([one, other], nonlinear=False, maxgap=0)
-	assert z.shape == (200, 3 * 3600 -1 )
+	assert z.shape == (200, 3 * 3600 - 1)
 
 	assert np.array_equal(z[:, :3600], one)
 	# assert np.array_equal(z[:, 3600:], ndimage.zoom(other, (1, 2)))
