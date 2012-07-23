@@ -468,14 +468,11 @@ class LinearTimeSpectrogram(Spectrogram):
                             ]
                         )
                     )
-                    # We made the element larger, thus the difference
-                    # is now 0.
-                    diff = 0
-
+            
             arr[:, sx:sx + x] = elem[:, :x]
             time_axis[sx:sx + x] = elem.time_axis[:x] + data.t_delt * (sx + sd)
-
-            sd += max(0, diff)
+            if nonlinear:
+                sd += max(0, diff)
             sx += x
         params = {
             'time_axis': time_axis,
