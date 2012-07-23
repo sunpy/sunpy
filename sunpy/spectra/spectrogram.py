@@ -8,6 +8,7 @@ import urllib2
 
 from itertools import izip
 from copy import copy, deepcopy
+from math import floor
 
 import numpy as np
 import pyfits
@@ -364,16 +365,19 @@ class LinearTimeSpectrogram(Spectrogram):
         new_delt seconds. """
         if self.t_delt == new_delt:
             return self
-        factor = self.t_delt / new_delt
+        factor = self.t_delt / float(new_delt)
 
         # The last data-point does not change!
-        new_size = (self.shape[1] - 1) * factor + 1 # pylint: disable=E1101
+        new_size = floor((self.shape[1] - 1) * factor + 1) # pylint: disable=E1101
         data = ndimage.zoom(self, (1, new_size / self.shape[1])) # pylint: disable=E1101
 
         params = self.get_params()
         params.update({
             'time_axis': np.linspace(
-                self.time_axis[0], self.time_axis[-1], new_size),
+                self.time_axis[0],
+                self.time_axis[(new_size - 1) * new_delt / self.t_delt],
+                new_size
+            ),
             't_delt': new_delt,
             'timedelta': datetime.timedelta(seconds=new_delt),
         })
