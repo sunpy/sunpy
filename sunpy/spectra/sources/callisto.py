@@ -28,7 +28,7 @@ def buffered_write(inp, outp, buffer_size):
         outp.write(read)
 
 
-def query(start, end, instrument=None, number=None, url=DEFAULT_URL):
+def query(start, end, instruments=None, number=None, url=DEFAULT_URL):
     day = datetime.datetime(start.year, start.month, start.day)
     while day <= end:
         directory = url + '%d/%02d/%02d/' % (day.year, day.month, day.day)
@@ -43,7 +43,7 @@ def query(start, end, instrument=None, number=None, url=DEFAULT_URL):
                 continue
             point = datetime.datetime.strptime(date + time, TIME_STR)
             opn.close()
-            if instrument is not None and instrument != inst:
+            if instruments is not None and inst not in instruments:
                 continue
 
             if number is not None and number != no:
