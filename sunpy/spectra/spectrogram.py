@@ -319,7 +319,8 @@ class Spectrogram(np.ndarray):
         while state:
             for item, (value, tk) in state.iteritems():
                 # Value is biggest.
-                if all(tk >= k for it, (v, k) in state.iteritems() if it is not item):
+                if all(tk >= k for it, (v, k)
+                    in state.iteritems() if it is not item):
                     yield value
                     break
             try:
@@ -406,7 +407,9 @@ class LinearTimeSpectrogram(Spectrogram):
         last = data
         for elem in specs[1:]:
             e_init = (
-                SECONDS_PER_DAY * (get_day(elem.start) - get_day(start_day)).days + elem.t_init
+                SECONDS_PER_DAY * (
+                    get_day(elem.start) - get_day(start_day)
+                ).days + elem.t_init
             )
             x = int((e_init - last.t_init) / min_delt)
             xs.append(x)
