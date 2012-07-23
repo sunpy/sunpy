@@ -33,6 +33,8 @@ REFERENCE = 0
 COPY = 1
 DEEPCOPY = 2
 
+def get_day(dt):
+    return datetime.datetime(dt.year, dt.month, dt.day)
 
 # XXX: Find out why imshow(x) fails!
 class Spectrogram(np.ndarray):
@@ -397,7 +399,7 @@ class LinearTimeSpectrogram(Spectrogram):
         last = data
         for elem in specs[1:]:
             e_init = (
-                SECONDS_PER_DAY * (elem.start.day - start_day.day) + elem.t_init
+                SECONDS_PER_DAY * (get_day(elem.start.day) - get_day(start_day.day)).days + elem.t_init
             )
             x = int((e_init - last.t_init) / min_delt)
             xs.append(x)
