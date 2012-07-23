@@ -98,10 +98,13 @@ class Spectrogram(np.ndarray):
     def __new__(cls, data, *args, **kwargs):
         return np.asarray(data).view(cls)
 
-    def __init__(self, data, time_axis, freq_axis, start, end, t_init,
+    def __init__(self, data, time_axis, freq_axis, start, end, t_init=None,
         t_label="Time", f_label="Frequency", content=""):
         # Because of how object creation works, there is no avoiding
         # unused arguments in this case.
+        if t_init is None:
+            diff = (start - get_day(start))
+            t_init = diff.seconds
         self.start = start
         self.end = end
 
@@ -399,14 +402,15 @@ class LinearTimeSpectrogram(Spectrogram):
         last = data
         for elem in specs[1:]:
             e_init = (
-                SECONDS_PER_DAY * (get_day(elem.start.day) - get_day(start_day.day)).days + elem.t_init
+                SECONDS_PER_DAY * (get_day(elem.start) - get_day(start_day)).days + elem.t_init
             )
             x = int((e_init - last.t_init) / min_delt)
             xs.append(x)
             # XXX 
             diff = (last.shape[1] - x)
 
-            if maxgap is not None and diff > maxgap:
+            if maxgap is not None and diff < maxgap:
+                print diff, maxgap
                 raise ValueError("Too large gap.")
 
             # If we leave out undefined values, we do not want to
