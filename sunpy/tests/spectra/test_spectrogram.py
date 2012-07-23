@@ -264,6 +264,7 @@ def test_auto_t_init():
 		datetime(2010, 1, 1, 0, 30)
 	).t_init == 900
 
+
 def test_normalize():
 	image = np.random.rand(200, 3600)
 	spec = Spectrogram(image,
