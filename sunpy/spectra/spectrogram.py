@@ -60,7 +60,8 @@ class Spectrogram(np.ndarray):
         )
 
     @classmethod
-    def _new_with_params(cls, data, params):
+    def _new_with_params(cls, data, params, **kwargs):
+        params.update(kwargs)
         """ Implementation detail. """
         obj = cls.__new__(cls, data)
         for key, value in params.iteritems():
@@ -409,8 +410,7 @@ class LinearTimeSpectrogram(Spectrogram):
             # XXX 
             diff = (last.shape[1] - x)
 
-            if maxgap is not None and diff < maxgap:
-                print diff, maxgap
+            if maxgap is not None and -diff > maxgap:
                 raise ValueError("Too large gap.")
 
             # If we leave out undefined values, we do not want to
@@ -439,9 +439,24 @@ class LinearTimeSpectrogram(Spectrogram):
                 else:
                     # If we want to stay linear, fill up the missing
                     # pixels with placeholder zeros.
-                    filler = np.zeros((data.f_res, x - elem.shape[1]))
+                    diff = x - elem.shape[1]
+                    filler = np.zeros((data.shape[0], diff))
                     filler[:] = 0
-                    elem = np.concatenate([elem, filler], 1)
+                    minimum = elem.time_axis[-1]
+                    elem = cls._new_with_params(
+                        np.concatenate([elem, filler], 1),
+                        elem.get_params(),
+                        time_axis=np.concatenate(
+                            [
+                                elem.time_axis,
+                                np.linspace(
+                                    minimum + min_delt,
+                                    minimum + diff * min_delt,
+                                    diff
+                                )
+                            ]
+                        )
+                    )
             arr[:, sx:sx + x] = elem[:, :x]
             time_axis[sx:sx + x] = elem.time_axis[:x] + data.t_delt * sx
             
