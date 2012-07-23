@@ -1,4 +1,11 @@
+# -*- coding: utf-8 -*-
+# Author: Florian Mayer <florian.mayer@bitsrc.org>
+
+from __future__ import absolute_import
+
 from datetime import datetime
+
+import pytest
 
 import numpy as np
 
@@ -93,6 +100,8 @@ def test_join():
 
 	assert np.array_equal(z[:, :3598], one[:, :-2])
 	assert np.array_equal(z[:, 3598:], ndimage.zoom(other, (1, 2)))
+	assert z.start == one.start
+	assert z.end == other.end
 
 
 def test_join_midnight():
@@ -178,6 +187,49 @@ def test_join_over_midnight():
 
 	assert np.array_equal(z[:, :3600], one)
 	assert np.array_equal(z[:, 3600:], ndimage.zoom(other, (1, 2)))
+
+def test_join_gap():
+	image = np.random.rand(200, 3600)
+	one = LinearTimeSpectrogram(
+		image, np.linspace(0, image.shape[1] - 1, image.shape[1]),
+		np.linspace(0, image.shape[0] - 1, image.shape[0]),
+		datetime(2010, 10, 10, 23, 45), datetime(2010, 10, 11, 0, 15,), 85500, 0.5,
+	)
+
+	image = np.random.rand(200, 3600)
+	other = LinearTimeSpectrogram(
+		image, np.linspace(0, image.shape[1] - 1, image.shape[1]),
+		np.linspace(0, image.shape[0] - 1, image.shape[0]),
+		datetime(2010, 10, 11, 0, 15, 1), datetime(2010, 10, 11, 1, 15), 901, 1,
+	)
+	with pytest.raises(ValueError) as excinfo:
+		z = LinearTimeSpectrogram.join_many([one, other], nonlinear=False, maxgap=0)
+
+	assert excinfo.value.message == "Too large gap."
+
+
+def test_join_with_gap():
+	image = np.random.rand(200, 3600)
+	one = LinearTimeSpectrogram(
+		image, np.linspace(0, image.shape[1] - 1, image.shape[1]),
+		np.linspace(0, image.shape[0] - 1, image.shape[0]),
+		datetime(2010, 10, 10, 23, 45), datetime(2010, 10, 11, 0, 15,), 85500, 0.5,
+	)
+
+	image = np.random.rand(200, 3600)
+	other = LinearTimeSpectrogram(
+		image, np.linspace(0, image.shape[1] - 1, image.shape[1]),
+		np.linspace(0, image.shape[0] - 1, image.shape[0]),
+		datetime(2010, 10, 11, 0, 15), datetime(2010, 10, 11, 1, 15), 901, 1,
+	)
+
+	z = LinearTimeSpectrogram.join_many([one, other], nonlinear=False, maxgap=2)
+	assert z.shape == (200, 3 * 3600 + 2)
+
+	assert np.array_equal(z[:, :3600], one)
+	assert (z[:, 3600:3602] == 0).all()
+	assert np.array_equal(z[:, 3602:], ndimage.zoom(other, (1, 2)))
+
 
 def test_auto_t_init():
 	image = np.random.rand(200, 3600)
