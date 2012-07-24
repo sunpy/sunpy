@@ -115,33 +115,22 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         """ Return updated header. """
         header = self.header.copy()
 
-        if self.swapped:
+        if swapped:
             header['NAXIS2'] = self.shape[1] # pylint: disable=E1101
             header['NAXIS1'] = self.shape[0] # pylint: disable=E1101
         else:
             header['NAXIS1'] = self.shape[1] # pylint: disable=E1101
             header['NAXIS2'] = self.shape[0] # pylint: disable=E1101
         return header
-
-    def __new__(cls, data, axes=None, header=None):
-        # pylint: disable=W0613
-        if header is not None:
-            # Always put time on the x-axis.
-            if "time" not in header["CTYPE1"].lower():
-                data = data.transpose()
-        
-        return np.asarray(data).view(cls)
     
     @classmethod
     def read(cls, filename, **kwargs):
         """ Read in FITS file and return a new CallistoSpectrogram. """
         fl = pyfits.open(filename, **kwargs)
-        return cls(fl[0].data, fl[1], fl[0].header)
-        
-    def __init__(self, data, axes, header):
-        # Because of how object creation works, there is no avoiding
-        # unused arguments in this case.
-        # pylint: disable=W0613
+        data = fl[0].data
+        axes = fl[1]
+        header = fl[0].header
+
         start = parse_header_time(
             header['DATE-OBS'], header.get('TIME-OBS', header.get('TIME$_OBS'))
         )
@@ -149,17 +138,18 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
             header['DATE-END'], header.get('TIME-END', header.get('TIME$_END'))
         )
 
-        self.swapped = "time" not in header["CTYPE1"].lower()
+        swapped = "time" not in header["CTYPE1"].lower()
         
         # Swap dimensions so x-axis is always time.
-        if self.swapped:
+        if swapped:
             t_delt = header["CDELT2"]
             t_init = header["CRVAL2"] - t_delt * header["CRPIX2"]
             t_label = header["CTYPE2"]
 
             f_delt = header["CDELT1"]
             f_init = header["CRVAL1"] - t_delt * header["CRPIX1"]
-            f_label = header["CTYPE1"]  
+            f_label = header["CTYPE1"]
+            data = data.transpose()
         else:
             t_delt = header["CDELT1"]
             t_init = header["CRVAL1"] - t_delt * header["CRPIX1"]
@@ -196,14 +186,27 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
             freq_axis = \
                 np.linspace(0, self.shape[0] - 1) * f_delt + f_init # pylint: disable=E1101
 
+        content = header["CONTENT"].split(" ", 1)[1]
+        return cls(data, time_axis, freq_axis, start, end, t_init, t_delt,
+            t_label, f_label, content, header, axes.header, swapped)
+
+        
+    def __init__(self, data, time_axis, freq_axis, start, end,
+            t_init, t_delt, t_label, f_label, content, header, axes_header,
+            swapped):
+        # Because of how object creation works, there is no avoiding
+        # unused arguments in this case.
+        # pylint: disable=W0613
+        
         super(CallistoSpectrogram, self).__init__(
             data, time_axis, freq_axis, start, end,
             t_init, t_delt, t_label, f_label,
-            header['CONTENT']
+            content
         )
 
         self.header = header
-        self.axes_header = axes.header
+        self.axes_header = axes_header
+        self.swapped = swapped
 
     @classmethod
     def is_datasource_for(cls, header):
