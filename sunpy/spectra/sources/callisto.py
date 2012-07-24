@@ -83,7 +83,7 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
     # copied to maintain the object and how to handle them.
     COPY_PROPERTIES = LinearTimeSpectrogram.COPY_PROPERTIES + [
         ('header', REFERENCE),
-        ('content', REFERENCE),
+        ('swapped', REFERENCE),
         ('axes_header', REFERENCE)
     ]
 
@@ -122,7 +122,7 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
             header['NAXIS1'] = self.shape[1] # pylint: disable=E1101
             header['NAXIS2'] = self.shape[0] # pylint: disable=E1101
         return header
-    
+
     @classmethod
     def read(cls, filename, **kwargs):
         """ Read in FITS file and return a new CallistoSpectrogram. """
