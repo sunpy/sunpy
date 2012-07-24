@@ -55,6 +55,18 @@ class Spectrogram(np.ndarray):
         ('t_init', REFERENCE),
     ]
 
+    def as_class(self, cls):
+        if not issubclass(cls, Spectrogram):
+            raise ValueError
+
+        dct = {}
+        var = vars(self)
+        for prop, _ in cls.COPY_PROPERTIES:
+            if not prop in var:
+                raise ValueError
+            dct[prop] = var[prop]
+        return cls(self, **dct)
+
     def get_params(self):
         return dict(
             (name, getattr(self, name)) for name, _ in self.COPY_PROPERTIES
@@ -342,8 +354,6 @@ class LinearTimeSpectrogram(Spectrogram):
     # pylint: disable=E1002
     COPY_PROPERTIES = Spectrogram.COPY_PROPERTIES + [
         ('t_delt', REFERENCE),
-        ('t_init', REFERENCE),
-        ('timedelta', REFERENCE),
     ]
      
     def __init__(self, data, time_axis, freq_axis, start, end,
@@ -354,8 +364,6 @@ class LinearTimeSpectrogram(Spectrogram):
             content
         )
         self.t_delt = t_delt
-
-        self.timedelta = datetime.timedelta(seconds=self.t_delt)
 
     @staticmethod
     def make_array(shape):
@@ -386,7 +394,6 @@ class LinearTimeSpectrogram(Spectrogram):
                 new_size
             ),
             't_delt': new_delt,
-            'timedelta': datetime.timedelta(seconds=new_delt),
         })
         return self._new_with_params(data, params)
 
@@ -494,9 +501,11 @@ class LinearTimeSpectrogram(Spectrogram):
             't_label': data.t_label,
             'f_label': data.f_label,
             'content': data.content,
-            'timedelta': data.timedelta,
         }
-        return cls._new_with_params(arr, params)
+        if nonlinear:
+            del params['t_delt']
+            return Spectrogram(arr, **params)
+        return LinearTimeSpectrogram(arr, **params)
 
     def time_to_x(self, time):
         """ Return x-coordinate in spectrogram that corresponds to the
@@ -550,6 +559,5 @@ class LinearTimeSpectrogram(Spectrogram):
             't_label': one.t_label,
             'f_label': one.f_label,
             'content': one.content,
-            'timedelta': datetime.timedelta(seconds=delt),
         }
         return self.__class__._new_with_params(new, params)

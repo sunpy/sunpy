@@ -137,6 +137,7 @@ def test_join():
     assert np.array_equal(
         z.time_axis, np.linspace(0, 0.5 * (z.shape[1] - 1), z.shape[1])
     )
+    assert isinstance(z, LinearTimeSpectrogram)
 
 
 def test_join_midnight():
@@ -166,6 +167,7 @@ def test_join_midnight():
     assert np.array_equal(
         z.time_axis, np.linspace(0, 0.5 * (z.shape[1] - 1), z.shape[1])
     )
+    assert isinstance(z, LinearTimeSpectrogram)
 
 
 def test_join_month():
@@ -195,6 +197,7 @@ def test_join_month():
     assert np.array_equal(
         z.time_axis, np.linspace(0, 0.5 * (z.shape[1] - 1), z.shape[1])
     )
+    assert isinstance(z, LinearTimeSpectrogram)
 
 
 def test_join_year():
@@ -224,6 +227,7 @@ def test_join_year():
     assert np.array_equal(
         z.time_axis, np.linspace(0, 0.5 * (z.shape[1] - 1), z.shape[1])
     )
+    assert isinstance(z, LinearTimeSpectrogram)
 
 
 def test_join_over_midnight():
@@ -255,6 +259,7 @@ def test_join_over_midnight():
     assert np.array_equal(
         z.time_axis, np.linspace(0, 0.5 * (z.shape[1] - 1), z.shape[1])
     )
+    assert isinstance(z, LinearTimeSpectrogram)
 
 
 def test_join_gap():
@@ -311,6 +316,7 @@ def test_join_with_gap():
     assert np.array_equal(
         z.time_axis, np.linspace(0, 0.5 * (z.shape[1] - 1), z.shape[1])
     )
+    assert isinstance(z, LinearTimeSpectrogram)
 
 
 def test_join_with_gap_fill():
@@ -342,6 +348,7 @@ def test_join_with_gap_fill():
     assert np.array_equal(
         z.time_axis, np.linspace(0, 0.5 * (z.shape[1] - 1), z.shape[1])
     )
+    assert isinstance(z, LinearTimeSpectrogram)
 
 
 def test_join_nonlinear():
@@ -374,6 +381,7 @@ def test_join_nonlinear():
     assert np.array_equal(z[:, :3600], one)
     assert np.array_equal(z.time_axis[:3600], one.time_axis)
     assert np.array_equal(z.time_axis[3600:], oz.time_axis + 1801)
+    assert isinstance(z, Spectrogram)
 
 
 def test_auto_t_init():
