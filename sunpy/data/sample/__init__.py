@@ -23,6 +23,8 @@ RHESSI_IMAGE = os.path.join(rootdir, "hsi_image_20101016_191218.fits")
 #
 EIT_195_IMAGE = os.path.join(rootdir, "eit_l1_20020625_100011.fits")
 
+CALLISTO_IMAGE = os.path.join(rootdir, "BIR_20110922_103000_01.fit")
+
 # A stacked calibrated event list from RHESSI
 # hsi_calib_ev_20020220_1106_20020220_1106_25_40.fits
 #
