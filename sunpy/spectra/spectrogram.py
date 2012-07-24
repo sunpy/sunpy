@@ -392,7 +392,7 @@ class LinearTimeSpectrogram(Spectrogram):
 
     @classmethod
     def join_many(cls, spectrograms, mk_arr=None, nonlinear=False,
-        maxgap=0):
+        maxgap=0, fill=0):
         # XXX: Only load header and load contents of files
         # on demand.
 
@@ -463,7 +463,7 @@ class LinearTimeSpectrogram(Spectrogram):
                     # If we want to stay linear, fill up the missing
                     # pixels with placeholder zeros.
                     filler = np.zeros((data.shape[0], diff))
-                    filler[:] = 0
+                    filler[:] = fill
                     minimum = elem.time_axis[-1]
                     elem = cls._new_with_params(
                         np.concatenate([elem, filler], 1),
