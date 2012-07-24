@@ -396,8 +396,7 @@ class LinearTimeSpectrogram(Spectrogram):
         # XXX: Only load header and load contents of files
         # on demand.
 
-        # XXX: This currently assumes all files  have the same frequency
-        # channels.
+        # XXX: Return spectrogram with nonlinear.
         if mk_arr is None:
             mk_arr = cls.make_array
 
