@@ -193,7 +193,6 @@ class Spectrogram(np.ndarray):
             'origin': 'lower',
         }
         params.update(matplotlib_args)
-        # XXX: This should not be necessary.
         im = axes.imshow(np.array(self), **params)
         
         xa = axes.get_xaxis()
@@ -402,8 +401,6 @@ class LinearTimeSpectrogram(Spectrogram):
         maxgap=0, fill=0):
         # XXX: Only load header and load contents of files
         # on demand.
-
-        # XXX: Return spectrogram with nonlinear.
         if mk_arr is None:
             mk_arr = cls.make_array
 
@@ -433,8 +430,7 @@ class LinearTimeSpectrogram(Spectrogram):
             )
             x = int((e_init - last.t_init) / min_delt)
             xs.append(x)
-            # XXX 
-            diff = (last.shape[1] - x)
+            diff = last.shape[1] - x
 
             if maxgap is not None and -diff > maxgap:
                 raise ValueError("Too large gap.")
@@ -496,7 +492,7 @@ class LinearTimeSpectrogram(Spectrogram):
             'freq_axis': data.freq_axis,
             'start': data.start,
             'end': specs[-1].end,
-            't_delt': data.t_delt, # XXX
+            't_delt': data.t_delt,
             't_init': data.t_init,
             't_label': data.t_label,
             'f_label': data.f_label,
