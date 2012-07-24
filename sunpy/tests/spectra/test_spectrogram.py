@@ -483,8 +483,10 @@ def test_combine_freqs():
         900,
         0.25
     )
-    comb = spec.combine_frequencies(spec2)
+    comb = LinearTimeSpectrogram.combine_frequencies([spec, spec2])
     stuff = [spec, spec2]
+
+    # print comb
 
     for freq in xrange(10):
         assert np.array_equal(
