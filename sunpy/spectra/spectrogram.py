@@ -562,27 +562,31 @@ class LinearTimeSpectrogram(Spectrogram):
         delt = min(sp.t_delt for sp in specs)
         start = max(sp.t_init for sp in specs)
 
+        # XXX: Could do without resampling by using
+        # sp.t_init below, not sure if good idea.
         specs = [sp.resample_time(delt) for sp in specs]
         cut = [sp[:, (start - sp.t_init) / delt:] for sp in specs]
 
         length = min(sp.shape[1] for sp in cut)
         return [sp[:, :length] for sp in cut]
-    
-    def combine_frequencies(self, other):
-        one, other = self.intersect_time([self, other])
 
-        dtype_ = max(one.dtype, other.dtype)
+    @classmethod
+    def combine_frequencies(cls, specs):
+        specs = cls.intersect_time(specs)
 
-        new = np.zeros(
-            (one.shape[0] + other.shape[0], one.shape[1]), dtype=dtype_
-        )
+        one = specs[0]
 
-        freq_axis = np.zeros((one.shape[0] + other.shape[0],))
+        dtype_ = max(sp.dtype for sp in specs)
+        fsize = sum(sp.shape[0] for sp in specs)
 
-        for n, (data, row) in enumerate(self.merge(
+        new = np.zeros((fsize, one.shape[1]), dtype=dtype_)
+
+        freq_axis = np.zeros((fsize,))
+
+
+        for n, (data, row) in enumerate(cls.merge(
             [
-                ((one, n) for n in xrange(one.shape[0])),
-                ((other, n) for n in xrange(other.shape[0])),
+                [(sp, n) for n in xrange(sp.shape[0])] for sp in specs
             ],
             key=lambda x: x[0].freq_axis[x[1]]
         )):
@@ -599,4 +603,5 @@ class LinearTimeSpectrogram(Spectrogram):
             'f_label': one.f_label,
             'content': one.content,
         }
-        return self.__class__._new_with_params(new, params)
+        # XXX
+        return cls._new_with_params(new, params)
