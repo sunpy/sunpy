@@ -300,6 +300,7 @@ def test_join_with_gap():
     z = LinearTimeSpectrogram.join_many(
         [one, other], nonlinear=False, maxgap=2
     )
+
     # The - 1 is because resampling other procuces an image of size
     # 2 * 3600 - 1
     # The + 2 is because there is one second without data inserted.
@@ -307,6 +308,37 @@ def test_join_with_gap():
 
     assert np.array_equal(z[:, :3600], one)
     assert (z[:, 3600:3602] == 0).all()
+    assert np.array_equal(
+        z.time_axis, np.linspace(0, 0.5 * (z.shape[1] - 1), z.shape[1])
+    )
+
+
+def test_join_with_gap_fill():
+    image = np.random.rand(200, 3600)
+    one = LinearTimeSpectrogram(
+        image, np.linspace(0, 0.5 * (image.shape[1] - 1), image.shape[1]),
+        np.linspace(0, image.shape[0] - 1, image.shape[0]),
+        datetime(2010, 10, 10, 23, 45),
+        datetime(2010, 10, 11, 0, 15,), 85500, 0.5,
+    )
+
+    image = np.random.rand(200, 3600)
+    other = LinearTimeSpectrogram(
+        image, np.linspace(0, image.shape[1] - 1, image.shape[1]),
+        np.linspace(0, image.shape[0] - 1, image.shape[0]),
+        datetime(2010, 10, 11, 0, 15), datetime(2010, 10, 11, 1, 15), 901, 1,
+    )
+
+    z = LinearTimeSpectrogram.join_many(
+        [one, other], nonlinear=False, maxgap=2, fill=np.NaN
+    )
+    # The - 1 is because resampling other procuces an image of size
+    # 2 * 3600 - 1
+    # The + 2 is because there is one second without data inserted.
+    assert z.shape == (200, 3 * 3600 + 2 - 1)
+
+    assert np.array_equal(z[:, :3600], one)
+    assert np.isnan(z[:, 3600:3602]).all()
     assert np.array_equal(
         z.time_axis, np.linspace(0, 0.5 * (z.shape[1] - 1), z.shape[1])
     )
