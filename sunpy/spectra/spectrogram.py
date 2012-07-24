@@ -16,6 +16,7 @@ import pyfits
 from bs4 import BeautifulSoup
 
 from scipy import ndimage
+from scipy.stats.mstats import mode
 
 from matplotlib import pyplot as plt
 from matplotlib.ticker import FuncFormatter, MaxNLocator
@@ -308,11 +309,11 @@ class Spectrogram(np.ndarray):
             (self.max() - self.min()) # pylint: disable=E1101
         )
 
-    def interpolate(self, time, frequency):
+    def interpolate(self, frequency):
         """ Linearly interpolate intensity at unknown frequency at the
         time with the index time. """
         lfreq, lvalue = None, None
-        for freq, value in izip(self.freq_axis, self[:, time]):
+        for freq, value in izip(self.freq_axis, self[:, :]):
             if freq < frequency:
                 break
             lfreq, lvalue = freq, value
@@ -348,6 +349,13 @@ class Spectrogram(np.ndarray):
             except StopIteration:
                 del state[item]
 
+    def normalize_mode(self, min_=0, max_=1, dtype_=np.dtype('float32')):
+        m = mode(self[self != 0].flatten())[0]
+        data = self.astype(dtype_)
+        return (
+            min_ + (max_ - min_) * (data - self.min()) / # pylint: disable=E1101
+            (m - self.min()) # pylint: disable=E1101
+        )
 
 class LinearTimeSpectrogram(Spectrogram):
     # pylint: disable=E1002
@@ -514,6 +522,13 @@ class LinearTimeSpectrogram(Spectrogram):
         if 0 <= result < self.shape[1]: # pylint: disable=E1101
             return result
         raise ValueError("Out of range.")
+
+    def freq_overlap(self, other):
+        lower = max(self.freq_axis[-1], other.freq_axis[-1])
+        upper = min(self.freq_axis[0], other.freq_axis[0])
+        if lower > upper:
+            raise ValueError("No overlap.")
+        return lower, upper
 
     def combine_frequencies(self, other):
         delt = min(self.t_delt, other.t_delt)
