@@ -105,7 +105,7 @@ class Spectrogram(np.ndarray):
         # Because of how object creation works, there is no avoiding
         # unused arguments in this case.
         if t_init is None:
-            diff = (start - get_day(start))
+            diff = start - get_day(start)
             t_init = diff.seconds
         self.start = start
         self.end = end
@@ -286,6 +286,11 @@ class Spectrogram(np.ndarray):
         return new
 
     def normalize(self, min_=0, max_=1, dtype_=np.dtype('float32')):
+        """ Normalize intensities to [min_, max_]. """
+        if max_ == min_:
+            raise ValueError("Maximum and minimum must be different.")
+        if self.max() == self.min():
+            raise ValueError("Spectrogram needs to contain distinct values.")
         data = self.astype(dtype_) # pylint: disable=E1101
         return (
             min_ + (max_ - min_) * (data - self.min()) / # pylint: disable=E1101
@@ -293,6 +298,8 @@ class Spectrogram(np.ndarray):
         )
 
     def interpolate(self, time, frequency):
+        """ Linearly interpolate intensity at unknown frequency at the
+        time with the index time. """
         lfreq, lvalue = None, None
         for freq, value in izip(self.freq_axis, self[:, time]):
             if freq < frequency:
