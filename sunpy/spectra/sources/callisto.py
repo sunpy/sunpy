@@ -11,6 +11,8 @@ import urllib2
 import numpy as np
 import pyfits
 
+from itertools import izip
+
 from bs4 import BeautifulSoup
 
 from sunpy.time import parse_time
@@ -212,6 +214,15 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
     def is_datasource_for(cls, header):
         """ Check if class supports data from the given FITS file. """
         return header.get('instrument', '').strip() in cls.INSTRUMENTS
+
+    def remove_border(self):
+        left = 0
+        while self.freq_axis[left] == self.freq_axis[0]:
+            left += 1
+        right = self.shape[0] - 1
+        while self.freq_axis[right] == self.freq_axis[-1]:
+            right -= 1
+        return self[left-1:right+2, :]
 
 
 if __name__ == "__main__":

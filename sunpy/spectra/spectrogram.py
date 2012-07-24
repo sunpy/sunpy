@@ -350,6 +350,46 @@ class Spectrogram(np.ndarray):
             except StopIteration:
                 del state[item]
 
+    def linearize_freqs(self, delta_freq=None):
+        # 
+        if delta_freq is None:
+            delta_freq = (self.freq_axis[:-1] - self.freq_axis[1:])
+            # Multiple values at the same frequency are just thrown away
+            # in the process of linearizaion
+            delta_freq = delta_freq[delta_freq != 0].min()
+        nsize = (self.freq_axis.max() - self.freq_axis.min()) / delta_freq + 1
+        new = np.zeros((nsize, self.shape[1]), dtype=self.dtype)
+
+        freqs = self.freq_axis - self.freq_axis.min()
+        freqs = freqs / delta_freq
+
+        midpoints = np.round((freqs[:-1] + freqs[1:]) / 2)
+        fillto = np.concatenate(
+            [midpoints, np.round([freqs[-1]])]
+        )
+        fillfrom = np.concatenate(
+            [np.round([freqs[0] + 1]), midpoints]
+        )
+
+        for row, from_, to_ in izip(self, fillfrom, fillto):
+            new[to_:from_] = row
+
+        vrs = self.get_params()
+        vrs.update({
+            'freq_axis': np.linspace(
+                self.freq_axis.max(), self.freq_axis.min(), nsize
+            )
+        })
+
+        return self.__class__(new, **vrs)
+
+    def freq_overlap(self, other):
+        lower = max(self.freq_axis[-1], other.freq_axis[-1])
+        upper = min(self.freq_axis[0], other.freq_axis[0])
+        if lower > upper:
+            raise ValueError("No overlap.")
+        return lower, upper
+
 
 class LinearTimeSpectrogram(Spectrogram):
     # pylint: disable=E1002
@@ -517,31 +557,25 @@ class LinearTimeSpectrogram(Spectrogram):
             return result
         raise ValueError("Out of range.")
 
-    def freq_overlap(self, other):
-        lower = max(self.freq_axis[-1], other.freq_axis[-1])
-        upper = min(self.freq_axis[0], other.freq_axis[0])
-        if lower > upper:
-            raise ValueError("No overlap.")
-        return lower, upper
+    @staticmethod
+    def intersect_time(specs):
+        delt = min(sp.t_delt for sp in specs)
+        start = max(sp.t_init for sp in specs)
 
+        specs = [sp.resample_time(delt) for sp in specs]
+        cut = [sp[:, (start - sp.t_init) / delt:] for sp in specs]
+
+        length = min(sp.shape[1] for sp in cut)
+        return [sp[:, :length] for sp in cut]
+    
     def combine_frequencies(self, other):
-        delt = min(self.t_delt, other.t_delt)
+        one, other = self.intersect_time([self, other])
 
-        one = self.resample_time(delt)
-        other = other.resample_time(delt)
+        dtype_ = max(one.dtype, other.dtype)
 
-        x = (other.t_init - self.t_init) / delt
-
-        if x < 0:
-            other = other[:, -x:]
-        else:
-            one = one[:, x:]
-
-        length = min(one.shape[1], other.shape[1]) # pylint: disable=E1103
-        one = one[:, :length]
-        other = other[:, :length]
-
-        new = np.zeros((one.shape[0] + other.shape[0], length))
+        new = np.zeros(
+            (one.shape[0] + other.shape[0], one.shape[1]), dtype=dtype_
+        )
 
         freq_axis = np.zeros((one.shape[0] + other.shape[0],))
 
@@ -559,7 +593,7 @@ class LinearTimeSpectrogram(Spectrogram):
             'freq_axis': freq_axis,
             'start': one.start,
             'end': one.end,
-            't_delt': delt,
+            't_delt': one.t_delt,
             't_init': one.t_init,
             't_label': one.t_label,
             'f_label': one.f_label,

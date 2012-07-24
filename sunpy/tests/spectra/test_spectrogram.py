@@ -495,7 +495,7 @@ def test_combine_freqs():
 def test_join_diff_freq():
     image = np.random.rand(5, 3600)
     spec = LinearTimeSpectrogram(image,
-        np.linspace(0, image.shape[1] - 1, image.shape[1]),
+        np.linspace(0, 0.25 * (image.shape[1] - 1), image.shape[1]),
         np.array([8, 6, 4, 2, 0]),
         datetime(2010, 1, 1, 0, 15),
         datetime(2010, 1, 1, 0, 30),
@@ -504,7 +504,7 @@ def test_join_diff_freq():
     )
     image = np.random.rand(5, 3600)
     spec2 = LinearTimeSpectrogram(image,
-        np.linspace(0, image.shape[1] - 1, image.shape[1]),
+        np.linspace(0, 0.25 * (image.shape[1] - 1), image.shape[1]),
         np.array([9, 7, 5, 3, 1]),
         datetime(2010, 1, 1, 0, 15),
         datetime(2010, 1, 1, 0, 30),
@@ -515,3 +515,36 @@ def test_join_diff_freq():
     with pytest.raises(ValueError) as excinfo:
         LinearTimeSpectrogram.join_many([spec, spec2])
     assert excinfo.value.message == "Frequeny channels do not match."
+
+
+def test_intersect_time():
+    image = np.random.rand(5, 3600)
+    spec = LinearTimeSpectrogram(image,
+        np.linspace(0, 0.25 * (image.shape[1] - 1), image.shape[1]),
+        np.array([8, 6, 4, 2, 0]),
+        datetime(2010, 1, 1, 0, 15),
+        datetime(2010, 1, 1, 0, 30),
+        900,
+        0.25
+    )
+    image = np.random.rand(5, 3600)
+    spec2 = LinearTimeSpectrogram(image,
+        np.linspace(0, 0.25 * (image.shape[1] - 1), image.shape[1]),
+        np.array([9, 7, 5, 3, 1]),
+        datetime(2010, 1, 1, 0, 15),
+        datetime(2010, 1, 1, 0, 30),
+        901,
+        0.25
+    )
+
+    one, other = LinearTimeSpectrogram.intersect_time(
+        [spec, spec2]
+    )
+
+    assert one.shape[1] == other.shape[1]
+    assert one.shape[1] == 3596
+    assert np.array_equal(one, spec[:, 4:])
+    assert np.array_equal(other, spec2[:, :-4])
+
+    assert np.array_equal(one.time_axis, other.time_axis)
+    assert one.t_init == other.t_init
