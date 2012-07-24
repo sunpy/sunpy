@@ -46,7 +46,7 @@ def query(start, end, instruments=None, number=None, url=DEFAULT_URL):
             if instruments is not None and inst not in instruments:
                 continue
 
-            if number is not None and number != no:
+            if number is not None and number != int(no):
                 continue
 
             if start <= point <= end:
