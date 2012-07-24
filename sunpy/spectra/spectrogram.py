@@ -403,6 +403,10 @@ class LinearTimeSpectrogram(Spectrogram):
 
         specs = sorted(spectrograms, key=lambda x: x.start)
 
+        freqs = specs[0].freq_axis
+        if not all(np.array_equal(freqs, sp.freq_axis) for sp in specs):
+            raise ValueError("Frequeny channels do not match.")
+
         # Smallest time-delta becomes the common time-delta.
         min_delt = min(sp.t_delt for sp in specs)
 
