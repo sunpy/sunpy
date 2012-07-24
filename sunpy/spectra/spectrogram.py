@@ -35,6 +35,7 @@ REFERENCE = 0
 COPY = 1
 DEEPCOPY = 2
 
+# Maybe move to util.
 def get_day(dt):
     return datetime.datetime(dt.year, dt.month, dt.day)
 
