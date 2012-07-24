@@ -67,6 +67,7 @@ def download(urls, directory):
         paths.append(path)
     return paths
 
+
 def parse_header_time(date, time):
     """ Return datetime object from date and time fields of header. """
     if time is not None:
