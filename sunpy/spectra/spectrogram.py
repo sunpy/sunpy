@@ -349,13 +349,6 @@ class Spectrogram(np.ndarray):
             except StopIteration:
                 del state[item]
 
-    def normalize_mode(self, min_=0, max_=1, dtype_=np.dtype('float32')):
-        m = mode(self[self != 0].flatten())[0]
-        data = self.astype(dtype_)
-        return (
-            min_ + (max_ - min_) * (data - self.min()) / # pylint: disable=E1101
-            (m - self.min()) # pylint: disable=E1101
-        )
 
 class LinearTimeSpectrogram(Spectrogram):
     # pylint: disable=E1002
