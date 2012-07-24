@@ -39,6 +39,8 @@ def mk_spec(image):
 
 
 def test_subtract_bg():
+    # The idea is to generate background and add a random signal, perform
+    # background subtraction and see if the signal comes out again.
     bg = np.linspace(0, 200, 200).astype(np.uint16)
     bg.shape = (200, 1)
     bg = bg + np.zeros((200, 3600))
@@ -123,6 +125,9 @@ def test_join():
     z = LinearTimeSpectrogram.join_many(
         [one, other], nonlinear=False, maxgap=0
     )
+    # The - 1 is because resampling other procuces an image of size
+    # 2 * 3600 - 1
+    # The - 2 is because there is one second overlap.
     assert z.shape == (200, 3 * 3600 - 2 - 1)
 
     assert np.array_equal(z[:, :3598], one[:, :-2])
@@ -153,6 +158,8 @@ def test_join_midnight():
     z = LinearTimeSpectrogram.join_many(
         [one, other], nonlinear=False, maxgap=0
     )
+    # The - 1 is because resampling other procuces an image of size
+    # 2 * 3600 - 1
     assert z.shape == (200, 3 * 3600 - 1)
 
     assert np.array_equal(z[:, :3600], one)
@@ -180,6 +187,8 @@ def test_join_month():
     z = LinearTimeSpectrogram.join_many(
         [one, other], nonlinear=False, maxgap=0
     )
+    # The - 1 is because resampling other procuces an image of size
+    # 2 * 3600 - 1
     assert z.shape == (200, 3 * 3600 - 1)
 
     assert np.array_equal(z[:, :3600], one)
@@ -207,6 +216,8 @@ def test_join_year():
     z = LinearTimeSpectrogram.join_many(
         [one, other], nonlinear=False, maxgap=0
     )
+    # The - 1 is because resampling other procuces an image of size
+    # 2 * 3600 - 1
     assert z.shape == (200, 3 * 3600 - 1)
 
     assert np.array_equal(z[:, :3600], one)
@@ -235,6 +246,8 @@ def test_join_over_midnight():
     )
     oz = other.resample_time(0.5)
 
+    # The - 1 is because resampling other procuces an image of size
+    # 2 * 3600 - 1
     assert z.shape == (200, 3 * 3600 - 1)
 
     assert np.array_equal(z[:, :3600], one)
@@ -287,6 +300,9 @@ def test_join_with_gap():
     z = LinearTimeSpectrogram.join_many(
         [one, other], nonlinear=False, maxgap=2
     )
+    # The - 1 is because resampling other procuces an image of size
+    # 2 * 3600 - 1
+    # The + 2 is because there is one second without data inserted.
     assert z.shape == (200, 3 * 3600 + 2 - 1)
 
     assert np.array_equal(z[:, :3600], one)
@@ -319,6 +335,8 @@ def test_join_nonlinear():
         [one, other], nonlinear=True, maxgap=2
     )
 
+    # The - 1 is because resampling other procuces an image of size
+    # 2 * 3600 - 1
     assert z.shape == (200, 3 * 3600 - 1)
 
     assert np.array_equal(z[:, :3600], one)
@@ -350,6 +368,37 @@ def test_normalize():
     assert dict_eq(spec.get_params(), nspec.get_params())
     assert_array_almost_equal(nspec.max(), 1)
     assert nspec.min() == 0
+
+
+def test_normalize_error():
+    image = np.zeros((200, 3600))
+    spec = Spectrogram(image,
+        np.linspace(0, image.shape[1] - 1, image.shape[1]),
+        np.linspace(0, image.shape[0] - 1, image.shape[0]),
+        datetime(2010, 1, 1, 0, 15),
+        datetime(2010, 1, 1, 0, 30)
+    )
+
+    with pytest.raises(ValueError) as excinfo:
+        spec.normalize(0, 1)
+    assert (
+        excinfo.value.message ==
+        "Spectrogram needs to contain distinct values."
+    )
+
+
+def test_normalize_error2():
+    image = np.random.rand(200, 3600) * 43
+    spec = Spectrogram(image,
+        np.linspace(0, image.shape[1] - 1, image.shape[1]),
+        np.linspace(0, image.shape[0] - 1, image.shape[0]),
+        datetime(2010, 1, 1, 0, 15),
+        datetime(2010, 1, 1, 0, 30)
+    )
+
+    with pytest.raises(ValueError) as excinfo:
+        spec.normalize(1, 1)
+    assert excinfo.value.message == "Maximum and minimum must be different."
 
 
 def test_resample():
