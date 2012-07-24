@@ -450,3 +450,28 @@ def test_combine_freqs():
         assert np.array_equal(
             comb[9 - freq, :], stuff[freq % 2][4 - freq // 2, :]
         )
+
+
+def test_join_diff_freq():
+    image = np.random.rand(5, 3600)
+    spec = LinearTimeSpectrogram(image,
+        np.linspace(0, image.shape[1] - 1, image.shape[1]),
+        np.array([8, 6, 4, 2, 0]),
+        datetime(2010, 1, 1, 0, 15),
+        datetime(2010, 1, 1, 0, 30),
+        900,
+        0.25
+    )
+    image = np.random.rand(5, 3600)
+    spec2 = LinearTimeSpectrogram(image,
+        np.linspace(0, image.shape[1] - 1, image.shape[1]),
+        np.array([9, 7, 5, 3, 1]),
+        datetime(2010, 1, 1, 0, 15),
+        datetime(2010, 1, 1, 0, 30),
+        1800,
+        0.25
+    )
+    
+    with pytest.raises(ValueError) as excinfo:
+        LinearTimeSpectrogram.join_many([spec, spec2])
+    assert excinfo.value.message == "Frequeny channels do not match."
