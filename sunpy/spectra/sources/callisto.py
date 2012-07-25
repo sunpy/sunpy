@@ -225,6 +225,10 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
             right -= 1
         return self[left-1:right+2, :]
 
+    @classmethod
+    def read_many(cls, filenames):
+        return map(cls.read, filenames)
+
 
 if __name__ == "__main__":
     opn = CallistoSpectrogram.read("callisto/BIR_20110922_103000_01.fit")
