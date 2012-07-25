@@ -16,6 +16,10 @@ from scipy import ndimage
 from sunpy.spectra.spectrogram import Spectrogram, LinearTimeSpectrogram
 
 
+def is_linear(arr):
+    return np.array_equal(arr, np.linspace(arr[0], arr[-1], len(arr)))
+
+
 def dict_eq(one, other):
     ks = set(one.keys())
     if ks != set(other.keys()):
@@ -134,9 +138,7 @@ def test_join():
     # assert np.array_equal(z[:, 3598:], ndimage.zoom(other, (1, 2)))
     assert z.start == one.start
     assert z.end == other.end
-    assert np.array_equal(
-        z.time_axis, np.linspace(0, 0.5 * (z.shape[1] - 1), z.shape[1])
-    )
+    assert is_linear(z.time_axis)
     assert isinstance(z, LinearTimeSpectrogram)
 
 
@@ -164,9 +166,7 @@ def test_join_midnight():
     assert z.shape == (200, 3 * 3600 - 1)
 
     assert np.array_equal(z[:, :3600], one)
-    assert np.array_equal(
-        z.time_axis, np.linspace(0, 0.5 * (z.shape[1] - 1), z.shape[1])
-    )
+    assert is_linear(z.time_axis)
     assert isinstance(z, LinearTimeSpectrogram)
 
 
@@ -194,9 +194,7 @@ def test_join_month():
     assert z.shape == (200, 3 * 3600 - 1)
 
     assert np.array_equal(z[:, :3600], one)
-    assert np.array_equal(
-        z.time_axis, np.linspace(0, 0.5 * (z.shape[1] - 1), z.shape[1])
-    )
+    assert is_linear(z.time_axis)
     assert isinstance(z, LinearTimeSpectrogram)
 
 
@@ -224,9 +222,7 @@ def test_join_year():
     assert z.shape == (200, 3 * 3600 - 1)
 
     assert np.array_equal(z[:, :3600], one)
-    assert np.array_equal(
-        z.time_axis, np.linspace(0, 0.5 * (z.shape[1] - 1), z.shape[1])
-    )
+    assert is_linear(z.time_axis)
     assert isinstance(z, LinearTimeSpectrogram)
 
 
@@ -256,9 +252,7 @@ def test_join_over_midnight():
 
     assert np.array_equal(z[:, :3600], one)
     assert np.array_equal(z.time_axis[:3600], one.time_axis)
-    assert np.array_equal(
-        z.time_axis, np.linspace(0, 0.5 * (z.shape[1] - 1), z.shape[1])
-    )
+    assert is_linear(z.time_axis)
     assert isinstance(z, LinearTimeSpectrogram)
 
 
@@ -313,9 +307,7 @@ def test_join_with_gap():
 
     assert np.array_equal(z[:, :3600], one)
     assert (z[:, 3600:3602] == 0).all()
-    assert np.array_equal(
-        z.time_axis, np.linspace(0, 0.5 * (z.shape[1] - 1), z.shape[1])
-    )
+    assert is_linear(z.time_axis)
     assert isinstance(z, LinearTimeSpectrogram)
 
 
@@ -345,9 +337,7 @@ def test_join_with_gap_fill():
 
     assert np.array_equal(z[:, :3600], one)
     assert np.isnan(z[:, 3600:3602]).all()
-    assert np.array_equal(
-        z.time_axis, np.linspace(0, 0.5 * (z.shape[1] - 1), z.shape[1])
-    )
+    assert is_linear(z.time_axis)
     assert isinstance(z, LinearTimeSpectrogram)
 
 
