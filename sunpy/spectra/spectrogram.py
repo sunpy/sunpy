@@ -16,6 +16,8 @@ import pyfits
 
 from bs4 import BeautifulSoup
 
+from numpy import ma
+
 from scipy import ndimage
 from scipy.stats.mstats import mode
 
@@ -468,6 +470,8 @@ class LinearTimeSpectrogram(Spectrogram):
         maxgap=0, fill=0):
         # XXX: Only load header and load contents of files
         # on demand.
+        mask = None
+
         if mk_arr is None:
             mk_arr = cls.make_array
 
@@ -550,6 +554,10 @@ class LinearTimeSpectrogram(Spectrogram):
                     )
             
             arr[:, sx:sx + x] = elem[:, :x]
+            if diff > 0:
+                if mask is None:
+                    mask = np.zeros((data.shape[0], size), dtype=np.uint8)
+                mask[:, sx + x - diff:sx + x] = 1
             time_axis[sx:sx + x] = elem.time_axis[:x] + data.t_delt * (sx + sd)
             if nonlinear:
                 sd += max(0, diff)
@@ -565,6 +573,8 @@ class LinearTimeSpectrogram(Spectrogram):
             'f_label': data.f_label,
             'content': data.content,
         }
+        if mask is not None:
+            arr = ma.array(arr, mask=mask)
         if nonlinear:
             del params['t_delt']
             return Spectrogram(arr, **params)
