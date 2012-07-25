@@ -6,6 +6,7 @@ from __future__ import absolute_import
 import datetime
 import urllib2
 
+from random import randint
 from itertools import izip
 from copy import copy, deepcopy
 from math import floor
@@ -272,6 +273,29 @@ class Spectrogram(np.ndarray):
 
         # Get indices of values with lowest standard deviation.
         cand = sorted(xrange(self.shape[0]), key=lambda y: sdevs[y])
+        # Only consider the best 5 %.
+        realcand = cand[:max(1, int(0.05 * len(cand)))]
+
+        # Average the best 5 %
+        bg = np.average(self[:, realcand], 1)
+
+        return self - bg.reshape(self.shape[0], 1)
+
+    def randomized_subtract_bg(self, amount):
+        """ Perform constant background subtraction. """
+        cols = [randint(0, self.shape[1] - 1) for _ in xrange(amount)]
+
+        # pylint: disable=E1101,E1103
+        data = self.astype(to_signed(self.dtype))
+        # Subtract average value from every frequency channel.
+        tmp = (data - np.average(self, 1).reshape(self.shape[0], 1))
+        # Get standard deviation at every point of time.
+        # Need to convert because otherwise this class's __getitem__
+        # is used which assumes two-dimensionality.
+        sdevs = np.asarray(np.std(tmp, 0))
+
+        # Get indices of values with lowest standard deviation.
+        cand = sorted(cols, key=lambda y: sdevs[y])
         # Only consider the best 5 %.
         realcand = cand[:max(1, int(0.05 * len(cand)))]
 
