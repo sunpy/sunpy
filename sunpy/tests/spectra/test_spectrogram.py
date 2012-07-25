@@ -384,7 +384,7 @@ def test_auto_t_init():
     ).t_init == 900
 
 
-def test_normalize():
+def test_rescale():
     image = np.random.rand(200, 3600) * 43
     spec = Spectrogram(image,
         np.linspace(0, image.shape[1] - 1, image.shape[1]),
@@ -393,14 +393,14 @@ def test_normalize():
         datetime(2010, 1, 1, 0, 30)
     )
 
-    nspec = spec.normalize()
+    nspec = spec.rescale()
 
     assert dict_eq(spec.get_params(), nspec.get_params())
     assert_array_almost_equal(nspec.max(), 1)
     assert nspec.min() == 0
 
 
-def test_normalize_error():
+def test_rescale_error():
     image = np.zeros((200, 3600))
     spec = Spectrogram(image,
         np.linspace(0, image.shape[1] - 1, image.shape[1]),
@@ -410,14 +410,14 @@ def test_normalize_error():
     )
 
     with pytest.raises(ValueError) as excinfo:
-        spec.normalize(0, 1)
+        spec.rescale(0, 1)
     assert (
         excinfo.value.message ==
         "Spectrogram needs to contain distinct values."
     )
 
 
-def test_normalize_error2():
+def test_rescale_error2():
     image = np.random.rand(200, 3600) * 43
     spec = Spectrogram(image,
         np.linspace(0, image.shape[1] - 1, image.shape[1]),
@@ -427,7 +427,7 @@ def test_normalize_error2():
     )
 
     with pytest.raises(ValueError) as excinfo:
-        spec.normalize(1, 1)
+        spec.rescale(1, 1)
     assert excinfo.value.message == "Maximum and minimum must be different."
 
 
