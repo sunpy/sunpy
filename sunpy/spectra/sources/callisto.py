@@ -6,12 +6,13 @@ from __future__ import absolute_import
 import os
 import datetime
 import urllib2
-
+import tempfile
 
 import numpy as np
 import pyfits
 
 from itertools import izip
+from collections import defaultdict
 
 from bs4 import BeautifulSoup
 
@@ -226,8 +227,36 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         return self[left-1:right+2, :]
 
     @classmethod
-    def read_many(cls, filenames):
-        return map(cls.read, filenames)
+    def read_many(cls, filenames, sort_by=None):
+        objs = map(cls.read, filenames)
+        if sort_by is not None:
+            objs.sort(key=lambda x: getattr(x, sort_by))
+        return objs
+
+    from_file = read
+
+    @classmethod
+    def from_url(cls, url):
+        return self.read(url)
+
+    @classmethod
+    def from_range(cls, instrument, start, end):
+        urls = query(start, end, [instrument])
+        data = map(cls.from_url, urls)
+        freq_buckets = defaultdict(list)
+        for elem in data:
+            freq_buckets[tuple(elem.freq_axis)].append(elem)
+        return cls.combine_frequencies(
+            [cls.join_many(elem) for elem in freq_buckets.itervalues()]
+        )
+
+    @classmethod
+    def make(cls, *args, **kwargs):
+        # XXX: Implement kwargs
+        if len(args) + len(kwargs) == 1:
+            return cls.read(*(args + kwargs.values()))
+        else:
+            return cls.from_range(*args)
 
 
 if __name__ == "__main__":
