@@ -237,7 +237,7 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
 
     @classmethod
     def from_url(cls, url):
-        return self.read(url)
+        return cls.read(url)
 
     @classmethod
     def from_range(cls, instrument, start, end):
