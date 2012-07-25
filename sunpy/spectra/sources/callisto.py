@@ -189,6 +189,7 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
                 np.linspace(0, self.shape[0] - 1) * f_delt + f_init # pylint: disable=E1101
 
         content = header["CONTENT"].split(" ", 1)[1]
+        content = start.strftime("%d %b %Y")+ ' ' + content
         return cls(data, time_axis, freq_axis, start, end, t_init, t_delt,
             t_label, f_label, content, header, axes.header, swapped)
 

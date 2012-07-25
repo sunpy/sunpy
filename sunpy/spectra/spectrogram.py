@@ -292,15 +292,16 @@ class Spectrogram(np.ndarray):
         # Get standard deviation at every point of time.
         # Need to convert because otherwise this class's __getitem__
         # is used which assumes two-dimensionality.
+        tmp = tmp[:, cols]
         sdevs = np.asarray(np.std(tmp, 0))
 
         # Get indices of values with lowest standard deviation.
-        cand = sorted(cols, key=lambda y: sdevs[y])
+        cand = sorted(xrange(amount), key=lambda y: sdevs[y])
         # Only consider the best 5 %.
         realcand = cand[:max(1, int(0.05 * len(cand)))]
 
         # Average the best 5 %
-        bg = np.average(self[:, realcand], 1)
+        bg = np.average(self[:, [cols[r] for r in realcand]], 1)
 
         return self - bg.reshape(self.shape[0], 1)
 
