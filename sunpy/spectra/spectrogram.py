@@ -325,7 +325,7 @@ class Spectrogram(np.ndarray):
 
         return new
 
-    def normalize(self, min_=0, max_=1, dtype_=np.dtype('float32')):
+    def rescale(self, min_=0, max_=1, dtype_=np.dtype('float32')):
         """ Normalize intensities to [min_, max_]. """
         if max_ == min_:
             raise ValueError("Maximum and minimum must be different.")
