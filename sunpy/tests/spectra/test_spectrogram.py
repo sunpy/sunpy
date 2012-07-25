@@ -64,6 +64,24 @@ def test_subtract_bg():
     assert dict_eq(spectrogram.get_params(), sbg.get_params())
 
 
+def test_auto_const_bg():
+    # The idea is to generate background and add a random signal, perform
+    # background subtraction and see if the signal comes out again.
+    x = np.linspace(0, 200, 200).astype(np.uint16)
+    bg = x.reshape(200, 1)
+    bg = bg + np.zeros((200, 3600))
+
+    signal = np.random.rand(200, 1800) * 255
+    signal = signal.astype(np.uint16)
+
+    image = bg
+    image[:, 1800:] += signal
+
+    spectrogram = mk_spec(image)
+    sbg = spectrogram.auto_const_bg()
+    assert np.array_equal(sbg, x.reshape(200, 1))
+
+
 def test_slice_time_axis():
     rnd = np.random.rand(200, 3600)
     spectrogram = mk_spec(rnd)
@@ -540,3 +558,5 @@ def test_intersect_time():
 
     assert np.array_equal(one.time_axis, other.time_axis)
     assert one.t_init == other.t_init
+    assert is_linear(one.time_axis)
+    assert is_linear(other.time_axis)

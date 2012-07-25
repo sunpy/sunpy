@@ -262,7 +262,7 @@ class Spectrogram(np.ndarray):
 
         return self[left:right, :]
 
-    def subtract_bg(self):
+    def auto_const_bg(self):
         """ Perform constant background subtraction. """
         # pylint: disable=E1101,E1103
         data = self.astype(to_signed(self.dtype))
@@ -280,10 +280,12 @@ class Spectrogram(np.ndarray):
 
         # Average the best 5 %
         bg = np.average(self[:, realcand], 1)
+        return bg.reshape(self.shape[0], 1)
 
-        return self - bg.reshape(self.shape[0], 1)
+    def subtract_bg(self):
+        return self - self.auto_const_bg()
 
-    def randomized_subtract_bg(self, amount):
+    def randomized_auto_const_bg(self, amount):
         """ Perform constant background subtraction. """
         cols = [randint(0, self.shape[1] - 1) for _ in xrange(amount)]
 
@@ -305,7 +307,7 @@ class Spectrogram(np.ndarray):
         # Average the best 5 %
         bg = np.average(self[:, [cols[r] for r in realcand]], 1)
 
-        return self - bg.reshape(self.shape[0], 1)
+        return bg.reshape(self.shape[0], 1)
 
     def clip(self, minimum=None, maximum=None):
         """ Clip values to be in the interval [minimum, maximum]. Any values
