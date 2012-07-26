@@ -290,7 +290,8 @@ class Spectrogram(np.ndarray):
         return self - self.auto_const_bg()
 
     def randomized_auto_const_bg(self, amount):
-        """ Perform constant background subtraction. """
+        """ Perform constant background subtraction. Only consider a randomly
+        chosen subset of the image. """
         cols = [randint(0, self.shape[1] - 1) for _ in xrange(amount)]
 
         # pylint: disable=E1101,E1103
@@ -484,7 +485,7 @@ class LinearTimeSpectrogram(Spectrogram):
 
         freqs = specs[0].freq_axis
         if not all(np.array_equal(freqs, sp.freq_axis) for sp in specs):
-            raise ValueError("Frequeny channels do not match.")
+            raise ValueError("Frequency channels do not match.")
 
         # Smallest time-delta becomes the common time-delta.
         min_delt = min(sp.t_delt for sp in specs)
