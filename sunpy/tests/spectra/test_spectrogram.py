@@ -544,7 +544,7 @@ def test_join_diff_freq():
     
     with pytest.raises(ValueError) as excinfo:
         LinearTimeSpectrogram.join_many([spec, spec2])
-    assert excinfo.value.message == "Frequeny channels do not match."
+    assert excinfo.value.message == "Frequency channels do not match."
 
 
 def test_intersect_time():
@@ -580,3 +580,22 @@ def test_intersect_time():
     assert one.t_init == other.t_init
     assert is_linear(one.time_axis)
     assert is_linear(other.time_axis)
+
+def test_check_linearity():
+    image = np.random.rand(5, 3600)
+    spec = LinearTimeSpectrogram(image,
+        np.linspace(0, 0.25 * (image.shape[1] - 1), image.shape[1]),
+        np.array([8, 6, 4, 2, 0]),
+        datetime(2010, 1, 1, 0, 15),
+        datetime(2010, 1, 1, 0, 30),
+        900,
+        0.25
+    )
+    assert spec.check_linearity()
+    spec.time_axis[1] += 0.1
+    assert not spec.check_linearity()
+    assert spec.check_linearity(0.1)
+    spec.time_axis[1] -= 0.1
+    # The average stays (almost) the same because there are 3600 items.
+    spec.time_axis[1] += 0.2 * 0.25
+    assert spec.check_linearity(None, 0.2)

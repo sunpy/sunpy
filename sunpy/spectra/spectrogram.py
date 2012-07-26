@@ -646,3 +646,14 @@ class LinearTimeSpectrogram(Spectrogram):
         }
         # XXX
         return cls._new_with_params(new, params)
+
+    def check_linearity(self, err=None, err_factor=None):
+        deltas = self.time_axis[:-1] - self.time_axis[1:]
+        avg = np.average(deltas)
+        if err is None and err_factor is None:
+            err = 0
+        elif err is None:
+            err = abs(err_factor * avg)
+        elif err_factor is not None:
+            raise ValueError
+        return (abs(deltas - avg) <= err).all()
