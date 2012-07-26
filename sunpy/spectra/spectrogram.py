@@ -196,6 +196,7 @@ class Spectrogram(np.ndarray):
         
         params = {
             'origin': 'lower',
+            'aspect': 'auto',
         }
         params.update(matplotlib_args)
         im = axes.imshow(np.array(self), **params)
