@@ -180,6 +180,62 @@ def test_join():
     assert isinstance(z, LinearTimeSpectrogram)
 
 
+def test_join_dtype():
+    image = np.random.rand(200, 3600).astype(np.uint8)
+    one = LinearTimeSpectrogram(
+        image, np.linspace(0, 0.5 * (image.shape[1] - 1), image.shape[1]),
+        np.linspace(0, image.shape[0] - 1, image.shape[0]),
+        datetime(2010, 10, 10), datetime(2010, 10, 10, 0, 30), 0, 0.5,
+    )
+
+    image = np.random.rand(200, 3600).astype(np.uint8)
+    other = LinearTimeSpectrogram(
+        image, np.linspace(0, image.shape[1] - 1, image.shape[1]),
+        np.linspace(0, image.shape[0] - 1, image.shape[0]),
+        datetime(2010, 10, 10, 0, 29),
+        datetime(2010, 10, 10, 1, 29), 1799, 1,
+    )
+    
+    print one.dtype
+    print other.dtype
+    
+    z = LinearTimeSpectrogram.join_many(
+        [one, other], nonlinear=False, maxgap=0
+    )
+    # The - 1 is because resampling other procuces an image of size
+    # 2 * 3600 - 1
+    # The - 2 is because there is one second overlap.
+    assert z.dtype == np.dtype('uint8')
+
+
+def test_join_different_dtype():
+    image = np.random.rand(200, 3600).astype(np.uint16)
+    one = LinearTimeSpectrogram(
+        image, np.linspace(0, 0.5 * (image.shape[1] - 1), image.shape[1]),
+        np.linspace(0, image.shape[0] - 1, image.shape[0]),
+        datetime(2010, 10, 10), datetime(2010, 10, 10, 0, 30), 0, 0.5,
+    )
+
+    image = np.random.rand(200, 3600).astype(np.uint8)
+    other = LinearTimeSpectrogram(
+        image, np.linspace(0, image.shape[1] - 1, image.shape[1]),
+        np.linspace(0, image.shape[0] - 1, image.shape[0]),
+        datetime(2010, 10, 10, 0, 29),
+        datetime(2010, 10, 10, 1, 29), 1799, 1,
+    )
+    
+    print one.dtype
+    print other.dtype
+    
+    z = LinearTimeSpectrogram.join_many(
+        [one, other], nonlinear=False, maxgap=0
+    )
+    # The - 1 is because resampling other procuces an image of size
+    # 2 * 3600 - 1
+    # The - 2 is because there is one second overlap.
+    assert z.dtype == np.dtype('uint16')
+
+
 def test_join_midnight():
     image = np.random.rand(200, 3600)
     one = LinearTimeSpectrogram(

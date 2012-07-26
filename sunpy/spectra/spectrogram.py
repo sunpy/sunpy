@@ -440,13 +440,15 @@ class LinearTimeSpectrogram(Spectrogram):
         self.t_delt = t_delt
 
     @staticmethod
-    def make_array(shape):
-        return np.zeros(shape)
+    def make_array(shape, dtype_=np.dtype('float32')):
+        return np.zeros(shape, dtype=dtype_)
 
     @staticmethod
-    def memmap(filename):
+    def memmap(filename, dtype_=np.dtype('float32')):
         return (
-            lambda shape: np.memmap(filename, mode="write", shape=shape)
+            lambda shape: np.memmap(
+                filename, mode="write", shape=shape, dtype=dtype_
+            )
         )
     
     def resample_time(self, new_delt):
@@ -489,6 +491,7 @@ class LinearTimeSpectrogram(Spectrogram):
 
         # Smallest time-delta becomes the common time-delta.
         min_delt = min(sp.t_delt for sp in specs)
+        dtype_ = max(sp.dtype for sp in specs)
 
         specs = [sp.resample_time(min_delt) for sp in specs]
         size = sum(sp.shape[1] for sp in specs)
@@ -527,7 +530,7 @@ class LinearTimeSpectrogram(Spectrogram):
 
         # We do that here so the user can pass a memory mapped
         # array if they'd like to.
-        arr = mk_arr((data.shape[0], size))
+        arr = mk_arr((data.shape[0], size), dtype_)
         time_axis = np.zeros((size,))
         sx = 0
         # Amount of pixels left out due to nonlinearity. Needs to be
@@ -600,6 +603,8 @@ class LinearTimeSpectrogram(Spectrogram):
 
     @staticmethod
     def intersect_time(specs):
+        """ Return slice of spectrograms that is present in all of the ones
+        passed. """
         delt = min(sp.t_delt for sp in specs)
         start = max(sp.t_init for sp in specs)
 
