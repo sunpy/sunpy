@@ -74,8 +74,6 @@ class TimeRange:
         self.t1 = parse_time(x)
 
         # End date
-        # XXX: I find it extremely dangerous to do different behaviour for
-        # floats and integers. --Florian
         if isinstance(y, str):
             self.t2 = parse_time(y)
             
