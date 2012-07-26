@@ -187,9 +187,12 @@ class Spectrogram(np.ndarray):
     def show(self, *args, **kwargs):
         self.plot(*args, **kwargs).show()
 
-    def plot(self, overlays=[], colorbar=True, **matplotlib_args):
+    def plot(self, overlays=[], colorbar=True, min_=None, max_=None, 
+        **matplotlib_args):
         # [] as default argument is okay here because it is only read.
         # pylint: disable=W0102,R0914
+
+        data = np.array(self.clip(min_, max_))
 
         figure = plt.figure(frameon=True)
         axes = figure.add_subplot(111)
@@ -341,8 +344,7 @@ class Spectrogram(np.ndarray):
         )
 
     def interpolate(self, frequency):
-        """ Linearly interpolate intensity at unknown frequency at the
-        time with the index time. """
+        """ Linearly interpolate intensity at unknown frequency. """
         lfreq, lvalue = None, None
         for freq, value in izip(self.freq_axis, self[:, :]):
             if freq < frequency:
