@@ -196,15 +196,9 @@ def test_join_dtype():
         datetime(2010, 10, 10, 1, 29), 1799, 1,
     )
     
-    print one.dtype
-    print other.dtype
-    
     z = LinearTimeSpectrogram.join_many(
         [one, other], nonlinear=False, maxgap=0
     )
-    # The - 1 is because resampling other procuces an image of size
-    # 2 * 3600 - 1
-    # The - 2 is because there is one second overlap.
     assert z.dtype == np.dtype('uint8')
 
 
@@ -224,15 +218,9 @@ def test_join_different_dtype():
         datetime(2010, 10, 10, 1, 29), 1799, 1,
     )
     
-    print one.dtype
-    print other.dtype
-    
     z = LinearTimeSpectrogram.join_many(
         [one, other], nonlinear=False, maxgap=0
     )
-    # The - 1 is because resampling other procuces an image of size
-    # 2 * 3600 - 1
-    # The - 2 is because there is one second overlap.
     assert z.dtype == np.dtype('uint16')
 
 
