@@ -202,7 +202,7 @@ class Spectrogram(np.ndarray):
             'aspect': 'auto',
         }
         params.update(matplotlib_args)
-        im = axes.imshow(np.array(self), **params)
+        im = axes.imshow(data, **params)
         
         xa = axes.get_xaxis()
         ya = axes.get_yaxis()
