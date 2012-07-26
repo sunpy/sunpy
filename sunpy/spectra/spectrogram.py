@@ -648,6 +648,10 @@ class LinearTimeSpectrogram(Spectrogram):
         return cls._new_with_params(new, params)
 
     def check_linearity(self, err=None, err_factor=None):
+        """ Check linearity of time axis. If err is given, tolerate absolute
+        derivation from average delta up to err. If err_factor is given,
+        tolerate up to err_factor * average_delta. If both are given,
+        TypeError is raised. Default to err=0."""
         deltas = self.time_axis[:-1] - self.time_axis[1:]
         avg = np.average(deltas)
         if err is None and err_factor is None:
@@ -655,5 +659,5 @@ class LinearTimeSpectrogram(Spectrogram):
         elif err is None:
             err = abs(err_factor * avg)
         elif err_factor is not None:
-            raise ValueError
+            raise TypeError("Only supply err or err_factor, not both")
         return (abs(deltas - avg) <= err).all()
