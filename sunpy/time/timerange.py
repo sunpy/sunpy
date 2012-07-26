@@ -55,7 +55,7 @@ class TimeRange:
     | http://docs.scipy.org/doc/numpy/reference/arrays.classes.html
 
     """
-    def __init__(self, a, b = None):
+    def __init__(self, a, b=None, julian_date=False):
         """Creates a new TimeRange instance"""
         from sunpy.time import parse_time
         # if already a timeRange object just return it
@@ -76,7 +76,7 @@ class TimeRange:
         # End date
         # XXX: I find it extremely dangerous to do different behaviour for
         # floats and integers. --Florian
-        if isinstance(y, (str, float)):
+        if isinstance(y, str):
             self.t2 = parse_time(y)
             
         # Timedelta
@@ -84,8 +84,11 @@ class TimeRange:
             self.t2 = self.t1 + y
             
         # Seconds offset
-        if isinstance(y, int):
-            self.t2 = self.t1 + timedelta(0, y) 
+        if isinstance(y, (float, int)):
+            if julian_date:
+                self.t2 = parse_time(y)
+            else:
+                self.t2 = self.t1 + timedelta(0, y) 
             
         self.dt = self.t2 - self.t1
     
