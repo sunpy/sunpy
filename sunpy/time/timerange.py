@@ -1,6 +1,8 @@
 from __future__ import absolute_import
 from datetime import timedelta
 
+from sunpy.time import parse_time
+
 __all__ = ["TimeRange"]
 
 class TimeRange:
@@ -57,7 +59,6 @@ class TimeRange:
     """
     def __init__(self, a, b = None):
         """Creates a new TimeRange instance"""
-        from sunpy.time import parse_time
         
         # if already a timeRange object just return it
         #if isinstance(a, TimeRange):
@@ -75,11 +76,13 @@ class TimeRange:
         self.t1 = parse_time(x)
 
         # End date
-        if isinstance(y, str) or isinstance(y, float):
+        # XXX: I find it extremely dangerous to do different behaviour for
+        # floats and integers. --Florian
+        if isinstance(y, (str, float)):
             self.t2 = parse_time(y)
             
         # Timedelta
-        if type(y) == type(timedelta(1)):
+        if isinstance(y, timedelta):
             self.t2 = self.t1 + y
             
         # Seconds offset
