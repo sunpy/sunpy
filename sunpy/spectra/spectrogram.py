@@ -644,8 +644,7 @@ class LinearTimeSpectrogram(Spectrogram):
             'f_label': one.f_label,
             'content': one.content,
         }
-        # XXX
-        return cls._new_with_params(new, params)
+        return cls(new, **params)
 
     def check_linearity(self, err=None, err_factor=None):
         """ Check linearity of time axis. If err is given, tolerate absolute
