@@ -82,6 +82,26 @@ def test_auto_const_bg():
     assert np.array_equal(sbg, x.reshape(200, 1))
 
 
+def test_randomized_auto_const_bg():
+    # The idea is to generate background and add a random signal, perform
+    # background subtraction and see if the signal comes out again.
+    # As this is a Monte-Carlo probabilistic algorithm this test might
+    # fail occasionally.
+    x = np.linspace(0, 200, 200).astype(np.uint16)
+    bg = x.reshape(200, 1)
+    bg = bg + np.zeros((200, 3600))
+
+    signal = np.random.rand(200, 1800) * 255
+    signal = signal.astype(np.uint16)
+
+    image = bg
+    image[:, 1800:] += signal
+
+    spectrogram = mk_spec(image)
+    sbg = spectrogram.randomized_auto_const_bg(1500)
+    assert np.array_equal(sbg, x.reshape(200, 1))
+
+
 def test_slice_time_axis():
     rnd = np.random.rand(200, 3600)
     spectrogram = mk_spec(rnd)
