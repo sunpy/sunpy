@@ -1,8 +1,6 @@
 from __future__ import absolute_import
 from datetime import timedelta
 
-from sunpy.time import parse_time
-
 __all__ = ["TimeRange"]
 
 class TimeRange:
@@ -59,7 +57,7 @@ class TimeRange:
     """
     def __init__(self, a, b = None):
         """Creates a new TimeRange instance"""
-        
+        from sunpy.time import parse_time
         # if already a timeRange object just return it
         #if isinstance(a, TimeRange):
         #    return a
