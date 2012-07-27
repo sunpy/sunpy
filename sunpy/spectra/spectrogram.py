@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 # Author: Florian Mayer <florian.mayer@bitsrc.org>
 
+""" Classes for spectral analysis. """
+
 from __future__ import absolute_import
 
 import datetime
@@ -43,6 +45,7 @@ def get_day(dt):
 
 # XXX: Find out why imshow(x) fails!
 class Spectrogram(np.ndarray):
+    """ Base class for spectral analysis in SunPy. """
     # Contrary to what pylint may think, this is not an old-style class.
     # pylint: disable=E1002,W0142,R0902
 
