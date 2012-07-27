@@ -97,7 +97,7 @@ def parse_time(time_string=None):
              "%Y/%m/%dT%H:%M:%S.%f",    # Example 2007/05/04T21:08:12.999999
              "%Y-%m-%dT%H:%M:%S.%fZ",   # Example 2007-05-04T21:08:12.999Z
              "%Y-%m-%dT%H:%M:%S",       # Example 2007-05-04T21:08:12
-             "%Y/%m/%dT%H:%M:%S",       # Example 2007-05-04T21:08:12
+             "%Y/%m/%dT%H:%M:%S",       # Example 2007/05/04T21:08:12
              "%Y%m%dT%H%M%S.%f",        # Example 20070504T210812.999999
              "%Y%m%dT%H%M%S",           # Example 20070504T210812
              "%Y/%m/%d %H:%M:%S",       # Example 2007/05/04 21:08:12
