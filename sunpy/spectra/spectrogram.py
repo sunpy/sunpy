@@ -232,10 +232,11 @@ class Spectrogram(np.ndarray):
         return figure
 
     def __getitem__(self, key):
-        if not isinstance(key, tuple):
-            key = (key, slice(None, None, None))
-
-        if isinstance(key[0], slice) and isinstance(key[1], slice):
+        only_y = not isinstance(key, tuple)
+        
+        if only_y:
+            return super(Spectrogram, self).__getitem__(key)
+        elif isinstance(key[0], slice) and isinstance(key[1], slice):
             return self.slice(key[0], key[1])
         elif isinstance(key[1], slice):
             return Spectrum( # XXX: Right class
