@@ -683,3 +683,17 @@ def test_in_interval():
     )
     
     assert np.array_equal(spec.in_interval("00:15", "00:30"), spec)
+
+
+def test_in_interval2():
+    image = np.random.rand(5, 900)
+    spec = LinearTimeSpectrogram(image,
+        np.linspace(0, 1 * (image.shape[1] - 1), image.shape[1]),
+        np.array([8, 6, 4, 2, 0]),
+        datetime(2010, 1, 1, 0, 15),
+        datetime(2010, 1, 1, 0, 30),
+        900,
+        1
+    )
+    
+    assert np.array_equal(spec.in_interval("2010-01-01T00:15:00", "00:30"), spec)

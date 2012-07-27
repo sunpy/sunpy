@@ -14,8 +14,6 @@ from math import floor
 import numpy as np
 import pyfits
 
-from bs4 import BeautifulSoup
-
 from numpy import ma
 
 from scipy import ndimage
@@ -706,15 +704,15 @@ class LinearTimeSpectrogram(Spectrogram):
                 self.start.year, self.start.month, self.start.day,
                 *map(int, start.split(":"))
             )
-            try:
-                end = parse_time(end)
-            except ValueError:
-                if get_day(self.start) != get_day(self.end):
-                    raise TypeError(
-                        "Time ambiguous because data spans over more than one day"
-                    )                
-                end = datetime.datetime(
-                    self.start.year, self.start.month, self.start.day,
-                    *map(int, end.split(":"))
-                )        
+        try:
+            end = parse_time(end)
+        except ValueError:
+            if get_day(self.start) != get_day(self.end):
+                raise TypeError(
+                    "Time ambiguous because data spans over more than one day"
+                )                
+            end = datetime.datetime(
+                self.start.year, self.start.month, self.start.day,
+                *map(int, end.split(":"))
+            )
         return self[:, self.time_to_x(start): self.time_to_x(end)]
