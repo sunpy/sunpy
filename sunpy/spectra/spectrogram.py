@@ -665,3 +665,29 @@ class LinearTimeSpectrogram(Spectrogram):
         elif err_factor is not None:
             raise TypeError("Only supply err or err_factor, not both")
         return (abs(deltas - avg) <= err).all()
+    
+    def in_interval(self, start, end):
+        try:
+            start = parse_time(start)
+        except ValueError:
+            # XXX: We could do better than that.
+            if get_day(self.start) != get_day(self.end):
+                raise TypeError(
+                    "Time ambiguous because data spans over more than one day"
+                )
+            start = datetime.datetime(
+                self.start.year, self.start.month, self.start.day,
+                *map(int, start.split(":"))
+            )
+            try:
+                end = parse_time(end)
+            except ValueError:
+                if get_day(self.start) != get_day(self.end):
+                    raise TypeError(
+                        "Time ambiguous because data spans over more than one day"
+                    )                
+                end = datetime.datetime(
+                    self.start.year, self.start.month, self.start.day,
+                    *map(int, end.split(":"))
+                )        
+        return self[:, self.time_to_x(start): self.time_to_x(end)]
