@@ -148,6 +148,18 @@ def test_time_to_x():
     assert ret == 59
 
 
+def test_time_to_x_nonlinear():
+    image = np.zeros((200, 3600))
+    spectrogram = Spectrogram(
+        image, np.linspace(0, image.shape[1] - 1, image.shape[1]),
+        np.linspace(0, image.shape[0] - 1, image.shape[0]),
+        datetime(2010, 10, 10), datetime(2010, 10, 10, 1)
+    )
+    ret = spectrogram.time_to_x(datetime(2010, 10, 10, 0, 0, 59))
+    assert isinstance(ret, int)
+    assert ret == 59
+
+
 def test_join():
     image = np.random.rand(200, 3600)
     one = LinearTimeSpectrogram(
@@ -644,6 +656,7 @@ def test_check_linearity():
     spec.time_axis[1] += 0.2 * 0.25
     assert spec.check_linearity(None, 0.2)
 
+
 def test_flatten():
     flat = np.arange(5 * 3600)
     image = flat.reshape(5, 3600)
@@ -656,3 +669,17 @@ def test_flatten():
         0.25
     )
     assert np.array_equal(flat, spec.flatten())
+
+
+def test_in_interval():
+    image = np.random.rand(5, 900)
+    spec = LinearTimeSpectrogram(image,
+        np.linspace(0, 1 * (image.shape[1] - 1), image.shape[1]),
+        np.array([8, 6, 4, 2, 0]),
+        datetime(2010, 1, 1, 0, 15),
+        datetime(2010, 1, 1, 0, 30),
+        900,
+        1
+    )
+    
+    assert np.array_equal(spec.in_interval("00:15", "00:30"), spec)
