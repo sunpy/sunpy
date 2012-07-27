@@ -394,7 +394,7 @@ def test_join_with_gap():
         [one, other], nonlinear=False, maxgap=1
     )
 
-    # The - 1 is because resampling other procuces an image of size
+    # The - 1 is because resampling other produces an image of size
     # 2 * 3600 - 1
     # The + 2 is because there is one second without data inserted.
     assert z.shape == (200, 3 * 3600 + 2 - 1)
