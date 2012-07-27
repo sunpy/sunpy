@@ -423,6 +423,19 @@ class Spectrogram(np.ndarray):
         if lower > upper:
             raise ValueError("No overlap.")
         return lower, upper
+    
+    def time_to_x(self, time):
+        """ Return x-coordinate in spectrogram that corresponds to the
+        passed datetime value. """        
+        diff = time - self.start
+        diff_s = SECONDS_PER_DAY * diff.days + diff.seconds
+        if self.time_axis[-1] < diff_s < 0:
+            raise ValueError("Out of bounds")
+        for n, elem in enumerate(self.time_axis):
+            if diff_s < elem:
+                return n - 1
+        # The last element is the searched one.
+        return n
 
 
 class LinearTimeSpectrogram(Spectrogram):
@@ -598,7 +611,7 @@ class LinearTimeSpectrogram(Spectrogram):
         diff = time - self.start
         diff_s = SECONDS_PER_DAY * diff.days + diff.seconds
         result = diff_s // self.t_delt
-        if 0 <= result < self.shape[1]: # pylint: disable=E1101
+        if 0 <= result <= self.shape[1]: # pylint: disable=E1101
             return result
         raise ValueError("Out of range.")
 
