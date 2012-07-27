@@ -41,7 +41,9 @@ DEEPCOPY = 2
 
 # Maybe move to util.
 def get_day(dt):
+    """ Return datetime for the beginning of the day of given datetime. """
     return datetime.datetime(dt.year, dt.month, dt.day)
+
 
 # XXX: Find out why imshow(x) fails!
 class Spectrogram(np.ndarray):
@@ -79,7 +81,7 @@ class Spectrogram(np.ndarray):
             (name, getattr(self, name)) for name, _ in self.COPY_PROPERTIES
         )
     
-    def slice(self, y_range, x_range):
+    def _slice(self, y_range, x_range):
         """ Return new spectrogram reduced to the values passed
         as slices. """
         data = super(Spectrogram, self).__getitem__([y_range, x_range])
@@ -243,7 +245,7 @@ class Spectrogram(np.ndarray):
         if only_y:
             return super(Spectrogram, self).__getitem__(key)
         elif isinstance(key[0], slice) and isinstance(key[1], slice):
-            return self.slice(key[0], key[1])
+            return self._slice(key[0], key[1])
         elif isinstance(key[1], slice):
             return Spectrum( # XXX: Right class
                 super(Spectrogram, self).__getitem__(key),
