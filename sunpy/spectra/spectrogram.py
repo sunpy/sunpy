@@ -77,15 +77,6 @@ class Spectrogram(np.ndarray):
         return dict(
             (name, getattr(self, name)) for name, _ in self.COPY_PROPERTIES
         )
-
-    @classmethod
-    def _new_with_params(cls, data, params, **kwargs):
-        params.update(kwargs)
-        """ Implementation detail. """
-        obj = cls.__new__(cls, data)
-        for key, value in params.iteritems():
-            setattr(obj, key, value)
-        return obj
     
     def slice(self, y_range, x_range):
         """ Return new spectrogram reduced to the values passed
@@ -282,7 +273,7 @@ class Spectrogram(np.ndarray):
         return self[left:right, :]
 
     def auto_const_bg(self):
-        """ Perform constant background subtraction. """
+        """ Automatically determine background. """
         # pylint: disable=E1101,E1103
         data = self.astype(to_signed(self.dtype))
         # Subtract average value from every frequency channel.
@@ -302,10 +293,11 @@ class Spectrogram(np.ndarray):
         return bg.reshape(self.shape[0], 1)
 
     def subtract_bg(self):
+        """ Perform constant background subtraction. """
         return self - self.auto_const_bg()
 
     def randomized_auto_const_bg(self, amount):
-        """ Perform constant background subtraction. Only consider a randomly
+        """ Automatically determine background. Only consider a randomly
         chosen subset of the image. """
         cols = [randint(0, self.shape[1] - 1) for _ in xrange(amount)]
 
@@ -328,7 +320,12 @@ class Spectrogram(np.ndarray):
         bg = np.average(self[:, [cols[r] for r in realcand]], 1)
 
         return bg.reshape(self.shape[0], 1)
-
+    
+    def randomized_subtract_bg(self, amount):
+        """ Perform randomized constant background subtraction. 
+        Does not produce the same result every time it is run. """
+        return self - self.randomized_auto_const_bg(amount)
+    
     def clip(self, minimum=None, maximum=None):
         """ Clip values to be in the interval [minimum, maximum]. Any values
         greater than the maximum will be assigned the maximum, any values
@@ -375,7 +372,8 @@ class Spectrogram(np.ndarray):
         return (ldiff * value + diff * lvalue) / (diff + ldiff)
 
     @staticmethod
-    def merge(items, key=lambda x: x):
+    def _merge(items, key=lambda x: x):
+        """ Implementation detail. """
         state = {}
         for item in map(iter, items):
             try:
@@ -399,7 +397,7 @@ class Spectrogram(np.ndarray):
                 del state[item]
 
     def linearize_freqs(self, delta_freq=None):
-        # 
+        """ Rebin frequencies so that the frequency axis is linear. """
         if delta_freq is None:
             delta_freq = (self.freq_axis[:-1] - self.freq_axis[1:])
             # Multiple values at the same frequency are just thrown away
@@ -432,6 +430,8 @@ class Spectrogram(np.ndarray):
         return self.__class__(new, **vrs)
 
     def freq_overlap(self, other):
+        """ Get frequency range present in both spectrograms. Returns
+        (min, max) tuple. """
         lower = max(self.freq_axis[-1], other.freq_axis[-1])
         upper = min(self.freq_axis[0], other.freq_axis[0])
         if lower > upper:
@@ -504,6 +504,8 @@ class LinearTimeSpectrogram(Spectrogram):
     @classmethod
     def join_many(cls, spectrograms, mk_arr=None, nonlinear=False,
         maxgap=0, fill=0):
+        """ Produce new Spectrogram that contains spectrograms
+        joined together in time. """
         # XXX: Only load header and load contents of files
         # on demand.
         mask = None
@@ -655,7 +657,7 @@ class LinearTimeSpectrogram(Spectrogram):
         freq_axis = np.zeros((fsize,))
 
 
-        for n, (data, row) in enumerate(cls.merge(
+        for n, (data, row) in enumerate(cls._merge(
             [
                 [(sp, n) for n in xrange(sp.shape[0])] for sp in specs
             ],
