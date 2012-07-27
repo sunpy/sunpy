@@ -111,7 +111,7 @@ class Spectrogram(np.ndarray):
                 seconds=self.time_axis[eoffset]),
             't_init': self.t_init + self.time_axis[soffset],
         })
-        return self._new_with_params(data, params)
+        return self.__class__(data, **params)
 
     # This accepting arbitrary arguments makes it easier to subclass this.
     def __new__(cls, data, *args, **kwargs):
@@ -485,8 +485,8 @@ class LinearTimeSpectrogram(Spectrogram):
             ),
             't_delt': new_delt,
         })
-        return self._new_with_params(data, params)
-
+        return self.__class__(data, **params)
+    
     @classmethod
     def join_many(cls, spectrograms, mk_arr=None, nonlinear=False,
         maxgap=0, fill=0):
@@ -552,6 +552,8 @@ class LinearTimeSpectrogram(Spectrogram):
         sd = 0
         for x, elem in izip(xs, specs):
             diff = x - elem.shape[1]
+            e_time_axis = elem.time_axis
+            
             if x > elem.shape[1]:
                 if nonlinear:
                     x = elem.shape[1]
@@ -561,27 +563,24 @@ class LinearTimeSpectrogram(Spectrogram):
                     filler = np.zeros((data.shape[0], diff))
                     filler[:] = fill
                     minimum = elem.time_axis[-1]
-                    elem = cls._new_with_params(
-                        np.concatenate([elem, filler], 1),
-                        elem.get_params(),
-                        time_axis=np.concatenate(
-                            [
-                                elem.time_axis,
-                                np.linspace(
-                                    minimum + min_delt,
-                                    minimum + diff * min_delt,
-                                    diff
-                                )
-                            ]
-                        )
-                    )
+                    e_time_axis = np.concatenate(
+                        [
+                            elem.time_axis,
+                            np.linspace(
+                                minimum + min_delt,
+                                minimum + diff * min_delt,
+                                diff
+                            )
+                        ]
+                    )                    
+                    elem = np.concatenate([elem, filler], 1)
             
             arr[:, sx:sx + x] = elem[:, :x]
             if diff > 0:
                 if mask is None:
                     mask = np.zeros((data.shape[0], size), dtype=np.uint8)
                 mask[:, sx + x - diff:sx + x] = 1
-            time_axis[sx:sx + x] = elem.time_axis[:x] + data.t_delt * (sx + sd)
+            time_axis[sx:sx + x] = e_time_axis[:x] + data.t_delt * (sx + sd)
             if nonlinear:
                 sd += max(0, diff)
             sx += x
