@@ -23,6 +23,7 @@ from scipy.stats.mstats import mode
 
 from matplotlib import pyplot as plt
 from matplotlib.ticker import FuncFormatter, MaxNLocator
+from matplotlib.colorbar import Colorbar
 
 from sunpy.time import parse_time
 from sunpy.util.util import to_signed
@@ -185,17 +186,24 @@ class Spectrogram(np.ndarray):
         return "%.2f" % freq
 
     def show(self, *args, **kwargs):
-        self.plot(*args, **kwargs).show()
+        nums = plt.get_fignums()
+        figure = None
+        if nums:
+            figure = plt.figure(max(nums))
+        self.plot(figure, *args, **kwargs).show()
 
-    def plot(self, overlays=[], colorbar=True, min_=None, max_=None, 
+    def plot(self, figure=None, overlays=[], colorbar=True, min_=None, max_=None, 
         **matplotlib_args):
         # [] as default argument is okay here because it is only read.
         # pylint: disable=W0102,R0914
 
         data = np.array(self.clip(min_, max_))
-
-        figure = plt.figure(frameon=True)
-        axes = figure.add_subplot(111)
+        newfigure = figure is None
+        if figure is None:
+            figure = plt.figure(frameon=True)
+            axes = figure.add_subplot(111)
+        else:
+            axes = figure.axes[0]
         
         params = {
             'origin': 'lower',
@@ -225,10 +233,16 @@ class Spectrogram(np.ndarray):
             tl.set_rotation(30)
         figure.add_axes(axes)
         if colorbar:
-            figure.colorbar(im).set_label("Intensity")
+            if newfigure:
+                figure.colorbar(im).set_label("Intensity")
+            else:
+                Colorbar(figure.axes[1], im).set_label("Intensity")
 
         for overlay in overlays:
             figure, axes = overlay(figure, axes)
+            
+        for ax in figure.axes:
+            ax.autoscale()
         return figure
 
     def __getitem__(self, key):
