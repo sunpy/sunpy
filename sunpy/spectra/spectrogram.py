@@ -563,16 +563,14 @@ class LinearTimeSpectrogram(Spectrogram):
                     filler = np.zeros((data.shape[0], diff))
                     filler[:] = fill
                     minimum = elem.time_axis[-1]
-                    e_time_axis = np.concatenate(
-                        [
-                            elem.time_axis,
-                            np.linspace(
-                                minimum + min_delt,
-                                minimum + diff * min_delt,
-                                diff
-                            )
-                        ]
-                    )                    
+                    e_time_axis = np.concatenate([
+                        elem.time_axis,
+                        np.linspace(
+                            minimum + min_delt,
+                            minimum + diff * min_delt,
+                            diff
+                        )
+                    ])
                     elem = np.concatenate([elem, filler], 1)
             
             arr[:, sx:sx + x] = elem[:, :x]
