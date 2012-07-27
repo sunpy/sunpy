@@ -540,7 +540,7 @@ class LinearTimeSpectrogram(Spectrogram):
             xs.append(x)
             diff = last.shape[1] - x
 
-            if maxgap is not None and -diff > maxgap:
+            if maxgap is not None and -diff > maxgap / min_delt:
                 raise ValueError("Too large gap.")
 
             # If we leave out undefined values, we do not want to
