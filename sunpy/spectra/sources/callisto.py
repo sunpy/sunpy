@@ -241,6 +241,8 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
 
     @classmethod
     def from_range(cls, instrument, start, end):
+        start = parse_time(start)
+        end = parse_time(end)
         urls = query(start, end, [instrument])
         data = map(cls.from_url, urls)
         freq_buckets = defaultdict(list)
