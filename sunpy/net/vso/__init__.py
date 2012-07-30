@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 # Author: Florian Mayer <florian.mayer@bitsrc.org>
-
+#
+# This module was developed with funding provided by
+# the ESA Summer of Code (2011).
+#
 #pylint: disable=W0401,C0103,R0904,W0141
 
 from __future__ import absolute_import
@@ -24,7 +27,8 @@ from suds import client, TypeNotFound
 from sunpy.net import download
 from sunpy.net.attr import and_, Attr
 from sunpy.net.vso.attrs import walker, TIMEFORMAT
-from sunpy.util.util import anytim, to_angstrom, print_table
+from sunpy.util.util import to_angstrom, print_table
+from sunpy.time import parse_time
 
 DEFAULT_URL = 'http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl'
 DEFAULT_PORT = 'nsoVSOi'
@@ -187,10 +191,15 @@ class VSOClient(object):
     method_order = [
         'URL-TAR_GZ', 'URL-ZIP', 'URL-TAR', 'URL-FILE', 'URL-packaged'
     ]
-    def __init__(self, api=None):
+    def __init__(self, url=None, port=None, api=None):
         if api is None:
-            api = client.Client(DEFAULT_URL)
-            api.set_options(port=DEFAULT_PORT)
+            if url is None:
+                url = DEFAULT_URL
+            if port is None:
+                port = DEFAULT_PORT
+            
+            api = client.Client(url)
+            api.set_options(port=port)
         self.api = api
     
     def make(self, type_, **kwargs):
@@ -245,10 +254,8 @@ class VSOClient(object):
             except TypeNotFound:
                 pass
             except Exception as ex:
-                print("Error: Invalid response recieved from VSO request.")
                 response = QueryResponse.create(self.merge(responses))
                 response.add_error(ex)
-                return response
         
         return QueryResponse.create(self.merge(responses))
     
@@ -403,7 +410,7 @@ class VSOClient(object):
         queryreq = self.api.factory.create('QueryRequest')
         for key, value in kwargs.iteritems():
             if key.startswith('time'):
-                value = anytim(value).strftime(TIMEFORMAT)
+                value = parse_time(value).strftime(TIMEFORMAT)
             for k, v in ALIASES.get(key, sdk(key))(value).iteritems():
                 attr = k.split('_')
                 lst = attr[-1]

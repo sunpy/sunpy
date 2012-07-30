@@ -5,8 +5,7 @@ from __future__ import absolute_import
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
-from sunpy.map.basemap import UnrecognizedDataSouceError
-from sunpy.map.basemap import BaseMap
+from sunpy.map import Map
 from sunpy.map.sources import *
 import numpy as np
 
@@ -38,13 +37,13 @@ class MapCube(np.ndarray):
     See Also
     --------
     numpy.ndarray Parent class for the MapCube object
-    :class:`sunpy.map.BaseMap`
+    :class:`sunpy.map.Map`
         
     Examples
     --------
     >>> mapcube = sunpy.make_map('images/')
     >>> mapcube[0].show()
-    >>> mapcube[3].header.get('crpix1')
+    >>> mapcube[3].reference_pixel['x']
     2050.6599120000001
     """
     def __new__(cls, *args, **kwargs):
@@ -56,10 +55,10 @@ class MapCube(np.ndarray):
     
         # convert input to maps
         for item in args:
-            if isinstance(item, BaseMap):
+            if isinstance(item, Map):
                 maps.append(item)
             else:
-                maps.append(BaseMap.read(item))
+                maps.append(Map.read(item))
 
         # sort data
         sortby = kwargs.get("sortby", "date")
@@ -69,7 +68,7 @@ class MapCube(np.ndarray):
         # create data cube
         for map_ in maps:
             data.append(np.array(map_))
-            headers.append(map_.header)
+            headers.append(map_._original_header)
 
         obj = np.asarray(data).view(cls)
         obj._headers = headers
@@ -105,11 +104,10 @@ class MapCube(np.ndarray):
         if self.ndim is 3 and isinstance(key, int):
             data = np.ndarray.__getitem__(self, key)
             header = self._headers[key]
-            for cls in BaseMap.__subclasses__():
+            for cls in Map.__subclasses__():
                 if cls.is_datasource_for(header):
                     return cls(data, header)
-            raise UnrecognizedDataSouceError("File header not recognized by "
-                                             "SunPy.")
+
         else:
             return np.ndarray.__getitem__(self, key)
         

@@ -9,5 +9,6 @@ Welcome to the SunPy User Guide!
    
    installation/index
    tutorial
-.. overview
-    
+   maps
+   customization
+   troubleshooting

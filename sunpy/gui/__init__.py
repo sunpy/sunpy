@@ -9,12 +9,11 @@ from PyQt4.QtGui import QApplication
 from sunpy.gui.mainwindow import MainWindow
 from sunpy.io import UnrecognizedFileTypeError 
 
-
 class Plotman(object):
     """ Wraps a MainWindow so PlotMan instances can be created via the CLI.
 
-        Example
-        -------
+        Examples
+        --------
         from sunpy.gui import Plotman
         plots = Plotman("data/examples")
         plots.show()
@@ -25,25 +24,32 @@ class Plotman(object):
                    or FITS paths to be opened in PlotMan """
         self.app = QApplication(sys.argv)
         self.main = MainWindow()
-        self.open_paths(paths)
+        self.open_files(paths)
 
-    def open_paths(self, paths):
-        for path in paths:
-            if os.path.isfile(path):
+    def open_files(self, inputs):
+        VALID_EXTENSIONS = [".jp2", ".fits", ".fts"]
+        
+        to_open = []
+        
+        # Determine files to process
+        for input_ in inputs:
+            if os.path.isfile(input_):
+                to_open.append(input_)
+            elif os.path.isdir(input_):
+                for file_ in os.listdir(input_):
+                    to_open.append(file_)
+            else:
+                raise IOError("Path " + input_ + " does not exist.")
+
+        # Load files
+        for filepath in to_open:
+            name, ext = os.path.splitext(filepath) #pylint: disable=W0612
+            
+            if ext.lower() in VALID_EXTENSIONS:
                 try:
-                    self.main.add_tab(path, os.path.basename(path))
+                    self.main.add_tab(filepath, os.path.basename(filepath))
                 except UnrecognizedFileTypeError:
                     pass
-            elif os.path.isdir(path):
-                for file_ in os.listdir(path):
-                    if path[-1] != os.path.sep:
-                        path += os.path.sep
-                    try:
-                        self.main.add_tab(path + file_, file_)
-                    except UnrecognizedFileTypeError:
-                        pass
-            else:
-                raise IOError("Path " + path + " does not exist.")
 
     def show(self):
         self.main.show()
@@ -53,4 +59,3 @@ if __name__=="__main__":
     from sunpy.gui import Plotman
     plots = Plotman(sunpy.AIA_171_IMAGE)
     plots.show()
-    

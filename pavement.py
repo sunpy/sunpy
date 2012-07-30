@@ -20,7 +20,7 @@ install = imp.load_source(
 #
 options(
     deploy = Bunch(
-        htmldir = path('doc/source/_build/html'),
+        htmldir = path('doc/html'),
         host = 'sipwork.org',
         hostpath = 'www/sunpy/doc'
     ),
@@ -40,7 +40,13 @@ install(setup)
 def sdist():
     """Generated HTML docs and builds a tarball."""
     shutil.rmtree('doc/html')
-    
+
+@task
+@needs('sdist', 'setuptools.command.upload')
+def upload():
+    """Generated HTML docs and builds a tarball."""
+    shutil.rmtree('doc/html')
+
 @task
 @needs('prepare_docs', 'setuptools.command.bdist_wininst')
 def bdist():
@@ -61,13 +67,13 @@ def prepare_docs():
     shutil.move(sourcedir, destdir)
     
 @task
-@needs('paver.doctools.html', 'upload_docs')
+@needs('prepare_docs', 'upload_docs')
 @cmdopts([('username=', 'u', 'Username')])
 def deploy(options):
     """Update the docs on sunpy.org"""
     if "username" not in options:
         options.username = raw_input("Username: ")
-    sh("rsync -avz -e ssh %s/ %s@%s:%s/" % (options.htmldir,
+    sh("rsync -avz --delete -e ssh %s/ %s@%s:%s/" % (options.htmldir,
         options.username, options.host, options.hostpath))
 
 #
@@ -107,3 +113,17 @@ def clean():
     for file_ in glob('distribute-*') + ['MANIFEST']:
         if os.path.exists(file_):
             os.remove(file_)
+
+    def clean_cache(directory):
+        """Remove .pyc files and __pycache__ directories"""
+        for x in os.listdir(directory):
+            filepath = os.path.join(directory, x)
+            if os.path.isfile(filepath) and filepath.endswith('.pyc'):
+                os.remove(filepath)
+            elif os.path.isdir(filepath):
+                if filepath.endswith("__pycache__"):
+                    os.rmdir(filepath)
+                else:
+                    clean_cache(filepath)
+
+    clean_cache('.')

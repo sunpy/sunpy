@@ -17,24 +17,24 @@ datatype, they behave like ndarrays and support the same operations as ndarrays.
 
 Creating Map Objects
 ^^^^^^^^^^^^^^^^^^^^
-SunPy Map objects are constructed using the special function :func:`Map`: ::
+SunPy Map objects are constructed using the special function :func:`make_map`: ::
 
 >>> x = sunpy.make_map('file.fits')
 
-The result of a call to `Map` will be either a generic `BaseMap` object, or a 
-subclass of `BaseMap` which deals with a specific type of data, e.g. 
+The result of a call to `make_map` will be either a generic `Map` object, 
+or a subclass of `Map` which deals with a specific type of data, e.g. 
 `AIAMap` or `LASCOMap`.
 
-.. autofunction:: Map
+.. autofunction:: make_map
    
 Map Classes
 ^^^^^^^^^^^
 
-:class:`BaseMap`
+:class:`Map`
 """"""""""""""""
 The top-level class from which all other Maps inherit from.
 
-.. autoclass:: BaseMap
+.. autoclass:: Map
 
     
 :class:`MapHeader`
@@ -51,4 +51,11 @@ A Composite Map is a Map object which contains one or more layers, representing
 for example a stack of images with varying opacities.
 
 .. autoclass:: CompositeMap
+
+:class:`MapCube`
+"""""""""""""""""""""
+A MapCube is a three-dimension generalization of the Map class, for example,
+a time series of images.
+
+.. autoclass:: MapCube
 

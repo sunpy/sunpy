@@ -82,12 +82,7 @@ as a `remote` in git: ::
 To stay up to date you can grab the latest changes to the SunPy master using
 the commands: ::
 
- git fetch upstream
- git merge upstream/master
-
-You can also do this in one line with: ::
-
- git pull upstream/master
+ git pull upstream master
 
 This will merge the upstream code automatically. After running either of these commands, 
 your local copy of your personal repo is just a copy of the main repo.
@@ -394,10 +389,10 @@ Class docstrings should include a clear and concise docstring explaining the
 overall purpose of the class, required and optional input parameters, and the 
 return value. Additionally, notes, references and examples are encouraged.
 
-Example (:class:`sunpy.map.BaseMap`) ::
+Example (:class:`sunpy.map.Map`) ::
 
     """
-    BaseMap(data, header)
+    Map(data, header)
     
     A spatially-aware data array based on the SolarSoft Map object
     

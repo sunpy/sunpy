@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 # Author: Florian Mayer <florian.mayer@bitsrc.org>
-
+#
+# This module was developed with funding provided by
+# the ESA Summer of Code (2011).
+#
 # pylint: disable=C0103,R0903
 
 from __future__ import absolute_import
@@ -10,8 +13,9 @@ from datetime import datetime
 from sunpy.net.attr import (
     Attr, ValueAttr, AttrWalker, AttrAnd, AttrOr, DummyAttr, ValueAttr
 )
-from sunpy.util.util import to_angstrom, anytim
+from sunpy.util.util import to_angstrom
 from sunpy.util.multimethod import MultiMethod
+from sunpy.time import parse_time
 
 TIMEFORMAT = '%Y%m%d%H%M%S'
 
@@ -52,9 +56,9 @@ class Wave(Attr, _Range):
 
 class Time(Attr, _Range):
     def __init__(self, start, end, near=None):
-        self.start = anytim(start)
-        self.end = anytim(end)
-        self.near = None if near is None else anytim(near)
+        self.start = parse_time(start)
+        self.end = parse_time(end)
+        self.near = None if near is None else parse_time(near)
 
         _Range.__init__(self, self.start, self.end, self.__class__)
         Attr.__init__(self)
@@ -229,6 +233,14 @@ walker.add_converter(Time)(
 
 walker.add_converter(_VSOSimpleAttr)(
     lambda x: ValueAttr({(x.__class__.__name__.lower(), ): x.value})
+)
+
+walker.add_converter(Wave)(
+    lambda x: ValueAttr({
+            ('wave', 'wavemin'): x.min,
+            ('wave', 'wavemax'): x.max,
+            ('wave', 'waveunit'): x.unit,
+    })
 )
 
 filter_results = MultiMethod(lambda *a, **kw: (a[0], ))
