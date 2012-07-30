@@ -269,10 +269,11 @@ class Spectrogram(np.ndarray):
         elif isinstance(key[0], slice) and isinstance(key[1], slice):
             return self._slice(key[0], key[1])
         elif isinstance(key[1], slice):
-            return Spectrum( # XXX: Right class
-                super(Spectrogram, self).__getitem__(key),
-                self.time_axis[key[1].start:key[1].stop:key[1].step]
-            )
+            # return Spectrum( # XXX: Right class
+            #     super(Spectrogram, self).__getitem__(key),
+            #     self.time_axis[key[1].start:key[1].stop:key[1].step]
+            # )
+            return np.array(super(Spectrogram, self).__getitem__(key))
         elif isinstance(key[0], slice):
             return Spectrum(
                 super(Spectrogram, self).__getitem__(key),
