@@ -10,13 +10,17 @@ from __future__ import absolute_import
 
 from sunpy.util.multimethod import MultiMethod
 
+"""
+Allow representation of queries as logic expressions. This module makes
+sure that attributes that are combined using the two logic operations AND (&)
+and OR (|) always are in disjunctive normal form, that is, there are only two
+levels ­- the first being disjunction and the second being conjunction. In other
+words, every combinations of attributes looks like this:
+(a AND b AND c) OR (d AND e).
+"""
+
 class Attr(object):
-    """ This is the base for all attributes. It makes sure that attributes
-    that are combined using the two logic operations AND (&) and OR (|) always
-    are in disjunctive normal form, that is, there are only two levels ­-
-    the first being disjunction and the second being conjunction. In other
-    words, every combinations of attributes looks like this:
-    (a AND b AND c) OR (d AND e). """
+    """ This is the base for all attributes. """
     def __and__(self, other):
         if isinstance(other, AttrOr):
             return AttrOr([elem & self for elem in other.attrs])
