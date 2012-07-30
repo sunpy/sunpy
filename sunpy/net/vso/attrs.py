@@ -6,6 +6,16 @@
 #
 # pylint: disable=C0103,R0903
 
+"""
+Attributes that can be used to construct VSO queries. Attributes are the
+fundamental building blocks of queries that, together with the two
+operations of AND and OR (and in some rare cases XOR) can be used to
+construct complex queries. Most attributes can only be used once in an
+AND-expression, if you still attempt to do so it is called a collision,
+for a quick example think about how the system should handle
+Instrument('aia') & Instrument('eit').
+"""
+
 from __future__ import absolute_import
 
 from sunpy.net.attr import (
