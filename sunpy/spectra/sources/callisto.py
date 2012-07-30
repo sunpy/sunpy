@@ -55,7 +55,9 @@ def query(start, end, instruments=None, url=DEFAULT_URL):
                 continue
             point = datetime.datetime.strptime(date + time, TIME_STR)
             opn.close()
-            if instruments is not None and inst not in instruments:
+            if (instruments is not None and
+                inst not in instruments and 
+                (inst, int(no)) not in instruments):
                 continue
             
             if start <= point <= end:
