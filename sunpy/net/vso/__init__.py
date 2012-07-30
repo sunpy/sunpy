@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 # Author: Florian Mayer <florian.mayer@bitsrc.org>
-
+#
+# This module was developed with funding provided by
+# the ESA Summer of Code (2011).
+#
 #pylint: disable=W0401,C0103,R0904,W0141
 
 from __future__ import absolute_import

@@ -48,7 +48,7 @@ class Map(np.ndarray):
 
     Attributes
     ----------
-    fits_header : dict
+    original_header : dict
         Dictionary representation of the original FITS header
     carrington_longitude : str
         Carrington longitude (crln_obs)
@@ -294,10 +294,10 @@ Dimension:\t [%d, %d]
         """
         # if data is stored as unsigned, cast up (e.g. uint8 => int16)
         if self.dtype.kind == "u":
-            dtype = "int%d" % (max(int(self.dtype.name[4:]) * 2, 64))
+            dtype = "int%d" % (min(int(self.dtype.name[4:]) * 2, 64))
             self = self.astype(np.dtype(dtype))
         if other.dtype.kind == "u":
-            dtype = "int%d" % (max(int(other.dtype.name[4:]) * 2, 64))
+            dtype = "int%d" % (min(int(other.dtype.name[4:]) * 2, 64))
             other = other.astype(np.dtype(dtype))
 
         result = np.ndarray.__sub__(self, other)

@@ -55,10 +55,9 @@ class TimeRange:
     | http://docs.scipy.org/doc/numpy/reference/arrays.classes.html
 
     """
-    def __init__(self, a, b = None):
+    def __init__(self, a, b=None, julian_date=False):
         """Creates a new TimeRange instance"""
         from sunpy.time import parse_time
-        
         # if already a timeRange object just return it
         #if isinstance(a, TimeRange):
         #    return a
@@ -75,16 +74,19 @@ class TimeRange:
         self.t1 = parse_time(x)
 
         # End date
-        if isinstance(y, str) or isinstance(y, float):
+        if isinstance(y, str):
             self.t2 = parse_time(y)
             
         # Timedelta
-        if type(y) == type(timedelta(1)):
+        if isinstance(y, timedelta):
             self.t2 = self.t1 + y
             
         # Seconds offset
-        if isinstance(y, int):
-            self.t2 = self.t1 + timedelta(0, y) 
+        if isinstance(y, (float, int)):
+            if julian_date:
+                self.t2 = parse_time(y)
+            else:
+                self.t2 = self.t1 + timedelta(0, y) 
             
         self.dt = self.t2 - self.t1
     
