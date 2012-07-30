@@ -19,6 +19,8 @@ words, every combinations of attributes looks like this:
 (a AND b AND c) OR (d AND e).
 """
 
+# XXX: Maybe allow other normal forms.
+
 class Attr(object):
     """ This is the base for all attributes. """
     def __and__(self, other):
