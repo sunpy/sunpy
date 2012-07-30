@@ -57,3 +57,13 @@ To get rid of the noise, we could also clip low intensities.
 
 .. image:: ../images/spectra_ex5.png
 
+If we want more context, we can also join together different images into
+a large one in time (note that this does more than just concatenating the
+array and the axes -- it also considers possible overlap or gaps).
+
+    >>> c1 = CallistoSpectrogram.read("BIR_20110922_101500_01.fit")
+    >>> c2 = CallistoSpectrogram.read("BIR_20110922_103000_01.fit")
+    >>> d = CallistoSpectrogram.join_many([c1, c2])
+    >>> d.show()
+
+.. image:: ../images/spectra_ex6.png
