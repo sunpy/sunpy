@@ -851,7 +851,7 @@ class LinearTimeSpectrogram(Spectrogram):
         ----------
         start : None or datetime or parse_time compatible string or time string
             Start time of the part of the spectrogram that is returned. If the
-            measurement only spans over one day, a colon seperated sdtring
+            measurement only spans over one day, a colon seperated string
             representing the time can be passed.
         end : None or datetime or parse_time compatible string or time string
             See start.
