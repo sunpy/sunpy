@@ -164,9 +164,9 @@ class Spectrogram(np.ndarray):
 
         for prop, cpy in self.COPY_PROPERTIES:
             elem = getattr(obj, prop, None)
-            if cpy == 1:
+            if cpy == COPY:
                 elem = copy(elem)
-            if cpy == 2:
+            if cpy == DEEPCOPY:
                 elem = deepcopy(elem)
 
             setattr(self, prop, elem)
@@ -540,6 +540,7 @@ class Spectrogram(np.ndarray):
 
 
 class LinearTimeSpectrogram(Spectrogram):
+    """ Spectrogram evenly sampled in time. """
     # pylint: disable=E1002
     COPY_PROPERTIES = Spectrogram.COPY_PROPERTIES + [
         ('t_delt', REFERENCE),
