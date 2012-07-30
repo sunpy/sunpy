@@ -29,7 +29,18 @@ def buffered_write(inp, outp, buffer_size):
         outp.write(read)
 
 
-def query(start, end, instruments=None, number=None, url=DEFAULT_URL):
+def query(start, end, instruments=None, url=DEFAULT_URL):
+    """ Get URLs for callisto data from instruments between start and end.
+    
+    Parameters
+    ----------
+    start : parse_time compatible
+    end : parse_time compatible
+    instruments : sequence
+        Sequence of instruments whose data is requested.
+    url : str
+        Base URL for the request.
+    """
     day = datetime.datetime(start.year, start.month, start.day)
     while day <= end:
         directory = url + '%d/%02d/%02d/' % (day.year, day.month, day.day)
@@ -46,10 +57,7 @@ def query(start, end, instruments=None, number=None, url=DEFAULT_URL):
             opn.close()
             if instruments is not None and inst not in instruments:
                 continue
-
-            if number is not None and number != int(no):
-                continue
-
+            
             if start <= point <= end:
                 yield directory + href
         day += _DAY
@@ -216,6 +224,7 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         return header.get('instrument', '').strip() in cls.INSTRUMENTS
 
     def remove_border(self):
+        """ Remove duplicate entries on the borders. """
         left = 0
         while self.freq_axis[left] == self.freq_axis[0]:
             left += 1
@@ -226,6 +235,7 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
 
     @classmethod
     def read_many(cls, filenames, sort_by=None):
+        """ Return list of CallistoSpectrogram objects read from filenames. """
         objs = map(cls.read, filenames)
         if sort_by is not None:
             objs.sort(key=lambda x: getattr(x, sort_by))
@@ -235,10 +245,13 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
 
     @classmethod
     def from_url(cls, url):
+        """ Return CallistoSpectrogram read from URL. """
         return cls.read(url)
 
     @classmethod
     def from_range(cls, instrument, start, end):
+        """ Automatically download data from instrument between start and
+        end. """
         start = parse_time(start)
         end = parse_time(end)
         urls = query(start, end, [instrument])
