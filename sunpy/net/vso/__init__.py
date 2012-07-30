@@ -125,7 +125,7 @@ class QueryResponse(list):
     
     def query(self, *query):
         """ Furtherly reduce the query response by matching it against
-        another query. """
+        another query, e.g. response.query(attrs.Instrument('aia')). """
         query = and_(*query)
         return QueryResponse(
             attrs.filter_results(query, self), self.queryresult
