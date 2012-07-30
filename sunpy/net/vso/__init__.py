@@ -124,6 +124,8 @@ class QueryResponse(list):
         self.errors = []
     
     def query(self, *query):
+        """ Furtherly reduce the query response by matching it against
+        another query. """
         query = and_(*query)
         return QueryResponse(
             attrs.filter_results(query, self), self.queryresult
