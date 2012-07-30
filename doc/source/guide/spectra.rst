@@ -67,3 +67,12 @@ array and the axes -- it also considers possible overlap or gaps).
     >>> d.show()
 
 .. image:: ../images/spectra_ex6.png
+
+We could also get the from_range method to get data between those two points
+directly from the archive and joined together (though that will fetch all
+frequencies of BIR).
+
+    >>> d = CallistoSpectrogram.from_range("BIR", "2011-09-22T10:15:00", "2011-09-22T10:45:00")
+    >>> d.show()
+
+.. image:: ../images/spectra_ex7.png
