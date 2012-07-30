@@ -442,9 +442,9 @@ class Spectrogram(np.ndarray):
             raise ValueError("Frequency not in interpolation range")
         if lfreq is None:
             raise ValueError("Frequency not in interpolation range")
-        diff = frequency - freq
+        diff = frequency - freq # pylint: disable=W0631
         ldiff = lfreq - frequency
-        return (ldiff * value + diff * lvalue) / (diff + ldiff)
+        return (ldiff * value + diff * lvalue) / (diff + ldiff) # pylint: disable=W0631
 
     @staticmethod
     def _merge(items, key=lambda x: x):
