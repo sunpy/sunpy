@@ -11,6 +11,12 @@ from __future__ import absolute_import
 from sunpy.util.multimethod import MultiMethod
 
 class Attr(object):
+    """ This is the base for all attributes. It makes sure that attributes
+    that are combined using the two logic operations AND (&) and OR (|) always
+    are in disjunctive normal form, that is, there are only two levels ­-
+    the first being disjunction and the second being conjunction. In other
+    words, every combinations of attributes looks like this:
+    (a AND b AND c) OR (d AND e). """
     def __and__(self, other):
         if isinstance(other, AttrOr):
             return AttrOr([elem & self for elem in other.attrs])
@@ -35,6 +41,8 @@ class Attr(object):
 
 
 class DummyAttr(Attr):
+    """ Empty attribute. Useful for building up queries. Returns other
+    attribute when ORed or ANDed. """
     def __and__(self, other):
         return other
     
@@ -52,6 +60,7 @@ class DummyAttr(Attr):
 
 
 class AttrAnd(Attr):
+    """ Attribute representing attributes ANDed together. """
     def __init__(self, attrs):
         Attr.__init__(self)
         self.attrs = attrs
@@ -83,6 +92,7 @@ class AttrAnd(Attr):
 
 
 class AttrOr(Attr):
+    """ Attribute representing attributes ORed together. """
     def __init__(self, attrs):
         Attr.__init__(self)
         self.attrs = attrs
