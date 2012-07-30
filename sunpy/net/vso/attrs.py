@@ -231,3 +231,11 @@ walker.add_converter(Time)(
 walker.add_converter(_SimpleAttr)(
     lambda x: ValueAttr({(x.__class__.__name__.lower(), ): x.value})
 )
+
+walker.add_converter(Wave)(
+    lambda x: ValueAttr({
+            ('wave', 'wavemin'): x.min,
+            ('wave', 'wavemax'): x.max,
+            ('wave', 'waveunit'): x.unit,
+    })
+)
