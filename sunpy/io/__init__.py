@@ -18,7 +18,7 @@ def read_file(filepath):
     reader = detect_filetype(filepath)    
     return reader.read(filepath)
 
-def read_header(filepath):
+def read_file_header(filepath):
     """Reads the header from a given file"""
     for extension, reader in _known_formats.items():
         if filepath.endswith(extension):
@@ -35,6 +35,7 @@ def detect_filetype(filepath):
     fp = open(filepath)
     line1 = fp.readline()
     line2 = fp.readline() 
+    fp.close()
     
     # FITS
     #
@@ -42,7 +43,6 @@ def detect_filetype(filepath):
     match = re.match(r"[A-Z0-9_]{0,8} *=", line1)
     
     if match is not None and len(match.string) == 9:
-        fp.close()
         return fits
     
     # JPEG 2000
@@ -57,10 +57,9 @@ def detect_filetype(filepath):
     
     for sig in jp2_signatures:
         if line1 + line2 == sig:
-            fp.close()
             # j2k_to_image requires a valid extension
             raise InvalidJPEG2000FileExtension
-        
+
     # Raise an error if an unsupported filetype is encountered
     raise UnrecognizedFileTypeError("The requested filetype is not currently "
                                     "supported by SunPy.")

@@ -12,31 +12,34 @@ import sunpy
 import matplotlib
 from PyQt4.QtGui import QSizePolicy
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg
+from matplotlib.figure import Figure
 
 class FigureCanvas(FigureCanvasQTAgg):
     """ General plot widget, resizes to fit window """
 
     def __init__(self, map_, parent=None):
         self.parent = parent
-        self.map_ = map_
-        self.figure = self.map_.plot()
+        self.map = map_
+        self.figure = Figure()
+        self.map.plot(figure=self.figure)
+        self.axes = self.figure.gca()
 
         # Code duplication from plotman.py!
-        if self.map_.norm() is not None:
+        if self.map.norm() is not None:
             # If pre-normalised, get inital clips from the matplotlib norm
-            self.vmin = self.map_.norm().vmin
-            self.vmax = self.map_.norm().vmax
+            self.vmin = self.map.norm().vmin
+            self.vmax = self.map.norm().vmax
         else:
             # Otherwise, get initial clips from the map data directly.
-            self.vmin = self.map_.min()
-            self.vmax = self.map_.max()
+            self.vmin = self.map.min()
+            self.vmax = self.map.max()
         
         self.scaling = "Linear" # Shouldn't be a default.
 
         # Matplotlib kwargs
         self.params = {
-                        "cmap": self.map_.cmap,
-                        "norm": self.map_.norm(),
+                        "cmap": self.map.cmap,
+                        "norm": self.map.norm(),
                       }
 
         FigureCanvasQTAgg.__init__(self, self.figure)
@@ -45,14 +48,14 @@ class FigureCanvas(FigureCanvasQTAgg):
                                    QSizePolicy.Expanding)
         FigureCanvasQTAgg.updateGeometry(self)
 
-    def get_cmap(self, cmap_name, gamma=None):
+    def get_cmap(self, cmapname, gamma=None):
         """ Given a sunpy or matplotlib cmap name, returns the cmap. """
         mpl_cmaps = sorted(m for m in matplotlib.pyplot.cm.datad
                             if not m.endswith("_r"))
-        if cmap_name in mpl_cmaps:
-            return matplotlib.cm.get_cmap(cmap_name)
+        if cmapname in mpl_cmaps:
+            return matplotlib.cm.get_cmap(cmapname)
         else:
-            return sunpy.cm.get_cmap(cmap_name)
+            return sunpy.cm.get_cmap(cmapname)
 
     def get_norm(self):
         """ Return a matplotlib Normalize according to clip values and scale type """
@@ -73,15 +76,16 @@ class FigureCanvas(FigureCanvasQTAgg):
             return self.params["norm"]
 
 
-    def update_figure(self, cmap_name=None, vmin=None, vmax=None, scaling=None):
+    def update_figure(self, cmapname=None, vmin=None, vmax=None, scaling=None):
         # Destroy any previous figures
-        matplotlib.pyplot.close()
-
+        #matplotlib.pyplot.close()
+        self.figure.clear()
+        
         # Clear error messages
         self.window().colorErrorLabel.clear()        
 
-        if cmap_name is not None:
-            self.params.update({"cmap": self.get_cmap(cmap_name)})
+        if cmapname is not None:
+            self.params.update({"cmap": self.get_cmap(cmapname)})
         elif vmax is not None:
             self.vmax = vmax
             self.params.update({"norm": self.get_norm()})
@@ -92,11 +96,17 @@ class FigureCanvas(FigureCanvasQTAgg):
             self.scaling = scaling
             self.params.update({"norm": self.get_norm()})
 
-        self.figure = self.map_.plot(**self.params)
+        #self.figure = Figure()
+        self.map.plot(figure=self.figure, **self.params)
+        self.axes = self.figure.gca()
+        
         self.resize_figure() 
 
     def reset_figure(self):
-        self.figure = self.map_.plot()
+        self.figure = Figure()
+        self.map.plot(figure=self.figure)
+        self.axes = self.figure.gca()
+        
         self.resize_figure()
         self.window().initialize_color_options()
 

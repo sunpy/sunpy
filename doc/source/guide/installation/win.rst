@@ -4,23 +4,6 @@ Windows
 
 Overview
 --------
-**Required**
-
-For its basic functioning, SunPy requires several libraries:
-
-* NumPy_
-* SciPy_
-* Matplotlib_
-* PyFITS_
-
-**Optional**
-
-In addition to the required libraries listed above, there are a couple other
-optional dependencies which are only needed for certain features.
-
-* `PyQt4 <http://www.riverbankcomputing.co.uk/software/pyqt/download>`__ (SunPy Plotman)
-* `Suds <https://fedorahosted.org/suds/>`__ (VSO/HEK support)
-* `OpenJPEG <http://www.openjpeg.org/>`__ and `PIL <http://www.pythonware.com/products/pil/>`__ (JPEG 2000 support)
 
 There are many ways to get SunPy up and running on Windows, and we describe the 
 recommended method and an alternate method below.  Lines in text boxes should 
@@ -116,8 +99,6 @@ Download and install `NumPy <http://sourceforge.net/projects/numpy/files/NumPy/1
 Download and install `SciPy <http://sourceforge.net/projects/scipy/files/scipy/0.9.0/scipy-0.9.0-win32-superpack-python2.7.exe/download>`__.
 
 Download and install `matplotlib <http://sourceforge.net/projects/matplotlib/files/matplotlib/matplotlib-1.0.1/matplotlib-1.0.1.win32-py2.7.exe/download>`__.
-
-Download and install `PyQt4 <http://www.riverbankcomputing.co.uk/static/Downloads/PyQt4/PyQt-Py2.7-x86-gpl-4.8.5-1.exe>`__.
 
 Download and install `distribute <http://pythonxy.googlecode.com/files/distribute-0.6.21_py27.exe>`_.  (Note: this installer is built by the Python(x,y) team.)
 

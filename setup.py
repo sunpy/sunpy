@@ -34,14 +34,15 @@ def install(setup): #pylint: disable=W0621
         # 2011/11/21: disabling for now to prevent paver warnings
         #extra_requires={
         #    "JPEG 2000": ['PIL'],
-        #    "Plotman": ['PyQt4'],
-        #    "VSO/HEK": ['suds']
+        #    "Plotman": ['PyQt4']
         #},
         install_requires=[
-            'NumPy',
-            'PyFITS',
-            'SciPy',
-            'Matplotlib>=1.0',            
+            'numpy',
+            'pyfits',
+            'scipy',
+            'suds',
+            'pandas==0.8.0',
+            'matplotlib>=1.0'
         ],
         license="BSD",
         long_description="\n".join(DOCLINES[2:]),

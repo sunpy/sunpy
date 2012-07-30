@@ -1,6 +1,6 @@
 """
 Fundamental Solar Physical Constants
-------------------------------
+------------------------------------
 These constants are taken from various sources. This module is heavily based on
 (if not directly copied from) SciPy constants module.
 
@@ -28,18 +28,21 @@ Constants are imported from Review of Particle Physics 2010 (page 102),
 and NASA's Sun Fact Sheet as well as other sources.
 
 Websites
--------
+--------
 http://nssdc.gsfc.nasa.gov/planetary/factsheet/sunfact.html
 
-TODO: 
-----------
-Need better sources as well as error values.
-Create a cheat sheet function which prints out key solar values.
+.. todo:: Need better sources as well as error values.
+
+.. todo:: Create a cheat sheet function which prints out key solar values.
+
 """
+#TODO: Need better sources as well as error values.
+#TODO: Create a cheat sheet function which prints out key solar values.
+
 from __future__ import absolute_import
 
 import scipy.constants as _cd
-from . import _si as _con
+from . import _si as _con # pylint: disable=E0611
 
 physical_constants = _con.physical_constants
 
@@ -204,8 +207,8 @@ def print_all(key = None):
             print(format_string.format(key, str(value(key)), unit(key), 
                                        str(precision(key))))
     else: 
-            print(format_string.format(key, str(value(key)), unit(key), 
-                                       str(precision(key))))
+        print(format_string.format(key, str(value(key)), unit(key), 
+                                   str(precision(key))))
 
 # Spectral class is not included in physical constants since it is not a number
 spectral_classification = 'G2V'

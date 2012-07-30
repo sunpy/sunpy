@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 # Author: Florian Mayer <florian.mayer@bitsrc.org>
-
+#
+# This module was developed with funding provided by
+# the ESA Summer of Code (2011).
+#
 # pylint: disable=C0103,R0903
 
 from __future__ import absolute_import
@@ -12,11 +15,11 @@ from urllib2 import urlopen
 from urllib import urlencode
 from datetime import datetime
 from functools import partial
-
 from sunpy.net import attr
 from sunpy.net.hek import attrs
 from sunpy.net.vso import attrs as v_attrs
 from sunpy.util.util import unique
+from sunpy.util.xml import xml_to_dict
 
 DEFAULT_URL = 'http://www.lmsal.com/hek/her'
 
@@ -39,7 +42,7 @@ class HEKClient(object):
         'event_type': '**',
     }
     # Default to full disk.
-    attrs.walker.apply(attrs.SpartialRegion(), {}, default)
+    attrs.walker.apply(attrs.SpatialRegion(), {}, default)
     
     def __init__(self, url=DEFAULT_URL):
         self.url = url
@@ -93,6 +96,28 @@ class Response(dict):
     @property
     def vso_all(self):
         return attr.and_(self.vso_time, self.vso_instrument)
+    
+    def get_voevent(self, as_dict=True, 
+                    base_url="http://www.lmsal.com/hek/her?"):
+        """Retrieves the VOEvent object associated with a given event and
+        returns it as either a Python dictionary or an XML string."""
+
+        # Build URL
+        params = {                                                      
+            "cmd": "export-voevent",
+            "cosec": 1,
+            "ivorn": self['kb_archivid']
+        }
+        url = base_url + urlencode(params)
+        
+        # Query and read response
+        response = urlopen(url).read()
+
+        # Return a string or dict
+        if as_dict:
+            return xml_to_dict(response)
+        else:
+            return response
 
 
 if __name__ == '__main__':

@@ -77,6 +77,11 @@ def system_info():
         suds_version = "NOT INSTALLED"
         
     try:
+        from pandas import __version__ as pandas_version
+    except ImportError:
+        pandas_version = "NOT INSTALLED"
+        
+    try:
         from PyQt4.QtCore import PYQT_VERSION_STR as pyqt_version
     except ImportError:
         pyqt_version = "NOT INSTALLED"
@@ -90,5 +95,6 @@ def system_info():
     print("SciPy: %s" % scipy_version)
     print("Matplotlib: %s" % matplotlib_version)
     print("PyFITS: %s" % pyfits_version)
+    print("pandas: %s" % pandas_version)
     print("SUDS: %s" % suds_version)
     print("PyQt: %s\n" % pyqt_version)

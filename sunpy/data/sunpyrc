@@ -1,0 +1,34 @@
+;
+; SunPy Configuration
+;
+; This is a sample sunpy configuration file - you can find a copy
+; of it on your system in site-packages/sunpy/data/sunpyrc.  If you edit it
+; there, please note that it will be overridden in your next install.
+; If you want to keep a permanent local copy that will not be
+; over-written, place it in HOME/.sunpy/sunpyrc (unix/linux
+; like systems) and C:\Documents and Settings\yourname\.sunpy
+; (win32 systems).
+;
+; Note that any relative filepaths specified in the SunPy configuration file
+; will be relative to SunPy's working directory.
+;
+
+;;;;;;;;;;;;;;;;;;;
+; General Options ;
+;;;;;;;;;;;;;;;;;;;
+[general]
+
+; The SunPy working directory is the parent directory where all generated
+; and download files will be stored.
+; Default Value: $USER/sunpy
+;working_dir = /home/user/sunpy
+
+;;;;;;;;;;;;;
+; Downloads ;
+;;;;;;;;;;;;;
+[downloads]
+
+; Location to save download data to
+; Default value: data/
+;download_dir = /tmp
+download_dir = data 
