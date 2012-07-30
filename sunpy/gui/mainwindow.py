@@ -67,19 +67,21 @@ class MainWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
         self.refresh_color_options()
 
     @pyqtSignature("QString")
-    def on_cmListWidget_currentTextChanged(self, cmap_name):
-        self.current_tab.canvas.update_figure(cmap_name=str(cmap_name))
+    def on_cmListWidget_currentTextChanged(self, cmapname):
+        self.current_tab.canvas.update_figure(cmapname=str(cmapname))
 
     def add_tab(self, file_path, tab_title):
         """ Adds a new tab having title 'tab_title' containing a
             TabPage widget whose FigureCanvas displays the data in 'file_path' """
 
         try:
-            map_object = sunpy.make_map(file_path)
-            tab_page = TabPage(map_object, self.tabWidget)
+            mapobject = sunpy.make_map(file_path)
+            tab_page = TabPage(mapobject, self.tabWidget)
             self.tabWidget.addTab(tab_page, tab_title)
+            
             # Focus new tab
             self.tabWidget.setCurrentIndex(self.tabWidget.count() - 1)
+            
             # Set color options dialog appropriately
             self.initialize_color_options()
             if self.tabWidget.count() == 1:
@@ -92,9 +94,10 @@ class MainWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
     def initialize_color_options(self):
         """ Perform a first time initialisation of color
             option widgets when a new plot is opened. """
+        from sunpy.cm import cm
 
         # Populate list widget with SunPy colormaps
-        for cmap in sunpy.cm.cmlist:
+        for cmap in cm.cmlist:
             self.cmListWidget.addItem(cmap)
 
         # Populate list widget with MPL colormaps
@@ -102,14 +105,14 @@ class MainWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
         for cmap in self.mpl_cmaps:
             self.cmListWidget.addItem(cmap)
 
-        if self.current_tab.canvas.map_.norm() is not None:
+        if self.current_tab.canvas.map.norm() is not None:
             # If pre-normalised, get inital clips from the matplotlib norm
-            self.clipMinDoubleSpinBox.setValue(self.current_tab.canvas.map_.norm().vmin)
-            self.clipMaxDoubleSpinBox.setValue(self.current_tab.canvas.map_.norm().vmax)
+            self.clipMinDoubleSpinBox.setValue(self.current_tab.canvas.map.norm().vmin)
+            self.clipMaxDoubleSpinBox.setValue(self.current_tab.canvas.map.norm().vmax)
         else:
             # Otherwise, get initial clips from the map data directly.
-            self.clipMinDoubleSpinBox.setValue(self.current_tab.canvas.map_.min())
-            self.clipMaxDoubleSpinBox.setValue(self.current_tab.canvas.map_.max())
+            self.clipMinDoubleSpinBox.setValue(self.current_tab.canvas.map.min())
+            self.clipMaxDoubleSpinBox.setValue(self.current_tab.canvas.map.max())
 
         self.scalingComboBox.setCurrentIndex(0)  # Set to linear...
         # Ideally we should set selection to the new appropriate colormap
@@ -130,12 +133,3 @@ class MainWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
     @property
     def current_tab(self):
         return self.tabWidget.currentWidget()
-
-
-if __name__ == "__main__":
-    import sys
-    from PyQt4.QtGui import QApplication
-    app = QApplication(sys.argv)
-    main = MainWindow()
-    main.show()
-    app.exec_()

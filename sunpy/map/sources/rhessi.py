@@ -1,45 +1,48 @@
 """RHESSI Map subclass definitions"""
-#pylint: disable=W0221,W0222
+#pylint: disable=W0221,W0222,E1121
 
 __author__ = "Steven Christe"
 __email__ = "steven.d.christe@nasa.gov"
 
-from sunpy.map.basemap import BaseMap
+from sunpy.map import Map
 from sunpy.cm import cm
-from sunpy.util import util as util
+from sunpy.time import parse_time
 
-class RHESSIMap(BaseMap):
+class RHESSIMap(Map):
     """RHESSI Image Map definition
     
-    Reference
-    ---------
+    References
+    ----------
     For a description of RHESSI image fits headers
     ???
 
     TODO: Currently (8/29/2011), cannot read fits files containing more than one 
     image (schriste)
     """
-    def __new__(cls, data, header):
-        return BaseMap.__new__(cls, data)
-
     @classmethod
     def get_properties(cls, header):
-        """Returns the default and normalized values to use for the Map"""
-        properties = BaseMap.get_properties()
+        """Parses RHESSI image header"""
+        properties = Map.get_properties(header)
+        
         properties.update({
-            'date': util.anytim(header.get('date_obs')),
-            'det': header.get('telescop'),
-            'inst': header.get('telescop'),
-            'meas': [header.get('energy_l'), header.get('energy_h')],
-            'obs': header.get('telescop'),
-            'name': "RHESSI " + str(header.get('energy_l')) + '-' + 
-                    str(header.get('energy_h')) + ' keV',
-            'cmap': cm.get_cmap(name = 'rhessi'),
-            'exptime': (util.anytim(header.get('date_end')) - 
-                        util.anytim(header.get('date_obs'))).seconds
+            "date": parse_time(header.get('date_obs')),
+            
+            "detector": header.get('telescop'),
+            "instrument": header.get('telescop'),
+            "measurement": [header.get('energy_l'), header.get('energy_h')],
+            "observatory": "SDO",
+            "name": "RHESSI %d - %d keV" % (header.get('energy_l'), 
+                                            header.get('energy_h')),
+            "cmap": cm.get_cmap('rhessi'),
+            "exposure_time": (parse_time(header.get('date_end')) - 
+                              parse_time(header.get('date_obs'))).seconds,
+            "coordinate_system": {
+                'x': 'HPLN-TAN',
+                'y': 'HPLT-TAN'
+            }
         })
         return properties
-        
+
     @classmethod
     def is_datasource_for(cls, header):
         """Determines if header corresponds to an AIA image"""

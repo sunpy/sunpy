@@ -2,211 +2,153 @@
 Mac OS X
 ========
 
-Overview
+Because of the wide variety of methods for setting up a Python environment on
+Mac OS X, users have a number of options with how to install SunPy and its
+dependencies.
+
+Installation using EPD
+======================
+
+The simplest method and the recommended one is to install the `Enthought Python
+Distribution (EPD) <http://www.enthought.com/products/epd_free.php/>`_, which
+includes both Python and a number of the dependencies needed by SunPy. 
+
+Enthought Python Distribution
+-----------------------------
+The Enthought Python Distribution (EPD) is metapackage which handles the
+installation not only of Python, but also a number of other libraries used
+by SunPy including NumPy, SciPy, and Matplotlib.
+
+Install EPD
+^^^^^^^^^^^
+There are a number versions of EPD available, many of which are not free. For
+our purposes, however, either of the free versions below will work: ::
+
+ `EPD Free <http://www.enthought.com/products/epd_free.php/>`_
+ `EPD Academic <<http://www.enthought.com/products/edudownload.php>>`_
+
+Download whichever of the above versions of EPD is appropriate, and follow the 
+`instructions provided on the EPD website <http://www.enthought.com/products/epdgetstart.php?platform=mac>`_ 
+to install EPD on your system.
+
+Install pip
+^^^^^^^^^^^
+Most Python distributions ship with a tool called `easy_install <http://pypi.python.org/pypi/setuptools>`_ 
+which assists with installing Python packages.
+
+Although `easy_install`_ is capable of installing most of the dependencies 
+needed for SunPy itself, a more powerful tool called `pip <http://pypi.python.org/pypi/pip>`_
+provides a more flexible installation (including support for uninstalling, 
+upgrading, and installing from remote sources such as GitHub) and should be 
+used instead.
+
+Use `easy_install`_ to install `pip`: ::
+
+ sudo easy_install pip
+
+Install remaining dependencies
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Now that pip is installed, we can install the remaining libraries needed by
+SunPy.
+
+If you installed the EPD Academic version, run: ::
+
+ sudo pip install --upgrade suds
+ 
+If you installed EPD Free version, run: ::
+
+ sudo pip install --upgrade suds
+ sudo pip install --upgrade pyfits
+ sudo pip install --upgrade pandas
+ 
+Additionally, if you plan to help with SunPy development, some additional 
+dependencies are required: ::
+
+ pip install --upgrade pytest pylint paver tox sphinx numpydoc
+
+All done! You are now ready to :doc:`install SunPy itself <index>`.
+
+Other installation methods
+==========================
+
+For users who wish to have more control over the installation of Python, several
+alternative installation methods are provided, including instructions for
+`Macports <http://www.macports.org/>`_ and `Homebrew <http://mxcl.github.com/homebrew/>`_.
+These later methods use the `Python.org <http://python.org/>`_ version of 
+Python as the basis installation.
+
+Basic
+-----
+Installation using DMG installers... (TO BE WRITTEN)
+
+Macports
 --------
-**Required**
+Intallation using Macports... (TO BE WRITTEN)
 
-For its basic functioning, SunPy requires several libraries:
-
-* `NumPy <http://numpy.scipy.org/>`__
-* `Matplotlib <http://matplotlib.sourceforge.net/>`__
-* `PyFITS <http://www.stsci.edu/resources/software_hardware/pyfits>`_
-
-**Optional**
-
-In addition to the required libraries listed above, there are a couple other
-optional dependencies which are only needed for certain features.
-
-* `PyQt4 <http://www.riverbankcomputing.co.uk/software/pyqt/download>`__ (SunPy Plotman)
-* `Suds <https://fedorahosted.org/suds/>`__ (VSO/HEK support)
-* `OpenJPEG <http://www.openjpeg.org/>`__ and `PIL <http://www.pythonware.com/products/pil/>`__ (JPEG 2000 support)
-
-Using Macports
---------------
-Macports is a free/open source package management system that simplifies the 
-installation of other free/open source software referred to as ports. Macports 
-installs itself and its ports in /opt/local. Activating a port places links to 
-the port software in the expected location on the drive wherever that may be. 
-Due to the fact that Mac Os X already comes with its own version of Python 
-(which can change without warning during a software update to the OS) installing
-SunPy and its dependencies can be a challenge. Macports provides a good solution
-to this problem. This tutorial follows the one provided by Thomas Robitaille 
-(astrofrog on Github). If you run into any trouble make sure to check out the 
-Problem Solving section at the end. This method has been tested on Mac OSX 10.5,
-10.6, and 10.7.
-
-Before you start you'll need to install Xcode which is the freely available 
-developer environment provided by Apple. You can find it in the Mac App Store.  
-Just a warning, it is a rather large download but provides compilers which are 
-necessary for Macports. After installing Xcode you can go ahead, download and 
-install MacPorts. When that is done open a terminal and update the package index
-using the command: ::
-
-  sudo port selfupdate
-
-If you run into problems with the selfupdate, refer to the Problem Solving 
-section below (Issue #1 & Issue #2).
-
-You can then install NumPy and Matplotlib using the command: ::
-
-  sudo port install py27-matplotlib py27-numpy
-
-When that is done let's install SciPy: ::
-
-  sudo port install py27-scipy
-
-If you run into an error with the gcc44 build during the scipy installation,
-refer to the Problem Solving section below (Issue #3).
-
-Install the last two remaining dependency for SunPy which is pyFits: ::
-
-  sudo port install py27-pyfits py27-suds
- 
-Another very useful (and recommended tool) is iPython which provides an advanced
-Python shell with: ::
-
-  sudo port install py27-ipython
-
-If you are planning on doing any GUI development you'll want to install PyQT 
-(a particular tough install without Macports) with the following: ::
-
-  sudo port install py27-pyqt4
-
-Configuration
--------------
-
-Now that the installation is done you'll want to setup a few things. First, 
-create a folder called .matplotlib in your home directory (if it does not 
-already exist). ::
-
-  mkdir ~/.matplotlib
-
-Copy the default configuration file provided by matplotlib into this directory 
-with the following (one-line) command: ::
-
-  cp /opt/local/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/matplotlib
-  /mpl-data/matplotlibrc ~/.matplotlib/
-
-Now edit .matplotlib/matplotlibrc and change the backend from Agg to MacOSX. ::
-
-  cd ~/.matplotlib
-  Open matplotlibrc with your favorite editor.
-  Find the line that says "backend     : Agg"
-  Change to "backend       : MacOSX".
-
-Finally you'll want to set your new installation of python as the default python
-(and ipython) to be called with the following command: ::
-
-  sudo port select --set python python27
-  sudo port select --set ipython ipython27
- 
-Validation
-----------
-You can test if everything worked with the following example. First open ipython
-by just typing in the terminal: (You will probably have to completely restart 
-the terminal.)  ::
-
-  ipython
-
-Then just cut and paste the following code: ::
-
-  import numpy as np
-  import scipy.special as sp
-  import matplotlib.pyplot as plt
-
-  x = np.arange(200).astype('float')/10
-  y = sp.j0(x)
-  plt.plot(x,y)
-  plt.title("Bessel Function n = 0")
-  plt.show()
-
-This example tests out numpy, scipy, and matplotlib.
-
-Installing other packages
--------------------------
-To install packages that are not in macports make sure to use: ::
-
-  python setup.py install --user
-
-(Run this command as written from the directory that contains the package in 
-question.)  
-This will install the packages in ~/Library/Python/2.7/lib/python/site-packages 
-where they will automatically recognized by Python. This will maintain the 
-integrity of the the MacPorts file structure. In general, do not install 
-anything into /opt/local without using the ports command.
-
-If you would like to use easy_install then remember to set the directory 
-manually so that it installs the library into your local directory. Here is an 
-example for installing pIDLy: ::
-
-  easy_install --install-dir='~/Library/Python/2.7/lib/python/site-packages' pidly
-
-It is not necessary to use sudo for this command.
-
-Problem Solving
----------------
-
-1) If you installed MacPorts and are getting an error during the selfupdate 
-process involving sqlite, try removing the MacPorts directory entirely and 
-reinstall.  The directory to remove is /opt/local.  This must be done from the 
-terminal.  You may want to make a backup tar file of the directory before 
-deleting it.  (Note that there are lots of files.)
-
-2) If during the selfupdate process you get an error with syncing index(es), 
-you may be behind a firewall for your rsync port.  To get around this, do the 
-following: ::
-
-  cd /opt/local/etc/macports/
-
-Use your favorite editor to open the sources.conf file.
-Make the following changes to the file:  ::
-
-  #rsync://rsync.macports.org/release/ports/ [default]
-  http://www.macports.org/files/ports.tar.gz [default]
-
-Now *instead* of using sudo port selfupdate, use the following command: ::
-
-  port -d sync
-
-Now move onto the next step (sudo port install py27-matplotlib py27-numpy)...
-
-3) During the installation of scipy, you may run into trouble with building 
-gcc44. The following error message may appear: ::
-
-  --->  Building gcc44
-  Error: Target org.macports.build returned: shell command failed (see log for details)
-  Error: Failed to install gcc44
-  Log for gcc44 is at:   /opt/local/var/macports/logs/_opt_local_var_macports_sources_rsync.macports.org
-  _release_tarballs_ports_lang_gcc44/gcc44/main.log
-  Error: The following dependencies were not installed: gcc44 swig-python bison gsed swig pcre
-  Error: Status 1 encountered during processing.
-  To report a bug, see <http://guide.macports.org/#project.tickets>
-
-This issue has been noticed by others (https://trac.macports.org/ticket/25713). 
-Thankfully there is a simple solution,  just run the following command to clean
-up this failed installation: ::
-
-  sudo port clean gcc44
-
-and then run the last command again: ::
-
-  sudo port install py27-scipy
-
-This should now install without any problems. Now move onto the next step (sudo 
-port install py27-pyfits)...
-
-Updating
+Homebrew
 --------
 
-As new versions of matplotlib or scipy are released every once in a while it is necessary to update. Thankfully
-macports is built to make this easy. You can do a full upgrade of all of the software that macports installed with 
-the following command: ::
+`Homebrew <http://mxcl.github.com/homebrew/>`_ is a tool for helping to automate
+the installation of a number of useful tools and libraries on Mac OS X. It is
+similar to Macports, but attempts to improve on some of the Pitfalls of 
+Macports.
 
-  port upgrade installed
+Note that if you have already installed either fink or Macports on your system,
+it is recommended that you uninstall them before using Homebrew.
 
-and make sure to get yourself a cup of coffee after hitting return as this will probably run for a while. You can also
-upgrade individual packages (and their dependencies) with a similar line of code, namely: ::
+Python
+^^^^^^
+To begin, download and install the `latest 2.x version of Python <http://python.org/download/>`_
+using the Mac OS X installer available from `Python.org <http://python.org/>`_.
 
-  port upgrade packagename
+Homebrew
+^^^^^^^^
+Next, install and update homebrew: ::
 
-You may have to precede those commands with sudo depending on what level of privileges you have on your system. 
+ /usr/bin/ruby -e "$(/usr/bin/curl -fsSL https://raw.github.com/mxcl/homebrew/master/Library/Contributions/install_homebrew.rb)"
+ brew doctor
+
+Using homebrew, install Qt and some of the other dependencies needed for 
+compilation later on by pip: ::
+
+ brew -v install gfortran pkgconfig git openjpeg readline
+
+Pip
+^^^
+Most Python distributions ship with a tool called `easy_install <http://pypi.python.org/pypi/setuptools>`_ 
+which assists with installing Python packages.
+
+Although `easy_install`_ is capable of installing most of
+the dependencies needed for SunPy itself, a more powerful tool called 
+`pip <http://pypi.python.org/pypi/pip>`__ provides a more flexible installation 
+(including support for uninstalling, upgrading, and installing from remote 
+sources such as GitHub) and should be used instead.
+
+To begin, use `easy_install`_ to install `pip`: ::
+
+ sudo easy_install pip
+
+Use to install the remaining SunPy dependencies: ::
+
+ sudo pip install --upgrade distribute
+ sudo pip install --upgrade ipython
+ sudo pip install --upgrade numpy
+ sudo pip install --upgrade scipy
+ sudo pip install --upgrade pyfits
+ sudo pip install --upgrade suds
+ sudo pip install --upgrade pandas
+ sudo pip install --upgrade matplotlib
+ 
+Additionally, if you plan to help with SunPy development, some additional 
+dependencies are required: ::
+
+ pip install --upgrade pytest pylint paver tox sphinx numpydoc
+
+All done!
+
+Trouble-shooting
+================
+
+
+
+

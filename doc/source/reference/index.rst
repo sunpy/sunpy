@@ -1,18 +1,24 @@
 .. _reference:
 
-===============
-SunPy Reference
-===============
+====================
+SunPy Code Reference
+====================
 
 .. module:: sunpy
 
 .. toctree::
    :maxdepth: 2
 
+   cm
+   gui
+   hek
+   instr
+   io
+   lightcurve
    map
    mapcube
-   gui
-   io
+   rhessi
    sun
+   time
    vso
    wcs

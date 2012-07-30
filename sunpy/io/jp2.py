@@ -1,5 +1,6 @@
 """JPEG 2000 File Reader"""
 from __future__ import absolute_import
+from sunpy.map.header import MapHeader
 
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
@@ -8,7 +9,7 @@ import os
 import subprocess
 import tempfile
 from matplotlib.image import imread
-from xml.dom.minidom import parseString
+from sunpy.util.xml import xml_to_dict
 
 def read(filepath):
     """Reads in the file at the specified location"""
@@ -29,7 +30,10 @@ def get_header(filepath):
         elif is_float(v):
             pydict[k] = float(v)
             
-    return pydict
+    # Remove newlines from comment
+    pydict['comment'] = pydict['comment'].replace("\n", "")
+            
+    return MapHeader(pydict)
 
 def get_data(filepath, j2k_to_image="j2k_to_image"):
     """Extracts the data portion of a JPEG 2000 image
@@ -77,7 +81,11 @@ def read_xmlbox(filepath, root):
         xmlstr += line
         if line.find("</%s>" % root) != -1:
             break
-    xmlstr = xmlstr[xmlstr.find("<%s>" % root):]
+
+    start = xmlstr.find("<%s>" % root)
+    end = xmlstr.find("</%s>" % root) + len("</%s>" % root)
+    
+    xmlstr = xmlstr[start : end]
     
     fp.close()
 
@@ -112,71 +120,6 @@ def which(program):
                 return exe_file
 
     return None
-
-#
-# Converting XML to a Dictionary
-# Author: Christoph Dietze
-# URL   : http://code.activestate.com/recipes/116539/
-#
-class NotTextNodeError(Exception):
-    pass
-
-def xml_to_dict(xmlstring):
-    """Converts an XML string to a Python dictionary"""
-    return node_to_dict(parseString(xmlstring))
-
-def node_to_dict(node):
-    """
-    node_to_dict() scans through the children of node and makes a dictionary 
-    from the content.
-    
-    Three cases are differentiated:
-    1. If the node contains no other nodes, it is a text-node and 
-       {nodeName: text} is merged into the dictionary.
-    2. If the node has the attribute "method" set to "true", then it's children 
-       will be appended to a list and this list is merged to the dictionary in 
-       the form: {nodeName:list}.
-    3. Else, node_to_dict() will call itself recursively on the nodes children 
-       (merging {nodeName: node_to_dict()} to the dictionary).
-    """
-    dic = {} 
-    for n in node.childNodes:
-        if n.nodeType != n.ELEMENT_NODE:
-            continue
-        if n.getAttribute("multiple") == "true":
-            # node with multiple children: put them in a list
-            l = []
-            for c in n.childNodes:
-                if c.nodeType != n.ELEMENT_NODE:
-                    continue
-                l.append(node_to_dict(c))
-                dic.update({n.nodeName: l})
-            continue
-            
-        try:
-            text = get_node_text(n)
-        except NotTextNodeError:
-            # 'normal' node
-            dic.update({n.nodeName: node_to_dict(n)})
-            continue
-    
-        # text node
-        dic.update({n.nodeName: text})
-        continue
-    return dic
-
-def get_node_text(node):
-    """
-    scans through all children of node and gathers the text. if node has 
-    non-text child-nodes, then NotTextNodeError is raised.
-    """
-    t = ""
-    for n in node.childNodes:
-        if n.nodeType == n.TEXT_NODE:
-            t += n.nodeValue
-        else:
-            raise NotTextNodeError
-    return t
 
 class MissingOpenJPEGBinaryError(OSError):
     """Unable to find OpenJPEG. Please ensure that OpenJPEG binaries are installed in a 

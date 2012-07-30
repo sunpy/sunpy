@@ -1,85 +1,75 @@
 """SDO Map subclass definitions"""
-#pylint: disable=W0221,W0222,E1101
+#pylint: disable=W0221,W0222,E1101,E1121
 
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
-from sunpy.map.basemap import BaseMap
+from sunpy.map import Map
 from sunpy.cm import cm
-from sunpy.util import util as util
 from matplotlib import colors
+import numpy as np
 
-class AIAMap(BaseMap):
+class AIAMap(Map):
     """AIA Image Map definition
     
-    Reference
-    ---------
+    References
+    ----------
     For a description of AIA headers
     http://jsoc.stanford.edu/doc/keywords/AIA/AIA02840_A_AIA-SDO_FITS_Keyword_Documents.pdf
     """
-    def __new__(cls, data, header):
-        return BaseMap.__new__(cls, data)
-
     @classmethod
     def get_properties(cls, header):
-        """Returns the default and normalized values to use for the Map"""
-        # Note: Trailing "Z" in date was dropped on 2010/12/07        
-        properties = BaseMap.get_properties()
+        """Parses AIA image header"""
+        properties = Map.get_properties(header)
+        
         properties.update({
-            'date': util.anytim(header.get('date-obs')),
-            'det': "AIA",
-            'inst': "AIA",
-            'meas': header.get('wavelnth'),
-            'obs': "SDO",
-            'name': "AIA %s" % header.get('wavelnth'),
-            'cmap': cm.get_cmap(name='sdoaia' + str(header.get('wavelnth'))),
-            'exptime': header.get('exptime')
+            "detector": "AIA",
+            "instrument": "AIA",
+            "observatory": "SDO",
+            "nickname": "AIA",
+            "cmap": cm.get_cmap('sdoaia%d' % header.get('wavelnth'))
         })
         return properties
-        
-    @classmethod
-    def is_datasource_for(cls, header):
-        """Determines if header corresponds to an AIA image"""
-        return header.get('instrume') and header.get('instrume')[0:3] == 'AIA'
-    
+
     def norm(self):
         """Returns a Normalize object to be used with AIA data"""
+        # byte-scaled images have most likely already been scaled
+        if self.dtype == np.uint8:
+            return None
+
         mean = self.mean()
         std = self.std()
         
         vmin = max(0, mean - 3 * std)
         vmax = min(self.max(), mean + 3 * std)
         
-        # 8-bit images are probably from Helioviewer and are already scaled
-        vmax = max(255, vmax)
-        
         return colors.Normalize(vmin, vmax)
+    
+    @classmethod
+    def is_datasource_for(cls, header):
+        """Determines if header corresponds to an AIA image"""
+        return header.get('instrume', '').startswith('AIA')
         
-class HMIMap(BaseMap):
+class HMIMap(Map):
     """HMI Image Map definition"""
-    def __new__(cls, data, header):        
-        return BaseMap.__new__(cls, data)
-        
     @classmethod
     def get_properties(cls, header):
-        """Returns the default and normalized values to use for the Map"""
-        # Note: Trailing "Z" in date was dropped on 2010/12/07    
-        meas = header['content'].split(" ")[0].lower()
+        """Parses HMI image header"""
+        properties = Map.get_properties(header)
         
-        properties = BaseMap.get_properties()
+        measurement = header['content'].split(" ")[0].lower()
+        
         properties.update({
-            "date": util.anytim(header.get('date-obs')),
-            "det": "HMI",
-            "inst": "HMI",
-            "meas": meas,
-            "obs": "SDO",
-            "name": "HMI %s" % meas,
-            "exptime": header.get('exptime')
+            "detector": "HMI",
+            "instrument": "HMI",
+            "measurement": measurement,
+            "observatory": "SDO",
+            "name": "HMI %s" % measurement,
+            "nickname": "HMI"
         })
         return properties
-        
+
     @classmethod
     def is_datasource_for(cls, header):
         """Determines if header corresponds to an HMI image"""
-        return header.get('instrume') and header.get('instrume')[0:3] == 'HMI'
-
+        return header.get('instrume', '').startswith('HMI') 
