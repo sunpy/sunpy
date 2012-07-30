@@ -65,6 +65,7 @@ class Spectrogram(np.ndarray):
     ]
 
     def as_class(self, cls):
+        """ Implementation detail. """
         if not issubclass(cls, Spectrogram):
             raise ValueError
 
@@ -77,13 +78,14 @@ class Spectrogram(np.ndarray):
         return cls(self, **dct)
 
     def get_params(self):
+        """ Implementation detail. """
         return dict(
             (name, getattr(self, name)) for name, _ in self.COPY_PROPERTIES
         )
     
     def _slice(self, y_range, x_range):
         """ Return new spectrogram reduced to the values passed
-        as slices. """
+        as slices. Implementation detail. """
         data = super(Spectrogram, self).__getitem__([y_range, x_range])
         params = self.get_params()
 
@@ -180,6 +182,8 @@ class Spectrogram(np.ndarray):
         return "%.2f" % freq
 
     def show(self, *args, **kwargs):
+        """ Draw spectrogram on figure with highest index or new one if
+        none exists. For parameters see :py:meth:`plot`. """
         nums = plt.get_fignums()
         figure = None
         if nums:
@@ -188,6 +192,24 @@ class Spectrogram(np.ndarray):
 
     def plot(self, figure=None, overlays=[], colorbar=True, min_=None, max_=None, 
         **matplotlib_args):
+        """
+        Plot spectrogram onto figure.
+        
+        Parameters
+        ----------
+        figure : matplotlib.figure.Figure
+            Figure to plot the spectrogram on. If None, new Figure is created.
+        overlays : list
+            List of overlays (functions that receive figure and axes and return
+            new ones) to be applied after drawing.
+        colorbar : bool
+            Flag that determines whether or not to draw a colorbar. If existing
+            figure is passed, it is attempted to overdraw old colorbar.
+        min_ : float
+            Clip intensities lower than min_ before drawing.
+        max_ : float
+            Clip intensities higher than max_ before drawing.
+        """
         # [] as default argument is okay here because it is only read.
         # pylint: disable=W0102,R0914
 
@@ -259,18 +281,26 @@ class Spectrogram(np.ndarray):
         
         return super(Spectrogram, self).__getitem__(key)
 
-    def clip_freq(self, minimum=None, maximum=None):
+    def clip_freq(self, min_=None, max_=None):
         """ Return a new spectrogram only consisting of frequencies
-        in the interval [minimum, maximum]. """
+        in the interval [min_, max_].
+        
+        Parameters
+        ----------
+        min_ : float
+            All frequencies in the result are larger than this.
+        max_ : float
+            All frequencies in the result are smaller than this.
+        """
         left = 0
-        if maximum is not None:
-            while self.freq_axis[left] > maximum:
+        if max_ is not None:
+            while self.freq_axis[left] > max_:
                 left += 1
 
         right = len(self.freq_axis) - 1
 
-        if minimum is not None:
-            while self.freq_axis[right] < minimum:
+        if min_ is not None:
+            while self.freq_axis[right] < min_:
                 right -= 1
 
         return self[left:right, :]
@@ -301,7 +331,14 @@ class Spectrogram(np.ndarray):
 
     def randomized_auto_const_bg(self, amount):
         """ Automatically determine background. Only consider a randomly
-        chosen subset of the image. """
+        chosen subset of the image.
+        
+        Parameters
+        ----------
+        amount : int
+            Size of random sample that is considered for calculation of
+            the background.
+        """
         cols = [randint(0, self.shape[1] - 1) for _ in xrange(amount)]
 
         # pylint: disable=E1101,E1103
@@ -326,29 +363,55 @@ class Spectrogram(np.ndarray):
     
     def randomized_subtract_bg(self, amount):
         """ Perform randomized constant background subtraction. 
-        Does not produce the same result every time it is run. """
+        Does not produce the same result every time it is run.
+        
+        Parameters
+        ----------
+        amount : int
+            Size of random sample that is considered for calculation of
+            the background.
+        """
         return self - self.randomized_auto_const_bg(amount)
     
-    def clip(self, minimum=None, maximum=None):
-        """ Clip values to be in the interval [minimum, maximum]. Any values
+    def clip(self, min_=None, max_=None):
+        """ Clip intensities to be in the interval [min_, max_]. Any values
         greater than the maximum will be assigned the maximum, any values
         lower than the minimum will be assigned the minimum. If either is
-        left out or None, do not clip at that side of the interval. """
+        left out or None, do not clip at that side of the interval.
+        
+        Parameters
+        ----------
+        min_ : int or float
+            New minimum value for intensities.
+        max_ : int or float
+            New maximum value for intensities
+        """
         # pylint: disable=E1101
-        if minimum is None:
-            minimum = int(self.min())
+        if min_ is None:
+            min_ = int(self.min())
 
-        if maximum is None:
-            maximum = int(self.max())
+        if max_ is None:
+            max_ = int(self.max())
 
         new = self.copy()
-        new[new < minimum] = minimum
-        new[new > maximum] = maximum
+        new[new < min_] = min_
+        new[new > max_] = max_
 
         return new
 
     def rescale(self, min_=0, max_=1, dtype_=np.dtype('float32')):
-        """ Normalize intensities to [min_, max_]. """
+        u""" Rescale intensities to [min_, max_]. Note that min_ ≠ max_
+        and spectrogram.min() ≠ spectrogram.max().
+        
+        Parameters
+        ----------
+        min_ : float or int
+            New minimum value in the resulting spectogram.
+        max_ : float or int
+            New maximum value in the resulting spectogram.
+        dtype_ : np.dtype
+            Data-type of the resulting spectogram.
+        """
         if max_ == min_:
             raise ValueError("Maximum and minimum must be different.")
         if self.max() == self.min():
@@ -360,7 +423,15 @@ class Spectrogram(np.ndarray):
         )
 
     def interpolate(self, frequency):
-        """ Linearly interpolate intensity at unknown frequency. """
+        """ Linearly interpolate intensity at unknown frequency using linear
+        interpolation of its two neighbours.
+        
+        Parameters
+        ----------
+        frequency : float or int
+            Unknown frequency for which to lineary interpolate the intensities.
+            freq_axis[0] >= frequency >= self_freq_axis[-1]
+        """
         lfreq, lvalue = None, None
         for freq, value in izip(self.freq_axis, self[:, :]):
             if freq < frequency:
@@ -400,12 +471,19 @@ class Spectrogram(np.ndarray):
                 del state[item]
 
     def linearize_freqs(self, delta_freq=None):
-        """ Rebin frequencies so that the frequency axis is linear. """
+        """ Rebin frequencies so that the frequency axis is linear.
+        
+        Parameters
+        ----------
+        delta_freq : float
+            Difference between consecutive values on the new frequency axis.
+            Defaults to half of smallest delta in current frequency axis.
+        """
         if delta_freq is None:
             delta_freq = (self.freq_axis[:-1] - self.freq_axis[1:])
             # Multiple values at the same frequency are just thrown away
             # in the process of linearizaion
-            delta_freq = delta_freq[delta_freq != 0].min()
+            delta_freq = delta_freq[delta_freq != 0].min() / 2.
         nsize = (self.freq_axis.max() - self.freq_axis.min()) / delta_freq + 1
         new = np.zeros((nsize, self.shape[1]), dtype=self.dtype)
 
@@ -443,7 +521,13 @@ class Spectrogram(np.ndarray):
     
     def time_to_x(self, time):
         """ Return x-coordinate in spectrogram that corresponds to the
-        passed datetime value. """        
+        passed datetime value.
+        
+        Parameters
+        ----------
+        time : parse_time compatible
+            Datetime to find the x coordinate for.
+        """        
         diff = time - self.start
         diff_s = SECONDS_PER_DAY * diff.days + diff.seconds
         if self.time_axis[-1] < diff_s < 0:
@@ -472,19 +556,34 @@ class LinearTimeSpectrogram(Spectrogram):
 
     @staticmethod
     def make_array(shape, dtype_=np.dtype('float32')):
+        """ Function to create an array with shape and dtype. """
         return np.zeros(shape, dtype=dtype_)
 
     @staticmethod
-    def memmap(filename, dtype_=np.dtype('float32')):
+    def memmap(filename):
+        """ Return function that takes shape and dtype and returns a
+        memory mapped array.
+        
+        Parameters
+        ----------
+        filename : str
+            File to store the memory mapped array in.
+        """
         return (
-            lambda shape: np.memmap(
+            lambda shape, dtype_=np.dtype('float32'): np.memmap(
                 filename, mode="write", shape=shape, dtype=dtype_
             )
         )
     
     def resample_time(self, new_delt):
         """ Rescale image so that the difference in time between pixels is
-        new_delt seconds. """
+        new_delt seconds.
+        
+        Parameters
+        ----------
+        new_delt : float
+            New delta between consecutive values.
+        """
         if self.t_delt == new_delt:
             return self
         factor = self.t_delt / float(new_delt)
@@ -505,10 +604,28 @@ class LinearTimeSpectrogram(Spectrogram):
         return self.__class__(data, **params)
     
     @classmethod
-    def join_many(cls, spectrograms, mk_arr=None, nonlinear=False,
+    def join_many(cls, specs, mk_arr=None, nonlinear=False,
         maxgap=0, fill=0):
         """ Produce new Spectrogram that contains spectrograms
-        joined together in time. """
+        joined together in time.
+        
+        Parameters
+        ----------
+        specs : list
+            List of spectrograms to join together in time.
+        nonlinear : bool
+            If True, leave out gaps between spectrograms. Else, fill them with
+            the value specified in fill. 
+        maxgap : float, int or None
+            Largest gap to allow in second. If None, allow gap of arbitrary
+            size.
+        fill : float or int
+            Value to fill missing values (assuming nonlinear=False) with.
+        mk_array: function
+            Function that is called to create the resulting array. Can be set
+            to Spectrogram.memap(filename) to create a memory mapped
+            result array.
+        """
         # XXX: Only load header and load contents of files
         # on demand.
         mask = None
@@ -516,7 +633,7 @@ class LinearTimeSpectrogram(Spectrogram):
         if mk_arr is None:
             mk_arr = cls.make_array
 
-        specs = sorted(spectrograms, key=lambda x: x.start)
+        specs = sorted(specs, key=lambda x: x.start)
 
         freqs = specs[0].freq_axis
         if not all(np.array_equal(freqs, sp.freq_axis) for sp in specs):
@@ -621,9 +738,16 @@ class LinearTimeSpectrogram(Spectrogram):
 
     def time_to_x(self, time):
         """ Return x-coordinate in spectrogram that corresponds to the
-        passed datetime value. """
+        passed datetime value.
+        
+        Parameters
+        ----------
+        time : parse_time compatible
+            Datetime to find the x coordinate for.
+        """
         # This is impossible for frequencies because that mapping
         # is not injective.
+        time = parse_time(time)
         diff = time - self.start
         diff_s = SECONDS_PER_DAY * diff.days + diff.seconds
         result = diff_s // self.t_delt
@@ -634,7 +758,13 @@ class LinearTimeSpectrogram(Spectrogram):
     @staticmethod
     def intersect_time(specs):
         """ Return slice of spectrograms that is present in all of the ones
-        passed. """
+        passed.
+        
+        Parameters
+        ----------
+        specs : list
+            List of spectrograms of which to find the time intersections.
+        """
         delt = min(sp.t_delt for sp in specs)
         start = max(sp.t_init for sp in specs)
 
@@ -648,6 +778,14 @@ class LinearTimeSpectrogram(Spectrogram):
 
     @classmethod
     def combine_frequencies(cls, specs):
+        """ Return new spectrogram that contains frequencies from all the
+        spectrograms in spec. Only returns time intersection of all of them.
+        
+        Parameters
+        ----------
+        spec : list
+            List of spectrograms of which to combine the frequencies into one.
+        """
         specs = cls.intersect_time(specs)
 
         one = specs[0]
@@ -685,7 +823,17 @@ class LinearTimeSpectrogram(Spectrogram):
         """ Check linearity of time axis. If err is given, tolerate absolute
         derivation from average delta up to err. If err_factor is given,
         tolerate up to err_factor * average_delta. If both are given,
-        TypeError is raised. Default to err=0."""
+        TypeError is raised. Default to err=0.
+        
+        Parameters
+        ----------
+        err : float
+            Absolute difference each delta is allowed to diverge from the
+            average. Cannot be used in combination with err_factor.
+        err_factor : float
+            Relative difference each delta is allowed to diverge from the
+            average, i.e. err_factor * average. Cannot be used in combination
+            with err. """
         deltas = self.time_axis[:-1] - self.time_axis[1:]
         avg = np.average(deltas)
         if err is None and err_factor is None:
@@ -696,28 +844,43 @@ class LinearTimeSpectrogram(Spectrogram):
             raise TypeError("Only supply err or err_factor, not both")
         return (abs(deltas - avg) <= err).all()
     
-    def in_interval(self, start, end):
-        try:
-            start = parse_time(start)
-        except ValueError:
-            # XXX: We could do better than that.
-            if get_day(self.start) != get_day(self.end):
-                raise TypeError(
-                    "Time ambiguous because data spans over more than one day"
+    def in_interval(self, start=None, end=None):
+        """ Return part of spectrogram that lies in [start, end).
+        
+        Parameters
+        ----------
+        start : None or datetime or parse_time compatible string or time string
+            Start time of the part of the spectrogram that is returned. If the
+            measurement only spans over one day, a colon seperated sdtring
+            representing the time can be passed.
+        end : None or datetime or parse_time compatible string or time string
+            See start.
+        """
+        if start is not None:
+            try:
+                start = parse_time(start)
+            except ValueError:
+                # XXX: We could do better than that.
+                if get_day(self.start) != get_day(self.end):
+                    raise TypeError(
+                        "Time ambiguous because data spans over more than one day"
+                    )
+                start = datetime.datetime(
+                    self.start.year, self.start.month, self.start.day,
+                    *map(int, start.split(":"))
                 )
-            start = datetime.datetime(
-                self.start.year, self.start.month, self.start.day,
-                *map(int, start.split(":"))
-            )
-        try:
-            end = parse_time(end)
-        except ValueError:
-            if get_day(self.start) != get_day(self.end):
-                raise TypeError(
-                    "Time ambiguous because data spans over more than one day"
-                )                
-            end = datetime.datetime(
-                self.start.year, self.start.month, self.start.day,
-                *map(int, end.split(":"))
-            )
-        return self[:, self.time_to_x(start): self.time_to_x(end)]
+            start = self.time_to_x(start)
+        if end is not None:
+            try:
+                end = parse_time(end)
+            except ValueError:
+                if get_day(self.start) != get_day(self.end):
+                    raise TypeError(
+                        "Time ambiguous because data spans over more than one day"
+                    )                
+                end = datetime.datetime(
+                    self.start.year, self.start.month, self.start.day,
+                    *map(int, end.split(":"))
+                )
+            end = self.time_to_x(end)
+        return self[:, start:end]
