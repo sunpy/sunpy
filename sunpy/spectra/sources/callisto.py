@@ -6,12 +6,10 @@ from __future__ import absolute_import
 import os
 import datetime
 import urllib2
-import tempfile
 
 import numpy as np
 import pyfits
 
-from itertools import izip
 from collections import defaultdict
 
 from bs4 import BeautifulSoup
@@ -118,7 +116,7 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         """ Return updated header. """
         header = self.header.copy()
 
-        if swapped:
+        if self.swapped:
             header['NAXIS2'] = self.shape[1] # pylint: disable=E1101
             header['NAXIS1'] = self.shape[0] # pylint: disable=E1101
         else:
@@ -181,13 +179,13 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         else:
             # Otherwise, assume it's linear.
             time_axis = \
-                np.linspace(0, self.shape[1] - 1) * t_delt + t_init # pylint: disable=E1101
+                np.linspace(0, data.shape[1] - 1) * t_delt + t_init # pylint: disable=E1101
 
         if fq is not None:  
             freq_axis = np.squeeze(fq)
         else:
             freq_axis = \
-                np.linspace(0, self.shape[0] - 1) * f_delt + f_init # pylint: disable=E1101
+                np.linspace(0, data.shape[0] - 1) * f_delt + f_init # pylint: disable=E1101
 
         content = header["CONTENT"].split(" ", 1)[1]
         content = start.strftime("%d %b %Y")+ ' ' + content
