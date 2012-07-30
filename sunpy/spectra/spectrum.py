@@ -12,7 +12,7 @@ class Spectrum(np.ndarray):
         return np.asarray(data).view(cls)
 
     def __init__(self, data, freq_axis):
-    	self.freq_axis = freq_axis
+        self.freq_axis = freq_axis
 
     def plot(self, overlays=[], colorbar=True, **matplotlib_args):
         # [] as default argument is okay here because it is only read.
@@ -20,7 +20,7 @@ class Spectrum(np.ndarray):
 
         figure = plt.figure(frameon=True)
         axes = figure.add_subplot(111)
-        
+
         params = {}
 
         params.update(matplotlib_args)
