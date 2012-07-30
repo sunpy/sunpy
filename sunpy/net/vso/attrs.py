@@ -243,8 +243,18 @@ walker.add_converter(Wave)(
     })
 )
 
+# The idea of using a multi-method here - that means a method which dispatches
+# by type but is not attached to said class - is that the attribute classes are
+# designed to be used not only in the context of VSO but also elsewhere (which
+# AttrAnd and AttrOr obviously are - in the HEK module). If we defined the
+# filter method as a member of the attribute classes, we could only filter
+# one type of data (that is, VSO data).
 filter_results = MultiMethod(lambda *a, **kw: (a[0], ))
 
+# If we filter with ANDed together attributes, the only items are the ones
+# that match all of them - this is implementing  by ANDing the pool of items
+# with the matched items - only the ones that match everything are there
+# after this.
 @filter_results.add_dec(AttrAnd)
 def _(attr, results):
     res = set(results)
@@ -252,6 +262,9 @@ def _(attr, results):
         res &= filter_results(elem, res)
     return res
 
+# If we filter with ORed attributes, the only attributes that should be
+# removed are the ones that match none of them. That's why we build up the
+# resulting set by ORing all the matching items.
 @filter_results.add_dec(AttrOr)
 def _(attr, results):
     res = set()
@@ -259,6 +272,7 @@ def _(attr, results):
         res |= filter_results(elem, results)
     return res
 
+# Filter out items by comparing attributes.
 @filter_results.add_dec(_VSOSimpleAttr)
 def _(attr, results):
     attrname = attr.__class__.__name__.lower()
@@ -269,6 +283,7 @@ def _(attr, results):
         getattr(item, attrname).lower() == attr.value.lower()
     )
 
+# The dummy attribute does not filter at all.
 @filter_results.add_dec(DummyAttr, Field)
 def _(attr, results):
     return set(results)
