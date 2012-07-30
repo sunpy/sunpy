@@ -6,7 +6,6 @@
 from __future__ import absolute_import
 
 import datetime
-import urllib2
 
 from random import randint
 from itertools import izip
@@ -14,12 +13,9 @@ from copy import copy, deepcopy
 from math import floor
 
 import numpy as np
-import pyfits
-
 from numpy import ma
 
 from scipy import ndimage
-from scipy.stats.mstats import mode
 
 from matplotlib import pyplot as plt
 from matplotlib.ticker import FuncFormatter, MaxNLocator
