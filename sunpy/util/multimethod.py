@@ -124,7 +124,8 @@ class MultiMethod(object):
     def super(self, *args, **kwargs):
         """ Like __call__, only that when you give it super(cls, obj) items,
         it will skip the multimethod for cls and use the one for its parent
-        class. """
+        class. The normal __call__ does not consider this for performance
+        reasons. """
         objs = self.get(*args, **kwargs)
         types = tuple(
             [
