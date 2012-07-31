@@ -6,10 +6,6 @@
 #
 # pylint: disable=C0103,R0903
 
-from __future__ import absolute_import
-
-from sunpy.util.multimethod import MultiMethod
-
 """
 Allow representation of queries as logic expressions. This module makes
 sure that attributes that are combined using the two logic operations AND (&)
@@ -18,6 +14,10 @@ levels ­- the first being disjunction and the second being conjunction. In othe
 words, every combinations of attributes looks like this:
 (a AND b AND c) OR (d AND e).
 """
+
+from __future__ import absolute_import
+
+from sunpy.util.multimethod import MultiMethod
 
 # XXX: Maybe allow other normal forms.
 

@@ -1,3 +1,33 @@
+# -*- coding: utf-8 -*-
+# Author: Florian Mayer <florian.mayer@bitsrc.org>
+#
+# This module was developed with funding provided by
+# the ESA Summer of Code (2011).
+
+# The template can be found in tools/hektemplate.py
+
+"""
+This script is used to generate sunpy.net.hek.attrs. The rationale for using
+code-generation in lieu of dynamic magic is that code-generation ensures
+that tools (e.g. IPython) are able to automatically complete names of members.
+Considering the sheer amount of members it is essential that users are able
+to use completion.
+
+Events are _ListAttrs, which means that when they are encountered in a query,
+they are added to a list in the query. For events, that particular list
+is event_type, i.e., when AR is encountered in the query, "ar" is appended
+to the event_type GET parameter of the query URL.
+
+Events also have attributes which are _StringParamAttrWrapper, that means that
+they overload the Python operators for strings and return a _ParamAttr for
+them. _ParamAttrs are used to specify the values of parameters of the event.
+So, AR.NumSpots == 1 returns a _ParamAttr that when encountered in a query
+sets the GET parameters in a way that only active regions with only one spot
+are returned. _StringParamAttrWrapper support <, <= ,>, >=, ==, != and like.
+"""
+
+from __future__ import absolute_import
+
 import shutil
 import sys
 import os
@@ -14,8 +44,12 @@ NAMES = defaultdict(lambda: None, {
 })
 
 OTHER = ['Area', 'BoundBox', 'Bound', 'OBS', 'Skel', 'FRM', 'Event', 'Outflow']
+# There is no underscore after Wave in the names of the API, so we do not 
+# need to remove it.
 OTHER_NOPAD = ['Wave', 'Veloc', 'Freq', 'Intens']
 
+# Not all of them actually are string. We just use string for now because
+# that is the type that has the most functionality.
 fields = {
     'AR_CompactnessCls': '_StringParamAttrWrapper',
     'AR_IntensKurt': '_StringParamAttrWrapper',
@@ -201,7 +235,7 @@ fields = {
 
 def mk_gen(rest):
     ret = ''
-    ret += 'class Misc(object):\n'
+    ret += '@apply\nclass Misc(object):\n'
     for elem in sorted(rest):
         ret += '    %s = %s(%r)\n' %(elem, fields[elem], elem)
     return ret
@@ -224,7 +258,7 @@ def mk_cls(key, used, pad=1, nokeys=True, init=True, name=None, base='_ListAttr'
         ret += '    %s = %s(%r)\n' % (k[len(key) + pad:], v, k)
     if init:
         ret += '''    def __init__(self):
-            _ListAttr.__init__(self, "event_type", %r)''' % name.lower()
+        _ListAttr.__init__(self, "event_type", %r)''' % name.lower()
     return ret
 
 if __name__ == '__main__':
@@ -247,11 +281,6 @@ if __name__ == '__main__':
         fd = open(dest, 'w')
     
     tmplfd = open(tmpl)
-    
-    fd.write(
-        "# THIS IS AN AUTOMATICALLY GENERATED FILE\n"
-        "# DO NOT EDIT!\n"
-    )
     
     while True:
         buf = tmplfd.read(BUFFER)
