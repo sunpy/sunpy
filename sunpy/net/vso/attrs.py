@@ -110,6 +110,8 @@ class Field(ValueAttr):
 
 
 class _SimpleAttr(Attr):
+    """ A _SimpleAttr is an attribute that is not composite, i.e. that only
+    has a single value, such as, e.g., Instrument('eit'). """
     def __init__(self, value):
         Attr.__init__(self)
         
