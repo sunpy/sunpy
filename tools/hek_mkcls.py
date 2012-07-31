@@ -26,6 +26,9 @@ sets the GET parameters in a way that only active regions with only one spot
 are returned. _StringParamAttrWrapper support <, <= ,>, >=, ==, != and like.
 """
 
+# XXX: Maybe split into three modules and import them all into one so
+# we do not need a template but generate one module in its entirety.
+
 from __future__ import absolute_import
 
 import shutil
