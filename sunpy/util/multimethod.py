@@ -19,7 +19,7 @@
 # THE SOFTWARE.
 
 """
-
+Multimethod implementation in pure Python.
 """
 
 from __future__ import absolute_import
