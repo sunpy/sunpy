@@ -20,6 +20,7 @@ from sunpy.util.util import toggle_pylab
 from sunpy.io import read_file, read_file_header
 from sunpy.sun import constants
 from sunpy.time import parse_time
+from sunpy.util.util import to_signed
 
 """
 TODO
@@ -294,11 +295,9 @@ Dimension:\t [%d, %d]
         """
         # if data is stored as unsigned, cast up (e.g. uint8 => int16)
         if self.dtype.kind == "u":
-            dtype = "int%d" % (min(int(self.dtype.name[4:]) * 2, 64))
-            self = self.astype(np.dtype(dtype))
+            self = self.astype(to_signed(self.dtype))
         if other.dtype.kind == "u":
-            dtype = "int%d" % (min(int(other.dtype.name[4:]) * 2, 64))
-            other = other.astype(np.dtype(dtype))
+            other = other.astype(to_signed(other.dtype))
 
         result = np.ndarray.__sub__(self, other)
 
