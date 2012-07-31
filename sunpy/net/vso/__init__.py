@@ -144,6 +144,14 @@ class QueryResponse(list):
         self.queryresult = queryresult
         self.errors = []
     
+    def query(self, *query):
+        """ Furtherly reduce the query response by matching it against
+        another query, e.g. response.query(attrs.Instrument('aia')). """
+        query = and_(*query)
+        return QueryResponse(
+            attrs.filter_results(query, self), self.queryresult
+        )
+    
     @classmethod
     def create(cls, queryresult):
         return cls(iter_records(queryresult), queryresult)
