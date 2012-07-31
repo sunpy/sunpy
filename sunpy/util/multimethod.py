@@ -18,6 +18,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+"""
+
+"""
+
 from __future__ import absolute_import
 
 from warnings import warn
@@ -36,6 +40,15 @@ class TypeWarning(UserWarning):
 
 
 class MultiMethod(object):
+    """ A multimethod is a callable object that decides which code to execute
+    based on the type of one or more of its arguments. 
+    
+    Parameters
+    ----------
+    get : function
+        function which receives args and kwargs and returns a tuple of
+        values to consider for dispatch.
+    """
     def __init__(self, get):
         self.get = get
         
@@ -43,6 +56,22 @@ class MultiMethod(object):
         self.cache = {}
     
     def add(self, fun, types, override=SILENT):
+        """ Add fun to the multimethod. It will be executed if get returns
+        values of the types passed as types. 
+        
+        Parameters
+        ----------
+        fun : function
+            function to be added to the multimethod
+        types : tuple of classes
+            types for which the function is executed
+        override : SILENT, WARN or FAIL
+            control behaviour when overriding existing definitions.
+            If it is set to SILENT, prior definitions are silently
+            overriden, if it is set to WARN a TypeWarning
+            will be issued, and with FAIL a TypeError is raised when
+            attempting to override an existing definition.
+        """
         overriden = False
         if override:
             for signature, _ in self.methods:
@@ -63,6 +92,10 @@ class MultiMethod(object):
         self.methods.append((types, fun))
     
     def add_dec(self, *types, **kwargs):
+        """ Return a decorator that adds the function it receives to the
+        multimethod with the types passed as *args. Using keyword arg
+        override to control overriding behaviour. Compare add.
+        """
         self.cache = {}
         def _dec(fun):
             self.add(fun, types, kwargs.get('override', SILENT))
@@ -86,7 +119,11 @@ class MultiMethod(object):
                 return fun(*args, **kwargs)
         raise TypeError('%r' % types)
     
+    # XXX: Other Python implementations.
     def super(self, *args, **kwargs):
+        """ Like __call__, only that when you give it super(cls, obj) items,
+        it will skip the multimethod for cls and use the one for its parent
+        class. """
         objs = self.get(*args, **kwargs)
         types = tuple(
             [
