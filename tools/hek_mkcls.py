@@ -42,16 +42,20 @@ EVENTS = [
     'EF', 'CJ', 'PG', 'OT', 'NR', 'SG', 'SP', 'CR', 'CC', 'ER', 'TO'
 ]
 
+# For some reason, the event type is "ce" but all its attributes start with
+# "CME". This dict is here to consider this.
 NAMES = defaultdict(lambda: None, {
     'CME': 'CE'
 })
-
+# These are just groups for attributes that are not _ListAttrs themselves.
 OTHER = ['Area', 'BoundBox', 'Bound', 'OBS', 'Skel', 'FRM', 'Event', 'Outflow']
 # There is no underscore after Wave in the names of the API, so we do not 
 # need to remove it.
 OTHER_NOPAD = ['Wave', 'Veloc', 'Freq', 'Intens']
+# Every attribute that neither starts with something in EVENTS, OTHER or
+# OTHER_NOPAD, is put into the Misc class.
 
-# Not all of them actually are string. We just use string for now because
+# XXX: Not all of them actually are string. We just use string for now because
 # that is the type that has the most functionality.
 fields = {
     'AR_CompactnessCls': '_StringParamAttrWrapper',
@@ -237,6 +241,7 @@ fields = {
 }
 
 def mk_gen(rest):
+    """ Generate Misc class. """
     ret = ''
     ret += '@apply\nclass Misc(object):\n'
     for elem in sorted(rest):
