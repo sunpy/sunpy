@@ -1,4 +1,7 @@
 """Time related functionality"""
+
+import re
+
 import julian
 import timerange
 from datetime import datetime
@@ -9,6 +12,51 @@ from sunpy.time.julian import *
 __all__ = ["parse_time", "day_of_year", "break_time"]
 __all__ += julian.__all__
 __all__ += timerange.__all__
+
+
+# Mapping of time format codes to regular expressions.
+REGEX = {
+    '%Y': '(?P<year>\d{4})',
+    '%m': '(?P<month>\d{1,2})',
+    '%d': '(?P<day>\d{1,2})',
+    '%H': '(?P<hour>\d{1,2})',
+    '%M': '(?P<minute>\d{1,2})',
+    '%S': '(?P<second>\d{1,2})',
+    '%f': '(?P<microsecond>\d+)',
+    '%b': '(?P<month_str>[a-zA-Z]+)'
+}
+
+def _group_or_none(match, group):
+    try:
+        return match.group(group)
+    except IndexError:
+        return None
+
+def _n_or_eq(a, b):
+    return a is None or a == b
+
+def _regex_parse_time(inp, format):
+    # Parser for finding out the minute value so we can adjust the string
+    # from 24:00:00 to 00:00:00 the next day because strptime does not
+    # understand the former.
+    for key, value in REGEX.iteritems():
+        format = format.replace(key, value)
+    match = re.match(format, inp)
+    if match is None:
+        return None, None
+    try:
+        hour = match.group("hour")
+    except IndexError:
+        return inp, timedelta(days=0)
+    if match.group("hour") == "24":
+        if not all(_n_or_eq(_group_or_none(match, g), '00')
+            for g in ["minute", "second", "microsecond"]
+        ):
+            raise ValueError
+        from_, to = match.span("hour")
+        return inp[:from_] + "00" + inp[to:], timedelta(days=1)
+    return inp, timedelta(days=0)
+
 
 def parse_time(time_string=None):
     """Given a time string will parse and return a datetime object.
@@ -49,6 +97,7 @@ def parse_time(time_string=None):
              "%Y/%m/%dT%H:%M:%S.%f",    # Example 2007/05/04T21:08:12.999999
              "%Y-%m-%dT%H:%M:%S.%fZ",   # Example 2007-05-04T21:08:12.999Z
              "%Y-%m-%dT%H:%M:%S",       # Example 2007-05-04T21:08:12
+             "%Y/%m/%dT%H:%M:%S",       # Example 2007/05/04T21:08:12
              "%Y%m%dT%H%M%S.%f",        # Example 20070504T210812.999999
              "%Y%m%dT%H%M%S",           # Example 20070504T210812
              "%Y/%m/%d %H:%M:%S",       # Example 2007/05/04 21:08:12
@@ -65,8 +114,14 @@ def parse_time(time_string=None):
              "%d-%b-%Y",                # Example 04-May-2007
              "%Y%m%d_%H%M%S"]           # Example 20070504_210812
         for time_format in time_format_list: 
-            try: 
-                return datetime.strptime(time_string, time_format)
+            try:
+                try:
+                    ts, time_delta = _regex_parse_time(time_string, time_format)
+                except TypeError:
+                    break
+                if ts is None:
+                    continue
+                return datetime.strptime(ts, time_format) + time_delta
             except ValueError:
                 pass
     
