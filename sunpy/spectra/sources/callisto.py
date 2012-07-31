@@ -21,7 +21,8 @@ TIME_STR = "%Y%m%d%H%M%S"
 DEFAULT_URL = 'http://soleil.i4ds.ch/solarradio/data/2002-20yy_Callisto/'
 _DAY = datetime.timedelta(days=1)
 
-def buffered_write(inp, outp, buffer_size):
+def _buffered_write(inp, outp, buffer_size):
+    """ Implementation detail. """
     while True:
         read = inp.read(buffer_size)
         if not read:
@@ -66,13 +67,22 @@ def query(start, end, instruments=None, url=DEFAULT_URL):
 
 
 def download(urls, directory):
+    """ Download files from urls into directory.
+    
+    Parameters
+    ----------
+    urls : list of str
+        urls of the files to retrieve
+    directory : str
+        directory to save them in
+    """
     paths = []
     for url in urls:
         _, filename = os.path.split(url)
         path = os.path.join(directory, filename)
         fd = open(path, 'w')
         src = urllib2.urlopen(url)
-        buffered_write(src, fd, 4096)
+        _buffered_write(src, fd, 4096)
         fd.close()
         src.close()
         paths.append(path)
@@ -87,6 +97,20 @@ def parse_header_time(date, time):
 
 
 class CallistoSpectrogram(LinearTimeSpectrogram):
+    """ Classed used for dynamic spectra coming from the Callisto network.
+    
+    
+    Additional (not inherited) parameters
+    -------------------------------------
+    header : pyfits.Header
+        main header of the FITS file
+    axes_header : pyfits.Header
+        header foe the axes table
+    swapped : boolean
+        flag that specifies whether originally in the file the x-axis was
+        frequency
+    """
+    
     # Contrary to what pylint may think, this is not an old-style class.
     # pylint: disable=E1002,W0142,R0902
 
@@ -97,7 +121,9 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         ('swapped', REFERENCE),
         ('axes_header', REFERENCE)
     ]
-
+    
+    # List of instruments retrieved in July 2012 from
+    # http://soleil.i4ds.ch/solarradio/data/2002-20yy_Callisto/
     INSTRUMENTS = set([
         'ALASKA', 'ALMATY', 'BIR', 'DARO', 'HB9SCT', 'HUMAIN',
         'HURBANOVO', 'KASI', 'KENYA', 'KRIM', 'MALAYSIA', 'MRT1',
@@ -105,7 +131,13 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
     ])
 
     def save(self, filepath):
-        """ Save modified spectrogram back to filepath. """
+        """ Save modified spectrogram back to filepath.
+        
+        Parameters
+        ----------
+        filepath : str
+            path to save the spectrogram to
+        """
         main_header = self.get_header()
         data = pyfits.PrimaryHDU(self, header=main_header)
         ## XXX: Update axes header.
@@ -136,7 +168,15 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
 
     @classmethod
     def read(cls, filename, **kwargs):
-        """ Read in FITS file and return a new CallistoSpectrogram. """
+        """ Read in FITS file and return a new CallistoSpectrogram. 
+        Any unknown (i.e. any except filename) keyword arguments get
+        passed to pyfits.open.
+        
+        Parameters
+        ----------
+        filename : str
+            path of the file to read
+        """
         fl = pyfits.open(filename, **kwargs)
         data = fl[0].data
         axes = fl[1]
@@ -222,7 +262,13 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
 
     @classmethod
     def is_datasource_for(cls, header):
-        """ Check if class supports data from the given FITS file. """
+        """ Check if class supports data from the given FITS file.
+        
+        Parameters
+        ----------
+        header : pyfits.Header
+            main header of the FITS file
+        """
         return header.get('instrument', '').strip() in cls.INSTRUMENTS
 
     def remove_border(self):
@@ -237,7 +283,16 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
 
     @classmethod
     def read_many(cls, filenames, sort_by=None):
-        """ Return list of CallistoSpectrogram objects read from filenames. """
+        """ Return list of CallistoSpectrogram objects read from filenames.
+        
+        Parameters
+        ----------
+        filenames : list of str
+            list of paths to read from
+        sort_by : str
+            optional attribute of the resulting objects to sort from, e.g.
+            start to sort by starting time.
+        """
         objs = map(cls.read, filenames)
         if sort_by is not None:
             objs.sort(key=lambda x: getattr(x, sort_by))
@@ -247,13 +302,29 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
 
     @classmethod
     def from_url(cls, url):
-        """ Return CallistoSpectrogram read from URL. """
+        """ Return CallistoSpectrogram read from URL.
+        
+        Parameters
+        ----------
+        url : str
+            URL to retrieve the data from
+        """
         return cls.read(url)
 
     @classmethod
     def from_range(cls, instrument, start, end):
         """ Automatically download data from instrument between start and
-        end. """
+        end and join it together.
+        
+        Parameters
+        ----------
+        instrument : str
+            instrument to retrieve the data from
+        start : parse_time compatible
+            start of the measurement
+        end : parse_time compatible
+            end of the measurement
+        """
         start = parse_time(start)
         end = parse_time(end)
         urls = query(start, end, [instrument])
