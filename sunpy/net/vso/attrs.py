@@ -174,6 +174,11 @@ class PScale(_SimpleAttr):
 # server can handle.
 walker = AttrWalker()
 
+# The _create functions make a new VSO query from the attribute tree,
+# the _apply functions take an existing query-block and update it according
+# to the attribute tree passed in as root. Different attributes require
+# different functions for conversion into query blocks.
+
 @walker.add_creator(ValueAttr, AttrAnd)
 # pylint: disable=E0102,C0103,W0613
 def _create(wlk, root, api):
@@ -223,6 +228,11 @@ def _apply(wlk, root, api, queryblock):
     """ Implementation detail. """
     pass
 
+
+# Converters take a type unknown to the walker and convert it into one
+# known to it. All of those convert types into ValueAttrs, which are
+# handled above by just assigning according to the keys and values of the
+# attrs member.
 walker.add_converter(Extent)(
     lambda x: ValueAttr(
         dict((('extent', k), v) for k, v in vars(x).iteritems())
