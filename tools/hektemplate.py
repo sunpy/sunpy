@@ -160,6 +160,9 @@ class _NumberParamAttrWrapper(ComparisonParamAttrWrapper):
     pass
 
 
+# The walker is what traverses the attribute tree and converts it to a format
+# that is understood by the server we are querying. The HEK walker builds up
+# a dictionary of GET parameters to be sent to the server.
 walker = attr.AttrWalker()
 
 @walker.add_applier(Contains)
