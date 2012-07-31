@@ -24,6 +24,8 @@ them. _ParamAttrs are used to specify the values of parameters of the event.
 So, AR.NumSpots == 1 returns a _ParamAttr that when encountered in a query
 sets the GET parameters in a way that only active regions with only one spot
 are returned. _StringParamAttrWrapper support <, <= ,>, >=, ==, != and like.
+_ComparisonParamAttrWrapper support all the operations mentioned above
+barring like.
 """
 
 # XXX: Maybe split into three modules and import them all into one so
