@@ -22,7 +22,8 @@ DEFAULT_URL = 'http://soleil.i4ds.ch/solarradio/data/2002-20yy_Callisto/'
 _DAY = datetime.timedelta(days=1)
 
 def _buffered_write(inp, outp, buffer_size):
-    """ Implementation detail. """
+    """ Implementation detail. Write from inp to outp in chunks of
+    buffer_size. """
     while True:
         read = inp.read(buffer_size)
         if not read:

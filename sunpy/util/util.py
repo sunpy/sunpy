@@ -19,6 +19,14 @@ import numpy as np
 from itertools import izip, imap
 
 def to_signed(dtype):
+    """ Return dtype that can hold data of passed dtype but is signed.
+    Raise ValueError if no such dtype exists.
+    
+    Parameters
+    ----------
+    dtype : np.dtype
+        dtype whose values the new dtype needs to be able to represent.
+    """
     if dtype.kind == "u":
         if dtype.itemsize == 8:
             raise ValueError("Cannot losslessy convert uint64 to int.")
