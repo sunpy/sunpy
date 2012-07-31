@@ -53,6 +53,8 @@ def query(start, end, instruments=None, url=DEFAULT_URL):
             try:
                 inst, date, time, no = name.split('_')
             except ValueError:
+                # If the split fails, the file name does not match out format,
+                # so we skip it and continue to the next iteration of the loop.
                 continue
             point = datetime.datetime.strptime(date + time, TIME_STR)
             opn.close()
