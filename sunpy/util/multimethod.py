@@ -57,7 +57,8 @@ class MultiMethod(object):
     
     def add(self, fun, types, override=SILENT):
         """ Add fun to the multimethod. It will be executed if get returns
-        values of the types passed as types. 
+        values of the types passed as types. Must return tuples of same
+        length for any input.
         
         Parameters
         ----------
