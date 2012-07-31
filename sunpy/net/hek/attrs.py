@@ -25,6 +25,9 @@ from sunpy.net import attr
 from sunpy.time import parse_time
 
 class _ParamAttr(attr.Attr):
+    """ A _ParamAttr is used to represent equality or inequality checks
+    for certain parameters. It stores the attribute's name, the operator to
+    compare with, and the value to compare to. """
     def __init__(self, name, op, value):
         attr.Attr.__init__(self)
         self.name = name
@@ -37,6 +40,7 @@ class _ParamAttr(attr.Attr):
         return self.op == other.op and self.name == other.name
 
 
+# XXX: Why is this here but never used.
 class _BoolParamAttr(_ParamAttr):
     def __init__(self, name, value='true'):
         _ParamAttr.__init__(self, name, '=', value)
@@ -52,6 +56,9 @@ class _BoolParamAttr(_ParamAttr):
 
 
 class _ListAttr(attr.Attr):
+    """ A _ListAttr is used when the server expects a list of things with
+    the name (GET parameter name) key. By adding the _ListAttr to the query,
+    item is added to that list. """
     def __init__(self, key, item):
         attr.Attr.__init__(self)
         
@@ -75,7 +82,9 @@ class EventType(_ListAttr):
         _ListAttr.__init__(self, 'event_type', item)
 
 
+# XXX: XOR
 class Time(attr.Attr):
+    """ Restrict query to time range between start and end. """
     def __init__(self, start, end):
         attr.Attr.__init__(self)
         self.start = start
