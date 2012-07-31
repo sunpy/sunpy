@@ -43,7 +43,32 @@ def get_day(dt):
 
 # XXX: Find out why imshow(x) fails!
 class Spectrogram(np.ndarray):
-    """ Base class for spectral analysis in SunPy. """
+    """ Base class for spectral analysis in SunPy.
+    
+    Parameters
+    ----------
+    data : np.ndarray
+        two-dimensional array of the image data of the spectrogram.
+    time_axis : np.ndarray
+        one-dimensional array containing the offset from the start
+        for each column of data.
+    freq_axis : np.ndarray
+        one-dimensional array containing information about the
+        frequencies each row of the image corresponds to.
+    start : datetime
+        starting time of the measurement
+    end : datetime
+        end time of the measurement
+    t_init : int
+        offset from the start of the day the measurement began. If None
+        gets automatically set from start.
+    t_label : str
+        label for the time axis
+    f_label : str
+        label for the frequency axis
+    content : str
+        header for the image
+    """
     # Contrary to what pylint may think, this is not an old-style class.
     # pylint: disable=E1002,W0142,R0902
 
@@ -537,7 +562,13 @@ class Spectrogram(np.ndarray):
 
 
 class LinearTimeSpectrogram(Spectrogram):
-    """ Spectrogram evenly sampled in time. """
+    """ Spectrogram evenly sampled in time.
+    
+    Additional (not inherited) parameters
+    -------------------------------------
+    t_delt : float
+        difference between the items on the time axis
+    """
     # pylint: disable=E1002
     COPY_PROPERTIES = Spectrogram.COPY_PROPERTIES + [
         ('t_delt', REFERENCE),
@@ -831,7 +862,8 @@ class LinearTimeSpectrogram(Spectrogram):
         err_factor : float
             Relative difference each delta is allowed to diverge from the
             average, i.e. err_factor * average. Cannot be used in combination
-            with err. """
+            with err.
+        """
         deltas = self.time_axis[:-1] - self.time_axis[1:]
         avg = np.average(deltas)
         if err is None and err_factor is None:
