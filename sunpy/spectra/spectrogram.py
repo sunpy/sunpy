@@ -534,7 +534,13 @@ class Spectrogram(np.ndarray):
 
     def freq_overlap(self, other):
         """ Get frequency range present in both spectrograms. Returns
-        (min, max) tuple. """
+        (min, max) tuple.
+        
+        Parameters
+        ----------
+        other : Spectrogram
+            other spectrogram with which to look for frequency overlap
+        """
         lower = max(self.freq_axis[-1], other.freq_axis[-1])
         upper = min(self.freq_axis[0], other.freq_axis[0])
         if lower > upper:
@@ -585,7 +591,15 @@ class LinearTimeSpectrogram(Spectrogram):
 
     @staticmethod
     def make_array(shape, dtype_=np.dtype('float32')):
-        """ Function to create an array with shape and dtype. """
+        """ Function to create an array with shape and dtype.
+        
+        Parameters
+        ----------
+        shape : tuple
+            shape of the array to create
+        dtype_ : np.dtype
+            data-type of the array to create
+        """
         return np.zeros(shape, dtype=dtype_)
 
     @staticmethod
