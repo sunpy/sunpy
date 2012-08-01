@@ -54,7 +54,12 @@ class Attr(object):
 
 class DummyAttr(Attr):
     """ Empty attribute. Useful for building up queries. Returns other
-    attribute when ORed or ANDed. """
+    attribute when ORed or ANDed.
+    
+    attr = DummyAttr()
+    for from_, to in times:
+        attr |= Time(from_, to)
+    """
     def __and__(self, other):
         return other
     
