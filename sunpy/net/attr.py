@@ -175,7 +175,7 @@ class AttrWalker(object):
     
     def add_converter(self, *types):
         def _dec(fun):
-            for type_ in types:                
+            for type_ in types:
                 self.applymm.add(self.cv_apply(fun), (type_, ))
                 self.createmm.add(self.cv_create(fun), (type_, ))
             return fun

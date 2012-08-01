@@ -60,7 +60,7 @@ def test_query_number():
     URL = 'http://soleil.i4ds.ch/solarradio/data/2002-20yy_Callisto/2011/09/22/'
 
     result = list(query(
-        datetime(2011, 9, 22, 5), datetime(2011, 9, 22, 6), set(["BIR"]), 1
+        datetime(2011, 9, 22, 5), datetime(2011, 9, 22, 6), set([("BIR", 1)])
     ))
     RESULTS = [
         "BIR_20110922_050000_01.fit.gz",
@@ -78,7 +78,7 @@ def test_download():
     directory = mkdtemp()
     try:
         result = query(
-            datetime(2011, 9, 22, 5), datetime(2011, 9, 22, 6), set(["BIR"]), 1
+            datetime(2011, 9, 22, 5), datetime(2011, 9, 22, 6), set([("BIR", 1)])
         )
         RESULTS = [
             "BIR_20110922_050000_01.fit.gz",

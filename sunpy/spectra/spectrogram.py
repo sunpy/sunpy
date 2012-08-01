@@ -6,7 +6,6 @@
 from __future__ import absolute_import
 
 import datetime
-import urllib2
 
 from random import randint
 from itertools import izip
@@ -14,12 +13,9 @@ from copy import copy, deepcopy
 from math import floor
 
 import numpy as np
-import pyfits
-
 from numpy import ma
 
 from scipy import ndimage
-from scipy.stats.mstats import mode
 
 from matplotlib import pyplot as plt
 from matplotlib.ticker import FuncFormatter, MaxNLocator
@@ -47,7 +43,32 @@ def get_day(dt):
 
 # XXX: Find out why imshow(x) fails!
 class Spectrogram(np.ndarray):
-    """ Base class for spectral analysis in SunPy. """
+    """ Base class for spectral analysis in SunPy.
+    
+    Parameters
+    ----------
+    data : np.ndarray
+        two-dimensional array of the image data of the spectrogram.
+    time_axis : np.ndarray
+        one-dimensional array containing the offset from the start
+        for each column of data.
+    freq_axis : np.ndarray
+        one-dimensional array containing information about the
+        frequencies each row of the image corresponds to.
+    start : datetime
+        starting time of the measurement
+    end : datetime
+        end time of the measurement
+    t_init : int
+        offset from the start of the day the measurement began. If None
+        gets automatically set from start.
+    t_label : str
+        label for the time axis
+    f_label : str
+        label for the frequency axis
+    content : str
+        header for the image
+    """
     # Contrary to what pylint may think, this is not an old-style class.
     # pylint: disable=E1002,W0142,R0902
 
@@ -164,9 +185,9 @@ class Spectrogram(np.ndarray):
 
         for prop, cpy in self.COPY_PROPERTIES:
             elem = getattr(obj, prop, None)
-            if cpy == 1:
+            if cpy == COPY:
                 elem = copy(elem)
-            if cpy == 2:
+            if cpy == DEEPCOPY:
                 elem = deepcopy(elem)
 
             setattr(self, prop, elem)
@@ -269,10 +290,11 @@ class Spectrogram(np.ndarray):
         elif isinstance(key[0], slice) and isinstance(key[1], slice):
             return self._slice(key[0], key[1])
         elif isinstance(key[1], slice):
-            return Spectrum( # XXX: Right class
-                super(Spectrogram, self).__getitem__(key),
-                self.time_axis[key[1].start:key[1].stop:key[1].step]
-            )
+            # return Spectrum( # XXX: Right class
+            #     super(Spectrogram, self).__getitem__(key),
+            #     self.time_axis[key[1].start:key[1].stop:key[1].step]
+            # )
+            return np.array(super(Spectrogram, self).__getitem__(key))
         elif isinstance(key[0], slice):
             return Spectrum(
                 super(Spectrogram, self).__getitem__(key),
@@ -441,9 +463,9 @@ class Spectrogram(np.ndarray):
             raise ValueError("Frequency not in interpolation range")
         if lfreq is None:
             raise ValueError("Frequency not in interpolation range")
-        diff = frequency - freq
+        diff = frequency - freq # pylint: disable=W0631
         ldiff = lfreq - frequency
-        return (ldiff * value + diff * lvalue) / (diff + ldiff)
+        return (ldiff * value + diff * lvalue) / (diff + ldiff) # pylint: disable=W0631
 
     @staticmethod
     def _merge(items, key=lambda x: x):
@@ -512,7 +534,13 @@ class Spectrogram(np.ndarray):
 
     def freq_overlap(self, other):
         """ Get frequency range present in both spectrograms. Returns
-        (min, max) tuple. """
+        (min, max) tuple.
+        
+        Parameters
+        ----------
+        other : Spectrogram
+            other spectrogram with which to look for frequency overlap
+        """
         lower = max(self.freq_axis[-1], other.freq_axis[-1])
         upper = min(self.freq_axis[0], other.freq_axis[0])
         if lower > upper:
@@ -540,6 +568,13 @@ class Spectrogram(np.ndarray):
 
 
 class LinearTimeSpectrogram(Spectrogram):
+    """ Spectrogram evenly sampled in time.
+    
+    Additional (not inherited) parameters
+    -------------------------------------
+    t_delt : float
+        difference between the items on the time axis
+    """
     # pylint: disable=E1002
     COPY_PROPERTIES = Spectrogram.COPY_PROPERTIES + [
         ('t_delt', REFERENCE),
@@ -556,7 +591,15 @@ class LinearTimeSpectrogram(Spectrogram):
 
     @staticmethod
     def make_array(shape, dtype_=np.dtype('float32')):
-        """ Function to create an array with shape and dtype. """
+        """ Function to create an array with shape and dtype.
+        
+        Parameters
+        ----------
+        shape : tuple
+            shape of the array to create
+        dtype_ : np.dtype
+            data-type of the array to create
+        """
         return np.zeros(shape, dtype=dtype_)
 
     @staticmethod
@@ -817,7 +860,7 @@ class LinearTimeSpectrogram(Spectrogram):
             'f_label': one.f_label,
             'content': one.content,
         }
-        return cls(new, **params)
+        return LinearTimeSpectrogram(new, **params)
 
     def check_linearity(self, err=None, err_factor=None):
         """ Check linearity of time axis. If err is given, tolerate absolute
@@ -833,7 +876,8 @@ class LinearTimeSpectrogram(Spectrogram):
         err_factor : float
             Relative difference each delta is allowed to diverge from the
             average, i.e. err_factor * average. Cannot be used in combination
-            with err. """
+            with err.
+        """
         deltas = self.time_axis[:-1] - self.time_axis[1:]
         avg = np.average(deltas)
         if err is None and err_factor is None:
