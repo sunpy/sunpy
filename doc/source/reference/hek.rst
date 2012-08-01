@@ -31,7 +31,8 @@ If we, for example, also wanted CMEs in this period.
 Which reads out as "find datasets that are within the given dataset AND
 are (an AR OR a CE)".
 
-
+Module documentation
+^^^^^^^^^^^^^^^^^^^^
 
 .. currentmodule:: sunpy.net.hek
 
