@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Author: Florian Mayer <florian.mayer@bitsrc.org>
+# Author: David Perez-Suarez <dps.helio-?-gmail.com>
 
 from __future__ import absolute_import
 
