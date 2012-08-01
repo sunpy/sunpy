@@ -6,12 +6,10 @@ from __future__ import absolute_import
 import os
 import datetime
 import urllib2
-import tempfile
 
 import numpy as np
 import pyfits
 
-from itertools import izip
 from collections import defaultdict
 
 from bs4 import BeautifulSoup
@@ -23,7 +21,9 @@ TIME_STR = "%Y%m%d%H%M%S"
 DEFAULT_URL = 'http://soleil.i4ds.ch/solarradio/data/2002-20yy_Callisto/'
 _DAY = datetime.timedelta(days=1)
 
-def buffered_write(inp, outp, buffer_size):
+def _buffered_write(inp, outp, buffer_size):
+    """ Implementation detail. Write from inp to outp in chunks of
+    buffer_size. """
     while True:
         read = inp.read(buffer_size)
         if not read:
@@ -31,7 +31,18 @@ def buffered_write(inp, outp, buffer_size):
         outp.write(read)
 
 
-def query(start, end, instruments=None, number=None, url=DEFAULT_URL):
+def query(start, end, instruments=None, url=DEFAULT_URL):
+    """ Get URLs for callisto data from instruments between start and end.
+    
+    Parameters
+    ----------
+    start : parse_time compatible
+    end : parse_time compatible
+    instruments : sequence
+        Sequence of instruments whose data is requested.
+    url : str
+        Base URL for the request.
+    """
     day = datetime.datetime(start.year, start.month, start.day)
     while day <= end:
         directory = url + '%d/%02d/%02d/' % (day.year, day.month, day.day)
@@ -43,28 +54,38 @@ def query(start, end, instruments=None, number=None, url=DEFAULT_URL):
             try:
                 inst, date, time, no = name.split('_')
             except ValueError:
+                # If the split fails, the file name does not match out format,
+                # so we skip it and continue to the next iteration of the loop.
                 continue
             point = datetime.datetime.strptime(date + time, TIME_STR)
             opn.close()
-            if instruments is not None and inst not in instruments:
+            if (instruments is not None and
+                inst not in instruments and 
+                (inst, int(no)) not in instruments):
                 continue
-
-            if number is not None and number != int(no):
-                continue
-
+            
             if start <= point <= end:
                 yield directory + href
         day += _DAY
 
 
 def download(urls, directory):
+    """ Download files from urls into directory.
+    
+    Parameters
+    ----------
+    urls : list of str
+        urls of the files to retrieve
+    directory : str
+        directory to save them in
+    """
     paths = []
     for url in urls:
         _, filename = os.path.split(url)
         path = os.path.join(directory, filename)
         fd = open(path, 'w')
         src = urllib2.urlopen(url)
-        buffered_write(src, fd, 4096)
+        _buffered_write(src, fd, 4096)
         fd.close()
         src.close()
         paths.append(path)
@@ -79,6 +100,20 @@ def parse_header_time(date, time):
 
 
 class CallistoSpectrogram(LinearTimeSpectrogram):
+    """ Classed used for dynamic spectra coming from the Callisto network.
+    
+    
+    Additional (not inherited) parameters
+    -------------------------------------
+    header : pyfits.Header
+        main header of the FITS file
+    axes_header : pyfits.Header
+        header foe the axes table
+    swapped : boolean
+        flag that specifies whether originally in the file the x-axis was
+        frequency
+    """
+    
     # Contrary to what pylint may think, this is not an old-style class.
     # pylint: disable=E1002,W0142,R0902
 
@@ -89,7 +124,9 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         ('swapped', REFERENCE),
         ('axes_header', REFERENCE)
     ]
-
+    
+    # List of instruments retrieved in July 2012 from
+    # http://soleil.i4ds.ch/solarradio/data/2002-20yy_Callisto/
     INSTRUMENTS = set([
         'ALASKA', 'ALMATY', 'BIR', 'DARO', 'HB9SCT', 'HUMAIN',
         'HURBANOVO', 'KASI', 'KENYA', 'KRIM', 'MALAYSIA', 'MRT1',
@@ -97,7 +134,13 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
     ])
 
     def save(self, filepath):
-        """ Save modified spectrogram back to filepath. """
+        """ Save modified spectrogram back to filepath.
+        
+        Parameters
+        ----------
+        filepath : str
+            path to save the spectrogram to
+        """
         main_header = self.get_header()
         data = pyfits.PrimaryHDU(self, header=main_header)
         ## XXX: Update axes header.
@@ -118,7 +161,7 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         """ Return updated header. """
         header = self.header.copy()
 
-        if swapped:
+        if self.swapped:
             header['NAXIS2'] = self.shape[1] # pylint: disable=E1101
             header['NAXIS1'] = self.shape[0] # pylint: disable=E1101
         else:
@@ -128,7 +171,15 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
 
     @classmethod
     def read(cls, filename, **kwargs):
-        """ Read in FITS file and return a new CallistoSpectrogram. """
+        """ Read in FITS file and return a new CallistoSpectrogram. 
+        Any unknown (i.e. any except filename) keyword arguments get
+        passed to pyfits.open.
+        
+        Parameters
+        ----------
+        filename : str
+            path of the file to read
+        """
         fl = pyfits.open(filename, **kwargs)
         data = fl[0].data
         axes = fl[1]
@@ -181,13 +232,13 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         else:
             # Otherwise, assume it's linear.
             time_axis = \
-                np.linspace(0, self.shape[1] - 1) * t_delt + t_init # pylint: disable=E1101
+                np.linspace(0, data.shape[1] - 1) * t_delt + t_init # pylint: disable=E1101
 
         if fq is not None:  
             freq_axis = np.squeeze(fq)
         else:
             freq_axis = \
-                np.linspace(0, self.shape[0] - 1) * f_delt + f_init # pylint: disable=E1101
+                np.linspace(0, data.shape[0] - 1) * f_delt + f_init # pylint: disable=E1101
 
         content = header["CONTENT"].split(" ", 1)[1]
         content = start.strftime("%d %b %Y")+ ' ' + content
@@ -214,10 +265,17 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
 
     @classmethod
     def is_datasource_for(cls, header):
-        """ Check if class supports data from the given FITS file. """
+        """ Check if class supports data from the given FITS file.
+        
+        Parameters
+        ----------
+        header : pyfits.Header
+            main header of the FITS file
+        """
         return header.get('instrument', '').strip() in cls.INSTRUMENTS
 
     def remove_border(self):
+        """ Remove duplicate entries on the borders. """
         left = 0
         while self.freq_axis[left] == self.freq_axis[0]:
             left += 1
@@ -228,6 +286,16 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
 
     @classmethod
     def read_many(cls, filenames, sort_by=None):
+        """ Return list of CallistoSpectrogram objects read from filenames.
+        
+        Parameters
+        ----------
+        filenames : list of str
+            list of paths to read from
+        sort_by : str
+            optional attribute of the resulting objects to sort from, e.g.
+            start to sort by starting time.
+        """
         objs = map(cls.read, filenames)
         if sort_by is not None:
             objs.sort(key=lambda x: getattr(x, sort_by))
@@ -237,10 +305,31 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
 
     @classmethod
     def from_url(cls, url):
+        """ Return CallistoSpectrogram read from URL.
+        
+        Parameters
+        ----------
+        url : str
+            URL to retrieve the data from
+        """
         return cls.read(url)
 
     @classmethod
     def from_range(cls, instrument, start, end):
+        """ Automatically download data from instrument between start and
+        end and join it together.
+        
+        Parameters
+        ----------
+        instrument : str
+            instrument to retrieve the data from
+        start : parse_time compatible
+            start of the measurement
+        end : parse_time compatible
+            end of the measurement
+        """
+        start = parse_time(start)
+        end = parse_time(end)
         urls = query(start, end, [instrument])
         data = map(cls.from_url, urls)
         freq_buckets = defaultdict(list)

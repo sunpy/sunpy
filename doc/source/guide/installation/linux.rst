@@ -21,17 +21,15 @@ can be installed using :command:`apt-get`: ::
 
     sudo apt-get update && sudo apt-get install python-numpy  \
     python-matplotlib python-pyfits python-qt4 python-scipy python-suds \
-    python-imaging python-pip openjpeg-tools git-core ipython
+    python-imaging python-pandas python-pip openjpeg-tools git-core ipython
 
 The above command will install the recommended set of libraries and tools 
 including both the required and optional dependencies, and also IPython and Git.
-
-Next, use pip to install pandas: ::
-
-    sudo pip install pandas
     
 Arch Linux
 ----------
 The install the latest version of SunPy on Arch Linux, run: ::
 
     yaourt sunpy
+
+(or some similar command using the AUR installer of your choice...)
