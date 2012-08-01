@@ -147,7 +147,7 @@ class Contains(attr.Attr):
         return hash(tuple(vars(self).itervalues()))
 
 
-class ComparisonParamAttrWrapper(object):
+class _ComparisonParamAttrWrapper(object):
     def __init__(self, name):
         self.name = name
     
@@ -170,12 +170,12 @@ class ComparisonParamAttrWrapper(object):
         return _ParamAttr(self.name, '!=', other)
 
 
-class _StringParamAttrWrapper(ComparisonParamAttrWrapper):
+class _StringParamAttrWrapper(_ComparisonParamAttrWrapper):
     def like(self, other):
         return _ParamAttr(self.name, 'like', other)
 
 
-class _NumberParamAttrWrapper(ComparisonParamAttrWrapper):
+class _NumberParamAttrWrapper(_ComparisonParamAttrWrapper):
     pass
 
 
