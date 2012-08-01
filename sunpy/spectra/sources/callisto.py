@@ -15,6 +15,7 @@ from collections import defaultdict
 from bs4 import BeautifulSoup
 
 from sunpy.time import parse_time
+from sunpy.util.magicfunc import MagicFunc
 from sunpy.spectra.spectrogram import LinearTimeSpectrogram, REFERENCE
 
 TIME_STR = "%Y%m%d%H%M%S"
@@ -113,7 +114,8 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         flag that specifies whether originally in the file the x-axis was
         frequency
     """
-    
+    _magic = MagicFunc()
+    make = _magic
     # Contrary to what pylint may think, this is not an old-style class.
     # pylint: disable=E1002,W0142,R0902
 
@@ -301,8 +303,16 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
             objs.sort(key=lambda x: getattr(x, sort_by))
         return objs
 
-    from_file = read
-
+    @classmethod
+    def from_file(cls, filename):
+        return cls.read(filename)
+    
+    @classmethod
+    def from_dir(cls, directory):
+        return cls.read_many(
+            os.path.join(directory, elem) for elem in os.listdir(directory)
+        )
+    
     @classmethod
     def from_url(cls, url):
         """ Return CallistoSpectrogram read from URL.
@@ -313,7 +323,7 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
             URL to retrieve the data from
         """
         return cls.read(url)
-
+    
     @classmethod
     def from_range(cls, instrument, start, end):
         """ Automatically download data from instrument between start and
@@ -339,13 +349,21 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
             [cls.join_many(elem) for elem in freq_buckets.itervalues()]
         )
 
-    @classmethod
-    def make(cls, *args, **kwargs):
-        # XXX: Implement kwargs
-        if len(args) + len(kwargs) == 1:
-            return cls.read(*(args + kwargs.values()))
-        else:
-            return cls.from_range(*args)
+
+CallistoSpectrogram.make.add(
+    CallistoSpectrogram.from_file,
+    lambda filename: os.path.isfile(filename)
+)
+CallistoSpectrogram.make.add(
+    CallistoSpectrogram.from_dir,
+    lambda directory: os.path.isdir(directory)
+)
+CallistoSpectrogram.make.add(
+    CallistoSpectrogram.from_url
+)
+CallistoSpectrogram.make.add(
+    CallistoSpectrogram.from_range
+)
 
 
 if __name__ == "__main__":
