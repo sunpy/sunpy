@@ -37,6 +37,7 @@ def matches_signature(fun, a, kw):
 class MagicFunc(object):
     def __init__(self):
         self.funcs = []
+        self.nones = []
     
     def add_dec(self, condition):
         def _dec(fun):
@@ -45,16 +46,43 @@ class MagicFunc(object):
         return _dec
     
     def add(self, fun, condition=None):
-        if condition is not None and (
-            correct_argspec(fun) != correct_argspec(condition)):
+        """ Add fun to MagicFunc under the condition that the arguments must
+        match. If condition is left out, the function is executed for every
+        input that matches the signature. Functions are considered in the
+        order they are added, but ones with condition=None are considered
+        as the last: that means, a function with condition None
+        serves as an else branch for that signature.
+        conditions must be mutually
+        exclusive because otherwise which will be executed depends on the
+        order they are added in. Function signatures of fun and condition
+        must match (if fun is bound, the bound parameter needs to be left
+        out in condition). """
+        if condition is None:
+            self.nones.append(fun)
+        elif correct_argspec(fun) != correct_argspec(condition)):
             raise ValueError(
                 "Signature of condition must match signature of fun."
             )
-        self.funcs.append((fun, condition))
+        else:
+            self.funcs.append((fun, condition))
     
     def __call__(self, *args, **kwargs):
+        matched = False
         for fun, condition in self.funcs:
-            if (matches_signature(fun, args, kwargs) and
-                (condition is None or condition(*args, **kwargs))):
+            if matches_signature(fun, args, kwargs):
+                matched = True
+                if condition(*args, **kwargs):
+                    return fun(*args, **kwargs)
+        for fun in self.nones:
+            if matches_signature(fun, args, kwargs):
                 return fun(*args, **kwargs)
-        raise TypeError
+        
+        if matched:
+            raise TypeError(
+                "Your input did not fulfill the condition for any function."
+            )
+        else:
+            raise TypeError(
+                "There are no functions matching your input parameter "
+                "signature."
+            )
