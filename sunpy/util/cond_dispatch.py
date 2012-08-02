@@ -10,6 +10,23 @@ from __future__ import absolute_import
 
 import inspect
 
+from itertools import izip
+
+def matches_types(fun, types, args, kwargs):
+    return all(
+        isinstance(obj, cls) for obj, cls in izip(
+            arginize(fun, args, kwargs), types
+        )
+    )
+
+def arginize(fun, a, kw):
+    args, varargs, keywords, defaults = correct_argspec(fun)
+    if varargs is not None or keywords is not None:
+        raise ValueError
+    names = args[len(a):]
+    return list(a) + [kw[name] for name in names]
+
+
 def correct_argspec(fun):
     args, varargs, keywords, defaults = inspect.getargspec(fun)
     if inspect.ismethod(fun):
@@ -49,7 +66,7 @@ class ConditionalDispatch(object):
             return fun
         return _dec
     
-    def add(self, fun, condition=None):
+    def add(self, fun, condition=None, types=None):
         """ Add fun to ConditionalDispatch under the condition that the
         arguments must match. If condition is left out, the function is 
         executed for every input that matches the signature. Functions are
@@ -61,23 +78,25 @@ class ConditionalDispatch(object):
         of fun and condition must match (if fun is bound, the bound parameter
         needs to be left out in condition). """
         if condition is None:
-            self.nones.append(fun)
+            self.nones.append((fun, types))
         elif correct_argspec(fun) != correct_argspec(condition):
             raise ValueError(
                 "Signature of condition must match signature of fun."
             )
         else:
-            self.funcs.append((fun, condition))
+            self.funcs.append((fun, condition, types))
     
     def __call__(self, *args, **kwargs):
         matched = False
-        for fun, condition in self.funcs:
-            if matches_signature(fun, args, kwargs):
+        for fun, condition, types in self.funcs:
+            if (matches_signature(fun, args, kwargs) and
+                (types is None or matches_types(fun, types, args, kwargs))):
                 matched = True
                 if condition(*args, **kwargs):
                     return fun(*args, **kwargs)
-        for fun in self.nones:
-            if matches_signature(fun, args, kwargs):
+        for fun, types in self.nones:
+            if (matches_signature(fun, args, kwargs) and
+                (types is None or matches_types(fun, types, args, kwargs))):
                 return fun(*args, **kwargs)
         
         if matched:
