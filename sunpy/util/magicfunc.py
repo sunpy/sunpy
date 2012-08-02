@@ -2,6 +2,11 @@
 # Author: Florian Mayer <florian.mayer@bitsrc.org>
 # For lack of a better name, this is named magic function for now.
 
+""" Offer a callable object that dispatches based on arbitrary conditions
+and function signature. That means, whenever it is called, it finds the
+registered methods that match the input's signature and then checks for
+user-defined conditions. """
+
 from __future__ import absolute_import
 
 import inspect

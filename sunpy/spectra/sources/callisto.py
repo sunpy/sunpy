@@ -114,7 +114,7 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         flag that specifies whether originally in the file the x-axis was
         frequency
     """
-    make = MagicFunc()
+    create = MagicFunc()
     # Contrary to what pylint may think, this is not an old-style class.
     # pylint: disable=E1002,W0142,R0902
 
@@ -349,18 +349,18 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         )
 
 
-CallistoSpectrogram.make.add(
+CallistoSpectrogram.create.add(
     CallistoSpectrogram.from_file,
     lambda filename: os.path.isfile(filename)
 )
-CallistoSpectrogram.make.add(
+CallistoSpectrogram.create.add(
     CallistoSpectrogram.from_dir,
     lambda directory: os.path.isdir(directory)
 )
-CallistoSpectrogram.make.add(
+CallistoSpectrogram.create.add(
     CallistoSpectrogram.from_url
 )
-CallistoSpectrogram.make.add(
+CallistoSpectrogram.create.add(
     CallistoSpectrogram.from_range
 )
 
