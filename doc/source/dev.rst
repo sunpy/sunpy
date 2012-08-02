@@ -548,7 +548,8 @@ with the contents of this section, you will need to install the
 `pytest <http://pytest.org>`_ package, which can be found on 
 `PyPI <http://pypi.python.org/pypi>`_.
 
-**Writing a unit test**
+Writing a unit test
+^^^^^^^^^^^^^^^^^^^
 
 Consider a simple module `stuff.py` that contains the simple function shown
 below.::
@@ -578,7 +579,8 @@ being the same as those for the science modules prefixed with `test_`. For
 example, the modules `util.py` and `multimethod.py` in `sunpy/util` have 
 corresponding test modules `test_util.py` and `test_multimethod.py`.
 
-**Running unit tests**
+Running unit tests
+^^^^^^^^^^^^^^^^^^
 
 To find and run all the SunPy unit tests, simply run ::
 
@@ -611,6 +613,28 @@ for the tests for `sunpy.util.util`.
 .. have to build all dependencies. Subsequent runs will take significantly
 .. less time.
 
+When to write unit tests
+^^^^^^^^^^^^^^^^^^^^^^^^
+A rule of thumb for unit testing is to have at least one unit test per public
+function.
+
+New Functionality
+"""""""""""""""""
+For SunPy, we would encourage all developers to thoroughly `cover <http://en.wikipedia.org/wiki/Code_coverage>`_
+their code by writing unit tests for each new function created.
+
+Developers who want to take an aggresive approach to reducing bugs may even
+wish to consider adopting a practice such as Test Drive Development (TDD) 
+whereby unit tests are written before any actual code is written. The tests
+begin by failing, and then as they code is developed the user re-runs the
+tests until all of them are passing.  
+
+Bugs discovered
+"""""""""""""""
+In addition to writing unit tests new functionality, it is also a good practice
+to write a unit test each time a bug is found, and submit the unit test along
+with the fix for the problem. This way we can ensure that the bug does not
+re-emerge at a later time.
 
 Virtualenv
 ----------
