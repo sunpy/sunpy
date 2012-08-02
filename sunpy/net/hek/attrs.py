@@ -58,7 +58,8 @@ class _BoolParamAttr(_ParamAttr):
 class _ListAttr(attr.Attr):
     """ A _ListAttr is used when the server expects a list of things with
     the name (GET parameter name) key. By adding the _ListAttr to the query,
-    item is added to that list. """
+    item is added to that list. Please note that the server must treat items
+    of the list as AND in order for the query to be semantically correct. """
     def __init__(self, key, item):
         attr.Attr.__init__(self)
         

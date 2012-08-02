@@ -13,10 +13,9 @@ that tools (e.g. IPython) are able to automatically complete names of members.
 Considering the sheer amount of members it is essential that users are able
 to use completion.
 
-Events are _ListAttrs, which means that when they are encountered in a query,
-they are added to a list in the query. For events, that particular list
-is event_type, i.e., when AR is encountered in the query, "ar" is appended
-to the event_type GET parameter of the query URL.
+Events are EventType objects. When they are directly ORed together, they are
+joined together so that only one query is sent to the query. They may not
+be ANDed together because an event cannot be of multiple types.	
 
 Events also have attributes which are _StringParamAttrWrapper, that means that
 they overload the Python operators for strings and return a _ParamAttr for
