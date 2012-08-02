@@ -250,7 +250,7 @@ def mk_gen(rest):
         ret += '    %s = %s(%r)\n' %(elem, fields[elem], elem)
     return ret
 
-def mk_cls(key, used, pad=1, nokeys=True, init=True, name=None, base='_ListAttr'):
+def mk_cls(key, used, pad=1, nokeys=True, init=True, name=None, base='EventType'):
     if name is None:
         name = key
     
@@ -261,14 +261,14 @@ def mk_cls(key, used, pad=1, nokeys=True, init=True, name=None, base='_ListAttr'
     if not keys:
         if not nokeys:
             raise ValueError
-        return '%s = _ListAttr("event_type", %r)' % (key, name.lower())
+        return '%s = EventType(%r)' % (key, name.lower())
     ret = ''
     ret += '@apply\nclass %s(%s):\n' % (name, base)
     for k, v in keys:
         ret += '    %s = %s(%r)\n' % (k[len(key) + pad:], v, k)
     if init:
         ret += '''    def __init__(self):
-        _ListAttr.__init__(self, "event_type", %r)''' % name.lower()
+        EventType.__init__(self, %r)''' % name.lower()
     return ret
 
 if __name__ == '__main__':
