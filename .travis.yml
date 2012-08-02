@@ -3,6 +3,6 @@ python:
   - "2.6"
   - "2.7"
 # command to install dependencies
-install: sudo apt-get build-dep python-scipy python-numpy; pip install -r requirements.txt --use-mirrors
+install: sudo apt-get installinstallinstallinstallinstallinstallinstallinstallinstall python-scipy python-numpy; pip install -r requirements.txt --use-mirrors
 # command to run tests
 script: py.test sunpy/tests/ 
