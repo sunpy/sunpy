@@ -56,6 +56,8 @@ class DummyAttr(Attr):
     """ Empty attribute. Useful for building up queries. Returns other
     attribute when ORed or ANDed.
     
+    So, if we wanted an attr matching all the time intervals between the times 
+    stored as from, to tuples in a list, we could do.
     attr = DummyAttr()
     for from_, to in times:
         attr |= Time(from_, to)
