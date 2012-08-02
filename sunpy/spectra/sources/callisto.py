@@ -15,7 +15,7 @@ from collections import defaultdict
 from bs4 import BeautifulSoup
 
 from sunpy.time import parse_time
-from sunpy.util.magicfunc import MagicFunc
+from sunpy.util.cond_dispatch import ConditionalDispatch
 from sunpy.spectra.spectrogram import LinearTimeSpectrogram, REFERENCE
 
 TIME_STR = "%Y%m%d%H%M%S"
@@ -114,7 +114,7 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         flag that specifies whether originally in the file the x-axis was
         frequency
     """
-    create = MagicFunc()
+    create = ConditionalDispatch()
     # Contrary to what pylint may think, this is not an old-style class.
     # pylint: disable=E1002,W0142,R0902
 
