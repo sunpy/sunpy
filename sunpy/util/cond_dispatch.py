@@ -20,6 +20,8 @@ def matches_types(fun, types, args, kwargs):
     )
 
 def arginize(fun, a, kw):
+    """ Turn args and kwargs into args by considering the function
+    signature. """
     args, varargs, keywords, defaults = correct_argspec(fun)
     if varargs is not None or keywords is not None:
         raise ValueError
@@ -28,6 +30,7 @@ def arginize(fun, a, kw):
 
 
 def correct_argspec(fun):
+    """ Remove first argument if method is bound. """
     args, varargs, keywords, defaults = inspect.getargspec(fun)
     if inspect.ismethod(fun):
         args = args[1:]
@@ -35,6 +38,8 @@ def correct_argspec(fun):
 
 
 def matches_signature(fun, a, kw):
+    """ Check whether function can be called with a as args and kw as kwargs.
+    """
     args, varargs, keywords, defaults = correct_argspec(fun)
     if varargs is None and len(a) > len(args):
         return False
