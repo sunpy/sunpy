@@ -364,30 +364,35 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
 
 CallistoSpectrogram.create.add(
     CallistoSpectrogram.from_file,
-    lambda filename: os.path.isfile(filename)
+    lambda filename: os.path.isfile(filename),
+    [basestring]
 )
 CallistoSpectrogram.create.add(
     CallistoSpectrogram.from_dir,
-    lambda directory: os.path.isdir(directory)
+    lambda directory: os.path.isdir(directory),
+    [basestring]
 )
 # If it is not a kwarg and only one matches, do not return a list.
 CallistoSpectrogram.create.add(
     CallistoSpectrogram.from_single_glob,
-    lambda singlepattern: '*' in singlepattern and len(glob.glob(singlepattern)) == 1
+    lambda singlepattern: '*' in singlepattern and len(glob.glob(singlepattern)) == 1,
+    [basestring]
 )
 # This case only gets executed under the condition that the previous one wasn't.
 # This is either because more than one file matched, or because the user
 # explicitely used pattern=, in both cases we want a list.
 CallistoSpectrogram.create.add(
     CallistoSpectrogram.from_glob,
-    lambda pattern: '*' in pattern and glob.glob(pattern)
+    lambda pattern: '*' in pattern and glob.glob(pattern),
+    [basestring]
 )
 CallistoSpectrogram.create.add(
     CallistoSpectrogram.from_files,
-    lambda filenames: isinstance(filenames, list)
+    types=[list]
 )
 CallistoSpectrogram.create.add(
-    CallistoSpectrogram.from_url
+    CallistoSpectrogram.from_url,
+    types=[basestring]
 )
 CallistoSpectrogram.create.add(
     CallistoSpectrogram.from_range
