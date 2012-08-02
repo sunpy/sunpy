@@ -56,3 +56,13 @@ def test_stringwrapper_ge(foostrwrap):
     res = hek.attrs.walker.create(foostrwrap >= "bar", {})
     assert len(res) == 1
     assert res[0] == {'value0': 'bar', 'op0': '>=', 'param0': 'foo'}
+
+def test_stringwrapper_ne(foostrwrap):
+    res = hek.attrs.walker.create(foostrwrap != "bar", {})
+    assert len(res) == 1
+    assert res[0] == {'value0': 'bar', 'op0': '!=', 'param0': 'foo'}
+
+def test_stringwrapper_like(foostrwrap):
+    res = hek.attrs.walker.create(foostrwrap.like("bar"), {})
+    assert len(res) == 1
+    assert res[0] == {'value0': 'bar', 'op0': 'like', 'param0': 'foo'}
