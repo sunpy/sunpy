@@ -36,6 +36,8 @@ data using :py:func:`pyplot.plot`.
 
     >>> bg = image.auto_const_bg()
     >>> plt.plot(image.freq_axis, bg)
+    >>> xlabel("Frequency [MHz]")
+    >>> ylabel("Intensity")
     >>> plt.show() # This might not be necessary if you are using pylab.
 
 .. image:: ../images/spectra_ex3.png
