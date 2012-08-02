@@ -61,3 +61,10 @@ def test_else2():
     assert f(2) == 4
     assert f(3) == 12
     assert f(5) == 15
+
+
+def test_types():
+    f = ConditionalDispatch()
+    f.add(lambda x: 2 * x, lambda x: x % 2 == 0, [int])
+    with pytest.raises(TypeError):
+        f(2.0)
