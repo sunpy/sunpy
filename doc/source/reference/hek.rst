@@ -26,7 +26,7 @@ times. If query receives multiple arguments those are combined using AND.
 If we, for example, also wanted CMEs in this period.
 
 
-    >>> res = client.query(hek.attrs.Time('2011-09-22T09:00:00', '2011-09-22T11:00:00'), hek.attrs.AR | hek.attr.CE)
+    >>> res = client.query(hek.attrs.Time('2011-09-22T09:00:00', '2011-09-22T11:00:00'), hek.attrs.AR | hek.attrs.CE)
 
 Which reads out as "find datasets that are within the given dataset AND
 are (an AR OR a CE)".
