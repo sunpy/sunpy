@@ -4,10 +4,10 @@ Spectra
 
 Spectrograms
 ------------
-SunPy currently supports reading dynamic spectra from Callisto instruments.
+SunPy currently supports reading dynamic spectra from e-Callisto_ instruments.
 The main class that is used for this is
 :py:class:`sunpy.spectra.sources.callisto.CallistoSpectrogram`. SunPy also
-comes with an example image that shows a radio burst observerd by BIR that
+comes with an example image that shows a radio burst observerd at `Ross Observatory`_ (aka. BIR; Birr Castle, Co. Offaly, Ireland) that
 can be found in sunpy.CALLISTO_IMAGE
 
     >>> from matplotlib import pyplot as plt
@@ -36,6 +36,8 @@ data using :py:func:`pyplot.plot`.
 
     >>> bg = image.auto_const_bg()
     >>> plt.plot(image.freq_axis, bg)
+    >>> xlabel("Frequency [MHz]")
+    >>> ylabel("Intensity")
     >>> plt.show() # This might not be necessary if you are using pylab.
 
 .. image:: ../images/spectra_ex3.png
@@ -43,8 +45,8 @@ data using :py:func:`pyplot.plot`.
 Now let us say we want to isolate the interesting bit (which starts around
 10:38) from the boring background; there is a method called
 :py:meth:`in_interval` that allows us to take the part of an image that is
-within a specified interval. Leaving out the second interval border defaults
-to the end.
+within a specified interval. Leaving out the second argument it defaults
+to the end time of the file.
 
     >>> interesting = nobg.in_interval("10:38")
     >>> interesting.show(min_=0)
@@ -76,3 +78,6 @@ frequencies of BIR).
     >>> d.show()
 
 .. image:: ../images/spectra_ex7.png
+
+.. _e-Callisto: http://www.e-callisto.org/
+.. _Ross Observatory: http://rosseobservatory.ie/ 

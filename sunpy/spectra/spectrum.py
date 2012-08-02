@@ -24,7 +24,7 @@ class Spectrum(np.ndarray):
     def __init__(self, data, freq_axis):
         self.freq_axis = freq_axis
 
-    def plot(self, overlays=[], colorbar=True, **matplotlib_args):
+    def plot(self, overlays=[], **matplotlib_args):
         """
         Plot spectrum onto figure.
         
@@ -35,9 +35,6 @@ class Spectrum(np.ndarray):
         overlays : list
             List of overlays (functions that receive figure and axes and return
             new ones) to be applied after drawing.
-        colorbar : bool
-            Flag that determines whether or not to draw a colorbar. If existing
-            figure is passed, it is attempted to overdraw old colorbar.
         """
         # [] as default argument is okay here because it is only read.
         # pylint: disable=W0102,R0914
