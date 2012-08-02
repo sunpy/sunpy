@@ -4,6 +4,7 @@
 from __future__ import absolute_import
 
 import os
+import glob
 import datetime
 import urllib2
 
@@ -301,7 +302,15 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         if sort_by is not None:
             objs.sort(key=lambda x: getattr(x, sort_by))
         return objs
-
+    
+    @classmethod
+    def from_glob(cls, pattern):
+        return cls.read_many(glob.glob(pattern))
+    
+    @classmethod
+    def from_files(cls, filenames):
+        return cls.read_many(filenames)
+    
     @classmethod
     def from_file(cls, filename):
         return cls.read(filename)
@@ -356,6 +365,14 @@ CallistoSpectrogram.create.add(
 CallistoSpectrogram.create.add(
     CallistoSpectrogram.from_dir,
     lambda directory: os.path.isdir(directory)
+)
+CallistoSpectrogram.create.add(
+    CallistoSpectrogram.from_glob,
+    lambda pattern: '*' in pattern and glob.glob(pattern)
+)
+CallistoSpectrogram.create.add(
+    CallistoSpectrogram.from_files,
+    lambda filenames: isinstance(filenames, list)
 )
 CallistoSpectrogram.create.add(
     CallistoSpectrogram.from_url
