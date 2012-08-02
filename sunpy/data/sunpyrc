@@ -20,15 +20,16 @@
 
 ; The SunPy working directory is the parent directory where all generated
 ; and download files will be stored.
-; Default Value: $USER/sunpy
-;working_dir = /home/user/sunpy
+; Default Value: <user's home directory>/sunpy
+; working_dir = /home/$USER/sunpy
 
 ;;;;;;;;;;;;;
 ; Downloads ;
 ;;;;;;;;;;;;;
 [downloads]
 
-; Location to save download data to
+; Location to save download data to. Path should be specified relative to the
+; SunPy working directory.
 ; Default value: data/
 ;download_dir = /tmp
-download_dir = data 
+download_dir = data/ 
