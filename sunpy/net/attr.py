@@ -57,7 +57,11 @@ class DummyAttr(Attr):
     attribute when ORed or ANDed.
     
     So, if we wanted an attr matching all the time intervals between the times 
-    stored as from, to tuples in a list, we could do.
+    stored as from, to tuples in a list, we could do. It is the neutral element
+    for attributes, so A | DummyAttr() == A and DummyAttr() | A == A (and
+    analoguous with &). This can be used when building up attrs in a loop to
+    prevent having to special case the first element.
+    
     attr = DummyAttr()
     for from_, to in times:
         attr |= Time(from_, to)
