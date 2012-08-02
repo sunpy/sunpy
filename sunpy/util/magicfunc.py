@@ -64,7 +64,7 @@ class MagicFunc(object):
         out in condition). """
         if condition is None:
             self.nones.append(fun)
-        elif correct_argspec(fun) != correct_argspec(condition)):
+        elif correct_argspec(fun) != correct_argspec(condition):
             raise ValueError(
                 "Signature of condition must match signature of fun."
             )
