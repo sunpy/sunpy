@@ -133,6 +133,7 @@ class Spectrogram(np.ndarray):
 
     # This accepting arbitrary arguments makes it easier to subclass this.
     def __new__(cls, data, *args, **kwargs):
+        raise NotImplementedError
         return np.asarray(data).view(cls)
 
     def __init__(self, data, time_axis, freq_axis, start, end, t_init=None,
