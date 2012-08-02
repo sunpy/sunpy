@@ -51,6 +51,8 @@ def test_else():
 
 
 def test_else2():
+    # This verifies else branches do not catch cases that are covered
+    # by cases added later.
     f = MagicFunc()
     # Because gcd(2, 3) == 1, 2 | x and 3 | x are mutually exclusive.
     f.add(lambda x: 2 * x, lambda x: x % 2 == 0)
