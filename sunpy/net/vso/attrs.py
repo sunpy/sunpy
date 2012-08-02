@@ -6,6 +6,16 @@
 #
 # pylint: disable=C0103,R0903
 
+"""
+Attributes that can be used to construct VSO queries. Attributes are the
+fundamental building blocks of queries that, together with the two
+operations of AND and OR (and in some rare cases XOR) can be used to
+construct complex queries. Most attributes can only be used once in an
+AND-expression, if you still attempt to do so it is called a collision,
+for a quick example think about how the system should handle
+Instrument('aia') & Instrument('eit').
+"""
+
 from __future__ import absolute_import
 
 from datetime import datetime
@@ -103,6 +113,8 @@ class Field(ValueAttr):
 
 
 class _VSOSimpleAttr(Attr):
+    """ A _SimpleAttr is an attribute that is not composite, i.e. that only
+    has a single value, such as, e.g., Instrument('eit'). """
     def __init__(self, value):
         Attr.__init__(self)
         
@@ -167,6 +179,11 @@ class PScale(_VSOSimpleAttr):
 # server can handle.
 walker = AttrWalker()
 
+# The _create functions make a new VSO query from the attribute tree,
+# the _apply functions take an existing query-block and update it according
+# to the attribute tree passed in as root. Different attributes require
+# different functions for conversion into query blocks.
+
 @walker.add_creator(ValueAttr, AttrAnd)
 # pylint: disable=E0102,C0103,W0613
 def _create(wlk, root, api):
@@ -216,6 +233,11 @@ def _apply(wlk, root, api, queryblock):
     """ Implementation detail. """
     pass
 
+
+# Converters take a type unknown to the walker and convert it into one
+# known to it. All of those convert types into ValueAttrs, which are
+# handled above by just assigning according to the keys and values of the
+# attrs member.
 walker.add_converter(Extent)(
     lambda x: ValueAttr(
         dict((('extent', k), v) for k, v in vars(x).iteritems())
