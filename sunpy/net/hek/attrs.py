@@ -250,6 +250,7 @@ def _a(wlk, root, state, dct):
 
 @apply
 class AR(_ListAttr):
+    """ Active region. """
     CompactnessCls = _StringParamAttrWrapper('AR_CompactnessCls')
     IntensKurt = _StringParamAttrWrapper('AR_IntensKurt')
     IntensMax = _StringParamAttrWrapper('AR_IntensMax')
