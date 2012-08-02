@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 # Author: Florian Mayer <florian.mayer@bitsrc.org>
-# For lack of a better name, this is named magic function for now.
 
 """ Offer a callable object that dispatches based on arbitrary conditions
 and function signature. That means, whenever it is called, it finds the
@@ -39,7 +38,7 @@ def matches_signature(fun, a, kw):
     return True
 
 
-class MagicFunc(object):
+class ConditionalDispatch(object):
     def __init__(self):
         self.funcs = []
         self.nones = []
