@@ -54,7 +54,9 @@ class Attr(object):
 
 class DummyAttr(Attr):
     """ Empty attribute. Useful for building up queries. Returns other
-    attribute when ORed or ANDed.
+    attribute when ORed or ANDed. It can be considered an empty query
+    that you can use as an initial value if you want to build up your
+    query in a loop.
     
     So, if we wanted an attr matching all the time intervals between the times 
     stored as (from, to) tuples in a list, we could do.
