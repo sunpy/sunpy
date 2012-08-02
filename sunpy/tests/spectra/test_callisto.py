@@ -11,6 +11,8 @@ from datetime import datetime
 
 import numpy as np
 
+import sunpy.data.test
+
 from sunpy.data.sample import CALLISTO_IMAGE
 from sunpy.spectra.sources.callisto import (
     CallistoSpectrogram, query, download
@@ -122,7 +124,7 @@ def test_create_url_kw():
 
 def test_create_single_glob():
     PATTERN = os.path.join(
-        os.path.split(CALLISTO_IMAGE)[0],
+        os.path.dirname(CALLISTO_IMAGE),
         "BIR_*"
     )
     ca = CallistoSpectrogram.create(PATTERN)
@@ -131,7 +133,7 @@ def test_create_single_glob():
 
 def test_create_single_glob_kw():
     PATTERN = os.path.join(
-        os.path.split(CALLISTO_IMAGE)[0],
+        os.path.dirname(CALLISTO_IMAGE),
         "BIR_*"
     )
     ca = CallistoSpectrogram.create(singlepattern=PATTERN)
@@ -140,8 +142,16 @@ def test_create_single_glob_kw():
 
 def test_create_glob_kw():
     PATTERN = os.path.join(
-        os.path.split(CALLISTO_IMAGE)[0],
+        os.path.dirname(CALLISTO_IMAGE),
         "BIR_*"
     )
     ca = CallistoSpectrogram.create(pattern=PATTERN)[0]
     assert np.array_equal(ca, CallistoSpectrogram.read(CALLISTO_IMAGE))
+
+def test_create_glob():
+    PATTERN = os.path.join(
+        os.path.dirname(sunpy.data.test.__file__),
+        "BIR_*"
+    )
+    ca = CallistoSpectrogram.create(PATTERN)
+    assert len(ca) == 2
