@@ -77,9 +77,19 @@ class _ListAttr(attr.Attr):
         return hash(tuple(vars(self).itervalues()))
 
 
-class EventType(_ListAttr):
+class EventType(attr.Attr):
     def __init__(self, item):
-        _ListAttr.__init__(self, 'event_type', item)
+        attr.Attr.__init__(self)
+        self.item = item
+    
+    def collides(self, other):
+        return isinstance(other, EventType)
+    
+    def __or__(self, other):
+        if isinstance(other, EventType):
+            return EventType(self.item + ',' + other.item)
+        else:
+            return super(EventType, self).__or__(other)
 
 
 # XXX: XOR
@@ -147,7 +157,7 @@ class Contains(attr.Attr):
         return hash(tuple(vars(self).itervalues()))
 
 
-class _ComparisonParamAttrWrapper(object):
+class ComparisonParamAttrWrapper(object):
     def __init__(self, name):
         self.name = name
     
@@ -170,12 +180,12 @@ class _ComparisonParamAttrWrapper(object):
         return _ParamAttr(self.name, '!=', other)
 
 
-class _StringParamAttrWrapper(_ComparisonParamAttrWrapper):
+class _StringParamAttrWrapper(ComparisonParamAttrWrapper):
     def like(self, other):
         return _ParamAttr(self.name, 'like', other)
 
 
-class _NumberParamAttrWrapper(_ComparisonParamAttrWrapper):
+class _NumberParamAttrWrapper(ComparisonParamAttrWrapper):
     pass
 
 
@@ -199,7 +209,7 @@ def _a(wlk, root, state, dct):
     return dct
 
 @walker.add_creator(
-    Time, SpatialRegion, _ListAttr, _ParamAttr, attr.AttrAnd, Contains)
+    Time, SpatialRegion, EventType, _ParamAttr, attr.AttrAnd, Contains)
 # pylint: disable=E0102,C0103,W0613
 def _c(wlk, root, state):
     value = {}
@@ -223,22 +233,13 @@ def _a(wlk, root, state, dct):
     dct['event_coordsys'] = root.sys
     return dct
 
-@walker.add_applier(_ListAttr)
-# pylint: disable=E0102,C0103,W0613
-def _a(wlk, root, state, dct):
-    if root.key in dct:
-        dct[root.key] += ',%s' % root.item
-    else:
-        dct[root.key] = root.item
-    return dct
-
 @walker.add_applier(EventType)
 # pylint: disable=E0102,C0103,W0613
 def _a(wlk, root, state, dct):
     if dct.get('type', None) == 'contains':
         raise ValueError
-    
-    return wlk.super_apply(super(EventType, root), state, dct)
+    dct['event_type'] = root.item
+    return dct
 
 @walker.add_applier(_ParamAttr)
 # pylint: disable=E0102,C0103,W0613
@@ -279,7 +280,7 @@ def _a(wlk, root, state, dct):
 
 
 @apply
-class AR(_ListAttr):
+class AR(EventType):
     CompactnessCls = _StringParamAttrWrapper('AR_CompactnessCls')
     IntensKurt = _StringParamAttrWrapper('AR_IntensKurt')
     IntensMax = _StringParamAttrWrapper('AR_IntensMax')
@@ -304,10 +305,10 @@ class AR(_ListAttr):
     SpotAreaReprUnit = _StringParamAttrWrapper('AR_SpotAreaReprUnit')
     ZurichCls = _StringParamAttrWrapper('AR_ZurichCls')
     def __init__(self):
-        _ListAttr.__init__(self, "event_type", 'ar')
+        EventType.__init__(self, 'ar')
 
 @apply
-class CE(_ListAttr):
+class CE(EventType):
     Accel = _StringParamAttrWrapper('CME_Accel')
     AccelUncert = _StringParamAttrWrapper('CME_AccelUncert')
     AccelUnit = _StringParamAttrWrapper('CME_AccelUnit')
@@ -323,10 +324,10 @@ class CE(_ListAttr):
     RadialLinVelUncert = _StringParamAttrWrapper('CME_RadialLinVelUncert')
     RadialLinVelUnit = _StringParamAttrWrapper('CME_RadialLinVelUnit')
     def __init__(self):
-        _ListAttr.__init__(self, "event_type", 'ce')
+        EventType.__init__(self, 'ce')
 
 @apply
-class CD(_ListAttr):
+class CD(EventType):
     Area = _StringParamAttrWrapper('CD_Area')
     AreaUncert = _StringParamAttrWrapper('CD_AreaUncert')
     AreaUnit = _StringParamAttrWrapper('CD_AreaUnit')
@@ -337,14 +338,14 @@ class CD(_ListAttr):
     VolumeUncert = _StringParamAttrWrapper('CD_VolumeUncert')
     VolumeUnit = _StringParamAttrWrapper('CD_VolumeUnit')
     def __init__(self):
-        _ListAttr.__init__(self, "event_type", 'cd')
+        EventType.__init__(self, 'cd')
 
-CH = _ListAttr("event_type", 'ch')
+CH = EventType('ch')
 
-CW = _ListAttr("event_type", 'cw')
+CW = EventType('cw')
 
 @apply
-class FI(_ListAttr):
+class FI(EventType):
     BarbsL = _StringParamAttrWrapper('FI_BarbsL')
     BarbsR = _StringParamAttrWrapper('FI_BarbsR')
     BarbsTot = _StringParamAttrWrapper('FI_BarbsTot')
@@ -353,14 +354,14 @@ class FI(_ListAttr):
     LengthUnit = _StringParamAttrWrapper('FI_LengthUnit')
     Tilt = _StringParamAttrWrapper('FI_Tilt')
     def __init__(self):
-        _ListAttr.__init__(self, "event_type", 'fi')
+        EventType.__init__(self, 'fi')
 
-FE = _ListAttr("event_type", 'fe')
+FE = EventType('fe')
 
-FA = _ListAttr("event_type", 'fa')
+FA = EventType('fa')
 
 @apply
-class FL(_ListAttr):
+class FL(EventType):
     EFoldTime = _StringParamAttrWrapper('FL_EFoldTime')
     EFoldTimeUnit = _StringParamAttrWrapper('FL_EFoldTimeUnit')
     Fluence = _StringParamAttrWrapper('FL_Fluence')
@@ -373,21 +374,21 @@ class FL(_ListAttr):
     PeakTemp = _StringParamAttrWrapper('FL_PeakTemp')
     PeakTempUnit = _StringParamAttrWrapper('FL_PeakTempUnit')
     def __init__(self):
-        _ListAttr.__init__(self, "event_type", 'fl')
+        EventType.__init__(self, 'fl')
 
-LP = _ListAttr("event_type", 'lp')
+LP = EventType('lp')
 
-OS = _ListAttr("event_type", 'os')
+OS = EventType('os')
 
 @apply
-class SS(_ListAttr):
+class SS(EventType):
     SpinRate = _StringParamAttrWrapper('SS_SpinRate')
     SpinRateUnit = _StringParamAttrWrapper('SS_SpinRateUnit')
     def __init__(self):
-        _ListAttr.__init__(self, "event_type", 'ss')
+        EventType.__init__(self, 'ss')
 
 @apply
-class EF(_ListAttr):
+class EF(EventType):
     AspectRatio = _StringParamAttrWrapper('EF_AspectRatio')
     AxisLength = _StringParamAttrWrapper('EF_AxisLength')
     AxisOrientation = _StringParamAttrWrapper('EF_AxisOrientation')
@@ -403,18 +404,18 @@ class EF(_ListAttr):
     SumNegSignedFlux = _StringParamAttrWrapper('EF_SumNegSignedFlux')
     SumPosSignedFlux = _StringParamAttrWrapper('EF_SumPosSignedFlux')
     def __init__(self):
-        _ListAttr.__init__(self, "event_type", 'ef')
+        EventType.__init__(self, 'ef')
 
-CJ = _ListAttr("event_type", 'cj')
+CJ = EventType('cj')
 
-PG = _ListAttr("event_type", 'pg')
+PG = EventType('pg')
 
-OT = _ListAttr("event_type", 'ot')
+OT = EventType('ot')
 
-NR = _ListAttr("event_type", 'nr')
+NR = EventType('nr')
 
 @apply
-class SG(_ListAttr):
+class SG(EventType):
     AspectRatio = _StringParamAttrWrapper('SG_AspectRatio')
     Chirality = _StringParamAttrWrapper('SG_Chirality')
     MeanContrast = _StringParamAttrWrapper('SG_MeanContrast')
@@ -422,29 +423,29 @@ class SG(_ListAttr):
     PeakContrast = _StringParamAttrWrapper('SG_PeakContrast')
     Shape = _StringParamAttrWrapper('SG_Shape')
     def __init__(self):
-        _ListAttr.__init__(self, "event_type", 'sg')
+        EventType.__init__(self, 'sg')
 
-SP = _ListAttr("event_type", 'sp')
+SP = EventType('sp')
 
-CR = _ListAttr("event_type", 'cr')
+CR = EventType('cr')
 
 @apply
-class CC(_ListAttr):
+class CC(EventType):
     AxisUnit = _StringParamAttrWrapper('CC_AxisUnit')
     MajorAxis = _StringParamAttrWrapper('CC_MajorAxis')
     MinorAxis = _StringParamAttrWrapper('CC_MinorAxis')
     TiltAngleMajorFromRadial = _StringParamAttrWrapper('CC_TiltAngleMajorFromRadial')
     TiltAngleUnit = _StringParamAttrWrapper('CC_TiltAngleUnit')
     def __init__(self):
-        _ListAttr.__init__(self, "event_type", 'cc')
+        EventType.__init__(self, 'cc')
 
-ER = _ListAttr("event_type", 'er')
+ER = EventType('er')
 
 @apply
-class TO(_ListAttr):
+class TO(EventType):
     Shape = _StringParamAttrWrapper('TO_Shape')
     def __init__(self):
-        _ListAttr.__init__(self, "event_type", 'to')
+        EventType.__init__(self, 'to')
 
 @apply
 class Wave(object):

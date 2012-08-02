@@ -77,9 +77,19 @@ class _ListAttr(attr.Attr):
         return hash(tuple(vars(self).itervalues()))
 
 
-class EventType(_ListAttr):
+class EventType(attr.Attr):
     def __init__(self, item):
-        _ListAttr.__init__(self, 'event_type', item)
+        attr.Attr.__init__(self)
+        self.item = item
+    
+    def collides(self, other):
+        return isinstance(other, EventType)
+    
+    def __or__(self, other):
+        if isinstance(other, EventType):
+            return EventType(self.item + ',' + other.item)
+        else:
+            return super(EventType, self).__or__(other)
 
 
 # XXX: XOR
@@ -199,7 +209,7 @@ def _a(wlk, root, state, dct):
     return dct
 
 @walker.add_creator(
-    Time, SpatialRegion, _ListAttr, _ParamAttr, attr.AttrAnd, Contains)
+    Time, SpatialRegion, EventType, _ParamAttr, attr.AttrAnd, Contains)
 # pylint: disable=E0102,C0103,W0613
 def _c(wlk, root, state):
     value = {}
@@ -223,22 +233,13 @@ def _a(wlk, root, state, dct):
     dct['event_coordsys'] = root.sys
     return dct
 
-@walker.add_applier(_ListAttr)
-# pylint: disable=E0102,C0103,W0613
-def _a(wlk, root, state, dct):
-    if root.key in dct:
-        dct[root.key] += ',%s' % root.item
-    else:
-        dct[root.key] = root.item
-    return dct
-
 @walker.add_applier(EventType)
 # pylint: disable=E0102,C0103,W0613
 def _a(wlk, root, state, dct):
     if dct.get('type', None) == 'contains':
         raise ValueError
-    
-    return wlk.super_apply(super(EventType, root), state, dct)
+    dct['event_type'] = root.item
+    return dct
 
 @walker.add_applier(_ParamAttr)
 # pylint: disable=E0102,C0103,W0613
