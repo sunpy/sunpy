@@ -63,12 +63,24 @@ class Results(object):
         self.errors = []
     
     def submit(self, keys, value):
+        """
+        
+        Parameters
+        ----------
+        keys : list
+            names under which to save the value
+        value : object
+            value to save
+        """
         for key in keys:
             self.map_[key] = value
         self.poke()
     
     def poke(self):
         self.n -= 1
+        """ Signal completion of one item that was waited for. This can be
+        because it was submitted, because it lead to an error or for any
+        other reason. """
         if not self.n:
             if self.done is not None:
                 self.map_ = self.done(self.map_)
@@ -76,6 +88,13 @@ class Results(object):
             self.evt.set()
     
     def require(self, keys):
+        """ Require that keys be submitted before the Results object is
+        finished (i.e., wait returns). Returns a callback method that can
+        be used to submit the result by simply calling it with the result.
+        
+        keys : list
+            name of keys under which to save the result
+        """
         self.n += 1
         return partial(self.submit, keys)
     
@@ -85,6 +104,8 @@ class Results(object):
         return self.map_
     
     def add_error(self, exception):
+        """ Signal a required result cannot be submitted because of an
+        error. """
         self.errors.append(exception)
         self.poke()
 
