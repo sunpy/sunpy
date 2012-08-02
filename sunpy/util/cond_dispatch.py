@@ -50,17 +50,16 @@ class ConditionalDispatch(object):
         return _dec
     
     def add(self, fun, condition=None):
-        """ Add fun to MagicFunc under the condition that the arguments must
-        match. If condition is left out, the function is executed for every
-        input that matches the signature. Functions are considered in the
-        order they are added, but ones with condition=None are considered
-        as the last: that means, a function with condition None
+        """ Add fun to ConditionalDispatch under the condition that the
+        arguments must match. If condition is left out, the function is 
+        executed for every input that matches the signature. Functions are
+        considered in the order they are added, but ones with condition=None
+        are considered as the last: that means, a function with condition None
         serves as an else branch for that signature.
-        conditions must be mutually
-        exclusive because otherwise which will be executed depends on the
-        order they are added in. Function signatures of fun and condition
-        must match (if fun is bound, the bound parameter needs to be left
-        out in condition). """
+        conditions must be mutually exclusive because otherwise which will
+        be executed depends on the order they are added in. Function signatures
+        of fun and condition must match (if fun is bound, the bound parameter
+        needs to be left out in condition). """
         if condition is None:
             self.nones.append(fun)
         elif correct_argspec(fun) != correct_argspec(condition):
