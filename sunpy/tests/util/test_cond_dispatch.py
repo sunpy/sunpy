@@ -5,10 +5,10 @@ from __future__ import absolute_import
 
 import pytest
 
-from sunpy.util.magicfunc import MagicFunc
+from sunpy.util.cond_dispatch import ConditionalDispatch
 
 def pytest_funcarg__oddeven(request):
-    f = MagicFunc()
+    f = ConditionalDispatch()
     # Multiply even numbers by two.
     f.add(lambda x: 2 * x, lambda x: x % 2 == 0)
     # Mulitply odd numbers by three.
@@ -31,7 +31,7 @@ def test_wrong_sig(oddeven):
 
 
 def test_nocond():
-    f = MagicFunc()
+    f = ConditionalDispatch()
     # Multiply even numbers by two.
     f.add(lambda x: 2 * x, lambda x: x % 2 == 0)
     with pytest.raises(TypeError) as exc_info:
@@ -42,7 +42,7 @@ def test_nocond():
 
 
 def test_else():
-    f = MagicFunc()
+    f = ConditionalDispatch()
     # Multiply even numbers by two.
     f.add(lambda x: 2 * x, lambda x: x % 2 == 0)
     f.add(lambda x: 3 * x)
@@ -53,7 +53,7 @@ def test_else():
 def test_else2():
     # This verifies else branches do not catch cases that are covered
     # by cases added later.
-    f = MagicFunc()
+    f = ConditionalDispatch()
     # Because gcd(2, 3) == 1, 2 | x and 3 | x are mutually exclusive.
     f.add(lambda x: 2 * x, lambda x: x % 2 == 0)
     f.add(lambda x: 3 * x)
