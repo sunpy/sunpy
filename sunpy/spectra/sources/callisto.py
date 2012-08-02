@@ -308,6 +308,10 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         return cls.read_many(glob.glob(pattern))
     
     @classmethod
+    def from_single_glob(cls, singlepattern):
+        return cls.read(glob.glob(singlepattern)[0])
+    
+    @classmethod
     def from_files(cls, filenames):
         return cls.read_many(filenames)
     
@@ -366,6 +370,14 @@ CallistoSpectrogram.create.add(
     CallistoSpectrogram.from_dir,
     lambda directory: os.path.isdir(directory)
 )
+# If it is not a kwarg and only one matches, do not return a list.
+CallistoSpectrogram.create.add(
+    CallistoSpectrogram.from_single_glob,
+    lambda singlepattern: '*' in singlepattern and len(glob.glob(singlepattern)) == 1
+)
+# This case only gets executed under the condition that the previous one wasn't.
+# This is either because more than one file matched, or because the user
+# explicitely used pattern=, in both cases we want a list.
 CallistoSpectrogram.create.add(
     CallistoSpectrogram.from_glob,
     lambda pattern: '*' in pattern and glob.glob(pattern)
