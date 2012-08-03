@@ -565,6 +565,9 @@ class Spectrogram(np.ndarray):
                 return n - 1
         # The last element is the searched one.
         return n
+    
+    def at_freq(self, freq):
+        return self[np.nonzero(self.freq_axis == freq)[0], :]
 
 
 class LinearTimeSpectrogram(Spectrogram):
