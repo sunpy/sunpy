@@ -33,6 +33,51 @@ def _buffered_write(inp, outp, buffer_size):
         outp.write(read)
 
 
+def match_histograms(one, other, nbins, inplace=False):
+    if not inplace:
+        one = one.copy()
+    
+    bins = np.linspace(0, max(one.max(), other.max()), nbins)
+    
+    one_hist, edges = np.histogram(one, bins)
+    other_hist, edges = np.histogram(other, bins)
+    
+    # XXX: cum_hist
+    one_cum = np.cumsum(one_hist)
+    other_cum = np.cumsum(other_hist)
+    
+    for prev_bin, bin_, one_n in izip(bins[:-1], bins[1:], one_cum):
+        idx = abs(other_cum - one_n).argmin()
+        one[(prev_bin < one) & (one < bin_)] = bins[idx]
+    return one
+
+
+def minimal_pairs(one, other):
+    """ Assumes one and other are sorted. """
+    bestdiff, bestj, besti = None, None, None
+    for i, freq in enumerate(one):
+        lbestj = bestj
+        lbestdiff = bestdiff
+        
+        bestdiff, bestj = None, None
+        
+        for j, o_freq in enumerate(other[lbestj:]):
+            j = lbestj + j if lbestj else j
+            diff = abs(freq - o_freq)
+            if bestj is not None and diff > bestdiff:
+                break
+            
+            if bestj is None or bestdiff > diff:
+                bestj = j
+                bestdiff = diff
+        if lbestj is not None and lbestj != bestj:
+            yield (besti, lbestj, lbestdiff)
+            besti = i
+        elif lbestdiff is None or bestdiff < lbestdiff:
+            besti = i
+            lbestdiff = bestdiff
+
+
 def query(start, end, instruments=None, url=DEFAULT_URL):
     """ Get URLs for callisto data from instruments between start and end.
     
