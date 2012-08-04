@@ -100,7 +100,7 @@ def convert_hpc_hcc(rsun, dsun, units_x, units_y, hpx, hpy,
                     distance=None):
     """This routine converts Helioprojective-Cartesian (HPC) coordinates into 
     Heliocentric-Cartesian (HCC) coordinates, using equations 15 in 
-    Thompson (2006), A&A, 449, 791-803.
+    Thompson (2006), A&A, 449, 791-803. Returns only x and y.
     """
     x, y, z = convert_hpc_hcc_xyz(rsun, dsun, units_x, units_y, hpx, hpy)
     return x, y
