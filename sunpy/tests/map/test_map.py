@@ -17,7 +17,19 @@ class TestMap:
         self.fits.verify('silentfix')
         
         # include full comment
-        comment = "".join(self.fits[0].header.get_comment())
+        fits_comment = self.fits[0].header.get_comment()
+        
+        # PyFITS 2.x
+        if isinstance(fits_comment[0], basestring):
+            comments = [val for val in fits_comment]       
+        else:
+            # PyFITS 3.x
+            comments = [card.value for card in fits_comment]
+        comment = "".join(comments).strip()
+        
+        # touch data to apply scaling up front
+        self.fits[0].data        
+        
         self.fits[0].header.update('COMMENT', comment)
 
     def teardown_class(self):
@@ -82,9 +94,30 @@ class TestMap:
     def test_fits_data_comparison(self):
         """Make sure the data is the same in pyfits and SunPy"""
         assert (self.map == self.fits[0].data).all()
-
+    
+    def test_sub(self):
+        map_ = sunpy.Map(np.array([[1, 1], [2, 2]], dtype=np.uint8), {})
+        minus = map_ - map_
+        assert minus.dtype == np.int16
+        assert (minus == 0).all()
+        assert np.array_equal(
+            map_ - 2 * map_,
+            np.array([[-1, -1], [-2, -2]], dtype=np.int16)
+        )
+    
     def test__original_header_comparison(self):
-        """Make sure the header is the same in pyfits and SunPy"""
+        """Make sure the header is the same in pyfits and SunPy.
+        
+        PyFITS makes a number of changes to the data and header when reading
+        it in including applying scaling and removing the comment from the
+        header cards to handle it separately.
+        
+        The manipulations in the setup_class method and here attempt to
+        level the playing field some so that the rest of the things that
+        should be the same can be tested.
+        
+        // Keith, July 2012
+        """
 
         # Access fits data once to apply scaling-related changes and update
         # header information in fits[0].header
@@ -99,9 +132,13 @@ class TestMap:
                 del fits_header[key]
             if key in map_header:
                 del map_header[key]
+                
+        # Remove empty field (newline?) that is added when data is accesed for first time
+        if '' in fits_header:
+            fits_header.pop('')
         
         for k,v in map_header.items():
             if v != fits_header[k]:
                 print k
-
+        
         assert map_header == fits_header

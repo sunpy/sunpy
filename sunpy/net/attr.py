@@ -1,13 +1,37 @@
 # -*- coding: utf-8 -*-
 # Author: Florian Mayer <florian.mayer@bitsrc.org>
-
+#
+# This module was developed with funding provided by
+# the ESA Summer of Code (2011).
+#
 # pylint: disable=C0103,R0903
+
+"""
+Allow representation of queries as logic expressions. This module makes
+sure that attributes that are combined using the two logic operations AND (&)
+and OR (|) always are in disjunctive normal form, that is, there are only two
+levels ­- the first being disjunction and the second being conjunction. In other
+words, every combinations of attributes looks like this:
+(a AND b AND c) OR (d AND e).
+
+Walkers are used to traverse the tree that results from combining attributes.
+They are implemented using sunpy.util.multimethod. Multimethods are functions
+that are not assigned to classes but still dispatch by type of one or more
+of their arguments. For more information about multimethods, refer to
+sunpy.util.multimethod.
+
+Please note that & is evaluated first, so A & B | C is equivalent to
+(A & B) | C.
+"""
 
 from __future__ import absolute_import
 
 from sunpy.util.multimethod import MultiMethod
 
+# XXX: Maybe allow other normal forms.
+
 class Attr(object):
+    """ This is the base for all attributes. """
     def __and__(self, other):
         if isinstance(other, AttrOr):
             return AttrOr([elem & self for elem in other.attrs])
@@ -32,6 +56,18 @@ class Attr(object):
 
 
 class DummyAttr(Attr):
+    """ Empty attribute. Useful for building up queries. Returns other
+    attribute when ORed or ANDed. It can be considered an empty query
+    that you can use as an initial value if you want to build up your
+    query in a loop.
+    
+    So, if we wanted an attr matching all the time intervals between the times 
+    stored as (from, to) tuples in a list, we could do.
+    
+    attr = DummyAttr()
+    for from_, to in times:
+        attr |= Time(from_, to)
+    """
     def __and__(self, other):
         return other
     
@@ -49,6 +85,7 @@ class DummyAttr(Attr):
 
 
 class AttrAnd(Attr):
+    """ Attribute representing attributes ANDed together. """
     def __init__(self, attrs):
         Attr.__init__(self)
         self.attrs = attrs
@@ -80,6 +117,7 @@ class AttrAnd(Attr):
 
 
 class AttrOr(Attr):
+    """ Attribute representing attributes ORed together. """
     def __init__(self, attrs):
         Attr.__init__(self)
         self.attrs = attrs
@@ -172,7 +210,7 @@ class AttrWalker(object):
     
     def add_converter(self, *types):
         def _dec(fun):
-            for type_ in types:                
+            for type_ in types:
                 self.applymm.add(self.cv_apply(fun), (type_, ))
                 self.createmm.add(self.cv_create(fun), (type_, ))
             return fun

@@ -34,16 +34,16 @@ def install(setup): #pylint: disable=W0621
         # 2011/11/21: disabling for now to prevent paver warnings
         #extra_requires={
         #    "JPEG 2000": ['PIL'],
-        #    "Plotman": ['PyQt4'],
-        #    "VSO/HEK": ['suds']
+        #    "Plotman": ['PyQt4']
         #},
         install_requires=[
             'numpy',
             'pyfits',
             'scipy',
             'suds',
-            'pandas',
-            'matplotlib>=1.0'
+            'pandas==0.8.0',
+            'matplotlib>=1.0',
+            'beautifulsoup4',
         ],
         license="BSD",
         long_description="\n".join(DOCLINES[2:]),
@@ -51,7 +51,7 @@ def install(setup): #pylint: disable=W0621
         maintainer_email="sunpy@googlegroups.com",
         name="sunpy",
         packages=find_packages(),
-        package_data={'': ['*.fits']},
+        package_data={'': ['*.fits', 'sunpyrc']},
         platforms=["Windows", "Linux", "Solaris", "Mac OS-X", "Unix"],
         provides=['sunpy'],
         url="http://www.sunpy.org/",
