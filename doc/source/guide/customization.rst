@@ -9,8 +9,8 @@ Customizing sunpy
 The :file:`sunpyrc` file
 =============================
 
-sunpy uses :file:`sunprc` configuration files to customize all kinds
-of properties. You can control a number of key features of sunpy such as 
+sunpy uses :file:`sunpyrc` configuration files to customize all kinds
+of properties. You can control a number of key features of SunPy such as 
 where your data will download to. SunPy looks for :file:`sunpyrc` in two
 locations, in the following order:
 
