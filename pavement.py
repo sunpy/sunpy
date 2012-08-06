@@ -122,7 +122,7 @@ def clean():
                 os.remove(filepath)
             elif os.path.isdir(filepath):
                 if filepath.endswith("__pycache__"):
-                    os.rmdir(filepath)
+                    shutil.rmtree(filepath)
                 else:
                     clean_cache(filepath)
 
