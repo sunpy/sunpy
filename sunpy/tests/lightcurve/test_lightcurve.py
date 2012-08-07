@@ -24,18 +24,16 @@ dates = [base - datetime.timedelta(minutes=x) for x in range(0, 24 * 60)]
     (np.arange(24 * 60), dates),
     ({"param": range(24 * 60)}, dates)
 ])
-
 def test_input(data, index):
     """Tests different types of expected input"""
     sunpy.lightcurve.LightCurve(data, index=index)
 
-def test_input_empty():
-    """Tests empty input"""
+@pytest.mark.parametrize(("bad_input"), [
+    (None),
+    (EVE_AVERAGES_CSV)
+])
+def test_unimplemented(bad_input):
+    """Tests input that has not been implemented for the generic LC class"""
     with pytest.raises(NotImplementedError):
-        sunpy.lightcurve.LightCurve()
-    
-def test_input_file():
-    """Tests filepath input"""
-    with pytest.raises(NotImplementedError):
-        sunpy.lightcurve.LightCurve(EVE_AVERAGES_CSV)
-        
+        sunpy.lightcurve.LightCurve(bad_input)
+
