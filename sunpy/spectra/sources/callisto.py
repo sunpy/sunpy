@@ -426,15 +426,13 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         one = one.clip_freq(*ovl)
         two = two.clip_freq(*ovl)
         
-        to_consider = [
+        pairs_indices = [
             (x, y) for x, y, d in minimal_pairs(one.freq_axis, two.freq_axis)
             if d <= maxdiff
         ]
         
-        pairs_indices = [(x, y) for x, y in to_consider]        
-        
         # XXX: Maybe (xd.freq_axis[x] + yd.freq_axis[y]) / 2.
-        pairs_freqs = [one.freq_axis[x] for x, y in to_consider]
+        pairs_freqs = [one.freq_axis[x] for x, y in pairs_indices]
         
         pairs_data = [
             (one[n_one, :], two[n_two, :]) for n_one, n_two in pairs_indices
