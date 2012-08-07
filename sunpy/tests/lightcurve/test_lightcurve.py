@@ -13,31 +13,26 @@ import numpy as np
 import pytest
 import datetime
 import sunpy
-import pandas
 from sunpy.data.test import (EVE_AVERAGES_CSV)
+
+# Generate input test data
+base = datetime.datetime.today()
+dates = [base - datetime.timedelta(minutes=x) for x in range(0, 24 * 60)]
+
+@pytest.mark.parametrize(("data", "index"), [
+    (range(24 * 60), dates),
+    (np.arange(24 * 60), dates),
+    ({"param": range(24 * 60)}, dates)
+])
+
+def test_input(data, index):
+    """Tests different types of expected input"""
+    sunpy.lightcurve.LightCurve(data, index=index)
 
 def test_input_empty():
     """Tests empty input"""
     with pytest.raises(NotImplementedError):
         sunpy.lightcurve.LightCurve()
-
-def test_input_dict_datetimes():
-    """Tests LightCurve creation from a dictionary and list of datetimes"""
-    base = datetime.datetime.today()
-    dates = [base - datetime.timedelta(minutes=x) for x in range(0, 24 * 60)]
-    sunpy.lightcurve.LightCurve({"param": range(24 * 60)}, index=dates)
-    
-def test_input_ndarray_datetimes():
-    """Tests LightCurve creation from a dictionary and list of datetimes"""
-    base = datetime.datetime.today()
-    dates = [base - datetime.timedelta(minutes=x) for x in range(0, 24 * 60)]
-    sunpy.lightcurve.LightCurve(np.arange(24 * 60), index=dates)
-    
-def test_input_list_datetimes():
-    """Tests LightCurve creation from a dictionary and list of datetimes"""
-    base = datetime.datetime.today()
-    dates = [base - datetime.timedelta(minutes=x) for x in range(0, 24 * 60)]
-    sunpy.lightcurve.LightCurve(range(24 * 60), index=dates)
     
 def test_input_file():
     """Tests filepath input"""
