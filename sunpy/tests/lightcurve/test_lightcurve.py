@@ -13,6 +13,7 @@ import numpy as np
 import pytest
 import datetime
 import sunpy
+import pandas
 from sunpy.data.test import (EVE_AVERAGES_CSV)
 
 def test_input_empty():
@@ -32,7 +33,14 @@ def test_input_ndarray_datetimes():
     dates = [base - datetime.timedelta(minutes=x) for x in range(0, 24 * 60)]
     sunpy.lightcurve.LightCurve(np.arange(24 * 60), index=dates)
     
+def test_input_list_datetimes():
+    """Tests LightCurve creation from a dictionary and list of datetimes"""
+    base = datetime.datetime.today()
+    dates = [base - datetime.timedelta(minutes=x) for x in range(0, 24 * 60)]
+    sunpy.lightcurve.LightCurve(range(24 * 60), index=dates)
+    
 def test_input_file():
     """Tests filepath input"""
     with pytest.raises(NotImplementedError):
         sunpy.lightcurve.LightCurve(EVE_AVERAGES_CSV)
+        
