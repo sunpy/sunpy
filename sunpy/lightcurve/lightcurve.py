@@ -187,11 +187,13 @@ class LightCurve:
     
     def _parse_csv(self, filepath):
         """Place holder method to parse CSV files."""
-        pass
+        msg = "Generic CSV parsing not yet implemented for LightCurve"
+        raise NotImplementedError(msg)
     
     def _parse_fits(self, filepath):
         """Place holder method to parse FITS files."""
-        pass
+        msg = "Generic FITS parsing not yet implemented for LightCurve"
+        raise NotImplementedError(msg)
     
     def _parse_filepath(self, filepath):
         filename, extension = os.path.splitext(filepath)
