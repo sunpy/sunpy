@@ -221,11 +221,3 @@ class LightCurve:
         truncated = self.data.truncate(sunpy.time.parse_time(start),
                                        sunpy.time.parse_time(end))
         return LightCurve(truncated, self.header.copy())
-
-if __name__ == "__main__":
-    import datetime
-    import sunpy
-    base = datetime.datetime.today()
-    dates = [base - datetime.timedelta(minutes=x) for x in range(0, 24 * 60)]
-    light_curve = sunpy.lightcurve.LightCurve({"param1": range(24 * 60)}, 
-    index=dates)
