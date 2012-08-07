@@ -96,6 +96,7 @@ def minimal_pairs(one, other):
     diff = bestdiff if bestj != lbestj else lbestdiff
     yield (besti, bestj, diff)
 
+
 def query(start, end, instruments=None, url=DEFAULT_URL):
     """ Get URLs for callisto data from instruments between start and end.
     
@@ -425,6 +426,19 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         )
     
     def homogenize(self, other, maxdiff=1):
+        """ Return overlapping part of self and other as (self, other) tuple.
+        Homogenize intensities so that the images can be used with
+        combine_frequencies. Note that this works best when most of the 
+        picture is signal, so use :py:meth:`in_interval` to select the subset
+        of your image before applying this method.
+        
+        Parameters
+        ----------
+        other : CallistoSpectrogram
+            Spectrogram to be homogenized with the current one.
+        maxdiff : float
+            Threshold for which frequencies are considered equal.
+        """
         one, two = self.intersect_time([self, other])
         
         assert isinstance(one, CallistoSpectrogram)
@@ -463,12 +477,12 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         f1 = np.polyfit(pairs_freqs, factors, 3)
         f2 = np.polyfit(pairs_freqs, constants, 3)
         
-        return one, two.apply_freq(
+        return one, two._apply_freq(
             partial(polyfun_at, f1),
             partial(polyfun_at, f2),
         )
     
-    def apply_freq(self, factor_fun, constant_fun):
+    def _apply_freq(self, factor_fun, constant_fun):
         ne = np.zeros(self.shape, dtype=self.dtype)
         for n, (freq, line) in enumerate(zip(self.freq_axis, self)):
             ne[n, :] = factor_fun(freq) * line + constant_fun(freq)
