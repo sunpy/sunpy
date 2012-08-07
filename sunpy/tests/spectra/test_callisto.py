@@ -160,5 +160,16 @@ def test_minimum_pairs_commotative():
     A = [0, 1, 2]
     B = [1, 2, 3]
     first = list(minimal_pairs(A, B))
-    print first
     assert first == [(b, a, d) for a, b, d in minimal_pairs(B, A)]
+
+def test_minimum_pairs_end():
+    assert (
+        list(minimal_pairs([0, 1, 2, 4], [1, 2, 3, 4])) ==
+        [(1, 0, 0), (2, 1, 0), (3, 3, 0)]
+    )
+
+def test_minimum_pairs_end_more():
+    assert (
+        list(minimal_pairs([0, 1, 2, 4, 8], [1, 2, 3, 4])) ==
+        [(1, 0, 0), (2, 1, 0), (3, 3, 0)]
+    )
