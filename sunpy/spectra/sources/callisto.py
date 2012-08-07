@@ -11,6 +11,7 @@ import urllib2
 import numpy as np
 import pyfits
 
+from itertools import izip
 from collections import defaultdict
 
 from bs4 import BeautifulSoup
