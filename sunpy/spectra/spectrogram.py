@@ -211,7 +211,7 @@ class Spectrogram(np.ndarray):
             figure = plt.figure(max(nums))
         self.plot(figure, *args, **kwargs).show()
 
-    def plot(self, figure=None, overlays=[], colorbar=True, min_=None, max_=None, 
+    def plot(self, figure=None, axes=None, overlays=[], colorbar=True, min_=None, max_=None, 
         **matplotlib_args):
         """
         Plot spectrogram onto figure.
@@ -236,11 +236,12 @@ class Spectrogram(np.ndarray):
 
         data = np.array(self.clip(min_, max_))
         newfigure = figure is None
-        if figure is None:
-            figure = plt.figure(frameon=True)
-            axes = figure.add_subplot(111)
-        else:
-            axes = figure.axes[0]
+        if axes is None:
+            if figure is None:
+                figure = plt.figure(frameon=True)
+                axes = figure.add_subplot(111)
+            else:
+                axes = figure.axes[0]
         
         params = {
             'origin': 'lower',
