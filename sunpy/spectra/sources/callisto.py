@@ -4,6 +4,7 @@
 from __future__ import absolute_import
 
 import os
+import glob
 import datetime
 import urllib2
 
@@ -15,6 +16,7 @@ from collections import defaultdict
 from bs4 import BeautifulSoup
 
 from sunpy.time import parse_time
+from sunpy.util.cond_dispatch import ConditionalDispatch
 from sunpy.spectra.spectrogram import LinearTimeSpectrogram, REFERENCE
 
 TIME_STR = "%Y%m%d%H%M%S"
@@ -113,7 +115,7 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         flag that specifies whether originally in the file the x-axis was
         frequency
     """
-    
+    create = ConditionalDispatch()
     # Contrary to what pylint may think, this is not an old-style class.
     # pylint: disable=E1002,W0142,R0902
 
@@ -300,9 +302,29 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         if sort_by is not None:
             objs.sort(key=lambda x: getattr(x, sort_by))
         return objs
-
-    from_file = read
-
+    
+    @classmethod
+    def from_glob(cls, pattern):
+        return cls.read_many(glob.glob(pattern))
+    
+    @classmethod
+    def from_single_glob(cls, singlepattern):
+        return cls.read(glob.glob(singlepattern)[0])
+    
+    @classmethod
+    def from_files(cls, filenames):
+        return cls.read_many(filenames)
+    
+    @classmethod
+    def from_file(cls, filename):
+        return cls.read(filename)
+    
+    @classmethod
+    def from_dir(cls, directory):
+        return cls.read_many(
+            os.path.join(directory, elem) for elem in os.listdir(directory)
+        )
+    
     @classmethod
     def from_url(cls, url):
         """ Return CallistoSpectrogram read from URL.
@@ -313,7 +335,7 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
             URL to retrieve the data from
         """
         return cls.read(url)
-
+    
     @classmethod
     def from_range(cls, instrument, start, end):
         """ Automatically download data from instrument between start and
@@ -339,13 +361,42 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
             [cls.join_many(elem) for elem in freq_buckets.itervalues()]
         )
 
-    @classmethod
-    def make(cls, *args, **kwargs):
-        # XXX: Implement kwargs
-        if len(args) + len(kwargs) == 1:
-            return cls.read(*(args + kwargs.values()))
-        else:
-            return cls.from_range(*args)
+
+CallistoSpectrogram.create.add(
+    CallistoSpectrogram.from_file,
+    lambda filename: os.path.isfile(filename),
+    [basestring]
+)
+CallistoSpectrogram.create.add(
+    CallistoSpectrogram.from_dir,
+    lambda directory: os.path.isdir(directory),
+    [basestring]
+)
+# If it is not a kwarg and only one matches, do not return a list.
+CallistoSpectrogram.create.add(
+    CallistoSpectrogram.from_single_glob,
+    lambda singlepattern: '*' in singlepattern and len(glob.glob(singlepattern)) == 1,
+    [basestring]
+)
+# This case only gets executed under the condition that the previous one wasn't.
+# This is either because more than one file matched, or because the user
+# explicitely used pattern=, in both cases we want a list.
+CallistoSpectrogram.create.add(
+    CallistoSpectrogram.from_glob,
+    lambda pattern: '*' in pattern and glob.glob(pattern),
+    [basestring]
+)
+CallistoSpectrogram.create.add(
+    CallistoSpectrogram.from_files,
+    types=[list]
+)
+CallistoSpectrogram.create.add(
+    CallistoSpectrogram.from_url,
+    types=[basestring]
+)
+CallistoSpectrogram.create.add(
+    CallistoSpectrogram.from_range
+)
 
 
 if __name__ == "__main__":
