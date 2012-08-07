@@ -221,6 +221,10 @@ class Map(np.ndarray):
             "units": {
                 'x': header.get('cunit1', 'arcsec'),
                 'y': header.get('cunit2', 'arcsec')
+            },
+            "rotation_angle": {
+                'x': header.get('crota1', 0.),
+                'y': header.get('crota2', 0.)
             }
         }
 
@@ -236,7 +240,7 @@ class Map(np.ndarray):
                           'scale', 'units', 'reference_coordinate',
                           'reference_pixel', 'coordinate_system',
                           'heliographic_latitude', 'heliographic_longitude',
-                          'carrington_longitude']
+                          'carrington_longitude','rotation_angle']
 
             for attr in properties:
                 setattr(self, attr, getattr(obj, attr))
