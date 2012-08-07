@@ -5,7 +5,6 @@ from __future__ import absolute_import
 
 #
 # @TODO:
-#   ndarray + indices?
 #   time deltas instead of datetimes?
 
 #pylint: disable=C0103,R0904,W0201,W0232,E1101,E1103
