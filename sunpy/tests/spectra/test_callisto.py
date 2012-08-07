@@ -15,7 +15,7 @@ import sunpy.data.test
 
 from sunpy.data.sample import CALLISTO_IMAGE
 from sunpy.spectra.sources.callisto import (
-    CallistoSpectrogram, query, download
+    CallistoSpectrogram, query, download, minimal_pairs
 )
 
 
@@ -155,3 +155,10 @@ def test_create_glob():
     )
     ca = CallistoSpectrogram.create(PATTERN)
     assert len(ca) == 2
+
+def test_minimum_pairs_commotative():
+    A = [0, 1, 2]
+    B = [1, 2, 3]
+    first = list(minimal_pairs(A, B))
+    print first
+    assert first == [(b, a, d) for a, b, d in minimal_pairs(B, A)]

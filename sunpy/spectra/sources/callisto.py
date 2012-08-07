@@ -69,13 +69,13 @@ def minimal_pairs(one, other):
     one, other : sequence
         Sequence of scalars to find pairs from.
     """
-    bestdiff, bestj, besti = None, None, None
+    bestdiff = bestj = besti = None
     for i, freq in enumerate(one):
         lbestj = bestj
+        
         lbestdiff = bestdiff
         
         bestdiff, bestj = None, None
-        
         for j, o_freq in enumerate(other[lbestj:]):
             j = lbestj + j if lbestj else j
             diff = abs(freq - o_freq)
@@ -85,13 +85,16 @@ def minimal_pairs(one, other):
             if bestj is None or bestdiff > diff:
                 bestj = j
                 bestdiff = diff
+        
         if lbestj is not None and lbestj != bestj:
             yield (besti, lbestj, lbestdiff)
             besti = i
         elif lbestdiff is None or bestdiff < lbestdiff:
             besti = i
             lbestdiff = bestdiff
-
+    
+    diff = bestdiff if bestj != lbestj else lbestdiff
+    yield (besti, bestj, diff)
 
 def query(start, end, instruments=None, url=DEFAULT_URL):
     """ Get URLs for callisto data from instruments between start and end.
