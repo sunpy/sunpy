@@ -73,8 +73,6 @@ def minimal_pairs(one, other):
     for i, freq in enumerate(one):
         lbestj = bestj
         
-        # lbestdiff = bestdiff
-        
         bestdiff, bestj = None, None
         for j, o_freq in enumerate(other[lbestj:]):
             j = lbestj + j if lbestj else j

@@ -179,3 +179,9 @@ def test_minimum_pairs_end_diff():
         list(minimal_pairs([0, 1, 2, 8], [1, 2, 3, 4])) ==
         [(1, 0, 0), (2, 1, 0), (3, 3, 4)]
     )
+
+def test_closest():
+    assert (
+        list(minimal_pairs([50, 60], [0, 10, 20, 30, 40, 51, 52])) ==
+        [(0, 5, 1), (1, 6, 8)]
+    )
