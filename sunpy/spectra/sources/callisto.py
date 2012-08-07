@@ -9,12 +9,17 @@ import datetime
 import urllib2
 
 import numpy as np
+
 import pyfits
 
 from itertools import izip
+from functools import partial
 from collections import defaultdict
 
 from bs4 import BeautifulSoup
+
+from scipy.optimize import leastsq
+from scipy.ndimage import gaussian_filter1d
 
 from sunpy.time import parse_time
 from sunpy.util.cond_dispatch import ConditionalDispatch
@@ -32,6 +37,10 @@ def _buffered_write(inp, outp, buffer_size):
         if not read:
             break
         outp.write(read)
+
+
+def polyfun_at(coeff, p):
+    return np.sum(k * p ** n for n, k in enumerate(reversed(coeff)))
 
 
 def match_histograms(one, other, nbins, inplace=False):
@@ -406,6 +415,58 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         return cls.combine_frequencies(
             [cls.join_many(elem) for elem in freq_buckets.itervalues()]
         )
+    
+    def homogenize(self, other, maxdiff=1):
+        one, two = self.intersect_time([self, other])
+        
+        assert isinstance(one, CallistoSpectrogram)
+        assert isinstance(two, CallistoSpectrogram)
+        
+        ovl = two.freq_overlap(one)
+        one = one.clip_freq(*ovl)
+        two = two.clip_freq(*ovl)
+        
+        to_consider = [
+            (x, y) for x, y, d in minimal_pairs(one.freq_axis, two.freq_axis)
+            if d <= maxdiff
+        ]
+        
+        pairs_indices = [(x, y) for x, y in to_consider]        
+        
+        # XXX: Maybe (xd.freq_axis[x] + yd.freq_axis[y]) / 2.
+        pairs_freqs = [one.freq_axis[x] for x, y in to_consider]
+        
+        pairs_data = [
+            (one[n_one, :], two[n_two, :]) for n_one, n_two in pairs_indices
+        ]
+        
+        # XXX: Maybe unnecessary.
+        pairs_data_gaussian = [
+            (gaussian_filter1d(a, 15), gaussian_filter1d(b, 15))
+            for a, b in pairs_data
+        ]
+        
+        least = [
+            leastsq(lambda p: np.int16(a) - (p[0] * b + p[1]), [1, 0])[0]
+            for a, b in pairs_data_gaussian
+        ]
+        
+        factors = [x for x, y in least]
+        constants = [y for x, y in least]
+        
+        f1 = np.polyfit(pairs_freqs, factors, 3)
+        f2 = np.polyfit(pairs_freqs, constants, 3)
+        
+        return one, two.apply_freq(
+            partial(polyfun_at, f1),
+            partial(polyfun_at, f2),
+        )
+    
+    def apply_freq(self, factor_fun, constant_fun):
+        ne = np.zeros(self.shape, dtype=self.dtype)
+        for n, (freq, line) in enumerate(zip(self.freq_axis, self)):
+            ne[n, :] = factor_fun(freq) * line + constant_fun(freq)
+        return CallistoSpectrogram(ne, **self.get_params())
 
 
 CallistoSpectrogram.create.add(
