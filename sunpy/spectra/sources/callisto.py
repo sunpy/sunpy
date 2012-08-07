@@ -69,11 +69,11 @@ def minimal_pairs(one, other):
     one, other : sequence
         Sequence of scalars to find pairs from.
     """
-    bestdiff = bestj = besti = None
+    lbestdiff = bestdiff = bestj = besti = None
     for i, freq in enumerate(one):
         lbestj = bestj
         
-        lbestdiff = bestdiff
+        # lbestdiff = bestdiff
         
         bestdiff, bestj = None, None
         for j, o_freq in enumerate(other[lbestj:]):
@@ -89,12 +89,12 @@ def minimal_pairs(one, other):
         if lbestj is not None and lbestj != bestj:
             yield (besti, lbestj, lbestdiff)
             besti = i
+            lbestdiff = bestdiff
         elif lbestdiff is None or bestdiff < lbestdiff:
             besti = i
             lbestdiff = bestdiff
     
-    diff = bestdiff if bestj != lbestj else lbestdiff
-    yield (besti, bestj, diff)
+    yield (besti, bestj, lbestdiff)
 
 
 def query(start, end, instruments=None, url=DEFAULT_URL):
