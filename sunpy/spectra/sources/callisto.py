@@ -63,7 +63,12 @@ def match_histograms(one, other, nbins, inplace=False):
 
 
 def minimal_pairs(one, other):
-    """ Assumes one and other are sorted. """
+    """ Find pairs of values in one and other with minimal distance.
+    Assumes one and other are sorted in the same sort sequence.
+    
+    one, other : sequence
+        Sequence of scalars to find pairs from.
+    """
     bestdiff, bestj, besti = None, None, None
     for i, freq in enumerate(one):
         lbestj = bestj
