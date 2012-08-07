@@ -173,3 +173,9 @@ def test_minimum_pairs_end_more():
         list(minimal_pairs([0, 1, 2, 4, 8], [1, 2, 3, 4])) ==
         [(1, 0, 0), (2, 1, 0), (3, 3, 0)]
     )
+
+def test_minimum_pairs_end_diff():
+    assert (
+        list(minimal_pairs([0, 1, 2, 8], [1, 2, 3, 4])) ==
+        [(1, 0, 0), (2, 1, 0), (3, 3, 4)]
+    )
