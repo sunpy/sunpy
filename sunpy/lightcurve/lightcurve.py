@@ -126,7 +126,7 @@ class LightCurve:
         # set the data and the header
         self.data = data
         
-        # allow for user to pass in their own header.
+        # allow for user to pass in their own header. 
         # could also do a type check to make sure either a dict or a string
         # is passed to the header
         if "header" in kwargs:
