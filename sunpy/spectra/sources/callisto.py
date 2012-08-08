@@ -368,6 +368,9 @@ CallistoSpectrogram.create.add(
     [basestring]
 )
 CallistoSpectrogram.create.add(
+# pylint: disable=W0108
+# The lambda is necessary because introspection is peformed on the
+# argspec of the function.
     CallistoSpectrogram.from_dir,
     lambda directory: os.path.isdir(directory),
     [basestring]
