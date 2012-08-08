@@ -475,17 +475,11 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         f1 = np.polyfit(pairs_freqs, factors, 3)
         f2 = np.polyfit(pairs_freqs, constants, 3)
         
-        return one, two._apply_freq(
-            partial(polyfun_at, f1),
-            partial(polyfun_at, f2),
+        return (
+            one,
+            two * polyfun_at(f1, two.freq_axis)[:, np.newaxis] +
+                polyfun_at(f2, two.freq_axis)[:, np.newaxis]
         )
-    
-    def _apply_freq(self, factor_fun, constant_fun):
-        ne = np.zeros(self.shape, dtype=self.dtype)
-        for n, (freq, line) in enumerate(zip(self.freq_axis, self)):
-            ne[n, :] = factor_fun(freq) * line + constant_fun(freq)
-        return CallistoSpectrogram(ne, **self.get_params())
-
 
 CallistoSpectrogram.create.add(
     CallistoSpectrogram.from_file,
