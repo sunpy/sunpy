@@ -13,6 +13,8 @@ import numpy as np
 
 import sunpy.data.test
 
+from numpy.testing import assert_array_almost_equal
+
 from sunpy.data.sample import CALLISTO_IMAGE
 from sunpy.spectra.sources.callisto import (
     CallistoSpectrogram, query, download, minimal_pairs
@@ -185,3 +187,135 @@ def test_closest():
         list(minimal_pairs([50, 60], [0, 10, 20, 30, 40, 51, 52])) ==
         [(0, 5, 1), (1, 6, 8)]
     )
+
+def test_homogenize_factor():
+    a = np.float64(np.random.randint(0, 255, 3600))[np.newaxis, :]
+    
+    c1 = CallistoSpectrogram(
+        a,
+        np.arange(3600),
+        np.array([1]),
+        datetime(2011, 1, 1),
+        datetime(2011, 1, 1, 1),
+        0,
+        1,
+        'Time',
+        'Frequency',
+        'Test',
+        None,
+        None,
+        False
+    )
+    b = 2 * a
+    c2 = CallistoSpectrogram(
+        b,
+        np.arange(3600),
+        np.array([1]),
+        datetime(2011, 1, 1),
+        datetime(2011, 1, 1, 1),
+        0,
+        1,
+        'Time',
+        'Frequency',
+        'Test',
+        None,
+        None,
+        False
+    )
+    
+    pairs_indices, factors, constants = c1._homogenize_params(
+        c2, 0
+    )
+    
+    assert pairs_indices == [(0, 0)]
+    assert_array_almost_equal(factors, [0.5], 2)
+    assert_array_almost_equal(constants, [0], 2)
+    assert_array_almost_equal(factors[0] * b + constants[0], a)
+
+def test_homogenize_constant():
+    a = np.float64(np.random.randint(0, 255, 3600))[np.newaxis, :]
+    
+    c1 = CallistoSpectrogram(
+        a,
+        np.arange(3600),
+        np.array([1]),
+        datetime(2011, 1, 1),
+        datetime(2011, 1, 1, 1),
+        0,
+        1,
+        'Time',
+        'Frequency',
+        'Test',
+        None,
+        None,
+        False
+    )
+    b = a + 10
+    c2 = CallistoSpectrogram(
+        b,
+        np.arange(3600),
+        np.array([1]),
+        datetime(2011, 1, 1),
+        datetime(2011, 1, 1, 1),
+        0,
+        1,
+        'Time',
+        'Frequency',
+        'Test',
+        None,
+        None,
+        False
+    )
+    
+    pairs_indices, factors, constants = c1._homogenize_params(
+        c2, 0
+    )
+    
+    assert pairs_indices == [(0, 0)]
+    assert_array_almost_equal(factors, [1], 2)
+    assert_array_almost_equal(constants, [-10], 2)
+    assert_array_almost_equal(factors[0] * b + constants[0], a)
+
+def test_homogenize_both():
+    a = np.float64(np.random.randint(0, 255, 3600))[np.newaxis, :]
+    
+    c1 = CallistoSpectrogram(
+        a,
+        np.arange(3600),
+        np.array([1]),
+        datetime(2011, 1, 1),
+        datetime(2011, 1, 1, 1),
+        0,
+        1,
+        'Time',
+        'Frequency',
+        'Test',
+        None,
+        None,
+        False
+    )
+    b = 2 * a + 1
+    c2 = CallistoSpectrogram(
+        b,
+        np.arange(3600),
+        np.array([1]),
+        datetime(2011, 1, 1),
+        datetime(2011, 1, 1, 1),
+        0,
+        1,
+        'Time',
+        'Frequency',
+        'Test',
+        None,
+        None,
+        False
+    )
+    
+    pairs_indices, factors, constants = c1._homogenize_params(
+        c2, 0
+    )
+    
+    assert pairs_indices == [(0, 0)]
+    assert_array_almost_equal(factors, [0.5], 2)
+    assert_array_almost_equal(constants, [-0.5], 2)
+    assert_array_almost_equal(factors[0] * b + constants[0], a)
