@@ -446,11 +446,9 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         
         # If we used integer arithmetic, we would accept more invalid
         # values.
-        af64 = np.float64(a)
-        bf64 = np.float64(b)
         
         least = [
-            leastsq(lambda p: af64 - (p[0] * bf64 + p[1]), [1, 0])[0]
+            leastsq(lambda p: np.float64(a) - (p[0] * np.float64(b) + p[1]), [1, 0])[0]
             for a, b in pairs_data_gaussian
         ]
         
