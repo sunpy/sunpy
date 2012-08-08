@@ -423,6 +423,42 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
             [cls.join_many(elem) for elem in freq_buckets.itervalues()]
         )
     
+    def _overlap(self, other):
+        one, two = self.intersect_time([self, other])
+        ovl = one.freq_overlap(two)
+        return one.clip_freq(*ovl), two.clip_freq(*ovl)
+    
+    def _homogenize_params(self, other, maxdiff=1):
+        pairs_indices = [
+            (x, y) for x, y, d in minimal_pairs(self.freq_axis, other.freq_axis)
+            if d <= maxdiff
+        ]
+        
+        pairs_data = [
+            (self[n_one, :], other[n_two, :]) for n_one, n_two in pairs_indices
+        ]
+        
+        # XXX: Maybe unnecessary.
+        pairs_data_gaussian = [
+            (gaussian_filter1d(a, 15), gaussian_filter1d(b, 15))
+            for a, b in pairs_data
+        ]
+        
+        # If we used integer arithmetic, we would accept more invalid
+        # values.
+        af64 = np.float64(a)
+        bf64 = np.float64(b)
+        
+        least = [
+            leastsq(lambda p: af64 - (p[0] * bf64 + p[1]), [1, 0])[0]
+            for a, b in pairs_data_gaussian
+        ]
+        
+        factors = [x for x, y in least]
+        constants = [y for x, y in least]
+        
+        return pairs_indices, factors, constants
+    
     def homogenize(self, other, maxdiff=1):
         """ Return overlapping part of self and other as (self, other) tuple.
         Homogenize intensities so that the images can be used with
@@ -437,40 +473,13 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         maxdiff : float
             Threshold for which frequencies are considered equal.
         """
-        one, two = self.intersect_time([self, other])
-        
-        assert isinstance(one, CallistoSpectrogram)
-        assert isinstance(two, CallistoSpectrogram)
-        
-        ovl = two.freq_overlap(one)
-        one = one.clip_freq(*ovl)
-        two = two.clip_freq(*ovl)
-        
-        pairs_indices = [
-            (x, y) for x, y, d in minimal_pairs(one.freq_axis, two.freq_axis)
-            if d <= maxdiff
-        ]
+        one, two = self._overlap(other)
+        pairs_indices, factors, constants = one._homogenize_params(
+            two, maxdiff
+        )
         
         # XXX: Maybe (xd.freq_axis[x] + yd.freq_axis[y]) / 2.
-        pairs_freqs = [one.freq_axis[x] for x, y in pairs_indices]
-        
-        pairs_data = [
-            (one[n_one, :], two[n_two, :]) for n_one, n_two in pairs_indices
-        ]
-        
-        # XXX: Maybe unnecessary.
-        pairs_data_gaussian = [
-            (gaussian_filter1d(a, 15), gaussian_filter1d(b, 15))
-            for a, b in pairs_data
-        ]
-        
-        least = [
-            leastsq(lambda p: np.int16(a) - (p[0] * b + p[1]), [1, 0])[0]
-            for a, b in pairs_data_gaussian
-        ]
-        
-        factors = [x for x, y in least]
-        constants = [y for x, y in least]
+        pairs_freqs = [self.freq_axis[x] for x, y in pairs_indices]
         
         f1 = np.polyfit(pairs_freqs, factors, 3)
         f2 = np.polyfit(pairs_freqs, constants, 3)
@@ -480,6 +489,7 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
             two * polyfun_at(f1, two.freq_axis)[:, np.newaxis] +
                 polyfun_at(f2, two.freq_axis)[:, np.newaxis]
         )
+
 
 CallistoSpectrogram.create.add(
     CallistoSpectrogram.from_file,
