@@ -53,13 +53,16 @@ class LightCurve:
     """
     def __init__(self, *args, **kwargs):
         self._filename = ""
+        header = None
+        
+        num_args = len(args) + len(kwargs)
 
         # If no arguments specified, perform default action
-        if len(args) == 0:
+        if num_args == 0:
             args = (self._get_default_uri(),)
 
         # Single argument
-        if len(args) == 1:
+        if num_args == 1:
             # If single string, could be a filepath, URL, date, or TimeRange
             if sunpy.time.is_time(args[0]):
                 date = sunpy.time.parse_time(args[0])
@@ -89,7 +92,7 @@ class LightCurve:
             header, data = self._parse_filepath(filepath)
         
         # Two arguments
-        elif len(args) == 2:
+        elif num_args == 2:
             # Date range
             if (sunpy.time.is_time(args[0]) and sunpy.time.is_time(args[1])):
                 url = self._get_url_for_date_range(args[0], args[1])
@@ -105,7 +108,7 @@ class LightCurve:
                   isinstance(args[0], dict) or 
                   isinstance(args[0], np.ndarray) or 
                   isinstance(args[0], pandas.Series)):
-            # DataFrame Index
+                # DataFrame Index
                 if "index" in kwargs:
                     index = kwargs["index"]
                 else:
@@ -117,13 +120,13 @@ class LightCurve:
         # @NOTE: should we also support inputting start and end dates or a
         # date range?
 
-        if len(args) > 2:
+        if num_args > 2:
             raise TypeError("Lightcurve takes a maximum of two arguments.")
-
 
         # set the data and the header
         self.data = data
-        # allow for user to pass in their own header.
+        
+        # allow for user to pass in their own header. 
         # could also do a type check to make sure either a dict or a string
         # is passed to the header
         if "header" in kwargs:
@@ -184,11 +187,13 @@ class LightCurve:
     
     def _parse_csv(self, filepath):
         """Place holder method to parse CSV files."""
-        pass
+        msg = "Generic CSV parsing not yet implemented for LightCurve"
+        raise NotImplementedError(msg)
     
     def _parse_fits(self, filepath):
         """Place holder method to parse FITS files."""
-        pass
+        msg = "Generic FITS parsing not yet implemented for LightCurve"
+        raise NotImplementedError(msg)
     
     def _parse_filepath(self, filepath):
         filename, extension = os.path.splitext(filepath)
