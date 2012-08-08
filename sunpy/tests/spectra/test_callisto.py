@@ -319,3 +319,48 @@ def test_homogenize_both():
     assert_array_almost_equal(factors, [0.5], 2)
     assert_array_almost_equal(constants, [-0.5], 2)
     assert_array_almost_equal(factors[0] * b + constants[0], a)
+
+def test_homogenize_rightfq():
+    a = np.float64(np.random.randint(0, 255, 3600))[np.newaxis, :]
+        
+    c1 = CallistoSpectrogram(
+        a,
+        np.arange(3600),
+        np.array([1]),
+        datetime(2011, 1, 1),
+        datetime(2011, 1, 1, 1),
+        0,
+        1,
+        'Time',
+        'Frequency',
+        'Test',
+        None,
+        None,
+        False
+    )
+    b = 2 * a + 1
+    c2 = CallistoSpectrogram(
+        np.concatenate([
+            np.arange(3600)[np.newaxis, :], b,
+            np.arange(3600)[np.newaxis, :]
+            ], 0),
+        np.arange(3600),
+        np.array([0, 1, 2]),
+        datetime(2011, 1, 1),
+        datetime(2011, 1, 1, 1),
+        0,
+        1,
+        'Time',
+        'Frequency',
+        'Test',
+        None,
+        None,
+        False
+    )
+    pairs_indices, factors, constants = c1._homogenize_params(
+        c2, 0
+    )    
+    assert pairs_indices == [(0, 1)]
+    assert_array_almost_equal(factors, [0.5], 2)
+    assert_array_almost_equal(constants, [-0.5], 2)
+    assert_array_almost_equal(factors[0] * b + constants[0], a)
