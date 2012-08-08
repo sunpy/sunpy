@@ -481,6 +481,7 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         # XXX: Maybe (xd.freq_axis[x] + yd.freq_axis[y]) / 2.
         pairs_freqs = [self.freq_axis[x] for x, y in pairs_indices]
         
+        # XXX: Extrapolation does not work this way.
         f1 = np.polyfit(pairs_freqs, factors, 3)
         f2 = np.polyfit(pairs_freqs, constants, 3)
         
