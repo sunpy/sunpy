@@ -7,8 +7,8 @@ from __future__ import absolute_import
 import sunpy
 from sunpy.data.test import (EVE_AVERAGES_CSV)
 
-class TestMap:
-    """Tests the Map class"""
+class TestEve:
+    """Tests the EVE class"""
     def setup_class(self):
         pass
 
