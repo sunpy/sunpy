@@ -29,6 +29,15 @@ TIME_STR = "%Y%m%d%H%M%S"
 DEFAULT_URL = 'http://soleil.i4ds.ch/solarradio/data/2002-20yy_Callisto/'
 _DAY = datetime.timedelta(days=1)
 
+def findpeaks(a):
+    """ Find local maxima in 1D. Use findpeaks(-a) for minima. """
+    return np.nonzero((a[1:-1] > a[:-2]) & (a[1:-1] > a[2:]))[0]
+
+
+def delta(s):
+    return s[1:] - s[:-1]
+
+
 def _buffered_write(inp, outp, buffer_size):
     """ Implementation detail. Write from inp to outp in chunks of
     buffer_size. """
@@ -95,6 +104,15 @@ def minimal_pairs(one, other):
     yield (besti, bestj, lbestdiff)
 
 
+def find_next(one, other):
+    n = 0
+    for elem1 in one:
+        for elem2 in other[n:]:
+            n += 1
+            if elem2 > elem1:
+                yield elem1, elem2
+                break
+                
 def query(start, end, instruments=None, url=DEFAULT_URL):
     """ Get URLs for callisto data from instruments between start and end.
     
@@ -177,6 +195,8 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         flag that specifies whether originally in the file the x-axis was
         frequency
     """
+    SIGMA_SUM = 75
+    SIGMA_DELTA_SUM = 20
     create = ConditionalDispatch()
     # Contrary to what pylint may think, this is not an old-style class.
     # pylint: disable=E1002,W0142,R0902
@@ -428,6 +448,14 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         ovl = one.freq_overlap(two)
         return one.clip_freq(*ovl), two.clip_freq(*ovl)
     
+    @staticmethod
+    def _to_minimize(a, b):
+        def _fun(p):
+            if p[0] <= 0.2 or abs(p[1]) >= a.max():
+                return float("inf")
+            return a - (p[0] * b + p[1])
+        return _fun
+    
     def _homogenize_params(self, other, maxdiff=1):
         pairs_indices = [
             (x, y) for x, y, d in minimal_pairs(self.freq_axis, other.freq_axis)
@@ -448,7 +476,7 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         # values.
         pairs_data_gaussian64 = np.float64(pairs_data_gaussian)
         least = [
-            leastsq(lambda p: a - (p[0] * b + p[1]), [1, 0])[0]
+            leastsq(self._to_minimize(a,b), [1, 0])[0]
             for a, b in pairs_data_gaussian64
         ]
         
@@ -479,6 +507,7 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         pairs_freqs = [one.freq_axis[x] for x, y in pairs_indices]
         
         # XXX: Extrapolation does not work this way.
+        # XXX: Improve.
         f1 = np.polyfit(pairs_freqs, factors, 3)
         f2 = np.polyfit(pairs_freqs, constants, 3)
         
@@ -487,8 +516,25 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
             two * polyfun_at(f1, two.freq_axis)[:, np.newaxis] +
                 polyfun_at(f2, two.freq_axis)[:, np.newaxis]
         )
+    
+    def find_interesting(self):
+        s = sum(self, 0)
+        s = s - s.min()
+        s = gaussian_filter1d(s, self.SIGMA_SUM)
+        
+        sd = gaussian_filter1d(delta(np.float64(s)), self.SIGMA_DELTA_SUM)
+        
+        mxs = findpeaks(sd)
+        mns = findpeaks(-sd)
+        
+        return max(
+            # Only negative derivatives imply end of interesting
+            # part.
+            find_next(mxs, [mn for mn in mns if sd[mn] < 0]),
+            key=lambda x: sd[x[0]]
+        )
 
-
+    
 CallistoSpectrogram.create.add(
     CallistoSpectrogram.from_file,
     lambda filename: os.path.isfile(filename),
