@@ -1,7 +1,12 @@
 # -*- coding: utf-8 -*-
 # Author: Florian Mayer <florian.mayer@bitsrc.org>
-
+#
+# This module was developed with funding provided by
+# the ESA Summer of Code (2011).
+#
 # pylint: disable=C0103,R0903
+
+""" Facilities to interface with the HEK. """
 
 from __future__ import absolute_import
 
@@ -30,6 +35,7 @@ def _freeze(obj):
 
 
 class HEKClient(object):
+    """ Client to interact with the HEK. """
     # FIXME: Types!
     
     default = {
@@ -45,6 +51,7 @@ class HEKClient(object):
         self.url = url
     
     def _download(self, data):
+        """ Implementation detail. """
         page = 1        
         results = []
         
@@ -58,6 +65,9 @@ class HEKClient(object):
             page += 1
     
     def query(self, *query):
+        """ Retrieve information about records matching the criteria
+        given in the query expression. If multiple arguments are passed,
+        they are connected with AND. """
         query = attr.and_(*query)
         
         data = attrs.walker.create(query, {})
@@ -70,9 +80,10 @@ class HEKClient(object):
         if len(ndata) == 1:
             return self._download(ndata[0])
         else:
-            return self.merge(self._download(data) for data in ndata)
+            return self._merge(self._download(data) for data in ndata)
     
-    def merge(self, responses):
+    def _merge(self, responses):
+        """ Implementation detail. """
         return list(unique(chain.from_iterable(responses), _freeze))
 
 

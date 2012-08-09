@@ -113,3 +113,17 @@ def clean():
     for file_ in glob('distribute-*') + ['MANIFEST']:
         if os.path.exists(file_):
             os.remove(file_)
+
+    def clean_cache(directory):
+        """Remove .pyc files and __pycache__ directories"""
+        for x in os.listdir(directory):
+            filepath = os.path.join(directory, x)
+            if os.path.isfile(filepath) and filepath.endswith('.pyc'):
+                os.remove(filepath)
+            elif os.path.isdir(filepath):
+                if filepath.endswith("__pycache__"):
+                    shutil.rmtree(filepath)
+                else:
+                    clean_cache(filepath)
+
+    clean_cache('.')

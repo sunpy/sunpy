@@ -11,5 +11,6 @@ Welcome to the SunPy User Guide!
    tutorial
    maps
    hek
+   spectra
    customization
    troubleshooting
