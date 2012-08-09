@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 # Author: Florian Mayer <florian.mayer@bitsrc.org>
-
+#
+# This module was developed with funding provided by
+# the ESA Summer of Code (2011).
+#
 #pylint: disable=W0401,C0103,R0904,W0141
 
 from __future__ import absolute_import
@@ -60,12 +63,24 @@ class Results(object):
         self.errors = []
     
     def submit(self, keys, value):
+        """
+        
+        Parameters
+        ----------
+        keys : list
+            names under which to save the value
+        value : object
+            value to save
+        """
         for key in keys:
             self.map_[key] = value
         self.poke()
     
     def poke(self):
         self.n -= 1
+        """ Signal completion of one item that was waited for. This can be
+        because it was submitted, because it lead to an error or for any
+        other reason. """
         if not self.n:
             if self.done is not None:
                 self.map_ = self.done(self.map_)
@@ -73,6 +88,13 @@ class Results(object):
             self.evt.set()
     
     def require(self, keys):
+        """ Require that keys be submitted before the Results object is
+        finished (i.e., wait returns). Returns a callback method that can
+        be used to submit the result by simply calling it with the result.
+        
+        keys : list
+            name of keys under which to save the result
+        """
         self.n += 1
         return partial(self.submit, keys)
     
@@ -82,6 +104,8 @@ class Results(object):
         return self.map_
     
     def add_error(self, exception):
+        """ Signal a required result cannot be submitted because of an
+        error. """
         self.errors.append(exception)
         self.poke()
 
@@ -119,6 +143,14 @@ class QueryResponse(list):
         super(QueryResponse, self).__init__(lst)
         self.queryresult = queryresult
         self.errors = []
+    
+    def query(self, *query):
+        """ Furtherly reduce the query response by matching it against
+        another query, e.g. response.query(attrs.Instrument('aia')). """
+        query = and_(*query)
+        return QueryResponse(
+            attrs.filter_results(query, self), self.queryresult
+        )
     
     @classmethod
     def create(cls, queryresult):
@@ -182,10 +214,15 @@ class VSOClient(object):
     method_order = [
         'URL-TAR_GZ', 'URL-ZIP', 'URL-TAR', 'URL-FILE', 'URL-packaged'
     ]
-    def __init__(self, api=None):
+    def __init__(self, url=None, port=None, api=None):
         if api is None:
-            api = client.Client(DEFAULT_URL)
-            api.set_options(port=DEFAULT_PORT)
+            if url is None:
+                url = DEFAULT_URL
+            if port is None:
+                port = DEFAULT_PORT
+            
+            api = client.Client(url)
+            api.set_options(port=port)
         self.api = api
     
     def make(self, type_, **kwargs):

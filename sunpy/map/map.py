@@ -20,6 +20,7 @@ from sunpy.util.util import toggle_pylab
 from sunpy.io import read_file, read_file_header
 from sunpy.sun import constants
 from sunpy.time import parse_time
+from sunpy.util.util import to_signed
 
 """
 TODO
@@ -48,7 +49,7 @@ class Map(np.ndarray):
 
     Attributes
     ----------
-    fits_header : dict
+    original_header : dict
         Dictionary representation of the original FITS header
     carrington_longitude : str
         Carrington longitude (crln_obs)
@@ -220,6 +221,10 @@ class Map(np.ndarray):
             "units": {
                 'x': header.get('cunit1', 'arcsec'),
                 'y': header.get('cunit2', 'arcsec')
+            },
+            "rotation_angle": {
+                'x': header.get('crota1', 0.),
+                'y': header.get('crota2', 0.)
             }
         }
 
@@ -235,7 +240,7 @@ class Map(np.ndarray):
                           'scale', 'units', 'reference_coordinate',
                           'reference_pixel', 'coordinate_system',
                           'heliographic_latitude', 'heliographic_longitude',
-                          'carrington_longitude']
+                          'carrington_longitude','rotation_angle']
 
             for attr in properties:
                 setattr(self, attr, getattr(obj, attr))
@@ -294,11 +299,9 @@ Dimension:\t [%d, %d]
         """
         # if data is stored as unsigned, cast up (e.g. uint8 => int16)
         if self.dtype.kind == "u":
-            dtype = "int%d" % (min(int(self.dtype.name[4:]) * 2, 64))
-            self = self.astype(np.dtype(dtype))
+            self = self.astype(to_signed(self.dtype))
         if other.dtype.kind == "u":
-            dtype = "int%d" % (min(int(other.dtype.name[4:]) * 2, 64))
-            other = other.astype(np.dtype(dtype))
+            other = other.astype(to_signed(other.dtype))
 
         result = np.ndarray.__sub__(self, other)
 
@@ -562,7 +565,7 @@ Dimension:\t [%d, %d]
         ----------
         | http://mail.scipy.org/pipermail/numpy-discussion/2010-July/051760.html
         """
-        from sunpy.image import reshape_image_to_4d_superpixel
+        from sunpy.image.rescale import reshape_image_to_4d_superpixel
 
         # Note: because the underlying ndarray is transposed in sense when
         #   compared to the Map, the ndarray is transposed, resampled, then

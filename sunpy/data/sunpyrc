@@ -9,14 +9,27 @@
 ; like systems) and C:\Documents and Settings\yourname\.sunpy
 ; (win32 systems).
 ;
+; Note that any relative filepaths specified in the SunPy configuration file
+; will be relative to SunPy's working directory.
+;
 
-;
-; DOWNLOAD OPTIONS
-;
-; By default, SunPy downloads all data to a temporary directory on your system
-; path. To save data to a more permanent location you can either specify a
-; filepath to use for the save_directory setting below, or specify a filepath
-; as a keyword argument for the command downloading the data.
-;
+;;;;;;;;;;;;;;;;;;;
+; General Options ;
+;;;;;;;;;;;;;;;;;;;
+[general]
+
+; The SunPy working directory is the parent directory where all generated
+; and download files will be stored.
+; Default Value: <user's home directory>/sunpy
+; working_dir = /home/$USER/sunpy
+
+;;;;;;;;;;;;;
+; Downloads ;
+;;;;;;;;;;;;;
 [downloads]
-download_dir = /tmp
+
+; Location to save download data to. Path should be specified relative to the
+; SunPy working directory.
+; Default value: data/
+;download_dir = /tmp
+download_dir = data/ 
