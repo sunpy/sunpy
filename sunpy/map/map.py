@@ -565,7 +565,7 @@ Dimension:\t [%d, %d]
         ----------
         | http://mail.scipy.org/pipermail/numpy-discussion/2010-July/051760.html
         """
-        from sunpy.image import reshape_image_to_4d_superpixel
+        from sunpy.image.rescale import reshape_image_to_4d_superpixel
 
         # Note: because the underlying ndarray is transposed in sense when
         #   compared to the Map, the ndarray is transposed, resampled, then
