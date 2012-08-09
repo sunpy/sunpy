@@ -518,8 +518,7 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         )
     
     def find_interesting(self):
-        s = sum(self, 0)
-        s = s - s.min()
+        s = np.sum(self, 0)
         s = gaussian_filter1d(s, self.SIGMA_SUM)
         
         sd = gaussian_filter1d(delta(np.float64(s)), self.SIGMA_DELTA_SUM)
