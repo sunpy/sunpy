@@ -4,6 +4,49 @@ import sunpy
 import tempfile
 import ConfigParser
 
+def load_config():
+    """
+    Read the sunpyrc configuration file. If one does not exists in the user's
+    home directory then read in the defaults from module
+    """
+    config = ConfigParser.SafeConfigParser()
+    
+    # Get locations of SunPy configuration files to be loaded
+    config_files = _find_config_files()
+    
+    # Read in configuration files
+    config.read(config_files)
+    
+    # Specify the working directory as a default so that the user's home
+    # directory can be located in an OS-independent manner
+    if not config.has_option('general', 'working_dir'):
+        config.set('general', 'working_dir', os.path.join(_get_home(), "sunpy"))
+    
+    # Use absolute filepaths and adjust OS-dependent paths as needed
+    filepaths = [
+        ('downloads', 'download_dir')
+    ]
+    _fix_filepaths(config, filepaths)
+    
+    # check for sunpy working directory and create it if it doesn't exist
+    if not os.path.isdir(config.get('downloads', 'download_dir')):
+        os.mkdir(config.get('downloads', 'download_dir'))
+
+    return config
+
+def print_config():
+    """Print current configuration options"""
+    print("FILES USED:")
+    for file_ in _find_config_files():
+        print("  " + file_)
+    
+    print ("\nCONFIGURATION:")
+    for section in sunpy.config.sections():
+        print("  [%s]" % section)
+        for option in sunpy.config.options(section):
+            print("  %s = %s" % (option, sunpy.config.get(section, option)))
+        print("")
+
 def _is_writable_dir(p):
     """Checks to see if a directory is writable"""
     return os.path.isdir(p) and os.access(p, os.W_OK)
@@ -27,8 +70,27 @@ def _get_home():
         return path
     else:
         raise RuntimeError('please define environment variable $HOME')
+    
+def _find_config_files():
+    """Finds locations of SunPy configuration files"""
+    config_files = []
+    config_filename = 'sunpyrc'
+    
+    # find default configuration file
+    module_dir = os.path.dirname(sunpy.__file__)
+    config_files.append(module_dir + '/data/sunpyrc')
 
-def _get_configdir():
+    # if a user configuration file exists, add that to list of files to read
+    # so that any values set there will overide ones specified in the default
+    # config file
+    config_path = _get_user_configdir()
+    
+    if os.path.exists(config_path + '/' + config_filename):
+        config_files.append(config_path + '/' + config_filename)
+        
+    return config_files
+
+def _get_user_configdir():
     """
     Return the string representing the configuration dir.
     The default is "HOME/.sunpy".  You can override this with the
@@ -62,49 +124,36 @@ def _get_configdir():
 
     return p
 
-def _fix_filepaths(config):
+def _fix_filepaths(config, filepaths):
     """Converts relative filepaths to absolute filepaths"""
-    # Filepath config parameters
-    filepaths = [('downloads', 'download_dir')]
-
+    # Parse working_dir
+    working_dir = _expand_filepath(config.get("general", "working_dir"))
+    config.set('general', 'working_dir', working_dir)
+    
     for f in filepaths:
         val = config.get(*f)
         
-        # Check for /tmp
-        if val == "/tmp":
-            val = tempfile.gettempdir()
-
-        # Expand filepaths
-        params = f + (os.path.abspath(os.path.expanduser(val)),)
-        config.set(*params)
-
-def read_configfile():
-    """
-    Read the sunpyrc configuration file. If one does not exists in the user's
-    home directory then read in the defaults from module
-    """
-    config = ConfigParser.ConfigParser()
-    
-    # determine location of config file
-    config_filename = 'sunpyrc'
-    config_path = _get_configdir()
-    
-    # check if to see if defaults have been customized 
-    # if not read in the defaults from the module
-    if os.path.exists(config_path + '/' + config_filename):
-        filepath = config_path + '/' + config_filename
-    else:
-        module_dir = os.path.dirname(sunpy.__file__)
-        filepath = module_dir + '/data/sunpyrc'
-    
-    # Read in configuration
-    config.readfp(open(filepath))
-    
-    # Use absolute filepaths and adjust OS-dependent paths as needed
-    _fix_filepaths(config)
+        filepath = _expand_filepath(val, working_dir)
         
-    return config
+        # Create dir if it doesn't already exist
+        if not os.path.isdir(filepath):
+            os.makedirs(filepath)
 
-if __name__ == "__main__":
-    import sunpy
-    sunpy.util.system_info()
+        # Replace config value with full filepath
+        params = f + (filepath,)
+        config.set(*params)
+        
+def _expand_filepath(filepath, working_dir=""):
+    """Checks a filepath and expands it if necessary"""
+    # Expand home directory
+    if filepath[0] == "~":
+        return os.path.abspath(os.path.expanduser(filepath))
+    # Check for /tmp
+    elif filepath == "/tmp":
+        return tempfile.gettempdir()
+    # Relative filepaths
+    elif not filepath.startswith("/"):
+        return os.path.join(working_dir, filepath)    
+    # Absolute filepath
+    else:
+        return filepath
