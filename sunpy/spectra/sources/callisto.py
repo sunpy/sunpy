@@ -104,7 +104,8 @@ def minimal_pairs(one, other):
     yield (besti, bestj, lbestdiff)
 
 
-def find_next(one, other):
+DONT = object()
+def find_next(one, other, pad=DONT):
     n = 0
     for elem1 in one:
         for elem2 in other[n:]:
@@ -112,7 +113,11 @@ def find_next(one, other):
             if elem2 > elem1:
                 yield elem1, elem2
                 break
-                
+        else:
+            if pad is not DONT:
+                yield elem1, pad
+
+
 def query(start, end, instruments=None, url=DEFAULT_URL):
     """ Get URLs for callisto data from instruments between start and end.
     
@@ -195,6 +200,7 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         flag that specifies whether originally in the file the x-axis was
         frequency
     """
+    # XXX: Determine those from the data.
     SIGMA_SUM = 75
     SIGMA_DELTA_SUM = 20
     create = ConditionalDispatch()
@@ -521,11 +527,16 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         s = np.sum(self, 0)
         s = gaussian_filter1d(s, self.SIGMA_SUM)
         
+        s = s - s.min()
+        
         sd = gaussian_filter1d(delta(np.float64(s)), self.SIGMA_DELTA_SUM)
         
         mxs = findpeaks(sd)
         mns = findpeaks(-sd)
         
+        	
+        
+        # XXX: End of interesting part is back to noise in s.
         return max(
             # Only negative derivatives imply end of interesting
             # part.
@@ -550,7 +561,8 @@ CallistoSpectrogram.create.add(
 # If it is not a kwarg and only one matches, do not return a list.
 CallistoSpectrogram.create.add(
     CallistoSpectrogram.from_single_glob,
-    lambda singlepattern: '*' in singlepattern and len(glob.glob(singlepattern)) == 1,
+    lambda singlepattern: ('*' in singlepattern and
+                           len(glob.glob(singlepattern)) == 1),
     [basestring]
 )
 # This case only gets executed under the condition that the previous one wasn't.
