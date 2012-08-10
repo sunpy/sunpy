@@ -32,9 +32,9 @@ http://www.lmsal.com/hek/VOEvent_Spec.html.
     In [3]: import datetime
     In [4]: tstart = datetime.datetime(2011,8,9,7,23,56)
     In [5]: tend = datetime.datetime(2011,8,9,12,40,29)
-    In [6]: EventType = 'FL'
+    In [6]: event_type = 'FL'
     In [7]: result = client.query(hek.attrs.Time(tstart,tend),
-                                hek.attrs.EventType(EventType))
+                                hek.attrs.EventType(event_type))
 
 The first line in the block of code above ("In [3]:") imports the
 datetime module.  The second and third lines define the search start
@@ -51,15 +51,16 @@ Let's break down the arguments of client.query.  The first argument:
 
 sets the start and end times for the query.  The second argument:
 
-    hek.attrs.EventType(EventType)
+    hek.attrs.EventType(event_type)
 
-sets the type of event to look for.  Since we have defined EventType =
-'FL', this sets the query to look for flares.  We could have also set
-the flare event type using the syntax
+sets the type of event to look for.  Since we have defined event_type
+= 'FL', this sets the query to look for flares.  We could have also
+set the flare event type using the syntax
 
     hek.attrs.FL
 
-There is more on the attributes of hek.attrs in section 4 of this guide.
+There is more on the attributes of hek.attrs in section 4 of this
+guide.
 
 
 3. The result
@@ -70,10 +71,11 @@ So, how many flare detections did the query turn up?
     In [8]: len(result)
     Out[8]: 19
 
-The object returned by the above query is a list of Python dictionary objects.
-Each dictionary consists of key-value pairs that exactly correspond to the
-parameters listed at http://www.lmsal.com/hek/VOEvent_Spec.html. You
-can inspect all the dictionary keys very simply:
+The object returned by the above query is a list of Python dictionary
+objects.  Each dictionary consists of key-value pairs that exactly
+correspond to the parameters listed at
+http://www.lmsal.com/hek/VOEvent_Spec.html. You can inspect all the
+dictionary keys very simply:
 
     In [10]: result[0].keys()
     Out[10]:
@@ -123,7 +125,7 @@ key features you need to know in order to make use of the full power
 of the HEK client.  Firstly, the attribute module - hek.attrs -
 describes ALL the parameters stored by the HEK as listed in
 http://www.lmsal.com/hek/VOEvent_Spec.html, and the HEK client makes
-these parameters searchable.  
+these parameters searchable.
 
 To explain this, let's have a closer look at hek.attrs. The help
 command is your friend here:
@@ -205,7 +207,7 @@ Latest Events tool.  I can retrieve those entries only from the HEK
 with the following command:
 
     In [14]: result = client.query( hek.attrs.Time(tstart,tend), 
-                            hek.attrs.EventType(EventType),
+                            hek.attrs.EventType(event_type),
                             hek.attrs.FRM.Name == 'SSW Latest Events')
     In [15]: len(result)
     Out[15]: 2
@@ -214,7 +216,7 @@ We can also retrieve all the entries in the time range which were not
 made by SSW Latest Events with the following command:
 
     In [16]: result = client.query( hek.attrs.Time(tstart,tend), 
-                            hek.attrs.EventType(EventType),
+                            hek.attrs.EventType(event_type),
                             hek.attrs.FRM.Name != 'SSW Latest Events')
     In [17]: len(result)
     Out[17]: 17
@@ -224,7 +226,7 @@ the HEK client.  Other comparisons are possible.  For example, let's
 say I want all the flares that have a peak flux of over 4000.0:
 
     In [18]: result = client.query(hek.attrs.Time(tstart,tend),
-                            hek.attrs.EventType(EventType),
+                            hek.attrs.EventType(event_type),
                             hek.attrs.FL.PeakFlux > 4000.0)
     In [19]: len(result)
     Out[19]: 1
@@ -234,7 +236,7 @@ all the flares with a peak flux above 1000 AND west of 800 arcseconds
 from disk center of the Sun
 
     In [20]: result = client.query(hek.attrs.Time(tstart,tend),
-                            hek.attrs.EventType(EventType),
+                            hek.attrs.EventType(event_type),
                             hek.attrs.Event.Coord1 > 800,
                             hek.attrs.FL.PeakFlux > 1000.0)
 
@@ -248,7 +250,7 @@ caution is advisable.  Let's say I want all the flares west of 50
 arcseconds OR have a peak flux over 1000.0:
 
     In [21]: result = client.query(hek.attrs.Time(tstart,tend),
-                            hek.attrs.EventType(EventType),
+                            hek.attrs.EventType(event_type),
                             (hek.attrs.Event.Coord1 > 50) or 
                             (hek.attrs.FL.PeakFlux > 1000.0) )
 and as a check
@@ -298,7 +300,7 @@ Let's say we want all the flares west of 50 arcseconds AND have a peak
 flux over 1000.0:
 
     In [24]: result = client.query(hek.attrs.Time(tstart,tend),
-                            hek.attrs.EventType(EventType),
+                            hek.attrs.EventType(event_type),
                             (hek.attrs.Event.Coord1 > 50) and 
                             (hek.attrs.FL.PeakFlux > 1000.0) )
 
