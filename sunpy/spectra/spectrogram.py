@@ -327,9 +327,9 @@ class Spectrogram(np.ndarray):
                 right -= 1
 
         return self[left:right, :]
-
-    def auto_const_bg(self):
-        """ Automatically determine background. """
+    
+    
+    def auto_find_background(self, amount=0.05):
         # pylint: disable=E1101,E1103
         data = self.astype(to_signed(self.dtype))
         # Subtract average value from every frequency channel.
@@ -340,11 +340,13 @@ class Spectrogram(np.ndarray):
         sdevs = np.asarray(np.std(tmp, 0))
 
         # Get indices of values with lowest standard deviation.
-        cand = sorted(xrange(self.shape[0]), key=lambda y: sdevs[y])
+        cand = sorted(xrange(self.shape[1]), key=lambda y: sdevs[y])
         # Only consider the best 5 %.
-        realcand = cand[:max(1, int(0.05 * len(cand)))]
-
-        # Average the best 5 %
+        return cand[:max(1, int(amount * len(cand)))]
+    
+    def auto_const_bg(self):
+        """ Automatically determine background. """
+        realcand = self.auto_find_background()
         bg = np.average(self[:, realcand], 1)
         return bg.reshape(self.shape[0], 1)
 
