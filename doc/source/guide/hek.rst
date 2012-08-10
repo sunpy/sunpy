@@ -2,11 +2,12 @@
 Using SunPy's HEK module
 ------------------------
 
-The Heliophysics Event Knowledgebase (HEK) is a repository of feature and
-event information concerning the Sun.  Entries are generated both by automated
-algorithms and human observers.  SunPy accesses this information through the
-'hek' module, which was developed through support from the European Space
-Agency Summer of Code in Space (ESA-SOCIS) 2011.
+The Heliophysics Event Knowledgebase (HEK) is a repository of feature
+and event information concerning the Sun.  Entries are generated both
+by automated algorithms and human observers.  SunPy accesses this
+information through the 'hek' module, which was developed through
+support from the European Space Agency Summer of Code in Space
+(ESA-SOCIS) 2011.
 
 1. Setting up the client
 ------------------------
@@ -22,25 +23,44 @@ This creates a client that we will use to interact with the HEK.
 2. A simple query
 -----------------
 
-To search the HEK, you need a start time, an end time, and an event type.  Times
-are specified as Python datetime objects.  Event types are specified as upper
-case, two letter strings, and are identical to the two letter abbreviations
-found at the HEK website, http://www.lmsal.com/hek/VOEvent_Spec.html.
+To search the HEK, you need a start time, an end time, and an event
+type.  Times are specified as Python datetime objects.  Event types
+are specified as upper case, two letter strings, and are identical to
+the two letter abbreviations found at the HEK website,
+http://www.lmsal.com/hek/VOEvent_Spec.html.
 
-    In[3]: import datetime
-    In[4]: tstart = datetime.datetime(2011,8,9,7,23,56)
-    In[5]: tend = datetime.datetime(2011,8,9,12,40,29)
-    In[6]: EventType = 'FL'
-    In[7]: result = client.query(hek.attrs.Time(tstart,tend), hek.attrs.EventType(EventType))
+    In [3]: import datetime
+    In [4]: tstart = datetime.datetime(2011,8,9,7,23,56)
+    In [5]: tend = datetime.datetime(2011,8,9,12,40,29)
+    In [6]: EventType = 'FL'
+    In [7]: result = client.query(hek.attrs.Time(tstart,tend),
+                                hek.attrs.EventType(EventType))
 
-The first line imports the datetime module.  The second and third
-lines define the search start and end times.  Line 4 specifies the
-event type, in this 'FL' or flare.  Line 5 goes out to the web,
-contacts the HEK, and queries it for the information you have
-requested.  Event data for ALL flares available in the HEK within the
-time range 2011/08/09 07:23: 56 UT - 2011/08/09 12:40:20 UT will be
-returned, regardless of which feature recognition method used to
-detect the flare.
+The first line in the block of code above ("In [3]:") imports the
+datetime module.  The second and third lines define the search start
+and end times.  The fourth line specifies the event type, in this 'FL'
+or flare.  Line 5 ("In [7]:") goes out to the web, contacts the HEK,
+and queries it for the information you have requested.  Event data for
+ALL flares available in the HEK within the time range 2011/08/09
+07:23: 56 UT - 2011/08/09 12:40:20 UT will be returned, regardless of
+which feature recognition method used to detect the flare.
+
+Let's break down the arguments of client.query.  The first argument:
+
+    hek.attrs.Time(tstart,tend)
+
+sets the start and end times for the query.  The second argument:
+
+    hek.attrs.EventType(EventType)
+
+sets the type of event to look for.  Since we have defined EventType =
+'FL', this sets the query to look for flares.  We could have also set
+the flare event type using the syntax
+
+    hek.attrs.FL
+
+There is more on the attributes of hek.attrs in section 4 of this guide.
+
 
 3. The result
 -------------
@@ -71,7 +91,7 @@ recognition method is called "frm_name". Using list comprehensions
 recognition methods used to find each of the flares in the result
 object, for example:
 
-    In [11]: [result[i]["frm_name"] for i in range(0,len(result)-1)]
+    In [11]: [elem["frm_name"] for elem in result]
     Out[11]: 
     [u'asainz',
      u'asainz',
@@ -132,6 +152,15 @@ If you scroll down to section DATA you will see
     FL = <sunpy.net.hek.attrs.FL object>
     FRM = <sunpy.net.hek.attrs.FRM object>
     etc etc...
+
+The object hek.attrs knows the attributes of the HEK.  You'll see that
+one of the attributes is a flare object
+
+   FL = <sunpy.net.hek.attrs.FL object>
+
+We can replace hek.attrs.EventType('FL') with hek.attrs.FL - they do
+the same thing, setting the query to look for flare events.  Both
+methods of setting the event type are provided as a convenience
 
 Let's look further at the FRM attribute....
 
@@ -224,8 +253,7 @@ arcseconds OR have a peak flux over 1000.0:
                             (hek.attrs.FL.PeakFlux > 1000.0) )
 and as a check
 
-    In [22]: [result[i]["fl_peakflux"] for i in
-                         range(0,len(result)-1)]
+    In [22]: [elem["fl_peakflux"] for elem in result]
     Out[22]: [None,
               None,
               None,
@@ -243,8 +271,7 @@ and as a check
               6275.98,
               923.984]
 
-    In [23]: [result[i]["event_coord1"] for i in
-                         range(0,len(result)-1)]
+    In [23]: [elem["event_coord1"] for elem in result]
     Out[23]: [51,
               51,
               51,
@@ -275,11 +302,9 @@ flux over 1000.0:
                             (hek.attrs.Event.Coord1 > 50) and 
                             (hek.attrs.FL.PeakFlux > 1000.0) )
 
-    In [25]: [result[i]["fl_peakflux"] for i in
-              range(0,len(result)-1)] 
+    In [25]: [elem["fl_peakflux"] for elem in result] 
     Out[25]: [2326.86, 1698.83, 2360.49, 3242.64, 1375.93, 6275.98]
-    In [26]: [result[i]["event_coord1"] for i in 
-              range(0,len(result)-1)]
+    In [26]: [elem["event_coord1"] for elem in result]
     Out[26]: [883.2, 883.2, 883.2, 883.2, 883.2, 883.2]
 
 In this case none of the peak fluxes are returned with the value
