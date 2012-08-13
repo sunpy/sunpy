@@ -48,6 +48,17 @@ def min_delt(arr):
     return deltas[deltas != 0].min()
 
 
+def list_formatter(lst, fun=None):
+    def _fun(x, pos):
+        try:
+            elem = lst[x]
+        except IndexError:
+            return None
+        if fun is None:
+            return elem
+        return fun(elem)
+    return _fun
+
 class _AttrGetter(object):
     def __init__(self, arr, delt=None):
         self.arr = arr
@@ -200,16 +211,6 @@ class Spectrogram(np.ndarray):
         except IndexError:
             return None
 
-    def freq_formatter(self, x, pos):
-        """ This returns the label for the tick of value x at
-        a specified pos on the frequency axis. """
-        # Callback, cannot avoid unused arguments.
-        # pylint: disable=W0613
-        try:
-            return self.format_freq(self.freq_axis[x])
-        except IndexError:
-            return None 
-
     def __array_finalize__(self, obj):
         if self is obj:
             return
@@ -266,8 +267,12 @@ class Spectrogram(np.ndarray):
         # pylint: disable=W0102,R0914
         if linear:
             data = _AttrGetter(self)
+            freqs = np.arange(
+                self.freq_axis[0], self.freq_axis[-1], -data.delt
+            )
         else:
             data = np.array(self.clip(min_, max_))
+            freqs = self.freq_axis
         newfigure = figure is None
         if figure is None:
             figure = plt.figure(frameon=True)
@@ -291,7 +296,7 @@ class Spectrogram(np.ndarray):
 
         ya.set_major_locator(MaxNLocator(integer=True, steps=[1, 5, 10]))
         ya.set_major_formatter(
-            FuncFormatter(self.freq_formatter)
+            FuncFormatter(list_formatter(freqs, self.format_freq))
         )
         
         axes.set_xlabel(self.t_label)
