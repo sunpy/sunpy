@@ -78,7 +78,7 @@ MOCK_MODULES = [
 for mod_name in MOCK_MODULES:
     sys.modules[mod_name] = Mock(pi=math.pi, G=6.67364e-11)
 
-sys.modules['numpy'] = Mock(pi=math.pi, G=6.67364e-11)
+sys.modules['numpy'] = Mock(pi=math.pi, G=6.67364e-11, ndarray=type('ndarray', (), {}))
 sys.modules['scipy.constants'] = Mock(pi=math.pi, G=6.67364e-11)
 
 
