@@ -14,6 +14,7 @@
 import sys, os, math
 
 class Mock(object):
+    __all__ = []
     def __init__(self, *args, **kwargs):
         for key, value in kwargs.iteritems():
             setattr(self, key, value)
