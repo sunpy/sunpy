@@ -64,7 +64,7 @@ class _AttrGetter(object):
         return 1 + (self.arr.freq_axis[0] - self.arr.freq_axis[-1]) / self.delt
     
     def __getitem__(self, item):
-        freq = self.arr.freq_axis[-1] + item * self.delt
+        freq = self.arr.freq_axis[0] - item * self.delt
         for n, mid in enumerate(self.midpoints):
             if mid <= freq:
                 return self.arr[n, :]
@@ -242,8 +242,8 @@ class Spectrogram(np.ndarray):
             figure = plt.figure(max(nums))
         self.plot(figure, *args, **kwargs).show()
 
-    def plot(self, figure=None, overlays=[], colorbar=True, min_=None, max_=None, 
-        **matplotlib_args):
+    def plot(self, figure=None, overlays=[], colorbar=True, min_=None, max_=None,
+             linear=True, **matplotlib_args):
         """
         Plot spectrogram onto figure.
         
@@ -264,8 +264,10 @@ class Spectrogram(np.ndarray):
         """
         # [] as default argument is okay here because it is only read.
         # pylint: disable=W0102,R0914
-
-        data = np.array(self.clip(min_, max_))
+        if linear:
+            data = _AttrGetter(self)
+        else:
+            data = np.array(self.clip(min_, max_))
         newfigure = figure is None
         if figure is None:
             figure = plt.figure(frameon=True)
