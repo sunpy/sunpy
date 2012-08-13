@@ -35,7 +35,7 @@ class Mock(object):
 MOCK_MODULES = [
     'scipy', 'matplotlib', 'matplotlib.pyplot', 'pyfits',
     'scipy.constants.constants', 'matplotlib.cm',
-    'matplotlib.image']
+    'matplotlib.image', 'matplotlib.colors']
 for mod_name in MOCK_MODULES:
     sys.modules[mod_name] = Mock(pi=math.pi, G=6.67364e-11)
 
