@@ -41,6 +41,37 @@ def get_day(dt):
     return datetime.datetime(dt.year, dt.month, dt.day)
 
 
+def min_delt(arr):
+    deltas = (arr[:-1] - arr[1:])
+    # Multiple values at the same frequency are just thrown away
+    # in the process of linearizaion
+    return deltas[deltas != 0].min()
+
+
+class _AttrGetter(object):
+    def __init__(self, arr, delt=None):
+        self.arr = arr
+        if delt is None:
+            # Nyquist–Shannon sampling theorem
+            delt = min_delt(arr.freq_axis) / 2.
+        
+        self.delt = delt
+        
+        midpoints =(self.arr.freq_axis[:-1] + self.arr.freq_axis[1:]) / 2
+        self.midpoints = np.concatenate([midpoints, arr.freq_axis[-1:]])
+    
+    def __len__(self):
+        return 1 + (self.arr.freq_axis[0] - self.arr.freq_axis[-1]) / self.delt
+    
+    def __getitem__(self, item):
+        freq = self.arr.freq_axis[-1] + item * self.delt
+        for n, mid in enumerate(self.midpoints):
+            if mid <= freq:
+                return self.arr[n, :]
+        raise IndexError
+    
+    
+
 # XXX: Find out why imshow(x) fails!
 class Spectrogram(np.ndarray):
     """ Base class for spectral analysis in SunPy.
@@ -502,10 +533,8 @@ class Spectrogram(np.ndarray):
             Defaults to half of smallest delta in current frequency axis.
         """
         if delta_freq is None:
-            delta_freq = (self.freq_axis[:-1] - self.freq_axis[1:])
-            # Multiple values at the same frequency are just thrown away
-            # in the process of linearizaion
-            delta_freq = delta_freq[delta_freq != 0].min() / 2.
+            # Nyquist–Shannon sampling theorem
+            delta_freq = min_delt(self.freq_axis) / 2.
         nsize = (self.freq_axis.max() - self.freq_axis.min()) / delta_freq + 1
         new = np.zeros((nsize, self.shape[1]), dtype=self.dtype)
 
