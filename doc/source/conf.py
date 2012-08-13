@@ -31,7 +31,8 @@ class Mock(object):
 
 MOCK_MODULES = [
     'numpy', 'scipy', 'matplotlib', 'matplotlib.pyplot', 'pyfits',
-    'scipy.constants', 'scipy.constants.constants']
+    'scipy.constants', 'scipy.constants.constants', 'matplotlib.cm',
+    'matplotlib.image']
 for mod_name in MOCK_MODULES:
     sys.modules[mod_name] = Mock()
 
