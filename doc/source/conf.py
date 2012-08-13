@@ -11,11 +11,13 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
-import sys, os
+import sys, os, math
 
 class Mock(object):
     def __init__(self, *args, **kwargs):
-        pass
+        for key, value in kwargs.iteritems():
+            setattr(self, key, value)
+	
 
     def __call__(self, *args, **kwargs):
         return Mock()
@@ -29,12 +31,15 @@ class Mock(object):
         else:
             return Mock()
 
+
 MOCK_MODULES = [
-    'numpy', 'scipy', 'matplotlib', 'matplotlib.pyplot', 'pyfits',
+    'scipy', 'matplotlib', 'matplotlib.pyplot', 'pyfits',
     'scipy.constants', 'scipy.constants.constants', 'matplotlib.cm',
     'matplotlib.image']
 for mod_name in MOCK_MODULES:
     sys.modules[mod_name] = Mock()
+
+sys.modules['numpy'] = Mock(pi=math.pi)
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
