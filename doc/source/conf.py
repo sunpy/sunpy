@@ -72,7 +72,7 @@ MOCK_MODULES = [
     'scipy', 'matplotlib', 'matplotlib.pyplot', 'pyfits',
     'scipy.constants.constants', 'matplotlib.cm',
     'matplotlib.image', 'matplotlib.colors', 'sunpy.cm',
-    'pandas']
+    'pandas', 'pandas.io', 'pandas.io.parsers']
 for mod_name in MOCK_MODULES:
     sys.modules[mod_name] = Mock(pi=math.pi, G=6.67364e-11)
 
