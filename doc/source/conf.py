@@ -36,7 +36,7 @@ __neg__ = __pos__ = __abs__ = __invert__ = __call__
             return '/dev/null'
         if name == 'sqrt':
             return math.sqrt
-        elif name[0] == name[0].upper():
+        elif name[0] != '_' and name[0] == name[0].upper():
             return type(name, (), {})
         else:
             return Mock(**vars(self))
@@ -73,7 +73,8 @@ MOCK_MODULES = [
     'scipy', 'matplotlib', 'matplotlib.pyplot', 'pyfits',
     'scipy.constants.constants', 'matplotlib.cm',
     'matplotlib.image', 'matplotlib.colors', 'sunpy.cm',
-    'pandas', 'pandas.io', 'pandas.io.parsers']
+    'pandas', 'pandas.io', 'pandas.io.parsers',
+    'suds', 'matplotlib.ticker']
 for mod_name in MOCK_MODULES:
     sys.modules[mod_name] = Mock(pi=math.pi, G=6.67364e-11)
 
