@@ -22,7 +22,7 @@ class Mock(object):
     def __call__(self, *args, **kwargs):
         return Mock()
 
-    @classmethod
+
     def __getattr__(cls, name):
         if name in ('__file__', '__path__'):
             return '/dev/null'
@@ -37,7 +37,7 @@ MOCK_MODULES = [
     'scipy.constants.constants', 'matplotlib.cm',
     'matplotlib.image']
 for mod_name in MOCK_MODULES:
-    sys.modules[mod_name] = Mock()
+    sys.modules[mod_name] = Mock(pi=math.pi, G=6.67364e-11)
 
 sys.modules['numpy'] = Mock(pi=math.pi)
 sys.modules['scipy.constants'] = Mock(G=6.67364e-11)
