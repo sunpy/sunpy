@@ -34,12 +34,14 @@ class Mock(object):
 
 MOCK_MODULES = [
     'scipy', 'matplotlib', 'matplotlib.pyplot', 'pyfits',
-    'scipy.constants', 'scipy.constants.constants', 'matplotlib.cm',
+    'scipy.constants.constants', 'matplotlib.cm',
     'matplotlib.image']
 for mod_name in MOCK_MODULES:
     sys.modules[mod_name] = Mock()
 
 sys.modules['numpy'] = Mock(pi=math.pi)
+sys.modules['scipy.constants'] = Mock(G=6.67364e-11)
+
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
