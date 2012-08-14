@@ -655,6 +655,8 @@ class LinearTimeSpectrogram(Spectrogram):
         })
         return self.__class__(data, **params)
     
+    JOIN_REPEAT = object()
+    
     @classmethod
     def join_many(cls, specs, mk_arr=None, nonlinear=False,
         maxgap=0, fill=0):
@@ -673,6 +675,8 @@ class LinearTimeSpectrogram(Spectrogram):
             size.
         fill : float or int
             Value to fill missing values (assuming nonlinear=False) with.
+            Can be LinearTimeSpectrogram.JOIN_REPEAT to repeat the values for
+            the time just before the gap.
         mk_array: function
             Function that is called to create the resulting array. Can be set
             to Spectrogram.memap(filename) to create a memory mapped
@@ -749,7 +753,10 @@ class LinearTimeSpectrogram(Spectrogram):
                     # If we want to stay linear, fill up the missing
                     # pixels with placeholder zeros.
                     filler = np.zeros((data.shape[0], diff))
-                    filler[:] = fill
+                    if fill is cls.JOIN_REPEAT:
+                        filler[:, :] = elem[:, -1, np.newaxis]
+                    else:
+                        filler[:] = fill
                     minimum = elem.time_axis[-1]
                     e_time_axis = np.concatenate([
                         elem.time_axis,
