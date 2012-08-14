@@ -25,7 +25,7 @@ GitHub by forking the master repository.All development is then done on that
 fork, using topic branches to isolate work on different features. New 
 contributers can then initiate pull requests to have their code incorporated 
 into the SunPy master repo. Regular contributers can become members of the 
-SunPy team <https://github.com/sunpy>`_ on GitHub and push code directly to 
+`SunPy team <https://github.com/sunpy>`_ on GitHub and push code directly to 
 the master repo.
 
 **Getting Started**
