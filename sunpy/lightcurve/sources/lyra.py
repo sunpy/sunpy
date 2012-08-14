@@ -100,7 +100,8 @@ class LYRALightCurve(LightCurve):
             start_str = hdulist[0].header['date_obs']
         #end_str = hdulist[0].header['date-end']
         
-        start = datetime.datetime.strptime(start_str, '%Y-%m-%dT%H:%M:%S.%f')
+        #start = datetime.datetime.strptime(start_str, '%Y-%m-%dT%H:%M:%S.%f')
+        start = sunpy.time.parse_time(start_str)
         #end = datetime.datetime.strptime(end_str, '%Y-%m-%dT%H:%M:%S.%f')
 
         # First column are times
