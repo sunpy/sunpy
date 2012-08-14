@@ -397,18 +397,21 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
     
     @classmethod
     def from_single_glob(cls, singlepattern):
-        return cls.read(glob.glob(singlepattern)[0])
+        return cls.read(glob.glob(os.path.expanduser(singlepattern))[0])
     
     @classmethod
     def from_files(cls, filenames):
+        filenames = map(os.path.expanduser, filenames)
         return cls.read_many(filenames)
     
     @classmethod
     def from_file(cls, filename):
+        filename = os.path.expanduser(filename)
         return cls.read(filename)
     
     @classmethod
     def from_dir(cls, directory):
+        directory = os.path.expanduser(directory)
         return cls.read_many(
             os.path.join(directory, elem) for elem in os.listdir(directory)
         )
@@ -547,7 +550,7 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
     
 CallistoSpectrogram.create.add(
     CallistoSpectrogram.from_file,
-    lambda filename: os.path.isfile(filename),
+    lambda filename: os.path.isfile(os.path.expanduser(filename)),
     [basestring]
 )
 CallistoSpectrogram.create.add(
@@ -555,14 +558,15 @@ CallistoSpectrogram.create.add(
 # The lambda is necessary because introspection is peformed on the
 # argspec of the function.
     CallistoSpectrogram.from_dir,
-    lambda directory: os.path.isdir(directory),
+    lambda directory: os.path.isdir(os.path.expanduser(directory)),
     [basestring]
 )
 # If it is not a kwarg and only one matches, do not return a list.
 CallistoSpectrogram.create.add(
     CallistoSpectrogram.from_single_glob,
     lambda singlepattern: ('*' in singlepattern and
-                           len(glob.glob(singlepattern)) == 1),
+                           len(glob.glob(
+                               os.path.expanduser(singlepattern))) == 1),
     [basestring]
 )
 # This case only gets executed under the condition that the previous one wasn't.
@@ -570,7 +574,9 @@ CallistoSpectrogram.create.add(
 # explicitely used pattern=, in both cases we want a list.
 CallistoSpectrogram.create.add(
     CallistoSpectrogram.from_glob,
-    lambda pattern: '*' in pattern and glob.glob(pattern),
+    lambda pattern: '*' in pattern and glob.glob(
+        os.path.expanduser(pattern)
+        ),
     [basestring]
 )
 CallistoSpectrogram.create.add(
