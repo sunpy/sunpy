@@ -60,6 +60,16 @@ def list_formatter(lst, fun=None):
     return _fun
 
 class _AttrGetter(object):
+    """ Helper class for frequency channel linearization.
+    
+    Parameters
+    ----------
+    arr : Spectrogram
+        Spectrogram to linearize.
+    delt : float
+        Delta between frequency channels in linearized spectrogram. Defaults to
+        (minimum delta / 2.) because of the Shannon sampling theorem.
+    """
     def __init__(self, arr, delt=None):
         self.arr = arr
         if delt is None:
@@ -262,6 +272,8 @@ class Spectrogram(np.ndarray):
             Clip intensities lower than min_ before drawing.
         max_ : float
             Clip intensities higher than max_ before drawing.
+        linear :  bool
+            If set to true, "stretch" image to make frequency axis linear.
         """
         # [] as default argument is okay here because it is only read.
         # pylint: disable=W0102,R0914
