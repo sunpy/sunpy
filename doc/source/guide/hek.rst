@@ -15,8 +15,8 @@ support from the European Space Agency Summer of Code in Space
 SunPy's HEK module is in sunpy.net.  It can be imported into your
 IPython session as follows:
 
-    In [1]: from sunpy.net import hek
-    In [2]: client = hek.HEKClient()
+    >>> from sunpy.net import hek
+    >>> client = hek.HEKClient()
 
 This creates a client that we will use to interact with the HEK.
 
@@ -29,21 +29,20 @@ are specified as upper case, two letter strings, and are identical to
 the two letter abbreviations found at the HEK website,
 http://www.lmsal.com/hek/VOEvent_Spec.html.
 
-    In [3]: import datetime
-    In [4]: tstart = datetime.datetime(2011,8,9,7,23,56)
-    In [5]: tend = datetime.datetime(2011,8,9,12,40,29)
-    In [6]: event_type = 'FL'
-    In [7]: result = client.query(hek.attrs.Time(tstart,tend),
-                                hek.attrs.EventType(event_type))
+    >>> import datetime
+    >>> tstart = datetime.datetime(2011,8,9,7,23,56)
+    >>> tend = datetime.datetime(2011,8,9,12,40,29)
+    >>> event_type = 'FL'
+    >>> result = client.query(hek.attrs.Time(tstart,tend),hek.attrs.EventType(event_type))
 
-The first line in the block of code above ("In [3]:") imports the
-datetime module.  The second and third lines define the search start
-and end times.  The fourth line specifies the event type, in this 'FL'
-or flare.  Line 5 ("In [7]:") goes out to the web, contacts the HEK,
-and queries it for the information you have requested.  Event data for
-ALL flares available in the HEK within the time range 2011/08/09
-07:23: 56 UT - 2011/08/09 12:40:20 UT will be returned, regardless of
-which feature recognition method used to detect the flare.
+The first line in the block of code above imports the datetime module.
+The second and third lines define the search start and end times.  The
+fourth line specifies the event type, in this 'FL' or flare.  Line 5
+goes out to the web, contacts the HEK, and queries it for the
+information you have requested.  Event data for ALL flares available
+in the HEK within the time range 2011/08/09 07:23: 56 UT - 2011/08/09
+12:40:20 UT will be returned, regardless of which feature recognition
+method used to detect the flare.
 
 Let's break down the arguments of client.query.  The first argument:
 
@@ -68,8 +67,8 @@ guide.
 
 So, how many flare detections did the query turn up?
 
-    In [8]: len(result)
-    Out[8]: 19
+    >>> len(result)
+    19
 
 The object returned by the above query is a list of Python dictionary
 objects.  Each dictionary consists of key-value pairs that exactly
@@ -77,8 +76,7 @@ correspond to the parameters listed at
 http://www.lmsal.com/hek/VOEvent_Spec.html. You can inspect all the
 dictionary keys very simply:
 
-    In [10]: result[0].keys()
-    Out[10]:
+    >>> result[0].keys()
     [u'skel_startc1',
      u'concept',
      u'frm_versionnumber',
@@ -93,8 +91,7 @@ recognition method is called "frm_name". Using list comprehensions
 recognition methods used to find each of the flares in the result
 object, for example:
 
-    In [11]: [elem["frm_name"] for elem in result]
-    Out[11]: 
+    >>> [elem["frm_name"] for elem in result] 
     [u'asainz',
      u'asainz',
      u'asainz',
@@ -128,12 +125,9 @@ http://www.lmsal.com/hek/VOEvent_Spec.html, and the HEK client makes
 these parameters searchable.
 
 To explain this, let's have a closer look at hek.attrs. The help
-command is your friend here:
+command is your friend here; scroll down to section DATA you will see:
 
-    In [12]: help(hek.attrs)
-
-If you scroll down to section DATA you will see
-
+    >>> help(hek.attrs)
     AR = <sunpy.net.hek.attrs.AR object>
     Area = <sunpy.net.hek.attrs.Area object>
     Bound = <sunpy.net.hek.attrs.Bound object>
@@ -158,20 +152,16 @@ If you scroll down to section DATA you will see
 The object hek.attrs knows the attributes of the HEK.  You'll see that
 one of the attributes is a flare object
 
-   FL = <sunpy.net.hek.attrs.FL object>
+    FL = <sunpy.net.hek.attrs.FL object>
 
 We can replace hek.attrs.EventType('FL') with hek.attrs.FL - they do
 the same thing, setting the query to look for flare events.  Both
 methods of setting the event type are provided as a convenience
 
-Let's look further at the FRM attribute....
+Let's look further at the FRM attribute:
 
-    In [13]: help(hek.attrs.FRM)
-
-which yields
-
+    >>> help(hek.attrs.FRM)
     Help on FRM in module sunpy.net.hek.attrs object:
-
     class FRM(__builtin__.object)
      |  Data descriptors defined here:
      |  
@@ -206,42 +196,33 @@ Let's say I am only interested in those flares identified by the SSW
 Latest Events tool.  I can retrieve those entries only from the HEK
 with the following command:
 
-    In [14]: result = client.query( hek.attrs.Time(tstart,tend), 
-                            hek.attrs.EventType(event_type),
-                            hek.attrs.FRM.Name == 'SSW Latest Events')
-    In [15]: len(result)
-    Out[15]: 2
+    >>> result = client.query( hek.attrs.Time(tstart,tend), hek.attrs.EventType(event_type), hek.attrs.FRM.Name == 'SSW Latest Events')
+    >>> len(result)
+    2
 
 We can also retrieve all the entries in the time range which were not
 made by SSW Latest Events with the following command:
 
-    In [16]: result = client.query( hek.attrs.Time(tstart,tend), 
-                            hek.attrs.EventType(event_type),
-                            hek.attrs.FRM.Name != 'SSW Latest Events')
-    In [17]: len(result)
-    Out[17]: 17
+    >>> result = client.query( hek.attrs.Time(tstart,tend), hek.attrs.EventType(event_type),hek.attrs.FRM.Name != 'SSW Latest Events')
+    >>> len(result)
+    17
 
 We are using Python's comparison operators to filter the returns from
 the HEK client.  Other comparisons are possible.  For example, let's
 say I want all the flares that have a peak flux of over 4000.0:
 
-    In [18]: result = client.query(hek.attrs.Time(tstart,tend),
-                            hek.attrs.EventType(event_type),
-                            hek.attrs.FL.PeakFlux > 4000.0)
-    In [19]: len(result)
-    Out[19]: 1
+    >>> result = client.query(hek.attrs.Time(tstart,tend), hek.attrs.EventType(event_type), hek.attrs.FL.PeakFlux > 4000.0)
+    >>> len(result)
+    1
 
 Multiple comparisons can be included.  For example, let's say I want
 all the flares with a peak flux above 1000 AND west of 800 arcseconds
 from disk center of the Sun
 
-    In [20]: result = client.query(hek.attrs.Time(tstart,tend),
-                            hek.attrs.EventType(event_type),
-                            hek.attrs.Event.Coord1 > 800,
-                            hek.attrs.FL.PeakFlux > 1000.0)
+    >>> result = client.query(hek.attrs.Time(tstart,tend), hek.attrs.EventType(event_type), hek.attrs.Event.Coord1 > 800, hek.attrs.FL.PeakFlux > 1000.0)
 
-So, comparison operators can be used to filter the results back from
-the HEK.
+Multiple comparison operators can be used to filter the results back
+from the HEK.
 
 The second important feature about the HEK client is that the
 comparisons we've made above can be combined using Python's logical
@@ -249,47 +230,45 @@ operators.  This makes complex queries easy to create.  However, some
 caution is advisable.  Let's say I want all the flares west of 50
 arcseconds OR have a peak flux over 1000.0:
 
-    In [21]: result = client.query(hek.attrs.Time(tstart,tend),
-                            hek.attrs.EventType(event_type),
-                            (hek.attrs.Event.Coord1 > 50) or 
-                            (hek.attrs.FL.PeakFlux > 1000.0) )
+    >>> result = client.query(hek.attrs.Time(tstart,tend), hek.attrs.EventType(event_type), (hek.attrs.Event.Coord1 > 50) or (hek.attrs.FL.PeakFlux > 1000.0) )
+
 and as a check
 
-    In [22]: [elem["fl_peakflux"] for elem in result]
-    Out[22]: [None,
-              None,
-              None,
-              None,
-              None,
-              None,
-              None,
-              2326.86,
-              1698.83,
-              None,
-              None,
-              2360.49,
-              3242.64,
-              1375.93,
-              6275.98,
-              923.984]
+    >>> [elem["fl_peakflux"] for elem in result]
+    [None,
+    None,
+    None,
+    None,
+    None,
+    None,
+    None,
+    2326.86,
+    1698.83,
+    None,
+    None,
+    2360.49,
+    3242.64,
+    1375.93,
+    6275.98,
+    923.984]
 
-    In [23]: [elem["event_coord1"] for elem in result]
-    Out[23]: [51,
-              51,
-              51,
-              924,
-              924,
-              924,
-              69,
-              883.2,
-              883.2,
-              69,
-              69,
-              883.2,
-              883.2,
-              883.2,
-              883.2,
-              883.2]
+    >>> [elem["event_coord1"] for elem in result]
+    [51,
+    51,
+    51,
+    924,
+    924,
+    924,
+    69,
+    883.2,
+    883.2,
+    69,
+    69,
+    883.2,
+    883.2,
+    883.2,
+    883.2,
+    883.2]
 
 Note that some of the fluxes are returned as "None".  This is because
 some feature recognition methods for flares do not report the peak
@@ -299,15 +278,12 @@ flux.  However, because the location of event_coord1 is greater than
 Let's say we want all the flares west of 50 arcseconds AND have a peak
 flux over 1000.0:
 
-    In [24]: result = client.query(hek.attrs.Time(tstart,tend),
-                            hek.attrs.EventType(event_type),
-                            (hek.attrs.Event.Coord1 > 50) and 
-                            (hek.attrs.FL.PeakFlux > 1000.0) )
+    >>> result = client.query(hek.attrs.Time(tstart,tend), hek.attrs.EventType(event_type), (hek.attrs.Event.Coord1 > 50) and (hek.attrs.FL.PeakFlux > 1000.0) )
 
-    In [25]: [elem["fl_peakflux"] for elem in result] 
-    Out[25]: [2326.86, 1698.83, 2360.49, 3242.64, 1375.93, 6275.98]
-    In [26]: [elem["event_coord1"] for elem in result]
-    Out[26]: [883.2, 883.2, 883.2, 883.2, 883.2, 883.2]
+    >>> [elem["fl_peakflux"] for elem in result] 
+    [2326.86, 1698.83, 2360.49, 3242.64, 1375.93, 6275.98]
+    >>> [elem["event_coord1"] for elem in result]
+    [883.2, 883.2, 883.2, 883.2, 883.2, 883.2]
 
 In this case none of the peak fluxes are returned with the value
 "None".  Since we are using an "and" logical operator we need a result
