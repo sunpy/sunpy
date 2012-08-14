@@ -78,15 +78,15 @@ def _find_config_files():
     
     # find default configuration file
     module_dir = os.path.dirname(sunpy.__file__)
-    config_files.append(module_dir + '/data/sunpyrc')
+    config_files.append(os.path.join(module_dir, 'data', 'sunpyrc'))
 
     # if a user configuration file exists, add that to list of files to read
     # so that any values set there will overide ones specified in the default
     # config file
     config_path = _get_user_configdir()
     
-    if os.path.exists(config_path + '/' + config_filename):
-        config_files.append(config_path + '/' + config_filename)
+    if os.path.exists(os.path.join(config_path, config_filename)):
+        config_files.append(os.path.join(config_path, config_filename))
         
     return config_files
 

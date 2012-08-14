@@ -280,8 +280,8 @@ def run_tests(timer, scale_factor):
 #        print('\t\t\t\tSkipped read/write test')
 
     # Remove the data file
-    if (not nofileio):
-        os.remove('/tmp/test.dat')
+    #if (not nofileio):
+    #    os.remove('/tmp/test.dat')
         
 if __name__ == '__main__':
     sys.exit(main())
