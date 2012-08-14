@@ -200,7 +200,7 @@ class Spectrogram(np.ndarray):
     @staticmethod
     def format_freq(freq):
         """ Override to configure default plotting """
-        return "%.2f" % freq
+        return "%.1f" % freq
 
     def show(self, *args, **kwargs):
         """ Draw spectrogram on figure with highest index or new one if
@@ -269,6 +269,8 @@ class Spectrogram(np.ndarray):
             tl.set_fontsize(10)
             tl.set_rotation(30)
         figure.add_axes(axes)
+        figure.subplots_adjust(bottom=0.2)
+        figure.subplots_adjust(left=0.2)
         if colorbar:
             if newfigure:
                 figure.colorbar(im).set_label("Intensity")
@@ -280,6 +282,7 @@ class Spectrogram(np.ndarray):
             
         for ax in figure.axes:
             ax.autoscale()
+        
         return figure
 
     def __getitem__(self, key):
