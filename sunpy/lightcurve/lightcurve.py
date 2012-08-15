@@ -60,9 +60,7 @@ class LightCurve(object):
     _cond_dispatch = ConditionalDispatch()
     create = classmethod(_cond_dispatch.wrapper())
     
-    def __init__(self, data, header=None):
-        print data
-        
+    def __init__(self, data, header=None):     
         self.data = data
         self.header = header
     
