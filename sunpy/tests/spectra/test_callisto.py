@@ -47,15 +47,15 @@ def test_query():
         "BIR_20110922_050000_01.fit.gz",
         "BIR_20110922_051500_01.fit.gz",
         "BIR_20110922_053000_01.fit.gz",
-        "BIR_20110922_060000_01.fit.gz",
         "BIR_20110922_050000_03.fit.gz",
         "BIR_20110922_051500_03.fit.gz",
         "BIR_20110922_053000_03.fit.gz",
         "BIR_20110922_054500_03.fit.gz",
-        "BIR_20110922_060000_03.fit.gz"
     ]
-
+    
     RESULTS.sort()
+    # Should be sorted anyway, but better to assume as little as possible.
+    result.sort()
 
     assert result == [URL + res for res in RESULTS]
 
@@ -70,10 +70,11 @@ def test_query_number():
         "BIR_20110922_050000_01.fit.gz",
         "BIR_20110922_051500_01.fit.gz",
         "BIR_20110922_053000_01.fit.gz",
-        "BIR_20110922_060000_01.fit.gz",
     ]
 
     RESULTS.sort()
+    # Should be sorted anyway, but better to assume as little as possible.
+    result.sort()
 
     assert result == [URL + res for res in RESULTS]
 
@@ -88,7 +89,6 @@ def test_download():
             "BIR_20110922_050000_01.fit.gz",
             "BIR_20110922_051500_01.fit.gz",
             "BIR_20110922_053000_01.fit.gz",
-            "BIR_20110922_060000_01.fit.gz",
         ]
         download(result, directory)
         assert sorted(os.listdir(directory)) == RESULTS
