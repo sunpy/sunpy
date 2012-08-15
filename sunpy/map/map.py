@@ -21,6 +21,7 @@ from sunpy.io import read_file, read_file_header
 from sunpy.sun import constants
 from sunpy.time import parse_time
 from sunpy.util.util import to_signed
+from sunpy.image.rescale import resample, reshape_image_to_4d_superpixel
 
 """
 TODO
@@ -507,7 +508,6 @@ Dimension:\t [%d, %d]
         ----------
         | http://www.scipy.org/Cookbook/Rebinning (Original source, 2011/11/19)
         """
-        from sunpy.image import resample
 
         # Note: because the underlying ndarray is transposed in sense when
         #   compared to the Map, the ndarray is transposed, resampled, then
@@ -565,7 +565,6 @@ Dimension:\t [%d, %d]
         ----------
         | http://mail.scipy.org/pipermail/numpy-discussion/2010-July/051760.html
         """
-        from sunpy.image.rescale import reshape_image_to_4d_superpixel
 
         # Note: because the underlying ndarray is transposed in sense when
         #   compared to the Map, the ndarray is transposed, resampled, then
