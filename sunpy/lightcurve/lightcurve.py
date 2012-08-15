@@ -61,7 +61,7 @@ class LightCurve(object):
     create = classmethod(_cond_dispatch.wrapper())
     
     def __init__(self, data, header=None):
-        self._filename = "" # XXX
+        print data
         
         self.data = data
         self.header = header
@@ -73,8 +73,7 @@ class LightCurve(object):
         filepath = cls._download(
             url, kwargs, err="Unable to download data for  specified date"
         )
-        header, data = cls._parse_filepath(filepath)
-        return cls(header, data)
+        return cls.from_file(filepath)
     
     @classmethod
     def from_range(cls, from_, to, **kwargs):
@@ -96,7 +95,7 @@ class LightCurve(object):
     def from_file(cls, filename):
         filename = os.path.expanduser(filename)
         
-        header, data = cls._parse_filepath(filename)  
+        header, data = cls._parse_filepath(filename)
         return cls(data, header)
     
     @classmethod

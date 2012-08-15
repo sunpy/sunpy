@@ -29,10 +29,6 @@ class LYRALightCurve(LightCurve):
     ----------
     | http://lasp.colorado.edu/home/eve/data/data-access/
     """
-    def __init__(self, *args, **kwargs):
-        LightCurve.__init__(self, *args, **kwargs)
-
-        
     def show(self, names=3, **kwargs):
         """Plots the LYRA data
         
