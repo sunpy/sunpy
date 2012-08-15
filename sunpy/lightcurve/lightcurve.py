@@ -78,7 +78,7 @@ class LightCurve(object):
     
     @classmethod
     def from_range(cls, from_, to, **kwargs):
-        url = self._get_url_for_date_range(from_, to)
+        url = cls._get_url_for_date_range(from_, to)
         filepath = self._download(
             url, kwargs, 
             err = "Unable to download data for specified date range"
@@ -87,7 +87,7 @@ class LightCurve(object):
     
     @classmethod
     def from_timerange(cls, timerange, **kwargs):
-        url = self._get_url_for_date_range(timerange)
+        url = cls._get_url_for_date_range(timerange)
         err = "Unable to download data for specified date range"
         filepath = self._download(url, err, kwargs)   
         return cls.from_file(filepath)       
@@ -96,20 +96,20 @@ class LightCurve(object):
     def from_file(cls, filename):
         filename = os.path.expanduser(filename)
         
-        header, data = self._parse_filepath(filepath)  
+        header, data = cls._parse_filepath(filename)  
         return cls(header, data)
     
     @classmethod
     def from_url(cls, url, **kwargs):
         try:
-            filepath = self._download(url, kwargs)
+            filepath = cls._download(url, kwargs)
         except (urllib2.HTTPError, urllib2.URLError, ValueError):
             err = ("Unable to read location. Did you "
                    "specify a valid filepath or URL?")
             raise ValueError(err)
     
     @classmethod
-    def from_data(self, data, index=None, header=None):
+    def from_data(cls, data, index=None, header=None):
         return cls(
             pandas.DataFrame(data, index=index),
             header
@@ -175,13 +175,13 @@ class LightCurve(object):
         raise NotImplementedError(msg % cls.__name__)
     
     @staticmethod
-    def _parse_csv(cls, filepath):
+    def _parse_csv(filepath):
         """Place holder method to parse CSV files."""
         msg = "Generic CSV parsing not yet implemented for LightCurve"
         raise NotImplementedError(msg)
     
     @staticmethod
-    def _parse_fits(cls, filepath):
+    def _parse_fits(filepath):
         """Place holder method to parse FITS files."""
         msg = "Generic FITS parsing not yet implemented for LightCurve"
         raise NotImplementedError(msg)
