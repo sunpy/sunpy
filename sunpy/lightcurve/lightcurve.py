@@ -97,7 +97,7 @@ class LightCurve(object):
         filename = os.path.expanduser(filename)
         
         header, data = cls._parse_filepath(filename)  
-        return cls(header, data)
+        return cls(data, data)
     
     @classmethod
     def from_url(cls, url, **kwargs):
@@ -107,6 +107,7 @@ class LightCurve(object):
             err = ("Unable to read location. Did you "
                    "specify a valid filepath or URL?")
             raise ValueError(err)
+        return cls.from_file(filepath)
     
     @classmethod
     def from_data(cls, data, index=None, header=None):
@@ -114,6 +115,10 @@ class LightCurve(object):
             pandas.DataFrame(data, index=index),
             header
         )
+    
+    @classmethod
+    def from_yesterday(cls):
+        return cls.from_url(cls._get_default_uri())
     
     @classmethod
     def from_dataframe(cls, dataframe, header=None):
@@ -278,5 +283,12 @@ LightCurve._cond_dispatch.add(
     run_cls("from_dataframe"),
     lambda cls, dataframe, header=None: True,
     [type, pandas.DataFrame, object],
+    False
+)
+
+LightCurve._cond_dispatch.add(
+    run_cls("from_yesterday"),
+    lambda cls: True,
+    [type],
     False
 )
