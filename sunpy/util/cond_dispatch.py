@@ -113,3 +113,6 @@ class ConditionalDispatch(object):
                 "There are no functions matching your input parameter "
                 "signature."
             )
+    
+    def wrapper(self):
+        return lambda *args, **kwargs: self(*args, **kwargs)
