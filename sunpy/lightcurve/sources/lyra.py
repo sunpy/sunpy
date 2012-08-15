@@ -85,7 +85,7 @@ class LYRALightCurve(LightCurve):
     @classmethod
     def _get_default_uri(cls):
         """Look for and download today's LYRA data"""
-        return cls._get_url_for_date(datetime.utcnow())
+        return cls._get_url_for_date(datetime.datetime.utcnow())
     
     @staticmethod
     def _parse_fits(filepath):
