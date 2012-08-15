@@ -29,6 +29,8 @@ TIME_STR = "%Y%m%d%H%M%S"
 DEFAULT_URL = 'http://soleil.i4ds.ch/solarradio/data/2002-20yy_Callisto/'
 _DAY = datetime.timedelta(days=1)
 
+DATA_SIZE = datetime.timedelta(seconds=15*60)
+
 def findpeaks(a):
     """ Find local maxima in 1D. Use findpeaks(-a) for minima. """
     return np.nonzero((a[1:-1] > a[:-2]) & (a[1:-1] > a[2:]))[0]
@@ -144,14 +146,15 @@ def query(start, end, instruments=None, url=DEFAULT_URL):
                 # If the split fails, the file name does not match out format,
                 # so we skip it and continue to the next iteration of the loop.
                 continue
-            point = datetime.datetime.strptime(date + time, TIME_STR)
+            dstart = datetime.datetime.strptime(date + time, TIME_STR)
             opn.close()
             if (instruments is not None and
                 inst not in instruments and 
                 (inst, int(no)) not in instruments):
                 continue
             
-            if start <= point <= end:
+            dend = dstart + DATA_SIZE
+            if dend > start and dstart < end:
                 yield directory + href
         day += _DAY
 
@@ -428,7 +431,7 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         return cls.read(url)
     
     @classmethod
-    def from_range(cls, instrument, start, end):
+    def from_range(cls, instrument, start, end, **kwargs):
         """ Automatically download data from instrument between start and
         end and join it together.
         
@@ -441,6 +444,12 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         end : parse_time compatible
             end of the measurement
         """
+        kw = {
+            'maxgap': 1,
+            'fill': cls.JOIN_REPEAT,
+        }
+        
+        kw.update(kwargs)
         start = parse_time(start)
         end = parse_time(end)
         urls = query(start, end, [instrument])
@@ -449,7 +458,7 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         for elem in data:
             freq_buckets[tuple(elem.freq_axis)].append(elem)
         return cls.combine_frequencies(
-            [cls.join_many(elem) for elem in freq_buckets.itervalues()]
+            [cls.join_many(elem, **kw) for elem in freq_buckets.itervalues()]
         )
     
     def _overlap(self, other):
