@@ -97,7 +97,7 @@ class LightCurve(object):
         filename = os.path.expanduser(filename)
         
         header, data = cls._parse_filepath(filename)  
-        return cls(data, data)
+        return cls(data, header)
     
     @classmethod
     def from_url(cls, url, **kwargs):
