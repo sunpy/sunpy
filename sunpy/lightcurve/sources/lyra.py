@@ -68,7 +68,8 @@ class LYRALightCurve(LightCurve):
         plt.show()
 
     
-    def _get_url_for_date(self, date):
+    @staticmethod
+    def _get_url_for_date(date):
         """Returns a URL to the LYRA data for the specified date
         """
         dt = sunpy.time.parse_time(date or datetime.datetime.utcnow())
@@ -80,12 +81,14 @@ class LYRALightCurve(LightCurve):
         base_url = "http://proba2.oma.be/lyra/data/bsd/"
         url_path = urlparse.urljoin(dt.strftime('%Y/%m/%d/'), filename)
         return urlparse.urljoin(base_url, url_path)
-        
-    def _get_default_uri(self):
-        """Look for and download today's LYRA data"""
-        return _get_url_for_date(self,datetime.utcnow())
     
-    def _parse_fits(self,filepath):
+    @classmethod
+    def _get_default_uri(cls):
+        """Look for and download today's LYRA data"""
+        return cls._get_url_for_date(datetime.utcnow())
+    
+    @staticmethod
+    def _parse_fits(filepath):
         """Loads LYRA data from a FITS file"""
         # Open file with PyFITS
         hdulist = pyfits.open(filepath)
@@ -115,4 +118,3 @@ class LYRALightCurve(LightCurve):
             
         # Return the header and the data
         return hdulist[0].header, pandas.DataFrame(table, index=times)
-        

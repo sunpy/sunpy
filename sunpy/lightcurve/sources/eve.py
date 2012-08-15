@@ -45,11 +45,13 @@ class EVELightCurve(LightCurve):
         self.data.plot(**kwargs)
         plt.show()
         
-    def _get_default_uri(self):
+    @staticmethod
+    def _get_default_uri():
         """Load latest level 0CS if no other data is specified"""
         return "http://lasp.colorado.edu/eve/data_access/quicklook/quicklook_data/L0CS/LATEST_EVE_L0CS_DIODES_1m.txt"
     
-    def _get_url_for_date(self, date):
+    @staticmethod
+    def _get_url_for_date(date):
         """Returns a URL to the EVE data for the specified date
         
             @NOTE: currently only supports downloading level 0 data
@@ -57,7 +59,8 @@ class EVELightCurve(LightCurve):
         base_url = 'http://lasp.colorado.edu/eve/data/quicklook/L0CS/SpWx/'
         return base_url + date.strftime('%Y/%Y%m%d') + '_EVE_L0CS_DIODES_1m.txt'
     
-    def _parse_csv(self, filepath):
+    @classmethod
+    def _parse_csv(cls, filepath):
         """Parses an EVE CSV file"""
         fp = open(filepath, 'rb')
         
@@ -66,15 +69,17 @@ class EVELightCurve(LightCurve):
         fp.seek(0)
 
         if line1.startswith("Date"):
-            return self._parse_average_csv(fp)
+            return cls._parse_average_csv(fp)
         elif line1.startswith(";"):
-            return self._parse_level_0cs(fp)
+            return cls._parse_level_0cs(fp)
     
-    def _parse_average_csv(self, fp):
+    @staticmethod
+    def _parse_average_csv(fp):
         """Parses an EVE Averages file"""
         return "", read_csv(fp, sep=",", index_col=0, parse_dates=True)
     
-    def _parse_level_0cs(self, fp):
+    @staticmethod
+    def _parse_level_0cs(fp):
         """Parses and EVE Level 0CS file"""
         header = ""
         

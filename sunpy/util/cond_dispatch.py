@@ -12,12 +12,19 @@ import inspect
 
 from itertools import izip
 
+
+def run_cls(name):
+    return lambda cls, *args, **kwargs: getattr(cls, name)(*args, **kwargs)
+    
+
+
 def matches_types(fun, types, args, kwargs):
     return all(
         isinstance(obj, cls) for obj, cls in izip(
             arginize(fun, args, kwargs), types
         )
     )
+
 
 def arginize(fun, a, kw):
     """ Turn args and kwargs into args by considering the function
@@ -26,7 +33,11 @@ def arginize(fun, a, kw):
     if varargs is not None or keywords is not None:
         raise ValueError
     names = args[len(a):]
-    return list(a) + [kw[name] for name in names]
+    if defaults:
+        defs = dict(izip(args[-len(defaults):], defaults))
+    else:
+        defs = {}
+    return list(a) + [kw.get(name, defs[name]) for name in names]
 
 
 def correct_argspec(fun):
@@ -55,7 +66,7 @@ def matches_signature(fun, a, kw):
     # If there are any arguments that weren't passed but do not have
     # defaults, the signature does not match.
     defs = set() if defaults is None else set(defaults)
-    if rest > defs:
+    if keywords is None and rest > defs:
         return False
     return True
 
@@ -71,7 +82,7 @@ class ConditionalDispatch(object):
             return fun
         return _dec
     
-    def add(self, fun, condition=None, types=None):
+    def add(self, fun, condition=None, types=None, check=True):
         """ Add fun to ConditionalDispatch under the condition that the
         arguments must match. If condition is left out, the function is 
         executed for every input that matches the signature. Functions are
@@ -84,7 +95,7 @@ class ConditionalDispatch(object):
         needs to be left out in condition). """
         if condition is None:
             self.nones.append((fun, types))
-        elif correct_argspec(fun) != correct_argspec(condition):
+        elif check and correct_argspec(fun) != correct_argspec(condition):
             raise ValueError(
                 "Signature of condition must match signature of fun."
             )
@@ -94,14 +105,14 @@ class ConditionalDispatch(object):
     def __call__(self, *args, **kwargs):
         matched = False
         for fun, condition, types in self.funcs:
-            if (matches_signature(fun, args, kwargs) and
-                (types is None or matches_types(fun, types, args, kwargs))):
+            if (matches_signature(condition, args, kwargs) and
+                (types is None or matches_types(condition, types, args, kwargs))):
                 matched = True
                 if condition(*args, **kwargs):
                     return fun(*args, **kwargs)
         for fun, types in self.nones:
-            if (matches_signature(fun, args, kwargs) and
-                (types is None or matches_types(fun, types, args, kwargs))):
+            if (matches_signature(condition, args, kwargs) and
+                (types is None or matches_types(condition, types, args, kwargs))):
                 return fun(*args, **kwargs)
         
         if matched:
