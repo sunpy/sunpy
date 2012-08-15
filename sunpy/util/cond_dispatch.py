@@ -30,14 +30,14 @@ def arginize(fun, a, kw):
     """ Turn args and kwargs into args by considering the function
     signature. """
     args, varargs, keywords, defaults = correct_argspec(fun)
-    if varargs is not None or keywords is not None:
+    if varargs is not None:
         raise ValueError
     names = args[len(a):]
     if defaults:
         defs = dict(izip(args[-len(defaults):], defaults))
     else:
         defs = {}
-    return list(a) + [kw.get(name, defs[name]) for name in names]
+    return list(a) + [kw.get(name, defs.get(name, None)) for name in names]
 
 
 def correct_argspec(fun):
@@ -111,8 +111,8 @@ class ConditionalDispatch(object):
                 if condition(*args, **kwargs):
                     return fun(*args, **kwargs)
         for fun, types in self.nones:
-            if (matches_signature(condition, args, kwargs) and
-                (types is None or matches_types(condition, types, args, kwargs))):
+            if (matches_signature(fun, args, kwargs) and
+                (types is None or matches_types(fun, types, args, kwargs))):
                 return fun(*args, **kwargs)
         
         if matched:
