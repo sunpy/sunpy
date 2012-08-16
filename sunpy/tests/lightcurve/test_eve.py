@@ -17,5 +17,4 @@ class TestEve:
         
     def test_csv_parsing(self):
         """Check support for parsing EVE CSV files"""
-        sunpy.lightcurve.EVELightCurve(EVE_AVERAGES_CSV)
-        
+        sunpy.lightcurve.EVELightCurve.create(EVE_AVERAGES_CSV)
