@@ -14,7 +14,7 @@ Requirements
 * `PyFITS <http://www.stsci.edu/resources/software_hardware/pyfits>`_
 * `Suds <https://fedorahosted.org/suds/>`__
 * `pandas <http://pandas.pydata.org/>`_
-* `beautifulsoup4 <http://www.crummy.com/software/BeautifulSoup/`_
+* `beautifulsoup4 <http://www.crummy.com/software/BeautifulSoup/>`_
 
 Optional Dependencies
 =====================
