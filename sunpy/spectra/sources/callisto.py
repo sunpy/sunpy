@@ -333,15 +333,19 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
             freq_axis = \
                 np.linspace(0, data.shape[0] - 1) * f_delt + f_init # pylint: disable=E1101
 
-        content = header["CONTENT"].split(" ", 1)[1]
-        content = start.strftime("%d %b %Y")+ ' ' + content
-        return cls(data, time_axis, freq_axis, start, end, t_init, t_delt,
-            t_label, f_label, content, header, axes.header, swapped)
+        content = header["CONTENT"]
+        instruments = set([header["INSTRUME"]])
+        
+        return cls(
+            data, time_axis, freq_axis, start, end, t_init, t_delt,
+            t_label, f_label, content, instruments, 
+            header, axes.header, swapped
+        )
 
         
     def __init__(self, data, time_axis, freq_axis, start, end,
-            t_init, t_delt, t_label, f_label, content, header, axes_header,
-            swapped):
+            t_init, t_delt, t_label, f_label, content, instruments, 
+            header, axes_header, swapped):
         # Because of how object creation works, there is no avoiding
         # unused arguments in this case.
         # pylint: disable=W0613
@@ -349,7 +353,7 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         super(CallistoSpectrogram, self).__init__(
             data, time_axis, freq_axis, start, end,
             t_init, t_delt, t_label, f_label,
-            content
+            content, instruments
         )
 
         self.header = header
