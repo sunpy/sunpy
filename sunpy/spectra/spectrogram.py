@@ -562,16 +562,17 @@ class Spectrogram(np.ndarray):
 
         midpoints = np.round((freqs[:-1] + freqs[1:]) / 2)
         fillto = np.concatenate(
-            [midpoints, np.round([freqs[-1]]) - 1]
+            [midpoints - 1, np.round([freqs[-1]]) - 1]
         )
         fillfrom = np.concatenate(
-            [np.round([freqs[0]]), midpoints]
+            [np.round([freqs[0]]), midpoints - 1]
         )
         
         fillto = np.abs(fillto)
         fillfrom = np.abs(fillfrom)
 
         for row, from_, to_ in izip(self, fillfrom, fillto):
+            print from_, to_
             new[from_: to_] = row
 
         vrs = self.get_params()
