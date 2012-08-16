@@ -15,7 +15,13 @@ import urllib2
 import numpy as np
 import matplotlib.pyplot as plt
 
-class LightCurve:
+from datetime import datetime
+from types import NoneType
+
+from sunpy.time import is_time, TimeRange
+from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
+
+class LightCurve(object):
     """
     LightCurve(filepath)
 
@@ -51,98 +57,80 @@ class LightCurve:
     | http://pandas.pydata.org/pandas-docs/dev/dsintro.html
 
     """
-    def __init__(self, *args, **kwargs):
-        self._filename = ""
-        header = None
-        
-        num_args = len(args) + len(kwargs)
-
-        # If no arguments specified, perform default action
-        if num_args == 0:
-            args = (self._get_default_uri(),)
-
-        # Single argument
-        if num_args == 1:
-            # If single string, could be a filepath, URL, date, or TimeRange
-            if sunpy.time.is_time(args[0]):
-                date = sunpy.time.parse_time(args[0])
-                url = self._get_url_for_date(date)
-                filepath = self._download(url, kwargs, 
-                                          err="Unable to download data for \
-                                           specified date")
-            elif isinstance(args[0], basestring):
-                # Filepath
-                if os.path.isfile(os.path.expanduser(args[0])):
-                    filepath = os.path.expanduser(args[0])
-                else:
-                    # Otherwise, assume string input is a URL
-                    try:
-                        filepath = self._download(args[0], kwargs)
-                    except (urllib2.HTTPError, urllib2.URLError, ValueError):
-                        err = ("Unable to read location. Did you "
-                               "specify a valid filepath or URL?")
-                        raise ValueError(err)
-            elif isinstance(args[0], sunpy.time.TimeRange):
-                # TimeRange
-                url = self._get_url_for_date_range(args[0])
-                err = "Unable to download data for specified date range"
-                filepath = self._download(url, err, kwargs)   
-
-            # Parse resulting file
-            header, data = self._parse_filepath(filepath)
-        
-        # Two arguments
-        elif num_args == 2:
-            # Date range
-            if (sunpy.time.is_time(args[0]) and sunpy.time.is_time(args[1])):
-                url = self._get_url_for_date_range(args[0], args[1])
-                filepath = self._download(url, kwargs, 
-                                          err = "Unable to download data for \
-                                          specified date range")
-                header, data = self._parse_filepath(filepath)  
-                
-            # Other light curve creation options (DataFrame, ndarray, etc)
-            elif isinstance(args[0], pandas.DataFrame):
-                data = args[0]
-            elif (isinstance(args[0], list) or 
-                  isinstance(args[0], dict) or 
-                  isinstance(args[0], np.ndarray) or 
-                  isinstance(args[0], pandas.Series)):
-                # DataFrame Index
-                if "index" in kwargs:
-                    index = kwargs["index"]
-                else:
-                    index = None
-                data = pandas.DataFrame(args[0], index=index)
-            else:
-                raise TypeError("Both arguments passed are unrecognized.")
-                
-        # @NOTE: should we also support inputting start and end dates or a
-        # date range?
-
-        if num_args > 2:
-            raise TypeError("Lightcurve takes a maximum of two arguments.")
-
-        # set the data and the header
+    _cond_dispatch = ConditionalDispatch()
+    create = classmethod(_cond_dispatch.wrapper())
+    
+    def __init__(self, data, header=None):     
         self.data = data
+        self.header = header
+    
+    @classmethod
+    def from_time(cls, time, **kwargs):
+        date = sunpy.time.parse_time(time)
+        url = cls._get_url_for_date(date)
+        filepath = cls._download(
+            url, kwargs, err="Unable to download data for  specified date"
+        )
+        return cls.from_file(filepath)
+    
+    @classmethod
+    def from_range(cls, from_, to, **kwargs):
+        url = cls._get_url_for_date_range(from_, to)
+        filepath = self._download(
+            url, kwargs, 
+            err = "Unable to download data for specified date range"
+        )
+        return cls.from_file(filepath)
+    
+    @classmethod
+    def from_timerange(cls, timerange, **kwargs):
+        url = cls._get_url_for_date_range(timerange)
+        err = "Unable to download data for specified date range"
+        filepath = self._download(url, err, kwargs)   
+        return cls.from_file(filepath)       
+    
+    @classmethod
+    def from_file(cls, filename):
+        filename = os.path.expanduser(filename)
         
-        # allow for user to pass in their own header. 
-        # could also do a type check to make sure either a dict or a string
-        # is passed to the header
-        if "header" in kwargs:
-            self.header = kwargs["header"]
-        else:
-            self.header = header
-        
+        header, data = cls._parse_filepath(filename)
+        return cls(data, header)
+    
+    @classmethod
+    def from_url(cls, url, **kwargs):
+        try:
+            filepath = cls._download(url, kwargs)
+        except (urllib2.HTTPError, urllib2.URLError, ValueError):
+            err = ("Unable to read location. Did you "
+                   "specify a valid filepath or URL?")
+            raise ValueError(err)
+        return cls.from_file(filepath)
+    
+    @classmethod
+    def from_data(cls, data, index=None, header=None):
+        return cls(
+            pandas.DataFrame(data, index=index),
+            header
+        )
+    
+    @classmethod
+    def from_yesterday(cls):
+        return cls.from_url(cls._get_default_uri())
+    
+    @classmethod
+    def from_dataframe(cls, dataframe, header=None):
+        return cls(dataframe, header)
+    
     def show(self, **kwargs):
         """Shows a plot of the light curve"""
         self.data.plot(**kwargs)
         plt.show()
-        
-    def _download(self, uri, kwargs, 
+    
+    @staticmethod
+    def _download(uri, kwargs, 
                   err='Unable to download data at specified URL'):
         """Attempts to download data at the specified URI"""
-        self._filename = os.path.basename(uri).split("?")[0]
+        _filename = os.path.basename(uri).split("?")[0]
         
         # user specifies a download directory
         if "directory" in kwargs:
@@ -157,7 +145,7 @@ class LightCurve:
             overwrite = False
         
         # If the file is not already there, download it
-        filepath = os.path.join(download_dir, self._filename)
+        filepath = os.path.join(download_dir, _filename)
 
         if not(os.path.isfile(filepath)) or (overwrite and 
                                              os.path.isfile(filepath)):
@@ -169,39 +157,45 @@ class LightCurve:
             fp.write(response.read())
         
         return filepath
-
-    def _get_default_uri(self):
+    
+    @classmethod
+    def _get_default_uri(cls):
         """Default data to load when none is specified"""
         msg = "No default action set for %s"
-        raise NotImplementedError(msg % self.__class__.__name__)
-        
-    def _get_url_for_date(self, date):
+        raise NotImplementedError(msg % cls.__name__)
+    
+    @classmethod
+    def _get_url_for_date(cls, date):
         """Returns a URL to the data for the specified date"""
         msg = "Date-based downloads not supported for for %s"
-        raise NotImplementedError(msg % self.__class__.__name__)
+        raise NotImplementedError(msg % cls.__name__)
     
-    def _get_url_for_date_range(self, *args, **kwargs):
+    @classmethod
+    def _get_url_for_date_range(cls, *args, **kwargs):
         """Returns a URL to the data for the specified date range"""
         msg = "Date-range based downloads not supported for for %s"
-        raise NotImplementedError(msg % self.__class__.__name__)
+        raise NotImplementedError(msg % cls.__name__)
     
-    def _parse_csv(self, filepath):
+    @staticmethod
+    def _parse_csv(filepath):
         """Place holder method to parse CSV files."""
         msg = "Generic CSV parsing not yet implemented for LightCurve"
         raise NotImplementedError(msg)
     
-    def _parse_fits(self, filepath):
+    @staticmethod
+    def _parse_fits(filepath):
         """Place holder method to parse FITS files."""
         msg = "Generic FITS parsing not yet implemented for LightCurve"
         raise NotImplementedError(msg)
     
-    def _parse_filepath(self, filepath):
+    @classmethod
+    def _parse_filepath(cls, filepath):
         filename, extension = os.path.splitext(filepath)
         
         if extension.lower() in (".csv", ".txt"):
-            return self._parse_csv(filepath)
+            return cls._parse_csv(filepath)
         else:
-            return self._parse_fits(filepath)
+            return cls._parse_fits(filepath)
 
 
     def discrete_boxcar_average(self, seconds=1):
@@ -223,3 +217,75 @@ class LightCurve:
         truncated = self.data.truncate(sunpy.time.parse_time(start),
                                        sunpy.time.parse_time(end))
         return LightCurve(truncated, self.header.copy())
+
+
+# What's happening here is the following: The ConditionalDispatch is just an
+# unbound callable object, that is, it does not know which class it is attached
+# to. What we do against that is return a wrapper and make that a classmethod -
+# thus we get the class as whose member it is called as as the first argument,
+# this is why in the type signature we always have type as the first type.
+
+# We then use run_cls, which just returns a wrapper that interprets the first
+# argument as the class the function should be called of. So,
+# x = run_cls("foo") returns something that turns x(cls, 1) into cls.foo(1).
+# Because this has *args, **kwargs as its signature we need to disable the
+# check of ConditionalDispatch that makes sure the function and the
+# conditional need to have the same signature - but they still do have to.
+
+LightCurve._cond_dispatch.add(
+    run_cls("from_time"),
+    lambda cls, time: sunpy.time.is_time(time),
+    # type is here because the class parameter is a class,
+    # i.e. an instance of type (which is the base meta-class).
+    [type, (basestring, datetime, tuple)],
+    False
+)
+
+LightCurve._cond_dispatch.add(
+    run_cls("from_range"),
+    lambda cls, time, **kwargs: is_time(time),
+    [type, (basestring, datetime, tuple)],
+    False
+)
+
+LightCurve._cond_dispatch.add(
+    run_cls("from_timerange"),
+    lambda cls, timerange, **kwargs: True,
+    [type, TimeRange],
+    False
+)
+
+LightCurve._cond_dispatch.add(
+    run_cls("from_file"),
+    lambda cls, filename: os.path.exists(os.path.expanduser(filename)),
+    [type, basestring],
+    False
+)
+
+LightCurve._cond_dispatch.add(
+    run_cls("from_url"),
+    lambda cls, url, **kwargs: True,
+    [type, basestring],
+    False
+)
+
+LightCurve._cond_dispatch.add(
+    run_cls("from_data"),
+    lambda cls, data, index=None, header=None: True,
+    [type, (list, dict, np.ndarray, pandas.Series), object, object],
+    False
+)
+
+LightCurve._cond_dispatch.add(
+    run_cls("from_dataframe"),
+    lambda cls, dataframe, header=None: True,
+    [type, pandas.DataFrame, object],
+    False
+)
+
+LightCurve._cond_dispatch.add(
+    run_cls("from_yesterday"),
+    lambda cls: True,
+    [type],
+    False
+)
