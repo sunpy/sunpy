@@ -9,11 +9,17 @@ import datetime
 import urllib2
 
 import numpy as np
+
 import pyfits
 
+from itertools import izip
+from functools import partial
 from collections import defaultdict
 
 from bs4 import BeautifulSoup
+
+from scipy.optimize import leastsq
+from scipy.ndimage import gaussian_filter1d
 
 from sunpy.time import parse_time
 from sunpy.util.cond_dispatch import ConditionalDispatch
@@ -23,6 +29,17 @@ TIME_STR = "%Y%m%d%H%M%S"
 DEFAULT_URL = 'http://soleil.i4ds.ch/solarradio/data/2002-20yy_Callisto/'
 _DAY = datetime.timedelta(days=1)
 
+DATA_SIZE = datetime.timedelta(seconds=15*60)
+
+def findpeaks(a):
+    """ Find local maxima in 1D. Use findpeaks(-a) for minima. """
+    return np.nonzero((a[1:-1] > a[:-2]) & (a[1:-1] > a[2:]))[0]
+
+
+def delta(s):
+    return s[1:] - s[:-1]
+
+
 def _buffered_write(inp, outp, buffer_size):
     """ Implementation detail. Write from inp to outp in chunks of
     buffer_size. """
@@ -31,6 +48,76 @@ def _buffered_write(inp, outp, buffer_size):
         if not read:
             break
         outp.write(read)
+
+
+def polyfun_at(coeff, p):
+    return np.sum(k * p ** n for n, k in enumerate(reversed(coeff)))
+
+
+def match_histograms(one, other, nbins, inplace=False):
+    if not inplace:
+        one = one.copy()
+    
+    bins = np.linspace(0, max(one.max(), other.max()), nbins)
+    
+    one_hist, edges = np.histogram(one, bins)
+    other_hist, edges = np.histogram(other, bins)
+    
+    # XXX: cum_hist
+    one_cum = np.cumsum(one_hist)
+    other_cum = np.cumsum(other_hist)
+    
+    for prev_bin, bin_, one_n in izip(bins[:-1], bins[1:], one_cum):
+        idx = abs(other_cum - one_n).argmin()
+        one[(prev_bin < one) & (one < bin_)] = bins[idx]
+    return one
+
+
+def minimal_pairs(one, other):
+    """ Find pairs of values in one and other with minimal distance.
+    Assumes one and other are sorted in the same sort sequence.
+    
+    one, other : sequence
+        Sequence of scalars to find pairs from.
+    """
+    lbestdiff = bestdiff = bestj = besti = None
+    for i, freq in enumerate(one):
+        lbestj = bestj
+        
+        bestdiff, bestj = None, None
+        for j, o_freq in enumerate(other[lbestj:]):
+            j = lbestj + j if lbestj else j
+            diff = abs(freq - o_freq)
+            if bestj is not None and diff > bestdiff:
+                break
+            
+            if bestj is None or bestdiff > diff:
+                bestj = j
+                bestdiff = diff
+        
+        if lbestj is not None and lbestj != bestj:
+            yield (besti, lbestj, lbestdiff)
+            besti = i
+            lbestdiff = bestdiff
+        elif lbestdiff is None or bestdiff < lbestdiff:
+            besti = i
+            lbestdiff = bestdiff
+    
+    yield (besti, bestj, lbestdiff)
+
+
+DONT = object()
+def find_next(one, other, pad=DONT):
+    n = 0
+    for elem1 in one:
+        for elem2 in other[n:]:
+            n += 1
+            if elem2 > elem1:
+                yield elem1, elem2
+                break
+        else:
+            if pad is not DONT:
+                yield elem1, pad
 
 
 def query(start, end, instruments=None, url=DEFAULT_URL):
@@ -59,14 +146,15 @@ def query(start, end, instruments=None, url=DEFAULT_URL):
                 # If the split fails, the file name does not match out format,
                 # so we skip it and continue to the next iteration of the loop.
                 continue
-            point = datetime.datetime.strptime(date + time, TIME_STR)
+            dstart = datetime.datetime.strptime(date + time, TIME_STR)
             opn.close()
             if (instruments is not None and
                 inst not in instruments and 
                 (inst, int(no)) not in instruments):
                 continue
             
-            if start <= point <= end:
+            dend = dstart + DATA_SIZE
+            if dend > start and dstart < end:
                 yield directory + href
         day += _DAY
 
@@ -115,6 +203,9 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         flag that specifies whether originally in the file the x-axis was
         frequency
     """
+    # XXX: Determine those from the data.
+    SIGMA_SUM = 75
+    SIGMA_DELTA_SUM = 20
     create = ConditionalDispatch()
     # Contrary to what pylint may think, this is not an old-style class.
     # pylint: disable=E1002,W0142,R0902
@@ -309,18 +400,21 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
     
     @classmethod
     def from_single_glob(cls, singlepattern):
-        return cls.read(glob.glob(singlepattern)[0])
+        return cls.read(glob.glob(os.path.expanduser(singlepattern))[0])
     
     @classmethod
     def from_files(cls, filenames):
+        filenames = map(os.path.expanduser, filenames)
         return cls.read_many(filenames)
     
     @classmethod
     def from_file(cls, filename):
+        filename = os.path.expanduser(filename)
         return cls.read(filename)
     
     @classmethod
     def from_dir(cls, directory):
+        directory = os.path.expanduser(directory)
         return cls.read_many(
             os.path.join(directory, elem) for elem in os.listdir(directory)
         )
@@ -337,7 +431,7 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         return cls.read(url)
     
     @classmethod
-    def from_range(cls, instrument, start, end):
+    def from_range(cls, instrument, start, end, **kwargs):
         """ Automatically download data from instrument between start and
         end and join it together.
         
@@ -350,6 +444,12 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         end : parse_time compatible
             end of the measurement
         """
+        kw = {
+            'maxgap': 1,
+            'fill': cls.JOIN_REPEAT,
+        }
+        
+        kw.update(kwargs)
         start = parse_time(start)
         end = parse_time(end)
         urls = query(start, end, [instrument])
@@ -358,13 +458,108 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         for elem in data:
             freq_buckets[tuple(elem.freq_axis)].append(elem)
         return cls.combine_frequencies(
-            [cls.join_many(elem) for elem in freq_buckets.itervalues()]
+            [cls.join_many(elem, **kw) for elem in freq_buckets.itervalues()]
+        )
+    
+    def _overlap(self, other):
+        one, two = self.intersect_time([self, other])
+        ovl = one.freq_overlap(two)
+        return one.clip_freq(*ovl), two.clip_freq(*ovl)
+    
+    @staticmethod
+    def _to_minimize(a, b):
+        def _fun(p):
+            if p[0] <= 0.2 or abs(p[1]) >= a.max():
+                return float("inf")
+            return a - (p[0] * b + p[1])
+        return _fun
+    
+    def _homogenize_params(self, other, maxdiff=1):
+        pairs_indices = [
+            (x, y) for x, y, d in minimal_pairs(self.freq_axis, other.freq_axis)
+            if d <= maxdiff
+        ]
+        
+        pairs_data = [
+            (self[n_one, :], other[n_two, :]) for n_one, n_two in pairs_indices
+        ]
+        
+        # XXX: Maybe unnecessary.
+        pairs_data_gaussian = [
+            (gaussian_filter1d(a, 15), gaussian_filter1d(b, 15))
+            for a, b in pairs_data
+        ]
+        
+        # If we used integer arithmetic, we would accept more invalid
+        # values.
+        pairs_data_gaussian64 = np.float64(pairs_data_gaussian)
+        least = [
+            leastsq(self._to_minimize(a,b), [1, 0])[0]
+            for a, b in pairs_data_gaussian64
+        ]
+        
+        factors = [x for x, y in least]
+        constants = [y for x, y in least]
+        
+        return pairs_indices, factors, constants
+    
+    def homogenize(self, other, maxdiff=1):
+        """ Return overlapping part of self and other as (self, other) tuple.
+        Homogenize intensities so that the images can be used with
+        combine_frequencies. Note that this works best when most of the 
+        picture is signal, so use :py:meth:`in_interval` to select the subset
+        of your image before applying this method.
+        
+        Parameters
+        ----------
+        other : CallistoSpectrogram
+            Spectrogram to be homogenized with the current one.
+        maxdiff : float
+            Threshold for which frequencies are considered equal.
+        """
+        one, two = self._overlap(other)
+        pairs_indices, factors, constants = one._homogenize_params(
+            two, maxdiff
+        )
+        # XXX: Maybe (xd.freq_axis[x] + yd.freq_axis[y]) / 2.
+        pairs_freqs = [one.freq_axis[x] for x, y in pairs_indices]
+        
+        # XXX: Extrapolation does not work this way.
+        # XXX: Improve.
+        f1 = np.polyfit(pairs_freqs, factors, 3)
+        f2 = np.polyfit(pairs_freqs, constants, 3)
+        
+        return (
+            one,
+            two * polyfun_at(f1, two.freq_axis)[:, np.newaxis] +
+                polyfun_at(f2, two.freq_axis)[:, np.newaxis]
+        )
+    
+    def find_interesting(self):
+        s = np.sum(self, 0)
+        s = gaussian_filter1d(s, self.SIGMA_SUM)
+        
+        s = s - s.min()
+        
+        sd = gaussian_filter1d(delta(np.float64(s)), self.SIGMA_DELTA_SUM)
+        
+        mxs = findpeaks(sd)
+        mns = findpeaks(-sd)
+        
+        	
+        
+        # XXX: End of interesting part is back to noise in s.
+        return max(
+            # Only negative derivatives imply end of interesting
+            # part.
+            find_next(mxs, [mn for mn in mns if sd[mn] < 0]),
+            key=lambda x: sd[x[0]]
         )
 
-
+    
 CallistoSpectrogram.create.add(
     CallistoSpectrogram.from_file,
-    lambda filename: os.path.isfile(filename),
+    lambda filename: os.path.isfile(os.path.expanduser(filename)),
     [basestring]
 )
 CallistoSpectrogram.create.add(
@@ -372,13 +567,15 @@ CallistoSpectrogram.create.add(
 # The lambda is necessary because introspection is peformed on the
 # argspec of the function.
     CallistoSpectrogram.from_dir,
-    lambda directory: os.path.isdir(directory),
+    lambda directory: os.path.isdir(os.path.expanduser(directory)),
     [basestring]
 )
 # If it is not a kwarg and only one matches, do not return a list.
 CallistoSpectrogram.create.add(
     CallistoSpectrogram.from_single_glob,
-    lambda singlepattern: '*' in singlepattern and len(glob.glob(singlepattern)) == 1,
+    lambda singlepattern: ('*' in singlepattern and
+                           len(glob.glob(
+                               os.path.expanduser(singlepattern))) == 1),
     [basestring]
 )
 # This case only gets executed under the condition that the previous one wasn't.
@@ -386,7 +583,9 @@ CallistoSpectrogram.create.add(
 # explicitely used pattern=, in both cases we want a list.
 CallistoSpectrogram.create.add(
     CallistoSpectrogram.from_glob,
-    lambda pattern: '*' in pattern and glob.glob(pattern),
+    lambda pattern: '*' in pattern and glob.glob(
+        os.path.expanduser(pattern)
+        ),
     [basestring]
 )
 CallistoSpectrogram.create.add(
