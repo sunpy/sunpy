@@ -572,7 +572,6 @@ class Spectrogram(np.ndarray):
         fillfrom = np.abs(fillfrom)
 
         for row, from_, to_ in izip(self, fillfrom, fillto):
-            print from_, to_
             new[from_: to_] = row
 
         vrs = self.get_params()
