@@ -204,6 +204,7 @@ def test_homogenize_factor():
         'Test',
         None,
         None,
+        None,
         False
     )
     b = 2 * a
@@ -218,6 +219,7 @@ def test_homogenize_factor():
         'Time',
         'Frequency',
         'Test',
+        None,
         None,
         None,
         False
@@ -248,6 +250,7 @@ def test_homogenize_constant():
         'Test',
         None,
         None,
+        None,
         False
     )
     b = a + 10
@@ -262,6 +265,7 @@ def test_homogenize_constant():
         'Time',
         'Frequency',
         'Test',
+        None,
         None,
         None,
         False
@@ -292,6 +296,7 @@ def test_homogenize_both():
         'Test',
         None,
         None,
+        None,
         False
     )
     b = 2 * a + 1
@@ -306,6 +311,7 @@ def test_homogenize_both():
         'Time',
         'Frequency',
         'Test',
+        None,
         None,
         None,
         False
@@ -336,6 +342,7 @@ def test_homogenize_rightfq():
         'Test',
         None,
         None,
+        None,
         False
     )
     b = 2 * a + 1
@@ -353,6 +360,7 @@ def test_homogenize_rightfq():
         'Time',
         'Frequency',
         'Test',
+        None,
         None,
         None,
         False
