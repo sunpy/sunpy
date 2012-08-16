@@ -49,6 +49,8 @@ def min_delt(arr):
 
 
 def list_formatter(lst, fun=None):
+    """ Return function that takes x, pos and returns fun(lst[x]) if
+    fun is not None, else lst[x] or "" if x is out of range. """
     def _fun(x, pos):
         x = int(x)
         if x >= len(lst) or x < 0:
@@ -62,6 +64,7 @@ def list_formatter(lst, fun=None):
 
 
 def _union(sets):
+    """ Return union of sets. """
     union = set()
     for s in sets:
         union |= s
