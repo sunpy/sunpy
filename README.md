@@ -1,4 +1,3 @@
-
 SunPy
 =====
 
@@ -16,6 +15,7 @@ To begin, install the following requirements:
  * [Matplotlib](http://matplotlib.sourceforge.net/) (1.0+)
  * [Suds](https://fedorahosted.org/suds)
  * [pandas](http://pandas.pydata.org/)
+ * [beautifulsoup4](http://www.crummy.com/software/BeautifulSoup/)
 
 Next, use git to grab the latest version of SunPy:
 

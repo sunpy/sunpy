@@ -39,7 +39,7 @@ def read(filepath):
     fits_comment = hdulist[0].header.get_comment()
     
     # PyFITS 2.x
-    if isinstance(fits_comment[0], basestring):
+    if len(fits_comment) > 0 and isinstance(fits_comment[0], basestring):
         comments = [val for val in fits_comment]       
     else:
         # PyFITS 3.x
