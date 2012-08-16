@@ -319,6 +319,8 @@ class Spectrogram(np.ndarray):
             tl.set_fontsize(10)
             tl.set_rotation(30)
         figure.add_axes(axes)
+        figure.subplots_adjust(bottom=0.2)
+        figure.subplots_adjust(left=0.2)
         if colorbar:
             if newfigure:
                 figure.colorbar(im).set_label("Intensity")
@@ -330,6 +332,7 @@ class Spectrogram(np.ndarray):
             
         for ax in figure.axes:
             ax.autoscale()
+        
         return figure
 
     def __getitem__(self, key):
@@ -376,9 +379,9 @@ class Spectrogram(np.ndarray):
                 right -= 1
 
         return self[left:right, :]
-
-    def auto_const_bg(self):
-        """ Automatically determine background. """
+    
+    
+    def auto_find_background(self, amount=0.05):
         # pylint: disable=E1101,E1103
         data = self.astype(to_signed(self.dtype))
         # Subtract average value from every frequency channel.
@@ -389,11 +392,13 @@ class Spectrogram(np.ndarray):
         sdevs = np.asarray(np.std(tmp, 0))
 
         # Get indices of values with lowest standard deviation.
-        cand = sorted(xrange(self.shape[0]), key=lambda y: sdevs[y])
+        cand = sorted(xrange(self.shape[1]), key=lambda y: sdevs[y])
         # Only consider the best 5 %.
-        realcand = cand[:max(1, int(0.05 * len(cand)))]
-
-        # Average the best 5 %
+        return cand[:max(1, int(amount * len(cand)))]
+    
+    def auto_const_bg(self):
+        """ Automatically determine background. """
+        realcand = self.auto_find_background()
         bg = np.average(self[:, realcand], 1)
         return bg.reshape(self.shape[0], 1)
 
@@ -616,6 +621,9 @@ class Spectrogram(np.ndarray):
                 return n - 1
         # The last element is the searched one.
         return n
+    
+    def at_freq(self, freq):
+        return self[np.nonzero(self.freq_axis == freq)[0], :]
 
 
 class LinearTimeSpectrogram(Spectrogram):
@@ -697,6 +705,8 @@ class LinearTimeSpectrogram(Spectrogram):
         })
         return self.__class__(data, **params)
     
+    JOIN_REPEAT = object()
+    
     @classmethod
     def join_many(cls, specs, mk_arr=None, nonlinear=False,
         maxgap=0, fill=0):
@@ -715,6 +725,8 @@ class LinearTimeSpectrogram(Spectrogram):
             size.
         fill : float or int
             Value to fill missing values (assuming nonlinear=False) with.
+            Can be LinearTimeSpectrogram.JOIN_REPEAT to repeat the values for
+            the time just before the gap.
         mk_array: function
             Function that is called to create the resulting array. Can be set
             to Spectrogram.memap(filename) to create a memory mapped
@@ -791,7 +803,10 @@ class LinearTimeSpectrogram(Spectrogram):
                     # If we want to stay linear, fill up the missing
                     # pixels with placeholder zeros.
                     filler = np.zeros((data.shape[0], diff))
-                    filler[:] = fill
+                    if fill is cls.JOIN_REPEAT:
+                        filler[:, :] = elem[:, -1, np.newaxis]
+                    else:
+                        filler[:] = fill
                     minimum = elem.time_axis[-1]
                     e_time_axis = np.concatenate([
                         elem.time_axis,
