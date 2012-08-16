@@ -37,6 +37,7 @@ def findpeaks(a):
 
 
 def delta(s):
+    """ Return deltas between elements of s. len(delta(s)) == len(s) - 1. """
     return s[1:] - s[:-1]
 
 
@@ -51,26 +52,9 @@ def _buffered_write(inp, outp, buffer_size):
 
 
 def polyfun_at(coeff, p):
+    """ Return value of polynomial with coefficients (highest first) at
+    point (can also be an np.ndarray for more than one point) p. """
     return np.sum(k * p ** n for n, k in enumerate(reversed(coeff)))
-
-
-def match_histograms(one, other, nbins, inplace=False):
-    if not inplace:
-        one = one.copy()
-    
-    bins = np.linspace(0, max(one.max(), other.max()), nbins)
-    
-    one_hist, edges = np.histogram(one, bins)
-    other_hist, edges = np.histogram(other, bins)
-    
-    # XXX: cum_hist
-    one_cum = np.cumsum(one_hist)
-    other_cum = np.cumsum(other_hist)
-    
-    for prev_bin, bin_, one_n in izip(bins[:-1], bins[1:], one_cum):
-        idx = abs(other_cum - one_n).argmin()
-        one[(prev_bin < one) & (one < bin_)] = bins[idx]
-    return one
 
 
 def minimal_pairs(one, other):
@@ -108,6 +92,10 @@ def minimal_pairs(one, other):
 
 DONT = object()
 def find_next(one, other, pad=DONT):
+    """ Given two sorted sequences one and other, for every element
+    in one, return the one larger than it but nearest to it in other.
+    If no such exists and pad is not DONT, return value of pad as "partner".
+    """
     n = 0
     for elem1 in one:
         for elem2 in other[n:]:
@@ -466,12 +454,16 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         )
     
     def _overlap(self, other):
+        """ Find frequency and time overlap of two spectrograms. """
         one, two = self.intersect_time([self, other])
         ovl = one.freq_overlap(two)
         return one.clip_freq(*ovl), two.clip_freq(*ovl)
     
     @staticmethod
     def _to_minimize(a, b):
+        """
+        Function to be minimized for matching to frequency channels.
+        """
         def _fun(p):
             if p[0] <= 0.2 or abs(p[1]) >= a.max():
                 return float("inf")
@@ -479,6 +471,18 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         return _fun
     
     def _homogenize_params(self, other, maxdiff=1):
+        """
+        Return triple with a tuple of indices (in self and other, respectively),
+        factors and constants at these frequencies.
+        
+        Parameters
+        ----------
+        other : CallistoSpectrogram
+            Spectrogram to be homogenized with the current one.
+        maxdiff : float
+            Threshold for which frequencies are considered equal.
+        """
+            
         pairs_indices = [
             (x, y) for x, y, d in minimal_pairs(self.freq_axis, other.freq_axis)
             if d <= maxdiff
