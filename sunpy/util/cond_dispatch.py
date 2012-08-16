@@ -152,21 +152,7 @@ class ConditionalDispatch(object):
         return _dec
     
     def add(self, fun, condition=None, types=None, check=True):
-        """ Add fun to Conditi>>> fun = ConditionalDispatch()
->>> fun.add(lambda x: 3 * x, lambda x: x % 2 == 0, [int])
->>> fun.add(lambda x: 2 * x, lambda x: x % 2 == 1, [int])
->>> fun(2)
-6
->>> fun(3)
-6
->>> fun(3.2)
-Traceback (most recent call last):
-  File "<stdin>", line 1, in <module>
-  File "/home/florian/Projects/sunpy/sunpy/util/cond_dispatch.py", line 128, in __call__
-    "There are no functions matching your input parameter "
-TypeError: There are no functions matching your input parameter signature.
->>> 
-onalDispatch under the condition that the
+        """ Add fun to ConditionalDispatch under the condition that the
         arguments must match. If condition is left out, the function is 
         executed for every input that matches the signature. Functions are
         considered in the order they are added, but ones with condition=None
