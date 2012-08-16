@@ -278,7 +278,7 @@ class Spectrogram(np.ndarray):
         # [] as default argument is okay here because it is only read.
         # pylint: disable=W0102,R0914
         if linear:
-            data = _AttrGetter(self)
+            data = _AttrGetter(self.clip(min_, max_))
             freqs = np.arange(
                 self.freq_axis[0], self.freq_axis[-1], -data.delt
             )
