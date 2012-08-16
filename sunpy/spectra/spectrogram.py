@@ -242,7 +242,7 @@ class Spectrogram(np.ndarray):
     @staticmethod
     def format_freq(freq):
         """ Override to configure default plotting """
-        return "%.2f" % freq
+        return "%.1f" % freq
 
     def show(self, *args, **kwargs):
         """ Draw spectrogram on figure with highest index or new one if
@@ -557,19 +557,22 @@ class Spectrogram(np.ndarray):
         nsize = (self.freq_axis.max() - self.freq_axis.min()) / delta_freq + 1
         new = np.zeros((nsize, self.shape[1]), dtype=self.dtype)
 
-        freqs = self.freq_axis - self.freq_axis.min()
+        freqs = self.freq_axis - self.freq_axis.max()
         freqs = freqs / delta_freq
 
         midpoints = np.round((freqs[:-1] + freqs[1:]) / 2)
         fillto = np.concatenate(
-            [midpoints, np.round([freqs[-1]])]
+            [midpoints, np.round([freqs[-1]]) - 1]
         )
         fillfrom = np.concatenate(
-            [np.round([freqs[0] + 1]), midpoints]
+            [np.round([freqs[0]]), midpoints]
         )
+        
+        fillto = np.abs(fillto)
+        fillfrom = np.abs(fillfrom)
 
         for row, from_, to_ in izip(self, fillfrom, fillto):
-            new[to_:from_] = row
+            new[from_: to_] = row
 
         vrs = self.get_params()
         vrs.update({
