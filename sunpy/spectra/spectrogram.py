@@ -59,6 +59,14 @@ def list_formatter(lst, fun=None):
         return fun(elem)
     return _fun
 
+
+def _union(sets):
+    union = set()
+    for s in sets:
+        union |= s
+    return union
+
+
 class _AttrGetter(object):
     """ Helper class for frequency channel linearization.
     
@@ -129,6 +137,7 @@ class Spectrogram(np.ndarray):
     COPY_PROPERTIES = [
         ('time_axis', COPY),
         ('freq_axis', COPY),
+        ('instruments', COPY),
         ('start', REFERENCE),
         ('end', REFERENCE),
         ('t_label', REFERENCE),
@@ -188,12 +197,15 @@ class Spectrogram(np.ndarray):
         return np.asarray(data).view(cls)
 
     def __init__(self, data, time_axis, freq_axis, start, end, t_init=None,
-        t_label="Time", f_label="Frequency", content=""):
+        t_label="Time", f_label="Frequency", content="", instruments=None):
         # Because of how object creation works, there is no avoiding
         # unused arguments in this case.
         if t_init is None:
             diff = start - get_day(start)
             t_init = diff.seconds
+        if instruments is None:
+            instruments = set()
+        
         self.start = start
         self.end = end
 
@@ -206,6 +218,7 @@ class Spectrogram(np.ndarray):
         self.freq_axis = freq_axis
 
         self.content = content
+        self.instruments = instruments
 
     def time_formatter(self, x, pos):
         """ This returns the label for the tick of value x at
@@ -313,7 +326,15 @@ class Spectrogram(np.ndarray):
         
         axes.set_xlabel(self.t_label)
         axes.set_ylabel(self.f_label)
-        figure.suptitle(self.content)
+        # figure.suptitle(self.content)
+        
+        figure.suptitle(
+            ' '.join([
+                get_day(self.start).strftime("%d %b %Y"),
+                'Radio flux density',
+                '(' + ', '.join(self.instruments) + ')',
+            ])
+        )
         
         for tl in xa.get_ticklabels():
             tl.set_fontsize(10)
@@ -640,11 +661,14 @@ class LinearTimeSpectrogram(Spectrogram):
     ]
      
     def __init__(self, data, time_axis, freq_axis, start, end,
-        t_init, t_delt, t_label="Time", f_label="Frequency",
-        content=""):
+        t_init=None, t_delt=None, t_label="Time", f_label="Frequency",
+        content="", instruments=None):
+        if t_delt is None:
+            t_delt = min_delt(freq_axis)
+        
         super(LinearTimeSpectrogram, self).__init__(
             data, time_axis, freq_axis, start, end, t_init, t_label, f_label,
-            content
+            content, instruments
         )
         self.t_delt = t_delt
 
@@ -837,6 +861,7 @@ class LinearTimeSpectrogram(Spectrogram):
             't_label': data.t_label,
             'f_label': data.f_label,
             'content': data.content,
+            'instruments': _union(spec.instruments for spec in specs),
         }
         if mask is not None:
             arr = ma.array(arr, mask=mask)
@@ -925,6 +950,7 @@ class LinearTimeSpectrogram(Spectrogram):
             't_label': one.t_label,
             'f_label': one.f_label,
             'content': one.content,
+            'instruments': _union(spec.instruments for spec in specs)
         }
         return LinearTimeSpectrogram(new, **params)
 
