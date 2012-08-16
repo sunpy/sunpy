@@ -50,10 +50,11 @@ def min_delt(arr):
 
 def list_formatter(lst, fun=None):
     def _fun(x, pos):
-        try:
-            elem = lst[x]
-        except IndexError:
-            return None
+        x = int(x)
+        if x >= len(lst) or x < 0:
+            return ""
+        
+        elem = lst[x]
         if fun is None:
             return elem
         return fun(elem)
@@ -225,14 +226,14 @@ class Spectrogram(np.ndarray):
         a specified pos on the time axis. """
         # Callback, cannot avoid unused arguments.
         # pylint: disable=W0613
-        try:
-            return self.format_time(
-                self.start + datetime.timedelta(
-                    seconds=self.time_axis[int(x)]
-                )
+        x = int(x)
+        if x >= len(self.time_axis) or x < 0:
+            return ""
+        return self.format_time(
+            self.start + datetime.timedelta(
+                seconds=self.time_axis[x]
             )
-        except IndexError:
-            return None
+        )
 
     def __array_finalize__(self, obj):
         if self is obj:
@@ -260,11 +261,7 @@ class Spectrogram(np.ndarray):
     def show(self, *args, **kwargs):
         """ Draw spectrogram on figure with highest index or new one if
         none exists. For parameters see :py:meth:`plot`. """
-        nums = plt.get_fignums()
-        figure = None
-        if nums:
-            figure = plt.figure(max(nums))
-        self.plot(figure, *args, **kwargs).show()
+        self.plot(*args, **kwargs).show()
 
     def plot(self, figure=None, overlays=[], colorbar=True, min_=None, max_=None,
              linear=True, **matplotlib_args):
