@@ -18,7 +18,7 @@ from numpy import ma
 from scipy import ndimage
 
 from matplotlib import pyplot as plt
-from matplotlib.ticker import FuncFormatter, MaxNLocator
+from matplotlib.ticker import FuncFormatter, MaxNLocator, IndexLocator
 from matplotlib.colorbar import Colorbar
 
 from sunpy.time import parse_time
@@ -325,7 +325,27 @@ class Spectrogram(np.ndarray):
         )
         
         freq_fmt = list_formatter(freqs, self.format_freq)
-        ya.set_major_locator(MaxNLocator(integer=True, steps=[1, 5, 10]))
+        
+        if linear:
+            init = (self.freq_axis[0] % 5) / data.delt
+            nticks = 15.
+            dist = (self.freq_axis[0] - self.freq_axis[-1]) / nticks
+            dist = max(1, (dist // 10)) * 10
+            
+            ya.set_major_locator(
+                IndexLocator(
+                    dist / data.delt, init
+                )
+            )
+            ya.set_minor_locator(
+                IndexLocator(
+                    dist / data.delt / 10, init
+                )
+            )
+            freq_fmt = lambda x, pos: '%0.f' % (self.freq_axis[0] - x * data.delt)
+        else:
+            ya.set_major_locator(MaxNLocator(integer=True, steps=[1, 5, 10]))
+        
         ya.set_major_formatter(
             FuncFormatter(freq_fmt)
         )
