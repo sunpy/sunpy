@@ -660,12 +660,9 @@ class Spectrogram(np.ndarray):
             x = int(x)
             y = int(y)
             
-            print x, y, spec.shape
-            
             shape = map(int, spec.shape)
             
             if 0 <= x < shape[1] and 0 <= y < shape[0]:
-                print "bla"
                 pixel = spec[y][x]
             else:
                 pixel = ""
