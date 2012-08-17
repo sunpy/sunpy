@@ -544,7 +544,7 @@ class Spectrogram(np.ndarray):
         return (ldiff * value + diff * lvalue) / (diff + ldiff) # pylint: disable=W0631
 
     @staticmethod
-    def _merge(items, key=lambda x: x):
+    def _merge(items, key=(lambda x: x)):
         """ Implementation detail. """
         state = {}
         for item in map(iter, items):
