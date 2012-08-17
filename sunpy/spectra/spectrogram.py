@@ -288,7 +288,10 @@ class Spectrogram(np.ndarray):
         max_ : float
             Clip intensities higher than max_ before drawing.
         linear :  bool
-            If set to true, "stretch" image to make frequency axis linear.
+            If set to True, "stretch" image to make frequency axis linear.
+        showz : bool
+            If set to True, the value of the pixel that is hovered with the
+            mouse is shown in the bottom right corner.
         """
         # [] as default argument is okay here because it is only read.
         # pylint: disable=W0102,R0914
