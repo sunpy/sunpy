@@ -92,6 +92,8 @@ class _AttrGetter(object):
         
         midpoints =(self.arr.freq_axis[:-1] + self.arr.freq_axis[1:]) / 2
         self.midpoints = np.concatenate([midpoints, arr.freq_axis[-1:]])
+        
+        self.shape = (len(self), arr.shape[1])
     
     def __len__(self):
         return 1 + (self.arr.freq_axis[0] - self.arr.freq_axis[-1]) / self.delt
@@ -267,7 +269,7 @@ class Spectrogram(np.ndarray):
         self.plot(*args, **kwargs).show()
 
     def plot(self, figure=None, overlays=[], colorbar=True, min_=None, max_=None,
-             linear=True, **matplotlib_args):
+             linear=True, showz=True, **matplotlib_args):
         """
         Plot spectrogram onto figure.
         
@@ -318,10 +320,11 @@ class Spectrogram(np.ndarray):
         xa.set_major_formatter(
             FuncFormatter(self.time_formatter)
         )
-
+        
+        freq_fmt = list_formatter(freqs, self.format_freq)
         ya.set_major_locator(MaxNLocator(integer=True, steps=[1, 5, 10]))
         ya.set_major_formatter(
-            FuncFormatter(list_formatter(freqs, self.format_freq))
+            FuncFormatter(freq_fmt)
         )
         
         axes.set_xlabel(self.t_label)
@@ -342,6 +345,11 @@ class Spectrogram(np.ndarray):
         figure.add_axes(axes)
         figure.subplots_adjust(bottom=0.2)
         figure.subplots_adjust(left=0.2)
+        
+        if showz:
+            figure.gca().format_coord = self.mk_format_coord(
+                data, freq_fmt, self.time_formatter)
+        
         if colorbar:
             if newfigure:
                 figure.colorbar(im).set_label("Intensity")
@@ -646,6 +654,28 @@ class Spectrogram(np.ndarray):
     def at_freq(self, freq):
         return self[np.nonzero(self.freq_axis == freq)[0], :]
 
+    @staticmethod
+    def mk_format_coord(spec, freq_fmt, time_fmt):
+        def format_coord(x, y):
+            x = int(x)
+            y = int(y)
+            
+            print x, y, spec.shape
+            
+            shape = map(int, spec.shape)
+            
+            if 0 <= x < shape[1] and 0 <= y < shape[0]:
+                print "bla"
+                pixel = spec[y][x]
+            else:
+                pixel = ""
+            
+            return 'x=%s y=%s z=%s' % (
+                time_fmt(x, 0),
+                freq_fmt(y, 0),
+                pixel
+            )
+        return format_coord
 
 class LinearTimeSpectrogram(Spectrogram):
     """ Spectrogram evenly sampled in time.
@@ -1020,3 +1050,4 @@ class LinearTimeSpectrogram(Spectrogram):
                 )
             end = self.time_to_x(end)
         return self[:, start:end]
+    
