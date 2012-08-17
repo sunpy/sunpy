@@ -121,10 +121,17 @@ class LightCurve(object):
     def from_dataframe(cls, dataframe, header=None):
         return cls(dataframe, header)
     
+    def plot(self, **kwargs):
+        """Plot a plot of the light curve"""
+        axes = self.data.plot(**kwargs)
+        return axes.get_figure()
+    
     def show(self, **kwargs):
         """Shows a plot of the light curve"""
-        self.data.plot(**kwargs)
-        plt.show()
+        fig = self.plot(**kwargs)
+        fig.show()
+        
+        return fig
     
     @staticmethod
     def _download(uri, kwargs, 
