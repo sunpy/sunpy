@@ -101,7 +101,7 @@ class _AttrGetter(object):
     def __getitem__(self, item):
         freq = self.arr.freq_axis[0] - item * self.delt
         for n, mid in enumerate(self.midpoints):
-            if mid <= freq:
+            if round(mid, 2) <= round(freq, 2):
                 return self.arr[n, :]
         raise IndexError
     
