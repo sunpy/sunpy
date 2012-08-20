@@ -325,7 +325,7 @@ class Spectrogram(np.ndarray):
         )
         
         if linear:
-            # XXX: Why is the x off by 0.5 with the IndexLocator?
+            # 0.5 is because matplotlib seems to center it.
             init = (self.freq_axis[0] % 5) / data.delt + 0.5
             nticks = 15.
             dist = (self.freq_axis[0] - self.freq_axis[-1]) / nticks
