@@ -92,6 +92,7 @@ class _AttrGetter(object):
         
         midpoints =(self.arr.freq_axis[:-1] + self.arr.freq_axis[1:]) / 2
         self.midpoints = np.concatenate([midpoints, arr.freq_axis[-1:]])
+        self.midpoints = np.round(self.midpoints, 2)
         
         self.shape = (len(self), arr.shape[1])
     
@@ -99,7 +100,7 @@ class _AttrGetter(object):
         return 1 + (self.arr.freq_axis[0] - self.arr.freq_axis[-1]) / self.delt
     
     def __getitem__(self, item):
-        freq = self.arr.freq_axis[0] - item * self.delt
+        freq = round(self.arr.freq_axis[0] - item * self.delt, 2)
         if item:
             prevfreq = self.arr.freq_axis[0] - (item - 1) * self.delt
         else:
@@ -107,10 +108,11 @@ class _AttrGetter(object):
         
         start = None
         for n, mid in enumerate(self.midpoints):
-            if start is None and round(mid, 2) <= round(prevfreq, 2):
+            if start is None and mid <= prevfreq:
                 start = n
-            if round(mid, 2) <= round(freq, 2):
-                # print item, '/', len(self), start, n, '/', len(self.arr)
+            if mid <= freq:
+                if start == n:
+                    return self.arr[n]
                 return np.average(self.arr[start:n + 1, :], 0)
         raise IndexError
     
