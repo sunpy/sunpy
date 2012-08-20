@@ -36,6 +36,7 @@ COPY = 1
 DEEPCOPY = 2
 
 def common_base(objs):
+    """ Find class that every item of objs is an instance of. """
     for cls in objs[0].__class__.__mro__:
         if all(isinstance(obj, cls) for obj in objs):
             break
