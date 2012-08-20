@@ -35,6 +35,13 @@ REFERENCE = 0
 COPY = 1
 DEEPCOPY = 2
 
+def common_base(objs):
+    for cls in objs[0].__class__.__mro__:
+        if all(isinstance(obj, cls) for obj in objs):
+            break
+    return cls
+
+
 # Maybe move to util.
 def get_day(dt):
     """ Return datetime for the beginning of the day of given datetime. """
@@ -898,10 +905,7 @@ class LinearTimeSpectrogram(Spectrogram):
         if nonlinear:
             del params['t_delt']
             return Spectrogram(arr, **params)
-        for Spec in specs[0].__class__.__mro__:
-            if all(isinstance(spec, Spec) for spec in specs):
-                break
-        return Spec(arr, **params)
+        return common_base(specs)(arr, **params)
 
     def time_to_x(self, time):
         """ Return x-coordinate in spectrogram that corresponds to the
@@ -985,10 +989,7 @@ class LinearTimeSpectrogram(Spectrogram):
             'content': one.content,
             'instruments': _union(spec.instruments for spec in specs)
         }
-        for Spec in specs[0].__class__.__mro__:
-            if all(isinstance(spec, Spec) for spec in specs):
-                break
-        return Spec(new, **params)
+        return common_base(specs)(new, **params)
     
     def check_linearity(self, err=None, err_factor=None):
         """ Check linearity of time axis. If err is given, tolerate absolute
