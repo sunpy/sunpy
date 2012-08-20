@@ -324,10 +324,9 @@ class Spectrogram(np.ndarray):
             FuncFormatter(self.time_formatter)
         )
         
-        freq_fmt = list_formatter(freqs, self.format_freq)
-        
         if linear:
-            init = (self.freq_axis[0] % 5) / data.delt
+            # XXX: Why is the x off by 0.5 with the IndexLocator?
+            init = (self.freq_axis[0] % 5) / data.delt + 0.5
             nticks = 15.
             dist = (self.freq_axis[0] - self.freq_axis[-1]) / nticks
             dist = max(1, (dist // 10)) * 10
@@ -342,8 +341,10 @@ class Spectrogram(np.ndarray):
                     dist / data.delt / 10, init
                 )
             )
-            freq_fmt = lambda x, pos: '%0.f' % (self.freq_axis[0] - x * data.delt)
+            def freq_fmt(x, pos):
+                return self.format_freq(self.freq_axis[0] - x * data.delt)
         else:
+            freq_fmt = list_formatter(freqs, self.format_freq)
             ya.set_major_locator(MaxNLocator(integer=True, steps=[1, 5, 10]))
         
         ya.set_major_formatter(
