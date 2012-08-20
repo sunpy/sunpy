@@ -269,7 +269,7 @@ class Spectrogram(np.ndarray):
         self.plot(*args, **kwargs).show()
 
     def plot(self, figure=None, overlays=[], colorbar=True, min_=None, max_=None,
-             linear=True, showz=True, **matplotlib_args):
+             linear=True, showz=True, yres=None, **matplotlib_args):
         """
         Plot spectrogram onto figure.
         
@@ -296,7 +296,13 @@ class Spectrogram(np.ndarray):
         # [] as default argument is okay here because it is only read.
         # pylint: disable=W0102,R0914
         if linear:
-            data = _AttrGetter(self.clip(min_, max_))
+            delt = yres
+            if delt is not None:
+                delt = max(
+                    (self.freq_axis[0] - self.freq_axis[-1]) / (yres - 1),
+                    min_delt(self.freq_axis) / 2.
+                )
+            data = _AttrGetter(self.clip(min_, max_), delt)
             freqs = np.arange(
                 self.freq_axis[0], self.freq_axis[-1], -data.delt
             )
