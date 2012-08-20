@@ -92,7 +92,6 @@ class _AttrGetter(object):
         
         midpoints =(self.arr.freq_axis[:-1] + self.arr.freq_axis[1:]) / 2
         self.midpoints = np.concatenate([midpoints, arr.freq_axis[-1:]])
-        self.midpoints = np.round(self.midpoints, 2)
         
         self.shape = (len(self), arr.shape[1])
     
@@ -100,26 +99,11 @@ class _AttrGetter(object):
         return 1 + (self.arr.freq_axis[0] - self.arr.freq_axis[-1]) / self.delt
     
     def __getitem__(self, item):
-        freq = round(self.arr.freq_axis[0] - item * self.delt, 2)
-        if item:
-            prevfreq = self.arr.freq_axis[0] - (item - 1) * self.delt
-        else:
-            prevfreq = freq
-        
-        start = None
+        freq = self.arr.freq_axis[0] - item * self.delt
         for n, mid in enumerate(self.midpoints):
-            if start is None and mid <= prevfreq:
-                start = n
             if mid <= freq:
-                if start == n:
-                    return self.arr[n]
-                ys = slice(start, n + 1)
-                xs = slice(None, None)
-                # Prevent fancy indexing that returns a new Spectrogram.
-                return np.average(np.ndarray.__getitem__(self.arr, (ys, xs)), 0)
-                # return np.average(self.arr[start:n + 1, :], 0)
+                return self.arr[n, :]
         raise IndexError
-    
     
 
 # XXX: Find out why imshow(x) fails!
