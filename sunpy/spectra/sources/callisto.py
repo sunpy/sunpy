@@ -332,8 +332,9 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
 
         
     def __init__(self, data, time_axis, freq_axis, start, end,
-            t_init, t_delt, t_label, f_label, content, instruments, 
-            header, axes_header, swapped):
+            t_init=None, t_delt=None, t_label="Time", f_label="Frequency",
+            content="", instruments=None, header=None, axes_header=None,
+            swapped=False):
         # Because of how object creation works, there is no avoiding
         # unused arguments in this case.
         # pylint: disable=W0613
@@ -563,6 +564,25 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
             find_next(mxs, [mn for mn in mns if sd[mn] < 0]),
             key=lambda x: sd[x[0]]
         )
+    
+    def extend(self, minutes=15, **kwargs):
+        if len(self.instruments) != 1:
+            raise ValueError
+        
+        instrument = iter(self.instruments).next()
+        if minutes > 0:
+            data = CallistoSpectrogram.from_range(
+                instrument,
+                self.end, self.end + datetime.timedelta(minutes=minutes)
+            )
+        else:
+            data = CallistoSpectrogram.from_range(
+                instrument,
+                self.start - datetime.timedelta(minutes=-minutes), self.start
+            )
+        
+        data = data.clip_freq(self.freq_axis[-1], self.freq_axis[0])
+        return CallistoSpectrogram.join_many([self, data], **kwargs)
 
     
 CallistoSpectrogram.create.add(
