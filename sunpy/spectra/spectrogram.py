@@ -100,9 +100,18 @@ class _AttrGetter(object):
     
     def __getitem__(self, item):
         freq = self.arr.freq_axis[0] - item * self.delt
+        if item:
+            prevfreq = self.arr.freq_axis[0] - (item - 1) * self.delt
+        else:
+            prevfreq = freq
+        
+        start = None
         for n, mid in enumerate(self.midpoints):
+            if start is None and round(mid, 2) <= round(prevfreq, 2):
+                start = n
             if round(mid, 2) <= round(freq, 2):
-                return self.arr[n, :]
+                # print item, '/', len(self), start, n, '/', len(self.arr)
+                return np.average(self.arr[start:n + 1, :], 0)
         raise IndexError
     
     
