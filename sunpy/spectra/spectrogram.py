@@ -113,7 +113,11 @@ class _AttrGetter(object):
             if mid <= freq:
                 if start == n:
                     return self.arr[n]
-                return np.average(self.arr[start:n + 1, :], 0)
+                ys = slice(start, n + 1)
+                xs = slice(None, None)
+                # Prevent fancy indexing that returns a new Spectrogram.
+                return np.average(np.ndarray.__getitem__(self.arr, (ys, xs)), 0)
+                # return np.average(self.arr[start:n + 1, :], 0)
         raise IndexError
     
     
@@ -247,7 +251,7 @@ class Spectrogram(np.ndarray):
             return ""
         return self.format_time(
             self.start + datetime.timedelta(
-                seconds=self.time_axis[x]
+                seconds=float(self.time_axis[x])
             )
         )
 
