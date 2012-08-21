@@ -71,13 +71,13 @@ on the `SunPy project page <https://github.com/sunpy/sunpy>`_
 Next, you need to download the forked repository. Then clone the fork to your 
 local machine, edit and run: ::
 
- git clone git@github.com:your_username/sunpy.git 
+ git clone https://github.com/your_username/sunpy.git 
  
 By default your fork of the repo on GitHub is identified by the name `origin`.
 In order to keep the fork up to date with the main repo, it is useful to add it
 as a `remote` in git: ::
 
- git remote add upstream git://github.com/sunpy/sunpy.git
+ git remote add upstream https://github.com/sunpy/sunpy.git
 
 To stay up to date you can grab the latest changes to the SunPy master using
 the commands: ::
@@ -148,16 +148,12 @@ SunPy repo.
 
 The first thing you want to do before you start coding anything new is to pull
 in the latest code that others have written since you last did any coding. To
-do this, run :command:`git fetch`: ::
+do this, run :command:`git pull`: ::
 
-    git fetch 
-    
-If no changes were made since the last time you worked on SunPy then you don't
-need to do anything else and can begin coding again. If other people have pushed
-code since you last worked on SunPy then these changes will be fetched and you
-will need to merge them: ::
+    git pull upstream master
 
-    git merge upstream/branch_name
+This will ensure that you don't edit a file that has changed since your last pull
+which will lead to merge conflicts later on.
     
 **Code away**
 

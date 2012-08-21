@@ -25,7 +25,7 @@ dates = [base - datetime.timedelta(minutes=x) for x in range(0, 24 * 60)]
 ])
 def test_input(data, index):
     """Tests different types of expected input"""
-    sunpy.lightcurve.LightCurve(data, index=index)
+    sunpy.lightcurve.LightCurve.create(data, index=index)
 
 @pytest.mark.parametrize(("bad_input"), [
     (None),
@@ -33,6 +33,6 @@ def test_input(data, index):
 ])
 def test_unimplemented(bad_input):
     """Tests input that has not been implemented for the generic LC class"""
-    with pytest.raises(NotImplementedError):
-        sunpy.lightcurve.LightCurve(bad_input)
+    with pytest.raises((TypeError, NotImplementedError)):
+        sunpy.lightcurve.LightCurve.create(bad_input)
 

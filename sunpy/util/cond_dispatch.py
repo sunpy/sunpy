@@ -4,7 +4,72 @@
 """ Offer a callable object that dispatches based on arbitrary conditions
 and function signature. That means, whenever it is called, it finds the
 registered methods that match the input's signature and then checks for
-user-defined conditions. """
+user-defined conditions and types. 
+
+First, we need to create a new ConditionalDispatch>
+
+>>> fun = ConditionalDispatch()
+
+We then can start adding branches, in this case we add a branch for 
+even integers, in which case the function applied is a muliplication by
+three.
+
+>>> fun.add(lambda x: 3 * x, lambda x: x % 2 == 0, [int])
+
+By adding the other branch (odd), the function can be used for all integers.
+In the case of an odd integer, we double the input. Please note that the system
+has no way of verifying the conditions are mutually exclusive. In some cases
+it can even be useful to use not mutually exclusive conditions, in which case
+the branch that was added the earliest is executed.
+
+>>> fun.add(lambda x: 2 * x, lambda x: x % 2 == 1, [int])
+
+We can verify this is working.
+
+>>> fun(2)
+6
+>>> fun(3)
+6
+
+And that using a float, e.g., does not.
+
+>>> fun(3.2)
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "/home/florian/Projects/sunpy/sunpy/util/cond_dispatch.py", line 128, in __call__
+    "There are no functions matching your input parameter "
+TypeError: There are no functions matching your input parameter signature.
+
+
+We can then add a branch for floats, giving the condition None that means
+that this branch is always executed for floats.
+
+>>> fun.add(lambda y: 5 * y, None, [float])
+
+Also note that the float branch takes y, while the integer branch takes x.
+Thus, if the user explicitely passes fun(x=1) using a keyword argument, only
+the integer branch is considered. This can be useful if the user wants
+control over which kind of data they are passing the the function.
+
+>>> fun(2.0)
+10.0
+>>> fun(y=2)
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "/home/florian/Projects/sunpy/sunpy/util/cond_dispatch.py", line 128, in __call__
+    "There are no functions matching your input parameter "
+TypeError: There are no functions matching your input parameter signature.
+>>> fun(y=2.5)
+12.5
+>>> fun(x=2)
+6
+>>> fun(x=2.5)
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "/home/florian/Projects/sunpy/sunpy/util/cond_dispatch.py", line 128, in __call__
+    "There are no functions matching your input parameter "
+TypeError: There are no functions matching your input parameter signature.
+"""
 
 from __future__ import absolute_import
 
@@ -12,21 +77,36 @@ import inspect
 
 from itertools import izip
 
+
+def run_cls(name):
+    """ run_cls("foo")(cls, *args, **kwargs) -> cls.foo(*args, **kwargs) """
+    return lambda cls, *args, **kwargs: getattr(cls, name)(*args, **kwargs)
+    
+
+
 def matches_types(fun, types, args, kwargs):
+    """ See if args and kwargs match are instances of types. types are given
+    in the order they are defined in the function. kwargs are automatically
+    converted into that order. """
     return all(
         isinstance(obj, cls) for obj, cls in izip(
             arginize(fun, args, kwargs), types
         )
     )
 
+
 def arginize(fun, a, kw):
     """ Turn args and kwargs into args by considering the function
     signature. """
     args, varargs, keywords, defaults = correct_argspec(fun)
-    if varargs is not None or keywords is not None:
+    if varargs is not None:
         raise ValueError
     names = args[len(a):]
-    return list(a) + [kw[name] for name in names]
+    if defaults:
+        defs = dict(izip(args[-len(defaults):], defaults))
+    else:
+        defs = {}
+    return list(a) + [kw.get(name, defs.get(name, None)) for name in names]
 
 
 def correct_argspec(fun):
@@ -55,7 +135,7 @@ def matches_signature(fun, a, kw):
     # If there are any arguments that weren't passed but do not have
     # defaults, the signature does not match.
     defs = set() if defaults is None else set(defaults)
-    if rest > defs:
+    if keywords is None and rest > defs:
         return False
     return True
 
@@ -71,7 +151,7 @@ class ConditionalDispatch(object):
             return fun
         return _dec
     
-    def add(self, fun, condition=None, types=None):
+    def add(self, fun, condition=None, types=None, check=True):
         """ Add fun to ConditionalDispatch under the condition that the
         arguments must match. If condition is left out, the function is 
         executed for every input that matches the signature. Functions are
@@ -84,7 +164,7 @@ class ConditionalDispatch(object):
         needs to be left out in condition). """
         if condition is None:
             self.nones.append((fun, types))
-        elif correct_argspec(fun) != correct_argspec(condition):
+        elif check and correct_argspec(fun) != correct_argspec(condition):
             raise ValueError(
                 "Signature of condition must match signature of fun."
             )
@@ -94,8 +174,8 @@ class ConditionalDispatch(object):
     def __call__(self, *args, **kwargs):
         matched = False
         for fun, condition, types in self.funcs:
-            if (matches_signature(fun, args, kwargs) and
-                (types is None or matches_types(fun, types, args, kwargs))):
+            if (matches_signature(condition, args, kwargs) and
+                (types is None or matches_types(condition, types, args, kwargs))):
                 matched = True
                 if condition(*args, **kwargs):
                     return fun(*args, **kwargs)
@@ -113,3 +193,6 @@ class ConditionalDispatch(object):
                 "There are no functions matching your input parameter "
                 "signature."
             )
+    
+    def wrapper(self):
+        return lambda *args, **kwargs: self(*args, **kwargs)
