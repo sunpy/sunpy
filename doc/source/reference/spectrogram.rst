@@ -4,7 +4,7 @@
 Spectrograms
 ============
 
-.. currentmodule:: sunpy.spectra.spectrogram
+.. py:module:: sunpy.spectra.spectrogram
 
 .. automodule:: sunpy.spectra.spectrogram
    :members:
