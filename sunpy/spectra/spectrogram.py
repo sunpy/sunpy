@@ -587,6 +587,7 @@ class Spectrogram(np.ndarray):
         delta_freq : float
             Difference between consecutive values on the new frequency axis.
             Defaults to half of smallest delta in current frequency axis.
+            Compare Nyquist-Shannon sampling theorem.
         """
         if delta_freq is None:
             # Nyquist–Shannon sampling theorem
