@@ -353,7 +353,7 @@ class Spectrogram(np.ndarray):
         figure.subplots_adjust(left=0.2)
         
         if showz:
-            figure.gca().format_coord = self.mk_format_coord(
+            figure.gca().format_coord = self._mk_format_coord(
                 data, freq_fmt, self.time_formatter)
         
         if colorbar:
@@ -662,7 +662,7 @@ class Spectrogram(np.ndarray):
         return self[np.nonzero(self.freq_axis == freq)[0], :]
 
     @staticmethod
-    def mk_format_coord(spec, freq_fmt, time_fmt):
+    def _mk_format_coord(spec, freq_fmt, time_fmt):
         def format_coord(x, y):
             x = int(x)
             y = int(y)
@@ -680,6 +680,7 @@ class Spectrogram(np.ndarray):
                 pixel
             )
         return format_coord
+
 
 class LinearTimeSpectrogram(Spectrogram):
     """ Spectrogram evenly sampled in time.
