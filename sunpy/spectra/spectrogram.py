@@ -152,7 +152,7 @@ class Spectrogram(np.ndarray):
         ('t_init', REFERENCE),
     ]
 
-    def as_class(self, cls):
+    def _as_class(self, cls):
         """ Implementation detail. """
         if not issubclass(cls, Spectrogram):
             raise ValueError
