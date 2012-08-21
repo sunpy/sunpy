@@ -63,7 +63,7 @@ def query(start, end, instruments=None, url=DEFAULT_URL):
                 # so we skip it and continue to the next iteration of the loop.
                 continue
             dstart = datetime.datetime.strptime(date + time, TIME_STR)
-            opn.close()
+            
             if (instruments is not None and
                 inst not in instruments and 
                 (inst, int(no)) not in instruments):
@@ -72,6 +72,7 @@ def query(start, end, instruments=None, url=DEFAULT_URL):
             dend = dstart + DATA_SIZE
             if dend > start and dstart < end:
                 yield directory + href
+        opn.close()
         day += _DAY
 
 
