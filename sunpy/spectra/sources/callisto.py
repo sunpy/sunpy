@@ -123,8 +123,6 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
     SIGMA_SUM = 75
     SIGMA_DELTA_SUM = 20
     _create = ConditionalDispatch()
-    _wrapper = _create.wrapper
-    _wrapper.__doc__ 
     create = staticmethod(_create.wrapper())
     # Contrary to what pylint may think, this is not an old-style class.
     # pylint: disable=E1002,W0142,R0902
