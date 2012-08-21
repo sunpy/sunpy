@@ -36,6 +36,19 @@ COPY = 1
 DEEPCOPY = 2
 
 
+def common_base(objs):
+    """ Find class that every item of objs is an instance of. """
+    for cls in objs[0].__class__.__mro__:
+        if all(isinstance(obj, cls) for obj in objs):
+            break
+    return cls
+
+
+# Maybe move to util.
+def get_day(dt):
+    """ Return datetime for the beginning of the day of given datetime. """
+    return datetime.datetime(dt.year, dt.month, dt.day)
+
 def _list_formatter(lst, fun=None):
     """ Return function that takes x, pos and returns fun(lst[x]) if
     fun is not None, else lst[x] or "" if x is out of range. """
@@ -420,14 +433,14 @@ class Spectrogram(np.ndarray):
         if max_ is not None:
             while self.freq_axis[left] > max_:
                 left += 1
-
+        
         right = len(self.freq_axis) - 1
 
         if min_ is not None:
             while self.freq_axis[right] < min_:
                 right -= 1
 
-        return self[left:right, :]
+        return self[left:right + 1, :]
     
     
     def auto_find_background(self, amount=0.05):
@@ -782,7 +795,7 @@ class LinearTimeSpectrogram(Spectrogram):
     
     @classmethod
     def join_many(cls, specs, mk_arr=None, nonlinear=False,
-        maxgap=0, fill=0):
+        maxgap=0, fill=JOIN_REPEAT):
         """ Produce new Spectrogram that contains spectrograms
         joined together in time.
         
@@ -917,7 +930,7 @@ class LinearTimeSpectrogram(Spectrogram):
         if nonlinear:
             del params['t_delt']
             return Spectrogram(arr, **params)
-        return LinearTimeSpectrogram(arr, **params)
+        return common_base(specs)(arr, **params)
 
     def time_to_x(self, time):
         """ Return x-coordinate in spectrogram that corresponds to the
@@ -1001,8 +1014,8 @@ class LinearTimeSpectrogram(Spectrogram):
             'content': one.content,
             'instruments': _union(spec.instruments for spec in specs)
         }
-        return LinearTimeSpectrogram(new, **params)
-
+        return common_base(specs)(new, **params)
+    
     def check_linearity(self, err=None, err_factor=None):
         """ Check linearity of time axis. If err is given, tolerate absolute
         derivation from average delta up to err. If err_factor is given,
