@@ -6,7 +6,7 @@ Spectrograms
 ------------
 SunPy currently supports reading dynamic spectra from e-Callisto_ instruments.
 The main class that is used for this is
-:py:class:`sunpy.spectra.sources.callisto.CallistoSpectrogram`. SunPy also
+:py:class:`CallistoSpectrogram <sunpy.spectra.sources.callisto.CallistoSpectrogram>`. SunPy also
 comes with an example image that shows a radio burst observed at `Rosse Observatory`_ (aka. BIR; Birr Castle, Co. Offaly, Ireland) that
 can be found in sunpy.CALLISTO_IMAGE
 
