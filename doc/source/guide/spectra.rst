@@ -7,7 +7,7 @@ Spectrograms
 SunPy currently supports reading dynamic spectra from e-Callisto_ instruments.
 The main class that is used for this is
 :py:class:`sunpy.spectra.sources.callisto.CallistoSpectrogram`. SunPy also
-comes with an example image that shows a radio burst observerd at `Ross Observatory`_ (aka. BIR; Birr Castle, Co. Offaly, Ireland) that
+comes with an example image that shows a radio burst observed at `Rosse Observatory`_ (aka. BIR; Birr Castle, Co. Offaly, Ireland) that
 can be found in sunpy.CALLISTO_IMAGE
 
     >>> from matplotlib import pyplot as plt
@@ -33,7 +33,8 @@ using the min_ parameter of show in order to avoid negative values.
 If you want to see the background determined by the automatic subtraction,
 you can use the :py:meth:`auto_const_bg` method and visualize the resulting
 data using :py:func:`pyplot.plot`.
-
+    
+    >>> plt.figure()
     >>> bg = image.auto_const_bg()
     >>> plt.plot(image.freq_axis, bg)
     >>> xlabel("Frequency [MHz]")
@@ -80,4 +81,4 @@ frequencies of BIR).
 .. image:: ../images/spectra_ex7.png
 
 .. _e-Callisto: http://www.e-callisto.org/
-.. _Ross Observatory: http://rosseobservatory.ie/ 
+.. _Rosse Observatory: http://rosseobservatory.ie/ 
