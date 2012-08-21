@@ -90,7 +90,7 @@ class _AttrGetter(object):
         
         self.delt = delt
         
-        midpoints =(self.arr.freq_axis[:-1] + self.arr.freq_axis[1:]) / 2
+        midpoints = (self.arr.freq_axis[:-1] + self.arr.freq_axis[1:]) / 2
         self.midpoints = np.concatenate([midpoints, arr.freq_axis[-1:]])
         
         self.shape = (len(self), arr.shape[1])
