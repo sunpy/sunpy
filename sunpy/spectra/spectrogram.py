@@ -398,9 +398,9 @@ class Spectrogram(np.ndarray):
         Parameters
         ----------
         min_ : float
-            All frequencies in the result are larger than this.
+            All frequencies in the result are greater or equal to this.
         max_ : float
-            All frequencies in the result are smaller than this.
+            All frequencies in the result are smaller or equal to this.
         """
         left = 0
         if max_ is not None:
