@@ -168,7 +168,7 @@ class Spectrogram(np.ndarray):
             dct[prop] = var[prop]
         return cls(self, **dct)
 
-    def get_params(self):
+    def _get_params(self):
         """ Implementation detail. """
         return dict(
             (name, getattr(self, name)) for name, _ in self.COPY_PROPERTIES
@@ -178,7 +178,7 @@ class Spectrogram(np.ndarray):
         """ Return new spectrogram reduced to the values passed
         as slices. Implementation detail. """
         data = super(Spectrogram, self).__getitem__([y_range, x_range])
-        params = self.get_params()
+        params = self._get_params()
 
         soffset = 0 if x_range.start is None else x_range.start
         eoffset = self.shape[1] if x_range.stop is None else x_range.stop # pylint: disable=E1101
@@ -615,7 +615,7 @@ class Spectrogram(np.ndarray):
         for row, from_, to_ in izip(self, fillfrom, fillto):
             new[from_: to_] = row
 
-        vrs = self.get_params()
+        vrs = self._get_params()
         vrs.update({
             'freq_axis': np.linspace(
                 self.freq_axis.max(), self.freq_axis.min(), nsize
@@ -752,7 +752,7 @@ class LinearTimeSpectrogram(Spectrogram):
         new_size = floor((self.shape[1] - 1) * factor + 1) # pylint: disable=E1101
         data = ndimage.zoom(self, (1, new_size / self.shape[1])) # pylint: disable=E1101
 
-        params = self.get_params()
+        params = self._get_params()
         params.update({
             'time_axis': np.linspace(
                 self.time_axis[0],
