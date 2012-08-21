@@ -41,6 +41,72 @@ def get_day(dt):
     return datetime.datetime(dt.year, dt.month, dt.day)
 
 
+def min_delt(arr):
+    deltas = (arr[:-1] - arr[1:])
+    # Multiple values at the same frequency are just thrown away
+    # in the process of linearizaion
+    return deltas[deltas != 0].min()
+
+
+def list_formatter(lst, fun=None):
+    """ Return function that takes x, pos and returns fun(lst[x]) if
+    fun is not None, else lst[x] or "" if x is out of range. """
+    def _fun(x, pos):
+        x = int(x)
+        if x >= len(lst) or x < 0:
+            return ""
+        
+        elem = lst[x]
+        if fun is None:
+            return elem
+        return fun(elem)
+    return _fun
+
+
+def _union(sets):
+    """ Return union of sets. """
+    union = set()
+    for s in sets:
+        union |= s
+    return union
+
+
+class _AttrGetter(object):
+    """ Helper class for frequency channel linearization.
+    
+    Parameters
+    ----------
+    arr : Spectrogram
+        Spectrogram to linearize.
+    delt : float
+        Delta between frequency channels in linearized spectrogram. Defaults to
+        (minimum delta / 2.) because of the Shannon sampling theorem.
+    """
+    def __init__(self, arr, delt=None):
+        self.arr = arr
+        if delt is None:
+            # Nyquist–Shannon sampling theorem
+            delt = min_delt(arr.freq_axis) / 2.
+        
+        self.delt = delt
+        
+        midpoints = (self.arr.freq_axis[:-1] + self.arr.freq_axis[1:]) / 2
+        self.midpoints = np.concatenate([midpoints, arr.freq_axis[-1:]])
+        
+        self.shape = (len(self), arr.shape[1])
+    
+    def __len__(self):
+        return 1 + (self.arr.freq_axis[0] - self.arr.freq_axis[-1]) / self.delt
+    
+    def __getitem__(self, item):
+        freq = self.arr.freq_axis[0] - item * self.delt
+        for n, mid in enumerate(self.midpoints):
+            if mid <= freq:
+                return self.arr[n, :]
+        raise IndexError
+    
+    
+
 # XXX: Find out why imshow(x) fails!
 class Spectrogram(np.ndarray):
     """ Base class for spectral analysis in SunPy.
@@ -68,6 +134,9 @@ class Spectrogram(np.ndarray):
         label for the frequency axis
     content : str
         header for the image
+    instruments : set of str
+        instruments that recorded the data, may be more than one if
+        it was constructed using combine_frequencies or join_many.
     """
     # Contrary to what pylint may think, this is not an old-style class.
     # pylint: disable=E1002,W0142,R0902
@@ -77,6 +146,7 @@ class Spectrogram(np.ndarray):
     COPY_PROPERTIES = [
         ('time_axis', COPY),
         ('freq_axis', COPY),
+        ('instruments', COPY),
         ('start', REFERENCE),
         ('end', REFERENCE),
         ('t_label', REFERENCE),
@@ -85,7 +155,7 @@ class Spectrogram(np.ndarray):
         ('t_init', REFERENCE),
     ]
 
-    def as_class(self, cls):
+    def _as_class(self, cls):
         """ Implementation detail. """
         if not issubclass(cls, Spectrogram):
             raise ValueError
@@ -98,7 +168,7 @@ class Spectrogram(np.ndarray):
             dct[prop] = var[prop]
         return cls(self, **dct)
 
-    def get_params(self):
+    def _get_params(self):
         """ Implementation detail. """
         return dict(
             (name, getattr(self, name)) for name, _ in self.COPY_PROPERTIES
@@ -108,7 +178,7 @@ class Spectrogram(np.ndarray):
         """ Return new spectrogram reduced to the values passed
         as slices. Implementation detail. """
         data = super(Spectrogram, self).__getitem__([y_range, x_range])
-        params = self.get_params()
+        params = self._get_params()
 
         soffset = 0 if x_range.start is None else x_range.start
         eoffset = self.shape[1] if x_range.stop is None else x_range.stop # pylint: disable=E1101
@@ -136,12 +206,15 @@ class Spectrogram(np.ndarray):
         return np.asarray(data).view(cls)
 
     def __init__(self, data, time_axis, freq_axis, start, end, t_init=None,
-        t_label="Time", f_label="Frequency", content=""):
+        t_label="Time", f_label="Frequency", content="", instruments=None):
         # Because of how object creation works, there is no avoiding
         # unused arguments in this case.
         if t_init is None:
             diff = start - get_day(start)
             t_init = diff.seconds
+        if instruments is None:
+            instruments = set()
+        
         self.start = start
         self.end = end
 
@@ -154,30 +227,21 @@ class Spectrogram(np.ndarray):
         self.freq_axis = freq_axis
 
         self.content = content
+        self.instruments = instruments
 
     def time_formatter(self, x, pos):
         """ This returns the label for the tick of value x at
         a specified pos on the time axis. """
         # Callback, cannot avoid unused arguments.
         # pylint: disable=W0613
-        try:
-            return self.format_time(
-                self.start + datetime.timedelta(
-                    seconds=self.time_axis[int(x)]
-                )
+        x = int(x)
+        if x >= len(self.time_axis) or x < 0:
+            return ""
+        return self.format_time(
+            self.start + datetime.timedelta(
+                seconds=self.time_axis[x]
             )
-        except IndexError:
-            return None
-
-    def freq_formatter(self, x, pos):
-        """ This returns the label for the tick of value x at
-        a specified pos on the frequency axis. """
-        # Callback, cannot avoid unused arguments.
-        # pylint: disable=W0613
-        try:
-            return self.format_freq(self.freq_axis[x])
-        except IndexError:
-            return None 
+        )
 
     def __array_finalize__(self, obj):
         if self is obj:
@@ -205,14 +269,10 @@ class Spectrogram(np.ndarray):
     def show(self, *args, **kwargs):
         """ Draw spectrogram on figure with highest index or new one if
         none exists. For parameters see :py:meth:`plot`. """
-        nums = plt.get_fignums()
-        figure = None
-        if nums:
-            figure = plt.figure(max(nums))
-        self.plot(figure, *args, **kwargs).show()
+        self.plot(*args, **kwargs).show()
 
-    def plot(self, figure=None, overlays=[], colorbar=True, min_=None, max_=None, 
-        **matplotlib_args):
+    def plot(self, figure=None, overlays=[], colorbar=True, min_=None, max_=None,
+             linear=True, showz=True, **matplotlib_args):
         """
         Plot spectrogram onto figure.
         
@@ -230,11 +290,22 @@ class Spectrogram(np.ndarray):
             Clip intensities lower than min_ before drawing.
         max_ : float
             Clip intensities higher than max_ before drawing.
+        linear :  bool
+            If set to True, "stretch" image to make frequency axis linear.
+        showz : bool
+            If set to True, the value of the pixel that is hovered with the
+            mouse is shown in the bottom right corner.
         """
         # [] as default argument is okay here because it is only read.
         # pylint: disable=W0102,R0914
-
-        data = np.array(self.clip(min_, max_))
+        if linear:
+            data = _AttrGetter(self.clip(min_, max_))
+            freqs = np.arange(
+                self.freq_axis[0], self.freq_axis[-1], -data.delt
+            )
+        else:
+            data = np.array(self.clip(min_, max_))
+            freqs = self.freq_axis
         newfigure = figure is None
         if figure is None:
             figure = plt.figure(frameon=True)
@@ -255,15 +326,24 @@ class Spectrogram(np.ndarray):
         xa.set_major_formatter(
             FuncFormatter(self.time_formatter)
         )
-
+        
+        freq_fmt = list_formatter(freqs, self.format_freq)
         ya.set_major_locator(MaxNLocator(integer=True, steps=[1, 5, 10]))
         ya.set_major_formatter(
-            FuncFormatter(self.freq_formatter)
+            FuncFormatter(freq_fmt)
         )
         
         axes.set_xlabel(self.t_label)
         axes.set_ylabel(self.f_label)
-        figure.suptitle(self.content)
+        # figure.suptitle(self.content)
+        
+        figure.suptitle(
+            ' '.join([
+                get_day(self.start).strftime("%d %b %Y"),
+                'Radio flux density',
+                '(' + ', '.join(self.instruments) + ')',
+            ])
+        )
         
         for tl in xa.get_ticklabels():
             tl.set_fontsize(10)
@@ -271,6 +351,11 @@ class Spectrogram(np.ndarray):
         figure.add_axes(axes)
         figure.subplots_adjust(bottom=0.2)
         figure.subplots_adjust(left=0.2)
+        
+        if showz:
+            figure.gca().format_coord = self._mk_format_coord(
+                data, freq_fmt, self.time_formatter)
+        
         if colorbar:
             if newfigure:
                 figure.colorbar(im).set_label("Intensity")
@@ -313,9 +398,9 @@ class Spectrogram(np.ndarray):
         Parameters
         ----------
         min_ : float
-            All frequencies in the result are larger than this.
+            All frequencies in the result are greater or equal to this.
         max_ : float
-            All frequencies in the result are smaller than this.
+            All frequencies in the result are smaller or equal to this.
         """
         left = 0
         if max_ is not None:
@@ -329,9 +414,9 @@ class Spectrogram(np.ndarray):
                 right -= 1
 
         return self[left:right, :]
-
-    def auto_const_bg(self):
-        """ Automatically determine background. """
+    
+    
+    def auto_find_background(self, amount=0.05):
         # pylint: disable=E1101,E1103
         data = self.astype(to_signed(self.dtype))
         # Subtract average value from every frequency channel.
@@ -342,11 +427,13 @@ class Spectrogram(np.ndarray):
         sdevs = np.asarray(np.std(tmp, 0))
 
         # Get indices of values with lowest standard deviation.
-        cand = sorted(xrange(self.shape[0]), key=lambda y: sdevs[y])
+        cand = sorted(xrange(self.shape[1]), key=lambda y: sdevs[y])
         # Only consider the best 5 %.
-        realcand = cand[:max(1, int(0.05 * len(cand)))]
-
-        # Average the best 5 %
+        return cand[:max(1, int(amount * len(cand)))]
+    
+    def auto_const_bg(self):
+        """ Automatically determine background. """
+        realcand = self.auto_find_background()
         bg = np.average(self[:, realcand], 1)
         return bg.reshape(self.shape[0], 1)
 
@@ -471,7 +558,7 @@ class Spectrogram(np.ndarray):
         return (ldiff * value + diff * lvalue) / (diff + ldiff) # pylint: disable=W0631
 
     @staticmethod
-    def _merge(items, key=lambda x: x):
+    def _merge(items, key=(lambda x: x)):
         """ Implementation detail. """
         state = {}
         for item in map(iter, items):
@@ -503,30 +590,32 @@ class Spectrogram(np.ndarray):
         delta_freq : float
             Difference between consecutive values on the new frequency axis.
             Defaults to half of smallest delta in current frequency axis.
+            Compare Nyquist-Shannon sampling theorem.
         """
         if delta_freq is None:
-            delta_freq = (self.freq_axis[:-1] - self.freq_axis[1:])
-            # Multiple values at the same frequency are just thrown away
-            # in the process of linearizaion
-            delta_freq = delta_freq[delta_freq != 0].min() / 2.
+            # Nyquist–Shannon sampling theorem
+            delta_freq = min_delt(self.freq_axis) / 2.
         nsize = (self.freq_axis.max() - self.freq_axis.min()) / delta_freq + 1
         new = np.zeros((nsize, self.shape[1]), dtype=self.dtype)
 
-        freqs = self.freq_axis - self.freq_axis.min()
+        freqs = self.freq_axis - self.freq_axis.max()
         freqs = freqs / delta_freq
 
         midpoints = np.round((freqs[:-1] + freqs[1:]) / 2)
         fillto = np.concatenate(
-            [midpoints, np.round([freqs[-1]])]
+            [midpoints - 1, np.round([freqs[-1]]) - 1]
         )
         fillfrom = np.concatenate(
-            [np.round([freqs[0] + 1]), midpoints]
+            [np.round([freqs[0]]), midpoints - 1]
         )
+        
+        fillto = np.abs(fillto)
+        fillfrom = np.abs(fillfrom)
 
         for row, from_, to_ in izip(self, fillfrom, fillto):
-            new[to_:from_] = row
+            new[from_: to_] = row
 
-        vrs = self.get_params()
+        vrs = self._get_params()
         vrs.update({
             'freq_axis': np.linspace(
                 self.freq_axis.max(), self.freq_axis.min(), nsize
@@ -568,6 +657,29 @@ class Spectrogram(np.ndarray):
                 return n - 1
         # The last element is the searched one.
         return n
+    
+    def at_freq(self, freq):
+        return self[np.nonzero(self.freq_axis == freq)[0], :]
+
+    @staticmethod
+    def _mk_format_coord(spec, freq_fmt, time_fmt):
+        def format_coord(x, y):
+            x = int(x)
+            y = int(y)
+            
+            shape = map(int, spec.shape)
+            
+            if 0 <= x < shape[1] and 0 <= y < shape[0]:
+                pixel = spec[y][x]
+            else:
+                pixel = ""
+            
+            return 'x=%s y=%s z=%s' % (
+                time_fmt(x, 0),
+                freq_fmt(y, 0),
+                pixel
+            )
+        return format_coord
 
 
 class LinearTimeSpectrogram(Spectrogram):
@@ -584,11 +696,14 @@ class LinearTimeSpectrogram(Spectrogram):
     ]
      
     def __init__(self, data, time_axis, freq_axis, start, end,
-        t_init, t_delt, t_label="Time", f_label="Frequency",
-        content=""):
+        t_init=None, t_delt=None, t_label="Time", f_label="Frequency",
+        content="", instruments=None):
+        if t_delt is None:
+            t_delt = min_delt(freq_axis)
+        
         super(LinearTimeSpectrogram, self).__init__(
             data, time_axis, freq_axis, start, end, t_init, t_label, f_label,
-            content
+            content, instruments
         )
         self.t_delt = t_delt
 
@@ -638,7 +753,7 @@ class LinearTimeSpectrogram(Spectrogram):
         new_size = floor((self.shape[1] - 1) * factor + 1) # pylint: disable=E1101
         data = ndimage.zoom(self, (1, new_size / self.shape[1])) # pylint: disable=E1101
 
-        params = self.get_params()
+        params = self._get_params()
         params.update({
             'time_axis': np.linspace(
                 self.time_axis[0],
@@ -648,6 +763,8 @@ class LinearTimeSpectrogram(Spectrogram):
             't_delt': new_delt,
         })
         return self.__class__(data, **params)
+    
+    JOIN_REPEAT = object()
     
     @classmethod
     def join_many(cls, specs, mk_arr=None, nonlinear=False,
@@ -667,6 +784,8 @@ class LinearTimeSpectrogram(Spectrogram):
             size.
         fill : float or int
             Value to fill missing values (assuming nonlinear=False) with.
+            Can be LinearTimeSpectrogram.JOIN_REPEAT to repeat the values for
+            the time just before the gap.
         mk_array: function
             Function that is called to create the resulting array. Can be set
             to Spectrogram.memap(filename) to create a memory mapped
@@ -743,7 +862,10 @@ class LinearTimeSpectrogram(Spectrogram):
                     # If we want to stay linear, fill up the missing
                     # pixels with placeholder zeros.
                     filler = np.zeros((data.shape[0], diff))
-                    filler[:] = fill
+                    if fill is cls.JOIN_REPEAT:
+                        filler[:, :] = elem[:, -1, np.newaxis]
+                    else:
+                        filler[:] = fill
                     minimum = elem.time_axis[-1]
                     e_time_axis = np.concatenate([
                         elem.time_axis,
@@ -774,6 +896,7 @@ class LinearTimeSpectrogram(Spectrogram):
             't_label': data.t_label,
             'f_label': data.f_label,
             'content': data.content,
+            'instruments': _union(spec.instruments for spec in specs),
         }
         if mask is not None:
             arr = ma.array(arr, mask=mask)
@@ -862,6 +985,7 @@ class LinearTimeSpectrogram(Spectrogram):
             't_label': one.t_label,
             'f_label': one.f_label,
             'content': one.content,
+            'instruments': _union(spec.instruments for spec in specs)
         }
         return LinearTimeSpectrogram(new, **params)
 
@@ -931,3 +1055,4 @@ class LinearTimeSpectrogram(Spectrogram):
                 )
             end = self.time_to_x(end)
         return self[:, start:end]
+    
