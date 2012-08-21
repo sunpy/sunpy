@@ -22,6 +22,9 @@ from scipy.optimize import leastsq
 from scipy.ndimage import gaussian_filter1d
 
 from sunpy.time import parse_time
+from sunpy.util.util import (
+    findpeaks, delta, buffered_write, polyfun_at, minimal_pairs, find_next
+)
 from sunpy.util.cond_dispatch import ConditionalDispatch
 from sunpy.spectra.spectrogram import LinearTimeSpectrogram, REFERENCE
 
@@ -31,81 +34,6 @@ _DAY = datetime.timedelta(days=1)
 
 DATA_SIZE = datetime.timedelta(seconds=15*60)
 
-def findpeaks(a):
-    """ Find local maxima in 1D. Use findpeaks(-a) for minima. """
-    return np.nonzero((a[1:-1] > a[:-2]) & (a[1:-1] > a[2:]))[0]
-
-
-def delta(s):
-    """ Return deltas between elements of s. len(delta(s)) == len(s) - 1. """
-    return s[1:] - s[:-1]
-
-
-def _buffered_write(inp, outp, buffer_size):
-    """ Implementation detail. Write from inp to outp in chunks of
-    buffer_size. """
-    while True:
-        read = inp.read(buffer_size)
-        if not read:
-            break
-        outp.write(read)
-
-
-def polyfun_at(coeff, p):
-    """ Return value of polynomial with coefficients (highest first) at
-    point (can also be an np.ndarray for more than one point) p. """
-    return np.sum(k * p ** n for n, k in enumerate(reversed(coeff)))
-
-
-def minimal_pairs(one, other):
-    """ Find pairs of values in one and other with minimal distance.
-    Assumes one and other are sorted in the same sort sequence.
-    
-    one, other : sequence
-        Sequence of scalars to find pairs from.
-    """
-    lbestdiff = bestdiff = bestj = besti = None
-    for i, freq in enumerate(one):
-        lbestj = bestj
-        
-        bestdiff, bestj = None, None
-        for j, o_freq in enumerate(other[lbestj:]):
-            j = lbestj + j if lbestj else j
-            diff = abs(freq - o_freq)
-            if bestj is not None and diff > bestdiff:
-                break
-            
-            if bestj is None or bestdiff > diff:
-                bestj = j
-                bestdiff = diff
-        
-        if lbestj is not None and lbestj != bestj:
-            yield (besti, lbestj, lbestdiff)
-            besti = i
-            lbestdiff = bestdiff
-        elif lbestdiff is None or bestdiff < lbestdiff:
-            besti = i
-            lbestdiff = bestdiff
-    
-    yield (besti, bestj, lbestdiff)
-
-
-DONT = object()
-def find_next(one, other, pad=DONT):
-    """ Given two sorted sequences one and other, for every element
-    in one, return the one larger than it but nearest to it in other.
-    If no such exists and pad is not DONT, return value of pad as "partner".
-    """
-    n = 0
-    for elem1 in one:
-        for elem2 in other[n:]:
-            n += 1
-            if elem2 > elem1:
-                yield elem1, elem2
-                break
-        else:
-            if pad is not DONT:
-                yield elem1, pad
 
 
 def query(start, end, instruments=None, url=DEFAULT_URL):
@@ -163,14 +91,14 @@ def download(urls, directory):
         path = os.path.join(directory, filename)
         fd = open(path, 'w')
         src = urllib2.urlopen(url)
-        _buffered_write(src, fd, 4096)
+        buffered_write(src, fd, 4096)
         fd.close()
         src.close()
         paths.append(path)
     return paths
 
 
-def parse_header_time(date, time):
+def _parse_header_time(date, time):
     """ Return datetime object from date and time fields of header. """
     if time is not None:
         date = date + 'T' + time
@@ -269,10 +197,10 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         axes = fl[1]
         header = fl[0].header
 
-        start = parse_header_time(
+        start = _parse_header_time(
             header['DATE-OBS'], header.get('TIME-OBS', header.get('TIME$_OBS'))
         )
-        end = parse_header_time(
+        end = _parse_header_time(
             header['DATE-END'], header.get('TIME-END', header.get('TIME$_END'))
         )
 
