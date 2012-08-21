@@ -357,7 +357,7 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         header : pyfits.Header
             main header of the FITS file
         """
-        return header.get('instrument', '').strip() in cls.INSTRUMENTS
+        return header.get('instrume', '').strip() in cls.INSTRUMENTS
 
     def remove_border(self):
         """ Remove duplicate entries on the borders. """
