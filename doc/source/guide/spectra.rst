@@ -15,15 +15,17 @@ can be found in sunpy.CALLISTO_IMAGE
     >>> from sunpy.spectra.sources.callisto import CallistoSpectrogram
     >>> image = CallistoSpectrogram.read(sunpy.CALLISTO_IMAGE)
 
-You can now view the image by using the :py:meth:`show` method.
+You can now view the image by using the
+:py:meth:`show() <sunpy.spectra.spectrogram.Spectrogram.show>`  method.
 
     >>> image.show()
 
 .. image:: ../images/spectra_ex1.png
 
 You can then perform automatic constant background subtraction by using the
-:py:meth:`subtract_bg` method. The resulting image will be clipped at 0
-using the min_ parameter of show in order to avoid negative values.
+:py:meth:`subtract_bg() <sunpy.spectra.spectrogram.Spectrogram.subtract_bg>`
+method. The resulting image will be clipped at 0 using the min_ parameter of
+show in order to avoid negative values.
 
     >>> nobg = image.subtract_bg()
     >>> nobg.show(min_=0)
@@ -31,7 +33,9 @@ using the min_ parameter of show in order to avoid negative values.
 .. image:: ../images/spectra_ex2.png
 
 If you want to see the background determined by the automatic subtraction,
-you can use the :py:meth:`auto_const_bg` method and visualize the resulting
+you can use the
+:py:meth:`auto_const_bg() <sunpy.spectra.spectrogram.Spectrogram.auto_const_bg>` 
+method and visualize the resulting
 data using :py:func:`pyplot.plot`.
     
     >>> plt.figure()
@@ -45,7 +49,8 @@ data using :py:func:`pyplot.plot`.
 
 Now let us say we want to isolate the interesting bit (which starts around
 10:38) from the boring background; there is a method called
-:py:meth:`in_interval` that allows us to take the part of an image that is
+:py:meth:`in_interval() <sunpy.spectra.spectrogram.LinearTimeSpectrogram.in_interval>` 
+that allows us to take the part of an image that is
 within a specified interval. Leaving out the second argument it defaults
 to the end time of the file.
 
