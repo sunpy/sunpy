@@ -12,7 +12,7 @@ import numpy as np
 
 import pyfits
 
-from itertools import izip
+from itertools import izip, chain
 from functools import partial
 from collections import defaultdict
 
@@ -194,7 +194,10 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
     # XXX: Determine those from the data.
     SIGMA_SUM = 75
     SIGMA_DELTA_SUM = 20
-    create = ConditionalDispatch()
+    _create = ConditionalDispatch()
+    _wrapper = _create.wrapper
+    _wrapper.__doc__ 
+    create = staticmethod(_create.wrapper())
     # Contrary to what pylint may think, this is not an old-style class.
     # pylint: disable=E1002,W0142,R0902
 
@@ -388,24 +391,37 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
     
     @classmethod
     def from_glob(cls, pattern):
+        """ Read out files using glob (e.g., ~/BIR_2011*) pattern. Returns 
+        list of CallistoSpectrograms made from all matched files.
+        """        
         return cls.read_many(glob.glob(pattern))
     
     @classmethod
     def from_single_glob(cls, singlepattern):
-        return cls.read(glob.glob(os.path.expanduser(singlepattern))[0])
+        """ Read out a single file using glob (e.g., ~/BIR_2011*) pattern.
+        If more than one file matches the pattern, raise ValueError.
+        """
+        matches = glob.glob(os.path.expanduser(singlepattern))
+        if len(matches) != 1:
+            raise ValueError("Invalid number of matches: %d" % len(matches))
+        return cls.read(matches[0])
     
     @classmethod
     def from_files(cls, filenames):
+        """ Return list of CallistoSpectrogram read from given list of
+        filenames. """
         filenames = map(os.path.expanduser, filenames)
         return cls.read_many(filenames)
     
     @classmethod
     def from_file(cls, filename):
+        """ Return CallistoSpectrogram from FITS file. """
         filename = os.path.expanduser(filename)
         return cls.read(filename)
     
     @classmethod
     def from_dir(cls, directory):
+        """ Return list that contains all files in the directory read in. """
         directory = os.path.expanduser(directory)
         return cls.read_many(
             os.path.join(directory, elem) for elem in os.listdir(directory)
@@ -565,12 +581,12 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         )
 
     
-CallistoSpectrogram.create.add(
+CallistoSpectrogram._create.add(
     CallistoSpectrogram.from_file,
     lambda filename: os.path.isfile(os.path.expanduser(filename)),
     [basestring]
 )
-CallistoSpectrogram.create.add(
+CallistoSpectrogram._create.add(
 # pylint: disable=W0108
 # The lambda is necessary because introspection is peformed on the
 # argspec of the function.
@@ -579,7 +595,7 @@ CallistoSpectrogram.create.add(
     [basestring]
 )
 # If it is not a kwarg and only one matches, do not return a list.
-CallistoSpectrogram.create.add(
+CallistoSpectrogram._create.add(
     CallistoSpectrogram.from_single_glob,
     lambda singlepattern: ('*' in singlepattern and
                            len(glob.glob(
@@ -589,26 +605,44 @@ CallistoSpectrogram.create.add(
 # This case only gets executed under the condition that the previous one wasn't.
 # This is either because more than one file matched, or because the user
 # explicitely used pattern=, in both cases we want a list.
-CallistoSpectrogram.create.add(
+CallistoSpectrogram._create.add(
     CallistoSpectrogram.from_glob,
     lambda pattern: '*' in pattern and glob.glob(
         os.path.expanduser(pattern)
         ),
     [basestring]
 )
-CallistoSpectrogram.create.add(
+CallistoSpectrogram._create.add(
     CallistoSpectrogram.from_files,
     types=[list]
 )
-CallistoSpectrogram.create.add(
+CallistoSpectrogram._create.add(
     CallistoSpectrogram.from_url,
     types=[basestring]
 )
-CallistoSpectrogram.create.add(
+CallistoSpectrogram._create.add(
     CallistoSpectrogram.from_range
 )
 
 
+fns = (
+    item[0] for item in chain(
+        CallistoSpectrogram._create.funcs,
+        CallistoSpectrogram._create.nones
+    )
+)
+
+CallistoSpectrogram.create.__doc__ = (
+    """ Create CallistoSpectrogram from given input dispatching to the
+    appropriate from_* function.
+
+Possible signatures:
+
+""" + '\n\n'.join("%s -> :py:meth:`%s`" % (sig, fun.__name__)
+        for sig, fun in
+        izip(CallistoSpectrogram._create.get_signatures("create"), fns)
+    )
+)
 if __name__ == "__main__":
     opn = CallistoSpectrogram.read("callisto/BIR_20110922_103000_01.fit")
     opn.subtract_bg().clip(0).plot(ratio=2).show()

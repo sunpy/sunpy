@@ -75,7 +75,7 @@ from __future__ import absolute_import
 
 import inspect
 
-from itertools import izip
+from itertools import izip, chain, repeat
 
 
 def run_cls(name):
@@ -196,3 +196,36 @@ class ConditionalDispatch(object):
     
     def wrapper(self):
         return lambda *args, **kwargs: self(*args, **kwargs)
+    
+    def get_signatures(self, prefix=""):
+        for fun, condition, types in self.funcs:
+            if types is not None:
+                yield prefix + fmt_argspec_types(condition, types)
+            else:
+                yield prefix + inspect.formatargspec(*correct_argspec(condition))
+        
+        for fun, types in self.nones:
+            if types is not None:
+                yield prefix + fmt_argspec_types(fun, types)
+            else:
+                yield prefix + inspect.formatargspec(*correct_argspec(fun))
+
+
+def fmt_argspec_types(fun, types):
+    args, varargs, keywords, defaults = correct_argspec(fun)
+    NULL = object()
+    if defaults is None:
+        defaults = []
+    defs = chain(repeat(NULL, len(args) - len(defaults)), defaults)
+    
+    spec = []
+    for key, value, type_ in izip(args, defs, types):
+        if value is NULL:
+            spec.append("%s: %s" % (key, type_.__name__))
+        else:
+            spec.append("%s: %s = %s" % (key, type_.__name__, value))
+    if varargs is not None:
+        spec.append('*%s' % varargs)
+    if keywords is not None:
+        spec.append('**%s' % keywords)
+    return '(' + ', '.join(spec) + ')'
