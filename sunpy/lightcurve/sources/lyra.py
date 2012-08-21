@@ -13,7 +13,7 @@ import pyfits
 import sunpy
 
 class LYRALightCurve(LightCurve):
-    """SDO EVE light curve definition
+    """LYRA light curve definition
     
     Examples
     --------
