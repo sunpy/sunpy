@@ -62,15 +62,17 @@ class GOESLightCurve(LightCurve):
         ax.fmt_xdata = matplotlib.dates.DateFormatter('%H:%M')
         fig.autofmt_xdate()
         fig.show()
-        
-    def _get_default_uri(self):
+    
+    @classmethod
+    def _get_default_uri(cls):
         """Retrieve XRS 2s data from yesterday (most recent data available using
         SEM API) if no other data is specified"""
         today = datetime.datetime.today()
         yesterday = today - datetime.timedelta(days=1)
         
-        return self._get_url_for_date_range(yesterday, today)
+        return cls._get_url_for_date_range(yesterday, today)
     
+    @staticmethod
     def _get_url_for_date_range(self, *args, **kwargs):
         """Returns a URL to the GOES data for the specified date.
         
@@ -111,7 +113,8 @@ class GOESLightCurve(LightCurve):
         
         return url
     
-    def _parse_csv(self, filepath):
+    @staticmethod
+    def _parse_csv(filepath):
         """Parses an GOES CSV"""
         fp = open(filepath, 'rb')
         
