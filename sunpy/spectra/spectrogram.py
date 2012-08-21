@@ -134,6 +134,9 @@ class Spectrogram(np.ndarray):
         label for the frequency axis
     content : str
         header for the image
+    instruments : set of str
+        instruments that recorded the data, may be more than one if
+        it was constructed using combine_frequencies or join_many.
     """
     # Contrary to what pylint may think, this is not an old-style class.
     # pylint: disable=E1002,W0142,R0902
