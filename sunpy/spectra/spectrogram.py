@@ -21,8 +21,8 @@ from matplotlib import pyplot as plt
 from matplotlib.ticker import FuncFormatter, MaxNLocator
 from matplotlib.colorbar import Colorbar
 
-from sunpy.time import parse_time
-from sunpy.util.util import to_signed
+from sunpy.time import parse_time, get_day
+from sunpy.util.util import to_signed, min_delt
 from sunpy.spectra.spectrum import Spectrum
 
 # This should not be necessary, as observations do not take more than a day
@@ -35,20 +35,8 @@ REFERENCE = 0
 COPY = 1
 DEEPCOPY = 2
 
-# Maybe move to util.
-def get_day(dt):
-    """ Return datetime for the beginning of the day of given datetime. """
-    return datetime.datetime(dt.year, dt.month, dt.day)
 
-
-def min_delt(arr):
-    deltas = (arr[:-1] - arr[1:])
-    # Multiple values at the same frequency are just thrown away
-    # in the process of linearizaion
-    return deltas[deltas != 0].min()
-
-
-def list_formatter(lst, fun=None):
+def _list_formatter(lst, fun=None):
     """ Return function that takes x, pos and returns fun(lst[x]) if
     fun is not None, else lst[x] or "" if x is out of range. """
     def _fun(x, pos):
@@ -327,7 +315,7 @@ class Spectrogram(np.ndarray):
             FuncFormatter(self.time_formatter)
         )
         
-        freq_fmt = list_formatter(freqs, self.format_freq)
+        freq_fmt = _list_formatter(freqs, self.format_freq)
         ya.set_major_locator(MaxNLocator(integer=True, steps=[1, 5, 10]))
         ya.set_major_formatter(
             FuncFormatter(freq_fmt)
