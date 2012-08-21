@@ -40,3 +40,7 @@ from sunpy.data.sample import (AIA_171_IMAGE, RHESSI_IMAGE, EIT_195_IMAGE,
 
 # Load user configuration
 config = load_config()
+
+# Keep track of created maps
+from sunpy.util.map_manager import MapManager
+map_manager = MapManager()
