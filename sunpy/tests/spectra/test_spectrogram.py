@@ -63,7 +63,7 @@ def test_subtract_bg():
         spectrogram.subtract_bg()[:, 1800:], signal
     )
 
-    assert dict_eq(spectrogram.get_params(), sbg.get_params())
+    assert dict_eq(spectrogram._get_params(), sbg._get_params())
 
 
 def test_auto_const_bg():
@@ -393,7 +393,7 @@ def test_join_with_gap():
     )
 
     z = LinearTimeSpectrogram.join_many(
-        [one, other], nonlinear=False, maxgap=1
+        [one, other], nonlinear=False, maxgap=1, fill=0
     )
 
     # The - 1 is because resampling other produces an image of size
@@ -491,7 +491,7 @@ def test_rescale():
 
     nspec = spec.rescale()
 
-    assert dict_eq(spec.get_params(), nspec.get_params())
+    assert dict_eq(spec._get_params(), nspec._get_params())
     assert_array_almost_equal(nspec.max(), 1)
     assert nspec.min() == 0
 

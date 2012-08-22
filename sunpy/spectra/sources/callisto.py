@@ -12,7 +12,7 @@ import numpy as np
 
 import pyfits
 
-from itertools import izip
+from itertools import izip, chain
 from functools import partial
 from collections import defaultdict
 
@@ -22,6 +22,9 @@ from scipy.optimize import leastsq
 from scipy.ndimage import gaussian_filter1d
 
 from sunpy.time import parse_time
+from sunpy.util.util import (
+    findpeaks, delta, buffered_write, polyfun_at, minimal_pairs, find_next
+)
 from sunpy.util.cond_dispatch import ConditionalDispatch
 from sunpy.spectra.spectrogram import LinearTimeSpectrogram, REFERENCE
 
@@ -31,81 +34,6 @@ _DAY = datetime.timedelta(days=1)
 
 DATA_SIZE = datetime.timedelta(seconds=15*60)
 
-def findpeaks(a):
-    """ Find local maxima in 1D. Use findpeaks(-a) for minima. """
-    return np.nonzero((a[1:-1] > a[:-2]) & (a[1:-1] > a[2:]))[0]
-
-
-def delta(s):
-    """ Return deltas between elements of s. len(delta(s)) == len(s) - 1. """
-    return s[1:] - s[:-1]
-
-
-def _buffered_write(inp, outp, buffer_size):
-    """ Implementation detail. Write from inp to outp in chunks of
-    buffer_size. """
-    while True:
-        read = inp.read(buffer_size)
-        if not read:
-            break
-        outp.write(read)
-
-
-def polyfun_at(coeff, p):
-    """ Return value of polynomial with coefficients (highest first) at
-    point (can also be an np.ndarray for more than one point) p. """
-    return np.sum(k * p ** n for n, k in enumerate(reversed(coeff)))
-
-
-def minimal_pairs(one, other):
-    """ Find pairs of values in one and other with minimal distance.
-    Assumes one and other are sorted in the same sort sequence.
-    
-    one, other : sequence
-        Sequence of scalars to find pairs from.
-    """
-    lbestdiff = bestdiff = bestj = besti = None
-    for i, freq in enumerate(one):
-        lbestj = bestj
-        
-        bestdiff, bestj = None, None
-        for j, o_freq in enumerate(other[lbestj:]):
-            j = lbestj + j if lbestj else j
-            diff = abs(freq - o_freq)
-            if bestj is not None and diff > bestdiff:
-                break
-            
-            if bestj is None or bestdiff > diff:
-                bestj = j
-                bestdiff = diff
-        
-        if lbestj is not None and lbestj != bestj:
-            yield (besti, lbestj, lbestdiff)
-            besti = i
-            lbestdiff = bestdiff
-        elif lbestdiff is None or bestdiff < lbestdiff:
-            besti = i
-            lbestdiff = bestdiff
-    
-    yield (besti, bestj, lbestdiff)
-
-
-DONT = object()
-def find_next(one, other, pad=DONT):
-    """ Given two sorted sequences one and other, for every element
-    in one, return the one larger than it but nearest to it in other.
-    If no such exists and pad is not DONT, return value of pad as "partner".
-    """
-    n = 0
-    for elem1 in one:
-        for elem2 in other[n:]:
-            n += 1
-            if elem2 > elem1:
-                yield elem1, elem2
-                break
-        else:
-            if pad is not DONT:
-                yield elem1, pad
 
 
 def query(start, end, instruments=None, url=DEFAULT_URL):
@@ -135,7 +63,7 @@ def query(start, end, instruments=None, url=DEFAULT_URL):
                 # so we skip it and continue to the next iteration of the loop.
                 continue
             dstart = datetime.datetime.strptime(date + time, TIME_STR)
-            opn.close()
+            
             if (instruments is not None and
                 inst not in instruments and 
                 (inst, int(no)) not in instruments):
@@ -144,6 +72,7 @@ def query(start, end, instruments=None, url=DEFAULT_URL):
             dend = dstart + DATA_SIZE
             if dend > start and dstart < end:
                 yield directory + href
+        opn.close()
         day += _DAY
 
 
@@ -163,14 +92,14 @@ def download(urls, directory):
         path = os.path.join(directory, filename)
         fd = open(path, 'w')
         src = urllib2.urlopen(url)
-        _buffered_write(src, fd, 4096)
+        buffered_write(src, fd, 4096)
         fd.close()
         src.close()
         paths.append(path)
     return paths
 
 
-def parse_header_time(date, time):
+def _parse_header_time(date, time):
     """ Return datetime object from date and time fields of header. """
     if time is not None:
         date = date + 'T' + time
@@ -194,7 +123,8 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
     # XXX: Determine those from the data.
     SIGMA_SUM = 75
     SIGMA_DELTA_SUM = 20
-    create = ConditionalDispatch()
+    _create = ConditionalDispatch()
+    create = staticmethod(_create.wrapper())
     # Contrary to what pylint may think, this is not an old-style class.
     # pylint: disable=E1002,W0142,R0902
 
@@ -266,10 +196,10 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         axes = fl[1]
         header = fl[0].header
 
-        start = parse_header_time(
+        start = _parse_header_time(
             header['DATE-OBS'], header.get('TIME-OBS', header.get('TIME$_OBS'))
         )
-        end = parse_header_time(
+        end = _parse_header_time(
             header['DATE-END'], header.get('TIME-END', header.get('TIME$_END'))
         )
 
@@ -358,7 +288,7 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         header : pyfits.Header
             main header of the FITS file
         """
-        return header.get('instrument', '').strip() in cls.INSTRUMENTS
+        return header.get('instrume', '').strip() in cls.INSTRUMENTS
 
     def remove_border(self):
         """ Remove duplicate entries on the borders. """
@@ -389,24 +319,37 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
     
     @classmethod
     def from_glob(cls, pattern):
+        """ Read out files using glob (e.g., ~/BIR_2011*) pattern. Returns 
+        list of CallistoSpectrograms made from all matched files.
+        """        
         return cls.read_many(glob.glob(pattern))
     
     @classmethod
     def from_single_glob(cls, singlepattern):
-        return cls.read(glob.glob(os.path.expanduser(singlepattern))[0])
+        """ Read out a single file using glob (e.g., ~/BIR_2011*) pattern.
+        If more than one file matches the pattern, raise ValueError.
+        """
+        matches = glob.glob(os.path.expanduser(singlepattern))
+        if len(matches) != 1:
+            raise ValueError("Invalid number of matches: %d" % len(matches))
+        return cls.read(matches[0])
     
     @classmethod
     def from_files(cls, filenames):
+        """ Return list of CallistoSpectrogram read from given list of
+        filenames. """
         filenames = map(os.path.expanduser, filenames)
         return cls.read_many(filenames)
     
     @classmethod
     def from_file(cls, filename):
+        """ Return CallistoSpectrogram from FITS file. """
         filename = os.path.expanduser(filename)
         return cls.read(filename)
     
     @classmethod
     def from_dir(cls, directory):
+        """ Return list that contains all files in the directory read in. """
         directory = os.path.expanduser(directory)
         return cls.read_many(
             os.path.join(directory, elem) for elem in os.listdir(directory)
@@ -585,12 +528,12 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         return CallistoSpectrogram.join_many([self, data], **kwargs)
 
     
-CallistoSpectrogram.create.add(
+CallistoSpectrogram._create.add(
     CallistoSpectrogram.from_file,
     lambda filename: os.path.isfile(os.path.expanduser(filename)),
     [basestring]
 )
-CallistoSpectrogram.create.add(
+CallistoSpectrogram._create.add(
 # pylint: disable=W0108
 # The lambda is necessary because introspection is peformed on the
 # argspec of the function.
@@ -599,7 +542,7 @@ CallistoSpectrogram.create.add(
     [basestring]
 )
 # If it is not a kwarg and only one matches, do not return a list.
-CallistoSpectrogram.create.add(
+CallistoSpectrogram._create.add(
     CallistoSpectrogram.from_single_glob,
     lambda singlepattern: ('*' in singlepattern and
                            len(glob.glob(
@@ -609,26 +552,44 @@ CallistoSpectrogram.create.add(
 # This case only gets executed under the condition that the previous one wasn't.
 # This is either because more than one file matched, or because the user
 # explicitely used pattern=, in both cases we want a list.
-CallistoSpectrogram.create.add(
+CallistoSpectrogram._create.add(
     CallistoSpectrogram.from_glob,
     lambda pattern: '*' in pattern and glob.glob(
         os.path.expanduser(pattern)
         ),
     [basestring]
 )
-CallistoSpectrogram.create.add(
+CallistoSpectrogram._create.add(
     CallistoSpectrogram.from_files,
     types=[list]
 )
-CallistoSpectrogram.create.add(
+CallistoSpectrogram._create.add(
     CallistoSpectrogram.from_url,
     types=[basestring]
 )
-CallistoSpectrogram.create.add(
+CallistoSpectrogram._create.add(
     CallistoSpectrogram.from_range
 )
 
 
+fns = (
+    item[0] for item in chain(
+        CallistoSpectrogram._create.funcs,
+        CallistoSpectrogram._create.nones
+    )
+)
+
+CallistoSpectrogram.create.__doc__ = (
+    """ Create CallistoSpectrogram from given input dispatching to the
+    appropriate from_* function.
+
+Possible signatures:
+
+""" + '\n\n'.join("%s -> :py:meth:`%s`" % (sig, fun.__name__)
+        for sig, fun in
+        izip(CallistoSpectrogram._create.get_signatures("create"), fns)
+    )
+)
 if __name__ == "__main__":
     opn = CallistoSpectrogram.read("callisto/BIR_20110922_103000_01.fit")
     opn.subtract_bg().clip(0).plot(ratio=2).show()
