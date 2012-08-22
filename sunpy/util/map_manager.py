@@ -3,9 +3,7 @@ import sunpy
 
 class MapManager(weakref.WeakSet):
     """Weak referenced set of maps created using functions decorated by manage_maps."""
-
-    def __repr__(self):
-        return str(self.data)
+    pass
 
 def manage_maps(fn):
     """Maps returned by functions decorated with manage_maps (eg. sunpy.make_map)
