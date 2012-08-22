@@ -307,6 +307,8 @@ class Spectrogram(np.ndarray):
                     (self.freq_axis[0] - self.freq_axis[-1]) / (yres - 1),
                     min_delt(self.freq_axis) / 2.
                 )
+                delt = float(delt)
+            
             data = _AttrGetter(self.clip(min_, max_), delt)
             freqs = np.arange(
                 self.freq_axis[0], self.freq_axis[-1], -data.delt
