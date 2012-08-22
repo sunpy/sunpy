@@ -92,7 +92,7 @@ class _AttrGetter(object):
             2
         )
         
-        self.max_np_delt = np.min(delta(self.midpoints))
+        self.max_mp_delt = np.min(delta(self.midpoints))
         
         self.shape = (len(self), arr.shape[1])
     
@@ -104,7 +104,7 @@ class _AttrGetter(object):
         # The idea is that when we take the biggest delta in the mid points,
         # we do not have to search anything that is between the beginning and
         # the first item that can possibly be that frequency.
-        min_mid = max(0, (freq - self.midpoints[0]) // self.max_np_delt)
+        min_mid = max(0, (freq - self.midpoints[0]) // self.max_mp_delt)
         for n, mid in enumerate(self.midpoints[min_mid:]):
             if mid <= freq:
                 return self.arr[min_mid + n, :]
