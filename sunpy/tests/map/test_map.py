@@ -105,7 +105,7 @@ class TestMap:
             np.array([[-1, -1], [-2, -2]], dtype=np.int16)
         )
     
-    def test__original_header_comparison(self):
+    def test_original_header_comparison(self):
         """Make sure the header is the same in pyfits and SunPy.
         
         PyFITS makes a number of changes to the data and header when reading
@@ -142,3 +142,12 @@ class TestMap:
                 print k
         
         assert map_header == fits_header
+
+    # TODO: Add tests for other resample methods (neighbour, nearest, spline)
+    def test_linear_resample_dimensions(self):
+        """Check that resampled map has expected dimensions."""
+
+        new_dimensions = (100, 200)
+        resampled_map = self.map.resample(new_dimensions)
+        assert resampled_map.shape[1] == new_dimensions[0]
+        assert resampled_map.shape[0] == new_dimensions[1]
