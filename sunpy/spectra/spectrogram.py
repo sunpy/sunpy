@@ -776,7 +776,7 @@ class LinearTimeSpectrogram(Spectrogram):
             the time just before the gap.
         mk_array: function
             Function that is called to create the resulting array. Can be set
-            to Spectrogram.memap(filename) to create a memory mapped
+            to LinearTimeSpectrogram.memap(filename) to create a memory mapped
             result array.
         """
         # XXX: Only load header and load contents of files
