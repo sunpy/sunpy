@@ -6,12 +6,12 @@ class DataManager(weakref.WeakSet):
     The list is at sunpy._data_manager"""
     pass
 
-def manage_maps(fn):
+def manage_data(fn):
     """SunPy data types returned by functions decorated with manage_data (eg. sunpy.make_map)
     will be registered in the sunpy._data_manager list."""
 
-    def fn_manage_maps(*args, **kwargs):
+    def fn_manage_data(*args, **kwargs):
         ret = fn(*args, **kwargs)
-        sunpy.map_manager.add(ret)
+        sunpy.data_manager.add(ret)
         return ret
-    return fn_manage_maps
+    return fn_manage_data
