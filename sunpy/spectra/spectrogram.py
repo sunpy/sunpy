@@ -125,7 +125,9 @@ class TimeFreq(object):
         ya = axes.get_yaxis()
         xa.set_major_formatter(
             FuncFormatter(
-                lambda x, pos: (self.start + datetime.timedelta(seconds=x)).strftime(time_fmt)
+                lambda x, pos: (
+                    self.start + datetime.timedelta(seconds=x)
+                    ).strftime(time_fmt)
             )
         )
         
