@@ -12,6 +12,6 @@ def manage_data(fn):
 
     def fn_manage_data(*args, **kwargs):
         ret = fn(*args, **kwargs)
-        sunpy.data_manager.add(ret)
+        sunpy._data_manager.add(ret)
         return ret
     return fn_manage_data
