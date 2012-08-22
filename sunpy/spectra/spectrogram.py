@@ -101,6 +101,9 @@ class _AttrGetter(object):
     
     def __getitem__(self, item):
         freq = round(self.arr.freq_axis[0] - item * self.delt, 2)
+        # The idea is that when we take the biggest delta in the mid points,
+        # we do not have to search anything that is between the beginning and
+        # the first item that can possibly be that frequency.
         min_mid = max(0, (freq - self.midpoints[0]) // self.max_np_delt)
         for n, mid in enumerate(self.midpoints[min_mid:]):
             if mid <= freq:
