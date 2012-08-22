@@ -8,3 +8,4 @@ Callisto Spectrograms
 
 .. automodule:: sunpy.spectra.sources.callisto
    :members:
+   :show-inheritance:
