@@ -336,10 +336,16 @@ class Spectrogram(np.ndarray):
         )
         
         if linear:
+            # Start with a number that is divisible by 5.
             init = (self.freq_axis[0] % 5) / data.delt
             nticks = 15.
+            # Calculate MHz difference between major ticks.
             dist = (self.freq_axis[0] - self.freq_axis[-1]) / nticks
-            dist = max(1, (dist // 10)) * 10
+            # Round to next multiple of 10, at least ten.
+            dist = max(round(dist, -1), 10)
+            # One pixel in image space is data.delt MHz, thus we can convert
+            # our distance between the major ticks into image space by dividing
+            # it by data.delt.
             
             ya.set_major_locator(
                 IndexLocator(
@@ -352,6 +358,8 @@ class Spectrogram(np.ndarray):
                 )
             )
             def freq_fmt(x, pos):
+                # This is necessary because matplotlib somehow tries to get
+                # the mid-point of the row, which we do not need here.
                 x = x + 0.5
                 return self.format_freq(self.freq_axis[0] - x * data.delt)
         else:
