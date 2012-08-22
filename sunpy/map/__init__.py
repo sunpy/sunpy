@@ -12,9 +12,9 @@ from sunpy.map.mapcube import MapCube
 from sunpy.map.compositemap import CompositeMap
 from sunpy.map.sources import *
 
-from sunpy.util.map_manager import manage_maps
+from sunpy.util.data_manager import manage_data
 
-@manage_maps
+@manage_data
 def make_map(*args, **kwargs):
     """Processes one or more inputs and returns a Map, MapCube, or CompositeMap
     instance.
