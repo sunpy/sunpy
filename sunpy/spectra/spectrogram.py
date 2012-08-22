@@ -102,7 +102,6 @@ class _AttrGetter(object):
     def __getitem__(self, item):
         freq = round(self.arr.freq_axis[0] - item * self.delt, 2)
         min_mid = max(0, (freq - self.midpoints[0]) // self.max_np_delt)
-        print min_mid, freq, self.midpoints, (self.midpoints[0] - freq), self.max_np_delt
         for n, mid in enumerate(self.midpoints[min_mid:]):
             if mid <= freq:
                 return self.arr[min_mid + n, :]
