@@ -22,7 +22,7 @@ from matplotlib.ticker import FuncFormatter, MaxNLocator, IndexLocator
 from matplotlib.colorbar import Colorbar
 
 from sunpy.time import parse_time, get_day
-from sunpy.util.util import to_signed, min_delt
+from sunpy.util.util import to_signed, min_delt, delta
 from sunpy.spectra.spectrum import Spectrum
 
 # This should not be necessary, as observations do not take more than a day
@@ -87,7 +87,12 @@ class _AttrGetter(object):
         self.delt = delt
         
         midpoints = (self.arr.freq_axis[:-1] + self.arr.freq_axis[1:]) / 2
-        self.midpoints = np.concatenate([midpoints, arr.freq_axis[-1:]])
+        self.midpoints = np.round(
+            np.concatenate([midpoints, arr.freq_axis[-1:]]),
+            2
+        )
+        
+        self.max_np_delt = np.min(delta(self.midpoints))
         
         self.shape = (len(self), arr.shape[1])
     
@@ -95,10 +100,12 @@ class _AttrGetter(object):
         return 1 + (self.arr.freq_axis[0] - self.arr.freq_axis[-1]) / self.delt
     
     def __getitem__(self, item):
-        freq = self.arr.freq_axis[0] - item * self.delt
-        for n, mid in enumerate(self.midpoints):
+        freq = round(self.arr.freq_axis[0] - item * self.delt, 2)
+        min_mid = max(0, (freq - self.midpoints[0]) // self.max_np_delt)
+        print min_mid, freq, self.midpoints, (self.midpoints[0] - freq), self.max_np_delt
+        for n, mid in enumerate(self.midpoints[min_mid:]):
             if mid <= freq:
-                return self.arr[n, :]
+                return self.arr[min_mid + n, :]
         raise IndexError
     
     def get_freq(self, item):
