@@ -109,6 +109,37 @@ class _AttrGetter(object):
         raise IndexError
     
 
+
+class TimeFreq(object):
+    def __init__(self, start, time, freq):
+        self.start = start
+        self.time = time
+        self.freq = freq
+    
+    def plot(self, figure=None, time_fmt="%H:%M:%S", **kwargs):
+        if figure is None:
+            figure = plt.figure()
+        axes = figure.add_subplot(111)
+        axes.plot(self.time, self.freq, **kwargs)
+        xa = axes.get_xaxis()
+        ya = axes.get_yaxis()
+        xa.set_major_formatter(
+            FuncFormatter(
+                lambda x, pos: (self.start + datetime.timedelta(seconds=x)).strftime(time_fmt)
+            )
+        )
+        
+        axes.set_xlabel("Time [UT]")
+        axes.set_ylabel("Frequency [MHz]")
+        
+        return figure
+    
+    def show(self, *args, **kwargs):
+        ret = self.plot(*args, **kwargs)
+        ret.show()
+        return ret
+
+
 # XXX: Find out why imshow(x) fails!
 class Spectrogram(np.ndarray):
     """ Base class for spectral analysis in SunPy.
@@ -271,7 +302,9 @@ class Spectrogram(np.ndarray):
     def show(self, *args, **kwargs):
         """ Draw spectrogram on figure with highest index or new one if
         none exists. For parameters see :py:meth:`plot`. """
-        self.plot(*args, **kwargs).show()
+        ret = self.plot(*args, **kwargs)
+        ret.show()
+        return ret
 
     def plot(self, figure=None, overlays=[], colorbar=True, min_=None, max_=None,
              linear=True, showz=True, yres=None, **matplotlib_args):
@@ -406,6 +439,37 @@ class Spectrogram(np.ndarray):
             
         for ax in figure.axes:
             ax.autoscale()
+
+        def ginput_to_time(inp):
+            return [
+                self.start + datetime.timedelta(seconds=float(self.time_axis[x]))
+                for x, y in inp
+            ]
+        
+        def ginput_to_time_secs(inp):
+            return np.array([self.time_axis[x] for x, y in inp])
+        
+        def ginput_to_time_offset(inp):
+            v = ginput_to_time_secs(inp)
+            return v - v.min()
+        
+
+        ginput_to_freq = lambda inp: [freqs[y] for x, y in inp]
+        
+        def time_freq(points=0):
+            inp = figure.ginput(points)
+            min_ = ginput_to_time_secs(inp).min()
+            start = self.start + datetime.timedelta(seconds=min_)
+            return TimeFreq(
+                start, ginput_to_time_offset(inp), ginput_to_freq(inp)
+            )
+        
+        figure.ginput_to_time = ginput_to_time
+        figure.ginput_to_time_offset = ginput_to_time_offset
+        
+        figure.ginput_to_freq = ginput_to_freq
+        
+        figure.time_freq = time_freq
         
         return figure
 
