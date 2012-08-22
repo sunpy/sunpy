@@ -18,7 +18,7 @@ from numpy import ma
 from scipy import ndimage
 
 from matplotlib import pyplot as plt
-from matplotlib.ticker import FuncFormatter, MaxNLocator
+from matplotlib.ticker import FuncFormatter, MaxNLocator, IndexLocator
 from matplotlib.colorbar import Colorbar
 
 from sunpy.time import parse_time, get_day
@@ -34,6 +34,14 @@ SECONDS_PER_DAY = 86400
 REFERENCE = 0
 COPY = 1
 DEEPCOPY = 2
+
+def common_base(objs):
+    """ Find class that every item of objs is an instance of. """
+    for cls in objs[0].__class__.__mro__:
+        if all(isinstance(obj, cls) for obj in objs):
+            break
+    return cls
+
 
 
 def _list_formatter(lst, fun=None):
@@ -92,7 +100,6 @@ class _AttrGetter(object):
             if mid <= freq:
                 return self.arr[n, :]
         raise IndexError
-    
     
 
 # XXX: Find out why imshow(x) fails!
@@ -227,7 +234,7 @@ class Spectrogram(np.ndarray):
             return ""
         return self.format_time(
             self.start + datetime.timedelta(
-                seconds=self.time_axis[x]
+                seconds=float(self.time_axis[x])
             )
         )
 
@@ -260,7 +267,7 @@ class Spectrogram(np.ndarray):
         self.plot(*args, **kwargs).show()
 
     def plot(self, figure=None, overlays=[], colorbar=True, min_=None, max_=None,
-             linear=True, showz=True, **matplotlib_args):
+             linear=True, showz=True, yres=None, **matplotlib_args):
         """
         Plot spectrogram onto figure.
         
@@ -287,7 +294,13 @@ class Spectrogram(np.ndarray):
         # [] as default argument is okay here because it is only read.
         # pylint: disable=W0102,R0914
         if linear:
-            data = _AttrGetter(self.clip(min_, max_))
+            delt = yres
+            if delt is not None:
+                delt = max(
+                    (self.freq_axis[0] - self.freq_axis[-1]) / (yres - 1),
+                    min_delt(self.freq_axis) / 2.
+                )
+            data = _AttrGetter(self.clip(min_, max_), delt)
             freqs = np.arange(
                 self.freq_axis[0], self.freq_axis[-1], -data.delt
             )
@@ -315,8 +328,29 @@ class Spectrogram(np.ndarray):
             FuncFormatter(self.time_formatter)
         )
         
-        freq_fmt = _list_formatter(freqs, self.format_freq)
-        ya.set_major_locator(MaxNLocator(integer=True, steps=[1, 5, 10]))
+        if linear:
+            # 0.5 is because matplotlib seems to center it.
+            init = (self.freq_axis[0] % 5) / data.delt + 0.5
+            nticks = 15.
+            dist = (self.freq_axis[0] - self.freq_axis[-1]) / nticks
+            dist = max(1, (dist // 10)) * 10
+            
+            ya.set_major_locator(
+                IndexLocator(
+                    dist / data.delt, init
+                )
+            )
+            ya.set_minor_locator(
+                IndexLocator(
+                    dist / data.delt / 10, init
+                )
+            )
+            def freq_fmt(x, pos):
+                return self.format_freq(self.freq_axis[0] - x * data.delt)
+        else:
+            freq_fmt = list_formatter(freqs, self.format_freq)
+            ya.set_major_locator(MaxNLocator(integer=True, steps=[1, 5, 10]))
+        
         ya.set_major_formatter(
             FuncFormatter(freq_fmt)
         )
@@ -394,14 +428,14 @@ class Spectrogram(np.ndarray):
         if max_ is not None:
             while self.freq_axis[left] > max_:
                 left += 1
-
+        
         right = len(self.freq_axis) - 1
 
         if min_ is not None:
             while self.freq_axis[right] < min_:
                 right -= 1
 
-        return self[left:right, :]
+        return self[left:right + 1, :]
     
     
     def auto_find_background(self, amount=0.05):
@@ -756,7 +790,7 @@ class LinearTimeSpectrogram(Spectrogram):
     
     @classmethod
     def join_many(cls, specs, mk_arr=None, nonlinear=False,
-        maxgap=0, fill=0):
+        maxgap=0, fill=JOIN_REPEAT):
         """ Produce new Spectrogram that contains spectrograms
         joined together in time.
         
@@ -891,7 +925,7 @@ class LinearTimeSpectrogram(Spectrogram):
         if nonlinear:
             del params['t_delt']
             return Spectrogram(arr, **params)
-        return LinearTimeSpectrogram(arr, **params)
+        return common_base(specs)(arr, **params)
 
     def time_to_x(self, time):
         """ Return x-coordinate in spectrogram that corresponds to the
@@ -975,8 +1009,8 @@ class LinearTimeSpectrogram(Spectrogram):
             'content': one.content,
             'instruments': _union(spec.instruments for spec in specs)
         }
-        return LinearTimeSpectrogram(new, **params)
-
+        return common_base(specs)(new, **params)
+    
     def check_linearity(self, err=None, err_factor=None):
         """ Check linearity of time axis. If err is given, tolerate absolute
         derivation from average delta up to err. If err_factor is given,

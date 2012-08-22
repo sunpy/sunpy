@@ -393,7 +393,7 @@ def test_join_with_gap():
     )
 
     z = LinearTimeSpectrogram.join_many(
-        [one, other], nonlinear=False, maxgap=1
+        [one, other], nonlinear=False, maxgap=1, fill=0
     )
 
     # The - 1 is because resampling other produces an image of size
