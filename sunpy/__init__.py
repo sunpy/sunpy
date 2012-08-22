@@ -43,4 +43,4 @@ config = load_config()
 
 # Keep track of created data types
 from sunpy.util.data_manager import DataManager
-_map_manager = DataManager()
+_data_manager = DataManager()
