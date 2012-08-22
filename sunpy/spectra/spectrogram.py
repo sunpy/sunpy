@@ -101,6 +101,13 @@ class _AttrGetter(object):
                 return self.arr[n, :]
         raise IndexError
     
+    def get_freq(self, item):
+        freq = self.arr.freq_axis[0] - item * self.delt
+        for n, mid in enumerate(self.midpoints):
+            if mid <= freq:
+                return self.arr.freq_axis[n]
+        raise IndexError
+    
 
 # XXX: Find out why imshow(x) fails!
 class Spectrogram(np.ndarray):
@@ -329,8 +336,7 @@ class Spectrogram(np.ndarray):
         )
         
         if linear:
-            # 0.5 is because matplotlib seems to center it.
-            init = (self.freq_axis[0] % 5) / data.delt + 0.5
+            init = (self.freq_axis[0] % 5) / data.delt
             nticks = 15.
             dist = (self.freq_axis[0] - self.freq_axis[-1]) / nticks
             dist = max(1, (dist // 10)) * 10
@@ -346,9 +352,10 @@ class Spectrogram(np.ndarray):
                 )
             )
             def freq_fmt(x, pos):
+                x = x + 0.5
                 return self.format_freq(self.freq_axis[0] - x * data.delt)
         else:
-            freq_fmt = list_formatter(freqs, self.format_freq)
+            freq_fmt = _list_formatter(freqs, self.format_freq)
             ya.set_major_locator(MaxNLocator(integer=True, steps=[1, 5, 10]))
         
         ya.set_major_formatter(
@@ -686,19 +693,17 @@ class Spectrogram(np.ndarray):
     @staticmethod
     def _mk_format_coord(spec, freq_fmt, time_fmt):
         def format_coord(x, y):
-            x = int(x)
-            y = int(y)
-            
             shape = map(int, spec.shape)
             
-            if 0 <= x < shape[1] and 0 <= y < shape[0]:
-                pixel = spec[y][x]
+            xint, yint = int(x), int(y)
+            if 0 <= xint < shape[1] and 0 <= yint < shape[0]:
+                pixel = spec[yint][xint]
             else:
                 pixel = ""
             
             return 'x=%s y=%s z=%s' % (
-                time_fmt(x, 0),
-                freq_fmt(y, 0),
+                time_fmt(x, None),
+                freq_fmt(y, None),
                 pixel
             )
         return format_coord
