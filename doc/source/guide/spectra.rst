@@ -6,8 +6,8 @@ Spectrograms
 ------------
 SunPy currently supports reading dynamic spectra from e-Callisto_ instruments.
 The main class that is used for this is
-:py:class:`sunpy.spectra.sources.callisto.CallistoSpectrogram`. SunPy also
-comes with an example image that shows a radio burst observerd at `Ross Observatory`_ (aka. BIR; Birr Castle, Co. Offaly, Ireland) that
+:py:class:`CallistoSpectrogram <sunpy.spectra.sources.callisto.CallistoSpectrogram>`. SunPy also
+comes with an example image that shows a radio burst observed at `Rosse Observatory`_ (aka. BIR; Birr Castle, Co. Offaly, Ireland) that
 can be found in sunpy.CALLISTO_IMAGE
 
     >>> from matplotlib import pyplot as plt
@@ -15,7 +15,8 @@ can be found in sunpy.CALLISTO_IMAGE
     >>> from sunpy.spectra.sources.callisto import CallistoSpectrogram
     >>> image = CallistoSpectrogram.read(sunpy.CALLISTO_IMAGE)
 
-You can now view the image by using the :py:meth:`show` method.
+You can now view the image by using the
+:py:meth:`show() <sunpy.spectra.spectrogram.Spectrogram.show>`  method.
 
     >>> image.show()
 
@@ -37,8 +38,9 @@ We will, for the purposes of this demonstration, continue working with the
 original image, though.
 
 You can then perform automatic constant background subtraction by using the
-:py:meth:`subtract_bg` method. The resulting image will be clipped at 0
-using the min_ parameter of show in order to avoid negative values.
+:py:meth:`subtract_bg() <sunpy.spectra.spectrogram.Spectrogram.subtract_bg>`
+method. The resulting image will be clipped at 0 using the min_ parameter of
+show in order to avoid negative values.
 
     >>> nobg = image.subtract_bg()
     >>> nobg.show(min_=0)
@@ -46,9 +48,12 @@ using the min_ parameter of show in order to avoid negative values.
 .. image:: ../images/spectra_ex2.png
 
 If you want to see the background determined by the automatic subtraction,
-you can use the :py:meth:`auto_const_bg` method and visualize the resulting
+you can use the
+:py:meth:`auto_const_bg() <sunpy.spectra.spectrogram.Spectrogram.auto_const_bg>` 
+method and visualize the resulting
 data using :py:func:`pyplot.plot`.
-
+    
+    >>> plt.figure()
     >>> bg = image.auto_const_bg()
     >>> plt.plot(image.freq_axis, bg)
     >>> xlabel("Frequency [MHz]")
@@ -59,7 +64,8 @@ data using :py:func:`pyplot.plot`.
 
 Now let us say we want to isolate the interesting bit (which starts around
 10:38) from the boring background; there is a method called
-:py:meth:`in_interval` that allows us to take the part of an image that is
+:py:meth:`in_interval() <sunpy.spectra.spectrogram.LinearTimeSpectrogram.in_interval>` 
+that allows us to take the part of an image that is
 within a specified interval. Leaving out the second argument it defaults
 to the end time of the file.
 
@@ -95,4 +101,4 @@ frequencies of BIR).
 .. image:: ../images/spectra_ex7.png
 
 .. _e-Callisto: http://www.e-callisto.org/
-.. _Ross Observatory: http://rosseobservatory.ie/ 
+.. _Rosse Observatory: http://rosseobservatory.ie/ 
