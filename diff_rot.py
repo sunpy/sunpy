@@ -40,19 +40,37 @@ from numpy import deg2rad as d2r
 
 
 def diff_rot(ddays,latitude,optional=None):
+    """
+    This function computes the change in longitude over days in degrees,
+    diff_rot(ddays,latitud,[optional])
+        ddays: Number of days that I want to rotate.
+        latitude: heliographic coordinate latitude in Degrees.
+        Optional inputs:
+        ----------------
+                         Howard: Use values for small magnetic
+                                 features from Howard et al.
+                         synodic: Use synodic rotation rate.
+                         sidereal: Use sidereal rotation rate.
+                         allen: Use values from Allen, Astrophysical Quantities
+    
+        Returns:
+        -------
+                return the change in longitude over days (units=degrees)
+        
+    """
 
-	 sin2l = (sin(d2r(latitude)))**2
-	 sin4l = sin2l**2
-	 if (optional==None) or (optional=='howard') or (optional=='sidereal')or (optional=='synodic'):
-		 rotation=1.*(10**(-6))*ddays*(2.894-0.428*sin2l-0.37*sin4l)*24.*3600./d2r(1)
-		 if optional=='synodic':
-			 rotation = rotation-0.9856*ddays
+    sin2l = (sin(d2r(latitude)))**2
+    sin4l = sin2l**2
+    if (optional==None) or (optional=='howard') or (optional=='sidereal')or (optional=='synodic'):
+	    rotation=1.*(10**(-6))*ddays*(2.894-0.428*sin2l-0.37*sin4l)*24.*3600./d2r(1)
+	    if optional=='synodic':
+		    rotation = rotation-0.9856*ddays
 			 
 		 
-	 if optional=='allen':
-		 rotation= ddays*(14.44-(3.0*sin2l))
+    if optional=='allen':
+	    rotation= ddays*(14.44-(3.0*sin2l))
 
-	 return round(rotation,4)
+    return round(rotation,4)
          
     
 
