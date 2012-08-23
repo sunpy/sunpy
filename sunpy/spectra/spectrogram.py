@@ -18,6 +18,7 @@ from numpy import ma
 from scipy import ndimage
 
 from matplotlib import pyplot as plt
+from matplotlib.figure import Figure
 from matplotlib.ticker import FuncFormatter, MaxNLocator, IndexLocator
 from matplotlib.colorbar import Colorbar
 
@@ -34,6 +35,14 @@ SECONDS_PER_DAY = 86400
 REFERENCE = 0
 COPY = 1
 DEEPCOPY = 2
+
+
+def figure(*args, **kwargs):
+    kw = {
+        'FigureClass': SpectroFigure,
+    }
+    kw.update(kwargs)
+    return plt.figure(*args, **kw)
 
 
 def _list_formatter(lst, fun=None):
@@ -99,7 +108,36 @@ class _AttrGetter(object):
             if mid <= freq:
                 return self.arr.freq_axis[n]
         raise IndexError
+
+
+class SpectroFigure(Figure):
+    def _init(self, data, freqs):
+        self.data = data
+        self.freqs = freqs
     
+    def ginput_to_time(self, inp):
+        return [
+            self.data.start + datetime.timedelta(seconds=secs)
+            for secs in self.ginput_to_time_secs(inp)
+        ]
+    
+    def ginput_to_time_secs(self, inp):
+        return np.array([float(self.data.time_axis[x]) for x, y in inp])
+    
+    def ginput_to_time_offset(self, inp):
+        v = self.ginput_to_time_secs(inp)
+        return v - v.min()
+    
+    def ginput_to_freq(self, inp):
+        return np.array([self.freqs[y] for x, y in inp])
+    
+    def time_freq(self, points=0):
+        inp = self.ginput(points)
+        min_ = self.ginput_to_time_secs(inp).min()
+        start = self.data.start + datetime.timedelta(seconds=min_)
+        return TimeFreq(
+            start, self.ginput_to_time_offset(inp), self.ginput_to_freq(inp)
+        )
 
 
 class TimeFreq(object):
@@ -357,10 +395,13 @@ class Spectrogram(np.ndarray):
             freqs = self.freq_axis
         newfigure = figure is None
         if figure is None:
-            figure = plt.figure(frameon=True)
+            figure = plt.figure(frameon=True, FigureClass=SpectroFigure)
             axes = figure.add_subplot(111)
         else:
-            axes = figure.axes[0]
+            if figure.axes:
+                axes = figure.axes[0]
+            else:
+                axes = figure.add_subplot(111)
         
         params = {
             'origin': 'lower',
@@ -438,45 +479,15 @@ class Spectrogram(np.ndarray):
             if newfigure:
                 figure.colorbar(im).set_label("Intensity")
             else:
-                Colorbar(figure.axes[1], im).set_label("Intensity")
+                if len(figure.axes) > 1:
+                    Colorbar(figure.axes[1], im).set_label("Intensity")
 
         for overlay in overlays:
             figure, axes = overlay(figure, axes)
             
         for ax in figure.axes:
             ax.autoscale()
-
-        def ginput_to_time(inp):
-            return [
-                self.start + datetime.timedelta(seconds=float(self.time_axis[x]))
-                for x, y in inp
-            ]
-        
-        def ginput_to_time_secs(inp):
-            return np.array([self.time_axis[x] for x, y in inp])
-        
-        def ginput_to_time_offset(inp):
-            v = ginput_to_time_secs(inp)
-            return v - v.min()
-        
-
-        ginput_to_freq = lambda inp: np.array([freqs[y] for x, y in inp])
-        
-        def time_freq(points=0):
-            inp = figure.ginput(points)
-            min_ = ginput_to_time_secs(inp).min()
-            start = self.start + datetime.timedelta(seconds=min_)
-            return TimeFreq(
-                start, ginput_to_time_offset(inp), ginput_to_freq(inp)
-            )
-        
-        figure.ginput_to_time = ginput_to_time
-        figure.ginput_to_time_offset = ginput_to_time_offset
-        
-        figure.ginput_to_freq = ginput_to_freq
-        
-        figure.time_freq = time_freq
-        
+        figure._init(self, freqs)
         return figure
 
     def __getitem__(self, key):
