@@ -87,10 +87,7 @@ class _AttrGetter(object):
         self.delt = delt
         
         midpoints = (self.arr.freq_axis[:-1] + self.arr.freq_axis[1:]) / 2
-        self.midpoints = np.round(
-            np.concatenate([midpoints, arr.freq_axis[-1:]]),
-            2
-        )
+        self.midpoints = np.concatenate([midpoints, arr.freq_axis[-1:]])
         
         self.max_mp_delt = np.min(delta(self.midpoints))
         
@@ -100,7 +97,11 @@ class _AttrGetter(object):
         return 1 + (self.arr.freq_axis[0] - self.arr.freq_axis[-1]) / self.delt
     
     def __getitem__(self, item):
-        freq = round(self.arr.freq_axis[0] - item * self.delt, 2)
+        if item < 0:
+            item = item % len(self)
+        if item >= len(self):
+            raise IndexError
+        freq = self.arr.freq_axis[0] - item * self.delt
         # The idea is that when we take the biggest delta in the mid points,
         # we do not have to search anything that is between the beginning and
         # the first item that can possibly be that frequency.
@@ -108,7 +109,7 @@ class _AttrGetter(object):
         for n, mid in enumerate(self.midpoints[min_mid:]):
             if mid <= freq:
                 return self.arr[min_mid + n, :]
-        raise IndexError
+        return self.arr[min_mid + n, :]
     
     def get_freq(self, item):
         freq = self.arr.freq_axis[0] - item * self.delt
