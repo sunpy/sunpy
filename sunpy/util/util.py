@@ -234,3 +234,37 @@ def min_delt(arr):
     # Multiple values at the same frequency are just thrown away
     # in the process of linearizaion
     return deltas[deltas != 0].min()
+
+
+def common_base(objs):
+    """ Find class that every item of objs is an instance of. """
+    for cls in objs[0].__class__.__mro__:
+        if all(isinstance(obj, cls) for obj in objs):
+            break
+    return cls
+
+
+def merge(items, key=(lambda x: x)):
+    """ Given sorted lists of iterables, return new iterable that returns
+    elemts of all iterables sorted with respect to key. """
+    state = {}
+    for item in map(iter, items):
+        try:
+            first = item.next()
+        except StopIteration:
+            continue
+        else:
+            state[item] = (first, key(first))
+    
+    while state:
+        for item, (value, tk) in state.iteritems():
+            # Value is biggest.
+            if all(tk >= k for it, (v, k)
+                in state.iteritems() if it is not item):
+                yield value
+                break
+        try:
+            n = item.next()
+            state[item] = (n, key(n))
+        except StopIteration:
+            del state[item]
