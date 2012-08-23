@@ -245,7 +245,8 @@ def common_base(objs):
 
 
 def merge(items, key=(lambda x: x)):
-    """ Implementation detail. """
+    """ Given sorted lists of iterables, return new iterable that returns
+    elemts of all iterables sorted with respect to key. """
     state = {}
     for item in map(iter, items):
         try:
