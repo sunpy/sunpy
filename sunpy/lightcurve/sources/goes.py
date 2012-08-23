@@ -69,11 +69,10 @@ class GOESLightCurve(LightCurve):
         SEM API) if no other data is specified"""
         today = datetime.datetime.today()
         yesterday = today - datetime.timedelta(days=1)
-        
         return cls._get_url_for_date_range(yesterday, today)
     
     @staticmethod
-    def _get_url_for_date_range(self, *args, **kwargs):
+    def _get_url_for_date_range(*args, **kwargs):
         """Returns a URL to the GOES data for the specified date.
         
         Parameters
