@@ -12,10 +12,13 @@ from sunpy.map.mapcube import MapCube
 from sunpy.map.compositemap import CompositeMap
 from sunpy.map.sources import *
 
+from sunpy.util.data_manager import manage_data
+
+@manage_data
 def make_map(*args, **kwargs):
     """Processes one or more inputs and returns a Map, MapCube, or CompositeMap
     instance.
-    
+
     Parameters
     ----------
     args : filepath(s), data array
@@ -25,12 +28,12 @@ def make_map(*args, **kwargs):
         Type of multimap to construct when passed more than one input. The
         default choice is a CompositeMap which is more lenient with respect
         to how similar the input data is.
-        
+
     Returns
     -------
     out : Map, MapCube, CompositeMap
         Returns a  subclass instance
-        
+
     Examples
     --------
     >>> import sunpy
@@ -45,7 +48,7 @@ def make_map(*args, **kwargs):
     """
     if len(args) is 0:
         raise TypeError("Invalid input.")
-    
+
     # First check to see if data/header were passed in    
     if isinstance(args[0], list) or isinstance(args[0], np.ndarray):
         data = None
@@ -61,21 +64,21 @@ def make_map(*args, **kwargs):
             else:
                 # 1-dimensional data
                 data = args[0]
-                
+
         # if either of the above cases hold, then create a new Map
         if data is not None:
             if len(args) > 1:
                 return Map(args[0], args[1])
             else:
                 return Map(args[0], {})
-            
-        
+
+
     # If not, check for one or more maps or filepaths
     if len(args) == 1:
         # String
         if isinstance(args[0], basestring):
             filepath = os.path.expanduser(args[0])
-            
+
             # Wildcard string
             if filepath.find("*") != -1:
                 import glob
@@ -83,7 +86,7 @@ def make_map(*args, **kwargs):
             # Directory (use all files)
             elif os.path.isdir(filepath):
                 maps = [os.path.join(filepath, x) for x in os.listdir(filepath)]
-                
+
             # Filepath
             else:
                 return Map.read(filepath)
@@ -93,7 +96,7 @@ def make_map(*args, **kwargs):
               isinstance(args[0], CompositeMap) or 
               isinstance(args[0], MapCube)):
             return args[0]
-        
+
         # List of filepaths or Maps
         elif isinstance(args[0], list):
             # list of maps or filepaths
@@ -106,13 +109,13 @@ def make_map(*args, **kwargs):
                                   "or wildcard expressions.")
     else:
         maps = args
-        
+
     # Make sure we found some data
     if len(maps) is 0:
         raise NoMapsFound("Specified path contains no valid files.")
-        
+
     mtype = kwargs.get("type", "composite")
-        
+
     # MapCube
     if mtype == "cube":
         return MapCube(*maps)
@@ -122,11 +125,11 @@ def make_map(*args, **kwargs):
     else:
         raise InvalidMapType("Invalid multi-map type specified. Please choose "
                              "between 'composite' or 'cube'.")
-        
+
 def read_header(filepath):
     """Parses a file header and return some important parameters"""
     return Map.read_header(filepath)
-    
+
 class InvalidMapInput(ValueError):
     """Exception to raise when input variable is not a Map instance and does
     not point to a valid Map input file."""
