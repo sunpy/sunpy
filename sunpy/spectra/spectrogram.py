@@ -71,6 +71,7 @@ def _union(sets):
     return union
 
 
+# XXX: Better name.
 class _AttrGetter(object):
     """ Helper class for frequency channel linearization.
     
@@ -116,12 +117,20 @@ class _AttrGetter(object):
         return self.arr[min_mid + n, :]
     
     def get_freq(self, item):
+        if item < 0:
+            item = item % len(self)
+        if item >= len(self):
+            raise IndexError
         freq = self.arr.freq_axis[0] - item * self.delt
-        for n, mid in enumerate(self.midpoints):
+        # The idea is that when we take the biggest delta in the mid points,
+        # we do not have to search anything that is between the beginning and
+        # the first item that can possibly be that frequency.
+        min_mid = max(0, (freq - self.midpoints[0]) // self.max_mp_delt)
+        for n, mid in enumerate(self.midpoints[min_mid:]):
             if mid <= freq:
-                return self.arr.freq_axis[n]
-        raise IndexError
-    
+                return self.arr.freq_axis[min_mid + n, :]
+        return self.arr.freq_axis[min_mid + n, :]
+
 
 # XXX: Find out why imshow(x) fails!
 class Spectrogram(np.ndarray):
