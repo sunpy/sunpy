@@ -103,6 +103,18 @@ class _AttrGetter(object):
 
 
 class TimeFreq(object):
+    """ Class to use for plotting frequency vs time.
+    
+    Parameters
+    ----------
+    start : datetime
+        Start time of the plot. All times in time are relative offsets to this
+        in seconds.
+    time : array
+        Time of the data points as offset from start in seconds.
+    freq : array
+        Frequency of the data points in MHz.
+    """
     def __init__(self, start, time, freq):
         self.start = start
         self.time = time
@@ -448,7 +460,7 @@ class Spectrogram(np.ndarray):
             return v - v.min()
         
 
-        ginput_to_freq = lambda inp: [freqs[y] for x, y in inp]
+        ginput_to_freq = lambda inp: np.array([freqs[y] for x, y in inp])
         
         def time_freq(points=0):
             inp = figure.ginput(points)
