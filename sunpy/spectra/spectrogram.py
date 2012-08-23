@@ -25,6 +25,10 @@ from sunpy.time import parse_time, get_day
 from sunpy.util.util import to_signed, min_delt, delta
 from sunpy.spectra.spectrum import Spectrum
 
+# 1080 because that usually is the maximum vertical pixel count on modern
+# screens nowadays (2012).
+DEFAULT_YRES = 1080
+
 # This should not be necessary, as observations do not take more than a day
 # but it is used for completeness' and extendibility's sake.
 # XXX: Leap second?
@@ -284,7 +288,7 @@ class Spectrogram(np.ndarray):
         self.plot(*args, **kwargs).show()
 
     def plot(self, figure=None, overlays=[], colorbar=True, min_=None, max_=None,
-             linear=True, showz=True, yres=None, **matplotlib_args):
+             linear=True, showz=True, yres=DEFAULT_YRES, **matplotlib_args):
         """
         Plot spectrogram onto figure.
         
@@ -307,6 +311,11 @@ class Spectrogram(np.ndarray):
         showz : bool
             If set to True, the value of the pixel that is hovered with the
             mouse is shown in the bottom right corner.
+        yres : int or None
+            To be used in combination with linear=True. If None, sample the
+            image with half the minimum frequency delta. Else, sample the
+            image to be at most yres pixels in vertical dimension. Defaults
+            to 1080 because that's a common screen size.
         """
         # [] as default argument is okay here because it is only read.
         # pylint: disable=W0102,R0914
