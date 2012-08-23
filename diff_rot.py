@@ -52,7 +52,7 @@ def diff_rot(ddays,latitude,optional=None):
 	 if optional=='allen':
 		 rotation= ddays*(14.44-(3.0*sin2l))
 
-	 return rotation
+	 return round(rotation,4)
          
     
 
