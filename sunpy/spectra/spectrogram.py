@@ -22,7 +22,7 @@ from matplotlib.ticker import FuncFormatter, MaxNLocator, IndexLocator
 from matplotlib.colorbar import Colorbar
 
 from sunpy.time import parse_time, get_day
-from sunpy.util.util import to_signed, min_delt
+from sunpy.util.util import to_signed, min_delt, common_base, merge
 from sunpy.spectra.spectrum import Spectrum
 
 # This should not be necessary, as observations do not take more than a day
@@ -34,14 +34,6 @@ SECONDS_PER_DAY = 86400
 REFERENCE = 0
 COPY = 1
 DEEPCOPY = 2
-
-def common_base(objs):
-    """ Find class that every item of objs is an instance of. """
-    for cls in objs[0].__class__.__mro__:
-        if all(isinstance(obj, cls) for obj in objs):
-            break
-    return cls
-
 
 
 def _list_formatter(lst, fun=None):
@@ -662,31 +654,6 @@ class Spectrogram(np.ndarray):
         ldiff = lfreq - frequency
         return (ldiff * value + diff * lvalue) / (diff + ldiff) # pylint: disable=W0631
 
-    @staticmethod
-    def _merge(items, key=(lambda x: x)):
-        """ Implementation detail. """
-        state = {}
-        for item in map(iter, items):
-            try:
-                first = item.next()
-            except StopIteration:
-                continue
-            else:
-                state[item] = (first, key(first))
-
-        while state:
-            for item, (value, tk) in state.iteritems():
-                # Value is biggest.
-                if all(tk >= k for it, (v, k)
-                    in state.iteritems() if it is not item):
-                    yield value
-                    break
-            try:
-                n = item.next()
-                state[item] = (n, key(n))
-            except StopIteration:
-                del state[item]
-
     def linearize_freqs(self, delta_freq=None):
         """ Rebin frequencies so that the frequency axis is linear.
         
@@ -1070,7 +1037,7 @@ class LinearTimeSpectrogram(Spectrogram):
         freq_axis = np.zeros((fsize,))
 
 
-        for n, (data, row) in enumerate(cls._merge(
+        for n, (data, row) in enumerate(merge(
             [
                 [(sp, n) for n in xrange(sp.shape[0])] for sp in specs
             ],
