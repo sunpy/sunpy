@@ -37,7 +37,7 @@
 ######################################################################################################################
 from math import pi, sin, cos
 from numpy import deg2rad as d2r
-
+import numpy as np
 
 def diff_rot(ddays,latitude,optional=None):
     """
@@ -70,7 +70,7 @@ def diff_rot(ddays,latitude,optional=None):
     if optional=='allen':
 	    rotation= ddays*(14.44-(3.0*sin2l))
 
-    return round(rotation,4)
+    return np.round(rotation,4)
          
     
 
