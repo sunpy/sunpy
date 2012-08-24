@@ -65,6 +65,10 @@ class SWavesSpectrogram(LinearTimeSpectrogram):
         content = ''
         t_label = 'Time [UT]'
         f_label = 'Frequency [KHz]'
+        
+        freq_axis = freq_axis[::-1]
+        data = data[::-1, :]
+        
         return cls(data, time_axis, freq_axis, start, end, t_init, t_delt,
             t_label, f_label, content, bg)
 
@@ -84,7 +88,7 @@ class SWavesSpectrogram(LinearTimeSpectrogram):
 
 
 if __name__ == "__main__":
-    opn = SWavesSpectrogram.read("/home/dvd/Documents/Programming/workspace/sunpy/sunpy/spectra/sources/data/swaves_average_20120705_a_hfr.dat")
+    opn = SWavesSpectrogram.read("/home/florian/swaves_average_20120705_a_hfr.dat")
     opn.plot().show()
     print "Press return to exit"
     raw_input()
