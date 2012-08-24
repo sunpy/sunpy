@@ -24,7 +24,7 @@ class Spectrum(np.ndarray):
     def __init__(self, data, freq_axis):
         self.freq_axis = freq_axis
 
-    def plot(self, overlays=[], **matplotlib_args):
+    def plot(self, figure=None, overlays=[], **matplotlib_args):
         """
         Plot spectrum onto figure.
         
