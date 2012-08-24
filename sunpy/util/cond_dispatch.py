@@ -6,7 +6,7 @@ and function signature. That means, whenever it is called, it finds the
 registered methods that match the input's signature and then checks for
 user-defined conditions and types. 
 
-First, we need to create a new ConditionalDispatch>
+First, we need to create a new ConditionalDispatch
 
 >>> fun = ConditionalDispatch()
 
