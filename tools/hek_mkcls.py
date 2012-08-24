@@ -1,3 +1,37 @@
+# -*- coding: utf-8 -*-
+# Author: Florian Mayer <florian.mayer@bitsrc.org>
+#
+# This module was developed with funding provided by
+# the ESA Summer of Code (2011).
+
+# The template can be found in tools/hektemplate.py
+
+"""
+This script is used to generate sunpy.net.hek.attrs. The rationale for using
+code-generation in lieu of dynamic magic is that code-generation ensures
+that tools (e.g. IPython) are able to automatically complete names of members.
+Considering the sheer amount of members it is essential that users are able
+to use completion.
+
+Events are EventType objects. When they are directly ORed together, they are
+joined together so that only one query is sent to the query. They may not
+be ANDed together because an event cannot be of multiple types.	
+
+Events also have attributes which are _StringParamAttrWrapper, that means that
+they overload the Python operators for strings and return a _ParamAttr for
+them. _ParamAttrs are used to specify the values of parameters of the event.
+So, AR.NumSpots == 1 returns a _ParamAttr that when encountered in a query
+sets the GET parameters in a way that only active regions with only one spot
+are returned. _StringParamAttrWrapper support <, <= ,>, >=, ==, != and like.
+_ComparisonParamAttrWrapper support all the operations mentioned above
+barring like.
+"""
+
+# XXX: Maybe split into three modules and import them all into one so
+# we do not need a template but generate one module in its entirety.
+
+from __future__ import absolute_import
+
 import shutil
 import sys
 import os
@@ -9,13 +43,21 @@ EVENTS = [
     'EF', 'CJ', 'PG', 'OT', 'NR', 'SG', 'SP', 'CR', 'CC', 'ER', 'TO'
 ]
 
+# For some reason, the event type is "ce" but all its attributes start with
+# "CME". This dict is here to consider this.
 NAMES = defaultdict(lambda: None, {
     'CME': 'CE'
 })
-
+# These are just groups for attributes that are not _ListAttrs themselves.
 OTHER = ['Area', 'BoundBox', 'Bound', 'OBS', 'Skel', 'FRM', 'Event', 'Outflow']
+# There is no underscore after Wave in the names of the API, so we do not 
+# need to remove it.
 OTHER_NOPAD = ['Wave', 'Veloc', 'Freq', 'Intens']
+# Every attribute that neither starts with something in EVENTS, OTHER or
+# OTHER_NOPAD, is put into the Misc class.
 
+# XXX: Not all of them actually are string. We just use string for now because
+# that is the type that has the most functionality.
 fields = {
     'AR_CompactnessCls': '_StringParamAttrWrapper',
     'AR_IntensKurt': '_StringParamAttrWrapper',
@@ -200,13 +242,14 @@ fields = {
 }
 
 def mk_gen(rest):
+    """ Generate Misc class. """
     ret = ''
-    ret += 'class Misc(object):\n'
+    ret += '@apply\nclass Misc(object):\n'
     for elem in sorted(rest):
         ret += '    %s = %s(%r)\n' %(elem, fields[elem], elem)
     return ret
 
-def mk_cls(key, used, pad=1, nokeys=True, init=True, name=None, base='_ListAttr'):
+def mk_cls(key, used, pad=1, nokeys=True, init=True, name=None, base='EventType'):
     if name is None:
         name = key
     
@@ -217,14 +260,14 @@ def mk_cls(key, used, pad=1, nokeys=True, init=True, name=None, base='_ListAttr'
     if not keys:
         if not nokeys:
             raise ValueError
-        return '%s = _ListAttr("event_type", %r)' % (key, name.lower())
+        return '%s = EventType(%r)' % (key, name.lower())
     ret = ''
     ret += '@apply\nclass %s(%s):\n' % (name, base)
     for k, v in keys:
         ret += '    %s = %s(%r)\n' % (k[len(key) + pad:], v, k)
     if init:
         ret += '''    def __init__(self):
-            _ListAttr.__init__(self, "event_type", %r)''' % name.lower()
+        EventType.__init__(self, %r)''' % name.lower()
     return ret
 
 if __name__ == '__main__':
@@ -247,11 +290,6 @@ if __name__ == '__main__':
         fd = open(dest, 'w')
     
     tmplfd = open(tmpl)
-    
-    fd.write(
-        "# THIS IS AN AUTOMATICALLY GENERATED FILE\n"
-        "# DO NOT EDIT!\n"
-    )
     
     while True:
         buf = tmplfd.read(BUFFER)

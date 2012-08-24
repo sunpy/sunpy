@@ -21,6 +21,7 @@ from sunpy.io import read_file, read_file_header
 from sunpy.sun import constants
 from sunpy.time import parse_time
 from sunpy.util.util import to_signed
+from sunpy.image.rescale import resample, reshape_image_to_4d_superpixel
 
 """
 TODO
@@ -221,6 +222,10 @@ class Map(np.ndarray):
             "units": {
                 'x': header.get('cunit1', 'arcsec'),
                 'y': header.get('cunit2', 'arcsec')
+            },
+            "rotation_angle": {
+                'x': header.get('crota1', 0.),
+                'y': header.get('crota2', 0.)
             }
         }
 
@@ -236,7 +241,7 @@ class Map(np.ndarray):
                           'scale', 'units', 'reference_coordinate',
                           'reference_pixel', 'coordinate_system',
                           'heliographic_latitude', 'heliographic_longitude',
-                          'carrington_longitude']
+                          'carrington_longitude','rotation_angle']
 
             for attr in properties:
                 setattr(self, attr, getattr(obj, attr))
@@ -503,7 +508,6 @@ Dimension:\t [%d, %d]
         ----------
         | http://www.scipy.org/Cookbook/Rebinning (Original source, 2011/11/19)
         """
-        from sunpy.image import resample
 
         # Note: because the underlying ndarray is transposed in sense when
         #   compared to the Map, the ndarray is transposed, resampled, then
@@ -561,7 +565,6 @@ Dimension:\t [%d, %d]
         ----------
         | http://mail.scipy.org/pipermail/numpy-discussion/2010-July/051760.html
         """
-        from sunpy.image import reshape_image_to_4d_superpixel
 
         # Note: because the underlying ndarray is transposed in sense when
         #   compared to the Map, the ndarray is transposed, resampled, then
