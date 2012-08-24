@@ -82,13 +82,13 @@ class SWavesSpectrogram(LinearTimeSpectrogram):
         super(SWavesSpectrogram, self).__init__(
             data, time_axis, freq_axis, start, end,
             t_init, t_delt, t_label, f_label,
-            content
+            content, set(["SWAVES"])
         )
         self.bg = bg
 
 
 if __name__ == "__main__":
     opn = SWavesSpectrogram.read("/home/florian/swaves_average_20120705_a_hfr.dat")
-    opn.plot().show()
+    opn.plot(min_=0, linear=False).show()
     print "Press return to exit"
     raw_input()
