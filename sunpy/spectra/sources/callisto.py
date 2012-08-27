@@ -490,27 +490,15 @@ CallistoSpectrogram._create.add(
     check=False
 )
 
-
-fns = (
-    item[0] for item in chain(
-        CallistoSpectrogram._create.funcs,
-        CallistoSpectrogram._create.nones
-    )
-)
-
 _create_wrapper.__doc__ = (
     """ Create CallistoSpectrogram from given input dispatching to the
     appropriate from_* function.
 
 Possible signatures:
 
-""" + '\n\n'.join("%s -> :py:meth:`%s`" % (sig, fun.__name__)
-        for sig, fun in
-        # The 1 prevents the cls from incorrectly being shown in the
-        # documentation.
-        izip(CallistoSpectrogram._create.get_signatures("create", 1), fns)
-    )
+""" + CallistoSpectrogram._create.generate_docs()
 )
+
 if __name__ == "__main__":
     opn = CallistoSpectrogram.read("callisto/BIR_20110922_103000_01.fit")
     opn.subtract_bg().clip(0).plot(ratio=2).show()
