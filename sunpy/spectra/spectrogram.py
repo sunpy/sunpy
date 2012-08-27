@@ -23,8 +23,12 @@ from matplotlib.ticker import FuncFormatter, MaxNLocator, IndexLocator
 from matplotlib.colorbar import Colorbar
 
 from sunpy.time import parse_time, get_day
-from sunpy.util.util import to_signed, min_delt, common_base, merge
+from sunpy.util.util import to_signed, min_delt, delta, common_base, merge
 from sunpy.spectra.spectrum import Spectrum
+
+# 1080 because that usually is the maximum vertical pixel count on modern
+# screens nowadays (2012).
+DEFAULT_YRES = 1080
 
 # This should not be necessary, as observations do not take more than a day
 # but it is used for completeness' and extendibility's sake.
@@ -68,7 +72,7 @@ def _union(sets):
     return union
 
 
-class _AttrGetter(object):
+class _LinearView(object):
     """ Helper class for frequency channel linearization.
     
     Parameters
@@ -90,24 +94,42 @@ class _AttrGetter(object):
         midpoints = (self.arr.freq_axis[:-1] + self.arr.freq_axis[1:]) / 2
         self.midpoints = np.concatenate([midpoints, arr.freq_axis[-1:]])
         
+        self.max_mp_delt = np.min(delta(self.midpoints))
+        
         self.shape = (len(self), arr.shape[1])
     
     def __len__(self):
         return 1 + (self.arr.freq_axis[0] - self.arr.freq_axis[-1]) / self.delt
     
     def __getitem__(self, item):
+        if item < 0:
+            item = item % len(self)
+        if item >= len(self):
+            raise IndexError
         freq = self.arr.freq_axis[0] - item * self.delt
-        for n, mid in enumerate(self.midpoints):
+        # The idea is that when we take the biggest delta in the mid points,
+        # we do not have to search anything that is between the beginning and
+        # the first item that can possibly be that frequency.
+        min_mid = max(0, (freq - self.midpoints[0]) // self.max_mp_delt)
+        for n, mid in enumerate(self.midpoints[min_mid:]):
             if mid <= freq:
-                return self.arr[n, :]
-        raise IndexError
+                return self.arr[min_mid + n, :]
+        return self.arr[min_mid + n, :]
     
     def get_freq(self, item):
+        if item < 0:
+            item = item % len(self)
+        if item >= len(self):
+            raise IndexError
         freq = self.arr.freq_axis[0] - item * self.delt
-        for n, mid in enumerate(self.midpoints):
+        # The idea is that when we take the biggest delta in the mid points,
+        # we do not have to search anything that is between the beginning and
+        # the first item that can possibly be that frequency.
+        min_mid = max(0, (freq - self.midpoints[0]) // self.max_mp_delt)
+        for n, mid in enumerate(self.midpoints[min_mid:]):
             if mid <= freq:
-                return self.arr.freq_axis[n]
-        raise IndexError
+                return self.arr.freq_axis[min_mid + n, :]
+        return self.arr.freq_axis[min_mid + n, :]
 
 
 class SpectroFigure(Figure):
@@ -351,7 +373,7 @@ class Spectrogram(np.ndarray):
         return ret
 
     def plot(self, figure=None, overlays=[], colorbar=True, min_=None, max_=None,
-             linear=True, showz=True, yres=None, **matplotlib_args):
+             linear=True, showz=True, yres=DEFAULT_YRES, **matplotlib_args):
         """
         Plot spectrogram onto figure.
         
@@ -374,6 +396,11 @@ class Spectrogram(np.ndarray):
         showz : bool
             If set to True, the value of the pixel that is hovered with the
             mouse is shown in the bottom right corner.
+        yres : int or None
+            To be used in combination with linear=True. If None, sample the
+            image with half the minimum frequency delta. Else, sample the
+            image to be at most yres pixels in vertical dimension. Defaults
+            to 1080 because that's a common screen size.
         """
         # [] as default argument is okay here because it is only read.
         # pylint: disable=W0102,R0914
@@ -386,7 +413,7 @@ class Spectrogram(np.ndarray):
                 )
                 delt = float(delt)
             
-            data = _AttrGetter(self.clip(min_, max_), delt)
+            data = _LinearView(self.clip(min_, max_), delt)
             freqs = np.arange(
                 self.freq_axis[0], self.freq_axis[-1], -data.delt
             )

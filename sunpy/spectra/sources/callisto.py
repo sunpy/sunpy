@@ -487,28 +487,9 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
                 polyfun_at(f2, two.freq_axis)[:, np.newaxis]
         )
     
-    def find_interesting(self):
-        s = np.sum(self, 0)
-        s = gaussian_filter1d(s, self.SIGMA_SUM)
-        
-        s = s - s.min()
-        
-        sd = gaussian_filter1d(delta(np.float64(s)), self.SIGMA_DELTA_SUM)
-        
-        mxs = findpeaks(sd)
-        mns = findpeaks(-sd)
-        
-        	
-        
-        # XXX: End of interesting part is back to noise in s.
-        return max(
-            # Only negative derivatives imply end of interesting
-            # part.
-            find_next(mxs, [mn for mn in mns if sd[mn] < 0]),
-            key=lambda x: sd[x[0]]
-        )
-    
     def extend(self, minutes=15, **kwargs):
+        """ Request subsequent files from the server. If minutes is negative,
+        retrieve preceding files. """
         if len(self.instruments) != 1:
             raise ValueError
         
