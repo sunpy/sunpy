@@ -506,6 +506,8 @@ Possible signatures:
 
 """ + '\n\n'.join("%s -> :py:meth:`%s`" % (sig, fun.__name__)
         for sig, fun in
+        # The 1 prevents the cls from incorrectly being shown in the
+        # documentation.
         izip(CallistoSpectrogram._create.get_signatures("create", 1), fns)
     )
 )
