@@ -327,6 +327,7 @@ class VSOClient(object):
         if cd is not None:
             try:
                 name = get_filename(cd)
+            # Message.get_filename raises this for bogus data.
             except IndexError:
                 pass
         if not name:
