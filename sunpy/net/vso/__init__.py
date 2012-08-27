@@ -316,10 +316,19 @@ class VSOClient(object):
     @staticmethod
     def mk_filename(pattern, response, sock, url):
         # FIXME: os.path.exists(name)
-        name = sock.headers.get(
-            'Content-Disposition', url.rstrip('/').rsplit('/', 1)[-1]
-        )
-        if not name:
+        cd = sock.headers.get('Content-Disposition', None)
+        name = None
+        if cd is not None:
+            mp = dict(
+                map(str.strip, item.split("="))
+                for item in cd.split(';') if '=' in item
+            )
+            print mp
+            if 'filename' in mp:
+                name = mp['filename'].strip('"')
+        if name is None:
+            name = url.rstrip('/').rsplit('/', 1)[-1]
+        if name is None:
             name = response.fileid.replace('/', '_')
         
         fname = pattern.format(file=name, **dict(response))
