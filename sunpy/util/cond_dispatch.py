@@ -82,6 +82,7 @@ def run_cls(name):
     """ run_cls("foo")(cls, *args, **kwargs) -> cls.foo(*args, **kwargs) """
     fun = lambda cls, *args, **kwargs: getattr(cls, name)(*args, **kwargs)
     fun.__name__ = name
+    fun.run_cls = True
     return fun    
 
 
@@ -207,24 +208,38 @@ class ConditionalDispatch(object):
     
     def get_signatures(self, prefix="", start=0):
         for fun, condition, types in self.funcs:
+            if start == -1:
+                st = getattr(fun, 'run_cls', 0)
+            else:
+                st = start
+
             if types is not None:
-                yield prefix + fmt_argspec_types(condition, types, start)
+                yield prefix + fmt_argspec_types(condition, types, st)
             else:
                 args, varargs, keywords, defaults = correct_argspec(condition)
-                args = args[start:]
+                args = args[st:]
                 yield prefix + inspect.formatargspec(
                     args, varargs, keywords, defaults
                 )
         
         for fun, types in self.nones:
             if types is not None:
-                yield prefix + fmt_argspec_types(fun, types, start)
+                yield prefix + fmt_argspec_types(fun, types, st)
             else:
                 args, varargs, keywords, defaults = correct_argspec(condition)
-                args = args[start:]
+                args = args[st:]
                 yield prefix + inspect.formatargspec(
                     args, varargs, keywords, defaults
                 )
+
+    def generate_docs(self):
+        fns = (item[0] for item in chain(self.funcs, self.nones))
+        return '\n\n'.join("%s -> :py:meth:`%s`" % (sig, fun.__name__)
+            for sig, fun in
+            # The 1 prevents the cls from incorrectly being shown in the
+            # documentation.
+            izip(self.get_signatures("create", -1), fns)
+        )
 
 
 def fmt_argspec_types(fun, types, start=0):
