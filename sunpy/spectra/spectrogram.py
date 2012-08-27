@@ -63,8 +63,7 @@ def _union(sets):
     return union
 
 
-# XXX: Better name.
-class _AttrGetter(object):
+class _LinearView(object):
     """ Helper class for frequency channel linearization.
     
     Parameters
@@ -329,7 +328,7 @@ class Spectrogram(np.ndarray):
                 )
                 delt = float(delt)
             
-            data = _AttrGetter(self.clip(min_, max_), delt)
+            data = _LinearView(self.clip(min_, max_), delt)
             freqs = np.arange(
                 self.freq_axis[0], self.freq_axis[-1], -data.delt
             )
