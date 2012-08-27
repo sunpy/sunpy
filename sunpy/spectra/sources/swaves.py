@@ -47,17 +47,19 @@ class SWavesSpectrogram(LinearTimeSpectrogram):
     def swavesfile_to_date(filename):
         _, name = os.path.split(filename)
         date = name.split('_')[2]
-        return datetime.datetime(int(date[0:4]),int(date[4:6]),int(date[6:]))
+        return datetime.datetime(
+            int(date[0:4]), int(date[4:6]), int(date[6:])
+        )
 
     @classmethod
     def read(cls, filename, **kwargs):
         """ Read in FITS file and return a new SWavesSpectrogram. """
-        data = np.genfromtxt(filename,skip_header=2)
-        time_axis = data[:,0] * 60.
-        data = data[:,1:].transpose()
-        header = np.genfromtxt(filename,skip_footer=time_axis.size)
-        freq_axis = header[0,:]
-        bg = header[1,:]
+        data = np.genfromtxt(filename, skip_header=2)
+        time_axis = data[:, 0] * 60.
+        data = data[:, 1:].transpose()
+        header = np.genfromtxt(filename, skip_footer=time_axis.size)
+        freq_axis = header[0, :]
+        bg = header[1, :]
         start = cls.swavesfile_to_date(filename)
         end = start + datetime.timedelta(seconds=time_axis[-1])
         t_delt = 60.
