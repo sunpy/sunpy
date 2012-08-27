@@ -509,6 +509,8 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         )
     
     def extend(self, minutes=15, **kwargs):
+        """ Request subsequent files from the server. If minutes is negative,
+        retrieve preceding files. """
         if len(self.instruments) != 1:
             raise ValueError
         
