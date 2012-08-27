@@ -80,8 +80,9 @@ from itertools import izip, chain, repeat
 
 def run_cls(name):
     """ run_cls("foo")(cls, *args, **kwargs) -> cls.foo(*args, **kwargs) """
-    return lambda cls, *args, **kwargs: getattr(cls, name)(*args, **kwargs)
-    
+    fun = lambda cls, *args, **kwargs: getattr(cls, name)(*args, **kwargs)
+    fun.__name__ = name
+    return fun    
 
 
 def matches_types(fun, types, args, kwargs):
@@ -145,6 +146,13 @@ class ConditionalDispatch(object):
         self.funcs = []
         self.nones = []
     
+    @classmethod
+    def from_existing(cls, cond_dispatch):
+        new = cls()
+        new.funcs = cond_dispatch.funcs[:]
+        new.nones = cond_dispatch.nones[:]
+        return new
+
     def add_dec(self, condition):
         def _dec(fun):
             self.add(fun, condition)
@@ -197,22 +205,34 @@ class ConditionalDispatch(object):
     def wrapper(self):
         return lambda *args, **kwargs: self(*args, **kwargs)
     
-    def get_signatures(self, prefix=""):
+    def get_signatures(self, prefix="", start=0):
         for fun, condition, types in self.funcs:
             if types is not None:
-                yield prefix + fmt_argspec_types(condition, types)
+                yield prefix + fmt_argspec_types(condition, types, start)
             else:
-                yield prefix + inspect.formatargspec(*correct_argspec(condition))
+                args, varargs, keywords, defaults = correct_argspec(condition)
+                args = args[start:]
+                yield prefix + inspect.formatargspec(
+                    args, varargs, keywords, defaults
+                )
         
         for fun, types in self.nones:
             if types is not None:
-                yield prefix + fmt_argspec_types(fun, types)
+                yield prefix + fmt_argspec_types(fun, types, start)
             else:
-                yield prefix + inspect.formatargspec(*correct_argspec(fun))
+                args, varargs, keywords, defaults = correct_argspec(condition)
+                args = args[start:]
+                yield prefix + inspect.formatargspec(
+                    args, varargs, keywords, defaults
+                )
 
 
-def fmt_argspec_types(fun, types):
+def fmt_argspec_types(fun, types, start=0):
     args, varargs, keywords, defaults = correct_argspec(fun)
+    
+    args = args[start:]
+    types = types[start:]
+
     NULL = object()
     if defaults is None:
         defaults = []
