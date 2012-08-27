@@ -25,7 +25,7 @@ from sunpy.time import parse_time
 from sunpy.util.util import (
     findpeaks, delta, buffered_write, polyfun_at, minimal_pairs, find_next
 )
-from sunpy.util.cond_dispatch import ConditionalDispatch
+from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
 from sunpy.spectra.spectrogram import LinearTimeSpectrogram, REFERENCE
 
 TIME_STR = "%Y%m%d%H%M%S"
@@ -106,6 +106,11 @@ def _parse_header_time(date, time):
     return parse_time(date)
 
 
+_create = ConditionalDispatch.from_existing(LinearTimeSpectrogram._create)
+# We cannot put this into the class, as _create_wrapper would be converted
+# into an instance method.
+_create_wrapper = _create.wrapper()
+
 class CallistoSpectrogram(LinearTimeSpectrogram):
     """ Classed used for dynamic spectra coming from the Callisto network.
     
@@ -123,8 +128,8 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
     # XXX: Determine those from the data.
     SIGMA_SUM = 75
     SIGMA_DELTA_SUM = 20
-    _create = ConditionalDispatch()
-    create = staticmethod(_create.wrapper())
+    _create = _create
+    create = classmethod(_create_wrapper)
     # Contrary to what pylint may think, this is not an old-style class.
     # pylint: disable=E1002,W0142,R0902
 
@@ -318,55 +323,6 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         return objs
     
     @classmethod
-    def from_glob(cls, pattern):
-        """ Read out files using glob (e.g., ~/BIR_2011*) pattern. Returns 
-        list of CallistoSpectrograms made from all matched files.
-        """        
-        return cls.read_many(glob.glob(pattern))
-    
-    @classmethod
-    def from_single_glob(cls, singlepattern):
-        """ Read out a single file using glob (e.g., ~/BIR_2011*) pattern.
-        If more than one file matches the pattern, raise ValueError.
-        """
-        matches = glob.glob(os.path.expanduser(singlepattern))
-        if len(matches) != 1:
-            raise ValueError("Invalid number of matches: %d" % len(matches))
-        return cls.read(matches[0])
-    
-    @classmethod
-    def from_files(cls, filenames):
-        """ Return list of CallistoSpectrogram read from given list of
-        filenames. """
-        filenames = map(os.path.expanduser, filenames)
-        return cls.read_many(filenames)
-    
-    @classmethod
-    def from_file(cls, filename):
-        """ Return CallistoSpectrogram from FITS file. """
-        filename = os.path.expanduser(filename)
-        return cls.read(filename)
-    
-    @classmethod
-    def from_dir(cls, directory):
-        """ Return list that contains all files in the directory read in. """
-        directory = os.path.expanduser(directory)
-        return cls.read_many(
-            os.path.join(directory, elem) for elem in os.listdir(directory)
-        )
-    
-    @classmethod
-    def from_url(cls, url):
-        """ Return CallistoSpectrogram read from URL.
-        
-        Parameters
-        ----------
-        url : str
-            URL to retrieve the data from
-        """
-        return cls.read(url)
-    
-    @classmethod
     def from_range(cls, instrument, start, end, **kwargs):
         """ Automatically download data from instrument between start and
         end and join it together.
@@ -527,48 +483,11 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         data = data.clip_freq(self.freq_axis[-1], self.freq_axis[0])
         return CallistoSpectrogram.join_many([self, data], **kwargs)
 
-    
+
 CallistoSpectrogram._create.add(
-    CallistoSpectrogram.from_file,
-    lambda filename: os.path.isfile(os.path.expanduser(filename)),
-    [basestring]
-)
-CallistoSpectrogram._create.add(
-# pylint: disable=W0108
-# The lambda is necessary because introspection is peformed on the
-# argspec of the function.
-    CallistoSpectrogram.from_dir,
-    lambda directory: os.path.isdir(os.path.expanduser(directory)),
-    [basestring]
-)
-# If it is not a kwarg and only one matches, do not return a list.
-CallistoSpectrogram._create.add(
-    CallistoSpectrogram.from_single_glob,
-    lambda singlepattern: ('*' in singlepattern and
-                           len(glob.glob(
-                               os.path.expanduser(singlepattern))) == 1),
-    [basestring]
-)
-# This case only gets executed under the condition that the previous one wasn't.
-# This is either because more than one file matched, or because the user
-# explicitely used pattern=, in both cases we want a list.
-CallistoSpectrogram._create.add(
-    CallistoSpectrogram.from_glob,
-    lambda pattern: '*' in pattern and glob.glob(
-        os.path.expanduser(pattern)
-        ),
-    [basestring]
-)
-CallistoSpectrogram._create.add(
-    CallistoSpectrogram.from_files,
-    types=[list]
-)
-CallistoSpectrogram._create.add(
-    CallistoSpectrogram.from_url,
-    types=[basestring]
-)
-CallistoSpectrogram._create.add(
-    CallistoSpectrogram.from_range
+    run_cls('from_range'),
+    lambda cls, instrument, start, end: True,
+    check=False
 )
 
 
@@ -579,7 +498,7 @@ fns = (
     )
 )
 
-CallistoSpectrogram.create.__doc__ = (
+_create_wrapper.__doc__ = (
     """ Create CallistoSpectrogram from given input dispatching to the
     appropriate from_* function.
 
@@ -587,7 +506,7 @@ Possible signatures:
 
 """ + '\n\n'.join("%s -> :py:meth:`%s`" % (sig, fun.__name__)
         for sig, fun in
-        izip(CallistoSpectrogram._create.get_signatures("create"), fns)
+        izip(CallistoSpectrogram._create.get_signatures("create", 1), fns)
     )
 )
 if __name__ == "__main__":
