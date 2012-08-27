@@ -14,7 +14,7 @@ from numpy.testing import assert_array_almost_equal
 from scipy import ndimage
 
 from sunpy.spectra.spectrogram import (
-    Spectrogram, LinearTimeSpectrogram, min_delt, _AttrGetter
+    Spectrogram, LinearTimeSpectrogram, min_delt, _LinearView
 )
 
 
@@ -729,7 +729,7 @@ def test_linearize():
     assert (linear[8] == image[3, :]).all()
 
 
-def test_linearize_wrapper():
+def test_linear_view():
     image = np.random.rand(5, 900)
     spec = LinearTimeSpectrogram(image,
         np.linspace(0, 1 * (image.shape[1] - 1), image.shape[1]),
@@ -740,7 +740,7 @@ def test_linearize_wrapper():
         1
     )
     
-    linear = _AttrGetter(spec)
+    linear = _LinearView(spec)
     # assert ((linear.freq_axis[:-1] - linear.freq_axis[1:]) == 2.5).all()
     
     assert (linear[0] == image[0, :]).all()
@@ -752,3 +752,37 @@ def test_linearize_wrapper():
     assert (linear[6] == image[2, :]).all()
     assert (linear[7] == image[2, :]).all()
     assert (linear[8] == image[3, :]).all()
+
+
+def test_linear_view_indexerror():
+    image = np.random.rand(5, 900)
+    spec = LinearTimeSpectrogram(image,
+        np.linspace(0, 1 * (image.shape[1] - 1), image.shape[1]),
+        np.array([20, 10, 5, 0]),
+        datetime(2010, 1, 1, 0, 15),
+        datetime(2010, 1, 1, 0, 30),
+        900,
+        1
+    )
+    
+    linear = _LinearView(spec)
+    # assert ((linear.freq_axis[:-1] - linear.freq_axis[1:]) == 2.5).all()
+    with pytest.raises(IndexError):
+        linear[9]
+
+
+def test_linear_view_negative():
+    image = np.random.rand(5, 900)
+    spec = LinearTimeSpectrogram(image,
+        np.linspace(0, 1 * (image.shape[1] - 1), image.shape[1]),
+        np.array([20, 10, 5, 0]),
+        datetime(2010, 1, 1, 0, 15),
+        datetime(2010, 1, 1, 0, 30),
+        900,
+        1
+    )
+    
+    linear = _LinearView(spec)
+    # assert ((linear.freq_axis[:-1] - linear.freq_axis[1:]) == 2.5).all()
+    assert (linear[8] == image[3, :]).all()
+    assert (linear[-1] == image[3, :]).all()
