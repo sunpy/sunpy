@@ -335,6 +335,7 @@ class VSOClient(object):
         if not name:
             name = response.fileid.replace('/', '_')
         
+        name = os.path.basename(name)
         fname = pattern.format(file=name, **dict(response))
         dir_ = os.path.dirname(fname)
         if not os.path.exists(dir_):
