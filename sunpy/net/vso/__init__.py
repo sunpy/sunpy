@@ -332,7 +332,7 @@ class VSOClient(object):
 
         if not name:
             name = "file"
-            rand = ""
+        rand = ""
 
         for _ in xrange(10):
             fname = pattern.format(file=name+rand, **dict(response))
