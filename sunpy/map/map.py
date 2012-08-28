@@ -23,6 +23,9 @@ from sunpy.time import parse_time
 from sunpy.util.util import to_signed
 from sunpy.image.rescale import resample, reshape_image_to_4d_superpixel
 
+from sunpy.util.cond_dispatch import ConditionalDispatch
+from sunpy.util.create import Parent
+
 """
 TODO
 ----
@@ -35,7 +38,10 @@ or something else?)
 * Should 'center' be renamed to 'offset' and crpix1 & 2 be used for 'center'?
 """
 
-class Map(np.ndarray):
+_create = ConditionalDispatch.from_existing(Parent._create)
+_create_wrapper = _create.wrapper()
+
+class Map(np.ndarray, Parent):
     """
     Map(data, header)
 
@@ -152,6 +158,9 @@ class Map(np.ndarray):
     | http://www.scipy.org/Subclasses
 
     """
+    _create = _create
+    create = classmethod(_create_wrapper)
+    
     def __new__(cls, data, header):
         """Creates a new Map instance"""
         if isinstance(data, np.ndarray):
