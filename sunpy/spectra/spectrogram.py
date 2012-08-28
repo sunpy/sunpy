@@ -7,8 +7,10 @@ from __future__ import absolute_import
 
 import os
 import glob
+import urllib2
 import datetime
 
+from tempfile import NamedTemporaryFile
 from random import randint
 from itertools import izip
 from copy import copy, deepcopy
@@ -23,9 +25,14 @@ from matplotlib import pyplot as plt
 from matplotlib.ticker import FuncFormatter, MaxNLocator, IndexLocator
 from matplotlib.colorbar import Colorbar
 
+import sunpy
+
+from sunpy.net.util import get_system_filename
 from sunpy.time import parse_time, get_day
 from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
-from sunpy.util.util import to_signed, min_delt, delta, common_base, merge
+from sunpy.util.util import (
+    to_signed, min_delt, delta, common_base, merge, buffered_write
+)
 from sunpy.spectra.spectrum import Spectrum
 
 # 1080 because that usually is the maximum vertical pixel count on modern
@@ -764,7 +771,25 @@ class Spectrogram(np.ndarray):
         url : str
             URL to retrieve the data from
         """
-        return cls.read(url)
+        default_dir = sunpy.config.get("downloads", "download_dir")
+        opn = urllib2.urlopen(url)
+        try:
+            name = get_system_filename(opn, url)
+            path = os.path.join(default_dir, name)
+            if os.path.exists(path):
+                fd = NamedTemporaryFile(
+                    prefix=name, dir=default_dir, delete=False
+                )
+                path = fd.name
+            else:
+                fd = open(path, "wb")
+            buffered_write(opn, fd, 9096)
+
+            fd.flush()
+
+            return cls.read(path)
+        finally:
+            opn.close()
 
 
 class LinearTimeSpectrogram(Spectrogram):
