@@ -8,6 +8,7 @@
 """
 
 from __future__ import absolute_import
+import os
 from scipy.constants import constants as con
 
 __all__ = ["toggle_pylab", "degrees_to_hours", "degrees_to_arc",
@@ -16,7 +17,7 @@ __all__ = ["toggle_pylab", "degrees_to_hours", "degrees_to_arc",
 
 from matplotlib import pyplot
 import numpy as np
-from itertools import izip, imap
+from itertools import izip, imap, count
 
 def to_signed(dtype):
     """ Return dtype that can hold data of passed dtype but is signed.
@@ -268,3 +269,16 @@ def merge(items, key=(lambda x: x)):
             state[item] = (n, key(n))
         except StopIteration:
             del state[item]
+
+
+def replacement_filename(path):
+    if not os.path.exists(path):
+        return path
+    else:
+        dir_, filename = os.path.split(path)
+        base, ext = os.path.splitext(filename)
+        for c in count():
+            name = base + '.' + str(c) + ext
+            newpath = os.path.join(dir_, name)
+            if not os.path.exists(newpath):
+                return newpath
