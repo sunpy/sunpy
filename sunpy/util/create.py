@@ -4,6 +4,7 @@ import os
 import glob
 
 import sunpy
+import urllib2
 
 from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
 
