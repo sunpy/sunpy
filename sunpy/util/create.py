@@ -6,10 +6,17 @@ import glob
 import sunpy
 import urllib2
 
+from sunpy.net.util import get_system_filename
+from sunpy.util.util import buffered_write, replacement_filename
+
 from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
 
 class Parent(object):
     _create = ConditionalDispatch()
+
+    @classmethod
+    def read(self, filename):
+        raise NotImplementedError
 
     @classmethod
     def from_glob(cls, pattern):
