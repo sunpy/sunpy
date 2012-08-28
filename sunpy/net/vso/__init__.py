@@ -108,9 +108,13 @@ class Results(object):
         self.n += 1
         return partial(self.submit, keys)
     
-    def wait(self):
+    def wait(self, timeout=100):
         """ Wait for result to be complete and return it. """
-        self.evt.wait()
+        # Giving wait a timeout somehow circumvents a CPython bug that the
+        # call gets ininterruptible.
+        while not self.evt.wait(timeout):
+            pass
+
         return self.map_
     
     def add_error(self, exception):
