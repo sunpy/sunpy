@@ -160,7 +160,7 @@ class Map(np.ndarray, Parent):
     """
     _create = _create
     create = classmethod(_create_wrapper)
-    
+
     def __new__(cls, data, header):
         """Creates a new Map instance"""
         if isinstance(data, np.ndarray):
@@ -861,3 +861,5 @@ class InvalidHeaderInformation(ValueError):
     """Exception to raise when an invalid header tag value is encountered for a
     FITS/JPEG 2000 file."""
     pass
+
+_create_wrapper.__doc__ = Map._create.generate_docs()
