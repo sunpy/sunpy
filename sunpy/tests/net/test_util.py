@@ -16,4 +16,3 @@ def test_content_disposition_unicode():
 
 def test_slugify():
     assert util.slugify(u"äb c", u"b_c")
-
