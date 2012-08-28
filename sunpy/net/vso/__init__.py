@@ -30,7 +30,7 @@ from sunpy.net import download
 from sunpy.net.util import get_filename, slugify
 from sunpy.net.attr import and_, Attr
 from sunpy.net.vso.attrs import walker, TIMEFORMAT
-from sunpy.util.util import to_angstrom, print_table
+from sunpy.util.util import to_angstrom, print_table, replacement_filename
 from sunpy.time import parse_time
 
 DEFAULT_URL = 'http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl'
@@ -332,18 +332,12 @@ class VSOClient(object):
 
         if not name:
             name = "file"
-        rand = ""
 
-        for _ in xrange(10):
-            fname = pattern.format(file=name+rand, **dict(response))
-            if overwrite or not os.path.exists(fname):
-                break
-            rand = "".join(
-                random.choice(ascii_lowercase) for _ in xrange(random.randint(1, 10))
-            )
-        else:
-            raise ValueError("Cannot find unused filename.")
+        fname = pattern.format(file=name, **dict(response))
 
+        if not overwrite and os.path.exists(fname):
+            fname = replacement_filename(fname)
+        
         dir_ = os.path.dirname(fname)
         if not os.path.exists(dir_):
             os.makedirs(dir_)
