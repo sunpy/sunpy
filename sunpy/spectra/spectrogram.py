@@ -776,9 +776,10 @@ class Spectrogram(np.ndarray):
         try:
             name = get_system_filename(opn, url)
             path = os.path.join(default_dir, name)
+            base, ext = os.path.splitext(name)
             if os.path.exists(path):
                 fd = NamedTemporaryFile(
-                    prefix=name, dir=default_dir, delete=False
+                    prefix=base, suffix=ext, dir=default_dir, delete=False
                 )
                 path = fd.name
             else:
