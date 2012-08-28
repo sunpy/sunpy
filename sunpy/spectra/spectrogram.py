@@ -1075,6 +1075,9 @@ class LinearTimeSpectrogram(Spectrogram):
         spec : list
             List of spectrograms of which to combine the frequencies into one.
         """
+        if not specs:
+            raise ValueError("Need at least one spectrogram.")
+        
         specs = cls.intersect_time(specs)
 
         one = specs[0]
