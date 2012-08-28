@@ -482,6 +482,17 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         
         data = data.clip_freq(self.freq_axis[-1], self.freq_axis[0])
         return CallistoSpectrogram.join_many([self, data], **kwargs)
+    
+    @classmethod
+    def from_url(cls, url):
+        """ Return CallistoSpectrogram read from URL.
+        
+        Parameters
+        ----------
+        url : str
+            URL to retrieve the data from
+        """
+        return cls.read(url)
 
 
 CallistoSpectrogram._create.add(
