@@ -3,6 +3,8 @@ from __future__ import absolute_import
 import os
 import glob
 
+import sunpy
+
 from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
 
 class Parent(object):
