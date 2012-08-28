@@ -17,12 +17,3 @@ def test_content_disposition_unicode():
 def test_slugify():
     assert util.slugify(u"äb c", u"b_c")
 
-
-def test_slugify_filename():
-    assert util.slugify_filename(u"äb c.exe", u"b_c.exe")
-
-def test_slugify_filename2():
-    assert util.slugify_filename(u"äb. c.exe", u"b_c.exe")
-
-def test_slugify_filename3():
-    assert util.slugify_filename(u"äb. c.exeß", u"b_c.exe")
