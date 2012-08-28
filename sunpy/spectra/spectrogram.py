@@ -182,9 +182,7 @@ class Spectrogram(np.ndarray, Parent):
         ('content', REFERENCE),
         ('t_init', REFERENCE),
     ]
-
-    _create = ConditionalDispatch()
-
+    _create = ConditionalDispatch.from_existing(Parent._create)
     def _as_class(self, cls):
         """ Implementation detail. """
         if not issubclass(cls, Spectrogram):
