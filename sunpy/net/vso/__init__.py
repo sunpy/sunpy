@@ -15,6 +15,7 @@ This module provides a wrapper around the VSO API.
 import re
 import os
 import sys
+import random
 import tempfile
 import threading
 
@@ -22,7 +23,7 @@ import threading
 from datetime import datetime, timedelta
 from functools import partial
 from collections import defaultdict
-
+from string import ascii_lowercase
 from suds import client, TypeNotFound
 
 from sunpy.net import download
@@ -316,19 +317,32 @@ class VSOClient(object):
         return self.make('QueryResponse', provideritem=providers.values())
     
     @staticmethod
-    def mk_filename(pattern, response, sock, url):
+    def mk_filename(pattern, response, sock, url, overwrite=False):
         name = get_filename(sock, url)
         if not name:
-            name = unicode(response.fileid)
-        
-        name = slugify(name)
+            if not isinstance(response.fileid, unicode):
+                name = unicode(response.fileid, "ascii", "ignore")
+            else:
+                name = response.fileid
 
         fs_encoding = sys.getfilesystemencoding()
         if fs_encoding is None:
             fs_encoding = "ascii"
         name = name.encode(fs_encoding, "ignore")
 
-        fname = pattern.format(file=name, **dict(response))
+        if not name:
+            name = "file"
+            rand = ""
+
+        for _ in xrange(10):
+            fname = pattern.format(file=name+rand, **dict(response))
+            if overwrite or not os.path.exists(fname):
+                break
+            rand = "".join(
+                random.choice(ascii_lowercase) for _ in xrange(random.randint(1, 10))
+            )
+        else:
+            raise ValueError("Cannot find unused filename.")
 
         dir_ = os.path.dirname(fname)
         if not os.path.exists(dir_):
