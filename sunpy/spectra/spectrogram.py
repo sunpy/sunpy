@@ -31,7 +31,8 @@ from sunpy.net.util import get_system_filename
 from sunpy.time import parse_time, get_day
 from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
 from sunpy.util.util import (
-    to_signed, min_delt, delta, common_base, merge, buffered_write
+    to_signed, min_delt, delta, common_base, merge, buffered_write,
+    replacement_filename
 )
 from sunpy.spectra.spectrum import Spectrum
 
@@ -776,17 +777,11 @@ class Spectrogram(np.ndarray):
         try:
             name = get_system_filename(opn, url)
             path = os.path.join(default_dir, name)
-            base, ext = os.path.splitext(name)
             if os.path.exists(path):
-                fd = NamedTemporaryFile(
-                    prefix=base, suffix=ext, dir=default_dir, delete=False
-                )
-                path = fd.name
-            else:
-                fd = open(path, "wb")
-            buffered_write(opn, fd, 9096)
+                path = replacement_filename(path)
 
-            fd.flush()
+            with open(path, 'wb') as fd:
+                buffered_write(opn, fd, 9096)
 
             return cls.read(path)
         finally:
