@@ -9,47 +9,64 @@ then download the relevant data.  SunPy uses the VSO through the 'vso'
 module, which was developed through support from the European Space
 Agency Summer of Code in Space (ESA-SOCIS) 2011.
 
-1. Setting up a client
-------------------------
+1. Setting up the VSO interaction
+--------------------------
 
 SunPy's VSO module is in sunpy.net.  It can be imported into your
 IPython session as follows:
 
     >>> from sunpy.net import vso
 
-SunPy's client that interacts with the VSO service is called as follows:
+We will also be using the datetime object from the datetime module, so
+we'll import that too
 
-    >>> client = vso.VSOClient()
-
-
-
-Two different clients have been developed.  The first client closely
-mimics the syntax of Solarsoft's IDL client, and can be 
+    >>> from datetime import datetime
 
 
-
-This creates a client that we will use to interact with the VSO.
 
 2. A simple query
 -----------------
 
-To search the VSO, you need a start time, an end time, and an
-instrument.  Times are specified as Python datetime objects.
+Obtaining data via the VSO is essentially a two-stage process.  In the
+first stage, you ask the VSO to find the data you want.  The VSO
+queries various data-providers looking for your data.  In the second
+stage, you download the data, if there is any data that matches your
+request.  The VSO client handles the particulars of how the data from
+the data provider is downloaded to your computer.
 
-    >>> import datetime
-    >>> tstart = datetime.datetime(2011,8,9,7,23,56)
-    >>> tend = datetime.datetime(2011,8,9,12,40,29)
-    >>> event_type = 'FL'
-    >>> result = client.query(hek.attrs.Time(tstart,tend),hek.attrs.EventType(event_type))
+Let's start with a very simple query.  To search the VSO, you need a
+start time, an end time, and an instrument. We have provided two
+different syntaxes for doing this search.  The first query syntax
+basically copies what you already may be used to from Solarsoft/IDL's
+VSO query client, VSO_SEARCH.pro.  This is known as a 'legacy' query,
+purely because the syntax is based on the legacy of Solarsoft/IDL's
+VSO query client.  The second query syntax is much more powerful, but
+slightly less familiar to Solarsoft/IDL users (which is why we have
+two different syntaxes).
 
-The first line in the block of code above imports the datetime module.
-The second and third lines define the search start and end times.  The
-fourth line specifies the event type, in this 'FL' or flare.  Line 5
-goes out to the web, contacts the HEK, and queries it for the
-information you have requested.  Event data for ALL flares available
-in the HEK within the time range 2011/08/09 07:23: 56 UT - 2011/08/09
-12:40:20 UT will be returned, regardless of which feature recognition
-method used to detect the flare.
+Let's say I want all the EIT data between 2001/01/01 and 2001/01/02.
+Using the legacy query suntax, this is simply
+
+    >>> result = vso.search(tstart = '2001/01/01', tend =
+    '2001/01/02', instrument = 'EIT')
+
+which is almost identical to what you would type in a Solarsoft/IDL
+session. 
+
+So, what's happening with this command?  Firstly, the code parses the
+arguments you've given it in order to decide if you want to use the
+Solarsoft-style syntax, or the more powerful "Pythonic" syntax.
+Having made a decision it spawns a client that understands the legacy
+query syntax
+
+To find out more about the keywords accepted by the Solarsoft legacy
+query, type
+
+    >>> help(vso.VSOClient.query_legacy)
+
+
+This is very similar 
+How many records is that?  That can 
 
 Let's break down the arguments of client.query.  The first argument:
 
