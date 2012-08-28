@@ -39,7 +39,11 @@ RANGE = re.compile(r'(\d+)(\s*-\s*(\d+))?(\s*([a-zA-Z]+))?')
 def get_filename(content_disposition):
     parser = FeedParser()
     parser.feed("Content-Disposition: " + content_disposition)
-    return parser.close().get_filename()
+    name = parser.close().get_filename()
+    if not isinstance(name, unicode):
+        name = name.decode("latin1")
+    return name
+
 
 # TODO: Name
 class NoData(Exception):
@@ -335,8 +339,15 @@ class VSOClient(object):
         if not name:
             name = response.fileid.replace('/', '_')
         
+        if isinstance(name, unicode):
+            fs_encoding = sys.getfilesystemencoding()
+            if fs_encoding is None:
+                fs_encoding = "ascii"
+            name = name.encode(fs_encoding, "ignore")
+
         name = os.path.basename(name)
         fname = pattern.format(file=name, **dict(response))
+
         dir_ = os.path.dirname(fname)
         if not os.path.exists(dir_):
             os.makedirs(dir_)
