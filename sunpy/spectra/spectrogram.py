@@ -42,6 +42,8 @@ DEEPCOPY = 2
 
 
 def figure(*args, **kwargs):
+    """ Create new SpectroFigure, a figure extended with features
+    useful for analysis of spectrograms. Compare pyplot.figure. """
     kw = {
         'FigureClass': SpectroFigure,
     }
