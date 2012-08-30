@@ -14,7 +14,7 @@ from numpy.testing import assert_array_almost_equal
 from scipy import ndimage
 
 from sunpy.spectra.spectrogram import (
-    Spectrogram, LinearTimeSpectrogram, min_delt, _AttrGetter
+    Spectrogram, LinearTimeSpectrogram, min_delt, _LinearView
 )
 
 
@@ -729,7 +729,7 @@ def test_linearize():
     assert (linear[8] == image[3, :]).all()
 
 
-def test_linearize_wrapper():
+def test_linear_view():
     image = np.random.rand(5, 900)
     spec = LinearTimeSpectrogram(image,
         np.linspace(0, 1 * (image.shape[1] - 1), image.shape[1]),
@@ -740,7 +740,7 @@ def test_linearize_wrapper():
         1
     )
     
-    linear = _AttrGetter(spec)
+    linear = _LinearView(spec)
     # assert ((linear.freq_axis[:-1] - linear.freq_axis[1:]) == 2.5).all()
     
     assert (linear[0] == image[0, :]).all()
@@ -754,7 +754,7 @@ def test_linearize_wrapper():
     assert (linear[8] == image[3, :]).all()
 
 
-def test_linearize_indexerror():
+def test_linear_view_indexerror():
     image = np.random.rand(5, 900)
     spec = LinearTimeSpectrogram(image,
         np.linspace(0, 1 * (image.shape[1] - 1), image.shape[1]),
@@ -765,13 +765,13 @@ def test_linearize_indexerror():
         1
     )
     
-    linear = _AttrGetter(spec)
+    linear = _LinearView(spec)
     # assert ((linear.freq_axis[:-1] - linear.freq_axis[1:]) == 2.5).all()
     with pytest.raises(IndexError):
         linear[9]
 
 
-def test_linearize_negative():
+def test_linear_view_negative():
     image = np.random.rand(5, 900)
     spec = LinearTimeSpectrogram(image,
         np.linspace(0, 1 * (image.shape[1] - 1), image.shape[1]),
@@ -782,7 +782,7 @@ def test_linearize_negative():
         1
     )
     
-    linear = _AttrGetter(spec)
+    linear = _LinearView(spec)
     # assert ((linear.freq_axis[:-1] - linear.freq_axis[1:]) == 2.5).all()
     assert (linear[8] == image[3, :]).all()
     assert (linear[-1] == image[3, :]).all()
