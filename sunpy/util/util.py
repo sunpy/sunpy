@@ -272,6 +272,10 @@ def merge(items, key=(lambda x: x)):
 
 
 def replacement_filename(path):
+    """ Return replacement path for already used path. Enumerates
+    until an unused filename is found. E.g., "/home/florian/foo.fits"
+    becomes "/home/florian/foo.0.fits", if that is used
+    "/home/florian/foo.1.fits", etc. """
     if not os.path.exists(path):
         return path
     else:
