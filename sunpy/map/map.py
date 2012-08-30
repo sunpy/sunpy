@@ -609,20 +609,23 @@ Dimension:\t [%d, %d]
     
     def rotate(self, angle, scale=1.0, centroid=None, recentre=True, order=3,
                missing=0.0):
-        """ Rotate, rescale and shift and image
+        """Returns a new rotated, rescaled and shifted map.
         
         Arguments
         ---------
-        angle        float           The angle to rotate the image by. (radians)
+        angle        float           The angle to rotate the image by (radians)
         
         Keyword Arguments
         -----------------
-        scale       float           A scale factor for the image, default is no scaling
-        centroid    tuple           The point in the image to rotate around (Axis of rotation),
-                                    default is the centre of the array
+        scale       float           A scale factor for the image, default is no
+                                    scaling
+        centroid    tuple           The point in the image to rotate around
+                                    (Axis of rotation), default is the centre
+                                    of the array
         recentre    bool, or list   Move the centroid (axis of rotation) to 
-                                        the centre of the array or recentre coords
-        order       int             The order of the spline interpolation to be used.
+                                    the centre of the array or recentre coords
+        order       int             The order of the spline interpolation to be
+                                    used.
         missing     float           The numerical value of any missing data
         """
         
@@ -661,7 +664,6 @@ Dimension:\t [%d, %d]
         rsmat, offs = _af_args(angle, centroid, shift, scale)
         data = scipy.ndimage.interpolation.affine_transform(
             image, rsmat, offset=offs, order=order, mode='constant', cval=missing)
-        
         
         # Update image scale and number of pixels
         header = self._original_header.copy()
