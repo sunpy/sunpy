@@ -113,11 +113,11 @@ static PyMethodDef my_methods[] = {
 };
 
 
-PyMODINIT_FUNC initgeom_extn(void)   // name is "init"+<module name>                 
+PyMODINIT_FUNC initCrotate(void)   // name is "init"+<module name>                 
 {
   PyObject *ge_mod;
 
-  ge_mod = Py_InitModule("geom_extn", my_methods);
+  ge_mod = Py_InitModule("Crotate", my_methods);
   if (ge_mod == NULL)
     return;
   PyModule_AddIntConstant(ge_mod, "NEAREST", NEAREST);
