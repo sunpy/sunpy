@@ -608,7 +608,7 @@ Dimension:\t [%d, %d]
         return new_map
     
     def rotate(self, angle, scale=1.0, centroid=None, recentre=True, order=3,
-               missing=0.0, method='scipy'):
+               missing=0.0, method='scipy', bicubic=None):
         """ Rotate, rescale and shift and image
         
         Arguments
@@ -642,6 +642,9 @@ Dimension:\t [%d, %d]
             # kpos and mati are the two transform constants, kpos is a 2x1 array
             return (mati, (kpos[0,0], kpos[1,0]))
         
+        #Sanity Checks        
+        if method != 'C' and bicubic is not None:
+            
         i_rows,i_cols = self.shape
         centre = ((i_rows - 1)/2.0, (i_cols - 1)/2.0)
         
@@ -660,13 +663,25 @@ Dimension:\t [%d, %d]
         
         image = np.asarray(self).copy()        
         
+        rsmat, offs = _af_args(angle, centroid, shift, scale)
         if method == 'scipy':
-            rsmat, offs = _af_args(angle, centroid, shift, scale)
             data = scipy.ndimage.interpolation.affine_transform(
                 image, rsmat, offset=offs, order=order, mode='constant', cval=missing)
                 
         elif method == 'C':
-            raise NotImplementedError("Nope, not yet")
+            import sunpy.image.Crotate as Crotate
+            if bicubic == None:
+                ktype = Crotate.NEAREST
+                kparm = 0
+            elif bicubic > 0:
+                ktype = Crotate.BILINEAR
+                kparm = 0
+            elif bicubic >= -1:
+                ktype = Crotate.BICUBIC
+                kparm = bicubic
+            else:
+                raise ValueError
+#            raise NotImplementedError("Nope, not yet")
             
         else:
             if type(method) != type(''):
