@@ -22,27 +22,26 @@ CLASSIFIERS = [
     'Operating System :: MacOS'
 ]
 
-#Crotate Module
-from distutils.core import Extension
-module = 'sunpy.image.Crotate'   # import this
-sourcefiles = ['sunpy/image/crotate/rot_extn.c',
-               'sunpy/image/crotate/transform/aff_tr.c']
-libs = ['m']
-# -ON for compile optimise 
-gcc_args = ['-std=c99', '-O3']
-# gcc_args = ['-std=c99']
-
-# need *module* name here
-crotate = Extension(module,
-                    sources = sourcefiles,
-                    libraries = libs,
-                    extra_compile_args = gcc_args
-                    )
-
 
 def install(setup): #pylint: disable=W0621
     from setuptools import find_packages
-
+    #Crotate Module
+    from distutils.core import Extension
+    module = 'sunpy.image.Crotate'   # import this
+    sourcefiles = ['sunpy/image/crotate/rot_extn.c',
+                   'sunpy/image/crotate/transform/aff_tr.c']
+    libs = ['m']
+    # -ON for compile optimise 
+    gcc_args = ['-std=c99', '-O3']
+    # gcc_args = ['-std=c99']
+    
+    # need *module* name here
+    crotate = Extension(module,
+                        sources = sourcefiles,
+                        libraries = libs,
+                        extra_compile_args = gcc_args
+                        )
+    print crotate
     setup(
         author="Steven Christe, Keith Hughitt, Jack Ireland and Alex Young",
         author_email="keith.hughitt@nasa.gov",
@@ -75,7 +74,7 @@ def install(setup): #pylint: disable=W0621
         url="http://www.sunpy.org/",
         use_2to3=True,
         version="0.1",
-        ext_modules = crotate
+        ext_modules = [crotate]
     )
 
 if __name__ == '__main__':
