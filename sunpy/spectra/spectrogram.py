@@ -206,7 +206,6 @@ class TimeFreq(object):
         return ret
 
 
-# XXX: Find out why imshow(x) fails!
 class Spectrogram(np.ndarray):
     """ Base class for spectral analysis in SunPy.
     
@@ -413,12 +412,12 @@ class Spectrogram(np.ndarray):
                 )
                 delt = float(delt)
             
-            data = _LinearView(self.clip(min_, max_), delt)
+            data = _LinearView(self.clip_values(min_, max_), delt)
             freqs = np.arange(
                 self.freq_axis[0], self.freq_axis[-1], -data.delt
             )
         else:
-            data = np.array(self.clip(min_, max_))
+            data = np.array(self.clip_values(min_, max_))
             freqs = self.freq_axis
         newfigure = figure is None
         if figure is None:
@@ -632,7 +631,7 @@ class Spectrogram(np.ndarray):
         """
         return self - self.randomized_auto_const_bg(amount)
     
-    def clip(self, min_=None, max_=None):
+    def clip_values(self, min_=None, max_=None, out=None):
         """ Clip intensities to be in the interval [min_, max_]. Any values
         greater than the maximum will be assigned the maximum, any values
         lower than the minimum will be assigned the minimum. If either is
@@ -652,11 +651,7 @@ class Spectrogram(np.ndarray):
         if max_ is None:
             max_ = int(self.max())
 
-        new = self.copy()
-        new[new < min_] = min_
-        new[new > max_] = max_
-
-        return new
+        return self.clip(min_, max_, out)
 
     def rescale(self, min_=0, max_=1, dtype_=np.dtype('float32')):
         u""" Rescale intensities to [min_, max_]. Note that min_ ≠ max_
