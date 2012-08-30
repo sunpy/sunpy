@@ -18,6 +18,7 @@ from numpy import ma
 from scipy import ndimage
 
 from matplotlib import pyplot as plt
+from matplotlib.figure import Figure
 from matplotlib.ticker import FuncFormatter, MaxNLocator, IndexLocator
 from matplotlib.colorbar import Colorbar
 
@@ -38,6 +39,16 @@ SECONDS_PER_DAY = 86400
 REFERENCE = 0
 COPY = 1
 DEEPCOPY = 2
+
+
+def figure(*args, **kwargs):
+    """ Create new SpectroFigure, a figure extended with features
+    useful for analysis of spectrograms. Compare pyplot.figure. """
+    kw = {
+        'FigureClass': SpectroFigure,
+    }
+    kw.update(kwargs)
+    return plt.figure(*args, **kw)
 
 
 def _list_formatter(lst, fun=None):
@@ -63,8 +74,7 @@ def _union(sets):
     return union
 
 
-# XXX: Better name.
-class _AttrGetter(object):
+class _LinearView(object):
     """ Helper class for frequency channel linearization.
     
     Parameters
@@ -120,11 +130,92 @@ class _AttrGetter(object):
         min_mid = max(0, (freq - self.midpoints[0]) // self.max_mp_delt)
         for n, mid in enumerate(self.midpoints[min_mid:]):
             if mid <= freq:
-                return self.arr.freq_axis[min_mid + n, :]
-        return self.arr.freq_axis[min_mid + n, :]
+                return self.arr.freq_axis[min_mid + n]
+        return self.arr.freq_axis[min_mid + n]
 
 
-# XXX: Find out why imshow(x) fails!
+class SpectroFigure(Figure):
+    def _init(self, data, freqs):
+        self.data = data
+        self.freqs = freqs
+    
+    def ginput_to_time(self, inp):
+        return [
+            self.data.start + datetime.timedelta(seconds=secs)
+            for secs in self.ginput_to_time_secs(inp)
+        ]
+    
+    def ginput_to_time_secs(self, inp):
+        return np.array([float(self.data.time_axis[x]) for x, y in inp])
+    
+    def ginput_to_time_offset(self, inp):
+        v = self.ginput_to_time_secs(inp)
+        return v - v.min()
+    
+    def ginput_to_freq(self, inp):
+        return np.array([self.freqs[y] for x, y in inp])
+    
+    def time_freq(self, points=0):
+        inp = self.ginput(points)
+        min_ = self.ginput_to_time_secs(inp).min()
+        start = self.data.start + datetime.timedelta(seconds=min_)
+        return TimeFreq(
+            start, self.ginput_to_time_offset(inp), self.ginput_to_freq(inp)
+        )
+
+
+class TimeFreq(object):
+    """ Class to use for plotting frequency vs time.
+    
+    Parameters
+    ----------
+    start : datetime
+        Start time of the plot. All times in time are relative offsets to this
+        in seconds.
+    time : array
+        Time of the data points as offset from start in seconds.
+    freq : array
+        Frequency of the data points in MHz.
+    """
+    def __init__(self, start, time, freq):
+        self.start = start
+        self.time = time
+        self.freq = freq
+    
+    def plot(self, figure=None, time_fmt="%H:%M:%S", **kwargs):
+        if figure is None:
+            figure = plt.figure()
+        axes = figure.add_subplot(111)
+        axes.plot(self.time, self.freq, **kwargs)
+        xa = axes.get_xaxis()
+        ya = axes.get_yaxis()
+        xa.set_major_formatter(
+            FuncFormatter(
+                lambda x, pos: (
+                    self.start + datetime.timedelta(seconds=x)
+                    ).strftime(time_fmt)
+            )
+        )
+        
+        axes.set_xlabel("Time [UT]")
+        axes.set_ylabel("Frequency [MHz]")
+
+        xa = axes.get_xaxis()
+        for tl in xa.get_ticklabels():
+            tl.set_fontsize(10)
+            tl.set_rotation(30)
+        figure.add_axes(axes)
+        figure.subplots_adjust(bottom=0.2)
+        figure.subplots_adjust(left=0.2)
+        
+        return figure
+    
+    def show(self, *args, **kwargs):
+        ret = self.plot(*args, **kwargs)
+        ret.show()
+        return ret
+
+
 class Spectrogram(np.ndarray):
     """ Base class for spectral analysis in SunPy.
     
@@ -286,7 +377,9 @@ class Spectrogram(np.ndarray):
     def show(self, *args, **kwargs):
         """ Draw spectrogram on figure with highest index or new one if
         none exists. For parameters see :py:meth:`plot`. """
-        self.plot(*args, **kwargs).show()
+        ret = self.plot(*args, **kwargs)
+        ret.show()
+        return ret
 
     def plot(self, figure=None, overlays=[], colorbar=True, min_=None, max_=None,
              linear=True, showz=True, yres=DEFAULT_YRES, **matplotlib_args):
@@ -329,19 +422,22 @@ class Spectrogram(np.ndarray):
                 )
                 delt = float(delt)
             
-            data = _AttrGetter(self.clip(min_, max_), delt)
+            data = _LinearView(self.clip_values(min_, max_), delt)
             freqs = np.arange(
                 self.freq_axis[0], self.freq_axis[-1], -data.delt
             )
         else:
-            data = np.array(self.clip(min_, max_))
+            data = np.array(self.clip_values(min_, max_))
             freqs = self.freq_axis
         newfigure = figure is None
         if figure is None:
-            figure = plt.figure(frameon=True)
+            figure = plt.figure(frameon=True, FigureClass=SpectroFigure)
             axes = figure.add_subplot(111)
         else:
-            axes = figure.axes[0]
+            if figure.axes:
+                axes = figure.axes[0]
+            else:
+                axes = figure.add_subplot(111)
         
         params = {
             'origin': 'lower',
@@ -419,14 +515,15 @@ class Spectrogram(np.ndarray):
             if newfigure:
                 figure.colorbar(im).set_label("Intensity")
             else:
-                Colorbar(figure.axes[1], im).set_label("Intensity")
+                if len(figure.axes) > 1:
+                    Colorbar(figure.axes[1], im).set_label("Intensity")
 
         for overlay in overlays:
             figure, axes = overlay(figure, axes)
             
         for ax in figure.axes:
             ax.autoscale()
-        
+        figure._init(self, freqs)
         return figure
 
     def __getitem__(self, key):
@@ -544,7 +641,7 @@ class Spectrogram(np.ndarray):
         """
         return self - self.randomized_auto_const_bg(amount)
     
-    def clip(self, min_=None, max_=None):
+    def clip_values(self, min_=None, max_=None, out=None):
         """ Clip intensities to be in the interval [min_, max_]. Any values
         greater than the maximum will be assigned the maximum, any values
         lower than the minimum will be assigned the minimum. If either is
@@ -564,11 +661,7 @@ class Spectrogram(np.ndarray):
         if max_ is None:
             max_ = int(self.max())
 
-        new = self.copy()
-        new[new < min_] = min_
-        new[new > max_] = max_
-
-        return new
+        return self.clip(min_, max_, out)
 
     def rescale(self, min_=0, max_=1, dtype_=np.dtype('float32')):
         u""" Rescale intensities to [min_, max_]. Note that min_ ≠ max_
@@ -987,6 +1080,9 @@ class LinearTimeSpectrogram(Spectrogram):
         spec : list
             List of spectrograms of which to combine the frequencies into one.
         """
+        if not specs:
+            raise ValueError("Need at least one spectrogram.")
+        
         specs = cls.intersect_time(specs)
 
         one = specs[0]
