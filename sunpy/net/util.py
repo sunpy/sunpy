@@ -8,6 +8,7 @@ import re
 import sys
 
 # For Content-Disposition parsing
+from urlparse import urlparse
 from email.parser import FeedParser
 from unicodedata import normalize
 from itertools import ifilter
@@ -49,8 +50,8 @@ def get_filename(sock, url):
             pass
 
     if not name:
-        no_get = url.rsplit('?', 1)[0]
-        name = no_get.rstrip('/').rsplit("/", 1)[-1]
+        parsed = urlparse(url)
+        name = parsed.path.rsplit('/', 1)[-1]
     return unicode(name)
 
 
