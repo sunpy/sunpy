@@ -10,7 +10,6 @@ import glob
 import urllib2
 import datetime
 
-from tempfile import NamedTemporaryFile
 from random import randint
 from itertools import izip
 from copy import copy, deepcopy
