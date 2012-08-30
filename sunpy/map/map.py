@@ -38,9 +38,6 @@ or something else?)
 * Should 'center' be renamed to 'offset' and crpix1 & 2 be used for 'center'?
 """
 
-_create = ConditionalDispatch.from_existing(Parent._create)
-_create_wrapper = _create.wrapper()
-
 class Map(np.ndarray, Parent):
     """
     Map(data, header)
@@ -158,8 +155,8 @@ class Map(np.ndarray, Parent):
     | http://www.scipy.org/Subclasses
 
     """
-    _create = _create
-    create = classmethod(_create_wrapper)
+    _create = ConditionalDispatch.from_existing(Parent._create)
+    create = classmethod(_create.wrapper())
 
     def __new__(cls, data, header):
         """Creates a new Map instance"""
@@ -862,4 +859,4 @@ class InvalidHeaderInformation(ValueError):
     FITS/JPEG 2000 file."""
     pass
 
-_create_wrapper.__doc__ = Map._create.generate_docs()
+Map.create.im_func.__doc__ = Map._create.generate_docs()

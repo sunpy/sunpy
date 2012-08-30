@@ -106,11 +106,6 @@ def _parse_header_time(date, time):
     return parse_time(date)
 
 
-_create = ConditionalDispatch.from_existing(LinearTimeSpectrogram._create)
-# We cannot put this into the class, as _create_wrapper would be converted
-# into an instance method.
-_create_wrapper = _create.wrapper()
-
 class CallistoSpectrogram(LinearTimeSpectrogram):
     """ Classed used for dynamic spectra coming from the Callisto network.
     
@@ -128,8 +123,8 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
     # XXX: Determine those from the data.
     SIGMA_SUM = 75
     SIGMA_DELTA_SUM = 20
-    _create = _create
-    create = classmethod(_create_wrapper)
+    _create = ConditionalDispatch.from_existing(LinearTimeSpectrogram._create)
+    create = classmethod(_create.wrapper())
     # Contrary to what pylint may think, this is not an old-style class.
     # pylint: disable=E1002,W0142,R0902
 
@@ -501,7 +496,7 @@ CallistoSpectrogram._create.add(
     check=False
 )
 
-_create_wrapper.__doc__ = (
+CallistoSpectrogram.create.im_func.__doc__ = (
     """ Create CallistoSpectrogram from given input dispatching to the
     appropriate from_* function.
 
