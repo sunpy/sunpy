@@ -11,6 +11,7 @@ __email__ = "keith.hughitt@nasa.gov"
 import os
 import pandas
 import sunpy
+import shutil
 import urllib2
 import numpy as np
 import matplotlib.pyplot as plt
@@ -19,7 +20,6 @@ from datetime import datetime
 from types import NoneType
 
 from sunpy.time import is_time, TimeRange
-from sunpy.util.util import buffered_write
 from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
 
 class LightCurve(object):
@@ -162,7 +162,7 @@ class LightCurve(object):
             except (urllib2.HTTPError, urllib2.URLError):
                 raise urllib2.URLError(err)
             with open(filepath, 'wb') as fp:
-                buffered_write(response, fp)
+                shutil.copyfileobj(response, fp)
                     
         return filepath
     
