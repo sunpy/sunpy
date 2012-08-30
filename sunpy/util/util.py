@@ -162,7 +162,7 @@ def delta(s):
     return s[1:] - s[:-1]
 
 
-def buffered_write(inp, outp, buffer_size):
+def buffered_write(inp, outp, buffer_size=8192):
     """ Write from inp to outp in chunks of
     buffer_size. """
     while True:
