@@ -786,3 +786,28 @@ def test_linear_view_negative():
     # assert ((linear.freq_axis[:-1] - linear.freq_axis[1:]) == 2.5).all()
     assert (linear[8] == image[3, :]).all()
     assert (linear[-1] == image[3, :]).all()
+
+
+def test_linear_view_freqs():
+    image = np.random.rand(5, 900)
+    spec = LinearTimeSpectrogram(image,
+        np.linspace(0, 1 * (image.shape[1] - 1), image.shape[1]),
+        np.array([20, 10, 5, 0]),
+        datetime(2010, 1, 1, 0, 15),
+        datetime(2010, 1, 1, 0, 30),
+        900,
+        1
+    )
+    
+    linear = _LinearView(spec)
+    # assert ((linear.freq_axis[:-1] - linear.freq_axis[1:]) == 2.5).all()
+    
+    assert linear.get_freq(0) == 20
+    assert linear.get_freq(1) == 20
+    assert linear.get_freq(2) == 20
+    assert linear.get_freq(3) == 10
+    assert linear.get_freq(4) == 10
+    assert linear.get_freq(5) == 10
+    assert linear.get_freq(6) == 5
+    assert linear.get_freq(7) == 5
+    assert linear.get_freq(8) == 0
