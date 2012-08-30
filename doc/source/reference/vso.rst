@@ -33,7 +33,7 @@ ANDed together for convenience, `a | b` can be used for OR::
    client = vso.VSOClient()
    result = client.query(
       vso.attrs.Time((2010, 1, 1), (2010, 1, 1, 1)),
-      vso.attrs.Instrument('eit') | vso.attrs.Instrument('ait')
+      vso.attrs.Instrument('eit') | vso.attrs.Instrument('sot')
    )
 
 Available attributes
