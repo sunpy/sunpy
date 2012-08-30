@@ -128,8 +128,8 @@ class _LinearView(object):
         min_mid = max(0, (freq - self.midpoints[0]) // self.max_mp_delt)
         for n, mid in enumerate(self.midpoints[min_mid:]):
             if mid <= freq:
-                return self.arr.freq_axis[min_mid + n, :]
-        return self.arr.freq_axis[min_mid + n, :]
+                return self.arr.freq_axis[min_mid + n]
+        return self.arr.freq_axis[min_mid + n]
 
 
 class SpectroFigure(Figure):
