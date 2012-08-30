@@ -608,7 +608,7 @@ Dimension:\t [%d, %d]
         return new_map
     
     def rotate(self, angle, scale=1.0, centroid=None, recentre=True, order=3,
-               missing=0.0, method='scipy', bicubic=None):
+               missing=0.0):
         """ Rotate, rescale and shift and image
         
         Arguments
@@ -624,8 +624,6 @@ Dimension:\t [%d, %d]
                                         the centre of the array or recentre coords
         order       int             The order of the spline interpolation to be used.
         missing     float           The numerical value of any missing data
-        method      string          Selects the rotation method from:
-                                        'scipy', 'C'
         """
         
         def _af_args(angle, centre, shift, scale):
@@ -641,10 +639,7 @@ Dimension:\t [%d, %d]
             kpos = centre - np.dot(mati, (centre + shift))  
             # kpos and mati are the two transform constants, kpos is a 2x1 array
             return (mati, (kpos[0,0], kpos[1,0]))
-        
-        #Sanity Checks        
-        if method != 'C' and bicubic is not None:
-            
+
         i_rows,i_cols = self.shape
         centre = ((i_rows - 1)/2.0, (i_cols - 1)/2.0)
         
@@ -664,29 +659,8 @@ Dimension:\t [%d, %d]
         image = np.asarray(self).copy()        
         
         rsmat, offs = _af_args(angle, centroid, shift, scale)
-        if method == 'scipy':
-            data = scipy.ndimage.interpolation.affine_transform(
-                image, rsmat, offset=offs, order=order, mode='constant', cval=missing)
-                
-        elif method == 'C':
-            import sunpy.image.Crotate as Crotate
-            if bicubic == None:
-                ktype = Crotate.NEAREST
-                kparm = 0
-            elif bicubic > 0:
-                ktype = Crotate.BILINEAR
-                kparm = 0
-            elif bicubic >= -1:
-                ktype = Crotate.BICUBIC
-                kparm = bicubic
-            else:
-                raise ValueError
-#            raise NotImplementedError("Nope, not yet")
-            
-        else:
-            if type(method) != type(''):
-                raise TypeError("method keyword argument should be a string")
-            raise ValueError("%s is not a valid argument for method"%method)
+        data = scipy.ndimage.interpolation.affine_transform(
+            image, rsmat, offset=offs, order=order, mode='constant', cval=missing)
         
         
         # Update image scale and number of pixels
