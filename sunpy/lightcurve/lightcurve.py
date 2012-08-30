@@ -19,6 +19,7 @@ from datetime import datetime
 from types import NoneType
 
 from sunpy.time import is_time, TimeRange
+from sunpy.util.util import buffered_write
 from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
 
 class LightCurve(object):
@@ -160,9 +161,9 @@ class LightCurve(object):
                 response = urllib2.urlopen(uri)
             except (urllib2.HTTPError, urllib2.URLError):
                 raise urllib2.URLError(err)
-            fp = open(filepath, 'wb')
-            fp.write(response.read())
-        
+            with open(filepath, 'wb') as fp:
+                buffered_write(response, fp)
+                    
         return filepath
     
     @classmethod
