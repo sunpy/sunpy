@@ -150,3 +150,121 @@ def print_table(lst, colsep=' ', linesep='\n'):
             col.ljust(n) for n, col in izip(width, row)
         ) for row in lst
     )
+
+
+def findpeaks(a):
+    """ Find local maxima in 1D. Use findpeaks(-a) for minima. """
+    return np.nonzero((a[1:-1] > a[:-2]) & (a[1:-1] > a[2:]))[0]
+
+
+def delta(s):
+    """ Return deltas between elements of s. len(delta(s)) == len(s) - 1. """
+    return s[1:] - s[:-1]
+
+
+def buffered_write(inp, outp, buffer_size):
+    """ Write from inp to outp in chunks of
+    buffer_size. """
+    while True:
+        read = inp.read(buffer_size)
+        if not read:
+            break
+        outp.write(read)
+
+
+def polyfun_at(coeff, p):
+    """ Return value of polynomial with coefficients (highest first) at
+    point (can also be an np.ndarray for more than one point) p. """
+    return np.sum(k * p ** n for n, k in enumerate(reversed(coeff)))
+
+
+def minimal_pairs(one, other):
+    """ Find pairs of values in one and other with minimal distance.
+    Assumes one and other are sorted in the same sort sequence.
+    
+    one, other : sequence
+        Sequence of scalars to find pairs from.
+    """
+    lbestdiff = bestdiff = bestj = besti = None
+    for i, freq in enumerate(one):
+        lbestj = bestj
+        
+        bestdiff, bestj = None, None
+        for j, o_freq in enumerate(other[lbestj:]):
+            j = lbestj + j if lbestj else j
+            diff = abs(freq - o_freq)
+            if bestj is not None and diff > bestdiff:
+                break
+            
+            if bestj is None or bestdiff > diff:
+                bestj = j
+                bestdiff = diff
+        
+        if lbestj is not None and lbestj != bestj:
+            yield (besti, lbestj, lbestdiff)
+            besti = i
+            lbestdiff = bestdiff
+        elif lbestdiff is None or bestdiff < lbestdiff:
+            besti = i
+            lbestdiff = bestdiff
+    
+    yield (besti, bestj, lbestdiff)
+
+
+DONT = object()
+def find_next(one, other, pad=DONT):
+    """ Given two sorted sequences one and other, for every element
+    in one, return the one larger than it but nearest to it in other.
+    If no such exists and pad is not DONT, return value of pad as "partner".
+    """
+    n = 0
+    for elem1 in one:
+        for elem2 in other[n:]:
+            n += 1
+            if elem2 > elem1:
+                yield elem1, elem2
+                break
+        else:
+            if pad is not DONT:
+                yield elem1, pad
+
+
+def min_delt(arr):
+    deltas = (arr[:-1] - arr[1:])
+    # Multiple values at the same frequency are just thrown away
+    # in the process of linearizaion
+    return deltas[deltas != 0].min()
+
+
+def common_base(objs):
+    """ Find class that every item of objs is an instance of. """
+    for cls in objs[0].__class__.__mro__:
+        if all(isinstance(obj, cls) for obj in objs):
+            break
+    return cls
+
+
+def merge(items, key=(lambda x: x)):
+    """ Given sorted lists of iterables, return new iterable that returns
+    elemts of all iterables sorted with respect to key. """
+    state = {}
+    for item in map(iter, items):
+        try:
+            first = item.next()
+        except StopIteration:
+            continue
+        else:
+            state[item] = (first, key(first))
+    
+    while state:
+        for item, (value, tk) in state.iteritems():
+            # Value is biggest.
+            if all(tk >= k for it, (v, k)
+                in state.iteritems() if it is not item):
+                yield value
+                break
+        try:
+            n = item.next()
+            state[item] = (n, key(n))
+        except StopIteration:
+            del state[item]

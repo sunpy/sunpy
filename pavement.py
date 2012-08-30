@@ -20,12 +20,12 @@ install = imp.load_source(
 #
 options(
     deploy = Bunch(
-        htmldir = path('doc/html'),
+        htmldir = path(os.path.join('doc', 'html')),
         host = 'sipwork.org',
         hostpath = 'www/sunpy/doc'
     ),
     sphinx = Bunch(docroot='doc/source', builddir="_build"),
-    upload_docs = Bunch(upload_dir='doc/html'),
+    upload_docs = Bunch(upload_dir=os.path.join('doc', 'html')),
     pylint = Bunch(quiet=False)
 )
 
@@ -39,19 +39,19 @@ install(setup)
 @needs('prepare_docs', 'setuptools.command.sdist')
 def sdist():
     """Generated HTML docs and builds a tarball."""
-    shutil.rmtree('doc/html')
+    shutil.rmtree(os.path.join('doc', 'html'))
 
 @task
 @needs('sdist', 'setuptools.command.upload')
 def upload():
     """Generated HTML docs and builds a tarball."""
-    shutil.rmtree('doc/html')
+    shutil.rmtree(os.path.join('doc', 'html'))
 
 @task
 @needs('prepare_docs', 'setuptools.command.bdist_wininst')
 def bdist():
     """Generated HTML docs and builds a windows binary."""
-    shutil.rmtree('doc/html')
+    shutil.rmtree(os.path.join('doc', 'html'))
 
 #
 # Documentation
@@ -60,8 +60,8 @@ def bdist():
 @needs('paver.doctools.html')
 def prepare_docs():
     """Prepares the SunPy HTML documentation for packaging"""
-    sourcedir = 'doc/source/_build/html'
-    destdir = 'doc/html'
+    sourcedir = os.path.join('doc', 'source', '_build', 'html')
+    destdir = os.path.join('doc', 'html')
     if os.path.exists(destdir):
         shutil.rmtree(destdir)
     shutil.move(sourcedir, destdir)
@@ -85,12 +85,13 @@ def pylint(options):
     """Checks the code using PyLint"""
     from pylint import lint
     
-    arguments = ['--rcfile=tools/pylint/pylintrc']
+    rcfile = os.path.join('tools', 'pylint', 'pylintrc')
+    arguments = ['--rcfile=%s' % rcfile]
     
     if options.quiet:
         arguments.extend(["-rn"])
         
-    arguments.extend(["sunpy/"])
+    arguments.extend(["sunpy"])
     lint.Run(arguments)
     
 #
@@ -102,9 +103,11 @@ def clean():
     """Cleans up build files"""
     from glob import glob
     
-    dirs = (['doc/html', 'doc/source/_build', 'build', 'dist', 'sunpy.egg-info'] + 
-             glob('doc/source/reference/generated') + 
-             glob('doc/source/reference/*/generated'))
+    dirs = ([os.path.join('doc', 'html'), 
+             os.path.join('doc', 'source', '_build'), 'build', 'dist', 
+             'sunpy.egg-info'] + 
+             glob(os.path.join('doc', 'source', 'reference', 'generated')) + 
+             glob(os.path.join('doc', 'source', 'reference', '*', 'generated')))
 
     for dir_ in dirs:
         if os.path.exists(dir_):

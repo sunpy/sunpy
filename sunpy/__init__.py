@@ -40,3 +40,7 @@ from sunpy.data.sample import (AIA_171_IMAGE, RHESSI_IMAGE, EIT_195_IMAGE,
 
 # Load user configuration
 config = load_config()
+
+# Keep track of created data types
+from sunpy.util.data_manager import DataManager
+_data_manager = DataManager()
