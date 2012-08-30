@@ -12,3 +12,9 @@ Spectrograms
 
 .. autoclass::  sunpy.spectra.spectrogram.Spectrogram
    :members:
+
+.. autoclass::  sunpy.spectra.spectrogram.SpectroFigure
+   :members:
+
+.. autoclass::  sunpy.spectra.spectrogram.TimeFreq
+   :members:
