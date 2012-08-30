@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+# Author: Florian Mayer <florian.mayer@bitsrc.org>
+
 from __future__ import absolute_import
 
 import os
@@ -11,19 +14,24 @@ from sunpy.util.util import buffered_write, replacement_filename
 
 from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
 
+
 class Parent(object):
     _create = ConditionalDispatch()
 
     @classmethod
-    def read(self, filename):
+    def read(cls, filename):
         raise NotImplementedError
+
+    @classmethod
+    def read_many(cls, filenames):
+        return map(cls.read, filenames)
 
     @classmethod
     def from_glob(cls, pattern):
         """ Read out files using glob (e.g., ~/BIR_2011*) pattern. Returns 
-        list of CallistoSpectrograms made from all matched files.
+        list of objects made from all matched files.
         """        
-        return map(cls.read, glob.glob(pattern))
+        return cls.read_many(glob.glob(pattern))
     
     @classmethod
     def from_single_glob(cls, singlepattern):
@@ -37,14 +45,14 @@ class Parent(object):
     
     @classmethod
     def from_files(cls, filenames):
-        """ Return list of CallistoSpectrogram read from given list of
+        """ Return list of object read from given list of
         filenames. """
         filenames = map(os.path.expanduser, filenames)
-        return map(cls.read, filenames)
+        return cls.read_many(filenames)
     
     @classmethod
     def from_file(cls, filename):
-        """ Return CallistoSpectrogram from FITS file. """
+        """ Return object from file. """
         filename = os.path.expanduser(filename)
         return cls.read(filename)
     
@@ -52,13 +60,13 @@ class Parent(object):
     def from_dir(cls, directory):
         """ Return list that contains all files in the directory read in. """
         directory = os.path.expanduser(directory)
-        return map(cls.read,
+        return cls.read_many(
             (os.path.join(directory, elem) for elem in os.listdir(directory))
         )
     
     @classmethod
     def from_url(cls, url):
-        """ Return CallistoSpectrogram read from URL.
+        """ Return object read from URL.
         
         Parameters
         ----------
