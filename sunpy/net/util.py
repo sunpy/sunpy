@@ -62,7 +62,4 @@ def get_system_filename(sock, url, default=u"file"):
     name = get_filename(sock, url)
     if not name:
         name = unicode(default)
-    name = name.encode(sys.getfilesystemencoding(), 'ignore')
-    if not name:
-        name = default
-    return name
+    return name.encode(sys.getfilesystemencoding(), 'ignore')
