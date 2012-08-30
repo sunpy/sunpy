@@ -13,6 +13,7 @@ import urllib
 import urllib2
 import sunpy
 from sunpy.time import parse_time
+from sunpy.util.util import buffered_write
 
 class HelioviewerClient:
     """Helioviewer.org Client"""
@@ -229,9 +230,8 @@ class HelioviewerClient:
         filename = content[content.find('filename=') + 10: -1]
         filepath = os.path.join(directory, filename)
         
-        f = open(filepath, 'wb')
-        f.write(response.read())
-        f.close()
+        with open(filepath, 'wb') as f:
+            buffered_write(response, f)
         
         return filepath
     
