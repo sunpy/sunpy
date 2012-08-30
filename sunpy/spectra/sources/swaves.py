@@ -39,14 +39,10 @@ from sunpy.spectra.spectrogram import LinearTimeSpectrogram, REFERENCE, get_day
 #    if len(result) > 0:
 #        listfiles = client.get(result).wait()
 
-_create = ConditionalDispatch.from_existing(LinearTimeSpectrogram._create)
-# We cannot put this into the class, as _create_wrapper would be converted
-# into an instance method.
-_create_wrapper = _create.wrapper()
 
 class SWavesSpectrogram(LinearTimeSpectrogram):
-    _create = _create
-    create = classmethod(_create_wrapper)
+    _create = ConditionalDispatch.from_existing(LinearTimeSpectrogram._create)
+    create = classmethod(_create.wrapper())
     COPY_PROPERTIES = LinearTimeSpectrogram.COPY_PROPERTIES + [
         ('bg', REFERENCE)
     ]
@@ -97,7 +93,7 @@ class SWavesSpectrogram(LinearTimeSpectrogram):
         self.bg = bg
 
 
-_create_wrapper.__doc__ = (
+SWavesSpectrogram.create.im_func.__doc__ = (
     """ Create SWavesSpectrogram from given input dispatching to the
     appropriate from_* function.
 
