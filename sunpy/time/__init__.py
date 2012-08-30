@@ -153,3 +153,8 @@ def break_time(t=None):
     """Given a time returns a string. Useful for naming files."""
     #TODO: should be able to handle a time range
     return parse_time(t).strftime("%Y%m%d_%H%M%S")
+
+
+def get_day(dt):
+    """ Return datetime for the beginning of the day of given datetime. """
+    return datetime(dt.year, dt.month, dt.day)
