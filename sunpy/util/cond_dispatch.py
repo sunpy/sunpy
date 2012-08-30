@@ -207,6 +207,12 @@ class ConditionalDispatch(object):
         return lambda *args, **kwargs: self(*args, **kwargs)
     
     def get_signatures(self, prefix="", start=0):
+        """ Return an iterator containing all possible function signatures.
+        If prefix is given, use it as function name in signatures, else
+        leave it out. If start is given, leave out first n elements.
+
+        If start is -1, leave out first element if the function was created
+        by run_cls. """
         for fun, condition, types in self.funcs:
             if start == -1:
                 st = getattr(fun, 'run_cls', 0)
