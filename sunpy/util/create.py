@@ -5,12 +5,13 @@ from __future__ import absolute_import
 
 import os
 import glob
+import shutil
 
 import sunpy
 import urllib2
 
 from sunpy.net.util import get_system_filename
-from sunpy.util.util import buffered_write, replacement_filename
+from sunpy.util.util import replacement_filename
 
 from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
 
@@ -82,7 +83,7 @@ class Parent(object):
                 path = replacement_filename(path)
 
             with open(path, 'wb') as fd:
-                buffered_write(opn, fd, 9096)
+                shutil.copyfileobj(opn, fd, 9096)
 
             return cls.read(path)
         finally:
