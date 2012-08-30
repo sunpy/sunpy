@@ -18,6 +18,8 @@ import sys
 import tempfile
 import threading
 
+# For Content-Disposition parsing
+from email.parser import FeedParser
 from datetime import datetime, timedelta
 from functools import partial
 from collections import defaultdict
@@ -33,6 +35,14 @@ from sunpy.time import parse_time
 DEFAULT_URL = 'http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl'
 DEFAULT_PORT = 'nsoVSOi'
 RANGE = re.compile(r'(\d+)(\s*-\s*(\d+))?(\s*([a-zA-Z]+))?')
+
+def get_filename(content_disposition):
+    parser = FeedParser()
+    parser.feed("Content-Disposition: " + content_disposition)
+    name = parser.close().get_filename()
+    if not isinstance(name, unicode):
+        name = name.decode("latin1")
+    return name
 
 
 # TODO: Name
@@ -98,9 +108,13 @@ class Results(object):
         self.n += 1
         return partial(self.submit, keys)
     
-    def wait(self):
+    def wait(self, timeout=100):
         """ Wait for result to be complete and return it. """
-        self.evt.wait()
+        # Giving wait a timeout somehow circumvents a CPython bug that the
+        # call gets ininterruptible.
+        while not self.evt.wait(timeout):
+            pass
+
         return self.map_
     
     def add_error(self, exception):
@@ -316,13 +330,28 @@ class VSOClient(object):
     @staticmethod
     def mk_filename(pattern, response, sock, url):
         # FIXME: os.path.exists(name)
-        name = sock.headers.get(
-            'Content-Disposition', url.rstrip('/').rsplit('/', 1)[-1]
-        )
+        cd = sock.headers.get('Content-Disposition', None)
+        name = None
+        if cd is not None:
+            try:
+                name = get_filename(cd)
+            # Message.get_filename raises this for bogus data.
+            except IndexError:
+                pass
+        if not name:
+            name = url.rstrip('/').rsplit('/', 1)[-1]
         if not name:
             name = response.fileid.replace('/', '_')
         
+        if isinstance(name, unicode):
+            fs_encoding = sys.getfilesystemencoding()
+            if fs_encoding is None:
+                fs_encoding = "ascii"
+            name = name.encode(fs_encoding, "ignore")
+
+        name = os.path.basename(name)
         fname = pattern.format(file=name, **dict(response))
+
         dir_ = os.path.dirname(fname)
         if not os.path.exists(dir_):
             os.makedirs(dir_)

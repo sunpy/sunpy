@@ -100,5 +100,30 @@ frequencies of BIR).
 
 .. image:: ../images/spectra_ex7.png
 
+The :py:meth:`plot() <sunpy.spectra.spectrogram.Spectrogram.plot>`
+and :py:meth:`show() <sunpy.spectra.spectrogram.Spectrogram.show>`
+methods return a special kind of figure that offers convenience features
+needed for analyzing spectrograms, a :py:class:`SpectroFigure <sunpy.spectra.spectrogram.SpectroFigure>`. By using its
+:py:meth:`time_freq() <sunpy.spectra.spectrogram.SpectroFigure.time_freq>`, we can
+select points on the figure and frequency-time information of them will be returned
+as a :py:class:`TimeFreq <sunpy.spectra.spectrogram.TimeFreq>`. Time is
+stored as offsets in seconds from TimeFreq.start.
+
+
+    >>> fig = image.show()
+    >>> time_freq = fig.time_freq()
+    >>> # Select points.
+    >>> time_freq.time
+    array([   0.  ,   54.5 ,  104.  ,  163.25])
+    >>> time_freq.freq
+    array([ 68.76923077,  59.29888786,  48.50092678,  36.46385542])
+
+We can then quickly visualize this using the 
+:py:meth:`show() <sunpy.spectra.spectrogram.TimeFreq.show>` method
+
+    >>> time_freq.show(marker='o', linestyle='--')
+
+.. image:: ../images/spectra_ex8.png
+
 .. _e-Callisto: http://www.e-callisto.org/
 .. _Rosse Observatory: http://rosseobservatory.ie/ 
