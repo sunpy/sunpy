@@ -5,6 +5,7 @@ from __future__ import absolute_import
 
 import os
 import glob
+import shutil
 import datetime
 import urllib2
 
@@ -23,7 +24,7 @@ from scipy.ndimage import gaussian_filter1d
 
 from sunpy.time import parse_time
 from sunpy.util.util import (
-    findpeaks, delta, buffered_write, polyfun_at, minimal_pairs, find_next
+    findpeaks, delta, polyfun_at, minimal_pairs, find_next
 )
 from sunpy.util.cond_dispatch import ConditionalDispatch
 from sunpy.spectra.spectrogram import LinearTimeSpectrogram, REFERENCE
@@ -92,7 +93,7 @@ def download(urls, directory):
         path = os.path.join(directory, filename)
         fd = open(path, 'w')
         src = urllib2.urlopen(url)
-        buffered_write(src, fd, 4096)
+        shutil.copyfileobj(src, fd)
         fd.close()
         src.close()
         paths.append(path)

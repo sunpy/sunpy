@@ -9,11 +9,11 @@ __email__ = "keith.hughitt@nasa.gov"
 
 import os
 import json
+import shutil
 import urllib
 import urllib2
 import sunpy
 from sunpy.time import parse_time
-from sunpy.util.util import buffered_write
 
 class HelioviewerClient:
     """Helioviewer.org Client"""
@@ -231,7 +231,7 @@ class HelioviewerClient:
         filepath = os.path.join(directory, filename)
         
         with open(filepath, 'wb') as f:
-            buffered_write(response, f)
+            shutil.copyfileobj(response, f)
         
         return filepath
     
