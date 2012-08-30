@@ -393,9 +393,12 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         freq_buckets = defaultdict(list)
         for elem in data:
             freq_buckets[tuple(elem.freq_axis)].append(elem)
-        return cls.combine_frequencies(
-            [cls.join_many(elem, **kw) for elem in freq_buckets.itervalues()]
-        )
+        try:
+            return cls.combine_frequencies(
+                [cls.join_many(elem, **kw) for elem in freq_buckets.itervalues()]
+            )
+        except ValueError:
+            raise ValueError("No data found.")
     
     def _overlap(self, other):
         """ Find frequency and time overlap of two spectrograms. """
