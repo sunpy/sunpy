@@ -11,6 +11,7 @@ import os
 import pyfits
 import numpy as np
 import matplotlib.pyplot as plt
+import scipy.ndimage.interpolation
 from matplotlib import patches
 from matplotlib import colors
 from matplotlib import cm
@@ -604,6 +605,80 @@ Dimension:\t [%d, %d]
         new_map.reference_coordinate['x'] = self.center['x']
         new_map.reference_coordinate['y'] = self.center['y']
 
+        return new_map
+    
+    def rotate(self, angle, scale=1.0, centroid=None, recentre=True, order=3,
+               missing=0.0, method='scipy'):
+        """ Rotate, rescale and shift and image
+        
+        Arguments
+        ---------
+        angle        float           The angle to rotate the image by. (radians)
+        
+        Keyword Arguments
+        -----------------
+        scale       float           A scale factor for the image, default is no scaling
+        centroid    tuple           The point in the image to rotate around (Axis of rotation),
+                                    default is the centre of the array
+        recentre    bool, or list   Move the centroid (axis of rotation) to 
+                                        the centre of the array or recentre coords
+        order       int             The order of the spline interpolation to be used.
+        missing     float           The numerical value of any missing data
+        method      string          Selects the rotation method from:
+                                        'scipy', 'C'
+        """
+        
+        def _af_args(angle, centre, shift, scale):
+            """ Makes args for affine_transform scipy lib fun from values for
+            input array, since fn. takes values in output array as args.  """
+        
+            # Re-usable bit - set centre, shift, ang
+            c = np.cos(angle)
+            s = np.sin(angle)
+            mati = np.array([[c, s],[-s, c]])/scale   # res->orig
+            centre = np.array([centre]).transpose()  # the centre of rotn
+            shift = np.array([shift]).transpose()    # the shift
+            kpos = centre - np.dot(mati, (centre + shift))  
+            # kpos and mati are the two transform constants, kpos is a 2x1 array
+            return (mati, (kpos[0,0], kpos[1,0]))
+        
+        i_rows,i_cols = self.shape
+        centre = ((i_rows - 1)/2.0, (i_cols - 1)/2.0)
+        
+        if not(centroid):
+            centroid = centre
+        
+        if recentre:
+            if centroid == centre:
+                shift = (0., 0.)
+            if type(recentre) in [list, tuple, np.ndarray]:
+                shift = np.array(recentre) - np.array(centre)
+            else:
+                shift = np.array(centroid) - np.array(centre)
+        else:
+            shift = (0.,0.)
+        
+        image = np.asarray(self).copy()        
+        
+        if method == 'scipy':
+            rsmat, offs = _af_args(angle, centroid, shift, scale)
+            data = scipy.ndimage.interpolation.affine_transform(
+                image, rsmat, offset=offs, order=order, mode='constant', cval=missing)
+                
+        elif method == 'C':
+            raise NotImplementedError("Nope, not yet")
+            
+        else:
+            if type(method) != type(''):
+                raise TypeError("method keyword argument should be a string")
+            raise ValueError("%s is not a valid argument for method"%method)
+        
+        
+        # Update image scale and number of pixels
+        header = self._original_header.copy()
+        # Create new map instance
+        new_map = self.__class__(data, header)
+        
         return new_map
     
     def save(self, filepath):
