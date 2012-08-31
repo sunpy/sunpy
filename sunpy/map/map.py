@@ -611,12 +611,10 @@ Dimension:\t [%d, %d]
                missing=0.0):
         """Returns a new rotated, rescaled and shifted map.
         
-        Arguments
+        Parameters
         ---------
-        angle        float           The angle to rotate the image by (radians)
+        angle       float           The angle to rotate the image by (radians)
         
-        Keyword Arguments
-        -----------------
         scale       float           A scale factor for the image, default is no
                                     scaling
         centroid    tuple           The point in the image to rotate around
@@ -627,45 +625,40 @@ Dimension:\t [%d, %d]
         order       int             The order of the spline interpolation to be
                                     used.
         missing     float           The numerical value of any missing data
+        
+        Returns
+        -------
+        New rotated, rescaled, translated map
         """
-        
-        def _af_args(angle, centre, shift, scale):
-            """ Makes args for affine_transform scipy lib fun from values for
-            input array, since fn. takes values in output array as args.  """
-        
-            # Re-usable bit - set centre, shift, ang
-            c = np.cos(angle)
-            s = np.sin(angle)
-            mati = np.array([[c, s],[-s, c]])/scale   # res->orig
-            centre = np.array([centre]).transpose()  # the centre of rotn
-            shift = np.array([shift]).transpose()    # the shift
-            kpos = centre - np.dot(mati, (centre + shift))  
-            # kpos and mati are the two transform constants, kpos is a 2x1 array
-            return (mati, (kpos[0,0], kpos[1,0]))
 
         i_rows,i_cols = self.shape
         centre = ((i_rows - 1)/2.0, (i_cols - 1)/2.0)
         
-        if not(centroid):
-            centroid = centre
-        
-        if recentre:
-            if centroid == centre:
-                shift = (0., 0.)
-            if type(recentre) in [list, tuple, np.ndarray]:
-                shift = np.array(recentre) - np.array(centre)
-            else:
-                shift = np.array(centroid) - np.array(centre)
+        if not centroid: #If Centroid is not set (None or False)
+            centroid = centre #Set the centroid to the centre of the image.
+
+        if isinstance(recentre, bool):
+            #if rentre is False then this will be (0,0)
+            shift = np.array(centroid) - np.array(centre) 
         else:
-            shift = (0.,0.)
+            shift = np.array(recentre) - np.array(centre)
         
-        image = np.asarray(self).copy()        
+        image = np.asarray(self).copy()
+    
+        #Calulate the parameters for the affline_transform
+        c = np.cos(angle)
+        s = np.sin(angle)
+        mati = np.array([[c, s],[-s, c]]) / scale   # res->orig
+        centre = np.array([centre]).transpose()  # the centre of rotn
+        shift = np.array([shift]).transpose()    # the shift
+        kpos = centre - np.dot(mati, (centre + shift))  
+        # kpos and mati are the two transform constants, kpos is a 2x1 array
+        rsmat, offs =  (mati, (kpos[0,0], kpos[1,0]))
         
-        rsmat, offs = _af_args(angle, centroid, shift, scale)
-        data = scipy.ndimage.interpolation.affine_transform(
-            image, rsmat, offset=offs, order=order, mode='constant', cval=missing)
+        data = scipy.ndimage.interpolation.affine_transform(image, rsmat,
+                       offset=offs, order=order, mode='constant', cval=missing)
         
-        # Update image scale and number of pixels
+        #Copy Header
         header = self._original_header.copy()
         # Create new map instance
         new_map = self.__class__(data, header)
