@@ -28,8 +28,8 @@ def install(setup): #pylint: disable=W0621
     #Crotate Module
     from distutils.core import Extension
     module = 'sunpy.image.Crotate'   # import this
-    sourcefiles = ['sunpy/image/crotate/rot_extn.c',
-                   'sunpy/image/crotate/transform/aff_tr.c']
+    sourcefiles = ['sunpy/image/src/rot_extn.c',
+                   'sunpy/image/src/transform/aff_tr.c']
     libs = ['m']
     # -ON for compile optimise 
     gcc_args = ['-std=c99', '-O3']
