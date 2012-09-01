@@ -637,8 +637,7 @@ Dimension:\t [%d, %d]
         """
         
         #Define Size and centre of array
-        i_rows,i_cols = self.shape
-        centre = ((i_rows - 1)/2.0, (i_cols - 1)/2.0)
+        centre = (np.array(self.shape)-1)/2.0
         
         #If Centroid is not set (None or False)
         #Set the centroid to the centre of the image.
