@@ -636,6 +636,11 @@ Dimension:\t [%d, %d]
         New rotated, rescaled, translated map
         """
         
+        #Do some sanity checks
+        #Make sure rotation_centre and recenter are vectors (2,1)
+        recentre = np.array(recentre).reshape(2,1)
+        rotation_centre = np.array(rotation_centre).reshape(2,1)
+        
         #Define Size and centre of array
         centre = (np.array(self.shape)-1)/2.0
         
