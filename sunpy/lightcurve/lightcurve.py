@@ -11,6 +11,7 @@ __email__ = "keith.hughitt@nasa.gov"
 import os
 import pandas
 import sunpy
+import shutil
 import urllib2
 import numpy as np
 import matplotlib.pyplot as plt
@@ -160,9 +161,9 @@ class LightCurve(object):
                 response = urllib2.urlopen(uri)
             except (urllib2.HTTPError, urllib2.URLError):
                 raise urllib2.URLError(err)
-            fp = open(filepath, 'wb')
-            fp.write(response.read())
-        
+            with open(filepath, 'wb') as fp:
+                shutil.copyfileobj(response, fp)
+                    
         return filepath
     
     @classmethod
