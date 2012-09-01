@@ -146,15 +146,3 @@ def test_wave_xor():
     
     assert a == attr.AttrOr(
         [va.Wave(0, 200), va.Wave(400, 600), va.Wave(800, 1000)])
-
-
-def test_content_disposition_ascii():
-    ret = vso.get_filename("Content-Disposition: attachment; filename=foo.txt")
-    assert ret == u"foo.txt"
-    assert isinstance(ret, unicode)
-
-
-def test_content_disposition_unicode():
-    ret = vso.get_filename("Content-Disposition: attachment; filename*= UTF-8''%e2%82%ac%20rates")
-    assert ret == u"€ rates"
-    assert isinstance(ret, unicode)
