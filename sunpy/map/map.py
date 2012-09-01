@@ -608,34 +608,42 @@ Dimension:\t [%d, %d]
         return new_map
     
     def rotate(self, angle, scale=1.0, centroid=None, recentre=True, order=3,
-               missing=0.0):
+               missing=np.nan):
         """Returns a new rotated, rescaled and shifted map.
         
         Parameters
         ---------
-        angle       float           The angle to rotate the image by (radians)
-        
-        scale       float           A scale factor for the image, default is no
-                                    scaling
-        centroid    tuple           The point in the image to rotate around
-                                    (Axis of rotation), default is the centre
-                                    of the array
-        recentre    bool, or list   Move the centroid (axis of rotation) to 
-                                    the centre of the array or recentre coords
-        order       int             The order of the spline interpolation to be
-                                    used.
-        missing     float           The numerical value of any missing data
+        angle: float
+           The angle to rotate the image by (radians)        
+        scale: float
+           A scale factor for the image, default is no scaling
+        centroid: tuple
+           The point in the image to rotate around (Axis of rotation).
+           Default: Centre of the array
+        recentre: bool, or array-like
+           Move the centroid (axis of rotation) to the centre of the array
+           or recentre coords. 
+           Default: True, recentre to the centre of the array.
+        order: int
+           The order of the spline interpolation to be used.
+           Default: 3 Cubic
+        missing: float
+           The numerical value of any missing data
+           Default: NaN
         
         Returns
         -------
         New rotated, rescaled, translated map
         """
-
+        
+        #Define Size and centre of array
         i_rows,i_cols = self.shape
         centre = ((i_rows - 1)/2.0, (i_cols - 1)/2.0)
         
-        if not centroid: #If Centroid is not set (None or False)
-            centroid = centre #Set the centroid to the centre of the image.
+        #If Centroid is not set (None or False)
+        #Set the centroid to the centre of the image.
+        if not centroid: 
+            centroid = centre 
 
         if isinstance(recentre, bool):
             #if rentre is False then this will be (0,0)
@@ -655,6 +663,7 @@ Dimension:\t [%d, %d]
         # kpos and mati are the two transform constants, kpos is a 2x1 array
         rsmat, offs =  (mati, (kpos[0,0], kpos[1,0]))
         
+        # This is the scipy call
         data = scipy.ndimage.interpolation.affine_transform(image, rsmat,
                        offset=offs, order=order, mode='constant', cval=missing)
         
