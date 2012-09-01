@@ -608,88 +608,65 @@ Dimension:\t [%d, %d]
         return new_map
     
     def rotate(self, angle, scale=1.0, centroid=None, recentre=True, order=3,
-               missing=0.0, method='scipy', bicubic=None):
-        """ Rotate, rescale and shift and image
+               missing=np.nan):
+        """Returns a new rotated, rescaled and shifted map.
         
-        Arguments
+        Parameters
         ---------
-        angle        float           The angle to rotate the image by. (radians)
+        angle: float
+           The angle to rotate the image by (radians)        
+        scale: float
+           A scale factor for the image, default is no scaling
+        centroid: tuple
+           The point in the image to rotate around (Axis of rotation).
+           Default: Centre of the array
+        recentre: bool, or array-like
+           Move the centroid (axis of rotation) to the centre of the array
+           or recentre coords. 
+           Default: True, recentre to the centre of the array.
+        order: int
+           The order of the spline interpolation to be used.
+           Default: 3 Cubic
+        missing: float
+           The numerical value of any missing data
+           Default: NaN
         
-        Keyword Arguments
-        -----------------
-        scale       float           A scale factor for the image, default is no scaling
-        centroid    tuple           The point in the image to rotate around (Axis of rotation),
-                                    default is the centre of the array
-        recentre    bool, or list   Move the centroid (axis of rotation) to 
-                                        the centre of the array or recentre coords
-        order       int             The order of the spline interpolation to be used.
-        missing     float           The numerical value of any missing data
-        method      string          Selects the rotation method from:
-                                        'scipy', 'C'
+        Returns
+        -------
+        New rotated, rescaled, translated map
         """
         
-        def _af_args(angle, centre, shift, scale):
-            """ Makes args for affine_transform scipy lib fun from values for
-            input array, since fn. takes values in output array as args.  """
-        
-            # Re-usable bit - set centre, shift, ang
-            c = np.cos(angle)
-            s = np.sin(angle)
-            mati = np.array([[c, s],[-s, c]])/scale   # res->orig
-            centre = np.array([centre]).transpose()  # the centre of rotn
-            shift = np.array([shift]).transpose()    # the shift
-            kpos = centre - np.dot(mati, (centre + shift))  
-            # kpos and mati are the two transform constants, kpos is a 2x1 array
-            return (mati, (kpos[0,0], kpos[1,0]))
-        
-        #Sanity Checks        
-        if method != 'C' and bicubic is not None:
-            
+        #Define Size and centre of array
         i_rows,i_cols = self.shape
         centre = ((i_rows - 1)/2.0, (i_cols - 1)/2.0)
         
-        if not(centroid):
-            centroid = centre
-        
-        if recentre:
-            if centroid == centre:
-                shift = (0., 0.)
-            if type(recentre) in [list, tuple, np.ndarray]:
-                shift = np.array(recentre) - np.array(centre)
-            else:
-                shift = np.array(centroid) - np.array(centre)
+        #If Centroid is not set (None or False)
+        #Set the centroid to the centre of the image.
+        if not centroid: 
+            centroid = centre 
+
+        if isinstance(recentre, bool):
+            #if rentre is False then this will be (0,0)
+            shift = np.array(centroid) - np.array(centre) 
         else:
-            shift = (0.,0.)
+            shift = np.array(recentre) - np.array(centre)
         
-        image = np.asarray(self).copy()        
+        image = np.asarray(self).copy()
+    
+        #Calulate the parameters for the affline_transform
+        c = np.cos(angle)
+        s = np.sin(angle)
+        mati = np.array([[c, s],[-s, c]]) / scale   # res->orig
+        centre = np.array([centre]).transpose()  # the centre of rotn
+        shift = np.array([shift]).transpose()    # the shift
+        kpos = centre - np.dot(mati, (centre + shift))  
+        # kpos and mati are the two transform constants, kpos is a 2x1 array
+        rsmat, offs =  (mati, (kpos[0,0], kpos[1,0]))
         
-        rsmat, offs = _af_args(angle, centroid, shift, scale)
-        if method == 'scipy':
-            data = scipy.ndimage.interpolation.affine_transform(
-                image, rsmat, offset=offs, order=order, mode='constant', cval=missing)
-                
-        elif method == 'C':
-            import sunpy.image.Crotate as Crotate
-            if bicubic == None:
-                ktype = Crotate.NEAREST
-                kparm = 0
-            elif bicubic > 0:
-                ktype = Crotate.BILINEAR
-                kparm = 0
-            elif bicubic >= -1:
-                ktype = Crotate.BICUBIC
-                kparm = bicubic
-            else:
-                raise ValueError
-#            raise NotImplementedError("Nope, not yet")
-            
-        else:
-            if type(method) != type(''):
-                raise TypeError("method keyword argument should be a string")
-            raise ValueError("%s is not a valid argument for method"%method)
+        data = scipy.ndimage.interpolation.affine_transform(image, rsmat,
+                       offset=offs, order=order, mode='constant', cval=missing)
         
-        
-        # Update image scale and number of pixels
+        #Copy Header
         header = self._original_header.copy()
         # Create new map instance
         new_map = self.__class__(data, header)
