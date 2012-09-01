@@ -163,16 +163,6 @@ def delta(s):
     return s[1:] - s[:-1]
 
 
-def buffered_write(inp, outp, buffer_size):
-    """ Write from inp to outp in chunks of
-    buffer_size. """
-    while True:
-        read = inp.read(buffer_size)
-        if not read:
-            break
-        outp.write(read)
-
-
 def polyfun_at(coeff, p):
     """ Return value of polynomial with coefficients (highest first) at
     point (can also be an np.ndarray for more than one point) p. """

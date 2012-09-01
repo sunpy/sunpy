@@ -9,6 +9,7 @@ __email__ = "keith.hughitt@nasa.gov"
 
 import os
 import json
+import shutil
 import urllib
 import urllib2
 import sunpy
@@ -229,9 +230,8 @@ class HelioviewerClient:
         filename = content[content.find('filename=') + 10: -1]
         filepath = os.path.join(directory, filename)
         
-        f = open(filepath, 'wb')
-        f.write(response.read())
-        f.close()
+        with open(filepath, 'wb') as f:
+            shutil.copyfileobj(response, f)
         
         return filepath
     
