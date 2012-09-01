@@ -607,7 +607,7 @@ Dimension:\t [%d, %d]
 
         return new_map
     
-    def rotate(self, angle, scale=1.0, centroid=None, recentre=True, order=3,
+    def rotate(self, angle, scale=1.0, rotation_centre=None, recentre=True, order=3,
                missing=np.nan):
         """Returns a new rotated, rescaled and shifted map.
         
@@ -617,7 +617,7 @@ Dimension:\t [%d, %d]
            The angle to rotate the image by (radians)        
         scale: float
            A scale factor for the image, default is no scaling
-        centroid: tuple
+        rotation_centre: tuple
            The point in the image to rotate around (Axis of rotation).
            Default: Centre of the array
         recentre: bool, or array-like
@@ -641,12 +641,12 @@ Dimension:\t [%d, %d]
         
         #If Centroid is not set (None or False)
         #Set the centroid to the centre of the image.
-        if not centroid: 
-            centroid = centre 
+        if not rotation_centre: 
+            rotation_centre = centre 
 
         if isinstance(recentre, bool):
             #if rentre is False then this will be (0,0)
-            shift = np.array(centroid) - np.array(centre) 
+            shift = np.array(rotation_centre) - np.array(centre) 
         else:
             shift = np.array(recentre) - np.array(centre)
         
