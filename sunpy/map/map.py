@@ -663,6 +663,7 @@ Dimension:\t [%d, %d]
         # kpos and mati are the two transform constants, kpos is a 2x1 array
         rsmat, offs =  (mati, (kpos[0,0], kpos[1,0]))
         
+        # This is the scipy call
         data = scipy.ndimage.interpolation.affine_transform(image, rsmat,
                        offset=offs, order=order, mode='constant', cval=missing)
         
