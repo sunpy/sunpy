@@ -8,6 +8,9 @@ from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
+import os
+import glob
+import urllib2
 import datetime
 
 from random import randint
@@ -25,8 +28,16 @@ from matplotlib.figure import Figure
 from matplotlib.ticker import FuncFormatter, MaxNLocator, IndexLocator
 from matplotlib.colorbar import Colorbar
 
+import sunpy
+
+from sunpy.net.util import get_system_filename
 from sunpy.time import parse_time, get_day
-from sunpy.util.util import to_signed, min_delt, delta, common_base, merge
+from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
+from sunpy.util.util import (
+    to_signed, min_delt, delta, common_base, merge,
+    replacement_filename
+)
+from sunpy.util.create import Parent
 from sunpy.spectra.spectrum import Spectrum
 
 # 1080 because that usually is the maximum vertical pixel count on modern
@@ -219,7 +230,7 @@ class TimeFreq(object):
         return ret
 
 
-class Spectrogram(np.ndarray):
+class Spectrogram(np.ndarray, Parent):
     """ Base class for spectral analysis in SunPy.
     
     Parameters
@@ -265,7 +276,7 @@ class Spectrogram(np.ndarray):
         ('content', REFERENCE),
         ('t_init', REFERENCE),
     ]
-
+    _create = ConditionalDispatch.from_existing(Parent._create)
     def _as_class(self, cls):
         """ Implementation detail. """
         if not issubclass(cls, Spectrogram):
