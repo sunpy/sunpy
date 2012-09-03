@@ -456,7 +456,7 @@ class Spectrogram(np.ndarray):
             'aspect': 'auto',
         }
         params.update(matplotlib_args)
-        if max_dist is not None:
+        if linear and max_dist is not None:
             toplot = ma.masked_array(data, mask=data.make_mask(max_dist))
         else:
             toplot = data
