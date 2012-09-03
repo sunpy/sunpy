@@ -98,40 +98,38 @@ class _LinearView(object):
         
         self.max_mp_delt = np.min(delta(self.midpoints))
         
+        self.freq_axis = np.arange(
+            self.arr.freq_axis[0], self.arr.freq_axis[-1], -self.delt
+        )
+        self.time_axis = self.arr.time_axis
+
         self.shape = (len(self), arr.shape[1])
     
     def __len__(self):
         return 1 + (self.arr.freq_axis[0] - self.arr.freq_axis[-1]) / self.delt
     
-    def __getitem__(self, item):
+    def _find(self, arr, item):
         if item < 0:
             item = item % len(self)
         if item >= len(self):
             raise IndexError
-        freq = self.arr.freq_axis[0] - item * self.delt
+
+        freq_offset = item * self.delt
+        freq = self.arr.freq_axis[0] - freq_offset
         # The idea is that when we take the biggest delta in the mid points,
         # we do not have to search anything that is between the beginning and
         # the first item that can possibly be that frequency.
         min_mid = max(0, (freq - self.midpoints[0]) // self.max_mp_delt)
         for n, mid in enumerate(self.midpoints[min_mid:]):
             if mid <= freq:
-                return self.arr[min_mid + n, :]
-        return self.arr[min_mid + n, :]
+                return arr[min_mid + n]
+        return arr[min_mid + n]
+
+    def __getitem__(self, item):
+        return self._find(self.arr, item)
     
     def get_freq(self, item):
-        if item < 0:
-            item = item % len(self)
-        if item >= len(self):
-            raise IndexError
-        freq = self.arr.freq_axis[0] - item * self.delt
-        # The idea is that when we take the biggest delta in the mid points,
-        # we do not have to search anything that is between the beginning and
-        # the first item that can possibly be that frequency.
-        min_mid = max(0, (freq - self.midpoints[0]) // self.max_mp_delt)
-        for n, mid in enumerate(self.midpoints[min_mid:]):
-            if mid <= freq:
-                return self.arr.freq_axis[min_mid + n]
-        return self.arr.freq_axis[min_mid + n]
+        return self._find(self.arr.freq_axis, item)
 
 
 class SpectroFigure(Figure):
