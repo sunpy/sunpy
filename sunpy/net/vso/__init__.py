@@ -15,34 +15,27 @@ This module provides a wrapper around the VSO API.
 import re
 import os
 import sys
+import random
 import tempfile
 import threading
 
-# For Content-Disposition parsing
-from email.parser import FeedParser
+
 from datetime import datetime, timedelta
 from functools import partial
 from collections import defaultdict
-
+from string import ascii_lowercase
 from suds import client, TypeNotFound
 
 from sunpy.net import download
+from sunpy.net.util import get_filename, slugify
 from sunpy.net.attr import and_, Attr
 from sunpy.net.vso.attrs import walker, TIMEFORMAT
-from sunpy.util.util import to_angstrom, print_table
+from sunpy.util.util import to_angstrom, print_table, replacement_filename
 from sunpy.time import parse_time
 
 DEFAULT_URL = 'http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl'
 DEFAULT_PORT = 'nsoVSOi'
 RANGE = re.compile(r'(\d+)(\s*-\s*(\d+))?(\s*([a-zA-Z]+))?')
-
-def get_filename(content_disposition):
-    parser = FeedParser()
-    parser.feed("Content-Disposition: " + content_disposition)
-    name = parser.close().get_filename()
-    if not isinstance(name, unicode):
-        name = name.decode("latin1")
-    return name
 
 
 # TODO: Name
@@ -328,30 +321,27 @@ class VSOClient(object):
         return self.make('QueryResponse', provideritem=providers.values())
     
     @staticmethod
-    def mk_filename(pattern, response, sock, url):
-        # FIXME: os.path.exists(name)
-        cd = sock.headers.get('Content-Disposition', None)
-        name = None
-        if cd is not None:
-            try:
-                name = get_filename(cd)
-            # Message.get_filename raises this for bogus data.
-            except IndexError:
-                pass
+    def mk_filename(pattern, response, sock, url, overwrite=False):
+        name = get_filename(sock, url)
         if not name:
-            name = url.rstrip('/').rsplit('/', 1)[-1]
-        if not name:
-            name = response.fileid.replace('/', '_')
-        
-        if isinstance(name, unicode):
-            fs_encoding = sys.getfilesystemencoding()
-            if fs_encoding is None:
-                fs_encoding = "ascii"
-            name = name.encode(fs_encoding, "ignore")
+            if not isinstance(response.fileid, unicode):
+                name = unicode(response.fileid, "ascii", "ignore")
+            else:
+                name = response.fileid
 
-        name = os.path.basename(name)
+        fs_encoding = sys.getfilesystemencoding()
+        if fs_encoding is None:
+            fs_encoding = "ascii"
+        name = name.encode(fs_encoding, "ignore")
+
+        if not name:
+            name = "file"
+
         fname = pattern.format(file=name, **dict(response))
 
+        if not overwrite and os.path.exists(fname):
+            fname = replacement_filename(fname)
+        
         dir_ = os.path.dirname(fname)
         if not os.path.exists(dir_):
             os.makedirs(dir_)

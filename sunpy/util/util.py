@@ -163,16 +163,6 @@ def delta(s):
     return s[1:] - s[:-1]
 
 
-def buffered_write(inp, outp, buffer_size):
-    """ Write from inp to outp in chunks of
-    buffer_size. """
-    while True:
-        read = inp.read(buffer_size)
-        if not read:
-            break
-        outp.write(read)
-
-
 def polyfun_at(coeff, p):
     """ Return value of polynomial with coefficients (highest first) at
     point (can also be an np.ndarray for more than one point) p. """
@@ -272,6 +262,10 @@ def merge(items, key=(lambda x: x)):
 
 
 def replacement_filename(path):
+    """ Return replacement path for already used path. Enumerates
+    until an unused filename is found. E.g., "/home/florian/foo.fits"
+    becomes "/home/florian/foo.0.fits", if that is used
+    "/home/florian/foo.1.fits", etc. """
     if not os.path.exists(path):
         return path
     else:
