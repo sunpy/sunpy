@@ -636,27 +636,27 @@ Dimension:\t [%d, %d]
         New rotated, rescaled, translated map
         """
         
-        #Do some sanity checks
         #Make sure rotation_centre and recenter are vectors (2,1)
         if not isinstance(recentre, bool):
             recentre = np.array(recentre).reshape(2,1)
-        if not rotation_centre is None:
-            import pdb; pdb.set_trace()
-            rotation_centre = np.array(rotation_centre).reshape(2,1)
-        
+                
         #Define Size and centre of array
         centre = (np.array(self.shape)-1)/2.0
         
         #If Centroid is not set (None or False)
         #Set the centroid to the centre of the image.
-        if not rotation_centre: 
+        if rotation_centre is None:
             rotation_centre = centre 
+        else:
+            rotation_centre = np.array(rotation_centre).reshape(2,1)
+
 
         if isinstance(recentre, bool):
             #if rentre is False then this will be (0,0)
             shift = np.array(rotation_centre) - np.array(centre) 
         else:
             shift = np.array(recentre) - np.array(centre)
+        
         image = np.asarray(self).copy()
     
         #Calulate the parameters for the affline_transform
@@ -667,7 +667,7 @@ Dimension:\t [%d, %d]
         shift = np.array([shift]).transpose()    # the shift
         kpos = centre - np.dot(mati, (centre + shift))  
         # kpos and mati are the two transform constants, kpos is a 2x1 array
-        rsmat, offs =  (mati, (kpos[0,0], kpos[1,0]))
+        rsmat, offs =  mati, np.squeeze((kpos[0,0], kpos[1,0]))
         
         # This is the scipy call
         data = scipy.ndimage.interpolation.affine_transform(image, rsmat,
