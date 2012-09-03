@@ -62,16 +62,15 @@ class EVELightCurve(LightCurve):
     @classmethod
     def _parse_csv(cls, filepath):
         """Parses an EVE CSV file"""
-        fp = open(filepath, 'rb')
-        
-        # Determine type of EVE CSV file and parse
-        line1 = fp.readline()
-        fp.seek(0)
+        with open(filepath, 'rb') as fp:
+            # Determine type of EVE CSV file and parse
+            line1 = fp.readline()
+            fp.seek(0)
 
-        if line1.startswith("Date"):
-            return cls._parse_average_csv(fp)
-        elif line1.startswith(";"):
-            return cls._parse_level_0cs(fp)
+            if line1.startswith("Date"):
+                return cls._parse_average_csv(fp)
+            elif line1.startswith(";"):
+                return cls._parse_level_0cs(fp)
     
     @staticmethod
     def _parse_average_csv(fp):
