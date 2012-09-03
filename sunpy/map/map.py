@@ -16,6 +16,7 @@ from matplotlib import patches
 from matplotlib import colors
 from matplotlib import cm
 from copy import copy
+import sunpy.image.Crotate as Crotate
 from sunpy.wcs import wcs as wcs
 from sunpy.util.util import toggle_pylab
 from sunpy.io import read_file, read_file_header
@@ -23,6 +24,7 @@ from sunpy.sun import constants
 from sunpy.time import parse_time
 from sunpy.util.util import to_signed
 from sunpy.image.rescale import resample, reshape_image_to_4d_superpixel
+
 
 """
 TODO
@@ -607,8 +609,8 @@ Dimension:\t [%d, %d]
 
         return new_map
     
-    def rotate(self, angle, scale=1.0, rotation_centre=None, recentre=True, order=3,
-               missing=0.0):
+    def rotate(self, angle, scale=1.0, rotation_centre=None, recentre=True,
+               missing=0.0, interpolation='spline', interp_param=None):
         """Returns a new rotated, rescaled and shifted map.
         
         Parameters
@@ -624,37 +626,59 @@ Dimension:\t [%d, %d]
            Move the centroid (axis of rotation) to the centre of the array
            or recentre coords. 
            Default: True, recentre to the centre of the array.
-        order: int
-           The order of the spline interpolation to be used.
-           Default: 3 Cubic
         missing: float
            The numerical value of any missing data
            Default: 0.0
+        interpolation: {'nearest' | 'bilinear' | 'spline' | 'bicubic'}
+            Interpolation method to use in the transform. Spline uses the 
+            scipy.ndimage.interpolation.affline_transform routine.
+            Default: 'spline'
+        interp_par: Int or Float
+            Optional parameter for controlling the interpolation.
+            Spline interpolation requires an integer value between 1 and 5 for 
+            the degree of the spline fit.
+            Default: 3
+            BiCubic interpolation requires a flaot value between -1 and 0.
+            Default: 0.5
+            Other interpolation options ingore the argument.
         
         Returns
         -------
         New rotated, rescaled, translated map
         """
         
-        #Make sure rotation_centre and recenter are vectors (2,1)
+        #Interpolation parameter Sanity
+        assert interpolation in ['nearest','spline','bilinear','bicubic']
+        #Set defaults based on interpolation
+        if interp_param is None:
+            if interpolation is 'spline':
+                interp_param = 3
+            elif interpolation is 'bicubic':
+                interp_param = 0.5
+            else:
+                interp_param = 0 #Default value for nearest or bilinear
+        
+        #Make sure recenter is a vector with shape (2,1)
         if not isinstance(recentre, bool):
             recentre = np.array(recentre).reshape(2,1)
                 
         #Define Size and centre of array
         centre = (np.array(self.shape)-1)/2.0
         
-        #If Centroid is not set (None or False)
-        #Set the centroid to the centre of the image.
+        #If rotation_centre is not set (None or False),
+        #set rotation_centre to the centre of the image.
         if rotation_centre is None:
             rotation_centre = centre 
         else:
+            #Else check rotation_centre is a vector with shape (2,1)
             rotation_centre = np.array(rotation_centre).reshape(2,1)
 
-
+        #Recentre to the rotation_centre if recentre is True
         if isinstance(recentre, bool):
             #if rentre is False then this will be (0,0)
             shift = np.array(rotation_centre) - np.array(centre) 
         else:
+            #Recentre to recentre vector otherwise
             shift = np.array(recentre) - np.array(centre)
         
         image = np.asarray(self).copy()
@@ -666,13 +690,30 @@ Dimension:\t [%d, %d]
         centre = np.array([centre]).transpose()  # the centre of rotn
         shift = np.array([shift]).transpose()    # the shift
         kpos = centre - np.dot(mati, (centre + shift))  
-        # kpos and mati are the two transform constants, kpos is a 2x1 array
+        # kpos and mati are the two transform constants, kpos is a 2x2 array
         rsmat, offs =  mati, np.squeeze((kpos[0,0], kpos[1,0]))
         
-        # This is the scipy call
-        data = scipy.ndimage.interpolation.affine_transform(image, rsmat,
-                       offset=offs, order=order, mode='constant', cval=missing)
-        
+        if interpolation == 'spline':
+            # This is the scipy call
+            data = scipy.ndimage.interpolation.affine_transform(image, rsmat,
+                           offset=offs, order=interp_param, mode='constant',
+                           cval=missing)
+        else:
+            #Use C extension Package
+            #Set up call parameters depending on interp type.
+            if interpolation == 'nearest':
+                interp_type = Crotate.NEAREST
+            elif interpolation == 'bilinear':
+                interp_type = Crotate.BILINEAR
+            elif interpolation == 'bicubic':
+                interp_type = Crotate.BICUBIC
+            #Make call to extension
+            data = Crotate.affine_transform(image, 
+                                      rsmat, offset=offs, 
+                                      kernel=interp_type, cubic=interp_param, 
+                                      mode='constant', cval=missing)
+            
+        #Return a new map
         #Copy Header
         header = self._original_header.copy()
         # Create new map instance
