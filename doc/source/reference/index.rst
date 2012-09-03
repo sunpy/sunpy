@@ -23,3 +23,4 @@ SunPy Code Reference
    vso
    wcs
    spectrogram
+   callisto

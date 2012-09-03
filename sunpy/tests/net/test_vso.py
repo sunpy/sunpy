@@ -135,6 +135,7 @@ def test_time_xor():
          va.Time((2010, 1, 1, 5), (2010, 1, 2))]
     )
 
+
 def test_wave_xor():
     one = va.Wave(0, 1000)
     a = one ^ va.Wave(200, 400)

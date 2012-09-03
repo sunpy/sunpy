@@ -13,7 +13,9 @@ from numpy.testing import assert_array_almost_equal
 
 from scipy import ndimage
 
-from sunpy.spectra.spectrogram import Spectrogram, LinearTimeSpectrogram
+from sunpy.spectra.spectrogram import (
+    Spectrogram, LinearTimeSpectrogram, min_delt, _LinearView
+)
 
 
 def is_linear(arr):
@@ -61,7 +63,7 @@ def test_subtract_bg():
         spectrogram.subtract_bg()[:, 1800:], signal
     )
 
-    assert dict_eq(spectrogram.get_params(), sbg.get_params())
+    assert dict_eq(spectrogram._get_params(), sbg._get_params())
 
 
 def test_auto_const_bg():
@@ -391,7 +393,7 @@ def test_join_with_gap():
     )
 
     z = LinearTimeSpectrogram.join_many(
-        [one, other], nonlinear=False, maxgap=1
+        [one, other], nonlinear=False, maxgap=1, fill=0
     )
 
     # The - 1 is because resampling other produces an image of size
@@ -489,7 +491,7 @@ def test_rescale():
 
     nspec = spec.rescale()
 
-    assert dict_eq(spec.get_params(), nspec.get_params())
+    assert dict_eq(spec._get_params(), nspec._get_params())
     assert_array_almost_equal(nspec.max(), 1)
     assert nspec.min() == 0
 
@@ -697,3 +699,115 @@ def test_in_interval2():
     )
     
     assert np.array_equal(spec.in_interval("2010-01-01T00:15:00", "00:30"), spec)
+
+
+def test_linearize():
+    image = np.random.rand(5, 900)
+    spec = LinearTimeSpectrogram(image,
+        np.linspace(0, 1 * (image.shape[1] - 1), image.shape[1]),
+        np.array([20, 10, 5, 0]),
+        datetime(2010, 1, 1, 0, 15),
+        datetime(2010, 1, 1, 0, 30),
+        900,
+        1
+    )
+    # 0   1   2   3   4   5  6  7  8
+    # -------- ----------- ----- ---
+    # 20 17.5 15 12.5 10 7.5 5 2.5 0
+    
+    linear = spec.linearize_freqs()
+    assert ((linear.freq_axis[:-1] - linear.freq_axis[1:]) == 2.5).all()
+    
+    assert (linear[0] == image[0, :]).all()
+    assert (linear[1] == image[0, :]).all()
+    assert (linear[2] == image[0, :]).all()
+    assert (linear[3] == image[1, :]).all()
+    assert (linear[4] == image[1, :]).all()
+    assert (linear[5] == image[1, :]).all()    
+    assert (linear[6] == image[2, :]).all()
+    assert (linear[7] == image[2, :]).all()
+    assert (linear[8] == image[3, :]).all()
+
+
+def test_linear_view():
+    image = np.random.rand(5, 900)
+    spec = LinearTimeSpectrogram(image,
+        np.linspace(0, 1 * (image.shape[1] - 1), image.shape[1]),
+        np.array([20, 10, 5, 0]),
+        datetime(2010, 1, 1, 0, 15),
+        datetime(2010, 1, 1, 0, 30),
+        900,
+        1
+    )
+    
+    linear = _LinearView(spec)
+    # assert ((linear.freq_axis[:-1] - linear.freq_axis[1:]) == 2.5).all()
+    
+    assert (linear[0] == image[0, :]).all()
+    assert (linear[1] == image[0, :]).all()
+    assert (linear[2] == image[0, :]).all()
+    assert (linear[3] == image[1, :]).all()
+    assert (linear[4] == image[1, :]).all()
+    assert (linear[5] == image[1, :]).all()    
+    assert (linear[6] == image[2, :]).all()
+    assert (linear[7] == image[2, :]).all()
+    assert (linear[8] == image[3, :]).all()
+
+
+def test_linear_view_indexerror():
+    image = np.random.rand(5, 900)
+    spec = LinearTimeSpectrogram(image,
+        np.linspace(0, 1 * (image.shape[1] - 1), image.shape[1]),
+        np.array([20, 10, 5, 0]),
+        datetime(2010, 1, 1, 0, 15),
+        datetime(2010, 1, 1, 0, 30),
+        900,
+        1
+    )
+    
+    linear = _LinearView(spec)
+    # assert ((linear.freq_axis[:-1] - linear.freq_axis[1:]) == 2.5).all()
+    with pytest.raises(IndexError):
+        linear[9]
+
+
+def test_linear_view_negative():
+    image = np.random.rand(5, 900)
+    spec = LinearTimeSpectrogram(image,
+        np.linspace(0, 1 * (image.shape[1] - 1), image.shape[1]),
+        np.array([20, 10, 5, 0]),
+        datetime(2010, 1, 1, 0, 15),
+        datetime(2010, 1, 1, 0, 30),
+        900,
+        1
+    )
+    
+    linear = _LinearView(spec)
+    # assert ((linear.freq_axis[:-1] - linear.freq_axis[1:]) == 2.5).all()
+    assert (linear[8] == image[3, :]).all()
+    assert (linear[-1] == image[3, :]).all()
+
+
+def test_linear_view_freqs():
+    image = np.random.rand(5, 900)
+    spec = LinearTimeSpectrogram(image,
+        np.linspace(0, 1 * (image.shape[1] - 1), image.shape[1]),
+        np.array([20, 10, 5, 0]),
+        datetime(2010, 1, 1, 0, 15),
+        datetime(2010, 1, 1, 0, 30),
+        900,
+        1
+    )
+    
+    linear = _LinearView(spec)
+    # assert ((linear.freq_axis[:-1] - linear.freq_axis[1:]) == 2.5).all()
+    
+    assert linear.get_freq(0) == 20
+    assert linear.get_freq(1) == 20
+    assert linear.get_freq(2) == 20
+    assert linear.get_freq(3) == 10
+    assert linear.get_freq(4) == 10
+    assert linear.get_freq(5) == 10
+    assert linear.get_freq(6) == 5
+    assert linear.get_freq(7) == 5
+    assert linear.get_freq(8) == 0

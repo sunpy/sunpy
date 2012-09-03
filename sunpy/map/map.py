@@ -21,6 +21,10 @@ from sunpy.io import read_file, read_file_header
 from sunpy.sun import constants
 from sunpy.time import parse_time
 from sunpy.util.util import to_signed
+from sunpy.image.rescale import resample, reshape_image_to_4d_superpixel
+
+from sunpy.util.cond_dispatch import ConditionalDispatch
+from sunpy.util.create import Parent
 
 """
 TODO
@@ -34,7 +38,7 @@ or something else?)
 * Should 'center' be renamed to 'offset' and crpix1 & 2 be used for 'center'?
 """
 
-class Map(np.ndarray):
+class Map(np.ndarray, Parent):
     """
     Map(data, header)
 
@@ -151,6 +155,9 @@ class Map(np.ndarray):
     | http://www.scipy.org/Subclasses
 
     """
+    _create = ConditionalDispatch.from_existing(Parent._create)
+    create = classmethod(_create.wrapper())
+
     def __new__(cls, data, header):
         """Creates a new Map instance"""
         if isinstance(data, np.ndarray):
@@ -221,6 +228,10 @@ class Map(np.ndarray):
             "units": {
                 'x': header.get('cunit1', 'arcsec'),
                 'y': header.get('cunit2', 'arcsec')
+            },
+            "rotation_angle": {
+                'x': header.get('crota1', 0.),
+                'y': header.get('crota2', 0.)
             }
         }
 
@@ -236,7 +247,7 @@ class Map(np.ndarray):
                           'scale', 'units', 'reference_coordinate',
                           'reference_pixel', 'coordinate_system',
                           'heliographic_latitude', 'heliographic_longitude',
-                          'carrington_longitude']
+                          'carrington_longitude','rotation_angle']
 
             for attr in properties:
                 setattr(self, attr, getattr(obj, attr))
@@ -503,7 +514,6 @@ Dimension:\t [%d, %d]
         ----------
         | http://www.scipy.org/Cookbook/Rebinning (Original source, 2011/11/19)
         """
-        from sunpy.image import resample
 
         # Note: because the underlying ndarray is transposed in sense when
         #   compared to the Map, the ndarray is transposed, resampled, then
@@ -561,7 +571,6 @@ Dimension:\t [%d, %d]
         ----------
         | http://mail.scipy.org/pipermail/numpy-discussion/2010-July/051760.html
         """
-        from sunpy.image import reshape_image_to_4d_superpixel
 
         # Note: because the underlying ndarray is transposed in sense when
         #   compared to the Map, the ndarray is transposed, resampled, then
@@ -849,3 +858,5 @@ class InvalidHeaderInformation(ValueError):
     """Exception to raise when an invalid header tag value is encountered for a
     FITS/JPEG 2000 file."""
     pass
+
+Map.create.im_func.__doc__ = Map._create.generate_docs()

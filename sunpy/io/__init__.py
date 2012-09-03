@@ -32,10 +32,9 @@ def detect_filetype(filepath):
     import re
     
     # Open file and read in first two lines
-    fp = open(filepath)
-    line1 = fp.readline()
-    line2 = fp.readline() 
-    fp.close()
+    with open(filepath) as fp:
+        line1 = fp.readline()
+        line2 = fp.readline() 
     
     # FITS
     #
