@@ -507,7 +507,7 @@ class Spectrogram(np.ndarray):
         
         if showz:
             figure.gca().format_coord = self._mk_format_coord(
-                data, freq_fmt, self.time_formatter)
+                data, figure.gca().format_coord)
         
         if colorbar:
             if newfigure:
@@ -787,7 +787,7 @@ class Spectrogram(np.ndarray):
         return self[np.nonzero(self.freq_axis == freq)[0], :]
 
     @staticmethod
-    def _mk_format_coord(spec, freq_fmt, time_fmt):
+    def _mk_format_coord(spec, fmt_coord):
         def format_coord(x, y):
             shape = map(int, spec.shape)
             
@@ -797,9 +797,8 @@ class Spectrogram(np.ndarray):
             else:
                 pixel = ""
             
-            return 'x=%s y=%s z=%s' % (
-                time_fmt(x, None),
-                freq_fmt(y, None),
+            return '%s z=%s' % (
+                fmt_coord(x, y),
                 pixel
             )
         return format_coord
