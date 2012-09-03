@@ -57,10 +57,9 @@ def get_data(filepath, j2k_to_image="j2k_to_image"):
     tmpname = "".join(os.path.splitext(jp2filename)[0:-1]) + ".pgm"
     tmpfile = os.path.join(tempfile.mkdtemp(), tmpname)
     
-    fnull = open(os.devnull, 'w') 
-    subprocess.call([j2k_to_image, "-i", filepath, "-o", tmpfile], 
-                    stdout=fnull, stderr=fnull)
-    fnull.close()
+    with open(os.devnull, 'w') as fnull:
+        subprocess.call([j2k_to_image, "-i", filepath, "-o", tmpfile], 
+                        stdout=fnull, stderr=fnull)
     
     data = imread(tmpfile)    
     os.remove(tmpfile)
@@ -74,20 +73,18 @@ def read_xmlbox(filepath, root):
     Given a filename and the name of the root node, extracts the XML header box
     from a JP2 image.
     """
-    fp = open(filepath, 'rb')
+    with open(filepath, 'rb') as fp:
 
-    xmlstr = ""
-    for line in fp:
-        xmlstr += line
-        if line.find("</%s>" % root) != -1:
-            break
+        xmlstr = ""
+        for line in fp:
+            xmlstr += line
+            if line.find("</%s>" % root) != -1:
+                break
 
-    start = xmlstr.find("<%s>" % root)
-    end = xmlstr.find("</%s>" % root) + len("</%s>" % root)
-    
-    xmlstr = xmlstr[start : end]
-    
-    fp.close()
+        start = xmlstr.find("<%s>" % root)
+        end = xmlstr.find("</%s>" % root) + len("</%s>" % root)
+        
+        xmlstr = xmlstr[start : end]
 
     # Fix any malformed XML (e.g. in older AIA data)
     return xmlstr.replace("&", "&amp;")

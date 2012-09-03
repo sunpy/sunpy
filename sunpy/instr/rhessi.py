@@ -110,33 +110,39 @@ def parse_obssumm_dbase_file(filename):
     whole days only.
 
     """
-    reader = csv.reader(open(filename, "rb"), delimiter=' ', skipinitialspace=True)
-    headerline = reader.next()
-    headerline = reader.next()
-    headerline = reader.next()
-    headerline = reader.next()
-    
-    obssumm_filename = []
-    orbit_start = []
-    orbit_end = []
-    start_time = []
-    end_time = []
-    status_flag = []
-    number_of_packets = []
-    
-    for row in reader:
-        obssumm_filename.append(row[0])
-        orbit_start.append(int(row[1]))
-        orbit_end.append(int(row[2]))
-        start_time.append(datetime.strptime(row[3], '%d-%b-%y'))
-        end_time.append(datetime.strptime(row[5], '%d-%b-%y'))
-        status_flag.append(int(row[7]))
-        number_of_packets.append(int(row[8]))
+    with open(filename, "rb") as fd:
+        reader = csv.reader(fd, delimiter=' ', skipinitialspace=True)
+        headerline = reader.next()
+        headerline = reader.next()
+        headerline = reader.next()
+        headerline = reader.next()
+        
+        obssumm_filename = []
+        orbit_start = []
+        orbit_end = []
+        start_time = []
+        end_time = []
+        status_flag = []
+        number_of_packets = []
+        
+        for row in reader:
+            obssumm_filename.append(row[0])
+            orbit_start.append(int(row[1]))
+            orbit_end.append(int(row[2]))
+            start_time.append(datetime.strptime(row[3], '%d-%b-%y'))
+            end_time.append(datetime.strptime(row[5], '%d-%b-%y'))
+            status_flag.append(int(row[7]))
+            number_of_packets.append(int(row[8]))
 
-    return {headerline[0].lower(): obssumm_filename, headerline[1].lower(): orbit_start,
-            headerline[2].lower(): orbit_end, headerline[3].lower(): start_time, 
-            headerline[4].lower(): end_time, headerline[5].lower(): status_flag, 
-            headerline[6].lower(): number_of_packets}
+        return {
+            headerline[0].lower(): obssumm_filename,
+            headerline[1].lower(): orbit_start,
+            headerline[2].lower(): orbit_end,
+            headerline[3].lower(): start_time,
+            headerline[4].lower(): end_time,
+            headerline[5].lower(): status_flag,
+            headerline[6].lower(): number_of_packets
+        }
 
 def get_obssum_filename(time_range):
     """Download the RHESSI observing summary data from one of the RHESSI 
