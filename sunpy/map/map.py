@@ -608,7 +608,7 @@ Dimension:\t [%d, %d]
         return new_map
     
     def rotate(self, angle, scale=1.0, rotation_centre=None, recentre=True, order=3,
-               missing=np.nan):
+               missing=0.0):
         """Returns a new rotated, rescaled and shifted map.
         
         Parameters
@@ -629,7 +629,7 @@ Dimension:\t [%d, %d]
            Default: 3 Cubic
         missing: float
            The numerical value of any missing data
-           Default: NaN
+           Default: 0.0
         
         Returns
         -------
@@ -638,8 +638,11 @@ Dimension:\t [%d, %d]
         
         #Do some sanity checks
         #Make sure rotation_centre and recenter are vectors (2,1)
-        recentre = np.array(recentre).reshape(2,1)
-        rotation_centre = np.array(rotation_centre).reshape(2,1)
+        if not isinstance(recentre, bool):
+            recentre = np.array(recentre).reshape(2,1)
+        if not rotation_centre is None:
+            import pdb; pdb.set_trace()
+            rotation_centre = np.array(rotation_centre).reshape(2,1)
         
         #Define Size and centre of array
         centre = (np.array(self.shape)-1)/2.0
@@ -654,7 +657,6 @@ Dimension:\t [%d, %d]
             shift = np.array(rotation_centre) - np.array(centre) 
         else:
             shift = np.array(recentre) - np.array(centre)
-        
         image = np.asarray(self).copy()
     
         #Calulate the parameters for the affline_transform
