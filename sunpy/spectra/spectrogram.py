@@ -210,6 +210,14 @@ class TimeFreq(object):
         
         axes.set_xlabel("Time [UT]")
         axes.set_ylabel("Frequency [MHz]")
+
+        xa = axes.get_xaxis()
+        for tl in xa.get_ticklabels():
+            tl.set_fontsize(10)
+            tl.set_rotation(30)
+        figure.add_axes(axes)
+        figure.subplots_adjust(bottom=0.2)
+        figure.subplots_adjust(left=0.2)
         
         return figure
     
