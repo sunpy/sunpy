@@ -3,7 +3,10 @@
 
 """ Classes for spectral analysis. """
 
+from __future__ import division
+from __future__ import print_function
 from __future__ import absolute_import
+from __future__ import unicode_literals
 
 import os
 import glob
@@ -109,40 +112,38 @@ class _LinearView(object):
         
         self.max_mp_delt = np.min(delta(self.midpoints))
         
+        self.freq_axis = np.arange(
+            self.arr.freq_axis[0], self.arr.freq_axis[-1], -self.delt
+        )
+        self.time_axis = self.arr.time_axis
+
         self.shape = (len(self), arr.shape[1])
 
     def __len__(self):
         return 1 + (self.arr.freq_axis[0] - self.arr.freq_axis[-1]) / self.delt
     
-    def __getitem__(self, item):
+    def _find(self, arr, item):
         if item < 0:
             item = item % len(self)
         if item >= len(self):
             raise IndexError
-        freq = self.arr.freq_axis[0] - item * self.delt
+
+        freq_offset = item * self.delt
+        freq = self.arr.freq_axis[0] - freq_offset
         # The idea is that when we take the biggest delta in the mid points,
         # we do not have to search anything that is between the beginning and
         # the first item that can possibly be that frequency.
         min_mid = max(0, (freq - self.midpoints[0]) // self.max_mp_delt)
         for n, mid in enumerate(self.midpoints[min_mid:]):
             if mid <= freq:
-                return self.arr[min_mid + n, :]
-        return self.arr[min_mid + n, :]
+                return arr[min_mid + n]
+        return arr[min_mid + n]
+
+    def __getitem__(self, item):
+        return self._find(self.arr, item)
     
     def get_freq(self, item):
-        if item < 0:
-            item = item % len(self)
-        if item >= len(self):
-            raise IndexError
-        freq = self.arr.freq_axis[0] - item * self.delt
-        # The idea is that when we take the biggest delta in the mid points,
-        # we do not have to search anything that is between the beginning and
-        # the first item that can possibly be that frequency.
-        min_mid = max(0, (freq - self.midpoints[0]) // self.max_mp_delt)
-        for n, mid in enumerate(self.midpoints[min_mid:]):
-            if mid <= freq:
-                return self.arr.freq_axis[min_mid + n]
-        return self.arr.freq_axis[min_mid + n]
+        return self._find(self.arr.freq_axis, item)
 
     def make_mask(self, max_dist):
         mask = np.zeros(self.shape, dtype=np.bool)
@@ -536,7 +537,7 @@ class Spectrogram(np.ndarray, Parent):
         
         if showz:
             figure.gca().format_coord = self._mk_format_coord(
-                data, freq_fmt, self.time_formatter)
+                data, figure.gca().format_coord)
         
         if colorbar:
             if newfigure:
@@ -816,7 +817,7 @@ class Spectrogram(np.ndarray, Parent):
         return self[np.nonzero(self.freq_axis == freq)[0], :]
 
     @staticmethod
-    def _mk_format_coord(spec, freq_fmt, time_fmt):
+    def _mk_format_coord(spec, fmt_coord):
         def format_coord(x, y):
             shape = map(int, spec.shape)
             
@@ -826,9 +827,8 @@ class Spectrogram(np.ndarray, Parent):
             else:
                 pixel = ""
             
-            return 'x=%s y=%s z=%s' % (
-                time_fmt(x, None),
-                freq_fmt(y, None),
+            return '%s z=%s' % (
+                fmt_coord(x, y),
                 pixel
             )
         return format_coord

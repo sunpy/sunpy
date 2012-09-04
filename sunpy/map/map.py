@@ -53,8 +53,6 @@ class Map(np.ndarray, Parent):
 
     Attributes
     ----------
-    original_header : dict
-        Dictionary representation of the original FITS header
     carrington_longitude : str
         Carrington longitude (crln_obs)
     center : dict
@@ -124,6 +122,8 @@ class Map(np.ndarray, Parent):
         Return a matplotlib plot figure object
     show()
         Display a matplotlib plot to the screen 
+    get_header()
+        Returns the original header from when the map was first created.
 
     Examples
     --------
