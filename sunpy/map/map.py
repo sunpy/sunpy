@@ -627,7 +627,7 @@ Dimension:\t [%d, %d]
            or recentre coords. 
            Default: True, recentre to the centre of the array.
         missing: float
-           The numerical value of any missing data
+           The numerical value to fill any missing points after rotation.
            Default: 0.0
         interpolation: {'nearest' | 'bilinear' | 'spline' | 'bicubic'}
             Interpolation method to use in the transform. 
