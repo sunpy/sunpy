@@ -6,12 +6,16 @@ from __future__ import absolute_import
 import os
 import re
 import sys
+import shutil
 
 # For Content-Disposition parsing
+from urllib2 import urlopen
 from urlparse import urlparse
 from email.parser import FeedParser
 from unicodedata import normalize
 from itertools import ifilter
+
+from sunpy.util.util import replacement_filename
 
 # Characters not allowed in slugified version.
 _punct_re = re.compile(r'[\t !"#$%&\'()*\-/<=>?@\[\\\]^_`{|},.]+')
@@ -51,7 +55,7 @@ def get_filename(sock, url):
 
     if not name:
         parsed = urlparse(url)
-        name = parsed.path.rsplit('/', 1)[-1]
+        name = parsed.path.rstrip('/').rsplit('/', 1)[-1]
     return unicode(name)
 
 
@@ -64,3 +68,23 @@ def get_system_filename(sock, url, default=u"file"):
     if not name:
         name = unicode(default)
     return name.encode(sys.getfilesystemencoding(), 'ignore')
+
+
+
+def download_file(url, directory, default=u'file', overwrite=False):
+    opn = urlopen(url)
+    try:
+        path = download_fileobj(opn, directory, url, default, overwrite)
+    finally:
+        opn.close()
+    return path
+
+
+def download_fileobj(opn, directory, url='', default=u"file", overwrite=False):
+    filename = get_system_filename(opn, url, default)
+    path = os.path.join(directory, filename)
+    if not overwrite and os.path.exists(path):
+        path = replacement_filename(path)
+    with open(path, 'wb') as fd:
+        shutil.copyfileobj(opn, fd)
+    return path
