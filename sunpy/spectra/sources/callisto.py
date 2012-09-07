@@ -55,27 +55,30 @@ def query(start, end, instruments=None, url=DEFAULT_URL):
     while day <= end:
         directory = url + '%d/%02d/%02d/' % (day.year, day.month, day.day)
         opn = urllib2.urlopen(directory)
-        soup = BeautifulSoup(opn)
-        for link in soup.find_all("a"):
-            href = link.get("href")
-            name = href.split('.')[0]
-            try:
-                inst, date, time, no = name.split('_')
-            except ValueError:
-                # If the split fails, the file name does not match out format,
-                # so we skip it and continue to the next iteration of the loop.
-                continue
-            dstart = datetime.datetime.strptime(date + time, TIME_STR)
-            
-            if (instruments is not None and
-                inst not in instruments and 
-                (inst, int(no)) not in instruments):
-                continue
-            
-            dend = dstart + DATA_SIZE
-            if dend > start and dstart < end:
-                yield directory + href
-        opn.close()
+        try:
+            soup = BeautifulSoup(opn)
+            for link in soup.find_all("a"):
+                href = link.get("href")
+                name = href.split('.')[0]
+                try:
+                    inst, date, time, no = name.split('_')
+                except ValueError:
+                    # If the split fails, the file name does not match out
+                    # format,so we skip it and continue to the next
+                    # iteration of the loop.
+                    continue
+                dstart = datetime.datetime.strptime(date + time, TIME_STR)
+                
+                if (instruments is not None and
+                    inst not in instruments and 
+                    (inst, int(no)) not in instruments):
+                    continue
+                
+                dend = dstart + DATA_SIZE
+                if dend > start and dstart < end:
+                    yield directory + href
+        finally:
+            opn.close()
         day += _DAY
 
 
