@@ -23,7 +23,7 @@ REGEX = {
     '%M': '(?P<minute>\d{1,2})',
     '%S': '(?P<second>\d{1,2})',
     '%f': '(?P<microsecond>\d+)',
-    '%b': '(?P<month_str>[a-zA-Z]+)'
+    '%b': '(?P<month_str>[a-zA-Z]+)',
 }
 
 TIME_FORMAT_LIST = [
