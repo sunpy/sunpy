@@ -29,6 +29,8 @@ from sunpy.util.util import (
 from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
 from sunpy.spectra.spectrogram import LinearTimeSpectrogram, REFERENCE
 
+from sunpy.net.util import download_file
+
 TIME_STR = "%Y%m%d%H%M%S"
 DEFAULT_URL = 'http://soleil.i4ds.ch/solarradio/data/2002-20yy_Callisto/'
 _DAY = datetime.timedelta(days=1)
@@ -87,17 +89,7 @@ def download(urls, directory):
     directory : str
         directory to save them in
     """
-    paths = []
-    for url in urls:
-        _, filename = os.path.split(url)
-        path = os.path.join(directory, filename)
-        fd = open(path, 'w')
-        src = urllib2.urlopen(url)
-        shutil.copyfileobj(src, fd)
-        fd.close()
-        src.close()
-        paths.append(path)
-    return paths
+    return [download_file(url, directory) for url in urls]
 
 
 def _parse_header_time(date, time):
