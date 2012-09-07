@@ -50,11 +50,13 @@ TIME_FORMAT_LIST = [
 ]
 
 
-def _group_or_none(match, group):
+def _group_or_none(match, group, fun):
     try:
-        return match.group(group)
+        ret = match.group(group)
     except IndexError:
         return None
+    else:
+        return fun(ret)
 
 def _n_or_eq(a, b):
     return a is None or a == b
@@ -73,7 +75,7 @@ def _regex_parse_time(inp, format):
     except IndexError:
         return inp, timedelta(days=0)
     if match.group("hour") == "24":
-        if not all(_n_or_eq(_group_or_none(match, g), '00')
+        if not all(_n_or_eq(_group_or_none(match, g, int), 00)
             for g in ["minute", "second", "microsecond"]
         ):
             raise ValueError
