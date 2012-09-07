@@ -26,6 +26,29 @@ REGEX = {
     '%b': '(?P<month_str>[a-zA-Z]+)'
 }
 
+TIME_FORMAT_LIST = [
+    "%Y-%m-%dT%H:%M:%S.%f",    # Example 2007-05-04T21:08:12.999999
+    "%Y/%m/%dT%H:%M:%S.%f",    # Example 2007/05/04T21:08:12.999999
+    "%Y-%m-%dT%H:%M:%S.%fZ",   # Example 2007-05-04T21:08:12.999Z
+    "%Y-%m-%dT%H:%M:%S",       # Example 2007-05-04T21:08:12
+    "%Y/%m/%dT%H:%M:%S",       # Example 2007/05/04T21:08:12
+    "%Y%m%dT%H%M%S.%f",        # Example 20070504T210812.999999
+    "%Y%m%dT%H%M%S",           # Example 20070504T210812
+    "%Y/%m/%d %H:%M:%S",       # Example 2007/05/04 21:08:12    "%Y/%m/%d %H:%M",          # Example 2007/05/04 21:08
+    "%Y/%m/%d %H:%M:%S.%f",    # Example 2007/05/04 21:08:12.999999
+    "%Y-%m-%d %H:%M:%S.%f",    # Example 2007-05-04 21:08:12.999999
+    "%Y-%m-%d %H:%M:%S",       # Example 2007-05-04 21:08:12
+    "%Y-%m-%d %H:%M",          # Example 2007-05-04 21:08
+    "%Y-%b-%d %H:%M:%S",       # Example 2007-May-04 21:08:12
+    "%Y-%b-%d %H:%M",          # Example 2007-May-04 21:08
+    "%Y-%b-%d",                # Example 2007-May-04
+    "%Y-%m-%d",                # Example 2007-05-04
+    "%Y/%m/%d",                # Example 2007/05/04
+    "%d-%b-%Y",                # Example 04-May-2007
+    "%Y%m%d_%H%M%S",           # Example 20070504_210812
+]
+
+
 def _group_or_none(match, group):
     try:
         return match.group(group)
@@ -59,6 +82,8 @@ def _regex_parse_time(inp, format):
 
 
 def find_time(string, format):
+    """ Return iterator of occurences of date formatted with format
+    in string. Currently supported format codes: """
     re_format = format
     for key, value in REGEX.iteritems():
         re_format = re_format.replace(key, value)
@@ -71,6 +96,38 @@ def find_time(string, format):
             continue
         else:
             yield dt
+
+
+find_time.__doc__ += ', '.join(REGEX.keys())
+
+def _iter_empty(iter):
+    try:
+        iter.next()
+    except StopIteration:
+        return True
+    return False
+
+
+def extract_time(string):
+    """ Find subset of string that corresponds to a datetime and return
+    its value as a a datetime. If more than one or none is found, raise
+    ValueError. """
+    matched = False
+    for time_format in TIME_FORMAT_LIST:
+        found = find_time(string, time_format)
+        try:
+            match = found.next()
+        except StopIteration:
+            continue
+        else:
+            if matched:
+                raise ValueError("Ambiguous string")
+            matched = True
+            if not _iter_empty(found):
+                raise ValueError("Ambiguous string")
+    if not matched:
+        raise ValueError("Time not found")
+    return match
 
 
 def parse_time(time_string=None):
@@ -107,28 +164,7 @@ def parse_time(time_string=None):
     elif isinstance(time_string, int) or isinstance(time_string, float):
         return datetime(1979, 1, 1) + timedelta(0, time_string)
     else:
-        time_format_list = \
-            ["%Y-%m-%dT%H:%M:%S.%f",    # Example 2007-05-04T21:08:12.999999
-             "%Y/%m/%dT%H:%M:%S.%f",    # Example 2007/05/04T21:08:12.999999
-             "%Y-%m-%dT%H:%M:%S.%fZ",   # Example 2007-05-04T21:08:12.999Z
-             "%Y-%m-%dT%H:%M:%S",       # Example 2007-05-04T21:08:12
-             "%Y/%m/%dT%H:%M:%S",       # Example 2007/05/04T21:08:12
-             "%Y%m%dT%H%M%S.%f",        # Example 20070504T210812.999999
-             "%Y%m%dT%H%M%S",           # Example 20070504T210812
-             "%Y/%m/%d %H:%M:%S",       # Example 2007/05/04 21:08:12
-             "%Y/%m/%d %H:%M",          # Example 2007/05/04 21:08
-             "%Y/%m/%d %H:%M:%S.%f",    # Example 2007/05/04 21:08:12.999999
-             "%Y-%m-%d %H:%M:%S.%f",    # Example 2007-05-04 21:08:12.999999
-             "%Y-%m-%d %H:%M:%S",       # Example 2007-05-04 21:08:12
-             "%Y-%m-%d %H:%M",          # Example 2007-05-04 21:08
-             "%Y-%b-%d %H:%M:%S",       # Example 2007-May-04 21:08:12
-             "%Y-%b-%d %H:%M",          # Example 2007-May-04 21:08
-             "%Y-%b-%d",                # Example 2007-May-04
-             "%Y-%m-%d",                # Example 2007-05-04
-             "%Y/%m/%d",                # Example 2007/05/04
-             "%d-%b-%Y",                # Example 04-May-2007
-             "%Y%m%d_%H%M%S"]           # Example 20070504_210812
-        for time_format in time_format_list: 
+        for time_format in TIME_FORMAT_LIST: 
             try:
                 try:
                     ts, time_delta = _regex_parse_time(time_string, time_format)
