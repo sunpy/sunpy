@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 # Author: Florian Mayer <florian.mayer@bitsrc.org>
 
+from __future__ import division
+from __future__ import print_function
 from __future__ import absolute_import
+from __future__ import unicode_literals
 
 import os
 import re
@@ -46,6 +49,8 @@ def get_filename(sock, url):
     First, tries Content-Disposition, if unavailable, extracts
     name from URL. """
     name = None
+    # NOTE: This gives bytes on 2 and unicode on 3.
+    # How does 3.x know the encoding?
     cd = sock.headers.get('Content-Disposition', None)
     if cd is not None:
         try:
@@ -66,9 +71,8 @@ def get_system_filename(sock, url, default=u"file"):
     in file system encoding. """
     name = get_filename(sock, url)
     if not name:
-        name = unicode(default)
+        name = default.decode("ascii", "ignore")
     return name.encode(sys.getfilesystemencoding(), 'ignore')
-
 
 
 def download_file(url, directory, default=u'file', overwrite=False):
