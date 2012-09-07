@@ -37,7 +37,7 @@ def get_content_disposition(content_disposition):
     """ Get content disposition filename from given header. Do not include
     "Content-Disposition:". Returns a unicode string! """
     parser = FeedParser()
-    parser.feed('Content-Disposition: ' + content_disposition)
+    parser.feed(b'Content-Disposition: ' + content_disposition)
     name = parser.close().get_filename()
     if not isinstance(name, unicode):
         name = name.decode('latin1', 'ignore')
