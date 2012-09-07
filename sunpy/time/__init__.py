@@ -2,8 +2,12 @@
 
 import re
 
+from collections import defaultdict
+
 import julian
 import timerange
+
+
 from datetime import datetime
 from datetime import timedelta
 from sunpy.time.timerange import TimeRange
@@ -56,6 +60,21 @@ def _regex_parse_time(inp, format):
         from_, to = match.span("hour")
         return inp[:from_] + "00" + inp[to:], timedelta(days=1)
     return inp, timedelta(days=0)
+
+
+def find_time(string, format):
+    re_format = format
+    for key, value in REGEX.iteritems():
+        re_format = re_format.replace(key, value)
+    matches = re.finditer(re_format, string)
+    for match in matches:
+        try:
+            matchstr = string[slice(*match.span())]
+            dt = datetime.strptime(matchstr, format)
+        except ValueError:
+            continue
+        else:
+            yield dt
 
 
 def parse_time(time_string=None):
