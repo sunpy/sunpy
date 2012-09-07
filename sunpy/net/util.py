@@ -76,6 +76,10 @@ def get_system_filename(sock, url, default=u"file"):
 
 
 def download_file(url, directory, default=u'file', overwrite=False):
+    """ Download file from url into directory. Try to get filename from
+    Content-Disposition header, otherwise get from path of url. Fall
+    back to default if both fail. Only overwrite existing files when
+    overwrite is True. """
     opn = urlopen(url)
     try:
         path = download_fileobj(opn, directory, url, default, overwrite)
@@ -85,6 +89,10 @@ def download_file(url, directory, default=u'file', overwrite=False):
 
 
 def download_fileobj(opn, directory, url='', default=u"file", overwrite=False):
+""" Download file from url into directory. Try to get filename from
+    Content-Disposition header, otherwise get from path of url if given.
+    Fall back to default if both fail. Only overwrite existing files when
+    overwrite is True. """
     filename = get_system_filename(opn, url, default)
     path = os.path.join(directory, filename)
     if not overwrite and os.path.exists(path):
