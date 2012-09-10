@@ -433,7 +433,8 @@ class Spectrogram(np.ndarray, Parent):
             to 1080 because that's a common screen size.
         max_dist : float or None
             If not None, mask elements that are further than max_dist away
-            from actual data points.
+            from actual data points (ie, frequencies that actually have data 
+            from the receiver and are not just nearest-neighbour interpolated).
         """
         # [] as default argument is okay here because it is only read.
         # pylint: disable=W0102,R0914
