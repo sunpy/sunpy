@@ -89,7 +89,7 @@ def download_file(url, directory, default=u'file', overwrite=False):
 
 
 def download_fileobj(opn, directory, url='', default=u"file", overwrite=False):
-""" Download file from url into directory. Try to get filename from
+    """ Download file from url into directory. Try to get filename from
     Content-Disposition header, otherwise get from path of url if given.
     Fall back to default if both fail. Only overwrite existing files when
     overwrite is True. """
