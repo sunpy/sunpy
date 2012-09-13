@@ -183,7 +183,7 @@ class QueryResponse(list):
         )
 
     def show(self):
-        """Print out human-readable summary of records retreived"""
+        """Print out human-readable summary of records retrieved"""
 
         table = [[str(datetime.strptime(record.time.start, TIMEFORMAT)), 
           str(datetime.strptime(record.time.end, TIMEFORMAT)), 

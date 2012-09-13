@@ -36,7 +36,8 @@ def _freeze(obj):
 
 class HEKClient(object):
     """ Client to interact with the HEK. """
-    # FIXME: Types!
+    # FIXME: Expose fields in .attrs with the right types
+    # that is, not all StringParamWrapper!
     
     default = {
         'cosec': '2',
