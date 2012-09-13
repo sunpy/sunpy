@@ -10,7 +10,7 @@ import shutil
 import sunpy
 import urllib2
 
-from sunpy.net.util import get_system_filename
+from sunpy.net.util import download_file
 from sunpy.util.util import replacement_filename
 
 from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
@@ -75,19 +75,8 @@ class Parent(object):
             URL to retrieve the data from
         """
         default_dir = sunpy.config.get("downloads", "download_dir")
-        opn = urllib2.urlopen(url)
-        try:
-            name = get_system_filename(opn, url)
-            path = os.path.join(default_dir, name)
-            if os.path.exists(path):
-                path = replacement_filename(path)
-
-            with open(path, 'wb') as fd:
-                shutil.copyfileobj(opn, fd, 9096)
-
-            return cls.read(path)
-        finally:
-            opn.close()
+        path = download_file(url, default_dir)
+        return cls.read(path)
 
 
 Parent._create.add(
