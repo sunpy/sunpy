@@ -17,10 +17,12 @@ Sources listed in each individual example.
 
 from numpy import genfromtxt
 import os
+import sunpy
+from sunpy.spectra import spectrum as sp
 
 rootdir = os.path.join(os.path.dirname(sunpy.__file__), "data", "examples") 
 
-def flare_spectrum:
+def flare_spectrum():
     """Load a flare spectrum from July 23rd, 2002 GOES X5 Class flare. This is a composite
     spectrum from x-ray to gamma-rays. Spectrum below 250 keV is the 2-minute average 
     over the flare peak. Spectrum above 250 keV is the flare-integrated spectrum scaled 
@@ -32,7 +34,12 @@ def flare_spectrum:
     """    
     
     filename = os.path.abspath(os.path.join(rootdir, "flare_spectrum.txt"))
-    data = data = genfromtxt(filename,delimiter=",", comments=';')
+    data = genfromtxt(filename,delimiter=",", comments=';')
+    
+    xunit = 'Energy [keV]'
+    yunit = r'Flux [photons $cm^{-2}$ s$^{-1}$ keV$^{-1}$]'
     
     # now load into spectrum object
-    
+    #spec = sp.Spectrum(data[:,0], data[:,4], width = data[:,2], name = 'RHESSI', units = [xunit, yunit])
+    spec = sp.Spectrum(data[:,0], data[:,4], name = 'RHESSI', units = [xunit, yunit])
+    return spec
