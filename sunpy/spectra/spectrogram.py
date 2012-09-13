@@ -118,7 +118,7 @@ class _LinearView(object):
         self.time_axis = self.arr.time_axis
 
         self.shape = (len(self), arr.shape[1])
-    
+
     def __len__(self):
         return 1 + (self.arr.freq_axis[0] - self.arr.freq_axis[-1]) / self.delt
     
@@ -144,6 +144,14 @@ class _LinearView(object):
     
     def get_freq(self, item):
         return self._find(self.arr.freq_axis, item)
+
+    def make_mask(self, max_dist):
+        mask = np.zeros(self.shape, dtype=np.bool)
+        for n, item in enumerate(xrange(len(self))):
+            freq = self.arr.freq_axis[0] - item * self.delt
+            if abs(self.get_freq(item) - freq) > max_dist:
+                mask[n, :] = True
+        return mask
 
 
 class SpectroFigure(Figure):
@@ -394,7 +402,8 @@ class Spectrogram(np.ndarray, Parent):
         return ret
 
     def plot(self, figure=None, overlays=[], colorbar=True, min_=None, max_=None,
-             linear=True, showz=True, yres=DEFAULT_YRES, **matplotlib_args):
+             linear=True, showz=True, yres=DEFAULT_YRES,
+             max_dist=None, **matplotlib_args):
         """
         Plot spectrogram onto figure.
         
@@ -422,6 +431,10 @@ class Spectrogram(np.ndarray, Parent):
             image with half the minimum frequency delta. Else, sample the
             image to be at most yres pixels in vertical dimension. Defaults
             to 1080 because that's a common screen size.
+        max_dist : float or None
+            If not None, mask elements that are further than max_dist away
+            from actual data points (ie, frequencies that actually have data 
+            from the receiver and are not just nearest-neighbour interpolated).
         """
         # [] as default argument is okay here because it is only read.
         # pylint: disable=W0102,R0914
@@ -456,7 +469,11 @@ class Spectrogram(np.ndarray, Parent):
             'aspect': 'auto',
         }
         params.update(matplotlib_args)
-        im = axes.imshow(data, **params)
+        if linear and max_dist is not None:
+            toplot = ma.masked_array(data, mask=data.make_mask(max_dist))
+        else:
+            toplot = data
+        im = axes.imshow(toplot, **params)
         
         xa = axes.get_xaxis()
         ya = axes.get_yaxis()
