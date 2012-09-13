@@ -4,6 +4,7 @@
 from __future__ import absolute_import
 
 import numpy as np
+from sunpy.time import parse_time
 
 from matplotlib import pyplot as plt
 
@@ -34,7 +35,8 @@ class Spectrum(np.ndarray):
         self.name = name
         self.units = units
         self.width = width
-        self.date = date
+        self.date = parse_time(date)
+
         if units == None:
             self.units = ['frequency [MHz]', 'solar flux units [sfu]']
         
@@ -58,7 +60,7 @@ class Spectrum(np.ndarray):
             self.channel = channel
             self.width = channel[1,:] - channel[0,:]
 
-    def plot(self, figure=None, overlays=[], **matplotlib_args):
+    def plot(self, figure=None, overlays=[], log=None, **matplotlib_args):
         """
         Plot spectrum onto figure.
         
@@ -79,19 +81,22 @@ class Spectrum(np.ndarray):
         params = {}
         params.update(matplotlib_args)
 
+        # todo: add code to detect whether log scaling is necessary
+        axes.set_yscale('log')
+        axes.set_xscale('log')
+   
         if self.width is None:
             axes.plot(self.channel[0,:], self.flux, **params)
         if self.width != None:
             axes.step(self.channel[0,:], self.flux, where='post', **params)
 
-        if self.name != None and self.date != None:
+        if ((self.name != None) & (self.date != None)):
             axes.set_title("%s %s" % (self.name, self.date))
         if self.name != None:
             axes.set_title("%s" % self.name)
         if self.date != None:
             axes.set_title("%s" % self.date)
 
-            
         axes.set_xlabel(self.units[0])
         axes.set_ylabel(self.units[1])
             
