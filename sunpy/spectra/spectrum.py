@@ -35,7 +35,8 @@ class Spectrum(np.ndarray):
         self.name = name
         self.units = units
         self.width = width
-        self.date = parse_time(date)
+        if date is not None: self.date = parse_time(date) 
+        else: self.date = None
 
         if units == None:
             self.units = ['frequency [MHz]', 'solar flux units [sfu]']
@@ -87,7 +88,7 @@ class Spectrum(np.ndarray):
    
         if self.width is None:
             axes.plot(self.channel[0,:], self.flux, **params)
-        if self.width != None:
+        if self.width is not None:
             axes.step(self.channel[0,:], self.flux, where='post', **params)
 
         if ((self.name != None) & (self.date != None)):
