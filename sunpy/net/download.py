@@ -307,37 +307,37 @@ class Downloader(object):
             fd.write(rec)
     
     def _start_download(self, url, path, callback, errback):
-        server = self._get_server(url)
-        
-        self.connections[server] += 1
-        self.conns += 1
-        
-        sock = urllib2.urlopen(url)
-        fullname = path(sock, url)
-        
         try:
+            server = self._get_server(url)
+            
+            self.connections[server] += 1
+            self.conns += 1
+            
+            sock = urllib2.urlopen(url)
+            fullname = path(sock, url)
+            
             args = [
                 sock, open(fullname, 'wb'),
                 partial(self._close, callback, [{'path': fullname}], server),
             ]
-        except IOError, e:
+            
+            try:
+                # hasattr does not work because HTTPResponse objects have a
+                # fileno method that raises AttributeError when called.
+                # Don't ask me.
+                sock.fileno()
+                # Due to caching it's not save to use select.
+                raise AttributeError
+            except AttributeError:
+                id_ = self.reactor.get_tid()
+                self.reactor.add_tcall(
+                    id_, partial(self._download, *args + [id_])
+                )
+            else:
+                self.reactor.add_fd(sock, partial(self._download, *args))
+        except Exception, e:
             if errback is not None:
-                return errback(e)
-        
-        try:
-            # hasattr does not work because HTTPResponse objects have a
-            # fileno method that raises AttributeError when called.
-            # Don't ask me.
-            sock.fileno()
-            # Due to caching it's not save to use select.
-            raise AttributeError
-        except AttributeError:
-            id_ = self.reactor.get_tid()
-            self.reactor.add_tcall(
-                id_, partial(self._download, *args + [id_])
-            )
-        else:
-            self.reactor.add_fd(sock, partial(self._download, *args))
+                errback(e)
     
     def _attempt_download(self, url, path, callback, errback):
         num_connections = self.connections[self._get_server(url)]
@@ -364,6 +364,11 @@ class Downloader(object):
         raise e
 
     def download(self, url, path=None, callback=None, errback=None):
+        self.reactor.call_sync(
+            lambda: self._dwn(url, path, callback, errback)
+        )
+
+    def _dwn(self, url, path=None, callback=None, errback=None):
         """Downloads a file at a specified URL.
         
         Parameters
@@ -432,7 +437,7 @@ if __name__ == '__main__':
         items = []
         def _fun(handler):
             items.append(handler)
-            if len(items) == 4:
+            if len(items) == n:
                 callback(items)
         return _fun
     
