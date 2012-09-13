@@ -317,7 +317,7 @@ class Downloader(object):
             fullname = path(sock, url)
             
             args = [
-                 sock, open(fullname, 'wb'),
+                sock, open(fullname, 'wb'),
                 partial(self._close, callback, [{'path': fullname}], server),
             ]
             
