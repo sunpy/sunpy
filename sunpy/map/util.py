@@ -9,7 +9,8 @@ __authors__ = ["Steven Christe"]
 __email__ = "steven.d.christe@nasa.gov"
 
 def map_hpc_to_hg(map, xbin = 1, ybin = 1):
-	"""Take a map (like an AIA map) and convert it from Helio-projective Cartesian coordinates to Heliographic coordinates."""
+	"""Take a map (like an AIA map) and convert it from 
+	Helioprojective Cartesian (HPC) coordinates to Heliographic (HG) coordinates."""
 
 	width = np.array(map.shape[1])
 	height = np.array(map.shape[0])
