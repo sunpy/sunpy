@@ -364,6 +364,11 @@ class Downloader(object):
         raise e
 
     def download(self, url, path=None, callback=None, errback=None):
+        self.reactor.call_sync(
+            lambda: self._dwn(url, path, callback, errback)
+        )
+
+    def _dwn(self, url, path=None, callback=None, errback=None):
         """Downloads a file at a specified URL.
         
         Parameters
@@ -432,7 +437,7 @@ if __name__ == '__main__':
         items = []
         def _fun(handler):
             items.append(handler)
-            if len(items) == 4:
+            if len(items) == n:
                 callback(items)
         return _fun
     
