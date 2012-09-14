@@ -41,7 +41,6 @@ def install(setup): #pylint: disable=W0621
                         libraries = libs,
                         extra_compile_args = gcc_args
                         )
-    print crotate
     setup(
         author="Steven Christe, Keith Hughitt, Jack Ireland and Alex Young",
         author_email="keith.hughitt@nasa.gov",
