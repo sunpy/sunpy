@@ -23,14 +23,40 @@ REGEX = {
     '%M': '(?P<minute>\d{1,2})',
     '%S': '(?P<second>\d{1,2})',
     '%f': '(?P<microsecond>\d+)',
-    '%b': '(?P<month_str>[a-zA-Z]+)'
+    '%b': '(?P<month_str>[a-zA-Z]+)',
 }
 
-def _group_or_none(match, group):
+TIME_FORMAT_LIST = [
+    "%Y-%m-%dT%H:%M:%S.%f",    # Example 2007-05-04T21:08:12.999999
+    "%Y/%m/%dT%H:%M:%S.%f",    # Example 2007/05/04T21:08:12.999999
+    "%Y-%m-%dT%H:%M:%S.%fZ",   # Example 2007-05-04T21:08:12.999Z
+    "%Y-%m-%dT%H:%M:%S",       # Example 2007-05-04T21:08:12
+    "%Y/%m/%dT%H:%M:%S",       # Example 2007/05/04T21:08:12
+    "%Y%m%dT%H%M%S.%f",        # Example 20070504T210812.999999
+    "%Y%m%dT%H%M%S",           # Example 20070504T210812
+    "%Y/%m/%d %H:%M:%S",       # Example 2007/05/04 21:08:12
+    "%Y/%m/%d %H:%M",          # Example 2007/05/04 21:08
+    "%Y/%m/%d %H:%M:%S.%f",    # Example 2007/05/04 21:08:12.999999
+    "%Y-%m-%d %H:%M:%S.%f",    # Example 2007-05-04 21:08:12.999999
+    "%Y-%m-%d %H:%M:%S",       # Example 2007-05-04 21:08:12
+    "%Y-%m-%d %H:%M",          # Example 2007-05-04 21:08
+    "%Y-%b-%d %H:%M:%S",       # Example 2007-May-04 21:08:12
+    "%Y-%b-%d %H:%M",          # Example 2007-May-04 21:08
+    "%Y-%b-%d",                # Example 2007-May-04
+    "%Y-%m-%d",                # Example 2007-05-04
+    "%Y/%m/%d",                # Example 2007/05/04
+    "%d-%b-%Y",                # Example 04-May-2007
+    "%Y%m%d_%H%M%S",           # Example 20070504_210812
+]
+
+
+def _group_or_none(match, group, fun):
     try:
-        return match.group(group)
+        ret = match.group(group)
     except IndexError:
         return None
+    else:
+        return fun(ret)
 
 def _n_or_eq(a, b):
     return a is None or a == b
@@ -49,13 +75,72 @@ def _regex_parse_time(inp, format):
     except IndexError:
         return inp, timedelta(days=0)
     if match.group("hour") == "24":
-        if not all(_n_or_eq(_group_or_none(match, g), '00')
+        if not all(_n_or_eq(_group_or_none(match, g, int), 00)
             for g in ["minute", "second", "microsecond"]
         ):
             raise ValueError
         from_, to = match.span("hour")
         return inp[:from_] + "00" + inp[to:], timedelta(days=1)
     return inp, timedelta(days=0)
+
+
+def find_time(string, format):
+    """ Return iterator of occurences of date formatted with format
+    in string. Currently supported format codes: """
+    re_format = format
+    for key, value in REGEX.iteritems():
+        re_format = re_format.replace(key, value)
+    matches = re.finditer(re_format, string)
+    for match in matches:
+        try:
+            matchstr = string[slice(*match.span())]
+            dt = datetime.strptime(matchstr, format)
+        except ValueError:
+            continue
+        else:
+            yield dt
+
+
+find_time.__doc__ += ', '.join(REGEX.keys())
+
+def _iter_empty(iter):
+    try:
+        iter.next()
+    except StopIteration:
+        return True
+    return False
+
+
+def extract_time(string):
+    """ Find subset of string that corresponds to a datetime and return
+    its value as a a datetime. If more than one or none is found, raise
+    ValueError. """
+    matched = None
+    bestmatch = None
+    for time_format in TIME_FORMAT_LIST:
+        found = find_time(string, time_format)
+        try:
+            match = found.next()
+        except StopIteration:
+            continue
+        else:
+            if matched is not None:
+                if time_format.startswith(matched):
+                    # Already matched is a substring of the one just matched.
+                    matched = time_format
+                    bestmatch = match
+                elif not matched.startswith(time_format):
+                    # If just matched is substring of time_format, just ignore
+                    # just matched.
+                    raise ValueError("Ambiguous string")
+            else:
+                matched = time_format
+                bestmatch = match
+            if not _iter_empty(found):
+                raise ValueError("Ambiguous string")
+    if not matched:
+        raise ValueError("Time not found")
+    return bestmatch
 
 
 def parse_time(time_string=None):
@@ -92,28 +177,7 @@ def parse_time(time_string=None):
     elif isinstance(time_string, int) or isinstance(time_string, float):
         return datetime(1979, 1, 1) + timedelta(0, time_string)
     else:
-        time_format_list = \
-            ["%Y-%m-%dT%H:%M:%S.%f",    # Example 2007-05-04T21:08:12.999999
-             "%Y/%m/%dT%H:%M:%S.%f",    # Example 2007/05/04T21:08:12.999999
-             "%Y-%m-%dT%H:%M:%S.%fZ",   # Example 2007-05-04T21:08:12.999Z
-             "%Y-%m-%dT%H:%M:%S",       # Example 2007-05-04T21:08:12
-             "%Y/%m/%dT%H:%M:%S",       # Example 2007/05/04T21:08:12
-             "%Y%m%dT%H%M%S.%f",        # Example 20070504T210812.999999
-             "%Y%m%dT%H%M%S",           # Example 20070504T210812
-             "%Y/%m/%d %H:%M:%S",       # Example 2007/05/04 21:08:12
-             "%Y/%m/%d %H:%M",          # Example 2007/05/04 21:08
-             "%Y/%m/%d %H:%M:%S.%f",    # Example 2007/05/04 21:08:12.999999
-             "%Y-%m-%d %H:%M:%S.%f",    # Example 2007-05-04 21:08:12.999999
-             "%Y-%m-%d %H:%M:%S",       # Example 2007-05-04 21:08:12
-             "%Y-%m-%d %H:%M",          # Example 2007-05-04 21:08
-             "%Y-%b-%d %H:%M:%S",       # Example 2007-May-04 21:08:12
-             "%Y-%b-%d %H:%M",          # Example 2007-May-04 21:08
-             "%Y-%b-%d",                # Example 2007-May-04
-             "%Y-%m-%d",                # Example 2007-05-04
-             "%Y/%m/%d",                # Example 2007/05/04
-             "%d-%b-%Y",                # Example 04-May-2007
-             "%Y%m%d_%H%M%S"]           # Example 20070504_210812
-        for time_format in time_format_list: 
+        for time_format in TIME_FORMAT_LIST: 
             try:
                 try:
                     ts, time_delta = _regex_parse_time(time_string, time_format)
