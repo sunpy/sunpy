@@ -9,10 +9,12 @@ __email__ = "keith.hughitt@nasa.gov"
 
 import os
 import json
+import shutil
 import urllib
 import urllib2
 import sunpy
 from sunpy.time import parse_time
+from sunpy.net.util import download_fileobj
 
 class HelioviewerClient:
     """Helioviewer.org Client"""
@@ -216,22 +218,16 @@ class HelioviewerClient:
     def _get_file(self, params, directory=None):
         """Downloads a file and return the filepath to that file"""
         # Query Helioviewer.org
-        response = self._request(params)
-        
-        # JPEG 2000 image response
         if directory is None:
             directory = sunpy.config.get('downloads', 'download_dir')
         else:
             directory = os.path.abspath(os.path.expanduser(directory))
 
-        # Get filename
-        content = response.info()['Content-Disposition']
-        filename = content[content.find('filename=') + 10: -1]
-        filepath = os.path.join(directory, filename)
-        
-        f = open(filepath, 'wb')
-        f.write(response.read())
-        f.close()
+        response = self._request(params)
+        try:
+            filepath = download_fileobj(response, directory)
+        finally:
+            response.close()
         
         return filepath
     
