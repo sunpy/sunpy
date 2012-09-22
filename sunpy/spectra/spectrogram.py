@@ -3,8 +3,14 @@
 
 """ Classes for spectral analysis. """
 
+from __future__ import division
+from __future__ import print_function
 from __future__ import absolute_import
+from __future__ import unicode_literals
 
+import os
+import glob
+import urllib2
 import datetime
 
 from random import randint
@@ -22,8 +28,16 @@ from matplotlib.figure import Figure
 from matplotlib.ticker import FuncFormatter, MaxNLocator, IndexLocator
 from matplotlib.colorbar import Colorbar
 
+import sunpy
+
+from sunpy.net.util import get_system_filename
 from sunpy.time import parse_time, get_day
-from sunpy.util.util import to_signed, min_delt, delta, common_base, merge
+from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
+from sunpy.util.util import (
+    to_signed, min_delt, delta, common_base, merge,
+    replacement_filename
+)
+from sunpy.util.create import Parent
 from sunpy.spectra.spectrum import Spectrum
 
 # 1080 because that usually is the maximum vertical pixel count on modern
@@ -42,6 +56,8 @@ DEEPCOPY = 2
 
 
 def figure(*args, **kwargs):
+    """ Create new SpectroFigure, a figure extended with features
+    useful for analysis of spectrograms. Compare pyplot.figure. """
     kw = {
         'FigureClass': SpectroFigure,
     }
@@ -96,40 +112,46 @@ class _LinearView(object):
         
         self.max_mp_delt = np.min(delta(self.midpoints))
         
+        self.freq_axis = np.arange(
+            self.arr.freq_axis[0], self.arr.freq_axis[-1], -self.delt
+        )
+        self.time_axis = self.arr.time_axis
+
         self.shape = (len(self), arr.shape[1])
-    
+
     def __len__(self):
         return 1 + (self.arr.freq_axis[0] - self.arr.freq_axis[-1]) / self.delt
     
-    def __getitem__(self, item):
+    def _find(self, arr, item):
         if item < 0:
             item = item % len(self)
         if item >= len(self):
             raise IndexError
-        freq = self.arr.freq_axis[0] - item * self.delt
+
+        freq_offset = item * self.delt
+        freq = self.arr.freq_axis[0] - freq_offset
         # The idea is that when we take the biggest delta in the mid points,
         # we do not have to search anything that is between the beginning and
         # the first item that can possibly be that frequency.
         min_mid = max(0, (freq - self.midpoints[0]) // self.max_mp_delt)
         for n, mid in enumerate(self.midpoints[min_mid:]):
             if mid <= freq:
-                return self.arr[min_mid + n, :]
-        return self.arr[min_mid + n, :]
+                return arr[min_mid + n]
+        return arr[min_mid + n]
+
+    def __getitem__(self, item):
+        return self._find(self.arr, item)
     
     def get_freq(self, item):
-        if item < 0:
-            item = item % len(self)
-        if item >= len(self):
-            raise IndexError
-        freq = self.arr.freq_axis[0] - item * self.delt
-        # The idea is that when we take the biggest delta in the mid points,
-        # we do not have to search anything that is between the beginning and
-        # the first item that can possibly be that frequency.
-        min_mid = max(0, (freq - self.midpoints[0]) // self.max_mp_delt)
-        for n, mid in enumerate(self.midpoints[min_mid:]):
-            if mid <= freq:
-                return self.arr.freq_axis[min_mid + n, :]
-        return self.arr.freq_axis[min_mid + n, :]
+        return self._find(self.arr.freq_axis, item)
+
+    def make_mask(self, max_dist):
+        mask = np.zeros(self.shape, dtype=np.bool)
+        for n, item in enumerate(xrange(len(self))):
+            freq = self.arr.freq_axis[0] - item * self.delt
+            if abs(self.get_freq(item) - freq) > max_dist:
+                mask[n, :] = True
+        return mask
 
 
 class SpectroFigure(Figure):
@@ -197,6 +219,14 @@ class TimeFreq(object):
         
         axes.set_xlabel("Time [UT]")
         axes.set_ylabel("Frequency [MHz]")
+
+        xa = axes.get_xaxis()
+        for tl in xa.get_ticklabels():
+            tl.set_fontsize(10)
+            tl.set_rotation(30)
+        figure.add_axes(axes)
+        figure.subplots_adjust(bottom=0.2)
+        figure.subplots_adjust(left=0.2)
         
         return figure
     
@@ -206,8 +236,7 @@ class TimeFreq(object):
         return ret
 
 
-# XXX: Find out why imshow(x) fails!
-class Spectrogram(np.ndarray):
+class Spectrogram(np.ndarray, Parent):
     """ Base class for spectral analysis in SunPy.
     
     Parameters
@@ -253,7 +282,7 @@ class Spectrogram(np.ndarray):
         ('content', REFERENCE),
         ('t_init', REFERENCE),
     ]
-
+    _create = ConditionalDispatch.from_existing(Parent._create)
     def _as_class(self, cls):
         """ Implementation detail. """
         if not issubclass(cls, Spectrogram):
@@ -373,7 +402,8 @@ class Spectrogram(np.ndarray):
         return ret
 
     def plot(self, figure=None, overlays=[], colorbar=True, min_=None, max_=None,
-             linear=True, showz=True, yres=DEFAULT_YRES, **matplotlib_args):
+             linear=True, showz=True, yres=DEFAULT_YRES,
+             max_dist=None, **matplotlib_args):
         """
         Plot spectrogram onto figure.
         
@@ -401,6 +431,10 @@ class Spectrogram(np.ndarray):
             image with half the minimum frequency delta. Else, sample the
             image to be at most yres pixels in vertical dimension. Defaults
             to 1080 because that's a common screen size.
+        max_dist : float or None
+            If not None, mask elements that are further than max_dist away
+            from actual data points (ie, frequencies that actually have data 
+            from the receiver and are not just nearest-neighbour interpolated).
         """
         # [] as default argument is okay here because it is only read.
         # pylint: disable=W0102,R0914
@@ -413,12 +447,12 @@ class Spectrogram(np.ndarray):
                 )
                 delt = float(delt)
             
-            data = _LinearView(self.clip(min_, max_), delt)
+            data = _LinearView(self.clip_values(min_, max_), delt)
             freqs = np.arange(
                 self.freq_axis[0], self.freq_axis[-1], -data.delt
             )
         else:
-            data = np.array(self.clip(min_, max_))
+            data = np.array(self.clip_values(min_, max_))
             freqs = self.freq_axis
         newfigure = figure is None
         if figure is None:
@@ -435,7 +469,11 @@ class Spectrogram(np.ndarray):
             'aspect': 'auto',
         }
         params.update(matplotlib_args)
-        im = axes.imshow(data, **params)
+        if linear and max_dist is not None:
+            toplot = ma.masked_array(data, mask=data.make_mask(max_dist))
+        else:
+            toplot = data
+        im = axes.imshow(toplot, **params)
         
         xa = axes.get_xaxis()
         ya = axes.get_yaxis()
@@ -500,7 +538,7 @@ class Spectrogram(np.ndarray):
         
         if showz:
             figure.gca().format_coord = self._mk_format_coord(
-                data, freq_fmt, self.time_formatter)
+                data, figure.gca().format_coord)
         
         if colorbar:
             if newfigure:
@@ -632,7 +670,7 @@ class Spectrogram(np.ndarray):
         """
         return self - self.randomized_auto_const_bg(amount)
     
-    def clip(self, min_=None, max_=None):
+    def clip_values(self, min_=None, max_=None, out=None):
         """ Clip intensities to be in the interval [min_, max_]. Any values
         greater than the maximum will be assigned the maximum, any values
         lower than the minimum will be assigned the minimum. If either is
@@ -652,11 +690,7 @@ class Spectrogram(np.ndarray):
         if max_ is None:
             max_ = int(self.max())
 
-        new = self.copy()
-        new[new < min_] = min_
-        new[new > max_] = max_
-
-        return new
+        return self.clip(min_, max_, out)
 
     def rescale(self, min_=0, max_=1, dtype_=np.dtype('float32')):
         u""" Rescale intensities to [min_, max_]. Note that min_ ≠ max_
@@ -784,7 +818,7 @@ class Spectrogram(np.ndarray):
         return self[np.nonzero(self.freq_axis == freq)[0], :]
 
     @staticmethod
-    def _mk_format_coord(spec, freq_fmt, time_fmt):
+    def _mk_format_coord(spec, fmt_coord):
         def format_coord(x, y):
             shape = map(int, spec.shape)
             
@@ -794,9 +828,8 @@ class Spectrogram(np.ndarray):
             else:
                 pixel = ""
             
-            return 'x=%s y=%s z=%s' % (
-                time_fmt(x, None),
-                freq_fmt(y, None),
+            return '%s z=%s' % (
+                fmt_coord(x, y),
                 pixel
             )
         return format_coord
