@@ -4,18 +4,36 @@ SunPy
 
 An open-source Python library for Solar Physics data analysis.
 
-Classes
--------
-Map
-    A spatially-aware 2d data array
-MapCube
-    A spatially-aware 3d data array
-
+Web Links
+---------
+Homepage: http://www.sunpy.org
+Documentation: http://sunpy.readthedocs.org/en/latest/index.html
 
 Available subpackages
 ---------------------
+cm
+    Solar Physics specific color maps.
+image
+    Generic methods to work with image data or maps.
+instr
+    subpackages spcific to missions or instruments.
+lightcurve
+    subpackage for working with 1D data sets like lightcurves.
 map
-    Methods relating to the solar maps
+    subpackage for working with 2D and 3D data sets of images or sequences of 
+    images.
+net
+    Routines for obtaining data from the internet.
+spectra
+    subpackage for working with 2D spectra datatypes
+sun
+    Contains astronomical and physical constants.
+time
+    Contains time related constants and methods.
+wcs
+     The WCS package provides functions to parse a World Coordinate System(WCS)
+coordinates for solar images as well as convert between various solar
+coordinate systems.
 
 """
 from __future__ import absolute_import
@@ -40,7 +58,3 @@ from sunpy.data.sample import (AIA_171_IMAGE, RHESSI_IMAGE, EIT_195_IMAGE,
 
 # Load user configuration
 config = load_config()
-
-# Keep track of created data types
-from sunpy.util.data_manager import DataManager
-_data_manager = DataManager()

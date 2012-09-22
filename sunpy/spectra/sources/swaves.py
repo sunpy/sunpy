@@ -6,6 +6,8 @@ from __future__ import absolute_import
 import os
 import datetime
 import numpy as np
+
+from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
 from sunpy.spectra.spectrogram import LinearTimeSpectrogram, REFERENCE, get_day
 
 
@@ -39,6 +41,8 @@ from sunpy.spectra.spectrogram import LinearTimeSpectrogram, REFERENCE, get_day
 
 
 class SWavesSpectrogram(LinearTimeSpectrogram):
+    _create = ConditionalDispatch.from_existing(LinearTimeSpectrogram._create)
+    create = classmethod(_create.wrapper())
     COPY_PROPERTIES = LinearTimeSpectrogram.COPY_PROPERTIES + [
         ('bg', REFERENCE)
     ]
@@ -88,6 +92,15 @@ class SWavesSpectrogram(LinearTimeSpectrogram):
         )
         self.bg = bg
 
+
+SWavesSpectrogram.create.im_func.__doc__ = (
+    """ Create SWavesSpectrogram from given input dispatching to the
+    appropriate from_* function.
+
+Possible signatures:
+
+""" + SWavesSpectrogram._create.generate_docs()
+)
 
 if __name__ == "__main__":
     opn = SWavesSpectrogram.read("/home/florian/swaves_average_20120705_a_hfr.dat")

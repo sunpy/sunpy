@@ -80,8 +80,10 @@ from itertools import izip, chain, repeat
 
 def run_cls(name):
     """ run_cls("foo")(cls, *args, **kwargs) -> cls.foo(*args, **kwargs) """
-    return lambda cls, *args, **kwargs: getattr(cls, name)(*args, **kwargs)
-    
+    fun = lambda cls, *args, **kwargs: getattr(cls, name)(*args, **kwargs)
+    fun.__name__ = name
+    fun.run_cls = True
+    return fun    
 
 
 def matches_types(fun, types, args, kwargs):
@@ -145,6 +147,13 @@ class ConditionalDispatch(object):
         self.funcs = []
         self.nones = []
     
+    @classmethod
+    def from_existing(cls, cond_dispatch):
+        new = cls()
+        new.funcs = cond_dispatch.funcs[:]
+        new.nones = cond_dispatch.nones[:]
+        return new
+
     def add_dec(self, condition):
         def _dec(fun):
             self.add(fun, condition)
@@ -197,22 +206,54 @@ class ConditionalDispatch(object):
     def wrapper(self):
         return lambda *args, **kwargs: self(*args, **kwargs)
     
-    def get_signatures(self, prefix=""):
+    def get_signatures(self, prefix="", start=0):
+        """ Return an iterator containing all possible function signatures.
+        If prefix is given, use it as function name in signatures, else
+        leave it out. If start is given, leave out first n elements.
+
+        If start is -1, leave out first element if the function was created
+        by run_cls. """
         for fun, condition, types in self.funcs:
-            if types is not None:
-                yield prefix + fmt_argspec_types(condition, types)
+            if start == -1:
+                st = getattr(fun, 'run_cls', 0)
             else:
-                yield prefix + inspect.formatargspec(*correct_argspec(condition))
+                st = start
+
+            if types is not None:
+                yield prefix + fmt_argspec_types(condition, types, st)
+            else:
+                args, varargs, keywords, defaults = correct_argspec(condition)
+                args = args[st:]
+                yield prefix + inspect.formatargspec(
+                    args, varargs, keywords, defaults
+                )
         
         for fun, types in self.nones:
             if types is not None:
-                yield prefix + fmt_argspec_types(fun, types)
+                yield prefix + fmt_argspec_types(fun, types, st)
             else:
-                yield prefix + inspect.formatargspec(*correct_argspec(fun))
+                args, varargs, keywords, defaults = correct_argspec(condition)
+                args = args[st:]
+                yield prefix + inspect.formatargspec(
+                    args, varargs, keywords, defaults
+                )
+
+    def generate_docs(self):
+        fns = (item[0] for item in chain(self.funcs, self.nones))
+        return '\n\n'.join("%s -> :py:meth:`%s`" % (sig, fun.__name__)
+            for sig, fun in
+            # The 1 prevents the cls from incorrectly being shown in the
+            # documentation.
+            izip(self.get_signatures("create", -1), fns)
+        )
 
 
-def fmt_argspec_types(fun, types):
+def fmt_argspec_types(fun, types, start=0):
     args, varargs, keywords, defaults = correct_argspec(fun)
+    
+    args = args[start:]
+    types = types[start:]
+
     NULL = object()
     if defaults is None:
         defaults = []
