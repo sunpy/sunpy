@@ -25,6 +25,8 @@ from sunpy.time import parse_time
 from sunpy.util.util import to_signed
 from sunpy.image.rescale import resample, reshape_image_to_4d_superpixel
 
+from sunpy.util.cond_dispatch import ConditionalDispatch
+from sunpy.util.create import Parent
 
 """
 TODO
@@ -38,7 +40,7 @@ or something else?)
 * Should 'center' be renamed to 'offset' and crpix1 & 2 be used for 'center'?
 """
 
-class Map(np.ndarray):
+class Map(np.ndarray, Parent):
     """
     Map(data, header)
 
@@ -124,6 +126,8 @@ class Map(np.ndarray):
         Return a matplotlib plot figure object
     show()
         Display a matplotlib plot to the screen 
+    get_header()
+        Returns the original header from when the map was first created.
 
     Examples
     --------
@@ -155,6 +159,9 @@ class Map(np.ndarray):
     | http://www.scipy.org/Subclasses
 
     """
+    _create = ConditionalDispatch.from_existing(Parent._create)
+    create = classmethod(_create.wrapper())
+
     def __new__(cls, data, header):
         """Creates a new Map instance"""
         if isinstance(data, np.ndarray):
@@ -968,3 +975,5 @@ class InvalidHeaderInformation(ValueError):
     """Exception to raise when an invalid header tag value is encountered for a
     FITS/JPEG 2000 file."""
     pass
+
+Map.create.im_func.__doc__ = Map._create.generate_docs()
