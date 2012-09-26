@@ -45,9 +45,10 @@ slightly less familiar to Solarsoft/IDL users (which is why we have
 two different syntaxes).
 
 Let's say I want all the EIT data between 2001/01/01 and 2001/01/02.
-Using the legacy query suntax, this is simply
+Using the legacy query syntax, this is simply
 
-    >>> result = vso.search(tstart = '2001/01/01', tend =
+    >>> client = vso.VSOClient()
+    >>> result = client.query_legacy(tstart = '2001/01/01', tend =
     '2001/01/02', instrument = 'EIT')
 
 which is almost identical to what you would type in a Solarsoft/IDL
@@ -62,10 +63,10 @@ query syntax
 To find out more about the keywords accepted by the Solarsoft legacy
 query, type
 
-    >>> help(vso.VSOClient.query_legacy)
-
+    >>> help(client.query_legacy)
 
 This is very similar 
+
 How many records is that?  That can 
 
 Let's break down the arguments of client.query.  The first argument:
