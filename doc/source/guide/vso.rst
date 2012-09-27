@@ -24,8 +24,8 @@ we'll import that too
 
 
 
-2. A simple query
------------------
+2. A simple query - using the legacy query
+---------------------------------
 
 Obtaining data via the VSO is essentially a two-stage process.  In the
 first stage, you ask the VSO to find the data you want.  The VSO
@@ -52,22 +52,43 @@ Using the legacy query syntax, this is simply
     '2001/01/02', instrument = 'EIT')
 
 which is almost identical to what you would type in a Solarsoft/IDL
-session. 
+session.
 
-So, what's happening with this command?  Firstly, the code parses the
-arguments you've given it in order to decide if you want to use the
-Solarsoft-style syntax, or the more powerful "Pythonic" syntax.
-Having made a decision it spawns a client that understands the legacy
-query syntax
+So, what's happening with this command?  The client is going out to
+the web to query the VSO to ask how many files EIT images are in the
+archive between the start of 2001/01/01 and the start of 2001/01/02. 
+
+How many records is that?  You can find that out be typing
+
+    >>> len(result)
+    122
+
+To get a little bit more information, try
+
+    >>> result.show()
 
 To find out more about the keywords accepted by the Solarsoft legacy
 query, type
 
     >>> help(client.query_legacy)
 
-This is very similar 
+Let's say you just want the EIT 171 Angstrom files for that data.
+These files can be found by
 
-How many records is that?  That can 
+    >>> result = client.query_legacy(tstart = '2001/01/01', tend =
+    '2001/01/02', instrument = 'EIT', min_wave = '171', max_wave =
+    '171', unit_wave = 'Angstrom')
+
+Which yields four results, the same as the VSO IDL client.  Using the
+legacy query keywords it is very easy to translate a Solarsoft/IDL VSO
+command into the equivalent SunPY VSO legacy query.
+
+
+
+2. The new query style
+------------------
+
+
 
 Let's break down the arguments of client.query.  The first argument:
 
