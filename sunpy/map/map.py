@@ -617,7 +617,7 @@ Dimension:\t [%d, %d]
         return new_map
     
     def rotate(self, angle, scale=1.0, rotation_centre=None, recentre=True,
-               missing=0.0, interpolation='spline', interp_param=None):
+               missing=0.0, interpolation='bicubic', interp_param=-0.5):
         """Returns a new rotated, rescaled and shifted map.
         
         Parameters
@@ -640,7 +640,8 @@ Dimension:\t [%d, %d]
             Interpolation method to use in the transform. 
             Spline uses the 
             scipy.ndimage.interpolation.affline_transform routine.
-            Default: 'spline'
+            nearest, bilinear and bicubic all replicate the IDL rot() function.
+            Default: 'bicubic'
         interp_par: Int or Float
             Optional parameter for controlling the interpolation.
             Spline interpolation requires an integer value between 1 and 5 for 
