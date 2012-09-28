@@ -744,7 +744,7 @@ Dimension:\t [%d, %d]
         return axes
         
     @toggle_pylab
-    def imshow(self, gamma=None, basic_plot=False, **imshow_args):
+    def show(self, gamma=None, basic_plot=False, **imshow_args):
         """ Plots the map object using matplotlib,
         in a method equivalent to plt.imshow()
         
