@@ -48,41 +48,69 @@ Let's say I want all the EIT data between 2001/01/01 and 2001/01/02.
 Using the legacy query syntax, this is simply
 
     >>> client = vso.VSOClient()
-    >>> result = client.query_legacy(tstart = '2001/01/01', tend =
+    >>> qr = client.query_legacy(tstart = '2001/01/01', tend =
     '2001/01/02', instrument = 'EIT')
 
 which is almost identical to what you would type in a Solarsoft/IDL
-session.
+session.  So, what's happening with this command?  The client is going
+out to the web to query the VSO to ask how many files EIT images are
+in the archive between the start of 2001/01/01 and the start of
+2001/01/02.
 
-So, what's happening with this command?  The client is going out to
-the web to query the VSO to ask how many files EIT images are in the
-archive between the start of 2001/01/01 and the start of 2001/01/02. 
+The same query can also be performed using a slightly different
+syntax.  For example
 
-How many records is that?  You can find that out be typing
+    >>> qr = client.query_legacy(tstart = datetime(2001,1,1), tend =
+    datetime(2001,1,2), instrument = 'EIT')
+
+and 
+
+    >>> qr = client.query_legacy(datetime(2001,1,1),
+        datetime(2001,1,2), instrument = 'EIT')
+
+both give the same result.
+
+The variable "result" is a Python list of response objects, each one
+of which is a record found by the VSO. How many records have been
+found?  You can find that out be typing
 
     >>> len(result)
     122
 
 To get a little bit more information, try
 
-    >>> result.show()
+    >>> qr.show()
 
-To find out more about the keywords accepted by the Solarsoft legacy
-query, type
+
+The Solarsoft legacy query has more keywords available: to find out
+more about the legacy query, type: 
 
     >>> help(client.query_legacy)
 
-Let's say you just want the EIT 171 Angstrom files for that data.
-These files can be found by
+As an example, let's say you just want the EIT 171 Angstrom files for
+that data.  These files can be found by
 
-    >>> result = client.query_legacy(tstart = '2001/01/01', tend =
+    >>> qr = client.query_legacy(tstart = '2001/01/01', tend =
     '2001/01/02', instrument = 'EIT', min_wave = '171', max_wave =
     '171', unit_wave = 'Angstrom')
 
-Which yields four results, the same as the VSO IDL client.  Using the
-legacy query keywords it is very easy to translate a Solarsoft/IDL VSO
-command into the equivalent SunPY VSO legacy query.
+which yields four results, the same as the VSO IDL client.
 
+Having located the data you want, you can download it using the
+following command:
+
+
+    >>>> res = client.get(qr, path = '/Users/ireland/Desktop/Data/{file}.fits')
+
+The "{file}" option uses the file name obtained by the VSO for each file.
+
+
+
+Using the
+legacy query keywords it is very easy to translate a Solarsoft/IDL VSO
+command into the equivalent SunPy VSO legacy query.  However, more
+powerful queries are possible with the new query style, which is
+descibed below.
 
 
 2. The new query style
