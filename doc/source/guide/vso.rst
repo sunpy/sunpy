@@ -70,11 +70,11 @@ and
 
 both give the same result.
 
-The variable "result" is a Python list of response objects, each one
+The variable "qr" is a Python list of response objects, each one
 of which is a record found by the VSO. How many records have been
 found?  You can find that out be typing
 
-    >>> len(result)
+    >>> qr.num_records()
     122
 
 To get a little bit more information, try
@@ -99,10 +99,17 @@ which yields four results, the same as the VSO IDL client.
 Having located the data you want, you can download it using the
 following command:
 
-
     >>>> res = client.get(qr, path = '/Users/ireland/Desktop/Data/{file}.fits')
 
-The "{file}" option uses the file name obtained by the VSO for each file.
+This downloads the query results into the directory
+/Users/ireland/Dekstop/Data naming downloaded file with the filename
+'{file}' obtained from the VSO , and appended with the suffix '.fits'.
+
+The '{file}' option uses the file name obtained by the VSO for each
+file.  You can also use other properties of the query return to define
+the path where the data is saved.  For example,
+
+
 
 
 
