@@ -78,7 +78,6 @@ To get a little bit more information, try
 
     >>> qr.show()
 
-
 The Solarsoft legacy query has more keywords available: to find out
 more about the legacy query, type: 
 
@@ -150,8 +149,12 @@ described in 'vso.attrs' - that are specifed to construct the query.
 The new-style query allows you to combine these VSO attribute objects
 in complex ways that are not possible with the legacy query style.
 
+So, let's look for the EIT and MDI data on the same day:
 
-
+    >>> qr=client.query(vso.attrs.Time(datetime(2001,1,1), datetime(2001,1,2)), vso.attrs.Instrument('eit') | vso.attrs.Instrument('mdi'))
+    >>> qr.num_records()
+    233
+    >>> qr.show()
 
 We are using Python's comparison operators to filter the returns from
 the HEK client.  Other comparisons are possible.  For example, let's
