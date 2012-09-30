@@ -47,9 +47,8 @@ two different syntaxes).
 Let's say I want all the EIT data between 2001/01/01 and 2001/01/02.
 Using the legacy query syntax, this is simply
 
-    >>> client = vso.VSOClient()
-    >>> qr = client.query_legacy(tstart = '2001/01/01', tend =
-    '2001/01/02', instrument = 'EIT')
+    >>> client=vso.VSOClient()
+    >>> qr=client.query_legacy(tstart='2001/01/01', tend='2001/01/02', instrument='EIT')
 
 which is almost identical to what you would type in a Solarsoft/IDL
 session.  So, what's happening with this command?  The client is going
@@ -60,13 +59,11 @@ in the archive between the start of 2001/01/01 and the start of
 The same query can also be performed using a slightly different
 syntax.  For example
 
-    >>> qr = client.query_legacy(tstart = datetime(2001,1,1), tend =
-    datetime(2001,1,2), instrument = 'EIT')
+    >>> qr=client.query_legacy(tstart=datetime(2001,1,1), tend=datetime(2001,1,2), instrument='EIT')
 
 and 
 
-    >>> qr = client.query_legacy(datetime(2001,1,1),
-        datetime(2001,1,2), instrument = 'EIT')
+    >>> qr=client.query_legacy(datetime(2001,1,1), datetime(2001,1,2), instrument='EIT')
 
 both give the same result.
 
@@ -90,203 +87,71 @@ more about the legacy query, type:
 As an example, let's say you just want the EIT 171 Angstrom files for
 that data.  These files can be found by
 
-    >>> qr = client.query_legacy(tstart = '2001/01/01', tend =
-    '2001/01/02', instrument = 'EIT', min_wave = '171', max_wave =
-    '171', unit_wave = 'Angstrom')
+    >>> qr=client.query_legacy(tstart='2001/01/01', tend='2001/01/02', instrument='EIT', min_wave='171', max_wave='171', unit_wave='Angstrom')
 
 which yields four results, the same as the VSO IDL client.
+
+3. Downloading the data
+--------------------
 
 Having located the data you want, you can download it using the
 following command:
 
-    >>>> res = client.get(qr, path = '/Users/ireland/Desktop/Data/{file}.fits')
+    >>> res=client.get(qr, path='/Users/ireland/Desktop/Data/{file}.fits')
 
 This downloads the query results into the directory
-/Users/ireland/Dekstop/Data naming downloaded file with the filename
-'{file}' obtained from the VSO , and appended with the suffix '.fits'.
+/Users/ireland/Dekstop/Data naming each downloaded file with the
+filename '{file}' obtained from the VSO , and appended with the suffix
+'.fits'.  The '{file}' option uses the file name obtained by the VSO
+for each file.  You can also use other properties of the query return
+to define the path where the data is saved.  For example, to save the
+data to a subdirecory named after the instrument, use
 
-The '{file}' option uses the file name obtained by the VSO for each
-file.  You can also use other properties of the query return to define
-the path where the data is saved.  For example,
+    >>> res=client.get(qr, path='/Users/ireland/Desktop/Data/{instrument}/{file}.fits')
+
+Note that the download process is spawned in parallel to your existing
+Python session.  This means that the remainder of your Python script
+will continue as the download proceeds.  This may cause a problem if
+the remainder of your script relies on the presence of the downloaded
+data.  If you want to resume your script after all the data has been
+downloaded then append '.wait()' to the 'get' command above, i.e.,
+
+     >>> res=client.get(qr, path='/Users/ireland/Desktop/Data/{instrument}/{file}.fits').wait()
+
+More information on the options available can be found through the
+standard Python 'help' command.
+
+Using the legacy query keywords it is very easy to translate a
+Solarsoft/IDL VSO command into the equivalent SunPy VSO legacy query.
+However, more powerful queries are possible with the new query style,
+which is descibed below.
 
 
-
-
-
-Using the
-legacy query keywords it is very easy to translate a Solarsoft/IDL VSO
-command into the equivalent SunPy VSO legacy query.  However, more
-powerful queries are possible with the new query style, which is
-descibed below.
-
-
-2. The new query style
+4. The new query style
 ------------------
 
+The new query style makes more complex queries possible.  Let's start
+with translating the above legacy query into the syntax of the new
+query:
 
+    >>> qr=client.query(vso.attrs.Time(datetime(2001,1,1), datetime(2001,1,2)), vso.attrs.Instrument('eit'))
 
 Let's break down the arguments of client.query.  The first argument:
 
-    hek.attrs.Time(tstart,tend)
+    vso.attrs.Time(datetime(2001,1,1), datetime(2001,1,2))
 
 sets the start and end times for the query.  The second argument:
 
-    hek.attrs.EventType(event_type)
+    vso.attrs.Instrument('eit')
 
-sets the type of event to look for.  Since we have defined event_type
-= 'FL', this sets the query to look for flares.  We could have also
-set the flare event type using the syntax
-
-    hek.attrs.FL
-
-There is more on the attributes of hek.attrs in section 4 of this
-guide.
+sets the instrument we are looking for.  So what is going on here?
+The notion is that a VSO query has a set of attribute objects -
+described in 'vso.attrs' - that are specifed to construct the query.
+The new-style query allows you to combine these VSO attribute objects
+in complex ways that are not possible with the legacy query style.
 
 
-3. The result
--------------
 
-So, how many flare detections did the query turn up?
-
-    >>> len(result)
-    19
-
-The object returned by the above query is a list of Python dictionary
-objects.  Each dictionary consists of key-value pairs that exactly
-correspond to the parameters listed at
-http://www.lmsal.com/hek/VOEvent_Spec.html. You can inspect all the
-dictionary keys very simply:
-
-    >>> result[0].keys()
-    [u'skel_startc1',
-     u'concept',
-     u'frm_versionnumber',
-     u'hrc_coord',
-     u'refs_orig',....
-
-and so on.  Remember, the HEK query we made returns all the flares in
-the time-range stored in the HEK, regardless of the feature
-recognition method.  The HEK parameter which stores the the feature
-recognition method is called "frm_name". Using list comprehensions
-(which are very cool), it is easy to get a list of the feature
-recognition methods used to find each of the flares in the result
-object, for example:
-
-    >>> [elem["frm_name"] for elem in result] 
-    [u'asainz',
-     u'asainz',
-     u'asainz',
-     u'asainz',
-     u'asainz',
-     u'asainz',
-     u'asainz',
-     u'SSW Latest Events',
-     u'SEC standard',
-     u'Flare Detective - Trigger Module',
-     u'Flare Detective - Trigger Module',
-     u'SSW Latest Events',
-     u'SEC standard',
-     u'Flare Detective - Trigger Module',
-     u'Flare Detective - Trigger Module',
-     u'Flare Detective - Trigger Module',
-     u'Flare Detective - Trigger Module',
-     u'Flare Detective - Trigger Module']
-
-It is likely each flare on the Sun was actually detected multiple
-times by many different methods.
-
-4. More complex queries
------------------------
-
-The HEK client allows you to make more complex queries.  There are two
-key features you need to know in order to make use of the full power
-of the HEK client.  Firstly, the attribute module - hek.attrs -
-describes ALL the parameters stored by the HEK as listed in
-http://www.lmsal.com/hek/VOEvent_Spec.html, and the HEK client makes
-these parameters searchable.
-
-To explain this, let's have a closer look at hek.attrs. The help
-command is your friend here; scroll down to section DATA you will see:
-
-    >>> help(hek.attrs)
-    AR = <sunpy.net.hek.attrs.AR object>
-    Area = <sunpy.net.hek.attrs.Area object>
-    Bound = <sunpy.net.hek.attrs.Bound object>
-    BoundBox = <sunpy.net.hek.attrs.BoundBox object>
-    CC = <sunpy.net.hek.attrs.CC object>
-    CD = <sunpy.net.hek.attrs.CD object>
-    CE = <sunpy.net.hek.attrs.CE object>
-    CH = <sunpy.net.hek.attrs.EventType object>
-    CJ = <sunpy.net.hek.attrs.EventType object>
-    CR = <sunpy.net.hek.attrs.EventType object>
-    CW = <sunpy.net.hek.attrs.EventType object>
-    EF = <sunpy.net.hek.attrs.EF object>
-    ER = <sunpy.net.hek.attrs.EventType object>
-    Event = <sunpy.net.hek.attrs.Event object>
-    FA = <sunpy.net.hek.attrs.EventType object>
-    FE = <sunpy.net.hek.attrs.EventType object>
-    FI = <sunpy.net.hek.attrs.FI object>
-    FL = <sunpy.net.hek.attrs.FL object>
-    FRM = <sunpy.net.hek.attrs.FRM object>
-    etc etc...
-
-The object hek.attrs knows the attributes of the HEK.  You'll see that
-one of the attributes is a flare object
-
-    FL = <sunpy.net.hek.attrs.FL object>
-
-We can replace hek.attrs.EventType('FL') with hek.attrs.FL - they do
-the same thing, setting the query to look for flare events.  Both
-methods of setting the event type are provided as a convenience
-
-Let's look further at the FRM attribute:
-
-    >>> help(hek.attrs.FRM)
-    Help on FRM in module sunpy.net.hek.attrs object:
-    class FRM(__builtin__.object)
-     |  Data descriptors defined here:
-     |  
-     |  __dict__
-     |      dictionary for instance variables (if defined)
-     |  
-     |  __weakref__
-     |      list of weak references to the object (if defined)
-     |  
-     |  ----------------------------------------------------------------------
-     |  Data and other attributes defined here:
-     |  
-     |  Contact = <sunpy.net.hek.attrs._StringParamAttrWrapper object>
-     |  
-     |  HumanFlag = <sunpy.net.hek.attrs._StringParamAttrWrapper object>
-     |  
-     |  Identifier = <sunpy.net.hek.attrs._StringParamAttrWrapper object>
-     |  
-     |  Institute = <sunpy.net.hek.attrs._StringParamAttrWrapper object>
-     |  
-     |  Name = <sunpy.net.hek.attrs._StringParamAttrWrapper object>
-     |  
-     |  ParamSet = <sunpy.net.hek.attrs._StringParamAttrWrapper object>
-     |  
-     |  SpecificID = <sunpy.net.hek.attrs._StringParamAttrWrapper object>
-     |  
-     |  URL = <sunpy.net.hek.attrs._StringParamAttrWrapper object>
-     |  
-     |  VersionNumber = <sunpy.net.hek.attrs._StringParamAttrWrapper object>
-
-Let's say I am only interested in those flares identified by the SSW
-Latest Events tool.  I can retrieve those entries only from the HEK
-with the following command:
-
-    >>> result = client.query( hek.attrs.Time(tstart,tend), hek.attrs.EventType(event_type), hek.attrs.FRM.Name == 'SSW Latest Events')
-    >>> len(result)
-    2
-
-We can also retrieve all the entries in the time range which were not
-made by SSW Latest Events with the following command:
-
-    >>> result = client.query( hek.attrs.Time(tstart,tend), hek.attrs.EventType(event_type),hek.attrs.FRM.Name != 'SSW Latest Events')
-    >>> len(result)
-    17
 
 We are using Python's comparison operators to filter the returns from
 the HEK client.  Other comparisons are possible.  For example, let's
