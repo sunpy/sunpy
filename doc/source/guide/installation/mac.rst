@@ -83,7 +83,22 @@ Installation using DMG installers... (TO BE WRITTEN)
 
 Macports
 --------
-Intallation using Macports... (TO BE WRITTEN)
+
+If you use MacPorts to manage your Python distribution, you can simply type
+e.g.::
+
+    sudo port install py27-sunpy
+
+to install SunPy. This will automatically install all of the required
+dependencies. You may also install SunPy for Python 2.6 (``py26-sunpy``). If
+a new version of SunPy is released, you can update your installation using
+e.g::
+
+    sudo port selfupdate
+    sudo port upgrade py27-sunpy
+
+For more information on using MacPorts to manage your Python installation,
+see the following `page <http://astrofrog.github.com/macports-python/>`_.
 
 Homebrew
 --------
