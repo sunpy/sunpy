@@ -72,29 +72,51 @@ def system_info():
         pyfits_version = "NOT INSTALLED"
         
     try:
-        from suds import __version__ as suds_version
-    except ImportError:
-        suds_version = "NOT INSTALLED"
-        
-    try:
         from pandas import __version__ as pandas_version
     except ImportError:
         pandas_version = "NOT INSTALLED"
+
+    try:
+        from bs4 import __version__ as bs4_version
+    except ImportError:
+        bs4_version = "NOT INSTALLED"
+        
+    try:
+        from PIL.Image import __version__ as PIL_version
+    except ImportError:
+        PIL_version = "NOT INSTALLED"
         
     try:
         from PyQt4.QtCore import PYQT_VERSION_STR as pyqt_version
     except ImportError:
         pyqt_version = "NOT INSTALLED"
 
-    print("###########")
-    print(" Libraries")
-    print("###########")
+    try:
+        from suds import __version__ as suds_version
+    except ImportError:
+        suds_version = "NOT INSTALLED"
+
+    print("####################")
+    print(" Required libraries")
+    print("####################")
     
     print("SunPy: %s" % sunpy.__version__)
+
     print("NumPy: %s" % numpy_version)
     print("SciPy: %s" % scipy_version)
     print("Matplotlib: %s" % matplotlib_version)
     print("PyFITS: %s" % pyfits_version)
     print("pandas: %s" % pandas_version)
+
+    print("")
+
+    print("#######################")
+    print(" Recommended libraries")
+    print("#######################")
+
+    print("beautifulsoup4: %s" % bs4_version)
+    print("PIL: %s" % PIL_version)
+    print("PyQt: %s" % pyqt_version)
     print("SUDS: %s" % suds_version)
-    print("PyQt: %s\n" % pyqt_version)
+
+    print("")
