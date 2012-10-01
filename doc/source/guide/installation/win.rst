@@ -23,15 +23,21 @@ installer is rather large (~500 MB) and thus may take a while to download.
 
 **2. Install other required modules**
 
-The following required modules are already included in Python(x,y): NumPy, SciPy, Matplotlib, PyFITS, pandas, and distribute.  Download and install `pip <http://code.google.com/p/pythonxy/downloads/list?q=pip>`_.  (Note: this installer is built by the Python(x,y) team.)
+The following required modules are already included in Python(x,y): NumPy,
+SciPy, Matplotlib, PyFITS, pandas, and distribute.  Download and install
+`pip <http://code.google.com/p/pythonxy/downloads/list?q=pip>`_.  (Note: this
+installer is built by the Python(x,y) team.)
 
 **3. Install Git**
 
-Download and install `Git <https://code.google.com/p/msysgit/downloads/list?can=3&q=Full+installer+for+official+Git+for+Windows>`_.  Git is used to retrieve the SunPy code.
+Download and install `Git <https://code.google.com/p/msysgit/downloads/list?can=3&q=Full+installer+for+official+Git+for+Windows>`_.
+Git is used to retrieve the SunPy code.
 
 **4. Install recommended/optional modules**
 
-The following recommended/optional modules are already included in Python(x,y): IPython, PIL, pylint, and PyQt.  You can use pip to install additional modules, e.g.: ::
+The following recommended/optional modules are already included in Python(x,y):
+IPython, PIL, pylint, and PyQt.  You can use pip to install additional modules,
+e.g.: ::
 
     pip install suds
     pip install beautifulsoup4
@@ -39,25 +45,36 @@ The following recommended/optional modules are already included in Python(x,y): 
 
 **5. Download and install SunPy**
 
-The simple (non-developer) way to install SunPy is to use the combination of pip and Git: ::
+The simple (non-developer) way to install SunPy is to use the combination of pip
+and Git: ::
 
     pip install git+https://github.com/sunpy/sunpy.git
 
-On the other hand, if you are a developer and plan to contribute to SunPy, it is often easier to have the SunPy code in a more accessible location that you manage with Git.  In that case, you can use pip to install your working version of the SunPy code (here assumed to be located in ``C:\sunpy``): ::
+On the other hand, if you are a developer and plan to contribute to SunPy, it is
+often easier to have the SunPy code in a more accessible location that you
+manage with Git.  In that case, you can use pip to install your working version
+of the SunPy code (here assumed to be located in ``C:\sunpy``): ::
 
     pip install -e 'C:\sunpy'
 
 **6. Upgrading in the future**
 
-If you used the simple (non-developer) way to install SunPy, you can upgrade SunPy by using pip and Git again: ::
+If you used the simple (non-developer) way to install SunPy, you can upgrade
+SunPy by using pip and Git again: ::
 
     pip install --upgrade --no-deps git+https://github.com/sunpy/sunpy.git
 
-Please make sure to include the ``--no-deps`` option because otherwise pip may try to upgrade dependencies such as SciPy and Matplotlib that are difficult to build from source and the likely errors will abort the upgrade.
+Please make sure to include the ``--no-deps`` option because otherwise pip may
+try to upgrade dependencies such as SciPy and Matplotlib that are difficult to
+build from source and the likely errors will abort the upgrade.
 
-If you used the developer way to install SunPy, you should use Git as appropriate to upgrade SunPy.
+If you used the developer way to install SunPy, you should use Git as
+appropriate to upgrade SunPy.
 
-Python(x,y) and its included modules (listed above in steps 2 and 4) can be upgraded by downloading and installing the latest versions.  Git can also be upgraded the same way.  Recommended/optional modules not included in Python(x,y) can generally be upgraded by using pip, e.g.: ::
+Python(x,y) and its included modules (listed above in steps 2 and 4) can be
+upgraded by downloading and installing the latest versions.  Git can also be
+upgraded the same way.  Recommended/optional modules not included in Python(x,y)
+can generally be upgraded by using pip, e.g.: ::
 
     pip install --upgrade suds
     pip install --upgrade beautifulsoup4
@@ -67,7 +84,11 @@ Python(x,y) and its included modules (listed above in steps 2 and 4) can be upgr
 Alternate method
 ^^^^^^^^^^^^^^^^
 
-If Python(x,y) is unavailable, or if it is critical for you to have the most up-to-date version of modules, then this alternate method eschews installers as much as possible and emphasizes building from source.  This method is not for the faint of heart!  Please use this method only if you are experienced with computers and Python.
+If Python(x,y) is unavailable, or if it is critical for you to have the most
+up-to-date version of modules, then this alternate method eschews installers
+as much as possible and emphasizes building from source.  This method is not
+for the faint of heart!  Please use this method only if you are experienced
+with computers and Python.
 
 **1. Install Python**
 
@@ -83,26 +104,33 @@ and associated scripts can be found:
 
 **2. Install compilers**
 
-Download and install `MinGW <http://mingw.org/>`_, specifically the C, C++, and Fortran compilers.  Make sure that the binaries can be found in your path (e.g., by adding ``C:\MinGW\bin`` to your path).
+Download and install `MinGW <http://mingw.org/>`_, specifically the C, C++, and
+Fortran compilers.  Make sure that the binaries can be found in your path (e.g.,
+by adding ``C:\MinGW\bin`` to your path).
 
 **3. Set up the Python build environment**
 
-Create a file in ``C:\Python27\lib\distutils\`` called ``distutils.cfg`` that contains the following lines: ::
+Create a file in ``C:\Python27\lib\distutils\`` called ``distutils.cfg`` that
+contains the following lines: ::
 
     [build]
     compiler=mingw32
     [build_ext]
     compiler=mingw32
 
-There is currently a bug in the Python 2.7 code, so you will also need to edit ``cygwincompiler.py`` in the same directory.  Remove all five instances of the character string "-mno-cygwin".
+There is currently a bug in the Python 2.7 code, so you will also need to edit
+``cygwincompiler.py`` in the same directory.  Remove all five instances of the
+character string "-mno-cygwin".
 
 **4. Install pip**
 
-Download `distribute_setup.py <http://python-distribute.org/distribute_setup.py>`_ to be able to install distribute: ::
+Download `distribute_setup.py <http://python-distribute.org/distribute_setup.py>`_
+to be able to install distribute: ::
 
     python distribute_setup.py
 
-Download `get-pip.py <https://raw.github.com/pypa/pip/master/contrib/get-pip.py>`_ to be able to install pip: ::
+Download `get-pip.py <https://raw.github.com/pypa/pip/master/contrib/get-pip.py>`_
+to be able to install pip: ::
 
     python get-pip.py
 
@@ -116,7 +144,10 @@ You can use pip to download and build modules from source: ::
     pip install pyfits
     pip install pandas
 
-Unfortunately, the compilations of SciPy and Matplotlib will likely fail due to missing libraries.  Until there is a workable solution, you should download the latest installers: `SciPy <http://sourceforge.net/projects/scipy/files/scipy/0.11.0/scipy-0.11.0-win32-superpack-python2.7.exe/download>`_ and `Matplotlib <http://sourceforge.net/projects/matplotlib/files/matplotlib/matplotlib-1.1.1/matplotlib-1.1.1.win32-py2.7.exe/download>`__.
+Unfortunately, the compilations of SciPy and Matplotlib will likely fail due to
+missing libraries.  Until there is a workable solution, you should download the
+latest installers: `SciPy <http://sourceforge.net/projects/scipy/files/scipy/0.11.0/scipy-0.11.0-win32-superpack-python2.7.exe/download>`_
+and `Matplotlib <http://sourceforge.net/projects/matplotlib/files/matplotlib/matplotlib-1.1.1/matplotlib-1.1.1.win32-py2.7.exe/download>`__.
 
 **6. The remaining steps**
 
