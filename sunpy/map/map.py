@@ -744,7 +744,7 @@ Dimension:\t [%d, %d]
         return axes
         
     @toggle_pylab
-    def show(self, gamma=None, basic_plot=False, **imshow_args):
+    def plot(self, gamma=None, basic_plot=False, axes=None, **imshow_args):
         """ Plots the map object using matplotlib,
         in a method equivalent to plt.imshow()
         
@@ -757,6 +757,10 @@ Dimension:\t [%d, %d]
             If true, the data is plotted by itself at it's natural scale; no
             title, labels, or axes are shown.
             
+        axes: matplotlib.axes object or None
+            If provided the image will be plotted on the given axes. Else the 
+            current matplotlib axes will be used.
+        
         **imshow_args : dict
             Any additional imshow arguments that should be used
             when plotting the image.
@@ -772,13 +776,14 @@ Dimension:\t [%d, %d]
         aia.imshow()
         aia.draw_limb()
         aia.draw_grid()
-        
         """
+
         #Get curent axes
-        axes = plt.gca()
+        if not axes:
+            axes = plt.gca()
         
         # Normal plot
-        if not(basic_plot):
+        if not basic_plot:
             axes.set_title("%s %s" % (self.name, self.date))
             
             # x-axis label
