@@ -27,8 +27,7 @@ The following required modules are already included in Python(x,y): NumPy, SciPy
 
 **3. Install Git**
 
-Download and install `Git <https://code.google.com/p/msysgit/downloads/list?can=3&q=Full+installer+for+official+Git+for+Windows>`_ 
-(choose the first file listed).  Git is used to retrieve the SunPy code.
+Download and install `Git <https://code.google.com/p/msysgit/downloads/list?can=3&q=Full+installer+for+official+Git+for+Windows>`_.  Git is used to retrieve the SunPy code.
 
 **4. Install recommended/optional modules**
 
@@ -56,9 +55,9 @@ If you used the simple (non-developer) way to install SunPy, you can upgrade Sun
 
 Please make sure to include the ``--no-deps`` option because otherwise pip may try to upgrade dependencies such as SciPy and Matplotlib that are difficult to build from source and the resulting likely errors will abort the upgrade.
 
-If you used the developer way to install SunPy, you should use :command:`git pull` in the appropriate directory to upgrade SunPy.
+If you used the developer way to install SunPy, you should use Git as appropriate to upgrade SunPy.
 
-Python(x,y) and its included modules (see above) can be upgraded by downloading and installing the latest versions.  Git can also be upgraded the same way.  Recommended/optional modules not included in Python(x,y) can generally be upgraded by using pip, e.g.: ::
+Python(x,y) and its included modules (listed above in steps 2 and 4) can be upgraded by downloading and installing the latest versions.  Git can also be upgraded the same way.  Recommended/optional modules not included in Python(x,y) can generally be upgraded by using pip, e.g.: ::
 
     pip install --upgrade suds
     pip install --upgrade beautifulsoup4
@@ -121,8 +120,8 @@ Unfortunately, the compilations of SciPy and Matplotlib will likely fail due to 
 
 **6. The remaining steps**
 
-You have now performed the required elements of step 1-2 of the recommended 
-method.  Now perform steps 3-5 of that method to complete your installation.
+You have completed the essential elements of steps 1-2 of the recommended 
+method.  Continue with steps 3-5 of that method to complete your installation.
 
 .. _NumPy: http://numpy.scipy.org/
 .. _SciPy: http://www.scipy.org/
