@@ -804,8 +804,21 @@ Dimension:\t [%d, %d]
              draw_grid=False, colorbar=True, basic_plot=False, **matplot_args):
         """Displays map on screen. Arguments are same as plot()."""
         self.plot(figure, overlays, draw_limb, gamma, draw_grid, colorbar, 
-                  basic_plot, **matplot_args).show()
+                  basic_plot, **matplot_args)
+        plt.show()
     
+    def plot_test(self):
+        figure = plt.figure()
+        axes = figure.add_subplot(111)
+        axes.set_title("%s %s" % (self.name, self.date))
+        extent = self.xrange + self.yrange
+        axes.imshow(self, origin='lower', extent=extent)
+        return figure
+        
+    def show_test(self):
+        self.plot_test()
+        plt.show()
+        
     def norm(self):
         """Default normalization method"""
         return None
