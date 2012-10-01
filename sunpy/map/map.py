@@ -360,7 +360,7 @@ Dimension:\t [%d, %d]
         return fig, axes
 
     def _draw_grid(self, fig, axes, grid_spacing=20):
-        """Draws a grid over the surface of the Sun"""
+        """Draws the lat/lon grid over the surface of the Sun"""
         # define the number of points for each latitude or longitude line
         num_points = 20
         hg_longitude_deg = np.linspace(-90, 90, num=num_points)
@@ -376,7 +376,7 @@ Dimension:\t [%d, %d]
                                       hg_longitude_deg_mesh,
                                       hg_latitude_deg_mesh, units='arcsec')
             axes.plot(x, y, color='white', linestyle='dotted')
-
+            
         hg_longitude_deg = np.arange(-90, 90, grid_spacing)
         hg_latitude_deg = np.linspace(-90, 90, num=num_points)
 
@@ -390,6 +390,9 @@ Dimension:\t [%d, %d]
                                       hg_longitude_deg_mesh,
                                       hg_latitude_deg_mesh, units='arcsec')
             axes.plot(x, y, color='white', linestyle='dotted')
+            
+        axes.set_ylim(self.yrange)
+        axes.set_xlim(self.xrange)
 
         return fig, axes
 
