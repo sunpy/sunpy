@@ -44,11 +44,11 @@ The simple (non-developer) way to install SunPy is to use the combination of pip
 
     pip install git+https://github.com/sunpy/sunpy.git
 
-On the other hand, if you are a developer and plan to contribute to SunPy, it is often easier to have the SunPy code in a more accessible location using :command:`git clone` or :command:`git pull`.  In that case, you can use pip to install your working version of the SunPy code (here assumed to be located in ``C:\sunpy``):
+On the other hand, if you are a developer and plan to contribute to SunPy, it is often easier to have the SunPy code in a more accessible location using :command:`git clone` or :command:`git pull`.  In that case, you can use pip to install your working version of the SunPy code (here assumed to be located in ``C:\sunpy``): ::
 
     pip install -e 'C:\sunpy'
 
-**6. Upgrading in the future
+**6. Upgrading in the future**
 
 If you used the simple (non-developer) way to install SunPy, you can upgrade SunPy by using pip and Git again: ::
 
@@ -84,11 +84,11 @@ and associated scripts can be found:
     1. Go to ``Start``-> ``Control Panel`` -> ``System`` -> ``Advanced system settings`` -> ``Environment variables``
     2. Find the ``PATH`` environment variable, under either user or system variables, and append ``C:\Python27`` and ``C:\Python27\Scripts``, separated by semicolons.
 
-**2. Install compilers
+**2. Install compilers**
 
 Download and install `MinGW <http://mingw.org/>`_, specifically the C, C++, and Fortran compilers.  This step is not for the faint of heart.  Make sure that the binaries can be found in your path.
 
-**3. Set up the Python build environment
+**3. Set up the Python build environment**
 
 Create a file in ``C:\Python27\lib\distutils\`` called ``distutils.cfg`` that contains the following lines: ::
 
@@ -107,7 +107,9 @@ Download and install `distribute <http://code.google.com/p/pythonxy/downloads/li
 
 Download and install `pip <http://code.google.com/p/pythonxy/downloads/list?q=pip>`_.  (Note: this installer is built by the Python(x,y) team.)
 
-**5. Install required modules
+**5. Install required modules**
+
+You can use pip to download and build modules from source: ::
 
     pip install numpy
     pip install scipy
