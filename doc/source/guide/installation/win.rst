@@ -53,7 +53,7 @@ If you used the simple (non-developer) way to install SunPy, you can upgrade Sun
 
     pip install --upgrade --no-deps git+https://github.com/sunpy/sunpy.git
 
-Please make sure to include the ``--no-deps`` option because otherwise pip may try to upgrade dependencies such as SciPy and Matplotlib that are difficult to build from source and the resulting likely errors will abort the upgrade.
+Please make sure to include the ``--no-deps`` option because otherwise pip may try to upgrade dependencies such as SciPy and Matplotlib that are difficult to build from source and the likely errors will abort the upgrade.
 
 If you used the developer way to install SunPy, you should use Git as appropriate to upgrade SunPy.
 
@@ -67,15 +67,13 @@ Python(x,y) and its included modules (listed above in steps 2 and 4) can be upgr
 Alternate method
 ^^^^^^^^^^^^^^^^
 
-Please use this method only if you are experienced with computers and cannot 
-use the recommended method.  Possible reasons include having very little disk 
-space or needing to have the most up-to-date versions of modules.
+If Python(x,y) is unavailable, or if it is critical for you to have the most up-to-date version of modules, then this alternate method eschews installers as much as possible and emphasizes building from source.  This method is not for the faint of heart!  Please use this method only if you are experienced with computers and Python.
 
 **1. Install Python**
 
 Download and install `Python 2.7 <http://www.python.org/ftp/python/2.7.3/python-2.7.3.msi>`_ 
 (32-bit).  Note that even if you are on a 64-bit system, you are installing a 
-32-bit version of Python to be able to use precompiled binaries.
+32-bit version of Python to be able to use precompiled binaries where still needed.
 
 You should update the ``PATH`` environment variable so that Python executables 
 and associated scripts can be found:
@@ -85,7 +83,7 @@ and associated scripts can be found:
 
 **2. Install compilers**
 
-Download and install `MinGW <http://mingw.org/>`_, specifically the C, C++, and Fortran compilers.  This step is not for the faint of heart.  Make sure that the binaries can be found in your path.
+Download and install `MinGW <http://mingw.org/>`_, specifically the C, C++, and Fortran compilers.  Make sure that the binaries can be found in your path (e.g., by adding ``C:\MinGW\bin`` to your path).
 
 **3. Set up the Python build environment**
 
@@ -100,11 +98,13 @@ There is currently a bug in the Python 2.7 code, so you will also need to edit `
 
 **4. Install pip**
 
-In principle, you could install pip from source, but that seems excessive.
+Download `distribute_setup.py <http://python-distribute.org/distribute_setup.py>`_ to be able to install distribute: ::
 
-Download and install `distribute <http://code.google.com/p/pythonxy/downloads/list?q=distribute>`_.  (Note: this installer is built by the Python(x,y) team.)
+    python distribute_setup.py
 
-Download and install `pip <http://code.google.com/p/pythonxy/downloads/list?q=pip>`_.  (Note: this installer is built by the Python(x,y) team.)
+Download `get-pip.py <https://raw.github.com/pypa/pip/master/contrib/get-pip.py>`_ to be able to install pip: ::
+
+    python get-pip.py
 
 **5. Install required modules**
 
