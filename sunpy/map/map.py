@@ -744,7 +744,7 @@ Dimension:\t [%d, %d]
         return axes
         
     @toggle_pylab
-    def plot(self, gamma=None, basic_plot=False, axes=None, **imshow_args):
+    def plot(self, gamma=None, annotate=True, axes=None, **imshow_args):
         """ Plots the map object using matplotlib,
         in a method equivalent to plt.imshow()
         
@@ -753,9 +753,9 @@ Dimension:\t [%d, %d]
         gamma : float
             Gamma value to use for the color map
             
-         basic_plot : bool
-            If true, the data is plotted by itself at it's natural scale; no
-            title, labels, or axes are shown.
+         annotate : bool
+            If true, the data is plotted at it's natural scale; with
+            title and axis labels.
             
         axes: matplotlib.axes object or None
             If provided the image will be plotted on the given axes. Else the 
@@ -769,21 +769,21 @@ Dimension:\t [%d, %d]
         --------
         #Simple Plot with color bar
         plt.figure()
-        aiamap.imshow()
+        aiamap.plot()
         plt.colorbar()
         
         #Add a limb line and grid
-        aia.imshow()
+        aia.plot()
         aia.draw_limb()
         aia.draw_grid()
         """
 
-        #Get curent axes
+        #Get current axes
         if not axes:
             axes = plt.gca()
         
         # Normal plot
-        if not basic_plot:
+        if annotate:
             axes.set_title("%s %s" % (self.name, self.date))
             
             # x-axis label
