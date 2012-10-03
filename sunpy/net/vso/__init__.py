@@ -16,7 +16,6 @@ import re
 import os
 import sys
 import random
-import tempfile
 import threading
 
 
@@ -26,6 +25,7 @@ from collections import defaultdict
 from string import ascii_lowercase
 from suds import client, TypeNotFound
 
+from sunpy import config
 from sunpy.net import download
 from sunpy.net.util import get_filename, slugify
 from sunpy.net.attr import and_, Attr
@@ -524,7 +524,8 @@ class VSOClient(object):
                 lambda _: None, 1, lambda mp: self.link(query_response, mp)
             )
         if path is None:
-            path = os.path.join(tempfile.mkdtemp(), '{file}')
+            path = os.path.join(config.get('downloads','download_dir'),
+                                '{file}')
         fileids = VSOClient.by_fileid(query_response)
         if not fileids:
             res.poke()
