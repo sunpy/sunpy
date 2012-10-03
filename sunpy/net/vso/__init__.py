@@ -177,19 +177,27 @@ class QueryResponse(list):
         """ Return total time-range all records span across. """
         return (
             datetime.strptime(
-                min(record.time.start for record in self), TIMEFORMAT),
+                min(record.time.start for record in self
+                  if record.time.start is not None), TIMEFORMAT),
             datetime.strptime(
-                max(record.time.end for record in self), TIMEFORMAT)
+                max(record.time.end for record in self
+                  if record.time.end is not None), TIMEFORMAT)
         )
 
     def show(self):
         """Print out human-readable summary of records retrieved"""
 
-        table = [[str(datetime.strptime(record.time.start, TIMEFORMAT)), 
-          str(datetime.strptime(record.time.end, TIMEFORMAT)), 
-          record.source,
-          record.instrument,
-          record.extent.type] for record in self]
+        table = [
+          [
+            str(datetime.strptime(record.time.start, TIMEFORMAT))
+              if record.time.start is not None else 'N/A',
+            str(datetime.strptime(record.time.end, TIMEFORMAT))
+              if record.time.end is not None else 'N/A',
+            record.source,
+            record.instrument,
+            record.extent.type
+              if record.extent.type is not None else 'N/A'
+          ] for record in self]
         table.insert(0, ['----------','--------','------','----------','----'])        
         table.insert(0, ['Start time','End time','Source','Instrument','Type'])
 
