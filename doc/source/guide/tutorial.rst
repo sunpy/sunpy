@@ -128,7 +128,7 @@ non-interactive version of the main API::
     
     # build our query
     result = client.query(
-        vso.attrs.Time((2001, 9, 20, 8), (2011, 9, 20, 9)),
+        vso.attrs.Time((2011, 9, 20, 1), (2011, 9, 20, 2)),
         vso.attrs.Instrument('eit')
     )
     
