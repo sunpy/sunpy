@@ -118,7 +118,7 @@ class Results(object):
 
 
 def _parse_waverange(string):
-    min_, max_, unit = RANGE.match(string)[::2]
+    min_, max_, unit = RANGE.match(string).groups()[::2]
     return {
         'wave_wavemin': min_,
         'wave_wavemax': min_ if max_ is None else max_,
