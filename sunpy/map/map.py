@@ -368,6 +368,8 @@ Dimension:\t [%d, %d]
         l0 = self.heliographic_longitude
         units = [self.units.get('x'), self.units.get('y')]
 	
+	    #TODO: This function could be optimized. Does not need to convert the entire image
+	    # coordinates
         lon_self, lat_self = wcs.convert_hpc_hg(rsun, dsun, units[0], units[1], b0, l0, x, y)
         # define the number of points for each latitude or longitude line
         num_points = 20
@@ -445,6 +447,9 @@ Dimension:\t [%d, %d]
 
     def data_to_pixel(self, value, dim):
         """Convert pixel-center data coordinates to pixel values"""
+        #TODO: This function should be renamed. It is confusing as data
+        # coordinates are in something like arcsec but this function just changes how you
+        # count pixels
         if dim not in ['x', 'y']:
             raise ValueError("Invalid dimension. Must be one of 'x' or 'y'.")
 
@@ -452,14 +457,25 @@ Dimension:\t [%d, %d]
 
         return (value - self.center[dim]) / self.scale[dim] + ((size - 1) / 2.)
 
-    def pixel_to_data(self):
+    def pixel_to_data(self, x = None, y = None):
+        """Convert from pixel coordinates to data coordinates (e.g. arcsec)"""
         width = self.shape[1]
         height = self.shape[0]
+        
+        if x > width-1:
+            raise ValueError("X pixel value larger than image width (%s)." % width)
+        if y > height-1:
+            raise ValueError("Y pixel value larger than image height (%s)." % height)
+        if x < 0:
+            raise ValueError("X pixel value cannot be less than 0.")
+        if y < 0:
+            raise ValueError("Y pixel value cannot be less than 0.")
+
         scale = np.array([self.scale.get('x'), self.scale.get('y')])
         crpix = np.array([self.reference_pixel.get('x'), self.reference_pixel.get('y')])
         crval = np.array([self.reference_coordinate.get('x'), self.reference_coordinate.get('y')])
         coordinate_system = [self.coordinate_system.get('x'), self.coordinate_system.get('y')]
-        x,y = wcs.convert_pixel_to_data(width, height, scale[0], scale[1], crpix[0], crpix[1], crval[0], crval[1], coordinate_system[0])
+        x,y = wcs.convert_pixel_to_data(width, height, scale[0], scale[1], crpix[0], crpix[1], crval[0], crval[1], coordinate_system[0], x = x, y = y)
 
         return x, y
 
