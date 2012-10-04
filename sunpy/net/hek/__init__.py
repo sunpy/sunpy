@@ -60,7 +60,7 @@ class HEKClient(object):
             data['page'] = page
             fd = urlopen(self.url, urlencode(data))
             try:
-                result = json.load()
+                result = json.load(fd)
             finally:
                 fd.close()
             results.extend(result['result'])
