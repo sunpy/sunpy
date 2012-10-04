@@ -19,52 +19,45 @@ from the list below.
    
 Installing SunPy
 ----------------
-There are several different ways to install SunPy. For most users the first
-method will be sufficient. If you would like to become more involved in the
-project, then an alternative method using Git is recommended.
+First, you will need to install Python and various prerequisites as described in
+the sections above.  You will also need to download and install `Git <http://git-scm.com/download>`__.
+
+There are several different ways to install SunPy, including a quick method and a
+developer method.  Depending on your setup, you may need to preface each of the
+``pip ...`` commands with ``sudo pip ...``.
 
 Quick installation
 ^^^^^^^^^^^^^^^^^^
-Once you have successfully installed Python and the prereqs as described in the
-sections above you are ready to install SunPy itself.
-
 The easiest way to install SunPy is to use pip: ::
 
-    sudo pip install git+https://github.com/sunpy/sunpy.git 
+    pip install git+https://github.com/sunpy/sunpy.git 
    
-This will download and install the latest version of SunPy. To upgrade the
-installation when a new version comes out you can run the same command with
-the '--upgrade' switch: ::
+This will download and install the latest version of SunPy. To upgrade SunPy at
+a later date, you can run: ::
 
-    sudo pip install --upgrade git+https://github.com/sunpy/sunpy.git
+    pip install --upgrade git+https://github.com/sunpy/sunpy.git
     
 That's it!
     
 Developer installation
 ^^^^^^^^^^^^^^^^^^^^^^
-If you are considering contributing to the development of SunPy, a more flexible
-approach using `Git <http://git-scm.com/>`__ and `Paver <http://paver.github.com/>`__
-is suggested.
+If you are considering contributing to the development of SunPy, you will likely
+want to keep the SunPy code tree in a convenient location.
 
-The first step is to `download and install Git <http://git-scm.com/download>`__.
-
-Next, we will use pip to install Paver -- a Python tool similar to `GNU Make <http://www.gnu.org/software/make/>`__: ::
-
-    sudo pip install paver
-    
-Now, open a terminal and cd to a directory where you wish to download SunPy, and 
+Open a terminal and cd to a directory where you wish to download SunPy, and 
 run: ::
 
     git clone https://github.com/sunpy/sunpy.git
     
-This will download the latest version of SunPy. Finally, run the following
-paver command: ::
+This will download the latest version of SunPy. Finally, cd into the SunPy code
+tree and run: ::
 
-    sudo paver develop
+    pip install -e .
     
-This will make it make possible to import and use SunPy from anywhere on your 
-system. Now, whenever you pull changes to the Git branch using ``git pull``, your SunPy
-installation will be automatically up to date.
+This will make it make possible to import and use SunPy regardless of your
+working directory. Now, whenever you pull changes to the Git branch using
+``git pull``, your Python installation will automatically see the latest version
+of SunPy.
    
 Testing your installation
 -------------------------
