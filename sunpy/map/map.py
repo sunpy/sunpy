@@ -360,11 +360,32 @@ Dimension:\t [%d, %d]
         return fig, axes
 
     def _draw_grid(self, fig, axes, grid_spacing=20):
-        """Draws the lat/lon grid over the surface of the Sun"""
+        x, y = self.pixel_to_data()
+        rsun = self.rsun_meters
+        dsun = self.dsun
+	
+        b0 = self.heliographic_latitude
+        l0 = self.heliographic_longitude
+        units = [self.units.get('x'), self.units.get('y')]
+	
+        lon_self, lat_self = wcs.convert_hpc_hg(rsun, dsun, units[0], units[1], b0, l0, x, y)
         # define the number of points for each latitude or longitude line
         num_points = 20
-        hg_longitude_deg = np.linspace(-90, 90, num=num_points)
-        hg_latitude_deg = np.arange(-90, 90, grid_spacing)
+        
+        #TODO: The following code is ugly. Fix it.
+        lon_range = [lon_self.min(), lon_self.max()]
+        lat_range = [lat_self.min(), lat_self.max()]
+        if np.isfinite(lon_range[0]) == False: 
+            lon_range[0] = -90 + self.heliographic_longitude
+        if np.isfinite(lon_range[1]) == False: 
+            lon_range[1] = 90 + self.heliographic_longitude
+        if np.isfinite(lat_range[0]) == False: 
+            lat_range[0] = -90 + self.heliographic_latitude
+        if np.isfinite(lat_range[1]) == False: 
+            lat_range[1] = 90 + self.heliographic_latitude
+
+        hg_longitude_deg = np.linspace(lon_range[0], lon_range[1], num=num_points)
+        hg_latitude_deg = np.arange(lat_range[0], lat_range[1]+grid_spacing, grid_spacing)
 
         # draw the latitude lines
         for lat in hg_latitude_deg:
@@ -377,8 +398,8 @@ Dimension:\t [%d, %d]
                                       hg_latitude_deg_mesh, units='arcsec')
             axes.plot(x, y, color='white', linestyle='dotted')
             
-        hg_longitude_deg = np.arange(-90, 90, grid_spacing)
-        hg_latitude_deg = np.linspace(-90, 90, num=num_points)
+        hg_longitude_deg = np.arange(lon_range[0], lon_range[1]+grid_spacing, grid_spacing)
+        hg_latitude_deg = np.linspace(lat_range[0], lat_range[1], num=num_points)
 
         # draw the longitude lines
         for lon in hg_longitude_deg:
@@ -430,7 +451,18 @@ Dimension:\t [%d, %d]
         size = self.shape[dim == 'x']  # 1 if dim == 'x', 0 if dim == 'y'.
 
         return (value - self.center[dim]) / self.scale[dim] + ((size - 1) / 2.)
-    
+
+    def pixel_to_data(self):
+        width = self.shape[1]
+        height = self.shape[0]
+        scale = np.array([self.scale.get('x'), self.scale.get('y')])
+        crpix = np.array([self.reference_pixel.get('x'), self.reference_pixel.get('y')])
+        crval = np.array([self.reference_coordinate.get('x'), self.reference_coordinate.get('y')])
+        coordinate_system = [self.coordinate_system.get('x'), self.coordinate_system.get('y')]
+        x,y = wcs.convert_pixel_to_data(width, height, scale[0], scale[1], crpix[0], crpix[1], crval[0], crval[1], coordinate_system[0])
+
+        return x, y
+
     def get_header(self, original=False):
         """Returns an updated MapHeader instance"""
         header = self._original_header.copy()
@@ -744,7 +776,7 @@ Dimension:\t [%d, %d]
             overlays = overlays + [self._draw_limb]
         # TODO: need to be able to pass the grid spacing to _draw_grid from the
         # plot command.
-        if draw_grid:
+        if draw_grid is not False:
             overlays = overlays + [self._draw_grid]
 
         # Create a figure and add title and axes
@@ -805,18 +837,6 @@ Dimension:\t [%d, %d]
         """Displays map on screen. Arguments are same as plot()."""
         self.plot(figure, overlays, draw_limb, gamma, draw_grid, colorbar, 
                   basic_plot, **matplot_args)
-        plt.show()
-    
-    def plot_test(self):
-        figure = plt.figure()
-        axes = figure.add_subplot(111)
-        axes.set_title("%s %s" % (self.name, self.date))
-        extent = self.xrange + self.yrange
-        axes.imshow(self, origin='lower', extent=extent)
-        return figure
-        
-    def show_test(self):
-        self.plot_test()
         plt.show()
         
     def norm(self):
