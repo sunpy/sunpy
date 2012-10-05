@@ -29,6 +29,8 @@ def test_path_exception():
     dw.download(
         "http://google.at", path_fun, errback=wait_for(1, lambda a: x.set())
     )
-    threading.Thread(target=dw.reactor.run).start()
+    th = threading.Thread(target=dw.reactor.run)
+    th.daemon = True
+    th.start()
     assert x.wait(10)
     dw.reactor.stop()
