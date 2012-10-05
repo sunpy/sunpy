@@ -2,7 +2,7 @@
 Using SunPy's VSO module
 ------------------------
 
-The Virtual Solar Observatpry (VSO) is a service which presents a
+The Virtual Solar Observatory (VSO) is a service which presents a
 homogenoeous interface to heterogeneous data-sets and services.  Using
 the VSO, a user can query multiple data providers simultaneously, and
 then download the relevant data.  SunPy uses the VSO through the 'vso'
@@ -127,7 +127,7 @@ which is descibed below.
 
 
 4. The new query style
-------------------
+----------------------
 
 The new query style makes more complex queries possible.  Let's start
 with translating the above legacy query into the syntax of the new
@@ -182,75 +182,14 @@ setting conditions that the returned records must satisfy.  You can
 set the wavelength; for example, to return the 171 Angstrom EIT results
 
     >>> qr=client.query(vso.attrs.Time(datetime(2001,1,1),datetime(2001,1,2)), vso.attrs.Instrument('eit'), vso.attrs.Wave(171,171) )
+    >>> qr.num_records()
+    4
 
+The new-style query returns the same type of response as the legacy
+query.  This means you can use the same command and syntax as shown
+above to download your data.
 
-The second important feature about the HEK client is that the
-comparisons we've made above can be combined using Python's logical
-operators.  This makes complex queries easy to create.  However, some
-caution is advisable.  Let's say I want all the flares west of 50
-arcseconds OR have a peak flux over 1000.0:
-
-    >>> result = client.query(hek.attrs.Time(tstart,tend), hek.attrs.EventType(event_type), (hek.attrs.Event.Coord1 > 50) or (hek.attrs.FL.PeakFlux > 1000.0) )
-
-and as a check
-
-    >>> [elem["fl_peakflux"] for elem in result]
-    [None,
-    None,
-    None,
-    None,
-    None,
-    None,
-    None,
-    2326.86,
-    1698.83,
-    None,
-    None,
-    2360.49,
-    3242.64,
-    1375.93,
-    6275.98,
-    923.984]
-
-    >>> [elem["event_coord1"] for elem in result]
-    [51,
-    51,
-    51,
-    924,
-    924,
-    924,
-    69,
-    883.2,
-    883.2,
-    69,
-    69,
-    883.2,
-    883.2,
-    883.2,
-    883.2,
-    883.2]
-
-Note that some of the fluxes are returned as "None".  This is because
-some feature recognition methods for flares do not report the peak
-flux.  However, because the location of event_coord1 is greater than
-50, the entry from the HEK for that flare detection is returned.
-
-Let's say we want all the flares west of 50 arcseconds AND have a peak
-flux over 1000.0:
-
-    >>> result = client.query(hek.attrs.Time(tstart,tend), hek.attrs.EventType(event_type), (hek.attrs.Event.Coord1 > 50) and (hek.attrs.FL.PeakFlux > 1000.0) )
-
-    >>> [elem["fl_peakflux"] for elem in result] 
-    [2326.86, 1698.83, 2360.49, 3242.64, 1375.93, 6275.98]
-    >>> [elem["event_coord1"] for elem in result]
-    [883.2, 883.2, 883.2, 883.2, 883.2, 883.2]
-
-In this case none of the peak fluxes are returned with the value
-"None".  Since we are using an "and" logical operator we need a result
-from the "(hek.attrs.FL.PeakFlux > 1000.0)" filter.  Flares that have
-"None" for a peak flux cannot provide this, and so are excluded.  The
-"None" type in this context effectively means "Don't know"; in such
-cases the client returns only those results from the HEK that
-definitely satisfy the criteria passed to it. 
-
-
+Finally, please let us know if you encounter a bug while using the VSO
+capbilities of SunPy.  Bugs are best reported via the issue tracking
+system on GitHub - go to https://github.com/sunpy/sunpy/issues and
+click on the "New Issue" button.
