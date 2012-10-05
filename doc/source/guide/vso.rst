@@ -104,7 +104,7 @@ filename '{file}' obtained from the VSO , and appended with the suffix
 '.fits'.  The '{file}' option uses the file name obtained by the VSO
 for each file.  You can also use other properties of the query return
 to define the path where the data is saved.  For example, to save the
-data to a subdirecory named after the instrument, use
+data to a subdirectory named after the instrument, use
 
     >>> res=client.get(qr, path='/Users/ireland/Desktop/Data/{instrument}/{file}.fits')
 
@@ -123,7 +123,7 @@ standard Python 'help' command.
 Using the legacy query keywords it is very easy to translate a
 Solarsoft/IDL VSO command into the equivalent SunPy VSO legacy query.
 However, more powerful queries are possible with the new query style,
-which is descibed below.
+which is described below.
 
 
 4. The new query style
@@ -190,6 +190,6 @@ query.  This means you can use the same command and syntax as shown
 above to download your data.
 
 Finally, please let us know if you encounter a bug while using the VSO
-capbilities of SunPy.  Bugs are best reported via the issue tracking
+capabilities of SunPy.  Bugs are best reported via the issue tracking
 system on GitHub - go to https://github.com/sunpy/sunpy/issues and
 click on the "New Issue" button.
