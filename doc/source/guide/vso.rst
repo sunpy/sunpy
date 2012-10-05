@@ -146,6 +146,18 @@ sets the start and end times for the query.  The second argument:
 sets the instrument we are looking for.  So what is going on here?
 The notion is that a VSO query has a set of attribute objects -
 described in 'vso.attrs' - that are specifed to construct the query.
+For the full list of vso attributes, use
+
+    >>> help(vso.attrs)
+
+Note that due to quirks at the VSO, we do not recommend that the
+extent object 'vso.attrs.Extent' be in your query.  Instead, we
+recommend that any extent filtering you need to do be done on the
+queries made without setting a value to the vso.attrs.Extent object.
+As we will see, the new-style query can take more than two arguments,
+each argument separated from the other by a comma.  Each of those
+arguments are chained together using a logical "AND".
+
 The new-style query allows you to combine these VSO attribute objects
 in complex ways that are not possible with the legacy query style.
 
@@ -156,22 +168,21 @@ So, let's look for the EIT and MDI data on the same day:
     233
     >>> qr.show()
 
-We are using Python's comparison operators to filter the returns from
-the HEK client.  Other comparisons are possible.  For example, let's
-say I want all the flares that have a peak flux of over 4000.0:
+The two instrument types are joined together by the operator '|'.
+This is the 'or' operator.  Think of the above query as setting a set
+of conditions which get passed to the VSO.  Let's say you want all the
+EIT data from two separate days:
 
-    >>> result = client.query(hek.attrs.Time(tstart,tend), hek.attrs.EventType(event_type), hek.attrs.FL.PeakFlux > 4000.0)
-    >>> len(result)
-    1
+    >>> qr=client.query(vso.attrs.Time(datetime(2001,1,1),datetime(2001,1,2)) | vso.attrs.Time(datetime(2007,8,9),datetime(2007,8,10)), vso.attrs.Instrument('eit') )
+    >>> qr.num_records()
+    227
 
-Multiple comparisons can be included.  For example, let's say I want
-all the flares with a peak flux above 1000 AND west of 800 arcseconds
-from disk center of the Sun
+Each of the arguments in the new-style query can be thought of as
+setting conditions that the returned records must satisfy.  You can
+set the wavelength; for example, to return the 171 Angstrom EIT results
 
-    >>> result = client.query(hek.attrs.Time(tstart,tend), hek.attrs.EventType(event_type), hek.attrs.Event.Coord1 > 800, hek.attrs.FL.PeakFlux > 1000.0)
+    >>> qr=client.query(vso.attrs.Time(datetime(2001,1,1),datetime(2001,1,2)), vso.attrs.Instrument('eit'), vso.attrs.Wave(171,171) )
 
-Multiple comparison operators can be used to filter the results back
-from the HEK.
 
 The second important feature about the HEK client is that the
 comparisons we've made above can be combined using Python's logical
