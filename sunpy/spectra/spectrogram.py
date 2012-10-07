@@ -231,8 +231,7 @@ class TimeFreq(object):
         return figure
     
     def show(self, *args, **kwargs):
-        ret = self.plot(*args, **kwargs)
-        ret.show()
+        ret = self.plot(*args, **kwargs).show()
         return ret
 
 
