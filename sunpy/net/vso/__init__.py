@@ -512,7 +512,9 @@ class VSOClient(object):
         """
         if downloader is None:
             downloader = download.Downloader()
-            threading.Thread(target=downloader.reactor.run).start()
+            thread = threading.Thread(target=downloader.reactor.run)
+            thread.daemon = True
+            thread.start()
             res = Results(
                 lambda _: downloader.reactor.stop(), 1,
                 lambda mp: self.link(query_response, mp)

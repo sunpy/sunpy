@@ -58,7 +58,11 @@ class HEKClient(object):
         
         while True:
             data['page'] = page
-            result = json.load(urlopen(self.url, urlencode(data)))
+            fd = urlopen(self.url, urlencode(data))
+            try:
+                result = json.load(fd)
+            finally:
+                fd.close()
             results.extend(result['result'])
             
             if not result['overmax']:

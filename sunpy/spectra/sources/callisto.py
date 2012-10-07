@@ -29,6 +29,8 @@ from sunpy.util.util import (
 from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
 from sunpy.spectra.spectrogram import LinearTimeSpectrogram, REFERENCE
 
+from sunpy.net.util import download_file
+
 TIME_STR = "%Y%m%d%H%M%S"
 DEFAULT_URL = 'http://soleil.i4ds.ch/solarradio/data/2002-20yy_Callisto/'
 _DAY = datetime.timedelta(days=1)
@@ -53,27 +55,30 @@ def query(start, end, instruments=None, url=DEFAULT_URL):
     while day <= end:
         directory = url + '%d/%02d/%02d/' % (day.year, day.month, day.day)
         opn = urllib2.urlopen(directory)
-        soup = BeautifulSoup(opn)
-        for link in soup.find_all("a"):
-            href = link.get("href")
-            name = href.split('.')[0]
-            try:
-                inst, date, time, no = name.split('_')
-            except ValueError:
-                # If the split fails, the file name does not match out format,
-                # so we skip it and continue to the next iteration of the loop.
-                continue
-            dstart = datetime.datetime.strptime(date + time, TIME_STR)
-            
-            if (instruments is not None and
-                inst not in instruments and 
-                (inst, int(no)) not in instruments):
-                continue
-            
-            dend = dstart + DATA_SIZE
-            if dend > start and dstart < end:
-                yield directory + href
-        opn.close()
+        try:
+            soup = BeautifulSoup(opn)
+            for link in soup.find_all("a"):
+                href = link.get("href")
+                name = href.split('.')[0]
+                try:
+                    inst, date, time, no = name.split('_')
+                except ValueError:
+                    # If the split fails, the file name does not match out
+                    # format,so we skip it and continue to the next
+                    # iteration of the loop.
+                    continue
+                dstart = datetime.datetime.strptime(date + time, TIME_STR)
+                
+                if (instruments is not None and
+                    inst not in instruments and 
+                    (inst, int(no)) not in instruments):
+                    continue
+                
+                dend = dstart + DATA_SIZE
+                if dend > start and dstart < end:
+                    yield directory + href
+        finally:
+            opn.close()
         day += _DAY
 
 
@@ -87,17 +92,7 @@ def download(urls, directory):
     directory : str
         directory to save them in
     """
-    paths = []
-    for url in urls:
-        _, filename = os.path.split(url)
-        path = os.path.join(directory, filename)
-        fd = open(path, 'w')
-        src = urllib2.urlopen(url)
-        shutil.copyfileobj(src, fd)
-        fd.close()
-        src.close()
-        paths.append(path)
-    return paths
+    return [download_file(url, directory) for url in urls]
 
 
 def _parse_header_time(date, time):
