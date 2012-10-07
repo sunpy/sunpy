@@ -69,7 +69,21 @@ def map_hpc_to_hg(map, xbin = 1, ybin = 1):
 	transformed_map.name = map.name
 	transformed_map.date = map.date
 	
-	return transformed_map
+	return lon_map
+
+def array_step_size(array):
+
+	num_positive = np.sign(array)[np.sign(array) == 1].sum()
+	num_negative = -np.sign(array)[np.sign(array) == -1].sum()
+
+	if num_positive >= num_negative: 
+		temp_array = array[np.sign(array) == 1]
+		result = temp_array.sum()/(num_positive*(num_positive+1)/2.0)
+	if num_positive < num_negative:
+		temp_array = array[np.sign(array) == -1]
+		result = temp_array.sum()/(num_negative*(num_negative+1)/2.0)
+
+	return result
 
 def map_hg_to_hpc(map, xbin = 10, ybin = 10):
     """Take a map in heliographic coordinates (HG) and convert it to 
