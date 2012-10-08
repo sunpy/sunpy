@@ -25,8 +25,6 @@ class GOESLightCurve(LightCurve):
     | http://www.ngdc.noaa.gov/goes/sem
     | http://www.ngdc.noaa.gov/goes/sem/getData/goes15
     """
-    def __init__(self, *args, **kwargs):
-        LightCurve.__init__(self, *args, **kwargs)
 
     def show(self, title="GOES Xray Flux", **kwargs):
         """Plots GOES light curve is the usual manner"""
