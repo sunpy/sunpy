@@ -17,12 +17,6 @@ IPython session as follows:
 
     >>> from sunpy.net import vso
 
-We will also be using the datetime object from the datetime module, so
-we'll import that too
-
-    >>> from datetime import datetime
-
-
 
 2. A simple query - using the legacy query
 ---------------------------------
@@ -44,8 +38,10 @@ VSO query client.  The second query syntax is much more powerful, but
 slightly less familiar to Solarsoft/IDL users (which is why we have
 two different syntaxes).
 
-Let's say I want all the EIT data between 2001/01/01 and 2001/01/02.
-Using the legacy query syntax, this is simply
+Let's say I want all the EIT data between 2001/01/01 and 2001/01/02
+(note that you can use any format understood by the parse_time
+function to specify the date and times you want).  Using the legacy
+query syntax, this is simply
 
     >>> client=vso.VSOClient()
     >>> qr=client.query_legacy(tstart='2001/01/01', tend='2001/01/02', instrument='EIT')
@@ -54,22 +50,14 @@ which is almost identical to what you would type in a Solarsoft/IDL
 session.  So, what's happening with this command?  The client is going
 out to the web to query the VSO to ask how many files EIT images are
 in the archive between the start of 2001/01/01 and the start of
-2001/01/02.
-
-The same query can also be performed using a slightly different
+2001/01/02.  The same query can also be performed using a slightly different
 syntax.  For example
 
-    >>> qr=client.query_legacy(tstart=datetime(2001,1,1), tend=datetime(2001,1,2), instrument='EIT')
+    >>> qr=client.query_legacy('2001/1/1', '2001/1/2', instrument='EIT')
 
-and 
-
-    >>> qr=client.query_legacy(datetime(2001,1,1), datetime(2001,1,2), instrument='EIT')
-
-both give the same result.
-
-The variable "qr" is a Python list of response objects, each one
-of which is a record found by the VSO. How many records have been
-found?  You can find that out be typing
+both gives the same result. The variable "qr" is a Python list of
+response objects, each one of which is a record found by the VSO. How
+many records have been found?  You can find that out be typing
 
     >>> qr.num_records()
     122
@@ -133,13 +121,15 @@ The new query style makes more complex queries possible.  Let's start
 with translating the above legacy query into the syntax of the new
 query:
 
-    >>> qr=client.query(vso.attrs.Time(datetime(2001,1,1), datetime(2001,1,2)), vso.attrs.Instrument('eit'))
+    >>> qr=client.query(vso.attrs.Time('2001/1/1', '2001/1/2'), vso.attrs.Instrument('eit'))
 
 Let's break down the arguments of client.query.  The first argument:
 
-    vso.attrs.Time(datetime(2001,1,1), datetime(2001,1,2))
+    vso.attrs.Time('2001/1/1', '2001/1/2')
 
-sets the start and end times for the query.  The second argument:
+sets the start and end times for the query (as with the legacy query,
+any date/time format understood by SunPy's 'parse_time' function can
+be used to specify dates and time).  The second argument:
 
     vso.attrs.Instrument('eit')
 
@@ -163,7 +153,7 @@ in complex ways that are not possible with the legacy query style.
 
 So, let's look for the EIT and MDI data on the same day:
 
-    >>> qr=client.query(vso.attrs.Time(datetime(2001,1,1), datetime(2001,1,2)), vso.attrs.Instrument('eit') | vso.attrs.Instrument('mdi'))
+    >>> qr=client.query(vso.attrs.Time('2001/1/1', '2001/1/2'), vso.attrs.Instrument('eit') | vso.attrs.Instrument('mdi'))
     >>> qr.num_records()
     233
     >>> qr.show()
@@ -173,7 +163,7 @@ This is the 'or' operator.  Think of the above query as setting a set
 of conditions which get passed to the VSO.  Let's say you want all the
 EIT data from two separate days:
 
-    >>> qr=client.query(vso.attrs.Time(datetime(2001,1,1),datetime(2001,1,2)) | vso.attrs.Time(datetime(2007,8,9),datetime(2007,8,10)), vso.attrs.Instrument('eit') )
+    >>> qr=client.query(vso.attrs.Time('2001/1/1', '2001/1/2') | vso.attrs.Time('2007/8/9', '2007/8/10'), vso.attrs.Instrument('eit') )
     >>> qr.num_records()
     227
 
@@ -181,7 +171,7 @@ Each of the arguments in the new-style query can be thought of as
 setting conditions that the returned records must satisfy.  You can
 set the wavelength; for example, to return the 171 Angstrom EIT results
 
-    >>> qr=client.query(vso.attrs.Time(datetime(2001,1,1),datetime(2001,1,2)), vso.attrs.Instrument('eit'), vso.attrs.Wave(171,171) )
+    >>> qr=client.query(vso.attrs.Time('2001/1/1', '2001/1/2'), vso.attrs.Instrument('eit'), vso.attrs.Wave(171,171) )
     >>> qr.num_records()
     4
 
