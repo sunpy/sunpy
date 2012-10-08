@@ -29,8 +29,6 @@ class LYRALightCurve(LightCurve):
     ----------
     | http://proba2.sidc.be/data/LYRA
     """
-    def __init__(self, *args, **kwargs):
-        LightCurve.__init__(self, *args, **kwargs)
 
     def show(self, names=3, **kwargs):
         """Plots the LYRA data
