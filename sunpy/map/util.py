@@ -81,7 +81,7 @@ def array_step_size(array):
 		result = temp_array.sum()/(num_positive*(num_positive+1)/2.0)
 	if num_positive < num_negative:
 		temp_array = array[np.sign(array) == -1]
-		result = temp_array.sum()/(num_negative*(num_negative+1)/2.0)
+		result = -temp_array.sum()/(num_negative*(num_negative+1)/2.0)
 
 	return result
 

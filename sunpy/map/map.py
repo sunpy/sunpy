@@ -462,13 +462,13 @@ Dimension:\t [%d, %d]
         width = self.shape[1]
         height = self.shape[0]
         
-        if x > width-1:
+        if (x is not None) & (x > width-1):
             raise ValueError("X pixel value larger than image width (%s)." % width)
-        if y > height-1:
+        if (x is not None) & (y > height-1):
             raise ValueError("Y pixel value larger than image height (%s)." % height)
-        if x < 0:
+        if (x is not None) & (x < 0):
             raise ValueError("X pixel value cannot be less than 0.")
-        if y < 0:
+        if (x is not None) & (y < 0):
             raise ValueError("Y pixel value cannot be less than 0.")
 
         scale = np.array([self.scale.get('x'), self.scale.get('y')])
