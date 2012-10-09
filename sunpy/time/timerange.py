@@ -1,5 +1,6 @@
 from __future__ import absolute_import
 from datetime import timedelta
+from datetime import datetime
 
 __all__ = ["TimeRange"]
 
@@ -76,6 +77,10 @@ class TimeRange:
         # End date
         if isinstance(y, str):
             self.t2 = parse_time(y)
+        
+        # Datetime
+        if isinstance(y,datetime):
+            self.t2 = y
             
         # Timedelta
         if isinstance(y, timedelta):
