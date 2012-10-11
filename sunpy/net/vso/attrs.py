@@ -53,7 +53,7 @@ class _Range(object):
 class Wave(Attr, _Range):
     def __init__(self, wavemin, wavemax, waveunit='Angstrom'):
         self.min, self.max = sorted(
-            to_angstrom(v, waveunit) for v in [wavemin, wavemax]
+            to_angstrom(v, waveunit) for v in [float(wavemin), float(wavemax)]
         )
         self.unit = 'Angstrom'
         
@@ -316,9 +316,13 @@ def _(attr, results):
     return set(
         it for it in results
         if
-        attr.min <= to_angstrom(it.wave.wavemax, it.wave.waveunit)
+        it.wave.wavemax is not None
         and
-        attr.max >= to_angstrom(it.wave.wavemin, it.wave.waveunit)
+        attr.min <= to_angstrom(float(it.wave.wavemax), it.wave.waveunit)
+        and
+        it.wave.wavemin is not None
+        and
+        attr.max >= to_angstrom(float(it.wave.wavemin), it.wave.waveunit)
     )
 
 @filter_results.add_dec(Time)
@@ -326,7 +330,11 @@ def _(attr, results):
     return set(
         it for it in results
         if
+        it.time.end is not None
+        and
         attr.min <= datetime.strptime(it.time.end, TIMEFORMAT)
+        and
+        it.time.start is not None
         and
         attr.max >= datetime.strptime(it.time.start, TIMEFORMAT)
     )
@@ -335,5 +343,8 @@ def _(attr, results):
 def _(attr, results):
     return set(
         it for it in results
-        if it.extent.type.lower() == attr.type.lower()
+        if
+        it.extent.type is not None
+        and
+        it.extent.type.lower() == attr.type.lower()
     )
