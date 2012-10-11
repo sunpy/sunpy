@@ -745,8 +745,8 @@ Dimension:\t [%d, %d]
         
     @toggle_pylab
     def plot(self, gamma=None, annotate=True, axes=None, **imshow_args):
-        """ Plots the map object using matplotlib,
-        in a method equivalent to plt.imshow()
+        """ Plots the map object using matplotlib, in a method equivalent
+        to plt.imshow() using nearest neighbour interpolation.
         
         Parameters
         ----------
@@ -807,15 +807,24 @@ Dimension:\t [%d, %d]
         cmap = copy(self.cmap)
         if gamma is not None:
             cmap.set_gamma(gamma)
+            
+            #make imshow kwargs a dict
         
-        ret = axes.imshow(self, origin='lower', cmap = cmap,
-                          norm = self.norm(), extent = extent, **imshow_args)
+        kwargs = {'origin':'lower',
+                  'cmap':cmap,
+                  'norm':self.norm(),
+                  'extent':extent,
+                  'interpolation':'nearest'}
+        kwargs.update(imshow_args)
+        
+        ret = axes.imshow(self, **kwargs)
+        
         #Set current image (makes colorbar work)
         plt.sci(ret)
         return ret
         
     @toggle_pylab
-    def quick_plot(self, draw_limb=True, draw_grid=False, gamma=None,
+    def show(self, draw_limb=True, draw_grid=False, gamma=None,
                    colorbar=True, basic_plot=False, **matplot_args):
         """Displays the map in a new figure
 
@@ -854,38 +863,8 @@ Dimension:\t [%d, %d]
         # Normal plot
         else:
             axes = figure.add_subplot(111)
-            axes.set_title("%s %s" % (self.name, self.date))
-            
-            # x-axis label
-            if self.coordinate_system['x'] == 'HG':
-                xlabel = 'Longitude [%s]' % self.units['x']
-            else:
-                xlabel = 'X-position [%s]' % self.units['x']
-
-            # y-axis label
-            if self.coordinate_system['y'] == 'HG':
-                ylabel = 'Latitude [%s]' % self.units['y']
-            else:
-                ylabel = 'Y-position [%s]' % self.units['y']
-                
-            axes.set_xlabel(xlabel)
-            axes.set_ylabel(ylabel)
-
-        # Determine extent
-        extent = self.xrange + self.yrange
-
-        # Matplotlib arguments
-        params = {
-            "cmap": self.cmap,
-            "norm": self.norm()
-        }
-        params.update(matplot_args)
-
-        if gamma is not None:
-            params['cmap'] = copy(params['cmap'])
-            params['cmap'].set_gamma(gamma)
-
-        im = axes.imshow(self, origin='lower', extent=extent, **params)
+        
+        im = self.plot(axes=axes,**matplot_args)        
         
         if colorbar and not basic_plot:
             figure.colorbar(im)
