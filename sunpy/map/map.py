@@ -260,12 +260,23 @@ class Map(np.ndarray, Parent):
         """Overriding indexing operation to ensure that header is updated.  Note
         that the indexing follows the ndarray row-column order, which is
         reversed from calling Map.submap()"""
-        if isinstance(key, tuple) and type(key[0]) is slice:
-            x_range = [key[1].start, key[1].stop]
-            y_range = [key[0].start, key[0].stop]
+        if isinstance(key, tuple):
+            # Used when asking for a 2D sub-array
+            # The header will be updated
+            if type(key[1]) is slice:
+                x_range = [key[1].start, key[1].stop]
+            else:
+                x_range = [key[1], key[1]+1]
+
+            if type(key[0]) is slice:
+                y_range = [key[0].start, key[0].stop]
+            else:
+                y_range = [key[0], key[0]+1]
 
             return self.submap(x_range, y_range, units="pixels")
         else:
+            # Typically used by np.ndarray.__repr__() due to indexing with [-1]
+            # The header will not be updated properly!
             return np.ndarray.__getitem__(self, key)
 
     def __add__(self, other):
