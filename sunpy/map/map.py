@@ -257,12 +257,14 @@ class Map(np.ndarray, Parent):
         return np.ndarray.__array_wrap__(self, out_arr, context)
 
     def __getitem__(self, key):
-        """Overiding indexing operation to ensure that header is updated"""
+        """Overriding indexing operation to ensure that header is updated.  Note
+        that the indexing follows the ndarray row-column order, which is
+        reversed from calling Map.submap()"""
         if isinstance(key, tuple) and type(key[0]) is slice:
             x_range = [key[1].start, key[1].stop]
             y_range = [key[0].start, key[0].stop]
 
-            return self.submap(y_range, x_range, units="pixels")
+            return self.submap(x_range, y_range, units="pixels")
         else:
             return np.ndarray.__getitem__(self, key)
 
