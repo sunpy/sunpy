@@ -685,7 +685,7 @@ Dimension:\t [%d, %d]
             if range_a[0] is None:
                 range_a[0] = 0
             if range_a[1] is None:
-                range_a[1] = self.shape[0]
+                range_a[1] = self.shape[1]
             if range_b[0] is None:
                 range_b[0] = 0
             if range_b[1] is None:
