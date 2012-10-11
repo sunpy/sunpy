@@ -207,22 +207,26 @@ class LightCurve(object):
     
     def truncate(self, a, b=None):
         """Returns a truncated version of the timeseries object"""
-        if isinstance(a,TimeRange):
+        if isinstance(a, TimeRange):
             time_range = a
         else:
             time_range = TimeRange(a,b)
         
-        truncated = self.data.truncate(time_range.start(), time_range.end() )
+        truncated = self.data.truncate(time_range.start(), time_range.end())
         return LightCurve(truncated, self.header.copy())
     
-    def extract(self,a):
+    def extract(self, a):
         """Extract a set of particular columns from the DataFrame"""
         # TODO allow the extract function to pick more than one column
-        if isinstance(self,pandas.Series):
+        if isinstance(self, pandas.Series):
             return self
         else:
-            return LightCurve( self.data[a], self.header.copy())
-                
+            return LightCurve(self.data[a], self.header.copy())
+        
+    def time_range(self):
+        """Returns the start and end times of the LightCurve as a TimeRange
+        object"""
+        return TimeRange(self.data.index[0], self.data.index[-1])
 
 # What's happening here is the following: The ConditionalDispatch is just an
 # unbound callable object, that is, it does not know which class it is attached
