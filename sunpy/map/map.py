@@ -845,12 +845,7 @@ Dimension:\t [%d, %d]
             Matplotlib Any additional imshow arguments that should be used
             when plotting the image.
         """
-        overlays = []
-        if draw_limb:
-            overlays.append(self.draw_limb)
-        if draw_grid:
-            overlays.append(self.draw_grid)
-
+        
         # Create a figure and add title and axes
         figure = plt.figure(frameon=not basic_plot)
 
@@ -863,14 +858,17 @@ Dimension:\t [%d, %d]
         # Normal plot
         else:
             axes = figure.add_subplot(111)
-        
+
         im = self.plot(axes=axes,**matplot_args)        
         
         if colorbar and not basic_plot:
             figure.colorbar(im)
+        
+        if draw_limb:
+            self.draw_limb(axes=axes)
+        if draw_grid:
+            self.draw_grid(axes=axes)
 
-        for overlay in overlays:
-            axes = overlay(axes)
         return figure
     
     def norm(self):
