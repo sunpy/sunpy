@@ -16,7 +16,6 @@ import re
 import os
 import sys
 import random
-import tempfile
 import threading
 
 
@@ -26,6 +25,7 @@ from collections import defaultdict
 from string import ascii_lowercase
 from suds import client, TypeNotFound
 
+from sunpy import config
 from sunpy.net import download
 from sunpy.net.util import get_filename, slugify
 from sunpy.net.attr import and_, Attr
@@ -118,7 +118,7 @@ class Results(object):
 
 
 def _parse_waverange(string):
-    min_, max_, unit = RANGE.match(string)[::2]
+    min_, max_, unit = RANGE.match(string).groups()[::2]
     return {
         'wave_wavemin': min_,
         'wave_wavemax': min_ if max_ is None else max_,
@@ -177,19 +177,27 @@ class QueryResponse(list):
         """ Return total time-range all records span across. """
         return (
             datetime.strptime(
-                min(record.time.start for record in self), TIMEFORMAT),
+                min(record.time.start for record in self
+                  if record.time.start is not None), TIMEFORMAT),
             datetime.strptime(
-                max(record.time.end for record in self), TIMEFORMAT)
+                max(record.time.end for record in self
+                  if record.time.end is not None), TIMEFORMAT)
         )
 
     def show(self):
         """Print out human-readable summary of records retrieved"""
 
-        table = [[str(datetime.strptime(record.time.start, TIMEFORMAT)), 
-          str(datetime.strptime(record.time.end, TIMEFORMAT)), 
-          record.source,
-          record.instrument,
-          record.extent.type] for record in self]
+        table = [
+          [
+            str(datetime.strptime(record.time.start, TIMEFORMAT))
+              if record.time.start is not None else 'N/A',
+            str(datetime.strptime(record.time.end, TIMEFORMAT))
+              if record.time.end is not None else 'N/A',
+            record.source,
+            record.instrument,
+            record.extent.type
+              if record.extent.type is not None else 'N/A'
+          ] for record in self]
         table.insert(0, ['----------','--------','------','----------','----'])        
         table.insert(0, ['Start time','End time','Source','Instrument','Type'])
 
@@ -524,7 +532,8 @@ class VSOClient(object):
                 lambda _: None, 1, lambda mp: self.link(query_response, mp)
             )
         if path is None:
-            path = os.path.join(tempfile.mkdtemp(), '{file}')
+            path = os.path.join(config.get('downloads','download_dir'),
+                                '{file}')
         fileids = VSOClient.by_fileid(query_response)
         if not fileids:
             res.poke()
