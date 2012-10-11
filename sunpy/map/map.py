@@ -869,6 +869,8 @@ Dimension:\t [%d, %d]
         if draw_grid:
             self.draw_grid(axes=axes)
 
+        plt.show()
+        
         return figure
     
     def norm(self):
