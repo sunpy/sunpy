@@ -369,47 +369,6 @@ Dimension:\t [%d, %d]
                                 self.reference_coordinate['y'])
         }
 
-    def _draw_limb(self, fig, axes):
-        """Draws a circle representing the solar limb"""
-        circ = patches.Circle([0, 0], radius=self.rsun_arcseconds, fill=False,
-                              color='white')
-        axes.add_artist(circ)
-        return fig, axes
-
-    def _draw_grid(self, fig, axes, grid_spacing=20):
-        """Draws a grid over the surface of the Sun"""
-        # define the number of points for each latitude or longitude line
-        num_points = 20
-        hg_longitude_deg = np.linspace(-90, 90, num=num_points)
-        hg_latitude_deg = np.arange(-90, 90, grid_spacing)
-
-        # draw the latitude lines
-        for lat in hg_latitude_deg:
-            hg_latitude_deg_mesh, hg_longitude_deg_mesh = np.meshgrid(
-                lat * np.ones(num_points), hg_longitude_deg)
-            x, y = wcs.convert_hg_hpc(self.rsun_meters,
-                                      self.dsun, self.heliographic_latitude,
-                                      self.heliographic_longitude,
-                                      hg_longitude_deg_mesh,
-                                      hg_latitude_deg_mesh, units='arcsec')
-            axes.plot(x, y, color='white', linestyle='dotted')
-
-        hg_longitude_deg = np.arange(-90, 90, grid_spacing)
-        hg_latitude_deg = np.linspace(-90, 90, num=num_points)
-
-        # draw the longitude lines
-        for lon in hg_longitude_deg:
-            hg_longitude_deg_mesh, hg_latitude_deg_mesh = np.meshgrid(
-                lon * np.ones(num_points), hg_latitude_deg)
-            x, y = wcs.convert_hg_hpc(self.rsun_meters,
-                                      self.dsun, self.heliographic_latitude,
-                                      self.heliographic_longitude,
-                                      hg_longitude_deg_mesh,
-                                      hg_latitude_deg_mesh, units='arcsec')
-            axes.plot(x, y, color='white', linestyle='dotted')
-
-        return fig, axes
-
     def _validate(self):
         """Validates the meta-information associated with a Map.
 
@@ -839,55 +798,123 @@ Dimension:\t [%d, %d]
         new_map.reference_pixel['y'] = self.reference_pixel['y'] - y_pixels[0]
 
         return new_map
-
-    @toggle_pylab
-    def plot(self, figure=None, overlays=None, draw_limb=True, gamma=None,
-             draw_grid=False, colorbar=True, basic_plot=False, **matplot_args):
-        """Plots the map object using matplotlib
-
+    
+    def draw_limb(self, axes=None):
+        """Draws a circle representing the solar limb 
+        
         Parameters
         ----------
-        overlays : list
-            List of overlays to include in the plot
-        draw_limb : bool
-            Whether the solar limb should be plotted.
-        draw_grid : bool
-            Whether solar meridians and parallels
-        grid_spacing : float
-            Set the spacing between meridians and parallels for the grid
+        axes: matplotlib.axes object or None
+            Axes to plot limb on or None to use current axes.
+        
+        Returns
+        -------
+        matplotlib.axes object
+        """
+        
+        if not axes:
+            axes = plt.gca()
+        
+        circ = patches.Circle([0, 0], radius=self.rsun_arcseconds, fill=False,
+                              color='white')
+        axes.add_artist(circ)
+        
+        return axes
+
+    def draw_grid(self, axes=None, grid_spacing=20):
+        """Draws a grid over the surface of the Sun
+        
+        Parameters
+        ----------
+        axes: matplotlib.axes object or None
+            Axes to plot limb on or None to use current axes.
+        
+        grid_spacing: float
+            Spacing (in degrees) for logditude and latitude grid.
+        
+        Returns
+        -------
+        matplotlib.axes object
+        """
+        if not axes:
+            axes = plt.gca()
+        # define the number of points for each latitude or longitude line
+        num_points = 20
+        hg_longitude_deg = np.linspace(-90, 90, num=num_points)
+        hg_latitude_deg = np.arange(-90, 90, grid_spacing)
+
+        # draw the latitude lines
+        for lat in hg_latitude_deg:
+            hg_latitude_deg_mesh, hg_longitude_deg_mesh = np.meshgrid(
+                lat * np.ones(num_points), hg_longitude_deg)
+            x, y = wcs.convert_hg_hpc(self.rsun_meters,
+                                      self.dsun, self.heliographic_latitude,
+                                      self.heliographic_longitude,
+                                      hg_longitude_deg_mesh,
+                                      hg_latitude_deg_mesh, units='arcsec')
+            axes.plot(x, y, color='white', linestyle='dotted')
+
+        hg_longitude_deg = np.arange(-90, 90, grid_spacing)
+        hg_latitude_deg = np.linspace(-90, 90, num=num_points)
+
+        # draw the longitude lines
+        for lon in hg_longitude_deg:
+            hg_longitude_deg_mesh, hg_latitude_deg_mesh = np.meshgrid(
+                lon * np.ones(num_points), hg_latitude_deg)
+            x, y = wcs.convert_hg_hpc(self.rsun_meters,
+                                      self.dsun, self.heliographic_latitude,
+                                      self.heliographic_longitude,
+                                      hg_longitude_deg_mesh,
+                                      hg_latitude_deg_mesh, units='arcsec')
+            axes.plot(x, y, color='white', linestyle='dotted')
+            
+        #reset extent
+        extent = self.xrange + self.yrange
+        plt.axis(extent)
+
+        return axes
+        
+    @toggle_pylab
+    def plot(self, gamma=None, annotate=True, axes=None, **imshow_args):
+        """ Plots the map object using matplotlib, in a method equivalent
+        to plt.imshow() using nearest neighbour interpolation.
+        
+        Parameters
+        ----------
         gamma : float
             Gamma value to use for the color map
-        colorbar : bool
-            Whether to display a colorbar next to the plot
-        basic_plot : bool
-            If true, the data is plotted by itself at it's natural scale; no
-            title, labels, or axes are shown.
-        **matplot_args : dict
-            Matplotlib Any additional imshow arguments that should be used
-            when plotting the image.
-        """
-        if overlays is None:
-            overlays = []
-        if draw_limb:
-            overlays = overlays + [self._draw_limb]
-        # TODO: need to be able to pass the grid spacing to _draw_grid from the
-        # plot command.
-        if draw_grid:
-            overlays = overlays + [self._draw_grid]
-
-        # Create a figure and add title and axes
-        if figure is None:
-            figure = plt.figure(frameon=not basic_plot)
-
-        # Basic plot
-        if basic_plot:
-            axes = plt.Axes(figure, [0., 0., 1., 1.])
-            axes.set_axis_off()
-            figure.add_axes(axes)
             
+         annotate : bool
+            If true, the data is plotted at it's natural scale; with
+            title and axis labels.
+            
+        axes: matplotlib.axes object or None
+            If provided the image will be plotted on the given axes. Else the 
+            current matplotlib axes will be used.
+        
+        **imshow_args : dict
+            Any additional imshow arguments that should be used
+            when plotting the image.
+        
+        Examples
+        --------
+        #Simple Plot with color bar
+        plt.figure()
+        aiamap.plot()
+        plt.colorbar()
+        
+        #Add a limb line and grid
+        aia.plot()
+        aia.draw_limb()
+        aia.draw_grid()
+        """
+
+        #Get current axes
+        if not axes:
+            axes = plt.gca()
+        
         # Normal plot
-        else:
-            axes = figure.add_subplot(111)
+        if annotate:
             axes.set_title("%s %s" % (self.name, self.date))
             
             # x-axis label
@@ -907,32 +934,75 @@ Dimension:\t [%d, %d]
 
         # Determine extent
         extent = self.xrange + self.yrange
-
-        # Matplotlib arguments
-        params = {
-            "cmap": self.cmap,
-            "norm": self.norm()
-        }
-        params.update(matplot_args)
-
+        
+        cmap = copy(self.cmap)
         if gamma is not None:
-            params['cmap'] = copy(params['cmap'])
-            params['cmap'].set_gamma(gamma)
+            cmap.set_gamma(gamma)
+            
+            #make imshow kwargs a dict
+        
+        kwargs = {'origin':'lower',
+                  'cmap':cmap,
+                  'norm':self.norm(),
+                  'extent':extent,
+                  'interpolation':'nearest'}
+        kwargs.update(imshow_args)
+        
+        ret = axes.imshow(self, **kwargs)
+        
+        #Set current image (makes colorbar work)
+        plt.sci(ret)
+        return ret
+        
+    @toggle_pylab
+    def peek(self, draw_limb=True, draw_grid=False, gamma=None,
+                   colorbar=True, basic_plot=False, **matplot_args):
+        """Displays the map in a new figure
 
-        im = axes.imshow(self, origin='lower', extent=extent, **params)
+        Parameters
+        ----------
+        draw_limb : bool
+            Whether the solar limb should be plotted.
+        draw_grid : bool
+            Whether solar meridians and parallels
+        gamma : float
+            Gamma value to use for the color map
+        colorbar : bool
+            Whether to display a colorbar next to the plot
+        basic_plot : bool
+            If true, the data is plotted by itself at it's natural scale; no
+            title, labels, or axes are shown.
+        **matplot_args : dict
+            Matplotlib Any additional imshow arguments that should be used
+            when plotting the image.
+        """
+        
+        # Create a figure and add title and axes
+        figure = plt.figure(frameon=not basic_plot)
+
+        # Basic plot
+        if basic_plot:
+            axes = plt.Axes(figure, [0., 0., 1., 1.])
+            axes.set_axis_off()
+            figure.add_axes(axes)
+            
+        # Normal plot
+        else:
+            axes = figure.add_subplot(111)
+
+        im = self.plot(axes=axes,**matplot_args)        
         
         if colorbar and not basic_plot:
             figure.colorbar(im)
+        
+        if draw_limb:
+            self.draw_limb(axes=axes)
+        if draw_grid:
+            self.draw_grid(axes=axes)
 
-        for overlay in overlays:
-            figure, axes = overlay(figure, axes)
+        plt.show()
+        
         return figure
-
-    def show(self, figure=None, overlays=None, draw_limb=False, gamma=1.0,
-             draw_grid=False, colorbar=True, basic_plot=False, **matplot_args):
-        """Displays map on screen. Arguments are same as plot()."""
-        self.plot(figure, overlays, draw_limb, gamma, draw_grid, colorbar, 
-                  basic_plot, **matplot_args).show()
     
     def norm(self):
         """Default normalization method"""
