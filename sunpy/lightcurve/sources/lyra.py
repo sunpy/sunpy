@@ -13,22 +13,23 @@ import pyfits
 import sunpy
 
 class LYRALightCurve(LightCurve):
-    """SDO EVE light curve definition
+    """LYRA light curve definition
     
     Examples
     --------
     >>> import sunpy
-    >>> lyra = sunpy.lightcurve.LYRALightCurve()
-    >>> lyra = sunpy.lightcurve.LYRALightCurve('~/Data/lyra/lyra_20110810-000000_lev2_std.fits')
-    >>> lyra = sunpy.lightcurve.LYRALightCurve('2011/08/10')
-    >>> lyra = sunpy.lightcurve.LYRALightCurve("http://proba2.oma.be/lyra/data/bsd/2011/08/10/lyra_20110810-000000_lev2_std.fits")
+    >>> lyra = sunpy.lightcurve.LYRALightCurve.create()
+    >>> lyra = sunpy.lightcurve.LYRALightCurve.create('~/Data/lyra/lyra_20110810-000000_lev2_std.fits')
+    >>> lyra = sunpy.lightcurve.LYRALightCurve.create('2011/08/10')
+    >>> lyra = sunpy.lightcurve.LYRALightCurve.create("http://proba2.oma.be/lyra/data/bsd/2011/08/10/lyra_20110810-000000_lev2_std.fits")
     >>> 
     >>> lyra.show()
     
     References
     ----------
-    | http://lasp.colorado.edu/home/eve/data/data-access/
+    | http://proba2.sidc.be/data/LYRA
     """
+
     def show(self, names=3, **kwargs):
         """Plots the LYRA data
         
