@@ -1,5 +1,6 @@
 from __future__ import absolute_import
 from datetime import timedelta
+from datetime import datetime
 
 __all__ = ["TimeRange"]
 
@@ -76,6 +77,10 @@ class TimeRange:
         # End date
         if isinstance(y, str):
             self.t2 = parse_time(y)
+        
+        # Datetime
+        if isinstance(y,datetime):
+            self.t2 = y
             
         # Timedelta
         if isinstance(y, timedelta):
@@ -110,7 +115,7 @@ class TimeRange:
         return self.t1 + self.dt / 2
     
     def days(self):
-        """Gets the number of days ellapsed."""
+        """Gets the number of days elapsed."""
         return self.dt.days
     
     def start(self):
@@ -122,23 +127,29 @@ class TimeRange:
         return self.t2
     
     def seconds(self):
-        """Gets the number of seconds ellapsed."""
+        """Gets the number of seconds elapsed."""
         return self.dt.total_seconds()
     
     def minutes(self):
-        """Gets the number of minutes ellapsed."""
+        """Gets the number of minutes elapsed."""
         return self.dt.total_seconds() / 60.0
     
     def next(self):
-        """Shift the time range forward by the amount of time ellapsed"""
+        """Shift the time range forward by the amount of time elapsed"""
         self.t1 = self.t1 + self.dt
         self.t2 = self.t2 + self.dt
         
         return self
     
     def previous(self):
-        """Shift the time range backward by the amount of time ellapsed"""
+        """Shift the time range backward by the amount of time elapsed"""
         self.t1 = self.t1 - self.dt
         self.t2 = self.t2 - self.dt
         
         return self
+    
+    def extend(self, t_backwards, t_forwards):
+        """Extend the time range forwards and backwards by arbitrary amounts"""
+        # Only a timedelta object is acceptable here
+        self.t1 = self.t1 + t_backwards
+        self.t2 = self.t2 + t_forwards
