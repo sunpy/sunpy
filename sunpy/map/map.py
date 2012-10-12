@@ -824,7 +824,7 @@ Dimension:\t [%d, %d]
         return ret
         
     @toggle_pylab
-    def show(self, draw_limb=True, draw_grid=False, gamma=None,
+    def view(self, draw_limb=True, draw_grid=False, gamma=None,
                    colorbar=True, basic_plot=False, **matplot_args):
         """Displays the map in a new figure
 
