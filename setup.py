@@ -27,6 +27,7 @@ def install(setup): #pylint: disable=W0621
     from setuptools import find_packages
     #Crotate Module
     from distutils.core import Extension
+    import numpy as np
     module = 'sunpy.image.Crotate'   # import this
     sourcefiles = ['sunpy/image/src/rot_extn.c',
                    'sunpy/image/src/transform/aff_tr.c']
@@ -39,7 +40,8 @@ def install(setup): #pylint: disable=W0621
     crotate = Extension(module,
                         sources = sourcefiles,
                         libraries = libs,
-                        extra_compile_args = gcc_args
+                        extra_compile_args = gcc_args,
+                        include_dirs = [np.get_include()]
                         )
     setup(
         author="Steven Christe, Keith Hughitt, Jack Ireland and Alex Young",
