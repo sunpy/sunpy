@@ -1,5 +1,5 @@
 ----------------
-A Quick Tutorial
+A brief tour of SunPy
 ----------------
 
 Welcome to the SunPy tutorial! This brief tutorial will walk you through some 

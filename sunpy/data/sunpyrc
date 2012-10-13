@@ -32,4 +32,4 @@
 ; SunPy working directory.
 ; Default value: data/
 ;download_dir = /tmp
-download_dir = data/ 
+download_dir = data

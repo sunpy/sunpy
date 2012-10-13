@@ -3,6 +3,7 @@
 .settings
 .project
 *.pyc
+*.pyd
 MANIFEST
 build
 dist

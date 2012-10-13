@@ -11,10 +11,15 @@ import os
 import pyfits
 import numpy as np
 import matplotlib.pyplot as plt
+import scipy.ndimage.interpolation
 from matplotlib import patches
 from matplotlib import colors
 from matplotlib import cm
 from copy import copy
+try:
+    import sunpy.image.Crotate as Crotate
+except ImportError:
+    print("C extension sunpy.image.Crotate cannot be found")
 from sunpy.wcs import wcs as wcs
 from sunpy.util.util import toggle_pylab
 from sunpy.io import read_file, read_file_header
@@ -53,6 +58,8 @@ class Map(np.ndarray, Parent):
 
     Attributes
     ----------
+    original_header : dict
+        Dictionary representation of the original FITS header
     carrington_longitude : str
         Carrington longitude (crln_obs)
     center : dict
@@ -257,13 +264,26 @@ class Map(np.ndarray, Parent):
         return np.ndarray.__array_wrap__(self, out_arr, context)
 
     def __getitem__(self, key):
-        """Overiding indexing operation to ensure that header is updated"""
-        if isinstance(key, tuple) and type(key[0]) is slice:
-            x_range = [key[1].start, key[1].stop]
-            y_range = [key[0].start, key[0].stop]
+        """Overriding indexing operation to ensure that header is updated.  Note
+        that the indexing follows the ndarray row-column order, which is
+        reversed from calling Map.submap()"""
+        if isinstance(key, tuple):
+            # Used when asking for a 2D sub-array
+            # The header will be updated
+            if type(key[1]) is slice:
+                x_range = [key[1].start, key[1].stop]
+            else:
+                x_range = [key[1], key[1]+1]
 
-            return self.submap(y_range, x_range, units="pixels")
+            if type(key[0]) is slice:
+                y_range = [key[0].start, key[0].stop]
+            else:
+                y_range = [key[0], key[0]+1]
+
+            return self.submap(x_range, y_range, units="pixels")
         else:
+            # Typically used by np.ndarray.__repr__() due to indexing with [-1]
+            # The header will not be updated properly!
             return np.ndarray.__getitem__(self, key)
 
     def __add__(self, other):
@@ -663,6 +683,122 @@ Dimension:\t [%d, %d]
 
         return new_map
     
+    def rotate(self, angle, scale=1.0, rotation_centre=None, recentre=True,
+               missing=0.0, interpolation='bicubic', interp_param=-0.5):
+        """Returns a new rotated, rescaled and shifted map.
+        
+        Parameters
+        ---------
+        angle: float
+           The angle to rotate the image by (radians)        
+        scale: float
+           A scale factor for the image, default is no scaling
+        rotation_centre: tuple
+           The point in the image to rotate around (Axis of rotation).
+           Default: Centre of the array
+        recentre: bool, or array-like
+           Move the centroid (axis of rotation) to the centre of the array
+           or recentre coords. 
+           Default: True, recentre to the centre of the array.
+        missing: float
+           The numerical value to fill any missing points after rotation.
+           Default: 0.0
+        interpolation: {'nearest' | 'bilinear' | 'spline' | 'bicubic'}
+            Interpolation method to use in the transform. 
+            Spline uses the 
+            scipy.ndimage.interpolation.affline_transform routine.
+            nearest, bilinear and bicubic all replicate the IDL rot() function.
+            Default: 'bicubic'
+        interp_par: Int or Float
+            Optional parameter for controlling the interpolation.
+            Spline interpolation requires an integer value between 1 and 5 for 
+            the degree of the spline fit.
+            Default: 3
+            BiCubic interpolation requires a flaot value between -1 and 0.
+            Default: 0.5
+            Other interpolation options ingore the argument.
+        
+        Returns
+        -------
+        New rotated, rescaled, translated map
+        """
+        
+        #Interpolation parameter Sanity
+        assert interpolation in ['nearest','spline','bilinear','bicubic']
+        #Set defaults based on interpolation
+        if interp_param is None:
+            if interpolation is 'spline':
+                interp_param = 3
+            elif interpolation is 'bicubic':
+                interp_param = 0.5
+            else:
+                interp_param = 0 #Default value for nearest or bilinear
+        
+        #Make sure recenter is a vector with shape (2,1)
+        if not isinstance(recentre, bool):
+            recentre = np.array(recentre).reshape(2,1)
+                
+        #Define Size and centre of array
+        centre = (np.array(self.shape)-1)/2.0
+        
+        #If rotation_centre is not set (None or False),
+        #set rotation_centre to the centre of the image.
+        if rotation_centre is None:
+            rotation_centre = centre 
+        else:
+            #Else check rotation_centre is a vector with shape (2,1)
+            rotation_centre = np.array(rotation_centre).reshape(2,1)
+
+        #Recentre to the rotation_centre if recentre is True
+        if isinstance(recentre, bool):
+            #if rentre is False then this will be (0,0)
+            shift = np.array(rotation_centre) - np.array(centre) 
+        else:
+            #Recentre to recentre vector otherwise
+            shift = np.array(recentre) - np.array(centre)
+        
+        image = np.asarray(self).copy()
+    
+        #Calulate the parameters for the affline_transform
+        c = np.cos(angle)
+        s = np.sin(angle)
+        mati = np.array([[c, s],[-s, c]]) / scale   # res->orig
+        centre = np.array([centre]).transpose()  # the centre of rotn
+        shift = np.array([shift]).transpose()    # the shift
+        kpos = centre - np.dot(mati, (centre + shift))  
+        # kpos and mati are the two transform constants, kpos is a 2x2 array
+        rsmat, offs =  mati, np.squeeze((kpos[0,0], kpos[1,0]))
+        
+        if interpolation == 'spline':
+            # This is the scipy call
+            data = scipy.ndimage.interpolation.affine_transform(image, rsmat,
+                           offset=offs, order=interp_param, mode='constant',
+                           cval=missing)
+        else:
+            #Use C extension Package
+            if not 'Crotate' in globals():
+                raise ValueError("You do not have the C extension sunpy.image.Crotate")
+            #Set up call parameters depending on interp type.
+            if interpolation == 'nearest':
+                interp_type = Crotate.NEAREST
+            elif interpolation == 'bilinear':
+                interp_type = Crotate.BILINEAR
+            elif interpolation == 'bicubic':
+                interp_type = Crotate.BICUBIC
+            #Make call to extension
+            data = Crotate.affine_transform(image, 
+                                      rsmat, offset=offs, 
+                                      kernel=interp_type, cubic=interp_param, 
+                                      mode='constant', cval=missing)
+            
+        #Return a new map
+        #Copy Header
+        header = self._original_header.copy()
+        # Create new map instance
+        new_map = self.__class__(data, header)
+        
+        return new_map
+    
     def save(self, filepath):
         """Saves the SunPy Map object to a file.
         
@@ -734,7 +870,7 @@ Dimension:\t [%d, %d]
             if range_a[0] is None:
                 range_a[0] = 0
             if range_a[1] is None:
-                range_a[1] = self.shape[0]
+                range_a[1] = self.shape[1]
             if range_b[0] is None:
                 range_b[0] = 0
             if range_b[1] is None:
@@ -761,53 +897,46 @@ Dimension:\t [%d, %d]
         return new_map
 
     @toggle_pylab
-    def plot(self, figure=None, overlays=None, draw_limb=True, gamma=None,
-             draw_grid=False, colorbar=True, basic_plot=False, **matplot_args):
-        """Plots the map object using matplotlib
-
+    def plot(self, gamma=None, annotate=True, axes=None, **imshow_args):
+        """ Plots the map object using matplotlib, in a method equivalent
+        to plt.imshow() using nearest neighbour interpolation.
+        
         Parameters
         ----------
-        overlays : list
-            List of overlays to include in the plot
-        draw_limb : bool
-            Whether the solar limb should be plotted.
-        draw_grid : bool
-            Whether solar meridians and parallels
-        grid_spacing : float
-            Set the spacing between meridians and parallels for the grid
         gamma : float
             Gamma value to use for the color map
-        colorbar : bool
-            Whether to display a colorbar next to the plot
-        basic_plot : bool
-            If true, the data is plotted by itself at it's natural scale; no
-            title, labels, or axes are shown.
-        **matplot_args : dict
-            Matplotlib Any additional imshow arguments that should be used
-            when plotting the image.
-        """
-        if overlays is None:
-            overlays = []
-        if draw_limb:
-            overlays = overlays + [self._draw_limb]
-        # TODO: need to be able to pass the grid spacing to _draw_grid from the
-        # plot command.
-        if draw_grid is not False:
-            overlays = overlays + [self._draw_grid]
-
-        # Create a figure and add title and axes
-        if figure is None:
-            figure = plt.figure(frameon=not basic_plot)
-
-        # Basic plot
-        if basic_plot:
-            axes = plt.Axes(figure, [0., 0., 1., 1.])
-            axes.set_axis_off()
-            figure.add_axes(axes)
             
+         annotate : bool
+            If true, the data is plotted at it's natural scale; with
+            title and axis labels.
+            
+        axes: matplotlib.axes object or None
+            If provided the image will be plotted on the given axes. Else the 
+            current matplotlib axes will be used.
+        
+        **imshow_args : dict
+            Any additional imshow arguments that should be used
+            when plotting the image.
+        
+        Examples
+        --------
+        #Simple Plot with color bar
+        plt.figure()
+        aiamap.plot()
+        plt.colorbar()
+        
+        #Add a limb line and grid
+        aia.plot()
+        aia.draw_limb()
+        aia.draw_grid()
+        """
+
+        #Get current axes
+        if not axes:
+            axes = plt.gca()
+        
         # Normal plot
-        else:
-            axes = figure.add_subplot(111)
+        if annotate:
             axes.set_title("%s %s" % (self.name, self.date))
             
             # x-axis label
@@ -827,34 +956,76 @@ Dimension:\t [%d, %d]
 
         # Determine extent
         extent = self.xrange + self.yrange
-
-        # Matplotlib arguments
-        params = {
-            "cmap": self.cmap,
-            "norm": self.norm()
-        }
-        params.update(matplot_args)
-
+        
+        cmap = copy(self.cmap)
         if gamma is not None:
-            params['cmap'] = copy(params['cmap'])
-            params['cmap'].set_gamma(gamma)
+            cmap.set_gamma(gamma)
+            
+            #make imshow kwargs a dict
+        
+        kwargs = {'origin':'lower',
+                  'cmap':cmap,
+                  'norm':self.norm(),
+                  'extent':extent,
+                  'interpolation':'nearest'}
+        kwargs.update(imshow_args)
+        
+        ret = axes.imshow(self, **kwargs)
+        
+        #Set current image (makes colorbar work)
+        plt.sci(ret)
+        return ret
+        
+    @toggle_pylab
+    def peek(self, draw_limb=True, draw_grid=False, gamma=None,
+                   colorbar=True, basic_plot=False, **matplot_args):
+        """Displays the map in a new figure
 
-        im = axes.imshow(self, origin='lower', extent=extent, **params)
+        Parameters
+        ----------
+        draw_limb : bool
+            Whether the solar limb should be plotted.
+        draw_grid : bool
+            Whether solar meridians and parallels
+        gamma : float
+            Gamma value to use for the color map
+        colorbar : bool
+            Whether to display a colorbar next to the plot
+        basic_plot : bool
+            If true, the data is plotted by itself at it's natural scale; no
+            title, labels, or axes are shown.
+        **matplot_args : dict
+            Matplotlib Any additional imshow arguments that should be used
+            when plotting the image.
+        """
+        
+        # Create a figure and add title and axes
+        figure = plt.figure(frameon=not basic_plot)
+
+        # Basic plot
+        if basic_plot:
+            axes = plt.Axes(figure, [0., 0., 1., 1.])
+            axes.set_axis_off()
+            figure.add_axes(axes)
+            
+        # Normal plot
+        else:
+            axes = figure.add_subplot(111)
+
+        im = self.plot(axes=axes,**matplot_args)        
         
         if colorbar and not basic_plot:
             figure.colorbar(im)
+        
+        if draw_limb:
+            self.draw_limb(axes=axes)
+        if draw_grid:
+            self.draw_grid(axes=axes)
 
-        for overlay in overlays:
-            figure, axes = overlay(figure, axes)
-        return figure
-
-    def show(self, figure=None, overlays=None, draw_limb=False, gamma=1.0,
-             draw_grid=False, colorbar=True, basic_plot=False, **matplot_args):
-        """Displays map on screen. Arguments are same as plot()."""
-        self.plot(figure, overlays, draw_limb, gamma, draw_grid, colorbar, 
-                  basic_plot, **matplot_args)
         plt.show()
         
+        return figure
+    
     def norm(self):
         """Default normalization method"""
         return None

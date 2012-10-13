@@ -10,6 +10,7 @@ Welcome to the SunPy User Guide!
    installation/index
    tutorial
    plotting
+   vso
    maps
    hek
    spectra
