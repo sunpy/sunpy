@@ -45,8 +45,7 @@ __all__ = ["convert_angle_units", "convert_pixel_to_data", "convert_hpc_hg",
 import numpy as np
 
 def convert_angle_units(unit='arcsec'):
-    """Determine the conversion factor between the map units (e.g. arcsec, arcmin, deg)
-    and radians."""
+    """Determine the conversion factor between the data and radians."""
     
     if unit == 'deg':
         return np.deg2rad(1)
@@ -59,8 +58,9 @@ def convert_angle_units(unit='arcsec'):
 
 def convert_pixel_to_data(width, height, scale_x, scale_y, crpix1, crpix2, 
                           crval1, crval2, ctype, x=None, y=None):
-    """This procedure converts between pixel coordinates and data coordinates
-    at each x and y pixel centers. If no x and y are given then return the entire detector."""
+    """This procedure takes WCS-compliant header tags, and calculates the 
+        data coordinates at each x and y pixel centers. If no x and y are given
+        then return the entire detector."""
     cdelt = np.array([scale_x, scale_y])
     crpix = np.array([crpix1, crpix2])
     crval = np.array([crval1, crval2])
