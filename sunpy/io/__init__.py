@@ -4,7 +4,7 @@ from sunpy.io import fits, jp2
 
 # File formats supported by SunPy
 _known_formats = {
-    ('fts', 'fits'): fits,
+    ('fts', 'fits', 'fit'): fits,
     ('jp2', 'j2k', 'jpc', 'jpt'): jp2
 }
 
