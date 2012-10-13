@@ -16,7 +16,10 @@ from matplotlib import patches
 from matplotlib import colors
 from matplotlib import cm
 from copy import copy
-import sunpy.image.Crotate as Crotate
+try:
+    import sunpy.image.Crotate as Crotate
+except ImportError:
+    print("C extension sunpy.image.Crotate cannot be found")
 from sunpy.wcs import wcs as wcs
 from sunpy.util.util import toggle_pylab
 from sunpy.io import read_file, read_file_header
@@ -681,6 +684,8 @@ Dimension:\t [%d, %d]
                            cval=missing)
         else:
             #Use C extension Package
+            if not 'Crotate' in globals():
+                raise ValueError("You do not have the C extension sunpy.image.Crotate")
             #Set up call parameters depending on interp type.
             if interpolation == 'nearest':
                 interp_type = Crotate.NEAREST
