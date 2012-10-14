@@ -118,7 +118,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'SunPy'
-copyright = u'2011, SunPy Community' #pylint: disable=W0622
+copyright = u'2012, SunPy Community' #pylint: disable=W0622
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -191,7 +191,7 @@ html_theme = 'default'
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-html_logo = '../logo/sunpy_logo_135x135.png'
+html_logo = '../logo/sunpy_logo_compact_300x373.png'
 
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
