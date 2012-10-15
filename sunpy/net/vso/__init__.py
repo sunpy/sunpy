@@ -67,7 +67,8 @@ class Results(object):
     
     def submit(self, keys, value):
         """
-        
+        Submit
+
         Parameters
         ----------
         keys : list
