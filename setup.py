@@ -27,22 +27,29 @@ def install(setup): #pylint: disable=W0621
     from setuptools import find_packages
     #Crotate Module
     from distutils.core import Extension
-    import numpy as np
-    module = 'sunpy.image.Crotate'   # import this
-    sourcefiles = ['sunpy/image/src/rot_extn.c',
-                   'sunpy/image/src/transform/aff_tr.c']
-    libs = ['m']
-    # -ON for compile optimise 
-    gcc_args = ['-std=c99', '-O3']
-    # gcc_args = ['-std=c99']
-    
-    # need *module* name here
-    crotate = Extension(module,
-                        sources = sourcefiles,
-                        libraries = libs,
-                        extra_compile_args = gcc_args,
-                        include_dirs = [np.get_include()]
-                        )
+
+    try:
+        import numpy as np
+    except ImportError:
+        print("SunPy WARNING: NumPy must be installed first to build the C extension")
+
+    if 'np' in locals():
+        module = 'sunpy.image.Crotate'   # import this
+        sourcefiles = ['sunpy/image/src/rot_extn.c',
+                       'sunpy/image/src/transform/aff_tr.c']
+        libs = ['m']
+        # -ON for compile optimise 
+        gcc_args = ['-std=c99', '-O3']
+        # gcc_args = ['-std=c99']
+
+        # need *module* name here
+        crotate = Extension(module,
+                            sources = sourcefiles,
+                            libraries = libs,
+                            extra_compile_args = gcc_args,
+                            include_dirs = [np.get_include()]
+                            )
+
     setup(
         author="Steven Christe, Keith Hughitt, Jack Ireland and Alex Young",
         author_email="keith.hughitt@nasa.gov",
@@ -75,7 +82,7 @@ def install(setup): #pylint: disable=W0621
         url="http://www.sunpy.org/",
         use_2to3=True,
         version="0.1",
-        ext_modules = [crotate]
+        ext_modules = [crotate] if 'crotate' in locals() else []
     )
 
 if __name__ == '__main__':
