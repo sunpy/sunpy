@@ -49,7 +49,9 @@ __lt__
 
 
     def __repr__(self):
-        return "Mock"
+        # Use _mock_repr to fake the __repr__ call
+        res = getattr(self, "_mock_repr")
+        return res if isinstance(res, str) else "Mock"
 
     def __hash__(self):
         return 1
@@ -80,7 +82,9 @@ MOCK_MODULES = [
 for mod_name in MOCK_MODULES:
     sys.modules[mod_name] = Mock(pi=math.pi, G=6.67364e-11)
 
-sys.modules['numpy'] = Mock(pi=math.pi, G=6.67364e-11, ndarray=type('ndarray', (), {}))
+sys.modules['numpy'] = Mock(pi=math.pi, G=6.67364e-11,
+                            ndarray=type('ndarray', (), {}),
+                            dtype=lambda _: Mock(_mock_repr='np.dtype(\'float32\')'))
 sys.modules['scipy.constants'] = Mock(pi=math.pi, G=6.67364e-11)
 
 
