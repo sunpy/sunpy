@@ -93,21 +93,21 @@ objects for you so you don't have to worry about creating them yourself.
 To be consistent with matplotlib, SunPy has developed a standard plotting policy which 
 supports both simple and advanced matplotlib usage. 
 
-5. show()
+5. peek()
 ---------
 
-For quick and easy access to a plots
-all sunpy base objects (e.g. map, spectra, lightcurve) define their own show() command.
+For quick and easy access to a plot
+all sunpy base objects (e.g. map, spectra, lightcurve) define their own peek() command.
 For example you can do the following ::
 
     import sunpy
     map = sunpy.make_map(sunpy.EIT_195_IMAGE)
-    map.show()
+    map.peek(draw_limb=True)
 
 This creates a plot window with all axes defined, a plot title, and the image of the map
-data all defined by the contents of the map. As this is a show() command, the plot window
-blocks and must be closed before doing anything else. This is meant as a quick way to 
-visualize the contents of an object you've created.
+data all defined by the contents of the map. As this is command makes use of show(), the 
+plot window blocks and must be closed before doing anything else. This is meant as a 
+quick way to visualize the contents of a sunpy object you've created.
 
 6. plot()
 ---------
@@ -121,15 +121,20 @@ and therefore manipulate the plot as you see fit. Here is an example of this at 
     import sunpy
     import matplotlib.pyplot as plt
     map = sunpy.make_map(sunpy.EIT_195_IMAGE)
-    fig = map.plot()
+    map.plot()
+    map.draw_limb()
     plt.show()
 
-This output of this example is equivalent to one in the previous section. If we want
-to make changes to the plot that is possible by using the gca() command on the figure
-object. This returns the axes object.    
+This output of this example is equivalent to one in the previous section. The map.plot()
+command is equivalent to ax.plot(x,y) command which we introduced in section 3. Similar
+to that command it will create a figure for you if you haven't created on yourself. For
+advanced plotting you'll want to create it yourself. 
 
+    fig = plt.figure()
+    map.plot()
+    plt.colorbar()    
     ax = fig.gca()
-    ax.plot([-1000,1000], [0,0])
+    ax.plot([-1000,1000], [0,0], color="white")
     plt.show()
 
 The above a plot of line across the map. Using the fig.gca() command to get access to the
@@ -137,29 +142,33 @@ axes object most anything can be done to the plot and the plot can be displayed 
 using the show() command. Here is another example ::
 
     from matplotlib import patches
-    fig = map.plot()
+    fig = plt.figure()
+    map.plot()
     ax = fig.gca()
     rect = patches.Rectangle([-350, -650], 500, 500, color = 'white', fill=False)
     ax.add_artist(rect)
     plt.show()
     
-Finally, here is a more complex example ::
+Finally, here is a more complex example, starting from the beginning::
 
     from matplotlib import patches
     import sunpy
     import matplotlib.pyplot as plt
     map = sunpy.make_map(sunpy.AIA_171_IMAGE)
     smap = map.submap([-100-250, -100+250], [-400-250, -400+250])
-    rect = patches.Rectangle([-200, -400], 500, 500, color = 'white')
-    
+    rect = patches.Rectangle([-100-250, -400-250], 500, 500, color = 'white', fill=False)
+        
     fig = plt.figure()
-    ax1 = fig.add_subplot(111)
-    map.plot(ax1)
+    ax1 = fig.add_subplot(2,1,1)
+    map.plot()
     ax1.add_artist(rect)
-    ax2 = fig.add_subplot(112)
-    smap.plot(ax2)
+    ax2 = fig.add_subplot(2,1,2)
+    smap.plot()
+    smap.draw_grid(grid_spacing=10)
+    ax2.set_title('submap')
+    fig.subplots_adjust(hspace=0.4)
     plt.show()
-    
+
 The above example creates two side by side plots one with the overall view of the Sun
 with a small area marked with a white box. That smaller view is then shown in the plot
-next to it.
+below it. The spacing between the two plots is controlled by fig.subplots_adjust().

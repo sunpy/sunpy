@@ -1018,8 +1018,9 @@ Dimension:\t [%d, %d]
         ----------
         draw_limb : bool
             Whether the solar limb should be plotted.
-        draw_grid : bool
-            Whether solar meridians and parallels
+        draw_grid : bool or number
+            Whether solar meridians and parallels are plotted. If number then sets
+            degree difference between parallels and meridians.
         gamma : float
             Gamma value to use for the color map
         colorbar : bool
@@ -1062,7 +1063,7 @@ Dimension:\t [%d, %d]
         return figure
     
     def norm(self):
-        """Default normalization method"""
+        """Default normalization method. Not yet implemented."""
         return None
 
     @classmethod
