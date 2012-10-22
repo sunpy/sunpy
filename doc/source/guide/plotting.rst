@@ -131,9 +131,9 @@ to that command it will create a figure for you if you haven't created on yourse
 advanced plotting you'll want to create it yourself. 
 
     fig = plt.figure()
+    ax = plt.subplot(1,1,1)
     map.plot()
     plt.colorbar()    
-    ax = fig.gca()
     ax.plot([-1000,1000], [0,0], color="white")
     plt.show()
 
@@ -143,8 +143,8 @@ using the show() command. Here is another example ::
 
     from matplotlib import patches
     fig = plt.figure()
+    ax = plt.subplot(1,1,1)
     map.plot()
-    ax = fig.gca()
     rect = patches.Rectangle([-350, -650], 500, 500, color = 'white', fill=False)
     ax.add_artist(rect)
     plt.show()
