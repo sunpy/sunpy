@@ -372,6 +372,106 @@ Dimension:\t [%d, %d]
                                 self.reference_coordinate['y'])
         }
 
+    def draw_limb(self, axes=None):
+        """Draws a circle representing the solar limb 
+        
+            Parameters
+            ----------
+            axes: matplotlib.axes object or None
+                Axes to plot limb on or None to use current axes.
+        
+            Returns
+            -------
+            matplotlib.axes object
+        """
+        
+        if not axes:
+            axes = plt.gca()
+        
+        circ = patches.Circle([0, 0], radius=self.rsun_arcseconds, fill=False,
+                              color='white')
+        axes.add_artist(circ)
+        
+        return axes
+
+    def draw_grid(self, axes=None, grid_spacing=20):
+        """Draws a grid over the surface of the Sun
+        
+        Parameters
+        ----------
+        axes: matplotlib.axes object or None
+        Axes to plot limb on or None to use current axes.
+        
+        grid_spacing: float
+            Spacing (in degrees) for logditude and latitude grid.
+        
+        Returns
+        -------
+        matplotlib.axes object
+        """
+
+        if not axes:
+            axes = plt.gca()
+
+        x, y = self.pixel_to_data()
+        rsun = self.rsun_meters
+        dsun = self.dsun
+	
+        b0 = self.heliographic_latitude
+        l0 = self.heliographic_longitude
+        units = [self.units.get('x'), self.units.get('y')]
+	
+	    #TODO: This function could be optimized. Does not need to convert the entire image
+	    # coordinates
+        lon_self, lat_self = wcs.convert_hpc_hg(rsun, dsun, units[0], units[1], b0, l0, x, y)
+        # define the number of points for each latitude or longitude line
+        num_points = 20
+        
+        #TODO: The following code is ugly. Fix it.
+        lon_range = [lon_self.min(), lon_self.max()]
+        lat_range = [lat_self.min(), lat_self.max()]
+        if np.isfinite(lon_range[0]) == False: 
+            lon_range[0] = -90 + self.heliographic_longitude
+        if np.isfinite(lon_range[1]) == False: 
+            lon_range[1] = 90 + self.heliographic_longitude
+        if np.isfinite(lat_range[0]) == False: 
+            lat_range[0] = -90 + self.heliographic_latitude
+        if np.isfinite(lat_range[1]) == False: 
+            lat_range[1] = 90 + self.heliographic_latitude
+
+        hg_longitude_deg = np.linspace(lon_range[0], lon_range[1], num=num_points)
+        hg_latitude_deg = np.arange(lat_range[0], lat_range[1]+grid_spacing, grid_spacing)
+
+        # draw the latitude lines
+        for lat in hg_latitude_deg:
+            hg_latitude_deg_mesh, hg_longitude_deg_mesh = np.meshgrid(
+                lat * np.ones(num_points), hg_longitude_deg)
+            x, y = wcs.convert_hg_hpc(self.rsun_meters,
+                                      self.dsun, self.heliographic_latitude,
+                                      self.heliographic_longitude,
+                                      hg_longitude_deg_mesh,
+                                      hg_latitude_deg_mesh, units='arcsec')
+            axes.plot(x, y, color='white', linestyle='dotted')
+            
+        hg_longitude_deg = np.arange(lon_range[0], lon_range[1]+grid_spacing, grid_spacing)
+        hg_latitude_deg = np.linspace(lat_range[0], lat_range[1], num=num_points)
+
+        # draw the longitude lines
+        for lon in hg_longitude_deg:
+            hg_longitude_deg_mesh, hg_latitude_deg_mesh = np.meshgrid(
+                lon * np.ones(num_points), hg_latitude_deg)
+            x, y = wcs.convert_hg_hpc(self.rsun_meters,
+                                      self.dsun, self.heliographic_latitude,
+                                      self.heliographic_longitude,
+                                      hg_longitude_deg_mesh,
+                                      hg_latitude_deg_mesh, units='arcsec')
+            axes.plot(x, y, color='white', linestyle='dotted')
+            
+        axes.set_ylim(self.yrange)
+        axes.set_xlim(self.xrange)
+
+        return axes
+
     def _validate(self):
         """Validates the meta-information associated with a Map.
 
@@ -400,13 +500,38 @@ Dimension:\t [%d, %d]
 
     def data_to_pixel(self, value, dim):
         """Convert pixel-center data coordinates to pixel values"""
+        #TODO: This function should be renamed. It is confusing as data
+        # coordinates are in something like arcsec but this function just changes how you
+        # count pixels
         if dim not in ['x', 'y']:
             raise ValueError("Invalid dimension. Must be one of 'x' or 'y'.")
 
         size = self.shape[dim == 'x']  # 1 if dim == 'x', 0 if dim == 'y'.
 
         return (value - self.center[dim]) / self.scale[dim] + ((size - 1) / 2.)
-    
+
+    def pixel_to_data(self, x = None, y = None):
+        """Convert from pixel coordinates to data coordinates (e.g. arcsec)"""
+        width = self.shape[1]
+        height = self.shape[0]
+        
+        if (x is not None) & (x > width-1):
+            raise ValueError("X pixel value larger than image width (%s)." % width)
+        if (x is not None) & (y > height-1):
+            raise ValueError("Y pixel value larger than image height (%s)." % height)
+        if (x is not None) & (x < 0):
+            raise ValueError("X pixel value cannot be less than 0.")
+        if (x is not None) & (y < 0):
+            raise ValueError("Y pixel value cannot be less than 0.")
+
+        scale = np.array([self.scale.get('x'), self.scale.get('y')])
+        crpix = np.array([self.reference_pixel.get('x'), self.reference_pixel.get('y')])
+        crval = np.array([self.reference_coordinate.get('x'), self.reference_coordinate.get('y')])
+        coordinate_system = [self.coordinate_system.get('x'), self.coordinate_system.get('y')]
+        x,y = wcs.convert_pixel_to_data(width, height, scale[0], scale[1], crpix[0], crpix[1], crval[0], crval[1], coordinate_system[0], x = x, y = y)
+
+        return x, y
+
     def get_header(self, original=False):
         """Returns an updated MapHeader instance"""
         header = self._original_header.copy()
@@ -803,82 +928,7 @@ Dimension:\t [%d, %d]
         new_map.reference_pixel['y'] = self.reference_pixel['y'] - y_pixels[0]
 
         return new_map
-    
-    def draw_limb(self, axes=None):
-        """Draws a circle representing the solar limb 
-        
-        Parameters
-        ----------
-        axes: matplotlib.axes object or None
-            Axes to plot limb on or None to use current axes.
-        
-        Returns
-        -------
-        matplotlib.axes object
-        """
-        
-        if not axes:
-            axes = plt.gca()
-        
-        circ = patches.Circle([0, 0], radius=self.rsun_arcseconds, fill=False,
-                              color='white')
-        axes.add_artist(circ)
-        
-        return axes
 
-    def draw_grid(self, axes=None, grid_spacing=20):
-        """Draws a grid over the surface of the Sun
-        
-        Parameters
-        ----------
-        axes: matplotlib.axes object or None
-            Axes to plot limb on or None to use current axes.
-        
-        grid_spacing: float
-            Spacing (in degrees) for logditude and latitude grid.
-        
-        Returns
-        -------
-        matplotlib.axes object
-        """
-        if not axes:
-            axes = plt.gca()
-        # define the number of points for each latitude or longitude line
-        num_points = 20
-        hg_longitude_deg = np.linspace(-90, 90, num=num_points)
-        hg_latitude_deg = np.arange(-90, 90, grid_spacing)
-
-        # draw the latitude lines
-        for lat in hg_latitude_deg:
-            hg_latitude_deg_mesh, hg_longitude_deg_mesh = np.meshgrid(
-                lat * np.ones(num_points), hg_longitude_deg)
-            x, y = wcs.convert_hg_hpc(self.rsun_meters,
-                                      self.dsun, self.heliographic_latitude,
-                                      self.heliographic_longitude,
-                                      hg_longitude_deg_mesh,
-                                      hg_latitude_deg_mesh, units='arcsec')
-            axes.plot(x, y, color='white', linestyle='dotted')
-
-        hg_longitude_deg = np.arange(-90, 90, grid_spacing)
-        hg_latitude_deg = np.linspace(-90, 90, num=num_points)
-
-        # draw the longitude lines
-        for lon in hg_longitude_deg:
-            hg_longitude_deg_mesh, hg_latitude_deg_mesh = np.meshgrid(
-                lon * np.ones(num_points), hg_latitude_deg)
-            x, y = wcs.convert_hg_hpc(self.rsun_meters,
-                                      self.dsun, self.heliographic_latitude,
-                                      self.heliographic_longitude,
-                                      hg_longitude_deg_mesh,
-                                      hg_latitude_deg_mesh, units='arcsec')
-            axes.plot(x, y, color='white', linestyle='dotted')
-            
-        #reset extent
-        extent = self.xrange + self.yrange
-        plt.axis(extent)
-
-        return axes
-        
     @toggle_pylab
     def plot(self, gamma=None, annotate=True, axes=None, **imshow_args):
         """ Plots the map object using matplotlib, in a method equivalent
@@ -968,8 +1018,9 @@ Dimension:\t [%d, %d]
         ----------
         draw_limb : bool
             Whether the solar limb should be plotted.
-        draw_grid : bool
-            Whether solar meridians and parallels
+        draw_grid : bool or number
+            Whether solar meridians and parallels are plotted. If number then sets
+            degree difference between parallels and meridians.
         gamma : float
             Gamma value to use for the color map
         colorbar : bool
@@ -1002,15 +1053,17 @@ Dimension:\t [%d, %d]
         
         if draw_limb:
             self.draw_limb(axes=axes)
-        if draw_grid:
+        if draw_grid is True:
             self.draw_grid(axes=axes)
+        elif isinstance(draw_grid, (int, long, float)):
+            self.draw_grid(axes=axes, grid_spacing=draw_grid)
 
         plt.show()
         
         return figure
     
     def norm(self):
-        """Default normalization method"""
+        """Default normalization method. Not yet implemented."""
         return None
 
     @classmethod
