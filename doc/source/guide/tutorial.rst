@@ -8,7 +8,29 @@ and trying out some of the examples demonstrated. Once you've completed the
 tutorial check out the :doc:`code reference</reference/index>` for a more
 thorough look at the functionality available.
 
-1. Plotting
+
+1. Maps
+-------
+Maps are the primary data type in SunPy they are spatially and / or temporally aware 
+data arrays. There are types of maps for a 2D image, a time series of 2D images or 
+1D spectra or 2D spectrograms. Making a map of your data is the normally the first 
+step in using SunPy to work with your data. 
+
+**Creating a Map**
+
+SunPy supports many different data products from various sources 'out of the box' we 
+shall use SDO's AIA instrument as an example in this tutorial. The general way to create
+a map from one of the supported data products is with the `sunpy.make_map()` command.
+
+`sunpy.make_map()` takes either a filename, list of filenames data array and header. We can test map with::
+
+    import sunpy
+    aia = sunpy.make_map(sunpy.AIA_171_IMAGE)
+
+This returns a map named aia which can be maniputated with standard SunPy map commands.
+
+
+2. Plotting
 -----------
 
 Let's begin by creating a simple plot of an AIA image. To make things easy,
@@ -18,10 +40,8 @@ files have names like `sunpy.AIA_171_IMAGE` and `sunpy.RHESSI_IMAGE`.
 Try typing the below example into your interactive Python shell::
 
     import sunpy
-    from matplotlib import cm
-    from matplotlib import colors
     aia = sunpy.make_map(sunpy.AIA_171_IMAGE)
-    aia.show(cmap=cm.hot, norm=colors.Normalize(1, 2048))
+    aia.peek()
 
 If everything has been configured properly you should see an AIA image with
 a red colormap, a colorbar on the right-hand side and a title and some 
@@ -30,36 +50,32 @@ labels.
 .. image:: ../images/plotting_ex1.png
 
 There is lot going on here, but we will walk you through the example. Briefly,
-in the first few lines we are just importing SunPy and a couple other plotting
-related modules that we will use in the example. On the fourth line we create a
+the first line is just importing SunPy. On the second line we create a
 SunPy Map object which is basically just a spatially-aware image or data array.
-On the last line we then plot the map object, adding a couple additional
-parameters to specify a color map to use and how we wish to scale the image.
+On the last line we then plot the map object, using the built in 'quick plot' function `peek()`.
 
-Over the next few sections we will explain some of these features in more depth
-and then move onto more other modules included in SunPy.
+SunPy uses a matplotlib like interface to it's plotting so more complex plots can be built by combining
+SunPy with matplotlib::
 
-**Specifying a Colormap**
+    import sunpy
+    import matplotlib.pyplot as plt
 
-There are a number of color maps defined in SunPy which are used for data from 
-particular missions (e.g. SDO/AIA). 
-A simple example on how to use the color maps provided by SunPy: ::
-
-    from sunpy.cm import cm
+    aia = sunpy.make_map(sunpy.AIA_171_IMAGE)
     
-    # cmlist is a dictionary with all of the color tables
-    # to list all of the keys of the dictionary
-    cm.cmlist.keys()
+    fig = plt.figure()
+    ax = plt.subplot(111)
 
-    # to grab a particular colortable then
-    cmap = cm.cmlist.get('sdoaia94')
+    aia.plot()
+    plt.colorbar()
+    aia.draw_limb()
 
-    # you can also get a visual representation of all of the color tables 
-    cm.show_colormaps()
-.. image:: ../images/plotting_ex2.png
+    plt.show()
 
+This should output something like the image below:
 
-2. Solar Physical Constants
+.. image:: ../images/plotting_ex3.png
+
+3. Solar Physical Constants
 ---------------------------
 
 SunPy contains a convienient list of solar-related physical constants. Here is 
@@ -83,7 +99,7 @@ a short bit of code to get you started: ::
     # or you can use the following convinience method to list them all
     con.print_all()
 
-3. Working with Times
+4. Working with Times
 ---------------------
 
 SunPy also contains a number of convenience functions for working with dates
@@ -105,7 +121,7 @@ and times. Here is a short example: ::
     time_range = TimeRange('2010/03/04 00:10', '2010/03/04 00:20')
     time_range.center()
     
-4. Querying the VSO
+5. Querying the VSO
 -------------------
 There are a couple different ways to query and download data from the VSO using
 SunPy. The method you should use depends first on your preference with respect
@@ -141,7 +157,7 @@ non-interactive version of the main API::
 Note that specifying a path is optional and if you do not specify one the files
 will simply be downloaded into a temporary directory (e.g. /tmp/xyz).
 
-5. Querying Helioviewer.org
+6. Querying Helioviewer.org
 ---------------------------
 SunPy can be used to make several basic requests using the The `Helioviewer.org API <http://helioviewer.org/api/>`__
 including generating a PNG and downloading a `JPEG 2000 <http://wiki.helioviewer.org/wiki/JPEG_2000>`__
@@ -223,7 +239,7 @@ For more information about using querying Helioviewer.org, see the Helioviewer.o
 API documentation at: `http://helioviewer.org/api/ <http://helioviewer.org/api/>`__.
  
 
-6. Graphical plot manipulation
+7. Graphical plot manipulation
 ------------------------------
 
 SunPy provides a basic GUI for plot manipulation which can be invoked interactively.
