@@ -1018,7 +1018,7 @@ Dimension:\t [%d, %d]
         ----------
         draw_limb : bool
             Whether the solar limb should be plotted.
-        draw_grid : bool or float
+        draw_grid : bool or number
             Whether solar meridians and parallels are plotted. If float then sets
             degree difference between parallels and meridians.
         gamma : float
@@ -1054,10 +1054,14 @@ Dimension:\t [%d, %d]
         
         if draw_limb:
             self.draw_limb(axes=axes)
-        if draw_grid:
-            self.draw_grid(axes=axes)
-        elif isinstance(draw_grid, float):
+        
+        if isinstance(draw_grid, bool):
+            if draw_grid:
+                self.draw_grid(axes=axes)
+        elif isinstance(draw_grid, (int, long, float)):
             self.draw_grid(axes=axes, grid_spacing=draw_grid)
+        else:
+            raise TypeError("draw_grid should be bool, int, long or float")
 
         plt.show()
         
