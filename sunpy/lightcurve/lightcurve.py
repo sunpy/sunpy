@@ -11,6 +11,7 @@ __email__ = "keith.hughitt@nasa.gov"
 import os
 import pandas
 import sunpy
+import shutil
 import urllib2
 import numpy as np
 import matplotlib.pyplot as plt
@@ -160,9 +161,9 @@ class LightCurve(object):
                 response = urllib2.urlopen(uri)
             except (urllib2.HTTPError, urllib2.URLError):
                 raise urllib2.URLError(err)
-            fp = open(filepath, 'wb')
-            fp.write(response.read())
-        
+            with open(filepath, 'wb') as fp:
+                shutil.copyfileobj(response, fp)
+                    
         return filepath
     
     @classmethod
@@ -203,28 +204,29 @@ class LightCurve(object):
             return cls._parse_csv(filepath)
         else:
             return cls._parse_fits(filepath)
-
-
-    def discrete_boxcar_average(self, seconds=1):
-        """Computes a discrete boxcar average for the DataFrame"""
-        date_range = pandas.DateRange(self.data.index[0], self.data.index[-1], 
-                                      offset=pandas.datetools.Second(seconds))
-        grouped = self.data.groupby(date_range.asof)
-        subsampled = grouped.mean()
-        
-        return LightCurve(subsampled, self.header.copy())
     
-    def truncate(self, start=None, end=None):
-        """Returns a truncated version of the Lyra object"""
-        if start is None:
-            start = self.data.index[0]
-        if end is None:
-            end = self.data.index[-1]
+    def truncate(self, a, b=None):
+        """Returns a truncated version of the timeseries object"""
+        if isinstance(a, TimeRange):
+            time_range = a
+        else:
+            time_range = TimeRange(a,b)
         
-        truncated = self.data.truncate(sunpy.time.parse_time(start),
-                                       sunpy.time.parse_time(end))
+        truncated = self.data.truncate(time_range.start(), time_range.end())
         return LightCurve(truncated, self.header.copy())
-
+    
+    def extract(self, a):
+        """Extract a set of particular columns from the DataFrame"""
+        # TODO allow the extract function to pick more than one column
+        if isinstance(self, pandas.Series):
+            return self
+        else:
+            return LightCurve(self.data[a], self.header.copy())
+        
+    def time_range(self):
+        """Returns the start and end times of the LightCurve as a TimeRange
+        object"""
+        return TimeRange(self.data.index[0], self.data.index[-1])
 
 # What's happening here is the following: The ConditionalDispatch is just an
 # unbound callable object, that is, it does not know which class it is attached

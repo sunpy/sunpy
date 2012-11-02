@@ -6,6 +6,7 @@ __email__ = "keith.hughitt@nasa.gov"
 
 from sunpy.map import Map
 from sunpy.sun import constants
+from sunpy.sun import sun
 from sunpy.cm import cm
 from sunpy.time import parse_time
 from matplotlib import colors
@@ -19,16 +20,18 @@ class EITMap(Map):
         properties = Map.get_properties(header)
         
         # Solar radius in arc-seconds at 1 au
-        # @TODO: use sunpy.sun instead
-        radius_1au = 959.644
+        radius_1au = sun.angular_size(header.get('date_obs'))
         
         scale = header.get("cdelt1")
+        # EIT solar radius is expressed in number of EIT pixels
+        solar_r = header.get("solar_r")
         
         properties.update({
             "date": parse_time(header.get('date_obs')),
             "detector": "EIT",
+            "rsun_arcseconds": solar_r * scale,
             "dsun": ((radius_1au / 
-                      (properties['rsun_arcseconds'] * scale)) * constants.au),
+                      (solar_r * scale)) * constants.au),
             "name": "EIT %s" % header.get('wavelnth'),
             "nickname": "EIT",
             "cmap": cm.get_cmap('sohoeit%d' % header.get('wavelnth'))

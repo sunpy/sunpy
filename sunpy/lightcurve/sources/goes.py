@@ -25,8 +25,6 @@ class GOESLightCurve(LightCurve):
     | http://www.ngdc.noaa.gov/goes/sem
     | http://www.ngdc.noaa.gov/goes/sem/getData/goes15
     """
-    def __init__(self, *args, **kwargs):
-        LightCurve.__init__(self, *args, **kwargs)
 
     def show(self, title="GOES Xray Flux", **kwargs):
         """Plots GOES light curve is the usual manner"""
@@ -115,8 +113,7 @@ class GOESLightCurve(LightCurve):
     @staticmethod
     def _parse_csv(filepath):
         """Parses an GOES CSV"""
-        fp = open(filepath, 'rb')
-        
-        # @todo: check for:
-        # "No-Data-Found for the time period requested..." error
-        return "", read_csv(fp, sep=",", index_col=0, parse_dates=True)
+        with open(filepath, 'rb') as fp:
+            # @todo: check for:
+            # "No-Data-Found for the time period requested..." error
+            return "", read_csv(fp, sep=",", index_col=0, parse_dates=True)

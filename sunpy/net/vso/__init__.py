@@ -15,19 +15,22 @@ This module provides a wrapper around the VSO API.
 import re
 import os
 import sys
-import tempfile
+import random
 import threading
+
 
 from datetime import datetime, timedelta
 from functools import partial
 from collections import defaultdict
-
+from string import ascii_lowercase
 from suds import client, TypeNotFound
 
+from sunpy import config
 from sunpy.net import download
+from sunpy.net.util import get_filename, slugify
 from sunpy.net.attr import and_, Attr
 from sunpy.net.vso.attrs import walker, TIMEFORMAT
-from sunpy.util.util import to_angstrom, print_table
+from sunpy.util.util import to_angstrom, print_table, replacement_filename
 from sunpy.time import parse_time
 
 DEFAULT_URL = 'http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl'
@@ -64,7 +67,8 @@ class Results(object):
     
     def submit(self, keys, value):
         """
-        
+        Submit
+
         Parameters
         ----------
         keys : list
@@ -98,9 +102,13 @@ class Results(object):
         self.n += 1
         return partial(self.submit, keys)
     
-    def wait(self):
+    def wait(self, timeout=100):
         """ Wait for result to be complete and return it. """
-        self.evt.wait()
+        # Giving wait a timeout somehow circumvents a CPython bug that the
+        # call gets ininterruptible.
+        while not self.evt.wait(timeout):
+            pass
+
         return self.map_
     
     def add_error(self, exception):
@@ -111,7 +119,7 @@ class Results(object):
 
 
 def _parse_waverange(string):
-    min_, max_, unit = RANGE.match(string)[::2]
+    min_, max_, unit = RANGE.match(string).groups()[::2]
     return {
         'wave_wavemin': min_,
         'wave_wavemax': min_ if max_ is None else max_,
@@ -170,19 +178,27 @@ class QueryResponse(list):
         """ Return total time-range all records span across. """
         return (
             datetime.strptime(
-                min(record.time.start for record in self), TIMEFORMAT),
+                min(record.time.start for record in self
+                  if record.time.start is not None), TIMEFORMAT),
             datetime.strptime(
-                max(record.time.end for record in self), TIMEFORMAT)
+                max(record.time.end for record in self
+                  if record.time.end is not None), TIMEFORMAT)
         )
 
     def show(self):
-        """Print out human-readable summary of records retreived"""
+        """Print out human-readable summary of records retrieved"""
 
-        table = [[str(datetime.strptime(record.time.start, TIMEFORMAT)), 
-          str(datetime.strptime(record.time.end, TIMEFORMAT)), 
-          record.source,
-          record.instrument,
-          record.extent.type] for record in self]
+        table = [
+          [
+            str(datetime.strptime(record.time.start, TIMEFORMAT))
+              if record.time.start is not None else 'N/A',
+            str(datetime.strptime(record.time.end, TIMEFORMAT))
+              if record.time.end is not None else 'N/A',
+            record.source,
+            record.instrument,
+            record.extent.type
+              if record.extent.type is not None else 'N/A'
+          ] for record in self]
         table.insert(0, ['----------','--------','------','----------','----'])        
         table.insert(0, ['Start time','End time','Source','Instrument','Type'])
 
@@ -314,15 +330,27 @@ class VSOClient(object):
         return self.make('QueryResponse', provideritem=providers.values())
     
     @staticmethod
-    def mk_filename(pattern, response, sock, url):
-        # FIXME: os.path.exists(name)
-        name = sock.headers.get(
-            'Content-Disposition', url.rstrip('/').rsplit('/', 1)[-1]
-        )
+    def mk_filename(pattern, response, sock, url, overwrite=False):
+        name = get_filename(sock, url)
         if not name:
-            name = response.fileid.replace('/', '_')
-        
+            if not isinstance(response.fileid, unicode):
+                name = unicode(response.fileid, "ascii", "ignore")
+            else:
+                name = response.fileid
+
+        fs_encoding = sys.getfilesystemencoding()
+        if fs_encoding is None:
+            fs_encoding = "ascii"
+        name = name.encode(fs_encoding, "ignore")
+
+        if not name:
+            name = "file"
+
         fname = pattern.format(file=name, **dict(response))
+
+        if not overwrite and os.path.exists(fname):
+            fname = replacement_filename(fname)
+        
         dir_ = os.path.dirname(fname)
         if not os.path.exists(dir_):
             os.makedirs(dir_)
@@ -493,7 +521,9 @@ class VSOClient(object):
         """
         if downloader is None:
             downloader = download.Downloader()
-            threading.Thread(target=downloader.reactor.run).start()
+            thread = threading.Thread(target=downloader.reactor.run)
+            thread.daemon = True
+            thread.start()
             res = Results(
                 lambda _: downloader.reactor.stop(), 1,
                 lambda mp: self.link(query_response, mp)
@@ -503,7 +533,8 @@ class VSOClient(object):
                 lambda _: None, 1, lambda mp: self.link(query_response, mp)
             )
         if path is None:
-            path = os.path.join(tempfile.mkdtemp(), '{file}')
+            path = os.path.join(config.get('downloads','download_dir'),
+                                '{file}')
         fileids = VSOClient.by_fileid(query_response)
         if not fileids:
             res.poke()

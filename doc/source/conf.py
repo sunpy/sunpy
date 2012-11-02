@@ -49,7 +49,9 @@ __lt__
 
 
     def __repr__(self):
-        return "Mock"
+        # Use _mock_repr to fake the __repr__ call
+        res = getattr(self, "_mock_repr")
+        return res if isinstance(res, str) else "Mock"
 
     def __hash__(self):
         return 1
@@ -75,11 +77,14 @@ MOCK_MODULES = [
     'matplotlib.image', 'matplotlib.colors', 'sunpy.cm',
     'pandas', 'pandas.io', 'pandas.io.parsers',
     'suds', 'matplotlib.ticker', 'matplotlib.colorbar',
-    'matplotlib.dates', 'scipy.optimize', 'scipy.ndimage']
+    'matplotlib.dates', 'scipy.optimize', 'scipy.ndimage',
+    'matplotlib.figure', 'scipy.ndimage.interpolation', 'bs4']
 for mod_name in MOCK_MODULES:
     sys.modules[mod_name] = Mock(pi=math.pi, G=6.67364e-11)
 
-sys.modules['numpy'] = Mock(pi=math.pi, G=6.67364e-11, ndarray=type('ndarray', (), {}))
+sys.modules['numpy'] = Mock(pi=math.pi, G=6.67364e-11,
+                            ndarray=type('ndarray', (), {}),
+                            dtype=lambda _: Mock(_mock_repr='np.dtype(\'float32\')'))
 sys.modules['scipy.constants'] = Mock(pi=math.pi, G=6.67364e-11)
 
 
@@ -117,7 +122,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'SunPy'
-copyright = u'2011, SunPy Community' #pylint: disable=W0622
+copyright = u'2012, SunPy Community' #pylint: disable=W0622
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -164,7 +169,7 @@ default_role = "autolink"
 pygments_style = 'sphinx'
 
 # A list of ignored prefixes for module index sorting.
-#modindex_common_prefix = []
+modindex_common_prefix = ['sunpy.']
 
 
 # -- Options for HTML output ---------------------------------------------------
@@ -190,7 +195,7 @@ html_theme = 'default'
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-html_logo = '../logo/sunpy_logo_135x135.png'
+html_logo = '../logo/sunpy_logo_compact_300x373.png'
 
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32

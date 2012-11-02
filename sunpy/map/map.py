@@ -11,10 +11,15 @@ import os
 import pyfits
 import numpy as np
 import matplotlib.pyplot as plt
+import scipy.ndimage.interpolation
 from matplotlib import patches
 from matplotlib import colors
 from matplotlib import cm
 from copy import copy
+try:
+    import sunpy.image.Crotate as Crotate
+except ImportError:
+    print("C extension sunpy.image.Crotate cannot be found")
 from sunpy.wcs import wcs as wcs
 from sunpy.util.util import toggle_pylab
 from sunpy.io import read_file, read_file_header
@@ -22,6 +27,9 @@ from sunpy.sun import constants
 from sunpy.time import parse_time
 from sunpy.util.util import to_signed
 from sunpy.image.rescale import resample, reshape_image_to_4d_superpixel
+
+from sunpy.util.cond_dispatch import ConditionalDispatch
+from sunpy.util.create import Parent
 
 """
 TODO
@@ -35,7 +43,7 @@ or something else?)
 * Should 'center' be renamed to 'offset' and crpix1 & 2 be used for 'center'?
 """
 
-class Map(np.ndarray):
+class Map(np.ndarray, Parent):
     """
     Map(data, header)
 
@@ -121,6 +129,8 @@ class Map(np.ndarray):
         Return a matplotlib plot figure object
     show()
         Display a matplotlib plot to the screen 
+    get_header()
+        Returns the original header from when the map was first created.
 
     Examples
     --------
@@ -152,6 +162,9 @@ class Map(np.ndarray):
     | http://www.scipy.org/Subclasses
 
     """
+    _create = ConditionalDispatch.from_existing(Parent._create)
+    create = classmethod(_create.wrapper())
+
     def __new__(cls, data, header):
         """Creates a new Map instance"""
         if isinstance(data, np.ndarray):
@@ -251,13 +264,26 @@ class Map(np.ndarray):
         return np.ndarray.__array_wrap__(self, out_arr, context)
 
     def __getitem__(self, key):
-        """Overiding indexing operation to ensure that header is updated"""
-        if isinstance(key, tuple) and type(key[0]) is slice:
-            x_range = [key[1].start, key[1].stop]
-            y_range = [key[0].start, key[0].stop]
+        """Overriding indexing operation to ensure that header is updated.  Note
+        that the indexing follows the ndarray row-column order, which is
+        reversed from calling Map.submap()"""
+        if isinstance(key, tuple):
+            # Used when asking for a 2D sub-array
+            # The header will be updated
+            if type(key[1]) is slice:
+                x_range = [key[1].start, key[1].stop]
+            else:
+                x_range = [key[1], key[1]+1]
 
-            return self.submap(y_range, x_range, units="pixels")
+            if type(key[0]) is slice:
+                y_range = [key[0].start, key[0].stop]
+            else:
+                y_range = [key[0], key[0]+1]
+
+            return self.submap(x_range, y_range, units="pixels")
         else:
+            # Typically used by np.ndarray.__repr__() due to indexing with [-1]
+            # The header will not be updated properly!
             return np.ndarray.__getitem__(self, key)
 
     def __add__(self, other):
@@ -346,19 +372,75 @@ Dimension:\t [%d, %d]
                                 self.reference_coordinate['y'])
         }
 
-    def _draw_limb(self, fig, axes):
-        """Draws a circle representing the solar limb"""
+    def draw_limb(self, axes=None):
+        """Draws a circle representing the solar limb 
+        
+            Parameters
+            ----------
+            axes: matplotlib.axes object or None
+                Axes to plot limb on or None to use current axes.
+        
+            Returns
+            -------
+            matplotlib.axes object
+        """
+        
+        if not axes:
+            axes = plt.gca()
+        
         circ = patches.Circle([0, 0], radius=self.rsun_arcseconds, fill=False,
                               color='white')
         axes.add_artist(circ)
-        return fig, axes
+        
+        return axes
 
-    def _draw_grid(self, fig, axes, grid_spacing=20):
-        """Draws a grid over the surface of the Sun"""
+    def draw_grid(self, axes=None, grid_spacing=20):
+        """Draws a grid over the surface of the Sun
+        
+        Parameters
+        ----------
+        axes: matplotlib.axes object or None
+        Axes to plot limb on or None to use current axes.
+        
+        grid_spacing: float
+            Spacing (in degrees) for logditude and latitude grid.
+        
+        Returns
+        -------
+        matplotlib.axes object
+        """
+
+        if not axes:
+            axes = plt.gca()
+
+        x, y = self.pixel_to_data()
+        rsun = self.rsun_meters
+        dsun = self.dsun
+	
+        b0 = self.heliographic_latitude
+        l0 = self.heliographic_longitude
+        units = [self.units.get('x'), self.units.get('y')]
+	
+	    #TODO: This function could be optimized. Does not need to convert the entire image
+	    # coordinates
+        lon_self, lat_self = wcs.convert_hpc_hg(rsun, dsun, units[0], units[1], b0, l0, x, y)
         # define the number of points for each latitude or longitude line
         num_points = 20
-        hg_longitude_deg = np.linspace(-90, 90, num=num_points)
-        hg_latitude_deg = np.arange(-90, 90, grid_spacing)
+        
+        #TODO: The following code is ugly. Fix it.
+        lon_range = [lon_self.min(), lon_self.max()]
+        lat_range = [lat_self.min(), lat_self.max()]
+        if np.isfinite(lon_range[0]) == False: 
+            lon_range[0] = -90 + self.heliographic_longitude
+        if np.isfinite(lon_range[1]) == False: 
+            lon_range[1] = 90 + self.heliographic_longitude
+        if np.isfinite(lat_range[0]) == False: 
+            lat_range[0] = -90 + self.heliographic_latitude
+        if np.isfinite(lat_range[1]) == False: 
+            lat_range[1] = 90 + self.heliographic_latitude
+
+        hg_longitude_deg = np.linspace(lon_range[0], lon_range[1], num=num_points)
+        hg_latitude_deg = np.arange(lat_range[0], lat_range[1]+grid_spacing, grid_spacing)
 
         # draw the latitude lines
         for lat in hg_latitude_deg:
@@ -370,9 +452,9 @@ Dimension:\t [%d, %d]
                                       hg_longitude_deg_mesh,
                                       hg_latitude_deg_mesh, units='arcsec')
             axes.plot(x, y, color='white', linestyle='dotted')
-
-        hg_longitude_deg = np.arange(-90, 90, grid_spacing)
-        hg_latitude_deg = np.linspace(-90, 90, num=num_points)
+            
+        hg_longitude_deg = np.arange(lon_range[0], lon_range[1]+grid_spacing, grid_spacing)
+        hg_latitude_deg = np.linspace(lat_range[0], lat_range[1], num=num_points)
 
         # draw the longitude lines
         for lon in hg_longitude_deg:
@@ -384,8 +466,11 @@ Dimension:\t [%d, %d]
                                       hg_longitude_deg_mesh,
                                       hg_latitude_deg_mesh, units='arcsec')
             axes.plot(x, y, color='white', linestyle='dotted')
+            
+        axes.set_ylim(self.yrange)
+        axes.set_xlim(self.xrange)
 
-        return fig, axes
+        return axes
 
     def _validate(self):
         """Validates the meta-information associated with a Map.
@@ -415,13 +500,38 @@ Dimension:\t [%d, %d]
 
     def data_to_pixel(self, value, dim):
         """Convert pixel-center data coordinates to pixel values"""
+        #TODO: This function should be renamed. It is confusing as data
+        # coordinates are in something like arcsec but this function just changes how you
+        # count pixels
         if dim not in ['x', 'y']:
             raise ValueError("Invalid dimension. Must be one of 'x' or 'y'.")
 
         size = self.shape[dim == 'x']  # 1 if dim == 'x', 0 if dim == 'y'.
 
         return (value - self.center[dim]) / self.scale[dim] + ((size - 1) / 2.)
-    
+
+    def pixel_to_data(self, x = None, y = None):
+        """Convert from pixel coordinates to data coordinates (e.g. arcsec)"""
+        width = self.shape[1]
+        height = self.shape[0]
+        
+        if (x is not None) & (x > width-1):
+            raise ValueError("X pixel value larger than image width (%s)." % width)
+        if (x is not None) & (y > height-1):
+            raise ValueError("Y pixel value larger than image height (%s)." % height)
+        if (x is not None) & (x < 0):
+            raise ValueError("X pixel value cannot be less than 0.")
+        if (x is not None) & (y < 0):
+            raise ValueError("Y pixel value cannot be less than 0.")
+
+        scale = np.array([self.scale.get('x'), self.scale.get('y')])
+        crpix = np.array([self.reference_pixel.get('x'), self.reference_pixel.get('y')])
+        crval = np.array([self.reference_coordinate.get('x'), self.reference_coordinate.get('y')])
+        coordinate_system = [self.coordinate_system.get('x'), self.coordinate_system.get('y')]
+        x,y = wcs.convert_pixel_to_data(width, height, scale[0], scale[1], crpix[0], crpix[1], crval[0], crval[1], coordinate_system[0], x = x, y = y)
+
+        return x, y
+
     def get_header(self, original=False):
         """Returns an updated MapHeader instance"""
         header = self._original_header.copy()
@@ -606,6 +716,122 @@ Dimension:\t [%d, %d]
 
         return new_map
     
+    def rotate(self, angle, scale=1.0, rotation_centre=None, recentre=True,
+               missing=0.0, interpolation='bicubic', interp_param=-0.5):
+        """Returns a new rotated, rescaled and shifted map.
+        
+        Parameters
+        ---------
+        angle: float
+           The angle to rotate the image by (radians)        
+        scale: float
+           A scale factor for the image, default is no scaling
+        rotation_centre: tuple
+           The point in the image to rotate around (Axis of rotation).
+           Default: Centre of the array
+        recentre: bool, or array-like
+           Move the centroid (axis of rotation) to the centre of the array
+           or recentre coords. 
+           Default: True, recentre to the centre of the array.
+        missing: float
+           The numerical value to fill any missing points after rotation.
+           Default: 0.0
+        interpolation: {'nearest' | 'bilinear' | 'spline' | 'bicubic'}
+            Interpolation method to use in the transform. 
+            Spline uses the 
+            scipy.ndimage.interpolation.affline_transform routine.
+            nearest, bilinear and bicubic all replicate the IDL rot() function.
+            Default: 'bicubic'
+        interp_par: Int or Float
+            Optional parameter for controlling the interpolation.
+            Spline interpolation requires an integer value between 1 and 5 for 
+            the degree of the spline fit.
+            Default: 3
+            BiCubic interpolation requires a flaot value between -1 and 0.
+            Default: 0.5
+            Other interpolation options ingore the argument.
+        
+        Returns
+        -------
+        New rotated, rescaled, translated map
+        """
+        
+        #Interpolation parameter Sanity
+        assert interpolation in ['nearest','spline','bilinear','bicubic']
+        #Set defaults based on interpolation
+        if interp_param is None:
+            if interpolation is 'spline':
+                interp_param = 3
+            elif interpolation is 'bicubic':
+                interp_param = 0.5
+            else:
+                interp_param = 0 #Default value for nearest or bilinear
+        
+        #Make sure recenter is a vector with shape (2,1)
+        if not isinstance(recentre, bool):
+            recentre = np.array(recentre).reshape(2,1)
+                
+        #Define Size and centre of array
+        centre = (np.array(self.shape)-1)/2.0
+        
+        #If rotation_centre is not set (None or False),
+        #set rotation_centre to the centre of the image.
+        if rotation_centre is None:
+            rotation_centre = centre 
+        else:
+            #Else check rotation_centre is a vector with shape (2,1)
+            rotation_centre = np.array(rotation_centre).reshape(2,1)
+
+        #Recentre to the rotation_centre if recentre is True
+        if isinstance(recentre, bool):
+            #if rentre is False then this will be (0,0)
+            shift = np.array(rotation_centre) - np.array(centre) 
+        else:
+            #Recentre to recentre vector otherwise
+            shift = np.array(recentre) - np.array(centre)
+        
+        image = np.asarray(self).copy()
+    
+        #Calulate the parameters for the affline_transform
+        c = np.cos(angle)
+        s = np.sin(angle)
+        mati = np.array([[c, s],[-s, c]]) / scale   # res->orig
+        centre = np.array([centre]).transpose()  # the centre of rotn
+        shift = np.array([shift]).transpose()    # the shift
+        kpos = centre - np.dot(mati, (centre + shift))  
+        # kpos and mati are the two transform constants, kpos is a 2x2 array
+        rsmat, offs =  mati, np.squeeze((kpos[0,0], kpos[1,0]))
+        
+        if interpolation == 'spline':
+            # This is the scipy call
+            data = scipy.ndimage.interpolation.affine_transform(image, rsmat,
+                           offset=offs, order=interp_param, mode='constant',
+                           cval=missing)
+        else:
+            #Use C extension Package
+            if not 'Crotate' in globals():
+                raise ValueError("You do not have the C extension sunpy.image.Crotate")
+            #Set up call parameters depending on interp type.
+            if interpolation == 'nearest':
+                interp_type = Crotate.NEAREST
+            elif interpolation == 'bilinear':
+                interp_type = Crotate.BILINEAR
+            elif interpolation == 'bicubic':
+                interp_type = Crotate.BICUBIC
+            #Make call to extension
+            data = Crotate.affine_transform(image, 
+                                      rsmat, offset=offs, 
+                                      kernel=interp_type, cubic=interp_param, 
+                                      mode='constant', cval=missing)
+            
+        #Return a new map
+        #Copy Header
+        header = self._original_header.copy()
+        # Create new map instance
+        new_map = self.__class__(data, header)
+        
+        return new_map
+    
     def save(self, filepath):
         """Saves the SunPy Map object to a file.
         
@@ -677,7 +903,7 @@ Dimension:\t [%d, %d]
             if range_a[0] is None:
                 range_a[0] = 0
             if range_a[1] is None:
-                range_a[1] = self.shape[0]
+                range_a[1] = self.shape[1]
             if range_b[0] is None:
                 range_b[0] = 0
             if range_b[1] is None:
@@ -704,53 +930,46 @@ Dimension:\t [%d, %d]
         return new_map
 
     @toggle_pylab
-    def plot(self, figure=None, overlays=None, draw_limb=True, gamma=None,
-             draw_grid=False, colorbar=True, basic_plot=False, **matplot_args):
-        """Plots the map object using matplotlib
-
+    def plot(self, gamma=None, annotate=True, axes=None, **imshow_args):
+        """ Plots the map object using matplotlib, in a method equivalent
+        to plt.imshow() using nearest neighbour interpolation.
+        
         Parameters
         ----------
-        overlays : list
-            List of overlays to include in the plot
-        draw_limb : bool
-            Whether the solar limb should be plotted.
-        draw_grid : bool
-            Whether solar meridians and parallels
-        grid_spacing : float
-            Set the spacing between meridians and parallels for the grid
         gamma : float
             Gamma value to use for the color map
-        colorbar : bool
-            Whether to display a colorbar next to the plot
-        basic_plot : bool
-            If true, the data is plotted by itself at it's natural scale; no
-            title, labels, or axes are shown.
-        **matplot_args : dict
-            Matplotlib Any additional imshow arguments that should be used
-            when plotting the image.
-        """
-        if overlays is None:
-            overlays = []
-        if draw_limb:
-            overlays = overlays + [self._draw_limb]
-        # TODO: need to be able to pass the grid spacing to _draw_grid from the
-        # plot command.
-        if draw_grid:
-            overlays = overlays + [self._draw_grid]
-
-        # Create a figure and add title and axes
-        if figure is None:
-            figure = plt.figure(frameon=not basic_plot)
-
-        # Basic plot
-        if basic_plot:
-            axes = plt.Axes(figure, [0., 0., 1., 1.])
-            axes.set_axis_off()
-            figure.add_axes(axes)
             
+         annotate : bool
+            If true, the data is plotted at it's natural scale; with
+            title and axis labels.
+            
+        axes: matplotlib.axes object or None
+            If provided the image will be plotted on the given axes. Else the 
+            current matplotlib axes will be used.
+        
+        **imshow_args : dict
+            Any additional imshow arguments that should be used
+            when plotting the image.
+        
+        Examples
+        --------
+        #Simple Plot with color bar
+        plt.figure()
+        aiamap.plot()
+        plt.colorbar()
+        
+        #Add a limb line and grid
+        aia.plot()
+        aia.draw_limb()
+        aia.draw_grid()
+        """
+
+        #Get current axes
+        if not axes:
+            axes = plt.gca()
+        
         # Normal plot
-        else:
-            axes = figure.add_subplot(111)
+        if annotate:
             axes.set_title("%s %s" % (self.name, self.date))
             
             # x-axis label
@@ -770,35 +989,86 @@ Dimension:\t [%d, %d]
 
         # Determine extent
         extent = self.xrange + self.yrange
-
-        # Matplotlib arguments
-        params = {
-            "cmap": self.cmap,
-            "norm": self.norm()
-        }
-        params.update(matplot_args)
-
+        
+        cmap = copy(self.cmap)
         if gamma is not None:
-            params['cmap'] = copy(params['cmap'])
-            params['cmap'].set_gamma(gamma)
+            cmap.set_gamma(gamma)
+            
+            #make imshow kwargs a dict
+        
+        kwargs = {'origin':'lower',
+                  'cmap':cmap,
+                  'norm':self.norm(),
+                  'extent':extent,
+                  'interpolation':'nearest'}
+        kwargs.update(imshow_args)
+        
+        ret = axes.imshow(self, **kwargs)
+        
+        #Set current image (makes colorbar work)
+        plt.sci(ret)
+        return ret
+        
+    @toggle_pylab
+    def peek(self, draw_limb=True, draw_grid=False, gamma=None,
+                   colorbar=True, basic_plot=False, **matplot_args):
+        """Displays the map in a new figure
 
-        im = axes.imshow(self, origin='lower', extent=extent, **params)
+        Parameters
+        ----------
+        draw_limb : bool
+            Whether the solar limb should be plotted.
+        draw_grid : bool or number
+            Whether solar meridians and parallels are plotted. If float then sets
+            degree difference between parallels and meridians.
+        gamma : float
+            Gamma value to use for the color map
+        colorbar : bool
+            Whether to display a colorbar next to the plot
+        basic_plot : bool
+            If true, the data is plotted by itself at it's natural scale; no
+            title, labels, or axes are shown.
+        **matplot_args : dict
+            Matplotlib Any additional imshow arguments that should be used
+            when plotting the image.
+        """
+        
+        # Create a figure and add title and axes
+        figure = plt.figure(frameon=not basic_plot)
+
+        # Basic plot
+        if basic_plot:
+            axes = plt.Axes(figure, [0., 0., 1., 1.])
+            axes.set_axis_off()
+            figure.add_axes(axes)
+            matplot_args.update({'annotate':False})
+            
+        # Normal plot
+        else:
+            axes = figure.add_subplot(111)
+
+        im = self.plot(axes=axes,**matplot_args)        
         
         if colorbar and not basic_plot:
             figure.colorbar(im)
+        
+        if draw_limb:
+            self.draw_limb(axes=axes)
+        
+        if isinstance(draw_grid, bool):
+            if draw_grid:
+                self.draw_grid(axes=axes)
+        elif isinstance(draw_grid, (int, long, float)):
+            self.draw_grid(axes=axes, grid_spacing=draw_grid)
+        else:
+            raise TypeError("draw_grid should be bool, int, long or float")
 
-        for overlay in overlays:
-            figure, axes = overlay(figure, axes)
+        plt.show()
+        
         return figure
-
-    def show(self, figure=None, overlays=None, draw_limb=False, gamma=1.0,
-             draw_grid=False, colorbar=True, basic_plot=False, **matplot_args):
-        """Displays map on screen. Arguments are same as plot()."""
-        self.plot(figure, overlays, draw_limb, gamma, draw_grid, colorbar, 
-                  basic_plot, **matplot_args).show()
     
     def norm(self):
-        """Default normalization method"""
+        """Default normalization method. Not yet implemented."""
         return None
 
     @classmethod
@@ -852,3 +1122,5 @@ class InvalidHeaderInformation(ValueError):
     """Exception to raise when an invalid header tag value is encountered for a
     FITS/JPEG 2000 file."""
     pass
+
+Map.create.im_func.__doc__ = Map._create.generate_docs()

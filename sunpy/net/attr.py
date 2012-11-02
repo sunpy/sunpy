@@ -113,7 +113,7 @@ class AttrAnd(Attr):
         return hash(frozenset(self.attrs))
     
     def collides(self, other):
-        return any(elem.collides(other) for elem in self)
+        return any(elem.collides(other) for elem in self.attrs)
 
 
 class AttrOr(Attr):
@@ -164,7 +164,7 @@ class AttrOr(Attr):
         return hash(frozenset(self.attrs))
     
     def collides(self, other):
-        return all(elem.collides(other) for elem in self)
+        return all(elem.collides(other) for elem in self.attrs)
 
 
 class ValueAttr(Attr):

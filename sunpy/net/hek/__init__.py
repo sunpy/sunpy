@@ -36,7 +36,8 @@ def _freeze(obj):
 
 class HEKClient(object):
     """ Client to interact with the HEK. """
-    # FIXME: Types!
+    # FIXME: Expose fields in .attrs with the right types
+    # that is, not all StringParamWrapper!
     
     default = {
         'cosec': '2',
@@ -57,7 +58,11 @@ class HEKClient(object):
         
         while True:
             data['page'] = page
-            result = json.load(urlopen(self.url, urlencode(data)))
+            fd = urlopen(self.url, urlencode(data))
+            try:
+                result = json.load(fd)
+            finally:
+                fd.close()
             results.extend(result['result'])
             
             if not result['overmax']:

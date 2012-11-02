@@ -8,6 +8,7 @@
 """
 
 from __future__ import absolute_import
+import os
 from scipy.constants import constants as con
 
 __all__ = ["toggle_pylab", "degrees_to_hours", "degrees_to_arc",
@@ -16,7 +17,7 @@ __all__ = ["toggle_pylab", "degrees_to_hours", "degrees_to_arc",
 
 from matplotlib import pyplot
 import numpy as np
-from itertools import izip, imap
+from itertools import izip, imap, count
 
 def to_signed(dtype):
     """ Return dtype that can hold data of passed dtype but is signed.
@@ -162,16 +163,6 @@ def delta(s):
     return s[1:] - s[:-1]
 
 
-def buffered_write(inp, outp, buffer_size):
-    """ Write from inp to outp in chunks of
-    buffer_size. """
-    while True:
-        read = inp.read(buffer_size)
-        if not read:
-            break
-        outp.write(read)
-
-
 def polyfun_at(coeff, p):
     """ Return value of polynomial with coefficients (highest first) at
     point (can also be an np.ndarray for more than one point) p. """
@@ -268,3 +259,20 @@ def merge(items, key=(lambda x: x)):
             state[item] = (n, key(n))
         except StopIteration:
             del state[item]
+
+
+def replacement_filename(path):
+    """ Return replacement path for already used path. Enumerates
+    until an unused filename is found. E.g., "/home/florian/foo.fits"
+    becomes "/home/florian/foo.0.fits", if that is used
+    "/home/florian/foo.1.fits", etc. """
+    if not os.path.exists(path):
+        return path
+    else:
+        dir_, filename = os.path.split(path)
+        base, ext = os.path.splitext(filename)
+        for c in count():
+            name = base + '.' + str(c) + ext
+            newpath = os.path.join(dir_, name)
+            if not os.path.exists(newpath):
+                return newpath

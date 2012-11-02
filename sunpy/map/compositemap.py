@@ -13,7 +13,9 @@ __email__ = "keith.hughitt@nasa.gov"
 class CompositeMap:
     """
     CompositeMap(map1 [,map2,..])
-    
+
+    A Composite Map class
+
     Parameters
     ----------
     args : [sunpy.map | string]
