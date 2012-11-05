@@ -220,11 +220,25 @@ def lasco_color_table(number):
     
     return colors.LinearSegmentedColormap('mytable', cdict)
 
-def sxt_color_table(filter):
+def sxt_color_table(sxt_filter):
     '''Returns one of the fundamental color tables for Yokhoh SXT images.'''
-    if filter == 'Al':
-        pass
-    if filter == 'WL':
-        pass
-    return None
-    #return colors.LinearSegmentedColormap('mytable', cdict)
+    try:
+        r, g, b = {
+            'Al': (eit_dark_blue_r, eit_dark_blue_g, eit_dark_blue_b), 
+            'WL': (eit_dark_green_r, eit_dark_green_g, eit_dark_green_b)
+        }[sxt_filter]
+    except KeyError:
+        raise ValueError(
+            "Invalid SXT filter type number. Valid values are "
+            "'Al', 'WL'."
+        )
+
+    # Now create the color tuples
+    i = np.linspace(0, 1, r0.size)
+    
+    cdict = dict(
+        (name, list(zip(i, el/255.0, el/255.0)))
+        for el, name in [(r, 'red'),  (g, 'green'), (b, 'blue')]
+    )
+    
+    return colors.LinearSegmentedColormap('mytable', cdict)
