@@ -40,7 +40,7 @@ c3 = ((c1 + c2/2.0) * 255.0 / (c1.max() + c2.max()/2.0)).astype('f')
 
 def aia_color_table(wavelength):
     '''Returns one of the fundamental color tables for SDO AIA images.
-       Based on aia_lct.pro part of SDO/AIA on SSWIDL written by Karl Schriver (2010/04/12).
+       Based on aia_lct.pro part of SDO/AIA on SSWIDL written by Karel Schriver (2010/04/12).
     '''
     try:
         r, g, b = {
@@ -196,11 +196,9 @@ lasco_c3_b = np.concatenate((np.array([0,4,6,10,13,17,20,24,27,31,33,37,40,44,47
 
 def lasco_color_table(number):
     '''Returns one of the fundamental color tables for SOHO LASCO images.'''
-    # SOHO EIT Color tables
-    # EIT 171 IDL Name EIT Dark Bot Blue
-    # EIT 195 IDL Name EIT Dark Bot Green
-    # EIT 284 IDL Name EIT Dark Bot Yellow
-    # EIT 304 IDL Name EIT Dark Bot Red
+    # SOHO LASCO Color tables
+    # LASCO C2 white light IDL Name 
+    # LASCO C3 white light IDL Name 
     try:
         r, g, b = {
             2: (lasco_c2_r, lasco_c2_g, lasco_c2_b), 
@@ -221,3 +219,12 @@ def lasco_color_table(number):
     )
     
     return colors.LinearSegmentedColormap('mytable', cdict)
+
+def sxt_color_table(filter):
+    '''Returns one of the fundamental color tables for Yokhoh SXT images.'''
+    if filter == 'Al':
+        pass
+    if filter == 'WL':
+        pass
+    return None
+    #return colors.LinearSegmentedColormap('mytable', cdict)
