@@ -220,12 +220,14 @@ def lasco_color_table(number):
     
     return colors.LinearSegmentedColormap('mytable', cdict)
 
+grayscale = np.array(range(0,256))
+
 def sxt_color_table(sxt_filter):
     '''Returns one of the fundamental color tables for Yokhoh SXT images.'''
     try:
         r, g, b = {
             'Al': (eit_dark_blue_r, eit_dark_blue_g, eit_dark_blue_b), 
-            'WL': (eit_dark_green_r, eit_dark_green_g, eit_dark_green_b)
+            'WL': (grayscale, grayscale, grayscale)
         }[sxt_filter]
     except KeyError:
         raise ValueError(
