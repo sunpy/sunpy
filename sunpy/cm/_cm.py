@@ -220,13 +220,21 @@ def lasco_color_table(number):
     
     return colors.LinearSegmentedColormap('mytable', cdict)
 
+# Translated from the JP2Gen IDL SXT code lct_yla_gold.pro.  Might be better
+# to explicitly copy the numbers from the IDL calculation.  This is a little
+# more compact.
+sxt_gold_r = np.concatenate((255.0*np.array(range(0,185))/185.0,
+                            255*np.ones(71)))
+sxt_gold_g = 255*(np.array(range(0,256))**1.25)/(255.0**1.25)
+sxt_gold_b = np.concatenate((np.zeros(185),255.0*np.array(range(0,71))/71.0))
+                            
 grayscale = np.array(range(0,256))
 
 def sxt_color_table(sxt_filter):
     '''Returns one of the fundamental color tables for Yokhoh SXT images.'''
     try:
         r, g, b = {
-            'Al': (eit_dark_blue_r, eit_dark_blue_g, eit_dark_blue_b), 
+            'Al': (sxt_gold_r, sxt_gold_g, sxt_gold_b), 
             'WL': (grayscale, grayscale, grayscale)
         }[sxt_filter]
     except KeyError:
