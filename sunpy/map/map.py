@@ -416,13 +416,13 @@ Dimension:\t [%d, %d]
         x, y = self.pixel_to_data()
         rsun = self.rsun_meters
         dsun = self.dsun
-	
+
         b0 = self.heliographic_latitude
         l0 = self.heliographic_longitude
         units = [self.units.get('x'), self.units.get('y')]
-	
-	    #TODO: This function could be optimized. Does not need to convert the entire image
-	    # coordinates
+
+        #TODO: This function could be optimized. Does not need to convert the entire image
+        # coordinates
         lon_self, lat_self = wcs.convert_hpc_hg(rsun, dsun, units[0], units[1], b0, l0, x, y)
         # define the number of points for each latitude or longitude line
         num_points = 20
