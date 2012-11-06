@@ -13,26 +13,35 @@ class XRTMap(Map):
     References
     ----------
     For a description of XRT headers
-    http://proba2.oma.be/index.html/swap/swap-analysis-manual/article/data-products?menu=23
+    ???
     """
+    # Add in some information about the the possible filter wheel measurements
+    Map.filter_wheel1_measurements = ["Al_med", "Al_poly", "Be_med",
+                                      "Be_thin", "C_poly", "Open"]
+    Map.filter_wheel2_measurements = ["Open", "Al_mesh", "Al_thick",
+                                      "Be_thick", "Gband", "Ti_poly"]
     @classmethod
     def get_properties(cls, header):
         """Parses XRT image header"""
         properties = Map.get_properties(header)
-        
-        wavelnth = header.get('wavelnth')
-        if wavelnth == 'Al.1':
-            wavelnth = 'Al01'
-        
+        filter
+        fw1 = header.get('EC_FW1_')
+        if not(fw1.lower() in [x.lower() for x in cls.filter_wheel1_measurements]):
+            pass
+        fw2 = header.get('EC_FW2_')
+        if not(fw2.lower() in [x.lower() for x in cls.filter_wheel2_measurements]):
+            pass
+        # All images get the same color table - IDL Red temperature (loadct, 3)
         properties.update({
             "detector": "XRT",
             "instrument": "XRT",
             "observatory": "Hinode",
-            "name": "Hinode %s" % wavelnth,
+            "name": "XRT %s-%s " % (fw1.replace('_', ' '),
+                                       fw2.replace('_', ' ')),
             "nickname": "XRT",
-            "cmap": cm.get_cmap(name='hinodexrt' + wavelnth.lower())
+            "cmap": cm.get_cmap(name='hinodexrt')
         })
-        return properties 
+        return properties
 
     @classmethod
     def is_datasource_for(cls, header):

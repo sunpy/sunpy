@@ -403,7 +403,7 @@ Dimension:\t [%d, %d]
         Axes to plot limb on or None to use current axes.
         
         grid_spacing: float
-            Spacing (in degrees) for logditude and latitude grid.
+            Spacing (in degrees) for longitude and latitude grid.
         
         Returns
         -------
