@@ -30,12 +30,8 @@ class SXTMap(Map):
             "observatory": "Yohkoh",
             "name": "SXT %s" % wavelnth,
             "nickname": "SXT",
-            "cmap": cm.get_cmap(name='sxt%d' % wavelnth.lower())
+            "cmap": cm.get_cmap(name='yohkohsxt' + wavelnth.lower())
         })
-        # From the file 
-        # http://hesperia.gsfc.nasa.gov/ssw/smm/gen/idl/graphics/sxt_image.keep
-        # it looks like the SXT color table is
-        # IDL's loadct,3 
         return properties 
 
     @classmethod
