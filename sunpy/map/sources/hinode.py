@@ -13,8 +13,8 @@ class XRTMap(Map):
     References
     ----------
     For a description of XRT headers
-    ???
     """
+    #TODO: get a link for the XRT FITS headers
     # Add in some information about the the possible filter wheel measurements
     Map.filter_wheel1_measurements = ["Al_med", "Al_poly", "Be_med",
                                       "Be_thin", "C_poly", "Open"]
