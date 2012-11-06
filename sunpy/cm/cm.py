@@ -33,6 +33,8 @@ yohkohsxtal01 = _cm.sxt_color_table('Al')
 yohkohsxtalmg = _cm.sxt_color_table('Al')
 yohkohsxtwl = _cm.sxt_color_table('WL')
 
+hinodexrt = _cm.xrt_color_table()
+
 
 
 cmlist = {
@@ -56,6 +58,7 @@ cmlist = {
           'yohkohsxtal01': yohkohsxtal01,
           'yohkohsxtalmg': yohkohsxtalmg,
           'yohkohsxtwl': yohkohsxtwl,
+          'hinodexrt': hinodexrt
           }
 
 
