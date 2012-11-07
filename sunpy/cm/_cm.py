@@ -234,13 +234,13 @@ def sxt_color_table(sxt_filter):
     '''Returns one of the fundamental color tables for Yokhoh SXT images.'''
     try:
         r, g, b = {
-            'Al': (sxt_gold_r, sxt_gold_g, sxt_gold_b), 
-            'WL': (grayscale, grayscale, grayscale)
+            'al': (sxt_gold_r, sxt_gold_g, sxt_gold_b), 
+            'wh': (grayscale, grayscale, grayscale)
         }[sxt_filter]
     except KeyError:
         raise ValueError(
             "Invalid SXT filter type number. Valid values are "
-            "'Al', 'WL'."
+            "'al', 'wh'."
         )
 
     # Now create the color tuples

@@ -29,9 +29,8 @@ sohoeit304 = _cm.eit_color_table(304)
 soholasco2 = _cm.lasco_color_table(2)
 soholasco3 = _cm.lasco_color_table(3)
 
-yohkohsxtal01 = _cm.sxt_color_table('Al')
-yohkohsxtalmg = _cm.sxt_color_table('Al')
-yohkohsxtwl = _cm.sxt_color_table('WL')
+yohkohsxtal = _cm.sxt_color_table('al')
+yohkohsxtwh = _cm.sxt_color_table('wh')
 
 hinodexrt = _cm.xrt_color_table()
 
@@ -55,9 +54,8 @@ cmlist = {
           'soholasco2': soholasco2,
           'soholasco3': soholasco3,
           'rhessi': cm.jet,  # pylint: disable=E1101
-          'yohkohsxtal01': yohkohsxtal01,
-          'yohkohsxtalmg': yohkohsxtalmg,
-          'yohkohsxtwl': yohkohsxtwl,
+          'yohkohsxtal': yohkohsxtal,
+          'yohkohsxtwh': yohkohsxtwh,
           'hinodexrt': hinodexrt
           }
 
