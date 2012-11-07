@@ -6,6 +6,8 @@ __email__ = "jack.ireland@nasa.gov"
 
 from sunpy.map import Map
 from sunpy.cm import cm
+from sunpy.time import parse_time
+from datetime import datetime
 
 class XRTMap(Map):
     """XRT Image Map definition
@@ -24,13 +26,16 @@ class XRTMap(Map):
     def get_properties(cls, header):
         """Parses XRT image header"""
         properties = Map.get_properties(header)
-        filter
+        # XRT uses DATE_OBS, not date-obs.
+        properties["date"] = parse_time(header.get('date_obs', None))
+
         fw1 = header.get('EC_FW1_')
         if not(fw1.lower() in [x.lower() for x in cls.filter_wheel1_measurements]):
             pass
         fw2 = header.get('EC_FW2_')
         if not(fw2.lower() in [x.lower() for x in cls.filter_wheel2_measurements]):
             pass
+
         # All images get the same color table - IDL Red temperature (loadct, 3)
         properties.update({
             "detector": "XRT",
