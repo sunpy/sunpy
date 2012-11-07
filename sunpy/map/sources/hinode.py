@@ -29,6 +29,8 @@ class XRTMap(Map):
         # XRT uses DATE_OBS, not date-obs.
         properties["date"] = parse_time(header.get('date_obs', None))
 
+        #TODO: proper exception handling here - report to the user that there is
+        # an unexpected value
         fw1 = header.get('EC_FW1_')
         if not(fw1.lower() in [x.lower() for x in cls.filter_wheel1_measurements]):
             pass
