@@ -25,6 +25,7 @@ from sunpy.util.util import toggle_pylab
 from sunpy.io import read_file, read_file_header
 from sunpy.sun import constants
 from sunpy.time import parse_time
+from sunpy.time import is_time
 from sunpy.util.util import to_signed
 from sunpy.image.rescale import resample, reshape_image_to_4d_superpixel
 
@@ -195,9 +196,16 @@ class Map(np.ndarray, Parent):
     @classmethod
     def get_properties(cls, header):
         """Parses a map header and determines default properties."""
+        if is_time(header.get('date-obs',[])): # Hack! check FITS standard is a time
+            date = header.get('date-obs')
+            # Check commonly used but non-standard FITS keyword for observation time is a time
+        elif is_time(header.get('date_obs',[])): # Horrible [] hack
+            date = header.get('date_obs')
+        else:
+            date = None
         return {
             "cmap": cm.gray,  # @UndefinedVariable
-            "date": parse_time(header.get('date-obs', None)),
+            "date": parse_time(date),
             "detector": header.get('detector', ''),
             "dsun": header.get('dsun_obs', constants.au),
             "exposure_time": header.get('exptime', 0.),
