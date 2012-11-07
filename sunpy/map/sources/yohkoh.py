@@ -6,6 +6,7 @@ __email__ = "jack.ireland@nasa.gov"
 
 from sunpy.map import Map
 from sunpy.cm import cm
+from sunpy.sun import constants
 
 class SXTMap(Map):
     """SXT Image Map definition
@@ -20,17 +21,26 @@ class SXTMap(Map):
         """Parses SXT image header"""
         properties = Map.get_properties(header)
         
+        # 2012/11/07 - the SXT headers do not have a value of the distance from
+        # the spacecraft to the center of the Sun.  The FITS keyword 'DSUN_OBS'
+        # appears to refer to the observed diameter of the Sun.  Until such 
+        # time as that is calculated and properly included in the file, we will 
+        # use the value of 1 AU as a standard.
+        properties['dsun']= constants.au
+        
         wavelnth = header.get('wavelnth')
         if wavelnth == 'Al.1':
             wavelnth = 'Al01'
-        
+        if wavelnth.lower() == 'open':
+            wavelnth = 'white light'
+
         properties.update({
             "detector": "SXT",
             "instrument": "SXT",
             "observatory": "Yohkoh",
             "name": "SXT %s" % wavelnth,
             "nickname": "SXT",
-            "cmap": cm.get_cmap(name='yohkohsxt' + wavelnth.lower())
+            "cmap": cm.get_cmap(name='yohkohsxt' + wavelnth[0:2].lower())
         })
         return properties 
 
