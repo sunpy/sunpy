@@ -11,6 +11,7 @@ Welcome to the SunPy User Guide!
    tutorial
    plotting
    vso
+   helioviewer
    maps
    hek
    spectra
