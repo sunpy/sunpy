@@ -52,7 +52,6 @@ def toggle_pylab(fn):
         return fn_itoggle
     else:
         return fn
-    
 
 def goes_flare_class(gcls):
     """Convert GOES classes into a number to aid size comparison.  Units are
