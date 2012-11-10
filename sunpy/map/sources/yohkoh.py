@@ -45,7 +45,7 @@ class SXTMap(Map):
         return properties 
 
     def norm(self):
-        """Returns a Normalize object to be used with Yohkoh data"""
+        """Returns a Normalize object to be used with SXT data"""
         # byte-scaled images have most likely already been scaled
         if self.dtype == np.uint8:
             return None
