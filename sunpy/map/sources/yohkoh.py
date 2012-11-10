@@ -44,6 +44,20 @@ class SXTMap(Map):
         })
         return properties 
 
+    def norm(self):
+        """Returns a Normalize object to be used with Yohkoh data"""
+        # byte-scaled images have most likely already been scaled
+        if self.dtype == np.uint8:
+            return None
+
+        mean = self.mean()
+        std = self.std()
+        
+        vmin = max(0, mean - 3 * std)
+        vmax = min(self.max(), mean + 3 * std)
+        
+        return colors.Normalize(vmin, vmax)
+
     @classmethod
     def is_datasource_for(cls, header):
         """Determines if header corresponds to an SXT image"""
