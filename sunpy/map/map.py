@@ -126,9 +126,13 @@ class Map(np.ndarray, Parent):
     submap(range_a, range_b, units)
         Returns a submap of the map with the specified range
     plot()
-        Return a matplotlib plot figure object
-    show()
+        Return a matplotlib imageaxes instance, like plt.imshow()
+    peek()
         Display a matplotlib plot to the screen 
+    draw_limb()
+        Draw a line on the image where the solar limb is.
+    draw_grid()
+        Draw a lon/lat grid on a map plot.
     get_header()
         Returns the original header from when the map was first created.
 
