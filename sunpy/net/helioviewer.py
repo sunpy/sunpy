@@ -75,7 +75,7 @@ class HelioviewerClient:
         
         return response
     
-    def download_jp2(self, date, directory=None, **kwargs):
+    def download_jp2(self, date, directory=None, overwrite=False, **kwargs):
         """
         Downloads the JPEG 2000 that most closely matches the specified time and 
         data source.
@@ -131,7 +131,7 @@ class HelioviewerClient:
         if 'jpip' in kwargs:
             return self._get_json(params)
     
-        return self._get_file(params, directory)
+        return self._get_file(params, directory, overwrite=overwrite)
     
     def download_png(self, date, image_scale, layers, directory=None,
                      overwrite=False, **kwargs):
