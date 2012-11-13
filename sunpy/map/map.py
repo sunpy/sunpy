@@ -126,9 +126,13 @@ class Map(np.ndarray, Parent):
     submap(range_a, range_b, units)
         Returns a submap of the map with the specified range
     plot()
-        Return a matplotlib plot figure object
-    show()
+        Return a matplotlib imageaxes instance, like plt.imshow()
+    peek()
         Display a matplotlib plot to the screen 
+    draw_limb()
+        Draw a line on the image where the solar limb is.
+    draw_grid()
+        Draw a lon/lat grid on a map plot.
     get_header()
         Returns the original header from when the map was first created.
 
@@ -1019,7 +1023,7 @@ Dimension:\t [%d, %d]
         draw_limb : bool
             Whether the solar limb should be plotted.
         draw_grid : bool or number
-            Whether solar meridians and parallels are plotted. If number then sets
+            Whether solar meridians and parallels are plotted. If float then sets
             degree difference between parallels and meridians.
         gamma : float
             Gamma value to use for the color map
@@ -1041,6 +1045,7 @@ Dimension:\t [%d, %d]
             axes = plt.Axes(figure, [0., 0., 1., 1.])
             axes.set_axis_off()
             figure.add_axes(axes)
+            matplot_args.update({'annotate':False})
             
         # Normal plot
         else:
@@ -1053,10 +1058,14 @@ Dimension:\t [%d, %d]
         
         if draw_limb:
             self.draw_limb(axes=axes)
-        if draw_grid is True:
-            self.draw_grid(axes=axes)
+        
+        if isinstance(draw_grid, bool):
+            if draw_grid:
+                self.draw_grid(axes=axes)
         elif isinstance(draw_grid, (int, long, float)):
             self.draw_grid(axes=axes, grid_spacing=draw_grid)
+        else:
+            raise TypeError("draw_grid should be bool, int, long or float")
 
         plt.show()
         
