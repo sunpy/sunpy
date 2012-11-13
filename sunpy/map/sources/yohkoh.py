@@ -7,6 +7,8 @@ __email__ = "jack.ireland@nasa.gov"
 from sunpy.map import Map
 from sunpy.cm import cm
 from sunpy.sun import constants
+from matplotlib import colors
+import numpy as np
 
 class SXTMap(Map):
     """SXT Image Map definition
