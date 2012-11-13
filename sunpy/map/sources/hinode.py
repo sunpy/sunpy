@@ -8,6 +8,8 @@ from sunpy.map import Map
 from sunpy.cm import cm
 from sunpy.time import parse_time
 from datetime import datetime
+from matplotlib import colors
+import numpy as np
 
 class XRTMap(Map):
     """XRT Image Map definition
