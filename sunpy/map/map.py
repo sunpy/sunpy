@@ -348,15 +348,15 @@ Dimension:\t [%d, %d]
     @property
     def xrange(self):
         """Return the X range of the image in arcsec from edge to edge."""
-        xmin = self.center['x'] - self.shape[1] / 2 * self.scale['x']
-        xmax = self.center['x'] + self.shape[1] / 2 * self.scale['x']
+        xmin = self.center['x'] - self.shape[1] / 2. * self.scale['x']
+        xmax = self.center['x'] + self.shape[1] / 2. * self.scale['x']
         return [xmin, xmax]
 
     @property
     def yrange(self):
         """Return the Y range of the image in arcsec from edge to edge."""
-        ymin = self.center['y'] - self.shape[0] / 2 * self.scale['y']
-        ymax = self.center['y'] + self.shape[0] / 2 * self.scale['y']
+        ymin = self.center['y'] - self.shape[0] / 2. * self.scale['y']
+        ymax = self.center['y'] + self.shape[0] / 2. * self.scale['y']
         return [ymin, ymax]
     
     @property
