@@ -209,7 +209,7 @@ class Map(np.ndarray, Parent):
             date = None
         return {
             "cmap": cm.gray,  # @UndefinedVariable
-            "date": parse_time(date),
+            "date": parse_time(date) if date is not None else 'N/A',
             "detector": header.get('detector', ''),
             "dsun": header.get('dsun_obs', constants.au),
             "exposure_time": header.get('exptime', 0.),
