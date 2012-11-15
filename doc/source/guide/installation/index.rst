@@ -20,7 +20,7 @@ the instructions below to install SunPy and its requirements.
 
 Installing Python Modules
 -------------------------
-You should now have the following installed on your system; Python, Numpy, Scipy, 
+You should now have the following  on your system; Python, Numpy, Scipy, 
 Matplotlib, git, pip and Qt. You can now install some final remaining dependencies using pip.
 Depending on which system you are using some of these may already be installed 
 but it does not hurt to upgrade: ::
