@@ -96,8 +96,8 @@ class MDIMap(Map):
         rsun = header.get('radius')
         
         # Solar radius in arc-seconds at 1 au
-        # @TODO: use sunpy.sun instead
-        radius_1au = 959.644
+        # previous value radius_1au = 959.644
+        radius_1au = constants.average_angular_size
         
         # MDI images may have radius = 0.0
         if not rsun:
