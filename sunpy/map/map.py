@@ -25,6 +25,7 @@ from sunpy.util.util import toggle_pylab
 from sunpy.io import read_file, read_file_header
 from sunpy.sun import constants
 from sunpy.time import parse_time
+from sunpy.time import is_time
 from sunpy.util.util import to_signed
 from sunpy.image.rescale import resample, reshape_image_to_4d_superpixel
 
@@ -199,9 +200,16 @@ class Map(np.ndarray, Parent):
     @classmethod
     def get_properties(cls, header):
         """Parses a map header and determines default properties."""
+        if is_time(header.get('date-obs',[])): # Hack! check FITS standard is a time
+            date = header.get('date-obs')
+            # Check commonly used but non-standard FITS keyword for observation time is a time
+        elif is_time(header.get('date_obs',[])): # Horrible [] hack
+            date = header.get('date_obs')
+        else:
+            date = None
         return {
             "cmap": cm.gray,  # @UndefinedVariable
-            "date": parse_time(header.get('date-obs', None)),
+            "date": parse_time(date) if date is not None else 'N/A',
             "detector": header.get('detector', ''),
             "dsun": header.get('dsun_obs', constants.au),
             "exposure_time": header.get('exptime', 0.),
@@ -407,7 +415,7 @@ Dimension:\t [%d, %d]
         Axes to plot limb on or None to use current axes.
         
         grid_spacing: float
-            Spacing (in degrees) for logditude and latitude grid.
+            Spacing (in degrees) for longitude and latitude grid.
         
         Returns
         -------
@@ -420,13 +428,13 @@ Dimension:\t [%d, %d]
         x, y = self.pixel_to_data()
         rsun = self.rsun_meters
         dsun = self.dsun
-	
+
         b0 = self.heliographic_latitude
         l0 = self.heliographic_longitude
         units = [self.units.get('x'), self.units.get('y')]
-	
-	    #TODO: This function could be optimized. Does not need to convert the entire image
-	    # coordinates
+
+        #TODO: This function could be optimized. Does not need to convert the entire image
+        # coordinates
         lon_self, lat_self = wcs.convert_hpc_hg(rsun, dsun, units[0], units[1], b0, l0, x, y)
         # define the number of points for each latitude or longitude line
         num_points = 20
