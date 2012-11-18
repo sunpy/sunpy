@@ -16,8 +16,8 @@ Installation using EPD
 One simplest method is to install the `Enthought Python
 Distribution (EPD) <http://www.enthought.com/products/epd_free.php/>`_, which
 includes both Python and many of dependencies needed by SunPy. 
-The Enthought Python Distribution (EPD) is metapackage which handles the
-installation everything for you.
+The Enthought Python Distribution (EPD) is a metapackage which handles the
+installation of everything for you.
 
 Install EPD
 ^^^^^^^^^^^
@@ -34,8 +34,9 @@ and :doc:`install SunPy itself <index>`.
 
 Installation using Virtual Box
 ------------------------------
+
 `Virtual box <https://www.virtualbox.org/>` is a free virtual environment that allows 
-you to run linux or other operating systems concurrently with OS X. Since it is so easy
+you to run linux or other operating systems concurrently with OS X. Since it is very easy
 to install and maintain SunPy under linux, the idea here is to have your own linux 
 environment on your mac and use it for SunPy. We recommend you use Ubuntu linux in your 
 virtual box. You can download an install disk for Ubuntu at 
@@ -50,12 +51,12 @@ Other installation methods
 For users who wish to have more control over the installation of Python, several
 alternative installation methods are provided below, including instructions for
 `Macports <http://www.macports.org/>`_ and `Homebrew <http://mxcl.github.com/homebrew/>`_.
-The following instructions are not recommended for beginners! OS X comes pre-loaded with
+The following instructions are not recommended for beginners. OS X comes pre-loaded with
 Python but each versions of OS X (Mountain Lion, Snow Leopard, etc.) ships with a
 different version of Python. In the instructions below, we therefore recommend that you
 install your own version of Python. You will then have two versions of Python living on
 your system at the same time. It can be confusing to make sure that when you install
-packages they are installed for the correct local Python so beware.
+packages they are installed for the correct Python so beware.
 
 Python 2.7.3+
 ^^^^^^^^^^^^^
@@ -114,13 +115,13 @@ Next, install and update homebrew: ::
 Using homebrew, install Qt and some of the other dependencies needed for 
 compilation later on by pip: ::
 
- brew -v install gfortran pkgconfig git openjpeg readline
+ brew -v install gfortran pkgconfig git openjpeg readline pyqt
 
 Now on to the next steps.
 
 Git
 ^^^
-Head over and `download <http://git-scm.com/downloads>` and install git.
+Head over and `download <http://git-scm.com/downloads>` and install git. 
 
 Pip
 ^^^

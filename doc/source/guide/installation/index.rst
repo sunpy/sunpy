@@ -29,11 +29,10 @@ but it does not hurt to upgrade: ::
  pip install --upgrade pyfits
  pip install --upgrade suds
  pip install --upgrade pandas
- pip install --upgrade suds
  pip install --upgrade beautifulsoup4
 
-We also recommend you use ipython (a great python enviromnent). This can also be installed
-using pip: ::
+We also recommend you use `ipython <http://ipython.org/>` (a great python enviromnent). 
+This can also be installed using pip: ::
 
  pip install --upgrade ipython
  
@@ -47,8 +46,8 @@ All done with the SunPy Python prerequisites. You are now ready to install SunPy
 Installing SunPy
 ----------------
 There are a number of ways of installing SunPy. We currently recommend you use the latest
-(development) version of SunPy as we are developing quickly. To do this you'll want to 
-install git to grab the latest code from github. If you would rather have a more stable
+(development) version of SunPy as we are developing quickly. To do this you'll use git 
+and pip to grab the latest code from github. If you would rather have a more stable
 version of SunPy then check out the section below on grabbing the stable SunPy.
 
 Grabbing the latest SunPy
@@ -83,8 +82,8 @@ run: ::
 
     git clone https://github.com/sunpy/sunpy.git
     
-This will download the latest version of SunPy. Finally, cd into the SunPy code
-tree and run: ::
+This will download the latest version of SunPy. Finally, from inside the new SunPy 
+directory run: ::
 
     pip install -e .
     
@@ -98,7 +97,7 @@ That's it!
    
 Grabbing the stable SunPy
 =========================
-If you'd like want to use a more stable version of SunPy and only upgrade at milestones
+If you'd like to use a more stable version of SunPy and only upgrade at milestones
 then head over to `github <https://github.com/sunpy/sunpy/tags>` and download the latest
 stable release. After extracting the download you can install SunPy by going into the directory
 and running: ::

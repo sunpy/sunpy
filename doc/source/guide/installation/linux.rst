@@ -30,7 +30,7 @@ which assists with installing Python packages.
 
 Although `easy_install`_ is capable of installing most of
 the dependencies needed for SunPy itself, a more powerful tool called 
-`pip <http://pypi.python.org/pypi/pip>`__ which provides a more flexible installation 
+`pip <http://pypi.python.org/pypi/pip>`__ provides a more flexible installation 
 (including support for uninstalling, upgrading, and installing from remote 
 sources such as GitHub) and should be used instead. 
 
