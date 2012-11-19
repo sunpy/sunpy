@@ -322,7 +322,7 @@ Dimension:\t [%d, %d]
 [dx, dy] =\t [%f, %f]
  
 """ % (self.observatory, self.instrument, self.detector, self.measurement,
-       self.date.strftime("%Y-%m-%d %H:%M:%S"), self.exposure_time,
+       self.date, self.exposure_time,
        self.shape[1], self.shape[0], self.scale['x'], self.scale['y']) 
      + np.ndarray.__repr__(self))
 
