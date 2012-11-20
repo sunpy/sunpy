@@ -155,8 +155,10 @@ class LightCurve(object):
     
     def peek(self, **kwargs):
         """Displays the light curve in a new figure"""
-        self.plot(**kwargs)
-        figure = plt.gcf()
+        
+        figure = plt.figure()
+        
+        lines = self.plot(**kwargs)
         
         figure.show()
         
