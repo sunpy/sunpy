@@ -99,10 +99,10 @@ Grabbing the stable SunPy
 =========================
 If you'd like to use a more stable version of SunPy and only upgrade at milestones
 then head over to `github <https://github.com/sunpy/sunpy/tags>` and download the latest
-stable release. After extracting the download you can install SunPy by going into the directory
-and running: ::
+stable release. After extracting the download you can install SunPy by using pip like so
+: ::
 
-    python setup.py install
+    pip install ./downloads/SunPyPackage-1.0.4.tar.gz
     
 This will add it to your existing Python modules. To upgrade to the next version, just
 head back to the github page and grab the next version and repeat the process above.
