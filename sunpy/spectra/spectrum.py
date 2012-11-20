@@ -65,9 +65,7 @@ class Spectrum(np.ndarray):
         
         figure = plt.figure()
         
-        axes = figure.add_subplot(111)
-        
-        lines = self.plot(axes=axes,**matplot_args)
+        lines = self.plot(**matplot_args)
         
         plt.show()
         
