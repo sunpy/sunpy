@@ -322,7 +322,7 @@ Dimension:\t [%d, %d]
 [dx, dy] =\t [%f, %f]
  
 """ % (self.observatory, self.instrument, self.detector, self.measurement,
-       self.date.strftime("%Y-%m-%d %H:%M:%S"), self.exposure_time,
+       self.date, self.exposure_time,
        self.shape[1], self.shape[0], self.scale['x'], self.scale['y']) 
      + np.ndarray.__repr__(self))
 
@@ -360,15 +360,15 @@ Dimension:\t [%d, %d]
     @property
     def xrange(self):
         """Return the X range of the image in arcsec from edge to edge."""
-        xmin = self.center['x'] - self.shape[1] / 2 * self.scale['x']
-        xmax = self.center['x'] + self.shape[1] / 2 * self.scale['x']
+        xmin = self.center['x'] - self.shape[1] / 2. * self.scale['x']
+        xmax = self.center['x'] + self.shape[1] / 2. * self.scale['x']
         return [xmin, xmax]
 
     @property
     def yrange(self):
         """Return the Y range of the image in arcsec from edge to edge."""
-        ymin = self.center['y'] - self.shape[0] / 2 * self.scale['y']
-        ymax = self.center['y'] + self.shape[0] / 2 * self.scale['y']
+        ymin = self.center['y'] - self.shape[0] / 2. * self.scale['y']
+        ymax = self.center['y'] + self.shape[0] / 2. * self.scale['y']
         return [ymin, ymax]
     
     @property
