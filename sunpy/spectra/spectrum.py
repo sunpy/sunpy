@@ -67,7 +67,7 @@ class Spectrum(np.ndarray):
         
         lines = self.plot(**matplot_args)
         
-        plt.show()
+        figure.show()
         
         return figure
         
