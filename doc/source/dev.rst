@@ -74,7 +74,7 @@ on the `SunPy project page <https://github.com/sunpy/sunpy>`_
 Next, you need to download the forked repository. Clone the fork to your 
 local machine, edit and run: ::
 
- git clone https://github.com/your_username/sunpy.git 
+ git clone git@github.com:your_username/sunpy.git
  
 By default your fork of the repo on GitHub is identified by the name `origin`.
 In order to keep the fork up to date with the main repo, it is useful to add it
