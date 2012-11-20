@@ -230,7 +230,7 @@ def convert_hpc_hg(rsun, dsun, units_x, units_y, b0, l0, x, y):
 
 def get_center(size, scale, crpix, crval):
     """Returns the center of the map."""
-    return scale * (size - 1) / 2 + crval - (crpix - 1) * scale
+    return scale * (size - 1) / 2. + crval - (crpix - 1) * scale
 
 def proj_tan(x, y, force=False):
     """Applies the gnomonic (TAN) projection to intermediate relative 
