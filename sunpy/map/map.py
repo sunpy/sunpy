@@ -1049,7 +1049,7 @@ Dimension:\t [%d, %d]
             
         # Normal plot
         else:
-            axes = figure.add_subplot(111)
+            axes = figure.gca()
 
         im = self.plot(axes=axes,**matplot_args)        
         
@@ -1067,7 +1067,7 @@ Dimension:\t [%d, %d]
         else:
             raise TypeError("draw_grid should be bool, int, long or float")
 
-        plt.show()
+        figure.show()
         
         return figure
     
