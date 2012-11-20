@@ -18,7 +18,13 @@ class LogicalLightCurve(LightCurve):
     """
     Logical light curve.  Originated from a need to analyze the times of HEK
     results, where 'True' indicates an event was observed, and 'False' indicates 
-    an event was not observed."""
+    an event was not observed.
+        
+    Examples
+    --------
+    >>> import sunpy
+    >>> lyra = sunpy.lightcurve.LogicalLightCurve.create()
+    """
         
     def show(self, **kwargs):
         """Shows a plot of the light curve"""

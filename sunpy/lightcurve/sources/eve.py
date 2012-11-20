@@ -14,10 +14,10 @@ class EVELightCurve(LightCurve):
     Examples
     --------
     >>> import sunpy
-    >>> eve = sunpy.lightcurve.EVELightCurve()
-    >>> eve = sunpy.lightcurve.EVELightCurve('~/Downloads/EVE_Fe_IX_171_averages.csv')
-    >>> eve = sunpy.lightcurve.EVELightCurve('2012/06/20')
-    >>> eve = sunpy.lightcurve.EVELightCurve("http://lasp.colorado.edu/eve/data_access/quicklook/quicklook_data/L0CS/LATEST_EVE_L0CS_DIODES_1m.txt")
+    >>> eve = sunpy.lightcurve.EVELightCurve.create()
+    >>> eve = sunpy.lightcurve.EVELightCurve.create('~/Downloads/EVE_Fe_IX_171_averages.csv')
+    >>> eve = sunpy.lightcurve.EVELightCurve.create('2012/06/20')
+    >>> eve = sunpy.lightcurve.EVELightCurve.create("http://lasp.colorado.edu/eve/data_access/quicklook/quicklook_data/L0CS/LATEST_EVE_L0CS_DIODES_1m.txt")
     >>> 
     >>> eve.show()
     
