@@ -89,15 +89,20 @@ a short bit of code to get you started: ::
     # the solar radius
     print(con.radius)
 
-    # not all constants have a shortcut assigned to them (as above)
-    # the rest of the constants are stored in a dictionary
-    solar_constants = con.physical_constants
+Not all constants have a shortcut assigned to them (as above). The rest of the constants 
+are stored in a dictionary. The following code grabs the dictionary and gets all of the
+keys.::
 
-    # to get a list of all of the values stored in this dictionary
+    solar_constants = con.physical_constants
     solar_constants.keys()
     
-    # or you can use the following convinience method to list them all
+You can also use the following function to print out a table of all of the values
+available. ::
+
     con.print_all()
+
+These constants are provided as a convenience so that everyone is using the same 
+(accepted values). More will be added over time.
 
 4. Working with Times
 ---------------------
