@@ -25,6 +25,7 @@ from sunpy.util.util import toggle_pylab
 from sunpy.io import read_file, read_file_header
 from sunpy.sun import constants
 from sunpy.time import parse_time
+from sunpy.time import is_time
 from sunpy.util.util import to_signed
 from sunpy.image.rescale import resample, reshape_image_to_4d_superpixel
 
@@ -126,9 +127,13 @@ class Map(np.ndarray, Parent):
     submap(range_a, range_b, units)
         Returns a submap of the map with the specified range
     plot()
-        Return a matplotlib plot figure object
-    show()
+        Return a matplotlib imageaxes instance, like plt.imshow()
+    peek()
         Display a matplotlib plot to the screen 
+    draw_limb()
+        Draw a line on the image where the solar limb is.
+    draw_grid()
+        Draw a lon/lat grid on a map plot.
     get_header()
         Returns the original header from when the map was first created.
 
@@ -195,9 +200,16 @@ class Map(np.ndarray, Parent):
     @classmethod
     def get_properties(cls, header):
         """Parses a map header and determines default properties."""
+        if is_time(header.get('date-obs',[])): # Hack! check FITS standard is a time
+            date = header.get('date-obs')
+            # Check commonly used but non-standard FITS keyword for observation time is a time
+        elif is_time(header.get('date_obs',[])): # Horrible [] hack
+            date = header.get('date_obs')
+        else:
+            date = None
         return {
             "cmap": cm.gray,  # @UndefinedVariable
-            "date": parse_time(header.get('date-obs', None)),
+            "date": parse_time(date) if date is not None else 'N/A',
             "detector": header.get('detector', ''),
             "dsun": header.get('dsun_obs', constants.au),
             "exposure_time": header.get('exptime', 0.),
@@ -310,7 +322,7 @@ Dimension:\t [%d, %d]
 [dx, dy] =\t [%f, %f]
  
 """ % (self.observatory, self.instrument, self.detector, self.measurement,
-       self.date.strftime("%Y-%m-%d %H:%M:%S"), self.exposure_time,
+       self.date, self.exposure_time,
        self.shape[1], self.shape[0], self.scale['x'], self.scale['y']) 
      + np.ndarray.__repr__(self))
 
@@ -348,15 +360,15 @@ Dimension:\t [%d, %d]
     @property
     def xrange(self):
         """Return the X range of the image in arcsec from edge to edge."""
-        xmin = self.center['x'] - self.shape[1] / 2 * self.scale['x']
-        xmax = self.center['x'] + self.shape[1] / 2 * self.scale['x']
+        xmin = self.center['x'] - self.shape[1] / 2. * self.scale['x']
+        xmax = self.center['x'] + self.shape[1] / 2. * self.scale['x']
         return [xmin, xmax]
 
     @property
     def yrange(self):
         """Return the Y range of the image in arcsec from edge to edge."""
-        ymin = self.center['y'] - self.shape[0] / 2 * self.scale['y']
-        ymax = self.center['y'] + self.shape[0] / 2 * self.scale['y']
+        ymin = self.center['y'] - self.shape[0] / 2. * self.scale['y']
+        ymax = self.center['y'] + self.shape[0] / 2. * self.scale['y']
         return [ymin, ymax]
     
     @property
@@ -403,7 +415,7 @@ Dimension:\t [%d, %d]
         Axes to plot limb on or None to use current axes.
         
         grid_spacing: float
-            Spacing (in degrees) for logditude and latitude grid.
+            Spacing (in degrees) for longitude and latitude grid.
         
         Returns
         -------
@@ -416,13 +428,13 @@ Dimension:\t [%d, %d]
         x, y = self.pixel_to_data()
         rsun = self.rsun_meters
         dsun = self.dsun
-	
+
         b0 = self.heliographic_latitude
         l0 = self.heliographic_longitude
         units = [self.units.get('x'), self.units.get('y')]
-	
-	    #TODO: This function could be optimized. Does not need to convert the entire image
-	    # coordinates
+
+        #TODO: This function could be optimized. Does not need to convert the entire image
+        # coordinates
         lon_self, lat_self = wcs.convert_hpc_hg(rsun, dsun, units[0], units[1], b0, l0, x, y)
         # define the number of points for each latitude or longitude line
         num_points = 20

@@ -48,7 +48,7 @@ mode.
 
 To turn on interactivity for pyplot use the command ::
     
-    plt.ion(). 
+    plt.ion()
     
 In interactive mode, the plot will appear at the first plot() command and most 
 commands will update the plot as you call them. Here is an example ::
@@ -72,11 +72,14 @@ and access the figures and axes objects. Here is an example ::
 
     import matplotlib.pyplot as plt
     import numpy as np
+    
     x = np.arange(0, 10, 0.2)
     y = np.sin(x)
+    
     fig = plt.figure()
     ax = fig.add_subplot(111)
     ax.plot(x, y)
+    
     plt.show()
 
 Figure is the top-level container for all plot elements and axes is the top-level container
@@ -101,12 +104,13 @@ all sunpy base objects (e.g. map, spectra, lightcurve) define their own peek() c
 For example you can do the following ::
 
     import sunpy
-    map = sunpy.make_map(sunpy.EIT_195_IMAGE)
-    map.peek(draw_limb=True)
+    
+    smap = sunpy.make_map(sunpy.EIT_195_IMAGE)
+    smap.peek(draw_limb=True)
 
 This creates a plot window with all axes defined, a plot title, and the image of the map
-data all defined by the contents of the map. As this is command makes use of show(), the 
-plot window blocks and must be closed before doing anything else. This is meant as a 
+data all defined by the contents of the map. As this is command makes use of show(), in non-interactive 
+mode the plot window blocks and must be closed before doing anything else. This is meant as a 
 quick way to visualize the contents of a sunpy object you've created.
 
 6. plot()
@@ -120,21 +124,25 @@ and therefore manipulate the plot as you see fit. Here is an example of this at 
 
     import sunpy
     import matplotlib.pyplot as plt
-    map = sunpy.make_map(sunpy.EIT_195_IMAGE)
-    map.plot()
-    map.draw_limb()
+    
+    smap = sunpy.make_map(sunpy.EIT_195_IMAGE)
+    smap.plot()
+    smap.draw_limb()
+    
     plt.show()
 
 This output of this example is equivalent to one in the previous section. The map.plot()
 command is equivalent to ax.plot(x,y) command which we introduced in section 3. Similar
 to that command it will create a figure for you if you haven't created on yourself. For
-advanced plotting you'll want to create it yourself. 
+advanced plotting you'll want to create it yourself. ::
 
     fig = plt.figure()
     ax = plt.subplot(1,1,1)
-    map.plot()
+    
+    smap.plot()
     plt.colorbar()    
     ax.plot([-1000,1000], [0,0], color="white")
+    
     plt.show()
 
 The above a plot of line across the map. Using the fig.gca() command to get access to the
@@ -144,9 +152,11 @@ using the show() command. Here is another example ::
     from matplotlib import patches
     fig = plt.figure()
     ax = plt.subplot(1,1,1)
-    map.plot()
+    
+    smap.plot()
     rect = patches.Rectangle([-350, -650], 500, 500, color = 'white', fill=False)
     ax.add_artist(rect)
+    
     plt.show()
     
 Finally, here is a more complex example, starting from the beginning::
@@ -154,21 +164,58 @@ Finally, here is a more complex example, starting from the beginning::
     from matplotlib import patches
     import sunpy
     import matplotlib.pyplot as plt
-    map = sunpy.make_map(sunpy.AIA_171_IMAGE)
-    smap = map.submap([-100-250, -100+250], [-400-250, -400+250])
+    smap = sunpy.make_map(sunpy.AIA_171_IMAGE)
+    submap = map.submap([-100-250, -100+250], [-400-250, -400+250])
     rect = patches.Rectangle([-100-250, -400-250], 500, 500, color = 'white', fill=False)
         
     fig = plt.figure()
     ax1 = fig.add_subplot(2,1,1)
-    map.plot()
-    ax1.add_artist(rect)
-    ax2 = fig.add_subplot(2,1,2)
     smap.plot()
-    smap.draw_grid(grid_spacing=10)
+    ax1.add_artist(rect)
+    
+    ax2 = fig.add_subplot(2,1,2)
+    submap.plot()
+    submap.draw_grid(grid_spacing=10)
     ax2.set_title('submap')
     fig.subplots_adjust(hspace=0.4)
+    
     plt.show()
 
 The above example creates two side by side plots one with the overall view of the Sun
 with a small area marked with a white box. That smaller view is then shown in the plot
 below it. The spacing between the two plots is controlled by fig.subplots_adjust().
+
+7. Specifying a Colormap
+------------------------
+
+There are a number of color maps defined in SunPy which are used for data from 
+particular missions (e.g. SDO/AIA). 
+A simple example on how to use the color maps provided by SunPy: ::
+
+    from sunpy.cm import cm
+    
+    # cmlist is a dictionary with all of the color tables
+    # to list all of the keys of the dictionary
+    cm.cmlist.keys()
+
+    # to grab a particular colortable then
+    cmap = cm.cmlist.get('sdoaia94')
+
+    # you can also get a visual representation of all of the color tables 
+    cm.show_colormaps()
+
+
+.. image:: ../images/plotting_ex2.png
+
+These can be used with the standard commands to change the colormap::
+
+    import sunpy
+    from sunpy.cm import cm
+
+    cmap = cm.cmlist.get('sdoaia94')
+    smap = sunpy.make_map(sunpy.AIA_171_IMAGE)
+    
+    fig = plt.figure()
+    ax = plt.subplot(1,1,1)
+    smap.plot(cmap=cmap)
+    plt.show()
