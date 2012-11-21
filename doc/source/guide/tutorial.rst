@@ -1,6 +1,6 @@
-----------------
+---------------------
 A brief tour of SunPy
-----------------
+---------------------
 
 Welcome to the SunPy tutorial! This brief tutorial will walk you through some 
 of the functionality currently offered by SunPy. Start by reading this tutorial
@@ -28,7 +28,7 @@ a map from one of the supported data products is with the `sunpy.make_map()` com
     aia = sunpy.make_map(sunpy.AIA_171_IMAGE)
 
 This returns a map named aia which can be maniputated with standard SunPy map commands.
-
+For more information about maps checkout the :doc:`map guide <maps>`.
 
 2. Plotting
 -----------
@@ -125,7 +125,9 @@ and times. Here is a short example: ::
     # TimeRange objects are useful for representing ranges of time
     time_range = TimeRange('2010/03/04 00:10', '2010/03/04 00:20')
     time_range.center()
-    
+
+For more information about working with time in SunPy checkout the :doc:`time guide <time>`.
+
 5. Querying the VSO
 -------------------
 There are a couple different ways to query and download data from the VSO using
@@ -161,6 +163,8 @@ non-interactive version of the main API::
 
 Note that specifying a path is optional and if you do not specify one the files
 will simply be downloaded into a temporary directory (e.g. /tmp/xyz).
+For more information about vso client checkout the :doc:`vso guide <vso>`.
+
 
 6. Querying Helioviewer.org
 ---------------------------
@@ -187,3 +191,5 @@ are the pixel values for the image dimensions.
 The result is:
 
 .. image:: ../images/helioviewer_download_png_ex1.png
+
+For more information checkout the :doc:`helioviewer guide <helioviewer>`.
