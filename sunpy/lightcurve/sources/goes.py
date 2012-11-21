@@ -14,11 +14,10 @@ class GOESLightCurve(LightCurve):
     
     Examples
     --------
-    >>> import sunpy
-    >>> goes = sunpy.lightcurve.GOESLightCurve.create()
-    >>> goes = sunpy.lightcurve.GOESLightCurve.create('2012/06/01', '2012/06/05')
-    >>> 
-    >>> goes.show()
+    import sunpy
+    goes = sunpy.lightcurve.GOESLightCurve.create()
+    goes = sunpy.lightcurve.GOESLightCurve.create('2012/06/01', '2012/06/05')
+    goes.show()
     
     References
     ----------

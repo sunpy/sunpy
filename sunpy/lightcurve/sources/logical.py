@@ -22,8 +22,8 @@ class LogicalLightCurve(LightCurve):
         
     Examples
     --------
-    >>> import sunpy
-    >>> lyra = sunpy.lightcurve.LogicalLightCurve.create()
+    import sunpy
+    lyra = sunpy.lightcurve.LogicalLightCurve.create()
     """
         
     def show(self, **kwargs):

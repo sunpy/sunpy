@@ -44,14 +44,13 @@ class LightCurve(object):
 
     Examples
     --------
-    >>> import sunpy
-    >>> import datetime
-    >>> base = datetime.datetime.today()
-    >>> dates = [base - datetime.timedelta(minutes=x) for x in 
-    range(0, 24 * 60)]
-    >>> light_curve = sunpy.lightcurve.LightCurve.create(
+    import sunpy
+    import datetime
+    base = datetime.datetime.today()
+    dates = [base - datetime.timedelta(minutes=x) for x in range(0, 24 * 60)]
+    light_curve = sunpy.lightcurve.LightCurve.create(
     {"param1": range(24 * 60)}, index=dates)
-    >>> light_curve.show()
+    light_curve.show()
 
     References
     ----------
