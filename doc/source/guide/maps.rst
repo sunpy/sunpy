@@ -1,10 +1,21 @@
-----
+====
 Maps
-----
+====
 
 Maps in SunPy are spatially-aware data arrays. In other words, they are 2-dimensional data associated with a coordinate system. In this guide, we will 
 cover some of the basic functionality of maps. Once you've read through this guide check out the :doc:`code reference</reference/index>` for a more
 thorough look at SunPy maps.
+
+------------
+Data Support
+------------
+The map object currently supports the following data sources
+
+- SDO/AIA
+- Yohkoh/XRT
+- SOHO/EIT, SOHO/LASCO, SOHO/MDI
+- STEREO/EUVI, STEREO/COR
+- PROBA2/SWAP
 
 1. Creating maps
 ----------------
