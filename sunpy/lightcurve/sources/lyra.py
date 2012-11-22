@@ -22,7 +22,7 @@ class LYRALightCurve(LightCurve):
     lyra = sunpy.lightcurve.LYRALightCurve.create('~/Data/lyra/lyra_20110810-000000_lev2_std.fits')
     lyra = sunpy.lightcurve.LYRALightCurve.create('2011/08/10')
     lyra = sunpy.lightcurve.LYRALightCurve.create("http://proba2.oma.be/lyra/data/bsd/2011/08/10/lyra_20110810-000000_lev2_std.fits")
-    lyra.show()
+    lyra.peek()
     
     References
     ----------
