@@ -8,6 +8,8 @@ import os
 from pandas.io.parsers import read_csv
 from datetime import datetime  
 
+import matplotlib.pyplot as plt
+
 class EVELightCurve(LightCurve):
     """SDO EVE light curve definition
     
@@ -25,7 +27,8 @@ class EVELightCurve(LightCurve):
     | http://lasp.colorado.edu/home/eve/data/data-access/
     """
 
-    def plot(self, **kwargs):
+    def peek(self, **kwargs):
+        figure = plt.figure()
         # Choose title if none was specified
         if not kwargs.has_key("title"):
             if len(self.data.columns) > 1:
@@ -37,9 +40,11 @@ class EVELightCurve(LightCurve):
                 else:
                     kwargs['title'] = 'EVE Averages'
 
-        lines = LightCurve.plot(self, **kwargs)
+        self.plot(**kwargs)
         
-        return lines
+        figure.show()
+        
+        return figure
         
     @staticmethod
     def _get_default_uri():

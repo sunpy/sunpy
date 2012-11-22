@@ -29,7 +29,7 @@ class LYRALightCurve(LightCurve):
     | http://proba2.sidc.be/data/LYRA
     """
 
-    def plot(self, axes=None, names=3, **kwargs):
+    def peek(self, names=3, **kwargs):
         """Plots the LYRA data
         
         See: http://pandas.sourceforge.net/visualization.html
@@ -49,8 +49,8 @@ class LYRALightCurve(LightCurve):
         #            kwargs['title'] = 'LYRA data'
 
         """Shows a plot of all four light curves"""
-        if not axes:
-            axes = plt.gca()
+        figure = plt.figure()
+        axes = plt.gca()
         
         axes = self.data.plot(ax=axes, subplots=True, sharex=True, **kwargs)
         #plt.legend(loc='best')
@@ -65,7 +65,9 @@ class LYRALightCurve(LightCurve):
         axes[0].set_title("LYRA ("+ self.data.index[0].strftime('%Y-%m-%d') +")")
         axes[-1].set_xlabel("Time")
         
-        return axes
+        figure.show()
+        
+        return figure
 
     
     @staticmethod

@@ -25,11 +25,12 @@ class GOESLightCurve(LightCurve):
     | http://www.ngdc.noaa.gov/goes/sem/getData/goes15
     """
 
-    def plot(self, axes=None, title="GOES Xray Flux", **kwargs):
+    def peek(self, title="GOES Xray Flux", **kwargs):
         """Plots GOES light curve is the usual manner"""
         
-        if not axes:
-            axes = plt.gca()
+        
+        figure = plt.figure()
+        axes = plt.gca()
         
         dates = matplotlib.dates.date2num(self.data.index)
         
@@ -59,9 +60,10 @@ class GOESLightCurve(LightCurve):
         axes.xaxis.set_major_formatter(formatter)
         
         axes.fmt_xdata = matplotlib.dates.DateFormatter('%H:%M')
-        plt.gcf().autofmt_xdate()
+        figure.autofmt_xdate()
+        figure.show()
         
-        return axes
+        return figure
     
     @classmethod
     def _get_default_uri(cls):

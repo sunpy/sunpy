@@ -141,25 +141,17 @@ class LightCurve(object):
         #Get current axes
         if axes is None:
             axes = plt.gca()
-           
-        old_lines = axes.get_lines()
-        
-        self.data.plot(ax=axes, **plot_args)
-        
-        new_lines = axes.get_lines()
-        
-        # Only return newly added lines
-        for old_line in old_lines:
-        	new_lines.remove(old_line)
-        
-        return new_lines
+         
+        axes = self.data.plot(ax=axes, **plot_args)
+
+        return axes
     
     def peek(self, **kwargs):
         """Displays the light curve in a new figure"""
         
         figure = plt.figure()
         
-        lines = self.plot(**kwargs)
+        self.plot(**kwargs)
         
         figure.show()
         
