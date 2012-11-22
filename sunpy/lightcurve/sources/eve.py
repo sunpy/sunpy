@@ -25,7 +25,7 @@ class EVELightCurve(LightCurve):
     | http://lasp.colorado.edu/home/eve/data/data-access/
     """
 
-    def show(self, **kwargs):
+    def plot(self, **kwargs):
         # Choose title if none was specified
         if not kwargs.has_key("title"):
             if len(self.data.columns) > 1:
@@ -37,10 +37,9 @@ class EVELightCurve(LightCurve):
                 else:
                     kwargs['title'] = 'EVE Averages'
 
-        #LightCurve.show(kwargs)
-        from matplotlib import pyplot as plt
-        self.data.plot(**kwargs)
-        plt.show()
+        lines = LightCurve.plot(self, **kwargs)
+        
+        return lines
         
     @staticmethod
     def _get_default_uri():
