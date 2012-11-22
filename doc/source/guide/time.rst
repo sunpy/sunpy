@@ -1,6 +1,7 @@
--------------
+=============
 Time in SunPy
--------------
+=============
+
 Working with times and time ranges is a standard task in solar data analysis as such
 SunPy strives to provide convenient and easy methods to do the simple stuff. Python
 already provides an object for a time or date through the `datetime object 
