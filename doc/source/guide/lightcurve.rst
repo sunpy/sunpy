@@ -23,7 +23,7 @@ The lightcurve object currently supports the following data sources
 
 - SDO/EVE
 - GOES XRS
-- PROBA3/LYRA
+- PROBA2/LYRA
 
 1. Creating a Lightcurve
 ------------------------
