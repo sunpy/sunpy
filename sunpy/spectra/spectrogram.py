@@ -239,6 +239,8 @@ class TimeFreq(object):
 class Spectrogram(np.ndarray, Parent):
     """ Base class for spectral analysis in SunPy.
     
+    .. warning:: This module is under development! Use at your own risk.
+    
     Parameters
     ----------
     data : np.ndarray
