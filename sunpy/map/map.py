@@ -150,10 +150,7 @@ class Map(np.ndarray, Parent):
     [ 0.    ,  0.    , -1.1875, ...,  0.125 ,  0.    ,  0.6875]])
     >>> aia.units['x']
     'arcsec'
-    >>> aia.show()
-    >>> import matplotlib.cm as cm
-    >>> import matplotlib.colors as colors
-    >>> aia.show(cmap=cm.hot, norm=colors.Normalize(1, 2048))
+    >>> aia.peek()
 
     See Also
     --------
