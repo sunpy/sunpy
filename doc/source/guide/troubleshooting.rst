@@ -15,12 +15,53 @@ Obtaining sunpy version
 To find out your sunpy version number, import it and print the
 ``__version__`` attribute::
 
-    >>> import sunpy
-    >>> matplotlib.__version__
-    '0.1'
-
+    import sunpy
+    sunpy.__version__
 
 .. _locating-sunpy-install:
+
+System Info
+===========
+
+To quickly collect information on your system, you can use our convienience function
+``system_info`` which you can run through: ::
+
+    import sunpy
+    sunpy.util.system_info()
+
+The output should look something like: ::
+
+    ==========================================================
+     SunPy Installation Information
+    
+     Sunday, 18. November 2012 11:06PM UT
+    ==========================================================
+    
+    ###########
+     General
+    ###########
+    OS: Mac OS X 10.8.2 (i386)
+    Python: 2.7.3 (64bit)
+    
+    ####################
+     Required libraries
+    ####################
+    SunPy: 0.1
+    NumPy: 1.6.2
+    SciPy: 0.10.1
+    Matplotlib: 1.2.x
+    PyFITS: 3.0.8
+    pandas: 0.8.1
+    
+    #######################
+     Recommended libraries
+    #######################
+    beautifulsoup4: 4.1.1
+    PIL: NOT INSTALLED
+    PyQt: 4.9.4
+    SUDS: 0.4'
+
+This information is especially useful if you are running into a bug and need help.
 
 :file:`sunpy` install location
 ===================================
@@ -28,61 +69,66 @@ To find out your sunpy version number, import it and print the
 You can find what directory sunpy is installed in by importing it
 and printing the ``__file__`` attribute::
 
-    >>> import sunpy
-    >>> sunpy.__file__
-    '/home/jdhunter/dev/lib64/python2.5/site-packages/matplotlib/__init__.pyc'
-
+    import sunpy
+    sunpy.__file__
+ 
 .. _locating-matplotlib-config-dir:
 
 :file:`.sunpy` directory location
 ======================================
 
-Each user has a :file:`.sunpy/` directory which may contain a
+Each user should have a :file:`.sunpy/` directory which should contain a
 :ref:`sunpyrc <customizing-with-sunpyrc-files>` file. To locate your :file:`.sunpy/`
-directory, use :func:`matplotlib.get_configdir`::
+directory, use :func:`sunpy.print_config`::
 
-    >>> import sunpy as sun
-    >>> sun.get_configdir()
-    '/home/moon/.matplotlib'
+    import sunpy as sun
+    sun.print_config()
+
+The output should look something like: ::
+
+    FILES USED:
+        sunpy/data/sunpyrc
+
+    CONFIGURATION:
+    [general]
+    working_dir = /Users/schriste/sunpy
+
+    [downloads]
+    download_dir = /Users/schriste/sunpy/data
 
 On unix-like systems, this directory is generally located in your
 :envvar:`HOME` directory.  On windows, it is in your documents and
-settings directory by default::
-
-    >>> import sunpy
-    >>> sunpy.get_configdir()
-    'C:\\Documents and Settings\\jdhunter\\.sunpy'
+settings directory by default.
 
 If you would like to use a different configuration directory, you can
 do so by specifying the location in your :envvar:`SUNPY_CONFIGDIR`
 environment variable.
-
 
 .. _reporting-problems:
 
 Report a problem
 ================
 
-If you are having a problem with matplotlib, search the mailing
+If you are having a problem with sunpy, search the mailing
 lists first: it is possible that someone else has already run into
 your problem.
 
 If not, please provide the following information in your e-mail to the
-`mailing list
-<http://lists.sourceforge.net/mailman/listinfo/matplotlib-users>`_:
+`mailing list <http://groups.google.com/forum/#!forum/sunpy>`_:
 
   * your operating system; (Linux/UNIX users: post the output of ``uname -a``)
 
   * sunpy version::
 
-        python -c `import matplotlib; print matplotlib.__version__`
+        import sunpy
+        sunpy.util.system_info()
 
-  * where you obtained sunpy.
+  * how you obtained sunpy.
 
   * any customizations to your ``sunpyrc`` file (see
     :ref:`customizing-sunpy`).
 
-  * if the problem is reproducible, please try to provide a *minimal*,
+  * Please try to provide a *minimal*,
     standalone Python script that demonstrates the problem.  This is
     *the* critical step.  If you can't post a piece of code that we
     can run and reproduce your error, the chances of getting help are
@@ -91,9 +137,7 @@ If not, please provide the following information in your e-mail to the
     will help you find a bug in *your* code that is causing the
     problem.
 
-
 You will likely get a faster response writing to the mailing list than
-filing a bug in the bug tracker.  Most developers check the bug
-tracker only periodically.  If your problem has been determined to be
-a bug and can not be quickly solved, you may be asked to file a bug in
-the tracker so the issue doesn't get lost.
+filing a bug in the `bug tracker <http://github.com/sunpy/sunpy/issues>`_.  
+If your problem has been determined to be a bug and can not be quickly solved, the issues 
+may be filed a bug in the tracker so the issue doesn't get lost.

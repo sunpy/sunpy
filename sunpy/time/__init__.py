@@ -143,17 +143,14 @@ def extract_time(string):
     return bestmatch
 
 
-def parse_time(time_string=None):
+def parse_time(time_string):
     """Given a time string will parse and return a datetime object.
     Similar to the anytim function in IDL.
-
-    .. note:: If no input is given then returns the datetime for the 
-    current time.
 
     Parameters
     ----------
     time_string : string
-        Datestring to parse. Defaults to utcnow() if none specified.
+        Datestring to parse
 
     Returns
     -------
@@ -168,9 +165,7 @@ def parse_time(time_string=None):
     .. todo:: add ability to parse tai (International Atomic Time seconds since 
     Jan 1, 1958)
     """
-    if time_string is None:
-        return datetime.now()
-    elif isinstance(time_string, datetime):
+    if isinstance(time_string, datetime):
         return time_string
     elif isinstance(time_string, tuple):
         return datetime(*time_string)

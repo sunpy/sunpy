@@ -5,7 +5,8 @@ Developer's Guide
 Overview
 --------
 This article describes the guidelines to be followed by developers working on
-SunPy.
+SunPy. You if you are thinking of contributing to SunPy please read the following
+carefully.
 
 Version Control
 ---------------
@@ -21,18 +22,20 @@ Creating Your Own Repo
 **Overview**
 
 Each person contributing to SunPy should create their own code repository on
-GitHub by forking the master repository.All development is then done on that 
+GitHub by forking the master repository or repo. All development is then done on that 
 fork, using topic branches to isolate work on different features. New 
 contributers can then initiate pull requests to have their code incorporated 
-into the SunPy master repo. Regular contributers can become members of the 
-`SunPy team <https://github.com/sunpy>`_ on GitHub and push code directly to 
-the master repo.
+into the SunPy master repository. Regular contributers can become members of the 
+`SunPy team <https://github.com/sunpy>`_ on GitHub. Code will be reviewed by regular 
+contributors and comments will usually be provided before code is accepted.
 
 **Getting Started**
 
-Creating your own repo on GitHub is easy to do. If you haven't already done so, 
-`install git <http://git-scm.com/download>`_ and `create an account on 
-GitHub <https://github.com/signup/free>`_.
+Creating your own repo on GitHub is easy to do. If you followed the SunPy installation
+instructions you should already have git installed. Go ahead and create a free account 
+on `create an account on GitHub <https://github.com/signup/free>`_. Github has some 
+`great resources to help <https://help.github.com/>`_. Here is a quick overview of the
+process. 
 
 **Adding an SSH key to GitHub**
 
@@ -57,7 +60,7 @@ GitHub: ::
 
 Each contributer to SunPy has their own copy of the SunPy master repo. When
 working on the code, changes are made to this copied repo, and only when the
-changes are completed, and have been verified to work, are they pushed back
+changes are completed, and have been verified to work, are they pull requested back
 to the master repo. GitHub provides a simple mechanism to setup your own
 personal repo by providing an option to `fork a repository 
 <http://help.github.com/fork-a-repo/>`_. When you create a fork of a GitHub
@@ -68,10 +71,10 @@ begin working on it.
 To begin, fork the main SunPy repo on GitHub by clicking on the `Fork` button 
 on the `SunPy project page <https://github.com/sunpy/sunpy>`_
 
-Next, you need to download the forked repository. Then clone the fork to your 
+Next, you need to download the forked repository. Clone the fork to your 
 local machine, edit and run: ::
 
- git clone https://github.com/your_username/sunpy.git 
+ git clone git@github.com:your_username/sunpy.git
  
 By default your fork of the repo on GitHub is identified by the name `origin`.
 In order to keep the fork up to date with the main repo, it is useful to add it
@@ -84,7 +87,8 @@ the commands: ::
 
  git pull upstream master
 
-This will merge the upstream code automatically. After running either of these commands, 
+This will merge the upstream code automatically with your code so you don't need to worry
+about it overwriting your changes. After running either of these commands, 
 your local copy of your personal repo is just a copy of the main repo.
 This is the same procedure that you will use in the future to keep yourself syncronized with the
 main repo. To make sure everything is setup correctly, let's make some changes
@@ -96,18 +100,19 @@ Commit and push the changes to GitHub: ::
  git commit -a -m "My first commit"
  git push
 
-You repo is now synced with GitHub and ahead of the main repo as it contains your personal contribution.
+You local repo is now synced with GitHub and ahead of the main repo as it contains 
+your personal contribution. Remember to commit after you've done a unit of work (i.e.
+often). This will make it easier for you (in the future) and everyone else to understand 
+what you are doing. Also make sure to make your commit statements clear and understandable.
 
 **Conclusion**
 
 That's it! You now have your own personal SunPy repo to develop on. You could
-hack away at it to your heart's content, pushing changes to GitHub to share
+hack away at it to your heart's content, pushing changes to your fork on GitHub to share
 with others and to ensure that you have a backup online.
 
-But what happens when you want to start contributing back to the main SunPy 
-repo?
-
-That is the topic of the next section.
+But what about when you want to start contributing back to the main SunPy 
+repo? That is the topic of the next section.
 
 Branches
 ^^^^^^^^
@@ -194,17 +199,22 @@ The local and remote copies of your repo are now synced.
 
 Once you have made your desired changes, and committed and pushed your personal
 branch, you need to decide whether or not to merge those changes back into the
-main repo. If the changes you made are finished and have been tested and proven
-stable, then they can be merged into the main repo. If you are not finished with 
-making your changes or broke some important functionality, then you will
-probably want to wait before merging those changes. For now, lets assume that
-your changes are complete and they are ready to be added to the main repo. The most
-polite way to do this is to initiate a "pull request". To do this go to the github
+main SunPy repo. If the changes you made are finished and have been tested and proven
+stable (see the testing section below), then they can be merged into SunPy. 
+For now, lets assume that
+your changes are complete and they are ready to be added to the main SunPy repo. 
+All contributed code to SunPy must be submitted as a "pull request". To do this go to the github
 website and to your repo (remember to select the branch) then click on the "Pull
 Request" button (in the upper right hand corner next to the Fork button which you've
-used before). This will submit your code to a review by the members of the SunPy dev
-team. Once a member of the SunPy dev team approves it then your code is now part of
-the main SunPy code. Congratulations!
+used before). All initial pull requests must be done to the staging branch of sunpy 
+(NEVER TO THE MAIN BRANCH!). The staging branch is used as a test best for new code. 
+This will submit your code to a review. You will likely
+receive some constructive comments on your code. To address these you can simply work
+on your code and push those changes to your local repo. Those changes will be reflected
+in your pull request. Once a member of 
+the SunPy dev team approves your pull request then your code will be 
+merged into the main SunPy branch
+and your code will be part of the main SunPy code. Congratulations!
 
 And that's it! It may seem like a lot at first but once you go through the
 motions a few times it becomes very quick.
@@ -244,16 +254,13 @@ statements. Checking the SunPy trunk code this helps to ensure some baseline
 level of quality and consistency for the code, and also helps to prevent 
 potential problems from slipping through the cracks into the production code.
 
-PyLint can be installed using `easy_install`: ::
-
-    easy_install pylint
-
-To run PyLint on a file, simply call pylint from the command-line, passing in
-the name of the file you wish to check: ::
+If you followed the installation instructions for devs, pylint should already be 
+installed on your system. To run PyLint on a file, simply call pylint from the 
+command-line, passing in the name of the file you wish to check: ::
 
     pylint file.py
     
-By default PyLint will print a line of lines with potential problems along
+By default PyLint will print lines with potential problems along
 with a summary report. To disable the summary report you can add either `-rn`
 or `--reports=no` to the command: ::
 
@@ -298,12 +305,16 @@ file-wide, and for a single line.
 Documentation
 -------------
 
-Code should be documented following the guidelines in `PEP 8 
+All code must be documented. Undocumented code will not be accepted into SunPy. 
+Documentation should follow the guidelines in `PEP 8 
 <http://www.python.org/dev/peps/pep-0008/>`_ and `PEP 257 (Docstring 
 conventions) <http://www.python.org/dev/peps/pep-0257/>`_. Documentation for 
 modules, classes, and functions should follow the `NumPy/SciPy documentation 
 style guide 
-<https://github.com/numpy/numpy/blob/master/doc/HOWTO_DOCUMENT.rst.txt>`_
+<https://github.com/numpy/numpy/blob/master/doc/HOWTO_DOCUMENT.rst.txt>`_. We provide
+an example of good documentation below or you can just browse some of SunPy code
+itself for examples. All of the SunPy documentation (like this page!) is built by Sphinx
+and must therefore adhere to Sphinx guidelines.
 
 Sphinx
 ^^^^^^
@@ -325,7 +336,7 @@ Sphinx.
 
 All of the SunPy documentation is contained in the ``doc/source`` folder and code
 comments. To generate the documentation you must have Sphinx (as well as Numpydoc) installed
-on your computer (`easy_install sphinx` and `easy_install numpydoc`). Enter the ``doc/source`` folder and
+on your computer. Enter the ``doc/source`` folder and
 run: ::
 
     make html
@@ -335,7 +346,7 @@ This will generate HTML documentation for SunPy.
 Additionally, there is a `paver <http://paver.github.com/paver/>`_ command that
 can be used to accomplish the same thing: ::
 
-    paver build_sphinx
+    paver prepare_docs
     
 Which is a shortcut for the sphinx command: ::
 
@@ -539,10 +550,8 @@ Lists should be indented one level from their parents.
 Testing
 -------
 
-This is a brief tutorial on how to write and run SunPy unit tests. To work
-with the contents of this section, you will need to install the 
-`pytest <http://pytest.org>`_ package, which can be found on 
-`PyPI <http://pypi.python.org/pypi>`_.
+This is a brief tutorial on how to write and run SunPy unit tests. SunPy makes use
+of the great package `pytest <http://pytest.org>` for all of its testing needs.
 
 Writing a unit test
 ^^^^^^^^^^^^^^^^^^^
@@ -631,10 +640,3 @@ In addition to writing unit tests new functionality, it is also a good practice
 to write a unit test each time a bug is found, and submit the unit test along
 with the fix for the problem. This way we can ensure that the bug does not
 re-emerge at a later time.
-
-Virtualenv
-----------
-`virtualenv <http://www.virtualenv.org/>`_ allows multiple isolated Python
-environments to live on the same system. The `--no-site-packages` option
-completely isolates it from the system Python installation; without it
-packages installed on the system Python may also be used in the virtualenv.
