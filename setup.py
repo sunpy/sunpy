@@ -27,7 +27,8 @@ def install(setup): #pylint: disable=W0621
     from setuptools import find_packages
     #Crotate Module
     from distutils.core import Extension
-
+    from os.path import dirname
+    cwd = dirname(__file__)
     try:
         import numpy as np
     except ImportError:
@@ -35,8 +36,8 @@ def install(setup): #pylint: disable=W0621
 
     if 'np' in locals():
         module = 'sunpy.image.Crotate'   # import this
-        sourcefiles = ['sunpy/image/src/rot_extn.c',
-                       'sunpy/image/src/transform/aff_tr.c']
+        sourcefiles = [cwd + '/sunpy/image/src/rot_extn.c',
+                       cwd + '/sunpy/image/src/transform/aff_tr.c']
         libs = ['m']
         # -ON for compile optimise 
         gcc_args = ['-std=c99', '-O3']
