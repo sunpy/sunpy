@@ -48,7 +48,7 @@ def install(setup): #pylint: disable=W0621
                             sources = sourcefiles,
                             libraries = libs,
                             extra_compile_args = gcc_args,
-                            include_dirs = [np.get_include()]
+                            include_dirs = [np.get_include(),cwd]
                             )
 
     setup(
