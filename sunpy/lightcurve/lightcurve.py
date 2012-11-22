@@ -44,14 +44,13 @@ class LightCurve(object):
 
     Examples
     --------
-    >>> import sunpy
-    >>> import datetime
-    >>> base = datetime.datetime.today()
-    >>> dates = [base - datetime.timedelta(minutes=x) for x in 
-    range(0, 24 * 60)]
-    >>> light_curve = sunpy.lightcurve.LightCurve.create(
+    import sunpy
+    import datetime
+    base = datetime.datetime.today()
+    dates = [base - datetime.timedelta(minutes=x) for x in range(0, 24 * 60)]
+    light_curve = sunpy.lightcurve.LightCurve.create(
     {"param1": range(24 * 60)}, index=dates)
-    >>> light_curve.show()
+    light_curve.show()
 
     References
     ----------
@@ -70,14 +69,14 @@ class LightCurve(object):
         date = sunpy.time.parse_time(time)
         url = cls._get_url_for_date(date)
         filepath = cls._download(
-            url, kwargs, err="Unable to download data for  specified date"
+            url, kwargs, err="Unable to download data for specified date"
         )
         return cls.from_file(filepath)
     
     @classmethod
     def from_range(cls, from_, to, **kwargs):
         url = cls._get_url_for_date_range(from_, to)
-        filepath = self._download(
+        filepath = cls._download(
             url, kwargs, 
             err = "Unable to download data for specified date range"
         )
@@ -86,8 +85,10 @@ class LightCurve(object):
     @classmethod
     def from_timerange(cls, timerange, **kwargs):
         url = cls._get_url_for_date_range(timerange)
-        err = "Unable to download data for specified date range"
-        filepath = self._download(url, err, kwargs)   
+        filepath = cls._download(
+            url, kwargs,
+            err = "Unable to download data for specified date range"
+        )   
         return cls.from_file(filepath)       
     
     @classmethod

@@ -14,11 +14,10 @@ class GOESLightCurve(LightCurve):
     
     Examples
     --------
-    >>> import sunpy
-    >>> goes = sunpy.lightcurve.GOESLightCurve()
-    >>> goes = sunpy.lightcurve.GOESLightCurve('2012/06/01', '2012/06/05')
-    >>> 
-    >>> goes.show()
+    import sunpy
+    goes = sunpy.lightcurve.GOESLightCurve.create()
+    goes = sunpy.lightcurve.GOESLightCurve.create('2012/06/01', '2012/06/05')
+    goes.show()
     
     References
     ----------
@@ -76,7 +75,7 @@ class GOESLightCurve(LightCurve):
         Parameters
         ----------
         args : TimeRange, datetimes, date strings
-            Date range should be specified using either a TimeRange, or start
+            Date range should be specified using a TimeRange, or start
             and end dates at datetime instances or date strings.
         satellite_number : int
             GOES satellite number (default = 15)
@@ -85,13 +84,15 @@ class GOESLightCurve(LightCurve):
             types depend on the satellite number specified. (default = xrs_2s) 
         """
         # TimeRange
-        if len(args) == 1 and type(args[0]) is sunpy.time.TimeRange:
+        if len(args) == 1 and isinstance(args[0], sunpy.time.TimeRange):
             start = args[0].start()
             end = args[0].end()
         elif len(args) == 2:
             # Start & End date
             start = sunpy.time.parse_time(args[0])
             end = sunpy.time.parse_time(args[1])
+            if end < start:
+                print('Warning: start time (argument 1) > end time (argument 2)')
             
         # GOES query parameters
         params = {
