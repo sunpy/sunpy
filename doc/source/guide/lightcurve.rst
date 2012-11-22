@@ -28,5 +28,21 @@ The lightcurve object currently supports the following data sources
 1. Creating a Lightcurve
 ------------------------
 
+A LightCurve object consists of two parts - times, and measurements which were taken at
+those times.
+
 A LightCurve object must be supplied with some data when it is created.  The data
 can either be in your current Python session, in a local file, or in a remote file.
+Let's create some fake data and pass it into a LightCurve object.
+
+    >>> from sunpy.lightcurve import LightCurve
+    >>> import datetime
+    >>> base = datetime.datetime.today()
+    >>> dates = [base - datetime.timedelta(minutes=x) for x in range(0, 24 * 60)]
+    >>> light_curve = LightCurve.create({"param1": range(24 * 60)}, index=dates)
+    >>> light_curve.show()
+
+The first two lines import sunpy and the datetime module.  The next two lines create a list
+of dates.  Let's look at the argument and keyword in LightCurve.create.  The argument is
+a dictionary that contains a single entry with key "param1" with a value of a list of
+1440 entries (from 0 to 1439).  The keyword "index" passes the dates created earlier.  The
