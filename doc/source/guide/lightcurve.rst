@@ -28,3 +28,5 @@ The lightcurve object currently supports the following data sources
 1. Creating a Lightcurve
 ------------------------
 
+A LightCurve object must be supplied with some data when it is created.  The data
+can either be in your current Python session, in a local file, or in a remote file.
