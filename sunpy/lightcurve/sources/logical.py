@@ -25,12 +25,6 @@ class LogicalLightCurve(LightCurve):
     import sunpy
     lyra = sunpy.lightcurve.LogicalLightCurve.create()
     """
-        
-    def show(self, **kwargs):
-        """Shows a plot of the light curve"""
-        fig = self.plot(**kwargs)
-        fig.show()
-        return fig
 
     def complement(self):
         """ Define the complement of the passed lightcurve """
