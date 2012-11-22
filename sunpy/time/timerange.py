@@ -15,7 +15,7 @@ class TimeRange:
     a : the start time specified as a time string, or datetime object
         A 2d list or ndarray containing the map data
     b : the end time specified as a time string or datetime object
-        or the length of the time range specified as a timediff object, or 
+        or the length of the time range specified as a timedelta object, or 
         number of seconds
 
     Attributes
@@ -43,10 +43,9 @@ class TimeRange:
    
     Examples
     --------
-    >>> time_range = TimeRange('2010/03/04 00:10', '2010/03/04 00:20')
-    >>> time_range = TimeRange('2010/03/04 00:10', 400)
-    >>> time_range = TimeRange(('2010/03/04 00:10', '2010/03/04 00:20'))
-    >>> time_range = TimeRange(['2010/03/04 00:10', 400])
+    time_range = TimeRange('2010/03/04 00:10', '2010/03/04 00:20')
+    time_range = TimeRange('2010/03/04 00:10', 400)
+
     
     See Also
     --------

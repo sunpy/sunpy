@@ -1,26 +1,74 @@
 """
 Fundamental Solar Physical Constants
 ------------------------------------
-These constants are taken from various sources. This module is heavily based on
-(if not directly copied from) SciPy constants module.
+These constants are taken from various sources. The structure of this module is heavily 
+based on if not directly copied from the SciPy constants module but contains Solar 
+Physical constants. All units are in SI (mks) unless otherwise specified.
 
 Object
 ------
 physical_constants : dict
     A dictionary containing physical constants. Keys are the names
-    of physical constants, values are tuples (value, units, precision).
+    of physical constants, values are tuples (value, units, precision). The dictionary
+    contains the following solar physical constants:
+        
+    GM: 
+        The gravitational constant multiplied by the mass of the Sun.
+    absolute magnitude: 
+        The absolute visual magnitude of the Sun. It is the measure of the Sun's intrinsic 
+        brightness. It is the apparent magnitude the Sun would have if it were 32.6 light
+        years (10 parsecs) away from Earth.
+    average density:
+         The average density of the Sun in SI.
+    average_angular_size: 
+        The average angular size of the Sun as seen from Earth in arcseconds.
+    center density:
+        The density at the center of the Sun in SI.
+    center temperature:
+        The temperature at the center of the Sun in Kelvin.
+    diameter: 
+        The diameters of the Sun at the equator in meters.
+    effective temperature:
+        The effective black-body temperature of the Sun in Kelvin.  
+    ellipticity: 
+        The ellipticity of the Sun.
+    escape velocity: 
+        The velocity which an object needs to escape from the gravitational pull of the Sun.
+    luminosity:
+        The luminosity of the Sun in Joules per second.
+    mass:
+        The mass of the Sun in kg.
+    mass conversion rate:
+        The rate at which the Sun converts mass to energy.
+    mean energy production:
+        The mean rate at which the Sun produces energy in Joules per second
+    mean intensity:
+        The mean intensity of the Sun.
+    metallicity: 
+        The metallicity of the Sun
+    radius:
+        The radius of the Sun at the equator in meters.
+    solar flux unit:
+        The definition of a solar flux unit.
+    sunspot cycle:
+        The average duration of the solar activity cycle.
+    surface area:
+        The surface area of the Sun in meters squared. 
+    surface gravity:
+        The gravitational acceleration at the surface of the Sun as measured at the equator.
+    visual magnitude:
+       A measure of the Sun's brightness as seen by an observer on Earth without the
+       presence of the atmosphere.
+    volume:
+        The volume of the Sun in meters cubed.
 
-Functions
----------
-value(key):
-    Returns the value of the physical constant(key).
-unit(key):
-    Returns the units of the physical constant(key).
-precision(key):
-    Returns the relative precision of the physical constant(key).
-find(sub):
-    Prints or returns list of keys containing the string sub,
-    default is all.
+Attributes
+----------
+A number of variables from physical_constants are made available for convenience as 
+attributes. They are equatorial_radius, radius (same as equatorial radius), equatorial_diameter, volume, surface_area, average_density, center_density, 
+equatorial_surface_gravity, mean_intensity, effective_temperature, center_temperature, 
+luminosity, absolute_magnitude, visual_magnitude, mass_conversion_rate, 
+mean_energy_production, escape_velocity, ellipticity, GM, average_angular_size, sfu.
 
 Source
 ------
