@@ -49,7 +49,7 @@ def install(setup): #pylint: disable=W0621
                             libraries = libs,
                             extra_compile_args = gcc_args,
                             include_dirs =
-                            [np.get_include(),cwd+'/sunpy/image/src/']
+                            [np.get_include(),cwd+'/sunpy/image/src']
                             )
 
     setup(
