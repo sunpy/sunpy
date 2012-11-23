@@ -49,3 +49,9 @@ very simply using the 'index' keyword, as is shown below.
     >>> dates = [base - datetime.timedelta(minutes=x) for x in range(0, 24 * 60)]
     >>> light_curve = LightCurve.create({"param1": range(24 * 60)}, index=dates)
 
+This gives the measurements "param1" a set of times, in this case, 1440 minutes beginning at the
+current local time.
+
+The LightCurve object contains two basic attributes, 'data' and 'header'.  The 'data' attribute
+is either a pandas TimeSeries object or a pandas DataFrame (a generalization of the TimeSeries
+object).  These data objects have very powerful methods for handling data based on times.
