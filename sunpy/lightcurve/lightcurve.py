@@ -44,13 +44,14 @@ class LightCurve(object):
 
     Examples
     --------
-    import sunpy
-    import datetime
-    base = datetime.datetime.today()
-    dates = [base - datetime.timedelta(minutes=x) for x in range(0, 24 * 60)]
-    light_curve = sunpy.lightcurve.LightCurve.create(
+    >>> import sunpy
+    >>> import datetime
+    >>> base = datetime.datetime.today()
+    >>> dates = [base - datetime.timedelta(minutes=x) for x in 
+    range(0, 24 * 60)]
+    >>> light_curve = sunpy.lightcurve.LightCurve.create(
     {"param1": range(24 * 60)}, index=dates)
-    light_curve.show()
+    >>> light_curve.show()
 
     References
     ----------
@@ -69,14 +70,14 @@ class LightCurve(object):
         date = sunpy.time.parse_time(time)
         url = cls._get_url_for_date(date)
         filepath = cls._download(
-            url, kwargs, err="Unable to download data for specified date"
+            url, kwargs, err="Unable to download data for  specified date"
         )
         return cls.from_file(filepath)
     
     @classmethod
     def from_range(cls, from_, to, **kwargs):
         url = cls._get_url_for_date_range(from_, to)
-        filepath = cls._download(
+        filepath = self._download(
             url, kwargs, 
             err = "Unable to download data for specified date range"
         )
@@ -85,10 +86,8 @@ class LightCurve(object):
     @classmethod
     def from_timerange(cls, timerange, **kwargs):
         url = cls._get_url_for_date_range(timerange)
-        filepath = cls._download(
-            url, kwargs,
-            err = "Unable to download data for specified date range"
-        )   
+        err = "Unable to download data for specified date range"
+        filepath = self._download(url, err, kwargs)   
         return cls.from_file(filepath)       
     
     @classmethod
@@ -123,39 +122,17 @@ class LightCurve(object):
     def from_dataframe(cls, dataframe, header=None):
         return cls(dataframe, header)
     
-    def plot(self, axes=None, **plot_args):
-        """Plot a plot of the light curve
-        
-        Parameters
-        ----------            
-        axes: matplotlib.axes object or None
-            If provided the image will be plotted on the given axes. Else the 
-            current matplotlib axes will be used.
-        
-        **plot_args : dict
-            Any additional plot arguments that should be used
-            when plotting the image.
-        
-        """
-
-        #Get current axes
-        if axes is None:
-            axes = plt.gca()
-         
-        axes = self.data.plot(ax=axes, **plot_args)
-
-        return axes
+    def plot(self, **kwargs):
+        """Plot a plot of the light curve"""
+        axes = self.data.plot(**kwargs)
+        return axes.get_figure()
     
-    def peek(self, **kwargs):
-        """Displays the light curve in a new figure"""
+    def show(self, **kwargs):
+        """Shows a plot of the light curve"""
+        fig = self.plot(**kwargs)
+        fig.show()
         
-        figure = plt.figure()
-        
-        self.plot(**kwargs)
-        
-        figure.show()
-        
-        return figure
+        return fig
     
     @staticmethod
     def _download(uri, kwargs, 
