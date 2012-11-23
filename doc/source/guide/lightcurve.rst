@@ -36,13 +36,16 @@ can either be in your current Python session, in a local file, or in a remote fi
 Let's create some fake data and pass it into a LightCurve object.
 
     >>> from sunpy.lightcurve import LightCurve
+    >>> light_curve = LightCurve.create({"param1": range(24 * 60)})
+
+The first line imports the lightcurve object.  Let's look at the argument in LightCurve.create.  
+The argument is a dictionary that contains a single entry with key "param1" with a value 
+of a list of 1440 entries (from 0 to 1439) - these are our 'fake data' measurements.  Since
+no other times are provided, a default set of times are provided.  You can provide your own times
+very simply using the 'index' keyword, as is shown below.
+
     >>> import datetime
     >>> base = datetime.datetime.today()
     >>> dates = [base - datetime.timedelta(minutes=x) for x in range(0, 24 * 60)]
     >>> light_curve = LightCurve.create({"param1": range(24 * 60)}, index=dates)
-    >>> light_curve.show()
 
-The first two lines import sunpy and the datetime module.  The next two lines create a list
-of dates.  Let's look at the argument and keyword in LightCurve.create.  The argument is
-a dictionary that contains a single entry with key "param1" with a value of a list of
-1440 entries (from 0 to 1439).  The keyword "index" passes the dates created earlier.  The
