@@ -9,11 +9,12 @@
 
 from __future__ import absolute_import
 import os
+import types
 from scipy.constants import constants as con
 
 __all__ = ["toggle_pylab", "degrees_to_hours", "degrees_to_arc",
            "kelvin_to_keV", "keV_to_kelvin", "unique", "print_table", 
-           "to_angstrom"]
+           "to_angstrom", "goes_flare_class"]
 
 from matplotlib import pyplot
 import numpy as np
@@ -51,6 +52,23 @@ def toggle_pylab(fn):
         return fn_itoggle
     else:
         return fn
+
+def goes_flare_class(gcls):
+    """Convert GOES classes into a number to aid size comparison.  Units are
+    watts per meter squared."""
+    def calc(gcls):
+        powers_of_ten = {'A':1e-08, 'B':1e-07, 'C':1e-06, 'M':1e-05, 'X':1e-04}
+        power = gcls[0].upper()
+        if power in powers_of_ten:
+            return powers_of_ten[power] * float(gcls[1:])
+        else:
+            return None
+
+    if isinstance(gcls, types.StringType):
+        return calc(gcls)
+    if isinstance(gcls, types.ListType):
+        return [calc(x) for x in gcls]
+
 
 def degrees_to_hours(angle):
     """Converts an angle from the degree notation to the hour, arcmin, arcsec 

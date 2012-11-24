@@ -456,13 +456,16 @@ class VSOClient(object):
             'date': _parse_date,
             'layout': sdk('datatype'),
         }
-        kwargs.update({'time_start': tstart, 'time_end': tend})
+        if tstart is not None:
+            kwargs.update({'time_start': tstart})
+        if tend is not None:
+            kwargs.update({'time_end': tend})
         
         queryreq = self.api.factory.create('QueryRequest')
         for key, value in kwargs.iteritems():
-            if key.startswith('time'):
-                value = parse_time(value).strftime(TIMEFORMAT)
             for k, v in ALIASES.get(key, sdk(key))(value).iteritems():
+                if k.startswith('time'):
+                    v = parse_time(v).strftime(TIMEFORMAT)
                 attr = k.split('_')
                 lst = attr[-1]
                 rest = attr[:-1]
