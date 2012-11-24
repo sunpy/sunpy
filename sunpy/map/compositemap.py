@@ -192,9 +192,9 @@ class CompositeMap:
         """
         self._maps[index].zorder = zorder
 
-    def plot(self, figure=None, overlays=None, draw_limb=False, gamma=1.0, # pylint: disable=W0613
-             draw_grid=False, colorbar=True, basic_plot=False, # pylint: disable=W0613
-             title="SunPy Plot", **matplot_args):
+    def plot(self, axes=None, gamma=1.0, # pylint: disable=W0613
+             basic_plot=False, annotate=True, # pylint: disable=W0613
+             title="SunPy Composite Plot", **matplot_args):
         """Plots the composite map object using matplotlib
         
         Parameters
@@ -212,18 +212,27 @@ class CompositeMap:
         out : matplotlib.figure.Figure
             A Matplotlib figure instance representing the composite map plot
         """
-        if overlays is None:
-            overlays = []
+        
+        #Get current axes
+        if not axes:
+            axes = plt.gca()
+        
+        # x-axis label
+        if self._maps[0].coordinate_system['x'] == 'HG':
+            xlabel = 'Longitude [%s]' % self._maps[0].units['x']
+        else:
+            xlabel = 'X-position [%s]' % self._maps[0].units['x']
 
-        # Create a figure and add title and axes
-        if figure is None:
-            figure = plt.figure()
-        
-        axes = figure.add_subplot(111)
+        # y-axis label
+        if self._maps[0].coordinate_system['y'] == 'HG':
+            ylabel = 'Latitude [%s]' % self._maps[0].units['y']
+        else:
+            ylabel = 'Y-position [%s]' % self._maps[0].units['y']
+            
+        axes.set_xlabel(xlabel)
+        axes.set_ylabel(ylabel)
+
         axes.set_title(title)
-        
-        axes.set_xlabel('X-position [' + self._maps[0].units['x'] + ']')
-        axes.set_ylabel('Y-position [' + self._maps[0].units['y'] + ']')
         
         # Plot layers of composite map
         for m in self._maps:
@@ -239,39 +248,73 @@ class CompositeMap:
             params.update(matplot_args)
             
             if m.levels is False:
-                plt.imshow(m, **params)
+                ret = axes.imshow(m, **params)
             
             # Use contour for contour data, and imshow otherwise
             if m.levels is not False:
                 # Set data with values <= 0 to transparent
                 # contour_data = np.ma.masked_array(m, mask=(m <= 0))
-                plt.contour(m, m.levels, **params)
+                ret = axes.contour(m, m.levels, **params)
                 
         # Adjust axes extents to include all data
         axes.axis('image')
         
-        for overlay in overlays:
-            figure, axes = overlay(figure, axes)
-
-        return figure
-
-    def show(self, figure=None, overlays=None, draw_limb=False, gamma=1.0,
-             draw_grid=False, colorbar=True, basic_plot=False, 
-             title="SunPy Plot", **matplot_args):
-        """Displays the composite map on the screen.
+        #Set current image (makes colorbar work)
+        plt.sci(ret)
+        return ret
         
+    def peek(self, draw_limb=True, draw_grid=False, gamma=None,
+                   colorbar=True, basic_plot=False, **matplot_args):
+        """Displays the map in a new figure
+
         Parameters
         ----------
-        title : string
-            Title to use for the plot
-        overlays : list
-            List of overlays to include in the plot
+        draw_limb : bool
+            Whether the solar limb should be plotted.
+        draw_grid : bool or number
+            Whether solar meridians and parallels are plotted. If float then sets
+            degree difference between parallels and meridians.
+        gamma : float
+            Gamma value to use for the color map
+        colorbar : bool
+            Whether to display a colorbar next to the plot
+        basic_plot : bool
+            If true, the data is plotted by itself at it's natural scale; no
+            title, labels, or axes are shown.
         **matplot_args : dict
             Matplotlib Any additional imshow arguments that should be used
             when plotting the image.
         """
-        self.plot(figure, overlays, draw_limb, gamma, draw_grid, colorbar, 
-                  basic_plot, title, **matplot_args).show()
+        
+        # Create a figure and add title and axes
+        figure = plt.figure(frameon=not basic_plot)
+
+        # Basic plot
+        if basic_plot:
+            axes = plt.Axes(figure, [0., 0., 1., 1.])
+            axes.set_axis_off()
+            figure.add_axes(axes)
+            matplot_args.update({'annotate':False})
+        else:
+            axes = figure.add_subplot(111)
+
+        im = self.plot(axes=axes,**matplot_args)        
+        
+        #if draw_limb:
+        #    self.draw_limb(axes=axes)
+        
+        #if isinstance(draw_grid, bool):
+        #    if draw_grid:
+                #self.draw_grid(axes=axes)
+        #elif isinstance(draw_grid, (int, long, float)):
+        #    self.draw_grid(axes=axes, grid_spacing=draw_grid)
+        #else:
+        #    raise TypeError("draw_grid should be bool, int, long or float")
+
+        plt.show()
+        
+        return figure
+
         
 class OutOfRangeAlphaValue(ValueError):
     """Exception to raise when an alpha value outside of the range 0-1 is
