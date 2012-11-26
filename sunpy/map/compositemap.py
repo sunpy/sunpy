@@ -122,6 +122,10 @@ class CompositeMap:
     def list_maps(self):
         """Prints a list of the currently included maps"""
         print [m.__class__ for m in self._maps]
+    
+    def get_map(self, index):
+        """ Returns the map with given index """
+        return self._maps[index]
         
     def get_alpha(self, index=None):
         """Gets the alpha-channel value for a layer in the composite image"""
@@ -192,48 +196,57 @@ class CompositeMap:
         """
         self._maps[index].zorder = zorder
 
-    def plot(self, axes=None, gamma=1.0, # pylint: disable=W0613
-             basic_plot=False, annotate=True, # pylint: disable=W0613
+    def plot(self, axes=None, gamma=None, annotate=True, # pylint: disable=W0613
              title="SunPy Composite Plot", **matplot_args):
         """Plots the composite map object using matplotlib
         
         Parameters
         ----------
-        title : string
-            Title to use for the plot
-        overlays : list
-            List of overlays to include in the plot
+        axes: matplotlib.axes object or None
+            If provided the image will be plotted on the given axes. Else the 
+            current matplotlib axes will be used.
+ 
+        gamma : float
+            Gamma value to use for the color map
+
+        annotate : bool
+            If true, the data is plotted at it's natural scale; with
+            title and axis labels.
+            
         **matplot_args : dict
             Matplotlib Any additional imshow arguments that should be used
             when plotting the image.
             
         Returns
         -------
-        out : matplotlib.figure.Figure
-            A Matplotlib figure instance representing the composite map plot
+        ret : List
+            List of axes image or quad contour sets that have been plotted.
         """
         
         #Get current axes
         if not axes:
             axes = plt.gca()
         
-        # x-axis label
-        if self._maps[0].coordinate_system['x'] == 'HG':
-            xlabel = 'Longitude [%s]' % self._maps[0].units['x']
-        else:
-            xlabel = 'X-position [%s]' % self._maps[0].units['x']
-
-        # y-axis label
-        if self._maps[0].coordinate_system['y'] == 'HG':
-            ylabel = 'Latitude [%s]' % self._maps[0].units['y']
-        else:
-            ylabel = 'Y-position [%s]' % self._maps[0].units['y']
-            
-        axes.set_xlabel(xlabel)
-        axes.set_ylabel(ylabel)
-
-        axes.set_title(title)
+        if annotate:
+            # x-axis label
+            if self._maps[0].coordinate_system['x'] == 'HG':
+                xlabel = 'Longitude [%s]' % self._maps[0].units['x']
+            else:
+                xlabel = 'X-position [%s]' % self._maps[0].units['x']
+    
+            # y-axis label
+            if self._maps[0].coordinate_system['y'] == 'HG':
+                ylabel = 'Latitude [%s]' % self._maps[0].units['y']
+            else:
+                ylabel = 'Y-position [%s]' % self._maps[0].units['y']
+                
+            axes.set_xlabel(xlabel)
+            axes.set_ylabel(ylabel)
+    
+            axes.set_title(title)
         
+        #Define a list of plotted objects
+        ret = []
         # Plot layers of composite map
         for m in self._maps:
             # Parameters for plotting
@@ -248,39 +261,40 @@ class CompositeMap:
             params.update(matplot_args)
             
             if m.levels is False:
-                ret = axes.imshow(m, **params)
+                ret.append(axes.imshow(m, **params))
             
             # Use contour for contour data, and imshow otherwise
             if m.levels is not False:
                 # Set data with values <= 0 to transparent
                 # contour_data = np.ma.masked_array(m, mask=(m <= 0))
-                ret = axes.contour(m, m.levels, **params)
+                ret.append(axes.contour(m, m.levels, **params))
+                #Set the label of the first line so a legend can be created
+                ret[-1].collections[0].set_label(m.name)
                                 
         # Adjust axes extents to include all data
         axes.axis('image')
         
         #Set current image (makes colorbar work)
-        plt.sci(ret)
+        plt.sci(ret[0])
         return ret
         
-    def peek(self, gamma=None,
-                   colorbar=True, basic_plot=False, **matplot_args):
+    def peek(self, gamma=None, colorbar=True, basic_plot=False, 
+             **matplot_args):
         """Displays the map in a new figure
 
         Parameters
         ----------
-        draw_limb : bool
-            Whether the solar limb should be plotted.
-        draw_grid : bool or number
-            Whether solar meridians and parallels are plotted. If float then sets
-            degree difference between parallels and meridians.
         gamma : float
             Gamma value to use for the color map
-        colorbar : bool
-            Whether to display a colorbar next to the plot
+            
+        colorbar : bool or int
+            Whether to display a colorbar next to the plot.
+            If specified as an integer a colorbar is plotted for that index.
+            
         basic_plot : bool
             If true, the data is plotted by itself at it's natural scale; no
             title, labels, or axes are shown.
+            
         **matplot_args : dict
             Matplotlib Any additional imshow arguments that should be used
             when plotting the image.
@@ -298,8 +312,12 @@ class CompositeMap:
         else:
             axes = figure.add_subplot(111)
 
-        self.plot(axes=axes,**matplot_args)        
+        ret = self.plot(axes=axes,**matplot_args)        
         
+        if not isinstance(colorbar, bool) and isinstance(colorbar, int):
+            figure.colorbar(ret[colorbar])
+        elif colorbar:
+            plt.colorbar()
         #if draw_limb:
         #    self.draw_limb(axes=axes)
         
@@ -311,7 +329,7 @@ class CompositeMap:
         #else:
         #    raise TypeError("draw_grid should be bool, int, long or float")
 
-        plt.show()
+        figure.show()
         
         return figure
 
