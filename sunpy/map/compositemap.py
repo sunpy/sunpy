@@ -57,10 +57,10 @@ class CompositeMap:
     Examples
     --------
     >>> import sunpy
-    >>> sunpy.CompositeMap(sunpy.AIA_171_IMAGE, sunpy.RHESSI_IMAGE).show()
+    >>> sunpy.CompositeMap(sunpy.AIA_171_IMAGE, sunpy.RHESSI_IMAGE).peek()
     >>> comp_map = sunpy.CompositeMap(sunpy.AIA_171_IMAGE, sunpy.EIT_195_IMAGE)    
     >>> comp_map.add_map(sunpy.RHESSI_IMAGE)
-    >>> comp_map.show()
+    >>> comp_map.peek()
 
     """    
     def __init__(self, *args):
