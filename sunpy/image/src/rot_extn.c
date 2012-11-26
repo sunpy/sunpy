@@ -38,9 +38,9 @@ This with args of array, number and keywords.
 #include <Python.h>
 #include <numpy/arrayobject.h>
 
-#include "transform/aff_tr.h"
+#include <transform/aff_tr.h>
 
-#include "rot_extn.h"
+#include <rot_extn.h>
 
 
 
