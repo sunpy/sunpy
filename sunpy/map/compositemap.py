@@ -255,7 +255,7 @@ class CompositeMap:
                 # Set data with values <= 0 to transparent
                 # contour_data = np.ma.masked_array(m, mask=(m <= 0))
                 ret = axes.contour(m, m.levels, **params)
-                
+                                
         # Adjust axes extents to include all data
         axes.axis('image')
         
@@ -263,7 +263,7 @@ class CompositeMap:
         plt.sci(ret)
         return ret
         
-    def peek(self, draw_limb=True, draw_grid=False, gamma=None,
+    def peek(self, gamma=None,
                    colorbar=True, basic_plot=False, **matplot_args):
         """Displays the map in a new figure
 
@@ -298,7 +298,7 @@ class CompositeMap:
         else:
             axes = figure.add_subplot(111)
 
-        im = self.plot(axes=axes,**matplot_args)        
+        self.plot(axes=axes,**matplot_args)        
         
         #if draw_limb:
         #    self.draw_limb(axes=axes)
