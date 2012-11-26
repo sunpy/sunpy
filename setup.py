@@ -27,7 +27,8 @@ def install(setup): #pylint: disable=W0621
     from setuptools import find_packages
     #Crotate Module
     from distutils.core import Extension
-
+    from os.path import dirname, join
+    cwd = dirname(__file__)
     try:
         import numpy as np
     except ImportError:
@@ -35,8 +36,8 @@ def install(setup): #pylint: disable=W0621
 
     if 'np' in locals():
         module = 'sunpy.image.Crotate'   # import this
-        sourcefiles = ['sunpy/image/src/rot_extn.c',
-                       'sunpy/image/src/transform/aff_tr.c']
+        sourcefiles = [join(cwd, 'sunpy', 'image', 'src', 'rot_extn.c'),
+                       join(cwd, 'sunpy', 'image', 'src', 'transform', 'aff_tr.c')]
         libs = ['m']
         # -ON for compile optimise 
         gcc_args = ['-std=c99', '-O3']
@@ -47,12 +48,13 @@ def install(setup): #pylint: disable=W0621
                             sources = sourcefiles,
                             libraries = libs,
                             extra_compile_args = gcc_args,
-                            include_dirs = [np.get_include()]
+                            include_dirs =
+                            [np.get_include(), join(cwd, 'sunpy', 'image', 'src')]
                             )
 
     setup(
-        author="Steven Christe, Keith Hughitt, Jack Ireland and Alex Young",
-        author_email="keith.hughitt@nasa.gov",
+	author="Steven Christe, Matt Earnshaw,  Russell Hewett, Keith Hughitt, Jack Ireland, Florian Mayer, Stuart Mumford,  Albert Shih, David Perez-Suarez et. al",
+        author_email="sunpy@googlegroups.com",
         classifiers=CLASSIFIERS,
         description=DOCLINES[0],
         download_url="http://www.sunpy.org/download/",
@@ -66,7 +68,7 @@ def install(setup): #pylint: disable=W0621
             'pyfits',
             'scipy',
  #           'suds',
-            'pandas<=0.8.0',
+            'pandas',
             'matplotlib>=1.0',
  #           'beautifulsoup4',
         ],
@@ -81,7 +83,7 @@ def install(setup): #pylint: disable=W0621
         provides=['sunpy'],
         url="http://www.sunpy.org/",
         use_2to3=True,
-        version="0.1",
+        version="0.2",
         ext_modules = [crotate] if 'crotate' in locals() else []
     )
 
