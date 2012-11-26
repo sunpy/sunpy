@@ -24,31 +24,50 @@ class Spectrum(np.ndarray):
     def __init__(self, data, freq_axis):
         self.freq_axis = freq_axis
 
-    def plot(self, figure=None, overlays=[], **matplotlib_args):
+    def plot(self, axes=None, **matplot_args):
         """
-        Plot spectrum onto figure.
+        Plot spectrum onto current axes. Behaves like matplotlib.pylot.plot()
         
         Parameters
         ----------
-        figure : matplotlib.figure.Figure
-            Figure to plot the spectrogram on. If None, new Figure is created.
-        overlays : list
-            List of overlays (functions that receive figure and axes and return
-            new ones) to be applied after drawing.
+        axes: matplotlib.axes object or None
+            If provided the spectrum will be plotted on the given axes. 
+            Else the current matplotlib axes will be used.
         """
-        # [] as default argument is okay here because it is only read.
-        # pylint: disable=W0102,R0914
-
-        if figure is None:
-            figure = plt.figure(frameon=True)
-        axes = figure.add_subplot(111)
-
+        
+        #Get current axes
+        if not axes:
+            axes = plt.gca()
+        
         params = {}
+        params.update(matplot_args)
+        
+        #This is taken from mpl.pyplot.plot() as we are trying to
+        #replicate that functionality
+        
+        # allow callers to override the hold state by passing hold=True|False
+        washold = axes.ishold()
+        hold = matplot_args.pop('hold', None)
+        
+        if hold is not None:
+            axes.hold(hold)
+        try:
+            lines = axes.plot(self.freq_axis, self, **params)
+        finally:
+            axes.hold(washold)
 
-        params.update(matplotlib_args)
-
-        axes.plot(self.freq_axis, self, **params)
-
-        for overlay in overlays:
-            figure, axes = overlay(figure, axes)
+        return lines
+    
+    def peek(self, **matplot_args):
+        """
+        Plot spectrum onto a new figure.
+        """
+        
+        figure = plt.figure()
+        
+        lines = self.plot(**matplot_args)
+        
+        figure.show()
+        
         return figure
+        
