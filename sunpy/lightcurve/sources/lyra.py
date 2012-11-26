@@ -17,20 +17,19 @@ class LYRALightCurve(LightCurve):
     
     Examples
     --------
-    >>> import sunpy
-    >>> lyra = sunpy.lightcurve.LYRALightCurve.create()
-    >>> lyra = sunpy.lightcurve.LYRALightCurve.create('~/Data/lyra/lyra_20110810-000000_lev2_std.fits')
-    >>> lyra = sunpy.lightcurve.LYRALightCurve.create('2011/08/10')
-    >>> lyra = sunpy.lightcurve.LYRALightCurve.create("http://proba2.oma.be/lyra/data/bsd/2011/08/10/lyra_20110810-000000_lev2_std.fits")
-    >>> 
-    >>> lyra.show()
+    import sunpy
+    lyra = sunpy.lightcurve.LYRALightCurve.create()
+    lyra = sunpy.lightcurve.LYRALightCurve.create('~/Data/lyra/lyra_20110810-000000_lev2_std.fits')
+    lyra = sunpy.lightcurve.LYRALightCurve.create('2011/08/10')
+    lyra = sunpy.lightcurve.LYRALightCurve.create("http://proba2.oma.be/lyra/data/bsd/2011/08/10/lyra_20110810-000000_lev2_std.fits")
+    lyra.peek()
     
     References
     ----------
     | http://proba2.sidc.be/data/LYRA
     """
 
-    def show(self, names=3, **kwargs):
+    def peek(self, names=3, **kwargs):
         """Plots the LYRA data
         
         See: http://pandas.sourceforge.net/visualization.html
@@ -50,7 +49,10 @@ class LYRALightCurve(LightCurve):
         #            kwargs['title'] = 'LYRA data'
 
         """Shows a plot of all four light curves"""
-        axes = self.data.plot(subplots=True, sharex=True, **kwargs)       
+        figure = plt.figure()
+        axes = plt.gca()
+        
+        axes = self.data.plot(ax=axes, subplots=True, sharex=True, **kwargs)
         #plt.legend(loc='best')
         
         for i, name in enumerate(self.data.columns):
@@ -62,7 +64,10 @@ class LYRALightCurve(LightCurve):
         
         axes[0].set_title("LYRA ("+ self.data.index[0].strftime('%Y-%m-%d') +")")
         axes[-1].set_xlabel("Time")
-        plt.show()
+        
+        figure.show()
+        
+        return figure
 
     
     @staticmethod

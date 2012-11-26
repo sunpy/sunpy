@@ -23,12 +23,19 @@ class SXTMap(Map):
         """Parses SXT image header"""
         properties = Map.get_properties(header)
         
-        # 2012/11/07 - the SXT headers do not have a value of the distance from
+        # 2012/12/19 - the SXT headers do not have a value of the distance from
         # the spacecraft to the center of the Sun.  The FITS keyword 'DSUN_OBS'
         # appears to refer to the observed diameter of the Sun.  Until such 
         # time as that is calculated and properly included in the file, we will 
-        # use the value of 1 AU as a standard.
+        # use simple trigonometry to calculate the distance of the center of 
+        # the Sun from the spacecraft.  Note that the small angle approximation
+        # is used, and the solar radius stored in SXT FITS files is in arcseconds.
         properties['dsun']= constants.au
+        yohkoh_solar_r = header.get('solar_r', None)
+        if yohkoh_solar_r == None:
+            properties['dsun']= constants.au
+        else:
+            properties['dsun'] = constants.radius/(np.deg2rad(yohkoh_solar_r/3600.0))
         
         wavelnth = header.get('wavelnth')
         if wavelnth == 'Al.1':

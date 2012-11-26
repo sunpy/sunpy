@@ -12,10 +12,11 @@ Data Support
 The map object currently supports the following data sources
 
 - SDO/AIA
-- Yohkoh/XRT
-- SOHO/EIT, SOHO/LASCO, SOHO/MDI
 - STEREO/EUVI, STEREO/COR
+- Hinode/XRT
+- SOHO/EIT, SOHO/LASCO, SOHO/MDI
 - PROBA2/SWAP
+- Yohkoh/SXT
 
 1. Creating maps
 ----------------
