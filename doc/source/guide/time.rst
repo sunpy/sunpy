@@ -20,7 +20,6 @@ Here are few examples of formats which parse_time() accepts: ::
     parse_time('2007/05/04T21:08:12')
     parse_time('20070504T210812')
     parse_time('2007-May-04 21:08:12')
-    parse_time('04-May-2007 21:08:12')
     parse_time('20070504_210812')
 
 Each of the above returns the same datetime object. All SunPy functions which require 
@@ -53,16 +52,16 @@ example: ::
 or: ::
 
     from datetime import timedelta
-    time_range = TimeRange('2010/03/04 00:10', datetime.timedelta(0,400))
+    time_range = TimeRange('2010/03/04 00:10', timedelta(0,400))
 
 The time range objects provides a number of useful functions. For example, you can easily
 get the time at the center of your interval or the length of your interval in minutes 
 or days or seconds: ::
 
-    time_range.center
-    time_range.minutes
-    time_range.days
-    time_range.seconds
+    time_range.center()
+    time_range.minutes()
+    time_range.days()
+    time_range.seconds()
     
 It also makes it easy to create new time ranges. The functions next() and previous()
 do an inplace update to the object by either adding or subtracting the same time interval
