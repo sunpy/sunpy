@@ -948,7 +948,7 @@ Dimension:\t [%d, %d]
         gamma : float
             Gamma value to use for the color map
             
-         annotate : bool
+        annotate : bool
             If true, the data is plotted at it's natural scale; with
             title and axis labels.
             
