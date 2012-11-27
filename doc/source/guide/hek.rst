@@ -29,9 +29,8 @@ are specified as upper case, two letter strings, and are identical to
 the two letter abbreviations found at the HEK website,
 http://www.lmsal.com/hek/VOEvent_Spec.html.
 
-    >>> import datetime
-    >>> tstart = datetime.datetime(2011,8,9,7,23,56)
-    >>> tend = datetime.datetime(2011,8,9,12,40,29)
+    >>> tstart = '2011/08/09 07:23:56'
+    >>> tend = '2011/08/09 12:40:29'
     >>> event_type = 'FL'
     >>> result = client.query(hek.attrs.Time(tstart,tend),hek.attrs.EventType(event_type))
 
