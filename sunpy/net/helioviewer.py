@@ -75,7 +75,7 @@ class HelioviewerClient:
         
         return response
     
-    def download_jp2(self, date, directory=None, **kwargs):
+    def download_jp2(self, date, directory=None, overwrite=False, **kwargs):
         """
         Downloads the JPEG 2000 that most closely matches the specified time and 
         data source.
@@ -131,10 +131,10 @@ class HelioviewerClient:
         if 'jpip' in kwargs:
             return self._get_json(params)
     
-        return self._get_file(params, directory)
+        return self._get_file(params, directory, overwrite=overwrite)
     
-    def download_png(self, date, image_scale, layers, directory=None, 
-                        **kwargs):
+    def download_png(self, date, image_scale, layers, directory=None,
+                     overwrite=False, **kwargs):
         """Downloads a PNG image using data from Helioviewer.org.
         
         Returns a single image containing all layers/image types requested. 
@@ -207,7 +207,7 @@ class HelioviewerClient:
         }
         params.update(kwargs)
         
-        return self._get_file(params, directory)
+        return self._get_file(params, directory, overwrite=overwrite)
         
     
     def _get_json(self, params):
@@ -215,7 +215,7 @@ class HelioviewerClient:
         response = self._request(params).read()
         return json.loads(response)
     
-    def _get_file(self, params, directory=None):
+    def _get_file(self, params, directory=None, overwrite=False):
         """Downloads a file and return the filepath to that file"""
         # Query Helioviewer.org
         if directory is None:
@@ -225,7 +225,7 @@ class HelioviewerClient:
 
         response = self._request(params)
         try:
-            filepath = download_fileobj(response, directory)
+            filepath = download_fileobj(response, directory, overwrite=overwrite)
         finally:
             response.close()
         

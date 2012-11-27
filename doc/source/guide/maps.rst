@@ -1,10 +1,22 @@
-----
+====
 Maps
-----
+====
 
 Maps in SunPy are spatially-aware data arrays. In other words, they are 2-dimensional data associated with a coordinate system. In this guide, we will 
 cover some of the basic functionality of maps. Once you've read through this guide check out the :doc:`code reference</reference/index>` for a more
 thorough look at SunPy maps.
+
+------------
+Data Support
+------------
+The map object currently supports the following data sources
+
+- SDO/AIA
+- STEREO/EUVI, STEREO/COR
+- Hinode/XRT
+- SOHO/EIT, SOHO/LASCO, SOHO/MDI
+- PROBA2/SWAP
+- Yohkoh/SXT
 
 1. Creating maps
 ----------------
@@ -47,6 +59,7 @@ The format of the header follows the fits standard.
 A map contains a number of data-associated attributes. To get a quick look at your map simply
 type::
 
+    my_map = sunpy.make_map(sunpy.AIA_171_IMAGE)
     my_map
     
 This will show a representation of the data as well as some of its associated
@@ -55,7 +68,7 @@ exposure time, map center, xrange, yrange
 other::
 
     map_date = my_map.date
-    map_exptime = my_map.exptime
+    map_exptime = my_map.exposure_time
     map_center = my_map.center
     map_xrange = my_map.xrange
     map_yrange = my_map.yrange
@@ -66,7 +79,7 @@ To get a list of all of the attributes check the documentation by typing::
     
 The header of the map can be accessed by using the following method::
 
-    my_map.get_header()
+    header = my_map.get_header()
     
 This returns a dictionary with the header information as read from the source
 file. 
@@ -81,7 +94,7 @@ way, through indexing. For example, to get the 0th element in the array ::
     
 One important fact to remember which is intially confusing is that the first index is for the 
 y direction while the second index is for the x direction! For more information about indexing 
-please refer to the `Numpy documentation < http://www.scipy.org/Tentative_NumPy_Tutorial#head-864862d3f2bb4c32f04260fac61eb4ef34788c4c>`.
+please refer to the `Numpy documentation <http://www.scipy.org/Tentative_NumPy_Tutorial#head-864862d3f2bb4c32f04260fac61eb4ef34788c4c>`.
 You can also check on the shape of the array with ::
 
     my_map.shape
@@ -92,14 +105,14 @@ you can use::
     import numpy as np
     var = np.array(aia_map)
     
-The variable var is now simply a NumPy ndarray. Fortunately this is not generally necessary
+The variable var is now simply a `Numpy ndarray <http://docs.scipy.org/doc/numpy/reference/arrays.ndarray.html>`. Fortunately this is not generally necessary
 as the SunPy map inherits directly from the NumPy ndarray and therefore applying NumPy methods
 directly on the SunPy map is generally safe. So one could, for example, apply the following code::
 
     import numpy as np
     log_map = np.log(my_map)
 
-The np.log function will be applied on each element in the map data array as expected. A few NumPy
+The np.log() function will be applied on each element in the map data array as expected. A few NumPy
 ndarray methods are also directly available such as, for example, to find the maximum and mean 
 in the map data just use::
 
@@ -113,7 +126,7 @@ This is the advantage of inheritance!
 The SunPy map object has its own built-in plot methods so that it is easy to
 quickly view your map on the screen. To create a plot just type::
 
-    my_map.show()
+    my_map.peek()
     
 This will open a matplotlib plot right on your screen.
 In addition, to enable users to modify the plot it is possible to grab the
@@ -142,7 +155,7 @@ and then plots the result::
     my_maps.add_map(sunpy.AIA_171_IMAGE)
     my_maps.set_alpha(2,0.5)
     my_maps.set_levels(1,[50,60,70,80,90], percent = True)
-    my_maps.show()
+    my_maps.peek()
 
 This is not a particularly pretty plot but it shows what SunPy can do!
 

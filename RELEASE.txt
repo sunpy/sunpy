@@ -1,0 +1,48 @@
+The SunPy development team is pleased to announce the release of SunPy 0.2 "Thanksgiving Tortoise". This release is a large milestone for SunPy. Including the additon of many new features, and forms the 
+foundations for future releases.
+
+This release is over 13 months worth of work and contains over 1200 commits from 14 contributors.
+
+The major new features added in this release are:
+
+Completely re-written plotting routines for most of the core datatypes. JPEG 2000 support as an input file type. Improved documentation for much of the code base, including re-written installation 
+instructions.
+
+New lightcurve object
+
+    LYRA support
+    GOES/XRS support
+    SDO/EVE support
+
+New Spectrum and Spectrogram object (in development)
+
+    Spectrogram plotting routines
+    Callisto spectrum type and support
+    STEREO/SWAVES support
+
+Map Object
+
+    Added support for LASCO, Yohkoh/XRT maps
+    A new CompositeMap object for overlaying maps
+    Resample method
+    Superpixel method
+    The addition of the rotate() method for 2D maps.
+
+The people who have contributed to this release are:
+
+    Florian Mayer
+    Keith Hughitt
+    Jack Ireland
+    Steven Christe
+    Stuart Mumford
+    Albert Shih
+    Matt Earnshaw
+    Nicky Chorley
+    David Perez-Suarez
+    Andrew Inglis
+    Russell Hewett
+    Thomas Robitaille
+    Jordan Ballew
+    Arseniy Kustov
+
+
