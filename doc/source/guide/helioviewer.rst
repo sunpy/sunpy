@@ -5,6 +5,10 @@ SunPy can be used to make several basic requests using the The `Helioviewer.org 
 including generating a PNG and downloading a `JPEG 2000 <http://wiki.helioviewer.org/wiki/JPEG_2000>`__
 image and loading it into a SunPy Map.
 
+The SunPy Helioviewer client requires installation of OpenJPEG, an open source
+library for reading and writing JPEG2000 files.  To install OpenJPEG, please follow the
+instructions at `the OpenJPEG homepage <http://www.openjpeg.org>`__ .
+
 To interact with the Helioviewer API, users first create a "HelioviewerClient"
 instance. The client instance can then be used to make various queries against
 the API using the same parameters one would use when making a web request.
