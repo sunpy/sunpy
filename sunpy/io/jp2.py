@@ -40,9 +40,10 @@ def get_data(filepath, j2k_to_image="j2k_to_image"):
     
     Uses the OpenJPEG j2k_to_image command, if available, to extract the data
     portion of a JPEG 2000 image. The image is first converted to a temporary
-    intermediate file (PGM) and then read back in and stored an as ndarray.
+    intermediate file (PNG) and then read back in and stored an as ndarray.
     
-    NOTE: PIL is also required for Matplotlib to read in PGM images.
+    The image as read back in is upside down, and so it is spun around for the
+    correct orientation.
     """
     if j2k_to_image == "j2k_to_image" and os.name is "nt":
         j2k_to_image = "j2k_to_image.exe"
@@ -54,7 +55,7 @@ def get_data(filepath, j2k_to_image="j2k_to_image"):
     
     jp2filename = os.path.basename(filepath)
     
-    tmpname = "".join(os.path.splitext(jp2filename)[0:-1]) + ".pgm"
+    tmpname = "".join(os.path.splitext(jp2filename)[0:-1]) + ".png"
     tmpfile = os.path.join(tempfile.mkdtemp(), tmpname)
     
     with open(os.devnull, 'w') as fnull:
@@ -64,7 +65,8 @@ def get_data(filepath, j2k_to_image="j2k_to_image"):
     data = imread(tmpfile)    
     os.remove(tmpfile)
     
-    return data
+    # flip the array around since it has been read in upside down.
+    return data[::-1]
 
 def read_xmlbox(filepath, root):
     """
