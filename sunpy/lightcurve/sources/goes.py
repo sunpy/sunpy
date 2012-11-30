@@ -25,40 +25,45 @@ class GOESLightCurve(LightCurve):
     | http://www.ngdc.noaa.gov/goes/sem/getData/goes15
     """
 
-    def show(self, title="GOES Xray Flux", **kwargs):
+    def peek(self, title="GOES Xray Flux", **kwargs):
         """Plots GOES light curve is the usual manner"""
-        fig = plt.figure()
-        ax = fig.add_subplot(111)
+        
+        
+        figure = plt.figure()
+        axes = plt.gca()
+        
         dates = matplotlib.dates.date2num(self.data.index)
         
-        ax.plot_date(dates, self.data['A_FLUX'], '-', 
+        axes.plot_date(dates, self.data['A_FLUX'], '-', 
                      label='0.5--4.0 $\AA$', color='blue', lw=2)
-        ax.plot_date(dates, self.data['B_FLUX'], '-', 
+        axes.plot_date(dates, self.data['B_FLUX'], '-', 
                      label='1.0--8.0 $\AA$', color='red', lw=2)
         
-        ax.set_yscale("log")
-        ax.set_ylim(1e-9, 1e-2)
-        ax.set_title(title)
-        ax.set_ylabel('Watts m$^{-2}$')
-        ax.set_xlabel(datetime.datetime.isoformat(self.data.index[0])[0:10])
+        axes.set_yscale("log")
+        axes.set_ylim(1e-9, 1e-2)
+        axes.set_title(title)
+        axes.set_ylabel('Watts m$^{-2}$')
+        axes.set_xlabel(datetime.datetime.isoformat(self.data.index[0])[0:10])
         
-        ax2 = ax.twinx()
+        ax2 = axes.twinx()
         ax2.set_yscale("log")
         ax2.set_ylim(1e-9, 1e-2)
         ax2.set_yticks((1e-9, 1e-8, 1e-7, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2))
         ax2.set_yticklabels((' ','A','B','C','M','X',' '))
         
-        ax.yaxis.grid(True, 'major')
-        ax.xaxis.grid(False, 'major')
-        ax.legend()
+        axes.yaxis.grid(True, 'major')
+        axes.xaxis.grid(False, 'major')
+        axes.legend()
         
         # @todo: display better tick labels for date range (e.g. 06/01 - 06/05)
         formatter = matplotlib.dates.DateFormatter('%H:%M')
-        ax.xaxis.set_major_formatter(formatter)
+        axes.xaxis.set_major_formatter(formatter)
         
-        ax.fmt_xdata = matplotlib.dates.DateFormatter('%H:%M')
-        fig.autofmt_xdate()
-        fig.show()
+        axes.fmt_xdata = matplotlib.dates.DateFormatter('%H:%M')
+        figure.autofmt_xdate()
+        figure.show()
+        
+        return figure
     
     @classmethod
     def _get_default_uri(cls):

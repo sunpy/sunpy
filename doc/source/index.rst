@@ -34,6 +34,7 @@ Documentation
    resources
    release
    about
+   cite
    bugs
 
 ..   testing

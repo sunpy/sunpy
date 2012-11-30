@@ -139,7 +139,7 @@ class Map(np.ndarray, Parent):
 
     Examples
     --------
-    >>> aia = sunpy.Map(sunpy.AIA_171_IMAGE)
+    >>> aia = sunpy.make_map(sunpy.AIA_171_IMAGE)
     >>> aia.T
     AIAMap([[ 0.3125,  1.    , -1.1875, ..., -0.625 ,  0.5625,  0.5   ],
     [-0.0625,  0.1875,  0.375 , ...,  0.0625,  0.0625, -0.125 ],
@@ -150,10 +150,7 @@ class Map(np.ndarray, Parent):
     [ 0.    ,  0.    , -1.1875, ...,  0.125 ,  0.    ,  0.6875]])
     >>> aia.units['x']
     'arcsec'
-    >>> aia.show()
-    >>> import matplotlib.cm as cm
-    >>> import matplotlib.colors as colors
-    >>> aia.show(cmap=cm.hot, norm=colors.Normalize(1, 2048))
+    >>> aia.peek()
 
     See Also
     --------
@@ -951,7 +948,7 @@ Dimension:\t [%d, %d]
         gamma : float
             Gamma value to use for the color map
             
-         annotate : bool
+        annotate : bool
             If true, the data is plotted at it's natural scale; with
             title and axis labels.
             
@@ -1057,7 +1054,7 @@ Dimension:\t [%d, %d]
             
         # Normal plot
         else:
-            axes = figure.add_subplot(111)
+            axes = figure.gca()
 
         im = self.plot(axes=axes,**matplot_args)        
         
@@ -1075,7 +1072,7 @@ Dimension:\t [%d, %d]
         else:
             raise TypeError("draw_grid should be bool, int, long or float")
 
-        plt.show()
+        figure.show()
         
         return figure
     

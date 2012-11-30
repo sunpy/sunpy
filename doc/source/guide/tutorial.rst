@@ -1,6 +1,6 @@
-----------------
+---------------------
 A brief tour of SunPy
-----------------
+---------------------
 
 Welcome to the SunPy tutorial! This brief tutorial will walk you through some 
 of the functionality currently offered by SunPy. Start by reading this tutorial
@@ -28,7 +28,7 @@ a map from one of the supported data products is with the `sunpy.make_map()` com
     aia = sunpy.make_map(sunpy.AIA_171_IMAGE)
 
 This returns a map named aia which can be maniputated with standard SunPy map commands.
-
+For more information about maps checkout the :doc:`map guide <maps>`.
 
 2. Plotting
 -----------
@@ -89,15 +89,20 @@ a short bit of code to get you started: ::
     # the solar radius
     print(con.radius)
 
-    # not all constants have a shortcut assigned to them (as above)
-    # the rest of the constants are stored in a dictionary
-    solar_constants = con.physical_constants
+Not all constants have a shortcut assigned to them (as above). The rest of the constants 
+are stored in a dictionary. The following code grabs the dictionary and gets all of the
+keys.::
 
-    # to get a list of all of the values stored in this dictionary
+    solar_constants = con.physical_constants
     solar_constants.keys()
     
-    # or you can use the following convinience method to list them all
+You can also use the following function to print out a table of all of the values
+available. ::
+
     con.print_all()
+
+These constants are provided as a convenience so that everyone is using the same 
+(accepted values). More will be added over time.
 
 4. Working with Times
 ---------------------
@@ -120,7 +125,9 @@ and times. Here is a short example: ::
     # TimeRange objects are useful for representing ranges of time
     time_range = TimeRange('2010/03/04 00:10', '2010/03/04 00:20')
     time_range.center()
-    
+
+For more information about working with time in SunPy checkout the :doc:`time guide <time>`.
+
 5. Querying the VSO
 -------------------
 There are a couple different ways to query and download data from the VSO using
@@ -156,6 +163,8 @@ non-interactive version of the main API::
 
 Note that specifying a path is optional and if you do not specify one the files
 will simply be downloaded into a temporary directory (e.g. /tmp/xyz).
+For more information about vso client checkout the :doc:`vso guide <vso>`.
+
 
 6. Querying Helioviewer.org
 ---------------------------
@@ -182,3 +191,5 @@ are the pixel values for the image dimensions.
 The result is:
 
 .. image:: ../images/helioviewer_download_png_ex1.png
+
+For more information checkout the :doc:`helioviewer guide <helioviewer>`.
