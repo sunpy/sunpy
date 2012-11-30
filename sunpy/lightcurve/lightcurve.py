@@ -123,17 +123,39 @@ class LightCurve(object):
     def from_dataframe(cls, dataframe, header=None):
         return cls(dataframe, header)
     
-    def plot(self, **kwargs):
-        """Plot a plot of the light curve"""
-        axes = self.data.plot(**kwargs)
-        return axes.get_figure()
-    
-    def show(self, **kwargs):
-        """Shows a plot of the light curve"""
-        fig = self.plot(**kwargs)
-        fig.show()
+    def plot(self, axes=None, **plot_args):
+        """Plot a plot of the light curve
         
-        return fig
+        Parameters
+        ----------            
+        axes: matplotlib.axes object or None
+            If provided the image will be plotted on the given axes. Else the 
+            current matplotlib axes will be used.
+        
+        **plot_args : dict
+            Any additional plot arguments that should be used
+            when plotting the image.
+        
+        """
+
+        #Get current axes
+        if axes is None:
+            axes = plt.gca()
+         
+        axes = self.data.plot(ax=axes, **plot_args)
+
+        return axes
+    
+    def peek(self, **kwargs):
+        """Displays the light curve in a new figure"""
+        
+        figure = plt.figure()
+        
+        self.plot(**kwargs)
+        
+        figure.show()
+        
+        return figure
     
     @staticmethod
     def _download(uri, kwargs, 

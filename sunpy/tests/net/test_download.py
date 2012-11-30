@@ -32,5 +32,6 @@ def test_path_exception():
     th = threading.Thread(target=dw.reactor.run)
     th.daemon = True
     th.start()
-    assert x.wait(10)
+    x.wait(10)
+    assert x.isSet()
     dw.reactor.stop()
