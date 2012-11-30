@@ -11,10 +11,10 @@ import tempfile
 from matplotlib.image import imread
 from sunpy.util.xml import xml_to_dict
 
-def read(filepath):
+def read(filepath, j2k_to_image='opj_decompress'):
     """Reads in the file at the specified location"""
     header = get_header(filepath)
-    data = get_data(filepath)
+    data = get_data(filepath, j2k_to_image=j2k_to_image)
     
     return data, header 
 
@@ -35,7 +35,7 @@ def get_header(filepath):
             
     return MapHeader(pydict)
 
-def get_data(filepath, j2k_to_image="j2k_to_image"):
+def get_data(filepath, j2k_to_image="opj_decompress"):
     """Extracts the data portion of a JPEG 2000 image
     
     Uses the OpenJPEG j2k_to_image command, if available, to extract the data
@@ -45,13 +45,14 @@ def get_data(filepath, j2k_to_image="j2k_to_image"):
     The image as read back in is upside down, and so it is spun around for the
     correct orientation.
     """
-    if j2k_to_image == "j2k_to_image" and os.name is "nt":
-        j2k_to_image = "j2k_to_image.exe"
+    if os.name is "nt":
+        if (j2k_to_image == "j2k_to_image") or (j2k_to_image == "opj_decompress"):
+            j2k_to_image = j2k_to_image+".exe"
 
     if which(j2k_to_image) is None:
         raise MissingOpenJPEGBinaryError("You must first install the OpenJPEG "
-                                         "binaries before using this "
-                                         "funcitonality")
+                                         "(version >=1.4) binaries before using "
+                                         "this functionality.")
     
     jp2filename = os.path.basename(filepath)
     
