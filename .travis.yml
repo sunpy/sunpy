@@ -2,8 +2,18 @@ language: python
 python:
   - "2.6"
   - "2.7"
+  - "3.0"
+  - "3.1"
+  - "3.2"
 # command to install dependencies
-install: sudo apt-get build-dep python-scipy python-numpy; pip install pytest suds numpy beautifulsoup4; pip install scipy; pip install matplotlib; pip install pyfits; pip install pandas==0.8.0; pip install --no-index -f http://dist.plone.org/thirdparty/ -U PIL; 
+install: 
+  - sudo apt-get build-dep python-scipy python-numpy
+  - 'if [ ${TRAVIS_PYTHON_VERSION:0:1} == "2" ]; then pip install numpy; fi'
+  - 'if [ ${TRAVIS_PYTHON_VERSION:0:1} == "3" ]; then pip install https://github.com/y-p/numpy/archive/1.6.2_with_travis_fix.tar.gz; fi'  - pip install pytest suds-jurko beautifulsoup4
+  - pip install scipy
+  - pip install matplotlib
+  - pip install pyfits
+  - pip install pandas
 
 # command to run tests
 script: py.test sunpy/tests/
