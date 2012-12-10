@@ -8,25 +8,27 @@ import os
 from pandas.io.parsers import read_csv
 from datetime import datetime  
 
+import matplotlib.pyplot as plt
+
 class EVELightCurve(LightCurve):
     """SDO EVE light curve definition
     
     Examples
     --------
-    >>> import sunpy
-    >>> eve = sunpy.lightcurve.EVELightCurve()
-    >>> eve = sunpy.lightcurve.EVELightCurve('~/Downloads/EVE_Fe_IX_171_averages.csv')
-    >>> eve = sunpy.lightcurve.EVELightCurve('2012/06/20')
-    >>> eve = sunpy.lightcurve.EVELightCurve("http://lasp.colorado.edu/eve/data_access/quicklook/quicklook_data/L0CS/LATEST_EVE_L0CS_DIODES_1m.txt")
-    >>> 
-    >>> eve.show()
+    import sunpy
+    eve = sunpy.lightcurve.EVELightCurve.create()
+    eve = sunpy.lightcurve.EVELightCurve.create('~/Downloads/EVE_Fe_IX_171_averages.csv')
+    eve = sunpy.lightcurve.EVELightCurve.create('2012/06/20')
+    eve = sunpy.lightcurve.EVELightCurve.create("http://lasp.colorado.edu/eve/data_access/quicklook/quicklook_data/L0CS/LATEST_EVE_L0CS_DIODES_1m.txt")
+    eve.show()
     
     References
     ----------
     | http://lasp.colorado.edu/home/eve/data/data-access/
     """
 
-    def show(self, **kwargs):
+    def peek(self, **kwargs):
+        figure = plt.figure()
         # Choose title if none was specified
         if not kwargs.has_key("title"):
             if len(self.data.columns) > 1:
@@ -38,10 +40,11 @@ class EVELightCurve(LightCurve):
                 else:
                     kwargs['title'] = 'EVE Averages'
 
-        #LightCurve.show(kwargs)
-        from matplotlib import pyplot as plt
-        self.data.plot(**kwargs)
-        plt.show()
+        self.plot(**kwargs)
+        
+        figure.show()
+        
+        return figure
         
     @staticmethod
     def _get_default_uri():
