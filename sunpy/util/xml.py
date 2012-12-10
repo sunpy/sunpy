@@ -12,7 +12,21 @@ class NotTextNodeError(Exception):
     pass
 
 def xml_to_dict(xmlstring):
-    """Converts an XML string to a Python dictionary"""
+    """
+    Converts an XML string to a Python dictionary
+    
+    Warning: This method does not support multiple inner nodes of the 
+             same name but with different values.  It always takes the last value.
+    
+    Example:
+            <outer>
+                <inner>one</inner>
+                <inner>two</inner>
+            </outer>
+            
+        gives you the dict
+           {u'outer': {u'inner': u'two'}}  
+    """
     return node_to_dict(parseString(xmlstring))
 
 def node_to_dict(node):
