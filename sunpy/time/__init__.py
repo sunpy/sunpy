@@ -170,7 +170,14 @@ def parse_time(time_string):
     elif isinstance(time_string, datetime):
         return time_string
     elif isinstance(time_string, tuple):
-        return datetime(*time_string)
+        #Simple checking to see if the tuple is intended as input to datetime
+        if isinstance(time_string[0], (int, long)) and \
+           1 <= time_string[0] <= 9999 and \
+           isinstance(time_string[1], (int, long)) and \
+           1 <= time_string[1] <= 12:
+            return datetime(*time_string)
+        else:
+            return tuple(map(parse_time, time_string))
     elif isinstance(time_string, int) or isinstance(time_string, float):
         return datetime(1979, 1, 1) + timedelta(0, time_string)
     else:
