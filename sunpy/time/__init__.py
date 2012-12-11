@@ -165,7 +165,9 @@ def parse_time(time_string):
     .. todo:: add ability to parse tai (International Atomic Time seconds since 
     Jan 1, 1958)
     """
-    if isinstance(time_string, datetime):
+    if isinstance(time_string, list):
+        return list(map(parse_time, time_string))
+    elif isinstance(time_string, datetime):
         return time_string
     elif isinstance(time_string, tuple):
         return datetime(*time_string)
