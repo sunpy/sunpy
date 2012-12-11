@@ -168,8 +168,20 @@ def parse_time(time_string):
     if isinstance(time_string, datetime):
         return time_string
     elif isinstance(time_string, tuple):
+<<<<<<< HEAD
         return datetime(*time_string)
     elif isinstance(time_string, int) or isinstance(time_string, float):
+=======
+        #Simple checking to see if the tuple is intended as input to datetime
+        if isinstance(time_string[0], (int, long)) and \
+           1 <= time_string[0] <= 9999 and \
+           isinstance(time_string[1], (int, long)) and \
+           1 <= time_string[1] <= 12:
+            return datetime(*time_string)
+        else:
+            return tuple(map(parse_time, time_string))
+    elif isinstance(time_string, (int, long, float)):
+>>>>>>> 0a8848d... Bugfix: added the possibility of long input for seconds past 1979
         return datetime(1979, 1, 1) + timedelta(0, time_string)
     else:
         for time_format in TIME_FORMAT_LIST: 
