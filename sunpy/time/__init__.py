@@ -178,7 +178,7 @@ def parse_time(time_string):
             return datetime(*time_string)
         else:
             return tuple(map(parse_time, time_string))
-    elif isinstance(time_string, int) or isinstance(time_string, float):
+    elif isinstance(time_string, (int, long, float)):
         return datetime(1979, 1, 1) + timedelta(0, time_string)
     else:
         for time_format in TIME_FORMAT_LIST: 
