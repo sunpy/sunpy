@@ -171,10 +171,13 @@ def parse_time(time_string):
         return time_string
     elif isinstance(time_string, tuple):
         #Simple checking to see if the tuple is intended as input to datetime
-        if isinstance(time_string[0], (int, long)) and \
+        if len(time_string) >= 3 and \
+           isinstance(time_string[0], (int, long)) and \
            1 <= time_string[0] <= 9999 and \
            isinstance(time_string[1], (int, long)) and \
-           1 <= time_string[1] <= 12:
+           1 <= time_string[1] <= 12 and \
+           isinstance(time_string[2], (int, long)) and \
+           1 <= time_string[2] <= 31:
             return datetime(*time_string)
         else:
             return tuple(map(parse_time, time_string))
