@@ -71,3 +71,4 @@ class SXTMap(Map):
     def is_datasource_for(cls, header):
         """Determines if header corresponds to an SXT image"""
         return header.get('instrume') == 'SXT'
+
