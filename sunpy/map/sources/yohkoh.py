@@ -72,8 +72,3 @@ class SXTMap(Map):
         """Determines if header corresponds to an SXT image"""
         return header.get('instrume') == 'SXT'
 
-if __name__ == "__main__":
-    import sunpy
-    x = sunpy.make_map("/home/keith/Downloads/sfd0101041037.fits")
-    
-    
