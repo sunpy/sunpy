@@ -57,7 +57,6 @@ The output should look something like: ::
      Recommended libraries
     #######################
     beautifulsoup4: 4.1.1
-    PIL: NOT INSTALLED
     PyQt: 4.9.4
     SUDS: 0.4'
 
