@@ -17,7 +17,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from datetime import datetime
-from types import NoneType
 
 from sunpy.time import is_time, TimeRange
 from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
