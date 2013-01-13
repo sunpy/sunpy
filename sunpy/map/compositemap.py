@@ -4,7 +4,6 @@ Author: `Keith Hughitt <keith.hughitt@nasa.gov>`
 """
 from __future__ import absolute_import
 
-from matplotlib import patches
 import matplotlib.pyplot as plt
 from sunpy.map import Map
 
