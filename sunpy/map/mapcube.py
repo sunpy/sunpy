@@ -5,9 +5,15 @@ from __future__ import absolute_import
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
+from copy import copy
+import numpy as np
+import matplotlib.animation as animation
+import matplotlib.pyplot as plt
+from matplotlib.widgets import Button
+from sunpy.util import plotting
 from sunpy.map import Map
 from sunpy.map.sources import *
-import numpy as np
+from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 #
 # 2011/04/13: Should Map be broken up into Map and MapHeader classes? This way
@@ -150,6 +156,88 @@ class MapCube(np.ndarray):
         """Derotates the layers in the MapCube"""
         pass
     
-    def plot(self):
-        """A basic plot method (not yet implemented)"""
-        pass
+    def plot(self, annotate=True, axes=None, gamma=None, controls=True,
+             interval=200, resample=[0.25,0.25], colorbar=False,
+             **imshow_args):
+        """A plot method that animates! """
+        
+        if not axes:
+            axes = plt.gca()
+        fig = axes.get_figure()
+        
+        # Normal plot
+        if annotate:
+            axes.set_title("%s %s" % (self[0].name, self[0].date))
+            
+            # x-axis label
+            if self[0].coordinate_system['x'] == 'HG':
+                xlabel = 'Longitude [%s]' % self[0].units['x']
+            else:
+                xlabel = 'X-position [%s]' % self[0].units['x']
+
+            # y-axis label
+            if self[0].coordinate_system['y'] == 'HG':
+                ylabel = 'Latitude [%s]' % self[0].units['y']
+            else:
+                ylabel = 'Y-position [%s]' % self[0].units['y']
+                
+            axes.set_xlabel(xlabel)
+            axes.set_ylabel(ylabel)
+
+        # Determine extent
+        extent = self[0].xrange + self[0].yrange
+        
+        cmap = copy(self[0].cmap)
+        if gamma is not None:
+            cmap.set_gamma(gamma)
+            
+            #make imshow kwargs a dict
+        
+        kwargs = {'origin':'lower',
+                  'cmap':cmap,
+                  'norm':self[0].norm(),
+                  'extent':extent,
+                  'interpolation':'nearest'}
+        kwargs.update(imshow_args)
+        
+        im = axes.imshow(self[0], **kwargs)
+        
+        #Set current image (makes colorbar work)
+        plt.sci(im)
+        
+        divider = make_axes_locatable(axes)
+        cax = divider.append_axes("right", size="5%", pad=0.2)
+        cbar = plt.colorbar(im,cax)
+        
+        if resample:
+            resample = np.array(self.shape[1:]) * np.array(resample)
+            ani_data = [x.resample(resample) for x in self]
+        else:
+            ani_data = self
+            
+        def updatefig(i, *args):
+            im = args[0]
+            im.set_array(args[2][i])
+            im.set_cmap(self[i].cmap)
+            im.set_norm(self[i].norm())
+            if args[1]:
+                axes.set_title("%s %s" % (self[i].name, self[i].date))
+        
+        ani = plotting.ControlFuncAnimation(fig, updatefig,
+                                            frames=xrange(0,self.shape[0]),
+                                            fargs = [im,annotate,ani_data],
+                                            interval=interval,
+                                            blit=False)
+        if controls:
+            axes, bax1, bax2 = plotting.add_controls(axes=axes)
+            #Add Buttons to the new axes
+            stop = Button(bax1, "Stop")
+            start = Button(bax2, "Start")
+        
+        if controls:            
+            return ani, [start,stop]
+        
+        else:
+            return ani
+        
+        
