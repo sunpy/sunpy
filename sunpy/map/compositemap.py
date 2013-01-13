@@ -4,6 +4,7 @@ Author: `Keith Hughitt <keith.hughitt@nasa.gov>`
 """
 from __future__ import absolute_import
 
+from matplotlib import patches
 import matplotlib.pyplot as plt
 from sunpy.map import Map
 
@@ -196,6 +197,45 @@ class CompositeMap:
         """
         self._maps[index].zorder = zorder
 
+    def draw_limb(self, index, axes=None):
+        """Draws a circle representing the solar limb 
+        
+            Parameters
+            ----------
+            index: integer
+                Map index to use to plot limb.
+                
+            axes: matplotlib.axes object or None
+                Axes to plot limb on or None to use current axes.
+        
+            Returns
+            -------
+            matplotlib.axes object
+        """
+        return self._maps[index].draw_limb(axes=axes)
+        
+    def draw_grid(self, index,  axes=None, grid_spacing=20):
+        """Draws a grid over the surface of the Sun
+        
+        Parameters
+        ----------
+        index: integer
+            Index to determine which map to use to draw grid.
+            
+        axes: matplotlib.axes object or None
+            Axes to plot limb on or None to use current axes.
+        
+        grid_spacing: float
+            Spacing (in degrees) for longitude and latitude grid.
+        
+        Returns
+        -------
+        matplotlib.axes object
+        """
+        
+        ax = self._maps[index].draw_grid(axes=axes, grid_spacing=grid_spacing)
+        return ax
+        
     def plot(self, axes=None, gamma=None, annotate=True, # pylint: disable=W0613
              title="SunPy Composite Plot", **matplot_args):
         """Plots the composite map object using matplotlib
