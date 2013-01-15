@@ -9,7 +9,7 @@ from copy import copy
 import numpy as np
 import matplotlib.animation as animation
 import matplotlib.pyplot as plt
-from matplotlib.widgets import Button
+
 from sunpy.util import plotting
 from sunpy.map import Map
 from sunpy.map.sources import *
@@ -230,14 +230,10 @@ class MapCube(np.ndarray):
                                             blit=False)
         if controls:
             axes, bax1, bax2 = plotting.add_controls(axes=axes)
-            #Add Buttons to the new axes
-            stop = Button(bax1, "Stop")
-            start = Button(bax2, "Start")
+
+            bax1._button.on_clicked(ani._start)
+            bax2._button.on_clicked(ani._stop)
         
-        if controls:            
-            return ani, [start,stop]
-        
-        else:
-            return ani
+        return ani
         
         

@@ -11,6 +11,7 @@ __email__ = "stuartmumford@physics.org"
 
 import matplotlib.animation as animation
 import matplotlib.pyplot as plt
+from matplotlib.widgets import Button
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import mpl_toolkits.axes_grid1.axes_size as Size
 
@@ -69,5 +70,11 @@ def add_controls(axes=None):
     bax2 = fig.add_axes((0.,0.,0.8,1.))
     locator = divider.new_locator(nx=2, ny=0)
     bax2.set_axes_locator(locator)
+    
+    start = Button(bax1, "Start")
+    stop = Button(bax2, "Stop")
+    #Make dummy refernce to prevent garbage collection
+    bax1._button = start
+    bax2._button = stop
     
     return axes, bax1, bax2
