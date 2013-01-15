@@ -11,7 +11,7 @@ __email__ = "stuartmumford@physics.org"
 
 import matplotlib.animation as animation
 import matplotlib.pyplot as plt
-from matplotlib.widgets import Button
+import matplotlib.widgets as widgets
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import mpl_toolkits.axes_grid1.axes_size as Size
 
@@ -38,7 +38,7 @@ class ControlFuncAnimation(animation.FuncAnimation):
         if self.event_source:
             animation.FuncAnimation._stop(self, *args)
 
-def add_controls(axes=None):
+def add_controls(axes=None, slider=False):
     """ Adds Start/Stop controls to an axes having been given a animation 
     instance. """
     
@@ -49,32 +49,48 @@ def add_controls(axes=None):
     
     #Split up the current axes so there is space for a start and a stop button
     divider = make_axes_locatable(axes)
-    pad = 0.1 # Padding between axes
+    pad = 0.06 # Padding between axes
     pad_size = Size.Fraction(pad, Size.AxesX(axes))
 
     #Define size of usefult axes cells, 50% each in x 20% for buttons in y.
     xsize = Size.Fraction((1.-2.*pad)/2., Size.AxesX(axes))
-    ysize = Size.Fraction((1.-2.*pad)/5., Size.AxesY(axes))
+    ysize = Size.Fraction((1.-2.*pad)/15., Size.AxesY(axes))
 
     #Set up grid, 3x3 with cells for padding.
     divider.set_horizontal([xsize, pad_size, xsize])
-    divider.set_vertical([ysize, pad_size, Size.AxesY(axes)])
-
+    if slider:
+        divider.set_vertical([ysize, pad_size, ysize, pad_size, Size.AxesY(axes)])
+        bny = 2
+    else:
+        divider.set_vertical([ysize, pad_size, Size.AxesY(axes)])
+        bny = 0
+        
     #Main figure spans all horiz and is in the top (2) in vert.
-    axes.set_axes_locator(divider.new_locator(0, 2, nx1=-1))
+    axes.set_axes_locator(divider.new_locator(0, len(divider.get_vertical())-1,
+                                              nx1=-1))
     
     #Add two axes for buttons and make them 50/50 spilt at the bottom.
     bax1 = fig.add_axes((0.,0.,1.,1.))
-    locator = divider.new_locator(nx=0, ny=0)
+    locator = divider.new_locator(nx=0, ny=bny)
     bax1.set_axes_locator(locator)
     bax2 = fig.add_axes((0.,0.,0.8,1.))
-    locator = divider.new_locator(nx=2, ny=0)
+    locator = divider.new_locator(nx=2, ny=bny)
     bax2.set_axes_locator(locator)
     
-    start = Button(bax1, "Start")
-    stop = Button(bax2, "Stop")
+
+    
+    start = widgets.Button(bax1, "Start")
+    stop = widgets.Button(bax2, "Stop")
     #Make dummy refernce to prevent garbage collection
     bax1._button = start
     bax2._button = stop
     
+    if slider:
+        bax3 = fig.add_axes((0.,0.,0.6,1.))
+        locator = divider.new_locator(nx=0, ny=0, nx1=-1)
+        bax3.set_axes_locator(locator)
+        sframe = widgets.Slider(bax3, 'Frame', 0, 10, valinit=0, valfmt = '%i')        
+        bax3._slider = sframe
+    
+        return axes, bax1, bax2, bax3
     return axes, bax1, bax2
