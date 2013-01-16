@@ -5,7 +5,7 @@ import numpy as np
 
 class Chaincode(np.ndarray):
     '''
-    Chaincode(origin, chaincode, xdelta = 1, ydelta = 1)
+    Chaincode(origin, chaincode, xdelta=1, ydelta=1)
 
     A tool to infer some information from chaincodes produced
     by HELIO Feature Catalogue or Heliphyisics Events Knowledgebase
@@ -26,41 +26,41 @@ class Chaincode(np.ndarray):
     ------
     cc.coordinates : numpy.ndarray
         An array containing all the x and y coordinates of the cc
-        such [[x0,x1,x2,...,xn],[y0,y1,y2,...,yn]]
+        such [[x0, x1, x2, ..., xn], [y0 ,y1, y2, ..., yn]]
 
     Example
     -------
-    cc = Chaincode([-88,812],"44464655567670006011212222324",
-         xdelta = 2.629, ydelta = 2.629)
+    cc = Chaincode([-88, 812], "44464655567670006011212222324",
+         xdelta=2.629, ydelta=2.629)
     # To plot...
     fig = plt.figure()
     ax = fig.add_subplot(111)
     x,y = zip(cc.coordinates)
-    ax.plot(x[0],y[0],'go-')
+    ax.plot(x[0], y[0], 'go-')
     fig.show()
     '''
-    def __new__(cls,origin,chaincode,**kargs):
-        if isinstance(origin,list):
+    def __new__(cls, origin, chaincode, **kargs):
+        if isinstance(origin, list):
             obj = np.asarray(origin).view(cls)
         else:
             raise TypeError('Invalid input')
         return obj
 
-    def __init__(self,origin,chaincode,xdelta=1,ydelta=1):
-        x_steps = [-1,-1,0,1,1,1,0,-1]
-        y_steps = [0,-1,-1,-1,0,1,1,1]
-        self.coordinates = np.ndarray((2,len(chaincode)+1))
+    def __init__(self, origin, chaincode, xdelta=1, ydelta=1):
+        x_steps = [-1, -1, 0, 1, 1, 1, 0, -1]
+        y_steps = [0, -1, -1, -1, 0, 1, 1, 1]
+        self.coordinates = np.ndarray((2, len(chaincode)+1))
         self.coordinates[:,0] = origin
         if chaincode.isdigit():
-            for index,step in enumerate(chaincode):
+            for index, step in enumerate(chaincode):
                 self.coordinates[:,index + 1] = self.coordinates[:,index] + \
                     [[x_steps[int(step)] * xdelta, y_steps[int(step)] * ydelta]]
 
-    def matchend(self,end):
-        return np.alltrue(np.equal(self.coordinates[:,-1],np.asarray(end)))
+    def matchend(self, end):
+        return np.alltrue(np.equal(self.coordinates[:,-1], np.asarray(end)))
 
-    def matchany(self,coordinates,index):
-        return np.alltrue(np.allclose(self.coordinates[:,index],np.asarray(coordinates)))
+    def matchany(self, coordinates, index):
+        return np.alltrue(np.allclose(self.coordinates[:,index], np.asarray(coordinates)))
 
     def BoundingBox(self):
         '''
@@ -72,9 +72,35 @@ class Chaincode(np.ndarray):
         bb[:,1] = self.coordinates.max(1)
         return bb
 
-    def area(self):
+    def area(self):# should we add a mask for possible not flat objects (eg. Sun)?
         # Check whehter it is a closed object
         pass
 
     def length(self):
         pass
+
+    def subBoundingBox(self, xedge=None, yedge=None):
+        '''
+        Extract the x or y boundaries of the chaincode from
+        a defined limits xedge or yedge.
+        '''
+# It needs to check whether the input are lists and with 2 elements..
+#        try:
+#            if (type(xedge) == list) or (type(yedge) == list):
+#                
+        if xedge != None:
+            edge = xedge
+            IndexMask = 0  # we want to mask X
+            IndexValue = 1 # we want to extract the MinMax from Y
+        elif yedge != None:
+            edge = yedge
+            IndexMask = 1
+            IndexValue = 0
+        else:
+            print "Not edges input"
+            return None
+        mask = (self.coordinates[IndexMask,:] >= edge[0]) & \
+            (self.coordinates[IndexMask,:] <= edge[1])
+# Should the edges be included?
+        mx = np.ma.masked_array(self.coordinates[IndexValue,:], mask=(~mask))
+        return [mx.min(), mx.max()]
