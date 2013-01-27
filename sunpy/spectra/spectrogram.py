@@ -34,7 +34,7 @@ from sunpy.net.util import get_system_filename
 from sunpy.time import parse_time, get_day
 from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
 from sunpy.util.util import (
-    to_signed, min_delt, delta, common_base, merge,
+    to_signed, min_delt, common_base, merge,
     replacement_filename
 )
 from sunpy.util.create import Parent
@@ -53,7 +53,6 @@ SECONDS_PER_DAY = 86400
 REFERENCE = 0
 COPY = 1
 DEEPCOPY = 2
-
 
 def figure(*args, **kwargs):
     """ Create new SpectroFigure, a figure extended with features
@@ -109,8 +108,8 @@ class _LinearView(object):
         
         midpoints = (self.arr.freq_axis[:-1] + self.arr.freq_axis[1:]) / 2
         self.midpoints = np.concatenate([midpoints, arr.freq_axis[-1:]])
-        
-        self.max_mp_delt = np.min(delta(self.midpoints))
+        	
+        self.max_mp_delt = np.min(self.midpoints[1:] - self.midpoints[:-1])
         
         self.freq_axis = np.arange(
             self.arr.freq_axis[0], self.arr.freq_axis[-1], -self.delt

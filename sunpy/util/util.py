@@ -7,7 +7,7 @@ from itertools import izip, imap, count
 import numpy as np
 from matplotlib import pyplot
 
-__all__ = ['toggle_pylab', 'unique', 'print_table', 
+__all__ = ['to_signed', 'toggle_pylab', 'unique', 'print_table', 
            'replacement_filename', 'goes_flare_class']
 
 def to_signed(dtype):
@@ -86,12 +86,6 @@ def print_table(lst, colsep=' ', linesep='\n'):
 def findpeaks(a):
     """ Find local maxima in 1D. Use findpeaks(-a) for minima. """
     return np.nonzero((a[1:-1] > a[:-2]) & (a[1:-1] > a[2:]))[0]
-
-
-def delta(s):
-    """ Return deltas between elements of s. len(delta(s)) == len(s) - 1. """
-    return s[1:] - s[:-1]
-
 
 def polyfun_at(coeff, p):
     """ Return value of polynomial with coefficients (highest first) at
