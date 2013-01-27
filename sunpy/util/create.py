@@ -7,11 +7,11 @@ import os
 import glob
 import shutil
 
-import sunpy
 import urllib2
 
+import sunpy
 from sunpy.net.util import download_file
-from sunpy.util.util import replacement_filename
+from sunpy.util import replacement_filename
 
 from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
 
