@@ -21,12 +21,10 @@ try:
 except ImportError:
     print("C extension sunpy.image.Crotate cannot be found")
 import sunpy.wcs as wcs
-from sunpy.util import toggle_pylab
+from sunpy.util import toggle_pylab, to_signed
 from sunpy.io import read_file, read_file_header
 from sunpy.sun import constants
-from sunpy.time import parse_time
-from sunpy.time import is_time
-from sunpy.util.util import to_signed
+from sunpy.time import parse_time, is_time
 from sunpy.image.rescale import resample, reshape_image_to_4d_superpixel
 
 from sunpy.util.cond_dispatch import ConditionalDispatch
