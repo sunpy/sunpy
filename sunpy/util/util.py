@@ -7,8 +7,8 @@ from itertools import izip, imap, count
 import numpy as np
 from matplotlib import pyplot
 
-__all__ = ["toggle_pylab", "unique", "print_table", 
-           "to_angstrom", "goes_flare_class"]
+__all__ = ['toggle_pylab', 'unique', 'print_table', 
+           'replacement_filename', 'goes_flare_class']
 
 def to_signed(dtype):
     """ Return dtype that can hold data of passed dtype but is signed.
@@ -189,7 +189,6 @@ def merge(items, key=(lambda x: x)):
             state[item] = (n, key(n))
         except StopIteration:
             del state[item]
-
 
 def replacement_filename(path):
     """ Return replacement path for already used path. Enumerates
