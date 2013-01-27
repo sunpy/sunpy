@@ -1,7 +1,9 @@
 from __future__ import absolute_import
 
-import pytest
 from datetime import datetime
+
+import pytest
+
 from sunpy.time import julian
 
 DATETIME_DATE_1 = datetime(1900, 1, 1, 12, 00, 00)
@@ -26,6 +28,12 @@ def test_constant():
 
     assert julian.JULIAN_DAY_ON_NOON01JAN1900 == 2415021.0
 
+
+def test_julian_day():
+    assert julian.julian_day('1900-01-01 12:00') == 2415021.0
+    assert julian.julian_day(LANDING) == 2439159.5
+    result = julian.julian_day('2000-03-01 15:30:26')
+    assert_almost_equal(result, 2451605.1461111, decimal=3)
 
 def test_julian_day1():
     """should return julian day for date 1"""
