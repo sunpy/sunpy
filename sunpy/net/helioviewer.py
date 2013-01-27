@@ -8,10 +8,12 @@ __author__ = ["Keith Hughitt"]
 __email__ = "keith.hughitt@nasa.gov"
 
 import os
-import json
 import shutil
 import urllib
 import urllib2
+
+import json
+
 import sunpy
 from sunpy.time import parse_time
 from sunpy.net.util import download_fileobj
@@ -71,7 +73,7 @@ class HelioviewerClient:
         response = self._get_json(params)
         
         # Cast date string to DateTime
-        response['date'] = sunpy.time.parse_time(response['date'])
+        response['date'] = parse_time(response['date'])
         
         return response
     

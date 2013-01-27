@@ -21,6 +21,13 @@ Carrington Rotation Number = 1971.4091        check!
 """
 from __future__ import absolute_import
 
+import math
+import cmath
+
+import numpy as np
+
+from sunpy.time import parse_time, julian
+
 __all__ = ["print_params"
            ,"heliographic_solar_center"
            ,"solar_north"
@@ -49,12 +56,6 @@ __all__ = ["print_params"
 
 __authors__ = ["Steven Christe"]
 __email__ = "steven.d.christe@nasa.gov"
-
-import math
-import cmath
-import numpy as np
-from sunpy.time import parse_time
-from sunpy.time import julian
 
 def solar_cycle_number(t=None):
     time = parse_time(t)
