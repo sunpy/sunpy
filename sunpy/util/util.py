@@ -8,7 +8,8 @@ import numpy as np
 from matplotlib import pyplot
 
 __all__ = ['to_signed', 'toggle_pylab', 'unique', 'print_table', 
-           'replacement_filename', 'goes_flare_class']
+           'replacement_filename', 'goes_flare_class', 'merge', 'common_base']
+
 
 def to_signed(dtype):
     """ Return dtype that can hold data of passed dtype but is signed.
@@ -24,6 +25,7 @@ def to_signed(dtype):
             raise ValueError("Cannot losslessy convert uint64 to int.")
         dtype = "int%d" % (min(dtype.itemsize * 2 * 8, 64))
     return np.dtype(dtype)
+
 
 def toggle_pylab(fn):
     """ A decorator to prevent functions from opening matplotlib windows
@@ -42,6 +44,7 @@ def toggle_pylab(fn):
         return fn_itoggle
     else:
         return fn
+
 
 def goes_flare_class(gcls):
     """Convert GOES classes into a number to aid size comparison.  Units are
@@ -86,6 +89,7 @@ def print_table(lst, colsep=' ', linesep='\n'):
 def findpeaks(a):
     """ Find local maxima in 1D. Use findpeaks(-a) for minima. """
     return np.nonzero((a[1:-1] > a[:-2]) & (a[1:-1] > a[2:]))[0]
+
 
 def polyfun_at(coeff, p):
     """ Return value of polynomial with coefficients (highest first) at
@@ -142,13 +146,6 @@ def find_next(one, other, pad=DONT):
         else:
             if pad is not DONT:
                 yield elem1, pad
-
-
-def min_delt(arr):
-    deltas = (arr[:-1] - arr[1:])
-    # Multiple values at the same frequency are just thrown away
-    # in the process of linearizaion
-    return deltas[deltas != 0].min()
 
 
 def common_base(objs):
