@@ -3,10 +3,12 @@
 Useful for keeping track of when an event occurred, usually labeled as 
 "True"."""
 from __future__ import absolute_import
+
+import numpy as np
+
 from sunpy.lightcurve import LightCurve
 from scipy.ndimage import label
 from sunpy.time import TimeRange
-import numpy as np
 
 #
 #
