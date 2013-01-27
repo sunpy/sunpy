@@ -2,6 +2,7 @@ from __future__ import absolute_import
 
 from datetime import datetime
 
+from numpy.testing import assert_almost_equal
 import pytest
 
 from sunpy.time import julian
@@ -17,6 +18,8 @@ STRING_DATE_3 = '2174/02/11 05:02:00'
 
 DATETIME_DATE_4 = datetime(814, 1, 28, 23, 59, 59)
 STRING_DATE_4 = '0814/01/28 23:59:59'
+
+LANDING = datetime(1966, 2, 3)
 
 def test__all__():
     """should return __all__"""
