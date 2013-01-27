@@ -20,8 +20,8 @@ try:
     import sunpy.image.Crotate as Crotate
 except ImportError:
     print("C extension sunpy.image.Crotate cannot be found")
-from sunpy.wcs import wcs as wcs
-from sunpy.util.util import toggle_pylab
+import sunpy.wcs as wcs
+from sunpy.util import toggle_pylab
 from sunpy.io import read_file, read_file_header
 from sunpy.sun import constants
 from sunpy.time import parse_time
