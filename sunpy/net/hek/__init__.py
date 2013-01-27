@@ -20,7 +20,7 @@ from functools import partial
 from sunpy.net import attr
 from sunpy.net.hek import attrs
 from sunpy.net.vso import attrs as v_attrs
-from sunpy.util.util import unique
+from sunpy.util import unique
 from sunpy.util.xml import xml_to_dict
 
 DEFAULT_URL = 'http://www.lmsal.com/hek/her'
