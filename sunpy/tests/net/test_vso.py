@@ -11,7 +11,7 @@ from sunpy.net import vso
 from sunpy.net.vso import attrs as va
 from sunpy.net import attr
 
-from sunpy.util.util import energy, frequency
+from sunpy.util.unit_conversion import energy, frequency
 
 def pytest_funcarg__eit(request):
     return va.Instrument('eit')
