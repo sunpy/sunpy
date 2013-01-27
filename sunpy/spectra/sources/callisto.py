@@ -23,9 +23,7 @@ from scipy.optimize import leastsq
 from scipy.ndimage import gaussian_filter1d
 
 from sunpy.time import parse_time
-from sunpy.util.util import (
-    findpeaks, polyfun_at, minimal_pairs, find_next
-)
+from sunpy.util import polyfun_at, minimal_pairs
 from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
 from sunpy.spectra.spectrogram import LinearTimeSpectrogram, REFERENCE
 

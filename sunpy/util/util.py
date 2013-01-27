@@ -7,8 +7,9 @@ from itertools import izip, imap, count
 import numpy as np
 from matplotlib import pyplot
 
-__all__ = ['to_signed', 'toggle_pylab', 'unique', 'print_table', 
-           'replacement_filename', 'goes_flare_class', 'merge', 'common_base']
+__all__ = ['to_signed', 'toggle_pylab', 'unique', 'print_table',
+           'replacement_filename', 'goes_flare_class', 'merge', 'common_base',
+           'minimal_pairs', 'polyfun_at']
 
 
 def to_signed(dtype):
