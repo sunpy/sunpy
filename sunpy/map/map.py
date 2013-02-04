@@ -19,7 +19,7 @@ from copy import copy
 try:
     import sunpy.image.Crotate as Crotate
 except ImportError:
-    raise ImportWarning("You do not have the C extension sunpy.image.Crotate")
+    pass
 from sunpy.wcs import wcs as wcs
 from sunpy.util.util import toggle_pylab
 from sunpy.io import read_file, read_file_header
@@ -825,7 +825,11 @@ Dimension:\t [%d, %d]
         else:
             #Use C extension Package
             if not 'Crotate' in globals():
-                raise ImportWarning("You do not have the C extension sunpy.image.Crotate")
+                raise ImportWarning("""The C extension sunpy.image.Crotate is not installed
+Falling back to the interpolation = 'spline' """)
+                data = scipy.ndimage.interpolation.affine_transform(image, rsmat,
+                           offset=offs, order=interp_param, mode='constant',
+                           cval=missing)
             #Set up call parameters depending on interp type.
             if interpolation == 'nearest':
                 interp_type = Crotate.NEAREST
