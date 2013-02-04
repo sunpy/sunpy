@@ -19,7 +19,7 @@ from copy import copy
 try:
     import sunpy.image.Crotate as Crotate
 except ImportError:
-    print("Import Error: C extension sunpy.image.Crotate cannot be found")
+    raise ImportWarning("C extension sunpy.image.Crotate cannot be found")
 from sunpy.wcs import wcs as wcs
 from sunpy.util.util import toggle_pylab
 from sunpy.io import read_file, read_file_header
