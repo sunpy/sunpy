@@ -241,7 +241,11 @@ class CompositeMap:
                             'heliographic_longitude']
             for i, amap in enumerate(self._maps):
                 if all([hasattr(amap,k) for k in needed_attrs]):
-                    index = i               
+                    index = i
+                    break
+        
+        if not all([hasattr(self._maps[index],k) for k in needed_attrs]):
+            raise ValueError("Specified index does not have all the required attributes to draw grid.")
         
         ax = self._maps[index].draw_grid(axes=axes, grid_spacing=grid_spacing)
         return ax

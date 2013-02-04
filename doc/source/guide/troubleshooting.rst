@@ -7,6 +7,23 @@ Troubleshooting
 .. contents::
    :backlinks: none
 
+.. _ImportWarning:
+
+Crotate ImportWarning
+=====================
+
+The SunPy map class has a custom rotate functionality, similar to IDL's ROT function.
+This uses a Python C-API extension which should be build by installing sunpy.
+If for any reason this build process fails, you will not be able to use the C-API
+rotate code, but will be able to still use all the functionality of map.
+
+If this happens you will encounter the following warning upon importing sunpy::
+
+    import sunpy.map
+    Traceback (most recent call last):
+      File "map.py", line 22, in <module>
+    ImportWarning: C extension sunpy.image.Crotate cannot be found
+
 .. _sunpy-version:
 
 Obtaining sunpy version
