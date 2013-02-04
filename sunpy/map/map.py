@@ -19,7 +19,7 @@ from copy import copy
 try:
     import sunpy.image.Crotate as Crotate
 except ImportError:
-    raise ImportWarning("C extension sunpy.image.Crotate cannot be found")
+    raise ImportWarning("You do not have the C extension sunpy.image.Crotate")
 from sunpy.wcs import wcs as wcs
 from sunpy.util.util import toggle_pylab
 from sunpy.io import read_file, read_file_header
@@ -825,7 +825,7 @@ Dimension:\t [%d, %d]
         else:
             #Use C extension Package
             if not 'Crotate' in globals():
-                raise ValueError("You do not have the C extension sunpy.image.Crotate")
+                raise ImportWarning("You do not have the C extension sunpy.image.Crotate")
             #Set up call parameters depending on interp type.
             if interpolation == 'nearest':
                 interp_type = Crotate.NEAREST
