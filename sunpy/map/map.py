@@ -466,7 +466,7 @@ Dimension:\t [%d, %d]
                                       self.heliographic_longitude,
                                       hg_longitude_deg_mesh,
                                       hg_latitude_deg_mesh, units='arcsec')
-            axes.plot(x, y, color='white', linestyle='dotted')
+            axes.plot(x, y, color='white', linestyle='dotted',zorder=100)
             
         hg_longitude_deg = np.arange(lon_range[0], lon_range[1]+grid_spacing, grid_spacing)
         hg_latitude_deg = np.linspace(lat_range[0], lat_range[1], num=num_points)
@@ -480,7 +480,7 @@ Dimension:\t [%d, %d]
                                       self.heliographic_longitude,
                                       hg_longitude_deg_mesh,
                                       hg_latitude_deg_mesh, units='arcsec')
-            axes.plot(x, y, color='white', linestyle='dotted')
+            axes.plot(x, y, color='white', linestyle='dotted',zorder=100)
             
         axes.set_ylim(self.yrange)
         axes.set_xlim(self.xrange)
