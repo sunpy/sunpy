@@ -400,11 +400,11 @@ Dimension:\t [%d, %d]
         if hasattr(self, 'center'):
             circ = patches.Circle([self.center['x'], self.center['y']],
                                   radius=self.rsun_arcseconds, fill=False,
-                                  color='white')
+                                  color='white',zorder=100)
         else:
             print("Assuming center of Sun is center of image")
             circ = patches.Circle([0,0], radius=self.rsun_arcseconds,
-                                  fill=False, color='white')
+                                  fill=False, color='white',zorder=100)
         axes.add_artist(circ)
         
         return axes
