@@ -196,7 +196,7 @@ class CompositeMap:
         """
         self._maps[index].zorder = zorder
 
-    def draw_limb(self, index, axes=None):
+    def draw_limb(self, index=None, axes=None):
         """Draws a circle representing the solar limb 
         
             Parameters
@@ -211,6 +211,11 @@ class CompositeMap:
             -------
             matplotlib.axes object
         """
+        if index is None:
+            for i,amap in enumerate(self._maps):
+                if hasattr(amap,'rsun_arcseconds'):
+                    index = i
+                    break
         return self._maps[index].draw_limb(axes=axes)
         
     def draw_grid(self, index,  axes=None, grid_spacing=20):
