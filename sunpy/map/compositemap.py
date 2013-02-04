@@ -218,7 +218,7 @@ class CompositeMap:
                     break
         return self._maps[index].draw_limb(axes=axes)
         
-    def draw_grid(self, index,  axes=None, grid_spacing=20):
+    def draw_grid(self, index=None,  axes=None, grid_spacing=20):
         """Draws a grid over the surface of the Sun
         
         Parameters
@@ -236,6 +236,12 @@ class CompositeMap:
         -------
         matplotlib.axes object
         """
+        if index is None:
+            needed_attrs = ['rsun_meters', 'dsun', 'heliographic_latitude',
+                            'heliographic_longitude']
+            for i, amap in enumerate(self._maps):
+                if all([hasattr(amap,k) for k in needed_attrs]):
+                    index = i               
         
         ax = self._maps[index].draw_grid(axes=axes, grid_spacing=grid_spacing)
         return ax
