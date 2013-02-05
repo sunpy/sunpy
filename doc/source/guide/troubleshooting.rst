@@ -13,7 +13,7 @@ Crotate Warning
 ===============
 
 The SunPy map class has a custom rotate functionality, similar to IDL's ROT function.
-This uses a Python C-API extension which should be built by installing sunpy.
+This uses a Python C-API extension which should be compiled by installing sunpy.
 If for any reason this build process fails, you will not be able to use the C-API
 rotate code, but will be able to still use all the functionality of map.
 
