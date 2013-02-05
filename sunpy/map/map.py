@@ -777,7 +777,7 @@ Dimension:\t [%d, %d]
         C-API extension. If for some reason this is not compiled correctly this
         routine will fall back upon the scipy implementation of order = 3.
         For more infomation see:
-            http://sunpy.readthedocs.org/en/latest/guide/troubleshooting.html
+            http://sunpy.readthedocs.org/en/latest/guide/troubleshooting.html#crotate-warning
         """
         
         #Interpolation parameter Sanity
@@ -835,7 +835,7 @@ Dimension:\t [%d, %d]
             #Use C extension Package
             if True:#not 'Crotate' in globals():
                 warnings.warn(""""The C extension sunpy.image.Crotate is not 
-installed, falling back to the interpolation = 'spline' of order = 3""" ,Warning)
+installed, falling back to the interpolation='spline' of order=3""" ,Warning)
                 data = scipy.ndimage.interpolation.affine_transform(image, rsmat,
                            offset=offs, order=3, mode='constant',
                            cval=missing)
