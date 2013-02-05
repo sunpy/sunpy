@@ -770,6 +770,14 @@ Dimension:\t [%d, %d]
         Returns
         -------
         New rotated, rescaled, translated map
+        
+        Notes
+        -----
+        Apart from interpolation='spline' all other options use a compiled 
+        C-API extension. If for some reason this is not compiled correctly this
+        routine will fall back upon the scipy implementation of order = 3.
+        For more infomation see:
+            http://sunpy.readthedocs.org/en/latest/guide/troubleshooting.html
         """
         
         #Interpolation parameter Sanity
@@ -826,7 +834,8 @@ Dimension:\t [%d, %d]
         else:
             #Use C extension Package
             if True:#not 'Crotate' in globals():
-                warnings.warn("The C extension sunpy.image.Crotate is not installed, falling back to the interpolation = 'spline' of order = 3" ,Warning)
+                warnings.warn(""""The C extension sunpy.image.Crotate is not 
+installed, falling back to the interpolation = 'spline' of order = 3""" ,Warning)
                 data = scipy.ndimage.interpolation.affine_transform(image, rsmat,
                            offset=offs, order=3, mode='constant',
                            cval=missing)
