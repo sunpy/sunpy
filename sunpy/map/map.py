@@ -8,6 +8,7 @@ __authors__ = ["Keith Hughitt, Steven Christe"]
 __email__ = "keith.hughitt@nasa.gov"
 
 import os
+import warnings
 import pyfits
 import numpy as np
 import matplotlib.pyplot as plt
@@ -825,8 +826,8 @@ Dimension:\t [%d, %d]
         else:
             #Use C extension Package
             if not 'Crotate' in globals():
-                raise ImportWarning("""The C extension sunpy.image.Crotate is not installed
-Falling back to the interpolation = 'spline' """)
+                warnings.warn("""The C extension sunpy.image.Crotate is not installed
+Falling back to the interpolation = 'spline' """,ImportWarning)
                 data = scipy.ndimage.interpolation.affine_transform(image, rsmat,
                            offset=offs, order=interp_param, mode='constant',
                            cval=missing)
