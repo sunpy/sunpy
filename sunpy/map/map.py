@@ -825,11 +825,10 @@ Dimension:\t [%d, %d]
                            cval=missing)
         else:
             #Use C extension Package
-            if not 'Crotate' in globals():
-                warnings.warn("""The C extension sunpy.image.Crotate is not installed
-Falling back to the interpolation = 'spline' """,ImportWarning)
+            if True:#not 'Crotate' in globals():
+                warnings.warn("The C extension sunpy.image.Crotate is not installed, falling back to the interpolation = 'spline' of order = 3" ,Warning)
                 data = scipy.ndimage.interpolation.affine_transform(image, rsmat,
-                           offset=offs, order=interp_param, mode='constant',
+                           offset=offs, order=3, mode='constant',
                            cval=missing)
             #Set up call parameters depending on interp type.
             if interpolation == 'nearest':
