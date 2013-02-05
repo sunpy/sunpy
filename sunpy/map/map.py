@@ -833,7 +833,7 @@ Dimension:\t [%d, %d]
                            cval=missing)
         else:
             #Use C extension Package
-            if True:#not 'Crotate' in globals():
+            if not 'Crotate' in globals():
                 warnings.warn(""""The C extension sunpy.image.Crotate is not 
 installed, falling back to the interpolation='spline' of order=3""" ,Warning)
                 data = scipy.ndimage.interpolation.affine_transform(image, rsmat,
