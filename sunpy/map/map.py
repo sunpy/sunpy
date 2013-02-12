@@ -8,6 +8,7 @@ __authors__ = ["Keith Hughitt, Steven Christe"]
 __email__ = "keith.hughitt@nasa.gov"
 
 import os
+import warnings
 import pyfits
 import numpy as np
 import matplotlib.pyplot as plt
@@ -19,7 +20,7 @@ from copy import copy
 try:
     import sunpy.image.Crotate as Crotate
 except ImportError:
-    print("Import Error: C extension sunpy.image.Crotate cannot be found")
+    pass
 from sunpy.wcs import wcs as wcs
 from sunpy.util.util import toggle_pylab
 from sunpy.io import read_file, read_file_header
@@ -466,7 +467,7 @@ Dimension:\t [%d, %d]
                                       self.heliographic_longitude,
                                       hg_longitude_deg_mesh,
                                       hg_latitude_deg_mesh, units='arcsec')
-            axes.plot(x, y, color='white', linestyle='dotted')
+            axes.plot(x, y, color='white', linestyle='dotted',zorder=100)
             
         hg_longitude_deg = np.arange(lon_range[0], lon_range[1]+grid_spacing, grid_spacing)
         hg_latitude_deg = np.linspace(lat_range[0], lat_range[1], num=num_points)
@@ -480,7 +481,7 @@ Dimension:\t [%d, %d]
                                       self.heliographic_longitude,
                                       hg_longitude_deg_mesh,
                                       hg_latitude_deg_mesh, units='arcsec')
-            axes.plot(x, y, color='white', linestyle='dotted')
+            axes.plot(x, y, color='white', linestyle='dotted',zorder=100)
             
         axes.set_ylim(self.yrange)
         axes.set_xlim(self.xrange)
@@ -769,6 +770,14 @@ Dimension:\t [%d, %d]
         Returns
         -------
         New rotated, rescaled, translated map
+        
+        Notes
+        -----
+        Apart from interpolation='spline' all other options use a compiled 
+        C-API extension. If for some reason this is not compiled correctly this
+        routine will fall back upon the scipy implementation of order = 3.
+        For more infomation see:
+            http://sunpy.readthedocs.org/en/latest/guide/troubleshooting.html#crotate-warning
         """
         
         #Interpolation parameter Sanity
@@ -825,7 +834,11 @@ Dimension:\t [%d, %d]
         else:
             #Use C extension Package
             if not 'Crotate' in globals():
-                raise ValueError("You do not have the C extension sunpy.image.Crotate")
+                warnings.warn(""""The C extension sunpy.image.Crotate is not 
+installed, falling back to the interpolation='spline' of order=3""" ,Warning)
+                data = scipy.ndimage.interpolation.affine_transform(image, rsmat,
+                           offset=offs, order=3, mode='constant',
+                           cval=missing)
             #Set up call parameters depending on interp type.
             if interpolation == 'nearest':
                 interp_type = Crotate.NEAREST
