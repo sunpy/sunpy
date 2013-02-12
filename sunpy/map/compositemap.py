@@ -216,9 +216,14 @@ class CompositeMap:
                 if hasattr(amap,'rsun_arcseconds'):
                     index = i
                     break
+                
+        index_check = hasattr(self._maps[index],'rsun_arcseconds')
+        if not index_check or index is None:
+            raise ValueError("Specified index does not have all the required attributes to draw limb.")
+            
         return self._maps[index].draw_limb(axes=axes)
         
-    def draw_grid(self, index,  axes=None, grid_spacing=20):
+    def draw_grid(self, index=None,  axes=None, grid_spacing=20):
         """Draws a grid over the surface of the Sun
         
         Parameters
@@ -236,6 +241,17 @@ class CompositeMap:
         -------
         matplotlib.axes object
         """
+        if index is None:
+            needed_attrs = ['rsun_meters', 'dsun', 'heliographic_latitude',
+                            'heliographic_longitude']
+            for i, amap in enumerate(self._maps):
+                if all([hasattr(amap,k) for k in needed_attrs]):
+                    index = i
+                    break
+        
+        index_check = all([hasattr(self._maps[index],k) for k in needed_attrs])
+        if not index_check or index is None:
+            raise ValueError("Specified index does not have all the required attributes to draw grid.")
         
         ax = self._maps[index].draw_grid(axes=axes, grid_spacing=grid_spacing)
         return ax
