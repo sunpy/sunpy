@@ -37,6 +37,8 @@ from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
 from sunpy.util.create import Parent
 from sunpy.spectra.spectrum import Spectrum
 
+__all__ = ['Spectrogram', 'LinearTimeSpectrogram']
+
 # 1080 because that usually is the maximum vertical pixel count on modern
 # screens nowadays (2012).
 DEFAULT_YRES = 1080
