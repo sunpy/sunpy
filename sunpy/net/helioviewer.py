@@ -18,6 +18,8 @@ import sunpy
 from sunpy.time import parse_time
 from sunpy.net.util import download_fileobj
 
+__all__ = ['HelioviewerClient']
+
 class HelioviewerClient:
     """Helioviewer.org Client"""
     def __init__(self, url="http://helioviewer.org/api/"):
@@ -59,8 +61,8 @@ class HelioviewerClient:
             
         Examples
         --------
-        >>> from sunpy.net import helioviewer
-        >>> client = helioviewer.HelioviewerClient()
+        >>> from sunpy.net import HelioviewerClient
+        >>> client = HelioviewerClient()
         >>> metadata = client.get_closest_image('2012/01/01', sourceId=11)
         >>> print(metadata['date'])
         """
