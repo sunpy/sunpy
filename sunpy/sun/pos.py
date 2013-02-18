@@ -12,7 +12,7 @@ __authors__ = ["Jack Ireland"]
 __email__ = "jack.ireland@nasa.gov"
 
 """
-Questions
+Questions (now an issue: https://github.com/sunpy/sunpy/issues/394)
 ---------
 1. should the output always be an ndarray?
 2. Should we be able to return position in other coordinate systems as well?
