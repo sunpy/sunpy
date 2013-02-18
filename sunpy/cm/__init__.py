@@ -1,4 +1,3 @@
-from . cm import *
+from __future__ import absolute_import
 
-__all__ = []
-__all__ += cm.__all__
+from sunpy.cm.cm import *
