@@ -66,7 +66,7 @@ def test_complexattr_apply():
 
 def test_complexattr_create(client):
     a = attr.ValueAttr({('time', 'start'): 'test'})
-    assert vso.walker.create(a, client.api)[0].time.start == 'test'
+    assert va.walker.create(a, client.api)[0].time.start == 'test'
 
 
 def test_complexattr_and_duplicate():
