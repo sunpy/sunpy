@@ -8,18 +8,22 @@ __authors__ = ["Keith Hughitt, Steven Christe"]
 __email__ = "keith.hughitt@nasa.gov"
 
 import os
-import pyfits
+from copy import copy
+
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy.ndimage.interpolation
 from matplotlib import patches
 from matplotlib import colors
 from matplotlib import cm
-from copy import copy
+
+import pyfits
+
 try:
     import sunpy.image.Crotate as Crotate
 except ImportError:
     print("C extension sunpy.image.Crotate cannot be found")
+
 import sunpy.wcs as wcs
 from sunpy.util import toggle_pylab, to_signed
 from sunpy.io import read_file, read_file_header
@@ -31,8 +35,10 @@ from sunpy.image.rescale import resample as sunpy_image_resample
 from sunpy.util.cond_dispatch import ConditionalDispatch
 from sunpy.util.create import Parent
 
+__all__ = ['Map']
+
 """
-TODO
+TODO (now an issue in https://github.com/sunpy/sunpy/issues/396)
 ----
 * Automatically include Map docstring when displaying help for subclasses?
 

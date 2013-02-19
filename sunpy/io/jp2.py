@@ -1,6 +1,5 @@
 """JPEG 2000 File Reader"""
 from __future__ import absolute_import
-from sunpy.map.header import MapHeader
 
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
@@ -8,8 +7,13 @@ __email__ = "keith.hughitt@nasa.gov"
 import os
 import subprocess
 import tempfile
+
 from matplotlib.image import imread
+
 from sunpy.util.xml import xml_to_dict
+from sunpy.map.header import MapHeader
+
+__all__ = ['read', 'get_header', 'get_data', 'read_xmlbox', 'which', 'is_float']
 
 def read(filepath):
     """Reads in the file at the specified location"""
