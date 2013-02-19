@@ -12,6 +12,8 @@ import sunpy
 from sunpy.lightcurve import LightCurve
 from sunpy.time import parse_time, TimeRange
 
+__all__ = ['GOESLightCurve']
+
 class GOESLightCurve(LightCurve):
     """GOES light curve definition
     

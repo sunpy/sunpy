@@ -10,6 +10,8 @@ from sunpy.lightcurve import LightCurve
 from scipy.ndimage import label
 from sunpy.time import TimeRange
 
+__all__ = ['LogicalLightCurve']
+
 #
 #
 # Logical Lightcurve

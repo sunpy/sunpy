@@ -10,6 +10,8 @@ from pandas.io.parsers import read_csv
 
 from sunpy.lightcurve import LightCurve
 
+__all__ = ['EVELightCurve']
+
 class EVELightCurve(LightCurve):
     """SDO EVE light curve definition
     
