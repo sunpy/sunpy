@@ -25,7 +25,8 @@ from sunpy.util import toggle_pylab, to_signed
 from sunpy.io import read_file, read_file_header
 from sunpy.sun import constants
 from sunpy.time import parse_time, is_time
-from sunpy.image.rescale import resample, reshape_image_to_4d_superpixel
+from sunpy.image.rescale import reshape_image_to_4d_superpixel
+from sunpy.image.rescale import resample as sunpy_image_resample
 
 from sunpy.util.cond_dispatch import ConditionalDispatch
 from sunpy.util.create import Parent
@@ -633,8 +634,8 @@ Dimension:\t [%d, %d]
         #   coordinates in a Map are at pixel centers
 
         # Make a copy of the original data and perform resample
-        data = resample(np.asarray(self).copy().T, dimensions,
-                        method, center=True)
+        data = sunpy_image_resample(np.asarray(self).copy().T, dimensions,
+                                    method, center=True)
 
         # Update image scale and number of pixels
         header = self._original_header.copy()
