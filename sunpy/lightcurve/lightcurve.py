@@ -22,6 +22,8 @@ import sunpy
 from sunpy.time import is_time, TimeRange, parse_time
 from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
 
+__all__ = ['LightCurve']
+
 class LightCurve(object):
     """
     LightCurve(filepath)

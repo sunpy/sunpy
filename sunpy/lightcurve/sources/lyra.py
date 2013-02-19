@@ -14,6 +14,8 @@ import sunpy
 from sunpy.lightcurve import LightCurve 
 from sunpy.time import parse_time
 
+__all__ = ['LYRALightCurve']
+
 class LYRALightCurve(LightCurve):
     """LYRA light curve definition
     
