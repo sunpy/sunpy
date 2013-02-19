@@ -16,7 +16,7 @@ import json
 
 import sunpy
 from sunpy.time import parse_time
-from sunpy.net.util import download_fileobj
+from sunpy.util.net import download_fileobj
 
 __all__ = ['HelioviewerClient']
 

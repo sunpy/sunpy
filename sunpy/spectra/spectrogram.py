@@ -30,11 +30,11 @@ from matplotlib.colorbar import Colorbar
 
 import sunpy
 
-from sunpy.net.util import get_system_filename
 from sunpy.time import parse_time, get_day
 from sunpy.util import to_signed, common_base, merge, replacement_filename
 from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
 from sunpy.util.create import Parent
+from sunpy.util.net import get_system_filename
 from sunpy.spectra.spectrum import Spectrum
 
 __all__ = ['Spectrogram', 'LinearTimeSpectrogram']
