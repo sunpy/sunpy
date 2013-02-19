@@ -12,7 +12,6 @@ import os
 import shutil
 import urllib2
 from datetime import datetime
-from types import NoneType
 
 import numpy as np
 import matplotlib.pyplot as plt
