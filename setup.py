@@ -60,7 +60,6 @@ def install(setup): #pylint: disable=W0621
         download_url="http://www.sunpy.org/download/",
         # 2011/11/21: disabling for now to prevent paver warnings
         #extra_requires={
-        #    "JPEG 2000": ['PIL'],
         #    "Plotman": ['PyQt4']
         #},
         install_requires=[
@@ -83,7 +82,7 @@ def install(setup): #pylint: disable=W0621
         provides=['sunpy'],
         url="http://www.sunpy.org/",
         use_2to3=True,
-        version="0.2",
+        version="0.2.0",
         ext_modules = [crotate] if 'crotate' in locals() else []
     )
 
