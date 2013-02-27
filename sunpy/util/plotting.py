@@ -8,6 +8,7 @@ Some Independant plotting tools, mainly animation UI based.
 """
 __author__ = "Stuart Mumford"
 __email__ = "stuartmumford@physics.org"
+__all__ = ['ControlFuncAnimation', 'add_controls']
 
 import matplotlib.animation as animation
 import matplotlib.pyplot as plt

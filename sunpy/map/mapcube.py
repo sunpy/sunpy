@@ -5,17 +5,18 @@ from __future__ import absolute_import
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
-from copy import copy
 import numpy as np
-import matplotlib.animation as animation
 import matplotlib.pyplot as plt
+from mpl_toolkits.axes_grid1 import make_axes_locatable
+from copy import copy
 
-from sunpy.util import plotting
 from sunpy.map import Map
 from sunpy.map.sources import *
-from mpl_toolkits.axes_grid1 import make_axes_locatable
+from sunpy.util import plotting
 
-#
+__all__ = ['MapCube']
+
+# (https://github.com/sunpy/sunpy/issues/397)
 # 2011/04/13: Should Map be broken up into Map and MapHeader classes? This way
 # mapped header values can be used in MapCube without having to keep extra
 # copies of the data..
