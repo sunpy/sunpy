@@ -1,5 +1,6 @@
 __author__ = ["Jose Ivan Campos Rozo"]
 
+__all__ = ['diff_rot']
 import numpy as np
 
 def diff_rot(ddays,latitude,rot_type=None):
@@ -39,26 +40,26 @@ def diff_rot(ddays,latitude,rot_type=None):
     With rotation type 'allen':
         rotation = diff_rot(2, np.linspace(-70, 70, 20), 'allen')
     """
-    sin2l = (np.sin(np.d2r(latitude)))**2
+    sin2l = (np.sin(np.deg2rad(latitude)))**2
     sin4l = sin2l**2
     
     if rot_type in [None, 'howard', 'sidereal', 'synodic']:
 	    rotation = 1. * 10**-6 * ddays * (2.894 - 0.428 * sin2l -
-                                        0.37 * sin4l) * 24. * 3600. / np.d2r(1)
+                                    0.37 * sin4l) * 24. * 3600. / np.deg2rad(1)
 	    if rot_type == 'synodic':
 		    rotation = rotation - 0.9856 * ddays
-			 
 		 
     elif rot_type == 'allen':
         rotation = ddays * (14.44 - (3.0 * sin2l))
     
     else:
-        raise ValueError(""""rot_type must equal on of 
+        raise ValueError("""rot_type must equal one of 
         {None | 'howard' | 'synodic' | 'sidereal' | 'allen'}""")
 
     return np.round(rotation,4)
          
-    
+if __name__ == '__main__':
+    print diff_rot(10, 30, rot_type='sidereal')
 
 
      
