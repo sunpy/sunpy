@@ -495,7 +495,7 @@ class VSOClient(object):
             time_near=datetime.utcnow()
         )
     
-    def get(self, query_response, path=None, methods=('URL-FILE',), downloader=None):
+    def get(self, query_response, path=None, methods=('URL-FILE',), downloader=None, site=None):
         """
         Download data specified in the query_response.
         
@@ -542,9 +542,14 @@ class VSOClient(object):
         if not fileids:
             res.poke()
             return res
+        # Adding the site parameter to the info
+        info = {}
+        if site:
+            info['site']=site
+        
         self.download_all(
             self.api.service.GetData(
-                self.make_getdatarequest(query_response, methods)
+                self.make_getdatarequest(query_response, methods, info)
                 ),
             methods, downloader, path,
             fileids, res
@@ -568,14 +573,14 @@ class VSOClient(object):
             ret.append(item)
         return ret
     
-    def make_getdatarequest(self, response, methods=None):
+    def make_getdatarequest(self, response, methods=None, info=None):
         if methods is None:
             methods = self.method_order + ['URL']
         
         return self.create_getdatarequest(
             dict((k, [x.fileid for x in v])
                  for k, v in self.by_provider(response).iteritems()),
-            methods
+            methods, info
         )
     
     def create_getdatarequest(self, map_, methods, info=None):
