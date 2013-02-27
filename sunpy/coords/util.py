@@ -57,11 +57,3 @@ def diff_rot(ddays,latitude,rot_type=None):
         {None | 'howard' | 'synodic' | 'sidereal' | 'allen'}""")
 
     return np.round(rotation,4)
-         
-if __name__ == '__main__':
-    print diff_rot(10, 30, rot_type='sidereal')
-
-
-     
-
-     
