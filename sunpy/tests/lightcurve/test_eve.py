@@ -19,3 +19,4 @@ class TestEve(unittest.TestCase):
         """Check support for parsing EVE CSV files"""
         csv = sunpy.lightcurve.EVELightCurve.create(EVE_AVERAGES_CSV)
         self.assertIsInstance(csv, sunpy.lightcurve.sources.eve.EVELightCurve)
+        
