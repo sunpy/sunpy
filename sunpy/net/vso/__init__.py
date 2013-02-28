@@ -513,6 +513,18 @@ class VSOClient(object):
             Methods acceptable to user.
         downloader : sunpy.net.downloader.Downloader
             Downloader used to download the data.
+        site: str
+            There are a number of caching mirrors for SDO and other
+            instruments, some available ones are listed below.
+                NSO   : National Solar Observatory, Tucson (US)
+                SAO  (aka CFA)  : Smithonian Astronomical Observatory, Harvard U. (US)
+                SDAC (aka GSFC) : Solar Data Analysis Center, NASA/GSFC (US)
+                ROB   : Royal Observatory of Belgium (Belgium)
+                MPS   : Max Planck Institute for Solar System Research (Germany)
+                UCLan : University of Central Lancashire (UK)
+                IAS   : Institut Aeronautique et Spatial (France)
+                KIS   : Kiepenheuer-Institut fur Sonnenphysik Germany)
+                NMSU  : New Mexico State University (US)
         
         Returns
         -------
