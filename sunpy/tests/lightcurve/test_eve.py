@@ -15,8 +15,13 @@ class TestEve(unittest.TestCase):
         eve = sunpy.lightcurve.EVELightCurve.create('2012/06/20')
         self.assertIsInstance(eve, sunpy.lightcurve.EVELightCurve)
 
+    def test_txt(self):
+        """Check support for parsing EVE TXT files """
+        eve = sunpy.lightcurve.EVELightCurve.create(
+        "http://lasp.colorado.edu/eve/data_access/quicklook/quicklook_data/L0CS/LATEST_EVE_L0CS_DIODES_1m.txt") 
+        self.assertIsInstance(eve, sunpy.lightcurve.EVELightCurve)        
+        
     def test_csv_parsing(self):
         """Check support for parsing EVE CSV files"""
         csv = sunpy.lightcurve.EVELightCurve.create(EVE_AVERAGES_CSV)
         self.assertIsInstance(csv, sunpy.lightcurve.sources.eve.EVELightCurve)
-        
