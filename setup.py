@@ -35,21 +35,33 @@ def install(setup): #pylint: disable=W0621
         print("SunPy WARNING: NumPy must be installed first to build the C extension")
 
     if 'np' in locals():
-        module = 'sunpy.image.Crotate'   # import this
-        sourcefiles = [join(cwd, 'sunpy', 'image', 'src', 'rot_extn.c'),
+        
+        module_crotate = 'sunpy.image.Crotate'   # import this
+        sourcefiles_crotate = [join(cwd, 'sunpy', 'image', 'src', 'rot_extn.c'),
                        join(cwd, 'sunpy', 'image', 'src', 'transform', 'aff_tr.c')]
         libs = ['m']
-        # -ON for compile optimise 
         gcc_args = ['-std=c99', '-O3']
-        # gcc_args = ['-std=c99']
-
-        # need *module* name here
-        crotate = Extension(module,
-                            sources = sourcefiles,
+        crotate = Extension(module_crotate,
+                            sources = sourcefiles_crotate,
                             libraries = libs,
                             extra_compile_args = gcc_args,
                             include_dirs =
                             [np.get_include(), join(cwd, 'sunpy', 'image', 'src')]
+                            )
+
+        module_ana = 'sunpy.io.ana._pyana'
+        sourcefiles_ana = [join(cwd, 'sunpy', 'io', 'ana', 'src', 'anacompress.c'),
+                       join(cwd, 'sunpy', 'io', 'ana', 'src', 'anadecompress.c'),
+                       join(cwd, 'sunpy', 'io', 'ana', 'src', 'anarw.c'),
+                       join(cwd, 'sunpy', 'io', 'ana', 'src', 'testrw.c'),
+                       join(cwd, 'sunpy', 'io', 'ana', 'src', '_pyana.c')]
+
+        ana = Extension(module_ana,
+                            sources = sourcefiles_ana,
+                            libraries = libs,
+                            extra_compile_args = gcc_args,
+                            include_dirs =
+                            [np.get_include(), join(cwd, 'sunpy', 'io', 'src')]
                             )
 
     setup(
@@ -83,7 +95,7 @@ def install(setup): #pylint: disable=W0621
         url="http://www.sunpy.org/",
         use_2to3=True,
         version="0.2.0",
-        ext_modules = [crotate] if 'crotate' in locals() else []
+        ext_modules = [crotate,ana] if 'crotate' and 'ana' in locals()  else []
     )
 
 if __name__ == '__main__':
