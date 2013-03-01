@@ -1,11 +1,11 @@
 from __future__ import absolute_import
 
 from datetime import datetime
-from sunpy.time import parse_time
+
 from numpy.testing import assert_almost_equal
 
 from sunpy import time
-from sunpy.time import julian
+from sunpy.time import parse_time, julian
 
 LANDING = datetime(1966, 2, 3)
 
@@ -52,13 +52,6 @@ def test_parse_time_ISO():
     
     for k, v in lst:
         assert parse_time(k) == v
-
-def test_julian_day():
-    assert julian.julian_day('1900-01-01 12:00') == 2415021.0
-    assert julian.julian_day(LANDING) == 2439159.5
-    result = julian.julian_day('2000-03-01 15:30:26')
-    assert_almost_equal(result, 2451605.1461111, decimal=3)
-
     
 def test_break_time():
     assert time.break_time(datetime(2007, 5, 4, 21, 8, 12)) == '20070504_210812'
