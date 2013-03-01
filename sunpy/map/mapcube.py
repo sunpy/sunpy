@@ -48,7 +48,6 @@ class MapCube(np.ndarray):
     """
     def __new__(cls, *args, **kwargs):
         """Creates a new Map instance"""
-        
         maps = []
         data = []
         headers = []
@@ -61,8 +60,10 @@ class MapCube(np.ndarray):
                 maps.append(Map.read(item))
 
         # sort data
+        print kwargs
         sortby = kwargs.get("sortby", "date")
         if hasattr(cls, '_sort_by_%s' % sortby):
+            print'!!!'
             maps.sort(key=getattr(cls, '_sort_by_%s' % sortby)())
 
         # create data cube
