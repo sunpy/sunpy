@@ -21,6 +21,13 @@ Carrington Rotation Number = 1971.4091        check!
 """
 from __future__ import absolute_import
 
+import math
+import cmath
+
+import numpy as np
+
+from sunpy.time import parse_time, julian_day, julian_centuries
+
 __all__ = ["print_params"
            ,"heliographic_solar_center"
            ,"solar_north"
@@ -50,12 +57,6 @@ __all__ = ["print_params"
 __authors__ = ["Steven Christe"]
 __email__ = "steven.d.christe@nasa.gov"
 
-import math
-import cmath
-import numpy as np
-from sunpy.time import parse_time
-from sunpy.time import julian
-
 def solar_cycle_number(t=None):
     time = parse_time(t)
     result = (time.year + 8) % 28 + 1
@@ -81,45 +82,45 @@ def position(t=None):
     
 def eccentricity_SunEarth_orbit(t=None):
     """Returns the eccentricity of the Sun Earth Orbit."""
-    T = julian.julian_centuries(t)
+    T = julian_centuries(t)
     result = 0.016751040 - 0.00004180 * T - 0.0000001260 * T ** 2
     return result
 
 def mean_ecliptic_longitude(t=None):
     """Returns the mean ecliptic longitude."""
-    T = julian.julian_centuries(t)
+    T = julian_centuries(t)
     result = 279.696680 + 36000.76892 * T + 0.0003025 * T ** 2
     result = result % 360.0
     return result
 
 def longitude_Sun_perigee(t=None): # pylint: disable=W0613 
-    # T = julian.julian_centuries(t)
+    # T = julian_centuries(t)
     return 1
     
 def mean_anomaly(t=None):
     """Returns the mean anomaly (the angle through which the Sun has moved
     assuming a circular orbit) as a function of time."""
-    T = julian.julian_centuries(t)
+    T = julian_centuries(t)
     result = 358.475830 + 35999.049750 * T - 0.0001500 * T ** 2 - 0.00000330 * T ** 3
     result = result % 360.0
     return result
 
 def carrington_rotation_number(t=None):
     """Return the Carrington Rotation number"""
-    jd = julian.julian_day(t)
+    jd = julian_day(t)
     result = (1. / 27.2753) * (jd - 2398167.0) + 1.0
     return result
 
 def geometric_mean_longitude(t=None):
     """Returns the geometric mean longitude (in degrees)"""   
-    T = julian.julian_centuries(t)
+    T = julian_centuries(t)
     result = 279.696680 + 36000.76892 * T + 0.0003025 * T ** 2
     result = result % 360.0
     return result
   
 def equation_of_center(t=None):
     """Returns the Sun's equation of center (in degrees)"""
-    T = julian.julian_centuries(t)
+    T = julian_centuries(t)
     mna = mean_anomaly(t) 
     result = ((1.9194600 - 0.0047890 * T - 0.0000140 * T
     ** 2) * np.sin(np.radians(mna) + (0.0200940 - 0.0001000 * T) *
@@ -147,7 +148,7 @@ def sunearth_distance(t=None):
 
 def apparent_longitude(t=None):
     """Returns the apparent longitude of the Sun."""
-    T = julian.julian_centuries(t)
+    T = julian_centuries(t)
     omega = 259.18 - 1934.142*T
     true_long = true_longitude(t)        
     result = true_long - 0.00569 - 0.00479*math.sin(np.radians(omega))
@@ -162,7 +163,7 @@ def apparent_latitude(t=None): # pylint: disable=W0613
     return 0
 
 def true_obliquity_of_ecliptic(t=None):
-    T = julian.julian_centuries(t)
+    T = julian_centuries(t)
     result = 23.452294 - 0.0130125 * T - 0.00000164 * T ** 2 + 0.000000503 * T ** 3
     return result
 
@@ -200,7 +201,7 @@ def apparent_declination(t=None):
 
 def solar_north(t=None):
     """Returns the position of the Solar north pole in degrees."""
-    T = julian.julian_centuries(t)
+    T = julian_centuries(t)
     ob1 = true_obliquity_of_ecliptic(t)
     # in degrees
     i = 7.25
@@ -216,8 +217,8 @@ def solar_north(t=None):
 
 def heliographic_solar_center(t=None):
     """Returns the position of the solar center in heliographic coordinates."""
-    jd = julian.julian_day(t)
-    T = julian.julian_centuries(t)
+    jd = julian_day(t)
+    T = julian_centuries(t)
     # Heliographic coordinates in degrees
     theta = (jd - 2398220)*360/25.38
     i = 7.25

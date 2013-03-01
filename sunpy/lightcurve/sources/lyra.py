@@ -2,15 +2,19 @@
 """Provides programs to process and analyze PROBA2/LYRA data."""
 from __future__ import absolute_import
 
-from sunpy.lightcurve import LightCurve 
-
 import os
-import pandas
 import datetime  
-from matplotlib import pyplot as plt
 import urlparse
+
+from matplotlib import pyplot as plt
 import pyfits
+import pandas
+
 import sunpy
+from sunpy.lightcurve import LightCurve 
+from sunpy.time import parse_time
+
+__all__ = ['LYRALightCurve']
 
 class LYRALightCurve(LightCurve):
     """LYRA light curve definition
@@ -74,7 +78,7 @@ class LYRALightCurve(LightCurve):
     def _get_url_for_date(date):
         """Returns a URL to the LYRA data for the specified date
         """
-        dt = sunpy.time.parse_time(date or datetime.datetime.utcnow())
+        dt = parse_time(date or datetime.datetime.utcnow())
 
         # Filename
         filename = "lyra_%s000000_lev%d_%s.fits" % (dt.strftime('%Y%m%d-'),
@@ -106,7 +110,7 @@ class LYRALightCurve(LightCurve):
         #end_str = hdulist[0].header['date-end']
         
         #start = datetime.datetime.strptime(start_str, '%Y-%m-%dT%H:%M:%S.%f')
-        start = sunpy.time.parse_time(start_str)
+        start = parse_time(start_str)
         #end = datetime.datetime.strptime(end_str, '%Y-%m-%dT%H:%M:%S.%f')
 
         # First column are times
