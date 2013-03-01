@@ -23,14 +23,15 @@ class EITMap(Map):
         properties = Map.get_properties(header)
         
         # Solar radius in arc-seconds at 1 au
-        radius_1au = sun.angular_size(header.get('date_obs'))
+        radius_1au = sun.angular_size(header.get('date-obs',
+                                                 header.get('date_obs')))
         
         scale = header.get("cdelt1")
         # EIT solar radius is expressed in number of EIT pixels
         solar_r = header.get("solar_r")
         
         properties.update({
-            "date": parse_time(header.get('date_obs')),
+            "date": parse_time(header.get('date-obs'),header.get('date_obs')),
             "detector": "EIT",
             "rsun_arcseconds": solar_r * scale,
             "dsun": ((radius_1au / 
@@ -67,7 +68,8 @@ class LASCOMap(Map):
         """Parses LASCO image header"""
         properties = Map.get_properties(header)
         
-        datestr = "%sT%s" % (header.get('date_obs'), header.get('time_obs'))
+        datestr = "%sT%s" % (header.get('date-obs',header.get('date_obs')),
+                             header.get('time-obs',header.get('time_obs')))
         
         properties.update({
             "date": parse_time(datestr),
@@ -91,7 +93,7 @@ class MDIMap(Map):
         properties = Map.get_properties(header)
         
         # MDI sometimes has an "60" in seconds field
-        datestr = header['date_obs']
+        datestr = header.get('date-obs',header.get('date_obs'))
 
         if datestr[17:19] == "60":
             datestr = datestr[:17] + "30" + datestr[19:]
