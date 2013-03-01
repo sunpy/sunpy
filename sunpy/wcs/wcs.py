@@ -36,13 +36,13 @@
 """
 from __future__ import absolute_import
 
-__all__ = ["convert_angle_units", "convert_pixel_to_data", "convert_hpc_hg",
-           "convert_data_to_pixel", "convert_hpc_hcc", "convert_hcc_hpc",
-           "convert_hcc_hg", "convert_hg_hcc", "convert_hg_hcc_xyz", "proj_tan",
-           "convert_hg_hpc",  "convert_to_coord", "convert_hpc_hcc_xyz", 
-           "get_center"]
-
 import numpy as np
+
+__all__ = ['convert_angle_units', 'convert_pixel_to_data', 'convert_hpc_hg',
+           'convert_data_to_pixel', 'convert_hpc_hcc', 'convert_hcc_hpc',
+           'convert_hcc_hg', 'convert_hg_hcc', 'convert_hg_hcc_xyz', 'proj_tan',
+           'convert_hg_hpc',  'convert_to_coord', 'convert_hpc_hcc_xyz', 
+           'get_center']
 
 def convert_angle_units(unit='arcsec'):
     """Determine the conversion factor between the data and radians."""

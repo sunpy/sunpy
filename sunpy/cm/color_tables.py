@@ -3,8 +3,11 @@ Nothing here but dictionaries for generating LinearSegmentedColormaps,
 and a dictionary of these dictionaries.
 """
 from __future__ import absolute_import
+
 import numpy as np
 import matplotlib.colors as colors
+
+__all__ = ['aia_color_table', 'lasco_color_table', 'eit_color_table', 'sxt_color_table', 'xrt_color_table']
 
 # FIXME: Give me a proper name.
 def _mkx(i, steps, n):

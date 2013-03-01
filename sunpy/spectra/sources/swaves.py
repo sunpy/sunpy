@@ -5,11 +5,13 @@ from __future__ import absolute_import
 
 import os
 import datetime
+
 import numpy as np
 
 from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
 from sunpy.spectra.spectrogram import LinearTimeSpectrogram, REFERENCE, get_day
 
+__all__ = ['SWavesSpectrogram']
 
 #def query(start, end, spacecraft=None, band=None):
 #    start = datetime.datetime(start.year, start.month, start.day)

@@ -6,6 +6,10 @@ from __future__ import absolute_import
 
 import pyfits
 
+import sunpy.io
+
+__all__ = ['MapHeader']
+
 class MapHeader(dict):
     """
     MapHeader(header)
@@ -25,8 +29,9 @@ class MapHeader(dict):
         """Creates a new MapHeader instance"""
         if isinstance(args[0], basestring):
             # filepath
-            from sunpy.io import read_file_header
-            tags = read_file_header(args[0])
+            # Note, this call has to come this way or else there is a circular 
+            # dependence in the imports.
+            tags = sunpy.io.read_file_header(args[0])
         else:
             # dictionary
             tags = args[0]
