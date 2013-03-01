@@ -1,6 +1,6 @@
 """File input and output functions"""
 from __future__ import absolute_import
-from sunpy.io import fits, jp2
+from sunpy.io import fits, jp2, ana
 
 # File formats supported by SunPy
 _known_formats = {
