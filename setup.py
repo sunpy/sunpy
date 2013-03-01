@@ -49,12 +49,12 @@ def install(setup): #pylint: disable=W0621
                             [np.get_include(), join(cwd, 'sunpy', 'image', 'src')]
                             )
 
-        module_ana = 'sunpy.io.ana._pyana'
-        sourcefiles_ana = [join(cwd, 'sunpy', 'io', 'ana', 'src', 'anacompress.c'),
-                       join(cwd, 'sunpy', 'io', 'ana', 'src', 'anadecompress.c'),
-                       join(cwd, 'sunpy', 'io', 'ana', 'src', 'anarw.c'),
-                       join(cwd, 'sunpy', 'io', 'ana', 'src', 'testrw.c'),
-                       join(cwd, 'sunpy', 'io', 'ana', 'src', '_pyana.c')]
+        module_ana = 'sunpy.io._pyana'
+        sourcefiles_ana = [join(cwd, 'sunpy', 'io', 'src', 'ana', 'anacompress.c'),
+                       join(cwd, 'sunpy', 'io', 'src', 'ana', 'anadecompress.c'),
+                       join(cwd, 'sunpy', 'io', 'src', 'ana', 'anarw.c'),
+                       join(cwd, 'sunpy', 'io', 'src', 'ana', 'testrw.c'),
+                       join(cwd, 'sunpy', 'io', 'src', 'ana', '_pyana.c')]
 
         ana = Extension(module_ana,
                             sources = sourcefiles_ana,
