@@ -34,7 +34,7 @@ import Ui_RGBComposite
 import numpy as np
 from sunpy.net.helioviewer import HelioviewerClient
 from sunpy.map import Map
-from sunpy.util.util import toggle_pylab
+from sunpy.util import toggle_pylab
 from PyQt4 import QtGui, QtCore
 from matplotlib import pyplot as plt
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas

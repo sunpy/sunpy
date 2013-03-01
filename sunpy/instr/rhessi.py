@@ -10,16 +10,19 @@
 """
 
 from __future__ import absolute_import
-import numpy as np
-import pyfits
-import sunpy
-from sunpy.time import TimeRange
-from datetime import datetime
-from datetime import timedelta
-import matplotlib.pyplot as plt
-import matplotlib.dates
+
 import urllib
 import csv
+from datetime import datetime
+from datetime import timedelta
+
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.dates
+import pyfits
+
+import sunpy
+from sunpy.time import TimeRange, parse_time
 import sunpy.sun.constants as sun
 from sunpy.sun.sun import angular_size
 from sunpy.sun.sun import sunearth_distance
@@ -240,7 +243,7 @@ def parse_obssumm_file(filename):
 
     fits = pyfits.open(filename)
     
-    reference_time_ut = sunpy.time.parse_time(fits[5].data.field('UT_REF')[0])
+    reference_time_ut = parse_time(fits[5].data.field('UT_REF')[0])
     time_interval_sec = fits[5].data.field('TIME_INTV')[0]
     # label_unit = fits[5].data.field('DIM1_UNIT')[0]
     # labels = fits[5].data.field('DIM1_IDS')

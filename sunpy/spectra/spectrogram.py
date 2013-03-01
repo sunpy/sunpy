@@ -30,15 +30,14 @@ from matplotlib.colorbar import Colorbar
 
 import sunpy
 
-from sunpy.net.util import get_system_filename
 from sunpy.time import parse_time, get_day
+from sunpy.util import to_signed, common_base, merge, replacement_filename
 from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
-from sunpy.util.util import (
-    to_signed, min_delt, delta, common_base, merge,
-    replacement_filename
-)
 from sunpy.util.create import Parent
+from sunpy.util.net import get_system_filename
 from sunpy.spectra.spectrum import Spectrum
+
+__all__ = ['Spectrogram', 'LinearTimeSpectrogram']
 
 # 1080 because that usually is the maximum vertical pixel count on modern
 # screens nowadays (2012).
@@ -54,7 +53,6 @@ REFERENCE = 0
 COPY = 1
 DEEPCOPY = 2
 
-
 def figure(*args, **kwargs):
     """ Create new SpectroFigure, a figure extended with features
     useful for analysis of spectrograms. Compare pyplot.figure. """
@@ -64,6 +62,12 @@ def figure(*args, **kwargs):
     kw.update(kwargs)
     return plt.figure(*args, **kw)
 
+
+def _min_delt(arr):
+    deltas = (arr[:-1] - arr[1:])
+    # Multiple values at the same frequency are just thrown away
+    # in the process of linearizaion
+    return deltas[deltas != 0].min()
 
 def _list_formatter(lst, fun=None):
     """ Return function that takes x, pos and returns fun(lst[x]) if
@@ -103,14 +107,14 @@ class _LinearView(object):
         self.arr = arr
         if delt is None:
             # Nyquist–Shannon sampling theorem
-            delt = min_delt(arr.freq_axis) / 2.
+            delt = _min_delt(arr.freq_axis) / 2.
         
         self.delt = delt
         
         midpoints = (self.arr.freq_axis[:-1] + self.arr.freq_axis[1:]) / 2
         self.midpoints = np.concatenate([midpoints, arr.freq_axis[-1:]])
-        
-        self.max_mp_delt = np.min(delta(self.midpoints))
+        	
+        self.max_mp_delt = np.min(self.midpoints[1:] - self.midpoints[:-1])
         
         self.freq_axis = np.arange(
             self.arr.freq_axis[0], self.arr.freq_axis[-1], -self.delt
@@ -445,7 +449,7 @@ class Spectrogram(np.ndarray, Parent):
             if delt is not None:
                 delt = max(
                     (self.freq_axis[0] - self.freq_axis[-1]) / (yres - 1),
-                    min_delt(self.freq_axis) / 2.
+                    _min_delt(self.freq_axis) / 2.
                 )
                 delt = float(delt)
             
@@ -752,7 +756,7 @@ class Spectrogram(np.ndarray, Parent):
         """
         if delta_freq is None:
             # Nyquist–Shannon sampling theorem
-            delta_freq = min_delt(self.freq_axis) / 2.
+            delta_freq = _min_delt(self.freq_axis) / 2.
         nsize = (self.freq_axis.max() - self.freq_axis.min()) / delta_freq + 1
         new = np.zeros((nsize, self.shape[1]), dtype=self.dtype)
 
@@ -854,7 +858,7 @@ class LinearTimeSpectrogram(Spectrogram):
         t_init=None, t_delt=None, t_label="Time", f_label="Frequency",
         content="", instruments=None):
         if t_delt is None:
-            t_delt = min_delt(freq_axis)
+            t_delt = _min_delt(freq_axis)
         
         super(LinearTimeSpectrogram, self).__init__(
             data, time_axis, freq_axis, start, end, t_init, t_label, f_label,

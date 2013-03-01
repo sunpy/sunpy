@@ -1,12 +1,12 @@
 from __future__ import absolute_import
 
 #pylint: disable=E1103
-
-import pyfits
-import sunpy
-from sunpy.wcs import wcs as wcs
-from numpy.testing import assert_array_almost_equal
 import numpy as np
+from numpy.testing import assert_array_almost_equal
+import pyfits
+
+import sunpy
+import sunpy.wcs as wcs
 
 fits = pyfits.open(sunpy.AIA_171_IMAGE)
 header = fits[0].header
