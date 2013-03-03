@@ -1,33 +1,30 @@
 """
-ana.py
-
-A C extension for Python to read ana f0 files. Based on Michiel van Noort's
+ANA is a simple script that allows people to access compressed ana files.
+It accesses a C library, based on Michiel van Noort's
 IDL DLM library 'f0' which contains a cleaned up version of the original
 anarw routines.
 
-To read a file:
-> anadata = pyana.fzread(<filename>, [debug=0])
-which will return a dict with the data in anadata['data'] and some meta info
-in anadata['header']. To return only the data or header, use pyana.getdata()
-and pyana.getheader() respectively.
-
-To write a file:
-> pyana.fzwrite(<filename>, <data>, [compress=1, [comments=False, [debug=0]]]):
-or use pyana.writeto(), which is an alias to fzwrite().
-
 Created by Tim van Werkhoven (t.i.m.vanwerkhoven@gmail.com) on 2009-02-11.
-Copyright (c) 2009--2011 Tim van Werkhoven. All rights reserved.
+Copyright (c) 2009--2011 Tim van Werkhoven. All rights reserved.   
 """
 
+#To read a file:
+#> anadata = pyana.fzread(<filename>, [debug=0])
+#which will return a dict with the data in anadata['data'] and some meta info
+#in anadata['header']. To return only the data or header, use pyana.getdata()
+#and pyana.getheader() respectively.
+#
+#To write a file:
+#> pyana.fzwrite(<filename>, <data>, [compress=1, [comments=False, [debug=0]]]):
+#or use pyana.writeto(), which is an alias to fzwrite().
+ 
 from __future__ import absolute_import
 
 import os
-from sunpy.io import _pyana
-#from . import _pyana
+
+from . import _pyana
 
 __all__ = ['fz_read', 'get_data', 'get_header', 'fz_write', 'write_to']
-
-## Functions for loading in ANA files
 
 def fz_read(filename, debug=0):
 	"""
