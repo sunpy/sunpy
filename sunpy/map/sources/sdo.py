@@ -26,6 +26,7 @@ class AIAMap(Map):
             "detector": "AIA",
             "instrument": "AIA",
             "observatory": "SDO",
+            "name": "AIA %s" % header.get('wavelnth'),
             "nickname": "AIA",
             "cmap": cm.get_cmap('sdoaia%d' % header.get('wavelnth')),
             "processing_level": header.get('LVL_NUM')            

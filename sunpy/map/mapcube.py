@@ -119,7 +119,7 @@ class MapCube(np.ndarray):
         """Returns a lightcurve object at a given pixel"""
         times = [map.date for map in self]
         data = [map[x,y] for map in self]
-        return LightCurve.create( {"emission": data}, index=times)
+        return LightCurve.create( {map.name: data}, index=times)
         
     # Coalignment methods
     def _coalign_diff(self):
