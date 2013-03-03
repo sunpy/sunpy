@@ -67,6 +67,6 @@ class anaTests(unittest.TestCase):
 		self.assertRaises(RuntimeError, ana.fz_write, '/tmp/pyana-testf32', self.img_f32, 1, 'testcase', 1)
 		
 
-#if __name__ == "__main__":	
-#	suite = unittest.TestLoader().loadTestsFromTestCase(anaTests)
-#	unittest.TextTestRunner(verbosity=2).run(suite)
+if __name__ == "__main__":	
+	suite = unittest.TestLoader().loadTestsFromTestCase(anaTests)
+	unittest.TextTestRunner(verbosity=2).run(suite)
