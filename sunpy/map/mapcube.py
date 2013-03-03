@@ -7,6 +7,7 @@ __email__ = "keith.hughitt@nasa.gov"
 
 from sunpy.map import Map
 from sunpy.map.sources import *
+from sunpy.lightcurve import LightCurve
 import numpy as np
 
 #
@@ -60,10 +61,8 @@ class MapCube(np.ndarray):
                 maps.append(Map.read(item))
 
         # sort data
-        print kwargs
         sortby = kwargs.get("sortby", "date")
         if hasattr(cls, '_sort_by_%s' % sortby):
-            print'!!!'
             maps.sort(key=getattr(cls, '_sort_by_%s' % sortby)())
 
         # create data cube
@@ -115,6 +114,12 @@ class MapCube(np.ndarray):
     def std(self, *args, **kwargs):
         """overide np.ndarray.std()"""
         return np.array(self, copy=False, subok=False).std(*args, **kwargs)
+    
+    def get_lightcurve_by_array_index(self, x, y):
+        """Returns a lightcurve object at a given pixel"""
+        times = [map.date for map in self]
+        data = [map[x,y] for map in self]
+        return LightCurve.create( {"emission": data}, index=times)
         
     # Coalignment methods
     def _coalign_diff(self):

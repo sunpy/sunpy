@@ -83,7 +83,6 @@ def make_map(*args, **kwargs):
             # Directory (use all files)
             elif os.path.isdir(filepath):
                 maps = [os.path.join(filepath, x) for x in os.listdir(filepath)]
-
             # Filepath
             else:
                 return Map.read(filepath)
@@ -115,7 +114,7 @@ def make_map(*args, **kwargs):
 
     # MapCube
     if mtype == "cube":
-        return MapCube(*maps)
+        return MapCube(*maps, **kwargs)
     # CompositeMap (default)
     elif mtype == "composite":
         return CompositeMap(*maps)
