@@ -32,9 +32,6 @@ from sunpy.map.header import MapHeader
 
 __all__ = ['read', 'get_header']
 
-__author__ = "Keith Hughitt"
-__email__ = "keith.hughitt@nasa.gov"
-
 def read(filepath):
     """Reads in the file at the specified location"""
     hdulist = pyfits.open(filepath)
