@@ -25,8 +25,12 @@ References
 
 """
 from __future__ import absolute_import
-from sunpy.map.header import MapHeader
+
 import pyfits
+
+from sunpy.map.header import MapHeader
+
+__all__ = ['read', 'get_header']
 
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"

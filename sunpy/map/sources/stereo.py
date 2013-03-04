@@ -8,6 +8,8 @@ from sunpy.map import Map
 from sunpy.time import parse_time
 from sunpy.cm import cm
 
+__all__ = ['EUVIMap', 'CORMap']
+
 class EUVIMap(Map):
     """EUVI Image Map definition"""
     @classmethod
