@@ -4,13 +4,16 @@
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
+import numpy as np
+from matplotlib import colors
+
 from sunpy.map import Map
 from sunpy.sun import constants
 from sunpy.sun import sun
 from sunpy.cm import cm
 from sunpy.time import parse_time
-from matplotlib import colors
-import numpy as np
+
+__all__ = ['EITMap', 'LASCOMap', 'MDIMap']
 
 class EITMap(Map):
     """EIT Image Map definition"""

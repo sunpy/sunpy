@@ -2,13 +2,15 @@
 """Provides programs to process and analyze EVE data."""
 from __future__ import absolute_import
 
-from sunpy.lightcurve import LightCurve
-
 import os
-from pandas.io.parsers import read_csv
 from datetime import datetime  
 
 import matplotlib.pyplot as plt
+from pandas.io.parsers import read_csv
+
+from sunpy.lightcurve import LightCurve
+
+__all__ = ['EVELightCurve']
 
 class EVELightCurve(LightCurve):
     """SDO EVE light curve definition
