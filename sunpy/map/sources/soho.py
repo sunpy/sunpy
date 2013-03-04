@@ -31,7 +31,7 @@ class EITMap(Map):
         solar_r = header.get("solar_r")
         
         properties.update({
-            "date": parse_time(header.get('date-obs'),header.get('date_obs')),
+            "date": parse_time(header.get('date-obs',header.get('date_obs'))),
             "detector": "EIT",
             "rsun_arcseconds": solar_r * scale,
             "dsun": ((radius_1au / 
