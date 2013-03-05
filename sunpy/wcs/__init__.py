@@ -1,4 +1,3 @@
-from . wcs import *
+from __future__ import absolute_import
 
-__all__ = []
-__all__ += wcs.__all__
+from sunpy.wcs.wcs import *

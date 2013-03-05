@@ -6,13 +6,10 @@ __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
 import numpy as np
-import matplotlib.pyplot as plt
-from mpl_toolkits.axes_grid1 import make_axes_locatable
-from copy import copy
 
 from sunpy.map import Map
 from sunpy.map.sources import *
-from sunpy.util import plotting
+import numpy as np
 
 __all__ = ['MapCube']
 
@@ -175,66 +172,3 @@ class MapCube(np.ndarray):
                 xlabel = 'Longitude [%s]' % self[0].units['x']
             else:
                 xlabel = 'X-position [%s]' % self[0].units['x']
-
-            # y-axis label
-            if self[0].coordinate_system['y'] == 'HG':
-                ylabel = 'Latitude [%s]' % self[0].units['y']
-            else:
-                ylabel = 'Y-position [%s]' % self[0].units['y']
-                
-            axes.set_xlabel(xlabel)
-            axes.set_ylabel(ylabel)
-
-        # Determine extent
-        extent = self[0].xrange + self[0].yrange
-        
-        cmap = copy(self[0].cmap)
-        if gamma is not None:
-            cmap.set_gamma(gamma)
-            
-            #make imshow kwargs a dict
-        
-        kwargs = {'origin':'lower',
-                  'cmap':cmap,
-                  'norm':self[0].norm(),
-                  'extent':extent,
-                  'interpolation':'nearest'}
-        kwargs.update(imshow_args)
-        
-        im = axes.imshow(self[0], **kwargs)
-        
-        #Set current image (makes colorbar work)
-        plt.sci(im)
-        
-        divider = make_axes_locatable(axes)
-        cax = divider.append_axes("right", size="5%", pad=0.2)
-        cbar = plt.colorbar(im,cax)
-        
-        if resample:
-            resample = np.array(self.shape[1:]) * np.array(resample)
-            ani_data = [x.resample(resample) for x in self]
-        else:
-            ani_data = self
-            
-        def updatefig(i, *args):
-            im = args[0]
-            im.set_array(args[2][i])
-            im.set_cmap(self[i].cmap)
-            im.set_norm(self[i].norm())
-            if args[1]:
-                axes.set_title("%s %s" % (self[i].name, self[i].date))
-        
-        ani = plotting.ControlFuncAnimation(fig, updatefig,
-                                            frames=xrange(0,self.shape[0]),
-                                            fargs = [im,annotate,ani_data],
-                                            interval=interval,
-                                            blit=False)
-        if controls:
-            axes, bax1, bax2 = plotting.add_controls(axes=axes)
-
-            bax1._button.on_clicked(ani._start)
-            bax2._button.on_clicked(ani._stop)
-        
-        return ani
-        
-        
