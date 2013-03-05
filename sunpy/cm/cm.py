@@ -3,36 +3,37 @@ This module provides a set of colormaps specific for solar data.
 """
 from __future__ import absolute_import
 
-__all__ = ["get_cmap", "show_colormaps"]
-
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
-from sunpy.cm import _cm
 
-sdoaia94 = _cm.aia_color_table(94)
-sdoaia131 = _cm.aia_color_table(131)
-sdoaia171 = _cm.aia_color_table(171)
-sdoaia193 = _cm.aia_color_table(193)
-sdoaia211 = _cm.aia_color_table(211)
-sdoaia304 = _cm.aia_color_table(304)
-sdoaia335 = _cm.aia_color_table(335)
-sdoaia1600 = _cm.aia_color_table(1600)
-sdoaia1700 = _cm.aia_color_table(1700)
-sdoaia4500 = _cm.aia_color_table(4500)
+from sunpy.cm import color_tables as ct
 
-sohoeit171 = _cm.eit_color_table(171)
-sohoeit195 = _cm.eit_color_table(195)
-sohoeit284 = _cm.eit_color_table(284)
-sohoeit304 = _cm.eit_color_table(304)
+__all__ = ['get_cmap', 'show_colormaps']
 
-soholasco2 = _cm.lasco_color_table(2)
-soholasco3 = _cm.lasco_color_table(3)
+sdoaia94 = ct.aia_color_table(94)
+sdoaia131 = ct.aia_color_table(131)
+sdoaia171 = ct.aia_color_table(171)
+sdoaia193 = ct.aia_color_table(193)
+sdoaia211 = ct.aia_color_table(211)
+sdoaia304 = ct.aia_color_table(304)
+sdoaia335 = ct.aia_color_table(335)
+sdoaia1600 = ct.aia_color_table(1600)
+sdoaia1700 = ct.aia_color_table(1700)
+sdoaia4500 = ct.aia_color_table(4500)
 
-yohkohsxtal = _cm.sxt_color_table('al')
-yohkohsxtwh = _cm.sxt_color_table('wh')
+sohoeit171 = ct.eit_color_table(171)
+sohoeit195 = ct.eit_color_table(195)
+sohoeit284 = ct.eit_color_table(284)
+sohoeit304 = ct.eit_color_table(304)
 
-hinodexrt = _cm.xrt_color_table()
+soholasco2 = ct.lasco_color_table(2)
+soholasco3 = ct.lasco_color_table(3)
+
+yohkohsxtal = ct.sxt_color_table('al')
+yohkohsxtwh = ct.sxt_color_table('wh')
+
+hinodexrt = ct.xrt_color_table()
 
 
 
