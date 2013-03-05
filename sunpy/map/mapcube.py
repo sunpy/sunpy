@@ -6,6 +6,7 @@ __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
 import numpy as np
+import matplotlib.pyplot as plt
 
 from sunpy.map import Map
 from sunpy.map.sources import *
@@ -173,8 +174,9 @@ class MapCube(np.ndarray):
             else:
                 xlabel = 'X-position [%s]' % self[0].units['x']
             
-	    axes.set_xlabel(xlabel)
-            axes.set_ylabel(ylabel)
+        
+        axes.set_xlabel(xlabel)
+        axes.set_ylabel(ylabel)
 
         # Determine extent
         extent = self[0].xrange + self[0].yrange
