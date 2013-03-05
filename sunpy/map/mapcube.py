@@ -2,15 +2,14 @@
 from __future__ import absolute_import
 #pylint: disable=W0401,W0614,W0201,W0212,W0404
 
-__author__ = "Keith Hughitt"
-__email__ = "keith.hughitt@nasa.gov"
-
 import numpy as np
 import matplotlib.pyplot as plt
+from mpl_toolkits.axes_grid1 import make_axes_locatable
+from copy import copy
 
 from sunpy.map import Map
 from sunpy.map.sources import *
-import numpy as np
+from sunpy.util import plotting
 
 __all__ = ['MapCube']
 
@@ -173,10 +172,15 @@ class MapCube(np.ndarray):
                 xlabel = 'Longitude [%s]' % self[0].units['x']
             else:
                 xlabel = 'X-position [%s]' % self[0].units['x']
-            
-        
-        axes.set_xlabel(xlabel)
-        axes.set_ylabel(ylabel)
+
+            # y-axis label
+            if self[0].coordinate_system['y'] == 'HG':
+                ylabel = 'Latitude [%s]' % self[0].units['y']
+            else:
+                ylabel = 'Y-position [%s]' % self[0].units['y']
+                
+            axes.set_xlabel(xlabel)
+            axes.set_ylabel(ylabel)
 
         # Determine extent
         extent = self[0].xrange + self[0].yrange
