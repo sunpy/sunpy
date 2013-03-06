@@ -33,10 +33,19 @@ class MapCube(np.ndarray):
     sortby : {"date"}
         Method by which the MapCube should be sorted along the z-axis.
 
+    ordering : {"order":  # one-dimensional array of orderable objects,
+                "description": # a description of the meaning of "order"
+                "units": } #the units of "order"
     Attributes
     ----------
     headers : list
         a list of dictionaries containing the original and normalized header tags for the files used to build the MapCube.
+
+    ordering : dictionary
+        a dictionary that contains the following tags
+            "order": the numerical list that orders the maps in the mapcube
+            "description": a description of the meaning of "order"
+            "units": the units of "order"
 
     See Also
     --------
@@ -170,10 +179,31 @@ class MapCube(np.ndarray):
     def _sort_by_date(cls):
         return lambda m: m.date # maps.sort(key=attrgetter('date'))
     
-    def _derotate(self):
-        """Derotates the layers in the MapCube"""
+    def _derotate_by_latitude(self, index=index, use_order=False):
+        """Derotates the layers in the MapCube.  Derotates each image using
+        the latitudinal dependence defined by diff_rot.  Derotates the stack of
+        images to the map in the stack at position 'index'.  If use_order is
+        True then we assume that index is of the same type as ordering["order"]
+        and the map stack is derotated to the closest map in the stack to the
+        value of index passed.  Another way of putting this is to say 'for the
+        mapcube find the map in mapcube that minimizes
+        abs(map._ordering["order"] - index).  If use_order is False then the
+        maps in the mapcube are derotated relative to mapcube[i]."""
+        pass
+    
+    def _derotate_by_center_of_fov(self, index=index, order=order):
+        """Derotate layers of the MapCube using the center of the FOV in each 
+        layer only. Should be faster than _derotate_by_latitude.   Derotates the stack of
+        images to the map in the stack at position 'index'.  If use_order is
+        True then we assume that index is of the same type as ordering["order"]
+        and the map stack is derotated to the closest map in the stack to the
+        value of index passed.  Another way of putting this is to say 'for the
+        mapcube find the map in mapcube that minimizes
+        abs(map._ordering["order"] - index).  If use_order is False then the
+        maps in the mapcube are derotated relative to mapcube[i]."""
         pass
     
     def plot(self):
-        """A basic plot method (not yet implemented)"""
+        """A basic plot method (not yet implemented).  Three dimensional
+        plotting required."""
         pass
