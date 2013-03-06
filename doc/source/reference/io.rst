@@ -12,3 +12,4 @@ Input/Output
    io
    io.fits
    io.jp2
+   io.ana
