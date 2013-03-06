@@ -28,7 +28,7 @@ from . import _pyana
 
 __all__ = ['read', 'get_data', 'get_header', 'write']
 
-def read(filename, debug=0):
+def read(filename, debug=False):
     """
     Loads an ANA file and returns the data, size, dimensions and comments in a
     dictionary.
@@ -37,8 +37,8 @@ def read(filename, debug=0):
     ----------
     filename: string
         Name of file to be read.
-    debug: int
-        Does something 0 or 1.
+    debug: bool, optional
+        Prints versbose debug information.
     
     Returns
     -------
@@ -47,7 +47,7 @@ def read(filename, debug=0):
     
     Examples
     --------
-    data = sunpy.io.ana.read(filename)
+    >>> data = sunpy.io.ana.read(filename)
     
     """
     if not os.path.isfile(filename):
@@ -56,7 +56,7 @@ def read(filename, debug=0):
     data = _pyana.fzread(filename, debug)
     return data
 
-def get_data(filename, debug=0):
+def get_data(filename, debug=False):
     """
     Loads an ANA file and only returns the data as a numpy array.
 
@@ -64,8 +64,8 @@ def get_data(filename, debug=0):
     ----------
     filename: string
         Name of file to be read.
-    debug: int, optional
-        Does something 0 or 1.
+    debug: bool, optional
+        Prints versbose debug information.
     
     Returns
     -------
@@ -74,13 +74,13 @@ def get_data(filename, debug=0):
     
     Examples
     --------
-    data = sunpy.io.ana.getdata(filename)
+    >>> data = sunpy.io.ana.getdata(filename)
     """
     data = read(filename, debug)
     return data['data']
 
 	
-def get_header(filename, debug=0):
+def get_header(filename, debug=False):
     """
     Load an ANA file and only return the header consisting of the dimensions,
     size (defined as the product of all dimensions times the size of the
@@ -90,8 +90,8 @@ def get_header(filename, debug=0):
     ----------
     filename: string
         Name of file to be read.
-    debug: int, optional
-        Does something 0 or 1.
+    debug: bool, optional
+        Prints versbose debug information.
     
     Returns
     -------
@@ -100,12 +100,12 @@ def get_header(filename, debug=0):
 
     Examples
     --------    
-    header = sunpy.io.ana.getheader(filename)
+    >>> header = sunpy.io.ana.getheader(filename)
     """
     data = read(filename, debug)
     return data['header']
 
-def write(filename, data, compress=1, comments=False, debug=0):
+def write(filename, data, compress=1, comments=False, debug=False):
     """
     Saves a 2D numpy array as an ANA file and returns the bytes written or NULL
 
@@ -120,8 +120,8 @@ def write(filename, data, compress=1, comments=False, debug=0):
         1 is to compress, 0 is uncompressed
     commnets: string, optional
         The comments to be stored as a header.
-    debug: int, optional
-        Does something 0 or 1.
+    debug: bool, optional
+        Prints versbose debug information.
     
     Returns
     -------
@@ -130,7 +130,7 @@ def write(filename, data, compress=1, comments=False, debug=0):
 
     Examples
     --------    
-    written = sunpy.io.ana.write(filename, data, compress=1, comments=False)
+    >>> written = sunpy.io.ana.write(filename, data, compress=1, comments=False)
     """
     if comments:
         return _pyana.fzwrite(filename, data, compress, comments, debug)
