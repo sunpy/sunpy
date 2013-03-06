@@ -9,6 +9,7 @@ import numpy as np
 
 from sunpy.map import Map
 from sunpy.map.sources import *
+from sunpy.lightcurve import LightCurve
 
 __all__ = ['MapCube']
 
@@ -62,13 +63,17 @@ class MapCube(np.ndarray):
             else:
                 maps.append(Map.read(item))
 
-        
+        # default ordering
+        ordering = kwargs.get("ordering",{"order":range(0,len(maps)),
+                                          "description":"default ordering",
+                                          "units":'index'})
 
-        # sort data
+        # sort data.  a sort method overwrites the existing ordering
         sortby = kwargs.get("sortby", "date")
         if hasattr(cls, '_sort_by_%s' % sortby):
-            maps.sort(key=getattr(cls, '_sort_by_%s' % sortby)())
-            ordering = {"order":[map_.date for map_ in maps],
+            sort_key=getattr(cls, '_sort_by_%s' % sortby)()
+            maps.sort(key=sort_key)
+            ordering = {"order":[sort_key(map_) for map_ in maps],
                         "description":'time',
                         "units":''}
 
@@ -103,6 +108,9 @@ class MapCube(np.ndarray):
 
         if hasattr(obj, '_headers'):
             self._headers = obj._headers
+
+        if hasattr(obj, '_ordering'):
+            self._ordering = obj._ordering
         
     def __array_wrap__(self, out_arr, context=None):
         """Returns a wrapped instance of a MapCube object"""
@@ -119,6 +127,7 @@ class MapCube(np.ndarray):
 
         else:
             return np.ndarray.__getitem__(self, key)
+
         
     def std(self, *args, **kwargs):
         """overide np.ndarray.std()"""
