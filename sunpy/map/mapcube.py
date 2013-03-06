@@ -60,10 +60,16 @@ class MapCube(np.ndarray):
             else:
                 maps.append(Map.read(item))
 
+        
+
         # sort data
         sortby = kwargs.get("sortby", "date")
         if hasattr(cls, '_sort_by_%s' % sortby):
             maps.sort(key=getattr(cls, '_sort_by_%s' % sortby)())
+            ordering = {"order":[map_.date for map_ in maps],
+                        "description":'time',
+                        "units":''}
+
 
         # create data cube
         for map_ in maps:
@@ -72,6 +78,7 @@ class MapCube(np.ndarray):
 
         obj = np.asarray(data).view(cls)
         obj._headers = headers
+        obj._ordering = ordering
 
         return obj
     
@@ -117,9 +124,9 @@ class MapCube(np.ndarray):
     
     def get_lightcurve_by_array_index(self, x, y):
         """Returns a lightcurve object at a given pixel"""
-        times = [map.date for map in self]
+        order = self.ordering["order"]
         data = [map[x,y] for map in self]
-        return LightCurve.create( {map.name: data}, index=times)
+        return LightCurve.create( {map.name: data}, index=order)
         
     # Coalignment methods
     def _coalign_diff(self):
