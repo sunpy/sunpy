@@ -4,10 +4,13 @@
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
+import numpy as np
+from matplotlib import colors
+
 from sunpy.map import Map
 from sunpy.cm import cm
-from matplotlib import colors
-import numpy as np
+
+__all__ = ['AIAMap', 'HMIMap']
 
 class AIAMap(Map):
     """AIA Image Map definition
