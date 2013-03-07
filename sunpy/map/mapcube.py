@@ -198,6 +198,11 @@ class MapCube(np.ndarray):
         cube = MapCube(*maps)
         ani = cube.plot(colorbar=True)        
         plt.show()
+        
+        #Plot the map at 1/2 original resolution.
+        cube = MapCube(*maps)
+        ani = cube.plot(resample=[0.5, 0.5], colorbar=True)        
+        plt.show()
         """
         
         if not axes:
