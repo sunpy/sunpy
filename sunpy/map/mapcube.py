@@ -154,10 +154,51 @@ class MapCube(np.ndarray):
         """Derotates the layers in the MapCube"""
         pass
     
-    def plot(self, annotate=True, axes=None, gamma=None, controls=True,
-             interval=200, resample=[0.25,0.25], colorbar=False,
-             **imshow_args):
-        """A plot method that animates! """
+    def plot(self, gamma=None, annotate=True, axes=None, controls=True,
+             interval=200, resample=False, colorbar=False,
+             **ani_args):
+        """
+        A animation plotting routine that animates each element in the
+        MapCube
+        
+        Parameters
+        ----------
+        gamma: float
+            Gamma value to use for the color map
+            
+        annotate: bool
+            If true, the data is plotted at it's natural scale; with
+            title and axis labels.
+            
+        axes: matplotlib.axes object or None
+            If provided the image will be plotted on the given axes. Else the 
+            current matplotlib axes will be used.
+        
+        controls: bool
+            Adds play / pause button to the animation
+        
+        interval: int
+            Frame display time in ms.
+        
+        resample: list or False
+            Draws the map at a lower resolution to increase the speed of
+            animation. Specify a list as a fraction i.e. [0.25, 0.25] to 
+            plot at 1/4 resolution.
+        
+        colorbar: bool
+            Draw a colorbar on the plot.
+        
+        **ani_args : dict
+            Any additional imshow arguments that should be used
+            when plotting the image. Passed to 
+            sunpy.util.plotting.ControlFuncAnimation
+        
+        Example
+        -------
+        cube = MapCube(*maps)
+        ani = cube.plot(colorbar=True)        
+        plt.show()
+        """
         
         if not axes:
             axes = plt.gca()
@@ -223,9 +264,9 @@ class MapCube(np.ndarray):
         
         ani = plotting.ControlFuncAnimation(fig, updatefig,
                                             frames=xrange(0,self.shape[0]),
-                                            fargs = [im,annotate,ani_data],
+                                            fargs=[im,annotate,ani_data],
                                             interval=interval,
-                                            blit=False)
+                                            blit=False,**ani_args)
         if controls:
             axes, bax1, bax2 = plotting.add_controls(axes=axes)
 
