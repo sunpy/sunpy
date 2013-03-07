@@ -242,7 +242,7 @@ class MapCube(np.ndarray):
                   'norm':self[0].norm(),
                   'extent':extent,
                   'interpolation':'nearest'}
-        kwargs.update(imshow_args)
+        kwargs.update(ani_args)
         
         im = axes.imshow(self[0], **kwargs)
         
@@ -273,7 +273,7 @@ class MapCube(np.ndarray):
                                             interval=interval,
                                             blit=False,**ani_args)
         if controls:
-            axes, bax1, bax2 = plotting.add_controls(axes=axes)
+            axes, bax1, bax2, bax3 = plotting.add_controls(axes=axes)
 
             bax1._button.on_clicked(ani._start)
             bax2._button.on_clicked(ani._stop)
