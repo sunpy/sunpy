@@ -50,7 +50,7 @@ def add_controls(axes=None, slider=False):
     
     #Split up the current axes so there is space for a start and a stop button
     divider = make_axes_locatable(axes)
-    pad = 0.06 # Padding between axes
+    pad = 0.08 # Padding between axes
     pad_size = Size.Fraction(pad, Size.AxesX(axes))
 
     #Define size of usefult axes cells, 50% each in x 20% for buttons in y.
@@ -77,8 +77,6 @@ def add_controls(axes=None, slider=False):
     bax2 = fig.add_axes((0.,0.,0.8,1.))
     locator = divider.new_locator(nx=2, ny=bny)
     bax2.set_axes_locator(locator)
-    
-
     
     start = widgets.Button(bax1, "Start")
     stop = widgets.Button(bax2, "Stop")
