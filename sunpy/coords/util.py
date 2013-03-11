@@ -33,7 +33,10 @@ def diff_rot(ddays,latitude,rot_type=None):
         http://hesperia.gsfc.nasa.gov/ssw/gen/idl/solar/diff_rot.pro
     
     Howard rotation:
-        http://labs.adsabs.harvard.edu/adsabs/abs/1990SoPh..130..295H
+        http://adsabs.harvard.edu/abs/1990SoPh..130..295H
+    
+    A review of rotation parameters:
+        http://link.springer.com/article/10.1023%2FA%3A1005226402796
     
     Examples
     --------
