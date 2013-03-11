@@ -55,15 +55,15 @@ def add_controls(axes=None, slider=False):
     
     #Split up the current axes so there is space for a start and a stop button
     divider = make_axes_locatable(axes)
-    pad = 0.08 # Padding between axes
+    pad = 0.1 # Padding between axes
     pad_size = Size.Fraction(pad, Size.AxesX(axes))
 
     #Define size of usefult axes cells, 50% each in x 20% for buttons in y.
-    xsize = Size.Fraction((1.-2.*pad)/2., Size.AxesX(axes))
+    xsize = Size.Fraction((1.-2.*pad)/3., Size.AxesX(axes))
     ysize = Size.Fraction((1.-2.*pad)/15., Size.AxesY(axes))
 
     #Set up grid, 3x3 with cells for padding.
-    divider.set_horizontal([xsize, pad_size, xsize])
+    divider.set_horizontal([xsize, pad_size, xsize, pad_size, xsize])
     if slider:
         divider.set_vertical([ysize, pad_size, ysize, pad_size, Size.AxesY(axes)])
         bny = 2
@@ -82,19 +82,24 @@ def add_controls(axes=None, slider=False):
     bax2 = fig.add_axes((0.,0.,0.8,1.))
     locator = divider.new_locator(nx=2, ny=bny)
     bax2.set_axes_locator(locator)
+    bax3 = fig.add_axes((0.,0.,0.7,1.))
+    locator = divider.new_locator(nx=4, ny=bny)
+    bax3.set_axes_locator(locator)
     
     start = widgets.Button(bax1, "Start")
     stop = widgets.Button(bax2, "Stop")
+    step = widgets.Button(bax3, "Step")
     #Make dummy refernce to prevent garbage collection
     bax1._button = start
     bax2._button = stop
+    bax3._button = step
     
     if slider:
-        bax3 = fig.add_axes((0.,0.,0.6,1.))
+        bax4 = fig.add_axes((0.,0.,0.6,1.))
         locator = divider.new_locator(nx=0, ny=0, nx1=-1)
-        bax3.set_axes_locator(locator)
-        sframe = widgets.Slider(bax3, 'Frame', 0, 10, valinit=0, valfmt = '%i')        
-        bax3._slider = sframe
+        bax4.set_axes_locator(locator)
+        sframe = widgets.Slider(bax4, 'Frame', 0, 10, valinit=0, valfmt = '%i')        
+        bax4._slider = sframe
     
-        return axes, bax1, bax2, bax3
-    return axes, bax1, bax2
+        return axes, bax1, bax2, bax3, bax4
+    return axes, bax1, bax2, bax3
