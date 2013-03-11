@@ -18,11 +18,11 @@ class DiffRotTest(unittest.TestCase):
         self.failUnless(np.array_equal(rot, np.array([110.2725,  110.2725])))
         
     def test_synodic(self):
-        rot = diff_rot(10, 30, rot_type='synodic')
+        rot = diff_rot(10, 30, rot_type='howard', frame_time='synodic')
         self.failUnless(rot == 126.9656)
         
     def test_sidereal(self):
-        rot = diff_rot(10, 30, rot_type='sidereal')
+        rot = diff_rot(10, 30, rot_type='howard', frame_time='sidereal')
         self.failUnless(rot == 136.8216)
         
     def test_howard(self):
@@ -32,6 +32,10 @@ class DiffRotTest(unittest.TestCase):
     def test_allen(self):
         rot = diff_rot(10, 30, rot_type='allen')
         self.failUnless(rot == 136.9)
+    
+    def test_snodgrass(self):
+        rot = diff_rot(10, 30, rot_type='snodgrass')
+        self.failUnless(rot == 135.4232)
     
     def test_fail(self):
         self.assertRaises(ValueError, diff_rot, 10, 30, rot_type='garbage')
