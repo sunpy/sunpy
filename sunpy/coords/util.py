@@ -32,6 +32,9 @@ def diff_rot(ddays,latitude,rot_type=None):
     IDL code equavalent:
         http://hesperia.gsfc.nasa.gov/ssw/gen/idl/solar/diff_rot.pro
     
+    Howard rotation:
+        http://labs.adsabs.harvard.edu/adsabs/abs/1990SoPh..130..295H
+    
     Examples
     --------
     Default rotation calculation over two days at 30 degrees latitude:
