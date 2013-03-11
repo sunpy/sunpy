@@ -273,9 +273,10 @@ class MapCube(np.ndarray):
                                             interval=interval,
                                             blit=False,**ani_args)
         if controls:
-            axes, bax1, bax2 = plotting.add_controls(axes=axes)
+            axes, bax1, bax2, bax3 = plotting.add_controls(axes=axes)
 
             bax1._button.on_clicked(ani._start)
             bax2._button.on_clicked(ani._stop)
+            bax3._button.on_clicked(ani._step)
         
         return ani
