@@ -25,19 +25,24 @@ class ControlFuncAnimation(animation.FuncAnimation):
         animation.FuncAnimation.__init__(self, fig, func, frames=frames,
                                          init_func=init_func, fargs=fargs,
                                          save_count=save_count, **kwargs)
+                                         
+        self._started = False #Set to false _start will start animation
         if not auto_start:
             self._fig.canvas.mpl_disconnect(self._first_draw_id)
             self._first_draw_id = None
     
     def _start(self, *args):
-        if self.event_source is None:
-            self.event_source = self.fig.canvas.new_timer()
-            self.event_source.interval = self._interval
-        animation.FuncAnimation._start(self)
+        if not self._started:
+            if self.event_source is None:
+                self.event_source = self.fig.canvas.new_timer()
+                self.event_source.interval = self._interval
+            animation.FuncAnimation._start(self)
+            self._started = True
     
     def _stop(self, *args):
         if self.event_source:
             animation.FuncAnimation._stop(self, *args)
+        self._started = False
 
 def add_controls(axes=None, slider=False):
     """ Adds Start/Stop controls to an axes having been given a animation 
