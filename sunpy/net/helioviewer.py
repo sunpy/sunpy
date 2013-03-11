@@ -8,13 +8,17 @@ __author__ = ["Keith Hughitt"]
 __email__ = "keith.hughitt@nasa.gov"
 
 import os
-import json
 import shutil
 import urllib
 import urllib2
+
+import json
+
 import sunpy
 from sunpy.time import parse_time
-from sunpy.net.util import download_fileobj
+from sunpy.util.net import download_fileobj
+
+__all__ = ['HelioviewerClient']
 
 class HelioviewerClient:
     """Helioviewer.org Client"""
@@ -57,8 +61,8 @@ class HelioviewerClient:
             
         Examples
         --------
-        >>> from sunpy.net import helioviewer
-        >>> client = helioviewer.HelioviewerClient()
+        >>> from sunpy.net import HelioviewerClient
+        >>> client = HelioviewerClient()
         >>> metadata = client.get_closest_image('2012/01/01', sourceId=11)
         >>> print(metadata['date'])
         """
@@ -71,7 +75,7 @@ class HelioviewerClient:
         response = self._get_json(params)
         
         # Cast date string to DateTime
-        response['date'] = sunpy.time.parse_time(response['date'])
+        response['date'] = parse_time(response['date'])
         
         return response
     

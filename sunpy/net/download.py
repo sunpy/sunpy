@@ -13,10 +13,11 @@ import urllib2
 import select
 import socket
 import threading
-import sunpy
 
 from functools import partial
 from collections import defaultdict, deque
+
+import sunpy
 
 class IDPool(object):
     """
