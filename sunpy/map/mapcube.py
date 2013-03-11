@@ -5,11 +5,14 @@ from __future__ import absolute_import
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
-from sunpy.map import Map
-from sunpy.map.sources import *
 import numpy as np
 
-#
+from sunpy.map import Map
+from sunpy.map.sources import *
+
+__all__ = ['MapCube']
+
+# (https://github.com/sunpy/sunpy/issues/397)
 # 2011/04/13: Should Map be broken up into Map and MapHeader classes? This way
 # mapped header values can be used in MapCube without having to keep extra
 # copies of the data..

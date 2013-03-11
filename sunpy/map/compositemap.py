@@ -5,7 +5,10 @@ Author: `Keith Hughitt <keith.hughitt@nasa.gov>`
 from __future__ import absolute_import
 
 import matplotlib.pyplot as plt
-from sunpy.map import Map
+
+from sunpy.map import map
+
+__all__ = ['CompositeMap']
 
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"

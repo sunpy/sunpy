@@ -1,8 +1,9 @@
 """SunPy configuration file functionality"""
 import os
-import sunpy
 import tempfile
 import ConfigParser
+
+import sunpy
 
 def load_config():
     """
