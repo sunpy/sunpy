@@ -8,33 +8,37 @@ __authors__ = ["Keith Hughitt, Steven Christe"]
 __email__ = "keith.hughitt@nasa.gov"
 
 import os
+from copy import copy
 import warnings
-import pyfits
+
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy.ndimage.interpolation
 from matplotlib import patches
 from matplotlib import colors
 from matplotlib import cm
-from copy import copy
+import pyfits
+
 try:
     import sunpy.image.Crotate as Crotate
 except ImportError:
     pass
-from sunpy.wcs import wcs as wcs
-from sunpy.util.util import toggle_pylab
+
+import sunpy.wcs as wcs
+from sunpy.util import toggle_pylab, to_signed
 from sunpy.io import read_file, read_file_header
 from sunpy.sun import constants
-from sunpy.time import parse_time
-from sunpy.time import is_time
-from sunpy.util.util import to_signed
-from sunpy.image.rescale import resample, reshape_image_to_4d_superpixel
+from sunpy.time import parse_time, is_time
+from sunpy.image.rescale import reshape_image_to_4d_superpixel
+from sunpy.image.rescale import resample as sunpy_image_resample
 
 from sunpy.util.cond_dispatch import ConditionalDispatch
 from sunpy.util.create import Parent
 
+__all__ = ['Map']
+
 """
-TODO
+TODO (now an issue in https://github.com/sunpy/sunpy/issues/396)
 ----
 * Automatically include Map docstring when displaying help for subclasses?
 
@@ -642,8 +646,8 @@ Dimension:\t [%d, %d]
         #   coordinates in a Map are at pixel centers
 
         # Make a copy of the original data and perform resample
-        data = resample(np.asarray(self).copy().T, dimensions,
-                        method, center=True)
+        data = sunpy_image_resample(np.asarray(self).copy().T, dimensions,
+                                    method, center=True)
 
         # Update image scale and number of pixels
         header = self._original_header.copy()

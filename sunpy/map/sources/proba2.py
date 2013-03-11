@@ -7,6 +7,8 @@ __email__ = "keith.hughitt@nasa.gov"
 from sunpy.map import Map
 from sunpy.cm import cm
 
+__all__ = ['SWAPMap']
+
 class SWAPMap(Map):
     """SWAP Image Map definition
     

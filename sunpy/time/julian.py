@@ -1,6 +1,8 @@
 from __future__ import absolute_import
 
-__all__ = ["julian_day", "julian_centuries"]
+from sunpy.time import parse_time
+
+__all__ = ['julian_day', 'julian_centuries']
 
 # The number of days between Jan 1 1900 and the Julian reference date of 
 # 12:00 noon Jan 1, 4713 BC
@@ -10,7 +12,6 @@ def julian_day(t=None):
     """Returns the (fractional) Julian day defined as the number of days 
     between the queried day and the reference date of 12:00 (noon) Jan 1, 4713 
     BC."""
-    from sunpy.time import parse_time
 
     # Good online reference for fractional julian day
     # http://www.stevegs.com/jd_calc/jd_calc.htm    
