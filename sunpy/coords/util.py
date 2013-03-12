@@ -1,4 +1,4 @@
-__author__ = ["Jose Ivan Campos Rozo"]
+__author__ = ["Jose Ivan Campos Rozo", "Stuart Mumford"]
 
 __all__ = ['diff_rot']
 import numpy as np
