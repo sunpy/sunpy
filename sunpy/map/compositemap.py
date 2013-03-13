@@ -341,8 +341,8 @@ class CompositeMap:
         plt.sci(ret[0])
         return ret
         
-    def peek(self, gamma=None, colorbar=True, basic_plot=False, 
-             **matplot_args):
+    def peek(self, gamma=None, colorbar=True, basic_plot=False, draw_limb=True,
+             draw_grid=False, **matplot_args):
         """Displays the map in a new figure
 
         Parameters
@@ -381,16 +381,17 @@ class CompositeMap:
             figure.colorbar(ret[colorbar])
         elif colorbar:
             plt.colorbar()
-        #if draw_limb:
-        #    self.draw_limb(axes=axes)
+        if draw_limb:
+            self.draw_limb(axes=axes)
         
-        #if isinstance(draw_grid, bool):
-        #    if draw_grid:
-                #self.draw_grid(axes=axes)
-        #elif isinstance(draw_grid, (int, long, float)):
-        #    self.draw_grid(axes=axes, grid_spacing=draw_grid)
-        #else:
-        #    raise TypeError("draw_grid should be bool, int, long or float")
+        if isinstance(draw_grid, bool):
+            if draw_grid:
+                self.draw_grid(axes=axes)
+        
+        elif isinstance(draw_grid, (int, long, float)):
+            self.draw_grid(axes=axes, grid_spacing=draw_grid)
+        else:
+            raise TypeError("draw_grid should be bool, int, long or float")
 
         figure.show()
         
