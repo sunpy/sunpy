@@ -11,7 +11,7 @@ from sunpy.net import vso
 from sunpy.net.vso import attrs as va
 from sunpy.net import attr
 
-from sunpy.util.util import energy, frequency
+from sunpy.util.unit_conversion import energy, frequency
 
 def pytest_funcarg__eit(request):
     return va.Instrument('eit')
@@ -66,7 +66,7 @@ def test_complexattr_apply():
 
 def test_complexattr_create(client):
     a = attr.ValueAttr({('time', 'start'): 'test'})
-    assert vso.walker.create(a, client.api)[0].time.start == 'test'
+    assert va.walker.create(a, client.api)[0].time.start == 'test'
 
 
 def test_complexattr_and_duplicate():

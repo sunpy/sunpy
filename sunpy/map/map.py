@@ -8,32 +8,37 @@ __authors__ = ["Keith Hughitt, Steven Christe"]
 __email__ = "keith.hughitt@nasa.gov"
 
 import os
-import pyfits
+from copy import copy
+import warnings
+
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy.ndimage.interpolation
 from matplotlib import patches
 from matplotlib import colors
 from matplotlib import cm
-from copy import copy
+import pyfits
+
 try:
     import sunpy.image.Crotate as Crotate
 except ImportError:
-    print("C extension sunpy.image.Crotate cannot be found")
-from sunpy.wcs import wcs as wcs
-from sunpy.util.util import toggle_pylab
+    pass
+
+import sunpy.wcs as wcs
+from sunpy.util import toggle_pylab, to_signed
 from sunpy.io import read_file, read_file_header
 from sunpy.sun import constants
-from sunpy.time import parse_time
-from sunpy.time import is_time
-from sunpy.util.util import to_signed
-from sunpy.image.rescale import resample, reshape_image_to_4d_superpixel
+from sunpy.time import parse_time, is_time
+from sunpy.image.rescale import reshape_image_to_4d_superpixel
+from sunpy.image.rescale import resample as sunpy_image_resample
 
 from sunpy.util.cond_dispatch import ConditionalDispatch
 from sunpy.util.create import Parent
 
+__all__ = ['Map']
+
 """
-TODO
+TODO (now an issue in https://github.com/sunpy/sunpy/issues/396)
 ----
 * Automatically include Map docstring when displaying help for subclasses?
 
@@ -397,8 +402,14 @@ Dimension:\t [%d, %d]
         if not axes:
             axes = plt.gca()
         
-        circ = patches.Circle([0, 0], radius=self.rsun_arcseconds, fill=False,
-                              color='white')
+        if hasattr(self, 'center'):
+            circ = patches.Circle([self.center['x'], self.center['y']],
+                                  radius=self.rsun_arcseconds, fill=False,
+                                  color='white',zorder=100)
+        else:
+            print("Assuming center of Sun is center of image")
+            circ = patches.Circle([0,0], radius=self.rsun_arcseconds,
+                                  fill=False, color='white',zorder=100)
         axes.add_artist(circ)
         
         return axes
@@ -460,7 +471,7 @@ Dimension:\t [%d, %d]
                                       self.heliographic_longitude,
                                       hg_longitude_deg_mesh,
                                       hg_latitude_deg_mesh, units='arcsec')
-            axes.plot(x, y, color='white', linestyle='dotted')
+            axes.plot(x, y, color='white', linestyle='dotted',zorder=100)
             
         hg_longitude_deg = np.arange(lon_range[0], lon_range[1]+grid_spacing, grid_spacing)
         hg_latitude_deg = np.linspace(lat_range[0], lat_range[1], num=num_points)
@@ -474,7 +485,7 @@ Dimension:\t [%d, %d]
                                       self.heliographic_longitude,
                                       hg_longitude_deg_mesh,
                                       hg_latitude_deg_mesh, units='arcsec')
-            axes.plot(x, y, color='white', linestyle='dotted')
+            axes.plot(x, y, color='white', linestyle='dotted',zorder=100)
             
         axes.set_ylim(self.yrange)
         axes.set_xlim(self.xrange)
@@ -635,8 +646,8 @@ Dimension:\t [%d, %d]
         #   coordinates in a Map are at pixel centers
 
         # Make a copy of the original data and perform resample
-        data = resample(np.asarray(self).copy().T, dimensions,
-                        method, center=True)
+        data = sunpy_image_resample(np.asarray(self).copy().T, dimensions,
+                                    method, center=True)
 
         # Update image scale and number of pixels
         header = self._original_header.copy()
@@ -763,6 +774,14 @@ Dimension:\t [%d, %d]
         Returns
         -------
         New rotated, rescaled, translated map
+        
+        Notes
+        -----
+        Apart from interpolation='spline' all other options use a compiled 
+        C-API extension. If for some reason this is not compiled correctly this
+        routine will fall back upon the scipy implementation of order = 3.
+        For more infomation see:
+            http://sunpy.readthedocs.org/en/latest/guide/troubleshooting.html#crotate-warning
         """
         
         #Interpolation parameter Sanity
@@ -819,7 +838,11 @@ Dimension:\t [%d, %d]
         else:
             #Use C extension Package
             if not 'Crotate' in globals():
-                raise ValueError("You do not have the C extension sunpy.image.Crotate")
+                warnings.warn(""""The C extension sunpy.image.Crotate is not 
+installed, falling back to the interpolation='spline' of order=3""" ,Warning)
+                data = scipy.ndimage.interpolation.affine_transform(image, rsmat,
+                           offset=offs, order=3, mode='constant',
+                           cval=missing)
             #Set up call parameters depending on interp type.
             if interpolation == 'nearest':
                 interp_type = Crotate.NEAREST

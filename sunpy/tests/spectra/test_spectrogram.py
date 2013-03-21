@@ -13,8 +13,8 @@ from numpy.testing import assert_array_almost_equal
 
 from scipy import ndimage
 
-from sunpy.spectra.spectrogram import (
-    Spectrogram, LinearTimeSpectrogram, min_delt, _LinearView
+from sunpy.spectra.spectrogram import(
+    Spectrogram, LinearTimeSpectrogram, _LinearView
 )
 
 

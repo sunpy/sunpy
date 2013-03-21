@@ -9,18 +9,19 @@ __authors__ = ["Keith Hughitt"]
 __email__ = "keith.hughitt@nasa.gov"
 
 import os
-import pandas
-import sunpy
 import shutil
 import urllib2
+from datetime import datetime
+
 import numpy as np
 import matplotlib.pyplot as plt
+import pandas
 
-from datetime import datetime
-from types import NoneType
-
-from sunpy.time import is_time, TimeRange
+import sunpy
+from sunpy.time import is_time, TimeRange, parse_time
 from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
+
+__all__ = ['LightCurve']
 
 class LightCurve(object):
     """
@@ -66,7 +67,7 @@ class LightCurve(object):
     
     @classmethod
     def from_time(cls, time, **kwargs):
-        date = sunpy.time.parse_time(time)
+        date = parse_time(time)
         url = cls._get_url_for_date(date)
         filepath = cls._download(
             url, kwargs, err="Unable to download data for specified date"
@@ -266,7 +267,7 @@ class LightCurve(object):
 
 LightCurve._cond_dispatch.add(
     run_cls("from_time"),
-    lambda cls, time: sunpy.time.is_time(time),
+    lambda cls, time: is_time(time),
     # type is here because the class parameter is a class,
     # i.e. an instance of type (which is the base meta-class).
     [type, (basestring, datetime, tuple)],

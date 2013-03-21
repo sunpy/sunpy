@@ -1,11 +1,12 @@
 from __future__ import absolute_import
 
-import pytest
 from xml.parsers.expat import ExpatError
 from xml.dom.minidom import Document
 from xml.dom.minidom import parseString
-from sunpy.util import xml
 
+import pytest
+
+from sunpy.util import xml
 
 
 def test_xml_to_dict1():
