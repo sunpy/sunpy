@@ -47,7 +47,7 @@ def make_map(*args, **kwargs):
     if len(args) is 0:
         raise TypeError("Invalid input.")
 
-    # First check to see if data/header were passed in    
+    # First check to see if data/header were passed in
     if isinstance(args[0], list) or isinstance(args[0], np.ndarray):
         data = None
 
@@ -111,12 +111,13 @@ def make_map(*args, **kwargs):
     if len(maps) is 0:
         raise NoMapsFound("Specified path contains no valid files.")
 
-    mtype = kwargs.get("type", "composite")
+    # Default is a MapCube
+    mtype = kwargs.get("type", "cube")
 
-    # MapCube
+    # MapCube (default)
     if mtype == "cube":
         return MapCube(*maps)
-    # CompositeMap (default)
+    # CompositeMap
     elif mtype == "composite":
         return CompositeMap(*maps)
     else:
