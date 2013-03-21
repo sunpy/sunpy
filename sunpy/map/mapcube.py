@@ -148,10 +148,31 @@ class MapCube(np.ndarray):
     @classmethod
     def _sort_by_date(cls):
         return lambda m: m.date # maps.sort(key=attrgetter('date'))
-    
-    def _derotate(self):
-        """Derotates the layers in the MapCube"""
+
+    def _derotate_by_latitude(self, index=0, use_order=False):
+        """Derotates the layers in the MapCube.  Derotates each image using
+        the latitudinal dependence defined by diff_rot.  Derotates the stack of
+        images to the map in the stack at position 'index'.  If use_order is
+        True then we assume that index is of the same type as ordering["order"]
+        and the map stack is derotated to the closest map in the stack to the
+        value of index passed.  Another way of putting this is to say 'for the
+        mapcube find the map in mapcube that minimizes
+        abs(map._ordering["order"] - index).  If use_order is False then the
+        maps in the mapcube are derotated relative to mapcube[i]."""
         pass
+
+    def _derotate_by_center_of_fov(self, index=0, use_order=False):
+        """Derotate layers of the MapCube using the center of the FOV in each 
+        layer only. Should be faster than _derotate_by_latitude.   Derotates the stack of
+        images to the map in the stack at position 'index'.  If use_order is
+        True then we assume that index is of the same type as ordering["order"]
+        and the map stack is derotated to the closest map in the stack to the
+        value of index passed.  Another way of putting this is to say 'for the
+        mapcube find the map in mapcube that minimizes
+        abs(map._ordering["order"] - index).  If use_order is False then the
+        maps in the mapcube are derotated relative to mapcube[i]."""
+        pass    
+
     
     def plot(self, gamma=None, annotate=True, axes=None, controls=True,
              interval=200, resample=False, colorbar=False,
