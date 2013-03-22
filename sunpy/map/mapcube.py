@@ -12,6 +12,7 @@ from sunpy.map import Map
 from sunpy.map.sources import *
 from sunpy.lightcurve import LightCurve
 from sunpy.util import plotting
+from sunpy.coords import diff_rot
 
 __all__ = ['MapCube']
 
@@ -197,7 +198,7 @@ class MapCube(np.ndarray):
         maps in the mapcube are derotated relative to mapcube[i]."""
         pass
 
-    def _derotate_by_center_of_fov(self, **kwargs):
+    def derotate_by_center_of_fov(self, **kwargs):
         """Derotate layers of the MapCube using the center of the FOV in each
         layer only. Should be faster than _derotate_by_latitude.   Derotates
         the stack of images to the map in the stack at position 'index'.
@@ -218,11 +219,11 @@ class MapCube(np.ndarray):
             else:
                 difference = np.absolute((index - self._ordering["order"]))
             index = np.where(difference == difference.min())[0][0]
+        print index
+        xcen = self._headers[index]["xcen"]
+        ycen = self._headers[index]["ycen"]
 
-        xcen = self._headers[index].xcen
-        ycen = self._headers[index].ycen
-
-        for map in self.data:
+        for m in self:
             pass
 
         return

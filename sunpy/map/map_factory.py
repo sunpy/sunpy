@@ -89,8 +89,8 @@ def make_map(*args, **kwargs):
                 return Map.read(filepath)
 
         # Map/MapCube/CompositeMap
-        elif (isinstance(args[0], Map) or 
-              isinstance(args[0], CompositeMap) or 
+        elif (isinstance(args[0], Map) or
+              isinstance(args[0], CompositeMap) or
               isinstance(args[0], MapCube)):
             return args[0]
 
