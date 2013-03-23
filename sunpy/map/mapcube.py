@@ -180,7 +180,7 @@ class MapCube(np.ndarray):
     def _sort_by_date(cls):
         return lambda m: m.date # maps.sort(key=attrgetter('date'))
     
-    def _derotate_by_latitude(self, index=index, use_order=False):
+    def _derotate_by_latitude(self, index=0, use_order=False):
         """Derotates the layers in the MapCube.  Derotates each image using
         the latitudinal dependence defined by diff_rot.  Derotates the stack of
         images to the map in the stack at position 'index'.  If use_order is
@@ -192,7 +192,7 @@ class MapCube(np.ndarray):
         maps in the mapcube are derotated relative to mapcube[i]."""
         pass
     
-    def _derotate_by_center_of_fov(self, index=index, order=order):
+    def _derotate_by_center_of_fov(self, index=0, use_order=False):
         """Derotate layers of the MapCube using the center of the FOV in each 
         layer only. Should be faster than _derotate_by_latitude.   Derotates the stack of
         images to the map in the stack at position 'index'.  If use_order is
