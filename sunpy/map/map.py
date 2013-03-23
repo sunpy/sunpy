@@ -710,8 +710,7 @@ Dimension:\t [%d, %d]
         elif method == 'average':
             data = ((reshaped.sum(axis=3).sum(axis=1)) /
                     np.float32(dimensions[0] * dimensions[1]))
-        
-        
+
         #data = resample(np.asarray(self).copy().T, dimensions,
         #                method, center=True)
 
@@ -735,15 +734,15 @@ Dimension:\t [%d, %d]
         new_map.reference_coordinate['y'] = self.center['y']
 
         return new_map
-    
+
     def rotate(self, angle, scale=1.0, rotation_centre=None, recentre=True,
                missing=0.0, interpolation='bicubic', interp_param=-0.5):
         """Returns a new rotated, rescaled and shifted map.
-        
+
         Parameters
         ---------
         angle: float
-           The angle to rotate the image by (radians)        
+           The angle to rotate the image by (radians)
         scale: float
            A scale factor for the image, default is no scaling
         rotation_centre: tuple
@@ -774,7 +773,7 @@ Dimension:\t [%d, %d]
         Returns
         -------
         New rotated, rescaled, translated map
-        
+
         Notes
         -----
         Apart from interpolation='spline' all other options use a compiled 
@@ -783,9 +782,9 @@ Dimension:\t [%d, %d]
         For more infomation see:
             http://sunpy.readthedocs.org/en/latest/guide/troubleshooting.html#crotate-warning
         """
-        
+
         #Interpolation parameter Sanity
-        assert interpolation in ['nearest','spline','bilinear','bicubic']
+        assert interpolation in ['nearest', 'spline', 'bilinear', 'bicubic']
         #Set defaults based on interpolation
         if interp_param is None:
             if interpolation is 'spline':
@@ -793,15 +792,15 @@ Dimension:\t [%d, %d]
             elif interpolation is 'bicubic':
                 interp_param = 0.5
             else:
-                interp_param = 0 #Default value for nearest or bilinear
-        
+                interp_param = 0  # Default value for nearest or bilinear
+
         #Make sure recenter is a vector with shape (2,1)
         if not isinstance(recentre, bool):
             recentre = np.array(recentre).reshape(2,1)
-                
+
         #Define Size and centre of array
         centre = (np.array(self.shape)-1)/2.0
-        
+
         #If rotation_centre is not set (None or False),
         #set rotation_centre to the centre of the image.
         if rotation_centre is None:
@@ -813,17 +812,17 @@ Dimension:\t [%d, %d]
         #Recentre to the rotation_centre if recentre is True
         if isinstance(recentre, bool):
             #if rentre is False then this will be (0,0)
-            shift = np.array(rotation_centre) - np.array(centre) 
+            shift = np.array(rotation_centre) - np.array(centre)
         else:
             #Recentre to recentre vector otherwise
             shift = np.array(recentre) - np.array(centre)
         
         image = np.asarray(self).copy()
     
-        #Calulate the parameters for the affline_transform
+        #Calulate the parameters for the affine_transform
         c = np.cos(angle)
         s = np.sin(angle)
-        mati = np.array([[c, s],[-s, c]]) / scale   # res->orig
+        mati = np.array([[c, s],[-s, c]]) / scale  # res->orig
         centre = np.array([centre]).transpose()  # the centre of rotn
         shift = np.array([shift]).transpose()    # the shift
         kpos = centre - np.dot(mati, (centre + shift))  
