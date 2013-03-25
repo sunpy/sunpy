@@ -1,8 +1,10 @@
 from __future__ import division
 
-__all__ = ['diff_rot', 'rot_xy']
+__all__ = ['diff_rot']
 import numpy as np
 import datetime
+from sunpy.time import parse_time
+from sunpy.wcs import convert_hcc_hg
 
 __author__ = ["Jose Ivan Campos Rozo", "Stuart Mumford"]
 __all__ = ['diff_rot']
@@ -79,7 +81,7 @@ def diff_rot(ddays, latitude, rot_type='howard', frame_time='sidereal'):
         A, B, C = rot_params[rot_type]
 
         #This is in micro-radians / sec
-        rotation_rate = A + B * sin2l + C * sin4l 
+        rotation_rate = A + B * sin2l + C * sin4l
         rotation_deg = rotation_rate * 1e-6  * delta_seconds / np.deg2rad(1)
 
     if frame_time == 'synodic':
@@ -88,7 +90,7 @@ def diff_rot(ddays, latitude, rot_type='howard', frame_time='sidereal'):
     return np.round(rotation_deg, 4)
 
 
-def rot_xy(x, y, interval=0, date=datetime.datetime.utcnow()):
+def rot_xy(x, y, date=datetime.datetime.utcnow(), **kwargs):
     """ Get a solar rotated position for a given time interval.
 
     Parameters
@@ -100,12 +102,11 @@ def rot_xy(x, y, interval=0, date=datetime.datetime.utcnow()):
         y-locations.
 
     interval: Time interval in seconds; positive (negative) values leads to '
-              forward (backward) rotation. If interval is not given, a beginning
-              time must be given with the tstart keyword
+              forward (backward) rotation.
 
     date: date/time at which the sun position is calculated; can be in any
           format accepted by parse_time. If missing, current date/time is
-;                 assumed.
+          assumed.
 ;
 ; OUTPUTS:
 ;       RESULT - A (Mx2) array representing rotated positions in arcsecs,
@@ -131,8 +132,7 @@ def rot_xy(x, y, interval=0, date=datetime.datetime.utcnow()):
 ;       TEND    - Date/time at which XX and YY will be rotated to; can be
 ;                 in any acceptable time format. If needed but missing,
 ;                 current time is assumed
-;       ERROR   - Error message returned; if there is no error, a null
-;                 string is returned
+
 ;       OFFLIMB - A named variable indicating whether any rotated
 ;                 point is off the limb (1) or not (0). When OFFLIMB
 ;                 is 1, the points still remaining visible (inside the limb)
@@ -158,7 +158,41 @@ def rot_xy(x, y, interval=0, date=datetime.datetime.utcnow()):
     See Also
     --------
     IDL code equavalent:
-        http://hesperia.gsfc.nasa.gov/ssw/gen/idl/solar/diff_rot.pro
+        http://hesperia.gsfc.nasa.gov/ssw/gen/idl/solar/rot_xy.pro
 
 """
+    # must have pairs of co-ordinates
+    if np.array(x).shape != np.array(y).shape:
+        raise ValueError('Input co-ordinates must have the same shape.')
+
+    # Make sure we have enough time information to perform a solar differential
+    # rotation
+    if kwargs.get("tend") is not None:
+        tend = parse_time(kwargs.get("tend"))
+    else:
+        tend = datetime.datetime.utcnow()
+    if (kwargs.get("tstart") is not None):
+        delta = tend - parse_time(kwargs.get("tstart"))
+
+    if kwargs.get("interval") is not None:
+        if isinstance(kwargs.get("interval"), datetime.timedelta):
+            delta = kwargs.get("interval")
+        else:
+            delta = datetime.timedelta(seconds=kwargs.get("interval"))
+    if ((kwargs.get("tstart") is None) and (kwargs.get("tend") is None)) or \
+    ((kwargs.get("tstart") is None) and kwargs.get("interval") is None):
+        raise ValueError("You need to specify 'tstart' & 'tend', or " + \
+                          "'tstart' and 'interval'")
+
+    # differentially rotate if interval is non-zero
+    if delta.total_seconds() > 0.0:
+        hgln, hglt = convert_hcc_hg(rsun, b0, l0, x, y)
+
+    return None
+
+
+def pb0r(date):
+    """To calculate the solar P, B0 angles and the semi-diameter.
+    http://hesperia.gsfc.nasa.gov/ssw/gen/idl/solar/pb0r.pro
+    """
     pass

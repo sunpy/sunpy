@@ -12,7 +12,7 @@ from sunpy.map import Map
 from sunpy.map.sources import *
 from sunpy.lightcurve import LightCurve
 from sunpy.util import plotting
-from sunpy.coords import diff_rot
+#from sunpy.coords import rot_xy
 
 __all__ = ['MapCube']
 
