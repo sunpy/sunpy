@@ -3,7 +3,7 @@ from __future__ import division
 __all__ = ['diff_rot']
 import numpy as np
 import datetime
-from sunpy.time import parse_time
+from sunpy.time import parse_time, julian_day
 from sunpy.wcs import convert_hcc_hg
 
 __author__ = ["Jose Ivan Campos Rozo", "Stuart Mumford"]
@@ -191,8 +191,104 @@ def rot_xy(x, y, date=datetime.datetime.utcnow(), **kwargs):
     return None
 
 
-def pb0r(date):
-    """To calculate the solar P, B0 angles and the semi-diameter.
+def pb0r(date, stereo=False):
+    """To calculate the solar P, B0 angles and the semi-diameter.  Based on
     http://hesperia.gsfc.nasa.gov/ssw/gen/idl/solar/pb0r.pro
     """
-    pass
+    # place holder for STEREO calculation
+    if stereo:
+        raise ValueError("STEREO solar P, B0 and semi-diameter calcution" + \
+                         " is not supported.")
+    # number of Julian days since 2415020.0
+    jd = julian_day(date) - 2415020.0
+
+    # get the longitude of the sun etc.
+    sun_position = sun_pos(jd)
+
+    return {"b0":b0, "rsun":rsun, "l0":l0}
+
+
+def sun_pos(date):
+    """ Calculate solar ephemeris parameters.  Allows for planetary and lunar
+    perturbations in the calculation of solar longitude at date and various
+    other solar positional parameters. This routine is a truncated version of
+    Newcomb's Sun and is designed to give apparent angular coordinates (T.E.D)
+    to a precision of one second of time.
+
+    Parameters
+    -----------
+    date: a date/time object or a fractional number of days since JD 2415020.0
+
+    Returns:
+    -------
+    A dictionary with the following keys with the following meanings:
+
+    longitude  -  Longitude of sun for mean equinox of date (degs)
+    ra         -  Apparent RA for true equinox of date (degs)
+    dec        -  Apparent declination for true equinox of date (degs)
+    app_long   -  Apparent longitude (degs)
+    obliq      -  True obliquity (degs)longditude_delta:
+
+    See Also
+    --------
+    IDL code equavalent:
+        http://hesperia.gsfc.nasa.gov/ssw/gen/idl/solar/sun_pos.pro
+
+    Examples
+    --------
+    sp = sun_pos('1998-07-14')
+    sp = sun_pos(1800.667)
+    """
+
+    # check the time input
+    if isinstance(parse_time(date), datetime.datetime):
+        # convert the input time into Julian days with the required offset
+        dd = julian_day(date) - 2415020.0
+    elif isinstance(np.ndarray(date), np.ndarray):
+        # assume that the input is a number which is already in Julian day
+        # format with the required offset
+        dd = date
+    else:
+        raise ValueError('Input must be either an array of Julian dates ' + \
+                         'or an object that specifies a date/time.')
+
+    # form time in Julian centuries from 1900.0
+    t = dd / 36525.0
+
+    # form sun's mean longitude
+    l = (279.6966780 + np.mod(36000.7689250 * t, 360.00)) * 3600.0
+
+    # allow for ellipticity of the orbit (equation of centre) using the Earth's
+    # mean anomaly ME
+    me = 358.4758440 + np.mod(35999.049750 * t, 360.0)
+    ellcor = (6910.10 - 17.20 * t) * np.sin(np.deg2rad(me)) + \
+    72.30 * np.sin(np.deg2rad(2.0 * me))
+    l = l + ellcor
+
+    # allow for the Venus perturbations using the mean anomaly of Venus MV
+    mv = 212.603219 + np.mod(58517.8038750 * t, 360.0)
+    vencorr = 4.80 * np.cos(np.deg2rad(299.10170 + mv - me)) + \
+          5.50 * np.cos(np.deg2rad(148.31330 + 2.0 * mv - 2.0 * me)) + \
+          2.50 * np.cos(np.deg2rad(315.94330 + 2.0 * mv - 3.0 * me)) + \
+          1.60 * np.cos(np.deg2rad(345.25330 + 3.0 * mv - 4.0 * me)) + \
+          1.00 * np.cos(np.deg2rad(318.150 + 3.0 * mv - 5.0 * me))
+    l = l + vencorr
+
+    # Allow for the Jupiter perturbations using the mean anomaly of Jupiter MJ
+    mj = 225.3283280 + np.mod(3034.69202390 * t, 360.00)
+    jupcorr = 7.20 * np.cos(np.deg2rad(179.53170 - mj + me)) + \
+          2.60 * np.cos(np.deg2rad(263.21670 - mj)) + \
+          2.70 * np.cos(np.deg2rad(87.14500 - 2.0 * mj + 2.0 * me)) + \
+          1.60 * np.cos(np.deg2rad(109.49330 - 2.0 * mj + me))
+    l = l + jupcorr
+
+    # Allow for the Moons perturbations using the mean elongation of the Moon
+    # from the Sun D
+    d = 350.73768140 + np.mod(445267.114220 * t, 360.0)
+    mooncorr = 6.50 * np.sin(np.deg2rad(d))
+    l = l + mooncorr
+
+    # TODO: rest of sun_pos.pro from and including the long period terms
+    # TODO: make sure that the variables in the docstring at the start are
+    # the same as the ones that are returned by this function.
+    return {"longmed":longmed, "ra":ra, "dec":dec, l, oblt
