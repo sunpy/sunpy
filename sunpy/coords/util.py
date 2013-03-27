@@ -200,10 +200,30 @@ def pb0r(date, stereo=False):
         raise ValueError("STEREO solar P, B0 and semi-diameter calcution" + \
                          " is not supported.")
     # number of Julian days since 2415020.0
-    jd = julian_day(date) - 2415020.0
+    de = julian_day(date) - 2415020.0
 
     # get the longitude of the sun etc.
-    sun_position = sun_pos(jd)
+    sun_position = sun_pos(date)
+    longmed = sun_position["longitude"]
+    ra = sun_position["ra"]
+    dec = sun_position["dec"]
+    appl = sun_position["app_long"]
+    oblt = sun_position["obliq"]
+
+    # form the aberrated longitude
+    Lambda = longmed - (20.50 / 3600.0)
+
+    # form longitude of ascending node of sun's equator on ecliptic
+    node = 73.6666660 + (50.250 / 3600.0) * ((de / 365.250) + 50.0)
+    arg = Lambda - node
+
+    # calculate P, the position angle of the pole
+    p = np.rad2deg(\
+        np.arctan(-np.tan(np.deg2rad(oblt) * np.cos(np.deg2rad(appl)))) + \
+        np.arctan(-0.127220 * np.cos(np.deg2rad(arg))))
+
+    # B0 the tilt of the axis
+
 
     return {"b0":b0, "rsun":rsun, "l0":l0}
 
@@ -220,9 +240,12 @@ def sun_pos(date, is_julian=False, since_2415020=False):
     date: a date/time object or a fractional number of days since JD 2415020.0
 
     is_julian: { False | True }
-        notify this routine that the variable "date" is a Julian date 
+        notify this routine that the variable "date" is a Julian date
         (a floating point number)
-        
+
+    since_2415020: { False | True }
+        notify this routine that the variable "date" has been corrected for
+        the required time offset
 
     Returns:
     -------
