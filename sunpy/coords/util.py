@@ -6,8 +6,8 @@ import datetime
 from sunpy.time import parse_time, julian_day
 from sunpy.wcs import convert_hcc_hg
 
-__author__ = ["Jose Ivan Campos Rozo", "Stuart Mumford"]
-__all__ = ['diff_rot']
+__author__ = ["Jose Ivan Campos Rozo", "Stuart Mumford", "Jack Ireland"]
+__all__ = ['diff_rot', 'sun_pos']
 
 
 def diff_rot(ddays, latitude, rot_type='howard', frame_time='sidereal'):
@@ -208,7 +208,7 @@ def pb0r(date, stereo=False):
     return {"b0":b0, "rsun":rsun, "l0":l0}
 
 
-def sun_pos(date):
+def sun_pos(date, is_julian=False, since_2415020=False):
     """ Calculate solar ephemeris parameters.  Allows for planetary and lunar
     perturbations in the calculation of solar longitude at date and various
     other solar positional parameters. This routine is a truncated version of
@@ -218,6 +218,11 @@ def sun_pos(date):
     Parameters
     -----------
     date: a date/time object or a fractional number of days since JD 2415020.0
+
+    is_julian: { False | True }
+        notify this routine that the variable "date" is a Julian date 
+        (a floating point number)
+        
 
     Returns:
     -------
@@ -236,21 +241,40 @@ def sun_pos(date):
 
     Examples
     --------
-    sp = sun_pos('1998-07-14')
-    sp = sun_pos(1800.667)
-    """
+    >>> sp = sun_pos('2013-03-27')
+    >>> sp['longitude'], sp['ra'], sp['dec'], sp['app_long'], sp['obliq']
 
+    (6.4854963639582923,
+     5.9525787873210403,
+     2.5739661719621627,
+     6.4834125906094799,
+     23.435885888864924)
+
+    >>> jd = sunpy.time.julian_day('2013-03-27')
+    >>> jd
+    2456378.5
+    >>> sp = sun_pos(2456378.5, is_julian=True)
+    >>> sp['longitude'], sp['ra'], sp['dec'], sp['app_long'], sp['obliq']
+
+    (6.4854963639582923,
+     5.9525787873210403,
+     2.5739661719621627,
+     6.4834125906094799,
+     23.435885888864924)
+    """
     # check the time input
-    if isinstance(parse_time(date), datetime.datetime):
-        # convert the input time into Julian days with the required offset
-        dd = julian_day(date) - 2415020.0
-    elif isinstance(np.ndarray(date), np.ndarray):
-        # assume that the input is a number which is already in Julian day
-        # format with the required offset
-        dd = date
+    if is_julian:
+        # if a Julian date is being passed in
+        if since_2415020:
+            dd = date
+        else:
+            dd = date - 2415020.0
     else:
-        raise ValueError('Input must be either an array of Julian dates ' + \
-                         'or an object that specifies a date/time.')
+        # parse the input time as a julian day
+        if since_2415020:
+            dd = julian_day(date)
+        else:
+            dd = julian_day(date) - 2415020.0
 
     # form time in Julian centuries from 1900.0
     t = dd / 36525.0
@@ -288,7 +312,38 @@ def sun_pos(date):
     mooncorr = 6.50 * np.sin(np.deg2rad(d))
     l = l + mooncorr
 
-    # TODO: rest of sun_pos.pro from and including the long period terms
-    # TODO: make sure that the variables in the docstring at the start are
-    # the same as the ones that are returned by this function.
-    return {"longmed":longmed, "ra":ra, "dec":dec, l, oblt
+    # Note the original code is
+    # longterm  = + 6.4d0 * sin(( 231.19d0  +  20.20d0 * t )*!dtor)
+    longterm = 6.40 * np.sin(np.deg2rad(231.190 + 20.20 * t))
+    l = l + longterm
+    l = np.mod(l + 2592000.0, 1296000.0)
+    longmed = l / 3600.0
+
+    # Allow for Aberration
+    l = l - 20.5
+
+    # Allow for Nutation using the longitude of the Moons mean node OMEGA
+    omega = 259.1832750 - np.mod(1934.1420080 * t, 360.0)
+    l = l - 17.20 * np.sin(np.deg2rad(omega))
+
+    # Form the True Obliquity
+    oblt = 23.4522940 - 0.01301250 * t + \
+    (9.20 * np.cos(np.deg2rad(omega))) / 3600.0
+
+    # Form Right Ascension and Declination
+    l = l / 3600.0
+    ra = np.rad2deg(np.arctan2(np.sin(np.deg2rad(l)) * \
+                        np.cos(np.deg2rad(oblt)), np.cos(np.deg2rad(l))))
+
+    if isinstance(ra, np.ndarray):
+        ra[ra < 0.0] += 360.0
+    elif ra < 0.0:
+        ra = ra + 360.0
+
+    dec = np.rad2deg(np.arcsin(np.sin(np.deg2rad(l)) * \
+                                np.sin(np.deg2rad(oblt))))
+
+    # convert the internal variables to those listed in the top of the
+    # comment section in this code and in the original IDL code.
+    return {"longitude": longmed, "ra": ra, "dec": dec, "app_long": l,
+            "obliq": oblt}
