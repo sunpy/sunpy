@@ -191,14 +191,44 @@ def rot_xy(x, y, date=datetime.datetime.utcnow(), **kwargs):
     return None
 
 
-def pb0r(date, stereo=False):
-    """To calculate the solar P, B0 angles and the semi-diameter.  Based on
-    http://hesperia.gsfc.nasa.gov/ssw/gen/idl/solar/pb0r.pro
+def pb0r(date, stereo=None, soho=False, arcsec=False):
+    """To calculate the solar P, B0 angles and the semi-diameter.
+
+    Parameters
+    -----------
+    date: a date/time object
+
+    stereo: { 'A' | 'B' | None }
+        calculate the solar P, B0 angles and the semi-diameter from the point
+        of view of either of the STEREO spacecraft.
+
+    soho: { False | True }
+        calculate the solar P, B0 angles and the semi-diameter from the point
+        of view of the SOHO spacecraft.  SOHO sits at the Lagrange L1 point
+        which is about 1% closer to the Sun than the Earth.  Implementation
+        of this seems to require the ability to read SOHO orbit files.
+
+    arcsec: { False | True }
+        return the semi-diameter in arcseconds.
+
+    Returns:
+    -------
+    A dictionary with the following keys with the following meanings:
+
+    p  -  Solar P (position angle of pole)  (degrees)
+    b0 -  latitude of point at disk centre (degrees)
+    sd -  semi-diameter of the solar disk
+
+    See Also
+    --------
+    IDL code equavalent:
+        http://hesperia.gsfc.nasa.gov/ssw/gen/idl/solar/pb0r.pro
     """
     # place holder for STEREO calculation
-    if stereo:
+    if stereo is not None:
         raise ValueError("STEREO solar P, B0 and semi-diameter calcution" + \
                          " is not supported.")
+
     # number of Julian days since 2415020.0
     de = julian_day(date) - 2415020.0
 
@@ -222,10 +252,38 @@ def pb0r(date, stereo=False):
         np.arctan(-np.tan(np.deg2rad(oblt) * np.cos(np.deg2rad(appl)))) + \
         np.arctan(-0.127220 * np.cos(np.deg2rad(arg))))
 
-    # B0 the tilt of the axis
+    # B0 the tilt of the axis...
+    b = np.rad2deg(np.arcsin(0.12620 * np.sin(np.deg2rad(arg))))
 
+    # ... and the semi-diameter
+    # Form the mean anomalies of Venus(MV),Earth(ME),Mars(MM),Jupiter(MJ)
+    # and the mean elongation of the Moon from the Sun(D).
+    t = de / 36525.0
+    mv = 212.60 + np.mod(58517.80 * t, 360.0)
+    me = 358.4760 + np.mod(35999.04980 * t, 360.0)
+    mm = 319.50 + np.mod(19139.860 * t, 360.0)
+    mj = 225.30 + np.mod(3034.690 * t, 360.0)
+    d = 350.70 + np.mod(445267.110 * t, 360.0)
 
-    return {"b0":b0, "rsun":rsun, "l0":l0}
+    # Form the geocentric distance(r) and semi-diameter(sd)
+    r = 1.0001410 - (0.0167480 - 0.00004180 * t) * np.cos(np.deg2rad(me)) \
+        - 0.000140 * np.cos(np.deg2rad(2.0 * me)) \
+        + 0.0000160 * np.cos(np.deg2rad(58.30 + 2.0 * mv - 2.0 * me)) \
+        + 0.0000050 * np.cos(np.deg2rad(209.10 + mv - me)) \
+        + 0.0000050 * np.cos(np.deg2rad(253.80 - 2.0 * mm + 2.0 * me)) \
+        + 0.0000160 * np.cos(np.deg2rad(89.50 - mj + me)) \
+        + 0.0000090 * np.cos(np.deg2rad(357.10 - 2.0 * mj + 2.0 * me)) \
+        + 0.0000310 * np.cos(np.deg2rad(d))
+
+    sd_const = wcs_rsun / wcs_au
+    sd = np.arcsin(sd_const / r) * 10800.0 / np.pi
+
+    # place holder for SOHO correction
+    if soho:
+        raise ValueError("SOHO correction (on the order of 1% " + \
+                        "since SOHO sets at L1) not yet supported.")
+
+    return {"p": p, "b0": b, "sd": sd}
 
 
 def sun_pos(date, is_julian=False, since_2415020=False):
