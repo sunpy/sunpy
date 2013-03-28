@@ -556,7 +556,7 @@ class VSOClient(object):
             return res
         # Adding the site parameter to the info
         info = {}
-        if site:
+        if site is not None:
             info['site']=site
         
         self.download_all(
