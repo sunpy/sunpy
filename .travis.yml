@@ -1,11 +1,14 @@
 language: python
 python:
-  - 2.6
   - 2.7
   - 3.2
   - 3.3
 env:
-    - NUMPY_VERSION=1.7.0 SETUP_CMD='test' OPTIONAL_DEPS=true MATPLOTLIB_VERSION=1.1
+    - NUMPY_VERSION=1.7.0 SETUP_CMD='test' OPTIONAL_DEPS=true MATPLOTLIB_VERSION=1.1 SUDS_PKG='suds-jurko'
+matrix:
+    include:
+        - python: 2.6
+        env: NUMPY_VERSION=1.7.0 SETUP_CMD='test' OPTIONAL_DEPS=true MATPLOTLIB_VERSION=1.1 SUDS_PKG='suds'
 
 before_install:
    # We do this to make sure we get the dependencies so pip works below
