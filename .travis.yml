@@ -22,5 +22,6 @@ install:
   - pip install --upgrade "numpy==$NUMPY_VERSION" -q --use-mirrors
   - pip install --upgrade "matplotlib==$MATPLOTLIB_VERSION" -q --use-mirrors
   - if $OPTIONAL_DEPS; then pip install scipy --use-mirrors; fi
-    # command to run tests
+  - python setup.py install
+# command to run tests
 script: py.test sunpy/tests/
