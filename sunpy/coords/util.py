@@ -1,13 +1,13 @@
 from __future__ import division
 
-__all__ = ['diff_rot']
 import numpy as np
 import datetime
 from sunpy.time import parse_time, julian_day
 from sunpy.wcs import convert_hcc_hg
+from sunpy.sun import constants
 
 __author__ = ["Jose Ivan Campos Rozo", "Stuart Mumford", "Jack Ireland"]
-__all__ = ['diff_rot', 'sun_pos']
+__all__ = ['diff_rot', 'sun_pos', 'pb0r']
 
 
 def diff_rot(ddays, latitude, rot_type='howard', frame_time='sidereal'):
@@ -63,8 +63,8 @@ def diff_rot(ddays, latitude, rot_type='howard', frame_time='sidereal'):
     delta_seconds = delta.total_seconds()
     delta_days = delta_seconds / 24 / 3600
 
-    sin2l = (np.sin(np.deg2rad(latitude)))**2
-    sin4l = sin2l**2
+    sin2l = (np.sin(np.deg2rad(latitude))) ** 2
+    sin4l = sin2l ** 2
 
     rot_params = {'howard': [2.894, -0.428, -0.370],
                   'snodgrass': [2.851, -0.343, -0.474]
@@ -82,7 +82,7 @@ def diff_rot(ddays, latitude, rot_type='howard', frame_time='sidereal'):
 
         #This is in micro-radians / sec
         rotation_rate = A + B * sin2l + C * sin4l
-        rotation_deg = rotation_rate * 1e-6  * delta_seconds / np.deg2rad(1)
+        rotation_deg = rotation_rate * 1e-6 * delta_seconds / np.deg2rad(1)
 
     if frame_time == 'synodic':
         rotation_deg -= 0.9856 * delta_days
@@ -224,6 +224,9 @@ def pb0r(date, stereo=None, soho=False, arcsec=False):
     IDL code equavalent:
         http://hesperia.gsfc.nasa.gov/ssw/gen/idl/solar/pb0r.pro
     """
+    if (stereo is not None) and soho:
+        raise ValueError("Cannot set STEREO and SOHO simultaneously")
+
     # place holder for STEREO calculation
     if stereo is not None:
         raise ValueError("STEREO solar P, B0 and semi-diameter calcution" + \
@@ -235,8 +238,8 @@ def pb0r(date, stereo=None, soho=False, arcsec=False):
     # get the longitude of the sun etc.
     sun_position = sun_pos(date)
     longmed = sun_position["longitude"]
-    ra = sun_position["ra"]
-    dec = sun_position["dec"]
+    #ra = sun_position["ra"]
+    #dec = sun_position["dec"]
     appl = sun_position["app_long"]
     oblt = sun_position["obliq"]
 
@@ -275,7 +278,7 @@ def pb0r(date, stereo=None, soho=False, arcsec=False):
         + 0.0000090 * np.cos(np.deg2rad(357.10 - 2.0 * mj + 2.0 * me)) \
         + 0.0000310 * np.cos(np.deg2rad(d))
 
-    sd_const = wcs_rsun / wcs_au
+    sd_const = constants.radius / constants.au
     sd = np.arcsin(sd_const / r) * 10800.0 / np.pi
 
     # place holder for SOHO correction
@@ -283,7 +286,10 @@ def pb0r(date, stereo=None, soho=False, arcsec=False):
         raise ValueError("SOHO correction (on the order of 1% " + \
                         "since SOHO sets at L1) not yet supported.")
 
-    return {"p": p, "b0": b, "sd": sd}
+    if arcsec:
+        return {"p": p, "b0": b, "sd": sd * 60.0}
+    else:
+        return {"p": p, "b0": b, "sd": sd}
 
 
 def sun_pos(date, is_julian=False, since_2415020=False):
@@ -323,25 +329,7 @@ def sun_pos(date, is_julian=False, since_2415020=False):
     Examples
     --------
     >>> sp = sun_pos('2013-03-27')
-    >>> sp['longitude'], sp['ra'], sp['dec'], sp['app_long'], sp['obliq']
 
-    (6.4854963639582923,
-     5.9525787873210403,
-     2.5739661719621627,
-     6.4834125906094799,
-     23.435885888864924)
-
-    >>> jd = sunpy.time.julian_day('2013-03-27')
-    >>> jd
-    2456378.5
-    >>> sp = sun_pos(2456378.5, is_julian=True)
-    >>> sp['longitude'], sp['ra'], sp['dec'], sp['app_long'], sp['obliq']
-
-    (6.4854963639582923,
-     5.9525787873210403,
-     2.5739661719621627,
-     6.4834125906094799,
-     23.435885888864924)
     """
     # check the time input
     if is_julian:
@@ -378,6 +366,12 @@ def sun_pos(date, is_julian=False, since_2415020=False):
           1.60 * np.cos(np.deg2rad(345.25330 + 3.0 * mv - 4.0 * me)) + \
           1.00 * np.cos(np.deg2rad(318.150 + 3.0 * mv - 5.0 * me))
     l = l + vencorr
+
+    # Allow for the Mars perturbations using the mean anomaly of Mars MM
+    mm = 319.5294250 + np.mod(19139.858500 * t, 360.0)
+    marscorr = 2.0 * np.cos(np.deg2rad(343.88830 - 2.0 * mm + 2.0 * me)) + \
+            1.80 * np.cos(np.deg2rad(200.40170 - 2.0 * mm + me))
+    l = l + marscorr
 
     # Allow for the Jupiter perturbations using the mean anomaly of Jupiter MJ
     mj = 225.3283280 + np.mod(3034.69202390 * t, 360.00)
