@@ -1,19 +1,23 @@
 language: python
 python:
-  - "2.6"
-  - "2.7"
-  - "3.0"
-  - "3.1"
-  - "3.2"
+  - 2.6
+  - 2.7
+  - 3.2
+  - 3.3
+env:
+    - NUMPY_VERSION=1.7.0 SETUP_CMD='test' OPTIONAL_DEPS=true
+    - MATPLOTLIB_VERSION=1.1 
+
+before_install:
+   # We do this to make sure we get the dependencies so pip works below
+   - sudo apt-get update -qq
+   - if [[ $SETUP_CMD != egg_info ]]; then sudo apt-get install -qq python-numpy cython libatlas-dev liblapack-dev gfortran; fi
+   - if $OPTIONAL_DEPS; then sudo apt-get install -qq python-scipy python-matplotlib python-pandas python-pyfits; fi
+
 # command to install dependencies
 install: 
-  - sudo apt-get build-dep python-scipy python-numpy
-  - 'if [ ${TRAVIS_PYTHON_VERSION:0:1} == "2" ]; then pip install numpy; fi'
-  - 'if [ ${TRAVIS_PYTHON_VERSION:0:1} == "3" ]; then pip install https://github.com/y-p/numpy/archive/1.6.2_with_travis_fix.tar.gz; fi'  - pip install pytest suds-jurko beautifulsoup4
-  - pip install scipy
-  - pip install matplotlib
-  - pip install pyfits
-  - pip install pandas
-
+  - pip install pytest suds-jurko beautifulsoup4
+  - pip install --upgrade "numpy==$NUMPY_VERSION" -q --use-mirrors
+  - pip install --upgrade "matplotlib==$MATPLOTLIB_VERSION" -q --use-mirrors
 # command to run tests
 script: py.test sunpy/tests/
