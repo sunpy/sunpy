@@ -21,6 +21,7 @@ before_install:
 # command to install dependencies
 install: 
   - pip install pytest suds-jurko beautifulsoup4
+  - if $OPTIONAL_DEPS; then pip install pyfits --use-mirrors; fi
   - pip install --upgrade "numpy==$NUMPY_VERSION" -q --use-mirrors
   - pip install --upgrade "matplotlib==$MATPLOTLIB_VERSION" -q --use-mirrors
   - if $OPTIONAL_DEPS; then pip install scipy --use-mirrors; fi
