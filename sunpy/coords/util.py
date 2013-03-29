@@ -3,11 +3,11 @@ from __future__ import division
 import numpy as np
 import datetime
 from sunpy.time import parse_time, julian_day
-from sunpy.wcs import convert_hcc_hg
+from sunpy.wcs import convert_hcc_hg, convert_hg_hcc
 from sunpy.sun import constants
 
 __author__ = ["Jose Ivan Campos Rozo", "Stuart Mumford", "Jack Ireland"]
-__all__ = ['diff_rot', 'sun_pos', 'pb0r']
+__all__ = ['diff_rot', 'sun_pos', 'pb0r', 'rot_xy']
 
 
 def diff_rot(ddays, latitude, rot_type='howard', frame_time='sidereal'):
@@ -59,6 +59,8 @@ def diff_rot(ddays, latitude, rot_type='howard', frame_time='sidereal'):
 
     if not isinstance(ddays, datetime.timedelta):
         delta = datetime.timedelta(days=ddays)
+    else:
+        delta = ddays
 
     delta_seconds = delta.total_seconds()
     delta_days = delta_seconds / 24 / 3600
@@ -87,19 +89,19 @@ def diff_rot(ddays, latitude, rot_type='howard', frame_time='sidereal'):
     if frame_time == 'synodic':
         rotation_deg -= 0.9856 * delta_days
 
-    return np.round(rotation_deg, 4)
+    return rotation_deg
 
 
-def rot_xy(x, y, date=datetime.datetime.utcnow(), **kwargs):
+def rot_xy(x, y, **kwargs):
     """ Get a solar rotated position for a given time interval.
 
     Parameters
     -----------
     x: float or numpy ndarray
-        x-locations.
+        helio-projective x-co-ordinate in arcseconds
 
     y: float or numpy ndarray
-        y-locations.
+        helio-projective y-co-ordinate in arcseconds
 
     interval: Time interval in seconds; positive (negative) values leads to '
               forward (backward) rotation.
@@ -107,53 +109,13 @@ def rot_xy(x, y, date=datetime.datetime.utcnow(), **kwargs):
     date: date/time at which the sun position is calculated; can be in any
           format accepted by parse_time. If missing, current date/time is
           assumed.
-;
-; OUTPUTS:
-;       RESULT - A (Mx2) array representing rotated positions in arcsecs,
-;                RESULT(*,0) being X position and RESULT(*,1) Y position;
-;                where M is number of elements in XX (and in YY).
-;                If an error occurs, [-9999,-9999] will be returned.
-;
-;                If OFFLIMB = 1 after the call, there must be some
-;                points rotated to the back of the sun. The points remain
-;                visible can be determined by RESULT(INDEX,*), and
-;                off-limb points will have the value of (-9999, -9999).
-;
-; OPTIONAL OUTPUTS:
-;       None.
-;
-; KEYWORDS:
-;       DATE    - Date/time at which the sun position is calculated; can
-;                 be in any UTC format. If missing, current date/time is
-;                 assumed.
-;       TSTART  - Date/time to which XX and YY are referred; can be in
-;                 any acceptable time format. Must be supplied if
-;                 INTERVAL is not passed
-;       TEND    - Date/time at which XX and YY will be rotated to; can be
+
+    tstart: date/time to which XX and YY are referred; can be in any acceptable
+            time format. Must be supplied if interval is not passed
+
+    tend: Date/time at which XX and YY will be rotated to; can be
 ;                 in any acceptable time format. If needed but missing,
 ;                 current time is assumed
-
-;       OFFLIMB - A named variable indicating whether any rotated
-;                 point is off the limb (1) or not (0). When OFFLIMB
-;                 is 1, the points still remaining visible (inside the limb)
-;                 will be those whose indices are INDEX (below)
-;       INDEX   - Indices of XX/YY which remain inside the limb after
-;                 rotation. When OFFLIMB becomes 1, the number of
-;                 INDEX will be smaller than that of XX or YY. If no
-;                 point remains inside the limb, INDEX is set to -1
-;       BACK_INDEX  - Indices of XX/YY which were on the disk at TSTART, 
-;                 but are no longer visible (i.e. are behind the visible 
-;                 solar disk) after rotation. 
-;       KEEP    - keep same epoch DATE when rotating; use same P,B0,R values 
-;                 both for DATE and DATE+INTERVAL
-;       VSTART, VEND = {b0,l0,rsun} = input structure with b0,l0,rsun
-;                at start/end of rotation
-
-
-    Returns:
-    -------
-    longditude_delta: ndarray
-        The change in longitude over days (units=degrees)
 
     See Also
     --------
@@ -167,28 +129,40 @@ def rot_xy(x, y, date=datetime.datetime.utcnow(), **kwargs):
 
     # Make sure we have enough time information to perform a solar differential
     # rotation
-    if kwargs.get("tend") is not None:
-        tend = parse_time(kwargs.get("tend"))
-    else:
-        tend = datetime.datetime.utcnow()
-    if (kwargs.get("tstart") is not None):
-        delta = tend - parse_time(kwargs.get("tstart"))
+    # Start time
+    dstart = parse_time(kwargs.get("tstart", kwargs.get("date", \
+                                             datetime.datetime.utcnow())))
 
     if kwargs.get("interval") is not None:
         if isinstance(kwargs.get("interval"), datetime.timedelta):
-            delta = kwargs.get("interval")
+            interval = kwargs.get("interval")
         else:
-            delta = datetime.timedelta(seconds=kwargs.get("interval"))
-    if ((kwargs.get("tstart") is None) and (kwargs.get("tend") is None)) or \
-    ((kwargs.get("tstart") is None) and kwargs.get("interval") is None):
-        raise ValueError("You need to specify 'tstart' & 'tend', or " + \
-                          "'tstart' and 'interval'")
+            interval = datetime.timedelta(seconds=kwargs.get("interval"))
+        dend = dstart + interval
+    elif (kwargs.get("tstart") is not None) and \
+            (kwargs.get("tend") is not None):
+        dstart = parse_time(kwargs.get("tstart"))
+        dend = parse_time(kwargs.get("tend"))
+        interval = dend - dstart
+    else:
+        raise ValueError('You need to specify "tstart" & "tend", or ' + \
+                         '"tstart" & "interval"')
 
-    # differentially rotate if interval is non-zero
-    if delta.total_seconds() > 0.0:
-        hgln, hglt = convert_hcc_hg(rsun, b0, l0, x, y)
+    # Get the Sun's position
+    vstart = kwargs.get("vstart", pb0r(dstart))
 
-    return None
+    # Compute heliographic co-ordinates - returns (longitude, latitude). Points
+    # off the limb are returned as nan
+    longitude, latitude = convert_hcc_hg(vstart["sd"]/60.0, vstart["b0"], vstart["l0"], x / 3600.0, y / 3600.0)
+
+    # Compute the differential rotation
+    drot = diff_rot(interval, latitude, frame_time='synodic')
+
+    # Convert back to helioprojective cartesian in units of arcseconds
+    vend = kwargs.get("vend", pb0r(dend))
+    newx, newy = convert_hg_hcc(vend["sd"]/60.0,  vend["b0"], vend["l0"], longitude, latitude + drot)
+
+    return 3600.0*newx, 3600.0*newy
 
 
 def pb0r(date, stereo=None, soho=False, arcsec=False):
@@ -217,7 +191,7 @@ def pb0r(date, stereo=None, soho=False, arcsec=False):
 
     p  -  Solar P (position angle of pole)  (degrees)
     b0 -  latitude of point at disk centre (degrees)
-    sd -  semi-diameter of the solar disk
+    sd -  semi-diameter of the solar disk in arcminutes
 
     See Also
     --------
@@ -289,7 +263,7 @@ def pb0r(date, stereo=None, soho=False, arcsec=False):
     if arcsec:
         return {"p": p, "b0": b, "sd": sd * 60.0}
     else:
-        return {"p": p, "b0": b, "sd": sd}
+        return {"p": p, "b0": b, "sd": sd, "l0": 0.0}
 
 
 def sun_pos(date, is_julian=False, since_2415020=False):
