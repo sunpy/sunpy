@@ -4,8 +4,12 @@ python:
   - 2.7
   - 3.2
   - 3.3
+
+virtualenv:
+     system_site_packages: true
+
 env:
-    - NUMPY_VERSION=1.7.0 SETUP_CMD='test' OPTIONAL_DEPS=true MATPLOTLIB_VERSION=1.1 SUDS_PKG='suds-jurko'
+    - NUMPY_VERSION=1.7.0 SETUP_CMD='test' MATPLOTLIB_VERSION=1.1 SUDS_PKG='suds-jurko'
 
 #matrix:
 #    include:
@@ -15,18 +19,18 @@ env:
 before_install:
    # We do this to make sure we get the dependencies so pip works below
    - sudo apt-get update -qq
-   - if [[ $SETUP_CMD != egg_info ]]; then sudo apt-get install -qq python-numpy cython libatlas-dev liblapack-dev gfortran; fi
-   - if $OPTIONAL_DEPS; then sudo apt-get install -qq python-scipy python-matplotlib python-pandas python-pyfits; fi
+   - sudo apt-get install -qq python-numpy cython libatlas-dev liblapack-dev gfortran python-matplotlib
 
 # command to install dependencies
 install: 
   - pip install pytest suds-jurko beautifulsoup4
-  - if $OPTIONAL_DEPS; then pip install pyfits --use-mirrors; fi
+  - pip install pyfits --use-mirrors
   - pip install --upgrade "numpy==$NUMPY_VERSION" -q --use-mirrors
   - pip install --upgrade "matplotlib==$MATPLOTLIB_VERSION" -q --use-mirrors
-  - if $OPTIONAL_DEPS; then pip install scipy --use-mirrors; fi
+  - pip install pandas --use-mirrors
+  - pip install scipy --use-mirrors
 
 # command to run tests
 script:
-  - python setup.py test 
+  - python setup.py develop
   - py.test sunpy/tests/
