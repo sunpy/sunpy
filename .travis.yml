@@ -29,10 +29,10 @@ before_install:
 install: 
   - pip install pytest suds-jurko beautifulsoup4
   - pip install pyfits --use-mirrors
-  - pip install numpy --use-mirrors
+  - pip install numpy --upgrade -q --use-mirrors
   - pip install --upgrade "matplotlib==$MATPLOTLIB_VERSION" -q --use-mirrors
   - pip install pandas --use-mirrors
-#  - pip install scipy --use-mirrors
+  - pip install --upgrade scipy -q --use-mirrors
 
 # command to run tests
 script:
