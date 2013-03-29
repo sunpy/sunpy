@@ -4,7 +4,7 @@
 import sunpy.util.net
 
 def test_content_disposition_ascii():
-    ret = sunpy.util.net.set_content_disposition("Content-Disposition: attachment; filename=foo.txt")
+    ret = sunpy.util.net.get_content_disposition("Content-Disposition: attachment; filename=foo.txt")
     assert ret == u"foo.txt"
     assert isinstance(ret, unicode)
 
