@@ -252,7 +252,7 @@ def pb0r(date, stereo=None, soho=False, arcsec=False):
 
     # calculate P, the position angle of the pole
     p = np.rad2deg(\
-        np.arctan(-np.tan(np.deg2rad(oblt) * np.cos(np.deg2rad(appl)))) + \
+        np.arctan(-np.tan(np.deg2rad(oblt)) * np.cos(np.deg2rad(appl))) + \
         np.arctan(-0.127220 * np.cos(np.deg2rad(arg))))
 
     # B0 the tilt of the axis...
