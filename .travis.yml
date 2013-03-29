@@ -5,8 +5,8 @@ python:
   - 3.2
   - 3.3
 
-#virtualenv:
-#     system_site_packages: true
+virtualenv:
+     system_site_packages: true
 
 env:
     - NUMPY_VERSION=1.7.0 SETUP_CMD='test' MATPLOTLIB_VERSION=1.1 SUDS_PKG='suds-jurko'
@@ -19,7 +19,7 @@ env:
 before_install:
    # We do this to make sure we get the dependencies so pip works below
    - sudo apt-get update -qq
-   - sudo apt-get install -qq cython libatlas-dev liblapack-dev gfortran python-matplotlib
+   - sudo apt-get install -qq python-numpy cython libatlas-dev liblapack-dev gfortran python-matplotlib python-pandas python-pyfits
    # This means we don't have to build scipy, however it does mean that we are reliant upon this package working.
    - sudo add-apt-repository -y ppa:pylab/stable
    - sudo apt-get update
@@ -28,11 +28,11 @@ before_install:
 # command to install dependencies
 install: 
   - pip install pytest suds-jurko beautifulsoup4
-  - pip install pyfits --use-mirrors
+#  - pip install pyfits --use-mirrors
   - pip install numpy --upgrade -q --use-mirrors
   - pip install --upgrade "matplotlib==$MATPLOTLIB_VERSION" -q --use-mirrors
-  - pip install pandas --use-mirrors
-  - pip install --upgrade scipy -q --use-mirrors
+#  - pip install pandas --use-mirrors
+#  - pip install --upgrade scipy -q --use-mirrors
 
 # command to run tests
 script:
