@@ -20,6 +20,9 @@ before_install:
    # We do this to make sure we get the dependencies so pip works below
    - sudo apt-get update -qq
    - sudo apt-get install -qq python-numpy cython libatlas-dev liblapack-dev gfortran python-matplotlib
+   - sudo add-apt-repository ppa:pylab/stable
+   - sudo apt-get update
+   - sudo apt-get install python-scipy
 
 # command to install dependencies
 install: 
@@ -28,9 +31,10 @@ install:
   - pip install --upgrade "numpy==$NUMPY_VERSION" -q --use-mirrors
   - pip install --upgrade "matplotlib==$MATPLOTLIB_VERSION" -q --use-mirrors
   - pip install pandas --use-mirrors
-  - pip install scipy --use-mirrors
+#  - pip install scipy --use-mirrors
 
 # command to run tests
 script:
+  - pwd
   - python setup.py develop
-  - py.test sunpy/tests/
+  - py.test 
