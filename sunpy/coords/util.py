@@ -92,8 +92,10 @@ def diff_rot(ddays, latitude, rot_type='howard', frame_time='sidereal'):
     return rotation_deg
 
 
-def rot_xy(x, y, **kwargs):
-    """ Get a solar rotated position for a given time interval.
+def rot_hcc(x, y, **kwargs):
+    """Given a location on the Sun referred to using the Heliocentric Cartesian
+    co-ordinate system in the units of arcseconds, use the solar rotation
+    profile to find that location at some later or earlier time.
 
     Parameters
     -----------
@@ -103,19 +105,20 @@ def rot_xy(x, y, **kwargs):
     y: float or numpy ndarray
         helio-projective y-co-ordinate in arcseconds
 
-    interval: Time interval in seconds; positive (negative) values leads to '
+    interval: Time interval in seconds; positive (negative) values leads to
               forward (backward) rotation.
 
     date: date/time at which the sun position is calculated; can be in any
           format accepted by parse_time. If missing, current date/time is
           assumed.
 
-    tstart: date/time to which XX and YY are referred; can be in any acceptable
-            time format. Must be supplied if interval is not passed
+    tstart: date/time to which x and y are referred; can be in any acceptable
+            time format. Must be supplied if interval is not passed.  If this
+            is not present, the value of date is used.
 
-    tend: Date/time at which XX and YY will be rotated to; can be
-;                 in any acceptable time format. If needed but missing,
-;                 current time is assumed
+    tend: Date/time at which x and y will be rotated to; can be
+          in any acceptable time format. If needed but missing, current time
+          is assumed
 
     See Also
     --------
@@ -153,16 +156,18 @@ def rot_xy(x, y, **kwargs):
 
     # Compute heliographic co-ordinates - returns (longitude, latitude). Points
     # off the limb are returned as nan
-    longitude, latitude = convert_hcc_hg(vstart["sd"]/60.0, vstart["b0"], vstart["l0"], x / 3600.0, y / 3600.0)
+    longitude, latitude = convert_hcc_hg(vstart["sd"] / 60.0, vstart["b0"],
+                                         vstart["l0"], x / 3600.0, y / 3600.0)
 
     # Compute the differential rotation
     drot = diff_rot(interval, latitude, frame_time='synodic')
 
-    # Convert back to helioprojective cartesian in units of arcseconds
+    # Convert back to heliocentric cartesian in units of arcseconds
     vend = kwargs.get("vend", pb0r(dend))
-    newx, newy = convert_hg_hcc(vend["sd"]/60.0,  vend["b0"], vend["l0"], longitude, latitude + drot)
+    newx, newy = convert_hg_hcc(vend["sd"] / 60.0, vend["b0"], vend["l0"],
+                                longitude + drot, latitude)
 
-    return 3600.0*newx, 3600.0*newy
+    return 3600.0 * newx, 3600.0 * newy
 
 
 def pb0r(date, stereo=None, soho=False, arcsec=False):
