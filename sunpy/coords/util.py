@@ -7,7 +7,7 @@ from sunpy.wcs import convert_hcc_hg, convert_hg_hcc
 from sunpy.sun import constants
 
 __author__ = ["Jose Ivan Campos Rozo", "Stuart Mumford", "Jack Ireland"]
-__all__ = ['diff_rot', 'sun_pos', 'pb0r', 'rot_xy']
+__all__ = ['diff_rot', 'sun_pos', 'pb0r', 'rot_hcc']
 
 
 def diff_rot(ddays, latitude, rot_type='howard', frame_time='sidereal'):
@@ -63,7 +63,7 @@ def diff_rot(ddays, latitude, rot_type='howard', frame_time='sidereal'):
         delta = ddays
 
     delta_seconds = delta.total_seconds()
-    delta_days = delta_seconds / 24 / 3600
+    delta_days = delta_seconds / 24.0 / 3600.0
 
     sin2l = (np.sin(np.deg2rad(latitude))) ** 2
     sin4l = sin2l ** 2
