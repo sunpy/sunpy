@@ -120,10 +120,23 @@ def rot_hcc(x, y, **kwargs):
           in any acceptable time format. If needed but missing, current time
           is assumed
 
+TODO: give rot_hcc the ability to do this rotation for data from the SOHO
+point of view and the STEREO A, B point of views.
+
     See Also
     --------
     IDL code equavalent:
         http://hesperia.gsfc.nasa.gov/ssw/gen/idl/solar/rot_xy.pro
+    
+    Note: rot_xy uses arcmin2hel.pro and hel2arcmin.pro to implement the
+    same functionality.  These two functions seem to perform inverse
+    operations of each other to a very high accuracy.  The corresponding
+    equivalent functions here are convert_hcc_hg and convert_hg_hcc
+    respectively.  These two functions also seem to perform inverse
+    operations of each other to a very high accuracy.  However, the values
+    returned by arcmin2hel.pro are slightly different from those provided
+    by convert_hcc_hg.  This leads to slightly different results from
+    rot_hcc compared to rot_xy.
 
 """
     # must have pairs of co-ordinates
