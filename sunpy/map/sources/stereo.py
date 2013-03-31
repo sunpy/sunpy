@@ -49,7 +49,8 @@ class CORMap(Map):
             "measurement": "white-light",
             "name": "SECCHI %s" % header.get('detector'),
             "nickname": "%s-%s" % (header.get('detector'), 
-                                   header.get('obsrvtry')[-1])
+                                   header.get('obsrvtry')[-1]),
+            "cmap": cm.get_cmap('stereocor%s' % properties['detector'][1])
         })
         return properties
 
@@ -57,4 +58,3 @@ class CORMap(Map):
     def is_datasource_for(cls, header):
         """Determines if header corresponds to an COR image"""
         return header.get('detector', '').startswith('COR')
-
