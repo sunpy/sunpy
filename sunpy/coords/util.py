@@ -127,7 +127,7 @@ point of view and the STEREO A, B point of views.
     --------
     IDL code equavalent:
         http://hesperia.gsfc.nasa.gov/ssw/gen/idl/solar/rot_xy.pro
-    
+
     Note: rot_xy uses arcmin2hel.pro and hel2arcmin.pro to implement the
     same functionality.  These two functions seem to perform inverse
     operations of each other to a very high accuracy.  The corresponding
@@ -177,6 +177,9 @@ point of view and the STEREO A, B point of views.
 
     # Convert back to heliocentric cartesian in units of arcseconds
     vend = kwargs.get("vend", pb0r(dend))
+    # It appears that there is a difference in how the SSWIDL function
+    # hel2arcmin and the sunpy function below performs this co-ordinate
+    # transform.
     newx, newy = convert_hg_hcc(vend["sd"] / 60.0, vend["b0"], vend["l0"],
                                 longitude + drot, latitude)
 
