@@ -1,19 +1,39 @@
 language: python
+
 python:
-  - "2.6"
-  - "2.7"
-  - "3.0"
-  - "3.1"
-  - "3.2"
+  - 2.7
+
+virtualenv:
+     system_site_packages: true
+
+env:
+    - NUMPY_VERSION=1.7.0 SETUP_CMD='test' MATPLOTLIB_VERSION=1.1 SUDS_PKG='suds-jurko'
+
+#matrix:
+#    include:
+#        - python: 2.6
+#        env: NUMPY_VERSION=1.7.0 SETUP_CMD='test' OPTIONAL_DEPS=true MATPLOTLIB_VERSION=1.1 SUDS_PKG='suds'
+
+before_install:
+   # We do this to make sure we get the dependencies so pip works below
+   - sudo apt-get update -qq
+   - sudo apt-get install -qq python-numpy cython libatlas-dev liblapack-dev gfortran python-matplotlib python-pandas python-pyfits
+   # This means we don't have to build scipy, however it does mean that we are reliant upon this package working.
+   - sudo add-apt-repository -y ppa:pylab/stable
+   - sudo apt-get update
+   - sudo apt-get install python-scipy
+
 # command to install dependencies
 install: 
-  - sudo apt-get build-dep python-scipy python-numpy
-  - 'if [ ${TRAVIS_PYTHON_VERSION:0:1} == "2" ]; then pip install numpy; fi'
-  - 'if [ ${TRAVIS_PYTHON_VERSION:0:1} == "3" ]; then pip install https://github.com/y-p/numpy/archive/1.6.2_with_travis_fix.tar.gz; fi'  - pip install pytest suds-jurko beautifulsoup4
-  - pip install scipy
-  - pip install matplotlib
-  - pip install pyfits
-  - pip install pandas
+  - pip install pytest suds-jurko beautifulsoup4
+#  - pip install pyfits --use-mirrors
+  - pip install numpy --upgrade -q --use-mirrors
+  - pip install --upgrade "matplotlib==$MATPLOTLIB_VERSION" -q --use-mirrors
+  - pip install --upgrade pandas -q --use-mirrors
+#  - pip install --upgrade scipy -q --use-mirrors
 
 # command to run tests
-script: py.test sunpy/tests/
+script:
+  - pwd
+  - python setup.py develop
+  - py.test 
