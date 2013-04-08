@@ -27,10 +27,10 @@ from suds import client, TypeNotFound
 
 from sunpy import config
 from sunpy.net import download
-from sunpy.net.util import get_filename, slugify
+from sunpy.util.net import get_filename, slugify
 from sunpy.net.attr import and_, Attr
 from sunpy.net.vso.attrs import walker, TIMEFORMAT
-from sunpy.util.util import to_angstrom, print_table, replacement_filename
+from sunpy.util import to_angstrom, print_table, replacement_filename
 from sunpy.time import parse_time
 
 DEFAULT_URL = 'http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl'

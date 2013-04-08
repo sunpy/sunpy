@@ -18,7 +18,7 @@ class EUVIMap(Map):
         properties = Map.get_properties(header)
         
         properties.update({
-            "date": parse_time(header.get('date_obs')),
+            "date": parse_time(header.get('date-obs',header.get('date_obs'))),
             "detector": "EUVI",
             "instrument": "SECCHI",
             "observatory": header.get('obsrvtry'),
@@ -42,14 +42,15 @@ class CORMap(Map):
         # @TODO: Deal with invalid values for exptime. E.g. STEREO-B COR2
         # on 2012/03/20 has -1 for some images.
         properties.update({
-            "date": parse_time(header.get('date_obs')),
+            "date": parse_time(header.get('date-obs',header.get('date_obs'))),
             "detector": header.get('detector'),
             "instrument": "SECCHI",
             "observatory": header.get('obsrvtry'),
             "measurement": "white-light",
             "name": "SECCHI %s" % header.get('detector'),
             "nickname": "%s-%s" % (header.get('detector'), 
-                                   header.get('obsrvtry')[-1])
+                                   header.get('obsrvtry')[-1]),
+            "cmap": cm.get_cmap('stereocor%s' % properties['detector'][-1])
         })
         return properties
 
@@ -57,4 +58,3 @@ class CORMap(Map):
     def is_datasource_for(cls, header):
         """Determines if header corresponds to an COR image"""
         return header.get('detector', '').startswith('COR')
-

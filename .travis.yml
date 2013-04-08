@@ -34,6 +34,5 @@ install:
 
 # command to run tests
 script:
-  - pwd
   - python setup.py develop
-  - py.test 
+  - py.test --tb=short 
