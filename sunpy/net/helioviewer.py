@@ -29,8 +29,8 @@ class HelioviewerClient:
         """Returns a structured list of datasources available at Helioviewer.org"""
         params = {"action": "getDataSources"}
         params.update(kwargs)
-        
-        return self._get_json(params)    
+
+        return self._get_json(params)
     
     def get_closest_image(self, date, **kwargs):
         """Finds the closest image available for the specified source and date.
@@ -78,7 +78,7 @@ class HelioviewerClient:
         response['date'] = parse_time(response['date'])
         
         return response
-    
+
     def download_jp2(self, date, directory=None, overwrite=False, **kwargs):
         """
         Downloads the JPEG 2000 that most closely matches the specified time and 
@@ -86,7 +86,7 @@ class HelioviewerClient:
         
         The data source may be specified either using it's sourceId from the
         get_data_sources query, or a combination of observatory, instrument,
-        detector and measurement. 
+        detector and measurement.
         
         Parameters
         ----------
@@ -130,13 +130,13 @@ class HelioviewerClient:
             "date": self._format_date(date)
         }
         params.update(kwargs)
-        
+
         # JPIP URL response
         if 'jpip' in kwargs:
             return self._get_json(params)
-    
+
         return self._get_file(params, directory, overwrite=overwrite)
-    
+
     def download_png(self, date, image_scale, layers, directory=None,
                      overwrite=False, **kwargs):
         """Downloads a PNG image using data from Helioviewer.org.
@@ -166,7 +166,7 @@ class HelioviewerClient:
             (Optional)  Directory to download JPEG 2000 image to.
         x1 : float
             (Optional) The offset of the image's left boundary from the center 
-            of the sun, in arcseconds.        
+            of the sun, in arcseconds.
         y1 : float
             (Optional) The offset of the image's top boundary from the center 
             of the sun, in arcseconds.
@@ -185,14 +185,14 @@ class HelioviewerClient:
         height : int
             (Optional) Height of the image in pixels (Maximum: 1200).
         watermark
-            (Optional) Whether or not the include the timestamps and the 
+            (Optional) Whether or not the include the timestamps and the
             Helioviewer.org logo in the image (Default=True).
-            
+
         Returns
         -------
         out : string
             filepath to the PNG image
-            
+
         Examples
         --------
         >>> from sunpy.net.helioviewer import HelioviewerClient
@@ -234,21 +234,20 @@ class HelioviewerClient:
             response.close()
         
         return filepath
-    
+
     def _request(self, params):
-        """Sends an API request and returns the result
-        
+        """Sends an API request and returns the result.
         Parameters
         ----------
         params : dict
             Parameters to send
-            
+
         Returns
         -------
         out : result of request
         """
         response = urllib2.urlopen(self._api, urllib.urlencode(params))
-            
+
         return response
     
     def _format_date(self, date):

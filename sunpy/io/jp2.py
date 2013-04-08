@@ -40,7 +40,7 @@ def get_header(filepath):
             
     return MapHeader(pydict)
 
-def get_data(filepath, j2k_to_image="opj_decompress"):
+def get_data(filepath, j2k_to_image="j2k_to_image"):
     """Extracts the data portion of a JPEG 2000 image
     
     Uses the OpenJPEG j2k_to_image command, if available, to extract the data
@@ -52,25 +52,25 @@ def get_data(filepath, j2k_to_image="opj_decompress"):
     """
     if os.name is "nt":
         if (j2k_to_image == "j2k_to_image") or (j2k_to_image == "opj_decompress"):
-            j2k_to_image = j2k_to_image+".exe"
+            j2k_to_image = j2k_to_image + ".exe"
 
     if which(j2k_to_image) is None:
         raise MissingOpenJPEGBinaryError("You must first install the OpenJPEG "
                                          "(version >=1.4) binaries before using "
                                          "this functionality.")
-    
+
     jp2filename = os.path.basename(filepath)
-    
+
     tmpname = "".join(os.path.splitext(jp2filename)[0:-1]) + ".png"
     tmpfile = os.path.join(tempfile.mkdtemp(), tmpname)
-    
+
     with open(os.devnull, 'w') as fnull:
-        subprocess.call([j2k_to_image, "-i", filepath, "-o", tmpfile], 
+        subprocess.call([j2k_to_image, "-i", filepath, "-o", tmpfile],
                         stdout=fnull, stderr=fnull)
-    
-    data = imread(tmpfile)    
+
+    data = imread(tmpfile)
     os.remove(tmpfile)
-    
+
     # flip the array around since it has been read in upside down.
     return data[::-1]
 

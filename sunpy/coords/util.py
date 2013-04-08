@@ -91,8 +91,8 @@ def diff_rot(ddays, latitude, rot_type='howard', frame_time='sidereal'):
 
     return rotation_deg
 
-
-def rot_hcc(x, y, **kwargs):
+# change to tstart and tend ONLY
+def rot_hcc(x, y, tstart, tend):
     """Given a location on the Sun referred to using the Heliocentric Cartesian
     co-ordinate system in the units of arcseconds, use the solar rotation
     profile to find that location at some later or earlier time.
