@@ -13,8 +13,8 @@ def test_lyra():
     "http://proba2.oma.be/lyra/data/bsd/2011/08/10/lyra_20110810-000000_lev2_std.fits")
     assert isinstance(lyra, sunpy.lightcurve.LYRALightCurve)
 
-@cleanup    
-def test_peek():
-    lyra = sunpy.lightcurve.LYRALightCurve.create(
-    "http://proba2.oma.be/lyra/data/bsd/2011/08/10/lyra_20110810-000000_lev2_std.fits")
-    assert isinstance(lyra.peek(),mpl.figure.Figure)
+#@cleanup    
+#def test_peek():
+#    lyra = sunpy.lightcurve.LYRALightCurve.create(
+#    "http://proba2.oma.be/lyra/data/bsd/2011/08/10/lyra_20110810-000000_lev2_std.fits")
+#    assert isinstance(lyra.peek(),mpl.figure.Figure)
