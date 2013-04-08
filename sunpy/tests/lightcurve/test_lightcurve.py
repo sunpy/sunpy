@@ -30,11 +30,11 @@ class TestLight(unittest.TestCase):
         self.assertIsInstance(lyra.peek(),mpl.figure.Figure)
         pass
     
-    def test_peek(self):
-        lyra = sunpy.lightcurve.LYRALightCurve.create(
-        "http://proba2.oma.be/lyra/data/bsd/2011/08/10/lyra_20110810-000000_lev2_std.fits")
-        self.assertIsInstance(lyra.peek(),mpl.figure.Figure)
-        pass
+#    def test_peek(self):
+#        lyra = sunpy.lightcurve.LYRALightCurve.create(
+#        "http://proba2.oma.be/lyra/data/bsd/2011/08/10/lyra_20110810-000000_lev2_std.fits")
+#        self.assertIsInstance(lyra.peek(),mpl.figure.Figure)
+#        pass
     
     def test_plot(self):
         pass

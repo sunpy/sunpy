@@ -30,6 +30,9 @@ sohoeit304 = ct.eit_color_table(304)
 soholasco2 = ct.lasco_color_table(2)
 soholasco3 = ct.lasco_color_table(3)
 
+stereocor1 = ct.cor_color_table(1)
+stereocor2 = ct.cor_color_table(2)
+
 yohkohsxtal = ct.sxt_color_table('al')
 yohkohsxtwh = ct.sxt_color_table('wh')
 
@@ -54,6 +57,8 @@ cmlist = {
           'sohoeit304': sohoeit304,
           'soholasco2': soholasco2,
           'soholasco3': soholasco3,
+          'stereocor1': stereocor1,
+          'stereocor2': stereocor2,
           'rhessi': cm.jet,  # pylint: disable=E1101
           'yohkohsxtal': yohkohsxtal,
           'yohkohsxtwh': yohkohsxtwh,
