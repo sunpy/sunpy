@@ -24,20 +24,23 @@ before_install:
 #   - sudo apt-get install python-scipy
 
 # command to install dependencies
-install: 
-  - pip install pytest suds-jurko beautifulsoup4
+install:
+#Install Numpy first so we force the version we are using
+  - pip install --upgrade "numpy==$NUMPY_VERSION" --use-mirrors
 # This means we don't have to build scipy, however it does mean that we are reliant upon this package working.
   - sudo add-apt-repository -y ppa:pylab/stable
   - sudo apt-get update
   - sudo apt-get install python-scipy
-  - pip install --upgrade pyfits  --use-mirrors
-  - pip install --upgrade "numpy==$NUMPY_VERSION" --use-mirrors
+# Install the other requirements to the desired version
   - pip install --upgrade "matplotlib==$MATPLOTLIB_VERSION" --use-mirrors
+  - pip install --upgrade pyfits  --use-mirrors
   - pip install --upgrade pandas --use-mirrors
+  - pip install pytest suds-jurko beautifulsoup4
 #  - pip install --upgrade scipy -q --use-mirrors
 
 # command to run tests
 script:
   - python setup.py develop
   - py.test --tb=short
+  - echo "---------------------LONG TESTS-----------------------------------"
   - py.test 
