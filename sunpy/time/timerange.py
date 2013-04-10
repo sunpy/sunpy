@@ -30,7 +30,7 @@ class TimeRange:
     center : datetime
         The center of the time range
     split(n) : timerange[]
-        Split the time range into evenly spread parts
+        Split the TimeRange into evenly sized TimeRane objects
     dt : timediff
         The difference in time between the start time and end time
     days : float
@@ -119,16 +119,26 @@ class TimeRange:
         return self.t1 + self.dt / 2
     
     def split(self,n=2):
-        """Gets n equal subsections between start and end"""
+        """Splits the TimeRange into multiple equally sized parts
+        
+        Accepts a value greater than or equal to 1 as input, and
+        returns an array of equally sized TimeRange objects between
+        t1 and t2.
+        
+        Raises a ValueError if requested amount is less than 1
+        
+        """
+
         if n <= 0:
             raise ValueError('n must be greater than or equal to 1')
         subsections = []
         previous_time = self.start()
+        next_time = None
         for _ in range(n):
             next_time = previous_time + self.dt/n
             next_range = TimeRange(previous_time,next_time)
             subsections.append(next_range)
-            previus_time = next_time
+            previous_time = next_time
         return subsections
     
     def days(self):
