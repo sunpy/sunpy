@@ -29,7 +29,7 @@ class TimeRange:
         The end time of the time range
     center: datetime
         The center of the time range
-    split: timerange[]
+    split(n): timerange[]
         Split the time range into evenly spread parts
     dt : timediff
         The difference in time between the start time and end time
