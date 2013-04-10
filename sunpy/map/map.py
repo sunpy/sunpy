@@ -530,11 +530,11 @@ Dimension:\t [%d, %d]
 
         return (value - self.center[dim]) / self.scale[dim] + ((size - 1) / 2.)
 
-    def pixel_to_data(self, x = None, y = None):
+    def pixel_to_data(self, x=None, y=None):
         """Convert from pixel coordinates to data coordinates (e.g. arcsec)"""
         width = self.shape[1]
         height = self.shape[0]
-        
+
         if (x is not None) & (x > width-1):
             raise ValueError("X pixel value larger than image width (%s)." % width)
         if (x is not None) & (y > height-1):
@@ -548,7 +548,7 @@ Dimension:\t [%d, %d]
         crpix = np.array([self.reference_pixel.get('x'), self.reference_pixel.get('y')])
         crval = np.array([self.reference_coordinate.get('x'), self.reference_coordinate.get('y')])
         coordinate_system = [self.coordinate_system.get('x'), self.coordinate_system.get('y')]
-        x,y = wcs.convert_pixel_to_data(width, height, scale[0], scale[1], crpix[0], crpix[1], crval[0], crval[1], coordinate_system[0], x = x, y = y)
+        x, y = wcs.convert_pixel_to_data(width, height, scale[0], scale[1], crpix[0], crpix[1], crval[0], crval[1], coordinate_system[0], x = x, y = y)
 
         return x, y
 
@@ -605,9 +605,9 @@ Dimension:\t [%d, %d]
         header['crpix1'] = self.reference_pixel['x']
         header['crpix2'] = self.reference_pixel['y']
         
-        return header               
+        return header
 
-    def resample(self, dimensions, method='linear'):
+    def resample(self, dimensions, method='linear', **kwargs):
         """Returns a new Map that has been resampled up or down
 
         Arbitrary resampling of the Map to new dimension sizes.
