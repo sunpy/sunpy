@@ -27,9 +27,9 @@ class TimeRange:
         The start time of the time range
     t2 : datetime
         The end time of the time range
-    center: datetime
+    center : datetime
         The center of the time range
-    split(n): timerange[]
+    split(n) : timerange[]
         Split the time range into evenly spread parts
     dt : timediff
         The difference in time between the start time and end time
@@ -123,10 +123,10 @@ class TimeRange:
         if n <= 0:
             raise ValueError('n must be greater than or equal to 1')
         subsections = []
-        previus_time = self.start()
-        for i in range(n):
-            next_time = previus_time + self.dt/n
-            next_range = TimeRange(previus_time,next_time)
+        previous_time = self.start()
+        for _ in range(n):
+            next_time = previous_time + self.dt/n
+            next_range = TimeRange(previous_time,next_time)
             subsections.append(next_range)
             previus_time = next_time
         return subsections
