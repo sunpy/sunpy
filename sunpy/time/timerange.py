@@ -118,7 +118,7 @@ class TimeRange:
         """Gets the center of the TimeRange instance"""
         return self.t1 + self.dt / 2
     
-    def split(self,n):
+    def split(self,n=2):
         """Gets n equal subsections between start and end"""
         if n <= 0:
             raise ValueError('n must be greater than or equal to 1')
