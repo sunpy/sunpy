@@ -29,6 +29,8 @@ class TimeRange:
         The end time of the time range
     center: datetime
         The center of the time range
+    split: datetime[]
+        Split the time range into evenly spread parts
     dt : timediff
         The difference in time between the start time and end time
     days : float
@@ -114,6 +116,19 @@ class TimeRange:
     def center(self):
         """Gets the center of the TimeRange instance"""
         return self.t1 + self.dt / 2
+    
+    def split(self,n):
+        """Gets n equal subsections between start and end"""
+        if n <= 0:
+            raise ValueError('n must be greater than or equal to 1')
+        #If n is 1 return the center
+        if n == 1:
+            return self.center()
+        subsections = [self.start()]
+        for i in range(n-1):
+            j = i+1
+            subsections.append(self.t1 + self.dt*j/(n-1))
+        return subsections
     
     def days(self):
         """Gets the number of days elapsed."""
