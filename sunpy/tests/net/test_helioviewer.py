@@ -12,6 +12,7 @@ from sunpy.net.helioviewer import HelioviewerClient
 client = HelioviewerClient()
 if not client.is_online():
     __SKIP_TESTS__ = True
+    print("Skipping Helioviewer.org tests (server inaccessible)")
 else:
     __SKIP_TESTS__ = False
 
