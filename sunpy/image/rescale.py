@@ -9,7 +9,7 @@ import skimage
 __all__ = ['resample', 'reshape_image_to_4d_superpixel']
 
 
-def resample(orig, dimensions, method='linear', center=False, minusone=True):
+def resample(orig, dimensions, method='linear', center=False, minusone=False):
     """Returns a new ndarray that has been resampled up or down
 
     Arbitrary resampling of source array to new dimension sizes.
@@ -93,7 +93,7 @@ def _resample_nearest_linear(orig, dimensions, method, offset, m1):
     old_coords = [np.arange(i, dtype=np.float) for i in orig.shape]
 
     # first interpolation - for ndims = any
-    '''mint = scipy.interpolate.interp1d(old_coords[-1], orig, kind=method)
+    mint = scipy.interpolate.interp1d(old_coords[-1], orig, kind=method)
     new_data = mint(dimlist[-1])
 
     trorder = [orig.ndim - 1] + range(orig.ndim - 1)
@@ -107,11 +107,7 @@ def _resample_nearest_linear(orig, dimensions, method, offset, m1):
     if orig.ndim > 1:
         # need one more transpose to return to original dimensions
         new_data = new_data.transpose(trorder)
-    '''
-    # Temporary hack; use the scikits image resize function.  Requires
-    # sci-kits images >= 0.8.2 .  Handles the problem of upsizing and
-    # downsizing images - hoorah!
-    new_data = skimage.transform.resize(orig, dimensions)
+
     return new_data
 
 
