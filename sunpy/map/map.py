@@ -134,7 +134,7 @@ class Map(np.ndarray, Parent):
     plot()
         Return a matplotlib imageaxes instance, like plt.imshow()
     peek()
-        Display a matplotlib plot to the screen 
+        Display a matplotlib plot to the screen
     draw_limb()
         Draw a line on the image where the solar limb is.
     draw_grid()
