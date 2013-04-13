@@ -88,18 +88,18 @@ class TestMap:
         assert submap_header.get('naxis2') == height / 2
         
         # Check data
-        assert (np.asarray(self.map)[height/2:height, 
-                                     width/2:width] == submap).all()
+        assert (self.map.data[height/2:height, 
+                                     width/2:width] == submap.data).all()
         
     def test_fits_data_comparison(self):
         """Make sure the data is the same in pyfits and SunPy"""
-        assert (self.map == self.fits[0].data).all()
+        assert (self.map.data == self.fits[0].data).all()
     
     def test_sub(self):
         map_ = sunpy.Map(np.array([[1, 1], [2, 2]], dtype=np.uint8), {})
         minus = map_ - map_
         assert minus.dtype == np.int16
-        assert (minus == 0).all()
+        assert (minus.data == 0).all()
         assert np.array_equal(
             map_ - 2 * map_,
             np.array([[-1, -1], [-2, -2]], dtype=np.int16)

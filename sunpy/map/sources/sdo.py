@@ -38,7 +38,7 @@ class AIAMap(Map):
     def norm(self):
         """Returns a Normalize object to be used with AIA data"""
         # byte-scaled images have most likely already been scaled
-        if self.dtype == np.uint8:
+        if self.data.dtype == np.uint8:
             return None
 
         mean = self.mean()
