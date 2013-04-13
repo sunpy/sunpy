@@ -1,0 +1,4 @@
+0.2.1 CONTAINS THE FOLLOWING BUG FIXES:
+
+* JP2 files with no comment in the header
+* Added the possibility of long input for seconds past 1979
