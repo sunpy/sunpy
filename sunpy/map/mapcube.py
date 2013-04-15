@@ -20,7 +20,23 @@ __all__ = ['MapCube']
 # 2011/04/13: Should Map be broken up into Map and MapHeader classes? This way
 # mapped header values can be used in MapCube without having to keep extra
 # copies of the data..
+# 2013/04/14
+# The mapcube has to be easily accessible along all dimensions.  At the moment.
+# it is not.
+# MC = MapCube(list of fits files, array)
+# 
+# 1-d (lightcurve)
+# lc = MC.sub(0, 0, 100:200)
 #
+# 2-d (map)
+# mp = MC.sub(100:200, 200:300, 4)
+# 
+# 3-4 (mapcube)
+# mc = MC.sub(100:200, 200:300, 4:40)
+#
+# Perhaps NDData is the answer?
+#
+
 class MapCube(np.ndarray):
     """
     MapCube(input)
