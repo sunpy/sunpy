@@ -191,27 +191,9 @@ class Map(Parent):
 
 #TODO: Do we want to be able to index map?
     def __getitem__(self, key):
-        """Overriding indexing operation to ensure that header is updated.  Note
-        that the indexing follows the ndarray row-column order, which is
-        reversed from calling Map.submap()"""
-        if isinstance(key, tuple):
-            # Used when asking for a 2D sub-array
-            # The header will be updated
-            if type(key[1]) is slice:
-                x_range = [key[1].start, key[1].stop]
-            else:
-                x_range = [key[1], key[1]+1]
-
-            if type(key[0]) is slice:
-                y_range = [key[0].start, key[0].stop]
-            else:
-                y_range = [key[0], key[0]+1]
-
-            return self.submap(x_range, y_range, units="pixels")
-        else:
-            # Typically used by np.ndarray.__repr__() due to indexing with [-1]
-            # The header will not be updated properly!
-            return np.ndarray.__getitem__(self, key)
+        """ This should allow indexing by physical coordinate"""
+        raise NotImplementedError(
+    "The ability to index Map by physical coordinate is not yet implemented.")
 
     def __repr__(self):
         if not hasattr(self, 'observatory'):
@@ -233,61 +215,7 @@ Dimension:\t [%d, %d]
        self.date, self.exposure_time,
        self.data.shape[1], self.data.shape[0], self.scale['x'], self.scale['y']) 
      + self.data.__repr__())
-     
-    def __add__(self, other):
-        """Add two maps. Currently does not take into account the alignment
-        between the two maps."""
-        result = self.data + other
-
-        return result
-
-#TODO: Unravel this mess!!
-    def __sub__(self, other):
-        """Subtract two maps. Currently does not take into account the
-        alignment between the two maps.
-
-        numpy dtype nums:
-            1    int8
-            2    uint8
-            3    int16
-            4    uint16
-        """
-        # if data is stored as unsigned, cast up (e.g. uint8 => int16)
-        if self.data.dtype.kind == "u":
-            self.data = self.data.astype(to_signed(self.data.dtype))
-        if isinstance(other, Map):
-            if other.data.dtype.kind == "u":
-                other = other.data.astype(to_signed(other.data.dtype))
-        else:
-            if other.dtype.kind == "u":
-                other = other.astype(to_signed(other.dtype))
-        
-        
-        result = Map(self.data - other, self._original_header)
-
-        def norm():
-            mean = result.mean()
-            std = result.std()
-            vmin = max(result.min(), mean - 6 * std)
-            vmax = min(result.max(), mean + 6 * std)
-
-            return colors.Normalize(vmin, vmax)
-
-        result.norm = norm
-        result.cmap = cm.gray
-
-        return result
     
-    def __mul__(self, other):
-        """ Multipy the maps data by another"""
-        result = self.data * other
-        return result
-    
-    def __rmul__(self, other):
-        """ Multipy the maps data by another"""
-        result = self.data * other
-        return result
-
     @property
     def shape(self):
         return self.data.shape
@@ -322,6 +250,7 @@ Dimension:\t [%d, %d]
                                 self.reference_pixel['y'], 
                                 self.reference_coordinate['y'])
         }
+    
     @classmethod
     def get_properties(cls, header):
         """Parses a map header and determines default properties."""
@@ -479,10 +408,14 @@ Dimension:\t [%d, %d]
             raise ValueError("Y pixel value cannot be less than 0.")
 
         scale = np.array([self.scale.get('x'), self.scale.get('y')])
-        crpix = np.array([self.reference_pixel.get('x'), self.reference_pixel.get('y')])
-        crval = np.array([self.reference_coordinate.get('x'), self.reference_coordinate.get('y')])
-        coordinate_system = [self.coordinate_system.get('x'), self.coordinate_system.get('y')]
-        x,y = wcs.convert_pixel_to_data(width, height, scale[0], scale[1], crpix[0], crpix[1], crval[0], crval[1], coordinate_system[0], x = x, y = y)
+        crpix = np.array([self.reference_pixel.get('x'),
+                          self.reference_pixel.get('y')])
+        crval = np.array([self.reference_coordinate.get('x'),
+                          self.reference_coordinate.get('y')])
+        coordinate_system = [self.coordinate_system.get('x'),
+                             self.coordinate_system.get('y')]
+        x,y = wcs.convert_pixel_to_data(width, height, scale[0], scale[1],
+         crpix[0], crpix[1], crval[0], crval[1], coordinate_system[0], x=x, y=y)
 
         return x, y
 
