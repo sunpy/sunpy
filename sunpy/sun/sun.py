@@ -27,6 +27,7 @@ import cmath
 import numpy as np
 
 from sunpy.time import parse_time, julian_day, julian_centuries
+from sunpy.sun import constants
 
 __all__ = ["print_params"
            ,"heliographic_solar_center"
@@ -51,7 +52,7 @@ __all__ = ["print_params"
            ,"mean_ecliptic_longitude"
            ,"eccentricity_SunEarth_orbit"
            ,"position"
-           ,"angular_size"
+           ,"solar_semidiameter_angular_size"
            ,"solar_cycle_number"]
 
 __authors__ = ["Steven Christe"]
@@ -62,15 +63,13 @@ def solar_cycle_number(t=None):
     result = (time.year + 8) % 28 + 1
     return result
 
-#def radius(t=None):
-#    return angular_size(t)
-
-def angular_size(t=None):
-    """Return the angular size of the Sun as a function of 
-    time as viewed from Earth (in arcsec)"""
-    result = 959.63 / sunearth_distance(t)
-    return result
-
+def solar_semidiameter_angular_size(t=None):
+    """Return the angular size of the semi-diameter of the Sun as 
+    a function of time as viewed from Earth (in arcsec)"""
+    solar_semidiameter_rad = math.atan(constants.radius /
+                                       (sunearth_distance(t) * constants.au))
+    return np.rad2deg(solar_semidiameter_rad) * 60. * 60.
+ 
 def position(t=None):
     """Returns the position of the Sun (right ascension and declination)
     on the celestial sphere using the equatorial coordinate system in arcsec.
@@ -140,7 +139,8 @@ def true_anomaly(t=None):
     return result
 
 def sunearth_distance(t=None):
-    """Returns the Sun Earth distance. There are a set of higher accuracy terms not included here."""  
+    """Returns the Sun Earth distance (AU). There are a set of higher 
+    accuracy terms not included here."""  
     ta = true_anomaly(t)
     e = eccentricity_SunEarth_orbit(t)
     result = 1.00000020 * (1.0 - e ** 2) / (1.0 + e * math.cos(np.radians(ta)))

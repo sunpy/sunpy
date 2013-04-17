@@ -21,21 +21,23 @@ class EITMap(Map):
     def get_properties(cls, header):
         """Parses EIT image header"""
         properties = Map.get_properties(header)
-        
-        # Solar radius in arc-seconds at 1 au
-        radius_1au = sun.angular_size(header.get('date-obs',
-                                                 header.get('date_obs')))
+        date_obs = header.get('date-obs',header.get('date_obs'))
+        # Solar radius in arc-seconds as seen from Earth
+        radius_1au = sun.solar_semidiameter_angular_size(date_obs)
         
         scale = header.get("cdelt1")
         # EIT solar radius is expressed in number of EIT pixels
         solar_r = header.get("solar_r")
         
         properties.update({
-            "date": parse_time(header.get('date-obs',header.get('date_obs'))),
+            "date": parse_time(date_obs),
             "detector": "EIT",
             "rsun_arcseconds": solar_r * scale,
-            "dsun": ((radius_1au / 
-                      (solar_r * scale)) * constants.au),
+            # dsun - d_{\sun,Object} =
+            # D_{\sun\earth} * \tan(radius_1au[rad])/\tan(radius_d[rad])
+            # though tan x ~ x for x << 1
+            "dsun": sun.sunearth_distance(date_obs) * constants.au *
+                      (radius_1au / (solar_r * scale)),
             "name": "EIT %s" % header.get('wavelnth'),
             "nickname": "EIT",
             "cmap": cm.get_cmap('sohoeit%d' % header.get('wavelnth'))
