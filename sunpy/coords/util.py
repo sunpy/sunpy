@@ -91,8 +91,8 @@ def diff_rot(ddays, latitude, rot_type='howard', frame_time='sidereal'):
 
     return rotation_deg
 
-# change to tstart and tend ONLY
-def rot_hcc(x, y, tstart, tend):
+
+def rot_hcc(x, y, tstart, tend, spacecraft=None, **kwargs):
     """Given a location on the Sun referred to using the Heliocentric Cartesian
     co-ordinate system in the units of arcseconds, use the solar rotation
     profile to find that location at some later or earlier time.
@@ -105,20 +105,16 @@ def rot_hcc(x, y, tstart, tend):
     y: float or numpy ndarray
         helio-projective y-co-ordinate in arcseconds
 
-    interval: Time interval in seconds; positive (negative) values leads to
-              forward (backward) rotation.
-
-    date: date/time at which the sun position is calculated; can be in any
-          format accepted by parse_time. If missing, current date/time is
-          assumed.
 
     tstart: date/time to which x and y are referred; can be in any acceptable
-            time format. Must be supplied if interval is not passed.  If this
-            is not present, the value of date is used.
+            time format.
 
     tend: Date/time at which x and y will be rotated to; can be
-          in any acceptable time format. If needed but missing, current time
-          is assumed
+          in any acceptable time format.
+
+    spacecraft: { None | "soho" | "stereo_a" | "stereo_b" }
+                calculate the rotation from the point of view of the SOHO,
+                STEREO A, or STEREO B spacecraft.
 
 TODO: give rot_hcc the ability to do this rotation for data from the SOHO
 point of view and the STEREO A, B point of views.
@@ -130,7 +126,7 @@ point of view and the STEREO A, B point of views.
 
     Note: rot_xy uses arcmin2hel.pro and hel2arcmin.pro to implement the
     same functionality.  These two functions seem to perform inverse
-    operations of each other to a very high accuracy.  The corresponding
+    operations of each other to a high accuracy.  The corresponding
     equivalent functions here are convert_hcc_hg and convert_hg_hcc
     respectively.  These two functions also seem to perform inverse
     operations of each other to a very high accuracy.  However, the values
@@ -146,26 +142,12 @@ point of view and the STEREO A, B point of views.
     # Make sure we have enough time information to perform a solar differential
     # rotation
     # Start time
-    dstart = parse_time(kwargs.get("tstart", kwargs.get("date", \
-                                             datetime.datetime.utcnow())))
+    dstart = parse_time(tstart)
+    dend = parse_time(tend)
+    interval = dend - dstart
 
-    if kwargs.get("interval") is not None:
-        if isinstance(kwargs.get("interval"), datetime.timedelta):
-            interval = kwargs.get("interval")
-        else:
-            interval = datetime.timedelta(seconds=kwargs.get("interval"))
-        dend = dstart + interval
-    elif (kwargs.get("tstart") is not None) and \
-            (kwargs.get("tend") is not None):
-        dstart = parse_time(kwargs.get("tstart"))
-        dend = parse_time(kwargs.get("tend"))
-        interval = dend - dstart
-    else:
-        raise ValueError('You need to specify "tstart" & "tend", or ' + \
-                         '"tstart" & "interval"')
-
-    # Get the Sun's position
-    vstart = kwargs.get("vstart", pb0r(dstart))
+    # Get the Sun's position from the vantage point at the start time
+    vstart = kwargs.get("vstart", pb0r(dstart, spacecraft=spacecraft))
 
     # Compute heliographic co-ordinates - returns (longitude, latitude). Points
     # off the limb are returned as nan
@@ -176,7 +158,8 @@ point of view and the STEREO A, B point of views.
     drot = diff_rot(interval, latitude, frame_time='synodic')
 
     # Convert back to heliocentric cartesian in units of arcseconds
-    vend = kwargs.get("vend", pb0r(dend))
+    vend = kwargs.get("vend", pb0r(dend, spacecraft=spacecraft))
+
     # It appears that there is a difference in how the SSWIDL function
     # hel2arcmin and the sunpy function below performs this co-ordinate
     # transform.
@@ -186,22 +169,19 @@ point of view and the STEREO A, B point of views.
     return 3600.0 * newx, 3600.0 * newy
 
 
-def pb0r(date, stereo=None, soho=False, arcsec=False):
+def pb0r(date, spacecraft=None, arcsec=False):
     """To calculate the solar P, B0 angles and the semi-diameter.
 
     Parameters
     -----------
     date: a date/time object
 
-    stereo: { 'A' | 'B' | None }
+    spacecraft: { "soho" | "stereo_a" | "stereo_b" }
         calculate the solar P, B0 angles and the semi-diameter from the point
-        of view of either of the STEREO spacecraft.
-
-    soho: { False | True }
-        calculate the solar P, B0 angles and the semi-diameter from the point
-        of view of the SOHO spacecraft.  SOHO sits at the Lagrange L1 point
-        which is about 1% closer to the Sun than the Earth.  Implementation
-        of this seems to require the ability to read SOHO orbit files.
+        of view of either SOHO or either of the STEREO spacecraft.  SOHO sits
+        at the Lagrange L1 point which is about 1% closer to the Sun than the
+        Earth.  Implementation of this seems to require the ability to read
+        SOHO orbit files.
 
     arcsec: { False | True }
         return the semi-diameter in arcseconds.
@@ -219,13 +199,10 @@ def pb0r(date, stereo=None, soho=False, arcsec=False):
     IDL code equavalent:
         http://hesperia.gsfc.nasa.gov/ssw/gen/idl/solar/pb0r.pro
     """
-    if (stereo is not None) and soho:
-        raise ValueError("Cannot set STEREO and SOHO simultaneously")
-
-    # place holder for STEREO calculation
-    if stereo is not None:
-        raise ValueError("STEREO solar P, B0 and semi-diameter calcution" + \
-                         " is not supported.")
+    if (spacecraft is not None):
+        raise ValueError("Solar P, B0 and semi-diameter calcution" + \
+                         " is not supported for STEREO spacecraft or SOHO" + \
+                         " simultaneously.")
 
     # number of Julian days since 2415020.0
     de = julian_day(date) - 2415020.0
@@ -277,7 +254,7 @@ def pb0r(date, stereo=None, soho=False, arcsec=False):
     sd = np.arcsin(sd_const / r) * 10800.0 / np.pi
 
     # place holder for SOHO correction
-    if soho:
+    if spacecraft == 'soho':
         raise ValueError("SOHO correction (on the order of 1% " + \
                         "since SOHO sets at L1) not yet supported.")
 
