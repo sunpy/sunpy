@@ -17,7 +17,7 @@ import scipy.ndimage.interpolation
 from matplotlib import patches
 from matplotlib import colors
 from matplotlib import cm
-import pyfits
+# import pyfits
 
 try:
     import sunpy.image.Crotate as Crotate
@@ -26,7 +26,7 @@ except ImportError:
 
 import sunpy.wcs as wcs
 from sunpy.util import toggle_pylab, to_signed
-from sunpy.io import read_file, read_file_header
+# from sunpy.io import read_file, read_file_header
 from sunpy.sun import constants
 from sunpy.time import parse_time, is_time
 from sunpy.image.rescale import reshape_image_to_4d_superpixel
@@ -35,13 +35,9 @@ from sunpy.image.rescale import resample as sunpy_image_resample
 from sunpy.util.cond_dispatch import ConditionalDispatch
 from sunpy.util.create import Parent
 
-__all__ = ['Map']
+__all__ = ['MapBase', 'GenericMap']
 
 """
-TODO (now an issue in https://github.com/sunpy/sunpy/issues/396)
-----
-* Automatically include Map docstring when displaying help for subclasses?
-
 Questions
 ---------
 * Should we use Helioviewer or VSO's data model? (e.g. map.meas, map.wavelength
@@ -49,149 +45,55 @@ or something else?)
 * Should 'center' be renamed to 'offset' and crpix1 & 2 be used for 'center'?
 """
 
-class Map(Parent):
-    """
-    Map(data, header)
+class MapBase(object):
+    """ This object forms the base for all Map classes, both single and multi
+    maps. """
 
-    A spatially-aware 2D data array
-
-    Parameters
-    ----------
-    data : numpy.ndarray, list
-        A 2d list or ndarray containing the map data
-    header : dict
-        A dictionary of the original image header tags
-
-    Attributes
-    ----------
-    original_header : dict
-        Dictionary representation of the original FITS header
-    carrington_longitude : str
-        Carrington longitude (crln_obs)
-    center : dict
-        X and Y coordinate of the center of the map in units.
-        Usually represents the offset between the center of the Sun and the
-        center of the map.
-    cmap : matplotlib.colors.Colormap
-        A Matplotlib colormap to be applied to the data
-    coordinate_system : dict
-        Coordinate system used for x and y axes (ctype1/2)
-    date : datetime
-        Image observation time
-    detector : str
-        Detector name
-    dsun : float
-        The observer distance from the Sun.
-    exptime : float
-        Exposure time of the image in seconds.
-    heliographic_latitude : float
-        Heliographic latitude in degrees
-    heliographic_longitude : float
-        Heliographic longitude in degrees
-    instrument : str
-        Instrument name
-    measurement : str, int
-        Measurement name. In some instances this is the wavelength of image.
-    name: str
-        Human-readable description of map-type
-    nickname : str
-        An abbreviated human-readable description of the map-type; part of
-        the Helioviewer data model
-    observatory : str
-        Observatory name
-    reference_coordinate : float
-        Reference point WCS axes in data units (crval1/2) 
-    reference_pixel : float
-        Reference point axes in pixels (crpix1/2)
-    rsun_arcseconds : float
-        Radius of the sun in arcseconds
-    rsun_meters : float
-        Radius of the sun in meters
-    scale : dict
-        Image scale along the x and y axes in units/pixel (cdelt1/2).
-    units : dict
-        Image coordinate units along the x and y axes (cunit1/2).
-
-    Methods
-    -------
-    std()
-        Return the standard deviation of the map data
-    mean()
-        Return the mean of the map data
-    min()
-        Return the minimum value of the map data
-    max()
-        Return the maximum value of the map data
-    resample(dimension, method)
-        Returns a new map that has been resampled up or down
-    superpixel(dimension, method)
-        Returns a new map consisting of superpixels formed from the
-        original data.
-    save()
-        Save the map to a fits file.
-    submap(range_a, range_b, units)
-        Returns a submap of the map with the specified range
-    plot()
-        Return a matplotlib imageaxes instance, like plt.imshow()
-    peek()
-        Display a matplotlib plot to the screen 
-    draw_limb()
-        Draw a line on the image where the solar limb is.
-    draw_grid()
-        Draw a lon/lat grid on a map plot.
-    get_header()
-        Returns the original header from when the map was first created.
-
-    Examples
-    --------
-    >>> aia = sunpy.make_map(sunpy.AIA_171_IMAGE)
-    >>> aia.T
-    AIAMap([[ 0.3125,  1.    , -1.1875, ..., -0.625 ,  0.5625,  0.5   ],
-    [-0.0625,  0.1875,  0.375 , ...,  0.0625,  0.0625, -0.125 ],
-    [-0.125 , -0.8125, -0.5   , ..., -0.3125,  0.5625,  0.4375],
-    ...,
-    [ 0.625 ,  0.625 , -0.125 , ...,  0.125 , -0.0625,  0.6875],
-    [-0.625 , -0.625 , -0.625 , ...,  0.125 , -0.0625,  0.6875],
-    [ 0.    ,  0.    , -1.1875, ...,  0.125 ,  0.    ,  0.6875]])
-    >>> aia.units['x']
-    'arcsec'
-    >>> aia.peek()
-
-    See Also
-    --------
-    numpy.ndarray Parent class for the Map object
-
-    References
-    ----------
-    | http://docs.scipy.org/doc/numpy/reference/arrays.classes.html
-    | http://docs.scipy.org/doc/numpy/user/basics.subclassing.html
-    | http://docs.scipy.org/doc/numpy/reference/ufuncs.html
-    | http://www.scipy.org/Subclasses
-
-    """
-    _create = ConditionalDispatch.from_existing(Parent._create)
-    create = classmethod(_create.wrapper())
-    
     def __init__(self, data, header):
-        self._original_header = header
+        """ Instancstanciate a Map class.
+        
+        Parameters
+        ----------
+        
+        data: ndarray
+        
+        header: sunpy.map.MapHeader
+        
+        Returns
+        -------
+        A MapBase object
+        """
+        
+        self.header = header
         self.data = data
         
+        #TODO: What is this doing here?
         # Set naxis1 and naxis2 if not specified
-        if header.get('naxis1') is None:
-            header['naxis1'] = self.shape[1]
-        if header.get('naxis2') is None:
-            header['naxis2'] = self.shape[0]
+        if self.header.get('naxis1') is None:
+            self.header['naxis1'] = self.shape[1]
+        if self.header.get('naxis2') is None:
+            self.header['naxis2'] = self.shape[0]
 
-        # Parse header and set map attributes
+        # Parse header and set map properties
         for attr, value in list(self.get_properties(header).items()):
-            setattr(self, attr, value)
+            self._add_property(attr, value)
         
         # Validate properties
         self._validate()
 
-#TODO: Do we want to be able to index map?
+    def _add_property(self, attr, header_key):
+        """ This method maps a header value to a dynamically updating 
+        property """
+        def setter(self, value):
+            self.header[header_key] = value
+        
+        def getter(self):
+            return self.header[header_key]
+        
+        setattr(self, attr, property(getter, setter))
+
     def __getitem__(self, key):
-        """ This should allow indexing by physical coordinate"""
+        """ This should allow indexing by physical coordinate """
         raise NotImplementedError(
     "The ability to index Map by physical coordinate is not yet implemented.")
 
@@ -218,12 +120,87 @@ Dimension:\t [%d, %d]
     
     @property
     def shape(self):
-        return self.data.shape
-        
+        return self.data.shape #TODO: This assumes the data is always a ndarray
+    
     @property
     def dtype(self):
-        return self.data.dtype
+        return self.data.dtype #TODO: This assumes the data is always a ndarray
+    
+    def _validate(self):
+        """Validates the meta-information associated with a Map.
+
+        This function includes very basic validation checks which apply to
+        all of the kinds of files that SunPy can read. Datasource-specific
+        validation should be handled in the relevant file in the
+        sunpy.map.sources package."""
+        if (self.dsun <= 0 or self.dsun >= 40 * constants.au):
+            raise InvalidHeaderInformation("Invalid value for DSUN")
+    
+
+    #TODO: How to handle this with the new dynamic header?
+    def get_header(self, original=False):
+        """Returns an updated MapHeader instance"""
+        header = self._original_header.copy()
         
+        # If requested, return original header as-is
+        if original:
+            return header
+        
+        # Bit-depth
+        #
+        #   8    Character or unsigned binary integer
+        #  16    16-bit twos-complement binary integer
+        #  32    32-bit twos-complement binary integer
+        # -32    IEEE single precision floating point
+        # -64    IEEE double precision floating point
+        #
+        if not header.has_key('bitpix'):
+            bitdepth = 8 * self.dtype.itemsize
+            
+            if self.dtype.kind == "f":
+                bitdepth = - bitdepth
+                
+            header['bitpix'] = bitdepth
+
+        # naxis
+        header['naxis'] = self.data.ndim
+        header['naxis1'] = self.shape[1]
+        header['naxis2'] = self.shape[0]
+        
+        # dsun
+        if header.has_key('dsun_obs'):
+            header['dsun_obs'] = self.dsun
+
+        # rsun_obs
+        if header.has_key('rsun_obs'):
+            header['rsun_obs'] = self.rsun_arcseconds
+        elif header.has_key('solar_r'):
+            header['solar_r'] = self.rsun_arcseconds
+        elif header.has_key('radius'):
+            header['radius'] = self.rsun_arcseconds
+            
+        # cdelt
+        header['cdelt1'] = self.scale['x']
+        header['cdelt2'] = self.scale['y']
+
+        # crpix
+        header['crval1'] = self.reference_coordinate['x']
+        header['crval2'] = self.reference_coordinate['y']
+        
+        # crval
+        header['crpix1'] = self.reference_pixel['x']
+        header['crpix2'] = self.reference_pixel['y']
+        
+        return header               
+
+    def norm(self):
+        """Default normalization method. Not yet implemented."""
+        return None
+
+
+class GenericMap(MapBase):
+    """ This is the generic form of a 2D coordinate aware map """
+    
     @property
     def xrange(self):
         """Return the X range of the image in arcsec from edge to edge."""
@@ -307,80 +284,6 @@ Dimension:\t [%d, %d]
                 'y': header.get('crota2', 0.)
             }
         }
-    
-    @classmethod
-    def parse_file(cls, filepath):
-        """Reads in a map file and returns a header and data array"""
-        return read_file(filepath)
-
-    @classmethod
-    def read(cls, filepath):
-        """Map class factory
-
-        Attempts to determine the type of data associated with input and
-        returns an instance of either the generic Map class or a subclass
-        of Map such as AIAMap, EUVIMap, etc.
-
-        Parameters
-        ----------
-        filepath : string
-            Path to a valid FITS or JPEG 2000 file of a type supported by SunPy
-
-        Returns
-        -------
-        out : Map
-            Returns a Map instance for the particular type of data loaded.
-        """
-        data, header = cls.parse_file(filepath)
-
-        if cls.__name__ is not "Map":
-            return cls(data, header)
-
-        for cls in Map.__subclasses__():
-            if cls.is_datasource_for(header):
-                return cls(data, header)
-        
-        return Map(data, header)
-
-    @classmethod
-    def read_header(cls, filepath):
-        """Attempts to detect the datasource type and returns meta-information
-        for that particular datasource."""
-        header = read_file_header(filepath)
-
-        for cls in Map.__subclasses__():
-            if cls.is_datasource_for(header):
-                properties = cls.get_properties(header)
-                properties['header'] = header
-                
-                return properties
-    
-    def _validate(self):
-        """Validates the meta-information associated with a Map.
-
-        This function includes very basic validation checks which apply to
-        all of the kinds of files that SunPy can read. Datasource-specific
-        validation should be handled in the relevant file in the
-        sunpy.map.sources package."""
-        if (self.dsun <= 0 or self.dsun >= 40 * constants.au):
-            raise InvalidHeaderInformation("Invalid value for DSUN")
-
-    def std(self, *args, **kwargs):
-        """overide np.ndarray.std()"""
-        return self.data.std(*args, **kwargs)
-    
-    def mean(self, *args, **kwargs):
-        """overide np.ndarray.mean()"""
-        return self.data.mean(*args, **kwargs)
-    
-    def min(self, *args, **kwargs):
-        """overide np.ndarray.min()"""
-        return self.data.min(*args, **kwargs)
-        
-    def max(self, *args, **kwargs):
-        """overide np.ndarray.max()"""
-        return self.data.max(*args, **kwargs)
-    
     def data_to_pixel(self, value, dim):
         """Convert pixel-center data coordinates to pixel values"""
         #TODO: This function should be renamed. It is confusing as data
@@ -418,70 +321,7 @@ Dimension:\t [%d, %d]
          crpix[0], crpix[1], crval[0], crval[1], coordinate_system[0], x=x, y=y)
 
         return x, y
-
-    def get_header(self, original=False):
-        """Returns an updated MapHeader instance"""
-        header = self._original_header.copy()
-        
-        # If requested, return original header as-is
-        if original:
-            return header
-        
-        # Bit-depth
-        #
-        #   8    Character or unsigned binary integer
-        #  16    16-bit twos-complement binary integer
-        #  32    32-bit twos-complement binary integer
-        # -32    IEEE single precision floating point
-        # -64    IEEE double precision floating point
-        #
-        if not header.has_key('bitpix'):
-            bitdepth = 8 * self.dtype.itemsize
-            
-            if self.dtype.kind == "f":
-                bitdepth = - bitdepth
-                
-            header['bitpix'] = bitdepth
-
-        # naxis
-        header['naxis'] = self.data.ndim
-        header['naxis1'] = self.shape[1]
-        header['naxis2'] = self.shape[0]
-        
-        # dsun
-        if header.has_key('dsun_obs'):
-            header['dsun_obs'] = self.dsun
-
-        # rsun_obs
-        if header.has_key('rsun_obs'):
-            header['rsun_obs'] = self.rsun_arcseconds
-        elif header.has_key('solar_r'):
-            header['solar_r'] = self.rsun_arcseconds
-        elif header.has_key('radius'):
-            header['radius'] = self.rsun_arcseconds
-            
-        # cdelt
-        header['cdelt1'] = self.scale['x']
-        header['cdelt2'] = self.scale['y']
-
-        # crpix
-        header['crval1'] = self.reference_coordinate['x']
-        header['crval2'] = self.reference_coordinate['y']
-        
-        # crval
-        header['crpix1'] = self.reference_pixel['x']
-        header['crpix2'] = self.reference_pixel['y']
-        
-        return header               
-
-    def norm(self):
-        """Default normalization method. Not yet implemented."""
-        return None
-
-#==============================================================================
-# DATA PROCESSING ROUTINES in ALPHABETICAL ORDER:
-#==============================================================================
-
+    
     def draw_grid(self, axes=None, grid_spacing=20):
         """Draws a grid over the surface of the Sun
         
@@ -1086,5 +926,3 @@ class InvalidHeaderInformation(ValueError):
     """Exception to raise when an invalid header tag value is encountered for a
     FITS/JPEG 2000 file."""
     pass
-
-Map.create.im_func.__doc__ = Map._create.generate_docs()
