@@ -116,7 +116,7 @@ The np.log() function will be applied on each element in the map data array as e
 ndarray methods are also directly available such as, for example, to find the maximum and mean 
 in the map data just use::
 
-    my_map.min()
+    my_map.max()
     my_map.mean()
 
 This is the advantage of inheritance!
