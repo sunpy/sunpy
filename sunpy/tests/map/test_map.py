@@ -177,7 +177,7 @@ class TestMap:
         assert superpixel_map_sum[0][0] == self.map[0][0] + self.map[0][1] + self.map[1][0] + self.map[1][1]
 
         dimensions = (2, 2)
-        superpixel_map_avg = self.map.superpixel(dimensions)
+        superpixel_map_avg = self.map.superpixel(dimensions, 'average')
         assert superpixel_map_avg.shape[0] == self.map.shape[0]/dimensions[1]
         assert superpixel_map_avg.shape[1] == self.map.shape[1]/dimensions[0]
         assert superpixel_map_avg[0][0] == (self.map[0][0] + self.map[0][1] + self.map[1][0] + self.map[1][1])/4.0
