@@ -1,11 +1,8 @@
 from __future__ import absolute_import
-
 from datetime import timedelta
 from datetime import datetime
 
-from sunpy.time import parse_time
-
-__all__ = ['TimeRange']
+__all__ = ["TimeRange"]
 
 class TimeRange:
     """
@@ -18,7 +15,7 @@ class TimeRange:
     a : the start time specified as a time string, or datetime object
         A 2d list or ndarray containing the map data
     b : the end time specified as a time string or datetime object
-        or the length of the time range specified as a timedelta object, or 
+        or the length of the time range specified as a timediff object, or 
         number of seconds
 
     Attributes
@@ -46,9 +43,10 @@ class TimeRange:
    
     Examples
     --------
-    time_range = TimeRange('2010/03/04 00:10', '2010/03/04 00:20')
-    time_range = TimeRange('2010/03/04 00:10', 400)
-
+    >>> time_range = TimeRange('2010/03/04 00:10', '2010/03/04 00:20')
+    >>> time_range = TimeRange('2010/03/04 00:10', 400)
+    >>> time_range = TimeRange(('2010/03/04 00:10', '2010/03/04 00:20'))
+    >>> time_range = TimeRange(['2010/03/04 00:10', 400])
     
     See Also
     --------
@@ -60,10 +58,10 @@ class TimeRange:
     """
     def __init__(self, a, b=None, julian_date=False):
         """Creates a new TimeRange instance"""
-        # If a is a TimeRange, copy all attributes to new instance.
-        if isinstance(a, TimeRange):
-            self.__dict__ = a.__dict__.copy()
-            return
+        from sunpy.time import parse_time
+        # if already a timeRange object just return it
+        #if isinstance(a, TimeRange):
+        #    return a
         
         # Normalize different input types
         if b is None:
