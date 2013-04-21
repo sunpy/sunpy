@@ -144,10 +144,40 @@ class TestMap:
         assert map_header == fits_header
 
     # TODO: Add tests for other resample methods (neighbour, nearest, spline)
-    def test_linear_resample_dimensions(self):
+    def test_resample_dimensions(self):
         """Check that resampled map has expected dimensions."""
 
         new_dimensions = (100, 200)
-        resampled_map = self.map.resample(new_dimensions)
-        assert resampled_map.shape[1] == new_dimensions[0]
-        assert resampled_map.shape[0] == new_dimensions[1]
+        linear_resampled_map = self.map.resample(new_dimensions)
+        assert linear_resampled_map.shape[1] == new_dimensions[0]
+        assert linear_resampled_map.shape[0] == new_dimensions[1]
+
+        new_dimensions = (128, 256)
+        neighbour_resampled_map = self.map.resample(new_dimensions)
+        assert neighbour_resampled_map.shape[1] == new_dimensions[0]
+        assert neighbour_resampled_map.shape[0] == new_dimensions[1]
+
+        new_dimensions = (512, 128)
+        nearest_resampled_map = self.map.resample(new_dimensions)
+        assert nearest_resampled_map.shape[1] == new_dimensions[0]
+        assert nearest_resampled_map.shape[0] == new_dimensions[1]
+
+        new_dimensions = (200, 200)
+        spline_resampled_map = self.map.resample(new_dimensions)
+        assert spline_resampled_map.shape[1] == new_dimensions[0]
+        assert spline_resampled_map.shape[0] == new_dimensions[1]
+
+
+    def test_superpixel(self):
+
+        dimensions = (2, 2)
+        superpixel_map_sum = self.map.superpixel(dimensions)
+        assert superpixel_map_sum.shape[0] == self.map.shape[0]/dimensions[1]
+        assert superpixel_map_sum.shape[1] == self.map.shape[1]/dimensions[0]
+        assert superpixel_map_sum[0][0] == self.map[0][0] + self.map[0][1] + self.map[1][0] + self.map[1][1]
+
+        dimensions = (2, 2)
+        superpixel_map_avg = self.map.superpixel(dimensions)
+        assert superpixel_map_avg.shape[0] == self.map.shape[0]/dimensions[1]
+        assert superpixel_map_avg.shape[1] == self.map.shape[1]/dimensions[0]
+        assert superpixel_map_avg[0][0] == (self.map[0][0] + self.map[0][1] + self.map[1][0] + self.map[1][1])/4.0
