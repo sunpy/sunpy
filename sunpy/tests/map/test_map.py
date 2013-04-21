@@ -181,3 +181,13 @@ class TestMap:
         assert superpixel_map_avg.shape[0] == self.map.shape[0]/dimensions[1]
         assert superpixel_map_avg.shape[1] == self.map.shape[1]/dimensions[0]
         assert superpixel_map_avg[0][0] == (self.map[0][0] + self.map[0][1] + self.map[1][0] + self.map[1][1])/4.0
+
+
+    def test_rotate(self):
+
+        rotated_map_1 = self.map.rotate(0.5)
+        rotated_map_2 = rotated_map_1.rotate(0.5)
+        assert rotated_map_2.shape == rotated_map_1.shape == self.map.shape
+        assert rotated_map_2.mean() < rotated_map_1.mean() < self.map.mean()
+        assert rotated_map_2.mean() > rotated_map_1.std() > self.map.std()
+        assert rotated_map_2.get_header() == rotated_map_1.get_header() == self.map.get_header()
