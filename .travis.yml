@@ -1,9 +1,35 @@
 language: python
+
 python:
-  - "2.6"
-  - "2.7"
+  - 2.7
+
+virtualenv:
+     system_site_packages: false
+
+env:
+    - NUMPY_VERSION=1.7.0 SETUP_CMD='test' MATPLOTLIB_VERSION=1.1 SUDS_PKG='suds-jurko'
+
+#matrix:
+#    include:
+#        - python: 2.6
+#        env: NUMPY_VERSION=1.7.0 SETUP_CMD='test' OPTIONAL_DEPS=true MATPLOTLIB_VERSION=1.1 SUDS_PKG='suds'
+
+before_install:
+   # We do this to make sure we get the dependencies so pip works below
+   - sudo apt-get update -qq
+   - sudo apt-get install -qq cython libatlas-dev liblapack-dev gfortran
 # command to install dependencies
-install: sudo apt-get build-dep python-scipy python-numpy; pip install pytest suds numpy beautifulsoup4; pip install scipy; pip install matplotlib; pip install pyfits; pip install pandas==0.8.0; pip install --no-index -f http://dist.plone.org/thirdparty/ -U PIL; 
+install:
+#Install Numpy first so we force the version we are using
+  - pip install numpy --use-mirrors
+# Install the other requirements to the desired version
+  - pip install matplotlib --use-mirrors
+  - pip install pyfits  --use-mirrors
+  - pip install pandas --use-mirrors
+  - pip install scipy --use-mirrors
+  - pip install pytest suds-jurko beautifulsoup4
 
 # command to run tests
-script: py.test sunpy/tests/
+script:
+  - python setup.py develop
+  - py.test

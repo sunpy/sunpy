@@ -31,7 +31,8 @@ def get_header(filepath):
             pydict[k] = float(v)
             
     # Remove newlines from comment
-    pydict['comment'] = pydict['comment'].replace("\n", "")
+    if 'comment' in pydict:
+        pydict['comment'] = pydict['comment'].replace("\n", "")
             
     return MapHeader(pydict)
 
