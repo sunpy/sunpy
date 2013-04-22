@@ -32,6 +32,4 @@ install:
 # command to run tests
 script:
   - python setup.py develop
-  - py.test --tb=short
-  - echo "---------------------LONG TESTS-----------------------------------"
-  - py.test 
+  - py.test
