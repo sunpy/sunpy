@@ -67,19 +67,6 @@ class MapBase(object):
         self.header = header
         self.data = data
         
-        #TODO: What is this doing here?
-        # Set naxis1 and naxis2 if not specified
-        if self.header.get('naxis1') is None:
-            self.header['naxis1'] = self.shape[1]
-        if self.header.get('naxis2') is None:
-            self.header['naxis2'] = self.shape[0]
-
-        # Parse header and set map properties
-        for attr, value in list(self.get_properties(header).items()):
-            self._add_property(attr, value)
-        
-        # Validate properties
-        self._validate()
 
     def _add_property(self, attr, header_key):
         """ This method maps a header value to a dynamically updating 
@@ -199,7 +186,140 @@ Dimension:\t [%d, %d]
 
 
 class GenericMap(MapBase):
-    """ This is the generic form of a 2D coordinate aware map """
+    """
+    A Generic spatially-aware 2D data array
+
+    Parameters
+    ----------
+    data : numpy.ndarray, list
+        A 2d list or ndarray containing the map data
+    header : dict
+        A dictionary of the original image header tags
+
+    Attributes
+    ----------
+    original_header : dict
+        Dictionary representation of the original FITS header
+    carrington_longitude : str
+        Carrington longitude (crln_obs)
+    center : dict
+        X and Y coordinate of the center of the map in units.
+        Usually represents the offset between the center of the Sun and the
+        center of the map.
+    cmap : matplotlib.colors.Colormap
+        A Matplotlib colormap to be applied to the data
+    coordinate_system : dict
+        Coordinate system used for x and y axes (ctype1/2)
+    date : datetime
+        Image observation time
+    detector : str
+        Detector name
+    dsun : float
+        The observer distance from the Sun.
+    exptime : float
+        Exposure time of the image in seconds.
+    heliographic_latitude : float
+        Heliographic latitude in degrees
+    heliographic_longitude : float
+        Heliographic longitude in degrees
+    instrument : str
+        Instrument name
+    measurement : str, int
+        Measurement name. In some instances this is the wavelength of image.
+    name: str
+        Human-readable description of map-type
+    nickname : str
+        An abbreviated human-readable description of the map-type; part of
+        the Helioviewer data model
+    observatory : str
+        Observatory name
+    reference_coordinate : float
+        Reference point WCS axes in data units (crval1/2) 
+    reference_pixel : float
+        Reference point axes in pixels (crpix1/2)
+    rsun_arcseconds : float
+        Radius of the sun in arcseconds
+    rsun_meters : float
+        Radius of the sun in meters
+    scale : dict
+        Image scale along the x and y axes in units/pixel (cdelt1/2).
+    units : dict
+        Image coordinate units along the x and y axes (cunit1/2).
+
+    Methods
+    -------
+    std()
+        Return the standard deviation of the map data
+    mean()
+        Return the mean of the map data
+    min()
+        Return the minimum value of the map data
+    max()
+        Return the maximum value of the map data
+    resample(dimension, method)
+        Returns a new map that has been resampled up or down
+    superpixel(dimension, method)
+        Returns a new map consisting of superpixels formed from the
+        original data.
+    save()
+        Save the map to a fits file.
+    submap(range_a, range_b, units)
+        Returns a submap of the map with the specified range
+    plot()
+        Return a matplotlib imageaxes instance, like plt.imshow()
+    peek()
+        Display a matplotlib plot to the screen 
+    draw_limb()
+        Draw a line on the image where the solar limb is.
+    draw_grid()
+        Draw a lon/lat grid on a map plot.
+    get_header()
+        Returns the original header from when the map was first created.
+
+    Examples
+    --------
+    >>> aia = sunpy.make_map(sunpy.AIA_171_IMAGE)
+    >>> aia.T
+    AIAMap([[ 0.3125,  1.    , -1.1875, ..., -0.625 ,  0.5625,  0.5   ],
+    [-0.0625,  0.1875,  0.375 , ...,  0.0625,  0.0625, -0.125 ],
+    [-0.125 , -0.8125, -0.5   , ..., -0.3125,  0.5625,  0.4375],
+    ...,
+    [ 0.625 ,  0.625 , -0.125 , ...,  0.125 , -0.0625,  0.6875],
+    [-0.625 , -0.625 , -0.625 , ...,  0.125 , -0.0625,  0.6875],
+    [ 0.    ,  0.    , -1.1875, ...,  0.125 ,  0.    ,  0.6875]])
+    >>> aia.units['x']
+    'arcsec'
+    >>> aia.peek()
+
+    See Also
+    --------
+    numpy.ndarray Parent class for the Map object
+
+    References
+    ----------
+    | http://docs.scipy.org/doc/numpy/reference/arrays.classes.html
+    | http://docs.scipy.org/doc/numpy/user/basics.subclassing.html
+    | http://docs.scipy.org/doc/numpy/reference/ufuncs.html
+    | http://www.scipy.org/Subclasses
+
+    """
+    
+    def __init__(self, data, header):
+        MapBase.__init__(self, data, header)
+        
+        #TODO: What is this doing here?
+        # Set naxis1 and naxis2 if not specified
+        if self.header.get('naxis1') is None:
+            self.header['naxis1'] = self.shape[1]
+        if self.header.get('naxis2') is None:
+            self.header['naxis2'] = self.shape[0]
+
+        # Parse header and set map properties
+        for attr, value in list(self.get_properties(header).items()):
+            self._add_property(attr, value)
+        
+        # Validate properties
+        self._validate()
     
     @property
     def xrange(self):
