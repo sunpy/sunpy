@@ -3,14 +3,10 @@
 Useful for keeping track of when an event occurred, usually labeled as 
 "True"."""
 from __future__ import absolute_import
-
-import numpy as np
-
 from sunpy.lightcurve import LightCurve
 from scipy.ndimage import label
 from sunpy.time import TimeRange
-
-__all__ = ['LogicalLightCurve']
+import numpy as np
 
 #
 #
@@ -22,13 +18,13 @@ class LogicalLightCurve(LightCurve):
     """
     Logical light curve.  Originated from a need to analyze the times of HEK
     results, where 'True' indicates an event was observed, and 'False' indicates 
-    an event was not observed.
+    an event was not observed."""
         
-    Examples
-    --------
-    import sunpy
-    lyra = sunpy.lightcurve.LogicalLightCurve.create()
-    """
+    def show(self, **kwargs):
+        """Shows a plot of the light curve"""
+        fig = self.plot(**kwargs)
+        fig.show()
+        return fig
 
     def complement(self):
         """ Define the complement of the passed lightcurve """
