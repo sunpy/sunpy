@@ -187,7 +187,13 @@ class TestMap:
 
         rotated_map_1 = self.map.rotate(0.5)
         rotated_map_2 = rotated_map_1.rotate(0.5)
+        rotated_map_3 = self.map.rotate(0, 1.5)
+        rotated_map_4 = self.map.rotate(np.pi/2, 1.5)
+        rotated_map_5 = self.map.rotate(np.pi, 1.5)
         assert rotated_map_2.shape == rotated_map_1.shape == self.map.shape
         assert rotated_map_2.mean() < rotated_map_1.mean() < self.map.mean()
-        assert rotated_map_2.mean() > rotated_map_1.std() > self.map.std()
+        assert rotated_map_2.std() > rotated_map_1.std() > self.map.std()
         assert rotated_map_2.get_header() == rotated_map_1.get_header() == self.map.get_header()
+        assert rotated_map_3.mean() > self.map.mean()
+        assert int(rotated_map_3.mean()) == int(rotated_map_4.mean()) == int(rotated_map_5.mean())
+        assert int(rotated_map_3.std()) == int(rotated_map_4.std()) == int(rotated_map_5.std())
