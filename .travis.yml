@@ -4,7 +4,7 @@ python:
   - 2.7
 
 virtualenv:
-     system_site_packages: true
+     system_site_packages: false
 
 env:
     - NUMPY_VERSION=1.7.0 SETUP_CMD='test' MATPLOTLIB_VERSION=1.1 SUDS_PKG='suds-jurko'
