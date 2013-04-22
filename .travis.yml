@@ -21,13 +21,13 @@ before_install:
 # command to install dependencies
 install:
 #Install Numpy first so we force the version we are using
-  - pip install numpy --use-mirrors
+  - pip install numpy -q --use-mirrors
 # Install the other requirements to the desired version
-  - pip install matplotlib --use-mirrors
-  - pip install pyfits  --use-mirrors
-  - pip install pandas --use-mirrors
+  - pip install matplotlib -q --use-mirrors
+  - pip install pyfits  -q --use-mirrors
+  - pip install pandas -q --use-mirrors
   - pip install scipy -q --use-mirrors
-  - pip install pytest suds-jurko beautifulsoup4
+  - pip install -q pytest suds-jurko beautifulsoup4
 
 # command to run tests
 script:
