@@ -6,28 +6,34 @@ python:
 virtualenv:
      system_site_packages: false
 
+#There are a few environments configured, we specify a minumum version of mpl
+#and a exact version of Numpy to test against.
 env:
-    - NUMPY_VERSION=1.7.0 SETUP_CMD='test' MATPLOTLIB_VERSION=1.1 SUDS_PKG='suds-jurko'
+    - NUMPY_VERSION=1.7.1 MATPLOTLIB_VERSION=1.2 SUDS_PKG='suds-jurko'
 
-#matrix:
-#    include:
-#        - python: 2.6
-#        env: NUMPY_VERSION=1.7.0 SETUP_CMD='test' OPTIONAL_DEPS=true MATPLOTLIB_VERSION=1.1 SUDS_PKG='suds'
-
+matrix:
+    include:
+      - python: 2.6
+        env: NUMPY_VERSION=1.7.1 MATPLOTLIB_VERSION=1.2 SUDS_PKG='suds'
+      - python: 2.7
+        env: NUMPY_VERSION=1.6.2 MATPLOTLIB_VERSION=1.2 SUDS_PKG='suds-jurko'
+      - python: 2.6
+        env: NUMPY_VERSION=1.6.2 MATPLOTLIB_VERSION=1.2 SUDS_PKG='suds'
+        
 before_install:
    # We do this to make sure we get the dependencies so pip works below
    - sudo apt-get update -qq
    - sudo apt-get install -qq cython libatlas-dev liblapack-dev gfortran
-# command to install dependencies
+   
 install:
 #Install Numpy first so we force the version we are using
-  - pip install numpy --use-mirrors
+  - pip install numpy==$NUMPY_VERSION -q --use-mirrors
 # Install the other requirements to the desired version
-  - pip install matplotlib --use-mirrors
+  - pip install matplotlib>=$MATPLOTLIB_VERSION -q --use-mirrors
   - pip install pyfits  --use-mirrors
-  - pip install pandas --use-mirrors
-  - pip install scipy -q --use-mirrors
-  - pip install pytest suds-jurko beautifulsoup4
+  - pip install pandas -q --use-mirrors
+  - pip install scipy --use-mirrors
+  - pip install -q pytest $SUDS_PKG beautifulsoup4
 
 # command to run tests
 script:
