@@ -162,6 +162,10 @@ def parse_time(time_string):
     elif isinstance(time_string, int) or isinstance(time_string, float):
         return datetime(1979, 1, 1) + timedelta(0, time_string)
     else:
+        # remove trailing zeros and the final dot to allow any
+        # number of zeros. This solves issue #289
+        if '.' in time_string:
+            time_string = time_string.rstrip("0").rstrip(".")
         for time_format in TIME_FORMAT_LIST: 
             try:
                 try:
