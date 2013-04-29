@@ -143,7 +143,7 @@ class TestMap:
         
         assert map_header == fits_header
 
-    # TODO: Add tests for other resample methods (neighbour, nearest, spline)
+
     def test_resample_dimensions(self):
         """Check that resampled map has expected dimensions."""
 
@@ -153,17 +153,17 @@ class TestMap:
         assert linear_resampled_map.shape[0] == new_dimensions[1]
 
         new_dimensions = (128, 256)
-        neighbour_resampled_map = self.map.resample(new_dimensions)
+        neighbour_resampled_map = self.map.resample(new_dimensions, method = 'neighbour')
         assert neighbour_resampled_map.shape[1] == new_dimensions[0]
         assert neighbour_resampled_map.shape[0] == new_dimensions[1]
 
         new_dimensions = (512, 128)
-        nearest_resampled_map = self.map.resample(new_dimensions)
+        nearest_resampled_map = self.map.resample(new_dimensions, method = 'nearest')
         assert nearest_resampled_map.shape[1] == new_dimensions[0]
         assert nearest_resampled_map.shape[0] == new_dimensions[1]
 
         new_dimensions = (200, 200)
-        spline_resampled_map = self.map.resample(new_dimensions)
+        spline_resampled_map = self.map.resample(new_dimensions, method = 'spline')
         assert spline_resampled_map.shape[1] == new_dimensions[0]
         assert spline_resampled_map.shape[0] == new_dimensions[1]
 
