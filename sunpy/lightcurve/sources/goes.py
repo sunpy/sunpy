@@ -3,11 +3,16 @@
 from __future__ import absolute_import
 
 import datetime
+
 import matplotlib
+from matplotlib import pyplot as plt  
+from pandas.io.parsers import read_csv
+
 import sunpy
 from sunpy.lightcurve import LightCurve
-from pandas.io.parsers import read_csv
-from matplotlib import pyplot as plt  
+from sunpy.time import parse_time, TimeRange
+
+__all__ = ['GOESLightCurve']
 
 class GOESLightCurve(LightCurve):
     """GOES light curve definition
@@ -89,13 +94,13 @@ class GOESLightCurve(LightCurve):
             types depend on the satellite number specified. (default = xrs_2s) 
         """
         # TimeRange
-        if len(args) == 1 and isinstance(args[0], sunpy.time.TimeRange):
+        if len(args) == 1 and isinstance(args[0], TimeRange):
             start = args[0].start()
             end = args[0].end()
         elif len(args) == 2:
             # Start & End date
-            start = sunpy.time.parse_time(args[0])
-            end = sunpy.time.parse_time(args[1])
+            start = parse_time(args[0])
+            end = parse_time(args[1])
             if end < start:
                 print('Warning: start time (argument 1) > end time (argument 2)')
             

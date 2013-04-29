@@ -8,6 +8,8 @@ from sunpy.map import Map
 from sunpy.cm import cm
 from sunpy.time import parse_time
 
+__all__ = ['RHESSIMap']
+
 class RHESSIMap(Map):
     """RHESSI Image Map definition
     

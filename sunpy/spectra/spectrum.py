@@ -7,6 +7,8 @@ import numpy as np
 
 from matplotlib import pyplot as plt
 
+__all__ = ['Spectrum']
+
 class Spectrum(np.ndarray):
     """ Class representing a spectrum.
     

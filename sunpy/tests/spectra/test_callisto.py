@@ -5,16 +5,13 @@ from __future__ import absolute_import
 
 import os
 import shutil
-
 from tempfile import mkdtemp
 from datetime import datetime
 
 import numpy as np
-
-import sunpy.data.test
-
 from numpy.testing import assert_array_almost_equal
 
+import sunpy.data.test
 from sunpy.data.sample import CALLISTO_IMAGE
 from sunpy.spectra.sources.callisto import (
     CallistoSpectrogram, query, download, minimal_pairs
