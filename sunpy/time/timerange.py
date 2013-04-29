@@ -62,9 +62,10 @@ class TimeRange:
     """
     def __init__(self, a, b=None, julian_date=False):
         """Creates a new TimeRange instance"""
-        # if already a timeRange object just return it
-        #if isinstance(a, TimeRange):
-        #    return a
+        # If a is a TimeRange object, copy attributes to new instance.
+        if isinstance(a, TimeRange):
+            self.__dict__ = a.__dict__.copy()
+            return
         
         # Normalize different input types
         if b is None:
