@@ -146,16 +146,19 @@ class TestMap:
 
     def test_resample_dimensions(self):
         """Check that resampled map has expected dimensions."""
-
+        # Different dimensions to ensure that the resample method works
+        # correctly in cases where the dimensions of the original map are
+        # are exactly divisible by those of the output map as well as the cases
+        # in which they aren't.
         new_dimensions = (100, 200)
         linear_resampled_map = self.map.resample(new_dimensions)
         assert linear_resampled_map.shape[1] == new_dimensions[0]
         assert linear_resampled_map.shape[0] == new_dimensions[1]
 
         new_dimensions = (128, 256)
-        neighbour_resampled_map = self.map.resample(new_dimensions, method = 'neighbour')
-        assert neighbour_resampled_map.shape[1] == new_dimensions[0]
-        assert neighbour_resampled_map.shape[0] == new_dimensions[1]
+        neighbor_resampled_map = self.map.resample(new_dimensions, method = 'neighbor')
+        assert neighbor_resampled_map.shape[1] == new_dimensions[0]
+        assert neighbor_resampled_map.shape[0] == new_dimensions[1]
 
         new_dimensions = (512, 128)
         nearest_resampled_map = self.map.resample(new_dimensions, method = 'nearest')
