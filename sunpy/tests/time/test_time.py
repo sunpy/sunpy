@@ -17,7 +17,7 @@ def test_parse_time_24_2():
 
 def test_parse_time_trailing_zeros():
     # see issue #289 at https://github.com/sunpy/sunpy/issues/289
-    assert parse_time('2010-10-10T00:00:00.00000000') == datetime(2010, 10, 11)
+    assert parse_time('2010-10-10T00:00:00.00000000') == datetime(2010, 10, 10)
 
 def test_parse_time_tuple():
     assert parse_time((1966, 2, 3)) == LANDING
