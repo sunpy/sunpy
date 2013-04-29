@@ -12,6 +12,8 @@ import numpy as np
 import pytest
 import datetime
 import sunpy
+import unittest
+import matplotlib as mpl
 from sunpy.data.test import (EVE_AVERAGES_CSV)
 
 # Generate input test data
@@ -35,4 +37,3 @@ def test_unimplemented(bad_input):
     """Tests input that has not been implemented for the generic LC class"""
     with pytest.raises((TypeError, NotImplementedError)):
         sunpy.lightcurve.LightCurve.create(bad_input)
-

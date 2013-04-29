@@ -2,13 +2,17 @@
 Position of the Sun.
 """
 from __future__ import absolute_import
+
 import numpy as np
 #pylint: disable=E1101,E1121
+
+__all__ = ['position']
+
 __authors__ = ["Jack Ireland"]
 __email__ = "jack.ireland@nasa.gov"
 
 """
-Questions
+Questions (now an issue: https://github.com/sunpy/sunpy/issues/394)
 ---------
 1. should the output always be an ndarray?
 2. Should we be able to return position in other coordinate systems as well?
@@ -19,7 +23,7 @@ Questions
    any of them already exist there or in scipy constants?)
 """
 
-def pos(date, radian=False):
+def position(date, radian=False):
     """
     Routine to calculate the right ascension (RA) and declination (dec) of 
     the Sun.
