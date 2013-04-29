@@ -90,7 +90,7 @@ class HEKClient(object):
             return self._merge(self._download(data) for data in ndata)
     
     def _merge(self, responses):
-        """ Implementation detail. """
+        """ Merge responses, removing duplicates. """
         return list(unique(chain.from_iterable(responses), _freeze))
 
 
