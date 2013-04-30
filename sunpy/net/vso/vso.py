@@ -18,6 +18,7 @@ import sys
 import random
 import threading
 
+
 from datetime import datetime, timedelta
 from functools import partial
 from collections import defaultdict
@@ -26,10 +27,10 @@ from suds import client, TypeNotFound
 
 from sunpy import config
 from sunpy.net import download
+from sunpy.util.net import get_filename, slugify
 from sunpy.net.attr import and_, Attr
 from sunpy.net.vso.attrs import walker, TIMEFORMAT
-from sunpy.util import print_table, replacement_filename
-from sunpy.util.net import get_filename, slugify
+from sunpy.util import to_angstrom, print_table, replacement_filename
 from sunpy.time import parse_time
 
 DEFAULT_URL = 'http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl'
@@ -241,6 +242,9 @@ class VSOClient(object):
         self.api = api
     
     def make(self, type_, **kwargs):
+        """ Create new SOAP object with attributes specified in kwargs.
+        To assign subattributes, use foo__bar=1 to assign
+        ['foo']['bar'] = 1. """
         obj = self.api.factory.create(type_)
         for k, v in kwargs.iteritems():
             split = k.split('__')
@@ -298,6 +302,7 @@ class VSOClient(object):
         return QueryResponse.create(self.merge(responses))
     
     def merge(self, queryresponses):
+        """ Merge responses into one. """
         if len(queryresponses) == 1:
             return queryresponses[0]
         
@@ -494,7 +499,7 @@ class VSOClient(object):
             time_near=datetime.utcnow()
         )
     
-    def get(self, query_response, path=None, methods=('URL-FILE',), downloader=None):
+    def get(self, query_response, path=None, methods=('URL-FILE',), downloader=None, site=None):
         """
         Download data specified in the query_response.
         
@@ -512,6 +517,18 @@ class VSOClient(object):
             Methods acceptable to user.
         downloader : sunpy.net.downloader.Downloader
             Downloader used to download the data.
+        site: str
+            There are a number of caching mirrors for SDO and other
+            instruments, some available ones are listed below.
+                NSO   : National Solar Observatory, Tucson (US)
+                SAO  (aka CFA)  : Smithonian Astronomical Observatory, Harvard U. (US)
+                SDAC (aka GSFC) : Solar Data Analysis Center, NASA/GSFC (US)
+                ROB   : Royal Observatory of Belgium (Belgium)
+                MPS   : Max Planck Institute for Solar System Research (Germany)
+                UCLan : University of Central Lancashire (UK)
+                IAS   : Institut Aeronautique et Spatial (France)
+                KIS   : Kiepenheuer-Institut fur Sonnenphysik Germany)
+                NMSU  : New Mexico State University (US)
         
         Returns
         -------
@@ -541,9 +558,14 @@ class VSOClient(object):
         if not fileids:
             res.poke()
             return res
+        # Adding the site parameter to the info
+        info = {}
+        if site is not None:
+            info['site']=site
+        
         self.download_all(
             self.api.service.GetData(
-                self.make_getdatarequest(query_response, methods)
+                self.make_getdatarequest(query_response, methods, info)
                 ),
             methods, downloader, path,
             fileids, res
@@ -553,6 +575,8 @@ class VSOClient(object):
     
     @staticmethod
     def link(query_response, map_):
+        """ Return list of paths with records associated with them in
+        the meta attribute. """
         if not map_:
             return []
         ret = []
@@ -567,17 +591,20 @@ class VSOClient(object):
             ret.append(item)
         return ret
     
-    def make_getdatarequest(self, response, methods=None):
+    def make_getdatarequest(self, response, methods=None, info=None):
+        """ Make datarequest with methods from response. """
         if methods is None:
             methods = self.method_order + ['URL']
         
         return self.create_getdatarequest(
             dict((k, [x.fileid for x in v])
                  for k, v in self.by_provider(response).iteritems()),
-            methods
+            methods, info
         )
     
     def create_getdatarequest(self, map_, methods, info=None):
+        """ Create datarequest from map_ mapping data provider to
+        fileids and methods, """
         if info is None:
             info = {}
         

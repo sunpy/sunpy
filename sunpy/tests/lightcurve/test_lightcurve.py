@@ -20,25 +20,6 @@ from sunpy.data.test import (EVE_AVERAGES_CSV)
 base = datetime.datetime.today()
 dates = [base - datetime.timedelta(minutes=x) for x in range(0, 24 * 60)]
 
-class TestLight(unittest.TestCase):
-    """
-    Tests the general LightCurv
-    """
-    def test_class(self):
-        lyra = sunpy.lightcurve.LYRALightCurve.create(
-        "http://proba2.oma.be/lyra/data/bsd/2011/08/10/lyra_20110810-000000_lev2_std.fits")
-        self.assertIsInstance(lyra.peek(),mpl.figure.Figure)
-        pass
-    
-    def test_peek(self):
-        lyra = sunpy.lightcurve.LYRALightCurve.create(
-        "http://proba2.oma.be/lyra/data/bsd/2011/08/10/lyra_20110810-000000_lev2_std.fits")
-        self.assertIsInstance(lyra.peek(),mpl.figure.Figure)
-        pass
-    
-    def test_plot(self):
-        pass
-
 @pytest.mark.parametrize(("data", "index"), [
     (range(24 * 60), dates),
     (np.arange(24 * 60), dates),
