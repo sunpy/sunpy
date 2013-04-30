@@ -1,19 +1,41 @@
 language: python
+
 python:
-  - "2.6"
-  - "2.7"
-  - "3.0"
-  - "3.1"
-  - "3.2"
-# command to install dependencies
-install: 
-  - sudo apt-get build-dep python-scipy python-numpy
-  - 'if [ ${TRAVIS_PYTHON_VERSION:0:1} == "2" ]; then pip install numpy; fi'
-  - 'if [ ${TRAVIS_PYTHON_VERSION:0:1} == "3" ]; then pip install https://github.com/y-p/numpy/archive/1.6.2_with_travis_fix.tar.gz; fi'  - pip install pytest suds-jurko beautifulsoup4
-  - pip install scipy
-  - pip install matplotlib
-  - pip install pyfits
-  - pip install pandas
+  - 2.7
+
+virtualenv:
+     system_site_packages: false
+
+#There are a few environments configured, we specify a minumum version of mpl
+#and a exact version of Numpy to test against.
+env:
+    - NUMPY_VERSION=1.7.1 MATPLOTLIB_VERSION=1.2 SUDS_PKG='suds-jurko'
+
+matrix:
+    include:
+      - python: 2.6
+        env: NUMPY_VERSION=1.7.1 MATPLOTLIB_VERSION=1.2 SUDS_PKG='suds'
+      - python: 2.7
+        env: NUMPY_VERSION=1.6.2 MATPLOTLIB_VERSION=1.2 SUDS_PKG='suds-jurko'
+      - python: 2.6
+        env: NUMPY_VERSION=1.6.2 MATPLOTLIB_VERSION=1.2 SUDS_PKG='suds'
+        
+before_install:
+   # We do this to make sure we get the dependencies so pip works below
+   - sudo apt-get update -qq
+   - sudo apt-get install -qq cython libatlas-dev liblapack-dev gfortran
+   
+install:
+#Install Numpy first so we force the version we are using
+  - pip install numpy==$NUMPY_VERSION -q --use-mirrors
+# Install the other requirements to the desired version
+  - pip install matplotlib>=$MATPLOTLIB_VERSION -q --use-mirrors
+  - pip install pyfits  --use-mirrors
+  - pip install pandas -q --use-mirrors
+  - pip install scipy --use-mirrors
+  - pip install -q pytest $SUDS_PKG beautifulsoup4
 
 # command to run tests
-script: py.test sunpy/tests/
+script:
+  - python setup.py develop
+  - py.test
