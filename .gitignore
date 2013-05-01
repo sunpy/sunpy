@@ -15,3 +15,6 @@ doc/source/reference/generated
 doc/html
 docs
 .tox/
+.coverage
+htmlcov
+result.xml
