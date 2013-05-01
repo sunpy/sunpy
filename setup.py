@@ -67,7 +67,7 @@ def install(setup): #pylint: disable=W0621
             'pyfits',
             'scipy',
  #           'suds',
-            'pandas',
+            'pandas>=10',
             'matplotlib>=1.1',
  #           'beautifulsoup4',
         ],
