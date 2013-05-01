@@ -12,9 +12,9 @@ To begin, install the following requirements:
  * [PyFITS](http://www.stsci.edu/resources/software_hardware/pyfits)
  * [NumPy](http://numpy.scipy.org/)
  * [SciPy](http://www.scipy.org/)
- * [Matplotlib](http://matplotlib.sourceforge.net/) (1.0+)
+ * [Matplotlib](http://matplotlib.sourceforge.net/) (1.1+)
  * [Suds](https://fedorahosted.org/suds)
- * [pandas](http://pandas.pydata.org/)
+ * [pandas](http://pandas.pydata.org/) (10.0+)
  * [beautifulsoup4](http://www.crummy.com/software/BeautifulSoup/)
 
 Next, use git to grab the latest version of SunPy:
