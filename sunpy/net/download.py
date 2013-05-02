@@ -36,16 +36,6 @@ class Downloader(object):
 
         self.done_lock = threading.Semaphore(0)
     
-    def _download(self, sock, fd, callback):
-        while True:
-            rec = sock.read(self.buf)
-            if not rec:
-                callback()
-                fd.close()
-                break
-            else:
-                fd.write(rec)
-    
     def _start_download(self, url, path, callback, errback):
         try:
             server = self._get_server(url)
@@ -55,13 +45,16 @@ class Downloader(object):
             
             sock = urllib2.urlopen(url)
             fullname = path(sock, url)
-            
-            args = [
-                sock, open(fullname, 'wb'),
-                partial(self._close, callback, [{'path': fullname}], server),
-            ]
-            
-            threading.Thread(target=partial(self._download, *args)).start()
+
+            with open(fullname, 'wb') as fd:
+                while True:
+                    rec = sock.read(self.buf)
+                    if not rec:
+                        self._close(callback, [{'path': fullname}], server)
+                        fd.close()
+                        break
+                    else:
+                        fd.write(rec)
         except Exception, e:
             if errback is not None:
                 errback(e)
@@ -73,7 +66,7 @@ class Downloader(object):
         
         # If max downloads has not been exceeded, begin downloading
         if num_connections < self.max_conn and self.conns < self.max_total:
-            self._start_download(url, path, callback, errback)
+            threading.Thread(target=partial(self._start_download, url, path, callback, errback)).start()
             return True
         return False
 
