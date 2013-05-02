@@ -962,7 +962,7 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         return new_map
 
     @toggle_pylab
-    def plot(self, gamma=None, annotate=True, axes=None, **imshow_args):
+    def plot(self, gamma=None, annotate=True, axes=None, coords='HG' **imshow_args):
         """ Plots the map object using matplotlib, in a method equivalent
         to plt.imshow() using nearest neighbour interpolation.
         
@@ -999,6 +999,27 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         #Get current axes
         if not axes:
             axes = plt.gca()
+            
+        """ This block is an expansion from code that was borrowed from  ayshih and
+        his contribution to the same issue
+        
+        link: https://github.com/ayshih/sunpy/commit/50cf1ff2590dbd8530b4df35ce55e63c2d770d9a
+        
+        This is meant to allow the user to choose which system of coordinates to display
+        in the mouse-over box
+        """
+        if coords == 'HG': axes.format_coord = lambda x, y: 'Longitude=%f deg, Latitude=%f deg' % \
+               wcs.convert_hpc_hg(self.rsun_meters,
+                     self.dsun, 'arcsec', 'arcsec',
+                     self.heliographic_latitude,
+                     self.heliographic_longitude,
+                     x, y)
+        elif coords == 'HPC': axes.format_coord = lambda x, y: 'Longitude=%f deg, Latitude=%f deg' % \
+               wcs.convert_hg_hpc(self.rsun_meters,
+                     self.dsun, 'arcsec', 'arcsec',
+                     self.heliographic_latitude,
+                     self.heliographic_longitude,
+                     x, y)
         
         # Normal plot
         if annotate:
