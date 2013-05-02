@@ -42,7 +42,7 @@ def test_path_exception():
     dw.stop()
 
 
-def test_download_files():
+def test_download_http():
     items = []
 
     def wait_for(n, callback):  # pylint: disable=W0613
@@ -58,8 +58,8 @@ def test_download_files():
     dw = Downloader(1, 1)
 
     on_finish = wait_for(2, lambda _: dw.stop())
-    dw.download('ftp://speedtest.inode.at/speedtest-5mb', path_fun, on_finish)
-    dw.download('ftp://speedtest.inode.at/speedtest-20mb', path_fun, on_finish)
+    dw.download('http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js', path_fun, on_finish)
+    dw.download('http://ajax.googleapis.com/ajax/libs/webfont/1.4.2/webfont.js', path_fun, on_finish)
     # dw.download('ftp://speedtest.inode.at/speedtest-100mb', path_fun, on_finish)
 
     dw.wait()
