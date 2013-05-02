@@ -67,6 +67,8 @@ class Downloader(object):
                 errback(e)
     
     def _attempt_download(self, url, path, callback, errback):
+        """ Attempt download. If max. connection limit reached, queue for download later.
+        """
         num_connections = self.connections[self._get_server(url)]
         
         # If max downloads has not been exceeded, begin downloading
@@ -144,6 +146,8 @@ class Downloader(object):
             self.q[server].append((url, path, callback, errback))
     
     def _close(self, callback, args, server):
+        """ Called after download is done. Activated queued downloads, call callback.
+        """
         callback(*args)
         
         if self.q[server]:
