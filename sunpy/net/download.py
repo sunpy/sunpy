@@ -52,7 +52,6 @@ class Downloader(object):
                         rec = sock.read(self.buf)
                         if not rec:
                             self._close(callback, [{'path': fullname}], server)
-                            fd.close()
                             break
                         else:
                             fd.write(rec)
