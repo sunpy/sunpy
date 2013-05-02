@@ -13,6 +13,7 @@ import urllib2
 import threading
 
 from functools import partial
+from contextlib import closing
 from collections import defaultdict, deque
 
 import sunpy
@@ -43,18 +44,18 @@ class Downloader(object):
             self.connections[server] += 1
             self.conns += 1
             
-            sock = urllib2.urlopen(url)
-            fullname = path(sock, url)
+            with closing(urllib2.urlopen(url)) as sock:
+                fullname = path(sock, url)
 
-            with open(fullname, 'wb') as fd:
-                while True:
-                    rec = sock.read(self.buf)
-                    if not rec:
-                        self._close(callback, [{'path': fullname}], server)
-                        fd.close()
-                        break
-                    else:
-                        fd.write(rec)
+                with open(fullname, 'wb') as fd:
+                    while True:
+                        rec = sock.read(self.buf)
+                        if not rec:
+                            self._close(callback, [{'path': fullname}], server)
+                            fd.close()
+                            break
+                        else:
+                            fd.write(rec)
         except Exception, e:
             if errback is not None:
                 errback(e)
