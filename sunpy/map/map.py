@@ -981,7 +981,7 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
             
         coords: A parameter used to indicate and change the coordinate system
             displayed by the mouse hover-over when .peek() is run.
-            Current included systems are: HG, 
+            Current included systems are: HG, HPC
         
         **imshow_args : dict
             Any additional imshow arguments that should be used
@@ -1021,6 +1021,11 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
                      x, y)
         elif coords == 'HPC': 
             coords = None
+        elif coords == 'HCC':
+            axes.format_coord = lambda x, y: 'x=%f,    y=%f' % \
+               wcs.convert_hpc_hcc(self.rsun_meters,
+                     self.dsun, 'arcsec', 'arcsec',
+                     x, y)
         
         # Normal plot
         if annotate:
