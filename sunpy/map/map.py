@@ -1020,12 +1020,7 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
                      self.heliographic_longitude,
                      x, y)
         elif coords == 'HPC': 
-            axes.format_coord = lambda x, y: 'x=%f, y=%f' % \
-               wcs.convert_hg_hpc(self.rsun_meters,
-                     self.dsun,
-                     self.heliographic_latitude,
-                     self.heliographic_longitude,
-                     x, y)
+            coords = None
         
         # Normal plot
         if annotate:
