@@ -59,14 +59,13 @@ def diff_rot(ddays, latitude, rot_type='howard', frame_time='sidereal'):
 
     if not isinstance(ddays, datetime.timedelta):
         delta = datetime.timedelta(days=ddays)
-    else:
-        delta = ddays
 
-    delta_seconds = delta.total_seconds()
-    delta_days = delta_seconds / 24.0 / 3600.0
+    delta_seconds = (delta.microseconds + (delta.seconds + delta.days * 24 * 3600) *
+                    10**6) / 10**6
+    delta_days = delta_seconds / 24 / 3600
 
-    sin2l = (np.sin(np.deg2rad(latitude))) ** 2
-    sin4l = sin2l ** 2
+    sin2l = (np.sin(np.deg2rad(latitude)))**2
+    sin4l = sin2l**2
 
     rot_params = {'howard': [2.894, -0.428, -0.370],
                   'snodgrass': [2.851, -0.343, -0.474]
@@ -394,3 +393,7 @@ def sun_pos(date, is_julian=False, since_2415020=False):
     # comment section in this code and in the original IDL code.
     return {"longitude": longmed, "ra": ra, "dec": dec, "app_long": l,
             "obliq": oblt}
+=======
+    
+    return np.round(rotation_deg,4)
+>>>>>>> 03d3ebb02d1e0dbd7ca6c6a0208a8e56231705c8
