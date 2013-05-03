@@ -981,7 +981,7 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
             
         coords: A parameter used to indicate and change the coordinate system
             displayed by the mouse hover-over when .peek() is run.
-            Current included systems are: HG, HPC
+            Current included systems are: HG, HPC, HCC
         
         **imshow_args : dict
             Any additional imshow arguments that should be used
