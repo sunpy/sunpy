@@ -978,6 +978,10 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         axes: matplotlib.axes object or None
             If provided the image will be plotted on the given axes. Else the 
             current matplotlib axes will be used.
+            
+        coords: A parameter used to indicate and change the coordinate system
+            displayed by the mouse hover-over when .peek() is run.
+            Current included systems are: HG, 
         
         **imshow_args : dict
             Any additional imshow arguments that should be used
@@ -1016,7 +1020,7 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
                      x, y)
         elif coords == 'HPC': axes.format_coord = lambda x, y: 'Longitude=%f deg, Latitude=%f deg' % \
                wcs.convert_hg_hpc(self.rsun_meters,
-                     self.dsun, 'arcsec', 'arcsec',
+                     self.dsun,
                      self.heliographic_latitude,
                      self.heliographic_longitude,
                      x, y)
@@ -1037,7 +1041,7 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
             else:
                 ylabel = 'Y-position [%s]' % self.units['y']
                 
-            axes.set_xlabel("hello")
+            axes.set_xlabel(xlabel)
             axes.set_ylabel(ylabel)
 
         # Determine extent
