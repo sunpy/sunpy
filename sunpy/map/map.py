@@ -1001,8 +1001,8 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         """
 
         #Get current axes
-        #if not axes:
-         #   axes = plt.gca()
+        if not axes:
+            axes = plt.gca()
             
         """ This block is an expansion from code that was borrowed from  ayshih and
         his contribution to the same issue
@@ -1012,13 +1012,15 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         This is meant to allow the user to choose which system of coordinates to display
         in the mouse-over box
         """
-        if coords == 'HG': axes.format_coord = lambda x, y: 'Longitude=%f deg, Latitude=%f deg' % \
+        if coords == 'HG': 
+            axes.format_coord = lambda x, y: 'Longitude=%f deg, Latitude=%f deg' % \
                wcs.convert_hpc_hg(self.rsun_meters,
                      self.dsun, 'arcsec', 'arcsec',
                      self.heliographic_latitude,
                      self.heliographic_longitude,
                      x, y)
-        elif coords == 'HPC': axes.format_coord = lambda x, y: 'x=%f deg, y=%f deg' % \
+        elif coords == 'HPC': 
+            axes.format_coord = lambda x, y: 'x=%f, y=%f' % \
                wcs.convert_hg_hpc(self.rsun_meters,
                      self.dsun,
                      self.heliographic_latitude,
