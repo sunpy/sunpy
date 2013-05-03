@@ -100,7 +100,7 @@ class Map(np.ndarray, Parent):
     observatory : str
         Observatory name
     reference_coordinate : float
-        Reference point WCS axes in data units (crval1/2) 
+        Reference point WCS in data units (crval1/2) 
     reference_pixel : float
         Reference point axes in pixels (crpix1/2)
     rsun_arcseconds : float
@@ -962,7 +962,7 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         return new_map
 
     @toggle_pylab
-    def plot(self, gamma=None, annotate=True, axes=None, **imshow_args):
+    def plot(self, gamma=None, annotate=True, axes=None, coords=None, **imshow_args):
         """ Plots the map object using matplotlib, in a method equivalent
         to plt.imshow() using nearest neighbour interpolation.
         
@@ -978,6 +978,10 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         axes: matplotlib.axes object or None
             If provided the image will be plotted on the given axes. Else the 
             current matplotlib axes will be used.
+            
+        coords: A parameter used to indicate and change the coordinate system
+            displayed by the mouse hover-over when .peek() is run.
+            Current included systems are: HG, HPC, HCC
         
         **imshow_args : dict
             Any additional imshow arguments that should be used
@@ -999,6 +1003,29 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         #Get current axes
         if not axes:
             axes = plt.gca()
+            
+        """ This block is an expansion from code that was borrowed from  ayshih and
+        his contribution to the same issue
+        
+        link: https://github.com/ayshih/sunpy/commit/50cf1ff2590dbd8530b4df35ce55e63c2d770d9a
+        
+        This is meant to allow the user to choose which system of coordinates to display
+        in the mouse-over box
+        """
+        if coords == 'HG': 
+            axes.format_coord = lambda x, y: 'Longitude=%f deg, Latitude=%f deg' % \
+               wcs.convert_hpc_hg(self.rsun_meters,
+                     self.dsun, 'arcsec', 'arcsec',
+                     self.heliographic_latitude,
+                     self.heliographic_longitude,
+                     x, y)
+        elif coords == 'HPC': 
+            coords = None
+        elif coords == 'HCC':
+            axes.format_coord = lambda x, y: 'x=%f,    y=%f' % \
+               wcs.convert_hpc_hcc(self.rsun_meters,
+                     self.dsun, 'arcsec', 'arcsec',
+                     x, y)
         
         # Normal plot
         if annotate:
