@@ -962,7 +962,7 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         return new_map
 
     @toggle_pylab
-    def plot(self, gamma=None, annotate=True, axes=None, coords='HG' **imshow_args):
+    def plot(self, gamma=None, annotate=True, axes=None, coords='HG', **imshow_args):
         """ Plots the map object using matplotlib, in a method equivalent
         to plt.imshow() using nearest neighbour interpolation.
         
