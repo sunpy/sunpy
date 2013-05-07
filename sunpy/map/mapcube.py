@@ -6,10 +6,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from copy import copy
+from datetime import timedelta
 
 from sunpy.map import Map
 from sunpy.map.sources import *
+from sunpy.lightcurve import LightCurve
 from sunpy.util import plotting
+from sunpy.coords import rot_hcc
 
 __all__ = ['MapCube']
 
@@ -17,7 +20,23 @@ __all__ = ['MapCube']
 # 2011/04/13: Should Map be broken up into Map and MapHeader classes? This way
 # mapped header values can be used in MapCube without having to keep extra
 # copies of the data..
+# 2013/04/14
+# The mapcube has to be easily accessible along all dimensions.  At the moment.
+# it is not.
+# MC = MapCube(list of fits files, array)
+# 
+# 1-d (lightcurve)
+# lc = MC.sub(0, 0, 100:200)
 #
+# 2-d (map)
+# mp = MC.sub(100:200, 200:300, 4)
+# 
+# 3-4 (mapcube)
+# mc = MC.sub(100:200, 200:300, 4:40)
+#
+# Perhaps NDData is the answer?
+#
+
 class MapCube(np.ndarray):
     """
     MapCube(input)
@@ -28,21 +47,31 @@ class MapCube(np.ndarray):
 
     Parameters
     ----------
-    args : {string | Map}* 
+    args : {string | Map}*
         Map instances or filepaths from which MapCube should be built.
     sortby : {"date"}
         Method by which the MapCube should be sorted along the z-axis.
 
+    ordering : {"order":  # one-dimensional array of orderable objects,
+                "description": # a description of the meaning of "order"
+                "units": } #the units of "order"
     Attributes
     ----------
     headers : list
-        a list of dictionaries containing the original and normalized header tags for the files used to build the MapCube.
+        a list of dictionaries containing the original and normalized header
+        tags for the files used to build the MapCube.
+
+    ordering : dictionary
+        a dictionary that contains the following tags
+            "order": the numerical list that orders the maps in the mapcube
+            "description": a description of the meaning of "order"
+            "units": the units of "order"
 
     See Also
     --------
     numpy.ndarray Parent class for the MapCube object
     :class:`sunpy.map.Map`
-        
+
     Examples
     --------
     >>> mapcube = sunpy.make_map('images/')
@@ -52,11 +81,10 @@ class MapCube(np.ndarray):
     """
     def __new__(cls, *args, **kwargs):
         """Creates a new Map instance"""
-        
         maps = []
         data = []
         headers = []
-    
+
         # convert input to maps
         for item in args:
             if isinstance(item, Map):
@@ -69,6 +97,20 @@ class MapCube(np.ndarray):
         if hasattr(cls, '_sort_by_%s' % sortby):
             maps.sort(key=getattr(cls, '_sort_by_%s' % sortby)())
 
+        # default ordering
+        ordering = kwargs.get("ordering", {"order": range(0, len(maps)),
+                                          "description": "default ordering",
+                                          "units": 'index'})
+
+        # sort data.  a sort method overwrites the existing ordering
+        sortby = kwargs.get("sortby", "date")
+        if hasattr(cls, '_sort_by_%s' % sortby):
+            sort_key = getattr(cls, '_sort_by_%s' % sortby)()
+            maps.sort(key=sort_key)
+            ordering = {"order": [sort_key(map_) for map_ in maps],
+                        "description": 'time',
+                        "units": ''}
+
         # create data cube
         for map_ in maps:
             data.append(np.array(map_))
@@ -76,21 +118,23 @@ class MapCube(np.ndarray):
 
         obj = np.asarray(data).view(cls)
         obj._headers = headers
+        obj._ordering = ordering
 
         return obj
-    
+
     #pylint: disable=W0613,E1101
     def __init__(self, *args, **kwargs):
         coalign = kwargs.get("coalign", False)
         derotate = kwargs.get("derotate", False)
-        
-        # Coalignment
+
+        # coalignment
         if coalign and hasattr(self, '_coalign_%s' % coalign):
             getattr(self, '_coalign_%s' % coalign)()
 
-        if derotate:
-            self._derotate()
-            
+        if derotate is not False:
+            if hasattr(self, '_derorate_%s' % derotate):
+                getattr(self, '_derotate_%s' % derotate)(**kwargs)
+
     def __array_finalize__(self, obj):
         """Finishes instantiation of the new MapCube object"""
         if obj is None:
@@ -98,11 +142,14 @@ class MapCube(np.ndarray):
 
         if hasattr(obj, '_headers'):
             self._headers = obj._headers
-        
+
+        if hasattr(obj, '_ordering'):
+            self._ordering = obj._ordering
+
     def __array_wrap__(self, out_arr, context=None):
         """Returns a wrapped instance of a MapCube object"""
         return np.ndarray.__array_wrap__(self, out_arr, context)
-    
+
     def __getitem__(self, key):
         """Overiding indexing operation"""
         if self.ndim is 3 and isinstance(key, int):
@@ -114,46 +161,103 @@ class MapCube(np.ndarray):
 
         else:
             return np.ndarray.__getitem__(self, key)
-        
+
     def std(self, *args, **kwargs):
         """overide np.ndarray.std()"""
         return np.array(self, copy=False, subok=False).std(*args, **kwargs)
-        
+
+    def get_lightcurve_by_array_index(self, x, y):
+        """Returns a lightcurve object at a given pixel"""
+        data = [m[x, y] for m in self]
+        return LightCurve.create({m.name: data}, index=self.ordering["order"])
+
     # Coalignment methods
     def _coalign_diff(self):
         """Difference-based coalignment
-        
+
         Coaligns data by minimizing the difference between subsequent images
         before and after shifting the images one to several pixels in each
         direction.
-        
+
         pseudo-code:
-        
+
         for i len(self):
             min_diff = {'value': (), 'offset': (0, 0)} # () is pos infinity
-            
+
             # try shifting 1 pixel in each direction
             for x in (-1, 0, 1):
                 for y in (-1, 0, 1):
                     # calculate difference for intersecting pixels
                     # if < min_diff['value'], store new value/offset
-                    
+
             # shift image
             if min_diff['offset'] != (0, 0):
                 # shift and clip image
 
         """
         pass
-    
+
     # Sorting methods
     @classmethod
     def _sort_by_date(cls):
-        return lambda m: m.date # maps.sort(key=attrgetter('date'))
-    
-    def _derotate(self):
-        """Derotates the layers in the MapCube"""
+        return lambda m: m.date  # maps.sort(key=attrgetter('date'))
+
+    def _derotate_by_latitude(self, index=0, use_order=False):
+        """Derotates the layers in the MapCube.  Derotates each image using
+        the latitudinal dependence defined by diff_rot.  Derotates the stack of
+        images to the map in the stack at position 'index'.  If use_order is
+        True then we assume that index is of the same type as ordering["order"]
+        and the map stack is derotated to the closest map in the stack to the
+        value of index passed.  Another way of putting this is to say 'for the
+        mapcube find the map in mapcube that minimizes
+        abs(map._ordering["order"] - index).  If use_order is False then the
+        maps in the mapcube are derotated relative to mapcube[i]."""
         pass
-    
+
+
+    def derotate_by_center_of_fov(self, **kwargs):
+        """Derotate layers of the MapCube using the center of the FOV in each
+        layer only. Should be faster than _derotate_by_latitude.   Derotates
+        the stack of images to the map in the stack at position 'index'.
+        If use_order = True then we assume that index is of the same type as
+        ordering["order"] and the map stack is derotated to the closest map in
+        the stack to the value of index passed.  Another way of putting this is
+        to say 'for the mapcube, find the map in mapcube that minimizes
+        abs(map._ordering["order"] - index).  If use_order is False then the
+        maps in the mapcube are derotated relative to mapcube[i]."""
+
+        index = kwargs.get("index", 0)
+        use_order = kwargs.get("use_order", False)
+        if use_order:
+            difference = index - self._ordering["order"]
+            if isinstance(difference, timedelta):
+                difference = np.absolute((index - self._ordering["order"]).
+                                         to_seconds())
+            else:
+                difference = np.absolute((index - self._ordering["order"]))
+            index = np.where(difference == difference.min())[0][0]
+        print index
+
+        # Center of the field of view of the base map
+        xcen_base = self._headers[index]["xcen"]
+        ycen_base = self._headers[index]["ycen"]
+
+        # Pixel size of the pixels in the base map
+        xpixel_size = self._headers[index]["CDELT1"]
+        ypixel_size = self._headers[index]["CDELT2"]
+
+        # for each map calculate the derotation value in pixels, move the data,
+        # recreate a map with the moved data, and create a MapCube.
+        for m in self:
+            new_xcen, new_ycen = rot_hcc(m, tstart=m.header["date_obs"],
+                                 interval = self[index].header["date_obs"])
+            xpixel_difference = (new_xcen - xcen_base)/xpixel_size
+            ypixel_difference = (new_ycen - ycen_base)/ypixel_size
+            
+            pass
+
+        return
+
     def plot(self, gamma=None, annotate=True, axes=None, controls=True,
              interval=200, resample=False, colorbar=False,
              **ani_args):

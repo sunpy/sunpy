@@ -1,4 +1,6 @@
 """
+THIS CODE SHOULD BE DELETED - SUPERSEDED BY coords.sun_pos
+
 Position of the Sun.
 """
 from __future__ import absolute_import

@@ -13,4 +13,3 @@ from sunpy.map.sources import *
 from sunpy.map.map_factory import *
 
 
-
