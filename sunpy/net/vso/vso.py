@@ -242,6 +242,9 @@ class VSOClient(object):
         self.api = api
     
     def make(self, type_, **kwargs):
+        """ Create new SOAP object with attributes specified in kwargs.
+        To assign subattributes, use foo__bar=1 to assign
+        ['foo']['bar'] = 1. """
         obj = self.api.factory.create(type_)
         for k, v in kwargs.iteritems():
             split = k.split('__')
@@ -299,6 +302,7 @@ class VSOClient(object):
         return QueryResponse.create(self.merge(responses))
     
     def merge(self, queryresponses):
+        """ Merge responses into one. """
         if len(queryresponses) == 1:
             return queryresponses[0]
         
@@ -571,6 +575,8 @@ class VSOClient(object):
     
     @staticmethod
     def link(query_response, map_):
+        """ Return list of paths with records associated with them in
+        the meta attribute. """
         if not map_:
             return []
         ret = []
@@ -586,6 +592,7 @@ class VSOClient(object):
         return ret
     
     def make_getdatarequest(self, response, methods=None, info=None):
+        """ Make datarequest with methods from response. """
         if methods is None:
             methods = self.method_order + ['URL']
         
@@ -596,6 +603,8 @@ class VSOClient(object):
         )
     
     def create_getdatarequest(self, map_, methods, info=None):
+        """ Create datarequest from map_ mapping data provider to
+        fileids and methods, """
         if info is None:
             info = {}
         
