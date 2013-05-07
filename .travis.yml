@@ -39,6 +39,5 @@ install:
 
 # command to run tests
 script:
-  - python setup.py build
   - python setup.py develop
   - py.test
