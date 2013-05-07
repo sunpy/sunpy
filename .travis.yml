@@ -23,16 +23,16 @@ matrix:
 before_install:
    # We do this to make sure we get the dependencies so pip works below
    - sudo apt-get update -qq
-   - sudo apt-get install -qq cython libatlas-dev liblapack-dev gfortran
+   - sudo apt-get install -qq build-essential libatlas-dev liblapack-dev gfortran
    
 install:
 #Install Numpy first so we force the version we are using
+  - pip install cython --use-mirrors
   - pip install numpy==$NUMPY_VERSION -q --use-mirrors
 # Install the other requirements to the desired version
   - pip install matplotlib>=$MATPLOTLIB_VERSION -q --use-mirrors
   - pip install pyfits -q --use-mirrors
   - pip install pandas -q --use-mirrors
-  - pip install cython --use-mirrors
   - pip install scikit-image --use-mirrors
   - pip install scipy -q --use-mirrors
   - pip install -q pytest $SUDS_PKG beautifulsoup4
