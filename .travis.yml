@@ -32,6 +32,7 @@ install:
   - pip install matplotlib>=$MATPLOTLIB_VERSION -q --use-mirrors
   - pip install pyfits -q --use-mirrors
   - pip install pandas -q --use-mirrors
+  - pip install cython --use-mirrors
   - pip install scikit-image --use-mirrors
   - pip install scipy -q --use-mirrors
   - pip install -q pytest $SUDS_PKG beautifulsoup4
