@@ -34,7 +34,8 @@ install:
   - pip install pyfits -q --use-mirrors
   - pip install pandas -q --use-mirrors
   - pip install scikit-image --use-mirrors
-  - pip install scipy -q --use-mirrors
+#SciPy can't be quiet'ed as it takes longer than 10 mins to build
+  - pip install scipy --use-mirrors
   - pip install -q pytest $SUDS_PKG beautifulsoup4
 
 # command to run tests
