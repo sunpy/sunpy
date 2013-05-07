@@ -4,7 +4,6 @@ from __future__ import absolute_import
 import numpy as np
 import scipy.interpolate
 import scipy.ndimage
-import skimage
 
 __all__ = ['resample', 'reshape_image_to_4d_superpixel']
 
