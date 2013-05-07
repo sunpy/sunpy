@@ -30,12 +30,14 @@ install:
   - pip install numpy==$NUMPY_VERSION -q --use-mirrors
 # Install the other requirements to the desired version
   - pip install matplotlib>=$MATPLOTLIB_VERSION -q --use-mirrors
-  - pip install pyfits  --use-mirrors
+  - pip install pyfits -q --use-mirrors
   - pip install pandas -q --use-mirrors
-  - pip install scipy --use-mirrors
+  - pip install scikit-image -q --use-mirrors
+  - pip install scipy -q --use-mirrors
   - pip install -q pytest $SUDS_PKG beautifulsoup4
 
 # command to run tests
 script:
+  - python setup.py build
   - python setup.py develop
   - py.test
