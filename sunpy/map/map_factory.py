@@ -12,6 +12,7 @@ from sunpy.map.mapcube import MapCube
 from sunpy.map.compositemap import CompositeMap
 from sunpy.map.sources import *
 
+from sunpy.util.datatype_factory_base import RegisteredFactoryBase
 
 __all__ = ['make_map', 'read_header']
 
@@ -21,9 +22,9 @@ MapFactoryArgParser(object):
     # This can be hacked later to use ConditionalDispatch, but I'm not going to
     # do that.  (This explains why it is a class and not a function at the moment.  Really, this should be a class method of Map (the factory).
 
-	@classmethod
-	def read_file(cls, fname):
-		pass
+    @classmethod
+    def read_file(cls, fname):
+        pass
 
     @classmethod
     def __call__(cls, *args, **kwargs):
@@ -100,6 +101,7 @@ class Map(RegisteredFactoryBase):
             # If the list is meant to be a cube, instantiate a map cube
             if cube:
                 return MapCube(*data_header_pairs, **kwargs)
+
             # If the list is meant to be a composite mape, instantiate one
             if composite:
                 return CompositeMap(*data_header_pairs, **kwargs)
