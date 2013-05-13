@@ -102,7 +102,7 @@ class Map(RegisteredFactoryBase):
         if cls is Map:
             
             # Get list of data-header pairs, e.g., [(d1, h1), (d2, h2), ...]
-            data_header_pairs = MapFactoryArgParser(*args, **kwargs)
+            data_header_pairs, already_maps = MapFactoryArgParser(*args, **kwargs)
             
             # If the list is meant to be a cube, instantiate a map cube
             if cube:
@@ -130,7 +130,9 @@ class Map(RegisteredFactoryBase):
                     
                 # Instantiate the new map.
                 new_maps.append(WidgetType(data, header, **kwargs))
-                
+            
+            new_maps += already_maps
+            
             # If there was only one map instantiated, return that, otherwise
             # return the list of them.
             return new_maps[1] if len(new_maps) == 1 else new_maps
