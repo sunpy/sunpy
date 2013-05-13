@@ -393,7 +393,3 @@ def sun_pos(date, is_julian=False, since_2415020=False):
     # comment section in this code and in the original IDL code.
     return {"longitude": longmed, "ra": ra, "dec": dec, "app_long": l,
             "obliq": oblt}
-=======
-    
-    return np.round(rotation_deg,4)
->>>>>>> 03d3ebb02d1e0dbd7ca6c6a0208a8e56231705c8

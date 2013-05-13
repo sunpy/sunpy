@@ -952,7 +952,7 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         # Get ndarray representation of submap
         data = np.asarray(self)[y_pixels[0]:y_pixels[1],
                                 x_pixels[0]:x_pixels[1]]
-        
+
         # Instantiate new instance and update metadata
         new_map = self.__class__(data.copy(), header)
         new_map.reference_pixel['x'] = self.reference_pixel['x'] - x_pixels[0]
@@ -961,34 +961,35 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         return new_map
 
     @toggle_pylab
-    def plot(self, gamma=None, annotate=True, axes=None, **imshow_args):
+    def plot(self, gamma=None, annotate=True, axes=None,
+             **imshow_args):
         """ Plots the map object using matplotlib, in a method equivalent
         to plt.imshow() using nearest neighbour interpolation.
-        
+
         Parameters
         ----------
         gamma : float
             Gamma value to use for the color map
-            
+
         annotate : bool
             If true, the data is plotted at it's natural scale; with
             title and axis labels.
-            
+
         axes: matplotlib.axes object or None
-            If provided the image will be plotted on the given axes. Else the 
+            If provided the image will be plotted on the given axes. Else the
             current matplotlib axes will be used.
-        
+
         **imshow_args : dict
             Any additional imshow arguments that should be used
             when plotting the image.
-        
+
         Examples
         --------
         #Simple Plot with color bar
         plt.figure()
         aiamap.plot()
         plt.colorbar()
-        
+
         #Add a limb line and grid
         aia.plot()
         aia.draw_limb()
@@ -1042,7 +1043,8 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         
     @toggle_pylab
     def peek(self, draw_limb=True, draw_grid=False, gamma=None,
-                   colorbar=True, basic_plot=False, **matplot_args):
+                   colorbar=True, basic_plot=False, fevent=None,
+                   **matplot_args):
         """Displays the map in a new figure
 
         Parameters
@@ -1050,8 +1052,8 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         draw_limb : bool
             Whether the solar limb should be plotted.
         draw_grid : bool or number
-            Whether solar meridians and parallels are plotted. If float then sets
-            degree difference between parallels and meridians.
+            Whether solar meridians and parallels are plotted. If float then
+            sets degree difference between parallels and meridians.
         gamma : float
             Gamma value to use for the color map
         colorbar : bool
@@ -1059,9 +1061,23 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         basic_plot : bool
             If true, the data is plotted by itself at it's natural scale; no
             title, labels, or axes are shown.
+        fevent: list
+            A list of HEK feature and event objects.  Features and events whose
+            start end end times envelope the time of the map will be plotted
+            to in the map. Features and events will be rotated using solar
+            differential rotation to the time of the map.
         **matplot_args : dict
             Matplotlib Any additional imshow arguments that should be used
             when plotting the image.
+
+        Examples
+        --------
+        #Add all the flares that overlap with the map time
+        from sunpy.net import hek
+        client = hek.HEKClient()
+        res = client.query(hek.attrs.Time('2011-09-22T09:00:00',
+                                          '2011-09-22T11:00:00'), hek.attrs.FL)
+        aia.plot(fevent=res)
         """
         
         # Create a figure and add title and axes
