@@ -31,6 +31,7 @@ from sunpy.sun import constants
 from sunpy.time import parse_time, is_time
 from sunpy.image.rescale import reshape_image_to_4d_superpixel
 from sunpy.image.rescale import resample as sunpy_image_resample
+from sunpy.coords import rot_hpc
 
 from sunpy.util.cond_dispatch import ConditionalDispatch
 from sunpy.util.create import Parent
@@ -750,33 +751,33 @@ Dimension:\t [%d, %d]
            Default: Centre of the array
         recentre: bool, or array-like
            Move the centroid (axis of rotation) to the centre of the array
-           or recentre coords. 
+           or recentre coords.
            Default: True, recentre to the centre of the array.
         missing: float
            The numerical value to fill any missing points after rotation.
            Default: 0.0
         interpolation: {'nearest' | 'bilinear' | 'spline' | 'bicubic'}
-            Interpolation method to use in the transform. 
-            Spline uses the 
+            Interpolation method to use in the transform.
+            Spline uses the
             scipy.ndimage.interpolation.affline_transform routine.
             nearest, bilinear and bicubic all replicate the IDL rot() function.
             Default: 'bicubic'
         interp_par: Int or Float
             Optional parameter for controlling the interpolation.
-            Spline interpolation requires an integer value between 1 and 5 for 
+            Spline interpolation requires an integer value between 1 and 5 for
             the degree of the spline fit.
             Default: 3
             BiCubic interpolation requires a flaot value between -1 and 0.
             Default: 0.5
             Other interpolation options ingore the argument.
-        
+
         Returns
         -------
         New rotated, rescaled, translated map
 
         Notes
         -----
-        Apart from interpolation='spline' all other options use a compiled 
+        Apart from interpolation='spline' all other options use a compiled
         C-API extension. If for some reason this is not compiled correctly this
         routine will fall back upon the scipy implementation of order = 3.
         For more infomation see:
@@ -807,7 +808,7 @@ Dimension:\t [%d, %d]
             rotation_centre = centre 
         else:
             #Else check rotation_centre is a vector with shape (2,1)
-            rotation_centre = np.array(rotation_centre).reshape(2,1)
+            rotation_centre = np.array(rotation_centre).reshape(2, 1)
 
         #Recentre to the rotation_centre if recentre is True
         if isinstance(recentre, bool):
@@ -852,7 +853,7 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
             #Make call to extension
             data = Crotate.affine_transform(image, 
                                       rsmat, offset=offs, 
-                                      kernel=interp_type, cubic=interp_param, 
+                                      kernel=interp_type, cubic=interp_param,
                                       mode='constant', cval=missing)
             
         #Return a new map
@@ -964,31 +965,31 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
     def plot(self, gamma=None, annotate=True, axes=None, **imshow_args):
         """ Plots the map object using matplotlib, in a method equivalent
         to plt.imshow() using nearest neighbour interpolation.
-        
+
         Parameters
         ----------
         gamma : float
             Gamma value to use for the color map
-            
+
         annotate : bool
             If true, the data is plotted at it's natural scale; with
             title and axis labels.
-            
+
         axes: matplotlib.axes object or None
-            If provided the image will be plotted on the given axes. Else the 
+            If provided the image will be plotted on the given axes. Else the
             current matplotlib axes will be used.
-        
+
         **imshow_args : dict
             Any additional imshow arguments that should be used
             when plotting the image.
-        
+
         Examples
         --------
         #Simple Plot with color bar
         plt.figure()
         aiamap.plot()
         plt.colorbar()
-        
+
         #Add a limb line and grid
         aia.plot()
         aia.draw_limb()
@@ -998,11 +999,11 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         #Get current axes
         if not axes:
             axes = plt.gca()
-        
+
         # Normal plot
         if annotate:
             axes.set_title("%s %s" % (self.name, self.date))
-            
+
             # x-axis label
             if self.coordinate_system['x'] == 'HG':
                 xlabel = 'Longitude [%s]' % self.units['x']
@@ -1014,35 +1015,36 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
                 ylabel = 'Latitude [%s]' % self.units['y']
             else:
                 ylabel = 'Y-position [%s]' % self.units['y']
-                
+
             axes.set_xlabel(xlabel)
             axes.set_ylabel(ylabel)
 
         # Determine extent
         extent = self.xrange + self.yrange
-        
+
         cmap = copy(self.cmap)
         if gamma is not None:
             cmap.set_gamma(gamma)
-            
+
             #make imshow kwargs a dict
-        
-        kwargs = {'origin':'lower',
-                  'cmap':cmap,
-                  'norm':self.norm(),
-                  'extent':extent,
-                  'interpolation':'nearest'}
+
+        kwargs = {'origin': 'lower',
+                  'cmap': cmap,
+                  'norm': self.norm(),
+                  'extent': extent,
+                  'interpolation': 'nearest'}
         kwargs.update(imshow_args)
-        
+
         ret = axes.imshow(self, **kwargs)
-        
+
         #Set current image (makes colorbar work)
         plt.sci(ret)
         return ret
-        
+
     @toggle_pylab
     def peek(self, draw_limb=True, draw_grid=False, gamma=None,
-                   colorbar=True, basic_plot=False, **matplot_args):
+                   colorbar=True, basic_plot=False, fevent=None,
+                   **matplot_args):
         """Displays the map in a new figure
 
         Parameters
@@ -1050,8 +1052,8 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         draw_limb : bool
             Whether the solar limb should be plotted.
         draw_grid : bool or number
-            Whether solar meridians and parallels are plotted. If float then sets
-            degree difference between parallels and meridians.
+            Whether solar meridians and parallels are plotted. If float then
+            sets degree difference between parallels and meridians.
         gamma : float
             Gamma value to use for the color map
         colorbar : bool
@@ -1059,11 +1061,16 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         basic_plot : bool
             If true, the data is plotted by itself at it's natural scale; no
             title, labels, or axes are shown.
+        fevent: list
+            A list of HEK feature and event objects.  Features and events whose
+            start end end times envelope the time of the map will be plotted
+            to in the map. Features and events will be rotated using solar
+            differential rotation to the time of the map.
         **matplot_args : dict
             Matplotlib Any additional imshow arguments that should be used
             when plotting the image.
         """
-        
+
         # Create a figure and add title and axes
         figure = plt.figure(frameon=not basic_plot)
 
@@ -1072,20 +1079,20 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
             axes = plt.Axes(figure, [0., 0., 1., 1.])
             axes.set_axis_off()
             figure.add_axes(axes)
-            matplot_args.update({'annotate':False})
-            
+            matplot_args.update({'annotate': False})
+
         # Normal plot
         else:
             axes = figure.gca()
 
-        im = self.plot(axes=axes,**matplot_args)        
-        
+        im = self.plot(axes=axes, **matplot_args)
+
         if colorbar and not basic_plot:
             figure.colorbar(im)
-        
+
         if draw_limb:
             self.draw_limb(axes=axes)
-        
+
         if isinstance(draw_grid, bool):
             if draw_grid:
                 self.draw_grid(axes=axes)
@@ -1094,10 +1101,47 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         else:
             raise TypeError("draw_grid should be bool, int, long or float")
 
+        # Feature and event over plotting
+        if fevent is not None:
+            # Get the fevents that overlap the map observation time
+            filtered = []
+            for fev in fevent:
+                if (self.header['obs_time'] <= fev['event_starttime']) and \
+                (self.header['obs_time'] >= fev['event_endtime']):
+                    filtered.append(fev)
+            # Get the co-ordinates, rotate them to the map time, and plot them
+            for fev in filtered:
+                event_coord1 = fev['event_coord1']
+                event_coord2 = fev['event_coord2']
+                event_coordsys = fev['event_coordsys']
+                # If the HEK provides the HPC co-ordinates then use them
+                if ('hpc_x' in fev) and ('hpc_y' in fev):
+                    hek_x = fev['hpc_x']
+                    hek_y = fev['hpc_y']
+                elif fev['event_coordsys'] == 'UTC-HGC-TOPO':
+                    hek_x = None
+                    hek_y = None
+                elif fev['event_coordsys'] == 'UTC-HGC-TOPO':
+                    hek_x = None
+                    hek_y = None
+                elif fev['event_coordsys'] == 'UTC-HGC-TOPO':
+                    hek_x = None
+                    hek_y = None
+                # get the rotated co-ordinates
+                if np.isfinite(hek_x) and np.isfinite(hek_y):
+                    xrotated, yrotated = rot_hpc(hek_x, hek_y,
+                                             fev['event_starttime'],
+                                             self.header['obs_time'])
+                    # Check for NANs
+                    if np.isfinite(xrotated) and np.isfinite(yrotated):
+                        # Plot the remaining events
+                        axes.annotate(fev['event_type'],
+                                      xy=(xrotated, yrotated), xycoords='data')
+
         figure.show()
-        
+
         return figure
-    
+
     def norm(self):
         """Default normalization method. Not yet implemented."""
         return None

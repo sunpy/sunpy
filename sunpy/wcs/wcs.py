@@ -1,31 +1,31 @@
 """
-    The WCS package provides functions to parse a World Coordinate System (WCS) 
-    coordinates for solar images as well as convert between various solar 
+    The WCS package provides functions to parse a World Coordinate System (WCS)
+    coordinates for solar images as well as convert between various solar
     coordinate systems. The solar coordinates supported are
 
-    * Helioprojective-Cartesian (HPC): The most often used solar coordinate 
-        system. Describes positions on the Sun as angles measured from the 
-        center of the solar disk (usually in arcseconds) using cartesian 
+    * Helioprojective-Cartesian (HPC): The most often used solar coordinate
+        system. Describes positions on the Sun as angles measured from the
+        center of the solar disk (usually in arcseconds) using cartesian
         coordinates (X, Y)
-    * Helioprojective-Radial (HPR): Describes positions on the Sun using angles, 
-        similar to HPC, but uses a radial coordinate (rho, psi) system centered 
+    * Helioprojective-Radial (HPR): Describes positions on the Sun using angles
+        similar to HPC, but uses a radial coordinate (rho, psi) system centered
         on solar disk where psi is measured in the counter clock wise direction.
     * Heliocentric-Cartesian (HCC): The same as HPC but with positions expressed
-        in true (deprojected) physical distances instead of angles on the 
+        in true (deprojected) physical distances instead of angles on the
         celestial sphere.
     * Heliocentric-Radial (HCR): The same as HPR but with rho expressed in
-        true (deprojected) physical distances instead of angles on the celestial 
+        true (deprojected) physical distances instead of angles on the celestial
         sphere.
-    * Stonyhurst-Heliographic (HG): Expressed positions on the Sun using 
-        longitude and latitude on the solar sphere but with the origin which is 
-        at the intersection of the solar equator and the central meridian as 
-        seen from Earth. This means that the coordinate system remains fixed 
+    * Stonyhurst-Heliographic (HG): Expressed positions on the Sun using
+        longitude and latitude on the solar sphere but with the origin which is
+        at the intersection of the solar equator and the central meridian as
+        seen from Earth. This means that the coordinate system remains fixed
         with respect to Earth while the Sun rotates underneath it.
-    * Carrington-Heliographic (HG, /CARRINGTON): Carrington longitude is offset 
-        from Stonyhurst longitude by a time-dependent scalar value, L0. At the 
-        start of each Carrington rotation, L0 = 360, and steadily decreases 
-        until it reaches L0 = 0, at which point the next Carrington rotation 
-        starts. 
+    * Carrington-Heliographic (HG, /CARRINGTON): Carrington longitude is offset
+        from Stonyhurst longitude by a time-dependent scalar value, L0. At the
+        start of each Carrington rotation, L0 = 360, and steadily decreases
+        until it reaches L0 = 0, at which point the next Carrington rotation
+        starts.
 
     Note that SOLAR_B0, HGLT_OBS, and CRLT_OBS are all synonyms.
 
@@ -41,12 +41,13 @@ import numpy as np
 __all__ = ['convert_angle_units', 'convert_pixel_to_data', 'convert_hpc_hg',
            'convert_data_to_pixel', 'convert_hpc_hcc', 'convert_hcc_hpc',
            'convert_hcc_hg', 'convert_hg_hcc', 'convert_hg_hcc_xyz', 'proj_tan',
-           'convert_hg_hpc',  'convert_to_coord', 'convert_hpc_hcc_xyz', 
+           'convert_hg_hpc',  'convert_to_coord', 'convert_hpc_hcc_xyz', \
            'get_center']
+
 
 def convert_angle_units(unit='arcsec'):
     """Determine the conversion factor between the data and radians."""
-    
+
     if unit == 'deg':
         return np.deg2rad(1)
     elif unit == 'arcmin':
@@ -56,15 +57,16 @@ def convert_angle_units(unit='arcsec'):
     elif unit == 'mas':
         return np.deg2rad(1) / (60 * 60 * 1000.0)
 
-def convert_pixel_to_data(width, height, scale_x, scale_y, crpix1, crpix2, 
+
+def convert_pixel_to_data(width, height, scale_x, scale_y, crpix1, crpix2,
                           crval1, crval2, ctype, x=None, y=None):
-    """This procedure takes WCS-compliant header tags, and calculates the 
+    """This procedure takes WCS-compliant header tags, and calculates the
         data coordinates at each x and y pixel centers. If no x and y are given
         then return the entire detector."""
     cdelt = np.array([scale_x, scale_y])
     crpix = np.array([crpix1, crpix2])
     crval = np.array([crval1, crval2])
-    
+
     # first assume that coord is just [x,y]
     if (x is None) and (y is None):
         x, y = np.meshgrid(np.arange(width), np.arange(height))
