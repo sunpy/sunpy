@@ -20,11 +20,17 @@ __all__ = ['make_map', 'read_header']
 MapFactoryArgParser(object):
 
     # This can be hacked later to use ConditionalDispatch, but I'm not going to
-    # do that.  (This explains why it is a class and not a function at the moment.  Really, this should be a class method of Map (the factory).
+    # do that.  (This explains why it is a class and not a function at the moment.  Really, this should probably be a class method of Map (the factory).
 
     @classmethod
     def read_file(cls, fname):
-        pass
+        
+        # File gets read here.  This needs to be generic enough to seamlessly call a fits file or a jpeg2k file, etc
+        
+        data = None
+        meta = None
+        
+        return (data, header)
 
     @classmethod
     def __call__(cls, *args, **kwargs):
