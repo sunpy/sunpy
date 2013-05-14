@@ -400,4 +400,3 @@ def sun_pos(date, is_julian=False, since_2415020=False):
     # comment section in this code and in the original IDL code.
     return {"longitude": longmed, "ra": ra, "dec": dec, "app_long": l,
             "obliq": oblt}
-
