@@ -1043,8 +1043,7 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
 
     @toggle_pylab
     def peek(self, draw_limb=True, draw_grid=False, gamma=None,
-                   colorbar=True, basic_plot=False, fevent=None,
-                   **matplot_args):
+                   colorbar=True, basic_plot=False, **matplot_args):
         """Displays the map in a new figure
 
         Parameters
@@ -1061,11 +1060,6 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         basic_plot : bool
             If true, the data is plotted by itself at it's natural scale; no
             title, labels, or axes are shown.
-        fevent: list
-            A list of HEK feature and event objects.  Features and events whose
-            start end end times envelope the time of the map will be plotted
-            to in the map. Features and events will be rotated using solar
-            differential rotation to the time of the map.
         **matplot_args : dict
             Matplotlib Any additional imshow arguments that should be used
             when plotting the image.
@@ -1100,45 +1094,6 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
             self.draw_grid(axes=axes, grid_spacing=draw_grid)
         else:
             raise TypeError("draw_grid should be bool, int, long or float")
-
-        # Feature and event over plotting
-        if fevent is not None:
-            # Get the fevents that overlap the map observation time
-            filtered = []
-            for fev in fevent:
-                if (self.header['obs_time'] <= fev['event_starttime']) and \
-                (self.header['obs_time'] >= fev['event_endtime']):
-                    filtered.append(fev)
-            # Get the co-ordinates, rotate them to the map time, and plot them
-            for fev in filtered:
-                event_coord1 = fev['event_coord1']
-                event_coord2 = fev['event_coord2']
-                event_coordsys = fev['event_coordsys']
-                # If the HEK provides the HPC co-ordinates then use them. This
-                # assumes that the HEK are calculating the HPC co-ordinates
-                # correctly.
-                if ('hpc_x' in fev) and ('hpc_y' in fev):
-                    hek_x = fev['hpc_x']
-                    hek_y = fev['hpc_y']
-                elif fev['event_coordsys'] == 'UTC-HGC-TOPO':
-                    hek_x = None
-                    hek_y = None
-                elif fev['event_coordsys'] == 'UTC-HGC-TOPO':
-                    hek_x = None
-                    hek_y = None
-                elif fev['event_coordsys'] == 'UTC-HGC-TOPO':
-                    hek_x = None
-                    hek_y = None
-                # get the rotated co-ordinates
-                if np.isfinite(hek_x) and np.isfinite(hek_y):
-                    xrotated, yrotated = rot_hpc(hek_x, hek_y,
-                                             fev['event_starttime'],
-                                             self.header['obs_time'])
-                    # Check for NANs
-                    if np.isfinite(xrotated) and np.isfinite(yrotated):
-                        # Plot the remaining events
-                        axes.annotate(fev['event_type'],
-                                      xy=(xrotated, yrotated), xycoords='data')
 
         figure.show()
 
