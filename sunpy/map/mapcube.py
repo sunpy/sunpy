@@ -12,7 +12,7 @@ from sunpy.map import Map
 from sunpy.map.sources import *
 from sunpy.lightcurve import LightCurve
 from sunpy.util import plotting
-from sunpy.coords import rot_hcc
+from sunpy.coords import rot_hpc
 
 __all__ = ['MapCube']
 
@@ -249,7 +249,7 @@ class MapCube(np.ndarray):
         # for each map calculate the derotation value in pixels, move the data,
         # recreate a map with the moved data, and create a MapCube.
         for m in self:
-            new_xcen, new_ycen = rot_hcc(m, tstart=m.header["date_obs"],
+            new_xcen, new_ycen = rot_hpc(m, tstart=m.header["date_obs"],
                                  interval = self[index].header["date_obs"])
             xpixel_difference = (new_xcen - xcen_base)/xpixel_size
             ypixel_difference = (new_ycen - ycen_base)/ypixel_size

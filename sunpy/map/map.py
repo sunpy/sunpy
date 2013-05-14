@@ -31,6 +31,7 @@ from sunpy.sun import constants
 from sunpy.time import parse_time, is_time
 from sunpy.image.rescale import reshape_image_to_4d_superpixel
 from sunpy.image.rescale import resample as sunpy_image_resample
+from sunpy.coords import rot_hpc
 
 from sunpy.util.cond_dispatch import ConditionalDispatch
 from sunpy.util.create import Parent
@@ -750,33 +751,33 @@ Dimension:\t [%d, %d]
            Default: Centre of the array
         recentre: bool, or array-like
            Move the centroid (axis of rotation) to the centre of the array
-           or recentre coords. 
+           or recentre coords.
            Default: True, recentre to the centre of the array.
         missing: float
            The numerical value to fill any missing points after rotation.
            Default: 0.0
         interpolation: {'nearest' | 'bilinear' | 'spline' | 'bicubic'}
-            Interpolation method to use in the transform. 
-            Spline uses the 
+            Interpolation method to use in the transform.
+            Spline uses the
             scipy.ndimage.interpolation.affline_transform routine.
             nearest, bilinear and bicubic all replicate the IDL rot() function.
             Default: 'bicubic'
         interp_par: Int or Float
             Optional parameter for controlling the interpolation.
-            Spline interpolation requires an integer value between 1 and 5 for 
+            Spline interpolation requires an integer value between 1 and 5 for
             the degree of the spline fit.
             Default: 3
             BiCubic interpolation requires a flaot value between -1 and 0.
             Default: 0.5
             Other interpolation options ingore the argument.
-        
+
         Returns
         -------
         New rotated, rescaled, translated map
 
         Notes
         -----
-        Apart from interpolation='spline' all other options use a compiled 
+        Apart from interpolation='spline' all other options use a compiled
         C-API extension. If for some reason this is not compiled correctly this
         routine will fall back upon the scipy implementation of order = 3.
         For more infomation see:
@@ -807,7 +808,7 @@ Dimension:\t [%d, %d]
             rotation_centre = centre 
         else:
             #Else check rotation_centre is a vector with shape (2,1)
-            rotation_centre = np.array(rotation_centre).reshape(2,1)
+            rotation_centre = np.array(rotation_centre).reshape(2, 1)
 
         #Recentre to the rotation_centre if recentre is True
         if isinstance(recentre, bool):
@@ -852,7 +853,7 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
             #Make call to extension
             data = Crotate.affine_transform(image, 
                                       rsmat, offset=offs, 
-                                      kernel=interp_type, cubic=interp_param, 
+                                      kernel=interp_type, cubic=interp_param,
                                       mode='constant', cval=missing)
             
         #Return a new map
@@ -999,11 +1000,11 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         #Get current axes
         if not axes:
             axes = plt.gca()
-        
+
         # Normal plot
         if annotate:
             axes.set_title("%s %s" % (self.name, self.date))
-            
+
             # x-axis label
             if self.coordinate_system['x'] == 'HG':
                 xlabel = 'Longitude [%s]' % self.units['x']
@@ -1015,32 +1016,32 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
                 ylabel = 'Latitude [%s]' % self.units['y']
             else:
                 ylabel = 'Y-position [%s]' % self.units['y']
-                
+
             axes.set_xlabel(xlabel)
             axes.set_ylabel(ylabel)
 
         # Determine extent
         extent = self.xrange + self.yrange
-        
+
         cmap = copy(self.cmap)
         if gamma is not None:
             cmap.set_gamma(gamma)
-            
+
             #make imshow kwargs a dict
-        
-        kwargs = {'origin':'lower',
-                  'cmap':cmap,
-                  'norm':self.norm(),
-                  'extent':extent,
-                  'interpolation':'nearest'}
+
+        kwargs = {'origin': 'lower',
+                  'cmap': cmap,
+                  'norm': self.norm(),
+                  'extent': extent,
+                  'interpolation': 'nearest'}
         kwargs.update(imshow_args)
-        
+
         ret = axes.imshow(self, **kwargs)
-        
+
         #Set current image (makes colorbar work)
         plt.sci(ret)
         return ret
-        
+
     @toggle_pylab
     def peek(self, draw_limb=True, draw_grid=False, gamma=None,
                    colorbar=True, basic_plot=False, fevent=None,
@@ -1079,7 +1080,7 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
                                           '2011-09-22T11:00:00'), hek.attrs.FL)
         aia.plot(fevent=res)
         """
-        
+
         # Create a figure and add title and axes
         figure = plt.figure(frameon=not basic_plot)
 
@@ -1088,20 +1089,20 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
             axes = plt.Axes(figure, [0., 0., 1., 1.])
             axes.set_axis_off()
             figure.add_axes(axes)
-            matplot_args.update({'annotate':False})
-            
+            matplot_args.update({'annotate': False})
+
         # Normal plot
         else:
             axes = figure.gca()
 
-        im = self.plot(axes=axes,**matplot_args)        
-        
+        im = self.plot(axes=axes, **matplot_args)
+
         if colorbar and not basic_plot:
             figure.colorbar(im)
-        
+
         if draw_limb:
             self.draw_limb(axes=axes)
-        
+
         if isinstance(draw_grid, bool):
             if draw_grid:
                 self.draw_grid(axes=axes)
@@ -1111,9 +1112,9 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
             raise TypeError("draw_grid should be bool, int, long or float")
 
         figure.show()
-        
+
         return figure
-    
+
     def norm(self):
         """Default normalization method. Not yet implemented."""
         return None

@@ -3,11 +3,12 @@ from __future__ import division
 import numpy as np
 import datetime
 from sunpy.time import parse_time, julian_day
-from sunpy.wcs import convert_hcc_hg, convert_hg_hcc
-from sunpy.sun import constants
+#from sunpy.wcs import convert_hcc_hg, convert_hg_hcc
+from sunpy.wcs import convert_hpc_hg, convert_hg_hpc
+from sunpy.sun import constants, sun
 
 __author__ = ["Jose Ivan Campos Rozo", "Stuart Mumford", "Jack Ireland"]
-__all__ = ['diff_rot', 'sun_pos', 'pb0r', 'rot_hcc']
+__all__ = ['diff_rot', 'sun_pos', 'pb0r', 'rot_hpc']
 
 
 def diff_rot(ddays, latitude, rot_type='howard', frame_time='sidereal'):
@@ -59,6 +60,8 @@ def diff_rot(ddays, latitude, rot_type='howard', frame_time='sidereal'):
 
     if not isinstance(ddays, datetime.timedelta):
         delta = datetime.timedelta(days=ddays)
+    else:
+        delta = ddays
 
     delta_seconds = (delta.microseconds + (delta.seconds + delta.days * 24 * 3600) *
                     10**6) / 10**6
@@ -91,10 +94,10 @@ def diff_rot(ddays, latitude, rot_type='howard', frame_time='sidereal'):
     return rotation_deg
 
 
-def rot_hcc(x, y, tstart, tend, spacecraft=None, **kwargs):
-    """Given a location on the Sun referred to using the Heliocentric Cartesian
-    co-ordinate system in the units of arcseconds, use the solar rotation
-    profile to find that location at some later or earlier time.
+def rot_hpc(x, y, tstart, tend, spacecraft=None, **kwargs):
+    """Given a location on the Sun referred to using the Helioprojective
+    Cartesian co-ordinate system in the units of arcseconds, use the solar
+    rotation profile to find that location at some later or earlier time.
 
     Parameters
     -----------
@@ -103,7 +106,6 @@ def rot_hcc(x, y, tstart, tend, spacecraft=None, **kwargs):
 
     y: float or numpy ndarray
         helio-projective y-co-ordinate in arcseconds
-
 
     tstart: date/time to which x and y are referred; can be in any acceptable
             time format.
@@ -115,7 +117,7 @@ def rot_hcc(x, y, tstart, tend, spacecraft=None, **kwargs):
                 calculate the rotation from the point of view of the SOHO,
                 STEREO A, or STEREO B spacecraft.
 
-TODO: give rot_hcc the ability to do this rotation for data from the SOHO
+TODO: the ability to do this rotation for data from the SOHO
 point of view and the STEREO A, B point of views.
 
     See Also
@@ -126,12 +128,12 @@ point of view and the STEREO A, B point of views.
     Note: rot_xy uses arcmin2hel.pro and hel2arcmin.pro to implement the
     same functionality.  These two functions seem to perform inverse
     operations of each other to a high accuracy.  The corresponding
-    equivalent functions here are convert_hcc_hg and convert_hg_hcc
-    respectively.  These two functions also seem to perform inverse
-    operations of each other to a very high accuracy.  However, the values
+    equivalent functions here are convert_hpc_hg and convert_hg_hpc
+    respectively. These two functions seem to perform inverse
+    operations of each other to a high accuracy.  However, the values
     returned by arcmin2hel.pro are slightly different from those provided
-    by convert_hcc_hg.  This leads to slightly different results from
-    rot_hcc compared to rot_xy.
+    by convert_hpc_hg.  This leads to very slightly different results from
+    rot_hpc compared to rot_xy.
 
 """
     # must have pairs of co-ordinates
@@ -150,8 +152,10 @@ point of view and the STEREO A, B point of views.
 
     # Compute heliographic co-ordinates - returns (longitude, latitude). Points
     # off the limb are returned as nan
-    longitude, latitude = convert_hcc_hg(vstart["sd"] / 60.0, vstart["b0"],
-                                         vstart["l0"], x / 3600.0, y / 3600.0)
+    longitude, latitude = convert_hpc_hg(constants.radius,
+                                constants.au * sun.sunearth_distance(t=dstart),
+                                'arcsec', 'arcsec',
+                                vstart["b0"], vstart["l0"], x, y)
 
     # Compute the differential rotation
     drot = diff_rot(interval, latitude, frame_time='synodic')
@@ -162,10 +166,13 @@ point of view and the STEREO A, B point of views.
     # It appears that there is a difference in how the SSWIDL function
     # hel2arcmin and the sunpy function below performs this co-ordinate
     # transform.
-    newx, newy = convert_hg_hcc(vend["sd"] / 60.0, vend["b0"], vend["l0"],
-                                longitude + drot, latitude)
 
-    return 3600.0 * newx, 3600.0 * newy
+    newx, newy = convert_hg_hpc(constants.radius,
+                                constants.au * sun.sunearth_distance(t=dend),
+                                vend["b0"], vend["l0"],
+                                longitude + drot, latitude, units='arcsec')
+
+    return newx, newy
 
 
 def pb0r(date, spacecraft=None, arcsec=False):
