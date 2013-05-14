@@ -1114,7 +1114,9 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
                 event_coord1 = fev['event_coord1']
                 event_coord2 = fev['event_coord2']
                 event_coordsys = fev['event_coordsys']
-                # If the HEK provides the HPC co-ordinates then use them
+                # If the HEK provides the HPC co-ordinates then use them. This
+                # assumes that the HEK are calculating the HPC co-ordinates
+                # correctly.
                 if ('hpc_x' in fev) and ('hpc_y' in fev):
                     hek_x = fev['hpc_x']
                     hek_y = fev['hpc_y']
