@@ -27,7 +27,7 @@ class RegisteredFactoryBase(object):
                 
     def __new__(cls, *args, **kwargs):
         
-        if cls is RegistrationFactoryBase:
+        if cls is RegisteredFactoryBase:
             
             WidgetType = None
             for key in self.registry:
@@ -41,7 +41,7 @@ class RegisteredFactoryBase(object):
             else:
                 return self.GenericWidgetType(*args, **kwargs)
         else:
-            return super(RegistrationFactoryBase, cls).__new__(cls, *args, **kwargs)
+            return super(RegisteredFactoryBase, cls).__new__(cls, *args, **kwargs)
 
     def __init__(self, *args, **kwargs):
         raise NotImplementedError("RegistrationFactory __init__ should never be called.")
