@@ -6,7 +6,7 @@ import urllib2
 
 import numpy as np
 
-from sunpy.map.map import GenericMap
+from sunpy.map.map import GenericMap, MapBase
 #from sunpy.map.header import MapHeader
 #from sunpy.map.mapcube import MapCube
 #from sunpy.map.compositemap import CompositeMap
@@ -16,13 +16,13 @@ from sunpy.util.datatype_factory_base import RegisteredFactoryBase
 
 #__all__ = ['make_map', 'read_header']
 
-
-class MapFactoryArgParser(object):
-    # This can be hacked later to use ConditionalDispatch, but I'm not going to
-    # do that.  (This explains why it is a class and not a function at the moment.  Really, this should probably be a class method of Map (the factory).
+class Map(RegisteredFactoryBase):
+	
+    GenericWidgetType = GenericMap
+    
 
     @classmethod
-    def read_file(cls, fname):
+    def _read_file(cls, fname):
         
         # File gets read here.  This needs to be generic enough to seamlessly call a fits file or a jpeg2k file, etc
         
@@ -32,7 +32,7 @@ class MapFactoryArgParser(object):
         return (data, header)
 
     @classmethod
-    def __call__(cls, *args, **kwargs):
+    def _parse_args(cls, *args, **kwargs):
         
         data_header_pairs = list()
         already_maps = list()
@@ -45,35 +45,35 @@ class MapFactoryArgParser(object):
             
             # Data-header pair in a tuple
             if ((type(arg) in [tuple, list]) and 
-                          isinstance(arg[0],np.ndarray) and # or NDData or something else?
-                          isinstance(arg[1],SunpyMetaBase)): # FITSHeader, JP2kHeader, OrderedDict, dict?
+                 isinstance(arg[0],np.ndarray) and # or NDData or something else?
+                 isinstance(arg[1],SunpyMetaBase)): # FITSHeader, JP2kHeader, OrderedDict, dict?
                 data_header_pairs.append(arg)
             
             # Data-header pair not in a tuple
             elif (isinstance(arg, np.ndarray) and # or NDData or something else?
-                          isinstance(args[i+1],SunpyMetaBase)): # FITSHeader, JP2kHeader, OrderedDict, dict? 
+                  isinstance(args[i+1],SunpyMetaBase)): # FITSHeader, JP2kHeader, OrderedDict, dict? 
                 pair = (args[i], args[i+1])
                 data_header_pairs.append(pair)
                 i += 1 # an extra increment to account for the data-header pairing
             
             # File name
             elif (type(arg) is basestring and 
-                          os.path.isfile(os.path.expanduser(arg))):
+                  os.path.isfile(os.path.expanduser(arg))):
                 path = os.path.expanduser(arg)
-                pair = cls.read_file(path)
+                pair = cls._read_files(path)
                 data_header_pairs.append(pair)
             
             # Directory
             elif (type(arg) is basestring and 
-                          os.path.isdir(os.path.expanduser(arg))):
+                  os.path.isdir(os.path.expanduser(arg))):
                 path = os.path.expanduser(arg)
                 files = [os.path.join(directory, elem) for elem in os.listdir(path)]
-                data_header_pairs += map(cls.read_file, files)
+                data_header_pairs += map(cls._read_files, files)
             
             # Glob
             elif (type(arg) is basestring and '*' in arg):
                 files = glob.glob( os.path.expanduser(arg) )
-                data_header_pairs += map(cls.read_file, files)
+                data_header_pairs += map(cls._read_files, files)
             
             # Already a Map
             elif isinstance(arg, MapBase):
@@ -81,25 +81,30 @@ class MapFactoryArgParser(object):
                 
             # A URL
             elif (type(arg) is basestring and 
-                          urllib2.urlopen(arg)):
+                  urllib2.urlopen(arg)):
                 default_dir = sunpy.config.get("downloads", "download_dir")
                 path = download_file(url, default_dir)
-                pair = cls.read_file(path)
+                pair = cls._read_files(path)
                 data_header_pairs.append(pair)
         
             i += 1
-            
+        
+        # In the end, if there are aleady maps it should be put in the same
+        # order as the input, currently they are not.
+        
         return data_header_pairs, already_maps
-
-class Map(RegisteredFactoryBase):
-    GenericWidgetType = GenericMap
     
-    def __new__(cls, composite=False, cube=False, *args, **kwargs):
+    
+    def __new__(cls, *args, **kwargs):
+
+        # Hack to get around Python 2.x not backporting PEP 3102.
+        composite = kwargs.pop('composite', False)
+        cube = kwargs.pop('cube', False)
 
         if cls is Map:
             
             # Get list of data-header pairs, e.g., [(d1, h1), (d2, h2), ...]
-            data_header_pairs, already_maps = MapFactoryArgParser(*args, **kwargs)
+            data_header_pairs, already_maps = cls._parse_args(*args, **kwargs)
             
             # If the list is meant to be a cube, instantiate a map cube
             if cube:
