@@ -28,8 +28,8 @@ class Map(RegisteredFactoryBase):
         
         data = None
         meta = None
-        
-        return (data, header)
+
+        return (data, meta)
 
     @classmethod
     def _parse_args(cls, *args, **kwargs):
@@ -57,36 +57,36 @@ class Map(RegisteredFactoryBase):
                 i += 1 # an extra increment to account for the data-header pairing
             
             # File name
-            elif (type(arg) is basestring and 
+            elif (isinstance(arg,basestring) and 
                   os.path.isfile(os.path.expanduser(arg))):
                 path = os.path.expanduser(arg)
-                pair = cls._read_files(path)
+                pair = cls._read_file(path)
                 data_header_pairs.append(pair)
             
             # Directory
-            elif (type(arg) is basestring and 
+            elif (isinstance(arg,basestring) and 
                   os.path.isdir(os.path.expanduser(arg))):
                 path = os.path.expanduser(arg)
                 files = [os.path.join(directory, elem) for elem in os.listdir(path)]
                 data_header_pairs += map(cls._read_files, files)
             
             # Glob
-            elif (type(arg) is basestring and '*' in arg):
+            elif (isinstance(arg,basestring) and '*' in arg):
                 files = glob.glob( os.path.expanduser(arg) )
-                data_header_pairs += map(cls._read_files, files)
+                data_header_pairs += map(cls._read_file, files)
             
             # Already a Map
             elif isinstance(arg, MapBase):
                 already_maps.append(arg)
                 
             # A URL
-            elif (type(arg) is basestring and 
+            elif (isinstance(arg,basestring) and 
                   urllib2.urlopen(arg)):
                 default_dir = sunpy.config.get("downloads", "download_dir")
                 path = download_file(url, default_dir)
-                pair = cls._read_files(path)
+                pair = cls._read_file(path)
                 data_header_pairs.append(pair)
-        
+                
             i += 1
         
         # In the end, if there are aleady maps it should be put in the same
@@ -117,12 +117,14 @@ class Map(RegisteredFactoryBase):
             # Otherwise, each pair in the list gets built on its own
             new_maps = list()
             
-            for data, header in zip(*data_header_pairs):
-                
+            for pair in data_header_pairs:
+                data, header = zip(pair)
+                data = data[0]
+                header = header[0]
                 # Test to see which type of Map this pair is.  If none of the
                 # registered Map types match, use a generic map.
                 WidgetType = None
-                for key in self.registry:
+                for key in cls.registry:
                     
                     if cls.registry[key](data, header, **kwargs):
                         WidgetType = key
