@@ -28,12 +28,73 @@ from __future__ import absolute_import
 
 import pyfits
 
-from sunpy.map.header import MapHeader
+from sunpy.io.header import FileHeader
 
 __all__ = ['read', 'get_header']
 
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
+
+class FITSHeader(FileHeader):
+    """
+    FITSHeader(header)
+
+    A dictionary-like class for working with FITS  headers. Upper cases all
+    keywords to conform to FITSstandard
+
+    Parameters
+    ----------
+    header : pyfits.core.Header, dict
+        Header tags associated with the data
+
+    """
+    def __init__(self, adict):
+        """Creates a new MapHeader instance"""
+        # Store all keys as upper-case to allow for case-insensitive indexing
+        adict = dict((k.upper(), v) for k, v in adict.items())
+        #TODO: This might not work!
+        FileHeader.__init__(self, adict)
+        
+    def __contains__(self, key):
+        """Overide __contains__"""
+        return dict.__contains__(self, key.upper())
+
+    def __getitem__(self, key):
+        """Overide [] indexing"""
+        return dict.__getitem__(self, key.upper())
+
+    def __setitem__(self, key, value):
+        """Overide [] indexing"""
+        return dict.__setitem__(self, key.upper(), value)
+    
+    def as_pyfits_header(self):
+        """Returns a PyFITS header instance of the header"""
+        cards = [pyfits.core.Card(k, v) for k, v in self.items()]
+        return pyfits.core.Header(cards)
+
+    def copy(self):
+        """Overide copy operator"""
+        return type(self)(dict.copy(self))
+
+    def get(self, key, default=None):
+        """Overide .get() indexing"""
+        return dict.get(self, key.upper(), default)
+
+    def has_key(self, key):
+        """Overide .has_key() to perform case-insensitively"""
+        return key.upper() in self
+
+    def pop(self, key, default=None):
+        """Overide .pop() to perform case-insensitively"""
+        return dict.pop(self, key.upper(), default)
+
+    def update(self, d2):
+        """Overide .update() to perform case-insensitively"""
+        return dict.update(self, dict((k.upper(), v) for k, v in d2.items()))
+
+    def setdefault(self, key, default=None):
+        """Overide .setdefault() to perform case-insensitively"""
+        return dict.setdefault(self, key.upper(), default)
 
 def read(filepath):
     """Reads in the file at the specified location"""
@@ -50,7 +111,7 @@ def read(filepath):
         comments = [card.value for card in fits_comment]
         
     comment = "".join(comments).strip()
-    header = MapHeader(hdulist[0].header)
+    header = FITSHeader(hdulist[0].header)
     header['comment'] = comment
 
     return hdulist[0].data, header
@@ -61,7 +122,7 @@ def get_header(filepath):
     hdulist.verify('silentfix')
     
     comment = "".join(hdulist[0].header.get_comment()).strip()
-    header = MapHeader(hdulist[0].header)
+    header = FITSHeader(hdulist[0].header)
     header['comment'] = comment
             
     return header
