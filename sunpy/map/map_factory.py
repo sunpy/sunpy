@@ -6,15 +6,15 @@ import urllib2
 
 import numpy as np
 
-from sunpy.map.map import GenericMap, MapBase
+from sunpy.map import GenericMap, MapBase
 #from sunpy.map.header import MapHeader
-#from sunpy.map.mapcube import MapCube
+from sunpy.map.mapcube import MapCube
 #from sunpy.map.compositemap import CompositeMap
 #from sunpy.map.sources import *
 
 from sunpy.util.datatype_factory_base import RegisteredFactoryBase
 
-#__all__ = ['make_map', 'read_header']
+__all__ = ['Map']
 
 class Map(RegisteredFactoryBase):
 	
