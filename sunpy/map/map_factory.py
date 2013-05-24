@@ -3,14 +3,17 @@ from __future__ import absolute_import
 import os
 import glob
 import urllib2
+from collections import OrderedDict
 
 import numpy as np
 
 from sunpy.map import GenericMap, MapBase
-#from sunpy.map.header import MapHeader
-from sunpy.map.mapcube import MapCube
+from sunpy.map.header import Meta
+#from sunpy.map.mapcube import MapCube
 #from sunpy.map.compositemap import CompositeMap
 #from sunpy.map.sources import *
+
+from sunpy.io.file_tools import read_file
 
 from sunpy.util.datatype_factory_base import RegisteredFactoryBase
 
@@ -23,11 +26,14 @@ class Map(RegisteredFactoryBase):
 
     @classmethod
     def _read_file(cls, fname):
-        
         # File gets read here.  This needs to be generic enough to seamlessly call a fits file or a jpeg2k file, etc
         
-        data = None
-        meta = None
+        filedata, filemeta  = read_file(fname)
+        
+        assert isinstance(filemeta, OrderedDict)
+        
+        data = filedata
+        meta = Meta(filemeta)
 
         return (data, meta)
 
