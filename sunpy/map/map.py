@@ -67,7 +67,8 @@ class MapBase(object):
         self.header = header
         self.data = data
         
-
+    
+#    def __getattr__(self, attr):
     def _add_property(self, attr, header_key):
         """ This method maps a header value to a dynamically updating 
         property """
