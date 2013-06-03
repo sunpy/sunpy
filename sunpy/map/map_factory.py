@@ -8,7 +8,7 @@ from collections import OrderedDict
 import numpy as np
 
 from sunpy.map import GenericMap, MapBase
-from sunpy.map.header import Meta
+from sunpy.map.header import MapMeta
 #from sunpy.map.mapcube import MapCube
 #from sunpy.map.compositemap import CompositeMap
 #from sunpy.map.sources import *
@@ -26,14 +26,15 @@ class Map(RegisteredFactoryBase):
 
     @classmethod
     def _read_file(cls, fname):
-        # File gets read here.  This needs to be generic enough to seamlessly call a fits file or a jpeg2k file, etc
+        # File gets read here.  This needs to be generic enough to seamlessly
+        #call a fits file or a jpeg2k file, etc
         
         filedata, filemeta  = read_file(fname)
         
         assert isinstance(filemeta, OrderedDict)
         
         data = filedata
-        meta = Meta(filemeta)
+        meta = MapMeta(filemeta)
 
         return (data, meta)
 
