@@ -15,9 +15,6 @@ from sunpy.io.header import FileHeader
 
 __all__ = ['read', 'get_header', 'get_data', 'read_xmlbox', 'which', 'is_float']
 
-class jp2Header(FileHeader):
-    pass
-
 def read(filepath, j2k_to_image='opj_decompress'):
     """Reads in the file at the specified location"""
     header = get_header(filepath)
@@ -41,7 +38,7 @@ def get_header(filepath):
     if 'comment' in pydict:
         pydict['comment'] = pydict['comment'].replace("\n", "")
             
-    return jp2Header(pydict)
+    return FileHeader(pydict)
 
 def get_data(filepath, j2k_to_image="opj_decompress"):
     """Extracts the data portion of a JPEG 2000 image
