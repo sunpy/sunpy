@@ -27,8 +27,10 @@ class TimeRange:
         The start time of the time range
     t2 : datetime
         The end time of the time range
-    center: datetime
+    center : datetime
         The center of the time range
+    split(n) : timerange[]
+        Split the TimeRange into evenly sized TimeRane objects
     dt : timediff
         The difference in time between the start time and end time
     days : float
@@ -60,9 +62,10 @@ class TimeRange:
     """
     def __init__(self, a, b=None, julian_date=False):
         """Creates a new TimeRange instance"""
-        # if already a timeRange object just return it
-        #if isinstance(a, TimeRange):
-        #    return a
+        # If a is a TimeRange object, copy attributes to new instance.
+        if isinstance(a, TimeRange):
+            self.__dict__ = a.__dict__.copy()
+            return
         
         # Normalize different input types
         if b is None:
@@ -109,11 +112,35 @@ class TimeRange:
                 '\n\tCenter:'.ljust(12) + center + 
                 '\n\tDuration:'.ljust(12) + str(self.days()) + ' days or' + 
                 '\n\t'.ljust(12) +  str(self.minutes()) + ' minutes or' + 
-                '\n\t'.ljust(12) +  str(self.seconds()) + ' seconds')
+                '\n\t'.ljust(12) +  str(self.seconds()) + ' seconds' + 
+                '\n')
 
     def center(self):
         """Gets the center of the TimeRange instance"""
         return self.t1 + self.dt / 2
+    
+    def split(self,n=2):
+        """Splits the TimeRange into multiple equally sized parts
+        
+        Accepts a value greater than or equal to 1 as input, and
+        returns an array of equally sized TimeRange objects between
+        t1 and t2.
+        
+        Raises a ValueError if requested amount is less than 1
+        
+        """
+
+        if n <= 0:
+            raise ValueError('n must be greater than or equal to 1')
+        subsections = []
+        previous_time = self.start()
+        next_time = None
+        for _ in range(n):
+            next_time = previous_time + self.dt/n
+            next_range = TimeRange(previous_time,next_time)
+            subsections.append(next_range)
+            previous_time = next_time
+        return subsections
     
     def days(self):
         """Gets the number of days elapsed."""

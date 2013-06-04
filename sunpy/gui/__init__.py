@@ -7,7 +7,7 @@ import sys
 import sunpy
 from PyQt4.QtGui import QApplication
 from sunpy.gui.mainwindow import MainWindow
-from sunpy.io import UnrecognizedFileTypeError 
+from sunpy.io.file_tools import UnrecognizedFileTypeError
 
 class Plotman(object):
     """ Wraps a MainWindow so PlotMan instances can be created via the CLI.

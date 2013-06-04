@@ -3,6 +3,8 @@ from __future__ import absolute_import
 #pylint: disable=E1103
 import numpy as np
 from numpy.testing import assert_array_almost_equal
+from numpy.testing import assert_equal
+
 import pyfits
 
 import sunpy
@@ -17,6 +19,14 @@ img = sunpy.make_map(sunpy.AIA_171_IMAGE)
 
 wcs.wcs.rsun_meters = img.rsun_meters
 
+def test_convert_angle_units():
+    actual = np.array([wcs._convert_angle_units(), wcs._convert_angle_units('arcsec'),
+        wcs._convert_angle_units('arcmin'), wcs._convert_angle_units('deg'), 
+        wcs._convert_angle_units('mas')])
+    desired = np.array([np.deg2rad(1) / (60 * 60), np.deg2rad(1) / (60 * 60), 
+        np.deg2rad(1) / 60.0, np.deg2rad(1), np.deg2rad(1) / (60 * 60 * 1000)])
+    assert_equal(actual, desired)
+    
 def test_conv_hpc_hcc():
     coord = [40.0, 32.0]
     result = wcs.convert_hpc_hcc(coord[0], coord[1], angle_units=img.units['x'])
