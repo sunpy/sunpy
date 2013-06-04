@@ -112,18 +112,7 @@ Dimension:\t [%d, %d]
     
     @property
     def dtype(self):
-        return self.data.dtype #TODO: This assumes the data is always a ndarray
-    
-    def _validate(self):
-        """Validates the meta-information associated with a Map.
-
-        This function includes very basic validation checks which apply to
-        all of the kinds of files that SunPy can read. Datasource-specific
-        validation should be handled in the relevant file in the
-        sunpy.map.sources package."""
-        if (self.dsun <= 0 or self.dsun >= 40 * constants.au):
-            raise InvalidHeaderInformation("Invalid value for DSUN")
-    
+        return self.data.dtype #TODO: This assumes the data is always a ndarray    
 
     #TODO: How to handle this with the new dynamic header?
     def get_header(self, original=False):
@@ -405,6 +394,18 @@ class GenericMap(MapBase):
                 'y': header.get('crota2', 0.)
             }
         }
+    
+    def _validate(self):
+        """Validates the meta-information associated with a Map.
+
+        This function includes very basic validation checks which apply to
+        all of the kinds of files that SunPy can read. Datasource-specific
+        validation should be handled in the relevant file in the
+        sunpy.map.sources package."""
+#        if (self.dsun <= 0 or self.dsun >= 40 * constants.au):
+#            raise InvalidHeaderInformation("Invalid value for DSUN")
+        pass
+            
     def data_to_pixel(self, value, dim):
         """Convert pixel-center data coordinates to pixel values"""
         #TODO: This function should be renamed. It is confusing as data

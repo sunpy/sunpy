@@ -7,8 +7,9 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from copy import copy
 
-from sunpy.map import Map
-from sunpy.map.sources import *
+from sunpy.map import MapBase
+from sunpy.map.map_factory import Map
+#from sunpy.map.sources import *
 from sunpy.util import plotting
 
 __all__ = ['MapCube']
@@ -59,10 +60,10 @@ class MapCube(np.ndarray):
     
         # convert input to maps
         for item in args:
-            if isinstance(item, Map):
+            if isinstance(item, Mapbase):
                 maps.append(item)
             else:
-                maps.append(Map.read(item))
+                maps.append(Map(item))
 
         # sort data
         sortby = kwargs.get("sortby", "date")

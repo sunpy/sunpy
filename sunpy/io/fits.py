@@ -28,7 +28,7 @@ from __future__ import absolute_import
 
 import pyfits
 
-from sunpy.map.header import MapHeader
+from sunpy.io.header import FileHeader
 
 __all__ = ['read', 'get_header']
 
@@ -50,7 +50,7 @@ def read(filepath):
         comments = [card.value for card in fits_comment]
         
     comment = "".join(comments).strip()
-    header = MapHeader(hdulist[0].header)
+    header = FileHeader(hdulist[0].header)
     header['comment'] = comment
 
     return hdulist[0].data, header
@@ -61,7 +61,24 @@ def get_header(filepath):
     hdulist.verify('silentfix')
     
     comment = "".join(hdulist[0].header.get_comment()).strip()
-    header = MapHeader(hdulist[0].header)
+    header = FileHeader(hdulist[0].header)
     header['comment'] = comment
             
     return header
+
+def write(fname, data, header):
+    """
+    Take a data header pair and write a fits file
+    
+    Parameters
+    ----------
+    fname: str
+        File name, with extension
+        
+    data: ndarray
+        n-dimensional data array
+    
+    header: dict
+        A header dictionary
+    """
+    pyfits.writeto(fname, data, header=header, output_verify='fix')
