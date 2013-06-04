@@ -3,7 +3,6 @@ from __future__ import absolute_import
 import os
 import glob
 import urllib2
-from collections import OrderedDict
 
 import numpy as np
 
@@ -14,6 +13,7 @@ from sunpy.map.header import MapMeta
 #from sunpy.map.sources import *
 
 from sunpy.io.file_tools import read_file
+from sunpy.io.header import FileHeader
 
 from sunpy.util.datatype_factory_base import RegisteredFactoryBase
 
@@ -31,7 +31,7 @@ class Map(RegisteredFactoryBase):
         
         filedata, filemeta  = read_file(fname)
         
-        assert isinstance(filemeta, OrderedDict)
+        assert isinstance(filemeta, FileHeader)
         
         data = filedata
         meta = MapMeta(filemeta)
@@ -95,7 +95,7 @@ class Map(RegisteredFactoryBase):
                 data_header_pairs.append(pair)
                 
             i += 1
-        
+        #TODO:
         # In the end, if there are aleady maps it should be put in the same
         # order as the input, currently they are not.
         
@@ -262,9 +262,9 @@ class Map(RegisteredFactoryBase):
 #        raise InvalidMapType("Invalid multi-map type specified. Please choose "
 #                             "between 'composite' or 'cube'.")
 
-def read_header(filepath):
-    """Parses a file header and return some important parameters"""
-    return Map.read_header(filepath)
+#def read_header(filepath):
+#    """Parses a file header and return some important parameters"""
+#    return Map.read_header(filepath)
 
 class InvalidMapInput(ValueError):
     """Exception to raise when input variable is not a Map instance and does

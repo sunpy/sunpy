@@ -11,39 +11,60 @@ Overview
 One of core classes in SunPy is a Map. A SunPy Map object is simply a 
 spatially-aware data array, often an image. In order to make it easy to work
 with image data in SunPy, the Map object provides a number of methods for
-commonly performed operations. Further, because SunPy Map objects are
-instances inherit from the NumPy `ndarray <http://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html>`_ 
-datatype, they behave like ndarrays and support the same operations as ndarrays.
+commonly performed operations.
+
+2D map objects are subclasses of sunpy.map.MapBase and all Map objects are created 
+using the Map factory sunpy.Map.
+
+Updated Map Layout
+^^^^^^^^^^^^^^^^^^
+Todo:
+
+1. Map factory and registration
+2. MapBase and Generic Map
+3. MapMeta and the seperation from the file io
+
 
 Creating Map Objects
 ^^^^^^^^^^^^^^^^^^^^
-SunPy Map objects are constructed using the special function :func:`make_map`: ::
+SunPy Map objects are constructed using the special factory 
+class :class:`Map`: ::
 
->>> x = sunpy.make_map('file.fits')
+>>> x = sunpy.Map('file.fits')
 
-The result of a call to `make_map` will be either a generic `Map` object, 
-or a subclass of `Map` which deals with a specific type of data, e.g. 
-`AIAMap` or `LASCOMap`.
+The result of a call to `Map` will be either a `MapBase` object, 
+or a subclass of `MapBase` which either deals with a specific type of data, 
+e.g. `AIAMap` or `LASCOMap`, or a 2D map `GenericMap`.
 
 .. autofunction:: make_map
    
 Map Classes
 ^^^^^^^^^^^
+There are a series of base map classes which are specalised for each 
+instrument. These subclass one of the MapBase derivaties and then register with
+ the Map factory class which will instancestate a instrument class if the 
+parameters are met. 
 
-:class:`Map`
+:class:`MapBase`
 """"""""""""""""
-The top-level class from which all other Maps inherit from.
+The top-level class from which all other ND Maps inherit from.
 
-.. autoclass:: Map
+.. autoclass:: MapBase
 
+:class:`GenericMap`
+"""""""""""""""""""
+This is the top level 2D map class, containg processing and visualisation 
+routines designed to work with 2D data.
+
+.. autoclass:: `GenericMap`
     
-:class:`MapHeader`
+:class:`MapMeta`
 """"""""""""""""""
 
-Header information for `Map` objects are stored in a class called 
-:class:`MapHeader`.
+Meta data for `MapBase` objects are stored in a class called 
+:class:`MapMeta`.
 
-.. autoclass:: MapHeader
+.. autoclass:: MapMeta
 
 :class:`CompositeMap`
 """""""""""""""""""""
