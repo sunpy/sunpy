@@ -49,6 +49,35 @@ class MapBase(object):
     """ This object forms the base for all Map classes, both single and multi
     maps. """
 
+    @classmethod
+    def get_properties(cls, header):
+        """
+        Parses a map header and determines default properties.
+        
+        This should be overloaded for more  specific Maps.
+        This list is to handle nD fits files.
+        """
+        if is_time(header.get('date-obs',[])): # Hack! check FITS standard is a time
+            date = header.get('date-obs')
+            # Check commonly used but non-standard FITS keyword for observation time is a time
+        elif is_time(header.get('date_obs',[])): # Horrible [] hack
+            date = header.get('date_obs')
+        else:
+            date = None
+        return {
+            "cmap": cm.gray,  # @UndefinedVariable
+            "date": parse_time(date) if date is not None else 'N/A', #TODO: this should be none?
+            "detector": header.get('detector', ''),
+            "dsun": header.get('dsun_obs', constants.au),
+            "exposure_time": header.get('exptime', 0.),
+            "instrument": header.get('instrume', ''),
+            "measurement": header.get('wavelnth', ''),
+            "observatory": header.get('telescop', ''),
+            "name": header.get('telescop', '') + " " + 
+                    str(header.get('wavelnth', '')),
+            "nickname": header.get('detector', '')
+            }
+
     def __init__(self, data, header):
         """ Instancstanciate a Map class.
         
@@ -339,26 +368,11 @@ class GenericMap(MapBase):
     
     @classmethod
     def get_properties(cls, header):
-        """Parses a map header and determines default properties."""
-        if is_time(header.get('date-obs',[])): # Hack! check FITS standard is a time
-            date = header.get('date-obs')
-            # Check commonly used but non-standard FITS keyword for observation time is a time
-        elif is_time(header.get('date_obs',[])): # Horrible [] hack
-            date = header.get('date_obs')
-        else:
-            date = None
-        return {
-            "cmap": cm.gray,  # @UndefinedVariable
-            "date": parse_time(date) if date is not None else 'N/A',
-            "detector": header.get('detector', ''),
-            "dsun": header.get('dsun_obs', constants.au),
-            "exposure_time": header.get('exptime', 0.),
-            "instrument": header.get('instrume', ''),
-            "measurement": header.get('wavelnth', ''),
-            "observatory": header.get('telescop', ''),
-            "name": header.get('telescop', '') + " " + 
-                    str(header.get('wavelnth', '')),
-            "nickname": header.get('detector', ''),
+        """
+        This is an overload of MapBase for Generic 2D types
+        """
+        mapbaseprops = MapBase.get_properties(cls, header)
+        return mapbaseprops.update({
             "rsun_meters": header.get('rsun_ref', constants.radius),
             "rsun_arcseconds": header.get('rsun_obs', header.get('solar_r',
                                header.get('radius',
@@ -392,7 +406,7 @@ class GenericMap(MapBase):
                 'x': header.get('crota1', 0.),
                 'y': header.get('crota2', 0.)
             }
-        }
+        })
     
     def _validate(self):
         """Validates the meta-information associated with a Map.
@@ -878,7 +892,8 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         new_map = self.__class__(data, header)
         
         return new_map
-    
+        
+    #TODO: replace this with io.fits.write()
     def save(self, filepath):
         """Saves the SunPy Map object to a file.
         
