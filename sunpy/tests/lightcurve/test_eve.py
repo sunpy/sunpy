@@ -7,13 +7,11 @@ from __future__ import absolute_import
 import sunpy
 from sunpy.data.test import (EVE_AVERAGES_CSV)
 import matplotlib
-from matplotlib.testing.decorators import cleanup
 
 
-@cleanup    
 def test_eve():
-    eve = sunpy.lightcurve.EVELightCurve.create('2012/06/20')
-    assert isinstance(eve, matplotlib.testing.decorators.TestEve)
+    eve = sunpy.lightcurve.EVELightCurve.create('2013/04/15')
+    assert isinstance(eve, sunpy.lightcurve.EVELightCurve)
    
 def test_txt():
     """Check support for parsing EVE TXT files """

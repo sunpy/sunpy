@@ -34,8 +34,8 @@
         HGLT_OBS, and CRLT_OBS are all synonyms.
     * l0: Carrington longitude of central meridian as seen from Earth.
     * dsun_meters: Distance between observer and the Sun. Default is 1 AU.
-    * rsun: Radius of the Sun in meters. Default is 6.955e8 m. This valued is stored
-      locally in this module.
+    * rsun: Radius of the Sun in meters. Default is 6.955e8 meters. This valued is stored
+      locally in this module and can be modified if necessary.
     
     References
     ----------

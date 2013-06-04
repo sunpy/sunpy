@@ -4,7 +4,7 @@
 CM
 ==
 
-.. currentmodule:: sunpy
+.. currentmodule:: sunpy.cm
 
-.. automodule:: sunpy.cm
+.. automodule:: sunpy.cm.cm
    :members:
