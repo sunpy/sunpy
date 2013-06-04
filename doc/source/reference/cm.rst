@@ -6,5 +6,5 @@ CM
 
 .. currentmodule:: sunpy
 
-.. automodule:: cm
+.. automodule:: sunpy.cm
    :members:
