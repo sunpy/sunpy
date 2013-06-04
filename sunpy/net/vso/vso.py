@@ -540,11 +540,9 @@ class VSOClient(object):
         """
         if downloader is None:
             downloader = download.Downloader()
-            thread = threading.Thread(target=downloader.reactor.run)
-            thread.daemon = True
-            thread.start()
+            downloader.init()
             res = Results(
-                lambda _: downloader.reactor.stop(), 1,
+                lambda _: downloader.stop(), 1,
                 lambda mp: self.link(query_response, mp)
             )
         else:
@@ -700,9 +698,8 @@ class VSOClient(object):
     def download(self, method, url, dw, callback, errback, *args):
         """ Override to costumize download action. """
         if method.startswith('URL'):
-            return dw.reactor.call_sync(
-                partial(dw.download, url, partial(self.mk_filename, *args),
-                        callback, errback)
+            return dw.download(url, partial(self.mk_filename, *args),
+                        callback, errback
             )
         raise NoData
     
