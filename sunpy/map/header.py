@@ -18,33 +18,33 @@ class MapMeta(OrderedDict):
     def __init__(self, adict):
         """Creates a new MapHeader instance"""
         # Store all keys as upper-case to allow for case-insensitive indexing
-        adict = dict((k.lower(), v) for k, v in adict.items())
-        OrderedDict.__init__(self, adict)
-        
+        tags = dict((k.upper(), v) for k, v in adict.items())
+
+        super(MapMeta, self).__init__(tags)
+
     def __contains__(self, key):
         """Overide __contains__"""
-        return dict.__contains__(self, key.lower())
+        return OrderedDict.__contains__(self, key.lower())
 
     def __getitem__(self, key):
         """Overide [] indexing"""
-        return dict.__getitem__(self, key.lower())
+        return OrderedDict.__getitem__(self, key.lower())
 
     def __setitem__(self, key, value):
         """Overide [] indexing"""
-        return dict.__setitem__(self, key.lower(), value)
+        return OrderedDict.__setitem__(self, key.lower(), value)
     
     def as_pyfits_header(self):
         """Returns a PyFITS header instance of the header"""
-        cards = [pyfits.core.Card(k, v) for k, v in self.items()]
-        return pyfits.core.Header(cards)
+        raise NotImplementedError("Depreciated")#TODO: What is this use case?
 
     def copy(self):
         """Overide copy operator"""
-        return type(self)(dict.copy(self))
+        return OrderedDict(self)(dict.copy(self))
 
     def get(self, key, default=None):
         """Overide .get() indexing"""
-        return dict.get(self, key.lower(), default)
+        return OrderedDict.get(self, key.lower(), default)
 
     def has_key(self, key):
         """Overide .has_key() to perform case-insensitively"""
@@ -52,12 +52,12 @@ class MapMeta(OrderedDict):
 
     def pop(self, key, default=None):
         """Overide .pop() to perform case-insensitively"""
-        return dict.pop(self, key.lower(), default)
+        return OrderedDict.pop(self, key.lower(), default)
 
     def update(self, d2):
         """Overide .update() to perform case-insensitively"""
-        return dict.update(self, dict((k.lower(), v) for k, v in d2.items()))
+        return OrderedDict.update(self, dict((k.lower(), v) for k, v in d2.items()))
 
     def setdefault(self, key, default=None):
         """Overide .setdefault() to perform case-insensitively"""
-        return dict.setdefault(self, key.lower(), default)
+        return OrderedDict.setdefault(self, key.lower(), default)
