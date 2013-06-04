@@ -26,6 +26,8 @@ References
 """
 from __future__ import absolute_import
 
+import os
+
 import pyfits
 
 from sunpy.io.header import FileHeader
@@ -81,4 +83,7 @@ def write(fname, data, header):
     header: dict
         A header dictionary
     """
-    pyfits.writeto(fname, data, header=header, output_verify='fix')
+    cards = [pyfits.core.Card(k, v) for k, v in header.items()]
+    cards = pyfits.core.Header(cards)
+    pyfits.writeto(os.path.expanduser(fname), data, header=cards,
+                   output_verify='fix')

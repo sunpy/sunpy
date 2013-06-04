@@ -24,16 +24,16 @@ try:
 except ImportError:
     pass
 
+import sunpy.io as io
 import sunpy.wcs as wcs
 from sunpy.util import toggle_pylab, to_signed
-# from sunpy.io import read_file, read_file_header
 from sunpy.sun import constants
 from sunpy.time import parse_time, is_time
 from sunpy.image.rescale import reshape_image_to_4d_superpixel
 from sunpy.image.rescale import resample as sunpy_image_resample
 
-from sunpy.util.cond_dispatch import ConditionalDispatch
-from sunpy.util.create import Parent
+#from sunpy.util.cond_dispatch import ConditionalDispatch
+#from sunpy.util.create import Parent
 
 __all__ = ['MapBase', 'GenericMap']
 
@@ -49,7 +49,7 @@ class MapBase(object):
     """ This object forms the base for all Map classes, both single and multi
     maps. """
 
-    def __init__(self, data, header):
+    def __init__(self, data, meta):
         """ Instancstanciate a Map class.
         
         Parameters
@@ -57,26 +57,33 @@ class MapBase(object):
         
         data: ndarray
         
-        header: sunpy.map.MapHeader
+        meta: sunpy.map.MapMeta
         
         Returns
         -------
         A MapBase object
         """
         
-        self.header = header
+        self.meta = meta
         self.data = data
         
+    @property
+    def header(self):
+        warnings.warn("""map.header has been renamed to map.meta
+        for compatability with astropy, please use meta instead""", Warning)
+        return self.meta
     
 #    def __getattr__(self, attr):
     def _add_property(self, attr, header_key):
-        """ This method maps a header value to a dynamically updating 
-        property """
+        """
+        This method maps a header value to a dynamically updating 
+        property
+        """
         def setter(self, value):
-            self.header[header_key] = value
+            self.meta[header_key] = value
         
         def getter(self):
-            return self.header[header_key]
+            return self.meta[header_key]
         
         setattr(self, attr, property(getter, setter))
 
@@ -115,6 +122,7 @@ Dimension:\t [%d, %d]
         return self.data.dtype #TODO: This assumes the data is always a ndarray    
 
     #TODO: How to handle this with the new dynamic header?
+    #It should go away!!
     def get_header(self, original=False):
         """Returns an updated MapHeader instance"""
         header = self._original_header.copy()
@@ -299,17 +307,17 @@ class GenericMap(MapBase):
         
         #TODO: What is this doing here?
         # Set naxis1 and naxis2 if not specified
-        if self.header.get('naxis1') is None:
-            self.header['naxis1'] = self.shape[1]
-        if self.header.get('naxis2') is None:
-            self.header['naxis2'] = self.shape[0]
+        if self.meta.get('naxis1') is None:
+            self.meta['naxis1'] = self.shape[1]
+        if self.meta.get('naxis2') is None:
+            self.meta['naxis2'] = self.shape[0]
 
         # Parse header and set map properties
-        for attr, value in list(self.get_properties(header).items()):
-            self._add_property(attr, value)
+#        for attr, value in list(self.get_properties(header).items()):
+#            self._add_property(attr, value)
         
         # Validate properties
-        self._validate()
+#        self._validate()
     
     @property
     def xrange(self):
@@ -339,59 +347,59 @@ class GenericMap(MapBase):
         }
     
     @classmethod
-    def get_properties(cls, header):
-        """Parses a map header and determines default properties."""
-        if is_time(header.get('date-obs',[])): # Hack! check FITS standard is a time
-            date = header.get('date-obs')
+    def get_properties(cls, meta):
+        """Parses a map meta and determines default properties."""
+        if is_time(meta.get('date-obs',[])): # Hack! check FITS standard is a time
+            date = meta.get('date-obs')
             # Check commonly used but non-standard FITS keyword for observation time is a time
-        elif is_time(header.get('date_obs',[])): # Horrible [] hack
-            date = header.get('date_obs')
+        elif is_time(meta.get('date_obs',[])): # Horrible [] hack
+            date = meta.get('date_obs')
         else:
             date = None
         return {
             "cmap": cm.gray,  # @UndefinedVariable
             "date": parse_time(date) if date is not None else 'N/A',
-            "detector": header.get('detector', ''),
-            "dsun": header.get('dsun_obs', constants.au),
-            "exposure_time": header.get('exptime', 0.),
-            "instrument": header.get('instrume', ''),
-            "measurement": header.get('wavelnth', ''),
-            "observatory": header.get('telescop', ''),
-            "name": header.get('telescop', '') + " " + 
-                    str(header.get('wavelnth', '')),
-            "nickname": header.get('detector', ''),
-            "rsun_meters": header.get('rsun_ref', constants.radius),
-            "rsun_arcseconds": header.get('rsun_obs', header.get('solar_r',
-                               header.get('radius',
+            "detector": meta.get('detector', ''),
+            "dsun": meta.get('dsun_obs', constants.au),
+            "exposure_time": meta.get('exptime', 0.),
+            "instrument": meta.get('instrume', ''),
+            "measurement": meta.get('wavelnth', ''),
+            "observatory": meta.get('telescop', ''),
+            "name": meta.get('telescop', '') + " " + 
+                    str(meta.get('wavelnth', '')),
+            "nickname": meta.get('detector', ''),
+            "rsun_meters": meta.get('rsun_ref', constants.radius),
+            "rsun_arcseconds": meta.get('rsun_obs', meta.get('solar_r',
+                               meta.get('radius',
                                constants.average_angular_size))),
             "coordinate_system": {
-                'x': header.get('ctype1', 'HPLN-TAN'),
-                'y': header.get('ctype2', 'HPLT-TAN')
+                'x': meta.get('ctype1', 'HPLN-TAN'),
+                'y': meta.get('ctype2', 'HPLT-TAN')
             },
-            "carrington_longitude": header.get('crln_obs', 0.),
-            "heliographic_latitude": header.get('hglt_obs', 
-                                     header.get('crlt_obs',
-                                     header.get('solar_b0', 0.))),
-            "heliographic_longitude": header.get('hgln_obs', 0.),
+            "carrington_longitude": meta.get('crln_obs', 0.),
+            "heliographic_latitude": meta.get('hglt_obs', 
+                                     meta.get('crlt_obs',
+                                     meta.get('solar_b0', 0.))),
+            "heliographic_longitude": meta.get('hgln_obs', 0.),
             "reference_coordinate": {
-                'x': header.get('crval1', 0.),
-                'y': header.get('crval2', 0.),
+                'x': meta.get('crval1', 0.),
+                'y': meta.get('crval2', 0.),
             },
             "reference_pixel": {
-                'x': header.get('crpix1', (header.get('naxis1') + 1) / 2.),
-                'y': header.get('crpix2', (header.get('naxis2') + 1) / 2.)
+                'x': meta.get('crpix1', (meta.get('naxis1') + 1) / 2.),
+                'y': meta.get('crpix2', (meta.get('naxis2') + 1) / 2.)
             },
             "scale": {
-                'x': header.get('cdelt1', 1.),
-                'y': header.get('cdelt2', 1.),
+                'x': meta.get('cdelt1', 1.),
+                'y': meta.get('cdelt2', 1.),
             },
             "units": {
-                'x': header.get('cunit1', 'arcsec'),
-                'y': header.get('cunit2', 'arcsec')
+                'x': meta.get('cunit1', 'arcsec'),
+                'y': meta.get('cunit2', 'arcsec')
             },
             "rotation_angle": {
-                'x': header.get('crota1', 0.),
-                'y': header.get('crota2', 0.)
+                'x': meta.get('crota1', 0.),
+                'y': meta.get('crota2', 0.)
             }
         }
     
@@ -732,7 +740,7 @@ class GenericMap(MapBase):
                                     method, center=True)
 
         # Update image scale and number of pixels
-        header = self._original_header.copy()
+        meta = self._original_header.copy()
 
         # Note that 'x' and 'y' correspond to 1 and 0 in self.shape,
         # respectively
@@ -740,7 +748,7 @@ class GenericMap(MapBase):
         scale_factor_y = (float(self.shape[0]) / dimensions[1])
 
         # Create new map instance
-        new_map = self.__class__(data.T, header)
+        new_map = self.__class__(data.T, meta)
 
         # Update metadata
         new_map.scale['x'] *= scale_factor_x
@@ -874,9 +882,9 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
             
         #Return a new map
         #Copy Header
-        header = self._original_header.copy()
+        meta = self._original_header.copy()
         # Create new map instance
-        new_map = self.__class__(data, header)
+        new_map = self.__class__(data, meta)
         
         return new_map
     
@@ -891,10 +899,7 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         filepath : string
             Location to save file to.
         """
-        pyfits_header = self.get_header().as_pyfits_header()
-        hdu = pyfits.PrimaryHDU(self.data, header=pyfits_header)
-        hdulist = pyfits.HDUList([hdu])
-        hdulist.writeto(os.path.expanduser(filepath))        
+        io.write_file(filepath, self.data, self.meta)        
 
     def submap(self, range_a, range_b, units="data"):
         """Returns a submap of the map with the specified range
@@ -964,14 +969,14 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
                 "Invalid unit. Must be one of 'data' or 'pixels'")
 
         # Make a copy of the header with updated centering information
-        header = self._original_header.copy()
+        meta = self._original_header.copy()
         
         # Get ndarray representation of submap
         data = self.data[y_pixels[0]:y_pixels[1],
                                 x_pixels[0]:x_pixels[1]]
         
         # Instantiate new instance and update metadata
-        new_map = self.__class__(data.copy(), header)
+        new_map = self.__class__(data.copy(), meta)
         new_map.reference_pixel['x'] = self.reference_pixel['x'] - x_pixels[0]
         new_map.reference_pixel['y'] = self.reference_pixel['y'] - y_pixels[0]
 
@@ -1023,7 +1028,7 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         #                method, center=True)
 
         # Update image scale and number of pixels
-        header = self._original_header.copy()
+        meta = self._original_header.copy()
 
         # Note that 'x' and 'y' correspond to 1 and 0 in self.shape,
         # respectively
@@ -1031,7 +1036,7 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         new_ny = self.shape[0] / dimensions[1]
 
         # Create new map instance
-        new_map = self.__class__(data.T, header)
+        new_map = self.__class__(data.T, meta)
 
         # Update metadata
         new_map.scale['x'] = dimensions[0] * self.scale['x']

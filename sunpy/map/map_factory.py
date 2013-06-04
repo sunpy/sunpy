@@ -35,7 +35,7 @@ class Map(RegisteredFactoryBase):
         
         data = filedata
         meta = MapMeta(filemeta)
-
+        
         return (data, meta)
 
     @classmethod
@@ -146,7 +146,7 @@ class Map(RegisteredFactoryBase):
             
             # If there was only one map instantiated, return that, otherwise
             # return the list of them.
-            return new_maps[1] if len(new_maps) == 1 else new_maps
+            return new_maps[0] if len(new_maps) == 1 else new_maps
         else:
             return super(Map, cls).__new__(cls, *args, **kwargs)
  
