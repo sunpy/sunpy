@@ -5,13 +5,9 @@ import numpy as np
 from numpy.testing import assert_array_almost_equal
 from numpy.testing import assert_equal
 
-import pyfits
-
 import sunpy
 import sunpy.wcs as wcs
 
-fits = pyfits.open(sunpy.AIA_171_IMAGE)
-header = fits[0].header
 img = sunpy.make_map(sunpy.AIA_171_IMAGE)
 
 # the following known_answers come from equivalent queries to IDL
@@ -67,13 +63,13 @@ def test_conv_hg_hpc():
     result = wcs.convert_hg_hpc(coord[0], coord[1], dsun_meters=img.dsun, 
                                 b0=img.heliographic_latitude,
                                 l0=img.heliographic_longitude, angle_units = img.units['x'])
-    known_answer = [0.10603822*60*60, 0.20752017*60*60]
+    known_answer = [381.737592, 747.072612]
     magnitude = np.floor(np.log10(known_answer))
     assert_array_almost_equal(result*10**(-magnitude), 
                               known_answer*10**(-magnitude), decimal=2)
   
 def test_conv_hpc_hg():
-    coord = [0.10603822*60*60, 0.20752017*60*60]
+    coord = [381.737592, 747.072612]
     result = wcs.convert_hpc_hg(coord[0], coord[1], dsun_meters=img.dsun, 
                                 b0=img.heliographic_latitude,
                                 l0=img.heliographic_longitude, angle_units = img.units['x'])
