@@ -204,7 +204,7 @@ def convert_hpc_hcc(x, y, dsun_meters=None, angle_units='arcsec', distance=None)
     --------
     
     """
-    x, y, z = convert_hpc_hcc_xyz(x, y, dsun_meters, angle_units, distance)
+    x, y, z = convert_hpc_hcc_xyz(x, y, dsun_meters=dsun_meters, angle_units=angle_units, distance=distance)
     return x, y
 
 def convert_hpc_hcc_xyz(x, y, dsun_meters=None, angle_units='arcsec', distance=None):
