@@ -40,6 +40,12 @@ def get_header(filepath):
             
     return FileHeader(pydict)
 
+def write(fname, data, header):
+    """
+    Place holder for required file writer
+    """
+    raise NotImplementedError("No jp2 writer is implemented")
+
 def get_data(filepath, j2k_to_image="opj_decompress"):
     """Extracts the data portion of a JPEG 2000 image
     
