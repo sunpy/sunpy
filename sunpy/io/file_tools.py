@@ -21,7 +21,11 @@ def read_file(filepath):
     return reader.read(filepath)
 
 def read_file_header(filepath):
-    """Reads the header from a given file"""
+    """
+    Reads the header from a given file
+    
+    This should always return a instance of io.header.FileHeader
+    """
     for extension, reader in _known_formats.items():
         if filepath.endswith(extension):
             return reader.get_header(filepath)
