@@ -45,30 +45,30 @@ def test_conv_hcc_hpc():
  
 def test_conv_hcc_hg():
     coord = [13.0, 58.0]
-    result = wcs.convert_hcc_hg(coord[0], coord[1], b0=img.heliographic_latitude, l0=img.heliographic_longitude)
+    result = wcs.convert_hcc_hg(coord[0], coord[1], b0_deg=img.heliographic_latitude, l0_deg=img.heliographic_longitude)
     known_answer = [1.0791282e-06, -7.0640732]
-    assert_allclose(result, known_answer, rtol=1e-1, atol=0)
+    assert_allclose(result, known_answer, rtol=1e-2, atol=0)
  
 def test_conv_hg_hcc():
     coord = [34.0, 96.0]
-    result = wcs.convert_hg_hcc(coord[0], coord[1], b0=img.heliographic_latitude, 
-                                l0=img.heliographic_longitude)
+    result = wcs.convert_hg_hcc(coord[0], coord[1], b0_deg=img.heliographic_latitude, 
+                                l0_deg=img.heliographic_longitude)
     known_answer = [-40653538.0, 6.7903529e8]
-    assert_allclose(result, known_answer, rtol=1e-1, atol=0)
+    assert_allclose(result, known_answer, rtol=1e-2, atol=0)
     
 def test_conv_hg_hpc():
     coord = [34.0, 45.0]
     result = wcs.convert_hg_hpc(coord[0], coord[1], dsun_meters=img.dsun, 
-                                b0=img.heliographic_latitude,
-                                l0=img.heliographic_longitude, angle_units = img.units['x'])
+                                b0_deg=img.heliographic_latitude,
+                                l0_deg=img.heliographic_longitude, angle_units = img.units['x'])
     known_answer = [381.737592, 747.072612]
-    assert_allclose(result, known_answer, rtol=1e-1, atol=0)
+    assert_allclose(result, known_answer, rtol=1e-2, atol=0)
   
 def test_conv_hpc_hg():
     coord = [382, 748]
     known_answer = [34.091299, 45.095130]
     result = wcs.convert_hpc_hg(coord[0], coord[1], dsun_meters=img.dsun, 
-                                b0=img.heliographic_latitude,
-                                l0=img.heliographic_longitude, angle_units = img.units['x'])
-    assert_allclose(result, known_answer, rtol=1e-1, atol=0)
+                                b0_deg=img.heliographic_latitude,
+                                l0_deg=img.heliographic_longitude, angle_units = img.units['x'])
+    assert_allclose(result, known_answer, rtol=1e-2, atol=0)
   
