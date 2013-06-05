@@ -191,8 +191,7 @@ def convert_hpc_hcc(x, y, dsun_meters=None, angle_units='arcsec'):
         Distance from the observer to the Sun in meters
     angle_units : str
         Units of the data coordinates (e.g. arcsec, arcmin, degrees). Default is arcsec.
-    distance : float
-          
+    
     Returns
     -------
     out : ndarray
@@ -221,8 +220,7 @@ def convert_hpc_hcc_xyz(x, y, dsun_meters=None, angle_units='arcsec'):
         Distance from the observer to the Sun in meters. Default is 1 AU.
     angle_units : str
         Units of the data coordinates (e.g. arcsec, arcmin, degrees). Default is arcsec.
-    distance : float
-        
+    
     Returns
     -------
     out : ndarray
@@ -270,8 +268,7 @@ def convert_hcc_hpc(x, y, dsun_meters=None, angle_units='arcsec'):
         Distance from the observer to the Sun in meters. Default is 1 AU.
     angle_units : str
         Units of the data coordinates (e.g. arcsec, arcmin, degrees). Default is arcsec.
-    distance : float
-        
+    
     Returns
     -------
     out : ndarray
