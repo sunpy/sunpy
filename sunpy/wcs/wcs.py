@@ -52,7 +52,7 @@ rsun_meters = sun.constants.radius
 __all__ = ['_convert_angle_units', 'convert_pixel_to_data', 'convert_hpc_hg',
            'convert_data_to_pixel', 'convert_hpc_hcc', 'convert_hcc_hpc',
            'convert_hcc_hg', 'convert_hg_hcc', 'proj_tan',
-           'convert_hg_hpc',  'convert_to_coord', 'convert_hpc_hcc_xyz', 
+           'convert_hg_hpc',  'convert_to_coord', 
            'get_center']
 
 def _convert_angle_units(unit='arcsec'):
@@ -178,36 +178,7 @@ def convert_data_to_pixel(x, y, scale, reference_pixel, reference_coordinate):
 
     return pixelx, pixely
 
-def convert_hpc_hcc(x, y, dsun_meters=None, angle_units='arcsec'):
-    """Converts between Helioprojective-Cartesian (HPC) coordinates (hpx, hpy) into 
-    Heliocentric-Cartesian (HCC) coordinates, using equations 15 in 
-    Thompson (2006), A&A, 449, 791-803. Returns two dimensional coordinates in meters.
-
-    Parameters
-    ----------
-    x, y : float
-        Data coordinate in angle units (default is arcsec)
-    dsun_meters : float
-        Distance from the observer to the Sun in meters
-    angle_units : str
-        Units of the data coordinates (e.g. arcsec, arcmin, degrees). Default is arcsec.
-    
-    Returns
-    -------
-    out : ndarray
-        The  data coordinates (x,y) in heliocentric cartesian coordinates in meters.
-
-    Notes
-    -----
-
-    Examples
-    --------
-    
-    """
-    x, y, z = convert_hpc_hcc_xyz(x, y, dsun_meters=dsun_meters, angle_units=angle_units)
-    return x, y
-
-def convert_hpc_hcc_xyz(x, y, dsun_meters=None, angle_units='arcsec'):
+def convert_hpc_hcc(x, y, dsun_meters=None, angle_units='arcsec', z = False):
     """Converts from Helioprojective-Cartesian (HPC) coordinates into 
     Heliocentric-Cartesian (HCC) coordinates. Returns all three dimensions, x, y, z in
     meters.
@@ -220,7 +191,9 @@ def convert_hpc_hcc_xyz(x, y, dsun_meters=None, angle_units='arcsec'):
         Distance from the observer to the Sun in meters. Default is 1 AU.
     angle_units : str
         Units of the data coordinates (e.g. arcsec, arcmin, degrees). Default is arcsec.
-    
+    z : Bool
+        If true return the z coordinate as well.
+
     Returns
     -------
     out : ndarray
@@ -254,7 +227,10 @@ def convert_hpc_hcc_xyz(x, y, dsun_meters=None, angle_units='arcsec'):
     ry = distance * siny
     rz = dsun_meters - distance * cosy * cosx
 
-    return rx, ry, rz
+    if z:
+        return rx, ry, rz
+    else:
+        return, rx, ry
 
 def convert_hcc_hpc(x, y, dsun_meters=None, angle_units='arcsec'):
     """Convert Heliocentric-Cartesian (HCC) to angular 
@@ -262,7 +238,7 @@ def convert_hcc_hpc(x, y, dsun_meters=None, angle_units='arcsec'):
 
     Parameters
     ----------
-    x, y : float
+    x, y : float (meters)
         Data coordinate in meters.
     dsun_meters : float
         Distance from the observer to the Sun in meters. Default is 1 AU.
@@ -282,8 +258,7 @@ def convert_hcc_hpc(x, y, dsun_meters=None, angle_units='arcsec'):
     
     """
     
-    # Calculate the z coordinate by assuming that it is on the surface of the 
-    # Sun
+    # Calculate the z coordinate by assuming that it is on the surface of the Sun
     z = np.sqrt(rsun_meters ** 2 - x ** 2 - y ** 2)
     
     if dsun_meters is None:
@@ -296,10 +271,13 @@ def convert_hcc_hpc(x, y, dsun_meters=None, angle_units='arcsec'):
     if angle_units == 'arcsec':
         hpcx = 60 * 60 * hpcx
         hpcy = 60 * 60 * hpcy
-    
+    elif angle_units == 'arcmin':
+        hpcx = 60 * hpcx
+        hpcy = 60 * hpcy
+        
     return hpcx, hpcy
 
-def convert_hcc_hg(x, y, b0=0, l0=0):
+def convert_hcc_hg(x, y, b0_deg=0, l0_deg=0):
     """Convert from Heliocentric-Cartesian (HCC) (given in arcsec) to Heliographic 
     coordinates (HG) given in degrees.
     
@@ -307,17 +285,17 @@ def convert_hcc_hg(x, y, b0=0, l0=0):
     ----------
     x, y : float (meters)
         Data coordinate in meters. Z unit is assumed to be on the Sun.
-    b0 : float (degrees)
+    b0_deg : float (degrees)
         Tilt of the solar North rotational axis toward the observer 
         (heliographic latitude of the observer). Usually given as SOLAR_B0, 
         HGLT_OBS, or CRLT_OBS. Default is 0.
-    l0 : float (degrees)
+    l0_deg : float (degrees)
         Carrington longitude of central meridian as seen from Earth. Default is 0.
            
     Returns
     -------
-    out : ndarray
-        The  data coordinates (x,y) in heliographic coordinates in degrees.
+    out : ndarray (degrees)
+        The  data coordinates (lon, lat) in heliographic coordinates in degrees.
     
     Notes
     -----
@@ -328,30 +306,28 @@ def convert_hcc_hg(x, y, b0=0, l0=0):
     """
     z = np.sqrt(rsun_meters**2 - x**2 - y**2)
 
-    b0 = np.deg2rad(b0)
-    l0 = np.deg2rad(l0)
-    cosb = np.cos(b0)
-    sinb = np.sin(b0)
+    cosb = np.cos(np.deg2rad(b0_deg))
+    sinb = np.sin(np.deg2rad(b0_deg))
 
     hecr = np.sqrt(x**2 + y**2 + z**2)
-    hgln = np.arctan2(x, z * cosb - y * sinb) + l0
+    hgln = np.arctan2(x, z * cosb - y * sinb) + np.deg2rad(l0_deg)
     hglt = np.arcsin((y * cosb + z * sinb) / hecr)
     
     return np.rad2deg(hgln), np.rad2deg(hglt)
 
-def convert_hg_hcc(hglongitude, hglongitude, b0=0, l0=0, occultation=False, z=False):
+def convert_hg_hcc(hglon_deg, hglat_deg, b0_deg=0, l0_deg=0, occultation=False, z=False):
     """Convert from Heliographic coordinates (given in degrees) to 
     Heliocentric-Cartesian coordinates.
     
     Parameters
     ----------
-    hglongitude, hglatitude : float (degrees)
-        Data coordinate in meters. Z unit is assumed to be on the Sun.
-    b0 : float (degrees)
+    hglon_deg, hglat_deg : float (degrees)
+        Heliographic longitude and latitude in degrees.
+    b0_deg : float (degrees)
         Tilt of the solar North rotational axis toward the observer 
         (heliographic latitude of the observer). Usually given as SOLAR_B0, 
         HGLT_OBS, or CRLT_OBS. Default is 0.
-    l0 : float (degrees)
+    l0_deg : float (degrees)
         Carrington longitude of central meridian as seen from Earth. Default is 0.
     occultation : Bool
         If true set all points behind the Sun (e.g. not visible) to Nan.
@@ -361,7 +337,7 @@ def convert_hg_hcc(hglongitude, hglongitude, b0=0, l0=0, occultation=False, z=Fa
     Returns
     -------
     out : ndarray (meters)
-        The  data coordinates (x,y) in Heliocentric-Cartesian coordinates.
+        The data coordinates in Heliocentric-Cartesian coordinates.
     
     Notes
     -----
@@ -371,19 +347,13 @@ def convert_hg_hcc(hglongitude, hglongitude, b0=0, l0=0, occultation=False, z=Fa
     --------
     
     """
-    cx = np.deg2rad(1)
-    cy = np.deg2rad(1)
+    lon = np.deg2rad(hglon_deg)
+    lat = np.deg2rad(hglat_deg)
     
-    lon = cx * hgln
-    lat = cy * hglt
-    
-    b0 = np.deg2rad(b0)
-    l0 = np.deg2rad(l0)
+    cosb = np.cos(np.deg2rad(b0_deg))
+    sinb = np.sin(np.deg2rad(b0_deg))
 
-    cosb = np.cos(b0)
-    sinb = np.sin(b0)
-
-    lon = lon - l0
+    lon = lon - np.deg2rad(l0_deg)
 
     cosx = np.cos(lon)
     sinx = np.sin(lon)
@@ -405,28 +375,32 @@ def convert_hg_hcc(hglongitude, hglongitude, b0=0, l0=0, occultation=False, z=Fa
     else:
         return x, y
 
-def convert_hg_hpc(hglon, hglat, b0=0, l0=0, dsun_meters=None, angle_units='arcsec', 
+def convert_hg_hpc(hglon_deg, hglat_deg, b0_deg=0, l0_deg=0, dsun_meters=None, angle_units='arcsec', 
                    occultation=False):
     """Convert from Heliographic coordinates (HG) to Helioprojective-Cartesian 
     (HPC).
     
     Parameters
     ----------
-    hglongitude, hglatitude : float (degrees)
-        Data coordinate in meters. Z unit is assumed to be on the Sun.
-    b0 : float (degrees)
+    hglon_deg, hglat_deg : float (degrees)
+        Heliographic longitude and latitude in degrees.
+    b0_deg : float (degrees)
         Tilt of the solar North rotational axis toward the observer 
         (heliographic latitude of the observer). Usually given as SOLAR_B0, 
         HGLT_OBS, or CRLT_OBS. Default is 0.
-    l0 : float (degrees)
+    l0_deg : float (degrees)
         Carrington longitude of central meridian as seen from Earth. Default is 0.
     occultation : Bool
         If true set all points behind the Sun (e.g. not visible) to Nan.
+    dsun_meters : float (meters)
+        Distance between the observer and the Sun.
+    angle_units : str 
+        
     
     Returns
     -------
     out : ndarray (arcsec)
-        The  data coordinates (x,y) in Helioprojective-Cartesian coordinates.
+        The data coordinates (x,y) in Helioprojective-Cartesian coordinates.
     
     Notes
     -----
@@ -437,11 +411,11 @@ def convert_hg_hpc(hglon, hglat, b0=0, l0=0, dsun_meters=None, angle_units='arcs
     
     """
     
-    tempx, tempy = convert_hg_hcc(hglon, hglat, b0=b0, l0=b0, occultation=occultation)
+    tempx, tempy = convert_hg_hcc(hglon_deg, hglat_deg, b0_deg=b0_deg, l0_deg=l0_deg, occultation=occultation)
     x, y = convert_hcc_hpc(tempx, tempy, dsun_meters=dsun_meters, angle_units=angle_units)
     return x, y
 
-def convert_hpc_hg(x, y, b0=0, l0=0, dsun_meters=None, angle_units='arcsec'):
+def convert_hpc_hg(x, y, b0_deg=0, l0_deg=0, dsun_meters=None, angle_units='arcsec'):
     """Convert from Helioprojective-Cartesian (HPC) to Heliographic coordinates 
     (HG) in degrees.
     
@@ -456,9 +430,9 @@ def convert_hpc_hg(x, y, b0=0, l0=0, dsun_meters=None, angle_units='arcsec'):
     l0 : float (degrees)
         Carrington longitude of central meridian as seen from Earth. Default is 0.
     dsun_meters : float (meters)
-        If true set all points behind the Sun (e.g. not visible) to Nan.
+        Distance between the observer and the Sun.
     angle_units : str
-        
+        Units used for input x and y. Default is arcsec.
     
     Returns
     -------
@@ -474,8 +448,8 @@ def convert_hpc_hg(x, y, b0=0, l0=0, dsun_meters=None, angle_units='arcsec'):
     
     """
     
-    tempx, tempy = convert_hpc_hcc(x, y, dsun_meters, angle_units)
-    lon, lat = convert_hcc_hg(tempx, tempy, b0, l0)
+    tempx, tempy = convert_hpc_hcc(x, y, dsun_meters=dsun_meters, angle_units=angle_units)
+    lon, lat = convert_hcc_hg(tempx, tempy, b0_deg=b0_deg, l0_deg=l0_deg)
     return lon, lat
 
 def proj_tan(x, y, force=False):
