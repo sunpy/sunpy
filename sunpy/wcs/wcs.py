@@ -178,7 +178,7 @@ def convert_data_to_pixel(x, y, scale, reference_pixel, reference_coordinate):
 
     return pixelx, pixely
 
-def convert_hpc_hcc(x, y, dsun_meters=None, angle_units='arcsec', z = False):
+def convert_hpc_hcc(x, y, dsun_meters=None, angle_units='arcsec', z=False):
     """Converts from Helioprojective-Cartesian (HPC) coordinates into 
     Heliocentric-Cartesian (HCC) coordinates. Returns all three dimensions, x, y, z in
     meters.
@@ -227,10 +227,10 @@ def convert_hpc_hcc(x, y, dsun_meters=None, angle_units='arcsec', z = False):
     ry = distance * siny
     rz = dsun_meters - distance * cosy * cosx
 
-    if z:
+    if z == True:
         return rx, ry, rz
     else:
-        return, rx, ry
+        return rx, ry
 
 def convert_hcc_hpc(x, y, dsun_meters=None, angle_units='arcsec'):
     """Convert Heliocentric-Cartesian (HCC) to angular 
@@ -366,11 +366,10 @@ def convert_hg_hcc(hglon_deg, hglat_deg, b0_deg=0, l0_deg=0, occultation=False, 
     z = rsun_meters * (siny * sinb + cosy * cosx * cosb)
     
     if occultation:
-        index = (z < 0)
-        x[index] = np.nan
-        y[index] = np.nan
+        x[z < 0] = np.nan
+        y[z < 0] = np.nan
 
-    if z:
+    if z == True:
         return x, y, z
     else:
         return x, y
