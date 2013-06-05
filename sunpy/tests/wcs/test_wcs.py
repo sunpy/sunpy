@@ -15,6 +15,13 @@ img = sunpy.make_map(sunpy.AIA_171_IMAGE)
 
 wcs.wcs.rsun_meters = img.rsun_meters
 
+#def test_convert_pixel_to_data():
+#    actual = 
+#    reference_pixel = [img.reference_pixel['x'], img.reference_pixel['y']]
+#    reference_coordinate = [img.reference_coordinate['x'], img.reference_coordinate['y']]
+#    scale = [img.scale['x'], img.scale['y']]
+#    actual = wcs.convert_pixel_to_data(scale,img.shape, reference_pixel, reference_coordinate, 0, 0)
+
 def test_convert_angle_units():
     actual = np.array([wcs._convert_angle_units(), wcs._convert_angle_units('arcsec'),
         wcs._convert_angle_units('arcmin'), wcs._convert_angle_units('deg'), 
@@ -58,8 +65,8 @@ def test_conv_hg_hpc():
     assert_allclose(result, known_answer, rtol=1e-1, atol=0)
   
 def test_conv_hpc_hg():
-    coord = [381.737592, 747.072612]
-    known_answer = [34.0, 45.0]
+    coord = [382, 748]
+    known_answer = [34.091299, 45.095130]
     result = wcs.convert_hpc_hg(coord[0], coord[1], dsun_meters=img.dsun, 
                                 b0=img.heliographic_latitude,
                                 l0=img.heliographic_longitude, angle_units = img.units['x'])
