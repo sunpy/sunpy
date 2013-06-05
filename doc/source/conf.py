@@ -22,6 +22,9 @@ class Mock(object):
     def __call__(self, *args, **kwargs):
         return Mock()
 
+    def __iter__(self):
+        return iter([Mock()])
+
     __add__  = __mul__  = __getitem__ = __setitem__ = \
 __delitem__ = __sub__ =  __floordiv__ = __mod__ = __divmod__ = \
 __pow__ = __lshift__ = __rshift__ = __and__ = __xor__ = __or__ = \
@@ -29,13 +32,14 @@ __rmul__  = __rsub__  = __rfloordiv__ = __rmod__ = __rdivmod__ = \
 __rpow__ = __rlshift__ = __rrshift__ = __rand__ = __rxor__ = __ror__ = \
 __imul__  = __isub__  = __ifloordiv__ = __imod__ = __idivmod__ = \
 __ipow__ = __ilshift__ = __irshift__ = __iand__ = __ixor__ = __ior__ = \
+__div__ = __rdiv__ = __idiv__ = __truediv__ = __rtruediv__ = __itruediv__ = \
 __neg__ = __pos__ = __abs__ = __invert__ = __call__
 
     def __getattr__(self, name):
         if name in ('__file__', '__path__'):
             return '/dev/null'
-        elif name[0] != '_' and name[0] == name[0].upper():
-            return type(name, (), {})
+        #elif name[0] != '_' and name[0] == name[0].upper():
+        #    return type(name, (), {})
         else:
             return Mock(**vars(self))
 
@@ -89,7 +93,7 @@ MOCK_MODULES = [
     'sunpy.gui.ui.mainwindow.widgets.figure_canvas',
     'sunpy.gui.ui.mainwindow.widgets.toolbars',
     'sunpy.gui.ui.mainwindow.resources',
-    'sunpy.cm','sunpy.cm.cm']
+    'bs4']
 for mod_name in MOCK_MODULES:
     sys.modules[mod_name] = Mock(pi=math.pi, G=6.67364e-11)
 
