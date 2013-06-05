@@ -51,7 +51,7 @@ rsun_meters = sun.constants.radius
 
 __all__ = ['_convert_angle_units', 'convert_pixel_to_data', 'convert_hpc_hg',
            'convert_data_to_pixel', 'convert_hpc_hcc', 'convert_hcc_hpc',
-           'convert_hcc_hg', 'convert_hg_hcc', 'convert_hg_hcc_xyz', 'proj_tan',
+           'convert_hcc_hg', 'convert_hg_hcc', 'proj_tan',
            'convert_hg_hpc',  'convert_to_coord', 'convert_hpc_hcc_xyz', 
            'get_center']
 
@@ -339,7 +339,7 @@ def convert_hcc_hg(x, y, b0=0, l0=0):
     
     return np.rad2deg(hgln), np.rad2deg(hglt)
 
-def convert_hg_hcc(hglongitude, hglatitude, b0=0, l0=0, occultation=False):
+def convert_hg_hcc(hglongitude, hglongitude, b0=0, l0=0, occultation=False, z=False):
     """Convert from Heliographic coordinates (given in degrees) to 
     Heliocentric-Cartesian coordinates.
     
@@ -355,44 +355,8 @@ def convert_hg_hcc(hglongitude, hglatitude, b0=0, l0=0, occultation=False):
         Carrington longitude of central meridian as seen from Earth. Default is 0.
     occultation : Bool
         If true set all points behind the Sun (e.g. not visible) to Nan.
-    
-    Returns
-    -------
-    out : ndarray (meters)
-        The  data coordinates (x,y) in Heliocentric-Cartesian coordinates.
-    
-    Notes
-    -----
-            
-    Examples
-    --------
-    
-    """
-    x, y, z = convert_hg_hcc_xyz(hglongitude, hglatitude, b0, l0)
-    
-    if occultation:
-        index = (z < 0)
-        x[index] = np.nan
-        y[index] = np.nan
-    
-    return x, y
-
-def convert_hg_hcc_xyz(hgln, hglt, b0=0, l0=0):
-    """Convert from Heliographic coordinates (given in degrees) to 
-    Heliocentric-Cartesian coordinates.
-    
-    Parameters
-    ----------
-    hglongitude, hglatitude : float (degrees)
-        Data coordinate in meters. Z unit is assumed to be on the Sun.
-    b0 : float (degrees)
-        Tilt of the solar North rotational axis toward the observer 
-        (heliographic latitude of the observer). Usually given as SOLAR_B0, 
-        HGLT_OBS, or CRLT_OBS. Default is 0.
-    l0 : float (degrees)
-        Carrington longitude of central meridian as seen from Earth. Default is 0.
-    occultation : Bool
-        If true set all points behind the Sun (e.g. not visible) to Nan.
+    z : Bool
+        If true return the z coordinate as well.
     
     Returns
     -------
@@ -431,7 +395,15 @@ def convert_hg_hcc_xyz(hgln, hglt, b0=0, l0=0):
     y = rsun_meters * (siny * cosb - cosy * cosx * sinb)
     z = rsun_meters * (siny * sinb + cosy * cosx * cosb)
     
-    return x, y, z
+    if occultation:
+        index = (z < 0)
+        x[index] = np.nan
+        y[index] = np.nan
+
+    if z:
+        return x, y, z
+    else:
+        return x, y
 
 def convert_hg_hpc(hglon, hglat, b0=0, l0=0, dsun_meters=None, angle_units='arcsec', 
                    occultation=False):
