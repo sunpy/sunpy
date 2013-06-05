@@ -177,7 +177,7 @@ def convert_data_to_pixel(x, y, scale, reference_pixel, reference_coordinate):
 
     return pixelx, pixely
 
-def convert_hpc_hcc(x, y, dsun_meters=None, angle_units='arcsec', distance=None):
+def convert_hpc_hcc(x, y, dsun_meters=None, angle_units='arcsec'):
     """Converts between Helioprojective-Cartesian (HPC) coordinates (hpx, hpy) into 
     Heliocentric-Cartesian (HCC) coordinates, using equations 15 in 
     Thompson (2006), A&A, 449, 791-803. Returns two dimensional coordinates in meters.
@@ -204,10 +204,10 @@ def convert_hpc_hcc(x, y, dsun_meters=None, angle_units='arcsec', distance=None)
     --------
     
     """
-    x, y, z = convert_hpc_hcc_xyz(x, y, dsun_meters=dsun_meters, angle_units=angle_units, distance=distance)
+    x, y, z = convert_hpc_hcc_xyz(x, y, dsun_meters=dsun_meters, angle_units=angle_units)
     return x, y
 
-def convert_hpc_hcc_xyz(x, y, dsun_meters=None, angle_units='arcsec', distance=None):
+def convert_hpc_hcc_xyz(x, y, dsun_meters=None, angle_units='arcsec'):
     """Converts from Helioprojective-Cartesian (HPC) coordinates into 
     Heliocentric-Cartesian (HCC) coordinates. Returns all three dimensions, x, y, z in
     meters.
@@ -246,11 +246,10 @@ def convert_hpc_hcc_xyz(x, y, dsun_meters=None, angle_units='arcsec', distance=N
     if dsun_meters is None:
         dsun_meters = sun.constants.au
 
-    if distance is None: 
-        q = dsun_meters * cosy * cosx
-        distance = q ** 2 - dsun_meters ** 2 + rsun_meters ** 2
-        # distance[np.where(distance < 0)] = np.sqrt(-1)
-        distance = q - np.sqrt(distance)
+    q = dsun_meters * cosy * cosx
+    distance = q ** 2 - dsun_meters ** 2 + rsun_meters ** 2
+    # distance[np.where(distance < 0)] = np.sqrt(-1)
+    distance = q - np.sqrt(distance)
 
     rx = distance * cosy * sinx
     ry = distance * siny
