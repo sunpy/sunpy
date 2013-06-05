@@ -34,7 +34,7 @@
         HGLT_OBS, and CRLT_OBS are all synonyms.
     * l0: Carrington longitude of central meridian as seen from Earth.
     * dsun_meters: Distance between observer and the Sun. Default is 1 AU.
-    * rsun: Radius of the Sun in meters. Default is 6.955e8 meters. This valued is stored
+    * rsun_meters: Radius of the Sun in meters. Default is 6.955e8 meters. This valued is stored
       locally in this module and can be modified if necessary.
     
     References
@@ -107,6 +107,7 @@ def convert_pixel_to_data(size, scale, reference_pixel,
         x, y = np.meshgrid(np.arange(size[0]), np.arange(size[1]))
 
     # note that crpix[] counts pixels starting at 1
+    
     coordx = (x - (crpix[0] - 1)) * cdelt[0] + crval[0]
     coordy = (y - (crpix[1] - 1)) * cdelt[1] + crval[1]
     
@@ -165,9 +166,9 @@ def convert_data_to_pixel(x, y, scale, reference_pixel, reference_coordinate):
     """
     
     # TODO: Needs to check what coordinate system the data is given in
-    cdelt = np.array([scale_x, scale_y])
-    crpix = np.array([reference_pixel_x, reference_pixel_y])
-    crval = np.array([reference_coordinate_x, reference_coordinate_y])
+    cdelt = np.array(scale)
+    crpix = np.array(reference_pixel)
+    crval = np.array(reference_coordinate)
     # De-apply any tabular projections.
     # coord = inv_proj_tan(coord)
     
