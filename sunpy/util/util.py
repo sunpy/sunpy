@@ -11,7 +11,6 @@ __all__ = ['to_signed', 'toggle_pylab', 'unique', 'print_table',
            'replacement_filename', 'goes_flare_class', 'merge', 'common_base',
            'minimal_pairs', 'polyfun_at']
 
-
 def to_signed(dtype):
     """ Return dtype that can hold data of passed dtype but is signed.
     Raise ValueError if no such dtype exists.
