@@ -24,3 +24,5 @@ SunPy Code Reference
    wcs
    spectrogram
    callisto
+   util
+   image
