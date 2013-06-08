@@ -59,3 +59,29 @@ def test_parse_time_ISO():
     
 def test_break_time():
     assert time.break_time(datetime(2007, 5, 4, 21, 8, 12)) == '20070504_210812'
+
+def test_day_of_year():
+    # Note that 2012 is a leap year, 2011 is a standard year
+    # test that it starts at 1
+    assert time.day_of_year('2011/01/01') == 1.0
+    # test fractional day
+    assert time.day_of_year('2011/01/01 06:00') == 1.25
+    assert time.day_of_year('2011/01/01 12:00') == 1.50
+    assert time.day_of_year('2011/01/01 18:00') == 1.75
+    # test correct number of days in a (standard) year
+    assert time.day_of_year('2011/12/12') == 365
+    # test correct number of days in a (leap) year
+    assert time.day_of_year('2012/12/12') == 366
+    # test a few extra dates in standard year
+    assert time.day_of_year('2011/08/01') == 213
+    assert time.day_of_year('2011/04/10') == 100
+    assert time.day_of_year('2011/01/31') == 31
+    assert time.day_of_year('2011/09/30') == 273
+    # test a few extra dates in a leap year
+    assert time.day_of_year('2011/08/01') == 214
+    assert time.day_of_year('2011/04/10') == 101
+    assert time.day_of_year('2011/01/31') == 31
+    assert time.day_of_year('2011/09/30') == 274
+    
+    
+    
