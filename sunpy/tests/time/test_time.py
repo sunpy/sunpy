@@ -69,19 +69,19 @@ def test_day_of_year():
     assert time.day_of_year('2011/01/01 12:00') == 1.50
     assert time.day_of_year('2011/01/01 18:00') == 1.75
     # test correct number of days in a (standard) year
-    assert time.day_of_year('2011/12/12') == 365
+    assert time.day_of_year('2011/12/31') == 365
     # test correct number of days in a (leap) year
-    assert time.day_of_year('2012/12/12') == 366
+    assert time.day_of_year('2012/12/31') == 366
     # test a few extra dates in standard year
     assert time.day_of_year('2011/08/01') == 213
     assert time.day_of_year('2011/04/10') == 100
     assert time.day_of_year('2011/01/31') == 31
     assert time.day_of_year('2011/09/30') == 273
     # test a few extra dates in a leap year
-    assert time.day_of_year('2011/08/01') == 214
-    assert time.day_of_year('2011/04/10') == 101
-    assert time.day_of_year('2011/01/31') == 31
-    assert time.day_of_year('2011/09/30') == 274
+    assert time.day_of_year('2012/08/01') == 214
+    assert time.day_of_year('2012/04/10') == 101
+    assert time.day_of_year('2012/01/31') == 31
+    assert time.day_of_year('2012/09/30') == 274
     
     
     
