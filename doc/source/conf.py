@@ -34,8 +34,6 @@ __neg__ = __pos__ = __abs__ = __invert__ = __call__
     def __getattr__(self, name):
         if name in ('__file__', '__path__'):
             return '/dev/null'
-        if name == 'sqrt':
-            return math.sqrt
         elif name[0] != '_' and name[0] == name[0].upper():
             return type(name, (), {})
         else:
@@ -74,11 +72,24 @@ __lt__
 MOCK_MODULES = [
     'scipy', 'matplotlib', 'matplotlib.pyplot', 'pyfits',
     'scipy.constants.constants', 'matplotlib.cm',
-    'matplotlib.image', 'matplotlib.colors', 'sunpy.cm',
+    'matplotlib.image', 'matplotlib.colors',
     'pandas', 'pandas.io', 'pandas.io.parsers',
     'suds', 'matplotlib.ticker', 'matplotlib.colorbar',
     'matplotlib.dates', 'scipy.optimize', 'scipy.ndimage',
-    'matplotlib.figure', 'scipy.ndimage.interpolation', 'bs4']
+    'matplotlib.figure', 'scipy.ndimage.interpolation', 'bs4',
+    'scipy.interpolate',
+    'matplotlib.cbook','matplotlib.axes','matplotlib.transforms',
+    'matplotlib.gridspec','matplotlib.artist','matplotlib.axis',
+    'matplotlib.collections','matplotlib.contour','matplotlib.path',
+    'matplotlib.patches','matplotlib.animation','matplotlib.widgets',
+    'mpl_toolkits','mpl_toolkits.axes_grid1',
+    'mpl_toolkits.axes_grid1.axes_size',
+    #'PyQt4','PyQt4.QtCore','PyQt4.QtGui',
+    #'matplotlib.backends.backend_qt4agg',
+    'sunpy.gui.ui.mainwindow.widgets.figure_canvas',
+    'sunpy.gui.ui.mainwindow.widgets.toolbars',
+    'sunpy.gui.ui.mainwindow.resources',
+    'sunpy.cm','sunpy.cm.cm']
 for mod_name in MOCK_MODULES:
     sys.modules[mod_name] = Mock(pi=math.pi, G=6.67364e-11)
 
@@ -282,3 +293,7 @@ latex_documents = [
 import glob
 autosummary_generate = (glob.glob("reference/*.rst") + 
                         glob.glob("reference/*/*.rst"))
+
+# Uncomment this to squelch numpydoc from autolisting class members, which
+# generates a ridiculous number of warnings.
+#numpydoc_show_class_members = False

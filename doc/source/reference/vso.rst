@@ -4,7 +4,7 @@
 VSO
 ===
 
-.. currentmodule:: sunpy.net.vso
+.. module:: sunpy.net.vso
 
 Introduction
 ^^^^^^^^^^^^

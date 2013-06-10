@@ -4,7 +4,7 @@
 Light Curves
 ============
 
-.. currentmodule:: sunpy.lightcurve
+.. module:: sunpy.lightcurve
 
 Overview
 ^^^^^^^^
