@@ -475,6 +475,6 @@ def convert_to_coord(x, y, from_coord, to_coord, b0_deg=0, l0_deg=0, dsun_meters
     elif (from_coord == 'hg') and (to_coord == 'hpc'):
         rx, ry = convert_hg_hpc(x, y, b0_deg=b0_deg, l0_deg=l0_deg, dsun_meters=dsun_meters, angle_units=angle_units)
     elif (from_coord == 'hpc') and (to_coord == 'hcc'):
-        rx, ry = convert_hpc_hcc(x, y, dsun_meters=dsun_meters, angle_units=angle_units):
+        rx, ry = convert_hpc_hcc(x, y, dsun_meters=dsun_meters, angle_units=angle_units)
     
     return rx, ry
