@@ -38,6 +38,8 @@ __neg__ = __pos__ = __abs__ = __invert__ = __call__
     def __getattr__(self, name):
         if name in ('__file__', '__path__'):
             return '/dev/null'
+        # This clause is commented out because it makes an assumption with
+        # case convention that is not necessarily true
         #elif name[0] != '_' and name[0] == name[0].upper():
         #    return type(name, (), {})
         else:
@@ -88,19 +90,23 @@ MOCK_MODULES = [
     'matplotlib.patches','matplotlib.animation','matplotlib.widgets',
     'mpl_toolkits','mpl_toolkits.axes_grid1',
     'mpl_toolkits.axes_grid1.axes_size',
+
+    # The following lines are for sunpy.gui, which is a mess
     #'PyQt4','PyQt4.QtCore','PyQt4.QtGui',
     #'matplotlib.backends.backend_qt4agg',
     'sunpy.gui.ui.mainwindow.widgets.figure_canvas',
     'sunpy.gui.ui.mainwindow.widgets.toolbars',
     'sunpy.gui.ui.mainwindow.resources',
-    'bs4']
+
+    'scipy.constants']
 for mod_name in MOCK_MODULES:
     sys.modules[mod_name] = Mock(pi=math.pi, G=6.67364e-11)
 
+# We want np.dtype() to return a special Mock class because it shows up as a
+# default value for arguments (see sunpy.spectra.spectrogram)
 sys.modules['numpy'] = Mock(pi=math.pi, G=6.67364e-11,
                             ndarray=type('ndarray', (), {}),
                             dtype=lambda _: Mock(_mock_repr='np.dtype(\'float32\')'))
-sys.modules['scipy.constants'] = Mock(pi=math.pi, G=6.67364e-11)
 
 
 # If extensions (or modules to document with autodoc) are in another directory,
