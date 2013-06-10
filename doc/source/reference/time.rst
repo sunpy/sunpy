@@ -7,5 +7,5 @@ Date and time related functionality.
 
 .. currentmodule:: sunpy.time
 
-.. automodule:: sunpy.time
+.. automodule:: sunpy.time.time
    :members:
