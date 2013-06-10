@@ -460,22 +460,21 @@ def proj_tan(x, y, force=False):
     # TODO: write proj_tan function
     return x, y
     
-def convert_to_coord(x, y, from_coord, to_coord, b0=0, l0=0):
+def convert_to_coord(x, y, from_coord, to_coord, b0_deg=0, l0_deg=0, dsun_meters=None, angle_units='arcsec'):
     """Apply a coordinate transform to coordinates. Right now can only do hpc 
     to hcc to hg"""
     
     if (from_coord == 'hcc') and (to_coord == 'hg'):
-         rx, ry = convert_hcc_hg(x, y, b0, l0)
+        rx, ry = convert_hcc_hg(x, y, b0_deg=b0_deg, l0_deg=l0_deg)
     elif (from_coord == 'hpc') and (to_coord == 'hg'):
-         #rx, ry = convert_hpc_hg(x, y, b0, l0)
-         convert_hpc_hg(x, y, b0=0, l0=0, dsun_meters=None, angle_units='arcsec')
+        rx, ry = convert_hpc_hg(x, y, b0_deg=b0_deg, l0_deg=l0_deg, dsun_meters=dsun_meters, angle_units=angle_units)
     elif (from_coord == 'hg') and (to_coord == 'hcc'):
-         rx, ry = convert_hcc_hg(x, y, b0, l0)
+        rx, ry = convert_hg_hcc(x, y, b0_deg=b0_deg, l0_deg=l0_deg)
     elif (from_coord == 'hcc') and (to_coord == 'hpc'):
-         rx, ry = convert_hcc_hg(x, y, b0, l0)
+        rx, ry = convert_hcc_hpc(x, y, dsun_meters=dsun_meters, angle_units=angle_units)
     elif (from_coord == 'hg') and (to_coord == 'hpc'):
-         rx, ry = convert_hcc_hg(x, y, b0, l0)
+        rx, ry = convert_hg_hpc(x, y, b0_deg=b0_deg, l0_deg=l0_deg, dsun_meters=dsun_meters, angle_units=angle_units)
     elif (from_coord == 'hpc') and (to_coord == 'hcc'):
-         rx, ry = convert_hcc_hg(x, y, b0, l0)
+        rx, ry = convert_hpc_hcc(x, y, dsun_meters=dsun_meters, angle_units=angle_units):
     
     return rx, ry
