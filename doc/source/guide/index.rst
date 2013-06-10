@@ -18,3 +18,5 @@ Welcome to the SunPy User Guide!
    spectra
    customization
    troubleshooting
+   lightcurve
+   git

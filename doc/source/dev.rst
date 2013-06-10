@@ -17,7 +17,7 @@ a Distributed Version Control system. Code branches are hosted on
 for Open-Source software.
 
 Creating Your Own Repo 
-^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^
 
 **Overview**
 
@@ -61,7 +61,7 @@ GitHub: ::
 Each contributer to SunPy has their own copy of the SunPy master repo. When
 working on the code, changes are made to this copied repo, and only when the
 changes are completed, and have been verified to work, are they pull requested back
-to the master repo. GitHub provides a simple mechanism to setup your own
+to the upstream repo. GitHub provides a simple mechanism to setup your own
 personal repo by providing an option to `fork a repository 
 <http://help.github.com/fork-a-repo/>`_. When you create a fork of a GitHub
 project, a copy of the repo will automatically be created for you, and a link
@@ -137,7 +137,7 @@ the above).
 
 Developers should create new branches for the features they are working on. 
 When they have finished making changes and the code has been tested and 
-verified to be working well, the code can be merged back into the SunPy master 
+verified to be working well, the code can be merged back into the SunPy 
 repo. This is usually done through something called a pull request. 
 
 Example Workflow
@@ -207,13 +207,13 @@ All contributed code to SunPy must be submitted as a "pull request". To do this 
 website and to your repo (remember to select the branch) then click on the "Pull
 Request" button (in the upper right hand corner next to the Fork button which you've
 used before). All initial pull requests must be done to the staging branch of sunpy 
-(NEVER TO THE MAIN BRANCH!). The staging branch is used as a test best for new code. 
+(NEVER TO THE MAIN BRANCH!). The staging branch is used as a test bed for new code. 
 This will submit your code to a review. You will likely
 receive some constructive comments on your code. To address these you can simply work
 on your code and push those changes to your local repo. Those changes will be reflected
 in your pull request. Once a member of 
 the SunPy dev team approves your pull request then your code will be 
-merged into the main SunPy branch
+merged into the main SunPy repo
 and your code will be part of the main SunPy code. Congratulations!
 
 And that's it! It may seem like a lot at first but once you go through the
