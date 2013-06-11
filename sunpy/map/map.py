@@ -92,7 +92,7 @@ class Map(np.ndarray, Parent):
         Instrument name
     measurement : str, int
         Measurement name. In some instances this is the wavelength of image.
-    name: str
+    name : str
         Human-readable description of map-type
     nickname : str
         An abbreviated human-readable description of the map-type; part of
