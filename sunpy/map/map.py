@@ -68,10 +68,6 @@ class Map(np.ndarray, Parent):
         Dictionary representation of the original FITS header
     carrington_longitude : str
         Carrington longitude (crln_obs)
-    center : dict
-        X and Y coordinate of the center of the map in units.
-        Usually represents the offset between the center of the Sun and the
-        center of the map.
     cmap : matplotlib.colors.Colormap
         A Matplotlib colormap to be applied to the data
     coordinate_system : dict

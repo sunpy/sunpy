@@ -557,7 +557,12 @@ variables have a trailing underscore, e.g., "xxx_".
 
 This usually occurs when the text following a directive is wrapped to the next
 line without properly indenting a multi-line text block.
-        
+
+**WARNING: toctree references unknown document '...'** /
+**WARNING: toctree contains reference to nonexisting document**
+
+This pair of errors is due to the way numpydoc scrapes class members.
+
 Testing
 -------
 
