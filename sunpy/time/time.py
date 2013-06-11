@@ -181,29 +181,66 @@ def parse_time(time_string):
         raise ValueError("%s is not a valid time string!" % time_string)
     
 
-def is_time(time):
-    """Returns true if the input is a valid date/time representation"""
+def is_time(time_string):
+    """Returns true if the input is a valid date/time representation
+    
+    Parameters
+    ----------
+    time_string : string
+        Datestring to parse
+
+    Returns
+    -------
+    out : bool
+        True if can be parsed by parse_time
+
+    Examples
+    --------
+    >>> sunpy.time.parse_time('2012/08/01')
+    >>> sunpy.time.parse_time('2005-08-04T00:01:02.000Z')
+
+    .. todo:: add ability to parse tai (International Atomic Time seconds since 
+    Jan 1, 1958)"""
     if None:
         return False
-    elif isinstance(time, datetime):
+    elif isinstance(time_string, datetime):
         return True
 
     try:
-        parse_time(time)
+        parse_time(time_string)
     except ValueError:
         return False
     else:
         return True
 
 
-def day_of_year(t=None):
-    """Returns the day of year."""
-    SECONDS_IN_DAY = 60 * 60 * 24.0
-    time = parse_time(t)
-    time_diff = parse_time(t) - datetime(time.year, 1, 1, 0, 0, 0)
-    result = time_diff.days + time_diff.seconds / SECONDS_IN_DAY
-    return result
+def day_of_year(time_string):
+    """Returns the (fractional) day of year.
+        
+    Parameters
+    ----------
+    time_string : string
+        A parse_time compatible string
 
+    Returns
+    -------
+    out : float
+        The fractional day of year (where Jan 1st is 1).
+
+    Examples
+    --------
+    >>> sunpy.time.day_of_year('2012/01/01')
+    1.00
+    >>> sunpy.time.day_of_year('2012/08/01')
+    214.00
+    >>> sunpy.time.day_of_year('2005-08-04T00:18:02.000Z')
+    216.01252314814815
+
+    """
+    SECONDS_IN_DAY = 60 * 60 * 24.0
+    time = parse_time(time_string)
+    time_diff = time - datetime(time.year, 1, 1, 0, 0, 0)
+    return time_diff.days + time_diff.seconds / SECONDS_IN_DAY + 1
 
 def break_time(t=None):
     """Given a time returns a string. Useful for naming files."""
