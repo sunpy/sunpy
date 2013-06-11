@@ -37,11 +37,11 @@ class LightCurve(object):
 
     Attributes
     ----------
+    header : string, dict
+        The comment string or header associated with the light curve input
     data : pandas.DataFrame
         An pandas DataFrame prepresenting one or more fields as they vary with 
         respect to time.
-    header : string, dict
-        The comment string or header associated with the light curve input
 
     Examples
     --------
