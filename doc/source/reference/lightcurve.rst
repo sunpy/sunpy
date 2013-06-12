@@ -29,7 +29,7 @@ instrument-specific subclasses. Each of these are described below.
 .. autoclass:: LYRALightCurve
 
 :class:`LogicalLightCurve`
-"""""""""""""""""""""""
+""""""""""""""""""""""""""
 .. autoclass:: LogicalLightCurve
 
 :class:`GOESLightCurve`

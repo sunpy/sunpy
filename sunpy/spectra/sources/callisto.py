@@ -107,8 +107,8 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
     """ Classed used for dynamic spectra coming from the Callisto network.
     
     
-    Additional (not inherited) parameters
-    -------------------------------------
+    Attributes
+    ----------
     header : pyfits.Header
         main header of the FITS file
     axes_header : pyfits.Header
