@@ -124,10 +124,7 @@ class Map(RegisteredFactoryBase):
             # Otherwise, each pair in the list gets built on its own
             new_maps = list()
             
-            for pair in data_header_pairs:
-                data, header = zip(pair)
-                data = data[0]
-                header = header[0]
+            for data, header in data_header_pairs:
                 # Test to see which type of Map this pair is.  If none of the
                 # registered Map types match, use a generic map.
                 WidgetType = None
