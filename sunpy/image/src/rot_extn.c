@@ -43,6 +43,8 @@ This with args of array, number and keywords.
 #include <rot_extn.h>
 
 
+static char docstring[] =
+"sunpy.image.Crotate.affine_transformation(input, matrix, offset=[0.0, 0.0], kernel=Crotate.BICUBIC, cubic=-0.5, mode='constant', cval=0.0)\n\nApply an affine transformation to an image array\n\nParameters\n----------\ninput : ndarray\nmatrix : ndarray\noffset\nkernel\ncubic\nmode\ncval";
 
 /* Function called on Python function call via method definition map
    below.  Takes as args two np arrays and optionally a tuple, an int,
@@ -133,7 +135,7 @@ static PyObject *rot_shift_scale_args(PyObject *dummy, PyObject *args, PyObject 
 
 /* This defines the method names and maps to C fns */
 static PyMethodDef my_methods[] = {
-  { "affine_transform", (PyCFunction)rot_shift_scale_args, METH_VARARGS | METH_KEYWORDS , "apply an affine transform to an image array" },
+  { "affine_transform", (PyCFunction)rot_shift_scale_args, METH_VARARGS | METH_KEYWORDS , docstring },
   {NULL, NULL, 0, NULL}        /* Sentinel */
 };
 
