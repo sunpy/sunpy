@@ -74,11 +74,11 @@ def convert_pixel_to_data(size, scale, reference_pixel,
     ----------
     size : 2d ndarray
         Number of pixels in width and height.
-   scale : 2d ndarray
+    scale : 2d ndarray
         The size of a pixel (dx,dy) in data coordinates (equivalent to WCS/CDELT)
     reference_pixel : 2d ndarray
         The reference pixel (x,y) at which the reference coordinate is given (equivalent to WCS/CRPIX)
-    reference_coordinate: 2d ndarray
+    reference_coordinate : 2d ndarray
         The data coordinate (x, y) as measured at the reference pixel (equivalent to WCS/CRVAL)
     x,y : int or ndarray
         The pixel values at which data coordinates are requested. If none are given, 
@@ -127,7 +127,7 @@ def get_center(size, scale, reference_pixel, reference_coordinate):
         The size of a pixel (dx,dy) in data coordinates (equivalent to WCS/CDELT)
     reference_pixel : 2d ndarray
         The reference pixel (x,y) at which the reference coordinate is given (equivalent to WCS/CRPIX)
-    reference_coordinate: 2d ndarray
+    reference_coordinate : 2d ndarray
         The data coordinate (x, y) as measured at the reference pixel (equivalent to WCS/CRVAL)
           
     Returns
@@ -152,7 +152,7 @@ def convert_data_to_pixel(x, y, scale, reference_pixel, reference_coordinate):
         The size of a pixel (dx,dy) in data coordinates (equivalent to WCS/CDELT)
     reference_pixel : 2d ndarray
         The reference pixel (x,y) at which the reference coordinate is given (equivalent to WCS/CRPIX)
-    reference_coordinate: 2d ndarray
+    reference_coordinate : 2d ndarray
         The data coordinate (x, y) as measured at the reference pixel (equivalent to WCS/CRVAL)
         
     Returns
