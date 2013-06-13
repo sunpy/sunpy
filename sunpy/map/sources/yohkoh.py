@@ -7,13 +7,13 @@ __email__ = "jack.ireland@nasa.gov"
 import numpy as np
 from matplotlib import colors
 
-from sunpy.map import Map
+from sunpy.map import GenericMap
 from sunpy.cm import cm
 from sunpy.sun import constants
 
 __all__ = ['SXTMap']
 
-class SXTMap(Map):
+class SXTMap(GenericMap):
     """SXT Image Map definition
     
     References
@@ -71,6 +71,6 @@ class SXTMap(Map):
         return colors.Normalize(vmin, vmax)
 
     @classmethod
-    def is_datasource_for(cls, header):
+    def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an SXT image"""
         return header.get('instrume') == 'SXT'
