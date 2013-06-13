@@ -4,12 +4,12 @@
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
-from sunpy.map import Map
+from sunpy.map import GenericMap
 from sunpy.cm import cm
 
 __all__ = ['SWAPMap']
 
-class SWAPMap(Map):
+class SWAPMap(GenericMap):
     """SWAP Image Map definition
     
     References
@@ -33,6 +33,6 @@ class SWAPMap(Map):
         return properties
 
     @classmethod
-    def is_datasource_for(cls, header):
+    def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an SWAP image"""
         return header.get('instrume') == 'SWAP'

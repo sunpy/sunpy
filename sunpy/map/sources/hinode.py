@@ -9,13 +9,14 @@ from datetime import datetime
 import numpy as np
 from matplotlib import colors
 
-from sunpy.map import Map
+from sunpy.map import GenericMap
 from sunpy.cm import cm
 from sunpy.time import parse_time
 
+
 __all__ = ['XRTMap']
 
-class XRTMap(Map):
+class XRTMap(GenericMap):
     """XRT Image Map definition
     
     References
@@ -72,6 +73,7 @@ class XRTMap(Map):
 
 
     @classmethod
-    def is_datasource_for(cls, header):
+    def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an XRT image"""
         return header.get('instrume') == 'XRT'
+        
