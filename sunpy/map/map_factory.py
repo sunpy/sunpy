@@ -74,7 +74,7 @@ class Map(RegisteredFactoryBase):
             elif (isinstance(arg,basestring) and 
                   os.path.isdir(os.path.expanduser(arg))):
                 path = os.path.expanduser(arg)
-                files = [os.path.join(directory, elem) for elem in os.listdir(path)]
+                files = [os.path.join(path, elem) for elem in os.listdir(path)]
                 data_header_pairs += map(cls._read_files, files)
             
             # Glob
@@ -90,6 +90,7 @@ class Map(RegisteredFactoryBase):
             elif (isinstance(arg,basestring) and 
                   urllib2.urlopen(arg)):
                 default_dir = sunpy.config.get("downloads", "download_dir")
+                url = arg
                 path = download_file(url, default_dir)
                 pair = cls._read_file(path)
                 data_header_pairs.append(pair)
