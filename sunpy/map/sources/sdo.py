@@ -7,12 +7,12 @@ __email__ = "keith.hughitt@nasa.gov"
 import numpy as np
 from matplotlib import colors
 
-from sunpy.map import Map
+from sunpy.map import GenericMap
 from sunpy.cm import cm
 
 __all__ = ['AIAMap', 'HMIMap']
 
-class AIAMap(Map):
+class AIAMap(GenericMap):
     """AIA Image Map definition
     
     References
@@ -50,11 +50,11 @@ class AIAMap(Map):
         return colors.Normalize(vmin, vmax)
     
     @classmethod
-    def is_datasource_for(cls, header):
+    def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an AIA image"""
         return header.get('instrume', '').startswith('AIA')
         
-class HMIMap(Map):
+class HMIMap(GenericMap):
     """HMI Image Map definition"""
     @classmethod
     def get_properties(cls, header):
@@ -74,6 +74,6 @@ class HMIMap(Map):
         return properties
 
     @classmethod
-    def is_datasource_for(cls, header):
+    def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an HMI image"""
         return header.get('instrume', '').startswith('HMI') 

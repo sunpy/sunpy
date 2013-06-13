@@ -7,7 +7,7 @@ __email__ = "keith.hughitt@nasa.gov"
 import numpy as np
 from matplotlib import colors
 
-from sunpy.map import Map
+from sunpy.map import GenericMap
 from sunpy.sun import constants
 from sunpy.sun import sun
 from sunpy.cm import cm
@@ -15,7 +15,7 @@ from sunpy.time import parse_time
 
 __all__ = ['EITMap', 'LASCOMap', 'MDIMap']
 
-class EITMap(Map):
+class EITMap(GenericMap):
     """EIT Image Map definition"""
     @classmethod
     def get_properties(cls, header):
@@ -43,7 +43,7 @@ class EITMap(Map):
         return properties
 
     @classmethod
-    def is_datasource_for(cls, header):
+    def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an EIT image"""
         return header.get('instrume') == 'EIT'
 
@@ -61,7 +61,7 @@ class EITMap(Map):
 
         return colors.LogNorm(vmin, vmax)
 
-class LASCOMap(Map):
+class LASCOMap(GenericMap):
     """LASCO Image Map definition"""
     @classmethod
     def get_properties(cls, header):
@@ -81,11 +81,11 @@ class LASCOMap(Map):
         return properties
         
     @classmethod
-    def is_datasource_for(cls, header):
+    def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an LASCO image"""
         return header.get('instrume') == 'LASCO'
         
-class MDIMap(Map):
+class MDIMap(GenericMap):
     """MDI Image Map definition"""
     @classmethod
     def get_properties(cls, header):
@@ -126,6 +126,6 @@ class MDIMap(Map):
         return properties
         
     @classmethod
-    def is_datasource_for(cls, header):
+    def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an MDI image"""
         return header.get('instrume') == 'MDI'
