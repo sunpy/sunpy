@@ -15,6 +15,8 @@ from sunpy.map.header import MapMeta
 from sunpy.io.file_tools import read_file
 from sunpy.io.header import FileHeader
 
+from sunpy.util.net import download_file
+
 from sunpy.util.datatype_factory_base import RegisteredFactoryBase
 
 __all__ = ['Map']
