@@ -4,7 +4,7 @@
 Callisto Spectrograms
 =====================
 
-.. py:module:: sunpy.spectra.sources.callisto
+.. currentmodule:: sunpy.spectra.sources.callisto
 
 .. automodule:: sunpy.spectra.sources.callisto
    :members:
