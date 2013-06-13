@@ -13,8 +13,6 @@ from sunpy.sun import sun
 from sunpy.cm import cm
 from sunpy.time import parse_time
 
-from .. map_factory import Map
-
 __all__ = ['EITMap', 'LASCOMap', 'MDIMap']
 
 class EITMap(GenericMap):
@@ -132,7 +130,3 @@ class MDIMap(GenericMap):
         """Determines if header corresponds to an MDI image"""
         return header.get('instrume') == 'MDI'
 
-
-Map.register(EITMap, EITMap.is_datasource_for)
-Map.register(LASCOMap, LASCOMap.is_datasource_for)
-Map.register(MDIMap, MDIMap.is_datasource_for)
