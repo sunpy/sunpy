@@ -4,13 +4,14 @@ import os
 import glob
 import urllib2
 
+from collections import OrderedDict
+
 import numpy as np
 
 from sunpy.map import GenericMap, MapBase
 from sunpy.map.header import MapMeta
-#from sunpy.map.mapcube import MapCube
-#from sunpy.map.compositemap import CompositeMap
-#from sunpy.map.sources import *
+from . compositemap import CompositeMap
+from . mapcube import MapCube
 
 from sunpy.io.file_tools import read_file
 from sunpy.io.header import FileHeader
@@ -22,7 +23,6 @@ __all__ = ['Map']
 class Map(RegisteredFactoryBase):
 	
     GenericWidgetType = GenericMap
-    
 
     @classmethod
     def _read_file(cls, fname):
@@ -53,12 +53,12 @@ class Map(RegisteredFactoryBase):
             # Data-header pair in a tuple
             if ((type(arg) in [tuple, list]) and 
                  isinstance(arg[0],np.ndarray) and # or NDData or something else?
-                 isinstance(arg[1],SunpyMetaBase)): # FITSHeader, JP2kHeader, OrderedDict, dict?
+                 isinstance(arg[1],OrderedDict)): # FITSHeader, JP2kHeader, OrderedDict, dict?
                 data_header_pairs.append(arg)
             
             # Data-header pair not in a tuple
             elif (isinstance(arg, np.ndarray) and # or NDData or something else?
-                  isinstance(args[i+1],SunpyMetaBase)): # FITSHeader, JP2kHeader, OrderedDict, dict? 
+                  isinstance(args[i+1],OrderedDict)): # FITSHeader, JP2kHeader, OrderedDict, dict? 
                 pair = (args[i], args[i+1])
                 data_header_pairs.append(pair)
                 i += 1 # an extra increment to account for the data-header pairing
