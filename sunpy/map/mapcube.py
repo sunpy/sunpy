@@ -193,8 +193,8 @@ class MapCube(np.ndarray):
             when plotting the image. Passed to 
             sunpy.util.plotting.ControlFuncAnimation
         
-        Example
-        -------
+        Examples
+        --------
         cube = MapCube(*maps)
         ani = cube.plot(colorbar=True)        
         plt.show()
