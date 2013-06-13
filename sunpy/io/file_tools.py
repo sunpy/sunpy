@@ -53,14 +53,17 @@ def detect_filetype(filepath):
     # Open file and read in first two lines
     with open(filepath) as fp:
         line1 = fp.readline()
-        line2 = fp.readline() 
+        line2 = fp.readline()
+        #Some FITS files do not have line breaks at the end of header cards.
+        fp.seek(0)
+        first80 = fp.read(80)
     
     # FITS
     #
     # Checks for "KEY_WORD  =" at beginning of file
-    match = re.match(r"[A-Z0-9_]{0,8} *=", line1)
+    match = re.match(r"[A-Z0-9_]{0,8} *=", first80)
     
-    if match is not None and len(match.string) == 9:
+    if match is not None:
         return fits
     
     # JPEG 2000
