@@ -4,6 +4,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from sunpy.database import commands, tables
+from sunpy.database.caching import LRUCache
 
 
 class EntryAlreadyAddedError(Exception):
@@ -36,11 +37,19 @@ class EntryAlreadyStarredError(Exception):
 
 
 class Database(object):
-    def __init__(self, url):
+    def __init__(self, url, CacheClass=LRUCache, cache_size=float('inf')):
         self._engine = create_engine(url)
         self._session_cls = sessionmaker(bind=self._engine)
         self.session = self._session_cls()
         self._command_manager = commands.CommandManager()
+
+        class Cache(CacheClass):
+            def callback(this, entry_id, database_entry):
+                self.remove(database_entry)
+
+            def append(this, value):
+                this[max(this or [0]) + 1] = value
+        self._cache = Cache(cache_size)
 
     def create_tables(self, checkfirst=True):
         """Initialise the database by creating all necessary tables."""
@@ -58,6 +67,10 @@ class Database(object):
         """
         self.session.commit()
 
+    def get_entry_by_id(self, entry_id):
+        """Get a database entry by its unique ID number."""
+        return self._cache[entry_id]
+
     def star(self, database_entry, ignore_already_starred=False):
         """Mark the given database entry as starred. If this entry is already
         marked as starred, the behaviour depends on the optional argument
@@ -69,6 +82,7 @@ class Database(object):
         if database_entry.starred and not ignore_already_starred:
             raise EntryAlreadyStarredError(database_entry)
         database_entry.starred = True
+        self._cache[database_entry.id] = database_entry
 
     def get_starred(self):
         """Get all starred database entries as a generator."""
@@ -86,6 +100,10 @@ class Database(object):
             raise EntryAlreadyAddedError(database_entry)
         add_entry_cmd = commands.AddEntry(self.session, database_entry)
         self._command_manager.do(add_entry_cmd)
+        if database_entry.id is None:
+            self._cache.append(database_entry)
+        else:
+            self._cache[database_entry.id] = database_entry
 
     def edit(self, database_entry, **kwargs):
         """Change the given database entry so that it interprets the passed
@@ -95,11 +113,19 @@ class Database(object):
 
         """
         self._command_manager.do(commands.EditEntry(database_entry, **kwargs))
+        self._cache[database_entry.id] = database_entry
 
     def remove(self, database_entry):
         """Remove the given database entry from the database table."""
         remove_entry_cmd = commands.RemoveEntry(self.session, database_entry)
         self._command_manager.do(remove_entry_cmd)
+        try:
+            del self._cache[database_entry.id]
+        except KeyError:
+            # entry cannot be removed because it was already removed or never
+            # existed in the database. This can be safely ignored, the user
+            # doesn't even know there's a cache here
+            pass
 
     def undo(self, n=1):
         """undo the last n commands.
