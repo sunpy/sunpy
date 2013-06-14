@@ -439,7 +439,7 @@ Dimension:\t [%d, %d]
 
         #TODO: This function could be optimized. Does not need to convert the entire image
         # coordinates
-        lon_self, lat_self = wcs.convert_hpc_hg(rsun, dsun, units[0], units[1], b0, l0, x, y)
+        lon_self, lat_self = wcs.convert_hpc_hg(x, y, b0_deg=b0, l0_deg=l0, dsun_meters=dsun, angle_units=units[0])
         # define the number of points for each latitude or longitude line
         num_points = 20
         
@@ -462,11 +462,10 @@ Dimension:\t [%d, %d]
         for lat in hg_latitude_deg:
             hg_latitude_deg_mesh, hg_longitude_deg_mesh = np.meshgrid(
                 lat * np.ones(num_points), hg_longitude_deg)
-            x, y = wcs.convert_hg_hpc(self.rsun_meters,
-                                      self.dsun, self.heliographic_latitude,
-                                      self.heliographic_longitude,
-                                      hg_longitude_deg_mesh,
-                                      hg_latitude_deg_mesh, units='arcsec')
+            x, y = wcs.convert_hg_hpc(hg_longitude_deg_mesh, hg_latitude_deg_mesh, 
+                                      b0_deg=self.heliographic_latitude,
+                                      l0_deg=self.heliographic_longitude,
+                                      dsun_meters = self.dsun, angle_units='arcsec')
             axes.plot(x, y, color='white', linestyle='dotted',zorder=100)
             
         hg_longitude_deg = np.arange(lon_range[0], lon_range[1]+grid_spacing, grid_spacing)
@@ -476,11 +475,10 @@ Dimension:\t [%d, %d]
         for lon in hg_longitude_deg:
             hg_longitude_deg_mesh, hg_latitude_deg_mesh = np.meshgrid(
                 lon * np.ones(num_points), hg_latitude_deg)
-            x, y = wcs.convert_hg_hpc(self.rsun_meters,
-                                      self.dsun, self.heliographic_latitude,
-                                      self.heliographic_longitude,
-                                      hg_longitude_deg_mesh,
-                                      hg_latitude_deg_mesh, units='arcsec')
+            x, y = wcs.convert_hg_hpc(hg_longitude_deg_mesh, hg_latitude_deg_mesh, 
+                                      b0_deg=self.heliographic_latitude,
+                                      l0_deg=self.heliographic_longitude,
+                                      dsun_meters = self.dsun, angle_units='arcsec')
             axes.plot(x, y, color='white', linestyle='dotted',zorder=100)
             
         axes.set_ylim(self.yrange)
@@ -544,7 +542,7 @@ Dimension:\t [%d, %d]
         crpix = np.array([self.reference_pixel.get('x'), self.reference_pixel.get('y')])
         crval = np.array([self.reference_coordinate.get('x'), self.reference_coordinate.get('y')])
         coordinate_system = [self.coordinate_system.get('x'), self.coordinate_system.get('y')]
-        x,y = wcs.convert_pixel_to_data(width, height, scale[0], scale[1], crpix[0], crpix[1], crval[0], crval[1], coordinate_system[0], x = x, y = y)
+        x,y = wcs.convert_pixel_to_data(self.shape, scale, crpix, crval, x = x, y = y)
 
         return x, y
 
