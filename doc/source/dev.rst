@@ -542,11 +542,27 @@ the URL.
 Make sure there is a space before and after each colon in your class and
 function docs (e.g. attribute : type, instead of attribute: type). Also, for
 some sections (e.g. Attributes) numpydoc seems to complain when a description
-spans more than one line.
+spans more than one line, particuarly if it is the first attribute listed.
 
 **WARNING: Block quote ends without a blank line; unexpected unindent.**
+
 Lists should be indented one level from their parents.
-        
+
+**ERROR: Unkown target name: "xxx"**
+
+In addition to legitimate errors of this type, this error will also occur when
+variables have a trailing underscore, e.g., "xxx_".
+
+**WARNING: Explicit markup ends without a blank line; unexpected unindent.**
+
+This usually occurs when the text following a directive is wrapped to the next
+line without properly indenting a multi-line text block.
+
+**WARNING: toctree references unknown document '...'** /
+**WARNING: toctree contains reference to nonexisting document**
+
+This pair of errors is due to the way numpydoc scrapes class members.
+
 Testing
 -------
 

@@ -23,11 +23,11 @@ class LogicalLightCurve(LightCurve):
     Logical light curve.  Originated from a need to analyze the times of HEK
     results, where 'True' indicates an event was observed, and 'False' indicates 
     an event was not observed.
-        
+
     Examples
     --------
     import sunpy
-    lyra = sunpy.lightcurve.LogicalLightCurve.create()
+    light_curve = sunpy.lightcurve.LogicalLightCurve.create()
     """
 
     def complement(self):
@@ -39,7 +39,7 @@ class LogicalLightCurve(LightCurve):
         """Label all the periods of time that have the value 'True'. Return
         a list of TimeRange objects """
 
-        labeling = label(self.data)        
+        labeling = label(self.data)
         timeranges = []
         for i in xrange(1, labeling[1]+1):
             eventindices = (labeling[0] == i).nonzero()
