@@ -227,7 +227,7 @@ def convert_hpc_hcc(x, y, dsun_meters=None, angle_units='arcsec', z=False):
     ry = distance * siny
     rz = dsun_meters - distance * cosy * cosx
 
-    if z == True:
+    if np.all(z == True):
         return rx, ry, rz
     else:
         return rx, ry
@@ -369,7 +369,7 @@ def convert_hg_hcc(hglon_deg, hglat_deg, b0_deg=0, l0_deg=0, occultation=False, 
         x[z < 0] = np.nan
         y[z < 0] = np.nan
 
-    if z == True:
+    if np.all(z == True):
         return x, y, z
     else:
         return x, y
