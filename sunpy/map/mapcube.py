@@ -52,20 +52,11 @@ class MapCube(np.ndarray):
     sortby : {"date"}
         Method by which the MapCube should be sorted along the z-axis.
 
-    ordering : {"order":  # one-dimensional array of orderable objects,
-                "description": # a description of the meaning of "order"
-                "units": } #the units of "order"
     Attributes
     ----------
     headers : list
         a list of dictionaries containing the original and normalized header
         tags for the files used to build the MapCube.
-
-    ordering : dictionary
-        a dictionary that contains the following tags
-            "order": the numerical list that orders the maps in the mapcube
-            "description": a description of the meaning of "order"
-            "units": the units of "order"
 
     See Also
     --------
@@ -97,19 +88,11 @@ class MapCube(np.ndarray):
         if hasattr(cls, '_sort_by_%s' % sortby):
             maps.sort(key=getattr(cls, '_sort_by_%s' % sortby)())
 
-        # default ordering
-        ordering = kwargs.get("ordering", {"order": range(0, len(maps)),
-                                          "description": "default ordering",
-                                          "units": 'index'})
-
         # sort data.  a sort method overwrites the existing ordering
         sortby = kwargs.get("sortby", "date")
         if hasattr(cls, '_sort_by_%s' % sortby):
             sort_key = getattr(cls, '_sort_by_%s' % sortby)()
             maps.sort(key=sort_key)
-            ordering = {"order": [sort_key(map_) for map_ in maps],
-                        "description": 'time',
-                        "units": ''}
 
         # create data cube
         for map_ in maps:
@@ -118,7 +101,6 @@ class MapCube(np.ndarray):
 
         obj = np.asarray(data).view(cls)
         obj._headers = headers
-        obj._ordering = ordering
 
         return obj
 
@@ -143,9 +125,6 @@ class MapCube(np.ndarray):
         if hasattr(obj, '_headers'):
             self._headers = obj._headers
 
-        if hasattr(obj, '_ordering'):
-            self._ordering = obj._ordering
-
     def __array_wrap__(self, out_arr, context=None):
         """Returns a wrapped instance of a MapCube object"""
         return np.ndarray.__array_wrap__(self, out_arr, context)
@@ -165,11 +144,6 @@ class MapCube(np.ndarray):
     def std(self, *args, **kwargs):
         """overide np.ndarray.std()"""
         return np.array(self, copy=False, subok=False).std(*args, **kwargs)
-
-    def get_lightcurve_by_array_index(self, x, y):
-        """Returns a lightcurve object at a given pixel"""
-        data = [m[x, y] for m in self]
-        return LightCurve.create({m.name: data}, index=self.ordering["order"])
 
     # Coalignment methods
     def _coalign_diff(self):
@@ -202,60 +176,16 @@ class MapCube(np.ndarray):
     def _sort_by_date(cls):
         return lambda m: m.date  # maps.sort(key=attrgetter('date'))
 
-    def _derotate_by_latitude(self, index=0, use_order=False):
+    def _derotate_by_latitude(self, **kwargs):
         """Derotates the layers in the MapCube.  Derotates each image using
-        the latitudinal dependence defined by diff_rot.  Derotates the stack of
-        images to the map in the stack at position 'index'.  If use_order is
-        True then we assume that index is of the same type as ordering["order"]
-        and the map stack is derotated to the closest map in the stack to the
-        value of index passed.  Another way of putting this is to say 'for the
-        mapcube find the map in mapcube that minimizes
-        abs(map._ordering["order"] - index).  If use_order is False then the
-        maps in the mapcube are derotated relative to mapcube[i]."""
+        the latitudinal dependence defined by diff_rot."""
         pass
-
+        return
 
     def derotate_by_center_of_fov(self, **kwargs):
         """Derotate layers of the MapCube using the center of the FOV in each
-        layer only. Should be faster than _derotate_by_latitude.   Derotates
-        the stack of images to the map in the stack at position 'index'.
-        If use_order = True then we assume that index is of the same type as
-        ordering["order"] and the map stack is derotated to the closest map in
-        the stack to the value of index passed.  Another way of putting this is
-        to say 'for the mapcube, find the map in mapcube that minimizes
-        abs(map._ordering["order"] - index).  If use_order is False then the
-        maps in the mapcube are derotated relative to mapcube[i]."""
-
-        index = kwargs.get("index", 0)
-        use_order = kwargs.get("use_order", False)
-        if use_order:
-            difference = index - self._ordering["order"]
-            if isinstance(difference, timedelta):
-                difference = np.absolute((index - self._ordering["order"]).
-                                         to_seconds())
-            else:
-                difference = np.absolute((index - self._ordering["order"]))
-            index = np.where(difference == difference.min())[0][0]
-        print index
-
-        # Center of the field of view of the base map
-        xcen_base = self._headers[index]["xcen"]
-        ycen_base = self._headers[index]["ycen"]
-
-        # Pixel size of the pixels in the base map
-        xpixel_size = self._headers[index]["CDELT1"]
-        ypixel_size = self._headers[index]["CDELT2"]
-
-        # for each map calculate the derotation value in pixels, move the data,
-        # recreate a map with the moved data, and create a MapCube.
-        for m in self:
-            new_xcen, new_ycen = rot_hpc(m, tstart=m.header["date_obs"],
-                                 interval = self[index].header["date_obs"])
-            xpixel_difference = (new_xcen - xcen_base)/xpixel_size
-            ypixel_difference = (new_ycen - ycen_base)/ypixel_size
-            
-            pass
-
+        layer only. Should be faster than _derotate_by_latitude."""
+        pass
         return
 
     def plot(self, gamma=None, annotate=True, axes=None, controls=True,
