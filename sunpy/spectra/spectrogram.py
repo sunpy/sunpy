@@ -95,7 +95,7 @@ def _union(sets):
 class _LinearView(object):
     """ Helper class for frequency channel linearization.
     
-    Parameters
+    Attributes
     ----------
     arr : Spectrogram
         Spectrogram to linearize.
@@ -191,11 +191,10 @@ class SpectroFigure(Figure):
 class TimeFreq(object):
     """ Class to use for plotting frequency vs time.
     
-    Parameters
+    Attributes
     ----------
     start : datetime
-        Start time of the plot. All times in time are relative offsets to this
-        in seconds.
+        Start time of the plot.
     time : array
         Time of the data points as offset from start in seconds.
     freq : array
@@ -245,7 +244,7 @@ class Spectrogram(np.ndarray, Parent):
     
     .. warning:: This module is under development! Use at your own risk.
     
-    Parameters
+    Attributes
     ----------
     data : np.ndarray
         two-dimensional array of the image data of the spectrogram.
@@ -844,8 +843,8 @@ class Spectrogram(np.ndarray, Parent):
 class LinearTimeSpectrogram(Spectrogram):
     """ Spectrogram evenly sampled in time.
     
-    Additional (not inherited) parameters
-    -------------------------------------
+    Attributes
+    ----------
     t_delt : float
         difference between the items on the time axis
     """
