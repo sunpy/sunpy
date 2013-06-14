@@ -6,13 +6,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from copy import copy
-from datetime import timedelta
 
 from sunpy.map import Map
 from sunpy.map.sources import *
-from sunpy.lightcurve import LightCurve
 from sunpy.util import plotting
-from sunpy.coords import rot_hpc
 
 __all__ = ['MapCube']
 
@@ -87,12 +84,6 @@ class MapCube(np.ndarray):
         sortby = kwargs.get("sortby", "date")
         if hasattr(cls, '_sort_by_%s' % sortby):
             maps.sort(key=getattr(cls, '_sort_by_%s' % sortby)())
-
-        # sort data.  a sort method overwrites the existing ordering
-        sortby = kwargs.get("sortby", "date")
-        if hasattr(cls, '_sort_by_%s' % sortby):
-            sort_key = getattr(cls, '_sort_by_%s' % sortby)()
-            maps.sort(key=sort_key)
 
         # create data cube
         for map_ in maps:
