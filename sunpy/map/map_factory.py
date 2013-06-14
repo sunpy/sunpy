@@ -75,7 +75,7 @@ class Map(RegisteredFactoryBase):
                   os.path.isdir(os.path.expanduser(arg))):
                 path = os.path.expanduser(arg)
                 files = [os.path.join(directory, elem) for elem in os.listdir(path)]
-                data_header_pairs += map(cls._read_files, files)
+                data_header_pairs += map(cls._read_file, files)
             
             # Glob
             elif (isinstance(arg,basestring) and '*' in arg):
@@ -103,7 +103,17 @@ class Map(RegisteredFactoryBase):
     
     
     def __new__(cls, *args, **kwargs):
-
+        """
+        Create a new Map object
+        
+        Parameters
+        ----------
+        anything!
+        
+        Returns
+        -------
+        A Map object
+        """
         # Hack to get around Python 2.x not backporting PEP 3102.
         composite = kwargs.pop('composite', False)
         cube = kwargs.pop('cube', False)
