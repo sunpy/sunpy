@@ -21,8 +21,8 @@ class GOESLightCurve(LightCurve):
     --------
     import sunpy
     goes = sunpy.lightcurve.GOESLightCurve.create()
-    goes = sunpy.lightcurve.GOESLightCurve.create('2012/06/01', '2012/06/05')
-    goes.show()
+    goes = sunpy.lightcurve.GOESLightCurve.create(('2012/06/01', '2012/06/05'))
+    goes.peek()
     
     References
     ----------
