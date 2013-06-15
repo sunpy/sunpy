@@ -25,10 +25,10 @@ class XRTMap(GenericMap):
     """
     #TODO: get a link for the XRT FITS headers
     # Add in some information about the the possible filter wheel measurements
-    Map.filter_wheel1_measurements = ["Al_med", "Al_poly", "Be_med",
-                                      "Be_thin", "C_poly", "Open"]
-    Map.filter_wheel2_measurements = ["Open", "Al_mesh", "Al_thick",
-                                      "Be_thick", "Gband", "Ti_poly"]
+    filter_wheel1_measurements = ["Al_med", "Al_poly", "Be_med",
+                                  "Be_thin", "C_poly", "Open"]
+    filter_wheel2_measurements = ["Open", "Al_mesh", "Al_thick",
+                                  "Be_thick", "Gband", "Ti_poly"]
     @classmethod
     def get_properties(cls, header):
         """Parses XRT image header"""
