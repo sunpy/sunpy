@@ -487,7 +487,7 @@ class Spectrogram(Parent):
         }
         params.update(matplotlib_args)
         if linear and max_dist is not None:
-            # toplot = ma.masked_array(data, mask=data.make_mask(max_dist))
+            toplot = ma.masked_array(data, mask=data.make_mask(max_dist))
             pass
         else:
             toplot = data
