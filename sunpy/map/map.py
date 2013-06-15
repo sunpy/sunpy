@@ -877,7 +877,7 @@ class GenericMap(MapBase):
         else:
             #Use C extension Package
             if not 'Crotate' in globals():
-                warnings.warn(""""The C extension sunpy.image.Crotate is not 
+                warnings.warn("""The C extension sunpy.image.Crotate is not 
 installed, falling back to the interpolation='spline' of order=3""" ,Warning)
                 data = scipy.ndimage.interpolation.affine_transform(image, rsmat,
                            offset=offs, order=3, mode='constant',
