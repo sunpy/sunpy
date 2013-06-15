@@ -7,7 +7,7 @@ from __future__ import absolute_import
 import matplotlib.pyplot as plt
 
 from sunpy.map import GenericMap
-from sunpy.map.map_factory import Map
+import sunpy.map.map_factory
 
 __all__ = ['CompositeMap']
 
@@ -116,7 +116,7 @@ class CompositeMap(object):
         if zorder is None:
             zorder = max([m.zorder for m in self._maps]) + 10
         
-        m = Map(input_)
+        m = sunpy.map.map_factory.Map(input_)
         assert isinstance(Map, GenericMap)
         m.zorder = zorder
         m.alpha = alpha
