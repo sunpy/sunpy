@@ -399,7 +399,7 @@ Dimension:\t [%d, %d]
             axes = plt.gca()
         
         if hasattr(self, 'center'):
-            circ = patches.Circle([self.center['x'], self.center['y']],
+            circ = patches.Circle([0, 0],
                                   radius=self.rsun_arcseconds, fill=False,
                                   color='white',zorder=100)
         else:
@@ -430,7 +430,6 @@ Dimension:\t [%d, %d]
             axes = plt.gca()
 
         x, y = self.pixel_to_data()
-        rsun = self.rsun_meters
         dsun = self.dsun
 
         b0 = self.heliographic_latitude
@@ -1080,7 +1079,7 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         
         if draw_limb:
             self.draw_limb(axes=axes)
-        
+            
         if isinstance(draw_grid, bool):
             if draw_grid:
                 self.draw_grid(axes=axes)
