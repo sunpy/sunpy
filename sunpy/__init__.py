@@ -43,7 +43,9 @@ __version__ = 0.2
 import sunpy.map
 import sunpy.sun
 import sunpy.lightcurve
-#from sunpy.map import make_map
+
+from sunpy.map.map_factory import Map
+
 #from sunpy.map import read_header
 #from sunpy.map.map import Map
 #from sunpy.map.header import MapHeader

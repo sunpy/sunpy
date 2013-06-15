@@ -8,7 +8,7 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 from copy import copy
 
 from sunpy.map import MapBase
-from sunpy.map.map_factory import Map
+#from .map_factory import Map
 #from sunpy.map.sources import *
 from sunpy.util import plotting
 
@@ -60,7 +60,7 @@ class MapCube(np.ndarray):
     
         # convert input to maps
         for item in args:
-            if isinstance(item, Mapbase):
+            if isinstance(item, MapBase):
                 maps.append(item)
             else:
                 maps.append(Map(item))

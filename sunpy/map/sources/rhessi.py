@@ -4,13 +4,13 @@
 __author__ = "Steven Christe"
 __email__ = "steven.d.christe@nasa.gov"
 
-from sunpy.map import Map
+from sunpy.map import GenericMap
 from sunpy.cm import cm
 from sunpy.time import parse_time
 
 __all__ = ['RHESSIMap']
 
-class RHESSIMap(Map):
+class RHESSIMap(GenericMap):
     """RHESSI Image Map definition
     
     References
@@ -46,6 +46,7 @@ class RHESSIMap(Map):
         return properties
 
     @classmethod
-    def is_datasource_for(cls, header):
-        """Determines if header corresponds to an AIA image"""
+    def is_datasource_for(cls, data, header, **kwargs):
+        """Determines if header corresponds to an RHESSI image"""
         return header.get('instrume') == 'RHESSI'
+
