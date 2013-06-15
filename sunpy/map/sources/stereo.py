@@ -4,13 +4,13 @@
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
-from sunpy.map import Map
+from sunpy.map import GenericMap
 from sunpy.time import parse_time
 from sunpy.cm import cm
 
 __all__ = ['EUVIMap', 'CORMap']
 
-class EUVIMap(Map):
+class EUVIMap(GenericMap):
     """EUVI Image Map definition"""
     @classmethod
     def get_properties(cls, header):
@@ -28,11 +28,11 @@ class EUVIMap(Map):
         return properties
 
     @classmethod
-    def is_datasource_for(cls, header):
+    def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an EUVI image"""
         return header.get('detector') == 'EUVI'
         
-class CORMap(Map):
+class CORMap(GenericMap):
     """COR Image Map definition"""
     @classmethod
     def get_properties(cls, header):
@@ -55,6 +55,7 @@ class CORMap(Map):
         return properties
 
     @classmethod
-    def is_datasource_for(cls, header):
+    def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an COR image"""
         return header.get('detector', '').startswith('COR')
+        

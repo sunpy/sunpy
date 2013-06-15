@@ -6,14 +6,15 @@ from __future__ import absolute_import
 
 import matplotlib.pyplot as plt
 
-from sunpy.map import Map
+from sunpy.map import GenericMap
+from sunpy.map.map_factory import Map
 
 __all__ = ['CompositeMap']
 
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
-class CompositeMap:
+class CompositeMap(object):
     """
     CompositeMap(map1 [,map2,..])
 
@@ -67,6 +68,14 @@ class CompositeMap:
 
     """    
     def __init__(self, *args):
+        """
+        Create a CompositeMap
+        
+        Parameters
+        ----------
+        data, meta pairs: tuple
+            A sequence of (data, header) tuples
+        """
         self._maps = []
         
         # Default alpha and zorder values
@@ -76,11 +85,7 @@ class CompositeMap:
         
         # Parse input Maps/filepaths        
         for i, item in enumerate(args):
-            # Parse map
-            if isinstance(item, Map):
-                m = item
-            else:
-                m = Map.read(item)
+            m = GenericMap(*item)
             
             # Set z-order and alpha values for the map
             m.zorder = zorders[i]
@@ -111,7 +116,8 @@ class CompositeMap:
         if zorder is None:
             zorder = max([m.zorder for m in self._maps]) + 10
         
-        m = Map.read(input_)
+        m = Map(input_)
+        assert isinstance(Map, GenericMap)
         m.zorder = zorder
         m.alpha = alpha
         m.levels = levels

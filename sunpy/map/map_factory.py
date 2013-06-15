@@ -4,16 +4,19 @@ import os
 import glob
 import urllib2
 
+from collections import OrderedDict
+
 import numpy as np
 
 from sunpy.map import GenericMap, MapBase
 from sunpy.map.header import MapMeta
-#from sunpy.map.mapcube import MapCube
-#from sunpy.map.compositemap import CompositeMap
-#from sunpy.map.sources import *
+from . compositemap import CompositeMap
+from . mapcube import MapCube
 
 from sunpy.io.file_tools import read_file
 from sunpy.io.header import FileHeader
+
+from sunpy.util.net import download_file
 
 from sunpy.util.datatype_factory_base import RegisteredFactoryBase
 
@@ -53,12 +56,12 @@ class Map(RegisteredFactoryBase):
             # Data-header pair in a tuple
             if ((type(arg) in [tuple, list]) and 
                  isinstance(arg[0],np.ndarray) and # or NDData or something else?
-                 isinstance(arg[1],SunpyMetaBase)): # FITSHeader, JP2kHeader, OrderedDict, dict?
+                 isinstance(arg[1],OrderedDict)): # FITSHeader, JP2kHeader, OrderedDict, dict?
                 data_header_pairs.append(arg)
             
             # Data-header pair not in a tuple
             elif (isinstance(arg, np.ndarray) and # or NDData or something else?
-                  isinstance(args[i+1],SunpyMetaBase)): # FITSHeader, JP2kHeader, OrderedDict, dict? 
+                  isinstance(args[i+1],OrderedDict)): # FITSHeader, JP2kHeader, OrderedDict, dict? 
                 pair = (args[i], args[i+1])
                 data_header_pairs.append(pair)
                 i += 1 # an extra increment to account for the data-header pairing
@@ -74,8 +77,8 @@ class Map(RegisteredFactoryBase):
             elif (isinstance(arg,basestring) and 
                   os.path.isdir(os.path.expanduser(arg))):
                 path = os.path.expanduser(arg)
-                files = [os.path.join(directory, elem) for elem in os.listdir(path)]
-                data_header_pairs += map(cls._read_file, files)
+                files = [os.path.join(path, elem) for elem in os.listdir(path)]
+                data_header_pairs += map(cls._read_files, files)
             
             # Glob
             elif (isinstance(arg,basestring) and '*' in arg):
@@ -90,6 +93,7 @@ class Map(RegisteredFactoryBase):
             elif (isinstance(arg,basestring) and 
                   urllib2.urlopen(arg)):
                 default_dir = sunpy.config.get("downloads", "download_dir")
+                url = arg
                 path = download_file(url, default_dir)
                 pair = cls._read_file(path)
                 data_header_pairs.append(pair)
@@ -103,17 +107,7 @@ class Map(RegisteredFactoryBase):
     
     
     def __new__(cls, *args, **kwargs):
-        """
-        Create a new Map object
-        
-        Parameters
-        ----------
-        anything!
-        
-        Returns
-        -------
-        A Map object
-        """
+
         # Hack to get around Python 2.x not backporting PEP 3102.
         composite = kwargs.pop('composite', False)
         cube = kwargs.pop('cube', False)
@@ -134,10 +128,7 @@ class Map(RegisteredFactoryBase):
             # Otherwise, each pair in the list gets built on its own
             new_maps = list()
             
-            for pair in data_header_pairs:
-                data, header = zip(pair)
-                data = data[0]
-                header = header[0]
+            for data, header in data_header_pairs:
                 # Test to see which type of Map this pair is.  If none of the
                 # registered Map types match, use a generic map.
                 WidgetType = None
