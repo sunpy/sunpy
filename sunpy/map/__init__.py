@@ -10,9 +10,9 @@ from sunpy.map.map import MapBase, GenericMap
 #from sunpy.map.header import MapHeader
 #from sunpy.map.mapcube import MapCube
 #from sunpy.map.compositemap import CompositeMap
-#from sunpy.map.sources import *
 #
 from sunpy.map.map_factory import Map
+from sunpy.map.sources import *
 #
 #
 #
