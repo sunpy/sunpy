@@ -82,7 +82,7 @@ class CompositeMap(object):
         alphas = [1] * len(args)
         zorders = range(0, 10 * len(args), 10)
         levels = [False] * len(args)
-
+        
         # Parse input Maps/filepaths        
         for i, item in enumerate(args):
             m = GenericMap(*item)

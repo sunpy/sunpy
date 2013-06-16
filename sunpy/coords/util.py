@@ -58,7 +58,8 @@ def diff_rot(ddays,latitude,rot_type='howard',frame_time='sidereal'):
     if not isinstance(ddays,datetime.timedelta):
         delta = datetime.timedelta(days=ddays)
     
-    delta_seconds = delta.total_seconds()
+    delta_seconds = (delta.microseconds + (delta.seconds + delta.days * 24 * 3600) *
+                    10**6) / 10**6
     delta_days = delta_seconds / 24 / 3600
     
     sin2l = (np.sin(np.deg2rad(latitude)))**2

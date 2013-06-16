@@ -3,6 +3,7 @@
 from __future__ import absolute_import
 
 import os
+import numpy as np
 from datetime import datetime  
 
 import matplotlib.pyplot as plt
@@ -22,19 +23,19 @@ class EVELightCurve(LightCurve):
     eve = sunpy.lightcurve.EVELightCurve.create('~/Downloads/EVE_Fe_IX_171_averages.csv')
     eve = sunpy.lightcurve.EVELightCurve.create('2012/06/20')
     eve = sunpy.lightcurve.EVELightCurve.create("http://lasp.colorado.edu/eve/data_access/quicklook/quicklook_data/L0CS/LATEST_EVE_L0CS_DIODES_1m.txt")
-    eve.show()
+    eve.peek()
     
     References
     ----------
     | http://lasp.colorado.edu/home/eve/data/data-access/
     """
 
-    def peek(self, **kwargs):
+    def peek(self, column = None, **kwargs):
         figure = plt.figure()
         # Choose title if none was specified
-        if not kwargs.has_key("title"):
+        if not kwargs.has_key("title") and column is None:
             if len(self.data.columns) > 1:
-                kwargs['title'] = 'EVE GOES Proxy Xray Flux (1 minute data)'
+                kwargs['title'] = 'EVE (1 minute data)'
             else:
                 if self._filename is not None:
                     base = self._filename.replace('_', ' ')
@@ -42,10 +43,14 @@ class EVELightCurve(LightCurve):
                 else:
                     kwargs['title'] = 'EVE Averages'
 
-        self.plot(**kwargs)
-        
+        if column is None:
+            self.plot(**kwargs)
+        else:
+            data = self.data[column]
+            if not kwargs.has_key("title"):
+                kwargs['title'] = 'EVE ' + column.replace('_', ' ')
+            data.plot(**kwargs)
         figure.show()
-        
         return figure
         
     @staticmethod
@@ -85,10 +90,9 @@ class EVELightCurve(LightCurve):
         """Parses and EVE Level 0CS file"""
         header = ""
         
-        fields = ('xrs-b', 'xrs-a', 'sem', 'ESPquad', 'esp171', 
-                  'esp257', 'esp304', 'esp366', 'espdark', 'megsp', 'megsdark', 
-                  'q0esp', 'q1esp', 'q2esp', 'q3esp', 'cmlat', 'cmlon')
-        
+        fields = ('XRS-B_proxy', 'XRS-A_proxy', 'SEM_proxy', '0.1-7ESPquad', '17.1ESP',
+                  '25.7ESP', '30.4ESP', '36.6ESP', 'darkESP', '121.6MEGS-P', 'darkMEGS-P', 
+                  'q0ESP', 'q1ESP', 'q2ESP', 'q3ESP', 'CMLat', 'CMLon', 'x_cool proxy', 'oldXRSB proxy')
         line = fp.readline()
         
         # Read comment at top of file
@@ -97,15 +101,15 @@ class EVELightCurve(LightCurve):
             line = fp.readline()
             
         # Next line is YYYY DOY MM DD
-        parts = line.split(" ")
+        date_parts = line.split(" ")
                 
-        year = int(parts[0])
-        month = int(parts[2])
-        day = int(parts[3])
+        year = int(date_parts[0])
+        month = int(date_parts[2])
+        day = int(date_parts[3])
         
         # function to parse date column (HHMM)
         parser = lambda x: datetime(year, month, day, int(x[0:2]), int(x[2:4]))
 
-        data = read_csv(fp, sep="\s*", names=fields, index_col=0, date_parser=parser)
-        
+        data = read_csv(fp, sep="\s*", names=fields, index_col=0, date_parser=parser, comment = ';', header = None)
+        data.columns = fields
         return header, data
