@@ -1,10 +1,10 @@
 .. _map:
 
-----------
-SunPy Maps
-----------
+----
+Maps
+----
 
-.. currentmodule:: sunpy.map
+.. module:: sunpy.map
 
 Overview
 ^^^^^^^^
@@ -13,8 +13,8 @@ spatially-aware data array, often an image. In order to make it easy to work
 with image data in SunPy, the Map object provides a number of methods for
 commonly performed operations.
 
-2D map objects are subclasses of sunpy.map.MapBase and all Map objects are created 
-using the Map factory sunpy.Map.
+2D map objects are subclasses of sunpy.map.MapBase and all Map objects are 
+created using the Map factory sunpy.Map.
 
 Updated Map Layout
 ^^^^^^^^^^^^^^^^^^
@@ -36,7 +36,12 @@ The result of a call to `Map` will be either a `MapBase` object,
 or a subclass of `MapBase` which either deals with a specific type of data, 
 e.g. `AIAMap` or `LASCOMap`, or a 2D map `GenericMap`.
 
-.. autofunction:: make_map
+TODO: Document Map creattion here, should this be done through the doc string
+of Map.__new__??
+
+.. method:: Map.__new__
+
+.. autoclass:: Map
    
 Map Classes
 ^^^^^^^^^^^
@@ -56,7 +61,7 @@ The top-level class from which all other ND Maps inherit from.
 This is the top level 2D map class, containg processing and visualisation 
 routines designed to work with 2D data.
 
-.. autoclass:: `GenericMap`
+.. autoclass:: GenericMap
     
 :class:`MapMeta`
 """"""""""""""""""

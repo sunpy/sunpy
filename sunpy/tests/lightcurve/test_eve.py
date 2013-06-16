@@ -10,7 +10,7 @@ import matplotlib
 
 
 def test_eve():
-    eve = sunpy.lightcurve.EVELightCurve.create('2012/06/20')
+    eve = sunpy.lightcurve.EVELightCurve.create('2013/04/15')
     assert isinstance(eve, sunpy.lightcurve.EVELightCurve)
    
 def test_txt():

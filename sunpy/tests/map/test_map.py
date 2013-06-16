@@ -143,11 +143,65 @@ class TestMap:
         
         assert map_header == fits_header
 
-    # TODO: Add tests for other resample methods (neighbour, nearest, spline)
-    def test_linear_resample_dimensions(self):
-        """Check that resampled map has expected dimensions."""
 
+    def test_resample_dimensions(self):
+        """Check that resampled map has expected dimensions."""
+        # Different dimensions to ensure that the resample method works
+        # correctly in cases where the dimensions of the original map are
+        # are exactly divisible by those of the output map as well as the cases
+        # in which they aren't.
         new_dimensions = (100, 200)
-        resampled_map = self.map.resample(new_dimensions)
-        assert resampled_map.shape[1] == new_dimensions[0]
-        assert resampled_map.shape[0] == new_dimensions[1]
+        linear_resampled_map = self.map.resample(new_dimensions)
+        assert linear_resampled_map.shape[1] == new_dimensions[0]
+        assert linear_resampled_map.shape[0] == new_dimensions[1]
+
+        new_dimensions = (128, 256)
+        neighbor_resampled_map = self.map.resample(new_dimensions, method = 'neighbor')
+        assert neighbor_resampled_map.shape[1] == new_dimensions[0]
+        assert neighbor_resampled_map.shape[0] == new_dimensions[1]
+
+        new_dimensions = (512, 128)
+        nearest_resampled_map = self.map.resample(new_dimensions, method = 'nearest')
+        assert nearest_resampled_map.shape[1] == new_dimensions[0]
+        assert nearest_resampled_map.shape[0] == new_dimensions[1]
+
+        new_dimensions = (200, 200)
+        spline_resampled_map = self.map.resample(new_dimensions, method = 'spline')
+        assert spline_resampled_map.shape[1] == new_dimensions[0]
+        assert spline_resampled_map.shape[0] == new_dimensions[1]
+
+
+    def test_superpixel(self):
+
+        dimensions = (2, 2)
+        superpixel_map_sum = self.map.superpixel(dimensions)
+        assert superpixel_map_sum.shape[0] == self.map.shape[0]/dimensions[1]
+        assert superpixel_map_sum.shape[1] == self.map.shape[1]/dimensions[0]
+        assert superpixel_map_sum[0][0] == self.map[0][0] + self.map[0][1] + self.map[1][0] + self.map[1][1]
+
+        dimensions = (2, 2)
+        superpixel_map_avg = self.map.superpixel(dimensions, 'average')
+        assert superpixel_map_avg.shape[0] == self.map.shape[0]/dimensions[1]
+        assert superpixel_map_avg.shape[1] == self.map.shape[1]/dimensions[0]
+        assert superpixel_map_avg[0][0] == (self.map[0][0] + self.map[0][1] + self.map[1][0] + self.map[1][1])/4.0
+
+
+    def test_rotate(self):
+
+        rotated_map_1 = self.map.rotate(0.5)
+        rotated_map_2 = rotated_map_1.rotate(0.5)
+        rotated_map_3 = self.map.rotate(0, 1.5)
+        rotated_map_4 = self.map.rotate(np.pi/2, 1.5)
+        rotated_map_5 = self.map.rotate(np.pi, 1.5)
+        assert rotated_map_2.shape == rotated_map_1.shape == self.map.shape
+        # Rotation of a map by non-integral multiple of pi/2 cuts off the corners
+        # and assigns the value of 0 to corner pixels. This results in reduction
+        # of the mean and an increase in standard deviation.
+        assert rotated_map_2.mean() < rotated_map_1.mean() < self.map.mean()
+        assert rotated_map_2.std() > rotated_map_1.std() > self.map.std()
+        assert rotated_map_2.get_header() == rotated_map_1.get_header() == self.map.get_header()
+        assert rotated_map_3.mean() > self.map.mean()
+        # Mean and std should be equal when angle of rotation is integral multiple
+        # of pi/2
+        assert int(rotated_map_3.mean()) == int(rotated_map_4.mean()) == int(rotated_map_5.mean())
+        assert int(rotated_map_3.std()) == int(rotated_map_4.std()) == int(rotated_map_5.std())

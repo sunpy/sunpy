@@ -25,6 +25,7 @@ __all__ = ['Map']
 class Map(RegisteredFactoryBase):
 	
     GenericWidgetType = GenericMap
+    
 
     @classmethod
     def _read_file(cls, fname):
@@ -45,13 +46,13 @@ class Map(RegisteredFactoryBase):
         
         data_header_pairs = list()
         already_maps = list()
-        print args
+        
         # For each of the arguments, handle each of the cases
         i = 0
         while i < len(args):
             
             arg = args[i]
-
+            
             # Data-header pair in a tuple
             if ((type(arg) in [tuple, list]) and 
                  isinstance(arg[0],np.ndarray) and # or NDData or something else?
