@@ -83,7 +83,7 @@ class LightCurve(object):
 
     @classmethod
     def from_range(cls, from_, to, **kwargs):
-        url = cls._get_url_for_date_range(from_, to)
+        url = cls._get_url_for_date_range(parse_time(from_), parse_time(to))
         filepath = cls._download(
             url, kwargs, 
             err = "Unable to download data for specified date range"
@@ -283,8 +283,8 @@ LightCurve._cond_dispatch.add(
 
 LightCurve._cond_dispatch.add(
     run_cls("from_range"),
-    lambda cls, time, **kwargs: is_time(time),
-    [type, (basestring, datetime, tuple)],
+    lambda cls, time1, time2, **kwargs: is_time(time1) and is_time(time2),
+    [type, (basestring, datetime, tuple), (basestring, datetime, tuple)],
     False
 )
 
