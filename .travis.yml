@@ -33,7 +33,7 @@ install:
 #Install Numpy first so we force the version we are using
   - pip install numpy==$NUMPY_VERSION -q --use-mirrors
 # Install the other requirements to the desired version
-  - pip install matplotlib>=$MATPLOTLIB_VERSION -q --use-mirrors
+  - pip install matplotlib>=$MATPLOTLIB_VERSION --use-mirrors
   - pip install pyfits  --use-mirrors
   - pip install pandas==$PANDAS_VERSION -q --use-mirrors
   - pip install scipy --use-mirrors
