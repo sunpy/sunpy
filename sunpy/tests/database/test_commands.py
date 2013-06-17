@@ -5,7 +5,7 @@ from sqlalchemy.orm import sessionmaker
 import pytest
 
 from sunpy.database.commands import AddEntry, RemoveEntry, EditEntry,\
-    NoSuchEntryError
+    NoSuchEntryError, CommandManager
 from sunpy.database.tables import DatabaseEntry
 
 
@@ -91,3 +91,16 @@ def test_remove_entry_undo(session):
     assert session.query(DatabaseEntry).count() == 0
     cmd.undo()
     assert session.query(DatabaseEntry).count() == 1
+
+
+def test_redo_stack_empty_after_call(session):
+    manager = CommandManager()
+    manager.do(AddEntry(session, DatabaseEntry()))
+    manager.do(AddEntry(session, DatabaseEntry()))
+    assert len(manager.undo_commands) == 2
+    session.commit()
+    manager.undo(2)
+    assert not manager.undo_commands
+    assert len(manager.redo_commands) == 2
+    manager.do(AddEntry(session, DatabaseEntry()))
+    assert not manager.redo_commands
