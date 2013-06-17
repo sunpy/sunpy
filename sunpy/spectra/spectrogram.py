@@ -1026,7 +1026,6 @@ class LinearTimeSpectrogram(Spectrogram):
             diff = x - elem.shape[1]
             e_time_axis = elem.time_axis
 
-            print(elem)
             elem = elem.data
             
             if x > elem.shape[1]:
