@@ -40,6 +40,15 @@ def test_add_entry_undo(session):
     assert session.query(DatabaseEntry).count() == 0
 
 
+def test_add_entry_undo_precommit(session):
+    entry = DatabaseEntry()
+    cmd = AddEntry(session, entry)
+    cmd()
+    cmd.undo()
+    session.commit()
+    assert session.query(DatabaseEntry).count() == 0
+
+
 def test_edit_entry_invalid(session):
     with pytest.raises(ValueError):
         EditEntry(DatabaseEntry())

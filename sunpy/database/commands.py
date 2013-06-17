@@ -61,7 +61,13 @@ class AddEntry(DatabaseOperation):
             self.session.add(self.database_entry)
 
     def undo(self):
-        self.session.delete(self.database_entry)
+        try:
+            self.session.delete(self.database_entry)
+        except InvalidRequestError:
+            # database entry cannot be removed because the last call was not
+            # followed by a commit -> use make_transient to revert putting the
+            # entry into the pending state
+            make_transient(self.database_entry)
 
 
 class RemoveEntry(DatabaseOperation):
