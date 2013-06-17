@@ -374,19 +374,6 @@ class Spectrogram(Parent):
                 seconds=float(self.time_axis[x])
             )
         )
-
-    def __array_finalize__(self, obj):
-        if self is obj:
-            return
-
-        for prop, cpy in self.COPY_PROPERTIES:
-            elem = getattr(obj, prop, None)
-            if cpy == COPY:
-                elem = copy(elem)
-            if cpy == DEEPCOPY:
-                elem = deepcopy(elem)
-
-            setattr(self, prop, elem)
     
     @staticmethod
     def format_time(time):
