@@ -148,6 +148,8 @@ class CommandManager(object):
         """
         command()
         self.push_undo_command(command)
+        # clear the redo stack when a new command was executed
+        self.redo_commands[:] = []
 
     def undo(self, n=1):
         """Undo the last n commands. The default is to undo only the last
