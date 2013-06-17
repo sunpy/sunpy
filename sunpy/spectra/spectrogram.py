@@ -297,19 +297,6 @@ class Spectrogram(Parent):
     def dtype(self):
         return self.data.dtype
 
-    def _as_class(self, cls):
-        """ Implementation detail. """
-        if not issubclass(cls, Spectrogram):
-            raise ValueError
-
-        dct = {}
-        var = vars(self)
-        for prop, _ in cls.COPY_PROPERTIES:
-            if not prop in var:
-                raise ValueError
-            dct[prop] = var[prop]
-        return cls(self, **dct)
-
     def _get_params(self):
         """ Implementation detail. """
         return dict(
