@@ -37,6 +37,11 @@ class EntryAlreadyStarredError(Exception):
 
 
 class Database(object):
+    """
+    .. seealso::
+
+        sqlalchemy.create_engine
+    """
     def __init__(self, url, CacheClass=LRUCache, cache_size=float('inf')):
         self._engine = create_engine(url)
         self._session_cls = sessionmaker(bind=self._engine)
@@ -130,7 +135,7 @@ class Database(object):
     def undo(self, n=1):
         """undo the last n commands.
 
-        .. seelalso::
+        .. seealso::
 
             :ref:`sunpy.database.CommandManager.undo`
 
@@ -140,7 +145,7 @@ class Database(object):
     def redo(self, n=1):
         """redo the last n commands.
 
-        .. seelalso::
+        .. seealso::
 
             :ref:`sunpy.database.CommandManager.redo`
 
