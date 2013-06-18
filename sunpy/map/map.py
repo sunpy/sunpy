@@ -49,38 +49,53 @@ or something else?)
 class MapBase(object):
     """ This object forms the base for all Map classes, both single and multi
     maps. """
-
-    @classmethod
-    def get_properties(cls, header):
-        """
-        Parses a map header and determines default properties.
         
-        This should be overloaded for more  specific Maps.
-        This list is to handle nD fits files.
-        """
-        if is_time(header.get('date-obs',[])): # Hack! check FITS standard is a time
-            date = header.get('date-obs')
-            # Check commonly used but non-standard FITS keyword for observation time is a time
-        elif is_time(header.get('date_obs',[])): # Horrible [] hack
-            date = header.get('date_obs')
-        else:
-            date = None
-        return {
-            "cmap": cm.gray,  # @UndefinedVariable
-            "date": parse_time(date) if date is not None else 'N/A', #TODO: this should be none?
-            "detector": header.get('detector', ''),
-            "dsun": header.get('dsun_obs', constants.au),
-            "exposure_time": header.get('exptime', 0.),
-            "instrument": header.get('instrume', ''),
-            "measurement": header.get('wavelnth', ''),
-            "observatory": header.get('telescop', ''),
-            "name": header.get('telescop', '') + " " + 
-                    str(header.get('wavelnth', '')),
-            "nickname": header.get('detector', '')
-            }
+    # Need list of meta keys that will become properties.  
+    # property_name -> (meta_key, mutable, default)
+    _automatic_properties = {
+    "detector" : ("detector", False, ''),
+    "dsun" : ("dsun_obs", False, constants.au),
+    "exposure_time" : ("exptime", False, 0.0),
+    "instrument" : ("instrume", False, ''),
+    "measurement" : ("wavelnth", False, ''),
+    "wavelength" : ("wavelnth", False, ''),
+    "observatory" : ("telescop", False, ''),
+    } 
+    
+    @property
+    def name(self):
+    	return self._name
+    @name.setter
+    def name(self, n):
+    	self._name = n
+        
+    @property
+    def nickname(self):
+    	return self._nickname
+    @nickname.setter
+    def nickname(self, n):
+    	self._nickname = n
+    
+    @property
+    def date(self):
+    	return self.meta.get('date-obs', None)
+    @date.setter
+    def date(self, new_date):
+    	self.meta['date-obs'] = new_date
+        #propagate change to malformed FITS keywords
+    	if is_time(self.meta.get('date_obs', None)): 
+        	self.meta['date_obs'] = new_date
+            
+    def _fix_date(self):
+        # Check commonly used but non-standard FITS keyword for observation time
+        # and correct the keyword if we can.  Keep updating old one for 
+        # backwards compatibility.
+    	if is_time(self.meta.get('date_obs', None)): 
+        	self.meta['date-obs'] = self.meta['date_obs']   
+
 
     def __init__(self, data, meta):
-        """ Instancstanciate a Map class.
+        """ Instantiate a Map class.
         
         Parameters
         ----------
@@ -97,25 +112,41 @@ class MapBase(object):
         self.meta = meta
         self.data = data
         
+        # Setup some attributes
+        self._fix_date()
+        self._name = self.meta.get('telescop', '') + " " + str(self.meta.get('wavelnth', ''))
+        self._nickname = self.meta.get('detector', '')
+
+        self.cmap = cm.gray
+        
+        # Setup automatic properties
+        for p in self._automatic_properties:
+        	self._add_property(p)
+        
     @property
     def header(self):
         warnings.warn("""map.header has been renamed to map.meta
         for compatability with astropy, please use meta instead""", Warning)
         return self.meta
     
-#    def __getattr__(self, attr):
-    def _add_property(self, attr, header_key):
+    def _add_property(self, attr):
         """
-        This method maps a header value to a dynamically updating 
-        property
+    	This method maps a header value to a dynamically updating 
+    	property
         """
-        def setter(self, value):
-            self.meta[header_key] = value
         
+        meta_key, make_setter, default = self._automatic_properties[attr]
+
         def getter(self):
-            return self.meta[header_key]
-        
-        setattr(self, attr, property(getter, setter))
+            return self.meta.get(meta_key, default)
+
+        if make_setter:
+            def setter(self, value):
+                self.meta[meta_key] = value
+        else:
+        	setter = None
+
+        setattr(type(self), attr, property(getter, setter))
 
     def __getitem__(self, key):
         """ This should allow indexing by physical coordinate """
