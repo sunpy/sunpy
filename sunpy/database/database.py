@@ -153,7 +153,8 @@ class Database(object):
         self._command_manager.redo(n)
 
     def __contains__(self, database_entry):
-        (ret,), = self.session.query(exists().where(tables.DatabaseEntry.id==database_entry.id))
+        (ret,), = self.session.query(
+            exists().where(tables.DatabaseEntry.id == database_entry.id))
         return ret
 
     def __iter__(self):
