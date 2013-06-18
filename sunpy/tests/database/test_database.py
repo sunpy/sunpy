@@ -110,6 +110,7 @@ def test_contains_exists(database):
     database.commit()
     assert entry in database
 
+
 def test_contains_precommit(database):
     entry = DatabaseEntry()
     database.add(entry)
