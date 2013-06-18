@@ -64,34 +64,34 @@ class MapBase(object):
     
     @property
     def name(self):
-    	return self._name
+        return self._name
     @name.setter
     def name(self, n):
-    	self._name = n
+        self._name = n
         
     @property
     def nickname(self):
-    	return self._nickname
+        return self._nickname
     @nickname.setter
     def nickname(self, n):
-    	self._nickname = n
+        self._nickname = n
     
     @property
     def date(self):
-    	return self.meta.get('date-obs', None)
+        return self.meta.get('date-obs', None)
     @date.setter
     def date(self, new_date):
-    	self.meta['date-obs'] = new_date
+        self.meta['date-obs'] = new_date
         #propagate change to malformed FITS keywords
-    	if is_time(self.meta.get('date_obs', None)): 
-        	self.meta['date_obs'] = new_date
+        if is_time(self.meta.get('date_obs', None)): 
+            self.meta['date_obs'] = new_date
             
     def _fix_date(self):
         # Check commonly used but non-standard FITS keyword for observation time
         # and correct the keyword if we can.  Keep updating old one for 
         # backwards compatibility.
-    	if is_time(self.meta.get('date_obs', None)): 
-        	self.meta['date-obs'] = self.meta['date_obs']   
+        if is_time(self.meta.get('date_obs', None)): 
+            self.meta['date-obs'] = self.meta['date_obs']   
 
 
     def __init__(self, data, meta):
@@ -121,7 +121,7 @@ class MapBase(object):
         
         # Setup automatic properties
         for p in self._automatic_properties:
-        	self._add_property(p)
+            self._add_property(p)
         
     @property
     def header(self):
@@ -131,8 +131,8 @@ class MapBase(object):
     
     def _add_property(self, attr):
         """
-    	This method maps a header value to a dynamically updating 
-    	property
+        This method maps a header value to a dynamically updating 
+        property
         """
         
         meta_key, make_setter, default = self._automatic_properties[attr]
@@ -144,7 +144,7 @@ class MapBase(object):
             def setter(self, value):
                 self.meta[meta_key] = value
         else:
-        	setter = None
+            setter = None
 
         setattr(type(self), attr, property(getter, setter))
 
