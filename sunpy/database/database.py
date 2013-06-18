@@ -1,6 +1,6 @@
 from __future__ import absolute_import
 
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, exists
 from sqlalchemy.orm import sessionmaker
 
 from sunpy.database import commands, tables
@@ -151,6 +151,10 @@ class Database(object):
 
         """
         self._command_manager.redo(n)
+
+    def __contains__(self, database_entry):
+        (ret,), = self.session.query(exists().where(tables.DatabaseEntry.id==database_entry.id))
+        return ret
 
     def __iter__(self):
         """iterate over all database entries that have been saved."""

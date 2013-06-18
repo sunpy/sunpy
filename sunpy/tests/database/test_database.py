@@ -104,6 +104,22 @@ def test_remove_nonexisting_entry(database):
         database.remove(DatabaseEntry())
 
 
+def test_contains_exists(database):
+    entry = DatabaseEntry()
+    database.add(entry)
+    database.commit()
+    assert entry in database
+
+def test_contains_precommit(database):
+    entry = DatabaseEntry()
+    database.add(entry)
+    assert entry not in database
+
+
+def test_contains_notexists(database):
+    assert DatabaseEntry() not in database
+
+
 def test_iter(database):
     entry1 = DatabaseEntry()
     entry2 = DatabaseEntry()
