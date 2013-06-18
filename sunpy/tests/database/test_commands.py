@@ -18,6 +18,11 @@ def session():
     return Session(bind=engine)
 
 
+@pytest.fixture
+def command_manager():
+    return CommandManager()
+
+
 def test_add_entry(session):
     assert not session.new
     entry = DatabaseEntry()
@@ -102,14 +107,13 @@ def test_remove_entry_undo(session):
     assert session.query(DatabaseEntry).count() == 1
 
 
-def test_redo_stack_empty_after_call(session):
-    manager = CommandManager()
-    manager.do(AddEntry(session, DatabaseEntry()))
-    manager.do(AddEntry(session, DatabaseEntry()))
-    assert len(manager.undo_commands) == 2
+def test_redo_stack_empty_after_call(session, command_manager):
+    command_manager.do(AddEntry(session, DatabaseEntry()))
+    command_manager.do(AddEntry(session, DatabaseEntry()))
+    assert len(command_manager.undo_commands) == 2
     session.commit()
-    manager.undo(2)
-    assert not manager.undo_commands
-    assert len(manager.redo_commands) == 2
-    manager.do(AddEntry(session, DatabaseEntry()))
-    assert not manager.redo_commands
+    command_manager.undo(2)
+    assert not command_manager.undo_commands
+    assert len(command_manager.redo_commands) == 2
+    command_manager.do(AddEntry(session, DatabaseEntry()))
+    assert not command_manager.redo_commands
