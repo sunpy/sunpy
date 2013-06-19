@@ -681,11 +681,11 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
             
         #Return a new map
         #Copy Header
-        meta = self._original_header.copy()
+        meta = self.meta.copy()
+
         # Create new map instance
-        new_map = self.__class__(data, meta)
-        
-        return new_map       
+        MapType = type(self)
+        return MapType(data, meta)
 
     def submap(self, range_a, range_b, units="data"):
         """Returns a submap of the map with the specified range
@@ -754,19 +754,20 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
             raise ValueError(
                 "Invalid unit. Must be one of 'data' or 'pixels'")
 
-        # Make a copy of the header with updated centering information
-        meta = self._original_header.copy()
         
         # Get ndarray representation of submap
-        data = self.data[y_pixels[0]:y_pixels[1],
-                                x_pixels[0]:x_pixels[1]]
+        xslice = slice(x_pixels[0], x_pixels[1])
+        yslice = slice(y_pixels[0], y_pixels[1])
+        new_data = self.data[yslice, xslice].copy()
         
-        # Instantiate new instance and update metadata
-        new_map = self.__class__(data.copy(), meta)
-        new_map.reference_pixel['x'] = self.reference_pixel['x'] - x_pixels[0]
-        new_map.reference_pixel['y'] = self.reference_pixel['y'] - y_pixels[0]
+        # Make a copy of the header with updated centering information
+        new_meta = self.meta.copy()
+        new_meta['crpix1'] = self.reference_pixel['x'] - x_pixels[0]
+        new_meta['crpix2'] = self.reference_pixel['y'] - y_pixels[0]
 
-        return new_map
+        # Create new map instance
+        MapType = type(self)
+        return MapType(new_data, new_meta)
 
     def superpixel(self, dimensions, method='sum'):
         """Returns a new map consisting of superpixels formed from the
@@ -804,35 +805,32 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         reshaped = reshape_image_to_4d_superpixel(self.data.copy().T,
                                                   dimensions)
         if method == 'sum':
-            data = reshaped.sum(axis=3).sum(axis=1)
+            new_data = reshaped.sum(axis=3).sum(axis=1)
         elif method == 'average':
-            data = ((reshaped.sum(axis=3).sum(axis=1)) /
+            new_data = ((reshaped.sum(axis=3).sum(axis=1)) /
                     np.float32(dimensions[0] * dimensions[1]))
+        new_data = new_data.T
         
         
-        #data = resample(np.asarray(self).copy().T, dimensions,
-        #                method, center=True)
-
         # Update image scale and number of pixels
-        meta = self._original_header.copy()
+        new_meta = self.meta.copy()
 
         # Note that 'x' and 'y' correspond to 1 and 0 in self.shape,
         # respectively
         new_nx = self.shape[1] / dimensions[0]
         new_ny = self.shape[0] / dimensions[1]
 
-        # Create new map instance
-        new_map = self.__class__(data.T, meta)
-
         # Update metadata
-        new_map.scale['x'] = dimensions[0] * self.scale['x']
-        new_map.scale['y'] = dimensions[1] * self.scale['y']
-        new_map.reference_pixel['x'] = (new_nx + 1) / 2.
-        new_map.reference_pixel['y'] = (new_ny + 1) / 2.
-        new_map.reference_coordinate['x'] = self.center['x']
-        new_map.reference_coordinate['y'] = self.center['y']
+        new_meta['cdelt1'] = dimensions[0] * self.scale['x']
+        new_meta['cdelt2'] = dimensions[1] * self.scale['y']
+        new_meta['crpix1'] = (new_nx + 1) / 2.
+        new_meta['crpix2'] = (new_ny + 1) / 2.
+        new_meta['crval1'] = self.center['x']
+        new_meta['crval2'] = self.center['y']
 
-        return new_map        
+        # Create new map instance
+        MapType = type(self)
+        return MapType(new_data, new_meta)
         
 # #### Visualization #### #
 
