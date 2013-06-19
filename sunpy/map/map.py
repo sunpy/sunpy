@@ -284,12 +284,12 @@ Dimension:\t [%d, %d]
     @property
     def date(self):
         return self.meta.get('date-obs', None)
-    @date.setter
-    def date(self, new_date):
-        self.meta['date-obs'] = new_date
-        #propagate change to malformed FITS keywords
-        if is_time(self.meta.get('date_obs', None)): 
-            self.meta['date_obs'] = new_date
+#    @date.setter
+#    def date(self, new_date):
+#        self.meta['date-obs'] = new_date
+#        #propagate change to malformed FITS keywords
+#        if is_time(self.meta.get('date_obs', None)): 
+#            self.meta['date_obs'] = new_date
 
     @property
     def detector(self):
