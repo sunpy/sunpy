@@ -201,7 +201,7 @@ def is_time(time_string):
 
     .. todo:: add ability to parse tai (International Atomic Time seconds since 
     Jan 1, 1958)"""
-    if None:
+    if time_string is None:
         return False
     elif isinstance(time_string, datetime):
         return True
