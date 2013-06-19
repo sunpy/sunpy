@@ -8,7 +8,7 @@ from collections import OrderedDict
 
 import numpy as np
 
-from sunpy.map import GenericMap, MapBase
+from sunpy.map import GenericMap
 from sunpy.map.header import MapMeta
 from . compositemap import CompositeMap
 from . mapcube import MapCube
@@ -86,7 +86,7 @@ class Map(RegisteredFactoryBase):
                 data_header_pairs += map(cls._read_file, files)
             
             # Already a Map
-            elif isinstance(arg, MapBase):
+            elif isinstance(arg, GenericMap):
                 already_maps.append(arg)
                 
             # A URL
