@@ -508,29 +508,29 @@ Dimension:\t [%d, %d]
         #   coordinates in a Map are at pixel centers
 
         # Make a copy of the original data and perform resample
-        data = sunpy_image_resample(self.data.copy().T, dimensions,
+        new_data = sunpy_image_resample(self.data.copy().T, dimensions,
                                     method, center=True)
-
-        # Update image scale and number of pixels
-        meta = self._original_header.copy()
+        new_data = new_data.T
 
         # Note that 'x' and 'y' correspond to 1 and 0 in self.shape,
         # respectively
         scale_factor_x = (float(self.shape[1]) / dimensions[0])
         scale_factor_y = (float(self.shape[0]) / dimensions[1])
 
-        # Create new map instance
-        new_map = self.__class__(data.T, meta)
-
+        # Update image scale and number of pixels
+        new_meta = self.meta.copy()
+        
         # Update metadata
-        new_map.scale['x'] *= scale_factor_x
-        new_map.scale['y'] *= scale_factor_y
-        new_map.reference_pixel['x'] = (dimensions[0] + 1) / 2.
-        new_map.reference_pixel['y'] = (dimensions[1] + 1) / 2.
-        new_map.reference_coordinate['x'] = self.center['x']
-        new_map.reference_coordinate['y'] = self.center['y']
+        new_meta['cdelt1'] *= scale_factor_x
+        new_meta['cdelt2'] *= scale_factor_y
+        new_meta['crpix1'] = (dimensions[0] + 1) / 2.
+        new_meta['crpix2'] = (dimensions[1] + 1) / 2.
+        new_meta['crval1'] = self.center['x']
+        new_meta['crval2'] = self.center['y']
 
-        return new_map
+        # Create new map instance
+        MapType = type(self)
+        return MapType(new_data, new_meta)
     
     def rotate(self, angle, scale=1.0, rotation_centre=None, recentre=True,
                missing=0.0, interpolation='bicubic', interp_param=-0.5):
