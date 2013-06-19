@@ -440,7 +440,7 @@ Dimension:\t [%d, %d]
 
         return (value - self.center[dim]) / self.scale[dim] + ((size - 1) / 2.)
 
-    def pixel_to_data(self, x = None, y = None):
+    def pixel_to_data(self, x=None, y=None):
         """Convert from pixel coordinates to data coordinates (e.g. arcsec)"""
         width = self.shape[1]
         height = self.shape[0]
@@ -454,16 +454,17 @@ Dimension:\t [%d, %d]
         if (x is not None) & (y < 0):
             raise ValueError("Y pixel value cannot be less than 0.")
 
-        scale = np.array([self.scale.get('x'), self.scale.get('y')])
-        crpix = np.array([self.reference_pixel.get('x'),
-                          self.reference_pixel.get('y')])
-        crval = np.array([self.reference_coordinate.get('x'),
-                          self.reference_coordinate.get('y')])
-        coordinate_system = [self.coordinate_system.get('x'),
-                             self.coordinate_system.get('y')]
-        x,y = wcs.convert_pixel_to_data(width, height, scale[0], scale[1],
-         crpix[0], crpix[1], crval[0], crval[1], coordinate_system[0], x=x, y=y)
-
+        scale = self.scale
+        crpix = self.reference_pixel
+        crval = self.reference_coordinate
+        coordinate_system = self.coordinate_system
+        
+        x,y = wcs.convert_pixel_to_data(width, height, 
+                                        scale['x'], scale['y'],
+                                        crpix['x'], crpix['y'], 
+                                        crval['x'], crval['y'], 
+                                        coordinate_system['x'], 
+                                        x=x, y=y)
         return x, y
         
 # #### Image processing routines #### #
@@ -846,7 +847,7 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
 
         b0 = self.heliographic_latitude
         l0 = self.heliographic_longitude
-        units = [self.units.get('x'), self.units.get('y')]
+        units = [self.units['x'], self.units['y']]
 
         #TODO: This function could be optimized. Does not need to convert the entire image
         # coordinates
