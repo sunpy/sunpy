@@ -229,8 +229,8 @@ class GenericMap(NDDataStandin):
         self._fix_naxis()
         
         # Setup some attributes
-        self._name = self.meta.get('telescop', '') + " " + str(self.meta.get('wavelnth', ''))
-        self._nickname = self.meta.get('detector', '')
+        self._name = self.observatory + " " + str(self.measurement)
+        self._nickname = self.detector
 
         # Visualization attributes
         self.cmap = cm.gray
