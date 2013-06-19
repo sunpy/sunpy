@@ -559,7 +559,7 @@ Dimension:\t [%d, %d]
         MapType = type(self)
         return MapType(new_data, new_meta)
     
-    def rotate(self, angle, scale=1.0, rotation_centre=None, recentre=True,
+    def rotate(self, angle, scale=1.0, rotation_center=None, recenter=True,
                missing=0.0, interpolation='bicubic', interp_param=-0.5):
         """Returns a new rotated, rescaled and shifted map.
         
@@ -569,13 +569,13 @@ Dimension:\t [%d, %d]
            The angle to rotate the image by (radians)        
         scale: float
            A scale factor for the image, default is no scaling
-        rotation_centre: tuple
+        rotation_center: tuple
            The point in the image to rotate around (Axis of rotation).
-           Default: Centre of the array
-        recentre: bool, or array-like
-           Move the centroid (axis of rotation) to the centre of the array
-           or recentre coords. 
-           Default: True, recentre to the centre of the array.
+           Default: center of the array
+        recenter: bool, or array-like
+           Move the centroid (axis of rotation) to the center of the array
+           or recenter coords. 
+           Default: True, recenter to the center of the array.
         missing: float
            The numerical value to fill any missing points after rotation.
            Default: 0.0
@@ -619,27 +619,27 @@ Dimension:\t [%d, %d]
                 interp_param = 0 #Default value for nearest or bilinear
         
         #Make sure recenter is a vector with shape (2,1)
-        if not isinstance(recentre, bool):
-            recentre = np.array(recentre).reshape(2,1)
+        if not isinstance(recenter, bool):
+            recenter = np.array(recenter).reshape(2,1)
                 
-        #Define Size and centre of array
-        centre = (np.array(self.data.shape)-1)/2.0
+        #Define Size and center of array
+        center = (np.array(self.data.shape)-1)/2.0
         
-        #If rotation_centre is not set (None or False),
-        #set rotation_centre to the centre of the image.
-        if rotation_centre is None:
-            rotation_centre = centre 
+        #If rotation_center is not set (None or False),
+        #set rotation_center to the center of the image.
+        if rotation_center is None:
+            rotation_center = center 
         else:
-            #Else check rotation_centre is a vector with shape (2,1)
-            rotation_centre = np.array(rotation_centre).reshape(2,1)
+            #Else check rotation_center is a vector with shape (2,1)
+            rotation_center = np.array(rotation_center).reshape(2,1)
 
-        #Recentre to the rotation_centre if recentre is True
-        if isinstance(recentre, bool):
+        #recenter to the rotation_center if recenter is True
+        if isinstance(recenter, bool):
             #if rentre is False then this will be (0,0)
-            shift = np.array(rotation_centre) - np.array(centre) 
+            shift = np.array(rotation_center) - np.array(center) 
         else:
-            #Recentre to recentre vector otherwise
-            shift = np.array(recentre) - np.array(centre)
+            #recenter to recenter vector otherwise
+            shift = np.array(recenter) - np.array(center)
         
         image = self.data.copy()
     
@@ -647,9 +647,9 @@ Dimension:\t [%d, %d]
         c = np.cos(angle)
         s = np.sin(angle)
         mati = np.array([[c, s],[-s, c]]) / scale   # res->orig
-        centre = np.array([centre]).transpose()  # the centre of rotn
+        center = np.array([center]).transpose()  # the center of rotn
         shift = np.array([shift]).transpose()    # the shift
-        kpos = centre - np.dot(mati, (centre + shift))  
+        kpos = center - np.dot(mati, (center + shift))  
         # kpos and mati are the two transform constants, kpos is a 2x2 array
         rsmat, offs =  mati, np.squeeze((kpos[0,0], kpos[1,0]))
         
