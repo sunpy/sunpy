@@ -36,6 +36,20 @@ class EntryAlreadyStarredError(Exception):
             'as starred' % self.database_entry)
 
 
+class EntryAlreadyUnstarredError(Exception):
+    """This exception is raised if the star mark from a database entry is
+    attempted to be removed although the entry is not starred.
+
+    """
+    def __init__(self, database_entry):
+        self.database_entry = database_entry
+
+    def __str__(self):
+        return (
+            'the entry %r is already not marked '
+            'as starred' % self.database_entry)
+
+
 class Database(object):
     """
     .. seealso::
@@ -87,6 +101,19 @@ class Database(object):
         if database_entry.starred and not ignore_already_starred:
             raise EntryAlreadyStarredError(database_entry)
         database_entry.starred = True
+        self._cache[database_entry.id] = database_entry
+
+    def unstar(self, database_entry, ignore_already_unstarred=False):
+        """Remove the starred mark of the given entry. If this entry is not
+        marked as starred, the behaviour depends on the optional argument
+        ``ignore_already_unstarred``: if it is ``False`` (the default),
+        :exc:`sunpy.database.EntryAlreadyUnstarredError` is raised. Otherwise,
+        the entry is kept as unstarred and no exception is raised.
+
+        """
+        if not database_entry.starred and not ignore_already_unstarred:
+            raise EntryAlreadyUnstarredError(database_entry)
+        database_entry.starred = False
         self._cache[database_entry.id] = database_entry
 
     def get_starred(self):
