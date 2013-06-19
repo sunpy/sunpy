@@ -395,11 +395,11 @@ Dimension:\t [%d, %d]
     
     def _fix_naxis(self):
     	# If naxis is not specified, get it from the array shape
-        if self.meta.get('naxis1') is None:
+        if 'naxis1' not in self.meta:
             self.meta['naxis1'] = self.shape[1]
-        if self.meta.get('naxis2') is None:
+        if 'naxis2' not in self.meta:
             self.meta['naxis2'] = self.shape[0]
-        if self.meta.get('naxis') is None:
+        if 'naxis' not in self.meta:
         	self.meta['naxis'] = self.ndim
             
 	def _fix_bitpix(self):
@@ -411,7 +411,7 @@ Dimension:\t [%d, %d]
         # -32    IEEE single precision floating point
         # -64    IEEE double precision floating point
         #
-        if not self.meta.has_key('bitpix'):
+        if 'bitpix' not in self.meta:
         	float_fac = -1 if self.dtype.kind == "f" else 1
             self.meta['bitpix'] = float_fac * 8 * self.dtype.itemsize
     
