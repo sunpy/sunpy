@@ -81,6 +81,18 @@ class NDDataStandin(object):
     @property
     def ndim(self):
     	return self.data.ndim
+    
+    def std(self, *args, **kwargs):
+        return self.data.std(*args, **kwargs)
+    
+    def mean(self, *args, **kwargs):
+        return self.data.mean(*args, **kwargs)
+    
+    def min(self, *args, **kwargs):
+        return self.data.min(*args, **kwargs)
+        
+    def max(self, *args, **kwargs):
+        return self.data.max(*args, **kwargs)
         
     @property
     def header(self):
