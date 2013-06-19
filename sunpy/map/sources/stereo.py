@@ -12,21 +12,16 @@ __all__ = ['EUVIMap', 'CORMap']
 
 class EUVIMap(GenericMap):
     """EUVI Image Map definition"""
-    @classmethod
-    def get_properties(cls, header):
-        """Parses EUVI image header"""
-        properties = Map.get_properties(header)
+    
+    def __init__(self, data, header, **kwargs):
         
-        properties.update({
-            "date": parse_time(header.get('date-obs',header.get('date_obs'))),
-            "detector": "EUVI",
-            "instrument": "SECCHI",
-            "observatory": header.get('obsrvtry'),
-            "cmap": cm.get_cmap('sohoeit%d' % header.get('wavelnth')),
-            "nickname": "EUVI-" + header.get('obsrvtry')[-1]
-        })
-        return properties
-
+        GenericMap.__init__(self, data, header, **kwargs)
+        
+        self._name = self.observatory + " " + self.detector + " " + str(self.measurement)
+        self._nickname = "{0}-{1}".format(self.detector, self.observatory[-1])
+        
+        self.cmap = cm.get_cmap('sohoeit%d' % self.wavelength)
+        
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an EUVI image"""
@@ -34,25 +29,20 @@ class EUVIMap(GenericMap):
         
 class CORMap(GenericMap):
     """COR Image Map definition"""
-    @classmethod
-    def get_properties(cls, header):
-        """Parses COR image header"""
-        properties = Map.get_properties(header)
+    
+    def __init__(self, data, header, **kwargs):
         
-        # @TODO: Deal with invalid values for exptime. E.g. STEREO-B COR2
-        # on 2012/03/20 has -1 for some images.
-        properties.update({
-            "date": parse_time(header.get('date-obs',header.get('date_obs'))),
-            "detector": header.get('detector'),
-            "instrument": "SECCHI",
-            "observatory": header.get('obsrvtry'),
-            "measurement": "white-light",
-            "name": "SECCHI %s" % header.get('detector'),
-            "nickname": "%s-%s" % (header.get('detector'), 
-                                   header.get('obsrvtry')[-1]),
-            "cmap": cm.get_cmap('stereocor%s' % properties['detector'][-1])
-        })
-        return properties
+        GenericMap.__init__(self, data, header, **kwargs)
+        
+        self._name = self.observatory + " " + self.detector + " " + str(self.measurement)
+        self._nickname = "{0}-{1}".format(self.detector, self.observatory[-1])
+        
+        self.cmap = cm.get_cmap('stereocor%s' % self.detector[-1])
+        
+    @property
+    def measurement(self):
+        # TODO: This needs to do more than white-light.  Should give B, pB, etc.
+        return "white-light"
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
