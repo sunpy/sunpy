@@ -3,7 +3,7 @@ from __future__ import absolute_import
 import pytest
 
 from sunpy.database import Database, EntryAlreadyAddedError,\
-    EntryAlreadyStarredError
+    EntryAlreadyStarredError, EntryAlreadyUnstarredError
 from sunpy.database.tables import DatabaseEntry
 from sunpy.database.commands import NoSuchEntryError
 from sunpy.database.caching import LRUCache, LFUCache
@@ -53,6 +53,20 @@ def test_star_already_starred_entry(database):
     database.star(entry)
     with pytest.raises(EntryAlreadyStarredError):
         database.star(entry)
+
+
+def unstar_entry(database):
+    entry = DatabaseEntry()
+    assert not entry.starred
+    database.star(entry)
+    assert entry.starred
+    database.unstar(entry)
+    assert not entry.starred
+
+
+def test_unstar_already_unstarred_entry(database):
+    with pytest.raises(EntryAlreadyUnstarredError):
+        database.unstar(DatabaseEntry())
 
 
 def test_get_starred_entries(database):
