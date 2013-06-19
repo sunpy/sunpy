@@ -7,7 +7,6 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from copy import copy
 
-from sunpy.map import MapBase
 #from .map_factory import Map
 #from sunpy.map.sources import *
 from sunpy.util import plotting
@@ -19,71 +18,39 @@ __all__ = ['MapCube']
 # mapped header values can be used in MapCube without having to keep extra
 # copies of the data..
 #
-class MapCube(np.ndarray):
+class MapCube(object):
     """
     MapCube(input)
     
-    A spatially-aware data array based on the SolarSoft Map object.
-    Reads in the files at the specified location, stores their headers, and
-    creates a 3d array from their contents.
+    A series of spatially aligned Maps.
 
     Parameters
     ----------
-    args : {string | Map}* 
-        Map instances or filepaths from which MapCube should be built.
-    sortby : {"date"}
+    args : {List}
+        A list of Map instances
+    sortby : {"date", None}
         Method by which the MapCube should be sorted along the z-axis.
-
-    Attributes
-    ----------
-    headers : list
-        a list of dictionaries containing the original and normalized header tags for the files used to build the MapCube.
-
-    See Also
-    --------
-    numpy.ndarray Parent class for the MapCube object
-    :class:`sunpy.map.Map`
         
     Examples
     --------
-    >>> mapcube = sunpy.make_map('images/')
+    >>> mapcube = sunpy.Map('images/', mapcube=True)
     >>> mapcube[0].show()
     >>> mapcube[3].reference_pixel['x']
     2050.6599120000001
     """
-    def __new__(cls, *args, **kwargs):
+    #pylint: disable=W0613,E1101
+    def __init__(self, maps, sortby='date', coalign=False, derotate=False):
         """Creates a new Map instance"""
         
-        maps = []
-        data = []
-        headers = []
-    
-        # convert input to maps
-        for item in args:
-            if isinstance(item, MapBase):
-                maps.append(item)
-            else:
-                maps.append(Map(item))
+        _maps = args[0]
 
-        # sort data
-        sortby = kwargs.get("sortby", "date")
-        if hasattr(cls, '_sort_by_%s' % sortby):
-            maps.sort(key=getattr(cls, '_sort_by_%s' % sortby)())
+        # Optionally sort data
+        if sortby is 'date':
+            _maps.sort(key=getattr(cls, '_sort_by_%s' % sortby)())
 
         # create data cube
         for map_ in maps:
             data.append(np.array(map_))
-            headers.append(map_._original_header)
-
-        obj = np.asarray(data).view(cls)
-        obj._headers = headers
-
-        return obj
-    
-    #pylint: disable=W0613,E1101
-    def __init__(self, *args, **kwargs):
-        coalign = kwargs.get("coalign", False)
-        derotate = kwargs.get("derotate", False)
         
         # Coalignment
         if coalign and hasattr(self, '_coalign_%s' % coalign):
@@ -91,34 +58,10 @@ class MapCube(np.ndarray):
 
         if derotate:
             self._derotate()
-            
-    def __array_finalize__(self, obj):
-        """Finishes instantiation of the new MapCube object"""
-        if obj is None:
-            return
-
-        if hasattr(obj, '_headers'):
-            self._headers = obj._headers
-        
-    def __array_wrap__(self, out_arr, context=None):
-        """Returns a wrapped instance of a MapCube object"""
-        return np.ndarray.__array_wrap__(self, out_arr, context)
     
     def __getitem__(self, key):
         """Overiding indexing operation"""
-        if self.ndim is 3 and isinstance(key, int):
-            data = np.ndarray.__getitem__(self, key)
-            header = self._headers[key]
-            for cls in Map.__subclasses__():
-                if cls.is_datasource_for(header):
-                    return cls(data, header)
-
-        else:
-            return np.ndarray.__getitem__(self, key)
-        
-    def std(self, *args, **kwargs):
-        """overide np.ndarray.std()"""
-        return np.array(self, copy=False, subok=False).std(*args, **kwargs)
+        return _maps[key]
         
     # Coalignment methods
     def _coalign_diff(self):
