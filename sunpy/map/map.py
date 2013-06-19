@@ -248,7 +248,7 @@ class GenericMap(NDDataStandin):
         if not hasattr(self, 'observatory'):
             return self.data.__repr__()
         return (
-"""SunPy Map
+"""SunPy %s
 ---------
 Observatory:\t %s
 Instrument:\t %s
@@ -259,7 +259,8 @@ dt:\t\t %f
 Dimension:\t [%d, %d] 
 [dx, dy] =\t [%f, %f]
  
-""" % (self.observatory, self.instrument, self.detector, self.measurement,
+""" % (self.__class__.__name__,
+       self.observatory, self.instrument, self.detector, self.measurement,
        self.date, self.exposure_time,
        self.data.shape[1], self.data.shape[0], self.scale['x'], self.scale['y']) 
      + self.data.__repr__())
@@ -316,7 +317,7 @@ Dimension:\t [%d, %d]
         
     @property
     def observatory(self):
-        return self.meta.get('telescop', "")
+        return self.meta.get('obsrvtry', self.meta.get('telescop', ""))
         
     @property
     def xrange(self):
