@@ -47,8 +47,8 @@ or something else?)
 """
 
 class NDDataStandin(object):
-	
-	def __init__(self, data, meta, **kwargs):
+    
+    def __init__(self, data, meta, **kwargs):
         """ Instantiate a Map class.
         
         Parameters
@@ -65,8 +65,8 @@ class NDDataStandin(object):
         
         self.meta = meta
         self.data = data
-	
-	@property
+    
+    @property
     def shape(self):
         return self.data.shape
     
@@ -76,11 +76,11 @@ class NDDataStandin(object):
         
     @property
     def size(self):
-    	return self.data.size
-    	
+        return self.data.size
+        
     @property
     def ndim(self):
-    	return self.data.ndim
+        return self.data.ndim
     
     def std(self, *args, **kwargs):
         return self.data.std(*args, **kwargs)
@@ -221,7 +221,7 @@ class GenericMap(NDDataStandin):
     """
     
     def __init__(self, data, header, **kwargs):
-    	
+        
         NDDataStandin.__init__(self, data, header, **kwargs)
         
         # Correct possibly missing meta keywords
@@ -232,7 +232,7 @@ class GenericMap(NDDataStandin):
         self._name = self.meta.get('telescop', '') + " " + str(self.meta.get('wavelnth', ''))
         self._nickname = self.meta.get('detector', '')
 
-		# Visualization attributes
+        # Visualization attributes
         self.cmap = cm.gray
         
         # Validate header
@@ -292,32 +292,32 @@ Dimension:\t [%d, %d]
 
     @property
     def detector(self):
-    	return self.meta.get('detector', "")
-    	
+        return self.meta.get('detector', "")
+        
     @property
     def dsun(self):
-    	return self.meta.get('dsun_obs', constants.au)
-    	
+        return self.meta.get('dsun_obs', constants.au)
+        
     @property
     def exposure_time(self):
-    	return self.meta.get('exptime', 0.0)
-    	
+        return self.meta.get('exptime', 0.0)
+        
     @property
     def instrument(self):
-    	return self.meta.get('instrume', "")
-    	
+        return self.meta.get('instrume', "")
+        
     @property
     def measurement(self):
-    	return self.meta.get('wavelnth', "")
-    	
+        return self.meta.get('wavelnth', "")
+        
     @property
     def wavelength(self):
-    	return self.meta.get('wavelnth', "")
-    	
+        return self.meta.get('wavelnth', "")
+        
     @property
     def observatory(self):
-    	return self.meta.get('telescop', "")
-    	
+        return self.meta.get('telescop', "")
+        
     @property
     def xrange(self):
         """Return the X range of the image in arcsec from edge to edge."""
@@ -345,59 +345,59 @@ Dimension:\t [%d, %d]
                
     @property
     def rsun_meters(self):
-    	return self.meta.get('rsun_ref', constants.radius)
+        return self.meta.get('rsun_ref', constants.radius)
     
     @property
     def rsun_arcseconds(self):
-    	return self.meta.get('rsun_obs', self.meta.get('solar_r',
+        return self.meta.get('rsun_obs', self.meta.get('solar_r',
                                          self.meta.get('radius', constants.average_angular_size)))
                                          
     @property
     def coordinate_system(self):
-    	return {'x': self.meta.get('ctype1', 'HPLN-TAN'),
+        return {'x': self.meta.get('ctype1', 'HPLN-TAN'),
                 'y': self.meta.get('ctype2', 'HPLT-TAN'),}
     
     @property
     def carrington_longitude(self):
-    	return self.meta.get('crln_obs', 0.)
-    	
+        return self.meta.get('crln_obs', 0.)
+        
     @property
     def heliographic_latitude(self):
-    	return self.meta.get('hglt_obs', self.meta.get('crlt_obs',
+        return self.meta.get('hglt_obs', self.meta.get('crlt_obs',
                                          self.meta.get('solar_b0', 0.)))
-    	
+        
     @property
     def heliographic_longitude(self):
-    	return self.meta.get('hgln_obs', 0.)
-    	
+        return self.meta.get('hgln_obs', 0.)
+        
     @property
     def reference_coordinate(self):
-    	return {'x': self.meta.get('crval1', 0.),
+        return {'x': self.meta.get('crval1', 0.),
                 'y': self.meta.get('crval2', 0.),}
-    	
+        
     @property
     def reference_pixel(self):
-    	return {'x': self.meta.get('crpix1', (self.meta.get('naxis1') + 1) / 2.),
+        return {'x': self.meta.get('crpix1', (self.meta.get('naxis1') + 1) / 2.),
                 'y': self.meta.get('crpix2', (self.meta.get('naxis2') + 1) / 2.),}
-    	
+        
     @property
     def scale(self):
-    	return {'x': self.meta.get('cdelt1', 1.),
+        return {'x': self.meta.get('cdelt1', 1.),
                 'y': self.meta.get('cdelt2', 1.),}
-    	
+        
     @property
     def units(self):
-    	return {'x': self.meta.get('cunit1', 'arcsec'),
+        return {'x': self.meta.get('cunit1', 'arcsec'),
                 'y': self.meta.get('cunit2', 'arcsec'),}
-    	
+        
     @property
     def rotation_angle(self):
-    	return {'x': self.meta.get('crota1', 0.),
+        return {'x': self.meta.get('crota1', 0.),
                 'y': self.meta.get('crota2', 0.),}
-	
+    
             
 # #### Miscellaneous #### #
-	
+    
     def _fix_date(self):
         # Check commonly used but non-standard FITS keyword for observation time
         # and correct the keyword if we can.  Keep updating old one for 
@@ -406,16 +406,16 @@ Dimension:\t [%d, %d]
             self.meta['date-obs'] = self.meta['date_obs']  
     
     def _fix_naxis(self):
-    	# If naxis is not specified, get it from the array shape
+        # If naxis is not specified, get it from the array shape
         if 'naxis1' not in self.meta:
             self.meta['naxis1'] = self.shape[1]
         if 'naxis2' not in self.meta:
             self.meta['naxis2'] = self.shape[0]
         if 'naxis' not in self.meta:
-        	self.meta['naxis'] = self.ndim
+            self.meta['naxis'] = self.ndim
             
-	def _fix_bitpix(self):
-		# Bit-depth
+    def _fix_bitpix(self):
+        # Bit-depth
         #
         #   8    Character or unsigned binary integer
         #  16    16-bit twos-complement binary integer
@@ -424,7 +424,7 @@ Dimension:\t [%d, %d]
         # -64    IEEE double precision floating point
         #
         if 'bitpix' not in self.meta:
-        	float_fac = -1 if self.dtype.kind == "f" else 1
+            float_fac = -1 if self.dtype.kind == "f" else 1
             self.meta['bitpix'] = float_fac * 8 * self.dtype.itemsize
     
     def _validate(self):
@@ -478,6 +478,21 @@ Dimension:\t [%d, %d]
                                         coordinate_system['x'], 
                                         x=x, y=y)
         return x, y
+        
+# #### I/O routines #### #
+
+    def save(self, filepath):
+        """Saves the SunPy Map object to a file.
+        
+        Currently SunPy can only save files in the FITS format. In the future
+        support will be added for saving to other formats.
+        
+        Parameters
+        ----------
+        filepath : string
+            Location to save file to.
+        """
+        io.write_file(filepath, self.data, self.meta) 
         
 # #### Image processing routines #### #
 
@@ -670,20 +685,7 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         # Create new map instance
         new_map = self.__class__(data, meta)
         
-        return new_map
-    
-    def save(self, filepath):
-        """Saves the SunPy Map object to a file.
-        
-        Currently SunPy can only save files in the FITS format. In the future
-        support will be added for saving to other formats.
-        
-        Parameters
-        ----------
-        filepath : string
-            Location to save file to.
-        """
-        io.write_file(filepath, self.data, self.meta)        
+        return new_map       
 
     def submap(self, range_a, range_b, units="data"):
         """Returns a submap of the map with the specified range
