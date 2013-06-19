@@ -46,55 +46,9 @@ or something else?)
 * Should 'center' be renamed to 'offset' and crpix1 & 2 be used for 'center'?
 """
 
-class MapBase(object):
-    """ This object forms the base for all Map classes, both single and multi
-    maps. """
-        
-    # Need list of meta keys that will become properties.  
-    # property_name -> (meta_key, mutable, default)
-    _automatic_properties = {
-    "detector" : ("detector", False, ''),
-    "dsun" : ("dsun_obs", False, constants.au),
-    "exposure_time" : ("exptime", False, 0.0),
-    "instrument" : ("instrume", False, ''),
-    "measurement" : ("wavelnth", False, ''),
-    "wavelength" : ("wavelnth", False, ''),
-    "observatory" : ("telescop", False, ''),
-    } 
-    
-    @property
-    def name(self):
-        return self._name
-    @name.setter
-    def name(self, n):
-        self._name = n
-        
-    @property
-    def nickname(self):
-        return self._nickname
-    @nickname.setter
-    def nickname(self, n):
-        self._nickname = n
-    
-    @property
-    def date(self):
-        return self.meta.get('date-obs', None)
-    @date.setter
-    def date(self, new_date):
-        self.meta['date-obs'] = new_date
-        #propagate change to malformed FITS keywords
-        if is_time(self.meta.get('date_obs', None)): 
-            self.meta['date_obs'] = new_date
-            
-    def _fix_date(self):
-        # Check commonly used but non-standard FITS keyword for observation time
-        # and correct the keyword if we can.  Keep updating old one for 
-        # backwards compatibility.
-        if is_time(self.meta.get('date_obs', None)): 
-            self.meta['date-obs'] = self.meta['date_obs']   
-
-
-    def __init__(self, data, meta):
+class NDDataStandin(object):
+	
+	def __init__(self, data, meta, **kwargs):
         """ Instantiate a Map class.
         
         Parameters
@@ -111,17 +65,22 @@ class MapBase(object):
         
         self.meta = meta
         self.data = data
+	
+	@property
+    def shape(self):
+        return self.data.shape
+    
+    @property
+    def dtype(self):
+        return self.data.dtype
         
-        # Setup some attributes
-        self._fix_date()
-        self._name = self.meta.get('telescop', '') + " " + str(self.meta.get('wavelnth', ''))
-        self._nickname = self.meta.get('detector', '')
-
-        self.cmap = cm.gray
-        
-        # Setup automatic properties
-        for p in self._automatic_properties:
-            self._add_property(p)
+    @property
+    def size(self):
+    	return self.data.size
+    	
+    @property
+    def ndim(self):
+    	return self.data.ndim
         
     @property
     def header(self):
@@ -129,122 +88,8 @@ class MapBase(object):
         for compatability with astropy, please use meta instead""", Warning)
         return self.meta
     
-    def _add_property(self, attr):
-        """
-        This method maps a header value to a dynamically updating 
-        property
-        """
-        
-        meta_key, make_setter, default = self._automatic_properties[attr]
 
-        def getter(self):
-            return self.meta.get(meta_key, default)
-
-        if make_setter:
-            def setter(self, value):
-                self.meta[meta_key] = value
-        else:
-            setter = None
-
-        setattr(type(self), attr, property(getter, setter))
-
-    def __getitem__(self, key):
-        """ This should allow indexing by physical coordinate """
-        raise NotImplementedError(
-    "The ability to index Map by physical coordinate is not yet implemented.")
-
-    def __repr__(self):
-        if not hasattr(self, 'observatory'):
-            return self.data.__repr__()
-
-        return (
-"""SunPy Map
----------
-Observatory:\t %s
-Instrument:\t %s
-Detector:\t %s
-Measurement:\t %s
-Obs Date:\t %s
-dt:\t\t %f
-Dimension:\t [%d, %d] 
-[dx, dy] =\t [%f, %f]
- 
-""" % (self.observatory, self.instrument, self.detector, self.measurement,
-       self.date, self.exposure_time,
-       self.data.shape[1], self.data.shape[0], self.scale['x'], self.scale['y']) 
-     + self.data.__repr__())
-    
-    @property
-    def shape(self):
-        return self.data.shape #TODO: This assumes the data is always a ndarray
-    
-    @property
-    def dtype(self):
-        return self.data.dtype #TODO: This assumes the data is always a ndarray    
-
-    #TODO: How to handle this with the new dynamic header?
-    #It should go away!!
-    def get_header(self, original=False):
-        """Returns an updated MapHeader instance"""
-        header = self._original_header.copy()
-        
-        # If requested, return original header as-is
-        if original:
-            return header
-        
-        # Bit-depth
-        #
-        #   8    Character or unsigned binary integer
-        #  16    16-bit twos-complement binary integer
-        #  32    32-bit twos-complement binary integer
-        # -32    IEEE single precision floating point
-        # -64    IEEE double precision floating point
-        #
-        if not header.has_key('bitpix'):
-            bitdepth = 8 * self.dtype.itemsize
-            
-            if self.dtype.kind == "f":
-                bitdepth = - bitdepth
-                
-            header['bitpix'] = bitdepth
-
-        # naxis
-        header['naxis'] = self.data.ndim
-        header['naxis1'] = self.shape[1]
-        header['naxis2'] = self.shape[0]
-        
-        # dsun
-        if header.has_key('dsun_obs'):
-            header['dsun_obs'] = self.dsun
-
-        # rsun_obs
-        if header.has_key('rsun_obs'):
-            header['rsun_obs'] = self.rsun_arcseconds
-        elif header.has_key('solar_r'):
-            header['solar_r'] = self.rsun_arcseconds
-        elif header.has_key('radius'):
-            header['radius'] = self.rsun_arcseconds
-            
-        # cdelt
-        header['cdelt1'] = self.scale['x']
-        header['cdelt2'] = self.scale['y']
-
-        # crpix
-        header['crval1'] = self.reference_coordinate['x']
-        header['crval2'] = self.reference_coordinate['y']
-        
-        # crval
-        header['crpix1'] = self.reference_pixel['x']
-        header['crpix2'] = self.reference_pixel['y']
-        
-        return header               
-
-    def norm(self):
-        """Default normalization method. Not yet implemented."""
-        return None
-
-
-class GenericMap(MapBase):
+class GenericMap(NDDataStandin):
     """
     A Generic spatially-aware 2D data array
 
@@ -363,23 +208,104 @@ class GenericMap(MapBase):
 
     """
     
-    def __init__(self, data, header):
-        MapBase.__init__(self, data, header)
+    def __init__(self, data, header, **kwargs):
+    	
+        NDDataStandin.__init__(self, data, header, **kwargs)
         
-        #TODO: What is this doing here?
-        # Set naxis1 and naxis2 if not specified
-        if self.meta.get('naxis1') is None:
-            self.meta['naxis1'] = self.shape[1]
-        if self.meta.get('naxis2') is None:
-            self.meta['naxis2'] = self.shape[0]
+        # Correct possibly missing meta keywords
+        self._fix_date()
+        self._fix_naxis()
+        
+        # Setup some attributes
+        self._name = self.meta.get('telescop', '') + " " + str(self.meta.get('wavelnth', ''))
+        self._nickname = self.meta.get('detector', '')
 
-        # Parse header and set map properties
-#        for attr, value in list(self.get_properties(header).items()):
-#            self._add_property(attr, value)
+		# Visualization attributes
+        self.cmap = cm.gray
         
-        # Validate properties
-#        self._validate()
+        # Validate header
+        # TODO: This should be a function of the header, not of the map
+        self._validate()
+
+    def __getitem__(self, key):
+        """ This should allow indexing by physical coordinate """
+        raise NotImplementedError(
+    "The ability to index Map by physical coordinate is not yet implemented.")
+
+    def __repr__(self):
+        if not hasattr(self, 'observatory'):
+            return self.data.__repr__()
+        return (
+"""SunPy Map
+---------
+Observatory:\t %s
+Instrument:\t %s
+Detector:\t %s
+Measurement:\t %s
+Obs Date:\t %s
+dt:\t\t %f
+Dimension:\t [%d, %d] 
+[dx, dy] =\t [%f, %f]
+ 
+""" % (self.observatory, self.instrument, self.detector, self.measurement,
+       self.date, self.exposure_time,
+       self.data.shape[1], self.data.shape[0], self.scale['x'], self.scale['y']) 
+     + self.data.__repr__())
+
+# #### Keyword attribute and other attribute definitions #### #
+
+    @property
+    def name(self):
+        return self._name
+    @name.setter
+    def name(self, n):
+        self._name = n
+        
+    @property
+    def nickname(self):
+        return self._nickname
+    @nickname.setter
+    def nickname(self, n):
+        self._nickname = n
     
+    @property
+    def date(self):
+        return self.meta.get('date-obs', None)
+    @date.setter
+    def date(self, new_date):
+        self.meta['date-obs'] = new_date
+        #propagate change to malformed FITS keywords
+        if is_time(self.meta.get('date_obs', None)): 
+            self.meta['date_obs'] = new_date
+
+    @property
+    def detector(self):
+    	return self.meta.get('detector', "")
+    	
+    @property
+    def dsun(self):
+    	return self.meta.get('dsun_obs', constants.au)
+    	
+    @property
+    def exposure_time(self):
+    	return self.meta.get('exptime', 0.0)
+    	
+    @property
+    def instrument(self):
+    	return self.meta.get('instrume', "")
+    	
+    @property
+    def measurement(self):
+    	return self.meta.get('wavelnth', "")
+    	
+    @property
+    def wavelength(self):
+    	return self.meta.get('wavelnth', "")
+    	
+    @property
+    def observatory(self):
+    	return self.meta.get('telescop', "")
+    	
     @property
     def xrange(self):
         """Return the X range of the image in arcsec from edge to edge."""
@@ -398,56 +324,96 @@ class GenericMap(MapBase):
     def center(self):
         """Returns the offset between the center of the Sun and the center of 
         the map."""
-        return {
-            'x': wcs.get_center(self.shape[1], self.scale['x'], 
-                                self.reference_pixel['x'], 
-                                self.reference_coordinate['x']),
-            'y': wcs.get_center(self.shape[0], self.scale['y'], 
-                                self.reference_pixel['y'], 
-                                self.reference_coordinate['y'])
-        }
+        return {'x': wcs.get_center(self.shape[1], self.scale['x'], 
+                                    self.reference_pixel['x'], 
+                                    self.reference_coordinate['x']),
+                'y': wcs.get_center(self.shape[0], self.scale['y'], 
+                                    self.reference_pixel['y'], 
+                                    self.reference_coordinate['y']),}
+               
+    @property
+    def rsun_meters(self):
+    	return self.meta.get('rsun_ref', constants.radius)
     
-    @classmethod
-    def get_properties(cls, meta):
-        """
-        This is an overload of MapBase for Generic 2D types
-        """
-        mapbaseprops = MapBase.get_properties(cls, meta)
-        return mapbaseprops.update({
-            "rsun_meters": meta.get('rsun_ref', constants.radius),
-            "rsun_arcseconds": meta.get('rsun_obs', header.get('solar_r',
-                               meta.get('radius',
-                               constants.average_angular_size))),
-            "coordinate_system": {
-                'x': meta.get('ctype1', 'HPLN-TAN'),
-                'y': meta.get('ctype2', 'HPLT-TAN')
-            },
-            "carrington_longitude": meta.get('crln_obs', 0.),
-            "heliographic_latitude": meta.get('hglt_obs', 
-                                     meta.get('crlt_obs',
-                                     meta.get('solar_b0', 0.))),
-            "heliographic_longitude": meta.get('hgln_obs', 0.),
-            "reference_coordinate": {
-                'x': meta.get('crval1', 0.),
-                'y': meta.get('crval2', 0.),
-            },
-            "reference_pixel": {
-                'x': meta.get('crpix1', (meta.get('naxis1') + 1) / 2.),
-                'y': meta.get('crpix2', (meta.get('naxis2') + 1) / 2.)
-            },
-            "scale": {
-                'x': meta.get('cdelt1', 1.),
-                'y': meta.get('cdelt2', 1.),
-            },
-            "units": {
-                'x': meta.get('cunit1', 'arcsec'),
-                'y': meta.get('cunit2', 'arcsec')
-            },
-            "rotation_angle": {
-                'x': meta.get('crota1', 0.),
-                'y': meta.get('crota2', 0.)
-            }
-        })
+    @property
+    def rsun_arcseconds(self):
+    	return self.meta.get('rsun_obs', self.meta.get('solar_r',
+                                         self.meta.get('radius', constants.average_angular_size)))
+                                         
+    @property
+    def coordinate_system(self):
+    	return {'x': self.meta.get('ctype1', 'HPLN-TAN'),
+                'y': self.meta.get('ctype2', 'HPLT-TAN'),}
+    
+    @property
+    def carrington_longitude(self):
+    	return self.meta.get('crln_obs', 0.)
+    	
+    @property
+    def heliographic_latitude(self):
+    	return self.meta.get('hglt_obs', self.meta.get('crlt_obs',
+                                         self.meta.get('solar_b0', 0.)))
+    	
+    @property
+    def heliographic_longitude(self):
+    	return self.meta.get('hgln_obs', 0.)
+    	
+    @property
+    def reference_coordinate(self):
+    	return {'x': self.meta.get('crval1', 0.),
+                'y': self.meta.get('crval2', 0.),}
+    	
+    @property
+    def reference_pixel(self):
+    	return {'x': self.meta.get('crpix1', (self.meta.get('naxis1') + 1) / 2.),
+                'y': self.meta.get('crpix2', (self.meta.get('naxis2') + 1) / 2.),}
+    	
+    @property
+    def scale(self):
+    	return {'x': self.meta.get('cdelt1', 1.),
+                'y': self.meta.get('cdelt2', 1.),}
+    	
+    @property
+    def units(self):
+    	return {'x': self.meta.get('cunit1', 'arcsec'),
+                'y': self.meta.get('cunit2', 'arcsec'),}
+    	
+    @property
+    def rotation_angle(self):
+    	return {'x': self.meta.get('crota1', 0.),
+                'y': self.meta.get('crota2', 0.),}
+	
+            
+# #### Miscellaneous #### #
+	
+    def _fix_date(self):
+        # Check commonly used but non-standard FITS keyword for observation time
+        # and correct the keyword if we can.  Keep updating old one for 
+        # backwards compatibility.
+        if is_time(self.meta.get('date_obs', None)): 
+            self.meta['date-obs'] = self.meta['date_obs']  
+    
+    def _fix_naxis(self):
+    	# If naxis is not specified, get it from the array shape
+        if self.meta.get('naxis1') is None:
+            self.meta['naxis1'] = self.shape[1]
+        if self.meta.get('naxis2') is None:
+            self.meta['naxis2'] = self.shape[0]
+        if self.meta.get('naxis') is None:
+        	self.meta['naxis'] = self.ndim
+            
+	def _fix_bitpix(self):
+		# Bit-depth
+        #
+        #   8    Character or unsigned binary integer
+        #  16    16-bit twos-complement binary integer
+        #  32    32-bit twos-complement binary integer
+        # -32    IEEE single precision floating point
+        # -64    IEEE double precision floating point
+        #
+        if not self.meta.has_key('bitpix'):
+        	float_fac = -1 if self.dtype.kind == "f" else 1
+            self.meta['bitpix'] = float_fac * 8 * self.dtype.itemsize
     
     def _validate(self):
         """Validates the meta-information associated with a Map.
@@ -459,7 +425,9 @@ class GenericMap(MapBase):
 #        if (self.dsun <= 0 or self.dsun >= 40 * constants.au):
 #            raise InvalidHeaderInformation("Invalid value for DSUN")
         pass
-            
+
+# #### Data conversion routines #### #
+
     def data_to_pixel(self, value, dim):
         """Convert pixel-center data coordinates to pixel values"""
         #TODO: This function should be renamed. It is confusing as data
@@ -497,251 +465,8 @@ class GenericMap(MapBase):
          crpix[0], crpix[1], crval[0], crval[1], coordinate_system[0], x=x, y=y)
 
         return x, y
-    
-    def draw_grid(self, axes=None, grid_spacing=20):
-        """Draws a grid over the surface of the Sun
         
-        Parameters
-        ----------
-        axes: matplotlib.axes object or None
-        Axes to plot limb on or None to use current axes.
-        
-        grid_spacing: float
-            Spacing (in degrees) for longitude and latitude grid.
-        
-        Returns
-        -------
-        matplotlib.axes object
-        """
-
-        if not axes:
-            axes = plt.gca()
-
-        x, y = self.pixel_to_data()
-        rsun = self.rsun_meters
-        dsun = self.dsun
-
-        b0 = self.heliographic_latitude
-        l0 = self.heliographic_longitude
-        units = [self.units.get('x'), self.units.get('y')]
-
-        #TODO: This function could be optimized. Does not need to convert the entire image
-        # coordinates
-        lon_self, lat_self = wcs.convert_hpc_hg(rsun, dsun, units[0], units[1], b0, l0, x, y)
-        # define the number of points for each latitude or longitude line
-        num_points = 20
-        
-        #TODO: The following code is ugly. Fix it.
-        lon_range = [lon_self.min(), lon_self.max()]
-        lat_range = [lat_self.min(), lat_self.max()]
-        if np.isfinite(lon_range[0]) == False: 
-            lon_range[0] = -90 + self.heliographic_longitude
-        if np.isfinite(lon_range[1]) == False: 
-            lon_range[1] = 90 + self.heliographic_longitude
-        if np.isfinite(lat_range[0]) == False: 
-            lat_range[0] = -90 + self.heliographic_latitude
-        if np.isfinite(lat_range[1]) == False: 
-            lat_range[1] = 90 + self.heliographic_latitude
-
-        hg_longitude_deg = np.linspace(lon_range[0], lon_range[1], num=num_points)
-        hg_latitude_deg = np.arange(lat_range[0], lat_range[1]+grid_spacing, grid_spacing)
-
-        # draw the latitude lines
-        for lat in hg_latitude_deg:
-            hg_latitude_deg_mesh, hg_longitude_deg_mesh = np.meshgrid(
-                lat * np.ones(num_points), hg_longitude_deg)
-            x, y = wcs.convert_hg_hpc(self.rsun_meters,
-                                      self.dsun, self.heliographic_latitude,
-                                      self.heliographic_longitude,
-                                      hg_longitude_deg_mesh,
-                                      hg_latitude_deg_mesh, units='arcsec')
-            axes.plot(x, y, color='white', linestyle='dotted',zorder=100)
-            
-        hg_longitude_deg = np.arange(lon_range[0], lon_range[1]+grid_spacing, grid_spacing)
-        hg_latitude_deg = np.linspace(lat_range[0], lat_range[1], num=num_points)
-
-        # draw the longitude lines
-        for lon in hg_longitude_deg:
-            hg_longitude_deg_mesh, hg_latitude_deg_mesh = np.meshgrid(
-                lon * np.ones(num_points), hg_latitude_deg)
-            x, y = wcs.convert_hg_hpc(self.rsun_meters,
-                                      self.dsun, self.heliographic_latitude,
-                                      self.heliographic_longitude,
-                                      hg_longitude_deg_mesh,
-                                      hg_latitude_deg_mesh, units='arcsec')
-            axes.plot(x, y, color='white', linestyle='dotted',zorder=100)
-            
-        axes.set_ylim(self.yrange)
-        axes.set_xlim(self.xrange)
-
-        return axes
-
-    def draw_limb(self, axes=None):
-        """Draws a circle representing the solar limb 
-        
-            Parameters
-            ----------
-            axes: matplotlib.axes object or None
-                Axes to plot limb on or None to use current axes.
-        
-            Returns
-            -------
-            matplotlib.axes object
-        """
-        
-        if not axes:
-            axes = plt.gca()
-        
-        if hasattr(self, 'center'):
-            circ = patches.Circle([self.center['x'], self.center['y']],
-                                  radius=self.rsun_arcseconds, fill=False,
-                                  color='white',zorder=100)
-        else:
-            print("Assuming center of Sun is center of image")
-            circ = patches.Circle([0,0], radius=self.rsun_arcseconds,
-                                  fill=False, color='white',zorder=100)
-        axes.add_artist(circ)
-        
-        return axes
-
-    @toggle_pylab
-    def peek(self, draw_limb=True, draw_grid=False, gamma=None,
-                   colorbar=True, basic_plot=False, **matplot_args):
-        """Displays the map in a new figure
-
-        Parameters
-        ----------
-        draw_limb : bool
-            Whether the solar limb should be plotted.
-        draw_grid : bool or number
-            Whether solar meridians and parallels are plotted. If float then sets
-            degree difference between parallels and meridians.
-        gamma : float
-            Gamma value to use for the color map
-        colorbar : bool
-            Whether to display a colorbar next to the plot
-        basic_plot : bool
-            If true, the data is plotted by itself at it's natural scale; no
-            title, labels, or axes are shown.
-        **matplot_args : dict
-            Matplotlib Any additional imshow arguments that should be used
-            when plotting the image.
-        """
-        
-        # Create a figure and add title and axes
-        figure = plt.figure(frameon=not basic_plot)
-
-        # Basic plot
-        if basic_plot:
-            axes = plt.Axes(figure, [0., 0., 1., 1.])
-            axes.set_axis_off()
-            figure.add_axes(axes)
-            matplot_args.update({'annotate':False})
-            
-        # Normal plot
-        else:
-            axes = figure.gca()
-
-        im = self.plot(axes=axes,**matplot_args)        
-        
-        if colorbar and not basic_plot:
-            figure.colorbar(im)
-        
-        if draw_limb:
-            self.draw_limb(axes=axes)
-        
-        if isinstance(draw_grid, bool):
-            if draw_grid:
-                self.draw_grid(axes=axes)
-        elif isinstance(draw_grid, (int, long, float)):
-            self.draw_grid(axes=axes, grid_spacing=draw_grid)
-        else:
-            raise TypeError("draw_grid should be bool, int, long or float")
-
-        figure.show()
-        
-        return figure
-
-    @toggle_pylab
-    def plot(self, gamma=None, annotate=True, axes=None, **imshow_args):
-        """ Plots the map object using matplotlib, in a method equivalent
-        to plt.imshow() using nearest neighbour interpolation.
-        
-        Parameters
-        ----------
-        gamma : float
-            Gamma value to use for the color map
-            
-        annotate : bool
-            If true, the data is plotted at it's natural scale; with
-            title and axis labels.
-            
-        axes: matplotlib.axes object or None
-            If provided the image will be plotted on the given axes. Else the 
-            current matplotlib axes will be used.
-        
-        **imshow_args : dict
-            Any additional imshow arguments that should be used
-            when plotting the image.
-        
-        Examples
-        --------
-        #Simple Plot with color bar
-        plt.figure()
-        aiamap.plot()
-        plt.colorbar()
-        
-        #Add a limb line and grid
-        aia.plot()
-        aia.draw_limb()
-        aia.draw_grid()
-        """
-
-        #Get current axes
-        if not axes:
-            axes = plt.gca()
-        
-        # Normal plot
-        if annotate:
-            axes.set_title("%s %s" % (self.name, self.date))
-            
-            # x-axis label
-            if self.coordinate_system['x'] == 'HG':
-                xlabel = 'Longitude [%s]' % self.units['x']
-            else:
-                xlabel = 'X-position [%s]' % self.units['x']
-
-            # y-axis label
-            if self.coordinate_system['y'] == 'HG':
-                ylabel = 'Latitude [%s]' % self.units['y']
-            else:
-                ylabel = 'Y-position [%s]' % self.units['y']
-                
-            axes.set_xlabel(xlabel)
-            axes.set_ylabel(ylabel)
-
-        # Determine extent
-        extent = self.xrange + self.yrange
-        
-        cmap = copy(self.cmap)
-        if gamma is not None:
-            cmap.set_gamma(gamma)
-            
-            #make imshow kwargs a dict
-        
-        kwargs = {'origin':'lower',
-                  'cmap':cmap,
-                  'norm':self.norm(),
-                  'extent':extent,
-                  'interpolation':'nearest'}
-        kwargs.update(imshow_args)
-        
-        ret = axes.imshow(self.data, **kwargs)
-        
-        #Set current image (makes colorbar work)
-        plt.sci(ret)
-        return ret
-    
+# #### Image processing routines #### #
 
     def resample(self, dimensions, method='linear'):
         """Returns a new Map that has been resampled up or down
@@ -1092,8 +817,258 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         new_map.reference_coordinate['x'] = self.center['x']
         new_map.reference_coordinate['y'] = self.center['y']
 
-        return new_map
+        return new_map        
+        
+# #### Visualization #### #
 
+    def draw_grid(self, axes=None, grid_spacing=20):
+        """Draws a grid over the surface of the Sun
+        
+        Parameters
+        ----------
+        axes: matplotlib.axes object or None
+        Axes to plot limb on or None to use current axes.
+        
+        grid_spacing: float
+            Spacing (in degrees) for longitude and latitude grid.
+        
+        Returns
+        -------
+        matplotlib.axes object
+        """
+
+        if not axes:
+            axes = plt.gca()
+
+        x, y = self.pixel_to_data()
+        rsun = self.rsun_meters
+        dsun = self.dsun
+
+        b0 = self.heliographic_latitude
+        l0 = self.heliographic_longitude
+        units = [self.units.get('x'), self.units.get('y')]
+
+        #TODO: This function could be optimized. Does not need to convert the entire image
+        # coordinates
+        lon_self, lat_self = wcs.convert_hpc_hg(rsun, dsun, units[0], units[1], b0, l0, x, y)
+        # define the number of points for each latitude or longitude line
+        num_points = 20
+        
+        #TODO: The following code is ugly. Fix it.
+        lon_range = [lon_self.min(), lon_self.max()]
+        lat_range = [lat_self.min(), lat_self.max()]
+        if np.isfinite(lon_range[0]) == False: 
+            lon_range[0] = -90 + self.heliographic_longitude
+        if np.isfinite(lon_range[1]) == False: 
+            lon_range[1] = 90 + self.heliographic_longitude
+        if np.isfinite(lat_range[0]) == False: 
+            lat_range[0] = -90 + self.heliographic_latitude
+        if np.isfinite(lat_range[1]) == False: 
+            lat_range[1] = 90 + self.heliographic_latitude
+
+        hg_longitude_deg = np.linspace(lon_range[0], lon_range[1], num=num_points)
+        hg_latitude_deg = np.arange(lat_range[0], lat_range[1]+grid_spacing, grid_spacing)
+
+        # draw the latitude lines
+        for lat in hg_latitude_deg:
+            hg_latitude_deg_mesh, hg_longitude_deg_mesh = np.meshgrid(
+                lat * np.ones(num_points), hg_longitude_deg)
+            x, y = wcs.convert_hg_hpc(self.rsun_meters,
+                                      self.dsun, self.heliographic_latitude,
+                                      self.heliographic_longitude,
+                                      hg_longitude_deg_mesh,
+                                      hg_latitude_deg_mesh, units='arcsec')
+            axes.plot(x, y, color='white', linestyle='dotted',zorder=100)
+            
+        hg_longitude_deg = np.arange(lon_range[0], lon_range[1]+grid_spacing, grid_spacing)
+        hg_latitude_deg = np.linspace(lat_range[0], lat_range[1], num=num_points)
+
+        # draw the longitude lines
+        for lon in hg_longitude_deg:
+            hg_longitude_deg_mesh, hg_latitude_deg_mesh = np.meshgrid(
+                lon * np.ones(num_points), hg_latitude_deg)
+            x, y = wcs.convert_hg_hpc(self.rsun_meters,
+                                      self.dsun, self.heliographic_latitude,
+                                      self.heliographic_longitude,
+                                      hg_longitude_deg_mesh,
+                                      hg_latitude_deg_mesh, units='arcsec')
+            axes.plot(x, y, color='white', linestyle='dotted',zorder=100)
+            
+        axes.set_ylim(self.yrange)
+        axes.set_xlim(self.xrange)
+
+        return axes
+
+    def draw_limb(self, axes=None):
+        """Draws a circle representing the solar limb 
+        
+            Parameters
+            ----------
+            axes: matplotlib.axes object or None
+                Axes to plot limb on or None to use current axes.
+        
+            Returns
+            -------
+            matplotlib.axes object
+        """
+        
+        if not axes:
+            axes = plt.gca()
+        
+        if hasattr(self, 'center'):
+            circ = patches.Circle([self.center['x'], self.center['y']],
+                                  radius=self.rsun_arcseconds, fill=False,
+                                  color='white',zorder=100)
+        else:
+            print("Assuming center of Sun is center of image")
+            circ = patches.Circle([0,0], radius=self.rsun_arcseconds,
+                                  fill=False, color='white',zorder=100)
+        axes.add_artist(circ)
+        
+        return axes
+
+    @toggle_pylab
+    def peek(self, draw_limb=True, draw_grid=False, gamma=None,
+                   colorbar=True, basic_plot=False, **matplot_args):
+        """Displays the map in a new figure
+
+        Parameters
+        ----------
+        draw_limb : bool
+            Whether the solar limb should be plotted.
+        draw_grid : bool or number
+            Whether solar meridians and parallels are plotted. If float then sets
+            degree difference between parallels and meridians.
+        gamma : float
+            Gamma value to use for the color map
+        colorbar : bool
+            Whether to display a colorbar next to the plot
+        basic_plot : bool
+            If true, the data is plotted by itself at it's natural scale; no
+            title, labels, or axes are shown.
+        **matplot_args : dict
+            Matplotlib Any additional imshow arguments that should be used
+            when plotting the image.
+        """
+        
+        # Create a figure and add title and axes
+        figure = plt.figure(frameon=not basic_plot)
+
+        # Basic plot
+        if basic_plot:
+            axes = plt.Axes(figure, [0., 0., 1., 1.])
+            axes.set_axis_off()
+            figure.add_axes(axes)
+            matplot_args.update({'annotate':False})
+            
+        # Normal plot
+        else:
+            axes = figure.gca()
+
+        im = self.plot(axes=axes,**matplot_args)        
+        
+        if colorbar and not basic_plot:
+            figure.colorbar(im)
+        
+        if draw_limb:
+            self.draw_limb(axes=axes)
+        
+        if isinstance(draw_grid, bool):
+            if draw_grid:
+                self.draw_grid(axes=axes)
+        elif isinstance(draw_grid, (int, long, float)):
+            self.draw_grid(axes=axes, grid_spacing=draw_grid)
+        else:
+            raise TypeError("draw_grid should be bool, int, long or float")
+
+        figure.show()
+        
+        return figure
+
+    @toggle_pylab
+    def plot(self, gamma=None, annotate=True, axes=None, **imshow_args):
+        """ Plots the map object using matplotlib, in a method equivalent
+        to plt.imshow() using nearest neighbour interpolation.
+        
+        Parameters
+        ----------
+        gamma : float
+            Gamma value to use for the color map
+            
+        annotate : bool
+            If true, the data is plotted at it's natural scale; with
+            title and axis labels.
+            
+        axes: matplotlib.axes object or None
+            If provided the image will be plotted on the given axes. Else the 
+            current matplotlib axes will be used.
+        
+        **imshow_args : dict
+            Any additional imshow arguments that should be used
+            when plotting the image.
+        
+        Examples
+        --------
+        #Simple Plot with color bar
+        plt.figure()
+        aiamap.plot()
+        plt.colorbar()
+        
+        #Add a limb line and grid
+        aia.plot()
+        aia.draw_limb()
+        aia.draw_grid()
+        """
+
+        #Get current axes
+        if not axes:
+            axes = plt.gca()
+        
+        # Normal plot
+        if annotate:
+            axes.set_title("%s %s" % (self.name, self.date))
+            
+            # x-axis label
+            if self.coordinate_system['x'] == 'HG':
+                xlabel = 'Longitude [%s]' % self.units['x']
+            else:
+                xlabel = 'X-position [%s]' % self.units['x']
+
+            # y-axis label
+            if self.coordinate_system['y'] == 'HG':
+                ylabel = 'Latitude [%s]' % self.units['y']
+            else:
+                ylabel = 'Y-position [%s]' % self.units['y']
+                
+            axes.set_xlabel(xlabel)
+            axes.set_ylabel(ylabel)
+
+        # Determine extent
+        extent = self.xrange + self.yrange
+        
+        cmap = copy(self.cmap)
+        if gamma is not None:
+            cmap.set_gamma(gamma)
+            
+            #make imshow kwargs a dict
+        
+        kwargs = {'origin':'lower',
+                  'cmap':cmap,
+                  'norm':self.norm(),
+                  'extent':extent,
+                  'interpolation':'nearest'}
+        kwargs.update(imshow_args)
+        
+        ret = axes.imshow(self.data, **kwargs)
+        
+        #Set current image (makes colorbar work)
+        plt.sci(ret)
+        return ret
+
+    def norm(self):
+        """Default normalization method. Not yet implemented."""
+        return None       
+        
 
 class InvalidHeaderInformation(ValueError):
     """Exception to raise when an invalid header tag value is encountered for a
