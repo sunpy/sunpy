@@ -20,20 +20,26 @@ class AIAMap(GenericMap):
     For a description of AIA headers
     http://jsoc.stanford.edu/doc/keywords/AIA/AIA02840_A_AIA-SDO_FITS_Keyword_Documents.pdf
     """
-    @classmethod
-    def get_properties(cls, header):
-        """Parses AIA image header"""
-        properties = Map.get_properties(header)
+    
+    def __init__(self, data, header, **kwargs):
         
-        properties.update({
-            "detector": "AIA",
-            "instrument": "AIA",
-            "observatory": "SDO",
-            "nickname": "AIA",
-            "cmap": cm.get_cmap('sdoaia%d' % header.get('wavelnth')),
-            "processing_level": header.get('LVL_NUM')            
-        })
-        return properties
+        GenericMap.__init__(self, data, header, **kwargs)
+        
+        # Fill in some missing info
+        self.meta['detector'] = "AIA"
+#        self.meta['instrme'] = "AIA"
+        
+        self._nickname = self.detector
+        
+        self.cmap = cm.get_cmap('sdoaia%d' % self.wavelength)
+    
+    @property
+    def observatory(self):
+        return self.meta['telescop'].split('/')[0]
+        
+    @property
+    def processing_level(self):
+        return self.meta['lvl_num']
 
     def norm(self):
         """Returns a Normalize object to be used with AIA data"""
@@ -56,22 +62,25 @@ class AIAMap(GenericMap):
         
 class HMIMap(GenericMap):
     """HMI Image Map definition"""
-    @classmethod
-    def get_properties(cls, header):
-        """Parses HMI image header"""
-        properties = Map.get_properties(header)
+    
+    def __init__(self, data, header, **kwargs):
         
-        measurement = header['content'].split(" ")[0].lower()
+        GenericMap.__init__(self, data, header, **kwargs)
         
-        properties.update({
-            "detector": "HMI",
-            "instrument": "HMI",
-            "measurement": measurement,
-            "observatory": "SDO",
-            "name": "HMI %s" % measurement,
-            "nickname": "HMI"
-        })
-        return properties
+        self.meta['detector'] = "HMI"
+#        self.meta['instrme'] = "HMI"
+#        self.meta['obsrvtry'] = "SDO"
+
+        self._name = self.detector + str(self.measurement)
+        self._nickname = self.detector
+    
+    @property
+    def measurement(self):
+        return header['content'].split(" ")[0].lower()
+    
+    @property
+    def observatory(self):
+        return self.meta['telescop'].split('/')[0]    
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
