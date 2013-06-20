@@ -111,20 +111,17 @@ class Map(RegisteredFactoryBase):
         # Hack to get around Python 2.x not backporting PEP 3102.
         composite = kwargs.pop('composite', False)
         cube = kwargs.pop('cube', False)
+        
+        
+        #TODO: This is not nice!!
+        if cube:
+            cubekwargs = {'sortby':kwargs.pop('sortby','date')}
 
         if cls is Map:
             
             # Get list of data-header pairs, e.g., [(d1, h1), (d2, h2), ...]
             data_header_pairs, already_maps = cls._parse_args(*args, **kwargs)
-            
-            # If the list is meant to be a cube, instantiate a map cube
-            if cube:
-                return MapCube(*data_header_pairs, **kwargs)
-
-            # If the list is meant to be a composite mape, instantiate one
-            if composite:
-                return CompositeMap(*data_header_pairs, **kwargs)
-                
+                            
             # Otherwise, each pair in the list gets built on its own
             new_maps = list()
             
@@ -144,6 +141,15 @@ class Map(RegisteredFactoryBase):
                 new_maps.append(WidgetType(data, header, **kwargs))
             
             new_maps += already_maps
+            print len(new_maps)
+            
+            # If the list is meant to be a cube, instantiate a map cube
+            if cube:
+                return MapCube(new_maps, **cubekwargs)
+
+            # If the list is meant to be a composite mape, instantiate one
+            if composite:
+                return CompositeMap(new_maps, **kwargs)
             
             # If there was only one map instantiated, return that, otherwise
             # return the list of them.

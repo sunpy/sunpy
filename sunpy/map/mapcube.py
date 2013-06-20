@@ -13,11 +13,6 @@ from sunpy.util import plotting
 
 __all__ = ['MapCube']
 
-# (https://github.com/sunpy/sunpy/issues/397)
-# 2011/04/13: Should Map be broken up into Map and MapHeader classes? This way
-# mapped header values can be used in MapCube without having to keep extra
-# copies of the data..
-#
 class MapCube(object):
     """
     MapCube(input)
@@ -42,15 +37,14 @@ class MapCube(object):
     def __init__(self, maps, sortby='date', coalign=False, derotate=False):
         """Creates a new Map instance"""
         
-        _maps = args[0]
+        self._maps = maps
 
         # Optionally sort data
-        if sortby is 'date':
-            _maps.sort(key=getattr(cls, '_sort_by_%s' % sortby)())
-
-        # create data cube
-        for map_ in maps:
-            data.append(np.array(map_))
+        if sortby is not None:
+            if sortby is 'date':
+                self._maps.sort(key=getattr(self, '_sort_by_%s' % sortby)())
+            else:
+                raise ValueError("Only sort by date is supported")
         
         # Coalignment
         if coalign and hasattr(self, '_coalign_%s' % coalign):
@@ -61,7 +55,7 @@ class MapCube(object):
     
     def __getitem__(self, key):
         """Overiding indexing operation"""
-        return _maps[key]
+        return self._maps[key]
         
     # Coalignment methods
     def _coalign_diff(self):
@@ -198,6 +192,8 @@ class MapCube(object):
         cbar = plt.colorbar(im,cax)
         
         if resample:
+            #This assumes that the maps a homogenous!
+            #TODO: Update this!
             resample = np.array(self.shape[1:]) * np.array(resample)
             ani_data = [x.resample(resample) for x in self]
         else:
