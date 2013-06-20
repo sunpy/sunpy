@@ -29,7 +29,7 @@ class SXTMap(GenericMap):
         self.meta['detector'] = "SXT"
         self.meta['telescop'] = "Yohkoh"
         
-        self.name = self.observatory + " " + self.wavelength_string
+        self._name = self.observatory + " " + self.wavelength_string
     
         self.cmap = cm.get_cmap(name='yohkohsxt' + self.wavelength_string[0:2].lower())
     
