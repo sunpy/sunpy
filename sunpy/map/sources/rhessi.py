@@ -43,31 +43,7 @@ class RHESSIMap(GenericMap):
     
     @property
     def detector(self):
-        return self.meta['telescop']
-        
-#    @classmethod
-#    def get_properties(cls, header):
-#        """Parses RHESSI image header"""
-#        properties = Map.get_properties(header)
-#        
-#        properties.update({
-#            "date": parse_time(header.get('date_obs')),
-#            
-#            "detector": header.get('telescop'),
-#            "instrument": header.get('telescop'),
-#            "measurement":[header.get('energy_l'), header.get('energy_h')],
-#            "observatory": "SDO",
-#            "name": "RHESSI %d - %d keV" % (header.get('energy_l'), 
-#                                            header.get('energy_h')),
-#            "cmap": cm.get_cmap('rhessi'),
-#            "exposure_time": (parse_time(header.get('date_end')) - 
-#                              parse_time(header.get('date_obs'))).seconds,
-#            "coordinate_system": {
-#                'x': 'HPLN-TAN',
-#                'y': 'HPLT-TAN'
-#            }
-#        })
-#        return properties
+        return self.meta['telescop']    
     
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
