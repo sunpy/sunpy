@@ -8,11 +8,11 @@ import sunpy
 import pyfits
 import numpy as np
 
-class TestMap:
+class TestGenericMap:
     """Tests the Map class"""
     def setup_class(self):
         self.file = sunpy.AIA_171_IMAGE
-        self.map = sunpy.make_map(self.file)
+        self.map = sunpy.Map(self.file)
         self.fits = pyfits.open(self.file)
         self.fits.verify('silentfix')
         
@@ -50,7 +50,7 @@ class TestMap:
         # Check conversion of map edges
         # Note: data coords are at pixel centers, so edges are 0.5 pixels wider
         assert self.map.data_to_pixel(self.map.xrange[0], 'x') == 0. - 0.5
-        assert self.map.data_to_pixel(self.map.yrange[0], 'y') == 0. - 0.5
+        assert self.map.data_to_pixel(selffilepath + .map.yrange[0], 'y') == 0. - 0.5
         assert self.map.data_to_pixel(self.map.xrange[1], 'x') == (self.map._original_header['naxis1'] - 1) + 0.5
         assert self.map.data_to_pixel(self.map.yrange[1], 'y') == (self.map._original_header['naxis2'] - 1) + 0.5
     
