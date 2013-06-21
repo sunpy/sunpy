@@ -21,6 +21,7 @@ from sunpy.util import expand_list
 
 from sunpy.util.datatype_factory_base import RegisteredFactoryBase
 
+from sunpy.util import deprecated
 __all__ = ['Map']
 
 class Map(RegisteredFactoryBase):
@@ -155,10 +156,9 @@ class Map(RegisteredFactoryBase):
             return super(Map, cls).__new__(cls, *args, **kwargs)
  
 
-
+@deprecated("Please use the new factory sunpy.Map")
 def make_map(*args, **kwargs):
     __doc__ = Map.__doc__
-#    warnings.warn()
     Map(*args, **kwargs)
     
 

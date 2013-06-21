@@ -44,7 +44,7 @@ import sunpy.map
 import sunpy.sun
 import sunpy.lightcurve
 
-from sunpy.map.map_factory import Map
+from sunpy.map.map_factory import Map, make_map
 
 #from sunpy.map import read_header
 #from sunpy.map.map import Map

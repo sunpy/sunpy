@@ -11,7 +11,7 @@ from matplotlib import pyplot
 __all__ = ['to_signed', 'toggle_pylab', 'unique', 'print_table',
            'replacement_filename', 'goes_flare_class', 'merge', 'common_base',
            'minimal_pairs', 'polyfun_at', 
-           'expand_list', 'expand_list_generator']
+           'expand_list', 'expand_list_generator', 'deprecated']
 
 def to_signed(dtype):
     """ Return dtype that can hold data of passed dtype but is signed.
@@ -216,16 +216,28 @@ def expand_list_generator(input):
 
 #==============================================================================
 # Deprecation decorator: http://code.activestate.com/recipes/391367-deprecated/
+# and http://www.artima.com/weblogs/viewpost.jsp?thread=240845
 #==============================================================================
-def deprecated(func):
-    """This is a decorator which can be used to mark functions
-    as deprecated. It will result in a warning being emmitted
-    when the function is used."""
-    def newFunc(*args, **kwargs):
-        warnings.warn("Call to deprecated function %s." % func.__name__,
-                      category=DeprecationWarning)
-        return func(*args, **kwargs)
-    newFunc.__name__ = func.__name__
-    newFunc.__doc__ = func.__doc__
-    newFunc.__dict__.update(func.__dict__)
-    return newFunc
+class Deprecated(object):
+    """ Use this decorator to deprecate a function or method, you can pass an
+    additional message to the decorator:
+    
+    @Deprecated("no more")
+    def dontuseme():
+        pass
+    """
+    def __init__(self, message=""):
+        self.message = message
+
+    def __call__(self, func):
+        def newFunc(*args, **kwargs):
+            warnings.warn("Call to deprecated function %s. \n %s" %(
+                                                                func.__name__,
+                                                                self.message),
+                          category=Warning, stacklevel=2)
+            return func(*args, **kwargs)
+        
+        newFunc.__name__ = func.__name__
+        newFunc.__doc__ = func.__doc__
+        newFunc.__dict__.update(func.__dict__)
+        return newFunc
