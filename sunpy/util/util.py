@@ -11,7 +11,7 @@ from matplotlib import pyplot
 __all__ = ['to_signed', 'toggle_pylab', 'unique', 'print_table',
            'replacement_filename', 'goes_flare_class', 'merge', 'common_base',
            'minimal_pairs', 'polyfun_at', 
-           'expand_list', 'expand_list_generator', 'deprecated']
+           'expand_list', 'expand_list_generator', 'Deprecated']
 
 def to_signed(dtype):
     """ Return dtype that can hold data of passed dtype but is signed.

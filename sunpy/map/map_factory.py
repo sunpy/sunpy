@@ -1,5 +1,8 @@
 from __future__ import absolute_import
 
+__authors__ = ["Russell Hewett, Stuart Mumford"]
+__email__ = "stuart@mumford.me.uk"
+
 import os
 import glob
 import urllib2
@@ -10,18 +13,17 @@ import numpy as np
 
 from sunpy.map import GenericMap
 from sunpy.map.header import MapMeta
-from . compositemap import CompositeMap
-from . mapcube import MapCube
+from sunpy.map.compositemap import CompositeMap
+from sunpy.map.mapcube import MapCube
 
 from sunpy.io.file_tools import read_file
 from sunpy.io.header import FileHeader
 
 from sunpy.util.net import download_file
 from sunpy.util import expand_list
-
 from sunpy.util.datatype_factory_base import RegisteredFactoryBase
+from sunpy.util import Deprecated
 
-from sunpy.util import deprecated
 __all__ = ['Map']
 
 class Map(RegisteredFactoryBase):
@@ -156,7 +158,7 @@ class Map(RegisteredFactoryBase):
             return super(Map, cls).__new__(cls, *args, **kwargs)
  
 
-@deprecated("Please use the new factory sunpy.Map")
+@Deprecated("Please use the new factory sunpy.Map")
 def make_map(*args, **kwargs):
     __doc__ = Map.__doc__
     Map(*args, **kwargs)

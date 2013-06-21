@@ -5,7 +5,7 @@ __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
 
-from sunpy.map.map import GenericMap
+from sunpy.map.mapbase import GenericMap
 
 #from sunpy.map.header import MapHeader
 from sunpy.map.mapcube import MapCube
