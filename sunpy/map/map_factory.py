@@ -17,6 +17,7 @@ from sunpy.io.file_tools import read_file
 from sunpy.io.header import FileHeader
 
 from sunpy.util.net import download_file
+from sunpy.util import expand_list
 
 from sunpy.util.datatype_factory_base import RegisteredFactoryBase
 
@@ -25,7 +26,6 @@ __all__ = ['Map']
 class Map(RegisteredFactoryBase):
 	
     GenericWidgetType = GenericMap
-    
 
     @classmethod
     def _read_file(cls, fname):
@@ -46,6 +46,9 @@ class Map(RegisteredFactoryBase):
         
         data_header_pairs = list()
         already_maps = list()
+        
+        # Account for nested lists of items
+        args = expand_list(args)
         
         # For each of the arguments, handle each of the cases
         i = 0

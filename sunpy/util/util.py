@@ -9,7 +9,8 @@ from matplotlib import pyplot
 
 __all__ = ['to_signed', 'toggle_pylab', 'unique', 'print_table',
            'replacement_filename', 'goes_flare_class', 'merge', 'common_base',
-           'minimal_pairs', 'polyfun_at']
+           'minimal_pairs', 'polyfun_at', 
+           'expand_list', 'expand_list_generator']
 
 def to_signed(dtype):
     """ Return dtype that can hold data of passed dtype but is signed.
@@ -196,3 +197,16 @@ def replacement_filename(path):
             newpath = os.path.join(dir_, name)
             if not os.path.exists(newpath):
                 return newpath
+
+
+
+def expand_list(input):
+	return [item for item in expand_list_generator(input)]
+
+def expand_list_generator(input):    
+    for item in input:
+       if type(item) in [list, tuple]:
+           for nested_item in expand_list_generator(item):
+               yield nested_item
+       else:
+           yield item
