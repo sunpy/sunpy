@@ -15,8 +15,8 @@ Welcome to the SunPy User Guide!
    helioviewer
    maps
    hek
+   lightcurve
    spectra
    customization
    troubleshooting
    lightcurve
-   git

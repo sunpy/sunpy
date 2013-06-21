@@ -467,17 +467,12 @@ Dimension:\t [%d, %d]
         if (x is not None) & (y < 0):
             raise ValueError("Y pixel value cannot be less than 0.")
 
-        scale = self.scale
-        crpix = self.reference_pixel
-        crval = self.reference_coordinate
-        coordinate_system = self.coordinate_system
-        
-        x,y = wcs.convert_pixel_to_data(width, height, 
-                                        scale['x'], scale['y'],
-                                        crpix['x'], crpix['y'], 
-                                        crval['x'], crval['y'], 
-                                        coordinate_system['x'], 
-                                        x=x, y=y)
+        scale = np.array([self.scale['x'], self.scale.get['y']])
+        crpix = np.array([self.reference_pixel['x'], self.reference_pixel['y']])
+        crval = np.array([self.reference_coordinate['x'], self.reference_coordinate['y']])
+        coordinate_system = [self.coordinate_system['x'], self.coordinate_system['y']]
+        x,y = wcs.convert_pixel_to_data(self.shape, scale, crpix, crval, x = x, y = y)
+
         return x, y
         
 # #### I/O routines #### #
@@ -929,14 +924,9 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         if not axes:
             axes = plt.gca()
         
-        if hasattr(self, 'center'):
-            circ = patches.Circle([self.center['x'], self.center['y']],
+        circ = patches.Circle([0, 0],
                                   radius=self.rsun_arcseconds, fill=False,
                                   color='white',zorder=100)
-        else:
-            print("Assuming center of Sun is center of image")
-            circ = patches.Circle([0,0], radius=self.rsun_arcseconds,
-                                  fill=False, color='white',zorder=100)
         axes.add_artist(circ)
         
         return axes
