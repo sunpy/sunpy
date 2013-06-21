@@ -2,6 +2,7 @@ from __future__ import absolute_import
 
 import os
 import types
+import warnings
 from itertools import izip, imap, count
 
 import numpy as np
@@ -199,7 +200,9 @@ def replacement_filename(path):
                 return newpath
 
 
-
+#==============================================================================
+# expand list from :http://stackoverflow.com/a/2185971/2486799
+#==============================================================================
 def expand_list(input):
 	return [item for item in expand_list_generator(input)]
 
@@ -210,3 +213,19 @@ def expand_list_generator(input):
                yield nested_item
        else:
            yield item
+
+#==============================================================================
+# Deprecation decorator: http://code.activestate.com/recipes/391367-deprecated/
+#==============================================================================
+def deprecated(func):
+    """This is a decorator which can be used to mark functions
+    as deprecated. It will result in a warning being emmitted
+    when the function is used."""
+    def newFunc(*args, **kwargs):
+        warnings.warn("Call to deprecated function %s." % func.__name__,
+                      category=DeprecationWarning)
+        return func(*args, **kwargs)
+    newFunc.__name__ = func.__name__
+    newFunc.__doc__ = func.__doc__
+    newFunc.__dict__.update(func.__dict__)
+    return newFunc
