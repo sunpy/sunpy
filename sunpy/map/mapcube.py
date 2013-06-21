@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from copy import copy
 
+from sunpy.map import MapBase
 #from .map_factory import Map
 #from sunpy.map.sources import *
 from sunpy.util import plotting
@@ -25,6 +26,16 @@ class MapCube(object):
         A list of Map instances
     sortby : {"date", None}
         Method by which the MapCube should be sorted along the z-axis.
+
+    Attributes
+    ----------
+    headers : list
+        a list of dictionaries containing the original and normalized header tags for the files used to build the MapCube.
+
+    See Also
+    --------
+    numpy.ndarray Parent class for the MapCube object
+    :class:`sunpy.map.Map`
         
     Examples
     --------
@@ -52,7 +63,7 @@ class MapCube(object):
 
         if derotate:
             self._derotate()
-    
+
     def __getitem__(self, key):
         """Overiding indexing operation"""
         return self._maps[key]
