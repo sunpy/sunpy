@@ -7,7 +7,10 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from copy import copy
 
+from sunpy.map import GenericMap
+
 from sunpy.util import plotting
+from sunpy.util import expand_list
 
 __all__ = ['MapCube']
 
@@ -16,48 +19,54 @@ class MapCube(object):
     MapCube(input)
     
     A series of spatially aligned Maps.
-
+    
     Parameters
     ----------
     args : {List}
         A list of Map instances
     sortby : {"date", None}
         Method by which the MapCube should be sorted along the z-axis.
-
-    Attributes
-    ----------
-    headers : list
-        a list of dictionaries containing the original and normalized header tags for the files used to build the MapCube.
-
-    See Also
-    --------
-    numpy.ndarray Parent class for the MapCube object
-    :class:`sunpy.map.Map`
-        
+    derotate : {None}
+        Apply a derotation to the data (Not Implemented)
+    coalign : {None}
+        Apply fine coalignment to the data (Not Implemented)
+ 
     Examples
     --------
     >>> mapcube = sunpy.Map('images/', mapcube=True)
-    >>> mapcube[0].show()
+    >>> mapcube[0].plot()
     >>> mapcube[3].reference_pixel['x']
     2050.6599120000001
     """
     #pylint: disable=W0613,E1101
-    def __init__(self, maps, sortby='date', coalign=False, derotate=False,
-                 **kwargs):
+    def __init__(self, *args, **kwargs):
         """Creates a new Map instance"""
         
-        self._maps = maps
+        # Hack to get around Python 2.x not backporting PEP 3102.
+        sortby = kwargs.pop('sortby', 'date')
+        coalign = kwargs.pop('coalign', False)
+        derotate = kwargs.pop('derotate', False)
+        
+        self._maps = expand_list(args)
+        
+        for m in self._maps:
+            if not isinstance(m, GenericMap):
+                raise ValueError(
+                           'CompositeMap expects pre-constructed map objects.')
 
         # Optionally sort data
         if sortby is not None:
             if sortby is 'date':
-                self._maps.sort(key=getattr(self, '_sort_by_%s' % sortby)())
+                self._maps.sort(key=self._sort_by_date())
             else:
                 raise ValueError("Only sort by date is supported")
         
         # Coalignment
-        if coalign and hasattr(self, '_coalign_%s' % coalign):
-            getattr(self, '_coalign_%s' % coalign)()
+        if coalign:
+            if coalign == 'diff':
+                self.coalign("diff")
+            else:
+                raise ValueError("That coalignment method is not supported")
 
         if derotate:
             self._derotate()
@@ -65,7 +74,12 @@ class MapCube(object):
     def __getitem__(self, key):
         """Overiding indexing operation"""
         return self._maps[key]
-        
+    
+    def coalign(self, method="diff"):
+        """ Fine coalign the data"""
+        if method == 'diff':
+            return _coalign_diff(self)
+    
     # Coalignment methods
     def _coalign_diff(self):
         """Difference-based coalignment
@@ -82,7 +96,8 @@ class MapCube(object):
             # try shifting 1 pixel in each direction
             for x in (-1, 0, 1):
                 for y in (-1, 0, 1):
-                    # calculate difference for intersecting pixels
+                    # calculate differenand hasattr(self, '_coalign_%s' % coalign):
+            getattr(self, '_coalign_%s' % coalign)()ce for intersecting pixels
                     # if < min_diff['value'], store new value/offset
                     
             # shift image
@@ -90,7 +105,7 @@ class MapCube(object):
                 # shift and clip image
 
         """
-        pass
+        raise NotImplementedError("Sorry this is not yet supported")
     
     # Sorting methods
     @classmethod
