@@ -67,33 +67,27 @@ class CompositeMap(object):
     >>> comp_map.peek()
 
     """    
-    def __init__(self, *args):
+    def __init__(self, maps, **kwargs):
         """
         Create a CompositeMap
         
         Parameters
         ----------
-        data, meta pairs: tuple
-            A sequence of (data, header) tuples
+        Maps: SunPy Maps
+            A sequence of maps
         """
-        self._maps = []
+        self._maps = maps
         
         # Default alpha and zorder values
         alphas = [1] * len(args)
         zorders = range(0, 10 * len(args), 10)
         levels = [False] * len(args)
         
-        # Parse input Maps/filepaths        
-        for i, item in enumerate(args):
-            m = GenericMap(*item)
-            
-            # Set z-order and alpha values for the map
+        # Set z-order and alpha values for the map     
+        for i, m in enumerate(self._maps):
             m.zorder = zorders[i]
             m.alpha = alphas[i]
             m.levels = levels[i]
-
-            # Add map
-            self._maps.append(m)
 
     def add_map(self, input_, zorder=None, alpha=1, levels=False):
         """Adds a map to the CompositeMap
