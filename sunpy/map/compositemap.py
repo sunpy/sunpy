@@ -7,7 +7,6 @@ from __future__ import absolute_import
 import matplotlib.pyplot as plt
 
 from sunpy.map import GenericMap
-import sunpy.map.map_factory
 
 from sunpy.util import expand_list
 
@@ -84,7 +83,8 @@ class CompositeMap(object):
         
         for m in self._maps:
             if not isinstance(m, GenericMap):
-                raise ValueError('CompositeMap expects pre-constructed map objects.')
+                raise ValueError(
+                           'CompositeMap expects pre-constructed map objects.')
         
         # Default alpha and zorder values
         alphas = [1] * len(args)
