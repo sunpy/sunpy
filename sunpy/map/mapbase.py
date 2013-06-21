@@ -4,8 +4,8 @@ Map is a generic Map class from which all other Map classes inherit from.
 from __future__ import absolute_import
 
 #pylint: disable=E1101,E1121,W0404,W0613
-__authors__ = ["Keith Hughitt, Steven Christe"]
-__email__ = "keith.hughitt@nasa.gov"
+__authors__ = ["Russell Hewett, Stuart Mumford, Keith Hughitt, Steven Christe"]
+__email__ = "stuart@mumford.me.uk"
 
 import os
 from copy import copy
