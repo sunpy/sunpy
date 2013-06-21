@@ -22,6 +22,9 @@ class Mock(object):
     def __call__(self, *args, **kwargs):
         return Mock()
 
+    def __iter__(self):
+        return iter([Mock()])
+
     __add__  = __mul__  = __getitem__ = __setitem__ = \
 __delitem__ = __sub__ =  __floordiv__ = __mod__ = __divmod__ = \
 __pow__ = __lshift__ = __rshift__ = __and__ = __xor__ = __or__ = \
@@ -29,13 +32,16 @@ __rmul__  = __rsub__  = __rfloordiv__ = __rmod__ = __rdivmod__ = \
 __rpow__ = __rlshift__ = __rrshift__ = __rand__ = __rxor__ = __ror__ = \
 __imul__  = __isub__  = __ifloordiv__ = __imod__ = __idivmod__ = \
 __ipow__ = __ilshift__ = __irshift__ = __iand__ = __ixor__ = __ior__ = \
+__div__ = __rdiv__ = __idiv__ = __truediv__ = __rtruediv__ = __itruediv__ = \
 __neg__ = __pos__ = __abs__ = __invert__ = __call__
 
     def __getattr__(self, name):
         if name in ('__file__', '__path__'):
             return '/dev/null'
-        elif name[0] != '_' and name[0] == name[0].upper():
-            return type(name, (), {})
+        # This clause is commented out because it makes an assumption with
+        # case convention that is not necessarily true
+        #elif name[0] != '_' and name[0] == name[0].upper():
+        #    return type(name, (), {})
         else:
             return Mock(**vars(self))
 
@@ -84,19 +90,23 @@ MOCK_MODULES = [
     'matplotlib.patches','matplotlib.animation','matplotlib.widgets',
     'mpl_toolkits','mpl_toolkits.axes_grid1',
     'mpl_toolkits.axes_grid1.axes_size',
+
+    # The following lines are for sunpy.gui, which is a mess
     #'PyQt4','PyQt4.QtCore','PyQt4.QtGui',
     #'matplotlib.backends.backend_qt4agg',
     'sunpy.gui.ui.mainwindow.widgets.figure_canvas',
     'sunpy.gui.ui.mainwindow.widgets.toolbars',
     'sunpy.gui.ui.mainwindow.resources',
-    'sunpy.cm','sunpy.cm.cm']
+
+    'scipy.constants']
 for mod_name in MOCK_MODULES:
     sys.modules[mod_name] = Mock(pi=math.pi, G=6.67364e-11)
 
+# We want np.dtype() to return a special Mock class because it shows up as a
+# default value for arguments (see sunpy.spectra.spectrogram)
 sys.modules['numpy'] = Mock(pi=math.pi, G=6.67364e-11,
                             ndarray=type('ndarray', (), {}),
                             dtype=lambda _: Mock(_mock_repr='np.dtype(\'float32\')'))
-sys.modules['scipy.constants'] = Mock(pi=math.pi, G=6.67364e-11)
 
 
 # If extensions (or modules to document with autodoc) are in another directory,
@@ -294,6 +304,6 @@ import glob
 autosummary_generate = (glob.glob("reference/*.rst") + 
                         glob.glob("reference/*/*.rst"))
 
-# Uncomment this to squelch numpydoc from autolisting class members, which
+# Uncomment this to stop numpydoc from autolisting class members, which
 # generates a ridiculous number of warnings.
 #numpydoc_show_class_members = False
