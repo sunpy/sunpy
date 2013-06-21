@@ -137,7 +137,7 @@ class CompositeMap(object):
         else:
             return self._maps[index].alpha
         
-    def get_zorder(self, index = None):
+    def get_zorder(self, index=None):
         """Gets the layering preference (z-order) for a map within the
         composite.
         """
@@ -146,14 +146,14 @@ class CompositeMap(object):
         else:
             return self._maps[index].zorder
 
-    def get_colors(self, index = None):
+    def get_colors(self, index=None):
         """Gets the colors for a map within the compositemap."""
         if index is None:
             return [_map.cmap for _map in self._maps]
         else:
             return self._maps[index].cmap
 
-    def get_norm(self, index = None):
+    def get_norm(self, index=None):
         """Gets the normalization for a map within the
         composite.
         """
@@ -162,7 +162,7 @@ class CompositeMap(object):
         else:
             return self._maps[index].norm
             
-    def get_levels(self, index = None):
+    def get_levels(self, index=None):
         """Gets the list of contour levels for a map within the
         composite.
         """
@@ -175,7 +175,7 @@ class CompositeMap(object):
         """Sets the norm for a layer in the composite image"""
         self._maps[index].norm = norm
 
-    def set_levels(self, index, levels, percent = False):
+    def set_levels(self, index, levels, percent=False):
         """Sets the contour levels for a layer in the composite image"""
         if percent is False: 
             self._maps[index].levels = levels
@@ -226,7 +226,7 @@ class CompositeMap(object):
             
         return self._maps[index].draw_limb(axes=axes)
         
-    def draw_grid(self, index=None,  axes=None, grid_spacing=20):
+    def draw_grid(self, index=None, axes=None, grid_spacing=20):
         """Draws a grid over the surface of the Sun
         
         Parameters
