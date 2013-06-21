@@ -90,7 +90,7 @@ class CompositeMap(object):
             m.alpha = alphas[i]
             m.levels = levels[i]
 
-    def add_map(self, map, zorder=None, alpha=1, levels=False):
+    def add_map(self, amap, zorder=None, alpha=1, levels=False):
         """Adds a map to the CompositeMap
         
         Parameters
@@ -111,12 +111,12 @@ class CompositeMap(object):
         if zorder is None:
             zorder = max([m.zorder for m in self._maps]) + 10
         
-        assert isinstance(Map, GenericMap)
-        m.zorder = zorder
-        m.alpha = alpha
-        m.levels = levels
+        assert isinstance(amap, GenericMap)
+        amap.zorder = zorder
+        amap.alpha = alpha
+        amap.levels = levels
         
-        self._maps.append(m)
+        self._maps.append(amap)
         
     def remove_map(self, index):
         """Removes and returns the map with the given index"""
