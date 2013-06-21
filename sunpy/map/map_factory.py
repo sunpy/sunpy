@@ -161,7 +161,7 @@ class Map(RegisteredFactoryBase):
 @Deprecated("Please use the new factory sunpy.Map")
 def make_map(*args, **kwargs):
     __doc__ = Map.__doc__
-    Map(*args, **kwargs)
+    return Map(*args, **kwargs)
     
 
 
