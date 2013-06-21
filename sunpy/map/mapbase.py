@@ -26,7 +26,7 @@ except ImportError:
 
 import sunpy.io as io
 import sunpy.wcs as wcs
-from sunpy.util import toggle_pylab, to_signed
+from sunpy.util import toggle_pylab, to_signed, Deprecated
 # from sunpy.io import read_file, read_file_header
 from sunpy.sun import constants
 from sunpy.time import parse_time, is_time
@@ -98,6 +98,10 @@ class NDDataStandin(object):
     def header(self):
         warnings.warn("""map.header has been renamed to map.meta
         for compatability with astropy, please use meta instead""", Warning)
+        return self.meta
+    
+    @Deprecated("get_header is no longer supported please use map.meta")
+    def get_header(self):
         return self.meta
     
 
@@ -760,7 +764,9 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         new_meta = self.meta.copy()
         new_meta['crpix1'] = self.reference_pixel['x'] - x_pixels[0]
         new_meta['crpix2'] = self.reference_pixel['y'] - y_pixels[0]
-
+        new_meta['naxis1'] = new_data.shape[1]
+        new_meta['naxis2'] = new_data.shape[0]
+        
         # Create new map instance
         MapType = type(self)
         return MapType(new_data, new_meta)

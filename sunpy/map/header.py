@@ -33,15 +33,7 @@ class MapMeta(OrderedDict):
     def __setitem__(self, key, value):
         """Overide [] indexing"""
         return OrderedDict.__setitem__(self, key.lower(), value)
-    
-    def as_pyfits_header(self):
-        """Returns a PyFITS header instance of the header"""
-        raise NotImplementedError("Depreciated")#TODO: What is this use case?
-
-    def copy(self):
-        """Overide copy operator"""
-        return OrderedDict(self)(dict.copy(self))
-
+        
     def get(self, key, default=None):
         """Overide .get() indexing"""
         return OrderedDict.get(self, key.lower(), default)
