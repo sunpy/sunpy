@@ -6,6 +6,11 @@ from __future__ import absolute_import
 
 import matplotlib.pyplot as plt
 
+from sunpy.map import GenericMap
+import sunpy.map.map_factory
+
+from sunpy.util import expand_list
+
 __all__ = ['CompositeMap']
 
 __author__ = "Keith Hughitt"
@@ -65,7 +70,7 @@ class CompositeMap(object):
     >>> comp_map.peek()
 
     """    
-    def __init__(self, maps, **kwargs):
+    def __init__(self, *args, **kwargs):
         """
         Create a CompositeMap
         
@@ -74,7 +79,12 @@ class CompositeMap(object):
         Maps: SunPy Maps
             A sequence of maps
         """
-        self._maps = maps
+        
+        self._maps = expand_list(args)
+        
+        for m in self._maps:
+            if not isinstance(m, GenericMap):
+                raise ValueError('CompositeMap expects pre-constructed map objects.')
         
         # Default alpha and zorder values
         alphas = [1] * len(args)
