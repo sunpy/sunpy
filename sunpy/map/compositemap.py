@@ -61,9 +61,10 @@ class CompositeMap(object):
     Examples
     --------
     >>> import sunpy
-    >>> sunpy.CompositeMap(sunpy.AIA_171_IMAGE, sunpy.RHESSI_IMAGE).peek()
-    >>> comp_map = sunpy.CompositeMap(sunpy.AIA_171_IMAGE, sunpy.EIT_195_IMAGE)    
-    >>> comp_map.add_map(sunpy.RHESSI_IMAGE)
+    >>> sunpy.Map(sunpy.AIA_171_IMAGE, sunpy.RHESSI_IMAGE, composite=True)
+    >>> comp_map = sunpy.Map(sunpy.AIA_171_IMAGE, sunpy.EIT_195_IMAGE,
+                             composite=True)
+    >>> comp_map.add_map(sunpy.Map(sunpy.RHESSI_IMAGE))
     >>> comp_map.peek()
 
     """    
@@ -89,13 +90,13 @@ class CompositeMap(object):
             m.alpha = alphas[i]
             m.levels = levels[i]
 
-    def add_map(self, input_, zorder=None, alpha=1, levels=False):
+    def add_map(self, map, zorder=None, alpha=1, levels=False):
         """Adds a map to the CompositeMap
         
         Parameters
         ----------
-        input_ : {sunpy.map, string}
-            Map instance or filepath to map to be added
+        map : sunpy.map
+            Map instance to be added
         zorder : int
             The index to use when determining where the map should lie along
             the z-axis; maps with higher z-orders appear above maps with lower
@@ -110,7 +111,6 @@ class CompositeMap(object):
         if zorder is None:
             zorder = max([m.zorder for m in self._maps]) + 10
         
-        m = sunpy.map.map_factory.Map(input_)
         assert isinstance(Map, GenericMap)
         m.zorder = zorder
         m.alpha = alpha
