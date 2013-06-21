@@ -46,41 +46,10 @@ or something else?)
 * Should 'center' be renamed to 'offset' and crpix1 & 2 be used for 'center'?
 """
 
-class MapBase(object):
-    """ This object forms the base for all Map classes, both single and multi
-    maps. """
-
-    @classmethod
-    def get_properties(cls, header):
-        """
-        Parses a map header and determines default properties.
-        
-        This should be overloaded for more  specific Maps.
-        This list is to handle nD fits files.
-        """
-        if is_time(header.get('date-obs',[])): # Hack! check FITS standard is a time
-            date = header.get('date-obs')
-            # Check commonly used but non-standard FITS keyword for observation time is a time
-        elif is_time(header.get('date_obs',[])): # Horrible [] hack
-            date = header.get('date_obs')
-        else:
-            date = None
-        return {
-            "cmap": cm.gray,  # @UndefinedVariable
-            "date": parse_time(date) if date is not None else 'N/A', #TODO: this should be none?
-            "detector": header.get('detector', ''),
-            "dsun": header.get('dsun_obs', constants.au),
-            "exposure_time": header.get('exptime', 0.),
-            "instrument": header.get('instrume', ''),
-            "measurement": header.get('wavelnth', ''),
-            "observatory": header.get('telescop', ''),
-            "name": header.get('telescop', '') + " " + 
-                    str(header.get('wavelnth', '')),
-            "nickname": header.get('detector', '')
-            }
-
-    def __init__(self, data, meta):
-        """ Instancstanciate a Map class.
+class NDDataStandin(object):
+    
+    def __init__(self, data, meta, **kwargs):
+        """ Instantiate a Map class.
         
         Parameters
         ----------
@@ -96,6 +65,34 @@ class MapBase(object):
         
         self.meta = meta
         self.data = data
+    
+    @property
+    def shape(self):
+        return self.data.shape
+    
+    @property
+    def dtype(self):
+        return self.data.dtype
+        
+    @property
+    def size(self):
+        return self.data.size
+        
+    @property
+    def ndim(self):
+        return self.data.ndim
+    
+    def std(self, *args, **kwargs):
+        return self.data.std(*args, **kwargs)
+    
+    def mean(self, *args, **kwargs):
+        return self.data.mean(*args, **kwargs)
+    
+    def min(self, *args, **kwargs):
+        return self.data.min(*args, **kwargs)
+        
+    def max(self, *args, **kwargs):
+        return self.data.max(*args, **kwargs)
         
     @property
     def header(self):
@@ -103,117 +100,8 @@ class MapBase(object):
         for compatability with astropy, please use meta instead""", Warning)
         return self.meta
     
-#    def __getattr__(self, attr):
-    def _add_property(self, attr, header_key):
-        """
-        This method maps a header value to a dynamically updating 
-        property
-        """
-        def setter(self, value):
-            self.meta[header_key] = value
-        
-        def getter(self):
-            return self.meta[header_key]
-        
-        setattr(self, attr, property(getter, setter))
 
-    def __getitem__(self, key):
-        """ This should allow indexing by physical coordinate """
-        raise NotImplementedError(
-    "The ability to index Map by physical coordinate is not yet implemented.")
-
-    def __repr__(self):
-        if not hasattr(self, 'observatory'):
-            return self.data.__repr__()
-
-        return (
-"""SunPy Map
----------
-Observatory:\t %s
-Instrument:\t %s
-Detector:\t %s
-Measurement:\t %s
-Obs Date:\t %s
-dt:\t\t %f
-Dimension:\t [%d, %d] 
-[dx, dy] =\t [%f, %f]
- 
-""" % (self.observatory, self.instrument, self.detector, self.measurement,
-       self.date, self.exposure_time,
-       self.data.shape[1], self.data.shape[0], self.scale['x'], self.scale['y']) 
-     + self.data.__repr__())
-    
-    @property
-    def shape(self):
-        return self.data.shape #TODO: This assumes the data is always a ndarray
-    
-    @property
-    def dtype(self):
-        return self.data.dtype #TODO: This assumes the data is always a ndarray    
-
-    #TODO: How to handle this with the new dynamic header?
-    #It should go away!!
-    def get_header(self, original=False):
-        """Returns an updated MapHeader instance"""
-        header = self._original_header.copy()
-        
-        # If requested, return original header as-is
-        if original:
-            return header
-        
-        # Bit-depth
-        #
-        #   8    Character or unsigned binary integer
-        #  16    16-bit twos-complement binary integer
-        #  32    32-bit twos-complement binary integer
-        # -32    IEEE single precision floating point
-        # -64    IEEE double precision floating point
-        #
-        if not header.has_key('bitpix'):
-            bitdepth = 8 * self.dtype.itemsize
-            
-            if self.dtype.kind == "f":
-                bitdepth = - bitdepth
-                
-            header['bitpix'] = bitdepth
-
-        # naxis
-        header['naxis'] = self.data.ndim
-        header['naxis1'] = self.shape[1]
-        header['naxis2'] = self.shape[0]
-        
-        # dsun
-        if header.has_key('dsun_obs'):
-            header['dsun_obs'] = self.dsun
-
-        # rsun_obs
-        if header.has_key('rsun_obs'):
-            header['rsun_obs'] = self.rsun_arcseconds
-        elif header.has_key('solar_r'):
-            header['solar_r'] = self.rsun_arcseconds
-        elif header.has_key('radius'):
-            header['radius'] = self.rsun_arcseconds
-            
-        # cdelt
-        header['cdelt1'] = self.scale['x']
-        header['cdelt2'] = self.scale['y']
-
-        # crpix
-        header['crval1'] = self.reference_coordinate['x']
-        header['crval2'] = self.reference_coordinate['y']
-        
-        # crval
-        header['crpix1'] = self.reference_pixel['x']
-        header['crpix2'] = self.reference_pixel['y']
-        
-        return header               
-
-    def norm(self):
-        """Default normalization method. Not yet implemented."""
-        return None
-
-
-class GenericMap(MapBase):
+class GenericMap(NDDataStandin):
     """
     A Generic spatially-aware 2D data array
 
@@ -332,23 +220,105 @@ class GenericMap(MapBase):
 
     """
     
-    def __init__(self, data, header):
-        MapBase.__init__(self, data, header)
+    def __init__(self, data, header, **kwargs):
         
-        #TODO: What is this doing here?
-        # Set naxis1 and naxis2 if not specified
-        if self.meta.get('naxis1') is None:
-            self.meta['naxis1'] = self.shape[1]
-        if self.meta.get('naxis2') is None:
-            self.meta['naxis2'] = self.shape[0]
+        NDDataStandin.__init__(self, data, header, **kwargs)
+        
+        # Correct possibly missing meta keywords
+        self._fix_date()
+        self._fix_naxis()
+        
+        # Setup some attributes
+        self._name = self.observatory + " " + str(self.measurement)
+        self._nickname = self.detector
 
-        # Parse header and set map properties
-#        for attr, value in list(self.get_properties(header).items()):
-#            self._add_property(attr, value)
+        # Visualization attributes
+        self.cmap = cm.gray
         
-        # Validate properties
-#        self._validate()
+        # Validate header
+        # TODO: This should be a function of the header, not of the map
+        self._validate()
+
+    def __getitem__(self, key):
+        """ This should allow indexing by physical coordinate """
+        raise NotImplementedError(
+    "The ability to index Map by physical coordinate is not yet implemented.")
+
+    def __repr__(self):
+        if not hasattr(self, 'observatory'):
+            return self.data.__repr__()
+        return (
+"""SunPy %s
+---------
+Observatory:\t %s
+Instrument:\t %s
+Detector:\t %s
+Measurement:\t %s
+Obs Date:\t %s
+dt:\t\t %f
+Dimension:\t [%d, %d] 
+[dx, dy] =\t [%f, %f]
+ 
+""" % (self.__class__.__name__,
+       self.observatory, self.instrument, self.detector, self.measurement,
+       self.date, self.exposure_time,
+       self.data.shape[1], self.data.shape[0], self.scale['x'], self.scale['y']) 
+     + self.data.__repr__())
+
+# #### Keyword attribute and other attribute definitions #### #
+
+    @property
+    def name(self):
+        return self._name
+    @name.setter
+    def name(self, n):
+        self._name = n
+        
+    @property
+    def nickname(self):
+        return self._nickname
+    @nickname.setter
+    def nickname(self, n):
+        self._nickname = n
     
+    @property
+    def date(self):
+        return self.meta.get('date-obs', None)
+#    @date.setter
+#    def date(self, new_date):
+#        self.meta['date-obs'] = new_date
+#        #propagate change to malformed FITS keywords
+#        if is_time(self.meta.get('date_obs', None)): 
+#            self.meta['date_obs'] = new_date
+
+    @property
+    def detector(self):
+        return self.meta.get('detector', "")
+        
+    @property
+    def dsun(self):
+        return self.meta.get('dsun_obs', constants.au)
+        
+    @property
+    def exposure_time(self):
+        return self.meta.get('exptime', 0.0)
+        
+    @property
+    def instrument(self):
+        return self.meta.get('instrume', "")
+        
+    @property
+    def measurement(self):
+        return self.meta.get('wavelnth', "")
+        
+    @property
+    def wavelength(self):
+        return self.meta.get('wavelnth', "")
+        
+    @property
+    def observatory(self):
+        return self.meta.get('obsrvtry', self.meta.get('telescop', ""))
+        
     @property
     def xrange(self):
         """Return the X range of the image in arcsec from edge to edge."""
@@ -367,56 +337,96 @@ class GenericMap(MapBase):
     def center(self):
         """Returns the offset between the center of the Sun and the center of 
         the map."""
-        return {
-            'x': wcs.get_center(self.shape[1], self.scale['x'], 
-                                self.reference_pixel['x'], 
-                                self.reference_coordinate['x']),
-            'y': wcs.get_center(self.shape[0], self.scale['y'], 
-                                self.reference_pixel['y'], 
-                                self.reference_coordinate['y'])
-        }
+        return {'x': wcs.get_center(self.shape[1], self.scale['x'], 
+                                    self.reference_pixel['x'], 
+                                    self.reference_coordinate['x']),
+                'y': wcs.get_center(self.shape[0], self.scale['y'], 
+                                    self.reference_pixel['y'], 
+                                    self.reference_coordinate['y']),}
+               
+    @property
+    def rsun_meters(self):
+        return self.meta.get('rsun_ref', constants.radius)
     
-    @classmethod
-    def get_properties(cls, meta):
-        """
-        This is an overload of MapBase for Generic 2D types
-        """
-        mapbaseprops = MapBase.get_properties(cls, meta)
-        return mapbaseprops.update({
-            "rsun_meters": meta.get('rsun_ref', constants.radius),
-            "rsun_arcseconds": meta.get('rsun_obs', header.get('solar_r',
-                               meta.get('radius',
-                               constants.average_angular_size))),
-            "coordinate_system": {
-                'x': meta.get('ctype1', 'HPLN-TAN'),
-                'y': meta.get('ctype2', 'HPLT-TAN')
-            },
-            "carrington_longitude": meta.get('crln_obs', 0.),
-            "heliographic_latitude": meta.get('hglt_obs', 
-                                     meta.get('crlt_obs',
-                                     meta.get('solar_b0', 0.))),
-            "heliographic_longitude": meta.get('hgln_obs', 0.),
-            "reference_coordinate": {
-                'x': meta.get('crval1', 0.),
-                'y': meta.get('crval2', 0.),
-            },
-            "reference_pixel": {
-                'x': meta.get('crpix1', (meta.get('naxis1') + 1) / 2.),
-                'y': meta.get('crpix2', (meta.get('naxis2') + 1) / 2.)
-            },
-            "scale": {
-                'x': meta.get('cdelt1', 1.),
-                'y': meta.get('cdelt2', 1.),
-            },
-            "units": {
-                'x': meta.get('cunit1', 'arcsec'),
-                'y': meta.get('cunit2', 'arcsec')
-            },
-            "rotation_angle": {
-                'x': meta.get('crota1', 0.),
-                'y': meta.get('crota2', 0.)
-            }
-        })
+    @property
+    def rsun_arcseconds(self):
+        return self.meta.get('rsun_obs', self.meta.get('solar_r',
+                                         self.meta.get('radius', constants.average_angular_size)))
+                                         
+    @property
+    def coordinate_system(self):
+        return {'x': self.meta.get('ctype1', 'HPLN-TAN'),
+                'y': self.meta.get('ctype2', 'HPLT-TAN'),}
+    
+    @property
+    def carrington_longitude(self):
+        return self.meta.get('crln_obs', 0.)
+        
+    @property
+    def heliographic_latitude(self):
+        return self.meta.get('hglt_obs', self.meta.get('crlt_obs',
+                                         self.meta.get('solar_b0', 0.)))
+        
+    @property
+    def heliographic_longitude(self):
+        return self.meta.get('hgln_obs', 0.)
+        
+    @property
+    def reference_coordinate(self):
+        return {'x': self.meta.get('crval1', 0.),
+                'y': self.meta.get('crval2', 0.),}
+        
+    @property
+    def reference_pixel(self):
+        return {'x': self.meta.get('crpix1', (self.meta.get('naxis1') + 1) / 2.),
+                'y': self.meta.get('crpix2', (self.meta.get('naxis2') + 1) / 2.),}
+        
+    @property
+    def scale(self):
+        return {'x': self.meta.get('cdelt1', 1.),
+                'y': self.meta.get('cdelt2', 1.),}
+        
+    @property
+    def units(self):
+        return {'x': self.meta.get('cunit1', 'arcsec'),
+                'y': self.meta.get('cunit2', 'arcsec'),}
+        
+    @property
+    def rotation_angle(self):
+        return {'x': self.meta.get('crota1', 0.),
+                'y': self.meta.get('crota2', 0.),}
+    
+            
+# #### Miscellaneous #### #
+    
+    def _fix_date(self):
+        # Check commonly used but non-standard FITS keyword for observation time
+        # and correct the keyword if we can.  Keep updating old one for 
+        # backwards compatibility.
+        if is_time(self.meta.get('date_obs', None)): 
+            self.meta['date-obs'] = self.meta['date_obs']  
+    
+    def _fix_naxis(self):
+        # If naxis is not specified, get it from the array shape
+        if 'naxis1' not in self.meta:
+            self.meta['naxis1'] = self.shape[1]
+        if 'naxis2' not in self.meta:
+            self.meta['naxis2'] = self.shape[0]
+        if 'naxis' not in self.meta:
+            self.meta['naxis'] = self.ndim
+            
+    def _fix_bitpix(self):
+        # Bit-depth
+        #
+        #   8    Character or unsigned binary integer
+        #  16    16-bit twos-complement binary integer
+        #  32    32-bit twos-complement binary integer
+        # -32    IEEE single precision floating point
+        # -64    IEEE double precision floating point
+        #
+        if 'bitpix' not in self.meta:
+            float_fac = -1 if self.dtype.kind == "f" else 1
+            self.meta['bitpix'] = float_fac * 8 * self.dtype.itemsize
     
     def _validate(self):
         """Validates the meta-information associated with a Map.
@@ -428,7 +438,9 @@ class GenericMap(MapBase):
 #        if (self.dsun <= 0 or self.dsun >= 40 * constants.au):
 #            raise InvalidHeaderInformation("Invalid value for DSUN")
         pass
-            
+
+# #### Data conversion routines #### #
+
     def data_to_pixel(self, value, dim):
         """Convert pixel-center data coordinates to pixel values"""
         #TODO: This function should be renamed. It is confusing as data
@@ -441,7 +453,7 @@ class GenericMap(MapBase):
 
         return (value - self.center[dim]) / self.scale[dim] + ((size - 1) / 2.)
 
-    def pixel_to_data(self, x = None, y = None):
+    def pixel_to_data(self, x=None, y=None):
         """Convert from pixel coordinates to data coordinates (e.g. arcsec)"""
         width = self.shape[1]
         height = self.shape[0]
@@ -455,18 +467,374 @@ class GenericMap(MapBase):
         if (x is not None) & (y < 0):
             raise ValueError("Y pixel value cannot be less than 0.")
 
-        scale = np.array([self.scale.get('x'), self.scale.get('y')])
-        crpix = np.array([self.reference_pixel.get('x'),
-                          self.reference_pixel.get('y')])
-        crval = np.array([self.reference_coordinate.get('x'),
-                          self.reference_coordinate.get('y')])
-        coordinate_system = [self.coordinate_system.get('x'),
-                             self.coordinate_system.get('y')]
-        x,y = wcs.convert_pixel_to_data(width, height, scale[0], scale[1],
-         crpix[0], crpix[1], crval[0], crval[1], coordinate_system[0], x=x, y=y)
-
+        scale = self.scale
+        crpix = self.reference_pixel
+        crval = self.reference_coordinate
+        coordinate_system = self.coordinate_system
+        
+        x,y = wcs.convert_pixel_to_data(width, height, 
+                                        scale['x'], scale['y'],
+                                        crpix['x'], crpix['y'], 
+                                        crval['x'], crval['y'], 
+                                        coordinate_system['x'], 
+                                        x=x, y=y)
         return x, y
+        
+# #### I/O routines #### #
+
+    def save(self, filepath):
+        """Saves the SunPy Map object to a file.
+        
+        Currently SunPy can only save files in the FITS format. In the future
+        support will be added for saving to other formats.
+        
+        Parameters
+        ----------
+        filepath : string
+            Location to save file to.
+        """
+        io.write_file(filepath, self.data, self.meta) 
+        
+# #### Image processing routines #### #
+
+    def resample(self, dimensions, method='linear'):
+        """Returns a new Map that has been resampled up or down
+
+        Arbitrary resampling of the Map to new dimension sizes.
+
+        Uses the same parameters and creates the same co-ordinate lookup points
+        as IDL''s congrid routine, which apparently originally came from a
+        VAX/VMS routine of the same name.
+
+        Parameters
+        ----------
+        dimensions : tuple
+            Dimensions that new Map should have.
+            Note: the first argument corresponds to the 'x' axis and the second
+            argument corresponds to the 'y' axis.
+        method : {'neighbor' | 'nearest' | 'linear' | 'spline'}
+            Method to use for resampling interpolation.
+                * neighbor - Closest value from original data
+                * nearest and linear - Uses n x 1-D interpolations using
+                  scipy.interpolate.interp1d
+                * spline - Uses ndimage.map_coordinates
+
+        Returns
+        -------
+        out : Map
+            A new Map which has been resampled to the desired dimensions.
+
+        References
+        ----------
+        | http://www.scipy.org/Cookbook/Rebinning (Original source, 2011/11/19)
+        """
+
+        # Note: because the underlying ndarray is transposed in sense when
+        #   compared to the Map, the ndarray is transposed, resampled, then
+        #   transposed back
+        # Note: "center" defaults to True in this function because data
+        #   coordinates in a Map are at pixel centers
+
+        # Make a copy of the original data and perform resample
+        new_data = sunpy_image_resample(self.data.copy().T, dimensions,
+                                    method, center=True)
+        new_data = new_data.T
+
+        # Note that 'x' and 'y' correspond to 1 and 0 in self.shape,
+        # respectively
+        scale_factor_x = (float(self.shape[1]) / dimensions[0])
+        scale_factor_y = (float(self.shape[0]) / dimensions[1])
+
+        # Update image scale and number of pixels
+        new_meta = self.meta.copy()
+        
+        # Update metadata
+        new_meta['cdelt1'] *= scale_factor_x
+        new_meta['cdelt2'] *= scale_factor_y
+        new_meta['crpix1'] = (dimensions[0] + 1) / 2.
+        new_meta['crpix2'] = (dimensions[1] + 1) / 2.
+        new_meta['crval1'] = self.center['x']
+        new_meta['crval2'] = self.center['y']
+
+        # Create new map instance
+        MapType = type(self)
+        return MapType(new_data, new_meta)
     
+    def rotate(self, angle, scale=1.0, rotation_center=None, recenter=True,
+               missing=0.0, interpolation='bicubic', interp_param=-0.5):
+        """Returns a new rotated, rescaled and shifted map.
+        
+        Parameters
+        ---------
+        angle: float
+           The angle to rotate the image by (radians)        
+        scale: float
+           A scale factor for the image, default is no scaling
+        rotation_center: tuple
+           The point in the image to rotate around (Axis of rotation).
+           Default: center of the array
+        recenter: bool, or array-like
+           Move the centroid (axis of rotation) to the center of the array
+           or recenter coords. 
+           Default: True, recenter to the center of the array.
+        missing: float
+           The numerical value to fill any missing points after rotation.
+           Default: 0.0
+        interpolation: {'nearest' | 'bilinear' | 'spline' | 'bicubic'}
+            Interpolation method to use in the transform. 
+            Spline uses the 
+            scipy.ndimage.interpolation.affline_transform routine.
+            nearest, bilinear and bicubic all replicate the IDL rot() function.
+            Default: 'bicubic'
+        interp_par: Int or Float
+            Optional parameter for controlling the interpolation.
+            Spline interpolation requires an integer value between 1 and 5 for 
+            the degree of the spline fit.
+            Default: 3
+            BiCubic interpolation requires a flaot value between -1 and 0.
+            Default: 0.5
+            Other interpolation options ingore the argument.
+        
+        Returns
+        -------
+        New rotated, rescaled, translated map
+        
+        Notes
+        -----
+        Apart from interpolation='spline' all other options use a compiled 
+        C-API extension. If for some reason this is not compiled correctly this
+        routine will fall back upon the scipy implementation of order = 3.
+        For more infomation see:
+            http://sunpy.readthedocs.org/en/latest/guide/troubleshooting.html#crotate-warning
+        """
+        
+        #Interpolation parameter Sanity
+        assert interpolation in ['nearest','spline','bilinear','bicubic']
+        #Set defaults based on interpolation
+        if interp_param is None:
+            if interpolation is 'spline':
+                interp_param = 3
+            elif interpolation is 'bicubic':
+                interp_param = 0.5
+            else:
+                interp_param = 0 #Default value for nearest or bilinear
+        
+        #Make sure recenter is a vector with shape (2,1)
+        if not isinstance(recenter, bool):
+            recenter = np.array(recenter).reshape(2,1)
+                
+        #Define Size and center of array
+        center = (np.array(self.data.shape)-1)/2.0
+        
+        #If rotation_center is not set (None or False),
+        #set rotation_center to the center of the image.
+        if rotation_center is None:
+            rotation_center = center 
+        else:
+            #Else check rotation_center is a vector with shape (2,1)
+            rotation_center = np.array(rotation_center).reshape(2,1)
+
+        #recenter to the rotation_center if recenter is True
+        if isinstance(recenter, bool):
+            #if rentre is False then this will be (0,0)
+            shift = np.array(rotation_center) - np.array(center) 
+        else:
+            #recenter to recenter vector otherwise
+            shift = np.array(recenter) - np.array(center)
+        
+        image = self.data.copy()
+    
+        #Calulate the parameters for the affline_transform
+        c = np.cos(angle)
+        s = np.sin(angle)
+        mati = np.array([[c, s],[-s, c]]) / scale   # res->orig
+        center = np.array([center]).transpose()  # the center of rotn
+        shift = np.array([shift]).transpose()    # the shift
+        kpos = center - np.dot(mati, (center + shift))  
+        # kpos and mati are the two transform constants, kpos is a 2x2 array
+        rsmat, offs =  mati, np.squeeze((kpos[0,0], kpos[1,0]))
+        
+        if interpolation == 'spline':
+            # This is the scipy call
+            data = scipy.ndimage.interpolation.affine_transform(image, rsmat,
+                           offset=offs, order=interp_param, mode='constant',
+                           cval=missing)
+        else:
+            #Use C extension Package
+            if not 'Crotate' in globals():
+                warnings.warn("""The C extension sunpy.image.Crotate is not 
+installed, falling back to the interpolation='spline' of order=3""" ,Warning)
+                data = scipy.ndimage.interpolation.affine_transform(image, rsmat,
+                           offset=offs, order=3, mode='constant',
+                           cval=missing)
+            #Set up call parameters depending on interp type.
+            if interpolation == 'nearest':
+                interp_type = Crotate.NEAREST
+            elif interpolation == 'bilinear':
+                interp_type = Crotate.BILINEAR
+            elif interpolation == 'bicubic':
+                interp_type = Crotate.BICUBIC
+            #Make call to extension
+            data = Crotate.affine_transform(image, 
+                                      rsmat, offset=offs, 
+                                      kernel=interp_type, cubic=interp_param, 
+                                      mode='constant', cval=missing)
+            
+        #Return a new map
+        #Copy Header
+        meta = self.meta.copy()
+
+        # Create new map instance
+        MapType = type(self)
+        return MapType(data, meta)
+
+    def submap(self, range_a, range_b, units="data"):
+        """Returns a submap of the map with the specified range
+
+        Parameters
+        ----------
+        range_a : list
+            The range of the Map to select across either the x axis.
+        range_b : list
+            The range of the Map to select across either the y axis.
+        units : {'data' | 'pixels'}, optional
+            The units for the supplied ranges.
+
+        Returns
+        -------
+        out : Map
+            A new map instance is returned representing to specified sub-region
+
+        Examples
+        --------
+        >>> aia.submap([-5,5],[-5,5])
+        AIAMap([[ 341.3125,  266.5   ,  329.375 ,  330.5625,  298.875 ],
+        [ 347.1875,  273.4375,  247.4375,  303.5   ,  305.3125],
+        [ 322.8125,  302.3125,  298.125 ,  299.    ,  261.5   ],
+        [ 334.875 ,  289.75  ,  269.25  ,  256.375 ,  242.3125],
+        [ 273.125 ,  241.75  ,  248.8125,  263.0625,  249.0625]])
+
+        >>> aia.submap([0,5],[0,5], units='pixels')
+        AIAMap([[ 0.3125, -0.0625, -0.125 ,  0.    , -0.375 ],
+        [ 1.    ,  0.1875, -0.8125,  0.125 ,  0.3125],
+        [-1.1875,  0.375 , -0.5   ,  0.25  , -0.4375],
+        [-0.6875, -0.3125,  0.8125,  0.0625,  0.1875],
+        [-0.875 ,  0.25  ,  0.1875,  0.    , -0.6875]])
+        """
+        if units is "data":
+            # Check edges (e.g. [:512,..] or [:,...])
+            if range_a[0] is None:
+                range_a[0] = self.xrange[0]
+            if range_a[1] is None:
+                range_a[1] = self.xrange[1]
+            if range_b[0] is None:
+                range_b[0] = self.yrange[0]
+            if range_b[1] is None:
+                range_b[1] = self.yrange[1]
+
+            #x_pixels = [self.data_to_pixel(elem, 'x') for elem in range_a]
+            x_pixels = [np.ceil(self.data_to_pixel(range_a[0], 'x')),
+                        np.floor(self.data_to_pixel(range_a[1], 'x')) + 1]
+            #y_pixels = [self.data_to_pixel(elem, 'y') for elem in range_b]
+            y_pixels = [np.ceil(self.data_to_pixel(range_b[0], 'y')),
+                        np.floor(self.data_to_pixel(range_b[1], 'y')) + 1]
+        elif units is "pixels":
+            # Check edges
+            if range_a[0] is None:
+                range_a[0] = 0
+            if range_a[1] is None:
+                range_a[1] = self.shape[1]
+            if range_b[0] is None:
+                range_b[0] = 0
+            if range_b[1] is None:
+                range_b[1] = self.shape[0]
+                
+            x_pixels = range_a
+            y_pixels = range_b
+        else:
+            raise ValueError(
+                "Invalid unit. Must be one of 'data' or 'pixels'")
+
+        
+        # Get ndarray representation of submap
+        xslice = slice(x_pixels[0], x_pixels[1])
+        yslice = slice(y_pixels[0], y_pixels[1])
+        new_data = self.data[yslice, xslice].copy()
+        
+        # Make a copy of the header with updated centering information
+        new_meta = self.meta.copy()
+        new_meta['crpix1'] = self.reference_pixel['x'] - x_pixels[0]
+        new_meta['crpix2'] = self.reference_pixel['y'] - y_pixels[0]
+
+        # Create new map instance
+        MapType = type(self)
+        return MapType(new_data, new_meta)
+
+    def superpixel(self, dimensions, method='sum'):
+        """Returns a new map consisting of superpixels formed from the
+        original data.  Useful for increasing signal to noise ratio in images.
+
+        Parameters
+        ----------
+        dimensions : tuple
+            One superpixel in the new map is equal to (dimension[0],
+            dimension[1]) pixels of the original map
+            Note: the first argument corresponds to the 'x' axis and the second
+            argument corresponds to the 'y' axis.
+        method : {'sum' | 'average'}
+            What each superpixel represents compared to the original data
+                * sum - add up the original data
+                * average - average the sum over the number of original pixels
+
+        Returns
+        -------
+        out : Map
+            A new Map which has superpixels of the required size.
+
+        References
+        ----------
+        | http://mail.scipy.org/pipermail/numpy-discussion/2010-July/051760.html
+        """
+
+        # Note: because the underlying ndarray is transposed in sense when
+        #   compared to the Map, the ndarray is transposed, resampled, then
+        #   transposed back
+        # Note: "center" defaults to True in this function because data
+        #   coordinates in a Map are at pixel centers
+
+        # Make a copy of the original data and perform reshaping
+        reshaped = reshape_image_to_4d_superpixel(self.data.copy().T,
+                                                  dimensions)
+        if method == 'sum':
+            new_data = reshaped.sum(axis=3).sum(axis=1)
+        elif method == 'average':
+            new_data = ((reshaped.sum(axis=3).sum(axis=1)) /
+                    np.float32(dimensions[0] * dimensions[1]))
+        new_data = new_data.T
+        
+        
+        # Update image scale and number of pixels
+        new_meta = self.meta.copy()
+
+        # Note that 'x' and 'y' correspond to 1 and 0 in self.shape,
+        # respectively
+        new_nx = self.shape[1] / dimensions[0]
+        new_ny = self.shape[0] / dimensions[1]
+
+        # Update metadata
+        new_meta['cdelt1'] = dimensions[0] * self.scale['x']
+        new_meta['cdelt2'] = dimensions[1] * self.scale['y']
+        new_meta['crpix1'] = (new_nx + 1) / 2.
+        new_meta['crpix2'] = (new_ny + 1) / 2.
+        new_meta['crval1'] = self.center['x']
+        new_meta['crval2'] = self.center['y']
+
+        # Create new map instance
+        MapType = type(self)
+        return MapType(new_data, new_meta)
+        
+# #### Visualization #### #
+
     def draw_grid(self, axes=None, grid_spacing=20):
         """Draws a grid over the surface of the Sun
         
@@ -492,7 +860,7 @@ class GenericMap(MapBase):
 
         b0 = self.heliographic_latitude
         l0 = self.heliographic_longitude
-        units = [self.units.get('x'), self.units.get('y')]
+        units = [self.units['x'], self.units['y']]
 
         #TODO: This function could be optimized. Does not need to convert the entire image
         # coordinates
@@ -710,359 +1078,11 @@ class GenericMap(MapBase):
         #Set current image (makes colorbar work)
         plt.sci(ret)
         return ret
-    
 
-    def resample(self, dimensions, method='linear'):
-        """Returns a new Map that has been resampled up or down
-
-        Arbitrary resampling of the Map to new dimension sizes.
-
-        Uses the same parameters and creates the same co-ordinate lookup points
-        as IDL''s congrid routine, which apparently originally came from a
-        VAX/VMS routine of the same name.
-
-        Parameters
-        ----------
-        dimensions : tuple
-            Dimensions that new Map should have.
-            Note: the first argument corresponds to the 'x' axis and the second
-            argument corresponds to the 'y' axis.
-        method : {'neighbor' | 'nearest' | 'linear' | 'spline'}
-            Method to use for resampling interpolation.
-                * neighbor - Closest value from original data
-                * nearest and linear - Uses n x 1-D interpolations using
-                  scipy.interpolate.interp1d
-                * spline - Uses ndimage.map_coordinates
-
-        Returns
-        -------
-        out : Map
-            A new Map which has been resampled to the desired dimensions.
-
-        References
-        ----------
-        | http://www.scipy.org/Cookbook/Rebinning (Original source, 2011/11/19)
-        """
-
-        # Note: because the underlying ndarray is transposed in sense when
-        #   compared to the Map, the ndarray is transposed, resampled, then
-        #   transposed back
-        # Note: "center" defaults to True in this function because data
-        #   coordinates in a Map are at pixel centers
-
-        # Make a copy of the original data and perform resample
-        data = sunpy_image_resample(self.data.copy().T, dimensions,
-                                    method, center=True)
-
-        # Update image scale and number of pixels
-        meta = self._original_header.copy()
-
-        # Note that 'x' and 'y' correspond to 1 and 0 in self.shape,
-        # respectively
-        scale_factor_x = (float(self.shape[1]) / dimensions[0])
-        scale_factor_y = (float(self.shape[0]) / dimensions[1])
-
-        # Create new map instance
-        new_map = self.__class__(data.T, meta)
-
-        # Update metadata
-        new_map.scale['x'] *= scale_factor_x
-        new_map.scale['y'] *= scale_factor_y
-        new_map.reference_pixel['x'] = (dimensions[0] + 1) / 2.
-        new_map.reference_pixel['y'] = (dimensions[1] + 1) / 2.
-        new_map.reference_coordinate['x'] = self.center['x']
-        new_map.reference_coordinate['y'] = self.center['y']
-
-        return new_map
-    
-    def rotate(self, angle, scale=1.0, rotation_centre=None, recentre=True,
-               missing=0.0, interpolation='bicubic', interp_param=-0.5):
-        """Returns a new rotated, rescaled and shifted map.
+    def norm(self):
+        """Default normalization method. Not yet implemented."""
+        return None       
         
-        Parameters
-        ---------
-        angle: float
-           The angle to rotate the image by (radians)        
-        scale: float
-           A scale factor for the image, default is no scaling
-        rotation_centre: tuple
-           The point in the image to rotate around (Axis of rotation).
-           Default: Centre of the array
-        recentre: bool, or array-like
-           Move the centroid (axis of rotation) to the centre of the array
-           or recentre coords. 
-           Default: True, recentre to the centre of the array.
-        missing: float
-           The numerical value to fill any missing points after rotation.
-           Default: 0.0
-        interpolation: {'nearest' | 'bilinear' | 'spline' | 'bicubic'}
-            Interpolation method to use in the transform. 
-            Spline uses the 
-            scipy.ndimage.interpolation.affline_transform routine.
-            nearest, bilinear and bicubic all replicate the IDL rot() function.
-            Default: 'bicubic'
-        interp_par: Int or Float
-            Optional parameter for controlling the interpolation.
-            Spline interpolation requires an integer value between 1 and 5 for 
-            the degree of the spline fit.
-            Default: 3
-            BiCubic interpolation requires a flaot value between -1 and 0.
-            Default: 0.5
-            Other interpolation options ingore the argument.
-        
-        Returns
-        -------
-        New rotated, rescaled, translated map
-        
-        Notes
-        -----
-        Apart from interpolation='spline' all other options use a compiled 
-        C-API extension. If for some reason this is not compiled correctly this
-        routine will fall back upon the scipy implementation of order = 3.
-        For more infomation see:
-            http://sunpy.readthedocs.org/en/latest/guide/troubleshooting.html#crotate-warning
-        """
-        
-        #Interpolation parameter Sanity
-        assert interpolation in ['nearest','spline','bilinear','bicubic']
-        #Set defaults based on interpolation
-        if interp_param is None:
-            if interpolation is 'spline':
-                interp_param = 3
-            elif interpolation is 'bicubic':
-                interp_param = 0.5
-            else:
-                interp_param = 0 #Default value for nearest or bilinear
-        
-        #Make sure recenter is a vector with shape (2,1)
-        if not isinstance(recentre, bool):
-            recentre = np.array(recentre).reshape(2,1)
-                
-        #Define Size and centre of array
-        centre = (np.array(self.data.shape)-1)/2.0
-        
-        #If rotation_centre is not set (None or False),
-        #set rotation_centre to the centre of the image.
-        if rotation_centre is None:
-            rotation_centre = centre 
-        else:
-            #Else check rotation_centre is a vector with shape (2,1)
-            rotation_centre = np.array(rotation_centre).reshape(2,1)
-
-        #Recentre to the rotation_centre if recentre is True
-        if isinstance(recentre, bool):
-            #if rentre is False then this will be (0,0)
-            shift = np.array(rotation_centre) - np.array(centre) 
-        else:
-            #Recentre to recentre vector otherwise
-            shift = np.array(recentre) - np.array(centre)
-        
-        image = self.data.copy()
-    
-        #Calulate the parameters for the affline_transform
-        c = np.cos(angle)
-        s = np.sin(angle)
-        mati = np.array([[c, s],[-s, c]]) / scale   # res->orig
-        centre = np.array([centre]).transpose()  # the centre of rotn
-        shift = np.array([shift]).transpose()    # the shift
-        kpos = centre - np.dot(mati, (centre + shift))  
-        # kpos and mati are the two transform constants, kpos is a 2x2 array
-        rsmat, offs =  mati, np.squeeze((kpos[0,0], kpos[1,0]))
-        
-        if interpolation == 'spline':
-            # This is the scipy call
-            data = scipy.ndimage.interpolation.affine_transform(image, rsmat,
-                           offset=offs, order=interp_param, mode='constant',
-                           cval=missing)
-        else:
-            #Use C extension Package
-            if not 'Crotate' in globals():
-                warnings.warn("""The C extension sunpy.image.Crotate is not 
-installed, falling back to the interpolation='spline' of order=3""" ,Warning)
-                data = scipy.ndimage.interpolation.affine_transform(image, rsmat,
-                           offset=offs, order=3, mode='constant',
-                           cval=missing)
-            #Set up call parameters depending on interp type.
-            if interpolation == 'nearest':
-                interp_type = Crotate.NEAREST
-            elif interpolation == 'bilinear':
-                interp_type = Crotate.BILINEAR
-            elif interpolation == 'bicubic':
-                interp_type = Crotate.BICUBIC
-            #Make call to extension
-            data = Crotate.affine_transform(image, 
-                                      rsmat, offset=offs, 
-                                      kernel=interp_type, cubic=interp_param, 
-                                      mode='constant', cval=missing)
-            
-        #Return a new map
-        #Copy Header
-        meta = self._original_header.copy()
-        # Create new map instance
-        new_map = self.__class__(data, meta)
-        
-        return new_map
-    
-    def save(self, filepath):
-        """Saves the SunPy Map object to a file.
-        
-        Currently SunPy can only save files in the FITS format. In the future
-        support will be added for saving to other formats.
-        
-        Parameters
-        ----------
-        filepath : string
-            Location to save file to.
-        """
-        io.write_file(filepath, self.data, self.meta)        
-
-    def submap(self, range_a, range_b, units="data"):
-        """Returns a submap of the map with the specified range
-
-        Parameters
-        ----------
-        range_a : list
-            The range of the Map to select across either the x axis.
-        range_b : list
-            The range of the Map to select across either the y axis.
-        units : {'data' | 'pixels'}, optional
-            The units for the supplied ranges.
-
-        Returns
-        -------
-        out : Map
-            A new map instance is returned representing to specified sub-region
-
-        Examples
-        --------
-        >>> aia.submap([-5,5],[-5,5])
-        AIAMap([[ 341.3125,  266.5   ,  329.375 ,  330.5625,  298.875 ],
-        [ 347.1875,  273.4375,  247.4375,  303.5   ,  305.3125],
-        [ 322.8125,  302.3125,  298.125 ,  299.    ,  261.5   ],
-        [ 334.875 ,  289.75  ,  269.25  ,  256.375 ,  242.3125],
-        [ 273.125 ,  241.75  ,  248.8125,  263.0625,  249.0625]])
-
-        >>> aia.submap([0,5],[0,5], units='pixels')
-        AIAMap([[ 0.3125, -0.0625, -0.125 ,  0.    , -0.375 ],
-        [ 1.    ,  0.1875, -0.8125,  0.125 ,  0.3125],
-        [-1.1875,  0.375 , -0.5   ,  0.25  , -0.4375],
-        [-0.6875, -0.3125,  0.8125,  0.0625,  0.1875],
-        [-0.875 ,  0.25  ,  0.1875,  0.    , -0.6875]])
-        """
-        if units is "data":
-            # Check edges (e.g. [:512,..] or [:,...])
-            if range_a[0] is None:
-                range_a[0] = self.xrange[0]
-            if range_a[1] is None:
-                range_a[1] = self.xrange[1]
-            if range_b[0] is None:
-                range_b[0] = self.yrange[0]
-            if range_b[1] is None:
-                range_b[1] = self.yrange[1]
-
-            #x_pixels = [self.data_to_pixel(elem, 'x') for elem in range_a]
-            x_pixels = [np.ceil(self.data_to_pixel(range_a[0], 'x')),
-                        np.floor(self.data_to_pixel(range_a[1], 'x')) + 1]
-            #y_pixels = [self.data_to_pixel(elem, 'y') for elem in range_b]
-            y_pixels = [np.ceil(self.data_to_pixel(range_b[0], 'y')),
-                        np.floor(self.data_to_pixel(range_b[1], 'y')) + 1]
-        elif units is "pixels":
-            # Check edges
-            if range_a[0] is None:
-                range_a[0] = 0
-            if range_a[1] is None:
-                range_a[1] = self.shape[1]
-            if range_b[0] is None:
-                range_b[0] = 0
-            if range_b[1] is None:
-                range_b[1] = self.shape[0]
-                
-            x_pixels = range_a
-            y_pixels = range_b
-        else:
-            raise ValueError(
-                "Invalid unit. Must be one of 'data' or 'pixels'")
-
-        # Make a copy of the header with updated centering information
-        meta = self._original_header.copy()
-        
-        # Get ndarray representation of submap
-        data = self.data[y_pixels[0]:y_pixels[1],
-                                x_pixels[0]:x_pixels[1]]
-        
-        # Instantiate new instance and update metadata
-        new_map = self.__class__(data.copy(), meta)
-        new_map.reference_pixel['x'] = self.reference_pixel['x'] - x_pixels[0]
-        new_map.reference_pixel['y'] = self.reference_pixel['y'] - y_pixels[0]
-
-        return new_map
-
-    def superpixel(self, dimensions, method='sum'):
-        """Returns a new map consisting of superpixels formed from the
-        original data.  Useful for increasing signal to noise ratio in images.
-
-        Parameters
-        ----------
-        dimensions : tuple
-            One superpixel in the new map is equal to (dimension[0],
-            dimension[1]) pixels of the original map
-            Note: the first argument corresponds to the 'x' axis and the second
-            argument corresponds to the 'y' axis.
-        method : {'sum' | 'average'}
-            What each superpixel represents compared to the original data
-                * sum - add up the original data
-                * average - average the sum over the number of original pixels
-
-        Returns
-        -------
-        out : Map
-            A new Map which has superpixels of the required size.
-
-        References
-        ----------
-        | http://mail.scipy.org/pipermail/numpy-discussion/2010-July/051760.html
-        """
-
-        # Note: because the underlying ndarray is transposed in sense when
-        #   compared to the Map, the ndarray is transposed, resampled, then
-        #   transposed back
-        # Note: "center" defaults to True in this function because data
-        #   coordinates in a Map are at pixel centers
-
-        # Make a copy of the original data and perform reshaping
-        reshaped = reshape_image_to_4d_superpixel(self.data.copy().T,
-                                                  dimensions)
-        if method == 'sum':
-            data = reshaped.sum(axis=3).sum(axis=1)
-        elif method == 'average':
-            data = ((reshaped.sum(axis=3).sum(axis=1)) /
-                    np.float32(dimensions[0] * dimensions[1]))
-        
-        
-        #data = resample(np.asarray(self).copy().T, dimensions,
-        #                method, center=True)
-
-        # Update image scale and number of pixels
-        meta = self._original_header.copy()
-
-        # Note that 'x' and 'y' correspond to 1 and 0 in self.shape,
-        # respectively
-        new_nx = self.shape[1] / dimensions[0]
-        new_ny = self.shape[0] / dimensions[1]
-
-        # Create new map instance
-        new_map = self.__class__(data.T, meta)
-
-        # Update metadata
-        new_map.scale['x'] = dimensions[0] * self.scale['x']
-        new_map.scale['y'] = dimensions[1] * self.scale['y']
-        new_map.reference_pixel['x'] = (new_nx + 1) / 2.
-        new_map.reference_pixel['y'] = (new_ny + 1) / 2.
-        new_map.reference_coordinate['x'] = self.center['x']
-        new_map.reference_coordinate['y'] = self.center['y']
-
-        return new_map
-
 
 class InvalidHeaderInformation(ValueError):
     """Exception to raise when an invalid header tag value is encountered for a
