@@ -42,31 +42,35 @@ def read(filepath):
     hdulist = pyfits.open(filepath)
     hdulist.verify('silentfix')
     
-    fits_comment = hdulist[0].header.get_comment()
-    
-    # PyFITS 2.x
-    if len(fits_comment) > 0 and isinstance(fits_comment[0], basestring):
-        comments = [val for val in fits_comment]       
-    else:
-        # PyFITS 3.x
-        comments = [card.value for card in fits_comment]
+    pairs = []
+    for hdu in hdulist:
+        fits_comment = hdulist[0].header.get_comment()
         
-    comment = "".join(comments).strip()
-    header = FileHeader(hdulist[0].header)
-    header['comment'] = comment
+        # PyFITS 2.x
+        if len(fits_comment) > 0 and isinstance(fits_comment[0], basestring):
+            comments = [val for val in fits_comment]       
+        else:
+            # PyFITS 3.x
+            comments = [card.value for card in fits_comment]
+            
+        comment = "".join(comments).strip()
+        header = FileHeader(hdu.header)
+        header['comment'] = comment
+        pairs.append((hdu.data, header))
 
-    return hdulist[0].data, header
+    return pairs
 
 def get_header(filepath):
-    """Returns the header for a given file"""
+    """Returns a list of headers for all HDUs"""
     hdulist = pyfits.open(filepath)
     hdulist.verify('silentfix')
-    
-    comment = "".join(hdulist[0].header.get_comment()).strip()
-    header = FileHeader(hdulist[0].header)
-    header['comment'] = comment
-            
-    return header
+    headers= []
+    for hdu in hdulist:
+        comment = "".join(hdulist[0].header.get_comment()).strip()
+        header = FileHeader(hdulist[0].header)
+        header['comment'] = comment
+        headers.append(header)
+    return headers
 
 def write(fname, data, header):
     """
