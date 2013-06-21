@@ -7,9 +7,6 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from copy import copy
 
-from sunpy.map import MapBase
-#from .map_factory import Map
-#from sunpy.map.sources import *
 from sunpy.util import plotting
 
 __all__ = ['MapCube']
@@ -45,7 +42,8 @@ class MapCube(object):
     2050.6599120000001
     """
     #pylint: disable=W0613,E1101
-    def __init__(self, maps, sortby='date', coalign=False, derotate=False):
+    def __init__(self, maps, sortby='date', coalign=False, derotate=False,
+                 **kwargs):
         """Creates a new Map instance"""
         
         self._maps = maps
@@ -193,7 +191,7 @@ class MapCube(object):
                   'interpolation':'nearest'}
         kwargs.update(ani_args)
         
-        im = axes.imshow(self[0], **kwargs)
+        im = axes.imshow(self[0].data, **kwargs)
         
         #Set current image (makes colorbar work)
         plt.sci(im)
@@ -205,21 +203,21 @@ class MapCube(object):
         if resample:
             #This assumes that the maps a homogenous!
             #TODO: Update this!
-            resample = np.array(self.shape[1:]) * np.array(resample)
+            resample = np.array(len(self._maps)-1) * np.array(resample)
             ani_data = [x.resample(resample) for x in self]
         else:
             ani_data = self
             
         def updatefig(i, *args):
             im = args[0]
-            im.set_array(args[2][i])
+            im.set_array(args[2][i].data)
             im.set_cmap(self[i].cmap)
             im.set_norm(self[i].norm())
             if args[1]:
                 axes.set_title("%s %s" % (self[i].name, self[i].date))
         
         ani = plotting.ControlFuncAnimation(fig, updatefig,
-                                            frames=xrange(0,self.shape[0]),
+                                            frames=xrange(0,len(self._maps)),
                                             fargs=[im,annotate,ani_data],
                                             interval=interval,
                                             blit=False,**ani_args)
