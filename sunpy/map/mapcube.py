@@ -157,14 +157,24 @@ class MapCube(object):
         
         Examples
         --------
-        cube = MapCube(*maps)
+        cube = sunpy.Map(files, cube=True)
         ani = cube.plot(colorbar=True)        
         plt.show()
         
         #Plot the map at 1/2 original resolution.
-        cube = MapCube(*maps)
+        cube = sunpy.Map(files, cube=True)
         ani = cube.plot(resample=[0.5, 0.5], colorbar=True)        
         plt.show()
+        
+        #Save an animation of the MapCube
+        cube = sunpy.Map(res, cube=True)
+
+        ani = cube.plot(controls=False)
+
+        Writer = animation.writers['ffmpeg']
+        writer = Writer(fps=10, metadata=dict(artist='SunPy'), bitrate=1800)
+
+        ani.save('mapcube_animation.mp4', writer=writer)
         """
         
         if not axes:
