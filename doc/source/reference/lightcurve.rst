@@ -4,7 +4,7 @@
 Light Curves
 ============
 
-.. currentmodule:: sunpy.lightcurve
+.. module:: sunpy.lightcurve
 
 Overview
 ^^^^^^^^
@@ -29,7 +29,7 @@ instrument-specific subclasses. Each of these are described below.
 .. autoclass:: LYRALightCurve
 
 :class:`LogicalLightCurve`
-"""""""""""""""""""""""
+""""""""""""""""""""""""""
 .. autoclass:: LogicalLightCurve
 
 :class:`GOESLightCurve`
