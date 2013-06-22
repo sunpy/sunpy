@@ -24,11 +24,11 @@ class BaseCache(OrderedDict):
 
     @abstractmethod
     def __getitem__(self, key):
-        return
+        return  # pragma: no cover
 
     @abstractmethod
     def __setitem__(self, key, value):
-        return
+        return  # pragma: no cover
 
     def callback(self, key, value):
         """This method should be called (by convention) if an item is removed
