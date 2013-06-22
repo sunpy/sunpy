@@ -42,11 +42,11 @@ class DatabaseOperation(object):
 
     @abstractmethod
     def __call__(self):
-        return
+        return  # pragma: no cover
 
     @abstractmethod
     def undo(self):
-        return
+        return  # pragma: no cover
 
 
 class AddEntry(DatabaseOperation):

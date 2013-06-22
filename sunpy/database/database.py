@@ -167,7 +167,7 @@ class Database(object):
             :ref:`sunpy.database.CommandManager.undo`
 
         """
-        self._command_manager.undo(n)
+        self._command_manager.undo(n)  # pragma: no cover
 
     def redo(self, n=1):
         """redo the last n commands.
@@ -177,7 +177,7 @@ class Database(object):
             :ref:`sunpy.database.CommandManager.redo`
 
         """
-        self._command_manager.redo(n)
+        self._command_manager.redo(n)  # pragma: no cover
 
     def __contains__(self, database_entry):
         (ret,), = self.session.query(
