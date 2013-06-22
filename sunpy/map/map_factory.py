@@ -35,14 +35,18 @@ class Map(RegisteredFactoryBase):
         # File gets read here.  This needs to be generic enough to seamlessly
         #call a fits file or a jpeg2k file, etc
         
-        filedata, filemeta  = read_file(fname)
+        pairs  = read_file(fname)
         
-        assert isinstance(filemeta, FileHeader)
+        for i, pair in enumerate(pairs):
+            filemeta = pair[1]
+            filedata = pair[0]
+            assert isinstance(filemeta, FileHeader)
         
-        data = filedata
-        meta = MapMeta(filemeta)
+            data = filedata
+            meta = MapMeta(filemeta)
+            pairs[i] = (data, meta)
         
-        return (data, meta)
+        return pairs
 
     @classmethod
     def _parse_args(cls, *args, **kwargs):
@@ -58,6 +62,7 @@ class Map(RegisteredFactoryBase):
         while i < len(args):
             
             arg = args[i]
+            print arg
             
             # Data-header pair in a tuple
             if ((type(arg) in [tuple, list]) and 
@@ -76,20 +81,23 @@ class Map(RegisteredFactoryBase):
             elif (isinstance(arg,basestring) and 
                   os.path.isfile(os.path.expanduser(arg))):
                 path = os.path.expanduser(arg)
-                pair = cls._read_file(path)
-                data_header_pairs.append(pair)
+                pairs = cls._read_file(path)
+                data_header_pairs += pairs
             
             # Directory
             elif (isinstance(arg,basestring) and 
                   os.path.isdir(os.path.expanduser(arg))):
                 path = os.path.expanduser(arg)
                 files = [os.path.join(path, elem) for elem in os.listdir(path)]
-                data_header_pairs += map(cls._read_file, files)
+                for afile in files:
+                    data_header_pairs += cls._read_file(afile)
+                
             
             # Glob
             elif (isinstance(arg,basestring) and '*' in arg):
                 files = glob.glob( os.path.expanduser(arg) )
-                data_header_pairs += map(cls._read_file, files)
+                for afile in files:
+                    data_header_pairs += cls._read_file(afile)
             
             # Already a Map
             elif isinstance(arg, GenericMap):
@@ -101,14 +109,13 @@ class Map(RegisteredFactoryBase):
                 default_dir = sunpy.config.get("downloads", "download_dir")
                 url = arg
                 path = download_file(url, default_dir)
-                pair = cls._read_file(path)
-                data_header_pairs.append(pair)
-                
+                pairs = cls._read_file(path)
+                data_header_pairs += pairs
+            
             i += 1
         #TODO:
         # In the end, if there are aleady maps it should be put in the same
         # order as the input, currently they are not.
-        
         return data_header_pairs, already_maps
     
     
@@ -125,8 +132,8 @@ class Map(RegisteredFactoryBase):
                             
             # Otherwise, each pair in the list gets built on its own
             new_maps = list()
-            
-            for data, header in data_header_pairs:
+            for pair in data_header_pairs:
+                data, header = pair
                 # Test to see which type of Map this pair is.  If none of the
                 # registered Map types match, use a generic map.
                 WidgetType = None
