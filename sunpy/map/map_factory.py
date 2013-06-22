@@ -36,17 +36,16 @@ class Map(RegisteredFactoryBase):
         #call a fits file or a jpeg2k file, etc
         
         pairs  = read_file(fname)
-        
+        new_pairs = []
         for i, pair in enumerate(pairs):
-            filemeta = pair[1]
-            filedata = pair[0]
+            filedata, filemeta = pair
             assert isinstance(filemeta, FileHeader)
-        
-            data = filedata
-            meta = MapMeta(filemeta)
-            pairs[i] = (data, meta)
-        
-        return pairs
+            #This tests that the data is more than 1D
+            if len(np.shape(filedata)) > 1:
+                data = filedata
+                meta = MapMeta(filemeta)
+                new_pairs.append((data, meta))
+        return new_pairs
 
     @classmethod
     def _parse_args(cls, *args, **kwargs):
@@ -62,7 +61,6 @@ class Map(RegisteredFactoryBase):
         while i < len(args):
             
             arg = args[i]
-            print arg
             
             # Data-header pair in a tuple
             if ((type(arg) in [tuple, list]) and 
@@ -91,7 +89,6 @@ class Map(RegisteredFactoryBase):
                 files = [os.path.join(path, elem) for elem in os.listdir(path)]
                 for afile in files:
                     data_header_pairs += cls._read_file(afile)
-                
             
             # Glob
             elif (isinstance(arg,basestring) and '*' in arg):
@@ -169,8 +166,6 @@ class Map(RegisteredFactoryBase):
 def make_map(*args, **kwargs):
     __doc__ = Map.__doc__
     return Map(*args, **kwargs)
-    
-
 
 class InvalidMapInput(ValueError):
     """Exception to raise when input variable is not a Map instance and does
