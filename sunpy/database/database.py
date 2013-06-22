@@ -180,6 +180,10 @@ class Database(object):
         self._command_manager.redo(n)  # pragma: no cover
 
     def __contains__(self, database_entry):
+        """Return True if the given database_entry entry is saved in the
+        database, False otherwise.
+
+        """
         (ret,), = self.session.query(
             exists().where(tables.DatabaseEntry.id == database_entry.id))
         return ret
