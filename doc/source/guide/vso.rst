@@ -10,7 +10,7 @@ module, which was developed through support from the European Space
 Agency Summer of Code in Space (ESA-SOCIS) 2011.
 
 1. Setting up the VSO interaction
---------------------------
+---------------------------------
 
 SunPy's VSO module is in sunpy.net.  It can be imported into your
 IPython session as follows:
@@ -19,7 +19,7 @@ IPython session as follows:
 
 
 2. A simple query - using the legacy query
----------------------------------
+------------------------------------------
 
 Obtaining data via the VSO is essentially a two-stage process.  In the
 first stage, you ask the VSO to find the data you want.  The VSO
@@ -79,7 +79,7 @@ that data.  These files can be found by
 which yields four results, the same as the VSO IDL client.
 
 3. Downloading the data
---------------------
+-----------------------
 
 Having located the data you want, you can download it using the
 following command:
