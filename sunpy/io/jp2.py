@@ -20,7 +20,7 @@ def read(filepath, j2k_to_image='opj_decompress'):
     header = get_header(filepath)
     data = get_data(filepath, j2k_to_image=j2k_to_image)
     
-    return data, header 
+    return [(data, header)]
 
 def get_header(filepath):
     """Reads the header in and saves it as a dictionary"""
@@ -38,7 +38,7 @@ def get_header(filepath):
     if 'comment' in pydict:
         pydict['comment'] = pydict['comment'].replace("\n", "")
             
-    return FileHeader(pydict)
+    return [FileHeader(pydict)]
 
 def write(fname, data, header):
     """
