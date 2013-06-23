@@ -4,6 +4,7 @@ import os.path
 
 from sunpy.database.tables import FitsHeaderEntry, Tag, DatabaseEntry
 from sunpy.net.vso import VSOClient
+import sunpy
 
 import pytest
 
@@ -53,28 +54,25 @@ def test_entry_from_qr_block():
 def test_add_fits_header_entries_from_file():
     entry = DatabaseEntry()
     assert entry.fits_header_entries == []
-    fitsfile = os.path.abspath(
-        os.path.join(
-            os.path.dirname(__file__),
-            'lyra_20110810-000000_lev2_std.fits'))
-    entry.add_fits_header_entries_from_file(fitsfile)
+    entry.add_fits_header_entries_from_file(sunpy.RHESSI_EVENT_LIST)
     assert entry.fits_header_entries == [
         FitsHeaderEntry('SIMPLE', True),
         FitsHeaderEntry('BITPIX', 8),
         FitsHeaderEntry('NAXIS', 0),
         FitsHeaderEntry('EXTEND', True),
-        FitsHeaderEntry('ORIGIN', 'ROB'),
-        FitsHeaderEntry('TELESCOP', 'PROBA2'),
-        FitsHeaderEntry('INSTRUME', 'LYRA'),
-        FitsHeaderEntry('OBJECT', 'EUV solar irrad'),
-        FitsHeaderEntry('OBS_MODE', 'standard'),
-        FitsHeaderEntry('DATE', '2012-10-12'),
-        FitsHeaderEntry('DATE-OBS', '2011-08-10T00:00:00.020000'),
-        FitsHeaderEntry('DATE-END', '2011-08-10T23:59:59.982999'),
-        FitsHeaderEntry('DATASRC', 'Redu'),
-        FitsHeaderEntry('LEVEL', '2'),
-        FitsHeaderEntry('ALGOR_V', 'EDG=2.1  BSDG=0.8'),
-        FitsHeaderEntry('FILENAME', 'lyra_20110810-000000_lev2_std.fits')]
+        FitsHeaderEntry('DATE', '2011-09-13T15:37:38'),
+        FitsHeaderEntry('ORIGIN', 'RHESSI'),
+        FitsHeaderEntry('OBSERVER', 'Unknown'),
+        FitsHeaderEntry('TELESCOP', 'RHESSI'),
+        FitsHeaderEntry('INSTRUME', 'RHESSI'),
+        FitsHeaderEntry('OBJECT', 'Sun'),
+        FitsHeaderEntry('DATE_OBS', '2002-02-20T11:06:00.000'),
+        FitsHeaderEntry('DATE_END', '2002-02-20T11:06:43.330'),
+        FitsHeaderEntry('TIME_UNI', 1),
+        FitsHeaderEntry('ENERGY_L', 25.0),
+        FitsHeaderEntry('ENERGY_H', 40.0),
+        FitsHeaderEntry('TIMESYS', '1979-01-01T00:00:00'),
+        FitsHeaderEntry('TIMEUNIT', 'd')]
 
 
 def test_add_tags_no_params():
