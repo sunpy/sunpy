@@ -37,7 +37,7 @@ class Map(RegisteredFactoryBase):
         
         pairs  = read_file(fname)
         new_pairs = []
-        for i, pair in enumerate(pairs):
+        for pair in pairs:
             filedata, filemeta = pair
             assert isinstance(filemeta, FileHeader)
             #This tests that the data is more than 1D

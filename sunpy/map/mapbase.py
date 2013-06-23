@@ -481,7 +481,7 @@ Dimension:\t [%d, %d]
         
 # #### I/O routines #### #
 
-    def save(self, filepath):
+    def save(self, filepath, filetype='auto', **kwargs):
         """Saves the SunPy Map object to a file.
         
         Currently SunPy can only save files in the FITS format. In the future
@@ -491,8 +491,12 @@ Dimension:\t [%d, %d]
         ----------
         filepath : string
             Location to save file to.
+        
+        filetype : string
+            'auto' or any supported file extension
         """
-        io.write_file(filepath, self.data, self.meta) 
+        io.write_file(filepath, self.data, self.meta, filetype=filetype, 
+                      **kwargs)
         
 # #### Image processing routines #### #
 

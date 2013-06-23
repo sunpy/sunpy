@@ -72,7 +72,7 @@ def get_header(filepath):
         headers.append(header)
     return headers
 
-def write(fname, data, header):
+def write(fname, data, header, **kwargs):
     """
     Take a data header pair and write a fits file
     
@@ -87,7 +87,20 @@ def write(fname, data, header):
     header: dict
         A header dictionary
     """
-    cards = [pyfits.core.Card(k, v) for k, v in header.items()]
+    #The comments need to be added to the header seperately from the normal
+    # kwargs. Find and deal with them:
+    cards = []
+    comments = []
+    # Check Header
+    for k,v in header.items():
+        if isinstance(v, pyfits.header._HeaderCommentaryCards):
+            comments.append(v)
+        else:
+            cards.append(pyfits.core.Card(k,v))
     cards = pyfits.core.Header(cards)
-    pyfits.writeto(os.path.expanduser(fname), data, header=cards,
-                   output_verify='fix')
+    if len(comments) > 0:
+        cards.add_comment(comments)
+    
+    fitskwargs = {'output_verify':'fix'}
+    fitskwargs.update(kwargs)
+    pyfits.writeto(os.path.expanduser(fname), data, header=cards, **fitskwargs)
