@@ -33,18 +33,22 @@ def read_file_header(filepath):
     reader = detect_filetype(filepath)
     return reader.get_header(filepath)  
 
-def write_file(fname, data, header):
+def write_file(fname, data, header, filetype='auto', **kwargs):
     """
     Write a file from a data & header pair using one of the defined file types
     """
-    for extension, reader in _known_formats.items():
-        if fname.endswith(extension):
-            return reader.write(fname, data, header)
+    if filetype == 'auto':
+        for extension, reader in _known_formats.items():
+            if fname.endswith(extension):
+                return reader.write(fname, data, header, **kwargs)
     
-    # If filetype is not apparent from extension, attempt to detect
-    reader = detect_filetype(fname)
-    return reader.write(fname, data, header)
-    
+    else:
+        for extension, reader in _known_formats.items():
+            if filetype in extension:
+                return reader.write(fname, data, header, **kwargs)
+            
+    #Nothing has matched, panic
+    raise ValueError("This filetype is not supported" )   
     
 def detect_filetype(filepath):
     """Attempts to determine the type of data contained in a file"""
