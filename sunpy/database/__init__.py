@@ -5,6 +5,7 @@ from sunpy.database.database import Database, EntryAlreadyAddedError,\
 from sunpy.database.tables import DatabaseEntry, FitsHeaderEntry, Tag,\
     entries_from_query_result
 from sunpy.database.commands import NoSuchEntryError
+from sunpy.database.caching import BaseCache, LRUCache, LFUCache
 
 __all__ = [
     'Database', 'EntryAlreadyAddedError', 'NoSuchEntryError',
