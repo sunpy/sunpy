@@ -36,12 +36,12 @@ The result of a call to `Map` will be either a `MapBase` object,
 or a subclass of `MapBase` which either deals with a specific type of data, 
 e.g. `AIAMap` or `LASCOMap`, or a 2D map `GenericMap`.
 
-TODO: Document Map creattion here, should this be done through the doc string
+TODO: Document Map creation here, should this be done through the doc string
 of Map.__new__??
 
-.. method:: Map.__new__
+.. method:: sunpy.map.Map.__new__
 
-.. autoclass:: Map
+.. autoclass:: sunpy.map.Map
    
 Map Classes
 ^^^^^^^^^^^
@@ -50,38 +50,31 @@ instrument. These subclass one of the MapBase derivaties and then register with
  the Map factory class which will instancestate a instrument class if the 
 parameters are met. 
 
-:class:`MapBase`
-""""""""""""""""
-The top-level class from which all other ND Maps inherit from.
-
-.. autoclass:: MapBase
-
 :class:`GenericMap`
 """""""""""""""""""
 This is the top level 2D map class, containg processing and visualisation 
 routines designed to work with 2D data.
 
-.. autoclass:: GenericMap
+.. autoclass:: sunpy.map.GenericMap
     
 :class:`MapMeta`
 """"""""""""""""""
 
-Meta data for `MapBase` objects are stored in a class called 
-:class:`MapMeta`.
+Meta data for `Map` objects are stored in a class called  :class:`MapMeta`.
 
-.. autoclass:: MapMeta
+.. autoclass:: sunpy.map.MapMeta
 
 :class:`CompositeMap`
 """""""""""""""""""""
 A Composite Map is a Map object which contains one or more layers, representing
 for example a stack of images with varying opacities.
 
-.. autoclass:: CompositeMap
+.. autoclass:: sunpy.map.CompositeMap
 
 :class:`MapCube`
 """""""""""""""""""""
 A MapCube is a three-dimension generalization of the Map class, for example,
 a time series of images.
 
-.. autoclass:: MapCube
+.. autoclass:: sunpy.map.MapCube
 
