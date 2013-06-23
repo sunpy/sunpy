@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
-from collections import OrderedDict
+from sunpy.util.odict import OrderedDict
 
 class FileHeader(OrderedDict):
     """ FileHeader is designed to provide a consistent interface to all other

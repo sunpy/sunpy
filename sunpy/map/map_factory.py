@@ -7,10 +7,11 @@ import os
 import glob
 import urllib2
 
-from collections import OrderedDict
+from sunpy.util.odict import OrderedDict
 
 import numpy as np
 
+import sunpy
 from sunpy.map import GenericMap
 from sunpy.map.header import MapMeta
 from sunpy.map.compositemap import CompositeMap

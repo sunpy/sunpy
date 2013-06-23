@@ -87,9 +87,9 @@ class CompositeMap(object):
                            'CompositeMap expects pre-constructed map objects.')
         
         # Default alpha and zorder values
-        alphas = [1] * len(args)
-        zorders = range(0, 10 * len(args), 10)
-        levels = [False] * len(args)
+        alphas = [1] * len(self._maps)
+        zorders = range(0, 10 * len(self._maps), 10)
+        levels = [False] * len(self._maps)
         
         # Set z-order and alpha values for the map     
         for i, m in enumerate(self._maps):

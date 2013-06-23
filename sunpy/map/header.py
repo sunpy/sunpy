@@ -4,7 +4,7 @@ normalization.
 """
 from __future__ import absolute_import
 
-from collections import OrderedDict
+from sunpy.util.odict import OrderedDict
 
 __all__ = ['MapMeta']
 
