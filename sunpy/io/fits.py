@@ -71,9 +71,11 @@ def read(filepath):
             # PyFITS 3.x
             comments = [card.value for card in fits_comment]
             
-        comment = "".join(comments).strip()
+        comment = "".join(hdu.header.get_comment()).strip()
+        history = "".join(hdu.header.get_history()).strip()
         header = FileHeader(hdu.header)
         header['comment'] = comment
+        header['history'] = history
         pairs.append((hdu.data, header))
 
     return pairs
@@ -96,9 +98,11 @@ def get_header(filepath):
     hdulist.verify('silentfix')
     headers= []
     for hdu in hdulist:
-        comment = "".join(hdulist[0].header.get_comment()).strip()
-        header = FileHeader(hdulist[0].header)
+        comment = "".join(hdu.header.get_comment()).strip()
+        history = "".join(hdu.header.get_history()).strip()
+        header = FileHeader(hdu.header)
         header['comment'] = comment
+        header['history'] = history
         headers.append(header)
     return headers
 
@@ -119,18 +123,19 @@ def write(fname, data, header, **kwargs):
     """
     #The comments need to be added to the header seperately from the normal
     # kwargs. Find and deal with them:
-    cards = []
-    comments = []
+    fits_header = pyfits.core.Header()
     # Check Header
     for k,v in header.items():
         if isinstance(v, pyfits.header._HeaderCommentaryCards):
-            comments.append(v)
+            if k is 'comments':
+                fits_header.add_comments(str(v))
+            elif k in 'history':
+                fits_header.add_history(str(v))
+            else:
+                fits_header.append(pyfits.core.Card(k, str(v)))
         else:
-            cards.append(pyfits.core.Card(k,v))
-    cards = pyfits.core.Header(cards)
-    if len(comments) > 0:
-        cards.add_comment(comments)
+            fits_header.append(pyfits.core.Card(k,v))
     
     fitskwargs = {'output_verify':'fix'}
     fitskwargs.update(kwargs)
-    pyfits.writeto(os.path.expanduser(fname), data, header=cards, **fitskwargs)
+    pyfits.writeto(os.path.expanduser(fname), data, header=fits_header, **fitskwargs)
