@@ -12,14 +12,11 @@ import sunpy.data.test
 
 filepath = sunpy.data.test.rootdir
 a_list_of_many = glob.glob(os.path.join(filepath,"EIT")+'/*')
-print a_list_of_many
 a_fname = a_list_of_many[0]
 #==============================================================================
 # Map Factory Tests
 #==============================================================================
 class TestMap:
-    #Test making a GenericMap
-    
     def test_mapcube(self):
         #Test making a MapCube
         cube = sunpy.Map(a_list_of_many, cube=True)
@@ -27,14 +24,12 @@ class TestMap:
     
     def test_composite(self):
         #Test making a CompositeMap
-        pass
+        comp = sunpy.Map(sunpy.AIA_171_IMAGE, sunpy.RHESSI_IMAGE,
+                         composite=True)
+        assert isinstance(comp, sunpy.map.CompositeMap)
     
     def test_patterns(self):
         ## Test different Map pattern matching ##
-        # Data-header pair in a tuple
-        
-        # Data-header pair not in a tuple
-         
         # File name
         eitmap = sunpy.Map(a_fname)
         assert isinstance(eitmap, sunpy.map.GenericMap)
@@ -50,23 +45,36 @@ class TestMap:
         amap = sunpy.Map(maps[0])
         assert isinstance(amap, sunpy.map.GenericMap)
         # A URL
-        
+        amap = sunpy.Map("https://raw.github.com/sunpy/sunpy/master/sunpy/data/sample/AIA20110319_105400_0171.fits")
+        assert isinstance(amap, sunpy.map.GenericMap)
         # A list of filenames
-        #maps = sunpy.Map(a_list_of_many)
-        #assert isinstance(maps, list)
-        #assert ([isinstance(amap,sunpy.map.GenericMap) for amap in maps])
+        maps = sunpy.Map(a_list_of_many)
+        assert isinstance(maps, list)
+        assert ([isinstance(amap,sunpy.map.GenericMap) for amap in maps])
+        # Data-header pair in a tuple
+        pair_map = sunpy.Map((amap.data, amap.meta))
+        assert isinstance(pair_map, sunpy.map.GenericMap)
+        # Data-header pair not in a tuple
+        pair_map = sunpy.Map(amap.data, amap.meta)
+        assert isinstance(pair_map, sunpy.map.GenericMap)
+         
     
     def test_save(self):
         #Test save out
-        pass
+        eitmap = sunpy.Map(a_fname)
+        eitmap.save("eit_save.fits", filetype='fits', clobber=True)
+        backin = sunpy.Map("eit_save.fits")
+        assert isinstance(backin, sunpy.map.sources.EITMap)
+        os.remove("eit_save.fits")
     
 #==============================================================================
 # Sources Tests
 #==============================================================================
     def test_sdo(self):
-        #Test an AIAMap & HMIMap
+        #Test an AIAMap
         aia = sunpy.Map(sunpy.AIA_171_IMAGE)
         assert isinstance(aia,sunpy.map.sources.AIAMap)
+        #Test a HMIMap
         
     def test_soho(self):
         #Test EITMap, LASCOMap & MDIMap
