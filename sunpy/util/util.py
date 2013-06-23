@@ -223,8 +223,6 @@ class Deprecated(object):
     additional message to the decorator:
     
     @Deprecated("no more")
-    def dontuseme():
-        pass
     """
     def __init__(self, message=""):
         self.message = message
