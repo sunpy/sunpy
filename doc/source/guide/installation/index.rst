@@ -92,7 +92,8 @@ working directory. To upgrade SunPy at a later date, go into the SunPy directory
 and run: ::
 
     git pull upstream master
-    
+    pip install --upgrade --no-deps -e .
+
 That's it!
    
 Grabbing the stable SunPy

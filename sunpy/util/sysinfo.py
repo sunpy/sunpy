@@ -81,11 +81,6 @@ def system_info():
         bs4_version = "NOT INSTALLED"
         
     try:
-        from PIL.Image import __version__ as PIL_version
-    except ImportError:
-        PIL_version = "NOT INSTALLED"
-        
-    try:
         from PyQt4.QtCore import PYQT_VERSION_STR as pyqt_version
     except ImportError:
         pyqt_version = "NOT INSTALLED"
@@ -114,7 +109,6 @@ def system_info():
     print("#######################")
 
     print("beautifulsoup4: %s" % bs4_version)
-    print("PIL: %s" % PIL_version)
     print("PyQt: %s" % pyqt_version)
     print("SUDS: %s" % suds_version)
 
