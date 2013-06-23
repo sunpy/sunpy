@@ -27,24 +27,42 @@ References
 from __future__ import absolute_import
 
 import os
-
 import pyfits
 
 from sunpy.io.header import FileHeader
 
-__all__ = ['read', 'get_header']
+__all__ = ['read', 'get_header', 'write']
 
-__author__ = "Keith Hughitt"
+__author__ = "Keith Hughitt, Stuart Mumford"
 __email__ = "keith.hughitt@nasa.gov"
 
 def read(filepath):
-    """Reads in the file at the specified location"""
+    """
+    Read a fits file
+    
+    Parameters
+    ----------
+    filepath : string
+        The fits file to be read
+        
+    Returns
+    -------
+    pairs : list
+        A list of (data, header) tuples
+    
+    Notes
+    -----
+    This routine reads all the HDU's in a fits file and returns a list of the 
+    data and a FileHeader instance for each one.
+    Also all comments in the original file are concatenated into a single
+    'comment' key in the returned FileHeader.
+    """
     hdulist = pyfits.open(filepath)
     hdulist.verify('silentfix')
     
     pairs = []
     for hdu in hdulist:
-        fits_comment = hdulist[0].header.get_comment()
+        fits_comment = hdu.header.get_comment()
         
         # PyFITS 2.x
         if len(fits_comment) > 0 and isinstance(fits_comment[0], basestring):
@@ -61,7 +79,19 @@ def read(filepath):
     return pairs
 
 def get_header(filepath):
-    """Returns a list of headers for all HDUs"""
+    """
+    Read a fits file and return just the headers for all HDU's
+    
+    Parameters
+    ----------
+    filepath : string
+        The file to be read
+    
+    Returns
+    -------
+    headers : list
+        A list of FileHeader headers
+    """
     hdulist = pyfits.open(filepath)
     hdulist.verify('silentfix')
     headers= []
