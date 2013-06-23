@@ -102,12 +102,15 @@ class Map(RegisteredFactoryBase):
                 
             # A URL
             elif (isinstance(arg,basestring) and 
-                  urllib2.urlopen(arg)):
+                  _is_url(arg)):
                 default_dir = sunpy.config.get("downloads", "download_dir")
                 url = arg
                 path = download_file(url, default_dir)
                 pairs = cls._read_file(path)
                 data_header_pairs += pairs
+            
+            else:
+                raise ValueError("File not found or invalid input")
             
             i += 1
         #TODO:
@@ -160,7 +163,13 @@ class Map(RegisteredFactoryBase):
             return new_maps[0] if len(new_maps) == 1 else new_maps
         else:
             return super(Map, cls).__new__(cls, *args, **kwargs)
- 
+
+def _is_url(arg):
+    try:
+        urllib2.urlopen(arg)
+    except:
+        return False
+    return True
 
 @Deprecated("Please use the new factory sunpy.Map")
 def make_map(*args, **kwargs):
