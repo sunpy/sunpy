@@ -27,7 +27,10 @@ References
 from __future__ import absolute_import
 
 import os
-import pyfits
+try:
+    import astropy.io.fits as pyfits
+except ImportError:
+    import pyfits
 
 from sunpy.io.header import FileHeader
 
