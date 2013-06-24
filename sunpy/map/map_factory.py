@@ -29,7 +29,7 @@ __all__ = ['Map']
 
 class Map(RegisteredFactoryBase):
 	
-    GenericWidgetType = GenericMap
+    DefaultWidgetType = GenericMap
 
     @classmethod
     def _read_file(cls, fname):
@@ -144,7 +144,7 @@ class Map(RegisteredFactoryBase):
                         WidgetType = key
                         break
                 else:
-                    WidgetType = cls.GenericWidgetType
+                    WidgetType = cls.DefaultWidgetType
                     
                 # Instantiate the new map.
                 new_maps.append(WidgetType(data, header, **kwargs))
