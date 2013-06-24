@@ -9,17 +9,17 @@ class RegisteredFactoryBase(object):
     registry: dict
         The dictionary containing the mapping of WidgetType's to functions that
         match the arguments to that WidgetType.
-    GenericWidgetType: type
+    DefaultWidgetType: type
         Fall-back type for the event that no WidgetTypes match the specified 
         arguments.
     """
     
     registry = dict()
     
-    GenericWidgetType = None
+    DefaultWidgetType = None
     
     @classmethod
-    def register(cls, WidgetType, dispatch_check_func=None, is_generic=False):
+    def register(cls, WidgetType, dispatch_check_func=None, is_default=False):
         """ 
         Register a WidgetType with the factory.
         
@@ -30,12 +30,12 @@ class RegisteredFactoryBase(object):
         dispatch_check_func: function-like, optional
             Function-like which returns True if arguments match WidgetType, 
             otherwise False.
-        is_generic: boolean, optional
-            Allows specification of cls.GenericWidgetType
+        is_default: boolean, optional
+            Allows specification of cls.DefaultWidgetType
             
         """ 
            
-        if not is_generic:
+        if not is_default:
             # If no separate function is specified to match, check for a default
             # attribute.
             if dispatch_check_func is None:
@@ -55,7 +55,7 @@ class RegisteredFactoryBase(object):
                     raise ValueError('dispatch_check_func must behave like a 
                                       function')    
         else:
-            cls.GenericWidgetType = WidgetType
+            cls.DefaultWidgetType = WidgetType
     
     @classmethod
     def unregister(cls, WidgetType):
@@ -86,7 +86,7 @@ class RegisteredFactoryBase(object):
             if WidgetType is not None:
                 return WidgetType(*args, **kwargs)
             else:
-                return cls.GenericWidgetType(*args, **kwargs)
+                return cls.DefaultWidgetType(*args, **kwargs)
         else:
             return super(RegisteredFactoryBase, cls).__new__(cls, *args, **kwargs)
 
