@@ -41,8 +41,7 @@ class RegisteredFactoryBase(object):
             if dispatch_check_func is None:
                 if hasattr(WidgetType, '_dispatch_check'):
                     if not callable(WidgetType._dispatch_check):
-                        raise ValueError('WidgetType._dispatch_check must behave 
-                                          like a function')    
+                        raise ValueError('WidgetType._dispatch_check must behave like a function')    
                     cls.registry[WidgetType] = WidgetType._dispatch_check
                 else:
                     raise AttributeError('dispatch_check_func must be specified 
@@ -59,7 +58,7 @@ class RegisteredFactoryBase(object):
     
     @classmethod
     def unregister(cls, WidgetType):
-    	""" Remove a type from the factory. """
+        """ Remove a type from the factory. """
         cls.registry.pop(WidgetType)
                 
     def __new__(cls, *args, **kwargs):
