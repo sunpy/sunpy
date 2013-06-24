@@ -17,7 +17,6 @@ import scipy.ndimage.interpolation
 from matplotlib import patches
 from matplotlib import colors
 from matplotlib import cm
-# import pyfits
 
 try:
     import sunpy.image.Crotate as Crotate
