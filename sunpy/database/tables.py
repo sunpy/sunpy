@@ -27,7 +27,7 @@ def timestamp2datetime(format, string):
 
 
 class FitsHeaderEntry(Base):
-    __tablename__ = 'fitsheader'
+    __tablename__ = 'fitsheaderentries'
     __hash__ = None
 
     id = Column(Integer, primary_key=True)
