@@ -41,18 +41,19 @@ class RegisteredFactoryBase(object):
             if dispatch_check_func is None:
                 if hasattr(WidgetType, '_dispatch_check'):
                     if not callable(WidgetType._dispatch_check):
-                        raise ValueError('WidgetType._dispatch_check must behave like a function')    
+                        raise ValueError("""WidgetType._dispatch_check must
+                                            behave like a function""")    
                     cls.registry[WidgetType] = WidgetType._dispatch_check
                 else:
-                    raise AttributeError('dispatch_check_func must be specified 
+                    raise AttributeError("""dispatch_check_func must be specified 
                                           or WidgetType must have 
-                                          _dispatch_check attribute.')
+                                          _dispatch_check attribute.""")
             else:
                 if callable(dispatch_check_func):
                     cls.registry[WidgetType] = dispatch_check_func
                 else:
-                    raise ValueError('dispatch_check_func must behave like a 
-                                      function')    
+                    raise ValueError("""dispatch_check_func must behave like a 
+                                      function""")    
         else:
             cls.DefaultWidgetType = WidgetType
     
