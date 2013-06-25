@@ -1,0 +1,140 @@
+Python 2.7.4 |Anaconda 1.5.1 (x86_64)| (default, May  9 2013, 12:12:00) 
+[GCC 4.0.1 (Apple Inc. build 5493)] on darwin
+Type "help", "copyright", "credits" or "license" for more information.
+>>> from sunpy.net import hek
+>>> temp = {'a': 15, 'b': 23, 'c': 45}
+>>> f = open('test-store', 'r')
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+IOError: [Errno 2] No such file or directory: 'test-store'
+>>> f = open('test-store.txt', 'r')
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+IOError: [Errno 2] No such file or directory: 'test-store.txt'
+>>> f = open('test-store.txt', 'r+')
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+IOError: [Errno 2] No such file or directory: 'test-store.txt'
+>>> f = open('test-store.txt', 'w')
+>>> f.write(test)
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+NameError: name 'test' is not defined
+>>> f.write(temp)
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+TypeError: expected a character buffer object
+>>> import json
+>>> f.write(json.dumps(temp))
+>>> f.close()
+>>> f.open('test-store.txt', 'w+')
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+AttributeError: 'file' object has no attribute 'open'
+>>> f = open('test-store.txt', 'w+')
+>>> json.loads(f.read())
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "/Users/michael/anaconda/lib/python2.7/json/__init__.py", line 338, in loads
+    return _default_decoder.decode(s)
+  File "/Users/michael/anaconda/lib/python2.7/json/decoder.py", line 365, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/Users/michael/anaconda/lib/python2.7/json/decoder.py", line 383, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+>>> json.loads(json.dumps(f.read()))
+u''
+>>> f.close()
+>>> f = open('test-store.txt', 'r')
+>>> print f
+<open file 'test-store.txt', mode 'r' at 0x10de2b270>
+>>> print f.read()
+
+>>> print temp
+{'a': 15, 'c': 45, 'b': 23}
+>>> f.close()
+>>> f = open('test.json', 'w')
+>>> f.write(json.dumps(temp))
+>>> f.close()
+>>> f = open('test.json', 'w')
+>>> print f.read()
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+IOError: File not open for reading
+>>> f.close()
+>>> f = open('test.json', 'r')
+>>> print f.read()
+
+>>> f.close()
+>>> f = open('test.json', 'w')
+>>> f.write(json.dumps(temp))
+>>> f.close()
+>>> f = open('test.json', 'r')
+>>> print f.read()
+{"a": 15, "c": 45, "b": 23}
+>>> json.loads(f.read())
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "/Users/michael/anaconda/lib/python2.7/json/__init__.py", line 338, in loads
+    return _default_decoder.decode(s)
+  File "/Users/michael/anaconda/lib/python2.7/json/decoder.py", line 365, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/Users/michael/anaconda/lib/python2.7/json/decoder.py", line 383, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+>>> json.loads(json.dumps(f.read()))
+u''
+>>> print f.read()
+
+>>> f.close()
+>>> f = open('test.json', 'r')
+>>> print f.read()
+{"a": 15, "c": 45, "b": 23}
+>>> json.loads(json.dumps(f.read()))
+u''
+>>> help(json.loads)
+
+>>> print f.read()
+
+>>> f.close()
+>>> f = open('test-store.json', 'r')
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+IOError: [Errno 2] No such file or directory: 'test-store.json'
+>>> f = open('test.json', 'r')
+>>> r = f.read()
+>>> print r
+{"a": 15, "c": 45, "b": 23}
+>>> print f.read()
+
+>>> def quickF():
+...     f = open('test.json', 'r')
+...     r = f.read()
+...     f.close()
+...     return r
+... 
+>>> f.close()
+>>> r = quickF()
+>>> print r
+{"a": 15, "c": 45, "b": 23}
+>>> print r
+{"a": 15, "c": 45, "b": 23}
+>>> json.loads(json.dumps(r))
+u'{"a": 15, "c": 45, "b": 23}'
+>>> json.loads(r)
+{u'a': 15, u'c': 45, u'b': 23}
+>>> print json.dumps(r)
+"{\"a\": 15, \"c\": 45, \"b\": 23}"
+>>> print json.dumps(r, sort_keys = True, indent = 4, separators = (',', ':'))
+"{\"a\": 15, \"c\": 45, \"b\": 23}"
+>>> print r
+{"a": 15, "c": 45, "b": 23}
+>>> print json.dumps(r, sort_keys = True, indent = 4, separators = (',', ': '))
+"{\"a\": 15, \"c\": 45, \"b\": 23}"
+>>> print json.dumps(json.loads(r), sort_keys = True, indent = 4, separators = (',', ': '))
+{
+    "a": 15,
+    "b": 23,
+    "c": 45
+}
+>>> 
