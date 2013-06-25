@@ -28,15 +28,29 @@ from sunpy.util import Deprecated
 __all__ = ['Map']
 
 class Map(RegisteredFactoryBase):
-	
-    GenericWidgetType = GenericMap
+    """
+    Map factory class.  Used to create a variety of Map objects.  Valid map types
+    are specified by registering them with the factory.
+    
+    Example
+    -------
+    >>> import sunpy
+    >>> mymap = sunpy.Map(sunpy.AIA_171_IMAGE)
+    
+    """
+
+    
+    DefaultWidgetType = GenericMap
 
     @classmethod
     def _read_file(cls, fname):
+        """ Read in a file name and return the list of (data, meta) pairs in
+            that file. """
+        
         # File gets read here.  This needs to be generic enough to seamlessly
         #call a fits file or a jpeg2k file, etc
+        pairs = read_file(fname)
         
-        pairs  = read_file(fname)
         new_pairs = []
         for pair in pairs:
             filedata, filemeta = pair
@@ -50,6 +64,22 @@ class Map(RegisteredFactoryBase):
 
     @classmethod
     def _parse_args(cls, *args, **kwargs):
+        """
+        Parses an args list for data-header pairs.  args can contain any mixture
+        of the following entries:
+        * tuples of data,header
+        * data, header not in a tuple
+        * filename, which will be read
+        * directory, from which all files will be read
+        * glob, from which all files will be read
+        * url, which will be downloaded and read
+        * lists containing any of the above.
+        
+        Example
+        -------
+        cls._parse_args(data, header, (data, header), ['file1', 'file2', 'file3'], 'file4', 'directory1', '*.fits')
+        
+        """ 
         
         data_header_pairs = list()
         already_maps = list()
@@ -65,6 +95,7 @@ class Map(RegisteredFactoryBase):
             
             # Data-header pair in a tuple
             if ((type(arg) in [tuple, list]) and 
+                 len(arg) == 2 and
                  isinstance(arg[0],np.ndarray) and # or NDData or something else?
                  isinstance(arg[1],OrderedDict)): # FITSHeader, JP2kHeader, OrderedDict, dict?
                 data_header_pairs.append(arg)
@@ -121,6 +152,21 @@ class Map(RegisteredFactoryBase):
     
     
     def __new__(cls, *args, **kwargs):
+        """
+        Factory-construction method.  Takes arbitrary arguments and keyword 
+        arguments and passes them to a sequence of pre-registered types to
+        determine which is the correct Map-type to build.
+        
+        Map-type registration must take a data-header pair as an argument.
+        
+        Parameters
+        ----------
+        composite: boolean, optional
+            Indicates if collection of maps should be returned as a CompositeMap
+        cube: boolean, optional
+            Indicates if collection of maps should be returned as a MapCube
+        
+        """
 
         # Hack to get around Python 2.x not backporting PEP 3102.
         composite = kwargs.pop('composite', False)
@@ -131,8 +177,10 @@ class Map(RegisteredFactoryBase):
             # Get list of data-header pairs, e.g., [(d1, h1), (d2, h2), ...]
             data_header_pairs, already_maps = cls._parse_args(*args, **kwargs)
                             
-            # Otherwise, each pair in the list gets built on its own
             new_maps = list()
+            
+            # Loop over each registered type and check to see if WidgetType
+            # matches the arguments.  If it does, use that type.
             for pair in data_header_pairs:
                 data, header = pair
                 # Test to see which type of Map this pair is.  If none of the
@@ -144,7 +192,7 @@ class Map(RegisteredFactoryBase):
                         WidgetType = key
                         break
                 else:
-                    WidgetType = cls.GenericWidgetType
+                    WidgetType = cls.DefaultWidgetType
                     
                 # Instantiate the new map.
                 new_maps.append(WidgetType(data, header, **kwargs))
