@@ -31,7 +31,7 @@ class TestFiletools():
         #Test read jp2
         pair = sunpy.io.read_file(os.path.join(sunpy.data.test.rootdir,
                                "2013_06_24__17_31_30_84__SDO_AIA_AIA_193.jp2"),
-                               j2k_to_image='j2k_to_image'mm)
+                               j2k_to_image='j2k_to_image')
         assert isinstance(pair, list)
         assert len(pair) == 1
         assert len(pair[0]) == 2
