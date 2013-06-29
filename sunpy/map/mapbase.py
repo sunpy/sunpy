@@ -471,7 +471,7 @@ Dimension:\t [%d, %d]
         if (x is not None) & (y < 0):
             raise ValueError("Y pixel value cannot be less than 0.")
 
-        scale = np.array([self.scale['x'], self.scale.get['y']])
+        scale = np.array([self.scale['x'], self.scale['y']])
         crpix = np.array([self.reference_pixel['x'], self.reference_pixel['y']])
         crval = np.array([self.reference_coordinate['x'], self.reference_coordinate['y']])
         coordinate_system = [self.coordinate_system['x'], self.coordinate_system['y']]
