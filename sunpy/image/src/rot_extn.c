@@ -43,6 +43,8 @@ This with args of array, number and keywords.
 #include <rot_extn.h>
 
 
+static char docstring[] =
+"sunpy.image.Crotate.affine_transformation(input, matrix, offset=[0.0, 0.0], kernel=Crotate.BICUBIC, cubic=-0.5, mode='constant', cval=0.0)\n\nApply an affine transformation to an image array\n\nParameters\n----------\ninput : ndarray\nmatrix : ndarray\noffset\nkernel\ncubic\nmode\ncval";
 
 /* Function called on Python function call via method definition map
    below.  Takes as args two np arrays and optionally a tuple, an int,
@@ -70,7 +72,8 @@ static PyObject *rot_shift_scale_args(PyObject *dummy, PyObject *args, PyObject 
   int ndim;
   int i;
   INTYPE *in_arr;
-  
+
+  int result;
   PyObject *out1;  
   OUTTYPE *out_arr;
 
@@ -118,13 +121,18 @@ static PyObject *rot_shift_scale_args(PyObject *dummy, PyObject *args, PyObject 
    
 //##  printf("E: ktype (interp type) %d\n", ktype);
 /* Call to function that does the actual work.  This one is external. */ 
-  if (affine_transform_kc(
+  result = affine_transform_kc(
         dims, out_arr, in_arr, 
         rotscale, 
         offset,
         ktype, interp_param, 
         mode, cval
-        ) != 0)
+        );
+
+  Py_DECREF(arr1);
+  Py_DECREF(arr2);
+
+  if (result != 0)
     return NULL;
 
   return Py_BuildValue("N", out1);
@@ -133,7 +141,7 @@ static PyObject *rot_shift_scale_args(PyObject *dummy, PyObject *args, PyObject 
 
 /* This defines the method names and maps to C fns */
 static PyMethodDef my_methods[] = {
-  { "affine_transform", (PyCFunction)rot_shift_scale_args, METH_VARARGS | METH_KEYWORDS , "apply an affine transform to an image array" },
+  { "affine_transform", (PyCFunction)rot_shift_scale_args, METH_VARARGS | METH_KEYWORDS , docstring },
   {NULL, NULL, 0, NULL}        /* Sentinel */
 };
 
