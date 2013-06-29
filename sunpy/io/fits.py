@@ -70,7 +70,7 @@ def read(filepath):
         else:
             # PyFITS 3.x
             comments = [card.value for card in fits_comment]
-            
+        print type(hdu.header.get_comment()[0])
         comment = "".join(hdu.header.get_comment()).strip()
         history = "".join(hdu.header.get_history()).strip()
         header = FileHeader(hdu.header)
