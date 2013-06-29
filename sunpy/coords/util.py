@@ -8,7 +8,7 @@ from sunpy.wcs import convert_hpc_hg, convert_hg_hpc
 from sunpy.sun import constants, sun
 
 __author__ = ["Jose Ivan Campos Rozo", "Stuart Mumford", "Jack Ireland"]
-__all__ = ['diff_rot', 'sun_pos', 'pb0r', 'rot_hpc']
+__all__ = ['diff_rot', 'sun_pos', 'calc_P_B0_SD', 'rot_hpc']
 
 
 def diff_rot(ddays, latitude, rot_type='howard', frame_time='sidereal'):
@@ -148,7 +148,7 @@ point of view and the STEREO A, B point of views.
     interval = dend - dstart
 
     # Get the Sun's position from the vantage point at the start time
-    vstart = kwargs.get("vstart", pb0r(dstart, spacecraft=spacecraft))
+    vstart = kwargs.get("vstart", calc_P_B0_SD(dstart, spacecraft=spacecraft))
 
     # Compute heliographic co-ordinates - returns (longitude, latitude). Points
     # off the limb are returned as nan
@@ -175,7 +175,7 @@ point of view and the STEREO A, B point of views.
     return newx, newy
 
 
-def pb0r(date, spacecraft=None, arcsec=False):
+def calc_P_B0_SD(date, spacecraft=None, arcsec=False):
     """To calculate the solar P, B0 angles and the semi-diameter.
 
     Parameters
@@ -241,7 +241,7 @@ def pb0r(date, spacecraft=None, arcsec=False):
     # and the mean elongation of the Moon from the Sun(D).
     t = de / 36525.0
     mv = 212.60 + np.mod(58517.80 * t, 360.0)
-    me = 358.4760 + np.mod(35999.04980 * t, 360.0)
+    me = 358.4760 + np.mod(35999.04980 * t, 360.0)git@github.com:wafels/sunpy.git
     mm = 319.50 + np.mod(19139.860 * t, 360.0)
     mj = 225.30 + np.mod(3034.690 * t, 360.0)
     d = 350.70 + np.mod(445267.110 * t, 360.0)
@@ -253,7 +253,7 @@ def pb0r(date, spacecraft=None, arcsec=False):
         + 0.0000050 * np.cos(np.deg2rad(209.10 + mv - me)) \
         + 0.0000050 * np.cos(np.deg2rad(253.80 - 2.0 * mm + 2.0 * me)) \
         + 0.0000160 * np.cos(np.deg2rad(89.50 - mj + me)) \
-        + 0.0000090 * np.cos(np.deg2rad(357.10 - 2.0 * mj + 2.0 * me)) \
+        + 0.0000090 * np.cos(np.deg2rad(357.10 - 2.0 * mj + 2.git@github.com:wafels/sunpy.git0 * me)) \
         + 0.0000310 * np.cos(np.deg2rad(d))
 
     sd_const = constants.radius / constants.au
