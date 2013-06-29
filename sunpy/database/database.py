@@ -52,9 +52,61 @@ class EntryAlreadyUnstarredError(Exception):
 
 class Database(object):
     """
-    .. seealso::
-
+    Parameters
+    ----------
+    url : str
+        A URL describing the database. This value is simply passed to
         sqlalchemy.create_engine
+    CacheClass : sunpy.database.caching.BaseCache
+        A concrete cache implementation of the abstract class BaseCache.
+        Builtin supported values for this parameters are
+        sunpy.database.LRUCache and sunpy.database.LFUCache.
+    cache_size : int
+        The maximum number of database entries, default is no limit.
+
+    Attributes
+    ----------
+    session : sqlalchemy.orm.session.Session
+        A SQLAlchemy session object. This may be used for advanced queries and
+        advanced manipulations and should only be used by people who are
+        experienced with SQLAlchemy.
+
+    Examples
+    --------
+    >>> database = Database('sqlite:///:memory:', LFUCache, 3)
+    >>> database.create_tables()
+    >>> database.add(DatabaseEntry())
+    >>> database.add(DatabaseEntry())
+    >>> database.add(DatabaseEntry())
+    >>> pprint(list(database))
+    [<DatabaseEntry(id 1, data provider None, fileid None)>,
+     <DatabaseEntry(id 2, data provider None, fileid None)>,
+     <DatabaseEntry(id 3, data provider None, fileid None)>]
+    >>> database.get_entry_by_id(1)
+    <DatabaseEntry(id 1, data provider None, fileid None)>
+    >>> database.get_entry_by_id(3)
+    <DatabaseEntry(id 3, data provider None, fileid None)>
+    >>> database.get_entry_by_id(3)
+    <DatabaseEntry(id 3, data provider None, fileid None)>
+    >>> database.add(DatabaseEntry())
+    >>> pprint(list(database))
+    [<DatabaseEntry(id 1, data provider None, fileid None)>,
+     <DatabaseEntry(id 3, data provider None, fileid None)>,
+     <DatabaseEntry(id 4, data provider None, fileid None)>]
+    >>> database.add(DatabaseEntry())
+    >>> pprint(list(database))
+    [<DatabaseEntry(id 1, data provider None, fileid None)>,
+     <DatabaseEntry(id 3, data provider None, fileid None)>,
+     <DatabaseEntry(id 5, data provider None, fileid None)>]
+    >>> database.undo(2)
+    >>> pprint(list(database))
+    [<DatabaseEntry(id 1, data provider None, fileid None)>,
+     <DatabaseEntry(id 3, data provider None, fileid None)>,
+     <DatabaseEntry(id 4, data provider None, fileid None)>]
+
+    See Also
+    --------
+    sqlalchemy.create_engine
     """
     def __init__(self, url, CacheClass=LRUCache, cache_size=float('inf')):
         self._engine = create_engine(url)
