@@ -149,28 +149,28 @@ point of view and the STEREO A, B point of views.
 
     # Get the Sun's position from the vantage point at the start time
     vstart = kwargs.get("vstart", calc_P_B0_SD(dstart, spacecraft=spacecraft))
-
+    print vstart
     # Compute heliographic co-ordinates - returns (longitude, latitude). Points
     # off the limb are returned as nan
-    longitude, latitude = convert_hpc_hg(constants.radius,
-                                constants.au * sun.sunearth_distance(t=dstart),
-                                'arcsec', 'arcsec',
-                                vstart["b0"], vstart["l0"], x, y)
-
+    longitude, latitude = convert_hpc_hg(x, y, b0_deg=vstart["b0"],
+                                         l0_deg=vstart["l0"], 
+                    dsun_meters=constants.au * sun.sunearth_distance(t=dstart),
+                                         angle_units='arcsec')
+    print longitude, latitude
     # Compute the differential rotation
     drot = diff_rot(interval, latitude, frame_time='synodic')
 
     # Convert back to heliocentric cartesian in units of arcseconds
-    vend = kwargs.get("vend", pb0r(dend, spacecraft=spacecraft))
+    vend = kwargs.get("vend", calc_P_B0_SD(dend, spacecraft=spacecraft))
 
     # It appears that there is a difference in how the SSWIDL function
     # hel2arcmin and the sunpy function below performs this co-ordinate
     # transform.
 
-    newx, newy = convert_hg_hpc(constants.radius,
-                                constants.au * sun.sunearth_distance(t=dend),
-                                vend["b0"], vend["l0"],
-                                longitude + drot, latitude, units='arcsec')
+    newx, newy = convert_hg_hpc(longitude + drot, latitude,b0_deg=vend["b0"],
+                                l0_deg=vend["l0"],
+                                dsun_meters=constants.au * sun.sunearth_distance(t=dend),
+                                angle_units='arcsec', occultation=False)
 
     return newx, newy
 
@@ -241,7 +241,7 @@ def calc_P_B0_SD(date, spacecraft=None, arcsec=False):
     # and the mean elongation of the Moon from the Sun(D).
     t = de / 36525.0
     mv = 212.60 + np.mod(58517.80 * t, 360.0)
-    me = 358.4760 + np.mod(35999.04980 * t, 360.0)git@github.com:wafels/sunpy.git
+    me = 358.4760 + np.mod(35999.04980 * t, 360.0)
     mm = 319.50 + np.mod(19139.860 * t, 360.0)
     mj = 225.30 + np.mod(3034.690 * t, 360.0)
     d = 350.70 + np.mod(445267.110 * t, 360.0)
@@ -253,7 +253,7 @@ def calc_P_B0_SD(date, spacecraft=None, arcsec=False):
         + 0.0000050 * np.cos(np.deg2rad(209.10 + mv - me)) \
         + 0.0000050 * np.cos(np.deg2rad(253.80 - 2.0 * mm + 2.0 * me)) \
         + 0.0000160 * np.cos(np.deg2rad(89.50 - mj + me)) \
-        + 0.0000090 * np.cos(np.deg2rad(357.10 - 2.0 * mj + 2.git@github.com:wafels/sunpy.git0 * me)) \
+        + 0.0000090 * np.cos(np.deg2rad(357.10 - 2.0 * mj + 2.0 * me)) \
         + 0.0000310 * np.cos(np.deg2rad(d))
 
     sd_const = constants.radius / constants.au

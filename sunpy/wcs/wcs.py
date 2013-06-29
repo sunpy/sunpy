@@ -217,16 +217,17 @@ def convert_hpc_hcc(x, y, dsun_meters=None, angle_units='arcsec', z=False):
 
     if dsun_meters is None:
         dsun_meters = sun.constants.au
-
+    print dsun_meters
     q = dsun_meters * cosy * cosx
+    print q
     distance = q ** 2 - dsun_meters ** 2 + rsun_meters ** 2
+    print distance, np.sqrt(distance)
     # distance[np.where(distance < 0)] = np.sqrt(-1)
     distance = q - np.sqrt(distance)
-
     rx = distance * cosy * sinx
     ry = distance * siny
     rz = dsun_meters - distance * cosy * cosx
-
+    
     if np.all(z == True):
         return rx, ry, rz
     else:
@@ -374,8 +375,8 @@ def convert_hg_hcc(hglon_deg, hglat_deg, b0_deg=0, l0_deg=0, occultation=False, 
     else:
         return x, y
 
-def convert_hg_hpc(hglon_deg, hglat_deg, b0_deg=0, l0_deg=0, dsun_meters=None, angle_units='arcsec', 
-                   occultation=False):
+def convert_hg_hpc(hglon_deg, hglat_deg, b0_deg=0, l0_deg=0, dsun_meters=None,
+                   angle_units='arcsec', occultation=False):
     """Convert from Heliographic coordinates (HG) to Helioprojective-Cartesian 
     (HPC).
     
