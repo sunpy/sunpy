@@ -17,7 +17,7 @@ Documentation
 
 - do not autodocument the inherited methods of caching.BaseCache
 
-- document the specific command AddEntry, EditEntry, RemoveEntry
+- document the specific commands AddEntry, EditEntry, RemoveEntry
 
 Testing
 -------
