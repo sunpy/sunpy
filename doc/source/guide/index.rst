@@ -20,4 +20,3 @@ Welcome to the SunPy User Guide!
    customization
    troubleshooting
    lightcurve
-   git
