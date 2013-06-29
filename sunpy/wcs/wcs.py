@@ -217,11 +217,8 @@ def convert_hpc_hcc(x, y, dsun_meters=None, angle_units='arcsec', z=False):
 
     if dsun_meters is None:
         dsun_meters = sun.constants.au
-    print dsun_meters
     q = dsun_meters * cosy * cosx
-    print q
     distance = q ** 2 - dsun_meters ** 2 + rsun_meters ** 2
-    print distance, np.sqrt(distance)
     # distance[np.where(distance < 0)] = np.sqrt(-1)
     distance = q - np.sqrt(distance)
     rx = distance * cosy * sinx

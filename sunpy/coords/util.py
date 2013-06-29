@@ -149,14 +149,12 @@ point of view and the STEREO A, B point of views.
 
     # Get the Sun's position from the vantage point at the start time
     vstart = kwargs.get("vstart", calc_P_B0_SD(dstart, spacecraft=spacecraft))
-    print vstart
     # Compute heliographic co-ordinates - returns (longitude, latitude). Points
     # off the limb are returned as nan
     longitude, latitude = convert_hpc_hg(x, y, b0_deg=vstart["b0"],
                                          l0_deg=vstart["l0"], 
                     dsun_meters=constants.au * sun.sunearth_distance(t=dstart),
                                          angle_units='arcsec')
-    print longitude, latitude
     # Compute the differential rotation
     drot = diff_rot(interval, latitude, frame_time='synodic')
 
