@@ -71,6 +71,13 @@ class MapCube(object):
         if derotate:
             self._derotate()
 
+        if hasattr(obj, '_headers'):
+            self._headers = obj._headers
+        
+    def __array_wrap__(self, out_arr, context=None):
+        """Returns a wrapped instance of a MapCube object"""
+        return np.ndarray.__array_wrap__(self, out_arr, context)
+    
     def __getitem__(self, key):
         """Overiding indexing operation"""
         return self._maps[key]
