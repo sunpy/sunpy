@@ -127,7 +127,7 @@ sys.path.append(os.path.abspath('../../sunpy/'))
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = ['sphinx.ext.autodoc', 'numpydoc', 'sphinx.ext.todo',
               'sphinx.ext.pngmath', 'sphinx.ext.viewcode', 
-              'sphinx.ext.autosummary']
+              'sphinx.ext.intersphinx', 'sphinx.ext.autosummary']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -266,6 +266,9 @@ html_show_sourcelink = True
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'SunPydoc'
 
+# mapping from unique project names to (target, inventory) tuples to use the
+# sphinx extension sphinx.ext.intersphinx to link to 3rdparty Sphinx projects
+intersphinx_mapping = {'sqlalchemy': ('http://docs.sqlalchemy.org/en/rel_0_8/', None)}
 
 # -- Options for LaTeX output --------------------------------------------------
 
