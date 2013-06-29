@@ -65,8 +65,8 @@ def get_obssumm_dbase_file(time_range):
     ----------
     | http://hesperia.gsfc.nasa.gov/ssw/hessi/doc/guides/hessi_data_access.htm#Observing Summary Data
 
-    .. note:: This API is currently limited to providing data from 
-    whole days only.
+    .. note::
+        This API is currently limited to providing data from whole days only.
 
     """
     
@@ -109,8 +109,8 @@ def parse_obssumm_dbase_file(filename):
     ----------
     | http://hesperia.gsfc.nasa.gov/ssw/hessi/doc/guides/hessi_data_access.htm#Observing Summary Data
 
-    .. note:: This API is currently limited to providing data from 
-    whole days only.
+    .. note::
+        This API is currently limited to providing data from whole days only.
 
     """
     with open(filename, "rb") as fd:
@@ -167,8 +167,8 @@ def get_obssum_filename(time_range):
     >>> import sunpy.instr.rhessi as rhessi
     >>> rhessi.get_obssumm_filename(('2011/04/04', '2011/04/05'))
 
-    .. note:: This API is currently limited to providing data from 
-    whole days only.
+    .. note::
+        This API is currently limited to providing data from whole days only.
 
     """
     # need to download and inspect the dbase file to determine the filename
@@ -202,8 +202,8 @@ def get_obssumm_file(time_range):
     >>> import sunpy.instr.rhessi as rhessi
     >>> rhessi.get_obssumm_file(('2011/04/04', '2011/04/05'))
 
-    .. note:: This API is currently limited to providing data from 
-    whole days only.
+    .. note::
+        This API is currently limited to providing data from whole days only.
 
     """
     

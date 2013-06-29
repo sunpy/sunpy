@@ -8,7 +8,6 @@ __author__ = ["Keith Hughitt"]
 __email__ = "keith.hughitt@nasa.gov"
 
 import os
-import shutil
 import urllib
 import urllib2
 
@@ -212,7 +211,15 @@ class HelioviewerClient:
         params.update(kwargs)
         
         return self._get_file(params, directory, overwrite=overwrite)
-        
+    
+    def is_online(self):
+        """Returns True if Helioviewer is online and available"""
+        try:
+            self.get_data_sources()
+        except urllib2.URLError:
+            return False
+            
+        return True
     
     def _get_json(self, params):
         """Returns a JSON result as a string"""

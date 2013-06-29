@@ -6,7 +6,7 @@ from __future__ import absolute_import
 
 import matplotlib.pyplot as plt
 
-from sunpy.map import map
+from sunpy.map import Map
 
 __all__ = ['CompositeMap']
 

@@ -66,9 +66,9 @@ def install(setup): #pylint: disable=W0621
             'numpy',
             'pyfits',
             'scipy',
-            'pandas',
-            'matplotlib>=1.1'
-#            'scikit-image',
+ #           'suds',
+            'pandas>=0.10.0',
+            'matplotlib>=1.1',
         ],
         license="BSD",
         long_description="\n".join(DOCLINES[2:]),

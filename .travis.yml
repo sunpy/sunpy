@@ -9,32 +9,33 @@ virtualenv:
 #There are a few environments configured, we specify a minumum version of mpl
 #and a exact version of Numpy to test against.
 env:
-    - NUMPY_VERSION=1.7.1 MATPLOTLIB_VERSION=1.2 SUDS_PKG='suds-jurko'
+    - NUMPY_VERSION=1.7.1 MATPLOTLIB_VERSION=1.2 PANDAS_VERSION=0.11.0 SUDS_PKG='suds-jurko'
 
 matrix:
     include:
       - python: 2.6
-        env: NUMPY_VERSION=1.7.1 MATPLOTLIB_VERSION=1.2 SUDS_PKG='suds'
+        env: NUMPY_VERSION=1.7.1 MATPLOTLIB_VERSION=1.2 PANDAS_VERSION=0.11.0 SUDS_PKG='suds'
       - python: 2.7
-        env: NUMPY_VERSION=1.6.2 MATPLOTLIB_VERSION=1.2 SUDS_PKG='suds-jurko'
+        env: NUMPY_VERSION=1.6.2 MATPLOTLIB_VERSION=1.2 PANDAS_VERSION=0.11.0 SUDS_PKG='suds-jurko'
       - python: 2.6
-        env: NUMPY_VERSION=1.6.2 MATPLOTLIB_VERSION=1.2 SUDS_PKG='suds'
-        
+        env: NUMPY_VERSION=1.6.2 MATPLOTLIB_VERSION=1.2 PANDAS_VERSION=0.11.0 SUDS_PKG='suds'
+      - python: 2.7
+        env: NUMPY_VERSION=1.7.1 MATPLOTLIB_VERSION=1.2 PANDAS_VERSION=0.10.1 SUDS_PKG='suds-jurko'
+      - python: 2.6
+        env: NUMPY_VERSION=1.7.1 MATPLOTLIB_VERSION=1.2 PANDAS_VERSION=0.10.1 SUDS_PKG='suds'
+
 before_install:
    # We do this to make sure we get the dependencies so pip works below
    - sudo apt-get update -qq
-   - sudo apt-get install -qq build-essential libatlas-dev liblapack-dev gfortran
+   - sudo apt-get install -qq cython libatlas-dev liblapack-dev gfortran
    
 install:
 #Install Numpy first so we force the version we are using
-  - pip install cython --use-mirrors
   - pip install numpy==$NUMPY_VERSION -q --use-mirrors
 # Install the other requirements to the desired version
-  - pip install matplotlib>=$MATPLOTLIB_VERSION -q --use-mirrors
-  - pip install pyfits -q --use-mirrors
-  - pip install pandas -q --use-mirrors
-#  - pip install scikit-image --use-mirrors
-#SciPy can't be quiet'ed as it takes longer than 10 mins to build
+  - pip install matplotlib>=$MATPLOTLIB_VERSION --use-mirrors
+  - pip install pyfits  --use-mirrors
+  - pip install pandas==$PANDAS_VERSION -q --use-mirrors
   - pip install scipy --use-mirrors
   - pip install -q pytest $SUDS_PKG beautifulsoup4
 
