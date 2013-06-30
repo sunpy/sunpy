@@ -8,6 +8,12 @@ import sunpy
 import pytest
 
 
+@pytest.fixture
+def query_result():
+    client = VSOClient()
+    return client.query_legacy('2001/1/1', '2001/1/2', instrument='EIT')
+
+
 def test_fits_header_entry_equality():
     assert FitsHeaderEntry('key', 'value') == FitsHeaderEntry('key', 'value')
     assert not (FitsHeaderEntry('key', 'value') == FitsHeaderEntry('k', 'v'))
@@ -37,10 +43,8 @@ def test_tag_hashability():
 
 
 @pytest.mark.slow
-def test_entry_from_qr_block():
-    client = VSOClient()
-    qr = client.query_legacy('2001/1/1', '2001/1/2', instrument='EIT')
-    entry = DatabaseEntry.from_query_result_block(qr[0])
+def test_entry_from_qr_block(query_result):
+    entry = DatabaseEntry.from_query_result_block(query_result[0])
     expected_entry = DatabaseEntry(
         source='SOHO', provider='SDAC', physobs='intensity',
         fileid='/archive/soho/private/data/processed/eit/lz/2001/01/efz20010101.010014',
