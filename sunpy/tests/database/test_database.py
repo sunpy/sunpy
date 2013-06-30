@@ -171,6 +171,14 @@ def test_add_already_existing_entry(database):
         database.add(entry)
 
 
+def test_add_already_existing_entry_ignore(database):
+    entry = DatabaseEntry()
+    database.add(entry)
+    database.add(entry, True)
+    database.commit()
+    assert entry.id == 1
+
+
 def test_edit_entry(database):
     entry = DatabaseEntry()
     database.add(entry)
