@@ -117,11 +117,6 @@ class DatabaseEntry(Base):
             FitsHeaderEntry(key, value) for key, value in header.iteritems()]
         self.fits_header_entries.extend(fits_header_entries)
 
-    def add_tags(self, *tag_names):
-        if not tag_names:
-            raise TypeError('at least one tag must be given')
-        self.tags.extend(map(Tag, tag_names))
-
     def __eq__(self, other):
         return (
             self.id == other.id and

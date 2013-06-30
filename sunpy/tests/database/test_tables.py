@@ -1,6 +1,5 @@
 from collections import Hashable
 from datetime import datetime
-import os.path
 
 from sunpy.database.tables import FitsHeaderEntry, Tag, DatabaseEntry
 from sunpy.net.vso import VSOClient
@@ -74,15 +73,3 @@ def test_add_fits_header_entries_from_file():
         FitsHeaderEntry('ENERGY_H', 40.0),
         FitsHeaderEntry('TIMESYS', '1979-01-01T00:00:00'),
         FitsHeaderEntry('TIMEUNIT', 'd')]
-
-
-def test_add_tags_no_params():
-    with pytest.raises(TypeError):
-        DatabaseEntry().add_tags()
-
-
-def test_add_tags():
-    entry = DatabaseEntry()
-    assert entry.tags == []
-    entry.add_tags('foo', 'bar', 'baz')
-    assert entry.tags == [Tag('foo'), Tag('bar'), Tag('baz')]
