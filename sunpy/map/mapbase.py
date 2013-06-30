@@ -7,17 +7,18 @@ from __future__ import absolute_import
 __authors__ = ["Russell Hewett, Stuart Mumford, Keith Hughitt, Steven Christe"]
 __email__ = "stuart@mumford.me.uk"
 
-import os
 from copy import copy
+import datetime
 import warnings
 
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy.ndimage.interpolation
 from matplotlib import patches
-from matplotlib import colors
 from matplotlib import cm
-# import pyfits
+
+from skimage import transform
+from skimage.util import img_as_float
 
 try:
     import sunpy.image.Crotate as Crotate
@@ -26,17 +27,14 @@ except ImportError:
 
 import sunpy.io as io
 import sunpy.wcs as wcs
-from sunpy.util import toggle_pylab, to_signed, Deprecated
-# from sunpy.io import read_file, read_file_header
+import sunpy.coords.util as cu
+from sunpy.util import toggle_pylab, Deprecated
 from sunpy.sun import constants
 from sunpy.time import parse_time, is_time
 from sunpy.image.rescale import reshape_image_to_4d_superpixel
 from sunpy.image.rescale import resample as sunpy_image_resample
 
-#from sunpy.util.cond_dispatch import ConditionalDispatch
-#from sunpy.util.create import Parent
-
-__all__ = ['MapBase', 'GenericMap']
+__all__ = ['NDDataStandin', 'GenericMap']
 
 """
 Questions
@@ -690,7 +688,99 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         # Create new map instance
         MapType = type(self)
         return MapType(data, meta)
-
+    
+    def transform_rotation(self, deltatime, rot_type='howard',
+                           frame_time='synodic'):
+        """
+        Apply a differential rotation transform to the map via hpc coords
+        
+        This routine will transform your image based on the suns rotation profile
+        over the amount of time specifed.
+        
+        Parameters
+        ----------
+        
+        deltatime: datetime.timedelta or target time
+            Either a timedelta or the time to rotate to
+        
+        rot_type: {'howard' | 'snodgrass' | 'allen'}
+            howard: Use values for small magnetic features from Howard et al.
+            snodgrass: Use Values from Snodgrass et. al
+            allen: Use values from Allen, Astrophysical Quantities, and simplier
+                    equation.
+    
+        frame_time: {'sidereal' | 'synodic'}
+            Choose 'type of day' time reference frame.
+            
+        
+        
+        Returns
+        -------
+        
+        map: sunpy.map.GenericMap
+            output map, with no header changes
+    
+        """
+        #TODO: write a diff_rot routine that takes HCC as input
+        #Scikit-image needs float arrays between 0 and 1
+            
+        #process the deltatime arg
+        if not isinstance(deltatime, datetime.timedelta):
+            deltatime = parse_time(deltatime) - self.date
+        
+        #Normalisation functions for scikit image
+        def to_norm(arr):
+            arr = img_as_float(arr)
+            if arr.min() < 0:
+                arr += arr.min()
+            arr /= arr.max()
+            return arr
+        
+        def un_norm(arr, ori):
+            arr *= ori.max()
+            if ori.min() < 0:
+                arr -= ori.min()
+            return arr.astype(ori.dtype, copy=False)
+        
+        #Transform function for warp:
+        #Note: This is the inverse transform
+        def warp_sun(xy, data, deltatime):
+            x,y = xy.T
+            
+            #Define some tuples
+            scale = [data.scale['x'], data.scale['y']]
+            ref_pix = [data.reference_pixel['x'], data.reference_pixel['y']]
+            ref_coord = [data.reference_coordinate['x'], data.reference_coordinate['y']]
+        
+            #Calculate the hpc coords
+            hpc_coords = wcs.convert_pixel_to_data(data.shape, scale,
+                                                   ref_pix, ref_coord)
+            
+            #Do the diff rot
+            rotted = cu.rot_hpc(hpc_coords[1], hpc_coords[0], data.date,
+                        parse_time(data.date)- deltatime)
+            
+            #Go back to pixel coords
+            x2,y2 = wcs.convert_data_to_pixel(rotted[0], rotted[1], scale, ref_pix,
+                                              ref_coord)
+            
+            #Restack the data to make it correct output form
+            xy2 = np.column_stack([x2.flat,y2.flat])
+            
+            #Remove NaNs
+            mask = np.isnan(xy2)
+            xy2[mask] = 0.0
+        
+            return xy2
+        
+        #Do the warp:
+        out = transform.warp(to_norm(self.data), inverse_map=warp_sun,
+                             map_args={'data':self, 'deltatime':deltatime})
+        
+        # Create new map instance
+        MapType = type(self)
+        return MapType(out, self.meta.copy())
+    
     def submap(self, range_a, range_b, units="data"):
         """Returns a submap of the map with the specified range
 

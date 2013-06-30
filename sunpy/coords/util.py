@@ -94,7 +94,8 @@ def diff_rot(ddays, latitude, rot_type='howard', frame_time='sidereal'):
     return rotation_deg
 
 
-def rot_hpc(x, y, tstart, tend, spacecraft=None, **kwargs):
+def rot_hpc(x, y, tstart, tend, spacecraft=None, frame_time='synodic',
+            rot_type='howard', **kwargs):
     """Given a location on the Sun referred to using the Helioprojective
     Cartesian co-ordinate system in the units of arcseconds, use the solar
     rotation profile to find that location at some later or earlier time.
@@ -116,7 +117,15 @@ def rot_hpc(x, y, tstart, tend, spacecraft=None, **kwargs):
     spacecraft: { None | "soho" | "stereo_a" | "stereo_b" }
                 calculate the rotation from the point of view of the SOHO,
                 STEREO A, or STEREO B spacecraft.
+                
+    rot_type: {'howard' | 'snodgrass' | 'allen'}
+        howard: Use values for small magnetic features from Howard et al.
+        snodgrass: Use Values from Snodgrass et. al
+        allen: Use values from Allen, Astrophysical Quantities, and simplier
+                equation.
 
+    frame_time: {'sidereal' | 'synodic'}
+        Choose 'type of day' time reference frame.
 TODO: the ability to do this rotation for data from the SOHO
 point of view and the STEREO A, B point of views.
 
@@ -156,7 +165,8 @@ point of view and the STEREO A, B point of views.
                     dsun_meters=constants.au * sun.sunearth_distance(t=dstart),
                                          angle_units='arcsec')
     # Compute the differential rotation
-    drot = diff_rot(interval, latitude, frame_time='synodic')
+    drot = diff_rot(interval, latitude, frame_time=frame_time,
+                    rot_type=rot_type)
 
     # Convert back to heliocentric cartesian in units of arcseconds
     vend = kwargs.get("vend", calc_P_B0_SD(dend, spacecraft=spacecraft))
