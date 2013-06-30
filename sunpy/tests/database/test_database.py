@@ -145,6 +145,12 @@ def test_unstar_already_unstarred_entry(database):
         database.unstar(DatabaseEntry())
 
 
+def test_unstar_already_unstarred_entry_ignore(database):
+    entry = DatabaseEntry()
+    database.unstar(entry, True)
+    assert not entry.starred
+
+
 def test_get_starred_entries(database):
     entry1 = DatabaseEntry()
     entry2 = DatabaseEntry()
