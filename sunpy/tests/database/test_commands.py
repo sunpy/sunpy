@@ -45,6 +45,18 @@ def test_add_entry_undo(session):
     assert session.query(DatabaseEntry).count() == 0
 
 
+def test_add_removed_entry(session):
+    entry = DatabaseEntry()
+    AddEntry(session, entry)()
+    session.commit()
+    RemoveEntry(session, entry)()
+    session.commit()
+    AddEntry(session, entry)()
+    session.commit()
+    assert not session.new
+    assert entry.id == 1
+
+
 def test_add_entry_undo_precommit(session):
     entry = DatabaseEntry()
     cmd = AddEntry(session, entry)
