@@ -15,7 +15,7 @@ class EntryAlreadyAddedError(Exception):
     def __init__(self, database_entry):
         self.database_entry = database_entry
 
-    def __str__(self):
+    def __str__(self):  # pragma: no cover
         return (
             'the entry %r was already added '
             'to the database' % self.database_entry)
@@ -30,7 +30,7 @@ class EntryAlreadyStarredError(Exception):
     def __init__(self, database_entry):
         self.database_entry = database_entry
 
-    def __str__(self):
+    def __str__(self):  # pragma: no cover
         return (
             'the entry %r is already marked '
             'as starred' % self.database_entry)
@@ -44,7 +44,7 @@ class EntryAlreadyUnstarredError(Exception):
     def __init__(self, database_entry):
         self.database_entry = database_entry
 
-    def __str__(self):
+    def __str__(self):  # pragma: no cover
         return (
             'the entry %r is already not marked '
             'as starred' % self.database_entry)

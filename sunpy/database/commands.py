@@ -19,7 +19,7 @@ class NoSuchEntryError(Exception):
     def __init__(self, database_entry):
         self.database_entry = database_entry
 
-    def __str__(self):
+    def __str__(self):  # pragma: no cover
         return (
             'the database entry %r cannot be removed because it '
             'is not stored in the database' % self.database_entry)

@@ -48,7 +48,7 @@ class FitsHeaderEntry(Base):
     def __ne__(self, other):
         return not (self == other)
 
-    def __repr__(self):
+    def __repr__(self):  # pragma: no cover
         return '<%s(id %s, key %r, value %r)>' % (
             self.__class__.__name__, self.id, self.key, self.value)
 
@@ -69,7 +69,7 @@ class Tag(Base):
     def __ne__(self, other):
         return not (self == other)
 
-    def __repr__(self):
+    def __repr__(self):  # pragma: no cover
         return '<%s(id %s, name %r)>' % (
             self.__class__.__name__, self.id, self.name)
 
@@ -138,7 +138,7 @@ class DatabaseEntry(Base):
             self.fits_header_entries == other.fits_header_entries and
             self.tags == other.tags)
 
-    def __ne__(self, other):
+    def __ne__(self, other):  # pragma: no cover
         return not (self == other)
 
     def __repr__(self):
