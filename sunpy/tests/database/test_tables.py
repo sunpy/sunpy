@@ -1,7 +1,8 @@
 from collections import Hashable
 from datetime import datetime
 
-from sunpy.database.tables import FitsHeaderEntry, Tag, DatabaseEntry
+from sunpy.database.tables import FitsHeaderEntry, Tag, DatabaseEntry,\
+    entries_from_query_result
 from sunpy.net.vso import VSOClient
 import sunpy
 
@@ -77,3 +78,18 @@ def test_add_fits_header_entries_from_file():
         FitsHeaderEntry('ENERGY_H', 40.0),
         FitsHeaderEntry('TIMESYS', '1979-01-01T00:00:00'),
         FitsHeaderEntry('TIMEUNIT', 'd')]
+
+
+@pytest.mark.slow
+def test_entries_from_query_result(query_result):
+    entries = list(entries_from_query_result(query_result))
+    assert len(entries) == 122
+    snd_entry = entries[1]
+    expected_entry = DatabaseEntry(
+        source='SOHO', provider='SDAC', physobs='intensity',
+        fileid='/archive/soho/private/data/processed/eit/lz/2001/01/efz20010101.070014',
+        observation_time_start=datetime(2001, 1, 1, 7, 0, 14),
+        observation_time_end=datetime(2001, 1, 1, 7, 0, 21),
+        instrument='EIT', size=2059.0, waveunit='Angstrom', wavemin=171.0,
+        wavemax=171.0)
+    assert snd_entry == expected_entry
