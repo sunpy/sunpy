@@ -37,6 +37,7 @@ def test_tag_hashability():
     assert not isinstance(Tag(''), Hashable)
 
 
+@pytest.mark.slow
 def test_entry_from_qr_block():
     client = VSOClient()
     qr = client.query_legacy('2001/1/1', '2001/1/2', instrument='EIT')
