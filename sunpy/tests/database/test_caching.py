@@ -2,6 +2,8 @@ from __future__ import absolute_import
 
 from collections import deque
 
+import pytest
+
 from sunpy.database.caching import BaseCache, LRUCache, LFUCache
 
 
@@ -46,6 +48,11 @@ def test_lru_cache():
     assert lrucache[3] == 'c'
     assert lrucache[4] == 'd'
     #assert lrucache.items() == [(3, 'c'), (1, 'a'), (4, 'd')]
+
+
+def test_lru_cache_missing_item():
+    with pytest.raises(KeyError):
+        LRUCache()[0]
 
 
 def test_lfu_cache():
