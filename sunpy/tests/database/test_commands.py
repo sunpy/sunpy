@@ -154,3 +154,19 @@ def test_cmd_manager_redo_stack_empty_after_call(session, command_manager):
     assert len(command_manager.redo_commands) == 2
     command_manager.do(AddEntry(session, DatabaseEntry()))
     assert not command_manager.redo_commands
+
+
+def test_cmd_manager_redo(session, command_manager):
+    assert command_manager.undo_commands == []
+    assert command_manager.redo_commands == []
+    command_manager.do(AddEntry(session, DatabaseEntry()))
+    command_manager.do(AddEntry(session, DatabaseEntry()))
+    assert len(command_manager.undo_commands) == 2
+    assert command_manager.redo_commands == []
+    session.commit()
+    command_manager.undo(2)
+    assert command_manager.undo_commands == []
+    assert len(command_manager.redo_commands) == 2
+    command_manager.redo(2)
+    assert len(command_manager.undo_commands) == 2
+    assert command_manager.redo_commands == []
