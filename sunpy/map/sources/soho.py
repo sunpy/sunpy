@@ -31,7 +31,6 @@ def _dsunAtSoho(date, rad_d, rad_1au = None):
     """
     if not rad_1au:
         rad_1au = sun.solar_semidiameter_angular_size(date)
-
     return  sun.sunearth_distance(date) * constants.au * (rad_1au / rad_d)
 
 
