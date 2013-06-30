@@ -65,9 +65,12 @@ def solar_cycle_number(t=None):
 
 def solar_semidiameter_angular_size(t=None):
     """Return the angular size of the semi-diameter of the Sun as 
-    a function of time as viewed from Earth (in arcsec)"""
-    solar_semidiameter_rad = math.atan(constants.radius /
-                                       (sunearth_distance(t) * constants.au))
+    a function of time as viewed from Earth (in arcsec)
+    Radius_{\sun}[rad] = \atan(\frac{<Radius_{\sun}[m]>}{D_{\sun\earth}(t)[m]})
+     since tan x ~ x when x << 1
+    Radius_{\sun}[rad] = \frac{<Radius_{\sun}[m]>)}{D_{\sun\earth}(t)[m]}
+    """
+    solar_semidiameter_rad = constants.radius / (sunearth_distance(t) * constants.au)
     return np.rad2deg(solar_semidiameter_rad) * 60. * 60.
  
 def position(t=None):
@@ -246,7 +249,7 @@ def print_params(t=None):
     print('Solar Ephemeris for ' + time.ctime())
     print('')
     print('Distance (AU) = ' + str(sunearth_distance(t)))
-    print('Semidiameter (arc sec) = ' + str(angular_size(t)))
+    print('Semidiameter (arc sec) = ' + str(solar_semidiameter_angular_size(t)))
     print('True (long,lat) in degrees = (' + str(true_longitude(t)) + ',' 
                                                  + str(true_latitude(t)) + ')')
     print('Apparent (long, lat) in degrees = (' + str(apparent_longitude(t)) + ',' 
