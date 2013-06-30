@@ -94,7 +94,7 @@ def test_tag_duplicates_before_adding(database):
     database.tag(entry2, 'tag')
     database.add(entry1)
     database.add(entry2)
-    assert database.get_by_tags('tag') == [entry1, entry2]
+    database.commit()
 
 
 def test_get_by_tags_missing_tags_arg(database):
