@@ -4,7 +4,7 @@ import pytest
 
 from sunpy.database import Database, EntryAlreadyAddedError,\
     EntryAlreadyStarredError, EntryAlreadyUnstarredError
-from sunpy.database.tables import DatabaseEntry
+from sunpy.database.tables import DatabaseEntry, Tag
 from sunpy.database.commands import NoSuchEntryError
 from sunpy.database.caching import LRUCache, LFUCache
 
@@ -39,6 +39,82 @@ def test_create_tables(database_without_tables):
     assert not database_without_tables._engine.has_table('data')
     database_without_tables.create_tables()
     assert database_without_tables._engine.has_table('data')
+
+
+def test_tags_property(database):
+    assert database.tags == []
+
+
+def test_get_existing_tag(database):
+    entry = DatabaseEntry()
+    database.tag(entry, 'tag')
+    database.add(entry)
+    # dirty trick:
+    expected_tag = Tag('tag')
+    expected_tag.id = 1
+    assert database.get_tag('tag') == expected_tag
+
+
+def test_get_nonexting_tag(database):
+    assert database.get_tag('foo') is None
+
+
+def test_tag_missing_tags_arg(database):
+    with pytest.raises(TypeError):
+        database.tag(DatabaseEntry())
+
+
+def test_tag_new_tag(database):
+    entry = DatabaseEntry()
+    database.tag(entry, 'tag')
+    assert len(entry.tags) == 1
+    database.add(entry)
+    assert len(database.tags) == 1
+    tag = entry.tags[0]
+    assert tag.name == 'tag'
+    assert tag in database.tags
+
+
+def test_tag_existing_tag(database):
+    entry1 = DatabaseEntry()
+    entry2 = DatabaseEntry()
+    database.tag(entry1, 'tag')
+    database.tag(entry2, 'tag')
+    assert entry1.tags == entry2.tags
+
+
+# the following test raises a sqlalchemy.exc.IntegrityError exception because
+# the uniqueness of the tag names can only be checked if the according entries
+# are already saved in the database (otherwise the tags have no IDs)
+@pytest.mark.xfail
+def test_tag_duplicates_before_adding(database):
+    entry1 = DatabaseEntry()
+    entry2 = DatabaseEntry()
+    database.tag(entry1, 'tag')
+    database.tag(entry2, 'tag')
+    database.add(entry1)
+    database.add(entry2)
+    assert database.get_by_tags('tag') == [entry1, entry2]
+
+
+def test_get_by_tags_missing_tags_arg(database):
+    with pytest.raises(TypeError):
+        database.get_by_tags()
+
+
+def test_get_by_tags_no_matches(database):
+    assert database.get_by_tags('foobar') == []
+
+
+def test_get_by_tags_matching(database):
+    entry1 = DatabaseEntry()
+    entry2 = DatabaseEntry()
+    database.add(entry1)
+    database.add(entry2)
+    database.tag(entry1, 'one')
+    database.tag(entry2, 'one', 'two')
+    assert database.get_by_tags('two') == [entry2]
+    assert database.get_by_tags('one') == [entry1, entry2]
 
 
 def test_star_entry(database):

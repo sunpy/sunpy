@@ -71,6 +71,9 @@ class Database(object):
         advanced manipulations and should only be used by people who are
         experienced with SQLAlchemy.
 
+    tags : list of sunpy.database.Tag objects
+        A list of all saved tags in database. This attribute is read-only.
+
     Examples
     --------
     >>> database = Database('sqlite:///:memory:', LFUCache, 3)
@@ -141,6 +144,52 @@ class Database(object):
     def get_entry_by_id(self, entry_id):
         """Get a database entry by its unique ID number."""
         return self._cache[entry_id]
+
+    @property
+    def tags(self):
+        return self.session.query(tables.Tag).all()
+
+    def get_tag(self, tag_name):
+        """Get the tag which has the given name. If no such tag exists, None is
+        returned.
+
+        """
+        for tag in self.tags:
+            if tag_name == tag.name:
+                return tag
+        return None
+
+    def tag(self, database_entry, *tags):
+        """Assign the given database entry the given tags. If no tags are
+        given, TypeError is raised.
+
+        """
+        if not tags:
+            raise TypeError('at least one tag must be given')
+        # avoid duplicates
+        tag_names = set(tags)
+        for tag_name in tag_names:
+            tag = self.get_tag(tag_name)
+            if tag is None:
+                # tag does not exist yet -> create it
+                database_entry.tags.append(tables.Tag(tag_name))
+            else:
+                # tag could be found in the tags table -> add this tag
+                database_entry.tags.append(tag)
+
+    def get_by_tags(self, *tags):
+        """Get all database entries that have at least one of the tags
+        assigned. If none of the database entries have any of the given tags
+        assigned, an empty list is returned. If no tags are given, TypeError is
+        raised.
+
+        """
+        if not tags:
+            raise TypeError('at least one tag must be given')
+        # XXX: replace ``all`` by ``any`` for disjunction instead of
+        # conjunction -> discuss which behaviour is more intuitive to the user
+        return self.session.query(tables.DatabaseEntry).filter(
+            tables.DatabaseEntry.tags.any(tables.Tag.name.in_(tags))).all()
 
     def star(self, database_entry, ignore_already_starred=False):
         """Mark the given database entry as starred. If this entry is already
