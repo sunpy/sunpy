@@ -15,6 +15,25 @@ from sunpy.time import parse_time
 
 __all__ = ['EITMap', 'LASCOMap', 'MDIMap']
 
+def _dsunAtSoho(date, rad_d, rad_1au = None):
+    """Determines the distance to the Sun from SOhO following
+    d_{\sun,Object} =
+            D_{\sun\earth} \frac{\tan(radius_{1au}[rad])}{\tan(radius_{d}[rad])}
+    though tan x ~ x for x << 1
+    d_{\sun,Object} =
+            D_{\sun\eart} \frac{radius_{1au}[rad]}{radius_{d}[rad]}
+    since radius_{1au} and radius_{d} are dividing each other we can use [arcsec]
+    instead. 
+
+    ---
+    TODO: Does this apply just to observations on the same Earth-Sun line?
+    If not it can be moved outside here.
+    """
+    if not rad_1au:
+        rad_1au = sun.solar_semidiameter_angular_size(date)
+    return  sun.sunearth_distance(date) * constants.au * (rad_1au / rad_d)
+
+
 class EITMap(Map):
     """EIT Image Map definition"""
     @classmethod
@@ -33,11 +52,7 @@ class EITMap(Map):
             "date": parse_time(date_obs),
             "detector": "EIT",
             "rsun_arcseconds": solar_r * scale,
-            # dsun - d_{\sun,Object} =
-            # D_{\sun\earth} * \tan(radius_1au[rad])/\tan(radius_d[rad])
-            # though tan x ~ x for x << 1
-            "dsun": sun.sunearth_distance(date_obs) * constants.au *
-                      (radius_1au / (solar_r * scale)),
+            "dsun": _dsunAtSoho(date_obs, solar_r * scale, radius_1au),
             "name": "EIT %s" % header.get('wavelnth'),
             "nickname": "EIT",
             "cmap": cm.get_cmap('sohoeit%d' % header.get('wavelnth'))
@@ -104,14 +119,16 @@ class MDIMap(Map):
         
         # Solar radius in arc-seconds at 1 au
         # previous value radius_1au = 959.644
-        radius_1au = constants.average_angular_size
+        # and changed to a variable value as seen from Earth
+        radius_1au = sun.solar_semidiameter_angular_size(datestr)
+
         
         # MDI images may have radius = 0.0
         if not rsun:
             dsun = constants.au
         else:
             scale = header.get("cdelt1")
-            dsun = (radius_1au / (rsun * scale)) * constants.au
+            dsun = _dsunAtSoho(datestr, (rsun * scale), radius_1au)
             
         # Determine measurement
         dpcobsr = header.get('dpc_obsr')
