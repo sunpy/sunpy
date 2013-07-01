@@ -694,8 +694,8 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         """
         Apply a differential rotation transform to the map via hpc coords
         
-        This routine will transform your image based on the suns rotation profile
-        over the amount of time specifed.
+        This routine will transform your image based on the suns rotation 
+        profile over the amount of time specifed.
         
         Parameters
         ----------
@@ -706,8 +706,8 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         rot_type: {'howard' | 'snodgrass' | 'allen'}
             howard: Use values for small magnetic features from Howard et al.
             snodgrass: Use Values from Snodgrass et. al
-            allen: Use values from Allen, Astrophysical Quantities, and simplier
-                    equation.
+            allen: Use values from Allen, Astrophysical Quantities, 
+                    and simplier equation.
     
         frame_time: {'sidereal' | 'synodic'}
             Choose 'type of day' time reference frame.
@@ -737,10 +737,11 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
             return arr
         
         def un_norm(arr, ori):
-            arr *= ori.max()
-            if ori.min() < 0:
-                arr -= ori.min()
-            return arr.astype(ori.dtype, copy=False)
+#            orif = img_as_float(ori)
+#            arr *= orif.max()
+#            if orif.min() < 0:
+#                arr -= orif.min()
+            return arr#.astype(ori.dtype, copy=False)
         
         #Transform function for warp:
         #Note: This is the inverse transform
@@ -750,7 +751,8 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
             #Define some tuples
             scale = [data.scale['x'], data.scale['y']]
             ref_pix = [data.reference_pixel['x'], data.reference_pixel['y']]
-            ref_coord = [data.reference_coordinate['x'], data.reference_coordinate['y']]
+            ref_coord = [data.reference_coordinate['x'],
+                         data.reference_coordinate['y']]
         
             #Calculate the hpc coords
             hpc_coords = wcs.convert_pixel_to_data(data.shape, scale,
@@ -758,11 +760,12 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
             
             #Do the diff rot
             rotted = cu.rot_hpc(hpc_coords[1], hpc_coords[0], data.date,
-                        parse_time(data.date)- deltatime)
+                        parse_time(data.date)- deltatime, 
+                        frame_time=frame_time, rot_type=rot_type)
             
             #Go back to pixel coords
-            x2,y2 = wcs.convert_data_to_pixel(rotted[0], rotted[1], scale, ref_pix,
-                                              ref_coord)
+            x2,y2 = wcs.convert_data_to_pixel(rotted[0], rotted[1], scale,
+                                              ref_pix, ref_coord)
             
             #Restack the data to make it correct output form
             xy2 = np.column_stack([x2.flat,y2.flat])
@@ -776,7 +779,7 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         #Do the warp:
         out = transform.warp(to_norm(self.data), inverse_map=warp_sun,
                              map_args={'data':self, 'deltatime':deltatime})
-        
+        out = un_norm(out, self.data)
         # Create new map instance
         MapType = type(self)
         return MapType(out, self.meta.copy())
