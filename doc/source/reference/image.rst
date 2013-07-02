@@ -7,7 +7,7 @@ Image specific functionality
 
 .. currentmodule:: sunpy.image
 
-.. automodule:: sunpy.image.image
+.. automodule:: sunpy.image.Crotate
    :members:
    
 .. automodule:: sunpy.image.rescale
