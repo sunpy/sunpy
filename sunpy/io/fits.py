@@ -62,15 +62,6 @@ def read(filepath):
     
     pairs = []
     for hdu in hdulist:
-        fits_comment = hdu.header.get_comment()
-        
-        # PyFITS 2.x
-        if len(fits_comment) > 0 and isinstance(fits_comment[0], basestring):
-            comments = [val for val in fits_comment]       
-        else:
-            # PyFITS 3.x
-            comments = [card.value for card in fits_comment]
-        print type(hdu.header.get_comment()[0])
         comment = "".join(hdu.header.get_comment()).strip()
         history = "".join(hdu.header.get_history()).strip()
         header = FileHeader(hdu.header)
