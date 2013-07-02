@@ -12,7 +12,7 @@ _known_formats = {
     ('jp2', 'j2k', 'jpc', 'jpt'): jp2
 }
 
-def read_file(filepath):
+def read_file(filepath, **kwargs):
     """
     Automatically determine the filetype and read the file
     
@@ -28,13 +28,13 @@ def read_file(filepath):
     """
     for extension, reader in _known_formats.items():
         if filepath.endswith(extension):
-            return reader.read(filepath)
+            return reader.read(filepath, **kwargs)
 
     # If filetype is not apparent from extension, attempt to detect
     reader = _detect_filetype(filepath)    
-    return reader.read(filepath)
+    return reader.read(filepath, **kwargs)
 
-def read_file_header(filepath):
+def read_file_header(filepath, **kwargs):
     """
     Reads the header from a given file
     
@@ -54,10 +54,10 @@ def read_file_header(filepath):
     """
     for extension, reader in _known_formats.items():
         if filepath.endswith(extension):
-            return reader.get_header(filepath)
+            return reader.get_header(filepath, **kwargs)
         
     reader = _detect_filetype(filepath)
-    return reader.get_header(filepath)  
+    return reader.get_header(filepath, **kwargs)  
 
 def write_file(fname, data, header, filetype='auto', **kwargs):
     """
