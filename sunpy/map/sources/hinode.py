@@ -9,13 +9,17 @@ from datetime import datetime
 import numpy as np
 from matplotlib import colors
 
-from sunpy.map import Map
+from sunpy.map import GenericMap
 from sunpy.cm import cm
 from sunpy.time import parse_time
 
+
 __all__ = ['XRTMap']
 
-class XRTMap(Map):
+def _lower_list(L):
+    return [item.lower() for item in L]
+
+class XRTMap(GenericMap):
     """XRT Image Map definition
     
     References
@@ -24,37 +28,33 @@ class XRTMap(Map):
     """
     #TODO: get a link for the XRT FITS headers
     # Add in some information about the the possible filter wheel measurements
-    Map.filter_wheel1_measurements = ["Al_med", "Al_poly", "Be_med",
-                                      "Be_thin", "C_poly", "Open"]
-    Map.filter_wheel2_measurements = ["Open", "Al_mesh", "Al_thick",
-                                      "Be_thick", "Gband", "Ti_poly"]
-    @classmethod
-    def get_properties(cls, header):
-        """Parses XRT image header"""
-        properties = Map.get_properties(header)
-        # XRT uses DATE_OBS, not date-obs.
-        properties["date"] = parse_time(header.get('date_obs', None))
-
-        #TODO: proper exception handling here - report to the user that there is
-        # an unexpected value
+    filter_wheel1_measurements = ["Al_med", "Al_poly", "Be_med",
+                                  "Be_thin", "C_poly", "Open"]
+    filter_wheel2_measurements = ["Open", "Al_mesh", "Al_thick",
+                                  "Be_thick", "Gband", "Ti_poly"]
+    
+    def __init__(self, data, header, **kwargs):
+        
+        GenericMap.__init__(self, data, header, **kwargs)
+        
         fw1 = header.get('EC_FW1_')
-        if not(fw1.lower() in [x.lower() for x in cls.filter_wheel1_measurements]):
-            pass
+        if fw1.lower() not in _lower_list(filter_wheel1_measurements):
+            raise ValueError('Unpexpected filter wheel 1 in header.')
+        fw1 = fw1.replace("_", " ")    
+            
         fw2 = header.get('EC_FW2_')
-        if not(fw2.lower() in [x.lower() for x in cls.filter_wheel2_measurements]):
-            pass
-
-        # All images get the same color table - IDL Red temperature (loadct, 3)
-        properties.update({
-            "detector": "XRT",
-            "instrument": "XRT",
-            "observatory": "Hinode",
-            "name": "XRT %s-%s " % (fw1.replace('_', ' '),
-                                       fw2.replace('_', ' ')),
-            "nickname": "XRT",
-            "cmap": cm.get_cmap(name='hinodexrt')
-        })
-        return properties
+        if fw2.lower() not in _lower_list(filter_wheel2_measurements):
+            raise ValueError('Unpexpected filter wheel 2 in header.')
+        fw2 = fw2.replace("_", " ")
+        
+        self.meta['detector'] = "XRT"
+#        self.meta['instrume'] = "XRT"
+        self.meta['telescop'] = "Hinode"
+        
+        self._name = "{0} {1}-{2}".format(self.detector, fw1, fw2)
+        self._nickname = self.detector
+        
+        self.cmap = cm.get_cmap(name='hinodexrt')
 
     def norm(self):
         """Returns a Normalize object to be used with XRT data"""
@@ -72,6 +72,7 @@ class XRTMap(Map):
 
 
     @classmethod
-    def is_datasource_for(cls, header):
+    def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an XRT image"""
         return header.get('instrume') == 'XRT'
+        
