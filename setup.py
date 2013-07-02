@@ -63,8 +63,8 @@ def install(setup): #pylint: disable=W0621
         #    "Plotman": ['PyQt4']
         #},
         install_requires=[
-            'numpy',
-            'pyfits',
+            'numpy>1.6.0',
+            'pyfits>3.0.0',
             'scipy',
  #           'suds',
             'pandas>=0.10.0',
