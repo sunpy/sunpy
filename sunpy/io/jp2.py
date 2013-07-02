@@ -7,11 +7,14 @@ __email__ = "keith.hughitt@nasa.gov"
 import os
 import subprocess
 import tempfile
+import xml.etree.cElementTree as ET
 
 from matplotlib.image import imread
 
 from sunpy.util.xml import xml_to_dict
 from sunpy.map.header import MapHeader
+
+from glymur import Jp2k
 
 __all__ = ['read', 'get_header', 'get_data', 'read_xmlbox', 'which', 'is_float']
 
@@ -42,37 +45,10 @@ def get_header(filepath):
 
 def get_data(filepath, j2k_to_image="opj_decompress"):
     """Extracts the data portion of a JPEG 2000 image
-    
-    Uses the OpenJPEG j2k_to_image command, if available, to extract the data
-    portion of a JPEG 2000 image. The image is first converted to a temporary
-    intermediate file (PNG) and then read back in and stored an as ndarray.
-    
-    The image as read back in is upside down, and so it is spun around for the
-    correct orientation.
     """
-    if os.name is "nt":
-        if (j2k_to_image == "j2k_to_image") or (j2k_to_image == "opj_decompress"):
-            j2k_to_image = j2k_to_image+".exe"
-
-    if which(j2k_to_image) is None:
-        raise MissingOpenJPEGBinaryError("You must first install the OpenJPEG "
-                                         "(version >=1.4) binaries before using "
-                                         "this functionality.")
-    
-    jp2filename = os.path.basename(filepath)
-    
-    tmpname = "".join(os.path.splitext(jp2filename)[0:-1]) + ".png"
-    tmpfile = os.path.join(tempfile.mkdtemp(), tmpname)
-    
-    with open(os.devnull, 'w') as fnull:
-        subprocess.call([j2k_to_image, "-i", filepath, "-o", tmpfile], 
-                        stdout=fnull, stderr=fnull)
-    
-    data = imread(tmpfile)    
-    os.remove(tmpfile)
-    
-    # flip the array around since it has been read in upside down.
-    return data[::-1]
+    jp2 = Jp2k(filepath)
+    data = jp2.read()
+    return data
 
 def read_xmlbox(filepath, root):
     """
@@ -81,18 +57,10 @@ def read_xmlbox(filepath, root):
     Given a filename and the name of the root node, extracts the XML header box
     from a JP2 image.
     """
-    with open(filepath, 'rb') as fp:
-
-        xmlstr = ""
-        for line in fp:
-            xmlstr += line
-            if line.find("</%s>" % root) != -1:
-                break
-
-        start = xmlstr.find("<%s>" % root)
-        end = xmlstr.find("</%s>" % root) + len("</%s>" % root)
-        
-        xmlstr = xmlstr[start : end]
+    jp2 = Jp2k(filepath)
+    # Assumes just a single XML box.
+    xmlbox = [box for box in jp2.box if box.id == 'xml '][0]
+    xmlstr = ET.tostring(xmlbox.xml.find('fits'))
 
     # Fix any malformed XML (e.g. in older AIA data)
     return xmlstr.replace("&", "&amp;")
