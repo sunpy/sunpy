@@ -117,7 +117,7 @@ def write(fname, data, header, **kwargs):
     """
     #The comments need to be added to the header seperately from the normal
     # kwargs. Find and deal with them:
-    fits_header = pyfits.core.Header()
+    fits_header = pyfits.Header()
     # Check Header
     for k,v in header.items():
         if isinstance(v, pyfits.header._HeaderCommentaryCards):
@@ -126,9 +126,9 @@ def write(fname, data, header, **kwargs):
             elif k in 'history':
                 fits_header.add_history(str(v))
             else:
-                fits_header.append(pyfits.core.Card(k, str(v)))
+                fits_header.append(pyfits.Card(k, str(v)))
         else:
-            fits_header.append(pyfits.core.Card(k,v))
+            fits_header.append(pyfits.Card(k,v))
     
     fitskwargs = {'output_verify':'fix'}
     fitskwargs.update(kwargs)
