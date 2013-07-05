@@ -4,81 +4,52 @@ normalization.
 """
 from __future__ import absolute_import
 
-import pyfits
+from sunpy.util.odict import OrderedDict
 
-import sunpy.io
+__all__ = ['MapMeta']
 
-__all__ = ['MapHeader']
-
-class MapHeader(dict):
+class MapMeta(OrderedDict):
     """
-    MapHeader(header)
-
-    A dictionary-like class for working with FITS, etc headers
-
-    Parameters
-    ----------
-    header : pyfits.core.Header, dict
-        Header tags associated with the data
-
-    Attributes
-    ----------
-
+    A class to hold meta data associated with a Map derivative.
+    
+    This class handles everything a lower case. This allows case insensitive 
+    indexing.
     """
-    def __init__(self, *args, **kwargs):
+    def __init__(self, adict):
         """Creates a new MapHeader instance"""
-        if isinstance(args[0], basestring):
-            # filepath
-            # Note, this call has to come this way or else there is a circular 
-            # dependence in the imports.
-            tags = sunpy.io.read_file_header(args[0])
-        else:
-            # dictionary
-            tags = args[0]
-
         # Store all keys as upper-case to allow for case-insensitive indexing
-        tags = dict((k.upper(), v) for k, v in tags.items())
-        args = (tags,) + args[1:]
+        tags = dict((k.upper(), v) for k, v in adict.items())
 
-        dict.__init__(self, *args, **kwargs)
+        super(MapMeta, self).__init__(tags)
 
     def __contains__(self, key):
         """Overide __contains__"""
-        return dict.__contains__(self, key.upper())
+        return OrderedDict.__contains__(self, key.lower())
 
     def __getitem__(self, key):
         """Overide [] indexing"""
-        return dict.__getitem__(self, key.upper())
+        return OrderedDict.__getitem__(self, key.lower())
 
     def __setitem__(self, key, value):
         """Overide [] indexing"""
-        return dict.__setitem__(self, key.upper(), value)
-    
-    def as_pyfits_header(self):
-        """Returns a PyFITS header instance of the header"""
-        cards = [pyfits.core.Card(k, v) for k, v in self.items()]
-        return pyfits.core.Header(cards)
-
-    def copy(self):
-        """Overide copy operator"""
-        return type(self)(dict.copy(self))
-
+        return OrderedDict.__setitem__(self, key.lower(), value)
+        
     def get(self, key, default=None):
         """Overide .get() indexing"""
-        return dict.get(self, key.upper(), default)
+        return OrderedDict.get(self, key.lower(), default)
 
     def has_key(self, key):
         """Overide .has_key() to perform case-insensitively"""
-        return key.upper() in self
+        return key.lower() in self
 
     def pop(self, key, default=None):
         """Overide .pop() to perform case-insensitively"""
-        return dict.pop(self, key.upper(), default)
+        return OrderedDict.pop(self, key.lower(), default)
 
     def update(self, d2):
         """Overide .update() to perform case-insensitively"""
-        return dict.update(self, dict((k.upper(), v) for k, v in d2.items()))
+        return OrderedDict.update(self, dict((k.lower(), v) for k, v in d2.items()))
 
     def setdefault(self, key, default=None):
         """Overide .setdefault() to perform case-insensitively"""
-        return dict.setdefault(self, key.upper(), default)
+        return OrderedDict.setdefault(self, key.lower(), default)

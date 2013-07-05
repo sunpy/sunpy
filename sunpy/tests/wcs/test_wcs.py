@@ -8,7 +8,7 @@ from numpy.testing import assert_allclose
 import sunpy
 import sunpy.wcs as wcs
 
-img = sunpy.make_map(sunpy.AIA_171_IMAGE)
+img = sunpy.Map(sunpy.AIA_171_IMAGE)
 
 # the following known_answers come from equivalent queries to IDL
 # WCS implementation (http://hesperia.gsfc.nasa.gov/ssw/gen/idl/wcs/)
