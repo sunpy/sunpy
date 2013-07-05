@@ -55,7 +55,6 @@ class FitsHeaderEntry(Base):
 
 class Tag(Base):
     __tablename__ = 'tags'
-    __hash__ = None
 
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False, unique=True)
