@@ -16,7 +16,6 @@ SunPy Code Reference
    io
    lightcurve
    map
-   mapcube
    rhessi
    sun
    time
