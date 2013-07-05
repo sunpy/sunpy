@@ -134,10 +134,10 @@ class Database(object):
         """Flush pending changes and commit the current transaction. This is a
         shortcut for :meth:`session.commit()`.
 
-        .. seealso::
-
-            sqlalchemy.orm.session.Session.commit for more information and
-            possible exceptions that may be thrown
+        See Also
+        --------
+        sqlalchemy.orm.session.Session.commit for more information and
+        possible exceptions that may be thrown
         """
         self.session.commit()
 
@@ -263,9 +263,9 @@ class Database(object):
     def undo(self, n=1):
         """undo the last n commands.
 
-        .. seealso::
-
-            :ref:`sunpy.database.CommandManager.undo`
+        See Also
+        --------
+        :ref:`sunpy.database.CommandManager.undo`
 
         """
         self._command_manager.undo(n)  # pragma: no cover
@@ -273,9 +273,9 @@ class Database(object):
     def redo(self, n=1):
         """redo the last n commands.
 
-        .. seealso::
-
-            :ref:`sunpy.database.CommandManager.redo`
+        See Also
+        --------
+        :ref:`sunpy.database.CommandManager.redo`
 
         """
         self._command_manager.redo(n)  # pragma: no cover
