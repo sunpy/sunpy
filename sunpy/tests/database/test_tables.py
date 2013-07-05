@@ -40,7 +40,7 @@ def test_tag_inequality():
 
 
 def test_tag_hashability():
-    assert not isinstance(Tag(''), Hashable)
+    assert isinstance(Tag(''), Hashable)
 
 
 @pytest.mark.slow
