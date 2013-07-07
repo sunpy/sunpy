@@ -74,6 +74,57 @@ class Database(object):
     tags : list of sunpy.database.Tag objects
         A list of all saved tags in database. This attribute is read-only.
 
+    Methods
+    -------
+    create_tables(checkfirst=True)
+        Create all necessary tables. Do nothing if ``checkfirst`` is True and
+        the required tables already exist.
+    commit()
+        Flush pending changes and commit the current transaction.
+    get_entry_by_id(id)
+        Get the database entry which has the given unique ID number assigned.
+    get_tag(tagname)
+        Get the tag which has the given unique tagname assigned. Returns None
+        if no tag with the given name is saved in the database.
+    tag(entry, *tags)
+        Assign the given database entry the given tags. If no tags are given,
+        TypeError is raised.
+    get_by_tags(*tags)
+        Get all database entries that have at least one of the tags
+        assigned. If no tags are given, TypeError is raised.
+    star(entry, ignore_already_starred=False)
+        Mark the given database entry as starred. If ``ignore_already_starred``
+        is False and the given entry is already marked as starred,
+        EntryAlreadyStarredError is raised.
+    unstar(entry, ignore_already_unstarred=False)
+        Remove the starred mark of the given entry. If
+        ``ignore_already_unstarred`` is False and the entry is not marked as
+        starred, EntryAlreadyUnstarredError is raised.
+    get_starred()
+        Return an iterator over all starred database entries.
+    add(entry, ignore_already_added=False)
+        Add the given database entry to the database. If
+        ``ignore_already_added`` is False and the given entry is already saved
+        in the database, EntryAlreadyAddedError is raised.
+    edit(entry, **kwargs)
+        Change the given database entry so that it interprets the passed
+        key-value pairs as new values where the keys represent the attributes
+        of this entry. If no keywords arguments are given, :exc:`ValueError` is
+        raised.
+    remove(entry)
+        Remove the given entry from the database.
+    undo(n=1)
+        Redo the last n operations.
+    redo(n=1)
+        Redo the last n undone operations.
+    __contains__(entry)
+        Return True if the given database entry is saved in the database,
+        False otherwise.
+    __iter__()
+        Return an iterator over all database entries.
+    __len__()
+        Get the number of database entries.
+
     Examples
     --------
     >>> database = Database('sqlite:///:memory:', LFUCache, 3)
@@ -126,7 +177,11 @@ class Database(object):
         self._cache = Cache(cache_size)
 
     def create_tables(self, checkfirst=True):
-        """Initialise the database by creating all necessary tables."""
+        """Initialise the database by creating all necessary tables. If
+        ``checkfirst`` is True, already existing tables are not attempted to be
+        created.
+
+        """
         metadata = tables.Base.metadata
         metadata.create_all(self._engine, checkfirst=checkfirst)
 
@@ -218,7 +273,7 @@ class Database(object):
         self._cache[database_entry.id] = database_entry
 
     def get_starred(self):
-        """Get all starred database entries as a generator."""
+        """Return an iterator over all starred database entries."""
         return (entry for entry in self if entry.starred)
 
     def add(self, database_entry, ignore_already_added=False):
