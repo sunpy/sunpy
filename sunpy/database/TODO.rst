@@ -31,6 +31,9 @@ Testing
   → test undo/redo in combination with the caching strategy
     (integration test, wohoo)
 
+- test starring and tagging entries that haven't been added to the
+  database!
+
 Simple
 ------
 
@@ -41,6 +44,12 @@ Simple
 
 Important
 ---------
+
+- adopt parameter names in Database methods to last changes in the
+  documentation!!!
+
+- support removing tags → see sqlalchemy doc to see what to pay attention
+  to when removing entries in a many-to-many relationship
 
 - which table fields are unique?
 
