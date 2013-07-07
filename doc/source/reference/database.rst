@@ -3,13 +3,16 @@ Database
 
 .. currentmodule:: sunpy.database
 
+.. automodule:: sunpy.database
+
 Module documentation
 ^^^^^^^^^^^^^^^^^^^^
-.. automodule:: sunpy.database
+
+.. autoclass:: sunpy.database.Database
    :members:
 
 Caching
 """""""
 
-.. automodule:: sunpy.database.caching
-   :members:
+.. autoclass:: sunpy.database.caching.BaseCache
+   :members: callback
