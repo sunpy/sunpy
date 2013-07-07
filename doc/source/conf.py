@@ -306,4 +306,4 @@ autosummary_generate = (glob.glob("reference/*.rst") +
 
 # Uncomment this to stop numpydoc from autolisting class members, which
 # generates a ridiculous number of warnings.
-#numpydoc_show_class_members = False
+numpydoc_show_class_members = False
