@@ -1,3 +1,21 @@
+"""
+Overview
+--------
+The database package exports the following classes, functions and exceptions:
+
+    :classes:
+        - Database
+        - DatabaseEntry
+        - FitsHeaderEntry
+        - Tag
+    :functions:
+        - entries_from_query_result
+    :exceptions:
+        - EntryAlreadyAddedError
+        - NoSuchEntryError
+        - EntryAlreadyStarredError
+        - EntryAlreadyUnstarredError
+"""
 from __future__ import absolute_import
 
 from sunpy.database.database import Database, EntryAlreadyAddedError,\
