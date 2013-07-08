@@ -182,3 +182,5 @@ def entries_from_path(fitsdir, recursive=False, pattern ='*.fits'):
         filename_paths = (os.path.join(dirpath, name) for name in filenames)
         for path in fnmatch.filter(filename_paths, pattern):
             yield DatabaseEntry.from_fits_filepath(path)
+        if not recursive:
+            break
