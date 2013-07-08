@@ -141,9 +141,14 @@ def test_entries_from_path():
         FitsHeaderEntry('SCI_OBJ', 'CME WATCH 195')]
 
 
-def test_entries_from_path_recursively():
+def test_entries_from_path_recursively_true():
     entries = list(entries_from_path(testdir, True))
     assert len(entries) == 15
+
+
+def test_entries_from_path_recursively_false():
+    entries = list(entries_from_path(testdir, False))
+    assert len(entries) == 2
 
 
 @pytest.mark.slow
