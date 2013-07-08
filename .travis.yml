@@ -34,7 +34,7 @@ install:
   - pip install numpy==$NUMPY_VERSION -q --use-mirrors
 # Install the other requirements to the desired version
   - pip install matplotlib>=$MATPLOTLIB_VERSION --use-mirrors
-  - pip install pyfits  --use-mirrors
+  - pip install astropy  --use-mirrors
   - pip install pandas==$PANDAS_VERSION -q --use-mirrors
   - pip install scipy --use-mirrors
   - pip install -q pytest $SUDS_PKG beautifulsoup4
