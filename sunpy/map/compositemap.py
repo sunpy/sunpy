@@ -250,9 +250,9 @@ class CompositeMap(object):
         -------
         matplotlib.axes object
         """
-        if index is None:
-            needed_attrs = ['rsun_meters', 'dsun', 'heliographic_latitude',
+        needed_attrs = ['rsun_meters', 'dsun', 'heliographic_latitude',
                             'heliographic_longitude']
+        if index is None:
             for i, amap in enumerate(self._maps):
                 if all([hasattr(amap,k) for k in needed_attrs]):
                     index = i
@@ -330,7 +330,7 @@ class CompositeMap(object):
             params.update(matplot_args)
             
             if m.levels is False:
-                ret.append(axes.imshow(m, **params))
+                ret.append(axes.imshow(m.data, **params))
             
             # Use contour for contour data, and imshow otherwise
             if m.levels is not False:

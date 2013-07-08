@@ -17,7 +17,6 @@ import scipy.ndimage.interpolation
 from matplotlib import patches
 from matplotlib import colors
 from matplotlib import cm
-# import pyfits
 
 try:
     import sunpy.image.Crotate as Crotate
@@ -869,7 +868,8 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
 
         #TODO: This function could be optimized. Does not need to convert the entire image
         # coordinates
-        lon_self, lat_self = wcs.convert_hpc_hg(rsun, dsun, units[0], units[1], b0, l0, x, y)
+        #lon_self, lat_self = wcs.convert_hpc_hg(rsun, dsun, angle_units = units[0], b0, l0, x, y)
+        lon_self, lat_self = wcs.convert_hpc_hg(x, y, b0_deg=b0, l0_deg=l0, dsun_meters=dsun, angle_units='arcsec')
         # define the number of points for each latitude or longitude line
         num_points = 20
         
@@ -892,11 +892,9 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         for lat in hg_latitude_deg:
             hg_latitude_deg_mesh, hg_longitude_deg_mesh = np.meshgrid(
                 lat * np.ones(num_points), hg_longitude_deg)
-            x, y = wcs.convert_hg_hpc(self.rsun_meters,
-                                      self.dsun, self.heliographic_latitude,
-                                      self.heliographic_longitude,
-                                      hg_longitude_deg_mesh,
-                                      hg_latitude_deg_mesh, units='arcsec')
+            x, y = wcs.convert_hg_hpc(hg_longitude_deg_mesh, hg_latitude_deg_mesh, b0_deg=b0, l0_deg=l0, 
+                    dsun_meters=dsun, angle_units=units[0], occultation=False)                         
+            
             axes.plot(x, y, color='white', linestyle='dotted',zorder=100)
             
         hg_longitude_deg = np.arange(lon_range[0], lon_range[1]+grid_spacing, grid_spacing)
@@ -906,11 +904,8 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         for lon in hg_longitude_deg:
             hg_longitude_deg_mesh, hg_latitude_deg_mesh = np.meshgrid(
                 lon * np.ones(num_points), hg_latitude_deg)
-            x, y = wcs.convert_hg_hpc(self.rsun_meters,
-                                      self.dsun, self.heliographic_latitude,
-                                      self.heliographic_longitude,
-                                      hg_longitude_deg_mesh,
-                                      hg_latitude_deg_mesh, units='arcsec')
+            x, y = wcs.convert_hg_hpc(hg_longitude_deg_mesh, hg_latitude_deg_mesh, b0_deg=b0, l0_deg=l0, 
+                    dsun_meters=dsun, angle_units=units[0], occultation=False)                         
             axes.plot(x, y, color='white', linestyle='dotted',zorder=100)
             
         axes.set_ylim(self.yrange)
