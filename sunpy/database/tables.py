@@ -2,6 +2,8 @@ from __future__ import absolute_import
 
 from time import strptime, mktime
 from datetime import datetime
+import fnmatch
+import os
 
 from sqlalchemy import Column, Integer, Float, String, DateTime, Boolean,\
     Table, ForeignKey
@@ -10,7 +12,8 @@ from sqlalchemy.ext.declarative import declarative_base
 from pyfits import getheader as get_pyfits_header
 
 __all__ = [
-    'FitsHeaderEntry', 'Tag', 'DatabaseEntry', 'entries_from_query_result']
+    'FitsHeaderEntry', 'Tag', 'DatabaseEntry', 'entries_from_query_result',
+    'entries_from_path']
 
 Base = declarative_base()
 
@@ -110,6 +113,12 @@ class DatabaseEntry(Base):
             waveunit=wave.waveunit, wavemin=float(wave.wavemin),
             wavemax=float(wave.wavemax))
 
+    @classmethod
+    def from_fits_filepath(cls, path):
+        entry = cls()
+        entry.add_fits_header_entries_from_file(path)
+        return entry
+
     def add_fits_header_entries_from_file(self, fits_filepath):
         header = get_pyfits_header(fits_filepath)
         fits_header_entries = [
@@ -147,3 +156,29 @@ class DatabaseEntry(Base):
 
 def entries_from_query_result(qr):
     return (DatabaseEntry.from_query_result_block(block) for block in qr)
+
+
+def entries_from_path(fitsdir, recursive=False, pattern ='*.fits'):
+    """Search the given directory recursively for *.fits file names and use the
+    corresponding FITS headers to generate instances of DatabaseEntry. Return an
+    iterator over those instances.
+
+    Parameters
+    ----------
+
+    fitsdir : string
+        The directory where to look for FITS files.
+
+    recursive : bool
+        If True, the given directory will be searched recursively. Otherwise,
+        only the given directory and no subdirectories are searched.
+
+    pattern : string
+        The pattern defines how FITS files are detected. The default is to
+        collect all files with the filename extension *.fits.
+
+    """
+    for dirpath, dirnames, filenames in os.walk(fitsdir):
+        filename_paths = (os.path.join(dirpath, name) for name in filenames)
+        for path in fnmatch.filter(filename_paths, pattern):
+            yield DatabaseEntry.from_fits_filepath(path)
