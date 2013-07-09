@@ -102,6 +102,21 @@ class DatabaseEntry(Base):
 
     @classmethod
     def from_query_result_block(cls, qr_block):
+        """Make a new ``DatabaseEntry`` instance from a VSO query result block.
+        A query result block is usually not created directly; instead, one gets
+        instances of ``suds.sudsobject.QueryResponseBlock`` by iterating over
+        a VSO query result.
+
+        Examples
+        --------
+        >>> from sunpy.net import vso
+        >>> from sunpy.database import DatabaseEntry
+        >>> client = vso.VSOClient()
+        >>> qr = client.query(vso.attrs.Time('2001/1/1', '2001/1/2'), vso.attrs.Instrument('eit'))
+        >>> DatabaseEntry.from_query_result_block(qr[0])
+        <DatabaseEntry(id None, data provider SDAC, fileid /archive/soho/private/data/processed/eit/lz/2001/01/efz20010101.010014)>
+
+        """
         time_start = timestamp2datetime('%Y%m%d%H%M%S', qr_block.time.start)
         time_end = timestamp2datetime('%Y%m%d%H%M%S', qr_block.time.end)
         wave = qr_block.wave
