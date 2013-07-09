@@ -7,6 +7,7 @@
 #pylint: disable=W0401,C0103,R0904,W0141
 
 from __future__ import absolute_import
+from __future__ import division
 
 """
 This module provides a wrapper around the VSO API.
@@ -15,6 +16,7 @@ This module provides a wrapper around the VSO API.
 import re
 import os
 import sys
+import math
 import random
 import threading
 
@@ -53,17 +55,61 @@ class _Str(str):
 
 # ----------------------------------------
 
+class ProgressBar(object):
+    SYMBOL = '='
+    LEFT_BORDER = '['
+    RIGHT_BORDER = ']'
+    def __init__(self, n, current=0, width=40, output=sys.stdout):
+        self.n = n
+        self.current = current
+        self.width = width
+        self.step = self.n / self.width
+        self.output = output
+
+    def start(self):
+        self.output.write(
+            self.LEFT_BORDER + " " * (len(self.SYMBOL) * self.width) +
+                self.RIGHT_BORDER
+        )
+        self.output.flush()
+        self.output.write("\b" * (self.width+len(self.RIGHT_BORDER)))
+
+    def finish(self):
+        print
+
+    def draw_one(self):
+        self.output.write(self.SYMBOL)
+
+    def draw(self):
+        cur = self.current
+        self.current = 0
+        for _ in xrange(cur):
+            self.poke()
+
+    def poke(self, n=1):
+        if self.current > self.n:
+            raise ValueError("ProgressBar overflowed.")
+
+        diff = int((self.current + n) / self.step) - int(self.current / self.step)
+        for _ in xrange(diff):
+            self.draw_one()
+        self.current += n
+
+
 class Results(object):
     """ Returned by VSOClient.get. Use .wait to wait
     for completion of download.
     """
     def __init__(self, callback, n=0, done=None):
         self.callback = callback
-        self.n = n
+        self.n = self.total = n
         self.map_ = {}
         self.done = done
         self.evt = threading.Event()
         self.errors = []
+        self.lock = threading.RLock()
+
+        self.progress = None
     
     def submit(self, keys, value):
         """
@@ -81,15 +127,18 @@ class Results(object):
         self.poke()
     
     def poke(self):
-        self.n -= 1
         """ Signal completion of one item that was waited for. This can be
         because it was submitted, because it lead to an error or for any
         other reason. """
-        if not self.n:
-            if self.done is not None:
-                self.map_ = self.done(self.map_)
-            self.callback(self.map_)
-            self.evt.set()
+        with self.lock:
+            if self.progress is not None:
+                self.progress.poke()
+            self.n -= 1
+            if not self.n:
+                if self.done is not None:
+                    self.map_ = self.done(self.map_)
+                self.callback(self.map_)
+                self.evt.set()
     
     def require(self, keys):
         """ Require that keys be submitted before the Results object is
@@ -99,15 +148,25 @@ class Results(object):
         keys : list
             name of keys under which to save the result
         """
-        self.n += 1
-        return partial(self.submit, keys)
+        with self.lock:
+            self.n += 1
+            self.total += 1
+            return partial(self.submit, keys)
     
-    def wait(self, timeout=100):
+    def wait(self, timeout=100, progress=False):
         """ Wait for result to be complete and return it. """
         # Giving wait a timeout somehow circumvents a CPython bug that the
         # call gets ininterruptible.
+        if progress:
+            with self.lock:
+                self.progress = ProgressBar(self.total, self.total - self.n)
+                self.progress.start()
+                self.progress.draw()
+
         while not self.evt.wait(timeout):
             pass
+
+        self.progress.finish()
 
         return self.map_
     
