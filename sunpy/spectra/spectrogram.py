@@ -587,7 +587,7 @@ class Spectrogram(Parent):
             while self.freq_axis[right] < min_:
                 right -= 1
 
-        return self._with_data(self.data[left:right + 1, :])
+        return self[left:right + 1, :]
     
     
     def auto_find_background(self, amount=0.05):
