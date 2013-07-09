@@ -57,8 +57,8 @@ class Downloader(object):
                             fd.write(rec)
         except Exception, e:
             if errback is not None:
-                errback(e)
-    
+                self._close(errback, [e], server)
+
     def _attempt_download(self, url, path, callback, errback):
         """ Attempt download. If max. connection limit reached, queue for download later.
         """
