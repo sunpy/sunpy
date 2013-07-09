@@ -155,6 +155,25 @@ class DatabaseEntry(Base):
 
 
 def entries_from_query_result(qr):
+    """Use a query response returned from ``VSOClient.query`` or
+    ``VSOClient.query_legacy`` to generate instances of ``DatabaseEntry``.
+    Return an iterator over those instances.
+
+    Examples
+    --------
+    >>> from sunpy.net import vso
+    >>> from sunpy.database import Database, entries_from_query_result
+    >>> client = vso.VSOClient()
+    >>> qr = client.query(vso.attrs.Time('2001/1/1', '2001/1/2'), vso.attrs.Instrument('eit'))
+    >>> entries = entries_from_query_result(qr)
+    >>> entries.next()
+    <DatabaseEntry(id None, data provider SDAC, fileid /archive/soho/private/data/processed/eit/lz/2001/01/efz20010101.010014)>
+
+    See Also
+    --------
+    VSOClient.query and VSOClient.query_legacy for information on how to query
+    a VSO server.
+    """
     return (DatabaseEntry.from_query_result_block(block) for block in qr)
 
 
