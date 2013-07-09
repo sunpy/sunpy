@@ -158,10 +158,10 @@ def entries_from_query_result(qr):
     return (DatabaseEntry.from_query_result_block(block) for block in qr)
 
 
-def entries_from_path(fitsdir, recursive=False, pattern ='*.fits'):
+def entries_from_path(fitsdir, recursive=False, pattern='*.fits'):
     """Search the given directory recursively for *.fits file names and use the
-    corresponding FITS headers to generate instances of DatabaseEntry. Return an
-    iterator over those instances.
+    corresponding FITS headers to generate instances of DatabaseEntry. Return
+    an iterator over those instances.
 
     Parameters
     ----------
