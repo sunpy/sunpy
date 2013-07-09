@@ -49,7 +49,7 @@ class TestDiffRot():
         for k in assertion:
             np.testing.assert_almost_equal(result[k], assertion[k], decimal=4)
 
-    def test_pb0r(self):
+    def test_calc_P_B0_SD(self):
         result = calc_P_B0_SD('2012-12-14')
         assertion = {'p': 10.4868, 'b0': -0.8127, 'l0': 0.0000, 'sd': 16.2364}
         for k in assertion:

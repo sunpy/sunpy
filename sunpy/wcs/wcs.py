@@ -346,8 +346,8 @@ def convert_hg_hcc(hglon_deg, hglat_deg, b0_deg=0, l0_deg=0, occultation=False, 
     
     """
 
-    lon = np.deg2rad(hglon_deg)#, dtype=np.float32)
-    lat = np.deg2rad(hglat_deg)#, dtype=np.float32)
+    lon = np.deg2rad(hglon_deg, dtype=np.float32)
+    lat = np.deg2rad(hglat_deg, dtype=np.float32)
     
     cosb = np.cos(np.deg2rad(b0_deg))
     sinb = np.sin(np.deg2rad(b0_deg))

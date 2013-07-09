@@ -63,7 +63,8 @@ def diff_rot(ddays, latitude, rot_type='howard', frame_time='sidereal'):
     else:
         delta = ddays
 
-    delta_seconds = (delta.microseconds + (delta.seconds + delta.days * 24 * 3600) *
+    delta_seconds = (delta.microseconds + 
+                                     (delta.seconds + delta.days * 24 * 3600) *
                     10**6) / 10**6
     delta_days = delta_seconds / 24 / 3600
 
@@ -71,8 +72,7 @@ def diff_rot(ddays, latitude, rot_type='howard', frame_time='sidereal'):
     sin4l = sin2l**2
 
     rot_params = {'howard': [2.894, -0.428, -0.370],
-                  'snodgrass': [2.851, -0.343, -0.474]
-                  }
+                  'snodgrass': [2.851, -0.343, -0.474]}
 
     if rot_type not in ['howard', 'allen', 'snodgrass']:
         raise ValueError("""rot_type must equal one of
@@ -177,7 +177,7 @@ point of view and the STEREO A, B point of views.
 
     newx, newy = convert_hg_hpc(longitude + drot, latitude,b0_deg=vend["b0"],
                                 l0_deg=vend["l0"],
-                                dsun_meters=constants.au * sun.sunearth_distance(t=dend),
+                       sun_meters=constants.au * sun.sunearth_distance(t=dend),
                                 angle_units='arcsec', occultation=False)
 
     return newx, newy
