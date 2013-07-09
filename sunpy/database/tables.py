@@ -120,6 +120,49 @@ class DatabaseEntry(Base):
         return entry
 
     def add_fits_header_entries_from_file(self, fits_filepath):
+        """Use the header of a FITS file to add this information to this
+        database entry. It will be saved in the attribute
+        ``fits_header_entries``.
+
+        Parameters
+        ----------
+        fits_filepath : file path or file-like object
+            File to get header from.  If an opened file object, its mode
+            must be one of the following rb, rb+, or ab+).
+
+        Examples
+        --------
+        >>> from pprint import pprint
+        >>> from sunpy.database import DatabaseEntry
+        >>> import sunpy
+        >>> entry = DatabaseEntry()
+        >>> entry.fits_header_entries
+        []
+        >>> entry.add_fits_header_entries_from_file(sunpy.RHESSI_EVENT_LIST)
+        >>> pprint(entry.fits_header_entries)
+        [<FitsHeaderEntry(id None, key 'SIMPLE', value True)>,
+         <FitsHeaderEntry(id None, key 'BITPIX', value 8)>,
+         <FitsHeaderEntry(id None, key 'NAXIS', value 0)>,
+         <FitsHeaderEntry(id None, key 'EXTEND', value True)>,
+         <FitsHeaderEntry(id None, key 'DATE', value '2011-09-13T15:37:38')>,
+         <FitsHeaderEntry(id None, key 'ORIGIN', value 'RHESSI')>,
+         <FitsHeaderEntry(id None, key 'OBSERVER', value 'Unknown')>,
+         <FitsHeaderEntry(id None, key 'TELESCOP', value 'RHESSI')>,
+         <FitsHeaderEntry(id None, key 'INSTRUME', value 'RHESSI')>,
+         <FitsHeaderEntry(id None, key 'OBJECT', value 'Sun')>,
+         <FitsHeaderEntry(id None, key 'DATE_OBS', value '2002-02-20T11:06:00.000')>,
+         <FitsHeaderEntry(id None, key 'DATE_END', value '2002-02-20T11:06:43.330')>,
+         <FitsHeaderEntry(id None, key 'TIME_UNI', value 1)>,
+         <FitsHeaderEntry(id None, key 'ENERGY_L', value 25.0)>,
+         <FitsHeaderEntry(id None, key 'ENERGY_H', value 40.0)>,
+         <FitsHeaderEntry(id None, key 'TIMESYS', value '1979-01-01T00:00:00')>,
+         <FitsHeaderEntry(id None, key 'TIMEUNIT', value 'd')>]
+
+        See Also
+        --------
+        pyfits.getheader is used to read the FITS header.
+
+        """
         header = get_pyfits_header(fits_filepath)
         fits_header_entries = [
             FitsHeaderEntry(key, value) for key, value in header.iteritems()]
