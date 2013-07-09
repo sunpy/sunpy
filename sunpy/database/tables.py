@@ -130,8 +130,7 @@ class DatabaseEntry(Base):
 
     @classmethod
     def from_fits_filepath(cls, path):
-        """
-        Make a new ``DatabaseEntry`` instance by using the method
+        """Make a new ``DatabaseEntry`` instance by using the method
         ``add_fits_header_entries_from_file``. This classmethod is simply a
         shortcut for the following lines::
 
@@ -141,6 +140,7 @@ class DatabaseEntry(Base):
         See Also
         --------
         :method:`add_fits_header_entries_from_file`
+
         """
         entry = cls()
         entry.add_fits_header_entries_from_file(path)
@@ -243,6 +243,7 @@ def entries_from_query_result(qr):
     --------
     VSOClient.query and VSOClient.query_legacy for information on how to query
     a VSO server.
+
     """
     return (DatabaseEntry.from_query_result_block(block) for block in qr)
 
@@ -254,7 +255,6 @@ def entries_from_path(fitsdir, recursive=False, pattern='*.fits'):
 
     Parameters
     ----------
-
     fitsdir : string
         The directory where to look for FITS files.
 
