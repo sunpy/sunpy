@@ -115,6 +115,18 @@ class DatabaseEntry(Base):
 
     @classmethod
     def from_fits_filepath(cls, path):
+        """
+        Make a new ``DatabaseEntry`` instance by using the method
+        ``add_fits_header_entries_from_file``. This classmethod is simply a
+        shortcut for the following lines::
+
+            entry = DatabaseEntry()
+            entry.add_fits_header_entries_from_file(path)
+
+        See Also
+        --------
+        :method:`add_fits_header_entries_from_file`
+        """
         entry = cls()
         entry.add_fits_header_entries_from_file(path)
         return entry
