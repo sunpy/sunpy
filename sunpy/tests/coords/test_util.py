@@ -1,7 +1,7 @@
 from __future__ import absolute_import
 import unittest
 import numpy as np
-from sunpy.coords import diff_rot, sun_pos, pb0r, rot_hpc
+from sunpy.coords import diff_rot, sun_pos, calc_P_B0_SD, rot_hpc
 #pylint: disable=C0103,R0904,W0201,W0212,W0232,E1103
 
 
@@ -51,7 +51,7 @@ class DiffRotTest(unittest.TestCase):
                                                            decimal=4) is None)
 
     def test_pb0r(self):
-        result = pb0r('2012-12-14')
+        result = calc_P_B0_SD('2012-12-14')
         assertion = {'p': 10.4868, 'b0': -0.8127, 'l0': 0.0000, 'sd': 16.2364}
         for k in assertion:
             self.failUnless(np.testing.assert_almost_equal(result[k],
