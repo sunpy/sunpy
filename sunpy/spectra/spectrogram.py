@@ -235,7 +235,7 @@ class TimeFreq(object):
     def peek(self, *args, **kwargs):
         plt.figure()
         ret = self.plot(*args, **kwargs)
-        ret.show()
+        plt.show()
         return ret
 
 
@@ -1201,5 +1201,5 @@ class LinearTimeSpectrogram(Spectrogram):
                     *map(int, end.split(":"))
                 )
             end = self.time_to_x(end)
-        return self.data[:, start:end]
+        return self[:, start:end]
     
