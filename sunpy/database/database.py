@@ -52,6 +52,8 @@ class EntryAlreadyUnstarredError(Exception):
 
 class Database(object):
     """
+    Database(url[, CacheClass[, cache_size]])
+
     Parameters
     ----------
     url : str
@@ -60,7 +62,9 @@ class Database(object):
     CacheClass : sunpy.database.caching.BaseCache
         A concrete cache implementation of the abstract class BaseCache.
         Builtin supported values for this parameters are
-        sunpy.database.LRUCache and sunpy.database.LFUCache.
+        :class:`sunpy.database.caching.LRUCache` and
+        :class:`sunpy.database.caching.LFUCache`.
+        The default value is :class:`sunpy.database.caching.LRUCache`.
     cache_size : int
         The maximum number of database entries, default is no limit.
 
