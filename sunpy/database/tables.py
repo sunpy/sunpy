@@ -241,9 +241,8 @@ class DatabaseEntry(Base):
 
         """
         header = get_pyfits_header(fits_filepath)
-        fits_header_entries = [
-            FitsHeaderEntry(key, value) for key, value in header.iteritems()]
-        self.fits_header_entries.extend(fits_header_entries)
+        self.fits_header_entries.extend(
+            FitsHeaderEntry(key, value) for key, value in header.iteritems())
 
     def __eq__(self, other):
         return (
