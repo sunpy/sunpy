@@ -80,12 +80,6 @@ def test_add_fits_header_entries_from_file():
         FitsHeaderEntry('ENERGY_H', 40.0),
         FitsHeaderEntry('TIMESYS', '1979-01-01T00:00:00'),
         FitsHeaderEntry('TIMEUNIT', 'd')]
-
-
-def test_add_fits_header_entries_from_file_using_instrume_and_dateobs_info():
-    entry = DatabaseEntry()
-    assert entry.fits_header_entries == []
-    entry.add_fits_header_entries_from_file(sunpy.RHESSI_EVENT_LIST)
     assert entry.instrument == 'RHESSI'
     assert entry.observation_time_start == datetime(2002, 02, 20, 11, 6, 0, 0)
 
