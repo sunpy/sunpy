@@ -56,7 +56,7 @@ class Database(object):
     ----------
     url : str
         A URL describing the database. This value is simply passed to
-        sqlalchemy.create_engine
+        :func:`sqlalchemy.create_engine`
     CacheClass : sunpy.database.caching.BaseCache
         A concrete cache implementation of the abstract class BaseCache.
         Builtin supported values for this parameters are
@@ -158,9 +158,6 @@ class Database(object):
      <DatabaseEntry(id 3, data provider None, fileid None)>,
      <DatabaseEntry(id 4, data provider None, fileid None)>]
 
-    See Also
-    --------
-    sqlalchemy.create_engine
     """
     def __init__(self, url, CacheClass=LRUCache, cache_size=float('inf')):
         self._engine = create_engine(url)
