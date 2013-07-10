@@ -27,7 +27,9 @@ It comes with a complete build environment so you will not need to worry about
 installing a compiler or likewise.
 
 Head to the download page, install it and you are set. It can also be installed
-into your user directory without administrator permissions.
+into your user directory without administrator permissions; be sure to use
+the Anaconda versions of the commands in the following listings if you have
+multiple Python environments installed.
 
 Installing Python Modules
 -------------------------
