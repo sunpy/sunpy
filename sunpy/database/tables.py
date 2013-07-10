@@ -311,6 +311,26 @@ def entries_from_path(fitsdir, recursive=False, pattern='*.fits'):
         The pattern defines how FITS files are detected. The default is to
         collect all files with the filename extension *.fits.
 
+    Examples
+    --------
+    >>> from pprint import pprint
+    >>> from sunpy.database import entries_from_path
+    >>> from sunpy.data.test import rootdir as fitsdir
+    >>> entries = list(entries_from_path(fitsdir))
+    >>> len(entries)
+    2
+    >>> # and now search `fitsdir` recursive
+    >>> entries = list(entries_from_path(fitsdir, True))
+    >>> len(entries)
+    15
+    >>> # print the first 5 items of the FITS header of the first found file
+    >>> pprint(entries[0].fits_header_entries[:5])
+    [<FitsHeaderEntry(id None, key 'SIMPLE', value True)>,
+     <FitsHeaderEntry(id None, key 'BITPIX', value -64)>,
+     <FitsHeaderEntry(id None, key 'NAXIS', value 2)>,
+     <FitsHeaderEntry(id None, key 'NAXIS1', value 128)>,
+     <FitsHeaderEntry(id None, key 'NAXIS2', value 128)>]
+
     """
     for dirpath, dirnames, filenames in os.walk(fitsdir):
         filename_paths = (os.path.join(dirpath, name) for name in filenames)
