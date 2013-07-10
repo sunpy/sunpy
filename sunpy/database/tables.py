@@ -246,11 +246,13 @@ class DatabaseEntry(Base):
         self.fits_header_entries.extend(
             FitsHeaderEntry(key, value) for key, value in header.iteritems())
         for header_entry in self.fits_header_entries:
-            key = header_entry.key
+            key, value = header_entry.key, header_entry.value
             if key == 'INSTRUME':
-                self.instrument = header_entry.value
+                self.instrument = value
+            elif key == 'WAVELNTH':
+                self.wavemin = self.wavemax = float(value)
             elif key in ('DATE-OBS', 'DATE_OBS'):
-                self.observation_time_start = parse_time(header_entry.value)
+                self.observation_time_start = parse_time(value)
 
     def __eq__(self, other):
         return (
