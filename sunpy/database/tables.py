@@ -11,6 +11,8 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 from pyfits import getheader as get_pyfits_header
 
+from sunpy.time import parse_time
+
 __all__ = [
     'FitsHeaderEntry', 'Tag', 'DatabaseEntry', 'entries_from_query_result',
     'entries_from_path']
@@ -243,6 +245,12 @@ class DatabaseEntry(Base):
         header = get_pyfits_header(fits_filepath)
         self.fits_header_entries.extend(
             FitsHeaderEntry(key, value) for key, value in header.iteritems())
+        for header_entry in self.fits_header_entries:
+            key = header_entry.key
+            if key == 'INSTRUME':
+                self.instrument = header_entry.value
+            elif key in ('DATE-OBS', 'DATE_OBS'):
+                self.observation_time_start = parse_time(header_entry.value)
 
     def __eq__(self, other):
         return (

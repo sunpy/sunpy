@@ -82,6 +82,14 @@ def test_add_fits_header_entries_from_file():
         FitsHeaderEntry('TIMEUNIT', 'd')]
 
 
+def test_add_fits_header_entries_from_file_using_instrume_and_dateobs_info():
+    entry = DatabaseEntry()
+    assert entry.fits_header_entries == []
+    entry.add_fits_header_entries_from_file(sunpy.RHESSI_EVENT_LIST)
+    assert entry.instrument == 'RHESSI'
+    assert entry.observation_time_start == datetime(2002, 02, 20, 11, 6, 0, 0)
+
+
 def test_entries_from_path():
     entries = list(entries_from_path(os.path.join(testdir, 'EIT')))
     assert len(entries) == 13
