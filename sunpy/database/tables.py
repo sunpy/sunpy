@@ -205,7 +205,10 @@ class DatabaseEntry(Base):
     def add_fits_header_entries_from_file(self, fits_filepath):
         """Use the header of a FITS file to add this information to this
         database entry. It will be saved in the attribute
-        ``fits_header_entries``.
+        :attr:`fits_header_entries`. If the key INSTRUME, WAVELNTH or
+        DATE-OBS / DATE_OBS is available, the attribute :attr:`instrument`,
+        :attr:`wavemin` and :attr:`wavemax` or :attr:`observation_time_start`
+        is set, respectively.
 
         Parameters
         ----------
