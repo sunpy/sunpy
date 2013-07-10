@@ -84,6 +84,16 @@ def test_add_fits_header_entries_from_file():
     assert entry.observation_time_start == datetime(2002, 02, 20, 11, 6, 0, 0)
 
 
+def test_add_fits_header_entries_from_file_wavelength():
+    entry = DatabaseEntry()
+    assert entry.fits_header_entries == []
+    path = os.path.join(testdir, 'EIT', 'efz20040301.020010_s.fits')
+    entry.add_fits_header_entries_from_file(path)
+    assert FitsHeaderEntry('WAVELNTH', 195) in entry.fits_header_entries
+    assert entry.wavemin == 195.0
+    assert entry.wavemax == 195.0
+
+
 def test_entries_from_path():
     entries = list(entries_from_path(os.path.join(testdir, 'EIT')))
     assert len(entries) == 13
