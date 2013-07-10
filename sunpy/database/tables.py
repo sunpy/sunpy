@@ -80,8 +80,9 @@ class DatabaseEntry(Base):
     """
     DatabaseEntry()
 
-    The class ``DatabaseEntry`` represents the main table of the database and
-    each instance represents one record that *can* be saved in the database.
+    The class :class:`DatabaseEntry` represents the main table of the database
+    and each instance represents one record that *can* be saved in the
+    database.
 
     Attributes
     ----------
@@ -159,10 +160,10 @@ class DatabaseEntry(Base):
 
     @classmethod
     def from_query_result_block(cls, qr_block):
-        """Make a new ``DatabaseEntry`` instance from a VSO query result block.
-        A query result block is usually not created directly; instead, one gets
-        instances of ``suds.sudsobject.QueryResponseBlock`` by iterating over
-        a VSO query result.
+        """Make a new :class:`DatabaseEntry` instance from a VSO query result
+        block. A query result block is usually not created directly; instead,
+        one gets instances of ``suds.sudsobject.QueryResponseBlock`` by
+        iterating over a VSO query result.
 
         Examples
         --------
@@ -187,16 +188,12 @@ class DatabaseEntry(Base):
 
     @classmethod
     def from_fits_filepath(cls, path):
-        """Make a new ``DatabaseEntry`` instance by using the method
-        ``add_fits_header_entries_from_file``. This classmethod is simply a
+        """Make a new :class:`DatabaseEntry` instance by using the method
+        :meth:`add_fits_header_entries_from_file`. This classmethod is simply a
         shortcut for the following lines::
 
             entry = DatabaseEntry()
             entry.add_fits_header_entries_from_file(path)
-
-        See Also
-        --------
-        :method:`add_fits_header_entries_from_file`
 
         """
         entry = cls()
@@ -242,10 +239,6 @@ class DatabaseEntry(Base):
          <FitsHeaderEntry(id None, key 'TIMESYS', value '1979-01-01T00:00:00')>,
          <FitsHeaderEntry(id None, key 'TIMEUNIT', value 'd')>]
 
-        See Also
-        --------
-        pyfits.getheader is used to read the FITS header.
-
         """
         header = get_pyfits_header(fits_filepath)
         fits_header_entries = [
@@ -282,9 +275,9 @@ class DatabaseEntry(Base):
 
 
 def entries_from_query_result(qr):
-    """Use a query response returned from ``VSOClient.query`` or
-    ``VSOClient.query_legacy`` to generate instances of ``DatabaseEntry``.
-    Return an iterator over those instances.
+    """Use a query response returned from :meth:`sunpy.net.vso.VSOClient.query`
+    or :meth:`sunpy.net.vso.VSOClient.query_legacy` to generate instances of
+    :class:`DatabaseEntry`. Return an iterator over those instances.
 
     Examples
     --------
@@ -296,19 +289,14 @@ def entries_from_query_result(qr):
     >>> entries.next()
     <DatabaseEntry(id None, data provider SDAC, fileid /archive/soho/private/data/processed/eit/lz/2001/01/efz20010101.010014)>
 
-    See Also
-    --------
-    VSOClient.query and VSOClient.query_legacy for information on how to query
-    a VSO server.
-
     """
     return (DatabaseEntry.from_query_result_block(block) for block in qr)
 
 
 def entries_from_path(fitsdir, recursive=False, pattern='*.fits'):
     """Search the given directory recursively for *.fits file names and use the
-    corresponding FITS headers to generate instances of DatabaseEntry. Return
-    an iterator over those instances.
+    corresponding FITS headers to generate instances of :class:`DatabaseEntry`.
+    Return an iterator over those instances.
 
     Parameters
     ----------
