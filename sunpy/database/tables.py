@@ -77,6 +77,63 @@ class Tag(Base):
 
 
 class DatabaseEntry(Base):
+    """
+    DatabaseEntry()
+
+    The class ``DatabaseEntry`` represents the main table of the database and
+    each instance represents one record that *can* be saved in the database.
+
+    Attributes
+    ----------
+    id : int
+        A unique ID number. By default it is None, but automatically set to the
+        maximum number plus one when this entry is added to the database.
+    source : string
+        The source is the name of an observatory or the name of a network of
+        observatories.
+    provider : string
+        The name of the server which provides the retrieved data.
+    physobs : string
+        A physical observable identifier used by VSO.
+    fileid : string
+        The file ID is a string defined by the data provider that should point
+        to a specific data product. The association of fileid to the specific
+        data may change sometime, if the fileid always points to the latest
+        calibrated data.
+    observation_time_start : datetime
+        The date and time when the observation of the data started.
+    observation_time_end : datetime
+        The date and time when the observation of the data ended.
+    instrument : string
+        The instrument which was used to observe the data.
+    size : float
+        The size of the data in kilobytes.
+    mission : string
+        The name of the mission. Currently, this attribute is not set
+        automatically by any method.
+    waveunit : string
+        The wave unit which has been used to measure the data (e.g. 'Angstrom')
+    wavemin : float
+        The value of the measured wave length.
+    wavemax : float
+        This is the same value as ``wavemin``. The value is stored twice,
+        because each ``suds.sudsobject.QueryResponseBlock`` which is used by
+        the vso package contains both these values.
+    path : string
+        A local file path where the according FITS file is saved.
+    download_time : datetime
+        The date and time when the files connected to a query have been
+        downloaded. Note: this is not the date and time when this entry has
+        been added to a database!
+    starred : bool
+        Entries can be starred to mark them. By default, this value is False.
+    fits_header_entries : list
+        A list of ``FitsHeaderEntry`` instances.
+    tags : list
+        A list of ``Tag`` instances. Use :ref:`sunpy.database.Database.tag` to
+        add a new tag or multiple tags to a specific entry.
+
+    """
     __tablename__ = 'data'
     __hash__ = None
 
