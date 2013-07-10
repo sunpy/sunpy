@@ -10,6 +10,7 @@ The database package exports the following classes, functions and exceptions:
         - Tag
     :functions:
         - entries_from_query_result
+        - entries_from_path
     :exceptions:
         - EntryAlreadyAddedError
         - NoSuchEntryError
@@ -29,4 +30,4 @@ __all__ = [
     'Database', 'EntryAlreadyAddedError', 'NoSuchEntryError',
     'EntryAlreadyStarredError', 'EntryAlreadyUnstarredError',
     'DatabaseEntry', 'FitsHeaderEntry', 'Tag', 'entries_from_query_result',
-    'entries_from_fits_paths']
+    'entries_from_path']
