@@ -74,6 +74,15 @@ def get_system_filename(sock, url, default=u"file"):
     return name.encode(sys.getfilesystemencoding(), 'ignore')
 
 
+def get_system_filename_slugify(sock, url, default=u"file"):
+    """ Get filename from given urllib2.urlopen object and URL.
+    First, attempts to extract Content-Disposition, second, extract
+    from URL, eventually fall back to default. Returns bytestring
+    in file system encoding, normalized so it shouldn't violate
+    operating system restrictions. """
+    return slugify(get_system_filename(sock, url, default))
+
+
 def download_file(url, directory, default=u'file', overwrite=False):
     """ Download file from url into directory. Try to get filename from
     Content-Disposition header, otherwise get from path of url. Fall
