@@ -294,7 +294,7 @@ def entries_from_query_result(qr):
     Examples
     --------
     >>> from sunpy.net import vso
-    >>> from sunpy.database import Database, entries_from_query_result
+    >>> from sunpy.database import entries_from_query_result
     >>> client = vso.VSOClient()
     >>> qr = client.query(vso.attrs.Time('2001/1/1', '2001/1/2'), vso.attrs.Instrument('eit'))
     >>> entries = entries_from_query_result(qr)
