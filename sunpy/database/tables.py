@@ -156,7 +156,7 @@ class DatabaseEntry(Base):
     wavemax = Column(Float)
     path = Column(String)
     download_time = Column(DateTime)
-    starred = Column(Boolean)
+    starred = Column(Boolean, default=False)
     fits_header_entries = relationship('FitsHeaderEntry', backref='data')
     tags = relationship('Tag', secondary=association_table, backref='data')
 
@@ -274,7 +274,7 @@ class DatabaseEntry(Base):
             self.wavemax == other.wavemax and
             self.path == other.path and
             self.download_time == other.download_time and
-            self.starred == other.starred and
+            bool(self.starred) == bool(other.starred) and
             self.fits_header_entries == other.fits_header_entries and
             self.tags == other.tags)
 
