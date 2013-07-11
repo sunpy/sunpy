@@ -44,12 +44,14 @@ def test_path_exception():
 
 def test_download_http():
     items = []
+    lck = threading.Lock()
 
     def wait_for(n, callback):  # pylint: disable=W0613
         def _fun(handler):
-            items.append(handler)
-            if len(items) == n:
-                callback(items)
+            with lck:
+                items.append(handler)
+                if len(items) == n:
+                    callback(items)
         return _fun
 
     tmp = tempfile.mkdtemp()
@@ -57,12 +59,15 @@ def test_download_http():
 
     dw = Downloader(1, 1)
 
-    on_finish = wait_for(2, lambda _: dw.stop())
+    on_finish = wait_for(3, lambda _: dw.stop())
     dw.download('http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js', path_fun, on_finish)
     dw.download('http://ajax.googleapis.com/ajax/libs/webfont/1.4.2/webfont.js', path_fun, on_finish)
+    dw.download('https://raw.github.com/sunpy/sunpy/master/INSTALL.txt', path_fun, on_finish)
     # dw.download('ftp://speedtest.inode.at/speedtest-100mb', path_fun, on_finish)
 
     dw.wait()
+
+    assert len(items) == 3
 
     for item in items:
         assert os.path.exists(item ['path'])
