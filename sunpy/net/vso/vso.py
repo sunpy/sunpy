@@ -29,6 +29,7 @@ from suds import client, TypeNotFound
 
 from sunpy import config
 from sunpy.net import download
+from sunpy.util.progressbar import TTYProgressBar as ProgressBar
 from sunpy.util.net import get_filename, slugify
 from sunpy.net.attr import and_, Attr
 from sunpy.net.vso.attrs import walker, TIMEFORMAT
@@ -54,46 +55,6 @@ class _Str(str):
 
 
 # ----------------------------------------
-
-class ProgressBar(object):
-    SYMBOL = '='
-    LEFT_BORDER = '['
-    RIGHT_BORDER = ']'
-    def __init__(self, n, current=0, width=40, output=sys.stdout):
-        self.n = n
-        self.current = current
-        self.width = width
-        self.step = self.n / self.width
-        self.output = output
-
-    def start(self):
-        self.output.write(
-            self.LEFT_BORDER + " " * (len(self.SYMBOL) * self.width) +
-                self.RIGHT_BORDER
-        )
-        self.output.flush()
-        self.output.write("\b" * (self.width+len(self.RIGHT_BORDER)))
-
-    def finish(self):
-        print
-
-    def draw_one(self):
-        self.output.write(self.SYMBOL)
-
-    def draw(self):
-        cur = self.current
-        self.current = 0
-        for _ in xrange(cur):
-            self.poke()
-
-    def poke(self, n=1):
-        if self.current > self.n:
-            raise ValueError("ProgressBar overflowed.")
-
-        diff = int((self.current + n) / self.step) - int(self.current / self.step)
-        for _ in xrange(diff):
-            self.draw_one()
-        self.current += n
 
 
 class Results(object):
