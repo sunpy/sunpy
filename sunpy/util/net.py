@@ -21,7 +21,7 @@ from itertools import ifilter
 from sunpy.util import replacement_filename
 
 # Characters not allowed in slugified version.
-_punct_re = re.compile(r'[\t !"#$%&\'()*\-/<=>?@\[\\\]^_`{|},.]+')
+_punct_re = re.compile(r'[:\t !"#$%&\'()*\-/<=>?@\[\\\]^_`{|},.]+')
 
 def slugify(text, delim=u'_', encoding="ascii"):
     """ Slugify given unicode text. """
