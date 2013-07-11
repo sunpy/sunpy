@@ -29,6 +29,7 @@ from sunpy import config
 from sunpy.net import download
 from sunpy.util.net import get_filename, slugify
 from sunpy.net.attr import and_, Attr
+from sunpy.net.vso import attrs
 from sunpy.net.vso.attrs import walker, TIMEFORMAT
 from sunpy.util import to_angstrom, print_table, replacement_filename
 from sunpy.util.net import slugify
