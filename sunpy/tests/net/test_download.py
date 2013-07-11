@@ -9,11 +9,35 @@ import pytest
 
 import os
 import tempfile
+import threading
 
 from functools import partial
 
+import sunpy
+
 from sunpy.net.download import Downloader, default_name
-import threading
+
+
+class CalledProxy(object):
+    def __init__(self, fn):
+        self.fn = fn
+        self.fired = False
+
+    def __call__(self, *args, **kwargs):
+        self.fn(*args, **kwargs)
+        self.fired = True
+
+
+class MockConfig(object):
+    def __init__(self):
+        self.dct = {}
+
+    def add_section(self, name, dct):
+        self.dct[name] = dct
+
+    def get(self, one, other):
+        return self.dct[one][other]
+
 
 def wait_for(n, callback): #pylint: disable=W0613
     items = []
@@ -58,8 +82,10 @@ def test_download_http():
     path_fun = partial(default_name, tmp)
 
     dw = Downloader(1, 1)
-    # If this fires, the assertion below will fail.
-    threading.Timer(60, dw.stop)
+    _stop = lambda _: dw.stop()
+
+    timeout = CalledProxy(_stop)
+    threading.Timer(60, timeout).start()
 
     on_finish = wait_for(3, lambda _: dw.stop())
     dw.download('http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js', path_fun, on_finish)
@@ -70,6 +96,60 @@ def test_download_http():
     dw.wait()
 
     assert len(items) == 3
+    assert not timeout.fired
 
     for item in items:
         assert os.path.exists(item['path'])
+
+
+def test_download_default_dir():
+    _config = sunpy.config
+
+    try:
+        tmpdir = tempfile.mkdtemp()
+
+        sunpy.config = MockConfig()
+        sunpy.config.add_section(
+            "downloads", {"download_dir": tmpdir}
+        )
+
+        dw = Downloader(1, 1)
+        _stop = lambda _: dw.stop()
+
+        timeout = CalledProxy(_stop)
+        errback = CalledProxy(_stop)
+        dw.download(
+            'http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js',
+            callback=_stop,
+            errback=errback
+        )
+
+        threading.Timer(10, timeout).start()
+        dw.wait()
+
+        assert not timeout.fired
+        assert not errback.fired
+        assert os.path.exists(os.path.join(tmpdir, 'jquery.min.js'))
+    finally:
+        sunpy.config = _config
+
+def test_download_dir():
+    tmpdir = tempfile.mkdtemp()
+
+    dw = Downloader(1, 1)
+    _stop = lambda _: dw.stop()
+    timeout = CalledProxy(_stop)
+    errback = CalledProxy(_stop)
+
+    dw.download(
+        'http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js',
+        tmpdir,
+        callback=_stop,
+        errback=errback
+    )
+
+    threading.Timer(10, timeout).start()
+    dw.wait()
+    assert not timeout.fired
+    assert not errback.fired
+    assert os.path.exists(os.path.join(tmpdir, 'jquery.min.js'))
