@@ -72,4 +72,4 @@ def test_download_http():
     assert len(items) == 3
 
     for item in items:
-        assert os.path.exists(item ['path'])
+        assert os.path.exists(item['path'])
