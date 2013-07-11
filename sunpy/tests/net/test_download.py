@@ -58,6 +58,8 @@ def test_download_http():
     path_fun = partial(default_name, tmp)
 
     dw = Downloader(1, 1)
+    # If this fires, the assertion below will fail.
+    threading.Timer(60, dw.stop)
 
     on_finish = wait_for(3, lambda _: dw.stop())
     dw.download('http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js', path_fun, on_finish)
