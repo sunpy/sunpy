@@ -166,33 +166,3 @@ class Downloader(object):
                             return
                     else:
                         break
-
-
-if __name__ == '__main__':
-    import tempfile
-
-    def wait_for(n, callback):  # pylint: disable=W0613
-        items = []
-
-        def _fun(handler):
-            print handler
-            items.append(handler)
-            if len(items) == n:
-                callback(items)
-        return _fun
-
-    tmp = tempfile.mkdtemp()
-    print tmp
-    path_fun = partial(default_name, tmp)
-    
-    dw = Downloader(1, 2)
-    
-    on_finish = wait_for(4, lambda _: dw.stop())
-    dw.download('ftp://speedtest.inode.at/speedtest-5mb', path_fun, on_finish)
-    dw.download('ftp://speedtest.inode.at/speedtest-20mb', path_fun, on_finish)
-    dw.download('https://bitsrc.org', path_fun, on_finish)
-    dw.download('ftp://speedtest.inode.at/speedtest-100mb', path_fun, on_finish)
-    
-    print dw.conns
-    
-    dw.wait()
