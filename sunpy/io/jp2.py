@@ -9,7 +9,8 @@ import subprocess
 import tempfile
 import xml.etree.cElementTree as ET
 
-from matplotlib.image import imread
+from glymur import Jp2k
+import glymur.jp2box
 
 from sunpy.util.xml import xml_to_dict
 from sunpy.io.header import FileHeader
@@ -33,8 +34,8 @@ def read(filepath, j2k_to_image='opj_decompress'):
     pairs : list
         A list of (data, header) tuples
     """
-    header = get_header(filepath)
-    data = _get_data(filepath, j2k_to_image=j2k_to_image)
+    header = get_header(filepath)[0]
+    data = _get_data(filepath)
     
     return [(data, header)]
 
@@ -88,7 +89,7 @@ def _get_data(filepath, j2k_to_image="opj_decompress"):
     data = jp2.read()
     return data
 
-def read_xmlbox(filepath, root):
+def _read_xmlbox(filepath, root):
     """
     Extracts the XML box from a JPEG 2000 image.
     
@@ -97,7 +98,8 @@ def read_xmlbox(filepath, root):
     """
     jp2 = Jp2k(filepath)
     # Assumes just a single XML box.
-    xmlbox = [box for box in jp2.box if box.id == 'xml '][0]
+    xmlbox = [box for box in jp2.box if isinstance(box, glymur.jp2box.XMLBox)][0]
+    #xmlbox = [box for box in jp2.box ][0]#if box.id == 'xml '
     xmlstr = ET.tostring(xmlbox.xml.find('fits'))
 
     # Fix any malformed XML (e.g. in older AIA data)

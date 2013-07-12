@@ -54,6 +54,8 @@ class Map(RegisteredFactoryBase):
         new_pairs = []
         for pair in pairs:
             filedata, filemeta = pair
+            print filedata, filemeta
+            print type(filedata), np.shape(filedata)
             assert isinstance(filemeta, FileHeader)
             #This tests that the data is more than 1D
             if len(np.shape(filedata)) > 1:
