@@ -99,16 +99,19 @@ MOCK_MODULES = [
     'sunpy.gui.ui.mainwindow.resources',
 
     'scipy.constants']
-for mod_name in MOCK_MODULES:
-    sys.modules[mod_name] = Mock(pi=math.pi, G=6.67364e-11)
 
-# We want np.dtype() to return a special Mock class because it shows up as a
-# default value for arguments (see sunpy.spectra.spectrogram)
-sys.modules['numpy'] = Mock(pi=math.pi, G=6.67364e-11,
-                            ndarray=type('ndarray', (), {}),
-                            dtype=lambda _: Mock(_mock_repr='np.dtype(\'float32\')'))
+if not tags.has('doctest'):
+    for mod_name in MOCK_MODULES:
+        sys.modules[mod_name] = Mock(pi=math.pi, G=6.67364e-11)
 
-
+    # We want np.dtype() to return a special Mock class because it shows up as a
+    # default value for arguments (see sunpy.spectra.spectrogram)
+    sys.modules['numpy'] = Mock(pi=math.pi, G=6.67364e-11,
+                                ndarray=type('ndarray', (), {}),
+                                dtype=lambda _: Mock(_mock_repr='np.dtype(\'float32\')'))
+else:
+    import matplotlib
+    matplotlib.interactive(True)
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
@@ -127,7 +130,7 @@ sys.path.append(os.path.abspath('../../sunpy/'))
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = ['sphinx.ext.autodoc', 'numpydoc', 'sphinx.ext.todo',
               'sphinx.ext.pngmath', 'sphinx.ext.viewcode', 
-              'sphinx.ext.autosummary']
+              'sphinx.ext.autosummary', 'sphinx.ext.doctest']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
