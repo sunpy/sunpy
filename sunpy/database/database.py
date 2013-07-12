@@ -347,7 +347,7 @@ class Database(object):
 
     def __iter__(self):
         """iterate over all database entries that have been saved."""
-        return iter(self.session.query(tables.DatabaseEntry).all())
+        return iter(self.session.query(tables.DatabaseEntry))
 
     def __len__(self):
         """Get the number of rows in the table."""
