@@ -27,7 +27,7 @@ matrix:
 before_install:
    # We do this to make sure we get the dependencies so pip works below
    - sudo apt-get update -qq
-   - sudo apt-get install -qq cython libatlas-dev liblapack-dev gfortran
+   - sudo apt-get install -qq cython libatlas-dev liblapack-dev gfortran libopenjpeg2
    
 install:
 #Install Numpy first so we force the version we are using
