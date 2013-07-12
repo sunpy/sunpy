@@ -75,15 +75,11 @@ def write(fname, data, header):
     """
     raise NotImplementedError("No jp2 writer is implemented")
 
-def _get_data(filepath, j2k_to_image="opj_decompress"):
+def _get_data(filepath):
     """Extracts the data portion of a JPEG 2000 image
     
-    Uses the OpenJPEG j2k_to_image command, if available, to extract the data
-    portion of a JPEG 2000 image. The image is first converted to a temporary
-    intermediate file (PNG) and then read back in and stored an as ndarray.
-    
     The image as read back in is upside down, and so it is spun around for the
-    correct orientation.
+    correct orientation. -- Is this true???
     """
     jp2 = Jp2k(filepath)
     data = jp2.read()
