@@ -5,8 +5,7 @@ __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
 import os
-import subprocess
-import tempfile
+import xml.etree.cElementTree as ET
 
 from matplotlib.image import imread
 
@@ -15,7 +14,7 @@ from sunpy.io.header import FileHeader
 
 __all__ = ['read', 'get_header', 'write']
 
-def read(filepath, j2k_to_image='opj_decompress'):
+def read(filepath):
     """
     Reads a JPEG2000 file
     
@@ -158,9 +157,3 @@ def _which(program):
                 return exe_file
 
     return None
-
-class MissingOpenJPEGBinaryError(OSError):
-    """Unable to find OpenJPEG. Please ensure that OpenJPEG binaries are installed in a 
-       location within your system's search PATH, or specify the location manually.
-    """
-    pass
