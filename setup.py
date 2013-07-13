@@ -62,7 +62,7 @@ def install(setup): #pylint: disable=W0621
             'numpy>1.6.0',
             'astropy',
             'scipy',
-            'glymur>=0.2.0'
+            'glymur>=0.2.0',
             'pandas>=0.10.0',
             'matplotlib>=1.1',
         ],
