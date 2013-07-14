@@ -3,7 +3,7 @@ import pytest
 from sunpy.database.database import Database
 from sunpy.database import tables
 from sunpy.database.attrs import Starred, Tag, walker
-from sunpy.net.attr import DummyAttr, AttrAnd, AttrOr, and_
+from sunpy.net.attr import DummyAttr, AttrAnd, AttrOr
 
 
 @pytest.fixture
@@ -80,11 +80,11 @@ def test_walker_create_dummy(session):
 
 
 def test_walker_create_starred_true(session):
-    query = walker.create(Starred(), session)
+    entries = walker.create(Starred(), session)
     tag = tables.Tag('foo')
     tag.id = 1
-    assert query.count() == 5
-    assert query.all() == [
+    assert len(entries) == 5
+    assert entries == [
         tables.DatabaseEntry(id=2, starred=True),
         tables.DatabaseEntry(id=4, starred=True),
         tables.DatabaseEntry(id=6, starred=True),
@@ -93,11 +93,11 @@ def test_walker_create_starred_true(session):
 
 
 def test_walker_create_starred_false(session):
-    query = walker.create(~Starred(), session)
+    entries = walker.create(~Starred(), session)
     tag = tables.Tag('foo')
     tag.id = 1
-    assert query.count() == 5
-    assert query.all() == [
+    assert len(entries) == 5
+    assert entries == [
         tables.DatabaseEntry(id=1),
         tables.DatabaseEntry(id=3),
         tables.DatabaseEntry(id=5, tags=[tag]),
@@ -106,19 +106,19 @@ def test_walker_create_starred_false(session):
 
 
 def test_walker_create_tag_positive(session):
-    query = walker.create(Tag('foo'), session)
+    entries = walker.create(Tag('foo'), session)
     tag = tables.Tag('foo')
     tag.id = 1
-    assert query.count() == 2
-    assert query.all() == [
+    assert len(entries) == 2
+    assert entries == [
         tables.DatabaseEntry(id=5, tags=[tag]),
         tables.DatabaseEntry(id=10, starred=True, tags=[tag])]
 
 
 def test_walker_create_tag_negative(session):
-    query = walker.create(~Tag('foo'), session)
-    assert query.count() == 8
-    assert query.all() == [
+    entries = walker.create(~Tag('foo'), session)
+    assert len(entries) == 8
+    assert entries == [
         tables.DatabaseEntry(id=1),
         tables.DatabaseEntry(id=2, starred=True),
         tables.DatabaseEntry(id=3),
@@ -129,11 +129,36 @@ def test_walker_create_tag_negative(session):
         tables.DatabaseEntry(id=9)]
 
 
-@pytest.mark.xfail
 def test_walker_create_anded_query(session):
-    query = walker.create(and_(Tag('foo'), Starred()), session)
-    assert query.count() == 1
+    entries = walker.create(Tag('foo') & Starred(), session)
+    assert len(entries) == 1
     tag = tables.Tag('foo')
     tag.id = 1
-    assert query.all() == [
-        tables.DatabaseEntry(id=10, starred=True, tags=[tag])]
+    assert tables.DatabaseEntry(id=10, starred=True, tags=[tag]) in entries
+
+
+def test_walker_create_ored_query(session):
+    entries = walker.create(Tag('foo') | Starred(), session)
+    assert len(entries) == 6
+    tag = tables.Tag('foo')
+    tag.id = 1
+    print entries
+    assert tables.DatabaseEntry(id=2, starred=True) in entries
+    assert tables.DatabaseEntry(id=4, starred=True) in entries
+    assert tables.DatabaseEntry(id=5, tags=[tag]) in entries
+    assert tables.DatabaseEntry(id=6, starred=True) in entries
+    assert tables.DatabaseEntry(id=8, starred=True) in entries
+    assert tables.DatabaseEntry(id=10, starred=True, tags=[tag]) in entries
+
+
+def test_walker_create_complex_query(session):
+    query = Tag('foo') & Starred() | ~Tag('foo') & ~Starred()
+    entries = walker.create(query, session)
+    assert len(entries) == 5
+    tag = tables.Tag('foo')
+    tag.id = 1
+    assert tables.DatabaseEntry(id=1) in entries
+    assert tables.DatabaseEntry(id=3) in entries
+    assert tables.DatabaseEntry(id=7) in entries
+    assert tables.DatabaseEntry(id=9) in entries
+    assert tables.DatabaseEntry(id=10, starred=True, tags=[tag]) in entries

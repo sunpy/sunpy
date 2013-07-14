@@ -1,5 +1,3 @@
-from sqlalchemy import and_
-
 from sunpy.net.attr import AttrWalker, Attr, ValueAttr, AttrAnd, AttrOr
 from sunpy.database import tables
 
@@ -68,13 +66,19 @@ class Tag(Attr):
 walker = AttrWalker()
 
 
+@walker.add_creator(AttrOr)
+def _create(wlk, root, session):
+    entries = set()
+    for attr in root.attrs:
+        # make sure to add only new entries to the set to avoid duplicates
+        entries.update(set(wlk.create(attr, session)) - entries)
+    return list(entries)
+
+
 @walker.add_creator(AttrAnd)
 def _create(wlk, root, session):
-    queries = []
-    for attr in root.attrs:
-        queries.append(wlk.create(attr, session))
-    query = session.query(tables.DatabaseEntry)
-    return query.filter(and_(*queries))
+    entries = [set(wlk.create(attr, session)) for attr in root.attrs]
+    return list(reduce(set.intersection, entries))
 
 
 @walker.add_creator(ValueAttr)
@@ -93,7 +97,7 @@ def _create(wlk, root, session):
                 query = query.filter(tables.DatabaseEntry.tags.any(criterion))
         else:
             query = query.filter_by(**{typ: value})
-    return query
+    return query.all()
 
 
 @walker.add_converter(Tag)
