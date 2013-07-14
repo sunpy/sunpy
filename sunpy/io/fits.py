@@ -25,7 +25,6 @@ References
 
 """
 from __future__ import absolute_import
-raise ImportError
 import os
 
 try:
