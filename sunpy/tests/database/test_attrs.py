@@ -142,7 +142,6 @@ def test_walker_create_ored_query(session):
     assert len(entries) == 6
     tag = tables.Tag('foo')
     tag.id = 1
-    print entries
     assert tables.DatabaseEntry(id=2, starred=True) in entries
     assert tables.DatabaseEntry(id=4, starred=True) in entries
     assert tables.DatabaseEntry(id=5, tags=[tag]) in entries
