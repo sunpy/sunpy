@@ -111,6 +111,7 @@ def _get_reader(ftype):
         if _jp2_imported:
             return jp2
         else:
+            #This one will not be used until we have a glymur dep
             raise ImportError(
             "jp2 reader can not be imported, do you have openjpeg installed?")
     
