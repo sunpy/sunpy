@@ -78,7 +78,7 @@ def _create(wlk, root, session):
 @walker.add_creator(AttrAnd)
 def _create(wlk, root, session):
     entries = [set(wlk.create(attr, session)) for attr in root.attrs]
-    return list(reduce(set.intersection, entries))
+    return list(set.intersection(*entries))
 
 
 @walker.add_creator(ValueAttr)
