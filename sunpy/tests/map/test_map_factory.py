@@ -52,7 +52,7 @@ class TestMap:
         assert isinstance(maps, list)
         assert ([isinstance(amap,sunpy.map.GenericMap) for amap in maps])
         # Data-header pair in a tuple
-        pair_map = sunpy.Map((amap.data, amap.meta))
+        pair_map = sunpy.map.Map((amap.data, amap.meta))
         assert isinstance(pair_map, sunpy.map.GenericMap)
         # Data-header pair not in a tuple
         pair_map = sunpy.map.Map(amap.data, amap.meta)
