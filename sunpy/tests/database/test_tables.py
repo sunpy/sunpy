@@ -97,7 +97,10 @@ def test_add_fits_header_entries_from_file_wavelength():
 def test_entries_from_path():
     entries = list(entries_from_path(os.path.join(testdir, 'EIT')))
     assert len(entries) == 13
-    assert entries[0].fits_header_entries == [
+    first_entry, filename = entries[0]
+    assert filename.startswith(os.path.join(testdir, 'EIT'))
+    assert filename.endswith('.fits')
+    assert first_entry.fits_header_entries == [
         FitsHeaderEntry('SIMPLE', True),
         FitsHeaderEntry('BITPIX', -64),
         FitsHeaderEntry('NAXIS', 2),

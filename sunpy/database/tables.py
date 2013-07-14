@@ -306,22 +306,32 @@ def entries_from_query_result(qr):
 
 
 def entries_from_path(fitsdir, recursive=False, pattern='*.fits'):
-    """Search the given directory recursively for *.fits file names and use the
-    corresponding FITS headers to generate instances of :class:`DatabaseEntry`.
-    Return an iterator over those instances.
+    """Search the given directory for FITS files and use the corresponding FITS
+    headers to generate instances of :class:`DatabaseEntry`.
 
     Parameters
     ----------
     fitsdir : string
         The directory where to look for FITS files.
 
-    recursive : bool
+    recursive : bool, optional
         If True, the given directory will be searched recursively. Otherwise,
-        only the given directory and no subdirectories are searched.
+        only the given directory and no subdirectories are searched. The
+        default is `False`, i.e. the given directory is not searched
+        recursively.
 
-    pattern : string
+    pattern : string, optional
         The pattern defines how FITS files are detected. The default is to
-        collect all files with the filename extension *.fits.
+        collect all files with the filename extension `.fits`. This value is
+        passed to the function :func:`fnmatch.filter`, see its documentation
+        for more information on the supported syntax.
+
+    Returns
+    -------
+    generator of (DatabaseEntry, str) pairs
+        A generator where each item is a tuple consisting of a
+        :class:`DatabaseEntry` instance and the absolute path to the filename
+        which was used to make the database entry.
 
     Examples
     --------
@@ -336,7 +346,8 @@ def entries_from_path(fitsdir, recursive=False, pattern='*.fits'):
     >>> len(entries)
     15
     >>> # print the first 5 items of the FITS header of the first found file
-    >>> pprint(entries[0].fits_header_entries[:5])
+    >>> first_entry, filename = entries[0]
+    >>> pprint(first_entry.fits_header_entries[:5])
     [<FitsHeaderEntry(id None, key 'SIMPLE', value True)>,
      <FitsHeaderEntry(id None, key 'BITPIX', value -64)>,
      <FitsHeaderEntry(id None, key 'NAXIS', value 2)>,
@@ -347,6 +358,6 @@ def entries_from_path(fitsdir, recursive=False, pattern='*.fits'):
     for dirpath, dirnames, filenames in os.walk(fitsdir):
         filename_paths = (os.path.join(dirpath, name) for name in filenames)
         for path in fnmatch.filter(filename_paths, pattern):
-            yield DatabaseEntry.from_fits_filepath(path)
+            yield DatabaseEntry.from_fits_filepath(path), path
         if not recursive:
             break
