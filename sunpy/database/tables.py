@@ -138,7 +138,6 @@ class DatabaseEntry(Base):
 
     """
     __tablename__ = 'data'
-    __hash__ = None
 
     # FIXME: primary key is data provider + file ID + download_time!
     id = Column(Integer, primary_key=True)
