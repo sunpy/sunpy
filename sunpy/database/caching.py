@@ -15,6 +15,10 @@ class BaseCache(OrderedDict):
     Call the method :meth:`callback` as soon as an item from the cache is
     removed.
 
+    Methods
+    -------
+    callback
+
     """
     __metaclass__ = ABCMeta
 
