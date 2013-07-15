@@ -89,8 +89,8 @@ def _create(wlk, root, session):
         if typ == 'tag':
             criterion = tables.Tag.name.in_([value])
             # `key[1]` is here the `inverted` attribute of the tag. That means
-            # that if `subtyp` is True, the given tag must not be included in
-            # the resulting entries.
+            # that if it is True, the given tag must not be included in the
+            # resulting entries.
             if key[1]:
                 query = query.filter(~tables.DatabaseEntry.tags.any(criterion))
             else:
