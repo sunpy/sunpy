@@ -253,6 +253,10 @@ class DatabaseEntry(Base):
                 self.instrument = value
             elif key == 'WAVELNTH':
                 self.wavemin = self.wavemax = float(value)
+            # NOTE: the key DATE-END or DATE_END is not part of the official
+            # FITS standard, but many FITS files use it in their header
+            elif key in ('DATE-END', 'DATE_END'):
+                self.observation_time_end = parse_time(value)
             elif key in ('DATE-OBS', 'DATE_OBS'):
                 self.observation_time_start = parse_time(value)
 

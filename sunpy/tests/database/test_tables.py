@@ -82,6 +82,7 @@ def test_add_fits_header_entries_from_file():
         FitsHeaderEntry('TIMEUNIT', 'd')]
     assert entry.instrument == 'RHESSI'
     assert entry.observation_time_start == datetime(2002, 02, 20, 11, 6, 0, 0)
+    assert entry.observation_time_end == datetime(2002, 02, 20, 11, 6, 43, 330000)
 
 
 def test_add_fits_header_entries_from_file_wavelength():
