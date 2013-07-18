@@ -1,4 +1,5 @@
 from sunpy.net import hek
 from sunpy.net import hek2vso
-store -r
-whos
+h2v = hek2vso.HEKClient()
+h = hek.HEKClient()
+
