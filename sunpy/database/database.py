@@ -204,7 +204,7 @@ class Database(object):
     def query(self, *query, **kwargs):
         """
         query(*query[, sortby])
-        Emits the given query to the database and returns a list of
+        Send the given query to the database and return a list of
         database entries that satisfy all of the given attributes.
 
         Apart from the attributes supported by the VSO interface, the following
