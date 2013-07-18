@@ -115,26 +115,6 @@ def test_tag_duplicates_before_adding(database):
     database.commit()
 
 
-def test_get_by_tags_missing_tags_arg(database):
-    with pytest.raises(TypeError):
-        database.get_by_tags()
-
-
-def test_get_by_tags_no_matches(database):
-    assert database.get_by_tags('foobar') == []
-
-
-def test_get_by_tags_matching(database):
-    entry1 = DatabaseEntry()
-    entry2 = DatabaseEntry()
-    database.add(entry1)
-    database.add(entry2)
-    database.tag(entry1, 'one')
-    database.tag(entry2, 'one', 'two')
-    assert database.get_by_tags('two') == [entry2]
-    assert database.get_by_tags('one') == [entry1, entry2]
-
-
 def test_star_entry(database):
     entry = DatabaseEntry()
     assert not entry.starred

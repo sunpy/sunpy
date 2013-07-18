@@ -296,20 +296,6 @@ class Database(object):
                 # tag could be found in the tags table -> add this tag
                 database_entry.tags.append(tag)
 
-    def get_by_tags(self, *tags):
-        """Get all database entries that have at least one of the tags
-        assigned. If none of the database entries have any of the given tags
-        assigned, an empty list is returned. If no tags are given, TypeError is
-        raised.
-
-        """
-        if not tags:
-            raise TypeError('at least one tag must be given')
-        # XXX: replace ``all`` by ``any`` for disjunction instead of
-        # conjunction -> discuss which behaviour is more intuitive to the user
-        return self.session.query(tables.DatabaseEntry).filter(
-            tables.DatabaseEntry.tags.any(tables.Tag.name.in_(tags))).all()
-
     def star(self, database_entry, ignore_already_starred=False):
         """Mark the given database entry as starred. If this entry is already
         marked as starred, the behaviour depends on the optional argument
