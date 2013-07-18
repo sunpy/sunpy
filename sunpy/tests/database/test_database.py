@@ -169,16 +169,6 @@ def test_unstar_already_unstarred_entry_ignore(database):
     assert not entry.starred
 
 
-def test_get_starred_entries(database):
-    entry1 = DatabaseEntry()
-    entry2 = DatabaseEntry()
-    database.add(entry1)
-    database.add(entry2)
-    assert list(database.get_starred()) == []
-    database.star(entry2)
-    assert list(database.get_starred()) == [entry2]
-
-
 def test_add_entry(database):
     entry = DatabaseEntry()
     assert entry.id is None

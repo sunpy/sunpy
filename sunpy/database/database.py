@@ -336,10 +336,6 @@ class Database(object):
         database_entry.starred = False
         self._cache[database_entry.id] = database_entry
 
-    def get_starred(self):
-        """Return an iterator over all starred database entries."""
-        return (entry for entry in self if entry.starred)
-
     def add(self, database_entry, ignore_already_added=False):
         """Add the given database entry to the database table. If the given
         database entry already exists in the database and
