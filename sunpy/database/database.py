@@ -97,9 +97,6 @@ class Database(object):
     tag(entry, *tags)
         Assign the given database entry the given tags. If no tags are given,
         TypeError is raised.
-    get_by_tags(*tags)
-        Get all database entries that have at least one of the tags
-        assigned. If no tags are given, TypeError is raised.
     star(entry, ignore_already_starred=False)
         Mark the given database entry as starred. If ``ignore_already_starred``
         is False and the given entry is already marked as starred,
@@ -108,8 +105,6 @@ class Database(object):
         Remove the starred mark of the given entry. If
         ``ignore_already_unstarred`` is False and the entry is not marked as
         starred, EntryAlreadyUnstarredError is raised.
-    get_starred()
-        Return an iterator over all starred database entries.
     add(entry, ignore_already_added=False)
         Add the given database entry to the database. If
         ``ignore_already_added`` is False and the given entry is already saved
