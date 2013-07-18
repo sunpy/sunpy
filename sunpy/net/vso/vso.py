@@ -126,8 +126,8 @@ class Results(object):
 
         while not self.evt.wait(timeout):
             pass
-
-        self.progress.finish()
+        if progress:
+            self.progress.finish()
 
         return self.map_
     
