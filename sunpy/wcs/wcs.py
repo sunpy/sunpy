@@ -363,14 +363,14 @@ def convert_hg_hcc(hglon_deg, hglat_deg, b0_deg=0, l0_deg=0, occultation=False, 
     # Perform the conversion.
     x = rsun_meters * cosy * sinx
     y = rsun_meters * (siny * cosb - cosy * cosx * sinb)
-    z = rsun_meters * (siny * sinb + cosy * cosx * cosb)
+    tz = rsun_meters * (siny * sinb + cosy * cosx * cosb)
     
     if occultation:
-        x[z < 0] = np.nan
-        y[z < 0] = np.nan
+        x[tz < 0] = np.nan
+        y[tz < 0] = np.nan
 
     if np.all(z == True):
-        return x, y, z
+        return x, y, tz
     else:
         return x, y
 
