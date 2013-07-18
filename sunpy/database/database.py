@@ -196,8 +196,8 @@ class Database(object):
 
         See Also
         --------
-        sqlalchemy.orm.session.Session.commit for more information and
-        possible exceptions that may be thrown
+        :meth:`sqlalchemy.orm.session.Session.commit
+
         """
         self.session.commit()
 
