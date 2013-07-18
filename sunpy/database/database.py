@@ -1,10 +1,14 @@
 from __future__ import absolute_import
 
+import operator
+
 from sqlalchemy import create_engine, exists
 from sqlalchemy.orm import sessionmaker
 
 from sunpy.database import commands, tables
 from sunpy.database.caching import LRUCache
+from sunpy.database.attrs import walker
+from sunpy.net.attr import and_
 
 
 class EntryAlreadyAddedError(Exception):
@@ -196,6 +200,65 @@ class Database(object):
         possible exceptions that may be thrown
         """
         self.session.commit()
+
+    def query(self, *query, **kwargs):
+        """
+        query(*query[, sortby])
+        Emits the given query to the database and returns a list of
+        database entries that satisfy all of the given attributes.
+
+        Apart from the attributes supported by the VSO interface, the following
+        attributes are supported:
+
+            - :class:`sunpy.database.attrs.Tag`
+
+            - :class:`sunpy.database.attrs.Starred`
+
+        An important difference to the VSO attributes is that these attributes
+        may also be used in negated form using the tilde ~ operator.
+
+        Parameters
+        ----------
+        query : list
+            A variable number of attributes that are chained together via the
+            boolean AND operator. The | operator may be used between attributes
+            to express the boolean OR operator.
+        sortby : str, optional
+            The column by which to sort the returned entries. The default is to
+            sort by the start of the observation. See the attributes of
+            :class:`DatabaseEntry` for a list of all possible values.
+
+        Raises
+        ------
+        TypeError
+            if no attribute is given or if some keyword argument other than
+            'sortby' is given.
+
+        Examples
+        --------
+        The database in this example contains 10 entries, of which the entries
+        #4 and #8 have the tag 'foo' and the entries #5 and #10 have the tag
+        'bar'; none of them are marked as starred. The query in the following
+        example searches for all non-starred entries with the tag 'foo' or
+        'bar' (or both).
+
+        >>> from pprint import pprint
+        >>> pprint(database.query(~attrs.Starred(), attrs.Tag('foo') | attrs.Tag('bar'), sortby='id'))
+        [<DatabaseEntry(id 4, data provider None, fileid None)>,
+         <DatabaseEntry(id 5, data provider None, fileid None)>,
+         <DatabaseEntry(id 8, data provider None, fileid None)>,
+         <DatabaseEntry(id 10, data provider None, fileid None)>]
+
+        """
+        if not query:
+            raise TypeError('at least one attribute required')
+        sortby = kwargs.pop('sortby', 'observation_time_start')
+        if kwargs:
+            k, v = kwargs.popitem()
+            raise TypeError('unexpected keyword argument %r' % k)
+        return sorted(
+            walker.create(and_(*query), self.session),
+            key=operator.attrgetter(sortby))
 
     def get_entry_by_id(self, entry_id):
         """Get a database entry by its unique ID number."""

@@ -7,6 +7,7 @@ from sunpy.database import Database, EntryAlreadyAddedError,\
 from sunpy.database.tables import DatabaseEntry, Tag
 from sunpy.database.commands import NoSuchEntryError
 from sunpy.database.caching import LRUCache, LFUCache
+from sunpy.database import attrs
 
 
 @pytest.fixture
@@ -33,6 +34,23 @@ def database():
     d = Database('sqlite:///:memory:')
     d.create_tables()
     return d
+
+
+@pytest.fixture
+def filled_database():
+    database = Database('sqlite:///:memory:')
+    database.create_tables()
+    for i in xrange(1, 11):
+        entry = DatabaseEntry()
+        database.add(entry)
+        # every fourth entry gets the tag 'foo'
+        if i % 4 == 0:
+            database.tag(entry, 'foo')
+        # every fifth entry gets the tag 'bar'
+        if i % 5 == 0:
+            database.tag(entry, 'bar')
+    database.commit()
+    return database
 
 
 def test_create_tables(database_without_tables):
@@ -292,3 +310,27 @@ def test_lfu_cache(database_using_lfucache):
     assert entries[2] == entry4
     #assert database_using_lrucache._cache.items() == [
     #    (1, entry1), (2, entry2), (4, entry4)]
+
+
+def test_query_missing_arg(database):
+    with pytest.raises(TypeError):
+        database.query()
+
+
+def test_query_unexpected_kwarg(database):
+    with pytest.raises(TypeError):
+        database.query(attrs.Starred(), foo=42)
+
+
+def test_query(filled_database):
+    foo = Tag('foo')
+    foo.id = 1
+    bar = Tag('bar')
+    bar.id = 2
+    entries = filled_database.query(attrs.Tag('foo') | attrs.Tag('bar'), sortby='id')
+    assert len(entries) == 4
+    assert entries == [
+        DatabaseEntry(id=4, tags=[foo]),
+        DatabaseEntry(id=5, tags=[bar]),
+        DatabaseEntry(id=8, tags=[foo]),
+        DatabaseEntry(id=10, tags=[bar])]
