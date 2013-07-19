@@ -5,6 +5,8 @@
 *.pyc
 *.pyd
 *.so
+*.o
+*.def
 MANIFEST
 build
 dist
@@ -18,3 +20,7 @@ docs
 .coverage
 htmlcov
 result.xml
+
+# Temporary files
+*.py~
+*.swp
