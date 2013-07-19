@@ -60,7 +60,7 @@ def read_xmlbox(filepath, root):
     jp2 = Jp2k(filepath)
     # Assumes just a single XML box.
     xmlbox = [box for box in jp2.box if box.box_id == 'xml '][0]
-    xmlstr = ET.tostring(xmlbox.xml.find('fits'))
+    xmlstr = ET.tostring(xmlbox.xml.find(root))
 
     # Fix any malformed XML (e.g. in older AIA data)
     return xmlstr.replace("&", "&amp;")
