@@ -6,9 +6,8 @@ import warnings
 from itertools import izip, imap, count
 
 import numpy as np
-from matplotlib import pyplot
 
-__all__ = ['to_signed', 'toggle_pylab', 'unique', 'print_table',
+__all__ = ['to_signed', 'unique', 'print_table',
            'replacement_filename', 'goes_flare_class', 'merge', 'common_base',
            'minimal_pairs', 'polyfun_at', 
            'expand_list', 'expand_list_generator', 'Deprecated']
@@ -27,26 +26,6 @@ def to_signed(dtype):
             raise ValueError("Cannot losslessy convert uint64 to int.")
         dtype = "int%d" % (min(dtype.itemsize * 2 * 8, 64))
     return np.dtype(dtype)
-
-
-def toggle_pylab(fn):
-    """ A decorator to prevent functions from opening matplotlib windows
-        unexpectedly when sunpy is run in interactive shells like ipython 
-        --pylab. 
-
-        Toggles the value of matplotlib.pyplot.isinteractive() to preserve the
-        users' expections of pylab's behaviour in general. """
-
-    if pyplot.isinteractive():
-        def fn_itoggle(*args, **kwargs):
-            pyplot.ioff()
-            ret = fn(*args, **kwargs)
-            pyplot.ion()
-            return ret
-        return fn_itoggle
-    else:
-        return fn
-
 
 def goes_flare_class(gcls):
     """Convert GOES classes into a number to aid size comparison.  Units are
