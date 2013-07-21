@@ -5,6 +5,47 @@ Installation
 Below are instructions for installation SunPy and its prerequisites on 
 different platforms.
 
+SunPy's Dependancies
+--------------------
+SunPy consists of many submodules that each have their own requirements. You do not need 
+to fufill all the requirements if you only intend on using parts of SunPy. It is of course
+reccomended that you install the requirements for all of SunPy.
+
+The Full set of requirements is:
+numpy >= 1.6.0
+scipy >= 0.10.0
+matplotlib >= 1.1
+pandas >= 0.10.0
+astropy >= 0.2.0
+suds
+beautifulsoup4
+
+To import SunPy core (including sun, time, util) you need the following dependacies:
+numpy
+scipy
+matplotlib
+
+Any submodules with extra requirements are listed below:
+instr:
+astropy.io.fits
+
+io:
+Optionally either of:
+astropy.io.fits
+openjpeg
+
+lightcurve:
+pandas
+astropy.io.fits
+
+map:
+astropy.io.fits
+
+net:
+suds
+beautifulsoup4
+
+
 Installing Scientific Python
 ----------------------------
 For instructions on setting up the scientific Python environment which is required by SunPy, 

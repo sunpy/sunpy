@@ -25,7 +25,8 @@ except ImportError:
 
 import sunpy.io as io
 import sunpy.wcs as wcs
-from sunpy.util import toggle_pylab, to_signed, Deprecated
+from sunpy.util import to_signed, Deprecated
+from sunpy.visualization import toggle_pylab
 # from sunpy.io import read_file, read_file_header
 from sunpy.sun import constants
 from sunpy.time import parse_time, is_time
