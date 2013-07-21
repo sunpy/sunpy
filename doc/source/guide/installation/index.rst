@@ -23,11 +23,11 @@ beautifulsoup4
 To import SunPy core (including sun, time, util) you need the following dependacies:
 numpy
 scipy
-matplotlib
 
 Any submodules with extra requirements are listed below:
 instr:
 astropy.io.fits
+matplotlib
 
 io:
 Optionally either of:
@@ -37,14 +37,18 @@ openjpeg
 lightcurve:
 pandas
 astropy.io.fits
+matplotlib
 
 map:
 astropy.io.fits
+matplotlib
 
 net:
 suds
 beautifulsoup4
 
+visualization:
+matplotlib
 
 Installing Scientific Python
 ----------------------------
