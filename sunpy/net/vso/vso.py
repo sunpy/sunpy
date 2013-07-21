@@ -29,8 +29,10 @@ from sunpy import config
 from sunpy.net import download
 from sunpy.util.net import get_filename, slugify
 from sunpy.net.attr import and_, Attr
+from sunpy.net.vso import attrs
 from sunpy.net.vso.attrs import walker, TIMEFORMAT
 from sunpy.util import to_angstrom, print_table, replacement_filename
+from sunpy.util.net import slugify
 from sunpy.time import parse_time
 
 DEFAULT_URL = 'http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl'
@@ -345,7 +347,7 @@ class VSOClient(object):
         fs_encoding = sys.getfilesystemencoding()
         if fs_encoding is None:
             fs_encoding = "ascii"
-        name = name.encode(fs_encoding, "ignore")
+        name = slugify(name).encode(fs_encoding, "ignore")
 
         if not name:
             name = "file"
@@ -355,7 +357,7 @@ class VSOClient(object):
         if not overwrite and os.path.exists(fname):
             fname = replacement_filename(fname)
         
-        dir_ = os.path.dirname(fname)
+        dir_ = os.path.abspath(os.path.dirname(fname))
         if not os.path.exists(dir_):
             os.makedirs(dir_)
         return fname

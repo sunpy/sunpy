@@ -61,16 +61,19 @@ def read(filepath):
     'comment' key in the returned FileHeader.
     """
     hdulist = pyfits.open(filepath)
-    hdulist.verify('silentfix')
-    
-    pairs = []
-    for hdu in hdulist:
-        comment = "".join(hdu.header.get_comment()).strip()
-        history = "".join(hdu.header.get_history()).strip()
-        header = FileHeader(hdu.header)
-        header['comment'] = comment
-        header['history'] = history
-        pairs.append((hdu.data, header))
+    try:
+        hdulist.verify('silentfix')
+
+        pairs = []
+        for hdu in hdulist:
+            comment = "".join(hdu.header.get_comment()).strip()
+            history = "".join(hdu.header.get_history()).strip()
+            header = FileHeader(hdu.header)
+            header['comment'] = comment
+            header['history'] = history
+            pairs.append((hdu.data, header))
+    finally:
+        hdulist.close()
 
     return pairs
 
@@ -89,15 +92,18 @@ def get_header(filepath):
         A list of FileHeader headers
     """
     hdulist = pyfits.open(filepath)
-    hdulist.verify('silentfix')
-    headers= []
-    for hdu in hdulist:
-        comment = "".join(hdu.header.get_comment()).strip()
-        history = "".join(hdu.header.get_history()).strip()
-        header = FileHeader(hdu.header)
-        header['comment'] = comment
-        header['history'] = history
-        headers.append(header)
+    try:
+        hdulist.verify('silentfix')
+        headers= []
+        for hdu in hdulist:
+            comment = "".join(hdu.header.get_comment()).strip()
+            history = "".join(hdu.header.get_history()).strip()
+            header = FileHeader(hdu.header)
+            header['comment'] = comment
+            header['history'] = history
+            headers.append(header)
+    finally:
+        hdulist.close()
     return headers
 
 def write(fname, data, header, **kwargs):

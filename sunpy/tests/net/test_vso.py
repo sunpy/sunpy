@@ -146,3 +146,13 @@ def test_wave_xor():
     
     assert a == attr.AttrOr(
         [va.Wave(0, 200), va.Wave(400, 600), va.Wave(800, 1000)])
+
+
+def test_err_dummyattr_create():
+    with pytest.raises(TypeError):
+        va.walker.create(attr.DummyAttr(), None, {})
+
+
+def test_err_dummyattr_apply():
+    with pytest.raises(TypeError):
+        va.walker.apply(attr.DummyAttr(), None, {})
