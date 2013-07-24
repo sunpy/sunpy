@@ -526,7 +526,7 @@ class Spectrogram(Parent):
         figure.subplots_adjust(left=0.2)
         
         if showz:
-            figure.gca().format_coord = self._mk_format_coord(
+            axes.format_coord = self._mk_format_coord(
                 data, figure.gca().format_coord)
         
         if colorbar:
@@ -542,7 +542,7 @@ class Spectrogram(Parent):
             ax.autoscale()
         if isinstance(figure, SpectroFigure):
             figure._init(self, freqs)
-        return figure
+        return axes
 
     def __getitem__(self, key):
         only_y = not isinstance(key, tuple)
