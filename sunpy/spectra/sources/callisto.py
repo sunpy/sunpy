@@ -11,7 +11,10 @@ import urllib2
 
 import numpy as np
 
-import pyfits
+try:
+    import astropy.io.fits as pyfits
+except ImportError:
+    import pyfits
 
 from itertools import izip, chain
 from functools import partial

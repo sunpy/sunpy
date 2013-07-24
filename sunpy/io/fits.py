@@ -26,42 +26,111 @@ References
 """
 from __future__ import absolute_import
 
-import pyfits
+import os
 
-from sunpy.map.header import MapHeader
+try:
+    import astropy.io.fits as pyfits
+except ImportError:
+    import pyfits
 
-__all__ = ['read', 'get_header']
+from sunpy.io.header import FileHeader
 
-__author__ = "Keith Hughitt"
+__all__ = ['read', 'get_header', 'write']
+
+__author__ = "Keith Hughitt, Stuart Mumford"
 __email__ = "keith.hughitt@nasa.gov"
 
 def read(filepath):
-    """Reads in the file at the specified location"""
+    """
+    Read a fits file
+    
+    Parameters
+    ----------
+    filepath : string
+        The fits file to be read
+        
+    Returns
+    -------
+    pairs : list
+        A list of (data, header) tuples
+    
+    Notes
+    -----
+    This routine reads all the HDU's in a fits file and returns a list of the 
+    data and a FileHeader instance for each one.
+    Also all comments in the original file are concatenated into a single
+    'comment' key in the returned FileHeader.
+    """
     hdulist = pyfits.open(filepath)
     hdulist.verify('silentfix')
     
-    fits_comment = hdulist[0].header.get_comment()
-    
-    # PyFITS 2.x
-    if len(fits_comment) > 0 and isinstance(fits_comment[0], basestring):
-        comments = [val for val in fits_comment]       
-    else:
-        # PyFITS 3.x
-        comments = [card.value for card in fits_comment]
-        
-    comment = "".join(comments).strip()
-    header = MapHeader(hdulist[0].header)
-    header['comment'] = comment
+    pairs = []
+    for hdu in hdulist:
+        comment = "".join(hdu.header.get_comment()).strip()
+        history = "".join(hdu.header.get_history()).strip()
+        header = FileHeader(hdu.header)
+        header['comment'] = comment
+        header['history'] = history
+        pairs.append((hdu.data, header))
 
-    return hdulist[0].data, header
+    return pairs
 
 def get_header(filepath):
-    """Returns the header for a given file"""
+    """
+    Read a fits file and return just the headers for all HDU's
+    
+    Parameters
+    ----------
+    filepath : string
+        The file to be read
+    
+    Returns
+    -------
+    headers : list
+        A list of FileHeader headers
+    """
     hdulist = pyfits.open(filepath)
     hdulist.verify('silentfix')
+    headers= []
+    for hdu in hdulist:
+        comment = "".join(hdu.header.get_comment()).strip()
+        history = "".join(hdu.header.get_history()).strip()
+        header = FileHeader(hdu.header)
+        header['comment'] = comment
+        header['history'] = history
+        headers.append(header)
+    return headers
+
+def write(fname, data, header, **kwargs):
+    """
+    Take a data header pair and write a fits file
     
-    comment = "".join(hdulist[0].header.get_comment()).strip()
-    header = MapHeader(hdulist[0].header)
-    header['comment'] = comment
-            
-    return header
+    Parameters
+    ----------
+    fname: str
+        File name, with extension
+        
+    data: ndarray
+        n-dimensional data array
+    
+    header: dict
+        A header dictionary
+    """
+    #The comments need to be added to the header seperately from the normal
+    # kwargs. Find and deal with them:
+    fits_header = pyfits.Header()
+    # Check Header
+    for k,v in header.items():
+        if isinstance(v, pyfits.header._HeaderCommentaryCards):
+            if k is 'comments':
+                fits_header.add_comments(str(v))
+            elif k in 'history':
+                fits_header.add_history(str(v))
+            else:
+                fits_header.append(pyfits.Card(k, str(v)))
+        else:
+            fits_header.append(pyfits.Card(k,v))
+    
+    fitskwargs = {'output_verify':'fix'}
+    fitskwargs.update(kwargs)
+    pyfits.writeto(os.path.expanduser(fname), data, header=fits_header, **fitskwargs)

@@ -5,52 +5,85 @@ __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
 import os
-import subprocess
-import tempfile
 import xml.etree.cElementTree as ET
 
-from matplotlib.image import imread
+from glymur import Jp2k
+import glymur.jp2box
 
 from sunpy.util.xml import xml_to_dict
-from sunpy.map.header import MapHeader
+from sunpy.io.header import FileHeader
 
-from glymur import Jp2k
+__all__ = ['read', 'get_header', 'write']
 
-__all__ = ['read', 'get_header', 'get_data', 'read_xmlbox', 'which', 'is_float']
-
-def read(filepath, j2k_to_image='opj_decompress'):
-    """Reads in the file at the specified location"""
-    header = get_header(filepath)
-    data = get_data(filepath, j2k_to_image=j2k_to_image)
+def read(filepath):
+    """
+    Reads a JPEG2000 file
     
-    return data, header 
+    Parameters
+    ----------
+    filepath : string
+        The file to be read
+    
+    j2k_to_image : string
+        binary to use for reading?
+    
+    Returns
+    -------
+    pairs : list
+        A list of (data, header) tuples
+    """
+    header = get_header(filepath)[0]
+    data = _get_data(filepath)
+    
+    return [(data, header)]
 
 def get_header(filepath):
-    """Reads the header in and saves it as a dictionary"""
-    xmlstring = read_xmlbox(filepath, "fits")
+    """
+    Reads the header form the file
+    
+    Parameters
+    ----------
+    filepath : string
+        The file to be read
+        
+    Returns
+    -------
+    headers : list
+        A list of headers read from the file
+    """
+    xmlstring = _read_xmlbox(filepath, "fits")
     pydict = xml_to_dict(xmlstring)["fits"]
     
     #Fix types
     for k, v in pydict.items():
         if v.isdigit():
             pydict[k] = int(v)
-        elif is_float(v):
+        elif _is_float(v):
             pydict[k] = float(v)
             
     # Remove newlines from comment
     if 'comment' in pydict:
         pydict['comment'] = pydict['comment'].replace("\n", "")
             
-    return MapHeader(pydict)
+    return [FileHeader(pydict)]
 
-def get_data(filepath, j2k_to_image="opj_decompress"):
+def write(fname, data, header):
+    """
+    Place holder for required file writer
+    """
+    raise NotImplementedError("No jp2 writer is implemented")
+
+def _get_data(filepath):
     """Extracts the data portion of a JPEG 2000 image
+    
+    The image as read back in is upside down, and so it is spun around for the
+    correct orientation. -- Is this true???
     """
     jp2 = Jp2k(filepath)
     data = jp2.read()
     return data
 
-def read_xmlbox(filepath, root):
+def _read_xmlbox(filepath, root):
     """
     Extracts the XML box from a JPEG 2000 image.
     
@@ -65,7 +98,7 @@ def read_xmlbox(filepath, root):
     # Fix any malformed XML (e.g. in older AIA data)
     return xmlstr.replace("&", "&amp;")
 
-def is_float(s):
+def _is_float(s):
     """Check to see if a string value is a valid float"""
     try:
         float(s)
@@ -73,7 +106,7 @@ def is_float(s):
     except ValueError:
         return False
     
-def which(program):
+def _which(program):
     """Checks for existence of executable
     
     Source: http://stackoverflow.com/questions/377017/test-if-executable-exists-in-python/377028#377028
@@ -93,9 +126,3 @@ def which(program):
                 return exe_file
 
     return None
-
-class MissingOpenJPEGBinaryError(OSError):
-    """Unable to find OpenJPEG. Please ensure that OpenJPEG binaries are installed in a 
-       location within your system's search PATH, or specify the location manually.
-    """
-    pass
