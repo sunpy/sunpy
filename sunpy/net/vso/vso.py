@@ -541,7 +541,7 @@ class VSOClient(object):
         
         Examples
         --------
-        >>> res = get(qr).wait()
+        >>> res = get(qr).wait() # doctest:+SKIP
         """
         if downloader is None:
             downloader = download.Downloader()
