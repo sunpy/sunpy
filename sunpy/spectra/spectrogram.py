@@ -388,7 +388,7 @@ class Spectrogram(Parent):
     def peek(self, *args, **kwargs):
         figure()
         ret = self.plot(*args, **kwargs)
-        ret.show()
+        plt.show()
         return ret
 
     def plot(self, figure=None, overlays=[], colorbar=True, min_=None, max_=None,
