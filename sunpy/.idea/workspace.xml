@@ -6,22 +6,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="30d82964-d853-42e3-bafe-dbd7c98000fe" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/net/hek2vso/h2vTesting" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/net/hek2vso/h2v-test.log" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/net/hek2vso/mod-load.ipy" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/net/hek2vso/test/hek_query-result" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/net/hek2vso/test/ipython_log.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/net/hek2vso/test/test.json" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/net/hek2vso/test/work-log" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/../update-all.sh" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/net/hek2vso/hek2vso.py" afterPath="$PROJECT_DIR$/net/hek2vso/hek2vso.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="sunpy.iws" />
     <ignored path=".idea/workspace.xml" />
     <file path="/Python Console" changelist="30d82964-d853-42e3-bafe-dbd7c98000fe" time="1371765103950" ignored="false" />
-    <file path="/Dummy.txt" changelist="30d82964-d853-42e3-bafe-dbd7c98000fe" time="1373667541488" ignored="false" />
-    <file path="/hek2vso.py" changelist="30d82964-d853-42e3-bafe-dbd7c98000fe" time="1373934126843" ignored="false" />
+    <file path="/Dummy.txt" changelist="30d82964-d853-42e3-bafe-dbd7c98000fe" time="1374706840896" ignored="false" />
+    <file path="/hek2vso.py" changelist="30d82964-d853-42e3-bafe-dbd7c98000fe" time="1374112944040" ignored="false" />
     <file path="/__init__.py" changelist="30d82964-d853-42e3-bafe-dbd7c98000fe" time="1371801446227" ignored="false" />
     <file path="/map.py" changelist="30d82964-d853-42e3-bafe-dbd7c98000fe" time="1372122340120" ignored="false" />
     <file path="/temp list" changelist="30d82964-d853-42e3-bafe-dbd7c98000fe" time="1373136975116" ignored="false" />
@@ -50,7 +41,7 @@
       <file leaf-file-name="hek2vso.py" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/net/hek2vso/hek2vso.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="74" column="0" selection-start="2269" selection-end="2269" vertical-scroll-proportion="0.8965517">
+            <state line="58" column="19" selection-start="1743" selection-end="1743" vertical-scroll-proportion="0.46551725">
               <folding>
                 <element signature="e#254#292#0" expanded="true" />
               </folding>
@@ -231,8 +222,8 @@
     <property name="options.lastSelected" value="project.propVCSSupport.Mappings" />
     <property name="last_opened_file_path" value="$USER_HOME$/anaconda/bin/ipython" />
     <property name="FullScreen" value="false" />
-    <property name="options.searchVisible" value="true" />
     <property name="options.splitter.details.proportions" value="0.2" />
+    <property name="options.searchVisible" value="true" />
   </component>
   <component name="PyConsoleOptionsProvider">
     <option name="myPythonConsoleState">
@@ -349,7 +340,7 @@
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3272727" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24959481" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.27228525" sideWeight="0.0" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2771475" sideWeight="0.0" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3272727" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
@@ -427,6 +418,20 @@
     <breakpoint-manager />
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/net/vso/attrs.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="116" column="31" selection-start="3504" selection-end="3504" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/net/vso/vso.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="66" column="4" selection-start="1680" selection-end="1680" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/net/hek2vso/hek2vso.py">
       <provider selected="true" editor-type-id="text-editor">
         <state line="68" column="41" selection-start="2061" selection-end="2061" vertical-scroll-proportion="0.0">
@@ -512,7 +517,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/net/hek2vso/hek2vso.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="74" column="0" selection-start="2269" selection-end="2269" vertical-scroll-proportion="0.8965517">
+        <state line="58" column="19" selection-start="1743" selection-end="1743" vertical-scroll-proportion="0.46551725">
           <folding>
             <element signature="e#254#292#0" expanded="true" />
           </folding>
