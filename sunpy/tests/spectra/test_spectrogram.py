@@ -689,7 +689,7 @@ def test_in_interval():
         1
     )
     
-    assert np.array_equal(spec.in_interval("00:15", "00:30"), spec.data)
+    assert np.array_equal(spec.in_interval("00:15", "00:30").data, spec.data)
 
 
 def test_in_interval2():
@@ -703,7 +703,9 @@ def test_in_interval2():
         1
     )
     
-    assert np.array_equal(spec.in_interval("2010-01-01T00:15:00", "00:30"), spec.data)
+    assert np.array_equal(
+        spec.in_interval("2010-01-01T00:15:00", "00:30").data, spec.data
+    )
 
 
 def test_linearize():
