@@ -25,8 +25,8 @@ References
 
 """
 from __future__ import absolute_import
-
 import os
+
 try:
     import astropy.io.fits as pyfits
 except ImportError:
