@@ -639,6 +639,18 @@ When to write unit tests
 A rule of thumb for unit testing is to have at least one unit test per public
 function.
 
+Continuous Intergration
+^^^^^^^^^^^^^^^^^^^^^^^
+
+SunPy makes use of the `Travis CI service <https://travis-ci.org/sunpy/sunpy>`_.
+This service builds a version of SunPy and runs all the tests. It also integrates 
+with GitHub and will report the test results on any Pull Request when they are 
+submitted and when they are updated.
+
+The Travis CI server not only builds SunPy from source, but currently it builds all 
+of SunPy's dependancies from source as well using pip, all of this behaviour is 
+specified in the .travis.yml file in the root of the SunPy repo.
+
 New Functionality
 """""""""""""""""
 For SunPy, we would encourage all developers to thoroughly `cover <http://en.wikipedia.org/wiki/Code_coverage>`_
