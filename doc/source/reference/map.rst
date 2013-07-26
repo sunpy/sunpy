@@ -6,6 +6,10 @@ Maps
 
 .. module:: sunpy.map
 
+.. testsetup::
+
+    import sunpy
+
 Overview
 ^^^^^^^^
 One of core classes in SunPy is a Map. A SunPy Map object is simply a 

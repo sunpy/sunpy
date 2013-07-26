@@ -205,9 +205,8 @@ class TimeFreq(object):
         self.time = time
         self.freq = freq
     
-    def plot(self, figure=None, time_fmt="%H:%M:%S", **kwargs):
-        if figure is None:
-            figure = plt.figure()
+    def plot(self, time_fmt="%H:%M:%S", **kwargs):
+        figure = plt.gcf()
         axes = figure.add_subplot(111)
         axes.plot(self.time, self.freq, **kwargs)
         xa = axes.get_xaxis()
@@ -233,9 +232,10 @@ class TimeFreq(object):
         
         return figure
     
-    def show(self, *args, **kwargs):
+    def peek(self, *args, **kwargs):
+        plt.figure()
         ret = self.plot(*args, **kwargs)
-        ret.show()
+        plt.show()
         return ret
 
 
@@ -385,11 +385,10 @@ class Spectrogram(Parent):
         """ Override to configure default plotting """
         return "%.1f" % freq
 
-    def show(self, *args, **kwargs):
-        """ Draw spectrogram on figure with highest index or new one if
-        none exists. For parameters see :py:meth:`plot`. """
+    def peek(self, *args, **kwargs):
+        figure()
         ret = self.plot(*args, **kwargs)
-        ret.show()
+        plt.show()
         return ret
 
     def plot(self, figure=None, overlays=[], colorbar=True, min_=None, max_=None,
@@ -445,15 +444,13 @@ class Spectrogram(Parent):
         else:
             data = np.array(self.clip_values(min_, max_))
             freqs = self.freq_axis
-        newfigure = figure is None
-        if figure is None:
-            figure = plt.figure(frameon=True, FigureClass=SpectroFigure)
-            axes = figure.add_subplot(111)
+
+        figure = plt.gcf()
+
+        if figure.axes:
+            axes = figure.axes[0]
         else:
-            if figure.axes:
-                axes = figure.axes[0]
-            else:
-                axes = figure.add_subplot(111)
+            axes = figure.add_subplot(111)
         
         params = {
             'origin': 'lower',
@@ -529,23 +526,23 @@ class Spectrogram(Parent):
         figure.subplots_adjust(left=0.2)
         
         if showz:
-            figure.gca().format_coord = self._mk_format_coord(
+            axes.format_coord = self._mk_format_coord(
                 data, figure.gca().format_coord)
         
         if colorbar:
-            if newfigure:
-                figure.colorbar(im).set_label("Intensity")
+            if len(figure.axes) > 1:
+                Colorbar(figure.axes[1], im).set_label("Intensity")
             else:
-                if len(figure.axes) > 1:
-                    Colorbar(figure.axes[1], im).set_label("Intensity")
+                figure.colorbar(im).set_label("Intensity")
 
         for overlay in overlays:
             figure, axes = overlay(figure, axes)
             
         for ax in figure.axes:
             ax.autoscale()
-        figure._init(self, freqs)
-        return figure
+        if isinstance(figure, SpectroFigure):
+            figure._init(self, freqs)
+        return axes
 
     def __getitem__(self, key):
         only_y = not isinstance(key, tuple)
@@ -590,7 +587,7 @@ class Spectrogram(Parent):
             while self.freq_axis[right] < min_:
                 right -= 1
 
-        return self._with_data(self.data[left:right + 1, :])
+        return self[left:right + 1, :]
     
     
     def auto_find_background(self, amount=0.05):
@@ -1204,5 +1201,5 @@ class LinearTimeSpectrogram(Spectrogram):
                     *map(int, end.split(":"))
                 )
             end = self.time_to_x(end)
-        return self.data[:, start:end]
+        return self[:, start:end]
     
