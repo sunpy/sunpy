@@ -22,13 +22,13 @@ eventType = 'FL'
 instrument = 'eit'
 
 
-class TestHEK2VSOTool(unittest.TestCase):
+class TestH2vClient(unittest.TestCase):
     """
     The class that runs the big happy tests
     """
     def setUp(self):
-        self.h2v = hek2vso.HEK2VSOTool()
-        self.hek = hek.Client()
+        self.h2v = hek2vso.H2VClient()
+        self.hek = hek.HEKClient()
         self.vso = vso.VSOClient()
         self.hekTime = hek.attrs.Time(startTime, endTime)
         self.hekEvent = hek.attrs.EventType(eventType)
@@ -59,8 +59,11 @@ class TestHEK2VSOTool(unittest.TestCase):
         self.assertEqual(len(result2), 3450, 'Error in VSO query')
         self.assertEqual(len(result3), 4, 'Error in VSO query')
 
-    def test_translate_results_to_query(self):
-        pass
+    def test_translate_and_query(self):
+        res = self.hek.query(hek.attrs.Time(startTime, endTime),
+                             hek.attrs.EventType(eventType))
+        res = self.h2v.translate_and_query(res)
+        self.assertEqual(res, 'pass')
 
 if __name__ == '__main__':
     unittest.main()

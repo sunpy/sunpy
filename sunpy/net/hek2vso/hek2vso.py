@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Author:   Michael Malocha
 # e-mail:   mmalocha13@gmail.com
-# Version:  June 20th, 2013
+# Version:  July 27th, 2013
 #
 
 """
@@ -11,7 +11,8 @@ and return the results from the VSO query to the user.
 
 from __future__ import absolute_import
 
-import json, sys
+#import json    # Now no longer necessary, though kept till code better tested
+import sys
 from astropy import units as u
 from sunpy.net import hek
 from sunpy.net import vso
@@ -24,6 +25,9 @@ def wave_unit_catcher(wavelength, units):
     """
     Designed to discover the units of the wavelength passed in and convert
     it into angstroms.
+
+    wavelength: The integer that contains the wavelength value.
+    units: The string that contains the units of the wavelength.
     """
     if units == 'nm':
         return u.nm.to(u.angstrom, wavelength)
@@ -40,31 +44,55 @@ def wave_unit_catcher(wavelength, units):
         return None
 
 
-def translate_results_to_query(*results):
+# removed the '*' from results
+def translate_results_to_query(results):
     """
     Parses the results from a HEK query and formulates a series of
     VSO queries.
+
+    results: The HEK results from a HEK query to be translated.
     """
-    results = json.dumps(results)
-    results = json.loads(results)
-    # The following line is to strip the results from the outer list
-    results = results[0]
+    typeList = "<type 'list'>"
+    typeHekResponse = "<class 'sunpy.net.hek.hek.Response'>"
+    tempType = str(type(results))
     queries = []
-    for result in results:
-        query = [vso.attrs.Time(result['event_starttime'],
-                                result['event_endtime']),
-                 vso.attrs.Source(result['obs_observatory']),
-                 vso.attrs.Instrument(result['obs_instrument'])]
-        avg_wave_len = wave_unit_catcher(result['obs_meanwavel'],
-                                       result['obs_wavelunit'])
-        query.append(vso.attrs.Wave(avg_wave_len, avg_wave_len))
+    if tempType == typeList:
+        for result in results:
+            query = vso_attribute_parse(result)
+            queries.append(query)
+    elif tempType == typeHekResponse:
+        query = vso_attribute_parse(results)
         queries.append(query)
+    else:
+        queries.append(None)
     return queries
+
+
+def vso_attribute_parse(phrase):
+    """
+    This is a simple function to parse HEK query result and generate a list
+    containing VSO relevant attributes.
+
+    phrase: The single HEK result to be parsed for VSO attribute data.
+    """
+    query = [vso.attrs.Time(phrase['event_starttime'],
+                            phrase['event_endtime']),
+             vso.attrs.Source(phrase['obs_observatory']),
+             vso.attrs.Instrument(phrase['obs_instrument'])]
+    avg_wave_len = wave_unit_catcher(phrase['obs_meanwavel'],
+                                     phrase['obs_wavelunit'])
+    query.append(vso.attrs.Wave(avg_wave_len, avg_wave_len))
+    return query
 
 
 def progress_bar(phrase, position, total):
     """
     This is a function to print a simple progress bar to the screen
+
+    phrase: The desired phrase to precede the progress bar with each update.
+    position: The current location in the data set (will be divided by 'total'
+            to determine percent finished).
+    total: The total size of the data set
     """
     bar_size = 20
     position = float(format(position, '.1f'))
@@ -114,17 +142,39 @@ class H2VClient(object):
         """
         return self.hek_results
 
-    def query(self, *client_query):
+    def full_query(self, client_query, limit=None):
         """
-        Takes a HEK style query and passes it to a HEKClient instance.
-        Possible additions:
+        Takes a list containing a HEK style query, passes it to a HEKClient
+         instance, translates it, queries the VSO webservice, then returns
+         the VSO results inside a structured list.
+
+         client_query: the list containing the HEK style query.
+         limit: an approximate limit to the desired number of VSO results.
+
+         Possible additions:
          - Save results to file
         """
-        self.num_of_records = 0
+        self.quick_clean()
         sys.stdout.write('\rQuerying HEK webservice...')
         sys.stdout.flush()
         self.hek_results = self.hek_client.query(*client_query)
-        vso_query = translate_results_to_query(self.hek_results)
+        return self.translate_and_query(self.hek_results, limit=limit, full_query=True)
+
+    def translate_and_query(self, hek_results, limit=None, full_query=False):
+        """
+        Takes the results from a HEK query, translates them, then makes a VSO
+        query, returning the results in a list organized by their
+        corresponding HEK query.
+
+        hek_results: the results from a HEK query in the form of a list.
+        limit: an approximate limit to the desired number of VSO results.
+        full_query: a simple flag that determines if the method is being
+                called from the full_query() method.
+        """
+        if full_query is False:
+            self.quick_clean()
+            self.hek_results = hek_results
+        vso_query = translate_results_to_query(hek_results)
         result_size = len(vso_query)
         place = 1
         for query in vso_query:
@@ -132,8 +182,18 @@ class H2VClient(object):
             temp = self.vso_client.query(*query)
             self.vso_results.append(temp)
             self.num_of_records += len(temp)
+            if limit is not None:
+                if self.num_of_records >= limit:
+                    break
             place += 1
         sys.stdout.write('\rDone                                          '
                          '                                                ')
         sys.stdout.flush()
         return self.vso_results
+
+    def quick_clean(self):
+        """
+        A simple method to quickly sterilize the instance variables.
+        """
+        self.vso_results = []
+        self.num_of_records = 0

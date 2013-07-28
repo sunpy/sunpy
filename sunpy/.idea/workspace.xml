@@ -6,19 +6,21 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="30d82964-d853-42e3-bafe-dbd7c98000fe" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/net/hek2vso/h2vTesting" afterPath="$PROJECT_DIR$/net/hek2vso/h2vTesting" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/net/hek2vso/hek2vso.py" afterPath="$PROJECT_DIR$/net/hek2vso/hek2vso.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="sunpy.iws" />
     <ignored path=".idea/workspace.xml" />
     <file path="/Python Console" changelist="30d82964-d853-42e3-bafe-dbd7c98000fe" time="1371765103950" ignored="false" />
-    <file path="/Dummy.txt" changelist="30d82964-d853-42e3-bafe-dbd7c98000fe" time="1374706840896" ignored="false" />
-    <file path="/hek2vso.py" changelist="30d82964-d853-42e3-bafe-dbd7c98000fe" time="1374112944040" ignored="false" />
+    <file path="/Dummy.txt" changelist="30d82964-d853-42e3-bafe-dbd7c98000fe" time="1374788089384" ignored="false" />
+    <file path="/hek2vso.py" changelist="30d82964-d853-42e3-bafe-dbd7c98000fe" time="1374991073348" ignored="false" />
     <file path="/__init__.py" changelist="30d82964-d853-42e3-bafe-dbd7c98000fe" time="1371801446227" ignored="false" />
     <file path="/map.py" changelist="30d82964-d853-42e3-bafe-dbd7c98000fe" time="1372122340120" ignored="false" />
     <file path="/temp list" changelist="30d82964-d853-42e3-bafe-dbd7c98000fe" time="1373136975116" ignored="false" />
     <file path="/VSO attrs list" changelist="30d82964-d853-42e3-bafe-dbd7c98000fe" time="1373137667070" ignored="false" />
     <file path="/mod-load.ipy" changelist="30d82964-d853-42e3-bafe-dbd7c98000fe" time="1373609783534" ignored="false" />
-    <file path="/h2vTesting" changelist="30d82964-d853-42e3-bafe-dbd7c98000fe" time="1373614776414" ignored="false" />
+    <file path="/h2vTesting" changelist="30d82964-d853-42e3-bafe-dbd7c98000fe" time="1374968397449" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -41,10 +43,8 @@
       <file leaf-file-name="hek2vso.py" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/net/hek2vso/hek2vso.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="58" column="19" selection-start="1743" selection-end="1743" vertical-scroll-proportion="0.46551725">
-              <folding>
-                <element signature="e#254#292#0" expanded="true" />
-              </folding>
+            <state line="195" column="68" selection-start="6536" selection-end="6536" vertical-scroll-proportion="0.7413793">
+              <folding />
             </state>
           </provider>
         </entry>
@@ -52,8 +52,21 @@
       <file leaf-file-name="h2vTesting" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/net/hek2vso/h2vTesting">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="62" column="12" selection-start="1861" selection-end="1861" vertical-scroll-proportion="0.0">
-              <folding />
+            <state line="34" column="0" selection-start="784" selection-end="784" vertical-scroll-proportion="0.0">
+              <folding>
+                <element signature="e#238#253#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="__init__.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/net/hek2vso/__init__.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+              <folding>
+                <element signature="e#0#38#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -222,8 +235,8 @@
     <property name="options.lastSelected" value="project.propVCSSupport.Mappings" />
     <property name="last_opened_file_path" value="$USER_HOME$/anaconda/bin/ipython" />
     <property name="FullScreen" value="false" />
-    <property name="options.splitter.details.proportions" value="0.2" />
     <property name="options.searchVisible" value="true" />
+    <property name="options.splitter.details.proportions" value="0.2" />
   </component>
   <component name="PyConsoleOptionsProvider">
     <option name="myPythonConsoleState">
@@ -242,6 +255,31 @@
     </key>
   </component>
   <component name="RunManager">
+    <configuration default="true" type="tests" factoryName="py.test">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="sunpy" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_SCRIPT" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <option name="testToRun" value="" />
+      <option name="keywords" value="" />
+      <option name="params" value="" />
+      <option name="USE_PARAM" value="false" />
+      <option name="USE_KEYWORD" value="false" />
+      <method />
+    </configuration>
     <configuration default="true" type="PythonConfigurationType" factoryName="Python">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -340,17 +378,17 @@
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3272727" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24959481" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2771475" sideWeight="0.0" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.28200972" sideWeight="0.0" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3272727" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3272727" sideWeight="0.5" order="10" side_tool="true" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3283582" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32781458" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
@@ -418,13 +456,6 @@
     <breakpoint-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/net/vso/attrs.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="116" column="31" selection-start="3504" selection-end="3504" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/net/vso/vso.py">
       <provider selected="true" editor-type-id="text-editor">
         <state line="66" column="4" selection-start="1680" selection-end="1680" vertical-scroll-proportion="0.0">
@@ -435,9 +466,7 @@
     <entry file="file://$PROJECT_DIR$/net/hek2vso/hek2vso.py">
       <provider selected="true" editor-type-id="text-editor">
         <state line="68" column="41" selection-start="2061" selection-end="2061" vertical-scroll-proportion="0.0">
-          <folding>
-            <element signature="e#254#292#0" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -451,7 +480,9 @@
     <entry file="file://$PROJECT_DIR$/net/hek2vso/h2vTesting">
       <provider selected="true" editor-type-id="text-editor">
         <state line="62" column="12" selection-start="1861" selection-end="1861" vertical-scroll-proportion="0.0">
-          <folding />
+          <folding>
+            <element signature="e#238#253#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -501,6 +532,15 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/net/hek2vso/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+          <folding>
+            <element signature="e#0#38#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/net/vso/attrs.py">
       <provider selected="true" editor-type-id="text-editor">
         <state line="116" column="31" selection-start="3504" selection-end="3504" vertical-scroll-proportion="0.0">
@@ -510,17 +550,17 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/net/hek2vso/h2vTesting">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="62" column="12" selection-start="1861" selection-end="1861" vertical-scroll-proportion="0.0">
-          <folding />
+        <state line="34" column="0" selection-start="784" selection-end="784" vertical-scroll-proportion="0.0">
+          <folding>
+            <element signature="e#238#253#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/net/hek2vso/hek2vso.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="58" column="19" selection-start="1743" selection-end="1743" vertical-scroll-proportion="0.46551725">
-          <folding>
-            <element signature="e#254#292#0" expanded="true" />
-          </folding>
+        <state line="195" column="68" selection-start="6536" selection-end="6536" vertical-scroll-proportion="0.7413793">
+          <folding />
         </state>
       </provider>
     </entry>
