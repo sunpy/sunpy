@@ -7,8 +7,6 @@ Documentation
 - document the package database itself!!! → show how to use the Database
   class and the undo and redo methods
 
-- document entries_from_query_result
-
 - document the caching package
 
 - document caching.LRUCache and caching.LFUCache
@@ -21,6 +19,8 @@ Documentation
 
 Testing
 -------
+- test adding entries that are already saved in the database → should
+  throw an exception
 
 - what to do if a database operation is attempted but the table hasn't
   been created yet? Throw a custom exception or create the required
@@ -36,14 +36,23 @@ Testing
 
 Simple
 ------
-
-- use a main DatabaseException class for all custom exceptions that are
-  raised in this package → also a main sunpy.SunPyException
-
 - support changing the cache size from Database → Database.cache_size
 
 Important
 ---------
+- Database.query / attrs module:
+  
+  - support VSO attributes
+
+  - support more attributes:
+
+      - Path (str, compare Tag attribute)
+
+      - DownloadTime (time range, see vso.attrs.Time)
+
+      - FitsHeaderEntry (custom attribute storing key and value)
+
+- remove Database.get_entry_by_id
 
 - adopt parameter names in Database methods to last changes in the
   documentation!!!
@@ -59,12 +68,14 @@ Important
 Long-term
 ---------
 
-- support querying via attributes (see vso)
+- support using the progressbar for adding many entries to the database
+  → Or do not support it directly. Rather, add a section in the docs "Tips
+  & Tricks" or something and show a snippet there
+
+- support TAR and TAR-GZ
 
 Unclear / Undecided
 -------------------
 
 - Should the FITS Header be normalized before being saved (the keys are
   usually in UPPERCASE, makes it worse to search for)?
-
-- how should the database-vso connection be implemented exactly?
