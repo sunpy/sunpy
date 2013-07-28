@@ -20,13 +20,13 @@ The database package exports the following classes, functions and exceptions:
 from __future__ import absolute_import
 
 from sunpy.database.database import Database, EntryAlreadyAddedError,\
-    EntryAlreadyStarredError, EntryAlreadyUnstarredError
+    EntryAlreadyStarredError, EntryAlreadyUnstarredError, NoSuchTagError
 from sunpy.database.tables import DatabaseEntry, FitsHeaderEntry, Tag,\
     entries_from_query_result, entries_from_path
 from sunpy.database.commands import NoSuchEntryError
 
 __all__ = [
-    'Database', 'EntryAlreadyAddedError', 'NoSuchEntryError',
+    'Database', 'EntryAlreadyAddedError', 'NoSuchEntryError', 'NoSuchTagError',
     'EntryAlreadyStarredError', 'EntryAlreadyUnstarredError',
     'DatabaseEntry', 'FitsHeaderEntry', 'Tag', 'entries_from_query_result',
     'entries_from_path']

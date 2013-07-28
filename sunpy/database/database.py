@@ -54,6 +54,18 @@ class EntryAlreadyUnstarredError(Exception):
             'as starred' % self.database_entry)
 
 
+class NoSuchTagError(Exception):
+    """This exception is raised if a tag cannot be found in a database by its
+    name.
+
+    """
+    def __init__(self, tag_name):
+        self.tag_name = tag_name
+
+    def __str__(self):  # pragma: no cover
+        return 'the tag %r is not saved in the database' % self.tag_name
+
+
 class Database(object):
     """
     Database(url[, CacheClass[, cache_size]])
@@ -264,14 +276,14 @@ class Database(object):
         return self.session.query(tables.Tag).all()
 
     def get_tag(self, tag_name):
-        """Get the tag which has the given name. If no such tag exists, None is
-        returned.
+        """Get the tag which has the given name. If no such tag exists,
+        :exc:`sunpy.database.NoSuchTagError` is raised.
 
         """
         for tag in self.tags:
             if tag_name == tag.name:
                 return tag
-        return None
+        raise NoSuchTagError(tag_name)
 
     def tag(self, database_entry, *tags):
         """Assign the given database entry the given tags. If no tags are
@@ -283,8 +295,9 @@ class Database(object):
         # avoid duplicates
         tag_names = set(tags)
         for tag_name in tag_names:
-            tag = self.get_tag(tag_name)
-            if tag is None:
+            try:
+                tag = self.get_tag(tag_name)
+            except NoSuchTagError:
                 # tag does not exist yet -> create it
                 database_entry.tags.append(tables.Tag(tag_name))
             else:

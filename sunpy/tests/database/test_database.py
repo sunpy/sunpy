@@ -3,7 +3,7 @@ from __future__ import absolute_import
 import pytest
 
 from sunpy.database import Database, EntryAlreadyAddedError,\
-    EntryAlreadyStarredError, EntryAlreadyUnstarredError
+    EntryAlreadyStarredError, EntryAlreadyUnstarredError, NoSuchTagError
 from sunpy.database.tables import DatabaseEntry, Tag
 from sunpy.database.commands import NoSuchEntryError
 from sunpy.database.caching import LRUCache, LFUCache
@@ -74,7 +74,8 @@ def test_get_existing_tag(database):
 
 
 def test_get_nonexting_tag(database):
-    assert database.get_tag('foo') is None
+    with pytest.raises(NoSuchTagError):
+        database.get_tag('foo')
 
 
 def test_tag_missing_tags_arg(database):
