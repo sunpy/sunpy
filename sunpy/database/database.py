@@ -96,6 +96,9 @@ class Database(object):
 
     Methods
     -------
+    set_cache_size(cache_size)
+        Set a new value for the maxiumum number of database entries in the
+        cache. Use the value ``float('inf')`` to disable caching.
     create_tables(checkfirst=True)
         Create all necessary tables. Do nothing if ``checkfirst`` is True and
         the required tables already exist.
@@ -187,6 +190,13 @@ class Database(object):
             def append(this, value):
                 this[max(this or [0]) + 1] = value
         self._cache = Cache(cache_size)
+
+    def set_cache_size(self, cache_size):
+        """Set a new value for the maxiumum number of database entries in the
+        cache. Use the value ``float('inf')`` to disable caching.
+
+        """
+        self._cache.maxsize = cache_size
 
     def create_tables(self, checkfirst=True):
         """Initialise the database by creating all necessary tables. If
