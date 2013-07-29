@@ -53,6 +53,16 @@ def filled_database():
     return database
 
 
+def test_setting_cache_size(database_using_lrucache):
+    for _ in xrange(5):
+        database_using_lrucache.add(DatabaseEntry())
+    assert len(database_using_lrucache) == 3
+    database_using_lrucache.set_cache_size(5)
+    for _ in xrange(5):
+        database_using_lrucache.add(DatabaseEntry())
+    assert len(database_using_lrucache) == 5
+
+
 def test_create_tables(database_without_tables):
     assert not database_without_tables._engine.has_table('data')
     database_without_tables.create_tables()
