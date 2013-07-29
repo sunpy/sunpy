@@ -104,6 +104,18 @@ class EditEntry(DatabaseOperation):
             setattr(self.database_entry, k, v)
 
 
+class RemoveTag(DatabaseOperation):
+    def __init__(self, database_entry, tag):
+        self.database_entry = database_entry
+        self.tag = tag
+
+    def __call__(self):
+        self.database_entry.tags.remove(self.tag)
+
+    def undo(self):
+        self.database_entry.tags.append(self.tag)
+
+
 class CommandManager(object):
     """The CommandManager saves all executed and reverted commands to act as an
     undo-redo-manager. All executed commands are saved in the list attribute

@@ -304,6 +304,18 @@ class Database(object):
                 # tag could be found in the tags table -> add this tag
                 database_entry.tags.append(tag)
 
+    def remove_tag(self, database_entry, tag_name):
+        """Remove the given tag from the database entry. If the tag is not
+        connected to any entry after this operation, the tag itself is removed
+        from the database as well. If the tag is not connected to the given
+        entry, :exc:`sunpy.database.NoSuchTagError` is raised.
+
+        """
+        tag = self.get_tag(tag_name)
+        self._command_manager.do(commands.RemoveTag(database_entry, tag))
+        if not tag.data:
+            self._command_manager.do(commands.RemoveEntry(self.session, tag))
+
     def star(self, database_entry, ignore_already_starred=False):
         """Mark the given database entry as starred. If this entry is already
         marked as starred, the behaviour depends on the optional argument
