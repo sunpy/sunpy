@@ -11,7 +11,10 @@ import urllib2
 
 import numpy as np
 
-import pyfits
+try:
+    import astropy.io.fits as pyfits
+except ImportError:
+    import pyfits
 
 from itertools import izip, chain
 from functools import partial
@@ -107,8 +110,8 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
     """ Classed used for dynamic spectra coming from the Callisto network.
     
     
-    Additional (not inherited) parameters
-    -------------------------------------
+    Attributes
+    ----------
     header : pyfits.Header
         main header of the FITS file
     axes_header : pyfits.Header
@@ -232,7 +235,7 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
             try:
                 fq = axes.data['frequency']
             except KeyError:
-                fq = None
+                fq = None 
         
         if tm is not None:
             # Fix dimensions (whyever they are (1, x) in the first place)
@@ -250,7 +253,7 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
 
         content = header["CONTENT"]
         instruments = set([header["INSTRUME"]])
-        
+    
         return cls(
             data, time_axis, freq_axis, start, end, t_init, t_delt,
             t_label, f_label, content, instruments, 
@@ -265,7 +268,7 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         # Because of how object creation works, there is no avoiding
         # unused arguments in this case.
         # pylint: disable=W0613
-        
+
         super(CallistoSpectrogram, self).__init__(
             data, time_axis, freq_axis, start, end,
             t_init, t_delt, t_label, f_label,

@@ -7,6 +7,7 @@
 #pylint: disable=W0401,C0103,R0904,W0141
 
 from __future__ import absolute_import
+from __future__ import division
 
 """
 This module provides a wrapper around the VSO API.
@@ -15,6 +16,7 @@ This module provides a wrapper around the VSO API.
 import re
 import os
 import sys
+import math
 import random
 import threading
 
@@ -27,10 +29,13 @@ from suds import client, TypeNotFound
 
 from sunpy import config
 from sunpy.net import download
+from sunpy.util.progressbar import TTYProgressBar as ProgressBar
 from sunpy.util.net import get_filename, slugify
 from sunpy.net.attr import and_, Attr
+from sunpy.net.vso import attrs
 from sunpy.net.vso.attrs import walker, TIMEFORMAT
 from sunpy.util import to_angstrom, print_table, replacement_filename
+from sunpy.util.net import slugify
 from sunpy.time import parse_time
 
 DEFAULT_URL = 'http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl'
@@ -53,17 +58,21 @@ class _Str(str):
 
 # ----------------------------------------
 
+
 class Results(object):
     """ Returned by VSOClient.get. Use .wait to wait
     for completion of download.
     """
     def __init__(self, callback, n=0, done=None):
         self.callback = callback
-        self.n = n
+        self.n = self.total = n
         self.map_ = {}
         self.done = done
         self.evt = threading.Event()
         self.errors = []
+        self.lock = threading.RLock()
+
+        self.progress = None
     
     def submit(self, keys, value):
         """
@@ -81,15 +90,18 @@ class Results(object):
         self.poke()
     
     def poke(self):
-        self.n -= 1
         """ Signal completion of one item that was waited for. This can be
         because it was submitted, because it lead to an error or for any
         other reason. """
-        if not self.n:
-            if self.done is not None:
-                self.map_ = self.done(self.map_)
-            self.callback(self.map_)
-            self.evt.set()
+        with self.lock:
+            if self.progress is not None:
+                self.progress.poke()
+            self.n -= 1
+            if not self.n:
+                if self.done is not None:
+                    self.map_ = self.done(self.map_)
+                self.callback(self.map_)
+                self.evt.set()
     
     def require(self, keys):
         """ Require that keys be submitted before the Results object is
@@ -99,15 +111,25 @@ class Results(object):
         keys : list
             name of keys under which to save the result
         """
-        self.n += 1
-        return partial(self.submit, keys)
+        with self.lock:
+            self.n += 1
+            self.total += 1
+            return partial(self.submit, keys)
     
-    def wait(self, timeout=100):
+    def wait(self, timeout=100, progress=False):
         """ Wait for result to be complete and return it. """
         # Giving wait a timeout somehow circumvents a CPython bug that the
         # call gets ininterruptible.
+        if progress:
+            with self.lock:
+                self.progress = ProgressBar(self.total, self.total - self.n)
+                self.progress.start()
+                self.progress.draw()
+
         while not self.evt.wait(timeout):
             pass
+        if progress:
+            self.progress.finish()
 
         return self.map_
     
@@ -242,6 +264,9 @@ class VSOClient(object):
         self.api = api
     
     def make(self, type_, **kwargs):
+        """ Create new SOAP object with attributes specified in kwargs.
+        To assign subattributes, use foo__bar=1 to assign
+        ['foo']['bar'] = 1. """
         obj = self.api.factory.create(type_)
         for k, v in kwargs.iteritems():
             split = k.split('__')
@@ -299,6 +324,7 @@ class VSOClient(object):
         return QueryResponse.create(self.merge(responses))
     
     def merge(self, queryresponses):
+        """ Merge responses into one. """
         if len(queryresponses) == 1:
             return queryresponses[0]
         
@@ -341,7 +367,7 @@ class VSOClient(object):
         fs_encoding = sys.getfilesystemencoding()
         if fs_encoding is None:
             fs_encoding = "ascii"
-        name = name.encode(fs_encoding, "ignore")
+        name = slugify(name).encode(fs_encoding, "ignore")
 
         if not name:
             name = "file"
@@ -351,7 +377,7 @@ class VSOClient(object):
         if not overwrite and os.path.exists(fname):
             fname = replacement_filename(fname)
         
-        dir_ = os.path.dirname(fname)
+        dir_ = os.path.abspath(os.path.dirname(fname))
         if not os.path.exists(dir_):
             os.makedirs(dir_)
         return fname
@@ -516,15 +542,18 @@ class VSOClient(object):
         site: str
             There are a number of caching mirrors for SDO and other
             instruments, some available ones are listed below.
-                NSO   : National Solar Observatory, Tucson (US)
-                SAO  (aka CFA)  : Smithonian Astronomical Observatory, Harvard U. (US)
-                SDAC (aka GSFC) : Solar Data Analysis Center, NASA/GSFC (US)
-                ROB   : Royal Observatory of Belgium (Belgium)
-                MPS   : Max Planck Institute for Solar System Research (Germany)
-                UCLan : University of Central Lancashire (UK)
-                IAS   : Institut Aeronautique et Spatial (France)
-                KIS   : Kiepenheuer-Institut fur Sonnenphysik Germany)
-                NMSU  : New Mexico State University (US)
+
+            =============== ========================================================
+            NSO             National Solar Observatory, Tucson (US)
+            SAO  (aka CFA)  Smithonian Astronomical Observatory, Harvard U. (US)
+            SDAC (aka GSFC) Solar Data Analysis Center, NASA/GSFC (US)
+            ROB             Royal Observatory of Belgium (Belgium)
+            MPS             Max Planck Institute for Solar System Research (Germany)
+            UCLan           University of Central Lancashire (UK)
+            IAS             Institut Aeronautique et Spatial (France)
+            KIS             Kiepenheuer-Institut fur Sonnenphysik Germany)
+            NMSU            New Mexico State University (US)
+            =============== ========================================================
         
         Returns
         -------
@@ -532,15 +561,13 @@ class VSOClient(object):
         
         Examples
         --------
-        >>> res = get(qr).wait()
+        >>> res = get(qr).wait() # doctest:+SKIP
         """
         if downloader is None:
             downloader = download.Downloader()
-            thread = threading.Thread(target=downloader.reactor.run)
-            thread.daemon = True
-            thread.start()
+            downloader.init()
             res = Results(
-                lambda _: downloader.reactor.stop(), 1,
+                lambda _: downloader.stop(), 1,
                 lambda mp: self.link(query_response, mp)
             )
         else:
@@ -571,6 +598,8 @@ class VSOClient(object):
     
     @staticmethod
     def link(query_response, map_):
+        """ Return list of paths with records associated with them in
+        the meta attribute. """
         if not map_:
             return []
         ret = []
@@ -586,6 +615,7 @@ class VSOClient(object):
         return ret
     
     def make_getdatarequest(self, response, methods=None, info=None):
+        """ Make datarequest with methods from response. """
         if methods is None:
             methods = self.method_order + ['URL']
         
@@ -596,6 +626,8 @@ class VSOClient(object):
         )
     
     def create_getdatarequest(self, map_, methods, info=None):
+        """ Create datarequest from map_ mapping data provider to
+        fileids and methods, """
         if info is None:
             info = {}
         
@@ -691,9 +723,8 @@ class VSOClient(object):
     def download(self, method, url, dw, callback, errback, *args):
         """ Override to costumize download action. """
         if method.startswith('URL'):
-            return dw.reactor.call_sync(
-                partial(dw.download, url, partial(self.mk_filename, *args),
-                        callback, errback)
+            return dw.download(url, partial(self.mk_filename, *args),
+                        callback, errback
             )
         raise NoData
     
