@@ -155,12 +155,12 @@ def reshape_image_to_4d_superpixel(img,dimensions):
     """
     # check that the dimensions divide into the image size exactly
     if img.shape[1] % dimensions[0] != 0:
-        print('Sum value in x direction must divide exactly into image \
-        x-dimension size')
+        print('Sum value in x direction must divide exactly into image'
+              ' x-dimension size.')
         return None
     if img.shape[0] % dimensions[1] != 0:
-        print('Sum value in y direction must divide exactly into image \
-        x-dimension size')
+        print('Sum value in y direction must divide exactly into image'
+              ' x-dimension size.')
         return None
    
     # Reshape up to a higher dimensional array which is useful for higher
