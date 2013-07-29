@@ -24,9 +24,10 @@ from __future__ import absolute_import
 
 import os
 
-from . import _pyana
+from sunpy.io import _pyana
+from sunpy.io.header import FileHeader
 
-__all__ = ['read', 'get_data', 'get_header', 'write']
+__all__ = ['read', 'get_header', 'write']
 
 def read(filename, debug=False):
     """
@@ -53,33 +54,10 @@ def read(filename, debug=False):
     if not os.path.isfile(filename):
         raise IOError("File does not exist!")
 	
-    data = _pyana.fzread(filename, debug)
-    return data
+    data = _pyana.fzread(filename, debug)['data']
+    header = get_header(filename, debug)
+    return [(header, data)]
 
-def get_data(filename, debug=False):
-    """
-    Loads an ANA file and only returns the data as a numpy array.
-
-    Parameters
-    ----------
-    filename: string
-        Name of file to be read.
-    debug: bool, optional
-        Prints versbose debug information.
-    
-    Returns
-    -------
-    out: ndarray
-        Contains the data only of an ANA file.    
-    
-    Examples
-    --------
-    >>> data = sunpy.io.ana.getdata(filename)
-    """
-    data = read(filename, debug)
-    return data['data']
-
-	
 def get_header(filename, debug=False):
     """
     Load an ANA file and only return the header consisting of the dimensions,
@@ -103,7 +81,7 @@ def get_header(filename, debug=False):
     >>> header = sunpy.io.ana.getheader(filename)
     """
     data = read(filename, debug)
-    return data['header']
+    return FileHeader(data['header'])
 
 def write(filename, data, compress=1, comments=False, debug=False):
     """
