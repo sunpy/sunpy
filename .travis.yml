@@ -38,7 +38,6 @@ install:
   - pip install matplotlib>=$MATPLOTLIB_VERSION --use-mirrors
   - pip install astropy  --use-mirrors
   - pip install pandas==$PANDAS_VERSION -q --use-mirrors
-  - pip install glymur>=0.2.2 --use-mirrors
   - pip install scipy --use-mirrors
   - pip install -q pytest $SUDS_PKG beautifulsoup4
 
