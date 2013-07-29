@@ -2,7 +2,7 @@ import pytest
 
 from sunpy.database.database import Database
 from sunpy.database import tables
-from sunpy.database.attrs import Starred, Tag, walker
+from sunpy.database.attrs import Starred, Tag, Path, walker
 from sunpy.net.attr import DummyAttr, AttrAnd, AttrOr
 
 
@@ -21,6 +21,9 @@ def session():
         # every second entry gets starred
         if i % 2 == 0:
             database.star(entry)
+        # every third entry is stored in the path /tmp
+        if i % 3 == 0:
+            database.edit(entry, path='/tmp')
         # every fifth entry gets the tag 'foo'
         if i % 5 == 0:
             database.tag(entry, 'foo')
@@ -87,7 +90,7 @@ def test_walker_create_starred_true(session):
     assert entries == [
         tables.DatabaseEntry(id=2, starred=True),
         tables.DatabaseEntry(id=4, starred=True),
-        tables.DatabaseEntry(id=6, starred=True),
+        tables.DatabaseEntry(id=6, path='/tmp', starred=True),
         tables.DatabaseEntry(id=8, starred=True),
         tables.DatabaseEntry(id=10, starred=True, tags=[tag])]
 
@@ -99,10 +102,10 @@ def test_walker_create_starred_false(session):
     assert len(entries) == 5
     assert entries == [
         tables.DatabaseEntry(id=1),
-        tables.DatabaseEntry(id=3),
+        tables.DatabaseEntry(id=3, path='/tmp'),
         tables.DatabaseEntry(id=5, tags=[tag]),
         tables.DatabaseEntry(id=7),
-        tables.DatabaseEntry(id=9)]
+        tables.DatabaseEntry(id=9, path='/tmp')]
 
 
 def test_walker_create_tag_positive(session):
@@ -121,12 +124,12 @@ def test_walker_create_tag_negative(session):
     assert entries == [
         tables.DatabaseEntry(id=1),
         tables.DatabaseEntry(id=2, starred=True),
-        tables.DatabaseEntry(id=3),
+        tables.DatabaseEntry(id=3, path='/tmp'),
         tables.DatabaseEntry(id=4, starred=True),
-        tables.DatabaseEntry(id=6, starred=True),
+        tables.DatabaseEntry(id=6, path='/tmp', starred=True),
         tables.DatabaseEntry(id=7),
         tables.DatabaseEntry(id=8, starred=True),
-        tables.DatabaseEntry(id=9)]
+        tables.DatabaseEntry(id=9, path='/tmp')]
 
 
 def test_walker_create_anded_query(session):
@@ -145,7 +148,7 @@ def test_walker_create_ored_query(session):
     assert tables.DatabaseEntry(id=2, starred=True) in entries
     assert tables.DatabaseEntry(id=4, starred=True) in entries
     assert tables.DatabaseEntry(id=5, tags=[tag]) in entries
-    assert tables.DatabaseEntry(id=6, starred=True) in entries
+    assert tables.DatabaseEntry(id=6, path='/tmp', starred=True) in entries
     assert tables.DatabaseEntry(id=8, starred=True) in entries
     assert tables.DatabaseEntry(id=10, starred=True, tags=[tag]) in entries
 
@@ -157,7 +160,19 @@ def test_walker_create_complex_query(session):
     tag = tables.Tag('foo')
     tag.id = 1
     assert tables.DatabaseEntry(id=1) in entries
-    assert tables.DatabaseEntry(id=3) in entries
+    assert tables.DatabaseEntry(id=3, path='/tmp') in entries
     assert tables.DatabaseEntry(id=7) in entries
-    assert tables.DatabaseEntry(id=9) in entries
+    assert tables.DatabaseEntry(id=9, path='/tmp') in entries
     assert tables.DatabaseEntry(id=10, starred=True, tags=[tag]) in entries
+
+
+def test_walker_create_path_attr_notfound(session):
+    assert walker.create(Path('doesnotexist'), session) == []
+
+
+def test_walker_create_path_attr_exists(session):
+    entries = walker.create(Path('/tmp'), session)
+    assert len(entries) == 3
+    assert tables.DatabaseEntry(id=3, path='/tmp') in entries
+    assert tables.DatabaseEntry(id=6, path='/tmp', starred=True) in entries
+    assert tables.DatabaseEntry(id=9, path='/tmp') in entries
