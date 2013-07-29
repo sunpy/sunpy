@@ -1,3 +1,4 @@
+from sunpy.net.vso.attrs import _VSOSimpleAttr as _DBSimpleAttr
 from sunpy.net.attr import AttrWalker, Attr, ValueAttr, AttrAnd, AttrOr
 from sunpy.database import tables
 
@@ -63,6 +64,10 @@ class Tag(Attr):
         return '<Tag(%r, %r)>' % (self.tagname, self.inverted)
 
 
+class Path(_DBSimpleAttr):
+    pass
+
+
 walker = AttrWalker()
 
 
@@ -108,3 +113,8 @@ def _convert(attr):
 @walker.add_converter(Starred)
 def _convert(attr):
     return ValueAttr({('starred', ): attr.value})
+
+
+@walker.add_converter(_DBSimpleAttr)
+def _convert(attr):
+    return ValueAttr({(attr.__class__.__name__.lower(),): attr.value})
