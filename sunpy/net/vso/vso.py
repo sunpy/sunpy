@@ -242,6 +242,9 @@ class VSOClient(object):
         self.api = api
     
     def make(self, type_, **kwargs):
+        """ Create new SOAP object with attributes specified in kwargs.
+        To assign subattributes, use foo__bar=1 to assign
+        ['foo']['bar'] = 1. """
         obj = self.api.factory.create(type_)
         for k, v in kwargs.iteritems():
             split = k.split('__')
@@ -299,6 +302,7 @@ class VSOClient(object):
         return QueryResponse.create(self.merge(responses))
     
     def merge(self, queryresponses):
+        """ Merge responses into one. """
         if len(queryresponses) == 1:
             return queryresponses[0]
         
@@ -516,15 +520,18 @@ class VSOClient(object):
         site: str
             There are a number of caching mirrors for SDO and other
             instruments, some available ones are listed below.
-                NSO   : National Solar Observatory, Tucson (US)
-                SAO  (aka CFA)  : Smithonian Astronomical Observatory, Harvard U. (US)
-                SDAC (aka GSFC) : Solar Data Analysis Center, NASA/GSFC (US)
-                ROB   : Royal Observatory of Belgium (Belgium)
-                MPS   : Max Planck Institute for Solar System Research (Germany)
-                UCLan : University of Central Lancashire (UK)
-                IAS   : Institut Aeronautique et Spatial (France)
-                KIS   : Kiepenheuer-Institut fur Sonnenphysik Germany)
-                NMSU  : New Mexico State University (US)
+
+            =============== ========================================================
+            NSO             National Solar Observatory, Tucson (US)
+            SAO  (aka CFA)  Smithonian Astronomical Observatory, Harvard U. (US)
+            SDAC (aka GSFC) Solar Data Analysis Center, NASA/GSFC (US)
+            ROB             Royal Observatory of Belgium (Belgium)
+            MPS             Max Planck Institute for Solar System Research (Germany)
+            UCLan           University of Central Lancashire (UK)
+            IAS             Institut Aeronautique et Spatial (France)
+            KIS             Kiepenheuer-Institut fur Sonnenphysik Germany)
+            NMSU            New Mexico State University (US)
+            =============== ========================================================
         
         Returns
         -------
@@ -536,11 +543,9 @@ class VSOClient(object):
         """
         if downloader is None:
             downloader = download.Downloader()
-            thread = threading.Thread(target=downloader.reactor.run)
-            thread.daemon = True
-            thread.start()
+            downloader.init()
             res = Results(
-                lambda _: downloader.reactor.stop(), 1,
+                lambda _: downloader.stop(), 1,
                 lambda mp: self.link(query_response, mp)
             )
         else:
@@ -571,6 +576,8 @@ class VSOClient(object):
     
     @staticmethod
     def link(query_response, map_):
+        """ Return list of paths with records associated with them in
+        the meta attribute. """
         if not map_:
             return []
         ret = []
@@ -586,6 +593,7 @@ class VSOClient(object):
         return ret
     
     def make_getdatarequest(self, response, methods=None, info=None):
+        """ Make datarequest with methods from response. """
         if methods is None:
             methods = self.method_order + ['URL']
         
@@ -596,6 +604,8 @@ class VSOClient(object):
         )
     
     def create_getdatarequest(self, map_, methods, info=None):
+        """ Create datarequest from map_ mapping data provider to
+        fileids and methods, """
         if info is None:
             info = {}
         
@@ -691,9 +701,8 @@ class VSOClient(object):
     def download(self, method, url, dw, callback, errback, *args):
         """ Override to costumize download action. """
         if method.startswith('URL'):
-            return dw.reactor.call_sync(
-                partial(dw.download, url, partial(self.mk_filename, *args),
-                        callback, errback)
+            return dw.download(url, partial(self.mk_filename, *args),
+                        callback, errback
             )
         raise NoData
     

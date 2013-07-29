@@ -16,9 +16,20 @@ Python(x,y)
 Download and install `Python(x,y) <https://code.google.com/p/pythonxy/wiki/Downloads>`_.
 Python(x,y) is a distribution that include not only Python, but also a large 
 variety of Python modules and development tools.  Please note that this 
-installer is rather large (~500 MB) and thus may take a while to download.
-The following required modules are included in Python(x,y): NumPy,
-SciPy, Matplotlib, PyFITS, pandas, distribute, and Qt.
+installer is rather large (~600 MB) and thus may take a while to download.
+The modules in Python(x,y) include:
+
+* NumPy
+* SciPy
+* Matplotlib
+* PyFITS
+* pandas
+* distribute
+* pip
+* Qt
+* Sphinx
+* pylint
+* ipython
 
 **2. Set up the Python build environment**
 
@@ -30,20 +41,12 @@ contains the following lines: ::
     [build_ext]
     compiler=mingw32
 
-There is currently a bug in the Python 2.7 code, so you will also need to edit
-``cygwincompiler.py`` in the same directory.  Remove all five instances of the
-character string "-mno-cygwin".
-
 **3. Install Git**
 
 Download and install `Git <https://code.google.com/p/msysgit/downloads/list?can=3&q=Full+installer+for+official+Git+for+Windows>`_.
 Git is used to retrieve the SunPy code.
 
-**4. Install Pip**
-
-Download and install
-`pip <http://code.google.com/p/pythonxy/downloads/list?q=pip>`_.  (Note: this
-installer is built by the Python(x,y) team.) You are now ready to continue with 
+You are now ready to continue with
 :doc:`the rest of the installation <index>`.
 
 Alternate method
@@ -57,7 +60,7 @@ with computers and Python.
 
 **1. Install Python**
 
-Download and install `Python 2.7 <http://www.python.org/ftp/python/2.7.3/python-2.7.3.msi>`_ 
+Download and install `Python 2.7 <http://www.python.org/ftp/python/2.7.5/python-2.7.5.msi>`_ 
 (32-bit).  Note that even if you are on a 64-bit system, you are installing a 
 32-bit version of Python to be able to use precompiled binaries where still needed.
 
@@ -109,7 +112,7 @@ You can use pip to download and build modules from source: ::
 
 Unfortunately, the compilations of SciPy and Matplotlib will likely fail due to
 missing libraries.  Until there is a workable solution, you should download the
-latest installers: `SciPy <http://sourceforge.net/projects/scipy/files/scipy/0.11.0/scipy-0.11.0-win32-superpack-python2.7.exe/download>`_
-and `Matplotlib <http://sourceforge.net/projects/matplotlib/files/matplotlib/matplotlib-1.1.1/matplotlib-1.1.1.win32-py2.7.exe/download>`__.
+latest installers: `SciPy <http://sourceforge.net/projects/scipy/files/scipy/0.12.0/scipy-0.12.0-win32-superpack-python2.7.exe/download>`_
+and `Matplotlib <http://sourceforge.net/projects/matplotlib/files/matplotlib/matplotlib-1.2.1/matplotlib-1.2.1.win32-py2.7.exe/download>`__.
 You are now ready to continue with :doc:`the rest of the installation <index>`.
 
