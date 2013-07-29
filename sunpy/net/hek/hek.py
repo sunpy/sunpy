@@ -54,7 +54,7 @@ class HEKClient(object):
         self.url = url
     
     def _download(self, data):
-        """ Implementation detail. """
+        """ Download all data, even if pagiated. """
         page = 1        
         results = []
         
@@ -90,7 +90,7 @@ class HEKClient(object):
             return self._merge(self._download(data) for data in ndata)
     
     def _merge(self, responses):
-        """ Implementation detail. """
+        """ Merge responses, removing duplicates. """
         return list(unique(chain.from_iterable(responses), _freeze))
 
 

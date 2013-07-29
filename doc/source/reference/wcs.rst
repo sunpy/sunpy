@@ -4,7 +4,7 @@
 WCS
 ===
 
-.. currentmodule:: sunpy
+.. currentmodule:: sunpy.wcs
 
-.. automodule:: wcs
+.. automodule:: sunpy.wcs.wcs
    :members:

@@ -12,7 +12,7 @@ __all__ = ['Spectrum']
 class Spectrum(np.ndarray):
     """ Class representing a spectrum.
     
-    Parameters
+    Attributes
     ----------
     data : np.ndarray
         one-dimensional array which the intensity at a particular frequency
@@ -72,4 +72,4 @@ class Spectrum(np.ndarray):
         figure.show()
         
         return figure
-        
+

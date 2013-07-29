@@ -4,7 +4,7 @@
 SunPy Maps
 ----------
 
-.. currentmodule:: sunpy.map
+.. module:: sunpy.map
 
 Overview
 ^^^^^^^^

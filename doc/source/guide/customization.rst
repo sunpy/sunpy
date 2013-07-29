@@ -50,7 +50,7 @@ the sunpy package. Settings can be modified directly, for example::
 A sample sunpyrc file
 --------------------------------------------------------------------
 
-.. htmlonly::
+.. only:: html
 
     `(download) <../_static/sunpyrc>`__
 
