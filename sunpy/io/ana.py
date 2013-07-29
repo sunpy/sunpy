@@ -21,9 +21,7 @@ Examples
 """
  
 from __future__ import absolute_import
-
 import os
-
 from sunpy.io import _pyana
 from sunpy.io.header import FileHeader
 
@@ -43,8 +41,8 @@ def read(filename, debug=False):
     
     Returns
     -------
-    out: dictionary
-        Contains data, size, diemnsions and comments of an ANA file.    
+    out: list
+        A list of (data, header) tuples
     
     Examples
     --------
@@ -54,9 +52,8 @@ def read(filename, debug=False):
     if not os.path.isfile(filename):
         raise IOError("File does not exist!")
 	
-    data = _pyana.fzread(filename, debug)['data']
-    header = get_header(filename, debug)
-    return [(header, data)]
+    data = _pyana.fzread(filename, debug)
+    return [(FileHeader(data['header']), data['data'])]
 
 def get_header(filename, debug=False):
     """
@@ -73,15 +70,15 @@ def get_header(filename, debug=False):
     
     Returns
     -------
-    out: string
-        Contains the header only of an ANA file.    
+    out: list
+        Contains the header only of an ANA file in list form.
 
     Examples
     --------    
-    >>> header = sunpy.io.ana.getheader(filename)
+    >>> header = sunpy.io.ana.get_header(filename)
     """
-    data = read(filename, debug)
-    return FileHeader(data['header'])
+    data = _pyana.fzread(filename, debug)
+    return [FileHeader(data['header'])]
 
 def write(filename, data, compress=1, comments=False, debug=False):
     """
