@@ -16,7 +16,6 @@ SunPy Code Reference
    io
    lightcurve
    map
-   mapcube
    rhessi
    sun
    time
@@ -24,3 +23,5 @@ SunPy Code Reference
    wcs
    spectrogram
    callisto
+   util
+   image

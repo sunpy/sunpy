@@ -60,7 +60,7 @@ def test_subtract_bg():
     spectrogram = mk_spec(image)
     sbg = spectrogram.subtract_bg()
     assert np.array_equal(
-        spectrogram.subtract_bg()[:, 1800:], signal
+        spectrogram.subtract_bg()[:, 1800:].data, signal
     )
 
     assert dict_eq(spectrogram._get_params(), sbg._get_params())
@@ -114,7 +114,7 @@ def test_slice_time_axis():
         np.linspace(0, 3600 - 60 - 1, 3600 - 59 - 1)
     )
     assert new.start == datetime(2010, 10, 10, 0, 0, 59)
-    assert np.array_equal(new, rnd[:, 59:3599])
+    assert np.array_equal(new.data, rnd[:, 59:3599])
 
 
 def test_slice_freq_axis():
@@ -123,7 +123,7 @@ def test_slice_freq_axis():
     new = spectrogram[100:150, :]
     assert new.shape == (50, 3600)
     assert np.array_equal(new.freq_axis, np.linspace(100, 149, 50))
-    assert np.array_equal(new, rnd[100:150, :])
+    assert np.array_equal(new.data, rnd[100:150, :])
 
 
 def test_slice_both_axis():
@@ -135,7 +135,7 @@ def test_slice_both_axis():
     assert np.array_equal(new.time_axis, np.linspace(0, 3600 - 60, 3600 - 59))
     assert new.start == datetime(2010, 10, 10, 0, 0, 59)
     assert np.array_equal(new.freq_axis, np.linspace(100, 199, 100))
-    assert np.array_equal(new, rnd[100:, 59:])
+    assert np.array_equal(new.data, rnd[100:, 59:])
 
 
 def test_time_to_x():
@@ -186,7 +186,7 @@ def test_join():
     # The - 2 is because there is one second overlap.
     assert z.shape == (200, 3 * 3600 - 2 - 1)
 
-    assert np.array_equal(z[:, :3598], one[:, :-2])
+    assert np.array_equal(z.data[:, :3598], one.data[:, :-2])
     # assert np.array_equal(z[:, 3598:], ndimage.zoom(other, (1, 2)))
     assert z.start == one.start
     assert z.end == other.end
@@ -261,7 +261,7 @@ def test_join_midnight():
     # 2 * 3600 - 1
     assert z.shape == (200, 3 * 3600 - 1)
 
-    assert np.array_equal(z[:, :3600], one)
+    assert np.array_equal(z.data[:, :3600], one.data)
     assert is_linear(z.time_axis)
     assert isinstance(z, LinearTimeSpectrogram)
 
@@ -289,7 +289,7 @@ def test_join_month():
     # 2 * 3600 - 1
     assert z.shape == (200, 3 * 3600 - 1)
 
-    assert np.array_equal(z[:, :3600], one)
+    assert np.array_equal(z.data[:, :3600], one.data)
     assert is_linear(z.time_axis)
     assert isinstance(z, LinearTimeSpectrogram)
 
@@ -317,7 +317,7 @@ def test_join_year():
     # 2 * 3600 - 1
     assert z.shape == (200, 3 * 3600 - 1)
 
-    assert np.array_equal(z[:, :3600], one)
+    assert np.array_equal(z.data[:, :3600], one.data)
     assert is_linear(z.time_axis)
     assert isinstance(z, LinearTimeSpectrogram)
 
@@ -346,7 +346,7 @@ def test_join_over_midnight():
     # 2 * 3600 - 1
     assert z.shape == (200, 3 * 3600 - 1)
 
-    assert np.array_equal(z[:, :3600], one)
+    assert np.array_equal(z.data[:, :3600], one.data)
     assert np.array_equal(z.time_axis[:3600], one.time_axis)
     assert is_linear(z.time_axis)
     assert isinstance(z, LinearTimeSpectrogram)
@@ -401,8 +401,9 @@ def test_join_with_gap():
     # The + 2 is because there is one second without data inserted.
     assert z.shape == (200, 3 * 3600 + 2 - 1)
 
-    assert np.array_equal(z[:, :3600], one)
-    assert (z[:, 3600:3602] == 0).all()
+    assert np.array_equal(z.data[:, :3600], one.data)
+    # Second data to unpack masked array
+    assert (z.data.data[:, 3600:3602] == 0).all()
     assert is_linear(z.time_axis)
     assert isinstance(z, LinearTimeSpectrogram)
 
@@ -431,8 +432,12 @@ def test_join_with_gap_fill():
     # The + 2 is because there is one second without data inserted.
     assert z.shape == (200, 3 * 3600 + 2 - 1)
 
-    assert np.array_equal(z[:, :3600], one)
-    assert np.isnan(z[:, 3600:3602]).all()
+    assert np.array_equal(z.data[:, :3600], one.data)
+
+    print type(z.data)
+
+    # Second data to unpack masked array
+    assert np.isnan(z.data.data[:, 3600:3602]).all()
     assert is_linear(z.time_axis)
     assert isinstance(z, LinearTimeSpectrogram)
 
@@ -464,7 +469,7 @@ def test_join_nonlinear():
     # 2 * 3600 - 1
     assert z.shape == (200, 3 * 3600 - 1)
 
-    assert np.array_equal(z[:, :3600], one)
+    assert np.array_equal(z.data[:, :3600], one.data)
     assert np.array_equal(z.time_axis[:3600], one.time_axis)
     assert np.array_equal(z.time_axis[3600:], oz.time_axis + 1801)
     assert isinstance(z, Spectrogram)
@@ -492,8 +497,8 @@ def test_rescale():
     nspec = spec.rescale()
 
     assert dict_eq(spec._get_params(), nspec._get_params())
-    assert_array_almost_equal(nspec.max(), 1)
-    assert nspec.min() == 0
+    assert_array_almost_equal(nspec.data.max(), 1)
+    assert nspec.data.min() == 0
 
 
 def test_rescale_error():
@@ -631,8 +636,8 @@ def test_intersect_time():
 
     assert one.shape[1] == other.shape[1]
     assert one.shape[1] == 3596
-    assert np.array_equal(one, spec[:, 4:])
-    assert np.array_equal(other, spec2[:, :-4])
+    assert np.array_equal(one.data, spec.data[:, 4:])
+    assert np.array_equal(other.data, spec2.data[:, :-4])
 
     assert np.array_equal(one.time_axis, other.time_axis)
     assert one.t_init == other.t_init
@@ -670,7 +675,7 @@ def test_flatten():
         900,
         0.25
     )
-    assert np.array_equal(flat, spec.flatten())
+    assert np.array_equal(flat, spec.data.flatten())
 
 
 def test_in_interval():
@@ -684,7 +689,7 @@ def test_in_interval():
         1
     )
     
-    assert np.array_equal(spec.in_interval("00:15", "00:30"), spec)
+    assert np.array_equal(spec.in_interval("00:15", "00:30").data, spec.data)
 
 
 def test_in_interval2():
@@ -698,7 +703,9 @@ def test_in_interval2():
         1
     )
     
-    assert np.array_equal(spec.in_interval("2010-01-01T00:15:00", "00:30"), spec)
+    assert np.array_equal(
+        spec.in_interval("2010-01-01T00:15:00", "00:30").data, spec.data
+    )
 
 
 def test_linearize():

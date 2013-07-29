@@ -2,6 +2,7 @@ from __future__ import absolute_import
 
 import os
 import types
+import warnings
 from itertools import izip, imap, count
 
 import numpy as np
@@ -9,8 +10,8 @@ from matplotlib import pyplot
 
 __all__ = ['to_signed', 'toggle_pylab', 'unique', 'print_table',
            'replacement_filename', 'goes_flare_class', 'merge', 'common_base',
-           'minimal_pairs', 'polyfun_at']
-
+           'minimal_pairs', 'polyfun_at', 
+           'expand_list', 'expand_list_generator', 'Deprecated']
 
 def to_signed(dtype):
     """ Return dtype that can hold data of passed dtype but is signed.
@@ -197,3 +198,44 @@ def replacement_filename(path):
             newpath = os.path.join(dir_, name)
             if not os.path.exists(newpath):
                 return newpath
+
+
+#==============================================================================
+# expand list from :http://stackoverflow.com/a/2185971/2486799
+#==============================================================================
+def expand_list(input):
+	return [item for item in expand_list_generator(input)]
+
+def expand_list_generator(input):    
+    for item in input:
+       if type(item) in [list, tuple]:
+           for nested_item in expand_list_generator(item):
+               yield nested_item
+       else:
+           yield item
+
+#==============================================================================
+# Deprecation decorator: http://code.activestate.com/recipes/391367-deprecated/
+# and http://www.artima.com/weblogs/viewpost.jsp?thread=240845
+#==============================================================================
+class Deprecated(object):
+    """ Use this decorator to deprecate a function or method, you can pass an
+    additional message to the decorator:
+    
+    @Deprecated("no more")
+    """
+    def __init__(self, message=""):
+        self.message = message
+
+    def __call__(self, func):
+        def newFunc(*args, **kwargs):
+            warnings.warn("Call to deprecated function %s. \n %s" %(
+                                                                func.__name__,
+                                                                self.message),
+                          category=Warning, stacklevel=2)
+            return func(*args, **kwargs)
+        
+        newFunc.__name__ = func.__name__
+        newFunc.__doc__ = func.__doc__
+        newFunc.__dict__.update(func.__dict__)
+        return newFunc

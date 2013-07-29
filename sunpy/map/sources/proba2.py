@@ -4,12 +4,12 @@
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
-from sunpy.map import Map
+from sunpy.map import GenericMap
 from sunpy.cm import cm
 
 __all__ = ['SWAPMap']
 
-class SWAPMap(Map):
+class SWAPMap(GenericMap):
     """SWAP Image Map definition
     
     References
@@ -17,22 +17,24 @@ class SWAPMap(Map):
     For a description of SWAP headers
     http://proba2.oma.be/index.html/swap/swap-analysis-manual/article/data-products?menu=23
     """
-    @classmethod
-    def get_properties(cls, header):
-        """Parses SWAP image header"""
-        properties = Map.get_properties(header)
+    
+    def __init__(self, data, header, **kwargs):
         
-        properties.update({
-            "detector": "SWAP",
-            "instrument": "SWAP",
-            "observatory": "PROBA2",
-            "name": "SWAP %s" % header.get('wavelnth'),
-            "nickname": "SWAP",
-            "cmap": cm.get_cmap(name='sdoaia171')
-        })
-        return properties
+        GenericMap.__init__(self, data, header, **kwargs)
+
+		# It needs to be verified that these must actually be set and are not
+		# already in the header.
+        self.meta['detector'] = "SWAP"
+#        self.meta['instrme'] = "SWAP"
+        self.meta['obsrvtry'] = "PROBA2"
+        
+        self._name = self.detector + " " + self.measurement
+        self._nickname = self.detector
+        
+        self.cmap = cm.get_cmap(name='sdoaia171')
+            
 
     @classmethod
-    def is_datasource_for(cls, header):
+    def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an SWAP image"""
         return header.get('instrume') == 'SWAP'

@@ -95,12 +95,12 @@ def test_download():
 
 def test_create_file():
     ca = CallistoSpectrogram.create(CALLISTO_IMAGE)
-    assert np.array_equal(ca, CallistoSpectrogram.read(CALLISTO_IMAGE))
+    assert np.array_equal(ca.data, CallistoSpectrogram.read(CALLISTO_IMAGE).data)
 
 
 def test_create_file_kw():
     ca = CallistoSpectrogram.create(filename=CALLISTO_IMAGE)
-    assert np.array_equal(ca, CallistoSpectrogram.read(CALLISTO_IMAGE))
+    assert np.array_equal(ca.data, CallistoSpectrogram.read(CALLISTO_IMAGE).data)
 
 
 def test_create_url():
@@ -109,7 +109,7 @@ def test_create_url():
         "BIR_20110922_050000_01.fit.gz"
     )
     ca = CallistoSpectrogram.create(URL)
-    assert np.array_equal(ca, CallistoSpectrogram.read(URL))
+    assert np.array_equal(ca.data, CallistoSpectrogram.read(URL).data)
 
 
 def test_create_url_kw():
@@ -118,7 +118,7 @@ def test_create_url_kw():
         "BIR_20110922_050000_01.fit.gz"
     )
     ca = CallistoSpectrogram.create(url=URL)
-    assert np.array_equal(ca, CallistoSpectrogram.read(URL))
+    assert np.array_equal(ca.data, CallistoSpectrogram.read(URL).data)
 
 
 def test_create_single_glob():
@@ -127,7 +127,7 @@ def test_create_single_glob():
         "BIR_*"
     )
     ca = CallistoSpectrogram.create(PATTERN)
-    assert np.array_equal(ca, CallistoSpectrogram.read(CALLISTO_IMAGE))
+    assert np.array_equal(ca.data, CallistoSpectrogram.read(CALLISTO_IMAGE).data)
 
 
 def test_create_single_glob_kw():
@@ -136,7 +136,7 @@ def test_create_single_glob_kw():
         "BIR_*"
     )
     ca = CallistoSpectrogram.create(singlepattern=PATTERN)
-    assert np.array_equal(ca, CallistoSpectrogram.read(CALLISTO_IMAGE))
+    assert np.array_equal(ca.data, CallistoSpectrogram.read(CALLISTO_IMAGE).data)
 
 
 def test_create_glob_kw():
@@ -145,7 +145,7 @@ def test_create_glob_kw():
         "BIR_*"
     )
     ca = CallistoSpectrogram.create(pattern=PATTERN)[0]
-    assert np.array_equal(ca, CallistoSpectrogram.read(CALLISTO_IMAGE))
+    assert np.array_equal(ca.data, CallistoSpectrogram.read(CALLISTO_IMAGE).data)
 
 def test_create_glob():
     PATTERN = os.path.join(
@@ -369,3 +369,9 @@ def test_homogenize_rightfq():
     assert_array_almost_equal(factors, [0.5], 2)
     assert_array_almost_equal(constants, [-0.5], 2)
     assert_array_almost_equal(factors[0] * b + constants[0], a)
+
+def test_extend():
+    im = CallistoSpectrogram.create(CALLISTO_IMAGE)
+    im2 = im.extend()
+    # Not too stable test, but works.
+    assert im2.data.shape == (200, 7196)

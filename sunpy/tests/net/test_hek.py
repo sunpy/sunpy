@@ -8,7 +8,7 @@ from __future__ import absolute_import
 import pytest
 
 from sunpy.net import hek
-
+from sunpy.net import attr
 
 def pytest_funcarg__foostrwrap(request):
     return hek.attrs._StringParamAttrWrapper("foo")
@@ -66,3 +66,11 @@ def test_stringwrapper_like(foostrwrap):
     res = hek.attrs.walker.create(foostrwrap.like("bar"), {})
     assert len(res) == 1
     assert res[0] == {'value0': 'bar', 'op0': 'like', 'param0': 'foo'}
+
+def test_err_dummyattr_create():
+    with pytest.raises(TypeError):
+        hek.attrs.walker.create(attr.DummyAttr(), {})
+
+def test_err_dummyattr_apply():
+    with pytest.raises(TypeError):
+        hek.attrs.walker.apply(attr.DummyAttr(), {})

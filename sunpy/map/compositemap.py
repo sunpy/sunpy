@@ -6,14 +6,16 @@ from __future__ import absolute_import
 
 import matplotlib.pyplot as plt
 
-from sunpy.map import map
+from sunpy.map import GenericMap
+
+from sunpy.util import expand_list
 
 __all__ = ['CompositeMap']
 
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
-class CompositeMap:
+class CompositeMap(object):
     """
     CompositeMap(map1 [,map2,..])
 
@@ -60,43 +62,48 @@ class CompositeMap:
     Examples
     --------
     >>> import sunpy
-    >>> sunpy.CompositeMap(sunpy.AIA_171_IMAGE, sunpy.RHESSI_IMAGE).peek()
-    >>> comp_map = sunpy.CompositeMap(sunpy.AIA_171_IMAGE, sunpy.EIT_195_IMAGE)    
-    >>> comp_map.add_map(sunpy.RHESSI_IMAGE)
+    >>> sunpy.Map(sunpy.AIA_171_IMAGE, sunpy.RHESSI_IMAGE, composite=True)
+    >>> comp_map = sunpy.Map(sunpy.AIA_171_IMAGE, sunpy.EIT_195_IMAGE,
+                             composite=True)
+    >>> comp_map.add_map(sunpy.Map(sunpy.RHESSI_IMAGE))
     >>> comp_map.peek()
 
     """    
-    def __init__(self, *args):
-        self._maps = []
+    def __init__(self, *args, **kwargs):
+        """
+        Create a CompositeMap
+        
+        Parameters
+        ----------
+        Maps: SunPy Maps
+            A sequence of maps
+        """
+        
+        self._maps = expand_list(args)
+        
+        for m in self._maps:
+            if not isinstance(m, GenericMap):
+                raise ValueError(
+                           'CompositeMap expects pre-constructed map objects.')
         
         # Default alpha and zorder values
-        alphas = [1] * len(args)
-        zorders = range(0, 10 * len(args), 10)
-        levels = [False] * len(args)
+        alphas = [1] * len(self._maps)
+        zorders = range(0, 10 * len(self._maps), 10)
+        levels = [False] * len(self._maps)
         
-        # Parse input Maps/filepaths        
-        for i, item in enumerate(args):
-            # Parse map
-            if isinstance(item, Map):
-                m = item
-            else:
-                m = Map.read(item)
-            
-            # Set z-order and alpha values for the map
+        # Set z-order and alpha values for the map     
+        for i, m in enumerate(self._maps):
             m.zorder = zorders[i]
             m.alpha = alphas[i]
             m.levels = levels[i]
 
-            # Add map
-            self._maps.append(m)
-
-    def add_map(self, input_, zorder=None, alpha=1, levels=False):
+    def add_map(self, amap, zorder=None, alpha=1, levels=False):
         """Adds a map to the CompositeMap
         
         Parameters
         ----------
-        input_ : {sunpy.map, string}
-            Map instance or filepath to map to be added
+        map : sunpy.map
+            Map instance to be added
         zorder : int
             The index to use when determining where the map should lie along
             the z-axis; maps with higher z-orders appear above maps with lower
@@ -111,12 +118,11 @@ class CompositeMap:
         if zorder is None:
             zorder = max([m.zorder for m in self._maps]) + 10
         
-        m = Map.read(input_)
-        m.zorder = zorder
-        m.alpha = alpha
-        m.levels = levels
+        amap.zorder = zorder
+        amap.alpha = alpha
+        amap.levels = levels
         
-        self._maps.append(m)
+        self._maps.append(amap)
         
     def remove_map(self, index):
         """Removes and returns the map with the given index"""
@@ -137,7 +143,7 @@ class CompositeMap:
         else:
             return self._maps[index].alpha
         
-    def get_zorder(self, index = None):
+    def get_zorder(self, index=None):
         """Gets the layering preference (z-order) for a map within the
         composite.
         """
@@ -146,14 +152,14 @@ class CompositeMap:
         else:
             return self._maps[index].zorder
 
-    def get_colors(self, index = None):
+    def get_colors(self, index=None):
         """Gets the colors for a map within the compositemap."""
         if index is None:
             return [_map.cmap for _map in self._maps]
         else:
             return self._maps[index].cmap
 
-    def get_norm(self, index = None):
+    def get_norm(self, index=None):
         """Gets the normalization for a map within the
         composite.
         """
@@ -162,7 +168,7 @@ class CompositeMap:
         else:
             return self._maps[index].norm
             
-    def get_levels(self, index = None):
+    def get_levels(self, index=None):
         """Gets the list of contour levels for a map within the
         composite.
         """
@@ -175,7 +181,7 @@ class CompositeMap:
         """Sets the norm for a layer in the composite image"""
         self._maps[index].norm = norm
 
-    def set_levels(self, index, levels, percent = False):
+    def set_levels(self, index, levels, percent=False):
         """Sets the contour levels for a layer in the composite image"""
         if percent is False: 
             self._maps[index].levels = levels
@@ -226,7 +232,7 @@ class CompositeMap:
             
         return self._maps[index].draw_limb(axes=axes)
         
-    def draw_grid(self, index=None,  axes=None, grid_spacing=20):
+    def draw_grid(self, index=None, axes=None, grid_spacing=20):
         """Draws a grid over the surface of the Sun
         
         Parameters
@@ -244,9 +250,9 @@ class CompositeMap:
         -------
         matplotlib.axes object
         """
-        if index is None:
-            needed_attrs = ['rsun_meters', 'dsun', 'heliographic_latitude',
+        needed_attrs = ['rsun_meters', 'dsun', 'heliographic_latitude',
                             'heliographic_longitude']
+        if index is None:
             for i, amap in enumerate(self._maps):
                 if all([hasattr(amap,k) for k in needed_attrs]):
                     index = i
@@ -324,7 +330,7 @@ class CompositeMap:
             params.update(matplot_args)
             
             if m.levels is False:
-                ret.append(axes.imshow(m, **params))
+                ret.append(axes.imshow(m.data, **params))
             
             # Use contour for contour data, and imshow otherwise
             if m.levels is not False:
