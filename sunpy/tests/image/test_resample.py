@@ -1,11 +1,11 @@
 # Author: Tomas Meszaros <exo@tty.sk>
 
 from sunpy import AIA_171_IMAGE
-from sunpy import make_map
+from sunpy import map
 from sunpy.image.rescale import reshape_image_to_4d_superpixel
 
 
-AIA_MAP = make_map(AIA_171_IMAGE)
+AIA_MAP = map.Map(AIA_171_IMAGE)
 
 def resample_meta(dimensions, method, center, minusone):
 	map_resampled = AIA_MAP.resample(dimensions)
@@ -34,6 +34,7 @@ def test_resample_spline():
 	resample_method('spline')
 
 def test_reshape():
-	assert reshape_image_to_4d_superpixel(AIA_MAP, (512, 512)) != None
-	assert reshape_image_to_4d_superpixel(AIA_MAP, (600, 512)) == None
-	assert reshape_image_to_4d_superpixel(AIA_MAP, (512, 600)) == None
+	assert reshape_image_to_4d_superpixel(AIA_MAP.data, (512, 512)) != None
+	assert reshape_image_to_4d_superpixel(AIA_MAP.data, (600, 512)) == None
+	assert reshape_image_to_4d_superpixel(AIA_MAP.data, (512, 600)) == None
+
