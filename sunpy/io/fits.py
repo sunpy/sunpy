@@ -69,8 +69,10 @@ def read(filepath):
             comment = "".join(hdu.header.get_comment()).strip()
             history = "".join(hdu.header.get_history()).strip()
             header = FileHeader(hdu.header)
-            header['comment'] = comment
-            header['history'] = history
+            header.pop('COMMENT', None)
+            header.pop('HISTORY', None)
+            header['COMMENT'] = comment
+            header['HISTORY'] = history
             pairs.append((hdu.data, header))
     finally:
         hdulist.close()
@@ -99,8 +101,10 @@ def get_header(filepath):
             comment = "".join(hdu.header.get_comment()).strip()
             history = "".join(hdu.header.get_history()).strip()
             header = FileHeader(hdu.header)
-            header['comment'] = comment
-            header['history'] = history
+            header.pop('COMMENT', None)
+            header.pop('HISTORY', None)
+            header['COMMENT'] = comment
+            header['HISTORY'] = history
             headers.append(header)
     finally:
         hdulist.close()
