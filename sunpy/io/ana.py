@@ -53,7 +53,7 @@ def read(filename, debug=False):
         raise IOError("File does not exist!")
 	
     data = _pyana.fzread(filename, debug)
-    return [(FileHeader(data['header']), data['data'])]
+    return [(data['data'],FileHeader(data['header']))]
 
 def get_header(filename, debug=False):
     """
@@ -80,7 +80,7 @@ def get_header(filename, debug=False):
     data = _pyana.fzread(filename, debug)
     return [FileHeader(data['header'])]
 
-def write(filename, data, compress=1, comments=False, debug=False):
+def write(filename, data, comments=False, compress=1, debug=False):
     """
     Saves a 2D numpy array as an ANA file and returns the bytes written or NULL
 
@@ -107,6 +107,7 @@ def write(filename, data, compress=1, comments=False, debug=False):
     --------    
     >>> written = sunpy.io.ana.write(filename, data, compress=1, comments=False)
     """
+    
     if comments:
         return _pyana.fzwrite(filename, data, compress, comments, debug)
     else:
