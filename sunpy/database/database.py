@@ -436,9 +436,7 @@ class Database(object):
             start = 1 if key.start is None else key.start
             stop = len(self) + 1 if key.stop is None else key.stop
             step = 1 if key.step is None else key.step
-            print (start, stop, step)
             for i in xrange(start, stop, step):
-                print i
                 try:
                     entry = self.get_entry_by_id(i)
                 except EntryNotFoundError:
