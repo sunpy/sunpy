@@ -7,12 +7,12 @@ __email__ = "keith.hughitt@nasa.gov"
 import numpy as np
 from matplotlib import colors
 
-from sunpy.map import Map
+from sunpy.map import GenericMap
 from sunpy.cm import cm
 
 __all__ = ['AIAMap', 'HMIMap']
 
-class AIAMap(Map):
+class AIAMap(GenericMap):
     """AIA Image Map definition
     
     References
@@ -20,25 +20,31 @@ class AIAMap(Map):
     For a description of AIA headers
     http://jsoc.stanford.edu/doc/keywords/AIA/AIA02840_A_AIA-SDO_FITS_Keyword_Documents.pdf
     """
-    @classmethod
-    def get_properties(cls, header):
-        """Parses AIA image header"""
-        properties = Map.get_properties(header)
+    
+    def __init__(self, data, header, **kwargs):
         
-        properties.update({
-            "detector": "AIA",
-            "instrument": "AIA",
-            "observatory": "SDO",
-            "nickname": "AIA",
-            "cmap": cm.get_cmap('sdoaia%d' % header.get('wavelnth')),
-            "processing_level": header.get('LVL_NUM')            
-        })
-        return properties
+        GenericMap.__init__(self, data, header, **kwargs)
+        
+        # Fill in some missing info
+        self.meta['detector'] = "AIA"
+#        self.meta['instrme'] = "AIA"
+        
+        self._nickname = self.detector
+        
+        self.cmap = cm.get_cmap('sdoaia%d' % self.wavelength)
+    
+    @property
+    def observatory(self):
+        return self.meta['telescop'].split('/')[0]
+        
+    @property
+    def processing_level(self):
+        return self.meta['lvl_num']
 
     def norm(self):
         """Returns a Normalize object to be used with AIA data"""
         # byte-scaled images have most likely already been scaled
-        if self.dtype == np.uint8:
+        if self.data.dtype == np.uint8:
             return None
 
         mean = self.mean()
@@ -50,30 +56,33 @@ class AIAMap(Map):
         return colors.Normalize(vmin, vmax)
     
     @classmethod
-    def is_datasource_for(cls, header):
+    def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an AIA image"""
         return header.get('instrume', '').startswith('AIA')
         
-class HMIMap(Map):
+class HMIMap(GenericMap):
     """HMI Image Map definition"""
-    @classmethod
-    def get_properties(cls, header):
-        """Parses HMI image header"""
-        properties = Map.get_properties(header)
+    
+    def __init__(self, data, header, **kwargs):
         
-        measurement = header['content'].split(" ")[0].lower()
+        GenericMap.__init__(self, data, header, **kwargs)
         
-        properties.update({
-            "detector": "HMI",
-            "instrument": "HMI",
-            "measurement": measurement,
-            "observatory": "SDO",
-            "name": "HMI %s" % measurement,
-            "nickname": "HMI"
-        })
-        return properties
+        self.meta['detector'] = "HMI"
+#        self.meta['instrme'] = "HMI"
+#        self.meta['obsrvtry'] = "SDO"
+
+        self._name = self.detector + str(self.measurement)
+        self._nickname = self.detector
+    
+    @property
+    def measurement(self):
+        return header['content'].split(" ")[0].lower()
+    
+    @property
+    def observatory(self):
+        return self.meta['telescop'].split('/')[0]    
 
     @classmethod
-    def is_datasource_for(cls, header):
+    def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an HMI image"""
         return header.get('instrume', '').startswith('HMI') 

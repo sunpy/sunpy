@@ -19,7 +19,11 @@ from datetime import timedelta
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.dates
-import pyfits
+
+try:
+    import astropy.io.fits as pyfits
+except ImportError:
+    import pyfits
 
 import sunpy
 from sunpy.time import TimeRange, parse_time

@@ -221,18 +221,6 @@ def _create(wlk, root, api):
         blocks.extend(wlk.create(attr, api))
     return blocks
 
-@walker.add_creator(DummyAttr)
-# pylint: disable=E0102,C0103,W0613
-def _create(wlk, root, api):
-    """ Implementation detail. """
-    return api.factory.create('QueryRequestBlock')
-
-@walker.add_applier(DummyAttr)
-# pylint: disable=E0102,C0103,W0613
-def _apply(wlk, root, api, queryblock):
-    """ Implementation detail. """
-    pass
-
 
 # Converters take a type unknown to the walker and convert it into one
 # known to it. All of those convert types into ValueAttrs, which are
