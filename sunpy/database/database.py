@@ -11,6 +11,18 @@ from sunpy.database.attrs import walker
 from sunpy.net.attr import and_
 
 
+class EntryNotFoundError(Exception):
+    """This exception is raised if a database entry cannot be found by its
+    unique ID.
+
+    """
+    def __init__(self, entry_id):
+        self.entry_id = entry_id
+
+    def __str__(self):  # pragma: no cover
+        return 'an entry with the ID %d does not exist' % self.entry_id
+
+
 class EntryAlreadyAddedError(Exception):
     """This exception is raised if a database entry is attempted to be added to
     the database although it was already saved in it.
@@ -278,8 +290,15 @@ class Database(object):
             key=operator.attrgetter(sortby))
 
     def get_entry_by_id(self, entry_id):
-        """Get a database entry by its unique ID number."""
-        return self._cache[entry_id]
+        """Get a database entry by its unique ID number. If an entry with the
+        given ID does not exist, :exc:`sunpy.database.EntryNotFoundError` is
+        raised.
+
+        """
+        try:
+            return self._cache[entry_id]
+        except KeyError:
+            raise EntryNotFoundError(entry_id)
 
     @property
     def tags(self):
