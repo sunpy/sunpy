@@ -144,7 +144,7 @@ class DatabaseEntry(Base):
     source = Column(String)
     provider = Column(String)
     physobs = Column(String)
-    fileid = Column(String)
+    fileid = Column(String, unique=True)
     observation_time_start = Column(DateTime)
     observation_time_end = Column(DateTime)
     instrument = Column(String)
