@@ -1,6 +1,6 @@
-from sunpy.net.vso.attrs import _VSOSimpleAttr as _DBSimpleAttr
+from sunpy.net.vso import attrs as vso_attrs
 from sunpy.net.attr import AttrWalker, Attr, ValueAttr, AttrAnd, AttrOr
-from sunpy.database import tables
+from sunpy.database.tables import DatabaseEntry, Tag as TableTag
 
 __all__ = ['Starred', 'Tag', 'walker']
 
@@ -64,7 +64,7 @@ class Tag(Attr):
         return '<Tag(%r, %r)>' % (self.tagname, self.inverted)
 
 
-class Path(_DBSimpleAttr):
+class Path(vso_attrs._VSOSimpleAttr):
     pass
 
 
@@ -88,18 +88,18 @@ def _create(wlk, root, session):
 
 @walker.add_creator(ValueAttr)
 def _create(wlk, root, session):
-    query = session.query(tables.DatabaseEntry)
+    query = session.query(DatabaseEntry)
     for key, value in root.attrs.iteritems():
         typ = key[0]
         if typ == 'tag':
-            criterion = tables.Tag.name.in_([value])
+            criterion = TableTag.name.in_([value])
             # `key[1]` is here the `inverted` attribute of the tag. That means
             # that if it is True, the given tag must not be included in the
             # resulting entries.
             if key[1]:
-                query = query.filter(~tables.DatabaseEntry.tags.any(criterion))
+                query = query.filter(~DatabaseEntry.tags.any(criterion))
             else:
-                query = query.filter(tables.DatabaseEntry.tags.any(criterion))
+                query = query.filter(DatabaseEntry.tags.any(criterion))
         else:
             query = query.filter_by(**{typ: value})
     return query.all()
@@ -115,6 +115,6 @@ def _convert(attr):
     return ValueAttr({('starred', ): attr.value})
 
 
-@walker.add_converter(_DBSimpleAttr)
+@walker.add_converter(vso_attrs._VSOSimpleAttr)
 def _convert(attr):
     return ValueAttr({(attr.__class__.__name__.lower(),): attr.value})
