@@ -8,7 +8,7 @@ __all__ = ['read_file', 'read_file_header', 'write_file']
 
 # File formats supported by SunPy
 _known_formats = {
-    ('fts', 'fits'): fits,
+    ('fts', 'fits', 'fits.fz'): fits,
     ('jp2', 'j2k', 'jpc', 'jpt'): jp2,
     ('fz', 'f0'): ana
 }

@@ -22,7 +22,13 @@ To enable support for file types that include multiple data, header
 combinations `read` and `get_header` must both return lists even if there is 
 only one item in the list.
 
+The main functions avalible through the sunpy.io namespace are as follows:
+ 
+.. automodule:: sunpy.io.file_tools
+   :members:
+
 The I/O submodule currently supports two file types FITS and JPEG2000.
+The documentation for these submodules is avalible in the table below.
 
 .. currentmodule:: sunpy
 
@@ -33,3 +39,4 @@ The I/O submodule currently supports two file types FITS and JPEG2000.
    io.fits
    io.jp2
    io.ana
+   io.header
