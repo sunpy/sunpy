@@ -66,7 +66,11 @@ def install(setup): #pylint: disable=W0621
                             include_dirs =
                             [np.get_include(), join(cwd, 'sunpy', 'io', 'src')]
                             )
-
+    ext_modules = []
+    if 'crotate' in locals():
+        ext_modules.append(crotate)
+    if 'ana' in locals():
+        ext_modules.append(ana)
     setup(
 	author="Steven Christe, Matt Earnshaw,  Russell Hewett, Keith Hughitt, Jack Ireland, Florian Mayer, Stuart Mumford,  Albert Shih, David Perez-Suarez et. al",
         author_email="sunpy@googlegroups.com",
@@ -98,7 +102,7 @@ def install(setup): #pylint: disable=W0621
         url="http://www.sunpy.org/",
         use_2to3=True,
         version="0.3.0",
-        ext_modules = [crotate] if 'crotate' in locals() else []
+        ext_modules = ext_modules
     )
 
 if __name__ == '__main__':
