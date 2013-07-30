@@ -9,9 +9,9 @@ from sqlalchemy import Column, Integer, Float, String, DateTime, Boolean,\
     Table, ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
-from pyfits import getheader as get_pyfits_header
 
 from sunpy.time import parse_time
+from sunpy.io import fits
 
 __all__ = [
     'FitsHeaderEntry', 'Tag', 'DatabaseEntry', 'entries_from_query_result',
@@ -244,7 +244,8 @@ class DatabaseEntry(Base):
          <FitsHeaderEntry(id None, key 'TIMEUNIT', value 'd')>]
 
         """
-        header = get_pyfits_header(fits_filepath)
+        # FIXME: store a list of headers and not only the first one!
+        header = fits.get_header(fits_filepath)[0]
         self.fits_header_entries.extend(
             FitsHeaderEntry(key, value) for key, value in header.iteritems())
         for header_entry in self.fits_header_entries:

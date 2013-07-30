@@ -79,7 +79,9 @@ def test_add_fits_header_entries_from_file():
         FitsHeaderEntry('ENERGY_L', 25.0),
         FitsHeaderEntry('ENERGY_H', 40.0),
         FitsHeaderEntry('TIMESYS', '1979-01-01T00:00:00'),
-        FitsHeaderEntry('TIMEUNIT', 'd')]
+        FitsHeaderEntry('TIMEUNIT', 'd'),
+        FitsHeaderEntry('COMMENT', ''),
+        FitsHeaderEntry('HISTORY', '')]
     assert entry.instrument == 'RHESSI'
     assert entry.observation_time_start == datetime(2002, 02, 20, 11, 6, 0, 0)
     assert entry.observation_time_end == datetime(2002, 02, 20, 11, 6, 43, 330000)
@@ -118,15 +120,20 @@ def test_entries_from_path():
         FitsHeaderEntry('CFTEMP', -66.71),
         FitsHeaderEntry('DATE', '2004-03-01'),
         FitsHeaderEntry('EXPMODE', 'backside'),
-        FitsHeaderEntry('COMMENT', "CORRECTED DATE_OBS = '2004-03-01T01:58:31.604Z'  COMMANDED EXPOSURE TIME"),
-        FitsHeaderEntry('COMMENT', " =   10.000 s  SHUTTER CLOSE TIME =    2.598 s  LINE_SYNC = 'no'  CAMERA"),
-        FitsHeaderEntry('COMMENT', "_ERR = 'no'  IMAGE_OF_SEQ =                    0  READOUT PORT = 'B'  NU"),
-        FitsHeaderEntry('COMMENT', 'M_LEB_PROC =                    3  LEB_PROC = 26 (no ROI)  LEB_PROC = 27'),
-        FitsHeaderEntry('COMMENT', ' (no occ mask)  LEB_PROC = 12 (Rice)  BLOCKS_HORZ =   32  BLOCKS_VERT ='),
-        FitsHeaderEntry('COMMENT', '  32  P1_X =           1  P2_X =        1024  P1_Y =          20  P2_Y ='),
-        FitsHeaderEntry('COMMENT', '        1043  N_MISSING_BLOCKS =    0'),
-        FitsHeaderEntry('COMMENT', '[\n\n\n\n                       / 284 = Fe XV, 304 = He II\n\n\n\n\n\n\n\n,   Versio'),
-        FitsHeaderEntry('COMMENT', 'n 4.0, 2001 December 10]'),
+        FitsHeaderEntry('COMMENT', """
+CORRECTED DATE_OBS = '2004-03-01T01:58:31.604Z'  COMMANDED EXPOSURE TIME =   10.000 s  SHUTTER CLOSE TIME =    2.598 s  LINE_SYNC = 'no'  CAMERA_ERR = 'no'  IMAGE_OF_SEQ =                    0  READOUT PORT = 'B'  NUM_LEB_PROC =                    3  LEB_PROC = 26 (no ROI)  LEB_PROC = 27 (no occ mask)  LEB_PROC = 12 (Rice)  BLOCKS_HORZ =   32  BLOCKS_VERT =  32  P1_X =           1  P2_X =        1024  P1_Y =          20  P2_Y =        1043  N_MISSING_BLOCKS =    0[
+
+
+
+                       / 284 = Fe XV, 304 = He II
+
+
+
+
+
+
+
+,   Version 4.0, 2001 December 10]""".strip()),
         FitsHeaderEntry('CAR_ROT', 2013.0),
         FitsHeaderEntry('OBS_PROG', '195_10S_AL_1.000'),
         FitsHeaderEntry('SC_Y0', 0.0),
@@ -154,7 +161,8 @@ def test_entries_from_path():
         FitsHeaderEntry('HEC_Y', 46576272.0),
         FitsHeaderEntry('HEC_Z', -94896.31),
         FitsHeaderEntry('EXPTIME', 12.598),
-        FitsHeaderEntry('SCI_OBJ', 'CME WATCH 195')]
+        FitsHeaderEntry('SCI_OBJ', 'CME WATCH 195'),
+        FitsHeaderEntry('HISTORY', '')]
 
 
 def test_entries_from_path_recursively_true():
