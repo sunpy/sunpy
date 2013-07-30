@@ -263,6 +263,36 @@ def test_getitem_notfound(database):
         database[23]
 
 
+def test_getitem_one(filled_database):
+    first_entry = DatabaseEntry(id=1)
+    assert filled_database[1] == first_entry
+
+
+def test_getitem_getall(filled_database):
+    entries = filled_database[:]
+    assert entries == list(filled_database)
+
+
+def test_getitem_custom(filled_database):
+    entries = filled_database[2:6:2]
+    foo = Tag('foo')
+    foo.id = 1
+    assert entries == [
+        DatabaseEntry(id=2), DatabaseEntry(id=4, tags=[foo])]
+
+
+def test_getitem_exceeding_range(filled_database):
+    entries = filled_database[8:1000]
+    foo = Tag('foo')
+    foo.id = 1
+    bar = Tag('bar')
+    bar.id = 2
+    assert entries == [
+        DatabaseEntry(id=8, tags=[foo]),
+        DatabaseEntry(id=9),
+        DatabaseEntry(id=10, tags=[bar])]
+
+
 def test_contains_exists(database):
     entry = DatabaseEntry()
     database.add(entry)
