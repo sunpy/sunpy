@@ -21,7 +21,7 @@ from itertools import ifilter
 from sunpy.util import replacement_filename
 
 # Characters not allowed in slugified version.
-_punct_re = re.compile(r'[\t !"#$%&\'()*\-/<=>?@\[\\\]^_`{|},.]+')
+_punct_re = re.compile(r'[:\t !"#$%&\'()*\-/<=>?@\[\\\]^_`{|},.]+')
 
 def slugify(text, delim=u'_', encoding="ascii"):
     """ Slugify given unicode text. """
@@ -72,6 +72,15 @@ def get_system_filename(sock, url, default=u"file"):
     if not name:
         name = default.decode("ascii", "ignore")
     return name.encode(sys.getfilesystemencoding(), 'ignore')
+
+
+def get_system_filename_slugify(sock, url, default=u"file"):
+    """ Get filename from given urllib2.urlopen object and URL.
+    First, attempts to extract Content-Disposition, second, extract
+    from URL, eventually fall back to default. Returns bytestring
+    in file system encoding, normalized so it shouldn't violate
+    operating system restrictions. """
+    return slugify(get_system_filename(sock, url, default))
 
 
 def download_file(url, directory, default=u'file', overwrite=False):
