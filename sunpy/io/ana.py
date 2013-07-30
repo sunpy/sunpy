@@ -97,9 +97,9 @@ def write(filename, data, comments=False, compress=1, debug=False):
 
     Examples
     --------    
-    >>> written = sunpy.io.ana.write(filename, data, compress=1, comments=False)
+    >>> written = sunpy.io.ana.write(filename, data, comments=Falsem, compress=1)
     """
-    
+#    if isinstance(comments,FileHeader)
     if comments:
         return _pyana.fzwrite(filename, data, compress, comments, debug)
     else:
