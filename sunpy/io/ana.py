@@ -1,4 +1,8 @@
 """
+ANA File Reader
+
+Notes
+-----
 ANA is a script that allows people to access compressed ana files.
 It accesses a C library, based on Michiel van Noort's
 IDL DLM library 'f0' which contains a cleaned up version of the original
@@ -6,18 +10,6 @@ anarw routines.
 
 Created by Tim van Werkhoven (t.i.m.vanwerkhoven@gmail.com) on 2009-02-11.
 Copyright (c) 2009--2011 Tim van Werkhoven. All rights reserved.   
-
-Examples
---------
-
-    To read a file:
-        anadata = sunpy.io.ana.read(<filename>, [debug=0])
-    which will return a dict with the data in anadata['data'] and 
-    some meta info in anadata['header']. To return only the data or header, 
-    use sunpy.io.ana.getdata() and sunpy.io.ana.getheader() respectively.
-
-    To write a file:
-        sunpy.io.ana.write(<filename>, <data>, [compress=1, [comments=False, [debug=0]]]):
 """
  
 from __future__ import absolute_import
@@ -29,8 +21,8 @@ __all__ = ['read', 'get_header', 'write']
 
 def read(filename, debug=False):
     """
-    Loads an ANA file and returns the data, size, dimensions and comments in a
-    dictionary.
+    Loads an ANA file and returns the data and a header in a list of (data,
+    header) tuples.
     
     Parameters
     ----------
@@ -57,7 +49,7 @@ def read(filename, debug=False):
 
 def get_header(filename, debug=False):
     """
-    Load an ANA file and only return the header consisting of the dimensions,
+    Loads an ANA file and only return the header consisting of the dimensions,
     size (defined as the product of all dimensions times the size of the
     datatype, this not relying on actual filesize) and comments.
 
@@ -71,7 +63,7 @@ def get_header(filename, debug=False):
     Returns
     -------
     out: list
-        Contains the header only of an ANA file in list form.
+        A list of FileHeader headers
 
     Examples
     --------    
@@ -90,18 +82,18 @@ def write(filename, data, comments=False, compress=1, debug=False):
         Name of file to be created.
     data: numpy array
         Name of data to be stored.
+    comments: FileHeader, optional
+        The comments to be stored as a header.
     compress: int, optional
         To compress the data or not.
         1 is to compress, 0 is uncompressed
-    commnets: string, optional
-        The comments to be stored as a header.
     debug: bool, optional
         Prints versbose debug information.
     
     Returns
     -------
     out: ANA compressed archive
-        A new ANA compressed archive containing the data and commments.    
+        A new ANA compressed archive containing the data and header.    
 
     Examples
     --------    
