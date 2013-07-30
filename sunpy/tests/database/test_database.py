@@ -3,7 +3,8 @@ from __future__ import absolute_import
 import pytest
 
 from sunpy.database import Database, EntryAlreadyAddedError,\
-    EntryAlreadyStarredError, EntryAlreadyUnstarredError, NoSuchTagError
+    EntryAlreadyStarredError, EntryAlreadyUnstarredError, NoSuchTagError,\
+    EntryNotFoundError
 from sunpy.database.tables import DatabaseEntry, Tag
 from sunpy.database.commands import NoSuchEntryError
 from sunpy.database.caching import LRUCache, LFUCache
@@ -67,6 +68,15 @@ def test_create_tables(database_without_tables):
     assert not database_without_tables._engine.has_table('data')
     database_without_tables.create_tables()
     assert database_without_tables._engine.has_table('data')
+
+
+def test_get_entry_by_id_invalid(database):
+    with pytest.raises(EntryNotFoundError):
+        database.get_entry_by_id(0)
+
+
+def test_get_entry_by_id_accessible(filled_database):
+    assert filled_database.get_entry_by_id(1) == DatabaseEntry(id=1)
 
 
 def test_tags_property(database):
@@ -246,6 +256,11 @@ def test_remove_existing_entry(database):
 def test_remove_nonexisting_entry(database):
     with pytest.raises(NoSuchEntryError):
         database.remove(DatabaseEntry())
+
+
+def test_getitem_notfound(database):
+    with pytest.raises(IndexError):
+        database[23]
 
 
 def test_contains_exists(database):
