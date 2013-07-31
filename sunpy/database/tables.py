@@ -290,7 +290,7 @@ class DatabaseEntry(Base):
     def __ne__(self, other):  # pragma: no cover
         return not (self == other)
 
-    def __repr__(self):
+    def __repr__(self):  # pragma: no cover
         return '<%s(id %s, data provider %s, fileid %s)>' % (
             self.__class__.__name__, self.id, self.provider, self.fileid)
 
