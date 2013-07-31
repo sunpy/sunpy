@@ -82,6 +82,11 @@ def test_tag_repr():
     assert repr(~Tag('foo')) == "<~Tag('foo')>"
 
 
+def test_path_repr():
+    assert repr(Path('/tmp')) == "<Path('/tmp')>"
+    assert repr(~Path('/tmp')) == "<~Path('/tmp')>"
+
+
 def test_downloadtime_repr():
     download_time = DownloadTime('2008-12-8', datetime(2009, 6, 12))
     expected_repr = (
@@ -239,6 +244,28 @@ def test_walker_create_path_attr_exists(session):
         download_time=datetime(2005, 6, 15, 6)) in entries
     assert tables.DatabaseEntry(
         id=9, path='/tmp', download_time=datetime(2005, 6, 15, 9)) in entries
+
+
+def test_walker_create_path_inverted(session):
+    tag = tables.Tag('foo')
+    tag.id = 1
+    entries = walker.create(~Path('/tmp'), session)
+    assert len(entries) == 7
+    assert entries == [
+        tables.DatabaseEntry(
+            id=1, download_time=datetime(2005, 6, 15, 1)),
+        tables.DatabaseEntry(
+            id=2, starred=True, download_time=datetime(2005, 6, 15, 2)),
+        tables.DatabaseEntry(
+            id=4, starred=True, download_time=datetime(2005, 6, 15, 4)),
+        tables.DatabaseEntry(
+            id=5, tags=[tag], download_time=datetime(2005, 6, 15, 5)),
+        tables.DatabaseEntry(id=7, download_time=datetime(2005, 6, 15, 7)),
+        tables.DatabaseEntry(
+            id=8, starred=True, download_time=datetime(2005, 6, 15, 8)),
+        tables.DatabaseEntry(
+            id=10, starred=True, tags=[tag],
+            download_time=datetime(2005, 6, 15, 10))]
 
 
 def test_walker_create_downloadtime_notfound(session):

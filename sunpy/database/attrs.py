@@ -1,3 +1,5 @@
+from sqlalchemy import or_
+
 from sunpy.time import parse_time
 from sunpy.net.vso import attrs as vso_attrs
 from sunpy.net.attr import AttrWalker, Attr, ValueAttr, AttrAnd, AttrOr
@@ -67,7 +69,17 @@ class Tag(Attr):
 
 
 class Path(vso_attrs._VSOSimpleAttr):
-    pass
+    def __init__(self, value):
+        self.inverted = False
+        vso_attrs._VSOSimpleAttr.__init__(self, value)
+
+    def __invert__(self):
+        path = self.__class__(self.value)
+        path.inverted = True
+        return path
+
+    def __repr__(self):
+        return '<%sPath(%r)>' % ('~' if self.inverted else '', self.value)
 
 
 # TODO: support excluding ranges as soon as
@@ -130,6 +142,13 @@ def _create(wlk, root, session):
                 query = query.filter(~DatabaseEntry.download_time.between(start, end))
             else:
                 query = query.filter(DatabaseEntry.download_time.between(start, end))
+        elif typ == 'path':
+            path, inverted = value
+            if inverted:
+                query = query.filter(or_(
+                    DatabaseEntry.path != path, DatabaseEntry.path == None))
+            else:
+                query = query.filter(DatabaseEntry.path == path)
         else:
             query = query.filter_by(**{typ: value})
     return query.all()
@@ -145,9 +164,9 @@ def _convert(attr):
     return ValueAttr({('starred', ): attr.value})
 
 
-@walker.add_converter(vso_attrs._VSOSimpleAttr)
+@walker.add_converter(Path)
 def _convert(attr):
-    return ValueAttr({(attr.__class__.__name__.lower(),): attr.value})
+    return ValueAttr({('path', ): (attr.value, attr.inverted)})
 
 
 @walker.add_converter(DownloadTime)
