@@ -75,6 +75,9 @@ class Tag(Base):
     def __ne__(self, other):
         return not (self == other)
 
+    def __str__(self):
+        return self.name
+
     def __repr__(self):  # pragma: no cover
         return '<%s(id %s, name %r)>' % (
             self.__class__.__name__, self.id, self.name)
