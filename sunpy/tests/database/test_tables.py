@@ -215,16 +215,13 @@ def test_display_entries():
             observation_time_start=datetime(2010, 1, 1, 0, 59),
             observation_time_end=datetime(2010, 1, 1, 1),
             instrument='Merged gong', size=944.0, waveunit='Angstrom',
-            wavemin=6768.0, wavemax=6768.0, starred=True,
-            tags=[Tag('hodgepodge')])]
+            wavemin=6768.0, wavemax=6768.0, starred=True)]
     columns = [
         'id', 'source', 'provider', 'physobs', 'fileid',
         'observation_time_start', 'observation_time_end', 'instrument', 'size',
         'waveunit', 'wavemin', 'path', 'starred', 'tags']
     table = display_entries(entries, columns)
-    assert table == """
-id source provider physobs      fileid            observation_time_start observation_time_end instrument  size  waveunit wavemin path starred tags      
--- ------ -------- -------      ------            ---------------------- -------------------- ----------  ----  -------- ------- ---- ------- ----      
-1  SOHO   SDAC     intensity    /archive/soho/... 2001-01-01 07:00:14    2001-01-01 07:00:21  EIT         259.0 Angstrom 171.0   N/A  No      foo, bar  
-2  GONG   NSO      LOS_velocity pptid=11010...    2010-01-01 00:59:00    2010-01-01 01:00:00  Merged gong 944.0 Angstrom 6768.0  N/A  Yes     hodgepodge
-    """.strip()
+    assert table == """id source provider physobs      fileid            observation_time_start observation_time_end instrument  size  waveunit wavemin path starred tags    
+-- ------ -------- -------      ------            ---------------------- -------------------- ----------  ----  -------- ------- ---- ------- ----    
+1  SOHO   SDAC     intensity    /archive/soho/... 2001-01-01 07:00:14    2001-01-01 07:00:21  EIT         259.0 Angstrom 171.0   N/A  No      foo, bar
+2  GONG   NSO      LOS_velocity pptid=11010...    2010-01-01 00:59:00    2010-01-01 01:00:00  Merged gong 944.0 Angstrom 6768.0  N/A  Yes     N/A     """

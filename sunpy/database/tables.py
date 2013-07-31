@@ -400,7 +400,7 @@ def display_entries(database_entries, columns):
             if col == 'starred':
                 row.append('Yes' if entry.starred else 'No')
             elif col == 'tags':
-                row.append(', '.join(imap(str, entry.tags)))
+                row.append(', '.join(imap(str, entry.tags)) or 'N/A')
             else:
                 row.append(str(getattr(entry, col) or 'N/A'))
         if not row:
