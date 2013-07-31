@@ -73,12 +73,13 @@ def test_starred_equality():
 
 
 def test_starred_repr():
-    assert repr(Starred()) == '<Starred(True)>'
-    assert repr(~Starred()) == '<Starred(False)>'
+    assert repr(Starred()) == '<Starred()>'
+    assert repr(~Starred()) == '<~Starred()>'
 
 
 def test_tag_repr():
-    assert repr(Tag('foo')) == "<Tag('foo', False)>"
+    assert repr(Tag('foo')) == "<Tag('foo')>"
+    assert repr(~Tag('foo')) == "<~Tag('foo')>"
 
 
 def test_downloadtime_repr():

@@ -40,7 +40,8 @@ class _BooleanAttr(object):
         return False
 
     def __repr__(self):
-        return '<%s(%s)>' % (self.__class__.__name__, self.value)
+        return '<%s%s()>' % (
+            '~' if not self.value else '', self.__class__.__name__)
 
 
 class Starred(_BooleanAttr, Attr):
@@ -62,7 +63,7 @@ class Tag(Attr):
         return False
 
     def __repr__(self):
-        return '<Tag(%r, %r)>' % (self.tagname, self.inverted)
+        return '<%sTag(%r)>' % ('~' if self.inverted else '', self.tagname)
 
 
 class Path(vso_attrs._VSOSimpleAttr):
