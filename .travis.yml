@@ -28,17 +28,18 @@ before_install:
    # We do this to make sure we get the dependencies so pip works below
    - sudo apt-get update -qq
    - sudo apt-get install -qq cython libatlas-dev liblapack-dev gfortran
+   - pip install pip --upgrade
    - wget http://openjpeg.googlecode.com/files/openjpeg-1.5.0-Linux-x86_64.tar.gz
    - sudo tar -xvf openjpeg-1.5.0-Linux-x86_64.tar.gz --strip-components=1 -C /
 
 install:
 #Install Numpy first so we force the version we are using
-  - pip install numpy==$NUMPY_VERSION -q --use-mirrors
+  - bash .travis.pip.wheel $TRAVIS_PYTHON_VERSION numpy $NUMPY_VERSION -q
 # Install the other requirements to the desired version
-  - pip install matplotlib>=$MATPLOTLIB_VERSION --use-mirrors
-  - pip install astropy  --use-mirrors
-  - pip install pandas==$PANDAS_VERSION -q --use-mirrors
-  - pip install scipy --use-mirrors
+  - bash .travis.pip.wheel $TRAVIS_PYTHON_VERSION matplotlib $MATPLOTLIB_VERSION -q
+  - bash .travis.pip.wheel $TRAVIS_PYTHON_VERSION scipy  -q
+  - bash .travis.pip.wheel $TRAVIS_PYTHON_VERSION pandas $PANDAS_VERSION -q
+  - bash .travis.pip.wheel $TRAVIS_PYTHON_VERSION astropy -q
   - pip install -q pytest $SUDS_PKG beautifulsoup4
 
 # command to run tests
