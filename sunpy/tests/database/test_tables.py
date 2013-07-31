@@ -3,7 +3,7 @@ from datetime import datetime
 import os
 
 from sunpy.database.tables import FitsHeaderEntry, Tag, DatabaseEntry,\
-    entries_from_query_result, entries_from_path
+    entries_from_query_result, entries_from_path, display_entries
 from sunpy.net.vso import VSOClient
 from sunpy.data.test import rootdir as testdir
 import sunpy
@@ -188,3 +188,35 @@ def test_entries_from_query_result(query_result):
         instrument='EIT', size=2059.0, waveunit='Angstrom', wavemin=171.0,
         wavemax=171.0)
     assert snd_entry == expected_entry
+
+
+def test_display_entries_empty():
+    with pytest.raises(TypeError):
+        display_entries([])
+
+
+def test_display_entries():
+    entries = [
+        DatabaseEntry(
+            id=1, source='SOHO', provider='SDAC', physobs='intensity',
+            fileid='/archive/soho/...',
+            observation_time_start=datetime(2001, 1, 1, 7, 0, 14),
+            observation_time_end=datetime(2001, 1, 1, 7, 0, 21),
+            instrument='EIT', size=259.0, waveunit='Angstrom', wavemin=171.0,
+            wavemax=171.0, tags=[Tag('foo'), Tag('bar')]),
+        DatabaseEntry(
+            id=2, source='GONG', provider='NSO', physobs='LOS_velocity',
+            fileid='pptid=11010...',
+            observation_time_start=datetime(2010, 1, 1, 0, 59),
+            observation_time_end=datetime(2010, 1, 1, 1),
+            instrument='Merged gong', size=944.0, waveunit='Angstrom',
+            wavemin=6768.0, wavemax=6768.0, starred=True,
+            tags=[Tag('hodgepodge')])]
+    table = display_entries(entries)
+    print table
+    assert table == """
+ID Source Provider Physobs      File ID           Obs. time (start, end)          Instrument  Size  Wave unit Wave (min, max) Path Downloaded Starred Tags      
+== ====== ======== =======      =======           ======================          ==========  ====  ========= =============== ==== ========== ======= ====      
+1  SOHO   SDAC     intensity    /archive/soho/... 20010101T070014 20010101T070021 EIT         259.0 Angstrom  171.0, 171.0    N/A  N/A        No      foo, bar  
+2  GONG   NSO      LOS_velocity pptid=11010...    20100101T005900 20100101T010000 Merged gong 944.0 Angstrom  6768.0, 6768.0  N/A  N/A        Yes     hodgepodge
+""".strip()
