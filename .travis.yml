@@ -29,6 +29,7 @@ before_install:
    - sudo apt-get update -qq
    - sudo apt-get install -qq cython libatlas-dev liblapack-dev gfortran
    - pip install pip --upgrade
+   - pip install setuptools>=0.8 --upgrade
    - wget http://openjpeg.googlecode.com/files/openjpeg-1.5.0-Linux-x86_64.tar.gz
    - sudo tar -xvf openjpeg-1.5.0-Linux-x86_64.tar.gz --strip-components=1 -C /
 
@@ -36,7 +37,7 @@ install:
 #Install Numpy first so we force the version we are using
    - pip install --find-links http://sunpy.cadair.com/wheelhouse/index.html --use-wheel numpy==$NUMPY_VERSION
 # Install the other requirements to the desired version
-   - pip install --find-links http://sunpy.cadair.com/wheelhouse/index.html --use-wheel matplotlib=>$MATPLOTLIB_VERSION
+   - pip install --find-links http://sunpy.cadair.com/wheelhouse/index.html --use-wheel matplotlib>=$MATPLOTLIB_VERSION
    - pip install --find-links http://sunpy.cadair.com/wheelhouse/index.html --use-wheel scipy
    - pip install --find-links http://sunpy.cadair.com/wheelhouse/index.html --use-wheel pandas==$PANDAS_VERSION
    - pip install --find-links http://sunpy.cadair.com/wheelhouse/index.html --use-wheel astropy
