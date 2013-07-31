@@ -161,7 +161,6 @@ def _create(wlk, root, session):
             key_criterion = TableFitsHeaderEntry.key == key
             value_criterion = TableFitsHeaderEntry.value == val
             if inverted:
-                # FIXME: test me
                 query = query.filter(not_(and_(
                     DatabaseEntry.fits_header_entries.any(key_criterion),
                     DatabaseEntry.fits_header_entries.any(value_criterion))))
