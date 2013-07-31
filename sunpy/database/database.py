@@ -433,22 +433,23 @@ class Database(object):
     def __getitem__(self, key):
         if isinstance(key, slice):
             entries = []
-            start = 1 if key.start is None else key.start
-            stop = len(self) + 1 if key.stop is None else key.stop
+            start = 0 if key.start is None else key.start
+            stop = len(self) if key.stop is None else key.stop
             step = 1 if key.step is None else key.step
+            print (start, stop, step)
             for i in xrange(start, stop, step):
+                print i
                 try:
-                    entry = self.get_entry_by_id(i)
-                except EntryNotFoundError:
+                    entry = self[i]
+                except IndexError:
                     break
                 else:
                     entries.append(entry)
             return entries
-        try:
-            entry = self.get_entry_by_id(key)
-        except EntryNotFoundError:
-            raise IndexError
-        return entry
+        for i, entry in enumerate(self):
+            if i == key:
+                return entry
+        raise IndexError
 
     def __contains__(self, database_entry):
         """Return True if the given database_entry entry is saved in the
