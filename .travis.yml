@@ -34,13 +34,13 @@ before_install:
 
 install:
 #Install Numpy first so we force the version we are using
-  - bash .travis.pip.wheel $TRAVIS_PYTHON_VERSION numpy $NUMPY_VERSION -q
+   - pip install --find-links http://sunpy.cadair.com/wheelhouse/index.html --use-wheel numpy==$NUMPY_VERSION
 # Install the other requirements to the desired version
-  - bash .travis.pip.wheel $TRAVIS_PYTHON_VERSION matplotlib $MATPLOTLIB_VERSION -q
-  - bash .travis.pip.wheel $TRAVIS_PYTHON_VERSION scipy  -q
-  - bash .travis.pip.wheel $TRAVIS_PYTHON_VERSION pandas $PANDAS_VERSION -q
-  - bash .travis.pip.wheel $TRAVIS_PYTHON_VERSION astropy -q
-  - pip install -q pytest $SUDS_PKG beautifulsoup4
+   - pip install --find-links http://sunpy.cadair.com/wheelhouse/index.html --use-wheel matplotlib=>$MATPLOTLIB_VERSION
+   - pip install --find-links http://sunpy.cadair.com/wheelhouse/index.html --use-wheel scipy
+   - pip install --find-links http://sunpy.cadair.com/wheelhouse/index.html --use-wheel pandas==$PANDAS_VERSION
+   - pip install --find-links http://sunpy.cadair.com/wheelhouse/index.html --use-wheel astropy
+   - pip install -q pytest $SUDS_PKG beautifulsoup4
 
 # command to run tests
 script:
