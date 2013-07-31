@@ -1,3 +1,4 @@
+from sunpy.time import parse_time
 from sunpy.net.vso import attrs as vso_attrs
 from sunpy.net.attr import AttrWalker, Attr, ValueAttr, AttrAnd, AttrOr
 from sunpy.database.tables import DatabaseEntry, Tag as TableTag
@@ -68,6 +69,28 @@ class Path(vso_attrs._VSOSimpleAttr):
     pass
 
 
+# TODO: support excluding ranges as soon as
+# vso_attrs._Range.__xor__ is fixed / renamed
+class DownloadTime(Attr, vso_attrs._Range):
+    def __init__(self, start, end):
+        self.start = parse_time(start)
+        self.end = parse_time(end)
+        self.inverted = False
+        vso_attrs._Range.__init__(self, start, end, self.__class__)
+
+    def __invert__(self):
+        download_time = self.__class__(self.start, self.end)
+        download_time .inverted = True
+        return download_time
+
+    def collides(self, other):  # pragma: no cover
+        return isinstance(other, self.__class__)
+
+    def __repr__(self):
+        return '<%sDownloadTime(%r, %r)>' % (
+            '~' if self.inverted else '', self.start, self.end)
+
+
 walker = AttrWalker()
 
 
@@ -100,6 +123,12 @@ def _create(wlk, root, session):
                 query = query.filter(~DatabaseEntry.tags.any(criterion))
             else:
                 query = query.filter(DatabaseEntry.tags.any(criterion))
+        elif typ == 'download time':
+            start, end, inverted = value
+            if inverted:
+                query = query.filter(~DatabaseEntry.download_time.between(start, end))
+            else:
+                query = query.filter(DatabaseEntry.download_time.between(start, end))
         else:
             query = query.filter_by(**{typ: value})
     return query.all()
@@ -118,3 +147,9 @@ def _convert(attr):
 @walker.add_converter(vso_attrs._VSOSimpleAttr)
 def _convert(attr):
     return ValueAttr({(attr.__class__.__name__.lower(),): attr.value})
+
+
+@walker.add_converter(DownloadTime)
+def _convert(attr):
+    return ValueAttr({
+        ('download time', ): (attr.start, attr.end, attr.inverted)})
