@@ -9,20 +9,20 @@ virtualenv:
 #There are a few environments configured, we specify a minumum version of mpl
 #and a exact version of Numpy to test against.
 env:
-    - NUMPY_VERSION=1.7.1 MATPLOTLIB_VERSION=1.2 PANDAS_VERSION=0.12.0 SUDS_PKG='suds-jurko'
+    - NUMPY_VERSION=1.7.1 MATPLOTLIB_VERSION=1.2.1 PANDAS_VERSION=0.12.0 SUDS_PKG='suds-jurko'
 
 matrix:
     include:
       - python: 2.6
-        env: NUMPY_VERSION=1.7.1 MATPLOTLIB_VERSION=1.2 PANDAS_VERSION=0.12.0 SUDS_PKG='suds'
+        env: NUMPY_VERSION=1.7.1 MATPLOTLIB_VERSION=1.2.1 PANDAS_VERSION=0.12.0 SUDS_PKG='suds'
       - python: 2.7
-        env: NUMPY_VERSION=1.6.2 MATPLOTLIB_VERSION=1.2 PANDAS_VERSION=0.12.0 SUDS_PKG='suds-jurko'
+        env: NUMPY_VERSION=1.6.2 MATPLOTLIB_VERSION=1.2.1 PANDAS_VERSION=0.12.0 SUDS_PKG='suds-jurko'
       - python: 2.6
-        env: NUMPY_VERSION=1.6.2 MATPLOTLIB_VERSION=1.2 PANDAS_VERSION=0.12.0 SUDS_PKG='suds'
+        env: NUMPY_VERSION=1.6.2 MATPLOTLIB_VERSION=1.2.1 PANDAS_VERSION=0.12.0 SUDS_PKG='suds'
       - python: 2.7
-        env: NUMPY_VERSION=1.7.1 MATPLOTLIB_VERSION=1.2 PANDAS_VERSION=0.11.0 SUDS_PKG='suds-jurko'
+        env: NUMPY_VERSION=1.7.1 MATPLOTLIB_VERSION=1.2.1 PANDAS_VERSION=0.11.0 SUDS_PKG='suds-jurko'
       - python: 2.6
-        env: NUMPY_VERSION=1.7.1 MATPLOTLIB_VERSION=1.2 PANDAS_VERSION=0.11.0 SUDS_PKG='suds'
+        env: NUMPY_VERSION=1.7.1 MATPLOTLIB_VERSION=1.2.1 PANDAS_VERSION=0.11.0 SUDS_PKG='suds'
 
 before_install:
    # We do this to make sure we get the dependencies so pip works below
