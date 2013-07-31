@@ -75,6 +75,11 @@ def test_get_entry_by_id_invalid(database):
         database.get_entry_by_id(0)
 
 
+def test_get_entry_by_id_zero(filled_database):
+    with pytest.raises(EntryNotFoundError):
+        filled_database.get_entry_by_id(0)
+
+
 def test_get_entry_by_id_accessible(filled_database):
     assert filled_database.get_entry_by_id(1) == DatabaseEntry(id=1)
 
@@ -265,7 +270,7 @@ def test_getitem_notfound(database):
 
 def test_getitem_one(filled_database):
     first_entry = DatabaseEntry(id=1)
-    assert filled_database[1] == first_entry
+    assert filled_database[0] == first_entry
 
 
 def test_getitem_getall(filled_database):
@@ -274,7 +279,7 @@ def test_getitem_getall(filled_database):
 
 
 def test_getitem_custom(filled_database):
-    entries = filled_database[2:6:2]
+    entries = filled_database[1:5:2]
     foo = Tag('foo')
     foo.id = 1
     assert entries == [
@@ -282,11 +287,12 @@ def test_getitem_custom(filled_database):
 
 
 def test_getitem_exceeding_range(filled_database):
-    entries = filled_database[8:1000]
+    entries = filled_database[7:1000]
     foo = Tag('foo')
     foo.id = 1
     bar = Tag('bar')
     bar.id = 2
+    print entries
     assert entries == [
         DatabaseEntry(id=8, tags=[foo]),
         DatabaseEntry(id=9),
