@@ -28,7 +28,7 @@ def test_fits_header_entry_inequality():
 
 
 def test_fits_header_entry_hashability():
-    assert not isinstance(FitsHeaderEntry('key', 'value'), Hashable)
+    assert isinstance(FitsHeaderEntry('key', 'value'), Hashable)
 
 
 def test_tag_equality():
