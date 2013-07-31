@@ -1,9 +1,10 @@
-from sqlalchemy import or_
+from sqlalchemy import or_, and_, not_
 
 from sunpy.time import parse_time
 from sunpy.net.vso import attrs as vso_attrs
 from sunpy.net.attr import AttrWalker, Attr, ValueAttr, AttrAnd, AttrOr
-from sunpy.database.tables import DatabaseEntry, Tag as TableTag
+from sunpy.database.tables import DatabaseEntry, Tag as TableTag,\
+    FitsHeaderEntry as TableFitsHeaderEntry
 
 __all__ = ['Starred', 'Tag', 'walker']
 
@@ -93,7 +94,7 @@ class DownloadTime(Attr, vso_attrs._Range):
 
     def __invert__(self):
         download_time = self.__class__(self.start, self.end)
-        download_time .inverted = True
+        download_time.inverted = True
         return download_time
 
     def collides(self, other):  # pragma: no cover
@@ -102,6 +103,25 @@ class DownloadTime(Attr, vso_attrs._Range):
     def __repr__(self):
         return '<%sDownloadTime(%r, %r)>' % (
             '~' if self.inverted else '', self.start, self.end)
+
+
+class FitsHeaderEntry(Attr):
+    def __init__(self, key, value):
+        self.key = key
+        self.value = value
+        self.inverted = False
+
+    def __invert__(self):
+        entry = self.__class__(self.key, self.value)
+        entry.inverted = True
+        return entry
+
+    def collides(self, other):  # pragma: no cover
+        return False
+
+    def __repr__(self):
+        return '<%sFitsHeaderEntry(%r, %r)>' % (
+            '~' if self.inverted else '', self.key, self.value)
 
 
 walker = AttrWalker()
@@ -136,6 +156,19 @@ def _create(wlk, root, session):
                 query = query.filter(~DatabaseEntry.tags.any(criterion))
             else:
                 query = query.filter(DatabaseEntry.tags.any(criterion))
+        elif typ == 'fitsheaderentry':
+            key, val, inverted = value
+            key_criterion = TableFitsHeaderEntry.key == key
+            value_criterion = TableFitsHeaderEntry.value == val
+            if inverted:
+                # FIXME: test me
+                query = query.filter(not_(and_(
+                    DatabaseEntry.fits_header_entries.any(key_criterion),
+                    DatabaseEntry.fits_header_entries.any(value_criterion))))
+            else:
+                query = query.filter(and_(
+                    DatabaseEntry.fits_header_entries.any(key_criterion),
+                    DatabaseEntry.fits_header_entries.any(value_criterion)))
         elif typ == 'download time':
             start, end, inverted = value
             if inverted:
@@ -173,3 +206,9 @@ def _convert(attr):
 def _convert(attr):
     return ValueAttr({
         ('download time', ): (attr.start, attr.end, attr.inverted)})
+
+
+@walker.add_converter(FitsHeaderEntry)
+def _convert(attr):
+    return ValueAttr(
+        {('fitsheaderentry', ): (attr.key, attr.value, attr.inverted)})
