@@ -436,9 +436,7 @@ class Database(object):
             start = 0 if key.start is None else key.start
             stop = len(self) if key.stop is None else key.stop
             step = 1 if key.step is None else key.step
-            print (start, stop, step)
             for i in xrange(start, stop, step):
-                print i
                 try:
                     entry = self[i]
                 except IndexError:
