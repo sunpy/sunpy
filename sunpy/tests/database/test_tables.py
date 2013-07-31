@@ -190,9 +190,14 @@ def test_entries_from_query_result(query_result):
     assert snd_entry == expected_entry
 
 
-def test_display_entries_empty():
+def test_display_entries_missing_entries():
     with pytest.raises(TypeError):
-        display_entries([])
+        display_entries([], ['some', 'columns'])
+
+
+def test_display_entries_missing_columns():
+    with pytest.raises(TypeError):
+        display_entries([DatabaseEntry()], [])
 
 
 def test_display_entries():
@@ -212,11 +217,14 @@ def test_display_entries():
             instrument='Merged gong', size=944.0, waveunit='Angstrom',
             wavemin=6768.0, wavemax=6768.0, starred=True,
             tags=[Tag('hodgepodge')])]
-    table = display_entries(entries)
-    print table
+    columns = [
+        'id', 'source', 'provider', 'physobs', 'fileid',
+        'observation_time_start', 'observation_time_end', 'instrument', 'size',
+        'waveunit', 'wavemin', 'path', 'starred', 'tags']
+    table = display_entries(entries, columns)
     assert table == """
-ID Source Provider Physobs      File ID           Obs. time (start, end)          Instrument  Size  Wave unit Wave (min, max) Path Downloaded Starred Tags      
-== ====== ======== =======      =======           ======================          ==========  ====  ========= =============== ==== ========== ======= ====      
-1  SOHO   SDAC     intensity    /archive/soho/... 20010101T070014 20010101T070021 EIT         259.0 Angstrom  171.0, 171.0    N/A  N/A        No      foo, bar  
-2  GONG   NSO      LOS_velocity pptid=11010...    20100101T005900 20100101T010000 Merged gong 944.0 Angstrom  6768.0, 6768.0  N/A  N/A        Yes     hodgepodge
-""".strip()
+id source provider physobs      fileid            observation_time_start observation_time_end instrument  size  waveunit wavemin path starred tags      
+-- ------ -------- -------      ------            ---------------------- -------------------- ----------  ----  -------- ------- ---- ------- ----      
+1  SOHO   SDAC     intensity    /archive/soho/... 2001-01-01 07:00:14    2001-01-01 07:00:21  EIT         259.0 Angstrom 171.0   N/A  No      foo, bar  
+2  GONG   NSO      LOS_velocity pptid=11010...    2010-01-01 00:59:00    2010-01-01 01:00:00  Merged gong 944.0 Angstrom 6768.0  N/A  Yes     hodgepodge
+    """.strip()

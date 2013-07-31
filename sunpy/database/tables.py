@@ -372,37 +372,40 @@ def entries_from_path(fitsdir, recursive=False, pattern='*.fits'):
             break
 
 
-# FIXME: document me!
-def display_entries(database_entries):
-    header = [[
-        'ID', 'Source', 'Provider', 'Physobs', 'File ID',
-        'Obs. time (start, end)', 'Instrument',
-        'Size', 'Wave unit', 'Wave (min, max)',
-        'Path', 'Downloaded', 'Starred', 'Tags']]
-    rulers = [['=' * len(col) for col in header[0]]]
+def display_entries(database_entries, columns):
+    """Generate a table to display the database entries.
+
+    Parameters
+    ----------
+    database_entries : iterable of :class:`DatabaseEntry` instances
+        The database entries will be the rows in the resulting table.
+
+    columns : iterable of str
+        The columns that will be displayed in the resulting table. Possible
+        values for the strings are all attributes of :class:`DatabaseEntry`.
+
+    Returns
+    -------
+    str
+        A formatted table that can be printed on the console or written to a
+        file.
+
+    """
+    header = [columns]
+    rulers = [['-' * len(col) for col in columns]]
     data = []
-    # make sure that there is no value of type NoneType, hence the many
-    # str(...) calls
     for entry in database_entries:
-        obs_start_end = '%s %s' % (
-            entry.observation_time_start.strftime('%Y%m%dT%H%M%S') or 'N/A',
-            entry.observation_time_end.strftime('%Y%m%dT%H%M%S') or 'N/A')
-        data.append([
-            str(entry.id or 'N/A'),
-            str(entry.source or 'N/A'),
-            str(entry.provider or 'N/A'),
-            str(entry.physobs or 'N/A'),
-            str(entry.fileid or 'N/A'),  # TODO: truncate in a sensible way
-            obs_start_end,
-            str(entry.instrument or 'N/A'),
-            str(entry.size or 'N/A'),
-            #str(entry.mission),
-            str(entry.waveunit or 'N/A'),
-            ', '.join(map(str, (entry.wavemin, entry.wavemax))) or 'N/A',
-            str(entry.path or 'N/A'),
-            str(entry.download_time or 'N/A'),
-            'Yes' if entry.starred else 'No',
-            ', '.join(imap(str, entry.tags))])
+        row = []
+        for col in columns:
+            if col == 'starred':
+                row.append('Yes' if entry.starred else 'No')
+            elif col == 'tags':
+                row.append(', '.join(imap(str, entry.tags)))
+            else:
+                row.append(str(getattr(entry, col) or 'N/A'))
+        if not row:
+            raise TypeError('at least one column must be given')
+        data.append(row)
     if not data:
         raise TypeError('given iterable is empty')
     return print_table(header + rulers + data)
