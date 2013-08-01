@@ -69,15 +69,18 @@ class Tag(Attr):
         return '<%sTag(%r)>' % ('~' if self.inverted else '', self.tagname)
 
 
-class Path(vso_attrs._VSOSimpleAttr):
+class Path(Attr):
     def __init__(self, value):
+        self.value = value
         self.inverted = False
-        vso_attrs._VSOSimpleAttr.__init__(self, value)
 
     def __invert__(self):
         path = self.__class__(self.value)
         path.inverted = True
         return path
+
+    def collides(self, other):  # pragma: no cover
+        return isinstance(other, self.__class__)
 
     def __repr__(self):
         return '<%sPath(%r)>' % ('~' if self.inverted else '', self.value)
@@ -211,3 +214,8 @@ def _convert(attr):
 def _convert(attr):
     return ValueAttr(
         {('fitsheaderentry', ): (attr.key, attr.value, attr.inverted)})
+
+
+@walker.add_converter(vso_attrs._VSOSimpleAttr)
+def _convert(attr):
+    return ValueAttr({(attr.__class__.__name__.lower(), ): attr.value})

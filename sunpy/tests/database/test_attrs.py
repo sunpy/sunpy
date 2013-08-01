@@ -7,6 +7,7 @@ from sunpy.database import tables
 from sunpy.database.attrs import walker, Starred, Tag, Path, DownloadTime,\
     FitsHeaderEntry
 from sunpy.net.attr import DummyAttr, AttrAnd, AttrOr
+from sunpy.net import vso
 
 
 @pytest.fixture
@@ -34,6 +35,21 @@ def session():
             database.tag(entry, 'foo')
     # the last entry gets the FITS header entry INSTRUME=EIT
     entry.fits_header_entries.append(tables.FitsHeaderEntry('INSTRUME', 'EIT'))
+    database.commit()
+    return database.session
+
+
+@pytest.fixture
+def vso_session():
+    client = vso.VSOClient()
+    qr = client.query(
+        vso.attrs.Time('20110608T235955', '2011-06-09'),
+        vso.attrs.Instrument('aia'))
+    entries = tables.entries_from_query_result(qr)
+    database = Database('sqlite:///:memory:')
+    database.create_tables()
+    for entry in entries:
+        database.add(entry)
     database.commit()
     return database.session
 
@@ -380,3 +396,39 @@ def test_walker_create_fitsheader_inverted(session):
             id=8, starred=True, download_time=datetime(2005, 6, 15, 8)),
         tables.DatabaseEntry(
             id=9, path='/tmp', download_time=datetime(2005, 6, 15, 9))]
+
+
+@pytest.mark.slow
+def test_walker_create_vso_instrument(vso_session):
+    entries = walker.create(vso.attrs.Instrument('AIA'), vso_session)
+    assert entries == [
+        tables.DatabaseEntry(id=1, source='SDO', provider='JSOC',
+            physobs='intensity', fileid='aia__lev1:193:1086652831',
+            observation_time_start=datetime(2011, 6, 8, 23, 59, 55),
+            observation_time_end=datetime(2011, 6, 8, 23, 59, 56),
+            instrument='AIA', size=66200.0, waveunit='Angstrom', wavemin=193.0,
+            wavemax=193.0),
+        tables.DatabaseEntry(id=2, source='SDO', provider='JSOC',
+            physobs='intensity', fileid='aia__lev1:94:1086652832',
+            observation_time_start=datetime(2011, 6, 8, 23, 59, 56),
+            observation_time_end=datetime(2011, 6, 8, 23, 59, 57),
+            instrument='AIA', size=66200.0, waveunit='Angstrom', wavemin=94.0,
+            wavemax=94.0),
+        tables.DatabaseEntry(id=3, source='SDO', provider='JSOC',
+            physobs='intensity', fileid='aia__lev1:131:1086652833',
+            observation_time_start=datetime(2011, 6, 8, 23, 59, 57),
+            observation_time_end=datetime(2011, 6, 8, 23, 59, 58),
+            instrument='AIA', size=66200.0, waveunit='Angstrom', wavemin=131.0,
+            wavemax=131.0),
+        tables.DatabaseEntry(id=4, source='SDO', provider='JSOC',
+            physobs='intensity', fileid='aia__lev1:171:1086652835',
+            observation_time_start=datetime(2011, 6, 9, 0, 0),
+            observation_time_end=datetime(2011, 6, 9, 0, 0, 1),
+            instrument='AIA', size=66200.0, waveunit='Angstrom', wavemin=171.0,
+            wavemax=171.0),
+        tables.DatabaseEntry(id=5, source='SDO', provider='JSOC',
+            physobs='intensity', fileid='aia__lev1:211:1086652836',
+            observation_time_start=datetime(2011, 6, 9, 0, 0),
+            observation_time_end=datetime(2011, 6, 9, 0, 0, 1),
+            instrument='AIA', size=66200.0, waveunit='Angstrom', wavemin=211.0,
+            wavemax=211.0)]
