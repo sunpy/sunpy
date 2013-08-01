@@ -8,6 +8,7 @@ from datetime import datetime
 
 import matplotlib.pyplot as plt
 from pandas.io.parsers import read_csv
+from os.path import basename
 
 from sunpy.lightcurve import LightCurve
 
@@ -21,8 +22,9 @@ class EVELightCurve(LightCurve):
     import sunpy
     eve = sunpy.lightcurve.EVELightCurve.create()
     eve = sunpy.lightcurve.EVELightCurve.create('2012/06/20')
+    eve = sunpy.lightcurve.EVELightCurve.create(sunpy.data.test.EVE_AVERAGES_CSV)
     eve = sunpy.lightcurve.EVELightCurve.create("http://lasp.colorado.edu/eve/data_access/quicklook/quicklook_data/L0CS/LATEST_EVE_L0CS_DIODES_1m.txt")
-    eve.peek()
+    eve.peek(subplots=True)
     
     References
     ----------
@@ -70,6 +72,7 @@ class EVELightCurve(LightCurve):
     @classmethod
     def _parse_csv(cls, filepath):
         """Parses an EVE CSV file"""
+        cls._filename = basename(filepath)
         with open(filepath, 'rb') as fp:
             # Determine type of EVE CSV file and parse
             line1 = fp.readline()
