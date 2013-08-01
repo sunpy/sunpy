@@ -27,6 +27,7 @@ References
 from __future__ import absolute_import
 
 import os
+import re
 try:
     import astropy.io.fits as pyfits
 except ImportError:
@@ -34,9 +35,9 @@ except ImportError:
 
 from sunpy.io.header import FileHeader
 
-__all__ = ['read', 'get_header', 'write']
+__all__ = ['read', 'get_header', 'write', 'extract_waveunit']
 
-__author__ = "Keith Hughitt, Stuart Mumford"
+__author__ = "Keith Hughitt, Stuart Mumford, Simon Liedtke"
 __email__ = "keith.hughitt@nasa.gov"
 
 def read(filepath):
@@ -141,3 +142,32 @@ def write(fname, data, header, **kwargs):
     fitskwargs = {'output_verify':'fix'}
     fitskwargs.update(kwargs)
     pyfits.writeto(os.path.expanduser(fname), data, header=fits_header, **fitskwargs)
+
+
+def extract_waveunit(header):
+    """
+    Attempt to read the wave unit from a given FITS header.
+
+    Parameters
+    ----------
+    header : FileHeader
+        One :class:`sunpy.io.header.FileHeader` instance which was created by
+        reading a FITS file. :func:`sunpy.io.fits.get_header` returns a list of
+        such instances.
+
+    Returns
+    -------
+    waveunit : str
+        The wave unit that could be found or ``None`` otherwise.
+    """
+    try:
+        waveunit = header['WAVEUNIT']
+    except KeyError:
+        try:
+            wavelnth_comment = header['KEYCOMMENTS']['WAVELNTH']
+        except KeyError:
+            waveunit = None
+        else:
+            m = re.search(r'^\[(\w+?)\]', wavelnth_comment)
+            waveunit = m.group(1) if m is not None else None
+    return waveunit
