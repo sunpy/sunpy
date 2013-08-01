@@ -184,6 +184,12 @@ def _create(wlk, root, session):
                     DatabaseEntry.path != path, DatabaseEntry.path == None))
             else:
                 query = query.filter(DatabaseEntry.path == path)
+        elif typ == 'wave':
+            min_, max_, unit = value
+            query = query.filter(and_(
+                DatabaseEntry.wavemin >= min_,
+                DatabaseEntry.wavemax <= max_,
+                DatabaseEntry.waveunit == unit))
         else:
             query = query.filter_by(**{typ: value})
     return query.all()
@@ -219,3 +225,8 @@ def _convert(attr):
 @walker.add_converter(vso_attrs._VSOSimpleAttr)
 def _convert(attr):
     return ValueAttr({(attr.__class__.__name__.lower(), ): attr.value})
+
+
+@walker.add_converter(vso_attrs.Wave)
+def _convert(attr):
+    return ValueAttr({('wave', ): (attr.min, attr.max, attr.unit)})
