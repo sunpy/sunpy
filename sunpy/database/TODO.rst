@@ -7,6 +7,8 @@ Documentation
 - document the package database itself!!! → show how to use the Database
   class and the undo and redo methods
 
+- document Database.__getitem__
+
 - document the caching package
 
 - document caching.LRUCache and caching.LFUCache
@@ -19,6 +21,9 @@ Documentation
 
 Testing
 -------
+- test undoing and redoing the latest methods in Database!!! (e.g.
+  tagging, removing tags, ...)
+
 - test adding entries that are already saved in the database → should
   throw an exception
 
@@ -34,38 +39,23 @@ Testing
 - test starring and tagging entries that haven't been added to the
   database!
 
-Simple
-------
-- support changing the cache size from Database → Database.cache_size
-
 Important
 ---------
-- Database.query / attrs module:
-  
-  - support VSO attributes
+- do not save the waveunit. rather, use only nm
 
-  - support more attributes:
+- display_entries: support and test output of FITS header entries
 
-      - Path (str, compare Tag attribute)
-
-      - DownloadTime (time range, see vso.attrs.Time)
-
-      - FitsHeaderEntry (custom attribute storing key and value)
-
-- remove Database.get_entry_by_id
+- support the VSO attribute Time for querying the database
 
 - adopt parameter names in Database methods to last changes in the
   documentation!!!
-
-- support removing tags → see sqlalchemy doc to see what to pay attention
-  to when removing entries in a many-to-many relationship
 
 - which table fields are unique?
 
 - check if catching the exception InvalidRequestError is really sufficient
   in AddEntry.__call__, AddEntry.undo, RemoveEntry.__call__
 
-Long-term
+Low priority
 ---------
 
 - support using the progressbar for adding many entries to the database
@@ -79,3 +69,10 @@ Unclear / Undecided
 
 - Should the FITS Header be normalized before being saved (the keys are
   usually in UPPERCASE, makes it worse to search for)?
+
+Interfacing with VSO
+--------------------
+- general problem: db query cannot tell whether the same to the VSO might
+  fetch more data or the same data
+
+  → solution: remember queries, compare
