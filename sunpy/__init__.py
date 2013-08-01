@@ -38,17 +38,19 @@ coordinate systems.
 """
 from __future__ import absolute_import
 
-__version__ = 0.2
+__version__ = 0.3
 
 import sunpy.map
 import sunpy.sun
 import sunpy.lightcurve
-from sunpy.map import make_map
-from sunpy.map import read_header
-from sunpy.map.map import Map
-from sunpy.map.header import MapHeader
-from sunpy.map.mapcube import MapCube
-from sunpy.map.compositemap import CompositeMap
+
+from sunpy.map.map_factory import Map, make_map
+
+#from sunpy.map import read_header
+#from sunpy.map.map import Map
+#from sunpy.map.header import MapHeader
+#from sunpy.map.mapcube import MapCube
+#from sunpy.map.compositemap import CompositeMap
 from sunpy.util.config import load_config, print_config
 from sunpy.cm import *
 
