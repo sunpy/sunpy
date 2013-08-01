@@ -54,14 +54,10 @@ def read_file_header(filepath, **kwargs):
     """
     for extension, reader in _known_formats.items():
         if filepath.endswith(extension):
-            header = reader.get_header(filepath, **kwargs)
-            header['WAVEUNIT'] = fits.extract_waveunit(header)
-            return header
+            return reader.get_header(filepath, **kwargs)
         
     reader = _detect_filetype(filepath)
-    header = reader.get_header(filepath, **kwargs)  
-    header['WAVEUNIT'] = fits.extract_waveunit(header)
-    return header
+    return reader.get_header(filepath, **kwargs)  
 
 def write_file(fname, data, header, filetype='auto', **kwargs):
     """

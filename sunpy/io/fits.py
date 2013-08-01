@@ -73,6 +73,7 @@ def read(filepath):
             header['COMMENT'] = comment
             header['KEYCOMMENTS'] = hdu.header.comments
             header['HISTORY'] = history
+            header['WAVEUNIT'] = extract_waveunit(header)
             pairs.append((hdu.data, header))
     finally:
         hdulist.close()
@@ -104,6 +105,7 @@ def get_header(filepath):
             header['COMMENT'] = comment
             header['KEYCOMMENTS'] = hdu.header.comments            
             header['HISTORY'] = history
+            header['WAVEUNIT'] = extract_waveunit(header)
             headers.append(header)
     finally:
         hdulist.close()
