@@ -146,7 +146,7 @@ def write(fname, data, header, **kwargs):
 
 def extract_waveunit(header):
     """
-    Attempt to read the wave unit from a given FITS header.
+    Attempt to read the wavelength unit from a given FITS header.
 
     Parameters
     ----------
@@ -158,7 +158,7 @@ def extract_waveunit(header):
     Returns
     -------
     waveunit : str
-        The wave unit that could be found or ``None`` otherwise.
+        The wavelength unit that could be found or ``None`` otherwise.
     """
     try:
         waveunit = header['WAVEUNIT']
