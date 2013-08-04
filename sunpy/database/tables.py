@@ -183,13 +183,14 @@ class DatabaseEntry(Base):
         time_start = timestamp2datetime('%Y%m%d%H%M%S', qr_block.time.start)
         time_end = timestamp2datetime('%Y%m%d%H%M%S', qr_block.time.end)
         wave = qr_block.wave
+        wavemin = None if wave.wavemin is None else float(wave.wavemin)
+        wavemax = None if wave.wavemax is None else float(wave.wavemax)
         return cls(
             source=qr_block.source, provider=qr_block.provider,
             physobs=qr_block.physobs, fileid=qr_block.fileid,
             observation_time_start=time_start, observation_time_end=time_end,
             instrument=qr_block.instrument, size=qr_block.size,
-            waveunit=wave.waveunit, wavemin=float(wave.wavemin),
-            wavemax=float(wave.wavemax))
+            waveunit=wave.waveunit, wavemin=wavemin, wavemax=wavemax)
 
     @classmethod
     def from_fits_filepath(cls, path):
