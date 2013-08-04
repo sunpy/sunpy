@@ -4,7 +4,7 @@ import os
 
 from sunpy.database.tables import FitsHeaderEntry, Tag, DatabaseEntry,\
     entries_from_query_result, entries_from_path, display_entries
-from sunpy.net.vso import VSOClient
+from sunpy.net import vso
 from sunpy.data.test import rootdir as testdir
 import sunpy
 
@@ -13,8 +13,15 @@ import pytest
 
 @pytest.fixture
 def query_result():
-    client = VSOClient()
+    client = vso.VSOClient()
     return client.query_legacy('2001/1/1', '2001/1/2', instrument='EIT')
+
+
+@pytest.fixture
+def qr_with_none_waves():
+    return vso.VSOClient().query(
+        vso.attrs.Time('20121224T120049.8', '20121224T120049.8'),
+        vso.attrs.Provider('SDAC'), vso.attrs.Instrument('VIRGO'))
 
 
 def test_fits_header_entry_equality():
@@ -188,6 +195,47 @@ def test_entries_from_query_result(query_result):
         instrument='EIT', size=2059.0, waveunit='Angstrom', wavemin=171.0,
         wavemax=171.0)
     assert snd_entry == expected_entry
+
+
+def test_entry_from_query_results_with_none_wave(qr_with_none_waves):
+    entries = list(entries_from_query_result(qr_with_none_waves))
+    assert len(entries) == 5
+    assert entries == [
+        DatabaseEntry(
+            source='SOHO', provider='SDAC', physobs='intensity',
+            fileid='/archive/soho/private/data/processed/virgo/level1/1212/HK/121222_1.H01',
+            observation_time_start=datetime(2012, 12, 23, 23, 59, 3),
+            observation_time_end=datetime(2012, 12, 24, 23, 59, 2),
+            instrument='VIRGO', size=155.0, waveunit=None, wavemin=None,
+            wavemax=None),
+        DatabaseEntry(
+            source='SOHO', provider='SDAC', physobs='intensity',
+            fileid='/archive/soho/private/data/processed/virgo/level1/1212/LOI/121224_1.L01',
+            observation_time_end=datetime(2012, 12, 24, 23, 59, 2),
+            observation_time_start=datetime(2012, 12, 23, 23, 59, 3),
+            instrument='VIRGO', size=329.0, waveunit=None, wavemin=None,
+            wavemax=None),
+        DatabaseEntry(
+            source='SOHO', provider='SDAC', physobs ='intensity',
+            fileid='/archive/soho/private/data/processed/virgo/level1/1212/SPM/121222_1.S02',
+            observation_time_start=datetime(2012, 12, 23, 23, 59, 3),
+            observation_time_end=datetime(2012, 12, 24, 23, 59, 2),
+            instrument='VIRGO', size=87.0, waveunit=None, wavemin=None,
+            wavemax=None),
+        DatabaseEntry(
+            source='SOHO', provider='SDAC', physobs='intensity',
+            fileid='/archive/soho/private/data/processed/virgo/level1/1212/DIARAD/121222_1.D01',
+            observation_time_start=datetime(2012, 12, 24, 0, 1, 58),
+            observation_time_end=datetime(2012, 12, 25, 0, 1, 57),
+            instrument='VIRGO', size=14.0, waveunit=None, wavemin=None,
+            wavemax=None),
+      DatabaseEntry(
+            source='SOHO', provider='SDAC', physobs='intensity',
+            fileid='/archive/soho/private/data/processed/virgo/level1/1212/DIARAD/121222_1.D01',
+            observation_time_end=datetime(2012, 12, 25, 0, 1, 57),
+            observation_time_start=datetime(2012, 12, 24, 0, 1, 58),
+            instrument='VIRGO', size=14.0, waveunit=None, wavemin=None,
+            wavemax=None)]
 
 
 def test_display_entries_missing_entries():
