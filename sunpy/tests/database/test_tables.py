@@ -24,6 +24,14 @@ def qr_with_none_waves():
         vso.attrs.Provider('SDAC'), vso.attrs.Instrument('VIRGO'))
 
 
+@pytest.fixture
+def qr_block_with_missing_physobs():
+    return vso.VSOClient().query(
+        vso.attrs.Time('20130805T120000', '20130805T121000'),
+        vso.attrs.Instrument('SWAVES'), vso.attrs.Source('STEREO_A'),
+        vso.attrs.Provider('SSC'), vso.attrs.Wave(10, 160, 'kHz'))[0]
+
+
 def test_fits_header_entry_equality():
     assert FitsHeaderEntry('key', 'value') == FitsHeaderEntry('key', 'value')
     assert not (FitsHeaderEntry('key', 'value') == FitsHeaderEntry('k', 'v'))
@@ -62,6 +70,18 @@ def test_entry_from_qr_block(query_result):
         observation_time_end=datetime(2001, 1, 1, 1, 0, 21),
         instrument='EIT', size=2059.0, waveunit='Angstrom', wavemin=171.0,
         wavemax=171.0)
+    assert entry == expected_entry
+
+
+@pytest.mark.slow
+def test_entry_from_qr_block_with_missing_physobs(qr_block_with_missing_physobs):
+    entry = DatabaseEntry.from_query_result_block(qr_block_with_missing_physobs)
+    expected_entry = DatabaseEntry(
+        source='STEREO_A', provider='SSC',
+        fileid='swaves/2013/swaves_average_20130805_a_hfr.dat',
+        observation_time_start=datetime(2013, 8, 5),
+        observation_time_end=datetime(2013, 8, 6), instrument='SWAVES',
+        size=3601.08, waveunit='MHz', wavemin=0.125, wavemax=16)
     assert entry == expected_entry
 
 
