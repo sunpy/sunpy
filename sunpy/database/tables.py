@@ -185,9 +185,10 @@ class DatabaseEntry(Base):
         wave = qr_block.wave
         wavemin = None if wave.wavemin is None else float(wave.wavemin)
         wavemax = None if wave.wavemax is None else float(wave.wavemax)
+        physobs = getattr(qr_block, 'physobs', None)
         return cls(
             source=qr_block.source, provider=qr_block.provider,
-            physobs=qr_block.physobs, fileid=qr_block.fileid,
+            physobs=physobs, fileid=qr_block.fileid,
             observation_time_start=time_start, observation_time_end=time_end,
             instrument=qr_block.instrument, size=qr_block.size,
             waveunit=wave.waveunit, wavemin=wavemin, wavemax=wavemax)
