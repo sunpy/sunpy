@@ -17,7 +17,7 @@ from sunpy.util import print_table
 
 __all__ = [
     'FitsHeaderEntry', 'Tag', 'DatabaseEntry', 'entries_from_query_result',
-    'entries_from_path']
+    'entries_from_path', 'display_entries']
 
 Base = declarative_base()
 
