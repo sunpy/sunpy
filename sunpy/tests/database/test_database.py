@@ -68,10 +68,12 @@ def test_setting_cache_size_shrinking(database_using_lrucache):
     for _ in xrange(5):
         database_using_lrucache.add(DatabaseEntry())
     assert len(database_using_lrucache) == 3
-    database_using_lrucache.set_cache_size(1)
+    database_using_lrucache.set_cache_size(2)
+    assert len(database_using_lrucache) == 2
+    assert database_using_lrucache._cache.maxsize == 2
     for _ in xrange(5):
         database_using_lrucache.add(DatabaseEntry())
-    assert len(database_using_lrucache) == 1
+    assert len(database_using_lrucache) == 2
 
 
 def test_setting_cache_size_undo(database_using_lrucache):
@@ -80,8 +82,6 @@ def test_setting_cache_size_undo(database_using_lrucache):
     assert len(database_using_lrucache) == 3
     database_using_lrucache.set_cache_size(1)
     assert len(database_using_lrucache) == 1
-    database_using_lrucache.undo()
-    assert len(database_using_lrucache) == 2
     database_using_lrucache.undo()
     assert len(database_using_lrucache) == 3
 

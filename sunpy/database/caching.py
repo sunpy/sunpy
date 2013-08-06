@@ -26,11 +26,6 @@ class BaseCache(OrderedDict):
         self.maxsize = maxsize
         OrderedDict.__init__(self)
 
-    def set_size(self, size):
-        self.maxsize = size
-        while len(self) > self.maxsize:
-            self.remove()
-
     @abstractmethod
     def __getitem__(self, key):
         return  # pragma: no cover

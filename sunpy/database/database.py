@@ -208,7 +208,12 @@ class Database(object):
         cache. Use the value ``float('inf')`` to disable caching.
 
         """
-        self._cache.set_size(cache_size)
+        self._cache.maxsize = cache_size
+        cmds = []
+        for entry in self[cache_size:]:
+            cmds.append(commands.RemoveEntry(self.session, entry))
+            del self._cache[entry.id]
+        self._command_manager.do(cmds)
 
     def create_tables(self, checkfirst=True):
         """Initialise the database by creating all necessary tables. If
