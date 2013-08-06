@@ -50,6 +50,28 @@ def test_lru_cache():
     #assert lrucache.items() == [(3, 'c'), (1, 'a'), (4, 'd')]
 
 
+def test_lru_shrink_size():
+    lrucache = LRUCache(5)
+    for i in xrange(5):
+        lrucache[i] = str(i) * i
+    lrucache.set_size(3)
+    assert len(lrucache) == 3
+    assert lrucache[2] == '22'
+    assert lrucache[3] == '333'
+    assert lrucache[4] == '4444'
+
+
+def test_lfu_shrink_size():
+    lfucache = LFUCache(5)
+    for i in xrange(5):
+        lfucache[i] = str(i) * i
+    lfucache.set_size(3)
+    assert len(lfucache) == 3
+    assert lfucache[2] == '22'
+    assert lfucache[3] == '333'
+    assert lfucache[4] == '4444'
+
+
 def test_lru_cache_missing_item():
     with pytest.raises(KeyError):
         LRUCache()[0]
