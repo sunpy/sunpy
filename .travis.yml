@@ -40,7 +40,10 @@ install:
 # Install the other requirements to the desired version
    - pip install --find-links http://sunpy.cadair.com/wheelhouse/index.html --use-wheel matplotlib>=$MATPLOTLIB_VERSION
    - pip install --find-links http://sunpy.cadair.com/wheelhouse/index.html --use-wheel scipy
-   - pip install --find-links http://sunpy.cadair.com/wheelhouse/index.html --use-wheel pandas==$PANDAS_VERSION
+# Manually install pandas deps
+   - pip install pytz
+   - pip install python-dateutil
+   - pip install --find-links http://sunpy.cadair.com/wheelhouse/index.html --use-wheel --no-deps pandas==$PANDAS_VERSION
    - pip install --find-links http://sunpy.cadair.com/wheelhouse/index.html --use-wheel astropy
    - pip install -q pytest $SUDS_PKG beautifulsoup4
 
