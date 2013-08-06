@@ -41,7 +41,7 @@ install:
    - pip install --find-links http://sunpy.cadair.com/wheelhouse/index.html --use-wheel matplotlib>=$MATPLOTLIB_VERSION
    - pip install --find-links http://sunpy.cadair.com/wheelhouse/index.html --use-wheel scipy
 # Manually install pandas deps
-   - pip install pytz
+   - pip install pytz==2013b
    - pip install python-dateutil
    - pip install --find-links http://sunpy.cadair.com/wheelhouse/index.html --use-wheel --no-deps pandas==$PANDAS_VERSION
    - pip install --find-links http://sunpy.cadair.com/wheelhouse/index.html --use-wheel astropy
