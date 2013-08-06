@@ -314,7 +314,6 @@ def test_getitem_exceeding_range(filled_database):
     foo.id = 1
     bar = Tag('bar')
     bar.id = 2
-    print entries
     assert entries == [
         DatabaseEntry(id=8, tags=[foo]),
         DatabaseEntry(id=9),
