@@ -170,3 +170,19 @@ def test_cmd_manager_redo(session, command_manager):
     command_manager.redo(2)
     assert len(command_manager.undo_commands) == 2
     assert command_manager.redo_commands == []
+
+
+def test_undo_redo_multiple_cmds_at_once(session, command_manager):
+    assert command_manager.undo_commands == []
+    command_manager.do([
+        AddEntry(session, DatabaseEntry()),
+        AddEntry(session, DatabaseEntry()),
+        AddEntry(session, DatabaseEntry())])
+    assert len(command_manager.undo_commands) == 1
+    assert session.query(DatabaseEntry).count() == 3
+    command_manager.undo()
+    assert command_manager.undo_commands == []
+    assert session.query(DatabaseEntry).count() == 0
+    command_manager.redo()
+    assert command_manager.redo_commands == []
+    assert session.query(DatabaseEntry).count() == 3

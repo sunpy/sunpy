@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 
 from abc import ABCMeta, abstractmethod
+import collections
 
 from sqlalchemy.orm import make_transient
 from sqlalchemy.exc import InvalidRequestError
@@ -161,10 +162,16 @@ class CommandManager(object):
 
     def do(self, command):
         """Execute the given command (a subclass of DatabaseOperation).
-        Exceptions raised from the command are not caught.
+        Exceptions raised from the command are not caught. The passed argument
+        may also be an iterable of commands. In this case, every command of the
+        iterable is executed and only one entry is saved in the undo history.
 
         """
-        command()
+        if isinstance(command, collections.Iterable):
+            for cmd in command:
+                cmd()
+        else:
+            command()
         self.push_undo_command(command)
         # clear the redo stack when a new command was executed
         self.redo_commands[:] = []
@@ -178,7 +185,11 @@ class CommandManager(object):
         """
         for _ in xrange(n):
             command = self.pop_undo_command()
-            command.undo()
+            if isinstance(command, collections.Iterable):
+                for cmd in command:
+                    cmd.undo()
+            else:
+                command.undo()
             self.push_redo_command(command)
 
     def redo(self, n=1):
@@ -191,5 +202,9 @@ class CommandManager(object):
         """
         for _ in xrange(n):
             command = self.pop_redo_command()
-            command()
+            if isinstance(command, collections.Iterable):
+                for cmd in command:
+                    cmd()
+            else:
+                command()
             self.push_undo_command(command)
