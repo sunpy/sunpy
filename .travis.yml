@@ -35,12 +35,12 @@ before_install:
 
 install:
 #Install Numpy first so we force the version we are using
-   - pip install --find-links http://sunpy.cadair.com/wheelhouse/index.html --use-wheel numpy==$NUMPY_VERSION
+    - pip install --find-links http://sunpy.cadair.com/wheelhouse/index.html --use-wheel --upgrade numpy==$NUMPY_VERSION
 # Install the other requirements to the desired version
-   - pip install --find-links http://sunpy.cadair.com/wheelhouse/index.html --use-wheel matplotlib>=$MATPLOTLIB_VERSION
-   - pip install --find-links http://sunpy.cadair.com/wheelhouse/index.html --use-wheel scipy
-   - pip install --find-links http://sunpy.cadair.com/wheelhouse/index.html --use-wheel pandas==$PANDAS_VERSION
-   - pip install --find-links http://sunpy.cadair.com/wheelhouse/index.html --use-wheel astropy
+   - pip install --find-links http://sunpy.cadair.com/wheelhouse/index.html --use-wheel --upgrade matplotlib>=$MATPLOTLIB_VERSION
+   - pip install --find-links http://sunpy.cadair.com/wheelhouse/index.html --use-wheel --upgrade scipy
+   - pip install --find-links http://sunpy.cadair.com/wheelhouse/index.html --use-wheel --upgrade pandas==$PANDAS_VERSION
+   - pip install --find-links http://sunpy.cadair.com/wheelhouse/index.html --use-wheel --upgrade astropy
    - pip install -q pytest $SUDS_PKG beautifulsoup4
 
 # command to run tests
