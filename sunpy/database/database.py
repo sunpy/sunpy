@@ -103,6 +103,11 @@ class Database(object):
         advanced manipulations and should only be used by people who are
         experienced with SQLAlchemy.
 
+    cache_size: int
+        The maximum number of database entries. This attribute is read-only. To
+        change this value, use the method
+        :meth:`sunpy.database.Database.set_cache_size`.
+
     tags : list of sunpy.database.Tag objects
         A list of all saved tags in database. This attribute is read-only.
 
@@ -202,6 +207,10 @@ class Database(object):
             def append(this, value):
                 this[max(this or [0]) + 1] = value
         self._cache = Cache(cache_size)
+
+    @property
+    def cache_size(self):
+        return self._cache.maxsize
 
     def set_cache_size(self, cache_size):
         """Set a new value for the maxiumum number of database entries in the
