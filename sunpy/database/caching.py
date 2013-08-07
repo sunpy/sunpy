@@ -41,7 +41,6 @@ class BaseCache(OrderedDict):
         item has been removed, the callback method is called.
 
         """
-        return  # pragma: no cover
 
     def callback(self, key, value):
         """This method should be called (by convention) if an item is removed
