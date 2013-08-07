@@ -42,7 +42,7 @@ install:
 # Manually install pandas deps due to a pip 1.4 / pytz bug
    - pip install --find-links http://sunpy.cadair.com/wheelhouse/index.html --use-wheel --upgrade pytz==2013b
    - pip install --find-links http://sunpy.cadair.com/wheelhouse/index.html --use-wheel --upgrade python-dateutil
-   - pip install --find-links http://sunpy.cadair.com/wheelhouse/index.html --use-wheel --upgrade pandas==$PANDAS_VERSION
+   - pip install --find-links http://sunpy.cadair.com/wheelhouse/index.html --use-wheel --upgrade --no-deps pandas==$PANDAS_VERSION
    - pip install --find-links http://sunpy.cadair.com/wheelhouse/index.html --use-wheel --upgrade astropy
    - pip install -q pytest $SUDS_PKG beautifulsoup4
 
