@@ -9,7 +9,6 @@ The database package exports the following classes, functions and exceptions:
         - FitsHeaderEntry
         - Tag
     :functions:
-        - entries_from_query_result
         - entries_from_path
         - display_entries
     :exceptions:
@@ -25,11 +24,11 @@ from sunpy.database.database import Database, EntryAlreadyAddedError,\
     EntryAlreadyStarredError, EntryAlreadyUnstarredError, NoSuchTagError,\
     EntryNotFoundError
 from sunpy.database.tables import DatabaseEntry, FitsHeaderEntry, Tag,\
-    entries_from_query_result, entries_from_path, display_entries
+    entries_from_path, display_entries
 from sunpy.database.commands import NoSuchEntryError
 
 __all__ = [
     'Database', 'EntryAlreadyAddedError', 'NoSuchEntryError', 'NoSuchTagError',
     'EntryAlreadyStarredError', 'EntryAlreadyUnstarredError',
     'EntryNotFoundError', 'DatabaseEntry', 'FitsHeaderEntry', 'Tag',
-    'entries_from_query_result', 'entries_from_path', 'display_entries']
+    'entries_from_path', 'display_entries']
