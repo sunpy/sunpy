@@ -2,15 +2,22 @@ from __future__ import absolute_import
 
 import re
 
-from sunpy.io import fits, jp2
+# File formats supported by SunPy
+# If dependancy is not importable, do not add it to the readers.
+_known_formats = {}
+try:
+    from sunpy.io import fits
+    _known_formats.update({('fts', 'fits'): fits})
+except ImportError:
+    pass
+
+try:
+    from sunpy.io import jp2
+    _known_formats.update({('jp2', 'j2k', 'jpc', 'jpt'): jp2})
+except ImportError:
+    pass
 
 __all__ = ['read_file', 'read_file_header', 'write_file']
-
-# File formats supported by SunPy
-_known_formats = {
-    ('fts', 'fits'): fits,
-    ('jp2', 'j2k', 'jpc', 'jpt'): jp2
-}
 
 def read_file(filepath, **kwargs):
     """
@@ -134,8 +141,10 @@ def _detect_filetype(filepath):
             raise InvalidJPEG2000FileExtension
 
     # Raise an error if an unsupported filetype is encountered
-    raise UnrecognizedFileTypeError("The requested filetype is not currently "
-                                    "supported by SunPy.")
+    raise UnrecognizedFileTypeError(
+    """You currently do not have the required reader installed to open this file.
+    SunPy supports reading FITS and JPEG2000 files if you have astropy or glymur
+    installed and configured correctly.""")
 
 class UnrecognizedFileTypeError(IOError):
     """Exception to raise when an unknown file type is encountered"""
