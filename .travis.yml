@@ -35,7 +35,7 @@ before_install:
 
 install:
 #Install Numpy first so we force the version we are using
-    - pip install --find-links http://sunpy.cadair.com/wheelhouse/index.html --use-wheel --upgrade numpy==$NUMPY_VERSION
+   - pip install --find-links http://sunpy.cadair.com/wheelhouse/index.html --use-wheel --upgrade numpy==$NUMPY_VERSION
 # Install the other requirements to the desired version
    - pip install --find-links http://sunpy.cadair.com/wheelhouse/index.html --use-wheel --upgrade matplotlib==$MATPLOTLIB_VERSION
    - pip install --find-links http://sunpy.cadair.com/wheelhouse/index.html --use-wheel --upgrade scipy
