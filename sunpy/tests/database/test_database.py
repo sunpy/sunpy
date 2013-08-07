@@ -1,5 +1,7 @@
 from __future__ import absolute_import
 
+from datetime import datetime
+
 import pytest
 
 from sunpy.database import Database, EntryAlreadyAddedError,\
@@ -9,6 +11,7 @@ from sunpy.database.tables import DatabaseEntry, Tag
 from sunpy.database.commands import NoSuchEntryError
 from sunpy.database.caching import LRUCache, LFUCache
 from sunpy.database import attrs
+from sunpy.net import vso
 
 
 @pytest.fixture
@@ -35,6 +38,13 @@ def database():
     d = Database('sqlite:///:memory:')
     d.create_tables()
     return d
+
+
+@pytest.fixture
+def query_result():
+    return vso.VSOClient().query(
+        vso.attrs.Time('20130801T200000', '20130801T200030'),
+        vso.attrs.Instrument('PLASTIC'))
 
 
 @pytest.fixture
@@ -266,6 +276,47 @@ def test_add_already_existing_entry_ignore(database):
     database.add(entry, True)
     database.commit()
     assert entry.id == 1
+
+
+def test_add_entry_from_qr(database, query_result):
+    assert len(database) == 0
+    database.add_from_vso_query_result(query_result)
+    assert len(database) == 4
+    expected_entries = [
+        DatabaseEntry(
+            id=1, source="STEREO_A", provider="SSC",
+            fileid="plastic/level1/ahead/2013/STA_L1_PLA_20130801_213",
+            observation_time_start=datetime(2013, 8, 1, 0, 0, 0),
+            observation_time_end=datetime(2013, 8, 2, 0, 0, 0),
+            instrument="PLASTIC", size=166.362, waveunit="keV", wavemin=0.2,
+            wavemax=100),
+        DatabaseEntry(
+            id=2, source="STEREO_A", provider="SSC",
+            fileid="plastic/level1/ahead/2013/STA_L1_PLA_SC_20130801_213",
+            observation_time_start=datetime(2013, 8, 1, 0, 0, 0),
+            observation_time_end=datetime(2013, 8, 2, 0, 0, 0),
+            instrument="PLASTIC", size=21.167, waveunit="keV", wavemin=0.2,
+            wavemax=100),
+        DatabaseEntry(
+            id=3, source="STEREO_B", provider="SSC",
+            fileid="plastic/level1/behind/2013/STB_L1_PLA_20130801_213",
+            observation_time_start=datetime(2013, 8, 1, 0, 0, 0),
+            observation_time_end=datetime(2013, 8, 2, 0, 0, 0),
+            instrument="PLASTIC", size=13164.4, waveunit="keV", wavemin=0.2,
+            wavemax=100),
+        DatabaseEntry(
+            id=4, source="STEREO_B", provider="SSC",
+            fileid="plastic/level1/behind/2013/STB_L1_PLA_SC_20130801_213",
+            observation_time_start=datetime(2013, 8, 1, 0, 0, 0),
+            observation_time_end=datetime(2013, 8, 2, 0, 0, 0),
+            instrument="PLASTIC", size=77.9795, waveunit="keV", wavemin=0.2,
+            wavemax=100)]
+    assert list(database) == expected_entries
+    database.undo()
+    assert len(database) == 0
+    database.redo()
+    assert len(database) == 4
+    assert list(database) == expected_entries
 
 
 def test_edit_entry(database):

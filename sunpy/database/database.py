@@ -408,6 +408,22 @@ class Database(object):
         else:
             self._cache[database_entry.id] = database_entry
 
+    def add_from_vso_query_result(self, query_result, ignore_already_added=False):
+        """Generate database entries from a VSO query result and add all the
+        generated entries to this database.
+
+        """
+        cmds = []
+        for database_entry in tables.entries_from_query_result(query_result):
+            if database_entry in self and not ignore_already_added:
+                raise EntryAlreadyAddedError(database_entry)
+            cmds.append(commands.AddEntry(self.session, database_entry))
+            if database_entry.id is None:
+                self._cache.append(database_entry)
+            else:
+                self._cache[database_entry.id] = database_entry
+        self._command_manager.do(cmds)
+
     def edit(self, database_entry, **kwargs):
         """Change the given database entry so that it interprets the passed
         key-value pairs as new values where the keys represent the attributes
