@@ -214,7 +214,13 @@ class Database(object):
 
     def set_cache_size(self, cache_size):
         """Set a new value for the maxiumum number of database entries in the
-        cache. Use the value ``float('inf')`` to disable caching.
+        cache. Use the value ``float('inf')`` to disable caching. If the new
+        cache is smaller than the previous one and cannot contain all the
+        entries anymore, entries are removed from the cache until the number of
+        entries equals the cache size. Which entries are removed depends on the
+        implementation of the cache (e.g.
+        :class:`sunpy.database.caching.LRUCache`,
+        :class:`sunpy.database.caching.LFUCache`).
 
         """
         self._cache.maxsize = cache_size
