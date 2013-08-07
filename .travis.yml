@@ -44,7 +44,9 @@ install:
    - pip install --find-links http://sunpy.cadair.com/wheelhouse/index.html --use-wheel --upgrade python-dateutil
    - pip install --find-links http://sunpy.cadair.com/wheelhouse/index.html --use-wheel --upgrade --no-deps pandas==$PANDAS_VERSION
    - pip install --find-links http://sunpy.cadair.com/wheelhouse/index.html --use-wheel --upgrade astropy
-   - pip install -q pytest $SUDS_PKG beautifulsoup4
+   - pip install --find-links http://sunpy.cadair.com/wheelhouse/index.html --use-wheel --upgrade pytest 
+   - pip install --find-links http://sunpy.cadair.com/wheelhouse/index.html --use-wheel --upgrade $SUDS_PKG 
+   - pip install --find-links http://sunpy.cadair.com/wheelhouse/index.html --use-wheel --upgrade beautifulsoup4
 
 # command to run tests
 script:
