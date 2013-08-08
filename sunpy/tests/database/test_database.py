@@ -194,10 +194,6 @@ def test_tag_duplicate(database):
         database.tag(entry, 'tag')
 
 
-# the following test raises a sqlalchemy.exc.IntegrityError exception because
-# the uniqueness of the tag names can only be checked if the according entries
-# are already saved in the database (otherwise the tags have no IDs)
-@pytest.mark.xfail
 def test_tag_duplicates_before_adding(database):
     entry1 = DatabaseEntry()
     entry2 = DatabaseEntry()
@@ -205,7 +201,8 @@ def test_tag_duplicates_before_adding(database):
     database.tag(entry2, 'tag')
     database.add(entry1)
     database.add(entry2)
-    database.commit()
+    with pytest.raises(sqlalchemy.orm.exc.FlushError):
+        database.commit()
 
 
 def remove_nonexisting_tag(database):
