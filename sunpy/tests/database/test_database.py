@@ -75,6 +75,16 @@ def test_fits_header_entry_unique_key(database):
         database.commit()
 
 
+def test_tags_unique(database):
+    entry = DatabaseEntry()
+    entry.tags = [Tag('foo')]
+    database.add(entry)
+    database.commit()
+    entry.tags.append(Tag('foo'))
+    with pytest.raises(sqlalchemy.orm.exc.FlushError):
+        database.commit()
+
+
 def test_setting_cache_size(database_using_lrucache):
     assert database_using_lrucache.cache_size == 3
     for _ in xrange(5):
