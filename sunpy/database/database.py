@@ -78,6 +78,20 @@ class NoSuchTagError(Exception):
         return 'the tag %r is not saved in the database' % self.tag_name
 
 
+class TagAlreadyAssignedError(Exception):
+    """This exception is raised if it is attempted to assign a tag to a
+    database entry but the database entry already has this tag assigned.
+
+    """
+    def __init__(self, database_entry, tag_name):
+        self.database_entry = database_entry
+        self.tag_name = tag_name
+
+    def __str__(self):  # pragma: no cover
+        return 'the database entry %r has already assigned the tag %r' % (
+            self.database_entry, self.tag_name)
+
+
 class Database(object):
     """
     Database(url[, CacheClass[, cache_size]])
@@ -335,8 +349,16 @@ class Database(object):
         raise NoSuchTagError(tag_name)
 
     def tag(self, database_entry, *tags):
-        """Assign the given database entry the given tags. If no tags are
-        given, TypeError is raised.
+        """Assign the given database entry the given tags.
+
+        Raises
+        ------
+        TypeError
+            If no tags are given.
+
+        :exc:`sunpy.database.TagAlreadyAssignedError`
+            If at least one of the given tags is already assigned to the given
+            database entry.
 
         """
         if not tags:
@@ -346,6 +368,8 @@ class Database(object):
         for tag_name in tag_names:
             try:
                 tag = self.get_tag(tag_name)
+                if tag in database_entry.tags:
+                    raise TagAlreadyAssignedError(database_entry, tag_names)
             except NoSuchTagError:
                 # tag does not exist yet -> create it
                 database_entry.tags.append(tables.Tag(tag_name))
