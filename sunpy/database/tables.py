@@ -61,14 +61,13 @@ class FitsHeaderEntry(Base):
 class Tag(Base):
     __tablename__ = 'tags'
 
-    id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False, unique=True)
+    name = Column(String, nullable=False, primary_key=True)
 
     def __init__(self, name):
         self.name = name
 
     def __eq__(self, other):
-        return self.id == other.id and self.name == other.name
+        return self.name == other.name
 
     def __ne__(self, other):
         return not (self == other)
@@ -77,8 +76,7 @@ class Tag(Base):
         return self.name
 
     def __repr__(self):  # pragma: no cover
-        return '<%s(id %s, name %r)>' % (
-            self.__class__.__name__, self.id, self.name)
+        return '<%s(name %r)>' % (self.__class__.__name__, self.name)
 
 
 class DatabaseEntry(Base):
