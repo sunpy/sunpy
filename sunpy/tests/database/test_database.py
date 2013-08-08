@@ -151,7 +151,6 @@ def test_get_existing_tag(database):
     entry = DatabaseEntry()
     database.tag(entry, 'tag')
     database.add(entry)
-    # dirty trick:
     expected_tag = Tag('tag')
     expected_tag.id = 1
     assert database.get_tag('tag') == expected_tag
