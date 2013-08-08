@@ -7,7 +7,7 @@ import sqlalchemy
 
 from sunpy.database import Database, EntryAlreadyAddedError,\
     EntryAlreadyStarredError, EntryAlreadyUnstarredError, NoSuchTagError,\
-    EntryNotFoundError
+    EntryNotFoundError, TagAlreadyAssignedError
 from sunpy.database.tables import DatabaseEntry, FitsHeaderEntry, Tag
 from sunpy.database.commands import NoSuchEntryError
 from sunpy.database.caching import LRUCache, LFUCache
@@ -183,6 +183,15 @@ def test_tag_existing_tag(database):
     database.tag(entry1, 'tag')
     database.tag(entry2, 'tag')
     assert entry1.tags == entry2.tags
+
+
+def test_tag_duplicate(database):
+    entry = DatabaseEntry()
+    database.add(entry)
+    database.tag(entry, 'tag')
+    database.commit()
+    with pytest.raises(TagAlreadyAssignedError):
+        database.tag(entry, 'tag')
 
 
 # the following test raises a sqlalchemy.exc.IntegrityError exception because
