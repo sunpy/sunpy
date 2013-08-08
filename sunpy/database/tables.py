@@ -116,9 +116,6 @@ class DatabaseEntry(Base):
         The instrument which was used to observe the data.
     size : float
         The size of the data in kilobytes.
-    mission : string
-        The name of the mission. Currently, this attribute is not set
-        automatically by any method.
     waveunit : string
         The wave unit which has been used to measure the data (e.g. 'Angstrom')
     wavemin : float
@@ -154,7 +151,6 @@ class DatabaseEntry(Base):
     observation_time_end = Column(DateTime)
     instrument = Column(String)
     size = Column(Float)
-    mission = Column(String)  # FIXME: does this info really exist?!
     waveunit = Column(String)
     wavemin = Column(Float)
     wavemax = Column(Float)
@@ -281,7 +277,6 @@ class DatabaseEntry(Base):
             self.observation_time_end == other.observation_time_end and
             self.instrument == other.instrument and
             self.size == other.size and
-            self.mission == other.mission and
             self.waveunit == other.waveunit and
             self.wavemin == other.wavemin and
             self.wavemax == other.wavemax and
