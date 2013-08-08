@@ -37,9 +37,8 @@ def timestamp2datetime(format, string):
 class FitsHeaderEntry(Base):
     __tablename__ = 'fitsheaderentries'
 
-    id = Column(Integer, primary_key=True)
     dbentry_id = Column(Integer, ForeignKey('data.id'))
-    key = Column(String, nullable=False)
+    key = Column(String, nullable=False, primary_key=True)
     value = Column(String, nullable=False)
 
     def __init__(self, key, value):
@@ -48,7 +47,6 @@ class FitsHeaderEntry(Base):
 
     def __eq__(self, other):
         return (
-            self.id == other.id and
             self.key == other.key and
             self.value == other.value)
 
@@ -56,8 +54,8 @@ class FitsHeaderEntry(Base):
         return not (self == other)
 
     def __repr__(self):  # pragma: no cover
-        return '<%s(id %s, key %r, value %r)>' % (
-            self.__class__.__name__, self.id, self.key, self.value)
+        return '<%s(key %r, value %r)>' % (
+            self.__class__.__name__, self.key, self.value)
 
 
 class Tag(Base):
