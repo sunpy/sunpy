@@ -3,11 +3,12 @@ from __future__ import absolute_import
 from datetime import datetime
 
 import pytest
+import sqlalchemy
 
 from sunpy.database import Database, EntryAlreadyAddedError,\
     EntryAlreadyStarredError, EntryAlreadyUnstarredError, NoSuchTagError,\
     EntryNotFoundError
-from sunpy.database.tables import DatabaseEntry, Tag
+from sunpy.database.tables import DatabaseEntry, FitsHeaderEntry, Tag
 from sunpy.database.commands import NoSuchEntryError
 from sunpy.database.caching import LRUCache, LFUCache
 from sunpy.database import attrs
@@ -62,6 +63,16 @@ def filled_database():
             database.tag(entry, 'bar')
     database.commit()
     return database
+
+
+def test_fits_header_entry_unique_key(database):
+    entry = DatabaseEntry()
+    entry.fits_header_entries = [FitsHeaderEntry('k', 'v')]
+    database.add(entry)
+    database.commit()
+    entry.fits_header_entries.append(FitsHeaderEntry('k', 'v2'))
+    with pytest.raises(sqlalchemy.orm.exc.FlushError):
+        database.commit()
 
 
 def test_setting_cache_size(database_using_lrucache):
