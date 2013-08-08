@@ -270,7 +270,7 @@ class DatabaseEntry(Base):
 
     def __eq__(self, other):
         return (
-            self.id == other.id and
+            (self.id == other.id or self.id is None or other.id is None) and
             self.source == other.source and
             self.provider == other.provider and
             self.physobs == other.physobs and
