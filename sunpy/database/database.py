@@ -415,13 +415,13 @@ class Database(object):
         """
         cmds = []
         for database_entry in tables.entries_from_query_result(query_result):
-            if database_entry in self and not ignore_already_added:
+            # use list(self) instead of simply self because __contains__ checks
+            # for existence in the database and not only all attributes except
+            # ID.
+            if database_entry in list(self) and not ignore_already_added:
                 raise EntryAlreadyAddedError(database_entry)
             cmds.append(commands.AddEntry(self.session, database_entry))
-            if database_entry.id is None:
-                self._cache.append(database_entry)
-            else:
-                self._cache[database_entry.id] = database_entry
+            self._cache.append(database_entry)
         self._command_manager.do(cmds)
 
     def edit(self, database_entry, **kwargs):
