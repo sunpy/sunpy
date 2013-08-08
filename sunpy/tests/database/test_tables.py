@@ -194,12 +194,12 @@ CORRECTED DATE_OBS = '2004-03-01T01:58:31.604Z'  COMMANDED EXPOSURE TIME =   10.
 
 def test_entries_from_path_recursively_true():
     entries = list(entries_from_path(testdir, True))
-    assert len(entries) == 15
+    assert len(entries) == 18
 
 
 def test_entries_from_path_recursively_false():
     entries = list(entries_from_path(testdir, False))
-    assert len(entries) == 2
+    assert len(entries) == 5
 
 
 @pytest.mark.slow

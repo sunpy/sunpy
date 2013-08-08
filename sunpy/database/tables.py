@@ -13,6 +13,7 @@ from sqlalchemy.ext.declarative import declarative_base
 
 from sunpy.time import parse_time
 from sunpy.io import fits
+from sunpy.io import file_tools as sunpy_filetools
 from sunpy.util import print_table
 
 __all__ = [
@@ -315,9 +316,12 @@ def entries_from_query_result(qr):
     return (DatabaseEntry.from_query_result_block(block) for block in qr)
 
 
-def entries_from_path(fitsdir, recursive=False, pattern='*.fits'):
+def entries_from_path(fitsdir, recursive=False, pattern='*'):
     """Search the given directory for FITS files and use the corresponding FITS
-    headers to generate instances of :class:`DatabaseEntry`.
+    headers to generate instances of :class:`DatabaseEntry`. FITS files are
+    detected by reading the content of each file, the `pattern` argument may be
+    used to avoid reading entire directories if one knows that all FITS files have
+    the same filename extension.
 
     Parameters
     ----------
@@ -331,10 +335,10 @@ def entries_from_path(fitsdir, recursive=False, pattern='*.fits'):
         recursively.
 
     pattern : string, optional
-        The pattern defines how FITS files are detected. The default is to
-        collect all files with the filename extension `.fits`. This value is
-        passed to the function :func:`fnmatch.filter`, see its documentation
-        for more information on the supported syntax.
+        The pattern can be used to filter the list of filenames before the
+        files are attempted to be read. The default is to collect all files.
+        This value is passed to the function :func:`fnmatch.filter`, see its
+        documentation for more information on the supported syntax.
 
     Returns
     -------
@@ -368,7 +372,14 @@ def entries_from_path(fitsdir, recursive=False, pattern='*.fits'):
     for dirpath, dirnames, filenames in os.walk(fitsdir):
         filename_paths = (os.path.join(dirpath, name) for name in filenames)
         for path in fnmatch.filter(filename_paths, pattern):
-            yield DatabaseEntry.from_fits_filepath(path), path
+            try:
+                filetype = sunpy_filetools._detect_filetype(path)
+            except (
+                    sunpy_filetools.UnrecognizedFileTypeError,
+                    sunpy_filetools.InvalidJPEG2000FileExtension):
+                continue
+            if filetype == fits:
+                yield DatabaseEntry.from_fits_filepath(path), path
         if not recursive:
             break
 
