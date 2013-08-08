@@ -253,8 +253,10 @@ class DatabaseEntry(Base):
         """
         # FIXME: store a list of headers and not only the first one!
         header = fits.get_header(fits_filepath)[0]
-        self.fits_header_entries.extend(
-            FitsHeaderEntry(key, value) for key, value in header.iteritems())
+        for key, value in header.iteritems():
+            if key == 'KEYCOMMENTS':
+                value = str(value)
+            self.fits_header_entries.append(FitsHeaderEntry(key, value))
         for header_entry in self.fits_header_entries:
             key, value = header_entry.key, header_entry.value
             if key == 'INSTRUME':

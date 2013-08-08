@@ -89,7 +89,8 @@ def test_add_fits_header_entries_from_file():
     entry = DatabaseEntry()
     assert entry.fits_header_entries == []
     entry.add_fits_header_entries_from_file(sunpy.RHESSI_EVENT_LIST)
-    assert entry.fits_header_entries == [
+    assert len(entry.fits_header_entries) == 20
+    expected_fits_header_entries = [
         FitsHeaderEntry('SIMPLE', True),
         FitsHeaderEntry('BITPIX', 8),
         FitsHeaderEntry('NAXIS', 0),
@@ -108,7 +109,25 @@ def test_add_fits_header_entries_from_file():
         FitsHeaderEntry('TIMESYS', '1979-01-01T00:00:00'),
         FitsHeaderEntry('TIMEUNIT', 'd'),
         FitsHeaderEntry('COMMENT', ''),
+        FitsHeaderEntry('KEYCOMMENTS', '''  SIMPLE  Written by IDL:  Tue Sep 13 15:37:38 2011
+  BITPIX  
+   NAXIS  
+  EXTEND  File contains extensions
+    DATE  File creation date (YYYY-MM-DDThh:mm:ss UTC)
+  ORIGIN  High Energy Solar Spectroscopic Imager
+OBSERVER  Usually the name of the user who generated file
+TELESCOP  Name of the Telescope or Mission
+INSTRUME  Name of the instrument
+  OBJECT  Object being observed
+DATE_OBS  nominal U.T. date when integration of this
+DATE_END  nominal U.T. date when integration of this
+TIME_UNI  
+ENERGY_L  
+ENERGY_H  
+ TIMESYS  Reference time in YYYY MM DD hh:mm:ss
+TIMEUNIT  Unit for TIMEZERO, TSTARTI and TSTOPI'''),
         FitsHeaderEntry('HISTORY', '')]
+    assert entry.fits_header_entries == expected_fits_header_entries
     assert entry.instrument == 'RHESSI'
     assert entry.observation_time_start == datetime(2002, 02, 20, 11, 6, 0, 0)
     assert entry.observation_time_end == datetime(2002, 02, 20, 11, 6, 43, 330000)
@@ -130,6 +149,7 @@ def test_entries_from_path():
     first_entry, filename = entries[0]
     assert filename.startswith(os.path.join(testdir, 'EIT'))
     assert filename.endswith('.fits')
+    assert len(first_entry.fits_header_entries) == 47
     assert first_entry.fits_header_entries == [
         FitsHeaderEntry('SIMPLE', True),
         FitsHeaderEntry('BITPIX', -64),
@@ -189,6 +209,21 @@ CORRECTED DATE_OBS = '2004-03-01T01:58:31.604Z'  COMMANDED EXPOSURE TIME =   10.
         FitsHeaderEntry('HEC_Z', -94896.31),
         FitsHeaderEntry('EXPTIME', 12.598),
         FitsHeaderEntry('SCI_OBJ', 'CME WATCH 195'),
+        FitsHeaderEntry('KEYCOMMENTS',
+            '  SIMPLE  conforms to FITS standard\n'
+            '  BITPIX  array data type\n'
+            '   NAXIS  number of array dimensions\n'
+            '  NAXIS1  \n  NAXIS2  \nDATE_OBS  \n'
+            '  CMP_NO  \nDSUN_OBS  \n SOLAR_R  \n  CDELT1  \n  CDELT2  \n'
+            '  OBJECT  \nDATE-OBS  \n  CFTEMP  \n    DATE  \n EXPMODE  \n'
+            ' COMMENT  \n COMMENT  \n COMMENT  \n COMMENT  \n COMMENT  \n'
+            ' COMMENT  \n COMMENT  \n COMMENT  \n COMMENT  \n CAR_ROT  \n'
+            'OBS_PROG  \n   SC_Y0  \nFILENAME  \nINSTRUME  \n  CTYPE2  \n'
+            '  ORIGIN  \n  CTYPE1  \n DATASRC  \nSOLAR_B0  \n CCDTEMP  \n'
+            '   SC_X0  \n   BUNIT  \nDETECTOR  \n  CRVAL2  \n  CRPIX1  \n'
+            '  CRPIX2  \n  CRVAL1  \nTIME-OBS  \nTELESCOP  \nWAVELNTH  \n'
+            '  FILTER  \n SC_ROLL  \n   HEC_X  \n   HEC_Y  \n   HEC_Z  \n'
+            ' EXPTIME  \n SCI_OBJ  '),
         FitsHeaderEntry('HISTORY', '')]
 
 
