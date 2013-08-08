@@ -319,6 +319,22 @@ def test_add_entry_from_qr(database, query_result):
     assert list(database) == expected_entries
 
 
+def test_add_entries_from_qr_duplicates(database, query_result):
+    assert len(database) == 0
+    database.add_from_vso_query_result(query_result)
+    assert len(database) == 4
+    with pytest.raises(EntryAlreadyAddedError):
+        database.add_from_vso_query_result(query_result)
+
+
+def test_add_entries_from_qr_ignore_duplicates(database, query_result):
+    assert len(database) == 0
+    database.add_from_vso_query_result(query_result)
+    assert len(database) == 4
+    database.add_from_vso_query_result(query_result, True)
+    assert len(database) == 8
+
+
 def test_edit_entry(database):
     entry = DatabaseEntry()
     database.add(entry)
