@@ -48,7 +48,7 @@ class FitsHeaderEntry(Base):
 
     def __eq__(self, other):
         return (
-            self.id == other.id and
+            (self.id == other.id or self.id is None or other.id is None) and
             self.key == other.key and
             self.value == other.value)
 
