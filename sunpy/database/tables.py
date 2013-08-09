@@ -248,7 +248,10 @@ class DatabaseEntry(Base):
         # FIXME: store a list of headers and not only the first one!
         header = fits.get_header(fits_filepath)[0]
         for key, value in header.iteritems():
-            if key == 'KEYCOMMENTS':
+            # Yes, it is possible to have an empty key in a FITS file.
+            # Example: sunpy.data.sample.EIT_195_IMAGE
+            # Don't ask me why this could be a good idea.
+            if key in ('KEYCOMMENTS', ''):
                 value = str(value)
             self.fits_header_entries.append(FitsHeaderEntry(key, value))
         for header_entry in self.fits_header_entries:
