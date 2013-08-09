@@ -65,16 +65,6 @@ def filled_database():
     return database
 
 
-def test_fits_header_entry_unique_key(database):
-    entry = DatabaseEntry()
-    entry.fits_header_entries = [FitsHeaderEntry('k', 'v')]
-    database.add(entry)
-    database.commit()
-    entry.fits_header_entries.append(FitsHeaderEntry('k', 'v2'))
-    with pytest.raises(sqlalchemy.orm.exc.FlushError):
-        database.commit()
-
-
 def test_tags_unique(database):
     entry = DatabaseEntry()
     entry.tags = [Tag('foo')]
