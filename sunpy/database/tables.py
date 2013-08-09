@@ -38,7 +38,8 @@ class FitsHeaderEntry(Base):
     __tablename__ = 'fitsheaderentries'
 
     dbentry_id = Column(Integer, ForeignKey('data.id'))
-    key = Column(String, nullable=False, primary_key=True)
+    id = Column(Integer, primary_key=True)
+    key = Column(String, nullable=False)
     value = Column(String, nullable=False)
 
     def __init__(self, key, value):
@@ -46,14 +47,17 @@ class FitsHeaderEntry(Base):
         self.value = value
 
     def __eq__(self, other):
-        return (self.key == other.key and self.value == other.value)
+        return (
+            self.id == other.id and
+            self.key == other.key and
+            self.value == other.value)
 
     def __ne__(self, other):
         return not (self == other)
 
     def __repr__(self):  # pragma: no cover
-        return '<%s(key %r, value %r)>' % (
-            self.__class__.__name__, self.key, self.value)
+        return '<%s(id %s, key %r, value %r)>' % (
+            self.__class__.__name__, self.id, self.key, self.value)
 
 
 class Tag(Base):
