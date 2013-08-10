@@ -241,11 +241,16 @@ class Database(object):
         :class:`sunpy.database.caching.LFUCache`).
 
         """
-        self._cache.maxsize = cache_size
         cmds = []
-        for entry in self[cache_size:]:
+        # remove items from the cache if the given argument is lower than the
+        # current cache size
+        while cache_size < self.cache_size:
+            # remove items from the cache until cache_size == maxsize of the
+            # cache
+            entry_id, entry = self._cache.to_be_removed
             cmds.append(commands.RemoveEntry(self.session, entry))
-            del self._cache[entry.id]
+            del self._cache[entry_id]
+        self._cache.maxsize = cache_size
         self._command_manager.do(cmds)
 
     def create_tables(self, checkfirst=True):
