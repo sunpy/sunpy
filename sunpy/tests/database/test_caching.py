@@ -20,6 +20,9 @@ def test_custom_cache():
             except IndexError:
                 return None
 
+        def remove(self):
+            del self.queue[0]
+
         def __getitem__(self, key):
             for k, value in self.queue:
                 if k == key:
@@ -48,13 +51,16 @@ def test_lru_cache():
     lrucache[1] = 'a'
     lrucache[2] = 'b'
     lrucache[3] = 'c'
+    assert lrucache.to_be_removed == (1, 'a')
     lrucache[1]
     lrucache[3]
+    assert lrucache.to_be_removed == (2, 'b')
     lrucache[4] = 'd'
     assert len(lrucache) == 3
     assert lrucache[1] == 'a'
     assert lrucache[3] == 'c'
     assert lrucache[4] == 'd'
+    assert lrucache.to_be_removed == (1, 'a')
     #assert lrucache.items() == [(3, 'c'), (1, 'a'), (4, 'd')]
 
 
