@@ -21,6 +21,7 @@ from __future__ import absolute_import
 from sunpy.database.database import Database, EntryAlreadyAddedError,\
     EntryAlreadyStarredError, EntryAlreadyUnstarredError, NoSuchTagError,\
     EntryNotFoundError, TagAlreadyAssignedError
+from sunpy.database.tables import display_entries
 from sunpy.database.commands import NoSuchEntryError
 
 __all__ = [
