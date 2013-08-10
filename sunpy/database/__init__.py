@@ -14,6 +14,7 @@ The database package exports the following classes, functions and exceptions:
         - EntryAlreadyUnstarredError
         - EntryNotFoundError
         - TagAlreadyAssignedError
+        - NoSuchTagError
 """
 from __future__ import absolute_import
 
