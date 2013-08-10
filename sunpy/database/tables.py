@@ -16,9 +16,7 @@ from sunpy.io import fits
 from sunpy.io import file_tools as sunpy_filetools
 from sunpy.util import print_table
 
-__all__ = [
-    'FitsHeaderEntry', 'Tag', 'DatabaseEntry',
-    'entries_from_path', 'display_entries']
+__all__ = ['FitsHeaderEntry', 'Tag', 'DatabaseEntry', 'display_entries']
 
 Base = declarative_base()
 

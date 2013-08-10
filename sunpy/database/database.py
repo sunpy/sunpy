@@ -448,6 +448,45 @@ class Database(object):
             self._cache.append(database_entry)
         self._command_manager.do(cmds)
 
+    def add_from_path(self, path, recursive=False, pattern='*',
+            ignore_already_added=False):
+        """Search the given directory for FITS files and use their FITS headers
+        to add new entries to the database. Note that one entry in the database
+        is assined to a list of FITS headers, so not the number of FITS headers
+        but the number of FITS files which have been read determine the number
+        of database entries that will be added. FITS files are detected by reading
+        the content of each file, the `pattern` argument may be used to avoid
+        reading entire directories if one knows that all FITS files have the
+        same filename extension.
+
+        Parameters
+        ----------
+        path : string
+            The directory where to look for FITS files.
+
+        recursive : bool, optional
+            If True, the given directory will be searched recursively. Otherwise,
+            only the given directory and no subdirectories are searched. The
+            default is `False`, i.e. the given directory is not searched
+            recursively.
+
+        pattern : string, optional
+            The pattern can be used to filter the list of filenames before the
+            files are attempted to be read. The default is to collect all files.
+            This value is passed to the function :func:`fnmatch.filter`, see its
+            documentation for more information on the supported syntax.
+        """
+        cmds = []
+        entries = []
+        for database_entry, filepath in tables.entries_from_path(path,
+                recursive, pattern):
+            if database_entry in list(self) and not ignore_already_added:
+                raise EntryAlreadyAddedError(database_entry)
+            entries.append(database_entry)
+            cmds.append(commands.AddEntry(self.session, database_entry))
+            self._cache.append(database_entry)
+        self._command_manager.do(cmds)
+
     def edit(self, database_entry, **kwargs):
         """Change the given database entry so that it interprets the passed
         key-value pairs as new values where the keys represent the attributes
