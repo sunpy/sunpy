@@ -77,33 +77,48 @@ def test_tags_unique(database):
 
 
 def test_setting_cache_size(database_using_lrucache):
-    assert database_using_lrucache.cache_size == 3
+    assert database_using_lrucache.cache_maxsize == 3
+    assert database_using_lrucache.cache_size == 0
     for _ in xrange(5):
         database_using_lrucache.add(DatabaseEntry())
     assert len(database_using_lrucache) == 3
+    assert database_using_lrucache.cache_size == 3
+    assert database_using_lrucache.cache_maxsize == 3
     database_using_lrucache.set_cache_size(5)
-    assert database_using_lrucache.cache_size == 5
+    assert database_using_lrucache.cache_size == 3
+    assert database_using_lrucache.cache_maxsize == 5
     for _ in xrange(5):
         database_using_lrucache.add(DatabaseEntry())
     assert len(database_using_lrucache) == 5
+    assert database_using_lrucache.cache_size == 5
+    assert database_using_lrucache.cache_maxsize == 5
 
 
 def test_setting_cache_size_shrinking(database_using_lrucache):
-    assert database_using_lrucache.cache_size == 3
+    assert database_using_lrucache.cache_maxsize == 3
+    assert database_using_lrucache.cache_size == 0
     for _ in xrange(5):
         database_using_lrucache.add(DatabaseEntry())
     assert len(database_using_lrucache) == 3
+    assert database_using_lrucache.cache_maxsize == 3
+    assert database_using_lrucache.cache_size == 3
     database_using_lrucache.set_cache_size(2)
+    assert database_using_lrucache.cache_maxsize == 2
     assert database_using_lrucache.cache_size == 2
     assert len(database_using_lrucache) == 2
-    assert database_using_lrucache._cache.maxsize == 2
+    assert list(database_using_lrucache) == [
+        DatabaseEntry(id=4),
+        DatabaseEntry(id=5)]
     for _ in xrange(5):
         database_using_lrucache.add(DatabaseEntry())
     assert len(database_using_lrucache) == 2
+    assert database_using_lrucache.cache_maxsize == 2
+    assert database_using_lrucache.cache_size == 2
 
 
 def test_setting_cache_size_undo(database_using_lrucache):
-    assert database_using_lrucache.cache_size == 3
+    assert database_using_lrucache.cache_maxsize == 3
+    assert database_using_lrucache.cache_size == 0
     for _ in xrange(5):
         database_using_lrucache.add(DatabaseEntry())
     assert len(database_using_lrucache) == 3
