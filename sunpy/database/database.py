@@ -257,10 +257,6 @@ class Database(object):
         """Flush pending changes and commit the current transaction. This is a
         shortcut for :meth:`session.commit()`.
 
-        See Also
-        --------
-        :meth:`sqlalchemy.orm.session.Session.commit
-
         """
         self.session.commit()
 
