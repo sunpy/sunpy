@@ -223,7 +223,7 @@ class Database(object):
         self._cache = Cache(cache_size)
 
     @property
-    def cache_size
+    def cache_size(self):
         return len(self._cache)
 
     @property
