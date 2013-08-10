@@ -13,6 +13,13 @@ def test_custom_cache():
             self.queue = deque([], maxsize)
             BaseCache.__init__(self, maxsize)
 
+        @property
+        def to_be_removed(self):
+            try:
+                return self.queue[0]
+            except IndexError:
+                return None
+
         def __getitem__(self, key):
             for k, value in self.queue:
                 if k == key:
@@ -28,6 +35,7 @@ def test_custom_cache():
     cache[1] = 'a'
     cache[2] = 'b'
     cache[3] = 'c'
+    assert cache.to_be_removed == (1, 'a')
     cache[4] = 'd'
     assert len(cache) == 3
     assert cache[2] == 'b'
@@ -60,9 +68,12 @@ def test_lfu_cache():
     lfucache[1] = 'a'
     lfucache[2] = 'b'
     lfucache[3] = 'c'
+    assert lfucache.to_be_removed == (1, 'a')
     lfucache[1]
     lfucache[2]
+    assert lfucache.to_be_removed == (3, 'c')
     lfucache[4] = 'd'
+    assert lfucache.to_be_removed == (4, 'd')
     assert len(lfucache) == 3
     assert lfucache[1] == 'a'
     assert lfucache[2] == 'b'

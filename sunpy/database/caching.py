@@ -1,6 +1,6 @@
 from __future__ import absolute_import
 
-from abc import ABCMeta, abstractmethod
+from abc import ABCMeta, abstractmethod, abstractproperty
 from collections import OrderedDict, Counter
 
 __all__ = ['BaseCache', 'LRUCache', 'LFUCache']
@@ -17,6 +17,8 @@ class BaseCache(OrderedDict):
 
     Methods
     -------
+    get
+    remove
     callback
 
     """
@@ -26,12 +28,28 @@ class BaseCache(OrderedDict):
         self.maxsize = maxsize
         OrderedDict.__init__(self)
 
+    def get(self, key, default=None):
+        """Return the corresponding value to `key` if `key` is in the cache,
+        `default` otherwise. This method has no side-effects, multiple calls
+        with the same cache and the same passed key must always return the same
+        value.
+
+        """
+        try:
+            return OrderedDict.__getitem__(self, key)
+        except KeyError:
+            return default
+
     @abstractmethod
     def __getitem__(self, key):
         return  # pragma: no cover
 
     @abstractmethod
     def __setitem__(self, key, value):
+        return  # pragma: no cover
+
+    @abstractproperty
+    def to_be_removed(self):
         return  # pragma: no cover
 
     @abstractmethod
@@ -81,21 +99,22 @@ class LFUCache(BaseCache):
         self.usage_counter = Counter()
         BaseCache.__init__(self, maxsize)
 
-    def remove(self):
-        """Remove the least frequently used item."""
-        lfu_key = self._get_lfu_key()
-        val = self[lfu_key]
-        del self[lfu_key]
-        del self.usage_counter[lfu_key]
-        self.callback(lfu_key, val)
-
-    def _get_lfu_key(self):
+    @property
+    def to_be_removed(self):
         min_ = float('inf')
+        lfu_key = None
         for k, v in self.usage_counter.iteritems():
             if v < min_:
                 min_ = v
-                key = k
-        return key
+                lfu_key = k
+        return lfu_key, self.get(lfu_key)
+
+    def remove(self):
+        """Remove the least frequently used item."""
+        lfu_key, val = self.to_be_removed
+        del self[lfu_key]
+        del self.usage_counter[lfu_key]
+        self.callback(lfu_key, val)
 
     def __getitem__(self, key):
         value = OrderedDict.__getitem__(self, key)
