@@ -6,8 +6,8 @@ from collections import OrderedDict, Counter
 __all__ = ['BaseCache', 'LRUCache', 'LFUCache']
 
 
-class BaseCache(OrderedDict):
-    """BaseCache is a class that inherits from OrderedDict. It has a
+class BaseCache(object):
+    """BaseCache is a class that saves and operates on an OrderedDict. It has a
     certain capacity, stored in the attribute :attr:`maxsize`. Whether this
     capacity is reached, can be checked by using the boolean property
     :attr:`is_full`. To implement a custom cache, inherit from this class and
@@ -26,7 +26,7 @@ class BaseCache(OrderedDict):
 
     def __init__(self, maxsize=float('inf')):
         self.maxsize = maxsize
-        OrderedDict.__init__(self)
+        self.dict = OrderedDict()
 
     def get(self, key, default=None):
         """Return the corresponding value to `key` if `key` is in the cache,
@@ -36,7 +36,7 @@ class BaseCache(OrderedDict):
 
         """
         try:
-            return OrderedDict.__getitem__(self, key)
+            return self.dict[key]
         except KeyError:
             return default
 
@@ -70,19 +70,103 @@ class BaseCache(OrderedDict):
 
     @property
     def is_full(self):
-        return len(self) == self.maxsize
+        return len(self.dict) == self.maxsize
+
+    def __delitem__(self, key):
+        self.dict.__delitem__(key)
+
+    def __contains__(self, key):
+        return key in self.dict.keys()
+
+    def __len__(self):
+        return len(self.keys())
+
+    def __iter__(self):
+        for key in self.dict.__iter__():
+            yield key
+
+    def __reversed__(self):
+        for key in self.dict.__reversed__():
+            yield key
+
+    def clear(self):
+        return self.dict.clear()
+
+    def keys(self):
+        return self.dict.keys()
+
+    def values(self):
+        return self.dict.values()
+
+    def items(self):
+        return self.dict.items()
+
+    def iterkeys(self):
+        return self.dict.iterkeys()
+
+    def itervalues(self):
+        for value in self.dict.itervalues():
+            yield value
+
+    def iteritems(self):
+        for key, value in self.dict.iteritems():
+            yield key, value
+
+    def update(self, *args, **kwds):
+        self.dict.update(*args, **kwds)
+
+    def pop(self, key, defaukt=OrderedDict._OrderedDict__marker):
+        return self.dict.pop(key, default)
+
+    def setdefault(self, key, default=None):
+        return self.dict.setdefault(key, default)
+
+    def popitem(self, last=True):
+        return self.dict.popitem(last)
+
+    def __reduce__(self):
+        return self.dict.__reduce__()
+
+    def copy(self):
+        return self.dict.copy()
+
+    def __eq__(self, other):
+        if isinstance(other, (self.__class__, OrderedDict)):
+            return dict.__eq__(self, other) and all(_imap(_eq, self, other))
+        return dict.__eq__(self, other)
+
+    def __ne__(self, other):
+        return self.dict.__ne__(other)
+
+    def viewkeys(self):
+        return self.dict.viewkeys()
+
+    def viewvalues(self):
+        return self.dict.viewvalues()
+
+    def viewitems(self):
+        return self.dict.viewitems()
+
+    @classmethod
+    def fromkeys(cls, iterable, value=None):
+        return self.dict.__class__.fromkeys(iterable, value)
 
 
 class LRUCache(BaseCache):
+    @property
+    def to_be_removed(self):
+        return self.iteritems().next()
+
     def remove(self):
         """Remove the least recently used item."""
         self.callback(*self.popitem(last=False))
 
     def __getitem__(self, key):
+        print self.keys()
         if key in self:
-            value = OrderedDict.__getitem__(self, key)
+            value = self.dict.__getitem__(key)
             del self[key]
-            OrderedDict.__setitem__(self, key, value)
+            self.dict.__setitem__(key, value)
             return value
         raise KeyError
 
@@ -91,7 +175,7 @@ class LRUCache(BaseCache):
             del self[key]
         if self.is_full:
             self.remove()
-        OrderedDict.__setitem__(self, key, value)
+        self.dict.__setitem__(key, value)
 
 
 class LFUCache(BaseCache):
@@ -117,7 +201,7 @@ class LFUCache(BaseCache):
         self.callback(lfu_key, val)
 
     def __getitem__(self, key):
-        value = OrderedDict.__getitem__(self, key)
+        value = self.dict.__getitem__(key)
         self.usage_counter[key] += 1
         return value
 
@@ -125,4 +209,4 @@ class LFUCache(BaseCache):
         self.usage_counter[key] += 1
         if self.is_full:
             self.remove()
-        OrderedDict.__setitem__(self, key, value)
+        self.dict.__setitem__(key, value)
