@@ -223,7 +223,11 @@ class Database(object):
         self._cache = Cache(cache_size)
 
     @property
-    def cache_size(self):
+    def cache_size
+        return len(self._cache)
+
+    @property
+    def cache_maxsize(self):
         return self._cache.maxsize
 
     def set_cache_size(self, cache_size):
