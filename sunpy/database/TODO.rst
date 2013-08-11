@@ -3,6 +3,9 @@ TODO
 
 Documentation
 -------------
+- document property cache_size, cache_maxsize
+
+- document commands.EmptyCommandStackError, commands.NoSuchEntryError
 
 - document the package database itself!!! → show how to use the Database
   class and the undo and redo methods
@@ -41,22 +44,37 @@ Testing
 
 Important
 ---------
-- do not save the waveunit. rather, use only nm
+- trivial: new Database.clear method to remove all entries in one run
+  (again, undo/redo should be intuitevely possible)
 
-- display_entries: support and test output of FITS header entries
+- do not save the waveunit. rather, use only nm
 
 - support the VSO attribute Time for querying the database
 
+- support multiple HDUs per database entry
+
+- support saving entries by HEK query result
+
+- __repr__ for the classes in commands module
+
+- display_entries: support and test output of FITS header entries
+
+- use new-style string formatting everywhere
+
 - adopt parameter names in Database methods to last changes in the
   documentation!!!
-
-- which table fields are unique?
 
 - check if catching the exception InvalidRequestError is really sufficient
   in AddEntry.__call__, AddEntry.undo, RemoveEntry.__call__
 
 Low priority
 ---------
+
+- Database.{__contains__, __iter__, __len__}: return values of the cache
+  instead of sending a query to the database
+  PRO: better speed performance
+  CONTRA: needs explicit "commit" calls after each database operation or
+  before each __contains__, __iter__, __len__ call
 
 - support using the progressbar for adding many entries to the database
   → Or do not support it directly. Rather, add a section in the docs "Tips
