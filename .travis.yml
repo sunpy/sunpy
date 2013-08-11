@@ -44,4 +44,4 @@ install:
 # command to run tests
 script:
   - python setup.py develop
-  - py.test
+  - py.test -vv
