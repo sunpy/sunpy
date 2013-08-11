@@ -6,7 +6,9 @@
 from __future__ import absolute_import
 
 from abc import ABCMeta, abstractmethod, abstractproperty
-from collections import OrderedDict, Counter
+
+from sunpy.util.odict import OrderedDict
+from sunpy.util.counter import Counter
 
 __all__ = ['BaseCache', 'LRUCache', 'LFUCache']
 
