@@ -9,7 +9,7 @@ import sunpy
 from sunpy.database import Database, EntryAlreadyAddedError,\
     EntryAlreadyStarredError, EntryAlreadyUnstarredError, NoSuchTagError,\
     EntryNotFoundError, TagAlreadyAssignedError
-from sunpy.database.tables import DatabaseEntry, FitsHeaderEntry, Tag
+from sunpy.database.tables import DatabaseEntry, FitsHeaderEntry, Tag, display_entries
 from sunpy.database.commands import NoSuchEntryError
 from sunpy.database.caching import LRUCache, LFUCache
 from sunpy.database import attrs
@@ -901,6 +901,21 @@ def test_remove_existing_entry(database):
 def test_remove_nonexisting_entry(database):
     with pytest.raises(NoSuchEntryError):
         database.remove(DatabaseEntry())
+
+
+def test_clear_empty_database(database):
+    database.clear()
+
+
+def test_clear_database(filled_database):
+    assert len(filled_database) == 10
+    filled_database.clear()
+    assert not filled_database
+    filled_database.undo()
+    assert len(filled_database) == 10
+    filled_database.commit()
+    filled_database.redo()
+    assert not filled_database
 
 
 def test_getitem_notfound(database):
