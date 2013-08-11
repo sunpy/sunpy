@@ -160,7 +160,6 @@ class LRUCache(BaseCache):
         self.callback(*self.popitem(last=False))
 
     def __getitem__(self, key):
-        print self.keys()
         if key in self:
             value = self.dict.__getitem__(key)
             del self[key]
