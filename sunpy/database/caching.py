@@ -6,6 +6,7 @@
 from __future__ import absolute_import
 
 from abc import ABCMeta, abstractmethod, abstractproperty
+from collections import MutableMapping
 
 from sunpy.util.odict import OrderedDict
 from sunpy.util.counter import Counter
@@ -122,7 +123,7 @@ class BaseCache(object):
     def update(self, *args, **kwds):  # pragma: no cover
         self.dict.update(*args, **kwds)
 
-    def pop(self, key, defaukt=OrderedDict._OrderedDict__marker):  # pragma: no cover
+    def pop(self, key, default=MutableMapping._MutableMapping__marker):  # pragma: no cover
         return self.dict.pop(key, default)
 
     def setdefault(self, key, default=None):  # pragma: no cover
