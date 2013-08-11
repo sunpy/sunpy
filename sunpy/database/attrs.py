@@ -3,6 +3,8 @@
 # This module was developed with funding provided by
 # the Google Summer of Code (2013).
 
+from __future__ import absolute_import
+
 from sqlalchemy import or_, and_, not_
 
 from sunpy.time import parse_time
