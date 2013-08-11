@@ -1,3 +1,8 @@
+# Author: Simon Liedtke <liedtke.simon@googlemail.com>
+#
+# This module was developed with funding provided by
+# the Google Summer of Code (2013).
+
 from sqlalchemy import or_, and_, not_
 
 from sunpy.time import parse_time
