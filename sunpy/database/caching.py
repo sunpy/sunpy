@@ -131,9 +131,7 @@ class BaseCache(object):
         return self.dict.copy()
 
     def __eq__(self, other):  # pragma: no cover
-        if isinstance(other, (self.__class__, OrderedDict)):
-            return dict.__eq__(self, other) and all(_imap(_eq, self, other))
-        return dict.__eq__(self, other)
+        return self.dict.__eq__(other)
 
     def __ne__(self, other):  # pragma: no cover
         return self.dict.__ne__(other)
