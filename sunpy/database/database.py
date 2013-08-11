@@ -546,10 +546,14 @@ class Database(object):
                 except IndexError:
                     break
                 else:
+                    self._cache[entry.id]
                     entries.append(entry)
             return entries
         for i, entry in enumerate(self):
             if i == key:
+                # "touch" the entry in the cache to intentionally cause possible
+                # side-effects
+                self._cache[entry.id]
                 return entry
         raise IndexError
 
