@@ -514,6 +514,17 @@ class Database(object):
             # doesn't even know there's a cache here
             pass
 
+    def clear(self):
+        """Remove all entries from the databse. This operation can be undone
+        using the :meth:`undo` method.
+
+        """
+        cmds = []
+        for entry in self:
+            cmds.append(commands.RemoveEntry(self.session, entry))
+            del self._cache[entry.id]
+        self._command_manager.do(cmds)
+
     def undo(self, n=1):
         """undo the last n commands.
 
