@@ -57,11 +57,8 @@ def test_lru_cache():
     assert lrucache.to_be_removed == (2, 'b')
     lrucache[4] = 'd'
     assert len(lrucache) == 3
-    assert lrucache[1] == 'a'
-    assert lrucache[3] == 'c'
-    assert lrucache[4] == 'd'
     assert lrucache.to_be_removed == (1, 'a')
-    #assert lrucache.items() == [(3, 'c'), (1, 'a'), (4, 'd')]
+    assert lrucache == {1: 'a', 3: 'c', 4: 'd'}
 
 
 def test_lru_cache_missing_item():
@@ -79,9 +76,6 @@ def test_lfu_cache():
     lfucache[2]
     assert lfucache.to_be_removed == (3, 'c')
     lfucache[4] = 'd'
-    assert lfucache.to_be_removed == (4, 'd')
     assert len(lfucache) == 3
-    assert lfucache[1] == 'a'
-    assert lfucache[2] == 'b'
-    assert lfucache[4] == 'd'
-    #assert lrucache.items() == [(1, 'a'), (2, 'b'), (4, 'd')]
+    assert lfucache.to_be_removed == (4, 'd')
+    assert lfucache == {1: 'a', 2: 'b', 4: 'd'}
