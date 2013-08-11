@@ -44,9 +44,6 @@ Testing
 
 Important
 ---------
-- trivial: new Database.clear method to remove all entries in one run
-  (again, undo/redo should be intuitevely possible)
-
 - do not save the waveunit. rather, use only nm
 
 - support the VSO attribute Time for querying the database
