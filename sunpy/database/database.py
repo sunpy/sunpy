@@ -373,7 +373,7 @@ class Database(object):
         TypeError
             If no tags are given.
 
-        :exc:`sunpy.database.TagAlreadyAssignedError`
+        sunpy.database.TagAlreadyAssignedError
             If at least one of the given tags is already assigned to the given
             database entry.
 
