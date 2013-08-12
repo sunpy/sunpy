@@ -25,6 +25,10 @@ class EmptyCommandStackError(Exception):
 
 
 class NoSuchEntryError(Exception):
+    """This exception is raised if it is attempted to remove an entry even
+    though it does not exist in the database.
+
+    """
     def __init__(self, database_entry):
         self.database_entry = database_entry
 
