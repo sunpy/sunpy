@@ -6,6 +6,7 @@
 from __future__ import absolute_import
 
 from datetime import datetime
+from operator import attrgetter
 
 import pytest
 import sqlalchemy
@@ -378,68 +379,42 @@ def test_add_fom_path(database):
     assert len(database) == 5
     expected_entries = [
         DatabaseEntry(
-            id=1, observation_time_start=datetime(2010, 10, 16, 19, 12, 18),
-            observation_time_end=datetime(2010, 10, 16, 19, 12, 22),
+            observation_time_start=datetime(2002, 2, 20, 11, 6, 0),
+            observation_time_end=datetime(2002, 2, 20, 11, 6, 43, 330000),
             instrument='RHESSI',
             fits_header_entries=[
                 FitsHeaderEntry('SIMPLE', True),
-                FitsHeaderEntry('BITPIX', -32),
-                FitsHeaderEntry('NAXIS', 2),
-                FitsHeaderEntry('NAXIS1', 64),
-                FitsHeaderEntry('NAXIS2', 64),
+                FitsHeaderEntry('BITPIX', 8),
+                FitsHeaderEntry('NAXIS', 0),
                 FitsHeaderEntry('EXTEND', True),
-                FitsHeaderEntry('DATE', '2011-08-29T09:50:24'),
+                FitsHeaderEntry('DATE', '2011-09-13T15:37:38'),
                 FitsHeaderEntry('ORIGIN', 'RHESSI'),
-                FitsHeaderEntry('OBSERVER', 'schriste'),
+                FitsHeaderEntry('OBSERVER', 'Unknown'),
                 FitsHeaderEntry('TELESCOP', 'RHESSI'),
                 FitsHeaderEntry('INSTRUME', 'RHESSI'),
                 FitsHeaderEntry('OBJECT', 'Sun'),
-                FitsHeaderEntry('DATE_OBS', '2010-10-16T19:12:18.000'),
-                FitsHeaderEntry('DATE_END', '2010-10-16T19:12:22.000'),
+                FitsHeaderEntry('DATE_OBS', '2002-02-20T11:06:00.000'),
+                FitsHeaderEntry('DATE_END', '2002-02-20T11:06:43.330'),
                 FitsHeaderEntry('TIME_UNI', 1),
-                FitsHeaderEntry('ENERGY_L', 12.0),
-                FitsHeaderEntry('ENERGY_H', 25.0),
-                FitsHeaderEntry('TIMESYS', '1979.00'),
-                FitsHeaderEntry('TIMEUNIT', 's'),
-                FitsHeaderEntry('CRPIX1', -66.2278),
-                FitsHeaderEntry('CRPIX2', 131.958),
-                FitsHeaderEntry('CRVAL1', 0.0),
-                FitsHeaderEntry('CRVAL2', 0.0),
-                FitsHeaderEntry('CDELT1', 4.0),
-                FitsHeaderEntry('CDELT2', 4.0),
-                FitsHeaderEntry('CTYPE1', 'arcsec'),
-                FitsHeaderEntry('CTYPE2', 'arcsec'),
-                FitsHeaderEntry('XCEN', 394.911),
-                FitsHeaderEntry('YCEN', -397.831),
-                FitsHeaderEntry('CROTACN1', 0.0),
-                FitsHeaderEntry('CROTACN2', 0.0),
-                FitsHeaderEntry('CROTA', 0.0),
+                FitsHeaderEntry('ENERGY_L', 25.0),
+                FitsHeaderEntry('ENERGY_H', 40.0),
+                FitsHeaderEntry('TIMESYS', '1979-01-01T00:00:00'),
+                FitsHeaderEntry('TIMEUNIT', 'd'),
                 FitsHeaderEntry('COMMENT', ''),
-                FitsHeaderEntry('KEYCOMMENTS', ('  SIMPLE  Written by IDL:  Mo'
-                    'n Aug 29 09:50:24 2011\n  BITPIX  Real*4 (floating point)'
-                    '\n   NAXIS  \n  NAXIS1  \n  NAXIS2  \n  EXTEND  File cont'
-                    'ains extensions\n    DATE  File creation date (YYYY-MM-DD'
-                    'Thh:mm:ss UTC)\n  ORIGIN  High Energy Solar Spectroscopic'
-                    ' Imager\nOBSERVER  Usually the name of the user who gener'
-                    'ated file\nTELESCOP  Name of the Telescope or Mission\nIN'
-                    'STRUME  Name of the instrument\n  OBJECT  Object being ob'
-                    'served\nDATE_OBS  nominal U.T. date when integration of t'
-                    'his\nDATE_END  nominal U.T. date when integration of this'
-                    '\nTIME_UNI  \nENERGY_L  \nENERGY_H  \n TIMESYS  Reference'
-                    ' Time\nTIMEUNIT  Does not take leap seconds into account'
-                    '\n  CRPIX1  Reference pixel coordinates\n  CRPIX2  Refere'
-                    'nce pixel coordinates\n  CRVAL1  Reference data coordinat'
-                    'es\n  CRVAL2  Reference data coordinates\n  CDELT1  Width'
-                    ' of a pixel in data units\n  CDELT2  Height of a pixel in'
-                    ' data units\n  CTYPE1  data units for CDELT1\n  CTYPE2  d'
-                    'ata units for CDELT2\n    XCEN  Center of image rel to su'
-                    'n center ,+=W\n    YCEN  Center of image rel to sun cente'
-                    'r, +=N\nCROTACN1  X Position of Center of Rotation (arcse'
-                    'c)\nCROTACN2  Y Position of Center of Rotation (arcsec)\n'
-                    '   CROTA  Rotation Angle (clockwise from N)')),
+                FitsHeaderEntry('KEYCOMMENTS', ('  SIMPLE  Written by IDL:  Tu'
+                    'e Sep 13 15:37:38 2011\n  BITPIX  \n   NAXIS  \n  EXTEND '
+                    ' File contains extensions\n    DATE  File creation date ('
+                    'YYYY-MM-DDThh:mm:ss UTC)\n  ORIGIN  High Energy Solar Spe'
+                    'ctroscopic Imager\nOBSERVER  Usually the name of the user'
+                    ' who generated file\nTELESCOP  Name of the Telescope or M'
+                    'ission\nINSTRUME  Name of the instrument\n  OBJECT  Objec'
+                    't being observed\nDATE_OBS  nominal U.T. date when integr'
+                    'ation of this\nDATE_END  nominal U.T. date when integrati'
+                    'on of this\nTIME_UNI  \nENERGY_L  \nENERGY_H  \n TIMESYS '
+                    ' Reference time in YYYY MM DD hh:mm:ss\nTIMEUNIT  Unit fo'
+                    'r TIMEZERO, TSTARTI and TSTOPI')),
                 FitsHeaderEntry('HISTORY', '')]),
         DatabaseEntry(
-            id=2,
             observation_time_start=datetime(2002, 6, 25, 10, 0, 10, 514000),
             instrument='EIT', wavemin=195.0, wavemax=195, fits_header_entries=[
                 FitsHeaderEntry('SIMPLE', True),
@@ -535,7 +510,67 @@ def test_add_fom_path(database):
                     '\n HISTORY  \n HISTORY  \n HISTORY  \n HISTORY  \n HISTOR'
                     'Y  \n HISTORY  \n HISTORY  '))]),
         DatabaseEntry(
-            id=3,
+            observation_time_start=datetime(2010, 10, 16, 19, 12, 18),
+            observation_time_end=datetime(2010, 10, 16, 19, 12, 22),
+            instrument='RHESSI',
+            fits_header_entries=[
+                FitsHeaderEntry('SIMPLE', True),
+                FitsHeaderEntry('BITPIX', -32),
+                FitsHeaderEntry('NAXIS', 2),
+                FitsHeaderEntry('NAXIS1', 64),
+                FitsHeaderEntry('NAXIS2', 64),
+                FitsHeaderEntry('EXTEND', True),
+                FitsHeaderEntry('DATE', '2011-08-29T09:50:24'),
+                FitsHeaderEntry('ORIGIN', 'RHESSI'),
+                FitsHeaderEntry('OBSERVER', 'schriste'),
+                FitsHeaderEntry('TELESCOP', 'RHESSI'),
+                FitsHeaderEntry('INSTRUME', 'RHESSI'),
+                FitsHeaderEntry('OBJECT', 'Sun'),
+                FitsHeaderEntry('DATE_OBS', '2010-10-16T19:12:18.000'),
+                FitsHeaderEntry('DATE_END', '2010-10-16T19:12:22.000'),
+                FitsHeaderEntry('TIME_UNI', 1),
+                FitsHeaderEntry('ENERGY_L', 12.0),
+                FitsHeaderEntry('ENERGY_H', 25.0),
+                FitsHeaderEntry('TIMESYS', '1979.00'),
+                FitsHeaderEntry('TIMEUNIT', 's'),
+                FitsHeaderEntry('CRPIX1', -66.2278),
+                FitsHeaderEntry('CRPIX2', 131.958),
+                FitsHeaderEntry('CRVAL1', 0.0),
+                FitsHeaderEntry('CRVAL2', 0.0),
+                FitsHeaderEntry('CDELT1', 4.0),
+                FitsHeaderEntry('CDELT2', 4.0),
+                FitsHeaderEntry('CTYPE1', 'arcsec'),
+                FitsHeaderEntry('CTYPE2', 'arcsec'),
+                FitsHeaderEntry('XCEN', 394.911),
+                FitsHeaderEntry('YCEN', -397.831),
+                FitsHeaderEntry('CROTACN1', 0.0),
+                FitsHeaderEntry('CROTACN2', 0.0),
+                FitsHeaderEntry('CROTA', 0.0),
+                FitsHeaderEntry('COMMENT', ''),
+                FitsHeaderEntry('KEYCOMMENTS', ('  SIMPLE  Written by IDL:  Mo'
+                    'n Aug 29 09:50:24 2011\n  BITPIX  Real*4 (floating point)'
+                    '\n   NAXIS  \n  NAXIS1  \n  NAXIS2  \n  EXTEND  File cont'
+                    'ains extensions\n    DATE  File creation date (YYYY-MM-DD'
+                    'Thh:mm:ss UTC)\n  ORIGIN  High Energy Solar Spectroscopic'
+                    ' Imager\nOBSERVER  Usually the name of the user who gener'
+                    'ated file\nTELESCOP  Name of the Telescope or Mission\nIN'
+                    'STRUME  Name of the instrument\n  OBJECT  Object being ob'
+                    'served\nDATE_OBS  nominal U.T. date when integration of t'
+                    'his\nDATE_END  nominal U.T. date when integration of this'
+                    '\nTIME_UNI  \nENERGY_L  \nENERGY_H  \n TIMESYS  Reference'
+                    ' Time\nTIMEUNIT  Does not take leap seconds into account'
+                    '\n  CRPIX1  Reference pixel coordinates\n  CRPIX2  Refere'
+                    'nce pixel coordinates\n  CRVAL1  Reference data coordinat'
+                    'es\n  CRVAL2  Reference data coordinates\n  CDELT1  Width'
+                    ' of a pixel in data units\n  CDELT2  Height of a pixel in'
+                    ' data units\n  CTYPE1  data units for CDELT1\n  CTYPE2  d'
+                    'ata units for CDELT2\n    XCEN  Center of image rel to su'
+                    'n center ,+=W\n    YCEN  Center of image rel to sun cente'
+                    'r, +=N\nCROTACN1  X Position of Center of Rotation (arcse'
+                    'c)\nCROTACN2  Y Position of Center of Rotation (arcsec)\n'
+                    '   CROTA  Rotation Angle (clockwise from N)')),
+                FitsHeaderEntry('HISTORY', '')]),
+        DatabaseEntry(
             observation_time_start=datetime(2011, 3, 19, 10, 54, 0, 340000),
             instrument='AIA_3', wavemin=171, wavemax=171, fits_header_entries=[
                 FitsHeaderEntry('SIMPLE', True),
@@ -753,7 +788,7 @@ def test_add_fom_path(database):
                     'ksum updated 2011-03-19T11:08:18')),
                 FitsHeaderEntry('HISTORY', '')]),
         DatabaseEntry(
-            id=4, observation_time_start=datetime(2011, 9, 22, 0, 0, 0),
+            observation_time_start=datetime(2011, 9, 22, 0, 0, 0),
             observation_time_end=datetime(2011, 9, 22, 0, 0, 0),
             instrument='BIR',
             fits_header_entries=[
@@ -825,49 +860,15 @@ def test_add_fom_path(database):
                     '\n OBS_LOC  observatory longitude code {E,W}\n OBS_ALT  '
                     'observatory altitude in meter asl\n FRQFILE  name of freq'
                     'uency file\n PWM_VAL  PWM value to control tuner gain\n '
-                    'HISTORY  '))]),
-        DatabaseEntry(
-            id=5, observation_time_start=datetime(2002, 2, 20, 11, 6, 0),
-            observation_time_end=datetime(2002, 2, 20, 11, 6, 43, 330000),
-            instrument='RHESSI',
-            fits_header_entries=[
-                FitsHeaderEntry('SIMPLE', True),
-                FitsHeaderEntry('BITPIX', 8),
-                FitsHeaderEntry('NAXIS', 0),
-                FitsHeaderEntry('EXTEND', True),
-                FitsHeaderEntry('DATE', '2011-09-13T15:37:38'),
-                FitsHeaderEntry('ORIGIN', 'RHESSI'),
-                FitsHeaderEntry('OBSERVER', 'Unknown'),
-                FitsHeaderEntry('TELESCOP', 'RHESSI'),
-                FitsHeaderEntry('INSTRUME', 'RHESSI'),
-                FitsHeaderEntry('OBJECT', 'Sun'),
-                FitsHeaderEntry('DATE_OBS', '2002-02-20T11:06:00.000'),
-                FitsHeaderEntry('DATE_END', '2002-02-20T11:06:43.330'),
-                FitsHeaderEntry('TIME_UNI', 1),
-                FitsHeaderEntry('ENERGY_L', 25.0),
-                FitsHeaderEntry('ENERGY_H', 40.0),
-                FitsHeaderEntry('TIMESYS', '1979-01-01T00:00:00'),
-                FitsHeaderEntry('TIMEUNIT', 'd'),
-                FitsHeaderEntry('COMMENT', ''),
-                FitsHeaderEntry('KEYCOMMENTS', ('  SIMPLE  Written by IDL:  Tu'
-                    'e Sep 13 15:37:38 2011\n  BITPIX  \n   NAXIS  \n  EXTEND '
-                    ' File contains extensions\n    DATE  File creation date ('
-                    'YYYY-MM-DDThh:mm:ss UTC)\n  ORIGIN  High Energy Solar Spe'
-                    'ctroscopic Imager\nOBSERVER  Usually the name of the user'
-                    ' who generated file\nTELESCOP  Name of the Telescope or M'
-                    'ission\nINSTRUME  Name of the instrument\n  OBJECT  Objec'
-                    't being observed\nDATE_OBS  nominal U.T. date when integr'
-                    'ation of this\nDATE_END  nominal U.T. date when integrati'
-                    'on of this\nTIME_UNI  \nENERGY_L  \nENERGY_H  \n TIMESYS '
-                    ' Reference time in YYYY MM DD hh:mm:ss\nTIMEUNIT  Unit fo'
-                    'r TIMEZERO, TSTARTI and TSTOPI')),
-                FitsHeaderEntry('HISTORY', '')])]
-    assert list(database) == expected_entries
+                    'HISTORY  '))])]
+    sorted_entries = sorted(database, key=attrgetter('observation_time_start'))
+    assert sorted_entries == expected_entries
     database.undo()
     assert len(database) == 0
     database.redo()
     assert len(database) == 5
-    assert list(database) == expected_entries
+    sorted_entries = sorted(database, key=attrgetter('observation_time_start'))
+    assert sorted_entries == expected_entries
 
 
 def test_add_fom_path_duplicates(database):
