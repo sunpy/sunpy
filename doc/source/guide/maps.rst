@@ -144,7 +144,7 @@ number of associated methods to customize your plot. For example, the following 
 adds a new map (which must be instantiated first), sets its transparency to 25%, turns on contours from 50% to 90% for the second map, 
 and then plots the result::
 
-    my_maps.add_map(Map(sunpy.AIA_171_IMAGE))
+    my_maps.add_map(sunpy.Map(sunpy.AIA_171_IMAGE))
     my_maps.set_alpha(2,0.5)
     my_maps.set_levels(1,[50,60,70,80,90], percent = True)
     my_maps.peek()
