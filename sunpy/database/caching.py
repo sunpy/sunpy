@@ -20,14 +20,21 @@ class BaseCache(object):
     capacity is reached, can be checked by using the boolean property
     :attr:`is_full`. To implement a custom cache, inherit from this class and
     override the methods ``__getitem__`` and ``__setitem__``.
-    Call the method :meth:`callback` as soon as an item from the cache is
-    removed.
+    Call the method :meth:`sunpy.database.caching.BaseCache.callback` as soon
+    as an item from the cache is removed.
 
     Methods
     -------
     get
     remove
     callback
+    __getitem__
+    __setitem__
+
+    Attributes
+    ----------
+    to_be_removed
+    is_full
 
     """
     __metaclass__ = ABCMeta
@@ -50,15 +57,27 @@ class BaseCache(object):
 
     @abstractmethod
     def __getitem__(self, key):
+        """abstract method: this method must be overwritten by inheriting
+        subclasses. It defines what happens if an item from the cache is
+        attempted to be accessed.
+
+        """
         return  # pragma: no cover
 
     @abstractmethod
     def __setitem__(self, key, value):
-        return  # pragma: no cover
+        """abstract method: this method must be overwritten by inheriting
+        subclasses. It defines what happens if a new value should be assigned
+        to the given key. If the given key does already exist in the cache or
+        not must be checked by the person who implements this method.
+        """
 
     @abstractproperty
     def to_be_removed(self):
-        return  # pragma: no cover
+        """The item that will be removed on the next
+        :meth:`sunpy.database.caching.BaseCache.remove` call.
+
+        """
 
     @abstractmethod
     def remove(self):
@@ -78,6 +97,10 @@ class BaseCache(object):
 
     @property
     def is_full(self):
+        """True if the number of items in the cache equals :attr:`maxsize`,
+        False otherwise.
+
+        """
         return len(self.dict) == self.maxsize
 
     def __delitem__(self, key):
@@ -159,8 +182,21 @@ class BaseCache(object):
 
 
 class LRUCache(BaseCache):
+    """
+    Methods
+    -------
+    get
+    remove
+    callback
+    __getitem__
+    __setitem__
+    """
     @property
     def to_be_removed(self):
+        """Return the least recently used key and its corresponding value as a
+        tuple.
+
+        """
         return self.iteritems().next()
 
     def remove(self):
@@ -168,6 +204,15 @@ class LRUCache(BaseCache):
         self.callback(*self.popitem(last=False))
 
     def __getitem__(self, key):
+        """Returns the value which is associated to the given key and put it
+        with its associated value to the end of this cache.
+
+        Raises
+        ------
+        KeyError
+            If the key cannot be found in the cache.
+
+        """
         if key in self:
             value = self.dict.__getitem__(key)
             del self[key]
@@ -176,6 +221,12 @@ class LRUCache(BaseCache):
         raise KeyError
 
     def __setitem__(self, key, value):
+        """If the key does already exist in the cache, move it to the end of
+        this cache. Otherwise, set a new value and put it to the end of this
+        cache. If the cache is full, remove the least recently used item before
+        inserting the new key-value pair.
+
+        """
         if key in self:
             del self[key]
         if self.is_full:
@@ -184,12 +235,25 @@ class LRUCache(BaseCache):
 
 
 class LFUCache(BaseCache):
+    """
+    Methods
+    -------
+    get
+    remove
+    callback
+    __getitem__
+    __setitem__
+    """
     def __init__(self, maxsize=float('inf')):
         self.usage_counter = Counter()
         BaseCache.__init__(self, maxsize)
 
     @property
     def to_be_removed(self):
+        """Returns the key with the lowest times of access and its
+        corresponding value as a tuple.
+
+        """
         min_ = float('inf')
         lfu_key = None
         for k, v in self.usage_counter.iteritems():
@@ -206,11 +270,26 @@ class LFUCache(BaseCache):
         self.callback(lfu_key, val)
 
     def __getitem__(self, key):
+        """Returns the value which is associated to the given key and
+        increments the frequency counter of this key.
+
+        Raises
+        ------
+        KeyError
+            If the key cannot be found in the cache.
+
+        """
         value = self.dict.__getitem__(key)
         self.usage_counter[key] += 1
         return value
 
     def __setitem__(self, key, value):
+        """Increment the frequency counter of the given key if it is already
+        present in the cache, otherwise set it to 1. If the cache is full,
+        remove the least frequently used item before inserting the new
+        key-value pair.
+
+        """
         self.usage_counter[key] += 1
         if self.is_full:
             self.remove()
