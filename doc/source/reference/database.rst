@@ -8,7 +8,7 @@ Database
 
 .. automodule:: sunpy.database
 
-Module documentation
+Package documentation
 ^^^^^^^^^^^^^^^^^^^^
 
 The Database class
@@ -50,25 +50,51 @@ Exceptions
     This exception is raised if a tag cannot be found in a database by its
     name.
 
+Modules
+^^^^^^^
+
+tables
+""""""
+
+.. autoclass:: sunpy.database.tables.DatabaseEntry
+   :members:
+
+.. autoclass:: sunpy.database.tables.FitsHeaderEntry
+   :members:
+
+.. autoclass:: sunpy.database.tables.Tag
+   :members:
+
+utility functions
+-----------------
+
+.. autofunction:: sunpy.database.tables.entries_from_query_result
+
+.. autofunction:: sunpy.database.tables.entries_from_path
+
+.. autofunction:: sunpy.database.tables.display_entries
+
+caching
+"""""""
+
+.. automodule:: sunpy.database.caching
+   :members:
+   :special-members:
+   :exclude-members: __metaclass__, __weakref__
+   :show-inheritance:
+
+commands
+""""""""
+
+.. automodule:: sunpy.database.commands
+   :members:
+
 .. FIXME: to be documented
     .. class:: sunpy.database.commands.NoSuchEntryError
     .. class:: sunpy.database.commands.EmptyCommandStackError
-..
-    tables
-    """"""
-    .. autoclass:: sunpy.database.tables.DatabaseEntry
+
+.. FIXME: to be documented
+    attrs
+    """""
+    .. automodule:: sunpy.database.attrs
        :members:
-    .. autoclass:: sunpy.database.tables.FitsHeaderEntry
-       :members:
-    .. autoclass:: sunpy.database.tables.Tag
-       :members:
-    utility functions
-    """""""""""""""""
-    .. autofunction:: sunpy.database.tables.entries_from_query_result
-    .. autofunction:: sunpy.database.tables.entries_from_path
-    Caching
-    """""""
-    .. autoclass:: sunpy.database.caching.BaseCache
-       :members: callback
-    .. autoclass:: sunpy.database.caching.LRUCache
-    .. autoclass:: sunpy.database.caching.LFUCache
