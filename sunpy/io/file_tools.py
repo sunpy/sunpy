@@ -7,12 +7,17 @@ from sunpy.io import fits, jp2
 __all__ = ['read_file', 'read_file_header', 'write_file']
 
 # File formats supported by SunPy
-_known_formats = {
+_known_extensions = {
     ('fts', 'fits'): fits,
     ('jp2', 'j2k', 'jpc', 'jpt'): jp2
 }
 
-def read_file(filepath, **kwargs):
+_readers = {
+            'fits':fits,
+            'jp2':jp2
+}
+
+def read_file(filepath, filetype=None, **kwargs):
     """
     Automatically determine the filetype and read the file
     
@@ -21,20 +26,29 @@ def read_file(filepath, **kwargs):
     filepath : string
         The file to be read
     
+    filetype: string
+        Supported reader or extension to manually specify the filetype.
+        Supported readers are ('jp2', 'fits')
+    
     Returns
     -------
     pairs : list
         A list of (data, header) tuples.
     """
-    for extension, reader in _known_formats.items():
-        if filepath.endswith(extension):
+    if filetype:
+        for name, reader in _readers.items():
+            if filetype == name:
+                return reader.read(filepath, **kwargs)
+                
+    for extension, reader in _known_extensions.items():
+        if filepath.endswith(extension) or filetype in extension:
             return reader.read(filepath, **kwargs)
 
     # If filetype is not apparent from extension, attempt to detect
     reader = _detect_filetype(filepath)    
     return reader.read(filepath, **kwargs)
 
-def read_file_header(filepath, **kwargs):
+def read_file_header(filepath, filetype=None, **kwargs):
     """
     Reads the header from a given file
     
@@ -46,14 +60,23 @@ def read_file_header(filepath, **kwargs):
     filepath :  string
         The file from which the header is to be read.
     
+    filetype: string
+        Supported reader or extension to manually specify the filetype.
+        Supported readers are ('jp2', 'fits')
+    
     Returns
     -------
     
     headers : list
         A list of headers
     """
-    for extension, reader in _known_formats.items():
-        if filepath.endswith(extension):
+    if filetype:
+        for name, reader in _readers.items():
+            if filetype == name:
+                return reader.get_header(filepath, **kwargs)
+                
+    for extension, reader in _known_extensions.items():
+        if filepath.endswith(extension) or filetype in extension:
             return reader.get_header(filepath, **kwargs)
         
     reader = _detect_filetype(filepath)
@@ -83,12 +106,12 @@ def write_file(fname, data, header, filetype='auto', **kwargs):
     This routine currently only supports saving a single HDU.
     """
     if filetype == 'auto':
-        for extension, reader in _known_formats.items():
+        for extension, reader in _known_extensions.items():
             if fname.endswith(extension):
                 return reader.write(fname, data, header, **kwargs)
     
     else:
-        for extension, reader in _known_formats.items():
+        for extension, reader in _known_extensions.items():
             if filetype in extension:
                 return reader.write(fname, data, header, **kwargs)
             
