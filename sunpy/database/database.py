@@ -542,7 +542,7 @@ class Database(object):
 
         See Also
         --------
-        :ref:`sunpy.database.CommandManager.undo`
+        :meth:`sunpy.database.commands.CommandManager.undo`
 
         """
         self._command_manager.undo(n)  # pragma: no cover
@@ -552,7 +552,7 @@ class Database(object):
 
         See Also
         --------
-        :ref:`sunpy.database.CommandManager.redo`
+        :meth:`sunpy.database.commands.CommandManager.redo`
 
         """
         self._command_manager.redo(n)  # pragma: no cover
