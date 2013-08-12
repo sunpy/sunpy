@@ -6,12 +6,10 @@
 """
 Overview
 --------
-The database package exports the following classes, functions and exceptions:
+The database package exports the following classes and exceptions:
 
     :classes:
         - Database
-    :functions:
-        - display_entries
     :exceptions:
         - EntryAlreadyAddedError
         - NoSuchEntryError
@@ -26,10 +24,9 @@ from __future__ import absolute_import
 from sunpy.database.database import Database, EntryAlreadyAddedError,\
     EntryAlreadyStarredError, EntryAlreadyUnstarredError, NoSuchTagError,\
     EntryNotFoundError, TagAlreadyAssignedError
-from sunpy.database.tables import display_entries
 from sunpy.database.commands import NoSuchEntryError
 
 __all__ = [
     'Database', 'EntryAlreadyAddedError', 'NoSuchEntryError', 'NoSuchTagError',
     'EntryAlreadyStarredError', 'EntryAlreadyUnstarredError',
-    'EntryNotFoundError', 'TagAlreadyAssignedError', 'display_entries']
+    'EntryNotFoundError', 'TagAlreadyAssignedError']
