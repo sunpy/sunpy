@@ -18,7 +18,10 @@ __all__ = [
 
 
 class EmptyCommandStackError(Exception):
-    pass
+    """This exception is raised if it is attempted to pop from a command stack
+    even though it is empty.
+
+    """
 
 
 class NoSuchEntryError(Exception):
