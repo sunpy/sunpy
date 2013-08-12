@@ -13,7 +13,8 @@ from sunpy.net.attr import AttrWalker, Attr, ValueAttr, AttrAnd, AttrOr
 from sunpy.database.tables import DatabaseEntry, Tag as TableTag,\
     FitsHeaderEntry as TableFitsHeaderEntry
 
-__all__ = ['Starred', 'Tag', 'walker']
+__all__ = [
+    'Starred', 'Tag', 'Path', 'DownloadTime', 'FitsHeaderEntry', 'walker']
 
 
 class _BooleanAttr(object):
