@@ -8,3 +8,4 @@ scipy
 suds==0.4
 sunpy==0.1
 wsgiref==0.1.2
+sqlalchemy
