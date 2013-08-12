@@ -16,6 +16,7 @@ To begin, install the following requirements:
  * [Suds](https://fedorahosted.org/suds)
  * [pandas](http://pandas.pydata.org/) (0.10.0+)
  * [beautifulsoup4](http://www.crummy.com/software/BeautifulSoup/)
+ * [sqlalchemy](http://www.sqlalchemy.org/)
 
 Next, use git to grab the latest version of SunPy:
 
