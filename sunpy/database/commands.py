@@ -144,7 +144,8 @@ class CommandManager(object):
 
     def pop_undo_command(self):
         """Remove the last command from the undo command stack and return it.
-        If the command stack is empty, EmptyCommandStackError is raised.
+        If the command stack is empty,
+        :exc:`sunpy.database.commands.EmptyCommandStackError` is raised.
 
         """
         try:
@@ -159,7 +160,8 @@ class CommandManager(object):
 
     def pop_redo_command(self):
         """Remove the last command from the redo command stack and return it.
-        If the command stack is empty, EmptyCommandStackError is raised.
+        If the command stack is empty,
+        :exc:`sunpy.database.commands.EmptyCommandStackError` is raised.
 
         """
         try:
@@ -187,8 +189,8 @@ class CommandManager(object):
     def undo(self, n=1):
         """Undo the last n commands. The default is to undo only the last
         command. If there is no command that can be undone because n is too big
-        or because no command has been executed yet, EmptyCommandStackError is
-        raised.
+        or because no command has been executed yet,
+        :exc:`sunpy.database.commands.EmptyCommandStackError` is raised.
 
         """
         for _ in xrange(n):
@@ -205,7 +207,7 @@ class CommandManager(object):
         method. The default is to redo only the last command which has been
         undone using the undo method. If there is no command that can be redone
         because n is too big or because no command has been undone yet,
-        EmptyCommandStackError is raised.
+        :exc:`sunpy.database.commands.EmptyCommandStackError` is raised.
 
         """
         for _ in xrange(n):
