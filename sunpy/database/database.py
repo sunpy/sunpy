@@ -283,9 +283,15 @@ class Database(object):
         Apart from the attributes supported by the VSO interface, the following
         attributes are supported:
 
+            - :class:`sunpy.database.attrs.Starred`
+
             - :class:`sunpy.database.attrs.Tag`
 
-            - :class:`sunpy.database.attrs.Starred`
+            - :class:`sunpy.database.attrs.Path`
+
+            - :class:`sunpy.database.attrs.DownloadTime`
+
+            - :class:`sunpy.database.attrs.FitsHeaderEntry`
 
         An important difference to the VSO attributes is that these attributes
         may also be used in negated form using the tilde ~ operator.
@@ -299,7 +305,8 @@ class Database(object):
         sortby : str, optional
             The column by which to sort the returned entries. The default is to
             sort by the start of the observation. See the attributes of
-            :class:`DatabaseEntry` for a list of all possible values.
+            :class:`sunpy.database.tables.DatabaseEntry` for a list of all
+            possible values.
 
         Raises
         ------
