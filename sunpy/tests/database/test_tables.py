@@ -151,11 +151,13 @@ def test_add_fits_header_entries_from_file_wavelength():
 def test_entries_from_path():
     entries = list(entries_from_path(os.path.join(testdir, 'EIT')))
     assert len(entries) == 13
-    first_entry, filename = entries[0]
+    for entry, filename in entries:
+        if filename.endswith('efz20040301.020010_s.fits'):
+            break
     assert filename.startswith(os.path.join(testdir, 'EIT'))
     assert filename.endswith('.fits')
-    assert len(first_entry.fits_header_entries) == 47
-    assert first_entry.fits_header_entries == [
+    assert len(entry.fits_header_entries) == 47
+    assert entry.fits_header_entries == [
         FitsHeaderEntry('SIMPLE', True),
         FitsHeaderEntry('BITPIX', -64),
         FitsHeaderEntry('NAXIS', 2),
