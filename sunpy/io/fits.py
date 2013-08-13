@@ -33,7 +33,8 @@ References
 from __future__ import absolute_import
 
 import os
-import copy
+import itertools
+
 try:
     import astropy.io.fits as pyfits
 except ImportError:
@@ -73,7 +74,7 @@ def read(filepath):
         
         headers = get_header(hdulist)
         pairs = []
-        for hdu,header in zip(hdulist, headers):
+        for hdu,header in itertools.izip(hdulist, headers):
             pairs.append((hdu.data, header))
     finally:
         hdulist.close()
@@ -122,7 +123,7 @@ def get_header(afile):
             keydict = {}
             for card in hdu.header.cards:
                 if card.comment != '':
-                 keydict.update({card.keyword:card.comment})
+                    keydict.update({card.keyword:card.comment})
             header['KEYCOMMENTS'] = keydict
             
             headers.append(header)
@@ -148,6 +149,7 @@ def write(fname, data, header, **kwargs):
     """
     #Copy header so the one in memory is left alone while changing it for write
     header = header.copy()
+    
     #The comments need to be added to the header seperately from the normal
     # kwargs. Find and deal with them:
     fits_header = pyfits.Header()
@@ -167,11 +169,12 @@ def write(fname, data, header, **kwargs):
 
     
     if isinstance(key_comments, dict):
-            for k,v in key_comments.items():
-                fits_header.comments[k] = v
+        for k,v in key_comments.items():
+            fits_header.comments[k] = v
     elif key_comments:
         raise TypeError("KEYCOMMENTS must be a dictionary")
     
     fitskwargs = {'output_verify':'fix'}
     fitskwargs.update(kwargs)
-    pyfits.writeto(os.path.expanduser(fname), data, header=fits_header, **fitskwargs)
+    pyfits.writeto(os.path.expanduser(fname), data, header=fits_header,
+                   **fitskwargs)
