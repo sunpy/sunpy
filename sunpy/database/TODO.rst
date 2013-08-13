@@ -6,8 +6,6 @@ Documentation
 
 Reference
 ~~~~~~~~~
-- commands: use :exc:`...` to refer to exceptions
-
 - Database: explain the purpose and meaning of this class
 
 - DatabaseEntry:
@@ -34,14 +32,12 @@ Reference
 
 - document property cache_size, cache_maxsize
 
-- document commands.EmptyCommandStackError, commands.NoSuchEntryError
-
 - document the package database itself!!! → show how to use the Database
   class and the undo and redo methods
 
 - document Database.__getitem__
 
-- document the caching package
+- document the caching module
 
 - document caching.LRUCache and caching.LFUCache
 
@@ -61,9 +57,6 @@ Testing
 
   - unstar
 
-- test adding entries that are already saved in the database → should
-  throw an exception
-
 - what to do if a database operation is attempted but the table hasn't
   been created yet? Throw a custom exception or create the required
   table(s) silently? Currently, the exception OperationalError from
@@ -78,6 +71,9 @@ Testing
 
 Important
 ---------
+- docs: fix all examples with (implicit) repr calls in DatabaseEntry
+  instances!!!
+
 - make BaseCache.dict private → BaseCache._dict
 
 - do not save the waveunit. rather, use only nm -> only possible if
