@@ -3,6 +3,12 @@ FITS File Reader
 
 Notes
 -----
+FITS
+    [1] FITS files allow comments to be attached to every value in the header.
+    This is implemented in this module as a KEYCOMMENTS dictionary in the 
+    sunpy header. To add a comment to the file on write, add a comment to this
+    dictionary with the same name as a key in the header (upcased).
+
 PyFITS
     [1] Due to the way PyFITS works with images the header dictionary may
     differ depending on whether is accessed before or after the fits[0].data
