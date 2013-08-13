@@ -15,6 +15,25 @@ from sunpy.time import parse_time, is_time
 
 __all__ = ['EITMap', 'LASCOMap', 'MDIMap']
 
+def _dsunAtSoho(date, rad_d, rad_1au = None):
+    """Determines the distance to the Sun from SOhO following
+    d_{\sun,Object} =
+            D_{\sun\earth} \frac{\tan(radius_{1au}[rad])}{\tan(radius_{d}[rad])}
+    though tan x ~ x for x << 1
+    d_{\sun,Object} =
+            D_{\sun\eart} \frac{radius_{1au}[rad]}{radius_{d}[rad]}
+    since radius_{1au} and radius_{d} are dividing each other we can use [arcsec]
+    instead. 
+
+    ---
+    TODO: Does this apply just to observations on the same Earth-Sun line?
+    If not it can be moved outside here.
+    """
+    if not rad_1au:
+        rad_1au = sun.solar_semidiameter_angular_size(date)
+    return  sun.sunearth_distance(date) * constants.au * (rad_1au / rad_d)
+
+
 class EITMap(GenericMap):
     """EIT Image Map definition"""
     
@@ -36,7 +55,7 @@ class EITMap(GenericMap):
         return self.meta['solar_r'] * self.meta['cdelt1']
         
     def _fix_dsun(self):
-        dsun = constants.au * sun.angular_size(self.date) / (self.rsun_arcseconds)
+        dsun = _dsunAtSoho(self.date, self.rsun_arcseconds)
         self.meta['dsun_obs'] = dsun
 
     @classmethod
@@ -121,7 +140,8 @@ class MDIMap(GenericMap):
 #            radius = sun.angular_size(self.date)
             self.meta['dsun_obs'] = constants.au
         else:
-            self.meta['dsun_obs'] = constants.au * radius / (self.rsun_arcseconds)
+            scale = self.meta.get('cdelt1')
+            self.meta['dsun_obs'] = _dsunAtSoho(self.date, radius * scale)
         
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
