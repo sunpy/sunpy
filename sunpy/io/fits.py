@@ -183,8 +183,7 @@ def write(fname, data, header, **kwargs):
 
 
 def extract_waveunit(header):
-    """
-    Attempt to read the wavelength unit from a given FITS header.
+    """Attempt to read the wavelength unit from a given FITS header.
 
     Parameters
     ----------
@@ -197,6 +196,18 @@ def extract_waveunit(header):
     -------
     waveunit : str
         The wavelength unit that could be found or ``None`` otherwise.
+
+    Examples
+    --------
+    The goal of this function is to return a string that can be used in
+    conjunction with the astropy.units module so that the return value can be
+    used like this::
+
+        >>> import astropy.units
+        >>> waveunit = extract_waveunit(header)
+        >>> if waveunit is not None:
+        ...     unit = getattr(astropy.units, waveunit)
+
     """
     # algorithm: try the following procedures in the following order and return
     # as soon as a waveunit could be detected
