@@ -1,6 +1,7 @@
 from sunpy.io.fits import get_header, extract_waveunit
 from sunpy.data.sample import RHESSI_IMAGE, EIT_195_IMAGE, AIA_171_IMAGE,\
     SWAP_LEVEL1_IMAGE
+from sunpy.data.test.waveunit import MEDN_IMAGE, MQ_IMAGE, NA_IMAGE, SVSM_IMAGE
 
 
 def test_extract_waveunit_missing_waveunit_key_and_missing_wavelnth_comment():
@@ -21,9 +22,31 @@ def test_extract_waveunit_from_waveunit_key():
     assert waveunit == 'angstrom'
 
 
-def test_extract_waveunit_from_wavelnth_comment():
-    # the key WAVEUNIT does not exist, but the comment belonging to the key
-    # WAVELNTH can be parsed so that the wave unit can be read
-    # SWAP_LEVEL1_IMAGE
+def test_extract_waveunit_minus9():
+    # value of WAVEUNIT is -9
+    waveunit = extract_waveunit(get_header(MEDN_IMAGE)[0])
+    assert waveunit == 'nm'
+
+
+def test_extract_waveunit_minus10():
+    # value of WAVEUNIT is -10
+    waveunit = extract_waveunit(get_header(MQ_IMAGE)[0])
+    assert waveunit == 'angstrom'
+
+
+def test_extract_waveunit_waveunitcomment():
+    # comment of WAVEUNIT is: "in meters"
+    waveunit = extract_waveunit(get_header(NA_IMAGE)[0])
+    assert waveunit == 'm'
+
+
+def test_extract_waveunit_wavelnthcomment_brackets():
+    # WAVELNTH comment is: "[Angstrom] bandpass peak response"
     waveunit = extract_waveunit(get_header(SWAP_LEVEL1_IMAGE)[0])
-    assert waveunit == 'Angstrom'
+    assert waveunit == 'angstrom'
+
+
+def test_extract_waveunit_wavelnthcomment_parentheses():
+    # WAVELNTH comment is: "Observed wavelength (nm)"
+    waveunit = extract_waveunit(get_header(SVSM_IMAGE)[0])
+    assert waveunit == 'nm'
