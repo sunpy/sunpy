@@ -84,7 +84,9 @@ def read(filepath):
 
 def get_header(afile):
     """
-    Read a fits file and return just the headers for all HDU's
+    Read a fits file and return just the headers for all HDU's. In each header,
+    the key WAVEUNIT denotes the wavelength unit which is used to describe the
+    value of the key WAVELNTH.
     
     Parameters
     ----------
