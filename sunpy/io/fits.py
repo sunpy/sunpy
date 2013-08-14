@@ -119,7 +119,6 @@ def get_header(afile):
             header = FileHeader(hdu.header)
             header['COMMENT'] = comment
             header['HISTORY'] = history
-            header['WAVEUNIT'] = extract_waveunit(header)
             
             #Strip out KEYCOMMENTS to a dict, the hard way
             keydict = {}
@@ -127,6 +126,7 @@ def get_header(afile):
                 if card.comment != '':
                     keydict.update({card.keyword:card.comment})
             header['KEYCOMMENTS'] = keydict
+            header['WAVEUNIT'] = extract_waveunit(header)
             
             headers.append(header)
     finally:
@@ -198,14 +198,45 @@ def extract_waveunit(header):
     waveunit : str
         The wavelength unit that could be found or ``None`` otherwise.
     """
-    try:
-        waveunit = header['WAVEUNIT']
-    except KeyError:
-        try:
-            wavelnth_comment = header['KEYCOMMENTS']['WAVELNTH']
-        except KeyError:
-            waveunit = None
+    # algorithm: try the following procedures in the following order and return
+    # as soon as a waveunit could be detected
+    # 1. read header('WAVEUNIT'). If None, go to step 2.
+    # 1.1 -9 -> 'nm'
+    # 1.2 -10 -> 'angstrom'
+    # 1.3 0 -> go to step 2
+    # 1.4 if neither of the above, return the value itself in lowercase
+    # 2. parse waveunit_comment
+    # 2.1 'in meters' -> 'm'
+    # 3. parse wavelnth_comment
+    # 3.1 "[$UNIT] ..." -> $UNIT
+    # 3.2 "Observed wavelength ($UNIT)" -> $UNIT
+    def parse_waveunit_comment(waveunit_comment):
+        if waveunit_comment == 'in meters':
+            return 'm'
+
+    waveunit_comment = header['KEYCOMMENTS'].get('WAVEUNIT')
+    wavelnth_comment = header['KEYCOMMENTS'].get('WAVELNTH')
+    waveunit = header.get('WAVEUNIT')
+    if waveunit is not None:
+        if waveunit == -9:
+            waveunit = 'nm'
+        elif waveunit == -10:
+            waveunit = 'angstrom'
+        elif waveunit == 0:
+            waveunit = parse_waveunit_comment(waveunit_comment)
         else:
-            m = re.search(r'^\[(\w+?)\]', wavelnth_comment)
-            waveunit = m.group(1) if m is not None else None
+            waveunit = str(waveunit).lower()
+    elif waveunit_comment is not None:
+        waveunit = parse_waveunit_comment(waveunit_comment)
+    elif wavelnth_comment is not None:
+        # supported formats (where $UNIT is the unit like "nm" or "Angstrom"):
+        #   "Observed wavelength ($UNIT)"
+        #   "[$UNIT] ..."
+        parentheses_pattern = r'Observed wavelength \((\w+?)\)$'
+        brackets_pattern = r'^\[(\w+?)\]'
+        for pattern in [parentheses_pattern, brackets_pattern]:
+            m = re.search(pattern, wavelnth_comment)
+            if m is not None:
+                waveunit = m.group(1)
+                break
     return waveunit
