@@ -3,6 +3,12 @@ FITS File Reader
 
 Notes
 -----
+FITS
+    [1] FITS files allow comments to be attached to every value in the header.
+    This is implemented in this module as a KEYCOMMENTS dictionary in the 
+    sunpy header. To add a comment to the file on write, add a comment to this
+    dictionary with the same name as a key in the header (upcased).
+
 PyFITS
     [1] Due to the way PyFITS works with images the header dictionary may
     differ depending on whether is accessed before or after the fits[0].data
@@ -28,6 +34,8 @@ from __future__ import absolute_import
 
 import os
 import re
+import itertools
+
 try:
     import astropy.io.fits as pyfits
 except ImportError:
@@ -64,51 +72,66 @@ def read(filepath):
     hdulist = pyfits.open(filepath)
     try:
         hdulist.verify('silentfix')
-
+        
+        headers = get_header(hdulist)
         pairs = []
-        for hdu in hdulist:
-            comment = "".join(hdu.header.get_comment()).strip()
-            history = "".join(hdu.header.get_history()).strip()
-            header = FileHeader(hdu.header)
-            header['COMMENT'] = comment
-            header['KEYCOMMENTS'] = hdu.header.comments
-            header['HISTORY'] = history
-            header['WAVEUNIT'] = extract_waveunit(header)
+        for hdu,header in itertools.izip(hdulist, headers):
             pairs.append((hdu.data, header))
     finally:
         hdulist.close()
 
     return pairs
 
-def get_header(filepath):
+def get_header(afile):
     """
     Read a fits file and return just the headers for all HDU's
     
     Parameters
     ----------
-    filepath : string
-        The file to be read
+    afile : string or pyfits.HDUList
+        The file to be read, or HDUList to process
     
     Returns
     -------
     headers : list
         A list of FileHeader headers
     """
-    hdulist = pyfits.open(filepath)
-    try:
+    if isinstance(afile,pyfits.HDUList):
+        hdulist = afile
+        close = False
+    else:
+        hdulist = pyfits.open(afile)
         hdulist.verify('silentfix')
+        close=True
+        
+    try:
         headers= []
         for hdu in hdulist:
-            comment = "".join(hdu.header.get_comment()).strip()
-            history = "".join(hdu.header.get_history()).strip()
+            try:
+                comment = "".join(hdu.header['COMMENT']).strip()
+            except KeyError:
+                comment = ""
+            try:
+                history = "".join(hdu.header['HISTORY']).strip()
+            except KeyError:
+                history = ""
+            
             header = FileHeader(hdu.header)
             header['COMMENT'] = comment
-            header['KEYCOMMENTS'] = hdu.header.comments            
             header['HISTORY'] = history
             header['WAVEUNIT'] = extract_waveunit(header)
+            
+            #Strip out KEYCOMMENTS to a dict, the hard way
+            keydict = {}
+            for card in hdu.header.cards:
+                if card.comment != '':
+                    keydict.update({card.keyword:card.comment})
+            header['KEYCOMMENTS'] = keydict
+            
             headers.append(header)
     finally:
-        hdulist.close()
+        if close:
+            hdulist.close()
     return headers
 
 def write(fname, data, header, **kwargs):
@@ -126,10 +149,15 @@ def write(fname, data, header, **kwargs):
     header: dict
         A header dictionary
     """
+    #Copy header so the one in memory is left alone while changing it for write
+    header = header.copy()
+    
     #The comments need to be added to the header seperately from the normal
     # kwargs. Find and deal with them:
     fits_header = pyfits.Header()
     # Check Header
+    key_comments = header.pop('KEYCOMMENTS', False)
+
     for k,v in header.items():
         if isinstance(v, pyfits.header._HeaderCommentaryCards):
             if k is 'comments':
@@ -140,10 +168,18 @@ def write(fname, data, header, **kwargs):
                 fits_header.append(pyfits.Card(k, str(v)))
         else:
             fits_header.append(pyfits.Card(k,v))
+
+    
+    if isinstance(key_comments, dict):
+        for k,v in key_comments.items():
+            fits_header.comments[k] = v
+    elif key_comments:
+        raise TypeError("KEYCOMMENTS must be a dictionary")
     
     fitskwargs = {'output_verify':'fix'}
     fitskwargs.update(kwargs)
-    pyfits.writeto(os.path.expanduser(fname), data, header=fits_header, **fitskwargs)
+    pyfits.writeto(os.path.expanduser(fname), data, header=fits_header,
+                   **fitskwargs)
 
 
 def extract_waveunit(header):
