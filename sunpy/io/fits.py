@@ -218,14 +218,20 @@ def extract_waveunit(header):
     wavelnth_comment = header['KEYCOMMENTS'].get('WAVELNTH')
     waveunit = header.get('WAVEUNIT')
     if waveunit is not None:
-        if waveunit == -9:
-            waveunit = 'nm'
-        elif waveunit == -10:
-            waveunit = 'angstrom'
-        elif waveunit == 0:
-            waveunit = parse_waveunit_comment(waveunit_comment)
-        else:
-            waveunit = str(waveunit).lower()
+        metre_submultiples = {
+            0: parse_waveunit_comment(waveunit_comment),
+            -1: 'dm',
+            -2: 'cm',
+            -3: 'mm',
+            -6: 'um',
+            -9: 'nm',
+            -10: 'angstrom',
+            -12: 'pm',
+            -15: 'fm',
+            -18: 'am',
+            -21: 'zm',
+            -24: 'zm'}
+        waveunit = metre_submultiples.get(waveunit, str(waveunit).lower())
     elif waveunit_comment is not None:
         waveunit = parse_waveunit_comment(waveunit_comment)
     elif wavelnth_comment is not None:
