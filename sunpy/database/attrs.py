@@ -182,9 +182,11 @@ def _create(wlk, root, session):
         elif typ == 'download time':
             start, end, inverted = value
             if inverted:
-                query = query.filter(~DatabaseEntry.download_time.between(start, end))
+                query = query.filter(
+                    ~DatabaseEntry.download_time.between(start, end))
             else:
-                query = query.filter(DatabaseEntry.download_time.between(start, end))
+                query = query.filter(
+                    DatabaseEntry.download_time.between(start, end))
         elif typ == 'path':
             path, inverted = value
             if inverted:
