@@ -460,6 +460,15 @@ class Database(object):
         """Generate database entries from a VSO query result and add all the
         generated entries to this database.
 
+        Parameters
+        ----------
+        query_result : sunpy.net.vso.vso.QueryResponse
+            A VSO query response that was returned by the ``query`` method of a
+            :class:`sunpy.net.vso.VSOClient` object.
+
+        ignore_already_added : bool
+            See :meth:`sunpy.database.Database.add`.
+
         """
         cmds = []
         for database_entry in tables.entries_from_query_result(query_result):
