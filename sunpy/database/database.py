@@ -397,8 +397,12 @@ class Database(object):
     def remove_tag(self, database_entry, tag_name):
         """Remove the given tag from the database entry. If the tag is not
         connected to any entry after this operation, the tag itself is removed
-        from the database as well. If the tag is not connected to the given
-        entry, :exc:`sunpy.database.NoSuchTagError` is raised.
+        from the database as well.
+
+        Raises
+        ------
+        sunpy.database.NoSuchTagError
+            If the tag is not connected to the given entry.
 
         """
         tag = self.get_tag(tag_name)
