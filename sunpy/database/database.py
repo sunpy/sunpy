@@ -433,11 +433,18 @@ class Database(object):
         self._cache[database_entry.id] = database_entry
 
     def add(self, database_entry, ignore_already_added=False):
-        """Add the given database entry to the database table. If the given
-        database entry already exists in the database and
-        ``ignore_already_added`` is ``False`` (the default),
-        :exc:`sunpy.database.EntryAlreadyAddedError` is raised. Otherwise, the
-        entry is kept in the database and no exception is raised.
+        """Add the given database entry to the database table.
+
+        Parameters
+        ----------
+        database_entry : sunpy.database.tables.DatabaseEntry
+            The database entry that will be added to this database.
+
+        ignore_already_added : bool, optional
+            If True, attempts to add an already exisiting database entry will
+            result in a :exc:`sunpy.database.EntryAlreadyAddedError`.
+            Otherwise, a new entry will be added and there will be duplicates
+            in the database.
 
         """
         if database_entry in self and not ignore_already_added:
