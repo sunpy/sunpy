@@ -510,10 +510,7 @@ class Database(object):
             see its documentation for more information on the supported syntax.
 
         ignore_already_added : bool, optional
-            If True, attempts to add an already exisiting database entry will
-            result in a :exc:`sunpy.database.EntryAlreadyAddedError`.
-            Otherwise, a new entry will be added and there will be duplicates
-            in the database.
+            See :meth:`sunpy.database.Database.add`.
 
         """
         cmds = []
