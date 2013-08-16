@@ -17,8 +17,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 
 from sunpy.time import parse_time
-from sunpy.io import fits
-from sunpy.io import file_tools as sunpy_filetools
+from sunpy.io import fits, file_tools as sunpy_filetools
 from sunpy.util import print_table
 
 __all__ = ['FitsHeaderEntry', 'Tag', 'DatabaseEntry', 'display_entries']
