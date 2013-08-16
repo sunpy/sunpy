@@ -10,7 +10,8 @@ virtualenv:
 #and a exact version of Numpy to test against.
 env:
     - NUMPY_VERSION=1.7.1 MATPLOTLIB_VERSION=1.3.0 PANDAS_VERSION=0.12.0 SUDS_PKG='suds'
-
+    global:
+        - PIP_WHEEL_COMMAND="--find-links http://sunpy.cadair.com/wheelhouse/index.html --use-wheel"
 matrix:
     include:
       - python: 2.6
@@ -36,16 +37,16 @@ before_install:
 # Install from wheels
 install:
 #Install Numpy first so we force the version we are using
-   - pip install --find-links http://sunpy.cadair.com/wheelhouse/index.html --use-wheel numpy==$NUMPY_VERSION
+   - pip install $PIP_WHEEL_COMMAND numpy==$NUMPY_VERSION
 # Install the other requirements to the desired version
-   - pip install --find-links http://sunpy.cadair.com/wheelhouse/index.html --use-wheel matplotlib==$MATPLOTLIB_VERSION
-   - pip install --find-links http://sunpy.cadair.com/wheelhouse/index.html --use-wheel scipy
+   - pip install $PIP_WHEEL_COMMAND matplotlib==$MATPLOTLIB_VERSION
+   - pip install $PIP_WHEEL_COMMAND scipy
 # Manually install pandas deps due to a pip 1.4 / pytz bug
-   - pip install --find-links http://sunpy.cadair.com/wheelhouse/index.html --use-wheel pytz==2013b
-   - pip install --find-links http://sunpy.cadair.com/wheelhouse/index.html --use-wheel python-dateutil
-   - pip install --find-links http://sunpy.cadair.com/wheelhouse/index.html --use-wheel pandas==$PANDAS_VERSION
-   - pip install --find-links http://sunpy.cadair.com/wheelhouse/index.html --use-wheel astropy
-   - pip install -q pytest $SUDS_PKG beautifulsoup4
+   - pip install  $PIP_WHEEL_COMMAND pytz==2013b
+   - pip install  $PIP_WHEEL_COMMAND python-dateutil
+   - pip install  $PIP_WHEEL_COMMAND pandas==$PANDAS_VERSION
+   - pip install  $PIP_WHEEL_COMMAND astropy
+   - pip install  $PIP_WHEEL_COMMAND pytest $SUDS_PKG beautifulsoup4
 
 # command to run tests
 script:
