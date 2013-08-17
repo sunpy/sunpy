@@ -10,8 +10,8 @@ from sqlalchemy.orm import sessionmaker
 import pytest
 
 from sunpy.database.commands import AddEntry, RemoveEntry, EditEntry,\
-    NoSuchEntryError, EmptyCommandStackError, CommandManager
-from sunpy.database.tables import DatabaseEntry
+    RemoveTag, NoSuchEntryError, EmptyCommandStackError, CommandManager
+from sunpy.database.tables import DatabaseEntry, Tag
 
 
 @pytest.fixture
@@ -122,6 +122,20 @@ def test_remove_entry_undo(session):
     assert session.query(DatabaseEntry).count() == 0
     cmd.undo()
     assert session.query(DatabaseEntry).count() == 1
+
+
+def test_remove_tag_undo(session):
+    tag = Tag('tag')
+    entry = DatabaseEntry()
+    entry.tags.append(tag)
+    session.add(entry)
+    session.commit()
+    assert tag in entry.tags
+    cmd = RemoveTag(entry, tag)
+    cmd()
+    assert tag not in entry.tags
+    cmd.undo()
+    assert tag in entry.tags
 
 
 def test_cmd_manager_pop_undo_cmd(session, command_manager):
