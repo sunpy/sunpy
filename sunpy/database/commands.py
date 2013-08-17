@@ -13,8 +13,9 @@ from sqlalchemy.exc import InvalidRequestError
 
 
 __all__ = [
-    'EmptyCommandStackError', 'NoSuchEntryError', 'DatabaseOperation',
-    'AddEntry', 'RemoveEntry', 'EditEntry', 'CommandManager']
+    'EmptyCommandStackError', 'NoSuchEntryError', 'NonRemovableTagError',
+    'DatabaseOperation', 'AddEntry', 'RemoveEntry', 'EditEntry',
+    'CommandManager']
 
 
 class EmptyCommandStackError(Exception):
@@ -36,6 +37,20 @@ class NoSuchEntryError(Exception):
         return (
             'the database entry %r cannot be removed because it '
             'is not stored in the database' % self.database_entry)
+
+
+class NonRemovableTagError(Exception):
+    """This exception is raised if it is attempted to remove a tag from a
+    database entry even though it is not saved in this entry.
+
+    """
+    def __init__(self, database_entry, tag):
+        self.database_entry = tag
+        self.tag = tag
+
+    def __str__(self):  # pragma: no cover
+        return 'the tag %s cannot be removed from the database entry %r' % (
+            self.database_entry, self.tag)
 
 
 class DatabaseOperation(object):
@@ -141,7 +156,11 @@ class RemoveTag(DatabaseOperation):
         self.tag = tag
 
     def __call__(self):
-        self.database_entry.tags.remove(self.tag)
+        try:
+            self.database_entry.tags.remove(self.tag)
+        except ValueError:
+            # tag not saved in entry
+            raise NonRemovableTagError(self.database_entry, self.tag)
 
     def undo(self):
         self.database_entry.tags.append(self.tag)
