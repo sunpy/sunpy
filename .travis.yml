@@ -54,4 +54,4 @@ script:
   - py.test
 
 notifications:
-  irc: "chat.freenode.net#Cadair"
+  irc: "chat.freenode.net#SunPy"
