@@ -53,3 +53,6 @@ install:
 script:
   - python setup.py develop
   - py.test
+
+notifications:
+  irc: "chat.freenode.net#SunPy"
