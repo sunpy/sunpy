@@ -63,6 +63,11 @@ class DatabaseOperation(object):
 
 
 class AddEntry(DatabaseOperation):
+    """Add a new database entry to this session. It is not checked whether an
+    equivalent entry is already saved in the session; this has to be checked by
+    the caller. The ``undo`` method removes the entry from the session again.
+
+    """
     def __call__(self):
         try:
             self.session.add(self.database_entry)
@@ -84,6 +89,12 @@ class AddEntry(DatabaseOperation):
 
 
 class RemoveEntry(DatabaseOperation):
+    """Remove the given database entry from the session. If it cannot be
+    removed, because it is not stored in the session,
+    :exc:`sunpy.database.NoSuchEntryError` is raised. The ``undo`` method puts
+    the database entry back into the session object.
+
+    """
     def __call__(self):
         try:
             self.session.delete(self.database_entry)
@@ -98,6 +109,13 @@ class RemoveEntry(DatabaseOperation):
 
 
 class EditEntry(DatabaseOperation):
+    """Change the properties of the database entry. The given keyword arguments
+    are used to set the attributes of the entry. The keys represent the
+    attribute name and the values represent the new value of this attribute.
+    Example: ``EditEntry(entry, foo='bar')`` will set the attribute ``foo`` of
+    ``entry`` to the value ``'bar'``.
+
+    """
     def __init__(self, database_entry, **kwargs):
         self.database_entry = database_entry
         if not kwargs:
