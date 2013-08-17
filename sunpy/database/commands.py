@@ -68,7 +68,7 @@ class AddEntry(DatabaseOperation):
             self.session.add(self.database_entry)
         except InvalidRequestError:
             # database entry cannot be added because it was removed from the
-            # database -> use the make_transient to send this object back to
+            # database -> use make_transient to send this object back to
             # the transient state
             make_transient(self.database_entry)
             self.session.add(self.database_entry)
