@@ -18,15 +18,17 @@ The database package exports the following classes and exceptions:
         - EntryNotFoundError
         - TagAlreadyAssignedError
         - NoSuchTagError
+        - NonRemovableTagError
 """
 from __future__ import absolute_import
 
 from sunpy.database.database import Database, EntryAlreadyAddedError,\
     EntryAlreadyStarredError, EntryAlreadyUnstarredError, NoSuchTagError,\
     EntryNotFoundError, TagAlreadyAssignedError
-from sunpy.database.commands import NoSuchEntryError
+from sunpy.database.commands import NoSuchEntryError, NonRemovableTagError
 
 __all__ = [
     'Database', 'EntryAlreadyAddedError', 'NoSuchEntryError', 'NoSuchTagError',
-    'EntryAlreadyStarredError', 'EntryAlreadyUnstarredError',
-    'EntryNotFoundError', 'TagAlreadyAssignedError']
+    'NonRemovableTagError', 'EntryAlreadyStarredError',
+    'EntryAlreadyUnstarredError', 'EntryNotFoundError',
+    'TagAlreadyAssignedError']
