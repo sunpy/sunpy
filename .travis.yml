@@ -1,8 +1,8 @@
 language: python
 
 python:
+  - 2.6
   - 2.7
-
 virtualenv:
      system_site_packages: false
 
@@ -11,23 +11,16 @@ virtualenv:
 env:
     global:
         - PIP_WHEEL_COMMAND="--find-links http://sunpy.cadair.com/wheelhouse/index.html --use-wheel --upgrade"
+        - MATPLOTLIB_VERSION=1.3.0 SUDS_PKG='suds-jurko'
     matrix:
-        - NUMPY_VERSION=1.7.1 MATPLOTLIB_VERSION=1.3.0 PANDAS_VERSION=0.12.0 SUDS_PKG='suds'
-matrix:
-    include:
-      - python: 2.6
-        env: NUMPY_VERSION=1.7.1 MATPLOTLIB_VERSION=1.3.0 PANDAS_VERSION=0.12.0 SUDS_PKG='suds'
-      - python: 2.7
-        env: NUMPY_VERSION=1.6.2 MATPLOTLIB_VERSION=1.3.0 PANDAS_VERSION=0.12.0 SUDS_PKG='suds'
-      - python: 2.6
-        env: NUMPY_VERSION=1.6.2 MATPLOTLIB_VERSION=1.3.0 PANDAS_VERSION=0.12.0 SUDS_PKG='suds'
-      - python: 2.7
-        env: NUMPY_VERSION=1.7.1 MATPLOTLIB_VERSION=1.3.0 PANDAS_VERSION=0.11.0 SUDS_PKG='suds'
-      - python: 2.6
-        env: NUMPY_VERSION=1.7.1 MATPLOTLIB_VERSION=1.3.0 PANDAS_VERSION=0.11.0 SUDS_PKG='suds'
+        - NUMPY_VERSION=1.7.1 PANDAS_VERSION=0.12.0
+        - NUMPY_VERSION=1.6.2 PANDAS_VERSION=0.11.0
+        - NUMPY_VERSION=1.7.1 PANDAS_VERSION=0.11.0
 
 before_install:
-   # We do this to make sure we get the dependencies so pip works below
+# Pick the suds version based on the python version
+   - if [[ $TRAVIS_PYTHON_VERSION == '2.6' ]]; then SUDS_PKG='suds' ;fi
+# We do this to make sure we get the dependencies so pip works below
    - sudo apt-get update -qq
    - sudo apt-get install -qq cython libatlas-dev liblapack-dev gfortran
    - pip install pip --upgrade
