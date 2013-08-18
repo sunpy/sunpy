@@ -151,6 +151,12 @@ class EditEntry(DatabaseOperation):
 
 
 class RemoveTag(DatabaseOperation):
+    """Remove the tag from the given database entry. If the tag cannot be
+    removed from the database entry because it is not assigned to the entry,
+    :exc:`sunpy.database.NonRemovableTagError` is raised. The ``undo`` method
+    puts the removed tag back into the tag list of the database entry.
+
+    """
     def __init__(self, database_entry, tag):
         self.database_entry = database_entry
         self.tag = tag
