@@ -6,9 +6,9 @@ python:
 virtualenv:
      system_site_packages: false
 
-#Configure the build environment. Global varibles are defined for all
-#configurations. Each configuration in the matrix is run for each python version
-#above.
+# Configure the build environment. Global varibles are defined for all
+# configurations. Each configuration in the matrix is run for each python version
+# above.
 env:
     global:
         - PIP_WHEEL_COMMAND="--find-links http://sunpy.cadair.com/wheelhouse/index.html --use-wheel --upgrade"
@@ -32,9 +32,9 @@ before_install:
    - wget http://openjpeg.googlecode.com/files/openjpeg-1.5.0-Linux-x86_64.tar.gz
    - sudo tar -xvf openjpeg-1.5.0-Linux-x86_64.tar.gz --strip-components=1 -C /
 
-#Install all SunPy dependacies using wheels.
+# Install all SunPy dependacies using wheels.
 install:
-#Install Numpy first so we force the version we are using
+# Install Numpy first so we force the version we are using
    - pip install $PIP_WHEEL_COMMAND numpy==$NUMPY_VERSION
    - pip install $PIP_WHEEL_COMMAND matplotlib==$MATPLOTLIB_VERSION
    - pip install $PIP_WHEEL_COMMAND scipy
@@ -49,6 +49,6 @@ script:
   - python setup.py develop
   - py.test --parallel=8
 
-#Notify the IRC channel of build status
+# Notify the IRC channel of build status
 notifications:
   irc: "chat.freenode.net#SunPy"
