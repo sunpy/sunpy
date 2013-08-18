@@ -43,11 +43,11 @@ install:
    - pip install $PIP_WHEEL_COMMAND pandas==$PANDAS_VERSION
    - pip install $PIP_WHEEL_COMMAND astropy
    - pip install $PIP_WHEEL_COMMAND $SUDS_PKG beautifulsoup4
-   - pip install $PIP_WHEEL_COMMAND pytest pytest-xdist
+   - pip install $PIP_WHEEL_COMMAND pytest 
 # Install SunPy and run tests.
 script:
   - python setup.py develop
-  - py.test -n 8
+  - py.test
 
 # Notify the IRC channel of build status
 notifications:
