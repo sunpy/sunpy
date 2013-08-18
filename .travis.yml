@@ -39,15 +39,15 @@ install:
    - pip install $PIP_WHEEL_COMMAND matplotlib==$MATPLOTLIB_VERSION
    - pip install $PIP_WHEEL_COMMAND scipy
 # Manually install pandas deps due to a pip 1.4 / pytz bug
-   - pip install  $PIP_WHEEL_COMMAND pytz==2013b python-dateutil
-   - pip install  $PIP_WHEEL_COMMAND pandas==$PANDAS_VERSION
-   - pip install  $PIP_WHEEL_COMMAND astropy
-   - pip install  $PIP_WHEEL_COMMAND pytest $SUDS_PKG beautifulsoup4
-
+   - pip install $PIP_WHEEL_COMMAND pytz==2013b python-dateutil
+   - pip install $PIP_WHEEL_COMMAND pandas==$PANDAS_VERSION
+   - pip install $PIP_WHEEL_COMMAND astropy
+   - pip install $PIP_WHEEL_COMMAND $SUDS_PKG beautifulsoup4
+   - pip install $PIP_WHEEL_COMMAND pytest pytest-xdist
 # Install SunPy and run tests.
 script:
   - python setup.py develop
-  - py.test --parallel=8
+  - py.test -n=8
 
 # Notify the IRC channel of build status
 notifications:
