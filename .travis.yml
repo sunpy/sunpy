@@ -47,7 +47,7 @@ install:
 # Install SunPy and run tests.
 script:
   - python setup.py develop
-  - py.test -n=8
+  - py.test -n 8
 
 # Notify the IRC channel of build status
 notifications:
