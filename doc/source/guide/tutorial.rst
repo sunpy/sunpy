@@ -20,12 +20,12 @@ step in using SunPy to work with your data.
 
 SunPy supports many different data products from various sources 'out of the box' we 
 shall use SDO's AIA instrument as an example in this tutorial. The general way to create
-a map from one of the supported data products is with the `sunpy.make_map()` command.
+a map from one of the supported data products is with the `sunpy.Map()` command.
 
-`sunpy.make_map()` takes either a filename, list of filenames data array and header. We can test map with::
+`sunpy.Map()` takes either a filename, list of filenames data array and header. We can test map with::
 
     import sunpy
-    aia = sunpy.make_map(sunpy.AIA_171_IMAGE)
+    aia = sunpy.Map(sunpy.AIA_171_IMAGE)
 
 This returns a map named aia which can be maniputated with standard SunPy map commands.
 For more information about maps checkout the :doc:`map guide <maps>`.
@@ -40,7 +40,7 @@ files have names like `sunpy.AIA_171_IMAGE` and `sunpy.RHESSI_IMAGE`.
 Try typing the below example into your interactive Python shell::
 
     import sunpy
-    aia = sunpy.make_map(sunpy.AIA_171_IMAGE)
+    aia = sunpy.Map(sunpy.AIA_171_IMAGE)
     aia.peek()
 
 If everything has been configured properly you should see an AIA image with
@@ -60,7 +60,7 @@ SunPy with matplotlib::
     import sunpy
     import matplotlib.pyplot as plt
 
-    aia = sunpy.make_map(sunpy.AIA_171_IMAGE)
+    aia = sunpy.Map(sunpy.AIA_171_IMAGE)
     
     fig = plt.figure()
     ax = plt.subplot(111)
