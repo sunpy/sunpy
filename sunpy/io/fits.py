@@ -243,7 +243,7 @@ def extract_waveunit(header):
             -15: 'fm',
             -18: 'am',
             -21: 'zm',
-            -24: 'zm'}
+            -24: 'ym'}
         waveunit = metre_submultiples.get(waveunit, str(waveunit).lower())
     elif waveunit_comment is not None:
         waveunit = parse_waveunit_comment(waveunit_comment)
