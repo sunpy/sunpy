@@ -156,7 +156,7 @@ So, let's look for the EIT and MDI data on the same day:
 
     >>> qr=client.query(vso.attrs.Time('2001/1/1', '2001/1/2'), vso.attrs.Instrument('eit') | vso.attrs.Instrument('mdi'))
     >>> qr.num_records()
-    233
+    144
     >>> qr.show() # doctest:+SKIP
     ...
 
