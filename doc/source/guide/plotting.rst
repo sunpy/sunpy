@@ -105,7 +105,7 @@ For example you can do the following ::
 
     import sunpy
     
-    smap = sunpy.make_map(sunpy.EIT_195_IMAGE)
+    smap = sunpy.Map(sunpy.EIT_195_IMAGE)
     smap.peek(draw_limb=True)
 
 This creates a plot window with all axes defined, a plot title, and the image of the map
@@ -125,7 +125,7 @@ and therefore manipulate the plot as you see fit. Here is an example of this at 
     import sunpy
     import matplotlib.pyplot as plt
     
-    smap = sunpy.make_map(sunpy.EIT_195_IMAGE)
+    smap = sunpy.Map(sunpy.EIT_195_IMAGE)
     smap.plot()
     smap.draw_limb()
     
@@ -164,7 +164,7 @@ Finally, here is a more complex example, starting from the beginning::
     from matplotlib import patches
     import sunpy
     import matplotlib.pyplot as plt
-    smap = sunpy.make_map(sunpy.AIA_171_IMAGE)
+    smap = sunpy.Map(sunpy.AIA_171_IMAGE)
     submap = map.submap([-100-250, -100+250], [-400-250, -400+250])
     rect = patches.Rectangle([-100-250, -400-250], 500, 500, color = 'white', fill=False)
         
@@ -213,7 +213,7 @@ These can be used with the standard commands to change the colormap::
     from sunpy.cm import cm
 
     cmap = cm.cmlist.get('sdoaia94')
-    smap = sunpy.make_map(sunpy.AIA_171_IMAGE)
+    smap = sunpy.Map(sunpy.AIA_171_IMAGE)
     
     fig = plt.figure()
     ax = plt.subplot(1,1,1)

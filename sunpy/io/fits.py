@@ -33,6 +33,7 @@ References
 from __future__ import absolute_import
 
 import os
+import re
 import itertools
 
 try:
@@ -42,9 +43,9 @@ except ImportError:
 
 from sunpy.io.header import FileHeader
 
-__all__ = ['read', 'get_header', 'write']
+__all__ = ['read', 'get_header', 'write', 'extract_waveunit']
 
-__author__ = "Keith Hughitt, Stuart Mumford"
+__author__ = "Keith Hughitt, Stuart Mumford, Simon Liedtke"
 __email__ = "keith.hughitt@nasa.gov"
 
 def read(filepath):
@@ -83,7 +84,9 @@ def read(filepath):
 
 def get_header(afile):
     """
-    Read a fits file and return just the headers for all HDU's
+    Read a fits file and return just the headers for all HDU's. In each header,
+    the key WAVEUNIT denotes the wavelength unit which is used to describe the
+    value of the key WAVELNTH.
     
     Parameters
     ----------
@@ -125,6 +128,7 @@ def get_header(afile):
                 if card.comment != '':
                     keydict.update({card.keyword:card.comment})
             header['KEYCOMMENTS'] = keydict
+            header['WAVEUNIT'] = extract_waveunit(header)
             
             headers.append(header)
     finally:
@@ -178,3 +182,80 @@ def write(fname, data, header, **kwargs):
     fitskwargs.update(kwargs)
     pyfits.writeto(os.path.expanduser(fname), data, header=fits_header,
                    **fitskwargs)
+
+
+def extract_waveunit(header):
+    """Attempt to read the wavelength unit from a given FITS header.
+
+    Parameters
+    ----------
+    header : FileHeader
+        One :class:`sunpy.io.header.FileHeader` instance which was created by
+        reading a FITS file. :func:`sunpy.io.fits.get_header` returns a list of
+        such instances.
+
+    Returns
+    -------
+    waveunit : str
+        The wavelength unit that could be found or ``None`` otherwise.
+
+    Examples
+    --------
+    The goal of this function is to return a string that can be used in
+    conjunction with the astropy.units module so that the return value can be
+    directly passed to ``astropy.units.Unit``::
+
+        >>> import astropy.units
+        >>> waveunit = extract_waveunit(header)
+        >>> if waveunit is not None:
+        ...     unit = astropy.units.Unit(waveunit)
+
+    """
+    # algorithm: try the following procedures in the following order and return
+    # as soon as a waveunit could be detected
+    # 1. read header('WAVEUNIT'). If None, go to step 2.
+    # 1.1 -9 -> 'nm'
+    # 1.2 -10 -> 'angstrom'
+    # 1.3 0 -> go to step 2
+    # 1.4 if neither of the above, return the value itself in lowercase
+    # 2. parse waveunit_comment
+    # 2.1 'in meters' -> 'm'
+    # 3. parse wavelnth_comment
+    # 3.1 "[$UNIT] ..." -> $UNIT
+    # 3.2 "Observed wavelength ($UNIT)" -> $UNIT
+    def parse_waveunit_comment(waveunit_comment):
+        if waveunit_comment == 'in meters':
+            return 'm'
+
+    waveunit_comment = header['KEYCOMMENTS'].get('WAVEUNIT')
+    wavelnth_comment = header['KEYCOMMENTS'].get('WAVELNTH')
+    waveunit = header.get('WAVEUNIT')
+    if waveunit is not None:
+        metre_submultiples = {
+            0: parse_waveunit_comment(waveunit_comment),
+            -1: 'dm',
+            -2: 'cm',
+            -3: 'mm',
+            -6: 'um',
+            -9: 'nm',
+            -10: 'angstrom',
+            -12: 'pm',
+            -15: 'fm',
+            -18: 'am',
+            -21: 'zm',
+            -24: 'zm'}
+        waveunit = metre_submultiples.get(waveunit, str(waveunit).lower())
+    elif waveunit_comment is not None:
+        waveunit = parse_waveunit_comment(waveunit_comment)
+    elif wavelnth_comment is not None:
+        # supported formats (where $UNIT is the unit like "nm" or "Angstrom"):
+        #   "Observed wavelength ($UNIT)"
+        #   "[$UNIT] ..."
+        parentheses_pattern = r'Observed wavelength \((\w+?)\)$'
+        brackets_pattern = r'^\[(\w+?)\]'
+        for pattern in [parentheses_pattern, brackets_pattern]:
+            m = re.search(pattern, wavelnth_comment)
+            if m is not None:
+                waveunit = m.group(1)
+                break
+    return waveunit
