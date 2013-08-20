@@ -15,7 +15,8 @@ import sunpy
 from sunpy.database import Database, EntryAlreadyAddedError,\
     EntryAlreadyStarredError, EntryAlreadyUnstarredError, NoSuchTagError,\
     EntryNotFoundError, TagAlreadyAssignedError
-from sunpy.database.tables import DatabaseEntry, FitsHeaderEntry, Tag, display_entries
+from sunpy.database.tables import DatabaseEntry, FitsHeaderEntry, Tag,\
+    display_entries
 from sunpy.database.commands import NoSuchEntryError
 from sunpy.database.caching import LRUCache, LFUCache
 from sunpy.database import attrs
@@ -1060,7 +1061,8 @@ def test_query(filled_database):
     foo.id = 1
     bar = Tag('bar')
     bar.id = 2
-    entries = filled_database.query(attrs.Tag('foo') | attrs.Tag('bar'), sortby='id')
+    entries = filled_database.query(
+        attrs.Tag('foo') | attrs.Tag('bar'), sortby='id')
     assert len(entries) == 4
     assert entries == [
         DatabaseEntry(id=4, tags=[foo]),
