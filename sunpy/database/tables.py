@@ -11,6 +11,7 @@ import fnmatch
 import os
 from itertools import imap
 
+import astropy.units
 from sqlalchemy import Column, Integer, Float, String, DateTime, Boolean,\
     Table, ForeignKey
 from sqlalchemy.orm import relationship
@@ -29,6 +30,32 @@ association_table = Table('association', Base.metadata,
     Column('tag_name', String, ForeignKey('tags.name')),
     Column('entry_id', Integer, ForeignKey('data.id'))
 )
+
+
+class WaveunitNotFoundError(Exception):
+    """This exception is raised if a wavelength unit cannot be found in a FITS
+    header or in a VSO query result block.
+
+    """
+    def __init__(self, obj):
+        self.obj = obj
+
+    def __str__(self):  # pragma: no cover
+        return 'the wavelength unit cannot be found in %s' % (self.obj,)
+
+
+class WaveunitNotConvertibleError(Exception):
+    """This exception is raised if a wavelength cannot be converted to an
+    astropy.units.Unit instance.
+
+    """
+    def __init__(self, waveunit):
+        self.waveunit = waveunit
+
+    def __str__(self):  # pragma: no cover
+        return (
+            'the waveunit %r cannot be converted to an '
+            'astropy.units.Unit instance' % (self.waveunit))
 
 
 # TODO: move this function outside this package (sunpy.util? sunpy.time?)
@@ -116,8 +143,6 @@ class DatabaseEntry(Base):
         The instrument which was used to observe the data.
     size : float
         The size of the data in kilobytes.
-    waveunit : string
-        The wave unit which has been used to measure the data (e.g. 'Angstrom')
     wavemin : float
         The value of the measured wave length.
     wavemax : float
@@ -151,7 +176,6 @@ class DatabaseEntry(Base):
     observation_time_end = Column(DateTime)
     instrument = Column(String)
     size = Column(Float)
-    waveunit = Column(String)
     wavemin = Column(Float)
     wavemax = Column(Float)
     path = Column(String)
@@ -161,11 +185,20 @@ class DatabaseEntry(Base):
     tags = relationship('Tag', secondary=association_table, backref='data')
 
     @classmethod
-    def from_query_result_block(cls, qr_block):
+    def from_query_result_block(cls, qr_block, default_waveunit=None):
         """Make a new :class:`DatabaseEntry` instance from a VSO query result
-        block. A query result block is usually not created directly; instead,
-        one gets instances of ``suds.sudsobject.QueryResponseBlock`` by
-        iterating over a VSO query result.
+        block. The values of :attr:`wavemin` and :attr:`wavemax` are converted
+        to nm (nanometres).
+
+        Parameters
+        ----------
+        qr_block : suds.sudsobject.QueryResponseBlock
+            A query result block is usually not created directly; instead,
+            one gets instances of ``suds.sudsobject.QueryResponseBlock`` by
+            iterating over a VSO query result.
+        default_waveunit : str, optional
+            The wavelength unit that is used if it cannot be found in the
+            `qr_block`.
 
         Examples
         --------
@@ -180,43 +213,81 @@ class DatabaseEntry(Base):
         time_start = timestamp2datetime('%Y%m%d%H%M%S', qr_block.time.start)
         time_end = timestamp2datetime('%Y%m%d%H%M%S', qr_block.time.end)
         wave = qr_block.wave
-        wavemin = None if wave.wavemin is None else float(wave.wavemin)
-        wavemax = None if wave.wavemax is None else float(wave.wavemax)
+        if wave.waveunit is None:
+            if default_waveunit is None:
+                raise WaveunitNotFoundError(qr_block)
+            else:
+                unit = astropy.units.Unit(default_waveunit)
+        else:
+            unit = astropy.units.Unit(wave.waveunit)
+        if wave.wavemin is None:
+            wavemin = None
+        else:
+            wavemin = unit.to(
+                astropy.units.nm,
+                float(wave.wavemin),
+                astropy.units.equivalencies.spectral())
+        if wave.wavemax is None:
+            wavemax = None
+        else:
+            wavemax = unit.to(
+                astropy.units.nm,
+                float(wave.wavemax),
+                astropy.units.equivalencies.spectral())
         physobs = getattr(qr_block, 'physobs', None)
         return cls(
             source=qr_block.source, provider=qr_block.provider,
             physobs=physobs, fileid=qr_block.fileid,
             observation_time_start=time_start, observation_time_end=time_end,
             instrument=qr_block.instrument, size=qr_block.size,
-            waveunit=wave.waveunit, wavemin=wavemin, wavemax=wavemax)
+            wavemin=wavemin, wavemax=wavemax)
 
     @classmethod
-    def from_fits_filepath(cls, path):
+    def from_fits_filepath(cls, path, default_waveunit=None):
         """Make a new :class:`DatabaseEntry` instance by using the method
         :meth:`add_fits_header_entries_from_file`. This classmethod is simply a
         shortcut for the following lines::
 
             entry = DatabaseEntry()
-            entry.add_fits_header_entries_from_file(path)
+            entry.add_fits_header_entries_from_file(path, default_waveunit)
 
         """
         entry = cls()
-        entry.add_fits_header_entries_from_file(path)
+        entry.add_fits_header_entries_from_file(path, default_waveunit)
         return entry
 
-    def add_fits_header_entries_from_file(self, fits_filepath):
+    def add_fits_header_entries_from_file(self, fits_filepath,
+            default_waveunit=None):
         """Use the header of a FITS file to add this information to this
         database entry. It will be saved in the attribute
         :attr:`fits_header_entries`. If the key INSTRUME, WAVELNTH or
         DATE-OBS / DATE_OBS is available, the attribute :attr:`instrument`,
         :attr:`wavemin` and :attr:`wavemax` or :attr:`observation_time_start`
-        is set, respectively.
+        is set, respectively. If the wavelength unit can be read, the values of
+        of :attr:`wavemin` and :attr:`wavemax` are converted to nm
+        (nanometres).
 
         Parameters
         ----------
         fits_filepath : file path or file-like object
             File to get header from.  If an opened file object, its mode
             must be one of the following rb, rb+, or ab+).
+
+        default_waveunit : str, optional
+            The wavelength unit that is used for a header if it cannot be
+            found.
+
+        Raises
+        ------
+        sunpy.database.WaveunitNotFoundError
+            If `default_waveunit` is not given and the wavelength unit cannot
+            be found in one of the FITS headers
+
+        sunpy.WaveunitNotConvertibleError
+            If a wavelength unit could be found but cannot be used to create an
+            instance of the type ``astropy.units.Unit``. This can be the case
+            for example if a FITS header has the key `WAVEUNIT` with the value
+            `nonsense`.
 
         Examples
         --------
@@ -256,12 +327,23 @@ class DatabaseEntry(Base):
             if key in ('KEYCOMMENTS', ''):
                 value = str(value)
             self.fits_header_entries.append(FitsHeaderEntry(key, value))
+        waveunit = fits.extract_waveunit(header)
+        if waveunit is None:
+            if default_waveunit is None:
+                raise WaveunitNotFoundError(fits_filepath)
+            else:
+                waveunit = default_waveunit
+        try:
+            unit = astropy.units.Unit(waveunit)
+        except ValueError:
+            raise WaveunitNotConvertibleError(waveunit)
         for header_entry in self.fits_header_entries:
             key, value = header_entry.key, header_entry.value
             if key == 'INSTRUME':
                 self.instrument = value
             elif key == 'WAVELNTH':
-                self.wavemin = self.wavemax = float(value)
+                # use the value of `unit` to convert the wavelength to nm
+                self.wavemin = self.wavemax = unit.to(astropy.units.nm, value)
             # NOTE: the key DATE-END or DATE_END is not part of the official
             # FITS standard, but many FITS files use it in their header
             elif key in ('DATE-END', 'DATE_END'):
@@ -280,7 +362,6 @@ class DatabaseEntry(Base):
             self.observation_time_end == other.observation_time_end and
             self.instrument == other.instrument and
             self.size == other.size and
-            self.waveunit == other.waveunit and
             self.wavemin == other.wavemin and
             self.wavemax == other.wavemax and
             self.path == other.path and
@@ -296,21 +377,29 @@ class DatabaseEntry(Base):
         return (
             '<%s(id %s, source %r, provider %r, physobs %r, fileid %s, '
             'observation_time_start %s, observation_time_end %s, instrument %r, '
-            'size %s, waveunit %r, wavemin %s, wavemax %s, path %r, '
+            'size %s, wavemin %s, wavemax %s, path %r, '
             'download_time %s, starred %s, fits_header_entries %r, '
             'tags %r)>') % (
                 self.__class__.__name__, self.id, self.source, self.provider,
                 self.physobs, self.fileid, self.observation_time_start,
                 self.observation_time_end, self.instrument, self.size,
-                self.waveunit, self.wavemin, self.wavemax, self.path,
+                self.wavemin, self.wavemax, self.path,
                 self.download_time, self.starred, self.fits_header_entries,
                 self.tags)
 
 
-def entries_from_query_result(qr):
+def entries_from_query_result(qr, default_waveunit=None):
     """Use a query response returned from :meth:`sunpy.net.vso.VSOClient.query`
     or :meth:`sunpy.net.vso.VSOClient.query_legacy` to generate instances of
     :class:`DatabaseEntry`. Return an iterator over those instances.
+
+    Parameters
+    ----------
+    qr : sunpy.net.vso.vso.QueryResponse
+        The query response from which to build the database entries.
+
+    default_waveunit : str, optional
+        See :meth:`sunpy.database.DatabaseEntry.from_query_result_block`.
 
     Examples
     --------
@@ -323,10 +412,12 @@ def entries_from_query_result(qr):
     <DatabaseEntry(id None, data provider SDAC, fileid /archive/soho/private/data/processed/eit/lz/2001/01/efz20010101.010014)>
 
     """
-    return (DatabaseEntry.from_query_result_block(block) for block in qr)
+    for block in qr:
+        yield DatabaseEntry.from_query_result_block(block, default_waveunit)
 
 
-def entries_from_path(fitsdir, recursive=False, pattern='*'):
+def entries_from_path(fitsdir, recursive=False, pattern='*',
+        default_waveunit=None):
     """Search the given directory for FITS files and use the corresponding FITS
     headers to generate instances of :class:`DatabaseEntry`. FITS files are
     detected by reading the content of each file, the `pattern` argument may be
@@ -349,6 +440,10 @@ def entries_from_path(fitsdir, recursive=False, pattern='*'):
         files are attempted to be read. The default is to collect all files.
         This value is passed to the function :func:`fnmatch.filter`, see its
         documentation for more information on the supported syntax.
+
+    default_waveunit : str, optional
+        See
+        :meth:`sunpy.database.tables.DatabaseEntry.add_fits_header_entries_from_file`.
 
     Returns
     -------
@@ -389,7 +484,7 @@ def entries_from_path(fitsdir, recursive=False, pattern='*'):
                     sunpy_filetools.InvalidJPEG2000FileExtension):
                 continue
             if filetype == fits:
-                yield DatabaseEntry.from_fits_filepath(path), path
+                yield DatabaseEntry.from_fits_filepath(path, default_waveunit), path
         if not recursive:
             break
 
