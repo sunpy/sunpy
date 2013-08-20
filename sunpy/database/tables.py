@@ -421,8 +421,8 @@ def entries_from_path(fitsdir, recursive=False, pattern='*',
     """Search the given directory for FITS files and use the corresponding FITS
     headers to generate instances of :class:`DatabaseEntry`. FITS files are
     detected by reading the content of each file, the `pattern` argument may be
-    used to avoid reading entire directories if one knows that all FITS files have
-    the same filename extension.
+    used to avoid reading entire directories if one knows that all FITS files
+    have the same filename extension.
 
     Parameters
     ----------
@@ -484,7 +484,9 @@ def entries_from_path(fitsdir, recursive=False, pattern='*',
                     sunpy_filetools.InvalidJPEG2000FileExtension):
                 continue
             if filetype == fits:
-                yield DatabaseEntry.from_fits_filepath(path, default_waveunit), path
+                entry = DatabaseEntry.from_fits_filepath(
+                    path, default_waveunit)
+                yield entry, path
         if not recursive:
             break
 
