@@ -38,12 +38,12 @@ def aiaprep(aiamap):
     if ((fovx < 2456.5) or (fovx > 2458.5) or
         (fovy < 2456.5) or (fovy > 2458.5)):
         
-        recentre = False
+        recenter = False
     else:
-        recentre = True
+        recenter = True
 
     aiamap = aiamap.rotate(np.radians(-instrot), scale=scale_factor,
-                           rotation_centre=(y0,x0), recentre=recentre,
+                           rotation_center=(y0,x0), recenter=recenter,
                            missing=missing_val, interpolation='bicubic',
                            interp_param=-0.5)
     
