@@ -76,6 +76,10 @@ class DatabaseOperation(object):
     def undo(self):
         return  # pragma: no cover
 
+    def __repr__(self):
+        return '<%s(session %r, entry id %s)>' % (
+            self.__class__.__name__, self.session, self.database_entry.id)
+
 
 class AddEntry(DatabaseOperation):
     """Add a new database entry to this session. It is not checked whether an

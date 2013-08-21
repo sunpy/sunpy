@@ -29,6 +29,16 @@ def command_manager():
     return CommandManager()
 
 
+def test_add_entry_repr(session):
+    entry = DatabaseEntry(id=5)
+    repr_result = repr(AddEntry(session, entry))
+    expected_repr_result = (
+        '<AddEntry('
+            'session <sqlalchemy.orm.session.Session object at %#x>, '
+            'entry id 5)>' % id(session))
+    assert repr_result == expected_repr_result
+
+
 def test_add_entry(session):
     assert not session.new
     entry = DatabaseEntry()
