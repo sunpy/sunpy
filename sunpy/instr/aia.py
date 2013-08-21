@@ -23,7 +23,7 @@ def aiaprep(aiamap):
     #I believe this is the target pixel scale for SDO data
     scale_ref = 0.6
     #Extract useful parameters from the map
-    scale_fac = aiamap.scale['x'] / scale_ref
+    scale_factor = aiamap.scale['x'] / scale_ref
     x0 = aiamap.reference_pixel['x']
     y0 = aiamap.reference_pixel['y']
     instrot = aiamap.rotation_angle['y'] #This needs to be pulled out into map.
@@ -42,7 +42,7 @@ def aiaprep(aiamap):
     else:
         recentre = True
 
-    aiamap = aiamap.rotate(np.radians(-instrot), scale=scale_fac,
+    aiamap = aiamap.rotate(np.radians(-instrot), scale=scale_factor,
                            rotation_centre=(y0,x0), recentre=recentre,
                            missing=missing_val, interpolation='bicubic',
                            interp_param=-0.5)
