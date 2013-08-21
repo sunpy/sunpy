@@ -271,7 +271,7 @@ class DatabaseEntry(Base):
         ----------
         fits_filepath : file path or file-like object
             File to get header from.  If an opened file object, its mode
-            must be one of the following rb, rb+, or ab+).
+            must be one of the following rb, rb+, or ab+.
 
         default_waveunit : str, optional
             The wavelength unit that is used for a header if it cannot be
