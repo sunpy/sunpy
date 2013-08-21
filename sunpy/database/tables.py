@@ -234,12 +234,15 @@ class DatabaseEntry(Base):
                 astropy.units.nm,
                 float(wave.wavemax),
                 astropy.units.equivalencies.spectral())
+        source = str(qr_block.source) if qr_block.source is not None else None
+        provider = str(qr_block.provider) if qr_block.provider is not None else None
+        fileid = str(qr_block.fileid) if qr_block.fileid is not None else None
+        instrument = str(qr_block.instrument) if qr_block.instrument is not None else None
         physobs = getattr(qr_block, 'physobs', None)
         return cls(
-            source=qr_block.source, provider=qr_block.provider,
-            physobs=physobs, fileid=qr_block.fileid,
+            source=source, provider=provider, physobs=physobs, fileid=fileid,
             observation_time_start=time_start, observation_time_end=time_end,
-            instrument=qr_block.instrument, size=qr_block.size,
+            instrument=instrument, size=qr_block.size,
             wavemin=wavemin, wavemax=wavemax)
 
     @classmethod
