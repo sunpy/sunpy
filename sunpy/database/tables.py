@@ -381,7 +381,7 @@ class DatabaseEntry(Base):
 
     def __repr__(self):  # pragma: no cover
         return (
-            '<%s(id %s, source %r, provider %r, physobs %r, fileid %s, '
+            '<%s(id %s, source %r, provider %r, physobs %r, fileid %r, '
             'observation_time_start %s, observation_time_end %s, instrument %r, '
             'size %s, wavemin %s, wavemax %s, path %r, '
             'download_time %s, starred %s, fits_header_entries %r, '
