@@ -352,6 +352,12 @@ class DatabaseEntry(Base):
                 self.observation_time_start = parse_time(value)
 
     def __eq__(self, other):
+        wavemins_equal = self.wavemin is None and other.wavemin is None or\
+                self.wavemin is not None and other.wavemin is not None and\
+                round(self.wavemin, 10) == round(other.wavemin, 10)
+        wavemaxs_equal = self.wavemax is None and other.wavemax is None or\
+                self.wavemax is not None and other.wavemax is not None and\
+                round(self.wavemax, 10) == round(other.wavemax, 10)
         return (
             (self.id == other.id or self.id is None or other.id is None) and
             self.source == other.source and
@@ -362,8 +368,8 @@ class DatabaseEntry(Base):
             self.observation_time_end == other.observation_time_end and
             self.instrument == other.instrument and
             self.size == other.size and
-            self.wavemin == other.wavemin and
-            self.wavemax == other.wavemax and
+            wavemins_equal and
+            wavemaxs_equal and
             self.path == other.path and
             self.download_time == other.download_time and
             bool(self.starred) == bool(other.starred) and
