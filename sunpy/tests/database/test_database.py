@@ -6,7 +6,6 @@
 from __future__ import absolute_import
 
 from datetime import datetime
-from operator import attrgetter
 
 import pytest
 import sqlalchemy
@@ -14,8 +13,7 @@ import sqlalchemy
 from sunpy.database import Database, EntryAlreadyAddedError,\
     EntryAlreadyStarredError, EntryAlreadyUnstarredError, NoSuchTagError,\
     EntryNotFoundError, TagAlreadyAssignedError
-from sunpy.database.tables import DatabaseEntry, FitsHeaderEntry, Tag,\
-    display_entries
+from sunpy.database.tables import DatabaseEntry, Tag
 from sunpy.database.commands import NoSuchEntryError
 from sunpy.database.caching import LRUCache, LFUCache
 from sunpy.database import attrs
