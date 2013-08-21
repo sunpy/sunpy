@@ -99,7 +99,7 @@ class TagAlreadyAssignedError(Exception):
 
 class Database(object):
     """
-    Database(url[, CacheClass[, cache_size]])
+    Database(url[, CacheClass[, cache_size[, default_waveunit]]])
 
     Parameters
     ----------
@@ -114,6 +114,13 @@ class Database(object):
         The default value is :class:`sunpy.database.caching.LRUCache`.
     cache_size : int
         The maximum number of database entries, default is no limit.
+    default_waveunit : str, optional
+        The wavelength unit that will be used if an entry is added to the
+        database but its wavelength unit cannot be found (either in the file or
+        the VSO query result block, depending on the way the entry was added).
+        If `None` (the default), attempting to add an entry without knowing the
+        wavelength unit results in a
+        :exc:`sunpy.database.WaveunitNotFoundError`.
 
     Attributes
     ----------
@@ -129,6 +136,9 @@ class Database(object):
 
     tags : list of sunpy.database.Tag objects
         A list of all saved tags in database. This attribute is read-only.
+
+    default_waveunit : str
+        See "Parameters" section.
 
     Methods
     -------
@@ -213,11 +223,13 @@ class Database(object):
      <DatabaseEntry(id 4, data provider None, fileid None)>]
 
     """
-    def __init__(self, url, CacheClass=LRUCache, cache_size=float('inf')):
+    def __init__(self, url, CacheClass=LRUCache, cache_size=float('inf'),
+            default_waveunit=None):
         self._engine = create_engine(url)
         self._session_cls = sessionmaker(bind=self._engine)
         self.session = self._session_cls()
         self._command_manager = commands.CommandManager()
+        self.default_waveunit = default_waveunit
 
         class Cache(CacheClass):
             def callback(this, entry_id, database_entry):
@@ -475,7 +487,9 @@ class Database(object):
 
         """
         cmds = []
-        for database_entry in tables.entries_from_query_result(query_result):
+        entries = tables.entries_from_query_result(
+            query_result, self.default_waveunit)
+        for database_entry in entries:
             # use list(self) instead of simply self because __contains__ checks
             # for existence in the database and not only all attributes except
             # ID.
@@ -518,12 +532,11 @@ class Database(object):
 
         """
         cmds = []
-        entries = []
-        for database_entry, filepath in tables.entries_from_path(path,
-                recursive, pattern):
+        entries = tables.entries_from_path(
+            path, recursive, pattern, self.default_waveunit)
+        for database_entry, filepath in entries:
             if database_entry in list(self) and not ignore_already_added:
                 raise EntryAlreadyAddedError(database_entry)
-            entries.append(database_entry)
             cmds.append(commands.AddEntry(self.session, database_entry))
             self._cache.append(database_entry)
         self._command_manager.do(cmds)
