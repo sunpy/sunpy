@@ -11,7 +11,7 @@ import fnmatch
 import os
 from itertools import imap
 
-import astropy.units
+from astropy.units import Unit, nm, equivalencies
 from sqlalchemy import Column, Integer, Float, String, DateTime, Boolean,\
     Table, ForeignKey
 from sqlalchemy.orm import relationship
@@ -217,23 +217,17 @@ class DatabaseEntry(Base):
             if default_waveunit is None:
                 raise WaveunitNotFoundError(qr_block)
             else:
-                unit = astropy.units.Unit(default_waveunit)
+                unit = Unit(default_waveunit)
         else:
-            unit = astropy.units.Unit(wave.waveunit)
+            unit = Unit(wave.waveunit)
         if wave.wavemin is None:
             wavemin = None
         else:
-            wavemin = unit.to(
-                astropy.units.nm,
-                float(wave.wavemin),
-                astropy.units.equivalencies.spectral())
+            wavemin = unit.to(nm, float(wave.wavemin), equivalencies.spectral())
         if wave.wavemax is None:
             wavemax = None
         else:
-            wavemax = unit.to(
-                astropy.units.nm,
-                float(wave.wavemax),
-                astropy.units.equivalencies.spectral())
+            wavemax = unit.to(nm, float(wave.wavemax), equivalencies.spectral())
         source = str(qr_block.source) if qr_block.source is not None else None
         provider = str(qr_block.provider) if qr_block.provider is not None else None
         fileid = str(qr_block.fileid) if qr_block.fileid is not None else None
@@ -337,7 +331,7 @@ class DatabaseEntry(Base):
             else:
                 waveunit = default_waveunit
         try:
-            unit = astropy.units.Unit(waveunit)
+            unit = Unit(waveunit)
         except ValueError:
             raise WaveunitNotConvertibleError(waveunit)
         for header_entry in self.fits_header_entries:
@@ -346,7 +340,8 @@ class DatabaseEntry(Base):
                 self.instrument = value
             elif key == 'WAVELNTH':
                 # use the value of `unit` to convert the wavelength to nm
-                self.wavemin = self.wavemax = unit.to(astropy.units.nm, value)
+                self.wavemin = self.wavemax = unit.to(
+                    nm, value, equivalencies.spectral())
             # NOTE: the key DATE-END or DATE_END is not part of the official
             # FITS standard, but many FITS files use it in their header
             elif key in ('DATE-END', 'DATE_END'):

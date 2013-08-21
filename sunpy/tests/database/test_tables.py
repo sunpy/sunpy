@@ -5,7 +5,6 @@
 
 from collections import Hashable
 from datetime import datetime
-import os
 
 from sunpy.database.tables import FitsHeaderEntry, Tag, DatabaseEntry,\
     entries_from_query_result, entries_from_path, display_entries,\
