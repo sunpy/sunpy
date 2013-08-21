@@ -50,11 +50,12 @@ def aiaprep(aiamap):
         
     
     #; Update header tag values as needed:
-    aiamap.reference_pixel['x'] = aiamap.shape[1]/2. + 0.5
-    aiamap.reference_pixel['y'] = aiamap.shape[0]/2. + 0.5
-    aiamap.scale = {'x': scale_ref, 'y':scale_ref}
-#    oindex0['CROTA2'] = 0.0
-    # %% might gack if rhs values don't exist    
-#    oindex0['R_SUN']  = iindex0['RSUN_OBS']/iindex0['CDELT1']
-#    oindex0['LVL_NUM'] = 1.5
+    aiamap.meta['crpix1'] = aiamap.shape[1]/2. + 0.5
+    aiamap.meta['crpix2'] = aiamap.shape[0]/2. + 0.5
+    aiamap.meta['cunit1'] = scale_ref
+    aiamap.meta['cunit2'] = scale_ref
+    aiamap.meta['crota1'] = 0.0
+    aiamap.meta['crota2'] = 0.0
+    aiamap.meta['lvl_num']= 1.5
+    
     return aiamap
