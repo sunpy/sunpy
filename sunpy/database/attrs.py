@@ -6,6 +6,7 @@
 from __future__ import absolute_import
 
 from sqlalchemy import or_, and_, not_
+from astropy.units import Unit, nm, equivalencies
 
 from sunpy.time import parse_time
 from sunpy.net.vso import attrs as vso_attrs
@@ -196,10 +197,13 @@ def _create(wlk, root, session):
                 query = query.filter(DatabaseEntry.path == path)
         elif typ == 'wave':
             min_, max_, unit = value
+            waveunit = Unit(unit)
+            # convert min_ and max_ to nm from the unit `waveunit`
+            wavemin = waveunit.to(nm, min_, equivalencies.spectral())
+            wavemax = waveunit.to(nm, max_, equivalencies.spectral())
             query = query.filter(and_(
-                DatabaseEntry.wavemin >= min_,
-                DatabaseEntry.wavemax <= max_,
-                DatabaseEntry.waveunit == unit))
+                DatabaseEntry.wavemin >= wavemin,
+                DatabaseEntry.wavemax <= wavemax))
         else:
             query = query.filter_by(**{typ: value})
     return query.all()
