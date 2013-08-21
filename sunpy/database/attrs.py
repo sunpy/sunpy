@@ -204,6 +204,12 @@ def _create(wlk, root, session):
             query = query.filter(and_(
                 DatabaseEntry.wavemin >= wavemin,
                 DatabaseEntry.wavemax <= wavemax))
+        elif typ == 'time':
+            start, end, near = value
+            # FIXME: how to use `near`?
+            query = query.filter(and_(
+                DatabaseEntry.observation_time_start >= start,
+                DatabaseEntry.observation_time_end <= end))
         else:
             query = query.filter_by(**{typ: value})
     return query.all()
@@ -244,3 +250,8 @@ def _convert(attr):
 @walker.add_converter(vso_attrs.Wave)
 def _convert(attr):
     return ValueAttr({('wave', ): (attr.min, attr.max, attr.unit)})
+
+
+@walker.add_converter(vso_attrs.Time)
+def _convert(attr):
+    return ValueAttr({('time', ): (attr.start, attr.end, attr.near)})

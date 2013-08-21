@@ -449,3 +449,27 @@ def test_walker_create_wave(vso_session):
             observation_time_start=datetime(2011, 6, 9, 0, 0),
             observation_time_end=datetime(2011, 6, 9, 0, 0, 1),
             instrument='AIA', size=66200.0, wavemin=17.1, wavemax=17.1)]
+
+
+@pytest.mark.slow
+def test_walker_create_time(vso_session):
+    time = vso.attrs.Time(
+        datetime(2011, 6, 8, 23, 59, 57), datetime(2011, 6, 9, 0, 0, 1))
+    entries = walker.create(time, vso_session)
+    assert len(entries) == 3
+    assert entries == [
+        tables.DatabaseEntry(id=3, source='SDO', provider='JSOC',
+            physobs='intensity', fileid='aia__lev1:131:1086652833',
+            observation_time_start=datetime(2011, 6, 8, 23, 59, 57),
+            observation_time_end=datetime(2011, 6, 8, 23, 59, 58),
+            instrument='AIA', size=66200.0, wavemin=13.1, wavemax=13.1),
+        tables.DatabaseEntry(id=4, source='SDO', provider='JSOC',
+            physobs='intensity', fileid='aia__lev1:171:1086652835',
+            observation_time_start=datetime(2011, 6, 9, 0, 0),
+            observation_time_end=datetime(2011, 6, 9, 0, 0, 1),
+            instrument='AIA', size=66200.0, wavemin=17.1, wavemax=17.1),
+        tables.DatabaseEntry(id=5, source='SDO', provider='JSOC',
+            physobs='intensity', fileid='aia__lev1:211:1086652836',
+            observation_time_start=datetime(2011, 6, 9, 0, 0),
+            observation_time_end=datetime(2011, 6, 9, 0, 0, 1),
+            instrument='AIA', size=66200.0, wavemin=21.1, wavemax=21.1)]
