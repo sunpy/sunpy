@@ -216,6 +216,20 @@ def test_tag_duplicates_before_adding(database):
         database.commit()
 
 
+def test_tag_undo(database):
+    entry = DatabaseEntry()
+    database.add(entry)
+    database.tag(entry, 'tag')
+    assert len(database.tags) == 1
+    assert len(entry.tags) == 1
+    database.undo()
+    assert len(entry.tags) == 0
+    assert len(database.tags) == 0
+    database.redo()
+    assert len(database.tags) == 1
+    assert len(entry.tags) == 1
+
+
 def remove_nonexisting_tag(database):
     with pytest.raises(NoSuchTagError):
         database.remove_tag('foo')
