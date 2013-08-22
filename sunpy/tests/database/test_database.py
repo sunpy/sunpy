@@ -315,6 +315,7 @@ def test_add_already_existing_entry_ignore(database):
     assert entry.id == 1
 
 
+@pytest.mark.slow
 def test_add_entry_from_qr(database, query_result):
     assert len(database) == 0
     database.add_from_vso_query_result(query_result)
@@ -356,6 +357,7 @@ def test_add_entry_from_qr(database, query_result):
     assert list(database) == expected_entries
 
 
+@pytest.mark.slow
 def test_add_entries_from_qr_duplicates(database, query_result):
     assert len(database) == 0
     database.add_from_vso_query_result(query_result)
@@ -364,6 +366,7 @@ def test_add_entries_from_qr_duplicates(database, query_result):
         database.add_from_vso_query_result(query_result)
 
 
+@pytest.mark.slow
 def test_add_entries_from_qr_ignore_duplicates(database, query_result):
     assert len(database) == 0
     database.add_from_vso_query_result(query_result)
