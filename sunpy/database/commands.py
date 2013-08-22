@@ -153,6 +153,10 @@ class EditEntry(DatabaseOperation):
         for k, v in self.prev_values.iteritems():
             setattr(self.database_entry, k, v)
 
+    def __repr__(self):
+        return '<EditEntry(kwargs %r, entry id %s)>' % (
+            self.kwargs, self.database_entry.id)
+
 
 class RemoveTag(DatabaseOperation):
     """Remove the tag from the given database entry. If the tag cannot be
@@ -174,6 +178,10 @@ class RemoveTag(DatabaseOperation):
 
     def undo(self):
         self.database_entry.tags.append(self.tag)
+
+    def __repr__(self):
+        return "<RemoveTag(tag '%s', entry id %s)>" % (
+            self.tag, self.database_entry.id)
 
 
 class CommandManager(object):
