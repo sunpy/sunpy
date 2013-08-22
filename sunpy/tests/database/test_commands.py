@@ -82,6 +82,12 @@ def test_add_entry_undo_precommit(session):
     assert session.query(DatabaseEntry).count() == 0
 
 
+def test_edit_entry_repr():
+    entry = DatabaseEntry(id=7)
+    expected_repr_result = "<EditEntry(kwargs {'foo': 'bar'}, entry id 7)>"
+    assert repr(EditEntry(entry, foo='bar')) == expected_repr_result
+
+
 def test_edit_entry_invalid(session):
     with pytest.raises(ValueError):
         EditEntry(DatabaseEntry())
@@ -109,6 +115,15 @@ def test_edit_entry_undo(session):
     assert entry.id == 1
 
 
+def test_remove_entry_repr(session):
+    entry = DatabaseEntry(id=3)
+    expected_repr_result = (
+        '<RemoveEntry('
+            'session <sqlalchemy.orm.session.Session object at %#x>, '
+            'entry id 3)>' % id(session))
+    assert repr(RemoveEntry(session, entry)) == expected_repr_result
+
+
 def test_remove_existing_entry(session):
     entry = DatabaseEntry()
     session.add(entry)
@@ -133,6 +148,12 @@ def test_remove_entry_undo(session):
     assert session.query(DatabaseEntry).count() == 0
     cmd.undo()
     assert session.query(DatabaseEntry).count() == 1
+
+
+def test_remove_tag_repr():
+    entry = DatabaseEntry(id=8)
+    tag = Tag('foo')
+    assert repr(RemoveTag(entry, tag)) == "<RemoveTag(tag 'foo', entry id 8)>"
 
 
 def test_remove_nonexisting_tag(session):
