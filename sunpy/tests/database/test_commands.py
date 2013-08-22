@@ -10,8 +10,8 @@ from sqlalchemy.orm import sessionmaker
 import pytest
 
 from sunpy.database.commands import AddEntry, RemoveEntry, EditEntry,\
-    RemoveTag, NoSuchEntryError, NonRemovableTagError, EmptyCommandStackError,\
-    CommandManager
+    AddTag, RemoveTag, NoSuchEntryError, NonRemovableTagError,\
+    EmptyCommandStackError, CommandManager
 from sunpy.database.tables import DatabaseEntry, Tag
 
 
@@ -148,6 +148,48 @@ def test_remove_entry_undo(session):
     assert session.query(DatabaseEntry).count() == 0
     cmd.undo()
     assert session.query(DatabaseEntry).count() == 1
+
+
+def test_add_tag_repr(session):
+    entry = DatabaseEntry(id=12)
+    tag = Tag('spam')
+    expected_repr_result = (
+        "<AddTag("
+        "tag 'spam', "
+        "session <sqlalchemy.orm.session.Session object at %#x>, "
+        "entry id 12)>" % id(session))
+    assert repr(AddTag(session, entry, tag)) == expected_repr_result
+
+
+def test_add_tag(session):
+    tag = Tag('tag')
+    entry = DatabaseEntry()
+    assert entry.tags == []
+    cmd = AddTag(session, entry, tag)
+    cmd()
+    assert tag in entry.tags
+
+
+def test_add_removed_tag(session):
+    entry = DatabaseEntry()
+    tag = Tag('tag')
+    entry.tags.append(tag)
+    session.add(tag)
+    session.commit()
+    session.delete(tag)
+    AddTag(session, entry, tag)()
+    assert tag in entry.tags
+
+
+def test_add_tag_undo_unsaved_entry(session):
+    tag = Tag('tag')
+    entry = DatabaseEntry()
+    cmd = AddTag(session, entry, tag)
+    cmd()
+    cmd.undo()
+    assert entry.tags == []
+    cmd()
+    assert tag in entry.tags
 
 
 def test_remove_tag_repr():

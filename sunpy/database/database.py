@@ -394,6 +394,7 @@ class Database(object):
             raise TypeError('at least one tag must be given')
         # avoid duplicates
         tag_names = set(tags)
+        cmds = []
         for tag_name in tag_names:
             try:
                 tag = self.get_tag(tag_name)
@@ -401,10 +402,9 @@ class Database(object):
                     raise TagAlreadyAssignedError(database_entry, tag_names)
             except NoSuchTagError:
                 # tag does not exist yet -> create it
-                database_entry.tags.append(tables.Tag(tag_name))
-            else:
-                # tag could be found in the tags table -> add this tag
-                database_entry.tags.append(tag)
+                tag = tables.Tag(tag_name)
+            cmds.append(commands.AddTag(self.session, database_entry, tag))
+        self._command_manager.do(cmds)
 
     def remove_tag(self, database_entry, tag_name):
         """Remove the given tag from the database entry. If the tag is not

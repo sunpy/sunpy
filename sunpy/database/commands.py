@@ -158,6 +158,39 @@ class EditEntry(DatabaseOperation):
             self.kwargs, self.database_entry.id)
 
 
+class AddTag(DatabaseOperation):
+    def __init__(self, session, database_entry, tag):
+        self.session = session
+        self.database_entry = database_entry
+        self.tag = tag
+
+    def __call__(self):
+        try:
+            self.database_entry.tags.append(self.tag)
+        except InvalidRequestError:
+            # self.tag cannot be added because it was just removed
+            # -> put it back to transient state
+            make_transient(self.tag)
+            self.database_entry.tags.append(self.tag)
+
+    def undo(self):
+        self.database_entry.tags.remove(self.tag)
+        if not self.tag.data:
+            # remove the tag from the database as well if it was the last tag
+            # assigned to an entry
+            try:
+                RemoveEntry(self.session, self.tag)()
+            except NoSuchEntryError:
+                # entry cannot be removed because tag is only connected to
+                # entries which are not saved in the database
+                # -> can be safely ignored
+                pass
+
+    def __repr__(self):
+        return "<AddTag(tag '%s', session %r, entry id %s)>" % (
+            self.tag, self.session, self.database_entry.id)
+
+
 class RemoveTag(DatabaseOperation):
     """Remove the tag from the given database entry. If the tag cannot be
     removed from the database entry because it is not assigned to the entry,
