@@ -271,6 +271,17 @@ def test_star_already_starred_entry(database):
         database.star(entry)
 
 
+def test_star_undo(database):
+    entry = DatabaseEntry()
+    assert not entry.starred
+    database.star(entry)
+    assert entry.starred
+    database.undo()
+    assert not entry.starred
+    database.redo()
+    assert entry.starred
+
+
 def unstar_entry(database):
     entry = DatabaseEntry()
     assert not entry.starred
@@ -288,6 +299,17 @@ def test_unstar_already_unstarred_entry(database):
 def test_unstar_already_unstarred_entry_ignore(database):
     entry = DatabaseEntry()
     database.unstar(entry, True)
+    assert not entry.starred
+
+
+def test_unstar_undo(database):
+    entry = DatabaseEntry()
+    entry.starred = True
+    database.unstar(entry)
+    assert not entry.starred
+    database.undo()
+    assert entry.starred
+    database.redo()
     assert not entry.starred
 
 

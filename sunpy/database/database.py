@@ -432,8 +432,7 @@ class Database(object):
         """
         if database_entry.starred and not ignore_already_starred:
             raise EntryAlreadyStarredError(database_entry)
-        database_entry.starred = True
-        self._cache[database_entry.id] = database_entry
+        self.edit(database_entry, starred=True)
 
     def unstar(self, database_entry, ignore_already_unstarred=False):
         """Remove the starred mark of the given entry. If this entry is not
@@ -445,8 +444,7 @@ class Database(object):
         """
         if not database_entry.starred and not ignore_already_unstarred:
             raise EntryAlreadyUnstarredError(database_entry)
-        database_entry.starred = False
-        self._cache[database_entry.id] = database_entry
+        self.edit(database_entry, starred=False)
 
     def add(self, database_entry, ignore_already_added=False):
         """Add the given database entry to the database table.
