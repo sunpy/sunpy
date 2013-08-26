@@ -57,7 +57,7 @@ class TestHelioviewerClient:
                                             instrument='MDI', detector='MDI',
                                             measurement='continuum')
         try:
-            map_ = sunpy.map.Map(filepath)
+            map_ = sunpy.Map(filepath)
         except sunpy.io.jp2.MissingOpenJPEGBinaryError:
             # We can't test JP2 decoding if binary is not available
             pass

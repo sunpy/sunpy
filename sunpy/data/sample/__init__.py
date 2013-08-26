@@ -39,3 +39,8 @@ CALLISTO_IMAGE = os.path.abspath(
 RHESSI_EVENT_LIST = os.path.abspath(
     os.path.join(rootdir, "hsi_calib_ev_20020220_1106_20020220_1106_25_40.fits")
 )
+
+#
+# swap_lv1_20120101_001607.fits
+#
+SWAP_LEVEL1_IMAGE = os.path.join(rootdir, "swap_lv1_20120101_001607.fits")

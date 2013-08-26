@@ -63,6 +63,19 @@ the instructions below to install SunPy and its requirements.
    linux
    win
 
+Anaconda
+^^^^^^^^
+Alternatively, available for all platforms is Anaconda,
+a scientific Python distribution that is available free of charge
+from `https://store.continuum.io/cshop/anaconda/ <https://store.continuum.io/cshop/anaconda/>`_.
+It comes with a complete build environment so you will not need to worry about
+installing a compiler or likewise.
+
+Head to the download page, install it and you are set. It can also be installed
+into your user directory without administrator permissions; be sure to use
+the Anaconda versions of the commands in the following listings if you have
+multiple Python environments installed.
+
 Installing Python Modules
 -------------------------
 You should now have the following  on your system; Python, Numpy, Scipy, 
@@ -160,6 +173,6 @@ Now you can test your installation. Open a new Python shell and type these
 commands: ::
 
 >>> import sunpy
->>> sunpy.make_map(sunpy.AIA_171_IMAGE).peek()
+>>> sunpy.Map(sunpy.AIA_171_IMAGE).peek()
 
 If all goes well you should see an AIA 171 image on your screen.
