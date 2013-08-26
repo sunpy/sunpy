@@ -64,10 +64,6 @@ class DatabaseOperation(object):
     """
     __metaclass__ = ABCMeta
 
-    def __init__(self, session, database_entry):
-        self.session = session
-        self.database_entry = database_entry
-
     @abstractmethod
     def __call__(self):
         return  # pragma: no cover
@@ -76,10 +72,6 @@ class DatabaseOperation(object):
     def undo(self):
         return  # pragma: no cover
 
-    def __repr__(self):
-        return '<%s(session %r, entry id %s)>' % (
-            self.__class__.__name__, self.session, self.database_entry.id)
-
 
 class AddEntry(DatabaseOperation):
     """Add a new database entry to this session. It is not checked whether an
@@ -87,6 +79,10 @@ class AddEntry(DatabaseOperation):
     the caller. The ``undo`` method removes the entry from the session again.
 
     """
+    def __init__(self, session, database_entry):
+        self.session = session
+        self.database_entry = database_entry
+
     def __call__(self):
         try:
             self.session.add(self.database_entry)
@@ -106,6 +102,10 @@ class AddEntry(DatabaseOperation):
             # entry into the pending state
             make_transient(self.database_entry)
 
+    def __repr__(self):
+        return '<%s(session %r, entry id %s)>' % (
+            self.__class__.__name__, self.session, self.database_entry.id)
+
 
 class RemoveEntry(DatabaseOperation):
     """Remove the given database entry from the session. If it cannot be
@@ -114,17 +114,25 @@ class RemoveEntry(DatabaseOperation):
     the database entry back into the session object.
 
     """
+    def __init__(self, session, entry):
+        self.session = session
+        self.entry = entry
+
     def __call__(self):
         try:
-            self.session.delete(self.database_entry)
+            self.session.delete(self.entry)
         except InvalidRequestError:
             # self.database_entry cannot be removed becaused it's not stored in
             # the database
-            raise NoSuchEntryError(self.database_entry)
+            raise NoSuchEntryError(self.entry)
 
     def undo(self):
-        make_transient(self.database_entry)
-        self.session.add(self.database_entry)
+        make_transient(self.entry)
+        self.session.add(self.entry)
+
+    def __repr__(self):
+        return '<%s(session %r, entry %r)>' % (
+            self.__class__.__name__, self.session, self.entry)
 
 
 class EditEntry(DatabaseOperation):
@@ -210,7 +218,13 @@ class RemoveTag(DatabaseOperation):
             raise NonRemovableTagError(self.database_entry, self.tag)
 
     def undo(self):
-        self.database_entry.tags.append(self.tag)
+        try:
+            self.database_entry.tags.append(self.tag)
+        except InvalidRequestError:
+            # self.tag cannot be added because it was just removed
+            # -> put it back to transient state
+            make_transient(self.tag)
+            self.database_entry.tags.append(self.tag)
 
     def __repr__(self):
         return "<RemoveTag(tag '%s', entry id %s)>" % (

@@ -250,25 +250,31 @@ def test_remove_tag(filled_database):
     assert foo not in filled_database.tags
 
 
-def test_remove_tag_undo(filled_database):
+def test_remove_tag_undo_redo(filled_database):
     foo = Tag('foo')
     foo.id = 1
     fourth_entry = filled_database.get_entry_by_id(4)
     assert foo in fourth_entry.tags
     filled_database.remove_tag(fourth_entry, 'foo')
     assert foo not in fourth_entry.tags
+    assert foo in filled_database.tags
     filled_database.undo()
     assert foo in fourth_entry.tags
+    assert foo in filled_database.tags
     filled_database.redo()
     assert foo not in fourth_entry.tags
+    assert foo in filled_database.tags
     eighth_entry = filled_database.get_entry_by_id(8)
     filled_database.remove_tag(eighth_entry, 'foo')
     assert foo not in eighth_entry.tags
     assert foo not in filled_database.tags
-    filled_database.undo(2)
+    filled_database.undo()
     assert foo not in fourth_entry.tags
     assert foo in eighth_entry.tags
     assert foo in filled_database.tags
+    filled_database.redo()
+    assert foo not in eighth_entry.tags
+    assert foo not in filled_database.tags
 
 
 def test_star_entry(database):

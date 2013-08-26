@@ -418,9 +418,15 @@ class Database(object):
 
         """
         tag = self.get_tag(tag_name)
-        self._command_manager.do(commands.RemoveTag(database_entry, tag))
+        cmds = []
+        remove_tag_cmd = commands.RemoveTag(database_entry, tag)
+        remove_tag_cmd()
+        cmds.append(remove_tag_cmd)
         if not tag.data:
-            self._command_manager.do(commands.RemoveEntry(self.session, tag))
+            remove_entry_cmd = commands.RemoveEntry(self.session, tag)
+            remove_entry_cmd()
+            cmds.append(remove_entry_cmd)
+        self._command_manager.push_undo_command(cmds)
 
     def star(self, database_entry, ignore_already_starred=False):
         """Mark the given database entry as starred. If this entry is already
