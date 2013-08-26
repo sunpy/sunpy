@@ -120,7 +120,7 @@ def test_remove_entry_repr(session):
     expected_repr_result = (
         '<RemoveEntry('
             'session <sqlalchemy.orm.session.Session object at %#x>, '
-            'entry id 3)>' % id(session))
+            'entry <DatabaseEntry(id 3)>)>' % id(session))
     assert repr(RemoveEntry(session, entry)) == expected_repr_result
 
 
