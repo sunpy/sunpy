@@ -7,7 +7,7 @@ from collections import Hashable
 from datetime import datetime
 
 from sunpy.database.tables import FitsHeaderEntry, Tag, DatabaseEntry,\
-    entries_from_query_result, entries_from_path, display_entries,\
+    entries_from_query_result, entries_from_dir, display_entries,\
     WaveunitNotFoundError
 from sunpy.net import vso
 from sunpy.data.test import rootdir as testdir
@@ -142,7 +142,7 @@ def test_add_fits_header_entries_from_file():
 
 
 def test_entries_from_path():
-    entries = list(entries_from_path(waveunitdir))
+    entries = list(entries_from_dir(waveunitdir))
     assert len(entries) == 4
     for entry, filename in entries:
         if filename.endswith('na120701.091058.fits'):
@@ -197,13 +197,13 @@ def test_entries_from_path():
 
 def test_entries_from_path_recursively_true():
     entries = list(
-        entries_from_path(testdir, True, default_waveunit='angstrom'))
+        entries_from_dir(testdir, True, default_waveunit='angstrom'))
     assert len(entries) == 22
 
 
 def test_entries_from_path_recursively_false():
     entries = list(
-        entries_from_path(testdir, False, default_waveunit='angstrom'))
+        entries_from_dir(testdir, False, default_waveunit='angstrom'))
     assert len(entries) == 5
 
 

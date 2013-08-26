@@ -536,7 +536,7 @@ class Database(object):
 
         """
         cmds = []
-        entries = tables.entries_from_path(
+        entries = tables.entries_from_dir(
             path, recursive, pattern, self.default_waveunit)
         for database_entry, filepath in entries:
             if database_entry in list(self) and not ignore_already_added:

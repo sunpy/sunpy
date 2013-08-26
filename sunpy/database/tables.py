@@ -421,7 +421,7 @@ def entries_from_query_result(qr, default_waveunit=None):
         yield DatabaseEntry.from_query_result_block(block, default_waveunit)
 
 
-def entries_from_path(fitsdir, recursive=False, pattern='*',
+def entries_from_dir(fitsdir, recursive=False, pattern='*',
         default_waveunit=None):
     """Search the given directory for FITS files and use the corresponding FITS
     headers to generate instances of :class:`DatabaseEntry`. FITS files are
