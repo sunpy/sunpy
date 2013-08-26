@@ -369,3 +369,9 @@ def test_homogenize_rightfq():
     assert_array_almost_equal(factors, [0.5], 2)
     assert_array_almost_equal(constants, [-0.5], 2)
     assert_array_almost_equal(factors[0] * b + constants[0], a)
+
+def test_extend():
+    im = CallistoSpectrogram.create(CALLISTO_IMAGE)
+    im2 = im.extend()
+    # Not too stable test, but works.
+    assert im2.data.shape == (200, 7196)

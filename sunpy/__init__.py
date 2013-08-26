@@ -38,7 +38,7 @@ coordinate systems.
 """
 from __future__ import absolute_import
 
-__version__ = 0.2
+__version__ = 0.3
 
 from sunpy.util.config import load_config, print_config
 

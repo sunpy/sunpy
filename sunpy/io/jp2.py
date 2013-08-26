@@ -36,7 +36,7 @@ def read(filepath, j2k_to_image="opj_decompress"):
     header = get_header(filepath)
     data = _get_data(filepath, j2k_to_image=j2k_to_image)
     
-    return [(data, header)]
+    return [(data, header[0])]
 
 def get_header(filepath):
     """

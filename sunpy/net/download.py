@@ -36,6 +36,7 @@ class Downloader(object):
         self.buf = 9096
 
         self.done_lock = threading.Semaphore(0)
+        self.mutex = threading.Lock()
     
     def _start_download(self, url, path, callback, errback):
         try:
@@ -51,17 +52,20 @@ class Downloader(object):
                     while True:
                         rec = sock.read(self.buf)
                         if not rec:
-                            self._close(callback, [{'path': fullname}], server)
+                            with self.mutex:
+                                self._close(callback, [{'path': fullname}], server)
                             break
                         else:
                             fd.write(rec)
         except Exception, e:
             if errback is not None:
-                errback(e)
-    
+                with self.mutex:
+                    self._close(errback, [e], server)
+
     def _attempt_download(self, url, path, callback, errback):
         """ Attempt download. If max. connection limit reached, queue for download later.
         """
+
         num_connections = self.connections[self._get_server(url)]
         
         # If max downloads has not been exceeded, begin downloading
@@ -147,13 +151,13 @@ class Downloader(object):
         """ Called after download is done. Activated queued downloads, call callback.
         """
         callback(*args)
-        
+
+        self.connections[server] -= 1
+        self.conns -= 1
+
         if self.q[server]:
-            self._start_download(*self.q[server].pop())
+            self._attempt_download(*self.q[server].pop())
         else:
-            self.connections[server] -= 1
-            self.conns -= 1
-            
             for k, v in self.q.iteritems():  # pylint: disable=W0612
                 while v:
                     if self._attempt_download(*v[0]):
@@ -162,33 +166,3 @@ class Downloader(object):
                             return
                     else:
                         break
-
-
-if __name__ == '__main__':
-    import tempfile
-
-    def wait_for(n, callback):  # pylint: disable=W0613
-        items = []
-
-        def _fun(handler):
-            print handler
-            items.append(handler)
-            if len(items) == n:
-                callback(items)
-        return _fun
-
-    tmp = tempfile.mkdtemp()
-    print tmp
-    path_fun = partial(default_name, tmp)
-    
-    dw = Downloader(1, 2)
-    
-    on_finish = wait_for(4, lambda _: dw.stop())
-    dw.download('ftp://speedtest.inode.at/speedtest-5mb', path_fun, on_finish)
-    dw.download('ftp://speedtest.inode.at/speedtest-20mb', path_fun, on_finish)
-    dw.download('https://bitsrc.org', path_fun, on_finish)
-    dw.download('ftp://speedtest.inode.at/speedtest-100mb', path_fun, on_finish)
-    
-    print dw.conns
-    
-    dw.wait()
