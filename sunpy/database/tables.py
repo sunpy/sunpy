@@ -378,18 +378,19 @@ class DatabaseEntry(Base):
         return not (self == other)
 
     def __repr__(self):  # pragma: no cover
-        return (
-            '<%s(id %s, source %r, provider %r, physobs %r, fileid %r, '
-            'observation_time_start %s, observation_time_end %s, instrument %r, '
-            'size %s, wavemin %s, wavemax %s, path %r, '
-            'download_time %s, starred %s, fits_header_entries %r, '
-            'tags %r)>') % (
-                self.__class__.__name__, self.id, self.source, self.provider,
-                self.physobs, self.fileid, self.observation_time_start,
-                self.observation_time_end, self.instrument, self.size,
-                self.wavemin, self.wavemax, self.path,
-                self.download_time, self.starred, self.fits_header_entries,
-                self.tags)
+        attrs = [
+            'id', 'source', 'provider', 'physobs', 'fileid',
+            'observation_time_start', 'observation_time_end', 'instrument',
+            'size', 'wavemin', 'wavemax', 'path', 'download_time', 'starred',
+            'fits_header_entries', 'tags']
+        ret = '<%s(' % (self.__class__.__name__,)
+        for attr in attrs:
+            value = getattr(self, attr, None)
+            if value:
+                ret += '%s %r, ' % (attr, value)
+        ret = ret.rstrip(', ')
+        ret += ')>'
+        return ret
 
 
 def entries_from_query_result(qr, default_waveunit=None):
