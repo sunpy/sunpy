@@ -321,10 +321,27 @@ def entries_from_query_result(qr, default_waveunit=None):
     >>> from sunpy.net import vso
     >>> from sunpy.database import entries_from_query_result
     >>> client = vso.VSOClient()
-    >>> qr = client.query(vso.attrs.Time('2001/1/1', '2001/1/2'), vso.attrs.Instrument('eit'))
+    >>> qr = client.query(
+    ...     vso.attrs.Time('2001/1/1', '2001/1/2'),
+    ...     vso.attrs.Instrument('eit'))
     >>> entries = entries_from_query_result(qr)
-    >>> entries.next()
-    <DatabaseEntry(id None, data provider SDAC, fileid /archive/soho/private/data/processed/eit/lz/2001/01/efz20010101.010014)>
+    >>> entry = entries.next()
+    >>> entry.source
+    'SOHO'
+    >>> entry.provider
+    'SDAC'
+    >>> entry.physobs
+    'intensity'
+    >>> entry.fileid
+    '/archive/soho/private/data/processed/eit/lz/2001/01/efz20010101.010014'
+    >>> entry.observation_time_start, entry.observation_time_end
+    (datetime.datetime(2001, 1, 1, 1, 0, 14), datetime.datetime(2001, 1, 1, 1, 0, 21))
+    >>> entry.instrument
+    'EIT'
+    >>> entry.size
+    2059.0
+    >>> entry.wavemin, entry.wavemax
+    (17.1, 17.1)
 
     """
     for block in qr:
