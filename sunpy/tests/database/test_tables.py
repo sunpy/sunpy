@@ -12,7 +12,7 @@ from sunpy.database.tables import FitsHeaderEntry, Tag, DatabaseEntry,\
 from sunpy.net import vso
 from sunpy.data.test import rootdir as testdir
 from sunpy.data.test.waveunit import waveunitdir, MQ_IMAGE
-from sunpy.data.sample import RHESSI_IMAGE
+from sunpy.data.sample import RHESSI_IMAGE, EIT_195_IMAGE
 
 import pytest
 
@@ -137,8 +137,11 @@ def test_entries_from_file():
 
 
 def test_entries_from_file_withoutwaveunit():
+    # does not raise `WaveunitNotFoundError`, because no wavelength information
+    # is present in this file
+    entries_from_file(RHESSI_IMAGE).next()
     with pytest.raises(WaveunitNotFoundError):
-        entries_from_file(RHESSI_IMAGE).next()
+        entries_from_file(EIT_195_IMAGE).next()
 
 
 def test_entries_from_dir():

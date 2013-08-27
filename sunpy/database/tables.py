@@ -414,19 +414,20 @@ def entries_from_file(file, default_waveunit=None):
             entry.fits_header_entries.append(FitsHeaderEntry(key, value))
         waveunit = fits.extract_waveunit(header)
         if waveunit is None:
-            if default_waveunit is None:
-                raise WaveunitNotFoundError(file)
-            else:
-                waveunit = default_waveunit
-        try:
-            unit = Unit(waveunit)
-        except ValueError:
-            raise WaveunitNotConvertibleError(waveunit)
+            waveunit = default_waveunit
+        unit = None
+        if waveunit is not None:
+            try:
+                unit = Unit(waveunit)
+            except ValueError:
+                raise WaveunitNotConvertibleError(waveunit)
         for header_entry in entry.fits_header_entries:
             key, value = header_entry.key, header_entry.value
             if key == 'INSTRUME':
                 entry.instrument = value
             elif key == 'WAVELNTH':
+                if unit is None:
+                    raise WaveunitNotFoundError(file)
                 # use the value of `unit` to convert the wavelength to nm
                 entry.wavemin = entry.wavemax = unit.to(
                     nm, value, equivalencies.spectral())
