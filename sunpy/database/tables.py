@@ -215,7 +215,7 @@ class DatabaseEntry(Base):
         >>> entry.provider
         'SDAC'
         >>> entry.physobs
-        intensity
+        'intensity'
         >>> entry.fileid
         '/archive/soho/private/data/processed/eit/lz/2001/01/efz20010101.010014'
         >>> entry.observation_time_start, entry.observation_time_end
@@ -251,6 +251,8 @@ class DatabaseEntry(Base):
         fileid = str(qr_block.fileid) if qr_block.fileid is not None else None
         instrument = str(qr_block.instrument) if qr_block.instrument is not None else None
         physobs = getattr(qr_block, 'physobs', None)
+        if physobs is not None:
+            physobs = str(physobs)
         return cls(
             source=source, provider=provider, physobs=physobs, fileid=fileid,
             observation_time_start=time_start, observation_time_end=time_end,
