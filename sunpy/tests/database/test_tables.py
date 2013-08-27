@@ -7,8 +7,8 @@ from collections import Hashable
 from datetime import datetime
 
 from sunpy.database.tables import FitsHeaderEntry, Tag, DatabaseEntry,\
-    entries_from_query_result, entries_from_dir, display_entries,\
-    WaveunitNotFoundError
+    entries_from_query_result, entries_from_dir, entries_from_file,\
+    display_entries, WaveunitNotFoundError
 from sunpy.net import vso
 from sunpy.data.test import rootdir as testdir
 from sunpy.data.test.waveunit import waveunitdir, MQ_IMAGE
@@ -90,15 +90,10 @@ def test_entry_from_qr_block_with_missing_physobs(qr_block_with_missing_physobs)
     assert entry == expected_entry
 
 
-def test_add_fits_header_entries_from_file_missing_waveunit():
-    with pytest.raises(WaveunitNotFoundError):
-        DatabaseEntry.from_fits_filepath(RHESSI_IMAGE)
-
-
-def test_add_fits_header_entries_from_file():
-    entry = DatabaseEntry()
-    assert entry.fits_header_entries == []
-    entry.add_fits_header_entries_from_file(MQ_IMAGE)
+def test_entries_from_file():
+    entries = list(entries_from_file(MQ_IMAGE))
+    assert len(entries) == 1
+    entry = entries[0]
     assert len(entry.fits_header_entries) == 32
     expected_fits_header_entries = [
         FitsHeaderEntry('SIMPLE', True),
@@ -139,6 +134,11 @@ def test_add_fits_header_entries_from_file():
     assert entry.observation_time_end == datetime(2013, 8, 12, 8, 42, 53)
     assert round(entry.wavemin, 1) == 656.3
     assert round(entry.wavemax, 1) == 656.3
+
+
+def test_entries_from_file_withoutwaveunit():
+    with pytest.raises(WaveunitNotFoundError):
+        entries_from_file(RHESSI_IMAGE).next()
 
 
 def test_entries_from_dir():
