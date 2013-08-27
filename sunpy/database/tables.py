@@ -510,7 +510,6 @@ def entries_from_dir(fitsdir, recursive=False, pattern='*',
     Examples
     --------
     >>> from pprint import pprint
-    >>> from sunpy.database import entries_from_path
     >>> from sunpy.data.test import rootdir as fitsdir
     >>> entries = list(entries_from_dir(fitsdir))
     >>> len(entries)
