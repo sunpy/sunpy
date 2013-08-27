@@ -7,43 +7,59 @@ __email__ = "keith.hughitt@nasa.gov"
 import numpy as np
 from matplotlib import colors
 
-from sunpy.map import Map
+from sunpy.map import GenericMap
 from sunpy.sun import constants
 from sunpy.sun import sun
 from sunpy.cm import cm
-from sunpy.time import parse_time
+from sunpy.time import parse_time, is_time
 
 __all__ = ['EITMap', 'LASCOMap', 'MDIMap']
 
-class EITMap(Map):
+def _dsunAtSoho(date, rad_d, rad_1au = None):
+    """Determines the distance to the Sun from SOhO following
+    d_{\sun,Object} =
+            D_{\sun\earth} \frac{\tan(radius_{1au}[rad])}{\tan(radius_{d}[rad])}
+    though tan x ~ x for x << 1
+    d_{\sun,Object} =
+            D_{\sun\eart} \frac{radius_{1au}[rad]}{radius_{d}[rad]}
+    since radius_{1au} and radius_{d} are dividing each other we can use [arcsec]
+    instead. 
+
+    ---
+    TODO: Does this apply just to observations on the same Earth-Sun line?
+    If not it can be moved outside here.
+    """
+    if not rad_1au:
+        rad_1au = sun.solar_semidiameter_angular_size(date)
+    return  sun.sunearth_distance(date) * constants.au * (rad_1au / rad_d)
+
+
+class EITMap(GenericMap):
     """EIT Image Map definition"""
-    @classmethod
-    def get_properties(cls, header):
-        """Parses EIT image header"""
-        properties = Map.get_properties(header)
+    
+    def __init__(self, data, header, **kwargs):
         
-        # Solar radius in arc-seconds at 1 au
-        radius_1au = sun.angular_size(header.get('date-obs',
-                                                 header.get('date_obs')))
+        GenericMap.__init__(self, data, header, **kwargs)
         
-        scale = header.get("cdelt1")
-        # EIT solar radius is expressed in number of EIT pixels
-        solar_r = header.get("solar_r")
+        # Fill in some missing info
+        self.meta['detector'] = "EIT"
+        self._fix_dsun()
         
-        properties.update({
-            "date": parse_time(header.get('date-obs',header.get('date_obs'))),
-            "detector": "EIT",
-            "rsun_arcseconds": solar_r * scale,
-            "dsun": ((radius_1au / 
-                      (solar_r * scale)) * constants.au),
-            "name": "EIT %s" % header.get('wavelnth'),
-            "nickname": "EIT",
-            "cmap": cm.get_cmap('sohoeit%d' % header.get('wavelnth'))
-        })
-        return properties
+        self._name = self.detector + " " + str(self.measurement)
+        self._nickname = self.detector
+        
+        self.cmap = cm.get_cmap('sohoeit%d' % self.wavelength)
+    
+    @property
+    def rsun_arcseconds(self):
+        return self.meta['solar_r'] * self.meta['cdelt1']
+        
+    def _fix_dsun(self):
+        dsun = _dsunAtSoho(self.date, self.rsun_arcseconds)
+        self.meta['dsun_obs'] = dsun
 
     @classmethod
-    def is_datasource_for(cls, header):
+    def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an EIT image"""
         return header.get('instrume') == 'EIT'
 
@@ -61,71 +77,74 @@ class EITMap(Map):
 
         return colors.LogNorm(vmin, vmax)
 
-class LASCOMap(Map):
+class LASCOMap(GenericMap):
     """LASCO Image Map definition"""
+    
+    def __init__(self, data, header, **kwargs):
+        
+        GenericMap.__init__(self, data, header, **kwargs)
+        
+        # Fill in some missing or broken info
+        self._fix_date()
+        
+        self._name = self.instrument + " " + self.detector
+        self._nickname = self.instrument + "-" + self.detector
+                
+        self.cmap = cm.get_cmap('soholasco%s' % self.detector[1])
+        
+    @property
+    def measurement(self):
+        # TODO: This needs to do more than white-light.  Should give B, pB, etc.
+        return "white-light"
+    
+    def _fix_date(self):
+        datestr = "%sT%s" % (self.meta.get('date-obs',self.meta.get('date_obs')),
+                     self.meta.get('time-obs',self.meta.get('time_obs')))
+
+        # If non-standard Keyword is present, correct it too, for compatibility.
+        if 'date_obs' in self.meta:
+            self.meta['date_obs'] = self.meta['date-obs']
+            
+        
     @classmethod
-    def get_properties(cls, header):
-        """Parses LASCO image header"""
-        properties = Map.get_properties(header)
-        
-        datestr = "%sT%s" % (header.get('date-obs',header.get('date_obs')),
-                             header.get('time-obs',header.get('time_obs')))
-        
-        properties.update({
-            "date": parse_time(datestr),
-            "measurement": "white-light",
-            "name": "LASCO %s" % header.get('detector'),
-            "nickname": "LASCO-%s" % header.get('detector'),
-            "cmap": cm.get_cmap('soholasco%s' % properties['detector'][1])
-        })
-        return properties
-        
-    @classmethod
-    def is_datasource_for(cls, header):
+    def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an LASCO image"""
         return header.get('instrume') == 'LASCO'
         
-class MDIMap(Map):
+class MDIMap(GenericMap):
     """MDI Image Map definition"""
-    @classmethod
-    def get_properties(cls, header):
-        """Parses MDI image header"""
-        properties = Map.get_properties(header)
+    
+    def __init__(self, data, header, **kwargs):
         
-        # MDI sometimes has an "60" in seconds field
-        datestr = header.get('date-obs',header.get('date_obs'))
-
-        if datestr[17:19] == "60":
-            datestr = datestr[:17] + "30" + datestr[19:]
-            
-        rsun = header.get('radius')
+        GenericMap.__init__(self, data, header, **kwargs)
         
+        # Fill in some missing or broken info
+        self.meta['detector'] = "MDI"
+        self._fix_dsun()
+        
+        self._name = self.observatory + " " + self.detector
+        self._nickname = self.detector + " " + self.measurement
+        
+    @property
+    def measurement(self):
+        # TODO: This needs to do more than white-light.  Should give B, pB, etc.
+        return "magnetogram" if self.meta['dpc_obsr'].find('Mag') != -1 else "continuum"
+        
+    def _fix_dsun(self):
         # Solar radius in arc-seconds at 1 au
         # previous value radius_1au = 959.644
-        radius_1au = constants.average_angular_size
+        # radius = constants.average_angular_size
+        radius = self.meta.get('radius')
         
-        # MDI images may have radius = 0.0
-        if not rsun:
-            dsun = constants.au
+        if not radius:
+#            radius = sun.angular_size(self.date)
+            self.meta['dsun_obs'] = constants.au
         else:
-            scale = header.get("cdelt1")
-            dsun = (radius_1au / (rsun * scale)) * constants.au
-            
-        # Determine measurement
-        dpcobsr = header.get('dpc_obsr')
-        meas = "magnetogram" if dpcobsr.find('Mag') != -1 else "continuum"
-        
-        properties.update({
-            "date": parse_time(datestr),
-            "detector": "MDI",
-            "measurement": meas,
-            "dsun": dsun,
-            "name": "MDI %s" % meas,
-            "nickname": "MDI"
-        })
-        return properties
+            scale = self.meta.get('cdelt1')
+            self.meta['dsun_obs'] = _dsunAtSoho(self.date, radius * scale)
         
     @classmethod
-    def is_datasource_for(cls, header):
+    def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an MDI image"""
         return header.get('instrume') == 'MDI'
+

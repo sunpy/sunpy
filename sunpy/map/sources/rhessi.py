@@ -4,13 +4,13 @@
 __author__ = "Steven Christe"
 __email__ = "steven.d.christe@nasa.gov"
 
-from sunpy.map import Map
+from sunpy.map import GenericMap
 from sunpy.cm import cm
 from sunpy.time import parse_time
 
 __all__ = ['RHESSIMap']
 
-class RHESSIMap(Map):
+class RHESSIMap(GenericMap):
     """RHESSI Image Map definition
     
     References
@@ -21,31 +21,32 @@ class RHESSIMap(Map):
     TODO: Currently (8/29/2011), cannot read fits files containing more than one 
     image (schriste)
     """
-    @classmethod
-    def get_properties(cls, header):
-        """Parses RHESSI image header"""
-        properties = Map.get_properties(header)
+    
+    def __init__(self, data, header, **kwargs):
         
-        properties.update({
-            "date": parse_time(header.get('date_obs')),
-            
-            "detector": header.get('telescop'),
-            "instrument": header.get('telescop'),
-            "measurement": [header.get('energy_l'), header.get('energy_h')],
-            "observatory": "SDO",
-            "name": "RHESSI %d - %d keV" % (header.get('energy_l'), 
-                                            header.get('energy_h')),
-            "cmap": cm.get_cmap('rhessi'),
-            "exposure_time": (parse_time(header.get('date_end')) - 
-                              parse_time(header.get('date_obs'))).seconds,
-            "coordinate_system": {
-                'x': 'HPLN-TAN',
-                'y': 'HPLT-TAN'
-            }
-        })
-        return properties
-
+        GenericMap.__init__(self, data, header, **kwargs)
+        
+        self._name = "RHESSI %d - %d keV" % (self.measurement[0], self.measurement[1])
+        self._nickname = self.detector
+        
+        # Fix some broken/misapplied keywords
+        if self.meta['ctype1'] == 'arcsec':
+            self.meta['cunit1'] = 'arcsec'
+            self.meta['ctype1'] = 'HPLN-TAN'
+        if self.meta['ctype2'] == 'arcsec':
+            self.meta['cunit2'] = 'arcsec'
+            self.meta['ctype2'] = 'HPLT-TAN'
+        
+    @property
+    def measurement(self):
+        return [self.meta['energy_l'], self.meta['energy_h']]
+    
+    @property
+    def detector(self):
+        return self.meta['telescop']    
+    
     @classmethod
-    def is_datasource_for(cls, header):
-        """Determines if header corresponds to an AIA image"""
+    def is_datasource_for(cls, data, header, **kwargs):
+        """Determines if header corresponds to an RHESSI image"""
         return header.get('instrume') == 'RHESSI'
+

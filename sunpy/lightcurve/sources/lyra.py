@@ -7,7 +7,10 @@ import datetime
 import urlparse
 
 from matplotlib import pyplot as plt
-import pyfits
+try:
+    import astropy.io.fits as pyfits
+except ImportError:
+    import pyfits
 import pandas
 
 import sunpy
