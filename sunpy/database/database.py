@@ -191,39 +191,6 @@ class Database(object):
     __len__()
         Get the number of database entries.
 
-    Examples
-    --------
-    >>> database = Database('sqlite:///:memory:', LFUCache, 3)
-    >>> database.create_tables()
-    >>> database.add(DatabaseEntry())
-    >>> database.add(DatabaseEntry())
-    >>> database.add(DatabaseEntry())
-    >>> pprint(list(database))
-    [<DatabaseEntry(id 1, data provider None, fileid None)>,
-     <DatabaseEntry(id 2, data provider None, fileid None)>,
-     <DatabaseEntry(id 3, data provider None, fileid None)>]
-    >>> database.get_entry_by_id(1)
-    <DatabaseEntry(id 1, data provider None, fileid None)>
-    >>> database.get_entry_by_id(3)
-    <DatabaseEntry(id 3, data provider None, fileid None)>
-    >>> database.get_entry_by_id(3)
-    <DatabaseEntry(id 3, data provider None, fileid None)>
-    >>> database.add(DatabaseEntry())
-    >>> pprint(list(database))
-    [<DatabaseEntry(id 1, data provider None, fileid None)>,
-     <DatabaseEntry(id 3, data provider None, fileid None)>,
-     <DatabaseEntry(id 4, data provider None, fileid None)>]
-    >>> database.add(DatabaseEntry())
-    >>> pprint(list(database))
-    [<DatabaseEntry(id 1, data provider None, fileid None)>,
-     <DatabaseEntry(id 3, data provider None, fileid None)>,
-     <DatabaseEntry(id 5, data provider None, fileid None)>]
-    >>> database.undo(2)
-    >>> pprint(list(database))
-    [<DatabaseEntry(id 1, data provider None, fileid None)>,
-     <DatabaseEntry(id 3, data provider None, fileid None)>,
-     <DatabaseEntry(id 4, data provider None, fileid None)>]
-
     """
     def __init__(self, url, CacheClass=LRUCache, cache_size=float('inf'),
             default_waveunit=None):
