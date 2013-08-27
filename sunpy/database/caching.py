@@ -178,7 +178,7 @@ class BaseCache(object):
 
     @classmethod
     def fromkeys(cls, iterable, value=None):  # pragma: no cover
-        return self._dict.__class__.fromkeys(iterable, value)
+        return OrderedDict.fromkeys(iterable, value)
 
 
 class LRUCache(BaseCache):
