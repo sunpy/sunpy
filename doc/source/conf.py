@@ -98,7 +98,7 @@ MOCK_MODULES = [
     'sunpy.gui.ui.mainwindow.widgets.toolbars',
     'sunpy.gui.ui.mainwindow.resources',
 
-    'scipy.constants']
+    'scipy.constants', 'astropy.units']
 
 if not tags.has('doctest'):
     for mod_name in MOCK_MODULES:
