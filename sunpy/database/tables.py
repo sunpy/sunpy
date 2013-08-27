@@ -71,7 +71,7 @@ class FitsHeaderEntry(Base):
     dbentry_id = Column(Integer, ForeignKey('data.id'))
     id = Column(Integer, primary_key=True)
     key = Column(String, nullable=False)
-    value = Column(String, nullable=False)
+    value = Column(String)
 
     def __init__(self, key, value):
         self.key = key
@@ -97,7 +97,7 @@ class FitsKeyComment(Base):
     dbentry_id = Column(Integer, ForeignKey('data.id'))
     id = Column(Integer, primary_key=True)
     key = Column(String, nullable=False)
-    value = Column(String, nullable=False)
+    value = Column(String)
 
     def __init__(self, key, value):
         self.key = key
