@@ -41,7 +41,7 @@ class BaseCache(object):
 
     def __init__(self, maxsize=float('inf')):
         self.maxsize = maxsize
-        self.dict = OrderedDict()
+        self._dict = OrderedDict()
 
     def get(self, key, default=None):  # pragma: no cover
         """Return the corresponding value to `key` if `key` is in the cache,
@@ -51,7 +51,7 @@ class BaseCache(object):
 
         """
         try:
-            return self.dict[key]
+            return self._dict[key]
         except KeyError:
             return default
 
@@ -101,84 +101,84 @@ class BaseCache(object):
         False otherwise.
 
         """
-        return len(self.dict) == self.maxsize
+        return len(self._dict) == self.maxsize
 
     def __delitem__(self, key):
-        self.dict.__delitem__(key)
+        self._dict.__delitem__(key)
 
     def __contains__(self, key):
-        return key in self.dict.keys()
+        return key in self._dict.keys()
 
     def __len__(self):
-        return len(self.dict)
+        return len(self._dict)
 
     def __iter__(self):
-        for key in self.dict.__iter__():
+        for key in self._dict.__iter__():
             yield key
 
     def __reversed__(self):  # pragma: no cover
-        for key in self.dict.__reversed__():
+        for key in self._dict.__reversed__():
             yield key
 
     def clear(self):  # pragma: no cover
-        return self.dict.clear()
+        return self._dict.clear()
 
     def keys(self):  # pragma: no cover
-        return self.dict.keys()
+        return self._dict.keys()
 
     def values(self):  # pragma: no cover
-        return self.dict.values()
+        return self._dict.values()
 
     def items(self):  # pragma: no cover
-        return self.dict.items()
+        return self._dict.items()
 
     def iterkeys(self):  # pragma: no cover
-        return self.dict.iterkeys()
+        return self._dict.iterkeys()
 
     def itervalues(self):  # pragma: no cover
-        for value in self.dict.itervalues():
+        for value in self._dict.itervalues():
             yield value
 
     def iteritems(self):  # pragma: no cover
-        for key, value in self.dict.iteritems():
+        for key, value in self._dict.iteritems():
             yield key, value
 
     def update(self, *args, **kwds):  # pragma: no cover
-        self.dict.update(*args, **kwds)
+        self._dict.update(*args, **kwds)
 
     def pop(self, key, default=MutableMapping._MutableMapping__marker):  # pragma: no cover
-        return self.dict.pop(key, default)
+        return self._dict.pop(key, default)
 
     def setdefault(self, key, default=None):  # pragma: no cover
-        return self.dict.setdefault(key, default)
+        return self._dict.setdefault(key, default)
 
     def popitem(self, last=True):  # pragma: no cover
-        return self.dict.popitem(last)
+        return self._dict.popitem(last)
 
     def __reduce__(self):  # pragma: no cover
-        return self.dict.__reduce__()
+        return self._dict.__reduce__()
 
     def copy(self):  # pragma: no cover
-        return self.dict.copy()
+        return self._dict.copy()
 
     def __eq__(self, other):  # pragma: no cover
-        return self.dict.__eq__(other)
+        return self._dict.__eq__(other)
 
     def __ne__(self, other):  # pragma: no cover
-        return self.dict.__ne__(other)
+        return self._dict.__ne__(other)
 
     def viewkeys(self):  # pragma: no cover
-        return self.dict.viewkeys()
+        return self._dict.viewkeys()
 
     def viewvalues(self):  # pragma: no cover
-        return self.dict.viewvalues()
+        return self._dict.viewvalues()
 
     def viewitems(self):  # pragma: no cover
-        return self.dict.viewitems()
+        return self._dict.viewitems()
 
     @classmethod
     def fromkeys(cls, iterable, value=None):  # pragma: no cover
-        return self.dict.__class__.fromkeys(iterable, value)
+        return self._dict.__class__.fromkeys(iterable, value)
 
 
 class LRUCache(BaseCache):
@@ -214,9 +214,9 @@ class LRUCache(BaseCache):
 
         """
         if key in self:
-            value = self.dict.__getitem__(key)
+            value = self._dict.__getitem__(key)
             del self[key]
-            self.dict.__setitem__(key, value)
+            self._dict.__setitem__(key, value)
             return value
         raise KeyError
 
@@ -231,7 +231,7 @@ class LRUCache(BaseCache):
             del self[key]
         if self.is_full:
             self.remove()
-        self.dict.__setitem__(key, value)
+        self._dict.__setitem__(key, value)
 
 
 class LFUCache(BaseCache):
@@ -279,7 +279,7 @@ class LFUCache(BaseCache):
             If the key cannot be found in the cache.
 
         """
-        value = self.dict.__getitem__(key)
+        value = self._dict.__getitem__(key)
         self.usage_counter[key] += 1
         return value
 
@@ -293,4 +293,4 @@ class LFUCache(BaseCache):
         self.usage_counter[key] += 1
         if self.is_full:
             self.remove()
-        self.dict.__setitem__(key, value)
+        self._dict.__setitem__(key, value)
