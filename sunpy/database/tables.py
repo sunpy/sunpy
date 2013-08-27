@@ -205,11 +205,27 @@ class DatabaseEntry(Base):
         Examples
         --------
         >>> from sunpy.net import vso
-        >>> from sunpy.database import DatabaseEntry
         >>> client = vso.VSOClient()
-        >>> qr = client.query(vso.attrs.Time('2001/1/1', '2001/1/2'), vso.attrs.Instrument('eit'))
-        >>> DatabaseEntry.from_query_result_block(qr[0])
-        <DatabaseEntry(id None, data provider SDAC, fileid /archive/soho/private/data/processed/eit/lz/2001/01/efz20010101.010014)>
+        >>> qr = client.query(
+        ...     vso.attrs.Time('2001/1/1', '2001/1/2'),
+        ...     vso.attrs.Instrument('eit'))
+        >>> entry = DatabaseEntry.from_query_result_block(qr[0])
+        >>> entry.source
+        'SOHO'
+        >>> entry.provider
+        'SDAC'
+        >>> entry.physobs
+        intensity
+        >>> entry.fileid
+        '/archive/soho/private/data/processed/eit/lz/2001/01/efz20010101.010014'
+        >>> entry.observation_time_start, entry.observation_time_end
+        (datetime.datetime(2001, 1, 1, 1, 0, 14), datetime.datetime(2001, 1, 1, 1, 0, 21))
+        >>> entry.instrument
+        'EIT'
+        >>> entry.size
+        2059.0
+        >>> entry.wavemin, entry.wavemax
+        (17.1, 17.1)
 
         """
         time_start = timestamp2datetime('%Y%m%d%H%M%S', qr_block.time.start)
