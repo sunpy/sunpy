@@ -335,7 +335,9 @@ class Database(object):
         'bar' (or both).
 
         >>> from pprint import pprint
-        >>> pprint(database.query(~attrs.Starred(), attrs.Tag('foo') | attrs.Tag('bar'), sortby='id'))
+        >>> pprint(database.query(
+        ...     ~attrs.Starred(), attrs.Tag('foo') | attrs.Tag('bar'),
+        ...     sortby='id'))
         [<DatabaseEntry(id 4, data provider None, fileid None)>,
          <DatabaseEntry(id 5, data provider None, fileid None)>,
          <DatabaseEntry(id 8, data provider None, fileid None)>,
@@ -476,7 +478,8 @@ class Database(object):
         else:
             self._cache[database_entry.id] = database_entry
 
-    def add_from_vso_query_result(self, query_result, ignore_already_added=False):
+    def add_from_vso_query_result(self, query_result,
+            ignore_already_added=False):
         """Generate database entries from a VSO query result and add all the
         generated entries to this database.
 

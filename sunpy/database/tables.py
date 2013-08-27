@@ -261,11 +261,11 @@ class DatabaseEntry(Base):
 
     def __eq__(self, other):
         wavemins_equal = self.wavemin is None and other.wavemin is None or\
-                self.wavemin is not None and other.wavemin is not None and\
-                round(self.wavemin, 10) == round(other.wavemin, 10)
+            self.wavemin is not None and other.wavemin is not None and\
+            round(self.wavemin, 10) == round(other.wavemin, 10)
         wavemaxs_equal = self.wavemax is None and other.wavemax is None or\
-                self.wavemax is not None and other.wavemax is not None and\
-                round(self.wavemax, 10) == round(other.wavemax, 10)
+            self.wavemax is not None and other.wavemax is not None and\
+            round(self.wavemax, 10) == round(other.wavemax, 10)
         return (
             (self.id == other.id or self.id is None or other.id is None) and
             self.source == other.source and
