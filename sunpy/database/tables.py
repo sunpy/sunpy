@@ -239,116 +239,6 @@ class DatabaseEntry(Base):
             instrument=instrument, size=qr_block.size,
             wavemin=wavemin, wavemax=wavemax)
 
-    @classmethod
-    def from_fits_filepath(cls, path, default_waveunit=None):
-        """Make a new :class:`DatabaseEntry` instance by using the method
-        :meth:`add_fits_header_entries_from_file`. This classmethod is simply a
-        shortcut for the following lines::
-
-            entry = DatabaseEntry()
-            entry.add_fits_header_entries_from_file(path, default_waveunit)
-
-        """
-        entry = cls()
-        entry.add_fits_header_entries_from_file(path, default_waveunit)
-        return entry
-
-    def add_fits_header_entries_from_file(self, fits_filepath,
-            default_waveunit=None):
-        """Use the header of a FITS file to add this information to this
-        database entry. It will be saved in the attribute
-        :attr:`fits_header_entries`. If the key INSTRUME, WAVELNTH or
-        DATE-OBS / DATE_OBS is available, the attribute :attr:`instrument`,
-        :attr:`wavemin` and :attr:`wavemax` or :attr:`observation_time_start`
-        is set, respectively. If the wavelength unit can be read, the values of
-        of :attr:`wavemin` and :attr:`wavemax` are converted to nm
-        (nanometres).
-
-        Parameters
-        ----------
-        fits_filepath : file path or file-like object
-            File to get header from.  If an opened file object, its mode
-            must be one of the following rb, rb+, or ab+.
-
-        default_waveunit : str, optional
-            The wavelength unit that is used for a header if it cannot be
-            found.
-
-        Raises
-        ------
-        sunpy.database.WaveunitNotFoundError
-            If `default_waveunit` is not given and the wavelength unit cannot
-            be found in one of the FITS headers
-
-        sunpy.WaveunitNotConvertibleError
-            If a wavelength unit could be found but cannot be used to create an
-            instance of the type ``astropy.units.Unit``. This can be the case
-            for example if a FITS header has the key `WAVEUNIT` with the value
-            `nonsense`.
-
-        Examples
-        --------
-        >>> from pprint import pprint
-        >>> from sunpy.database import DatabaseEntry
-        >>> import sunpy
-        >>> entry = DatabaseEntry()
-        >>> entry.fits_header_entries
-        []
-        >>> entry.add_fits_header_entries_from_file(sunpy.RHESSI_EVENT_LIST)
-        >>> pprint(entry.fits_header_entries)
-        [<FitsHeaderEntry(id None, key 'SIMPLE', value True)>,
-         <FitsHeaderEntry(id None, key 'BITPIX', value 8)>,
-         <FitsHeaderEntry(id None, key 'NAXIS', value 0)>,
-         <FitsHeaderEntry(id None, key 'EXTEND', value True)>,
-         <FitsHeaderEntry(id None, key 'DATE', value '2011-09-13T15:37:38')>,
-         <FitsHeaderEntry(id None, key 'ORIGIN', value 'RHESSI')>,
-         <FitsHeaderEntry(id None, key 'OBSERVER', value 'Unknown')>,
-         <FitsHeaderEntry(id None, key 'TELESCOP', value 'RHESSI')>,
-         <FitsHeaderEntry(id None, key 'INSTRUME', value 'RHESSI')>,
-         <FitsHeaderEntry(id None, key 'OBJECT', value 'Sun')>,
-         <FitsHeaderEntry(id None, key 'DATE_OBS', value '2002-02-20T11:06:00.000')>,
-         <FitsHeaderEntry(id None, key 'DATE_END', value '2002-02-20T11:06:43.330')>,
-         <FitsHeaderEntry(id None, key 'TIME_UNI', value 1)>,
-         <FitsHeaderEntry(id None, key 'ENERGY_L', value 25.0)>,
-         <FitsHeaderEntry(id None, key 'ENERGY_H', value 40.0)>,
-         <FitsHeaderEntry(id None, key 'TIMESYS', value '1979-01-01T00:00:00')>,
-         <FitsHeaderEntry(id None, key 'TIMEUNIT', value 'd')>]
-
-        """
-        # FIXME: store a list of headers and not only the first one!
-        header = fits.get_header(fits_filepath)[0]
-        for key, value in header.iteritems():
-            # Yes, it is possible to have an empty key in a FITS file.
-            # Example: sunpy.data.sample.EIT_195_IMAGE
-            # Don't ask me why this could be a good idea.
-            if key in ('KEYCOMMENTS', ''):
-                value = str(value)
-            self.fits_header_entries.append(FitsHeaderEntry(key, value))
-        waveunit = fits.extract_waveunit(header)
-        if waveunit is None:
-            if default_waveunit is None:
-                raise WaveunitNotFoundError(fits_filepath)
-            else:
-                waveunit = default_waveunit
-        try:
-            unit = Unit(waveunit)
-        except ValueError:
-            raise WaveunitNotConvertibleError(waveunit)
-        for header_entry in self.fits_header_entries:
-            key, value = header_entry.key, header_entry.value
-            if key == 'INSTRUME':
-                self.instrument = value
-            elif key == 'WAVELNTH':
-                # use the value of `unit` to convert the wavelength to nm
-                self.wavemin = self.wavemax = unit.to(
-                    nm, value, equivalencies.spectral())
-            # NOTE: the key DATE-END or DATE_END is not part of the official
-            # FITS standard, but many FITS files use it in their header
-            elif key in ('DATE-END', 'DATE_END'):
-                self.observation_time_end = parse_time(value)
-            elif key in ('DATE-OBS', 'DATE_OBS'):
-                self.observation_time_start = parse_time(value)
-
     def __eq__(self, other):
         wavemins_equal = self.wavemin is None and other.wavemin is None or\
                 self.wavemin is not None and other.wavemin is not None and\
@@ -419,6 +309,97 @@ def entries_from_query_result(qr, default_waveunit=None):
     """
     for block in qr:
         yield DatabaseEntry.from_query_result_block(block, default_waveunit)
+
+
+def entries_from_file(file, default_waveunit=None):
+    """Use the headers of a FITS file to generate an iterator of
+    :class`sunpy.database.tables.DatabaseEntry` instances. Gathered information
+    will be saved in the attribute
+    :attr:`sunpy.database.tables.DatabaseEntry.fits_header_entries`. If the key
+    INSTRUME, WAVELNTH or DATE-OBS / DATE_OBS is available, the attribute
+    :attr:`sunpy.database.tables.DatabaseEntry.instrument`,
+    :attr:`sunpy.database.tables.DatabaseEntry.wavemin` and
+    :attr:`sunpy.database.tables.DatabaseEntry.wavemax` or
+    :attr:`sunpy.database.tables.DatabaseEntry.observation_time_start` is set,
+    respectively. If the wavelength unit can be read, the values of
+    :attr:`sunpy.database.tables.DatabaseEntry.wavemin` and
+    :attr:`sunpy.database.tables.DatabaseEntry.wavemax` are converted to nm
+    (nanometres).
+
+    Parameters
+    ----------
+    file : str or file-like object
+        Either a path pointing to a FITS file or a an opened file-like object.
+        If an opened file object, its mode must be one of the following rb,
+        rb+, or ab+.
+
+    default_waveunit : str, optional
+        The wavelength unit that is used for a header if it cannot be
+        found.
+
+    Raises
+    ------
+    sunpy.database.WaveunitNotFoundError
+        If `default_waveunit` is not given and the wavelength unit cannot
+        be found in one of the FITS headers
+
+    sunpy.WaveunitNotConvertibleError
+        If a wavelength unit could be found but cannot be used to create an
+        instance of the type ``astropy.units.Unit``. This can be the case
+        for example if a FITS header has the key `WAVEUNIT` with the value
+        `nonsense`.
+
+    Examples
+    --------
+    >>> entries = list(entries_from_file(sunpy.data.sample.SWAP_LEVEL1_IMAGE))
+    >>> len(entries)
+    1
+    >>> entry = entries.pop()
+    >>> entry.instrument
+    'SWAP'
+    >>> entry.observation_time_start, entry.observation_time_end
+    (datetime.datetime(2012, 1, 1, 0, 16, 7, 836000), None)
+    >>> entry.wavemin, entry.wavemax
+    (17.400000000000002, 17.400000000000002)
+    >>> len(entry.fits_header_entries)
+    112
+
+    """
+    headers = fits.get_header(file)
+    for header in headers:
+        entry = DatabaseEntry()
+        for key, value in header.iteritems():
+            # Yes, it is possible to have an empty key in a FITS file.
+            # Example: sunpy.data.sample.EIT_195_IMAGE
+            # Don't ask me why this could be a good idea.
+            if key in ('KEYCOMMENTS', ''):
+                value = str(value)
+            entry.fits_header_entries.append(FitsHeaderEntry(key, value))
+        waveunit = fits.extract_waveunit(header)
+        if waveunit is None:
+            if default_waveunit is None:
+                raise WaveunitNotFoundError(file)
+            else:
+                waveunit = default_waveunit
+        try:
+            unit = Unit(waveunit)
+        except ValueError:
+            raise WaveunitNotConvertibleError(waveunit)
+        for header_entry in entry.fits_header_entries:
+            key, value = header_entry.key, header_entry.value
+            if key == 'INSTRUME':
+                entry.instrument = value
+            elif key == 'WAVELNTH':
+                # use the value of `unit` to convert the wavelength to nm
+                entry.wavemin = entry.wavemax = unit.to(
+                    nm, value, equivalencies.spectral())
+            # NOTE: the key DATE-END or DATE_END is not part of the official
+            # FITS standard, but many FITS files use it in their header
+            elif key in ('DATE-END', 'DATE_END'):
+                entry.observation_time_end = parse_time(value)
+            elif key in ('DATE-OBS', 'DATE_OBS'):
+                entry.observation_time_start = parse_time(value)
+        yield entry
 
 
 def entries_from_dir(fitsdir, recursive=False, pattern='*',
