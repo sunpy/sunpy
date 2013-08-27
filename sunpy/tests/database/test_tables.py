@@ -141,7 +141,7 @@ def test_add_fits_header_entries_from_file():
     assert round(entry.wavemax, 1) == 656.3
 
 
-def test_entries_from_path():
+def test_entries_from_dir():
     entries = list(entries_from_dir(waveunitdir))
     assert len(entries) == 4
     for entry, filename in entries:
@@ -195,13 +195,13 @@ def test_entries_from_path():
         FitsHeaderEntry('KEYCOMMENTS', "{'WAVEUNIT': 'in meters', 'NAXIS2': 'number of rows', 'CDELT2': 'pixel scale y, in solar radius/pixel', 'CRPIX1': 'SUN CENTER X, pixels', 'CRPIX2': 'SUN CENTER Y, pixels', 'SOLAR_R': 'SOLAR RADIUS, pixels', 'NAXIS1': 'number of columns', 'CDELT1': 'pixel scale x, in solar radius/pixel', 'NAXIS3': 'StokesI', 'TELESCOP': 'Nancay Radioheliograph', 'INSTRUME': 'Nancay 2D-images Radioheliograph', 'BUNIT': 'Brightness temperature', 'BITPIX': 'IEEE 32-bit floating point values', 'DATE': 'Date of file creation', 'FREQUNIT': 'in MHz', 'EXPTIME': 'in seconds'}")]
 
 
-def test_entries_from_path_recursively_true():
+def test_entries_from_dir_recursively_true():
     entries = list(
         entries_from_dir(testdir, True, default_waveunit='angstrom'))
     assert len(entries) == 22
 
 
-def test_entries_from_path_recursively_false():
+def test_entries_from_dir_recursively_false():
     entries = list(
         entries_from_dir(testdir, False, default_waveunit='angstrom'))
     assert len(entries) == 5
