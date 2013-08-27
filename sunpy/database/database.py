@@ -25,7 +25,8 @@ class EntryNotFoundError(Exception):
         self.entry_id = entry_id
 
     def __str__(self):  # pragma: no cover
-        return 'an entry with the ID %d does not exist' % self.entry_id
+        return 'an entry with the ID {0:d} does not exist'.format(
+            self.entry_id)
 
 
 class EntryAlreadyAddedError(Exception):
@@ -38,8 +39,8 @@ class EntryAlreadyAddedError(Exception):
 
     def __str__(self):  # pragma: no cover
         return (
-            'the entry %r was already added '
-            'to the database' % self.database_entry)
+            'the entry {0!r} was already added '
+            'to the database'.format(self.database_entry))
 
 
 class EntryAlreadyStarredError(Exception):
@@ -53,8 +54,8 @@ class EntryAlreadyStarredError(Exception):
 
     def __str__(self):  # pragma: no cover
         return (
-            'the entry %r is already marked '
-            'as starred' % self.database_entry)
+            'the entry {0!r} is already marked '
+            'as starred'.format(self.database_entry))
 
 
 class EntryAlreadyUnstarredError(Exception):
@@ -67,8 +68,8 @@ class EntryAlreadyUnstarredError(Exception):
 
     def __str__(self):  # pragma: no cover
         return (
-            'the entry %r is already not marked '
-            'as starred' % self.database_entry)
+            'the entry {0!r} is already not marked '
+            'as starred'.format(self.database_entry))
 
 
 class NoSuchTagError(Exception):
@@ -80,7 +81,8 @@ class NoSuchTagError(Exception):
         self.tag_name = tag_name
 
     def __str__(self):  # pragma: no cover
-        return 'the tag %r is not saved in the database' % self.tag_name
+        return 'the tag {0!r} is not saved in the database'.format(
+            self.tag_name)
 
 
 class TagAlreadyAssignedError(Exception):
@@ -93,8 +95,8 @@ class TagAlreadyAssignedError(Exception):
         self.tag_name = tag_name
 
     def __str__(self):  # pragma: no cover
-        return 'the database entry %r has already assigned the tag %r' % (
-            self.database_entry, self.tag_name)
+        errmsg = 'the database entry {0!r} has already assigned the tag {1!r}'
+        return errmsg.format(self.database_entry, self.tag_name)
 
 
 class Database(object):
@@ -349,7 +351,7 @@ class Database(object):
         sortby = kwargs.pop('sortby', 'observation_time_start')
         if kwargs:
             k, v = kwargs.popitem()
-            raise TypeError('unexpected keyword argument %r' % k)
+            raise TypeError('unexpected keyword argument {0!r}'.format(k))
         return sorted(
             walker.create(and_(*query), self.session),
             key=operator.attrgetter(sortby))

@@ -43,7 +43,7 @@ class WaveunitNotFoundError(Exception):
         self.obj = obj
 
     def __str__(self):  # pragma: no cover
-        return 'the wavelength unit cannot be found in %s' % (self.obj,)
+        return 'the wavelength unit cannot be found in {0}'.format(self.obj)
 
 
 class WaveunitNotConvertibleError(Exception):
@@ -56,8 +56,8 @@ class WaveunitNotConvertibleError(Exception):
 
     def __str__(self):  # pragma: no cover
         return (
-            'the waveunit %r cannot be converted to an '
-            'astropy.units.Unit instance' % (self.waveunit))
+            'the waveunit {0!r} cannot be converted to an '
+            'astropy.units.Unit instance'.format(self.waveunit))
 
 
 # TODO: move this function outside this package (sunpy.util? sunpy.time?)
@@ -87,7 +87,7 @@ class FitsHeaderEntry(Base):
         return not (self == other)
 
     def __repr__(self):  # pragma: no cover
-        return '<%s(id %s, key %r, value %r)>' % (
+        return '<{0}(id {1}, key {2!r}, value {3!r})>'.format(
             self.__class__.__name__, self.id, self.key, self.value)
 
 
@@ -113,7 +113,7 @@ class FitsKeyComment(Base):
         return not (self == other)
 
     def __repr__(self):  # pragma: no cover
-        return '<%s(id %s, key %r, value %r)>' % (
+        return '<{0}(id {1}, key {2!r}, value {3!r})>'.format(
             self.__class__.__name__, self.id, self.key, self.value)
 
 
@@ -135,7 +135,7 @@ class Tag(Base):
         return self.name
 
     def __repr__(self):  # pragma: no cover
-        return '<%s(name %r)>' % (self.__class__.__name__, self.name)
+        return '<{0}(name {1!r})>'.format(self.__class__.__name__, self.name)
 
 
 class DatabaseEntry(Base):
@@ -320,11 +320,11 @@ class DatabaseEntry(Base):
             'observation_time_start', 'observation_time_end', 'instrument',
             'size', 'wavemin', 'wavemax', 'path', 'download_time', 'starred',
             'fits_header_entries', 'tags']
-        ret = '<%s(' % (self.__class__.__name__,)
+        ret = '<{0}('.format(self.__class__.__name__)
         for attr in attrs:
             value = getattr(self, attr, None)
             if value:
-                ret += '%s %r, ' % (attr, value)
+                ret += '{0} {1!r}, '.format(attr, value)
         ret = ret.rstrip(', ')
         ret += ')>'
         return ret

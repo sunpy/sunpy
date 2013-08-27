@@ -35,8 +35,8 @@ class NoSuchEntryError(Exception):
 
     def __str__(self):  # pragma: no cover
         return (
-            'the database entry %r cannot be removed because it '
-            'is not stored in the database' % self.database_entry)
+            'the database entry {0!r} cannot be removed because it '
+            'is not stored in the database'.format(self.database_entry))
 
 
 class NonRemovableTagError(Exception):
@@ -49,8 +49,8 @@ class NonRemovableTagError(Exception):
         self.tag = tag
 
     def __str__(self):  # pragma: no cover
-        return 'the tag %s cannot be removed from the database entry %r' % (
-            self.database_entry, self.tag)
+        errmsg = 'the tag {0} cannot be removed from the database entry {1!r}'
+        return errmsg.format(self.database_entry, self.tag)
 
 
 class DatabaseOperation(object):
@@ -103,7 +103,7 @@ class AddEntry(DatabaseOperation):
             make_transient(self.database_entry)
 
     def __repr__(self):
-        return '<%s(session %r, entry id %s)>' % (
+        return '<{0}(session {1!r}, entry id {2})>'.format(
             self.__class__.__name__, self.session, self.database_entry.id)
 
 
@@ -131,7 +131,7 @@ class RemoveEntry(DatabaseOperation):
         self.session.add(self.entry)
 
     def __repr__(self):
-        return '<%s(session %r, entry %r)>' % (
+        return '<{0}(session {1!r}, entry {2!r})>'.format(
             self.__class__.__name__, self.session, self.entry)
 
 
@@ -162,7 +162,7 @@ class EditEntry(DatabaseOperation):
             setattr(self.database_entry, k, v)
 
     def __repr__(self):
-        return '<EditEntry(kwargs %r, entry id %s)>' % (
+        return '<EditEntry(kwargs {0!r}, entry id {1})>'.format(
             self.kwargs, self.database_entry.id)
 
 
@@ -195,7 +195,7 @@ class AddTag(DatabaseOperation):
                 pass
 
     def __repr__(self):
-        return "<AddTag(tag '%s', session %r, entry id %s)>" % (
+        return "<AddTag(tag '{0}', session {1!r}, entry id {2})>".format(
             self.tag, self.session, self.database_entry.id)
 
 
@@ -227,7 +227,7 @@ class RemoveTag(DatabaseOperation):
             self.database_entry.tags.append(self.tag)
 
     def __repr__(self):
-        return "<RemoveTag(tag '%s', entry id %s)>" % (
+        return "<RemoveTag(tag '{0}', entry id {1})>".format(
             self.tag, self.database_entry.id)
 
 
