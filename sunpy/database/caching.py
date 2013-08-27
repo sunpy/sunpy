@@ -180,6 +180,9 @@ class BaseCache(object):
     def fromkeys(cls, iterable, value=None):  # pragma: no cover
         return OrderedDict.fromkeys(iterable, value)
 
+    def __repr__(self):  # pragma: no cover
+        return '{0}({1!r})'.format(self.__class__.__name__, dict(self._dict))
+
 
 class LRUCache(BaseCache):
     """
