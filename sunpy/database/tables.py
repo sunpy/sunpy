@@ -187,7 +187,7 @@ class DatabaseEntry(Base):
     tags = relationship('Tag', secondary=association_table, backref='data')
 
     @classmethod
-    def from_query_result_block(cls, qr_block, default_waveunit=None):
+    def _from_query_result_block(cls, qr_block, default_waveunit=None):
         """Make a new :class:`DatabaseEntry` instance from a VSO query result
         block. The values of :attr:`wavemin` and :attr:`wavemax` are converted
         to nm (nanometres).
@@ -345,7 +345,7 @@ def entries_from_query_result(qr, default_waveunit=None):
 
     """
     for block in qr:
-        yield DatabaseEntry.from_query_result_block(block, default_waveunit)
+        yield DatabaseEntry._from_query_result_block(block, default_waveunit)
 
 
 def entries_from_file(file, default_waveunit=None):
