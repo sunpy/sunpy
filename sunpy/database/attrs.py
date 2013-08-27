@@ -52,7 +52,7 @@ class _BooleanAttr(object):
         return False
 
     def __repr__(self):
-        return '<%s%s()>' % (
+        return '<{0}{1}()>'.format(
             '~' if not self.value else '', self.__class__.__name__)
 
 
@@ -75,7 +75,8 @@ class Tag(Attr):
         return False
 
     def __repr__(self):
-        return '<%sTag(%r)>' % ('~' if self.inverted else '', self.tagname)
+        return '<{0}Tag({1!r})>'.format(
+            '~' if self.inverted else '', self.tagname)
 
 
 class Path(Attr):
@@ -92,7 +93,8 @@ class Path(Attr):
         return isinstance(other, self.__class__)
 
     def __repr__(self):
-        return '<%sPath(%r)>' % ('~' if self.inverted else '', self.value)
+        return '<{0}Path({1!r})>'.format(
+            '~' if self.inverted else '', self.value)
 
 
 # TODO: support excluding ranges as soon as
@@ -113,7 +115,7 @@ class DownloadTime(Attr, vso_attrs._Range):
         return isinstance(other, self.__class__)
 
     def __repr__(self):
-        return '<%sDownloadTime(%r, %r)>' % (
+        return '<{0}DownloadTime({1!r}, {2!r})>'.format(
             '~' if self.inverted else '', self.start, self.end)
 
 
@@ -132,7 +134,7 @@ class FitsHeaderEntry(Attr):
         return False
 
     def __repr__(self):
-        return '<%sFitsHeaderEntry(%r, %r)>' % (
+        return '<{0}FitsHeaderEntry({1!r}, {2!r})>'.format(
             '~' if self.inverted else '', self.key, self.value)
 
 
