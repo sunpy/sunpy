@@ -68,7 +68,7 @@ def test_tag_hashability():
 
 @pytest.mark.slow
 def test_entry_from_qr_block(query_result):
-    entry = DatabaseEntry.from_query_result_block(query_result[0])
+    entry = DatabaseEntry._from_query_result_block(query_result[0])
     expected_entry = DatabaseEntry(
         source='SOHO', provider='SDAC', physobs='intensity',
         fileid='/archive/soho/private/data/processed/eit/lz/2001/01/efz20010101.010014',
@@ -80,7 +80,7 @@ def test_entry_from_qr_block(query_result):
 
 @pytest.mark.slow
 def test_entry_from_qr_block_with_missing_physobs(qr_block_with_missing_physobs):
-    entry = DatabaseEntry.from_query_result_block(qr_block_with_missing_physobs)
+    entry = DatabaseEntry._from_query_result_block(qr_block_with_missing_physobs)
     expected_entry = DatabaseEntry(
         source='STEREO_A', provider='SSC',
         fileid='swaves/2013/swaves_average_20130805_a_hfr.dat',
