@@ -6,9 +6,9 @@
 from collections import Hashable
 from datetime import datetime
 
-from sunpy.database.tables import FitsHeaderEntry, Tag, DatabaseEntry,\
-    entries_from_query_result, entries_from_dir, entries_from_file,\
-    display_entries, WaveunitNotFoundError
+from sunpy.database.tables import FitsHeaderEntry, FitsKeyComment, Tag,\
+    DatabaseEntry, entries_from_query_result, entries_from_dir,\
+    entries_from_file, display_entries, WaveunitNotFoundError
 from sunpy.net import vso
 from sunpy.data.test import rootdir as testdir
 from sunpy.data.test.waveunit import waveunitdir, MQ_IMAGE
@@ -94,7 +94,7 @@ def test_entries_from_file():
     entries = list(entries_from_file(MQ_IMAGE))
     assert len(entries) == 1
     entry = entries[0]
-    assert len(entry.fits_header_entries) == 32
+    assert len(entry.fits_header_entries) == 31
     expected_fits_header_entries = [
         FitsHeaderEntry('SIMPLE', True),
         FitsHeaderEntry('BITPIX', 16),
@@ -126,9 +126,11 @@ def test_entries_from_file():
         FitsHeaderEntry('SEQ_IND', 1),
         FitsHeaderEntry('SVECTOR', 0),
         FitsHeaderEntry('COMMENT', ''),
-        FitsHeaderEntry('HISTORY', ''),
-        FitsHeaderEntry('KEYCOMMENTS', "{'SIMPLE': 'Written by IDL:  Mon Aug 12 08:48:08 2013', 'BITPIX': 'Integer*2 (short integer)'}")]
+        FitsHeaderEntry('HISTORY', '')]
     assert entry.fits_header_entries == expected_fits_header_entries
+    assert entry.fits_key_comments == [
+        FitsKeyComment('SIMPLE', 'Written by IDL:  Mon Aug 12 08:48:08 2013'),
+        FitsKeyComment('BITPIX', 'Integer*2 (short integer)')]
     assert entry.instrument == 'Spectroheliograph'
     assert entry.observation_time_start == datetime(2013, 8, 12, 8, 42, 53)
     assert entry.observation_time_end == datetime(2013, 8, 12, 8, 42, 53)
@@ -151,7 +153,7 @@ def test_entries_from_dir():
         if filename.endswith('na120701.091058.fits'):
             break
     assert filename.startswith(waveunitdir)
-    assert len(entry.fits_header_entries) == 43
+    assert len(entry.fits_header_entries) == 42
     assert entry.fits_header_entries == [
         FitsHeaderEntry('SIMPLE', True),
         FitsHeaderEntry('BITPIX', -32),
@@ -194,8 +196,24 @@ def test_entries_from_dir():
         FitsHeaderEntry('CDELT2', 0.015625),
         FitsHeaderEntry('SOLAR_R', 64.0),
         FitsHeaderEntry('COMMENT', ''),
-        FitsHeaderEntry('HISTORY', ''),
-        FitsHeaderEntry('KEYCOMMENTS', "{'WAVEUNIT': 'in meters', 'NAXIS2': 'number of rows', 'CDELT2': 'pixel scale y, in solar radius/pixel', 'CRPIX1': 'SUN CENTER X, pixels', 'CRPIX2': 'SUN CENTER Y, pixels', 'SOLAR_R': 'SOLAR RADIUS, pixels', 'NAXIS1': 'number of columns', 'CDELT1': 'pixel scale x, in solar radius/pixel', 'NAXIS3': 'StokesI', 'TELESCOP': 'Nancay Radioheliograph', 'INSTRUME': 'Nancay 2D-images Radioheliograph', 'BUNIT': 'Brightness temperature', 'BITPIX': 'IEEE 32-bit floating point values', 'DATE': 'Date of file creation', 'FREQUNIT': 'in MHz', 'EXPTIME': 'in seconds'}")]
+        FitsHeaderEntry('HISTORY', '')]
+    assert entry.fits_key_comments == [
+        FitsKeyComment('WAVEUNIT', 'in meters'),
+        FitsKeyComment('NAXIS2', 'number of rows'),
+        FitsKeyComment('CDELT2', 'pixel scale y, in solar radius/pixel'),
+        FitsKeyComment('CRPIX1', 'SUN CENTER X, pixels'),
+        FitsKeyComment('CRPIX2', 'SUN CENTER Y, pixels'),
+        FitsKeyComment('SOLAR_R', 'SOLAR RADIUS, pixels'),
+        FitsKeyComment('NAXIS1', 'number of columns'),
+        FitsKeyComment('CDELT1', 'pixel scale x, in solar radius/pixel'),
+        FitsKeyComment('NAXIS3', 'StokesI'),
+        FitsKeyComment('TELESCOP', 'Nancay Radioheliograph'),
+        FitsKeyComment('INSTRUME', 'Nancay 2D-images Radioheliograph'),
+        FitsKeyComment('BUNIT', 'Brightness temperature'),
+        FitsKeyComment('BITPIX', 'IEEE 32-bit floating point values'),
+        FitsKeyComment('DATE', 'Date of file creation'),
+        FitsKeyComment('FREQUNIT', 'in MHz'),
+        FitsKeyComment('EXPTIME', 'in seconds')]
 
 
 def test_entries_from_dir_recursively_true():
