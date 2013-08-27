@@ -16,6 +16,8 @@ Reference
     by other methods such as Database.add_from_path or
     Database.add_from_vso_query_result
 
+- document the tables Tag, FitsHeaderEntry and FitsKeyComment
+
 - attrs module: document the following classes:
   
   - Starred
@@ -28,7 +30,14 @@ Reference
     
   - FitsHeaderEntry
 
+- attrs: document that for vso.attrs.Time, the `near` parameter is
+  ignored!
+
+- commands.CommandManager: update docstrings, especially paying attention
+  to using lists instead of commands as parameters!
+
 - document in more methods and functions which exceptions may be raised
+  -> which ones exactly?
 
 - document property cache_size, cache_maxsize
 
@@ -37,26 +46,10 @@ Reference
 
 - document Database.__getitem__
 
-- document the caching module
-
-- document caching.LRUCache and caching.LFUCache
-
 - improve doc of commands.DatabaseOperation (parameters of __init__)
-
-- do not autodocument the inherited methods of caching.BaseCache
-
-- document the specific commands AddEntry, EditEntry, RemoveEntry
 
 Testing
 -------
-- test undoing and redoing the following methods of Database:
-
-  - tag
-
-  - star
-
-  - unstar
-
 - what to do if a database operation is attempted but the table hasn't
   been created yet? Throw a custom exception or create the required
   table(s) silently? Currently, the exception OperationalError from
@@ -74,35 +67,24 @@ Important
 - docs: fix all examples with (implicit) repr calls in DatabaseEntry
   instances!!!
 
-- make BaseCache.dict private → BaseCache._dict
-
-- do not save the waveunit. rather, use only nm -> only possible if
-  PR #522 is merged
-
-- support the VSO attribute Time for querying the database
-
-- support multiple HDUs per database entry
-
-- support saving entries by HEK query result
-
-- __repr__ for the classes in commands module
-
 - display_entries: support and test output of FITS header entries
-
-- use new-style string formatting everywhere
 
 - adopt parameter names in Database methods to last changes in the
   documentation!!!
 
-- check if catching the exception InvalidRequestError is really sufficient
-  in AddEntry.__call__, AddEntry.undo, RemoveEntry.__call__
-
-Low priority
----------
 - write a contextmanager to disable undo/redo functionality for a block of
   operations -> commands module
 
 - support (un-)pickling of instances from the tables module
+
+Low priority
+---------
+- use new-style string formatting everywhere
+
+- support saving entries by HEK query result
+
+- check if catching the exception InvalidRequestError is really sufficient
+  in AddEntry.__call__, AddEntry.undo, RemoveEntry.__call__
 
 - Database.{__contains__, __iter__, __len__}: return values of the cache
   instead of sending a query to the database
@@ -118,7 +100,6 @@ Low priority
 
 Unclear / Undecided
 -------------------
-
 - Should the FITS Header be normalized before being saved (the keys are
   usually in UPPERCASE, makes it worse to search for)?
 
