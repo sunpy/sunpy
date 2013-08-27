@@ -75,7 +75,7 @@ correspond to the parameters listed at
 http://www.lmsal.com/hek/VOEvent_Spec.html. You can inspect all the
 dictionary keys very simply:
 
-    >>> result[0].keys()
+    >>> result[0].keys() # doctest:+SKIP
     [u'skel_startc1',
      u'concept',
      u'frm_versionnumber',
@@ -90,7 +90,7 @@ recognition method is called "frm_name". Using list comprehensions
 recognition methods used to find each of the flares in the result
 object, for example:
 
-    >>> [elem["frm_name"] for elem in result] 
+    >>> [elem["frm_name"] for elem in result] # doctest:+SKIP
     [u'asainz',
      u'asainz',
      u'asainz',
@@ -126,7 +126,7 @@ these parameters searchable.
 To explain this, let's have a closer look at hek.attrs. The help
 command is your friend here; scroll down to section DATA you will see:
 
-    >>> help(hek.attrs)
+    >>> help(hek.attrs) # doctest:+SKIP
     AR = <sunpy.net.hek.attrs.AR object>
     Area = <sunpy.net.hek.attrs.Area object>
     Bound = <sunpy.net.hek.attrs.Bound object>
@@ -159,7 +159,7 @@ methods of setting the event type are provided as a convenience
 
 Let's look further at the FRM attribute:
 
-    >>> help(hek.attrs.FRM)
+    >>> help(hek.attrs.FRM) # doctest:+SKIP
     Help on FRM in module sunpy.net.hek.attrs object:
     class FRM(__builtin__.object)
      |  Data descriptors defined here:
@@ -233,7 +233,7 @@ arcseconds OR have a peak flux over 1000.0:
 
 and as a check
 
-    >>> [elem["fl_peakflux"] for elem in result]
+    >>> [elem["fl_peakflux"] for elem in result] # doctest:+SKIP
     [None,
     None,
     None,
@@ -251,7 +251,7 @@ and as a check
     6275.98,
     923.984]
 
-    >>> [elem["event_coord1"] for elem in result]
+    >>> [elem["event_coord1"] for elem in result] # doctest:+SKIP
     [51,
     51,
     51,
@@ -279,9 +279,9 @@ flux over 1000.0:
 
     >>> result = client.query(hek.attrs.Time(tstart,tend), hek.attrs.EventType(event_type), (hek.attrs.Event.Coord1 > 50) and (hek.attrs.FL.PeakFlux > 1000.0) )
 
-    >>> [elem["fl_peakflux"] for elem in result] 
+    >>> [elem["fl_peakflux"] for elem in result] # doctest:+SKIP
     [2326.86, 1698.83, 2360.49, 3242.64, 1375.93, 6275.98]
-    >>> [elem["event_coord1"] for elem in result]
+    >>> [elem["event_coord1"] for elem in result] # doctest:+SKIP
     [883.2, 883.2, 883.2, 883.2, 883.2, 883.2]
 
 In this case none of the peak fluxes are returned with the value
