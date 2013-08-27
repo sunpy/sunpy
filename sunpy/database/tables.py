@@ -512,11 +512,11 @@ def entries_from_dir(fitsdir, recursive=False, pattern='*',
     >>> from pprint import pprint
     >>> from sunpy.database import entries_from_path
     >>> from sunpy.data.test import rootdir as fitsdir
-    >>> entries = list(entries_from_path(fitsdir))
+    >>> entries = list(entries_from_dir(fitsdir))
     >>> len(entries)
     2
     >>> # and now search `fitsdir` recursive
-    >>> entries = list(entries_from_path(fitsdir, True))
+    >>> entries = list(entries_from_dir(fitsdir, True))
     >>> len(entries)
     15
     >>> # print the first 5 items of the FITS header of the first found file
