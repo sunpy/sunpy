@@ -8,6 +8,7 @@ from datetime import datetime
 
 import matplotlib.pyplot as plt
 from pandas.io.parsers import read_csv
+from os.path import basename
 
 from sunpy.lightcurve import LightCurve
 
@@ -20,10 +21,10 @@ class EVELightCurve(LightCurve):
     --------
     import sunpy
     eve = sunpy.lightcurve.EVELightCurve.create()
-    eve = sunpy.lightcurve.EVELightCurve.create('~/Downloads/EVE_Fe_IX_171_averages.csv')
     eve = sunpy.lightcurve.EVELightCurve.create('2012/06/20')
+    eve = sunpy.lightcurve.EVELightCurve.create(sunpy.data.test.EVE_AVERAGES_CSV)
     eve = sunpy.lightcurve.EVELightCurve.create("http://lasp.colorado.edu/eve/data_access/quicklook/quicklook_data/L0CS/LATEST_EVE_L0CS_DIODES_1m.txt")
-    eve.peek()
+    eve.peek(subplots=True)
     
     References
     ----------
@@ -63,6 +64,7 @@ class EVELightCurve(LightCurve):
         """Returns a URL to the EVE data for the specified date
         
             @NOTE: currently only supports downloading level 0 data
+            .TODO: No data available prior to 2010/03/01!
         """
         base_url = 'http://lasp.colorado.edu/eve/data/quicklook/L0CS/SpWx/'
         return base_url + date.strftime('%Y/%Y%m%d') + '_EVE_L0CS_DIODES_1m.txt'
@@ -70,6 +72,7 @@ class EVELightCurve(LightCurve):
     @classmethod
     def _parse_csv(cls, filepath):
         """Parses an EVE CSV file"""
+        cls._filename = basename(filepath)
         with open(filepath, 'rb') as fp:
             # Determine type of EVE CSV file and parse
             line1 = fp.readline()
@@ -88,28 +91,38 @@ class EVELightCurve(LightCurve):
     @staticmethod
     def _parse_level_0cs(fp):
         """Parses and EVE Level 0CS file"""
-        header = ""
-        
-        fields = ('XRS-B_proxy', 'XRS-A_proxy', 'SEM_proxy', '0.1-7ESPquad', '17.1ESP',
-                  '25.7ESP', '30.4ESP', '36.6ESP', 'darkESP', '121.6MEGS-P', 'darkMEGS-P', 
-                  'q0ESP', 'q1ESP', 'q2ESP', 'q3ESP', 'CMLat', 'CMLon', 'x_cool proxy', 'oldXRSB proxy')
+        header = []
+        fields = []
         line = fp.readline()
-        
-        # Read comment at top of file
+        header.append(line)
+        # Read header at top of file
         while line.startswith(";"):
-            header += line
+            header.append(line)
             line = fp.readline()
-            
-        # Next line is YYYY DOY MM DD
+
+        fieldnames_start = False
+        for l in header:
+            if l.startswith("; Format:"):
+                fieldnames_start = False
+            if fieldnames_start:
+                fields.append(l.split(":")[0].replace(';', ' ').strip())        
+            if l.startswith("; Column descriptions:"):
+                fieldnames_start = True
+
+        # Next line is YYYY DOY MM DD        
         date_parts = line.split(" ")
                 
         year = int(date_parts[0])
         month = int(date_parts[2])
         day = int(date_parts[3])
+        #last_pos = fp.tell()
+        #line = fp.readline()
+        #el = line.split()
+        #len
         
         # function to parse date column (HHMM)
         parser = lambda x: datetime(year, month, day, int(x[0:2]), int(x[2:4]))
 
-        data = read_csv(fp, sep="\s*", names=fields, index_col=0, date_parser=parser, comment = ';', header = None)
-        data.columns = fields
+        data = read_csv(fp, sep="\s*", names=fields, index_col=0, date_parser=parser, header = None)
+        #data.columns = fields
         return header, data

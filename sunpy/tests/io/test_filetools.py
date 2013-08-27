@@ -58,11 +58,12 @@ class TestFiletools():
     def test_write_file_fits(self):
         #Test write FITS
         aiapair = sunpy.io.read_file(sunpy.AIA_171_IMAGE)[0]
-        sunpy.io.write_file("aia_171_image.fits", aiapair[0], aiapair[1])
+        sunpy.io.write_file("aia_171_image.fits", aiapair[0], aiapair[1],
+                            clobber=True)
         assert os.path.exists("aia_171_image.fits")
-        outpair = sunpy.io.read_file(sunpy.AIA_171_IMAGE)
-        assert np.all(np.equal(outpair[0][1], aiapair[1]))
-        assert outpair[0][1] == aiapair[1]
+        outpair = sunpy.io.read_file(sunpy.AIA_171_IMAGE)[0]
+        assert np.all(np.equal(outpair[0], aiapair[0]))
+        assert outpair[1] == aiapair[1]
         os.remove("aia_171_image.fits")
     
     def test_read_file_ana(self):
