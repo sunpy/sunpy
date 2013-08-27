@@ -91,6 +91,32 @@ class FitsHeaderEntry(Base):
             self.__class__.__name__, self.id, self.key, self.value)
 
 
+class FitsKeyComment(Base):
+    __tablename__ = 'fitskeycomments'
+
+    dbentry_id = Column(Integer, ForeignKey('data.id'))
+    id = Column(Integer, primary_key=True)
+    key = Column(String, nullable=False)
+    value = Column(String, nullable=False)
+
+    def __init__(self, key, value):
+        self.key = key
+        self.value = value
+
+    def __eq__(self, other):
+        return (
+            (self.id == other.id or self.id is None or other.id is None) and
+            self.key == other.key and
+            self.value == other.value)
+
+    def __ne__(self, other):
+        return not (self == other)
+
+    def __repr__(self):  # pragma: no cover
+        return '<%s(id %s, key %r, value %r)>' % (
+            self.__class__.__name__, self.id, self.key, self.value)
+
+
 class Tag(Base):
     __tablename__ = 'tags'
 
@@ -184,6 +210,7 @@ class DatabaseEntry(Base):
     download_time = Column(DateTime)
     starred = Column(Boolean, default=False)
     fits_header_entries = relationship('FitsHeaderEntry', backref='data')
+    fits_key_comments = relationship('FitsKeyComment', backref='data')
     tags = relationship('Tag', secondary=association_table, backref='data')
 
     @classmethod
@@ -409,8 +436,12 @@ def entries_from_file(file, default_waveunit=None):
             # Yes, it is possible to have an empty key in a FITS file.
             # Example: sunpy.data.sample.EIT_195_IMAGE
             # Don't ask me why this could be a good idea.
-            if key in ('KEYCOMMENTS', ''):
+            if key == '':
                 value = str(value)
+            elif key == 'KEYCOMMENTS':
+                for k, v in value.iteritems():
+                    entry.fits_key_comments.append(FitsKeyComment(k, v))
+                continue
             entry.fits_header_entries.append(FitsHeaderEntry(key, value))
         waveunit = fits.extract_waveunit(header)
         if waveunit is None:
