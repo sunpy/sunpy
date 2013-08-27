@@ -297,20 +297,10 @@ class Database(object):
 
         Examples
         --------
-        The database in this example contains 10 entries, of which the entries
-        #4 and #8 have the tag 'foo' and the entries #5 and #10 have the tag
-        'bar'; none of them are marked as starred. The query in the following
-        example searches for all non-starred entries with the tag 'foo' or
-        'bar' (or both).
+        The query in the following example searches for all non-starred entries
+        with the tag 'foo' or 'bar' (or both).
 
-        >>> from pprint import pprint
-        >>> pprint(database.query(
-        ...     ~attrs.Starred(), attrs.Tag('foo') | attrs.Tag('bar'),
-        ...     sortby='id'))
-        [<DatabaseEntry(id 4, data provider None, fileid None)>,
-         <DatabaseEntry(id 5, data provider None, fileid None)>,
-         <DatabaseEntry(id 8, data provider None, fileid None)>,
-         <DatabaseEntry(id 10, data provider None, fileid None)>]
+        >>> database.query(~attrs.Starred(), attrs.Tag('foo') | attrs.Tag('bar'))
 
         """
         if not query:
