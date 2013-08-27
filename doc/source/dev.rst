@@ -358,6 +358,17 @@ For more information on how to use Sphinx, consult the `Sphinx documentation
 The rest of this section will describe how to document the SunPy code in order
 to guarantee that well-formatted documentation will be created.
 
+**doctest**
+
+The example codes in the Guide section of the docs are configured with the Sphinx 
+`doctest extension <http://sphinx-doc.org/ext/doctest.html>`_.
+This will test the example code to make sure it runs correctly, it can be executed 
+using: ::
+
+  sphinx-build -t doctest -b doctest ./ _build
+
+from inside the ``doc/source`` folder.
+
 Examples
 ^^^^^^^^
 
@@ -435,7 +446,7 @@ Example (:class:`sunpy.map.Map`) ::
 
     Examples
     --------
-    >>> aia = sunpy.make_map(sunpy.AIA_171_IMAGE)
+    >>> aia = sunpy.Map(sunpy.AIA_171_IMAGE)
     >>> aia.T
     Map([[ 0.3125,  1.    , -1.1875, ..., -0.625 ,  0.5625,  0.5   ],
     [-0.0625,  0.1875,  0.375 , ...,  0.0625,  0.0625, -0.125 ],
