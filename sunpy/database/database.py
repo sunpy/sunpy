@@ -413,6 +413,27 @@ class Database(object):
             raise EntryAlreadyUnstarredError(database_entry)
         self.edit(database_entry, starred=False)
 
+    def add_many(self, database_entries, ignore_already_added=False):
+        """Add a row of database entries "at once". If this method is used,
+        only one entry is saved in the undo history.
+
+        Parameters
+        ----------
+        database_entries : iterable of sunpy.database.tables.DatabaseEntry
+            The database entries that will be added to the database.
+
+        ignore_already_added : bool, optional
+            See Database.add
+
+        """
+        cmds = []
+        for database_entry in database_entries:
+            if database_entry in list(self) and not ignore_already_added:
+                raise EntryAlreadyAddedError(database_entry)
+            cmds.append(commands.AddEntry(self.session, database_entry))
+            self._cache.append(database_entry)
+        self._command_manager.do(cmds)
+
     def add(self, database_entry, ignore_already_added=False):
         """Add the given database entry to the database table.
 
