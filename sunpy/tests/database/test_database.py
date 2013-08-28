@@ -333,6 +333,24 @@ def test_unstar_undo(database):
     assert not entry.starred
 
 
+def test_add_many(database):
+    assert len(database) == 0
+    database.add_many((DatabaseEntry() for _ in xrange(5)))
+    assert len(database) == 5
+    database.undo()
+    assert len(database) == 0
+    database.redo()
+    assert len(database) == 5
+
+
+def test_add_many_with_existing_entry(database):
+    evil_entry = DatabaseEntry()
+    database.add(evil_entry)
+    assert len(database) == 1
+    with pytest.raises(EntryAlreadyAddedError):
+        database.add_many([evil_entry])
+
+
 def test_add_entry(database):
     entry = DatabaseEntry()
     assert entry.id is None
