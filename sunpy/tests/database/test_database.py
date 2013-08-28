@@ -514,6 +514,21 @@ def test_getitem_exceeding_range(filled_database):
         DatabaseEntry(id=10, tags=[bar])]
 
 
+def test_getitem_negative_index(filled_database):
+    entry = filled_database[-4]
+    assert entry == DatabaseEntry(id=7)
+
+
+def test_getitem_negative_indices_slice(filled_database):
+    entries = filled_database[-2:-8:-2]
+    bar = Tag('bar')
+    bar.id = 2
+    assert entries == [
+        DatabaseEntry(id=9),
+        DatabaseEntry(id=7),
+        DatabaseEntry(id=5, tags=[bar])]
+
+
 def test_contains_exists(database):
     entry = DatabaseEntry()
     database.add(entry)
