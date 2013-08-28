@@ -595,7 +595,6 @@ def test_lru_cache(database_using_lrucache):
     entry4 = DatabaseEntry()
     database_using_lrucache.add(entry4)
     assert len(database_using_lrucache) == 3
-    entries = list(database_using_lrucache)
     assert database_using_lrucache._cache.items() == [
         (1, entry1), (3, entry3), (4, entry4)]
 
@@ -616,7 +615,6 @@ def test_lfu_cache(database_using_lfucache):
     entry4 = DatabaseEntry()
     database_using_lfucache.add(entry4)
     assert len(database_using_lfucache) == 3
-    entries = list(database_using_lfucache)
     assert database_using_lfucache._cache.items() == [
         (1, entry1), (2, entry2), (4, entry4)]
 
