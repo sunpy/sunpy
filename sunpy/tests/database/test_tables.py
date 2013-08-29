@@ -242,11 +242,13 @@ def test_entries_from_query_result(query_result):
     assert snd_entry == expected_entry
 
 
+@pytest.mark.slow
 def test_entry_from_query_results_with_none_wave(qr_with_none_waves):
     with pytest.raises(WaveunitNotFoundError):
         list(entries_from_query_result(qr_with_none_waves))
 
 
+@pytest.mark.slow
 def test_entry_from_query_results_with_none_wave_and_default_unit(
         qr_with_none_waves):
     entries = list(entries_from_query_result(qr_with_none_waves, 'nm'))
