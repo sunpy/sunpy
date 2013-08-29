@@ -428,6 +428,9 @@ class Database(object):
         """
         cmds = []
         for database_entry in database_entries:
+            # use list(self) instead of simply self because __contains__ checks
+            # for existence in the database and not only all attributes except
+            # ID.
             if database_entry in list(self) and not ignore_already_added:
                 raise EntryAlreadyAddedError(database_entry)
             cmds.append(commands.AddEntry(self.session, database_entry))
@@ -477,9 +480,6 @@ class Database(object):
         entries = tables.entries_from_query_result(
             query_result, self.default_waveunit)
         for database_entry in entries:
-            # use list(self) instead of simply self because __contains__ checks
-            # for existence in the database and not only all attributes except
-            # ID.
             if database_entry in list(self) and not ignore_already_added:
                 raise EntryAlreadyAddedError(database_entry)
             cmds.append(commands.AddEntry(self.session, database_entry))
