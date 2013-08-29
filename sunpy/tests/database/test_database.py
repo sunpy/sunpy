@@ -437,7 +437,7 @@ def test_add_entries_from_qr_ignore_duplicates(database, query_result):
 
 def test_add_fom_path(database):
     assert len(database) == 0
-    database.add_from_path(waveunitdir)
+    database.add_from_dir(waveunitdir)
     assert len(database) == 4
     database.undo()
     assert len(database) == 0
@@ -446,16 +446,16 @@ def test_add_fom_path(database):
 
 
 def test_add_fom_path_duplicates(database):
-    database.add_from_path(waveunitdir)
+    database.add_from_dir(waveunitdir)
     assert len(database) == 4
     with pytest.raises(EntryAlreadyAddedError):
-        database.add_from_path(waveunitdir)
+        database.add_from_dir(waveunitdir)
 
 
 def test_add_fom_path_ignore_duplicates(database):
-    database.add_from_path(waveunitdir)
+    database.add_from_dir(waveunitdir)
     assert len(database) == 4
-    database.add_from_path(waveunitdir, ignore_already_added=True)
+    database.add_from_dir(waveunitdir, ignore_already_added=True)
     assert len(database) == 8
 
 
