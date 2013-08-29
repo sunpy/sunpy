@@ -18,6 +18,7 @@ from sunpy.database.commands import NoSuchEntryError
 from sunpy.database.caching import LRUCache, LFUCache
 from sunpy.database import attrs
 from sunpy.net import vso
+from sunpy.data.sample import RHESSI_EVENT_LIST
 from sunpy.data.test.waveunit import waveunitdir
 
 
@@ -457,6 +458,30 @@ def test_add_fom_path_ignore_duplicates(database):
     assert len(database) == 4
     database.add_from_dir(waveunitdir, ignore_already_added=True)
     assert len(database) == 8
+
+
+def test_add_from_file(database):
+    assert len(database) == 0
+    database.add_from_file(RHESSI_EVENT_LIST)
+    assert len(database) == 11
+    # make sure that all entries have the same fileid
+    fileid = database[0].fileid
+    for entry in database:
+        assert entry.fileid == fileid
+
+
+def test_add_from_file_duplicates(database):
+    database.add_from_file(RHESSI_EVENT_LIST)
+    with pytest.raises(EntryAlreadyAddedError):
+        database.add_from_file(RHESSI_EVENT_LIST)
+
+
+def test_add_from_file_ignore_duplicates(database):
+    assert len(database) == 0
+    database.add_from_file(RHESSI_EVENT_LIST)
+    assert len(database) == 11
+    database.add_from_file(RHESSI_EVENT_LIST, True)
+    assert len(database) == 22
 
 
 def test_edit_entry(database):
