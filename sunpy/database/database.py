@@ -528,6 +528,30 @@ class Database(object):
             self._cache.append(database_entry)
         self._command_manager.do(cmds)
 
+    def add_from_file(self, file, ignore_already_added=False):
+        """Generate as many database entries as there are FITS headers in the
+        given file and add them to the database.
+
+        Parameters
+        ----------
+        file : str or file-like object
+            Either a path pointing to a FITS file or a an opened file-like
+            object. If an opened file object, its mode must be one of the
+            following rb, rb+, or ab+.
+
+        ignore_already_added : bool, optional
+            See :meth:`sunpy.database.Database.add`.
+
+        """
+        cmds = []
+        entries = tables.entries_from_file(file, self.default_waveunit)
+        for database_entry in entries:
+            if database_entry in list(self) and not ignore_already_added:
+                raise EntryAlreadyAddedError(database_entry)
+            cmds.append(commands.AddEntry(self.session, database_entry))
+            self._cache.append(database_entry)
+        self._command_manager.do(cmds)
+
     def edit(self, database_entry, **kwargs):
         """Change the given database entry so that it interprets the passed
         key-value pairs as new values where the keys represent the attributes
