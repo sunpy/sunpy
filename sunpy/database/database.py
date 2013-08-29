@@ -486,7 +486,7 @@ class Database(object):
             self._cache.append(database_entry)
         self._command_manager.do(cmds)
 
-    def add_from_path(self, path, recursive=False, pattern='*',
+    def add_from_dir(self, path, recursive=False, pattern='*',
             ignore_already_added=False):
         """Search the given directory for FITS files and use their FITS headers
         to add new entries to the database. Note that one entry in the database
