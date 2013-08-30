@@ -19,7 +19,12 @@ Major Changes:
     Added download progress bar
     pyfits is depricated in favor of Astropy
     
+spectra:
+    Plotting has been refactorted to use a consistent interface
+    spectra now no-longer inherits from numpy.ndarray instead has a .data attribute.
+
 Map:
+    map now no-longer inherits from numpy.ndarray instead has a .data attribute.
     make_map is deprecated in favor of Map which is a new factory class
     sunpy.map.Map is now sunpy.map.GenericMap
     mymap.header is now mymap.meta
@@ -37,7 +42,7 @@ io:
         wavelength unit in fits files.
       
 
-Bug fixes or under the hood chnages:
+Bug fixes or under the hood changes:
 
     A major re-work of all interal imports has resulted in a much cleaner namespace, i.e. sunpy.util.util is no longer used to import util.
     Some SOHO and STEREO files were not reading properly due to a date_obs parameter.
