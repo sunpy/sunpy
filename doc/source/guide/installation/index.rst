@@ -2,7 +2,7 @@
 Installation
 ============
 
-Below are instructions for installation SunPy and its prerequisites on 
+Below are instructions for installing SunPy and its prerequisites on 
 different platforms.
 
 Installing Scientific Python
@@ -54,8 +54,10 @@ All done with the SunPy Python prerequisites. You are now ready to install SunPy
 
 Installing SunPy
 ----------------
-There are a number of ways of installing SunPy.
-Currently, we recommend that users install the lastest stable release, so you won't have to expereince the pain that is breakage (unless it is a bug and thus we blame Cadair).
+There are two different versions of SunPy.
+Currently, we recommend that users install the latest stable release.
+However, the bleeding edge version off our GitHub is quite easy to install and you do get the latest and greatest but it may have bugs.
+If you do want to do this then check :ref:`contrib-reference-label`.
 Depending on your setup, you may need to preface each of the ``pip ...`` commands with ``sudo pip ...``.
 
 Grabbing the stable SunPy
@@ -94,6 +96,8 @@ commands: ::
 >>> sunpy.Map(sunpy.AIA_171_IMAGE).peek()
 
 If all goes well you should see an AIA 171 image on your screen.
+
+.. _contrib-reference-label:
 
 Contributing to SunPy
 ---------------------

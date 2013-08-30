@@ -111,11 +111,10 @@ what you are doing. Also make sure to make your commit statements clear and unde
 
 In order to use the version of SunPy located  in your personal repository. 
 You need to install it using the `setup.py` script located in the top-level folder.
-The `setup.py` script has several flags.
-`develop` will create a symlink from your repository to the local python library location thus installing SunPy.
-It will also build any external libraries required by SunPy.
-`build` and `build_ext` currently do the same thing and that is to (re)build the external libraries.
-`clean --all` will be required if the external library have failed to build and you want to try again.
+The `setup.py` script has several flags: ::
+ `develop` : Installs SunPy and builds all external libraries. 
+ `build` or `build_ext`:  (Re)Builds the external libraries.
+ `clean --all`: Cleans all build files 
 
 Use the `setup.py` script like so: ::
 
