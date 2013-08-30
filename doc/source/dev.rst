@@ -86,6 +86,7 @@ local machine, edit and run: ::
  git clone git@github.com:your_username/sunpy.git
 
 or: ::
+
  git clone http://github.com/sunpy/sunpy.git
 
 By default your fork of the repo on GitHub is identified by the name `origin`.
