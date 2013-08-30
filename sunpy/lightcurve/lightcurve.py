@@ -190,7 +190,6 @@ class LightCurve(object):
 
         # If the file is not already there, download it
         filepath = os.path.join(download_dir, _filename)
-        print filepath
 
         if not(os.path.isfile(filepath)) or (overwrite and 
                                              os.path.isfile(filepath)):
