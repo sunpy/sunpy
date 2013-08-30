@@ -11,5 +11,5 @@ Sun
    :toctree: generated/
 
    constants
-   pos
+   position
    sun
