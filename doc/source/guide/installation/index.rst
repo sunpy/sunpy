@@ -37,9 +37,8 @@ Installing Python Modules
 Making sure to have followed one of the guides previously. 
 You will have installed on your system: Python, Numpy, Scipy, Matplotlib, git, pip and Qt.
 There are few more remaining dependencies which must be installed using pip.
-Depending on which system you are using some of these may already be installed but it does not hurt to upgrade:
+Depending on which system you are using some of these may already be installed but it does not hurt to upgrade: ::
 
-::
  pip install --upgrade distribute
  pip install --upgrade pyfits
  pip install --upgrade suds
@@ -61,10 +60,6 @@ Depending on your setup, you may need to preface each of the ``pip ...`` command
 
 Grabbing the stable SunPy
 ^^^^^^^^^^^^^^^^^^^^^^^^^
-There are two sources for the stable release. Pypi or off our github page.
-
-Easy Way
-^^^^^^^^
 It is as simple as this: ::
 
     pip install sunpy
@@ -76,18 +71,18 @@ If you are upgrading the package: ::
 For those who like to download the source.
 You have a range of download locations.
 
-PyPi: https://pypi.python.org/packages/source/s/sunpy/sunpy-0.2.0.tar.gz
+PyPi: `Link Download <https://pypi.python.org/packages/source/s/sunpy/sunpy-0.3.0.tar.gz>`_
 
-Github (tar.gz): https://github.com/sunpy/sunpy/tarball/0.2
+Github (tar.gz): `Link Download <https://github.com/sunpy/sunpy/tarball/0.3>`_ 
 
-Github (zip): https://github.com/sunpy/sunpy/zipball/0.2
+Github (zip): `Link Download <https://github.com/sunpy/sunpy/zipball/0.3>`_ 
 
 Then you can use: ::
 
-    pip install ./<path of download location>/SunPyPackageName.file_extension
+    pip install ./<path to download>/SunPyPackageName.file_extension
 
 In some cases you may need the ``--no-deps`` flag if pip is trying to upgrade dependencies such as SciPy and Matplotlib that are difficult to build from source and the likely errors will abort the upgrade.
-That's it!
+That's it folks!
 
 Testing your installation
 -------------------------
