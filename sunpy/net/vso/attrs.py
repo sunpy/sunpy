@@ -23,7 +23,7 @@ from datetime import datetime
 from sunpy.net.attr import (
     Attr, ValueAttr, AttrWalker, AttrAnd, AttrOr, DummyAttr, ValueAttr
 )
-from sunpy.util.util import to_angstrom
+from sunpy.util import to_angstrom
 from sunpy.util.multimethod import MultiMethod
 from sunpy.time import parse_time
 
@@ -220,18 +220,6 @@ def _create(wlk, root, api):
     for attr in root.attrs:
         blocks.extend(wlk.create(attr, api))
     return blocks
-
-@walker.add_creator(DummyAttr)
-# pylint: disable=E0102,C0103,W0613
-def _create(wlk, root, api):
-    """ Implementation detail. """
-    return api.factory.create('QueryRequestBlock')
-
-@walker.add_applier(DummyAttr)
-# pylint: disable=E0102,C0103,W0613
-def _apply(wlk, root, api, queryblock):
-    """ Implementation detail. """
-    pass
 
 
 # Converters take a type unknown to the walker and convert it into one

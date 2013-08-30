@@ -5,22 +5,34 @@ from __future__ import absolute_import
 
 #pylint: disable=C0103,R0904,W0201,W0212,W0232,E1103
 import sunpy
+import sunpy.map
+import pytest
 from sunpy.net.helioviewer import HelioviewerClient
+
+# If server is not accessible, skip Helioviewer tests
+client = HelioviewerClient()
+if not client.is_online():
+    __SKIP_TESTS__ = True
+    print("Skipping Helioviewer.org tests (server inaccessible)")
+else:
+    __SKIP_TESTS__ = False
 
 class TestHelioviewerClient:
     """Tests the Helioviewer.org API Client class"""
     def setup_class(self):
-        self.client = HelioviewerClient()
+        self.client = client
         self.sources = self.client.get_data_sources()
 
     def teardown_class(self):
         self.client = None
-        
+    
+    @pytest.mark.skipif("__SKIP_TESTS__ is True")
     def test_get_datasources(self):
         """Makes sure datasource query returns a valid result and source id
         is casted to an integer"""
         assert type(self.sources['SDO']['AIA']['AIA']['171']['sourceId']) is int
         
+    @pytest.mark.skipif("__SKIP_TESTS__ is True")
     def test_get_closest_image(self):
         """Tests getClosestImage API method"""
         # check basic query
@@ -38,16 +50,16 @@ class TestHelioviewerClient:
         
         assert im1 == im2
         
+    @pytest.mark.skipif("__SKIP_TESTS__ is True")
     def test_download_jp2(self):
         """Tests getJP2Image API method"""
         filepath = self.client.download_jp2('2020/01/01', observatory='SOHO', 
                                             instrument='MDI', detector='MDI',
                                             measurement='continuum')
         try:
-            map_ = sunpy.make_map(filepath)
+            map_ = sunpy.Map(filepath)
         except sunpy.io.jp2.MissingOpenJPEGBinaryError:
             # We can't test JP2 decoding if binary is not available
             pass
         else:
-            assert isinstance(map_, sunpy.Map)
-    
+            assert isinstance(map_, sunpy.map.GenericMap)

@@ -5,6 +5,30 @@ SunPy can be used to make several basic requests using the The `Helioviewer.org 
 including generating a PNG and downloading a `JPEG 2000 <http://wiki.helioviewer.org/wiki/JPEG_2000>`__
 image and loading it into a SunPy Map.
 
+The SunPy Helioviewer client requires installing two other pieces of software.
+The first - OpenJPEG - is an open source library for reading and writing JPEG2000 
+files.  To install OpenJPEG, please follow the instructions at `the OpenJPEG 
+homepage <http://www.openjpeg.org>`__ .
+Once installed you need to check that the command j2k_to_image is accessable 
+in your path. i.e. you can run it from a command line or the windows run prompt
+without specifing a directory. This should enable sunpy to convert the files.
+[Note: SunPy 0.3 should be the last version of SunPy where the requirement for
+binary file conversion in this way is used. If you are making extensive use of
+JPEG2000 files you may wish to consider using the development version of Sunpy
+at `http://github.com/sunpy/sunpy <http://github.com/sunpy/sunpy>_]
+
+The other package you will need is
+the Python Imaging Library (PIL).  PIL can be obtained from 
+`here <http://www.pythonware.com/products/pil/>`__.
+Please follow the instructions there to install (note that PIL may ask you to
+install other packages too).  The reason that two packages are required is
+because matplotlib natively only reads in PNG files, and OpenJPEG 
+does not write PNG files.
+PIL is needed because the OpenJPEG command j2k_to_image (which converts a JPEG2000
+file to other file formats) does not support outputting to PNG, and PNG is the 
+only format Matplotlib can read in by itself. Matplotlib falls back to trying PIL 
+when it encounters the intermediate image format we use; hence, PIL is required.
+
 To interact with the Helioviewer API, users first create a "HelioviewerClient"
 instance. The client instance can then be used to make various queries against
 the API using the same parameters one would use when making a web request.
@@ -72,7 +96,7 @@ specifying a single string to indicate which layers to use, here we
 can specify the values as separate keyword arguments: ::
 
     filepath = hv.download_jp2('2012/07/05 00:30:00', observatory='SDO', instrument='HMI', detector='HMI', measurement='continuum')
-    hmi = sunpy.make_map(filepath)
+    hmi = sunpy.Map(filepath)
     hmi.submap([200,550],[-400,-200]).show()
 
 .. image:: ../images/helioviewer_download_jp2_ex.png

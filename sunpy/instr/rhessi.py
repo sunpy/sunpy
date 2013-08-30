@@ -10,18 +10,25 @@
 """
 
 from __future__ import absolute_import
-import numpy as np
-import pyfits
-import sunpy
-from sunpy.time import TimeRange
-from datetime import datetime
-from datetime import timedelta
-import matplotlib.pyplot as plt
-import matplotlib.dates
+
 import urllib
 import csv
+from datetime import datetime
+from datetime import timedelta
+
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.dates
+
+try:
+    import astropy.io.fits as pyfits
+except ImportError:
+    import pyfits
+
+import sunpy
+from sunpy.time import TimeRange, parse_time
 import sunpy.sun.constants as sun
-from sunpy.sun.sun import angular_size
+from sunpy.sun.sun import solar_semidiameter_angular_size
 from sunpy.sun.sun import sunearth_distance
 
 # Measured fixed grid parameters
@@ -62,8 +69,8 @@ def get_obssumm_dbase_file(time_range):
     ----------
     | http://hesperia.gsfc.nasa.gov/ssw/hessi/doc/guides/hessi_data_access.htm#Observing Summary Data
 
-    .. note:: This API is currently limited to providing data from 
-    whole days only.
+    .. note::
+        This API is currently limited to providing data from whole days only.
 
     """
     
@@ -106,8 +113,8 @@ def parse_obssumm_dbase_file(filename):
     ----------
     | http://hesperia.gsfc.nasa.gov/ssw/hessi/doc/guides/hessi_data_access.htm#Observing Summary Data
 
-    .. note:: This API is currently limited to providing data from 
-    whole days only.
+    .. note::
+        This API is currently limited to providing data from whole days only.
 
     """
     with open(filename, "rb") as fd:
@@ -164,8 +171,8 @@ def get_obssum_filename(time_range):
     >>> import sunpy.instr.rhessi as rhessi
     >>> rhessi.get_obssumm_filename(('2011/04/04', '2011/04/05'))
 
-    .. note:: This API is currently limited to providing data from 
-    whole days only.
+    .. note::
+        This API is currently limited to providing data from whole days only.
 
     """
     # need to download and inspect the dbase file to determine the filename
@@ -199,8 +206,8 @@ def get_obssumm_file(time_range):
     >>> import sunpy.instr.rhessi as rhessi
     >>> rhessi.get_obssumm_file(('2011/04/04', '2011/04/05'))
 
-    .. note:: This API is currently limited to providing data from 
-    whole days only.
+    .. note::
+        This API is currently limited to providing data from whole days only.
 
     """
     
@@ -240,7 +247,7 @@ def parse_obssumm_file(filename):
 
     fits = pyfits.open(filename)
     
-    reference_time_ut = sunpy.time.parse_time(fits[5].data.field('UT_REF')[0])
+    reference_time_ut = parse_time(fits[5].data.field('UT_REF')[0])
     time_interval_sec = fits[5].data.field('TIME_INTV')[0]
     # label_unit = fits[5].data.field('DIM1_UNIT')[0]
     # labels = fits[5].data.field('DIM1_IDS')
@@ -414,7 +421,7 @@ def backprojection(calibrated_event_list, pixel_size=(1.,1.), image_dim=(64,64))
         "CTYPE2": "HPLT-TAN",
         "HGLT_OBS": 0,
         "HGLN_OBS": 0,
-        "RSUN_OBS": angular_size(time_range.center()),
+        "RSUN_OBS": solar_semidiameter_angular_size(time_range.center()),
         "RSUN_REF": sun.radius,
         "DSUN_OBS": sunearth_distance(time_range.center()) * sunpy.sun.constants.au
     }

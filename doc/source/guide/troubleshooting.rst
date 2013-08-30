@@ -7,6 +7,30 @@ Troubleshooting
 .. contents::
    :backlinks: none
 
+.. _CrotateWarning:
+
+Crotate Warning
+===============
+
+The SunPy map class has a custom rotate functionality, similar to IDL's ROT function.
+This uses a Python C-API extension which should be compiled by installing sunpy.
+If for any reason this build process fails, you will not be able to use the C-API
+rotate code, but will be able to still use all the functionality of map.
+
+If this happens you will encounter the following warning upon using the rotate
+method
+::
+
+    rot_map = mymap.rotate(10)
+    sunpy/map/map.py:829: Warning: The C extension sunpy.image.Crotate is not installed, falling back to the interpolation='spline' of order=3
+      warnings.warn("The C extension sunpy.image.Crotate is not installed, falling back to the interpolation='spline' of order=3" ,Warning)
+
+What happens is, because the C-API extension is not found, the rotate() function 
+defaults to the spline interpolation method of order 3 which is implemented in scipy.
+
+To fix the C-API you should try and reinstall SunPy, if this still fails please 
+ask the mailing list for assistance.
+
 .. _sunpy-version:
 
 Obtaining sunpy version
@@ -57,7 +81,6 @@ The output should look something like: ::
      Recommended libraries
     #######################
     beautifulsoup4: 4.1.1
-    PIL: NOT INSTALLED
     PyQt: 4.9.4
     SUDS: 0.4'
 
