@@ -62,8 +62,8 @@ The people who have contributed to this release are:
     Ankit Angrawal
     Jack Ireland
     Matt Bates
-    Keith Hughitt
     Nabil Freij
+    Keith Hughitt
     David Perez-Suarez
     Tomas Meszaros
     Benjamin Mampaey
