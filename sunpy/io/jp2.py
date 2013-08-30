@@ -1,6 +1,5 @@
 """JPEG 2000 File Reader"""
 from __future__ import absolute_import
-from sunpy.map.header import MapHeader
 
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
@@ -8,53 +7,94 @@ __email__ = "keith.hughitt@nasa.gov"
 import os
 import subprocess
 import tempfile
-from matplotlib.image import imread
-from sunpy.util.xml import xml_to_dict
 
-def read(filepath):
-    """Reads in the file at the specified location"""
-    header = get_header(filepath)
-    data = get_data(filepath)
+from matplotlib.image import imread
+
+from sunpy.util.xml import xml_to_dict
+from sunpy.io.header import FileHeader
+
+__all__ = ['read', 'get_header', 'write']
+
+def read(filepath, j2k_to_image='opj_decompress'):
+    """
+    Reads a JPEG2000 file
     
-    return data, header 
+    Parameters
+    ----------
+    filepath : string
+        The file to be read
+    
+    j2k_to_image : string
+        binary to use for reading?
+    
+    Returns
+    -------
+    pairs : list
+        A list of (data, header) tuples
+    """
+    header = get_header(filepath)
+    data = _get_data(filepath, j2k_to_image=j2k_to_image)
+    
+    return [(data, header[0])]
 
 def get_header(filepath):
-    """Reads the header in and saves it as a dictionary"""
-    xmlstring = read_xmlbox(filepath, "fits")
+    """
+    Reads the header form the file
+    
+    Parameters
+    ----------
+    filepath : string
+        The file to be read
+        
+    Returns
+    -------
+    headers : list
+        A list of headers read from the file
+    """
+    xmlstring = _read_xmlbox(filepath, "fits")
     pydict = xml_to_dict(xmlstring)["fits"]
     
     #Fix types
     for k, v in pydict.items():
         if v.isdigit():
             pydict[k] = int(v)
-        elif is_float(v):
+        elif _is_float(v):
             pydict[k] = float(v)
             
     # Remove newlines from comment
-    pydict['comment'] = pydict['comment'].replace("\n", "")
+    if 'comment' in pydict:
+        pydict['comment'] = pydict['comment'].replace("\n", "")
             
-    return MapHeader(pydict)
+    return [FileHeader(pydict)]
 
-def get_data(filepath, j2k_to_image="j2k_to_image"):
+def write(fname, data, header):
+    """
+    Place holder for required file writer
+    """
+    raise NotImplementedError("No jp2 writer is implemented")
+
+def _get_data(filepath, j2k_to_image="opj_decompress"):
     """Extracts the data portion of a JPEG 2000 image
     
     Uses the OpenJPEG j2k_to_image command, if available, to extract the data
     portion of a JPEG 2000 image. The image is first converted to a temporary
-    intermediate file (PGM) and then read back in and stored an as ndarray.
+    intermediate file (PNG) and then read back in and stored an as ndarray.
     
-    NOTE: PIL is also required for Matplotlib to read in PGM images.
+    The image as read back in is upside down, and so it is spun around for the
+    correct orientation.
     """
-    if j2k_to_image == "j2k_to_image" and os.name is "nt":
-        j2k_to_image = "j2k_to_image.exe"
+    if os.name is "nt":
+        if (j2k_to_image == "j2k_to_image") or (j2k_to_image == "opj_decompress"):
+            j2k_to_image = j2k_to_image+".exe"
 
-    if which(j2k_to_image) is None:
+    if _which(j2k_to_image) is None:
         raise MissingOpenJPEGBinaryError("You must first install the OpenJPEG "
-                                         "binaries before using this "
-                                         "funcitonality")
+                                         "(version >=1.4) binaries before using "
+                                         "this functionality.")
     
     jp2filename = os.path.basename(filepath)
     
-    tmpname = "".join(os.path.splitext(jp2filename)[0:-1]) + ".pgm"
+    tmpname = "".join(os.path.splitext(jp2filename)[0:-1]) + ".png"
     tmpfile = os.path.join(tempfile.mkdtemp(), tmpname)
     
     with open(os.devnull, 'w') as fnull:
@@ -64,9 +104,10 @@ def get_data(filepath, j2k_to_image="j2k_to_image"):
     data = imread(tmpfile)    
     os.remove(tmpfile)
     
-    return data
+    # flip the array around since it has been read in upside down.
+    return data[::-1]
 
-def read_xmlbox(filepath, root):
+def _read_xmlbox(filepath, root):
     """
     Extracts the XML box from a JPEG 2000 image.
     
@@ -89,7 +130,7 @@ def read_xmlbox(filepath, root):
     # Fix any malformed XML (e.g. in older AIA data)
     return xmlstr.replace("&", "&amp;")
 
-def is_float(s):
+def _is_float(s):
     """Check to see if a string value is a valid float"""
     try:
         float(s)
@@ -97,7 +138,7 @@ def is_float(s):
     except ValueError:
         return False
     
-def which(program):
+def _which(program):
     """Checks for existence of executable
     
     Source: http://stackoverflow.com/questions/377017/test-if-executable-exists-in-python/377028#377028

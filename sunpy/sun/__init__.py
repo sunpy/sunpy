@@ -17,6 +17,11 @@ A typical use case might be::
 # it is hard coded to import the si units. Should we move away from this 
 # paradigm?
 
+from __future__ import absolute_import
+
+from sunpy.sun.sun import *
+
 from . import _cgs
 from . import _si
 from . import constants
+

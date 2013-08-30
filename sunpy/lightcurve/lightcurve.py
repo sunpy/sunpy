@@ -9,18 +9,19 @@ __authors__ = ["Keith Hughitt"]
 __email__ = "keith.hughitt@nasa.gov"
 
 import os
-import pandas
-import sunpy
 import shutil
 import urllib2
+from datetime import datetime
+
 import numpy as np
 import matplotlib.pyplot as plt
+import pandas
 
-from datetime import datetime
-from types import NoneType
-
-from sunpy.time import is_time, TimeRange
+import sunpy
+from sunpy.time import is_time, TimeRange, parse_time
 from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
+
+__all__ = ['LightCurve']
 
 class LightCurve(object):
     """
@@ -36,21 +37,28 @@ class LightCurve(object):
 
     Attributes
     ----------
+    header : string, dict
+        The comment string or header associated with the light curve input
     data : pandas.DataFrame
         An pandas DataFrame prepresenting one or more fields as they vary with 
         respect to time.
-    header : string, dict
-        The comment string or header associated with the light curve input
 
     Examples
     --------
     import sunpy
     import datetime
+    import numpy as np
+
     base = datetime.datetime.today()
     dates = [base - datetime.timedelta(minutes=x) for x in range(0, 24 * 60)]
+
+    intensity = np.sin(np.arange(0, 12 * np.pi, step=(12 * np.pi) / 24 * 60))
+
     light_curve = sunpy.lightcurve.LightCurve.create(
-    {"param1": range(24 * 60)}, index=dates)
-    light_curve.show()
+        {"param1": intensity}, index=dates
+    )
+
+    light_curve.peek()
 
     References
     ----------
@@ -59,45 +67,44 @@ class LightCurve(object):
     """
     _cond_dispatch = ConditionalDispatch()
     create = classmethod(_cond_dispatch.wrapper())
-    
-    def __init__(self, data, header=None):     
+
+    def __init__(self, data, header=None):
         self.data = data
         self.header = header
-    
+
     @classmethod
     def from_time(cls, time, **kwargs):
-        date = sunpy.time.parse_time(time)
+        date = parse_time(time)
         url = cls._get_url_for_date(date)
         filepath = cls._download(
             url, kwargs, err="Unable to download data for specified date"
         )
         return cls.from_file(filepath)
-    
+
     @classmethod
     def from_range(cls, from_, to, **kwargs):
-        url = cls._get_url_for_date_range(from_, to)
+        url = cls._get_url_for_date_range(parse_time(from_), parse_time(to))
         filepath = cls._download(
             url, kwargs, 
             err = "Unable to download data for specified date range"
         )
         return cls.from_file(filepath)
-    
+
     @classmethod
     def from_timerange(cls, timerange, **kwargs):
         url = cls._get_url_for_date_range(timerange)
         filepath = cls._download(
             url, kwargs,
             err = "Unable to download data for specified date range"
-        )   
-        return cls.from_file(filepath)       
-    
+        )
+        return cls.from_file(filepath)
+
     @classmethod
     def from_file(cls, filename):
         filename = os.path.expanduser(filename)
-        
         header, data = cls._parse_filepath(filename)
         return cls(data, header)
-    
+
     @classmethod
     def from_url(cls, url, **kwargs):
         try:
@@ -107,74 +114,74 @@ class LightCurve(object):
                    "specify a valid filepath or URL?")
             raise ValueError(err)
         return cls.from_file(filepath)
-    
+
     @classmethod
     def from_data(cls, data, index=None, header=None):
         return cls(
             pandas.DataFrame(data, index=index),
             header
         )
-    
+
     @classmethod
     def from_yesterday(cls):
         return cls.from_url(cls._get_default_uri())
-    
+
     @classmethod
     def from_dataframe(cls, dataframe, header=None):
         return cls(dataframe, header)
-    
+
     def plot(self, axes=None, **plot_args):
         """Plot a plot of the light curve
-        
+
         Parameters
-        ----------            
+        ----------
         axes: matplotlib.axes object or None
             If provided the image will be plotted on the given axes. Else the 
             current matplotlib axes will be used.
-        
+
         **plot_args : dict
             Any additional plot arguments that should be used
             when plotting the image.
-        
+
         """
 
         #Get current axes
         if axes is None:
             axes = plt.gca()
-         
+
         axes = self.data.plot(ax=axes, **plot_args)
 
         return axes
-    
+
     def peek(self, **kwargs):
         """Displays the light curve in a new figure"""
-        
+
         figure = plt.figure()
-        
+
         self.plot(**kwargs)
-        
+
         figure.show()
-        
+
         return figure
-    
+
     @staticmethod
     def _download(uri, kwargs, 
                   err='Unable to download data at specified URL'):
         """Attempts to download data at the specified URI"""
         _filename = os.path.basename(uri).split("?")[0]
-        
+
         # user specifies a download directory
         if "directory" in kwargs:
             download_dir = os.path.expanduser(kwargs["directory"])
         else:
             download_dir = sunpy.config.get("downloads", "download_dir")
-        
+
         # overwrite the existing file if the keyword is present
         if "overwrite" in kwargs:
             overwrite = kwargs["overwrite"]
         else:
             overwrite = False
-        
+
         # If the file is not already there, download it
         filepath = os.path.join(download_dir, _filename)
 
@@ -186,58 +193,58 @@ class LightCurve(object):
                 raise urllib2.URLError(err)
             with open(filepath, 'wb') as fp:
                 shutil.copyfileobj(response, fp)
-                    
+
         return filepath
-    
+
     @classmethod
     def _get_default_uri(cls):
         """Default data to load when none is specified"""
         msg = "No default action set for %s"
         raise NotImplementedError(msg % cls.__name__)
-    
+
     @classmethod
     def _get_url_for_date(cls, date):
         """Returns a URL to the data for the specified date"""
         msg = "Date-based downloads not supported for for %s"
         raise NotImplementedError(msg % cls.__name__)
-    
+
     @classmethod
     def _get_url_for_date_range(cls, *args, **kwargs):
         """Returns a URL to the data for the specified date range"""
         msg = "Date-range based downloads not supported for for %s"
         raise NotImplementedError(msg % cls.__name__)
-    
+
     @staticmethod
     def _parse_csv(filepath):
         """Place holder method to parse CSV files."""
         msg = "Generic CSV parsing not yet implemented for LightCurve"
         raise NotImplementedError(msg)
-    
+
     @staticmethod
     def _parse_fits(filepath):
         """Place holder method to parse FITS files."""
         msg = "Generic FITS parsing not yet implemented for LightCurve"
         raise NotImplementedError(msg)
-    
+
     @classmethod
     def _parse_filepath(cls, filepath):
         filename, extension = os.path.splitext(filepath)
-        
+
         if extension.lower() in (".csv", ".txt"):
             return cls._parse_csv(filepath)
         else:
             return cls._parse_fits(filepath)
-    
+
     def truncate(self, a, b=None):
         """Returns a truncated version of the timeseries object"""
         if isinstance(a, TimeRange):
             time_range = a
         else:
             time_range = TimeRange(a,b)
-        
+
         truncated = self.data.truncate(time_range.start(), time_range.end())
         return LightCurve(truncated, self.header.copy())
-    
+
     def extract(self, a):
         """Extract a set of particular columns from the DataFrame"""
         # TODO allow the extract function to pick more than one column
@@ -245,7 +252,7 @@ class LightCurve(object):
             return self
         else:
             return LightCurve(self.data[a], self.header.copy())
-        
+
     def time_range(self):
         """Returns the start and end times of the LightCurve as a TimeRange
         object"""
@@ -266,7 +273,7 @@ class LightCurve(object):
 
 LightCurve._cond_dispatch.add(
     run_cls("from_time"),
-    lambda cls, time: sunpy.time.is_time(time),
+    lambda cls, time: is_time(time),
     # type is here because the class parameter is a class,
     # i.e. an instance of type (which is the base meta-class).
     [type, (basestring, datetime, tuple)],
@@ -275,8 +282,8 @@ LightCurve._cond_dispatch.add(
 
 LightCurve._cond_dispatch.add(
     run_cls("from_range"),
-    lambda cls, time, **kwargs: is_time(time),
-    [type, (basestring, datetime, tuple)],
+    lambda cls, time1, time2, **kwargs: is_time(time1) and is_time(time2),
+    [type, (basestring, datetime, tuple), (basestring, datetime, tuple)],
     False
 )
 
