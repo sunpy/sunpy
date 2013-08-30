@@ -1,9 +1,12 @@
+
 =================
 Developer's Guide
 =================
 
-Overview
---------
+.. _dev-reference-label:
+
+Developer's Guide Overview
+--------------------------
 This article describes the guidelines to be followed by developers working on
 SunPy. You if you are thinking of contributing to SunPy please read the following
 carefully.
@@ -104,6 +107,19 @@ You local repo is now synced with GitHub and ahead of the main repo as it contai
 your personal contribution. Remember to commit after you've done a unit of work (i.e.
 often). This will make it easier for you (in the future) and everyone else to understand 
 what you are doing. Also make sure to make your commit statements clear and understandable.
+
+**Installing SunPy**
+
+In order to use the version of SunPy located  in your personal repository. 
+You need to install it using the `setup.py` script located in the top-level folder.
+The `setup.py` script has several flags enabling different outcomes depending on what you require.
+The most common flag will the `develop`, `build` and `build_ext`.
+`develop` will create a symlink from your repository to the local python library. 
+It will also build any external libraries required by SunPy.
+`build` and `build_ext` currently do the same thing and that is to (re)build the external libraries.
+Use the `setup.py` script like so: ::
+
+ sudo python setup.py develop
 
 **Conclusion**
 

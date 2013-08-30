@@ -33,11 +33,13 @@ multiple Python environments installed.
 
 Installing Python Modules
 -------------------------
-You should now have the following  on your system; Python, Numpy, Scipy, 
-Matplotlib, git, pip and Qt. You can now install some final remaining dependencies using pip.
-Depending on which system you are using some of these may already be installed 
-but it does not hurt to upgrade: ::
 
+Making sure to have followed one of the guides previously. 
+You will have installed on your system: Python, Numpy, Scipy, Matplotlib, git, pip and Qt.
+There are few more remaining dependencies which must be installed using pip.
+Depending on which system you are using some of these may already be installed but it does not hurt to upgrade:
+
+::
  pip install --upgrade distribute
  pip install --upgrade pyfits
  pip install --upgrade suds
@@ -49,77 +51,43 @@ This can also be installed using pip: ::
 
  pip install --upgrade ipython
  
-Additionally, if you plan to help with SunPy development, some additional 
-dependencies are required: ::
-
- pip install --upgrade pytest pylint paver tox sphinx numpydoc
-
 All done with the SunPy Python prerequisites. You are now ready to install SunPy itself.
 
 Installing SunPy
 ----------------
-There are a number of ways of installing SunPy. We currently recommend you use the latest
-(development) version of SunPy as we are developing quickly. To do this you'll use git 
-and pip to grab the latest code from github. If you would rather have a more stable
-version of SunPy then check out the section below on grabbing the stable SunPy.
+There are a number of ways of installing SunPy.
+Currently, we recommend that users install the lastest stable release, so you won't have to expereince the pain that is breakage (unless it is a bug and thus we blame Cadair).
+Depending on your setup, you may need to preface each of the ``pip ...`` commands with ``sudo pip ...``.
 
-Grabbing the latest SunPy
-=========================
-
-There are two ways to install the latest version SunPy, including a quick method 
-and a developer method.  Depending on your setup, you may need to preface each of the
-``pip ...`` commands with ``sudo pip ...``.
-
-Quick installation
-^^^^^^^^^^^^^^^^^^
-The easiest way to install SunPy is to use pip (combined with git): ::
-
-    pip install git+https://github.com/sunpy/sunpy.git 
-   
-This will download and install the latest version of SunPy. To upgrade SunPy at
-a later date, you can run: ::
-
-    pip install --upgrade --no-deps git+https://github.com/sunpy/sunpy.git
-
-Please make sure to include the ``--no-deps`` option because otherwise pip may
-try to upgrade dependencies such as SciPy and Matplotlib that are difficult to
-build from source and the likely errors will abort the upgrade. That's it!
-    
-Developer installation
-^^^^^^^^^^^^^^^^^^^^^^
-If you are considering contributing to the development of SunPy, you will likely
-want to keep the SunPy code tree in a convenient location.
-
-Open a terminal and cd to a directory where you wish to download SunPy, and 
-run: ::
-
-    git clone https://github.com/sunpy/sunpy.git
-    
-This will download the latest version of SunPy. Finally, from inside the new SunPy 
-directory run: ::
-
-    pip install -e .
-    
-This will make it make possible to import and use SunPy regardless of your
-working directory. To upgrade SunPy at a later date, go into the SunPy directory 
-and run: ::
-
-    git pull upstream master
-    pip install --upgrade --no-deps -e .
-
-That's it!
-   
 Grabbing the stable SunPy
-=========================
-If you'd like to use a more stable version of SunPy and only upgrade at milestones
-then head over to `github <https://github.com/sunpy/sunpy/tags>` and download the latest
-stable release. After extracting the download you can install SunPy by using pip like so
-: ::
+^^^^^^^^^^^^^^^^^^^^^^^^^
+There are two sources for the stable release. Pypi or off our github page.
 
-    pip install ./downloads/SunPyPackage-1.0.4.tar.gz
-    
-This will add it to your existing Python modules. To upgrade to the next version, just
-head back to the github page and grab the next version and repeat the process above.
+Easy Way
+^^^^^^^^
+It is as simple as this: ::
+
+    pip install sunpy
+
+If you are upgrading the package: ::
+
+    pip install --upgrade sunpy
+
+For those who like to download the source.
+You have a range of download locations.
+
+PyPi: https://pypi.python.org/packages/source/s/sunpy/sunpy-0.2.0.tar.gz
+
+Github (tar.gz): https://github.com/sunpy/sunpy/tarball/0.2
+
+Github (zip): https://github.com/sunpy/sunpy/zipball/0.2
+
+Then you can use: ::
+
+    pip install ./<path of download location>/SunPyPackageName.file_extension
+
+In some cases you may need the ``--no-deps`` flag if pip is trying to upgrade dependencies such as SciPy and Matplotlib that are difficult to build from source and the likely errors will abort the upgrade.
+That's it!
 
 Testing your installation
 -------------------------
@@ -131,3 +99,8 @@ commands: ::
 >>> sunpy.Map(sunpy.AIA_171_IMAGE).peek()
 
 If all goes well you should see an AIA 171 image on your screen.
+
+Contributing to SunPy
+---------------------
+If you are considering contributing to the development of SunPy and please do consider it.
+Please see :ref:`dev-reference-label` as it will explain everything required to start contributing.
