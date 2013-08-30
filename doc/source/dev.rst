@@ -25,7 +25,7 @@ Creating Your Own Repo
 **Overview**
 
 Each person contributing to SunPy should create their own code repository on
-GitHub by forking the master repository or repo. All development is then done on that 
+GitHub by forking the master repository or repo.eas All development is then done on that 
 fork, using topic branches to isolate work on different features. New 
 contributers can then initiate pull requests to have their code incorporated 
 into the SunPy master repository. Regular contributers can become members of the 
@@ -50,6 +50,13 @@ For instructions on how this is done, see the article on GitHub on
 work from multiple computers you will need to go through the process for each 
 computer you wish to work on. Once you have created your account and 
 associated a public SSH key it, you are ready to go.
+
+**Using HTTPS**
+
+If you do not fancy using SSH you can access GitHub using HTTP/HTTPS.
+A few things to note.
+Using HTTP only alows cloning of public repositories, while HTTPS allows cloning of private repositories but also allows you to have push access.
+This way you can type in your username and password to access your repositories.
 
 **Identifying yourself**
 
@@ -77,7 +84,10 @@ Next, you need to download the forked repository. Clone the fork to your
 local machine, edit and run: ::
 
  git clone git@github.com:your_username/sunpy.git
- 
+
+or: ::
+ git clone http://github.com/sunpy/sunpy.git
+
 By default your fork of the repo on GitHub is identified by the name `origin`.
 In order to keep the fork up to date with the main repo, it is useful to add it
 as a `remote` in git: ::
@@ -194,8 +204,11 @@ If you delete a file run: ::
 
     git rm <yourfilename>
 
-To move a file, copy the file and then run a git rm and then a git add. To check to see if git is happy
-run: ::
+To move a file: ::
+ 
+    git mv <source> <destination>
+
+To check to see if git is happy run: ::
 
     git status
 
