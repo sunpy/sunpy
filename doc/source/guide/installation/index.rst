@@ -92,11 +92,13 @@ Then you will want to cd into directory you want to have SunPy located and now: 
 
  git clone git@github.com:sunpy/sunpy.git
 
-This will download the SunPy repository and create a `sunpy` folder at the current location.
+This will download the SunPy repository and create a sunpy folder at the current location.
 With time, updates will happen and you can update your local copy by: ::
+
  git pull upstream master
 
 Finally, to install the local version of SunPy you can run: ::
+
  python setup.py install
 
 Testing your installation
