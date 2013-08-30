@@ -476,15 +476,10 @@ class Database(object):
             See :meth:`sunpy.database.Database.add`.
 
         """
-        cmds = []
-        entries = tables.entries_from_query_result(
-            query_result, self.default_waveunit)
-        for database_entry in entries:
-            if database_entry in list(self) and not ignore_already_added:
-                raise EntryAlreadyAddedError(database_entry)
-            cmds.append(commands.AddEntry(self.session, database_entry))
-            self._cache.append(database_entry)
-        self._command_manager.do(cmds)
+        self.add_many(
+            tables.entries_from_query_result(
+                query_result, self.default_waveunit),
+            ignore_already_added)
 
     def add_from_dir(self, path, recursive=False, pattern='*',
             ignore_already_added=False):
@@ -543,14 +538,9 @@ class Database(object):
             See :meth:`sunpy.database.Database.add`.
 
         """
-        cmds = []
-        entries = tables.entries_from_file(file, self.default_waveunit)
-        for database_entry in entries:
-            if database_entry in list(self) and not ignore_already_added:
-                raise EntryAlreadyAddedError(database_entry)
-            cmds.append(commands.AddEntry(self.session, database_entry))
-            self._cache.append(database_entry)
-        self._command_manager.do(cmds)
+        self.add_many(
+            tables.entries_from_file(file, self.default_waveunit),
+            ignore_already_added)
 
     def edit(self, database_entry, **kwargs):
         """Change the given database entry so that it interprets the passed
