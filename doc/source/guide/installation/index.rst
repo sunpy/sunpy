@@ -57,7 +57,6 @@ Installing SunPy
 There are two different versions of SunPy.
 Currently, we recommend that users install the latest stable release.
 However, the bleeding edge version off our GitHub is quite easy to install and you do get the latest and greatest but it may have bugs.
-If you do want to do this then check :ref:`contrib-reference-label`.
 Depending on your setup, you may need to preface each of the ``pip ...`` commands with ``sudo pip ...``.
 
 Grabbing the stable SunPy
@@ -81,10 +80,24 @@ Github (zip): `Download <https://github.com/sunpy/sunpy/zipball/0.3>`_
 
 Then you can use: ::
 
-    pip install ./<path to download>/SunPyPackageName.file_extension
+    pip install ./<path to download>/SunPyDownload.file_extension
 
 In some cases you may need the ``--no-deps`` flag if pip is trying to upgrade dependencies such as SciPy and Matplotlib that are difficult to build from source and the likely errors will abort the upgrade.
 That's it folks!
+
+Grabbing the latest SunPy
+^^^^^^^^^^^^^^^^^^^^^^^^^
+If you do fancy the latest version of SunPy.
+Then you will want to cd into directory you want to have SunPy located and now: ::
+
+ git clone git@github.com:sunpy/sunpy.git
+
+This will download the SunPy repository and create a `sunpy` folder at the current location.
+With time, updates will happen and you can update your local copy by: ::
+ git pull upstream master
+
+Finally, to install the local version of SunPy you can run: ::
+ python setup.py install
 
 Testing your installation
 -------------------------
@@ -96,8 +109,6 @@ commands: ::
 >>> sunpy.Map(sunpy.AIA_171_IMAGE).peek()
 
 If all goes well you should see an AIA 171 image on your screen.
-
-.. _contrib-reference-label:
 
 Contributing to SunPy
 ---------------------
