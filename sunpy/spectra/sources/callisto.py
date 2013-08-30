@@ -346,7 +346,7 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
             end of the measurement
         """
         kw = {
-            'maxgap': 1,
+            'maxgap': None,
             'fill': cls.JOIN_REPEAT,
         }
         
