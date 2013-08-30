@@ -71,11 +71,11 @@ If you are upgrading the package: ::
 For those who like to download the source.
 You have a range of download locations.
 
-PyPi: `Link Download <https://pypi.python.org/packages/source/s/sunpy/sunpy-0.3.0.tar.gz>`_
+PyPi: `Download <https://pypi.python.org/packages/source/s/sunpy/sunpy-0.3.0.tar.gz>`_
 
-Github (tar.gz): `Link Download <https://github.com/sunpy/sunpy/tarball/0.3>`_ 
+Github (tar.gz): `Download <https://github.com/sunpy/sunpy/tarball/0.3>`_ 
 
-Github (zip): `Link Download <https://github.com/sunpy/sunpy/zipball/0.3>`_ 
+Github (zip): `Download <https://github.com/sunpy/sunpy/zipball/0.3>`_ 
 
 Then you can use: ::
 

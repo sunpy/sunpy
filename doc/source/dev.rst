@@ -1,10 +1,12 @@
-.. _dev-reference-label:
+
 =================
 Developer's Guide
 =================
 
-Overview
---------
+.. _dev-reference-label:
+
+Developer's Guide Overview
+--------------------------
 This article describes the guidelines to be followed by developers working on
 SunPy. You if you are thinking of contributing to SunPy please read the following
 carefully.
