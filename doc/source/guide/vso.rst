@@ -10,7 +10,7 @@ module, which was developed through support from the European Space
 Agency Summer of Code in Space (ESA-SOCIS) 2011.
 
 1. Setting up the VSO interaction
---------------------------
+---------------------------------
 
 SunPy's VSO module is in sunpy.net.  It can be imported into your
 IPython session as follows:
@@ -19,7 +19,7 @@ IPython session as follows:
 
 
 2. A simple query - using the legacy query
----------------------------------
+------------------------------------------
 
 Obtaining data via the VSO is essentially a two-stage process.  In the
 first stage, you ask the VSO to find the data you want.  The VSO
@@ -64,12 +64,13 @@ many records have been found?  You can find that out be typing
 
 To get a little bit more information, try
 
-    >>> qr.show()
+    >>> qr.show() # doctest:+SKIP
+    ...
 
 The Solarsoft legacy query has more keywords available: to find out
 more about the legacy query, type: 
 
-    >>> help(client.query_legacy)
+    >>> help(client.query_legacy) # doctest:+SKIP
 
 As an example, let's say you just want the EIT 171 Angstrom files for
 that data.  These files can be found by
@@ -79,7 +80,7 @@ that data.  These files can be found by
 which yields four results, the same as the VSO IDL client.
 
 3. Downloading the data
---------------------
+-----------------------
 
 Having located the data you want, you can download it using the
 following command:
@@ -138,7 +139,7 @@ The notion is that a VSO query has a set of attribute objects -
 described in 'vso.attrs' - that are specifed to construct the query.
 For the full list of vso attributes, use
 
-    >>> help(vso.attrs)
+    >>> help(vso.attrs) # doctest:+SKIP
 
 Note that due to quirks at the VSO, we do not recommend that the
 extent object 'vso.attrs.Extent' be in your query.  Instead, we
@@ -155,8 +156,9 @@ So, let's look for the EIT and MDI data on the same day:
 
     >>> qr=client.query(vso.attrs.Time('2001/1/1', '2001/1/2'), vso.attrs.Instrument('eit') | vso.attrs.Instrument('mdi'))
     >>> qr.num_records()
-    233
-    >>> qr.show()
+    144
+    >>> qr.show() # doctest:+SKIP
+    ...
 
 The two instrument types are joined together by the operator '|'.
 This is the 'or' operator.  Think of the above query as setting a set
