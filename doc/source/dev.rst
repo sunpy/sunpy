@@ -55,7 +55,7 @@ associated a public SSH key it, you are ready to go.
 
 If you do not fancy using SSH you can access GitHub using HTTP/HTTPS.
 A few things to note.
-Using HTTP only alows cloning of public repositories, while HTTPS allows cloning of private repositories but also allows you to have push access.
+Using HTTP only allows cloning of public repositories, while HTTPS allows cloning of private repositories but also allows you to have push access.
 This way you can type in your username and password to access your repositories.
 
 **Identifying yourself**
