@@ -244,8 +244,9 @@ def test_entries_from_query_result(query_result):
 
 @pytest.mark.slow
 def test_entry_from_query_results_with_none_wave(qr_with_none_waves):
-    with pytest.raises(WaveunitNotFoundError):
-        list(entries_from_query_result(qr_with_none_waves))
+    # does not raise WaveunitNotFoundError because neither wavemin nor wavemax
+    # are given
+    list(entries_from_query_result(qr_with_none_waves))
 
 
 @pytest.mark.slow

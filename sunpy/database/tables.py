@@ -258,20 +258,23 @@ class DatabaseEntry(Base):
         time_start = timestamp2datetime('%Y%m%d%H%M%S', qr_block.time.start)
         time_end = timestamp2datetime('%Y%m%d%H%M%S', qr_block.time.end)
         wave = qr_block.wave
+        unit = None
         if wave.waveunit is None:
-            if default_waveunit is None:
-                raise WaveunitNotFoundError(qr_block)
-            else:
+            if default_waveunit is not None:
                 unit = Unit(default_waveunit)
         else:
             unit = Unit(wave.waveunit)
         if wave.wavemin is None:
             wavemin = None
         else:
+            if unit is None:
+                raise WaveunitNotFoundError(qr_block)
             wavemin = unit.to(nm, float(wave.wavemin), equivalencies.spectral())
         if wave.wavemax is None:
             wavemax = None
         else:
+            if unit is None:
+                raise WaveunitNotFoundError(qr_block)
             wavemax = unit.to(nm, float(wave.wavemax), equivalencies.spectral())
         source = str(qr_block.source) if qr_block.source is not None else None
         provider = str(qr_block.provider) if qr_block.provider is not None else None
