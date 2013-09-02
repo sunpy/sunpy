@@ -96,13 +96,13 @@ class Map(RegisteredFactoryBase):
             # Data-header pair in a tuple
             if ((type(arg) in [tuple, list]) and 
                  len(arg) == 2 and
-                 isinstance(arg[0],np.ndarray) and # or NDData or something else?
-                 isinstance(arg[1],OrderedDict)): # FITSHeader, JP2kHeader, OrderedDict, dict?
+                 isinstance(arg[0],np.ndarray) and
+                 isinstance(arg[1],dict)):
                 data_header_pairs.append(arg)
             
             # Data-header pair not in a tuple
-            elif (isinstance(arg, np.ndarray) and # or NDData or something else?
-                  isinstance(args[i+1],OrderedDict)): # FITSHeader, JP2kHeader, OrderedDict, dict? 
+            elif (isinstance(arg, np.ndarray) and
+                  isinstance(args[i+1],dict)):
                 pair = (args[i], args[i+1])
                 data_header_pairs.append(pair)
                 i += 1 # an extra increment to account for the data-header pairing
@@ -193,9 +193,12 @@ class Map(RegisteredFactoryBase):
                         break
                 else:
                     WidgetType = cls.DefaultWidgetType
-                    
+                
+                # Make sure the map header is a MapMeta, useful if the user
+                # passed in a dict
+                meta = MapMeta(header)
                 # Instantiate the new map.
-                new_maps.append(WidgetType(data, header, **kwargs))
+                new_maps.append(WidgetType(data, meta, **kwargs))
             
             new_maps += already_maps
             
