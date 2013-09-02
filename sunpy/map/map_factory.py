@@ -43,13 +43,13 @@ class Map(RegisteredFactoryBase):
     DefaultWidgetType = GenericMap
 
     @classmethod
-    def _read_file(cls, fname):
+    def _read_file(cls, fname, **kwargs):
         """ Read in a file name and return the list of (data, meta) pairs in
             that file. """
         
         # File gets read here.  This needs to be generic enough to seamlessly
         #call a fits file or a jpeg2k file, etc
-        pairs = read_file(fname)
+        pairs = read_file(fname, **kwargs)
         
         new_pairs = []
         for pair in pairs:
@@ -111,7 +111,7 @@ class Map(RegisteredFactoryBase):
             elif (isinstance(arg,basestring) and 
                   os.path.isfile(os.path.expanduser(arg))):
                 path = os.path.expanduser(arg)
-                pairs = cls._read_file(path)
+                pairs = cls._read_file(path, **kwargs)
                 data_header_pairs += pairs
             
             # Directory
@@ -120,13 +120,13 @@ class Map(RegisteredFactoryBase):
                 path = os.path.expanduser(arg)
                 files = [os.path.join(path, elem) for elem in os.listdir(path)]
                 for afile in files:
-                    data_header_pairs += cls._read_file(afile)
+                    data_header_pairs += cls._read_file(afile, **kwargs)
             
             # Glob
             elif (isinstance(arg,basestring) and '*' in arg):
                 files = glob.glob( os.path.expanduser(arg) )
                 for afile in files:
-                    data_header_pairs += cls._read_file(afile)
+                    data_header_pairs += cls._read_file(afile, **kwargs)
             
             # Already a Map
             elif isinstance(arg, GenericMap):
@@ -138,7 +138,7 @@ class Map(RegisteredFactoryBase):
                 default_dir = sunpy.config.get("downloads", "download_dir")
                 url = arg
                 path = download_file(url, default_dir)
-                pairs = cls._read_file(path)
+                pairs = cls._read_file(path, **kwargs)
                 data_header_pairs += pairs
             
             else:
