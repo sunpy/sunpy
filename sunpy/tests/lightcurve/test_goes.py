@@ -4,7 +4,11 @@ GOES LightCurve Tests
 from __future__ import absolute_import
 
 import pytest
+import matplotlib.pyplot as plt
+
 import sunpy.lightcurve
+from sunpy.tests.helpers import plot_comparison
+
 
 class TestGOESLightCurve():
     
@@ -36,3 +40,14 @@ class TestGOESLightCurve():
 #        
 #        self.assertEqual(context.exception.message,
 #                         'Can only compare identically-labeled DataFrame objects')
+    
+    def test_peek(self):
+        lc1 = sunpy.lightcurve.GOESLightCurve.create('2012/06/01','2012/06/02')
+        fig = lc1.peek()
+        plot_comparison(fig, "GOES_peek_2012_06_01-2012_06_02.png")
+
+    def test_plot(self):
+        lc1 = sunpy.lightcurve.GOESLightCurve.create('2012/06/01','2012/06/02')
+        fig = plt.figure()
+        lc1.plot()
+        plot_comparison(fig, "GOES_plot_2012_06_01-2012_06_02.png")
