@@ -22,8 +22,10 @@ from sunpy.io import fits, file_tools as sunpy_filetools
 from sunpy.util import print_table
 
 __all__ = [
-    'FitsHeaderEntry', 'Tag', 'DatabaseEntry', 'entries_from_query_result',
-    'entries_from_file', 'entries_from_dir', 'display_entries']
+    'WaveunitNotFoundError', 'WaveunitNotConvertibleError', 'JSONDump',
+    'FitsHeaderEntry', 'FitsKeyComment', 'Tag', 'DatabaseEntry',
+    'entries_from_query_result', 'entries_from_file', 'entries_from_dir',
+    'display_entries']
 
 Base = declarative_base()
 
