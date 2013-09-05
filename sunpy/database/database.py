@@ -259,7 +259,7 @@ class Database(object):
         self.session.commit()
 
     def download(self, *query, **kwargs):
-        """download(*query[, path])
+        """download(*query, client=sunpy.net.vso.VSOClient(), path=None, progress=False)
         Search for data using the VSO interface (see
         :meth:`sunpy.net.vso.VSOClient.query`). If querying the VSO results in
         no data, no operation is performed. Concrete, this means that no entry
@@ -273,12 +273,12 @@ class Database(object):
         """
         if not query:
             raise TypeError('at least one attribute required')
+        client = kwargs.pop('client', VSOClient())
         path = kwargs.pop('path', None)
         progress = kwargs.pop('progress', False)
         if kwargs:
             k, v = kwargs.popitem()
             raise TypeError('unexpected keyword argument {0!r}'.format(k))
-        client = VSOClient()  # XXX: allow passing custom arguments?
         qr = client.query(*query)
         # don't do anything if querying the VSO results in no data
         if not qr:
