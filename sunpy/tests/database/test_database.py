@@ -6,6 +6,8 @@
 from __future__ import absolute_import
 
 from datetime import datetime
+import glob
+import os.path
 
 import pytest
 import sqlalchemy
@@ -14,12 +16,13 @@ from sunpy.database import Database, EntryAlreadyAddedError,\
     EntryAlreadyStarredError, EntryAlreadyUnstarredError, NoSuchTagError,\
     EntryNotFoundError, TagAlreadyAssignedError
 from sunpy.database.tables import DatabaseEntry, Tag
-from sunpy.database.commands import NoSuchEntryError
+from sunpy.database.commands import EmptyCommandStackError, NoSuchEntryError
 from sunpy.database.caching import LRUCache, LFUCache
 from sunpy.database import attrs
 from sunpy.net import vso
 from sunpy.data.sample import RHESSI_EVENT_LIST
 from sunpy.data.test.waveunit import waveunitdir
+from sunpy.io import fits
 
 
 @pytest.fixture
@@ -53,6 +56,20 @@ def query_result():
     return vso.VSOClient().query(
         vso.attrs.Time('20130801T200000', '20130801T200030'),
         vso.attrs.Instrument('PLASTIC'))
+
+
+@pytest.fixture
+def empty_query():
+    return [
+        vso.attrs.Time((2012, 7, 3), (2012, 7, 4)),
+        vso.attrs.Instrument('EIT')]
+
+
+@pytest.fixture
+def download_query():
+    return [
+        vso.attrs.Time((2013, 5, 19, 2), (2013, 5, 19, 2), (2013, 5, 19, 2)),
+        vso.attrs.Instrument('VIRGO') | vso.attrs.Instrument('SECCHI')]
 
 
 @pytest.fixture
@@ -665,3 +682,72 @@ def test_query(filled_database):
         DatabaseEntry(id=5, tags=[bar]),
         DatabaseEntry(id=8, tags=[foo]),
         DatabaseEntry(id=10, tags=[bar])]
+
+
+def test_download_missing_arg(database):
+    with pytest.raises(TypeError):
+        database.download()
+
+
+def test_download_unexpected_kwarg(database):
+    with pytest.raises(TypeError):
+        database.download(vso.attrs.Source('SOHO'), foo=42)
+
+
+@pytest.mark.slow
+def test_download_empty_query_result(database, empty_query):
+    database.download(*empty_query)
+    with pytest.raises(EmptyCommandStackError):
+        database.undo()
+    assert len(database) == 0
+
+
+@pytest.mark.slow
+def test_download(database, download_query, tmpdir):
+    assert len(database) == 0
+    database.default_waveunit = 'angstrom'
+    database.download(*download_query, path=str(tmpdir.join('{file}.fits')))
+    fits_pattern = str(tmpdir.join('*.fits'))
+    num_of_fits_headers = sum(
+        len(fits.get_header(file)) for file in glob.glob(fits_pattern))
+    assert len(database) == num_of_fits_headers == 4
+    for entry in database:
+        assert os.path.dirname(entry.path) == str(tmpdir)
+    database.undo()
+    assert len(database) == 0
+    database.redo()
+    assert len(database) == 4
+
+
+@pytest.mark.slow
+def test_download_duplicates(database, download_query, tmpdir):
+    assert len(database) == 0
+    database.default_waveunit = 'angstrom'
+    database.download(*download_query, path=str(tmpdir.join('{file}.fits')))
+    assert len(database) == 4
+    download_time = database[0].download_time
+    database.download(*download_query, path=str(tmpdir.join('{file}.fits')))
+    assert len(database) == 4
+    assert database[0].download_time != download_time
+
+
+def test_fetch_missing_arg(database):
+    with pytest.raises(TypeError):
+        database.fetch()
+
+
+def test_fetch_unexpected_kwarg(database):
+    with pytest.raises(TypeError):
+        database.fetch(vso.attrs.Source('SOHO'), foo=42)
+
+
+@pytest.mark.slow
+def test_fetch(database, download_query, tmpdir):
+    assert len(database) == 0
+    database.default_waveunit = 'angstrom'
+    database.fetch(*download_query, path=str(tmpdir.join('{file}.fits')))
+    assert len(database) == 4
+    download_time = database[0].download_time
+    database.fetch(*download_query, path=str(tmpdir.join('{file}.fits')))
+    assert len(database) == 4
+    assert database[0].download_time == download_time

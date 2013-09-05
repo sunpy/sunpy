@@ -65,6 +65,27 @@ def timestamp2datetime(format, string):
     return datetime.fromtimestamp(mktime(strptime(string, format)))
 
 
+class JSONDump(Base):
+    __tablename__ = 'jsondumps'
+
+    dump = Column(String, nullable=False, primary_key=True)
+
+    def __init__(self, dump):
+        self.dump = dump
+
+    def __eq__(self, other):
+        return self.dump == other.dump
+
+    def __ne__(self, other):
+        return not (self == other)
+
+    def __str__(self):
+        return self.dump
+
+    def __repr__(self):  # pragma: no cover
+        return '<{0}(dump {1!r})>'.format(self.__class__.__name__, self.dump)
+
+
 class FitsHeaderEntry(Base):
     __tablename__ = 'fitsheaderentries'
 

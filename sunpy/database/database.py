@@ -6,14 +6,17 @@
 from __future__ import absolute_import
 
 import operator
+from datetime import datetime
 
 from sqlalchemy import create_engine, exists
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import sessionmaker
 
-from sunpy.database import commands, tables
+from sunpy.database import commands, tables, serialize
 from sunpy.database.caching import LRUCache
 from sunpy.database.attrs import walker
 from sunpy.net.attr import and_
+from sunpy.net.vso import VSOClient
 
 
 class EntryNotFoundError(Exception):
@@ -254,6 +257,103 @@ class Database(object):
 
         """
         self.session.commit()
+
+    def download(self, *query, **kwargs):
+        """download(*query[, path])
+        Search for data using the VSO interface (see
+        :meth:`sunpy.net.vso.VSOClient.query`). If querying the VSO results in
+        no data, no operation is performed. Concrete, this means that no entry
+        is added to the database and no file is downloaded. Otherwise, the
+        retrieved search result is used to download all files that belong to
+        this search result. After that, all the gathered information (the one
+        from the VSO query result and the one from the downloaded FITS files)
+        is added to the database in a way that each FITS header is represented
+        by one database entry.
+
+        """
+        if not query:
+            raise TypeError('at least one attribute required')
+        path = kwargs.pop('path', None)
+        progress = kwargs.pop('progress', False)
+        if kwargs:
+            k, v = kwargs.popitem()
+            raise TypeError('unexpected keyword argument {0!r}'.format(k))
+        client = VSOClient()  # XXX: allow passing custom arguments?
+        qr = client.query(*query)
+        # don't do anything if querying the VSO results in no data
+        if not qr:
+            return
+        entries = []
+        for block in qr:
+            paths = client.get([block], path).wait(progress=progress)
+            for path in paths:
+                qr_entry = tables.DatabaseEntry._from_query_result_block(block)
+                file_entries = list(
+                    tables.entries_from_file(path, self.default_waveunit))
+                for entry in file_entries:
+                    entry.source = qr_entry.source
+                    entry.provider = qr_entry.provider
+                    entry.physobs = qr_entry.physobs
+                    entry.fileid = qr_entry.fileid
+                    entry.observation_time_start =\
+                        qr_entry.observation_time_start
+                    entry.observation_time_end = qr_entry.observation_time_end
+                    entry.instrument = qr_entry.instrument
+                    entry.size = qr_entry.size
+                    entry.wavemin = qr_entry.wavemin
+                    entry.wavemax = qr_entry.wavemax
+                    entry.path = path
+                    entry.download_time = datetime.utcnow()
+                entries.extend(file_entries)
+        dump = serialize.dumps(and_(*query))
+        (dump_exists,), = self.session.query(
+            exists().where(tables.JSONDump.dump == tables.JSONDump(dump).dump))
+        if dump_exists:
+            # dump already exists in table jsondumps -> edit instead of add
+            # update all entries with the fileid `entry.fileid`
+            for entry in entries:
+                old_entry = self.session.query(
+                    tables.DatabaseEntry).filter_by(fileid=entry.fileid).first()
+                if old_entry is not None:
+                    attrs = [
+                        'source', 'provider', 'physobs',
+                        'observation_time_start', 'observation_time_end',
+                        'instrument', 'size', 'wavemin', 'wavemax',
+                        'download_time']
+                    kwargs = dict((k, getattr(entry, k)) for k in attrs)
+                    self._command_manager.do(
+                        commands.EditEntry(old_entry, **kwargs))
+        else:
+            self.add_many(entries)
+            # serialize the query and save the serialization in the database
+            # for two reasons:
+            #   1. to avoid unnecessary downloading in future calls of
+            #      ``fetch``
+            #   2. to know whether to add or to edit entries in future calls of
+            #      ``download`` (this method)
+            self.session.add(tables.JSONDump(dump))
+
+    def fetch(self, *query, **kwargs):
+        """fetch(*query[, path])
+        Check if the query has already been used to collect new data using the
+        :meth:`sunpy.database.Database.download` method. If yes, query the
+        database using the method :meth:`sunpy.database.Database.query` and
+        return the result. Otherwise, call
+        :meth:`sunpy.database.Database.download` and return the result.
+
+        """
+        if not query:
+            raise TypeError('at least one attribute required')
+        path = kwargs.pop('path', None)
+        if kwargs:
+            k, v = kwargs.popitem()
+            raise TypeError('unexpected keyword argument {0!r}'.format(k))
+        dump = serialize.dumps(and_(*query))
+        (dump_exists,), = self.session.query(
+            exists().where(tables.JSONDump.dump == tables.JSONDump(dump).dump))
+        if dump_exists:
+            return self.query(*query)
+        return self.download(*query, path=path)
 
     def query(self, *query, **kwargs):
         """
