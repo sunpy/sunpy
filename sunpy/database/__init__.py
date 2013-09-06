@@ -5,7 +5,7 @@
 
 """
 Overview
---------
+^^^^^^^^
 The database package exports the following classes and exceptions:
 
     :classes:
@@ -20,6 +20,7 @@ The database package exports the following classes and exceptions:
         - NoSuchTagError
         - NonRemovableTagError
 """
+
 from __future__ import absolute_import
 
 from sunpy.database.database import Database, EntryAlreadyAddedError,\
