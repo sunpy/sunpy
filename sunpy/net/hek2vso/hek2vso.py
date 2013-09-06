@@ -200,24 +200,6 @@ class H2VClient(object):
         self.vso_results = []
         self.num_of_records = 0
 
-    def return_num_records(self):
-        """
-        Simply returns the number of records from the VSO query
-        """
-        return self.num_of_records
-
-    def return_vso_results(self):
-        """
-        Returns the results from the VSO query
-        """
-        return self.vso_results
-
-    def return_hek_results(self):
-        """
-        Returns the results from the HEK query
-        """
-        return self.hek_results
-
     def full_query(self, client_query, limit=None):
         """
         An encompassing method that takes a HEK query and returns a VSO result

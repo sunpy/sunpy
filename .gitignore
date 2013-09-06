@@ -18,3 +18,5 @@ docs
 .coverage
 htmlcov
 result.xml
+sunpy/.idea/*
+.gitignore
