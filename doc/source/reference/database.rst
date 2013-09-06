@@ -70,7 +70,9 @@ utility functions
 
 .. autofunction:: sunpy.database.tables.entries_from_query_result
 
-.. autofunction:: sunpy.database.tables.entries_from_path
+.. autofunction:: sunpy.database.tables.entries_from_file
+
+.. autofunction:: sunpy.database.tables.entries_from_dir
 
 .. autofunction:: sunpy.database.tables.display_entries
 

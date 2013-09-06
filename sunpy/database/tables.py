@@ -403,18 +403,12 @@ def entries_from_query_result(qr, default_waveunit=None):
 
 def entries_from_file(file, default_waveunit=None):
     """Use the headers of a FITS file to generate an iterator of
-    :class`sunpy.database.tables.DatabaseEntry` instances. Gathered information
-    will be saved in the attribute
-    :attr:`sunpy.database.tables.DatabaseEntry.fits_header_entries`. If the key
-    INSTRUME, WAVELNTH or DATE-OBS / DATE_OBS is available, the attribute
-    :attr:`sunpy.database.tables.DatabaseEntry.instrument`,
-    :attr:`sunpy.database.tables.DatabaseEntry.wavemin` and
-    :attr:`sunpy.database.tables.DatabaseEntry.wavemax` or
-    :attr:`sunpy.database.tables.DatabaseEntry.observation_time_start` is set,
-    respectively. If the wavelength unit can be read, the values of
-    :attr:`sunpy.database.tables.DatabaseEntry.wavemin` and
-    :attr:`sunpy.database.tables.DatabaseEntry.wavemax` are converted to nm
-    (nanometres).
+    :class:`sunpy.database.tables.DatabaseEntry` instances. Gathered
+    information will be saved in the attribute `fits_header_entries`. If the
+    key INSTRUME, WAVELNTH or DATE-OBS / DATE_OBS is available, the attribute
+    `instrument`, `wavemin` and `wavemax` or `observation_time_start` is set,
+    respectively. If the wavelength unit can be read, the values of `wavemin`
+    and `wavemax` are converted to nm (nanometres).
 
     Parameters
     ----------
