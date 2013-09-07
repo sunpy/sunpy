@@ -150,9 +150,6 @@ class Database(object):
     set_cache_size(cache_size)
         Set a new value for the maxiumum number of database entries in the
         cache. Use the value ``float('inf')`` to disable caching.
-    create_tables(checkfirst=True)
-        Create all necessary tables. Do nothing if ``checkfirst`` is True and
-        the required tables already exist.
     commit()
         Flush pending changes and commit the current transaction.
     get_entry_by_id(id)
@@ -209,6 +206,7 @@ class Database(object):
 
             def append(this, value):
                 this[max(this or [0]) + 1] = value
+        self._create_tables()
         self._cache = Cache(cache_size)
 
     @property
@@ -242,7 +240,7 @@ class Database(object):
         self._cache.maxsize = cache_size
         self._command_manager.do(cmds)
 
-    def create_tables(self, checkfirst=True):
+    def _create_tables(self, checkfirst=True):
         """Initialise the database by creating all necessary tables. If
         ``checkfirst`` is True, already existing tables are not attempted to be
         created.

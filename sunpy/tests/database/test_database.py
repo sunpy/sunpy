@@ -32,23 +32,17 @@ def database_without_tables():
 
 @pytest.fixture
 def database_using_lrucache():
-    d = Database('sqlite:///:memory:', LRUCache, cache_size=3)
-    d.create_tables()
-    return d
+    return Database('sqlite:///:memory:', LRUCache, cache_size=3)
 
 
 @pytest.fixture
 def database_using_lfucache():
-    d = Database('sqlite:///:memory:', LFUCache, cache_size=3)
-    d.create_tables()
-    return d
+    return Database('sqlite:///:memory:', LFUCache, cache_size=3)
 
 
 @pytest.fixture
 def database():
-    d = Database('sqlite:///:memory:')
-    d.create_tables()
-    return d
+    return Database('sqlite:///:memory:')
 
 
 @pytest.fixture
@@ -75,7 +69,6 @@ def download_query():
 @pytest.fixture
 def filled_database():
     database = Database('sqlite:///:memory:')
-    database.create_tables()
     for i in xrange(1, 11):
         entry = DatabaseEntry()
         database.add(entry)
@@ -150,12 +143,6 @@ def test_setting_cache_size_undo(database_using_lrucache):
     assert len(database_using_lrucache) == 1
     database_using_lrucache.undo()
     assert len(database_using_lrucache) == 3
-
-
-def test_create_tables(database_without_tables):
-    assert not database_without_tables._engine.has_table('data')
-    database_without_tables.create_tables()
-    assert database_without_tables._engine.has_table('data')
 
 
 def test_get_entry_by_id_invalid(database):
