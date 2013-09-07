@@ -408,7 +408,9 @@ def entries_from_file(file, default_waveunit=None):
     key INSTRUME, WAVELNTH or DATE-OBS / DATE_OBS is available, the attribute
     `instrument`, `wavemin` and `wavemax` or `observation_time_start` is set,
     respectively. If the wavelength unit can be read, the values of `wavemin`
-    and `wavemax` are converted to nm (nanometres).
+    and `wavemax` are converted to nm (nanometres). The value of the `file`
+    parameter is used to set the attribute `path` of each generated database
+    entry.
 
     Parameters
     ----------
@@ -450,8 +452,12 @@ def entries_from_file(file, default_waveunit=None):
 
     """
     headers = fits.get_header(file)
+    if isinstance(file, (str, unicode)):
+        filename = file
+    else:
+        filename = getattr(file, 'name', None)
     for header in headers:
-        entry = DatabaseEntry()
+        entry = DatabaseEntry(path=filename)
         for key, value in header.iteritems():
             # Yes, it is possible to have an empty key in a FITS file.
             # Example: sunpy.data.sample.EIT_195_IMAGE

@@ -5,6 +5,7 @@
 
 from collections import Hashable
 from datetime import datetime
+import os.path
 
 from sunpy.database.tables import FitsHeaderEntry, FitsKeyComment, Tag,\
     DatabaseEntry, entries_from_query_result, entries_from_dir,\
@@ -136,6 +137,7 @@ def test_entries_from_file():
     assert entry.observation_time_end == datetime(2013, 8, 12, 8, 42, 53)
     assert round(entry.wavemin, 1) == 656.3
     assert round(entry.wavemax, 1) == 656.3
+    assert entry.path == MQ_IMAGE
 
 
 def test_entries_from_file_withoutwaveunit():
@@ -152,6 +154,7 @@ def test_entries_from_dir():
     for entry, filename in entries:
         if filename.endswith('na120701.091058.fits'):
             break
+    assert entry.path == os.path.join(waveunitdir, filename)
     assert filename.startswith(waveunitdir)
     assert len(entry.fits_header_entries) == 42
     assert entry.fits_header_entries == [
