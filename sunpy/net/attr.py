@@ -26,7 +26,7 @@ Please note that & is evaluated first, so A & B | C is equivalent to
 
 from __future__ import absolute_import
 
-from sunpy.util.multimethod import MultiMethod
+from net.sunpy.util.multimethod import MultiMethod
 
 # XXX: Maybe allow other normal forms.
 

@@ -15,8 +15,7 @@ import threading
 from functools import partial
 from contextlib import closing
 from collections import defaultdict, deque
-
-import sunpy
+from net import sunpy
 
 
 def default_name(path, sock, url):
