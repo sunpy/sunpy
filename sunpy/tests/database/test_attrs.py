@@ -23,7 +23,6 @@ def obj():
 @pytest.fixture
 def session():
     database = Database('sqlite:///:memory:')
-    database.create_tables()
     for i in xrange(1, 11):
         entry = tables.DatabaseEntry()
         database.add(entry)
@@ -52,7 +51,6 @@ def vso_session():
         vso.attrs.Instrument('aia'))
     entries = tables.entries_from_query_result(qr)
     database = Database('sqlite:///:memory:')
-    database.create_tables()
     for entry in entries:
         database.add(entry)
     database.commit()
