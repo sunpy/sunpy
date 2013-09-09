@@ -4,6 +4,8 @@ This module provides a wrapper around the Helioviewer API.
 from __future__ import absolute_import
 
 #pylint: disable=E1101,F0401,W0231
+from net import sunpy
+
 __author__ = ["Keith Hughitt"]
 __email__ = "keith.hughitt@nasa.gov"
 
@@ -13,9 +15,8 @@ import urllib2
 
 import json
 
-import sunpy
-from sunpy.time import parse_time
-from sunpy.util.net import download_fileobj
+from net.sunpy.time import parse_time
+from net.sunpy.util.net import download_fileobj
 
 __all__ = ['HelioviewerClient']
 
