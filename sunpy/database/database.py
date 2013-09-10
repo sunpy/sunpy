@@ -7,6 +7,7 @@ from __future__ import absolute_import
 
 import operator
 from datetime import datetime
+from contextlib import contextmanager
 
 from sqlalchemy import create_engine, exists
 from sqlalchemy.exc import IntegrityError
@@ -100,6 +101,26 @@ class TagAlreadyAssignedError(Exception):
     def __str__(self):  # pragma: no cover
         errmsg = 'the database entry {0!r} has already assigned the tag {1!r}'
         return errmsg.format(self.database_entry, self.tag_name)
+
+
+@contextmanager
+def disable_undo(database):
+    """A context manager to disable saving the used commands in the undo
+    history. This may be useful when it's important to save memory because a
+    big number of entries in the undo history may occupy a lot of memory space.
+
+    Example
+    -------
+    >>> with disable_undo(database) as db:
+    ...     db.add(entry)
+    >>> database.undo()
+    >>> Traceback (most recent call last):
+        ...
+    EmptyCommandStackError
+    """
+    database._enable_history = False
+    yield database
+    database._enable_history = True
 
 
 class Database(object):
@@ -199,6 +220,7 @@ class Database(object):
         self.session = self._session_cls()
         self._command_manager = commands.CommandManager()
         self.default_waveunit = default_waveunit
+        self._enable_history = True
 
         class Cache(CacheClass):
             def callback(this, entry_id, database_entry):
@@ -237,10 +259,15 @@ class Database(object):
             # remove items from the cache until cache_size == maxsize of the
             # cache
             entry_id, entry = self._cache.to_be_removed
-            cmds.append(commands.RemoveEntry(self.session, entry))
+            cmd = commands.RemoveEntry(self.session, entry)
+            if self._enable_history:
+                cmds.append(cmd)
+            else:
+                cmd()
             del self._cache[entry_id]
         self._cache.maxsize = cache_size
-        self._command_manager.do(cmds)
+        if cmds:
+            self._command_manager.do(cmds)
 
     def _create_tables(self, checkfirst=True):
         """Initialise the database by creating all necessary tables. If
@@ -321,8 +348,11 @@ class Database(object):
                         'instrument', 'size', 'wavemin', 'wavemax',
                         'download_time']
                     kwargs = dict((k, getattr(entry, k)) for k in attrs)
-                    self._command_manager.do(
-                        commands.EditEntry(old_entry, **kwargs))
+                    cmd = commands.EditEntry(old_entry, **kwargs)
+                    if self._enable_history:
+                        self._command_manager.do(cmd)
+                    else:
+                        cmd()
         else:
             self.add_many(entries)
             # serialize the query and save the serialization in the database
@@ -464,8 +494,13 @@ class Database(object):
             except NoSuchTagError:
                 # tag does not exist yet -> create it
                 tag = tables.Tag(tag_name)
-            cmds.append(commands.AddTag(self.session, database_entry, tag))
-        self._command_manager.do(cmds)
+            cmd = commands.AddTag(self.session, database_entry, tag)
+            if self._enable_history:
+                cmds.append(cmd)
+            else:
+                cmd()
+        if cmds:
+            self._command_manager.do(cmds)
 
     def remove_tag(self, database_entry, tag_name):
         """Remove the given tag from the database entry. If the tag is not
@@ -482,12 +517,15 @@ class Database(object):
         cmds = []
         remove_tag_cmd = commands.RemoveTag(self.session, database_entry, tag)
         remove_tag_cmd()
-        cmds.append(remove_tag_cmd)
+        if self._enable_history:
+            cmds.append(remove_tag_cmd)
         if not tag.data:
             remove_entry_cmd = commands.RemoveEntry(self.session, tag)
             remove_entry_cmd()
-            cmds.append(remove_entry_cmd)
-        self._command_manager.push_undo_command(cmds)
+            if self._enable_history:
+                cmds.append(remove_entry_cmd)
+        if self._enable_history:
+            self._command_manager.push_undo_command(cmds)
 
     def star(self, database_entry, ignore_already_starred=False):
         """Mark the given database entry as starred. If this entry is already
@@ -533,9 +571,17 @@ class Database(object):
             # ID.
             if database_entry in list(self) and not ignore_already_added:
                 raise EntryAlreadyAddedError(database_entry)
-            cmds.append(commands.AddEntry(self.session, database_entry))
-            self._cache.append(database_entry)
-        self._command_manager.do(cmds)
+            cmd = commands.AddEntry(self.session, database_entry)
+            if self._enable_history:
+                cmds.append(cmd)
+            else:
+                cmd()
+            if database_entry.id is None:
+                self._cache.append(database_entry)
+            else:
+                self._cache[database_entry.id] = database_entry
+        if cmds:
+            self._command_manager.do(cmds)
 
     def add(self, database_entry, ignore_already_added=False):
         """Add the given database entry to the database table.
@@ -555,7 +601,10 @@ class Database(object):
         if database_entry in self and not ignore_already_added:
             raise EntryAlreadyAddedError(database_entry)
         add_entry_cmd = commands.AddEntry(self.session, database_entry)
-        self._command_manager.do(add_entry_cmd)
+        if self._enable_history:
+            self._command_manager.do(add_entry_cmd)
+        else:
+            add_entry_cmd()
         if database_entry.id is None:
             self._cache.append(database_entry)
         else:
@@ -619,9 +668,14 @@ class Database(object):
         for database_entry, filepath in entries:
             if database_entry in list(self) and not ignore_already_added:
                 raise EntryAlreadyAddedError(database_entry)
-            cmds.append(commands.AddEntry(self.session, database_entry))
+            cmd = commands.AddEntry(self.session, database_entry)
+            if self._enable_history:
+                cmds.append(cmd)
+            else:
+                cmd()
             self._cache.append(database_entry)
-        self._command_manager.do(cmds)
+        if cmds:
+            self._command_manager.do(cmds)
 
     def add_from_file(self, file, ignore_already_added=False):
         """Generate as many database entries as there are FITS headers in the
@@ -649,13 +703,20 @@ class Database(object):
         raised.
 
         """
-        self._command_manager.do(commands.EditEntry(database_entry, **kwargs))
+        cmd = commands.EditEntry(database_entry, **kwargs)
+        if self._enable_history:
+            self._command_manager.do(cmd)
+        else:
+            cmd()
         self._cache[database_entry.id] = database_entry
 
     def remove(self, database_entry):
         """Remove the given database entry from the database table."""
         remove_entry_cmd = commands.RemoveEntry(self.session, database_entry)
-        self._command_manager.do(remove_entry_cmd)
+        if self._enable_history:
+            self._command_manager.do(remove_entry_cmd)
+        else:
+            remove_entry_cmd()
         try:
             del self._cache[database_entry.id]
         except KeyError:
@@ -685,7 +746,11 @@ class Database(object):
         for entry in self:
             cmds.append(commands.RemoveEntry(self.session, entry))
             del self._cache[entry.id]
-        self._command_manager.do(cmds)
+        if self._enable_history:
+            self._command_manager.do(cmds)
+        else:
+            for cmd in cmds:
+                cmd()
 
     def undo(self, n=1):
         """undo the last n commands.
