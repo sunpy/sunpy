@@ -208,6 +208,8 @@ class Database(object):
                 this[max(this or [0]) + 1] = value
         self._create_tables()
         self._cache = Cache(cache_size)
+        for entry in self:
+            self._cache[entry.id] = entry
 
     @property
     def cache_size(self):
