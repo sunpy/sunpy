@@ -15,7 +15,8 @@ import sqlalchemy
 from sunpy.database import Database, EntryAlreadyAddedError,\
     EntryAlreadyStarredError, EntryAlreadyUnstarredError, NoSuchTagError,\
     EntryNotFoundError, TagAlreadyAssignedError
-from sunpy.database.tables import DatabaseEntry, Tag
+from sunpy.database.tables import DatabaseEntry, Tag, FitsHeaderEntry,\
+    FitsKeyComment, JSONDump
 from sunpy.database.commands import EmptyCommandStackError, NoSuchEntryError
 from sunpy.database.caching import LRUCache, LFUCache
 from sunpy.database import attrs
@@ -519,11 +520,18 @@ def test_clear_database(filled_database):
     assert len(filled_database) == 10
     filled_database.clear()
     assert not filled_database
+    assert filled_database.session.query(JSONDump).all() == []
+    assert filled_database.session.query(FitsHeaderEntry).all() == []
+    assert filled_database.session.query(FitsKeyComment).all() == []
+    assert filled_database.session.query(Tag).all() == []
     filled_database.undo()
     assert len(filled_database) == 10
-    filled_database.commit()
     filled_database.redo()
     assert not filled_database
+    assert filled_database.session.query(JSONDump).all() == []
+    assert filled_database.session.query(FitsHeaderEntry).all() == []
+    assert filled_database.session.query(FitsKeyComment).all() == []
+    assert filled_database.session.query(Tag).all() == []
 
 
 def test_getitem_notfound(database):

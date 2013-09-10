@@ -7,6 +7,7 @@ from __future__ import absolute_import
 
 from abc import ABCMeta, abstractmethod
 import collections
+import os
 
 from sqlalchemy.orm import make_transient
 from sqlalchemy.exc import InvalidRequestError
@@ -297,6 +298,9 @@ class CommandManager(object):
         """
         if isinstance(command, collections.Iterable):
             for cmd in command:
+                # FIXME: What follows is the worst hack of my life. Enjoy.
+                # Without it, the test test_clear_database would fail.
+                f = open(os.devnull, 'w'); f.write(repr(cmd)); f.flush()
                 cmd()
         else:
             command()
