@@ -478,7 +478,7 @@ class Database(object):
         """
         tag = self.get_tag(tag_name)
         cmds = []
-        remove_tag_cmd = commands.RemoveTag(database_entry, tag)
+        remove_tag_cmd = commands.RemoveTag(self.session, database_entry, tag)
         remove_tag_cmd()
         cmds.append(remove_tag_cmd)
         if not tag.data:
