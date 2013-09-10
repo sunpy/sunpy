@@ -206,7 +206,8 @@ class RemoveTag(DatabaseOperation):
     puts the removed tag back into the tag list of the database entry.
 
     """
-    def __init__(self, database_entry, tag):
+    def __init__(self, session, database_entry, tag):
+        self.session = session
         self.database_entry = database_entry
         self.tag = tag
 
@@ -216,6 +217,17 @@ class RemoveTag(DatabaseOperation):
         except ValueError:
             # tag not saved in entry
             raise NonRemovableTagError(self.database_entry, self.tag)
+        else:
+            if not self.tag.data:
+                # remove the tag from the database as well if it was the last tag
+                # assigned to an entry
+                try:
+                    RemoveEntry(self.session, self.tag)()
+                except NoSuchEntryError:
+                    # entry cannot be removed because tag is only connected to
+                    # entries which are not saved in the database
+                    # -> can be safely ignored
+                    pass
 
     def undo(self):
         try:
@@ -227,8 +239,8 @@ class RemoveTag(DatabaseOperation):
             self.database_entry.tags.append(self.tag)
 
     def __repr__(self):
-        return "<RemoveTag(tag '{0}', entry id {1})>".format(
-            self.tag, self.database_entry.id)
+        return "<RemoveTag(tag '{0}', session {1!r}, entry id {2})>".format(
+            self.tag, self.session, self.database_entry.id)
 
 
 class CommandManager(object):

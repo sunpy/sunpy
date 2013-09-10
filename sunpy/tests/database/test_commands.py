@@ -192,14 +192,19 @@ def test_add_tag_undo_unsaved_entry(session):
     assert tag in entry.tags
 
 
-def test_remove_tag_repr():
+def test_remove_tag_repr(session):
     entry = DatabaseEntry(id=8)
     tag = Tag('foo')
-    assert repr(RemoveTag(entry, tag)) == "<RemoveTag(tag 'foo', entry id 8)>"
+    expected_repr_result = (
+        "<RemoveTag("
+            "tag 'foo', "
+            "session <sqlalchemy.orm.session.Session object at {0:#x}>, "
+            "entry id 8)>".format(id(session)))
+    assert repr(RemoveTag(session, entry, tag)) == expected_repr_result
 
 
 def test_remove_nonexisting_tag(session):
-    cmd = RemoveTag(DatabaseEntry(), Tag('tag'))
+    cmd = RemoveTag(session, DatabaseEntry(), Tag('tag'))
     with pytest.raises(NonRemovableTagError):
         cmd()
 
@@ -211,7 +216,7 @@ def test_remove_tag_undo(session):
     session.add(entry)
     session.commit()
     assert tag in entry.tags
-    cmd = RemoveTag(entry, tag)
+    cmd = RemoveTag(session, entry, tag)
     cmd()
     assert tag not in entry.tags
     cmd.undo()
