@@ -314,7 +314,7 @@ class CommandManager(object):
         for _ in xrange(n):
             command = self.pop_undo_command()
             if isinstance(command, collections.Iterable):
-                for cmd in command:
+                for cmd in reversed(command):
                     cmd.undo()
             else:
                 command.undo()
