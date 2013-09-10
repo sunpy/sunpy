@@ -14,7 +14,7 @@ import sqlalchemy
 
 from sunpy.database import Database, EntryAlreadyAddedError,\
     EntryAlreadyStarredError, EntryAlreadyUnstarredError, NoSuchTagError,\
-    EntryNotFoundError, TagAlreadyAssignedError
+    EntryNotFoundError, TagAlreadyAssignedError, disable_undo
 from sunpy.database.tables import DatabaseEntry, Tag, FitsHeaderEntry,\
     FitsKeyComment, JSONDump
 from sunpy.database.commands import EmptyCommandStackError, NoSuchEntryError
@@ -746,3 +746,25 @@ def test_fetch(database, download_query, tmpdir):
     database.fetch(*download_query, path=str(tmpdir.join('{file}.fits')))
     assert len(database) == 4
     assert database[0].download_time == download_time
+
+
+def test_disable_undo(database, download_query, tmpdir):
+    entry = DatabaseEntry()
+    with disable_undo(database) as db:
+        db.set_cache_size(5)
+        db.add(entry)
+        db.commit()
+        db.remove(entry)
+        db.default_waveunit = 'angstrom'
+        db.download(*download_query, path=str(tmpdir.join('{file}.fits')))
+        entry = db[0]
+        db.tag(entry, 'foo', 'bar')
+        db.remove_tag(entry, 'foo')
+        db.star(entry)
+        db.unstar(entry)
+        db.add_many([entry, entry], ignore_already_added=True)
+        db.add(entry, ignore_already_added=True)
+        db.add_from_dir(str(tmpdir))
+        db.clear()
+    with pytest.raises(EmptyCommandStackError):
+        database.undo()
