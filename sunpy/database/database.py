@@ -671,6 +671,18 @@ class Database(object):
         """
         cmds = []
         for entry in self:
+            for tag in entry.tags:
+                cmds.append(commands.RemoveTag(self.session, entry, tag))
+            # TODO: also remove all FITS header entries and all FITS header
+            # comments from each entry before removing the entry itself!
+        # remove all entries from all helper tables
+        database_tables = [
+            tables.JSONDump, tables.Tag, tables.FitsHeaderEntry,
+            tables.FitsKeyComment]
+        for table in database_tables:
+            for entry in self.session.query(table):
+                cmds.append(commands.RemoveEntry(self.session, entry))
+        for entry in self:
             cmds.append(commands.RemoveEntry(self.session, entry))
             del self._cache[entry.id]
         self._command_manager.do(cmds)
