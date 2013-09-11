@@ -332,7 +332,7 @@ class Database(object):
                     entry.path = path
                     entry.download_time = datetime.utcnow()
                 entries.extend(file_entries)
-        dump = serialize.dumps(and_(*query))
+        dump = serialize.dump_query(and_(*query))
         (dump_exists,), = self.session.query(
             exists().where(tables.JSONDump.dump == tables.JSONDump(dump).dump))
         if dump_exists:
@@ -378,7 +378,7 @@ class Database(object):
         if kwargs:
             k, v = kwargs.popitem()
             raise TypeError('unexpected keyword argument {0!r}'.format(k))
-        dump = serialize.dumps(and_(*query))
+        dump = serialize.dump_query(and_(*query))
         (dump_exists,), = self.session.query(
             exists().where(tables.JSONDump.dump == tables.JSONDump(dump).dump))
         if dump_exists:

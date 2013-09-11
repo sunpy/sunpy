@@ -68,9 +68,9 @@ def query_decode(json_object):
     return json_object
 
 
-def dumps(query):  # pragma: no cover
+def dump_query(query):  # pragma: no cover
     return json.dumps(query, cls=QueryEncoder)
 
 
-def loads(dump):  # pragma: no cover
+def load_query(dump):  # pragma: no cover
     return json.loads(dump, object_hook=query_decode)
