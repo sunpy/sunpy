@@ -208,7 +208,6 @@ def _create(wlk, root, session):
                 DatabaseEntry.wavemax <= wavemax))
         elif typ == 'time':
             start, end, near = value
-            # FIXME: how to use `near`?
             query = query.filter(and_(
                 DatabaseEntry.observation_time_start >= start,
                 DatabaseEntry.observation_time_end <= end))
