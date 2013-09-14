@@ -1,25 +1,36 @@
 # -*- coding: utf-8 -*-
 # Author:   Michael Malocha <mjm159@humboldt.edu>
-# Last Edit:  September 7th, 2013
+# Last Edit:  September 13th, 2013
 #
 # This module was developed with funding from the GSOC 2013 summer of code
 #
 
+"""
+This module is meant to parse the HELIO registry and return WSDL endpoints to
+facilitate the interfacing between further modules and HELIO.
+"""
 from __future__ import absolute_import
 import requests
 import xml.etree.ElementTree as EL
-from sunpy.net import helio as RL
+from sunpy.net.helio import registry_links as RL
 from bs4 import BeautifulSoup
+
+__author__ = 'Michael Malocha'
+__version__ = 'September 13th, 2013'
 
 
 def webservice_parser(service='HEC'):
     """
-    Quickly parses important contents from HELIO registry
+    Quickly parses important contents from HELIO registry.
+
+
     """
+    link = RL.LINK
+    # This if block will allow future service additions.
     if service == 'HEC':
-        link = RL.HEC
+        link += 'hec'
     elif service == 'HFC':
-        link = RL.HFC
+        link += 'hfc'
     else:
         print 'Unknown service'
         return None
@@ -50,15 +61,6 @@ def endpoint_parser(link):
     for web_link in soup.find_all('a'):
         endpoints.append(web_link.get('href'))
     return endpoints
-    # try:
-    #     endpoint_page = requests.get(link, timeout=0.5)
-    #     soup = BeautifulSoup(endpoint_page)
-    #     endpoints = []
-    #     for link in soup.find_all('a'):
-    #         endpoints.append(link.get('href'))
-    #     return endpoints
-    # except requests.exceptions.Timeout:
-    #     return None
 
 
 def link_test(link):
@@ -66,7 +68,7 @@ def link_test(link):
     Just a quick function to test a link.
     """
     try:
-        webpage = requests.get(link, timeout=0.5)
+        webpage = requests.get(link, timeout=0.5).text
         return webpage
     except requests.exceptions.Timeout:
         return None
@@ -89,13 +91,3 @@ def wsdl_retriever(service='HEC'):
             wsdl_link = link
             break
     return wsdl_link
-
-
-def main():
-    """
-    For some testing
-    """
-    print wsdl_retriever()
-
-if __name__ == 'main':
-    main()
