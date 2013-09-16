@@ -232,8 +232,8 @@ class DatabaseEntry(Base):
     path = Column(String)
     download_time = Column(DateTime)
     starred = Column(Boolean, default=False)
-    fits_header_entries = relationship('FitsHeaderEntry', backref='data')
-    fits_key_comments = relationship('FitsKeyComment', backref='data')
+    fits_header_entries = relationship('FitsHeaderEntry')
+    fits_key_comments = relationship('FitsKeyComment')
     tags = relationship('Tag', secondary=association_table, backref='data')
 
     @classmethod
