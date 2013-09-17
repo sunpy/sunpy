@@ -300,12 +300,14 @@ class Database(object):
         """
         if not query:
             raise TypeError('at least one attribute required')
-        client = kwargs.pop('client', VSOClient())
+        client = kwargs.pop('client', None)
         path = kwargs.pop('path', None)
         progress = kwargs.pop('progress', False)
         if kwargs:
             k, v = kwargs.popitem()
             raise TypeError('unexpected keyword argument {0!r}'.format(k))
+        if client is None:
+            client = VSOClient()
         qr = client.query(*query)
         # don't do anything if querying the VSO results in no data
         if not qr:
