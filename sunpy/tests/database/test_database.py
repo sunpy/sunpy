@@ -748,6 +748,7 @@ def test_fetch(database, download_query, tmpdir):
     assert database[0].download_time == download_time
 
 
+@pytest.mark.slow
 def test_disable_undo(database, download_query, tmpdir):
     entry = DatabaseEntry()
     with disable_undo(database) as db:
