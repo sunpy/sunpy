@@ -256,7 +256,7 @@ def test_entry_from_query_results_with_none_wave(qr_with_none_waves):
 def test_entry_from_query_results_with_none_wave_and_default_unit(
         qr_with_none_waves):
     entries = list(entries_from_query_result(qr_with_none_waves, 'nm'))
-    assert len(entries) == 5
+    assert len(entries) == 4
     assert entries == [
         DatabaseEntry(
             source='SOHO', provider='SDAC', physobs='intensity',
@@ -284,13 +284,6 @@ def test_entry_from_query_results_with_none_wave_and_default_unit(
             fileid='/archive/soho/private/data/processed/virgo/level1/1212/DIARAD/121222_1.D01',
             observation_time_start=datetime(2012, 12, 24, 0, 1, 58),
             observation_time_end=datetime(2012, 12, 25, 0, 1, 57),
-            instrument='VIRGO', size=14.0, wavemin=None,
-            wavemax=None),
-      DatabaseEntry(
-            source='SOHO', provider='SDAC', physobs='intensity',
-            fileid='/archive/soho/private/data/processed/virgo/level1/1212/DIARAD/121222_1.D01',
-            observation_time_end=datetime(2012, 12, 25, 0, 1, 57),
-            observation_time_start=datetime(2012, 12, 24, 0, 1, 58),
             instrument='VIRGO', size=14.0, wavemin=None,
             wavemax=None)]
 
