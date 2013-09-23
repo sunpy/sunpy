@@ -56,6 +56,9 @@ def endpoint_parser(link):
     endpoints = []
     for web_link in soup.find_all('a'):
         endpoints.append(web_link.get('href'))
+    # for link in soup.find_all('interface'):
+    #     for child in link.children:
+    #         endpoints.append(child.string)
     return endpoints
 
 
@@ -80,7 +83,7 @@ def link_test(link):
     Just a quick function to test a link.
     """
     try:
-        webpage = requests.get(link, timeout=0.5).text
+        webpage = requests.get(link, timeout=3).text
         return webpage
     except requests.exceptions.Timeout:
         return None

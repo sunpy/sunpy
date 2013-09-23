@@ -11,9 +11,11 @@ it's support through the use of a WSDL file.
 """
 
 from sunpy.net.helio import parser
+from sunpy.time import time as T
 from suds.client import Client as C
 from astropy.io.votable.table import parse_single_table
 import io
+import datetime
 
 __author__ = 'Michael Malocha'
 __version__ = 'September 15th, 2013'
@@ -52,34 +54,102 @@ def votable_handler(xml_table):
     return votable
 
 
+def time_check_and_convert(time):
+    """
+    Verifies 'time' as a time object, then makes it VOtable compatible
+    """
+    if T.is_time(time):
+        time_object = T.parse_time(time)
+        converted_time = time_object.strftime("%Y-%m-%d") + "T" + \
+                         time_object.strftime("%T")
+        return converted_time
+    else:
+        print "Not a valid datetime"
+        return None
+
+
 class Client(object):
     """
     A simple description of the class
     """
+
     def __init__(self, link=DEFAULT_LINK):
         """
         The initializing function.
         """
         self.hec_client = C(link)
 
-    def time_query(self, start_time, end_time, table):
+    def time_query(self, start_time, end_time, table=None, max_records=None):
         """
         The simple interface to query the wsdl service
         """
-        pass
+        if table is None:
+            table = self.make_table_list()
+        if max_records is not None:
+            self.hec_client.service.TimeQuery(STARTTIME=start_time,
+                                              ENDTIME=end_time,
+                                              FROM=table,
+                                              MAXRECORDS=max_records)
+        else:
+            self.hec_client.service.TimeQuery(STARTTIME=start_time,
+                                              ENDTIME=end_time,
+                                              FROM=table)
+        results = self.clean_last_received()
+        return results
 
     def get_table_names(self):
         """
         Returns a list of the available tables to query
         """
         self.hec_client.service.getTableNames()
-        tables = self.hec_client.last_received().str()
-        tables = suds_unwrapper(tables)
-        tables = votable_handler(tables)
+        tables = self.clean_last_received()
         return tables.array
-        #return self.hec_client.service.getTableNames()
 
+    def make_table_list(self):
+        """
+        Creates a list of table names and prompts the user for a choice
+        """
+        table_list = []
+        temp = None
+        tables = self.get_table_names()
+        for i in tables:
+            temp = str(i)[2:-3]
+            if len(temp) > 0:
+                table_list.append(temp)
+        counter = 1
+        table_list.sort()
+        for i in table_list:
+            temp = '  '
+            if 9 < counter < 100:
+                temp = ' '
+            elif 99 < counter:
+                temp = ''
+            temp += str(counter) + ") " + i
+            print temp
+            counter += 1
+        while True:
+            input = raw_input("\nPlease enter a table number between 1 and %i "
+                              "('e' to exit): " % len(table_list))
+            if input.lower() == "e" or input.lower() == "exit":
+                temp = None
+                break
+            temp = [int(s) for s in input.split() if s.isdigit()]
+            temp = temp[0] - 1
+            if temp in range(0, len(table_list)):
+                temp = table_list[temp]
+                break
+            else:
+                print "Choice outside of bounds"
+        return temp
 
+    def clean_last_received(self):
+        """
+        A method to return clean VOtable objects for the client.
+        """
+        results = self.hec_client.last_received().str()
+        results = suds_unwrapper(results)
+        results = votable_handler(results)
+        return results
 
 
 """
