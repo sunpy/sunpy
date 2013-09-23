@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # Author:   Michael Malocha <mjm159@humboldt.edu>
-# Last Edit:  September 13th, 2013
+# Last Edit:  September 22nd, 2013
 #
 # This module was developed with funding from the GSOC 2013 summer of code
 #
@@ -16,23 +16,48 @@ from sunpy.net.helio import registry_links as RL
 from bs4 import BeautifulSoup
 
 __author__ = 'Michael Malocha'
-__version__ = 'September 13th, 2013'
+__version__ = 'September 22nd, 2013'
+
+# Lifespan in seconds before a link times-out
+LINK_TIMEOUT = 3
 
 
 def webservice_parser(service='HEC'):
     """
     Quickly parses important contents from HELIO registry.
+
+    Uses the link contained in registry_links in with 'service' appended
+    and scrapes the web-service links contained on that webpage.
+
+    Parameters
+    ----------
+    service: str
+        Indicates which particular HELIO service is used. Defaults to HEC.
+
+    Returns
+    -------
+    links: list or NoneType
+        List of urls to registries containing WSDL endpoints.
+
+    Examples
+    --------
+    >>> from sunpy.net.helio import parser
+    >>> parser.webservice_parser()
+    ['http://msslkz.mssl.ucl.ac.uk/helio-hec/HelioService',
+    'http://festung3.oats.inaf.it:8080/helio-hec/HelioService',
+    'http://festung1.oats.inaf.it:8080/helio-hec/HelioService',
+    'http://hec.helio-vo.eu/helio_hec/HelioService',
+    'http://msslkz.mssl.ucl.ac.uk/helio-hec/HelioLongQueryService',
+    'http://festung3.oats.inaf.it:8080/helio-hec/HelioLongQueryService',
+    'http://festung1.oats.inaf.it:8080/helio-hec/HelioLongQueryService',
+    'http://hec.helio-vo.eu/helio_hec/HelioLongQueryService']
     """
-    link = RL.LINK
-    # This if block will allow future service additions.
-    # turn into a dictionary
-    link += service.lower()
+    link = RL.LINK + service.lower()
     if link_test(link) is None:
         return None
     xml = requests.get(link).text
     root = EL.fromstring(xml)
     links = []
-    # Add loop to parse xml text for table names under the 'relatedResource' tag.
     for interface in root.iter('interface'):
         service_type = interface.attrib
         key = service_type.keys()
@@ -47,7 +72,35 @@ def webservice_parser(service='HEC'):
 
 def endpoint_parser(link):
     """
-    Takes a link to a list of endpoints and parses the WSDL links
+    Takes a link to a list of endpoints and parses the WSDL links.
+
+    Feeding 1 result from webservice_parser() into endpoint_parser() at a time
+    will return a list of WSDL endpoints that are contained on the page from
+    that link that was passed in.
+
+    Parameters
+    ----------
+    link: str
+        A url to a page containing links to WSDL files.
+
+    Returns
+    -------
+    endpoints: list or NoneType
+        A list containing all of the available WSDL endpoints from the passed
+        in url.
+
+    Examples
+    --------
+    >>> from sunpy.net.helio import parser
+    >>> parser.endpoint_parser('http://msslkz.mssl.ucl.ac.uk/helio-hec/HelioService')
+    ['http://msslkz.mssl.ucl.ac.uk:80/helio-hec/HelioService?wsdl',
+    'http://msslkz.mssl.ucl.ac.uk:80/helio-hec/HelioService1_0?wsdl',
+    'http://msslkz.mssl.ucl.ac.uk:80/helio-hec/HelioService1_0b?wsdl',
+    'http://msslkz.mssl.ucl.ac.uk:80/helio-hec/HelioLongQueryService?wsdl',
+    'http://msslkz.mssl.ucl.ac.uk:80/helio-hec/HelioLongQueryService1_0?wsdl',
+    'http://msslkz.mssl.ucl.ac.uk:80/helio-hec/HelioLongQueryService1_1?wsdl',
+    'http://msslkz.mssl.ucl.ac.uk:80/helio-hec/HelioLongQueryService1_0b?wsdl',
+    'http://msslkz.mssl.ucl.ac.uk:80/helio-hec/HelioTavernaService?wsdl']
     """
     endpoint_page = link_test(link)
     if endpoint_page is None:
@@ -56,15 +109,34 @@ def endpoint_parser(link):
     endpoints = []
     for web_link in soup.find_all('a'):
         endpoints.append(web_link.get('href'))
-    # for link in soup.find_all('interface'):
-    #     for child in link.children:
-    #         endpoints.append(child.string)
     return endpoints
 
 
 def taverna_parser(link):
     """
-    Takes a link to a list of endpoints and parses the taverna WSDL link
+    Takes a link to a list of endpoints and parses the taverna WSDL links.
+
+    Takes a url to a page containing a list of endpoints, then passes that url
+    to endpoint_parser(). Upon receiving the resulting list from the parser
+    taverna_parser() goes through the list and finds all the WSDL links for
+    the taverna web-service. It then returns a list containing the filtered
+    links.
+
+    Parameters
+    ----------
+    link: str
+        A url to a page containing links to WSDL files.
+
+    Returns
+    -------
+    taverna_links: list or NoneType
+        A list containing WSDL links for a taverna web-service
+
+    Examples
+    --------
+    >>> from sunpy.net.helio import parser
+    >>> parser.taverna_parser('http://msslkz.mssl.ucl.ac.uk/helio-hec/HelioService')
+    ['http://msslkz.mssl.ucl.ac.uk:80/helio-hec/HelioTavernaService?wsdl']
     """
     endpoints = endpoint_parser(link)
     taverna_links = []
@@ -81,17 +153,69 @@ def taverna_parser(link):
 def link_test(link):
     """
     Just a quick function to test a link.
+
+    Quickly checks to see if the URL is a valid link; if it is it returns the
+    downloaded contents of that page.
+
+    Parameters
+    ----------
+    link: str
+        A string containing a URL
+
+    Returns
+    -------
+    webpage: str or NoneType
+        String containing the webresults
+
+    Examples
+    --------
+    >>> from sunpy.net.helio import parser
+    >>> parser.link_test('http://msslkz.mssl.ucl.ac.uk/helio-hec/HelioService')
+    u'<html>\n<head>...</body>\n</html>\n'
+
+    >>> print parser.link_test('http://rrnx.invalid_url5523.com')
+    None
     """
     try:
-        webpage = requests.get(link, timeout=3).text
+        webpage = requests.get(link, timeout=LINK_TIMEOUT).text
         return webpage
-    except requests.exceptions.Timeout:
+    except:
         return None
 
 
 def wsdl_retriever(service='HEC'):
     """
-    uses webservices_parser & endpoint_parser to retrieve a taverna WSDL file
+    Retrieves a link to a taverna WSDL file
+
+    This is essentially the master method, from it all the other functions get
+    called and it essentially knits everything together. It gets a list of
+    service links via webservice_parser(), then filters the results via
+    taverna_parser(). Finally it tests all the returned taverna WSDL links
+    and returns the first live taverna endpoint.
+
+    Parameters
+    ----------
+    service: str
+        Indicates which particular HELIO service is used. Defaults to HEC.
+
+    Returns
+    -------
+    wsdl: str
+        URL to a single live taverna endpoint
+
+    Examples
+    --------
+    >>> from sunpy.net.helio import parser
+    >>> parser.wsdl_retriever()
+    'http://msslkz.mssl.ucl.ac.uk:80/helio_hec/HelioTavernaService?wsdl'
+
+    Notes
+    -----
+    * Currently only support for HEC exists, but it was designed so that it
+        could be expanded at a later date
+    * There is a 3 second timeout lifespan on links, so there is potential for
+        this function to take a while to return. Timeout duration can be
+        controlled through the LINK_TIMEOUT value
     """
     service_links = webservice_parser(service=service)
     wsdl = None
