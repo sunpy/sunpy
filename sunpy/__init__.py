@@ -24,6 +24,9 @@ map
     images.
 net
     Routines for obtaining data from the internet.
+database
+    Store solar physics data (from FITS files or via the net package) in a
+    database.
 spectra
     subpackage for working with 2D spectra datatypes
 sun
