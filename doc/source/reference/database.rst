@@ -121,8 +121,16 @@ Exceptions
     This exception is raised if it is attempted to remove a tag from a
     database entry even though it is not saved in this entry.
 
-.. FIXME: to be documented
-    attrs
-    """""
-    .. automodule:: sunpy.database.attrs
-       :members:
+attrs
+"""""
+.. module:: sunpy.database.attrs
+
+.. class:: sunpy.database.attrs.Starred
+
+.. class:: sunpy.database.attrs.Tag(tagname)
+
+.. class:: sunpy.database.attrs.Path(value)
+
+.. class:: sunpy.database.attrs.DownloadTime(start, end)
+
+.. class:: sunpy.database.attrs.FitsHeaderEntry(key, value)
