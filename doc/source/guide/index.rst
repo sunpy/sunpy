@@ -12,6 +12,7 @@ Welcome to the SunPy User Guide!
    plotting
    time
    vso
+   database
    helioviewer
    maps
    hek
