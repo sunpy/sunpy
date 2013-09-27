@@ -16,18 +16,18 @@ Reference
     by other methods such as Database.add_from_path or
     Database.add_from_vso_query_result
 
-- document the tables Tag, FitsHeaderEntry and FitsKeyComment
+- document the tables Tag, FitsHeaderEntry, FitsKeyComment, JSONDump
 
 - attrs module: document the following classes:
-  
+
   - Starred
-    
+
   - Tag
-    
+
   - Path
-    
+
   - DownloadTime
-    
+
   - FitsHeaderEntry
 
 - attrs: document that for vso.attrs.Time, the `near` parameter is
@@ -36,13 +36,7 @@ Reference
 - commands.CommandManager: update docstrings, especially paying attention
   to using lists instead of commands as parameters!
 
-- document in more methods and functions which exceptions may be raised
-  -> which ones exactly?
-
 - document property cache_size, cache_maxsize
-
-- document the package database itself!!! → show how to use the Database
-  class and the undo and redo methods
 
 - document Database.__getitem__
 
@@ -64,33 +58,29 @@ Testing
 
 Important
 ---------
-- docs: fix all examples with (implicit) repr calls in DatabaseEntry
-  instances!!!
+- support serialize.load_{query,entry} with datetime format!
+
+- serialize: support indent parameter in dump_query
+
+- test_database: remove ``database_without_tables``
+
+- Database.{add_from_file,add_from_path},
+  entries_from_file, entries_from_dir: support *ignoring* entries without
+  waveunit
 
 - display_entries: support and test output of FITS header entries
 
 - adopt parameter names in Database methods to last changes in the
   documentation!!!
 
-- write a contextmanager to disable undo/redo functionality for a block of
-  operations -> commands module
-
 - support (un-)pickling of instances from the tables module
 
 Low priority
 ---------
-- use new-style string formatting everywhere
-
 - support saving entries by HEK query result
 
 - check if catching the exception InvalidRequestError is really sufficient
   in AddEntry.__call__, AddEntry.undo, RemoveEntry.__call__
-
-- Database.{__contains__, __iter__, __len__}: return values of the cache
-  instead of sending a query to the database
-  PRO: better speed performance
-  CONTRA: needs explicit "commit" calls after each database operation or
-  before each __contains__, __iter__, __len__ call
 
 - support using the progressbar for adding many entries to the database
   → Or do not support it directly. Rather, add a section in the docs "Tips
@@ -102,13 +92,6 @@ Unclear / Undecided
 -------------------
 - Should the FITS Header be normalized before being saved (the keys are
   usually in UPPERCASE, makes it worse to search for)?
-
-Interfacing with VSO
---------------------
-- general problem: db query cannot tell whether the same to the VSO might
-  fetch more data or the same data
-
-  → solution: remember queries, compare
 
 HEK Notes
 ---------
