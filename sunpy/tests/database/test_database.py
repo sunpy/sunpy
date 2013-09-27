@@ -27,11 +27,6 @@ from sunpy.io import fits
 
 
 @pytest.fixture
-def database_without_tables():
-    return Database('sqlite:///:memory:')
-
-
-@pytest.fixture
 def database_using_lrucache():
     return Database('sqlite:///:memory:', LRUCache, cache_size=3)
 
