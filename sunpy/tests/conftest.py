@@ -13,8 +13,6 @@ def site_reachable(url):
         return True
 
 
-# Using a numerical IP-address avoids a DNS lookup, which may block the
-# urllib2.urlopen call for more than a second
 GOOGLE_URL = 'http://www.google.com'
 
 is_online = partial(site_reachable, GOOGLE_URL)
