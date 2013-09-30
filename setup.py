@@ -39,7 +39,7 @@ def install(setup): #pylint: disable=W0621
         sourcefiles = [join(cwd, 'sunpy', 'image', 'src', 'rot_extn.c'),
                        join(cwd, 'sunpy', 'image', 'src', 'transform', 'aff_tr.c')]
         libs = ['m']
-        # -ON for compile optimise 
+        # -ON for compile optimise
         gcc_args = ['-std=c99', '-O3']
         # gcc_args = ['-std=c99']
 
@@ -71,6 +71,7 @@ def install(setup): #pylint: disable=W0621
         ext_modules.append(crotate)
     if 'ana' in locals():
         ext_modules.append(ana)
+
     setup(
 	author="Steven Christe, Matt Earnshaw,  Russell Hewett, Keith Hughitt, Jack Ireland, Florian Mayer, Stuart Mumford,  Albert Shih, David Perez-Suarez et. al",
         author_email="sunpy@googlegroups.com",
@@ -101,7 +102,7 @@ def install(setup): #pylint: disable=W0621
         provides=['sunpy'],
         url="http://www.sunpy.org/",
         use_2to3=True,
-        version="0.3.0",
+        version="0.3.1",
         ext_modules = ext_modules
     )
 
