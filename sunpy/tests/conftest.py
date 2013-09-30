@@ -9,8 +9,6 @@ def site_reachable(url):
         urllib2.urlopen(url, timeout=1)
     except urllib2.URLError:
         return False
-    except:
-        raise
     else:
         return True
 
