@@ -3,6 +3,8 @@ import urllib2
 
 import pytest
 
+GOOGLE_URL = 'http://www.google.com'
+
 
 def site_reachable(url):
     try:
@@ -12,8 +14,6 @@ def site_reachable(url):
     else:
         return True
 
-
-GOOGLE_URL = 'http://www.google.com'
 
 is_online = partial(site_reachable, GOOGLE_URL)
 
