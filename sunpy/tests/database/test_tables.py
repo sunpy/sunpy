@@ -67,7 +67,7 @@ def test_tag_hashability():
     assert isinstance(Tag(''), Hashable)
 
 
-@pytest.mark.slow
+@pytest.mark.online
 def test_entry_from_qr_block(query_result):
     entry = DatabaseEntry._from_query_result_block(query_result[0])
     expected_entry = DatabaseEntry(
@@ -79,7 +79,7 @@ def test_entry_from_qr_block(query_result):
     assert entry == expected_entry
 
 
-@pytest.mark.slow
+@pytest.mark.online
 def test_entry_from_qr_block_with_missing_physobs(qr_block_with_missing_physobs):
     entry = DatabaseEntry._from_query_result_block(qr_block_with_missing_physobs)
     expected_entry = DatabaseEntry(
@@ -231,7 +231,7 @@ def test_entries_from_dir_recursively_false():
     assert len(entries) == 5
 
 
-@pytest.mark.slow
+@pytest.mark.online
 def test_entries_from_query_result(query_result):
     entries = list(entries_from_query_result(query_result))
     assert len(entries) == 122
@@ -245,14 +245,14 @@ def test_entries_from_query_result(query_result):
     assert snd_entry == expected_entry
 
 
-@pytest.mark.slow
+@pytest.mark.online
 def test_entry_from_query_results_with_none_wave(qr_with_none_waves):
     # does not raise WaveunitNotFoundError because neither wavemin nor wavemax
     # are given
     list(entries_from_query_result(qr_with_none_waves))
 
 
-@pytest.mark.slow
+@pytest.mark.online
 def test_entry_from_query_results_with_none_wave_and_default_unit(
         qr_with_none_waves):
     entries = list(entries_from_query_result(qr_with_none_waves, 'nm'))
