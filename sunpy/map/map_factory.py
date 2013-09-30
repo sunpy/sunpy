@@ -43,13 +43,13 @@ class Map(RegisteredFactoryBase):
     DefaultWidgetType = GenericMap
 
     @classmethod
-    def _read_file(cls, fname):
+    def _read_file(cls, fname, **kwargs):
         """ Read in a file name and return the list of (data, meta) pairs in
             that file. """
         
         # File gets read here.  This needs to be generic enough to seamlessly
         #call a fits file or a jpeg2k file, etc
-        pairs = read_file(fname)
+        pairs = read_file(fname, **kwargs)
         
         new_pairs = []
         for pair in pairs:
@@ -96,13 +96,13 @@ class Map(RegisteredFactoryBase):
             # Data-header pair in a tuple
             if ((type(arg) in [tuple, list]) and 
                  len(arg) == 2 and
-                 isinstance(arg[0],np.ndarray) and # or NDData or something else?
-                 isinstance(arg[1],OrderedDict)): # FITSHeader, JP2kHeader, OrderedDict, dict?
+                 isinstance(arg[0],np.ndarray) and
+                 isinstance(arg[1],dict)):
                 data_header_pairs.append(arg)
             
             # Data-header pair not in a tuple
-            elif (isinstance(arg, np.ndarray) and # or NDData or something else?
-                  isinstance(args[i+1],OrderedDict)): # FITSHeader, JP2kHeader, OrderedDict, dict? 
+            elif (isinstance(arg, np.ndarray) and
+                  isinstance(args[i+1],dict)):
                 pair = (args[i], args[i+1])
                 data_header_pairs.append(pair)
                 i += 1 # an extra increment to account for the data-header pairing
@@ -111,7 +111,7 @@ class Map(RegisteredFactoryBase):
             elif (isinstance(arg,basestring) and 
                   os.path.isfile(os.path.expanduser(arg))):
                 path = os.path.expanduser(arg)
-                pairs = cls._read_file(path)
+                pairs = cls._read_file(path, **kwargs)
                 data_header_pairs += pairs
             
             # Directory
@@ -120,13 +120,13 @@ class Map(RegisteredFactoryBase):
                 path = os.path.expanduser(arg)
                 files = [os.path.join(path, elem) for elem in os.listdir(path)]
                 for afile in files:
-                    data_header_pairs += cls._read_file(afile)
+                    data_header_pairs += cls._read_file(afile, **kwargs)
             
             # Glob
             elif (isinstance(arg,basestring) and '*' in arg):
                 files = glob.glob( os.path.expanduser(arg) )
                 for afile in files:
-                    data_header_pairs += cls._read_file(afile)
+                    data_header_pairs += cls._read_file(afile, **kwargs)
             
             # Already a Map
             elif isinstance(arg, GenericMap):
@@ -138,7 +138,7 @@ class Map(RegisteredFactoryBase):
                 default_dir = sunpy.config.get("downloads", "download_dir")
                 url = arg
                 path = download_file(url, default_dir)
-                pairs = cls._read_file(path)
+                pairs = cls._read_file(path, **kwargs)
                 data_header_pairs += pairs
             
             else:
@@ -193,9 +193,12 @@ class Map(RegisteredFactoryBase):
                         break
                 else:
                     WidgetType = cls.DefaultWidgetType
-                    
+                
+                # Make sure the map header is a MapMeta, useful if the user
+                # passed in a dict
+                meta = MapMeta(header)
                 # Instantiate the new map.
-                new_maps.append(WidgetType(data, header, **kwargs))
+                new_maps.append(WidgetType(data, meta, **kwargs))
             
             new_maps += already_maps
             

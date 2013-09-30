@@ -15,7 +15,7 @@ from sunpy.io.header import FileHeader
 
 __all__ = ['read', 'get_header', 'write']
 
-def read(filepath, j2k_to_image='opj_decompress'):
+def read(filepath, j2k_to_image='j2k_to_image'):
     """
     Reads a JPEG2000 file
     
