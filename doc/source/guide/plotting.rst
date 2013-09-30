@@ -165,7 +165,7 @@ Finally, here is a more complex example, starting from the beginning::
     import sunpy
     import matplotlib.pyplot as plt
     smap = sunpy.Map(sunpy.AIA_171_IMAGE)
-    submap = map.submap([-100-250, -100+250], [-400-250, -400+250])
+    submap = smap.submap([-100-250, -100+250], [-400-250, -400+250])
     rect = patches.Rectangle([-100-250, -400-250], 500, 500, color = 'white', fill=False)
         
     fig = plt.figure()

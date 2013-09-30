@@ -336,7 +336,7 @@ class CompositeMap(object):
             if m.levels is not False:
                 # Set data with values <= 0 to transparent
                 # contour_data = np.ma.masked_array(m, mask=(m <= 0))
-                ret.append(axes.contour(m, m.levels, **params))
+                ret.append(axes.contour(m.data, m.levels, **params))
                 #Set the label of the first line so a legend can be created
                 ret[-1].collections[0].set_label(m.name)
                                 

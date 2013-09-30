@@ -28,7 +28,7 @@ except ImportError:
 import sunpy
 from sunpy.time import TimeRange, parse_time
 import sunpy.sun.constants as sun
-from sunpy.sun.sun import angular_size
+from sunpy.sun.sun import solar_semidiameter_angular_size
 from sunpy.sun.sun import sunearth_distance
 
 # Measured fixed grid parameters
@@ -421,7 +421,7 @@ def backprojection(calibrated_event_list, pixel_size=(1.,1.), image_dim=(64,64))
         "CTYPE2": "HPLT-TAN",
         "HGLT_OBS": 0,
         "HGLN_OBS": 0,
-        "RSUN_OBS": angular_size(time_range.center()),
+        "RSUN_OBS": solar_semidiameter_angular_size(time_range.center()),
         "RSUN_REF": sun.radius,
         "DSUN_OBS": sunearth_distance(time_range.center()) * sunpy.sun.constants.au
     }
