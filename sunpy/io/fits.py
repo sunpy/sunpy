@@ -3,6 +3,12 @@ FITS File Reader
 
 Notes
 -----
+FITS
+    [1] FITS files allow comments to be attached to every value in the header.
+    This is implemented in this module as a KEYCOMMENTS dictionary in the 
+    sunpy header. To add a comment to the file on write, add a comment to this
+    dictionary with the same name as a key in the header (upcased).
+
 PyFITS
     [1] Due to the way PyFITS works with images the header dictionary may
     differ depending on whether is accessed before or after the fits[0].data
@@ -27,13 +33,19 @@ References
 from __future__ import absolute_import
 
 import os
-import pyfits
+import re
+import itertools
+
+try:
+    import astropy.io.fits as pyfits
+except ImportError:
+    import pyfits
 
 from sunpy.io.header import FileHeader
 
-__all__ = ['read', 'get_header', 'write']
+__all__ = ['read', 'get_header', 'write', 'extract_waveunit']
 
-__author__ = "Keith Hughitt, Stuart Mumford"
+__author__ = "Keith Hughitt, Stuart Mumford, Simon Liedtke"
 __email__ = "keith.hughitt@nasa.gov"
 
 def read(filepath):
@@ -58,52 +70,70 @@ def read(filepath):
     'comment' key in the returned FileHeader.
     """
     hdulist = pyfits.open(filepath)
-    hdulist.verify('silentfix')
-    
-    pairs = []
-    for hdu in hdulist:
-        fits_comment = hdu.header.get_comment()
+    try:
+        hdulist.verify('silentfix')
         
-        # PyFITS 2.x
-        if len(fits_comment) > 0 and isinstance(fits_comment[0], basestring):
-            comments = [val for val in fits_comment]       
-        else:
-            # PyFITS 3.x
-            comments = [card.value for card in fits_comment]
-            
-        comment = "".join(hdu.header.get_comment()).strip()
-        history = "".join(hdu.header.get_history()).strip()
-        header = FileHeader(hdu.header)
-        header['comment'] = comment
-        header['history'] = history
-        pairs.append((hdu.data, header))
+        headers = get_header(hdulist)
+        pairs = []
+        for hdu,header in itertools.izip(hdulist, headers):
+            pairs.append((hdu.data, header))
+    finally:
+        hdulist.close()
 
     return pairs
 
-def get_header(filepath):
+def get_header(afile):
     """
-    Read a fits file and return just the headers for all HDU's
+    Read a fits file and return just the headers for all HDU's. In each header,
+    the key WAVEUNIT denotes the wavelength unit which is used to describe the
+    value of the key WAVELNTH.
     
     Parameters
     ----------
-    filepath : string
-        The file to be read
+    afile : string or pyfits.HDUList
+        The file to be read, or HDUList to process
     
     Returns
     -------
     headers : list
         A list of FileHeader headers
     """
-    hdulist = pyfits.open(filepath)
-    hdulist.verify('silentfix')
-    headers= []
-    for hdu in hdulist:
-        comment = "".join(hdu.header.get_comment()).strip()
-        history = "".join(hdu.header.get_history()).strip()
-        header = FileHeader(hdu.header)
-        header['comment'] = comment
-        header['history'] = history
-        headers.append(header)
+    if isinstance(afile,pyfits.HDUList):
+        hdulist = afile
+        close = False
+    else:
+        hdulist = pyfits.open(afile)
+        hdulist.verify('silentfix')
+        close=True
+        
+    try:
+        headers= []
+        for hdu in hdulist:
+            try:
+                comment = "".join(hdu.header['COMMENT']).strip()
+            except KeyError:
+                comment = ""
+            try:
+                history = "".join(hdu.header['HISTORY']).strip()
+            except KeyError:
+                history = ""
+            
+            header = FileHeader(hdu.header)
+            header['COMMENT'] = comment
+            header['HISTORY'] = history
+            
+            #Strip out KEYCOMMENTS to a dict, the hard way
+            keydict = {}
+            for card in hdu.header.cards:
+                if card.comment != '':
+                    keydict.update({card.keyword:card.comment})
+            header['KEYCOMMENTS'] = keydict
+            header['WAVEUNIT'] = extract_waveunit(header)
+            
+            headers.append(header)
+    finally:
+        if close:
+            hdulist.close()
     return headers
 
 def write(fname, data, header, **kwargs):
@@ -121,10 +151,15 @@ def write(fname, data, header, **kwargs):
     header: dict
         A header dictionary
     """
+    #Copy header so the one in memory is left alone while changing it for write
+    header = header.copy()
+    
     #The comments need to be added to the header seperately from the normal
     # kwargs. Find and deal with them:
-    fits_header = pyfits.core.Header()
+    fits_header = pyfits.Header()
     # Check Header
+    key_comments = header.pop('KEYCOMMENTS', False)
+
     for k,v in header.items():
         if isinstance(v, pyfits.header._HeaderCommentaryCards):
             if k is 'comments':
@@ -132,10 +167,95 @@ def write(fname, data, header, **kwargs):
             elif k in 'history':
                 fits_header.add_history(str(v))
             else:
-                fits_header.append(pyfits.core.Card(k, str(v)))
+                fits_header.append(pyfits.Card(k, str(v)))
         else:
-            fits_header.append(pyfits.core.Card(k,v))
+            fits_header.append(pyfits.Card(k,v))
+
+    
+    if isinstance(key_comments, dict):
+        for k,v in key_comments.items():
+            fits_header.comments[k] = v
+    elif key_comments:
+        raise TypeError("KEYCOMMENTS must be a dictionary")
     
     fitskwargs = {'output_verify':'fix'}
     fitskwargs.update(kwargs)
-    pyfits.writeto(os.path.expanduser(fname), data, header=fits_header, **fitskwargs)
+    pyfits.writeto(os.path.expanduser(fname), data, header=fits_header,
+                   **fitskwargs)
+
+
+def extract_waveunit(header):
+    """Attempt to read the wavelength unit from a given FITS header.
+
+    Parameters
+    ----------
+    header : FileHeader
+        One :class:`sunpy.io.header.FileHeader` instance which was created by
+        reading a FITS file. :func:`sunpy.io.fits.get_header` returns a list of
+        such instances.
+
+    Returns
+    -------
+    waveunit : str
+        The wavelength unit that could be found or ``None`` otherwise.
+
+    Examples
+    --------
+    The goal of this function is to return a string that can be used in
+    conjunction with the astropy.units module so that the return value can be
+    directly passed to ``astropy.units.Unit``::
+
+        >>> import astropy.units
+        >>> waveunit = extract_waveunit(header)
+        >>> if waveunit is not None:
+        ...     unit = astropy.units.Unit(waveunit)
+
+    """
+    # algorithm: try the following procedures in the following order and return
+    # as soon as a waveunit could be detected
+    # 1. read header('WAVEUNIT'). If None, go to step 2.
+    # 1.1 -9 -> 'nm'
+    # 1.2 -10 -> 'angstrom'
+    # 1.3 0 -> go to step 2
+    # 1.4 if neither of the above, return the value itself in lowercase
+    # 2. parse waveunit_comment
+    # 2.1 'in meters' -> 'm'
+    # 3. parse wavelnth_comment
+    # 3.1 "[$UNIT] ..." -> $UNIT
+    # 3.2 "Observed wavelength ($UNIT)" -> $UNIT
+    def parse_waveunit_comment(waveunit_comment):
+        if waveunit_comment == 'in meters':
+            return 'm'
+
+    waveunit_comment = header['KEYCOMMENTS'].get('WAVEUNIT')
+    wavelnth_comment = header['KEYCOMMENTS'].get('WAVELNTH')
+    waveunit = header.get('WAVEUNIT')
+    if waveunit is not None:
+        metre_submultiples = {
+            0: parse_waveunit_comment(waveunit_comment),
+            -1: 'dm',
+            -2: 'cm',
+            -3: 'mm',
+            -6: 'um',
+            -9: 'nm',
+            -10: 'angstrom',
+            -12: 'pm',
+            -15: 'fm',
+            -18: 'am',
+            -21: 'zm',
+            -24: 'ym'}
+        waveunit = metre_submultiples.get(waveunit, str(waveunit).lower())
+    elif waveunit_comment is not None:
+        waveunit = parse_waveunit_comment(waveunit_comment)
+    elif wavelnth_comment is not None:
+        # supported formats (where $UNIT is the unit like "nm" or "Angstrom"):
+        #   "Observed wavelength ($UNIT)"
+        #   "[$UNIT] ..."
+        parentheses_pattern = r'Observed wavelength \((\w+?)\)$'
+        brackets_pattern = r'^\[(\w+?)\]'
+        for pattern in [parentheses_pattern, brackets_pattern]:
+            m = re.search(pattern, wavelnth_comment)
+            if m is not None:
+                waveunit = m.group(1)
+                break
+    return waveunit

@@ -92,7 +92,9 @@ def _resample_nearest_linear(orig, dimensions, method, offset, m1):
     old_coords = [np.arange(i, dtype=np.float) for i in orig.shape]
 
     # first interpolation - for ndims = any
-    mint = scipy.interpolate.interp1d(old_coords[-1], orig, kind=method)
+    mint = scipy.interpolate.interp1d(old_coords[-1], orig, bounds_error=False,
+                                      fill_value=min(old_coords[-1]), kind=method)
+
     new_data = mint(dimlist[-1])
 
     trorder = [orig.ndim - 1] + range(orig.ndim - 1)
@@ -100,7 +102,7 @@ def _resample_nearest_linear(orig, dimensions, method, offset, m1):
         new_data = new_data.transpose(trorder)
 
         mint = scipy.interpolate.interp1d(old_coords[i], new_data,
-                                          kind=method)
+            bounds_error=False, fill_value=min(old_coords[i]), kind=method)
         new_data = mint(dimlist[i])
 
     if orig.ndim > 1:

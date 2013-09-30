@@ -39,7 +39,7 @@ def install(setup): #pylint: disable=W0621
         sourcefiles = [join(cwd, 'sunpy', 'image', 'src', 'rot_extn.c'),
                        join(cwd, 'sunpy', 'image', 'src', 'transform', 'aff_tr.c')]
         libs = ['m']
-        # -ON for compile optimise 
+        # -ON for compile optimise
         gcc_args = ['-std=c99', '-O3']
         # gcc_args = ['-std=c99']
 
@@ -63,8 +63,8 @@ def install(setup): #pylint: disable=W0621
         #    "Plotman": ['PyQt4']
         #},
         install_requires=[
-            'numpy',
-            'pyfits',
+            'numpy>1.6.0',
+            'astropy>=0.2.0',
             'scipy',
  #           'suds',
             'pandas>=0.10.0',
@@ -81,7 +81,7 @@ def install(setup): #pylint: disable=W0621
         provides=['sunpy'],
         url="http://www.sunpy.org/",
         use_2to3=True,
-        version="0.2.0",
+        version="0.3.1",
         ext_modules = [crotate] if 'crotate' in locals() else []
     )
 

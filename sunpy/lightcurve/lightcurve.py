@@ -102,7 +102,6 @@ class LightCurve(object):
     @classmethod
     def from_file(cls, filename):
         filename = os.path.expanduser(filename)
-
         header, data = cls._parse_filepath(filename)
         return cls(data, header)
 
@@ -167,10 +166,16 @@ class LightCurve(object):
 
     @staticmethod
     def _download(uri, kwargs, 
-                  err='Unable to download data at specified URL'):
+                  err='Unable to download data at specified URL',
+                  filename = None):
         """Attempts to download data at the specified URI"""
-        _filename = os.path.basename(uri).split("?")[0]
-
+        
+        #Allow manual override of output filename (used for GOES)
+        if filename is not None:
+            _filename = filename
+        else:            
+            _filename = os.path.basename(uri).split("?")[0]
+        
         # user specifies a download directory
         if "directory" in kwargs:
             download_dir = os.path.expanduser(kwargs["directory"])

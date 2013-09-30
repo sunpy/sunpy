@@ -7,6 +7,7 @@ from __future__ import absolute_import
 __authors__ = ["Russell Hewett, Stuart Mumford, Keith Hughitt, Steven Christe"]
 __email__ = "stuart@mumford.me.uk"
 
+import os
 from copy import copy
 import datetime
 import warnings
@@ -15,6 +16,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy.ndimage.interpolation
 from matplotlib import patches
+from matplotlib import colors
 from matplotlib import cm
 
 from skimage import transform

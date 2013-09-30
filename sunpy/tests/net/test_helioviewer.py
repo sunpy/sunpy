@@ -5,6 +5,7 @@ from __future__ import absolute_import
 
 #pylint: disable=C0103,R0904,W0201,W0212,W0232,E1103
 import sunpy
+import sunpy.map
 import pytest
 from sunpy.net.helioviewer import HelioviewerClient
 
@@ -56,9 +57,9 @@ class TestHelioviewerClient:
                                             instrument='MDI', detector='MDI',
                                             measurement='continuum')
         try:
-            map_ = sunpy.make_map(filepath)
+            map_ = sunpy.Map(filepath)
         except sunpy.io.jp2.MissingOpenJPEGBinaryError:
             # We can't test JP2 decoding if binary is not available
             pass
         else:
-            assert isinstance(map_, sunpy.Map)
+            assert isinstance(map_, sunpy.map.GenericMap)

@@ -1,9 +1,12 @@
+
 =================
 Developer's Guide
 =================
 
-Overview
---------
+.. _dev-reference-label:
+
+Developer's Guide Overview
+--------------------------
 This article describes the guidelines to be followed by developers working on
 SunPy. You if you are thinking of contributing to SunPy please read the following
 carefully.
@@ -22,7 +25,7 @@ Creating Your Own Repo
 **Overview**
 
 Each person contributing to SunPy should create their own code repository on
-GitHub by forking the master repository or repo. All development is then done on that 
+GitHub by forking the master repository or repo.eas All development is then done on that 
 fork, using topic branches to isolate work on different features. New 
 contributers can then initiate pull requests to have their code incorporated 
 into the SunPy master repository. Regular contributers can become members of the 
@@ -48,10 +51,16 @@ work from multiple computers you will need to go through the process for each
 computer you wish to work on. Once you have created your account and 
 associated a public SSH key it, you are ready to go.
 
+**Using HTTPS**
+
+If you do not fancy using SSH you can access GitHub using HTTP/HTTPS.
+A few things to note.
+Using HTTP only allows cloning of public repositories, while HTTPS allows cloning of private repositories but also allows you to have push access.
+This way you can type in your username and password to access your repositories.
+
 **Identifying yourself**
 
-Begin by identifying yourself to GitHub and logging in to
-GitHub: :: 
+Begin by identifying yourself to git (so all of your commits have this information) and logging in to GitHub: :: 
 
  git config --global user.name "Firstname Lastname"
  git config --global user.email "your_email@youremail.com"
@@ -75,7 +84,11 @@ Next, you need to download the forked repository. Clone the fork to your
 local machine, edit and run: ::
 
  git clone git@github.com:your_username/sunpy.git
- 
+
+or: ::
+
+ git clone http://github.com/sunpy/sunpy.git
+
 By default your fork of the repo on GitHub is identified by the name `origin`.
 In order to keep the fork up to date with the main repo, it is useful to add it
 as a `remote` in git: ::
@@ -104,6 +117,19 @@ You local repo is now synced with GitHub and ahead of the main repo as it contai
 your personal contribution. Remember to commit after you've done a unit of work (i.e.
 often). This will make it easier for you (in the future) and everyone else to understand 
 what you are doing. Also make sure to make your commit statements clear and understandable.
+
+**Installing SunPy**
+
+In order to use the version of SunPy located  in your personal repository. 
+You need to install it using the `setup.py` script located in the top-level folder.
+The `setup.py` script has several flags: ::
+ `develop` : Installs SunPy and builds all external libraries. 
+ `build` or `build_ext`:  (Re)Builds the external libraries.
+ `clean --all`: Cleans all build files 
+
+Use the `setup.py` script like so: ::
+
+ sudo python setup.py develop
 
 **Conclusion**
 
@@ -179,8 +205,11 @@ If you delete a file run: ::
 
     git rm <yourfilename>
 
-To move a file, copy the file and then run a git rm and then a git add. To check to see if git is happy
-run: ::
+To move a file: ::
+ 
+    git mv <source> <destination>
+
+To check to see if git is happy run: ::
 
     git status
 
@@ -358,6 +387,17 @@ For more information on how to use Sphinx, consult the `Sphinx documentation
 The rest of this section will describe how to document the SunPy code in order
 to guarantee that well-formatted documentation will be created.
 
+**doctest**
+
+The example codes in the Guide section of the docs are configured with the Sphinx 
+`doctest extension <http://sphinx-doc.org/ext/doctest.html>`_.
+This will test the example code to make sure it runs correctly, it can be executed 
+using: ::
+
+  sphinx-build -t doctest -b doctest ./ _build
+
+from inside the ``doc/source`` folder.
+
 Examples
 ^^^^^^^^
 
@@ -435,7 +475,7 @@ Example (:class:`sunpy.map.Map`) ::
 
     Examples
     --------
-    >>> aia = sunpy.make_map(sunpy.AIA_171_IMAGE)
+    >>> aia = sunpy.Map(sunpy.AIA_171_IMAGE)
     >>> aia.T
     Map([[ 0.3125,  1.    , -1.1875, ..., -0.625 ,  0.5625,  0.5   ],
     [-0.0625,  0.1875,  0.375 , ...,  0.0625,  0.0625, -0.125 ],
@@ -638,6 +678,18 @@ When to write unit tests
 ^^^^^^^^^^^^^^^^^^^^^^^^
 A rule of thumb for unit testing is to have at least one unit test per public
 function.
+
+Continuous Intergration
+^^^^^^^^^^^^^^^^^^^^^^^
+
+SunPy makes use of the `Travis CI service <https://travis-ci.org/sunpy/sunpy>`_.
+This service builds a version of SunPy and runs all the tests. It also integrates 
+with GitHub and will report the test results on any Pull Request when they are 
+submitted and when they are updated.
+
+The Travis CI server not only builds SunPy from source, but currently it builds all 
+of SunPy's dependancies from source as well using pip, all of this behaviour is 
+specified in the .travis.yml file in the root of the SunPy repo.
 
 New Functionality
 """""""""""""""""
