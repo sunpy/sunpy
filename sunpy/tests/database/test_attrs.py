@@ -401,7 +401,7 @@ def test_walker_create_fitsheader_inverted(session):
             id=9, path='/tmp', download_time=datetime(2005, 6, 15, 9))]
 
 
-@pytest.mark.slow
+@pytest.mark.online
 def test_walker_create_vso_instrument(vso_session):
     entries = walker.create(vso.attrs.Instrument('AIA'), vso_session)
     assert entries == [
@@ -432,7 +432,7 @@ def test_walker_create_vso_instrument(vso_session):
             instrument='AIA', size=66200.0, wavemin=21.1, wavemax=21.1)]
 
 
-@pytest.mark.slow
+@pytest.mark.online
 def test_walker_create_wave(vso_session):
     entries = walker.create(vso.attrs.Wave(100, 180), vso_session)
     assert len(entries) == 2
@@ -449,7 +449,7 @@ def test_walker_create_wave(vso_session):
             instrument='AIA', size=66200.0, wavemin=17.1, wavemax=17.1)]
 
 
-@pytest.mark.slow
+@pytest.mark.online
 def test_walker_create_time(vso_session):
     time = vso.attrs.Time(
         datetime(2011, 6, 8, 23, 59, 57), datetime(2011, 6, 9, 0, 0, 1))

@@ -376,7 +376,7 @@ def test_add_already_existing_entry_ignore(database):
     assert entry.id == 1
 
 
-@pytest.mark.slow
+@pytest.mark.online
 def test_add_entry_from_qr(database, query_result):
     assert len(database) == 0
     database.add_from_vso_query_result(query_result)
@@ -418,7 +418,7 @@ def test_add_entry_from_qr(database, query_result):
     assert list(database) == expected_entries
 
 
-@pytest.mark.slow
+@pytest.mark.online
 def test_add_entries_from_qr_duplicates(database, query_result):
     assert len(database) == 0
     database.add_from_vso_query_result(query_result)
@@ -427,7 +427,7 @@ def test_add_entries_from_qr_duplicates(database, query_result):
         database.add_from_vso_query_result(query_result)
 
 
-@pytest.mark.slow
+@pytest.mark.online
 def test_add_entries_from_qr_ignore_duplicates(database, query_result):
     assert len(database) == 0
     database.add_from_vso_query_result(query_result)
@@ -684,7 +684,7 @@ def test_download_unexpected_kwarg(database):
         database.download(vso.attrs.Source('SOHO'), foo=42)
 
 
-@pytest.mark.slow
+@pytest.mark.online
 def test_download_empty_query_result(database, empty_query):
     database.download(*empty_query)
     with pytest.raises(EmptyCommandStackError):
@@ -692,7 +692,7 @@ def test_download_empty_query_result(database, empty_query):
     assert len(database) == 0
 
 
-@pytest.mark.slow
+@pytest.mark.online
 def test_download(database, download_query, tmpdir):
     assert len(database) == 0
     database.default_waveunit = 'angstrom'
@@ -709,7 +709,7 @@ def test_download(database, download_query, tmpdir):
     assert len(database) == 4
 
 
-@pytest.mark.slow
+@pytest.mark.online
 def test_download_duplicates(database, download_query, tmpdir):
     assert len(database) == 0
     database.default_waveunit = 'angstrom'
@@ -731,7 +731,7 @@ def test_fetch_unexpected_kwarg(database):
         database.fetch(vso.attrs.Source('SOHO'), foo=42)
 
 
-@pytest.mark.slow
+@pytest.mark.online
 def test_fetch(database, download_query, tmpdir):
     assert len(database) == 0
     database.default_waveunit = 'angstrom'
@@ -743,7 +743,7 @@ def test_fetch(database, download_query, tmpdir):
     assert database[0].download_time == download_time
 
 
-@pytest.mark.slow
+@pytest.mark.online
 def test_disable_undo(database, download_query, tmpdir):
     entry = DatabaseEntry()
     with disable_undo(database) as db:
