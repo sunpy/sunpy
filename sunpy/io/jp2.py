@@ -53,7 +53,7 @@ def get_header(filepath):
     headers : list
         A list of headers read from the file
     """
-    jp2 = Jp2k(filename)
+    jp2 = Jp2k(filepath)
     xml_box = [box for box in jp2.box if box.box_id == 'xml ']
     xmlstring = ET.tostring(xml_box[0].xml.find('fits'))
     pydict = xml_to_dict(xmlstring)["fits"]
