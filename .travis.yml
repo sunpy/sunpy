@@ -28,6 +28,9 @@ before_install:
    - pip install pip --upgrade
 # Wheels also need a recent version of setuptools
    - pip install setuptools>=0.8 --upgrade
+# Install more upto date openjpeg library.
+   - wget http://openjpeg.googlecode.com/files/openjpeg-1.5.0-Linux-x86_64.tar.gz
+   - sudo tar -xvf openjpeg-1.5.0-Linux-x86_64.tar.gz --strip-components=1 -C /
 
 # Install all SunPy dependacies using wheels.
 install:
