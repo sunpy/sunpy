@@ -44,7 +44,7 @@ install:
    - pip install $PIP_WHEEL_COMMAND astropy
    - pip install $PIP_WHEEL_COMMAND $SUDS_PKG beautifulsoup4
    - pip install $PIP_WHEEL_COMMAND pytest 
-   - pip install glymur 
+   - pip install $PIP_WHEEL_COMMAND glymur 
 # Install SunPy and run tests.
 script:
   - python setup.py develop
