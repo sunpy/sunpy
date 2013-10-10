@@ -2,14 +2,14 @@
 Plotting in SunPy
 -----------------
 
-SunPy makes use of `matplotlib <http://matplotlib.org/>` for all of its plotting needs 
+SunPy makes use of `matplotlib <http://matplotlib.org/>`_ for all of its plotting needs 
 as such tries to follow the matplotlib plotting philosophy. 
 It is therefore useful to go over how matplotlib works as background.
 
 1. Matplotlib Tutorial
 ----------------------
 The tutorial provided here is a summary of one that can be found in the `matplotlib
-usage documentation <http://matplotlib.org/faq/usage_faq.html/>`.
+usage documentation <http://matplotlib.org/faq/usage_faq.html>`_.
 
 Matplotlib provides two main pathways for plotting. One is meant for interactive use
 (e.g. command-line) and the other for non-interactive use (e.g. modules). It is important
@@ -42,7 +42,7 @@ after the above code is executed nothing happens. Apparently, this confusing beh
 is something that the matplotlib devs get complaints about often and so this may change
 in the future (or may already have changed depending on your choice of backend). 
 A discussion about this can be found `here 
-<http://stackoverflow.com/questions/5524858/matplotlib-show-doesnt-work-twice>`.
+<http://stackoverflow.com/questions/5524858/matplotlib-show-doesnt-work-twice>`_.
 Don't be confused by another command called draw(). This is only used while in interactive
 mode. 
 
