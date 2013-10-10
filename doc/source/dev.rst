@@ -644,7 +644,7 @@ There are some tests for functions and methods in SunPy that require a
 working connection to the internet. pytest is configured in a way that it
 iterates over all tests that have been marked as *online* and checks if
 there is an established connection to the internet. If there is none, the
-test is kipped, otherwise it is run. Marking tests is pretty
+test is skipped, otherwise it is run. Marking tests is pretty
 straightforward in pytest: use the decorator ``@pytest.mark.online`` to
 mark a test function as needing an internet connection.
 
