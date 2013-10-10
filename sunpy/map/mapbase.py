@@ -913,7 +913,7 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
 
         return axes
 
-    def draw_limb(self, axes=None):
+    def draw_limb(self, axes=None, **kwargs):
         """Draws a circle representing the solar limb 
         
             Parameters
@@ -924,14 +924,25 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
             Returns
             -------
             matplotlib.axes object
+            
+            Notes
+            -----
+            keyword arguments are passed onto the Circle Patch, see:
+            http://matplotlib.org/api/artist_api.html#matplotlib.patches.Patch
+            http://matplotlib.org/api/artist_api.html#matplotlib.patches.Circle
         """
         
         if not axes:
             axes = plt.gca()
         
-        circ = patches.Circle([0, 0],
-                                  radius=self.rsun_arcseconds, fill=False,
-                                  color='white',zorder=100)
+        c_kw = {'radius':self.rsun_arcseconds,
+                'fill':False,
+                'color':'white',
+                'zorder':100
+                }
+        c_kw.update(kwargs)
+        
+        circ = patches.Circle([0, 0], **c_kw)
         axes.add_artist(circ)
         
         return axes
