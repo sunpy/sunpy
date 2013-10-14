@@ -2,6 +2,7 @@
 .pydevproject
 .settings
 .project
+*.orig
 *.pyc
 *.pyd
 *.so
