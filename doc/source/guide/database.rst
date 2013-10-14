@@ -6,8 +6,9 @@ The database package offers the possibility to save retrieved data (e.g.
 via the :mod:`sunpy.net.vso` package) onto a database. This makes it
 possible to fetch required data from the local database instead of
 downloading it again from a remote server. The package
-:mod:`sunpy.database` was developed as part of Google Summer of Code
-(GSOC) 2013.
+:mod:`sunpy.database` was developed as part of `Google Summer of Code
+(GSOC) 2013
+<http://www.google-melange.com/gsoc/homepage/google/gsoc2013>`_.
 
 1. Connecting and initializing the database
 -------------------------------------------
