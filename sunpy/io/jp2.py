@@ -7,6 +7,7 @@ __email__ = "keith.hughitt@nasa.gov"
 import os
 import subprocess
 import tempfile
+import xml.etree.cElementTree as ET
 
 from matplotlib.image import imread
 
@@ -160,7 +161,7 @@ def _which(program):
     return None
 
 class MissingOpenJPEGBinaryError(OSError):
-    """Unable to find OpenJPEG. Please ensure that OpenJPEG binaries are installed in a 
-       location within your system's search PATH, or specify the location manually.
-    """
+    """Unable to find OpenJPEG. Please ensure that OpenJPEG binaries are installed in a
+location within your system's search PATH, or specify the location manually.
+"""
     pass
