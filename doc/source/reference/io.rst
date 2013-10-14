@@ -35,6 +35,8 @@ The documentation for these submodules is avalible in the table below.
 .. autosummary::
    :toctree: generated/
 
+   io
    io.fits
    io.jp2
+   io.ana
    io.header
