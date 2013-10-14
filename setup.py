@@ -89,6 +89,7 @@ def install(setup): #pylint: disable=W0621
  #           'suds',
             'pandas>=0.10.0',
             'matplotlib>=1.1',
+            'glymur>=0.5.5',
  #           'beautifulsoup4',
         ],
         license="BSD",

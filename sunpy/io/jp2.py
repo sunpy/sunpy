@@ -7,16 +7,17 @@ __email__ = "keith.hughitt@nasa.gov"
 import os
 import subprocess
 import tempfile
-import xml.etree.cElementTree as ET
+from xml.etree import cElementTree as ET
 
 from matplotlib.image import imread
+from glymur import Jp2k
 
 from sunpy.util.xml import xml_to_dict
 from sunpy.io.header import FileHeader
 
 __all__ = ['read', 'get_header', 'write']
 
-def read(filepath, j2k_to_image='j2k_to_image'):
+def read(filepath):
     """
     Reads a JPEG2000 file
     
@@ -34,13 +35,13 @@ def read(filepath, j2k_to_image='j2k_to_image'):
         A list of (data, header) tuples
     """
     header = get_header(filepath)
-    data = _get_data(filepath, j2k_to_image=j2k_to_image)
+    data = Jp2k(filepath).read()
     
     return [(data, header[0])]
 
 def get_header(filepath):
     """
-    Reads the header form the file
+    Reads the header from the file
     
     Parameters
     ----------
@@ -52,7 +53,9 @@ def get_header(filepath):
     headers : list
         A list of headers read from the file
     """
-    xmlstring = _read_xmlbox(filepath, "fits")
+    jp2 = Jp2k(filepath)
+    xml_box = [box for box in jp2.box if box.box_id == 'xml ']
+    xmlstring = ET.tostring(xml_box[0].xml.find('fits'))
     pydict = xml_to_dict(xmlstring)["fits"]
     
     #Fix types
@@ -161,7 +164,7 @@ def _which(program):
     return None
 
 class MissingOpenJPEGBinaryError(OSError):
-    """Unable to find OpenJPEG. Please ensure that OpenJPEG binaries are installed in a
-location within your system's search PATH, or specify the location manually.
-"""
+    """Unable to find OpenJPEG. Please ensure that OpenJPEG binaries are installed in a 
+       location within your system's search PATH, or specify the location manually.
+    """
     pass
