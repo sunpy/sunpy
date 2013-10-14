@@ -23,13 +23,13 @@ class TestMap:
         #Test making a MapCube
         cube = sunpy.map.Map(a_list_of_many, cube=True)
         assert isinstance(cube, sunpy.map.MapCube)
-    
+
     def test_composite(self):
         #Test making a CompositeMap
         comp = sunpy.map.Map(sunpy.AIA_171_IMAGE, sunpy.RHESSI_IMAGE,
                          composite=True)
         assert isinstance(comp, sunpy.map.CompositeMap)
-    
+
     def test_patterns(self):
         ## Test different Map pattern matching ##
         # File name
@@ -62,10 +62,10 @@ class TestMap:
         #Custom Map
         data = np.arange(0,100).reshape(10,10)
         header = {'cdelt1': 10, 'cdelt2': 10, 'telescop':'sunpy'}
-        pair_map = sunpy.Map(data, header)
+        pair_map = sunpy.map.Map(data, header)
         assert isinstance(pair_map, sunpy.map.GenericMap)
-         
-    
+
+
     def test_save(self):
         #Test save out
         eitmap = sunpy.map.Map(a_fname)
@@ -73,7 +73,7 @@ class TestMap:
         backin = sunpy.map.Map("eit_save.fits")
         assert isinstance(backin, sunpy.map.sources.EITMap)
         os.remove("eit_save.fits")
-    
+
 #==============================================================================
 # Sources Tests
 #==============================================================================
@@ -82,36 +82,36 @@ class TestMap:
         aia = sunpy.map.Map(sunpy.AIA_171_IMAGE)
         assert isinstance(aia,sunpy.map.sources.AIAMap)
         #Test a HMIMap
-        
+
     def test_soho(self):
         #Test EITMap, LASCOMap & MDIMap
         eit = sunpy.map.Map(filepath + "/EIT/efz20040301.000010_s.fits")
         assert isinstance(eit,sunpy.map.sources.EITMap)
-    
+
         lasco = sunpy.map.Map(filepath + "/lasco_c2_25299383_s.fts")
         assert isinstance(lasco,sunpy.map.sources.LASCOMap)
-        
+
         mdi_c = sunpy.map.Map(filepath + "/mdi_fd_Ic_6h_01d.5871.0000_s.fits")
         assert isinstance(mdi_c,sunpy.map.sources.MDIMap)
-        
+
         mdi_m = sunpy.map.Map(filepath + "/mdi_fd_M_96m_01d.5874.0005_s.fits")
         assert isinstance(mdi_m,sunpy.map.sources.MDIMap)
-        
-    def test_stereo(self):    
+
+    def test_stereo(self):
         #Test EUVIMap & CORMap
         euvi = sunpy.map.Map(filepath + "/euvi_20090615_000900_n4euA_s.fts")
         assert isinstance(euvi,sunpy.map.sources.EUVIMap)
-        
+
         cor = sunpy.map.Map(filepath + "/cor1_20090615_000500_s4c1A.fts")
         assert isinstance(cor,sunpy.map.sources.CORMap)
-        
-    def test_rhessi(self):    
+
+    def test_rhessi(self):
         #Test RHESSIMap
         rhessi = sunpy.map.Map(sunpy.RHESSI_IMAGE)
         assert isinstance(rhessi,sunpy.map.sources.RHESSIMap)
-        
+
         #Test SWAPMap
-        
+
         #Test XRTMap
-        
+
         #Test SXTMap
