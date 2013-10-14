@@ -9,6 +9,7 @@ __email__ = "stuart@mumford.me.uk"
 
 import os
 from copy import copy
+import datetime
 import warnings
 
 import numpy as np
@@ -18,6 +19,9 @@ from matplotlib import patches
 from matplotlib import colors
 from matplotlib import cm
 
+from skimage import transform
+from skimage.util import img_as_float
+
 try:
     import sunpy.image.Crotate as Crotate
 except ImportError:
@@ -25,18 +29,15 @@ except ImportError:
 
 import sunpy.io as io
 import sunpy.wcs as wcs
+import sunpy.coords.util as cu
 from sunpy.util import to_signed, Deprecated
 from sunpy.visualization import toggle_pylab
-# from sunpy.io import read_file, read_file_header
 from sunpy.sun import constants
 from sunpy.time import parse_time, is_time
 from sunpy.image.rescale import reshape_image_to_4d_superpixel
 from sunpy.image.rescale import resample as sunpy_image_resample
 
-#from sunpy.util.cond_dispatch import ConditionalDispatch
-#from sunpy.util.create import Parent
-
-__all__ = ['MapBase', 'GenericMap']
+__all__ = ['NDDataStandin', 'GenericMap']
 
 """
 Questions
@@ -690,7 +691,102 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         # Create new map instance
         MapType = type(self)
         return MapType(data, meta)
-
+    
+    def transform_rotation(self, deltatime, rot_type='howard',
+                           frame_time='synodic'):
+        """
+        Apply a differential rotation transform to the map via hpc coords
+        
+        This routine will transform your image based on the suns rotation 
+        profile over the amount of time specifed.
+        
+        Parameters
+        ----------
+        
+        deltatime: datetime.timedelta or target time
+            Either a timedelta or the time to rotate to
+        
+        rot_type: {'howard' | 'snodgrass' | 'allen'}
+            howard: Use values for small magnetic features from Howard et al.
+            snodgrass: Use Values from Snodgrass et. al
+            allen: Use values from Allen, Astrophysical Quantities, 
+                    and simplier equation.
+    
+        frame_time: {'sidereal' | 'synodic'}
+            Choose 'type of day' time reference frame.
+            
+        
+        
+        Returns
+        -------
+        
+        map: sunpy.map.GenericMap
+            output map, with no header changes
+    
+        """
+        #TODO: write a diff_rot routine that takes HCC as input
+        #Scikit-image needs float arrays between 0 and 1
+            
+        #process the deltatime arg
+        if not isinstance(deltatime, datetime.timedelta):
+            deltatime = parse_time(deltatime) - self.date
+        
+        #Normalisation functions for scikit image
+        def to_norm(arr):
+            arr = img_as_float(arr)
+            if arr.min() < 0:
+                arr += arr.min()
+            arr /= arr.max()
+            return arr
+        
+        def un_norm(arr, ori):
+#            orif = img_as_float(ori)
+#            arr *= orif.max()
+#            if orif.min() < 0:
+#                arr -= orif.min()
+            return arr#.astype(ori.dtype, copy=False)
+        
+        #Transform function for warp:
+        #Note: This is the inverse transform
+        def warp_sun(xy, data, deltatime):
+            x,y = xy.T
+            
+            #Define some tuples
+            scale = [data.scale['x'], data.scale['y']]
+            ref_pix = [data.reference_pixel['x'], data.reference_pixel['y']]
+            ref_coord = [data.reference_coordinate['x'],
+                         data.reference_coordinate['y']]
+        
+            #Calculate the hpc coords
+            hpc_coords = wcs.convert_pixel_to_data(data.shape, scale,
+                                                   ref_pix, ref_coord)
+            
+            #Do the diff rot
+            rotted = cu.rot_hpc(hpc_coords[1], hpc_coords[0], data.date,
+                        parse_time(data.date)- deltatime, 
+                        frame_time=frame_time, rot_type=rot_type)
+            
+            #Go back to pixel coords
+            x2,y2 = wcs.convert_data_to_pixel(rotted[0], rotted[1], scale,
+                                              ref_pix, ref_coord)
+            
+            #Restack the data to make it correct output form
+            xy2 = np.column_stack([x2.flat,y2.flat])
+            
+            #Remove NaNs
+            mask = np.isnan(xy2)
+            xy2[mask] = 0.0
+        
+            return xy2
+        
+        #Do the warp:
+        out = transform.warp(to_norm(self.data), inverse_map=warp_sun,
+                             map_args={'data':self, 'deltatime':deltatime})
+        out = un_norm(out, self.data)
+        # Create new map instance
+        MapType = type(self)
+        return MapType(out, self.meta.copy())
+    
     def submap(self, range_a, range_b, units="data"):
         """Returns a submap of the map with the specified range
 
@@ -869,8 +965,7 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
 
         #TODO: This function could be optimized. Does not need to convert the entire image
         # coordinates
-        #lon_self, lat_self = wcs.convert_hpc_hg(rsun, dsun, angle_units = units[0], b0, l0, x, y)
-        lon_self, lat_self = wcs.convert_hpc_hg(x, y, b0_deg=b0, l0_deg=l0, dsun_meters=dsun, angle_units='arcsec')
+        lon_self, lat_self = wcs.convert_hpc_hg(rsun, dsun, units[0], units[1], b0, l0, x, y)
         # define the number of points for each latitude or longitude line
         num_points = 20
         
@@ -893,9 +988,11 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         for lat in hg_latitude_deg:
             hg_latitude_deg_mesh, hg_longitude_deg_mesh = np.meshgrid(
                 lat * np.ones(num_points), hg_longitude_deg)
-            x, y = wcs.convert_hg_hpc(hg_longitude_deg_mesh, hg_latitude_deg_mesh, b0_deg=b0, l0_deg=l0, 
-                    dsun_meters=dsun, angle_units=units[0], occultation=False)                         
-            
+            x, y = wcs.convert_hg_hpc(self.rsun_meters,
+                                      self.dsun, self.heliographic_latitude,
+                                      self.heliographic_longitude,
+                                      hg_longitude_deg_mesh,
+                                      hg_latitude_deg_mesh, units='arcsec')
             axes.plot(x, y, color='white', linestyle='dotted',zorder=100)
             
         hg_longitude_deg = np.arange(lon_range[0], lon_range[1]+grid_spacing, grid_spacing)
@@ -905,8 +1002,11 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         for lon in hg_longitude_deg:
             hg_longitude_deg_mesh, hg_latitude_deg_mesh = np.meshgrid(
                 lon * np.ones(num_points), hg_latitude_deg)
-            x, y = wcs.convert_hg_hpc(hg_longitude_deg_mesh, hg_latitude_deg_mesh, b0_deg=b0, l0_deg=l0, 
-                    dsun_meters=dsun, angle_units=units[0], occultation=False)                         
+            x, y = wcs.convert_hg_hpc(self.rsun_meters,
+                                      self.dsun, self.heliographic_latitude,
+                                      self.heliographic_longitude,
+                                      hg_longitude_deg_mesh,
+                                      hg_latitude_deg_mesh, units='arcsec')
             axes.plot(x, y, color='white', linestyle='dotted',zorder=100)
             
         axes.set_ylim(self.yrange)

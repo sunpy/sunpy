@@ -11,6 +11,7 @@ from sunpy.map import GenericMap
 
 from sunpy.visualization import plotting
 from sunpy.util import expand_list
+from sunpy.time import parse_time
 
 __all__ = ['MapCube']
 
@@ -69,8 +70,8 @@ class MapCube(object):
                 raise ValueError("That coalignment method is not supported")
 
         if derotate:
-            self._derotate()
-
+            self._derotate(method=derotate)
+            
     def __getitem__(self, key):
         """Overiding indexing operation"""
         return self._maps[key]
@@ -112,10 +113,100 @@ class MapCube(object):
     def _sort_by_date(cls):
         return lambda m: m.date # maps.sort(key=attrgetter('date'))
     
-    def _derotate(self):
-        """Derotates the layers in the MapCube"""
-        pass
+    def derotate(self, time, method='warp_all', frame_time='synodic', 
+                 rot_type='howard', copy=False):
+        """
+        Derotates the layers in the MapCube to one common time
+
+        Parameters
+        ----------        
+        time: int, str, or datetime
+            Time or map index to rotate all images to.
+            If integer specified it will be taken as a mapcube index, otherwise
+            it will be passed to parse_time.
+                
+        method: str - {'warp_all'}
+            transform method to be used
+        
+        rot_type: {'howard' | 'snodgrass' | 'allen'}
+            howard: Use values for small magnetic features from Howard et al.
+            snodgrass: Use Values from Snodgrass et. al
+            allen: Use values from Allen, Astrophysical Quantities, 
+                    and simplier equation.
     
+        frame_time: {'sidereal' | 'synodic'}
+            Choose 'type of day' time reference frame.
+            
+        copy: bool default: False
+            If true will return a new map_cube
+        
+        Returns
+        -------
+        New MapCube if copy is True else, None.
+        """
+        #Parse the time input
+        if not isinstance(time, int):
+            time = parse_time(time)
+        
+        if method == "warp_all":
+            return self._derotate_all_pix(time, rot_type=rot_type, 
+                                          frame_time=frame_time, copy=copy)
+                                            
+    
+    def _derotate_all_pix(self, time, frame_time='synodic', rot_type='howard',
+                          copy=False):
+        """
+        De-rotate map cube to one common time
+
+        Parameters
+        ----------
+        time: int or datetime
+            The time to rotate all the images to, if specified as an integer, 
+            will use used as an index of the mapcube and rotate all the images
+            to that time.
+        
+        rot_type: {'howard' | 'snodgrass' | 'allen'}
+            howard: Use values for small magnetic features from Howard et al.
+            snodgrass: Use Values from Snodgrass et. al
+            allen: Use values from Allen, Astrophysical Quantities, 
+                    and simplier equation.
+    
+        frame_time: {'sidereal' | 'synodic'}
+            Choose 'type of day' time reference frame.
+        
+        copy: bool default: False
+            If true will return a new map_cube
+        
+        
+        Returns
+        -------
+        New MapCube if copy is True else, None.
+        
+        Notes
+        -----
+        This method calculates the latitude shift for all pixels via a 
+        transform into hpc coordinates. For large images this can take up to
+        60 seconds per frame.
+        """
+        #Create a list of time deltas
+        if isinstance(time, int):
+            time = parse_time(self._maps[time].date)
+
+        tdeltas = []
+        for amap in self._maps:
+            tdeltas.append(time - parse_time(amap.date))
+            print tdeltas[-1]
+            
+        new_maps = []
+        for amap, tdelta in zip(self._maps, tdeltas):
+            new_maps.append(amap.transform_rotation(tdelta, rot_type=rot_type,
+                            frame_time=frame_time))
+        
+        if copy:
+            return MapCube(new_maps)
+        else:
+            self._maps = new_maps
+        
     def plot(self, gamma=None, annotate=True, axes=None, controls=True,
              interval=200, resample=False, colorbar=False,
              **ani_args):
@@ -223,7 +314,8 @@ class MapCube(object):
         
         divider = make_axes_locatable(axes)
         cax = divider.append_axes("right", size="5%", pad=0.2)
-        cbar = plt.colorbar(im,cax)
+        if colorbar:
+            cbar = plt.colorbar(im,cax)
         
         if resample:
             #This assumes that the maps a homogenous!
