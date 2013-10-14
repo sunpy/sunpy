@@ -13,7 +13,6 @@ import pytest
 import datetime
 import sunpy
 import sunpy.lightcurve
-#import unittest
 from sunpy.data.test import (EVE_AVERAGES_CSV)
 
 # Generate input test data
