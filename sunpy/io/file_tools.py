@@ -2,19 +2,21 @@ from __future__ import absolute_import
 
 import re
 
-from sunpy.io import fits, jp2
+from sunpy.io import fits, jp2, ana
 
 __all__ = ['read_file', 'read_file_header', 'write_file']
 
 # File formats supported by SunPy
 _known_extensions = {
     ('fts', 'fits'): fits,
-    ('jp2', 'j2k', 'jpc', 'jpt'): jp2
+    ('jp2', 'j2k', 'jpc', 'jpt'): jp2,
+	('fz', 'f0'): ana
 }
 
 _readers = {
             'fits':fits,
-            'jp2':jp2
+            'jp2':jp2,
+			'fz':ana
 }
 
 def read_file(filepath, filetype=None, **kwargs):

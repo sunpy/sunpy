@@ -10,16 +10,15 @@ SunPy Documentation
 .. ============
 .. * `Python 2.6+ <http://www.python.org/getit/releases/>`_
 .. * `NumPy/SciPy <http://numpy.scipy.org/>`_
-.. * `Matplotlib <http://matplotlib.sourceforge.net/>`__
-.. * `PyFITS <http://www.stsci.edu/resources/software_hardware/pyfits>`_
-.. * `Suds <https://fedorahosted.org/suds/>`__
+.. * `Matplotlib <http://matplotlib.sourceforge.net/>`_
+.. * `Astropy <http://astropy.org/>`_
 .. * `pandas <http://pandas.pydata.org/>`_
-.. * `beautifulsoup4 <http://www.crummy.com/software/BeautifulSoup/>`_
 
 .. Optional Dependencies
 .. =====================
 .. * `OpenJPEG <http://www.openjpeg.org/>`_
-.. * `PIL <http://www.pythonware.com/products/pil/>`_
+.. * `beautifulsoup4 <http://www.crummy.com/software/BeautifulSoup/>`_
+.. * `Suds <https://fedorahosted.org/suds/>`_
 
 Documentation
 =============
