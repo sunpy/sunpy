@@ -30,7 +30,8 @@ except ImportError:
 import sunpy.io as io
 import sunpy.wcs as wcs
 import sunpy.coords.util as cu
-from sunpy.util import toggle_pylab, Deprecated
+from sunpy.util import to_signed, Deprecated
+from sunpy.visualization import toggle_pylab
 from sunpy.sun import constants
 from sunpy.time import parse_time, is_time
 from sunpy.image.rescale import reshape_image_to_4d_superpixel

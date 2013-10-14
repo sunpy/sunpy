@@ -9,7 +9,8 @@ from copy import copy
 
 from sunpy.map import GenericMap
 
-from sunpy.util import plotting, expand_list
+from sunpy.visualization import plotting
+from sunpy.util import expand_list
 from sunpy.time import parse_time
 
 __all__ = ['MapCube']
