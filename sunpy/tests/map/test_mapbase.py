@@ -5,6 +5,8 @@ from __future__ import absolute_import
 
 #pylint: disable=C0103,R0904,W0201,W0212,W0232,E1103
 import sunpy
+import sunpy.map
+
 try:
     import astropy.io.fits as pyfits
 except ImportError:
@@ -15,7 +17,7 @@ class TestGenericMap:
     """Tests the Map class"""
     def setup_class(self):
         self.file = sunpy.AIA_171_IMAGE
-        self.map = sunpy.Map(self.file)
+        self.map = sunpy.map.Map(self.file)
         self.fits = pyfits.open(self.file)
         self.fits.verify('silentfix')
         
