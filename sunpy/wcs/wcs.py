@@ -277,14 +277,17 @@ def convert_hcc_hpc(x, y, dsun_meters=None, angle_units='arcsec'):
         
     return hpcx, hpcy
 
-def convert_hcc_hg(x, y, b0_deg=0, l0_deg=0):
+def convert_hcc_hg(x, y, z=None, b0_deg=0, l0_deg=0):
     """Convert from Heliocentric-Cartesian (HCC) (given in arcsec) to Heliographic 
     coordinates (HG) given in degrees.
     
     Parameters
     ----------
     x, y : float (meters)
-        Data coordinate in meters. Z unit is assumed to be on the Sun.
+        Data coordinate in meters.
+    z : float (meters)
+        Data coordinate in meters.  If None, then the z-coordinate is assumed
+        to be on the Sun.
     b0_deg : float (degrees)
         Tilt of the solar North rotational axis toward the observer 
         (heliographic latitude of the observer). Usually given as SOLAR_B0, 
@@ -304,14 +307,15 @@ def convert_hcc_hg(x, y, b0_deg=0, l0_deg=0):
     --------
     
     """
-    z = np.sqrt(rsun_meters**2 - x**2 - y**2)
+    if z is None:
+        zz = np.sqrt(rsun_meters**2 - x**2 - y**2)
 
     cosb = np.cos(np.deg2rad(b0_deg))
     sinb = np.sin(np.deg2rad(b0_deg))
 
-    hecr = np.sqrt(x**2 + y**2 + z**2)
-    hgln = np.arctan2(x, z * cosb - y * sinb) + np.deg2rad(l0_deg)
-    hglt = np.arcsin((y * cosb + z * sinb) / hecr)
+    hecr = np.sqrt(x**2 + y**2 + zz**2)
+    hgln = np.arctan2(x, zz * cosb - y * sinb) + np.deg2rad(l0_deg)
+    hglt = np.arcsin((y * cosb + zz * sinb) / hecr)
     
     return np.rad2deg(hgln), np.rad2deg(hglt)
 
