@@ -277,10 +277,11 @@ def convert_hcc_hpc(x, y, dsun_meters=None, angle_units='arcsec'):
         
     return hpcx, hpcy
 
-def convert_hcc_hg(x, y, z=None, b0_deg=0, l0_deg=0):
-    """Convert from Heliocentric-Cartesian (HCC) (given in arcsec) to Heliographic 
-    coordinates (HG) given in degrees.
-    
+def convert_hcc_hg(x, y, z=None, b0_deg=0, l0_deg=0, radius=False):
+    """Convert from Heliocentric-Cartesian (HCC) (given in meters) to
+    Heliographic coordinates (HG) given in degrees, with radial output in
+    meters.
+
     Parameters
     ----------
     x, y : float (meters)
@@ -294,34 +295,46 @@ def convert_hcc_hg(x, y, z=None, b0_deg=0, l0_deg=0):
         HGLT_OBS, or CRLT_OBS. Default is 0.
     l0_deg : float (degrees)
         Carrington longitude of central meridian as seen from Earth. Default is 0.
-           
+    radius : Bool
+        If true, forces the output to return a triple of (lon, lat, r). If
+        false, return (lon, lat) only.
+
     Returns
     -------
-    out : ndarray (degrees)
-        The  data coordinates (lon, lat) in heliographic coordinates in degrees.
+    out : ndarray (degrees, meters)
+        if radius is false, return the data coordinates (lon, lat).  If
+        radius=True, return the data cordinates (lon, lat, r).  The quantities
+        (lon, lat) are the heliographic coordinates in degrees.  The quantity
+        'r' is the heliographic radius in meters.
     
     Notes
     -----
+    Implements Eq. (12) of Thompson (2006), A&A, 449, 791.
             
     Examples
     --------
-    
+    >>> sunpy.wcs.convert_hcc_hg(230000.0,45000000.0, z= 695508000.0+8000000.0)
+    (0.01873188196651189, 3.6599471896203317, 704945784.41465974)
     """
     if z is None:
-        zz = np.sqrt(rsun_meters**2 - x**2 - y**2)
+        z = np.sqrt(rsun_meters**2 - x**2 - y**2) 
 
     cosb = np.cos(np.deg2rad(b0_deg))
     sinb = np.sin(np.deg2rad(b0_deg))
 
-    hecr = np.sqrt(x**2 + y**2 + zz**2)
-    hgln = np.arctan2(x, zz * cosb - y * sinb) + np.deg2rad(l0_deg)
-    hglt = np.arcsin((y * cosb + zz * sinb) / hecr)
-    
-    return np.rad2deg(hgln), np.rad2deg(hglt)
+    hecr = np.sqrt(x**2 + y**2 + z**2)
+    hgln = np.arctan2(x, z * cosb - y * sinb) + np.deg2rad(l0_deg)
+    hglt = np.arcsin((y * cosb + z * sinb) / hecr)
 
-def convert_hg_hcc(hglon_deg, hglat_deg, b0_deg=0, l0_deg=0, occultation=False, z=False):
+    if radius:
+        return np.rad2deg(hgln), np.rad2deg(hglt), hecr
+    else:
+        return np.rad2deg(hgln), np.rad2deg(hglt)
+
+def convert_hg_hcc(hglon_deg, hglat_deg, b0_deg=0, l0_deg=0, occultation=False,
+                   z=False, r=rsun_meters):
     """Convert from Heliographic coordinates (given in degrees) to 
-    Heliocentric-Cartesian coordinates.
+    Heliocentric-Cartesian coordinates (given in meters)
     
     Parameters
     ----------
@@ -337,6 +350,8 @@ def convert_hg_hcc(hglon_deg, hglat_deg, b0_deg=0, l0_deg=0, occultation=False, 
         If true set all points behind the Sun (e.g. not visible) to Nan.
     z : Bool
         If true return the z coordinate as well.
+    r : float (meters)
+        Heliographic radius
     
     Returns
     -------
@@ -345,7 +360,9 @@ def convert_hg_hcc(hglon_deg, hglat_deg, b0_deg=0, l0_deg=0, occultation=False, 
     
     Notes
     -----
-    
+    Implements Eq.(11) of Thompson (2006), A&A, 449, 791, with the default
+    assumption that the value 'r' in Eq. (11) is identical to the radius of the
+    Sun.
                 
     Examples
     --------
@@ -365,9 +382,9 @@ def convert_hg_hcc(hglon_deg, hglat_deg, b0_deg=0, l0_deg=0, occultation=False, 
     siny = np.sin(lat)
     
     # Perform the conversion.
-    x = rsun_meters * cosy * sinx
-    y = rsun_meters * (siny * cosb - cosy * cosx * sinb)
-    zz = rsun_meters * (siny * sinb + cosy * cosx * cosb)
+    x = r * cosy * sinx
+    y = r * (siny * cosb - cosy * cosx * sinb)
+    zz = r * (siny * sinb + cosy * cosx * cosb)
     
     if occultation:
         x[zz < 0] = np.nan
