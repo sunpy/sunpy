@@ -9,7 +9,7 @@ from copy import copy
 
 from sunpy.map import GenericMap
 
-from sunpy.util import plotting
+from sunpy.visualization import plotting
 from sunpy.util import expand_list
 
 __all__ = ['MapCube']
