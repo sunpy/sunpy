@@ -323,7 +323,7 @@ class CompositeMap(object):
                 "origin": "lower",
                 "extent": m.xrange + m.yrange,
                 "cmap": m.cmap,
-                "norm": m.norm(),
+                "norm": m.norm,
                 "alpha": m.alpha,
                 "zorder": m.zorder,
             }
