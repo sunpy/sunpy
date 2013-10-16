@@ -205,4 +205,11 @@ class TestGenericMap:
         fig = plt.figure()
         aiamap.plot()
         #Compare plots
-        helpers.plot_comparison(fig, "sunpy_AIA_171_test.png")
+        helpers.plot_comparison(fig, "sunpy_AIA_171_plot.png")
+
+    def test_peek(self):
+        aiamap = sunpy.map.Map(sunpy.AIA_171_IMAGE)
+        fig = plt.figure()
+        aiamap.peek()
+        #Compare plots
+        helpers.plot_comparison(fig, "sunpy_AIA_171_peek.png")
