@@ -313,7 +313,8 @@ def convert_hcc_hg(x, y, z=None, b0_deg=0, l0_deg=0, radius=False):
             
     Examples
     --------
-    >>> sunpy.wcs.convert_hcc_hg(230000.0,45000000.0, z= 695508000.0+8000000.0)
+    >>> sunpy.wcs.convert_hcc_hg(230000.0,45000000.0,
+    z=695508000.0 + 8000000.0, radius=True)
     (0.01873188196651189, 3.6599471896203317, 704945784.41465974)
     """
     if z is None:
