@@ -366,7 +366,9 @@ def convert_hg_hcc(hglon_deg, hglat_deg, b0_deg=0, l0_deg=0, occultation=False,
                 
     Examples
     --------
-    
+    >>> sunpy.wcs.convert_hg_hcc(0.01873188196651189, 3.6599471896203317,
+    r=704945784.41465974, z=True)
+    (230000.0, 45000000.0, 703508000.0)
     """
     lon = np.deg2rad(hglon_deg)
     lat = np.deg2rad(hglat_deg)
