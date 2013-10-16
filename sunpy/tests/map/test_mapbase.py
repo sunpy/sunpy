@@ -165,7 +165,6 @@ class TestGenericMap:
 
 
     def test_superpixel(self):
-
         dimensions = (2, 2)
         superpixel_map_sum = self.map.superpixel(dimensions)
         assert superpixel_map_sum.shape[0] == self.map.shape[0]/dimensions[1]
@@ -180,7 +179,6 @@ class TestGenericMap:
 
 
     def test_rotate(self):
-
         rotated_map_1 = self.map.rotate(0.5)
         rotated_map_2 = rotated_map_1.rotate(0.5)
         rotated_map_3 = self.map.rotate(0, 1.5)
