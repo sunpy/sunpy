@@ -3,12 +3,15 @@ Map tests
 """
 from __future__ import absolute_import
 
-#pylint: disable=C0103,R0904,W0201,W0212,W0232,E1103
 import sunpy
 import sunpy.map
 
 from astropy.io import fits
 import numpy as np
+import matplotlib.pyplot as plt
+
+import sunpy
+import sunpy.tests.helpers as helpers
 
 class TestGenericMap:
     """Tests the Map class"""
@@ -196,3 +199,10 @@ class TestGenericMap:
         # of pi/2
         assert int(rotated_map_3.mean()) == int(rotated_map_4.mean()) == int(rotated_map_5.mean())
         assert int(rotated_map_3.std()) == int(rotated_map_4.std()) == int(rotated_map_5.std())
+    
+    def test_plot(self):
+        aiamap = sunpy.map.Map(sunpy.AIA_171_IMAGE)
+        fig = plt.figure()
+        aiamap.plot()
+        #Compare plots
+        helpers.plot_comparison(fig, "sunpy_AIA_171_test.png")
