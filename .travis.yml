@@ -37,7 +37,7 @@ install:
 # Install Numpy first so we force the version we are using
    - pip install $PIP_WHEEL_COMMAND numpy==$NUMPY_VERSION
    - pip install $PIP_WHEEL_COMMAND matplotlib==$MATPLOTLIB_VERSION
-   - pip install scipy
+   - pip install $PIP_WHEEL_COMMAND scipy
 # Manually install pandas deps due to a pip 1.4 / pytz bug
    - pip install $PIP_WHEEL_COMMAND pytz==2013b python-dateutil
    - pip install $PIP_WHEEL_COMMAND pandas==$PANDAS_VERSION
