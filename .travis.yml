@@ -23,7 +23,7 @@ before_install:
    - if [[ $TRAVIS_PYTHON_VERSION == '2.6' ]]; then SUDS_PKG='suds' ;fi
 # Make sure the system is upto date and install scipy requirements
    - sudo apt-get update -qq
-   - sudo apt-get install -qq libatlas-dev liblapack-dev
+   - sudo apt-get install -qq libatlas-dev liblapack-dev gfortran
 # Make sure pip is at the latest version (>1.4 for wheels)
    - pip install pip --upgrade
 # Wheels also need a recent version of setuptools
@@ -37,7 +37,7 @@ install:
 # Install Numpy first so we force the version we are using
    - pip install $PIP_WHEEL_COMMAND numpy==$NUMPY_VERSION
    - pip install $PIP_WHEEL_COMMAND matplotlib==$MATPLOTLIB_VERSION
-   - pip install $PIP_WHEEL_COMMAND scipy
+   - pip install scipy
 # Manually install pandas deps due to a pip 1.4 / pytz bug
    - pip install $PIP_WHEEL_COMMAND pytz==2013b python-dateutil
    - pip install $PIP_WHEEL_COMMAND pandas==$PANDAS_VERSION
