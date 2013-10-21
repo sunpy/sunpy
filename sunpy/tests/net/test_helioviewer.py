@@ -56,5 +56,5 @@ class TestHelioviewerClient:
         filepath = self.client.download_jp2('2020/01/01', observatory='SOHO', 
                                             instrument='MDI', detector='MDI',
                                             measurement='continuum')
-        map_ = sunpy.Map(filepath)
+        map_ = sunpy.map.Map(filepath)
         assert isinstance(map_, sunpy.map.GenericMap)
