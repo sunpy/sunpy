@@ -20,13 +20,21 @@ To start a new connection to an already existing or to a new database,
 instantiate a new :class:`Database` object. The first parameter of
 ``Database`` receives one mandatory argument: A URL which describes how to
 connect to the database. This value is directly passed to
-:func:`sqlalchemy.create_engine`; refer to its documentation for more
-information about the allowed syntax. The database object in our example
-connects to a new SQLite database with the file name "sunpydata.sqlite" in
-the current directory. Note that a connection is only established when
-it's really needed, i.e. if some query is sent to the database to read
-from it. Transactions can also be committed explicitly using the
-:meth:`Database.commit` method.
+:func:`sqlalchemy.create_engine`. The supported formal of this URL is
+described by the documentation of :func:`sqlalchemy.create_engine` as
+follows:
+
+    "The string form of the URL is
+    ``dialect+driver://user:password@host/dbname[?key=value..]``, where
+    dialect is a database name such as ``mysql``, ``oracle``, ``postgresql``,
+    etc., and driver the name of a DBAPI, such as ``psycopg2``,
+    ``pyodbc``, ``cx_oracle``, etc."
+
+The database object in our example connects to a new SQLite database with
+the file name "sunpydata.sqlite" in the current directory. Note that a
+connection is only established when it's really needed, i.e. if some query
+is sent to the database to read from it. Transactions can also be
+committed explicitly using the :meth:`Database.commit` method.
 
     >>> from sunpy.database import Database
     >>> database = Database('sqlite:///sunpydata.sqlite')
