@@ -242,9 +242,6 @@ class GenericMap(NDDataStandin):
         # Validate header
         # TODO: This should be a function of the header, not of the map
         self._validate()
-        
-        #Define a matplotlib.colors.Normalize instance
-        self.norm = None
 
     def __getitem__(self, key):
         """ This should allow indexing by physical coordinate """
@@ -402,7 +399,7 @@ Dimension:\t [%d, %d]
     def rotation_angle(self):
         return {'x': self.meta.get('crota1', 0.),
                 'y': self.meta.get('crota2', 0.),}
-            
+
 # #### Miscellaneous #### #
     
     def _fix_date(self):
@@ -1066,7 +1063,7 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         
         kwargs = {'origin':'lower',
                   'cmap':cmap,
-                  'norm':self.norm,
+                  'norm':self.norm(),
                   'extent':extent,
                   'interpolation':'nearest'}
         kwargs.update(imshow_args)
@@ -1075,7 +1072,11 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         
         #Set current image (makes colorbar work)
         plt.sci(ret)
-        return ret    
+        return ret
+
+    def norm(self):
+        """Default normalization method. Not yet implemented."""
+        return None       
         
 
 class InvalidHeaderInformation(ValueError):
