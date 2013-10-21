@@ -116,9 +116,9 @@ class MapCube(object):
         """Derotates the layers in the MapCube"""
         pass
     
-    def plot(self, gamma=None, annotate=True, axes=None, controls=True,
-             interval=200, resample=False, colorbar=False,
-             **ani_args):
+    def plot(self, gamma=None, annotate=True, axes=None, controls=False,
+             interval=200, resample=False, colorbar=False, ani_args={},
+             **imshow_args):
         """
         A animation plotting routine that animates each element in the
         MapCube
@@ -149,11 +149,13 @@ class MapCube(object):
         
         colorbar: bool
             Draw a colorbar on the plot.
-        
-        **ani_args : dict
+
+        ani_args : dict
+            Passed to sunpy.util.plotting.ControlFuncAnimation
+
+         **imshow_args: dict
             Any additional imshow arguments that should be used
-            when plotting the image. Passed to 
-            sunpy.util.plotting.ControlFuncAnimation
+            when plotting the image.
         
         Examples
         --------
@@ -211,10 +213,10 @@ class MapCube(object):
         
         kwargs = {'origin':'lower',
                   'cmap':cmap,
-                  'norm':self[0].norm(),
+                  'norm':self[0].norm,
                   'extent':extent,
                   'interpolation':'nearest'}
-        kwargs.update(ani_args)
+        kwargs.update(imshow_args)
         
         im = axes.imshow(self[0].data, **kwargs)
         
@@ -237,7 +239,7 @@ class MapCube(object):
             im = args[0]
             im.set_array(args[2][i].data)
             im.set_cmap(self[i].cmap)
-            im.set_norm(self[i].norm())
+            im.set_norm(self[i].norm)
             if args[1]:
                 axes.set_title("%s %s" % (self[i].name, self[i].date))
         
@@ -245,7 +247,7 @@ class MapCube(object):
                                             frames=xrange(0,len(self._maps)),
                                             fargs=[im,annotate,ani_data],
                                             interval=interval,
-                                            blit=False,**ani_args)
+                                            blit=False)
         if controls:
             axes, bax1, bax2, bax3 = plotting.add_controls(axes=axes)
 
