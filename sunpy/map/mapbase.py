@@ -399,8 +399,7 @@ Dimension:\t [%d, %d]
     def rotation_angle(self):
         return {'x': self.meta.get('crota1', 0.),
                 'y': self.meta.get('crota2', 0.),}
-    
-            
+
 # #### Miscellaneous #### #
     
     def _fix_date(self):
