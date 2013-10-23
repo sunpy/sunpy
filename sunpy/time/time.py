@@ -7,6 +7,7 @@ __all__ = ['find_time', 'extract_time', 'parse_time', 'is_time', 'day_of_year', 
 # Mapping of time format codes to regular expressions.
 REGEX = {
     '%Y': '(?P<year>\d{4})',
+    '%j': '(?P<dayofyear>\d{3})',
     '%m': '(?P<month>\d{1,2})',
     '%d': '(?P<day>\d{1,2})',
     '%H': '(?P<hour>\d{1,2})',
@@ -37,6 +38,8 @@ TIME_FORMAT_LIST = [
     "%Y/%m/%d",                # Example 2007/05/04
     "%d-%b-%Y",                # Example 04-May-2007
     "%Y%m%d_%H%M%S",           # Example 20070504_210812
+    "%Y:%j:%H:%M:%S",          # Example 2012:124:21:08:12
+    "%Y:%j:%H:%M:%S.%f",       # Example 2012:124:21:08:12.999999
 ]
 
 

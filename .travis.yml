@@ -23,12 +23,12 @@ before_install:
    - if [[ $TRAVIS_PYTHON_VERSION == '2.6' ]]; then SUDS_PKG='suds' ;fi
 # Make sure the system is upto date and install scipy requirements
    - sudo apt-get update -qq
-   - sudo apt-get install -qq libatlas-dev liblapack-dev
+   - sudo apt-get install -qq libatlas-dev liblapack-dev gfortran
 # Make sure pip is at the latest version (>1.4 for wheels)
    - pip install pip --upgrade
 # Wheels also need a recent version of setuptools
    - pip install setuptools>=0.8 --upgrade
-# Install more upto date openjpeg binaries.
+# Install more upto date openjpeg library.
    - wget http://openjpeg.googlecode.com/files/openjpeg-1.5.0-Linux-x86_64.tar.gz
    - sudo tar -xvf openjpeg-1.5.0-Linux-x86_64.tar.gz --strip-components=1 -C /
 
@@ -44,6 +44,7 @@ install:
    - pip install $PIP_WHEEL_COMMAND astropy
    - pip install $PIP_WHEEL_COMMAND $SUDS_PKG beautifulsoup4
    - pip install $PIP_WHEEL_COMMAND pytest 
+   - pip install $PIP_WHEEL_COMMAND glymur 
 # Install SunPy and run tests.
 script:
   - python setup.py develop

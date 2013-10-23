@@ -40,14 +40,7 @@ from __future__ import absolute_import
 
 __version__ = 0.3
 
-import sunpy.map
-import sunpy.sun
-import sunpy.lightcurve
-
-from sunpy.map.map_factory import Map, make_map
-
 from sunpy.util.config import load_config, print_config
-from sunpy.cm import *
 
 # Sample data
 from sunpy.data.sample import (AIA_171_IMAGE, RHESSI_IMAGE, EIT_195_IMAGE, 
