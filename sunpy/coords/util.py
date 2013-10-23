@@ -177,7 +177,7 @@ point of view and the STEREO A, B point of views.
 
     newx, newy = convert_hg_hpc(longitude + drot, latitude,b0_deg=vend["b0"],
                                 l0_deg=vend["l0"],
-                       sun_meters=constants.au * sun.sunearth_distance(t=dend),
+                                dsun_meters=constants.au * sun.sunearth_distance(t=dend),
                                 angle_units='arcsec', occultation=False)
 
     return newx, newy

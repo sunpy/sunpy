@@ -58,5 +58,5 @@ class TestDiffRot():
     def test_rot_hpc(self):
         # testing along the Sun-Earth line, observer is on the Earth
         x, y = rot_hpc(451.4, -108.9, '2012-06-15', '2012-06-15 16:05:23')
-        np.testing.assert_almost_equal(x, 574.2, decimal=1)
-        np.testing.assert_almost_equal(y, -108.4, decimal=1)
+        np.testing.assert_almost_equal(x, 573.9, decimal=1)
+        np.testing.assert_almost_equal(y, -108.3, decimal=1)
