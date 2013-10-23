@@ -18,6 +18,8 @@ from matplotlib import patches
 from matplotlib import colors
 from matplotlib import cm
 
+import astropy.nddata
+
 try:
     import sunpy.image.Crotate as Crotate
 except ImportError:
@@ -46,66 +48,7 @@ or something else?)
 * Should 'center' be renamed to 'offset' and crpix1 & 2 be used for 'center'?
 """
 
-class NDDataStandin(object):
-    
-    def __init__(self, data, meta, **kwargs):
-        """ Instantiate a Map class.
-        
-        Parameters
-        ----------
-        
-        data: ndarray
-        
-        meta: sunpy.map.MapMeta
-        
-        Returns
-        -------
-        A MapBase object
-        """
-        
-        self.meta = meta
-        self.data = data
-    
-    @property
-    def shape(self):
-        return self.data.shape
-    
-    @property
-    def dtype(self):
-        return self.data.dtype
-        
-    @property
-    def size(self):
-        return self.data.size
-        
-    @property
-    def ndim(self):
-        return self.data.ndim
-    
-    def std(self, *args, **kwargs):
-        return self.data.std(*args, **kwargs)
-    
-    def mean(self, *args, **kwargs):
-        return self.data.mean(*args, **kwargs)
-    
-    def min(self, *args, **kwargs):
-        return self.data.min(*args, **kwargs)
-        
-    def max(self, *args, **kwargs):
-        return self.data.max(*args, **kwargs)
-        
-    @property
-    def header(self):
-        warnings.warn("""map.header has been renamed to map.meta
-        for compatability with astropy, please use meta instead""", Warning)
-        return self.meta
-    
-    @Deprecated("get_header is no longer supported please use map.meta")
-    def get_header(self):
-        return self.meta
-    
-
-class GenericMap(NDDataStandin):
+class GenericMap(astropy.nddata.NDData):
     """
     A Generic spatially-aware 2D data array
 
@@ -226,7 +169,7 @@ class GenericMap(NDDataStandin):
     
     def __init__(self, data, header, **kwargs):
         
-        NDDataStandin.__init__(self, data, header, **kwargs)
+        astropy.nddata.NDData.__init__(self, data, meta=header, **kwargs)
         
         # Correct possibly missing meta keywords
         self._fix_date()
@@ -270,6 +213,16 @@ Dimension:\t [%d, %d]
        self.date, self.exposure_time,
        self.data.shape[1], self.data.shape[0], self.scale['x'], self.scale['y']) 
      + self.data.__repr__())
+     
+
+    #Some numpy extraction
+        
+    def std(self, *args, **kwargs):
+        return self.data.std(*args, **kwargs)
+    
+    def mean(self, *args, **kwargs):
+        return self.data.mean(*args, **kwargs)
+     
 
 # #### Keyword attribute and other attribute definitions #### #
 
