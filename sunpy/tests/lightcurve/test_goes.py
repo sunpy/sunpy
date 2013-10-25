@@ -3,11 +3,12 @@ GOES LightCurve Tests
 """
 from __future__ import absolute_import
 
-import unittest
+import pytest
 import sunpy.lightcurve
 
-class TestGOESLightCurve(unittest.TestCase):
+class TestGOESLightCurve():
     
+    @pytest.mark.online
     def test_goes_range(self):
        lc1 = sunpy.lightcurve.GOESLightCurve.create('2012/06/01','2012/06/02')
        
@@ -18,6 +19,8 @@ class TestGOESLightCurve(unittest.TestCase):
             (lc1.data == lc2.data)
         except:
             raise Exception
+
+    @pytest.mark.online
     def test_filename(self):
         lc1 = sunpy.lightcurve.GOESLightCurve.create('2012/06/01','2012/06/02')
         lc2 = sunpy.lightcurve.GOESLightCurve.create('2012/06/03','2012/06/04')

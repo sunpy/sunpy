@@ -31,7 +31,7 @@ def test_simpleattr_apply():
     va.walker.apply(a, None, dct)
     assert dct['test'] == 1
 
-
+@pytest.mark.online
 def test_simpleattr_create(client):
     a = attr.ValueAttr({('instrument', ): 'eit'})
     assert va.walker.create(a, client.api)[0].instrument == 'eit'
@@ -64,6 +64,7 @@ def test_complexattr_apply():
     assert dct['test'] == {'foo': 'a', 'bar': 'b'}
 
 
+@pytest.mark.online
 def test_complexattr_create(client):
     a = attr.ValueAttr({('time', 'start'): 'test'})
     assert va.walker.create(a, client.api)[0].time.start == 'test'

@@ -26,12 +26,14 @@ class TestHelioviewerClient:
     def teardown_class(self):
         self.client = None
     
+    @pytest.mark.online
     @pytest.mark.skipif("__SKIP_TESTS__ is True")
     def test_get_datasources(self):
         """Makes sure datasource query returns a valid result and source id
         is casted to an integer"""
         assert type(self.sources['SDO']['AIA']['AIA']['171']['sourceId']) is int
-        
+    
+    @pytest.mark.online
     @pytest.mark.skipif("__SKIP_TESTS__ is True")
     def test_get_closest_image(self):
         """Tests getClosestImage API method"""
@@ -49,7 +51,8 @@ class TestHelioviewerClient:
         im2 = self.client.get_closest_image('1994/01/01', sourceId=source_id)
         
         assert im1 == im2
-        
+    
+    @pytest.mark.online
     @pytest.mark.skipif("__SKIP_TESTS__ is True")
     def test_download_jp2(self):
         """Tests getJP2Image API method"""
