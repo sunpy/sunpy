@@ -8,6 +8,8 @@ import os
 import glob
 import numpy as np
 
+import pytest
+
 import sunpy
 import sunpy.map
 import sunpy.data.test
