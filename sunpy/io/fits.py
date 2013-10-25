@@ -36,10 +36,7 @@ import os
 import re
 import itertools
 
-try:
-    import astropy.io.fits as pyfits
-except ImportError:
-    import pyfits
+from astropy.io import fits
 
 from sunpy.io.header import FileHeader
 
@@ -69,7 +66,7 @@ def read(filepath):
     Also all comments in the original file are concatenated into a single
     'comment' key in the returned FileHeader.
     """
-    hdulist = pyfits.open(filepath)
+    hdulist = fits.open(filepath)
     try:
         hdulist.verify('silentfix')
         
@@ -90,7 +87,7 @@ def get_header(afile):
     
     Parameters
     ----------
-    afile : string or pyfits.HDUList
+    afile : string or fits.HDUList
         The file to be read, or HDUList to process
     
     Returns
@@ -98,11 +95,11 @@ def get_header(afile):
     headers : list
         A list of FileHeader headers
     """
-    if isinstance(afile,pyfits.HDUList):
+    if isinstance(afile,fits.HDUList):
         hdulist = afile
         close = False
     else:
-        hdulist = pyfits.open(afile)
+        hdulist = fits.open(afile)
         hdulist.verify('silentfix')
         close=True
         
@@ -156,20 +153,20 @@ def write(fname, data, header, **kwargs):
     
     #The comments need to be added to the header seperately from the normal
     # kwargs. Find and deal with them:
-    fits_header = pyfits.Header()
+    fits_header = fits.Header()
     # Check Header
     key_comments = header.pop('KEYCOMMENTS', False)
 
     for k,v in header.items():
-        if isinstance(v, pyfits.header._HeaderCommentaryCards):
+        if isinstance(v, fits.header._HeaderCommentaryCards):
             if k is 'comments':
                 fits_header.add_comments(str(v))
             elif k in 'history':
                 fits_header.add_history(str(v))
             else:
-                fits_header.append(pyfits.Card(k, str(v)))
+                fits_header.append(fits.Card(k, str(v)))
         else:
-            fits_header.append(pyfits.Card(k,v))
+            fits_header.append(fits.Card(k,v))
 
     
     if isinstance(key_comments, dict):
@@ -180,7 +177,7 @@ def write(fname, data, header, **kwargs):
     
     fitskwargs = {'output_verify':'fix'}
     fitskwargs.update(kwargs)
-    pyfits.writeto(os.path.expanduser(fname), data, header=fits_header,
+    fits.writeto(os.path.expanduser(fname), data, header=fits_header,
                    **fitskwargs)
 
 
