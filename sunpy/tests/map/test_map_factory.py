@@ -46,9 +46,6 @@ class TestMap:
         # Already a Map
         amap = sunpy.map.Map(maps[0])
         assert isinstance(amap, sunpy.map.GenericMap)
-        # A URL
-        amap = sunpy.map.Map("https://raw.github.com/sunpy/sunpy/master/sunpy/data/sample/AIA20110319_105400_0171.fits")
-        assert isinstance(amap, sunpy.map.GenericMap)
         # A list of filenames
         maps = sunpy.map.Map(a_list_of_many)
         assert isinstance(maps, list)
@@ -65,6 +62,11 @@ class TestMap:
         pair_map = sunpy.map.Map(data, header)
         assert isinstance(pair_map, sunpy.map.GenericMap)
 
+    @pytest.mark.online
+    def test_url_pattern(self):
+        # A URL
+        amap = sunpy.map.Map("https://raw.github.com/sunpy/sunpy/master/sunpy/data/sample/AIA20110319_105400_0171.fits")
+        assert isinstance(amap, sunpy.map.GenericMap)
 
     def test_save(self):
         #Test save out
