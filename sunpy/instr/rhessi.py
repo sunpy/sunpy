@@ -20,10 +20,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.dates
 
-try:
-    import astropy.io.fits as pyfits
-except ImportError:
-    import pyfits
+from astropy.io import fits
 
 import sunpy
 from sunpy.time import TimeRange, parse_time
@@ -245,17 +242,17 @@ def parse_obssumm_file(filename):
 
     """
 
-    fits = pyfits.open(filename)
+    afits = fits.open(filename)
     
-    reference_time_ut = parse_time(fits[5].data.field('UT_REF')[0])
-    time_interval_sec = fits[5].data.field('TIME_INTV')[0]
+    reference_time_ut = parse_time(afits[5].data.field('UT_REF')[0])
+    time_interval_sec = afits[5].data.field('TIME_INTV')[0]
     # label_unit = fits[5].data.field('DIM1_UNIT')[0]
     # labels = fits[5].data.field('DIM1_IDS')
     labels = ['3 - 6 keV', '6 - 12 keV', '12 - 25 keV', '25 - 50 keV', 
               '50 - 100 keV', '100 - 300 keV', '300 - 800 keV', '800 - 7000 keV',
               '7000 - 20000 keV']
 
-    lightcurve_data = np.array(fits[6].data.field('countrate'))
+    lightcurve_data = np.array(afits[6].data.field('countrate'))
 
     dim = np.array(lightcurve_data[:,0]).size
  
@@ -329,23 +326,23 @@ def _backproject(calibrated_event_list, detector=8, pixel_size=(1.,1.), image_di
     >>> import sunpy.instr.rhessi as rhessi
 
     """
-    fits = pyfits.open(calibrated_event_list)
+    afits = fits.open(calibrated_event_list)
     
     #info_parameters = fits[2]    
     #detector_efficiency = info_parameters.data.field('cbe_det_eff$$REL')
     
-    fits = pyfits.open(calibrated_event_list)
+    afits = fits.open(calibrated_event_list)
 
     fits_detector_index = detector + 2
     detector_index = detector - 1
     grid_angle = np.pi/2. - grid_orientation[detector_index]
     harm_ang_pitch = grid_pitch[detector_index]/1
 
-    phase_map_center = fits[fits_detector_index].data.field('phase_map_ctr')
-    this_roll_angle = fits[fits_detector_index].data.field('roll_angle')
-    modamp = fits[fits_detector_index].data.field('modamp')
-    grid_transmission = fits[fits_detector_index].data.field('gridtran')
-    count = fits[fits_detector_index].data.field('count')
+    phase_map_center = afits[fits_detector_index].data.field('phase_map_ctr')
+    this_roll_angle = afits[fits_detector_index].data.field('roll_angle')
+    modamp = afits[fits_detector_index].data.field('modamp')
+    grid_transmission = afits[fits_detector_index].data.field('gridtran')
+    count = afits[fits_detector_index].data.field('count')
 
     tempa = (np.arange(image_dim[0]*image_dim[1]) %  image_dim[0]) - (image_dim[0]-1)/2.
     tempb = tempa.reshape(image_dim[0],image_dim[1]).transpose().reshape(image_dim[0]*image_dim[1])
@@ -391,15 +388,15 @@ def backprojection(calibrated_event_list, pixel_size=(1.,1.), image_dim=(64,64))
     """
     
     calibrated_event_list = sunpy.RHESSI_EVENT_LIST
-    fits = pyfits.open(calibrated_event_list)
-    info_parameters = fits[2]
+    afits = fits.open(calibrated_event_list)
+    info_parameters = afits[2]
     xyoffset = info_parameters.data.field('USED_XYOFFSET')[0]
     time_range = TimeRange(info_parameters.data.field('ABSOLUTE_TIME_RANGE')[0])
     
     image = np.zeros(image_dim)
     
     #find out what detectors were used
-    det_index_mask = fits[1].data.field('det_index_mask')[0]    
+    det_index_mask = afits[1].data.field('det_index_mask')[0]    
     detector_list = (np.arange(9)+1) * np.array(det_index_mask)
     for detector in detector_list:
         if detector > 0:
