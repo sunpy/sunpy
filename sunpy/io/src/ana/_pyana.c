@@ -16,6 +16,30 @@ version of the original anarw routines.
 #include "types.h"
 #include "anarw.h"
 
+// vasprintf() and asprintf() may not be defined, particularly on Windows
+#if !defined(vasprintf)
+int vasprintf( char **sptr, char *fmt, va_list argv )
+{
+    int wanted = vsnprintf( *sptr = NULL, 0, fmt, argv );
+    if( (wanted < 0) || ((*sptr = malloc( 1 + wanted )) == NULL) )
+        return -1;
+
+    return vsnprintf( *sptr, wanted, fmt, argv );
+}
+#endif
+
+#if !defined(asprintf)
+int asprintf( char **sptr, char *fmt, ... )
+{
+    int retval;
+    va_list argv;
+    va_start( argv, fmt );
+    retval = vasprintf( sptr, fmt, argv );
+    va_end( argv );
+    return retval;
+}
+#endif
+
 // Prototypes
 static PyObject * pyana_fzread(PyObject *self, PyObject *args);
 static PyObject * pyana_fzwrite(PyObject *self, PyObject *args);
