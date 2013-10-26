@@ -1,6 +1,12 @@
 0.3.2
 -----
-
+Bug Fixes:
+    * Pass draw_limb arguments to patches.Circle
+    * Pass graw_grid arguments to pyplot.plot()
+    * Fix README code example
+    * Fix Documentation links in potting guide
+    * Update to new EVE data URL
+    * Update LogicalLightcurve example in docs
 
 0.3.1
 -----
