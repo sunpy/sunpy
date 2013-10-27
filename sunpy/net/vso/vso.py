@@ -800,6 +800,12 @@ class InteractiveVSOClient(VSOClient):
             return self.query_legacy(*args, **kwargs)
     
     def get(self, query_response, path=None, methods=('URL-FILE',), downloader=None):
+        """The path expands ``~`` to refer to the user's home directory.
+        If the given path is an already existing directory, ``{file}`` is
+        appended to this path. After that, all received parameters (including
+        the updated path) are passed to :meth:`VSOClient.get`.
+
+        """
         if path is not None:
             path = os.path.abspath(os.path.expanduser(path))
             if os.path.exists(path) and os.path.isdir(path):
