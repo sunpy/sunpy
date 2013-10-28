@@ -100,17 +100,14 @@ class LYRALightCurve(LightCurve):
         end_ts=calendar.timegm(e.timetuple())
     
         #involves executing SQLite commands from within python.
-        #remember, can't execute dot sql commands from within Python
+        #connect to the SQlite database
         conn=sqlite3.connect(database_dir+'annotation_ppt.db')
         c=conn.cursor()
 
         #create a substitute tuple out of the start and end times for using in the database query
         tup=(start_ts,end_ts,start_ts,end_ts,start_ts,end_ts)
-    
-        #simplest start is to select all records, ordered by their start times
-        #r=c.execute('select * from event ORDER BY begin_time ASC')
 
-        #alternatively, search only for events within the time range of interest. Return them ordered by start time
+        #search only for events within the time range of interest (the lightcurve start/end). Return records ordered by start time
         r=(c.execute('select * from event WHERE((begin_time > ? AND begin_time < ?) OR (end_time > ? AND end_time < ?)' +  
                 'OR (begin_time < ? AND end_time > ?)) ORDER BY begin_time ASC',tup))
     
@@ -126,8 +123,10 @@ class LYRALightCurve(LightCurve):
             ref_time=datetime.datetime.utcfromtimestamp(l[2])
             end_time=datetime.datetime.utcfromtimestamp(l[3])
             event_type=l[4]
+            #get a string descriptor of the event type
             event_type_info=self._lytaf_event2string(l[4])
 
+            #create output tuple for each entry in list
             entry=(insertion_time,start_time,ref_time,end_time,event_type,event_type_info[0])
             output.append(entry)
 
