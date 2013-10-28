@@ -11,8 +11,6 @@ from sunpy.net import vso
 from sunpy.net.vso import attrs as va
 from sunpy.net import attr
 
-from sunpy.util.unit_conversion import energy, frequency
-
 def pytest_funcarg__eit(request):
     return va.Instrument('eit')
 
@@ -101,6 +99,17 @@ def test_attror_and():
 
 
 def test_wave_toangstrom():
+    frequency = [
+        ('Hz', 1),
+        ('kHz', 1e3),
+        ('MHz', 1e6),
+        ('GHz', 1e9)]
+
+    energy = [
+        ('eV', 1),
+        ('keV', 1e3),
+        ('MeV', 1e6)]
+
     for name, factor in energy:
         w = va.Wave(62 / factor, 62 / factor, name)
         assert int(w.min) == 199
