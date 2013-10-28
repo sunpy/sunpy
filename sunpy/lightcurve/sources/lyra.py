@@ -7,6 +7,7 @@ import datetime
 import urlparse
 import calendar
 import sqlite3
+import subprocess
 
 from matplotlib import pyplot as plt
 try:
@@ -37,7 +38,7 @@ class LYRALightCurve(LightCurve):
     ----------
     | http://proba2.sidc.be/data/LYRA
     """
-
+    #lytaf is blank by default. It can be populated with the get_lytaf_as_list method.
     lytaf=None
 
     def peek(self, names=3, **kwargs):
@@ -80,15 +81,16 @@ class LYRALightCurve(LightCurve):
 
         return figure
 
-    def download_lytaf():
-        #download the latest version of the Proba-2 pointing database from the Proba2 Science Center
-        subprocess.call(['curl','http://proba2.oma.be/lyra/data/lytaf/annotation_ppt.db','-o','annotation_ppt.db'])
+    def download_lytaf_database(self,dir=''):
+        """download the latest version of the Proba-2 pointing database from the Proba2 Science Center"""
+        subprocess.call(['curl','http://proba2.oma.be/lyra/data/lytaf/annotation_ppt.db','-o',dir+'annotation_ppt.db'])
 
         print 'LYTAF update completed'
         return
 
 
-    def get_lytaf_as_list(self):
+    def get_lytaf_events(self,database_dir=''):
+        """populates self.lytaf with a list of LYRA pointing events that occured during the lightcurve timerange"""
         #timerange is a TimeRange object
         timerange=self.time_range()
         #start_ts and end_ts need to be unix timestamps
@@ -99,7 +101,7 @@ class LYRALightCurve(LightCurve):
     
         #involves executing SQLite commands from within python.
         #remember, can't execute dot sql commands from within Python
-        conn=sqlite3.connect('annotation_ppt.db')
+        conn=sqlite3.connect(database_dir+'annotation_ppt.db')
         c=conn.cursor()
 
         #create a substitute tuple out of the start and end times for using in the database query
