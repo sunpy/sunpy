@@ -17,19 +17,23 @@ version of the original anarw routines.
 #include "anarw.h"
 
 // vasprintf() and asprintf() may not be defined, particularly on Windows
-#if !defined(vasprintf)
-int vasprintf( char **sptr, char *fmt, va_list argv )
+#ifndef __USE_GNU
+int vasprintf( char **sptr, const char *fmt, va_list argv )
 {
+    va_list argv2;
+    va_copy(argv2, argv);
+
     int wanted = vsnprintf( *sptr = NULL, 0, fmt, argv );
     if( (wanted < 0) || ((*sptr = malloc( 1 + wanted )) == NULL) )
         return -1;
 
-    return vsnprintf( *sptr, wanted, fmt, argv );
+    int retval;
+    retval = vsnprintf( *sptr, 1 + wanted, fmt, argv2 );
+    va_end(argv2);
+    return retval;
 }
-#endif
 
-#if !defined(asprintf)
-int asprintf( char **sptr, char *fmt, ... )
+int asprintf( char **sptr, const char *fmt, ... )
 {
     int retval;
     va_list argv;
