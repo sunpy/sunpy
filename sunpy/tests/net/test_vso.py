@@ -11,8 +11,6 @@ from sunpy.net import vso
 from sunpy.net.vso import attrs as va
 from sunpy.net import attr
 
-from sunpy.util.unit_conversion import energy, frequency
-
 def pytest_funcarg__eit(request):
     return va.Instrument('eit')
 
@@ -31,7 +29,7 @@ def test_simpleattr_apply():
     va.walker.apply(a, None, dct)
     assert dct['test'] == 1
 
-
+@pytest.mark.online
 def test_simpleattr_create(client):
     a = attr.ValueAttr({('instrument', ): 'eit'})
     assert va.walker.create(a, client.api)[0].instrument == 'eit'
@@ -64,6 +62,7 @@ def test_complexattr_apply():
     assert dct['test'] == {'foo': 'a', 'bar': 'b'}
 
 
+@pytest.mark.online
 def test_complexattr_create(client):
     a = attr.ValueAttr({('time', 'start'): 'test'})
     assert va.walker.create(a, client.api)[0].time.start == 'test'
@@ -100,6 +99,17 @@ def test_attror_and():
 
 
 def test_wave_toangstrom():
+    frequency = [
+        ('Hz', 1),
+        ('kHz', 1e3),
+        ('MHz', 1e6),
+        ('GHz', 1e9)]
+
+    energy = [
+        ('eV', 1),
+        ('keV', 1e3),
+        ('MeV', 1e6)]
+
     for name, factor in energy:
         w = va.Wave(62 / factor, 62 / factor, name)
         assert int(w.min) == 199
