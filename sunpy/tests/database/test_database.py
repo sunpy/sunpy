@@ -749,6 +749,7 @@ def test_fetch(database, download_query, tmpdir):
 
 
 @pytest.mark.online
+@pytest.mark.fails_on_travis
 def test_disable_undo(database, download_query, tmpdir):
     entry = DatabaseEntry()
     with disable_undo(database) as db:
