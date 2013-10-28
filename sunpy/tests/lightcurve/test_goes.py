@@ -26,7 +26,7 @@ class TestGOESLightCurve():
         lc2 = sunpy.lightcurve.GOESLightCurve.create('2012/06/03','2012/06/04')
         #If the dataframes are non-idential it raises an error, if they are
         #identical it returns True
-        with pytest.raises((TypeError, NotImplementedError)):
+        with pytest.raises((Exception)):
             self.compare(lc1, lc2)
         
         #This snippet is better but python 2.7 only, maybe sometime it will be 
