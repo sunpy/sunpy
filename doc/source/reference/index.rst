@@ -45,6 +45,7 @@ change.
    sun
    time
    vso
+   database
    wcs
    spectrogram
    callisto
