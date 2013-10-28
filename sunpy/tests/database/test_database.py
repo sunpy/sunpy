@@ -696,7 +696,8 @@ def test_download_empty_query_result(database, empty_query):
 def test_download(database, download_query, tmpdir):
     assert len(database) == 0
     database.default_waveunit = 'angstrom'
-    database.download(*download_query, path=str(tmpdir.join('{file}.fits')))
+    database.download(
+        *download_query, path=str(tmpdir.join('{file}.fits')), progress=True)
     fits_pattern = str(tmpdir.join('*.fits'))
     num_of_fits_headers = sum(
         len(fits.get_header(file)) for file in glob.glob(fits_pattern))
@@ -713,7 +714,8 @@ def test_download(database, download_query, tmpdir):
 def test_download_duplicates(database, download_query, tmpdir):
     assert len(database) == 0
     database.default_waveunit = 'angstrom'
-    database.download(*download_query, path=str(tmpdir.join('{file}.fits')))
+    database.download(
+        *download_query, path=str(tmpdir.join('{file}.fits')), progress=True)
     assert len(database) == 4
     download_time = database[0].download_time
     database.download(*download_query, path=str(tmpdir.join('{file}.fits')))
