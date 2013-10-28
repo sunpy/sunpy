@@ -48,7 +48,63 @@ committed explicitly using the :meth:`Database.commit` method.
 
 2. Adding new entries
 ---------------------
-.. TODO: talk a bit about DatabaseEntry, i.e. what information is stored
+Before explaining how to add new entries, it is important to know what
+information is saved in an entry. Each database entry is an instance of
+the class :class:`tables.DatabaseEntry` with the following attributes:
+
+====================== ===================================================
+      Attribute                            Description
+====================== ===================================================
+id                     A unique ID number. By default it is None, but
+                       automatically set to the maximum number plus one
+                       when an entry is added to the database.
+source                 The source is the name of an observatory or the
+                       name of a network of observatories.
+provider               The name of the server which provides the retrieved
+                       data.
+physobs                A physical observable identifier used by VSO.
+fileid                 The file ID is a string defined by the data
+                       provider that should point to a specific data
+                       product. The association of fileid to the specific
+                       data may change sometime, if the fileid always
+                       points to the latest calibrated data.
+observation_time_start The date and time when the observation of the data
+                       started.
+observation_time_end   The date and time when the observation of the data
+                       ended.
+instrument             The instrument which was used to observe the data.
+size                   The size of the data in kilobytes (-1 if unknown).
+wavemin                The value of the measured wave length.
+wavemax                This is the same value as ``wavemin``. The value is
+                       stored twice, because each
+                       ``suds.sudsobject.QueryResponseBlock`` which is
+                       used by the vso package contains both these values.
+path                   A local file path where the according FITS file is
+                       saved.
+download_time          The date and time when the files connected to a
+                       query have been downloaded. Note: this is not the
+                       date and time when this entry has been added to a
+                       database!
+starred                Entries can be starred to mark them. By default,
+                       this value is False.
+fits_header_entries    A list of :class:`tables.FitsHeaderEntry` instances.
+tags                   A list of :class:`tables.Tag` instances.
+====================== ===================================================
+
+The ``id`` attribute is automatically set if an entry is added to a
+database. The attributes ``source``, ``provider``, ``physobs``,
+``fileid``, ``observation_time_start``, ``observation_time_end``,
+``instrument``, ``size``, ``wavemin``, and ``wavemax`` are set by methods
+which use the VSO interface. In particular, these are
+:meth:`Database.add_from_vso_query_result`, :meth:`Database.download` and
+possibly :meth:`Database.fetch`. The attributes ``path`` and
+``download_time`` are set by the method :meth:`Database.download` and also
+possibly by :meth:`Database.fetch`. ``starred`` is set or changed via the
+method :meth:`Database.star` or :meth:`unstar`, respectively. Analogously,
+``tags`` is set via the methods :meth:`Database.tag` and
+:meth:`Database.remove_tag`. The attribute ``fits_header_entries`` is set
+by the methods :meth:`Database.download`, :meth:`Database.add_from_dir`,
+and :meth:`Database.add_from_file`.
 
 2.1 Adding entries from one FITS file
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
