@@ -8,6 +8,8 @@ import shutil
 from tempfile import mkdtemp
 from datetime import datetime
 
+import pytest
+
 import numpy as np
 from numpy.testing import assert_array_almost_equal
 
@@ -33,7 +35,7 @@ def test_read():
     )
     assert ca.dtype == np.uint8
 
-
+@pytest.mark.online
 def test_query():
     URL = 'http://soleil.i4ds.ch/solarradio/data/2002-20yy_Callisto/2011/09/22/'
 
@@ -56,7 +58,7 @@ def test_query():
 
     assert result == [URL + res for res in RESULTS]
 
-
+@pytest.mark.online
 def test_query_number():
     URL = 'http://soleil.i4ds.ch/solarradio/data/2002-20yy_Callisto/2011/09/22/'
 
@@ -75,7 +77,7 @@ def test_query_number():
 
     assert result == [URL + res for res in RESULTS]
 
-
+@pytest.mark.online
 def test_download():
     directory = mkdtemp()
     try:
@@ -102,7 +104,7 @@ def test_create_file_kw():
     ca = CallistoSpectrogram.create(filename=CALLISTO_IMAGE)
     assert np.array_equal(ca.data, CallistoSpectrogram.read(CALLISTO_IMAGE).data)
 
-
+@pytest.mark.online
 def test_create_url():
     URL = (
         "http://soleil.i4ds.ch/solarradio/data/2002-20yy_Callisto/2011/09/22/"
@@ -111,7 +113,7 @@ def test_create_url():
     ca = CallistoSpectrogram.create(URL)
     assert np.array_equal(ca.data, CallistoSpectrogram.read(URL).data)
 
-
+@pytest.mark.online
 def test_create_url_kw():
     URL = (
         "http://soleil.i4ds.ch/solarradio/data/2002-20yy_Callisto/2011/09/22/"
@@ -370,6 +372,7 @@ def test_homogenize_rightfq():
     assert_array_almost_equal(constants, [-0.5], 2)
     assert_array_almost_equal(factors[0] * b + constants[0], a)
 
+@pytest.mark.online
 def test_extend():
     im = CallistoSpectrogram.create(CALLISTO_IMAGE)
     im2 = im.extend()
