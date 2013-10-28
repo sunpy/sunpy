@@ -7,6 +7,7 @@ Bug Fixes:
     * Fix Documentation links in potting guide
     * Update to new EVE data URL
     * Update LogicalLightcurve example in docs
+    * Improved InteractiveVSOClient documentation
 
 0.3.1
 -----
