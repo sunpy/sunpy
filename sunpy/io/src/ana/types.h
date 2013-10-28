@@ -1,6 +1,8 @@
 #ifndef __TYPES_H__  // __TYPES_H__
 #define __TYPES_H__
 
+#include <stdint.h>
+
 //! @todo fix include guards to legal versions
 
 typedef float float32_t;
