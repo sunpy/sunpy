@@ -20,7 +20,7 @@ import sunpy
 from sunpy.lightcurve import LightCurve 
 from sunpy.time import parse_time
 
-__all__ = ['LYRALightCurve']
+__all__ = ['LYRALightCurve','download_lytaf_database','get_lytaf_events','_lytaf_event2string']
 
 class LYRALightCurve(LightCurve):
     """LYRA light curve definition
@@ -38,8 +38,6 @@ class LYRALightCurve(LightCurve):
     ----------
     | http://proba2.sidc.be/data/LYRA
     """
-    #lytaf is blank by default. It can be populated with the get_lytaf_as_list method.
-    lytaf=None
 
     def peek(self, names=3, **kwargs):
         """Plots the LYRA data
@@ -81,91 +79,6 @@ class LYRALightCurve(LightCurve):
 
         return figure
 
-    def download_lytaf_database(self,dir=''):
-        """download the latest version of the Proba-2 pointing database from the Proba2 Science Center"""
-        subprocess.call(['curl','http://proba2.oma.be/lyra/data/lytaf/annotation_ppt.db','-o',dir+'annotation_ppt.db'])
-
-        print 'LYTAF update completed'
-        return
-
-
-    def get_lytaf_events(self,database_dir=''):
-        """populates self.lytaf with a list of LYRA pointing events that occured during the lightcurve timerange"""
-        #timerange is a TimeRange object
-        timerange=self.time_range()
-        #start_ts and end_ts need to be unix timestamps
-        s=timerange.start()
-        start_ts=calendar.timegm(s.timetuple())
-        e=timerange.end()
-        end_ts=calendar.timegm(e.timetuple())
-    
-        #involves executing SQLite commands from within python.
-        #connect to the SQlite database
-        conn=sqlite3.connect(database_dir+'annotation_ppt.db')
-        c=conn.cursor()
-
-        #create a substitute tuple out of the start and end times for using in the database query
-        tup=(start_ts,end_ts,start_ts,end_ts,start_ts,end_ts)
-
-        #search only for events within the time range of interest (the lightcurve start/end). Return records ordered by start time
-        r=(c.execute('select * from event WHERE((begin_time > ? AND begin_time < ?) OR (end_time > ? AND end_time < ?)' +  
-                'OR (begin_time < ? AND end_time > ?)) ORDER BY begin_time ASC',tup))
-    
-        #get all records from the query in python list format. 
-        list=r.fetchall()
-
-        #times are in unix time - want to use datetime instead
-        output=[]
-
-        for l in list:
-            insertion_time=datetime.datetime.utcfromtimestamp(l[0])
-            start_time=datetime.datetime.utcfromtimestamp(l[1])
-            ref_time=datetime.datetime.utcfromtimestamp(l[2])
-            end_time=datetime.datetime.utcfromtimestamp(l[3])
-            event_type=l[4]
-            #get a string descriptor of the event type
-            event_type_info=self._lytaf_event2string(l[4])
-
-            #create output tuple for each entry in list
-            entry=(insertion_time,start_time,ref_time,end_time,event_type,event_type_info[0])
-            output.append(entry)
-
-        self.lytaf=output
-        #return output
-        return
-
-    def _lytaf_event2string(self,integers):
-        if type(integers) == int:
-            integers=[integers]
-        #else:
-        #    n=len(integers)
-        out=[]
-
-        for i in integers:
-            if i == 1:
-                out.append('LAR')
-            if i == 2:
-                out.append('N/A')
-            if i == 3:
-                out.append('UV occult.')
-            if i == 4:
-                out.append('Vis. occult.')
-            if i == 5:
-                out.append('Offpoint')
-            if i == 6:
-                out.append('SAA')
-            if i == 7:
-                out.append('Auroral zone')
-            if i == 8:
-                out.append('Moon in LYRA')
-            if i == 9:
-                out.append('Moon in SWAP')
-            if i == 10:
-                out.append('Venus in LYRA')
-            if i == 11:
-                out.append('Venus in SWAP')
-
-        return out
 
     @staticmethod
     def _get_url_for_date(date):
@@ -217,3 +130,85 @@ class LYRALightCurve(LightCurve):
 
         # Return the header and the data
         return hdulist[0].header, pandas.DataFrame(table, index=times)
+
+def download_lytaf_database(lytaf_dir=''):
+    """download the latest version of the Proba-2 pointing database from the Proba2 Science Center"""
+    subprocess.call(['curl','http://proba2.oma.be/lyra/data/lytaf/annotation_ppt.db','-o',lytaf_dir+'annotation_ppt.db'])
+    print 'LYTAF update completed'
+    return
+
+
+def get_lytaf_events(timerange,lytaf_dir=''):
+    """returns a list of LYRA pointing events that occured during a timerange"""
+    #timerange is a TimeRange object
+    #start_ts and end_ts need to be unix timestamps
+    s = timerange.start()
+    start_ts=calendar.timegm(s.timetuple())
+    e=timerange.end()
+    end_ts=calendar.timegm(e.timetuple())
+    
+    #involves executing SQLite commands from within python.
+    #connect to the SQlite database
+    conn=sqlite3.connect(lytaf_dir + 'annotation_ppt.db')
+    c=conn.cursor()
+
+    #create a substitute tuple out of the start and end times for using in the database query
+    tup=(start_ts,end_ts,start_ts,end_ts,start_ts,end_ts)
+
+    #search only for events within the time range of interest (the lightcurve start/end). Return records ordered by start time
+    r=(c.execute('select * from event WHERE((begin_time > ? AND begin_time < ?) OR (end_time > ? AND end_time < ?)' +  
+                'OR (begin_time < ? AND end_time > ?)) ORDER BY begin_time ASC',tup))
+    
+    #get all records from the query in python list format. 
+    list=r.fetchall()
+
+    #times are in unix time - want to use datetime instead
+    output=[]
+
+    for l in list:
+        insertion_time=datetime.datetime.utcfromtimestamp(l[0])
+        start_time=datetime.datetime.utcfromtimestamp(l[1])
+        ref_time=datetime.datetime.utcfromtimestamp(l[2])
+        end_time=datetime.datetime.utcfromtimestamp(l[3])
+        event_type=l[4]
+        #get a string descriptor of the event type
+        event_type_info=_lytaf_event2string(l[4])
+
+        #create output tuple for each entry in list
+        entry=(insertion_time,start_time,ref_time,end_time,event_type,event_type_info[0])
+        output.append(entry)
+    
+    return output
+
+def _lytaf_event2string(integers):
+    if type(integers) == int:
+        integers=[integers]
+    #else:
+    #    n=len(integers)
+    out=[]
+
+    for i in integers:
+        if i == 1:
+            out.append('LAR')
+        if i == 2:
+            out.append('N/A')
+        if i == 3:
+            out.append('UV occult.')
+        if i == 4:
+            out.append('Vis. occult.')
+        if i == 5:
+            out.append('Offpoint')
+        if i == 6:
+            out.append('SAA')
+        if i == 7:
+            out.append('Auroral zone')
+        if i == 8:
+            out.append('Moon in LYRA')
+        if i == 9:
+            out.append('Moon in SWAP')
+        if i == 10:
+            out.append('Venus in LYRA')
+        if i == 11:
+            out.append('Venus in SWAP')
+
+    return out
