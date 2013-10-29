@@ -66,9 +66,9 @@ def system_info():
         matplotlib_version = "NOT INSTALLED"
 
     try:
-        from pyfits import __version__ as pyfits_version
+        from astropy import __version__ as astropy_version
     except ImportError:
-        pyfits_version = "NOT INSTALLED"
+        astropy_version = "NOT INSTALLED"
         
     try:
         from pandas import __version__ as pandas_version
@@ -99,7 +99,7 @@ def system_info():
     print("NumPy: %s" % numpy_version)
     print("SciPy: %s" % scipy_version)
     print("Matplotlib: %s" % matplotlib_version)
-    print("PyFITS: %s" % pyfits_version)
+    print("AstroPy: %s" % astropy_version)
     print("pandas: %s" % pandas_version)
 
     print("")

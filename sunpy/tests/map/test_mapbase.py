@@ -7,10 +7,7 @@ from __future__ import absolute_import
 import sunpy
 import sunpy.map
 
-try:
-    import astropy.io.fits as pyfits
-except ImportError:
-    import pyfits
+from astropy.io import fits
 import numpy as np
 
 class TestGenericMap:
@@ -18,7 +15,7 @@ class TestGenericMap:
     def setup_class(self):
         self.file = sunpy.AIA_171_IMAGE
         self.map = sunpy.map.Map(self.file)
-        self.fits = pyfits.open(self.file)
+        self.fits = fits.open(self.file)
         self.fits.verify('silentfix')
         
         # include full comment
