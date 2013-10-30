@@ -7,7 +7,9 @@ import datetime
 import urlparse
 import calendar
 import sqlite3
-import subprocess
+#import subprocess
+import sunpy.net.download
+
 
 from matplotlib import pyplot as plt
 try:
@@ -133,7 +135,9 @@ class LYRALightCurve(LightCurve):
 
 def download_lytaf_database(lytaf_dir=''):
     """download the latest version of the Proba-2 pointing database from the Proba2 Science Center"""
-    subprocess.call(['curl','http://proba2.oma.be/lyra/data/lytaf/annotation_ppt.db','-o',lytaf_dir+'annotation_ppt.db'])
+    dl=sunpy.net.download.Downloader()
+    dl.download('http://proba2.oma.be/lyra/data/lytaf/annotation_ppt.db',path=lytaf_dir)
+    
     print 'LYTAF update completed'
     return
 
@@ -142,25 +146,25 @@ def get_lytaf_events(timerange,lytaf_dir=''):
     """returns a list of LYRA pointing events that occured during a timerange"""
     #timerange is a TimeRange object
     #start_ts and end_ts need to be unix timestamps
-    s = timerange.start()
-    start_ts=calendar.timegm(s.timetuple())
-    e=timerange.end()
-    end_ts=calendar.timegm(e.timetuple())
+    st_timerange = timerange.start()
+    start_ts=calendar.timegm(st_timerange.timetuple())
+    en_timerange=timerange.end()
+    end_ts=calendar.timegm(en_timerange.timetuple())
     
     #involves executing SQLite commands from within python.
     #connect to the SQlite database
     conn=sqlite3.connect(lytaf_dir + 'annotation_ppt.db')
-    c=conn.cursor()
+    cursor=conn.cursor()
 
     #create a substitute tuple out of the start and end times for using in the database query
-    tup=(start_ts,end_ts,start_ts,end_ts,start_ts,end_ts)
+    query_tup=(start_ts,end_ts,start_ts,end_ts,start_ts,end_ts)
 
     #search only for events within the time range of interest (the lightcurve start/end). Return records ordered by start time
-    r=(c.execute('select * from event WHERE((begin_time > ? AND begin_time < ?) OR (end_time > ? AND end_time < ?)' +  
-                'OR (begin_time < ? AND end_time > ?)) ORDER BY begin_time ASC',tup))
+    result=(cursor.execute('select * from event WHERE((begin_time > ? AND begin_time < ?) OR (end_time > ? AND end_time < ?)' +  
+                'OR (begin_time < ? AND end_time > ?)) ORDER BY begin_time ASC',query_tup))
     
     #get all records from the query in python list format. 
-    list=r.fetchall()
+    list=result.fetchall()
 
     #times are in unix time - want to use datetime instead
     output=[]
