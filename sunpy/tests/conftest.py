@@ -1,6 +1,10 @@
 from functools import partial
 import urllib2
 
+#Import matplotlib and set backend before anything else happens
+import matplotlib
+matplotlib.use('agg')
+
 import pytest
 
 GOOGLE_URL = 'http://www.google.com'
