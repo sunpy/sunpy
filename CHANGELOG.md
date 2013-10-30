@@ -8,6 +8,10 @@ Bug Fixes:
     * Update to new EVE data URL
     * Update LogicalLightcurve example in docs
     * Improved InteractiveVSOClient documentation
+    * GOESLightCurve now fails politely if no data is avalible.
+
+Known Bugs:
+    * sunpy.util.unit_conversion.to_angstrom does not work if 'nm' is passed in.
 
 0.3.1
 -----
