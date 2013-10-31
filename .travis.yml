@@ -14,9 +14,9 @@ env:
         - PIP_WHEEL_COMMAND="--find-links http://sunpy.cadair.com/wheelhouse/index.html --use-wheel --upgrade"
         - MATPLOTLIB_VERSION=1.3.0 SUDS_PKG='suds-jurko==0.4.1.jurko.4'
     matrix:
+        - NUMPY_VERSION=1.8.0 PANDAS_VERSION=0.12.0
         - NUMPY_VERSION=1.7.1 PANDAS_VERSION=0.12.0
-        - NUMPY_VERSION=1.6.2 PANDAS_VERSION=0.12.0
-        - NUMPY_VERSION=1.7.1 PANDAS_VERSION=0.11.0
+        - NUMPY_VERSION=1.8.0 PANDAS_VERSION=0.11.0
 
 before_install:
 # Pick the suds version based on the python version
