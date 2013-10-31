@@ -38,7 +38,12 @@ coordinate systems.
 """
 from __future__ import absolute_import
 
-__version__ = 0.3
+import warnings
+
+try:
+    from sunpy.version import version as __version__
+except ImportError:
+    warnings.warn('Missing version.py; you need to run setup.py', Warning)
 
 from sunpy.util.config import load_config, print_config
 

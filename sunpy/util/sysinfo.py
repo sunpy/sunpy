@@ -48,7 +48,14 @@ def system_info():
     # Python version
     arch = platform.architecture()[0]
     print("Python: %s (%s)\n" % (platform.python_version(), arch))
-    
+
+    try:
+        from sunpy.version import version as sunpy_version
+        from sunpy.version import git_description as sunpy_git_description
+    except ImportError:
+        sunpy_version = 'Missing version.py; re-run setup.py'
+        sunpy_git_description = ''
+
     # Dependencies
     try:
         from numpy import __version__ as numpy_version
@@ -94,7 +101,7 @@ def system_info():
     print(" Required libraries")
     print("####################")
     
-    print("SunPy: %s" % sunpy.__version__)
+    print("SunPy: %s (%s)" % (sunpy_version, sunpy_git_description))
 
     print("NumPy: %s" % numpy_version)
     print("SciPy: %s" % scipy_version)
