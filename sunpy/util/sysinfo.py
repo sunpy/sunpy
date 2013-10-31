@@ -54,7 +54,7 @@ def system_info():
         from sunpy.version import git_description as sunpy_git_description
     except ImportError:
         sunpy_version = 'Missing version.py; re-run setup.py'
-        sunpy_git_description = ''
+        sunpy_git_description = 'N/A'
 
     # Dependencies
     try:
@@ -100,8 +100,11 @@ def system_info():
     print("####################")
     print(" Required libraries")
     print("####################")
-    
-    print("SunPy: %s (%s)" % (sunpy_version, sunpy_git_description))
+
+    if sunpy_git_description == 'N/A':
+        print("SunPy: %s" % sunpy_version)
+    else:
+        print("SunPy: %s (%s)" % (sunpy_version, sunpy_git_description))
 
     print("NumPy: %s" % numpy_version)
     print("SciPy: %s" % scipy_version)

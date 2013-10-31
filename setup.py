@@ -30,7 +30,7 @@ def git_description():
         out = subprocess.Popen(['git', 'describe', '--tags'], stdout = subprocess.PIPE).communicate()[0]
         description = out.strip().decode('ascii')
     except OSError:
-        description = 'Unknown: could not run git'
+        description = 'Error: could not run git'
     return description
 
 def write_version_py():
