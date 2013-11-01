@@ -32,3 +32,6 @@ Map.register(CORMap, CORMap.is_datasource_for)
 
 from yohkoh import SXTMap
 Map.register(SXTMap, SXTMap.is_datasource_for)
+
+from trace import TRACEMap
+Map.register(TRACEMap, TRACEMap.is_datasource_for)
