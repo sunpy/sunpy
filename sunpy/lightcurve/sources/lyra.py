@@ -7,10 +7,7 @@ import datetime
 import urlparse
 
 from matplotlib import pyplot as plt
-try:
-    import astropy.io.fits as pyfits
-except ImportError:
-    import pyfits
+from astropy.io import fits
 import pandas
 
 import sunpy
@@ -100,7 +97,7 @@ class LYRALightCurve(LightCurve):
     def _parse_fits(filepath):
         """Loads LYRA data from a FITS file"""
         # Open file with PyFITS
-        hdulist = pyfits.open(filepath)
+        hdulist = fits.open(filepath)
         fits_record = hdulist[1].data
         #secondary_header = hdulist[1].header
 
