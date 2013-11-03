@@ -22,7 +22,7 @@ SunPy supports many different data products from various sources 'out of the box
 shall use SDO's AIA instrument as an example in this tutorial. The general way to create
 a map from one of the supported data products is with the `Map()` class from the `map` submodule.
 
-`Map()` takes either a filename, list of filenames data array and header. We can test map with::
+`Map()` takes either a filename, a list of filenames or a data array and header pair. We can test map with::
 
     import sunpy
     from sunpy.map import Map
