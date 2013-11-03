@@ -89,15 +89,43 @@ http://nssdc.gsfc.nasa.gov/planetary/factsheet/sunfact.html
 
 from __future__ import absolute_import
 
+from astropy import Units
 import scipy.constants as _cd
 from sunpy.sun import _si as _con # pylint: disable=E0611
 
 physical_constants = _con.physical_constants
 
-au = astronomical_unit = _cd.au
-
 # The following functions (value, precision, unit, find) are copied directly 
 # from SciPy constants.
+au = astronomical_unit = _cd.au * Units.unit('m')
+
+def quantity(key) :
+    """
+    The quantity in physical_constants index by key
+    
+    Parameters
+    ----------
+    key : Python string or unicode
+        Key indictionary in `physical_constants`
+
+    Returns
+    -------
+    quantity : Quantity
+        Quantity in `physical_constants` corresponding to `key`
+
+    See Also
+    --------
+    _constants : Contains the description of `physical_constants`, which, as a
+        dictionary literal object, does not itself possess a docstring.
+
+    Examples
+    --------
+    >>> from sunpy.sun import constants
+    >>> constants.quantity('mass')
+    
+    """
+    return physical_constants[key][0] * units.Unit(physical_constants[key][1])
+
 def value(key) :
     """
     Value in physical_constants indexed by key
@@ -124,7 +152,7 @@ def value(key) :
         1.9884e30
 
     """
-    return physical_constants[key][0]
+    return quantity(key).value
 
 def unit(key) :
     """
@@ -152,7 +180,7 @@ def unit(key) :
     'kg'
 
     """
-    return physical_constants[key][1]
+    return quantity(key).unit.to_string()
 
 def precision(key) :
     """
@@ -263,26 +291,26 @@ spectral_classification = 'G2V'
 
 # The following variables from _constants are brought out by making them 
 # accessible through a call such as sun.volume
-equatorial_radius = radius = value('radius')
-equatorial_diameter = value('diameter')
-volume = value('volume')
-surface_area = value('surface area')
-average_density = density = value('average density')
-center_density = value('center density')
-equatorial_surface_gravity = surface_gravity = value('surface gravity')
-mean_intensity = intensity = value('mean intensity')
-effective_temperature = value('effective temperature')
-center_temperature = value('center temperature')
-luminosity = value('luminosity')
-absolute_magnitude = value('absolute magnitude')
-visual_magnitude = value('visual magnitude')
-mass_conversion_rate = value('mass conversion rate')
-mean_energy_production = value('mean energy production')
-escape_velocity = value('escape velocity')
-ellipticity = value('ellipticity')
-GM = value('GM')
+equatorial_radius = radius = quantity('radius')
+equatorial_diameter = quantity('diameter')
+volume = quantity('volume')
+surface_area = quantity('surface area')
+average_density = density = quantity('average density')
+center_density = quantity('center density')
+equatorial_surface_gravity = surface_gravity = quantity('surface gravity')
+mean_intensity = intensity = quantity('mean intensity')
+effective_temperature = quantity('effective temperature')
+center_temperature = quantity('center temperature')
+luminosity = quantity('luminosity')
+absolute_magnitude = quantity('absolute magnitude')
+visual_magnitude = quantity('visual magnitude')
+mass_conversion_rate = quantity('mass conversion rate')
+mean_energy_production = quantity('mean energy production')
+escape_velocity = quantity('escape velocity')
+ellipticity = quantity('ellipticity')
+GM = quantity('GM')
 
-sfu = value('solar flux unit')
+sfu = quantity('solar flux unit')
 
 # Observable parameters
-average_angular_size = value('average_angular_size')
+average_angular_size = quantity('average_angular_size')
