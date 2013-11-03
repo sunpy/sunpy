@@ -48,7 +48,7 @@ install:
 # Install SunPy and run tests.
 script:
   - python setup.py develop
-  - py.test
+  - py.test -k-fails_on_travis
 
 # Notify the IRC channel of build status
 notifications:
