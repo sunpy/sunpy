@@ -82,7 +82,7 @@ def install(setup): #pylint: disable=W0621
         provides=['sunpy'],
         url="http://www.sunpy.org/",
         use_2to3=True,
-        version="0.3.1",
+        version="0.3.2",
         ext_modules = [crotate] if 'crotate' in locals() else []
     )
 
