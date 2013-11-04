@@ -103,7 +103,10 @@ class LightCurve(object):
     def from_file(cls, filename):
         filename = os.path.expanduser(filename)
         header, data = cls._parse_filepath(filename)
-        return cls(data, header)
+        if data.empty == True:
+            raise ValueError("No data found!")
+        else:               
+            return cls(data, header)
 
     @classmethod
     def from_url(cls, url, **kwargs):
