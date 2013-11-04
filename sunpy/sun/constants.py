@@ -89,7 +89,7 @@ http://nssdc.gsfc.nasa.gov/planetary/factsheet/sunfact.html
 
 from __future__ import absolute_import
 
-from astropy import Units
+from astropy.units import Quantity
 import scipy.constants as _cd
 from sunpy.sun import _si as _con # pylint: disable=E0611
 
@@ -97,7 +97,7 @@ physical_constants = _con.physical_constants
 
 # The following functions (value, precision, unit, find) are copied directly 
 # from SciPy constants.
-au = astronomical_unit = _cd.au * Units.unit('m')
+au = astronomical_unit = Quantity(_cd.au,'m')
 
 def quantity(key) :
     """
@@ -124,7 +124,7 @@ def quantity(key) :
     >>> constants.quantity('mass')
     
     """
-    return physical_constants[key][0] * units.Unit(physical_constants[key][1])
+    return physical_constants[key][0]
 
 def value(key) :
     """
@@ -208,7 +208,7 @@ def precision(key) :
     
 
     """
-    return physical_constants[key][2] / physical_constants[key][0]
+    return physical_constants[key][2] / quantity(key).value()
 
 def find(sub=None, disp=False):
     """
