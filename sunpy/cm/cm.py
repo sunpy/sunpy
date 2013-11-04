@@ -38,7 +38,14 @@ yohkohsxtwh = ct.sxt_color_table('wh')
 
 hinodexrt = ct.xrt_color_table()
 
-
+trace171 = ct.trace_color_table('171')
+trace193 = ct.trace_color_table('193')
+trace284 = ct.trace_color_table('284')
+trace1216 = ct.trace_color_table('1216')
+trace1550 = ct.trace_color_table('1550')
+trace1600 = ct.trace_color_table('1600')
+trace1700 = ct.trace_color_table('1700')
+traceWL = ct.trace_color_table('WL')
 
 cmlist = {
           'sdoaia94': sdoaia94,
@@ -62,7 +69,15 @@ cmlist = {
           'rhessi': cm.jet,  # pylint: disable=E1101
           'yohkohsxtal': yohkohsxtal,
           'yohkohsxtwh': yohkohsxtwh,
-          'hinodexrt': hinodexrt
+          'hinodexrt': hinodexrt,
+          'trace171': trace171,
+          'trace195': trace195,
+          'trace284': trace284,
+          'trace1216': trace1216,
+          'trace1550': trace1550,
+          'trace1600': trace1600,
+          'trace1700': trace1700,
+          'traceWL': traceWL
           }
 
 
