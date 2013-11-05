@@ -250,7 +250,7 @@ def sxt_color_table(sxt_filter):
 def xrt_color_table():
     '''Returns the color table used for all Hinode XRT images.'''
     # Now create the color dictionary in the correct format
-    cdict = create_cdict(r, g, b)
+    cdict = create_cdict(r0, g0, b0)
     return colors.LinearSegmentedColormap('mytable', cdict)
 
 #Stereo Secchi COR colour tables
