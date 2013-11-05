@@ -91,6 +91,7 @@ def install(setup): #pylint: disable=W0621
             'matplotlib>=1.1',
             'glymur>=0.5.9',
  #           'beautifulsoup4',
+            'sqlalchemy',
         ],
         license="BSD",
         long_description="\n".join(DOCLINES[2:]),
