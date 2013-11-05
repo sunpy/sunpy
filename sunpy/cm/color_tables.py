@@ -177,6 +177,7 @@ def eit_color_table(wavelength):
             "171, 195, 284, 304."
         )
 
+
     # Now create the color dictionary in the correct format
     cdict = create_cdict(r, g, b)
 
@@ -453,7 +454,7 @@ def trace_color_table(measurement):
         }[measurement]
     except KeyError:
         raise ValueError(
-            "Invalid TRACE filter waveband passed.  Valid values are"
+            "Invalid TRACE filter waveband passed.  Valid values are "
             "171, 195, 284, 1216, 1550, 1600, 1700, WL"
         )
 

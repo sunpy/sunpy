@@ -39,7 +39,7 @@ yohkohsxtwh = ct.sxt_color_table('wh')
 hinodexrt = ct.xrt_color_table()
 
 trace171 = ct.trace_color_table('171')
-trace193 = ct.trace_color_table('193')
+trace195 = ct.trace_color_table('195')
 trace284 = ct.trace_color_table('284')
 trace1216 = ct.trace_color_table('1216')
 trace1550 = ct.trace_color_table('1550')
