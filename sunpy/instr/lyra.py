@@ -44,7 +44,7 @@ def get_lytaf_events(timerange,lytaf_dir=''):
 
     for l in list:
         #create a dictionary for each entry of interest
-        lar_entry={'roi_discription':'LYRA LYTAF event',
+        lar_entry={'roi_description':'LYRA LYTAF event',
         'start_time':datetime.datetime.utcfromtimestamp(l[1]),
         'ref_time':datetime.datetime.utcfromtimestamp(l[2]),
         'end_time':datetime.datetime.utcfromtimestamp(l[3]),
