@@ -43,17 +43,17 @@ def get_lytaf_events(timerange,lytaf_dir=''):
     output=[]
 
     for l in list:
-        insertion_time=datetime.datetime.utcfromtimestamp(l[0])
-        start_time=datetime.datetime.utcfromtimestamp(l[1])
-        ref_time=datetime.datetime.utcfromtimestamp(l[2])
-        end_time=datetime.datetime.utcfromtimestamp(l[3])
-        event_type=l[4]
-        #get a string descriptor of the event type
-        event_type_info=_lytaf_event2string(l[4])
+        #create a dictionary for each entry of interest
+        lar_entry={'roi_discription':'LYRA LYTAF event',
+        'start_time':datetime.datetime.utcfromtimestamp(l[1]),
+        'ref_time':datetime.datetime.utcfromtimestamp(l[2]),
+        'end_time':datetime.datetime.utcfromtimestamp(l[3]),
+        'event_type_id':l[4],'event_type_description':_lytaf_event2string(l[4])}
 
         #create output tuple for each entry in list
-        entry=(insertion_time,start_time,ref_time,end_time,event_type,event_type_info[0])
-        output.append(entry)
+        #entry=(insertion_time,start_time,ref_time,end_time,event_type,event_type_info[0])
+        #output a list of dictionaries
+        output.append(lar_entry)
     
     return output
 
