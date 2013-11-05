@@ -48,7 +48,7 @@ def get_lytaf_events(timerange,lytaf_dir=''):
         'start_time':datetime.datetime.utcfromtimestamp(l[1]),
         'ref_time':datetime.datetime.utcfromtimestamp(l[2]),
         'end_time':datetime.datetime.utcfromtimestamp(l[3]),
-        'event_type_id':l[4],'event_type_description':_lytaf_event2string(l[4])}
+        'event_type_id':l[4],'event_type_description':_lytaf_event2string(l[4])[0]}
 
         #create output tuple for each entry in list
         #entry=(insertion_time,start_time,ref_time,end_time,event_type,event_type_info[0])
