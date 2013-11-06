@@ -1,7 +1,6 @@
 from __future__ import absolute_import
 
 import datetime
-import urlparse
 import calendar
 import sqlite3
 import sunpy.net.download
