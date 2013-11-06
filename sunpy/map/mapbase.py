@@ -1067,7 +1067,6 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
                   'extent':extent,
                   'interpolation':'nearest'}
         kwargs.update(imshow_args)
-        
         ret = axes.imshow(self.data, **kwargs)
         
         #Set current image (makes colorbar work)

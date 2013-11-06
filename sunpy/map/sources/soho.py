@@ -66,7 +66,18 @@ class EITMap(GenericMap):
     def norm(self):
         """Returns a Normalize object to be used with EIT data"""
         # byte-scaled images have most likely already been scaled
-        if self.dtype == np.uint8:
+        # THIS WARNING IS KNOWN TO APPLY TO 0.3 code only.
+        # NOT TESTED in sunpy 0.4 when the glymur library
+        # is used instead of pyopenjpeg.  It seems that EIT JP2 files read by
+        # pyopenjpeg and openjpeg using the j2k_to_image command, returns 
+        # np.float32 arrays.  For comparison, AIA JP2 files read the same way
+        # return np.uint8 arrays.  EIT JP2 files have already been
+        # byte-scaled when they are created by the Helioviewer Project.
+        # SunPy 0.3 and lower code assumes that if datatype of the data array
+        # was np.uint8 then the image was highly likely to be byte-scaled
+        # Since the data datatype was in fact a np.float32, then the byte-scaling
+        # was never picked up.
+        if self.data.dtype == np.float32:
             return None
         
         mean = self.mean()
