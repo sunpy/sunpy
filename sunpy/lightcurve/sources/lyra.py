@@ -124,3 +124,5 @@ class LYRALightCurve(LightCurve):
 
         # Return the header and the data
         return hdulist[0].header, pandas.DataFrame(table, index=times)
+
+
