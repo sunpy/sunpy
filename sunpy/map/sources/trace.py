@@ -38,13 +38,17 @@ above concerning how to read "tri" files in SSWIDL.
         self.meta['obsrvtry'] = "TRACE"
 
         # Name that will appear at the top of a TRACE image plot
-        self._name = self.detector + " " + str(self.meta['wave_len'])
+        self._name = self.detector + " " + self.measurement
         self._nickname = self.detector
 
         # Colour maps
-        self.cmap = cm.get_cmap('trace' + str(self.meta['wave_len']))
+        self.cmap = cm.get_cmap('trace' + self.measurement)
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an TRACE image"""
         return header.get('instrume') == 'TRACE'
+    
+    @property
+    def measurement(self):
+        return str(self.meta['wave_len'])
