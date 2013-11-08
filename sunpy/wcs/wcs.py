@@ -47,7 +47,7 @@ from __future__ import absolute_import
 import numpy as np
 import sunpy.sun as sun
 
-rsun_meters = sun.constants.radius
+rsun_meters = sun.constants.radius.si.value
 
 __all__ = ['_convert_angle_units', 'convert_pixel_to_data', 'convert_hpc_hg',
            'convert_data_to_pixel', 'convert_hpc_hcc', 'convert_hcc_hpc',
