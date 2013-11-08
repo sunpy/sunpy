@@ -24,7 +24,7 @@ class roi:
     
     Methods
     -------
-    timerange()
+    time_range()
         Return a time range object from the start and end times of the ROI
 
     Examples
