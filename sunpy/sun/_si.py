@@ -16,49 +16,88 @@ TODO: Add solar atmosphere values to standard model.
 """
 from __future__ import absolute_import
 
-import scipy.constants as _cd
-import numpy as np
-from astropy.units import Quantity
+from astropy.constants import Constant
+import astropy.constants as astrocon
 
 __all__ = ['physical_constants']
 
 physical_constants = {}
 
-# physical_constants[name] = (Quantity, uncert)
-physical_constants['mass'] = (Quantity(1.9884e30, 'kg'), -1)
-physical_constants['radius'] = (Quantity(6.95508e8, 'm'), -1)
-physical_constants['diameter'] = (physical_constants['radius'][0] * 2.0, -1)
-physical_constants['volume'] = (4 / 3. * np.pi * 
-                                physical_constants['radius'][0] ** 3, -1)
-physical_constants['surface area'] = (4 * np.pi * 
-                                      physical_constants['radius'][0] ** 2, -1)
-physical_constants['average density'] = (physical_constants['mass'][0] / 
-                                         physical_constants['volume'][0], -1)
-physical_constants['center density'] = (Quantity(1.622e5, 'kg m**-3'), -1)
-physical_constants['mean intensity'] = (Quantity(2.009e7, 'W m**-2 sr**-1'), -1)
-physical_constants['effective temperature'] = (Quantity(5778.0, 'K'), -1)
-physical_constants['center temperature'] = (Quantity(1.57e7, 'K'), -1)
-physical_constants['luminosity'] = (Quantity(3.8427e26, 'J/s'), -1)
-physical_constants['absolute magnitude'] = (Quantity(4.83, ''), -1)
-physical_constants['visual magnitude'] = (Quantity(-26.74, ''), -1)
-physical_constants['mass conversion rate'] = (Quantity(4300e6, 'kg/s'), -1)
-physical_constants['mean energy production'] = (Quantity(0.1937, 'J*kg'), -1)
-physical_constants['ellipticity'] = (Quantity(0.00005,''), -1)
-physical_constants['GM'] = (Quantity(_cd.G, 'N m**2 * kg**2') * physical_constants['mass'][0], 
-                            -1)
-physical_constants['surface gravity'] = (physical_constants['GM'][0] / 
-                                         physical_constants['radius'][0] ** 2, -1)
-physical_constants['escape velocity'] = (1e-3 * np.sqrt(2 * 
-                                         physical_constants['GM'][0] / 
-                                         physical_constants['radius'][0]), -1)
-physical_constants['sunspot cycle'] = (Quantity(11.4,'year'), -1)
-physical_constants['metallicity'] = (Quantity(0.0122,''), -1)
+physical_constants['mass'] = astrocon.M_sun
+physical_constants['radius'] = astrocon.R_sun
+physical_constants['luminosity'] = astrocon.L_sun
+physical_constants['mean distance'] = astrocon.au
+
+# following needs error estimate if appropriate
+physical_constants['perihelion distance'] = Constant('perihelion', "Perihelion Distance", 1.471e11, 'm', 0, 
+                                     "Allen's Astrophysical Quantities 4th Ed.", system='si')
+
+# following needs error estimate if appropriate
+physical_constants['aphelion distance'] = Constant('aphelion', "Aphelion Distance", 1.521e11, 'm', 0, 
+                                     "Allen's Astrophysical Quantities 4th Ed.", system='si')
+
+physical_constants['age'] = Constant('age', "Age of the Sun", 4.6e9, 'year', 0.1e9, 
+                                     "Allen's Astrophysical Quantities 4th Ed.", system='si')
 
 # A solar flux  (sfu) is traditional measure of solar radio flux.
-physical_constants['solar flux unit'] = (Quantity(1e-22, 'W m**-2 Hz**-1'), 0)
+physical_constants['solar flux unit'] = Constant('sfu', "Solar flux unit", 1e-22, 
+                                                 'W m**-2 Hz**-1', 0, "Allen's Astrophysical Quantities 4th Ed.", system='si')
+
+# following needs error estimate if appropriate
+physical_constants['visual magnitude'] = Constant('V', "Apparent visual magnitude", -26.75, 
+                                                 '', 0, "Allen's Astrophysical Quantities 4th Ed.", system='si')
+
+# The Sun as viewed from Earth
+physical_constants['average_angular_size'] = Constant('theta', "Semidiameter", 959.63, 
+                                                 'arcsec', 0, "Allen's Astrophysical Quantities 4th Ed.", system='si')
+
+# following needs error estimate if appropriate
+physical_constants['surface area'] = Constant('A', "Surface area", 6.087e18, 
+                                                 'm**2', 0, "Allen's Astrophysical Quantities 4th Ed.", system='si')
+
+# following needs error estimate if appropriate
+physical_constants['surface area'] = Constant('A', "Surface area", 6.087e18, 
+                                                 'm**2', 0, "Allen's Astrophysical Quantities 4th Ed.", system='si')
+
+# following needs error estimate if appropriate
+physical_constants['average density'] = Constant('rho', "Mean density", 1409, 
+                                                 'kg m**-3', 0, "Allen's Astrophysical Quantities 4th Ed.", system='si')
+
+# following needs error estimate if appropriate
+physical_constants['surface gravity'] = Constant('g', "Surface gravity", 274, 
+                                                 'm s**-1', 0, "Allen's Astrophysical Quantities 4th Ed.", system='si')
+
+# following needs error estimate if appropriate
+physical_constants['moment of inertia'] = Constant('I', "Moment of inertia", 5.7e54, 
+                                                 'kg m**-2', 0, "Allen's Astrophysical Quantities 4th Ed.", system='si')
+
+# following needs error estimate if appropriate
+physical_constants['volume'] = Constant('V', "Volume", 1.4122e27, 
+                                                 'm**3', 0, "Allen's Astrophysical Quantities 4th Ed.", system='si')
+
+# following needs error estimate if appropriate
+physical_constants['escape velocity'] = Constant('v', "Escape velocity at surface", 6.177e5, 
+                                                 'm s**-1', 0, "Allen's Astrophysical Quantities 4th Ed.", system='si')
+
+#the following constants need references and error estimates if appropriate
+physical_constants['metallicity'] = Constant('v', "Metallicity", 0.0122, 
+                                                 '', 0, "", system='si')
+
+physical_constants['sunspot cycle'] = Constant('v', "Average duration of sunspot cycle", 11.4, 
+                                                 'year', 0, "", system='si')                                      
+
+physical_constants['ellipticity'] = Constant('v', "Ellipticity", 0.00005, 
+                                                 '', 0, "", system='si')  
+physical_constants['average intensity'] = Constant('I', "Mean Intensity", 2.009e7, 
+                                                 'W m**-2 sr**-1', 0, "", system='si')                                      
+        
+physical_constants['effective temperature'] = Constant('T', "Effective surface temperature", 5778.0, 
+                                                 'K', 0, "", system='si')
+
+physical_constants['mass conversion rate'] = Constant('dm/dt', "Mass conversion rate", 4300e6, 
+                                                 'kg s**-1', 0, "", system='si')
 
 # Solar radius measured outside earth's atmosphere in arcseconds
-physical_constants['average_angular_size'] = (Quantity(961.07064,'arcsec'), -1)
 
 # Standard Model - Interior Structure
 # adapted from Turck-Chieze et al. (1988)
