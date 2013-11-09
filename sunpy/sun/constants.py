@@ -12,61 +12,48 @@ Object
         of physical constants, values are tuples (value, units, uncertainty). The dictionary
         contains the following solar physical constants:
 
-    absolute magnitude: 
-        The absolute visual magnitude of the Sun. It is the measure of the Sun's intrinsic 
-        brightness. It is the apparent magnitude the Sun would have if it were 32.6 light
-        years (10 parsecs) away from Earth.
     average density:
-         The average density of the Sun in SI.
+         The average density of the Sun.
     average_angular_size: 
         The average angular size of the Sun as seen from Earth in arcseconds.
-    center density:
-        The density at the center of the Sun in SI.
-    center temperature:
-        The temperature at the center of the Sun in Kelvin.
-    diameter: 
-        The diameters of the Sun at the equator in meters.
     effective temperature:
         The effective black-body temperature of the Sun in Kelvin.  
-    ellipticity: 
+    oblateness: 
         The ellipticity of the Sun.
     escape velocity: 
         The velocity which an object needs to escape from the gravitational pull of the Sun.
     luminosity:
-        The luminosity of the Sun in Joules per second.
+        The luminosity of the Sun.
     mass:
-        The mass of the Sun in kg.
+        The mass of the Sun.
     mass conversion rate:
         The rate at which the Sun converts mass to energy.
     mean energy production:
-        The mean rate at which the Sun produces energy in Joules per second
+        The mean rate at which the Sun produces energy.
     mean intensity:
         The mean intensity of the Sun.
     metallicity: 
-        The metallicity of the Sun
+        The metallicity of the Sun.
     radius:
-        The radius of the Sun at the equator in meters.
+        The radius of the Sun at the equator.
     solar flux unit:
         The definition of a solar flux unit.
     sunspot cycle:
         The average duration of the solar activity cycle.
     surface area:
-        The surface area of the Sun in meters squared. 
+        The surface area of the Sun. 
     surface gravity:
         The gravitational acceleration at the surface of the Sun as measured at the equator.
     visual magnitude:
        A measure of the Sun's brightness as seen by an observer on Earth without the
        presence of the atmosphere.
     volume:
-        The volume of the Sun in meters cubed.
+        The volume of the Sun.
 
 Attributes
 ----------
 A number of variables from physical_constants are made available for convenience as 
-attributes. They are equatorial_radius, radius (same as equatorial radius), equatorial_diameter, volume, surface_area, average_density, center_density, 
-equatorial_surface_gravity, mean_intensity, effective_temperature, center_temperature, 
-luminosity, absolute_magnitude, visual_magnitude, mass_conversion_rate, 
-mean_energy_production, escape_velocity, ellipticity, GM, average_angular_size, sfu.
+attributes. 
 
 Websites
 --------

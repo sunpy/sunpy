@@ -42,7 +42,7 @@ physical_constants['visual magnitude'] = Constant('V', "Apparent visual magnitud
                                                  '', 0, "Allen's Astrophysical Quantities 4th Ed.", system='si')
 
 # The Sun as viewed from Earth
-physical_constants['average_angular_size'] = Constant('theta', "Semidiameter", 959.63, 
+physical_constants['average angular size'] = Constant('theta', "Semidiameter", 959.63, 
                                                  'arcsec', 0, "Allen's Astrophysical Quantities 4th Ed.", system='si')
 
 # following needs error estimate if appropriate
@@ -82,7 +82,7 @@ physical_constants['sunspot cycle'] = Constant('v', "Average duration of sunspot
 physical_constants['average intensity'] = Constant('I', "Mean Intensity", 2.009e7, 
                                                  'W m**-2 sr**-1', 0, "", system='si')                                      
         
-physical_constants['effective temperature'] = Constant('T', "Effective surface temperature", 5778.0, 
+physical_constants['effective temperature'] = Constant('T', "The effective black-body temperature of the Sun in Kelvin. ", 5778.0, 
                                                  'K', 0, "", system='si')
 
 physical_constants['mass conversion rate'] = Constant('dm/dt', "Mass conversion rate", 4300e6, 
