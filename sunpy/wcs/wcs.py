@@ -216,7 +216,7 @@ def convert_hpc_hcc(x, y, dsun_meters=None, angle_units='arcsec', z=False):
     siny = np.sin(y * c[1])
 
     if dsun_meters is None:
-        dsun_meters = sun.constants.au
+        dsun_meters = sun.constants.au.si.value
 
     q = dsun_meters * cosy * cosx
     distance = q ** 2 - dsun_meters ** 2 + rsun_meters ** 2
@@ -262,7 +262,7 @@ def convert_hcc_hpc(x, y, dsun_meters=None, angle_units='arcsec'):
     z = np.sqrt(rsun_meters ** 2 - x ** 2 - y ** 2)
     
     if dsun_meters is None:
-        dsun_meters = sun.constants.au
+        dsun_meters = sun.constants.au.si.value
     zeta = dsun_meters - z
     distance = np.sqrt(x**2 + y**2 + zeta**2)
     hpcx = np.rad2deg(np.arctan2(x, zeta))
