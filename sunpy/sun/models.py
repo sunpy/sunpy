@@ -13,6 +13,8 @@ Object
     evolution : pandas.DatFrame
         The evolution as a function of time of the Sun
 
+.. todo:: Need source for evolution model.
+
 """
 
 from __future__ import absolute_import
@@ -55,8 +57,9 @@ _density = [147.74, 146.66, 142.73, 116.10, 93.35,
            10.157, 5.566, 2.259, 0.4483, 0.1528,
            0.042, 0.00361, 1.99e-7]
 
-d = {'mass': _mass, 'luminosity': _luminosity, 'temperature': _temperature, 'density': _density}
-interior = pandas.DataFrame(d, index = _radius)
+_d = {'mass': _mass, 'luminosity': _luminosity, 'temperature': _temperature, 'density': _density}
+interior = pandas.DataFrame(_d, index = _radius)
+interior.index.name = 'radius'
 interior.units = {'radius': con.radius, 'mass': con.mass, 'luminosity': con.luminosity, 
                   'temperature': Quantity(1e6, 'K'), 'density': Quantity(1, 'g cm**-3')}
 interior.source = 'Turck-Chieze et al. (1988)'
@@ -82,8 +85,9 @@ _tcentral_temperature = [13.35, 13.46, 13.68, 14.08, 14.22, 14.60,
                         15.12, 15.51, 16.18, 16.65, 17.13, 17.62,
                         18.42, 18.74, 18.81, 19.25]
 
-t = {'luminosity': _tluminosity, 'radius': _tradius, 'central temperature': _tcentral_temperature}
-evolution = pandas.DataFrame(t, index = _tradius)
+_t = {'luminosity': _tluminosity, 'radius': _tradius, 'central temperature': _tcentral_temperature}
+evolution = pandas.DataFrame(_t, index = _tradius)
+evolution.index.name = 'time'
 evolution.units = {'radius': con.radius, 'luminosity': con.luminosity, 
                   'central temperature': Quantity(1e6, 'K'), 'time': Quantity(1e9, 'year')}
 evolution.source = 'Unknown'

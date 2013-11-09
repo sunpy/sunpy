@@ -275,4 +275,4 @@ escape_velocity = constant('escape velocity')
 sfu = constant('solar flux unit')
 
 # Observable parameters
-average_angular_size = constant('average_angular_size')
+average_angular_size = constant('average angular size')
