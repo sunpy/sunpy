@@ -1,24 +1,17 @@
 """
-Collection of solar physical constants. Most constants are in SI s.
+Collection of solar physical constants.
 
 The list is not meant to be comprehensive, but just a convenient list for 
-everyday use. All derived values (e.g. escape velocity, average density) 
-are calculated. Use at own risk.
+everyday use.
 
-References:
-    Review of Particle Physics 2010 (page 102)
-    NASA Sun Fact Sheet 
-      (http://nssdc.gsfc.nasa.gov/planetary/factsheet/sunfact.html)
-    Wikipedia (http://en.wikipedia.org/wiki/Sun)
+.. todo:: Need better sources for some constants as well as error values.
 
-TODO: References should be to published or standard sources, NOT websites.
-TODO: Add solar atmosphere values to standard model.
 """
+
 from __future__ import absolute_import
 
 from astropy.constants import Constant
 import astropy.constants as astrocon
-import pandas
 
 __all__ = ['physical_constants']
 
@@ -80,8 +73,8 @@ physical_constants['oblateness'] = Constant('v', "oblateness", 8.01,
                                                  'marcsec', 0.14, "Fivian et al. 2008", system='si')  
 
 #the following constants need references and error estimates if appropriate
-physical_constants['metallicity'] = Constant('Z', "Metallicity", 0.0122, 
-                                                 'Asplund et al. 2006', 0, "", system='si')
+physical_constants['metallicity'] = Constant('Z', "Metallicity", 0.0122, '', 0.0, 
+                                                 'Asplund et al. 2006', system='si')
 
 physical_constants['sunspot cycle'] = Constant('v', "Average duration of sunspot cycle", 11.4, 
                                                  'year', 0, "", system='si')                                      

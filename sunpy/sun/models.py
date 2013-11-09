@@ -13,8 +13,6 @@ Object
     evolution : pandas.DatFrame
         The evolution as a function of time of the Sun
 
-
-
 """
 
 from __future__ import absolute_import
@@ -88,3 +86,4 @@ t = {'luminosity': _tluminosity, 'radius': _tradius, 'central temperature': _tce
 evolution = pandas.DataFrame(t, index = _tradius)
 evolution.units = {'radius': con.radius, 'luminosity': con.luminosity, 
                   'central temperature': Quantity(1e6, 'K'), 'time': Quantity(1e9, 'year')}
+evolution.source = 'Unknown'
