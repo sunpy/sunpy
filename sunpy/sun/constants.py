@@ -9,7 +9,7 @@ Object
 ------
     physical_constants : dict
         A dictionary containing physical constants. Keys are the names
-        of physical constants, values are tuples (value, units, precision). The dictionary
+        of physical constants, values are tuples (value, units, uncertainty). The dictionary
         contains the following solar physical constants:
 
     absolute magnitude: 
@@ -72,8 +72,6 @@ Websites
 --------
 | http://books.google.com/books?id=4SWENr1tIJ0C&printsec=frontcover&source=gbs_ge_summary_r&cad=0#v=onepage&q=sfu&f=false
 
-.. todo:: Need better sources as well as error values.
-
 """
 
 from __future__ import absolute_import
@@ -131,7 +129,7 @@ def value(key) :
     Examples
     --------
     >>> from sunpy.sun import constants
-    >>> constants.precision('mass')
+    >>> constants.uncertainty('mass')
         1.9884e30
 
     """
@@ -159,15 +157,15 @@ def unit(key) :
     Examples
     --------
     >>> from sunpy.sun import constants
-    >>> constants.precision('mass')
+    >>> constants.uncertainty('mass')
     'kg'
 
     """
     return constant(key).unit
 
-def precision(key) :
+def uncertainty(key) :
     """
-    Relative precision in physical_constants indexed by key
+    Relative uncertainty in physical_constants indexed by key
 
     Parameters
     ----------
@@ -177,7 +175,7 @@ def precision(key) :
     Returns
     -------
     prec : float
-        Relative precision in `physical_constants` corresponding to `key`
+        Relative uncertainty in `physical_constants` corresponding to `key`
 
     See Also
     --------
@@ -187,11 +185,11 @@ def precision(key) :
     Examples
     --------
     >>> from sunpy.sun import constants
-    >>> constants.precision('mass')
+    >>> constants.uncertainty('mass')
     
 
     """
-    return physical_constants[key].value / constant(key).value()
+    return constant(key).uncertainty
 
 def find(sub=None, disp=False):
     """
@@ -258,16 +256,16 @@ def print_all(key = None):
     format_string = ('{0:<' + str(column_width[0]) + '}' + '{1:>' + 
                     str(column_width[1]) + '}' + '{2:>' + str(column_width[2]) 
                     + '}' + '{3:>' + str(column_width[3]) + '}')
-    print(format_string.format('Name', 'Value', 'Units', 'Precision'))
+    print(format_string.format('Name', 'Value', 'Units', 'Error'))
     print(('{:-^' + str(table_width) + '}').format(''))
 
     if key is None:
         for key in physical_constants:
             print(format_string.format(key, str(value(key)), unit(key), 
-                                       str(precision(key))))
+                                       str(uncertainty(key))))
     else: 
         print(format_string.format(key, str(value(key)), unit(key), 
-                                   str(precision(key))))
+                                   str(uncertainty(key))))
 
 # Spectral class is not included in physical constants since it is not a number
 spectral_classification = 'G2V'
