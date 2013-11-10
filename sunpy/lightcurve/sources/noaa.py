@@ -65,7 +65,6 @@ class NOAAIndicesLightCurve(LightCurve):
     @staticmethod
     def _parse_csv(filepath):
         """Parses an NOAA indices csv"""
-        print(filepath)
         with open(filepath, 'r') as fp:
             fields = ('yyyy', 'mm', 'sunspot_swo', 'sunspot_ri', 'sunspot_ratio', 'sunspot_smooth_swo', 'sunspot_smooth_ri', 'radioflux', 'radioflux_smooth', 'geo_ap', 'geo_ap_smooth')
             data = read_csv(fp, delim_whitespace=True, names = fields, comment='#', skiprows=2, dtype={'yyyy':np.str, 'mm':np.str})
