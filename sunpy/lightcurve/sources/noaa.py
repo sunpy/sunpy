@@ -16,7 +16,7 @@ from sunpy.time import parse_time, TimeRange
 __all__ = ['NOAAIndicesLightCurve']
 
 class NOAAIndicesLightCurve(LightCurve):
-    """NOAA Solar Indices weekly indices definition
+    """NOAA observed Solar Indices weekly indices definition
 
     Examples
     --------
