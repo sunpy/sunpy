@@ -1,3 +1,8 @@
+Latest
+------
+    * Updated sun.constants to use astropy.constants objects which include units, source,
+    and error instide. For more info check out http://docs.astropy.org/en/latest/constants/index.html
+
 0.3.2
 -----
 Bug Fixes:
