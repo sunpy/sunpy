@@ -32,3 +32,6 @@ Map.register(CORMap, CORMap.is_datasource_for)
 
 from yohkoh import SXTMap
 Map.register(SXTMap, SXTMap.is_datasource_for)
+
+from iris import IRISMap
+Map.register(IRISMap, IRISMap.is_datasource_for)
