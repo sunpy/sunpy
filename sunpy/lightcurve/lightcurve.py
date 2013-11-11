@@ -89,7 +89,9 @@ class LightCurve(object):
             url, kwargs, 
             err = "Unable to download data for specified date range"
         )
-        return cls.from_file(filepath)
+        result = cls.from_file(filepath)
+        result.data = result.data.ix[result.data.index.indexer_between_time(from_, to)]
+        return result
 
     @classmethod
     def from_timerange(cls, timerange, **kwargs):
@@ -98,7 +100,9 @@ class LightCurve(object):
             url, kwargs,
             err = "Unable to download data for specified date range"
         )
-        return cls.from_file(filepath)
+        result = cls.from_file(filepath)
+        result.data = result.data.ix[ts.index.indexer_between_time(timerange.start(), timerange.end())]
+        return result
 
     @classmethod
     def from_file(cls, filename):
