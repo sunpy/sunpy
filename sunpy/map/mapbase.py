@@ -400,6 +400,10 @@ Dimension:\t [%d, %d]
         return {'x': self.meta.get('crota1', 0.),
                 'y': self.meta.get('crota2', 0.),}
 
+    @property
+    def norm(self):
+        return self._get_norm()
+
 # #### Miscellaneous #### #
     
     def _fix_date(self):
@@ -1084,7 +1088,7 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         
         kwargs = {'origin':'lower',
                   'cmap':cmap,
-                  'norm':self.norm(),
+                  'norm':self.norm,
                   'extent':extent,
                   'interpolation':'nearest'}
         kwargs.update(imshow_args)
@@ -1095,7 +1099,7 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         plt.sci(ret)
         return ret
 
-    def norm(self):
+    def _get_norm(self):
         """Default normalization method. Not yet implemented."""
         return None       
         
