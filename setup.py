@@ -91,6 +91,7 @@ def install(setup): #pylint: disable=W0621
             'matplotlib>=1.1',
             'glymur>=0.5.9',
  #           'beautifulsoup4',
+            'sqlalchemy',
         ],
         license="BSD",
         long_description="\n".join(DOCLINES[2:]),
@@ -103,7 +104,7 @@ def install(setup): #pylint: disable=W0621
         provides=['sunpy'],
         url="http://www.sunpy.org/",
         use_2to3=True,
-        version="0.3.1",
+        version="0.3.2",
         ext_modules = ext_modules
     )
 
