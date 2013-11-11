@@ -48,7 +48,11 @@ Module documentation
 
 The main class that interacts with the HEK service.  Provides a method
 that queries the HEK service, a download method, and a merge method
-(this method ensures that a unique list of events is returned).
+(this method ensures that a unique list of events is returned).  For
+general questions regarding the HEK API please consult
+http://www.lmsal.com/hek/api.html and
+http://vso.stanford.edu/hekwiki/ApplicationProgrammingInterface?action=print
+, and links within those pages.
 
 
 :class:'Response'
@@ -64,6 +68,13 @@ event, and the instrument that observed it.
 HEK attributes
 ^^^^^^^^^^^^
 
+These are the attributes that can be used to construct HEK queries.
+These attributes are defined in sunpy/net/hek.attrs.py.  This file is
+automatically generated from sunpy/tools/hek_mkcls.py and therefore
+should not be edited.  The file sunpy/tools/hek_mkcls.py creates and
+assigns attributes to the HEK feature/event types.  These attributes
+and feature/event types are listed on
+http://www.lmsal.com/hek/VOEvent_Spec.html. 
 
 .. autoclass: sunpy.net.hek.HEKClient
 
