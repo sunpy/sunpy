@@ -11,6 +11,7 @@ __email__ = "keith.hughitt@nasa.gov"
 import os
 import shutil
 import urllib2
+import warnings
 from datetime import datetime
 
 import numpy as np
@@ -202,6 +203,8 @@ class LightCurve(object):
                 raise urllib2.URLError(err)
             with open(filepath, 'wb') as fp:
                 shutil.copyfileobj(response, fp)
+        else:
+            warnings.warn("Using existing file rather than downloading, use overwrite=True to override.", RuntimeWarning)
 
         return filepath
 
