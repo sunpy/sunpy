@@ -489,7 +489,7 @@ Example (:class:`sunpy.map.Map`) ::
     >>> aia.show()
     >>> import matplotlib.cm as cm
     >>> import matplotlib.colors as colors
-    >>> aia.show(cmap=cm.hot, norm=colors.Normalize(1, 2048))
+    >>> aia.peek(cmap=cm.hot, norm=colors.Normalize(1, 2048))
     
     See Also
     --------
