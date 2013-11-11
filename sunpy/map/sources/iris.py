@@ -5,12 +5,8 @@ from sunpy.map import GenericMap
 __all__ = ['IRISMap']
 
 class IRISMap(GenericMap):
-    """AIA Image Map definition
-    
-    References
-    ----------
-    For a description of AIA headers
-    http://jsoc.stanford.edu/doc/keywords/AIA/AIA02840_A_AIA-SDO_FITS_Keyword_Documents.pdf
+    """
+    A 2D IRIS Map
     """
     
     def __init__(self, data, header, **kwargs):
