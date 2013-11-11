@@ -242,6 +242,8 @@ class GenericMap(NDDataStandin):
         # Validate header
         # TODO: This should be a function of the header, not of the map
         self._validate()
+        
+        self.norm = self._get_norm()
 
     def __getitem__(self, key):
         """ This should allow indexing by physical coordinate """
@@ -399,10 +401,6 @@ Dimension:\t [%d, %d]
     def rotation_angle(self):
         return {'x': self.meta.get('crota1', 0.),
                 'y': self.meta.get('crota2', 0.),}
-
-    @property
-    def norm(self):
-        return self._get_norm()
 
 # #### Miscellaneous #### #
     
