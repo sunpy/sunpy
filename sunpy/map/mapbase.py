@@ -839,7 +839,7 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         
 # #### Visualization #### #
 
-    def draw_grid(self, axes=None, grid_spacing=20):
+    def draw_grid(self, axes=None, grid_spacing=20, **kwargs):
         """Draws a grid over the surface of the Sun
         
         Parameters
@@ -853,6 +853,10 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         Returns
         -------
         matplotlib.axes object
+        
+        Notes
+        -----
+        keyword arguments are passed onto matplotlib.pyplot.plot
         """
 
         if not axes:
@@ -865,6 +869,12 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         b0 = self.heliographic_latitude
         l0 = self.heliographic_longitude
         units = [self.units['x'], self.units['y']]
+
+        #Prep the plot kwargs
+        plot_kw = {'color':'white',
+                   'linestyle':'dotted',
+                   'zorder':100}
+        plot_kw.update(kwargs)
 
         #TODO: This function could be optimized. Does not need to convert the entire image
         # coordinates
@@ -895,7 +905,7 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
             x, y = wcs.convert_hg_hpc(hg_longitude_deg_mesh, hg_latitude_deg_mesh, b0_deg=b0, l0_deg=l0, 
                     dsun_meters=dsun, angle_units=units[0], occultation=False)                         
             
-            axes.plot(x, y, color='white', linestyle='dotted',zorder=100)
+            axes.plot(x, y, **plot_kw)
             
         hg_longitude_deg = np.arange(lon_range[0], lon_range[1]+grid_spacing, grid_spacing)
         hg_latitude_deg = np.linspace(lat_range[0], lat_range[1], num=num_points)
@@ -906,14 +916,14 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
                 lon * np.ones(num_points), hg_latitude_deg)
             x, y = wcs.convert_hg_hpc(hg_longitude_deg_mesh, hg_latitude_deg_mesh, b0_deg=b0, l0_deg=l0, 
                     dsun_meters=dsun, angle_units=units[0], occultation=False)                         
-            axes.plot(x, y, color='white', linestyle='dotted',zorder=100)
+            axes.plot(x, y, **plot_kw)
             
         axes.set_ylim(self.yrange)
         axes.set_xlim(self.xrange)
 
         return axes
 
-    def draw_limb(self, axes=None):
+    def draw_limb(self, axes=None, **kwargs):
         """Draws a circle representing the solar limb 
         
             Parameters
@@ -924,14 +934,25 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
             Returns
             -------
             matplotlib.axes object
+            
+            Notes
+            -----
+            keyword arguments are passed onto the Circle Patch, see:
+            http://matplotlib.org/api/artist_api.html#matplotlib.patches.Patch
+            http://matplotlib.org/api/artist_api.html#matplotlib.patches.Circle
         """
         
         if not axes:
             axes = plt.gca()
         
-        circ = patches.Circle([0, 0],
-                                  radius=self.rsun_arcseconds, fill=False,
-                                  color='white',zorder=100)
+        c_kw = {'radius':self.rsun_arcseconds,
+                'fill':False,
+                'color':'white',
+                'zorder':100
+                }
+        c_kw.update(kwargs)
+        
+        circ = patches.Circle([0, 0], **c_kw)
         axes.add_artist(circ)
         
         return axes
