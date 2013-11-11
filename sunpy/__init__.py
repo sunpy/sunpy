@@ -41,9 +41,11 @@ coordinate systems.
 """
 from __future__ import absolute_import
 
-__version__ = 0.3
+__version__ = 0.33
 
 from sunpy.util.config import load_config, print_config
+from sunpy.util import system_info
+from sunpy.tests.test import test
 
 # Sample data
 from sunpy.data.sample import (AIA_171_IMAGE, RHESSI_IMAGE, EIT_195_IMAGE, 
