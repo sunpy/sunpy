@@ -2,22 +2,49 @@ from __future__ import absolute_import
 
 import re
 
-from sunpy.io import fits, jp2, ana
+try:
+    from . import fits
+except ImportError:
+    fits = None
+
+try:
+    from . import jp2
+except ImportError:
+    jp2 = None
+
+try:
+    from . import ana
+except ImportError:
+    ana = None
 
 __all__ = ['read_file', 'read_file_header', 'write_file']
 
 # File formats supported by SunPy
 _known_extensions = {
-    ('fts', 'fits'): fits,
-    ('jp2', 'j2k', 'jpc', 'jpt'): jp2,
-	('fz', 'f0'): ana
+    ('fts', 'fits'): 'fits',
+    ('jp2', 'j2k', 'jpc', 'jpt'): 'jp2',
+    ('fz', 'f0'): 'fz'
 }
 
-_readers = {
+#Define a dict which raises a custom error message if the value is None
+class Readers(dict):
+    def __init__(self, *args):
+        dict.__init__(self, *args)
+    
+    def __getitem__(self, key):
+        val = dict.__getitem__(self, key)
+        if val is None:
+            raise ReaderError("The Reader sunpy.io.%s is not avalible, please check that you have the required dependancies installed."%key)
+        return val
+
+#Map the readers
+_readers = Readers({
             'fits':fits,
             'jp2':jp2,
-			'fz':ana
-}
+		  'fz':ana
+})
+
+print _readers
 
 def read_file(filepath, filetype=None, **kwargs):
     """
@@ -30,7 +57,7 @@ def read_file(filepath, filetype=None, **kwargs):
     
     filetype: string
         Supported reader or extension to manually specify the filetype.
-        Supported readers are ('jp2', 'fits')
+        Supported readers are ('jp2', 'fits', 'ana')
     
     Returns
     -------
@@ -38,17 +65,15 @@ def read_file(filepath, filetype=None, **kwargs):
         A list of (data, header) tuples.
     """
     if filetype:
-        for name, reader in _readers.items():
-            if filetype == name:
-                return reader.read(filepath, **kwargs)
+        return _readers[filetype].read(filepath, **kwargs)
                 
-    for extension, reader in _known_extensions.items():
+    for extension, readername in _known_extensions.items():
         if filepath.endswith(extension) or filetype in extension:
-            return reader.read(filepath, **kwargs)
+            return _readers[readername].read(filepath, **kwargs)
 
     # If filetype is not apparent from extension, attempt to detect
-    reader = _detect_filetype(filepath)    
-    return reader.read(filepath, **kwargs)
+    readername = _detect_filetype(filepath)
+    return _readers[readername].read(filepath, **kwargs)  
 
 def read_file_header(filepath, filetype=None, **kwargs):
     """
@@ -73,16 +98,14 @@ def read_file_header(filepath, filetype=None, **kwargs):
         A list of headers
     """
     if filetype:
-        for name, reader in _readers.items():
-            if filetype == name:
-                return reader.get_header(filepath, **kwargs)
+        return _readers[filetype].get_header(filepath, **kwargs)
                 
-    for extension, reader in _known_extensions.items():
+    for extension, readername in _known_extensions.items():
         if filepath.endswith(extension) or filetype in extension:
-            return reader.get_header(filepath, **kwargs)
+            return _readers[readername].get_header(filepath, **kwargs)
         
-    reader = _detect_filetype(filepath)
-    return reader.get_header(filepath, **kwargs)  
+    readername = _detect_filetype(filepath)
+    return _readers[readername].get_header(filepath, **kwargs)  
 
 def write_file(fname, data, header, filetype='auto', **kwargs):
     """
@@ -108,14 +131,14 @@ def write_file(fname, data, header, filetype='auto', **kwargs):
     This routine currently only supports saving a single HDU.
     """
     if filetype == 'auto':
-        for extension, reader in _known_extensions.items():
+        for extension, readername in _known_extensions.items():
             if fname.endswith(extension):
-                return reader.write(fname, data, header, **kwargs)
+                return _readers[readername].write(fname, data, header, **kwargs)
     
     else:
-        for extension, reader in _known_extensions.items():
+        for extension, readername in _known_extensions.items():
             if filetype in extension:
-                return reader.write(fname, data, header, **kwargs)
+                return _readers[readername].write(fname, data, header, **kwargs)
             
     #Nothing has matched, panic
     raise ValueError("This filetype is not supported" )   
@@ -141,7 +164,7 @@ def _detect_filetype(filepath):
     match = re.match(r"[A-Z0-9_]{0,8} *=", first80)
     
     if match is not None:
-        return fits
+        return 'fits'
     
     # JPEG 2000
     #
@@ -155,8 +178,7 @@ def _detect_filetype(filepath):
     
     for sig in jp2_signatures:
         if line1 + line2 == sig:
-            # j2k_to_image requires a valid extension
-            raise InvalidJPEG2000FileExtension
+            return 'jp2'
 
     # Raise an error if an unsupported filetype is encountered
     raise UnrecognizedFileTypeError("The requested filetype is not currently "
@@ -166,7 +188,6 @@ class UnrecognizedFileTypeError(IOError):
     """Exception to raise when an unknown file type is encountered"""
     pass
 
-class InvalidJPEG2000FileExtension(IOError):
-    """Exception to raise when JPEG 2000 is detected but contains an invalid
-    file extension (and is thus unreadable by j2k_to_image"""
+class ReaderError(IOError):
+    """Exception to raise when an unknown file type is encountered"""
     pass
