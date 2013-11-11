@@ -23,7 +23,7 @@ __all__ = ['read_file', 'read_file_header', 'write_file']
 _known_extensions = {
     ('fts', 'fits'): 'fits',
     ('jp2', 'j2k', 'jpc', 'jpt'): 'jp2',
-    ('fz', 'f0'): 'fz'
+    ('fz', 'f0'): 'ana'
 }
 
 #Define a dict which raises a custom error message if the value is None
@@ -41,7 +41,7 @@ class Readers(dict):
 _readers = Readers({
             'fits':fits,
             'jp2':jp2,
-		  'fz':ana
+		  'ana':ana
 })
 
 print _readers
@@ -188,6 +188,9 @@ class UnrecognizedFileTypeError(IOError):
     """Exception to raise when an unknown file type is encountered"""
     pass
 
-class ReaderError(IOError):
+class ReaderError(ImportError):
     """Exception to raise when an unknown file type is encountered"""
+    pass
+
+class InvalidJPEG2000FileExtension(IOError):
     pass
