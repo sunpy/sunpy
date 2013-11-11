@@ -76,7 +76,7 @@ class HMIMap(GenericMap):
     
     @property
     def measurement(self):
-        return header['content'].split(" ")[0].lower()
+        return self.meta['content'].split(" ")[0].lower()
     
     @property
     def observatory(self):
