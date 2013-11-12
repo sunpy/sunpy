@@ -564,14 +564,16 @@ Dimension:\t [%d, %d]
         MapType = type(self)
         return MapType(new_data, new_meta)
     
-    def rotate(self, angle, scale=1.0, rotation_center=None, recenter=True,
+    def rotate(self, angle=None, rmatrix=None, scale=1.0, rotation_center=None, recenter=True,
                missing=0.0, interpolation='bicubic', interp_param=-0.5):
         """Returns a new rotated, rescaled and shifted map.
         
         Parameters
         ---------
         angle: float
-           The angle to rotate the image by (radians)        
+           The angle to rotate the image by (radians). Specify angle or matrix.
+        rmatrix: NxN
+            Linear transformation rotation matrix. Specify angle or matrix.
         scale: float
            A scale factor for the image, default is no scaling
         rotation_center: tuple
@@ -611,7 +613,7 @@ Dimension:\t [%d, %d]
         For more infomation see:
             http://sunpy.readthedocs.org/en/latest/guide/troubleshooting.html#crotate-warning
         """
-        
+        assert angle is None or rmatrix is None
         #Interpolation parameter Sanity
         assert interpolation in ['nearest','spline','bilinear','bicubic']
         #Set defaults based on interpolation
@@ -647,11 +649,14 @@ Dimension:\t [%d, %d]
             shift = np.array(recenter) - np.array(center)
         
         image = self.data.copy()
-    
-        #Calulate the parameters for the affline_transform
-        c = np.cos(angle)
-        s = np.sin(angle)
-        mati = np.array([[c, s],[-s, c]]) / scale   # res->orig
+        
+        if not angle is None:
+            #Calulate the parameters for the affline_transform
+            c = np.cos(angle)
+            s = np.sin(angle)
+            mati = np.array([[c, s],[-s, c]]) / scale   # res->orig
+        if not rmatrix is None:
+            mati = rmatrix / scale   # res->orig
         center = np.array([center]).transpose()  # the center of rotn
         shift = np.array([shift]).transpose()    # the shift
         kpos = center - np.dot(mati, (center + shift))  
