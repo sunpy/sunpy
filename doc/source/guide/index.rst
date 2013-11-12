@@ -11,6 +11,7 @@ Welcome to the SunPy User Guide!
    tutorial
    plotting
    time
+   roi
    vso
    database
    helioviewer
