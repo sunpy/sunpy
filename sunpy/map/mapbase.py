@@ -460,6 +460,7 @@ Dimension:\t [%d, %d]
         scale_factor_x = (float(self.shape[1]) / dimensions[0])
         scale_factor_y = (float(self.shape[0]) / dimensions[1])
 
+        new_map = copy(self)
         # Update image scale and number of pixels
         new_meta = self.meta.copy()
 
@@ -472,8 +473,8 @@ Dimension:\t [%d, %d]
         new_meta['crval2'] = self.center['y']
 
         # Create new map instance
-        MapType = type(self)
-        return MapType(new_data, new_meta)
+        new_map.data = new_data
+        return new_map
     
     def rotate(self, angle=None, rmatrix=None, scale=1.0, rotation_center=None, recenter=True,
                missing=0.0, interpolation='bicubic', interp_param=-0.5):
@@ -602,11 +603,11 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
 
         #Return a new map
         #Copy Header
-        meta = self.meta.copy()
+        new_map = copy(self)
 
         # Create new map instance
-        MapType = type(self)
-        return MapType(data, meta)
+        new_map.data = data
+        return new_map
 
     def submap(self, range_a, range_b, units="data"):
         """Returns a submap of the map with the specified range
@@ -682,15 +683,16 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         new_data = self.data[yslice, xslice].copy()
 
         # Make a copy of the header with updated centering information
-        new_meta = self.meta.copy()
+        new_map = copy(self)
+        new_meta = new_map.meta
         new_meta['crpix1'] = self.reference_pixel['x'] - x_pixels[0]
         new_meta['crpix2'] = self.reference_pixel['y'] - y_pixels[0]
         new_meta['naxis1'] = new_data.shape[1]
         new_meta['naxis2'] = new_data.shape[0]
 
         # Create new map instance
-        MapType = type(self)
-        return MapType(new_data, new_meta)
+        new_map.data = new_data
+        return new_map
 
     def superpixel(self, dimensions, method='sum'):
         """Returns a new map consisting of superpixels formed from the
@@ -736,7 +738,8 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
 
 
         # Update image scale and number of pixels
-        new_meta = self.meta.copy()
+        new_map = copy(self)
+        new_meta = new_map.meta
 
         # Note that 'x' and 'y' correspond to 1 and 0 in self.shape,
         # respectively
@@ -752,8 +755,8 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         new_meta['crval2'] = self.center['y']
 
         # Create new map instance
-        MapType = type(self)
-        return MapType(new_data, new_meta)
+        new_map.data = new_data
+        return new_map
 
 # #### Visualization #### #
 
