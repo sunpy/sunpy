@@ -56,7 +56,7 @@ class XRTMap(GenericMap):
         
         self.cmap = cm.get_cmap(name='hinodexrt')
 
-    def norm(self):
+    def _get_norm(self):
         """Returns a Normalize object to be used with XRT data"""
         # byte-scaled images have most likely already been scaled
         if self.dtype == np.uint8:
