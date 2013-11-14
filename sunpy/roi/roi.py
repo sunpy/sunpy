@@ -10,9 +10,10 @@ class roi:
     
     Parameters
     ----------
-    time : list
+
+    times : list (optional)
         A list of 1 or 2 parse_time-readable times
-    description : str
+    description : str (optional)
         A text description of the ROI
     source : str (optional)
         A description of where this ROI comes from (e.g. the instrument, 'RHESSI', 'LYRA LYTAF')
@@ -32,10 +33,10 @@ class roi:
 
     Examples
     --------
-    from sunpy.roi import roi
-    result = roi.roi(times=['2011-02-15 04:34:09','2011-02-15 04:48:21'],description='UV occult.',source='LYRA LYTAF')
+    from sunpy.roi import *
+    result = roi(times=['2011-02-15 04:34:09','2011-02-15 04:48:21'],description='UV occult.',source='LYRA LYTAF')
     ---------
-    result = roi.roi(times='2013-05-12 03:12:00') 
+    result = roi(times='2013-05-12 03:12:00') 
     """
     
     def __init__(self, times=None, description=None, source=None):
