@@ -10,7 +10,7 @@ from sunpy.hypermap.coordinate_system import CoordinateSystem
 from sunpy.hypermap.coordinate_system import CoordinateFrame
 
 
-class Hypermap(object):
+class HyperMap(object):
     """
     Hypermap
 
