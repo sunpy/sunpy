@@ -19,9 +19,9 @@ class GOESLightCurve(LightCurve):
 
     Examples
     --------
-    import sunpy
-    goes = sunpy.lightcurve.GOESLightCurve.create()
-    goes = sunpy.lightcurve.GOESLightCurve.create('2012/06/01', '2012/06/05')
+    from sunpy import lightcurve as lc
+    goes = lc.GOESLightCurve.create()
+    goes = lc.GOESLightCurve.create('2012/06/01', '2012/06/05')
     goes.peek()
 
     References
@@ -118,11 +118,35 @@ class GOESLightCurve(LightCurve):
                                         end.strftime("%Y%m%d"))
 
         return url
+    
+    #Subclass download to enable a different filename
+    @staticmethod
+    def _download(uri, kwargs, err='Unable to download data at specified URL',
+                  filename = None):
+        #Create a better filename
+        query_str = uri.split('?')[1]
+        pars = {}
+        for s in query_str.split('&'):
+            kv = s.split('=')
+            pars.update({kv[0]:kv[1]})
+        
+        base_url = uri.split('?')[0]
+        fname = base_url.split('/')[-1][:-4]
+        pars.update({'data_type':fname})
+        snumber = base_url.split('/')[-2]
+        pars.update({'satellite_number':snumber})
+        
+        filename = '%s_%s_%s_%s.csv'%(pars['satellite_number'],
+                                  pars['data_type'],
+                                  pars['fromDate'],
+                                  pars['toDate'])
+        
+        filepath = LightCurve._download(uri,kwargs,filename=filename)
+        
+        return filepath
 
     @staticmethod
     def _parse_csv(filepath):
         """Parses an GOES CSV"""
         with open(filepath, 'rb') as fp:
-            # @todo: check for:
-            # "No-Data-Found for the time period requested..." error
             return "", read_csv(fp, sep=",", index_col=0, parse_dates=True)

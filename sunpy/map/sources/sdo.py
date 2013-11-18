@@ -41,7 +41,7 @@ class AIAMap(GenericMap):
     def processing_level(self):
         return self.meta['lvl_num']
 
-    def norm(self):
+    def _get_norm(self):
         """Returns a Normalize object to be used with AIA data"""
         # byte-scaled images have most likely already been scaled
         if self.data.dtype == np.uint8:
@@ -76,7 +76,7 @@ class HMIMap(GenericMap):
     
     @property
     def measurement(self):
-        return header['content'].split(" ")[0].lower()
+        return self.meta['content'].split(" ")[0].lower()
     
     @property
     def observatory(self):

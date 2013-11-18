@@ -489,7 +489,7 @@ Example (:class:`sunpy.map.Map`) ::
     >>> aia.show()
     >>> import matplotlib.cm as cm
     >>> import matplotlib.colors as colors
-    >>> aia.show(cmap=cm.hot, norm=colors.Normalize(1, 2048))
+    >>> aia.peek(cmap=cm.hot, norm=colors.Normalize(1, 2048))
     
     See Also
     --------
@@ -640,6 +640,14 @@ being the same as those for the science modules prefixed with `test_`. For
 example, the modules `util.py` and `multimethod.py` in `sunpy/util` have 
 corresponding test modules `test_util.py` and `test_multimethod.py`.
 
+There are some tests for functions and methods in SunPy that require a
+working connection to the internet. pytest is configured in a way that it
+iterates over all tests that have been marked as *online* and checks if
+there is an established connection to the internet. If there is none, the
+test is skipped, otherwise it is run. Marking tests is pretty
+straightforward in pytest: use the decorator ``@pytest.mark.online`` to
+mark a test function as needing an internet connection.
+
 Running unit tests
 ^^^^^^^^^^^^^^^^^^
 
@@ -655,6 +663,29 @@ the module on the command line, e.g.::
  py.test sunpy/tests/util/test_util.py
 
 for the tests for `sunpy.util.util`.
+
+To run only tests that been marked with a specific pytest mark using the
+deocrator ``@pytest.mark`` (the the section *Writing a unit test*), use the
+following command (where ``MARK`` is the name of the mark)::
+
+  py.test -k MARK
+
+To exclude (i.e. skip all tests with a certain mark, use the following
+code (where ``MARK`` is the name of the mark)::
+
+  py.test -k-MARK
+
+Note that pytest is configured to skip all tests with the mark *online* if
+there is no connection to the internet. This cannot be circumvented, i.e.
+it cannot be forced to run a test with the mark *online* if there is no
+working internet connection (rename the mark to something else to call the test
+function anyway).
+
+To get more information about skipped and xfailed tests (xfail means a
+test has passed although it has been marked as ``@pytest.mark.xfail``),
+you need to use the option ``-rs`` for skipped tests and ``-rx`` for
+xfailed tests, respectively. Or use ``-rxs`` for detailed information on
+both skipped and xfailed tests.
 
 .. Unit tests should be written as often as possible using `unittest 
 .. <http://docs.python.org/release/3.1.3/library/unittest.html>`_. See the 

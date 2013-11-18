@@ -11,10 +11,7 @@ import urllib2
 
 import numpy as np
 
-try:
-    import astropy.io.fits as pyfits
-except ImportError:
-    import pyfits
+from astropy.io import fits
 
 from itertools import izip, chain
 from functools import partial
@@ -126,9 +123,9 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
     
     Attributes
     ----------
-    header : pyfits.Header
+    header : fits.Header
         main header of the FITS file
-    axes_header : pyfits.Header
+    axes_header : fits.Header
         header foe the axes table
     swapped : boolean
         flag that specifies whether originally in the file the x-axis was
@@ -167,19 +164,19 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
             path to save the spectrogram to
         """
         main_header = self.get_header()
-        data = pyfits.PrimaryHDU(self, header=main_header)
+        data = fits.PrimaryHDU(self, header=main_header)
         ## XXX: Update axes header.
 
-        freq_col = pyfits.Column(
+        freq_col = fits.Column(
             name="frequency", format="D8.3", array=self.freq_axis
         )
-        time_col = pyfits.Column(
+        time_col = fits.Column(
             name="time", format="D8.3", array=self.time_axis
         )
-        cols = pyfits.ColDefs([freq_col, time_col])
-        table = pyfits.new_table(cols, header=self.axes_header)
+        cols = fits.ColDefs([freq_col, time_col])
+        table = fits.new_table(cols, header=self.axes_header)
 
-        hdulist = pyfits.HDUList([data, table])
+        hdulist = fits.HDUList([data, table])
         hdulist.writeto(filepath)   
 
     def get_header(self):
@@ -198,14 +195,14 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
     def read(cls, filename, **kwargs):
         """ Read in FITS file and return a new CallistoSpectrogram. 
         Any unknown (i.e. any except filename) keyword arguments get
-        passed to pyfits.open.
+        passed to fits.open.
         
         Parameters
         ----------
         filename : str
             path of the file to read
         """
-        fl = pyfits.open(filename, **kwargs)
+        fl = fits.open(filename, **kwargs)
         data = fl[0].data
         axes = fl[1]
         header = fl[0].header
@@ -299,7 +296,7 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         
         Parameters
         ----------
-        header : pyfits.Header
+        header : fits.Header
             main header of the FITS file
         """
         return header.get('instrume', '').strip() in cls.INSTRUMENTS

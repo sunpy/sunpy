@@ -2,102 +2,98 @@
 Fundamental Solar Physical Constants
 ------------------------------------
 These constants are taken from various sources. The structure of this module is heavily 
-based on if not directly copied from the SciPy constants module but contains Solar 
-Physical constants. All units are in SI (mks) unless otherwise specified.
+based on if not directly copied from the SciPy constants module but contains olar 
+Physical constants.
 
 Object
 ------
-physical_constants : dict
-    A dictionary containing physical constants. Keys are the names
-    of physical constants, values are tuples (value, units, precision). The dictionary
-    contains the following solar physical constants:
-        
-    GM: 
-        The gravitational constant multiplied by the mass of the Sun.
-    absolute magnitude: 
-        The absolute visual magnitude of the Sun. It is the measure of the Sun's intrinsic 
-        brightness. It is the apparent magnitude the Sun would have if it were 32.6 light
-        years (10 parsecs) away from Earth.
+    physical_constants : dict
+        A dictionary containing physical constants. Keys are the names
+        of physical constants, values are tuples (value, units, uncertainty). The dictionary
+        contains the following solar physical constants:
+
     average density:
-         The average density of the Sun in SI.
+         The average density of the Sun.
     average_angular_size: 
         The average angular size of the Sun as seen from Earth in arcseconds.
-    center density:
-        The density at the center of the Sun in SI.
-    center temperature:
-        The temperature at the center of the Sun in Kelvin.
-    diameter: 
-        The diameters of the Sun at the equator in meters.
     effective temperature:
         The effective black-body temperature of the Sun in Kelvin.  
-    ellipticity: 
+    oblateness: 
         The ellipticity of the Sun.
     escape velocity: 
         The velocity which an object needs to escape from the gravitational pull of the Sun.
     luminosity:
-        The luminosity of the Sun in Joules per second.
+        The luminosity of the Sun.
     mass:
-        The mass of the Sun in kg.
+        The mass of the Sun.
     mass conversion rate:
         The rate at which the Sun converts mass to energy.
     mean energy production:
-        The mean rate at which the Sun produces energy in Joules per second
+        The mean rate at which the Sun produces energy.
     mean intensity:
         The mean intensity of the Sun.
     metallicity: 
-        The metallicity of the Sun
+        The metallicity of the Sun.
     radius:
-        The radius of the Sun at the equator in meters.
+        The radius of the Sun at the equator.
     solar flux unit:
         The definition of a solar flux unit.
     sunspot cycle:
         The average duration of the solar activity cycle.
     surface area:
-        The surface area of the Sun in meters squared. 
+        The surface area of the Sun. 
     surface gravity:
         The gravitational acceleration at the surface of the Sun as measured at the equator.
     visual magnitude:
        A measure of the Sun's brightness as seen by an observer on Earth without the
        presence of the atmosphere.
     volume:
-        The volume of the Sun in meters cubed.
+        The volume of the Sun.
 
 Attributes
 ----------
 A number of variables from physical_constants are made available for convenience as 
-attributes. They are equatorial_radius, radius (same as equatorial radius), equatorial_diameter, volume, surface_area, average_density, center_density, 
-equatorial_surface_gravity, mean_intensity, effective_temperature, center_temperature, 
-luminosity, absolute_magnitude, visual_magnitude, mass_conversion_rate, 
-mean_energy_production, escape_velocity, ellipticity, GM, average_angular_size, sfu.
-
-Source
-------
-Constants are imported from Review of Particle Physics 2010 (page 102), 
-and NASA's Sun Fact Sheet as well as other sources.
+attributes. 
 
 Websites
 --------
-http://nssdc.gsfc.nasa.gov/planetary/factsheet/sunfact.html
-
-.. todo:: Need better sources as well as error values.
-
-.. todo:: Create a cheat sheet function which prints out key solar values.
+| http://books.google.com/books?id=4SWENr1tIJ0C&printsec=frontcover&source=gbs_ge_summary_r&cad=0#v=onepage&q=sfu&f=false
 
 """
-#TODO: Need better sources as well as error values.
-#TODO: Create a cheat sheet function which prints out key solar values.
 
 from __future__ import absolute_import
 
-import scipy.constants as _cd
 from sunpy.sun import _si as _con # pylint: disable=E0611
 
 physical_constants = _con.physical_constants
 
-au = astronomical_unit = _cd.au
+def constant(key) :
+    """
+    The constant in physical_constants index by key
+    
+    Parameters
+    ----------
+    key : Python string or unicode
+        Key in dictionary in `physical_constants`
 
-# The following functions (value, precision, unit, find) are copied directly 
-# from SciPy constants.
+    Returns
+    -------
+    constant : constant
+        constant in `physical_constants` corresponding to `key`
+
+    See Also
+    --------
+    _constants : Contains the description of `physical_constants`, which, as a
+        dictionary literal object, does not itself possess a docstring.
+
+    Examples
+    --------
+    >>> from sunpy.sun import constants
+    >>> constants.constant('mass')
+    
+    """
+    return physical_constants[key]
+
 def value(key) :
     """
     Value in physical_constants indexed by key
@@ -120,11 +116,11 @@ def value(key) :
     Examples
     --------
     >>> from sunpy.sun import constants
-    >>> constants.precision('mass')
+    >>> constants.uncertainty('mass')
         1.9884e30
 
     """
-    return physical_constants[key][0]
+    return constant(key).value
 
 def unit(key) :
     """
@@ -148,15 +144,15 @@ def unit(key) :
     Examples
     --------
     >>> from sunpy.sun import constants
-    >>> constants.precision('mass')
+    >>> constants.uncertainty('mass')
     'kg'
 
     """
-    return physical_constants[key][1]
+    return constant(key).unit
 
-def precision(key) :
+def uncertainty(key) :
     """
-    Relative precision in physical_constants indexed by key
+    Relative uncertainty in physical_constants indexed by key
 
     Parameters
     ----------
@@ -166,7 +162,7 @@ def precision(key) :
     Returns
     -------
     prec : float
-        Relative precision in `physical_constants` corresponding to `key`
+        Relative uncertainty in `physical_constants` corresponding to `key`
 
     See Also
     --------
@@ -176,11 +172,11 @@ def precision(key) :
     Examples
     --------
     >>> from sunpy.sun import constants
-    >>> constants.precision('mass')
+    >>> constants.uncertainty('mass')
     
 
     """
-    return physical_constants[key][2] / physical_constants[key][0]
+    return constant(key).uncertainty
 
 def find(sub=None, disp=False):
     """
@@ -247,42 +243,36 @@ def print_all(key = None):
     format_string = ('{0:<' + str(column_width[0]) + '}' + '{1:>' + 
                     str(column_width[1]) + '}' + '{2:>' + str(column_width[2]) 
                     + '}' + '{3:>' + str(column_width[3]) + '}')
-    print(format_string.format('Name', 'Value', 'Units', 'Precision'))
+    print(format_string.format('Name', 'Value', 'Units', 'Error'))
     print(('{:-^' + str(table_width) + '}').format(''))
 
     if key is None:
         for key in physical_constants:
             print(format_string.format(key, str(value(key)), unit(key), 
-                                       str(precision(key))))
+                                       str(uncertainty(key))))
     else: 
         print(format_string.format(key, str(value(key)), unit(key), 
-                                   str(precision(key))))
+                                   str(uncertainty(key))))
 
 # Spectral class is not included in physical constants since it is not a number
 spectral_classification = 'G2V'
 
+au = astronomical_unit = constant('mean distance')
+
 # The following variables from _constants are brought out by making them 
 # accessible through a call such as sun.volume
-equatorial_radius = radius = value('radius')
-equatorial_diameter = value('diameter')
-volume = value('volume')
-surface_area = value('surface area')
-average_density = density = value('average density')
-center_density = value('center density')
-equatorial_surface_gravity = surface_gravity = value('surface gravity')
-mean_intensity = intensity = value('mean intensity')
-effective_temperature = value('effective temperature')
-center_temperature = value('center temperature')
-luminosity = value('luminosity')
-absolute_magnitude = value('absolute magnitude')
-visual_magnitude = value('visual magnitude')
-mass_conversion_rate = value('mass conversion rate')
-mean_energy_production = value('mean energy production')
-escape_velocity = value('escape velocity')
-ellipticity = value('ellipticity')
-GM = value('GM')
+mass = constant('mass')
+equatorial_radius = radius = constant('radius')
+volume = constant('volume')
+surface_area = constant('surface area')
+average_density = density = constant('average density')
+equatorial_surface_gravity = surface_gravity = constant('surface gravity')
+effective_temperature = constant('effective temperature')
+luminosity = constant('luminosity')
+mass_conversion_rate = constant('mass conversion rate')
+escape_velocity = constant('escape velocity')
 
-sfu = value('solar flux unit')
+sfu = constant('solar flux unit')
 
 # Observable parameters
-average_angular_size = value('average_angular_size')
+average_angular_size = constant('average angular size')

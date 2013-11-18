@@ -11,6 +11,7 @@ __email__ = "keith.hughitt@nasa.gov"
 import os
 import shutil
 import urllib2
+import warnings
 from datetime import datetime
 
 import numpy as np
@@ -88,7 +89,9 @@ class LightCurve(object):
             url, kwargs, 
             err = "Unable to download data for specified date range"
         )
-        return cls.from_file(filepath)
+        result = cls.from_file(filepath)
+        result.data = result.data.ix[result.data.index.indexer_between_time(from_, to)]
+        return result
 
     @classmethod
     def from_timerange(cls, timerange, **kwargs):
@@ -97,13 +100,18 @@ class LightCurve(object):
             url, kwargs,
             err = "Unable to download data for specified date range"
         )
-        return cls.from_file(filepath)
+        result = cls.from_file(filepath)
+        result.data = result.data.ix[ts.index.indexer_between_time(timerange.start(), timerange.end())]
+        return result
 
     @classmethod
     def from_file(cls, filename):
         filename = os.path.expanduser(filename)
         header, data = cls._parse_filepath(filename)
-        return cls(data, header)
+        if data.empty:
+            raise ValueError("No data found!")
+        else:               
+            return cls(data, header)
 
     @classmethod
     def from_url(cls, url, **kwargs):
@@ -166,10 +174,16 @@ class LightCurve(object):
 
     @staticmethod
     def _download(uri, kwargs, 
-                  err='Unable to download data at specified URL'):
+                  err='Unable to download data at specified URL',
+                  filename = None):
         """Attempts to download data at the specified URI"""
-        _filename = os.path.basename(uri).split("?")[0]
-
+        
+        #Allow manual override of output filename (used for GOES)
+        if filename is not None:
+            _filename = filename
+        else:            
+            _filename = os.path.basename(uri).split("?")[0]
+        
         # user specifies a download directory
         if "directory" in kwargs:
             download_dir = os.path.expanduser(kwargs["directory"])
@@ -193,6 +207,8 @@ class LightCurve(object):
                 raise urllib2.URLError(err)
             with open(filepath, 'wb') as fp:
                 shutil.copyfileobj(response, fp)
+        else:
+            warnings.warn("Using existing file rather than downloading, use overwrite=True to override.", RuntimeWarning)
 
         return filepath
 

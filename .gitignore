@@ -2,10 +2,14 @@
 .pydevproject
 .settings
 .project
+*.orig
 *.pyc
 *.pyd
 *.so
+*.o
+*.def
 *~
+*.swp
 MANIFEST
 build
 dist
