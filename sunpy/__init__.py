@@ -24,6 +24,9 @@ map
     images.
 net
     Routines for obtaining data from the internet.
+database
+    Store solar physics data (from FITS files or via the net package) in a
+    database.
 spectra
     subpackage for working with 2D spectra datatypes
 sun
@@ -40,14 +43,7 @@ from __future__ import absolute_import
 
 __version__ = 0.3
 
-import sunpy.map
-import sunpy.sun
-import sunpy.lightcurve
-
-from sunpy.map.map_factory import Map, make_map
-
 from sunpy.util.config import load_config, print_config
-from sunpy.cm import *
 
 # Sample data
 from sunpy.data.sample import (AIA_171_IMAGE, RHESSI_IMAGE, EIT_195_IMAGE, 

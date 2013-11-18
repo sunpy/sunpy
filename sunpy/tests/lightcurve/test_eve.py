@@ -3,16 +3,20 @@ EVE tests
 """
 from __future__ import absolute_import
 
+import pytest
+
 #pylint: disable=C0103,R0904,W0201,W0232,E1103
 import sunpy
+import sunpy.lightcurve
 from sunpy.data.test import (EVE_AVERAGES_CSV)
 import matplotlib
 
-
+@pytest.mark.online
 def test_eve():
     eve = sunpy.lightcurve.EVELightCurve.create('2013/04/15')
     assert isinstance(eve, sunpy.lightcurve.EVELightCurve)
-   
+
+@pytest.mark.online
 def test_txt():
     """Check support for parsing EVE TXT files """
     eve = sunpy.lightcurve.EVELightCurve.create(

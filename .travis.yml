@@ -12,23 +12,23 @@ virtualenv:
 env:
     global:
         - PIP_WHEEL_COMMAND="--find-links http://sunpy.cadair.com/wheelhouse/index.html --use-wheel --upgrade"
-        - MATPLOTLIB_VERSION=1.3.0 SUDS_PKG='suds-jurko==0.4.1.jurko.4'
+        - SUDS_PKG='suds-jurko==0.4.1.jurko.4'
     matrix:
+        - NUMPY_VERSION=1.8.0 PANDAS_VERSION=0.12.0
         - NUMPY_VERSION=1.7.1 PANDAS_VERSION=0.12.0
-        - NUMPY_VERSION=1.6.2 PANDAS_VERSION=0.12.0
-        - NUMPY_VERSION=1.7.1 PANDAS_VERSION=0.11.0
+        - NUMPY_VERSION=1.8.0 PANDAS_VERSION=0.11.0
 
 before_install:
 # Pick the suds version based on the python version
    - if [[ $TRAVIS_PYTHON_VERSION == '2.6' ]]; then SUDS_PKG='suds' ;fi
 # Make sure the system is upto date and install scipy requirements
    - sudo apt-get update -qq
-   - sudo apt-get install -qq libatlas-dev liblapack-dev
+   - sudo apt-get install -qq libatlas-dev liblapack-dev gfortran
 # Make sure pip is at the latest version (>1.4 for wheels)
    - pip install pip --upgrade
 # Wheels also need a recent version of setuptools
    - pip install setuptools>=0.8 --upgrade
-# Install more upto date openjpeg binaries.
+# Install more upto date openjpeg library.
    - wget http://openjpeg.googlecode.com/files/openjpeg-1.5.0-Linux-x86_64.tar.gz
    - sudo tar -xvf openjpeg-1.5.0-Linux-x86_64.tar.gz --strip-components=1 -C /
 
@@ -36,7 +36,7 @@ before_install:
 install:
 # Install Numpy first so we force the version we are using
    - pip install $PIP_WHEEL_COMMAND numpy==$NUMPY_VERSION
-   - pip install $PIP_WHEEL_COMMAND matplotlib==$MATPLOTLIB_VERSION
+   - pip install $PIP_WHEEL_COMMAND matplotlib
    - pip install $PIP_WHEEL_COMMAND scipy
 # Manually install pandas deps due to a pip 1.4 / pytz bug
    - pip install $PIP_WHEEL_COMMAND pytz==2013b python-dateutil
@@ -44,10 +44,11 @@ install:
    - pip install $PIP_WHEEL_COMMAND astropy
    - pip install $PIP_WHEEL_COMMAND $SUDS_PKG beautifulsoup4
    - pip install $PIP_WHEEL_COMMAND pytest 
+   - pip install $PIP_WHEEL_COMMAND glymur 
 # Install SunPy and run tests.
 script:
   - python setup.py develop
-  - py.test
+  - py.test -k-fails_on_travis
 
 # Notify the IRC channel of build status
 notifications:

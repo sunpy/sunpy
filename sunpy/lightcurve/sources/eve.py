@@ -57,7 +57,7 @@ class EVELightCurve(LightCurve):
     @staticmethod
     def _get_default_uri():
         """Load latest level 0CS if no other data is specified"""
-        return "http://lasp.colorado.edu/eve/data_access/quicklook/quicklook_data/L0CS/LATEST_EVE_L0CS_DIODES_1m.txt"
+        return "http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/LATEST_EVE_L0CS_DIODES_1m.txt"
     
     @staticmethod
     def _get_url_for_date(date):
@@ -66,7 +66,7 @@ class EVELightCurve(LightCurve):
             @NOTE: currently only supports downloading level 0 data
             .TODO: No data available prior to 2010/03/01!
         """
-        base_url = 'http://lasp.colorado.edu/eve/data/quicklook/L0CS/SpWx/'
+        base_url = 'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/'
         return base_url + date.strftime('%Y/%Y%m%d') + '_EVE_L0CS_DIODES_1m.txt'
     
     @classmethod

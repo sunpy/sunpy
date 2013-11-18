@@ -43,7 +43,7 @@ class SXTMap(GenericMap):
         self.meta['dsun_apparent'] = constants.au
         if 'solar_r' in self.meta:
             self.meta['dsun_apparent'] = constants.radius/(np.deg2rad(self.meta['solar_r']/3600.0))
-        
+   
     @property
     def dsun(self):
         """ For Yohkoh Maps, dsun_obs is not always defined. Uses approximation
@@ -59,7 +59,7 @@ class SXTMap(GenericMap):
             s = 'white light'
         return s
 
-    def norm(self):
+    def _get_norm(self):
         """Returns a Normalize object to be used with SXT data"""
         # byte-scaled images have most likely already been scaled
         if self.dtype == np.uint8:

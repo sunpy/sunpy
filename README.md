@@ -16,6 +16,7 @@ To begin, install the following requirements:
  * [Suds](https://fedorahosted.org/suds)
  * [pandas](http://pandas.pydata.org/) (0.10.0+)
  * [beautifulsoup4](http://www.crummy.com/software/BeautifulSoup/)
+ * [sqlalchemy](http://www.sqlalchemy.org/)
 
 Next, use git to grab the latest version of SunPy:
 
@@ -36,7 +37,7 @@ Here is a quick example of plotting an AIA image:
 ```python
 >>> import sunpy
 >>> import matplotlib.cm as cm
->>> aia = sunpy.make_map(sunpy.AIA_171_IMAGE)
+>>> aia = sunpy.Map(sunpy.AIA_171_IMAGE)
 >>> aia.peek(cmap=cm.hot)
 ```
 

@@ -51,7 +51,7 @@ def wait_for(n, callback): #pylint: disable=W0613
 def path_fun(*args, **kwargs):
     raise ValueError
 
-
+@pytest.mark.online
 def test_path_exception():
     x = threading.Event()
     dw = Downloader(1, 2)
@@ -65,7 +65,7 @@ def test_path_exception():
     assert x.isSet()
     dw.stop()
 
-
+@pytest.mark.online
 def test_download_http():
     items = []
     lck = threading.Lock()
@@ -101,7 +101,7 @@ def test_download_http():
     for item in items:
         assert os.path.exists(item['path'])
 
-
+@pytest.mark.online
 def test_download_default_dir():
     _config = sunpy.config
 
@@ -133,6 +133,7 @@ def test_download_default_dir():
     finally:
         sunpy.config = _config
 
+@pytest.mark.online
 def test_download_dir():
     tmpdir = tempfile.mkdtemp()
 
