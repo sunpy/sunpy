@@ -104,7 +104,7 @@ class GOESLightCurve(LightCurve):
         'goes15_dformat':'xrs_2s'}
 
         #find out which satellites were available. Start with newest first.
-        for sat_num in range(15:5,-1):
+        for sat_num in range(15,5,-1):
             
             if ((start > goes_dict['goes'+str(sat_num)+'_operational'].start() and start < goes_dict['goes'+str(sat_num)+'_operational'].end()) and
                 (end > goes_dict['goes'+str(sat_num)+'_operational'].start() and end < goes_dict['goes'+str(sat_num)+'_operational'].end())):
