@@ -77,6 +77,45 @@ class GOESLightCurve(LightCurve):
         return cls._get_url_for_date_range(yesterday, today)
 
     @staticmethod
+    def _get_goes_sat_num_and_data_type(start,end):
+        """Parses the query time to determine which GOES satellite to use and the correct data type"""
+       
+        goes_dict={'goes5_operational':TimeRange('1986-01-01','1987-03-31'),
+        'goes5_dformat':'xrs_1m',
+        'goes6_operational':TimeRange('1986-01-01','1994-12-31'),
+        'goes6_dformat':'xrs_1m',
+        'goes7_operational':TimeRange('1987-03-01','1996-08-31'),
+        'goes7_dformat':'xrs_1m',
+        'goes8_operational':TimeRange('1995-01-01','2003-06-16'),
+        'goes8_dformat':'xrs_1m',
+        'goes9_operational':TimeRange('1996-04-01','1998-07-31'),
+        'goes9_dformat':'xrs_1m',
+        'goes10_operational':TimeRange('1998-07-01','2009-12-31'),
+        'goes10_dformat':'xrs_1m',
+        'goes11_operational':TimeRange('2000-07-01','2011-02-28'),
+        'goes11_dformat':'xrs_1m',
+        'goes12_operational':TimeRange('2003-01-01','2010-08-31'),
+        'goes12_dformat':'xrs_1m',
+        'goes13_operational':TimeRange('2006-08-01','2013-11-19'),
+        'goes13_dformat':'xrs_2s',
+        'goes14_operational':TimeRange('2009-09-01','2012-11-24'),
+        'goes14_dformat':'xrs_2s',
+        'goes15_operational':TimeRange('2010-03-26',datetime.datetime.utcnow()),
+        'goes15_dformat':'xrs_2s'}
+
+        #find out which satellites were available. Start with newest first.
+        for sat_num in range(15:5,-1):
+            
+            if ((start > goes_dict['goes'+str(sat_num)+'_operational'].start() and start < goes_dict['goes'+str(sat_num)+'_operational'].end()) and
+                (end > goes_dict['goes'+str(sat_num)+'_operational'].start() and end < goes_dict['goes'+str(sat_num)+'_operational'].end())):
+                #if true then the satellite with sat_num is available
+                return sat_num,goes_dict['goes'+str(sat_num)+'_dformat']
+
+        #if no satellites were found then raise an exception
+        raise Exception, 'No operational GOES satellites found within specified time range'
+        
+
+    @staticmethod
     def _get_url_for_date_range(*args, **kwargs):
         """Returns a URL to the GOES data for the specified date.
 
@@ -102,10 +141,15 @@ class GOESLightCurve(LightCurve):
             if end < start:
                 print('Warning: start time (argument 1) > end time (argument 2)')
 
+
+        #find out which satellite and datatype to query from the query times
+
+
+        sat_num, dtype = _get_goes_sat_num_and_data_type(start,end)
         # GOES query parameters
         params = {
-            "satellite_number": 15,
-            "data_type": "xrs_2s"
+            "satellite_number": sat_num,
+            "data_type": dtype
         }
         params.update(kwargs)
 
@@ -144,6 +188,7 @@ class GOESLightCurve(LightCurve):
         filepath = LightCurve._download(uri,kwargs,filename=filename)
         
         return filepath
+    
 
     @staticmethod
     def _parse_csv(filepath):
