@@ -76,8 +76,8 @@ class GOESLightCurve(LightCurve):
         yesterday = today - datetime.timedelta(days=1)
         return cls._get_url_for_date_range(yesterday, today)
 
-    @staticmethod
-    def _get_goes_sat_num_and_data_type(start,end):
+    @classmethod
+    def _get_goes_sat_num_and_data_type(self,start,end):
         """Parses the query time to determine which GOES satellite to use and the correct data type"""
        
         goes_dict={'goes5_operational':TimeRange('1986-01-01','1987-03-31'),
@@ -145,7 +145,7 @@ class GOESLightCurve(LightCurve):
         #find out which satellite and datatype to query from the query times
 
 
-        sat_num, dtype = _get_goes_sat_num_and_data_type(start,end)
+        sat_num, dtype = GOESLightCurve._get_goes_sat_num_and_data_type(start,end)
         # GOES query parameters
         params = {
             "satellite_number": sat_num,
