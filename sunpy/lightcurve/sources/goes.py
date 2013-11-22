@@ -78,38 +78,35 @@ class GOESLightCurve(LightCurve):
 
     @classmethod
     def _get_goes_sat_num_and_data_type(self,start,end):
-        """Parses the query time to determine which GOES satellite to use and the correct data type"""
+        """Parses the query time to determine which GOES satellite to use and the correct data type
+        The operational times and dataformats are sourced from the GOES SEM API site:
+        http://www.ngdc.noaa.gov/goes/sem/getData"""
        
-        goes_dict={'goes5_operational':TimeRange('1986-01-01','1987-03-31'),
-        'goes5_dformat':'xrs_1m',
-        'goes6_operational':TimeRange('1986-01-01','1994-12-31'),
-        'goes6_dformat':'xrs_1m',
-        'goes7_operational':TimeRange('1987-03-01','1996-08-31'),
-        'goes7_dformat':'xrs_1m',
-        'goes8_operational':TimeRange('1995-01-01','2003-06-16'),
-        'goes8_dformat':'xrs_1m',
-        'goes9_operational':TimeRange('1996-04-01','1998-07-31'),
-        'goes9_dformat':'xrs_1m',
-        'goes10_operational':TimeRange('1998-07-01','2009-12-31'),
-        'goes10_dformat':'xrs_1m',
-        'goes11_operational':TimeRange('2000-07-01','2011-02-28'),
-        'goes11_dformat':'xrs_1m',
-        'goes12_operational':TimeRange('2003-01-01','2010-08-31'),
-        'goes12_dformat':'xrs_1m',
-        'goes13_operational':TimeRange('2006-08-01','2013-11-19'),
-        'goes13_dformat':'xrs_2s',
-        'goes14_operational':TimeRange('2009-09-01','2012-11-24'),
-        'goes14_dformat':'xrs_2s',
-        'goes15_operational':TimeRange('2010-03-26',datetime.datetime.utcnow()),
-        'goes15_dformat':'xrs_2s'}
+        goes_operational={
+        5:TimeRange('1986-01-01','1987-03-31'),
+        6:TimeRange('1986-01-01','1994-12-31'),
+        7:TimeRange('1987-03-01','1996-08-31'),
+        8:TimeRange('1995-01-01','2003-06-16'),
+        9:TimeRange('1996-04-01','1998-07-31'),
+        10:TimeRange('1998-07-01','2009-12-31'),
+        11:TimeRange('2000-07-01','2011-02-28'),
+        12:TimeRange('2003-01-01','2010-08-31'),
+        13:TimeRange('2006-08-01','2013-11-19'),
+        14:TimeRange('2009-09-01','2012-11-24'),
+        15:TimeRange('2010-03-26',datetime.datetime.utcnow())}
+
+        goes_dformat={5:'xrs_1m', 6:'xrs_1m', 7:'xrs_1m', 8:'xrs_1m', 9:'xrs_1m', 10:'xrs_1m',
+                      11:'xrs_1m', 12:'xrs_1m',13:'xrs_2s',14:'xrs_2s',15:'xrs_2s'}
 
         #find out which satellites were available. Start with newest first.
         for sat_num in range(15,5,-1):
             
-            if ((start > goes_dict['goes'+str(sat_num)+'_operational'].start() and start < goes_dict['goes'+str(sat_num)+'_operational'].end()) and
-                (end > goes_dict['goes'+str(sat_num)+'_operational'].start() and end < goes_dict['goes'+str(sat_num)+'_operational'].end())):
+            if ((start > goes_operational[sat_num].start() and start < goes_operational[sat_num].end()) and
+                (end > goes_operational[sat_num].start() and end < goes_operational[sat_num].end())):
                 #if true then the satellite with sat_num is available
-                return sat_num,goes_dict['goes'+str(sat_num)+'_dformat']
+                return sat_num,goes_dformat[sat_num]
+        
+        
 
         #if no satellites were found then raise an exception
         raise Exception, 'No operational GOES satellites found within specified time range'
