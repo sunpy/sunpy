@@ -3,6 +3,8 @@ from __future__ import absolute_import
 import datetime
 import calendar
 import sqlite3
+import numpy as np
+from sunpy.time import parse_time
 import sunpy.net.download
 
 def download_lytaf_database(lytaf_dir=''):
