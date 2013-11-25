@@ -12,7 +12,6 @@ def download_lytaf_database(lytaf_dir=''):
     dl=sunpy.net.download.Downloader()
     dl.download('http://proba2.oma.be/lyra/data/lytaf/annotation_ppt.db',path=lytaf_dir)
     
-    print 'LYTAF update completed'
     return
 
 
