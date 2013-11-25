@@ -6,11 +6,14 @@ import sqlite3
 import numpy as np
 from sunpy.time import parse_time
 import sunpy.net.download
+import urllib
 
 def download_lytaf_database(lytaf_dir=''):
     """download the latest version of the Proba-2 pointing database from the Proba2 Science Center"""
-    dl=sunpy.net.download.Downloader()
-    dl.download('http://proba2.oma.be/lyra/data/lytaf/annotation_ppt.db',path=lytaf_dir)
+    #dl=sunpy.net.download.Downloader()
+    #dl.download('http://proba2.oma.be/lyra/data/lytaf/annotation_ppt.db',path=lytaf_dir)
+    url='http://proba2.oma.be/lyra/data/lytaf/annotation_ppt.db'
+    urllib.urlretrieve(url,lytaf_dir+'annotation_ppt.db')
     
     return
 
