@@ -15,4 +15,4 @@ def make_coord_system():
         print "     units: %s" % i.units
         print 10*"-"
 
-make_coord_system()
+#make_coord_system()

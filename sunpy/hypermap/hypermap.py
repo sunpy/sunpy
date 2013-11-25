@@ -25,4 +25,3 @@ class HyperMap(object):
         self.data = data
         self.system = coordinate_system
         self.header = header
-
