@@ -35,7 +35,6 @@ change.
    :maxdepth: 2
 
    cm
-   gui
    hek
    instr
    io
@@ -45,6 +44,7 @@ change.
    sun
    time
    vso
+   roi
    database
    wcs
    spectrogram
