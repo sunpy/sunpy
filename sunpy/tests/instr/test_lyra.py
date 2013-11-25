@@ -1,15 +1,15 @@
 from __future__ import absolute_import
 
-from urllib2 import urlopen
 from sunpy.time import TimeRange
 from sunpy.instr import lyra
 import tempfile
 import os
 import pytest
+import datetime
 
 @pytest.mark.online
 def test_lytaf_utils():
-    '''test the downloading of the LYTAF file'''
+    '''test the downloading of the LYTAF file and subsequent queries'''
     tmp_dir=tempfile.mkdtemp() + '/'
     lyra.download_lytaf_database(lytaf_dir=tmp_dir)
     assert os.path.exists(tmp_dir + 'annotation_ppt.db') == True
