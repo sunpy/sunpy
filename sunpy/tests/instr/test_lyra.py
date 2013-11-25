@@ -20,7 +20,7 @@ def test_lytaf_utils():
     assert type(lar[0]) == dict
     assert type(lar[0]['start_time']) == datetime.datetime
     assert type(lar[0]['end_time']) == datetime.datetime
-    assert type(lar[0]['roi_description'] == str
+    assert type(lar[0]['roi_description']) == str
     assert type(lar[0]['event_type_description']) == str
     
     
