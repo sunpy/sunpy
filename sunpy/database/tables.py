@@ -563,7 +563,7 @@ def entries_from_dir(fitsdir, recursive=False, pattern='*',
                     sunpy_filetools.UnrecognizedFileTypeError,
                     sunpy_filetools.InvalidJPEG2000FileExtension):
                 continue
-            if filetype == fits:
+            if filetype == 'fits':
                 for entry in entries_from_file(path, default_waveunit):
                     yield entry, path
         if not recursive:
