@@ -1,21 +1,21 @@
 -----------------------------------
 Querying Helioviewer.org with SunPy
 -----------------------------------
-SunPy can be used to make several basic requests using the The `Helioviewer.org API <http://helioviewer.org/api/>`__
-including generating a PNG and downloading a `JPEG 2000 <http://wiki.helioviewer.org/wiki/JPEG_2000>`__
+SunPy can be used to make several basic requests using the The `Helioviewer.org API <http://helioviewer.org/api/>`_
+including generating a PNG and downloading a `JPEG 2000 <http://wiki.helioviewer.org/wiki/JPEG_2000>`_
 image and loading it into a SunPy Map.
 
-The SunPy Helioviewer client requires installing two other pieces of software.
-The first - OpenJPEG - is an open source library for reading and writing JPEG2000 
+The SunPy Helioviewer client requires installing two other pieces of software. 
+The first OpenJPEG is an open source library for reading and writing JPEG2000 
 files.  To install OpenJPEG, please follow the instructions at `the OpenJPEG 
-homepage <http://www.openjpeg.org>`__ .
+homepage <http://www.openjpeg.org>`_.
 Once installed you need to check that the command j2k_to_image is accessable 
 in your path. i.e. you can run it from a command line or the windows run prompt
 without specifing a directory. This should enable sunpy to convert the files.
 [Note: SunPy 0.3 should be the last version of SunPy where the requirement for
 binary file conversion in this way is used. If you are making extensive use of
 JPEG2000 files you may wish to consider using the development version of Sunpy
-at `http://github.com/sunpy/sunpy <http://github.com/sunpy/sunpy>_]
+at `http://github.com/sunpy/sunpy <http://github.com/sunpy/sunpy>`_]
 
 The other package you will need is
 the Python Imaging Library (PIL).  PIL can be obtained from 

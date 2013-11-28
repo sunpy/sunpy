@@ -17,7 +17,3 @@ change.
    coords
    database
    image
-   instr
-   io
-   lightcurve
-   map
