@@ -25,6 +25,8 @@ import cmath
 
 import numpy as np
 
+import astropy.units as u
+
 from sunpy.time import parse_time, julian_day, julian_centuries
 from sunpy.sun import constants
 
@@ -70,7 +72,7 @@ def solar_semidiameter_angular_size(t=None):
     Radius_{\sun}[rad] = \frac{<Radius_{\sun}[m]>)}{D_{\sun\earth}(t)[m]}
     """
     solar_semidiameter_rad = constants.radius / (sunearth_distance(t) * constants.au)
-    return np.rad2deg(solar_semidiameter_rad) * 60. * 60.
+    return np.rad2deg(solar_semidiameter_rad * u.degree) * 60. * 60.
  
 def position(t=None):
     """Returns the position of the Sun (right ascension and declination)
