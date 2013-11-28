@@ -41,7 +41,7 @@ original image, though.
 
 You can then perform automatic constant background subtraction by using the
 :py:meth:`subtract_bg() <sunpy.spectra.spectrogram.Spectrogram.subtract_bg>`
-method. The resulting image will be clipped at 0 using the min_ parameter of
+method. The resulting image will be clipped at 0 using the `min` parameter of
 peek in order to avoid negative values.::
 
     nobg = image.subtract_bg()
@@ -104,15 +104,15 @@ frequencies of BIR).::
 
 The :py:meth:`peek() <sunpy.spectra.spectrogram.Spectrogram.peek>`
 method returns a special kind of figure that offers convenience features
-needed for analyzing spectrograms, a :py:class:`SpectroFigure <sunpy.spectra.spectrogram.SpectroFigure>`. By using its
-:py:meth:`time_freq() <sunpy.spectra.spectrogram.SpectroFigure.time_freq>`, we can
-select points on the figure and frequency-time information of them will be returned
-as a :py:class:`TimeFreq <sunpy.spectra.spectrogram.TimeFreq>`. Time is
-stored as offsets in seconds from TimeFreq.start. Note that if you use
+needed for analyzing spectrograms, a :py:class:`SpectroFigure <sunpy.spectra.spectrogram.SpectroFigure>`.
+By using its :py:meth:`time_freq() <sunpy.spectra.spectrogram.SpectroFigure.time_freq>`, 
+we can select points on the figure and frequency-time information of them will 
+be returned as a :py:class:`TimeFreq <sunpy.spectra.spectrogram.TimeFreq>`.
+Time is stored as offsets in seconds from TimeFreq.start. Note that if you use
 :py:meth:`plot() <sunpy.spectra.spectrogram.Spectrogram.plot>` instead of
- :py:meth:`plot() <sunpy.spectra.spectrogram.Spectrogram.peek>`, you have to
- create a :py:class:`SpectroFigure <sunpy.spectra.spectrogram.SpectroFigure>`
- by using :py:fun:`SpectroFigure <sunpy.spectra.spectrogram.figure>`::
+:py:meth:`plot() <sunpy.spectra.spectrogram.Spectrogram.peek>`, you have to
+create a :py:class:`SpectroFigure <sunpy.spectra.spectrogram.SpectroFigure>`
+by using :py:class:`SpectroFigure <sunpy.spectra.spectrogram.figure>`::
 
 
     fig = image.peek()
