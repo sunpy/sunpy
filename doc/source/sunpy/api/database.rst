@@ -43,10 +43,10 @@ Exceptions
     name.
 
 Submodules
-==========
+----------
 
 sunpy.database.tables Module
-----------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: sunpy.database.tables.DatabaseEntry
    :members:
 
@@ -63,7 +63,7 @@ sunpy.database.tables Module
    :members:
 
 utility functions
-^^^^^^^^^^^^^^^^^
++++++++++++++++++
 .. autofunction:: sunpy.database.tables.entries_from_query_result
 
 .. autofunction:: sunpy.database.tables.entries_from_file
@@ -73,7 +73,7 @@ utility functions
 .. autofunction:: sunpy.database.tables.display_entries
 
 Exceptions
-^^^^^^^^^^
+++++++++++
 .. class:: sunpy.database.tables.WaveunitNotFoundError(obj)
 
     This exception is raised if a wavelength unit cannot be found in a FITS
@@ -84,11 +84,11 @@ Exceptions
     This exception is raised if a wavelength cannot be converted to an
     astropy.units.Unit instance.
 
-.. caching
 .. automodapi:: sunpy.database.caching
+    :headings: "^+"
 
 sunpy.database.commands Module
-------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. automodule:: sunpy.database.commands
    :exclude-members:
         EmptyCommandStackError, NoSuchEntryError, NonRemovableTagError
@@ -96,7 +96,7 @@ sunpy.database.commands Module
    :show-inheritance:
 
 Exceptions
-^^^^^^^^^^
+++++++++++
 .. class:: sunpy.database.commands.EmptyCommandStackError
 
     This exception is raised if it is attempted to pop from a command
@@ -113,7 +113,7 @@ Exceptions
     database entry even though it is not saved in this entry.
 
 sunpy.database.attrs Module
----------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. module:: sunpy.database.attrs
 
 .. class:: sunpy.database.attrs.Starred
