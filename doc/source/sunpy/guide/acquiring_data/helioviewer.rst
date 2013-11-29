@@ -69,7 +69,7 @@ dimensions.
 
 The result is:
 
-.. image:: ../images/helioviewer_download_png_ex1.png
+.. image:: ../../images/helioviewer_download_png_ex1.png
 
 If we find that the source id for AIA 304 is is 13, we could make the same
 request using: ::
@@ -86,7 +86,7 @@ lower layer: ::
 
 The result looks like:
 
-.. image:: ../images/helioviewer_download_png_ex2.png
+.. image:: ../../images/helioviewer_download_png_ex2.png
 
 Next, let's see how we can download a JPEG 2000 image and load it into a SunPy
 Map object.
@@ -99,7 +99,7 @@ can specify the values as separate keyword arguments: ::
     hmi = sunpy.Map(filepath)
     hmi.submap([200,550],[-400,-200]).show()
 
-.. image:: ../images/helioviewer_download_jp2_ex.png
+.. image:: ../../images/helioviewer_download_jp2_ex.png
 
 For more information about using querying Helioviewer.org, see the Helioviewer.org
 API documentation at: `http://helioviewer.org/api/ <http://helioviewer.org/api/>`__.
