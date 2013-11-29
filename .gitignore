@@ -19,6 +19,7 @@ doc/source/_build/*
 doc/source/reference/generated
 doc/html
 docs
+api
 .tox/
 .coverage
 htmlcov
