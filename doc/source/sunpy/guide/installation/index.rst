@@ -12,26 +12,27 @@ SunPy has the following strict requirements:
 
 - `Python <http://www.python.org/>`_ 2.6 or 2.7
 
-- `NumPy <http://www.numpy.org/>`_ |minimum_numpy_version| or later
+- `NumPy <http://www.numpy.org/>`_  1.6.0 or later
 
-- `SciPy <http://www.scipy.org/>`_ |minimum_scipy_version| or later
+- `SciPy <http://www.scipy.org/>`_ 0.10.0 or later
 
-- `AstroPy <http://www.astropy.org/>`_ |minimum_astropy_version| or later
+- `AstroPy <http://www.astropy.org/>`_ 0.2.0 or later
 
 SunPy also depends on other packages for optional features.
 However, note that these only need to be installed if those particular features
 are needed. SunPy will import even if these dependencies are not installed.
 
-- `Matplotlib <http://http://matplotlib.org/>`_: To do something
+- `Matplotlib <http://http://matplotlib.org/>`_: To do something.
 
-- `pandas <http://pandas.pydata.org/>`_: To do something
+- `pandas <http://pandas.pydata.org/>`_: To do something.
 
-- `suds <https://fedorahosted.org/suds/>`_: To do something
+- `suds <https://fedorahosted.org/suds/>`_: To do something.
 
-- `beautifulsoup4 <http://www.crummy.com/software/BeautifulSoup/>`_: To do something
+- `beautifulsoup4 <http://www.crummy.com/software/BeautifulSoup/>`_: To do something.
 
-- `gylmur <https://glymur.readthedocs.org/en/latest/>`_: To read/write
+- `gylmur <https://glymur.readthedocs.org/en/latest/>`_: To do something.
 
+- `pytest <http://pytest.org/latest/>`_: To run our tests.s
 Installing SunPy
 ==================
 
@@ -111,8 +112,7 @@ the `SunPy issue tracker <http://github.com/sunpy/sunpy/issues>`_.
 
     This way of running the tests may not work if you do it in the
     sunpy source distribution.  See :ref:`sourcebuildtest` for how to
-    run the tests from the source code directory, or :ref:`running-tests`
-    for more details.
+    run the tests from the source code directory.
 
 Building from source
 ====================
@@ -206,80 +206,12 @@ External C libraries
 ^^^^^^^^^^^^^^^^^^^^
 
 The SunPy source ships with the C source code of a number of
-libraries.  By default, these internal copies are used to build
-SunPy.  However, if you wish to use the system-wide installation of
-one of those libraries, you can pass one or more of the
-`--use-system-X` flags to the `setup.py build` command.
+libraries. By default, these internal copies are used to build
+SunPy.
 
-For example, to build SunPy using the system `libexpat`, use::
+To build using all of the libraries, use::
 
-    python setup.py build --use-system-expat
-
-To build using all of the system libraries, use::
-
-    python setup.py build --use-system-libraries
-
-To see which system libraries SunPy knows how to build against, use::
-
-    python setup.py build --help
-
-As with all distutils commandline options, they may also be provided
-in a `setup.cfg` in the same directory as `setup.py`.  For example, to
-use the system `libexpat`, add the following to the `setup.cfg` file::
-
-    [build]
-    use_system_expat=1
-
-The required version of setuptools is not available
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-If upon running the ``setup.py`` script you get a message like
-
-    The required version of setuptools (>=0.9.8) is not available,
-    and can't be installed while this script is running. Please
-    install a more recent version first, using
-    'easy_install -U setuptools'.
-
-    (Currently using setuptools 0.6c11 (/path/to/setuptools-0.6c11-py2.7.egg))
-
-this is because you have a very outdated version of the ``setuptools`` package
-which is used to install Python packages.  Normally SunPy will bootstrap a
-newer version of setuptools via the network, but setuptools suggests that you
-first *uninstall* the old version (the ``easy_install -U setuptools`` command).
-However, in the likely case that your version of setuptools was installed by an
-OS system package (on Linux check your package manager like apt or yum for
-a package called ``python-setuptools`` to be user).  In this case trying to
-uninstall with ``easy_install`` and without using ``sudo`` may not work, or may
-leave your system package in an inconsistent state.
-
-As the best course of action at this point depends largely on the individual
-system and how it is configured, if you are not sure yourself what do please
-ask on the SunPy mailing list.
-
-
-The Windows installer can't find Python in the registry
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-This is a common issue with Windows installers for Python packages that do not
-support the new User Access Control (UAC) framework added in Windows Vista and
-later.  In particular, when a Python is installed "for all users" (as opposed
-to for a single user) it adds entries for that Python installation under the
-``HKEY_LOCAL_MACHINE`` (HKLM) hierarchy and *not* under the
-``HKEY_CURRENT_USER`` (HKCU) hierarchy.  However, depending on your UAC
-settings, if the SunPy installer is not executed with elevated privileges it
-will not be able to check in HKLM for the required information about your
-Python installation.
-
-In short: If you encounter this problem it's because you need the appropriate
-entries in the Windows registry for Python. You can download `this script`__
-and execute it with the same Python as the one you want to install SunPy
-into.  For example to add the missing registry entries to your Python 2.7::
-
-    C:\> C:\Python27\python.exe C:\Path\To\Downloads\win_register_python.py
-
-__ https://gist.github.com/embray/6042780#file-win_register_python-py
-
-.. _builddocs:
+    python setup.py build_ext
 
 Building documentation
 ----------------------
@@ -294,24 +226,6 @@ Building the documentation requires the SunPy source code and some additional
 packages:
 
     - `Sphinx <http://sphinx.pocoo.org>`_ (and its dependencies) 1.0 or later
-
-    - `Graphviz <http://www.graphviz.org>`_
-
-.. note::
-
-    Sphinx also requires a reasonably modern LaTeX installation to render
-    equations.  Per the `Sphinx documentation
-    <http://sphinx-doc.org/builders.html?highlight=latex#sphinx.builders.latex.LaTeXBuilder>`_,
-    for the TexLive distribution the following packages are required to be
-    installed:
-
-    * latex-recommended
-    * latex-extra
-    * fonts-recommended
-
-    For other LaTeX distributions your mileage may vary. To build the PDF
-    documentation using LaTeX, the ``fonts-extra`` TexLive package or the
-    ``inconsolata`` CTAN package are also required.
 
 There are two ways to build the SunPy documentation. The most straightforward
 way is to execute the command (from the sunpy source directory)::
@@ -331,7 +245,7 @@ directory, and can be compiled using ``pdflatex``.
 The above method builds the API documentation from the source code.
 Alternatively, you can do::
 
-    cd docs
+    cd docs/source
     make html
 
 And the documentation will be generated in the same location, but using the
