@@ -75,13 +75,14 @@ To install SunPy with `pip`, simply run::
     unless you are fully aware of the risks.
 
 If you require more platform specific installation instructions.
+
 .. toctree::
    :maxdepth: 1
    
    mac
    linux
    win
-  
+
 .. _anaconda_install:
 
 Anaconda python distribution
