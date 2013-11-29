@@ -1,2 +1,10 @@
 sphinx
 numpydoc
+numpy
+matplotlib
+scipy
+glymur
+suds
+pandas
+beautifulsoup4
+astropy>=0.3.0
