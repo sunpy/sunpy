@@ -7,9 +7,9 @@ understands the pain they are in from using antiquated language and terrible sof
 Together, with your help (either code to our repo or just being a user of SunPy) you can make
 tomorrow a better tomorrow.
 
-While she may look thin and missing parts, SunPy is very much usable. Soon, she will capable of
+While SunPy may look thin and be missing parts, SunPy is very much usable. Soon, it will capable of
 FTL travel. Soon, ND arrays will be ours! Powering our mighty war machines, ready to crush any opposition.
-Come my brothers and sisters, into the breach of the IDL binary wall. It will soon crumble.
+Come my brothers and sisters, unto the breach in the IDL binary wall. It will soon crumble around our feet.
 
 The SunPy project is an effort to create an open-source software library for 
 solar physics using the `Python <http://www.python.org/>`_ programming language.
