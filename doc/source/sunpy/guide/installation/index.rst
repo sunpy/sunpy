@@ -22,20 +22,15 @@ SunPy also depends on other packages for optional features.
 However, note that these only need to be installed if those particular features
 are needed. SunPy will import even if these dependencies are not installed.
 
-- `Matplotlib <http://http://matplotlib.org/>`_: To plot
-  :class:`~sunpy.map` objects from/to HDF5 files
+- `Matplotlib <http://http://matplotlib.org/>`_: To do something
 
-- `pandas <http://pandas.pydata.org/>`_: To read/write
-  :class:`~sunpy.lightcurve` objects from/to HDF5 files
+- `pandas <http://pandas.pydata.org/>`_: To do something
 
-- `suds <https://fedorahosted.org/suds/>`_: To read/write
-  :class:`~sunpy.net` objects from/to HDF5 files
+- `suds <https://fedorahosted.org/suds/>`_: To do something
 
-- `beautifulsoup4 <http://www.crummy.com/software/BeautifulSoup/>`_: To read/write
-  :class:`~sunpy.net` objects from/to HDF5 files
+- `beautifulsoup4 <http://www.crummy.com/software/BeautifulSoup/>`_: To do something
 
 - `gylmur <https://glymur.readthedocs.org/en/latest/>`_: To read/write
-  :class:`~sunpy.io' objects from/to jpeg files
 
 Installing SunPy
 ==================
@@ -100,23 +95,14 @@ To update to the latest version run::
     Attempting to use ``pip`` to upgrade your installation of SunPy may result
     in a corrupted installation.
 
-Binary installers
------------------
-
-Binary installers maybe one day be available on Windows for Python 2.6 and 2.7
-at `PyPI <https://pypi.python.org/pypi/sunpy>`_.
-
-.. _testing_installed_sunpy:
-
-<!---
 Testing an installed SunPy
 ----------------------------
 
-The easiest way to test your installed version of astropy is running
-correctly is to use the :func:`astropy.test` function::
+The easiest way to test your installed version of SunPy is running
+correctly is to use the :func:`sunpy.tests` function::
 
-    import astropy
-    astropy.test()
+    import sunpy.tests
+    sunpy.tests.main()
 
 The tests should run and print out any failures, which you can report at
 the `SunPy issue tracker <http://github.com/sunpy/sunpy/issues>`_.
@@ -124,10 +110,9 @@ the `SunPy issue tracker <http://github.com/sunpy/sunpy/issues>`_.
 .. note::
 
     This way of running the tests may not work if you do it in the
-    astropy source distribution.  See :ref:`sourcebuildtest` for how to
+    sunpy source distribution.  See :ref:`sourcebuildtest` for how to
     run the tests from the source code directory, or :ref:`running-tests`
     for more details.
--->
 
 Building from source
 ====================
@@ -290,7 +275,7 @@ entries in the Windows registry for Python. You can download `this script`__
 and execute it with the same Python as the one you want to install SunPy
 into.  For example to add the missing registry entries to your Python 2.7::
 
-    C:\>C:\Python27\python.exe C:\Path\To\Downloads\win_register_python.py
+    C:\> C:\Python27\python.exe C:\Path\To\Downloads\win_register_python.py
 
 __ https://gist.github.com/embray/6042780#file-win_register_python-py
 
@@ -354,14 +339,10 @@ And the documentation will be generated in the same location, but using the
 
 .. _sourcebuildtest:
 
-<!--
 Testing a source code build of SunPy
 --------------------------------------
 
 The easiest way to test that your SunPy built correctly (without
 installing SunPy) is to run this from the root of the source tree::
 
-    python setup.py test
-
-There are also alternative methods of :ref:`running-tests`.
--->
+    py.test2
