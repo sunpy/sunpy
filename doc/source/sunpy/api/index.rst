@@ -17,3 +17,4 @@ change.
    coords
    database
    image
+   map
