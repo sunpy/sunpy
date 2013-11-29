@@ -272,4 +272,4 @@ def setup(app):
 
     app.connect('source-read', process_automodapi)
 
-    app.add_config_value('automodapi_toctreedirnm', 'api', True)
+    #app.add_config_value('automodapi_toctreedirnm', 'api', True)
