@@ -277,4 +277,4 @@ Testing a source code build of SunPy
 The easiest way to test that your SunPy built correctly (without
 installing SunPy) is to run this from the root of the source tree::
 
-    py.test2
+    py.test
