@@ -15,4 +15,5 @@ change.
    sunpy
    cm
    coords
+   database
    image
