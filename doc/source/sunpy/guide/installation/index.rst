@@ -30,8 +30,9 @@ are needed. SunPy will import even if these dependencies are not installed.
 
 - `beautifulsoup4 <http://www.crummy.com/software/BeautifulSoup/>`_: To do something.
 
-- `gylmur <https://glymur.readthedocs.org/en/latest/>`_: To do something.
-
+- `glymur <https://glymur.readthedocs.org/en/latest/>`_: To do something.
+  Glymur requires the installation of the OpenJPEG C library. Which can be found `here <http://code.google.com/p/openjpeg/downloads/list>`.
+  
 - `pytest <http://pytest.org/latest/>`_: To run our tests.
 
 Installing SunPy
