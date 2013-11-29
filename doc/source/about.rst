@@ -2,7 +2,7 @@
 About
 =====
 From the outer parts of space, SunPy will soon invade Planet Earth to overthrow
-the horrific and honourless overloads (IDL and SolarSoft). We call upon any responsible humans who
+the horrific and honourless overloads (IDL and SolarSoft). We call upon every responsible human who
 understands the pain they are in from using antiquated language and terrible software to join us!
 Together, with your help (either code to our repo or just being a user of SunPy) you can make
 tomorrow a better tomorrow.
