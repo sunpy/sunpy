@@ -30,6 +30,6 @@ acknowledge it please include the Sunpy logo on the title or conclusion slide.
     :width: 300px
     :align: center
     :height: 153px
-    :alt: the sunpy logo
+    :alt: the sunpy powered logo
     
 Other versions of the logo are also `available <https://github.com/sunpy/sunpy/tree/documentation_sprint/doc/logo>`_.
