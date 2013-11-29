@@ -1,5 +1,5 @@
-Database
-========
+SunPy Database
+==============
 ..
     TODO:
         - WHY was this package developed?
