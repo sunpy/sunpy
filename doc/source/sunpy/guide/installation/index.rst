@@ -12,43 +12,51 @@ to fufill all the requirements if you only intend on using parts of SunPy. It is
 reccomended that you install the requirements for all of SunPy.
 
 The Full set of requirements is:
-numpy >= 1.6.0
-scipy >= 0.10.0
-matplotlib >= 1.1
-pandas >= 0.10.0
-astropy >= 0.2.0
-suds
-beautifulsoup4
+
+* numpy >= 1.6.0
+* scipy >= 0.10.0
+* matplotlib >= 1.1
+* pandas >= 0.10.0
+* astropy >= 0.3.0
+* suds
+* beautifulsoup4
+* glymur
 
 To import SunPy core (including sun, time, util) you need the following dependacies:
-numpy
-scipy
+* numpy
+* scipy
 
 Any submodules with extra requirements are listed below:
 instr:
-astropy.io.fits
-matplotlib
+
+* astropy.io.fits
+* matplotlib
 
 io:
-Optionally either of:
-astropy.io.fits
-openjpeg
+
+* Optionally either of:
+* astropy.io.fits
+* glymur
 
 lightcurve:
-pandas
-astropy.io.fits
-matplotlib
+
+* pandas
+* astropy.io.fits
+* matplotlib
 
 map:
-astropy.io.fits
-matplotlib
+
+* astropy.io.fits
+* matplotlib
 
 net:
-suds
-beautifulsoup4
+
+* suds
+* beautifulsoup4
 
 visualization:
-matplotlib
+
+* matplotlib
 
 Installing Scientific Python
 ----------------------------
@@ -119,9 +127,9 @@ You have a range of download locations.
 
 PyPi: `Download <https://pypi.python.org/packages/source/s/sunpy/sunpy-0.3.1.tar.gz>`_
 
-Github (tar.gz): `Download <https://github.com/sunpy/sunpy/tarball/0.3>`_ 
+Github (tar.gz): `Download <https://github.com/sunpy/sunpy/tarball/0.3>`__ 
 
-Github (zip): `Download <https://github.com/sunpy/sunpy/zipball/0.3>`_ 
+Github (zip): `Download <https://github.com/sunpy/sunpy/zipball/0.3>`__ 
 
 Then you can use: ::
 
