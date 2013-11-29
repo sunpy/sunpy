@@ -503,10 +503,11 @@ Dimension:\t [%d, %d]
     
     def rotate(self, angle, scale=1.0, rotation_center=None, recenter=True,
                missing=0.0, interpolation='bicubic', interp_param=-0.5):
-        """Returns a new rotated, rescaled and shifted map.
+        """
+        Returns a new rotated, rescaled and shifted map.
         
         Parameters
-        ---------
+        ----------
         angle: float
            The angle to rotate the image by (radians)        
         scale: float
@@ -546,7 +547,7 @@ Dimension:\t [%d, %d]
         C-API extension. If for some reason this is not compiled correctly this
         routine will fall back upon the scipy implementation of order = 3.
         For more infomation see:
-            http://sunpy.readthedocs.org/en/latest/guide/troubleshooting.html#crotate-warning
+        http://sunpy.readthedocs.org/en/latest/guide/troubleshooting.html#crotate-warning
         """
         
         #Interpolation parameter Sanity
