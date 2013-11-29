@@ -26,7 +26,7 @@ are needed. SunPy will import even if these dependencies are not installed.
 
 - `pandas <http://pandas.pydata.org/>`_: To do something.
 
-- `suds <https://fedorahosted.org/suds/>`_: To do something.
+- `suds <https://bitbucket.org/jurko/suds>`_: To do something.
 
 - `beautifulsoup4 <http://www.crummy.com/software/BeautifulSoup/>`_: To do something.
 
@@ -74,7 +74,14 @@ To install SunPy with `pip`, simply run::
     Do **not** install SunPy or other third-party packages using ``sudo``
     unless you are fully aware of the risks.
 
-
+If you require more platform specific installation instructions.
+.. toctree::
+   :maxdepth: 1
+   
+   mac
+   linux
+   win
+  
 .. _anaconda_install:
 
 Anaconda python distribution
