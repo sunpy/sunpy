@@ -32,7 +32,8 @@ are needed. SunPy will import even if these dependencies are not installed.
 
 - `gylmur <https://glymur.readthedocs.org/en/latest/>`_: To do something.
 
-- `pytest <http://pytest.org/latest/>`_: To run our tests.s
+- `pytest <http://pytest.org/latest/>`_: To run our tests.
+
 Installing SunPy
 ==================
 
