@@ -1,49 +1,14 @@
-===================
 SunPy Documentation
 ===================
 
-.. Documentation Versions:
-.. * `0.1 <http://www.sunpy.org/doc>`_
-.. * `latest (recommended) <http://sunpy.readthedocs.org/en/latest/index.html>`_
-
-.. Requirements
-.. ============
-.. * `Python 2.6+ <http://www.python.org/getit/releases/>`_
-.. * `NumPy/SciPy <http://numpy.scipy.org/>`_
-.. * `Matplotlib <http://matplotlib.sourceforge.net/>`_
-.. * `Astropy <http://astropy.org/>`_
-.. * `pandas <http://pandas.pydata.org/>`_
-
-.. Optional Dependencies
-.. =====================
-.. * `OpenJPEG <http://www.openjpeg.org/>`_
-.. * `beautifulsoup4 <http://www.crummy.com/software/BeautifulSoup/>`_
-.. * `Suds <https://fedorahosted.org/suds/>`_
-
-Documentation
-=============
-
 .. toctree::
-   :maxdepth: 2
-   
-   guide/index
-   reference/index
-   dev
-   ssw
-   resources
-   release
-   about
-   cite
-   bugs
-
-..   testing
-..   gallery/index
-..   license
-..   glossary
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+  :maxdepth: 2
+    
+  sunpy/guide/index.rst
+  sunpy/api/index.rst
+  sunpy/dev
+  sunpy/cite
+  sunpy/resources
+  sunpy/ssw
+  sunpy/about
+  sunpy/bugs

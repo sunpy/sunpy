@@ -22,7 +22,7 @@ You can now view the image by using the
 
     image.peek()
 
-.. image:: ../images/spectra_ex1.png
+.. image:: ../../images/spectra_ex1.png
 
 We now notice that there seems to be something interesting that has been
 cut off at the corner of the image, so we use the extend method to request
@@ -34,20 +34,20 @@ registered before our existing local data), if none are given it defaults to
     more = image.extend()
     more.peek()
     
-.. image:: ../images/spectra_ex3.5.png
+.. image:: ../../images/spectra_ex3.5.png
 
 We will, for the purposes of this demonstration, continue working with the
 original image, though.
 
 You can then perform automatic constant background subtraction by using the
 :py:meth:`subtract_bg() <sunpy.spectra.spectrogram.Spectrogram.subtract_bg>`
-method. The resulting image will be clipped at 0 using the min_ parameter of
+method. The resulting image will be clipped at 0 using the `min` parameter of
 peek in order to avoid negative values.::
 
     nobg = image.subtract_bg()
     nobg.peek(min_=0)
 
-.. image:: ../images/spectra_ex2.png
+.. image:: ../../images/spectra_ex2.png
 
 If you want to see the background determined by the automatic subtraction,
 you can use the
@@ -62,7 +62,7 @@ data using :py:func:`pyplot.plot`.::
     plt.ylabel("Intensity")
     plt.show() # This might not be necessary if you are using pylab.
 
-.. image:: ../images/spectra_ex3.png
+.. image:: ../../images/spectra_ex3.png
 
 Now let us say we want to isolate the interesting bit (which starts around
 10:38) from the boring background; there is a method called
@@ -74,13 +74,13 @@ to the end time of the file.::
     interesting = nobg.in_interval("10:38")
     interesting.peek(min_=0)
 
-.. image:: ../images/spectra_ex4.png
+.. image:: ../../images/spectra_ex4.png
 
 To get rid of the noise, we could also clip low intensities.::
 
     interesting.peek(min_=20)
 
-.. image:: ../images/spectra_ex5.png
+.. image:: ../../images/spectra_ex5.png
 
 If we want more context, we can also join together different images into
 a large one in time (note that this does more than just concatenating the
@@ -91,7 +91,7 @@ array and the axes -- it also considers possible overlap or gaps).::
     d = CallistoSpectrogram.join_many([c1, c2])
     d.peek()
 
-.. image:: ../images/spectra_ex6.png
+.. image:: ../../images/spectra_ex6.png
 
 We could also get the from_range method to get data between those two points
 directly from the archive and joined together (though that will fetch all
@@ -100,19 +100,19 @@ frequencies of BIR).::
     d = CallistoSpectrogram.from_range("BIR", "2011-09-22T10:15:00", "2011-09-22T10:45:00")
     d.peek()
 
-.. image:: ../images/spectra_ex7.png
+.. image:: ../../images/spectra_ex7.png
 
 The :py:meth:`peek() <sunpy.spectra.spectrogram.Spectrogram.peek>`
 method returns a special kind of figure that offers convenience features
-needed for analyzing spectrograms, a :py:class:`SpectroFigure <sunpy.spectra.spectrogram.SpectroFigure>`. By using its
-:py:meth:`time_freq() <sunpy.spectra.spectrogram.SpectroFigure.time_freq>`, we can
-select points on the figure and frequency-time information of them will be returned
-as a :py:class:`TimeFreq <sunpy.spectra.spectrogram.TimeFreq>`. Time is
-stored as offsets in seconds from TimeFreq.start. Note that if you use
+needed for analyzing spectrograms, a :py:class:`SpectroFigure <sunpy.spectra.spectrogram.SpectroFigure>`.
+By using its :py:meth:`time_freq() <sunpy.spectra.spectrogram.SpectroFigure.time_freq>`, 
+we can select points on the figure and frequency-time information of them will 
+be returned as a :py:class:`TimeFreq <sunpy.spectra.spectrogram.TimeFreq>`.
+Time is stored as offsets in seconds from TimeFreq.start. Note that if you use
 :py:meth:`plot() <sunpy.spectra.spectrogram.Spectrogram.plot>` instead of
- :py:meth:`plot() <sunpy.spectra.spectrogram.Spectrogram.peek>`, you have to
- create a :py:class:`SpectroFigure <sunpy.spectra.spectrogram.SpectroFigure>`
- by using :py:fun:`SpectroFigure <sunpy.spectra.spectrogram.figure>`::
+:py:meth:`plot() <sunpy.spectra.spectrogram.Spectrogram.peek>`, you have to
+create a :py:class:`SpectroFigure <sunpy.spectra.spectrogram.SpectroFigure>`
+by using :py:class:`SpectroFigure <sunpy.spectra.spectrogram.figure>`::
 
 
     fig = image.peek()
@@ -128,7 +128,7 @@ We can then quickly visualize this using the
 
     time_freq.peek(marker='o', linestyle='--')
 
-.. image:: ../images/spectra_ex8.png
+.. image:: ../../images/spectra_ex8.png
 
 .. _e-Callisto: http://www.e-callisto.org/
 .. _Rosse Observatory: http://rosseobservatory.ie/ 
