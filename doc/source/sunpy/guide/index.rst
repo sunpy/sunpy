@@ -9,15 +9,10 @@ Welcome to the SunPy User Guide!
    
    installation/index
    tutorial
+   acquiring_data/index
+   data_types/index
    plotting
    time
    roi
-   vso
-   database
-   helioviewer
-   maps
-   hek
-   lightcurve
-   spectra
    customization
    troubleshooting
