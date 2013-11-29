@@ -5,95 +5,47 @@ Installation
 Requirements
 ============
 
-<<<<<<< HEAD:doc/source/sunpy/guide/installation/index.rst
-Below are instructions for installing SunPy and its prerequisites on 
-different platforms.
-
-SunPy's Dependancies
---------------------
 SunPy consists of many submodules that each have their own requirements. You do not need 
-to fufill all the requirements if you only intend on using parts of SunPy. It is of course
-reccomended that you install the requirements for all of SunPy.
+to fufill all the requirements if you only intend on using parts of SunPy.
 
-The Full set of requirements is:
+SunPy has the following strict requirements:
 
-* numpy >= 1.6.0
-* scipy >= 0.10.0
-* matplotlib >= 1.1
-* pandas >= 0.10.0
-* astropy >= 0.3.0
-* suds
-* beautifulsoup4
-* glymur
+- `Python <http://www.python.org/>`_ 2.6 or 2.7
 
-To import SunPy core (including sun, time, util) you need the following dependacies:
-* numpy
-* scipy
+- `NumPy <http://www.numpy.org/>`_ |minimum_numpy_version| or later
 
-Any submodules with extra requirements are listed below:
-instr:
+- `SciPy <http://www.scipy.org/>`_ |minimum_scipy_version| or later
 
-* astropy.io.fits
-* matplotlib
+- `AstroPy <http://www.astropy.org/>`_ |minimum_astropy_version| or later
 
-io:
-
-* Optionally either of:
-* astropy.io.fits
-* glymur
-
-lightcurve:
-
-* pandas
-* astropy.io.fits
-* matplotlib
-
-map:
-
-* astropy.io.fits
-* matplotlib
-
-net:
-
-* suds
-* beautifulsoup4
-
-visualization:
-
-* matplotlib
-
-Installing Scientific Python
-=======
-Astropy has the following strict requirements:
-
-- `Python <http://www.python.org/>`_ 2.6, 2.7, 3.1 or 3.2
-
-- `Numpy <http://www.numpy.org/>`_ |minimum_numpy_version| or later
-
-Astropy also depends on other packages for optional features:
-
-- `h5py <http://alfven.org/wp/hdf5-for-python/>`_: To read/write
-  :class:`~astropy.table.table.Table` objects from/to HDF5 files
-
-- `scipy <http://www.scipy.org/>`_: To power a variety of features (currently
-  mainly cosmology-related functionality)
-
-- `xmllint <http://www.xmlsoft.org/>`_: To validate VOTABLE XML files.
-
+SunPy also depends on other packages for optional features.
 However, note that these only need to be installed if those particular features
-are needed. Astropy will import even if these dependencies are not installed.
+are needed. SunPy will import even if these dependencies are not installed.
 
-.. TODO: Link to the planned dependency checker/installer tool.
+- `Matplotlib <http://http://matplotlib.org/>`_: To plot
+  :class:`~sunpy.map` objects from/to HDF5 files
 
-Installing Astropy
+- `pandas <http://pandas.pydata.org/>`_: To read/write
+  :class:`~sunpy.lightcurve` objects from/to HDF5 files
+
+- `suds <https://fedorahosted.org/suds/>`_: To read/write
+  :class:`~sunpy.net` objects from/to HDF5 files
+
+- `beautifulsoup4 <http://www.crummy.com/software/BeautifulSoup/>`_: To read/write
+  :class:`~sunpy.net` objects from/to HDF5 files
+
+- `gylmur <https://glymur.readthedocs.org/en/latest/>`_: To read/write
+  :class:`~sunpy.io' objects from/to jpeg files
+
+Installing SunPy
 ==================
 
 Using `pip`
 -----------
 
-To install Astropy with `pip`, simply run::
+To install SunPy with `pip`, simply run::
 
-    pip install --no-deps astropy
+    pip install --no-deps sunpy
 
 .. warning::
     Users of the Anaconda python distribution should follow the instructions
@@ -119,10 +71,10 @@ To install Astropy with `pip`, simply run::
     how to do this in the `pip documentation <http://www.pip-installer.org/en/1.2.1/other-tools.html#using-pip-with-the-user-scheme>`_.
 
     Alternatively, if you intend to do development on other software that uses
-    Astropy, such as an affiliated package, consider installing Astropy into a
+    SunPy, such as an affiliated package, consider installing SunPy into a
     :ref:`virtualenv<using-virtualenv>`.
 
-    Do **not** install Astropy or other third-party packages using ``sudo``
+    Do **not** install SunPy or other third-party packages using ``sudo``
     unless you are fully aware of the risks.
 
 
@@ -131,30 +83,33 @@ To install Astropy with `pip`, simply run::
 Anaconda python distribution
 ----------------------------
 
-Astropy is installed by default with Anaconda. To update to the latest version
-run::
+SunPy is not installed by default with Anaconda. To install run::
+ 
+ 	conda install sunpy
 
-    conda update astropy
+To update to the latest version run::
+
+    conda update sunpy
 
 .. note::
-    There may be a delay of a day or to between when a new version of Astropy
+    There may be a delay of a day or to between when a new version of SunPy
     is released and when a package is available for Anaconda. You can check
-    for the list of available versions with ``conda search astropy``.
+    for the list of available versions with ``conda search sunpy``.
     
 .. note::
-    Attempting to use ``pip`` to upgrade your installation of Astropy may result
+    Attempting to use ``pip`` to upgrade your installation of SunPy may result
     in a corrupted installation.
 
 Binary installers
 -----------------
 
-Binary installers are available on Windows for Python 2.6, 2.7, 3.1, and 3.2
-at `PyPI <https://pypi.python.org/pypi/astropy>`_.
+Binary installers maybe one day be available on Windows for Python 2.6 and 2.7
+at `PyPI <https://pypi.python.org/pypi/sunpy>`_.
 
-.. _testing_installed_astropy:
+.. _testing_installed_sunpy:
 
-Testing an installed Astropy
->>>>>>> 8eb0003... Started this pushv :(:doc/source/guide/installation/index.rst
+<!---
+Testing an installed SunPy
 ----------------------------
 
 The easiest way to test your installed version of astropy is running
@@ -164,7 +119,7 @@ correctly is to use the :func:`astropy.test` function::
     astropy.test()
 
 The tests should run and print out any failures, which you can report at
-the `Astropy issue tracker <http://github.com/astropy/astropy/issues>`_.
+the `SunPy issue tracker <http://github.com/sunpy/sunpy/issues>`_.
 
 .. note::
 
@@ -172,8 +127,7 @@ the `Astropy issue tracker <http://github.com/astropy/astropy/issues>`_.
     astropy source distribution.  See :ref:`sourcebuildtest` for how to
     run the tests from the source code directory, or :ref:`running-tests`
     for more details.
-
-
+-->
 
 Building from source
 ====================
@@ -182,7 +136,7 @@ Prerequisites
 -------------
 
 You will need a compiler suite and the development headers for Python and
-Numpy in order to build Astropy. On Linux, using the package manager for your
+Numpy in order to build SunPy. On Linux, using the package manager for your
 distribution will usually be the easiest route, while on MacOS X you will
 need the XCode command line tools.
 
@@ -213,27 +167,27 @@ Obtaining the source packages
 Source packages
 ^^^^^^^^^^^^^^^
 
-The latest stable source package for Astropy can be `downloaded here
-<https://pypi.python.org/pypi/astropy>`_.
+The latest stable source package for SunPy can be `downloaded here
+<https://pypi.python.org/pypi/sunpy>`_.
 
 Development repository
 ^^^^^^^^^^^^^^^^^^^^^^
 
-The latest development version of Astropy can be cloned from github
+The latest development version of SunPy can be cloned from github
 using this command::
 
-   git clone git://github.com/astropy/astropy.git
+   git clone git://github.com/sunpy/sunpy.git
 
 .. note::
 
-   If you wish to participate in the development of Astropy, see
+   If you wish to participate in the development of SunPy, see
    :ref:`developer-docs`.  This document covers only the basics
-   necessary to install Astropy.
+   necessary to install SunPy.
 
 Building and Installing
 -----------------------
 
-Astropy uses the Python `distutils framework
+SunPy uses the Python `distutils framework
 <http://docs.python.org/install/index.html>`_ for building and
 installing and requires the
 `distribute <http://pypi.python.org/pypi/distribute>`_ extension--the later is
@@ -241,14 +195,14 @@ automatically downloaded when running ``python setup.py`` if it is not already
 provided by your system.
 
 If Numpy is not already installed in your Python environment, the
-astropy setup process will try to download and install it before
-continuing to install astropy.
+SunPy setup process will try to download and install it before
+continuing to install SunPy.
 
-To build Astropy (from the root of the source tree)::
+To build SunPy (from the root of the source tree)::
 
     python setup.py build
 
-To install Astropy (from the root of the source tree)::
+To install SunPy (from the root of the source tree)::
 
     python setup.py install
 
@@ -256,7 +210,7 @@ Troubleshooting
 ---------------
 
 If you get an error mentioning that you do not have the correct permissions to
-install Astropy into the default ``site-packages`` directory, you can try
+install SunPy into the default ``site-packages`` directory, you can try
 installing with::
 
     python setup.py install --user
@@ -266,13 +220,13 @@ which will install into a default directory in your home directory.
 External C libraries
 ^^^^^^^^^^^^^^^^^^^^
 
-The Astropy source ships with the C source code of a number of
+The SunPy source ships with the C source code of a number of
 libraries.  By default, these internal copies are used to build
-Astropy.  However, if you wish to use the system-wide installation of
+SunPy.  However, if you wish to use the system-wide installation of
 one of those libraries, you can pass one or more of the
 `--use-system-X` flags to the `setup.py build` command.
 
-For example, to build Astropy using the system `libexpat`, use::
+For example, to build SunPy using the system `libexpat`, use::
 
     python setup.py build --use-system-expat
 
@@ -280,7 +234,7 @@ To build using all of the system libraries, use::
 
     python setup.py build --use-system-libraries
 
-To see which system libraries Astropy knows how to build against, use::
+To see which system libraries SunPy knows how to build against, use::
 
     python setup.py build --help
 
@@ -290,7 +244,6 @@ use the system `libexpat`, add the following to the `setup.cfg` file::
 
     [build]
     use_system_expat=1
-
 
 The required version of setuptools is not available
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -305,7 +258,7 @@ If upon running the ``setup.py`` script you get a message like
     (Currently using setuptools 0.6c11 (/path/to/setuptools-0.6c11-py2.7.egg))
 
 this is because you have a very outdated version of the ``setuptools`` package
-which is used to install Python packages.  Normally Astropy will bootstrap a
+which is used to install Python packages.  Normally SunPy will bootstrap a
 newer version of setuptools via the network, but setuptools suggests that you
 first *uninstall* the old version (the ``easy_install -U setuptools`` command).
 However, in the likely case that your version of setuptools was installed by an
@@ -316,7 +269,7 @@ leave your system package in an inconsistent state.
 
 As the best course of action at this point depends largely on the individual
 system and how it is configured, if you are not sure yourself what do please
-ask on the Astropy mailing list.
+ask on the SunPy mailing list.
 
 
 The Windows installer can't find Python in the registry
@@ -328,13 +281,13 @@ later.  In particular, when a Python is installed "for all users" (as opposed
 to for a single user) it adds entries for that Python installation under the
 ``HKEY_LOCAL_MACHINE`` (HKLM) hierarchy and *not* under the
 ``HKEY_CURRENT_USER`` (HKCU) hierarchy.  However, depending on your UAC
-settings, if the Astropy installer is not executed with elevated privileges it
+settings, if the SunPy installer is not executed with elevated privileges it
 will not be able to check in HKLM for the required information about your
 Python installation.
 
 In short: If you encounter this problem it's because you need the appropriate
 entries in the Windows registry for Python. You can download `this script`__
-and execute it with the same Python as the one you want to install Astropy
+and execute it with the same Python as the one you want to install SunPy
 into.  For example to add the missing registry entries to your Python 2.7::
 
     C:\>C:\Python27\python.exe C:\Path\To\Downloads\win_register_python.py
@@ -349,21 +302,16 @@ Building documentation
 .. note::
     Building the documentation is in general not necessary unless you
     are writing new documentation or do not have internet access, because
-    the latest (and archive) versions of astropy's documentation should
-    be available at `docs.astropy.org <http://docs.astropy.org>`_ .
+    the latest (and archive) versions of SunPy's documentation should
+    be available at `docs.sunpy.org <http://docs.sunpy.org>`_ .
 
-Building the documentation requires the Astropy source code and some additional
+Building the documentation requires the SunPy source code and some additional
 packages:
 
     - `Sphinx <http://sphinx.pocoo.org>`_ (and its dependencies) 1.0 or later
 
     - `Graphviz <http://www.graphviz.org>`_
 
-<<<<<<< HEAD:doc/source/sunpy/guide/installation/index.rst
-Github (tar.gz): `Download <https://github.com/sunpy/sunpy/tarball/0.3>`__ 
-
-Github (zip): `Download <https://github.com/sunpy/sunpy/zipball/0.3>`__ 
-=======
 .. note::
 
     Sphinx also requires a reasonably modern LaTeX installation to render
@@ -371,7 +319,6 @@ Github (zip): `Download <https://github.com/sunpy/sunpy/zipball/0.3>`__
     <http://sphinx-doc.org/builders.html?highlight=latex#sphinx.builders.latex.LaTeXBuilder>`_,
     for the TexLive distribution the following packages are required to be
     installed:
->>>>>>> 8eb0003... Started this pushv :(:doc/source/guide/installation/index.rst
 
     * latex-recommended
     * latex-extra
@@ -381,8 +328,8 @@ Github (zip): `Download <https://github.com/sunpy/sunpy/zipball/0.3>`__
     documentation using LaTeX, the ``fonts-extra`` TexLive package or the
     ``inconsolata`` CTAN package are also required.
 
-There are two ways to build the Astropy documentation. The most straightforward
-way is to execute the command (from the astropy source directory)::
+There are two ways to build the SunPy documentation. The most straightforward
+way is to execute the command (from the sunpy source directory)::
 
     python setup.py build_sphinx
 
@@ -393,7 +340,7 @@ The LaTeX documentation can be generated by using the command::
 
     python setup.py build_sphinx -b latex
 
-The LaTeX file ``Astropy.tex`` will be created in the ``docs/_build/latex``
+The LaTeX file ``SunPy.tex`` will be created in the ``docs/_build/latex``
 directory, and can be compiled using ``pdflatex``.
 
 The above method builds the API documentation from the source code.
@@ -403,15 +350,16 @@ Alternatively, you can do::
     make html
 
 And the documentation will be generated in the same location, but using the
-*installed* version of Astropy.
+*installed* version of SunPy.
 
 .. _sourcebuildtest:
 
-Testing a source code build of Astropy
+<!--
+Testing a source code build of SunPy
 --------------------------------------
 
-The easiest way to test that your Astropy built correctly (without
-installing astropy) is to run this from the root of the source tree::
+The easiest way to test that your SunPy built correctly (without
+installing SunPy) is to run this from the root of the source tree::
 
     python setup.py test
 
