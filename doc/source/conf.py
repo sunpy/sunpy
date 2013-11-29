@@ -28,7 +28,6 @@
 # Load all of the global Astropy configuration
 from astropy.sphinx.conf import *
 
-
 # -- General configuration ----------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
@@ -61,6 +60,7 @@ version = sunpy.__version__.split('-', 1)[0]
 release = sunpy.__version__
 
 intersphinx_mapping['astropy'] = ('http://docs.astropy.org/en/stable/', None)
+intersphinx_mapping['sqlalchemy'] = ('http://docs.sqlalchemy.org/en/rel_0_8/', None)
 # -- Options for HTML output ---------------------------------------------------
 
 # A NOTE ON HTML THEMES
@@ -118,7 +118,8 @@ man_pages = [('index', project.lower(), project + u' Documentation',
 
 ## -- Options for the edit_on_github extension ----------------------------------------
 #
-extensions += ['astropy.sphinx.ext.edit_on_github']
+extensions = filter(lambda a: a != 'astropy.sphinx.ext.automodapi', extensions)
+extensions += ['astropy.sphinx.ext.edit_on_github', 'sphinx.ext.doctest', 'sunpy.sphinx.ext.automodapi']
 #
 ## Don't import the module as "version" or it will override the
 ## "version" configuration parameter

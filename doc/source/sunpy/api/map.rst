@@ -1,8 +1,8 @@
 .. _map:
 
-----
+====
 Maps
-----
+====
 
 .. module:: sunpy.map
 
@@ -11,7 +11,7 @@ Maps
     import sunpy
 
 Overview
-^^^^^^^^
+--------
 One of core classes in SunPy is a Map. A SunPy Map object is simply a 
 spatially-aware data array, often an image. In order to make it easy to work
 with image data in SunPy, the Map object provides a number of methods for
@@ -20,17 +20,14 @@ commonly performed operations.
 2D map objects are subclasses of sunpy.map.MapBase and all Map objects are 
 created using the Map factory sunpy.Map.
 
-Updated Map Layout
-^^^^^^^^^^^^^^^^^^
-Todo:
-
-1. Map factory and registration
-2. MapBase and Generic Map
-3. MapMeta and the seperation from the file io
+.. Todo:
+    1. Map factory and registration
+    2. MapBase and Generic Map
+    3. MapMeta and the seperation from the file io
 
 
 Creating Map Objects
-^^^^^^^^^^^^^^^^^^^^
+--------------------
 SunPy Map objects are constructed using the special factory 
 class :class:`Map`: ::
 
@@ -79,44 +76,18 @@ The SunPy Map factory accepts a wide variety if inputs for creating maps::
 .. autoclass:: sunpy.map.Map
    
 Map Classes
-^^^^^^^^^^^
+-----------
 There are a series of base map classes which are specalised for each 
 instrument. These subclass GenericMap and then register with
- the Map factory class, which will direct instatiation of an instrument class if the correct
+the Map factory class, which will direct instatiation of an instrument class if the correct
 parameters are met. 
 
-:class:`GenericMap`
-"""""""""""""""""""
-This is the top level 2D map class, containing processing and visualisation 
-routines designed to work with 2D data.
-
-.. autoclass:: sunpy.map.GenericMap
-    
-:class:`MapMeta`
-""""""""""""""""""
-
-Meta data for `Map` objects are stored in a class called  :class:`MapMeta`.
-
-.. autoclass:: sunpy.map.MapMeta
-
-:class:`CompositeMap`
-"""""""""""""""""""""
-A Composite Map is a Map object which contains one or more layers, representing
-for example a stack of images with varying opacities.
-
-.. autoclass:: sunpy.map.CompositeMap
-
-:class:`MapCube`
-"""""""""""""""""""""
-A MapCube is a three-dimension generalization of the Map class, for example,
-a time series of images.
-
-.. autoclass:: sunpy.map.MapCube
-
-
+.. automodapi:: sunpy.map
+    :no-main-docstr:
+    :no-heading:
 
 Writing a new Map Class
-^^^^^^^^^^^^^^^^^^^^^^^
+-----------------------
 
 Map classes can be registered with the Map factory, even if the new class is not
 officially part of SunPy.  This is good for prototyping new instruments.  For
