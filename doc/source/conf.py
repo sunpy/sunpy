@@ -118,8 +118,9 @@ man_pages = [('index', project.lower(), project + u' Documentation',
 
 ## -- Options for the edit_on_github extension ----------------------------------------
 #
-extensions = filter(lambda a: a != 'astropy.sphinx.ext.automodapi', extensions)
-extensions += ['astropy.sphinx.ext.edit_on_github', 'sphinx.ext.doctest', 'sunpy.sphinx.ext.automodapi']
+#extensions = filter(lambda a: a != 'astropy.sphinx.ext.automodapi', extensions)
+extensions += ['astropy.sphinx.ext.edit_on_github', 'sphinx.ext.doctest']
+#extensions += ['sunpy.sphinx.ext.automodapi']
 #
 ## Don't import the module as "version" or it will override the
 ## "version" configuration parameter
