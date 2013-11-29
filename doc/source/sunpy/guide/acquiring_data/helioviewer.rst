@@ -95,7 +95,8 @@ specifying a single string to indicate which layers to use, here we
 can specify the values as separate keyword arguments: ::
 
     filepath = hv.download_jp2('2012/07/05 00:30:00', observatory='SDO', instrument='HMI', detector='HMI', measurement='continuum')
-    hmi = sunpy.Map(filepath)
+    from sunpy.map import Map
+    hmi = Map(filepath)
     hmi.submap([200,550],[-400,-200]).show()
 
 .. image:: ../../images/helioviewer_download_jp2_ex.png
