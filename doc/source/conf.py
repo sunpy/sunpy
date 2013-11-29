@@ -28,7 +28,6 @@
 # Load all of the global Astropy configuration
 from astropy.sphinx.conf import *
 
-
 # -- General configuration ----------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
@@ -61,6 +60,7 @@ version = sunpy.__version__.split('-', 1)[0]
 release = sunpy.__version__
 
 intersphinx_mapping['astropy'] = ('http://docs.astropy.org/en/stable/', None)
+intersphinx_mapping['sqlalchemy'] = ('http://docs.sqlalchemy.org/en/rel_0_8/', None)
 # -- Options for HTML output ---------------------------------------------------
 
 # A NOTE ON HTML THEMES
@@ -118,7 +118,9 @@ man_pages = [('index', project.lower(), project + u' Documentation',
 
 ## -- Options for the edit_on_github extension ----------------------------------------
 #
-extensions += ['astropy.sphinx.ext.edit_on_github']
+#extensions = filter(lambda a: a != 'astropy.sphinx.ext.automodapi', extensions)
+extensions += ['astropy.sphinx.ext.edit_on_github', 'sphinx.ext.doctest']
+#extensions += ['sunpy.sphinx.ext.automodapi']
 #
 ## Don't import the module as "version" or it will override the
 ## "version" configuration parameter
@@ -128,109 +130,3 @@ edit_on_github_branch = "master"
 
 edit_on_github_source_root = ""
 edit_on_github_doc_root = "docs"
-
-
-#import sys, os, math
-#
-#class Mock(object):
-#    __all__ = []
-#    def __init__(self, *args, **kwargs):
-#        for key, value in kwargs.iteritems():
-#            setattr(self, key, value)
-#
-#    def __call__(self, *args, **kwargs):
-#        return Mock()
-#
-#    def __iter__(self):
-#        return iter([Mock()])
-#
-#    __add__  = __mul__  = __getitem__ = __setitem__ = \
-#__delitem__ = __sub__ =  __floordiv__ = __mod__ = __divmod__ = \
-#__pow__ = __lshift__ = __rshift__ = __and__ = __xor__ = __or__ = \
-#__rmul__  = __rsub__  = __rfloordiv__ = __rmod__ = __rdivmod__ = \
-#__rpow__ = __rlshift__ = __rrshift__ = __rand__ = __rxor__ = __ror__ = \
-#__imul__  = __isub__  = __ifloordiv__ = __imod__ = __idivmod__ = \
-#__ipow__ = __ilshift__ = __irshift__ = __iand__ = __ixor__ = __ior__ = \
-#__div__ = __rdiv__ = __idiv__ = __truediv__ = __rtruediv__ = __itruediv__ = \
-#__neg__ = __pos__ = __abs__ = __invert__ = __call__
-#
-#    def __getattr__(self, name):
-#        if name in ('__file__', '__path__'):
-#            return '/dev/null'
-#        # This clause is commented out because it makes an assumption with
-#        # case convention that is not necessarily true
-#        #elif name[0] != '_' and name[0] == name[0].upper():
-#        #    return type(name, (), {})
-#        else:
-#            return Mock(**vars(self))
-#
-#    def __lt__(self, *args, **kwargs):
-#        return True
-#
-#    __nonzero__ = __le__ = __eq__ = __ne__ = __gt__ = __ge__ = __contains__ = \
-#__lt__
-#
-#
-#    def __repr__(self):
-#        # Use _mock_repr to fake the __repr__ call
-#        res = getattr(self, "_mock_repr")
-#        return res if isinstance(res, str) else "Mock"
-#
-#    def __hash__(self):
-#        return 1
-#
-#    __len__ = __int__ = __long__ = __index__ = __hash__
-#
-#    def __oct__(self):
-#        return '01'
-#
-#    def __hex__(self):
-#        return '0x1'
-#
-#    def __float__(self):
-#        return 0.1
-#
-#    def __complex__(self):
-#        return 1j
-#
-#
-#MOCK_MODULES = [
-#    'scipy', 'matplotlib', 'matplotlib.pyplot', 'pyfits',
-#    'scipy.constants.constants', 'matplotlib.cm',
-#    'matplotlib.image', 'matplotlib.colors',
-#    'pandas', 'pandas.io', 'pandas.io.parsers',
-#    'suds', 'matplotlib.ticker', 'matplotlib.colorbar',
-#    'matplotlib.dates', 'scipy.optimize', 'scipy.ndimage',
-#    'matplotlib.figure', 'scipy.ndimage.interpolation', 'bs4',
-#    'scipy.interpolate',
-#    'matplotlib.cbook','matplotlib.axes','matplotlib.transforms',
-#    'matplotlib.gridspec','matplotlib.artist','matplotlib.axis',
-#    'matplotlib.collections','matplotlib.contour','matplotlib.path',
-#    'matplotlib.patches','matplotlib.animation','matplotlib.widgets',
-#    'mpl_toolkits','mpl_toolkits.axes_grid1',
-#    'mpl_toolkits.axes_grid1.axes_size',
-#
-#    # The following lines are for sunpy.gui, which is a mess
-#    #'PyQt4','PyQt4.QtCore','PyQt4.QtGui',
-#    #'matplotlib.backends.backend_qt4agg',
-#    'sunpy.gui.ui.mainwindow.widgets.figure_canvas',
-#    'sunpy.gui.ui.mainwindow.widgets.toolbars',
-#    'sunpy.gui.ui.mainwindow.resources',
-#
-#    'scipy.constants',
-#
-#    'astropy', 'astropy.units', 'astropy.io', 'astropy.constants']
-#
-#if not tags.has('doctest'):
-#    for mod_name in MOCK_MODULES:
-#        sys.modules[mod_name] = Mock(pi=math.pi, G=6.67364e-11)
-#
-#    # We want np.dtype() to return a special Mock class because it shows up as a
-#    # default value for arguments (see sunpy.spectra.spectrogram)
-#    sys.modules['numpy'] = Mock(pi=math.pi, G=6.67364e-11,
-#                                ndarray=type('ndarray', (), {}),
-#                                dtype=lambda _: Mock(_mock_repr='np.dtype(\'float32\')'))
-#else:
-#    import matplotlib
-#    matplotlib.interactive(True)
-#    exclude_patterns = ["reference/*"]
