@@ -1,5 +1,4 @@
 sphinx
-numpydoc
 numpy
 matplotlib
 scipy
