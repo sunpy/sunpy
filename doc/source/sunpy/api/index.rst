@@ -16,3 +16,4 @@ change.
    cm
    coords
    image
+   map
