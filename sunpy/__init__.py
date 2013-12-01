@@ -34,9 +34,9 @@ sun
 time
     Contains time related constants and methods.
 wcs
-     The WCS package provides functions to parse a World Coordinate System(WCS)
-coordinates for solar images as well as convert between various solar
-coordinate systems.
+    The WCS package provides functions to parse a World Coordinate System(WCS) 
+    coordinates for solar images as well as convert between various solar 
+    coordinate systems.
 
 """
 from __future__ import absolute_import

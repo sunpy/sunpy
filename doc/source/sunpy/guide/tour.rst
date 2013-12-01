@@ -5,7 +5,7 @@ A brief tour of SunPy
 Welcome to the SunPy tutorial! This brief tutorial will walk you through some 
 of the functionality currently offered by SunPy. Start by reading this tutorial
 and trying out some of the examples demonstrated. Once you've completed the
-tutorial check out the :doc:`code reference</reference/index>` for a more
+tutorial check out the :doc:`api reference</sunpy/api/index>` for a more
 thorough look at the functionality available.
 
 
@@ -29,7 +29,7 @@ a map from one of the supported data products is with the `Map()` class from the
     aia = Map(sunpy.AIA_171_IMAGE)
 
 This returns a map named aia which can be maniputated with standard SunPy map commands.
-For more information about maps checkout the :doc:`map guide <maps>`.
+For more information about maps checkout the :doc:`map guide <data_types/maps>`.
 
 2. Plotting
 -----------
@@ -166,7 +166,7 @@ non-interactive version of the main API::
 
 Note that specifying a path is optional and if you do not specify one the files
 will simply be downloaded into a temporary directory (e.g. /tmp/xyz).
-For more information about vso client checkout the :doc:`vso guide <vso>`.
+For more information about vso client checkout the :doc:`vso guide <acquiring_data/vso>`.
 
 
 6. Querying Helioviewer.org
@@ -195,4 +195,4 @@ The result is:
 
 .. image:: ../images/helioviewer_download_png_ex1.png
 
-For more information checkout the :doc:`helioviewer guide <helioviewer>`.
+For more information checkout the :doc:`helioviewer guide <acquiring_data/helioviewer>`.

@@ -44,8 +44,6 @@ _readers = Readers({
 		  'ana':ana
 })
 
-print _readers
-
 def read_file(filepath, filetype=None, **kwargs):
     """
     Automatically determine the filetype and read the file
@@ -126,9 +124,10 @@ def write_file(fname, data, header, filetype='auto', **kwargs):
         {'auto', 'fits', 'jp2'} Filetype to savem if auto fname extension will
         be detected, else specifiy a supported file extension.
     
-    Other keyword arguments will be passes to the writer function used.
-    
-    This routine currently only supports saving a single HDU.
+    Notes
+    -----
+    * Other keyword arguments will be passes to the writer function used.
+    * This routine currently only supports saving a single HDU.
     """
     if filetype == 'auto':
         for extension, readername in _known_extensions.items():
