@@ -37,7 +37,8 @@ def read(filepath):
     header = get_header(filepath)
     data = Jp2k(filepath).read()
     
-    return [(data, header[0])]
+    # Data is read in north-south flipped, so flip it around.
+    return [(data[::-1], header[0])]
 
 def get_header(filepath):
     """
