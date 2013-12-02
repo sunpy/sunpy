@@ -1,46 +1,35 @@
-============
-Citing SunPy
-============
+===================
+Acknowledging SunPy
+===================
 
 If you have used SunPy in your scientific work we would appreciate 
-it if you would cite SunPy in the resulting paper or presentation. 
-The following is recommended:
+it if you would acknowledge it. 
 
-- Author: Stuart Mumford, David Pérez-Suárez, Steven Christe, Florian Mayer and Russell J. Hewett
-- Title: SunPy: Open Source Solar Data Analysis Tools for Python
-- Year 2013
-- URL: `http:///www.sunpy.org <http:///www.sunpy.org>`_
+Publications
+------------
 
-This `paper <http://conference.scipy.org/proceedings/scipy2013/mumford.html>`_  
-is the result of the `presentation <http://www.youtube.com/watch?v=bXPPTCkaVu8>`_ 
-hold during the `12th Python in Science conference (SciPy 2013) <http://conference.scipy.org/proceedings/scipy2013/>`_ 
-in Austin, Texas (US).  
-The `notebook is also available <nbviewer.ipython.org/url/sunpy.cadair.com/presentations/scipy_2013/SunPy_Presentation.ipynb>`_.
+For a publication we recommend the following line be added
 
-The `paper is open access <http://conference.scipy.org/proceedings/scipy2013/pdfs/mumford.pdf>`_ 
-and its BibTex entry is as follows: ::
+    This research has made use of SunPy, an open-source and free community-developed 
+    solar data analysis package written in Python (citation).
 
-  @InProceedings{ mumford-proc-scipy-2013,
-     author    = { Stuart Mumford and David P\'erez-Su\'arez and Steven Christe and Florian Mayer and Russell J. Hewett },
-     title     = { SunPy: Python for Solar Physicists },
-     booktitle = { Proceedings of the 12th Python in Science Conference },
-     pages     = { 69 - 72 },
-     year      = { 2013 },
-     editor    = { St\'efan van der Walt and Jarrod Millman and Katy Huff }
-  }
+where the citation is to the `SunPy paper <http://conference.scipy.org/proceedings/scipy2013/mumford.html>`_  
+presented at `SciPy 2013 <http://conference.scipy.org/proceedings/scipy2013/>`_ Scipy 2013 (`Bib reference <http://conference.scipy.org/proceedings/scipy2013/bib/mumford.bib>`_).
+The paper is `open access <http://conference.scipy.org/proceedings/scipy2013/pdfs/mumford.pdf>`_.
+If the journal allows please also include a link to sunpy.org.
+If you have the time please `email us <mailto:sunpy@googlegroups.com>`_ to let us know about 
+your paper as we maintain a `public list <https://www.zotero.org/groups/sunpy_-_python_for_solar_physicists>`_ of papers `Zotero <https://www.zotero.org>`_. 
 
-Thank you for using SunPy!
+Posters/Presentations
+---------------------
 
-Other References
-----------------
+If you are giving a talk or presenting a poster which used SunPy and would like to
+acknowledge it please include the Sunpy logo on the title or conclusion slide.
 
-A list of previous publications/presentations can be found in 
-`figshare.com <http://figshare.com/articles/search?q=tag%3A+sunpy&quick=1>`_ 
-and in the `github SunPy Presentations repository <https://github.com/sunpy/presentations>`_
-
-
-Useful references
------------------
-
-SunPy maintains a list of references related with the code as a 
-`public group in Zotero <https://www.zotero.org/groups/sunpy_-_python_for_solar_physicists>`_.
+.. image:: ../../logo/sunpy_powered_300x153.png
+    :width: 300px
+    :align: center
+    :height: 153px
+    :alt: the sunpy powered logo
+    
+Other versions of the logo are also `available <https://github.com/sunpy/sunpy/tree/documentation_sprint/doc/logo>`_.

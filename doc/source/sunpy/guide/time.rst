@@ -1,3 +1,5 @@
+.. _time-in-sunpy:
+
 =============
 Time in SunPy
 =============
@@ -6,6 +8,8 @@ Working with times and time ranges is a standard task in solar data analysis as 
 SunPy strives to provide convenient and easy methods to do the simple stuff. Python
 already provides an object for a time or date through the `datetime object 
 <http://docs.python.org/2/library/datetime.html>`_. SunPy builds upon its functionality.
+
+.. _parse-time:
 
 1. Parsing Times
 ----------------
