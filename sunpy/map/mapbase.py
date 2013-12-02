@@ -53,7 +53,6 @@ class NDDataStandin(object):
         
         Parameters
         ----------
-        
         data: ndarray
         
         meta: sunpy.map.MapMeta
@@ -116,86 +115,6 @@ class GenericMap(NDDataStandin):
     header : dict
         A dictionary of the original image header tags
 
-    Attributes
-    ----------
-    original_header : dict
-        Dictionary representation of the original FITS header
-    carrington_longitude : str
-        Carrington longitude (crln_obs)
-    center : dict
-        X and Y coordinate of the center of the map in units.
-        Usually represents the offset between the center of the Sun and the
-        center of the map.
-    cmap : matplotlib.colors.Colormap
-        A Matplotlib colormap to be applied to the data
-    coordinate_system : dict
-        Coordinate system used for x and y axes (ctype1/2)
-    date : datetime
-        Image observation time
-    detector : str
-        Detector name
-    dsun : float
-        The observer distance from the Sun.
-    exptime : float
-        Exposure time of the image in seconds.
-    heliographic_latitude : float
-        Heliographic latitude in degrees
-    heliographic_longitude : float
-        Heliographic longitude in degrees
-    instrument : str
-        Instrument name
-    measurement : str, int
-        Measurement name. In some instances this is the wavelength of image.
-    name: str
-        Human-readable description of map-type
-    nickname : str
-        An abbreviated human-readable description of the map-type; part of
-        the Helioviewer data model
-    observatory : str
-        Observatory name
-    reference_coordinate : float
-        Reference point WCS axes in data units (crval1/2) 
-    reference_pixel : float
-        Reference point axes in pixels (crpix1/2)
-    rsun_arcseconds : float
-        Radius of the sun in arcseconds
-    rsun_meters : float
-        Radius of the sun in meters
-    scale : dict
-        Image scale along the x and y axes in units/pixel (cdelt1/2).
-    units : dict
-        Image coordinate units along the x and y axes (cunit1/2).
-
-    Methods
-    -------
-    std()
-        Return the standard deviation of the map data
-    mean()
-        Return the mean of the map data
-    min()
-        Return the minimum value of the map data
-    max()
-        Return the maximum value of the map data
-    resample(dimension, method)
-        Returns a new map that has been resampled up or down
-    superpixel(dimension, method)
-        Returns a new map consisting of superpixels formed from the
-        original data.
-    save()
-        Save the map to a fits file.
-    submap(range_a, range_b, units)
-        Returns a submap of the map with the specified range
-    plot()
-        Return a matplotlib imageaxes instance, like plt.imshow()
-    peek()
-        Display a matplotlib plot to the screen 
-    draw_limb()
-        Draw a line on the image where the solar limb is.
-    draw_grid()
-        Draw a lon/lat grid on a map plot.
-    get_header()
-        Returns the original header from when the map was first created.
-
     Examples
     --------
     >>> aia = sunpy.make_map(sunpy.AIA_171_IMAGE)
@@ -211,17 +130,12 @@ class GenericMap(NDDataStandin):
     'arcsec'
     >>> aia.peek()
 
-    See Also
-    --------
-    numpy.ndarray Parent class for the Map object
-
     References
     ----------
     | http://docs.scipy.org/doc/numpy/reference/arrays.classes.html
     | http://docs.scipy.org/doc/numpy/user/basics.subclassing.html
     | http://docs.scipy.org/doc/numpy/reference/ufuncs.html
     | http://www.scipy.org/Subclasses
-
     """
     
     def __init__(self, data, header, **kwargs):
@@ -275,6 +189,7 @@ Dimension:\t [%d, %d]
 
     @property
     def name(self):
+        """Human-readable description of map-type"""
         return self._name
     @name.setter
     def name(self, n):
@@ -282,6 +197,7 @@ Dimension:\t [%d, %d]
         
     @property
     def nickname(self):
+        """An abbreviated human-readable description of the map-type; part of the Helioviewer data model"""
         return self._nickname
     @nickname.setter
     def nickname(self, n):
@@ -289,6 +205,7 @@ Dimension:\t [%d, %d]
     
     @property
     def date(self):
+        """Image observation time"""
         return self.meta.get('date-obs', None)
 #    @date.setter
 #    def date(self, new_date):
@@ -299,30 +216,37 @@ Dimension:\t [%d, %d]
 
     @property
     def detector(self):
+        """Detector name"""
         return self.meta.get('detector', "")
         
     @property
     def dsun(self):
+        """The observer distance from the Sun."""
         return self.meta.get('dsun_obs', constants.au)
         
     @property
     def exposure_time(self):
+        """Exposure time of the image in seconds."""
         return self.meta.get('exptime', 0.0)
         
     @property
     def instrument(self):
+        """Instrument name"""
         return self.meta.get('instrume', "")
         
     @property
     def measurement(self):
+        """Measurement name, defaults to the wavelength of image"""
         return self.meta.get('wavelnth', "")
         
     @property
     def wavelength(self):
+        """wavelength of the observation"""
         return self.meta.get('wavelnth', "")
         
     @property
     def observatory(self):
+        """Observatory or Telescope name"""
         return self.meta.get('obsrvtry', self.meta.get('telescop', ""))
         
     @property
@@ -341,8 +265,11 @@ Dimension:\t [%d, %d]
     
     @property
     def center(self):
-        """Returns the offset between the center of the Sun and the center of 
-        the map."""
+        """        
+        X and Y coordinate of the center of the map in units.
+        Usually represents the offset between the center of the Sun and the
+        center of the map.
+        """
         return {'x': wcs.get_center(self.shape[1], self.scale['x'], 
                                     self.reference_pixel['x'], 
                                     self.reference_coordinate['x']),
@@ -352,48 +279,58 @@ Dimension:\t [%d, %d]
                
     @property
     def rsun_meters(self):
+        """Radius of the sun in meters"""
         return self.meta.get('rsun_ref', constants.radius)
     
     @property
     def rsun_arcseconds(self):
+        """Radius of the sun in arcseconds"""
         return self.meta.get('rsun_obs', self.meta.get('solar_r',
                                          self.meta.get('radius', constants.average_angular_size)))
                                          
     @property
     def coordinate_system(self):
+        """Coordinate system used for x and y axes (ctype1/2)"""
         return {'x': self.meta.get('ctype1', 'HPLN-TAN'),
                 'y': self.meta.get('ctype2', 'HPLT-TAN'),}
     
     @property
     def carrington_longitude(self):
+        """Carrington longitude (crln_obs)"""
         return self.meta.get('crln_obs', 0.)
         
     @property
     def heliographic_latitude(self):
+        """Heliographic latitude in degrees"""
         return self.meta.get('hglt_obs', self.meta.get('crlt_obs',
                                          self.meta.get('solar_b0', 0.)))
         
     @property
     def heliographic_longitude(self):
+        """Heliographic longitude in degrees"""
         return self.meta.get('hgln_obs', 0.)
         
     @property
     def reference_coordinate(self):
+        """Reference point WCS axes in data units (crval1/2)"""
         return {'x': self.meta.get('crval1', 0.),
                 'y': self.meta.get('crval2', 0.),}
         
     @property
     def reference_pixel(self):
+        """Reference point axes in pixels (crpix1/2)"""
         return {'x': self.meta.get('crpix1', (self.meta.get('naxis1') + 1) / 2.),
                 'y': self.meta.get('crpix2', (self.meta.get('naxis2') + 1) / 2.),}
         
     @property
     def scale(self):
+        """Image scale along the x and y axes in units/pixel (cdelt1/2)"""
         return {'x': self.meta.get('cdelt1', 1.),
                 'y': self.meta.get('cdelt2', 1.),}
         
     @property
     def units(self):
+        """Image coordinate units along the x and y axes (cunit1/2)."""
         return {'x': self.meta.get('cunit1', 'arcsec'),
                 'y': self.meta.get('cunit2', 'arcsec'),}
         
@@ -566,10 +503,11 @@ Dimension:\t [%d, %d]
     
     def rotate(self, angle, scale=1.0, rotation_center=None, recenter=True,
                missing=0.0, interpolation='bicubic', interp_param=-0.5):
-        """Returns a new rotated, rescaled and shifted map.
+        """
+        Returns a new rotated, rescaled and shifted map.
         
         Parameters
-        ---------
+        ----------
         angle: float
            The angle to rotate the image by (radians)        
         scale: float
@@ -609,7 +547,7 @@ Dimension:\t [%d, %d]
         C-API extension. If for some reason this is not compiled correctly this
         routine will fall back upon the scipy implementation of order = 3.
         For more infomation see:
-            http://sunpy.readthedocs.org/en/latest/guide/troubleshooting.html#crotate-warning
+        http://sunpy.readthedocs.org/en/latest/guide/troubleshooting.html#crotate-warning
         """
         
         #Interpolation parameter Sanity
