@@ -37,11 +37,14 @@ The result of a call to `Map` will be either a `MapBase` object,
 or a subclass of `MapBase` which either deals with a specific type of data, 
 e.g. `AIAMap` or `LASCOMap`, or if no instrument matches, a 2D map `GenericMap`.
 
-The SunPy Map factory accepts a wide variety if inputs for creating maps::
+The SunPy Map factory accepts a wide variety of inputs for creating maps::
 
 * Preloaded tuples of (data, header) pairs
 
 >>> mymap = sunpy.Map((data, header))
+
+headers are some base of `dict` or `OrderedDict`,
+ including SunPy's `FileHeader` or `Map Meta` classes.
 
 * data, header pairs, not in tuples
 
@@ -115,6 +118,6 @@ register the FutureMap type with the factory ::
 
     sunpy.Map.register(FutureMap, FutureMap.is_datasource_for)
     
-If this line is place correctly, for example in your subpackages __init__.py,
+If this line is placed correctly, for example in your subpackages __init__.py,
 it can be guaranteed that the FutureMap is always accessible when your package
 is imported.
