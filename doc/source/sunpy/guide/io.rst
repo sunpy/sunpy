@@ -1,6 +1,6 @@
---------------------------------------
-Your Guide to Opening Files with SunPy
---------------------------------------
+------------------------
+Opening Files with SunPy
+------------------------
 
 SunPy has wrapped several libraries in order to make input and output as painless as possible. 
 So let me take you on a journey through the binary forests using the chainsaw of SunPy. 
