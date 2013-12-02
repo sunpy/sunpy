@@ -883,7 +883,7 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         #lon_self, lat_self = wcs.convert_hpc_hg(rsun, dsun, angle_units = units[0], b0, l0, x, y)
         lon_self, lat_self = wcs.convert_hpc_hg(x, y, b0_deg=b0, l0_deg=l0, dsun_meters=dsun, angle_units='arcsec')
         # define the number of points for each latitude or longitude line
-        num_points = 20
+        num_points = 50
         
         #TODO: The following code is ugly. Fix it.
         lon_range = [lon_self.min(), lon_self.max()]
@@ -1058,7 +1058,7 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         
         # Normal plot
         if annotate:
-            axes.set_title("%s %s" % (self.name, self.date))
+            axes.set_title("%s %s" % (self.name, parse_time(self.date).strftime("%Y-%m-%d %H:%M:%S.%f")))
             
             # x-axis label
             if self.coordinate_system['x'] == 'HG':
