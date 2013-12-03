@@ -172,7 +172,11 @@ and times. Here is a short example: ::
 
 For more information about working with time in SunPy checkout the :doc:`time guide <time>`.
 
-7. Querying the VSO
+
+7. Getting at Data
+---------------
+
+Querying the VSO
 -------------------
 There are a couple different ways to query and download data from the VSO using
 SunPy. The method you should use depends first on your preference with respect
@@ -209,6 +213,46 @@ Note that specifying a path is optional and if you do not specify one the files
 will simply be downloaded into a temporary directory (e.g. /tmp/xyz).
 For more information about vso client checkout the :doc:`vso guide <acquiring_data/vso>`.
 
+Database Package
+-------------------
+
+The database package offers the possibility to save retrieved data (e.g. via the
+:mod:'sunpy.net.vso' package) onto a local or remote database. The database may be 
+a single file located on a local hard drive (if a SQLite database is used) or a 
+local or remote database server.
+This makes it possible to fetch required data from the local database instead 
+of downloading it again from a remote server.
+
+Querying a database is straightforward, as this example using VSO, shows. The example
+demonstrates the useful feature which prevents storing the same data twice::
+
+
+>>> from sunpy.database import Database
+>>> from sunpy.net.vso.attrs import Time, Instrument
+>>> db = Database('sqlite:///')
+>>> entries = db.fetch(
+...     Time('2012-08-05', '2012-08-05 00:00:05'),
+...     Instrument('AIA'))
+>>> assert entries is None
+>>> len(db)
+2
+>>> entries = db.fetch(
+...     Time('2012-08-05', '2012-08-05 00:00:05'),
+...     Instrument('AIA'))
+>>> entries is None
+False
+>>> len(entries)
+2
+>>> len(db)
+2
+
+
+Explanation: first, entries is None because the query has never been used for querying 
+the database -> query the VSO, add new entries to database, remember query hash. 
+In the second fetch, entries is not None because the query has already been used and 
+returns a list of database entries.
+
+
 
 8. Querying Helioviewer.org
 ---------------------------
@@ -239,36 +283,3 @@ The result is:
 For more information checkout the :doc:`helioviewer guide <acquiring_data/helioviewer>`.
 
 
-9. Database Package
--------------------
-
-The database package offers the possibility to save retrieved data (e.g. via the
-:mod:'sunpy.net.vso' package)onto a local or remote database. The database may be 
-a single file located on a local hard drive (if a SQLite database is used) or a 
-local or remote database server.
-This makes it possible to fetch required data from the local database instead 
-of downloading it again from a remote server.
-
-Querying a database is straight forward, as this example using VSO. This example demonstrates
-the useful feature which prevents storing the same data twice::
-
-    >>> entries = database.fetch(
-    ...     vso.attrs.Time('2012-08-05', '2012-08-05 00:00:05'),
-    ...     vso.attrs.Instrument('AIA'))
-    >>> entries is None
-    False
-    >>> len(entries)
-    2
-    >>> len(database)
-    27
-
-    >>> entries = database.fetch(
-    ...     vso.attrs.Time('2013-08-05', '2013-08-05 00:00:05'),
-    ...     vso.attrs.Instrument('AIA'))
-    >>> entries is None
-    True
-    >>> len(database)
-    29
-
-Note the first call has been run before successfully, hence, the False statement. Whereas 
-the second call has not been run before and so more elements are added to the database.  
