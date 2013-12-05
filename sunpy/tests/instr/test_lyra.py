@@ -1,6 +1,6 @@
 from __future__ import absolute_import
 
-from sunpy.time import TimeRange
+from sunpy.time import TimeRange, parse_time
 from sunpy.instr import lyra
 import tempfile
 import os
@@ -22,6 +22,9 @@ def test_lytaf_utils():
     assert type(lar[0]['end_time']) == datetime.datetime
     assert type(lar[0]['roi_description']) == str
     assert type(lar[0]['event_type_description']) == str
+    assert lar[0]['start_time'] == parse_time('2010-06-13 02:07:04')
+    assert lar[0]['end_time'] == parse_time('2010-06-13 02:10:04')
+    assert lar[0]['event_type_description'] == 'LAR'
     
     
     
