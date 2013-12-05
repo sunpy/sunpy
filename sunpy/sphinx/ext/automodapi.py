@@ -244,7 +244,7 @@ def _mod_info(modname, toskip=[]):
     it has classes or functions.
     """
 
-    from ...utils.misc import find_mod_objs
+    from astropy.utils.misc import find_mod_objs
 
     hascls = hasfunc = False
 
