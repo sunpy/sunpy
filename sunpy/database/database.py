@@ -594,7 +594,7 @@ class Database(object):
             The database entry that will be added to this database.
 
         ignore_already_added : bool, optional
-            If True, attempts to add an already exisiting database entry will
+            If True, attempts to add an already existing database entry will
             result in a :exc:`sunpy.database.EntryAlreadyAddedError`.
             Otherwise, a new entry will be added and there will be duplicates
             in the database.
