@@ -4,6 +4,7 @@ import datetime
 import calendar
 import sqlite3
 import numpy as np
+import os
 from sunpy.time import parse_time
 import sunpy.net.download
 import urllib
@@ -13,7 +14,8 @@ def download_lytaf_database(lytaf_dir=''):
     #dl=sunpy.net.download.Downloader()
     #dl.download('http://proba2.oma.be/lyra/data/lytaf/annotation_ppt.db',path=lytaf_dir)
     url='http://proba2.oma.be/lyra/data/lytaf/annotation_ppt.db'
-    urllib.urlretrieve(url,lytaf_dir+'annotation_ppt.db')
+    destination=os.path.join(lytaf_dir,'annotation_ppt.db')
+    urllib.urlretrieve(url,destination)
     
     return
 
@@ -29,7 +31,8 @@ def get_lytaf_events(timerange,lytaf_dir=''):
     
     #involves executing SQLite commands from within python.
     #connect to the SQlite database
-    conn=sqlite3.connect(lytaf_dir + 'annotation_ppt.db')
+    #conn=sqlite3.connect(lytaf_dir + 'annotation_ppt.db')
+    conn=sqlite3.connect(os.path.join(lytaf_dir,'annotation_ppt.db'))
     cursor=conn.cursor()
 
     #create a substitute tuple out of the start and end times for using in the database query
