@@ -10,9 +10,9 @@ import datetime
 @pytest.mark.online
 def test_lytaf_utils():
     '''test the downloading of the LYTAF file and subsequent queries'''
-    tmp_dir=tempfile.mkdtemp() + '/'
+    tmp_dir=tempfile.mkdtemp()
     lyra.download_lytaf_database(lytaf_dir=tmp_dir)
-    assert os.path.exists(tmp_dir + 'annotation_ppt.db') == True
+    assert os.path.exists(os.path.join(tmp_dir,'annotation_ppt.db'))
 
     #try doing a query on the temporary database
     lar=lyra.get_lytaf_events(TimeRange('2010-06-13 02:00','2010-06-13 06:00'),lytaf_dir=tmp_dir)
