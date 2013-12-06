@@ -33,15 +33,21 @@ class CoordinateFrame(object):
     ----------
     system : string
         type of the frame
+    reference_position : float
+    pixel_size : float
+    number_of_pixels : int
     num_axes : int
     axes_names : list of strings
     units : list of units
     """
 
-    def __init__(self, system, num_axes, axes_names=None, units=None):
+    def __init__(self, reference_position, system, pixel_size, number_of_pixels,
+                 num_axes, axes_names=None, units=None):
         """ Initialize a frame"""
-        # TODO: Write type checking for @system, @num_axes, @axes_names, @units!
         self.system = system
+        self.reference_position = reference_position
+        self.pixel_size = pixel_size
+        self.number_of_pixels = number_of_pixels
         self.num_axes = num_axes
         self.axes_names = axes_names
         self.units = units
@@ -63,7 +69,33 @@ class SpatialFrame(CoordinateFrame):
                         in the future
     """
 
-    def __init__(self, reference_position, axes_names=["",""], units=["",""]):
-        super(SpatialFrame, self).__init__('Spatial', num_axes=2,
-                                           axes_names=axes_names, units=units)
-        self._reference_position = reference_position
+    def __init__(self, reference_position, pixel_size, number_of_pixels,
+                 axes_names=["",""], units=["",""]):
+        super(SpatialFrame, self).__init__(system='Spatial',
+                                           reference_position=reference_position,
+                                           pixel_size=pixel_size,
+                                           number_of_pixels=number_of_pixels,
+                                           num_axes=2,
+                                           axes_names=axes_names,
+                                           units=units)
+
+
+class SpectralFrame(CoordinateFrame):
+    """
+    SpectralFrame
+
+    Parameters
+    -----------------
+    reference_position: list, BUT possible astropy.Time or coordinate object
+                        in the future
+    """
+
+    def __init__(self, reference_position, pixel_size, number_of_pixels,
+                 axes_names=["",""], units=["",""]):
+        super(SpectralFrame, self).__init__(system='Spectral',
+                                           reference_position=reference_position,
+                                           pixel_size=pixel_size,
+                                           number_of_pixels=number_of_pixels,
+                                           num_axes=1,
+                                           axes_names=axes_names,
+                                           units=units)

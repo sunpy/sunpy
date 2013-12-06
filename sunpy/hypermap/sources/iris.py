@@ -12,6 +12,7 @@ import collections
 from sunpy.hypermap.coordinate_system import CoordinateFrame
 from sunpy.hypermap.coordinate_system import CoordinateSystem
 from sunpy.hypermap.coordinate_system import SpatialFrame
+from sunpy.hypermap.coordinate_system import SpectralFrame
 
 class Parser(object):
     """
@@ -54,6 +55,7 @@ class Parser(object):
         ctypes = self._get_header_item_group('CTYPE')
         cunits = self._get_header_item_group('CUNIT')
         crpixs = self._get_header_item_group('CRPIX')
+        cdelts = self._get_header_item_group('CDELT')
         # TODO: Where can we get axes names?
 
         # We want to stop when we are unable to find required keywords,
@@ -69,19 +71,25 @@ class Parser(object):
 
             if frame_type == 'Spatial':
                 frame_list.append(SpatialFrame(reference_position=crpixs[i][1],
-                                               #axes_names=None,
+                                               pixel_size=cdelts[i][1],
+                                               number_of_pixels=naxiss[i][1],
+                                               axes_names=None,
                                                units=[cunits[i][1],
                                                       cunits[i][1]]))
             elif frame_type == 'Time':
                 frame_list.append(CoordinateFrame(system='Time',
+                                                  reference_position=crpixs[i][1],
+                                                  pixel_size=cdelts[i][1],
+                                                  number_of_pixels=naxiss[i][1],
                                                   num_axes=1,
                                                   axes_names=None,
                                                   units=[cunits[i][1]]))
             elif frame_type == 'Spectral':
-                frame_list.append(CoordinateFrame(system='Spectral',
-                                                  num_axes=1,
-                                                  axes_names=None,
-                                                  units=[cunits[i][1]]))
+                frame_list.append(SpectralFrame(reference_position=crpixs[i][1],
+                                                pixel_size=cdelts[i][1],
+                                                number_of_pixels=naxiss[i][1],
+                                                axes_names=None,
+                                                units=[cunits[i][1]]))
         return frame_list
 
     def get_coordinate_system(self, name="CompositeSystem"):
