@@ -41,11 +41,12 @@ class CoordinateFrame(object):
     units : list of units
     """
 
-    def __init__(self, system, reference_position, pixel_size, number_of_pixels,
+    def __init__(self, system, reference_position, reference_coordinate, pixel_size, number_of_pixels,
                  num_axes, axes_names=None, units=None):
         """ Initialize a frame"""
         self.system = system
         self.reference_position = reference_position
+        self.reference_coordinate = reference_coordinate
         self.pixel_size = pixel_size
         self.number_of_pixels = number_of_pixels
         self.num_axes = num_axes
@@ -57,6 +58,15 @@ class CoordinateFrame(object):
         Transform from the current reference system to other if
         the system attribute of the two matches
         """
+    
+    def get_extent(self):
+        """
+        Return a list of the min and max values for the axis
+        """
+        amin = self.reference_position - self.number_of_pixels / 2. * self.pixel_size
+        amax = self.reference_position + self.number_of_pixels / 2. * self.pixel_size
+        return [amin, amax]
+        
 
 
 class SpatialFrame(CoordinateFrame):
@@ -69,10 +79,11 @@ class SpatialFrame(CoordinateFrame):
                         in the future
     """
 
-    def __init__(self, reference_position, pixel_size, number_of_pixels,
+    def __init__(self, reference_position, reference_coordinate, pixel_size, number_of_pixels,
                  axes_names=["",""], units=["",""]):
         super(SpatialFrame, self).__init__(system='Spatial',
                                            reference_position=reference_position,
+                                           reference_coordinate=reference_coordinate,
                                            pixel_size=pixel_size,
                                            number_of_pixels=number_of_pixels,
                                            num_axes=2,
@@ -90,10 +101,11 @@ class SpectralFrame(CoordinateFrame):
                         in the future
     """
 
-    def __init__(self, reference_position, pixel_size, number_of_pixels,
+    def __init__(self, reference_position, reference_coordinate, pixel_size, number_of_pixels,
                  axes_names=["",""], units=["",""]):
         super(SpectralFrame, self).__init__(system='Spectral',
                                            reference_position=reference_position,
+                                           reference_coordinate=reference_coordinate,
                                            pixel_size=pixel_size,
                                            number_of_pixels=number_of_pixels,
                                            num_axes=1,
