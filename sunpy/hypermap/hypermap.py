@@ -26,7 +26,7 @@ class HyperMap(object):
     """
 
     def __init__(self, data, coordinate_system, header):
-        self.data = data
+        self.data = data.T
         self.system = coordinate_system
         self.header = header
     
@@ -51,10 +51,17 @@ class HyperMap(object):
         elif naxis == 3:
             if isinstance(animate, bool) and animate:
                 raise ValueError("What axis to animate fool?!")
+            axlist = range(0,naxis)
+            axlist.pop(animate)
+            print axlist
+            y_extent = self.system.frames[axlist[0]].get_extent()
+            x_extent = self.system.frames[axlist[1]].get_extent()
+            extent = x_extent + y_extent
+            print extent
             #What axis are we animating over
             fig, ax = plt.subplots(1)
             ani = viz.animate_array(self.data, animate, axes=ax, cmap=plt.get_cmap('gray'),
-                                    norm='dynamic', extent=None, interval=200, colorbar=False)
+                                    norm='dynamic', extent=extent, interval=200, colorbar=False)
 
             return ani
             
