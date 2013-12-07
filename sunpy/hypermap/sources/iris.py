@@ -56,6 +56,8 @@ class Parser(object):
         cunits = self._get_header_item_group('CUNIT')
         crpixs = self._get_header_item_group('CRPIX')
         cdelts = self._get_header_item_group('CDELT')
+        crvals = self._get_header_item_group('CRVAL')
+        
         # TODO: Where can we get axes names?
 
         # We want to stop when we are unable to find required keywords,
@@ -71,6 +73,7 @@ class Parser(object):
 
             if frame_type == 'Spatial':
                 frame_list.append(SpatialFrame(reference_position=crpixs[i][1],
+                                               reference_coordinate=crvals[i][1],
                                                pixel_size=cdelts[i][1],
                                                number_of_pixels=naxiss[i][1],
                                                axes_names=None,
@@ -79,6 +82,7 @@ class Parser(object):
             elif frame_type == 'Time':
                 frame_list.append(CoordinateFrame(system='Time',
                                                   reference_position=crpixs[i][1],
+                                                  reference_coordinate=crvals[i][1],
                                                   pixel_size=cdelts[i][1],
                                                   number_of_pixels=naxiss[i][1],
                                                   num_axes=1,
@@ -86,6 +90,7 @@ class Parser(object):
                                                   units=[cunits[i][1]]))
             elif frame_type == 'Spectral':
                 frame_list.append(SpectralFrame(reference_position=crpixs[i][1],
+                                                reference_coordinate=crvals[i][1],
                                                 pixel_size=cdelts[i][1],
                                                 number_of_pixels=naxiss[i][1],
                                                 axes_names=None,
