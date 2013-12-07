@@ -4,8 +4,7 @@
 
 import sunpy.io  #read_file blows away RAM when using big Raster fits
 from sunpy.hypermap.sources.iris import Parser
-from sunpy.hypermap.coordinate_system import CoordinateSystem
-from sunpy.hypermap.coordinate_system import CoordinateFrame
+from sunpy.hypermap.coordinate_system import CoordinateSystem, CoordinateFrame
 
 # This is temporary, Stuart Mumford will provide nice & small test samples :-)
 _IRIS_SAMPLE_DATA = "/home/exo/iris_sample_data.fits"
@@ -53,8 +52,8 @@ def _test_make_coord_system():
     for i in s.frames:
         assert isinstance(i, CoordinateFrame)
         assert type(i.system) == str and i.system != ""
-        assert type(i.pixel_size) == float
-        assert type(i.number_of_pixels) == int
+        assert type(i.pixel_size) == float and i.pixel_size > 0
+        assert type(i.number_of_pixels) == int and i.number_of_pixels > 0
         assert type(i.num_axes) == int and i.num_axes > 0
         assert type(i.axes_names) == list or i.axes_names is None
         assert type(i.units) == list or i.units is None
@@ -68,8 +67,8 @@ def _test_make_raster_coord_system():
     for i in s1.frames:
         assert isinstance(i, CoordinateFrame)
         assert type(i.system) == str and i.system != ""
-        assert type(i.pixel_size) == float
-        assert type(i.number_of_pixels) == int
+        assert type(i.pixel_size) == float and i.pixel_size > 0
+        assert type(i.number_of_pixels) == int and i.number_of_pixels > 0
         assert type(i.num_axes) == int and i.num_axes > 0
         assert type(i.axes_names) == list or i.axes_names is None
         assert type(i.units) == list or i.units is None

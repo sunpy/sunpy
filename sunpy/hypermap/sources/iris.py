@@ -9,8 +9,8 @@ __email__ = "exo@tty.sk"
 
 import collections
 
-from sunpy.hypermap.coordinate_system import CoordinateFrame
 from sunpy.hypermap.coordinate_system import CoordinateSystem
+from sunpy.hypermap.coordinate_system import CoordinateFrame
 from sunpy.hypermap.coordinate_system import SpatialFrame
 from sunpy.hypermap.coordinate_system import SpectralFrame
 
@@ -24,16 +24,16 @@ class Parser(object):
         e.g.: sunpy.io.header.FileHeader
     """
 
+    _types_dictionary = {'HPLN-TAN': 'Spatial',
+                         'HPLT-TAN': 'Spatial',
+                         'Time': 'Time',
+                         'WAVE': 'Spectral'}
+
     def __init__(self, header):
         if not isinstance(header, collections.Mapping):
             raise HeaderTypeError("Header have to be an instance of the \
                                    collections.Mapping!")
         self._header = header
-
-    _types_dictionary = {'HPLN-TAN': 'Spatial',
-                         'HPLT-TAN': 'Spatial',
-                         'Time': 'Time',
-                         'WAVE': 'Spectral'}
 
     def _get_header_item_group(self, group):
         """

@@ -41,7 +41,7 @@ class CoordinateFrame(object):
     units : list of units
     """
 
-    def __init__(self, reference_position, system, pixel_size, number_of_pixels,
+    def __init__(self, system, reference_position, pixel_size, number_of_pixels,
                  num_axes, axes_names=None, units=None):
         """ Initialize a frame"""
         self.system = system
