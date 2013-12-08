@@ -29,11 +29,11 @@ class HyperMap(object):
         self.data = data.T
         self.system = coordinate_system
         self.header = header
-    
+
     def plot(self, animate=False):
         """
         Plot a HyperMap
-        
+
         Parameters
         ----------
         animate: int
@@ -41,7 +41,7 @@ class HyperMap(object):
         """
         #TODO: Make animate more cleverer
         naxis = len(self.system.frames)
-        
+
         if naxis == 1:
             #Plot some thing
             pass
@@ -64,7 +64,6 @@ class HyperMap(object):
                                     norm='dynamic', extent=extent, interval=200, colorbar=False)
 
             return ani
-            
+
         else:
             raise ValueError("Can't plot this hypermap, please slice it")
-        

@@ -23,8 +23,9 @@ def test_spectral_frame():
 
 def test_coordinate_system():
     cframe_time = CoordinateFrame("time", 1.1, 2, 3, 4, ["time"], ["second"])
-    cframe_spatial = SpatialFrame("Spatial", ["x", "y"], ["au", "au"])
-    frame_list = [cframe_time, cframe_spatial]
+    cframe_spatial = SpatialFrame("Spatial", 1.1, 2, 3, ["x", "y"], ["au", "au"])
+    cframe_spectral = SpectralFrame("Sectral", 1.1, 2, 3, ["whatever"], ["dummy"])
+    frame_list = [cframe_time, cframe_spatial, cframe_spectral]
     system_name = "Random Test Coordinate System"
     csystem = CoordinateSystem(frame_list, system_name)
     assert isinstance(csystem, CoordinateSystem)

@@ -57,7 +57,7 @@ class Parser(object):
         crpixs = self._get_header_item_group('CRPIX')
         cdelts = self._get_header_item_group('CDELT')
         crvals = self._get_header_item_group('CRVAL')
-        
+
         # TODO: Where can we get axes names?
 
         # We want to stop when we are unable to find required keywords,

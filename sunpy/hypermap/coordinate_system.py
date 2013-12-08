@@ -58,7 +58,7 @@ class CoordinateFrame(object):
         Transform from the current reference system to other if
         the system attribute of the two matches
         """
-    
+
     def get_extent(self):
         """
         Return a list of the min and max values for the axis
@@ -66,7 +66,7 @@ class CoordinateFrame(object):
         amin = self.reference_position - self.number_of_pixels / 2. * self.pixel_size
         amax = self.reference_position + self.number_of_pixels / 2. * self.pixel_size
         return [amin, amax]
-        
+
 
 
 class SpatialFrame(CoordinateFrame):

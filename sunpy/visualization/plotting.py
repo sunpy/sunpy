@@ -25,12 +25,12 @@ class ControlFuncAnimation(animation.FuncAnimation):
         animation.FuncAnimation.__init__(self, fig, func, frames=frames,
                                          init_func=init_func, fargs=fargs,
                                          save_count=save_count, **kwargs)
-                                         
+
         self._started = False #Set to false _start will start animation
         if not auto_start:
             self._fig.canvas.mpl_disconnect(self._first_draw_id)
             self._first_draw_id = None
-    
+
     def _start(self, *args):
         if not self._started:
             if self.event_source is None:
@@ -38,21 +38,21 @@ class ControlFuncAnimation(animation.FuncAnimation):
                 self.event_source.interval = self._interval
             animation.FuncAnimation._start(self)
             self._started = True
-    
+
     def _stop(self, *args):
         if self.event_source:
             animation.FuncAnimation._stop(self, *args)
         self._started = False
 
 def add_controls(axes=None, slider=False):
-    """ Adds Start/Stop controls to an axes having been given a animation 
+    """ Adds Start/Stop controls to an axes having been given a animation
     instance. """
-    
+
     #If No axes specified use current axes.
     if not axes:
         axes = plt.gca()
     fig = axes.get_figure()
-    
+
     #Split up the current axes so there is space for a start and a stop button
     divider = make_axes_locatable(axes)
     pad = 0.1 # Padding between axes
@@ -70,11 +70,11 @@ def add_controls(axes=None, slider=False):
     else:
         divider.set_vertical([ysize, pad_size, Size.AxesY(axes)])
         bny = 0
-        
+
     #Main figure spans all horiz and is in the top (2) in vert.
     axes.set_axes_locator(divider.new_locator(0, len(divider.get_vertical())-1,
                                               nx1=-1))
-    
+
     #Add two axes for buttons and make them 50/50 spilt at the bottom.
     bax1 = fig.add_axes((0.,0.,1.,1.))
     locator = divider.new_locator(nx=0, ny=bny)
@@ -85,7 +85,7 @@ def add_controls(axes=None, slider=False):
     bax3 = fig.add_axes((0.,0.,0.7,1.))
     locator = divider.new_locator(nx=4, ny=bny)
     bax3.set_axes_locator(locator)
-    
+
     start = widgets.Button(bax1, "Start")
     stop = widgets.Button(bax2, "Stop")
     step = widgets.Button(bax3, "Step")
@@ -93,13 +93,13 @@ def add_controls(axes=None, slider=False):
     bax1._button = start
     bax2._button = stop
     bax3._button = step
-    
+
     if slider:
         bax4 = fig.add_axes((0.,0.,0.6,1.))
         locator = divider.new_locator(nx=0, ny=0, nx1=-1)
         bax4.set_axes_locator(locator)
         sframe = widgets.Slider(bax4, 'Frame', 0, 10, valinit=0, valfmt = '%i')        
         bax4._slider = sframe
-    
+
         return axes, bax1, bax2, bax3, bax4
     return axes, bax1, bax2, bax3
