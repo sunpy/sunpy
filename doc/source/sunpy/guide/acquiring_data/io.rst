@@ -23,7 +23,7 @@ Luckily for everyone, SunPy has general purpose high-level IO functions.::
 
 These are designed to take a filename and breakdown the name in order to automatically calculate the call required to either read or write this file. 
 SunPy has a "database" of file extensions which is compared against when using the high-level IO functions.
-When reading or writing a data file, the function will return a (data, header) pair. 
+When reading or writing a data file, the function will return a list of (data, header) pairs depending on how HDUs exist in the file. 
 It important to remember this.
 If for some reason these calls fail, which is possible to do unknown file extensions or unsupported file types, create an issue and someone will get back to you.
 
