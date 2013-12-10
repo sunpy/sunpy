@@ -947,7 +947,7 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         if not axes:
             axes = plt.gca()
         
-        c_kw = {'radius':self.rsun_arcseconds,
+        c_kw = {'radius':self.rsun_arcseconds.value,
                 'fill':False,
                 'color':'white',
                 'zorder':100
