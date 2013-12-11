@@ -9,25 +9,12 @@ The SunPy Helioviewer client requires installing two other pieces of software.
 The first OpenJPEG is an open source library for reading and writing JPEG2000 
 files.  To install OpenJPEG, please follow the instructions at `the OpenJPEG 
 homepage <http://www.openjpeg.org>`_.
-Once installed you need to check that the command j2k_to_image is accessable 
-in your path. i.e. you can run it from a command line or the windows run prompt
-without specifing a directory. This should enable sunpy to convert the files.
-[Note: SunPy 0.3 should be the last version of SunPy where the requirement for
-binary file conversion in this way is used. If you are making extensive use of
-JPEG2000 files you may wish to consider using the development version of Sunpy
-at `http://github.com/sunpy/sunpy <http://github.com/sunpy/sunpy>`_]
 
-The other package you will need is
-the Python Imaging Library (PIL).  PIL can be obtained from 
-`here <http://www.pythonware.com/products/pil/>`__.
-Please follow the instructions there to install (note that PIL may ask you to
-install other packages too).  The reason that two packages are required is
-because matplotlib natively only reads in PNG files, and OpenJPEG 
-does not write PNG files.
-PIL is needed because the OpenJPEG command j2k_to_image (which converts a JPEG2000
-file to other file formats) does not support outputting to PNG, and PNG is the 
-only format Matplotlib can read in by itself. Matplotlib falls back to trying PIL 
-when it encounters the intermediate image format we use; hence, PIL is required.
+The other package you will need is `Glymur
+<https://pypi.python.org/pypi/Glymur/>`_].  Glymur is an interface
+between Python and the OpenJPEG linraries.  Please follow the
+instructions `here <https://glymur.readthedocs.org/en/latest/>`_ to
+install Glymur on your system.
 
 To interact with the Helioviewer API, users first create a "HelioviewerClient"
 instance. The client instance can then be used to make various queries against
@@ -71,6 +58,18 @@ The result is:
 
 .. image:: ../../images/helioviewer_download_png_ex1.png
 
+Note that the filename of the returned file has the date and time of
+the request, not of any of the times shown in the image itself.  This
+is not a bug.  Helioviewer.org finds images *closest to the requested
+time*.  Since the user may ask for images from multiple sources, and
+each of them may have a different observation time, the problem
+becomes which time is the most appropriate to associate with the
+resultant image.  Helioviewer.org doesn't choose between the images
+times, but instead uses the request time to construct the image
+filename.  This means that the image file names for request times in
+the future (like in this example) can look a little unusual compared to
+the times in the image.
+
 If we find that the source id for AIA 304 is is 13, we could make the same
 request using: ::
     
@@ -96,7 +95,8 @@ specifying a single string to indicate which layers to use, here we
 can specify the values as separate keyword arguments: ::
 
     filepath = hv.download_jp2('2012/07/05 00:30:00', observatory='SDO', instrument='HMI', detector='HMI', measurement='continuum')
-    hmi = sunpy.Map(filepath)
+    from sunpy.map import Map
+    hmi = Map(filepath)
     hmi.submap([200,550],[-400,-200]).show()
 
 .. image:: ../../images/helioviewer_download_jp2_ex.png
