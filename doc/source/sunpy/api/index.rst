@@ -17,4 +17,6 @@ change.
    coords
    database
    image
+   instr/index
+   io
    map
