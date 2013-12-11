@@ -19,6 +19,8 @@ To install the Anaconda Python distribution follow the instructions `here <http:
 
     You should also install XCode so you can build Cython extensions.
 
+Once complete follow the install instructions for the :ref:`anaconda_install`.
+
 Other installation methods
 --------------------------
 
