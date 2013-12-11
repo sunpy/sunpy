@@ -22,13 +22,13 @@ SunPy also depends on other packages for optional features.
 However, note that these only need to be installed if those particular features
 are needed. SunPy will import even if these dependencies are not installed.
 
-- `Matplotlib <http://http://matplotlib.org/>`_: For lightcurve, map, spectra, instr and vizualisation.
+- `Matplotlib <http://http://matplotlib.org/>`_ [*Highly Recommended*]: For `lightcurve`, `map`, `spectra`, `instr` and `vizualisation`.
 
-- `pandas <http://pandas.pydata.org/>`_: For lightcurve.
+- `pandas <http://pandas.pydata.org/>`_: For `lightcurve`.
 
-- `suds <https://bitbucket.org/jurko/suds>`_: For net.
+- `suds <https://bitbucket.org/jurko/suds>`_: For `net`.
 
-- `beautifulsoup4 <http://www.crummy.com/software/BeautifulSoup/>`_: For net
+- `beautifulsoup4 <http://www.crummy.com/software/BeautifulSoup/>`_: For `net`
 
 - `glymur <https://glymur.readthedocs.org/en/latest/>`_: To enable reading of JPEG2000 files.
   Glymur requires the installation of the OpenJPEG C library. Which can be found `here <http://code.google.com/p/openjpeg/downloads/list>`.
@@ -120,12 +120,6 @@ correctly is to use the :func:`sunpy.tests` function::
 
 The tests should run and print out any failures, which you can report at
 the `SunPy issue tracker <http://github.com/sunpy/sunpy/issues>`_.
-
-.. note::
-
-    This way of running the tests may not work if you do it in the
-    sunpy source distribution.  See :ref:`sourcebuildtest` for how to
-    run the tests from the source code directory.
 
 Building from source
 ====================
