@@ -15,19 +15,6 @@ Install Anaconda
 
 To install the Anaconda Python distribution follow the instructions `here <http://docs.continuum.io/anaconda/install.html>`_.
 
-Installation using Virtual Box
-------------------------------
-
-`Virtual box <https://www.virtualbox.org/>` is a free virtual environment that allows 
-you to run linux or other operating systems concurrently with OS X. Since it is very easy
-to install and maintain SunPy under linux, the idea here is to have your own linux 
-environment on your mac and use it for SunPy. We recommend you use Ubuntu linux in your 
-virtual box. You can download an install disk for Ubuntu at 
-`their website <http://www.ubuntu.com/download/help/install-desktop-latest>`. Directions
-on how to install your first virtual machine on Virtual Box are also 
-`available <https://www.virtualbox.org/manual/ch01.html#gui-createvm>`. After your have
-Ubuntu installed just follow the :doc:`instructions for linux <linux>`! Simple.
-
 Other installation methods
 --------------------------
 
@@ -150,4 +137,18 @@ Mountain Lion users will have to use the development version as of this writing:
     pip install git+https://github.com/matplotlib/matplotlib.git#egg=matplotlib-dev
 
 Done! You are now ready to :doc:`install SunPy itself <index>`.
+
+Installation using Virtual Box
+------------------------------
+
+As a last resort you can always install Linux in a Virtual Machine.
+`Virtual box <https://www.virtualbox.org/>` is a free virtual environment that allows 
+you to run linux or other operating systems concurrently with OS X. Since it is very easy
+to install and maintain SunPy under linux, the idea here is to have your own linux 
+environment on your mac and use it for SunPy. We recommend you use Ubuntu linux in your 
+virtual box. You can download an install disk for Ubuntu at 
+`their website <http://www.ubuntu.com/download/help/install-desktop-latest>`. Directions
+on how to install your first virtual machine on Virtual Box are also 
+`available <https://www.virtualbox.org/manual/ch01.html#gui-createvm>`. After your have
+Ubuntu installed just follow the :doc:`instructions for linux <linux>`! Simple.
 
