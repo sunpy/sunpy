@@ -15,9 +15,9 @@ Install Anaconda
 
 To install the Anaconda Python distribution follow the instructions `here <http://docs.continuum.io/anaconda/install.html>`_.
 
-.. note::
-
-    You should also install XCode so you can build Cython extensions.
+.. warning::
+    
+    You must have the XCode developer package installed to be able to compile SunPy
 
 Once complete follow the install instructions for the :ref:`anaconda_install`.
 
