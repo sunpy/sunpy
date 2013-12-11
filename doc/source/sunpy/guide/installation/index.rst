@@ -7,6 +7,7 @@ Requirements
 
 SunPy consists of many submodules that each have their own requirements. You do not need 
 to fufill all the requirements if you only intend on using parts of SunPy.
+It is however *strongly* recommended to have all the dependancies installed (with the potential exception of `glymur`).
 
 SunPy has the following strict requirements:
 
