@@ -40,7 +40,7 @@ Installing SunPy
 
 These instructions assume you have a scientific Python distribution installed. If you are new to Python then you will need to install such a distribution before continuing with these instructions.
 
-You can follow the various platform specific instructions below, or install the cross platform :ref:`anaconda_install`.
+The simpiliest method of obtaining a scientific Python distribution is to install the cross platform :ref:`anaconda_install`. Alternatively, can follow the various platform specific instructions below:
 
 .. toctree::
    :maxdepth: 1
