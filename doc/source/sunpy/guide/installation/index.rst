@@ -16,27 +16,38 @@ SunPy has the following strict requirements:
 
 - `SciPy <http://www.scipy.org/>`_ 0.10.0 or later
 
-- `AstroPy <http://www.astropy.org/>`_ 0.2.0 or later
+- `AstroPy <http://www.astropy.org/>`_ 0.3.0 or later
 
 SunPy also depends on other packages for optional features.
 However, note that these only need to be installed if those particular features
 are needed. SunPy will import even if these dependencies are not installed.
 
-- `Matplotlib <http://http://matplotlib.org/>`_: To do something.
+- `Matplotlib <http://http://matplotlib.org/>`_: For lightcurve, map, spectra, instr and vizualisation.
 
-- `pandas <http://pandas.pydata.org/>`_: To do something.
+- `pandas <http://pandas.pydata.org/>`_: For lightcurve.
 
-- `suds <https://bitbucket.org/jurko/suds>`_: To do something.
+- `suds <https://bitbucket.org/jurko/suds>`_: For net.
 
-- `beautifulsoup4 <http://www.crummy.com/software/BeautifulSoup/>`_: To do something.
+- `beautifulsoup4 <http://www.crummy.com/software/BeautifulSoup/>`_: For net
 
-- `glymur <https://glymur.readthedocs.org/en/latest/>`_: To do something.
+- `glymur <https://glymur.readthedocs.org/en/latest/>`_: To enable reading of JPEG2000 files.
   Glymur requires the installation of the OpenJPEG C library. Which can be found `here <http://code.google.com/p/openjpeg/downloads/list>`.
   
 - `pytest <http://pytest.org/latest/>`_: To run our tests.
 
 Installing SunPy
 ==================
+
+These instructions assume you have a scientific Python distribution installed. If you are new to Python then you will need to install such a distribution before continuing with these instructions.
+
+You can follow the various platform specific instructions below, or install the cross platform :ref:`anaconda_install`.
+
+.. toctree::
+   :maxdepth: 1
+   
+   win
+   mac
+   linux
 
 Using `pip`
 -----------
@@ -56,12 +67,6 @@ To install SunPy with `pip`, simply run::
 
 .. note::
 
-    The ``--no-deps`` flag is optional, but highly recommended if you already
-    have Numpy installed, since otherwise pip will sometimes try to "help" you
-    by upgrading your Numpy installation, which may not always be desired.
-
-.. note::
-
     If you get a ``PermissionError`` this means that you do not have the
     required administrative access to install new packages to your Python
     installation.  In this case you may consider using the ``--user`` option
@@ -75,21 +80,24 @@ To install SunPy with `pip`, simply run::
     Do **not** install SunPy or other third-party packages using ``sudo``
     unless you are fully aware of the risks.
 
-If you require more platform specific installation instructions.
-
-.. toctree::
-   :maxdepth: 1
-   
-   mac
-   linux
-   win
-
 .. _anaconda_install:
 
 Anaconda python distribution
 ----------------------------
+To install the Anaconda Python distribution follow the instructions `here <http://docs.continuum.io/anaconda/install.html>`_.
 
-SunPy is not installed by default with Anaconda. To install run::
+.. note::
+
+    On OS/X you should install XCode so you can build Cython extensions.
+
+To install SunPy launch the Anaconda command prompt or a system prompt and run the following commands.
+
+To install SunPy's extra dependancies run::
+
+    conda update astropy
+    conda install suds
+
+To install run::
  
  	conda install sunpy
 
@@ -98,13 +106,8 @@ To update to the latest version run::
     conda update sunpy
 
 .. note::
-    There may be a delay of a day or to between when a new version of SunPy
-    is released and when a package is available for Anaconda. You can check
-    for the list of available versions with ``conda search sunpy``.
-    
-.. note::
-    Attempting to use ``pip`` to upgrade your installation of SunPy may result
-    in a corrupted installation.
+
+    Currently Glymur / JPEG2000 support is not tested under Anaconda on any platforms. If you require JPEG2000 support either use a different install method, or contact the SunPy mailing list.
 
 Testing an installed SunPy
 ----------------------------
@@ -212,17 +215,6 @@ installing with::
 
 which will install into a default directory in your home directory.
 
-External C libraries
-^^^^^^^^^^^^^^^^^^^^
-
-The SunPy source ships with the C source code of a number of
-libraries. By default, these internal copies are used to build
-SunPy.
-
-To build using all of the libraries, use::
-
-    python setup.py build_ext
-
 Building documentation
 ----------------------
 
@@ -230,7 +222,7 @@ Building documentation
     Building the documentation is in general not necessary unless you
     are writing new documentation or do not have internet access, because
     the latest (and archive) versions of SunPy's documentation should
-    be available at `docs.sunpy.org <http://docs.sunpy.org>`_ .
+    be available at `sunpy.readthedocs.org <http://sunpy.readthedocs.org>`_ .
 
 Building the documentation requires the SunPy source code and some additional
 packages:
@@ -278,13 +270,3 @@ Alternatively, you can do::
 
 And the documentation will be generated in the same location, but using the
 *installed* version of SunPy.
-
-.. _sourcebuildtest:
-
-Testing a source code build of SunPy
---------------------------------------
-
-The easiest way to test that your SunPy built correctly (without
-installing SunPy) is to run this from the root of the source tree::
-
-    py.test
