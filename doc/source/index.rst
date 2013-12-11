@@ -5,9 +5,9 @@ SunPy Documentation
   :maxdepth: 2
 
   sunpy/about
+  sunpy/guide/index.rst
   sunpy/cite
+  sunpy/api/index.rst
   sunpy/bugs
   sunpy/dev
-  sunpy/guide/index.rst
-  sunpy/api/index.rst
   sunpy/ssw

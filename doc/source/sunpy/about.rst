@@ -48,7 +48,7 @@ If you think you belong on this list please send an `email <https://groups.googl
 
 SunPy Interns
 -------------
-SunPy has been partially funded by the ESA summer of code as well as the Google Summer of code programs. The following is a list of student interns along with their year of participation
+SunPy has been partially funded by the ESA Summer of Code In Space (SOCIS) as well as the Google Summer Of Code (GSOC) programs. The following is a list of student interns along with their year of participation
 
 * Florian Mayer (ESA Summer of Code 2011)
 * Matthew Earnshaw (ESA Summer of Code 2012)
