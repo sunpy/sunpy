@@ -89,7 +89,7 @@ To install the Anaconda Python distribution follow the instructions `here <http:
 
 .. note::
 
-    On OS/X you should install XCode so you can build Cython extensions.
+    On OS/X you need to install XCode so you can build SunPy's extensions.
 
 To install SunPy launch the Anaconda command prompt or a system prompt and run the following commands.
 
