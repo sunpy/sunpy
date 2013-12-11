@@ -9,3 +9,4 @@ Acquiring Data with SunPy
     hek
     helioviewer
     database
+    io
