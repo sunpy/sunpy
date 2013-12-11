@@ -28,7 +28,7 @@ a map from one of the supported data products is with the `Map()` class from the
     from sunpy.map import Map
     aia = Map(sunpy.AIA_171_IMAGE)
 
-This returns a map named aia which can be maniputated with standard SunPy map commands.
+This returns a map named aia which can be manipulated with standard SunPy map commands.
 For more information about maps checkout the :doc:`map guide <data_types/maps>`.
 
 2. Plotting
@@ -81,7 +81,7 @@ This should output something like the image below:
 3. Solar Physical Constants
 ---------------------------
 
-SunPy contains a convienient list of solar-related physical constants. Here is 
+SunPy contains a convenient list of solar-related physical constants. Here is 
 a short bit of code to get you started: ::
     
     from sunpy.sun import constants as con
@@ -107,7 +107,48 @@ available. ::
 These constants are provided as a convenience so that everyone is using the same 
 (accepted values). More will be added over time.
 
-4. Working with Times
+4. Spectra
+----------
+
+SunPy has spectral support for instruments which have such a capacity. CALLISTO, 
+an international network of Solar Radio Spectrometers, is a specfic example.
+The main class used for this is :py:class:CallistoSpectrogram.
+Below is the example built into sunpy::
+    
+    from matplotlib import pyplot as plt
+    import sunpy
+
+    from sunpy.spectra.sources.callisto import CallistoSpectrogram
+    image = CallistoSpectrogram.read(sunpy.CALLISTO_IMAGE)
+    
+    image.peek()        
+
+.. image:: ../images/spectra_ex1.png
+
+
+5. Lightcurves
+--------------
+
+SunPy handles time series data, fundamental to the study of any real world phenomenon,
+by creating a lightcurve object. Currently lightcurve supports
+
+- SDO/EVE
+- GOES XRS
+- PROBA2/LYRA
+
+A lightcurve consits of two parts; times and measurements taken at those times. The 
+data can either be in your current Python session, alternatively within a local or 
+remote file. Let's create some fake data and pass it into a lightcurve object::
+
+    from sunpy.lightcurve import LightCurve
+    light_curve = LightCurve.create({"param1": range(24*60)})
+
+Within LightCurve.create, we have a dictionary that contains a single entry with key
+"param1" containing a list of 1440 entries (0-1439). As there are no times provided,
+so a default set of times are generated.
+
+
+6. Working with Times
 ---------------------
 
 SunPy also contains a number of convenience functions for working with dates
@@ -131,7 +172,11 @@ and times. Here is a short example: ::
 
 For more information about working with time in SunPy checkout the :doc:`time guide <time>`.
 
-5. Querying the VSO
+
+7. Getting at Data
+---------------
+
+Querying the VSO
 -------------------
 There are a couple different ways to query and download data from the VSO using
 SunPy. The method you should use depends first on your preference with respect
@@ -168,8 +213,48 @@ Note that specifying a path is optional and if you do not specify one the files
 will simply be downloaded into a temporary directory (e.g. /tmp/xyz).
 For more information about vso client checkout the :doc:`vso guide <acquiring_data/vso>`.
 
+Database Package
+-------------------
 
-6. Querying Helioviewer.org
+The database package offers the possibility to save retrieved data (e.g. via the
+:mod:'sunpy.net.vso' package) onto a local or remote database. The database may be 
+a single file located on a local hard drive (if a SQLite database is used) or a 
+local or remote database server.
+This makes it possible to fetch required data from the local database instead 
+of downloading it again from a remote server.
+
+Querying a database is straightforward, as this example using VSO, shows. The example
+demonstrates the useful feature which prevents storing the same data twice::
+
+
+>>> from sunpy.database import Database
+>>> from sunpy.net.vso.attrs import Time, Instrument
+>>> db = Database('sqlite:///')
+>>> entries = db.fetch(
+...     Time('2012-08-05', '2012-08-05 00:00:05'),
+...     Instrument('AIA'))
+>>> assert entries is None
+>>> len(db)
+2
+>>> entries = db.fetch(
+...     Time('2012-08-05', '2012-08-05 00:00:05'),
+...     Instrument('AIA'))
+>>> entries is None
+False
+>>> len(entries)
+2
+>>> len(db)
+2
+
+
+Explanation: first, entries is None because the query has never been used for querying 
+the database -> query the VSO, add new entries to database, remember query hash. 
+In the second fetch, entries is not None because the query has already been used and 
+returns a list of database entries.
+
+
+
+8. Querying Helioviewer.org
 ---------------------------
 
 SunPy can be used to make several basic requests using the The `Helioviewer.org API <http://helioviewer.org/api/>`__
@@ -196,3 +281,5 @@ The result is:
 .. image:: ../images/helioviewer_download_png_ex1.png
 
 For more information checkout the :doc:`helioviewer guide <acquiring_data/helioviewer>`.
+
+
