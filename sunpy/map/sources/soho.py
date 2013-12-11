@@ -104,7 +104,7 @@ class LASCOMap(GenericMap):
                      self.meta.get('time-obs',self.meta.get('time_obs')))
 
         # If non-standard Keyword is present, correct it too, for compatibility.
-        if 'date_obs' in self.meta:
+        if 'date_obs' not in self.meta:
             self.meta['date_obs'] = self.meta['date-obs']
             
         
