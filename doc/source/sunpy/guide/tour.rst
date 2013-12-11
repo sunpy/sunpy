@@ -5,7 +5,7 @@ A brief tour of SunPy
 Welcome to the SunPy tutorial! This brief tutorial will walk you through some 
 of the functionality currently offered by SunPy. Start by reading this tutorial
 and trying out some of the examples demonstrated. Once you've completed the
-tutorial check out the :doc:`api reference</sunpy/api/index>` for a more
+tutorial check out the rest of the :doc:`User Guide </sunpy/guide/index>` for a more
 thorough look at the functionality available.
 
 
