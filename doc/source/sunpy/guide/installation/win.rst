@@ -16,6 +16,8 @@ Anaconda is an alternative cross platform Python distribution.
 Anaconda is avalible from `Continuum Analytics <http://continuum.io/downloads>`_.
 Download the windows installer sutible for your platform and follow the install wizard.
 
+Once complete follow the install instructions for the :ref:`anaconda_install`.
+
 Python(x,y)
 ^^^^^^^^^^^
 
