@@ -1,7 +1,7 @@
 .. _map:
 
 =========
-SunPy Map
+SunPy map
 =========
 
 .. module:: sunpy.map
