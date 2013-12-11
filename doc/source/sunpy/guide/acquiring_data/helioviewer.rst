@@ -11,7 +11,7 @@ files.  To install OpenJPEG, please follow the instructions at `the OpenJPEG
 homepage <http://www.openjpeg.org>`_.
 
 The other package you will need is `Glymur
-<https://pypi.python.org/pypi/Glymur/>`_].  Glymur is an interface
+<https://pypi.python.org/pypi/Glymur/>`_.  Glymur is an interface
 between Python and the OpenJPEG linraries.  Please follow the
 instructions `here <https://glymur.readthedocs.org/en/latest/>`_ to
 install Glymur on your system.
@@ -97,7 +97,7 @@ can specify the values as separate keyword arguments: ::
     filepath = hv.download_jp2('2012/07/05 00:30:00', observatory='SDO', instrument='HMI', detector='HMI', measurement='continuum')
     from sunpy.map import Map
     hmi = Map(filepath)
-    hmi.submap([200,550],[-400,-200]).show()
+    hmi.submap([200,550],[-400,-200]).peek()
 
 .. image:: ../../images/helioviewer_download_jp2_ex.png
 
