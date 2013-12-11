@@ -10,27 +10,10 @@ Mac OS X, users have a number of options with how to install SunPy and its
 dependencies. We have a number of solutions listed below. Choose the solution which best
 suits you.
 
-Installation using EPD
-----------------------
+Install Anaconda
+----------------
 
-One simplest method is to install the `Enthought Python
-Distribution (EPD) <http://www.enthought.com/products/epd_free.php/>`_, which
-includes both Python and many of dependencies needed by SunPy. 
-The Enthought Python Distribution (EPD) is a metapackage which handles the
-installation of everything for you.
-
-Install EPD
-^^^^^^^^^^^
-There are a number versions of EPD available, many of which are not free. For
-our purposes, however, either of the free versions below will work: ::
-
- `EPD Free <http://www.enthought.com/products/epd_free.php/>`_
- `EPD Academic <<http://www.enthought.com/products/edudownload.php>>`_
-
-Download whichever of the above versions of EPD is appropriate, and follow the 
-`instructions provided on the EPD website <http://www.enthought.com/products/epdgetstart.php?platform=mac>`_ 
-to install EPD on your system. You can now continue the installation process
-and :doc:`install SunPy itself <index>`.
+To install the Anaconda Python distribution follow the instructions `here <http://docs.continuum.io/anaconda/install.html>`_.
 
 Installation using Virtual Box
 ------------------------------
