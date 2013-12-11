@@ -34,7 +34,7 @@ registered before our existing local data), if none are given it defaults to
     more = image.extend()
     more.peek()
     
-.. image:: ../../images/spectra_ex3.5.png
+.. image:: ../../images/spectra_ex3-5.png
 
 We will, for the purposes of this demonstration, continue working with the
 original image, though.
