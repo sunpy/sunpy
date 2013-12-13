@@ -27,6 +27,8 @@ are needed. SunPy will import even if these dependencies are not installed.
 
 - `pandas <http://pandas.pydata.org/>`_: For `lightcurve`.
 
+- `sqlalchemy <http://www.sqlalchemy.org>`_: For the `database` package.
+
 - `suds <https://bitbucket.org/jurko/suds>`_: For `net`.
 
 - `beautifulsoup4 <http://www.crummy.com/software/BeautifulSoup/>`_: For `net`
@@ -35,6 +37,11 @@ are needed. SunPy will import even if these dependencies are not installed.
   Glymur requires the installation of the OpenJPEG C library. Which can be found `here <http://code.google.com/p/openjpeg/downloads/list>`.
   
 - `pytest <http://pytest.org/latest/>`_: To run our tests.
+
+The packages that will be installed as dependencies by default are the ones required to import the core datatypes `map`, `lightcurve` and `spectra`. These are the strict requirements and the following optional packages:
+
+- `matplotlib`
+- `pandas`
 
 Installing SunPy
 ================
@@ -60,6 +67,16 @@ To install SunPy with `pip`, simply run::
 .. warning::
     Users of the Anaconda python distribution should follow the instructions
     for :ref:`anaconda_install`.
+
+.. note::
+
+    If you wish to have all the optional packages installed you can install them
+    using pip thus::
+
+        pip install sqlalchemy
+        pip install suds
+        pip install beautifulsoup4
+        pip install glymur
 
 .. note::
 
