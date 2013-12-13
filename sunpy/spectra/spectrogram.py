@@ -408,10 +408,10 @@ class Spectrogram(Parent):
         colorbar : bool
             Flag that determines whether or not to draw a colorbar. If existing
             figure is passed, it is attempted to overdraw old colorbar.
-        min_ : float
-            Clip intensities lower than min_ before drawing.
-        max_ : float
-            Clip intensities higher than max_ before drawing.
+        min\_ : float
+            Clip intensities lower than min\_ before drawing.
+        max\_ : float
+            Clip intensities higher than max\_ before drawing.
         linear :  bool
             If set to True, "stretch" image to make frequency axis linear.
         showz : bool
@@ -568,13 +568,13 @@ class Spectrogram(Parent):
 
     def clip_freq(self, min_=None, max_=None):
         """ Return a new spectrogram only consisting of frequencies
-        in the interval [min_, max_].
+        in the interval [min\_, max\_].
         
         Parameters
         ----------
-        min_ : float
+        min\_ : float
             All frequencies in the result are greater or equal to this.
-        max_ : float
+        max\_ : float
             All frequencies in the result are smaller or equal to this.
         """
         left = 0
@@ -661,16 +661,18 @@ class Spectrogram(Parent):
         return self._with_data(self.data - self.randomized_auto_const_bg(amount))
 
     def clip_values(self, min_=None, max_=None, out=None):
-        """ Clip intensities to be in the interval [min_, max_]. Any values
-        greater than the maximum will be assigned the maximum, any values
-        lower than the minimum will be assigned the minimum. If either is
-        left out or None, do not clip at that side of the interval.
+        """
+        Clip intensities to be in the interval [min\_, max\_].
+        
+        Any values greater than the maximum will be assigned the maximum,
+        any values lower than the minimum will be assigned the minimum.
+        If either is left out or None, do not clip at that side of the interval.
         
         Parameters
         ----------
-        min_ : int or float
+        min\_ : int or float
             New minimum value for intensities.
-        max_ : int or float
+        max\_ : int or float
             New maximum value for intensities
         """
         # pylint: disable=E1101
@@ -683,14 +685,15 @@ class Spectrogram(Parent):
         return self._with_data(self.data.clip(min_, max_, out))
 
     def rescale(self, min_=0, max_=1, dtype_=np.dtype('float32')):
-        u""" Rescale intensities to [min_, max_]. Note that min_ ≠ max_
-        and spectrogram.min() ≠ spectrogram.max().
+        u"""
+        Rescale intensities to [min\_, max\_].
+        Note that min\_ ≠ max\_ and spectrogram.min() ≠ spectrogram.max().
         
         Parameters
         ----------
-        min_ : float or int
+        min\_ : float or int
             New minimum value in the resulting spectogram.
-        max_ : float or int
+        max\_ : float or int
             New maximum value in the resulting spectogram.
         dtype_ : np.dtype
             Data-type of the resulting spectogram.
@@ -706,7 +709,8 @@ class Spectrogram(Parent):
         )
 
     def interpolate(self, frequency):
-        """ Linearly interpolate intensity at unknown frequency using linear
+        """
+        Linearly interpolate intensity at unknown frequency using linear
         interpolation of its two neighbours.
         
         Parameters
