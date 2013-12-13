@@ -1,5 +1,5 @@
-Database
-========
+SunPy database
+==============
 .. automodule:: sunpy.database
 ..
     TODO:
