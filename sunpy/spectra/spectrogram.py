@@ -240,7 +240,8 @@ class TimeFreq(object):
 
 
 class Spectrogram(Parent):
-    """ Base class for spectral analysis in SunPy.
+    """
+    Base class for spectral analysis in SunPy.
     
     .. warning:: This module is under development! Use at your own risk.
     

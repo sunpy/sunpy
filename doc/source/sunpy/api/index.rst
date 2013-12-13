@@ -19,4 +19,8 @@ change.
    image
    instr/index
    io
+   lightcurve
    map
+   net
+   roi
+   spectra
