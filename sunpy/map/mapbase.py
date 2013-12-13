@@ -216,13 +216,33 @@ Dimension:\t [%d, %d]
      
 
     #Some numpy extraction
+    @property
+    def shape(self):
+        return self.data.shape
+    
+    @property
+    def dtype(self):
+        return self.data.dtype
         
+    @property
+    def size(self):
+        return self.data.size
+        
+    @property
+    def ndim(self):
+        return self.data.ndim
+    
     def std(self, *args, **kwargs):
         return self.data.std(*args, **kwargs)
     
     def mean(self, *args, **kwargs):
         return self.data.mean(*args, **kwargs)
-     
+    
+    def min(self, *args, **kwargs):
+        return self.data.min(*args, **kwargs)
+        
+    def max(self, *args, **kwargs):
+        return self.data.max(*args, **kwargs)
 
 # #### Keyword attribute and other attribute definitions #### #
 
