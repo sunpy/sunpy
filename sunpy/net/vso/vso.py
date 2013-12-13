@@ -626,7 +626,7 @@ class VSOClient(object):
         )
     
     def create_getdatarequest(self, map_, methods, info=None):
-        """ Create datarequest from map_ mapping data provider to
+        """ Create datarequest from map\_ mapping data provider to
         fileids and methods, """
         if info is None:
             info = {}

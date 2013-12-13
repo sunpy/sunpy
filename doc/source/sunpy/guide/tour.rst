@@ -81,7 +81,7 @@ This should output something like the image below:
 3. Solar Physical Constants
 ---------------------------
 
-SunPy contains a convenient list of solar-related physical constants. Here is 
+SunPy contains a convienient list of solar-related physical constants. Here is 
 a short bit of code to get you started: ::
     
     from sunpy.sun import constants as con
@@ -174,7 +174,7 @@ For more information about working with time in SunPy checkout the :doc:`time gu
 
 
 7. Getting at Data
----------------
+------------------
 
 Querying the VSO
 -------------------
@@ -227,24 +227,24 @@ Querying a database is straightforward, as this example using VSO, shows. The ex
 demonstrates the useful feature which prevents storing the same data twice::
 
 
->>> from sunpy.database import Database
->>> from sunpy.net.vso.attrs import Time, Instrument
->>> db = Database('sqlite:///')
->>> entries = db.fetch(
-...     Time('2012-08-05', '2012-08-05 00:00:05'),
-...     Instrument('AIA'))
->>> assert entries is None
->>> len(db)
-2
->>> entries = db.fetch(
-...     Time('2012-08-05', '2012-08-05 00:00:05'),
-...     Instrument('AIA'))
->>> entries is None
-False
->>> len(entries)
-2
->>> len(db)
-2
+    >>> from sunpy.database import Database
+    >>> from sunpy.net.vso.attrs import Time, Instrument
+    >>> db = Database('sqlite:///')
+    >>> entries = db.fetch(
+    ...     Time('2012-08-05', '2012-08-05 00:00:05'),
+    ...     Instrument('AIA'))
+    >>> assert entries is None
+    >>> len(db)
+    2
+    >>> entries = db.fetch(
+    ...     Time('2012-08-05', '2012-08-05 00:00:05'),
+    ...     Instrument('AIA'))
+    >>> entries is None
+    False
+    >>> len(entries)
+    2
+    >>> len(db)
+    2
 
 
 Explanation: first, entries is None because the query has never been used for querying 

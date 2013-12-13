@@ -17,4 +17,15 @@ change.
    coords
    database
    image
+   instr/index
+   io
+   lightcurve
    map
+   net
+   roi
+   spectra
+   sun
+   time
+   util
+   visualization
+   wcs
