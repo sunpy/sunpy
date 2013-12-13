@@ -37,7 +37,7 @@ are needed. SunPy will import even if these dependencies are not installed.
 - `pytest <http://pytest.org/latest/>`_: To run our tests.
 
 Installing SunPy
-==================
+================
 
 These instructions assume you have a scientific Python distribution installed. If you are new to Python then you will need to install such a distribution before continuing with these instructions.
 
@@ -111,7 +111,7 @@ To update to the latest version run::
     Currently Glymur / JPEG2000 support is not tested under Anaconda on any platforms. If you require JPEG2000 support either use a different install method, or contact the SunPy mailing list.
 
 Testing an installed SunPy
-----------------------------
+--------------------------
 
 The easiest way to test your installed version of SunPy is running
 correctly is to use the :func:`sunpy.tests` function::

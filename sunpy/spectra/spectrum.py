@@ -10,7 +10,8 @@ from matplotlib import pyplot as plt
 __all__ = ['Spectrum']
 
 class Spectrum(np.ndarray):
-    """ Class representing a spectrum.
+    """
+    Class representing a spectrum.
     
     Attributes
     ----------
