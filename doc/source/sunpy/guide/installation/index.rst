@@ -55,7 +55,7 @@ Using `pip`
 
 To install SunPy with `pip`, simply run::
 
-    pip install --no-deps sunpy
+    pip install sunpy
 
 .. warning::
     Users of the Anaconda python distribution should follow the instructions

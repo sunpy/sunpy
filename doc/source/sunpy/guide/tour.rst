@@ -81,7 +81,7 @@ This should output something like the image below:
 3. Solar Physical Constants
 ---------------------------
 
-SunPy contains a convenient list of solar-related physical constants. Here is 
+SunPy contains a convienient list of solar-related physical constants. Here is 
 a short bit of code to get you started: ::
     
     from sunpy.sun import constants as con
