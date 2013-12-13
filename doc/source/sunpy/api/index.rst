@@ -24,3 +24,8 @@ change.
    net
    roi
    spectra
+   sun
+   time
+   util
+   visualization
+   wcs

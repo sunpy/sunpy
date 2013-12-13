@@ -32,11 +32,10 @@ class Map(RegisteredFactoryBase):
     Map factory class.  Used to create a variety of Map objects.  Valid map types
     are specified by registering them with the factory.
     
-    Example
-    -------
+    Examples
+    --------
     >>> import sunpy
     >>> mymap = sunpy.Map(sunpy.AIA_171_IMAGE)
-    
     """
 
     

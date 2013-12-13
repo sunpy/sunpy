@@ -26,8 +26,8 @@ class LogicalLightCurve(LightCurve):
     results, where 'True' indicates an event was observed, and 'False'
     indicates an event was not observed.
     
-    Example
-    -------
+    Examples
+    --------
     >>> import sunpy.lightcurve as lightcurve
     >>> import datetime
     
