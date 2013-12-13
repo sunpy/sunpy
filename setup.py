@@ -115,7 +115,7 @@ def install(setup): #pylint: disable=W0621
         #},
         install_requires=[
             'numpy>1.6.0',
-            'astropy>=0.2.0',
+            'astropy>=0.3.0',
             'scipy',
  #           'suds',
             'pandas>=0.10.0',
