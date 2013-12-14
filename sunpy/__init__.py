@@ -52,7 +52,7 @@ except ImportError:
 
 from sunpy.util.config import load_config, print_config
 from sunpy.util import system_info
-from sunpy.tests.test import test
+from sunpy.tests import main as self_test
 
 # Sample data
 from sunpy.data.sample import (AIA_171_IMAGE, RHESSI_IMAGE, EIT_195_IMAGE, 
