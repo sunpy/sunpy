@@ -3,7 +3,7 @@ import os
 import tempfile
 import ConfigParser
 
-import sunpy
+import sunpy as spy
 
 def load_config():
     """
@@ -11,24 +11,24 @@ def load_config():
     home directory then read in the defaults from module
     """
     config = ConfigParser.SafeConfigParser()
-    
+
     # Get locations of SunPy configuration files to be loaded
     config_files = _find_config_files()
-    
+
     # Read in configuration files
     config.read(config_files)
-    
+
     # Specify the working directory as a default so that the user's home
     # directory can be located in an OS-independent manner
     if not config.has_option('general', 'working_dir'):
         config.set('general', 'working_dir', os.path.join(_get_home(), "sunpy"))
-    
+
     # Use absolute filepaths and adjust OS-dependent paths as needed
     filepaths = [
         ('downloads', 'download_dir')
     ]
     _fix_filepaths(config, filepaths)
-    
+
     # check for sunpy working directory and create it if it doesn't exist
     if not os.path.isdir(config.get('downloads', 'download_dir')):
         os.mkdir(config.get('downloads', 'download_dir'))
@@ -40,12 +40,12 @@ def print_config():
     print("FILES USED:")
     for file_ in _find_config_files():
         print("  " + file_)
-    
+
     print ("\nCONFIGURATION:")
-    for section in sunpy.config.sections():
+    for section in spy.config.sections():
         print("  [%s]" % section)
-        for option in sunpy.config.options(section):
-            print("  %s = %s" % (option, sunpy.config.get(section, option)))
+        for option in spy.config.options(section):
+            print("  %s = %s" % (option, spy.config.get(section, option)))
         print("")
 
 def _is_writable_dir(p):
@@ -71,24 +71,24 @@ def _get_home():
         return path
     else:
         raise RuntimeError('please define environment variable $HOME')
-    
+
 def _find_config_files():
     """Finds locations of SunPy configuration files"""
     config_files = []
     config_filename = 'sunpyrc'
-    
+
     # find default configuration file
-    module_dir = os.path.dirname(sunpy.__file__)
+    module_dir = os.path.dirname(spy.__file__)
     config_files.append(os.path.join(module_dir, 'data', 'sunpyrc'))
 
     # if a user configuration file exists, add that to list of files to read
     # so that any values set there will overide ones specified in the default
     # config file
     config_path = _get_user_configdir()
-    
+
     if os.path.exists(os.path.join(config_path, config_filename)):
         config_files.append(os.path.join(config_path, config_filename))
-        
+
     return config_files
 
 def _get_user_configdir():
@@ -98,10 +98,10 @@ def _get_user_configdir():
     SUNPY_CONFIGDIR environment variable
     """
     configdir = os.environ.get('SUNPY_CONFIGDIR')
-    
+
     if configdir is not None:
         if not _is_writable_dir(configdir):
-            raise RuntimeError('Could not write to SUNPY_CONFIGDIR="%s"' % 
+            raise RuntimeError('Could not write to SUNPY_CONFIGDIR="%s"' %
                                configdir)
         return configdir
 
@@ -130,12 +130,12 @@ def _fix_filepaths(config, filepaths):
     # Parse working_dir
     working_dir = _expand_filepath(config.get("general", "working_dir"))
     config.set('general', 'working_dir', working_dir)
-    
+
     for f in filepaths:
         val = config.get(*f)
-        
+
         filepath = _expand_filepath(val, working_dir)
-        
+
         # Create dir if it doesn't already exist
         if not os.path.isdir(filepath):
             os.makedirs(filepath)
@@ -143,7 +143,7 @@ def _fix_filepaths(config, filepaths):
         # Replace config value with full filepath
         params = f + (filepath,)
         config.set(*params)
-        
+
 def _expand_filepath(filepath, working_dir=""):
     """Checks a filepath and expands it if necessary"""
     # Expand home directory
@@ -154,7 +154,7 @@ def _expand_filepath(filepath, working_dir=""):
         return tempfile.gettempdir()
     # Relative filepaths
     elif not filepath.startswith("/"):
-        return os.path.join(working_dir, filepath)    
+        return os.path.join(working_dir, filepath)
     # Absolute filepath
     else:
         return filepath

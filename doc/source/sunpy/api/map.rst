@@ -74,9 +74,7 @@ headers are some base of `dict` or `OrderedDict`,
 
 >>> mymap = sunpy.Map((data, header), data2, header2, 'file1.fits', url_str, 'eit_*.fits')
 
-.. method:: sunpy.map.Map.__new__
 
-.. autoclass:: sunpy.map.Map
    
 Map Classes
 -----------
