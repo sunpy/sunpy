@@ -109,19 +109,12 @@ def install(setup): #pylint: disable=W0621
         classifiers=CLASSIFIERS,
         description=DOCLINES[0],
         download_url="http://www.sunpy.org/download/",
-        # 2011/11/21: disabling for now to prevent paver warnings
-        #extra_requires={
-        #    "Plotman": ['PyQt4']
-        #},
         install_requires=[
             'numpy>1.6.0',
             'astropy>=0.3.0',
             'scipy',
- #           'suds',
             'pandas>=0.10.0',
             'matplotlib>=1.1',
-            'glymur>=0.5.9',
- #           'beautifulsoup4',
             'sqlalchemy',
         ],
         license="BSD",
