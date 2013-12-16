@@ -18,6 +18,8 @@ from matplotlib import patches
 from matplotlib import colors
 from matplotlib import cm
 
+import astropy.nddata
+
 try:
     import sunpy.image.Crotate as Crotate
 except ImportError:
@@ -46,65 +48,7 @@ or something else?)
 * Should 'center' be renamed to 'offset' and crpix1 & 2 be used for 'center'?
 """
 
-class NDDataStandin(object):
-    
-    def __init__(self, data, meta, **kwargs):
-        """ Instantiate a Map class.
-        
-        Parameters
-        ----------
-        data: ndarray
-        
-        meta: sunpy.map.MapMeta
-        
-        Returns
-        -------
-        A MapBase object
-        """
-        
-        self.meta = meta
-        self.data = data
-    
-    @property
-    def shape(self):
-        return self.data.shape
-    
-    @property
-    def dtype(self):
-        return self.data.dtype
-        
-    @property
-    def size(self):
-        return self.data.size
-        
-    @property
-    def ndim(self):
-        return self.data.ndim
-    
-    def std(self, *args, **kwargs):
-        return self.data.std(*args, **kwargs)
-    
-    def mean(self, *args, **kwargs):
-        return self.data.mean(*args, **kwargs)
-    
-    def min(self, *args, **kwargs):
-        return self.data.min(*args, **kwargs)
-        
-    def max(self, *args, **kwargs):
-        return self.data.max(*args, **kwargs)
-        
-    @property
-    def header(self):
-        warnings.warn("""map.header has been renamed to map.meta
-        for compatability with astropy, please use meta instead""", Warning)
-        return self.meta
-    
-    @Deprecated("get_header is no longer supported please use map.meta")
-    def get_header(self):
-        return self.meta
-    
-
-class GenericMap(NDDataStandin):
+class GenericMap(astropy.nddata.NDData):
     """
     A Generic spatially-aware 2D data array
 
@@ -114,6 +58,86 @@ class GenericMap(NDDataStandin):
         A 2d list or ndarray containing the map data
     header : dict
         A dictionary of the original image header tags
+
+    Attributes
+    ----------
+    original_header : dict
+        Dictionary representation of the original FITS header
+    carrington_longitude : str
+        Carrington longitude (crln_obs)
+    center : dict
+        X and Y coordinate of the center of the map in units.
+        Usually represents the offset between the center of the Sun and the
+        center of the map.
+    cmap : matplotlib.colors.Colormap
+        A Matplotlib colormap to be applied to the data
+    coordinate_system : dict
+        Coordinate system used for x and y axes (ctype1/2)
+    date : datetime
+        Image observation time
+    detector : str
+        Detector name
+    dsun : float
+        The observer distance from the Sun.
+    exptime : float
+        Exposure time of the image in seconds.
+    heliographic_latitude : float
+        Heliographic latitude in degrees
+    heliographic_longitude : float
+        Heliographic longitude in degrees
+    instrument : str
+        Instrument name
+    measurement : str, int
+        Measurement name. In some instances this is the wavelength of image.
+    name: str
+        Human-readable description of map-type
+    nickname : str
+        An abbreviated human-readable description of the map-type; part of
+        the Helioviewer data model
+    observatory : str
+        Observatory name
+    reference_coordinate : float
+        Reference point WCS axes in data units (crval1/2) 
+    reference_pixel : float
+        Reference point axes in pixels (crpix1/2)
+    rsun_arcseconds : float
+        Radius of the sun in arcseconds
+    rsun_meters : float
+        Radius of the sun in meters
+    scale : dict
+        Image scale along the x and y axes in units/pixel (cdelt1/2).
+    units : dict
+        Image coordinate units along the x and y axes (cunit1/2).
+
+    Methods
+    -------
+    std()
+        Return the standard deviation of the map data
+    mean()
+        Return the mean of the map data
+    min()
+        Return the minimum value of the map data
+    max()
+        Return the maximum value of the map data
+    resample(dimension, method)
+        Returns a new map that has been resampled up or down
+    superpixel(dimension, method)
+        Returns a new map consisting of superpixels formed from the
+        original data.
+    save()
+        Save the map to a fits file.
+    submap(range_a, range_b, units)
+        Returns a submap of the map with the specified range
+    plot()
+        Return a matplotlib imageaxes instance, like plt.imshow()
+    peek()
+        Display a matplotlib plot to the screen 
+    draw_limb()
+        Draw a line on the image where the solar limb is.
+    draw_grid()
+        Draw a lon/lat grid on a map plot.
+    get_header()
+        Returns the original header from when the map was first created.
 
     Examples
     --------
@@ -130,17 +154,22 @@ class GenericMap(NDDataStandin):
     'arcsec'
     >>> aia.peek()
 
+    See Also
+    --------
+    numpy.ndarray Parent class for the Map object
+
     References
     ----------
     | http://docs.scipy.org/doc/numpy/reference/arrays.classes.html
     | http://docs.scipy.org/doc/numpy/user/basics.subclassing.html
     | http://docs.scipy.org/doc/numpy/reference/ufuncs.html
     | http://www.scipy.org/Subclasses
+
     """
     
     def __init__(self, data, header, **kwargs):
         
-        NDDataStandin.__init__(self, data, header, **kwargs)
+        astropy.nddata.NDData.__init__(self, data, meta=header, **kwargs)
         
         # Correct possibly missing meta keywords
         self._fix_date()
@@ -184,6 +213,36 @@ Dimension:\t [%d, %d]
        self.date, self.exposure_time,
        self.data.shape[1], self.data.shape[0], self.scale['x'], self.scale['y']) 
      + self.data.__repr__())
+     
+
+    #Some numpy extraction
+    @property
+    def shape(self):
+        return self.data.shape
+    
+    @property
+    def dtype(self):
+        return self.data.dtype
+        
+    @property
+    def size(self):
+        return self.data.size
+        
+    @property
+    def ndim(self):
+        return self.data.ndim
+    
+    def std(self, *args, **kwargs):
+        return self.data.std(*args, **kwargs)
+    
+    def mean(self, *args, **kwargs):
+        return self.data.mean(*args, **kwargs)
+    
+    def min(self, *args, **kwargs):
+        return self.data.min(*args, **kwargs)
+        
+    def max(self, *args, **kwargs):
+        return self.data.max(*args, **kwargs)
 
 # #### Keyword attribute and other attribute definitions #### #
 
@@ -503,11 +562,10 @@ Dimension:\t [%d, %d]
     
     def rotate(self, angle, scale=1.0, rotation_center=None, recenter=True,
                missing=0.0, interpolation='bicubic', interp_param=-0.5):
-        """
-        Returns a new rotated, rescaled and shifted map.
+        """Returns a new rotated, rescaled and shifted map.
         
         Parameters
-        ----------
+        ---------
         angle: float
            The angle to rotate the image by (radians)        
         scale: float
@@ -821,7 +879,7 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         #lon_self, lat_self = wcs.convert_hpc_hg(rsun, dsun, angle_units = units[0], b0, l0, x, y)
         lon_self, lat_self = wcs.convert_hpc_hg(x, y, b0_deg=b0, l0_deg=l0, dsun_meters=dsun, angle_units='arcsec')
         # define the number of points for each latitude or longitude line
-        num_points = 50
+        num_points = 20
         
         #TODO: The following code is ugly. Fix it.
         lon_range = [lon_self.min(), lon_self.max()]
@@ -885,7 +943,7 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         if not axes:
             axes = plt.gca()
         
-        c_kw = {'radius':self.rsun_arcseconds,
+        c_kw = {'radius':self.rsun_arcseconds.value,
                 'fill':False,
                 'color':'white',
                 'zorder':100
