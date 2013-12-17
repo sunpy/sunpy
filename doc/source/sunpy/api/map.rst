@@ -10,6 +10,8 @@ SunPy map
 
     import sunpy
 
+.. currentmodule:: sunpy.map
+
 Overview
 --------
 One of core classes in SunPy is a Map. A SunPy Map object is simply a 
@@ -33,48 +35,10 @@ class :class:`Map`: ::
 
 >>> x = sunpy.Map('file.fits')
 
-The result of a call to `Map` will be either a `MapBase` object, 
-or a subclass of `MapBase` which either deals with a specific type of data, 
-e.g. `AIAMap` or `LASCOMap`, or if no instrument matches, a 2D map `GenericMap`.
+The result of a call to `Map` will be either a `mapbase.GenericMap` object, 
+or a subclass of `mapbase.GenericMap` which either deals with a specific type of data, 
+e.g. `AIAMap` or `LASCOMap`, or if no instrument matches, a 2D map `mapbase.GenericMap`.
 
-The SunPy Map factory accepts a wide variety of inputs for creating maps::
-
-* Preloaded tuples of (data, header) pairs
-
->>> mymap = sunpy.Map((data, header))
-
-headers are some base of `dict` or `OrderedDict`,
- including SunPy's `FileHeader` or `Map Meta` classes.
-
-* data, header pairs, not in tuples
-
->>> mymap = sunpy.Map(data, header)
-
-* File names
-
->>> mymap = sunpy.Map('file1.fits')
-
-* All fits files in a directory by giving a directory
-
->>> mymap = sunpy.Map('local_dir/sub_dir')
-
-* Some regex globs
-
->>> mymap = sunpy.Map('eit_*.fits')
-
-* URLs
-
->>> mymap = sunpy.Map(url_str)
-
-* Lists of any of the above
-
->>> mymap = sunpy.Map(['file1.fits', 'file2.fits', 'file3.fits', 'directory1/'])
-
-* Any mixture of the above not in a list
-
->>> mymap = sunpy.Map((data, header), data2, header2, 'file1.fits', url_str, 'eit_*.fits')
-
-.. method:: sunpy.map.Map.__new__
 
 .. autoclass:: sunpy.map.Map
    
@@ -94,7 +58,7 @@ Writing a new Map Class
 
 Map classes can be registered with the Map factory, even if the new class is not
 officially part of SunPy.  This is good for prototyping new instruments.  For
-example, to add a Map type for a future instrument, consider the code skeleton::
+example, to add a Map type for a future instrument, consider the code skeleton ::
 
     import sunpy
     
@@ -109,7 +73,7 @@ example, to add a Map type for a future instrument, consider the code skeleton::
        # Specify a classmethod that determines if the data-header pair matches
        # the new instrument
        @classmethod
-        def is_datasource_for(cls, data, header, **kwargs):
+       def is_datasource_for(cls, data, header, **kwargs):
             """Determines if header corresponds to an AIA image"""
             return header.get('instrume', '').startswith('FUTURESCOPE')
             

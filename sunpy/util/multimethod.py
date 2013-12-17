@@ -94,7 +94,7 @@ class MultiMethod(object):
     
     def add_dec(self, *types, **kwargs):
         """ Return a decorator that adds the function it receives to the
-        multimethod with the types passed as *args. Using keyword arg
+        multimethod with the types passed as \*args. Using keyword arg
         override to control overriding behaviour. Compare add.
         """
         self.cache = {}
