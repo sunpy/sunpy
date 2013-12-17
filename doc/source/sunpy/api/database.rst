@@ -49,11 +49,11 @@ Submodules
 ..     :headings: "^+"
 
 .. automodapi:: sunpy.database.caching
-    :headings: "^+"
+    :headings: ^+
 
 .. automodapi:: sunpy.database.commands
-     :headings: "^+"
+     :headings: ^+
 
 .. automodapi:: sunpy.database.attrs
-    :headings: "^+"
+    :headings: ^+
 
