@@ -17,7 +17,7 @@ import sys
 from astropy import units
 from sunpy.net import hek
 from sunpy.net import vso
-from sunpy.util import progressbar2 as PB
+from sunpy.util.progressbar import TTYProgressBar
 
 __author__ = 'Michael Malocha'
 __version__ = 'Aug 10th, 2013'
@@ -226,21 +226,19 @@ class H2VClient(object):
             self.hek_results = hek_results
         vso_query = translate_results_to_query(hek_results)
         result_size = len(vso_query)
-        place = 1
         for query in vso_query:
             if use_progress_bar:
-                PB.progress_bar('Querying VSO webservice', place, result_size)
+                pbar = TTYProgressBar('Querying VSO webservice', result_size)
             temp = self.vso_client.query(*query)
             self.vso_results.append(temp)
             self.num_of_records += len(temp)
             if limit is not None:
                 if self.num_of_records >= limit:
                     break
-            place += 1
+            pbar.poke()
         if use_progress_bar:
-            sys.stdout.write('\rDone                                         '
-                             '                                              ')
-        sys.stdout.flush()
+            pbar.finish()
+        
         return self.vso_results
 
     def quick_clean(self):
