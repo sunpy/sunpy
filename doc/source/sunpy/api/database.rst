@@ -1,21 +1,16 @@
-SunPy database
+SunPy Database
 ==============
-.. automodule:: sunpy.database
 ..
     TODO:
         - WHY was this package developed?
         - WHAT are the use-cases?
         - WHICH methods can be undone?
         - WHICH methods are the most important ones to know?
-Package documentation
-^^^^^^^^^^^^^^^^^^^^^
-The Database class
-""""""""""""""""""
-.. autoclass:: sunpy.database.Database
-   :members:
+
+.. automodapi:: sunpy.database
 
 Exceptions
-""""""""""
+^^^^^^^^^^
 .. class:: sunpy.database.EntryAlreadyAddedError(database_entry)
 
     This exception is raised if a database entry is attempted to be added
@@ -47,87 +42,18 @@ Exceptions
     This exception is raised if a tag cannot be found in a database by its
     name.
 
-Modules
-^^^^^^^
-tables
-""""""
-.. autoclass:: sunpy.database.tables.DatabaseEntry
-   :members:
-
-.. autoclass:: sunpy.database.tables.FitsHeaderEntry
-   :members:
-
-.. autoclass:: sunpy.database.tables.FitsKeyComment
-   :members:
-
-.. autoclass:: sunpy.database.tables.Tag
-   :members:
-
-.. autoclass:: sunpy.database.tables.JSONDump
-   :members:
-
-utility functions
------------------
-.. autofunction:: sunpy.database.tables.entries_from_query_result
-
-.. autofunction:: sunpy.database.tables.entries_from_file
-
-.. autofunction:: sunpy.database.tables.entries_from_dir
-
-.. autofunction:: sunpy.database.tables.display_entries
-
-Exceptions
+Submodules
 ----------
-.. class:: sunpy.database.tables.WaveunitNotFoundError(obj)
 
-    This exception is raised if a wavelength unit cannot be found in a FITS
-    header or in a VSO query result block.
+.. .. automodapi:: sunpy.database.tables
+..     :headings: "^+"
 
-.. class:: sunpy.database.tables.WaveunitNotConvertibleError(waveunit)
-
-    This exception is raised if a wavelength cannot be converted to an
-    astropy.units.Unit instance.
-
-caching
-"""""""
 .. automodapi:: sunpy.database.caching
+    :headings: "^+"
 
+.. automodapi:: sunpy.database.commands
+     :headings: "^+"
 
-commands
-""""""""
-.. automodule:: sunpy.database.commands
-   :exclude-members:
-        EmptyCommandStackError, NoSuchEntryError, NonRemovableTagError
-   :members:
-   :show-inheritance:
+.. automodapi:: sunpy.database.attrs
+    :headings: "^+"
 
-Exceptions
-----------
-.. class:: sunpy.database.commands.EmptyCommandStackError
-
-    This exception is raised if it is attempted to pop from a command
-    stack even though it is empty.
-
-.. class:: sunpy.database.commands.NoSuchEntryError(database_entry)
-
-    This exception is raised if it is attempted to remove an entry even
-    though it does not exist in the database.
-
-.. class:: sunpy.database.commands.NonRemovableTagError(database_entry, tag)
-
-    This exception is raised if it is attempted to remove a tag from a
-    database entry even though it is not saved in this entry.
-
-attrs
-"""""
-.. module:: sunpy.database.attrs
-
-.. class:: sunpy.database.attrs.Starred
-
-.. class:: sunpy.database.attrs.Tag(tagname)
-
-.. class:: sunpy.database.attrs.Path(value)
-
-.. class:: sunpy.database.attrs.DownloadTime(start, end)
-
-.. class:: sunpy.database.attrs.FitsHeaderEntry(key, value)
