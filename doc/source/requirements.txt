@@ -7,3 +7,4 @@ suds
 pandas
 beautifulsoup4
 astropy>=0.3.0
+pytest
