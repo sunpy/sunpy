@@ -8,6 +8,7 @@ SunPy Database
         - WHICH methods are the most important ones to know?
 
 .. automodapi:: sunpy.database
+    :no-inheritance-diagram:
 
 Exceptions
 ^^^^^^^^^^
@@ -51,10 +52,13 @@ Submodules
 
 .. automodapi:: sunpy.database.caching
     :headings: ^+
+    :no-inheritance-diagram:
 
 .. automodapi:: sunpy.database.commands
-     :headings: ^+
+    :headings: ^+
+    :no-inheritance-diagram:
 
 .. automodapi:: sunpy.database.attrs
     :headings: ^+
+    :no-inheritance-diagram:
 
