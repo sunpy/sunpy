@@ -695,7 +695,7 @@ class Spectrogram(Parent):
             New minimum value in the resulting spectogram.
         max\_ : float or int
             New maximum value in the resulting spectogram.
-        dtype_ : np.dtype
+        dtype\_ : np.dtype
             Data-type of the resulting spectogram.
         """
         if max_ == min_:
@@ -862,7 +862,7 @@ class LinearTimeSpectrogram(Spectrogram):
         ----------
         shape : tuple
             shape of the array to create
-        dtype_ : np.dtype
+        dtype\_ : np.dtype
             data-type of the array to create
         """
         return np.zeros(shape, dtype=dtype_)

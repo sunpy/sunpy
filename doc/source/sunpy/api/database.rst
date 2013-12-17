@@ -90,11 +90,8 @@ Exceptions
 
 caching
 """""""
-.. automodule:: sunpy.database.caching
-   :members:
-   :special-members:
-   :exclude-members: __metaclass__, __weakref__
-   :show-inheritance:
+.. automodapi:: sunpy.database.caching
+
 
 commands
 """"""""
