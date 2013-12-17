@@ -45,8 +45,9 @@ Exceptions
 Submodules
 ----------
 
-.. .. automodapi:: sunpy.database.tables
-..     :headings: "^+"
+.. automodapi:: sunpy.database.tables
+    :headings: ^+
+    :no-inheritance-diagram:
 
 .. automodapi:: sunpy.database.caching
     :headings: ^+
