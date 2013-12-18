@@ -17,6 +17,10 @@ env:
         - NUMPY_VERSION=1.8.0 PANDAS_VERSION=0.12.0
         - NUMPY_VERSION=1.7.1 PANDAS_VERSION=0.12.0
         - NUMPY_VERSION=1.8.0 PANDAS_VERSION=0.11.0
+matrix:
+     include:
+        - python: 2.7
+          env: TEST_SPHINX='true' NUMPY_VERSION=1.8.0 PANDAS_VERSION=0.12.0
 
 before_install:
 # Pick the suds version based on the python version
@@ -24,6 +28,7 @@ before_install:
 # Make sure the system is upto date and install scipy requirements
    - sudo apt-get update -qq
    - sudo apt-get install -qq libatlas-dev liblapack-dev gfortran
+   - if [[ -n $TEST_SPHINX ]]; then sudo apt-get install graphviz texlive-latex-extra dvipng; fi
 # Make sure pip is at the latest version (>1.4 for wheels)
    - pip install pip --upgrade
 # Wheels also need a recent version of setuptools
@@ -41,14 +46,17 @@ install:
 # Manually install pandas deps due to a pip 1.4 / pytz bug
    - pip install $PIP_WHEEL_COMMAND pytz==2013b python-dateutil
    - pip install $PIP_WHEEL_COMMAND pandas==$PANDAS_VERSION
-   - pip install $PIP_WHEEL_COMMAND astropy
+   - pip install $PIP_WHEEL_COMMAND astropy>=0.3.0
    - pip install $PIP_WHEEL_COMMAND $SUDS_PKG beautifulsoup4
    - pip install $PIP_WHEEL_COMMAND pytest 
-   - pip install $PIP_WHEEL_COMMAND glymur 
+   - pip install $PIP_WHEEL_COMMAND glymur
+#Install sphinx if needed
+   - if [[ -n $TEST_SPHINX ]]; then pip install $PIP_WHEEL_COMMAND sphinx>=1.2; fi 
 # Install SunPy and run tests.
 script:
-  - python setup.py develop
-  - py.test -k-fails_on_travis
+   - python setup.py develop
+   - if [[ -n $TEST_SPHINX ]]; then cd doc/source && sphinx-build -W -b html -d _build/doctrees   . _build/html; fi
+   - if [[ -z $TEST_SPHINX ]]; then py.test -k-fails_on_travis; fi
 
 # Notify the IRC channel of build status
 notifications:

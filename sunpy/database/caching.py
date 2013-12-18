@@ -15,27 +15,14 @@ __all__ = ['BaseCache', 'LRUCache', 'LFUCache']
 
 
 class BaseCache(object):
-    """BaseCache is a class that saves and operates on an OrderedDict. It has a
-    certain capacity, stored in the attribute :attr:`maxsize`. Whether this
+    """
+    BaseCache is a class that saves and operates on an OrderedDict. It has a
+    certain capacity, stored in the attribute `maxsize`. Whether this
     capacity is reached, can be checked by using the boolean property
-    :attr:`is_full`. To implement a custom cache, inherit from this class and
+    `is_full`. To implement a custom cache, inherit from this class and
     override the methods ``__getitem__`` and ``__setitem__``.
-    Call the method :meth:`sunpy.database.caching.BaseCache.callback` as soon
+    Call the method `sunpy.database.caching.BaseCache.callback` as soon
     as an item from the cache is removed.
-
-    Methods
-    -------
-    get
-    remove
-    callback
-    __getitem__
-    __setitem__
-
-    Attributes
-    ----------
-    to_be_removed
-    is_full
-
     """
     __metaclass__ = ABCMeta
 
@@ -186,13 +173,7 @@ class BaseCache(object):
 
 class LRUCache(BaseCache):
     """
-    Methods
-    -------
-    get
-    remove
-    callback
-    __getitem__
-    __setitem__
+    LRUCache
     """
     @property
     def to_be_removed(self):
@@ -239,13 +220,7 @@ class LRUCache(BaseCache):
 
 class LFUCache(BaseCache):
     """
-    Methods
-    -------
-    get
-    remove
-    callback
-    __getitem__
-    __setitem__
+    LFUCache
     """
     def __init__(self, maxsize=float('inf')):
         self.usage_counter = Counter()
