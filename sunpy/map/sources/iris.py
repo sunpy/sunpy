@@ -1,11 +1,8 @@
-# -*- coding: utf-8 -*-
-
-import copy
+from __future__ import absolute_import
 
 import numpy as np
 
 from sunpy.map import GenericMap
-import sunpy.image.Crotate as Crotate
 
 __all__ = ['IRISMap']
 
@@ -14,10 +11,8 @@ class IRISMap(GenericMap):
     A 2D IRIS Map
     """
     
-    def __init__(self, data, header, **kwargs):
-        
+    def __init__(self, data, header, **kwargs):    
         GenericMap.__init__(self, data, header, **kwargs)
-    
 
     def iris_rot(self, missing=0.0, interpolation='bicubic', interp_param=-0.5):
         """
@@ -62,7 +57,8 @@ class IRISMap(GenericMap):
         
         #Return a new map
         img2 = self.rotate(rmatrix=cords, rotation_center=center, recenter=False, 
-                           missing=missing, interpolation=interpolation, interp_param=interp_param)
+                           missing=missing, interpolation=interpolation,
+                           interp_param=interp_param)
              
         # modify the header to show the fact it's been corrected
         img2.meta['pc1_1'] = 1
@@ -72,7 +68,6 @@ class IRISMap(GenericMap):
     
         return img2    
 
-    
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an AIA image"""
