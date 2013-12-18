@@ -12,7 +12,7 @@ def SJI_to_cube(filename, start=0, stop=None, hdu=0):
     """
     Read a SJI file and return a MapCube
     
-    ..warning::
+    .. warning::
         This function is a very early beta and is not stable. Further work is 
         on going to improve SunPy IRIS support.
     
@@ -21,18 +21,17 @@ def SJI_to_cube(filename, start=0, stop=None, hdu=0):
     filename: string
         File to read
     
-    start:
+    start: int
         Temporal axis index to create MapCube from
     
-    stop:
+    stop: int
         Temporal index to stop MapCube at
     
-    hdu:
+    hdu: int
         Choose hdu index
 
     Returns
     -------
-    
     iris_cube: sunpy.map.MapCube
         A map cube of the SJI sequence
     """
