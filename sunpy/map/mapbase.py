@@ -488,7 +488,7 @@ Dimension:\t [%d, %d]
         """Returns a new rotated, rescaled and shifted map.
 
         Parameters
-        ---------
+        ----------
         angle: float
            The angle to rotate the image by (radians)
         scale: float
