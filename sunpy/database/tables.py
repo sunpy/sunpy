@@ -169,7 +169,7 @@ class DatabaseEntry(Base):
     and each instance represents one record that *can* be saved in the
     database.
 
-    Attributes
+    Parameters
     ----------
     id : int
         A unique ID number. By default it is None, but automatically set to the
@@ -211,7 +211,7 @@ class DatabaseEntry(Base):
     fits_header_entries : list
         A list of ``FitsHeaderEntry`` instances.
     tags : list
-        A list of ``Tag`` instances. Use :ref:`sunpy.database.Database.tag` to
+        A list of ``Tag`` instances. Use `sunpy.database.Database.tag` to
         add a new tag or multiple tags to a specific entry.
 
     """

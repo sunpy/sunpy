@@ -27,6 +27,8 @@ from __future__ import absolute_import
 from warnings import warn
 from itertools import izip
 
+__all__ = ['TypeWarning', 'MultiMethod']
+
 SILENT = 0
 WARN = 1
 FAIL = 2
@@ -94,7 +96,7 @@ class MultiMethod(object):
     
     def add_dec(self, *types, **kwargs):
         """ Return a decorator that adds the function it receives to the
-        multimethod with the types passed as *args. Using keyword arg
+        multimethod with the types passed as \*args. Using keyword arg
         override to control overriding behaviour. Compare add.
         """
         self.cache = {}
