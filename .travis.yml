@@ -55,7 +55,7 @@ install:
 # Install SunPy and run tests.
 script:
    - python setup.py develop
-   - if [[ -n $TEST_SPHINX ]]; then sphinx-build -W -b html -d _build/doctrees   . _build/html; fi
+   - if [[ -n $TEST_SPHINX ]]; then cd docs/source && sphinx-build -W -b html -d _build/doctrees   . _build/html; fi
    - if [[ -z $TEST_SPHINX ]]; then py.test -k-fails_on_travis; fi
 
 # Notify the IRC channel of build status
