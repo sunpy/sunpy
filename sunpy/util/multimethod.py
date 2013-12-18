@@ -27,6 +27,8 @@ from __future__ import absolute_import
 from warnings import warn
 from itertools import izip
 
+__all__ = ['TypeWarning', 'MultiMethod']
+
 SILENT = 0
 WARN = 1
 FAIL = 2

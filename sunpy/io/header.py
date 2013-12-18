@@ -2,6 +2,8 @@
 from __future__ import absolute_import
 from sunpy.util.odict import OrderedDict
 
+__all = ['FileHeader']
+
 class FileHeader(OrderedDict):
     """ FileHeader is designed to provide a consistent interface to all other
     sunpy classes that expect a generic file.
