@@ -6,10 +6,10 @@ class RegisteredFactoryBase(object):
     
     Attributes
     ----------
-    registry : dict
+    registry\ : dict
         The dictionary containing the mapping of WidgetType's to functions that match the arguments to that WidgetType.
     
-    DefaultWidgetType : type
+    DefaultWidgetType\ : type
         Fall-back type for the event that no WidgetTypes match the specified arguments.
     """
     
