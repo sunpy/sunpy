@@ -5,6 +5,8 @@ import ConfigParser
 
 import sunpy as spy
 
+__all__ = ['load_config', 'print_config']
+
 def load_config():
     """
     Read the sunpyrc configuration file. If one does not exists in the user's
