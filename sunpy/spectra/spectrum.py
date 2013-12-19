@@ -15,16 +15,17 @@ class Spectrum(np.ndarray):
     
     Attributes
     ----------
-    data : np.ndarray
-        one-dimensional array which the intensity at a particular frequency
-        at every data-point.
     freq_axis : np.ndarray
         one-dimensional array with the frequency values at every data point
+
+    data\ : np.ndarray
+        one-dimensional array which the intensity at a particular frequency at every data-point.
     """
     def __new__(cls, data, *args, **kwargs):
         return np.asarray(data).view(cls)
 
     def __init__(self, data, freq_axis):
+        self.data = data
         self.freq_axis = freq_axis
 
     def plot(self, axes=None, **matplot_args):

@@ -15,6 +15,7 @@ from sunpy.util import replacement_filename
 
 from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
 
+__all__ = ['Parent']
 
 class Parent(object):
     _create = ConditionalDispatch()

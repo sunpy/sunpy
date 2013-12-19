@@ -392,7 +392,7 @@ class Spectrogram(Parent):
         plt.show()
         return ret
 
-    def plot(self, figure=None, overlays=[], colorbar=True, min_=None, max_=None,
+    def plot(self, figure=None, overlays=[], colorbar=True, vmin=None, vmax=None,
              linear=True, showz=True, yres=DEFAULT_YRES,
              max_dist=None, **matplotlib_args):
         """
@@ -408,10 +408,10 @@ class Spectrogram(Parent):
         colorbar : bool
             Flag that determines whether or not to draw a colorbar. If existing
             figure is passed, it is attempted to overdraw old colorbar.
-        min\_ : float
-            Clip intensities lower than min\_ before drawing.
-        max\_ : float
-            Clip intensities higher than max\_ before drawing.
+        vmin : float
+            Clip intensities lower than vmin before drawing.
+        vmax : float
+            Clip intensities higher than vmax before drawing.
         linear :  bool
             If set to True, "stretch" image to make frequency axis linear.
         showz : bool
@@ -438,12 +438,12 @@ class Spectrogram(Parent):
                 )
                 delt = float(delt)
 
-            data = _LinearView(self.clip_values(min_, max_), delt)
+            data = _LinearView(self.clip_values(vmin, vmax), delt)
             freqs = np.arange(
                 self.freq_axis[0], self.freq_axis[-1], -data.delt
             )
         else:
-            data = np.array(self.clip_values(min_, max_))
+            data = np.array(self.clip_values(vmin, vmax))
             freqs = self.freq_axis
 
         figure = plt.gcf()
@@ -566,7 +566,7 @@ class Spectrogram(Parent):
 
         return self.data[key]
 
-    def clip_freq(self, min_=None, max_=None):
+    def clip_freq(self, vmin=None, vmax=None):
         """ Return a new spectrogram only consisting of frequencies
         in the interval [min\_, max\_].
 
@@ -578,14 +578,14 @@ class Spectrogram(Parent):
             All frequencies in the result are smaller or equal to this.
         """
         left = 0
-        if max_ is not None:
-            while self.freq_axis[left] > max_:
+        if vmax is not None:
+            while self.freq_axis[left] > vmax:
                 left += 1
 
         right = len(self.freq_axis) - 1
 
-        if min_ is not None:
-            while self.freq_axis[right] < min_:
+        if vmin is not None:
+            while self.freq_axis[right] < vmin:
                 right -= 1
 
         return self[left:right + 1, :]
@@ -660,7 +660,7 @@ class Spectrogram(Parent):
         """
         return self._with_data(self.data - self.randomized_auto_const_bg(amount))
 
-    def clip_values(self, min_=None, max_=None, out=None):
+    def clip_values(self, vmin=None, vmax=None, out=None):
         """
         Clip intensities to be in the interval [min\_, max\_].
 
@@ -676,15 +676,15 @@ class Spectrogram(Parent):
             New maximum value for intensities
         """
         # pylint: disable=E1101
-        if min_ is None:
-            min_ = int(self.data.min())
+        if vmin is None:
+            vmin = int(self.data.min())
 
-        if max_ is None:
-            max_ = int(self.data.max())
+        if vmax is None:
+            vmax = int(self.data.max())
 
-        return self._with_data(self.data.clip(min_, max_, out))
+        return self._with_data(self.data.clip(vmin, vmax, out))
 
-    def rescale(self, min_=0, max_=1, dtype_=np.dtype('float32')):
+    def rescale(self, vmin=0, vmax=1, dtype=np.dtype('float32')):
         u"""
         Rescale intensities to [min\_, max\_].
         Note that min\_ ≠ max\_ and spectrogram.min() ≠ spectrogram.max().
@@ -695,16 +695,16 @@ class Spectrogram(Parent):
             New minimum value in the resulting spectogram.
         max\_ : float or int
             New maximum value in the resulting spectogram.
-        dtype\_ : np.dtype
+        dtype : np.dtype
             Data-type of the resulting spectogram.
         """
-        if max_ == min_:
+        if vmax == vmin:
             raise ValueError("Maximum and minimum must be different.")
         if self.data.max() == self.data.min():
             raise ValueError("Spectrogram needs to contain distinct values.")
-        data = self.data.astype(dtype_) # pylint: disable=E1101
+        data = self.data.astype(dtype) # pylint: disable=E1101
         return self._with_data(
-            min_ + (max_ - min_) * (data - self.data.min()) / # pylint: disable=E1101
+            vmin + (vmax - vmin) * (data - self.data.min()) / # pylint: disable=E1101
             (self.data.max() - self.data.min()) # pylint: disable=E1101
         )
 
@@ -855,17 +855,17 @@ class LinearTimeSpectrogram(Spectrogram):
         self.t_delt = t_delt
 
     @staticmethod
-    def make_array(shape, dtype_=np.dtype('float32')):
+    def make_array(shape, dtype=np.dtype('float32')):
         """ Function to create an array with shape and dtype.
 
         Parameters
         ----------
         shape : tuple
             shape of the array to create
-        dtype\_ : np.dtype
+        dtype : np.dtype
             data-type of the array to create
         """
-        return np.zeros(shape, dtype=dtype_)
+        return np.zeros(shape, dtype=dtype)
 
     @staticmethod
     def memmap(filename):
@@ -878,8 +878,8 @@ class LinearTimeSpectrogram(Spectrogram):
             File to store the memory mapped array in.
         """
         return (
-            lambda shape, dtype_=np.dtype('float32'): np.memmap(
-                filename, mode="write", shape=shape, dtype=dtype_
+            lambda shape, dtype=np.dtype('float32'): np.memmap(
+                filename, mode="write", shape=shape, dtype=dtype
             )
         )
 
