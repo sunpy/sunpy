@@ -319,7 +319,7 @@ def test_display_entries():
         'observation_time_start', 'observation_time_end', 'instrument', 'size',
         'wavemin', 'path', 'starred', 'tags']
     table = display_entries(entries, columns)
-    assert table == """id source provider physobs      fileid            observation_time_start observation_time_end instrument  size  wavemin path starred tags
--- ------ -------- -------      ------            ---------------------- -------------------- ----------  ----  ------- ---- ------- ----
-1  SOHO   SDAC     intensity    /archive/soho/... 2001-01-01 07:00:14    2001-01-01 07:00:21  EIT         259.0 171.0   N/A  No      foo, bar
-2  GONG   NSO      LOS_velocity pptid=11010...    2010-01-01 00:59:00    2010-01-01 01:00:00  Merged gong 944.0 6768.0  N/A  Yes     N/A     """
+    filedir = os.path.dirname(os.path.realpath(__file__))
+    with open(os.path.join(filedir,'test_table.txt'), 'r') as f:
+        stored_table = f.read()
+    assert table == stored_table
