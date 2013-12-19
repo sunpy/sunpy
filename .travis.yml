@@ -29,7 +29,7 @@ before_install:
 # Make sure the system is upto date and install scipy requirements
    - sudo apt-get update -qq
    - sudo apt-get install -qq libatlas-dev liblapack-dev gfortran
-   - if [[ -n $TEST_SPHINX ]]; then sudo apt-get install graphviz texlive-latex-extra dvipng; fi
+   - if [[ $TEST_MODE == 'sphinx' ]]; then sudo apt-get install graphviz texlive-latex-extra dvipng; fi
 # Make sure pip is at the latest version (>1.4 for wheels)
    - pip install pip --upgrade
 # Wheels also need a recent version of setuptools
@@ -52,7 +52,7 @@ install:
    - pip install $PIP_WHEEL_COMMAND pytest 
    - pip install $PIP_WHEEL_COMMAND glymur
 #Install sphinx if needed
-   - if [[ -n $TEST_SPHINX ]]; then pip install $PIP_WHEEL_COMMAND sphinx>=1.2; fi 
+   - if [[ $TEST_MODE == 'sphinx' ]]; then pip install $PIP_WHEEL_COMMAND sphinx>=1.2; fi 
 # Install SunPy and run tests.
 script:
    - python setup.py develop
