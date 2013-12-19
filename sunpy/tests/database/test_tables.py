@@ -222,13 +222,13 @@ def test_entries_from_dir():
 def test_entries_from_dir_recursively_true():
     entries = list(
         entries_from_dir(testdir, True, default_waveunit='angstrom'))
-    assert len(entries) == 22
+    assert len(entries) == 25
 
 
 def test_entries_from_dir_recursively_false():
     entries = list(
         entries_from_dir(testdir, False, default_waveunit='angstrom'))
-    assert len(entries) == 5
+    assert len(entries) == 8
 
 
 @pytest.mark.online
@@ -319,7 +319,7 @@ def test_display_entries():
         'observation_time_start', 'observation_time_end', 'instrument', 'size',
         'wavemin', 'path', 'starred', 'tags']
     table = display_entries(entries, columns)
-    assert table == """id source provider physobs      fileid            observation_time_start observation_time_end instrument  size  wavemin path starred tags    
--- ------ -------- -------      ------            ---------------------- -------------------- ----------  ----  ------- ---- ------- ----    
+    assert table == """id source provider physobs      fileid            observation_time_start observation_time_end instrument  size  wavemin path starred tags
+-- ------ -------- -------      ------            ---------------------- -------------------- ----------  ----  ------- ---- ------- ----
 1  SOHO   SDAC     intensity    /archive/soho/... 2001-01-01 07:00:14    2001-01-01 07:00:21  EIT         259.0 171.0   N/A  No      foo, bar
 2  GONG   NSO      LOS_velocity pptid=11010...    2010-01-01 00:59:00    2010-01-01 01:00:00  Merged gong 944.0 6768.0  N/A  Yes     N/A     """
