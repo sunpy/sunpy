@@ -18,6 +18,8 @@ from matplotlib import patches
 from matplotlib import colors
 from matplotlib import cm
 
+import astropy.nddata
+
 try:
     import sunpy.image.Crotate as Crotate
 except ImportError:
@@ -46,65 +48,7 @@ or something else?)
 * Should 'center' be renamed to 'offset' and crpix1 & 2 be used for 'center'?
 """
 
-class NDDataStandin(object):
-    
-    def __init__(self, data, meta, **kwargs):
-        """ Instantiate a Map class.
-        
-        Parameters
-        ----------
-        data: ndarray
-        
-        meta: sunpy.map.MapMeta
-        
-        Returns
-        -------
-        A MapBase object
-        """
-        
-        self.meta = meta
-        self.data = data
-    
-    @property
-    def shape(self):
-        return self.data.shape
-    
-    @property
-    def dtype(self):
-        return self.data.dtype
-        
-    @property
-    def size(self):
-        return self.data.size
-        
-    @property
-    def ndim(self):
-        return self.data.ndim
-    
-    def std(self, *args, **kwargs):
-        return self.data.std(*args, **kwargs)
-    
-    def mean(self, *args, **kwargs):
-        return self.data.mean(*args, **kwargs)
-    
-    def min(self, *args, **kwargs):
-        return self.data.min(*args, **kwargs)
-        
-    def max(self, *args, **kwargs):
-        return self.data.max(*args, **kwargs)
-        
-    @property
-    def header(self):
-        warnings.warn("""map.header has been renamed to map.meta
-        for compatability with astropy, please use meta instead""", Warning)
-        return self.meta
-    
-    @Deprecated("get_header is no longer supported please use map.meta")
-    def get_header(self):
-        return self.meta
-    
-
-class GenericMap(NDDataStandin):
+class GenericMap(astropy.nddata.NDData):
     """
     A Generic spatially-aware 2D data array
 
@@ -136,11 +80,12 @@ class GenericMap(NDDataStandin):
     | http://docs.scipy.org/doc/numpy/user/basics.subclassing.html
     | http://docs.scipy.org/doc/numpy/reference/ufuncs.html
     | http://www.scipy.org/Subclasses
+
     """
     
     def __init__(self, data, header, **kwargs):
         
-        NDDataStandin.__init__(self, data, header, **kwargs)
+        astropy.nddata.NDData.__init__(self, data, meta=header, **kwargs)
         
         # Correct possibly missing meta keywords
         self._fix_date()
@@ -184,6 +129,36 @@ Dimension:\t [%d, %d]
        self.date, self.exposure_time,
        self.data.shape[1], self.data.shape[0], self.scale['x'], self.scale['y']) 
      + self.data.__repr__())
+     
+
+    #Some numpy extraction
+    @property
+    def shape(self):
+        return self.data.shape
+    
+    @property
+    def dtype(self):
+        return self.data.dtype
+        
+    @property
+    def size(self):
+        return self.data.size
+        
+    @property
+    def ndim(self):
+        return self.data.ndim
+    
+    def std(self, *args, **kwargs):
+        return self.data.std(*args, **kwargs)
+    
+    def mean(self, *args, **kwargs):
+        return self.data.mean(*args, **kwargs)
+    
+    def min(self, *args, **kwargs):
+        return self.data.min(*args, **kwargs)
+        
+    def max(self, *args, **kwargs):
+        return self.data.max(*args, **kwargs)
 
 # #### Keyword attribute and other attribute definitions #### #
 
@@ -265,11 +240,8 @@ Dimension:\t [%d, %d]
     
     @property
     def center(self):
-        """        
-        X and Y coordinate of the center of the map in units.
-        Usually represents the offset between the center of the Sun and the
-        center of the map.
-        """
+        """Returns the offset between the center of the Sun and the center of 
+        the map."""
         return {'x': wcs.get_center(self.shape[1], self.scale['x'], 
                                     self.reference_pixel['x'], 
                                     self.reference_coordinate['x']),
@@ -503,8 +475,7 @@ Dimension:\t [%d, %d]
     
     def rotate(self, angle, scale=1.0, rotation_center=None, recenter=True,
                missing=0.0, interpolation='bicubic', interp_param=-0.5):
-        """
-        Returns a new rotated, rescaled and shifted map.
+        """Returns a new rotated, rescaled and shifted map.
         
         Parameters
         ----------
@@ -547,7 +518,7 @@ Dimension:\t [%d, %d]
         C-API extension. If for some reason this is not compiled correctly this
         routine will fall back upon the scipy implementation of order = 3.
         For more infomation see:
-        http://sunpy.readthedocs.org/en/latest/guide/troubleshooting.html#crotate-warning
+            http://sunpy.readthedocs.org/en/latest/guide/troubleshooting.html#crotate-warning
         """
         
         #Interpolation parameter Sanity
@@ -821,7 +792,7 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         #lon_self, lat_self = wcs.convert_hpc_hg(rsun, dsun, angle_units = units[0], b0, l0, x, y)
         lon_self, lat_self = wcs.convert_hpc_hg(x, y, b0_deg=b0, l0_deg=l0, dsun_meters=dsun, angle_units='arcsec')
         # define the number of points for each latitude or longitude line
-        num_points = 50
+        num_points = 20
         
         #TODO: The following code is ugly. Fix it.
         lon_range = [lon_self.min(), lon_self.max()]
