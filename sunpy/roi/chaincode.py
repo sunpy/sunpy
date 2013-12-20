@@ -22,8 +22,8 @@ class Chaincode(np.ndarray):
     ydelta : Float
         The scale to convert between pixels and flat coordinates
 
-    Output
-    ------
+    Returns
+    -------
     cc.coordinates : numpy.ndarray
         An array containing all the x and y coordinates of the cc
         such [[x0, x1, x2, ..., xn], [y0 ,y1, y2, ..., yn]]
