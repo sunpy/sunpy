@@ -211,7 +211,7 @@ class DatabaseEntry(Base):
     fits_header_entries : list
         A list of ``FitsHeaderEntry`` instances.
     tags : list
-        A list of ``Tag`` instances. Use :ref:`sunpy.database.Database.tag` to
+        A list of ``Tag`` instances. Use `sunpy.database.Database.tag` to
         add a new tag or multiple tags to a specific entry.
 
     """

@@ -121,7 +121,7 @@ man_pages = [('index', project.lower(), project + u' Documentation',
 #extensions = filter(lambda a: a != 'astropy.sphinx.ext.automodapi', extensions)
 extensions += ['astropy.sphinx.ext.edit_on_github', 'sphinx.ext.doctest']
 extensions += ['sunpy.sphinx.ext.automodapi']
-print extensions
+
 ## Don't import the module as "version" or it will override the
 ## "version" configuration parameter
 # TODO: make this smart like astropy

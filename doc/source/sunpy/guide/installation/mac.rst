@@ -17,7 +17,8 @@ To install the Anaconda Python distribution follow the instructions `here <http:
 
 .. warning::
     
-    You must have the XCode developer package installed to be able to compile SunPy
+    You must have the XCode developer package installed to be able to compile SunPy.
+    see :ref:`xcode`.
 
 Once complete follow the install instructions for the :ref:`anaconda_install`.
 
@@ -42,11 +43,21 @@ using their DMG installer. Next, choose your package installer of choice (either
 Macports or Homebrew) and follow the instructions below. If you do not have either
 go to their respective websites and install one of the other as needed.
 
-Compiler
-^^^^^^^^
-Download and install XCode from the App Store. Install the compiler by installing the
-optional "Command Line Tools" as part of XCode. In the latest version of Xcode, this
-can be found in the preferences under the Downloads tab.
+.. _xcode:
+
+XCode tools / Compiler
+^^^^^^^^^^^^^^^^^^^^^^
+If you are using MacOS X, you will need to the XCode command line
+tools.  One way to get them is to install `XCode
+<https://developer.apple.com/xcode/>`__. If you are using OS X 10.7
+(Lion) or later, you must also explicitly install the command line
+tools. You can do this by opening the XCode application, going to
+**Preferences**, then **Downloads**, and then under **Components**,
+click on the Install button to the right of **Command Line Tools**.
+Alternatively, on 10.7 (Lion) or later, you do not need to install
+XCode, you can download just the command line tools from
+https://developer.apple.com/downloads/index.action (requires an Apple
+developer account).
  
 Macports
 ^^^^^^^^

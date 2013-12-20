@@ -83,14 +83,14 @@ class LightCurve(object):
         return cls.from_file(filepath)
 
     @classmethod
-    def from_range(cls, from_, to, **kwargs):
-        url = cls._get_url_for_date_range(parse_time(from_), parse_time(to))
+    def from_range(cls, start, end, **kwargs):
+        url = cls._get_url_for_date_range(parse_time(start), parse_time(end))
         filepath = cls._download(
             url, kwargs, 
             err = "Unable to download data for specified date range"
         )
         result = cls.from_file(filepath)
-        result.data = result.data.ix[result.data.index.indexer_between_time(from_, to)]
+        result.data = result.data.ix[result.data.index.indexer_between_time(start, end)]
         return result
 
     @classmethod

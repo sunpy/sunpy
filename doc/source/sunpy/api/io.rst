@@ -3,6 +3,8 @@ SunPy io
 
 .. automodapi:: sunpy.io
 
+.. automodapi:: sunpy.io.header
+
 File Readers
 ------------
 
