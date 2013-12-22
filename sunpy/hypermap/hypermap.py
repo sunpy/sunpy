@@ -60,7 +60,7 @@ class HyperMap(object):
             extent = x_extent + y_extent
             print extent
             #What axis are we animating over
-            fig, ax = plt.subplots(1)
+            ax = plt.subplots(1)
             ani = viz.animate_array(self.data, animate, axes=ax, interval=200,
                                     cmap=plt.get_cmap('gray'), colorbar=False,
                                     norm='dynamic', extent=extent)
