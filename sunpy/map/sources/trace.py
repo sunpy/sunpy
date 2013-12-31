@@ -6,6 +6,7 @@ __email__ = "jack.ireland@nasa.gov"
 
 from sunpy.map import GenericMap
 from sunpy.cm import cm
+import numpy as np
 
 __all__ = ['TRACEMap']
 
