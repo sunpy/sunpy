@@ -8,6 +8,8 @@ import matplotlib.pyplot as plt
 
 import sunpy.visualization as viz
 
+from . coordinate_system import WCSParser
+
 __author__ = "Tomas Meszaros"
 __email__ = "exo@tty.sk"
 
@@ -20,16 +22,20 @@ class HyperMap(object):
     ----------
     data : numpy.ndarray
         data
-    coordinate_system : CoordinateSystem
-        CoordinateSystem object
     header : list
         header
+    coordinate_system : CoordinateSystem
+        CoordinateSystem object
     """
 
-    def __init__(self, data, coordinate_system, header):
-        self.data = data.T
-        self.system = coordinate_system
+    def __init__(self, data, header, coordinate_system=False):
+        self.data = data
         self.header = header
+
+        if not coordinate_system:
+            self.system = WCSParser(header).get_coordinate_system()
+        else:
+            self.system = coordinate_system
 
     def plot(self, animate=False):
         """
@@ -40,7 +46,7 @@ class HyperMap(object):
         animate: int
             Axis of underlying ndarray to animate
         """
-        #TODO: Make animate more cleverer
+        #TODO: Make animate more cleverer, i.e. make it use the type of frames
         naxis = len(self.system.frames)
 
         if naxis == 1:
@@ -54,15 +60,13 @@ class HyperMap(object):
                 raise ValueError("What axis to animate fool?!")
             axlist = range(0, naxis)
             axlist.pop(animate)
-            print axlist
             y_extent = self.system.frames[axlist[0]].get_extent()
             x_extent = self.system.frames[axlist[1]].get_extent()
             extent = x_extent + y_extent
-            print extent
             #What axis are we animating over
-            ax = plt.subplots(1)
+            ax = plt.subplot()
             ani = viz.animate_array(self.data, animate, axes=ax, interval=200,
-                                    cmap=plt.get_cmap('gray'), colorbar=False,
+                                    cmap=plt.get_cmap('gray'), colorbar=True,
                                     norm='dynamic', extent=extent)
 
             return ani

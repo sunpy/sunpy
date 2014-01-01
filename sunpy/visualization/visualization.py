@@ -103,7 +103,7 @@ def animate_array(array, n, axes=None, cmap=plt.get_cmap('gray'), norm='static',
         im.set_norm(norm[i])
 #        if args[1]:
 #            axes.set_title("%s %s" % (self[i].name, self[i].date))
-
+        axes.set_title("%i"%i)
     ani = anim.FuncAnimation(fig, updatefig,
                                         frames=xrange(0,n_im),
                                         fargs=[im,False,array,n],
