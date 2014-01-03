@@ -189,7 +189,7 @@ def apparent_rightascenscion(t=None):
     y = np.cos(np.radians(apparent_obliquity_of_ecliptic(t))) * np.sin(np.radians(apparent_longitude(t)))
     x = np.cos(np.radians(apparent_longitude(t)))
     rpol = np.rad2deg(np.arctan2(y, x))
-    app_ra = rpol[1] % 360.0
+    app_ra = rpol % 360.0
     if app_ra < 0: app_ra += 360.0
     result = app_ra/15.0
     return result
