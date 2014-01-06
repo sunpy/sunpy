@@ -21,8 +21,6 @@ Carrington Rotation Number = 1971.4091        check!
 """
 from __future__ import absolute_import
 
-import cmath
-
 import numpy as np
 
 import astropy.units as u
@@ -190,8 +188,8 @@ def apparent_rightascenscion(t=None):
     """Returns the apparent right ascenscion of the Sun."""
     y = np.cos(np.radians(apparent_obliquity_of_ecliptic(t))) * np.sin(np.radians(apparent_longitude(t)))
     x = np.cos(np.radians(apparent_longitude(t)))
-    rpol = cmath.polar(complex(x,y))
-    app_ra = rpol[1] % 360.0
+    rpol = np.rad2deg(np.arctan2(y, x))
+    app_ra = rpol % 360.0
     if app_ra < 0: app_ra += 360.0
     result = app_ra/15.0
     return result
