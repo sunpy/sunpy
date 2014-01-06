@@ -330,7 +330,7 @@ Dimension:\t [%d, %d]
     @property
     def rsun_arcseconds(self):
         return self.meta.get('rsun_obs', self.meta.get('solar_r',
-                                         self.meta.get('radius', constants.average_angular_size)))
+                                         self.meta.get('radius', constants.average_angular_size.to('arcsec').value)))
                                          
     @property
     def coordinate_system(self):
@@ -920,7 +920,7 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         if not axes:
             axes = plt.gca()
         
-        c_kw = {'radius':self.rsun_arcseconds.value,
+        c_kw = {'radius':self.rsun_arcseconds,
                 'fill':False,
                 'color':'white',
                 'zorder':100
