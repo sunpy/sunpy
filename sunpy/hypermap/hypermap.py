@@ -7,8 +7,9 @@ from __future__ import absolute_import
 import matplotlib.pyplot as plt
 
 import sunpy.visualization as viz
+from sunpy.visualization.imageanimator import ImageAnimator
 
-from . coordinate_system import WCSParser
+from . coordinate_system import WCSParser, SpatialFrame
 
 __author__ = "Tomas Meszaros"
 __email__ = "exo@tty.sk"
@@ -37,39 +38,49 @@ class HyperMap(object):
         else:
             self.system = coordinate_system
 
-    def plot(self, animate=False):
+    def plot(self, animate=False, **kwargs):
         """
         Plot a HyperMap
+
+        This function calls many different underlying plotting routines
+        depending on the data in the hypermap.
 
         Parameters
         ----------
         animate: int
             Axis of underlying ndarray to animate
         """
-        #TODO: Make animate more cleverer, i.e. make it use the type of frames
         naxis = len(self.system.frames)
+        num_spatial = sum([isinstance(frame, SpatialFrame) for frame in self.system.frames])
 
-        if naxis == 1:
-            #Plot some thing
-            pass
-        elif naxis == 2:
-            #imshow something
-            pass
-        elif naxis == 3:
-            if isinstance(animate, bool) and animate:
-                raise ValueError("What axis to animate fool?!")
-            axlist = range(0, naxis)
-            axlist.pop(animate)
-            y_extent = self.system.frames[axlist[0]].get_extent()
-            x_extent = self.system.frames[axlist[1]].get_extent()
-            extent = x_extent + y_extent
-            #What axis are we animating over
-            ax = plt.subplot()
-            ani = viz.animate_array(self.data, animate, axes=ax, interval=200,
-                                    cmap=plt.get_cmap('gray'), colorbar=True,
-                                    norm='dynamic', extent=extent)
-
-            return ani
-
+        if num_spatial == 2 and naxis > 2 and not animate:
+            ImageAnimator(self.data, axis_range=[s.get_extent() for s in self.system.frames], **kwargs)
         else:
-            raise ValueError("Can't plot this hypermap, please slice it")
+            if naxis == 1:
+                #Plot some thing
+                pass
+            elif naxis == 2:
+                #imshow something
+                pass
+            elif naxis == 3:
+                if isinstance(animate, bool) and animate:
+                    raise ValueError("What axis to animate fool?!")
+                axlist = range(0, naxis)
+                axlist.pop(animate)
+                y_extent = self.system.frames[axlist[0]].get_extent()
+                x_extent = self.system.frames[axlist[1]].get_extent()
+                extent = x_extent + y_extent
+                #setup kwargs
+                anim_kwargs = {'interval':200,
+                               'colorbar':True,
+                               'norm':'dynamic',
+                               'extent':extent}
+                anim_kwargs.update(kwargs)
+                #What axis are we animating over
+                ax = plt.subplot()
+                ani = viz.animate_array(self.data, animate, axes=ax, **anim_kwargs)
+
+                return ani
+
+            else:
+                raise ValueError("Can't plot this hypermap, please slice it")

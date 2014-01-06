@@ -117,6 +117,28 @@ class SpectralFrame(CoordinateFrame):
           units=units
         )
 
+class TemporalFrame(CoordinateFrame):
+    """
+    SpatialFrame
+
+    Parameters
+    -----------------
+    reference_position: list, BUT possible astropy.Time or coordinate object
+                        in the future
+    """
+
+    def __init__(self, reference_position, reference_coordinate, pixel_size,
+                 number_of_pixels, axes_names=["",""], units=["",""]):
+        super(TemporalFrame, self).__init__(
+          system='Temporal',
+          reference_position=reference_position,
+          reference_coordinate=reference_coordinate,
+          pixel_size=pixel_size,
+          number_of_pixels=number_of_pixels,
+          num_axes=2,
+          axes_names=axes_names,
+          units=units
+        )
 
 class WCSParser(object):
     """
