@@ -22,6 +22,7 @@ from sunpy.util.progressbar import TTYProgressBar
 __author__ = 'Michael Malocha'
 __version__ = 'Aug 10th, 2013'
 
+__all__ = ['wave_unit_catcher', 'translate_results_to_query', 'vso_attribute_parse', 'H2VClient']
 
 def wave_unit_catcher(wavelength, wave_units):
     """
