@@ -54,6 +54,11 @@ using the get_datasources method::
                 for meas, params in measurements.items():
                     print("%s %s: %d" % (observatory, params['nickname'], params['sourceId']))
                     
+At time of writing (2014/01/06) Helioviewer provides JP2 images from AIA, HMI, LASCO C2/C3, EIT,
+MDI, STEREO A/B COR1/2 & EUVI, SWAP and SXT.  New sources of JP2 images are being added every few months;
+please use the code snippet above to get an up-to-date list of available data sources.
+
+
 Suppose we next want to download a PNG image of the latest
 AIA 304 image available on Helioviewer.org. We could use the explicit 
 approach: ::
