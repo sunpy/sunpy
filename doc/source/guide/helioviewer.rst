@@ -106,5 +106,14 @@ can specify the values as separate keyword arguments: ::
 
 .. image:: ../images/helioviewer_download_jp2_ex.png
 
+Every JP2 file provided by the Helioviewer Project has been processed to generate an image that 
+can be used for browse purposes.  This typically involves following the standard image processing
+procedure used by each instrument team to connvert their science data into an image for a webpage.
+The JP2 image is then scaled between 0 and 255 (byte-scaled).  Please note that the JP2 image data
+is NOT the same as the original science data.  In the example above, SunPy queries Helioviewer for 
+the relevant JP2 file closest to the input time, downloads it, and selects a color table based on
+the JP2 image meta data for plotting.  The color table is that used by the Helioviewer Project to
+display JP2 images in their browse clients.
+
 For more information about using querying Helioviewer.org, see the Helioviewer.org
 API documentation at: `http://helioviewer.org/api/ <http://helioviewer.org/api/>`__.
