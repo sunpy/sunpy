@@ -63,11 +63,20 @@ def solar_cycle_number(t=None):
     return result
 
 def solar_semidiameter_angular_size(t=None):
-    """Return the angular size of the semi-diameter of the Sun as 
+    r"""
+    Return the angular size of the semi-diameter of the Sun as 
     a function of time as viewed from Earth (in arcsec)
-    Radius_{\sun}[rad] = \atan(\frac{<Radius_{\sun}[m]>}{D_{\sun\earth}(t)[m]})
-     since tan x ~ x when x << 1
-    Radius_{\sun}[rad] = \frac{<Radius_{\sun}[m]>)}{D_{\sun\earth}(t)[m]}
+    
+    .. math::
+    
+        Radius_{\odot}[rad]=\tan^{-1}\left(\frac{<Radius_{\odot}[m]>}{D_{\odot \oplus}(t)[m]}\right)
+
+    since :math:`tan(x) \approx x` when :math:`x << 1`
+
+    .. math::
+    
+        Radius_{\odot}[rad]=\frac{<Radius_{\odot}[m]>}{D_{\odot \oplus}(t)[m]}
+
     """
     solar_semidiameter_rad = constants.radius / (sunearth_distance(t) * constants.au)
     return np.rad2deg(solar_semidiameter_rad * u.degree) * 60. * 60.

@@ -32,11 +32,12 @@ class HelioviewerClient:
         return self._get_json(params)    
     
     def get_closest_image(self, date, **kwargs):
-        """Finds the closest image available for the specified source and date.
+        """
+        Finds the closest image available for the specified source and date.
         
         For more information on what types of requests are available and the
-        expected usage for the response, consult the Helioviewer API documenation:
-            http://helioviewer.org/api
+        expected usage for the response, consult the Helioviewer 
+        API documenation: http://helioviewer.org/api
         
         Parameters
         ----------
@@ -52,7 +53,6 @@ class HelioviewerClient:
             (Optional) measurement name
         sourceId : int
             (Optional) data source id
-            
         Returns
         -------
         out : dict
@@ -61,6 +61,7 @@ class HelioviewerClient:
         Examples
         --------
         >>> from sunpy.net import HelioviewerClient
+        
         >>> client = HelioviewerClient()
         >>> metadata = client.get_closest_image('2012/01/01', sourceId=11)
         >>> print(metadata['date'])
@@ -115,12 +116,13 @@ class HelioviewerClient:
         Examples
         --------
         >>> import sunpy
+        
         >>> from sunpy.net import helioviewer
         >>> hv = helioviewer.HelioviewerClient()
         >>> filepath = hv.download_jp2('2012/07/03 14:30:00', observatory='SDO', instrument='AIA', detector='AIA', measurement='171')
         >>> aia = sunpy.make_map(filepath)
         >>> aia.show()
-        >>>
+
         >>> data_sources = hv.get_data_sources()
         >>> hv.download_jp2('2012/07/03 14:30:00', sourceId=data_sources['SOHO']['LASCO']['C2']['white-light']['sourceId'])
         """
@@ -138,7 +140,8 @@ class HelioviewerClient:
     
     def download_png(self, date, image_scale, layers, directory=None,
                      overwrite=False, **kwargs):
-        """Downloads a PNG image using data from Helioviewer.org.
+        """
+        Downloads a PNG image using data from Helioviewer.org.
         
         Returns a single image containing all layers/image types requested. 
         If an image is not available for the date requested the closest 
