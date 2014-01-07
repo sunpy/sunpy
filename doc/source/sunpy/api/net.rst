@@ -7,3 +7,5 @@ SunPy net
 
 .. automodapi:: sunpy.net.hek
 
+.. automodapi:: sunpy.net.hek2vso
+
