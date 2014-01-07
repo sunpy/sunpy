@@ -74,10 +74,6 @@ class GenericMap(astropy.nddata.NDData):
     'arcsec'
     >>> aia.peek()
 
-    See Also
-    --------
-    numpy.ndarray Parent class for the Map object
-
     References
     ----------
     | http://docs.scipy.org/doc/numpy/reference/arrays.classes.html
@@ -244,14 +240,10 @@ Dimension:\t [%d, %d]
 
     @property
     def center(self):
-        """
-        X and Y coordinate of the center of the map in units.
-
-        Usually represents the offset between the center of the Sun and the
-        center of the map.
-        """
-        return {'x': wcs.get_center(self.shape[1], self.scale['x'],
-                                    self.reference_pixel['x'],
+        """Returns the offset between the center of the Sun and the center of 
+        the map."""
+        return {'x': wcs.get_center(self.shape[1], self.scale['x'], 
+                                    self.reference_pixel['x'], 
                                     self.reference_coordinate['x']),
                 'y': wcs.get_center(self.shape[0], self.scale['y'],
                                     self.reference_pixel['y'],
