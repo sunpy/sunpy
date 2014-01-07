@@ -36,8 +36,8 @@ class HelioviewerClient:
         """Finds the closest image available for the specified source and date.
 
         For more information on what types of requests are available and the
-        expected usage for the response, consult the Helioviewer API documenation:
-            http://helioviewer.org/api
+        expected usage for the response, consult the Helioviewer
+        API documenation: http://helioviewer.org/api
 
         Parameters
         ----------
@@ -62,6 +62,7 @@ class HelioviewerClient:
         Examples
         --------
         >>> from sunpy.net import HelioviewerClient
+
         >>> client = HelioviewerClient()
         >>> metadata = client.get_closest_image('2012/01/01', sourceId=11)
         >>> print(metadata['date'])
