@@ -117,6 +117,28 @@ class SpectralFrame(CoordinateFrame):
           units=units
         )
 
+class TemporalFrame(CoordinateFrame):
+    """
+    SpatialFrame
+
+    Parameters
+    -----------------
+    reference_position: list, BUT possible astropy.Time or coordinate object
+                        in the future
+    """
+
+    def __init__(self, reference_position, reference_coordinate, pixel_size,
+                 number_of_pixels, axes_names=["",""], units=["",""]):
+        super(TemporalFrame, self).__init__(
+          system='Temporal',
+          reference_position=reference_position,
+          reference_coordinate=reference_coordinate,
+          pixel_size=pixel_size,
+          number_of_pixels=number_of_pixels,
+          num_axes=2,
+          axes_names=axes_names,
+          units=units
+        )
 
 class WCSParser(object):
     """
@@ -148,7 +170,7 @@ class WCSParser(object):
         return [i for i in self._header.items() if not i[0].find(group) and
                                                    not i[0] == group]
 
-    def _make_frame_list(self):
+    def _make_frame_list(self, reverse=False):
         """
         Make list of CoordinateFrames so that we can feed CoordinateSystem
         with it later.
@@ -199,12 +221,25 @@ class WCSParser(object):
                                             number_of_pixels=naxiss[i][1],
                                             axes_names=None,
                                             units=[cunits[i][1]]))
-        return frames
+        if reverse:
+            return frames[::-1]
+        else:
+            return frames
 
-    def get_coordinate_system(self, name="CompositeSystem"):
-        """ Create CoordinateSystem out of frame list.
+    def get_coordinate_system(self, name="CompositeSystem", reverse=True):
         """
-        return CoordinateSystem(self._make_frame_list(), name)
+        Create CoordinateSystem out of frame list.
+
+        Parameters
+        ----------
+        name: str
+            Name for the created system
+
+        reverse: bool
+            Reverse the order of the frames, WCS headers are by default transposed
+            to their numpy array axis ordering.
+        """
+        return CoordinateSystem(self._make_frame_list(reverse=reverse), name)
 
 
 class HeaderTypeError(Exception):
