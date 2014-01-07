@@ -96,6 +96,9 @@ class ImageAnimator(object):
     * 'bottom': change the active slider down one
     * 'p': play/pause active slider
 
+    This viewer can have user defined buttones added by specifing the labels and
+    functions called when those buttons are clicked as keyword argumets.
+
     Parameters
     ----------
     data: ndarray
@@ -108,7 +111,8 @@ class ImageAnimator(object):
         Figure to use
 
     axis_range: list of lists
-        List of [min, max] pairs for each axis
+        List of [min, max] pairs for each axis, if min==max axis length
+        will be used.
 
     interval: int
         Animation interval in ms
@@ -146,27 +150,31 @@ class ImageAnimator(object):
         if len(image_axes) != 2:
             raise ValueError("There can only be two spatial axes")
 
-        all_axes_f = range(self.naxis)
-        self.image_axes = [all_axes_f[i] for i in image_axes]
-
         all_axes = range(self.naxis)
-        [all_axes.remove(x) for x in self.image_axes]
-        slider_axes = all_axes
+        #Handle negative indexes
+        self.image_axes = [all_axes[i] for i in image_axes]
+
+        slider_axes = range(self.naxis)
+        [slider_axes.remove(x) for x in self.image_axes]
 
         if len(slider_axes) != self.num_sliders:
             raise ValueError("Specific the same number of axes as sliders!")
         self.slider_axes = slider_axes
 
+        #Verify that combined slider_axes and image_axes make all axes
         ax = self.slider_axes + self.image_axes
         ax.sort()
         if ax != range(self.naxis):
             raise ValueError("spatial_axes and sider_axes mismatch")
 
+        #Make axes_range argument and replace instances where min == max
         if not axis_range:
             axis_range = [[0, i] for i in self.data.shape]
         else:
+            if len(axis_range) != self.naxis:
+                raise ValueError("axis_range must equal number of axes")
             for i,d in enumerate(self.data.shape):
-                if axis_range[i][0] == axis_range[i][1]:
+                if axis_range[i] is None or axis_range[i][0] == axis_range[i][1]:
                     axis_range[i] = [0, d]
         self.axis_range = axis_range
 
@@ -177,9 +185,7 @@ class ImageAnimator(object):
 
         #Set active slider
         self.active_slider = 0
-#==============================================================================
-#         Begin Plotting etc.
-#==============================================================================
+
         #Set a blank timer
         self.timer = None
 
@@ -206,42 +212,55 @@ class ImageAnimator(object):
         #Set the current axes to the main axes so commands like plt.ylabel() work.
         plt.sca(self.axes)
 
-#==============================================================================
 #       Connect fig events
-#==============================================================================
-        self.fig.canvas.mpl_connect('button_press_event', self._on_click)
+        self.fig.canvas.mpl_connect('button_press_event', self._mouse_click)
         self.fig.canvas.mpl_connect('key_press_event', self._key_press)
 
-    def _get_slice(self, i, n):
+    def label_slider(self, i, label):
         """
-        Slice an array, i'th element on n'th axes
+        Change the Slider label
 
         Parameters
         ----------
         i: int
-            The element to select
-        n: int
-            The axis along which to index the i'th element
+            The index of the slider to change (0 is bottom)
+        label: str
+            The label to set
         """
-        nax = self.naxis
-        arr_slice = [slice(None)]*nax
-        arr_slice[n] = i
-        return arr_slice
+        self.sliders[i]._slider.label.set_text(label)
 
-    def _updatefig(self, ax_slice):
+    def _updateimage(self, ax_slice):
         self.im.set_array(self.data[ax_slice])
 
     def _add_colorbar(self):
         self.colorbar = plt.colorbar(self.im, self.cax)
 
-    def _on_click(self, event):
+#==============================================================================
+#   Figure event callback functions
+#==============================================================================
+    def _mouse_click(self, event):
         if event.inaxes in self.sliders:
             slider = self.sliders.index(event.inaxes)
             self._set_active_slider(slider)
 
+    def _key_press(self, event):
+        if event.key == 'left':
+            self._previous(self.sliders[self.active_slider]._slider)
+        elif event.key == 'right':
+            self._step(self.sliders[self.active_slider]._slider)
+        elif event.key == 'up':
+            self._set_active_slider((self.active_slider+1)%self.num_sliders)
+        elif event.key == 'down':
+            self._set_active_slider((self.active_slider-1)%self.num_sliders)
+        elif event.key == 'p':
+            self._click_button(event, self.radio[self.active_slider]._radio,
+                               self.sliders[self.active_slider]._slider)
+
+#==============================================================================
+#   Active Sider methods
+#==============================================================================
     def _set_active_slider(self, ind):
         self._dehighlight_slider(self.active_slider)
-
         self._highliget_slider(ind)
         self.active_slider = ind
 
@@ -255,6 +274,9 @@ class ImageAnimator(object):
         [a.set_linewidth(1.0) for n,a in ax.spines.items()]
         self.fig.canvas.draw()
 
+#==============================================================================
+#   Build the figure and place the widgets
+#==============================================================================
     def _make_axes_grid(self):
         self.axes = self.fig.add_subplot(111)
 
@@ -344,6 +366,9 @@ class ImageAnimator(object):
             rdo.clicked = False
             self.radio[-1]._radio = rdo
 
+#==============================================================================
+#   Widget callbacks
+#==============================================================================
     def _click_button(self, event, button, slider):
         self._set_active_slider(slider.axes_num)
         if button.clicked:
@@ -355,18 +380,6 @@ class ImageAnimator(object):
             self._start_play(event, button, slider)
             button.label.set_text("||")
         self.fig.canvas.draw()
-
-    def _key_press(self, event):
-        if event.key == 'left':
-            self._previous(self.sliders[self.active_slider]._slider)
-        elif event.key == 'right':
-            self._step(self.sliders[self.active_slider]._slider)
-        elif event.key == 'up':
-            self._set_active_slider((self.active_slider+1)%self.num_sliders)
-        elif event.key == 'down':
-            self._set_active_slider((self.active_slider-1)%self.num_sliders)
-        elif event.key == 'p':
-            self._click_button(event, self.radio[self.active_slider]._radio, self.sliders[self.active_slider]._slider)
 
     def _start_play(self, event, button, slider=None):
         if not slider:
@@ -402,18 +415,5 @@ class ImageAnimator(object):
         ax_slice = copy.copy(self.image_slice)
         ax_slice[ax] = val
         if val != slider.cval:
-            self._updatefig(ax_slice)
+            self._updateimage(ax_slice)
             slider.cval = val
-
-    def label_slider(self, i, label):
-        """
-        Change the Slider label
-
-        Parameters
-        ----------
-        i: int
-            The index of the slider to change (0 is bottom)
-        label: str
-            The label to set
-        """
-        self.sliders[i]._slider.label.set_text(label)
