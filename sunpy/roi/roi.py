@@ -6,11 +6,11 @@ from sunpy.time import parse_time
 __all__ = ['roi']
 
 class roi:
-    """A generalized region of interest (ROI) object
+    """
+    A generalized region of interest (ROI) object
     
     Parameters
     ----------
-
     times : list (optional)
         A list of 1 or 2 parse_time-readable times
     description : str (optional)
@@ -33,10 +33,11 @@ class roi:
 
     Examples
     --------
-    from sunpy.roi import *
-    result = roi(times=['2011-02-15 04:34:09','2011-02-15 04:48:21'],description='UV occult.',source='LYRA LYTAF')
-    ---------
-    result = roi(times='2013-05-12 03:12:00') 
+    >>> from sunpy.roi import roi
+    
+    >>> result = roi(times=['2011-02-15 04:34:09','2011-02-15 04:48:21'],description='UV occult.',source='LYRA LYTAF')
+    
+    >>> result = roi(times='2013-05-12 03:12:00') 
     """
     
     def __init__(self, times=None, description=None, source=None):

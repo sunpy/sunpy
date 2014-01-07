@@ -1,2 +1,10 @@
-sphinx
-numpydoc
+sphinx>=1.2
+numpy>=1.8.0
+matplotlib>=1.1
+scipy
+glymur>=0.5.9
+suds
+pandas>=0.10
+beautifulsoup4
+astropy>=0.3.0
+pytest

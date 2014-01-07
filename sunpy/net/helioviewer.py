@@ -121,7 +121,7 @@ class HelioviewerClient:
         >>> filepath = hv.download_jp2('2012/07/03 14:30:00', observatory='SDO', instrument='AIA', detector='AIA', measurement='171')
         >>> aia = sunpy.make_map(filepath)
         >>> aia.show()
-        >>>
+
         >>> data_sources = hv.get_data_sources()
         >>> hv.download_jp2('2012/07/03 14:30:00', sourceId=data_sources['SOHO']['LASCO']['C2']['white-light']['sourceId'])
         """

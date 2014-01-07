@@ -109,8 +109,8 @@ def disable_undo(database):
     history. This may be useful when it's important to save memory because a
     big number of entries in the undo history may occupy a lot of memory space.
 
-    Example
-    -------
+    Examples
+    --------
     >>> with disable_undo(database) as db:
     ...     db.add(entry)
     >>> database.undo()
@@ -147,7 +147,8 @@ class Database(object):
         If `None` (the default), attempting to add an entry without knowing the
         wavelength unit results in a
         :exc:`sunpy.database.WaveunitNotFoundError`.
-
+    """
+    """
     Attributes
     ----------
     session : sqlalchemy.orm.session.Session

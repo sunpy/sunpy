@@ -27,34 +27,15 @@ class TimeRange:
         The start time of the time range
     t2 : datetime
         The end time of the time range
-    center : datetime
-        The center of the time range
-    split(n) : timerange[]
-        Split the TimeRange into evenly sized TimeRane objects
     dt : timediff
         The difference in time between the start time and end time
-    days : float
-        Number of days in the time range
-    minutes: float
-        Number of minutes in the time range
-    seconds: float
-        Number of seconds in the time range
-    next : None
-        Shift the start time (t1) and end time (t2) by adding dt in 
-        the current instance
-    previous : None
-        Shift the start time (t1) and end time (t2) by subtracting dt in 
-        the current instance
    
     Examples
     --------
-    time_range = TimeRange('2010/03/04 00:10', '2010/03/04 00:20')
-    time_range = TimeRange('2010/03/04 00:10', 400)
+    >>> time_range = TimeRange('2010/03/04 00:10', '2010/03/04 00:20')
+    
+    >>> time_range = TimeRange('2010/03/04 00:10', 400)
 
-    
-    See Also
-    --------
-    
     References
     ----------
     | http://docs.scipy.org/doc/numpy/reference/arrays.classes.html

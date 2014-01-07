@@ -65,8 +65,8 @@ class DummyAttr(Attr):
     stored as (from, to) tuples in a list, we could do.
 
     attr = DummyAttr()
-    for from_, to in times:
-        attr |= Time(from_, to)
+    for from\_, to in times:
+        attr |= Time(from\_, to)
     """
     def __and__(self, other):
         return other
