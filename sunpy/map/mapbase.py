@@ -18,6 +18,8 @@ from matplotlib import patches
 from matplotlib import colors
 from matplotlib import cm
 
+import astropy.nddata
+
 try:
     import sunpy.image.Crotate as Crotate
 except ImportError:
@@ -46,66 +48,7 @@ or something else?)
 * Should 'center' be renamed to 'offset' and crpix1 & 2 be used for 'center'?
 """
 
-class NDDataStandin(object):
-    
-    def __init__(self, data, meta, **kwargs):
-        """ Instantiate a Map class.
-        
-        Parameters
-        ----------
-        
-        data: ndarray
-        
-        meta: sunpy.map.MapMeta
-        
-        Returns
-        -------
-        A MapBase object
-        """
-        
-        self.meta = meta
-        self.data = data
-    
-    @property
-    def shape(self):
-        return self.data.shape
-    
-    @property
-    def dtype(self):
-        return self.data.dtype
-        
-    @property
-    def size(self):
-        return self.data.size
-        
-    @property
-    def ndim(self):
-        return self.data.ndim
-    
-    def std(self, *args, **kwargs):
-        return self.data.std(*args, **kwargs)
-    
-    def mean(self, *args, **kwargs):
-        return self.data.mean(*args, **kwargs)
-    
-    def min(self, *args, **kwargs):
-        return self.data.min(*args, **kwargs)
-        
-    def max(self, *args, **kwargs):
-        return self.data.max(*args, **kwargs)
-        
-    @property
-    def header(self):
-        warnings.warn("""map.header has been renamed to map.meta
-        for compatability with astropy, please use meta instead""", Warning)
-        return self.meta
-    
-    @Deprecated("get_header is no longer supported please use map.meta")
-    def get_header(self):
-        return self.meta
-    
-
-class GenericMap(NDDataStandin):
+class GenericMap(astropy.nddata.NDData):
     """
     A Generic spatially-aware 2D data array
 
@@ -115,86 +58,6 @@ class GenericMap(NDDataStandin):
         A 2d list or ndarray containing the map data
     header : dict
         A dictionary of the original image header tags
-
-    Attributes
-    ----------
-    original_header : dict
-        Dictionary representation of the original FITS header
-    carrington_longitude : str
-        Carrington longitude (crln_obs)
-    center : dict
-        X and Y coordinate of the center of the map in units.
-        Usually represents the offset between the center of the Sun and the
-        center of the map.
-    cmap : matplotlib.colors.Colormap
-        A Matplotlib colormap to be applied to the data
-    coordinate_system : dict
-        Coordinate system used for x and y axes (ctype1/2)
-    date : datetime
-        Image observation time
-    detector : str
-        Detector name
-    dsun : float
-        The observer distance from the Sun.
-    exptime : float
-        Exposure time of the image in seconds.
-    heliographic_latitude : float
-        Heliographic latitude in degrees
-    heliographic_longitude : float
-        Heliographic longitude in degrees
-    instrument : str
-        Instrument name
-    measurement : str, int
-        Measurement name. In some instances this is the wavelength of image.
-    name: str
-        Human-readable description of map-type
-    nickname : str
-        An abbreviated human-readable description of the map-type; part of
-        the Helioviewer data model
-    observatory : str
-        Observatory name
-    reference_coordinate : float
-        Reference point WCS axes in data units (crval1/2) 
-    reference_pixel : float
-        Reference point axes in pixels (crpix1/2)
-    rsun_arcseconds : float
-        Radius of the sun in arcseconds
-    rsun_meters : float
-        Radius of the sun in meters
-    scale : dict
-        Image scale along the x and y axes in units/pixel (cdelt1/2).
-    units : dict
-        Image coordinate units along the x and y axes (cunit1/2).
-
-    Methods
-    -------
-    std()
-        Return the standard deviation of the map data
-    mean()
-        Return the mean of the map data
-    min()
-        Return the minimum value of the map data
-    max()
-        Return the maximum value of the map data
-    resample(dimension, method)
-        Returns a new map that has been resampled up or down
-    superpixel(dimension, method)
-        Returns a new map consisting of superpixels formed from the
-        original data.
-    save()
-        Save the map to a fits file.
-    submap(range_a, range_b, units)
-        Returns a submap of the map with the specified range
-    plot()
-        Return a matplotlib imageaxes instance, like plt.imshow()
-    peek()
-        Display a matplotlib plot to the screen 
-    draw_limb()
-        Draw a line on the image where the solar limb is.
-    draw_grid()
-        Draw a lon/lat grid on a map plot.
-    get_header()
-        Returns the original header from when the map was first created.
 
     Examples
     --------
@@ -211,10 +74,6 @@ class GenericMap(NDDataStandin):
     'arcsec'
     >>> aia.peek()
 
-    See Also
-    --------
-    numpy.ndarray Parent class for the Map object
-
     References
     ----------
     | http://docs.scipy.org/doc/numpy/reference/arrays.classes.html
@@ -223,26 +82,26 @@ class GenericMap(NDDataStandin):
     | http://www.scipy.org/Subclasses
 
     """
-    
+
     def __init__(self, data, header, **kwargs):
-        
-        NDDataStandin.__init__(self, data, header, **kwargs)
-        
+
+        astropy.nddata.NDData.__init__(self, data, meta=header, **kwargs)
+
         # Correct possibly missing meta keywords
         self._fix_date()
         self._fix_naxis()
-        
+
         # Setup some attributes
         self._name = self.observatory + " " + str(self.measurement)
         self._nickname = self.detector
 
         # Visualization attributes
         self.cmap = cm.gray
-        
+
         # Validate header
         # TODO: This should be a function of the header, not of the map
         self._validate()
-        
+
         self.norm = self._get_norm()
 
     def __getitem__(self, key):
@@ -262,69 +121,109 @@ Detector:\t %s
 Measurement:\t %s
 Obs Date:\t %s
 dt:\t\t %f
-Dimension:\t [%d, %d] 
+Dimension:\t [%d, %d]
 [dx, dy] =\t [%f, %f]
- 
+
 """ % (self.__class__.__name__,
        self.observatory, self.instrument, self.detector, self.measurement,
        self.date, self.exposure_time,
-       self.data.shape[1], self.data.shape[0], self.scale['x'], self.scale['y']) 
+       self.data.shape[1], self.data.shape[0], self.scale['x'], self.scale['y'])
      + self.data.__repr__())
+
+
+    #Some numpy extraction
+    @property
+    def shape(self):
+        return self.data.shape
+
+    @property
+    def dtype(self):
+        return self.data.dtype
+
+    @property
+    def size(self):
+        return self.data.size
+
+    @property
+    def ndim(self):
+        return self.data.ndim
+
+    def std(self, *args, **kwargs):
+        return self.data.std(*args, **kwargs)
+
+    def mean(self, *args, **kwargs):
+        return self.data.mean(*args, **kwargs)
+
+    def min(self, *args, **kwargs):
+        return self.data.min(*args, **kwargs)
+
+    def max(self, *args, **kwargs):
+        return self.data.max(*args, **kwargs)
 
 # #### Keyword attribute and other attribute definitions #### #
 
     @property
     def name(self):
+        """Human-readable description of map-type"""
         return self._name
     @name.setter
     def name(self, n):
         self._name = n
-        
+
     @property
     def nickname(self):
+        """An abbreviated human-readable description of the map-type; part of the Helioviewer data model"""
         return self._nickname
     @nickname.setter
     def nickname(self, n):
         self._nickname = n
-    
+
     @property
     def date(self):
+        """Image observation time"""
         return self.meta.get('date-obs', None)
 #    @date.setter
 #    def date(self, new_date):
 #        self.meta['date-obs'] = new_date
 #        #propagate change to malformed FITS keywords
-#        if is_time(self.meta.get('date_obs', None)): 
+#        if is_time(self.meta.get('date_obs', None)):
 #            self.meta['date_obs'] = new_date
 
     @property
     def detector(self):
+        """Detector name"""
         return self.meta.get('detector', "")
-        
+
     @property
     def dsun(self):
+        """The observer distance from the Sun."""
         return self.meta.get('dsun_obs', constants.au)
-        
+
     @property
     def exposure_time(self):
+        """Exposure time of the image in seconds."""
         return self.meta.get('exptime', 0.0)
-        
+
     @property
     def instrument(self):
+        """Instrument name"""
         return self.meta.get('instrume', "")
-        
+
     @property
     def measurement(self):
+        """Measurement name, defaults to the wavelength of image"""
         return self.meta.get('wavelnth', "")
-        
+
     @property
     def wavelength(self):
+        """wavelength of the observation"""
         return self.meta.get('wavelnth', "")
-        
+
     @property
     def observatory(self):
+        """Observatory or Telescope name"""
         return self.meta.get('obsrvtry', self.meta.get('telescop', ""))
-        
+
     @property
     def xrange(self):
         """Return the X range of the image in arcsec from edge to edge."""
@@ -338,7 +237,7 @@ Dimension:\t [%d, %d]
         ymin = self.center['y'] - self.shape[0] / 2. * self.scale['y']
         ymax = self.center['y'] + self.shape[0] / 2. * self.scale['y']
         return [ymin, ymax]
-    
+
     @property
     def center(self):
         """Returns the offset between the center of the Sun and the center of 
@@ -346,71 +245,83 @@ Dimension:\t [%d, %d]
         return {'x': wcs.get_center(self.shape[1], self.scale['x'], 
                                     self.reference_pixel['x'], 
                                     self.reference_coordinate['x']),
-                'y': wcs.get_center(self.shape[0], self.scale['y'], 
-                                    self.reference_pixel['y'], 
+                'y': wcs.get_center(self.shape[0], self.scale['y'],
+                                    self.reference_pixel['y'],
                                     self.reference_coordinate['y']),}
-               
+
     @property
     def rsun_meters(self):
+        """Radius of the sun in meters"""
         return self.meta.get('rsun_ref', constants.radius)
-    
+
     @property
     def rsun_arcseconds(self):
+        """Radius of the sun in arcseconds"""
         return self.meta.get('rsun_obs', self.meta.get('solar_r',
                                          self.meta.get('radius', constants.average_angular_size)))
-                                         
+
     @property
     def coordinate_system(self):
+        """Coordinate system used for x and y axes (ctype1/2)"""
         return {'x': self.meta.get('ctype1', 'HPLN-TAN'),
                 'y': self.meta.get('ctype2', 'HPLT-TAN'),}
-    
+
     @property
     def carrington_longitude(self):
+        """Carrington longitude (crln_obs)"""
         return self.meta.get('crln_obs', 0.)
-        
+
     @property
     def heliographic_latitude(self):
+        """Heliographic latitude in degrees"""
         return self.meta.get('hglt_obs', self.meta.get('crlt_obs',
                                          self.meta.get('solar_b0', 0.)))
-        
+
     @property
     def heliographic_longitude(self):
+        """Heliographic longitude in degrees"""
         return self.meta.get('hgln_obs', 0.)
-        
+
     @property
     def reference_coordinate(self):
+        """Reference point WCS axes in data units (crval1/2)"""
         return {'x': self.meta.get('crval1', 0.),
                 'y': self.meta.get('crval2', 0.),}
-        
+
     @property
     def reference_pixel(self):
+        """Reference point axes in pixels (crpix1/2)"""
         return {'x': self.meta.get('crpix1', (self.meta.get('naxis1') + 1) / 2.),
                 'y': self.meta.get('crpix2', (self.meta.get('naxis2') + 1) / 2.),}
-        
+
     @property
     def scale(self):
+        """Image scale along the x and y axes in units/pixel (cdelt1/2)"""
         return {'x': self.meta.get('cdelt1', 1.),
                 'y': self.meta.get('cdelt2', 1.),}
-        
+
     @property
     def units(self):
+        """Image coordinate units along the x and y axes (cunit1/2)."""
         return {'x': self.meta.get('cunit1', 'arcsec'),
                 'y': self.meta.get('cunit2', 'arcsec'),}
-        
+
+    #TODO: This needs to be WCS compliant!
     @property
     def rotation_angle(self):
+        """The Rotation angle of each axis"""
         return {'x': self.meta.get('crota1', 0.),
                 'y': self.meta.get('crota2', 0.),}
 
 # #### Miscellaneous #### #
-    
+
     def _fix_date(self):
         # Check commonly used but non-standard FITS keyword for observation time
-        # and correct the keyword if we can.  Keep updating old one for 
+        # and correct the keyword if we can.  Keep updating old one for
         # backwards compatibility.
-        if is_time(self.meta.get('date_obs', None)): 
-            self.meta['date-obs'] = self.meta['date_obs']  
-    
+        if is_time(self.meta.get('date_obs', None)):
+            self.meta['date-obs'] = self.meta['date_obs']
+
     def _fix_naxis(self):
         # If naxis is not specified, get it from the array shape
         if 'naxis1' not in self.meta:
@@ -419,7 +330,7 @@ Dimension:\t [%d, %d]
             self.meta['naxis2'] = self.shape[0]
         if 'naxis' not in self.meta:
             self.meta['naxis'] = self.ndim
-            
+
     def _fix_bitpix(self):
         # Bit-depth
         #
@@ -432,7 +343,7 @@ Dimension:\t [%d, %d]
         if 'bitpix' not in self.meta:
             float_fac = -1 if self.dtype.kind == "f" else 1
             self.meta['bitpix'] = float_fac * 8 * self.dtype.itemsize
-    
+
     def _validate(self):
         """Validates the meta-information associated with a Map.
 
@@ -462,7 +373,7 @@ Dimension:\t [%d, %d]
         """Convert from pixel coordinates to data coordinates (e.g. arcsec)"""
         width = self.shape[1]
         height = self.shape[0]
-        
+
         if (x is not None) & (x > width-1):
             raise ValueError("X pixel value larger than image width (%s)." % width)
         if (x is not None) & (y > height-1):
@@ -479,26 +390,26 @@ Dimension:\t [%d, %d]
         x,y = wcs.convert_pixel_to_data(self.shape, scale, crpix, crval, x = x, y = y)
 
         return x, y
-        
+
 # #### I/O routines #### #
 
     def save(self, filepath, filetype='auto', **kwargs):
         """Saves the SunPy Map object to a file.
-        
+
         Currently SunPy can only save files in the FITS format. In the future
         support will be added for saving to other formats.
-        
+
         Parameters
         ----------
         filepath : string
             Location to save file to.
-        
+
         filetype : string
             'auto' or any supported file extension
         """
-        io.write_file(filepath, self.data, self.meta, filetype=filetype, 
+        io.write_file(filepath, self.data, self.meta, filetype=filetype,
                       **kwargs)
-        
+
 # #### Image processing routines #### #
 
     def resample(self, dimensions, method='linear'):
@@ -551,7 +462,7 @@ Dimension:\t [%d, %d]
 
         # Update image scale and number of pixels
         new_meta = self.meta.copy()
-        
+
         # Update metadata
         new_meta['cdelt1'] *= scale_factor_x
         new_meta['cdelt2'] *= scale_factor_y
@@ -563,15 +474,15 @@ Dimension:\t [%d, %d]
         # Create new map instance
         MapType = type(self)
         return MapType(new_data, new_meta)
-    
+
     def rotate(self, angle, scale=1.0, rotation_center=None, recenter=True,
                missing=0.0, interpolation='bicubic', interp_param=-0.5):
         """Returns a new rotated, rescaled and shifted map.
-        
+
         Parameters
-        ---------
+        ----------
         angle: float
-           The angle to rotate the image by (radians)        
+           The angle to rotate the image by (radians)
         scale: float
            A scale factor for the image, default is no scaling
         rotation_center: tuple
@@ -579,39 +490,39 @@ Dimension:\t [%d, %d]
            Default: center of the array
         recenter: bool, or array-like
            Move the centroid (axis of rotation) to the center of the array
-           or recenter coords. 
+           or recenter coords.
            Default: True, recenter to the center of the array.
         missing: float
            The numerical value to fill any missing points after rotation.
            Default: 0.0
         interpolation: {'nearest' | 'bilinear' | 'spline' | 'bicubic'}
-            Interpolation method to use in the transform. 
-            Spline uses the 
+            Interpolation method to use in the transform.
+            Spline uses the
             scipy.ndimage.interpolation.affline_transform routine.
             nearest, bilinear and bicubic all replicate the IDL rot() function.
             Default: 'bicubic'
         interp_par: Int or Float
             Optional parameter for controlling the interpolation.
-            Spline interpolation requires an integer value between 1 and 5 for 
+            Spline interpolation requires an integer value between 1 and 5 for
             the degree of the spline fit.
             Default: 3
             BiCubic interpolation requires a flaot value between -1 and 0.
             Default: 0.5
             Other interpolation options ingore the argument.
-        
+
         Returns
         -------
         New rotated, rescaled, translated map
-        
+
         Notes
         -----
-        Apart from interpolation='spline' all other options use a compiled 
+        Apart from interpolation='spline' all other options use a compiled
         C-API extension. If for some reason this is not compiled correctly this
         routine will fall back upon the scipy implementation of order = 3.
         For more infomation see:
-            http://sunpy.readthedocs.org/en/latest/guide/troubleshooting.html#crotate-warning
+        http://sunpy.readthedocs.org/en/latest/guide/troubleshooting.html#crotate-warning
         """
-        
+
         #Interpolation parameter Sanity
         assert interpolation in ['nearest','spline','bilinear','bicubic']
         #Set defaults based on interpolation
@@ -622,18 +533,18 @@ Dimension:\t [%d, %d]
                 interp_param = 0.5
             else:
                 interp_param = 0 #Default value for nearest or bilinear
-        
+
         #Make sure recenter is a vector with shape (2,1)
         if not isinstance(recenter, bool):
             recenter = np.array(recenter).reshape(2,1)
-                
+
         #Define Size and center of array
         center = (np.array(self.data.shape)-1)/2.0
-        
+
         #If rotation_center is not set (None or False),
         #set rotation_center to the center of the image.
         if rotation_center is None:
-            rotation_center = center 
+            rotation_center = center
         else:
             #Else check rotation_center is a vector with shape (2,1)
             rotation_center = np.array(rotation_center).reshape(2,1)
@@ -641,23 +552,23 @@ Dimension:\t [%d, %d]
         #recenter to the rotation_center if recenter is True
         if isinstance(recenter, bool):
             #if rentre is False then this will be (0,0)
-            shift = np.array(rotation_center) - np.array(center) 
+            shift = np.array(rotation_center) - np.array(center)
         else:
             #recenter to recenter vector otherwise
             shift = np.array(recenter) - np.array(center)
-        
+
         image = self.data.copy()
-    
+
         #Calulate the parameters for the affline_transform
         c = np.cos(angle)
         s = np.sin(angle)
         mati = np.array([[c, s],[-s, c]]) / scale   # res->orig
         center = np.array([center]).transpose()  # the center of rotn
         shift = np.array([shift]).transpose()    # the shift
-        kpos = center - np.dot(mati, (center + shift))  
+        kpos = center - np.dot(mati, (center + shift))
         # kpos and mati are the two transform constants, kpos is a 2x2 array
         rsmat, offs =  mati, np.squeeze((kpos[0,0], kpos[1,0]))
-        
+
         if interpolation == 'spline':
             # This is the scipy call
             data = scipy.ndimage.interpolation.affine_transform(image, rsmat,
@@ -666,7 +577,7 @@ Dimension:\t [%d, %d]
         else:
             #Use C extension Package
             if not 'Crotate' in globals():
-                warnings.warn("""The C extension sunpy.image.Crotate is not 
+                warnings.warn("""The C extension sunpy.image.Crotate is not
 installed, falling back to the interpolation='spline' of order=3""" ,Warning)
                 data = scipy.ndimage.interpolation.affine_transform(image, rsmat,
                            offset=offs, order=3, mode='constant',
@@ -679,11 +590,11 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
             elif interpolation == 'bicubic':
                 interp_type = Crotate.BICUBIC
             #Make call to extension
-            data = Crotate.affine_transform(image, 
-                                      rsmat, offset=offs, 
-                                      kernel=interp_type, cubic=interp_param, 
+            data = Crotate.affine_transform(image,
+                                      rsmat, offset=offs,
+                                      kernel=interp_type, cubic=interp_param,
                                       mode='constant', cval=missing)
-            
+
         #Return a new map
         #Copy Header
         meta = self.meta.copy()
@@ -752,26 +663,26 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
                 range_b[0] = 0
             if range_b[1] is None:
                 range_b[1] = self.shape[0]
-                
+
             x_pixels = range_a
             y_pixels = range_b
         else:
             raise ValueError(
                 "Invalid unit. Must be one of 'data' or 'pixels'")
 
-        
+
         # Get ndarray representation of submap
         xslice = slice(x_pixels[0], x_pixels[1])
         yslice = slice(y_pixels[0], y_pixels[1])
         new_data = self.data[yslice, xslice].copy()
-        
+
         # Make a copy of the header with updated centering information
         new_meta = self.meta.copy()
         new_meta['crpix1'] = self.reference_pixel['x'] - x_pixels[0]
         new_meta['crpix2'] = self.reference_pixel['y'] - y_pixels[0]
         new_meta['naxis1'] = new_data.shape[1]
         new_meta['naxis2'] = new_data.shape[0]
-        
+
         # Create new map instance
         MapType = type(self)
         return MapType(new_data, new_meta)
@@ -817,8 +728,8 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
             new_data = ((reshaped.sum(axis=3).sum(axis=1)) /
                     np.float32(dimensions[0] * dimensions[1]))
         new_data = new_data.T
-        
-        
+
+
         # Update image scale and number of pixels
         new_meta = self.meta.copy()
 
@@ -838,24 +749,24 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         # Create new map instance
         MapType = type(self)
         return MapType(new_data, new_meta)
-        
+
 # #### Visualization #### #
 
     def draw_grid(self, axes=None, grid_spacing=20, **kwargs):
         """Draws a grid over the surface of the Sun
-        
+
         Parameters
         ----------
         axes: matplotlib.axes object or None
         Axes to plot limb on or None to use current axes.
-        
+
         grid_spacing: float
             Spacing (in degrees) for longitude and latitude grid.
-        
+
         Returns
         -------
         matplotlib.axes object
-        
+
         Notes
         -----
         keyword arguments are passed onto matplotlib.pyplot.plot
@@ -884,17 +795,17 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         lon_self, lat_self = wcs.convert_hpc_hg(x, y, b0_deg=b0, l0_deg=l0, dsun_meters=dsun, angle_units='arcsec')
         # define the number of points for each latitude or longitude line
         num_points = 20
-        
+
         #TODO: The following code is ugly. Fix it.
         lon_range = [lon_self.min(), lon_self.max()]
         lat_range = [lat_self.min(), lat_self.max()]
-        if np.isfinite(lon_range[0]) == False: 
+        if np.isfinite(lon_range[0]) == False:
             lon_range[0] = -90 + self.heliographic_longitude
-        if np.isfinite(lon_range[1]) == False: 
+        if np.isfinite(lon_range[1]) == False:
             lon_range[1] = 90 + self.heliographic_longitude
-        if np.isfinite(lat_range[0]) == False: 
+        if np.isfinite(lat_range[0]) == False:
             lat_range[0] = -90 + self.heliographic_latitude
-        if np.isfinite(lat_range[1]) == False: 
+        if np.isfinite(lat_range[1]) == False:
             lat_range[1] = 90 + self.heliographic_latitude
 
         hg_longitude_deg = np.linspace(lon_range[0], lon_range[1], num=num_points)
@@ -904,11 +815,11 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         for lat in hg_latitude_deg:
             hg_latitude_deg_mesh, hg_longitude_deg_mesh = np.meshgrid(
                 lat * np.ones(num_points), hg_longitude_deg)
-            x, y = wcs.convert_hg_hpc(hg_longitude_deg_mesh, hg_latitude_deg_mesh, b0_deg=b0, l0_deg=l0, 
-                    dsun_meters=dsun, angle_units=units[0], occultation=False)                         
-            
+            x, y = wcs.convert_hg_hpc(hg_longitude_deg_mesh, hg_latitude_deg_mesh, b0_deg=b0, l0_deg=l0,
+                    dsun_meters=dsun, angle_units=units[0], occultation=False)
+
             axes.plot(x, y, **plot_kw)
-            
+
         hg_longitude_deg = np.arange(lon_range[0], lon_range[1]+grid_spacing, grid_spacing)
         hg_latitude_deg = np.linspace(lat_range[0], lat_range[1], num=num_points)
 
@@ -916,47 +827,47 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         for lon in hg_longitude_deg:
             hg_longitude_deg_mesh, hg_latitude_deg_mesh = np.meshgrid(
                 lon * np.ones(num_points), hg_latitude_deg)
-            x, y = wcs.convert_hg_hpc(hg_longitude_deg_mesh, hg_latitude_deg_mesh, b0_deg=b0, l0_deg=l0, 
-                    dsun_meters=dsun, angle_units=units[0], occultation=False)                         
+            x, y = wcs.convert_hg_hpc(hg_longitude_deg_mesh, hg_latitude_deg_mesh, b0_deg=b0, l0_deg=l0,
+                    dsun_meters=dsun, angle_units=units[0], occultation=False)
             axes.plot(x, y, **plot_kw)
-            
+
         axes.set_ylim(self.yrange)
         axes.set_xlim(self.xrange)
 
         return axes
 
     def draw_limb(self, axes=None, **kwargs):
-        """Draws a circle representing the solar limb 
-        
+        """Draws a circle representing the solar limb
+
             Parameters
             ----------
             axes: matplotlib.axes object or None
                 Axes to plot limb on or None to use current axes.
-        
+
             Returns
             -------
             matplotlib.axes object
-            
+
             Notes
             -----
             keyword arguments are passed onto the Circle Patch, see:
             http://matplotlib.org/api/artist_api.html#matplotlib.patches.Patch
             http://matplotlib.org/api/artist_api.html#matplotlib.patches.Circle
         """
-        
+
         if not axes:
             axes = plt.gca()
-        
+
         c_kw = {'radius':self.rsun_arcseconds.value,
                 'fill':False,
                 'color':'white',
                 'zorder':100
                 }
         c_kw.update(kwargs)
-        
+
         circ = patches.Circle([0, 0], **c_kw)
         axes.add_artist(circ)
-        
+
         return axes
 
     @toggle_pylab
@@ -982,7 +893,7 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
             Matplotlib Any additional imshow arguments that should be used
             when plotting the image.
         """
-        
+
         # Create a figure and add title and axes
         figure = plt.figure(frameon=not basic_plot)
 
@@ -992,19 +903,19 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
             axes.set_axis_off()
             figure.add_axes(axes)
             matplot_args.update({'annotate':False})
-            
+
         # Normal plot
         else:
             axes = figure.gca()
 
-        im = self.plot(axes=axes,**matplot_args)        
-        
+        im = self.plot(axes=axes,**matplot_args)
+
         if colorbar and not basic_plot:
             figure.colorbar(im)
-        
+
         if draw_limb:
             self.draw_limb(axes=axes)
-        
+
         if isinstance(draw_grid, bool):
             if draw_grid:
                 self.draw_grid(axes=axes)
@@ -1014,38 +925,38 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
             raise TypeError("draw_grid should be bool, int, long or float")
 
         figure.show()
-        
+
         return figure
 
     @toggle_pylab
     def plot(self, gamma=None, annotate=True, axes=None, **imshow_args):
         """ Plots the map object using matplotlib, in a method equivalent
         to plt.imshow() using nearest neighbour interpolation.
-        
+
         Parameters
         ----------
         gamma : float
             Gamma value to use for the color map
-            
+
         annotate : bool
             If true, the data is plotted at it's natural scale; with
             title and axis labels.
-            
+
         axes: matplotlib.axes object or None
-            If provided the image will be plotted on the given axes. Else the 
+            If provided the image will be plotted on the given axes. Else the
             current matplotlib axes will be used.
-        
+
         **imshow_args : dict
             Any additional imshow arguments that should be used
             when plotting the image.
-        
+
         Examples
         --------
         #Simple Plot with color bar
         plt.figure()
         aiamap.plot()
         plt.colorbar()
-        
+
         #Add a limb line and grid
         aia.plot()
         aia.draw_limb()
@@ -1055,11 +966,11 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         #Get current axes
         if not axes:
             axes = plt.gca()
-        
+
         # Normal plot
         if annotate:
-            axes.set_title("%s %s" % (self.name, self.date))
-            
+            axes.set_title("%s %s" % (self.name, parse_time(self.date).strftime("%Y-%m-%d %H:%M:%S.%f")))
+
             # x-axis label
             if self.coordinate_system['x'] == 'HG':
                 xlabel = 'Longitude [%s]' % self.units['x']
@@ -1071,36 +982,36 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
                 ylabel = 'Latitude [%s]' % self.units['y']
             else:
                 ylabel = 'Y-position [%s]' % self.units['y']
-                
+
             axes.set_xlabel(xlabel)
             axes.set_ylabel(ylabel)
 
         # Determine extent
         extent = self.xrange + self.yrange
-        
+
         cmap = copy(self.cmap)
         if gamma is not None:
             cmap.set_gamma(gamma)
-            
+
             #make imshow kwargs a dict
-        
+
         kwargs = {'origin':'lower',
                   'cmap':cmap,
                   'norm':self.norm,
                   'extent':extent,
                   'interpolation':'nearest'}
         kwargs.update(imshow_args)
-        
+
         ret = axes.imshow(self.data, **kwargs)
-        
+
         #Set current image (makes colorbar work)
         plt.sci(ret)
         return ret
 
     def _get_norm(self):
         """Default normalization method. Not yet implemented."""
-        return None       
-        
+        return None
+
 
 class InvalidHeaderInformation(ValueError):
     """Exception to raise when an invalid header tag value is encountered for a

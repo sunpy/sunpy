@@ -7,7 +7,7 @@ information.
 
 Source: http://code.activestate.com/recipes/576611/
 """
-
+__all__ = ['Counter']
 try:
     from collections import Counter
 except ImportError:
