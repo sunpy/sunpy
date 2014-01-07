@@ -4,7 +4,8 @@ This is where datasource specific logic is implemented. Each mission should
 have its own file with one or more classes defined. Typically, these classes
 will be subclasses of the :mod`sunpy.map.Map` class.
 """
-__all__ = ['sdo', 'soho', 'stereo', 'rhessi', 'proba2', 'yohkoh', 'hinode']
+__all__ = ['sdo', 'soho', 'stereo', 'rhessi', 'proba2', 'yohkoh', 'hinode',
+           'trace']
 
 from .. map_factory import Map
 
@@ -32,3 +33,6 @@ Map.register(CORMap, CORMap.is_datasource_for)
 
 from yohkoh import SXTMap
 Map.register(SXTMap, SXTMap.is_datasource_for)
+
+from trace import TRACEMap
+Map.register(TRACEMap, TRACEMap.is_datasource_for)
