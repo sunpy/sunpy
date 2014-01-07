@@ -22,10 +22,13 @@ except ImportError:
 
 from sunpy.util.config import load_config, print_config
 from sunpy.util import system_info
-from sunpy.tests import main as self_test
+try:
+    from sunpy.tests import main as self_test
+except ImportError:
+    pass
 
 # Sample data
-from sunpy.data.sample import (AIA_171_IMAGE, RHESSI_IMAGE, EIT_195_IMAGE, 
+from sunpy.data.sample import (AIA_171_IMAGE, RHESSI_IMAGE, EIT_195_IMAGE,
                                RHESSI_EVENT_LIST, CALLISTO_IMAGE)
 
 # Load user configuration
