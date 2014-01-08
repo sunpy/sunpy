@@ -1,5 +1,5 @@
 sphinx>=1.2
-numpy>=1.8.0
+numpy
 matplotlib>=1.1
 scipy
 glymur>=0.5.9
