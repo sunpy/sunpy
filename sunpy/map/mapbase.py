@@ -8,7 +8,7 @@ __authors__ = ["Russell Hewett, Stuart Mumford, Keith Hughitt, Steven Christe"]
 __email__ = "stuart@mumford.me.uk"
 
 import os
-from copy import copy
+from copy import deepcopy
 import warnings
 
 import numpy as np
@@ -460,7 +460,7 @@ Dimension:\t [%d, %d]
         scale_factor_x = (float(self.shape[1]) / dimensions[0])
         scale_factor_y = (float(self.shape[0]) / dimensions[1])
 
-        new_map = copy(self)
+        new_map = deepcopy(self)
         # Update image scale and number of pixels
         new_meta = self.meta.copy()
 
@@ -603,7 +603,7 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
 
         #Return a new map
         #Copy Header
-        new_map = copy(self)
+        new_map = deepcopy(self)
 
         # Create new map instance
         new_map.data = data
@@ -683,12 +683,11 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         new_data = self.data[yslice, xslice].copy()
 
         # Make a copy of the header with updated centering information
-        new_map = copy(self)
-        new_meta = new_map.meta
-        new_meta['crpix1'] = self.reference_pixel['x'] - x_pixels[0]
-        new_meta['crpix2'] = self.reference_pixel['y'] - y_pixels[0]
-        new_meta['naxis1'] = new_data.shape[1]
-        new_meta['naxis2'] = new_data.shape[0]
+        new_map = deepcopy(self)
+        new_map.meta['crpix1'] = self.reference_pixel['x'] - x_pixels[0]
+        new_map.meta['crpix2'] = self.reference_pixel['y'] - y_pixels[0]
+        new_map.meta['naxis1'] = new_data.shape[1]
+        new_map.meta['naxis2'] = new_data.shape[0]
 
         # Create new map instance
         new_map.data = new_data
@@ -738,7 +737,7 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
 
 
         # Update image scale and number of pixels
-        new_map = copy(self)
+        new_map = deepcopy(self)
         new_meta = new_map.meta
 
         # Note that 'x' and 'y' correspond to 1 and 0 in self.shape,
