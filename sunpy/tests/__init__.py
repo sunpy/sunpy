@@ -1,5 +1,4 @@
 import os.path
-
 import pytest
 
 testdir = os.path.dirname(os.path.abspath(__file__))
@@ -38,6 +37,8 @@ def main(modulename='', cover=False, show_uncovered_lines=False,
         number of tests that will be executed in any way.
 
     """
+    import pytest
+
     if not modulename:
         module = __import__('sunpy.tests', fromlist=['tests'])
     else:
