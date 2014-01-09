@@ -3,8 +3,9 @@ Solar Physical Models
 ---------------------
 This module contains standard models of the sun from various sources. All data is saved
 in pandas DataFrames with two added attributes
-    * source : names the source of the data
-    * units : a dictionary with the units of each of the columns
+
+* source : names the source of the data
+* units : a dictionary with the units of each of the columns
 
 Object
 ------
