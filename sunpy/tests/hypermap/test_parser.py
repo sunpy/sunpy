@@ -4,15 +4,18 @@
 """
 
 # NOTE: All test are "disabled" until the test data will be available.
+import os
+import pytest
 
 import sunpy.io  # read_file blows away RAM when using big Raster fits
 from sunpy.hypermap.coordinate_system import CoordinateSystem, CoordinateFrame
 from sunpy.hypermap.coordinate_system import WCSParser
+import sunpy.data.test
 
+filepath = sunpy.data.test.rootdir
 
-# This is temporary, Stuart Mumford will provide nice & small test samples :-)
-_IRIS_SAMPLE_DATA = "/home/exo/iris_sample_data.fits"
-_IRIS_RASTER_SAMPLE_DATA = "/home/exo/iris_raster_sample_data.fits"
+_IRIS_SAMPLE_DATA = os.path.join(filepath, "iris_l2_20130801_074720_4040000014_SJI_1400_t000.fits")
+_IRIS_RASTER_SAMPLE_DATA = None
 
 
 def test_item_group():
@@ -29,7 +32,7 @@ def test_item_group():
     assert parsed.get_header_item_group('CRPIX') != []
     assert parsed.get_header_item_group('CDELT') != []
 
-
+@pytest.mark.skipif(_IRIS_RASTER_SAMPLE_DATA is None, reason="Raster data not defined")
 def test_raster_item_group():
     """ Test for correct raster header item group extraction.
     """
@@ -71,7 +74,7 @@ def test_make_coord_system():
         assert type(i.axes_names) == list or i.axes_names is None
         assert type(i.units) == list or i.units is None
 
-
+@pytest.mark.skipif(_IRIS_RASTER_SAMPLE_DATA is None, reason="Raster data not defined")
 def test_make_raster_coord_system():
     """ Test raster CoordinateSystem creation and functionality.
     """
@@ -116,7 +119,7 @@ def _show_coordinate_system():
         print "             units: %s" % frame.units
         print "=" * len(system.name)
 
-
+@pytest.mark.skipif(_IRIS_RASTER_SAMPLE_DATA is None, reason="Raster data not defined")
 def _show_raster_coordinate_system():
     """ Print created raster CoordinateSystem.
     """

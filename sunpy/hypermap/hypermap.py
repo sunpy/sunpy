@@ -6,6 +6,8 @@ from __future__ import absolute_import
 
 import matplotlib.pyplot as plt
 
+import astropy.nddata
+
 import sunpy.visualization as viz
 from sunpy.visualization.imageanimator import ImageAnimator
 
@@ -15,7 +17,7 @@ __author__ = "Tomas Meszaros"
 __email__ = "exo@tty.sk"
 
 
-class HyperMap(object):
+class HyperMap(astropy.nddata.NDData):
     """
     HyperMap
 
@@ -29,12 +31,12 @@ class HyperMap(object):
         CoordinateSystem object
     """
 
-    def __init__(self, data, header, coordinate_system=False):
-        self.data = data
-        self.header = header
+    def __init__(self, data, meta, **kwargs):
+        coordinate_system = kwargs.pop('coordinate_system', None)
+        astropy.nddata.NDData(data, meta=meta, **kwargs)
 
         if not coordinate_system:
-            self.system = WCSParser(header).get_coordinate_system()
+            self.system = WCSParser(meta).get_coordinate_system()
         else:
             self.system = coordinate_system
 

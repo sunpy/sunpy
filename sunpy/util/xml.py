@@ -3,6 +3,8 @@
 from __future__ import absolute_import
 from xml.dom.minidom import parseString #pylint: disable=E0611,F0401
 
+__all__ = ['NotTextNodeError', 'xml_to_dict', 'node_to_dict', 'get_node_text']
+
 #
 # Converting XML to a Dictionary
 # Author: Christoph Dietze
@@ -15,17 +17,22 @@ def xml_to_dict(xmlstring):
     """
     Converts an XML string to a Python dictionary
     
-    Warning: This method does not support multiple inner nodes of the 
-             same name but with different values.  It always takes the last value.
+    .. Warning::
+        This method does not support multiple inner nodes of the same name but
+        with different values.  It always takes the last value.
     
-    Example:
-            <outer>
-                <inner>one</inner>
-                <inner>two</inner>
-            </outer>
+    Examples
+    --------
+    ::
+
+        <outer>
+            <inner>one</inner>
+            <inner>two</inner>
+        </outer>
             
-        gives you the dict
-           {u'outer': {u'inner': u'two'}}  
+    gives you the dict::
+
+       {u'outer': {u'inner': u'two'}}  
     """
     return node_to_dict(parseString(xmlstring))
 
@@ -35,6 +42,7 @@ def node_to_dict(node):
     from the content.
     
     Three cases are differentiated:
+    
     1. If the node contains no other nodes, it is a text-node and 
        {nodeName: text} is merged into the dictionary.
     2. If the node has the attribute "method" set to "true", then it's children 
@@ -42,6 +50,7 @@ def node_to_dict(node):
        the form: {nodeName:list}.
     3. Else, node_to_dict() will call itself recursively on the nodes children 
        (merging {nodeName: node_to_dict()} to the dictionary).
+
     """
     dic = {} 
     for n in node.childNodes:
