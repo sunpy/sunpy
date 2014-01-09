@@ -22,7 +22,6 @@ except ImportError:
 
 from sunpy.util.config import load_config, print_config
 from sunpy.util import system_info
-
 from sunpy.tests import main as self_test
 
 # Sample data
