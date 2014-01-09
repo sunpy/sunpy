@@ -15,16 +15,18 @@ from sunpy.lightcurve import LightCurve
 __all__ = ['EVELightCurve']
 
 class EVELightCurve(LightCurve):
-    """SDO EVE light curve definition
+    """
+    SDO EVE LightCurve.
     
     Examples
     --------
-    import sunpy
-    eve = sunpy.lightcurve.EVELightCurve.create()
-    eve = sunpy.lightcurve.EVELightCurve.create('2012/06/20')
-    eve = sunpy.lightcurve.EVELightCurve.create(sunpy.data.test.EVE_AVERAGES_CSV)
-    eve = sunpy.lightcurve.EVELightCurve.create("http://lasp.colorado.edu/eve/data_access/quicklook/quicklook_data/L0CS/LATEST_EVE_L0CS_DIODES_1m.txt")
-    eve.peek(subplots=True)
+    >>> import sunpy
+    
+    >>> eve = sunpy.lightcurve.EVELightCurve.create()
+    >>> eve = sunpy.lightcurve.EVELightCurve.create('2012/06/20')
+    >>> eve = sunpy.lightcurve.EVELightCurve.create(sunpy.data.test.EVE_AVERAGES_CSV)
+    >>> eve = sunpy.lightcurve.EVELightCurve.create("http://lasp.colorado.edu/eve/data_access/quicklook/quicklook_data/L0CS/LATEST_EVE_L0CS_DIODES_1m.txt")
+    >>> eve.peek(subplots=True)
     
     References
     ----------

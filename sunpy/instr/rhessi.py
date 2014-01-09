@@ -1,7 +1,4 @@
 # -*- coding: utf-8 -*-
-#
-#
-# <License info will go here...>
 """
     Provides programs to process and analyze RHESSI data.
 
@@ -28,6 +25,8 @@ import sunpy.sun.constants as sun
 from sunpy.sun.sun import solar_semidiameter_angular_size
 from sunpy.sun.sun import sunearth_distance
 
+__all__ = ['get_obssumm_dbase_file', 'parse_obssumm_dbase_file', 'get_obssum_filename', 'get_obssumm_file', 'parse_obssumm_file', 'show_obssumm', 'backprojection']
+
 # Measured fixed grid parameters
 grid_pitch = (4.52467, 7.85160, 13.5751, 23.5542, 40.7241, 70.5309, 122.164, 
               211.609, 366.646)
@@ -42,7 +41,8 @@ lc_linecolors = ('black', 'pink', 'green', 'blue', 'brown', 'red',
                      'navy', 'orange', 'green')
 
 def get_obssumm_dbase_file(time_range):
-    """Download the RHESSI observing summary database file. This file lists the 
+    """
+    Download the RHESSI observing summary database file. This file lists the 
     name of observing summary files for specific time ranges. 
     
     Parameters
@@ -86,7 +86,8 @@ def get_obssumm_dbase_file(time_range):
     return f
       
 def parse_obssumm_dbase_file(filename):
-    """Parse the RHESSI observing summary database file. This file lists the 
+    """
+    Parse the RHESSI observing summary database file. This file lists the 
     name of observing summary files for specific time ranges along with other 
     info
     
@@ -149,7 +150,8 @@ def parse_obssumm_dbase_file(filename):
         }
 
 def get_obssum_filename(time_range):
-    """Download the RHESSI observing summary data from one of the RHESSI 
+    """
+    Download the RHESSI observing summary data from one of the RHESSI 
     servers, parses it, and returns the name of the obssumm file relevant for
     the time range
 
@@ -183,7 +185,8 @@ def get_obssum_filename(time_range):
     return result.get('filename')[index_number]
 
 def get_obssumm_file(time_range):
-    """Download the RHESSI observing summary data from one of the RHESSI 
+    """
+    Download the RHESSI observing summary data from one of the RHESSI 
     servers. 
 
     Parameters
@@ -222,7 +225,8 @@ def get_obssumm_file(time_range):
     return f
 
 def parse_obssumm_file(filename):
-    """Parse a RHESSI observation summary file.
+    """
+    Parse a RHESSI observation summary file.
 
     Parameters
     ----------
@@ -301,7 +305,8 @@ def show_obssumm(data_dict):
     fig.show()
 
 def _backproject(calibrated_event_list, detector=8, pixel_size=(1.,1.), image_dim=(64,64)):
-    """Given a stacked calibrated event list fits file create a back 
+    """
+    Given a stacked calibrated event list fits file create a back 
     projection image for an individual detectors. This function is used by
     backprojection.
 
@@ -358,7 +363,8 @@ def _backproject(calibrated_event_list, detector=8, pixel_size=(1.,1.), image_di
     return bproj_image
 
 def backprojection(calibrated_event_list, pixel_size=(1.,1.), image_dim=(64,64)):
-    """Given a stacked calibrated event list fits file create a back 
+    """
+    Given a stacked calibrated event list fits file create a back 
     projection image.
     
     .. warning:: The image is not in the right orientation!

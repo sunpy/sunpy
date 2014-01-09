@@ -77,6 +77,9 @@ import inspect
 
 from itertools import izip, chain, repeat
 
+__all__ = ['run_cls', 'matches_types', 'arginize', 'correct_argspec',
+           'matches_signature', 'ConditionalDispatch', 'fmt_argspec_types']
+
 
 def run_cls(name):
     """ run_cls("foo")(cls, *args, **kwargs) -> cls.foo(*args, **kwargs) """
