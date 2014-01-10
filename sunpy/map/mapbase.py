@@ -258,7 +258,7 @@ Dimension:\t [%d, %d]
     def rsun_arcseconds(self):
         """Radius of the sun in arcseconds"""
         return self.meta.get('rsun_obs', self.meta.get('solar_r',
-                                         self.meta.get('radius', constants.average_angular_size.value)))
+                                         self.meta.get('radius', constants.average_angular_size.to('arcsec').value)))
 
     @property
     def coordinate_system(self):
