@@ -1,15 +1,14 @@
 """A Python MapCube Object"""
 from __future__ import absolute_import
 #pylint: disable=W0401,W0614,W0201,W0212,W0404
+import copy
 
 import numpy as np
 import matplotlib.pyplot as plt
-from mpl_toolkits.axes_grid1 import make_axes_locatable
-from copy import copy
 
 from sunpy.map import GenericMap
 
-from sunpy.visualization import plotting
+from sunpy.visualization.imageanimator import MapCubeAnimator
 from sunpy.util import expand_list
 
 __all__ = ['MapCube']
@@ -115,10 +114,8 @@ class MapCube(object):
     def _derotate(self):
         """Derotates the layers in the MapCube"""
         pass
-    
-    def plot(self, gamma=None, annotate=True, axes=None, controls=False,
-             interval=200, resample=False, colorbar=False, ani_args={},
-             **imshow_args):
+
+    def plot(self, gamma=None, axes=None, resample=None, **kwargs):
         """
         A animation plotting routine that animates each element in the
         MapCube
@@ -127,34 +124,24 @@ class MapCube(object):
         ----------
         gamma: float
             Gamma value to use for the color map
-            
-        annotate: bool
-            If true, the data is plotted at it's natural scale; with
-            title and axis labels.
-            
-        axes: matplotlib.axes object or None
-            If provided the image will be plotted on the given axes. Else the 
-            current matplotlib axes will be used.
-        
-        controls: bool
-            Adds play / pause button to the animation
-        
-        interval: int
-            Frame display time in ms.
-        
+
+        axes: mpl axes
+            axes to plot the animation on, if none uses current axes
+
         resample: list or False
             Draws the map at a lower resolution to increase the speed of
-            animation. Specify a list as a fraction i.e. [0.25, 0.25] to 
+            animation. Specify a list as a fraction i.e. [0.25, 0.25] to
             plot at 1/4 resolution.
-        
+            [Note: this will only work where the map arrays are the same size]
+
+        annotate: bool
+            Annotate the figure with scale and titles
+    
+        interval: int
+            Animation interval in ms
+    
         colorbar: bool
-            Draw a colorbar on the plot.
-
-        ani_args : dict
-            Passed to sunpy.util.plotting.ControlFuncAnimation
-
-        imshow_args: dict
-            Any additional imshow arguments that should be used when plotting the image.
+            Plot colorbar
         
         Examples
         --------
@@ -179,81 +166,71 @@ class MapCube(object):
 
         >>> ani.save('mapcube_animation.mp4', writer=writer)
         """
-        
-        if not axes:
-            axes = plt.gca()
-        fig = axes.get_figure()
-        
-        # Normal plot
-        if annotate:
-            axes.set_title("%s %s" % (self[0].name, self[0].date))
-            
-            # x-axis label
-            if self[0].coordinate_system['x'] == 'HG':
-                xlabel = 'Longitude [%s]' % self[0].units['x']
-            else:
-                xlabel = 'X-position [%s]' % self[0].units['x']
-
-            # y-axis label
-            if self[0].coordinate_system['y'] == 'HG':
-                ylabel = 'Latitude [%s]' % self[0].units['y']
-            else:
-                ylabel = 'Y-position [%s]' % self[0].units['y']
-                
-            axes.set_xlabel(xlabel)
-            axes.set_ylabel(ylabel)
-
-        # Determine extent
-        extent = self[0].xrange + self[0].yrange
-        
-        cmap = copy(self[0].cmap)
-        if gamma is not None:
-            cmap.set_gamma(gamma)
-            
-            #make imshow kwargs a dict
-        
-        kwargs = {'origin':'lower',
-                  'cmap':cmap,
-                  'norm':self[0].norm,
-                  'extent':extent,
-                  'interpolation':'nearest'}
-        kwargs.update(imshow_args)
-        
-        im = axes.imshow(self[0].data, **kwargs)
-        
-        #Set current image (makes colorbar work)
-        plt.sci(im)
-        
-        divider = make_axes_locatable(axes)
-        cax = divider.append_axes("right", size="5%", pad=0.2)
-        cbar = plt.colorbar(im,cax)
-        
         if resample:
             #This assumes that the maps a homogenous!
             #TODO: Update this!
             resample = np.array(len(self._maps)-1) * np.array(resample)
-            ani_data = [x.resample(resample) for x in self]
+            ani_cube = copy.deepcopy(self)
+            ani_cube._maps = [x.resample(resample) for x in self]
         else:
-            ani_data = self
-            
-        def updatefig(i, *args):
-            im = args[0]
-            im.set_array(args[2][i].data)
-            im.set_cmap(self[i].cmap)
-            im.set_norm(self[i].norm)
-            if args[1]:
-                axes.set_title("%s %s" % (self[i].name, self[i].date))
+            ani_cube = self
         
-        ani = plotting.ControlFuncAnimation(fig, updatefig,
-                                            frames=xrange(0,len(self._maps)),
-                                            fargs=[im,annotate,ani_data],
-                                            interval=interval,
-                                            blit=False)
-        if controls:
-            axes, bax1, bax2, bax3 = plotting.add_controls(axes=axes)
+        if gamma is not None:
+            self[0].cmap.set_gamma(gamma)
 
-            bax1._button.on_clicked(ani._start)
-            bax2._button.on_clicked(ani._stop)
-            bax3._button.on_clicked(ani._step)
+        return MapCubeAnimator(ani_cube, **kwargs).get_animation(axes=axes)
+
+    def peek(self, gamma=None, resample=None, **kwargs):
+        """
+        A animation plotting routine that animates each element in the
+        MapCube
         
-        return ani
+        Parameters
+        ----------
+        gamma: float
+            Gamma value to use for the color map
+
+        fig: mpl.figure
+            Figure to use to create the explorer
+
+        resample: list or False
+            Draws the map at a lower resolution to increase the speed of
+            animation. Specify a list as a fraction i.e. [0.25, 0.25] to
+            plot at 1/4 resolution.
+            [Note: this will only work where the map arrays are the same size]
+
+        annotate: bool
+            Annotate the figure with scale and titles
+    
+        interval: int
+            Animation interval in ms
+    
+        colorbar: bool
+            Plot colorbar
+        
+        Examples
+        --------
+        >>> cube = sunpy.Map(files, cube=True)
+        >>> ani = cube.plot(colorbar=True)        
+        >>> plt.show()
+
+        Plot the map at 1/2 original resolution
+
+        >>> cube = sunpy.Map(files, cube=True)
+        >>> ani = cube.plot(resample=[0.5, 0.5], colorbar=True)        
+        >>> plt.show()
+        """
+        
+        if gamma is not None:
+            self[0].cmap.set_gamma(gamma)
+            
+        if resample:
+            #This assumes that the maps a homogenous!
+            #TODO: Update this!
+            resample = np.array(len(self._maps)-1) * np.array(resample)
+            ani_cube = copy.deepcopy(self)
+            ani_cube._maps = [x.resample(resample) for x in self]
+        else:
+            ani_cube = self
+
+        return MapCubeAnimator(self, **kwargs)

@@ -3,6 +3,7 @@ import copy
 
 import matplotlib.pyplot as plt
 import matplotlib.widgets as widgets
+import matplotlib.animation as mplanim
 
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import mpl_toolkits.axes_grid1.axes_size as Size
@@ -110,7 +111,8 @@ class BaseFuncAnimator(object):
     
     slider_functions: list
         A list of functions to call when that slider is changed.
-        These functions will have `val` and the slider widget instance passed to them.
+        These functions will have `val`, the axes image object and the slider 
+        widget instance passed to them, i.e.: update_slider(val, im, slider)
     
     slider_ranges: list
         list of [min,max] pairs to set the ranges for each slider.
@@ -171,7 +173,7 @@ class BaseFuncAnimator(object):
         plt.sca(self.axes)
         
         #Do Plot
-        self._plot_start_image()
+        self.im = self.plot_start_image(self.axes)
 
         #Connect fig events
         self._connect_fig_events()
@@ -189,12 +191,68 @@ class BaseFuncAnimator(object):
         """
         self.sliders[i]._slider.label.set_text(label)
     
+    def get_animation(self, axes=None, slider=0, startframe=0, endframe=None,
+                      stepframe=1, **kwargs):
+        """
+        Return a matplotlib.animation.FuncAnimation instance for the selected
+        slider.
+        
+        This will allow easy saving of the animation to a file.
+        
+        Parameters
+        ----------
+        
+        slider: int
+            The slider to animate along
+        
+        startframe: int
+            The frame to start the animation
+        
+        endframe: int
+            The frame to end the animation
+        
+        stepframe: int
+            The step between frames
+        """
+        if not axes:
+            axes = plt.gca()
+        anim_fig = axes.get_figure()
+        
+        if endframe is None:
+            endframe=self.slider_ranges[slider][1]
+        
+        im = self.plot_start_image(axes)
+        
+        anim_kwargs = {'frames':range(startframe, endframe, stepframe),
+                       'fargs':[im, self.sliders[slider]._slider]}
+        anim_kwargs.update(kwargs)
+        
+        ani = mplanim.FuncAnimation(anim_fig, self.slider_functions[slider], **anim_kwargs)
+
+        return ani
+    
+    def plot_start_image(self, ax):
+        """
+        This method creates the inital image on the mpl axes
+        
+        .. warning::
+            This method needs to be implemeted in subclasses
+        
+        Parameters
+        ----------
+        ax: mpl axes
+            This is the axes on which to plot the image
+        
+        Returns
+        -------
+        AxesImage:
+            A AxesImage object, the instance returned from a plt.imshow() command.
+        """
+        raise NotImplementedError("Please define your setup function")
+    
     def _connect_fig_events(self):
         self.fig.canvas.mpl_connect('button_press_event', self._mouse_click)
         self.fig.canvas.mpl_connect('key_press_event', self._key_press)
-
-    def _plot_start_image(self):
-        raise NotImplementedError("Please define your setup function")
 
     def _add_colorbar(self):
         self.colorbar = plt.colorbar(self.im, self.cax)
@@ -376,7 +434,7 @@ class BaseFuncAnimator(object):
             s.set_val(s.val-1)
 
     def _slider_changed(self, val, slider):
-        self.slider_functions[slider.slider_ind](val, slider)
+        self.slider_functions[slider.slider_ind](val, self.im, slider)
 
 class MapCubeAnimator(BaseFuncAnimator):
     """
@@ -422,11 +480,11 @@ class MapCubeAnimator(BaseFuncAnimator):
         
         self._annotate_plot(0)
 
-    def updatefig(self, val, slider):
+    def updatefig(self, val, im, slider):
         i = int(val)
-        self.im.set_array(self.data[i].data)
-        self.im.set_cmap(self.mapcube[i].cmap)
-        self.im.set_norm(self.mapcube[i].norm)
+        im.set_array(self.data[i].data)
+        im.set_cmap(self.mapcube[i].cmap)
+        im.set_norm(self.mapcube[i].norm)
         if self.annotate:
             self._annotate_plot(i)
 
@@ -454,9 +512,10 @@ class MapCubeAnimator(BaseFuncAnimator):
         self.axes.set_xlabel(xlabel)
         self.axes.set_ylabel(ylabel)
 
-    def _plot_start_image(self):
-        self.im = self.mapcube[0].plot(annotate=self.annotate, axes=self.axes,
+    def plot_start_image(self, ax):
+        im = self.mapcube[0].plot(annotate=self.annotate, axes=ax,
                                        **self.imshow_kwargs)
+        return im
 
 class ImageAnimator(BaseFuncAnimator):
     """
@@ -543,7 +602,7 @@ class ImageAnimator(BaseFuncAnimator):
         for i in self.slider_axes:
             self.image_slice[i] = 0
         
-        BaseFuncAnimator.__init__(self, data, [self._slider_changed]*self.num_sliders,
+        BaseFuncAnimator.__init__(self, data, [self._updateimage]*self.num_sliders,
                                   [self.axis_range[i] for i in self.slider_axes], **kwargs)
 
     def label_slider(self, i, label):
@@ -559,7 +618,7 @@ class ImageAnimator(BaseFuncAnimator):
         """
         self.sliders[i]._slider.label.set_text(label)
 
-    def _plot_start_image(self):
+    def plot_start_image(self, ax):
         #Create extent arg
         extent = []
         #reverse because numpy is in y-x and extent is x-y
@@ -571,21 +630,17 @@ class ImageAnimator(BaseFuncAnimator):
                        'extent':extent}
 
         imshow_args.update(self.imshow_kwargs)
-        self.im = self.axes.imshow(self.data[self.image_slice], **imshow_args)
+        im = ax.imshow(self.data[self.image_slice], **imshow_args)
         if self.if_colorbar:
             self._add_colorbar()
+        
+        return im
 
-    def _updateimage(self, ax_slice):
-        self.im.set_array(self.data[ax_slice])
-
-#==============================================================================
-#   Widget callbacks
-#==============================================================================
-    def _slider_changed(self, val, slider):
+    def _updateimage(self, val, im, slider):
         val = int(val)
         ax = self.slider_axes[slider.slider_ind]
         ax_slice = copy.copy(self.image_slice)
         ax_slice[ax] = val
         if val != slider.cval:
-            self._updateimage(ax_slice)
+            im.set_array(self.data[ax_slice])
             slider.cval = val
