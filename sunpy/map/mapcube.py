@@ -4,6 +4,7 @@ from __future__ import absolute_import
 import copy
 
 import numpy as np
+import matplotlib.animation
 import matplotlib.pyplot as plt
 
 from sunpy.map import GenericMap
@@ -115,7 +116,8 @@ class MapCube(object):
         """Derotates the layers in the MapCube"""
         pass
 
-    def plot(self, gamma=None, axes=None, resample=None, **kwargs):
+    def plot(self, gamma=None, axes=None, resample=None, annotate=True, 
+             interval=200, **kwargs):
         """
         A animation plotting routine that animates each element in the
         MapCube
@@ -139,9 +141,6 @@ class MapCube(object):
     
         interval: int
             Animation interval in ms
-    
-        colorbar: bool
-            Plot colorbar
         
         Examples
         --------
@@ -166,19 +165,57 @@ class MapCube(object):
 
         >>> ani.save('mapcube_animation.mp4', writer=writer)
         """
+        if not axes:
+            axes = plt.gca()
+        fig = axes.get_figure()
+        
+        # Normal plot
+        def annotate_frame(i):
+            axes.set_title("%s %s" % (self[i].name, self[i].date))
+            
+            # x-axis label
+            if self[0].coordinate_system['x'] == 'HG':
+                xlabel = 'Longitude [%s]' % self[i].units['x']
+            else:
+                xlabel = 'X-position [%s]' % self[i].units['x']
+
+            # y-axis label
+            if self[0].coordinate_system['y'] == 'HG':
+                ylabel = 'Latitude [%s]' % self[i].units['y']
+            else:
+                ylabel = 'Y-position [%s]' % self[i].units['y']
+                
+            axes.set_xlabel(xlabel)
+            axes.set_ylabel(ylabel)
+
+        if gamma is not None:
+            self[0].cmap.set_gamma(gamma)
+            
+        im = self._maps[0].plot(**kwargs)
+        
         if resample:
             #This assumes that the maps a homogenous!
             #TODO: Update this!
             resample = np.array(len(self._maps)-1) * np.array(resample)
-            ani_cube = copy.deepcopy(self)
-            ani_cube._maps = [x.resample(resample) for x in self]
+            ani_data = [x.resample(resample) for x in self]
         else:
-            ani_cube = self
-        
-        if gamma is not None:
-            self[0].cmap.set_gamma(gamma)
+            ani_data = self
 
-        return MapCubeAnimator(ani_cube, **kwargs).get_animation(axes=axes)
+        def updatefig(i, im, annotate, ani_data):
+
+            im.set_array(ani_data[i].data)
+            im.set_cmap(self[i].cmap)
+            im.set_norm(self[i].norm)
+            if annotate:
+                annotate_frame(i)
+        
+        ani = matplotlib.animation.FuncAnimation(fig, updatefig,
+                                            frames=range(0,len(self._maps)),
+                                            fargs=[im,annotate,ani_data],
+                                            interval=interval,
+                                            blit=False)
+
+        return ani
 
     def peek(self, gamma=None, resample=None, **kwargs):
         """
@@ -219,6 +256,11 @@ class MapCube(object):
         >>> cube = sunpy.Map(files, cube=True)
         >>> ani = cube.plot(resample=[0.5, 0.5], colorbar=True)        
         >>> plt.show()
+        
+        Decide you want an animation:
+        >>> cube = sunpy.Map(files, cube=True)
+        >>> ani = cube.plot(resample=[0.5, 0.5], colorbar=True)        
+        >>> mplani = ani.get_animation()        
         """
         
         if gamma is not None:
