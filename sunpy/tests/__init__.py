@@ -6,6 +6,11 @@ INCLUDE_ONLINE = object()
 EXCLUDE_ONLINE = object()
 ONLY_ONLINE = object()
 
+try:
+    import pytest
+except ImportError:
+    pytest = None
+
 
 def main(modulename='', cover=False, show_uncovered_lines=False,
          online=INCLUDE_ONLINE):
@@ -36,7 +41,8 @@ def main(modulename='', cover=False, show_uncovered_lines=False,
         number of tests that will be executed in any way.
 
     """
-    import pytest
+    if pytest is None:
+        raise ImportError("You need to install pytest to run SunPy's tests")
 
     if not modulename:
         module = __import__('sunpy.tests', fromlist=['tests'])
