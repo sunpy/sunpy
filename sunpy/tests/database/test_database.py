@@ -380,49 +380,18 @@ def test_add_already_existing_entry_ignore(database):
 def test_add_entry_from_qr(database, query_result):
     assert len(database) == 0
     database.add_from_vso_query_result(query_result)
-    assert len(database) == 4
-    expected_entries = [
-        DatabaseEntry(
-            id=1, source="STEREO_A", provider="SSC",
-            fileid="plastic/level1/ahead/2013/STA_L1_PLA_20130801_213",
-            observation_time_start=datetime(2013, 8, 1, 0, 0, 0),
-            observation_time_end=datetime(2013, 8, 2, 0, 0, 0),
-            instrument="PLASTIC", size=166.362, wavemin=6.199209646,
-            wavemax=0.012398419292),
-        DatabaseEntry(
-            id=2, source="STEREO_A", provider="SSC",
-            fileid="plastic/level1/ahead/2013/STA_L1_PLA_SC_20130801_213",
-            observation_time_start=datetime(2013, 8, 1, 0, 0, 0),
-            observation_time_end=datetime(2013, 8, 2, 0, 0, 0),
-            instrument="PLASTIC", size=21.167, wavemin=6.199209646,
-            wavemax=0.012398419292),
-        DatabaseEntry(
-            id=3, source="STEREO_B", provider="SSC",
-            fileid="plastic/level1/behind/2013/STB_L1_PLA_20130801_213",
-            observation_time_start=datetime(2013, 8, 1, 0, 0, 0),
-            observation_time_end=datetime(2013, 8, 2, 0, 0, 0),
-            instrument="PLASTIC", size=13164.4, wavemin=6.199209646,
-            wavemax=0.012398419292),
-        DatabaseEntry(
-            id=4, source="STEREO_B", provider="SSC",
-            fileid="plastic/level1/behind/2013/STB_L1_PLA_SC_20130801_213",
-            observation_time_start=datetime(2013, 8, 1, 0, 0, 0),
-            observation_time_end=datetime(2013, 8, 2, 0, 0, 0),
-            instrument="PLASTIC", size=77.9795, wavemin=6.199209646,
-            wavemax=0.012398419292)]
-    assert list(database) == expected_entries
+    assert len(database) == 10
     database.undo()
     assert len(database) == 0
     database.redo()
-    assert len(database) == 4
-    assert list(database) == expected_entries
+    assert len(database) == 10
 
 
 @pytest.mark.online
 def test_add_entries_from_qr_duplicates(database, query_result):
     assert len(database) == 0
     database.add_from_vso_query_result(query_result)
-    assert len(database) == 4
+    assert len(database) == 10
     with pytest.raises(EntryAlreadyAddedError):
         database.add_from_vso_query_result(query_result)
 
@@ -431,9 +400,9 @@ def test_add_entries_from_qr_duplicates(database, query_result):
 def test_add_entries_from_qr_ignore_duplicates(database, query_result):
     assert len(database) == 0
     database.add_from_vso_query_result(query_result)
-    assert len(database) == 4
+    assert len(database) == 10
     database.add_from_vso_query_result(query_result, True)
-    assert len(database) == 8
+    assert len(database) == 20
 
 
 def test_add_fom_path(database):
@@ -702,13 +671,13 @@ def test_download(database, download_query, tmpdir):
     fits_pattern = str(tmpdir.join('*.fits'))
     num_of_fits_headers = sum(
         len(fits.get_header(file)) for file in glob.glob(fits_pattern))
-    assert len(database) == num_of_fits_headers == 4
+    assert len(database) == num_of_fits_headers == 2
     for entry in database:
         assert os.path.dirname(entry.path) == str(tmpdir)
     database.undo()
     assert len(database) == 0
     database.redo()
-    assert len(database) == 4
+    assert len(database) == 2
 
 
 @pytest.mark.online
@@ -718,10 +687,10 @@ def test_download_duplicates(database, download_query, tmpdir):
     database.default_waveunit = 'angstrom'
     database.download(
         *download_query, path=str(tmpdir.join('{file}.fits')), progress=True)
-    assert len(database) == 4
+    assert len(database) == 2
     download_time = database[0].download_time
     database.download(*download_query, path=str(tmpdir.join('{file}.fits')))
-    assert len(database) == 4
+    assert len(database) == 2
     assert database[0].download_time != download_time
 
 
@@ -741,10 +710,10 @@ def test_fetch(database, download_query, tmpdir):
     assert len(database) == 0
     database.default_waveunit = 'angstrom'
     database.fetch(*download_query, path=str(tmpdir.join('{file}.fits')))
-    assert len(database) == 4
+    assert len(database) == 2
     download_time = database[0].download_time
     database.fetch(*download_query, path=str(tmpdir.join('{file}.fits')))
-    assert len(database) == 4
+    assert len(database) == 2
     assert database[0].download_time == download_time
 
 

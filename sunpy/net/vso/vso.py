@@ -263,11 +263,11 @@ class VSOClient(object):
             api.set_options(port=port)
         self.api = api
     
-    def make(self, type_, **kwargs):
+    def make(self, atype, **kwargs):
         """ Create new SOAP object with attributes specified in kwargs.
         To assign subattributes, use foo__bar=1 to assign
         ['foo']['bar'] = 1. """
-        obj = self.api.factory.create(type_)
+        obj = self.api.factory.create(atype)
         for k, v in kwargs.iteritems():
             split = k.split('__')
             tip = split[-1]
@@ -597,16 +597,16 @@ class VSOClient(object):
         return res
     
     @staticmethod
-    def link(query_response, map_):
+    def link(query_response, maps):
         """ Return list of paths with records associated with them in
         the meta attribute. """
-        if not map_:
+        if not maps:
             return []
         ret = []
         
         for record_item in query_response:
             try:
-                item = _Str(map_[record_item.fileid]['path'])
+                item = _Str(maps[record_item.fileid]['path'])
             except KeyError:
                 continue
             # pylint: disable=W0201
@@ -625,8 +625,8 @@ class VSOClient(object):
             methods, info
         )
     
-    def create_getdatarequest(self, map_, methods, info=None):
-        """ Create datarequest from map_ mapping data provider to
+    def create_getdatarequest(self, maps, methods, info=None):
+        """ Create datarequest from maps mapping data provider to
         fileids and methods, """
         if info is None:
             info = {}
@@ -637,7 +637,7 @@ class VSOClient(object):
             request__info=info,
             request__datacontainer__datarequestitem=[
                 self.make('DataRequestItem', provider=k, fileiditem__fileid=[v])
-                for k, v in map_.iteritems()
+                for k, v in maps.iteritems()
             ]
         )
     
