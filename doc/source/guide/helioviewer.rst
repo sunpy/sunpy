@@ -108,7 +108,7 @@ can specify the values as separate keyword arguments: ::
 
 Every JP2 file provided by the Helioviewer Project has been processed to generate an image that 
 can be used for browse purposes.  This typically involves following the standard image processing
-procedure used by each instrument team to connvert their science data into an image for a webpage.
+procedure used by each instrument team to convert their science data into an image for a webpage.
 The JP2 image is then scaled between 0 and 255 (byte-scaled).  Please note that the JP2 image data
 is NOT the same as the original science data.  In the example above, SunPy queries Helioviewer for 
 the relevant JP2 file closest to the input time, downloads it, and selects a color table based on

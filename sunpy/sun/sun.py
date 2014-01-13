@@ -21,9 +21,9 @@ Carrington Rotation Number = 1971.4091        check!
 """
 from __future__ import absolute_import
 
-import cmath
-
 import numpy as np
+
+import astropy.units as u
 
 from sunpy.time import parse_time, julian_day, julian_centuries
 from sunpy.sun import constants
@@ -63,14 +63,23 @@ def solar_cycle_number(t=None):
     return result
 
 def solar_semidiameter_angular_size(t=None):
-    """Return the angular size of the semi-diameter of the Sun as 
+    r"""
+    Return the angular size of the semi-diameter of the Sun as 
     a function of time as viewed from Earth (in arcsec)
-    Radius_{\sun}[rad] = \atan(\frac{<Radius_{\sun}[m]>}{D_{\sun\earth}(t)[m]})
-     since tan x ~ x when x << 1
-    Radius_{\sun}[rad] = \frac{<Radius_{\sun}[m]>)}{D_{\sun\earth}(t)[m]}
+    
+    .. math::
+    
+        Radius_{\odot}[rad]=\tan^{-1}\left(\frac{<Radius_{\odot}[m]>}{D_{\odot \oplus}(t)[m]}\right)
+
+    since :math:`tan(x) \approx x` when :math:`x << 1`
+
+    .. math::
+    
+        Radius_{\odot}[rad]=\frac{<Radius_{\odot}[m]>}{D_{\odot \oplus}(t)[m]}
+
     """
     solar_semidiameter_rad = constants.radius / (sunearth_distance(t) * constants.au)
-    return np.rad2deg(solar_semidiameter_rad) * 60. * 60.
+    return np.rad2deg(solar_semidiameter_rad * u.degree) * 60. * 60.
  
 def position(t=None):
     """Returns the position of the Sun (right ascension and declination)
@@ -188,8 +197,8 @@ def apparent_rightascenscion(t=None):
     """Returns the apparent right ascenscion of the Sun."""
     y = np.cos(np.radians(apparent_obliquity_of_ecliptic(t))) * np.sin(np.radians(apparent_longitude(t)))
     x = np.cos(np.radians(apparent_longitude(t)))
-    rpol = cmath.polar(complex(x,y))
-    app_ra = rpol[1] % 360.0
+    rpol = np.rad2deg(np.arctan2(y, x))
+    app_ra = rpol % 360.0
     if app_ra < 0: app_ra += 360.0
     result = app_ra/15.0
     return result

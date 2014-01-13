@@ -31,7 +31,9 @@ def _dsunAtSoho(date, rad_d, rad_1au = None):
     """
     if not rad_1au:
         rad_1au = sun.solar_semidiameter_angular_size(date)
-    return  sun.sunearth_distance(date) * constants.au * (rad_1au / rad_d)
+    dsun = sun.sunearth_distance(date) * constants.au * (rad_1au / rad_d)
+    #return scalar value not astropy.quantity
+    return dsun.value
 
 
 class EITMap(GenericMap):
@@ -113,7 +115,7 @@ class LASCOMap(GenericMap):
                      self.meta.get('time-obs',self.meta.get('time_obs')))
 
         # If non-standard Keyword is present, correct it too, for compatibility.
-        if 'date_obs' in self.meta:
+        if 'date_obs' not in self.meta:
             self.meta['date_obs'] = self.meta['date-obs']
             
         
