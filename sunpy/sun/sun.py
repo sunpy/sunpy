@@ -234,8 +234,8 @@ def heliographic_solar_center(t=None):
     # Longitude at center of disk (deg):
     y = -np.sin(diff)*np.cos(np.radians(i))
     x = -np.cos(diff)
-    rpol = cmath.polar(complex(x,y))
-    he_lon = np.degrees(rpol[1]) - theta
+    rpol = np.rad2deg(np.arctan2(y, x))
+    he_lon = rpol - theta
     he_lon = he_lon % 360
     if he_lon < 0:
         he_lon = he_lon + 360.0
