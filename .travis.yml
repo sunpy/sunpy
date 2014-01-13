@@ -11,7 +11,7 @@ virtualenv:
 # above.
 env:
     global:
-        - PIP_WHEEL_COMMAND="--find-links http://sunpy.cadair.com/wheelhouse/index.html --use-wheel --upgrade"
+        - PIP_WHEEL_COMMAND="--use-mirros --find-links http://sunpy.cadair.com/wheelhouse/index.html --use-wheel --upgrade"
         - SUDS_PKG='suds-jurko==0.4.1.jurko.4'
         - TEST_MODE='tests'
     matrix:
@@ -37,6 +37,8 @@ before_install:
 # Install more upto date openjpeg library.
    - wget http://openjpeg.googlecode.com/files/openjpeg-1.5.0-Linux-x86_64.tar.gz
    - sudo tar -xvf openjpeg-1.5.0-Linux-x86_64.tar.gz --strip-components=1 -C /
+# Install coveralls
+   - pip install $PIP_WHEEL_COMMAND python-coveralls
 
 # Install all SunPy dependacies using wheels.
 install:
