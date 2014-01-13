@@ -39,4 +39,3 @@ Map.register(TRACEMap, TRACEMap.is_datasource_for)
 
 from iris import IRISMap
 Map.register(IRISMap, IRISMap.is_datasource_for)
-
