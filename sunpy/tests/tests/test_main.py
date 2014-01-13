@@ -4,6 +4,7 @@ import pytest
 
 import sunpy.tests
 
+root_dir = os.path.dirname(os.path.abspath(sunpy.__file__))
 
 def test_main_nonexisting_module():
     with pytest.raises(ImportError):
@@ -28,7 +29,7 @@ def test_main_noargs(monkeypatch):
 def test_main_submodule(monkeypatch):
     monkeypatch.setattr(pytest, 'main', lambda x: x)
     args = sunpy.tests.main('map')
-    assert args == [os.path.join(sunpy.tests.testdir, 'map')]
+    assert args == [os.path.join(root_dir, 'map', 'tests')]
 
 
 def test_main_with_cover(monkeypatch):
@@ -36,7 +37,7 @@ def test_main_with_cover(monkeypatch):
     args = sunpy.tests.main('map', cover=True)
     covpath = os.path.abspath(
         os.path.join(sunpy.tests.testdir, os.path.join(os.pardir, 'map')))
-    assert args == ['--cov', covpath, os.path.join(sunpy.tests.testdir, 'map')]
+    assert args == ['--cov', covpath, os.path.join(root_dir, 'map', 'tests')]
 
 
 def test_main_with_show_uncovered_lines(monkeypatch):
@@ -44,19 +45,19 @@ def test_main_with_show_uncovered_lines(monkeypatch):
     args = sunpy.tests.main('map', show_uncovered_lines=True)
     assert args == [
         '--cov-report', 'term-missing',
-        os.path.join(sunpy.tests.testdir, 'map')]
+        os.path.join(root_dir, 'map', 'tests')]
 
 
 def test_main_exclude_online(monkeypatch):
     monkeypatch.setattr(pytest, 'main', lambda x: x)
     args = sunpy.tests.main('map', online=sunpy.tests.EXCLUDE_ONLINE)
-    assert args == ['-k-online', os.path.join(sunpy.tests.testdir, 'map')]
+    assert args == ['-k-online', os.path.join(root_dir, 'map', 'tests')]
 
 
 def test_main_only_online(monkeypatch):
     monkeypatch.setattr(pytest, 'main', lambda x: x)
     args = sunpy.tests.main('map', online=sunpy.tests.ONLY_ONLINE)
-    assert args == ['-k', 'online', os.path.join(sunpy.tests.testdir, 'map')]
+    assert args == ['-k', 'online', os.path.join(root_dir, 'map', 'tests')]
 
 
 def test_main_invalid_online_parameter():
