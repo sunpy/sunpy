@@ -6,6 +6,7 @@
 from __future__ import absolute_import
 
 from datetime import datetime
+import copy
 import glob
 import os.path
 
@@ -79,10 +80,12 @@ def filled_database():
     return database
 
 def test_config_url():
+    old_conf = copy.deepcopy(sunpy.config)
     url = 'sqlite:///test.sqlite'
     sunpy.config.set('database', 'url', url)
     database = Database()
     assert database.url == url
+    sunpy.config = old_conf
 
 def test_tags_unique(database):
     entry = DatabaseEntry()
