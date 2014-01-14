@@ -87,6 +87,10 @@ def test_config_url(monkeypatch):
     sunpy.config.set('database', 'url', url)
     database = Database()
     assert database.url == url
+    #Test the error
+    sunpy.config.remove_option('database', 'url')
+    with pytest.raises(ConfigParser.NoOptionError):
+        database = Database()
 
 def test_tags_unique(database):
     entry = DatabaseEntry()
