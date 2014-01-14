@@ -9,12 +9,13 @@ import shutil
 
 import urllib2
 
-import sunpy
+from sunpy import config
 from sunpy.util.net import download_file
 from sunpy.util import replacement_filename
 
 from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
 
+__all__ = ['Parent']
 
 class Parent(object):
     _create = ConditionalDispatch()
@@ -29,11 +30,11 @@ class Parent(object):
 
     @classmethod
     def from_glob(cls, pattern):
-        """ Read out files using glob (e.g., ~/BIR_2011*) pattern. Returns 
+        """ Read out files using glob (e.g., ~/BIR_2011*) pattern. Returns
         list of objects made from all matched files.
-        """        
+        """
         return cls.read_many(glob.glob(pattern))
-    
+
     @classmethod
     def from_single_glob(cls, singlepattern):
         """ Read out a single file using glob (e.g., ~/BIR_2011*) pattern.
@@ -43,20 +44,20 @@ class Parent(object):
         if len(matches) != 1:
             raise ValueError("Invalid number of matches: %d" % len(matches))
         return cls.read(matches[0])
-    
+
     @classmethod
     def from_files(cls, filenames):
         """ Return list of object read from given list of
         filenames. """
         filenames = map(os.path.expanduser, filenames)
         return cls.read_many(filenames)
-    
+
     @classmethod
     def from_file(cls, filename):
         """ Return object from file. """
         filename = os.path.expanduser(filename)
         return cls.read(filename)
-    
+
     @classmethod
     def from_dir(cls, directory):
         """ Return list that contains all files in the directory read in. """
@@ -64,17 +65,17 @@ class Parent(object):
         return cls.read_many(
             (os.path.join(directory, elem) for elem in os.listdir(directory))
         )
-    
+
     @classmethod
     def from_url(cls, url):
         """ Return object read from URL.
-        
+
         Parameters
         ----------
         url : str
             URL to retrieve the data from
         """
-        default_dir = sunpy.config.get("downloads", "download_dir")
+        default_dir = config.get("downloads", "download_dir")
         path = download_file(url, default_dir)
         return cls.read(path)
 

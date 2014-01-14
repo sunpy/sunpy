@@ -34,11 +34,47 @@ class MapFactory(BasicRegistrationFactory):
     Map factory class.  Used to create a variety of Map objects.  Valid map types
     are specified by registering them with the factory.
 
-    Example
-    -------
+
+    Examples
+    --------
     >>> import sunpy
     >>> mymap = sunpy.Map(sunpy.AIA_171_IMAGE)
 
+    The SunPy Map factory accepts a wide variety of inputs for creating maps
+
+    * Preloaded tuples of (data, header) pairs
+
+    >>> mymap = sunpy.Map((data, header))
+
+    headers are some base of `dict` or `collections.OrderedDict`, including `sunpy.io.header.FileHeader` or `sunpy.map.header.MapMeta` classes.
+
+    * data, header pairs, not in tuples
+
+    >>> mymap = sunpy.Map(data, header)
+
+    * File names
+
+    >>> mymap = sunpy.Map('file1.fits')
+
+    * All fits files in a directory by giving a directory
+
+    >>> mymap = sunpy.Map('local_dir/sub_dir')
+
+    * Some regex globs
+
+    >>> mymap = sunpy.Map('eit_*.fits')
+
+    * URLs
+
+    >>> mymap = sunpy.Map(url_str)
+
+    * Lists of any of the above
+
+    >>> mymap = sunpy.Map(['file1.fits', 'file2.fits', 'file3.fits', 'directory1/'])
+
+    * Any mixture of the above not in a list
+
+    >>> mymap = sunpy.Map((data, header), data2, header2, 'file1.fits', url_str, 'eit_*.fits')
     """
 
     def _read_file(self, fname, **kwargs):
