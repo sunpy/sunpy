@@ -8,6 +8,7 @@ from __future__ import absolute_import
 from datetime import datetime
 import copy
 import glob
+import ConfigParser
 import os.path
 
 import pytest
@@ -80,8 +81,10 @@ def filled_database():
     return database
 
 def test_config_url():
-    old_conf = copy.deepcopy(sunpy.config)
+    old_conf = sunpy.config
+    sunpy.config = ConfigParser.SafeConfigParser()
     url = 'sqlite:///test.sqlite'
+    sunpy.config.add_section('database')
     sunpy.config.set('database', 'url', url)
     database = Database()
     assert database.url == url
