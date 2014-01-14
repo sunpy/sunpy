@@ -3,6 +3,7 @@ from __future__ import division
 
 import sys
 
+__all__ = ['TTYProgressBar']
 
 class TTYProgressBar(object):
     """

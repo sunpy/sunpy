@@ -16,8 +16,7 @@ from functools import partial
 from contextlib import closing
 from collections import defaultdict, deque
 
-import sunpy
-
+import sunpy as spy
 
 def default_name(path, sock, url):
     name = sock.headers.get('Content-Disposition', url.rsplit('/', 1)[-1])
@@ -129,7 +128,7 @@ class Downloader(object):
         server = self._get_server(url)
         
         # Create function to compute the filepath to download to if not set
-        default_dir = sunpy.config.get("downloads", "download_dir")
+        default_dir = spy.config.get("downloads", "download_dir")
 
         if path is None:
             path = partial(default_name, default_dir)
