@@ -81,14 +81,13 @@ def filled_database():
     return database
 
 def test_config_url():
-    old_conf = sunpy.config
     sunpy.config = ConfigParser.SafeConfigParser()
     url = 'sqlite:///test.sqlite'
     sunpy.config.add_section('database')
     sunpy.config.set('database', 'url', url)
     database = Database()
     assert database.url == url
-    sunpy.config = old_conf
+    sunpy.config = sunpy.util.config.load_config()
 
 def test_tags_unique(database):
     entry = DatabaseEntry()
