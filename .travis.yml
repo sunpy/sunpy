@@ -11,7 +11,7 @@ virtualenv:
 # above.
 env:
     global:
-        - PIP_WHEEL_COMMAND="--use-mirros --find-links http://sunpy.cadair.com/wheelhouse/index.html --use-wheel --upgrade"
+        - PIP_WHEEL_COMMAND="--use-mirrors --find-links http://sunpy.cadair.com/wheelhouse/index.html --use-wheel --upgrade"
         - SUDS_PKG='suds-jurko==0.4.1.jurko.4'
         - TEST_MODE='tests'
     matrix:
