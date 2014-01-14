@@ -6,7 +6,6 @@
 from __future__ import absolute_import
 
 from datetime import datetime
-import copy
 import glob
 import ConfigParser
 import os.path
@@ -87,9 +86,10 @@ def test_config_url(monkeypatch):
     sunpy.config.set('database', 'url', url)
     database = Database()
     assert database.url == url
-    #Test the error
-    sunpy.config.remove_option('database', 'url')
-    with pytest.raises(ConfigParser.NoOptionError):
+
+def test_config_url_none(monkeypatch):
+    monkeypatch.setattr("sunpy.config", ConfigParser.SafeConfigParser())
+    with pytest.raises(ConfigParser.NoSectionError):
         database = Database()
 
 def test_tags_unique(database):
