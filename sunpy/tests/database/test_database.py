@@ -12,6 +12,7 @@ import os.path
 import pytest
 import sqlalchemy
 
+import sunpy
 from sunpy.database import Database, EntryAlreadyAddedError,\
     EntryAlreadyStarredError, EntryAlreadyUnstarredError, NoSuchTagError,\
     EntryNotFoundError, TagAlreadyAssignedError, disable_undo
@@ -77,6 +78,11 @@ def filled_database():
     database.commit()
     return database
 
+def test_config_url():
+    url = 'sqlite:///test.sqlite'
+    sunpy.config.set('database', 'url', url)
+    database = Database()
+    assert database.url == url
 
 def test_tags_unique(database):
     entry = DatabaseEntry()
