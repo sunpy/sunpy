@@ -140,7 +140,7 @@ class MDIMap(GenericMap):
 #            radius = sun.angular_size(self.date)
             self.meta['dsun_obs'] = constants.au
         else:
-            self.meta['dsun_obs'] = _dsunAtSoho(self.date, radius * scale)
+            self.meta['dsun_obs'] = _dsunAtSoho(self.date, radius)
         
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
