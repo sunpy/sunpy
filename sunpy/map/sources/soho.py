@@ -87,7 +87,7 @@ class LASCOMap(GenericMap):
         GenericMap.__init__(self, data, header, **kwargs)
         
         # Fill in some missing or broken info
-        self._fix_date()
+        #self._fix_date()
         
         self._name = self.instrument + " " + self.detector
         self._nickname = self.instrument + "-" + self.detector
@@ -102,11 +102,9 @@ class LASCOMap(GenericMap):
     def _fix_date(self):
         datestr = "%sT%s" % (self.meta.get('date-obs',self.meta.get('date_obs')),
                      self.meta.get('time-obs',self.meta.get('time_obs')))
-
         # If non-standard Keyword is present, correct it too, for compatibility.
         if 'date_obs' not in self.meta:
             self.meta['date_obs'] = self.meta['date-obs']
-            
         
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
@@ -136,13 +134,14 @@ class MDIMap(GenericMap):
         # Solar radius in arc-seconds at 1 au
         # previous value radius_1au = 959.644
         # radius = constants.average_angular_size
-        radius = self.meta.get('radius')
+        scale = self.meta.get('cdelt1')
+        radius = scale * self.meta.get('radius')
+        self.meta['radius'] = radius
         
         if not radius:
 #            radius = sun.angular_size(self.date)
             self.meta['dsun_obs'] = constants.au
         else:
-            scale = self.meta.get('cdelt1')
             self.meta['dsun_obs'] = _dsunAtSoho(self.date, radius * scale)
         
     @classmethod
