@@ -996,7 +996,7 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         # Determine extent
         extent = self.xrange + self.yrange
 
-        cmap = copy(self.cmap)
+        cmap = deepcopy(self.cmap)
         if gamma is not None:
             cmap.set_gamma(gamma)
 
