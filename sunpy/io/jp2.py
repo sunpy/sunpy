@@ -35,6 +35,7 @@ def read(filepath):
         A list of (data, header) tuples
     """
     header = get_header(filepath)
+
     data = Jp2k(filepath).read()
     
     # Data is read in north-south flipped, so flip it around.
