@@ -87,25 +87,23 @@ class LASCOMap(GenericMap):
         GenericMap.__init__(self, data, header, **kwargs)
         
         # Fill in some missing or broken info
-        #self._fix_date()
-        
+        datestr = "%sT%s" % (self.meta.get('date-obs',self.meta.get('date_obs')),
+                     self.meta.get('time-obs',self.meta.get('time_obs')))
+        self.meta['date-obs'] = datestr
+
+        # If non-standard Keyword is present, correct it too, for compatibility.
+        if 'date_obs' in self.meta:
+            self.meta['date_obs'] = self.meta['date-obs']
+
         self._name = self.instrument + " " + self.detector
         self._nickname = self.instrument + "-" + self.detector
-                
         self.cmap = cm.get_cmap('soholasco%s' % self.detector[1])
         
     @property
     def measurement(self):
         # TODO: This needs to do more than white-light.  Should give B, pB, etc.
         return "white-light"
-    
-    def _fix_date(self):
-        datestr = "%sT%s" % (self.meta.get('date-obs',self.meta.get('date_obs')),
-                     self.meta.get('time-obs',self.meta.get('time_obs')))
-        # If non-standard Keyword is present, correct it too, for compatibility.
-        if 'date_obs' not in self.meta:
-            self.meta['date_obs'] = self.meta['date-obs']
-        
+
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an LASCO image"""
