@@ -319,8 +319,9 @@ Dimension:\t [%d, %d]
         # Check commonly used but non-standard FITS keyword for observation time
         # and correct the keyword if we can.  Keep updating old one for
         # backwards compatibility.
-        if is_time(self.meta.get('date_obs', None)):
-            self.meta['date-obs'] = self.meta['date_obs']
+        #if is_time(self.meta.get('date_obs', None)):
+        #    self.meta['date-obs'] = self.meta['date_obs']
+        pass
 
     def _fix_naxis(self):
         # If naxis is not specified, get it from the array shape
