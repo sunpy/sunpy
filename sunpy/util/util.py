@@ -58,7 +58,7 @@ def unique(itr, key=None):
                 yield elem
                 items.add(x)
 
-def print_table(lst, colsep=' ', linesep='\n'):
+def print_table(lst, colsep=' ', linesep='\n '):
     width = [max(imap(len, col)) for col in izip(*lst)]
     return linesep.join(
         colsep.join(
