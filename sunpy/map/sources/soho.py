@@ -95,7 +95,7 @@ class LASCOMap(GenericMap):
         if 'date_obs' in self.meta:
             self.meta['date_obs'] = self.meta['date-obs']
 
-        self._name = self.instrument + " " + self.detector
+        self._name = self.instrument + " " + self.detector + " " + self.measurement
         self._nickname = self.instrument + "-" + self.detector
         self.cmap = cm.get_cmap('soholasco%s' % self.detector[1])
         
@@ -120,7 +120,7 @@ class MDIMap(GenericMap):
         self.meta['detector'] = "MDI"
         self._fix_dsun()
         
-        self._name = self.observatory + " " + self.detector
+        self._name = self.detector + " " + self.measurement
         self._nickname = self.detector + " " + self.measurement
         
     @property
