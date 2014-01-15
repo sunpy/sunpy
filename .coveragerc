@@ -4,6 +4,7 @@ source = sunpy
 include = */sunpy/*
 omit =
     */setup.py
+    */tests/*
 
 [report]
 exclude_lines =
