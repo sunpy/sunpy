@@ -17,8 +17,8 @@ import os
 
 try:
     from sunpy.io import _pyana
-except ImportError:
-    pass
+except ImportError: # pragma: no cover
+    _pyana = None # pragma: no cover
 
 from sunpy.io.header import FileHeader
 
@@ -49,8 +49,8 @@ def read(filename, debug=False):
     if not os.path.isfile(filename):
         raise IOError("File does not exist!")
 
-    if not '_pyana' in globals():
-        raise ImportError("C extension for ANA is missing, please rebuild")
+    if _pyana is None:
+        raise ImportError("C extension for ANA is missing, please rebuild") # pragma: no cover
 
     data = _pyana.fzread(filename, debug)
     return [(data['data'],FileHeader(data['header']))]
@@ -77,8 +77,8 @@ def get_header(filename, debug=False):
     --------    
     >>> header = sunpy.io.ana.get_header(filename)
     """
-    if not '_pyana' in globals():
-        raise ImportError("C extension for ANA is missing, please rebuild")
+    if _pyana is None:
+        raise ImportError("C extension for ANA is missing, please rebuild")# pragma: no cover
 
     data = _pyana.fzread(filename, debug)
     return [FileHeader(data['header'])]
@@ -110,10 +110,9 @@ def write(filename, data, comments=False, compress=1, debug=False):
     --------    
     >>> written = sunpy.io.ana.write(filename, data, comments=Falsem, compress=1)
     """
-    if not '_pyana' in globals():
-        raise ImportError("C extension for ANA is missing, please rebuild")
+    if _pyana is None:
+        raise ImportError("C extension for ANA is missing, please rebuild")# pragma: no cover
 
-#    if isinstance(comments,FileHeader)
     if comments:
         return _pyana.fzwrite(filename, data, compress, comments, debug)
     else:
