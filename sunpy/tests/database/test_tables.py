@@ -7,6 +7,7 @@ from collections import Hashable
 from datetime import datetime
 import os.path
 
+from sunpy.database import Database
 from sunpy.database.tables import FitsHeaderEntry, FitsKeyComment, Tag,\
     DatabaseEntry, entries_from_query_result, entries_from_dir,\
     entries_from_file, display_entries, WaveunitNotFoundError
@@ -291,6 +292,11 @@ def test_entry_from_query_results_with_none_wave_and_default_unit(
 def test_display_entries_missing_entries():
     with pytest.raises(TypeError):
         display_entries([], ['some', 'columns'])
+
+
+def test_display_entries_empty_db():
+    with pytest.raises(TypeError):
+        display_entries(Database('sqlite:///'), ['id'])
 
 
 def test_display_entries_missing_columns():
