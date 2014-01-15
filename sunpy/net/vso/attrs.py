@@ -15,7 +15,6 @@ AND-expression, if you still attempt to do so it is called a collision,
 for a quick example think about how the system should handle
 Instrument('aia') & Instrument('eit').
 """
-
 from __future__ import absolute_import
 
 from datetime import datetime
@@ -26,6 +25,10 @@ from sunpy.net.attr import (
 from sunpy.util import to_angstrom
 from sunpy.util.multimethod import MultiMethod
 from sunpy.time import parse_time
+
+__all__ = ['Wave', 'Time', 'Extent', 'Field', 'Provider', 'Source',
+           'Instrument', 'Physobs', 'Pixels', 'Level', 'Resolution',
+           'Detector', 'Filter', 'Sample', 'Quicklook', 'PScale']
 
 TIMEFORMAT = '%Y%m%d%H%M%S'
 
@@ -92,14 +95,14 @@ class Time(Attr, _Range):
 
 class Extent(Attr):
     # pylint: disable=R0913
-    def __init__(self, x, y, width, length, type_):
+    def __init__(self, x, y, width, length, atype):
         Attr.__init__(self)
         
         self.x = x
         self.y = y
         self.width = width
         self.length = length
-        self.type = type_
+        self.type = atype
     
     def collides(self, other):
         return isinstance(other, self.__class__)
