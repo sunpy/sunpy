@@ -5,6 +5,7 @@ include = */sunpy/*
 omit =
     */setup.py
     */tests/*
+    sunpy/version.py
 
 [report]
 exclude_lines =
