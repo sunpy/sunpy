@@ -69,4 +69,4 @@ class anaTests(unittest.TestCase):
 #        self.img_f32c_rec = ana.read('/tmp/pyana-testf32c', 1)
 #        self.assert_(np.sum(self.img_f32c_rec[0][1]- self.img_f32) == 0,
 #            msg="Storing 32 bits float data without compression failed (diff: %g)" % (1.0*np.sum(self.img_f32c_rec[0][1] - self.img_f32)))    
-           self.assertRaises(RuntimeError, ana.write, '/tmp/pyana-testf32c', self.img_f32, 'testcase', 0)
+           self.assertRaises(RuntimeError, ana.write, '/tmp/pyana-testf32c', self.img_f32, 'testcase', 1)
