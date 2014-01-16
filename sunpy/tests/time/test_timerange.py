@@ -54,6 +54,15 @@ def test_string_delta_pair():
     assert timerange.t2 == end
     assert timerange.dt == delta
 
+def test_timerange():
+    timerange = sunpy.time.TimeRange(('2012/1/1',datetime.timedelta(days=1)))
+    timerange = sunpy.time.TimeRange(timerange)
+    assert isinstance(timerange, sunpy.time.TimeRange)
+    assert timerange.t1 == start
+    assert timerange.t2 == end
+    assert timerange.dt == delta
+
+
 def test_center():
     timerange = sunpy.time.TimeRange('2012/1/1','2012/1/2')
     assert timerange.center() == datetime.datetime(year=2012,day=1,month=1,hour=12)
