@@ -190,8 +190,6 @@ class MapCube(object):
 
         if gamma is not None:
             self[0].cmap.set_gamma(gamma)
-            
-        im = self._maps[0].plot(**kwargs)
         
         if resample:
             #This assumes that the maps a homogenous!
@@ -200,6 +198,8 @@ class MapCube(object):
             ani_data = [x.resample(resample) for x in self]
         else:
             ani_data = self
+        
+        im = ani_data[0].plot(**kwargs)
 
         def updatefig(i, im, annotate, ani_data):
 
