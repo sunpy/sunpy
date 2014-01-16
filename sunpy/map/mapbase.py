@@ -449,7 +449,7 @@ Dimension:\t [%d, %d]
         #   transposed back
         # Note: "center" defaults to True in this function because data
         #   coordinates in a Map are at pixel centers
-        print dimensions
+
         # Make a copy of the original data and perform resample
         new_data = sunpy_image_resample(self.data.copy().T, dimensions,
                                     method, center=True)
