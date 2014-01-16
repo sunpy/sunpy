@@ -18,6 +18,8 @@ from sunpy.map.mapcube import MapCube
 from sunpy.io.file_tools import read_file
 from sunpy.io.header import FileHeader
 
+from sunpy.database.tables import DatabaseEntry
+
 from sunpy.util.net import download_file
 from sunpy.util import expand_list
 from sunpy.util import Deprecated
@@ -178,6 +180,10 @@ class MapFactory(BasicRegistrationFactory):
                 path = download_file(url, default_dir)
                 pairs = self._read_file(path, **kwargs)
                 data_header_pairs += pairs
+
+            # A database Entry
+            elif (isinstance(arg, DatabaseEntry)):
+                data_header_pairs += self._read_file(arg.path, **kwargs)
 
             else:
                 raise ValueError("File not found or invalid input")
