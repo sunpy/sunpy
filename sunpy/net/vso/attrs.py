@@ -19,7 +19,7 @@ from __future__ import absolute_import
 
 from datetime import datetime
 
-import sunpy.time
+from sunpy.time import TimeRange
 from sunpy.net.attr import (
     Attr, ValueAttr, AttrWalker, AttrAnd, AttrOr, DummyAttr, ValueAttr
 )
@@ -73,9 +73,9 @@ class Wave(Attr, _Range):
 
 class Time(Attr, _Range):
     def __init__(self, start, end=None, near=None):
-        if end is None and not isinstance(start, sunpy.time.TimeRange):
+        if end is None and not isinstance(start, TimeRange):
             raise ValueError("Specify start and end or start has to be a TimeRange")
-        if isinstance(start, sunpy.time.TimeRange):
+        if isinstance(start, TimeRange):
             self.start = start.t1
             self.end = start.t2
         else:
