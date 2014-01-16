@@ -12,56 +12,21 @@ start = datetime.datetime(year=2012, month=1, day=1)
 end = datetime.datetime(year=2012, month=1, day=2)
 delta = end - start
 
-def test_strings():
-    timerange = sunpy.time.TimeRange('2012/1/1','2012/1/2')
+@pytest.mark.parametrize("inputs", [
+    ('2012/1/1','2012/1/2'),
+    (('2012/1/1','2012/1/2')),
+    ('2012/1/1',24*60*60),
+    (('2012/1/1',24*60*60)),
+    ('2012/1/1',datetime.timedelta(days=1)),
+    (('2012/1/1',datetime.timedelta(days=1))),
+    (('2012/1/1',datetime.timedelta(days=1)))
+])
+def test_timerange_inputs(inputs):
+    timerange = sunpy.time.TimeRange(*inputs)
     assert isinstance(timerange, sunpy.time.TimeRange)
     assert timerange.t1 == start
     assert timerange.t2 == end
     assert timerange.dt == delta
-
-def test_string_pair():
-    timerange = sunpy.time.TimeRange(('2012/1/1','2012/1/2'))
-    assert isinstance(timerange, sunpy.time.TimeRange)
-    assert timerange.t1 == start
-    assert timerange.t2 == end
-    assert timerange.dt == delta
-    
-def test_string_len():
-    timerange = sunpy.time.TimeRange('2012/1/1',24*60*60)
-    assert isinstance(timerange, sunpy.time.TimeRange)
-    assert timerange.t1 == start
-    assert timerange.t2 == end
-    assert timerange.dt == delta
-    
-def test_string_len_pair():
-    timerange = sunpy.time.TimeRange(('2012/1/1',24*60*60))
-    assert isinstance(timerange, sunpy.time.TimeRange)
-    assert timerange.t1 == start
-    assert timerange.t2 == end
-    assert timerange.dt == delta
-    
-def test_string_delta():
-    timerange = sunpy.time.TimeRange('2012/1/1',datetime.timedelta(days=1))
-    assert isinstance(timerange, sunpy.time.TimeRange)
-    assert timerange.t1 == start
-    assert timerange.t2 == end
-    assert timerange.dt == delta
-    
-def test_string_delta_pair():
-    timerange = sunpy.time.TimeRange(('2012/1/1',datetime.timedelta(days=1)))
-    assert isinstance(timerange, sunpy.time.TimeRange)
-    assert timerange.t1 == start
-    assert timerange.t2 == end
-    assert timerange.dt == delta
-
-def test_timerange():
-    timerange = sunpy.time.TimeRange(('2012/1/1',datetime.timedelta(days=1)))
-    timerange = sunpy.time.TimeRange(timerange)
-    assert isinstance(timerange, sunpy.time.TimeRange)
-    assert timerange.t1 == start
-    assert timerange.t2 == end
-    assert timerange.dt == delta
-
 
 def test_center():
     timerange = sunpy.time.TimeRange('2012/1/1','2012/1/2')
