@@ -98,27 +98,23 @@ class LASCOMap(GenericMap):
         GenericMap.__init__(self, data, header, **kwargs)
         
         # Fill in some missing or broken info
-        self._fix_date()
-        
-        self._name = self.instrument + " " + self.detector
+        datestr = "%sT%s" % (self.meta.get('date-obs',self.meta.get('date_obs')),
+                     self.meta.get('time-obs',self.meta.get('time_obs')))
+        self.meta['date-obs'] = datestr
+
+        # If non-standard Keyword is present, correct it too, for compatibility.
+        if 'date_obs' in self.meta:
+            self.meta['date_obs'] = self.meta['date-obs']
+
+        self._name = self.instrument + " " + self.detector + " " + self.measurement
         self._nickname = self.instrument + "-" + self.detector
-                
         self.cmap = cm.get_cmap('soholasco%s' % self.detector[1])
         
     @property
     def measurement(self):
         # TODO: This needs to do more than white-light.  Should give B, pB, etc.
         return "white-light"
-    
-    def _fix_date(self):
-        datestr = "%sT%s" % (self.meta.get('date-obs',self.meta.get('date_obs')),
-                     self.meta.get('time-obs',self.meta.get('time_obs')))
 
-        # If non-standard Keyword is present, correct it too, for compatibility.
-        if 'date_obs' not in self.meta:
-            self.meta['date_obs'] = self.meta['date-obs']
-            
-        
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an LASCO image"""
@@ -135,7 +131,7 @@ class MDIMap(GenericMap):
         self.meta['detector'] = "MDI"
         self._fix_dsun()
         
-        self._name = self.observatory + " " + self.detector
+        self._name = self.detector + " " + self.measurement
         self._nickname = self.detector + " " + self.measurement
         
     @property
@@ -144,17 +140,29 @@ class MDIMap(GenericMap):
         return "magnetogram" if self.meta['dpc_obsr'].find('Mag') != -1 else "continuum"
         
     def _fix_dsun(self):
-        # Solar radius in arc-seconds at 1 au
-        # previous value radius_1au = 959.644
-        # radius = constants.average_angular_size
-        radius = self.meta.get('radius')
+        """ Solar radius in arc-seconds at 1 au
+            previous value radius_1au = 959.644
+            radius = constants.average_angular_size
+            There are differences in the keywords in the test FITS data and in
+            the Helioviewer JPEG2000 files.  In both files, MDI stores the
+            the radius of the Sun in image pixels, and a pixel scale size.
+            The names of these keywords are different in the FITS versus the
+            JP2 file.  The code below first looks for the keywords relevant to
+            a FITS file, and then a JPEG2000 file.  For more information on
+            MDI FITS header keywords please go to http://soi.stanford.edu/,
+            http://soi.stanford.edu/data/ and
+            http://soi.stanford.edu/magnetic/Lev1.8/ .
+        """
+        scale = self.meta.get('xscale', self.meta.get('cdelt1'))
+        radius_in_pixels = self.meta.get('r_sun', self.meta.get('radius'))
+        radius = scale * radius_in_pixels
+        self.meta['radius'] = radius
         
         if not radius:
 #            radius = sun.angular_size(self.date)
             self.meta['dsun_obs'] = constants.au
         else:
-            scale = self.meta.get('cdelt1')
-            self.meta['dsun_obs'] = _dsunAtSoho(self.date, radius * scale)
+            self.meta['dsun_obs'] = _dsunAtSoho(self.date, radius)
         
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
