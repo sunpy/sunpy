@@ -76,32 +76,3 @@ def write(fname, data, header):
     Place holder for required file writer
     """
     raise NotImplementedError("No jp2 writer is implemented")
-
-def _is_float(s):
-    """Check to see if a string value is a valid float"""
-    try:
-        float(s)
-        return True
-    except ValueError:
-        return False
-
-def _which(program):
-    """Checks for existence of executable
-
-    Source: http://stackoverflow.com/questions/377017/test-if-executable-exists-in-python/377028#377028
-    """
-    def is_exe(fpath):
-        return os.path.exists(fpath) and os.access(fpath, os.X_OK)
-
-    fpath, fname = os.path.split(program) #pylint: disable=W0612
-
-    if fpath:
-        if is_exe(program):
-            return program
-    else:
-        for path in os.environ["PATH"].split(os.pathsep):
-            exe_file = os.path.join(path, program)
-            if is_exe(exe_file):
-                return exe_file
-
-    return None
