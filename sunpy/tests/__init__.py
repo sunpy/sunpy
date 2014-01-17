@@ -47,7 +47,7 @@ def main(modulename='', cover=False, show_uncovered_lines=False,
     if not modulename:
         module = __import__('sunpy')
     else:
-        module = __import__('sunpy.{}.tests'.format(modulename), fromlist=[modulename])
+        module = __import__('sunpy.{0}.tests'.format(modulename), fromlist=[modulename])
     path = None
     for path in module.__path__:
         if os.path.exists(path):
