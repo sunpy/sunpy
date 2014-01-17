@@ -206,6 +206,7 @@ class MapCube(object):
             im.set_array(ani_data[i].data)
             im.set_cmap(self[i].cmap)
             im.set_norm(self[i].norm)
+            im.set_extent(self.xrange + self.yrange)
             if annotate:
                 annotate_frame(i)
 
@@ -270,9 +271,7 @@ class MapCube(object):
             #This assumes that the maps a homogenous!
             #TODO: Update this!
             resample = np.array(len(self._maps)-1) * np.array(resample)
-            ani_cube = copy.deepcopy(self)
-            ani_cube._maps = [x.resample(resample) for x in self]
-        else:
-            ani_cube = self
+            for amap in self._maps:
+                amap.resample(resample) 
 
         return MapCubeAnimator(self, **kwargs)
