@@ -45,7 +45,7 @@ def main(modulename='', cover=False, show_uncovered_lines=False,
         raise ImportError("You need to install pytest to run SunPy's tests")
 
     if not modulename:
-        module = __import__('sunpy.tests', fromlist=['tests'])
+        module = __import__('sunpy', fromlist=['sunpy'])
     else:
         module = __import__('sunpy.' + modulename + '.tests', fromlist=[modulename])
     path = None
