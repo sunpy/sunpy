@@ -53,7 +53,7 @@ class MapCubeAnimator(imageanimator.BaseFuncAnimator):
         im.set_array(self.data[i].data)
         im.set_cmap(self.mapcube[i].cmap)
         im.set_norm(self.mapcube[i].norm)
-        im.set_extent(self.xrange + self.yrange)
+        im.set_extent(self.mapcube[i].xrange + self.mapcube[i].yrange)
         if self.annotate:
             self._annotate_plot(i)
 
