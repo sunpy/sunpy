@@ -76,3 +76,11 @@ def write(fname, data, header):
     Place holder for required file writer
     """
     raise NotImplementedError("No jp2 writer is implemented")
+
+def _is_float(s):
+    """Check to see if a string value is a valid float"""
+    try:
+        float(s)
+        return True
+    except ValueError:
+        return False
