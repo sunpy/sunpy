@@ -2,7 +2,7 @@
 
 __all__ = ['MapCubeAnimator']
 
-import imageanimator
+from sunpy.visualization import imageanimator
 
 class MapCubeAnimator(imageanimator.BaseFuncAnimator):
     """
