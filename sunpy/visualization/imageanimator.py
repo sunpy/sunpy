@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import copy
 
 import matplotlib.pyplot as plt
 import matplotlib.widgets as widgets
@@ -8,7 +7,7 @@ import matplotlib.animation as mplanim
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import mpl_toolkits.axes_grid1.axes_size as Size
 
-__all__ = ['BaseFuncAnimator', 'MapCubeAnimator', 'ImageAnimator']
+__all__ = ['BaseFuncAnimator', 'ImageAnimator']
 
 class SliderPB(widgets.Slider):
     __doc__= widgets.Slider.__doc__
