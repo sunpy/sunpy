@@ -34,10 +34,3 @@ Valid values for filetype are 'fits', 'jp2' and 'ana'
 This will work for the three high-level IO functions.
 
 Full documentation for fits files is located :ref:`iofits`, :ref:`iojp2` and :ref:`ioana`.
-
-2. Other files
----------------
-
-For other file types unfortunately there is currently no support. 
-However, Python has many IO libraries and there will be the ability to read them in.
-You can join the IRC channel for support on freenode (#sunpy) or the mailing list (<https://groups.google.com/forum/#!forum/sunpy>) and the GitHub issues section (<https://github.com/sunpy/sunpy/issues>).
