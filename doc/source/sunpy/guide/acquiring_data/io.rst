@@ -22,19 +22,18 @@ Part of SunPys convenience is that these file types have general purpose high-le
 	io.write_file(filename)
 
 These are designed to take a filename and breakdown the name in order to automatically calculate the call required to either read or write this file. 
-SunPy has a "database" of file extensions which is compared against when using the high-level IO functions.
-When reading or writing a data file, the function will return a list of (data, header) pairs depending on how HDUs exist in the file. 
+SunPy has a list of known file types which is compared against when using the high-level IO functions.
+When reading a data file, the function will return a list of (data, header) pairs depending on how HDUs exist in the file. 
 It important to remember this.
 
 Further, you can force the filetype from this interface, like so::
 
 	io.read_file(filename,filetype= 'filetype of your choice')
 
+Valid values for filetype are 'fits', 'jp2' and 'ana'
 This will work for the three high-level IO functions.
 
-Full documentation for fits files is located :ref:`iofits`.
-Full JPEG 2000 documentation is located :ref:`iojp2`
-And Full documentation associated with ANA files is located :ref:`ioana`
+Full documentation for fits files is located :ref:`iofits`, :ref:`iojp2` and :ref:`ioana`.
 
 2. Other files
 ---------------
