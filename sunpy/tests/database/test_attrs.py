@@ -47,8 +47,8 @@ def session():
 def vso_session():
     client = vso.VSOClient()
     qr = client.query(
-        vso.attrs.Time('20110608T235955', '2011-06-09'),
-        vso.attrs.Instrument('aia'))
+        vso.attrs.Time((2011, 9, 20, 1), (2011, 9, 20, 2)),
+        vso.attrs.Instrument('RHESSI'))
     entries = tables.entries_from_query_result(qr)
     database = Database('sqlite:///:memory:')
     for entry in entries:
