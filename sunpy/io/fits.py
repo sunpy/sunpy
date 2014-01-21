@@ -54,7 +54,7 @@ def read(filepath, hdus=None):
     ----------
     filepath : string
         The fits file to be read
-    hdu: list or interable
+    hdu: int or interable
         The HDU indexes to read from the file
 
     Returns
@@ -70,7 +70,7 @@ def read(filepath, hdus=None):
     'comment' key in the returned FileHeader.
     """
     hdulist = fits.open(filepath)
-    if not hdus is None:
+    if hdus is not None:
         if isinstance(hdus, int):
             hdulist = hdulist[hdus]
         elif isinstance(hdus, collections.Iterable):
