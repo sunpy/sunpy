@@ -28,10 +28,8 @@ class anaTests(unittest.TestCase):
     
     def testi8c(self):
         # Test int 8 compressed functions
-        ana.write('/tmp/pyana-testi8c', self.img_i8, 'testcase', 1)
+        ana.write('/tmp/pyana-testi8c', self.img_i8, 'testcase', 0)
         self.img_i8c_rec = ana.read('/tmp/pyana-testi8c')
-        print type(self.img_i8c_rec[0][0])
-        print type(self.img_i8)
         self.assert_(np.sum(self.img_i8c_rec[0][0] - self.img_i8) == 0,
              msg="Storing 8 bits integer data with compression failed (diff: %d)" % (np.sum(self.img_i8c_rec[0][0] - self.img_i8)))
     
@@ -44,7 +42,7 @@ class anaTests(unittest.TestCase):
     
     def testi16c(self):
         # Test int 16 compressed functions
-        ana.write('/tmp/pyana-testi16c', self.img_i16, 'testcase', 1)
+        ana.write('/tmp/pyana-testi16c', self.img_i16, 'testcase', 0)
         self.img_i16c_rec = ana.read('/tmp/pyana-testi16c')
         self.assert_(np.sum(self.img_i16c_rec[0][0] - self.img_i16) == 0,
             msg="Storing 16 bits integer data with compression failed (diff: %d)" % (np.sum(self.img_i16c_rec[0][0] - self.img_i16)))
@@ -67,7 +65,7 @@ class anaTests(unittest.TestCase):
         # Test if float 32 compressed functions
         #TODO: Bug with same code. Needs to be tracked down.
     
-#        ana.write('/tmp/pyana-testf32c', self.img_f32, 1, 'testcase', 1)
+#        ana.write('/tmp/pyana-testf32c', self.img_f32, 1, 'testcase', 0)
 #        self.img_f32c_rec = ana.read('/tmp/pyana-testf32c', 1)
 #        self.assert_(np.sum(self.img_f32c_rec[0][1]- self.img_f32) == 0,
 #            msg="Storing 32 bits float data without compression failed (diff: %g)" % (1.0*np.sum(self.img_f32c_rec[0][1] - self.img_f32)))    
