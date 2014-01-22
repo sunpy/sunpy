@@ -118,7 +118,7 @@ def split_series_using_lytaf(timearray,data,lar):
 
     if len(disc) == 0:
         print 'No events found within time series interval. Returning original series.'
-        return {'subtimes':datetime_array,'subdata':data}
+        return [{'subtimes':datetime_array,'subdata':data}]
     
     #-1 in diffmask means went from good data to bad
     #+1 means went from bad data to good
