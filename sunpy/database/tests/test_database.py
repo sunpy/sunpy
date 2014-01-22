@@ -7,11 +7,13 @@ from __future__ import absolute_import
 
 from datetime import datetime
 import glob
+import ConfigParser
 import os.path
 
 import pytest
 import sqlalchemy
 
+import sunpy
 from sunpy.database import Database, EntryAlreadyAddedError,\
     EntryAlreadyStarredError, EntryAlreadyUnstarredError, NoSuchTagError,\
     EntryNotFoundError, TagAlreadyAssignedError, disable_undo
@@ -77,6 +79,18 @@ def filled_database():
     database.commit()
     return database
 
+def test_config_url(monkeypatch):
+    monkeypatch.setattr("sunpy.config", ConfigParser.SafeConfigParser())
+    url = 'sqlite:///test.sqlite'
+    sunpy.config.add_section('database')
+    sunpy.config.set('database', 'url', url)
+    database = Database()
+    assert database.url == url
+
+def test_config_url_none(monkeypatch):
+    monkeypatch.setattr("sunpy.config", ConfigParser.SafeConfigParser())
+    with pytest.raises(ConfigParser.NoSectionError):
+        database = Database()
 
 def test_tags_unique(database):
     entry = DatabaseEntry()

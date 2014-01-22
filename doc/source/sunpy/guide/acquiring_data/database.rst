@@ -47,6 +47,16 @@ committed explicitly using the :meth:`Database.commit` method.
     on them explicitly before quitting the Python session! Otherwise, all
     changes on the altered databases are lost!
 
+.. note::
+
+    You can set the default database url in the sunpy config file under the
+    'database' section. See :ref:`customizing-sunpy` for information on the 
+    config file. A database section might look like this::
+
+        [database]
+        url = sqlite:////home/user/sunpy/my_database.sqlite
+
+
 2. Adding new entries
 ---------------------
 Before explaining how to add new entries, it is important to know what
