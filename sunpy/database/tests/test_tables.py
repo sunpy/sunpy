@@ -40,6 +40,13 @@ def qr_block_with_missing_physobs():
         vso.attrs.Provider('SSC'), vso.attrs.Wave(10, 160, 'kHz'))[0]
 
 
+@pytest.fixture
+def qr_block_with_kev_unit():
+    return vso.VSOClient().query(
+        vso.attrs.Time((2011, 9, 20, 1), (2011, 9, 20, 2)),
+        vso.attrs.Instrument('RHESSI'))[0]
+
+
 def test_fits_header_entry_equality():
     assert FitsHeaderEntry('key', 'value') == FitsHeaderEntry('key', 'value')
     assert not (FitsHeaderEntry('key', 'value') == FitsHeaderEntry('k', 'v'))
@@ -90,6 +97,21 @@ def test_entry_from_qr_block_with_missing_physobs(qr_block_with_missing_physobs)
         observation_time_end=datetime(2013, 8, 6), instrument='SWAVES',
         size=3601.08, wavemin=2398339664000.0, wavemax=18737028625.0)
     assert entry == expected_entry
+
+
+@pytest.mark.online
+def test_entry_from_qr_block_kev(qr_block_with_kev_unit):
+    # See issue #766.
+    entry = DatabaseEntry._from_query_result_block(qr_block_with_kev_unit)
+    assert entry.source == 'RHESSI'
+    assert entry.provider == 'LSSP'
+    assert entry.fileid == '/hessidata/2011/09/20/hsi_20110920_010920'
+    assert entry.observation_time_start == datetime(2011, 9, 20, 1, 9, 20)
+    assert entry.observation_time_end == datetime(2011, 9, 20, 2, 27, 40)
+    assert entry.instrument == 'RHESSI'
+    assert entry.size == -1
+    assert round(entry.wavemin, 3) == 0.413
+    assert round(entry.wavemax, 7) == 0.0000729
 
 
 def test_entries_from_file():
