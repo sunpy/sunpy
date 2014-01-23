@@ -604,6 +604,17 @@ def display_entries(database_entries, columns):
                 row.append('Yes' if entry.starred else 'No')
             elif col == 'tags':
                 row.append(', '.join(imap(str, entry.tags)) or 'N/A')
+            # do not display microseconds in datetime columns
+            elif col in (
+                    'observation_time_start',
+                    'observation_time_end',
+                    'download_time'):
+                time = getattr(entry, col, None)
+                if time is None:
+                    formatted_time = 'N/A'
+                else:
+                    formatted_time = time.strftime('%Y-%m-%d %H:%M:%S')
+                row.append(formatted_time)
             else:
                 row.append(str(getattr(entry, col) or 'N/A'))
         if not row:

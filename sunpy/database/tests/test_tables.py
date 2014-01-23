@@ -340,14 +340,15 @@ def test_display_entries():
             fileid='pptid=11010...',
             observation_time_start=datetime(2010, 1, 1, 0, 59),
             observation_time_end=datetime(2010, 1, 1, 1),
+            download_time=datetime(2014, 6, 15, 3, 42, 55, 123456),
             instrument='Merged gong', size=944.0,
             wavemin=6768.0, wavemax=6768.0, starred=True)]
     columns = [
-        'id', 'source', 'provider', 'physobs', 'fileid',
-        'observation_time_start', 'observation_time_end', 'instrument', 'size',
+        'id', 'source', 'provider', 'physobs', 'fileid', 'download_time',
+        'observation_time_start', 'instrument', 'size',
         'wavemin', 'path', 'starred', 'tags']
     table = display_entries(entries, columns)
     filedir = os.path.dirname(os.path.realpath(__file__))
     with open(os.path.join(filedir,'test_table.txt'), 'r') as f:
         stored_table = f.read()
-    assert table == stored_table
+    assert table.strip() == stored_table.strip()
