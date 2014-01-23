@@ -5,7 +5,7 @@ import datetime
 
 import sunpy
 
-__all__ = ['system_info']
+__all__ = ['system_info', 'sys_prop_test', 'sys_prop_print']
 
 def system_info():
     """Prints system information.
@@ -29,9 +29,6 @@ def system_info():
     system = platform.system()
     proc = platform.processor()
     
-    print("###########")
-    print(" General")
-    print("###########")
     
     # OS and architecture information
     if system == "Linux":
@@ -49,6 +46,9 @@ def system_info():
     arch = platform.architecture()[0]
     print("Python: %s (%s)\n" % (platform.python_version(), arch))
 
+
+    
+def sys_prop_test():
     try:
         from sunpy.version import version as sunpy_version
         from sunpy.version import git_description as sunpy_git_description
@@ -94,32 +94,62 @@ def system_info():
 
     try:
         from suds import __version__ as suds_version
-    except ImportError:
+    except:
         suds_version = "NOT INSTALLED"
-
-    print("####################")
-    print(" Required libraries")
-    print("####################")
-
-    if sunpy_git_description == 'N/A':
-        print("SunPy: %s" % sunpy_version)
+        
+    sys_prop = {'Time' : datetime.datetime.utcnow().strftime("%A, %d. %B %Y %I:%M%p UT"),
+                'System' : platform.system(), 'Processor' : platform.processor(), 
+                'Arch' : platform.architecture()[0], "Python" : platform.python_version(),
+                'SunPy': sunpy_version, 
+                'SunPy_git' : sunpy_git_description, 'NumPy' : numpy_version, 
+                'SciPy' : scipy_version, 'matplotlib' : matplotlib_version,
+                'Astropy' : astropy_version, 'Pandas' : pandas_version, 
+                'beautifulsoup' : bs4_version, 'PyQt' : pyqt_version,
+                'SUDS' : suds_version
+                }
+    return sys_prop
+    
+def sys_prop_print():
+    sys_prop = sys_prop_test()
+    
+    
+# general properties      
+    print("###########")
+    print(" General")
+    print("###########")   
+    # OS and architecture information
+    
+    for i in ['Time', 'System', 'Processor', 'Arch']:
+        print i + ' : ' + sys_prop[i]
+        
+    if sys_prop['System'] == "Linux":
+        distro = " ".join(platform.linux_distribution())
+        print("OS: %s (Linux %s %s)" %  (distro, platform.release(), sys_prop['Processor']))
+    elif sys_prop['System'] == "Darwin":
+        print("OS: Mac OS X %s (%s)" %  (platform.mac_ver()[0], sys_prop['Processor']))
+    elif sys_prop['System'] == "Windows":
+        print("OS: Windows %s %s (%s)" %  (platform.release(), 
+                                        platform.version(), sys_prop['Processor']))
     else:
-        print("SunPy: %s (%s)" % (sunpy_version, sunpy_git_description))
+        print ("Unknown OS (%s)" % sys_prop['Processor'])
 
-    print("NumPy: %s" % numpy_version)
-    print("SciPy: %s" % scipy_version)
-    print("Matplotlib: %s" % matplotlib_version)
-    print("AstroPy: %s" % astropy_version)
-    print("pandas: %s" % pandas_version)
-
-    print("")
-
-    print("#######################")
-    print(" Recommended libraries")
-    print("#######################")
-
-    print("beautifulsoup4: %s" % bs4_version)
-    print("PyQt: %s" % pyqt_version)
-    print("SUDS: %s" % suds_version)
-
-    print("")
+    
+    print "\n"
+# required libraries
+    print("###########")
+    print(" Required Libraries ")
+    print("###########")
+    
+    for i in ['Python', 'SunPy', 'SunPy_git', 'NumPy', 'SciPy',
+              'matplotlib', 'Astropy', 'Pandas']:
+        print i + ' : ' + sys_prop[i]
+    
+    print "\n"
+    
+# recommended
+    print("###########")    
+    print(" Recommended Libraries ") 
+    print("###########")
+        
+    for i in ['beautifulsoup', 'PyQt', 'SUDS']:
+        print i + ' : ' + sys_prop[i]
