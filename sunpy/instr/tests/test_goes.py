@@ -2,6 +2,7 @@ from __future__ import absolute_import
 
 import datetime
 from sunpy.time import TimeRange
+from sunpy.instr import goes
 
 def test_goes_event_list():
     trange=TimeRange('2011-06-07 00:00','2011-06-08 00:00')
