@@ -25,30 +25,14 @@ def system_info():
     print(" SunPy Installation Information\n")
     print(" " + datetime.datetime.utcnow().strftime("%A, %d. %B %Y %I:%M%p UT"))
     print("==========================================================\n")
-    
-    system = platform.system()
-    proc = platform.processor()
-    
-    
-    # OS and architecture information
-    if system == "Linux":
-        distro = " ".join(platform.linux_distribution())
-        print("OS: %s (Linux %s %s)" %  (distro, platform.release(), proc))
-    elif system == "Darwin":
-        print("OS: Mac OS X %s (%s)" %  (platform.mac_ver()[0], proc))
-    elif system == "Windows":
-        print("OS: Windows %s %s (%s)" %  (platform.release(), 
-                                        platform.version(), proc))
-    else:
-        print ("Unknown OS (%s)" % proc)
-        
-    # Python version
-    arch = platform.architecture()[0]
-    print("Python: %s (%s)\n" % (platform.python_version(), arch))
 
 
     
 def sys_prop_test():
+    system = platform.system()
+    proc = platform.processor()
+    
+    
     try:
         from sunpy.version import version as sunpy_version
         from sunpy.version import git_description as sunpy_git_description
@@ -112,6 +96,11 @@ def sys_prop_test():
 def sys_prop_print():
     sys_prop = sys_prop_test()
     
+# title
+    print("==========================================================")
+    print(" SunPy Installation Information\n")
+    print("==========================================================\n")  
+        
     
 # general properties      
     print("###########")
