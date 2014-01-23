@@ -286,7 +286,12 @@ class DatabaseEntry(Base):
             if default_waveunit is not None:
                 unit = Unit(default_waveunit)
         else:
-            unit = Unit(wave.waveunit)
+            # some query response blocks store the unit "kev",
+            # but AstroPy only understands "keV". See issue #766.
+            waveunit = wave.waveunit
+            if waveunit == "kev":
+                waveunit = "keV"
+            unit = Unit(waveunit)
         if wave.wavemin is None:
             wavemin = None
         else:
