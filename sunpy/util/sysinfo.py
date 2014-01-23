@@ -5,30 +5,11 @@ import datetime
 
 import sunpy
 
-__all__ = ['system_info', 'sys_prop_test', 'sys_prop_print']
+__all__ = ['system_info', 'sys_prop_print']
 
+
+    
 def system_info():
-    """Prints system information.
-    
-    Prints information about the runtime environment that SunPy lives in.
-    Information about the OS, architecture, Python, and all major dependencies
-    are included.
-    
-    The goal of this function is to provide enough information for someone
-    running SunPy code or replicating a bug to setup a comparible environment
-    to that which was originally used.
-    
-    Author: `Keith Hughitt <keith.hughitt@nasa.gov>` 
-    """
-    
-    print("==========================================================")
-    print(" SunPy Installation Information\n")
-    print(" " + datetime.datetime.utcnow().strftime("%A, %d. %B %Y %I:%M%p UT"))
-    print("==========================================================\n")
-
-
-    
-def sys_prop_test():
     system = platform.system()
     proc = platform.processor()
     
@@ -94,7 +75,7 @@ def sys_prop_test():
     return sys_prop
     
 def sys_prop_print():
-    sys_prop = sys_prop_test()
+    sys_prop = system_info()
     
 # title
     print("==========================================================")
