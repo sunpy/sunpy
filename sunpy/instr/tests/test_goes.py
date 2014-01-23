@@ -1,4 +1,4 @@
-from __future__import absolute_import
+from __future__ import absolute_import
 
 import datetime
 from sunpy.time import TimeRange
@@ -14,7 +14,7 @@ def test_goes_event_list():
     assert type(result[0]['start_time'] == datetime)
     assert type(result[0]['end_time'] == datetime)
     assert type(result[0]['goes_class'] == str)
-    assert type(result[0]['noaa_active_region'] == int
+    assert type(result[0]['noaa_active_region'] == int)
     assert result[0]['event_date'] == '2011-06-07'
     assert result[0]['goes_location'] == (54, -21)
     assert result[0]['start_time'] == datetime.datetime(2011,6,7,6,16)
@@ -23,3 +23,7 @@ def test_goes_event_list():
     assert result[0]['goes_class'] == 'M2.5'
     assert result[0]['noaa_active_region'] == 11226
      
+
+
+
+
