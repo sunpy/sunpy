@@ -26,7 +26,7 @@ Posters/Presentations
 If you are giving a talk or presenting a poster which used SunPy and would like to
 acknowledge it please include the Sunpy logo on the title or conclusion slide.
 
-.. image:: ../../logo/sunpy_powered_300x153.png
+.. image:: ../logo/sunpy_powered_300x153.png
     :width: 300px
     :align: center
     :height: 153px
