@@ -65,7 +65,7 @@ def system_info():
 
     try:
         from suds import __version__ as suds_version
-    except:
+    except ImportError:
         suds_version = "NOT INSTALLED"
         
     sys_prop = {'Time' : datetime.datetime.utcnow().strftime("%A, %d. %B %Y %I:%M%p UT"),
@@ -95,8 +95,8 @@ def sys_prop_print():
     print("###########")   
     # OS and architecture information
     
-    for i in ['Time', 'System', 'Processor', 'Arch']:
-        print i + ' : ' + sys_prop[i]
+    for sys_info in ['Time', 'System', 'Processor', 'Arch']:
+        print '%s : %s' % (sys_info, sys_prop[sys_info])
         
     if sys_prop['System'] == "Linux":
         distro = " ".join(platform.linux_distribution())
@@ -116,9 +116,9 @@ def sys_prop_print():
     print(" Required Libraries ")
     print("###########")
     
-    for i in ['Python', 'SunPy', 'SunPy_git', 'NumPy', 'SciPy',
+    for sys_info in ['Python', 'SunPy', 'SunPy_git', 'NumPy', 'SciPy',
               'matplotlib', 'Astropy', 'Pandas']:
-        print i + ' : ' + sys_prop[i]
+        print '%s : %s' % (sys_info, sys_prop[sys_info])
     
     print "\n"
     
@@ -127,5 +127,5 @@ def sys_prop_print():
     print(" Recommended Libraries ") 
     print("###########")
         
-    for i in ['beautifulsoup', 'PyQt', 'SUDS']:
-        print i + ' : ' + sys_prop[i]
+    for sys_info in ['beautifulsoup', 'PyQt', 'SUDS']:
+        print '%s : %s' % (sys_info, sys_prop[sys_info])
