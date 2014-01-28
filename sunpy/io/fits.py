@@ -54,7 +54,7 @@ def read(filepath, hdus=None):
     ----------
     filepath : string
         The fits file to be read
-    hdu: int or interable
+    hdu: int or iterable
         The HDU indexes to read from the file
 
     Returns
