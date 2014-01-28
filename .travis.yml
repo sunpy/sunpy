@@ -11,12 +11,17 @@ virtualenv:
 # above.
 env:
     global:
-        - PIP_WHEEL_COMMAND="--find-links http://sunpy.cadair.com/wheelhouse/index.html --use-wheel --upgrade"
+        - PIP_WHEEL_COMMAND="--use-mirrors --find-links http://sunpy.cadair.com/wheelhouse/index.html --use-wheel --upgrade"
         - SUDS_PKG='suds-jurko==0.4.1.jurko.4'
+        - TEST_MODE='tests'
     matrix:
+        - NUMPY_VERSION=1.8.0 PANDAS_VERSION=0.12.0
         - NUMPY_VERSION=1.7.1 PANDAS_VERSION=0.12.0
-        - NUMPY_VERSION=1.6.2 PANDAS_VERSION=0.12.0
-        - NUMPY_VERSION=1.7.1 PANDAS_VERSION=0.11.0
+        - NUMPY_VERSION=1.8.0 PANDAS_VERSION=0.11.0
+matrix:
+     include:
+        - python: 2.7
+          env: TEST_MODE='sphinx' NUMPY_VERSION=1.8.0 PANDAS_VERSION=0.12.0
 
 before_install:
 # Pick the suds version based on the python version
@@ -24,6 +29,7 @@ before_install:
 # Make sure the system is upto date and install scipy requirements
    - sudo apt-get update -qq
    - sudo apt-get install -qq libatlas-dev liblapack-dev gfortran
+   - if [[ $TEST_MODE == 'sphinx' ]]; then sudo apt-get install graphviz texlive-latex-extra dvipng; fi
 # Make sure pip is at the latest version (>1.4 for wheels)
    - pip install pip --upgrade
 # Wheels also need a recent version of setuptools
@@ -31,6 +37,8 @@ before_install:
 # Install more upto date openjpeg library.
    - wget http://openjpeg.googlecode.com/files/openjpeg-1.5.0-Linux-x86_64.tar.gz
    - sudo tar -xvf openjpeg-1.5.0-Linux-x86_64.tar.gz --strip-components=1 -C /
+# Install coveralls
+   - pip install $PIP_WHEEL_COMMAND python-coveralls pytest-cov
 
 # Install all SunPy dependacies using wheels.
 install:
@@ -41,14 +49,20 @@ install:
 # Manually install pandas deps due to a pip 1.4 / pytz bug
    - pip install $PIP_WHEEL_COMMAND pytz==2013b python-dateutil
    - pip install $PIP_WHEEL_COMMAND pandas==$PANDAS_VERSION
-   - pip install $PIP_WHEEL_COMMAND astropy
+   - pip install $PIP_WHEEL_COMMAND astropy>=0.3.0
    - pip install $PIP_WHEEL_COMMAND $SUDS_PKG beautifulsoup4
    - pip install $PIP_WHEEL_COMMAND pytest 
-   - pip install $PIP_WHEEL_COMMAND glymur 
+   - pip install $PIP_WHEEL_COMMAND glymur
+#Install sphinx if needed
+   - if [[ $TEST_MODE == 'sphinx' ]]; then pip install $PIP_WHEEL_COMMAND sphinx>=1.2; fi 
 # Install SunPy and run tests.
 script:
-  - python setup.py develop
-  - py.test
+   - python setup.py develop
+   - if [[ $TEST_MODE == 'sphinx' ]]; then cd doc/source && sphinx-build -W -b html -d _build/doctrees   . _build/html; fi
+   - if [[ $TEST_MODE == 'tests' ]]; then py.test -k-fails_on_travis --cov-report html --cov sunpy; fi
+
+after_success:
+   - coveralls
 
 # Notify the IRC channel of build status
 notifications:

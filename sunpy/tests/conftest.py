@@ -26,5 +26,5 @@ def pytest_runtest_setup(item):
     """
     if isinstance(item, item.Function):
         if 'online' in item.keywords and not is_online():
-            msg = 'skipping test {} (reason: client seems to be offline)'
+            msg = 'skipping test {0} (reason: client seems to be offline)'
             pytest.skip(msg.format(item.name))

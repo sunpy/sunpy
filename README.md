@@ -1,5 +1,4 @@
-SunPy
-=====
+# [SunPy](http://http://sunpy.github.io) [![Build Status](https://secure.travis-ci.org/sunpy/sunpy.png)](http://travis-ci.org/sunpy/sunpy)[![Coverage Status](https://coveralls.io/repos/sunpy/sunpy/badge.png?branch=master)](https://coveralls.io/r/sunpy/sunpy?branch=master)
 
 SunPy is an open-source Python library for solar physics data analysis.
 
@@ -9,13 +8,14 @@ Installation
 To begin, install the following requirements:
 
  * [Python]([Python](http://www.python.org) (2.6+)
- * [Astropy](http://astropy.org) (0.2.0+)
+ * [Astropy](http://astropy.org) (0.3.0)
  * [NumPy](http://numpy.scipy.org/)
  * [SciPy](http://www.scipy.org/)
  * [Matplotlib](http://matplotlib.sourceforge.net/) (1.1+)
  * [Suds](https://fedorahosted.org/suds)
  * [pandas](http://pandas.pydata.org/) (0.10.0+)
  * [beautifulsoup4](http://www.crummy.com/software/BeautifulSoup/)
+ * [sqlalchemy](http://www.sqlalchemy.org/)
 
 Next, use git to grab the latest version of SunPy:
 

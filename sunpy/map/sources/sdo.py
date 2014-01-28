@@ -30,6 +30,7 @@ class AIAMap(GenericMap):
 #        self.meta['instrme'] = "AIA"
         
         self._nickname = self.detector
+        self._name = self.detector + " " + str(self.measurement)
         
         self.cmap = cm.get_cmap('sdoaia%d' % self.wavelength)
     
@@ -71,12 +72,12 @@ class HMIMap(GenericMap):
 #        self.meta['instrme'] = "HMI"
 #        self.meta['obsrvtry'] = "SDO"
 
-        self._name = self.detector + str(self.measurement)
+        self._name = self.detector + " " + str(self.measurement)
         self._nickname = self.detector
     
     @property
     def measurement(self):
-        return header['content'].split(" ")[0].lower()
+        return self.meta['content'].split(" ")[0].lower()
     
     @property
     def observatory(self):

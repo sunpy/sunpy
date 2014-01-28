@@ -8,14 +8,11 @@ Welcome to the SunPy User Guide!
    :maxdepth: 3
    
    installation/index
-   tutorial
+   tour
+   acquiring_data/index
+   data_types/index
    plotting
    time
-   vso
-   helioviewer
-   maps
-   hek
-   lightcurve
-   spectra
+   roi
    customization
    troubleshooting

@@ -7,10 +7,7 @@ import datetime
 import urlparse
 
 from matplotlib import pyplot as plt
-try:
-    import astropy.io.fits as pyfits
-except ImportError:
-    import pyfits
+from astropy.io import fits
 import pandas
 
 import sunpy
@@ -20,16 +17,18 @@ from sunpy.time import parse_time
 __all__ = ['LYRALightCurve']
 
 class LYRALightCurve(LightCurve):
-    """LYRA light curve definition
+    """
+    Proba-2 LYRA LightCurve.
 
     Examples
     --------
-    import sunpy
-    lyra = sunpy.lightcurve.LYRALightCurve.create()
-    lyra = sunpy.lightcurve.LYRALightCurve.create('~/Data/lyra/lyra_20110810-000000_lev2_std.fits')
-    lyra = sunpy.lightcurve.LYRALightCurve.create('2011/08/10')
-    lyra = sunpy.lightcurve.LYRALightCurve.create("http://proba2.oma.be/lyra/data/bsd/2011/08/10/lyra_20110810-000000_lev2_std.fits")
-    lyra.peek()
+    >>> import sunpy
+    
+    >>> lyra = sunpy.lightcurve.LYRALightCurve.create()
+    >>> lyra = sunpy.lightcurve.LYRALightCurve.create('~/Data/lyra/lyra_20110810-000000_lev2_std.fits')
+    >>> lyra = sunpy.lightcurve.LYRALightCurve.create('2011/08/10')
+    >>> lyra = sunpy.lightcurve.LYRALightCurve.create("http://proba2.oma.be/lyra/data/bsd/2011/08/10/lyra_20110810-000000_lev2_std.fits")
+    >>> lyra.peek()
 
     References
     ----------
@@ -100,7 +99,7 @@ class LYRALightCurve(LightCurve):
     def _parse_fits(filepath):
         """Loads LYRA data from a FITS file"""
         # Open file with PyFITS
-        hdulist = pyfits.open(filepath)
+        hdulist = fits.open(filepath)
         fits_record = hdulist[1].data
         #secondary_header = hdulist[1].header
 
@@ -127,3 +126,5 @@ class LYRALightCurve(LightCurve):
 
         # Return the header and the data
         return hdulist[0].header, pandas.DataFrame(table, index=times)
+
+

@@ -1,0 +1,4 @@
+id source provider physobs      fileid            download_time       observation_time_start instrument  size  wavemin path starred tags    
+-- ------ -------- -------      ------            -------------       ---------------------- ----------  ----  ------- ---- ------- ----    
+1  SOHO   SDAC     intensity    /archive/soho/... N/A                 2001-01-01 07:00:14    EIT         259.0 171.0   N/A  No      foo, bar
+2  GONG   NSO      LOS_velocity pptid=11010...    2014-06-15 03:42:55 2010-01-01 00:59:00    Merged gong 944.0 6768.0  N/A  Yes     N/A     

@@ -2,166 +2,284 @@
 Installation
 ============
 
-Below are instructions for installing SunPy and its prerequisites on 
-different platforms.
+Requirements
+============
 
-SunPy's Dependancies
---------------------
 SunPy consists of many submodules that each have their own requirements. You do not need 
-to fufill all the requirements if you only intend on using parts of SunPy. It is of course
-reccomended that you install the requirements for all of SunPy.
+to fufill all the requirements if you only intend on using parts of SunPy.
+It is however *strongly* recommended to have all the dependancies installed (with the potential exception of `glymur`).
 
-The Full set of requirements is:
-numpy >= 1.6.0
-scipy >= 0.10.0
-matplotlib >= 1.1
-pandas >= 0.10.0
-astropy >= 0.2.0
-suds
-beautifulsoup4
+SunPy has the following strict requirements:
 
-To import SunPy core (including sun, time, util) you need the following dependacies:
-numpy
-scipy
+- `Python <http://www.python.org/>`_ 2.6 or 2.7
 
-Any submodules with extra requirements are listed below:
-instr:
-astropy.io.fits
-matplotlib
+- `NumPy <http://www.numpy.org/>`_  1.6.0 or later
 
-io:
-Optionally either of:
-astropy.io.fits
-openjpeg
+- `SciPy <http://www.scipy.org/>`_ 0.10.0 or later
 
-lightcurve:
-pandas
-astropy.io.fits
-matplotlib
+- `AstroPy <http://www.astropy.org/>`__ 0.3.0 or later
 
-map:
-astropy.io.fits
-matplotlib
+SunPy also depends on other packages for optional features.
+However, note that these only need to be installed if those particular features
+are needed. SunPy will import even if these dependencies are not installed.
 
-net:
-suds
-beautifulsoup4
+- `Matplotlib <http://http://matplotlib.org/>`_ [*Highly Recommended*] 1.3.0 or later: For `lightcurve`, `map`, `spectra`, `instr` and `vizualisation`.
 
-visualization:
-matplotlib
+- `pandas <http://pandas.pydata.org/>`_ 0.10 or later: For `lightcurve`.
 
-Installing Scientific Python
-----------------------------
-For instructions on setting up the scientific Python environment which is required by SunPy, 
-choose your OS from the list below. When you are done come back here and follow
-the instructions below to install SunPy and its requirements.
+- `sqlalchemy <http://www.sqlalchemy.org>`_: For the `database` package.
+
+- `suds <https://bitbucket.org/jurko/suds>`_: For `net.vso`.
+
+- `beautifulsoup4 <http://www.crummy.com/software/BeautifulSoup/>`_: For `Callisto` Spectrograms
+
+- `glymur <https://glymur.readthedocs.org/en/latest/>`_ 0.5.9 or later: To enable reading of JPEG2000 files.
+  Glymur requires the installation of the OpenJPEG C library. Which can be found `here <http://code.google.com/p/openjpeg/downloads/list>`.
+  
+- `pytest <http://pytest.org/latest/>`_: To run our tests.
+
+The packages that will be installed as dependencies by default are the ones required to import the core datatypes `map`, `lightcurve` and `spectra`. These are the strict requirements and the following optional packages:
+
+- `matplotlib`
+- `pandas`
+
+Installing SunPy
+================
+
+These instructions assume you have a scientific Python distribution installed. If you are new to Python then you will need to install such a distribution before continuing with these instructions.
+
+The simplest method of obtaining a scientific Python distribution is to install the cross platform :ref:`anaconda_install`. Alternatively, can follow the various platform specific instructions below:
 
 .. toctree::
    :maxdepth: 1
    
+   win
    mac
    linux
-   win
 
-Anaconda
-^^^^^^^^
-Alternatively, available for all platforms is Anaconda,
-a scientific Python distribution that is available free of charge
-from `https://store.continuum.io/cshop/anaconda/ <https://store.continuum.io/cshop/anaconda/>`_.
-It comes with a complete build environment so you will not need to worry about
-installing a compiler or likewise.
+Using `pip`
+-----------
 
-Head to the download page, install it and you are set. It can also be installed
-into your user directory without administrator permissions; be sure to use
-the Anaconda versions of the commands in the following listings if you have
-multiple Python environments installed.
-
-Installing Python Modules
--------------------------
-
-Making sure to have followed one of the guides previously. 
-You will have installed on your system: Python, Numpy, Scipy, Matplotlib, git, pip and Qt.
-There are few more remaining dependencies which must be installed using pip.
-Depending on which system you are using some of these may already be installed but it does not hurt to upgrade: ::
-
- pip install --upgrade distribute
- pip install --upgrade pyfits
- pip install --upgrade suds
- pip install --upgrade pandas
- pip install --upgrade beautifulsoup4
-
-We also recommend you use `ipython <http://ipython.org/>` (a great python enviromnent). 
-This can also be installed using pip: ::
-
- pip install --upgrade ipython
- 
-All done with the SunPy Python prerequisites. You are now ready to install SunPy itself.
-
-Installing SunPy
-----------------
-There are two different versions of SunPy.
-Currently, we recommend that users install the latest stable release.
-However, the bleeding edge version on our GitHub page is quite easy to install and you do get the latest and greatest but it may have bugs.
-Depending on your setup, you may need to preface each of the ``pip ...`` commands with ``sudo pip ...``.
-
-Grabbing the stable SunPy
-^^^^^^^^^^^^^^^^^^^^^^^^^
-It is as simple as this: ::
+To install SunPy with `pip`, simply run::
 
     pip install sunpy
 
-If you are upgrading the package: ::
+.. warning::
+    Users of the Anaconda python distribution should follow the instructions
+    for :ref:`anaconda_install`.
 
-    pip install --upgrade sunpy
+.. note::
 
-For those who like to download the source.
-You have a range of download locations.
+    If you wish to have all the optional packages installed you can install them
+    using pip thus::
 
-PyPi: `Download <https://pypi.python.org/packages/source/s/sunpy/sunpy-0.3.1.tar.gz>`_
+        pip install sqlalchemy
+        pip install suds
+        pip install beautifulsoup4
+        pip install glymur
 
-Github (tar.gz): `Download <https://github.com/sunpy/sunpy/tarball/0.3>`_ 
+.. note::
 
-Github (zip): `Download <https://github.com/sunpy/sunpy/zipball/0.3>`_ 
+    You will need a C compiler (e.g. ``gcc`` or ``clang``) to be installed (see
+    `Building from source`_ below) for the installation to succeed.
 
-Then you can use: ::
+.. note::
 
-    pip install ./<path to download>/SunPyDownload.file_extension
+    If you get a ``PermissionError`` this means that you do not have the
+    required administrative access to install new packages to your Python
+    installation.  In this case you may consider using the ``--user`` option
+    to install the package into your home directory.  You can read more about
+    how to do this in the `pip documentation <http://www.pip-installer.org/en/1.2.1/other-tools.html#using-pip-with-the-user-scheme>`_.
 
-In some cases you may need the ``--no-deps`` flag if pip is trying to upgrade dependencies such as SciPy and Matplotlib that are difficult to build from source and the likely errors will abort the upgrade.
-That's it folks!
+    Alternatively, if you intend to do development on other software that uses
+    SunPy, such as an affiliated package, consider installing SunPy into a
+    :ref:`virtualenv<using-virtualenv>`.
 
-Grabbing the latest SunPy
-^^^^^^^^^^^^^^^^^^^^^^^^^
-If you do fancy the latest version of SunPy.
-Then you will want to cd into directory you want to have SunPy located and now: ::
+    Do **not** install SunPy or other third-party packages using ``sudo``
+    unless you are fully aware of the risks.
 
- git clone git@github.com:sunpy/sunpy.git
+.. _anaconda_install:
 
-or using HTTP: ::
+Anaconda python distribution
+----------------------------
+To install the Anaconda Python distribution follow the instructions `here <http://docs.continuum.io/anaconda/install.html>`_.
 
- git clone http://github.com/sunpy/sunpy.git
+.. note::
 
-This will download the SunPy repository and create a sunpy folder at the current location.
-With time, updates will happen and you can update your local copy by: ::
+    On OS/X you need to install XCode so you can build SunPy's extensions.
+    see :ref:`xcode`
 
- git pull upstream master
+To install SunPy launch the Anaconda command prompt or a system prompt and run the following commands.
 
-Finally, to install or upgrade the local version of SunPy you can run: ::
+To install SunPy's extra dependancies run::
 
- python setup.py install --upgrade
+    conda update astropy
+    conda install suds
 
-Testing your installation
--------------------------
+To install run::
+ 
+ 	conda install sunpy
 
-Now you can test your installation. Open a new Python shell and type these 
-commands: ::
+To update to the latest version run::
 
->>> import sunpy
->>> sunpy.Map(sunpy.AIA_171_IMAGE).peek()
+    conda update sunpy
 
-If all goes well you should see an AIA 171 image on your screen.
+.. note::
 
-Contributing to SunPy
----------------------
-If you are considering contributing to the development of SunPy and please do consider it.
-Please see :ref:`dev-reference-label` as it will explain everything required to start contributing.
+    Currently Glymur / JPEG2000 support is not tested under Anaconda on any platforms. If you require JPEG2000 support either use a different install method, or contact the SunPy mailing list.
+
+Testing an installed SunPy
+--------------------------
+
+The easiest way to test your installed version of SunPy is running
+correctly is to use the :func:`sunpy.tests` function::
+
+    import sunpy.tests
+    sunpy.tests.main()
+
+The tests should run and print out any failures, which you can report at
+the `SunPy issue tracker <http://github.com/sunpy/sunpy/issues>`_.
+
+Building from source
+====================
+
+Prerequisites
+-------------
+
+You will need a compiler suite and the development headers for Python and
+Numpy in order to build SunPy. On Linux, using the package manager for your
+distribution will usually be the easiest route, while on MacOS X you will
+need the XCode command line tools.
+
+The `instructions for building Numpy from source
+<http://docs.scipy.org/doc/numpy/user/install.html>`_ are also a good
+resource for setting up your environment to build Python packages.
+
+You will also need `Cython <http://cython.org/>`_ installed to build
+from source, unless you are installing a numbered release. (The releases
+packages have the necessary C files packaged with them, and hence do not
+require Cython.)
+
+.. note:: If you are using MacOS X, you will need to the XCode command line
+          tools.  One way to get them is to install `XCode
+          <https://developer.apple.com/xcode/>`_. If you are using OS X 10.7
+          (Lion) or later, you must also explicitly install the command line
+          tools. You can do this by opening the XCode application, going to
+          **Preferences**, then **Downloads**, and then under **Components**,
+          click on the Install button to the right of **Command Line Tools**.
+          Alternatively, on 10.7 (Lion) or later, you do not need to install
+          XCode, you can download just the command line tools from
+          https://developer.apple.com/downloads/index.action (requires an Apple
+          developer account).
+
+Obtaining the source packages
+-----------------------------
+
+Source packages
+^^^^^^^^^^^^^^^
+
+The latest stable source package for SunPy can be `downloaded here
+<https://pypi.python.org/pypi/sunpy>`_.
+
+Development repository
+^^^^^^^^^^^^^^^^^^^^^^
+
+The latest development version of SunPy can be cloned from github
+using this command::
+
+   git clone git://github.com/sunpy/sunpy.git
+
+.. note::
+
+   If you wish to participate in the development of SunPy, see
+   :ref:`developer-docs`.  This document covers only the basics
+   necessary to install SunPy.
+
+Building and Installing
+-----------------------
+
+SunPy uses the Python `distutils framework
+<http://docs.python.org/install/index.html>`_ for building and
+installing and requires the
+`distribute <http://pypi.python.org/pypi/distribute>`_ extension--the later is
+automatically downloaded when running ``python setup.py`` if it is not already
+provided by your system.
+
+If Numpy is not already installed in your Python environment, the
+SunPy setup process will try to download and install it before
+continuing to install SunPy.
+
+To build SunPy (from the root of the source tree)::
+
+    python setup.py build
+
+To install SunPy (from the root of the source tree)::
+
+    python setup.py install
+
+Troubleshooting
+---------------
+
+If you get an error mentioning that you do not have the correct permissions to
+install SunPy into the default ``site-packages`` directory, you can try
+installing with::
+
+    python setup.py install --user
+
+which will install into a default directory in your home directory.
+
+Building documentation
+----------------------
+
+.. note::
+    Building the documentation is in general not necessary unless you
+    are writing new documentation or do not have internet access, because
+    the latest (and archive) versions of SunPy's documentation should
+    be available at `sunpy.readthedocs.org <http://sunpy.readthedocs.org>`_ .
+
+Building the documentation requires the SunPy source code and some additional
+packages:
+
+    - `Sphinx <http://sphinx.pocoo.org>`_ (and its dependencies) 1.0 or later
+
+    - `Graphviz <http://www.graphviz.org>`_
+
+.. note::
+
+    Sphinx also requires a reasonably modern LaTeX installation to render
+    equations.  Per the `Sphinx documentation
+    <http://sphinx-doc.org/builders.html?highlight=latex#sphinx.builders.latex.LaTeXBuilder>`_,
+    for the TexLive distribution the following packages are required to be
+    installed:
+
+    * latex-recommended
+    * latex-extra
+    * fonts-recommended
+
+    For other LaTeX distributions your mileage may vary. To build the PDF
+    documentation using LaTeX, the ``fonts-extra`` TexLive package or the
+    ``inconsolata`` CTAN package are also required.
+
+There are two ways to build the SunPy documentation. The most straightforward
+way is to execute the command (from the sunpy source directory)::
+
+    python setup.py build_sphinx
+
+The documentation will be built in the ``docs/_build/html`` directory, and can
+be read by pointing a web browser to ``docs/_build/html/index.html``.
+
+The LaTeX documentation can be generated by using the command::
+
+    python setup.py build_sphinx -b latex
+
+The LaTeX file ``SunPy.tex`` will be created in the ``docs/_build/latex``
+directory, and can be compiled using ``pdflatex``.
+
+The above method builds the API documentation from the source code.
+Alternatively, you can do::
+
+    cd docs/source
+    make html
+
+And the documentation will be generated in the same location, but using the
+*installed* version of SunPy.

@@ -123,9 +123,9 @@ what you are doing. Also make sure to make your commit statements clear and unde
 In order to use the version of SunPy located  in your personal repository. 
 You need to install it using the `setup.py` script located in the top-level folder.
 The `setup.py` script has several flags: ::
- `develop` : Installs SunPy and builds all external libraries. 
- `build` or `build_ext`:  (Re)Builds the external libraries.
- `clean --all`: Cleans all build files 
+`develop` : Installs SunPy and builds all external libraries. 
+`build` or `build_ext`:  (Re)Builds the external libraries.
+`clean --all`: Cleans all build files 
 
 Use the `setup.py` script like so: ::
 
@@ -489,7 +489,7 @@ Example (:class:`sunpy.map.Map`) ::
     >>> aia.show()
     >>> import matplotlib.cm as cm
     >>> import matplotlib.colors as colors
-    >>> aia.show(cmap=cm.hot, norm=colors.Normalize(1, 2048))
+    >>> aia.peek(cmap=cm.hot, norm=colors.Normalize(1, 2048))
     
     See Also
     --------
@@ -591,7 +591,7 @@ Lists should be indented one level from their parents.
 **ERROR: Unkown target name: "xxx"**
 
 In addition to legitimate errors of this type, this error will also occur when
-variables have a trailing underscore, e.g., "xxx_".
+variables have a trailing underscore, e.g., ``xxx_``.
 
 **WARNING: Explicit markup ends without a blank line; unexpected unindent.**
 
