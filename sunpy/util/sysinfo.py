@@ -10,6 +10,12 @@ __all__ = ['system_info', 'sys_prop_print']
 
     
 def system_info():
+    """
+    
+
+    """    
+    
+    
     system = platform.system()
     proc = platform.processor()
     
