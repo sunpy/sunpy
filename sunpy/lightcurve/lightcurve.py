@@ -75,8 +75,8 @@ class LightCurve(object):
     
     @property
     def header(self):
-        warnings.warn("""map.header has been renamed to map.meta
-for compatability with astropy, please use meta instead""", Warning)
+        warnings.warn("""lightcurve.header has been renamed to map.meta
+for compatability with map, please use meta instead""", Warning)
         return self.meta
 
     @classmethod
