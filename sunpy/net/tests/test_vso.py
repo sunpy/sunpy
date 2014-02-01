@@ -171,6 +171,6 @@ def test_wave_repr():
     """Tests the __repr__ method of class vso.attrs.Wave"""
     wav = Wave(12, 16)
     moarwav = Wave(40, 80, "RandomUnit")
-    assert wav == "<Wave(12, 16, Angstrom)>"
-    assert moarwav == "<Wave(40, 80, RandomUnit)>"
+    assert repr(wav) == "<Wave(12, 16, Angstrom)>"
+    assert repr(moarwav) == "<Wave(40, 80, RandomUnit)>"
 
