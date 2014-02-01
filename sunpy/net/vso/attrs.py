@@ -66,6 +66,9 @@ class Wave(Attr, _Range):
     def collides(self, other):
         return isinstance(other, self.__class__)
 
+    def __repr__(self):
+	return 'Min: {0}, Max: {1}, Units Used: {2}'.format(self.min, self.max, self.unit)
+
 
 class Time(Attr, _Range):
     def __init__(self, start, end, near=None):
