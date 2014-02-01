@@ -170,7 +170,7 @@ def test_err_dummyattr_apply():
 def test_wave_repr():
     """Tests the __repr__ method of class vso.attrs.Wave"""
     wav = vso.attrs.Wave(12, 16)
-    moarwav = vso.attrs.Wave(40, 80, "RandomUnit")
+    #moarwav = vso.attrs.Wave(40, 80, "RandomUnit")
     assert repr(wav) == "<Wave(12, 16, Angstrom)>"
     #assert repr(moarwav) == "<Wave(40, 80, RandomUnit)>"
 
