@@ -75,7 +75,13 @@ class LightCurve(object):
     
     @property
     def header(self):
-        warnings.warn("""lightcurve.header has been renamed to map.meta
+        """
+        Return the lightcurves metadata
+
+        .. deprecated:: 0.4.0
+            Use .meta instead
+        """
+        warnings.warn("""lightcurve.header has been renamed to lightcurve.meta
 for compatability with map, please use meta instead""", Warning)
         return self.meta
 
