@@ -67,7 +67,7 @@ class Wave(Attr, _Range):
         return isinstance(other, self.__class__)
 
     def __repr__(self):
-	return '<Wave({0}, {1}, {2})>'.format(self.min, self.max, self.unit)
+	return '<Wave({0!r}, {1!r}, {2!r})>'.format(self.min, self.max, self.unit)
 
 
 class Time(Attr, _Range):
