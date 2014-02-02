@@ -24,6 +24,9 @@ The lightcurve object currently supports the following data sources
 - GOES XRS
 - PROBA2/LYRA
 
+For SDO/EVE, please note that only the level OCS and average CSV
+files is `currently implemented <http://lasp.colorado.edu/home/eve/data/>`_.
+
 1. Creating a Lightcurve
 ------------------------
 
@@ -51,6 +54,12 @@ very simply using the 'index' keyword, as is shown below.
 This gives the measurements "param1" a set of times, in this case, 1440 minutes beginning at the
 current local time.
 
-The LightCurve object contains two basic attributes, 'data' and 'header'.  The 'data' attribute
-is either a pandas TimeSeries object or a pandas DataFrame (a generalization of the TimeSeries
-object).  These data objects have very powerful methods for handling data based on times.
+The LightCurve object contains two basic attributes, 'data' and
+'meta'.  The 'data' attribute is either a pandas TimeSeries object or
+a pandas DataFrame (a generalization of the TimeSeries object).  These
+data objects have very powerful methods for handling data based on
+times.  The 'meta' attribute contains any available metadata
+information in the original data file.  The type and amount of
+metadata available varies from data source to data source since there
+is no cross-instrument standard for describing time-series metadata
+(unlike FITS files).
