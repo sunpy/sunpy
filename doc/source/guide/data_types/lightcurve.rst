@@ -47,6 +47,7 @@ where the data is located.
 
 2.  Getting at the data
 -----------------------
+
 The data in a SunPy LightCurve object is accessible through the data
 attribute.  The header is accessible through the meta attribute.  Note
 that, unlike FITS files, there is no cross-instrument standard
