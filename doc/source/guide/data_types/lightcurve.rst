@@ -28,7 +28,7 @@ For SDO/EVE, please note that only the level OCS and average CSV
 files is `currently implemented <http://lasp.colorado.edu/home/eve/data/>`_.
 
 1. Creating a Lightcurve from a data source
---------------------------------------------------
+-------------------------------------------
 
 To create a LightCurve object from one of the supported data sources,
 import the object into your Python session.  The example below gets
@@ -46,7 +46,7 @@ where the data is located.
 
 
 2.  Getting at the data
-----------------------
+-----------------------
 The data in a SunPy LightCurve object is accessible through the data
 attribute.  The header is accessible through the meta attribute.  Note
 that, unlike FITS files, there is no cross-instrument standard
@@ -69,7 +69,7 @@ access the data inside a pandas DataFrame object.
 
 
 3. Creating a plot of your lightcurve
-------------------------------
+-------------------------------------
 
 The SunPy LightCurve object has its own built-in plot methods so that
 it is easy to quickly view your lightcurve. To create a plot just
@@ -85,7 +85,7 @@ the foundation for a more complicated figure.
 
 
 4. Creating your own lightcurve
-------------------------------
+-------------------------------
 
 A LightCurve object must be supplied with some data when it is
 created.  The data can either be in your current Python session, in a
