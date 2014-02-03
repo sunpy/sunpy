@@ -167,7 +167,6 @@ def test_err_dummyattr_apply():
     with pytest.raises(TypeError):
         va.walker.apply(attr.DummyAttr(), None, {})
 
-@pytest.fixture
 def test_wave_repr():
     """Tests the __repr__ method of class vso.attrs.Wave"""
     wav = vso.attrs.Wave(12, 16)
