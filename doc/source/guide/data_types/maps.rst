@@ -21,7 +21,7 @@ The map object currently supports the following data sources
 
 1. Creating maps
 ----------------
-SunPy contains a number of example fits files. 
+SunPy contains a number of example FITS files. 
 To make things easy, SunPy includes several example files which are used throughout the docs. 
 These files have names like `sunpy.AIA_171_IMAGE` and `sunpy.RHESSI_IMAGE`.
 To create the sample AIA map type the following into your interactive Python shell::
@@ -29,14 +29,14 @@ To create the sample AIA map type the following into your interactive Python she
     import sunpy
     my_map = sunpy.Map(sunpy.AIA_171_IMAGE)
 
-The variable my_map is a SunPy Map object. To create a SunPy Map object from a local fits file try something like the following ::
+The variable my_map is a SunPy Map object. To create a SunPy Map object from a local FITS file try something like the following ::
 
     my_map = sunpy.Map('/mydirectory/mymap.fits')
 
-SunPy automatically detects the type of file (e.g. fits), what instrument it is 
-associated with (e.g. AIA, EIT, LASCO) and will automatically look in the appropriate places for the fits
-keywords it needs to interpret the coordinate system. If the type of fits file 
-is not recognized then SunPy will try some default fits keywords and return a GenericMap but results
+SunPy automatically detects the type of file (e.g. FITS), what instrument it is 
+associated with (e.g. AIA, EIT, LASCO) and will automatically look in the appropriate places for the FITS
+keywords it needs to interpret the coordinate system. If the type of FITS file 
+is not recognized then SunPy will try some default FITS keywords and return a GenericMap but results
 may vary. SunPy can also create maps from the jpg2000 files from
 `helioviewer.org <http://helioviewer.org/>`.
 
@@ -51,9 +51,9 @@ header is given then some default values as assumed. Here is a simple example::
     header = {'cdelt1': 10, 'cdelt2': 10, 'telescop':'sunpy'}
     my_map = sunpy.Map(data, header)
 
-The format of the header follows the fits standard.
+The format of the header follows the FITS standard.
 
-2. Inspecting maps
+3. Inspecting maps
 ------------------
 A map contains a number of data-associated attributes. To get a quick look at your map simply
 type::
@@ -83,7 +83,7 @@ The meta data for the map is accessed by ::
 This references the meta data dictionary with the header information as read from the source
 file. 
 
-3. Getting at the data
+4. Getting at the data
 ----------------------
 The data in a SunPy Map object is accessible through the data attribute. 
 Currently, the data is implemented as a NumPy ndarray, so for example, to get 
@@ -112,7 +112,7 @@ Basic statistical functions on the data array are also passed through to Map obj
     my_map.max()
     my_map.mean()
 
-4. Creating a plot of your map
+5. Creating a plot of your map
 ------------------------------
 The SunPy map object has its own built-in plot methods so that it is easy to
 quickly view your map on the screen. To create a plot just type::
@@ -125,7 +125,7 @@ matplotlib figure object by using the plot() command instead of the show()
 command. This makes it possible to use the SunPy plot as the foundation for a 
 more complicated figure.
 
-5. Overlaying Maps
+6. Overlaying Maps
 ------------------
 The Map() method described above can also handle a list of maps. If a list in inputs
 is supplied, Map() will return a list of maps as the output.  However, if the
@@ -151,7 +151,7 @@ and then plots the result::
 
 This is not a particularly pretty plot but it shows what SunPy can do!
 
-5. Working with your map
+7. Working with your map
 ------------------------
 Part of the philosophy of the map object is to provide most of the basic
 functionality that a scientist would want therefore a map also contains a number
