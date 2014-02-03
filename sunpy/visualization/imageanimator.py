@@ -426,7 +426,7 @@ class BaseFuncAnimator(object):
     def _previous(self, slider):
         s = slider
         if s.val <= s.valmin:
-            s.set_val(s.valmin)
+            s.set_val(s.valmax)
         else:
             s.set_val(s.val-1)
 
