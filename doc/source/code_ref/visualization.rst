@@ -7,4 +7,4 @@ SunPy visualization
 
 .. automodapi:: sunpy.visualization.mapcubeanimator
 
-.. autoomodapi:: sunpy.visualization.imageanimator
+.. automodapi:: sunpy.visualization.imageanimator
