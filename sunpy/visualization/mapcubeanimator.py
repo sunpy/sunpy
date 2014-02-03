@@ -10,11 +10,11 @@ class MapCubeAnimator(imageanimator.BaseFuncAnimator):
 
     The following keyboard shortcuts are defined in the viewer:
 
-    * 'left': previous step on active slider
-    * 'right': next step on active slider
-    * 'top': change the active slider up one
-    * 'bottom': change the active slider down one
-    * 'p': play/pause active slider
+    - 'left': previous step on active slider
+    - 'right': next step on active slider
+    - 'top': change the active slider up one
+    - 'bottom': change the active slider down one
+    - 'p': play/pause active slider
 
     Parameters
     ----------
@@ -33,7 +33,9 @@ class MapCubeAnimator(imageanimator.BaseFuncAnimator):
     colorbar: bool
         Plot colorbar
 
-    Extra keywords are passed to mapcube[0].plot() i.e. the plot() routine of
+    Notes
+    -----
+    Extra keywords are passed to `mapcube[0].plot()` i.e. the `plot()` routine of
     the first map in the cube.
     """
     def __init__(self, mapcube, annotate=True, **kwargs):
@@ -64,7 +66,7 @@ class MapCubeAnimator(imageanimator.BaseFuncAnimator):
         """
         Annotate the image.
 
-        This may overwrite some stuff in GenericMap.plot()
+        This may overwrite some stuff in `GenericMap.plot()`
         """
         # Normal plot
         self.axes.set_title("%s %s" % (self.data[ind].name, self.data[ind].date))
