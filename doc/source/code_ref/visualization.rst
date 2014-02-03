@@ -1,6 +1,3 @@
-SunPy visualization
-===================
-
 .. automodapi:: sunpy.visualization
 
 .. automodapi:: sunpy.visualization.plotting
@@ -8,3 +5,4 @@ SunPy visualization
 .. automodapi:: sunpy.visualization.mapcubeanimator
 
 .. automodapi:: sunpy.visualization.imageanimator
+
