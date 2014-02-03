@@ -21,7 +21,7 @@ The map object currently supports the following data sources
 
 1. Creating maps
 ----------------
-SunPy contains a number of example fits files. 
+SunPy contains a number of example FITS files. 
 To make things easy, SunPy includes several example files which are used throughout the docs. 
 These files have names like `sunpy.AIA_171_IMAGE` and `sunpy.RHESSI_IMAGE`.
 To create the sample AIA map type the following into your interactive Python shell::
@@ -29,14 +29,14 @@ To create the sample AIA map type the following into your interactive Python she
     import sunpy
     my_map = sunpy.Map(sunpy.AIA_171_IMAGE)
 
-The variable my_map is a SunPy Map object. To create a SunPy Map object from a local fits file try something like the following ::
+The variable my_map is a SunPy Map object. To create a SunPy Map object from a local FITS file try something like the following ::
 
     my_map = sunpy.Map('/mydirectory/mymap.fits')
 
-SunPy automatically detects the type of file (e.g. fits), what instrument it is 
-associated with (e.g. AIA, EIT, LASCO) and will automatically look in the appropriate places for the fits
-keywords it needs to interpret the coordinate system. If the type of fits file 
-is not recognized then SunPy will try some default fits keywords and return a GenericMap but results
+SunPy automatically detects the type of file (e.g. FITS), what instrument it is 
+associated with (e.g. AIA, EIT, LASCO) and will automatically look in the appropriate places for the FITS
+keywords it needs to interpret the coordinate system. If the type of FITS file 
+is not recognized then SunPy will try some default FITS keywords and return a GenericMap but results
 may vary. SunPy can also create maps from the jpg2000 files from
 `helioviewer.org <http://helioviewer.org/>`.
 
@@ -51,7 +51,7 @@ header is given then some default values as assumed. Here is a simple example::
     header = {'cdelt1': 10, 'cdelt2': 10, 'telescop':'sunpy'}
     my_map = sunpy.Map(data, header)
 
-The format of the header follows the fits standard.
+The format of the header follows the FITS standard.
 
 2. Inspecting maps
 ------------------
