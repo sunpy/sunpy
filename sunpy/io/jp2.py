@@ -36,7 +36,7 @@ def read(filepath):
     """
     header = get_header(filepath)
 
-    data = Jp2k(filepath).read()
+    data = Jp2k(filepath).read()[::-1]
 
     return [(data, header[0])]
 
