@@ -91,17 +91,17 @@ class BaseFuncAnimator(object):
 
     The following keyboard shortcuts are defined in the viewer:
 
-    * 'left': previous step on active slider
-    * 'right': next step on active slider
-    * 'top': change the active slider up one
-    * 'bottom': change the active slider down one
-    * 'p': play/pause active slider
+    - 'left': previous step on active slider
+    - 'right': next step on active slider
+    - 'top': change the active slider up one
+    - 'bottom': change the active slider down one
+    - 'p': play/pause active slider
 
     This viewer can have user defined buttones added by specifing the labels and
     functions called when those buttons are clicked as keyword argumets.
 
-    To make this class useful the subclass must implement _plot_start_image
-    which must define a self.im attribute which is an instance of AxesImage
+    To make this class useful the subclass must implement `_plot_start_image`
+    which must define a `self.im` attribute which is an instance of AxesImage
 
     Parameters
     ----------
@@ -441,11 +441,11 @@ class ImageAnimator(BaseFuncAnimator):
 
     The following keyboard shortcuts are defined in the viewer:
 
-    * 'left': previous step on active slider
-    * 'right': next step on active slider
-    * 'top': change the active slider up one
-    * 'bottom': change the active slider down one
-    * 'p': play/pause active slider
+    - 'left': previous step on active slider
+    - 'right': next step on active slider
+    - 'top': change the active slider up one
+    - 'bottom': change the active slider down one
+    - 'p': play/pause active slider
 
     This viewer can have user defined buttones added by specifing the labels and
     functions called when those buttons are clicked as keyword argumets.
