@@ -53,7 +53,7 @@ header is given then some default values as assumed. Here is a simple example::
 
 The format of the header follows the FITS standard.
 
-2. Inspecting maps
+3. Inspecting maps
 ------------------
 A map contains a number of data-associated attributes. To get a quick look at your map simply
 type::
@@ -83,7 +83,7 @@ The meta data for the map is accessed by ::
 This references the meta data dictionary with the header information as read from the source
 file. 
 
-3. Getting at the data
+4. Getting at the data
 ----------------------
 The data in a SunPy Map object is accessible through the data attribute. 
 Currently, the data is implemented as a NumPy ndarray, so for example, to get 
@@ -112,7 +112,7 @@ Basic statistical functions on the data array are also passed through to Map obj
     my_map.max()
     my_map.mean()
 
-4. Creating a plot of your map
+5. Creating a plot of your map
 ------------------------------
 The SunPy map object has its own built-in plot methods so that it is easy to
 quickly view your map on the screen. To create a plot just type::
@@ -125,7 +125,7 @@ matplotlib figure object by using the plot() command instead of the show()
 command. This makes it possible to use the SunPy plot as the foundation for a 
 more complicated figure.
 
-5. Overlaying Maps
+6. Overlaying Maps
 ------------------
 The Map() method described above can also handle a list of maps. If a list in inputs
 is supplied, Map() will return a list of maps as the output.  However, if the
@@ -151,7 +151,7 @@ and then plots the result::
 
 This is not a particularly pretty plot but it shows what SunPy can do!
 
-5. Working with your map
+7. Working with your map
 ------------------------
 Part of the philosophy of the map object is to provide most of the basic
 functionality that a scientist would want therefore a map also contains a number
