@@ -422,6 +422,7 @@ class BaseFuncAnimator(object):
             s.set_val(s.valmin)
         else:
             s.set_val(s.val+1)
+        self.fig.canvas.draw()
 
     def _previous(self, slider):
         s = slider
@@ -429,6 +430,7 @@ class BaseFuncAnimator(object):
             s.set_val(s.valmax)
         else:
             s.set_val(s.val-1)
+        self.fig.canvas.draw()
 
     def _slider_changed(self, val, slider):
         self.slider_functions[slider.slider_ind](val, self.im, slider)
