@@ -153,30 +153,31 @@ class MapCube(object):
         ani_args : dict
             Passed to sunpy.util.plotting.ControlFuncAnimation
 
-         **imshow_args: dict
-            Any additional imshow arguments that should be used
-            when plotting the image.
+        imshow_args: dict
+            Any additional imshow arguments that should be used when plotting the image.
         
         Examples
         --------
-        cube = sunpy.Map(files, cube=True)
-        ani = cube.plot(colorbar=True)        
-        plt.show()
-        
-        #Plot the map at 1/2 original resolution.
-        cube = sunpy.Map(files, cube=True)
-        ani = cube.plot(resample=[0.5, 0.5], colorbar=True)        
-        plt.show()
-        
-        #Save an animation of the MapCube
-        cube = sunpy.Map(res, cube=True)
+        >>> cube = sunpy.Map(files, cube=True)
+        >>> ani = cube.plot(colorbar=True)        
+        >>> plt.show()
 
-        ani = cube.plot(controls=False)
+        Plot the map at 1/2 original resolution
 
-        Writer = animation.writers['ffmpeg']
-        writer = Writer(fps=10, metadata=dict(artist='SunPy'), bitrate=1800)
+        >>> cube = sunpy.Map(files, cube=True)
+        >>> ani = cube.plot(resample=[0.5, 0.5], colorbar=True)        
+        >>> plt.show()
 
-        ani.save('mapcube_animation.mp4', writer=writer)
+        Save an animation of the MapCube
+
+        >>> cube = sunpy.Map(res, cube=True)
+
+        >>> ani = cube.plot(controls=False)
+
+        >>> Writer = animation.writers['ffmpeg']
+        >>> writer = Writer(fps=10, metadata=dict(artist='SunPy'), bitrate=1800)
+
+        >>> ani.save('mapcube_animation.mp4', writer=writer)
         """
         
         if not axes:

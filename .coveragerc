@@ -1,2 +1,14 @@
 [run]
-omit = sunpy/tests/*
+branch = True
+source = sunpy
+include = */sunpy/*
+omit =
+    */setup.py
+    */tests/*
+    sunpy/version.py
+
+[report]
+exclude_lines =
+    pragma: no cover
+    def __repr__
+    if __name__ == .__main__.:
