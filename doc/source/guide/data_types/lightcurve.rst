@@ -18,7 +18,7 @@ for more information.
 Data Support
 ------------
 
-The lightcurve object currently supports the following data sources
+The lightcurve object currently supports the following data sources:
 
 - SDO/EVE
 - GOES XRS
@@ -27,71 +27,35 @@ The lightcurve object currently supports the following data sources
 For SDO/EVE, please note that only the level OCS and average CSV
 files is `currently implemented <http://lasp.colorado.edu/home/eve/data/>`_.
 
-1. Creating a Lightcurve
-------------------------
-
-The LightCurve object contains two basic attributes, 'data' and
-'meta'.  The 'data' attribute is either a pandas Series object or
-a pandas DataFrame (a generalization of the Series object).  These
-data objects have very powerful methods for handling data based on
-times.  The 'meta' attribute contains any available metadata
-information in the original data file.  The type and amount of
-metadata available varies from data source to data source since there
-is no cross-instrument standard for describing time-series metadata
-(unlike FITS files).
+1. Creating a Lightcurve from a data source
+--------------------------------------------------
 
 
-2. Inspecting LightCurves
------------------------
-A map contains a number of data-associated attributes. To get a quick look at your map simply
-type::
 
-    my_map = sunpy.Map(sunpy.AIA_171_IMAGE)
-    my_map
-    
-This will show a representation of the data as well as some of its associated
-attributes. A number of other attributes are also available, for example the date, 
-exposure time, map center, xrange, yrange
-other::
 
-    map_date = my_map.date
-    map_exptime = my_map.exposure_time
-    map_center = my_map.center
-    map_xrange = my_map.xrange
-    map_yrange = my_map.yrange
-    
-To get a list of all of the attributes check the documentation by typing::
-
-    help(my_map)
-    
-The meta data for the map is accessed by ::
-
-    header = my_map.meta
-    
-This references the meta data dictionary with the header information as read from the source
-file. 
-
-3. Getting at the data
+2.  Getting at the data
 ----------------------
 The data in a SunPy LightCurve object is accessible through the data attribute. 
 
 
 
-4. Creating a plot of your lightcurve
+3. Creating a plot of your lightcurve
 ------------------------------
-The SunPy lightcurve object has its own built-in plot methods so that it is easy to
-quickly view your lightcurve. To create a plot just type::
+
+The SunPy LightCurve object has its own built-in plot methods so that
+it is easy to quickly view your lightcurve. To create a plot just
+type:
 
     my_lightcurve.peek()
     
 This will open a matplotlib plot on your screen.  In addition, to
-enable users to modify the plot it is possible to grab the matplotlib
+enable users to modify the plot, it is possible to grab the matplotlib
 figure object by using the plot() command instead of the show()
 command. This makes it possible to use the SunPy lightcurve plot as
 the foundation for a more complicated figure.
 
 
-5. Creating your own lightcurve
+4. Creating your own lightcurve
 ------------------------------
 
 A LightCurve object must be supplied with some data when it is
@@ -116,6 +80,8 @@ the 'index' keyword, as is shown below.
     >>> light_curve = LightCurve.create({"param1": range(24 * 60)}, index=dates)
 
 This gives the measurements "param1" a set of times, in this case,
-1440 minutes beginning at the current local time.
+1440 minutes beginning at the current local time.  Under the hood,
+this has created a pandas Series object with a colum name "param1",
+with an index of times.
 
 
