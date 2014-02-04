@@ -246,6 +246,14 @@ class MapCube(object):
         colorbar: bool
             Plot colorbar
 
+        Returns
+        -------
+        Returns a MapCubeAnimator object
+
+        See Also
+        --------
+        sunpy.visualization.mapcubeanimator.MapCubeAnimator
+
         Examples
         --------
         >>> cube = sunpy.Map(files, cube=True)
@@ -272,6 +280,6 @@ class MapCube(object):
             #TODO: Update this!
             resample = np.array(len(self._maps)-1) * np.array(resample)
             for amap in self._maps:
-                amap.resample(resample) 
+                amap.resample(resample)
 
         return MapCubeAnimator(self, **kwargs)
