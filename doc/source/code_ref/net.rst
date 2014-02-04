@@ -12,3 +12,8 @@ SunPy net
 
 .. automodapi:: sunpy.net.hek2vso
 
+.. automodapi:: sunpy.net.helio
+
+.. automodapi:: sunpy.net.helio.hec
+    :headings: ^#
+

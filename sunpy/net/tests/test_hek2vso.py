@@ -11,7 +11,8 @@ This module was built to test the HEK2VSO class.
 __author__ = 'Michael Malocha'
 __version__ = 'June 11th, 2013'
 
-import unittest
+import pytest
+
 from sunpy.net import hek
 from sunpy.net import vso
 from sunpy.net import hek2vso
@@ -21,49 +22,17 @@ endTime = '2011/08/09 12:40:29'
 eventType = 'FL'
 instrument = 'eit'
 
+hekTime = hek.attrs.Time(startTime, endTime)
+hekEvent = hek.attrs.EventType(eventType)
 
-class TestH2vClient(unittest.TestCase):
-    """
-    The class that runs the big happy tests
-    """
-    def setUp(self):
-        self.h2v = hek2vso.H2VClient()
-        self.hek = hek.HEKClient()
-        self.vso = vso.VSOClient()
-        self.hekTime = hek.attrs.Time(startTime, endTime)
-        self.hekEvent = hek.attrs.EventType(eventType)
+@pytest.fixture
+def h2v_client():
+    return hek2vso.H2VClient()
 
-    def tearDown(self):
-        self.h2v.dispose()
-        self.hek.dispose()
-        self.vso.dispose()
-        self.hekTime.dispose()
-        self.hekEvent.dispose()
-        self.h2v = None
-        self.hek = None
-        self.vso = None
-        self.hekTime = None
-        self.hekEvent = None
+@pytest.fixture
+def hek_client():
+    return hek.HEKClient()
 
-    def test_hek_client(self):
-        results = self.hek.query(self.hekTime, self.hekEvent)
-        assert len(results) == 19
-
-    def test_vso_client(self):
-        result1 = self.vso.query(vso.attrs.Time(startTime, endTime),
-                                 vso.attrs.Instrument(instrument))
-        result2 = self.vso.query(vso.attrs.Time(startTime, endTime))
-        result3 = self.vso.query(vso.attrs.Time((2011,9,20,1), (2011,9,20,2)),
-                          vso.attrs.Instrument('eit'))
-        self.assertEqual(len(result1), 0, 'Error in VSO query')
-        self.assertEqual(len(result2), 3450, 'Error in VSO query')
-        self.assertEqual(len(result3), 4, 'Error in VSO query')
-
-    def test_translate_and_query(self):
-        res = self.hek.query(hek.attrs.Time(startTime, endTime),
-                             hek.attrs.EventType(eventType))
-        res = self.h2v.translate_and_query(res)
-        self.assertEqual(res, 'pass')
-
-if __name__ == '__main__':
-    unittest.main()
+@pytest.fixture
+def vso_client():
+    vso.VSOClient()
