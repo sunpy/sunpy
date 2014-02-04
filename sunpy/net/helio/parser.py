@@ -10,10 +10,16 @@ This module is meant to parse the HELIO registry and return WSDL endpoints to
 facilitate the interfacing between further modules and HELIO.
 """
 from __future__ import absolute_import
-import requests
+
 import xml.etree.ElementTree as EL
-from sunpy.net.helio import registry_links as RL
 from bs4 import BeautifulSoup
+
+try:
+    import requests
+except ImportError:
+    from sunpy.extern import requests
+
+from sunpy.net.helio import registry_links as RL
 
 __author__ = 'Michael Malocha'
 __version__ = 'September 22nd, 2013'
