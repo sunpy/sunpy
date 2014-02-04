@@ -3,7 +3,6 @@ from __future__ import absolute_import
 import platform
 import datetime
 
-import sunpy
 
 __all__ = ['system_info', 'sys_prop_print']
 
@@ -11,8 +10,14 @@ __all__ = ['system_info', 'sys_prop_print']
     
 def system_info():
     """
+    Test which packages are installed on system.
     
-
+    Return
+    ------
+    sys_prop: dict
+        A dictionary containing the programs and versions installed on this 
+        machine
+    
     """    
     
     
@@ -81,7 +86,12 @@ def system_info():
     return sys_prop
     
 def sys_prop_print():
+    """
+        
+
+    """    
     sys_prop = system_info()
+    
     
 # title
     print("==========================================================")
