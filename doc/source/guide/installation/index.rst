@@ -74,7 +74,7 @@ To install SunPy with `pip`, simply run::
     using pip thus::
 
         pip install sqlalchemy
-        pip install suds
+        pip install suds-jurko
         pip install beautifulsoup4
         pip install glymur
 
@@ -114,7 +114,7 @@ To install SunPy launch the Anaconda command prompt or a system prompt and run t
 To install SunPy's extra dependancies run::
 
     conda update astropy
-    conda install suds
+    conda install suds-jurko
 
 To install run::
  

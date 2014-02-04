@@ -115,7 +115,6 @@ def install(setup): #pylint: disable=W0621
             'scipy',
             'pandas>=0.10.0',
             'matplotlib>=1.1',
-            'sqlalchemy',
         ],
         license="BSD",
         long_description="\n".join(DOCLINES[2:]),

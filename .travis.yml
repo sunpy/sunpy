@@ -12,7 +12,7 @@ virtualenv:
 env:
     global:
         - PIP_WHEEL_COMMAND="--use-mirrors --find-links http://sunpy.cadair.com/wheelhouse/index.html --use-wheel --upgrade"
-        - SUDS_PKG='suds-jurko==0.4.1.jurko.4'
+        - SUDS_PKG='suds-jurko'
         - TEST_MODE='tests'
     matrix:
         - NUMPY_VERSION=1.8.0 PANDAS_VERSION=0.12.0
@@ -25,7 +25,7 @@ matrix:
 
 before_install:
 # Pick the suds version based on the python version
-   - if [[ $TRAVIS_PYTHON_VERSION == '2.6' ]]; then SUDS_PKG='suds' ;fi
+#   - if [[ $TRAVIS_PYTHON_VERSION == '2.6' ]]; then SUDS_PKG='suds' ;fi
 # Make sure the system is upto date and install scipy requirements
    - sudo apt-get update -qq
    - sudo apt-get install -qq libatlas-dev liblapack-dev gfortran
