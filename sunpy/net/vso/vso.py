@@ -28,7 +28,8 @@ from string import ascii_lowercase
 from suds import client, TypeNotFound
 
 from sunpy import config
-from sunpy.net import download, WellBehavedHttpTransport
+from sunpy.net import download
+from sunpy.net.proxyfix import WellBehavedHttpTransport
 from sunpy.util.progressbar import TTYProgressBar as ProgressBar
 from sunpy.util.net import get_filename, slugify
 from sunpy.net.attr import and_, Attr
