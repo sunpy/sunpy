@@ -7,7 +7,6 @@ __email__ = "keith.hughitt@nasa.gov"
 from sunpy.map import GenericMap
 from sunpy.time import parse_time
 from sunpy.cm import cm
-from sunpy.instr.stereo import EUVIMap, CORMap
 
 __all__ = ['EUVIMap', 'CORMap']
 

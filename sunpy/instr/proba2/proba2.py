@@ -6,7 +6,7 @@ __email__ = "keith.hughitt@nasa.gov"
 
 from sunpy.map import GenericMap
 from sunpy.cm import cm
-from sunpy.instr.proba2 import SWAPMap
+
 
 __all__ = ['SWAPMap']
 

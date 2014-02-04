@@ -12,7 +12,6 @@ from matplotlib import colors
 from sunpy.map import GenericMap
 from sunpy.cm import cm
 from sunpy.time import parse_time
-from sunpy.instr.hinode import XRTMap
 
 
 __all__ = ['XRTMap']

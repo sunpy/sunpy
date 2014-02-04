@@ -10,7 +10,7 @@ from matplotlib import colors
 from sunpy.map import GenericMap
 from sunpy.cm import cm
 from sunpy.sun import constants
-from sunpy.instr.yohkoh import SXTMap
+
 
 __all__ = ['SXTMap']
 

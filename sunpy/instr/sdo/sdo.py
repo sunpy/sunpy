@@ -9,7 +9,7 @@ from matplotlib import colors
 
 from sunpy.map import GenericMap
 from sunpy.cm import cm
-from sunpy.instr.sdo import AIAMap, HMIMap
+
 
 __all__ = ['AIAMap', 'HMIMap']
 

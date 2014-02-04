@@ -4,6 +4,8 @@ import pytest
 
 import sunpy.tests
 
+import sunpy.util.multimethod.TypeWarning
+
 root_dir = os.path.dirname(os.path.abspath(sunpy.__file__))
 
 def test_main_nonexisting_module():
