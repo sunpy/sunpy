@@ -4,6 +4,8 @@ from sunpy.net.helioviewer import *
 
 from suds.transport.http import HttpTransport as SudsHttpTransport 
 
+__all__ = ['WellBehavedHttpTransport']
+
 
 class WellBehavedHttpTransport(SudsHttpTransport): 
     """HttpTransport which properly obeys the ``*_proxy`` environment variables.""" 
@@ -27,5 +29,7 @@ class WellBehavedHttpTransport(SudsHttpTransport):
 
         Thus, passing an empty list will use the default ProxyHandler which 
         behaves correctly. 
+
+        This method comes from http://stackoverflow.com/a/12433606/1087595
         """ 
         return []
