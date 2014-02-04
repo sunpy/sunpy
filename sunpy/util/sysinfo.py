@@ -75,9 +75,9 @@ def system_info():
         
     sys_prop = {'Time' : datetime.datetime.utcnow().strftime("%A, %d. %B %Y %I:%M%p UT"),
                 'System' : platform.system(), 'Processor' : platform.processor(), 
+                'SunPy': sunpy_version, 'SunPy_git' : sunpy_git_description,
                 'Arch' : platform.architecture()[0], "Python" : platform.python_version(),
-                'SunPy': sunpy_version, 
-                'SunPy_git' : sunpy_git_description, 'NumPy' : numpy_version, 
+                'NumPy' : numpy_version, 
                 'SciPy' : scipy_version, 'matplotlib' : matplotlib_version,
                 'Astropy' : astropy_version, 'Pandas' : pandas_version, 
                 'beautifulsoup' : bs4_version, 'PyQt' : pyqt_version,
@@ -85,9 +85,9 @@ def system_info():
                 }
     return sys_prop
     
-def sys_prop_print():
+def get_sys_dict():
     """
-        
+    Takes dictionary from sys_info() and prints the contents in an attractive fashion   
 
     """    
     sys_prop = system_info()
@@ -105,7 +105,7 @@ def sys_prop_print():
     print("###########")   
     # OS and architecture information
     
-    for sys_info in ['Time', 'System', 'Processor', 'Arch']:
+    for sys_info in ['Time', 'System', 'Processor', 'Arch', 'SunPy', 'SunPy_git']:
         print '%s : %s' % (sys_info, sys_prop[sys_info])
         
     if sys_prop['System'] == "Linux":
@@ -126,7 +126,7 @@ def sys_prop_print():
     print(" Required Libraries ")
     print("###########")
     
-    for sys_info in ['Python', 'SunPy', 'SunPy_git', 'NumPy', 'SciPy',
+    for sys_info in ['Python', 'NumPy', 'SciPy',
               'matplotlib', 'Astropy', 'Pandas']:
         print '%s : %s' % (sys_info, sys_prop[sys_info])
     
