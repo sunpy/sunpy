@@ -75,7 +75,7 @@ class TestMap:
         eitmap = sunpy.map.Map(a_fname)
         eitmap.save("eit_save.fits", filetype='fits', clobber=True)
         backin = sunpy.map.Map("eit_save.fits")
-        assert isinstance(backin, sunpy.map.sources.EITMap)
+        assert isinstance(backin, sunpy.instr.soho.EITMap)
         os.remove("eit_save.fits")
 
 #==============================================================================
@@ -84,35 +84,35 @@ class TestMap:
     def test_sdo(self):
         #Test an AIAMap
         aia = sunpy.map.Map(sunpy.AIA_171_IMAGE)
-        assert isinstance(aia,sunpy.map.sources.AIAMap)
+        assert isinstance(aia,sunpy.instr.sdo.AIAMap)
         #Test a HMIMap
 
     def test_soho(self):
         #Test EITMap, LASCOMap & MDIMap
         eit = sunpy.map.Map(filepath + "/EIT/efz20040301.000010_s.fits")
-        assert isinstance(eit,sunpy.map.sources.EITMap)
+        assert isinstance(eit,sunpy.instr.soho.EITMap)
 
         lasco = sunpy.map.Map(filepath + "/lasco_c2_25299383_s.fts")
-        assert isinstance(lasco,sunpy.map.sources.LASCOMap)
+        assert isinstance(lasco,sunpy.instr.soho.LASCOMap)
 
         mdi_c = sunpy.map.Map(filepath + "/mdi_fd_Ic_6h_01d.5871.0000_s.fits")
-        assert isinstance(mdi_c,sunpy.map.sources.MDIMap)
+        assert isinstance(mdi_c,sunpy.instr.soho.MDIMap)
 
         mdi_m = sunpy.map.Map(filepath + "/mdi_fd_M_96m_01d.5874.0005_s.fits")
-        assert isinstance(mdi_m,sunpy.map.sources.MDIMap)
+        assert isinstance(mdi_m,sunpy.instr.soho.MDIMap)
 
     def test_stereo(self):
         #Test EUVIMap & CORMap
         euvi = sunpy.map.Map(filepath + "/euvi_20090615_000900_n4euA_s.fts")
-        assert isinstance(euvi,sunpy.map.sources.EUVIMap)
+        assert isinstance(euvi,sunpy.instr.stereo.EUVIMap)
 
         cor = sunpy.map.Map(filepath + "/cor1_20090615_000500_s4c1A.fts")
-        assert isinstance(cor,sunpy.map.sources.CORMap)
+        assert isinstance(cor,sunpy.instr.stereo.CORMap)
 
     def test_rhessi(self):
         #Test RHESSIMap
         rhessi = sunpy.map.Map(sunpy.RHESSI_IMAGE)
-        assert isinstance(rhessi,sunpy.map.sources.RHESSIMap)
+        assert isinstance(rhessi,sunpy.instr.rhessi.RHESSIMap)
 
         #Test SWAPMap
 
