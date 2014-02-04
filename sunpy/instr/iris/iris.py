@@ -5,6 +5,7 @@ Some very beta tools for IRIS
 import sunpy.io
 import sunpy.time
 import sunpy.map
+from sunpy.instr.iris import IRISMap
 
 __all__ = ['SJI_to_cube']
 
