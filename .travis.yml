@@ -53,6 +53,7 @@ install:
    - pip install $PIP_WHEEL_COMMAND $SUDS_PKG beautifulsoup4
    - pip install $PIP_WHEEL_COMMAND pytest 
    - pip install $PIP_WHEEL_COMMAND glymur
+   - pip install $PIP_WHEEL_COMMAND sqlalchemy
 #Install sphinx if needed
    - if [[ $TEST_MODE == 'sphinx' ]]; then pip install $PIP_WHEEL_COMMAND sphinx>=1.2; fi 
 # Install SunPy and run tests.
