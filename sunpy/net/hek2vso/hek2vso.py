@@ -15,9 +15,13 @@ from __future__ import absolute_import
 
 import sys
 from astropy import units
+try:
+    import progressbar
+except ImportError:
+    from sunpy.extern import progressbar
+
 from sunpy.net import hek
 from sunpy.net import vso
-from sunpy.util.progressbar import TTYProgressBar
 
 __author__ = 'Michael Malocha'
 __version__ = 'Aug 10th, 2013'
@@ -150,10 +154,6 @@ class H2VClient(object):
     >>> from sunpy.net import hek2vso
     >>> h2v = hek2vso.H2VClient()
     """
-    # Here is some test data
-    t_start = '2011/08/09 07:23:56'
-    t_end = '2011/08/09 12:40:29'
-    t_event = 'FL'
 
     def __init__(self):
         self.hek_client = hek.HEKClient()
@@ -162,7 +162,7 @@ class H2VClient(object):
         self.vso_results = []
         self.num_of_records = 0
 
-    def full_query(self, client_query, limit=None):
+    def full_query(self, client_query, limit=None, progress=False):
         """
         An encompassing method that takes a HEK query and returns a VSO result
 
@@ -180,16 +180,17 @@ class H2VClient(object):
         Examples
         --------
         >>> from sunpy.net import hek, hek2vso
-        >>> h2v = H2VClient()
+        >>> h2v = hek2vso.H2VClient()
         >>> q = h2v.full_query((hek.attrs.Time('2011/08/09 07:23:56', '2011/08/09 12:40:29'), hek.attrs.EventType('FL')))
         """
         self._quick_clean()
-        sys.stdout.write('\rQuerying HEK webservice...')
-        sys.stdout.flush()
+        if progress:
+            sys.stdout.write('\rQuerying HEK webservice...')
+            sys.stdout.flush()
         self.hek_results = self.hek_client.query(*client_query)
         self._quick_clean()
         return self.translate_and_query(self.hek_results,
-                                        limit=limit, full_query=True)
+                                        limit=limit, progress=progress)
 
     def translate_and_query(self, hek_results, limit=None, progress=False):
         """
@@ -201,7 +202,7 @@ class H2VClient(object):
 
         Parameters
         ----------
-        hek_results: sunpy.net.hek.hek.Response or list of sunpy.-.-.-.Response
+        hek_results: sunpy.net.hek.hek.Response or list of Responses
             The results from a HEK query in the form of a list.
         limit: int
             An approximate limit to the desired number of VSO results.
@@ -221,20 +222,24 @@ class H2VClient(object):
         """
         vso_query = translate_results_to_query(hek_results)
         result_size = len(vso_query)
+        if progress:
+            sys.stdout.write('\rQuerying VSO webservice')
+            sys.stdout.flush()
+            pbar = progressbar.ProgressBar(widgets=[progressbar.Bar(), progressbar.Percentage()], maxval=result_size).start()
+
         for query in vso_query:
-            if progress:
-                print 'Querying VSO webservice'
-                pbar = TTYProgressBar( result_size)
             temp = self.vso_client.query(*query)
             self.vso_results.append(temp)
             self.num_of_records += len(temp)
             if limit is not None:
                 if self.num_of_records >= limit:
                     break
-            pbar.poke()
+            if progress:
+                pbar.update(pbar.currval + 1)
+
         if progress:
             pbar.finish()
-        
+
         return self.vso_results
 
     def _quick_clean(self):
