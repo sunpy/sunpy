@@ -6,6 +6,7 @@ omit =
     */setup.py
     */tests/*
     sunpy/version.py
+    sunpy/extern/*
 
 [report]
 exclude_lines =
