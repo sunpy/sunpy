@@ -183,15 +183,15 @@ class H2VClient(object):
         >>> h2v = H2VClient()
         >>> q = h2v.full_query((hek.attrs.Time('2011/08/09 07:23:56', '2011/08/09 12:40:29'), hek.attrs.EventType('FL')))
         """
-        self.quick_clean()
+        self._quick_clean()
         sys.stdout.write('\rQuerying HEK webservice...')
         sys.stdout.flush()
         self.hek_results = self.hek_client.query(*client_query)
+        self._quick_clean()
         return self.translate_and_query(self.hek_results,
                                         limit=limit, full_query=True)
 
-    def translate_and_query(self, hek_results, limit=None,
-                            full_query=False, use_progress_bar=True):
+    def translate_and_query(self, hek_results, limit=None, progress=False):
         """
         Translates HEK results, makes a VSO query, then returns the results.
 
@@ -205,31 +205,26 @@ class H2VClient(object):
             The results from a HEK query in the form of a list.
         limit: int
             An approximate limit to the desired number of VSO results.
-        full_query: Boolean
-            A simple flag that determines if the method is being
-            called from the full_query() method.
-        use_progress_bar: Boolean
-            A flag to turn off the progress bar, defaults to "on"
+        progress: Boolean
+            A flag to turn off the progress bar, defaults to "off"
 
         Examples
         --------
         >>> from sunpy.net import hek, hek2vso
         >>> h = hek.HEKClient()
         >>> tstart = '2011/08/09 07:23:56'
-        >>> t_end = '2011/08/09 12:40:29'
-        >>> t_event = 'FL'
+        >>> tend = '2011/08/09 12:40:29'
+        >>> event_type = 'FL'
         >>> q = h.query(hek.attrs.Time(tstart, tend), hek.attts.EventType(event_type))
         >>> h2v = hek2vso.H2VClient()
         >>> res = h2v.translate_and_query(q)
         """
-        if full_query is False:
-            self.quick_clean()
-            self.hek_results = hek_results
         vso_query = translate_results_to_query(hek_results)
         result_size = len(vso_query)
         for query in vso_query:
-            if use_progress_bar:
-                pbar = TTYProgressBar('Querying VSO webservice', result_size)
+            if progress:
+                print 'Querying VSO webservice'
+                pbar = TTYProgressBar( result_size)
             temp = self.vso_client.query(*query)
             self.vso_results.append(temp)
             self.num_of_records += len(temp)
@@ -237,12 +232,12 @@ class H2VClient(object):
                 if self.num_of_records >= limit:
                     break
             pbar.poke()
-        if use_progress_bar:
+        if progress:
             pbar.finish()
         
         return self.vso_results
 
-    def quick_clean(self):
+    def _quick_clean(self):
         """
         A simple method to quickly sterilize the instance variables.
 
