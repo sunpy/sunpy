@@ -5,7 +5,7 @@ Maps
 Maps in SunPy are dimensionally-aware data arrays. 
 In other words, they are 2-dimensional data associated with a coordinate system. 
 In this guide, we will cover some of the basic functionality of maps. 
-Once you've read through this guide check out the :doc:`api reference</sunpy/api/index>` for a more thorough look at SunPy maps.
+Once you've read through this guide check out the :doc:`api reference</code_ref/index>` for a more thorough look at SunPy maps.
 
 ------------
 Data Support
