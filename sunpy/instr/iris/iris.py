@@ -6,6 +6,7 @@ import sunpy.io
 import sunpy.time
 import sunpy.map
 from sunpy.map import GenericMap
+import numpy as np
 
 __all__ = ['SJI_to_cube', 'IRISMap']
 
