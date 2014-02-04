@@ -9,7 +9,7 @@
 This module is meant to be an interface with the HELIO webservice, providing
 it's support through the use of a WSDL file.
 """
-from sunpy.net import WellBehavedHttpTransport
+from sunpy.net.proxyfix import WellBehavedHttpTransport
 from sunpy.net.helio import parser
 from sunpy.time import time as T
 from suds.client import Client as C
