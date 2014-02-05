@@ -166,3 +166,11 @@ def test_err_dummyattr_create():
 def test_err_dummyattr_apply():
     with pytest.raises(TypeError):
         va.walker.apply(attr.DummyAttr(), None, {})
+
+def test_wave_repr():
+    """Tests the __repr__ method of class vso.attrs.Wave"""
+    wav = vso.attrs.Wave(12, 16)
+    moarwav = vso.attrs.Wave(15, 12, "Angstrom")
+    assert repr(wav) == "<Wave(12.0, 16.0, 'Angstrom')>"
+    assert repr(moarwav) == "<Wave(12.0, 15.0, 'Angstrom')>"
+

@@ -47,8 +47,8 @@ def session():
 def vso_session():
     client = vso.VSOClient()
     qr = client.query(
-        vso.attrs.Time('20110608T235955', '2011-06-09'),
-        vso.attrs.Instrument('aia'))
+        vso.attrs.Time((2011, 9, 20, 1), (2011, 9, 20, 2)),
+        vso.attrs.Instrument('RHESSI'))
     entries = tables.entries_from_query_result(qr)
     database = Database('sqlite:///:memory:')
     for entry in entries:
@@ -403,71 +403,43 @@ def test_walker_create_fitsheader_inverted(session):
 
 @pytest.mark.online
 def test_walker_create_vso_instrument(vso_session):
-    entries = walker.create(vso.attrs.Instrument('AIA'), vso_session)
+    entries = walker.create(vso.attrs.Instrument('RHESSI'), vso_session)
     assert entries == [
-        tables.DatabaseEntry(id=1, source='SDO', provider='JSOC',
-            physobs='intensity', fileid='aia__lev1:193:1086652831',
-            observation_time_start=datetime(2011, 6, 8, 23, 59, 55),
-            observation_time_end=datetime(2011, 6, 8, 23, 59, 56),
-            instrument='AIA', size=66200.0, wavemin=19.3, wavemax=19.3),
-        tables.DatabaseEntry(id=2, source='SDO', provider='JSOC',
-            physobs='intensity', fileid='aia__lev1:94:1086652832',
-            observation_time_start=datetime(2011, 6, 8, 23, 59, 56),
-            observation_time_end=datetime(2011, 6, 8, 23, 59, 57),
-            instrument='AIA', size=66200.0, wavemin=9.4, wavemax=9.4),
-        tables.DatabaseEntry(id=3, source='SDO', provider='JSOC',
-            physobs='intensity', fileid='aia__lev1:131:1086652833',
-            observation_time_start=datetime(2011, 6, 8, 23, 59, 57),
-            observation_time_end=datetime(2011, 6, 8, 23, 59, 58),
-            instrument='AIA', size=66200.0, wavemin=13.1, wavemax=13.1),
-        tables.DatabaseEntry(id=4, source='SDO', provider='JSOC',
-            physobs='intensity', fileid='aia__lev1:171:1086652835',
-            observation_time_start=datetime(2011, 6, 9, 0, 0),
-            observation_time_end=datetime(2011, 6, 9, 0, 0, 1),
-            instrument='AIA', size=66200.0, wavemin=17.1, wavemax=17.1),
-        tables.DatabaseEntry(id=5, source='SDO', provider='JSOC',
-            physobs='intensity', fileid='aia__lev1:211:1086652836',
-            observation_time_start=datetime(2011, 6, 9, 0, 0),
-            observation_time_end=datetime(2011, 6, 9, 0, 0, 1),
-            instrument='AIA', size=66200.0, wavemin=21.1, wavemax=21.1)]
+        tables.DatabaseEntry(id=1, source=u'RHESSI', provider=u'LSSP',
+            physobs=u'intensity',
+            fileid=u'/hessidata/2011/09/20/hsi_20110920_010920',
+            observation_time_start=datetime(2011, 9, 20, 1, 9, 20),
+            observation_time_end=datetime(2011, 9, 20, 2, 27, 40),
+            instrument=u'RHESSI', size=-1.0, wavemin=0.4132806430668068,
+            wavemax=7.293187818826002e-05),
+        tables.DatabaseEntry(id=2, source=u'RHESSI', provider=u'LSSP',
+            physobs=u'intensity',
+            fileid=u'/hessidata/2011/09/19/hsi_20110919_233340',
+            observation_time_start=datetime(2011, 9, 19, 23, 33, 40),
+            observation_time_end=datetime(2011, 9, 20, 1, 9, 20),
+            instrument=u'RHESSI', size=-1.0, wavemin=0.4132806430668068,
+            wavemax=7.293187818826002e-05)]
 
 
 @pytest.mark.online
 def test_walker_create_wave(vso_session):
-    entries = walker.create(vso.attrs.Wave(100, 180), vso_session)
+    entries = walker.create(vso.attrs.Wave(0, 10), vso_session)
     assert len(entries) == 2
-    assert entries == [
-        tables.DatabaseEntry(id=3, source='SDO', provider='JSOC',
-            physobs='intensity', fileid='aia__lev1:131:1086652833',
-            observation_time_start=datetime(2011, 6, 8, 23, 59, 57),
-            observation_time_end=datetime(2011, 6, 8, 23, 59, 58),
-            instrument='AIA', size=66200.0, wavemin=13.1, wavemax=13.1),
-        tables.DatabaseEntry(id=4, source='SDO', provider='JSOC',
-            physobs='intensity', fileid='aia__lev1:171:1086652835',
-            observation_time_start=datetime(2011, 6, 9, 0, 0),
-            observation_time_end=datetime(2011, 6, 9, 0, 0, 1),
-            instrument='AIA', size=66200.0, wavemin=17.1, wavemax=17.1)]
+    entries = walker.create(vso.attrs.Wave(5, 10), vso_session)
+    assert len(entries) == 0
 
 
 @pytest.mark.online
 def test_walker_create_time(vso_session):
     time = vso.attrs.Time(
-        datetime(2011, 6, 8, 23, 59, 57), datetime(2011, 6, 9, 0, 0, 1))
+        datetime(2011, 9, 17, 0, 0, 0), datetime(2011, 9, 20, 0, 0, 0))
     entries = walker.create(time, vso_session)
-    assert len(entries) == 3
+    assert len(entries) == 1
     assert entries == [
-        tables.DatabaseEntry(id=3, source='SDO', provider='JSOC',
-            physobs='intensity', fileid='aia__lev1:131:1086652833',
-            observation_time_start=datetime(2011, 6, 8, 23, 59, 57),
-            observation_time_end=datetime(2011, 6, 8, 23, 59, 58),
-            instrument='AIA', size=66200.0, wavemin=13.1, wavemax=13.1),
-        tables.DatabaseEntry(id=4, source='SDO', provider='JSOC',
-            physobs='intensity', fileid='aia__lev1:171:1086652835',
-            observation_time_start=datetime(2011, 6, 9, 0, 0),
-            observation_time_end=datetime(2011, 6, 9, 0, 0, 1),
-            instrument='AIA', size=66200.0, wavemin=17.1, wavemax=17.1),
-        tables.DatabaseEntry(id=5, source='SDO', provider='JSOC',
-            physobs='intensity', fileid='aia__lev1:211:1086652836',
-            observation_time_start=datetime(2011, 6, 9, 0, 0),
-            observation_time_end=datetime(2011, 6, 9, 0, 0, 1),
-            instrument='AIA', size=66200.0, wavemin=21.1, wavemax=21.1)]
+        tables.DatabaseEntry(id=2, source=u'RHESSI', provider=u'LSSP',
+            physobs=u'intensity',
+            fileid=u'/hessidata/2011/09/19/hsi_20110919_233340',
+            observation_time_start=datetime(2011, 9, 19, 23, 33, 40),
+            observation_time_end=datetime(2011, 9, 20, 1, 9, 20),
+            instrument=u'RHESSI', size=-1.0, wavemin=0.4132806430668068,
+            wavemax=7.293187818826002e-05)]
