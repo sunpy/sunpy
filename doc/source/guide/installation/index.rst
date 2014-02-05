@@ -38,6 +38,13 @@ are needed. SunPy will import even if these dependencies are not installed.
   
 - `pytest <http://pytest.org/latest/>`_: To run our tests.
 
+The following two modules are used in SunPy but are also included in the source code under `sunpy.extern` if you have 
+them installed, your global ones will be used by default.
+
+- `requests <http://docs.python-requests.org/>`_: (Bundled with SunPy) Used in `sunpy.net.helio.hec`.
+
+- `progressbar <http://code.google.com/p/python-progressbar/>`_: (Bundled with SunPy) Used in `sunpy.net`.
+
 The packages that will be installed as dependencies by default are the ones required to import the core datatypes `map`, `lightcurve` and `spectra`. These are the strict requirements and the following optional packages:
 
 - `matplotlib`
@@ -76,6 +83,8 @@ To install SunPy with `pip`, simply run::
         pip install sqlalchemy
         pip install suds
         pip install beautifulsoup4
+        pip install requests
+        pip install progressbar
         pip install glymur
 
 .. note::
@@ -115,6 +124,7 @@ To install SunPy's extra dependancies run::
 
     conda update astropy
     conda install suds
+    conda install progressbar
 
 To install run::
  

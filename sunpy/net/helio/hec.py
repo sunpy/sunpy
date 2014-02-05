@@ -1,13 +1,9 @@
-# -*- coding: utf-8 -*-
-# Author:   Michael Malocha <mjm159@humboldt.edu>
-# Last Edit:  September 22nd, 2013
-#
-# This module was developed with funding from the GSOC 2013 summer of code
-#
-
 """
-This module is meant to be an interface with the HELIO webservice, providing
-it's support through the use of a WSDL file.
+Access the Helio Event Catalogue
+
+.. warning::
+    This module is still in beta
+
 """
 
 from sunpy.net.helio import parser
@@ -18,6 +14,8 @@ import io
 
 __author__ = 'Michael Malocha'
 __version__ = 'September 22nd, 2013'
+
+__all__ = ['HECClient']
 
 # The default wsdl file
 DEFAULT_LINK = parser.wsdl_retriever()
@@ -153,7 +151,7 @@ def time_check_and_convert(time):
         return None
 
 
-class Client(object):
+class HECClient(object):
     """
     A client class used to interface with and query HELIO webservices.
     """
@@ -171,7 +169,7 @@ class Client(object):
 
         Examples
         --------
-        >>> hc = hec.Client()
+        >>> hc = hec.HECClient()
         """
         self.hec_client = C(link)
 
@@ -204,7 +202,7 @@ class Client(object):
 
         Examples
         --------
-        >>> hc = hec.Client()
+        >>> hc = hec.HECClient()
         >>> start = '2005/01/03'
         >>> end = '2005/12/03'
         >>> temp = hc.time_query(start, end, max_records=10)
@@ -251,7 +249,7 @@ class Client(object):
 
         Examples
         --------
-        >>> hc = hec.Client()
+        >>> hc = hec.HECClient()
         >>> print hc.get_table_names()
         [('hi_cme_list',) ('cactus_stereoa_cme',) ('aad_gle',)
             ...
