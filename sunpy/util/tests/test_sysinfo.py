@@ -3,6 +3,6 @@ import sunpy
 
 def test_sysinfo():
 
-    output = sunpy.until.sys_prop_print()    
+    output = sunpy.util.get_sys_dict()    
     
     assert isinstance(output, dict)

@@ -4,11 +4,11 @@ import platform
 import datetime
 
 
-__all__ = ['system_info', 'sys_prop_print']
+__all__ = ['get_sys_dict', 'system_info']
 
 
     
-def system_info():
+def get_sys_dict():
     """
     Test which packages are installed on system.
     
@@ -85,14 +85,13 @@ def system_info():
                 }
     return sys_prop
     
-def get_sys_dict():
+def system_info():
     """
     Takes dictionary from sys_info() and prints the contents in an attractive fashion   
 
     """    
-    sys_prop = system_info()
-    
-    
+    sys_prop = get_sys_dict()
+
 # title
     print("==========================================================")
     print(" SunPy Installation Information\n")
