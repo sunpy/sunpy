@@ -684,7 +684,7 @@ def test_download(database, download_query, tmpdir):
     fits_pattern = str(tmpdir.join('*.fits'))
     num_of_fits_headers = sum(
         len(fits.get_header(file)) for file in glob.glob(fits_pattern))
-    assert len(database) == num_of_fits_headers == 4
+    assert len(database) == num_of_fits_headers
     for entry in database:
         assert os.path.dirname(entry.path) == str(tmpdir)
     database.undo()
