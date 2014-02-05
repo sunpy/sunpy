@@ -59,7 +59,7 @@ version = sunpy.__version__.split('-', 1)[0]
 # The full version, including alpha/beta/rc tags.
 release = sunpy.__version__
 
-intersphinx_mapping.pop('h5py')
+intersphinx_mapping.pop('h5py',None)
 intersphinx_mapping['astropy'] = ('http://docs.astropy.org/en/stable/', None)
 intersphinx_mapping['sqlalchemy'] = ('http://docs.sqlalchemy.org/en/rel_0_8/', None)
 intersphinx_mapping['pandas'] = ('http://pandas.pydata.org/pandas-docs/stable/', None)
