@@ -1,9 +1,5 @@
 """
 Access the Helio Event Catalogue
-
-.. warning::
-    This module is still in beta
-
 """
 from sunpy.net.proxyfix import WellBehavedHttpTransport
 from sunpy.net.helio import parser
