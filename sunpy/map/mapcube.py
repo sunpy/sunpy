@@ -267,6 +267,7 @@ class MapCube(object):
         >>> plt.show()
 
         Decide you want an animation:
+
         >>> cube = sunpy.Map(files, cube=True)
         >>> ani = cube.plot(resample=[0.5, 0.5], colorbar=True)
         >>> mplani = ani.get_animation()
