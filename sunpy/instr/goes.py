@@ -36,9 +36,7 @@ def get_goes_event_list(trange,goes_class_filter=None):
 
     for r in result:
         goes_event={}
-        tmpstring=str.split(str(r['event_starttime']),'T')
-        date=tmpstring[0]
-        goes_event['event_date'] = date
+        goes_event['event_date'] = parse_time(r['event_starttime']).date().strftime('%Y-%m-%d')
         goes_event['start_time'] =parse_time(r['event_starttime'])
         goes_event['peak_time'] = parse_time(r['event_peaktime'])
         goes_event['end_time'] = parse_time(r['event_endtime'])
