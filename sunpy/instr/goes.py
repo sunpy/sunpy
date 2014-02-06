@@ -7,14 +7,12 @@ from sunpy.time import parse_time
 def get_goes_event_list(trange,goes_class_filter=None):
     """A function to retrieve a list of flares detected by GOES within a given time range.
 
-    Inputs:
+    Parameters:
     -----------------
     trange: a SunPy TimeRange object
 
-    Optional inputs:
-    -----------------
-    goes_class_filter: a string specifying a minimum GOES class
-    for inclusion in the list, e.g. 'M1', 'X2'."""
+    goes_class_filter: (optional) string
+        a string specifying a minimum GOES class for inclusion in the list, e.g. 'M1', 'X2'."""
     
     
     #use HEK module to search for GOES events
