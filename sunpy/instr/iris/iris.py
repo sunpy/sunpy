@@ -25,8 +25,8 @@ class IRISMap(GenericMap):
         Parameters
         ----------
         missing: float
-           The numerical value to fill any missing points after rotation.
-           Default: 0.0
+            The numerical value to fill any missing points after rotation.
+            Default: 0.0
         interpolation: {'nearest' | 'bilinear' | 'spline' | 'bicubic'}
             Interpolation method to use in the transform. 
             Spline uses the 
