@@ -12,7 +12,7 @@ def get_sys_dict():
     """
     Test which packages are installed on system.
     
-    Return
+    Returns
     ------
     sys_prop: dict
         A dictionary containing the programs and versions installed on this 
@@ -72,6 +72,18 @@ def get_sys_dict():
         from suds import __version__ as suds_version
     except ImportError:
         suds_version = "NOT INSTALLED"
+      
+    try:
+        from sqlalchemy import __version__ as sqlalchemy_version
+    except ImportError:
+        sqlalchemy_version = "NOT INSTALLED"
+        
+    try:
+        from requests import __version__ as requests_version
+    except ImportError:
+        requests_version = "NOT INSTALLED"
+
+        
         
     sys_prop = {'Time' : datetime.datetime.utcnow().strftime("%A, %d. %B %Y %I:%M%p UT"),
                 'System' : platform.system(), 'Processor' : platform.processor(), 
@@ -81,7 +93,7 @@ def get_sys_dict():
                 'SciPy' : scipy_version, 'matplotlib' : matplotlib_version,
                 'Astropy' : astropy_version, 'Pandas' : pandas_version, 
                 'beautifulsoup' : bs4_version, 'PyQt' : pyqt_version,
-                'SUDS' : suds_version
+                'SUDS' : suds_version, 'Sqlalchemy' : sqlalchemy_version, 'Requests' : requests_version
                 }
     return sys_prop
     
@@ -136,5 +148,6 @@ def system_info():
     print(" Recommended Libraries ") 
     print("###########")
         
-    for sys_info in ['beautifulsoup', 'PyQt', 'SUDS']:
+    for sys_info in ['beautifulsoup', 'PyQt', 'SUDS', 
+                     'Sqlalchemy', 'Requests']:
         print '%s : %s' % (sys_info, sys_prop[sys_info])
