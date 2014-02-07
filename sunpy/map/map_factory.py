@@ -186,7 +186,7 @@ class MapFactory(BasicRegistrationFactory):
                 data_header_pairs += pairs
 
             # A database Entry
-            elif (isinstance(arg, DatabaseEntry)):
+            elif isinstance(arg, DatabaseEntry):
                 data_header_pairs += self._read_file(arg.path, **kwargs)
 
             else:
