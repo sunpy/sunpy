@@ -18,6 +18,8 @@ from sunpy.map.mapcube import MapCube
 from sunpy.io.file_tools import read_file
 from sunpy.io.header import FileHeader
 
+from sunpy.database.tables import DatabaseEntry
+
 from sunpy.util.net import download_file
 from sunpy.util import expand_list
 from sunpy.util import Deprecated
@@ -37,36 +39,40 @@ class MapFactory(BasicRegistrationFactory):
 
     Examples
     --------
-    >>> import sunpy
-    >>> mymap = sunpy.Map(sunpy.AIA_171_IMAGE)
+    >>> import sunpy.map
+    >>> mymap = sunpy.map.Map(sunpy.AIA_171_IMAGE)
 
     The SunPy Map factory accepts a wide variety of inputs for creating maps
 
     * Preloaded tuples of (data, header) pairs
 
-    >>> mymap = sunpy.Map((data, header))
+    >>> mymap = sunpy.map.Map((data, header))
 
     headers are some base of `dict` or `collections.OrderedDict`, including `sunpy.io.header.FileHeader` or `sunpy.map.header.MapMeta` classes.
 
     * data, header pairs, not in tuples
 
-    >>> mymap = sunpy.Map(data, header)
+    >>> mymap = sunpy.map.Map(data, header)
 
     * File names
 
-    >>> mymap = sunpy.Map('file1.fits')
+    >>> mymap = sunpy.map.Map('file1.fits')
 
     * All fits files in a directory by giving a directory
 
-    >>> mymap = sunpy.Map('local_dir/sub_dir')
+    >>> mymap = sunpy.map.Map('local_dir/sub_dir')
 
     * Some regex globs
 
-    >>> mymap = sunpy.Map('eit_*.fits')
+    >>> mymap = sunpy.map.Map('eit_*.fits')
 
     * URLs
 
-    >>> mymap = sunpy.Map(url_str)
+    >>> mymap = sunpy.map.Map(url_str)
+
+    * DatabaseEntry
+
+    >>> mymap = sunpy.map.Map(db_result)
 
     * Lists of any of the above
 
@@ -178,6 +184,10 @@ class MapFactory(BasicRegistrationFactory):
                 path = download_file(url, default_dir)
                 pairs = self._read_file(path, **kwargs)
                 data_header_pairs += pairs
+
+            # A database Entry
+            elif isinstance(arg, DatabaseEntry):
+                data_header_pairs += self._read_file(arg.path, **kwargs)
 
             else:
                 raise ValueError("File not found or invalid input")
