@@ -1,10 +1,10 @@
 from __future__ import absolute_import
 
-from sunpy.sun import sun 
+from sunpy.sun import sun
 from numpy.testing import assert_array_almost_equal
 
 def test_sunearth_distance():
-    # Source for these values 
+    # Source for these values
     # wolframalpha.com
     # http://www.wolframalpha.com/input/?i=earth-sun+distance+on+2010%2F02%2F04
     assert_array_almost_equal(sun.sunearth_distance("2010/02/04"), 0.9858, decimal=3)
