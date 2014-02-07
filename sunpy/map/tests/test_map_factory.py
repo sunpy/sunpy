@@ -64,6 +64,14 @@ class TestMap:
         pair_map = sunpy.map.Map(data, header)
         assert isinstance(pair_map, sunpy.map.GenericMap)
 
+    def test_databaseentry(self):
+        db = sunpy.database.Database(url='sqlite://', default_waveunit='angstrom')
+        db.add_from_file(a_fname)
+
+        res = db.get_entry_by_id(1)
+        db_map = sunpy.map.Map(res)
+        assert isinstance(db_map, sunpy.map.GenericMap)
+
     @pytest.mark.online
     def test_url_pattern(self):
         # A URL
