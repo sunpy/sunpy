@@ -7,8 +7,8 @@ from sunpy.time import parse_time
 def get_goes_event_list(trange,goes_class_filter=None):
     """A function to retrieve a list of flares detected by GOES within a given time range.
 
-    Parameters:
-    -----------------
+    Parameters
+    ----------
     trange: a SunPy TimeRange object
 
     goes_class_filter: (optional) string
