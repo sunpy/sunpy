@@ -474,6 +474,7 @@ Dimension:\t [%d, %d]
 
         # Create new map instance
         new_map.data = new_data
+        new_map.meta = new_meta
         return new_map
     
     def rotate(self, angle=None, rmatrix=None, scale=1.0, rotation_center=None, recenter=True,
