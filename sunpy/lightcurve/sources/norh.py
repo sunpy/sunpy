@@ -15,22 +15,23 @@ __all__ = ['NoRHLightCurve']
 class NoRHLightCurve(LightCurve):
 
     @classmethod
-    def _get_url_for_date(date):
+    def _get_url_for_date(cls,date):
+        """This method retrieves the url for NoRH correlation data for the given date."""
         baseurl='ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/'
         #date is a datetime object
         year=date.strftime('%Y')
         year_trim=date.strftime('%y')
         mon=date.strftime('%m')
         day=date.strftime('%d')
-        final_url_17=os.path.join(baseurl,year,month,'tca'+year_trim+mon+day)
-        final_url_34=os.path.join(baseurl,year,month,'tcz'+year_trim+mon+day)
+        final_url_17=os.path.join(baseurl,year,mon,'tca'+year_trim+mon+day)
+        final_url_34=os.path.join(baseurl,year,mon,'tcz'+year_trim+mon+day)
 
         return final_url_17
 
     #now want to download from these urls using the sunpy net functions
     @staticmethod
-    """This method parses NoRH tca and tcz correlation files."""
     def _parse_fits(filepath):
+        """This method parses NoRH tca and tcz correlation files."""
         hdulist=fits.open(filepath)
         header=hdulist[0].header
         #for these NoRH files, the time series data is recorded in the primary HDU
