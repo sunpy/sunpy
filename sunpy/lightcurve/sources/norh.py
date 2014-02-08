@@ -10,10 +10,38 @@ import sunpy
 from sunpy.lightcurve import LightCurve
 from sunpy.time import parse_time
 import numpy as np
+import matplotlib.pyplot as plt
 
 __all__ = ['NoRHLightCurve']
 
 class NoRHLightCurve(LightCurve):
+    """
+    Nobeyama Radioheliograph LightCurve.
+
+    Examples
+    --------
+    >>> import sunpy
+    
+    >>> norh = sunpy.lightcurve.NoRHLightCurve.create('~/Data/norh/tca110607')
+    >>> norh = sunpy.lightcurve.NoRHLightCurve.create('2011/08/10')
+    >>> norh.peek()
+
+    References
+    ----------
+    | http://solar.nro.nao.ac.jp/norh/
+    """
+
+    def peek(self, **kwargs):
+        """Plots the NoRH lightcurve"""
+        plt.figure()
+        axes = plt.gca()
+
+        axes.plot(self.data.index,self.data,label='17 GHz')
+        axes.set_yscale("log")
+        axes.set_xlabel('Start time: ' + datetime.datetime.isoformat(self.data.index[0])[0:19] + ' UT')
+        axes.set_ylabel('Correlation')
+        axes.legend()
+        plt.show()
 
     @classmethod
     def _get_url_for_date(cls,date):
