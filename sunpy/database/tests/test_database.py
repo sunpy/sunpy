@@ -81,7 +81,7 @@ def filled_database():
 
 def test_config_url(monkeypatch):
     monkeypatch.setattr("sunpy.config", ConfigParser.SafeConfigParser())
-    url = 'sqlite:///test.sqlite'
+    url = 'sqlite:///'
     sunpy.config.add_section('database')
     sunpy.config.set('database', 'url', url)
     database = Database()
