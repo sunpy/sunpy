@@ -9,6 +9,7 @@ import pandas
 import sunpy
 from sunpy.lightcurve import LightCurve
 from sunpy.time import parse_time
+import numpy as np
 
 __all__ = ['NoRHLightCurve']
 
@@ -25,8 +26,8 @@ class NoRHLightCurve(LightCurve):
         day=date.strftime('%d')
         final_url_17=os.path.join(baseurl,year,mon,'tca'+year_trim+mon+day)
         final_url_34=os.path.join(baseurl,year,mon,'tcz'+year_trim+mon+day)
-
-        return final_url_17
+        
+        return final_url_34
 
     #now want to download from these urls using the sunpy net functions
     @staticmethod
