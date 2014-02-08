@@ -216,8 +216,8 @@ def _create(wlk, root, session):
                 DatabaseEntry.observation_time_end > start))
         else:
             query = query.filter_by(**{typ: value})
-        if typ not in SUPPORTED:
-            raise NotImplementedError("The type so requested has not been implemented yet.")
+            if typ not in SUPPORTED:
+                raise NotImplementedError("The type so requested has not been implemented yet.")
     return query.all()
 
 
