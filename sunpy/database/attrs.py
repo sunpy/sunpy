@@ -17,6 +17,9 @@ from sunpy.database.tables import DatabaseEntry, Tag as TableTag,\
 __all__ = [
     'Starred', 'Tag', 'Path', 'DownloadTime', 'FitsHeaderEntry', 'walker']
 
+# This frozenset has been hardcoded to denote VSO attributes that are currently supported, on derdon's request.
+SUPPORTED = frozenset(["Source", "Provider", "Physobs", "Instrument"])
+
 
 class _BooleanAttr(object):
     def __init__(self, value, make):
@@ -213,6 +216,8 @@ def _create(wlk, root, session):
                 DatabaseEntry.observation_time_end > start))
         else:
             query = query.filter_by(**{typ: value})
+	    if typ not in SUPPORTED:
+		raise NotImplementedError("The type so requested has not been implemented yet.")
     return query.all()
 
 
