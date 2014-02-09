@@ -18,7 +18,7 @@ __all__ = [
     'Starred', 'Tag', 'Path', 'DownloadTime', 'FitsHeaderEntry', 'walker']
 
 # This frozenset has been hardcoded to denote VSO attributes that are currently supported, on derdon's request.
-SUPPORTED_SIMPLE_VSO_ATTRS = frozenset(["source", "provider", "physobs", "instrument", "starred"])
+SUPPORTED_SIMPLE_VSO_ATTRS = frozenset(["source", "provider", "physobs", "instrument"])
 
 
 class _BooleanAttr(object):
@@ -215,7 +215,7 @@ def _create(wlk, root, session):
                 DatabaseEntry.observation_time_start < end,
                 DatabaseEntry.observation_time_end > start))
         else:
-            if typ.lower() not in SUPPORTED_SIMPLE_VSO_ATTRS:
+            if typ.lower() not in SUPPORTED_SIMPLE_VSO_ATTRS or typ.lower() != 'starred':
                 raise NotImplementedError("The attribute {0!r} is not yet supported to query a database.".format(typ))
             query = query.filter_by(**{typ: value})
     return query.all()
