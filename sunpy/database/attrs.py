@@ -18,7 +18,7 @@ __all__ = [
     'Starred', 'Tag', 'Path', 'DownloadTime', 'FitsHeaderEntry', 'walker']
 
 # This frozenset has been hardcoded to denote VSO attributes that are currently supported, on derdon's request.
-SUPPORTED_SIMPLE_VSO_ATTRS = frozenset(["source", "provider", "physobs", "instrument"])
+SUPPORTED_SIMPLE_VSO_ATTRS = frozenset(["source", "provider", "physobs", "instrument", "starred"])
 
 
 class _BooleanAttr(object):
