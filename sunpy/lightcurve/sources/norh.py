@@ -24,6 +24,7 @@ class NoRHLightCurve(LightCurve):
     
     >>> norh = sunpy.lightcurve.NoRHLightCurve.create('~/Data/norh/tca110607')
     >>> norh = sunpy.lightcurve.NoRHLightCurve.create('2011/08/10')
+    >>> norh = sunpy.lightcurve.NoRHLightCurve.create('2011/08/10',wavelength='34')
     >>> norh.peek()
 
     References
