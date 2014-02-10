@@ -5,8 +5,10 @@
 
 from __future__ import absolute_import
 
+import datetime
 import pytest
 
+from sunpy.time import TimeRange
 from sunpy.net import vso
 from sunpy.net.vso import attrs as va
 from sunpy.net import attr
@@ -28,6 +30,16 @@ def test_simpleattr_apply():
     dct = {}
     va.walker.apply(a, None, dct)
     assert dct['test'] == 1
+
+def test_Time_timerange():
+    t = va.Time(TimeRange('2012/1/1','2012/1/2'))
+    assert isinstance(t, va.Time)
+    assert t.min == datetime.datetime(2012, 1, 1)
+    assert t.max == datetime.datetime(2012, 1, 2)
+
+def test_input_error():
+    with pytest.raises(ValueError):
+        va.Time('2012/1/1')
 
 @pytest.mark.online
 def test_simpleattr_create(client):
