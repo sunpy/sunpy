@@ -259,7 +259,7 @@ class VSOClient(object):
             if port is None:
                 port = DEFAULT_PORT
 
-            api = client.Client(url)
+            api = client.Client(url, transport = WellBehavedHttpTransport())
             api.set_options(port=port)
         self.api = api
 
