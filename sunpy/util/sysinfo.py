@@ -20,11 +20,6 @@ def get_sys_dict():
     
     """    
     
-    
-    system = platform.system()
-    proc = platform.processor()
-    
-    
     try:
         from sunpy.version import version as sunpy_version
         from sunpy.version import git_description as sunpy_git_description
@@ -139,7 +134,7 @@ def system_info():
     
     for sys_info in ['Python', 'NumPy', 'SciPy',
               'matplotlib', 'Astropy', 'Pandas']:
-        print '%s : %s' % (sys_info, sys_prop[sys_info])
+        print '%s: %s' % (sys_info, sys_prop[sys_info])
     
     print "\n"
     
@@ -150,4 +145,4 @@ def system_info():
         
     for sys_info in ['beautifulsoup', 'PyQt', 'SUDS', 
                      'Sqlalchemy', 'Requests']:
-        print '%s : %s' % (sys_info, sys_prop[sys_info])
+        print '%s: %s' % (sys_info, sys_prop[sys_info])
