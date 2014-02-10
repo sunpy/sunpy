@@ -23,8 +23,3 @@ def test_goes_event_list():
     assert result[0]['end_time'] == datetime.datetime(2011,6,7,6,59)
     assert result[0]['goes_class'] == 'M2.5'
     assert result[0]['noaa_active_region'] == 11226
-     
-
-
-
-
