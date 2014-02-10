@@ -56,8 +56,6 @@ class NoRHLightCurve(LightCurve):
         year_trim=date.strftime('%y')
         mon=date.strftime('%m')
         day=date.strftime('%d')
-        print kwargs
-        print 'wavelength' in kwargs
         if 'wavelength' in kwargs:
             if kwargs['wavelength'] == '34':
                 final_url=os.path.join(baseurl,year,mon,'tcz'+year_trim+mon+day)
