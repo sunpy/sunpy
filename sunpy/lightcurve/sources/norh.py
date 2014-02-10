@@ -57,7 +57,6 @@ class NoRHLightCurve(LightCurve):
         
         return final_url_34
 
-    #now want to download from these urls using the sunpy net functions
     @staticmethod
     def _parse_fits(filepath):
         """This method parses NoRH tca and tcz correlation files."""
