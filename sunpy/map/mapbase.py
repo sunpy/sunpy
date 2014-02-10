@@ -8,7 +8,7 @@ __authors__ = ["Russell Hewett, Stuart Mumford, Keith Hughitt, Steven Christe"]
 __email__ = "stuart@mumford.me.uk"
 
 import os
-from copy import deepcopy
+from copy import deepcopy, copy
 import warnings
 
 import numpy as np
@@ -38,7 +38,7 @@ from sunpy.image.rescale import resample as sunpy_image_resample
 #from sunpy.util.cond_dispatch import ConditionalDispatch
 #from sunpy.util.create import Parent
 
-__all__ = ['MapBase', 'GenericMap']
+__all__ = ['GenericMap']
 
 """
 Questions
@@ -474,6 +474,7 @@ Dimension:\t [%d, %d]
 
         # Create new map instance
         new_map.data = new_data
+        new_map.meta = new_meta
         return new_map
     
     def rotate(self, angle=None, rmatrix=None, scale=1.0, rotation_center=None, recenter=True,
