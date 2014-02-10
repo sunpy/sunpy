@@ -88,7 +88,7 @@ for compatability with map, please use meta instead""", Warning)
     @classmethod
     def from_time(cls, time, **kwargs):
         date = parse_time(time)
-        url = cls._get_url_for_date(date)
+        url = cls._get_url_for_date(date, **kwargs)
         filepath = cls._download(
             url, kwargs, err="Unable to download data for specified date"
         )
@@ -231,7 +231,7 @@ for compatability with map, please use meta instead""", Warning)
         raise NotImplementedError(msg % cls.__name__)
 
     @classmethod
-    def _get_url_for_date(cls, date):
+    def _get_url_for_date(cls, date, **kwargs):
         """Returns a URL to the data for the specified date"""
         msg = "Date-based downloads not supported for for %s"
         raise NotImplementedError(msg % cls.__name__)
@@ -301,7 +301,7 @@ for compatability with map, please use meta instead""", Warning)
 
 LightCurve._cond_dispatch.add(
     run_cls("from_time"),
-    lambda cls, time: is_time(time),
+    lambda cls, time, **kwargs: is_time(time),
     # type is here because the class parameter is a class,
     # i.e. an instance of type (which is the base meta-class).
     [type, (basestring, datetime, tuple)],

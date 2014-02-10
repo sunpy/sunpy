@@ -46,7 +46,7 @@ class NoRHLightCurve(LightCurve):
         plt.show()
 
     @classmethod
-    def _get_url_for_date(cls,date):
+    def _get_url_for_date(cls,date, **kwargs):
         """This method retrieves the url for NoRH correlation data for the given date."""
         #default urllib password anonymous@ is not accepted by the NoRH FTP server.
         #include an accepted password in base url
@@ -56,10 +56,16 @@ class NoRHLightCurve(LightCurve):
         year_trim=date.strftime('%y')
         mon=date.strftime('%m')
         day=date.strftime('%d')
-        final_url_17=os.path.join(baseurl,year,mon,'tca'+year_trim+mon+day)
-        final_url_34=os.path.join(baseurl,year,mon,'tcz'+year_trim+mon+day)
+        print kwargs
+        print 'wavelength' in kwargs
+        if 'wavelength' in kwargs:
+            if kwargs['wavelength'] == '34':
+                final_url=os.path.join(baseurl,year,mon,'tcz'+year_trim+mon+day)
+        else:
+            final_url=os.path.join(baseurl,year,mon,'tca'+year_trim+mon+day)
         
-        return final_url_17
+        print final_url
+        return final_url
 
     @staticmethod
     def _parse_fits(filepath):
