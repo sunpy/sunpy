@@ -589,15 +589,16 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
                 data = scipy.ndimage.interpolation.affine_transform(image, rsmat,
                            offset=offs, order=3, mode='constant',
                            cval=missing)
-            #Set up call parameters depending on interp type.
-            if interpolation == 'nearest':
-                interp_type = Crotate.NEAREST
-            elif interpolation == 'bilinear':
-                interp_type = Crotate.BILINEAR
-            elif interpolation == 'bicubic':
-                interp_type = Crotate.BICUBIC
-            #Make call to extension
-            data = Crotate.affine_transform(image,
+            else:
+                #Set up call parameters depending on interp type.
+                if interpolation == 'nearest':
+                    interp_type = Crotate.NEAREST
+                elif interpolation == 'bilinear':
+                    interp_type = Crotate.BILINEAR
+                elif interpolation == 'bicubic':
+                    interp_type = Crotate.BICUBIC
+                #Make call to extension
+                data = Crotate.affine_transform(image,
                                       rsmat, offset=offs,
                                       kernel=interp_type, cubic=interp_param,
                                       mode='constant', cval=missing)
