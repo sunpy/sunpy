@@ -4,6 +4,8 @@ import os
 from sunpy.net import hek
 from sunpy.time import parse_time
 
+__all__ = ['get_goes_event_list']
+
 def get_goes_event_list(trange,goes_class_filter=None):
     """A function to retrieve a list of flares detected by GOES within a given time range.
 
