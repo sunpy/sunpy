@@ -44,10 +44,3 @@ def get_goes_event_list(trange,goes_class_filter=None):
         goes_event_list.append(goes_event)
 
     return goes_event_list
-        
-    
-
-    
-
-    
-
