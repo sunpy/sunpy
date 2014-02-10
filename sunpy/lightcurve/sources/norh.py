@@ -38,6 +38,7 @@ class NoRHLightCurve(LightCurve):
 
         axes.plot(self.data.index,self.data,label='17 GHz')
         axes.set_yscale("log")
+        axes.set_ylim(1e-4,1)
         axes.set_xlabel('Start time: ' + datetime.datetime.isoformat(self.data.index[0])[0:19] + ' UT')
         axes.set_ylabel('Correlation')
         axes.legend()
@@ -46,7 +47,9 @@ class NoRHLightCurve(LightCurve):
     @classmethod
     def _get_url_for_date(cls,date):
         """This method retrieves the url for NoRH correlation data for the given date."""
-        baseurl='ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/'
+        #default urllib password anonymous@ is not accepted by the NoRH FTP server.
+        #include an accepted password in base url
+        baseurl='ftp://anonymous:mozilla@example.com@solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/'
         #date is a datetime object
         year=date.strftime('%Y')
         year_trim=date.strftime('%y')
