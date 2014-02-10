@@ -38,6 +38,8 @@ are needed. SunPy will import even if these dependencies are not installed.
   
 - `pytest <http://pytest.org/latest/>`_: To run our tests.
 
+- `requests <http://python-requests.org>`_: Used in `sunpy.net.helio.hec`.
+
 The packages that will be installed as dependencies by default are the ones required to import the core datatypes `map`, `lightcurve` and `spectra`. These are the strict requirements and the following optional packages:
 
 - `matplotlib`
@@ -77,6 +79,7 @@ To install SunPy with `pip`, simply run::
         pip install suds
         pip install beautifulsoup4
         pip install glymur
+        pip install requests
 
 .. note::
 
