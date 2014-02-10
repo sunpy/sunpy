@@ -33,4 +33,4 @@ Further, you can force the filetype from this interface, like so::
 Valid values for filetype are 'fits', 'jp2' and 'ana'
 This will work for the three high-level IO functions.
 
-Full documentation for fits files is located :ref:`iofits`, :ref:`iojp2` and :ref:`ioana`.
+Full documentation for compatible files is located here :ref:`iofits`, :ref:`iojp2` and :ref:`ioana`.
