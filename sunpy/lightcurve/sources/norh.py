@@ -35,10 +35,11 @@ class NoRHLightCurve(LightCurve):
         """Plots the NoRH lightcurve"""
         plt.figure()
         axes = plt.gca()
-
-        axes.plot(self.data.index,self.data,label='17 GHz')
+        data_lab=self.meta['obs-freq'][0:2] + ' ' + self.meta['obs-freq'][2:5]
+        axes.plot(self.data.index,self.data,label=data_lab)
         axes.set_yscale("log")
         axes.set_ylim(1e-4,1)
+        axes.set_title('Nobeyama Radioheliograph')
         axes.set_xlabel('Start time: ' + datetime.datetime.isoformat(self.data.index[0])[0:19] + ' UT')
         axes.set_ylabel('Correlation')
         axes.legend()
@@ -58,7 +59,7 @@ class NoRHLightCurve(LightCurve):
         final_url_17=os.path.join(baseurl,year,mon,'tca'+year_trim+mon+day)
         final_url_34=os.path.join(baseurl,year,mon,'tcz'+year_trim+mon+day)
         
-        return final_url_34
+        return final_url_17
 
     @staticmethod
     def _parse_fits(filepath):
