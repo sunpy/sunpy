@@ -62,7 +62,6 @@ class NoRHLightCurve(LightCurve):
         else:
             final_url=os.path.join(baseurl,year,mon,'tca'+year_trim+mon+day)
         
-        print final_url
         return final_url
 
     @staticmethod
