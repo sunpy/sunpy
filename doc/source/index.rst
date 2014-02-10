@@ -10,4 +10,5 @@ free and open-source solar data analysis environment for Python.
   guide/index.rst
   code_ref/index.rst
   dev
+  bugs
   ssw
