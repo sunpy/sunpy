@@ -15,11 +15,11 @@ from sunpy.map import Map
 # SunPy's JPEG2000 capabilities rely on the glymur library.  First we check to
 # make sure that glymur imports correctly before proceeding.
 try:
-    __import__("glymur")
+    import glymur
 except ImportError:
-    glymur_imports = True
-else:
     glymur_imports = False
+else:
+    glymur_imports = True
 
 @pytest.mark.skipif("glymur_imports is False")
 def test_read_data():
