@@ -10,10 +10,11 @@ This module is meant to parse the HELIO registry and return WSDL endpoints to
 facilitate the interfacing between further modules and HELIO.
 """
 from __future__ import absolute_import
-import requests
+from urllib2 import urlopen, URLError
 import xml.etree.ElementTree as EL
 from sunpy.net.helio import registry_links as RL
 from bs4 import BeautifulSoup
+from contextlib import closing
 
 __author__ = 'Michael Malocha'
 __version__ = 'September 22nd, 2013'
@@ -53,9 +54,9 @@ def webservice_parser(service='HEC'):
     'http://hec.helio-vo.eu/helio_hec/HelioLongQueryService']
     """
     link = RL.LINK + service.lower()
-    if link_test(link) is None:
-        return None
-    xml = requests.get(link).text
+    xml = link_test(link)
+    if xml is None:
+        return xml
     root = EL.fromstring(xml)
     links = []
     for interface in root.iter('interface'):
@@ -177,9 +178,9 @@ def link_test(link):
     None
     """
     try:
-        webpage = requests.get(link, timeout=LINK_TIMEOUT).text
-        return webpage
-    except:
+        with closing(urlopen(link)) as fd:
+            return fd.read()
+    except (ValueError, URLError):
         return None
 
 
