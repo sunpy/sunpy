@@ -15,13 +15,13 @@ env:
         - SUDS_PKG='suds-jurko==0.4.1.jurko.4'
         - TEST_MODE='tests'
     matrix:
+        - NUMPY_VERSION=1.8.0 PANDAS_VERSION=0.13.1
+        - NUMPY_VERSION=1.7.1 PANDAS_VERSION=0.13.1
         - NUMPY_VERSION=1.8.0 PANDAS_VERSION=0.12.0
-        - NUMPY_VERSION=1.7.1 PANDAS_VERSION=0.12.0
-        - NUMPY_VERSION=1.8.0 PANDAS_VERSION=0.11.0
 matrix:
      include:
         - python: 2.7
-          env: TEST_MODE='sphinx' NUMPY_VERSION=1.8.0 PANDAS_VERSION=0.12.0
+          env: TEST_MODE='sphinx' NUMPY_VERSION=1.8.0 PANDAS_VERSION=0.13.1
 
 before_install:
 # Pick the suds version based on the python version
@@ -50,7 +50,7 @@ install:
    - pip install $PIP_WHEEL_COMMAND pytz==2013b python-dateutil
    - pip install $PIP_WHEEL_COMMAND pandas==$PANDAS_VERSION
    - pip install $PIP_WHEEL_COMMAND astropy>=0.3.0
-   - pip install $PIP_WHEEL_COMMAND $SUDS_PKG beautifulsoup4
+   - pip install $PIP_WHEEL_COMMAND $SUDS_PKG beautifulsoup4 requests
    - pip install $PIP_WHEEL_COMMAND pytest 
    - pip install $PIP_WHEEL_COMMAND glymur
 #Install sphinx if needed

@@ -5,3 +5,4 @@ SunPy instr
     iris
     lyra
     rhessi
+    goes
