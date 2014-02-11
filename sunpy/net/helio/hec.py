@@ -29,7 +29,7 @@ def suds_unwrapper(wrapped_data):
     """
     Removes suds wrapping from returned xml data
 
-    When grabbing data via client.last_received() from the suds.client.Client
+    When grabbing data via votable_interceptor.last_payload from the suds.client.Client
     module, it returns the xml data in an un-helpful "<s:Envelope>" that needs
     to be removed. This function politely cleans it up.
 
@@ -45,16 +45,18 @@ def suds_unwrapper(wrapped_data):
 
     Examples
     --------
-    >>> from sunpy.net.helio import hec
+    >>> from sunpy.net.helio import hec  Todo: Fix this example!
     >>> from suds.client import Client
-    >>> client = Client(parser.wsdl_retriever())
+    >>> from sunpy.net.proxyfix import WellBehavedHttpTransport
+    >>> votable_interceptor = hec.VotableInterceptor()
+    >>> client = Client(hec.parser.wsdl_retriever(), plugins=[self.votable_interceptor], transport=WellBehavedHttpTransport())
     >>> client.service.getTableNames()
     >>> temp = client.last_received().str()
     >>> print temp
     <?xml version="1.0" encoding="UTF-8"?>
-    <S:Envelope>
+    <S:Envelope ..... >
        <S:Body>
-          <helio:queryResponse>
+          <helio:queryResponse ... >
              <VOTABLE xmlns="http://www.ivoa.net/xml/VOTable/v1.1" version="1.1">
                 <RESOURCE>
                 ...
@@ -141,13 +143,12 @@ def time_check_and_convert(time):
     Examples
     --------
     >>> time = '2013/01/03'
-    >>> hec.time_check_convert(time)
+    >>> hec.time_check_and_convert(time)
     '2013-01-03T00:00:00'
     """
     if T.is_time(time):
         time_object = T.parse_time(time)
-        converted_time = time_object.strftime("%Y-%m-%d") + "T" + \
-                         time_object.strftime("%T")
+        converted_time = time_object.isoformat()
         return converted_time
     else:
         print "Not a valid datetime"
@@ -313,20 +314,12 @@ class Client(object):
         temp = None
         tables = self.get_table_names()
         for i in tables:
-            temp = str(i)[2:-3]
+            temp = i[0]
             if len(temp) > 0:
                 table_list.append(temp)
-        counter = 1
         table_list.sort()
-        for i in table_list:
-            temp = '  '
-            if 9 < counter < 100:
-                temp = ' '
-            elif 99 < counter:
-                temp = ''
-            temp += str(counter) + ") " + i
-            print temp
-            counter += 1
+        for index, table in enumerate(table_list):
+            print ('{index:3d}) {table}'.format(number = index + 1, table = table))
         while True:
             input = raw_input("\nPlease enter a table number between 1 and %i "
                               "('e' to exit): " % len(table_list))
@@ -341,29 +334,4 @@ class Client(object):
             else:
                 print "Choice outside of bounds"
         return temp
-
-    def clean_last_received(self):
-        """
-        A method to return clean VOtable objects for the client.
-
-        This is a simple function just to clean up code. When called, it grabs
-        the "last results", runs suds_unwrapper() on the results, followed by
-        votable_handler(), then returns the results to the
-        clean_last_received()'s calling method. The "last results" are
-        actually tied to the client instance that call the webservice.
-
-        Returns
-        -------
-        results: astropy.io.votable.tree.Table
-            A clean and happy VOtable object
-
-        Examples
-        --------
-        >>> self.hec_client.service.getTableNames()
-        >>> tables = self.clean_last_received()
-        """
-        results = self.hec_client.last_received().str()
-        results = suds_unwrapper(results)
-        results = votable_handler(results)
-        return results
 
