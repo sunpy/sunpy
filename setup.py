@@ -110,10 +110,10 @@ def install(setup): #pylint: disable=W0621
         description=DOCLINES[0],
         download_url="http://www.sunpy.org/download/",
         install_requires=[
-            'numpy>1.6.0',
+            'numpy>1.7.1',
             'astropy>=0.3.0',
             'scipy',
-            'pandas>=0.10.0',
+            'pandas>=0.12.1',
             'matplotlib>=1.1',
             'sqlalchemy',
         ],
