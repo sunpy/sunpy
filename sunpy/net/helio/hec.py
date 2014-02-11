@@ -207,15 +207,10 @@ class Client(object):
             table = self.make_table_list()
         start_time = parse_time(start_time)
         end_time = parse_time(end_time)
-        if max_records is not None:
-            self.hec_client.service.TimeQuery(STARTTIME=start_time.isoformat(),
-                                              ENDTIME=end_time.isoformat(),
-                                              FROM=table,
-                                              MAXRECORDS=max_records)
-        else:
-            self.hec_client.service.TimeQuery(STARTTIME=start_time.isoformat(),
-                                              ENDTIME=end_time.isoformat(),
-                                              FROM=table)
+        self.hec_client.service.TimeQuery(STARTTIME=start_time.isoformat(),
+                                          ENDTIME=end_time.isoformat(),
+                                          FROM=table,
+                                          MAXRECORDS=max_records)
         results = votable_handler(self.votable_interceptor.last_payload)
         return results
 
