@@ -13,6 +13,7 @@ from sunpy.net.proxyfix import WellBehavedHttpTransport
 from sunpy.net.helio import parser
 from sunpy.time import time as T
 from suds.client import Client as C
+import suds
 from astropy.io.votable.table import parse_single_table
 import io
 
@@ -22,6 +23,7 @@ __version__ = 'September 22nd, 2013'
 # The default wsdl file
 DEFAULT_LINK = parser.wsdl_retriever()
 
+        
 
 def suds_unwrapper(wrapped_data):
     """
@@ -71,13 +73,12 @@ def suds_unwrapper(wrapped_data):
      </VOTABLE>
     """
     HEADER = '<?xml version="1.0" encoding="UTF-8"?>'
-    CATCH_1 = '<helio:queryResponse>'
+    CATCH_1 = '<VOTABLE'
     CATCH_2 = '</helio:queryResponse>'
     # Now going to find the locations of the CATCHes in the wrapped_data
     pos_1 = wrapped_data.find(CATCH_1)
-    size = len(CATCH_1)
     pos_2 = wrapped_data.find(CATCH_2)
-    unwrapped = HEADER + wrapped_data[pos_1 + size:pos_2]
+    unwrapped = HEADER + wrapped_data[pos_1:pos_2]
     return unwrapped
 
 
@@ -152,6 +153,20 @@ def time_check_and_convert(time):
         print "Not a valid datetime"
         return None
 
+class VotableInterceptor(suds.plugin.MessagePlugin):
+    '''
+    Adapted example from http://stackoverflow.com/questions/15259929/configure-suds-to-use-custom-response-xml-parser-for-big-response-payloads
+    '''
+    def __init__(self, *args, **kwargs):
+        self.last_payload = None
+
+    def received(self, context):
+        #recieved xml as a string
+        self.last_payload = unicode(suds_unwrapper(context.reply))
+        #clean up reply to prevent parsing
+        context.reply = ""
+        return context
+
 
 class Client(object):
     """
@@ -173,7 +188,8 @@ class Client(object):
         --------
         >>> hc = hec.Client()
         """
-        self.hec_client = C(link, transport=WellBehavedHttpTransport())
+        self.votable_interceptor = VotableInterceptor()
+        self.hec_client = C(link, plugins=[self.votable_interceptor], transport=WellBehavedHttpTransport())
 
     def time_query(self, start_time, end_time, table=None, max_records=None):
         """
@@ -235,7 +251,7 @@ class Client(object):
             self.hec_client.service.TimeQuery(STARTTIME=start_time,
                                               ENDTIME=end_time,
                                               FROM=table)
-        results = self.clean_last_received()
+        results = votable_handler(self.votable_interceptor.last_payload)
         return results
 
     def get_table_names(self):
@@ -260,7 +276,7 @@ class Client(object):
 
         """
         self.hec_client.service.getTableNames()
-        tables = self.clean_last_received()
+        tables = votable_handler(self.votable_interceptor.last_payload)
         return tables.array
 
     def make_table_list(self):
