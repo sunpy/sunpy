@@ -203,7 +203,7 @@ class Client(object):
          (31471, '2005-01-03T09:34:52', '2005-01-03T09:59:46', '2005-01-03T10:06:04', 717, 994.0, 108.0, 1000.0, 1872, 40, 55920, 6, 5010336)
          (31472, '2005-01-03T11:06:48', '2005-01-03T11:07:18', '2005-01-03T11:15:56', 717, 974.0, 116.0, 981.0, 548, 2160, 2240376, 12, 5010304)]
         """
-        if table is None:
+        while table is None:
             table = self.make_table_list()
         start_time = parse_time(start_time)
         end_time = parse_time(end_time)
@@ -270,12 +270,11 @@ class Client(object):
         'wind_waves_type_ii_burst'
         """
         table_list = []
-        temp = None
         tables = self.get_table_names()
         for i in tables:
-            temp = i[0]
-            if len(temp) > 0:
-                table_list.append(temp)
+            table = i[0]
+            if len(table) > 0:
+                table_list.append(table)
         table_list.sort()
         for index, table in enumerate(table_list):
             print ('{number:3d}) {table}'.format(number = index + 1, table = table))
