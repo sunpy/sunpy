@@ -1,8 +1,12 @@
 from __future__ import absolute_import
 
+import xml.etree.ElementTree
+
 import pytest
 
 from sunpy.net.helio import hec
+import sunpy.net.helio.parser as p
+from sunpy.net.helio import registry_links as RL
 
 def test_suds_unwrapper():
     suds_output = """<?xml version="1.0" encoding="UTF-8"?>
@@ -26,3 +30,8 @@ def test_suds_unwrapper():
              </VOTABLE>
 """
     assert hec.suds_unwrapper(suds_output) == expected_output
+
+@pytest.mark.online
+def test_webservice_parser():
+    result = p.webservice_parser()
+    assert isinstance(result,list)
