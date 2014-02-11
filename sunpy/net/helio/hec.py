@@ -74,13 +74,13 @@ def suds_unwrapper(wrapped_data):
         </RESOURCE>
      </VOTABLE>
     """
-    HEADER = '<?xml version="1.0" encoding="UTF-8"?>'
+    HEADER = '<?xml version="1.0" encoding="UTF-8"?>\n'
     CATCH_1 = '<VOTABLE'
-    CATCH_2 = '</helio:queryResponse>'
+    CATCH_2 = '</VOTABLE>\n'
     # Now going to find the locations of the CATCHes in the wrapped_data
     pos_1 = wrapped_data.find(CATCH_1)
     pos_2 = wrapped_data.find(CATCH_2)
-    unwrapped = HEADER + wrapped_data[pos_1:pos_2]
+    unwrapped = HEADER + wrapped_data[pos_1:pos_2] + CATCH_2
     return unwrapped
 
 
