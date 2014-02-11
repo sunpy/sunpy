@@ -11,7 +11,7 @@ it's support through the use of a WSDL file.
 """
 from sunpy.net.proxyfix import WellBehavedHttpTransport
 from sunpy.net.helio import parser
-from sunpy.time import time as T
+from sunpy.time import parse_time
 from suds.client import Client as C
 import suds
 from astropy.io.votable.table import parse_single_table
@@ -120,40 +120,6 @@ def votable_handler(xml_table):
     return votable
 
 
-def time_check_and_convert(time):
-    """
-    Verifies 'time' as a time object, then makes it VOtable compatible.
-
-    Quickly validates a date-time passed in via a string, then parses out a
-    datetime object from the string, which is then converted into the proper
-    format to be accepted by the WSDL service methods.
-    Returned format: 'yyyy-mm-ddThh:mm:ss'
-    Example: '1991-01-03T12:00:00'
-
-    Parameters
-    ----------
-    time: str
-        Contains a singular date-time object within a string.
-
-    Returns
-    -------
-    converted_time: str or None
-        A parsed and converted datetime string.
-
-    Examples
-    --------
-    >>> time = '2013/01/03'
-    >>> hec.time_check_and_convert(time)
-    '2013-01-03T00:00:00'
-    """
-    if T.is_time(time):
-        time_object = T.parse_time(time)
-        converted_time = time_object.isoformat()
-        return converted_time
-    else:
-        print "Not a valid datetime"
-        return None
-
 class VotableInterceptor(suds.plugin.MessagePlugin):
     '''
     Adapted example from http://stackoverflow.com/questions/15259929/configure-suds-to-use-custom-response-xml-parser-for-big-response-payloads
@@ -239,18 +205,16 @@ class Client(object):
         """
         if table is None:
             table = self.make_table_list()
-        start_time = time_check_and_convert(start_time)
-        end_time = time_check_and_convert(end_time)
-        if start_time is None or end_time is None:
-            return None
+        start_time = parse_time(start_time)
+        end_time = parse_time(end_time)
         if max_records is not None:
-            self.hec_client.service.TimeQuery(STARTTIME=start_time,
-                                              ENDTIME=end_time,
+            self.hec_client.service.TimeQuery(STARTTIME=start_time.isoformat(),
+                                              ENDTIME=end_time.isoformat(),
                                               FROM=table,
                                               MAXRECORDS=max_records)
         else:
-            self.hec_client.service.TimeQuery(STARTTIME=start_time,
-                                              ENDTIME=end_time,
+            self.hec_client.service.TimeQuery(STARTTIME=start_time.isoformat(),
+                                              ENDTIME=end_time.isoformat(),
                                               FROM=table)
         results = votable_handler(self.votable_interceptor.last_payload)
         return results
@@ -319,7 +283,7 @@ class Client(object):
                 table_list.append(temp)
         table_list.sort()
         for index, table in enumerate(table_list):
-            print ('{index:3d}) {table}'.format(number = index + 1, table = table))
+            print ('{number:3d}) {table}'.format(number = index + 1, table = table))
         while True:
             input = raw_input("\nPlease enter a table number between 1 and %i "
                               "('e' to exit): " % len(table_list))
