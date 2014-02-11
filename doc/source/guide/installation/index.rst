@@ -77,7 +77,6 @@ To install SunPy with `pip`, simply run::
         pip install suds
         pip install beautifulsoup4
         pip install glymur
-        pip install requests
 
 .. note::
 
