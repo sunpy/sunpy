@@ -14,8 +14,6 @@ __version__ = 'September 22nd, 2013'
 
 __all__ = ['HECClient']
 
-# The default wsdl file
-DEFAULT_LINK = parser.wsdl_retriever()
 
         
 
@@ -134,7 +132,7 @@ class HECClient(object):
     A client class used to interface with and query HELIO webservices.
     """
 
-    def __init__(self, link=DEFAULT_LINK):
+    def __init__(self, link=None):
         """
         The constructor; establishes the webservice link for the client
 
@@ -149,6 +147,10 @@ class HECClient(object):
         --------
         >>> hc = hec.HECClient()
         """
+        if link is None:
+            # The default wsdl file
+            link = parser.wsdl_retriever()
+
         self.votable_interceptor = VotableInterceptor()
         self.hec_client = C(link, plugins=[self.votable_interceptor], transport=WellBehavedHttpTransport())
 
