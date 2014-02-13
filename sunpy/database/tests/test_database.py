@@ -9,6 +9,7 @@ from datetime import datetime
 import glob
 import ConfigParser
 import os.path
+import sys
 
 import pytest
 import sqlalchemy
@@ -729,7 +730,9 @@ def test_fetch(database, download_query, tmpdir):
 
 
 @pytest.mark.online
-@pytest.mark.skipif(sys.version_info == (2,6))
+@pytest.mark.skipif(
+        sys.version_info == (2,6),
+        reason='for some unknown reason, this test fails on Python 2.6')
 def test_disable_undo(database, download_query, tmpdir):
     entry = DatabaseEntry()
     with disable_undo(database) as db:
