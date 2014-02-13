@@ -46,7 +46,7 @@ next section then describes the legacy query.  The final section
 describes how to download data from those query results.
 
 Constructing a Query
-^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^
 
 Let's start with a very simple query.  We could ask for all SOHO/EIT 
 data between January 1st and 2nd, 2001.
@@ -121,7 +121,7 @@ set the wavelength; for example, to return the 171 Angstrom EIT results
     4
 
 Using the Legacy Query Style
-^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 If you just need to do a quick query or don't want to do anything too
 complicated you can use the legacy query style. Let's show now how the
