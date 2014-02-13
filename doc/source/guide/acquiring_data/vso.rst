@@ -31,16 +31,22 @@ the data provider is downloaded to your computer.
 Searching the VSO
 -----------------
 
-The vso module can be used in two different ways, an advanced 
-query style and a simpler one based on the 
+To search the VSO, your query needs at minimum a start time, an end
+time, and an instrument.  Two styles of constructing the query are
+supported by SunPy's VSO module.  The first style is very flexible, as
+it allows users to issue complex queries in a single command.  This
+query style is described below.
+
+The second query style - known as the ``legacy query`` is useful for
+making quick VSO queries, and is based on the function call to
 `SSWIDL's VSO query client <http://docs.virtualsolar.org/wiki/VsoIDL>`_, `vso_search.pro <http://docs.virtualsolar.org/wiki/VsoIDL/VsoSearch>`_ (simple).
 
-To search the VSO, you need at least a start time and end time, 
-and an instrument. Different examples are shown in the following sections.
-We will first cover the advanced style. You can skip to the simpler style below.
+The section below first describe the more flexible query style.  The
+next section then describes the legacy query.  The final section
+describes how to download data from those query results.
 
-Advanced Query
-^^^^^^^^^^^^^^
+Constructing a Query
+^^^^^^^^^^^^^^^^^^^^
 
 Let's start with a very simple query.  We could ask for all SOHO/EIT 
 data between January 1st and 2nd, 2001.
@@ -114,12 +120,12 @@ set the wavelength; for example, to return the 171 Angstrom EIT results
     >>> qr.num_records()
     4
 
-Simple Query
-^^^^^^^^^^^^
+Using the Legacy Query Style
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-If you just need to do a quick query or don't want to do anything too complicated you
-can use the simple query. Let's show now how the first example is executed with the 
-legacy mode.
+If you just need to do a quick query or don't want to do anything too
+complicated you can use the legacy query style. Here is the first
+example from the above section executed using a legacy query.
 
 As before,  we want EIT data between 2001/01/01 and 2001/01/02
 
