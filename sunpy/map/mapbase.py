@@ -7,15 +7,13 @@ from __future__ import absolute_import
 __authors__ = ["Russell Hewett, Stuart Mumford, Keith Hughitt, Steven Christe"]
 __email__ = "stuart@mumford.me.uk"
 
-import os
-from copy import deepcopy, copy
+from copy import deepcopy
 import warnings
 
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy.ndimage.interpolation
 from matplotlib import patches
-from matplotlib import colors
 from matplotlib import cm
 
 import astropy.nddata
@@ -27,7 +25,6 @@ except ImportError:
 
 import sunpy.io as io
 import sunpy.wcs as wcs
-from sunpy.util import to_signed, Deprecated
 from sunpy.visualization import toggle_pylab
 # from sunpy.io import read_file, read_file_header
 from sunpy.sun import constants
