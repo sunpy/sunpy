@@ -124,8 +124,8 @@ Using the Legacy Query Style
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 If you just need to do a quick query or don't want to do anything too
-complicated you can use the legacy query style. Let's show now how the
-first example is executed using a legacy query.
+complicated you can use the legacy query style. Here is the first
+example from the above section executed using a legacy query.
 
 As before,  we want EIT data between 2001/01/01 and 2001/01/02
 
