@@ -211,7 +211,7 @@ def get_obssumm_file(time_range):
 
     """
     
-    _time_range = TimeRange(time_range)
+    time_range = TimeRange(time_range)
     data_location = 'metadata/catalog/'
     
     #TODO need to check which is the closest servers
