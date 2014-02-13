@@ -1,0 +1,2 @@
+.. automodapi:: sunpy.instr.goes
+
