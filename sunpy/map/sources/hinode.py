@@ -4,14 +4,11 @@
 __author__ = "Jack Ireland"
 __email__ = "jack.ireland@nasa.gov"
 
-from datetime import datetime
-
 import numpy as np
 from matplotlib import colors
 
 from sunpy.map import GenericMap
 from sunpy.cm import cm
-from sunpy.time import parse_time
 
 
 __all__ = ['XRTMap']
