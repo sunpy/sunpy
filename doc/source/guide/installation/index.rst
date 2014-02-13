@@ -29,9 +29,9 @@ are needed. SunPy will import even if these dependencies are not installed.
 
 - `sqlalchemy <http://www.sqlalchemy.org>`_: For the `database` package.
 
-- `suds <https://bitbucket.org/jurko/suds>`_: For `net.vso`.
+- `suds <https://bitbucket.org/jurko/suds>`_: For `net`.
 
-- `beautifulsoup4 <http://www.crummy.com/software/BeautifulSoup/>`_: For `Callisto` Spectrograms
+- `beautifulsoup4 <http://www.crummy.com/software/BeautifulSoup/>`_: For `Callisto` Spectrograms and `net.helio`
 
 - `glymur <https://glymur.readthedocs.org/en/latest/>`_ 0.5.9 or later: To enable reading of JPEG2000 files.
   Glymur requires the installation of the OpenJPEG C library. Which can be found `here <http://code.google.com/p/openjpeg/downloads/list>`.
@@ -114,15 +114,15 @@ To install SunPy launch the Anaconda command prompt or a system prompt and run t
 To install SunPy's extra dependancies run::
 
     conda update astropy
-    conda install suds
+    pip install suds
 
 To install run::
  
- 	conda install sunpy
+ 	pip install sunpy
 
 To update to the latest version run::
 
-    conda update sunpy
+    pip install --upgrade sunpy
 
 .. note::
 
@@ -154,11 +154,6 @@ need the XCode command line tools.
 The `instructions for building Numpy from source
 <http://docs.scipy.org/doc/numpy/user/install.html>`_ are also a good
 resource for setting up your environment to build Python packages.
-
-You will also need `Cython <http://cython.org/>`_ installed to build
-from source, unless you are installing a numbered release. (The releases
-packages have the necessary C files packaged with them, and hence do not
-require Cython.)
 
 .. note:: If you are using MacOS X, you will need to the XCode command line
           tools.  One way to get them is to install `XCode
