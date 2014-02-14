@@ -1,14 +1,13 @@
-------------
-Getting data
-------------
+-----------------------------
+Downloading Data from the VSO
+-----------------------------
 
 The main interface which SunPy provides to search for and download data is provided by
-SunPy VSO module. This module provides an interface to the 
+SunPy's VSO module. This module provides an interface to the 
 `Virtual Solar Observatory (VSO) <http://virtualsolar.org>`_
-is a service which presents a
-homogenoeous interface to heterogeneous data-sets and services.  Using
-the VSO, a user can query multiple data providers simultaneously, and
-then download the relevant data.  SunPy uses the VSO through the ``vso``
+which is a service which presents a homogenoeous interface to heterogeneous 
+data-sets and services.  Using the VSO, a user can query multiple data providers 
+simultaneously, and then download the relevant data.  SunPy uses the VSO through the ``vso``
 module, which was developed through support from the `European Space
 Agency Summer of Code in Space (ESA-SOCIS) 2011 
 <http://sophia.estec.esa.int/socis2011/>`_.
@@ -23,9 +22,9 @@ SunPy's VSO module is in ``sunpy.net``.  It can be imported as follows:
 
 This creates your client object. Obtaining data via the VSO is a two-stage process.  
 You first ask the VSO to find the data you want.  The VSO
-queries various data-providers looking for your data.  After that you choose the data
-you want to download, if there is any data that matches your
-request.  The VSO client handles the particulars of how the data from
+queries various data-providers looking for your data. If there is any data 
+that matches your request, you choose the data you want to download.
+The VSO client handles the particulars of how the data from
 the data provider is downloaded to your computer.
 
 Searching the VSO
@@ -39,7 +38,7 @@ query style is described below.
 
 The second query style - known as the ``legacy query`` is useful for
 making quick VSO queries, and is based on the function call to
-`SSWIDL's VSO query client <http://docs.virtualsolar.org/wiki/VsoIDL>`_, `vso_search.pro <http://docs.virtualsolar.org/wiki/VsoIDL/VsoSearch>`_ (simple).
+`SSWIDL's VSO query client <http://docs.virtualsolar.org/wiki/VsoIDL>`_.
 
 The section below first describe the more flexible query style.  The
 next section then describes the legacy query.  The final section

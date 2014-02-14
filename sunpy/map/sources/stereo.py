@@ -5,7 +5,6 @@ __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
 from sunpy.map import GenericMap
-from sunpy.time import parse_time
 from sunpy.cm import cm
 
 __all__ = ['EUVIMap', 'CORMap']

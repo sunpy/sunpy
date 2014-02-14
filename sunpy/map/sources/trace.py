@@ -7,6 +7,7 @@ __email__ = "jack.ireland@nasa.gov"
 from sunpy.map import GenericMap
 from sunpy.cm import cm
 import numpy as np
+from matplotlib import colors
 
 __all__ = ['TRACEMap']
 
