@@ -340,3 +340,6 @@ HEK results and create the corresponding VSO query attributes.
 
 This function allows users finer-grained control of VSO queries
 generated from HEK results.
+
+The 'hek2vso' module was developed with support from the 2013 Google
+Summer of Code.
