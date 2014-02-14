@@ -70,7 +70,7 @@ class LightCurve(object):
     create = classmethod(_cond_dispatch.wrapper())
 
     def __init__(self, data, meta=None):
-        self.data = data
+        self.data = pandas.DataFrame(data)
         self.meta = meta
     
     @property
