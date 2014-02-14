@@ -292,4 +292,12 @@ from the "(hek.attrs.FL.PeakFlux > 1000.0)" filter.  Flares that have
 cases the client returns only those results from the HEK that
 definitely satisfy the criteria passed to it. 
 
+5. Getting data for your event
+------------------------------
+
+The 'hek2vso' module allows you to take an HEK event and acquire data
+specific to that event.
+
+    >>> from sunpy.net import hek2vso
+    >>> h2v = hek2vso.HVClient()
 
