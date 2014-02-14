@@ -1,9 +1,10 @@
 """
 This module provides a translation layer between the HEK and the VSO.
-This allows you to download data for a event found in the VSO.
+It allows you to acquire records of data that are available via the
+VSO, based on the data in HEK event entries.
 
 .. warning::
-    This module is in beta and maybe unstable
+    This module is in beta and maybe unstable.
 
 """
 from __future__ import absolute_import
