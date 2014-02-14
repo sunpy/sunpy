@@ -77,7 +77,7 @@ class MapCube(object):
     def coalign(self, method="diff"):
         """ Fine coalign the data"""
         if method == 'diff':
-            return _coalign_diff(self)
+            return self._coalign_diff(self)
 
     # Coalignment methods
     def _coalign_diff(self):
