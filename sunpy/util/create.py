@@ -5,13 +5,9 @@ from __future__ import absolute_import
 
 import os
 import glob
-import shutil
-
-import urllib2
 
 from sunpy import config
 from sunpy.util.net import download_file
-from sunpy.util import replacement_filename
 
 from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
 

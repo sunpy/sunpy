@@ -3,9 +3,9 @@ Using SunPy's HEK module
 ------------------------
 
 The Heliophysics Event Knowledgebase (HEK) is a repository of feature
-and event information concerning the Sun.  Entries are generated both
+and event information about the Sun.  Entries are generated both
 by automated algorithms and human observers.  SunPy accesses this
-information through the 'hek' module, which was developed through
+information through the `hek` module, which was developed through
 support from the European Space Agency Summer of Code in Space
 (ESA-SOCIS) 2011.
 
@@ -13,7 +13,7 @@ support from the European Space Agency Summer of Code in Space
 ------------------------
 
 SunPy's HEK module is in sunpy.net.  It can be imported into your
-IPython session as follows:
+session as follows:
 
     >>> from sunpy.net import hek
     >>> client = hek.HEKClient()
@@ -24,7 +24,7 @@ This creates a client that we will use to interact with the HEK.
 -----------------
 
 To search the HEK, you need a start time, an end time, and an event
-type.  Times are specified as Python datetime objects.  Event types
+type.  Times are specified as strings or Python datetime objects.  Event types
 are specified as upper case, two letter strings, and are identical to
 the two letter abbreviations found at the HEK website,
 http://www.lmsal.com/hek/VOEvent_Spec.html.
@@ -34,26 +34,25 @@ http://www.lmsal.com/hek/VOEvent_Spec.html.
     >>> event_type = 'FL'
     >>> result = client.query(hek.attrs.Time(tstart,tend),hek.attrs.EventType(event_type))
 
-The first line in the block of code above imports the datetime module.
-The second and third lines define the search start and end times.  The
-fourth line specifies the event type, in this 'FL' or flare.  Line 5
+The first line defines the search start and end times.  The
+second line specifies the event type, in this 'FL' or flare.  Line 4
 goes out to the web, contacts the HEK, and queries it for the
 information you have requested.  Event data for ALL flares available
 in the HEK within the time range 2011/08/09 07:23: 56 UT - 2011/08/09
 12:40:20 UT will be returned, regardless of which feature recognition
 method used to detect the flare.
 
-Let's break down the arguments of client.query.  The first argument:
+Let's break down the arguments of client.query.  The first argument::
 
     hek.attrs.Time(tstart,tend)
 
-sets the start and end times for the query.  The second argument:
+sets the start and end times for the query.  The second argument::
 
     hek.attrs.EventType(event_type)
 
 sets the type of event to look for.  Since we have defined event_type
 = 'FL', this sets the query to look for flares.  We could have also
-set the flare event type using the syntax
+set the flare event type using the syntax::
 
     hek.attrs.FL
 
@@ -149,7 +148,7 @@ command is your friend here; scroll down to section DATA you will see:
     etc etc...
 
 The object hek.attrs knows the attributes of the HEK.  You'll see that
-one of the attributes is a flare object
+one of the attributes is a flare object::
 
     FL = <sunpy.net.hek.attrs.FL object>
 
@@ -157,7 +156,7 @@ We can replace hek.attrs.EventType('FL') with hek.attrs.FL - they do
 the same thing, setting the query to look for flare events.  Both
 methods of setting the event type are provided as a convenience
 
-Let's look further at the FRM attribute:
+Let's look further at the FRM attribute::
 
     >>> help(hek.attrs.FRM) # doctest:+SKIP
     Help on FRM in module sunpy.net.hek.attrs object:
@@ -285,10 +284,10 @@ flux over 1000.0:
     [883.2, 883.2, 883.2, 883.2, 883.2, 883.2]
 
 In this case none of the peak fluxes are returned with the value
-"None".  Since we are using an "and" logical operator we need a result
-from the "(hek.attrs.FL.PeakFlux > 1000.0)" filter.  Flares that have
-"None" for a peak flux cannot provide this, and so are excluded.  The
-"None" type in this context effectively means "Don't know"; in such
+`None`.  Since we are using an `and` logical operator we need a result
+from the `(hek.attrs.FL.PeakFlux > 1000.0)` filter.  Flares that have
+`None` for a peak flux cannot provide this, and so are excluded.  The
+`None` type in this context effectively means "Don't know"; in such
 cases the client returns only those results from the HEK that
 definitely satisfy the criteria passed to it. 
 
