@@ -271,15 +271,15 @@ for compatability with map, please use meta instead""", Warning)
             time_range = TimeRange(a,b)
 
         truncated = self.data.truncate(time_range.start(), time_range.end())
-        return LightCurve(truncated, self.meta.copy())
-
+        return self.create(truncated, self.meta)
+    
     def extract(self, a):
         """Extract a set of particular columns from the DataFrame"""
         # TODO allow the extract function to pick more than one column
         if isinstance(self, pandas.Series):
             return self
         else:
-            return LightCurve(self.data[a], self.meta.copy())
+            return LightCurve(self.data[a], self.meta)
 
     def time_range(self):
         """Returns the start and end times of the LightCurve as a TimeRange
