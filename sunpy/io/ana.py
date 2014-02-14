@@ -1,6 +1,9 @@
 """
 ANA File Reader
 
+.. warning::
+    This code currently has an unresolved bug under Windows, it may not work as expected.
+
 Notes
 -----
 ANA is a script that allows people to access compressed ana files.
