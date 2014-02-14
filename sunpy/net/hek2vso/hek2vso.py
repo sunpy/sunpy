@@ -7,8 +7,8 @@
 #pylint: disable=W0142
 
 """
-This module is to interface the results from a HEK query into a VSO query
-and return the results from the VSO query to the user.
+This module translates the results of a HEK query into a VSO query
+and returns the results from the VSO query to the user.
 """
 
 from __future__ import absolute_import
