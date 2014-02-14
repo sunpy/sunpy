@@ -295,8 +295,8 @@ definitely satisfy the criteria passed to it.
 5. Getting data for your event
 ------------------------------
 
-The 'hek2vso' module allows you to take an HEK event and acquire data
-specific to that event.
+The 'hek2vso' module allows you to take an HEK event and acquire VSO
+records specific to that event.
 
     >>> from sunpy.net import hek2vso
     >>> h2v = hek2vso.H2VClient()
@@ -315,7 +315,9 @@ flare detection algorithm running on the AIA 193 angstrom waveband.
 The VSO records are for full disk AIA 193 images between the start and
 end times of this event.  The 'translate_and_query' function uses
 exactly that information supplied by the HEK in order to find the
-relevant data for that event.
+relevant data for that event.  Note that the VSO does not generate
+records for all solar data, so it is possible that an HEK entry
+corresponds to data that is not accessible via the VSO.
 
 You can also go one step further back, passing in a list of HEK
 attribute objects to define your search, the results of which are then
