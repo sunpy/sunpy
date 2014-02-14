@@ -1,7 +1,7 @@
 """
 This module provides a translation layer between the HEK and the VSO.
 It allows you to acquire records of data that are available via the
-VSO that correspond to events found in the HEK.
+VSO, based on the data in HEK event entries.
 
 .. warning::
     This module is in beta and maybe unstable.
