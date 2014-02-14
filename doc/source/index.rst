@@ -12,3 +12,6 @@ free and open-source solar data analysis environment for Python.
   dev
   bugs
   ssw
+ 
+.. warning::
+    Having issues with links on this page? Make sure there is a trailing slash on the URL *e.g.* `http://docs.sunpy.org/en/latest/`
