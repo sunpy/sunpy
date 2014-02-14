@@ -6,7 +6,6 @@ from __future__ import absolute_import
 import pytest
 import sunpy.lightcurve
 
-from sunpy.tests.helpers import warnings_as_errors
 
 class TestGOESLightCurve():
     

@@ -10,7 +10,6 @@ from datetime import datetime
 from contextlib import contextmanager
 
 from sqlalchemy import create_engine, exists
-from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import sessionmaker
 
 import sunpy

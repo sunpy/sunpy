@@ -2,7 +2,6 @@
 """Provides programs to process and analyze PROBA2/LYRA data."""
 from __future__ import absolute_import
 
-import os
 import datetime
 import urlparse
 
@@ -10,7 +9,6 @@ from matplotlib import pyplot as plt
 from astropy.io import fits
 import pandas
 
-import sunpy
 from sunpy.lightcurve import LightCurve 
 from sunpy.time import parse_time
 

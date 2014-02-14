@@ -2,7 +2,6 @@ from __future__ import absolute_import
 
 #pylint: disable=E1103
 import numpy as np
-from numpy.testing import assert_array_almost_equal
 from numpy.testing import assert_allclose
 
 import sunpy
