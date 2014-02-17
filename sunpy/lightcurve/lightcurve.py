@@ -11,6 +11,7 @@ __email__ = "keith.hughitt@nasa.gov"
 import os
 import shutil
 import urllib2
+import warnings
 from datetime import datetime
 
 import numpy as np
@@ -37,7 +38,7 @@ class LightCurve(object):
 
     Attributes
     ----------
-    header : string, dict
+    meta : string, dict
         The comment string or header associated with the light curve input
     data : pandas.DataFrame
         An pandas DataFrame prepresenting one or more fields as they vary with 
@@ -45,20 +46,20 @@ class LightCurve(object):
 
     Examples
     --------
-    import sunpy
-    import datetime
-    import numpy as np
+    >>> import sunpy
+    >>> import datetime
+    >>> import numpy as np
 
-    base = datetime.datetime.today()
-    dates = [base - datetime.timedelta(minutes=x) for x in range(0, 24 * 60)]
+    >>> base = datetime.datetime.today()
+    >>> dates = [base - datetime.timedelta(minutes=x) for x in range(0, 24 * 60)]
 
-    intensity = np.sin(np.arange(0, 12 * np.pi, step=(12 * np.pi) / 24 * 60))
+    >>> intensity = np.sin(np.arange(0, 12 * np.pi, step=(12 * np.pi) / 24 * 60))
 
-    light_curve = sunpy.lightcurve.LightCurve.create(
-        {"param1": intensity}, index=dates
-    )
+    >>> light_curve = sunpy.lightcurve.LightCurve.create(
+    ...    {"param1": intensity}, index=dates
+    ... )
 
-    light_curve.peek()
+    >>> light_curve.peek()
 
     References
     ----------
@@ -68,9 +69,21 @@ class LightCurve(object):
     _cond_dispatch = ConditionalDispatch()
     create = classmethod(_cond_dispatch.wrapper())
 
-    def __init__(self, data, header=None):
-        self.data = data
-        self.header = header
+    def __init__(self, data, meta=None):
+        self.data = pandas.DataFrame(data)
+        self.meta = meta
+    
+    @property
+    def header(self):
+        """
+        Return the lightcurves metadata
+
+        .. deprecated:: 0.4.0
+            Use .meta instead
+        """
+        warnings.warn("""lightcurve.header has been renamed to lightcurve.meta
+for compatability with map, please use meta instead""", Warning)
+        return self.meta
 
     @classmethod
     def from_time(cls, time, **kwargs):
@@ -82,13 +95,15 @@ class LightCurve(object):
         return cls.from_file(filepath)
 
     @classmethod
-    def from_range(cls, from_, to, **kwargs):
-        url = cls._get_url_for_date_range(parse_time(from_), parse_time(to))
+    def from_range(cls, start, end, **kwargs):
+        url = cls._get_url_for_date_range(parse_time(start), parse_time(end))
         filepath = cls._download(
             url, kwargs, 
             err = "Unable to download data for specified date range"
         )
-        return cls.from_file(filepath)
+        result = cls.from_file(filepath)
+        result.data = result.data.ix[result.data.index.indexer_between_time(start, end)]
+        return result
 
     @classmethod
     def from_timerange(cls, timerange, **kwargs):
@@ -97,16 +112,18 @@ class LightCurve(object):
             url, kwargs,
             err = "Unable to download data for specified date range"
         )
-        return cls.from_file(filepath)
+        result = cls.from_file(filepath)
+        result.data = result.data.ix[ts.index.indexer_between_time(timerange.start(), timerange.end())]
+        return result
 
     @classmethod
     def from_file(cls, filename):
         filename = os.path.expanduser(filename)
-        header, data = cls._parse_filepath(filename)
+        meta, data = cls._parse_filepath(filename)
         if data.empty:
             raise ValueError("No data found!")
         else:               
-            return cls(data, header)
+            return cls(data, meta)
 
     @classmethod
     def from_url(cls, url, **kwargs):
@@ -119,10 +136,10 @@ class LightCurve(object):
         return cls.from_file(filepath)
 
     @classmethod
-    def from_data(cls, data, index=None, header=None):
+    def from_data(cls, data, index=None, meta=None):
         return cls(
             pandas.DataFrame(data, index=index),
-            header
+            meta
         )
 
     @classmethod
@@ -130,8 +147,8 @@ class LightCurve(object):
         return cls.from_url(cls._get_default_uri())
 
     @classmethod
-    def from_dataframe(cls, dataframe, header=None):
-        return cls(dataframe, header)
+    def from_dataframe(cls, dataframe, meta=None):
+        return cls(dataframe, meta)
 
     def plot(self, axes=None, **plot_args):
         """Plot a plot of the light curve
@@ -202,6 +219,8 @@ class LightCurve(object):
                 raise urllib2.URLError(err)
             with open(filepath, 'wb') as fp:
                 shutil.copyfileobj(response, fp)
+        else:
+            warnings.warn("Using existing file rather than downloading, use overwrite=True to override.", RuntimeWarning)
 
         return filepath
 
@@ -252,7 +271,7 @@ class LightCurve(object):
             time_range = TimeRange(a,b)
 
         truncated = self.data.truncate(time_range.start(), time_range.end())
-        return LightCurve(truncated, self.header.copy())
+        return LightCurve(truncated, self.meta.copy())
 
     def extract(self, a):
         """Extract a set of particular columns from the DataFrame"""
@@ -260,7 +279,7 @@ class LightCurve(object):
         if isinstance(self, pandas.Series):
             return self
         else:
-            return LightCurve(self.data[a], self.header.copy())
+            return LightCurve(self.data[a], self.meta.copy())
 
     def time_range(self):
         """Returns the start and end times of the LightCurve as a TimeRange
@@ -319,14 +338,14 @@ LightCurve._cond_dispatch.add(
 
 LightCurve._cond_dispatch.add(
     run_cls("from_data"),
-    lambda cls, data, index=None, header=None: True,
+    lambda cls, data, index=None, meta=None: True,
     [type, (list, dict, np.ndarray, pandas.Series), object, object],
     False
 )
 
 LightCurve._cond_dispatch.add(
     run_cls("from_dataframe"),
-    lambda cls, dataframe, header=None: True,
+    lambda cls, dataframe, meta=None: True,
     [type, pandas.DataFrame, object],
     False
 )

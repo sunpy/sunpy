@@ -20,14 +20,21 @@ __all__ = ['LogicalLightCurve']
 # start and end time of each TimeRange object are labeled 'True'.
 class LogicalLightCurve(LightCurve):
     """
-    Logical light curve.  Originated from a need to analyze the times of HEK
-    results, where 'True' indicates an event was observed, and 'False' indicates 
-    an event was not observed.
-
+    Logical LightCurve.
+    
+    Originated from a need to analyze the times of HEK
+    results, where 'True' indicates an event was observed, and 'False'
+    indicates an event was not observed.
+    
     Examples
     --------
-    import sunpy
-    light_curve = sunpy.lightcurve.LogicalLightCurve.create()
+    >>> import sunpy.lightcurve as lightcurve
+    >>> import datetime
+    
+    >>> base = datetime.datetime.today()
+    >>> dates = [base - datetime.timedelta(minutes=x) for x in range(0, 24 * 60)]
+    >>> z = [True for x in range(0, 24 * 60)]
+    >>> light_curve = lightcurve.LogicalLightCurve.create({"param1": z}, index=dates)
     """
 
     def complement(self):

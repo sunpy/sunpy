@@ -6,7 +6,17 @@ Overview
 --------
 
 There are many ways to get the necessary environment up and running for SunPy on Windows, 
-and we describe the recommended method and an alternate method below.  
+and we describe three methods below.  
+
+Anaconda
+^^^^^^^^
+
+Anaconda is an alternative cross platform Python distribution.
+
+Anaconda is avalible from `Continuum Analytics <http://continuum.io/downloads>`_.
+Download the windows installer sutible for your platform and follow the install wizard.
+
+Once complete follow the install instructions for the :ref:`anaconda_install`.
 
 Python(x,y)
 ^^^^^^^^^^^
@@ -40,11 +50,6 @@ contains the following lines: ::
     compiler=mingw32
     [build_ext]
     compiler=mingw32
-
-**3. Install Git**
-
-Download and install `Git <https://code.google.com/p/msysgit/downloads/list?can=3&q=Full+installer+for+official+Git+for+Windows>`_.
-Git is used to retrieve the SunPy code.
 
 You are now ready to continue with
 :doc:`the rest of the installation <index>`.

@@ -7,15 +7,6 @@ Enter the top-level directory in the extracted files and run:
 
     sudo python setup.py install
 
-Example Usage:
-
->>> import sunpy
->>> import matplotlib.cm as cm
->>> import matplotlib.colors as colors
->>> aia = sunpy.make_map(sunpy.AIA_171_IMAGE)
->>> aia.get_header()['crpix1']
->>> aia.show(cm=cm.hot, norm=colors.Normalize(1, 2048))
-
 For detailed installation instructions, see:
 
  http://www.sunpy.org/doc/guide/installation/index.html

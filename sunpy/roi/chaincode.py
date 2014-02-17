@@ -4,7 +4,7 @@ __email__ = "dps.helio-?-gmail.com"
 import numpy as np
 
 class Chaincode(np.ndarray):
-    '''
+    """
     Chaincode(origin, chaincode, xdelta=1, ydelta=1)
 
     A tool to infer some information from chaincodes produced
@@ -22,23 +22,23 @@ class Chaincode(np.ndarray):
     ydelta : Float
         The scale to convert between pixels and flat coordinates
 
-    Output
-    ------
+    Returns
+    -------
     cc.coordinates : numpy.ndarray
         An array containing all the x and y coordinates of the cc
         such [[x0, x1, x2, ..., xn], [y0 ,y1, y2, ..., yn]]
 
-    Example
-    -------
-    cc = Chaincode([-88, 812], "44464655567670006011212222324",
-         xdelta=2.629, ydelta=2.629)
-    # To plot...
-    fig = plt.figure()
-    ax = fig.add_subplot(111)
-    x,y = zip(cc.coordinates)
-    ax.plot(x[0], y[0], 'go-')
-    fig.show()
-    '''
+    Examples
+    --------
+    >>> cc = Chaincode([-88, 812], "44464655567670006011212222324", 
+    ...     xdelta=2.629, ydelta=2.629)
+    
+    >>> fig = plt.figure()
+    >>> ax = fig.add_subplot(111)
+    >>> x,y = zip(cc.coordinates)
+    >>> ax.plot(x[0], y[0], 'go-')
+    >>> fig.show()
+    """
     def __new__(cls, origin, chaincode, **kargs):
         if isinstance(origin, list):
             obj = np.asarray(origin).view(cls)

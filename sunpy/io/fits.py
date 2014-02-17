@@ -5,7 +5,7 @@ Notes
 -----
 FITS
     [1] FITS files allow comments to be attached to every value in the header.
-    This is implemented in this module as a KEYCOMMENTS dictionary in the 
+    This is implemented in this module as a KEYCOMMENTS dictionary in the
     sunpy header. To add a comment to the file on write, add a comment to this
     dictionary with the same name as a key in the header (upcased).
 
@@ -17,7 +17,7 @@ PyFITS
     accessed then the data will have been scaled and a modified header
     reflecting these changes will be returned: BITPIX may differ and
     BSCALE and B_ZERO may be dropped in the modified version.
-    
+
     [2] The verify('fix') call attempts to handle violations of the FITS
     standard. For example, nan values will be converted to "nan" strings.
     Attempting to cast a pyfits header to a dictionary while it contains
@@ -35,6 +35,7 @@ from __future__ import absolute_import
 import os
 import re
 import itertools
+import collections
 
 from astropy.io import fits
 
@@ -45,31 +46,38 @@ __all__ = ['read', 'get_header', 'write', 'extract_waveunit']
 __author__ = "Keith Hughitt, Stuart Mumford, Simon Liedtke"
 __email__ = "keith.hughitt@nasa.gov"
 
-def read(filepath):
+def read(filepath, hdus=None):
     """
     Read a fits file
-    
+
     Parameters
     ----------
     filepath : string
         The fits file to be read
-        
+    hdu: int or iterable
+        The HDU indexes to read from the file
+
     Returns
     -------
     pairs : list
         A list of (data, header) tuples
-    
+
     Notes
     -----
-    This routine reads all the HDU's in a fits file and returns a list of the 
+    This routine reads all the HDU's in a fits file and returns a list of the
     data and a FileHeader instance for each one.
     Also all comments in the original file are concatenated into a single
     'comment' key in the returned FileHeader.
     """
     hdulist = fits.open(filepath)
+    if hdus is not None:
+        if isinstance(hdus, int):
+            hdulist = hdulist[hdus]
+        elif isinstance(hdus, collections.Iterable):
+            hdulist = [hdulist[i] for i in hdus]
     try:
         hdulist.verify('silentfix')
-        
+
         headers = get_header(hdulist)
         pairs = []
         for hdu,header in itertools.izip(hdulist, headers):
@@ -84,12 +92,12 @@ def get_header(afile):
     Read a fits file and return just the headers for all HDU's. In each header,
     the key WAVEUNIT denotes the wavelength unit which is used to describe the
     value of the key WAVELNTH.
-    
+
     Parameters
     ----------
     afile : string or fits.HDUList
         The file to be read, or HDUList to process
-    
+
     Returns
     -------
     headers : list
@@ -102,7 +110,7 @@ def get_header(afile):
         hdulist = fits.open(afile)
         hdulist.verify('silentfix')
         close=True
-        
+
     try:
         headers= []
         for hdu in hdulist:
@@ -114,11 +122,11 @@ def get_header(afile):
                 history = "".join(hdu.header['HISTORY']).strip()
             except KeyError:
                 history = ""
-            
+
             header = FileHeader(hdu.header)
             header['COMMENT'] = comment
             header['HISTORY'] = history
-            
+
             #Strip out KEYCOMMENTS to a dict, the hard way
             keydict = {}
             for card in hdu.header.cards:
@@ -126,7 +134,7 @@ def get_header(afile):
                     keydict.update({card.keyword:card.comment})
             header['KEYCOMMENTS'] = keydict
             header['WAVEUNIT'] = extract_waveunit(header)
-            
+
             headers.append(header)
     finally:
         if close:
@@ -136,21 +144,21 @@ def get_header(afile):
 def write(fname, data, header, **kwargs):
     """
     Take a data header pair and write a fits file
-    
+
     Parameters
     ----------
     fname: str
         File name, with extension
-        
+
     data: ndarray
         n-dimensional data array
-    
+
     header: dict
         A header dictionary
     """
     #Copy header so the one in memory is left alone while changing it for write
     header = header.copy()
-    
+
     #The comments need to be added to the header seperately from the normal
     # kwargs. Find and deal with them:
     fits_header = fits.Header()
@@ -168,13 +176,13 @@ def write(fname, data, header, **kwargs):
         else:
             fits_header.append(fits.Card(k,v))
 
-    
+
     if isinstance(key_comments, dict):
         for k,v in key_comments.items():
             fits_header.comments[k] = v
     elif key_comments:
         raise TypeError("KEYCOMMENTS must be a dictionary")
-    
+
     fitskwargs = {'output_verify':'fix'}
     fitskwargs.update(kwargs)
     fits.writeto(os.path.expanduser(fname), data, header=fits_header,

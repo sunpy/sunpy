@@ -5,7 +5,6 @@ __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
 from sunpy.map import GenericMap
-from sunpy.time import parse_time
 from sunpy.cm import cm
 
 __all__ = ['EUVIMap', 'CORMap']
@@ -21,7 +20,12 @@ class EUVIMap(GenericMap):
         self._nickname = "{0}-{1}".format(self.detector, self.observatory[-1])
         
         self.cmap = cm.get_cmap('sohoeit%d' % self.wavelength)
-        
+
+        # Try to identify when the FITS meta data ddes not have the correct
+        # date FITS keyword
+        if ('date_obs' in self.meta) and not('date-obs' in self.meta):
+            self.meta['date-obs'] = self.meta['date_obs']
+
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an EUVI image"""
@@ -38,6 +42,11 @@ class CORMap(GenericMap):
         self._nickname = "{0}-{1}".format(self.detector, self.observatory[-1])
         
         self.cmap = cm.get_cmap('stereocor%s' % self.detector[-1])
+
+        # Try to identify when the FITS meta data ddes not have the correct
+        # date FITS keyword
+        if ('date_obs' in self.meta) and not('date-obs' in self.meta):
+            self.meta['date-obs'] = self.meta['date_obs']
         
     @property
     def measurement(self):

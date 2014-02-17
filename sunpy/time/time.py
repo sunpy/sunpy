@@ -186,7 +186,8 @@ def parse_time(time_string):
     
 
 def is_time(time_string):
-    """Returns true if the input is a valid date/time representation
+    """
+    Returns true if the input is a valid date/time representation
     
     Parameters
     ----------
@@ -203,8 +204,11 @@ def is_time(time_string):
     >>> sunpy.time.parse_time('2012/08/01')
     >>> sunpy.time.parse_time('2005-08-04T00:01:02.000Z')
 
-    .. todo:: add ability to parse tai (International Atomic Time seconds since 
-    Jan 1, 1958)"""
+    .. todo::
+    
+        add ability to parse tai (International Atomic Time seconds since Jan 1, 1958)
+    
+    """
     if time_string is None:
         return False
     elif isinstance(time_string, datetime):
