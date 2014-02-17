@@ -277,15 +277,8 @@ def show_obssumm(data_dict):
     ax = fig.add_subplot(111)
     dates = matplotlib.dates.date2num(t)
 
-    ax.plot_date(dates, data[:,0], '-', label = labels[0], color = lc_linecolors[0], lw = 2)
-    ax.plot_date(dates, data[:,1], '-', label = labels[1], color = lc_linecolors[1], lw = 2)
-    ax.plot_date(dates, data[:,2], '-', label = labels[2], color = lc_linecolors[2], lw = 2)
-    ax.plot_date(dates, data[:,3], '-', label = labels[3], color = lc_linecolors[3], lw = 2)
-    ax.plot_date(dates, data[:,4], '-', label = labels[4], color = lc_linecolors[4], lw = 2)
-    ax.plot_date(dates, data[:,5], '-', label = labels[5], color = lc_linecolors[5], lw = 2)
-    ax.plot_date(dates, data[:,6], '-', label = labels[6], color = lc_linecolors[6], lw = 2)
-    ax.plot_date(dates, data[:,7], '-', label = labels[7], color = lc_linecolors[7], lw = 2)
-    ax.plot_date(dates, data[:,8], '-', label = labels[8], color = lc_linecolors[8], lw = 2)
+    for i in xrange(9):
+        ax.plot_date(dates, data[:,i], '-', label = labels[i], color = lc_linecolors[i], lw = 2)
 
     ax.set_yscale("log")
 
