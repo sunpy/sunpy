@@ -21,7 +21,6 @@ from __future__ import absolute_import
 
 from sunpy.sun.sun import *
 
-from . import _cgs
 from . import _si
 from . import constants
 

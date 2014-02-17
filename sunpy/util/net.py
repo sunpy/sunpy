@@ -20,6 +20,10 @@ from itertools import ifilter
 
 from sunpy.util import replacement_filename
 
+__all__ = ['slugify','get_content_disposition', 'get_filename',
+           'get_system_filename', 'get_system_filename_slugify',
+           'download_file', 'download_fileobj']
+
 # Characters not allowed in slugified version.
 _punct_re = re.compile(r'[:\t !"#$%&\'()*\-/<=>?@\[\\\]^_`{|},.]+')
 

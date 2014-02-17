@@ -23,36 +23,35 @@ def diff_rot(ddays,latitude,rot_type='howard',frame_time='sidereal'):
     rot_type: {'howard' | 'snodgrass' | 'allen'}
         howard: Use values for small magnetic features from Howard et al.
         snodgrass: Use Values from Snodgrass et. al
-        allen: Use values from Allen, Astrophysical Quantities, and simplier
-                equation.
+        allen: Use values from Allen, Astrophysical Quantities, and simplier equation.
     
     frame_time: {'sidereal' | 'synodic'}
         Choose 'type of day' time reference frame.
 
-    Returns:
+    Returns
     -------
     longditude_delta: ndarray            
         The change in longitude over days (units=degrees)
     
-    See Also
-    --------
-    IDL code equavalent:
-        http://hesperia.gsfc.nasa.gov/ssw/gen/idl/solar/diff_rot.pro
-    
-    Howard rotation:
-        http://adsabs.harvard.edu/abs/1990SoPh..130..295H
-    
-    A review of rotation parameters (including Snodgrass values):
-        http://link.springer.com/article/10.1023%2FA%3A1005226402796
+    Notes
+    -----
+    * IDL code equavalent: http://hesperia.gsfc.nasa.gov/ssw/gen/idl/solar/diff_rot.pro
+    * Howard rotation: http://adsabs.harvard.edu/abs/1990SoPh..130..295H
+    * A review of rotation parameters (including Snodgrass values): http://link.springer.com/article/10.1023%2FA%3A1005226402796
     
     Examples
     --------
     Default rotation calculation over two days at 30 degrees latitude:
-        rotation = diff_rot(2, 30)
+    
+    >>> rotation = diff_rot(2, 30)
+    
     Default rotation over two days for a number of latitudes:
-        rotation = diff_rot(2, np.linspace(-70, 70, 20))
+    
+    >>> rotation = diff_rot(2, np.linspace(-70, 70, 20))
+    
     With rotation type 'allen':
-        rotation = diff_rot(2, np.linspace(-70, 70, 20), 'allen')
+    
+    >>> rotation = diff_rot(2, np.linspace(-70, 70, 20), 'allen')
     """
     
     if not isinstance(ddays,datetime.timedelta):

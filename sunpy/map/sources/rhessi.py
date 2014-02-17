@@ -5,8 +5,6 @@ __author__ = "Steven Christe"
 __email__ = "steven.d.christe@nasa.gov"
 
 from sunpy.map import GenericMap
-from sunpy.cm import cm
-from sunpy.time import parse_time
 
 __all__ = ['RHESSIMap']
 

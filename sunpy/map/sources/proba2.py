@@ -28,7 +28,7 @@ class SWAPMap(GenericMap):
 #        self.meta['instrme'] = "SWAP"
         self.meta['obsrvtry'] = "PROBA2"
         
-        self._name = self.detector + " " + self.measurement
+        self._name = self.detector + " " + str(self.measurement)
         self._nickname = self.detector
         
         self.cmap = cm.get_cmap(name='sdoaia171')

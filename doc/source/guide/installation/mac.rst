@@ -10,40 +10,17 @@ Mac OS X, users have a number of options with how to install SunPy and its
 dependencies. We have a number of solutions listed below. Choose the solution which best
 suits you.
 
-Installation using EPD
-----------------------
+Install Anaconda
+----------------
 
-One simplest method is to install the `Enthought Python
-Distribution (EPD) <http://www.enthought.com/products/epd_free.php/>`_, which
-includes both Python and many of dependencies needed by SunPy. 
-The Enthought Python Distribution (EPD) is a metapackage which handles the
-installation of everything for you.
+To install the Anaconda Python distribution follow the instructions `here <http://docs.continuum.io/anaconda/install.html>`_.
 
-Install EPD
-^^^^^^^^^^^
-There are a number versions of EPD available, many of which are not free. For
-our purposes, however, either of the free versions below will work: ::
+.. warning::
+    
+    You must have the XCode developer package installed to be able to compile SunPy.
+    see :ref:`xcode`.
 
- `EPD Free <http://www.enthought.com/products/epd_free.php/>`_
- `EPD Academic <<http://www.enthought.com/products/edudownload.php>>`_
-
-Download whichever of the above versions of EPD is appropriate, and follow the 
-`instructions provided on the EPD website <http://www.enthought.com/products/epdgetstart.php?platform=mac>`_ 
-to install EPD on your system. You can now continue the installation process
-and :doc:`install SunPy itself <index>`.
-
-Installation using Virtual Box
-------------------------------
-
-`Virtual box <https://www.virtualbox.org/>` is a free virtual environment that allows 
-you to run linux or other operating systems concurrently with OS X. Since it is very easy
-to install and maintain SunPy under linux, the idea here is to have your own linux 
-environment on your mac and use it for SunPy. We recommend you use Ubuntu linux in your 
-virtual box. You can download an install disk for Ubuntu at 
-`their website <http://www.ubuntu.com/download/help/install-desktop-latest>`. Directions
-on how to install your first virtual machine on Virtual Box are also 
-`available <https://www.virtualbox.org/manual/ch01.html#gui-createvm>`. After your have
-Ubuntu installed just follow the :doc:`instructions for linux <linux>`! Simple.
+Once complete follow the install instructions for the :ref:`anaconda_install`.
 
 Other installation methods
 --------------------------
@@ -66,11 +43,21 @@ using their DMG installer. Next, choose your package installer of choice (either
 Macports or Homebrew) and follow the instructions below. If you do not have either
 go to their respective websites and install one of the other as needed.
 
-Compiler
-^^^^^^^^
-Download and install XCode from the App Store. Install the compiler by installing the
-optional "Command Line Tools" as part of XCode. In the latest version of Xcode, this
-can be found in the preferences under the Downloads tab.
+.. _xcode:
+
+XCode tools / Compiler
+^^^^^^^^^^^^^^^^^^^^^^
+If you are using MacOS X, you will need to the XCode command line
+tools.  One way to get them is to install `XCode
+<https://developer.apple.com/xcode/>`__. If you are using OS X 10.7
+(Lion) or later, you must also explicitly install the command line
+tools. You can do this by opening the XCode application, going to
+**Preferences**, then **Downloads**, and then under **Components**,
+click on the Install button to the right of **Command Line Tools**.
+Alternatively, on 10.7 (Lion) or later, you do not need to install
+XCode, you can download just the command line tools from
+https://developer.apple.com/downloads/index.action (requires an Apple
+developer account).
  
 Macports
 ^^^^^^^^
@@ -167,4 +154,18 @@ Mountain Lion users will have to use the development version as of this writing:
     pip install git+https://github.com/matplotlib/matplotlib.git#egg=matplotlib-dev
 
 Done! You are now ready to :doc:`install SunPy itself <index>`.
+
+Installation using Virtual Box
+------------------------------
+
+As a last resort you can always install Linux in a Virtual Machine.
+`Virtual box <https://www.virtualbox.org/>` is a free virtual environment that allows 
+you to run linux or other operating systems concurrently with OS X. Since it is very easy
+to install and maintain SunPy under linux, the idea here is to have your own linux 
+environment on your mac and use it for SunPy. We recommend you use Ubuntu linux in your 
+virtual box. You can download an install disk for Ubuntu at 
+`their website <http://www.ubuntu.com/download/help/install-desktop-latest>`. Directions
+on how to install your first virtual machine on Virtual Box are also 
+`available <https://www.virtualbox.org/manual/ch01.html#gui-createvm>`. After your have
+Ubuntu installed just follow the :doc:`instructions for linux <linux>`! Simple.
 

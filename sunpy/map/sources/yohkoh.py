@@ -44,8 +44,6 @@ class SXTMap(GenericMap):
         if 'solar_r' in self.meta:
             self.meta['dsun_apparent'] = constants.radius/(np.deg2rad(self.meta['solar_r']/3600.0))
    
-        self.norm = self._get_norm()
-        
     @property
     def dsun(self):
         """ For Yohkoh Maps, dsun_obs is not always defined. Uses approximation

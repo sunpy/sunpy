@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sun Jan 13 15:34:49 2013
-
-@author: Stuart Mumford
-
 Some Independant plotting tools, mainly animation UI based.
 """
 __author__ = "Stuart Mumford"
