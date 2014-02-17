@@ -4,13 +4,16 @@ from __future__ import absolute_import
 
 import datetime
 import os
+import numpy as np
+import matplotlib.pyplot as plt
+
 from astropy.io import fits
 import pandas
+
 import sunpy
 from sunpy.lightcurve import LightCurve
 from sunpy.time import parse_time
-import numpy as np
-import matplotlib.pyplot as plt
+
 
 __all__ = ['NoRHLightCurve']
 
