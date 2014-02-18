@@ -16,7 +16,24 @@ from sunpy.time import parse_time, TimeRange
 __all__ = ['NOAAIndicesLightCurve']
 
 class NOAAIndicesLightCurve(LightCurve):
-    """NOAA observed Solar Indices weekly indices definition
+    """NOAA Solar cycle monthly indices monthly. 
+        
+    Solar activity is measured by a number of different values. The NOAA Solar Weather
+    Prediction Center (SWPC) publishes the following indices. All of these indices are 
+    also available as a 13-month running smoothed value.
+      
+    * The SWO sunspot number is issued by the NOAA Space Weather Prediction Center (SWPC)
+        
+    * The RI sunspot number is the official International Sunspot Number and is 
+    issued by the `Solar Influence Data Analysis Center (SDIC) <http://sidc.oma.be>`_
+    in Brussels, Belgium.
+    
+    * The ratio between the SWO and RI indices.
+    
+    * Radio flux at 10.7 cm is produced by `Penticon/Ottawa <http://www.ngdc.noaa.gov/stp/solar/flux.html>`_ 
+    and the units are in sfu.
+    
+    * The Ap Geomagnetic Index is produced by the United States Air Force (USAF).
 
     Examples
     --------
@@ -38,22 +55,17 @@ class NOAAIndicesLightCurve(LightCurve):
 
         dates = matplotlib.dates.date2num(self.data.index)
 
-        self.data['sunspot_swo'].plot()
-        self.data['sunspot_smooth_swo'].plot()
+        self.data['sunspot SWO'].plot()
+        self.data['sunspot SWO smooth'].plot()
 
         axes.set_ylim(0)
         axes.set_title('Solar Cycle Sunspot Number Progression')
         axes.set_ylabel('Sunspot Number')
-        axes.set_xlabel(datetime.datetime.isoformat(self.data.index[0])[0:10])
+        #axes.set_xlabel(datetime.datetime.isoformat(self.data.index[0])[0:10])
 
         axes.yaxis.grid(True, 'major')
-        axes.xaxis.grid(False, 'major')
+        axes.xaxis.grid(True, 'major')
         axes.legend()
-
-        # @todo: display better tick labels for date range (e.g. 06/01 - 06/05)
-        formatter = matplotlib.dates.DateFormatter('%Y/%m')
-        axes.xaxis.set_major_formatter(formatter)
-        axes.fmt_xdata = matplotlib.dates.DateFormatter('%Y:%m')
 
         return axes
 
@@ -66,7 +78,7 @@ class NOAAIndicesLightCurve(LightCurve):
     def _parse_csv(filepath):
         """Parses an NOAA indices csv"""
         with open(filepath, 'r') as fp:
-            fields = ('yyyy', 'mm', 'sunspot_swo', 'sunspot_ri', 'sunspot_ratio', 'sunspot_smooth_swo', 'sunspot_smooth_ri', 'radioflux', 'radioflux_smooth', 'geo_ap', 'geo_ap_smooth')
+            fields = ('yyyy', 'mm', 'sunspot SWO', 'sunspot RI', 'sunspot ratio', 'sunspot SWO smooth', 'sunspot RI smooth', 'radio flux', 'radio flux smoothed', 'geomagnetic ap', 'geomagnetic smooth')
             data = read_csv(fp, delim_whitespace=True, names = fields, comment='#', skiprows=2, dtype={'yyyy':np.str, 'mm':np.str})
             data = data.dropna(how='any')
             timeindex = [datetime.datetime.strptime(x + '/' + y, '%Y/%m') for x,y in zip(data['yyyy'], data['mm'])]
