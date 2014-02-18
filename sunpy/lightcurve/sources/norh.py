@@ -3,7 +3,7 @@
 from __future__ import absolute_import
 
 import datetime
-import os
+import urlparse
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -44,7 +44,7 @@ class NoRHLightCurve(LightCurve):
         axes.set_yscale("log")
         axes.set_ylim(1e-4,1)
         axes.set_title('Nobeyama Radioheliograph')
-        axes.set_xlabel('Start time: ' + datetime.datetime.isoformat(self.data.index[0])[0:19] + ' UT')
+        axes.set_xlabel('Start time: ' + self.data.index[0].strftime('%Y-%m-%d %H:%M:%S UT'))
         axes.set_ylabel('Correlation')
         axes.legend()
         plt.show()
@@ -62,9 +62,9 @@ class NoRHLightCurve(LightCurve):
         day=date.strftime('%d')
         if 'wavelength' in kwargs:
             if kwargs['wavelength'] == '34':
-                final_url=os.path.join(baseurl,year,mon,'tcz'+year_trim+mon+day)
+                final_url=urlparse.urljoin(baseurl,year+'/'+mon+'/tcz'+year_trim+mon+day)
         else:
-            final_url=os.path.join(baseurl,year,mon,'tca'+year_trim+mon+day)
+            final_url=urlparse.urljoin(baseurl,year+'/'+mon+'/tca'+year_trim+mon+day)
         
         return final_url
 
