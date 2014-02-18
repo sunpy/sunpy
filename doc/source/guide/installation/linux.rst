@@ -5,31 +5,37 @@ Linux
 Overview
 --------
 
-In general, it is very easy to install Python and the prereqs needed for SunPy
-on Linux systems. Almost all versions of Linux ship with a recent enough version
-of Python, so it is unlikely that you will need to do install Python yourself.
-
-For the prereqs, many of them can be installed using 
-`pip <http://www.pip-installer.org/en/latest/index.html>`__ or 
-`easy_install <http://pypi.python.org/pypi/setuptools>`__, or you can simply 
-install them from your distributions software repository using.
+Almost all versions of Linux ship with a recent enough version
+of Python, so it is unlikely that you will need to install Python yourself.
 
 Ubuntu
 ------
 On Ubuntu, most of the pre-reqs are available in the Ubuntu software repos and
 can be installed using :command:`apt-get`: ::
 
-    sudo apt-get update && sudo apt-get install python-numpy  \
-    python-matplotlib python-pyfits python-qt4 python-scipy python-suds \
-    python-imaging python-pandas python-pip openjpeg-tools git-core ipython
+    sudo apt-get install python-qt4 
+    sudo apt-get install git-core 
+    sudo apt-get python-numpy 
+    sudo apt-get python-scipy
+    sudo apt-get python-matplotlib
+    sudo apt-get update
 
-The above command will install the recommended set of libraries and tools 
-including both the required and optional dependencies, and also IPython and Git.
-    
-Arch Linux
-----------
-The install the latest version of SunPy on Arch Linux, run: ::
+Now we shall install pip.    
 
-    yaourt sunpy
+Pip
+^^^
+Most Python distributions ship with a tool called 
+`easy_install <http://pypi.python.org/pypi/setuptools>`_ 
+which assists with installing Python packages.
 
-(or some similar command using the AUR installer of your choice...)
+Although `easy_install`_ is capable of installing most of
+the dependencies needed for SunPy itself, a more powerful tool called 
+`pip <http://pypi.python.org/pypi/pip>`__ provides a more flexible installation 
+(including support for uninstalling, upgrading, and installing from remote 
+sources such as GitHub) and should be used instead. 
+
+Use `easy_install`_ to install `pip`: ::
+
+ sudo easy_install pip
+
+You are now ready to :doc:`install SunPy and its dependencies <index>`.

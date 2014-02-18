@@ -1,6 +1,12 @@
 """Image resampling methods"""
 from __future__ import absolute_import
 
+import numpy as np
+import scipy.interpolate
+import scipy.ndimage
+
+__all__ = ['resample', 'reshape_image_to_4d_superpixel']
+
 def resample(orig, dimensions, method='linear', center=False, minusone=False):
     """Returns a new ndarray that has been resampled up or down
     
@@ -41,7 +47,6 @@ def resample(orig, dimensions, method='linear', center=False, minusone=False):
     ----------
     | http://www.scipy.org/Cookbook/Rebinning (Original source, 2011/11/19)
     """
-    import numpy as np
 
     # Verify that number dimensions requested matches original shape
     if len(dimensions) != orig.ndim:
@@ -72,8 +77,6 @@ def resample(orig, dimensions, method='linear', center=False, minusone=False):
     
 def _resample_nearest_linear(orig, dimensions, method, offset, m1):
     """Resample Map using either linear or nearest interpolation"""
-    import scipy.interpolate
-    import numpy as np
 
     dimlist = []
     
@@ -87,15 +90,17 @@ def _resample_nearest_linear(orig, dimensions, method, offset, m1):
     old_coords = [np.arange(i, dtype=np.float) for i in orig.shape]
 
     # first interpolation - for ndims = any
-    mint = scipy.interpolate.interp1d(old_coords[-1], orig, kind=method)
+    mint = scipy.interpolate.interp1d(old_coords[-1], orig, bounds_error=False,
+                                      fill_value=min(old_coords[-1]), kind=method)
+
     new_data = mint(dimlist[-1])
 
     trorder = [orig.ndim - 1] + range(orig.ndim - 1)
     for i in xrange(orig.ndim - 2, -1, -1):
         new_data = new_data.transpose(trorder)
 
-        mint = scipy.interpolate.interp1d(old_coords[i], new_data, 
-                                          kind=method)
+        mint = scipy.interpolate.interp1d(old_coords[i], new_data,
+            bounds_error=False, fill_value=min(old_coords[i]), kind=method)
         new_data = mint(dimlist[i])
 
     if orig.ndim > 1:
@@ -106,7 +111,6 @@ def _resample_nearest_linear(orig, dimensions, method, offset, m1):
 
 def _resample_neighbor(orig, dimensions, offset, m1):
     """Resample Map using closest-value interpolation"""
-    import numpy as np
     
     dimlist = []
     
@@ -120,8 +124,6 @@ def _resample_neighbor(orig, dimensions, offset, m1):
 
 def _resample_spline(orig, dimensions, offset, m1):
     """Resample Map using spline-based interpolation"""
-    import scipy.ndimage
-    import numpy as np
     
     oslices = [slice(0, j) for j in orig.shape]
     old_coords = np.ogrid[oslices] #pylint: disable=W0612
@@ -153,12 +155,12 @@ def reshape_image_to_4d_superpixel(img,dimensions):
     """
     # check that the dimensions divide into the image size exactly
     if img.shape[1] % dimensions[0] != 0:
-        print('Sum value in x direction must divide exactly into image \
-        x-dimension size')
+        print('Sum value in x direction must divide exactly into image'
+              ' x-dimension size.')
         return None
     if img.shape[0] % dimensions[1] != 0:
-        print('Sum value in y direction must divide exactly into image \
-        x-dimension size')
+        print('Sum value in y direction must divide exactly into image'
+              ' x-dimension size.')
         return None
    
     # Reshape up to a higher dimensional array which is useful for higher

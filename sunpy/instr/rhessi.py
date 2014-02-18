@@ -1,7 +1,4 @@
 # -*- coding: utf-8 -*-
-#
-#
-# <License info will go here...>
 """
     Provides programs to process and analyze RHESSI data.
 
@@ -10,19 +7,25 @@
 """
 
 from __future__ import absolute_import
-import numpy as np
-import pyfits
-import sunpy
-from sunpy.time import TimeRange
-from datetime import datetime
-from datetime import timedelta
-import matplotlib.pyplot as plt
-import matplotlib.dates
+
 import urllib
 import csv
+from datetime import datetime
+from datetime import timedelta
+
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.dates
+
+from astropy.io import fits
+
+import sunpy
+from sunpy.time import TimeRange, parse_time
 import sunpy.sun.constants as sun
-from sunpy.sun.sun import angular_size
+from sunpy.sun.sun import solar_semidiameter_angular_size
 from sunpy.sun.sun import sunearth_distance
+
+__all__ = ['get_obssumm_dbase_file', 'parse_obssumm_dbase_file', 'get_obssum_filename', 'get_obssumm_file', 'parse_obssumm_file', 'show_obssumm', 'backprojection']
 
 # Measured fixed grid parameters
 grid_pitch = (4.52467, 7.85160, 13.5751, 23.5542, 40.7241, 70.5309, 122.164, 
@@ -38,7 +41,8 @@ lc_linecolors = ('black', 'pink', 'green', 'blue', 'brown', 'red',
                      'navy', 'orange', 'green')
 
 def get_obssumm_dbase_file(time_range):
-    """Download the RHESSI observing summary database file. This file lists the 
+    """
+    Download the RHESSI observing summary database file. This file lists the 
     name of observing summary files for specific time ranges. 
     
     Parameters
@@ -62,8 +66,8 @@ def get_obssumm_dbase_file(time_range):
     ----------
     | http://hesperia.gsfc.nasa.gov/ssw/hessi/doc/guides/hessi_data_access.htm#Observing Summary Data
 
-    .. note:: This API is currently limited to providing data from 
-    whole days only.
+    .. note::
+        This API is currently limited to providing data from whole days only.
 
     """
     
@@ -82,7 +86,8 @@ def get_obssumm_dbase_file(time_range):
     return f
       
 def parse_obssumm_dbase_file(filename):
-    """Parse the RHESSI observing summary database file. This file lists the 
+    """
+    Parse the RHESSI observing summary database file. This file lists the 
     name of observing summary files for specific time ranges along with other 
     info
     
@@ -106,8 +111,8 @@ def parse_obssumm_dbase_file(filename):
     ----------
     | http://hesperia.gsfc.nasa.gov/ssw/hessi/doc/guides/hessi_data_access.htm#Observing Summary Data
 
-    .. note:: This API is currently limited to providing data from 
-    whole days only.
+    .. note::
+        This API is currently limited to providing data from whole days only.
 
     """
     with open(filename, "rb") as fd:
@@ -145,7 +150,8 @@ def parse_obssumm_dbase_file(filename):
         }
 
 def get_obssum_filename(time_range):
-    """Download the RHESSI observing summary data from one of the RHESSI 
+    """
+    Download the RHESSI observing summary data from one of the RHESSI 
     servers, parses it, and returns the name of the obssumm file relevant for
     the time range
 
@@ -164,8 +170,8 @@ def get_obssum_filename(time_range):
     >>> import sunpy.instr.rhessi as rhessi
     >>> rhessi.get_obssumm_filename(('2011/04/04', '2011/04/05'))
 
-    .. note:: This API is currently limited to providing data from 
-    whole days only.
+    .. note::
+        This API is currently limited to providing data from whole days only.
 
     """
     # need to download and inspect the dbase file to determine the filename
@@ -179,7 +185,8 @@ def get_obssum_filename(time_range):
     return result.get('filename')[index_number]
 
 def get_obssumm_file(time_range):
-    """Download the RHESSI observing summary data from one of the RHESSI 
+    """
+    Download the RHESSI observing summary data from one of the RHESSI 
     servers. 
 
     Parameters
@@ -199,12 +206,12 @@ def get_obssumm_file(time_range):
     >>> import sunpy.instr.rhessi as rhessi
     >>> rhessi.get_obssumm_file(('2011/04/04', '2011/04/05'))
 
-    .. note:: This API is currently limited to providing data from 
-    whole days only.
+    .. note::
+        This API is currently limited to providing data from whole days only.
 
     """
     
-    _time_range = TimeRange(time_range)
+    time_range = TimeRange(time_range)
     data_location = 'metadata/catalog/'
     
     #TODO need to check which is the closest servers
@@ -218,7 +225,8 @@ def get_obssumm_file(time_range):
     return f
 
 def parse_obssumm_file(filename):
-    """Parse a RHESSI observation summary file.
+    """
+    Parse a RHESSI observation summary file.
 
     Parameters
     ----------
@@ -238,17 +246,17 @@ def parse_obssumm_file(filename):
 
     """
 
-    fits = pyfits.open(filename)
+    afits = fits.open(filename)
     
-    reference_time_ut = sunpy.time.parse_time(fits[5].data.field('UT_REF')[0])
-    time_interval_sec = fits[5].data.field('TIME_INTV')[0]
+    reference_time_ut = parse_time(afits[5].data.field('UT_REF')[0])
+    time_interval_sec = afits[5].data.field('TIME_INTV')[0]
     # label_unit = fits[5].data.field('DIM1_UNIT')[0]
     # labels = fits[5].data.field('DIM1_IDS')
     labels = ['3 - 6 keV', '6 - 12 keV', '12 - 25 keV', '25 - 50 keV', 
               '50 - 100 keV', '100 - 300 keV', '300 - 800 keV', '800 - 7000 keV',
               '7000 - 20000 keV']
 
-    lightcurve_data = np.array(fits[6].data.field('countrate'))
+    lightcurve_data = np.array(afits[6].data.field('countrate'))
 
     dim = np.array(lightcurve_data[:,0]).size
  
@@ -269,15 +277,8 @@ def show_obssumm(data_dict):
     ax = fig.add_subplot(111)
     dates = matplotlib.dates.date2num(t)
 
-    ax.plot_date(dates, data[:,0], '-', label = labels[0], color = lc_linecolors[0], lw = 2)
-    ax.plot_date(dates, data[:,1], '-', label = labels[1], color = lc_linecolors[1], lw = 2)
-    ax.plot_date(dates, data[:,2], '-', label = labels[2], color = lc_linecolors[2], lw = 2)
-    ax.plot_date(dates, data[:,3], '-', label = labels[3], color = lc_linecolors[3], lw = 2)
-    ax.plot_date(dates, data[:,4], '-', label = labels[4], color = lc_linecolors[4], lw = 2)
-    ax.plot_date(dates, data[:,5], '-', label = labels[5], color = lc_linecolors[5], lw = 2)
-    ax.plot_date(dates, data[:,6], '-', label = labels[6], color = lc_linecolors[6], lw = 2)
-    ax.plot_date(dates, data[:,7], '-', label = labels[7], color = lc_linecolors[7], lw = 2)
-    ax.plot_date(dates, data[:,8], '-', label = labels[8], color = lc_linecolors[8], lw = 2)
+    for i in xrange(9):
+        ax.plot_date(dates, data[:,i], '-', label = labels[i], color = lc_linecolors[i], lw = 2)
 
     ax.set_yscale("log")
 
@@ -297,7 +298,8 @@ def show_obssumm(data_dict):
     fig.show()
 
 def _backproject(calibrated_event_list, detector=8, pixel_size=(1.,1.), image_dim=(64,64)):
-    """Given a stacked calibrated event list fits file create a back 
+    """
+    Given a stacked calibrated event list fits file create a back 
     projection image for an individual detectors. This function is used by
     backprojection.
 
@@ -322,23 +324,23 @@ def _backproject(calibrated_event_list, detector=8, pixel_size=(1.,1.), image_di
     >>> import sunpy.instr.rhessi as rhessi
 
     """
-    fits = pyfits.open(calibrated_event_list)
+    afits = fits.open(calibrated_event_list)
     
     #info_parameters = fits[2]    
     #detector_efficiency = info_parameters.data.field('cbe_det_eff$$REL')
     
-    fits = pyfits.open(calibrated_event_list)
+    afits = fits.open(calibrated_event_list)
 
     fits_detector_index = detector + 2
     detector_index = detector - 1
     grid_angle = np.pi/2. - grid_orientation[detector_index]
     harm_ang_pitch = grid_pitch[detector_index]/1
 
-    phase_map_center = fits[fits_detector_index].data.field('phase_map_ctr')
-    this_roll_angle = fits[fits_detector_index].data.field('roll_angle')
-    modamp = fits[fits_detector_index].data.field('modamp')
-    grid_transmission = fits[fits_detector_index].data.field('gridtran')
-    count = fits[fits_detector_index].data.field('count')
+    phase_map_center = afits[fits_detector_index].data.field('phase_map_ctr')
+    this_roll_angle = afits[fits_detector_index].data.field('roll_angle')
+    modamp = afits[fits_detector_index].data.field('modamp')
+    grid_transmission = afits[fits_detector_index].data.field('gridtran')
+    count = afits[fits_detector_index].data.field('count')
 
     tempa = (np.arange(image_dim[0]*image_dim[1]) %  image_dim[0]) - (image_dim[0]-1)/2.
     tempb = tempa.reshape(image_dim[0],image_dim[1]).transpose().reshape(image_dim[0]*image_dim[1])
@@ -354,7 +356,8 @@ def _backproject(calibrated_event_list, detector=8, pixel_size=(1.,1.), image_di
     return bproj_image
 
 def backprojection(calibrated_event_list, pixel_size=(1.,1.), image_dim=(64,64)):
-    """Given a stacked calibrated event list fits file create a back 
+    """
+    Given a stacked calibrated event list fits file create a back 
     projection image.
     
     .. warning:: The image is not in the right orientation!
@@ -384,15 +387,15 @@ def backprojection(calibrated_event_list, pixel_size=(1.,1.), image_dim=(64,64))
     """
     
     calibrated_event_list = sunpy.RHESSI_EVENT_LIST
-    fits = pyfits.open(calibrated_event_list)
-    info_parameters = fits[2]
+    afits = fits.open(calibrated_event_list)
+    info_parameters = afits[2]
     xyoffset = info_parameters.data.field('USED_XYOFFSET')[0]
     time_range = TimeRange(info_parameters.data.field('ABSOLUTE_TIME_RANGE')[0])
     
     image = np.zeros(image_dim)
     
     #find out what detectors were used
-    det_index_mask = fits[1].data.field('det_index_mask')[0]    
+    det_index_mask = afits[1].data.field('det_index_mask')[0]    
     detector_list = (np.arange(9)+1) * np.array(det_index_mask)
     for detector in detector_list:
         if detector > 0:
@@ -414,7 +417,7 @@ def backprojection(calibrated_event_list, pixel_size=(1.,1.), image_dim=(64,64))
         "CTYPE2": "HPLT-TAN",
         "HGLT_OBS": 0,
         "HGLN_OBS": 0,
-        "RSUN_OBS": angular_size(time_range.center()),
+        "RSUN_OBS": solar_semidiameter_angular_size(time_range.center()),
         "RSUN_REF": sun.radius,
         "DSUN_OBS": sunearth_distance(time_range.center()) * sunpy.sun.constants.au
     }

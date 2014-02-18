@@ -6,6 +6,8 @@ from __future__ import absolute_import
 import numpy as np
 from . import _si
 
+__all__ = ['physical_constants']
+
 # This is really just to make the name shorter, so we can stick to a 
 # maximum of 79 characters per line.
 si_consts = _si.physical_constants

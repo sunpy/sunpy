@@ -268,12 +268,3 @@ def _c(wlk, root, state):
         blocks.extend(wlk.create(attribute, state))
     return blocks
 
-@walker.add_creator(attr.DummyAttr)
-# pylint: disable=E0102,C0103,W0613
-def _c(wlk, root, state):
-    return {}
-
-@walker.add_applier(attr.DummyAttr)
-# pylint: disable=E0102,C0103,W0613
-def _a(wlk, root, state, dct):
-    pass

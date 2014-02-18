@@ -1,5 +1,7 @@
 recursive-include doc/html *
 recursive-include sunpy *.py
+recursive-include sunpy *.h
+recursive-include sunpy *.c
 recursive-include sunpy/data/sample *
 recursive-include sunpy/data/test *
 include sunpy/data/sunpyrc

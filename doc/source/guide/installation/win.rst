@@ -5,109 +5,119 @@ Windows
 Overview
 --------
 
-There are many ways to get SunPy up and running on Windows, and we describe the 
-recommended method and an alternate method below.  Lines in text boxes should 
-be typed into ``Command Prompt``, which can be started from the Start menu or 
-in Start->Run by typing :command:`cmd`.
+There are many ways to get the necessary environment up and running for SunPy on Windows, 
+and we describe three methods below.  
 
-Recommended method
-^^^^^^^^^^^^^^^^^^
+Anaconda
+^^^^^^^^
+
+Anaconda is an alternative cross platform Python distribution.
+
+Anaconda is avalible from `Continuum Analytics <http://continuum.io/downloads>`_.
+Download the windows installer sutible for your platform and follow the install wizard.
+
+Once complete follow the install instructions for the :ref:`anaconda_install`.
+
+Python(x,y)
+^^^^^^^^^^^
 
 **1. Install Python(x,y)**
 
 Download and install `Python(x,y) <https://code.google.com/p/pythonxy/wiki/Downloads>`_.
 Python(x,y) is a distribution that include not only Python, but also a large 
 variety of Python modules and development tools.  Please note that this 
-installer is rather large (~400 MB) and thus may take a while to download.
+installer is rather large (~600 MB) and thus may take a while to download.
+The modules in Python(x,y) include:
 
-**2. Install other required modules**
+* NumPy
+* SciPy
+* Matplotlib
+* PyFITS
+* pandas
+* distribute
+* pip
+* Qt
+* Sphinx
+* pylint
+* ipython
 
-Download and install `pip <http://pythonxy.googlecode.com/files/pip-1.0.2_py27.exe>`_.  (Note: this installer is built by the Python(x,y) team.)
+**2. Set up the Python build environment**
 
-Download and install `PyFITS <http://pypi.python.org/packages/2.7/p/pyfits/pyfits-3.0.3.win32-py2.7.exe>`__.
+Create a file in ``C:\Python27\lib\distutils\`` called ``distutils.cfg`` that
+contains the following lines: ::
 
-**3. Install optional modules**
+    [build]
+    compiler=mingw32
+    [build_ext]
+    compiler=mingw32
 
-Install optional modules: ::
-
-    pip install suds
-    pip install paver
-
-* Paver is used to link symbolically to the SunPy code
-
-**4. Install Git**
-
-Download and install `Git <https://code.google.com/p/msysgit/downloads/list?can=3>`_ 
-(choose the first file listed).  Git is used to retrieve the SunPy code.
-
-**5. Download and install SunPy**
-
-The following will download SunPy to ``C:\sunpy``.  If you wish to download 
-SunPy elsewhere, modify these and later commands accordingly. ::
-
-    cd C:\
-    "%ProgramFiles%\Git\bin\git" clone git://github.com/sunpy/sunpy.git
-
-If you get the error ``The system cannot find the path specified``, try using 
-these commands: ::
-
-    cd C:\
-    "%ProgramFiles(x86)%\Git\bin\git" clone git://github.com/sunpy/sunpy.git
-
-Now that SunPy is downloaded, you can create a symbolic link for Python to find 
-the SunPy code. ::
-
-    cd C:\sunpy\
-    paver develop
-
-In the future, to update SunPy to the latest version: ::
-
-    cd C:\sunpy\
-    "%ProgramFiles%\Git\bin\git" pull
-
-As before, if you get the error ``The system cannot find the path specified``, 
-try using these commands: ::
-
-    cd C:\sunpy\
-    "%ProgramFiles(x86)%\Git\bin\git" pull
-
+You are now ready to continue with
+:doc:`the rest of the installation <index>`.
 
 Alternate method
 ^^^^^^^^^^^^^^^^
 
-Please use this method only if you are experienced with computers and cannot 
-use the recommended method.  Possible reasons include having very little disk 
-space or needing to have the most up-to-date versions of modules.
+If Python(x,y) is unavailable, or if it is critical for you to have the most
+up-to-date version of modules, then this alternate method eschews installers
+as much as possible and emphasizes building from source.  This method is not
+for the faint of heart!  Please use this method only if you are experienced
+with computers and Python.
 
-**1a. Install Python**
+**1. Install Python**
 
-Download and install `Python 2.7 <http://www.python.org/ftp/python/2.7.2/python-2.7.2.msi>`_ 
+Download and install `Python 2.7 <http://www.python.org/ftp/python/2.7.5/python-2.7.5.msi>`_ 
 (32-bit).  Note that even if you are on a 64-bit system, you are installing a 
-32-bit version of Python to be able to use precompiled binaries.
+32-bit version of Python to be able to use precompiled binaries where still needed.
 
 You should update the ``PATH`` environment variable so that Python executables 
 and associated scripts can be found:
 
     1. Go to ``Start``-> ``Control Panel`` -> ``System`` -> ``Advanced system settings`` -> ``Environment variables``
     2. Find the ``PATH`` environment variable, under either user or system variables, and append ``C:\Python27`` and ``C:\Python27\Scripts``, separated by semicolons.
-    
 
-**1b. Install required and optional modules included in Python(x,y)**
+**2. Install compilers**
 
-Download and install `NumPy <http://sourceforge.net/projects/numpy/files/NumPy/1.6.1/numpy-1.6.1-win32-superpack-python2.7.exe/download>`__.
+Download and install `MinGW <http://mingw.org/>`_, specifically the C, C++, and
+Fortran compilers.  Make sure that the binaries can be found in your path (e.g.,
+by adding ``C:\MinGW\bin`` to your path).
 
-Download and install `SciPy <http://sourceforge.net/projects/scipy/files/scipy/0.9.0/scipy-0.9.0-win32-superpack-python2.7.exe/download>`__.
+**3. Set up the Python build environment**
 
-Download and install `matplotlib <http://sourceforge.net/projects/matplotlib/files/matplotlib/matplotlib-1.0.1/matplotlib-1.0.1.win32-py2.7.exe/download>`__.
+Create a file in ``C:\Python27\lib\distutils\`` called ``distutils.cfg`` that
+contains the following lines: ::
 
-Download and install `distribute <http://pythonxy.googlecode.com/files/distribute-0.6.21_py27.exe>`_.  (Note: this installer is built by the Python(x,y) team.)
+    [build]
+    compiler=mingw32
+    [build_ext]
+    compiler=mingw32
 
-**2-5. The remaining steps**
+There is currently a bug in the Python 2.7 code, so you will also need to edit
+``cygwincompiler.py`` in the same directory.  Remove all five instances of the
+character string "-mno-cygwin".
 
-You have now performed the required elements of step 1 of the recommended 
-method.  Now perform steps 2-5 of that method to complete your installation.
+**4. Install pip**
 
-.. _NumPy: http://numpy.scipy.org/
-.. _SciPy: http://www.scipy.org/
-.. _Matplotlib: http://matplotlib.sourceforge.net/>
-.. _PyFITS: http://www.stsci.edu/resources/software_hardware/pyfits>
+Download `distribute_setup.py <http://python-distribute.org/distribute_setup.py>`_
+to be able to install distribute: ::
+
+    python distribute_setup.py
+
+Download `get-pip.py <https://raw.github.com/pypa/pip/master/contrib/get-pip.py>`_
+to be able to install pip: ::
+
+    python get-pip.py
+
+**5. Install required modules**
+
+You can use pip to download and build modules from source: ::
+
+    pip install numpy
+    pip install scipy
+    pip install matplotlib
+
+Unfortunately, the compilations of SciPy and Matplotlib will likely fail due to
+missing libraries.  Until there is a workable solution, you should download the
+latest installers: `SciPy <http://sourceforge.net/projects/scipy/files/scipy/0.12.0/scipy-0.12.0-win32-superpack-python2.7.exe/download>`_
+and `Matplotlib <http://sourceforge.net/projects/matplotlib/files/matplotlib/matplotlib-1.2.1/matplotlib-1.2.1.win32-py2.7.exe/download>`__.
+You are now ready to continue with :doc:`the rest of the installation <index>`.
+

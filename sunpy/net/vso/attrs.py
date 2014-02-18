@@ -15,17 +15,21 @@ AND-expression, if you still attempt to do so it is called a collision,
 for a quick example think about how the system should handle
 Instrument('aia') & Instrument('eit').
 """
-
 from __future__ import absolute_import
 
 from datetime import datetime
 
+from sunpy.time import TimeRange
 from sunpy.net.attr import (
     Attr, ValueAttr, AttrWalker, AttrAnd, AttrOr, DummyAttr, ValueAttr
 )
-from sunpy.util.util import to_angstrom
+from sunpy.util import to_angstrom
 from sunpy.util.multimethod import MultiMethod
 from sunpy.time import parse_time
+
+__all__ = ['Wave', 'Time', 'Extent', 'Field', 'Provider', 'Source',
+           'Instrument', 'Physobs', 'Pixels', 'Level', 'Resolution',
+           'Detector', 'Filter', 'Sample', 'Quicklook', 'PScale']
 
 TIMEFORMAT = '%Y%m%d%H%M%S'
 
@@ -53,7 +57,7 @@ class _Range(object):
 class Wave(Attr, _Range):
     def __init__(self, wavemin, wavemax, waveunit='Angstrom'):
         self.min, self.max = sorted(
-            to_angstrom(v, waveunit) for v in [wavemin, wavemax]
+            to_angstrom(v, waveunit) for v in [float(wavemin), float(wavemax)]
         )
         self.unit = 'Angstrom'
         
@@ -63,11 +67,20 @@ class Wave(Attr, _Range):
     def collides(self, other):
         return isinstance(other, self.__class__)
 
+    def __repr__(self):
+	return '<Wave({0!r}, {1!r}, {2!r})>'.format(self.min, self.max, self.unit)
+
 
 class Time(Attr, _Range):
-    def __init__(self, start, end, near=None):
-        self.start = parse_time(start)
-        self.end = parse_time(end)
+    def __init__(self, start, end=None, near=None):
+        if end is None and not isinstance(start, TimeRange):
+            raise ValueError("Specify start and end or start has to be a TimeRange")
+        if isinstance(start, TimeRange):
+            self.start = start.t1
+            self.end = start.t2
+        else:
+            self.start = parse_time(start)
+            self.end = parse_time(end)
         self.near = None if near is None else parse_time(near)
 
         _Range.__init__(self, self.start, self.end, self.__class__)
@@ -92,14 +105,14 @@ class Time(Attr, _Range):
 
 class Extent(Attr):
     # pylint: disable=R0913
-    def __init__(self, x, y, width, length, type_):
+    def __init__(self, x, y, width, length, atype):
         Attr.__init__(self)
         
         self.x = x
         self.y = y
         self.width = width
         self.length = length
-        self.type = type_
+        self.type = atype
     
     def collides(self, other):
         return isinstance(other, self.__class__)
@@ -221,18 +234,6 @@ def _create(wlk, root, api):
         blocks.extend(wlk.create(attr, api))
     return blocks
 
-@walker.add_creator(DummyAttr)
-# pylint: disable=E0102,C0103,W0613
-def _create(wlk, root, api):
-    """ Implementation detail. """
-    return api.factory.create('QueryRequestBlock')
-
-@walker.add_applier(DummyAttr)
-# pylint: disable=E0102,C0103,W0613
-def _apply(wlk, root, api, queryblock):
-    """ Implementation detail. """
-    pass
-
 
 # Converters take a type unknown to the walker and convert it into one
 # known to it. All of those convert types into ValueAttrs, which are
@@ -316,9 +317,13 @@ def _(attr, results):
     return set(
         it for it in results
         if
-        attr.min <= to_angstrom(it.wave.wavemax, it.wave.waveunit)
+        it.wave.wavemax is not None
         and
-        attr.max >= to_angstrom(it.wave.wavemin, it.wave.waveunit)
+        attr.min <= to_angstrom(float(it.wave.wavemax), it.wave.waveunit)
+        and
+        it.wave.wavemin is not None
+        and
+        attr.max >= to_angstrom(float(it.wave.wavemin), it.wave.waveunit)
     )
 
 @filter_results.add_dec(Time)
@@ -326,7 +331,11 @@ def _(attr, results):
     return set(
         it for it in results
         if
+        it.time.end is not None
+        and
         attr.min <= datetime.strptime(it.time.end, TIMEFORMAT)
+        and
+        it.time.start is not None
         and
         attr.max >= datetime.strptime(it.time.start, TIMEFORMAT)
     )
@@ -335,5 +344,8 @@ def _(attr, results):
 def _(attr, results):
     return set(
         it for it in results
-        if it.extent.type.lower() == attr.type.lower()
+        if
+        it.extent.type is not None
+        and
+        it.extent.type.lower() == attr.type.lower()
     )

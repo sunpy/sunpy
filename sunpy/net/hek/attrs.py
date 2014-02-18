@@ -58,8 +58,7 @@ class _BoolParamAttr(_ParamAttr):
 class _ListAttr(attr.Attr):
     """ A _ListAttr is used when the server expects a list of things with
     the name (GET parameter name) key. By adding the _ListAttr to the query,
-    item is added to that list. Please note that the server must treat items
-    of the list as AND in order for the query to be semantically correct. """
+    item is added to that list. """
     def __init__(self, key, item):
         attr.Attr.__init__(self)
         
@@ -269,15 +268,6 @@ def _c(wlk, root, state):
         blocks.extend(wlk.create(attribute, state))
     return blocks
 
-@walker.add_creator(attr.DummyAttr)
-# pylint: disable=E0102,C0103,W0613
-def _c(wlk, root, state):
-    return {}
-
-@walker.add_applier(attr.DummyAttr)
-# pylint: disable=E0102,C0103,W0613
-def _a(wlk, root, state, dct):
-    pass
 
 
 @apply

@@ -3,31 +3,49 @@ This module provides a set of colormaps specific for solar data.
 """
 from __future__ import absolute_import
 
-__all__ = ["get_cmap", "show_colormaps"]
-
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
-from sunpy.cm import _cm
 
-sdoaia94 = _cm.aia_color_table(94)
-sdoaia131 = _cm.aia_color_table(131)
-sdoaia171 = _cm.aia_color_table(171)
-sdoaia193 = _cm.aia_color_table(193)
-sdoaia211 = _cm.aia_color_table(211)
-sdoaia304 = _cm.aia_color_table(304)
-sdoaia335 = _cm.aia_color_table(335)
-sdoaia1600 = _cm.aia_color_table(1600)
-sdoaia1700 = _cm.aia_color_table(1700)
-sdoaia4500 = _cm.aia_color_table(4500)
+from sunpy.cm import color_tables as ct
 
-sohoeit171 = _cm.eit_color_table(171)
-sohoeit195 = _cm.eit_color_table(195)
-sohoeit284 = _cm.eit_color_table(284)
-sohoeit304 = _cm.eit_color_table(304)
+__all__ = ['get_cmap', 'show_colormaps']
 
-soholasco2 = _cm.lasco_color_table(2)
-soholasco3 = _cm.lasco_color_table(3)
+sdoaia94 = ct.aia_color_table(94)
+sdoaia131 = ct.aia_color_table(131)
+sdoaia171 = ct.aia_color_table(171)
+sdoaia193 = ct.aia_color_table(193)
+sdoaia211 = ct.aia_color_table(211)
+sdoaia304 = ct.aia_color_table(304)
+sdoaia335 = ct.aia_color_table(335)
+sdoaia1600 = ct.aia_color_table(1600)
+sdoaia1700 = ct.aia_color_table(1700)
+sdoaia4500 = ct.aia_color_table(4500)
+
+sohoeit171 = ct.eit_color_table(171)
+sohoeit195 = ct.eit_color_table(195)
+sohoeit284 = ct.eit_color_table(284)
+sohoeit304 = ct.eit_color_table(304)
+
+soholasco2 = ct.lasco_color_table(2)
+soholasco3 = ct.lasco_color_table(3)
+
+stereocor1 = ct.cor_color_table(1)
+stereocor2 = ct.cor_color_table(2)
+
+yohkohsxtal = ct.sxt_color_table('al')
+yohkohsxtwh = ct.sxt_color_table('wh')
+
+hinodexrt = ct.xrt_color_table()
+
+trace171 = ct.trace_color_table('171')
+trace195 = ct.trace_color_table('195')
+trace284 = ct.trace_color_table('284')
+trace1216 = ct.trace_color_table('1216')
+trace1550 = ct.trace_color_table('1550')
+trace1600 = ct.trace_color_table('1600')
+trace1700 = ct.trace_color_table('1700')
+traceWL = ct.trace_color_table('WL')
 
 cmlist = {
           'sdoaia94': sdoaia94,
@@ -46,7 +64,20 @@ cmlist = {
           'sohoeit304': sohoeit304,
           'soholasco2': soholasco2,
           'soholasco3': soholasco3,
-          'rhessi': cm.jet  # pylint: disable=E1101
+          'stereocor1': stereocor1,
+          'stereocor2': stereocor2,
+          'rhessi': cm.jet,  # pylint: disable=E1101
+          'yohkohsxtal': yohkohsxtal,
+          'yohkohsxtwh': yohkohsxtwh,
+          'hinodexrt': hinodexrt,
+          'trace171': trace171,
+          'trace195': trace195,
+          'trace284': trace284,
+          'trace1216': trace1216,
+          'trace1550': trace1550,
+          'trace1600': trace1600,
+          'trace1700': trace1700,
+          'traceWL': traceWL
           }
 
 
