@@ -82,14 +82,8 @@ class NoRHLightCurve(LightCurve):
         cadence=np.float(header['cdelt1'])
         sec_array=np.linspace(0,length-1,(length/cadence))
 
-        deltas=[]
-        for s in sec_array:
-            deltas.append(datetime.timedelta(0,s))
-
         norh_time=[]
-        for d in deltas:
-            norh_time.append(obs_start_time+d)
+        for s in sec_array:
+            norh_time.append(obs_start_time + datetime.timedelta(0,s))
 
         return header, pandas.DataFrame(data,index=norh_time)
-
-    
