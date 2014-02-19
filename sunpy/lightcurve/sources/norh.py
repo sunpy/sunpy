@@ -13,6 +13,7 @@ import pandas
 import sunpy
 from sunpy.lightcurve import LightCurve
 from sunpy.time import parse_time
+from sunpy.util.odict import OrderedDict
 
 
 __all__ = ['NoRHLightCurve']
@@ -39,7 +40,7 @@ class NoRHLightCurve(LightCurve):
         """Plots the NoRH lightcurve"""
         plt.figure()
         axes = plt.gca()
-        data_lab=self.meta['obs-freq'][0:2] + ' ' + self.meta['obs-freq'][2:5]
+        data_lab=self.meta['OBS-FREQ'][0:2] + ' ' + self.meta['OBS-FREQ'][2:5]
         axes.plot(self.data.index,self.data,label=data_lab)
         axes.set_yscale("log")
         axes.set_ylim(1e-4,1)
@@ -68,14 +69,14 @@ class NoRHLightCurve(LightCurve):
     def _parse_fits(filepath):
         """This method parses NoRH tca and tcz correlation files."""
         hdulist=fits.open(filepath)
-        header=hdulist[0].header
+        header=OrderedDict(hdulist[0].header)
         #for these NoRH files, the time series data is recorded in the primary HDU
         data=hdulist[0].data
 
         #No explicit time array in FITS file, so construct the time array from the FITS header
-        obs_start_time=parse_time(header['date-obs'] + 'T' + header['crval1'])
+        obs_start_time=parse_time(header['DATE-OBS'] + 'T' + header['CRVAL1'])
         length=len(data)
-        cadence=np.float(header['cdelt1'])
+        cadence=np.float(header['CDELT1'])
         sec_array=np.linspace(0,length-1,(length/cadence))
 
         norh_time=[]
