@@ -56,15 +56,11 @@ class NoRHLightCurve(LightCurve):
         #include an accepted password in base url
         baseurl='ftp://anonymous:mozilla@example.com@solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/'
         #date is a datetime object
-        year=date.strftime('%Y')
-        year_trim=date.strftime('%y')
-        mon=date.strftime('%m')
-        day=date.strftime('%d')
         if 'wavelength' in kwargs:
             if kwargs['wavelength'] == '34':
-                final_url=urlparse.urljoin(baseurl,year+'/'+mon+'/tcz'+year_trim+mon+day)
+                final_url=urlparse.urljoin(baseurl,date.strftime('%Y/%m/' + 'tcz' + '%y%m%d')) 
         else:
-            final_url=urlparse.urljoin(baseurl,year+'/'+mon+'/tca'+year_trim+mon+day)
+            final_url=urlparse.urljoin(baseurl, date.strftime('%Y/%m/' + 'tca' + '%y%m%d')) 
         
         return final_url
 
