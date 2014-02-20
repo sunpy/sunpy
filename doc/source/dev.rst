@@ -634,9 +634,9 @@ passes.
 
 The example given above is one in which the function and test reside in the
 same module. In SunPy, functions and tests are separated and the latter can be
-found in the `tests` directory within the directory containing the science module.
-The convention is to have one test module per science module, with the names for
-the test modules being the same as those for the science modules prefixed with
+found in the `tests` directory within the directory containing the module.
+The convention is to have one test module per module, with the names for
+the test modules being the same as those for the modules prefixed with
 `test_`. For example, the modules `xml.py` and `multimethod.py` in `sunpy/util`
 have corresponding test modules `test_xml.py` and `test_multimethod.py` in
 `sunpy/util/tests`.
