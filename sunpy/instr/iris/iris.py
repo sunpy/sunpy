@@ -52,7 +52,7 @@ class IRISMap(GenericMap):
         C-API extension. If for some reason this is not compiled correctly this
         routine will fall back upon the scipy implementation of order = 3.
         For more infomation see:
-            http://sunpy.readthedocs.org/en/latest/guide/troubleshooting.html#crotate-warning
+        http://sunpy.readthedocs.org/en/latest/guide/troubleshooting.html#crotate-warning
         """
         
         cords = np.matrix([[self.meta['pc1_1'], self.meta['pc1_2']],
