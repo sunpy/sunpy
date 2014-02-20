@@ -9,7 +9,6 @@ import pytest
 import sunpy
 import sunpy.lightcurve
 from sunpy.data.test import (EVE_AVERAGES_CSV)
-import matplotlib
 
 @pytest.mark.online
 def test_eve():

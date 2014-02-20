@@ -7,7 +7,7 @@ from sunpy.database import attrs as db_attrs
 from sunpy.net.attr import Attr, AttrOr, AttrAnd
 
 
-__all__ = ['dumps', 'loads']
+__all__ = ['dump_query', 'load_query']
 
 
 class QueryEncoder(json.JSONEncoder):

@@ -11,7 +11,6 @@ from sunpy.map import GenericMap
 from sunpy.sun import constants
 from sunpy.sun import sun
 from sunpy.cm import cm
-from sunpy.time import parse_time, is_time
 
 
 __all__ = ['EITMap', 'LASCOMap', 'MDIMap']

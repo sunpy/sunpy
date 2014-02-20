@@ -8,7 +8,6 @@ import matplotlib
 from matplotlib import pyplot as plt  
 from pandas.io.parsers import read_csv
 
-import sunpy
 from sunpy.lightcurve import LightCurve
 from sunpy.time import parse_time, TimeRange
 

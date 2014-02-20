@@ -1,7 +1,6 @@
 """A Python MapCube Object"""
 from __future__ import absolute_import
 #pylint: disable=W0401,W0614,W0201,W0212,W0404
-import copy
 
 import numpy as np
 import matplotlib.animation
@@ -78,7 +77,7 @@ class MapCube(object):
     def coalign(self, method="diff"):
         """ Fine coalign the data"""
         if method == 'diff':
-            return _coalign_diff(self)
+            return self._coalign_diff(self)
 
     # Coalignment methods
     def _coalign_diff(self):

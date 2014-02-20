@@ -7,15 +7,13 @@ from __future__ import absolute_import
 __authors__ = ["Russell Hewett, Stuart Mumford, Keith Hughitt, Steven Christe"]
 __email__ = "stuart@mumford.me.uk"
 
-import os
-from copy import deepcopy, copy
+from copy import deepcopy
 import warnings
 
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy.ndimage.interpolation
 from matplotlib import patches
-from matplotlib import colors
 from matplotlib import cm
 
 import astropy.nddata
@@ -27,7 +25,6 @@ except ImportError:
 
 import sunpy.io as io
 import sunpy.wcs as wcs
-from sunpy.util import to_signed, Deprecated
 from sunpy.visualization import toggle_pylab
 # from sunpy.io import read_file, read_file_header
 from sunpy.sun import constants
@@ -589,15 +586,16 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
                 data = scipy.ndimage.interpolation.affine_transform(image, rsmat,
                            offset=offs, order=3, mode='constant',
                            cval=missing)
-            #Set up call parameters depending on interp type.
-            if interpolation == 'nearest':
-                interp_type = Crotate.NEAREST
-            elif interpolation == 'bilinear':
-                interp_type = Crotate.BILINEAR
-            elif interpolation == 'bicubic':
-                interp_type = Crotate.BICUBIC
-            #Make call to extension
-            data = Crotate.affine_transform(image,
+            else:
+                #Set up call parameters depending on interp type.
+                if interpolation == 'nearest':
+                    interp_type = Crotate.NEAREST
+                elif interpolation == 'bilinear':
+                    interp_type = Crotate.BILINEAR
+                elif interpolation == 'bicubic':
+                    interp_type = Crotate.BICUBIC
+                #Make call to extension
+                data = Crotate.affine_transform(image,
                                       rsmat, offset=offs,
                                       kernel=interp_type, cubic=interp_param,
                                       mode='constant', cval=missing)

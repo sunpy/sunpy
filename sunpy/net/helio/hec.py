@@ -1,33 +1,27 @@
-# -*- coding: utf-8 -*-
-# Author:   Michael Malocha <mjm159@humboldt.edu>
-# Last Edit:  September 22nd, 2013
-#
-# This module was developed with funding from the GSOC 2013 summer of code
-#
-
 """
-This module is meant to be an interface with the HELIO webservice, providing
-it's support through the use of a WSDL file.
+Access the Helio Event Catalogue
 """
 from sunpy.net.proxyfix import WellBehavedHttpTransport
 from sunpy.net.helio import parser
-from sunpy.time import time as T
+from sunpy.time import parse_time
 from suds.client import Client as C
+import suds
 from astropy.io.votable.table import parse_single_table
 import io
 
 __author__ = 'Michael Malocha'
 __version__ = 'September 22nd, 2013'
 
-# The default wsdl file
-DEFAULT_LINK = parser.wsdl_retriever()
+__all__ = ['HECClient']
 
+
+        
 
 def suds_unwrapper(wrapped_data):
     """
     Removes suds wrapping from returned xml data
 
-    When grabbing data via client.last_received() from the suds.client.Client
+    When grabbing data via votable_interceptor.last_payload from the suds.client.Client
     module, it returns the xml data in an un-helpful "<s:Envelope>" that needs
     to be removed. This function politely cleans it up.
 
@@ -43,16 +37,18 @@ def suds_unwrapper(wrapped_data):
 
     Examples
     --------
-    >>> from sunpy.net.helio import hec
+    >>> from sunpy.net.helio import hec  Todo: Fix this example!
     >>> from suds.client import Client
-    >>> client = Client(parser.wsdl_retriever())
+    >>> from sunpy.net.proxyfix import WellBehavedHttpTransport
+    >>> votable_interceptor = hec.VotableInterceptor()
+    >>> client = Client(hec.parser.wsdl_retriever(), plugins=[self.votable_interceptor], transport=WellBehavedHttpTransport())
     >>> client.service.getTableNames()
     >>> temp = client.last_received().str()
     >>> print temp
     <?xml version="1.0" encoding="UTF-8"?>
-    <S:Envelope>
+    <S:Envelope ..... >
        <S:Body>
-          <helio:queryResponse>
+          <helio:queryResponse ... >
              <VOTABLE xmlns="http://www.ivoa.net/xml/VOTable/v1.1" version="1.1">
                 <RESOURCE>
                 ...
@@ -70,14 +66,13 @@ def suds_unwrapper(wrapped_data):
         </RESOURCE>
      </VOTABLE>
     """
-    HEADER = '<?xml version="1.0" encoding="UTF-8"?>'
-    CATCH_1 = '<helio:queryResponse>'
-    CATCH_2 = '</helio:queryResponse>'
+    HEADER = '<?xml version="1.0" encoding="UTF-8"?>\n'
+    CATCH_1 = '<VOTABLE'
+    CATCH_2 = '</VOTABLE>\n'
     # Now going to find the locations of the CATCHes in the wrapped_data
     pos_1 = wrapped_data.find(CATCH_1)
-    size = len(CATCH_1)
     pos_2 = wrapped_data.find(CATCH_2)
-    unwrapped = HEADER + wrapped_data[pos_1 + size:pos_2]
+    unwrapped = HEADER + wrapped_data[pos_1:pos_2] + CATCH_2
     return unwrapped
 
 
@@ -117,48 +112,27 @@ def votable_handler(xml_table):
     return votable
 
 
-def time_check_and_convert(time):
-    """
-    Verifies 'time' as a time object, then makes it VOtable compatible.
+class VotableInterceptor(suds.plugin.MessagePlugin):
+    '''
+    Adapted example from http://stackoverflow.com/questions/15259929/configure-suds-to-use-custom-response-xml-parser-for-big-response-payloads
+    '''
+    def __init__(self, *args, **kwargs):
+        self.last_payload = None
 
-    Quickly validates a date-time passed in via a string, then parses out a
-    datetime object from the string, which is then converted into the proper
-    format to be accepted by the WSDL service methods.
-    Returned format: 'yyyy-mm-ddThh:mm:ss'
-    Example: '1991-01-03T12:00:00'
-
-    Parameters
-    ----------
-    time: str
-        Contains a singular date-time object within a string.
-
-    Returns
-    -------
-    converted_time: str or None
-        A parsed and converted datetime string.
-
-    Examples
-    --------
-    >>> time = '2013/01/03'
-    >>> hec.time_check_convert(time)
-    '2013-01-03T00:00:00'
-    """
-    if T.is_time(time):
-        time_object = T.parse_time(time)
-        converted_time = time_object.strftime("%Y-%m-%d") + "T" + \
-                         time_object.strftime("%T")
-        return converted_time
-    else:
-        print "Not a valid datetime"
-        return None
+    def received(self, context):
+        #recieved xml as a string
+        self.last_payload = unicode(suds_unwrapper(context.reply))
+        #clean up reply to prevent parsing
+        context.reply = ""
+        return context
 
 
-class Client(object):
+class HECClient(object):
     """
     A client class used to interface with and query HELIO webservices.
     """
 
-    def __init__(self, link=DEFAULT_LINK):
+    def __init__(self, link=None):
         """
         The constructor; establishes the webservice link for the client
 
@@ -171,9 +145,14 @@ class Client(object):
 
         Examples
         --------
-        >>> hc = hec.Client()
+        >>> hc = hec.HECClient()
         """
-        self.hec_client = C(link, transport=WellBehavedHttpTransport())
+        if link is None:
+            # The default wsdl file
+            link = parser.wsdl_retriever()
+
+        self.votable_interceptor = VotableInterceptor()
+        self.hec_client = C(link, plugins=[self.votable_interceptor], transport=WellBehavedHttpTransport())
 
     def time_query(self, start_time, end_time, table=None, max_records=None):
         """
@@ -204,7 +183,7 @@ class Client(object):
 
         Examples
         --------
-        >>> hc = hec.Client()
+        >>> hc = hec.HECClient()
         >>> start = '2005/01/03'
         >>> end = '2005/12/03'
         >>> temp = hc.time_query(start, end, max_records=10)
@@ -220,22 +199,15 @@ class Client(object):
          (31471, '2005-01-03T09:34:52', '2005-01-03T09:59:46', '2005-01-03T10:06:04', 717, 994.0, 108.0, 1000.0, 1872, 40, 55920, 6, 5010336)
          (31472, '2005-01-03T11:06:48', '2005-01-03T11:07:18', '2005-01-03T11:15:56', 717, 974.0, 116.0, 981.0, 548, 2160, 2240376, 12, 5010304)]
         """
-        if table is None:
+        while table is None:
             table = self.make_table_list()
-        start_time = time_check_and_convert(start_time)
-        end_time = time_check_and_convert(end_time)
-        if start_time is None or end_time is None:
-            return None
-        if max_records is not None:
-            self.hec_client.service.TimeQuery(STARTTIME=start_time,
-                                              ENDTIME=end_time,
-                                              FROM=table,
-                                              MAXRECORDS=max_records)
-        else:
-            self.hec_client.service.TimeQuery(STARTTIME=start_time,
-                                              ENDTIME=end_time,
-                                              FROM=table)
-        results = self.clean_last_received()
+        start_time = parse_time(start_time)
+        end_time = parse_time(end_time)
+        self.hec_client.service.TimeQuery(STARTTIME=start_time.isoformat(),
+                                          ENDTIME=end_time.isoformat(),
+                                          FROM=table,
+                                          MAXRECORDS=max_records)
+        results = votable_handler(self.votable_interceptor.last_payload)
         return results
 
     def get_table_names(self):
@@ -251,7 +223,7 @@ class Client(object):
 
         Examples
         --------
-        >>> hc = hec.Client()
+        >>> hc = hec.HECClient()
         >>> print hc.get_table_names()
         [('hi_cme_list',) ('cactus_stereoa_cme',) ('aad_gle',)
             ...
@@ -260,7 +232,7 @@ class Client(object):
 
         """
         self.hec_client.service.getTableNames()
-        tables = self.clean_last_received()
+        tables = votable_handler(self.votable_interceptor.last_payload)
         return tables.array
 
     def make_table_list(self):
@@ -294,23 +266,14 @@ class Client(object):
         'wind_waves_type_ii_burst'
         """
         table_list = []
-        temp = None
         tables = self.get_table_names()
         for i in tables:
-            temp = str(i)[2:-3]
-            if len(temp) > 0:
-                table_list.append(temp)
-        counter = 1
+            table = i[0]
+            if len(table) > 0:
+                table_list.append(table)
         table_list.sort()
-        for i in table_list:
-            temp = '  '
-            if 9 < counter < 100:
-                temp = ' '
-            elif 99 < counter:
-                temp = ''
-            temp += str(counter) + ") " + i
-            print temp
-            counter += 1
+        for index, table in enumerate(table_list):
+            print ('{number:3d}) {table}'.format(number = index + 1, table = table))
         while True:
             input = raw_input("\nPlease enter a table number between 1 and %i "
                               "('e' to exit): " % len(table_list))
@@ -325,29 +288,4 @@ class Client(object):
             else:
                 print "Choice outside of bounds"
         return temp
-
-    def clean_last_received(self):
-        """
-        A method to return clean VOtable objects for the client.
-
-        This is a simple function just to clean up code. When called, it grabs
-        the "last results", runs suds_unwrapper() on the results, followed by
-        votable_handler(), then returns the results to the
-        clean_last_received()'s calling method. The "last results" are
-        actually tied to the client instance that call the webservice.
-
-        Returns
-        -------
-        results: astropy.io.votable.tree.Table
-            A clean and happy VOtable object
-
-        Examples
-        --------
-        >>> self.hec_client.service.getTableNames()
-        >>> tables = self.clean_last_received()
-        """
-        results = self.hec_client.last_received().str()
-        results = suds_unwrapper(results)
-        results = votable_handler(results)
-        return results
 
