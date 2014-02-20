@@ -54,6 +54,26 @@ def test_split_n_0():
     with pytest.raises(ValueError):
         timerange.split(n=0)
 
+def test_window():
+    timerange = sunpy.time.TimeRange('2012/1/1','2012/1/2')
+    window = timerange.window(12*60*60, 10)
+    expect = [sunpy.time.TimeRange('2012/1/1T00:00:00','2012/1/1T00:00:10'),
+              sunpy.time.TimeRange('2012/1/1T12:00:00','2012/1/1T12:00:10'),
+              sunpy.time.TimeRange('2012/1/2T00:00:00','2012/1/2T00:00:10')]
+    assert isinstance(window, list)
+    #Doing direct comparisons seem to not work
+    assert all([wi.t1 == ex.t1 and wi.t2 == ex.t2 for wi, ex in zip(window, expect)])
+
+def test_window_timedelta():
+    timerange = sunpy.time.TimeRange('2012/1/1','2012/1/2')
+    window = timerange.window(datetime.timedelta(hours=12), datetime.timedelta(seconds=10))
+    expect = [sunpy.time.TimeRange('2012/1/1T00:00:00','2012/1/1T00:00:10'),
+              sunpy.time.TimeRange('2012/1/1T12:00:00','2012/1/1T12:00:10'),
+              sunpy.time.TimeRange('2012/1/2T00:00:00','2012/1/2T00:00:10')]
+    assert isinstance(window, list)
+    #Doing direct comparisons seem to not work
+    assert all([wi.t1 == ex.t1 and wi.t2 == ex.t2 for wi, ex in zip(window, expect)])
+
 def test_days():
     timerange = sunpy.time.TimeRange('2012/1/1','2012/1/2')
     assert timerange.days() == 1
