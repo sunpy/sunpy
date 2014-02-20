@@ -45,7 +45,7 @@ method. The resulting image will be clipped at 0 using the `min` parameter of
 peek in order to avoid negative values.::
 
     nobg = image.subtract_bg()
-    nobg.peek(min_=0)
+    nobg.peek(vmin=0)
 
 .. image:: ../../images/spectra_ex2.png
 
@@ -72,13 +72,13 @@ within a specified interval. Leaving out the second argument it defaults
 to the end time of the file.::
 
     interesting = nobg.in_interval("10:38")
-    interesting.peek(min_=0)
+    interesting.peek(vmin=0)
 
 .. image:: ../../images/spectra_ex4.png
 
 To get rid of the noise, we could also clip low intensities.::
 
-    interesting.peek(min_=20)
+    interesting.peek(vmin=20)
 
 .. image:: ../../images/spectra_ex5.png
 
