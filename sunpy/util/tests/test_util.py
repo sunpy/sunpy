@@ -89,7 +89,6 @@ def test_find_next():
     """
     list1 = [1, 2, 3, 4, 5, 6, 7, 8, 9]
     list2 = [0, 2, 3, 5, 0, 0, 5, 9, 10, 15]
-    print list(util.find_next(list1, list2, None))
     assert list(util.find_next(list1, list2, None)) == [(1, 2), (2, 3), (3, 5),
                         (4, 5), (5, 9), (6, 10), (7, 15), (8, None), (9, None)]
 
