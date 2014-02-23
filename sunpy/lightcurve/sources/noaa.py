@@ -16,7 +16,7 @@ from sunpy.time import parse_time, TimeRange
 __all__ = ['NOAAIndicesLightCurve', 'NOAAPredictIndicesLightCurve']
 
 class NOAAIndicesLightCurve(LightCurve):
-    """NOAA Solar cycle monthly indices monthly. 
+    """NOAA Solar Cycle monthly indices. 
         
     Solar activity is measured by a number of different values. The NOAA Solar Weather
     Prediction Center (SWPC) publishes the following indices. All of these indices are 
@@ -51,25 +51,39 @@ class NOAAIndicesLightCurve(LightCurve):
     | http://www.swpc.noaa.gov/SolarCycle/
     """
 
-    def plot(self, axes=None, **plot_args):
+    def plot(self, axes=None, type='sunspot SWO', **plot_args):
         """Plots NOAA Indices as a function of time"""
         if axes is None:
             axes = plt.gca()
-
-        dates = matplotlib.dates.date2num(self.data.index)
-
-        self.data['sunspot SWO'].plot()
-        self.data['sunspot SWO smooth'].plot()
-
+        
+        if type == 'sunspot SWO':
+            self.data['sunspot SWO'].plot()
+            self.data['sunspot SWO smooth'].plot()
+            axes.set_ylabel('Sunspot Number')
+        if type == 'sunspot RI':
+            self.data['sunspot RI'].plot()
+            self.data['sunspot RI smooth'].plot()
+            axes.set_ylabel('Sunspot Number')
+        if type == 'sunspot compare':
+            self.data['sunspot RI'].plot()
+            self.data['sunspot SWO'].plot()
+            axes.set_ylabel('Sunspot Number')
+        if type == 'radio':
+            self.data['radio flux'].plot()
+            self.data['radio flux smooth'].plot()
+            axes.set_ylabel('Radio Flux [sfu]')
+        if type == 'geo':
+            self.data['geomagnetic ap'].plot()
+            self.data['geomagnetic ap smooth'].plot()
+            axes.set_ylabel('Geomagnetic AP Index')
+     
         axes.set_ylim(0)
-        axes.set_title('Solar Cycle Sunspot Number Progression')
-        axes.set_ylabel('Sunspot Number')
-        #axes.set_xlabel(datetime.datetime.isoformat(self.data.index[0])[0:10])
+        axes.set_title('Solar Cycle Progression')
 
         axes.yaxis.grid(True, 'major')
         axes.xaxis.grid(True, 'major')
         axes.legend()
-
+       
         return axes
 
     @classmethod
@@ -81,7 +95,7 @@ class NOAAIndicesLightCurve(LightCurve):
     def _parse_csv(filepath):
         """Parses an NOAA indices csv"""
         with open(filepath, 'r') as fp:
-            fields = ('yyyy', 'mm', 'sunspot SWO', 'sunspot RI', 'sunspot ratio', 'sunspot SWO smooth', 'sunspot RI smooth', 'radio flux', 'radio flux smoothed', 'geomagnetic ap', 'geomagnetic smooth')
+            fields = ('yyyy', 'mm', 'sunspot SWO', 'sunspot RI', 'sunspot ratio', 'sunspot SWO smooth', 'sunspot RI smooth', 'radio flux', 'radio flux smooth', 'geomagnetic ap', 'geomagnetic smooth')
             data = read_csv(fp, delim_whitespace=True, names = fields, comment='#', skiprows=2, dtype={'yyyy':np.str, 'mm':np.str})
             data = data.dropna(how='any')
             timeindex = [datetime.datetime.strptime(x + '/' + y, '%Y/%m') for x,y in zip(data['yyyy'], data['mm'])]
@@ -127,9 +141,9 @@ class NOAAPredictIndicesLightCurve(LightCurve):
 
         dates = matplotlib.dates.date2num(self.data.index)
 
-        self.data['sunspot'].plot()
-        self.data['sunspot low'].plot()
-        self.data['sunspot high'].plot()
+        self.data['sunspot'].plot(color='b')
+        self.data['sunspot low'].plot(linestyle='--', color='b')
+        self.data['sunspot high'].plot(linestyle='--', color='b')
 
         axes.set_ylim(0)
         axes.set_title('Solar Cycle Sunspot Number Prediction')
