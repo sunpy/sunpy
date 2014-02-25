@@ -20,28 +20,19 @@ class NOAAIndicesLightCurve(LightCurve):
         
     Solar activity is measured by a number of different values. The NOAA Solar Weather
     Prediction Center (SWPC) publishes the following indices. All of these indices are 
-    also available as a 13-month running smoothed value.
+    also provided as a 13-month running smoothed value.
       
-    * The SWO sunspot number is issued by the NOAA Space Weather Prediction Center (SWPC)
-        
-    * The RI sunspot number is the official International Sunspot Number and is 
-    issued by the `Solar Influence Data Analysis Center (SDIC) <http://sidc.oma.be>`_
-    in Brussels, Belgium.
-    
+    * The SWO sunspot number is issued by the NOAA Space Weather Prediction Center (SWPC) 
+    * The RI sunspot number is the official International Sunspot Number and is issued by the `Solar Influence Data Analysis Center (SDIC) <http://sidc.oma.be>`_ in Brussels, Belgium.
     * The ratio between the SWO and RI indices.
-    
-    * Radio flux at 10.7 cm is produced by `Penticon/Ottawa <http://www.ngdc.noaa.gov/stp/solar/flux.html>`_ 
-    and the units are in sfu.
-    
+    * Radio flux at 10.7 cm is produced by `Penticon/Ottawa <http://www.ngdc.noaa.gov/stp/solar/flux.html>`_ and the units are in sfu.
     * The Ap Geomagnetic Index is produced by the United States Air Force (USAF).
-    
-    * Predictions provided by ISES
 
     Examples
     --------
-    from sunpy import lightcurve as lc
-    noaa = lc.NOAAIndicesLightCurve.create()
-    noaa.peek()
+    >>> from sunpy import lightcurve as lc
+    >>> noaa = lc.NOAAIndicesLightCurve.create()
+    >>> noaa.peek()
 
     References
     ----------
@@ -106,7 +97,7 @@ class NOAAIndicesLightCurve(LightCurve):
             return "", data
 
 class NOAAPredictIndicesLightCurve(LightCurve):
-    """NOAA Solar cycle Predicted Progression
+    """NOAA Solar Cycle Predicted Progression
 
     The predictions are updated monthly and are produced by ISES. Observed values are 
     initially the preliminary values which are replaced with the final values as they 
@@ -114,18 +105,14 @@ class NOAAPredictIndicesLightCurve(LightCurve):
         
     The following predicted values are available.
               
-    * The predicted RI sunspot number is the official International Sunspot Number and is 
-    issued by the `Solar Influence Data Analysis Center (SDIC) <http://sidc.oma.be>`_
-    in Brussels, Belgium.
-    
-    * The predicted radio flux at 10.7 cm is produced by `Penticon/Ottawa <http://www.ngdc.noaa.gov/stp/solar/flux.html>`_ 
-    and the units are in sfu.
+    * The predicted RI sunspot number is the official International Sunspot Number and is issued by the `Solar Influence Data Analysis Center (SDIC) <http://sidc.oma.be>`_ in Brussels, Belgium.  
+    * The predicted radio flux at 10.7 cm is produced by `Penticon/Ottawa <http://www.ngdc.noaa.gov/stp/solar/flux.html>`_ and the units are in sfu.
     
     Examples
     --------
-    from sunpy import lightcurve as lc
-    noaa = lc.NOAAPredictIndicesLightCurve.create()
-    noaa.peek()
+    >>> from sunpy import lightcurve as lc
+    >>> noaa = lc.NOAAPredictIndicesLightCurve.create()
+    >>> noaa.peek()
 
     References
     ----------
