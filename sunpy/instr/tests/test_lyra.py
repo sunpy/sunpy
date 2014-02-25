@@ -30,13 +30,11 @@ def test_lytaf_utils():
     #test split_series_using_lytaf
     #construct a dummy signal for testing purposes
     basetime=parse_time('2010-06-13 02:00')
-    secs=np.linspace(0,3599,3600)
-    dummy_time=[]
-    for s in secs:
-        dummy_time.append(basetime + datetime.timedelta(0,s))
-    dummy_data=np.random.random(3600)
+    seconds=3600
+    dummy_time = [basetime + datetime.timedelta(0, s) for s in range(seconds)]
+    dummy_data=np.random.random(seconds)
 
-    split=lyra.split_series_using_lytaf(dummy_time,dummy_data,lar)
+    split=lyra.split_series_using_lytaf(dummy_time, dummy_data, lar)
     assert type(split) == list
     assert len(split) == 4
     assert split[0]['subtimes'][0] == datetime.datetime(2010, 6, 13, 2, 0)
