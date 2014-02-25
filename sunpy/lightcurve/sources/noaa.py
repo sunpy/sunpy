@@ -42,29 +42,29 @@ class NOAAIndicesLightCurve(LightCurve):
     | http://www.swpc.noaa.gov/SolarCycle/
     """
 
-    def plot(self, axes=None, type='sunspot SWO', **plot_args):
+    def peek(self, axes=None, type='sunspot SWO', **plot_args):
         """Plots NOAA Indices as a function of time"""
-        if axes is None:
-            axes = plt.gca()
-        
+        figure = plt.figure()
+        axes = plt.gca()
+       
         if type == 'sunspot SWO':
-            self.data['sunspot SWO'].plot()
+            axes = self.data['sunspot SWO'].plot()
             self.data['sunspot SWO smooth'].plot()
             axes.set_ylabel('Sunspot Number')
         if type == 'sunspot RI':
-            self.data['sunspot RI'].plot()
+            axes = self.data['sunspot RI'].plot()
             self.data['sunspot RI smooth'].plot()
             axes.set_ylabel('Sunspot Number')
         if type == 'sunspot compare':
-            self.data['sunspot RI'].plot()
+            axes = self.data['sunspot RI'].plot()
             self.data['sunspot SWO'].plot()
             axes.set_ylabel('Sunspot Number')
         if type == 'radio':
-            self.data['radio flux'].plot()
+            axes = self.data['radio flux'].plot()
             self.data['radio flux smooth'].plot()
             axes.set_ylabel('Radio Flux [sfu]')
         if type == 'geo':
-            self.data['geomagnetic ap'].plot()
+            axes = self.data['geomagnetic ap'].plot()
             self.data['geomagnetic ap smooth'].plot()
             axes.set_ylabel('Geomagnetic AP Index')
      
@@ -75,7 +75,8 @@ class NOAAIndicesLightCurve(LightCurve):
         axes.xaxis.grid(True, 'major')
         axes.legend()
        
-        return axes
+        figure.show()
+        return figure
 
     @classmethod
     def _get_default_uri(cls):
@@ -121,14 +122,12 @@ class NOAAPredictIndicesLightCurve(LightCurve):
     | http://www.swpc.noaa.gov/SolarCycle/
     """
 
-    def plot(self, axes=None, **plot_args):
+    def peek(self, axes=None, **plot_args):
         """Plots NOAA Indices as a function of time"""
-        if axes is None:
-            axes = plt.gca()
+        figure = plt.figure()
+        axes = plt.gca()
 
-        dates = matplotlib.dates.date2num(self.data.index)
-
-        self.data['sunspot'].plot(color='b')
+        axes = self.data['sunspot'].plot(color='b')
         self.data['sunspot low'].plot(linestyle='--', color='b')
         self.data['sunspot high'].plot(linestyle='--', color='b')
 
@@ -140,8 +139,9 @@ class NOAAPredictIndicesLightCurve(LightCurve):
         axes.yaxis.grid(True, 'major')
         axes.xaxis.grid(True, 'major')
         axes.legend()
-
-        return axes
+        
+        figure.show()
+        return figure
 
     @classmethod
     def _get_default_uri(cls):
