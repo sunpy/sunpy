@@ -155,7 +155,8 @@ def parse_time(time_string,TAI=0):
     >>> sunpy.time.parse_time('2012/08/01')
     >>> sunpy.time.parse_time('2005-08-04T00:01:02.000Z')
 
-    .. todo::
+    .. todo::--done
+    	
         add ability to parse tai (International Atomic Time seconds since
         Jan 1, 1958)
     """
