@@ -1,5 +1,5 @@
 """
-LightCurve is a generic LightCurve class from which all other LightCurve classes
+LightCurve is a generic LightCurve class from which all other LightCurve classes 
 inherit from.
 """
 from __future__ import absolute_import
@@ -38,10 +38,10 @@ class LightCurve(object):
 
     Attributes
     ----------
-    header : string, dict
+    meta : string, dict
         The comment string or header associated with the light curve input
     data : pandas.DataFrame
-        An pandas DataFrame prepresenting one or more fields as they vary with
+        An pandas DataFrame prepresenting one or more fields as they vary with 
         respect to time.
 
     Examples
@@ -69,9 +69,21 @@ class LightCurve(object):
     _cond_dispatch = ConditionalDispatch()
     create = classmethod(_cond_dispatch.wrapper())
 
-    def __init__(self, data, header=None):
+    def __init__(self, data, meta=None):
         self.data = data
-        self.header = header
+        self.meta = meta
+    
+    @property
+    def header(self):
+        """
+        Return the lightcurves metadata
+
+        .. deprecated:: 0.4.0
+            Use .meta instead
+        """
+        warnings.warn("""lightcurve.header has been renamed to lightcurve.meta
+for compatability with map, please use meta instead""", Warning)
+        return self.meta
 
     @classmethod
     def from_time(cls, time, **kwargs):
@@ -86,7 +98,7 @@ class LightCurve(object):
     def from_range(cls, start, end, **kwargs):
         url = cls._get_url_for_date_range(parse_time(start), parse_time(end))
         filepath = cls._download(
-            url, kwargs,
+            url, kwargs, 
             err = "Unable to download data for specified date range"
         )
         result = cls.from_file(filepath)
@@ -107,11 +119,11 @@ class LightCurve(object):
     @classmethod
     def from_file(cls, filename):
         filename = os.path.expanduser(filename)
-        header, data = cls._parse_filepath(filename)
+        meta, data = cls._parse_filepath(filename)
         if data.empty:
             raise ValueError("No data found!")
-        else:
-            return cls(data, header)
+        else:               
+            return cls(data, meta)
 
     @classmethod
     def from_url(cls, url, **kwargs):
@@ -124,10 +136,10 @@ class LightCurve(object):
         return cls.from_file(filepath)
 
     @classmethod
-    def from_data(cls, data, index=None, header=None):
+    def from_data(cls, data, index=None, meta=None):
         return cls(
             pandas.DataFrame(data, index=index),
-            header
+            meta
         )
 
     @classmethod
@@ -135,8 +147,8 @@ class LightCurve(object):
         return cls.from_url(cls._get_default_uri())
 
     @classmethod
-    def from_dataframe(cls, dataframe, header=None):
-        return cls(dataframe, header)
+    def from_dataframe(cls, dataframe, meta=None):
+        return cls(dataframe, meta)
 
     def plot(self, axes=None, **plot_args):
         """Plot a plot of the light curve
@@ -144,7 +156,7 @@ class LightCurve(object):
         Parameters
         ----------
         axes: matplotlib.axes object or None
-            If provided the image will be plotted on the given axes. Else the
+            If provided the image will be plotted on the given axes. Else the 
             current matplotlib axes will be used.
 
         **plot_args : dict
@@ -173,17 +185,17 @@ class LightCurve(object):
         return figure
 
     @staticmethod
-    def _download(uri, kwargs,
+    def _download(uri, kwargs, 
                   err='Unable to download data at specified URL',
                   filename = None):
         """Attempts to download data at the specified URI"""
-
+        
         #Allow manual override of output filename (used for GOES)
         if filename is not None:
             _filename = filename
-        else:
+        else:            
             _filename = os.path.basename(uri).split("?")[0]
-
+        
         # user specifies a download directory
         if "directory" in kwargs:
             download_dir = os.path.expanduser(kwargs["directory"])
@@ -199,7 +211,7 @@ class LightCurve(object):
         # If the file is not already there, download it
         filepath = os.path.join(download_dir, _filename)
 
-        if not(os.path.isfile(filepath)) or (overwrite and
+        if not(os.path.isfile(filepath)) or (overwrite and 
                                              os.path.isfile(filepath)):
             try:
                 response = urllib2.urlopen(uri)
@@ -259,7 +271,7 @@ class LightCurve(object):
             time_range = TimeRange(a,b)
 
         truncated = self.data.truncate(time_range.start(), time_range.end())
-        return LightCurve(truncated, self.header.copy())
+        return LightCurve(truncated, self.meta.copy())
 
     def extract(self, a):
         """Extract a set of particular columns from the DataFrame"""
@@ -267,7 +279,7 @@ class LightCurve(object):
         if isinstance(self, pandas.Series):
             return self
         else:
-            return LightCurve(self.data[a], self.header.copy())
+            return LightCurve(self.data[a], self.meta.copy())
 
     def time_range(self):
         """Returns the start and end times of the LightCurve as a TimeRange
@@ -326,14 +338,14 @@ LightCurve._cond_dispatch.add(
 
 LightCurve._cond_dispatch.add(
     run_cls("from_data"),
-    lambda cls, data, index=None, header=None: True,
+    lambda cls, data, index=None, meta=None: True,
     [type, (list, dict, np.ndarray, pandas.Series), object, object],
     False
 )
 
 LightCurve._cond_dispatch.add(
     run_cls("from_dataframe"),
-    lambda cls, dataframe, header=None: True,
+    lambda cls, dataframe, meta=None: True,
     [type, pandas.DataFrame, object],
     False
 )

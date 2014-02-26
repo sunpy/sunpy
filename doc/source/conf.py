@@ -59,8 +59,10 @@ version = sunpy.__version__.split('-', 1)[0]
 # The full version, including alpha/beta/rc tags.
 release = sunpy.__version__
 
+intersphinx_mapping.pop('h5py',None)
 intersphinx_mapping['astropy'] = ('http://docs.astropy.org/en/stable/', None)
 intersphinx_mapping['sqlalchemy'] = ('http://docs.sqlalchemy.org/en/rel_0_8/', None)
+intersphinx_mapping['pandas'] = ('http://pandas.pydata.org/pandas-docs/stable/', None)
 # -- Options for HTML output ---------------------------------------------------
 
 # A NOTE ON HTML THEMES
@@ -85,8 +87,8 @@ html_theme = 'default'
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
 # pixels large.
-html_favicon = '../logo/favicon.ico'
-html_logo = '../logo/sunpy_logo_compact_192x239.png'
+html_favicon = "../logo/favicon.ico"
+#html_logo = "../logo/sunpy_logo_compact_192x239.png"
 
 # If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
 # using the given strftime format.

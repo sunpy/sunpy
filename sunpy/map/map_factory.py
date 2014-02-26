@@ -18,6 +18,8 @@ from sunpy.map.mapcube import MapCube
 from sunpy.io.file_tools import read_file
 from sunpy.io.header import FileHeader
 
+from sunpy.database.tables import DatabaseEntry
+
 from sunpy.util.net import download_file
 from sunpy.util import expand_list
 from sunpy.util import Deprecated
@@ -34,11 +36,51 @@ class MapFactory(BasicRegistrationFactory):
     Map factory class.  Used to create a variety of Map objects.  Valid map types
     are specified by registering them with the factory.
 
-    Example
-    -------
-    >>> import sunpy
-    >>> mymap = sunpy.Map(sunpy.AIA_171_IMAGE)
 
+    Examples
+    --------
+    >>> import sunpy.map
+    >>> mymap = sunpy.map.Map(sunpy.AIA_171_IMAGE)
+
+    The SunPy Map factory accepts a wide variety of inputs for creating maps
+
+    * Preloaded tuples of (data, header) pairs
+
+    >>> mymap = sunpy.map.Map((data, header))
+
+    headers are some base of `dict` or `collections.OrderedDict`, including `sunpy.io.header.FileHeader` or `sunpy.map.header.MapMeta` classes.
+
+    * data, header pairs, not in tuples
+
+    >>> mymap = sunpy.map.Map(data, header)
+
+    * File names
+
+    >>> mymap = sunpy.map.Map('file1.fits')
+
+    * All fits files in a directory by giving a directory
+
+    >>> mymap = sunpy.map.Map('local_dir/sub_dir')
+
+    * Some regex globs
+
+    >>> mymap = sunpy.map.Map('eit_*.fits')
+
+    * URLs
+
+    >>> mymap = sunpy.map.Map(url_str)
+
+    * DatabaseEntry
+
+    >>> mymap = sunpy.map.Map(db_result)
+
+    * Lists of any of the above
+
+    >>> mymap = sunpy.Map(['file1.fits', 'file2.fits', 'file3.fits', 'directory1/'])
+
+    * Any mixture of the above not in a list
+
+    >>> mymap = sunpy.Map((data, header), data2, header2, 'file1.fits', url_str, 'eit_*.fits')
     """
 
     def _read_file(self, fname, **kwargs):
@@ -142,6 +184,10 @@ class MapFactory(BasicRegistrationFactory):
                 path = download_file(url, default_dir)
                 pairs = self._read_file(path, **kwargs)
                 data_header_pairs += pairs
+
+            # A database Entry
+            elif isinstance(arg, DatabaseEntry):
+                data_header_pairs += self._read_file(arg.path, **kwargs)
 
             else:
                 raise ValueError("File not found or invalid input")

@@ -209,8 +209,8 @@ def _create(wlk, root, session):
         elif typ == 'time':
             start, end, near = value
             query = query.filter(and_(
-                DatabaseEntry.observation_time_start >= start,
-                DatabaseEntry.observation_time_end <= end))
+                DatabaseEntry.observation_time_start < end,
+                DatabaseEntry.observation_time_end > start))
         else:
             query = query.filter_by(**{typ: value})
     return query.all()

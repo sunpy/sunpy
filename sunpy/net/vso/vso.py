@@ -29,6 +29,7 @@ from suds import client, TypeNotFound
 
 from sunpy import config
 from sunpy.net import download
+from sunpy.net.proxyfix import WellBehavedHttpTransport
 from sunpy.util.progressbar import TTYProgressBar as ProgressBar
 from sunpy.util.net import get_filename, slugify
 from sunpy.net.attr import and_, Attr
@@ -259,7 +260,7 @@ class VSOClient(object):
             if port is None:
                 port = DEFAULT_PORT
             
-            api = client.Client(url)
+            api = client.Client(url, transport = WellBehavedHttpTransport())
             api.set_options(port=port)
         self.api = api
     

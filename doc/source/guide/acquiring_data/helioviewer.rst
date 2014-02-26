@@ -41,6 +41,11 @@ using the get_datasources method::
                 for meas, params in measurements.items():
                     print("%s %s: %d" % (observatory, params['nickname'], params['sourceId']))
                     
+At time of writing (2014/01/06) Helioviewer provides JP2 images from AIA, HMI, LASCO C2/C3, EIT,
+MDI, STEREO A/B COR1/2 & EUVI, SWAP and SXT.  New sources of JP2 images are being added every few months;
+please use the code snippet above to get an up-to-date list of available data sources.
+
+
 Suppose we next want to download a PNG image of the latest
 AIA 304 image available on Helioviewer.org. We could use the explicit 
 approach: ::
@@ -100,6 +105,15 @@ can specify the values as separate keyword arguments: ::
     hmi.submap([200,550],[-400,-200]).peek()
 
 .. image:: ../../images/helioviewer_download_jp2_ex.png
+
+Every JP2 file provided by the Helioviewer Project has been processed to generate an image that 
+can be used for browse purposes.  This typically involves following the standard image processing
+procedure used by each instrument team to connvert their science data into an image for a webpage.
+The JP2 image is then scaled between 0 and 255 (byte-scaled).  Please note that the JP2 image data
+is NOT the same as the original science data.  In the example above, SunPy queries Helioviewer for 
+the relevant JP2 file closest to the input time, downloads it, and selects a color table based on
+the JP2 image meta data for plotting.  The color table is that used by the Helioviewer Project to
+display JP2 images in their browse clients.
 
 For more information about using querying Helioviewer.org, see the Helioviewer.org
 API documentation at: `http://helioviewer.org/api/ <http://helioviewer.org/api/>`__.

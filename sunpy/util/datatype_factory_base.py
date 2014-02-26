@@ -27,12 +27,6 @@ class BasicRegistrationFactory(object):
     additional_validation_functions : list of strings, optional
         List of strings corresponding to additional validation function names.
 
-    Methods
-    -------
-
-    register
-        Method for registering a class with the factory.
-
     Notes
     -----
 

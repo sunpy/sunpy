@@ -7,6 +7,7 @@ from collections import Hashable
 from datetime import datetime
 import os.path
 
+from sunpy.database import Database
 from sunpy.database.tables import FitsHeaderEntry, FitsKeyComment, Tag,\
     DatabaseEntry, entries_from_query_result, entries_from_dir,\
     entries_from_file, display_entries, WaveunitNotFoundError
@@ -37,6 +38,13 @@ def qr_block_with_missing_physobs():
         vso.attrs.Time('20130805T120000', '20130805T121000'),
         vso.attrs.Instrument('SWAVES'), vso.attrs.Source('STEREO_A'),
         vso.attrs.Provider('SSC'), vso.attrs.Wave(10, 160, 'kHz'))[0]
+
+
+@pytest.fixture
+def qr_block_with_kev_unit():
+    return vso.VSOClient().query(
+        vso.attrs.Time((2011, 9, 20, 1), (2011, 9, 20, 2)),
+        vso.attrs.Instrument('RHESSI'))[0]
 
 
 def test_fits_header_entry_equality():
@@ -89,6 +97,21 @@ def test_entry_from_qr_block_with_missing_physobs(qr_block_with_missing_physobs)
         observation_time_end=datetime(2013, 8, 6), instrument='SWAVES',
         size=3601.08, wavemin=2398339664000.0, wavemax=18737028625.0)
     assert entry == expected_entry
+
+
+@pytest.mark.online
+def test_entry_from_qr_block_kev(qr_block_with_kev_unit):
+    # See issue #766.
+    entry = DatabaseEntry._from_query_result_block(qr_block_with_kev_unit)
+    assert entry.source == 'RHESSI'
+    assert entry.provider == 'LSSP'
+    assert entry.fileid == '/hessidata/2011/09/20/hsi_20110920_010920'
+    assert entry.observation_time_start == datetime(2011, 9, 20, 1, 9, 20)
+    assert entry.observation_time_end == datetime(2011, 9, 20, 2, 27, 40)
+    assert entry.instrument == 'RHESSI'
+    assert entry.size == -1
+    assert round(entry.wavemin, 3) == 0.413
+    assert round(entry.wavemax, 7) == 0.0000729
 
 
 def test_entries_from_file():
@@ -293,6 +316,11 @@ def test_display_entries_missing_entries():
         display_entries([], ['some', 'columns'])
 
 
+def test_display_entries_empty_db():
+    with pytest.raises(TypeError):
+        display_entries(Database('sqlite:///'), ['id'])
+
+
 def test_display_entries_missing_columns():
     with pytest.raises(TypeError):
         display_entries([DatabaseEntry()], [])
@@ -312,14 +340,15 @@ def test_display_entries():
             fileid='pptid=11010...',
             observation_time_start=datetime(2010, 1, 1, 0, 59),
             observation_time_end=datetime(2010, 1, 1, 1),
+            download_time=datetime(2014, 6, 15, 3, 42, 55, 123456),
             instrument='Merged gong', size=944.0,
             wavemin=6768.0, wavemax=6768.0, starred=True)]
     columns = [
-        'id', 'source', 'provider', 'physobs', 'fileid',
-        'observation_time_start', 'observation_time_end', 'instrument', 'size',
+        'id', 'source', 'provider', 'physobs', 'fileid', 'download_time',
+        'observation_time_start', 'instrument', 'size',
         'wavemin', 'path', 'starred', 'tags']
     table = display_entries(entries, columns)
     filedir = os.path.dirname(os.path.realpath(__file__))
     with open(os.path.join(filedir,'test_table.txt'), 'r') as f:
         stored_table = f.read()
-    assert table == stored_table
+    assert table.strip() == stored_table.strip()

@@ -13,6 +13,7 @@ from sqlalchemy import create_engine, exists
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import sessionmaker
 
+import sunpy
 from sunpy.database import commands, tables, serialize
 from sunpy.database.caching import LRUCache
 from sunpy.database.attrs import walker
@@ -132,6 +133,7 @@ class Database(object):
     url : str
         A URL describing the database. This value is simply passed to
         :func:`sqlalchemy.create_engine`
+        If not specified the value will be read from the sunpy config file.
     CacheClass : sunpy.database.caching.BaseCache
         A concrete cache implementation of the abstract class BaseCache.
         Builtin supported values for this parameters are
@@ -214,8 +216,10 @@ class Database(object):
         Get the number of database entries.
 
     """
-    def __init__(self, url, CacheClass=LRUCache, cache_size=float('inf'),
+    def __init__(self, url=None, CacheClass=LRUCache, cache_size=float('inf'),
             default_waveunit=None):
+        if url is None:
+            url = sunpy.config.get('database', 'url')
         self._engine = create_engine(url)
         self._session_cls = sessionmaker(bind=self._engine)
         self.session = self._session_cls()
@@ -233,6 +237,11 @@ class Database(object):
         self._cache = Cache(cache_size)
         for entry in self:
             self._cache[entry.id] = entry
+
+    @property
+    def url(self):
+        """The sqlalchemy url of the database instance"""
+        return str(self._engine.url)
 
     @property
     def cache_size(self):
