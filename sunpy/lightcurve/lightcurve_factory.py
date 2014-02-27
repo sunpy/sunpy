@@ -53,20 +53,13 @@ class LightCurveFactory(BasicRegistrationFactory):
         #call a fits file or a jpeg2k file, etc
         pairs = read_file(fname, **kwargs)
 
-        _no_data = list()
-
         new_pairs = []
         for ind, pair in enumerate(pairs):
             filedata, filemeta = pair
             assert isinstance(filemeta, FileHeader)
-            if filedata is None:
-                _no_data.append(ind)
             data = filedata
             meta = MapMeta(filemeta)
             new_pairs.append((data, meta))
-
-        for pair in new_pairs:
-            if pair[0] is None:
 
         return new_pairs
 
@@ -78,7 +71,7 @@ class LightCurveFactory(BasicRegistrationFactory):
         """
         # Hack to get around Python 2.x not backporting PEP 3102.
         silence_errors = kwargs.pop('silence_errors', False)
-        concat_hdus = kwargs.pop('concatenate_hdus', False)
+        concat_hdus = kwargs.pop('concatenate_hdus', False) #TODO: Implement
 
         data_header_pairs = list() #each lc is in a list in here
         already_lcs = list()
