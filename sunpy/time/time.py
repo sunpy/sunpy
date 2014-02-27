@@ -136,7 +136,7 @@ def extract_time(string):
     return bestmatch
 
 
-def parse_time(time_string,TAI=0):
+def parse_time(time_string, TAI=0):
     """Given a time string will parse and return a datetime object.
     Similar to the anytim function in IDL.
 
@@ -164,7 +164,7 @@ def parse_time(time_string,TAI=0):
         return time_string
     elif isinstance(time_string, tuple):
         return datetime(*time_string)
-    elif TAI==1 and (isinstance(time_string,int) or isinstance(time_string,float)):
+    elif TAI == 1 and (isinstance(time_string, int) or isinstance(time_string, float)):
         return datetime(1958, 1, 1) + timedelta(0, time_string)
     elif isinstance(time_string, int) or isinstance(time_string, float):
         return datetime(1979, 1, 1) + timedelta(0, time_string)
@@ -188,7 +188,7 @@ def parse_time(time_string,TAI=0):
         raise ValueError("%s is not a valid time string!" % time_string)
     
 
-def is_time(time_string,TAI=0):
+def is_time(time_string, TAI=0):
     """
     Returns true if the input is a valid date/time representation
     
@@ -253,10 +253,10 @@ def day_of_year(time_string):
     time_diff = time - datetime(time.year, 1, 1, 0, 0, 0)
     return time_diff.days + time_diff.seconds / SECONDS_IN_DAY + 1
 
-def break_time(t=None,TAI=0):
+def break_time(t=None, TAI=0):
     """Given a time returns a string. Useful for naming files."""
     #TODO: should be able to handle a time range
-    return parse_time(t,TAI).strftime("%Y%m%d_%H%M%S")
+    return parse_time(t, TAI).strftime("%Y%m%d_%H%M%S")
 
 
 def get_day(dt):
