@@ -136,7 +136,7 @@ def extract_time(string):
     return bestmatch
 
 
-def parse_time(time_string, TAI=0):
+def parse_time(time_string, TAI = 0):
     """Given a time string will parse and return a datetime object.
     Similar to the anytim function in IDL.
 
@@ -144,6 +144,8 @@ def parse_time(time_string, TAI=0):
     ----------
     time_string : string
         Datestring to parse
+    TAI : int
+    	TAI = 1 if time_string is to be parsed with respect to (International Atomic seconds)
 
     Returns
     -------
@@ -154,6 +156,7 @@ def parse_time(time_string, TAI=0):
     --------
     >>> sunpy.time.parse_time('2012/08/01')
     >>> sunpy.time.parse_time('2005-08-04T00:01:02.000Z')
+    >>> sunpy.time.parse_time((1164585600,1)
 
     .. todo::--done
     	
@@ -196,7 +199,9 @@ def is_time(time_string, TAI=0):
     ----------
     time_string : string
         Datestring to parse
-
+    TAI : int
+    	TAI = 1 if time_string is to be parsed with respect to (International Atomic seconds)
+    
     Returns
     -------
     out : bool
@@ -206,9 +211,9 @@ def is_time(time_string, TAI=0):
     --------
     >>> sunpy.time.parse_time('2012/08/01')
     >>> sunpy.time.parse_time('2005-08-04T00:01:02.000Z')
-
-    .. todo::
+    >>> sunpy.time.parse_time((1164585600,1)
     
+    .. todo::--done
         add ability to parse tai (International Atomic Time seconds since Jan 1, 1958)
     
     """
@@ -254,7 +259,12 @@ def day_of_year(time_string):
     return time_diff.days + time_diff.seconds / SECONDS_IN_DAY + 1
 
 def break_time(t=None, TAI=0):
-    """Given a time returns a string. Useful for naming files."""
+    """Given a time returns a string. Useful for naming files.
+    
+    TAI : int
+    	TAI = 1 if time_string is to be parsed with respect to (International Atomic seconds)
+    
+    """
     #TODO: should be able to handle a time range
     return parse_time(t, TAI).strftime("%Y%m%d_%H%M%S")
 
