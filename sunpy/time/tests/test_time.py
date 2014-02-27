@@ -27,8 +27,9 @@ def test_parse_time_int():
 def test_parse_time_tai():
 	assert parse_time(0,1)==datetime(1958,1,1,0,0)
 	assert parse_time(86401,1)==datetime(1958,1,2,0,0,1)
-	assert parse_time(1391342432,1)==datetime(2002,2,2,12,0)
-	assert parse_time(1391342432.0,1)==datetime(2002,2,2,12,0)
+	assert parse_time(1391342400,1)==datetime(2002,2,2,12,0)
+	assert parse_time(1391342400.0,1)==datetime(2002,2,2,12,0)
+
 
 
 def test_parse_time_ISO():

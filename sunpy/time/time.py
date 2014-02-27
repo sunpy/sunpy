@@ -188,7 +188,7 @@ def parse_time(time_string,TAI=0):
         raise ValueError("%s is not a valid time string!" % time_string)
     
 
-def is_time(time_string,TAI=None):
+def is_time(time_string,TAI=0):
     """
     Returns true if the input is a valid date/time representation
     
@@ -253,7 +253,7 @@ def day_of_year(time_string):
     time_diff = time - datetime(time.year, 1, 1, 0, 0, 0)
     return time_diff.days + time_diff.seconds / SECONDS_IN_DAY + 1
 
-def break_time(t=None,TAI=None):
+def break_time(t=None,TAI=0):
     """Given a time returns a string. Useful for naming files."""
     #TODO: should be able to handle a time range
     return parse_time(t,TAI).strftime("%Y%m%d_%H%M%S")
