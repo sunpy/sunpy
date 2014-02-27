@@ -11,7 +11,7 @@ from astropy.io import fits
 import pandas
 
 import sunpy
-from sunpy.lightcurve import LightCurve 
+from sunpy.lightcurve import LightCurve
 from sunpy.time import parse_time
 
 __all__ = ['LYRALightCurve']
@@ -23,7 +23,7 @@ class LYRALightCurve(LightCurve):
     Examples
     --------
     >>> import sunpy
-    
+
     >>> lyra = sunpy.lightcurve.LYRALightCurve.create()
     >>> lyra = sunpy.lightcurve.LYRALightCurve.create('~/Data/lyra/lyra_20110810-000000_lev2_std.fits')
     >>> lyra = sunpy.lightcurve.LYRALightCurve.create('2011/08/10')
@@ -34,6 +34,31 @@ class LYRALightCurve(LightCurve):
     ----------
     | http://proba2.sidc.be/data/LYRA
     """
+    def __init__(self, data, meta):
+        # Start and end dates.  Different LYRA FITS files have
+        # different tags for the date obs.
+        if 'date-obs' in meta:
+            start_str = meta.header['date-obs']
+        elif 'date_obs' in meta.header:
+            start_str = meta.header['date_obs']
+        #end_str = hdulist[0].header['date-end']
+
+        #start = datetime.datetime.strptime(start_str, '%Y-%m-%dT%H:%M:%S.%f')
+        start = parse_time(start_str)
+        #end = datetime.datetime.strptime(end_str, '%Y-%m-%dT%H:%M:%S.%f')
+
+        # First column are times
+        times = [start + datetime.timedelta(0, n) for n in data.field(0)]
+
+        # Rest of columns are the data
+        table = {}
+
+        for i, col in enumerate(data.columns[1:-1]):
+            table[col.name] = data.field(i + 1)
+
+        # Return the header and the data
+        self.meta = meta
+        self.data = pandas.DataFrame(table, index=times)
 
     def peek(self, names=3, **kwargs):
         """Plots the LYRA data
