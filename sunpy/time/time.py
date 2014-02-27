@@ -144,7 +144,7 @@ def parse_time(time_string, TAI = 0):
     ----------
     time_string : string
         Datestring to parse
-    TAI : int
+    TAI : bool
     	TAI = 1 if time_string is to be parsed with respect to (International Atomic seconds)
 
     Returns
@@ -158,11 +158,7 @@ def parse_time(time_string, TAI = 0):
     >>> sunpy.time.parse_time('2005-08-04T00:01:02.000Z')
     >>> sunpy.time.parse_time((1164585600,1)
 
-    .. todo::--done
-    	
-        add ability to parse tai (International Atomic Time seconds since
-        Jan 1, 1958)
-    """
+     """
     if isinstance(time_string, datetime):
         return time_string
     elif isinstance(time_string, tuple):
@@ -199,7 +195,7 @@ def is_time(time_string, TAI=0):
     ----------
     time_string : string
         Datestring to parse
-    TAI : int
+    TAI : bool
     	TAI = 1 if time_string is to be parsed with respect to (International Atomic seconds)
     
     Returns
@@ -213,10 +209,7 @@ def is_time(time_string, TAI=0):
     >>> sunpy.time.parse_time('2005-08-04T00:01:02.000Z')
     >>> sunpy.time.parse_time((1164585600,1)
     
-    .. todo::--done
-        add ability to parse tai (International Atomic Time seconds since Jan 1, 1958)
-    
-    """
+   """
     if time_string is None:
         return False
     elif isinstance(time_string, datetime):
@@ -261,7 +254,7 @@ def day_of_year(time_string):
 def break_time(t=None, TAI=0):
     """Given a time returns a string. Useful for naming files.
     
-    TAI : int
+    TAI : bool
     	TAI = 1 if time_string is to be parsed with respect to (International Atomic seconds)
     
     """
