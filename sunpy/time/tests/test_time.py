@@ -25,13 +25,13 @@ def test_parse_time_int():
     assert parse_time(1009685652.0) == datetime(2010, 12, 30, 4, 14, 12)
 
 def test_parse_time_tai():
-	assert parse_time(0,1)==datetime(1958,1,1,0,0)
-	assert parse_time(86401,1)==datetime(1958,1,2,0,0,1)
-	assert parse_time(1391342400,1)==datetime(2002,2,2,12,0)
-	assert parse_time(1391342400.0,1)==datetime(2002,2,2,12,0)
-	assert parse_time(-1391342400,1)==datetime(1913,11,29,12,0)
-	assert parse_time(1164585600,1)==datetime(1994, 11, 27, 0, 0)
-	assert parse_time(-1164585600,1)==datetime(1921, 2, 5, 0, 0)
+	assert parse_time(0,True)==datetime(1958,1,1,0,0)
+	assert parse_time(86401,True)==datetime(1958,1,2,0,0,1)
+	assert parse_time(1391342400,True)==datetime(2002,2,2,12,0)
+	assert parse_time(1391342400.0,True)==datetime(2002,2,2,12,0)
+	assert parse_time(-1391342400,True)==datetime(1913,11,29,12,0)
+	assert parse_time(1164585600,True)==datetime(1994, 11, 27, 0, 0)
+	assert parse_time(-1164585600,True)==datetime(1921, 2, 5, 0, 0)
 
 
 
