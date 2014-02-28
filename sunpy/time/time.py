@@ -136,7 +136,7 @@ def extract_time(string):
     return bestmatch
 
 
-def parse_time(time_string):
+def parse_time(time_string, tai=False):
     """Given a time string will parse and return a datetime object.
     Similar to the anytim function in IDL.
 
@@ -144,6 +144,8 @@ def parse_time(time_string):
     ----------
     time_string : string
         Datestring to parse
+    tai  : bool
+    	tai  = True if time_string is to be parsed with respect to TAI(International Atomic seconds)
 
     Returns
     -------
@@ -154,15 +156,15 @@ def parse_time(time_string):
     --------
     >>> sunpy.time.parse_time('2012/08/01')
     >>> sunpy.time.parse_time('2005-08-04T00:01:02.000Z')
+    >>> sunpy.time.parse_time((1164585600, True)
 
-    .. todo::
-        add ability to parse tai (International Atomic Time seconds since
-        Jan 1, 1958)
-    """
+     """
     if isinstance(time_string, datetime):
         return time_string
     elif isinstance(time_string, tuple):
         return datetime(*time_string)
+    elif tai  == True and (isinstance(time_string, int) or isinstance(time_string, float)):
+        return datetime(1958, 1, 1) + timedelta(0, time_string)
     elif isinstance(time_string, int) or isinstance(time_string, float):
         return datetime(1979, 1, 1) + timedelta(0, time_string)
     else:
@@ -185,7 +187,7 @@ def parse_time(time_string):
         raise ValueError("%s is not a valid time string!" % time_string)
     
 
-def is_time(time_string):
+def is_time(time_string, tai=False):
     """
     Returns true if the input is a valid date/time representation
     
@@ -193,7 +195,9 @@ def is_time(time_string):
     ----------
     time_string : string
         Datestring to parse
-
+    tai  : bool
+    	tai  = True if time_string is to be parsed with respect to TAI(International Atomic seconds)
+    
     Returns
     -------
     out : bool
@@ -203,19 +207,16 @@ def is_time(time_string):
     --------
     >>> sunpy.time.parse_time('2012/08/01')
     >>> sunpy.time.parse_time('2005-08-04T00:01:02.000Z')
-
-    .. todo::
+    >>> sunpy.time.parse_time((1164585600, True)
     
-        add ability to parse tai (International Atomic Time seconds since Jan 1, 1958)
-    
-    """
+   """
     if time_string is None:
         return False
     elif isinstance(time_string, datetime):
         return True
 
     try:
-        parse_time(time_string)
+        parse_time(time_string, tai )
     except ValueError:
         return False
     else:
@@ -250,10 +251,15 @@ def day_of_year(time_string):
     time_diff = time - datetime(time.year, 1, 1, 0, 0, 0)
     return time_diff.days + time_diff.seconds / SECONDS_IN_DAY + 1
 
-def break_time(t=None):
-    """Given a time returns a string. Useful for naming files."""
+def break_time(t=None, tai=False):
+    """Given a time returns a string. Useful for naming files.
+    
+    tai  : bool
+    	tai  = True if time_string is to be parsed with respect to TAI(International Atomic seconds)
+    
+    """
     #TODO: should be able to handle a time range
-    return parse_time(t).strftime("%Y%m%d_%H%M%S")
+    return parse_time(t, tai).strftime("%Y%m%d_%H%M%S")
 
 
 def get_day(dt):

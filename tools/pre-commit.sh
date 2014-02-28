@@ -1,14 +1,13 @@
 #!/bin/bash
 
-PY_TEST=py.test
+PY_TEST=py.test 
 SPHINX=sphinx-build
 BASE_DIR="$(git rev-parse --show-toplevel)"
-
 NUM_SUNPY=$(git diff --name-only --stat HEAD $BASE_DIR/sunpy | wc -l)
 NUM_DOCS=$(git diff --name-only --stat HEAD $BASE_DIR/doc | wc -l)
 #IF code has changed run the tests:
 if [ $NUM_SUNPY -gt  0 ]; then
-    $PY_TEST $BASE_DIR
+    $PY_TEST $BASEDIR
 fi
 
 #If the code OR the docs have changed run the docs
