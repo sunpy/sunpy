@@ -56,6 +56,13 @@ class GenericMap(astropy.nddata.NDData):
     header : dict
         A dictionary of the original image header tags
 
+    Attributes
+    ----------
+    cmap : matplotlib.colors.Colormap
+        A color map used for plotting with matplotlib.
+    mpl_color_normalizer : matplotlib.colors.Normalize
+        A matplotlib normalizer used to scale the image plot.
+
     Examples
     --------
     >>> aia = sunpy.make_map(sunpy.AIA_171_IMAGE)
