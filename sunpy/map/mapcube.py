@@ -204,7 +204,7 @@ class MapCube(object):
 
             im.set_array(ani_data[i].data)
             im.set_cmap(self[i].cmap)
-            im.set_norm(self[i].mpl_color_normalizer)
+            im.set_mpl_color_normalizer(self[i].mpl_color_normalizer)
             im.set_extent(self.xrange + self.yrange)
             if annotate:
                 annotate_frame(i)

@@ -159,7 +159,7 @@ class CompositeMap(object):
         else:
             return self._maps[index].cmap
 
-    def get_norm(self, index=None):
+    def get_mpl_color_normalizer(self, index=None):
         """Gets the color normalizer for a map within the
         composite.
         """
@@ -177,7 +177,7 @@ class CompositeMap(object):
         else:
             return self._maps[index].levels
 
-    def set_norm(self, index, norm):
+    def set_mpl_color_normalizer(self, index, norm):
         """Sets the normalizer for a layer in the composite image."""
         self._maps[index].mpl_color_normalizer = norm
 
