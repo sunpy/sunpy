@@ -122,10 +122,7 @@ class TestMap:
         rhessi = sunpy.map.Map(sunpy.RHESSI_IMAGE)
         assert isinstance(rhessi,sunpy.map.sources.RHESSIMap)
     
-    def test_sot(self):
-		#Test SOTMap
-		sot = sunpy.map.Map(filepath + '/FGMG4_20110214_030443.7.fits')
-		assert isinstance(sot,sunpy.map.sources.SOTMap) 
+    
         
         
         
