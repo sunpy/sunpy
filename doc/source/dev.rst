@@ -235,7 +235,7 @@ your changes are complete and they are ready to be added to the main SunPy repo.
 All contributed code to SunPy must be submitted as a "pull request". To do this go to the github
 website and to your repo (remember to select the branch) then click on the "Pull
 Request" button (in the upper right hand corner next to the Fork button which you've
-used before). All initial pull requests can me made to the main branch unless they are a fix for specific version
+used before). All initial pull requests can me made to the master branch unless they are a fix for specific version
 in which case the request should be made to corresponding version.This will submit your code to a review. You will likely
 receive some constructive comments on your code. To address these you can simply work
 on your code and push those changes to your local repo. Those changes will be reflected
