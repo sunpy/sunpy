@@ -13,8 +13,6 @@ from sunpy.cm import cm
 
 __all__ = ['SOTMap']
 
-#~ def _lower_list(L):
-	#~ return [item.lower() for item in L]
 
 class SOTMap(GenericMap):
 	"""SOT Image Map definition
@@ -23,17 +21,25 @@ class SOTMap(GenericMap):
 	----------
 	For a description of SOT headers
 	"""
-	#~ #TODO: get a link for the XRT FITS headers
-	#~ # Add in some information about the the possible filter wheel measurements
+	#TODO: get a link for the SOT FITS headers
+	# Add in some information about the the possible instrument, observation type,
+	# observable ion and wavelength
+
 	
 	Intruments = ['SOT/WB','SOT/NB','SOT/SP','SOT/CT']
-	Waves = ['6302A', 'BFI no move', 'CN bandhead 3883', 'Ca II H line', 'G band 4305', 'NFI no move', 'TF Fe I 6302', 'TF Mg I 5172', 'TF Na I 5896', 'blue cont 4504', 'green cont 5550', 'red cont 6684']
-	Observation_Type = ['FG (simple)', 'FG focus scan', 'FG shuttered I and V', 'FG shutterless I and V', 'FG shutterless I and V with 0.2s intervals', 'FG shutterless Stokes', 'SP IQUV 4D array']
+	Waves = ['6302A', 'BFI no move', 'CN bandhead 3883',
+	'Ca II H line', 'G band 4305', 'NFI no move',
+	'TF Fe I 6302', 'TF Mg I 5172', 'TF Na I 5896', 
+	'blue cont 4504', 'green cont 5550', 'red cont 6684']
+	Observation_Type = ['FG (simple)', 'FG focus scan',
+	'FG shuttered I and V', 'FG shutterless I and V',
+	'FG shutterless I and V with 0.2s intervals',
+	'FG shutterless Stokes', 'SP IQUV 4D array']
+	
 	def __init__(self, data, header, **kwargs):
 		GenericMap.__init__(self, data, header, **kwargs)
 
 		self.meta['detector'] = "SOT"
-#		self.meta['instrume'] = "SOT"
 		self.meta['telescop'] = "Hinode"
 		
 		#self._name = self.detecto+' '+
@@ -48,4 +54,3 @@ class SOTMap(GenericMap):
 		instr=header.get('instrume')
 		if instr in instrument:
 			return instr
-		#return header.get('instrume') == 'SOT/NB'
