@@ -42,7 +42,7 @@ class AIAMap(GenericMap):
     def processing_level(self):
         return self.meta['lvl_num']
 
-    def _get_norm(self):
+    def _get_mpl_normalizer(self):
         """Returns a Normalize object to be used with AIA data"""
         # byte-scaled images have most likely already been scaled
         if self.data.dtype == np.uint8:
