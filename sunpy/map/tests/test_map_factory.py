@@ -126,8 +126,7 @@ class TestMap:
 		#Test SOTMap
 		sot = sunpy.map.Map(filepath + '/FGMG4_20110214_030443.7.fits')
 		assert isinstance(sot,sunpy.map.sources.SOTMap) 
-        
-        
+                
         
         #Test SWAPMap
 
