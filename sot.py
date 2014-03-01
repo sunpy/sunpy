@@ -43,8 +43,6 @@ class SOTMap(GenericMap):
 		
 		self.cmap = cm.get_cmap(name='hinodesot')
 
-	
-
 
 	@classmethod
 	def is_datasource_for(cls, data, header, **kwargs):
