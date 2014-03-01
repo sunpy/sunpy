@@ -99,6 +99,7 @@ class GenericMap(astropy.nddata.NDData):
         # TODO: This should be a function of the header, not of the map
         self._validate()
 
+        # Set mpl.colors.Normalize instance for plot scaling
         self.mpl_color_normalizer = self._get_mpl_normalizer()
 
     def __getitem__(self, key):
@@ -1016,9 +1017,10 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
 
     def _get_mpl_normalizer(self):
         """
-        Returns a default mpl.colors.Normalize instance.
+        Returns a default mpl.colors.Normalize instance for plot scaling.
 
-        Not yet implemented."""
+        Not yet implemented.
+        """
         return None
 
 
