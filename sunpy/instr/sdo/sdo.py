@@ -10,6 +10,7 @@ from matplotlib import colors
 from sunpy.map import GenericMap
 from sunpy.cm import cm
 
+
 __all__ = ['AIAMap', 'HMIMap']
 
 class AIAMap(GenericMap):

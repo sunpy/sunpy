@@ -7,6 +7,7 @@ __email__ = "keith.hughitt@nasa.gov"
 from sunpy.map import GenericMap
 from sunpy.cm import cm
 
+
 __all__ = ['SWAPMap']
 
 class SWAPMap(GenericMap):

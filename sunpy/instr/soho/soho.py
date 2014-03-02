@@ -12,6 +12,7 @@ from sunpy.sun import constants
 from sunpy.sun import sun
 from sunpy.cm import cm
 
+
 __all__ = ['EITMap', 'LASCOMap', 'MDIMap']
 
 def _dsunAtSoho(date, rad_d, rad_1au = None):

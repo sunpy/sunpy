@@ -11,6 +11,7 @@ from sunpy.map import GenericMap
 from sunpy.cm import cm
 from sunpy.sun import constants
 
+
 __all__ = ['SXTMap']
 
 class SXTMap(GenericMap):
