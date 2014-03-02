@@ -30,6 +30,12 @@ class MapCube(object):
     coalign : {None}
         Apply fine coalignment to the data (Not Implemented)
 
+    Attributes
+    ----------
+    maps : {List}
+	This attribute holds the list of Map instances obtained
+	from parameter args.
+
     Examples
     --------
     >>> mapcube = sunpy.Map('images/', mapcube=True)
@@ -46,9 +52,9 @@ class MapCube(object):
         coalign = kwargs.pop('coalign', False)
         derotate = kwargs.pop('derotate', False)
 
-        self._maps = expand_list(args)
+        self.maps = expand_list(args)
 
-        for m in self._maps:
+        for m in self.maps:
             if not isinstance(m, GenericMap):
                 raise ValueError(
                            'CompositeMap expects pre-constructed map objects.')
@@ -56,7 +62,7 @@ class MapCube(object):
         # Optionally sort data
         if sortby is not None:
             if sortby is 'date':
-                self._maps.sort(key=self._sort_by_date())
+                self.maps.sort(key=self._sort_by_date())
             else:
                 raise ValueError("Only sort by date is supported")
 
@@ -72,7 +78,7 @@ class MapCube(object):
 
     def __getitem__(self, key):
         """Overiding indexing operation"""
-        return self._maps[key]
+        return self.maps[key]
 
     def coalign(self, method="diff"):
         """ Fine coalign the data"""
@@ -193,7 +199,7 @@ class MapCube(object):
         if resample:
             #This assumes that the maps a homogenous!
             #TODO: Update this!
-            resample = np.array(len(self._maps)-1) * np.array(resample)
+            resample = np.array(len(self.maps)-1) * np.array(resample)
             ani_data = [x.resample(resample) for x in self]
         else:
             ani_data = self
@@ -210,7 +216,7 @@ class MapCube(object):
                 annotate_frame(i)
 
         ani = matplotlib.animation.FuncAnimation(fig, updatefig,
-                                            frames=range(0,len(self._maps)),
+                                            frames=range(0,len(self.maps)),
                                             fargs=[im,annotate,ani_data],
                                             interval=interval,
                                             blit=False)
@@ -278,8 +284,8 @@ class MapCube(object):
         if resample:
             #This assumes that the maps a homogenous!
             #TODO: Update this!
-            resample = np.array(len(self._maps)-1) * np.array(resample)
-            for amap in self._maps:
+            resample = np.array(len(self.maps)-1) * np.array(resample)
+            for amap in self.maps:
                 amap.resample(resample)
 
         return MapCubeAnimator(self, **kwargs)
