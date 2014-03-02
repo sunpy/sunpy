@@ -5,7 +5,7 @@ from __future__ import absolute_import
 
 import pytest
 import sunpy.lightcurve
-
+import sunpy.time
 
 class TestGOESLightCurve():
     
@@ -14,6 +14,13 @@ class TestGOESLightCurve():
        lc1 = sunpy.lightcurve.GOESLightCurve.create('2012/06/01','2012/06/02')
        
        assert isinstance(lc1, sunpy.lightcurve.GOESLightCurve)
+
+    @pytest.mark.online
+    def test_goes_timerange(self):
+        timerange = sunpy.time.TimeRange('2012/06/01', '2012/06/02')
+        lc1 = sunpy.lightcurve.GOESLightCurve.create(timerange)
+       
+        assert isinstance(lc1, sunpy.lightcurve.GOESLightCurve)
     
     def compare(self,lc1,lc2):
         try:
