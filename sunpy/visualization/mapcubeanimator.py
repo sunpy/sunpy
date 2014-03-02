@@ -43,9 +43,9 @@ class MapCubeAnimator(imageanimator.BaseFuncAnimator):
         self.mapcube = mapcube
         self.annotate = annotate
         slider_functions = [self.updatefig]
-        slider_ranges = [[0,len(mapcube._maps)]]
+        slider_ranges = [[0,len(mapcube.maps)]]
 
-        imageanimator.BaseFuncAnimator.__init__(self, mapcube._maps, slider_functions,
+        imageanimator.BaseFuncAnimator.__init__(self, mapcube.maps, slider_functions,
                                         slider_ranges, **kwargs)
 
         self._annotate_plot(0)
