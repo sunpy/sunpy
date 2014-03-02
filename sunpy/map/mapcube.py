@@ -33,8 +33,7 @@ class MapCube(object):
     Attributes
     ----------
     maps : {List}
-	This attribute holds the list of Map instances obtained
-	from parameter args.
+        This attribute holds the list of Map instances obtained from parameter args.
 
     Examples
     --------
