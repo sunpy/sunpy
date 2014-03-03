@@ -22,7 +22,7 @@ from sunpy.database.tables import DatabaseEntry, Tag, FitsHeaderEntry,\
 from sunpy.database.commands import EmptyCommandStackError, NoSuchEntryError
 from sunpy.database.caching import LRUCache, LFUCache
 from sunpy.database import attrs
-from sunpy.net import vso
+from sunpy.net import vso, hek
 from sunpy.data.sample import RHESSI_EVENT_LIST
 from sunpy.data.test.waveunit import waveunitdir
 from sunpy.io import fits
@@ -389,6 +389,15 @@ def test_add_already_existing_entry_ignore(database):
     database.commit()
     assert entry.id == 1
 
+
+@pytest.mark.online
+def test_add_entry_from_hek_qr(database):
+    hek_res = hek.HEKClient().query(
+        hek.attrs.Time('2011/08/09 07:23:56', '2011/08/09 07:24:00'),
+        hek.attrs.EventType('FL'))
+    assert len(database) == 0
+    database.add_from_hek_query_result(hek_res)
+    assert len(database) == 2133
 
 @pytest.mark.online
 def test_add_entry_from_qr(database, query_result):
