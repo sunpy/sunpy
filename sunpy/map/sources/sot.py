@@ -26,7 +26,7 @@ class SOTMap(GenericMap):
 	# observable ion and wavelength
 
 	
-	Intruments = ['SOT/WB','SOT/NB','SOT/SP','SOT/CT']
+	Instruments = ['SOT/WB','SOT/NB','SOT/SP','SOT/CT']
 	Waves = ['6302A', 'BFI no move', 'CN bandhead 3883',
 	'Ca II H line', 'G band 4305', 'NFI no move',
 	'TF Fe I 6302', 'TF Mg I 5172', 'TF Na I 5896', 
@@ -45,12 +45,11 @@ class SOTMap(GenericMap):
 		#self._name = self.detecto+' '+
 		self._nickname = self.detector
 		
-		self.cmap = cm.get_cmap(name='hinodesot')
+		#self.cmap = cm.get_cmap(name='hinodesot')
 
 
 	@classmethod
 	def is_datasource_for(cls, data, header, **kwargs):
 		"""Determines if header corresponds to an SOT image"""
-		instr=header.get('instrume')
-		if instr in instrument:
-			return instr
+		
+		return header.get('instrume') in cls.Instruments
