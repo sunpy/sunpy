@@ -10,6 +10,8 @@ import sunpy.map
 from astropy.io import fits
 import numpy as np
 
+from itertools import izip
+
 class TestGenericMap:
     """Tests the Map class"""
     def setup_class(self):
@@ -162,6 +164,30 @@ class TestGenericMap:
         spline_resampled_map = self.map.resample(new_dimensions, method = 'spline')
         assert spline_resampled_map.shape[1] == new_dimensions[0]
         assert spline_resampled_map.shape[0] == new_dimensions[1]
+
+    def test_resample_metadata(self):
+        """
+        Check that the resampled map has correctly adjusted metadata.
+        """
+        # Test several different dimensions in order to ensure that
+        # GenericMap.resample works whether or not the dimensions of
+        # the original map are divisble by those of the output map.
+        dimension_list = [(100, 200), (128, 256), (512, 128), (200, 200)]
+        methods = ['linear', 'neighbor', 'nearest', 'spline']
+        for new_dimensions, sample_method in izip(dimension_list, methods):
+            resampled_map = self.map.resample(new_dimensions, method = sample_method)
+            assert float(resampled_map.meta['cdelt1']) / self.map.meta['cdelt1'] \
+                   == float(self.map.shape[1]) / resampled_map.shape[1]
+            assert float(resampled_map.meta['cdelt2']) / self.map.meta['cdelt2'] \
+                   == float(self.map.shape[0]) / resampled_map.shape[0]
+            assert resampled_map.meta['crpix1'] == (resampled_map.shape[1] + 1) / 2.
+            assert resampled_map.meta['crpix2'] == (resampled_map.shape[0] + 1) / 2.
+            assert resampled_map.meta['crval1'] == self.map.center['x']
+            assert resampled_map.meta['crval2'] == self.map.center['y']
+            for key in self.map.meta:
+                if key not in ('cdelt1', 'cdelt2', 'crpix1', 'crpix2',
+                                                    'crval1', 'crval2'):
+                    assert resampled_map.meta[key] == self.map.meta[key]
 
 
     def test_superpixel(self):
