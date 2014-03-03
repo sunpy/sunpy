@@ -77,10 +77,10 @@ class NoRHLightCurve(LightCurve):
         obs_start_time=parse_time(header['DATE-OBS'] + 'T' + header['CRVAL1'])
         length=len(data)
         cadence=np.float(header['CDELT1'])
-        sec_array=np.linspace(0,length-1,(length/cadence))
+        sec_array=np.linspace(0, length-1, (length/cadence))
 
         norh_time=[]
         for s in sec_array:
             norh_time.append(obs_start_time + datetime.timedelta(0,s))
 
-        return header, pandas.DataFrame(data,index=norh_time)
+        return header, pandas.DataFrame(data, index=norh_time)
