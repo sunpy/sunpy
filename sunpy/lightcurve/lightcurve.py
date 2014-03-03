@@ -20,7 +20,6 @@ import pandas
 
 import sunpy
 from sunpy.time import is_time, TimeRange, parse_time
-from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
 
 __all__ = ['GenericLightCurve']
 
@@ -128,28 +127,10 @@ for compatability with map, please use meta instead""", Warning)
         return figure
 
     @classmethod
-    def _get_default_uri(cls):
-        """Default data to load when none is specified"""
-        msg = "No default action set for %s"
-        raise NotImplementedError(msg % cls.__name__)
-
-    @classmethod
-    def _get_url_for_date(cls, date):
-        """Returns a URL to the data for the specified date"""
-        msg = "Date-based downloads not supported for for %s"
-        raise NotImplementedError(msg % cls.__name__)
-
-    @classmethod
     def _get_url_for_date_range(cls, *args, **kwargs):
         """Returns a URL to the data for the specified date range"""
         msg = "Date-range based downloads not supported for for %s"
         raise NotImplementedError(msg % cls.__name__)
-
-    @staticmethod
-    def _parse_csv(filepath):
-        """Place holder method to parse CSV files."""
-        msg = "Generic CSV parsing not yet implemented for LightCurve"
-        raise NotImplementedError(msg)
 
     def truncate(self, a, b=None):
         """Returns a truncated version of the timeseries object"""

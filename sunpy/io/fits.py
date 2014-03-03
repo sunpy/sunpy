@@ -34,6 +34,7 @@ from __future__ import absolute_import
 
 import os
 import re
+import copy
 import itertools
 import collections
 
@@ -46,7 +47,7 @@ __all__ = ['read', 'get_header', 'write', 'extract_waveunit']
 __author__ = "Keith Hughitt, Stuart Mumford, Simon Liedtke"
 __email__ = "keith.hughitt@nasa.gov"
 
-def read(filepath, hdus=None, fold_blank_hdu=False):
+def read(filepath, hdus=None, fold_blank_hdu=False, **kwargs):
     """
     Read a fits file
 
@@ -83,17 +84,19 @@ def read(filepath, hdus=None, fold_blank_hdu=False):
 
         headers = get_header(hdulist)
         pairs = []
-        primary_hdu_blank = hdulist[0].data is not None
+        primary_hdu_blank = hdulist[0].data is None
         for hdu,header in itertools.izip(hdulist, headers):
             if primary_hdu_blank and fold_blank_hdu:
-                header.update(headers[0])
+                h = copy.deepcopy(headers[0]) #update the new header with the first one
+                h.update(header)
+                header = h
             pairs.append((hdu.data, header))
     finally:
         hdulist.close()
 
     return pairs
 
-def get_header(afile):
+def get_header(afile, **kwargs):
     """
     Read a fits file and return just the headers for all HDU's. In each header,
     the key WAVEUNIT denotes the wavelength unit which is used to describe the

@@ -11,7 +11,7 @@ from sunpy.database.tables import DatabaseEntry
 from sunpy.util.net import download_file
 from sunpy.time import parse_time
 from sunpy.util import expand_list
-from sunpy.io.file_tools import read_file
+from sunpy.io.file_tools import read_file, UnrecognizedFileTypeError
 from sunpy.io.header import FileHeader
 
 from sunpy.map.header import MapMeta
@@ -45,19 +45,23 @@ class LightCurveFactory(BasicRegistrationFactory):
     This is the lightcurve factory
     """
 
-    def _read_file(self, fname, **kwargs):
+    def _io_read_file(self, fname, **kwargs):
         """ Read in a file name and return the list of (data, meta) pairs in
             that file. """
 
-        # File gets read here.  This needs to be generic enough to seamlessly
-        #call a fits file or a jpeg2k file, etc
-        pairs = read_file(fname, **kwargs)
+        try:
+            pairs = read_file(fname, fold_blank_hdu=self.fold_blank_hdu, **kwargs)
+        except UnrecognizedFileTypeError:
+            if self.source is not None:
+                pass
 
         new_pairs = []
         for ind, pair in enumerate(pairs):
             filedata, filemeta = pair
             assert isinstance(filemeta, FileHeader)
             data = filedata
+            if data is None and self.fold_blank_hdu: #Skip blank
+                continue
             meta = MapMeta(filemeta)
             new_pairs.append((data, meta))
 
@@ -71,7 +75,11 @@ class LightCurveFactory(BasicRegistrationFactory):
         """
         # Hack to get around Python 2.x not backporting PEP 3102.
         silence_errors = kwargs.pop('silence_errors', False)
-        concat_hdus = kwargs.pop('concatenate_hdus', False) #TODO: Implement
+        self.fold_blank_hdu = kwargs.pop('fold_blank_hdu', True)
+        source = kwargs.pop('source', None)
+
+        if source is not None:
+            print source
 
         data_header_pairs = list() #each lc is in a list in here
         already_lcs = list()
@@ -102,8 +110,6 @@ class LightCurveFactory(BasicRegistrationFactory):
         #At this point we have finished the input processing and we now need
         # to create LightCurves from the (data,header) pairs and then concat
         # them with any existing LCs in that group.
-#        import pdb; pdb.set_trace()
-
         new_lc_sets = list()
         for lc_dhp in data_header_pairs:
             assert isinstance(lc_dhp, list) #This dosen't have to stay
@@ -145,9 +151,9 @@ class LightCurveFactory(BasicRegistrationFactory):
         lightcurves = list()
 
         for lc_set in lc_sets:
-            concatted = lc_set.pop(1)
-#            for lc in lc_set:
-#                concatted += lc #TDO: implement __add__ in GenericLightCurve
+            concatted = lc_set.pop(0)
+            for lc in lc_set:
+                concatted += lc #TDO: implement __add__ in GenericLightCurve
             lightcurves.append(concatted)
 
         if len(lightcurves) == 1:
@@ -189,7 +195,7 @@ class LightCurveFactory(BasicRegistrationFactory):
             # File name
             elif _is_file(arg):
                 path = os.path.expanduser(arg)
-                pairs = self._read_file(path, **kwargs)
+                pairs = self._io_read_file(path, **kwargs)
                 data_header_pairs += pairs
 
             # Directory

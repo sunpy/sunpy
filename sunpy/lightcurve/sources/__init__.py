@@ -4,4 +4,8 @@ This is where datasource specific logic is implemented. Each mission should
 have its own file with one or more classes defined. Typically, these classes
 will be subclasses of the :mod`sunpy.LightCurve` class.
 """
-__all__ = ['eve', 'goes', 'lyra', 'logical']
+
+from .. lightcurve_factory import LightCurve
+
+from . lyra import LYRALightCurve
+LightCurve.register(LYRALightCurve, LYRALightCurve._is_datasource_for)
