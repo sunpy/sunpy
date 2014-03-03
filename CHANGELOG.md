@@ -1,3 +1,7 @@
+Latest
+------
+  - Added Nobeyama Radioheliograph data support to Lightcurve object.
+
 0.4.0
 -----
 Features:
