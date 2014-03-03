@@ -95,7 +95,6 @@ class EVELightCurve(LightCurve):
         header = []
         fields = []
         line = fp.readline()
-        header.append(line)
         # Read header at top of file
         while line.startswith(";"):
             header.append(line)
