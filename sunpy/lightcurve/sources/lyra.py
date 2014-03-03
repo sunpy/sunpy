@@ -97,19 +97,26 @@ class LYRALightCurve(GenericLightCurve):
 
         return figure
 
+    @classmethod
+    def _get_url_from_timerange(cls, timerange):
+        days = timerange.get_days()
+        urls = []
+        for day in days:
+            urls.append(cls._get_url_for_date(day))
+        return urls
 
-    @staticmethod
-    def _get_url_for_date(date):
+    @classmethod
+    def _get_url_for_date(cls, date):
         """Returns a URL to the LYRA data for the specified date
         """
-        dt = parse_time(date or datetime.datetime.utcnow())
-
+        if not isinstance(date, datetime.date):
+            raise ValueError("This method requires a date")
         # Filename
-        filename = "lyra_%s000000_lev%d_%s.fits" % (dt.strftime('%Y%m%d-'),
+        filename = "lyra_%s000000_lev%d_%s.fits" % (date.strftime('%Y%m%d-'),
                                                     2, 'std')
         # URL
         base_url = "http://proba2.oma.be/lyra/data/bsd/"
-        url_path = urlparse.urljoin(dt.strftime('%Y/%m/%d/'), filename)
+        url_path = urlparse.urljoin(date.strftime('%Y/%m/%d/'), filename)
         return urlparse.urljoin(base_url, url_path)
 
     @classmethod
@@ -118,6 +125,10 @@ class LYRALightCurve(GenericLightCurve):
         return cls._get_url_for_date(datetime.datetime.utcnow())
 
     @classmethod
-    def _is_datasource_for(cls, data, header):
-        return header.pop('instrume', None) == 'LYRA'
+    def _is_datasource_for(cls, data, meta, source=None):
+        if meta is not None:
+            return meta.pop('instrume', None).upper() == 'LYRA'
+        if source is not None:
+            source = source.lower()
+            return source == 'lyra'
 

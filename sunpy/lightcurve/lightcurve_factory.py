@@ -76,10 +76,10 @@ class LightCurveFactory(BasicRegistrationFactory):
         # Hack to get around Python 2.x not backporting PEP 3102.
         silence_errors = kwargs.pop('silence_errors', False)
         self.fold_blank_hdu = kwargs.pop('fold_blank_hdu', True)
-        source = kwargs.pop('source', None)
+        self.source = kwargs.pop('source', None)
 
-        if source is not None:
-            print source
+        if self.source is not None:
+            self.source = self._check_registered_widgets(None, None, source=self.source)[0]
 
         data_header_pairs = list() #each lc is in a list in here
         already_lcs = list()
@@ -89,17 +89,24 @@ class LightCurveFactory(BasicRegistrationFactory):
         while i < len(args):
             arg = args[i]
 
+            #catch time
+            if isiterable(arg) and all([_is_time(x) for x in arg]) or isinstance(arg, sunpy.time.TimeRange):
+                if isiterable(arg) and len(arg) == 2:
+                    arg = sunpy.time.TimeRange(arg[0],arg[1])
+                elif isiterable(arg) and len(arg) != 2:
+                    raise ValueError("Times must be specified in pairs or as a TimeRange")
+                self.timerange = arg
+
+                if self.source is not None:
+                    arg = self.source._get_url_from_timerange(arg)
+                    print arg
+
             #A iterable arg
             if isiterable(arg):
-                if all([_is_time(x) for x in arg]):
-                    if len(arg) != 2:
-                        raise ValueError("Times must be specified in pairs")
-                    #Do somthing with time
-                    pass
-                else:
-                    dhp, lcs = self._process_single_lc_args(arg)
-                    data_header_pairs.append(dhp)
-                    already_lcs.append(lcs)
+                dhp, lcs = self._process_single_lc_args(arg)
+                data_header_pairs.append(dhp)
+                already_lcs.append(lcs)
+
             else:
                 dhp, lcs = self._process_single_lc_args(arg)
                 data_header_pairs.append(dhp)
@@ -123,7 +130,7 @@ class LightCurveFactory(BasicRegistrationFactory):
                 meta = MapMeta(header) #TODO: LC this
 
                 try:
-                    new_lc = self._check_registered_widgets(data, meta, **kwargs)
+                    new_lc = self._get_registered_widget(data, meta, **kwargs)
                 except (NoMatchError, MultipleMatchError, ValidationFunctionError):
                     if not silence_errors:
                         raise
@@ -236,11 +243,9 @@ class LightCurveFactory(BasicRegistrationFactory):
             return data_header_pairs, already_lcs
 
     def _check_registered_widgets(self, data, meta, **kwargs):
-
         candidate_widget_types = list()
 
         for key in self.registry:
-
             # Call the registered validation function for each registered class
             if self.registry[key](data, meta, **kwargs):
                 candidate_widget_types.append(key)
@@ -251,10 +256,14 @@ class LightCurveFactory(BasicRegistrationFactory):
             if self.default_widget_type is None:
                 raise NoMatchError("No types match specified arguments and no default is set.")
             else:
-                candidate_widget_types = [self.default_widget_type]
+                return [self.default_widget_type]
         elif n_matches > 1:
             raise MultipleMatchError("Too many candidate types idenfitied ({0}).  Specify enough keywords to guarantee unique type identification.".format(n_matches))
 
+        return candidate_widget_types
+
+    def _get_registered_widget(self, data, meta, **kwargs):
+        candidate_widget_types = self._check_registered_widgets(data, meta)
         # Only one is found
         WidgetType = candidate_widget_types[0]
 
