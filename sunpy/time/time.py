@@ -145,7 +145,7 @@ def parse_time(time_string, tai=False):
     time_string : string
         Datestring to parse
     tai : bool
-        tai = true if time_string is to be parsed according to TAI ( International Time Seconds)
+        tai = True if time_string is to be parsed according to TAI ( International Time Seconds)
 	
     Returns
     -------
@@ -163,7 +163,7 @@ def parse_time(time_string, tai=False):
         return time_string
     elif isinstance(time_string, tuple):
         return datetime(*time_string)
-    elif tai and ( isinstance( time_string, int) or isinstance( time_string, float)):
+    elif tai and  isinstance( time_string, int) or tai and isinstance( time_string, float) :
         return datetime(1958, 1, 1) + timedelta(0, time_string)
     elif isinstance(time_string, int) or isinstance(time_string, float):
         return datetime(1979, 1, 1) + timedelta(0, time_string)
