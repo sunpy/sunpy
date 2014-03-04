@@ -60,9 +60,10 @@ class LightCurveFactory(BasicRegistrationFactory):
         return self._io_read_file(fname, **kwargs)
 
     def _io_read_file(self, fname, **kwargs):
-        """ Read in a file name and return the list of (data, meta) pairs in
-            that file. """
-
+        """
+        Read in a file name and return the list of (data, meta) pairs in that
+        file.
+        """
         try:
             pairs = read_file(fname, fold_blank_hdu=self.fold_blank_hdu, **kwargs)
         except UnrecognizedFileTypeError:
@@ -91,11 +92,13 @@ class LightCurveFactory(BasicRegistrationFactory):
         silence_errors = kwargs.pop('silence_errors', False)
         self.fold_blank_hdu = kwargs.pop('fold_blank_hdu', True)
         self.source = kwargs.pop('source', None)
-
         self.timerange = kwargs.pop('timerange', None)
 
+        if not isiterable(self.source) and not None:
+            self.source = [self.source]
+
         if self.source is not None: #TODO: list of sources?
-            self.source = self._check_registered_widgets(None, None, source=self.source)[0]
+            self.source = [self._check_registered_widgets(None, None, source=asource)[0] for asource in self.source]
 
         data_header_pairs = list() #each lc is in a list in here
         already_lcs = list()
@@ -119,8 +122,9 @@ class LightCurveFactory(BasicRegistrationFactory):
             else:
                 raise ValueError("Times must be specified in pairs or as a TimeRange")
 
-            if self.source is not None and len(args) == 0:
-                args.append(self.source._get_url_from_timerange(self.timerange))
+            if not len(args) == len(self.source):
+                for asource in self.source[len(args):]:
+                    args.append(asource._get_url_from_timerange(self.timerange))
 
         # For each of the arguments, handle each of the cases
         i = 0
