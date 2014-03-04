@@ -93,7 +93,7 @@ class EVELightCurve(LightCurve):
     @staticmethod
     def _parse_level_0cs(fp):
         """Parses and EVE Level 0CS file"""
-	__chk=False      #boolean to check for missing data
+	__chk = False      #boolean to check for missing data
         header = []
         fields = []
         line = fp.readline()
@@ -102,7 +102,7 @@ class EVELightCurve(LightCurve):
         while line.startswith(";"):
             header.append(line)
 	    if line == '; Missing data: -1.00e+00\n' :     
-		    __chk=True
+		    __chk = True
             line = fp.readline()
 
         fieldnames_start = False
@@ -129,8 +129,8 @@ class EVELightCurve(LightCurve):
         parser = lambda x: datetime(year, month, day, int(x[0:2]), int(x[2:4]))
 
         data = read_csv(fp, sep="\s*", names=fields, index_col=0, date_parser=parser, header = None)
-	if __chk == True :   #If missing data in header
-		data[data==-1.00e+00] = numpy.nan
+	if __chk == True :   #If missing data specified in header
+		data[data == -1.00e+00] = numpy.nan
 	
         #data.columns = fields
         return header, data
