@@ -1,6 +1,7 @@
 import os
 import glob
 import urllib2
+import datetime
 
 import numpy as np
 
@@ -30,12 +31,23 @@ def _is_url(arg):
         return False
     return True
 
-def _is_time(arg):
+def _is_time_string(arg):
     try:
         parse_time(arg)
-    except ValueError:
+    except (ValueError, TypeError):
         return False
     return True
+
+def _is_time_date(arg):
+    """
+    Checks if time is timerange time string or time strinf pair or datetime.date
+    """
+    if isiterable(arg) and len(arg) <= 2 and all([_is_time_string(x) for x in arg]) or \
+       isinstance(arg, sunpy.time.TimeRange) or isinstance(arg, datetime.date) \
+       or _is_time_string(arg):
+           return True
+
+    return False
 
 def _is_file(arg):
     return isinstance(arg,basestring) and os.path.isfile(os.path.expanduser(arg))
@@ -44,6 +56,8 @@ class LightCurveFactory(BasicRegistrationFactory):
     """
     This is the lightcurve factory
     """
+    def _read_file(self, fname, **kwargs):
+        return self._io_read_file(fname, **kwargs)
 
     def _io_read_file(self, fname, **kwargs):
         """ Read in a file name and return the list of (data, meta) pairs in
@@ -78,28 +92,40 @@ class LightCurveFactory(BasicRegistrationFactory):
         self.fold_blank_hdu = kwargs.pop('fold_blank_hdu', True)
         self.source = kwargs.pop('source', None)
 
-        if self.source is not None:
+        self.timerange = kwargs.pop('timerange', None)
+
+        if self.source is not None: #TODO: list of sources?
             self.source = self._check_registered_widgets(None, None, source=self.source)[0]
 
         data_header_pairs = list() #each lc is in a list in here
         already_lcs = list()
+        args = list(args)
+
+        #catch time
+        if self.timerange is not None:
+            if isiterable(self.timerange) and len(self.timerange) == 2 and \
+               all([_is_time_string(x) for x in self.timerange]):
+                self.timerange = sunpy.time.TimeRange(self.timerange[0],self.timerange[1])
+
+            elif _is_time_string(self.timerange):
+                self.timerange = sunpy.time.TimeRange(self.timerange, self.timerange)
+
+            elif isinstance(self.timerange, sunpy.time.TimeRange):
+                pass
+
+            elif isinstance(self.timerange, datetime.date):
+                self.timerange = sunpy.time.TimeRange(self.timerange, self.timerange)
+
+            else:
+                raise ValueError("Times must be specified in pairs or as a TimeRange")
+
+            if self.source is not None and len(args) == 0:
+                args.append(self.source._get_url_from_timerange(self.timerange))
 
         # For each of the arguments, handle each of the cases
         i = 0
         while i < len(args):
             arg = args[i]
-
-            #catch time
-            if isiterable(arg) and all([_is_time(x) for x in arg]) or isinstance(arg, sunpy.time.TimeRange):
-                if isiterable(arg) and len(arg) == 2:
-                    arg = sunpy.time.TimeRange(arg[0],arg[1])
-                elif isiterable(arg) and len(arg) != 2:
-                    raise ValueError("Times must be specified in pairs or as a TimeRange")
-                self.timerange = arg
-
-                if self.source is not None:
-                    arg = self.source._get_url_from_timerange(arg)
-                    print arg
 
             #A iterable arg
             if isiterable(arg):
@@ -150,8 +176,11 @@ class LightCurveFactory(BasicRegistrationFactory):
         lightcurves = self._concatenate_lightcurves(all_lc_sets)
 
         #If a time range is specified then cut down the lc now:
-        pass#TODO: Implement
+        if self.timerange:
+            lightcurves = [lightcurve.truncate(self.timerange) for lightcurve in lightcurves]
 
+        if len(lightcurves) == 1:
+            return lightcurves[0]
         return lightcurves
 
     def _concatenate_lightcurves(self, lc_sets):
@@ -162,9 +191,6 @@ class LightCurveFactory(BasicRegistrationFactory):
             for lc in lc_set:
                 concatted += lc #TDO: implement __add__ in GenericLightCurve
             lightcurves.append(concatted)
-
-        if len(lightcurves) == 1:
-            return lightcurves[0]
 
         return lightcurves
 
@@ -202,7 +228,7 @@ class LightCurveFactory(BasicRegistrationFactory):
             # File name
             elif _is_file(arg):
                 path = os.path.expanduser(arg)
-                pairs = self._io_read_file(path, **kwargs)
+                pairs = self._read_file(path, **kwargs)
                 data_header_pairs += pairs
 
             # Directory
