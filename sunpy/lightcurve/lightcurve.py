@@ -72,8 +72,8 @@ class LightCurve(object):
 
     def __init__(self, data, meta=None):
         self.data = pandas.DataFrame(data)
-	if meta == '' or meta==None:
-		self.meta = OrderedDict
+	if meta == '' or meta == None:
+		self.meta = OrderedDict()
 	else:	
         	self.meta = meta
 	
