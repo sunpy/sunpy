@@ -10,6 +10,7 @@ from pandas.io.parsers import read_csv
 from os.path import basename
 
 from sunpy.lightcurve import LightCurve
+from sunpy.util.odict import OrderedDict
 
 __all__ = ['EVELightCurve']
 
@@ -100,6 +101,15 @@ class EVELightCurve(LightCurve):
         while line.startswith(";"):
             header.append(line)
             line = fp.readline()
+	
+	__od=OrderedDict()
+	for l in header :
+		if l == '; Format:\n' or l == '; Column descriptions:\n':
+			continue
+		elif ('Created' in l) or ('Source' in l):
+			__od[l.split(':',1)[0].replace(';',' ').strip()] = l.split(':',1)[1].strip()
+		elif ':' in l :
+			__od[l.split(':')[0].replace(';',' ').strip()] = l.split(':')[1].strip()
 
         fieldnames_start = False
         for l in header:
@@ -126,4 +136,4 @@ class EVELightCurve(LightCurve):
 
         data = read_csv(fp, sep="\s*", names=fields, index_col=0, date_parser=parser, header = None)
         #data.columns = fields
-        return header, data
+        return __od, data
