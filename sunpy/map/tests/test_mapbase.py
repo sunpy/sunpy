@@ -148,7 +148,7 @@ class TestGenericMap:
         dimension_list = [(100, 200), (128, 256), (512, 128), (200, 200)]
         methods = ['linear', 'neighbor', 'nearest', 'spline']
         for new_dimensions, sample_method in izip(dimension_list, methods):
-            resampled_map = self.map.resample(new_dimensions, method = sample_method)
+            resampled_map = self.map.resample(new_dimensions, method=sample_method)
             assert resampled_map.shape[1] == new_dimensions[0]
             assert resampled_map.shape[0] == new_dimensions[1]
 
@@ -162,7 +162,7 @@ class TestGenericMap:
         dimension_list = [(100, 200), (128, 256), (512, 128), (200, 200)]
         methods = ['linear', 'neighbor', 'nearest', 'spline']
         for new_dimensions, sample_method in izip(dimension_list, methods):
-            resampled_map = self.map.resample(new_dimensions, method = sample_method)
+            resampled_map = self.map.resample(new_dimensions, method=sample_method)
             assert float(resampled_map.meta['cdelt1']) / self.map.meta['cdelt1'] \
                    == float(self.map.shape[1]) / resampled_map.shape[1]
             assert float(resampled_map.meta['cdelt2']) / self.map.meta['cdelt2'] \
