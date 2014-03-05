@@ -127,7 +127,7 @@ class LYRALightCurve(GenericLightCurve):
     @classmethod
     def _is_datasource_for(cls, data, meta, source=None):
         if meta is not None:
-            return meta.pop('instrume', None).upper() == 'LYRA'
+            return meta.pop('instrume', '').upper() == 'LYRA'
         if source is not None:
             source = source.lower()
             return source == 'lyra'

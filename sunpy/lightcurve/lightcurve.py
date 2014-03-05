@@ -8,18 +8,16 @@ from __future__ import absolute_import
 __authors__ = ["Keith Hughitt"]
 __email__ = "keith.hughitt@nasa.gov"
 
-import os
-import shutil
-import urllib2
 import warnings
-from datetime import datetime
 
+import pandas
 import numpy as np
 import matplotlib.pyplot as plt
-import pandas
 
-import sunpy
-from sunpy.time import is_time, TimeRange, parse_time
+from astropy.io import ascii
+
+from sunpy.util.odict import OrderedDict
+import sunpy.time
 
 __all__ = ['GenericLightCurve']
 
@@ -68,7 +66,7 @@ class GenericLightCurve(object):
 
     def __init__(self, data, meta=None):
         self.data = pandas.DataFrame(data)
-        self.meta = meta
+        self.meta = OrderedDict(meta)
 
     def __add__(self, other):
         """
@@ -127,17 +125,34 @@ for compatability with map, please use meta instead""", Warning)
         return figure
 
     @classmethod
-    def _get_url_for_date_range(cls, *args, **kwargs):
+    def _get_url_from_timerange(cls, timerange, **kwargs):
         """Returns a URL to the data for the specified date range"""
         msg = "Date-range based downloads not supported for for %s"
         raise NotImplementedError(msg % cls.__name__)
 
+    @staticmethod
+    def _read_file(filepath):
+        """Attempt an Astropy Table read assuming one string time column somewhere"""
+        with open(filepath, 'rb') as fp:
+            data = ascii.read(fp)
+            #Find the index that is strings and times:
+            inds = [i for i,v in enumerate(data[0]) if isinstance(v, basestring) if sunpy.time.is_time(v)]
+            if len(inds) != 1:
+                raise IOError("Can not automatically parse file, can't find time column")
+            #Parse time that column
+            index = [sunpy.time.parse_time(v) for v in data[data.keys()[inds[0]]]]
+            #remove that column
+            data.remove_column(data.keys()[inds[0]])
+            #Make a DataFrame
+            data = pandas.DataFrame(np.asarray(data), index=index)
+            return [data, OrderedDict()]
+
     def truncate(self, a, b=None):
         """Returns a truncated version of the timeseries object"""
-        if isinstance(a, TimeRange):
+        if isinstance(a, sunpy.time.TimeRange):
             time_range = a
         else:
-            time_range = TimeRange(a,b)
+            time_range = sunpy.time.TimeRange(a,b)
 
         truncated = self.data.truncate(time_range.start(), time_range.end())
         return GenericLightCurve(truncated, self.meta.copy())
@@ -153,4 +168,4 @@ for compatability with map, please use meta instead""", Warning)
     def time_range(self):
         """Returns the start and end times of the LightCurve as a TimeRange
         object"""
-        return TimeRange(self.data.index[0], self.data.index[-1])
+        return sunpy.time.TimeRange(self.data.index[0], self.data.index[-1])

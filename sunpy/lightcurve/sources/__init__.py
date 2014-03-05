@@ -9,3 +9,6 @@ from .. lightcurve_factory import LightCurve
 
 from . lyra import LYRALightCurve
 LightCurve.register(LYRALightCurve, LYRALightCurve._is_datasource_for)
+
+from . goes import GOESLightCurve
+LightCurve.register(GOESLightCurve, GOESLightCurve._is_datasource_for)

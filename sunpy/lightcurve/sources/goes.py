@@ -6,15 +6,13 @@ import datetime
 
 import matplotlib
 from matplotlib import pyplot as plt
-from pandas.io.parsers import read_csv
 
-import sunpy
-from sunpy.lightcurve import LightCurve
-from sunpy.time import parse_time, TimeRange
+from sunpy.lightcurve import GenericLightCurve
+from sunpy.time import TimeRange
 
 __all__ = ['GOESLightCurve']
 
-class GOESLightCurve(LightCurve):
+class GOESLightCurve(GenericLightCurve):
     """
     GOES LightCurve.
 
@@ -107,7 +105,7 @@ class GOESLightCurve(LightCurve):
 
 
     @classmethod
-    def _get_url_for_date_range(cls, timerange, **kwargs):
+    def _get_url_from_timerange(cls, timerange, **kwargs):
         """Returns a URL to the GOES data for the specified date.
 
         Parameters
@@ -146,40 +144,7 @@ class GOESLightCurve(LightCurve):
 
         return [url]
 
-    #Subclass download to enable a different filename
-    @staticmethod
-    def _download(uri, kwargs, err='Unable to download data at specified URL',
-                  filename = None):
-        #Create a better filename
-        query_str = uri.split('?')[1]
-        pars = {}
-        for s in query_str.split('&'):
-            kv = s.split('=')
-            pars.update({kv[0]:kv[1]})
-
-        base_url = uri.split('?')[0]
-        fname = base_url.split('/')[-1][:-4]
-        pars.update({'data_type':fname})
-        snumber = base_url.split('/')[-2]
-        pars.update({'satellite_number':snumber})
-
-        filename = '%s_%s_%s_%s.csv'%(pars['satellite_number'],
-                                  pars['data_type'],
-                                  pars['fromDate'],
-                                  pars['toDate'])
-
-        filepath = LightCurve._download(uri,kwargs,filename=filename)
-
-        return filepath
-
-    @staticmethod
-    def _read_file(filepath):
-        """Parses an GOES CSV"""
-        with open(filepath, 'rb') as fp:
-            return "", read_csv(fp, sep=",", index_col=0, parse_dates=True)
-
     @classmethod
     def _is_datasource_for(cls, data, meta, source=None):
         if source is not None:
-            source = source.lower()
-            return source == 'goes'
+            return source.lower() == 'goes'

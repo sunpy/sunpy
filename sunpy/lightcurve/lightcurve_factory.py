@@ -27,7 +27,7 @@ from . lightcurve import GenericLightCurve
 def _is_url(arg):
     try:
         urllib2.urlopen(arg)
-    except: #ValueEror?
+    except ValueError:
         return False
     return True
 
@@ -56,19 +56,18 @@ class LightCurveFactory(BasicRegistrationFactory):
     """
     This is the lightcurve factory
     """
-    def _read_file(self, fname, **kwargs):
-        return self._io_read_file(fname, **kwargs)
+    def _read_file(self, fname, source=None, **kwargs):
+        try:
+            return self._io_read_file(fname, **kwargs)
+        except UnrecognizedFileTypeError:
+            return [source._read_file(fname)]
 
     def _io_read_file(self, fname, **kwargs):
         """
         Read in a file name and return the list of (data, meta) pairs in that
         file.
         """
-        try:
-            pairs = read_file(fname, fold_blank_hdu=self.fold_blank_hdu, **kwargs)
-        except UnrecognizedFileTypeError:
-            if self.source is not None:
-                pass
+        pairs = read_file(fname, fold_blank_hdu=self.fold_blank_hdu, **kwargs)
 
         new_pairs = []
         for ind, pair in enumerate(pairs):
@@ -86,46 +85,67 @@ class LightCurveFactory(BasicRegistrationFactory):
         """
         This is a tester for the input parsing of the new LightCurveFactory object
 
-        Unlike one lc can be made up of many files
+        Unlike map one lc can be made up of many files
         """
         # Hack to get around Python 2.x not backporting PEP 3102.
         silence_errors = kwargs.pop('silence_errors', False)
         self.fold_blank_hdu = kwargs.pop('fold_blank_hdu', True)
         self.source = kwargs.pop('source', None)
         self.timerange = kwargs.pop('timerange', None)
+        if not isiterable(self.source) or isinstance(self.source, basestring):
+            #Make source a list that is the number of args long.
+            if len(args): #Don't multiply by 0
+                self.source = [self.source]*len(args)
+            else:
+                self.source = [self.source]
 
-        if not isiterable(self.source) and not None:
-            self.source = [self.source]
+        elif len(self.source) != len(args) and self.timerange is None:
+            raise ValueError("""Source argument must be a string,
+            or a list the same length as the input unless timerange is given""")
 
-        if self.source is not None: #TODO: list of sources?
-            self.source = [self._check_registered_widgets(None, None, source=asource)[0] for asource in self.source]
-
+        #For each source, check the factory to get it's class
+        sources = list()
+        for asource in self.source:
+            if asource is not None:
+                sources.append(self._check_registered_widgets(None, None, source=asource)[0])
+        self.source = sources
         data_header_pairs = list() #each lc is in a list in here
         already_lcs = list()
         args = list(args)
 
-        #catch time
+        #Parse timerange, so that self.timerange is always a TimeRange
         if self.timerange is not None:
+            _one_day = datetime.timedelta(hours=23, minutes=59, seconds=59)
+            #Is a time string pari
             if isiterable(self.timerange) and len(self.timerange) == 2 and \
                all([_is_time_string(x) for x in self.timerange]):
                 self.timerange = sunpy.time.TimeRange(self.timerange[0],self.timerange[1])
 
+            #Is one time string
             elif _is_time_string(self.timerange):
-                self.timerange = sunpy.time.TimeRange(self.timerange, self.timerange)
+                #If one time is specified, take it as the start time and run
+                #till the end of that day.
+                end = datetime.datetime.combine(parse_time(self.timerange).date(),
+                                                datetime.datetime.min.time()) + _one_day
+                self.timerange = sunpy.time.TimeRange(self.timerange, end)
 
+            #Is timerange
             elif isinstance(self.timerange, sunpy.time.TimeRange):
                 pass
 
+            #Is a datetime.date
             elif isinstance(self.timerange, datetime.date):
-                self.timerange = sunpy.time.TimeRange(self.timerange, self.timerange)
+                self.timerange = sunpy.time.TimeRange(self.timerange, self.timerange + _one_day)
 
             else:
-                raise ValueError("Times must be specified in pairs or as a TimeRange")
+                raise ValueError("""timerange must be one of: a TimeRange object,
+                a datetime.date object, one time / date string or a pair of time / date strings.""")
 
             if not len(args) == len(self.source):
                 for asource in self.source[len(args):]:
                     args.append(asource._get_url_from_timerange(self.timerange))
 
+        print args
         # For each of the arguments, handle each of the cases
         i = 0
         while i < len(args):
@@ -133,12 +153,12 @@ class LightCurveFactory(BasicRegistrationFactory):
 
             #A iterable arg
             if isiterable(arg):
-                dhp, lcs = self._process_single_lc_args(arg)
+                dhp, lcs = self._process_single_lc_args(arg, source=self.source[i])
                 data_header_pairs.append(dhp)
                 already_lcs.append(lcs)
 
             else:
-                dhp, lcs = self._process_single_lc_args(arg)
+                dhp, lcs = self._process_single_lc_args(arg, source=self.source[i])
                 data_header_pairs.append(dhp)
                 already_lcs.append(lcs)
 
@@ -204,6 +224,7 @@ class LightCurveFactory(BasicRegistrationFactory):
         This function processes all the input to make one lc object,
         more like the processing in Map
         """
+        source = kwargs.pop('source', None)
         data_header_pairs = list() #each lc is in a list in here
         already_lcs = list()
 
@@ -232,7 +253,7 @@ class LightCurveFactory(BasicRegistrationFactory):
             # File name
             elif _is_file(arg):
                 path = os.path.expanduser(arg)
-                pairs = self._read_file(path, **kwargs)
+                pairs = self._read_file(path, source=source, **kwargs)
                 data_header_pairs += pairs
 
             # Directory
@@ -241,13 +262,13 @@ class LightCurveFactory(BasicRegistrationFactory):
                 path = os.path.expanduser(arg)
                 files = [os.path.join(path, elem) for elem in os.listdir(path)]
                 for afile in files:
-                    data_header_pairs += self._read_file(afile, **kwargs)
+                    data_header_pairs += self._read_file(afile, source=source, **kwargs)
 
             # Glob
             elif (isinstance(arg,basestring) and '*' in arg):
                 files = glob.glob( os.path.expanduser(arg) )
                 for afile in files:
-                    data_header_pairs += self._read_file(afile, **kwargs)
+                    data_header_pairs += self._read_file(afile, source=source, **kwargs)
 
             # Already a Map
             elif isinstance(arg, GenericLightCurve):
@@ -256,15 +277,15 @@ class LightCurveFactory(BasicRegistrationFactory):
             # A URL
             elif (isinstance(arg,basestring) and
                   _is_url(arg)):
-                default_dir = sunpy.config.get("downloads", "download_dir")
+                default_dir = sunpy.config.get("downloads", "download_dir") #TODO: target filename and dir
                 url = arg
                 path = download_file(url, default_dir)
-                pairs = self._read_file(path, **kwargs)
+                pairs = self._read_file(path, source=source, **kwargs)
                 data_header_pairs += pairs
 
             # A database Entry
             elif isinstance(arg, DatabaseEntry):
-                data_header_pairs += self._read_file(arg.path, **kwargs)
+                data_header_pairs += self._read_file(arg.path, source=source, **kwargs)
 
             else:
                 raise ValueError("File not found or invalid input")
@@ -288,7 +309,8 @@ class LightCurveFactory(BasicRegistrationFactory):
             else:
                 return [self.default_widget_type]
         elif n_matches > 1:
-            raise MultipleMatchError("Too many candidate types idenfitied ({0}).  Specify enough keywords to guarantee unique type identification.".format(n_matches))
+            raise MultipleMatchError("""Too many candidate types idenfitied ({0}).
+            Specify enough keywords to guarantee unique type identification.""".format(n_matches))
 
         return candidate_widget_types
 
