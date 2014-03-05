@@ -12,3 +12,8 @@ LightCurve.register(LYRALightCurve, LYRALightCurve._is_datasource_for)
 
 from . goes import GOESLightCurve
 LightCurve.register(GOESLightCurve, GOESLightCurve._is_datasource_for)
+
+from . eve import EVELightCurve
+LightCurve.register(EVELightCurve, EVELightCurve._is_datasource_for)
+
+from . logical import LogicalLightCurve

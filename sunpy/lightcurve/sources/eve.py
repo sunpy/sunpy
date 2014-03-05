@@ -3,31 +3,31 @@
 from __future__ import absolute_import
 
 import os
-import numpy as np
-from datetime import datetime  
+from datetime import datetime
 
 import matplotlib.pyplot as plt
 from pandas.io.parsers import read_csv
 from os.path import basename
 
-from sunpy.lightcurve import LightCurve
+from sunpy.util.odict import OrderedDict
+from sunpy.lightcurve import GenericLightCurve
 
 __all__ = ['EVELightCurve']
 
-class EVELightCurve(LightCurve):
+class EVELightCurve(GenericLightCurve):
     """
     SDO EVE LightCurve.
-    
+
     Examples
     --------
     >>> import sunpy
-    
+
     >>> eve = sunpy.lightcurve.EVELightCurve.create()
     >>> eve = sunpy.lightcurve.EVELightCurve.create('2012/06/20')
     >>> eve = sunpy.lightcurve.EVELightCurve.create(sunpy.data.test.EVE_AVERAGES_CSV)
     >>> eve = sunpy.lightcurve.EVELightCurve.create("http://lasp.colorado.edu/eve/data_access/quicklook/quicklook_data/L0CS/LATEST_EVE_L0CS_DIODES_1m.txt")
     >>> eve.peek(subplots=True)
-    
+
     References
     ----------
     | http://lasp.colorado.edu/home/eve/data/data-access/
@@ -55,24 +55,27 @@ class EVELightCurve(LightCurve):
             data.plot(**kwargs)
         figure.show()
         return figure
-        
-    @staticmethod
-    def _get_default_uri():
-        """Load latest level 0CS if no other data is specified"""
-        return "http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/LATEST_EVE_L0CS_DIODES_1m.txt"
-    
-    @staticmethod
-    def _get_url_for_date(date):
+
+    @classmethod
+    def _get_url_from_timerange(cls, timerange):
+        days = timerange.get_days()
+        urls = []
+        for day in days:
+            urls.append(cls._get_url_for_date(day))
+        return urls
+
+    @classmethod
+    def _get_url_for_date(cls, date):
         """Returns a URL to the EVE data for the specified date
-        
+
             @NOTE: currently only supports downloading level 0 data
             .TODO: No data available prior to 2010/03/01!
         """
         base_url = 'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/'
         return base_url + date.strftime('%Y/%Y%m%d') + '_EVE_L0CS_DIODES_1m.txt'
-    
+
     @classmethod
-    def _parse_csv(cls, filepath):
+    def _read_file(cls, filepath):
         """Parses an EVE CSV file"""
         cls._filename = basename(filepath)
         with open(filepath, 'rb') as fp:
@@ -84,12 +87,12 @@ class EVELightCurve(LightCurve):
                 return cls._parse_average_csv(fp)
             elif line1.startswith(";"):
                 return cls._parse_level_0cs(fp)
-    
+
     @staticmethod
     def _parse_average_csv(fp):
         """Parses an EVE Averages file"""
-        return "", read_csv(fp, sep=",", index_col=0, parse_dates=True)
-    
+        return read_csv(fp, sep=",", index_col=0, parse_dates=True), OrderedDict()
+
     @staticmethod
     def _parse_level_0cs(fp):
         """Parses and EVE Level 0CS file"""
@@ -107,13 +110,13 @@ class EVELightCurve(LightCurve):
             if l.startswith("; Format:"):
                 fieldnames_start = False
             if fieldnames_start:
-                fields.append(l.split(":")[0].replace(';', ' ').strip())        
+                fields.append(l.split(":")[0].replace(';', ' ').strip())
             if l.startswith("; Column descriptions:"):
                 fieldnames_start = True
 
-        # Next line is YYYY DOY MM DD        
+        # Next line is YYYY DOY MM DD
         date_parts = line.split(" ")
-                
+
         year = int(date_parts[0])
         month = int(date_parts[2])
         day = int(date_parts[3])
@@ -121,10 +124,15 @@ class EVELightCurve(LightCurve):
         #line = fp.readline()
         #el = line.split()
         #len
-        
+
         # function to parse date column (HHMM)
         parser = lambda x: datetime(year, month, day, int(x[0:2]), int(x[2:4]))
 
-        data = read_csv(fp, sep="\s*", names=fields, index_col=0, date_parser=parser, header = None)
+        data = read_csv(fp, sep="\s*", names=fields, index_col=0, date_parser=parser, header=None)
         #data.columns = fields
-        return header, data
+        return data, OrderedDict()
+
+    @classmethod
+    def _is_datasource_for(cls, data, meta, source=None):
+        if source is not None:
+            return source.lower() == 'eve'
