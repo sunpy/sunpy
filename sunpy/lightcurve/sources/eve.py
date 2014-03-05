@@ -102,7 +102,7 @@ class EVELightCurve(LightCurve):
             header.append(line)
             line = fp.readline()
 	
-	__od=OrderedDict()
+	__od = OrderedDict()
 	for l in header :
 		if l == '; Format:\n' or l == '; Column descriptions:\n':
 			continue
