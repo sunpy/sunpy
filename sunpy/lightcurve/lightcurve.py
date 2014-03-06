@@ -70,12 +70,12 @@ class LightCurve(object):
     _cond_dispatch = ConditionalDispatch()
     create = classmethod(_cond_dispatch.wrapper())
 
-    def __init__(self, data, meta=None):
+    def __init__(self, data, meta = None):
         self.data = pandas.DataFrame(data)
-	if meta == '' or meta == None:
+	if meta == '' or meta is None:
 		self.meta = OrderedDict()
 	else:	
-        	self.meta = meta
+        	self.meta = OrderedDict(meta)
 	
     
     @property
