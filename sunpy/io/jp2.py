@@ -4,12 +4,8 @@ from __future__ import absolute_import
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
-import os
-import subprocess
-import tempfile
 from xml.etree import cElementTree as ET
 
-from matplotlib.image import imread
 from glymur import Jp2k
 
 from sunpy.util.xml import xml_to_dict

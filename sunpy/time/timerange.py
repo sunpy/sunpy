@@ -41,7 +41,7 @@ class TimeRange:
     | http://docs.scipy.org/doc/numpy/reference/arrays.classes.html
 
     """
-    def __init__(self, a, b=None, julian_date=False):
+    def __init__(self, a, b=None):
         """Creates a new TimeRange instance"""
         # If a is a TimeRange object, copy attributes to new instance.
         if isinstance(a, TimeRange):
@@ -73,10 +73,7 @@ class TimeRange:
 
         # Seconds offset
         if isinstance(y, (float, int)):
-            if julian_date:
-                self.t2 = parse_time(y)
-            else:
-                self.t2 = self.t1 + timedelta(0, y)
+            self.t2 = self.t1 + timedelta(0, y)
 
         self.dt = self.t2 - self.t1
 
@@ -123,6 +120,42 @@ class TimeRange:
             previous_time = next_time
         return subsections
 
+    def window(self, cadence, window):
+        """
+        Split the TimeRange up into a series of TimeRange windows,
+        'window' long, between the start and end with a cadence of 'cadence'.
+
+        Parameters
+        ----------
+        cadence: int or timedelta
+            Cadence in seconds or a timedelta instance
+        window: int or timedelta
+            The length of the Time's, assumed to be seconds if int.
+
+        Returns
+        -------
+        times: list
+            A list of TimeRange objects, that are window long and seperated by
+            cadence.
+
+        Examples
+        --------
+        To get one 12 second long window every hour within the timerange:
+
+        >>> TimeRange.window(60*60, window=12)
+        """
+        if not isinstance(window, timedelta):
+            window = timedelta(seconds=window)
+        if not isinstance(cadence, timedelta):
+            cadence = timedelta(seconds=cadence)
+
+        n = 1
+        times = [TimeRange(self.t1, self.t1 + window)]
+        while times[-1].t2 < self.t2:
+            times.append(TimeRange(self.t1 + cadence*n, self.t1 + cadence*n + window))
+            n += 1
+        return times
+
     def days(self):
         """Gets the number of days elapsed."""
         return self.dt.days
@@ -137,11 +170,11 @@ class TimeRange:
 
     def seconds(self):
         """Gets the number of seconds elapsed."""
-        return self.dt.total_seconds()
+        return (self.dt.microseconds + (self.dt.seconds + self.dt.days * 24 * 3600) * 1e6) / 1e6
 
     def minutes(self):
         """Gets the number of minutes elapsed."""
-        return self.dt.total_seconds() / 60.0
+        return self.seconds() / 60.0
 
     def next(self):
         """Shift the time range forward by the amount of time elapsed"""
@@ -162,12 +195,3 @@ class TimeRange:
         # Only a timedelta object is acceptable here
         self.t1 = self.t1 + t_backwards
         self.t2 = self.t2 + t_forwards
-
-    def get_days(self):
-        """
-        Return all partial days contained within the timerange
-        """
-        dates = []
-        for i in range(self.days() + 1):
-            dates.append(self.t1.date() + timedelta(days=i))
-        return dates

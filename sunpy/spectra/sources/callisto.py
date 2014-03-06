@@ -3,9 +3,6 @@
 
 from __future__ import absolute_import
 
-import os
-import glob
-import shutil
 import datetime
 import urllib2
 
@@ -13,8 +10,6 @@ import numpy as np
 
 from astropy.io import fits
 
-from itertools import izip, chain
-from functools import partial
 from collections import defaultdict
 
 from bs4 import BeautifulSoup

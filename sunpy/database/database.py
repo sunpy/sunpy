@@ -5,18 +5,19 @@
 
 from __future__ import absolute_import
 
+import itertools
 import operator
 from datetime import datetime
 from contextlib import contextmanager
 
 from sqlalchemy import create_engine, exists
-from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import sessionmaker
 
 import sunpy
 from sunpy.database import commands, tables, serialize
 from sunpy.database.caching import LRUCache
 from sunpy.database.attrs import walker
+from sunpy.net.hek2vso import H2VClient
 from sunpy.net.attr import and_
 from sunpy.net.vso import VSOClient
 
@@ -621,6 +622,23 @@ class Database(object):
             self._cache.append(database_entry)
         else:
             self._cache[database_entry.id] = database_entry
+
+    def add_from_hek_query_result(self, query_result,
+            ignore_already_added=False):
+        """Add database entries from a HEK query result.
+
+        Parameters
+        ----------
+        query_result : list
+            The value returned by :meth:`sunpy.net.hek.HEKClient().query`
+
+        ignore_already_added : bool
+            See :meth:`sunpy.database.Database.add`.
+
+        """
+        vso_qr = itertools.chain.from_iterable(
+            H2VClient().translate_and_query(query_result))
+        self.add_from_vso_query_result(vso_qr, ignore_already_added)
 
     def add_from_vso_query_result(self, query_result,
             ignore_already_added=False):

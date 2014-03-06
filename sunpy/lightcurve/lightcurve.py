@@ -1,5 +1,5 @@
 """
-LightCurve is a generic LightCurve class from which all other LightCurve classes
+LightCurve is a generic LightCurve class from which all other LightCurve classes 
 inherit from.
 """
 from __future__ import absolute_import

@@ -22,7 +22,7 @@ CLASSIFIERS = [
     'Operating System :: MacOS'
 ]
 
-VERSION = '0.3.2'
+VERSION = '0.4.0'
 
 def git_description():
     import subprocess
@@ -104,16 +104,15 @@ def install(setup): #pylint: disable=W0621
     write_version_py()
 
     setup(
-	author="Steven Christe, Matt Earnshaw,  Russell Hewett, Keith Hughitt, Jack Ireland, Florian Mayer, Stuart Mumford,  Albert Shih, David Perez-Suarez et. al",
+	author="Steven Christe, Russell Hewett, Keith Hughitt, Jack Ireland, Florian Mayer, Stuart Mumford,  Albert Shih, David Perez-Suarez et. al",
         author_email="sunpy@googlegroups.com",
         classifiers=CLASSIFIERS,
         description=DOCLINES[0],
-        download_url="http://www.sunpy.org/download/",
         install_requires=[
-            'numpy>1.6.0',
+            'numpy>1.7.1',
             'astropy>=0.3.0',
             'scipy',
-            'pandas>=0.10.0',
+            'pandas>=0.12.0',
             'matplotlib>=1.1',
             'sqlalchemy',
         ],

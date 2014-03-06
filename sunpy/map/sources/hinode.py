@@ -4,14 +4,11 @@
 __author__ = "Jack Ireland"
 __email__ = "jack.ireland@nasa.gov"
 
-from datetime import datetime
-
 import numpy as np
 from matplotlib import colors
 
 from sunpy.map import GenericMap
 from sunpy.cm import cm
-from sunpy.time import parse_time
 
 
 __all__ = ['XRTMap']
@@ -38,12 +35,12 @@ class XRTMap(GenericMap):
         GenericMap.__init__(self, data, header, **kwargs)
         
         fw1 = header.get('EC_FW1_')
-        if fw1.lower() not in _lower_list(filter_wheel1_measurements):
+        if fw1.lower() not in _lower_list(self.filter_wheel1_measurements):
             raise ValueError('Unpexpected filter wheel 1 in header.')
         fw1 = fw1.replace("_", " ")    
             
         fw2 = header.get('EC_FW2_')
-        if fw2.lower() not in _lower_list(filter_wheel2_measurements):
+        if fw2.lower() not in _lower_list(self.filter_wheel2_measurements):
             raise ValueError('Unpexpected filter wheel 2 in header.')
         fw2 = fw2.replace("_", " ")
         
@@ -56,7 +53,7 @@ class XRTMap(GenericMap):
         
         self.cmap = cm.get_cmap(name='hinodexrt')
 
-    def _get_norm(self):
+    def _get_mpl_normalizer(self):
         """Returns a Normalize object to be used with XRT data"""
         # byte-scaled images have most likely already been scaled
         if self.dtype == np.uint8:
