@@ -54,13 +54,71 @@ def _is_file(arg):
 
 class LightCurveFactory(BasicRegistrationFactory):
     """
-    This is the lightcurve factory
+    LightCurve factory class.
+    Used to create a variety of LightCurve objects.
+    Valid LightCurve types are specified by registering them with the factory.
+
+    LightCurves can be created from a variety of inputs and then truncated by
+    timerange.
+
+    Examples
+    --------
+    >>> import sunpy.lightcurve
+    >>> lc = sunpy.lightcurve.LightCurve('g15_xrs_2s_20120101_20120102.csv',
+    ...                                  source='goes')
+
+    * A file that can be read by sunpy.io
+
+    >>> lc = sunpy.lightcurve.LightCurve('lyra_20110810-000000_lev2_std.fits')
+
+    * A file that can't be auto-detected
+
+    >>> lc = sunpy.lightcurve.LightCurve('g15_xrs_2s_20120101_20120102.csv',
+    ...                                  source='goes')
+
+    * Generate multiple LightCurves
+
+    >>> lc = sunpy.lightcurve.LightCurve('g15_xrs_2s_20120101_20120102.csv',
+    ...                                  'g15_xrs_2s_20031021_20120102.csv',
+    ...                                  source='goes')
+
+    * Generate multiple LightCurves from different sources
+
+    >>> lc = sunpy.lightcurve.LightCurve('lyra_20110810-000000_lev2_std.fits',
+    ...                                  'g15_xrs_2s_20031021_20120102.csv',
+    ...                                  source=['lyra','goes'])
+
+    Note: if you only specify one source, LightCurve will assume that all other
+    arguments are of that type, so if not you will have to manually override.
+
+    * Multiple Files to be read into one LightCurve
+
+    >>> lc = sunpy.lightcurve.LightCurve(['lyra_20120101-000000_lev2_std.fits',
+    ...                                   'lyra_20120102-000000_lev2_std.fits'])
+
+    * Multiple Files to be read into multiple LightCurves
+
+    >>> lc = sunpy.lightcurve.LightCurve(['lyra_20120101-000000_lev2_std.fits',
+    ...                                   'lyra_20120102-000000_lev2_std.fits'],
+    ...                                  ['lyra_20130521-000000_lev2_std.fits',
+    ...                                   'lyra_20130521-000000_lev2_std.fits'])
+
+    * Create a LightCurve from a file and then truncate to a time range.
+
+    >>> lc = sunpy.lightcurve.LightCurve('lyra_20120101-000000_lev2_std.fits',
+    ...                                   timerange=["2012/1/1T00:00:00", "2012/1/1T12:00:00"])
+
+    Note: Only one time range can be specified so it will truncate all files to
+    that time range.
+
+
+
     """
     def _read_file(self, fname, source=None, **kwargs):
         try:
             return self._io_read_file(fname, **kwargs)
         except UnrecognizedFileTypeError:
-            return [source._read_file(fname)]
+            return [self._check_registered_widgets(source=source)[0]._read_file(fname)]
 
     def _io_read_file(self, fname, **kwargs):
         """
@@ -104,11 +162,12 @@ class LightCurveFactory(BasicRegistrationFactory):
             or a list the same length as the input unless timerange is given""")
 
         #For each source, check the factory to get it's class
-        sources = list()
-        for asource in self.source:
-            if asource is not None:
-                sources.append(self._check_registered_widgets(None, None, source=asource)[0])
-        self.source = sources
+#        sources = list()
+#        for asource in self.source:
+#            if asource is not None:
+#                sources.append(self._check_registered_widgets(None, None, source=asource)[0])
+#        self.source = sources
+
         data_header_pairs = list() #each lc is in a list in here
         already_lcs = list()
         args = list(args)
@@ -145,7 +204,6 @@ class LightCurveFactory(BasicRegistrationFactory):
                 for asource in self.source[len(args):]:
                     args.append(asource._get_url_from_timerange(self.timerange))
 
-        print args
         # For each of the arguments, handle each of the cases
         i = 0
         while i < len(args):
@@ -168,7 +226,7 @@ class LightCurveFactory(BasicRegistrationFactory):
         # to create LightCurves from the (data,header) pairs and then concat
         # them with any existing LCs in that group.
         new_lc_sets = list()
-        for lc_dhp in data_header_pairs:
+        for i, lc_dhp in enumerate(data_header_pairs):
             assert isinstance(lc_dhp, list) #This dosen't have to stay
 
             new_lcs = list()
@@ -180,7 +238,9 @@ class LightCurveFactory(BasicRegistrationFactory):
                 meta = MapMeta(header) #TODO: LC this
 
                 try:
-                    new_lc = self._get_registered_widget(data, meta, **kwargs)
+                    kwergs = {'source':self.source[i]}
+                    kwergs.update(kwargs)
+                    new_lc = self._get_registered_widget(data, meta, **kwergs)
                 except (NoMatchError, MultipleMatchError, ValidationFunctionError):
                     if not silence_errors:
                         raise
@@ -293,12 +353,12 @@ class LightCurveFactory(BasicRegistrationFactory):
 
             return data_header_pairs, already_lcs
 
-    def _check_registered_widgets(self, data, meta, **kwargs):
+    def _check_registered_widgets(self, data=None, meta=None, source=None, **kwargs):
         candidate_widget_types = list()
 
         for key in self.registry:
             # Call the registered validation function for each registered class
-            if self.registry[key](data, meta, **kwargs):
+            if self.registry[key](data, meta, source=source, **kwargs):
                 candidate_widget_types.append(key)
 
         n_matches = len(candidate_widget_types)
@@ -314,8 +374,8 @@ class LightCurveFactory(BasicRegistrationFactory):
 
         return candidate_widget_types
 
-    def _get_registered_widget(self, data, meta, **kwargs):
-        candidate_widget_types = self._check_registered_widgets(data, meta)
+    def _get_registered_widget(self, data, meta, source=None, **kwargs):
+        candidate_widget_types = self._check_registered_widgets(data, meta, source=source)
         # Only one is found
         WidgetType = candidate_widget_types[0]
 

@@ -1,4 +1,5 @@
-"""Datasource-specific classes
+"""
+Datasource-specific classes
 
 This is where datasource specific logic is implemented. Each mission should
 have its own file with one or more classes defined. Typically, these classes
@@ -17,3 +18,4 @@ from . eve import EVELightCurve
 LightCurve.register(EVELightCurve, EVELightCurve._is_datasource_for)
 
 from . logical import LogicalLightCurve
+LightCurve.register(LogicalLightCurve, LogicalLightCurve._is_datasource_for)

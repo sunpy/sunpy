@@ -53,3 +53,8 @@ class LogicalLightCurve(GenericLightCurve):
             timeranges.append( TimeRange(self.data.index[ eventindices[0][0] ],
                                          self.data.index[ eventindices[0][-1] ]) )
         return timeranges
+
+    @classmethod
+    def _is_datasource_for(cls, data, meta, source=None):
+        if source is not None:
+            return source.lower() == 'logical'
