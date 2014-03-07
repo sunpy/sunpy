@@ -1,5 +1,5 @@
 """
-LightCurve is a generic LightCurve class from which all other LightCurve classes 
+LightCurve is a generic LightCurve class from which all other LightCurve classes
 inherit from.
 """
 from __future__ import absolute_import
@@ -73,10 +73,30 @@ class GenericLightCurve(object):
         List like concatenation for lightcurves
         """
         if not isinstance(other, GenericLightCurve):
-            return NotImplemented
+            raise NotImplementedError
 
-        self.data.append(other.data)
-        self.meta.update(other.meta) #TODO: make this MUCH smarter?
+        new_data = self.data.append(other.data)
+
+        new_dict = OrderedDict()
+        new_dict.update(self.meta)
+        new_dict.update(other.meta)
+
+        return self.__class__(new_data, new_dict)
+
+    def __radd__(self, other):
+        """
+        List like concatenation for lightcurves
+        """
+        if not isinstance(other, GenericLightCurve):
+            raise NotImplementedError
+
+        new_data = other.data.append(self.data)
+
+        new_dict = OrderedDict()
+        new_dict.update(other.meta)
+        new_dict.update(self.meta)
+
+        return self.__class__(new_data, new_dict)
 
     @property
     def header(self):

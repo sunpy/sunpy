@@ -5,11 +5,14 @@ from __future__ import absolute_import
 import datetime
 import urlparse
 
+import numpy as np
 from matplotlib import pyplot as plt
 import pandas
+from astropy.io import fits
 
 from sunpy.lightcurve import GenericLightCurve
 from sunpy.time import parse_time
+from sunpy.util.odict import OrderedDict
 
 __all__ = ['LYRALightCurve']
 
@@ -32,30 +35,34 @@ class LYRALightCurve(GenericLightCurve):
     | http://proba2.sidc.be/data/LYRA
     """
     def __init__(self, data, meta):
-        # Start and end dates.  Different LYRA FITS files have
-        # different tags for the date obs.
-        if 'date-obs' in meta:
-            start_str = meta['date-obs']
-        elif 'date_obs' in meta:
-            start_str = meta['date_obs']
-        #end_str = hdulist[0].header['date-end']
+        if isinstance(data, fits.fitsrec.FITS_rec):
+            # Start and end dates.  Different LYRA FITS files have
+            # different tags for the date obs.
+            if 'date-obs' in meta:
+                start_str = meta['date-obs']
+            elif 'date_obs' in meta:
+                start_str = meta['date_obs']
+            #end_str = hdulist[0].header['date-end']
 
-        #start = datetime.datetime.strptime(start_str, '%Y-%m-%dT%H:%M:%S.%f')
-        start = parse_time(start_str)
-        #end = datetime.datetime.strptime(end_str, '%Y-%m-%dT%H:%M:%S.%f')
+            #start = datetime.datetime.strptime(start_str, '%Y-%m-%dT%H:%M:%S.%f')
+            start = parse_time(start_str)
+            #end = datetime.datetime.strptime(end_str, '%Y-%m-%dT%H:%M:%S.%f')
 
-        # First column are times
-        times = [start + datetime.timedelta(0, n) for n in data.field(0)]
+            # First column are times
+            times = [start + datetime.timedelta(0, n) for n in data.field(0)]
 
-        # Rest of columns are the data
-        table = {}
+            # Rest of columns are the data
+            table = {}
 
-        for i, col in enumerate(data.columns[1:-1]):
-            table[col.name] = data.field(i + 1)
+            for i, col in enumerate(data.columns[1:-1]):
+                table[col.name] = np.asarray(data.field(i + 1), dtype='f8')
+
+            self.data = pandas.DataFrame(table, index=times)
+        else:
+            self.data = pandas.DataFrame(data)
 
         # Return the header and the data
-        self.meta = meta
-        self.data = pandas.DataFrame(table, index=times)
+        self.meta = OrderedDict(meta)
 
     def peek(self, names=3, **kwargs):
         """Plots the LYRA data

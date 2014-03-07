@@ -202,16 +202,21 @@ class LightCurveFactory(BasicRegistrationFactory):
 
             if not len(args) == len(self.source):
                 for asource in self.source[len(args):]:
-                    args.append(asource._get_url_from_timerange(self.timerange))
+                    args.append(self._check_registered_widgets(source=asource)[0]._get_url_from_timerange(self.timerange))
 
         # For each of the arguments, handle each of the cases
         i = 0
         while i < len(args):
             arg = args[i]
-
+            print arg
             #A iterable arg
-            if isiterable(arg):
+            if isiterable(arg) and not isinstance(arg, basestring):
+                dhp_list = list()
+                lcs_list = list()
+#                for aarg in arg:
                 dhp, lcs = self._process_single_lc_args(arg, source=self.source[i])
+#                    dhp_list.append(dhp)
+#                    lcs_list.append(lcs)
                 data_header_pairs.append(dhp)
                 already_lcs.append(lcs)
 
@@ -219,20 +224,20 @@ class LightCurveFactory(BasicRegistrationFactory):
                 dhp, lcs = self._process_single_lc_args(arg, source=self.source[i])
                 data_header_pairs.append(dhp)
                 already_lcs.append(lcs)
-
             i += 1
 
         #At this point we have finished the input processing and we now need
         # to create LightCurves from the (data,header) pairs and then concat
         # them with any existing LCs in that group.
+        print "data_header_pairs:", len(data_header_pairs), np.shape(data_header_pairs)
         new_lc_sets = list()
         for i, lc_dhp in enumerate(data_header_pairs):
             assert isinstance(lc_dhp, list) #This dosen't have to stay
-
+#            import pdb; pdb.set_trace()
             new_lcs = list()
             # Loop over each registered type and check to see if WidgetType
             # matches the arguments.  If it does, use that type.
-            for pair in lc_dhp:
+            for pair in lc_dhp:#TODO: This is not working for multi-curves
                 data, header = pair
                 meta = header
                 meta = MapMeta(header) #TODO: LC this
@@ -290,7 +295,6 @@ class LightCurveFactory(BasicRegistrationFactory):
 
         #TODO: Check that this dosen't futz with things
         args = expand_list(args)
-
         # For each of the arguments, handle each of the cases
         i = 0
         while i < len(args):
@@ -335,8 +339,7 @@ class LightCurveFactory(BasicRegistrationFactory):
                 already_lcs.append(arg)
 
             # A URL
-            elif (isinstance(arg,basestring) and
-                  _is_url(arg)):
+            elif isinstance(arg,basestring) and _is_url(arg):
                 default_dir = sunpy.config.get("downloads", "download_dir") #TODO: target filename and dir
                 url = arg
                 path = download_file(url, default_dir)
@@ -351,7 +354,7 @@ class LightCurveFactory(BasicRegistrationFactory):
                 raise ValueError("File not found or invalid input")
             i += 1
 
-            return data_header_pairs, already_lcs
+        return data_header_pairs, already_lcs
 
     def _check_registered_widgets(self, data=None, meta=None, source=None, **kwargs):
         candidate_widget_types = list()
