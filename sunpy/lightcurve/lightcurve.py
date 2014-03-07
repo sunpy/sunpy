@@ -16,7 +16,7 @@ import matplotlib.pyplot as plt
 
 from astropy.io import ascii
 
-from sunpy.util.odict import OrderedDict
+from sunpy.map.header import MapMeta
 import sunpy.time
 
 __all__ = ['GenericLightCurve']
@@ -66,7 +66,7 @@ class GenericLightCurve(object):
 
     def __init__(self, data, meta=None):
         self.data = pandas.DataFrame(data)
-        self.meta = OrderedDict(meta)
+        self.meta = MapMeta(meta)
 
     def __add__(self, other):
         """
@@ -77,7 +77,7 @@ class GenericLightCurve(object):
 
         new_data = self.data.append(other.data)
 
-        new_dict = OrderedDict()
+        new_dict = MapMeta()
         new_dict.update(self.meta)
         new_dict.update(other.meta)
 
@@ -92,7 +92,7 @@ class GenericLightCurve(object):
 
         new_data = other.data.append(self.data)
 
-        new_dict = OrderedDict()
+        new_dict = MapMeta()
         new_dict.update(other.meta)
         new_dict.update(self.meta)
 
@@ -165,7 +165,7 @@ for compatability with map, please use meta instead""", Warning)
             data.remove_column(data.keys()[inds[0]])
             #Make a DataFrame
             data = pandas.DataFrame(np.asarray(data), index=index)
-            return [data, OrderedDict()]
+            return [data, MapMeta()]
 
     def truncate(self, a, b=None):
         """Returns a truncated version of the timeseries object"""
@@ -175,7 +175,7 @@ for compatability with map, please use meta instead""", Warning)
             time_range = sunpy.time.TimeRange(a,b)
 
         truncated = self.data.truncate(time_range.start(), time_range.end())
-        return GenericLightCurve(truncated, self.meta.copy())
+        return self.__class__(truncated, self.meta.copy())
 
     def extract(self, a):
         """Extract a set of particular columns from the DataFrame"""

@@ -12,7 +12,7 @@ from astropy.io import fits
 
 from sunpy.lightcurve import GenericLightCurve
 from sunpy.time import parse_time
-from sunpy.util.odict import OrderedDict
+from sunpy.map.header import MapMeta
 
 __all__ = ['LYRALightCurve']
 
@@ -34,7 +34,7 @@ class LYRALightCurve(GenericLightCurve):
     ----------
     | http://proba2.sidc.be/data/LYRA
     """
-    def __init__(self, data, meta):
+    def __init__(self, data, meta, **kwargs):
         if isinstance(data, fits.fitsrec.FITS_rec):
             # Start and end dates.  Different LYRA FITS files have
             # different tags for the date obs.
@@ -62,7 +62,7 @@ class LYRALightCurve(GenericLightCurve):
             self.data = pandas.DataFrame(data)
 
         # Return the header and the data
-        self.meta = OrderedDict(meta)
+        self.meta = MapMeta(meta)
 
     def peek(self, names=3, **kwargs):
         """Plots the LYRA data
@@ -105,15 +105,15 @@ class LYRALightCurve(GenericLightCurve):
         return figure
 
     @classmethod
-    def _get_url_from_timerange(cls, timerange):
+    def _get_url_from_timerange(cls, timerange, **kwargs):
         days = timerange.get_days()
         urls = []
         for day in days:
-            urls.append(cls._get_url_for_date(day))
+            urls.append(cls._get_url_for_date(day, **kwargs))
         return urls
 
     @classmethod
-    def _get_url_for_date(cls, date):
+    def _get_url_for_date(cls, date, **kwargs):
         """Returns a URL to the LYRA data for the specified date
         """
         if not isinstance(date, datetime.date):
@@ -125,11 +125,6 @@ class LYRALightCurve(GenericLightCurve):
         base_url = "http://proba2.oma.be/lyra/data/bsd/"
         url_path = urlparse.urljoin(date.strftime('%Y/%m/%d/'), filename)
         return urlparse.urljoin(base_url, url_path)
-
-    @classmethod
-    def _get_default_uri(cls):
-        """Look for and download today's LYRA data"""
-        return cls._get_url_for_date(datetime.datetime.utcnow())
 
     @classmethod
     def _is_datasource_for(cls, data, meta, source=None):

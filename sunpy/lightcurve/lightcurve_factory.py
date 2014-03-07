@@ -161,13 +161,6 @@ class LightCurveFactory(BasicRegistrationFactory):
             raise ValueError("""Source argument must be a string,
             or a list the same length as the input unless timerange is given""")
 
-        #For each source, check the factory to get it's class
-#        sources = list()
-#        for asource in self.source:
-#            if asource is not None:
-#                sources.append(self._check_registered_widgets(None, None, source=asource)[0])
-#        self.source = sources
-
         data_header_pairs = list() #each lc is in a list in here
         already_lcs = list()
         args = list(args)
@@ -188,13 +181,13 @@ class LightCurveFactory(BasicRegistrationFactory):
                                                 datetime.datetime.min.time()) + _one_day
                 self.timerange = sunpy.time.TimeRange(self.timerange, end)
 
-            #Is timerange
-            elif isinstance(self.timerange, sunpy.time.TimeRange):
-                pass
-
             #Is a datetime.date
             elif isinstance(self.timerange, datetime.date):
                 self.timerange = sunpy.time.TimeRange(self.timerange, self.timerange + _one_day)
+
+            #Is timerange
+            elif isinstance(self.timerange, sunpy.time.TimeRange):
+                pass
 
             else:
                 raise ValueError("""timerange must be one of: a TimeRange object,
@@ -202,42 +195,27 @@ class LightCurveFactory(BasicRegistrationFactory):
 
             if not len(args) == len(self.source):
                 for asource in self.source[len(args):]:
-                    args.append(self._check_registered_widgets(source=asource)[0]._get_url_from_timerange(self.timerange))
+                    args.append(self._check_registered_widgets(source=asource)[0]._get_url_from_timerange(self.timerange, **kwargs))
 
         # For each of the arguments, handle each of the cases
         i = 0
         while i < len(args):
             arg = args[i]
-            print arg
-            #A iterable arg
-            if isiterable(arg) and not isinstance(arg, basestring):
-                dhp_list = list()
-                lcs_list = list()
-#                for aarg in arg:
-                dhp, lcs = self._process_single_lc_args(arg, source=self.source[i])
-#                    dhp_list.append(dhp)
-#                    lcs_list.append(lcs)
-                data_header_pairs.append(dhp)
-                already_lcs.append(lcs)
 
-            else:
-                dhp, lcs = self._process_single_lc_args(arg, source=self.source[i])
-                data_header_pairs.append(dhp)
-                already_lcs.append(lcs)
+            dhp, lcs = self._process_single_lc_args(arg, source=self.source[i])
+            data_header_pairs.append(dhp)
+            already_lcs.append(lcs)
             i += 1
 
         #At this point we have finished the input processing and we now need
         # to create LightCurves from the (data,header) pairs and then concat
         # them with any existing LCs in that group.
-        print "data_header_pairs:", len(data_header_pairs), np.shape(data_header_pairs)
         new_lc_sets = list()
         for i, lc_dhp in enumerate(data_header_pairs):
-            assert isinstance(lc_dhp, list) #This dosen't have to stay
-#            import pdb; pdb.set_trace()
             new_lcs = list()
             # Loop over each registered type and check to see if WidgetType
             # matches the arguments.  If it does, use that type.
-            for pair in lc_dhp:#TODO: This is not working for multi-curves
+            for pair in lc_dhp:
                 data, header = pair
                 meta = header
                 meta = MapMeta(header) #TODO: LC this
@@ -293,7 +271,6 @@ class LightCurveFactory(BasicRegistrationFactory):
         data_header_pairs = list() #each lc is in a list in here
         already_lcs = list()
 
-        #TODO: Check that this dosen't futz with things
         args = expand_list(args)
         # For each of the arguments, handle each of the cases
         i = 0

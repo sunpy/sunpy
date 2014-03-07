@@ -17,5 +17,8 @@ LightCurve.register(GOESLightCurve, GOESLightCurve._is_datasource_for)
 from . eve import EVELightCurve
 LightCurve.register(EVELightCurve, EVELightCurve._is_datasource_for)
 
+from . norh import NoRHLightCurve
+LightCurve.register(NoRHLightCurve, NoRHLightCurve._is_datasource_for)
+
 from . logical import LogicalLightCurve
 LightCurve.register(LogicalLightCurve, LogicalLightCurve._is_datasource_for)

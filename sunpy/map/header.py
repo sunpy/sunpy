@@ -11,22 +11,28 @@ __all__ = ['MapMeta']
 class MapMeta(OrderedDict):
     """
     A class to hold meta data associated with a Map derivative.
-    
-    This class handles everything a lower case. This allows case insensitive 
+
+    This class handles everything a lower case. This allows case insensitive
     indexing.
     """
-    def __init__(self, adict, *args):
+    def __init__(self, *args, **kwargs):
         """Creates a new MapHeader instance"""
+        if len(args) > 1:
+            raise TypeError('expected at most 1 arguments, got %d' % len(args))
+        elif not len(args):
+            args = [{}]
+
+        args = list(args)
         # Store all keys as upper-case to allow for case-insensitive indexing
         #OrderedDict can be instanciated from a list of lists or a tuple of tuples
-        if isinstance(adict, list) or isinstance(adict, tuple):
-            tags = dict((k.upper(), v) for k, v in adict)
-        elif isinstance(adict, dict):
-            tags = dict((k.upper(), v) for k, v in adict.items())
+        if isinstance(args[0], list) or isinstance(args[0], tuple):
+            args[0] = dict((k.upper(), v) for k, v in args[0])
+        elif isinstance(args[0], dict):
+            args[0] = dict((k.upper(), v) for k, v in args[0].items())
         else:
             raise TypeError("Can not create a MapMeta from this type input")
-            
-        super(MapMeta, self).__init__(tags, *args)
+
+        super(MapMeta, self).__init__(*args, **kwargs)
 
     def __contains__(self, key):
         """Overide __contains__"""
@@ -39,7 +45,7 @@ class MapMeta(OrderedDict):
     def __setitem__(self, key, value):
         """Overide [] indexing"""
         return OrderedDict.__setitem__(self, key.lower(), value)
-        
+
     def get(self, key, default=None):
         """Overide .get() indexing"""
         return OrderedDict.get(self, key.lower(), default)

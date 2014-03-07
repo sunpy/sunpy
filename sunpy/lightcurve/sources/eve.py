@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 from pandas.io.parsers import read_csv
 from os.path import basename
 
-from sunpy.util.odict import OrderedDict
+from sunpy.map.header import MapMeta
 from sunpy.lightcurve import GenericLightCurve
 
 __all__ = ['EVELightCurve']
@@ -57,15 +57,15 @@ class EVELightCurve(GenericLightCurve):
         return figure
 
     @classmethod
-    def _get_url_from_timerange(cls, timerange):
+    def _get_url_from_timerange(cls, timerange, **kwargs):
         days = timerange.get_days()
         urls = []
         for day in days:
-            urls.append(cls._get_url_for_date(day))
+            urls.append(cls._get_url_for_date(day, **kwargs))
         return urls
 
     @classmethod
-    def _get_url_for_date(cls, date):
+    def _get_url_for_date(cls, date, **kwargs):
         """Returns a URL to the EVE data for the specified date
 
             @NOTE: currently only supports downloading level 0 data
@@ -91,7 +91,7 @@ class EVELightCurve(GenericLightCurve):
     @staticmethod
     def _parse_average_csv(fp):
         """Parses an EVE Averages file"""
-        return read_csv(fp, sep=",", index_col=0, parse_dates=True), OrderedDict()
+        return read_csv(fp, sep=",", index_col=0, parse_dates=True), MapMeta()
 
     @staticmethod
     def _parse_level_0cs(fp):
@@ -130,7 +130,7 @@ class EVELightCurve(GenericLightCurve):
 
         data = read_csv(fp, sep="\s*", names=fields, index_col=0, date_parser=parser, header=None)
         #data.columns = fields
-        return data, OrderedDict()
+        return data, MapMeta()
 
     @classmethod
     def _is_datasource_for(cls, data, meta, source=None):
