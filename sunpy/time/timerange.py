@@ -195,3 +195,12 @@ class TimeRange:
         # Only a timedelta object is acceptable here
         self.t1 = self.t1 + t_backwards
         self.t2 = self.t2 + t_forwards
+
+    def get_days(self):
+        """
+        Return all partial days contained within the timerange
+        """
+        dates = []
+        for i in range(self.days() + 1):
+            dates.append(self.t1.date() + timedelta(days=i))
+        return dates

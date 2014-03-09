@@ -1,4 +1,4 @@
-"""Time related functionality"""
+#"""Time related functionality"""
 from __future__ import absolute_import
 
 from sunpy.time.time import *

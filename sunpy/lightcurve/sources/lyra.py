@@ -5,23 +5,25 @@ from __future__ import absolute_import
 import datetime
 import urlparse
 
+import numpy as np
 from matplotlib import pyplot as plt
-from astropy.io import fits
 import pandas
+from astropy.io import fits
 
-from sunpy.lightcurve import LightCurve 
+from sunpy.lightcurve import GenericLightCurve
 from sunpy.time import parse_time
+from sunpy.map.header import MapMeta
 
 __all__ = ['LYRALightCurve']
 
-class LYRALightCurve(LightCurve):
+class LYRALightCurve(GenericLightCurve):
     """
     Proba-2 LYRA LightCurve.
 
     Examples
     --------
     >>> import sunpy
-    
+
     >>> lyra = sunpy.lightcurve.LYRALightCurve.create()
     >>> lyra = sunpy.lightcurve.LYRALightCurve.create('~/Data/lyra/lyra_20110810-000000_lev2_std.fits')
     >>> lyra = sunpy.lightcurve.LYRALightCurve.create('2011/08/10')
@@ -32,6 +34,35 @@ class LYRALightCurve(LightCurve):
     ----------
     | http://proba2.sidc.be/data/LYRA
     """
+    def __init__(self, data, meta, **kwargs):
+        if isinstance(data, fits.fitsrec.FITS_rec):
+            # Start and end dates.  Different LYRA FITS files have
+            # different tags for the date obs.
+            if 'date-obs' in meta:
+                start_str = meta['date-obs']
+            elif 'date_obs' in meta:
+                start_str = meta['date_obs']
+            #end_str = hdulist[0].header['date-end']
+
+            #start = datetime.datetime.strptime(start_str, '%Y-%m-%dT%H:%M:%S.%f')
+            start = parse_time(start_str)
+            #end = datetime.datetime.strptime(end_str, '%Y-%m-%dT%H:%M:%S.%f')
+
+            # First column are times
+            times = [start + datetime.timedelta(0, n) for n in data.field(0)]
+
+            # Rest of columns are the data
+            table = {}
+
+            for i, col in enumerate(data.columns[1:-1]):
+                table[col.name] = np.asarray(data.field(i + 1), dtype='f8')
+
+            self.data = pandas.DataFrame(table, index=times)
+        else:
+            self.data = pandas.DataFrame(data)
+
+        # Return the header and the data
+        self.meta = MapMeta(meta)
 
     def peek(self, names=3, **kwargs):
         """Plots the LYRA data
@@ -73,56 +104,33 @@ class LYRALightCurve(LightCurve):
 
         return figure
 
+    @classmethod
+    def _get_url_from_timerange(cls, timerange, **kwargs):
+        days = timerange.get_days()
+        urls = []
+        for day in days:
+            urls.append(cls._get_url_for_date(day, **kwargs))
+        return urls
 
-    @staticmethod
-    def _get_url_for_date(date):
+    @classmethod
+    def _get_url_for_date(cls, date, **kwargs):
         """Returns a URL to the LYRA data for the specified date
         """
-        dt = parse_time(date or datetime.datetime.utcnow())
-
+        if not isinstance(date, datetime.date):
+            raise ValueError("This method requires a date")
         # Filename
-        filename = "lyra_%s000000_lev%d_%s.fits" % (dt.strftime('%Y%m%d-'),
+        filename = "lyra_%s000000_lev%d_%s.fits" % (date.strftime('%Y%m%d-'),
                                                     2, 'std')
         # URL
         base_url = "http://proba2.oma.be/lyra/data/bsd/"
-        url_path = urlparse.urljoin(dt.strftime('%Y/%m/%d/'), filename)
+        url_path = urlparse.urljoin(date.strftime('%Y/%m/%d/'), filename)
         return urlparse.urljoin(base_url, url_path)
 
     @classmethod
-    def _get_default_uri(cls):
-        """Look for and download today's LYRA data"""
-        return cls._get_url_for_date(datetime.datetime.utcnow())
-
-    @staticmethod
-    def _parse_fits(filepath):
-        """Loads LYRA data from a FITS file"""
-        # Open file with PyFITS
-        hdulist = fits.open(filepath)
-        fits_record = hdulist[1].data
-        #secondary_header = hdulist[1].header
-
-        # Start and end dates.  Different LYRA FITS files have
-        # different tags for the date obs.
-        if 'date-obs' in hdulist[0].header:
-            start_str = hdulist[0].header['date-obs']
-        elif 'date_obs' in hdulist[0].header:
-            start_str = hdulist[0].header['date_obs']
-        #end_str = hdulist[0].header['date-end']
-
-        #start = datetime.datetime.strptime(start_str, '%Y-%m-%dT%H:%M:%S.%f')
-        start = parse_time(start_str)
-        #end = datetime.datetime.strptime(end_str, '%Y-%m-%dT%H:%M:%S.%f')
-
-        # First column are times
-        times = [start + datetime.timedelta(0, n) for n in fits_record.field(0)]
-
-        # Rest of columns are the data
-        table = {}
-
-        for i, col in enumerate(fits_record.columns[1:-1]):
-            table[col.name] = fits_record.field(i + 1)
-
-        # Return the header and the data
-        return hdulist[0].header, pandas.DataFrame(table, index=times)
-
+    def _is_datasource_for(cls, data, meta, source=None):
+        if meta is not None:
+            return meta.pop('instrume', '').upper() == 'LYRA'
+        if source is not None:
+            source = source.lower()
+            return source == 'lyra'
 
