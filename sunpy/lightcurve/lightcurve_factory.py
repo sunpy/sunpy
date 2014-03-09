@@ -1,6 +1,7 @@
+from __future__ import absolute_import
+
 import os
 import glob
-import urllib2
 import datetime
 
 import numpy as np
@@ -10,6 +11,7 @@ from astropy.utils.misc import isiterable
 import sunpy
 from sunpy.database.tables import DatabaseEntry
 from sunpy.util.net import download_file
+from sunpy.util.factory_helpers import is_url, is_time_string, is_file, is_iterable_not_str
 from sunpy.time import parse_time
 from sunpy.util import expand_list
 from sunpy.io.file_tools import read_file, UnrecognizedFileTypeError
@@ -24,33 +26,7 @@ from sunpy.util.datatype_factory_base import ValidationFunctionError
 
 from . lightcurve import GenericLightCurve
 
-def _is_url(arg):
-    try:
-        urllib2.urlopen(arg)
-    except ValueError:
-        return False
-    return True
-
-def _is_time_string(arg):
-    try:
-        parse_time(arg)
-    except (ValueError, TypeError):
-        return False
-    return True
-
-def _is_time_date(arg):
-    """
-    Checks if time is timerange time string or time strinf pair or datetime.date
-    """
-    if isiterable(arg) and len(arg) <= 2 and all([_is_time_string(x) for x in arg]) or \
-       isinstance(arg, sunpy.time.TimeRange) or isinstance(arg, datetime.date) \
-       or _is_time_string(arg):
-           return True
-
-    return False
-
-def _is_file(arg):
-    return isinstance(arg,basestring) and os.path.isfile(os.path.expanduser(arg))
+__all__ = ['LightCurve', 'LightCurveFactory']
 
 class LightCurveFactory(BasicRegistrationFactory):
     """
@@ -111,6 +87,30 @@ class LightCurveFactory(BasicRegistrationFactory):
     Note: Only one time range can be specified so it will truncate all files to
     that time range.
 
+    * Get the data for a LightCurve between a time range.
+
+    >>> lc = sunpy.lightcurve.LightCurve(timerange=["2012/1/1T00:00:00", "2012/1/1T12:00:00"], source='goes')
+
+    * Multiple Files to be read into multiple LightCurves, all between a time range
+
+    >>> lc = sunpy.lightcurve.LightCurve(['lyra_20120101-000000_lev2_std.fits',
+    ...                                   'lyra_20120102-000000_lev2_std.fits'],
+    ...                                  ['lyra_20130521-000000_lev2_std.fits',
+    ...                                   'lyra_20130521-000000_lev2_std.fits'],
+    ...                                  timerange=["2012/1/1T00:00:00", "2012/1/1T12:00:00"])
+
+
+    Notes
+    -----
+
+    * Only one time range can be specified for each call to LightCurve.
+    * More data than the time requested may be downloaded if the source only
+    supports fixed timerange data downloads.
+    * Data where a source is not specified or can not be detected will be
+    passed to GenericLightCurve
+    * GenericLightCurve attempts to read data using astropy.io.ascii
+    auto-reader and looks for one time column.
+
 
 
     """
@@ -150,7 +150,7 @@ class LightCurveFactory(BasicRegistrationFactory):
         self.fold_blank_hdu = kwargs.pop('fold_blank_hdu', True)
         self.source = kwargs.pop('source', None)
         self.timerange = kwargs.pop('timerange', None)
-        if not isiterable(self.source) or isinstance(self.source, basestring):
+        if not is_iterable_not_str(self.source):
             #Make source a list that is the number of args long.
             if len(args): #Don't multiply by 0
                 self.source = [self.source]*len(args)
@@ -167,35 +167,12 @@ class LightCurveFactory(BasicRegistrationFactory):
 
         #Parse timerange, so that self.timerange is always a TimeRange
         if self.timerange is not None:
-            _one_day = datetime.timedelta(hours=23, minutes=59, seconds=59)
-            #Is a time string pari
-            if isiterable(self.timerange) and len(self.timerange) == 2 and \
-               all([_is_time_string(x) for x in self.timerange]):
-                self.timerange = sunpy.time.TimeRange(self.timerange[0],self.timerange[1])
-
-            #Is one time string
-            elif _is_time_string(self.timerange):
-                #If one time is specified, take it as the start time and run
-                #till the end of that day.
-                end = datetime.datetime.combine(parse_time(self.timerange).date(),
-                                                datetime.datetime.min.time()) + _one_day
-                self.timerange = sunpy.time.TimeRange(self.timerange, end)
-
-            #Is a datetime.date
-            elif isinstance(self.timerange, datetime.date):
-                self.timerange = sunpy.time.TimeRange(self.timerange, self.timerange + _one_day)
-
-            #Is timerange
-            elif isinstance(self.timerange, sunpy.time.TimeRange):
-                pass
-
-            else:
-                raise ValueError("""timerange must be one of: a TimeRange object,
-                a datetime.date object, one time / date string or a pair of time / date strings.""")
+            self.timerange = self._process_timerange(self.timerange)
 
             if not len(args) == len(self.source):
                 for asource in self.source[len(args):]:
-                    args.append(self._check_registered_widgets(source=asource)[0]._get_url_from_timerange(self.timerange, **kwargs))
+                    args.append(self._check_registered_widgets(source=asource
+                        )[0]._get_url_from_timerange(self.timerange, **kwargs))
 
         # For each of the arguments, handle each of the cases
         i = 0
@@ -250,6 +227,37 @@ class LightCurveFactory(BasicRegistrationFactory):
             return lightcurves[0]
         return lightcurves
 
+    def _process_timerange(self, timerange):
+        """
+        Process the various permitted forms of timerange into a sunpy timerange
+        object
+        """
+        _one_day = datetime.timedelta(hours=23, minutes=59, seconds=59)
+        #Is a time string pari
+        if isiterable(timerange) and len(timerange) == 2 and \
+           all([is_time_string(x) for x in timerange]):
+            return sunpy.time.TimeRange(timerange[0],timerange[1])
+
+        #Is one time string
+        elif is_time_string(timerange):
+            #If one time is specified, take it as the start time and run
+            #till the end of that day.
+            end = datetime.datetime.combine(parse_time(timerange).date(),
+                                            datetime.datetime.min.time()) + _one_day
+            return sunpy.time.TimeRange(timerange, end)
+
+        #Is a datetime.date
+        elif isinstance(timerange, datetime.date):
+            return sunpy.time.TimeRange(timerange, timerange + _one_day)
+
+        #Is timerange
+        elif isinstance(timerange, sunpy.time.TimeRange):
+            return timerange
+
+        else:
+            raise ValueError("""timerange must be one of: a TimeRange object,
+            a datetime.date object, one time / date string or a pair of time / date strings.""")
+
     def _concatenate_lightcurves(self, lc_sets):
         lightcurves = list()
 
@@ -260,7 +268,6 @@ class LightCurveFactory(BasicRegistrationFactory):
             lightcurves.append(concatted)
 
         return lightcurves
-
 
     def _process_single_lc_args(self, *args, **kwargs):
         """
@@ -292,7 +299,7 @@ class LightCurveFactory(BasicRegistrationFactory):
                 i += 1 # an extra increment to account for the data-header pairing
 
             # File name
-            elif _is_file(arg):
+            elif is_file(arg):
                 path = os.path.expanduser(arg)
                 pairs = self._read_file(path, source=source, **kwargs)
                 data_header_pairs += pairs
@@ -316,7 +323,7 @@ class LightCurveFactory(BasicRegistrationFactory):
                 already_lcs.append(arg)
 
             # A URL
-            elif isinstance(arg,basestring) and _is_url(arg):
+            elif isinstance(arg,basestring) and is_url(arg):
                 default_dir = sunpy.config.get("downloads", "download_dir") #TODO: target filename and dir
                 url = arg
                 path = download_file(url, default_dir)
@@ -360,9 +367,6 @@ class LightCurveFactory(BasicRegistrationFactory):
         WidgetType = candidate_widget_types[0]
 
         return WidgetType(data, meta, **kwargs)
-
-
-
 
 LightCurve = LightCurveFactory(default_widget_type=GenericLightCurve,
                  additional_validation_functions=['is_datasource_for'])
