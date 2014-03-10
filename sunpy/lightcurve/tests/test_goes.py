@@ -8,6 +8,7 @@ import sunpy.lightcurve
 
 
 class TestGOESLightCurve():
+    #Temporary fix for disabled GOES API
     @pytest.mark.xfail
     @pytest.mark.online
     def test_goes_range(self):
