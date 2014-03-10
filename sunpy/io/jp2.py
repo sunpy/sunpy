@@ -13,7 +13,7 @@ from sunpy.io.header import FileHeader
 
 __all__ = ['read', 'get_header', 'write']
 
-def read(filepath):
+def read(filepath, **kwargs):
     """
     Reads a JPEG2000 file
 
@@ -36,7 +36,7 @@ def read(filepath):
 
     return [(data, header[0])]
 
-def get_header(filepath):
+def get_header(filepath, **kwargs):
     """
     Reads the header from the file
 
@@ -68,7 +68,7 @@ def get_header(filepath):
 
     return [FileHeader(pydict)]
 
-def write(fname, data, header):
+def write(fname, data, header, **kwargs):
     """
     Place holder for required file writer
     """

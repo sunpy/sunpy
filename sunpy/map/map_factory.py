@@ -5,7 +5,6 @@ __email__ = "stuart@mumford.me.uk"
 
 import os
 import glob
-import urllib2
 
 import numpy as np
 
@@ -22,7 +21,7 @@ from sunpy.database.tables import DatabaseEntry
 
 from sunpy.util.net import download_file
 from sunpy.util import expand_list
-from sunpy.util import Deprecated
+from sunpy.util.factory_helpers import is_url, is_file
 
 from sunpy.util.datatype_factory_base import BasicRegistrationFactory
 from sunpy.util.datatype_factory_base import NoMatchError
@@ -152,8 +151,7 @@ class MapFactory(BasicRegistrationFactory):
                 i += 1 # an extra increment to account for the data-header pairing
 
             # File name
-            elif (isinstance(arg,basestring) and
-                  os.path.isfile(os.path.expanduser(arg))):
+            elif is_file(arg):
                 path = os.path.expanduser(arg)
                 pairs = self._read_file(path, **kwargs)
                 data_header_pairs += pairs
@@ -178,7 +176,7 @@ class MapFactory(BasicRegistrationFactory):
 
             # A URL
             elif (isinstance(arg,basestring) and
-                  _is_url(arg)):
+                  is_url(arg)):
                 default_dir = sunpy.config.get("downloads", "download_dir")
                 url = arg
                 path = download_file(url, default_dir)
@@ -280,25 +278,14 @@ class MapFactory(BasicRegistrationFactory):
             else:
                 candidate_widget_types = [self.default_widget_type]
         elif n_matches > 1:
-            raise MultipleMatchError("Too many candidate types idenfitied ({0}).  Specify enough keywords to guarantee unique type identification.".format(n_matches))
+            raise MultipleMatchError(
+"""Too many candidate types idenfitied ({0}).
+Specify enough keywords to guarantee unique type identification.""".format(n_matches))
 
         # Only one is found
         WidgetType = candidate_widget_types[0]
 
         return WidgetType(data, meta, **kwargs)
-
-
-def _is_url(arg):
-    try:
-        urllib2.urlopen(arg)
-    except:
-        return False
-    return True
-
-@Deprecated("Please use the new factory sunpy.Map")
-def make_map(*args, **kwargs):
-    __doc__ = MapFactory.__doc__
-    return Map(*args, **kwargs)
 
 class InvalidMapInput(ValueError):
     """Exception to raise when input variable is not a Map instance and does

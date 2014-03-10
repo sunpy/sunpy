@@ -7,25 +7,23 @@ import urlparse
 import numpy as np
 import matplotlib.pyplot as plt
 
-from astropy.io import fits
 import pandas
 
-import sunpy
-from sunpy.lightcurve import LightCurve
+from sunpy.lightcurve import GenericLightCurve
 from sunpy.time import parse_time
-from sunpy.util.odict import OrderedDict
+from sunpy.map.header import MapMeta
 
 
 __all__ = ['NoRHLightCurve']
 
-class NoRHLightCurve(LightCurve):
+class NoRHLightCurve(GenericLightCurve):
     """
     Nobeyama Radioheliograph LightCurve.
 
     Examples
     --------
     >>> import sunpy
-    
+
     >>> norh = sunpy.lightcurve.NoRHLightCurve.create('~/Data/norh/tca110607')
     >>> norh = sunpy.lightcurve.NoRHLightCurve.create('2011/08/10')
     >>> norh = sunpy.lightcurve.NoRHLightCurve.create('2011/08/10',wavelength='34')
@@ -35,6 +33,18 @@ class NoRHLightCurve(LightCurve):
     ----------
     | http://solar.nro.nao.ac.jp/norh/
     """
+    def __init__(self, data, meta, **kwargs):
+        obs_start_time=parse_time(meta['DATE-OBS'] + 'T' + meta['CRVAL1'])
+        length=len(data)
+        cadence=np.float(meta['CDELT1'])
+        sec_array=np.linspace(0, length-1, (length/cadence))
+
+        norh_time=[]
+        for s in sec_array:
+            norh_time.append(obs_start_time + datetime.timedelta(0,s))
+
+        self.data = pandas.DataFrame(data, index=norh_time)
+        self.meta = MapMeta(meta)
 
     def peek(self, **kwargs):
         """Plots the NoRH lightcurve"""
@@ -51,36 +61,36 @@ class NoRHLightCurve(LightCurve):
         plt.show()
 
     @classmethod
-    def _get_url_for_date(cls,date, **kwargs):
+    def _get_url_from_timerange(cls, timerange, **kwargs):
+        days = timerange.get_days()
+        urls = []
+        for day in days:
+            urls.append(cls._get_url_for_date(day, **kwargs))
+        return urls
+
+    @classmethod
+    def _get_url_for_date(cls, date, **kwargs):
         """This method retrieves the url for NoRH correlation data for the given date."""
+
+        # Hack to get around Python 2.x not backporting PEP 3102.
+        wavelength = kwargs.pop('wavelength', None)
+
         #default urllib password anonymous@ is not accepted by the NoRH FTP server.
         #include an accepted password in base url
         baseurl='ftp://anonymous:mozilla@example.com@solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/'
-        #date is a datetime object
-        if 'wavelength' in kwargs:
-            if kwargs['wavelength'] == '34':
-                final_url=urlparse.urljoin(baseurl,date.strftime('%Y/%m/' + 'tcz' + '%y%m%d')) 
+
+        #date is a datetime.date object
+        if wavelength == '34':
+            final_url=urlparse.urljoin(baseurl,date.strftime('%Y/%m/' + 'tcz' + '%y%m%d'))
         else:
-            final_url=urlparse.urljoin(baseurl, date.strftime('%Y/%m/' + 'tca' + '%y%m%d')) 
-        
+            final_url=urlparse.urljoin(baseurl, date.strftime('%Y/%m/' + 'tca' + '%y%m%d'))
+
         return final_url
 
-    @staticmethod
-    def _parse_fits(filepath):
-        """This method parses NoRH tca and tcz correlation files."""
-        hdulist=fits.open(filepath)
-        header=OrderedDict(hdulist[0].header)
-        #for these NoRH files, the time series data is recorded in the primary HDU
-        data=hdulist[0].data
-
-        #No explicit time array in FITS file, so construct the time array from the FITS header
-        obs_start_time=parse_time(header['DATE-OBS'] + 'T' + header['CRVAL1'])
-        length=len(data)
-        cadence=np.float(header['CDELT1'])
-        sec_array=np.linspace(0, length-1, (length/cadence))
-
-        norh_time=[]
-        for s in sec_array:
-            norh_time.append(obs_start_time + datetime.timedelta(0,s))
-
-        return header, pandas.DataFrame(data, index=norh_time)
+    @classmethod
+    def _is_datasource_for(cls, data, meta, source=None):
+        if meta is not None:
+            return meta.pop('telescop', '').upper() == 'RADIOHELIOGRAPH'
+        if source is not None:
+            source = source.lower()
+            return source == 'norh'
