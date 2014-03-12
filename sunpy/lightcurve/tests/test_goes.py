@@ -12,12 +12,14 @@ class TestGOESLightCurve():
     
     @pytest.mark.online
     def test_goes_range(self):
+       pytest.skip('The GOES API currently does not work')
        lc1 = sunpy.lightcurve.GOESLightCurve.create('2011/06/01', '2011/06/02')
        
        assert isinstance(lc1, sunpy.lightcurve.GOESLightCurve)
 
     @pytest.mark.online
     def test_goes_timerange(self):
+        pytest.skip('The GOES API currently does not work')
         timerange = sunpy.time.TimeRange('2011/06/01', '2011/06/02')
         lc1 = sunpy.lightcurve.GOESLightCurve.create(timerange)
        
@@ -31,6 +33,7 @@ class TestGOESLightCurve():
 
     @pytest.mark.online
     def test_filename(self):
+        pytest.skip('The GOES API currently does not work')
         lc1 = sunpy.lightcurve.GOESLightCurve.create('2011/06/01', '2011/06/02')
         lc2 = sunpy.lightcurve.GOESLightCurve.create('2011/06/03', '2011/06/04')
         #If the dataframes are non-idential it raises an error, if they are
