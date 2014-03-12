@@ -12,13 +12,13 @@ class TestGOESLightCurve():
     
     @pytest.mark.online
     def test_goes_range(self):
-       lc1 = sunpy.lightcurve.GOESLightCurve.create('2013/06/01', '2013/06/02')
+       lc1 = sunpy.lightcurve.GOESLightCurve.create('2011/06/01', '2011/06/02')
        
        assert isinstance(lc1, sunpy.lightcurve.GOESLightCurve)
 
     @pytest.mark.online
     def test_goes_timerange(self):
-        timerange = sunpy.time.TimeRange('2013/06/01', '2013/06/02')
+        timerange = sunpy.time.TimeRange('2011/06/01', '2011/06/02')
         lc1 = sunpy.lightcurve.GOESLightCurve.create(timerange)
        
         assert isinstance(lc1, sunpy.lightcurve.GOESLightCurve)
@@ -31,8 +31,8 @@ class TestGOESLightCurve():
 
     @pytest.mark.online
     def test_filename(self):
-        lc1 = sunpy.lightcurve.GOESLightCurve.create('2013/06/01','2013/06/02')
-        lc2 = sunpy.lightcurve.GOESLightCurve.create('2013/06/01','2013/06/02')
+        lc1 = sunpy.lightcurve.GOESLightCurve.create('2011/06/01', '2011/06/02')
+        lc2 = sunpy.lightcurve.GOESLightCurve.create('2011/06/03', '2011/06/04')
         #If the dataframes are non-idential it raises an error, if they are
         #identical it returns True
         with pytest.raises((Exception)):
