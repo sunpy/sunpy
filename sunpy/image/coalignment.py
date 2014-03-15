@@ -6,12 +6,6 @@ import numpy as np
 # Image co-registration by matching templates
 from skimage.feature import match_template
 
-# Shifting data - subpixel shifts are possible
-from scipy.ndimage.interpolation import shift
-
-# Map
-from sunpy.Map import Map
-
 
 def default_fmap_function(data):
     """
@@ -19,90 +13,6 @@ def default_fmap_function(data):
     manipulation function for the coalignment method.
     """
     return 1.0 * data
-
-
-# Coalignment by matching a template
-def coalign_by_match_template(mc, layer_index=0, func=default_fmap_function,
-                              clip=True):        
-    """
-    Co-register the layers in a mapcube according to a template taken from
-    that mapcube.
-
-    Input
-    -----
-    mc : a mapcube of shape (ny, nx, nt), where nt is the number of
-         layers in the mapcube.
-
-    layer_index : the layer in the mapcube from which the template will be
-                  extracted.
-
-    func: a function which is applied to the data values before the
-          coalignment method is applied.  This can be useful in coalignment,
-          because it is sometimes better to co-align on a function of the data
-          rather than the data itmc.  The calculated shifts are applied to
-          the original data.  Useful functions to consider are the log of the
-          image data, or 1 / data. The function is of the form func = F(data).
-          The default function ensures that the data are floats.
-
-    clip : clip off x, y edges in the datacube that are potentially affected
-            by edges effects.
-
-    Output
-    ------
-    datacube : the input datacube each layer having been co-registered against
-               the template.
-
-    """
-    # Size of the data
-    ny = mc.maps[layer_index].shape[0]
-    nx = mc.maps[layer_index].shape[1]
-    nt = len(mc.maps)
-
-    # Storage for the shifted data and the pixel shifts
-    shifted_datacube = np.zeros((ny, nx, nt))
-    xshift_keep = np.zeros((nt))
-    yshift_keep = np.zeros((nt))
-
-    # Calculate a template
-    template = func(mc.maps[layer_index].data[ny / 4: 3 * ny / 4,
-                                         nx / 4: 3 * nx / 4])
-
-    for i, m in enumerate(mc.maps):
-        # Get the next 2-d data array
-        this_layer = func(m.data)
-
-        # Calculate the y and x shifts in pixels
-        yshift, xshift = calculate_shift(this_layer, template)
-
-        # Keep shifts in pixels
-        yshift_keep[i] = yshift
-        xshift_keep[i] = xshift
-
-    # Calculate shifts relative to the template layer
-    yshift_keep = yshift_keep - yshift_keep[layer_index]
-    xshift_keep = xshift_keep - xshift_keep[layer_index]
-
-    # Shift the data
-    for i, m in enumerate(mc.maps):
-        shifted_datacube[:, :, i] = shift(m.data, [-yshift_keep[i], -xshift_keep[i]])
-
-    # Clip the data if requested
-    if clip:
-        shifted_datacube = clip_edges(shifted_datacube, yshift_keep, xshift_keep)
-
-    # Create a new mapcube.  Adjust the positioning information accordingly.
-    new_cube = []
-    for i, m in enumerate(mc.maps):
-        new_meta = m.meta.copy()
-        new_meta['xcen'] = new_meta['xcen'] + xshift_keep[i] * m.scale['x']
-        new_meta['ycen'] = new_meta['ycen'] + yshift_keep[i] * m.scale['y']
-        new_map = Map(shifted_datacube[:, :, i], new_meta)
-
-        # Store the new map in a list
-        new_cube.append(new_map)
-
-    # Return the cube and the pixel displacements
-    return Map(new_cube, cube=True)
 
 
 def calculate_shift(this_layer, template):
