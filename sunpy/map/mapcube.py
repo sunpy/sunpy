@@ -12,7 +12,8 @@ from sunpy.visualization.mapcubeanimator import MapCubeAnimator
 from sunpy.util import expand_list
 
 # Mapcube co-alignment functions
-from sunpy.image.coalignment import coalign_by_match_template
+from sunpy.image.coalignment import default_fmap_function, calculate_shift, clip_edges
+from scipy.ndimage.interpolation import shift
 
 __all__ = ['MapCube']
 
@@ -86,9 +87,85 @@ class MapCube(object):
     def coalign(self, method="match_template", **kwargs):
         """ Fine coalign the data"""
         if method == 'match_template':
-            return coalign_by_match_template(self, **kwargs)
+            return self._coalign_by_match_template(**kwargs)
         else:
-            ValueError("Only 'match_template' coalignment method is supported at present.")
+            raise ValueError("Only 'match_template' coalignment method is supported at present.")
+
+    # Coalignment by matching a template
+    def _coalign_by_match_template(self, layer_index=0, func=default_fmap_function,
+                                  clip=True):        
+        """
+        Co-register the layers in a mapcube according to a template taken from
+        that mapcube.  This method requires that scikit-image be installed.
+    
+        Input
+        -----
+        self : a mapcube of shape (ny, nx, nt), where nt is the number of
+             layers in the mapcube.
+    
+        layer_index : the layer in the mapcube from which the template will be
+                      extracted.
+    
+        func: a function which is applied to the data values before the
+              coalignment method is applied.  This can be useful in coalignment,
+              because it is sometimes better to co-align on a function of the data
+              rather than the data itself.  The calculated shifts are applied to
+              the original data.  Useful functions to consider are the log of the
+              image data, or 1 / data. The function is of the form func = F(data).
+              The default function ensures that the data are floats.
+    
+        clip : clip off x, y edges in the datacube that are potentially affected
+                by edges effects.
+    
+        Output
+        ------
+        datacube : the input datacube each layer having been co-registered against
+                   the template.
+    
+        """
+        # Size of the data
+        ny = self.maps[layer_index].shape[0]
+        nx = self.maps[layer_index].shape[1]
+        nt = len(self.maps)
+    
+        # Storage for the shifted data and the pixel shifts
+        shifted_datacube = np.zeros((ny, nx, nt))
+        xshift_keep = np.zeros((nt))
+        yshift_keep = np.zeros((nt))
+    
+        # Calculate a template
+        template = func(self.maps[layer_index].data[ny / 4: 3 * ny / 4,
+                                             nx / 4: 3 * nx / 4])
+    
+        for i, m in enumerate(self.maps):
+            # Get the next 2-d data array
+            this_layer = func(m.data)
+    
+            # Calculate the y and x shifts in pixels
+            yshift, xshift = calculate_shift(this_layer, template)
+    
+            # Keep shifts in pixels
+            yshift_keep[i] = yshift
+            xshift_keep[i] = xshift
+    
+        # Calculate shifts relative to the template layer
+        yshift_keep = yshift_keep - yshift_keep[layer_index]
+        xshift_keep = xshift_keep - xshift_keep[layer_index]
+    
+        # Shift the data
+        for i, m in enumerate(self.maps):
+            shifted_datacube[:, :, i] = shift(m.data, [-yshift_keep[i], -xshift_keep[i]])
+    
+        # Clip the data if requested
+        if clip:
+            shifted_datacube = clip_edges(shifted_datacube, yshift_keep, xshift_keep)
+    
+        # Create a new mapcube.  Adjust the positioning information accordingly.
+        for i, m in enumerate(self.maps):
+            self.maps[i].meta['xcen'] = self.maps[i].meta['xcen']  + xshift_keep[i] * m.scale['x']
+            self.maps[i].meta['ycen'] = self.maps[i].meta['ycen']  + yshift_keep[i] * m.scale['y']
+            self.maps[i].data = shifted_datacube[:, :, i]
+        return self
 
     # Sorting methods
     @classmethod
