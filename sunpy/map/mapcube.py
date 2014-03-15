@@ -93,7 +93,7 @@ class MapCube(object):
 
     # Coalignment by matching a template
     def _coalign_by_match_template(self, layer_index=0, func=default_fmap_function,
-                                  clip=True):        
+                                  clip=True, template=None):        
         """
         Co-register the layers in a mapcube according to a template taken from
         that mapcube.  This method requires that scikit-image be installed.
@@ -116,6 +116,10 @@ class MapCube(object):
     
         clip : clip off x, y edges in the datacube that are potentially affected
                 by edges effects.
+        
+        template: {None, Map, ndarray}
+                  The template used in the matching.  The template can be
+                  another SunPy map, or a numpy ndarray.
     
         Output
         ------
@@ -133,16 +137,28 @@ class MapCube(object):
         xshift_keep = np.zeros((nt))
         yshift_keep = np.zeros((nt))
     
-        # Calculate a template
-        template = func(self.maps[layer_index].data[ny / 4: 3 * ny / 4,
-                                             nx / 4: 3 * nx / 4])
-    
+        # Calculate a template.  If no template is passed then define one
+        # from the the index layer.
+        if template is None:
+            tplate = self.maps[layer_index].data[ny / 4: 3 * ny / 4,
+                                             nx / 4: 3 * nx / 4]
+        elif isinstance(template, GenericMap):
+            tplate = template.data
+        elif isinstance(template, np.ndarray):
+            tplate = template
+        else:
+            raise ValueError('Invalid template.')
+        
+        # Apply the function to the template
+        tplate = func(tplate)
+
+        # Match the template and calculate shifts
         for i, m in enumerate(self.maps):
             # Get the next 2-d data array
             this_layer = func(m.data)
     
             # Calculate the y and x shifts in pixels
-            yshift, xshift = calculate_shift(this_layer, template)
+            yshift, xshift = calculate_shift(this_layer, tplate)
     
             # Keep shifts in pixels
             yshift_keep[i] = yshift
