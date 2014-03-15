@@ -11,6 +11,9 @@ from sunpy.map import GenericMap
 from sunpy.visualization.mapcubeanimator import MapCubeAnimator
 from sunpy.util import expand_list
 
+# Mapcube co-alignment functions
+from sunpy.image.coalignment import coalign_by_match_template
+
 __all__ = ['MapCube']
 
 class MapCube(object):
@@ -28,7 +31,8 @@ class MapCube(object):
     derotate : {None}
         Apply a derotation to the data (Not Implemented)
     coalign : {None}
-        Apply fine coalignment to the data (Not Implemented)
+        Apply fine coalignment to the data (NOTE: requires the installation of
+        scikit-image.)
 
     Attributes
     ----------
@@ -79,37 +83,12 @@ class MapCube(object):
         """Overiding indexing operation"""
         return self.maps[key]
 
-    def coalign(self, method="diff"):
+    def coalign(self, method="match_template", **kwargs):
         """ Fine coalign the data"""
-        if method == 'diff':
-            return self._coalign_diff(self)
-
-    # Coalignment methods
-    def _coalign_diff(self):
-        """Difference-based coalignment
-
-        Coaligns data by minimizing the difference between subsequent images
-        before and after shifting the images one to several pixels in each
-        direction.
-
-        pseudo-code:
-
-        for i len(self):
-            min_diff = {'value': (), 'offset': (0, 0)} # () is pos infinity
-
-            # try shifting 1 pixel in each direction
-            for x in (-1, 0, 1):
-                for y in (-1, 0, 1):
-                    # calculate differenand hasattr(self, '_coalign_%s' % coalign):
-            getattr(self, '_coalign_%s' % coalign)()ce for intersecting pixels
-                    # if < min_diff['value'], store new value/offset
-
-            # shift image
-            if min_diff['offset'] != (0, 0):
-                # shift and clip image
-
-        """
-        raise NotImplementedError("Sorry this is not yet supported")
+        if method == 'match_template':
+            return coalign_by_match_template(self, **kwargs)
+        else:
+            ValueError("Only 'match_template' coalignment method is supported at present.")
 
     # Sorting methods
     @classmethod
