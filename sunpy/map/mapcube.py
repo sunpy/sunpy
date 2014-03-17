@@ -135,8 +135,8 @@ class MapCube(object):
 
         """
         # Check to make sure that match_template has been loaded
-        if not("match_template") in sys.modules:
-             print('Warning: the mapcube "coalign" method will not work. Please install scikit-image to enable the coalign method of mapcube.')
+        if not("skimage.feature.template") in sys.modules:
+             print('Warning: the mapcube "coalign" method will not work. Please install scikit-image >= 0.9.3 to enable the coalign method of mapcube.')
              return self
 
         # Size of the data
