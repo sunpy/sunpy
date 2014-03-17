@@ -184,7 +184,6 @@ class MapCube(object):
             shifted_data = shift(m.data, [-yshift_keep[i], -xshift_keep[i]])
             if clip:
                 yclips, xclips = calculate_clipping(yshift_keep, xshift_keep)
-                print yclips, xclips
                 shifted_data = clip_edges(shifted_data, yclips, xclips)
 
             # Update the mapcube image data
