@@ -7,7 +7,7 @@ import numpy as np
 try:
     from skimage.feature import match_template
 except ImportError:
-   pass
+   match_template = None
 
 
 def default_fmap_function(data):
@@ -132,7 +132,10 @@ def match_template_to_layer(layer, template):
     This function requires the "match_template" function in scikit image.
 
     """
-    return match_template(layer, template)
+    if match_template is None:
+        raise ImportError("Can't import 'match_template' from skimage.feature.  Please install the scikit-image package.")
+    else:
+        return match_template(layer, template)
 
 
 def find_best_match_location(corr):
