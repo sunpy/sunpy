@@ -4,7 +4,10 @@
 import numpy as np
 
 # Image co-registration by matching templates
-from skimage.feature import match_template
+try:
+    from skimage.feature import match_template
+except ImportError:
+    print('Warning: the mapcube "coalign" method will not work. Please install scikit-image to enable the coalign method of mapcube.')
 
 
 def default_fmap_function(data):
