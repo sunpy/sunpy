@@ -14,6 +14,7 @@ from sunpy.util import expand_list
 # Mapcube co-alignment functions
 from sunpy.image.coalignment import default_fmap_function, calculate_shift, clip_edges, calculate_clipping
 from scipy.ndimage.interpolation import shift
+from copy import deepcopy
 
 __all__ = ['MapCube']
 
@@ -175,15 +176,19 @@ class MapCube(object):
         yshift_keep = yshift_keep - yshift_keep[layer_index]
         xshift_keep = xshift_keep - xshift_keep[layer_index]
 
+        # New mapcube for the new data
+        newmc = deepcopy(self)
+
         # Shift the data and construct the mapcube
-        for i, m in enumerate(self.maps):
+        for i, m in enumerate(newmc.maps):
             shifted_data = shift(m.data, [-yshift_keep[i], -xshift_keep[i]])
             if clip:
                 yclips, xclips = calculate_clipping(yshift_keep, xshift_keep)
+                print yclips, xclips
                 shifted_data = clip_edges(shifted_data, yclips, xclips)
 
             # Update the mapcube image data
-            self.maps[i].data = shifted_data
+            newmc.maps[i].data = shifted_data
 
             # Calculate the shifts required in physical units, which are
             # presumed to be arcseconds.
@@ -191,15 +196,15 @@ class MapCube(object):
             yshift_arcseconds[i] = yshift_keep[i] * m.scale['y']
 
             # Adjust the positioning information accordingly.
-            self.maps[i].meta['xcen'] = self.maps[i].meta['xcen'] + xshift_arcseconds[i]
-            self.maps[i].meta['ycen'] = self.maps[i].meta['ycen'] + yshift_arcseconds[i]
+            newmc.maps[i].meta['xcen'] = newmc.maps[i].meta['xcen'] + xshift_arcseconds[i]
+            newmc.maps[i].meta['ycen'] = newmc.maps[i].meta['ycen'] + yshift_arcseconds[i]
 
         # Return the mapcube, or optionally, the mapcube and the displacements
         # used to create the mapcube.
         if return_displacements:
-            return self, {"x": xshift_arcseconds, "y": yshift_arcseconds}
+            return newmc, {"x": xshift_arcseconds, "y": yshift_arcseconds}
         else:
-            return self
+            return newmc
 
 
     # Sorting methods
