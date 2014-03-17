@@ -46,46 +46,46 @@ def calculate_shift(this_layer, template):
 #
 # Remove the edges of a datacube
 #
-def clip_edges(datacube, y, x):
+def clip_edges(data, yclips, xclips):
     """
-    Clips off the y and x edges of a datacube according to a list of pixel
+    Clips off the y and x edges of a 2d array according to a list of pixel
     values.  Positive pixel values will clip off the datacube at the upper end
     of the range.  Negative values will clip off values at the lower end of
     the  range.  This function is useful for removing data at the edge of
-    datacubes that may be affected by shifts from solar de-rotation and
-    layer co-registration, leaving a datacube unaffected by edge effects.
+    2d images that may be affected by shifts from solar de-rotation and
+    layer co-registration, leaving an image unaffected by edge effects.
 
     Input
     -----
-    datacube : a numpy array of shape (ny, nx, nt), where nt is the number of
-               layers in the datacube.
+    data : a numpy array of shape (ny, nx)
 
-    y : a numpy array of pixel values that correspond to how much to pixel
-        clip values in the x-direction.
+    yclips : the amount to clip in the y-direction of the data
 
-    x : a numpy array of pixel values that correspond to how much to pixel
-        clip values in the y-direction.
+    xclips : the amount to clip in the x-direction of the data
 
     Output
     ------
-    A datacube with edges clipd off according to the positive and negative
-    ceiling values in the y and x arrays.
+    A 2d image with edges clipped off according to the positive and negative
+    ceiling values in the yclips and xclips arrays.
     """
 
     # Datacube shape
-    ny = datacube.shape[0]
-    nx = datacube.shape[1]
-    nt = datacube.shape[2]
+    ny = data.shape[0]
+    nx = data.shape[1]
 
-    # maximum to clip off in the x-direction
-    xupper = _upper_clip(x)
-    xlower = _lower_clip(x)
+    return data[yclips[0]: ny - yclips[1] - 1, xclips[0]: nx - xclips[1] - 1]
 
-    # maximum to clip off in the y direction
-    yupper = _upper_clip(y)
-    ylower = _lower_clip(y)
 
-    return datacube[ylower: ny - yupper - 1, xlower: nx - xupper - 1, 0: nt]
+#
+# Return the upper and lower clipping values for the y and x directions an
+# input set of pixel shifts y and x
+#
+def calculate_clipping(y, x):
+    """
+    Return the upper and lower clipping values for the y and x directions an
+    input set of pixel shifts y and x.
+    """
+    return [_lower_clip(y), _upper_clip(y)], [_lower_clip(x), _upper_clip(x)], 
 
 
 #

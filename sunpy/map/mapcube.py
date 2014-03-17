@@ -12,7 +12,7 @@ from sunpy.visualization.mapcubeanimator import MapCubeAnimator
 from sunpy.util import expand_list
 
 # Mapcube co-alignment functions
-from sunpy.image.coalignment import default_fmap_function, calculate_shift, clip_edges
+from sunpy.image.coalignment import default_fmap_function, calculate_shift, clip_edges, calculate_clipping
 from scipy.ndimage.interpolation import shift
 
 __all__ = ['MapCube']
@@ -92,8 +92,9 @@ class MapCube(object):
             raise ValueError("Only 'match_template' coalignment method is supported at present.")
 
     # Coalignment by matching a template
-    def _coalign_by_match_template(self, layer_index=0, func=default_fmap_function,
-                                  clip=True, template=None):        
+    def _coalign_by_match_template(self, layer_index=0, clip=True,
+                                   template=None, func=default_fmap_function,
+                                   return_displacements=False):        
         """
         Co-register the layers in a mapcube according to a template taken from
         that mapcube.  This method requires that scikit-image be installed.
@@ -114,28 +115,30 @@ class MapCube(object):
               image data, or 1 / data. The function is of the form func = F(data).
               The default function ensures that the data are floats.
     
-        clip : clip off x, y edges in the datacube that are potentially affected
-                by edges effects.
+        clip : clip off x, y edges in the datacube that are potentially
+               affected by edges effects.
         
         template: {None, Map, ndarray}
                   The template used in the matching.  The template can be
                   another SunPy map, or a numpy ndarray.
-    
-        Output
-        ------
-        datacube : the input datacube each layer having been co-registered against
-                   the template.
-    
+                  
+        return_displacements : {True, False}
+                               If True, alse return the x and y displacements
+                               applied to the input data in units of
+                               arcseconds.
+
         """
         # Size of the data
         ny = self.maps[layer_index].shape[0]
         nx = self.maps[layer_index].shape[1]
         nt = len(self.maps)
     
-        # Storage for the shifted data and the pixel shifts
-        shifted_datacube = np.zeros((ny, nx, nt))
+        # Storage for the pixel shifts and the shifts in arcseconds
         xshift_keep = np.zeros((nt))
-        yshift_keep = np.zeros((nt))
+        yshift_keep = np.zeros_like(xshift_keep)
+        
+        xshift_arcseconds = np.zeros_like(xshift_keep)
+        yshift_arcseconds = np.zeros_like(xshift_keep)
     
         # Calculate a template.  If no template is passed then define one
         # from the the index layer.
@@ -148,7 +151,7 @@ class MapCube(object):
             tplate = template
         else:
             raise ValueError('Invalid template.')
-        
+
         # Apply the function to the template
         tplate = func(tplate)
 
@@ -156,32 +159,44 @@ class MapCube(object):
         for i, m in enumerate(self.maps):
             # Get the next 2-d data array
             this_layer = func(m.data)
-    
+
             # Calculate the y and x shifts in pixels
             yshift, xshift = calculate_shift(this_layer, tplate)
     
             # Keep shifts in pixels
             yshift_keep[i] = yshift
             xshift_keep[i] = xshift
-    
+
         # Calculate shifts relative to the template layer
         yshift_keep = yshift_keep - yshift_keep[layer_index]
         xshift_keep = xshift_keep - xshift_keep[layer_index]
-    
-        # Shift the data
+
+        # Shift the data and construct the mapcube
         for i, m in enumerate(self.maps):
-            shifted_datacube[:, :, i] = shift(m.data, [-yshift_keep[i], -xshift_keep[i]])
-    
-        # Clip the data if requested
-        if clip:
-            shifted_datacube = clip_edges(shifted_datacube, yshift_keep, xshift_keep)
-    
-        # Create a new mapcube.  Adjust the positioning information accordingly.
-        for i, m in enumerate(self.maps):
-            self.maps[i].meta['xcen'] = self.maps[i].meta['xcen']  + xshift_keep[i] * m.scale['x']
-            self.maps[i].meta['ycen'] = self.maps[i].meta['ycen']  + yshift_keep[i] * m.scale['y']
-            self.maps[i].data = shifted_datacube[:, :, i]
-        return self
+            shifted_data = shift(m.data, [-yshift_keep[i], -xshift_keep[i]])
+            if clip:
+                yclips, xclips = calculate_clipping(yshift_keep, xshift_keep)
+                shifted_data = clip_edges(shifted_data, yclips, xclips)
+
+            # Update the mapcube image data
+            self.maps[i].data = shifted_data
+
+            # Calculate the shifts required in physical units, which are
+            # presumed to be arcseconds.
+            xshift_arcseconds[i] = xshift_keep[i] * m.scale['x']
+            yshift_arcseconds[i] = yshift_keep[i] * m.scale['y']
+
+            # Adjust the positioning information accordingly.
+            self.maps[i].meta['xcen'] = self.maps[i].meta['xcen'] + xshift_arcseconds[i]
+            self.maps[i].meta['ycen'] = self.maps[i].meta['ycen'] + yshift_arcseconds[i]
+
+        # Return the mapcube, or optionally, the mapcube and the displacements
+        # used to create the mapcube.
+        if return_displacements:
+            return self, {"x": xshift_arcseconds, "y": yshift_arcseconds}
+        else:
+            return self
+
 
     # Sorting methods
     @classmethod
