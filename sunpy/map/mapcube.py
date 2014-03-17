@@ -97,8 +97,12 @@ class MapCube(object):
                                    return_displacements=False):        
         """
         Co-register the layers in a mapcube according to a template taken from
-        that mapcube.  This method requires that scikit-image be installed.
-    
+        that mapcube.  This method REQUIRES that scikit-image be installed.
+        When using this functionality, it is a good idea to check that the
+        shifts that were applied to were reasonable and expected.  One way of
+        checking this is to animate the original mapcube, animate the coaligned
+        mapcube, and compare the differences you see to the calculated shifts.  
+
         Input
         -----
         self : a mapcube of shape (ny, nx, nt), where nt is the number of
