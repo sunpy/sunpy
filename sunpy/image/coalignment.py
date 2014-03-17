@@ -49,9 +49,7 @@ def calculate_shift(this_layer, template):
 def clip_edges(data, yclips, xclips):
     """
     Clips off the y and x edges of a 2d array according to a list of pixel
-    values.  Positive pixel values will clip off the datacube at the upper end
-    of the range.  Negative values will clip off values at the lower end of
-    the  range.  This function is useful for removing data at the edge of
+    values.  This function is useful for removing data at the edge of
     2d images that may be affected by shifts from solar de-rotation and
     layer co-registration, leaving an image unaffected by edge effects.
 
@@ -83,7 +81,9 @@ def clip_edges(data, yclips, xclips):
 def calculate_clipping(y, x):
     """
     Return the upper and lower clipping values for the y and x directions an
-    input set of pixel shifts y and x.
+    input set of pixel shifts y and x. Positive pixel values will clip off the
+    datacube at the upper end of the range.  Negative values will clip off
+    values at the lower end of the range.  
     """
     return [_lower_clip(y), _upper_clip(y)], [_lower_clip(x), _upper_clip(x)], 
 
