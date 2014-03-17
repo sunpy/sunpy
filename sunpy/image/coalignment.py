@@ -7,7 +7,7 @@ import numpy as np
 try:
     from skimage.feature import match_template
 except ImportError:
-    print('Warning: the mapcube "coalign" method will not work. Please install scikit-image to enable the coalign method of mapcube.')
+   pass
 
 
 def default_fmap_function(data):
