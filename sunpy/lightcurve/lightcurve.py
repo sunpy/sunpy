@@ -102,7 +102,7 @@ for compatability with map, please use meta instead""", Warning)
             err = "Unable to download data for specified date range"
         )
         result = cls.from_file(filepath)
-        result.data = result.data.ix[result.data.index.indexer_between_time(start, end)]
+        result.data = result.data.truncate(start,end)
         return result
 
     @classmethod
@@ -113,7 +113,7 @@ for compatability with map, please use meta instead""", Warning)
             err = "Unable to download data for specified date range"
         )
         result = cls.from_file(filepath)
-        result.data = result.data.ix[ts.index.indexer_between_time(timerange.start(), timerange.end())]
+        result.data = result.data.truncate(timerange.start(), timerange.end())
         return result
 
     @classmethod
