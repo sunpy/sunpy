@@ -18,6 +18,7 @@ Features:
 Bug Fixes:
     * Add support for VSO queries through proxies.
     * Fix apparent Right Ascension calulations.
+    * LightCurve meta data member now an OrderedDict Instance
 
 0.3.2
 -----
