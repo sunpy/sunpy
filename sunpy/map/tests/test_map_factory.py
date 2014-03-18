@@ -15,7 +15,7 @@ import sunpy.map
 import sunpy.data.test
 
 filepath = sunpy.data.test.rootdir
-a_list_of_many = glob.glob(os.path.join(filepath,"EIT")+'/*')
+a_list_of_many = glob.glob(os.path.join(filepath, "EIT", "*"))
 a_fname = a_list_of_many[0]
 #==============================================================================
 # Map Factory Tests
@@ -38,11 +38,11 @@ class TestMap:
         eitmap = sunpy.map.Map(a_fname)
         assert isinstance(eitmap, sunpy.map.GenericMap)
         # Directory
-        maps = sunpy.map.Map(os.path.join(filepath,"EIT"))
+        maps = sunpy.map.Map(os.path.join(filepath, "EIT"))
         assert isinstance(maps, list)
         assert ([isinstance(amap,sunpy.map.GenericMap) for amap in maps])
         # Glob
-        maps = sunpy.map.Map(os.path.join(filepath,"EIT")+'/*')
+        maps = sunpy.map.Map(os.path.join(filepath, "EIT", "*"))
         assert isinstance(maps, list)
         assert ([isinstance(amap,sunpy.map.GenericMap) for amap in maps])
         # Already a Map
@@ -63,6 +63,14 @@ class TestMap:
         header = {'cdelt1': 10, 'cdelt2': 10, 'telescop':'sunpy'}
         pair_map = sunpy.map.Map(data, header)
         assert isinstance(pair_map, sunpy.map.GenericMap)
+
+    def test_databaseentry(self):
+        db = sunpy.database.Database(url='sqlite://', default_waveunit='angstrom')
+        db.add_from_file(a_fname)
+
+        res = db.get_entry_by_id(1)
+        db_map = sunpy.map.Map(res)
+        assert isinstance(db_map, sunpy.map.GenericMap)
 
     @pytest.mark.online
     def test_url_pattern(self):
@@ -89,24 +97,24 @@ class TestMap:
 
     def test_soho(self):
         #Test EITMap, LASCOMap & MDIMap
-        eit = sunpy.map.Map(filepath + "/EIT/efz20040301.000010_s.fits")
+        eit = sunpy.map.Map(os.path.join(filepath, "EIT", "efz20040301.000010_s.fits"))
         assert isinstance(eit,sunpy.map.sources.EITMap)
 
-        lasco = sunpy.map.Map(filepath + "/lasco_c2_25299383_s.fts")
+        lasco = sunpy.map.Map(os.path.join(filepath, "lasco_c2_25299383_s.fts"))
         assert isinstance(lasco,sunpy.map.sources.LASCOMap)
 
-        mdi_c = sunpy.map.Map(filepath + "/mdi_fd_Ic_6h_01d.5871.0000_s.fits")
+        mdi_c = sunpy.map.Map(os.path.join(filepath, "mdi_fd_Ic_6h_01d.5871.0000_s.fits"))
         assert isinstance(mdi_c,sunpy.map.sources.MDIMap)
 
-        mdi_m = sunpy.map.Map(filepath + "/mdi_fd_M_96m_01d.5874.0005_s.fits")
+        mdi_m = sunpy.map.Map(os.path.join(filepath, "mdi_fd_M_96m_01d.5874.0005_s.fits"))
         assert isinstance(mdi_m,sunpy.map.sources.MDIMap)
 
     def test_stereo(self):
         #Test EUVIMap & CORMap
-        euvi = sunpy.map.Map(filepath + "/euvi_20090615_000900_n4euA_s.fts")
+        euvi = sunpy.map.Map(os.path.join(filepath, "euvi_20090615_000900_n4euA_s.fts"))
         assert isinstance(euvi,sunpy.map.sources.EUVIMap)
 
-        cor = sunpy.map.Map(filepath + "/cor1_20090615_000500_s4c1A.fts")
+        cor = sunpy.map.Map(os.path.join(filepath, "cor1_20090615_000500_s4c1A.fts"))
         assert isinstance(cor,sunpy.map.sources.CORMap)
 
     def test_rhessi(self):

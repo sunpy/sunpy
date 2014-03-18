@@ -17,6 +17,9 @@ from sunpy.database.tables import DatabaseEntry, Tag as TableTag,\
 __all__ = [
     'Starred', 'Tag', 'Path', 'DownloadTime', 'FitsHeaderEntry', 'walker']
 
+# This frozenset has been hardcoded to denote VSO attributes that are currently supported, on derdon's request.
+SUPPORTED_SIMPLE_VSO_ATTRS = frozenset(['source', 'provider', 'physobs', 'instrument'])
+SUPPORTED_NONVSO_ATTRS = frozenset(['starred'])
 
 class _BooleanAttr(object):
     def __init__(self, value, make):
@@ -209,9 +212,11 @@ def _create(wlk, root, session):
         elif typ == 'time':
             start, end, near = value
             query = query.filter(and_(
-                DatabaseEntry.observation_time_start >= start,
-                DatabaseEntry.observation_time_end <= end))
+                DatabaseEntry.observation_time_start < end,
+                DatabaseEntry.observation_time_end > start))
         else:
+            if typ.lower() not in SUPPORTED_SIMPLE_VSO_ATTRS.union(SUPPORTED_NONVSO_ATTRS):
+                raise NotImplementedError("The attribute {0!r} is not yet supported to query a database.".format(typ))
             query = query.filter_by(**{typ: value})
     return query.all()
 

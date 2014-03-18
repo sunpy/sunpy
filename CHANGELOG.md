@@ -1,8 +1,32 @@
 Latest
 ------
+  - changed _maps attribute in MapCube to a non-hidden type
+  - Added Nobeyama Radioheliograph data support to Lightcurve object.
+  - Fixed some tests on map method to support Windows
+  - Added a window/split method to time range
+  - Updates to spectrogram documentation
+  - Added method Database.add_from_hek_query_result to HEK database
+
+0.4.0
+-----
+Features:
+    * **Major** documentation refactor. A far reaching re-write and restructure.
+    * Add a SunPy Database to store and search local data.
+    * Add beta support for querying the HELIO HEC
+    * Add beta HEK to VSO query translation.
+    * Add the ability to download the GOES event list.
+    * Add support for downloading and querying the LYTAF database.
+    * Add support for ANA data.
     * Updated sun.constants to use astropy.constants objects which include units, source,
     and error instide. For more info check out http://docs.astropy.org/en/latest/constants/index.html
     * Add some beta support for IRIS data products
+    * Add a new MapCubeAnimator class with interactive widgets which is returned by mapcube.peek().
+    * The Glymur library is now used to read JPEG2000 files.
+    * GOESLightCurve now supports all satellites.
+
+Bug Fixes:
+    * Add support for VSO queries through proxies.
+    * Fix apparent Right Ascension calulations.
 
 0.3.2
 -----

@@ -1,4 +1,5 @@
-# [SunPy](http://http://sunpy.github.io) [![Build Status](https://secure.travis-ci.org/sunpy/sunpy.png)](http://travis-ci.org/sunpy/sunpy)[![Coverage Status](https://coveralls.io/repos/sunpy/sunpy/badge.png?branch=master)](https://coveralls.io/r/sunpy/sunpy?branch=master)
+# [SunPy](http://sunpy.org) 
+[![Downloads](https://pypip.in/d/sunpy/badge.png)](https://pypi.python.org/pypi/sunpy/) [![Latest Version](https://pypip.in/v/sunpy/badge.png)](https://pypi.python.org/pypi/sunpy/) [![Build Status](https://secure.travis-ci.org/sunpy/sunpy.png)] (http://travis-ci.org/sunpy/sunpy) [![Coverage Status](https://coveralls.io/repos/sunpy/sunpy/badge.png?branch=master)](https://coveralls.io/r/sunpy/sunpy?branch=master)
 
 SunPy is an open-source Python library for solar physics data analysis.
 
