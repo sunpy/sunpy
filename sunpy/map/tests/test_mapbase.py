@@ -10,6 +10,21 @@ import sunpy.map
 from astropy.io import fits
 import numpy as np
 
+from itertools import izip
+
+import pytest
+     
+# Try different dimensions to ensure that the resample method works
+# correctly in cases where the dimensions of the original map are
+# are exactly divisible by those of the output map as well as the cases
+# in which they aren't.
+resample_params = [
+    ('linear', (100, 200)),
+    ('neighbor', (128, 256)),
+    ('nearest', (512, 128)),
+    ('spline', (200, 200)),
+]
+
 class TestGenericMap:
     """Tests the Map class"""
     def setup_class(self):
@@ -136,33 +151,32 @@ class TestGenericMap:
 #
 #        assert map_header == fits_header
 
-
-    def test_resample_dimensions(self):
+    @pytest.mark.parametrize('sample_method,new_dimensions', resample_params)
+    def test_resample_dimensions(self, sample_method, new_dimensions):
         """Check that resampled map has expected dimensions."""
-        # Different dimensions to ensure that the resample method works
-        # correctly in cases where the dimensions of the original map are
-        # are exactly divisible by those of the output map as well as the cases
-        # in which they aren't.
-        new_dimensions = (100, 200)
-        linear_resampled_map = self.map.resample(new_dimensions)
-        assert linear_resampled_map.shape[1] == new_dimensions[0]
-        assert linear_resampled_map.shape[0] == new_dimensions[1]
+        resampled_map = self.map.resample(new_dimensions, method=sample_method)
+        assert resampled_map.shape[1] == new_dimensions[0]
+        assert resampled_map.shape[0] == new_dimensions[1]
 
-        new_dimensions = (128, 256)
-        neighbor_resampled_map = self.map.resample(new_dimensions, method = 'neighbor')
-        assert neighbor_resampled_map.shape[1] == new_dimensions[0]
-        assert neighbor_resampled_map.shape[0] == new_dimensions[1]
-
-        new_dimensions = (512, 128)
-        nearest_resampled_map = self.map.resample(new_dimensions, method = 'nearest')
-        assert nearest_resampled_map.shape[1] == new_dimensions[0]
-        assert nearest_resampled_map.shape[0] == new_dimensions[1]
-
-        new_dimensions = (200, 200)
-        spline_resampled_map = self.map.resample(new_dimensions, method = 'spline')
-        assert spline_resampled_map.shape[1] == new_dimensions[0]
-        assert spline_resampled_map.shape[0] == new_dimensions[1]
-
+    @pytest.mark.parametrize('sample_method,new_dimensions', resample_params)
+    def test_resample_metadata(self, sample_method, new_dimensions):
+        """
+        Check that the resampled map has correctly adjusted metadata.
+        """
+        resampled_map = self.map.resample(new_dimensions, method=sample_method)
+        assert float(resampled_map.meta['cdelt1']) / self.map.meta['cdelt1'] \
+            == float(self.map.shape[1]) / resampled_map.shape[1]
+        assert float(resampled_map.meta['cdelt2']) / self.map.meta['cdelt2'] \
+            == float(self.map.shape[0]) / resampled_map.shape[0]
+        assert resampled_map.meta['crpix1'] == (resampled_map.shape[1] + 1) / 2.
+        assert resampled_map.meta['crpix2'] == (resampled_map.shape[0] + 1) / 2.
+        assert resampled_map.meta['crval1'] == self.map.center['x']
+        assert resampled_map.meta['crval2'] == self.map.center['y']
+        for key in self.map.meta:
+            if key not in ('cdelt1', 'cdelt2', 'crpix1', 'crpix2',
+                           'crval1', 'crval2'):
+                assert resampled_map.meta[key] == self.map.meta[key]
+            
 
     def test_superpixel(self):
 
