@@ -13,7 +13,7 @@ __all__ = ['_convert_angle_units', 'convert_pixel_to_data', 'convert_hpc_hg',
 
 def _convert_angle_units(unit='arcsec'):
     """Determine the conversion factor between the data units and radians."""
-    if unit == 'deg':
+    if unit == 'degrees':
         return np.deg2rad(1)
     elif unit == 'arcmin':
         return np.deg2rad(1) / 60.0
