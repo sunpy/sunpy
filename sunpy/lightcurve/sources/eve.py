@@ -96,22 +96,32 @@ class EVELightCurve(GenericLightCurve):
     @staticmethod
     def _parse_level_0cs(fp):
         """Parses and EVE Level 0CS file"""
+		is_missing_data = False      #boolean to check for missing data
+		missing_data_val = numpy.nan
         header = []
         fields = []
         line = fp.readline()
-        header.append(line)
         # Read header at top of file
         while line.startswith(";"):
             header.append(line)
             line = fp.readline()
+	
+		meta = MetaDict()
+		for hline in header :
+			if hline == '; Format:\n' or hline == '; Column descriptions:\n':
+				continue
+			elif ('Created' in hline) or ('Source' in hline):
+				meta[hline.split(':',1)[0].replace(';',' ').strip()] = hline.split(':',1)[1].strip()
+			elif ':' in hline :
+				meta[hline.split(':')[0].replace(';',' ').strip()] = hline.split(':')[1].strip()
 
         fieldnames_start = False
-        for l in header:
-            if l.startswith("; Format:"):
+        for hline in header:
+            if hline.startswith("; Format:"):
                 fieldnames_start = False
             if fieldnames_start:
-                fields.append(l.split(":")[0].replace(';', ' ').strip())
-            if l.startswith("; Column descriptions:"):
+                fields.append(hline.split(":")[0].replace(';', ' ').strip())        
+            if hline.startswith("; Column descriptions:"):
                 fieldnames_start = True
 
         # Next line is YYYY DOY MM DD
@@ -130,9 +140,4 @@ class EVELightCurve(GenericLightCurve):
 
         data = read_csv(fp, sep="\s*", names=fields, index_col=0, date_parser=parser, header=None)
         #data.columns = fields
-        return data, MapMeta()
-
-    @classmethod
-    def _is_datasource_for(cls, data, meta, source=None):
-        if source is not None:
-            return source.lower() == 'eve'
+        return header, data
