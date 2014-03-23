@@ -245,7 +245,7 @@ def test_entries_from_dir():
 def test_entries_from_dir_recursively_true():
     entries = list(
         entries_from_dir(testdir, True, default_waveunit='angstrom'))
-    assert len(entries) == 25
+    assert len(entries) == 31
 
 
 def test_entries_from_dir_recursively_false():
