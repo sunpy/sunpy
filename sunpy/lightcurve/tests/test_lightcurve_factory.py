@@ -8,6 +8,7 @@ import os
 
 import pytest
 
+import sunpy.data.test
 import sunpy.time
 from sunpy.lightcurve.lightcurve_factory import LightCurve
 from sunpy.lightcurve.sources import *
@@ -15,7 +16,7 @@ from sunpy.util.odict import OrderedDict
 
 from astropy.io import fits
 
-base_path = '/home/stuart/GitHub/sunpy/sunpy/data/test/'
+base_path = sunpy.data.test.rootdir
 
 #def test_generic_dhp():
 #    hdus = fits.open(os.path.join(base_path,'lyra_20120101-000000_lev2_std.fits'))
