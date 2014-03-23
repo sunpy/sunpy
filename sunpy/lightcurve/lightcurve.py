@@ -21,6 +21,7 @@ import pandas
 import sunpy
 from sunpy.time import is_time, TimeRange, parse_time
 from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
+from sunpy.util.odict import OrderedDict
 
 __all__ = ['LightCurve']
 
@@ -71,7 +72,11 @@ class LightCurve(object):
 
     def __init__(self, data, meta=None):
         self.data = pandas.DataFrame(data)
-        self.meta = meta
+	if meta == '' or meta is None:
+		self.meta = OrderedDict()
+	else:	
+        	self.meta = OrderedDict(meta)
+	
     
     @property
     def header(self):
