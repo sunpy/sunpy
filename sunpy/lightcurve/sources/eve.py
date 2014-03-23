@@ -11,6 +11,7 @@ from pandas.io.parsers import read_csv
 from os.path import basename
 
 from sunpy.lightcurve import LightCurve
+from sunpy.util.odict import OrderedDict
 
 __all__ = ['EVELightCurve']
 
@@ -107,14 +108,23 @@ class EVELightCurve(LightCurve):
 
 		   
             line = fp.readline()
+	
+	meta = OrderedDict()
+	for hline in header :
+		if hline == '; Format:\n' or hline == '; Column descriptions:\n':
+			continue
+		elif ('Created' in hline) or ('Source' in hline):
+			meta[hline.split(':',1)[0].replace(';',' ').strip()] = hline.split(':',1)[1].strip()
+		elif ':' in hline :
+			meta[hline.split(':')[0].replace(';',' ').strip()] = hline.split(':')[1].strip()
 
         fieldnames_start = False
-        for l in header:
-            if l.startswith("; Format:"):
+        for hline in header:
+            if hline.startswith("; Format:"):
                 fieldnames_start = False
             if fieldnames_start:
-                fields.append(l.split(":")[0].replace(';', ' ').strip())        
-            if l.startswith("; Column descriptions:"):
+                fields.append(hline.split(":")[0].replace(';', ' ').strip())        
+            if hline.startswith("; Column descriptions:"):
                 fieldnames_start = True
 
         # Next line is YYYY DOY MM DD        
@@ -136,4 +146,4 @@ class EVELightCurve(LightCurve):
 		data[data == float(missing_data_val)] = numpy.nan
 	
         #data.columns = fields
-        return header, data
+        return meta, data
