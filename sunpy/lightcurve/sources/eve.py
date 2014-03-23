@@ -105,13 +105,22 @@ class EVELightCurve(GenericLightCurve):
             header.append(line)
             line = fp.readline()
 
+        meta = MapMeta()
+        for hline in header :
+            if hline == '; Format:\n' or hline == '; Column descriptions:\n':
+                continue
+            elif ('Created' in hline) or ('Source' in hline):
+                meta[hline.split(':',1)[0].replace(';',' ').strip()] = hline.split(':',1)[1].strip()
+            elif ':' in hline :
+                meta[hline.split(':')[0].replace(';',' ').strip()] = hline.split(':')[1].strip()
+
         fieldnames_start = False
-        for l in header:
-            if l.startswith("; Format:"):
+        for hline in header:
+            if hline.startswith("; Format:"):
                 fieldnames_start = False
             if fieldnames_start:
-                fields.append(l.split(":")[0].replace(';', ' ').strip())
-            if l.startswith("; Column descriptions:"):
+                fields.append(hline.split(":")[0].replace(';', ' ').strip())        
+            if hline.startswith("; Column descriptions:"):
                 fieldnames_start = True
 
         # Next line is YYYY DOY MM DD
@@ -130,7 +139,7 @@ class EVELightCurve(GenericLightCurve):
 
         data = read_csv(fp, sep="\s*", names=fields, index_col=0, date_parser=parser, header=None)
         #data.columns = fields
-        return data, MapMeta()
+        return data, meta
 
     @classmethod
     def _is_datasource_for(cls, data, meta, source=None):
