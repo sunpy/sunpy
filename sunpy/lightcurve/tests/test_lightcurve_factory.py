@@ -16,7 +16,7 @@ from sunpy.util.odict import OrderedDict
 
 from astropy.io import fits
 
-base_path = sunpy.data.test.rootdir
+base_path = os.path.join(sunpy.data.test.rootdir, 'lightcurve/')
 
 #def test_generic_dhp():
 #    hdus = fits.open(os.path.join(base_path,'lyra_20120101-000000_lev2_std.fits'))
@@ -90,6 +90,9 @@ def test_multi():
                                       source=[None, 'goes'])
     assert isinstance(lc[0], LYRALightCurve)
     assert isinstance(lc[1], GOESLightCurve)
+
+#def test_glob():
+#    lc = LightCurve(base_path + '*.fits')
 
 def test_one_from_many():
     lc = LightCurve([os.path.join(base_path,'lyra_20120101-000000_lev2_std.fits'),

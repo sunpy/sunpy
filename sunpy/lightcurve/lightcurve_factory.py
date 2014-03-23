@@ -150,6 +150,7 @@ class LightCurveFactory(BasicRegistrationFactory):
         self.fold_blank_hdu = kwargs.pop('fold_blank_hdu', True)
         self.source = kwargs.pop('source', None)
         self.timerange = kwargs.pop('timerange', None)
+
         if not is_iterable_not_str(self.source):
             #Make source a list that is the number of args long.
             if len(args): #Don't multiply by 0
@@ -291,13 +292,6 @@ class LightCurveFactory(BasicRegistrationFactory):
                  isinstance(arg[1],dict)):
                 data_header_pairs.append(arg)
 
-            # Data-header pair not in a tuple
-            elif (isinstance(arg, np.ndarray) and
-                  isinstance(args[i+1],dict)):
-                pair = (args[i], args[i+1])
-                data_header_pairs.append(pair)
-                i += 1 # an extra increment to account for the data-header pairing
-
             # File name
             elif is_file(arg):
                 path = os.path.expanduser(arg)
@@ -318,7 +312,7 @@ class LightCurveFactory(BasicRegistrationFactory):
                 for afile in files:
                     data_header_pairs += self._read_file(afile, source=source, **kwargs)
 
-            # Already a Map
+            # Already a LightCurve
             elif isinstance(arg, GenericLightCurve):
                 already_lcs.append(arg)
 
