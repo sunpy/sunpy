@@ -4,11 +4,17 @@ from __future__ import absolute_import
 
 import datetime
 
+import pandas
+import numpy as np
 import matplotlib
 from matplotlib import pyplot as plt
 
+from astropy.io import ascii
+
+from sunpy.map.header import MapMeta
 from sunpy.lightcurve import GenericLightCurve
 from sunpy.time import TimeRange
+import sunpy.time
 
 __all__ = ['GOESLightCurve']
 
@@ -67,6 +73,45 @@ class GOESLightCurve(GenericLightCurve):
         figure.show()
 
         return figure
+
+    @staticmethod
+    def _read_file(filepath):
+        header = MapMeta()
+
+        #csv files downloaded from the goes archive have a big header find it
+        data_start = 0
+        fp = open(filepath, 'rb')
+        lines = fp.readlines()
+        for i, line in enumerate(lines):
+            if line.find('data:') != -1:
+                data_start = i + 1
+                break
+
+        #read the data
+        data = ascii.read(lines[data_start:])
+        #Find the index that is strings and times:
+        inds = [i for i,v in enumerate(data[0]) if isinstance(v, basestring) if sunpy.time.is_time(v)]
+        if len(inds) != 1:
+            raise IOError("Can not automatically parse file, can't find time column")
+        #Parse time that column
+        index = [sunpy.time.parse_time(v) for v in data[data.keys()[inds[0]]]]
+        #remove that column
+        data.remove_column(data.keys()[inds[0]])
+        #Make a DataFrame
+        data = pandas.DataFrame(np.asarray(data), index=index)
+        
+        #add the header to the header
+        for i,line in enumerate(lines[:data_start]):
+            eqs = line.split('=')
+            if len(eqs) == 1:
+                header.update({str(i): eqs[0]})
+            elif len(eqs) == 2:
+                header.update({eqs[0]: eqs[1]})
+            else:
+                header.update({eqs[0]: "".join(eqs[1:])})
+        
+        return (data, header)
+
 
     @classmethod
     def _get_goes_sat_num_and_data_type(self,start,end):
