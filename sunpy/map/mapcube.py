@@ -95,7 +95,9 @@ class MapCube(object):
     # Coalignment by matching a template
     def _coalign_by_match_template(self, layer_index=0, clip=True,
                                    template=None, func=default_fmap_function,
-                                   return_displacements=False):        
+                                   apply_displacements=True,
+                                   displacements_only=False,
+                                   with_displacements=False):        
         """
         Co-register the layers in a mapcube according to a template taken from
         that mapcube.  This method REQUIRES that scikit-image be installed.
@@ -126,9 +128,16 @@ class MapCube(object):
         template: {None, Map, ndarray}
                   The template used in the matching.  The template can be
                   another SunPy map, or a numpy ndarray.
-                  
-        return_displacements : {True, False}
-                               If True, alse return the x and y displacements
+
+        apply_displacements : {True, False, (xdisplacement, ydisplacement)}
+
+        displacements_only : {True, False}
+                               If true, return ONLY the x and y displacements
+                               applied to the input data in units of
+                               arcseconds.
+
+        with_displacements : {True, False}
+                               If True, also return the x and y displacements
                                applied to the input data in units of
                                arcseconds.
 
