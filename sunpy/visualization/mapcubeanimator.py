@@ -48,7 +48,8 @@ class MapCubeAnimator(imageanimator.BaseFuncAnimator):
         imageanimator.BaseFuncAnimator.__init__(self, mapcube.maps, slider_functions,
                                         slider_ranges, **kwargs)
 
-        self._annotate_plot(0)
+        if annotate:
+            self._annotate_plot(0)
 
     def updatefig(self, val, im, slider):
         i = int(val)
