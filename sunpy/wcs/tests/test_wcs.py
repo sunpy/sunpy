@@ -24,7 +24,7 @@ wcs.wcs.rsun_meters = img.rsun_meters
 
 def test_convert_angle_units():
     actual = np.array([wcs._convert_angle_units(), wcs._convert_angle_units('arcsec'),
-        wcs._convert_angle_units('arcmin'), wcs._convert_angle_units('deg'), 
+        wcs._convert_angle_units('arcmin'), wcs._convert_angle_units('degrees'), 
         wcs._convert_angle_units('mas')])
     desired = np.array([np.deg2rad(1) / (60 * 60), np.deg2rad(1) / (60 * 60), 
         np.deg2rad(1) / 60.0, np.deg2rad(1), np.deg2rad(1) / (60 * 60 * 1000)])
