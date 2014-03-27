@@ -6,6 +6,7 @@ Created on Wed Mar 26 20:17:06 2014
 """
 import datetime
 import astropy.time
+import pytest
 
 from sunpy.time import parse_time
 from sunpy.net.jsoc import JSOCClient
