@@ -17,6 +17,7 @@ import astropy.time
 from sunpy import config
 from sunpy.time import parse_time, TimeRange
 from sunpy.net.download import Downloader
+from sunpy.net.vso.vso import Results
 
 __all__ = ['JSOCClient']
 
@@ -253,6 +254,10 @@ class JSOCClient(object):
 
         if downloader is None:
             downloader = Downloader(max_conn=max_conn, max_total=max_conn)
+        
+        # A Results object tracks the number of downloads requested and the 
+        # number that have been completed.
+        r = Results(lambda x: None)
 
         urls = []
         for request_id in requestIDs:
@@ -270,10 +275,14 @@ class JSOCClient(object):
                     self.check_request(request_id)
 
         if urls:
-            for url in urls:
-                downloader.download(url, path=path)
+            for url, rcall in zip(urls, map(urls, lambda x: r.require([x]))):
+                downloader.download(url, callback=rcall, path=path)
+        else:
+            #Make Results think it has finished.
+            r.require([])
+            r.poke()
 
-        return downloader
+        return r
 
     def _process_time(self, time):
         """
