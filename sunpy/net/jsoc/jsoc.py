@@ -4,6 +4,8 @@ Created on Wed Mar 26 13:44:56 2014
 
 @author: stuart
 """
+from __future__ import print_function, absolute_import
+
 import os
 import time
 import urlparse
@@ -137,8 +139,6 @@ class JSOCClient(object):
             u = self._request_status(request_id)
             status = int(u.json()['status'])
 
-            print u.json()
-
             if status == 0: #Data ready to download
                 print("Request {} was exported at {} and is ready to download.".format(u.json()['requestid'],
                                                                                        u.json()['exptime']))
@@ -263,16 +263,15 @@ class JSOCClient(object):
                     if overwrite or not os.path.isfile(os.path.join(path, ar['filename'])):
                         urls.append(urlparse.urljoin(BASE_DL_URL + u.json()['dir']+'/', ar['filename']))
                 if progress:
-                    print "{} URLs found for Download. Totalling {}MB".format(len(urls), u.json()['size'])
+                    print("{} URLs found for Download. Totalling {}MB".format(len(urls), u.json()['size']))
+
+            else:
+                if progress:
+                    self.check_request(request_id)
 
         if urls:
             for url in urls:
                 downloader.download(url, path=path)
-
-            else:
-                if progress:
-                    print "Status Check for {} returned:".format(request_id)
-                    print u, u.json()
 
         return downloader
     def _process_time(self, time):
