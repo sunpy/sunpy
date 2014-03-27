@@ -21,7 +21,7 @@ def test_payload():
     payload = client._make_query_payload(start, end, 'hmi.M_42s')
 
     payload_expected = {
-       'ds':'{}[{}-{}]'.format('hmi.M_42s', start.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
+       'ds':'{0}[{1}-{2}]'.format('hmi.M_42s', start.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
                                        end.strftime("%Y.%m.%d_%H:%M:%S_TAI")),
        'format':'json',
        'method':'url',
@@ -30,7 +30,7 @@ def test_payload():
        'process':'n=0|no_op',
        'protocol':'FITS,compress Rice',
        'requestor':'none',
-       'filenamefmt':'{}.{{T_REC:A}}.{{CAMERA}}.{{segment}}'.format('hmi.M_42s')
+       'filenamefmt':'{0}.{{T_REC:A}}.{{CAMERA}}.{{segment}}'.format('hmi.M_42s')
        }
 
     assert payload == payload_expected
@@ -42,7 +42,7 @@ def test_payload_nocompression():
     payload = client._make_query_payload(start, end, 'hmi.M_42s', compression=None)
 
     payload_expected = {
-       'ds':'{}[{}-{}]'.format('hmi.M_42s', start.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
+       'ds':'{0}[{1}-{2}]'.format('hmi.M_42s', start.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
                                        end.strftime("%Y.%m.%d_%H:%M:%S_TAI")),
        'format':'json',
        'method':'url',
@@ -51,7 +51,7 @@ def test_payload_nocompression():
        'process':'n=0|no_op',
        'protocol':'FITS, **NONE**',
        'requestor':'none',
-       'filenamefmt':'{}.{{T_REC:A}}.{{CAMERA}}.{{segment}}'.format('hmi.M_42s')
+       'filenamefmt':'{0}.{{T_REC:A}}.{{CAMERA}}.{{segment}}'.format('hmi.M_42s')
        }
 
     assert payload == payload_expected
@@ -63,7 +63,7 @@ def test_payload_protocol():
     payload = client._make_query_payload(start, end, 'hmi.M_42s', protocol='as-is')
 
     payload_expected = {
-       'ds':'{}[{}-{}]'.format('hmi.M_42s', start.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
+       'ds':'{0}[{1}-{2}]'.format('hmi.M_42s', start.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
                                        end.strftime("%Y.%m.%d_%H:%M:%S_TAI")),
        'format':'json',
        'method':'url',
@@ -72,7 +72,7 @@ def test_payload_protocol():
        'process':'n=0|no_op',
        'protocol':'as-is',
        'requestor':'none',
-       'filenamefmt':'{}.{{T_REC:A}}.{{CAMERA}}.{{segment}}'.format('hmi.M_42s')
+       'filenamefmt':'{0}.{{T_REC:A}}.{{CAMERA}}.{{segment}}'.format('hmi.M_42s')
        }
 
     assert payload == payload_expected
