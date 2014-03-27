@@ -104,7 +104,7 @@ class JSOCClient(object):
             #TODD: catch non 200 return
             if response.json()['status'] != 2:
                 warnings.warn(
-                Warning("Query {} retuned status {} with error {}".format(i,
+                Warning("Query {0} retuned status {1} with error {2}".format(i,
                                                      response.json()['status'],
                                                      response.json()['error'])))
                 responses.pop(i)
@@ -140,13 +140,13 @@ class JSOCClient(object):
             status = int(u.json()['status'])
 
             if status == 0: #Data ready to download
-                print("Request {} was exported at {} and is ready to download.".format(u.json()['requestid'],
+                print("Request {0} was exported at {1} and is ready to download.".format(u.json()['requestid'],
                                                                                        u.json()['exptime']))
             elif status == 1:
-                print("Request {} was submitted {} seconds ago, it is not ready to download.".format(
+                print("Request {0} was submitted {1} seconds ago, it is not ready to download.".format(
                                                              u.json()['requestid'], u.json()['wait']))
             else:
-                print("Request returned status: {} with error: {}".format(
+                print("Request returned status: {0} with error: {1}".format(
                                     u.json()['status'], u.json()['error']))
 
             allstatus.append(status)
@@ -263,7 +263,7 @@ class JSOCClient(object):
                     if overwrite or not os.path.isfile(os.path.join(path, ar['filename'])):
                         urls.append(urlparse.urljoin(BASE_DL_URL + u.json()['dir']+'/', ar['filename']))
                 if progress:
-                    print("{} URLs found for Download. Totalling {}MB".format(len(urls), u.json()['size']))
+                    print("{0} URLs found for Download. Totalling {1}MB".format(len(urls), u.json()['size']))
 
             else:
                 if progress:
@@ -274,6 +274,7 @@ class JSOCClient(object):
                 downloader.download(url, path=path)
 
         return downloader
+
     def _process_time(self, time):
         """
         Take a UTC time string or datetime instance and generate a astropy.time
@@ -310,7 +311,7 @@ class JSOCClient(object):
         else:
             jprotocol = protocol
 
-        payload = {'ds':'{}[{}-{}]'.format(series, start_time.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
+        payload = {'ds':'{0}[{1}-{2}]'.format(series, start_time.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
                                            end_time.strftime("%Y.%m.%d_%H:%M:%S_TAI")),
                    'format':'json',
                    'method':'url',
@@ -319,7 +320,7 @@ class JSOCClient(object):
                    'process':'n=0|no_op',
                    'protocol':jprotocol,
                    'requestor':'none',
-                   'filenamefmt':'{}.{{T_REC:A}}.{{CAMERA}}.{{segment}}'.format(series)}
+                   'filenamefmt':'{0}.{{T_REC:A}}.{{CAMERA}}.{{segment}}'.format(series)}
 
         payload.update(kwargs)
 
@@ -337,6 +338,9 @@ class JSOCClient(object):
                           protocol=protocol, compression=compression, **kwargs)
 
         r = requests.post(JSOC_URL, data=payload)
+
+        if r.status_code != 200:
+            raise Exception("JSOC POST Request returned code {0}".format(r.status_code))
 
         return r, r.json()
 
