@@ -34,6 +34,25 @@ class JSOCClient(object):
     This Client mocks input to this site: http://jsoc.stanford.edu/ajax/exportdata.html
     Therefore that is a good resource if things are mis-behaving.
     The full list of 'series' is availible through this site: http://jsoc.stanford.edu/
+
+    Examples
+    --------
+    Query JSOC for some HMI data at 45 second cadence
+
+    >>> from sunpy.net import jsoc
+    >>> client = jsoc.JSOCClient()
+    >>> IDs = client.jsoc_query('2012/1/1T00:00:00', '2012/1/1T00:00:45', 'hmi.m_45s')
+
+    The returned `IDs` is a list of JSOC request identifiers, you can check the status of
+    a request thus:
+
+    >>> status = client.check_status(IDs)
+
+    Once the request has been staged (Status 1) you can download the data:
+
+    >>> dler = client.get(IDs)
+
+    This returns a SunPy Downloader instance.
     """
 
     def jsoc_query(self, start_time, end_time, series, **kwargs):
@@ -95,6 +114,167 @@ class JSOCClient(object):
 
         return requestIDs
 
+    def check_request(self, requestIDs):
+        """
+        Check the status of a request and print out a messgae about it
+
+        Parameters
+        ----------
+        requestIDs: list or string
+            A list of requestIDs to check
+
+        Returns
+        -------
+        status: list
+            A list of status' that were returned by JSOC
+        """
+        # Convert IDs to a list if not already
+        if not astropy.utils.misc.isiterable(requestIDs) or isinstance(requestIDs, basestring):
+            requestIDs = [requestIDs]
+
+        allstatus = []
+        for request_id in requestIDs:
+            u = self._request_status(request_id)
+            status = int(u.json()['status'])
+
+            print u.json()
+
+            if status == 0: #Data ready to download
+                print("Request {} was exported at {} and is ready to download.".format(u.json()['requestid'],
+                                                                                       u.json()['exptime']))
+            elif status == 1:
+                print("Request {} was submitted {} seconds ago, it is not ready to download.".format(
+                                                             u.json()['requestid'], u.json()['wait']))
+            else:
+                print("Request returned status: {} with error: {}".format(
+                                    u.json()['status'], u.json()['error']))
+
+            allstatus.append(status)
+
+        return allstatus
+
+
+    def wait_get(self, requestIDs, path=None, overwrite=False, progress=True,
+            max_conn=5, sleep=10):
+        """
+        Same as get() excepts it will wait until the download has been staged.
+
+        Parameters
+        ----------
+        requestIDs: list or string
+            One or many requestID strings
+
+        path: string
+            Path to save data to, defaults to SunPy download dir
+
+        overwrite: bool
+            Replace files with the same name if True
+
+        progress: bool
+            Print progress info to terminal
+
+        max_conns: int
+            Maximum number of download connections.
+
+        downloader: sunpy.download.Downloder instance
+            A Custom downloader to use
+
+        sleep: int
+            The number of seconds to wait between calls to JSOC to check the status
+            of the request.
+
+        Returns
+        -------
+        downloader: a sunpy.net.download.Downloader instance
+            A Downloader instance
+        """
+        # Convert IDs to a list if not already
+        if not astropy.utils.misc.isiterable(requestIDs) or isinstance(requestIDs, basestring):
+            requestIDs = [requestIDs]
+
+        downloader = Downloader(max_conn=max_conn, max_total=max_conn)
+
+        while requestIDs:
+            for i, request_id in enumerate(requestIDs):
+                u = self._request_status(request_id)
+
+                if progress:
+                    self.check_request(request_id)
+
+                if u.status_code == 200 and u.json()['status'] == '0':
+                    rID = requestIDs.pop(i)
+                    self.get(rID, path=path, overwrite=overwrite,
+                             progress=progress, downloader=downloader)
+
+                else:
+                    time.sleep(sleep)
+
+        return downloader
+
+    def get(self, requestIDs, path=None, overwrite=False, progress=True,
+            max_conn=5, downloader=None):
+        """
+        Query JSOC to see if request_id is ready for download.
+
+        If the request is ready for download download it.
+
+        Parameters
+        ----------
+        requestIDs: list or string
+            One or many requestID strings
+
+        path: string
+            Path to save data to, defaults to SunPy download dir
+
+        overwrite: bool
+            Replace files with the same name if True
+
+        progress: bool
+            Print progress info to terminal
+
+        max_conns: int
+            Maximum number of download connections.
+
+        downloader: sunpy.download.Downloder instance
+            A Custom downloader to use
+
+        Returns
+        -------
+        dlers: list
+            A list of Downloader instances or None if no URLs to download
+        """
+
+        # Convert IDs to a list if not already
+        if not astropy.utils.misc.isiterable(requestIDs) or isinstance(requestIDs, basestring):
+            requestIDs = [requestIDs]
+
+        if path is None:
+            path = config.get('downloads','download_dir')
+
+        if downloader is None:
+            downloader = Downloader(max_conn=max_conn, max_total=max_conn)
+
+        urls = []
+        for request_id in requestIDs:
+            u = self._request_status(request_id)
+
+            if u.status_code == 200 and u.json()['status'] == '0':
+                for ar in u.json()['data']:
+                    if overwrite or not os.path.isfile(os.path.join(path, ar['filename'])):
+                        urls.append(urlparse.urljoin(BASE_DL_URL + u.json()['dir']+'/', ar['filename']))
+                if progress:
+                    print "{} URLs found for Download. Totalling {}MB".format(len(urls), u.json()['size'])
+
+        if urls:
+            for url in urls:
+                downloader.download(url, path=path)
+
+            else:
+                if progress:
+                    print "Status Check for {} returned:".format(request_id)
+                    print u, u.json()
+
+        return downloader
     def _process_time(self, time):
         """
         Take a UTC time string or datetime instance and generate a astropy.time
@@ -186,122 +366,3 @@ class JSOCClient(object):
         u = requests.get(JSOC_URL, params=payload)
 
         return u
-
-    def wait_get(self, requestIDs, path=None, overwrite=False, progress=True,
-            max_conn=5, sleep=10):
-        """
-        Same as get() excepts it will wait until the download has been staged.
-
-        Parameters
-        ----------
-        requestIDs: list or string
-            One or many requestID strings
-
-        path: string
-            Path to save data to, defaults to SunPy download dir
-
-        overwrite: bool
-            Replace files with the same name if True
-
-        progress: bool
-            Print progress info to terminal
-
-        max_conns: int
-            Maximum number of download connections.
-
-        downloader: sunpy.download.Downloder instance
-            A Custom downloader to use
-
-        sleep: int
-            The number of seconds to wait between calls to JSOC to check the status
-            of the request.
-
-        Returns
-        -------
-        downloader: a sunpy.net.download.Downloader instance
-            A Downloader instance
-        """
-        # Convert IDs to a list if not already
-        if not astropy.utils.misc.isiterable(requestIDs) or isinstance(requestIDs, basestring):
-            requestIDs = [requestIDs]
-
-        downloader = Downloader(max_conn=max_conn, max_total=max_conn)
-
-        while requestIDs:
-            for i, request_id in enumerate(requestIDs):
-                u = self._request_status(request_id)
-
-                if u.status_code == 200 and u.json()['status'] == '0':
-                    rID = requestIDs.pop(i)
-                    self.get(rID, path=path, overwrite=overwrite,
-                             progress=progress, downloader=downloader)
-
-                else:
-                    time.sleep(sleep)
-
-        return downloader
-
-    def get(self, requestIDs, path=None, overwrite=False, progress=True,
-            max_conn=5, downloader=None):
-        """
-        Query JSOC to see if request_id is ready for download.
-
-        If the request is ready for download download it.
-
-        Parameters
-        ----------
-        requestIDs: list or string
-            One or many requestID strings
-
-        path: string
-            Path to save data to, defaults to SunPy download dir
-
-        overwrite: bool
-            Replace files with the same name if True
-
-        progress: bool
-            Print progress info to terminal
-
-        max_conns: int
-            Maximum number of download connections.
-
-        downloader: sunpy.download.Downloder instance
-            A Custom downloader to use
-
-        Returns
-        -------
-        dlers: list
-            A list of Downloader instances or None if no URLs to download
-        """
-
-        # Convert IDs to a list if not already
-        if not astropy.utils.misc.isiterable(requestIDs) or isinstance(requestIDs, basestring):
-            requestIDs = [requestIDs]
-
-        if path is None:
-            path = config.get('downloads','download_dir')
-
-        if downloader is None:
-            downloader = Downloader(max_conn=max_conn, max_total=max_conn)
-
-        urls = []
-        for request_id in requestIDs:
-            u = self._request_status(request_id)
-
-            if u.status_code == 200 and u.json()['status'] == '0':
-                for ar in u.json()['data']:
-                    if overwrite or not os.path.isfile(os.path.join(path, ar['filename'])):
-                        urls.append(urlparse.urljoin(BASE_DL_URL + u.json()['dir']+'/', ar['filename']))
-                if progress:
-                    print "{} URLs found for Download. Totalling {}MB".format(len(urls), u.json()['size'])
-
-        if urls:
-            for url in urls:
-                downloader.download(url, path=path)
-
-            else:
-                if progress:
-                    print "Status Check for {} returned:".format(request_id)
-                    print u, u.json()
-
-        return downloader
