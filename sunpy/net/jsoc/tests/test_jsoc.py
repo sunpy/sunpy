@@ -96,20 +96,20 @@ def test_status_request():
     r = client._request_status('none')
     assert r.json() == {u'status': 4, u'error': u"Bad RequestID 'none' provided."}
 
-#@pytest.mark.online
+@pytest.mark.online
 def test_post():
     responses = client.jsoc_query('2012/1/1T00:00:00', '2012/1/1T00:00:45', 'hmi.M_45s')
     assert isinstance(responses, list)
     assert responses[0][:4] == 'JSOC'
 
-#@pytest.mark.online
+@pytest.mark.online
 def test_post_pass():
     responses = client.jsoc_query('2012/1/1T00:00:00', '2012/1/1T00:00:45', 'hmi.M_45s', return_resp=True)
     responses[0].json()['status'] == 2
     responses[0].json()['protocol'] == 'FITS,compress Rice'
     responses[0].json()['method'] == 'url'
 
-#@pytest.mark.online
+@pytest.mark.online
 def test_post_fail(recwarn):
     client.jsoc_query('2012/1/1T00:00:00', '2012/1/1T00:00:45', 'none', return_resp=True)
     w = recwarn.pop(Warning)
@@ -118,12 +118,12 @@ def test_post_fail(recwarn):
     assert w.filename
     assert w.lineno
 
-#@pytest.mark.online
+@pytest.mark.online
 def test_request_status_fail():
     resp = client._request_status('none')
     assert resp.json() == {u'status': 4, u'error': u"Bad RequestID 'none' provided."}
 
-#@pytest.mark.online
+@pytest.mark.online
 def test_get():
     responses = client.jsoc_query('2012/1/1T00:00:00', '2012/1/1T00:00:45', 'hmi.M_45s')
     dlers = client.wait_get(responses[0])
