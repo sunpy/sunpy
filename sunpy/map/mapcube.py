@@ -95,7 +95,7 @@ class MapCube(object):
     # Coalignment by matching a template
     def _coalign_by_match_template(self, layer_index=0, clip=True,
                                    template=None, func=default_fmap_function,
-                                   apply_displacements=True,
+                                   apply_displacements=None,
                                    displacements_only=False,
                                    with_displacements=False):        
         """
@@ -129,7 +129,10 @@ class MapCube(object):
                   The template used in the matching.  The template can be
                   another SunPy map, or a numpy ndarray.
 
-        apply_displacements : {True, False, (xdisplacement, ydisplacement)}
+        apply_displacements : {None, (xdisplacement, ydisplacement)}
+                                Use the displacements supplied by the user. Can
+                                be used when you want to apply the same
+                                displacements to multiple mapcubes.
 
         displacements_only : {True, False}
                                If true, return ONLY the x and y displacements
@@ -137,9 +140,9 @@ class MapCube(object):
                                arcseconds.
 
         with_displacements : {True, False}
-                               If True, also return the x and y displacements
+                               If True, return the x and y displacements
                                applied to the input data in units of
-                               arcseconds.
+                               arcseconds, along with the mapcube.
 
         """
         # Size of the data
@@ -150,40 +153,56 @@ class MapCube(object):
         # Storage for the pixel shifts and the shifts in arcseconds
         xshift_keep = np.zeros((nt))
         yshift_keep = np.zeros_like(xshift_keep)
-        
-        xshift_arcseconds = np.zeros_like(xshift_keep)
-        yshift_arcseconds = np.zeros_like(xshift_keep)
-    
-        # Calculate a template.  If no template is passed then define one
-        # from the the index layer.
-        if template is None:
-            tplate = self.maps[layer_index].data[ny / 4: 3 * ny / 4,
-                                             nx / 4: 3 * nx / 4]
-        elif isinstance(template, GenericMap):
-            tplate = template.data
-        elif isinstance(template, np.ndarray):
-            tplate = template
+
+        # Use the displacements supplied
+        if apply_displacements is not None:
+            !!! need to calculate the pixel shifts here !!!
+            xshift_arcseconds = apply_displacements[0]
+            yshift_arcseconds = apply_displacements[1]
         else:
-            raise ValueError('Invalid template.')
-
-        # Apply the function to the template
-        tplate = func(tplate)
-
-        # Match the template and calculate shifts
-        for i, m in enumerate(self.maps):
-            # Get the next 2-d data array
-            this_layer = func(m.data)
-
-            # Calculate the y and x shifts in pixels
-            yshift, xshift = calculate_shift(this_layer, tplate)
+            xshift_arcseconds = np.zeros_like(xshift_keep)
+            yshift_arcseconds = np.zeros_like(xshift_keep)
+        
+            # Calculate a template.  If no template is passed then define one
+            # from the the index layer.
+            if template is None:
+                tplate = self.maps[layer_index].data[ny / 4: 3 * ny / 4,
+                                                 nx / 4: 3 * nx / 4]
+            elif isinstance(template, GenericMap):
+                tplate = template.data
+            elif isinstance(template, np.ndarray):
+                tplate = template
+            else:
+                raise ValueError('Invalid template.')
     
-            # Keep shifts in pixels
-            yshift_keep[i] = yshift
-            xshift_keep[i] = xshift
+            # Apply the function to the template
+            tplate = func(tplate)
+    
+            # Match the template and calculate shifts
+            for i, m in enumerate(self.maps):
+                # Get the next 2-d data array
+                this_layer = func(m.data)
+    
+                # Calculate the y and x shifts in pixels
+                yshift, xshift = calculate_shift(this_layer, tplate)
+        
+                # Keep shifts in pixels
+                yshift_keep[i] = yshift
+                xshift_keep[i] = xshift
+    
+            # Calculate shifts relative to the template layer
+            yshift_keep = yshift_keep - yshift_keep[layer_index]
+            xshift_keep = xshift_keep - xshift_keep[layer_index]
+    
+            for i, m in enumerate(self.maps):
+                # Calculate the shifts required in physical units, which are
+                # presumed to be arcseconds.
+                xshift_arcseconds[i] = xshift_keep[i] * m.scale['x']
+                yshift_arcseconds[i] = yshift_keep[i] * m.scale['y']
 
-        # Calculate shifts relative to the template layer
-        yshift_keep = yshift_keep - yshift_keep[layer_index]
-        xshift_keep = xshift_keep - xshift_keep[layer_index]
+        # Return only the displacements
+        if displacements_only:
+            return {"x": xshift_arcseconds, "y": yshift_arcseconds}
 
         # New mapcube for the new data
         newmc = deepcopy(self)
@@ -197,11 +216,6 @@ class MapCube(object):
 
             # Update the mapcube image data
             newmc.maps[i].data = shifted_data
-
-            # Calculate the shifts required in physical units, which are
-            # presumed to be arcseconds.
-            xshift_arcseconds[i] = xshift_keep[i] * m.scale['x']
-            yshift_arcseconds[i] = yshift_keep[i] * m.scale['y']
 
             # Adjust the positioning information accordingly.
             newmc.maps[i].meta['xcen'] = newmc.maps[i].meta['xcen'] + xshift_arcseconds[i]
