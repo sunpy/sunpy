@@ -275,13 +275,14 @@ class JSOCClient(object):
                     self.check_request(request_id)
 
         if urls:
-            for url, rcall in zip(urls, map(urls, lambda x: r.require([x]))):
+            for url, rcall in zip(urls, map(lambda x: r.require([x]), urls)):
                 downloader.download(url, callback=rcall, path=path)
+                
         else:
             #Make Results think it has finished.
             r.require([])
-            r.poke()
 
+        r.poke()
         return r
 
     def _process_time(self, time):
