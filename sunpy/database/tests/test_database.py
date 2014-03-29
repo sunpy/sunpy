@@ -487,6 +487,22 @@ def test_edit_entry(database):
     assert entry.id == 42
 
 
+def test_remove_many_entries(filled_database):
+    bar = Tag('bar')
+    bar.id = 2
+    # required to check if `remove_many` adds any entries to undo-history
+    filled_database.clear_histories()
+    filled_database.remove_many(filled_database[:8])
+    assert len(filled_database) == 2
+    assert list(filled_database) == [
+        DatabaseEntry(id=9),
+        DatabaseEntry(id=10, tags=[bar])]
+    filled_database.undo()
+    assert len(filled_database) == 10
+    with pytest.raises(EmptyCommandStackError):
+        filled_database.undo()
+
+
 def test_remove_existing_entry(database):
     entry = DatabaseEntry()
     database.add(entry)
