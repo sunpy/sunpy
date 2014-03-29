@@ -806,6 +806,15 @@ class Database(object):
             for cmd in cmds:
                 cmd()
 
+    def clear_histories(self):
+        """Clears all entries from the undo and redo history.
+
+        See Also
+        --------
+        :meth:`sunpy.database.commands.CommandManager.clear_histories`
+        """
+        self._command_manager.clear_histories()  # pragma: no cover
+
     def undo(self, n=1):
         """undo the last n commands.
 
