@@ -353,6 +353,8 @@ def test_add_many(database):
     database.add_many((DatabaseEntry() for _ in xrange(5)))
     assert len(database) == 5
     database.undo()
+    with pytest.raises(EmptyCommandStackError):
+        database.undo()
     assert len(database) == 0
     database.redo()
     assert len(database) == 5
