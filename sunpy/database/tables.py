@@ -462,10 +462,6 @@ def entries_from_file(file, default_waveunit=None):
     else:
         filename = getattr(file, 'name', None)
     for header in headers:
-        # Hinode/SOT contains a useless HDU with telemetric data (no units)
-        # http://listmgr.cv.nrao.edu/pipermail/fitsbits/2007-August/001923.html
-        if (header.has_key('XTENSION') and  header['XTENSION'] == 'DUMP'):
-            continue
         entry = DatabaseEntry(path=filename)
         for key, value in header.iteritems():
             # Yes, it is possible to have an empty key in a FITS file.
