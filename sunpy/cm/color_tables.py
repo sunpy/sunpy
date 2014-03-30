@@ -8,7 +8,8 @@ import numpy as np
 import matplotlib.colors as colors
 
 __all__ = ['aia_color_table', 'lasco_color_table', 'eit_color_table',
-           'sxt_color_table', 'xrt_color_table', 'trace_color_table']
+           'sxt_color_table', 'xrt_color_table', 'trace_color_table',
+           'sot_color_table', ]
 
 # FIXME: Give me a proper name.
 def _mkx(i, steps, n):
@@ -464,7 +465,27 @@ def trace_color_table(measurement):
     # Return the color table
     return colors.LinearSegmentedColormap('mytable', cdict)
 
-
+def sot_color_table(measurement):
+    '''Returns one of the standard color tables for SOT files (following osdc convention).
+    The relations between observation and color have been defined in hinode.py'''
+    try:
+        r, g, b = {
+            'intensity': (r0, g0, b0),
+            # TODO
+            #'stokesQUV': (),
+            #'magnetic field': (),
+            #'velocity': (),
+            #'width': (),
+            }[measurement]
+    except KeyError:
+        raise ValueError(
+            "Invalid (or not supported) SOT type. Valid values are: "
+            "intensity" #TODO, stokesQUV, magnetic field, velocity, width."
+            )
+    
+    cdict = create_cdict(r, g, b)
+    return colors.LinearSegmentedColormap('mytable', cdict)
+    
 def create_cdict(r, g, b):
     """ Create the color tuples in the correct format"""
     i = np.linspace(0, 1, r0.size)
