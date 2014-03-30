@@ -155,13 +155,16 @@ def convert_hpc_hcc(x, y, dsun_meters=None, angle_units='arcsec', z=False):
     Returns
     -------
     out : ndarray
-        The  data coordinates (x,y,z) in heliocentric cartesian coordinates in meters.
+        The data coordinates (x,y,z) in heliocentric cartesian coordinates in meters.
     
     Notes
     -----
+    Implements Eq. (15) of Thompson (2006), A&A, 449, 791.
             
     Examples
     --------
+    >>> sunpy.wcs.convert_hpc_hcc(40.0, 32.0, z=True)
+    (28876152.176423457, 23100922.071266972, 694524220.8157959)
     
     """
     
@@ -210,9 +213,12 @@ def convert_hcc_hpc(x, y, dsun_meters=None, angle_units='arcsec'):
     
     Notes
     -----
+    Implements Eq. (16) of Thompson (2006), A&A, 449, 791.
             
     Examples
     --------
+    >>> sunpy.wcs.convert_hcc_hpc(28748691, 22998953)
+    (39.823439773829705, 31.858751644835717)
     
     """
     
@@ -237,8 +243,8 @@ def convert_hcc_hpc(x, y, dsun_meters=None, angle_units='arcsec'):
 
 def convert_hcc_hg(x, y, z=None, b0_deg=0, l0_deg=0, radius=False):
     """Convert from Heliocentric-Cartesian (HCC) (given in meters) to
-    Heliographic coordinates (HG) given in degrees, with radial output in
-    meters.
+    Stonyhurst Heliographic coordinates (HG) given in degrees, with
+    radial output in meters.
 
     Parameters
     ----------
@@ -292,8 +298,8 @@ def convert_hcc_hg(x, y, z=None, b0_deg=0, l0_deg=0, radius=False):
 
 def convert_hg_hcc(hglon_deg, hglat_deg, b0_deg=0, l0_deg=0, occultation=False,
                    z=False, r=rsun_meters):
-    """Convert from Heliographic coordinates (given in degrees) to 
-    Heliocentric-Cartesian coordinates (given in meters)
+    """Convert from Stonhurst Heliographic coordinates (given in degrees) to 
+    Heliocentric-Cartesian coordinates (given in meters).
     
     Parameters
     ----------
@@ -319,7 +325,7 @@ def convert_hg_hcc(hglon_deg, hglat_deg, b0_deg=0, l0_deg=0, occultation=False,
     
     Notes
     -----
-    Implements Eq.(11) of Thompson (2006), A&A, 449, 791, with the default
+    Implements Eq. (11) of Thompson (2006), A&A, 449, 791, with the default
     assumption that the value 'r' in Eq. (11) is identical to the radius of the
     Sun.
                 
@@ -385,11 +391,12 @@ def convert_hg_hpc(hglon_deg, hglat_deg, b0_deg=0, l0_deg=0, dsun_meters=None, a
     
     Notes
     -----
-    Uses equations 15 in Thompson (2006), A&A, 449, 791-803. 
+    Uses equations 11 and 16 in Thompson (2006), A&A, 449, 791-803. 
             
     Examples
     --------
-    
+    >>> sunpy.wcs.convert_hg_hpc(34.0, 45.0, b0_deg=-7.064078, l0_deg=0.0)
+    (380.05656560308898, 743.78281283290016)
     """
     
     tempx, tempy = convert_hg_hcc(hglon_deg, hglat_deg, b0_deg=b0_deg, l0_deg=l0_deg, occultation=occultation)
@@ -422,11 +429,12 @@ def convert_hpc_hg(x, y, b0_deg=0, l0_deg=0, dsun_meters=None, angle_units='arcs
     
     Notes
     -----
-    Uses equations 15 in Thompson (2006), A&A, 449, 791-803. 
+    Uses equations 15 and 12 in Thompson (2006), A&A, 449, 791-803. 
             
     Examples
     --------
-    
+    >>> sunpy.wcs.convert_hg_hpc(382, 748, b0_deg=-7.064078, l0_deg=0.0)
+    (34.504653439914669, 45.443143275518182)
     """
     
     tempx, tempy = convert_hpc_hcc(x, y, dsun_meters=dsun_meters, angle_units=angle_units)
