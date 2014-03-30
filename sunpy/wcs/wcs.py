@@ -298,7 +298,7 @@ def convert_hcc_hg(x, y, z=None, b0_deg=0, l0_deg=0, radius=False):
 
 def convert_hg_hcc(hglon_deg, hglat_deg, b0_deg=0, l0_deg=0, occultation=False,
                    z=False, r=rsun_meters):
-    """Convert from Stonhurst Heliographic coordinates (given in degrees) to 
+    """Convert from Stonyhurst Heliographic coordinates (given in degrees) to 
     Heliocentric-Cartesian coordinates (given in meters).
     
     Parameters
