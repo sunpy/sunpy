@@ -311,13 +311,37 @@ Dimension:\t [%d, %d]
         return {'x': self.meta.get('cunit1', 'arcsec'),
                 'y': self.meta.get('cunit2', 'arcsec'),}
 
-    #TODO: This needs to be WCS compliant!
     @property
-    def rotation_angle(self):
+    def rotation_matrix(self):
         """The Rotation angle of each axis"""
-        return {'x': self.meta.get('crota1', 0.),
-                'y': self.meta.get('crota2', 0.),}
+        if self.meta.get('PC1_1', None) is not None:
+            return np.matrix([[self.meta['PC1_1'], self.meta['PC1_2']],
+                              [self.meta['PC2_1'], self.meta['PC2_2']]])
 
+        elif self.meta.get('CD1_1', None) is not None:
+            div = 1. / (self.scale['x'] - self.scale['y'])
+
+            deltm = np.matrix([[self.scale['y']/div, 0],
+                               [0, self.scale['x']/ div]])
+            
+            cd = np.matrix([[self.meta['CD1_1'], self.meta['CD1_2']],
+                            [self.meta['CD2_1'], self.meta['CD2_2']]])
+            
+            return deltm * cd
+        else:
+            return self._matrix_from_crota()
+
+    def _matrix_from_crota(self):
+        """
+        This method converts the deprecated CROTA FITS kwargs to the new 
+        PC rotation matrix
+        """
+        lam = self.scale['y'] / self.scale['x']
+        p = self.meta['CROTA2']
+        
+        return np.matrix([[np.cos(p), lam * np.sin(p)],
+                          [1/lam * np.sin(p), np.cos(p)]])
+        
 # #### Miscellaneous #### #
 
     def _fix_date(self):
