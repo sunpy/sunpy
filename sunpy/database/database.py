@@ -740,6 +740,30 @@ class Database(object):
             cmd()
         self._cache[database_entry.id] = database_entry
 
+    def remove_many(self, database_entries):
+        """Remove a row of database entries "at once". If this method is used,
+        only one entry is saved in the undo history.
+
+        Parameters
+        ----------
+        database_entries : iterable of sunpy.database.tables.DatabaseEntry
+            The database entries that will be removed from the database.
+        """
+        cmds = []
+        for database_entry in database_entries:
+            cmd = commands.RemoveEntry(self.session, database_entry)
+            if self._enable_history:
+                cmds.append(cmd)
+            else:
+                cmd()
+            try:
+                del self._cache[database_entry.id]
+            except KeyError:
+                pass
+
+        if cmds:
+            self._command_manager.do(cmds)
+
     def remove(self, database_entry):
         """Remove the given database entry from the database table."""
         remove_entry_cmd = commands.RemoveEntry(self.session, database_entry)
@@ -781,6 +805,15 @@ class Database(object):
         else:
             for cmd in cmds:
                 cmd()
+
+    def clear_histories(self):
+        """Clears all entries from the undo and redo history.
+
+        See Also
+        --------
+        :meth:`sunpy.database.commands.CommandManager.clear_histories`
+        """
+        self._command_manager.clear_histories()  # pragma: no cover
 
     def undo(self, n=1):
         """undo the last n commands.
