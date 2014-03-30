@@ -35,7 +35,7 @@ import the object into your Python session.  The example below gets
 LYRA data for date indicated:
 
     >>> from sunpy.lightcurve import LYRALightCurve
-    >>> ly = LYRALightCurve.create('2013/07/21)
+    >>> ly = LYRALightCurve.create('2013/07/21')
 
 The LYRA LightCurve object parses the input date and downloads the
 relevant data from the PROBA2/LYRA webpage.
