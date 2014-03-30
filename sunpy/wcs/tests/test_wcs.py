@@ -145,3 +145,16 @@ def test_convert_to_coord():
                         l0_deg=l0_deg, dsun_meters=dsun, angle_units=units))
     check_conversion('hpc', 'hcc', wcs.convert_hpc_hcc(x, y, dsun_meters=dsun,
                                                        angle_units=units))
+
+def test_convert_back():
+    # Make sure transformation followed by inverse transformation returns
+    # the original coordinates
+    coord = [40.0, 32.0]
+    assert_allclose(wcs.convert_hcc_hpc(*wcs.convert_hpc_hcc(*coord)),
+                    coord, rtol=1e-2, atol=0)
+    coord = [13.0, 58.0]
+    assert_allclose(wcs.convert_hg_hcc(*wcs.convert_hcc_hg(*coord)),
+                    coord, rtol=1e-2, atol=0)
+    coord = [34.0, 45.0]
+    assert_allclose(wcs.convert_hpc_hg(*wcs.convert_hg_hpc(*coord)),
+                    coord, rtol=1e-2, atol=0)
