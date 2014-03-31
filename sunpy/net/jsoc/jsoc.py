@@ -38,6 +38,9 @@ class JSOCClient(object):
     Therefore that is a good resource if things are mis-behaving.
     The full list of 'series' is availible through this site: http://jsoc.stanford.edu/
 
+    You can build more complex queries by specifiying parameters to POST to JSOC via keyword
+    arguments. You can generated these kwargs using the Export Data page at JSOC.
+
     Examples
     --------
     Query JSOC for some HMI data at 45 second cadence
@@ -254,8 +257,8 @@ class JSOCClient(object):
 
         if downloader is None:
             downloader = Downloader(max_conn=max_conn, max_total=max_conn)
-        
-        # A Results object tracks the number of downloads requested and the 
+
+        # A Results object tracks the number of downloads requested and the
         # number that have been completed.
         r = Results(lambda x: None)
 
@@ -277,7 +280,7 @@ class JSOCClient(object):
         if urls:
             for url, rcall in zip(urls, map(lambda x: r.require([x]), urls)):
                 downloader.download(url, callback=rcall, path=path)
-                
+
         else:
             #Make Results think it has finished.
             r.require([])
