@@ -122,8 +122,8 @@ quickly view your map on the screen. To create a plot just type::
     
 This will open a matplotlib plot right on your screen.
 In addition, to enable users to modify the plot it is possible to grab the
-matplotlib figure object by using the plot() command instead of the show() 
-command. This makes it possible to use the SunPy plot as the foundation for a 
+matplotlib figure object by using the plot() command.
+This makes it possible to use the SunPy plot as the foundation for a 
 more complicated figure.
 
 6. Overlaying Maps
@@ -140,8 +140,7 @@ To list which maps are part of your composite map use::
 
     my_maps.list_maps()
 
-Similar to all SunPy data objects, the composite map also has an associated `show()` method and a 
-number of associated methods to customize your plot. For example, the following code turns 
+The following code  
 adds a new map (which must be instantiated first), sets its transparency to 25%, turns on contours from 50% to 90% for the second map, 
 and then plots the result::
 
