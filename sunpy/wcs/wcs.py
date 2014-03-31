@@ -3,6 +3,8 @@ from __future__ import absolute_import
 import numpy as np
 import sunpy.sun as sun
 
+import astropy.units
+
 rsun_meters = sun.constants.radius.si.value
 
 __all__ = ['_convert_angle_units', 'convert_pixel_to_data', 'convert_hpc_hg',
@@ -178,7 +180,9 @@ def convert_hpc_hcc(x, y, dsun_meters=None, angle_units='arcsec', z=False):
 
     if dsun_meters is None:
         dsun_meters = sun.constants.au.si.value
-
+    elif isinstance(dsun_meters, astropy.units.Quantity):
+        dsun_meters = dsun_meters.si.value
+        
     q = dsun_meters * cosy * cosx
     distance = q ** 2 - dsun_meters ** 2 + rsun_meters ** 2
     # distance[np.where(distance < 0)] = np.sqrt(-1)
@@ -227,6 +231,9 @@ def convert_hcc_hpc(x, y, dsun_meters=None, angle_units='arcsec'):
     
     if dsun_meters is None:
         dsun_meters = sun.constants.au.si.value
+    elif isinstance(dsun_meters, astropy.units.Quantity):
+        dsun_meters = dsun_meters.si.value
+
     zeta = dsun_meters - z
     distance = np.sqrt(x**2 + y**2 + zeta**2)
     hpcx = np.rad2deg(np.arctan2(x, zeta))
