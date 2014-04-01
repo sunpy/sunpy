@@ -589,7 +589,7 @@ Dimension:\t [%d, %d]
         if angle is not None and rmatrix is not None:
             raise ValueError("You  cannot specify both an angle and a matrix")
         elif angle is None and rmatrix is None:
-            angle = -self.rotation_angle['y']
+            rmatrix = self.rotation_matrix
 
         # Interpolation parameter sanity
         if order not in range(6):
@@ -620,20 +620,25 @@ Dimension:\t [%d, %d]
             old_center = self.pixel_to_data(x=image_center[1], y=image_center[0])
             new_center = np.dot(rmatrix, old_center).reshape(2, 1)
 
+
+        if angle is not None and new_map.meta.get('crota2') is not None:
+            new_map.meta['crota2'] = self.rotation_angle['y'] + angle
+
+        pc_C = self.rotation_matrix * (rmatrix * scale).T
+        new_map.meta['PC1_1'] = pc_C[0,0]
+        new_map.meta['PC1_2'] = pc_C[0,1]
+        new_map.meta['PC2_1'] = pc_C[1,0]
+        new_map.meta['PC2_2'] = pc_C[1,1]
+        # Update pixel size if image has been scaled.
+        if scale != 1.0:
+            new_map.meta['cdelt1'] = self.scale['x'] / scale
+            new_map.meta['cdelt2'] = self.scale['y'] / scale
         # Define a new reference pixel in the rotated space
         new_map.meta['crval1'] = new_center[0]
         new_map.meta['crval2'] = new_center[1]
         new_map.meta['crpix1'] = map_center[1] + 1 # FITS counts pixels from 1
         new_map.meta['crpix2'] = map_center[0] + 1 # FITS counts pixels from 1
-        
-        # Update pixel size if image has been scaled.
-        if scale != 1.0:
-            new_map.meta['cdelt1'] = self.scale['x'] / scale
-            new_map.meta['cdelt2'] = self.scale['y'] / scale
-
-        if angle is not None and new_map.meta.get('crota2') is not None:
-            new_map.meta['crota2'] = self.rotation_angle['y'] + angle
-
+  
         return new_map
 
     def submap(self, range_a, range_b, units="data"):
@@ -791,10 +796,10 @@ Dimension:\t [%d, %d]
 
         Parameters
         ----------
-        axes : matplotlib.axes object or None
-            Axes to plot limb on or None to use current axes.
+        axes: matplotlib.axes object or None
+        Axes to plot limb on or None to use current axes.
 
-        grid_spacing : float
+        grid_spacing: float
             Spacing (in degrees) for longitude and latitude grid.
 
         Returns
@@ -858,7 +863,7 @@ Dimension:\t [%d, %d]
 
             Parameters
             ----------
-            axes : matplotlib.axes object or None
+            axes: matplotlib.axes object or None
                 Axes to plot limb on or None to use current axes.
 
             Returns
@@ -959,7 +964,7 @@ Dimension:\t [%d, %d]
             If true, the data is plotted at it's natural scale; with
             title and axis labels.
 
-        axes : matplotlib.axes object or None
+        axes: matplotlib.axes object or None
             If provided the image will be plotted on the given axes. Else the
             current matplotlib axes will be used.
 
