@@ -55,8 +55,9 @@ def test_default_fmap_function():
 def test_coalign():
 	# take the AIA image and shift it
 	m = map.Map(AIA_171_IMAGE)
+	# Pixel displacements have the y-displacement as the first entry
 	pixel_displacements = np.asarray([1.6, 10.1])
-	known_displacements = {'x':np.asarray([0.0, pixel_displacements[0] * m.scale['x']]), 'y':np.asarray([0.0, pixel_displacements[1] * m.scale['y']])}
+	known_displacements = {'x':np.asarray([0.0, pixel_displacements[1] * m.scale['x']]), 'y':np.asarray([0.0, pixel_displacements[0] * m.scale['y']])}
 	# Apply the shift
 	d1 = shift(m.data, pixel_displacements)
 	m1 = map.Map((d1, m.meta))

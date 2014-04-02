@@ -204,7 +204,7 @@ class MapCube(object):
 
         # Return only the displacements
         if displacements_only:
-            return {"y": xshift_arcseconds, "x": yshift_arcseconds}
+            return {"x": xshift_arcseconds, "y": yshift_arcseconds}
 
         # New mapcube for the new data
         newmc = deepcopy(self)
@@ -224,11 +224,9 @@ class MapCube(object):
             newmc.maps[i].meta['crpix2'] = newmc.maps[i].meta['crpix2'] + yshift_arcseconds[i]
 
         # Return the mapcube, or optionally, the mapcube and the displacements
-        # used to create the mapcube.  Remember the order of x and y is swapped
-        # when comparing numpy arrays to what the typical solar physicist
-        # expects in a right-handed Cartesian co-ordinate system.
+        # used to create the mapcube.
         if return_displacements:
-            return newmc, {"y": xshift_arcseconds, "x": yshift_arcseconds}
+            return newmc, {"x": xshift_arcseconds, "y": yshift_arcseconds}
         else:
             return newmc
 
