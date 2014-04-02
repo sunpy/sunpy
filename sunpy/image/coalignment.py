@@ -15,7 +15,7 @@ def default_fmap_function(data):
     This function ensures that the data are floats.  It is the default data
     manipulation function for the coalignment method.
     """
-    return 1.0 * data
+    return np.float64(data)
 
 
 def calculate_shift(this_layer, template):

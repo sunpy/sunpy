@@ -5,7 +5,13 @@ from numpy.testing import assert_allclose
 from scipy.ndimage.interpolation import shift
 from sunpy import AIA_171_IMAGE
 from sunpy import map
-from sunpy.image.coalignment import parabolic_turning_point
+from sunpy.image.coalignment import parabolic_turning_point, \
+repair_nonfinite, default_fmap_function, _lower_clip, _upper_clip, \
+calculate_clipping, get_correlation_shifts, find_best_match_location, \
+match_template_to_layer, clip_edges, calculate_shift
+
+
+clip_test_array = np.asarray([0.2, -0.3, -1.0001])
 
 
 def test_parabolic_turning_point():
@@ -13,7 +19,13 @@ def test_parabolic_turning_point():
 
 
 def test_repair_nonfinite():
-	pass
+	a = np.ones((9))
+	for i in range(0, 9):
+		for non_number in [np.nan, np.inf]:
+			a[i] = non_number
+			b = a.reshape(3, 3)
+			c = repair_nonfinite(b)
+			assert(np.isfinite(c).all())
 
 
 def test_get_correlation_shifts():
@@ -27,17 +39,17 @@ def test_find_best_match_location():
 def test_match_template_to_layer():
 	pass
 
-
 def test_lower_clip():
-	pass
-
+	print _lower_clip(clip_test_array)
+	assert(_lower_clip(clip_test_array) == 2.0)
 
 def test_upper_clip():
-	pass
-
+	print _upper_clip(clip_test_array)
+	assert(_upper_clip(clip_test_array) == 1.0)
 
 def test_calculate_clipping():
-	pass
+	answer = calculate_clipping(clip_test_array, clip_test_array)
+	assert(answer == ([2.0, 1.0], [2.0, 1.0]))
 
 
 def test_clip_edges():
@@ -49,7 +61,7 @@ def test_calculate_shift():
 
 
 def test_default_fmap_function():
-	pass
+	assert(default_fmap_function([1,2,3]).dtype == np.float64(1).dtype)
 
 
 def test_coalign():
