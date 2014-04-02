@@ -1,4 +1,8 @@
 # Author: Jack Ireland
+#
+# Testing functions for a mapcube coalignment functionality.  This
+# functionality relies on the scikit-image function "match_template".
+#
 
 import numpy as np
 from numpy.testing import assert_allclose
