@@ -43,13 +43,16 @@ def test_find_best_match_location():
 def test_match_template_to_layer():
 	pass
 
+
 def test_lower_clip():
 	print _lower_clip(clip_test_array)
 	assert(_lower_clip(clip_test_array) == 2.0)
 
+
 def test_upper_clip():
 	print _upper_clip(clip_test_array)
 	assert(_upper_clip(clip_test_array) == 1.0)
+
 
 def test_calculate_clipping():
 	answer = calculate_clipping(clip_test_array, clip_test_array)
@@ -57,7 +60,12 @@ def test_calculate_clipping():
 
 
 def test_clip_edges():
-	pass
+	a = np.zeros(shape=(341, 156))
+	yclip = [4, 0]
+	xclip = [1, 2]
+	new_a = clip_edges(a, yclip, xclip)
+	assert(a.shape[0] - (yclip[0] + yclip[1]) == 337)
+	assert(a.shape[1] - (xclip[0] + xclip[1]) == 153)
 
 
 def test_calculate_shift():
