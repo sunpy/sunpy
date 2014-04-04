@@ -49,6 +49,12 @@ def query_result():
         vso.attrs.Time('20130801T200000', '20130801T200030'),
         vso.attrs.Instrument('PLASTIC'))
 
+@pytest.fixture
+def download_qr():
+    return vso.VSOClient().query(
+        vso.attrs.Time('2012-03-29', '2012-03-29'),
+        vso.attrs.Instrument('AIA'))
+
 
 @pytest.fixture
 def empty_query():
@@ -400,6 +406,24 @@ def test_add_entry_from_hek_qr(database):
     assert len(database) == 0
     database.add_from_hek_query_result(hek_res)
     assert len(database) == 2133
+
+
+@pytest.mark.online
+def test_download_from_qr(database, download_qr, tmpdir):
+    assert len(database) == 0
+    database.download_from_vso_query_result(
+        download_qr, path=str(tmpdir.join('{file}.fits')))
+    fits_pattern = str(tmpdir.join('*.fits'))
+    num_of_fits_headers = sum(
+        len(fits.get_header(file)) for file in glob.glob(fits_pattern))
+    assert len(database) == num_of_fits_headers > 0
+    for entry in database:
+        assert os.path.dirname(entry.path) == str(tmpdir)
+    database.undo()
+    assert len(database) == 0
+    database.redo()
+    assert len(database) == num_of_fits_headers > 0
+
 
 @pytest.mark.online
 def test_add_entry_from_qr(database, query_result):
