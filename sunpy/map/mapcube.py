@@ -156,8 +156,8 @@ class MapCube(object):
 
         # Use the displacements supplied
         if apply_displacements is not None:
-            xshift_arcseconds = apply_displacements[0]
-            yshift_arcseconds = apply_displacements[1]
+            xshift_arcseconds = apply_displacements["x"]
+            yshift_arcseconds = apply_displacements["y"]
             for i, m in enumerate(self.maps):
                 xshift_keep[i] = xshift_arcseconds / m.scale['x']
                 yshift_keep[i] = yshift_arcseconds / m.scale['y']
