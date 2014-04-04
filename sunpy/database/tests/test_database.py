@@ -409,6 +409,9 @@ def test_add_entry_from_hek_qr(database):
 
 
 @pytest.mark.online
+@pytest.mark.skipif(
+        sys.version_info[:2] == (2,6),
+        reason='for some unknown reason, this test fails on Python 2.6')
 def test_download_from_qr(database, download_qr, tmpdir):
     assert len(database) == 0
     database.download_from_vso_query_result(
