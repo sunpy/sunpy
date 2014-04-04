@@ -15,6 +15,15 @@ calculate_clipping, get_correlation_shifts, find_best_match_location, \
 match_template_to_layer, clip_edges, calculate_shift
 
 
+# Map and template we will use in testing
+testmap = map.Map(AIA_171_IMAGE)
+test_layer = testmap.data
+ny = test_layer.shape[0]
+nx = test_layer.shape[1]
+test_template = test_layer[1 + ny / 4 : 1 + 3 * ny / 4,
+						   2 + nx / 4 : 2 + 3 * nx / 4]
+
+# Used in testing the clipping
 clip_test_array = np.asarray([0.2, -0.3, -1.0001])
 
 
@@ -69,7 +78,9 @@ def test_clip_edges():
 
 
 def test_calculate_shift():
-	pass
+	result = calculate_shift(test_layer, test_template)
+	assert_allclose(result[0], 257.0,  rtol=5e-4, atol=0)
+	assert_allclose(result[1], 258.0,  rtol=5e-4, atol=0)
 
 
 def test_default_fmap_function():
@@ -78,15 +89,14 @@ def test_default_fmap_function():
 
 def test_coalign():
 	# take the AIA image and shift it
-	m = map.Map(AIA_171_IMAGE)
 	# Pixel displacements have the y-displacement as the first entry
 	pixel_displacements = np.asarray([1.6, 10.1])
-	known_displacements = {'x':np.asarray([0.0, pixel_displacements[1] * m.scale['x']]), 'y':np.asarray([0.0, pixel_displacements[0] * m.scale['y']])}
+	known_displacements = {'x':np.asarray([0.0, pixel_displacements[1] * testmap.scale['x']]), 'y':np.asarray([0.0, pixel_displacements[0] * testmap.scale['y']])}
 	# Apply the shift
-	d1 = shift(m.data, pixel_displacements)
-	m1 = map.Map((d1, m.meta))
+	d1 = shift(testmap.data, pixel_displacements)
+	m1 = map.Map((d1, testmap.meta))
 	# Create the mapcube
-	mc = map.Map([m, m1], cube=True)
+	mc = map.Map([testmap, m1], cube=True)
 	# Do the coalignment
 	displacements = mc.coalign(displacements_only=True)
 	# Assert
