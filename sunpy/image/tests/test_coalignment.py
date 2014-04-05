@@ -65,12 +65,10 @@ def test_find_best_match_location():
     assert_allclose(x_test, 258.0, rtol=1e-3, atol=0)
 
 def test_lower_clip():
-	print _lower_clip(clip_test_array)
 	assert(_lower_clip(clip_test_array) == 2.0)
 
 
 def test_upper_clip():
-	print _upper_clip(clip_test_array)
 	assert(_upper_clip(clip_test_array) == 1.0)
 
 
