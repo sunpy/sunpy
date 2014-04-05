@@ -97,23 +97,23 @@ class MapCube(object):
                                    template=None, func=default_fmap_function,
                                    apply_displacements=None,
                                    return_displacements_only=False,
-                                   with_displacements=False):        
+                                   with_displacements=False):
         """
         Co-register the layers in a mapcube according to a template taken from
         that mapcube.  This method REQUIRES that scikit-image be installed.
         When using this functionality, it is a good idea to check that the
         shifts that were applied to were reasonable and expected.  One way of
         checking this is to animate the original mapcube, animate the coaligned
-        mapcube, and compare the differences you see to the calculated shifts.  
+        mapcube, and compare the differences you see to the calculated shifts.
 
         Input
         -----
         self : a mapcube of shape (ny, nx, nt), where nt is the number of
              layers in the mapcube.
-    
+
         layer_index : the layer in the mapcube from which the template will be
                       extracted.
-    
+
         func: a function which is applied to the data values before the
               coalignment method is applied.  This can be useful in coalignment,
               because it is sometimes better to co-align on a function of the data
@@ -121,10 +121,10 @@ class MapCube(object):
               the original data.  Useful functions to consider are the log of the
               image data, or 1 / data. The function is of the form func = F(data).
               The default function ensures that the data are floats.
-    
+
         clip : clip off x, y edges in the datacube that are potentially
                affected by edges effects.
-        
+
         template: None, Map, ndarray
                   The template used in the matching.  The template can be
                   another SunPy map, or a numpy ndarray.
@@ -149,7 +149,7 @@ class MapCube(object):
         ny = self.maps[layer_index].shape[0]
         nx = self.maps[layer_index].shape[1]
         nt = len(self.maps)
-    
+
         # Storage for the pixel shifts and the shifts in arcseconds
         xshift_keep = np.zeros((nt))
         yshift_keep = np.zeros_like(xshift_keep)
@@ -164,7 +164,7 @@ class MapCube(object):
         else:
             xshift_arcseconds = np.zeros_like(xshift_keep)
             yshift_arcseconds = np.zeros_like(xshift_keep)
-        
+
             # Calculate a template.  If no template is passed then define one
             # from the the index layer.
             if template is None:
@@ -176,26 +176,26 @@ class MapCube(object):
                 tplate = template
             else:
                 raise ValueError('Invalid template.')
-    
+
             # Apply the function to the template
             tplate = func(tplate)
-    
+
             # Match the template and calculate shifts
             for i, m in enumerate(self.maps):
                 # Get the next 2-d data array
                 this_layer = func(m.data)
-    
+
                 # Calculate the y and x shifts in pixels
                 yshift, xshift = calculate_shift(this_layer, tplate)
-        
+
                 # Keep shifts in pixels
                 yshift_keep[i] = yshift
                 xshift_keep[i] = xshift
-    
+
             # Calculate shifts relative to the template layer
             yshift_keep = yshift_keep - yshift_keep[layer_index]
             xshift_keep = xshift_keep - xshift_keep[layer_index]
-    
+
             for i, m in enumerate(self.maps):
                 # Calculate the shifts required in physical units, which are
                 # presumed to be arcseconds.
