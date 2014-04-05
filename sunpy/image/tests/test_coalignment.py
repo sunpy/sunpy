@@ -41,17 +41,28 @@ def test_repair_nonfinite():
 			assert(np.isfinite(c).all())
 
 
+def test_match_template_to_layer():
+    result = match_template_to_layer(test_layer, test_template)
+    assert(result.shape[0] == 513)
+    assert(result.shape[1] == 513)
+    assert_allclose(np.max(result), 1.00, rtol=1e-2, atol=0)
+
+
 def test_get_correlation_shifts():
-	pass
+    test_array = np.zeros((3,3))
+    test_array[1, 1] = 1
+    test_array[2, 1] = 0.6
+    test_array[1, 2] = 0.2
+    y_test, x_test = get_correlation_shifts(test_array)
+    assert_allclose(y_test, 0.214285714286, rtol=1e-2, atol=0)
+    assert_allclose(x_test, 0.0555555555556, rtol=1e-2, atol=0)
 
 
 def test_find_best_match_location():
-	pass
-
-
-def test_match_template_to_layer():
-	pass
-
+    result = match_template_to_layer(test_layer, test_template)
+    y_test, x_test = find_best_match_location(result)
+    assert_allclose(y_test, 257.0, rtol=1e-3, atol=0)
+    assert_allclose(x_test, 258.0, rtol=1e-3, atol=0)
 
 def test_lower_clip():
 	print _lower_clip(clip_test_array)
@@ -79,8 +90,8 @@ def test_clip_edges():
 
 def test_calculate_shift():
 	result = calculate_shift(test_layer, test_template)
-	assert_allclose(result[0], 257.0,  rtol=5e-4, atol=0)
-	assert_allclose(result[1], 258.0,  rtol=5e-4, atol=0)
+	assert_allclose(result[0], 257.0,  rtol=1e-3, atol=0)
+	assert_allclose(result[1], 258.0,  rtol=1e-3, atol=0)
 
 
 def test_default_fmap_function():
