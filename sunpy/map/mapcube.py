@@ -96,7 +96,7 @@ class MapCube(object):
     def _coalign_by_match_template(self, layer_index=0, clip=True,
                                    template=None, func=default_fmap_function,
                                    apply_displacements=None,
-                                   displacements_only=False,
+                                   return_displacements_only=False,
                                    with_displacements=False):        
         """
         Co-register the layers in a mapcube according to a template taken from
@@ -125,21 +125,21 @@ class MapCube(object):
         clip : clip off x, y edges in the datacube that are potentially
                affected by edges effects.
         
-        template: {None, Map, ndarray}
+        template: None, Map, ndarray
                   The template used in the matching.  The template can be
                   another SunPy map, or a numpy ndarray.
 
-        apply_displacements : {None, (xdisplacement, ydisplacement)}
+        apply_displacements : None, {"x": xdisplacement, "y": ydisplacement}
                                 Use the displacements supplied by the user. Can
                                 be used when you want to apply the same
                                 displacements to multiple mapcubes.
 
-        displacements_only : {True, False}
+        return_displacements_only : True, False
                                If true, return ONLY the x and y displacements
                                applied to the input data in units of
                                arcseconds.
 
-        with_displacements : {True, False}
+        with_displacements : True, False
                                If True, return the x and y displacements
                                applied to the input data in units of
                                arcseconds, along with the mapcube.
@@ -159,8 +159,8 @@ class MapCube(object):
             xshift_arcseconds = apply_displacements["x"]
             yshift_arcseconds = apply_displacements["y"]
             for i, m in enumerate(self.maps):
-                xshift_keep[i] = xshift_arcseconds / m.scale['x']
-                yshift_keep[i] = yshift_arcseconds / m.scale['y']
+                xshift_keep[i] = xshift_arcseconds[i] / m.scale['x']
+                yshift_keep[i] = yshift_arcseconds[i] / m.scale['y']
         else:
             xshift_arcseconds = np.zeros_like(xshift_keep)
             yshift_arcseconds = np.zeros_like(xshift_keep)
@@ -203,7 +203,7 @@ class MapCube(object):
                 yshift_arcseconds[i] = yshift_keep[i] * m.scale['y']
 
         # Return only the displacements
-        if displacements_only:
+        if return_displacements_only:
             return {"x": xshift_arcseconds, "y": yshift_arcseconds}
 
         # New mapcube for the new data
@@ -225,7 +225,7 @@ class MapCube(object):
 
         # Return the mapcube, or optionally, the mapcube and the displacements
         # used to create the mapcube.
-        if return_displacements:
+        if with_displacements:
             return newmc, {"x": xshift_arcseconds, "y": yshift_arcseconds}
         else:
             return newmc
