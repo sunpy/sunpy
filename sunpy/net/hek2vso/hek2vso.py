@@ -213,7 +213,7 @@ class H2VClient(object):
         >>> tstart = '2011/08/09 07:23:56'
         >>> tend = '2011/08/09 12:40:29'
         >>> event_type = 'FL'
-        >>> q = h.query(hek.attrs.Time(tstart, tend), hek.attts.EventType(event_type))
+        >>> q = h.query(hek.attrs.Time(tstart, tend), hek.attrs.EventType(event_type))
         >>> h2v = hek2vso.H2VClient()
         >>> res = h2v.translate_and_query(q)
         """
