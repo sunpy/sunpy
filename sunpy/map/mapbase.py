@@ -645,6 +645,10 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         new_map.meta['CRPIX1'] = new_map.meta['CRPIX1'] + shift[0]
         new_map.meta['CRPIX2'] = new_map.meta['CRPIX2'] + shift[1]
 
+        #Remove old CROTA kwargs
+        new_map.meta.pop('CROTA1', None)
+        new_map.meta.pop('CROTA2', None)
+
         # Create new map instance
         new_map.data = data
         return new_map
