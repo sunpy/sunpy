@@ -107,7 +107,7 @@ def test_coalign():
     # Create the mapcube
     mc = map.Map([testmap, m1], cube=True)
     # Do the coalignment
-    displacements = mc.coalign(displacements_only=True)
+    displacements = mc.coalign(return_displacements_only=True)
     # Assert
     assert_allclose(displacements['x'], known_displacements['x'], rtol=5e-2, atol=0)
     assert_allclose(displacements['y'], known_displacements['y'], rtol=5e-2, atol=0 )
