@@ -296,6 +296,32 @@ class Database(object):
         """
         self.session.commit()
 
+    def _download_and_collect_entries(self, query_result, client=None,
+            path=None, progress=False):
+        if client is None:
+            client = VSOClient()
+        for block in query_result:
+            paths = client.get([block], path).wait(progress=progress)
+            for path in paths:
+                qr_entry = tables.DatabaseEntry._from_query_result_block(block)
+                file_entries = list(
+                    tables.entries_from_file(path, self.default_waveunit))
+                for entry in file_entries:
+                    entry.source = qr_entry.source
+                    entry.provider = qr_entry.provider
+                    entry.physobs = qr_entry.physobs
+                    entry.fileid = qr_entry.fileid
+                    entry.observation_time_start =\
+                        qr_entry.observation_time_start
+                    entry.observation_time_end = qr_entry.observation_time_end
+                    entry.instrument = qr_entry.instrument
+                    entry.size = qr_entry.size
+                    entry.wavemin = qr_entry.wavemin
+                    entry.wavemax = qr_entry.wavemax
+                    entry.path = path
+                    entry.download_time = datetime.utcnow()
+                    yield entry
+
     def download(self, *query, **kwargs):
         """download(*query, client=sunpy.net.vso.VSOClient(), path=None, progress=False)
         Search for data using the VSO interface (see
@@ -323,28 +349,8 @@ class Database(object):
         # don't do anything if querying the VSO results in no data
         if not qr:
             return
-        entries = []
-        for block in qr:
-            paths = client.get([block], path).wait(progress=progress)
-            for path in paths:
-                qr_entry = tables.DatabaseEntry._from_query_result_block(block)
-                file_entries = list(
-                    tables.entries_from_file(path, self.default_waveunit))
-                for entry in file_entries:
-                    entry.source = qr_entry.source
-                    entry.provider = qr_entry.provider
-                    entry.physobs = qr_entry.physobs
-                    entry.fileid = qr_entry.fileid
-                    entry.observation_time_start =\
-                        qr_entry.observation_time_start
-                    entry.observation_time_end = qr_entry.observation_time_end
-                    entry.instrument = qr_entry.instrument
-                    entry.size = qr_entry.size
-                    entry.wavemin = qr_entry.wavemin
-                    entry.wavemax = qr_entry.wavemax
-                    entry.path = path
-                    entry.download_time = datetime.utcnow()
-                entries.extend(file_entries)
+        entries = list(self._download_and_collect_entries(
+            qr, client, path, progress))
         dump = serialize.dump_query(and_(*query))
         (dump_exists,), = self.session.query(
             exists().where(tables.JSONDump.dump == tables.JSONDump(dump).dump))
@@ -639,6 +645,30 @@ class Database(object):
         vso_qr = itertools.chain.from_iterable(
             H2VClient().translate_and_query(query_result))
         self.add_from_vso_query_result(vso_qr, ignore_already_added)
+
+    def download_from_vso_query_result(self, query_result, client=None,
+            path=None, progress=False, ignore_already_added=False):
+        """download(query_result, client=sunpy.net.vso.VSOClient(),
+        path=None, progress=False, ignore_already_added=False)
+
+        Add new database entries from a VSO query result and download the
+        corresponding data files. See :meth:`sunpy.database.Database.download`
+        for information about the parameters `client`, `path`, `progress`.
+
+        Parameters
+        ----------
+        query_result : sunpy.net.vso.vso.QueryResponse
+            A VSO query response that was returned by the ``query`` method of a
+            :class:`sunpy.net.vso.VSOClient` object.
+
+        ignore_already_added : bool
+            See :meth:`sunpy.database.Database.add`.
+
+        """
+        if not query_result:
+            return
+        self.add_many(self._download_and_collect_entries(
+            query_result, client, path, progress))
 
     def add_from_vso_query_result(self, query_result,
             ignore_already_added=False):

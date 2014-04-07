@@ -6,6 +6,7 @@ Latest
   - Added a window/split method to time range
   - Updates to spectrogram documentation
   - Added method Database.add_from_hek_query_result to HEK database
+  - Added method Database.download_from_vso_query_result
 
 0.4.0
 -----
