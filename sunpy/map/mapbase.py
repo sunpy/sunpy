@@ -251,10 +251,10 @@ Dimension:\t [%d, %d]
 
     @property
     def center(self):
-        """Returns the offset between the center of the Sun and the center of 
+        """Returns the offset between the center of the Sun and the center of
         the map."""
-        return {'x': wcs.get_center(self.shape[1], self.scale['x'], 
-                                    self.reference_pixel['x'], 
+        return {'x': wcs.get_center(self.shape[1], self.scale['x'],
+                                    self.reference_pixel['x'],
                                     self.reference_coordinate['x']),
                 'y': wcs.get_center(self.shape[0], self.scale['y'],
                                     self.reference_pixel['y'],
@@ -352,25 +352,25 @@ Dimension:\t [%d, %d]
 
             deltm = np.matrix([[self.scale['y']/div, 0],
                                [0, self.scale['x']/ div]])
-            
+
             cd = np.matrix([[self.meta['CD1_1'], self.meta['CD1_2']],
                             [self.meta['CD2_1'], self.meta['CD2_2']]])
-            
+
             return deltm * cd
         else:
             return self._matrix_from_crota()
 
     def _matrix_from_crota(self):
         """
-        This method converts the deprecated CROTA FITS kwargs to the new 
+        This method converts the deprecated CROTA FITS kwargs to the new
         PC rotation matrix
         """
         lam = self.scale['y'] / self.scale['x']
         p = self.meta['CROTA2']
-        
-        return np.matrix([[np.cos(p), lam * np.sin(p)],
+
+        return np.matrix([[np.cos(p), -1 * lam * np.sin(p)],
                           [1/lam * np.sin(p), np.cos(p)]])
-        
+
 # #### Miscellaneous #### #
 
     def _fix_date(self):
@@ -638,7 +638,10 @@ Dimension:\t [%d, %d]
         new_map.meta['crval2'] = new_center[1]
         new_map.meta['crpix1'] = map_center[1] + 1 # FITS counts pixels from 1
         new_map.meta['crpix2'] = map_center[0] + 1 # FITS counts pixels from 1
-  
+        
+        #Remove old CROTA kwargs
+        new_map.meta.pop('CROTA1', None)
+        new_map.meta.pop('CROTA2', None)
         return new_map
 
     def submap(self, range_a, range_b, units="data"):
