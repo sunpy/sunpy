@@ -56,6 +56,7 @@ install:
 # Install sphinx if needed
    - if [[ $TEST_MODE == 'sphinx' ]]; then pip install $PIP_WHEEL_COMMAND sphinx>=1.2; fi 
 # Install scikit-image package - originally included in order to test image coalignment functionality
+   - easy_install cython
    - pip install $PIP_WHEEL_COMMAND scikit-image
 # Install SunPy and run tests.
 script:
