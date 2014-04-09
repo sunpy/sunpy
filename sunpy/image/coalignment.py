@@ -15,7 +15,7 @@ def default_fmap_function(data):
     This function ensures that the data are floats.  It is the default data
     manipulation function for the coalignment method.
     """
-    return 1.0 * data
+    return np.float64(data)
 
 
 def calculate_shift(this_layer, template):
@@ -74,7 +74,7 @@ def clip_edges(data, yclips, xclips):
     ny = data.shape[0]
     nx = data.shape[1]
 
-    return data[yclips[0]: ny - yclips[1] - 1, xclips[0]: nx - xclips[1] - 1]
+    return data[yclips[0]: ny - yclips[1], xclips[0]: nx - xclips[1]]
 
 
 #
