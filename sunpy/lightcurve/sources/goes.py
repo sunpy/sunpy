@@ -4,23 +4,28 @@ from __future__ import absolute_import
 
 import datetime
 
+import pandas
+import numpy as np
 import matplotlib
-from matplotlib import pyplot as plt  
-from pandas.io.parsers import read_csv
+from matplotlib import pyplot as plt
 
-from sunpy.lightcurve import LightCurve
-from sunpy.time import parse_time, TimeRange
+from astropy.io import ascii
+
+from sunpy.map.header import MapMeta
+from sunpy.lightcurve import GenericLightCurve
+from sunpy.time import TimeRange
+import sunpy.time
 
 __all__ = ['GOESLightCurve']
 
-class GOESLightCurve(LightCurve):
+class GOESLightCurve(GenericLightCurve):
     """
     GOES LightCurve.
 
     Examples
     --------
     >>> from sunpy import lightcurve as lc
-    
+
     >>> goes = lc.GOESLightCurve.create()
     >>> goes = lc.GOESLightCurve.create('2012/06/01', '2012/06/05')
     >>> goes.peek()
@@ -38,9 +43,9 @@ class GOESLightCurve(LightCurve):
 
         dates = matplotlib.dates.date2num(self.data.index)
 
-        axes.plot_date(dates, self.data['A_FLUX'], '-', 
+        axes.plot_date(dates, self.data['A_FLUX'], '-',
                      label='0.5--4.0 $\AA$', color='blue', lw=2)
-        axes.plot_date(dates, self.data['B_FLUX'], '-', 
+        axes.plot_date(dates, self.data['B_FLUX'], '-',
                      label='1.0--8.0 $\AA$', color='red', lw=2)
 
         axes.set_yscale("log")
@@ -69,20 +74,51 @@ class GOESLightCurve(LightCurve):
 
         return figure
 
-    @classmethod
-    def _get_default_uri(cls):
-        """Retrieve XRS 2s data from yesterday (most recent data available using
-        SEM API) if no other data is specified"""
-        today = datetime.datetime.today()
-        yesterday = today - datetime.timedelta(days=1)
-        return cls._get_url_for_date_range(yesterday, today)
+    @staticmethod
+    def _read_file(filepath):
+        header = MapMeta()
+
+        #csv files downloaded from the goes archive have a big header find it
+        data_start = 0
+        fp = open(filepath, 'rb')
+        lines = fp.readlines()
+        for i, line in enumerate(lines):
+            if line.find('data:') != -1:
+                data_start = i + 1
+                break
+
+        #read the data
+        data = ascii.read(lines[data_start:])
+        #Find the index that is strings and times:
+        inds = [i for i,v in enumerate(data[0]) if isinstance(v, basestring) if sunpy.time.is_time(v)]
+        if len(inds) != 1:
+            raise IOError("Can not automatically parse file, can't find time column")
+        #Parse time that column
+        index = [sunpy.time.parse_time(v) for v in data[data.keys()[inds[0]]]]
+        #remove that column
+        data.remove_column(data.keys()[inds[0]])
+        #Make a DataFrame
+        data = pandas.DataFrame(np.asarray(data), index=index)
+        
+        #add the header to the header
+        for i,line in enumerate(lines[:data_start]):
+            eqs = line.split('=')
+            if len(eqs) == 1:
+                header.update({str(i): eqs[0]})
+            elif len(eqs) == 2:
+                header.update({eqs[0]: eqs[1]})
+            else:
+                header.update({eqs[0]: "".join(eqs[1:])})
+        
+        return (data, header)
+
 
     @classmethod
     def _get_goes_sat_num_and_data_type(self,start,end):
         """Parses the query time to determine which GOES satellite to use and the correct data type
         The operational times and dataformats are sourced from the GOES SEM API site:
         http://www.ngdc.noaa.gov/goes/sem/getData"""
-       
+
         goes_operational={
         5:TimeRange('1986-01-01','1987-03-31'),
         6:TimeRange('1986-01-01','1994-12-31'),
@@ -101,20 +137,20 @@ class GOESLightCurve(LightCurve):
 
         #find out which satellites were available. Start with newest first.
         for sat_num in range(15,5,-1):
-            
+
             if ((start > goes_operational[sat_num].start() and start < goes_operational[sat_num].end()) and
                 (end > goes_operational[sat_num].start() and end < goes_operational[sat_num].end())):
                 #if true then the satellite with sat_num is available
                 return sat_num,goes_dformat[sat_num]
-        
-        
+
+
 
         #if no satellites were found then raise an exception
         raise Exception, 'No operational GOES satellites found within specified time range'
-        
 
-    @staticmethod
-    def _get_url_for_date_range(*args, **kwargs):
+
+    @classmethod
+    def _get_url_from_timerange(cls, timerange, **kwargs):
         """Returns a URL to the GOES data for the specified date.
 
         Parameters
@@ -126,24 +162,16 @@ class GOESLightCurve(LightCurve):
             GOES satellite number (default = 15)
         data_type : string
             Data type to return for the particular GOES satellite. Supported
-            types depend on the satellite number specified. (default = xrs_2s) 
+            types depend on the satellite number specified. (default = xrs_2s)
         """
         # TimeRange
-        if len(args) == 1 and isinstance(args[0], TimeRange):
-            start = args[0].start()
-            end = args[0].end()
-        elif len(args) == 2:
-            # Start & End date
-            start = parse_time(args[0])
-            end = parse_time(args[1])
-            if end < start:
-                print('Warning: start time (argument 1) > end time (argument 2)')
-
+        start = timerange.start()
+        end = timerange.end()
 
         #find out which satellite and datatype to query from the query times
 
 
-        sat_num, dtype = GOESLightCurve._get_goes_sat_num_and_data_type(start,end)
+        sat_num, dtype = cls._get_goes_sat_num_and_data_type(start,end)
         # GOES query parameters
         params = {
             "satellite_number": sat_num,
@@ -152,44 +180,16 @@ class GOESLightCurve(LightCurve):
         params.update(kwargs)
 
         base_url = 'http://www.ngdc.noaa.gov/goes/sem/getData/goes%d/%s.csv'
-        query_str = "?fromDate=%s&toDate=%s&file=true" 
+        query_str = "?fromDate=%s&toDate=%s&file=true"
 
-        url = (base_url + query_str) % (params['satellite_number'], 
+        url = (base_url + query_str) % (params['satellite_number'],
                                         params['data_type'],
-                                        start.strftime("%Y%m%d"), 
+                                        start.strftime("%Y%m%d"),
                                         end.strftime("%Y%m%d"))
 
-        return url
-    
-    #Subclass download to enable a different filename
-    @staticmethod
-    def _download(uri, kwargs, err='Unable to download data at specified URL',
-                  filename = None):
-        #Create a better filename
-        query_str = uri.split('?')[1]
-        pars = {}
-        for s in query_str.split('&'):
-            kv = s.split('=')
-            pars.update({kv[0]:kv[1]})
-        
-        base_url = uri.split('?')[0]
-        fname = base_url.split('/')[-1][:-4]
-        pars.update({'data_type':fname})
-        snumber = base_url.split('/')[-2]
-        pars.update({'satellite_number':snumber})
-        
-        filename = '%s_%s_%s_%s.csv'%(pars['satellite_number'],
-                                  pars['data_type'],
-                                  pars['fromDate'],
-                                  pars['toDate'])
-        
-        filepath = LightCurve._download(uri,kwargs,filename=filename)
-        
-        return filepath
-    
+        return [url]
 
-    @staticmethod
-    def _parse_csv(filepath):
-        """Parses an GOES CSV"""
-        with open(filepath, 'rb') as fp:
-            return "", read_csv(fp, sep=",", index_col=0, parse_dates=True)
+    @classmethod
+    def _is_datasource_for(cls, data, meta, source=None):
+        if source is not None:
+            return source.lower() == 'goes'

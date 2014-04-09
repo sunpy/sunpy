@@ -14,7 +14,7 @@ anarw routines.
 Created by Tim van Werkhoven (t.i.m.vanwerkhoven@gmail.com) on 2009-02-11.
 Copyright (c) 2009--2011 Tim van Werkhoven.
 """
- 
+
 from __future__ import absolute_import
 import os
 
@@ -27,27 +27,28 @@ from sunpy.io.header import FileHeader
 
 __all__ = ['read', 'get_header', 'write']
 
-def read(filename, debug=False):
+def read(filename, debug=False, **kwargs):
     """
     Loads an ANA file and returns the data and a header in a list of (data,
     header) tuples.
-    
+
     Parameters
     ----------
     filename: string
         Name of file to be read.
     debug: bool, optional
         Prints versbose debug information.
-    
+
     Returns
     -------
     out: list
         A list of (data, header) tuples
-    
+
     Examples
     --------
+    >>> import sunpy.io
     >>> data = sunpy.io.ana.read(filename)
-    
+
     """
     if not os.path.isfile(filename):
         raise IOError("File does not exist!")
@@ -58,7 +59,7 @@ def read(filename, debug=False):
     data = _pyana.fzread(filename, debug)
     return [(data['data'],FileHeader(data['header']))]
 
-def get_header(filename, debug=False):
+def get_header(filename, debug=False, **kwargs):
     """
     Loads an ANA file and only return the header consisting of the dimensions,
     size (defined as the product of all dimensions times the size of the
@@ -70,14 +71,15 @@ def get_header(filename, debug=False):
         Name of file to be read.
     debug: bool, optional
         Prints versbose debug information.
-    
+
     Returns
     -------
     out: list
         A list of FileHeader headers
 
     Examples
-    --------    
+    --------
+    >>> import sunpy.io
     >>> header = sunpy.io.ana.get_header(filename)
     """
     if _pyana is None:
@@ -86,7 +88,7 @@ def get_header(filename, debug=False):
     data = _pyana.fzread(filename, debug)
     return [FileHeader(data['header'])]
 
-def write(filename, data, comments=False, compress=1, debug=False):
+def write(filename, data, comments=False, compress=1, debug=False, **kwargs):
     """
     Saves a 2D numpy array as an ANA file and returns the bytes written or NULL
 
@@ -103,14 +105,15 @@ def write(filename, data, comments=False, compress=1, debug=False):
         1 is to compress, 0 is uncompressed
     debug: bool, optional
         Prints versbose debug information.
-    
+
     Returns
     -------
     out: ANA compressed archive
-        A new ANA compressed archive containing the data and header.    
+        A new ANA compressed archive containing the data and header.
 
     Examples
-    --------    
+    --------
+    >>> import sunpy.io
     >>> written = sunpy.io.ana.write(filename, data, comments=Falsem, compress=1)
     """
     if _pyana is None:
