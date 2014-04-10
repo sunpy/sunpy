@@ -5,6 +5,7 @@ from __future__ import absolute_import
 import datetime
 import urlparse
 
+import matplotlib
 from matplotlib import pyplot as plt
 from astropy.io import fits
 import pandas
@@ -54,8 +55,9 @@ class LYRALightCurve(LightCurve):
 
         """Shows a plot of all four light curves"""
         figure = plt.figure()
+        plt.subplots_adjust(left=0.17,top=0.94,right=0.94,bottom=0.15)
         axes = plt.gca()
-
+        
         axes = self.data.plot(ax=axes, subplots=True, sharex=True, **kwargs)
         #plt.legend(loc='best')
 
@@ -63,11 +65,13 @@ class LYRALightCurve(LightCurve):
             if names < 3:
                 name = lyranames[names][i]
             else:
-                name = lyranames[0][i] + ' (' + lyranames[1][i] + ')'
-            axes[i].set_ylabel("%s (%s)" % (name, "W/m**2"))
+                name = lyranames[0][i] + ' \n (' + lyranames[1][i] + ')'
+            axes[i].set_ylabel( "%s %s" % (name, "\n (W/m**2)"),fontsize=9.5)
 
         axes[0].set_title("LYRA ("+ self.data.index[0].strftime('%Y-%m-%d') +")")
         axes[-1].set_xlabel("Time")
+        for axe in axes:
+            axe.locator_params(axis='y',nbins=6)
 
         figure.show()
 
