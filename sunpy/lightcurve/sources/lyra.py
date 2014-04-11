@@ -5,7 +5,6 @@ from __future__ import absolute_import
 import datetime
 import urlparse
 
-import numpy as np
 from matplotlib import pyplot as plt
 from astropy.io import fits
 import pandas
