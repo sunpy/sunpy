@@ -5,6 +5,7 @@ from __future__ import absolute_import
 import datetime
 import urlparse
 
+import numpy as np
 from matplotlib import pyplot as plt
 from astropy.io import fits
 import pandas
@@ -123,7 +124,11 @@ class LYRALightCurve(LightCurve):
         table = {}
 
         for i, col in enumerate(fits_record.columns[1:-1]):
-            table[col.name] = fits_record.field(i + 1)
+            #temporary patch for big-endian data bug on pandas 0.13
+            if fits_record.field(i+1).dtype.byteorder == '>':
+                table[col.name] = fits_record.field(i + 1).byteswap().newbyteorder()
+            else:
+                table[col.name] = fits_record.field(i + 1)
 
         # Return the header and the data
         return hdulist[0].header, pandas.DataFrame(table, index=times)
