@@ -36,3 +36,20 @@ def hek_client():
 @pytest.fixture
 def vso_client():
     vso.VSOClient()
+
+def test_wave_unit_catcher():
+    """Make sure that inter-unit conversion of wavelengths is accurate"""
+    # Implementing the example test cases
+    assert hek2vso.wave_unit_catcher(2.11e-06, 'cm') == 210.99999999999997 
+    assert hek2vso.wave_unit_catcher(9.4e-07, 'cm') == 93.99999999999999
+    assert hek2vso.wave_unit_catcher(5e-08, 'mm') == 0.4999999999999999
+
+def test_translate_results_to_query():
+    h = hek.HEKClient()
+    h2v = hek2vso.H2VClient()
+    q = h.query(hek.attrs.Time('2011/08/09 07:23:56', '2011/08/09 12:40:29'), hek.attrs.EventType('FL'))
+    ## TODO: Finish!!
+
+class TestH2VClient:
+    """Tests the H2V class"""
+
