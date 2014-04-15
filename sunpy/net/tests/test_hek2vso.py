@@ -60,7 +60,7 @@ def test_translate_results_to_query():
     hek_query = h.query(hekTime, hekEvent)
     vso_query = hek2vso.translate_results_to_query(hek_query)
 
-    if type(hek_query) == 'list':
+    if isinstance(hek_query, list):
         # Comparing length of two lists
         assert len(hek_query) == len(vso_query)
         #Comparing types of both queries
