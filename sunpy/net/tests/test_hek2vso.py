@@ -19,6 +19,8 @@ from sunpy.net import hek2vso
 
 from sunpy.time import parse_time
 
+import numpy as np
+
 startTime = '2011/08/09 07:23:56'
 endTime = '2011/08/09 12:40:29'
 eventType = 'FL'
@@ -42,9 +44,14 @@ def vso_client():
 def test_wave_unit_catcher():
     """Make sure that inter-unit conversion of wavelengths is accurate"""
     # Implementing the example test cases
-    assert hek2vso.wave_unit_catcher(2.11e-06, 'cm') == 210.99999999999997 
-    assert hek2vso.wave_unit_catcher(9.4e-07, 'cm') == 93.99999999999999
-    assert hek2vso.wave_unit_catcher(5e-08, 'mm') == 0.4999999999999999
+    test_wavel = [
+        hek2vso.wave_unit_catcher(2.11e-06, 'cm'), 
+        hek2vso.wave_unit_catcher(9.4e-07, 'cm'),
+        hek2vso.wave_unit_catcher(5e-08, 'mm') 
+    ]
+    test_results = [210.99999999999997, 93.99999999999999, 0.4999999999999999]
+
+    assert np.allclose(test_wavel, test_results, rtol=1e-05, atol=1e-8) == True
 
 def test_translate_results_to_query():
     """Make sure that conversion of HEK results to VSO queries is accurate"""
