@@ -49,9 +49,9 @@ def test_wave_unit_catcher():
         hek2vso.wave_unit_catcher(9.4e-07, 'cm'),
         hek2vso.wave_unit_catcher(5e-08, 'mm') 
     ]
-    test_results = [210.99999999999997, 93.99999999999999, 0.4999999999999999]
+    test_values = [211.0, 94.0, 0.5]
 
-    assert np.allclose(test_wavel, test_results, rtol=1e-05, atol=1e-8) == True
+    assert np.allclose(test_wavel, test_values, rtol=1e-05, atol=1e-8)
 
 def test_translate_results_to_query():
     """Make sure that conversion of HEK results to VSO queries is accurate"""
