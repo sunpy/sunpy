@@ -17,6 +17,8 @@ from sunpy.net import hek
 from sunpy.net import vso
 from sunpy.net import hek2vso
 
+from sunpy.time import parse_time
+
 startTime = '2011/08/09 07:23:56'
 endTime = '2011/08/09 12:40:29'
 eventType = 'FL'
@@ -45,11 +47,39 @@ def test_wave_unit_catcher():
     assert hek2vso.wave_unit_catcher(5e-08, 'mm') == 0.4999999999999999
 
 def test_translate_results_to_query():
+    """Make sure that conversion of HEK results to VSO queries is accurate"""
     h = hek.HEKClient()
     h2v = hek2vso.H2VClient()
-    q = h.query(hek.attrs.Time('2011/08/09 07:23:56', '2011/08/09 12:40:29'), hek.attrs.EventType('FL'))
-    ## TODO: Finish!!
+    hek_query = h.query(hekTime, hekEvent)
+    vso_query = hek2vso.translate_results_to_query(hek_query)
+
+    if type(hek_query) == 'list':
+        # Comparing length of two lists
+        assert len(hek_query) == len(vso_query)
+        #Comparing types of both queries
+        assert type(hek_query) == type(vso_query)
+
+def test_vso_attribute_parse():
+    """Make sure that Parsing of VSO attributes from HEK queries is accurate"""
+    h = hek.HEKClient()
+    h2v = hek2vso.H2VClient()
+    hek_query = h.query(hekTime, hekEvent)
+    vso_query = hek2vso.vso_attribute_parse(hek_query[0])
+
+    # Cheking Time
+    # TODO
+
+    # Checking Observatory
+    assert vso_query[1].value == hek_query[0]['obs_observatory']
+    
+    # Checking Instrument
+    assert vso_query[2].value == hek_query[0]['obs_instrument']
+    
+    # Checking Wavelength
+    assert vso_query[3].min == hek2vso.wave_unit_catcher(hek_query[0]['obs_meanwavel'], hek_query[0]['obs_wavelunit'])
+    assert vso_query[3].max == hek2vso.wave_unit_catcher(hek_query[0]['obs_meanwavel'], hek_query[0]['obs_wavelunit'])
+    assert vso_query[3].unit == 'Angstrom'
 
 class TestH2VClient:
     """Tests the H2V class"""
-
+    # TODO
