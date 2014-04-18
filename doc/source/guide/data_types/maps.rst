@@ -26,6 +26,7 @@ To make things easy, SunPy includes several example files which are used through
 These files have names like `sunpy.AIA_171_IMAGE` and `sunpy.RHESSI_IMAGE`.
 To create the sample AIA map type the following into your interactive Python shell::
 
+    import sunpy
     import sunpy.map
     my_map = sunpy.map.Map(sunpy.AIA_171_IMAGE)
 
@@ -43,7 +44,7 @@ may vary. SunPy can also create maps from the jpg2000 files from
 2. Creating Custom Maps
 -----------------------
 It is also possible to create maps using custom data from a simulation for example. To do this you
-need to provide Map() with both the data array as well as some basic meta information. If no
+need to provide `Map()` with both the data array as well as some basic meta information. If no
 header is given then some default values as assumed. Here is a simple example::
 
     import numpy as np
@@ -121,15 +122,15 @@ quickly view your map on the screen. To create a plot just type::
     
 This will open a matplotlib plot right on your screen.
 In addition, to enable users to modify the plot it is possible to grab the
-matplotlib figure object by using the plot() command instead of the show() 
-command. This makes it possible to use the SunPy plot as the foundation for a 
+matplotlib figure object by using the plot() command.
+This makes it possible to use the SunPy plot as the foundation for a 
 more complicated figure.
 
 6. Overlaying Maps
 ------------------
-The Map() method described above can also handle a list of maps. If a list in inputs
-is supplied, Map() will return a list of maps as the output.  However, if the
-'composite' keyword is set to True, then a CompositeMap object is returned.  This is useful if the maps are
+The `Map()` method described above can also handle a list of maps. If a list in inputs
+is supplied, `Map()` will return a list of maps as the output.  However, if the
+'composite' keyword is set to True, then a `CompositeMap` object is returned.  This is useful if the maps are
 of a different type (e.g. different instruments).  For example, to create a simple composite map::
 
     my_maps = sunpy.map.Map(sunpy.EIT_195_IMAGE, sunpy.RHESSI_IMAGE, composite=True)
@@ -139,8 +140,7 @@ To list which maps are part of your composite map use::
 
     my_maps.list_maps()
 
-Similar to all SunPy data objects, the composite map also has an associated show() method and a 
-number of associated methods to customize your plot. For example, the following code turns 
+The following code  
 adds a new map (which must be instantiated first), sets its transparency to 25%, turns on contours from 50% to 90% for the second map, 
 and then plots the result::
 
