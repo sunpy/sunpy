@@ -5,7 +5,7 @@ temperature and the GOES flux ratio for each GOES satellite.  Two
 files are calculated: one assuming coronal abundances and one
 assuming photospheric abundances.  This relationship is determined
 using CHIANTI for each GOES satellite and then hard-coded into the SSW
-IDL routine goes_get_chianti_temp.pro.  This code simply uses these
+IDL routine goes_get_chianti_temp.pro.  This code here simply uses these
 hard-coded values copied-and-pasted from goes_get_chianti_temp.pro and
 turns them into a csv file.  In the future this should be replaced by a
 far more elegant solution such as a direct interface between python
@@ -529,7 +529,7 @@ r_pho[14,:] = [2.65e-06,4.14e-06,6.32e-06,9.48e-06,1.40e-05,2.06e-05,2.98e-05,
 
 # Enter values into csv files.
 # Create string list of each row then enter it into csv file
-# Firstly csv file for coronal abundances usinf r_cor array.
+# Firstly csv file for coronal abundances using r_cor array.
 with open('goes_chianti_temp_cor.csv', 'wb') as csvfile:
     csvwriter = csv.writer(csvfile, delimiter=';')
     # First create header containing column names and read into csv file
