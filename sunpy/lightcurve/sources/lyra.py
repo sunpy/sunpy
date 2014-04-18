@@ -11,6 +11,7 @@ import pandas
 
 from sunpy.lightcurve import LightCurve 
 from sunpy.time import parse_time
+from sunpy.util.odict import OrderedDict
 
 __all__ = ['LYRALightCurve']
 
@@ -123,6 +124,6 @@ class LYRALightCurve(LightCurve):
             table[col.name] = fits_record.field(i + 1)
 
         # Return the header and the data
-        return hdulist[0].header, pandas.DataFrame(table, index=times)
+        return OrderedDict(hdulist[0].header), pandas.DataFrame(table, index=times)
 
 
