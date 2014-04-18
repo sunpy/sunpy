@@ -20,7 +20,7 @@ with image data in SunPy, the Map object provides a number of methods for
 commonly performed operations.
 
 2D map objects are subclasses of sunpy.map.MapBase and all Map objects are 
-created using the Map factory sunpy.Map.
+created using the Map factory sunpy.map.Map.
 
 .. Todo:
     1. Map factory and registration
@@ -33,7 +33,7 @@ Creating Map Objects
 SunPy Map objects are constructed using the special factory 
 class :class:`Map`: ::
 
->>> x = sunpy.Map('file.fits')
+>>> x = sunpy.map.Map('file.fits')
 
 The result of a call to `Map` will be either a `mapbase.GenericMap` object, 
 or a subclass of `mapbase.GenericMap` which either deals with a specific type of data, 
@@ -80,7 +80,7 @@ example, to add a Map type for a future instrument, consider the code skeleton :
 Then, to be able to instantiate a FutureMap using the Map() factory, one must
 register the FutureMap type with the factory ::
 
-    sunpy.Map.register(FutureMap, FutureMap.is_datasource_for)
+    sunpy.map.Map.register(FutureMap, FutureMap.is_datasource_for)
     
 If this line is placed correctly, for example in your subpackages __init__.py,
 it can be guaranteed that the FutureMap is always accessible when your package
