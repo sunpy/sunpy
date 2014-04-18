@@ -21,7 +21,7 @@ import numpy
 import csv
 
 # The data here was taken from goes_get_chianti_temp.pro on 2014-Apr-17
-DATETAKEN = '20140417'
+DATETAKEN = '2014-04-17'
 # Define current number of GOES satellites
 NUMSATS = 15
 # Put in check for user that DATETAKEN and NUMSATS are correct.
@@ -530,27 +530,37 @@ r_pho[14,:] = [2.65e-06,4.14e-06,6.32e-06,9.48e-06,1.40e-05,2.06e-05,2.98e-05,
 # Enter values into csv files.
 # Create string list of each row then enter it into csv file
 # Firstly csv file for coronal abundances usinf r_cor array.
-with open('goes_chianti_temp_cor_' + DATETAKEN + '.csv', 'wb') as csvfile:
+with open('goes_chianti_temp_cor.csv', 'wb') as csvfile:
     csvwriter = csv.writer(csvfile, delimiter=';')
     # First create header containing column names and read into csv file
     header = ['ratioGOES'+str(i) for i in range(1,NUMSATS+1)]
     header.insert(0, "log10temp")
+    header.append("date_taken_ssw")
     csvwriter.writerow(header)
     # Write in data row by row.
-    for i in range(len(log10temp)):
+    row = ["{:1.2e}".format(number) for number in r_cor[:,0]]
+    row.insert(0, log10temp[0])
+    row.append(DATETAKEN)
+    csvwriter.writerow(row)
+    for i in range(1, len(log10temp)):
         row = ["{:1.2e}".format(number) for number in r_cor[:,i]]
         row.insert(0, log10temp[i])
         csvwriter.writerow(row)
 
 # Next write csv file for photospheric abundances using r_pho array.
-with open('goes_chianti_temp_pho_' + DATETAKEN + '.csv', 'wb') as csvfile:
+with open('goes_chianti_temp_pho.csv', 'wb') as csvfile:
     csvwriter = csv.writer(csvfile, delimiter=';')
     # First create header containing column names and read into csv file
     header = ['ratioGOES'+str(i) for i in range(1,NUMSATS+1)]
     header.insert(0, "log10temp")
+    header.append("date_taken_ssw")
     csvwriter.writerow(header)
     # Write in data row by row.
-    for i in range(len(log10temp)):
+    row = ["{:1.2e}".format(number) for number in r_cor[:,0]]
+    row.insert(0, log10temp[0])
+    row.append(DATETAKEN)
+    csvwriter.writerow(row)
+    for i in range(1, len(log10temp)):
         row = ["{:1.2e}".format(number) for number in r_pho[:,i]]
         row.insert(0, log10temp[i])
         csvwriter.writerow(row)
