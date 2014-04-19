@@ -23,25 +23,34 @@ def createAIAMap():
 
 # HMI Tests
 def test_is_datasource_for(createHMI):
+    """Test the is_datasource_for method of HMIMap.
+    Note that header data to be provided as an argument
+    can be a MapMeta object, which in this case is
+    hmi.meta."""
     hmi = Map(createHMI)
     header = dict(hmi.meta)
     assert (hmi.is_datasource_for(hmi.data, header) == True)
 
 def test_observatory(createHMI):
+    """Tests the observatory property of the HMIMap object."""
     hmi = Map(createHMI)
     assert(hmi.observatory == "SDO")
 
 def test_measurement(createHMI):
+    """Tests the measurement property of the HMIMap object."""
     hmi = Map(createHMI)
     assert (hmi.measurement == "continuum")
 
 # AIA Tests
 def test_is_datasource_for(createAIAMap):
+    """Tests the is_datasource_for method of AIAMap."""
     header = dict(createAIAMap.meta)
     assert (createAIAMap.is_datasource_for(createAIAMap.data, header) == True)
 
 def test_observatory(createAIAMap):
+    """Tests the observatory property of the AIAMap object."""
     assert (createAIAMap.observatory == "SDO")
 
 def test_measurement(createAIAMap):
+    """Tests the measurement property of the AIAMap object."""
     assert (createAIAMap.measurement == 171)
