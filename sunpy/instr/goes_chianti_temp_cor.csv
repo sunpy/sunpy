@@ -1,4 +1,4 @@
-log10temp;ratioGOES1;ratioGOES2;ratioGOES3;ratioGOES4;ratioGOES5;ratioGOES6;ratioGOES7;ratioGOES8;ratioGOES9;ratioGOES10;ratioGOES11;ratioGOES12;ratioGOES13;ratioGOES14;ratioGOES15;date_taken_ssw
+log10temp_MK;ratioGOES1;ratioGOES2;ratioGOES3;ratioGOES4;ratioGOES5;ratioGOES6;ratioGOES7;ratioGOES8;ratioGOES9;ratioGOES10;ratioGOES11;ratioGOES12;ratioGOES13;ratioGOES14;ratioGOES15;date_taken_ssw
 0.0;4.67e-06;4.61e-06;4.61e-06;3.82e-06;4.03e-06;2.76e-06;3.31e-06;1.63e-06;1.81e-06;3.00e-06;2.25e-06;2.47e-06;2.21e-06;2.21e-06;2.43e-06;2014-04-17
 0.02;6.80e-06;6.72e-06;6.72e-06;5.56e-06;5.87e-06;4.22e-06;4.95e-06;2.49e-06;2.77e-06;4.39e-06;3.35e-06;3.66e-06;3.29e-06;3.29e-06;3.63e-06
 0.040000000000000001;9.74e-06;9.63e-06;9.63e-06;7.97e-06;8.41e-06;6.30e-06;7.27e-06;3.74e-06;4.15e-06;6.33e-06;4.91e-06;5.34e-06;4.82e-06;4.82e-06;5.31e-06

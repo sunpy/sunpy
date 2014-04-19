@@ -1,9 +1,11 @@
 """Create csv file of temperature as a function of GOES flux ratio.
 
 This code produces a csv file of the relationship between isothermal
-temperature and the GOES flux ratio for each GOES satellite.  Two
-files are calculated: one assuming coronal abundances and one
-assuming photospheric abundances.  This relationship is determined
+temperature and the GOES flux ratio for each GOES satellite.  Another
+csv file is then created containing the parameters of cubic spline fits
+the relationship for each GOES satellite.
+Two pairs of files are calculated: one assuming coronal abundances and
+one assuming photospheric abundances.  This relationship is determined
 using CHIANTI for each GOES satellite and then hard-coded into the SSW
 IDL routine goes_get_chianti_temp.pro.  This code here simply uses these
 hard-coded values copied-and-pasted from goes_get_chianti_temp.pro and
@@ -18,7 +20,9 @@ calibration etc. are not accounted for here.
 import sys
 
 import numpy
+import scipy.interpolate as interpolate
 import csv
+import datetime
 
 # The data here was taken from goes_get_chianti_temp.pro on 2014-Apr-17
 DATETAKEN = '2014-04-17'
@@ -530,7 +534,7 @@ r_pho[14,:] = [2.65e-06,4.14e-06,6.32e-06,9.48e-06,1.40e-05,2.06e-05,2.98e-05,
 # Enter values into csv files.
 # Create string list of each row then enter it into csv file
 # Firstly csv file for coronal abundances using r_cor array.
-with open('goes_chianti_temp_cor.csv', 'wb') as csvfile:
+with open('goes_chianti_temp_cor.csv', 'w') as csvfile:
     csvwriter = csv.writer(csvfile, delimiter=';')
     # First create header containing column names and read into csv file
     header = ['ratioGOES'+str(i) for i in range(1,NUMSATS+1)]
@@ -548,11 +552,11 @@ with open('goes_chianti_temp_cor.csv', 'wb') as csvfile:
         csvwriter.writerow(row)
 
 # Next write csv file for photospheric abundances using r_pho array.
-with open('goes_chianti_temp_pho.csv', 'wb') as csvfile:
+with open('goes_chianti_temp_pho.csv', 'w') as csvfile:
     csvwriter = csv.writer(csvfile, delimiter=';')
     # First create header containing column names and read into csv file
     header = ['ratioGOES'+str(i) for i in range(1,NUMSATS+1)]
-    header.insert(0, "log10temp")
+    header.insert(0, "log10temp_MK")
     header.append("date_taken_ssw")
     csvwriter.writerow(header)
     # Write in data row by row.

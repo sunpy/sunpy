@@ -1,4 +1,4 @@
-log10temp;longfluxGOES1;longfluxGOES2;longfluxGOES3;longfluxGOES4;longfluxGOES5;longfluxGOES6;longfluxGOES7;longfluxGOES8;longfluxGOES9;longfluxGOES10;longfluxGOES11;longfluxGOES12;longfluxGOES13;longfluxGOES14;longfluxGOES15;date_taken_ssw
+log10temp_MK;longfluxGOES1;longfluxGOES2;longfluxGOES3;longfluxGOES4;longfluxGOES5;longfluxGOES6;longfluxGOES7;longfluxGOES8;longfluxGOES9;longfluxGOES10;longfluxGOES11;longfluxGOES12;longfluxGOES13;longfluxGOES14;longfluxGOES15;date_taken_ssw
 0.0;5.17e-05;5.31e-05;5.31e-05;4.64e-05;4.37e-05;4.45e-05;3.84e-05;6.48e-05;6.83e-05;4.33e-05;5.40e-05;5.27e-05;5.43e-05;5.43e-05;6.27e-05;2014-04-18
 0.02;9.68e-05;9.95e-05;9.95e-05;8.68e-05;8.18e-05;8.29e-05;7.31e-05;1.19e-04;1.25e-04;8.18e-05;1.01e-04;9.82e-05;1.01e-04;1.01e-04;1.15e-04
 0.040000000000000001;1.78e-04;1.83e-04;1.83e-04;1.59e-04;1.50e-04;1.51e-04;1.36e-04;2.15e-04;2.25e-04;1.51e-04;1.83e-04;1.79e-04;1.84e-04;1.84e-04;2.09e-04

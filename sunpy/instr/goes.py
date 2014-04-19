@@ -1,9 +1,11 @@
 from __future__ import absolute_import
 import sys
 
+import numpy
+import scipy.interpolate
 import datetime
 import dateutil
-import numpy
+import csv
 
 from sunpy.net import hek
 from sunpy.time import parse_time
@@ -129,9 +131,9 @@ def goes_chianti_tem(longflux, shortflux, satellite=8,
     >>> temp, em = goes_chianti_tem(longflux, shortflux, satellite=15,
                                     date='2014-04-16', photospheric=False)
     >>> temp
-    array([11.282952, 11.282952])
+    array([?????, ??????])
     >>> em
-    array([0.47857765, 0.47857765])
+    array([?????, ??????])
 
     """
 
@@ -191,10 +193,112 @@ def goes_chianti_tem(longflux, shortflux, satellite=8,
     fluxratio[index] = 0.003
 
     # FIND TEMPERATURE AND EMISSION MEASURE FROM FUNCTIONS BELOW
-    #temp = goes_get_chianti_temp(fluxratio, satellite=satellite,
-    #                             photospheric=photospheric)
+    temp = goes_get_chianti_temp(fluxratio, satellite=satellite,
+                                 photospheric=photospheric)
     #em = goes_get_chianti_em(fluxratio, temp, satellite=satellite,
     #                         photospheric=photospheric)
-    temp, em = 1, 2
+    em = 1
     
     return temp, em
+
+def goes_get_chianti_temp(fluxratio, satellite=8, photospheric=False):
+    """Calculates temperature from GOES flux ratio.
+
+    Extended Summary
+    ----------------
+    This function calculates the isothermal temperature of the solar
+    soft X-ray emitting plasma observed by the GOES/XRS from the
+    observed flux ratio of the short (0.5-4 angstrom) to
+    long (1-8 angstrom) channels.  This function is not intended to be
+    called directly but by goes_chianti_tem(), although it can be used
+    independently.  However, if used independently data preparation,
+    such as correctly rescaling fluxes for some satellites etc. will
+    not be carried out.  This is done in goes_chianti_tem().
+
+    Parameters
+    ----------
+    fluxratio : numpy ndarray
+                Array containing the ratio of short channel to long
+                channel GOES/XRS flux measurements.
+    satellite : int
+                Number of GOES satellite used to make observations.
+                Important for correct calibration of data.
+                Default=8
+    photospheric : bool
+                   States whether photospheric or coronal abundances
+                   should be assumed.
+                   Default=False, i.e. coronal abundances assumed.
+
+    Returns
+    -------
+    temp : numpy array
+           Array of temperature values of same length as longflux and
+           shortflux.  [MK]
+
+    Notes
+    -----
+    This function uses csv files representing the modelled relationship
+    between temperature of the soft X-ray emitting plasma and the 
+    short to long channel GOES flux ratio.  goes_chianti_temp_cor.csv
+    is used when coronal abundances are assumed while
+    goes_chianti_temp_pho.csv is used when photospheric abundances are
+    assumed.  (See make_goes_chianti_temp.py for more detail.)
+
+    These files were calculated using the methods of White et al. (2005)
+    who used the CHIANTI atomic physics database to model the response
+    of the ratio of the short (0.5-4 angstrom) to long (1-8 angstrom)
+    channels of the XRSs onboard various GOES satellites.  This method
+    assumes an isothermal plasma, the ionisation equilibria of
+    Mazzotta et al. (1998), and a constant density of 10^10 cm^-3.
+    (See White et al. 2005 for justification of this last assumption.)
+    This function is based on goes_get_chianti_temp.pro in
+    SolarSoftWare written in IDL by Stephen White.
+
+    For correct preparation of GOES data before calculating temperature
+    see goes_chianti_tem() (Notes section of docstring).
+         
+    References
+    ----------
+    .. [1] White, S. M., Thomas, R. J., & Schwartz, R. A. 2005, Sol. Phys.,
+       227, 231
+    .. [2] Mazzotta, P., Mazzitelli, G., Colafrancesco, S., & Vittorio, N.
+       1998, A&AS, 133, 339
+
+    Examples
+    --------
+    >>> fluxratio = numpy.array([10,10])
+    >>> temp = goes_get_chianti_temp(fluxratio, satellite=15,
+                                     photospheric=False)
+    >>> temp
+    array([?????, ???????])
+
+    """
+    # Initialize lists to hold model data of flux ratio - temperature
+    # relationship read in from csv file
+    modeltemp = [ ] # modelled temperature is in log_10 sapce in units of MK
+    modelratio = [ ]
+    # Determine name of column in csv file containing model ratio values
+    # for relevant GOES satellite
+    label = "ratioGOES"+str(satellite)
+
+    # Read data representing appropriate temperature--flux ratio
+    # relationship depending on satellite number and assumed abundances.
+    if photospheric is False:
+        abund = "cor"
+    else:
+        abund = "pho"
+    with open("goes_chianti_temp_"+abund+".csv", "r") as csvfile:
+        csvreader = csv.DictReader(csvfile, delimiter=";")
+        for row in csvreader:
+            modeltemp.append(float(row["log10temp_MK"]))
+            modelratio.append(float(row[label]))
+    modeltemp = numpy.array(modeltemp)
+    modelratio = numpy.array(modelratio)
+
+    # Perform spline fit to model data to get temperatures for input
+    # values of flux ratio
+    spline = scipy.interpolate.splrep(modelratio, modeltemp, s=0)
+    temp = 10.**scipy.interpolate.splev(fluxratio, spline, der=0)
+
+    return temp
+    

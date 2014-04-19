@@ -524,7 +524,7 @@ with open('goes_chianti_em_pho.csv', 'wb') as csvfile:
     csvwriter = csv.writer(csvfile, delimiter=';')
     # First create header containing column names and read into csv file
     header = ['longfluxGOES'+str(i) for i in range(1,NUMSATS+1)]
-    header.insert(0, "log10temp")
+    header.insert(0, "log10temp_MK")
     header.append("date_taken_ssw")
     csvwriter.writerow(header)
     # Write in data row by row.
