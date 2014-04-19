@@ -1,25 +1,24 @@
 """Test cases for SDO Map subclasses"""
-"""This particular test file pertains to HMIMap"""
 
 import pytest
-from sunpy.map.sources.sdo import HMIMap
-from sunpy.map.sources.sdo import AIAMap
+from sunpy.map.sources.sdo import HMIMap, AIAMap
 from sunpy.map import Map
 from sunpy.net import HelioviewerClient
+from sunpy import AIA_171_IMAGE as aiaimg
 
 @pytest.mark.online
 @pytest.fixture
 def createHMI():
     """Downloads a HMIMap jp2 object through the use of HelioviewerClient."""
     hv = HelioviewerClient()
-    filepath = hv.download_jp2('2012/07/05 00:30:00', observatory='SDO', instrument='HMI', detector='HMI', measurement='continuum')
+    filepath = hv.download_jp2('2012/07/05 00:30:00', observatory='SDO', instrument='HMI', detector='HMI', 
+    measurement='continuum')
     return filepath
 
 @pytest.fixture
 def createAIAMap():
     """Creates an AIAMap as given in documentation examples, through AIA_171_IMAGE."""
-    aia = Map(aiaimg)
-    return aia
+    return Map(aiaimg)
 
 # HMI Tests
 def test_is_datasource_for(createHMI):
@@ -29,15 +28,29 @@ def test_is_datasource_for(createHMI):
     hmi.meta."""
     hmi = Map(createHMI)
     header = dict(hmi.meta)
-    assert (hmi.is_datasource_for(hmi.data, header) == True)
+    assert hmi.is_datasource_for(hmi.data, header)
 
 def test_observatory(createHMI):
     """Tests the observatory property of the HMIMap object."""
     hmi = Map(createHMI)
-    assert(hmi.observatory == "SDO")
+    assert hmi.observatory == "SDO"
 
 def test_measurement(createHMI):
     """Tests the measurement property of the HMIMap object."""
     hmi = Map(createHMI)
-    assert (hmi.measurement == "continuum")
+    assert hmi.measurement == "continuum"
+    
+# AIA Tests
+def test_is_datasource_for(createAIAMap):
+    """Tests the is_datasource_for method of AIAMap."""
+    header = dict(createAIAMap.meta)
+    assert createAIAMap.is_datasource_for(createAIAMap.data, header)
 
+def test_observatory(createAIAMap):
+    """Tests the observatory property of the AIAMap object."""
+    assert createAIAMap.observatory == "SDO"
+
+def test_measurement(createAIAMap):
+    """Tests the measurement property of the AIAMap object."""
+    assert createAIAMap.measurement == 171
+    
