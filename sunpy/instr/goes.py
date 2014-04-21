@@ -131,7 +131,7 @@ def goes_chianti_tem(longflux, shortflux, satellite=8,
     >>> temp, em = goes_chianti_tem(longflux, shortflux, satellite=15,
                                     date='2014-04-16', photospheric=False)
     >>> temp
-    array([?????, ??????])
+    array([11.28295376, 11.28295376])
     >>> em
     array([?????, ??????])
 
@@ -266,11 +266,11 @@ def goes_get_chianti_temp(fluxratio, satellite=8, photospheric=False):
 
     Examples
     --------
-    >>> fluxratio = numpy.array([10,10])
+    >>> fluxratio = numpy.array([0.1,0.1])
     >>> temp = goes_get_chianti_temp(fluxratio, satellite=15,
                                      photospheric=False)
     >>> temp
-    array([?????, ???????])
+    array([11.28295376, 11.28295376])
 
     """
     # Initialize lists to hold model data of flux ratio - temperature
