@@ -8,7 +8,7 @@ from __future__ import absolute_import
 __authors__ = ["Keith Hughitt"]
 __email__ = "keith.hughitt@nasa.gov"
 
-import os
+import os.path
 import shutil
 import urllib2
 import warnings
@@ -186,15 +186,10 @@ for compatability with map, please use meta instead""", Warning)
 
     @staticmethod
     def _download(uri, kwargs, 
-                  err='Unable to download data at specified URL',
-                  filename = None):
+                  err='Unable to download data at specified URL'):
         """Attempts to download data at the specified URI"""
-        
-        #Allow manual override of output filename (used for GOES)
-        if filename is not None:
-            _filename = filename
-        else:            
-            _filename = os.path.basename(uri).split("?")[0]
+                    
+        _filename = os.path.basename(uri).split("?")[0]
         
         # user specifies a download directory
         if "directory" in kwargs:
@@ -256,6 +251,7 @@ for compatability with map, please use meta instead""", Warning)
 
     @classmethod
     def _parse_filepath(cls, filepath):
+        """Check the file extension to see how to parse the file"""
         filename, extension = os.path.splitext(filepath)
 
         if extension.lower() in (".csv", ".txt"):
