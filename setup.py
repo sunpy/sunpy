@@ -116,6 +116,9 @@ def install(setup): #pylint: disable=W0621
             'matplotlib>=1.1',
             'sqlalchemy',
         ],
+        extras_require={
+            'net': ["suds", "beautifulsoup4"]
+        },
         license="BSD",
         long_description="\n".join(DOCLINES[2:]),
         maintainer="SunPy Developers",
