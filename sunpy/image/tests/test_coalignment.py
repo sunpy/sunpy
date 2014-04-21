@@ -12,8 +12,7 @@ from sunpy import map
 from sunpy.image.coalignment import parabolic_turning_point, \
 repair_nonfinite, default_fmap_function, _lower_clip, _upper_clip, \
 calculate_clipping, get_correlation_shifts, find_best_match_location, \
-match_template_to_layer, clip_edges, calculate_shift
-
+match_template_to_layer, clip_edges, calculate_shift, coalign_by_match_template
 
 # Map and template we will use in testing
 testmap = map.Map(AIA_171_IMAGE)
@@ -96,7 +95,7 @@ def test_default_fmap_function():
     assert(default_fmap_function([1,2,3]).dtype == np.float64(1).dtype)
 
 
-def test_coalign():
+def test_coalign_by_match_template():
     # take the AIA image and shift it
     # Pixel displacements have the y-displacement as the first entry
     pixel_displacements = np.asarray([1.6, 10.1])
@@ -107,8 +106,7 @@ def test_coalign():
     # Create the mapcube
     mc = map.Map([testmap, m1], cube=True)
     # Do the coalignment
-    displacements = mc.coalign(return_displacements_only=True)
+    displacements = coalign_by_match_template(mc, return_displacements_only=True)
     # Assert
     assert_allclose(displacements['x'], known_displacements['x'], rtol=5e-2, atol=0)
     assert_allclose(displacements['y'], known_displacements['y'], rtol=5e-2, atol=0 )
-
