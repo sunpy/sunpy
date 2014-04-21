@@ -117,8 +117,7 @@ def install(setup): #pylint: disable=W0621
             'sqlalchemy',
         ],
         extras_require={
-            'suds': ["suds"],
-            'beautifulsoup': ["beautifulsoup4"]
+            'net': ["suds", "beautifulsoup4"],
         },  
         license="BSD",
         long_description="\n".join(DOCLINES[2:]),
