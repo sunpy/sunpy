@@ -9,7 +9,7 @@ from matplotlib import pyplot as plt
 
 import sunpy
 from sunpy.lightcurve import LightCurve
-from sunpy.time import parse_time, TimeRange
+from sunpy.time import parse_time, TimeRange, validate_time_format
 from astropy.io import fits as pyfits
 from numpy import nan
 from numpy import floor
@@ -156,10 +156,13 @@ class GOESLightCurve(LightCurve):
         fits = pyfits.open(filepath)
         header = fits[0].header
         if len(fits) == 4:
-            start_time = datetime.datetime.strptime(fits[0].header['DATE-OBS'], '%d/%m/%Y')
+            if validate_time_format(fits[0].header['DATE-OBS'], '%d/%m/%Y'):
+                start_time = datetime.datetime.strptime(fits[0].header['DATE-OBS'], '%d/%m/%Y')
+            if validate_time_format(fits[0].header['DATE-OBS'], '%d/%m/%y'):
+                start_time = datetime.datetime.strptime(fits[0].header['DATE-OBS'], '%d/%m/%y')
+            xrsb = fits[2].data['FLUX'][0][:,0]
+            xrsa = fits[2].data['FLUX'][0][:,1]
             seconds_from_start = fits[2].data['TIME'][0]
-            xrsb = fits[2].data['FLUX'][:,:,0][0]
-            xrsa = fits[2].data['FLUX'][:,:,1][0]
         if len(fits) in (1, 2, 3):
             start_time = parse_time(header['TIMEZERO'])
             seconds_from_start = fits[0].data[0]
