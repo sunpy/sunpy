@@ -195,9 +195,8 @@ def goes_chianti_tem(longflux, shortflux, satellite=8,
     # FIND TEMPERATURE AND EMISSION MEASURE FROM FUNCTIONS BELOW
     temp = goes_get_chianti_temp(fluxratio, satellite=satellite,
                                  photospheric=photospheric)
-    #em = goes_get_chianti_em(fluxratio, temp, satellite=satellite,
-    #                         photospheric=photospheric)
-    em = 1
+    em = goes_get_chianti_em(longflux_corrected, temp, satellite=satellite,
+                             photospheric=photospheric)
     
     return temp, em
 
@@ -302,3 +301,92 @@ def goes_get_chianti_temp(fluxratio, satellite=8, photospheric=False):
 
     return temp
     
+def goes_get_chianti_em(longflux, temp, satellite=8, photospheric=False):
+    """Calculates emission measure from GOES 1-8A flux and temperature.
+
+    Extended Summary
+    ----------------
+    This function calculates the emission measure of the solar
+    soft X-ray emitting plasma observed by the GOES/XRS from the
+    the ratio of the isothermal temperature and observed long channel
+    (1-8 angstrom) flux which scales with the emission measure.
+    This function is not intended to be called directly but by
+    goes_chianti_tem(), although it can be used independently.
+    However, if used independently data preparation, such as correctly
+    rescaling fluxes for some satellites etc. will not be carried out.
+    This is done in goes_chianti_tem().
+
+    Parameters
+    ----------
+    longflux : numpy ndarray
+               Array containing the observed GOES/XRS long channel flux
+    satellite : int
+                Number of GOES satellite used to make observations.
+                Important for correct calibration of data.
+                Default=8
+    photospheric : bool
+                   States whether photospheric or coronal abundances
+                   should be assumed.
+                   Default=False, i.e. coronal abundances assumed.
+
+    Returns
+    -------
+    em : numpy array
+         Array of emission measure values of same length as longflux
+         and temp.  [cm^-3]
+
+    Notes
+    -----
+    This function uses csv files representing the modelled relationship
+    between the temperature of the solar soft X-ray emitting plasma
+    and the resulting observed flux in the GOES/XRS long channel
+    (1-8 angstroms).  goes_chianti_em_cor.csv is used when coronal
+    abundances are assumed while goes_chianti_em_pho.csv is used when
+    photospheric abundances are assumed.
+    (See make_goes_chianti_temp.py for more detail.)
+
+    These files were calculated using the methods of ????????????
+
+    For correct preparation of GOES data before calculating temperature
+    see goes_chianti_tem() (Notes section of docstring).
+         
+    References
+    ----------
+    .. [1] White, S. M., Thomas, R. J., & Schwartz, R. A. 2005, Sol. Phys.,
+       227, 231
+    .. [2] Mazzotta, P., Mazzitelli, G., Colafrancesco, S., & Vittorio, N.
+       1998, A&AS, 133, 339
+
+    Examples
+    --------
+
+    """
+
+    # Initialize lists to hold model data of temperature - long channel
+    # flux relationship read in from csv file.
+    modeltemp = [ ] # modelled temperature is in log_10 sapce in units of MK
+    modelflux = [ ]
+    # Determine name of column in csv file containing model ratio values
+    # for relevant GOES satellite
+    label = "longfluxGOES"+str(satellite)
+
+    # Read data representing appropriate temperature--long flux
+    # relationship depending on satellite number and assumed abundances.
+    if photospheric is False:
+        abund = "cor"
+    else:
+        abund = "pho"
+    with open("goes_chianti_em_"+abund+".csv", "r") as csvfile:
+        csvreader = csv.DictReader(csvfile, delimiter=";")
+        for row in csvreader:
+            modeltemp.append(float(row["log10temp_MK"]))
+            modelflux.append(float(row[label]))
+    modeltemp = numpy.array(modeltemp)
+    modelflux = numpy.array(modelflux)
+
+    # Perform spline fit to model data
+    spline = scipy.interpolate.splrep(modeltemp, modelflux, s=0)
+    denom = scipy.interpolate.splev(numpy.log10(temp), spline, der=0)
+    em = longflux/denom * 1e55
+
+    return em
