@@ -133,7 +133,7 @@ def goes_chianti_tem(longflux, shortflux, satellite=8,
     >>> temp
     array([11.28295376, 11.28295376])
     >>> em
-    array([?????, ??????])
+    array([  4.78577516e+48,   4.78577516e+48])
 
     """
 
@@ -345,7 +345,17 @@ def goes_get_chianti_em(longflux, temp, satellite=8, photospheric=False):
     photospheric abundances are assumed.
     (See make_goes_chianti_temp.py for more detail.)
 
-    These files were calculated using the methods of ????????????
+    These files were calculated using the methods of White et al. (2005)
+    who used the CHIANTI atomic physics database and GOES transfer
+    functions to model the response of the long channel to the
+    temperture of the emitting plasma for XRSs onboard various GOES
+    satellites.  The emission measure can then be found by scaling the
+    ratio of these two properties.  This method assumes an isothermal
+    plasma, the ionisation equilibria of Mazzotta et al. (1998), and
+    a constant density of 10^10 cm^-3.
+    (See White et al. 2005 for justification of this last assumption.)
+    This function is based on goes_get_chianti_temp.pro in
+    SolarSoftWare written in IDL by Stephen White.
 
     For correct preparation of GOES data before calculating temperature
     see goes_chianti_tem() (Notes section of docstring).
@@ -359,6 +369,12 @@ def goes_get_chianti_em(longflux, temp, satellite=8, photospheric=False):
 
     Examples
     --------
+    >>> longflux = numpy.array([7e-6,7e-6])
+    >>> temp = numpy.array([11,11])
+    >>> em = goes_get_chianti_em(longflux, temp, satellite=15,
+                                photospheric=False)
+    >>> em
+    array([  3.45200672e+48,   3.45200672e+48])
 
     """
 
