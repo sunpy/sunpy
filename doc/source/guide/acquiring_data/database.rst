@@ -127,6 +127,13 @@ represent one file but one FITS header of a file. That means, if you pass
 a file which has 5 FITS headers in it, 5 entries will be added to the
 database. The file in the following example (``sunpy.AIA_171_IMAGE``) has
 only one FITS header, that is why just one entry is added to the database.
+However, if you are working with Hinode/SOT files you may notice that for
+each file you get two entries, one which refers to the observation and
+another that contains some (useless - as `discussed 
+<http://listmgr.cv.nrao.edu/pipermail/fitsbits/2007-August/001923.html>`_
+in the `fitsbits mailing list
+<http://listmgr.cv.nrao.edu/mailman/listinfo/fitsbits>`_) 
+telemetry data.
 
 The method saves the value of `path` by either simply passing on the value
 of the received argument (if it was a string) or by reading the value of
