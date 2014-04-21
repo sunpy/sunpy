@@ -39,7 +39,7 @@ class JSOCClient(object):
     The full list of 'series' is availible through this site: http://jsoc.stanford.edu/
 
     You can build more complex queries by specifiying parameters to POST to JSOC via keyword
-    arguments. You can generated these kwargs using the Export Data page at JSOC.
+    arguments. You can generate these kwargs using the Export Data page at JSOC.
 
     Examples
     --------
@@ -56,9 +56,10 @@ class JSOCClient(object):
 
     Once the request has been staged (Status 1) you can download the data:
 
-    >>> dler = client.get(IDs)
+    >>> res = client.get(IDs)
 
-    This returns a SunPy Downloader instance.
+    This returns a Results instance which can be used to watch the progress
+    of the download.
     """
 
     def jsoc_query(self, start_time, end_time, series, **kwargs):
@@ -196,7 +197,7 @@ class JSOCClient(object):
         if not astropy.utils.misc.isiterable(requestIDs) or isinstance(requestIDs, basestring):
             requestIDs = [requestIDs]
 
-        downloader = Downloader(max_conn=max_conn, max_total=max_conn)
+        r = Results(lambda x: None)
 
         while requestIDs:
             for i, request_id in enumerate(requestIDs):
@@ -207,16 +208,16 @@ class JSOCClient(object):
 
                 if u.status_code == 200 and u.json()['status'] == '0':
                     rID = requestIDs.pop(i)
-                    self.get(rID, path=path, overwrite=overwrite,
-                             progress=progress, downloader=downloader)
+                    r = self.get(rID, path=path, overwrite=overwrite,
+                             progress=progress, results=r)
 
                 else:
                     time.sleep(sleep)
 
-        return downloader
+        return r
 
     def get(self, requestIDs, path=None, overwrite=False, progress=True,
-            max_conn=5, downloader=None):
+            max_conn=5, downloader=None, results=None):
         """
         Query JSOC to see if request_id is ready for download.
 
@@ -241,11 +242,14 @@ class JSOCClient(object):
 
         downloader: sunpy.download.Downloder instance
             A Custom downloader to use
+        
+        results: Results instance
+            A Results manager to use.
 
         Returns
         -------
-        dlers: list
-            A list of Downloader instances or None if no URLs to download
+        res: Results
+            A Results instance or None if no URLs to download
         """
 
         # Convert IDs to a list if not already
@@ -260,7 +264,8 @@ class JSOCClient(object):
 
         # A Results object tracks the number of downloads requested and the
         # number that have been completed.
-        r = Results(lambda x: None)
+        if results is None:
+            results = Results(lambda x: None)
 
         urls = []
         for request_id in requestIDs:
@@ -278,15 +283,15 @@ class JSOCClient(object):
                     self.check_request(request_id)
 
         if urls:
-            for url, rcall in zip(urls, map(lambda x: r.require([x]), urls)):
+            for url, rcall in zip(urls, map(lambda x: results.require([x]), urls)):
                 downloader.download(url, callback=rcall, path=path)
 
         else:
             #Make Results think it has finished.
-            r.require([])
+            results.require([])
 
-        r.poke()
-        return r
+        results.poke()
+        return results
 
     def _process_time(self, time):
         """

@@ -10,7 +10,7 @@ import pytest
 
 from sunpy.time import parse_time
 from sunpy.net.jsoc import JSOCClient
-
+from sunpy.net.vso.vso import Results
 
 client = JSOCClient()
 
@@ -125,6 +125,8 @@ def test_request_status_fail():
     assert resp.json() == {u'status': 4, u'error': u"Bad RequestID 'none' provided."}
 
 @pytest.mark.online
-def test_get():
-    responses = client.jsoc_query('2012/1/1T00:00:00', '2012/1/1T00:00:45', 'hmi.M_45s')
-    dlers = client.wait_get(responses[0])
+def test_wait_get():
+    responses = client.jsoc_query('2012/1/3T00:00:00', '2012/1/3T00:00:45', 'hmi.M_45s')
+    res = client.wait_get(responses[0])
+    assert isinstance(res, Results)
+    assert res.total == 2
