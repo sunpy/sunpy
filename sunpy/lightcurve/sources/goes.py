@@ -30,7 +30,7 @@ class GOESLightCurve(LightCurve):
 
     References
     ----------
-    | None
+    | http://umbra.nascom.nasa.gov/goes/fits/
     """
 
     def peek(self, title="GOES Xray Flux", **kwargs):
@@ -150,7 +150,7 @@ class GOESLightCurve(LightCurve):
         
     @staticmethod
     def _parse_fits(filepath):
-        """Parses a GOES FITS file from http://hesperia.gsfc.nasa.gov/goes"""
+        """Parses a GOES FITS file from http://umbra.nascom.nasa.gov/goes/fits/"""
         fits = pyfits.open(filepath)
         header = fits[0].header
         if len(fits) == 4:
