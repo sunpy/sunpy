@@ -97,12 +97,12 @@ class GOESLightCurve(LightCurve):
         15:TimeRange('2010-09-01',datetime.datetime.utcnow())}
 	    
         sat_list = []
-        for sat_num in (15,14,13,12,11,10,9,8,7,6,5,2):
+        for sat_num in goes_operational:
             if ((start > goes_operational[sat_num].start() and start < goes_operational[sat_num].end()) and
                 (end > goes_operational[sat_num].start() and end < goes_operational[sat_num].end())):
                     #if true then the satellite with sat_num is available
                     sat_list.append(sat_num)
-        print(sat_list)
+    
         if not sat_list:
             #if no satellites were found then raise an exception
             raise Exception, 'No operational GOES satellites found within specified time range'
@@ -145,7 +145,7 @@ class GOESLightCurve(LightCurve):
             url = (base_url + "%s/go%02d%s.fits") % (start.strftime("%Y"), sat_num[0], start.strftime("%y%m%d"))
         else:
             url = (base_url + "%s/go%02d%s.fits") % (start.strftime("%Y"), sat_num[0], start.strftime("%Y%m%d"))
-        print(url)
+            
         return url
         
     @staticmethod
