@@ -73,10 +73,11 @@ class GOESLightCurve(LightCurve):
 
     @classmethod
     def _get_default_uri(cls):
-        """Retrieve GOES data from yesterday if no other data is specified"""
+        """Retrieve latest GOES data if no other data is specified"""
         today = datetime.datetime.today()
-        yesterday = today - datetime.timedelta(days=1)
-        return cls._get_url_for_date_range(yesterday, today)
+        days_back = 3
+        time_range = TimeRange(today - datetime.timedelta(days=days_back), today - datetime.timedelta(days=days_back-1))
+        return cls._get_url_for_date_range(time_range)
 
     @classmethod
     def _get_goes_sat_num(self,start,end):
