@@ -79,7 +79,7 @@ class GOESLightCurve(LightCurve):
         return cls._get_url_for_date_range(yesterday, today)
 
     @classmethod
-    def _get_goes_sat_num_and_data_type(self,start,end):
+    def _get_goes_sat_num(self,start,end):
         """Parses the query time to determine which GOES satellite to use."""
        
         goes_operational={
@@ -138,7 +138,7 @@ class GOESLightCurve(LightCurve):
                 print('Warning: start time (argument 1) > end time (argument 2)')
 
         #find out which satellite and datatype to query from the query times
-        sat_num = GOESLightCurve._get_goes_sat_num_and_data_type(start,end)
+        sat_num = GOESLightCurve._get_goes_sat_num(start,end)
         base_url = 'http://umbra.nascom.nasa.gov/goes/fits/'
 
         if start < parse_time('1999/01/15'):
