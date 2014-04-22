@@ -56,6 +56,13 @@ class GenericMap(astropy.nddata.NDData):
     header : dict
         A dictionary of the original image header tags
 
+    Attributes
+    ----------
+    cmap : matplotlib.colors.Colormap
+        A color map used for plotting with matplotlib.
+    mpl_color_normalizer : matplotlib.colors.Normalize
+        A matplotlib normalizer used to scale the image plot.
+
     Examples
     --------
     >>> aia = sunpy.make_map(sunpy.AIA_171_IMAGE)
@@ -99,7 +106,8 @@ class GenericMap(astropy.nddata.NDData):
         # TODO: This should be a function of the header, not of the map
         self._validate()
 
-        self.norm = self._get_norm()
+        # Set mpl.colors.Normalize instance for plot scaling
+        self.mpl_color_normalizer = self._get_mpl_normalizer()
 
     def __getitem__(self, key):
         """ This should allow indexing by physical coordinate """
@@ -1003,7 +1011,7 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
 
         kwargs = {'origin':'lower',
                   'cmap':cmap,
-                  'norm':self.norm,
+                  'norm':self.mpl_color_normalizer,
                   'extent':extent,
                   'interpolation':'nearest'}
         kwargs.update(imshow_args)
@@ -1014,8 +1022,12 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         plt.sci(ret)
         return ret
 
-    def _get_norm(self):
-        """Default normalization method. Not yet implemented."""
+    def _get_mpl_normalizer(self):
+        """
+        Returns a default mpl.colors.Normalize instance for plot scaling.
+
+        Not yet implemented.
+        """
         return None
 
 

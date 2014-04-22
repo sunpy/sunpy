@@ -15,6 +15,7 @@ from sunpy.lightcurve.sources.goes import *
 from sunpy.lightcurve.sources.noaa import *
 from sunpy.lightcurve.sources.lyra import *
 from sunpy.lightcurve.sources.logical import *
+from sunpy.lightcurve.sources.norh import *
 
 
 #def make_lightcurve(*args, **kwargs):

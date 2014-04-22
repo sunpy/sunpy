@@ -21,6 +21,7 @@ import pandas
 import sunpy
 from sunpy.time import is_time, TimeRange, parse_time
 from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
+from sunpy.util.odict import OrderedDict
 
 __all__ = ['LightCurve']
 
@@ -71,7 +72,11 @@ class LightCurve(object):
 
     def __init__(self, data, meta=None):
         self.data = pandas.DataFrame(data)
-        self.meta = meta
+	if meta == '' or meta is None:
+		self.meta = OrderedDict()
+	else:	
+        	self.meta = OrderedDict(meta)
+	
     
     @property
     def header(self):
@@ -88,7 +93,7 @@ for compatability with map, please use meta instead""", Warning)
     @classmethod
     def from_time(cls, time, **kwargs):
         date = parse_time(time)
-        url = cls._get_url_for_date(date)
+        url = cls._get_url_for_date(date, **kwargs)
         filepath = cls._download(
             url, kwargs, err="Unable to download data for specified date"
         )
@@ -102,7 +107,7 @@ for compatability with map, please use meta instead""", Warning)
             err = "Unable to download data for specified date range"
         )
         result = cls.from_file(filepath)
-        result.data = result.data.ix[result.data.index.indexer_between_time(start, end)]
+        result.data = result.data.truncate(start,end)
         return result
 
     @classmethod
@@ -113,7 +118,7 @@ for compatability with map, please use meta instead""", Warning)
             err = "Unable to download data for specified date range"
         )
         result = cls.from_file(filepath)
-        result.data = result.data.ix[ts.index.indexer_between_time(timerange.start(), timerange.end())]
+        result.data = result.data.truncate(timerange.start(), timerange.end())
         return result
 
     @classmethod
@@ -231,7 +236,7 @@ for compatability with map, please use meta instead""", Warning)
         raise NotImplementedError(msg % cls.__name__)
 
     @classmethod
-    def _get_url_for_date(cls, date):
+    def _get_url_for_date(cls, date, **kwargs):
         """Returns a URL to the data for the specified date"""
         msg = "Date-based downloads not supported for for %s"
         raise NotImplementedError(msg % cls.__name__)
@@ -301,7 +306,7 @@ for compatability with map, please use meta instead""", Warning)
 
 LightCurve._cond_dispatch.add(
     run_cls("from_time"),
-    lambda cls, time: is_time(time),
+    lambda cls, time, **kwargs: is_time(time),
     # type is here because the class parameter is a class,
     # i.e. an instance of type (which is the base meta-class).
     [type, (basestring, datetime, tuple)],
