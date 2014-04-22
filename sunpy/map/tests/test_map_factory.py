@@ -14,6 +14,13 @@ import sunpy
 import sunpy.map
 import sunpy.data.test
 
+try:
+    import sqlalchemy
+    import sunpy.database
+    HAS_SQLALCHEMY = True
+except ImportError:
+    HAS_SQLALCHEMY = False
+
 filepath = sunpy.data.test.rootdir
 a_list_of_many = glob.glob(os.path.join(filepath, "EIT", "*"))
 a_fname = a_list_of_many[0]
@@ -64,6 +71,8 @@ class TestMap:
         pair_map = sunpy.map.Map(data, header)
         assert isinstance(pair_map, sunpy.map.GenericMap)
 
+    # requires sqlalchemy to run properly
+    @pytest.mark.skipif('not HAS_SQLALCHEMY')
     def test_databaseentry(self):
         db = sunpy.database.Database(url='sqlite://', default_waveunit='angstrom')
         db.add_from_file(a_fname)
@@ -121,11 +130,6 @@ class TestMap:
         #Test RHESSIMap
         rhessi = sunpy.map.Map(sunpy.RHESSI_IMAGE)
         assert isinstance(rhessi,sunpy.map.sources.RHESSIMap)
-    
-    def test_sot(self):
-        #Test SOTMap
-        sot = sunpy.map.Map(os.path.join(filepath , "FGMG4_20110214_030443.7.fits"))
-        assert isinstance(sot,sunpy.map.sources.SOTMap)
 
         #Test SWAPMap
 
