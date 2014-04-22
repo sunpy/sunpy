@@ -1,11 +1,11 @@
 """Test cases for SDO Map subclasses"""
+"""This particular test file pertains to HMIMap"""
 
+import pytest
 from sunpy.map.sources.sdo import HMIMap
 from sunpy.map.sources.sdo import AIAMap
 from sunpy.map import Map
 from sunpy.net import HelioviewerClient
-from sunpy import AIA_171_IMAGE as aiaimg
-import pytest
 
 @pytest.mark.online
 @pytest.fixture
@@ -41,16 +41,3 @@ def test_measurement(createHMI):
     hmi = Map(createHMI)
     assert (hmi.measurement == "continuum")
 
-# AIA Tests
-def test_is_datasource_for(createAIAMap):
-    """Tests the is_datasource_for method of AIAMap."""
-    header = dict(createAIAMap.meta)
-    assert (createAIAMap.is_datasource_for(createAIAMap.data, header) == True)
-
-def test_observatory(createAIAMap):
-    """Tests the observatory property of the AIAMap object."""
-    assert (createAIAMap.observatory == "SDO")
-
-def test_measurement(createAIAMap):
-    """Tests the measurement property of the AIAMap object."""
-    assert (createAIAMap.measurement == 171)
