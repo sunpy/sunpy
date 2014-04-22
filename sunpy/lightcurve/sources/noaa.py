@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Provides programs to process and analyze GOES data."""
+"""Provides programs to process and analyze NOAA Solar Cycle data."""
 from __future__ import absolute_import
 
 import datetime
@@ -86,16 +86,22 @@ class NOAAIndicesLightCurve(LightCurve):
     @staticmethod
     def _parse_csv(filepath):
         """Parses an NOAA indices csv"""
+        header = []
         with open(filepath, 'r') as fp:
+            line = fp.readline()
+            # Read header at top of file
+            while line.startswith((":", "#")):
+                header += line
+                line = fp.readline()	
             fields = ('yyyy', 'mm', 'sunspot SWO', 'sunspot RI', 'sunspot ratio', 'sunspot SWO smooth', 'sunspot RI smooth', 'radio flux', 'radio flux smooth', 'geomagnetic ap', 'geomagnetic smooth')
-            data = read_csv(fp, delim_whitespace=True, names = fields, comment='#', skiprows=2, dtype={'yyyy':np.str, 'mm':np.str})
+            data = read_csv(fp, delim_whitespace=True, names = fields, comment='#', dtype={'yyyy':np.str, 'mm':np.str})
             data = data.dropna(how='any')
             timeindex = [datetime.datetime.strptime(x + '/' + y, '%Y/%m') for x,y in zip(data['yyyy'], data['mm'])]
             data['time']=timeindex
             data = data.set_index('time')
             data = data.drop('mm',1)
             data = data.drop('yyyy',1)
-            return "", data
+            return {header: 'comments'}, data
 
 class NOAAPredictIndicesLightCurve(LightCurve):
     """NOAA Solar Cycle Predicted Progression
@@ -151,14 +157,19 @@ class NOAAPredictIndicesLightCurve(LightCurve):
     @staticmethod
     def _parse_csv(filepath):
         """Parses an NOAA indices csv"""
-        #with open(filepath, 'r') as fp:
-        fields = ('yyyy', 'mm', 'sunspot', 'sunspot low', 'sunspot high', 'radio flux', 'radio flux low', 'radio flux high')
-        data = read_csv(filepath, delim_whitespace=True, names = fields, comment='#', skiprows=2, dtype={'yyyy':np.str, 'mm':np.str})
-        data = data.dropna(how='any')
-        timeindex = [datetime.datetime.strptime(x + '/' + y, '%Y/%m') for x,y in zip(data['yyyy'], data['mm'])]
-        data['time']=timeindex
-        data = data.set_index('time')
-        data = data.drop('mm',1)
-        data = data.drop('yyyy',1)
-        return "", data
-
+        header = ''
+        with open(filepath, 'r') as fp:
+            line = fp.readline()
+            # Read header at top of file
+            while line.startswith((":", "#")):
+                header += line
+                line = fp.readline()
+            fields = ('yyyy', 'mm', 'sunspot', 'sunspot low', 'sunspot high', 'radio flux', 'radio flux low', 'radio flux high')
+            data = read_csv(filepath, delim_whitespace=True, names = fields, comment='#', skiprows=2, dtype={'yyyy':np.str, 'mm':np.str})
+            data = data.dropna(how='any')
+            timeindex = [datetime.datetime.strptime(x + '/' + y, '%Y/%m') for x,y in zip(data['yyyy'], data['mm'])]
+            data['time']=timeindex
+            data = data.set_index('time')
+            data = data.drop('mm',1)
+            data = data.drop('yyyy',1)
+            return {header: 'comments'}, data
