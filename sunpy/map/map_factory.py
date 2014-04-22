@@ -30,7 +30,6 @@ from sunpy.util.datatype_factory_base import ValidationFunctionError
 # Make a mock DatabaseEntry class if sqlalchemy is not installed
 
 try:
-    import sqlalchemy
     from sunpy.database.tables import DatabaseEntry
 except ImportError:
     class DatabaseEntry:
