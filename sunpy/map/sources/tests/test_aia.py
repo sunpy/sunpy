@@ -14,8 +14,7 @@ def createAIAMap():
 
 def test_is_datasource_for(createAIAMap):
     """Tests the is_datasource_for method of AIAMap."""
-    header = dict(createAIAMap.meta)
-    assert (createAIAMap.is_datasource_for(createAIAMap.data, header) == True)
+    assert (createAIAMap.is_datasource_for(createAIAMap.data, createAIAMap.meta) == True)
 
 def test_observatory(createAIAMap):
     """Tests the observatory property of the AIAMap object."""
