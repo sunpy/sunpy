@@ -59,7 +59,7 @@ class SXTMap(GenericMap):
             s = 'white light'
         return s
 
-    def _get_norm(self):
+    def _get_mpl_normalizer(self):
         """Returns a Normalize object to be used with SXT data"""
         # byte-scaled images have most likely already been scaled
         if self.dtype == np.uint8:

@@ -119,7 +119,43 @@ class TimeRange:
             subsections.append(next_range)
             previous_time = next_time
         return subsections
-    
+
+    def window(self, cadence, window):
+        """
+        Split the TimeRange up into a series of TimeRange windows,
+        'window' long, between the start and end with a cadence of 'cadence'.
+
+        Parameters
+        ----------
+        cadence: int or timedelta
+            Cadence in seconds or a timedelta instance
+        window: int or timedelta
+            The length of the Time's, assumed to be seconds if int.
+
+        Returns
+        -------
+        times: list
+            A list of TimeRange objects, that are window long and seperated by
+            cadence.
+
+        Examples
+        --------
+        To get one 12 second long window every hour within the timerange:
+
+        >>> TimeRange.window(60*60, window=12)
+        """
+        if not isinstance(window, timedelta):
+            window = timedelta(seconds=window)
+        if not isinstance(cadence, timedelta):
+            cadence = timedelta(seconds=cadence)
+
+        n = 1
+        times = [TimeRange(self.t1, self.t1 + window)]
+        while times[-1].t2 < self.t2:
+            times.append(TimeRange(self.t1 + cadence*n, self.t1 + cadence*n + window))
+            n += 1
+        return times
+
     def days(self):
         """Gets the number of days elapsed."""
         return self.dt.days
