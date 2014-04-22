@@ -101,7 +101,7 @@ class NOAAIndicesLightCurve(LightCurve):
             data = data.set_index('time')
             data = data.drop('mm',1)
             data = data.drop('yyyy',1)
-            return {header: 'comments'}, data
+            return {'comments': header}, data
 
 class NOAAPredictIndicesLightCurve(LightCurve):
     """NOAA Solar Cycle Predicted Progression
@@ -172,4 +172,4 @@ class NOAAPredictIndicesLightCurve(LightCurve):
             data = data.set_index('time')
             data = data.drop('mm',1)
             data = data.drop('yyyy',1)
-            return {header: 'comments'}, data
+            return {'comments': header}, data
