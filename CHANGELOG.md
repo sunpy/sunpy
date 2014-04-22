@@ -7,7 +7,7 @@ Latest
   - Updates to spectrogram documentation
   - Added method Database.add_from_hek_query_result to HEK database
   - Added method Database.download_from_vso_query_result
-
+    * Added support for NOAA solar cycle prediction in lightcurves
 0.4.0
 -----
 Features:
