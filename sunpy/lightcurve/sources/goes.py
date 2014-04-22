@@ -136,7 +136,7 @@ class GOESLightCurve(LightCurve):
             end = parse_time(args[1])
             time_range = TimeRange(start, end)
             if end < start:
-                raise InputError('start time (argument 1) > end time (argument 2)')
+                raise ValueError('start time (argument 1) > end time (argument 2)')
 
         #find out which satellite and datatype to query from the query times
         sat_num = GOESLightCurve._get_goes_sat_num(start,end)
@@ -162,7 +162,7 @@ class GOESLightCurve(LightCurve):
             elif is_time_in_given_format(fits[0].header['DATE-OBS'], '%d/%m/%y'):
                 start_time = datetime.datetime.strptime(fits[0].header['DATE-OBS'], '%d/%m/%y')
             else:
-               raise InputError("Date not recognized")
+               raise ValueError("Date not recognized")
             xrsb = fits[2].data['FLUX'][0][:,0]
             xrsa = fits[2].data['FLUX'][0][:,1]
             seconds_from_start = fits[2].data['TIME'][0]
@@ -172,7 +172,7 @@ class GOESLightCurve(LightCurve):
             xrsb = fits[0].data[1]
             xrsa = fits[0].data[2]
         else:
-            raise InputError("Don't know how to parse this file")
+            raise ValueError("Don't know how to parse this file")
             
         times = [start_time + datetime.timedelta(seconds = int(floor(s)), 
                     microseconds = int((s - floor(s))*1e6)) for s in seconds_from_start]
