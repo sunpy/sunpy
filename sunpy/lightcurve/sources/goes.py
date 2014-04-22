@@ -136,7 +136,7 @@ class GOESLightCurve(LightCurve):
             end = parse_time(args[1])
             time_range = TimeRange(start, end)
             if end < start:
-                print('Warning: start time (argument 1) > end time (argument 2)')
+                raise InputError('start time (argument 1) > end time (argument 2)')
 
         #find out which satellite and datatype to query from the query times
         sat_num = GOESLightCurve._get_goes_sat_num(start,end)
@@ -159,16 +159,20 @@ class GOESLightCurve(LightCurve):
         if len(fits) == 4:
             if is_time_in_given_format(fits[0].header['DATE-OBS'], '%d/%m/%Y'):
                 start_time = datetime.datetime.strptime(fits[0].header['DATE-OBS'], '%d/%m/%Y')
-            if is_time_in_given_format(fits[0].header['DATE-OBS'], '%d/%m/%y'):
+            elif is_time_in_given_format(fits[0].header['DATE-OBS'], '%d/%m/%y'):
                 start_time = datetime.datetime.strptime(fits[0].header['DATE-OBS'], '%d/%m/%y')
+            else:
+               raise InputError("Date not recognized")
             xrsb = fits[2].data['FLUX'][0][:,0]
             xrsa = fits[2].data['FLUX'][0][:,1]
             seconds_from_start = fits[2].data['TIME'][0]
-        if 1 <= len(fits) <= 3:
+        elif 1 <= len(fits) <= 3:
             start_time = parse_time(header['TIMEZERO'])
             seconds_from_start = fits[0].data[0]
             xrsb = fits[0].data[1]
             xrsa = fits[0].data[2]
+        else:
+            raise InputError("Don't know how to parse this file")
             
         times = [start_time + datetime.timedelta(seconds = int(floor(s)), 
                     microseconds = int((s - floor(s))*1e6)) for s in seconds_from_start]
