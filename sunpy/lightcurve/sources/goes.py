@@ -11,7 +11,7 @@ from numpy import floor
 from pandas import DataFrame
 
 from sunpy.lightcurve import LightCurve
-from sunpy.time import parse_time, TimeRange, validate_time_format
+from sunpy.time import parse_time, TimeRange, is_time_in_given_format
 
 __all__ = ['GOESLightCurve']
 
