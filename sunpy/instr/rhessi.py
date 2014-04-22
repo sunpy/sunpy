@@ -177,12 +177,14 @@ def get_obssum_filename(time_range):
     # need to download and inspect the dbase file to determine the filename
     # for the observing summary data
     f = get_obssumm_dbase_file(time_range)
+    data_location = 'metadata/catalog/'
+   
     result = parse_obssumm_dbase_file(f[0])
     _time_range = TimeRange(time_range)
-   
+    
     index_number = int(_time_range.t1.strftime('%d')) - 1
     
-    return result.get('filename')[index_number]
+    return data_servers[0] + data_location + result.get('filename')[index_number] + 's'
 
 def get_obssumm_file(time_range):
     """
@@ -217,7 +219,7 @@ def get_obssumm_file(time_range):
     #TODO need to check which is the closest servers
     url_root = data_servers[0] + data_location
         
-    url = url_root + get_obssum_filename(time_range) + 's'
+    url = url_root + get_obssum_filename(time_range)
     
     print('Downloading file: ' + url)
     f = urllib.urlretrieve(url)
@@ -247,6 +249,7 @@ def parse_obssumm_file(filename):
     """
 
     afits = fits.open(filename)
+    header = afits[0].header
     
     reference_time_ut = parse_time(afits[5].data.field('UT_REF')[0])
     time_interval_sec = afits[5].data.field('TIME_INTV')[0]
@@ -263,9 +266,9 @@ def parse_obssumm_file(filename):
     time_array = [reference_time_ut + timedelta(0,time_interval_sec*a) for a in np.arange(dim)]
 
     #TODO generate the labels for the dict automatically from labels
-    result = {'time': time_array, 'data': lightcurve_data, 'labels': labels}
+    data = {'time': time_array, 'data': lightcurve_data, 'labels': labels}
        
-    return result
+    return header, data
 
 def show_obssumm(data_dict):
     """show_obssum"""
