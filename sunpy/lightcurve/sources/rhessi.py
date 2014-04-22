@@ -40,23 +40,18 @@ class RHESSISummaryLightCurve(LightCurve):
 
         dates = matplotlib.dates.date2num(self.data.index)
 
-        axes.plot_date(dates, self.data['xrsa'], '-', 
-                     label='0.5--4.0 $\AA$', color='blue', lw=2)
-        axes.plot_date(dates, self.data['xrsb'], '-', 
-                     label='1.0--8.0 $\AA$', color='red', lw=2)
-
+        lc_linecolors = ('black', 'pink', 'green', 'blue', 'brown', 'red', 
+                     'navy', 'orange', 'green')
+        
+        for item, frame in self.data.iteritems():
+            axes.plot_date(dates, frame.values, '-', label = item, lw = 2)
+        
         axes.set_yscale("log")
-        axes.set_ylim(1e-9, 1e-2)
-        axes.set_title(title)
-        axes.set_ylabel('Watts m$^{-2}$')
         axes.set_xlabel(datetime.datetime.isoformat(self.data.index[0])[0:10])
 
-        ax2 = axes.twinx()
-        ax2.set_yscale("log")
-        ax2.set_ylim(1e-9, 1e-2)
-        ax2.set_yticks((1e-9, 1e-8, 1e-7, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2))
-        ax2.set_yticklabels((' ','A','B','C','M','X',' '))
-
+        axes.set_title('RHESSI Observing Summary Count Rates, Corrected')
+        axes.set_ylabel('Corrected Count Rates s$^{-1}$ detector$^{-1}$')
+   
         axes.yaxis.grid(True, 'major')
         axes.xaxis.grid(False, 'major')
         axes.legend()
@@ -68,8 +63,6 @@ class RHESSISummaryLightCurve(LightCurve):
         axes.fmt_xdata = matplotlib.dates.DateFormatter('%H:%M')
         figure.autofmt_xdate()
         figure.show()
-
-        return figure
 
     @classmethod
     def _get_default_uri(cls):
