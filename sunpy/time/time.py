@@ -2,7 +2,7 @@ import re
 from datetime import datetime
 from datetime import timedelta
 
-__all__ = ['find_time', 'extract_time', 'parse_time', 'is_time', 'day_of_year', 'break_time', 'get_day', 'validate_time_format']
+__all__ = ['find_time', 'extract_time', 'parse_time', 'is_time', 'day_of_year', 'break_time', 'get_day', 'is_time_in_given_format']
 
 # Mapping of time format codes to regular expressions.
 REGEX = {
