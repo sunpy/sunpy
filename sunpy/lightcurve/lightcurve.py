@@ -135,8 +135,7 @@ for compatability with map, please use meta instead""", Warning)
         try:
             filepath = cls._download(url, kwargs)
         except (urllib2.HTTPError, urllib2.URLError, ValueError):
-            err = ("Unable to read location. Did you "
-                   "specify a valid filepath or URL?")
+            err = ("Unable to read location %s.") % url
             raise ValueError(err)
         return cls.from_file(filepath)
 
