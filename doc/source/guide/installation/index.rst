@@ -60,23 +60,25 @@ The simplest method of obtaining a scientific Python distribution is to install 
 Using `pip`
 -----------
 
-To install SunPy with `pip`, simply run::
+To install SunPy with `pip` including optional dependencies (recommended), simply run::
+
+    pip install sunpy[all]
+
+To install SunPy with no optional dependencies::
 
     pip install sunpy
+
+To install SunPy with net-based dependencies (suds and beautifulsoup)::
+
+    pip install sunpy[net]
+
+To install SunPy with database dependencies (sqlalchemy)::
+
+    pip install sunpy[database]
 
 .. warning::
     Users of the Anaconda python distribution should follow the instructions
     for :ref:`anaconda_install`.
-
-.. note::
-
-    If you wish to have all the optional packages installed you can install them
-    using pip thus::
-
-        pip install sqlalchemy
-        pip install suds
-        pip install beautifulsoup4
-        pip install glymur
 
 .. note::
 
