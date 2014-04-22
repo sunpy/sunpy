@@ -105,7 +105,7 @@ class GOESLightCurve(LightCurve):
     
         if not sat_list:
             #if no satellites were found then raise an exception
-            raise Exception, 'No operational GOES satellites found within specified time range'
+            raise Exception, 'No operational GOES satellites within time range'
         else:
             return sat_list
         
@@ -142,9 +142,11 @@ class GOESLightCurve(LightCurve):
         base_url = 'http://umbra.nascom.nasa.gov/goes/fits/'
 
         if start < parse_time('1999/01/15'):
-            url = (base_url + "%s/go%02d%s.fits") % (start.strftime("%Y"), sat_num[0], start.strftime("%y%m%d"))
+            url = (base_url + "%s/go%02d%s.fits") % (start.strftime("%Y"), 
+                sat_num[0], start.strftime("%y%m%d"))
         else:
-            url = (base_url + "%s/go%02d%s.fits") % (start.strftime("%Y"), sat_num[0], start.strftime("%Y%m%d"))
+            url = (base_url + "%s/go%02d%s.fits") % (start.strftime("%Y"), 
+                sat_num[0], start.strftime("%Y%m%d"))
             
         return url
         
@@ -154,20 +156,21 @@ class GOESLightCurve(LightCurve):
         fits = pyfits.open(filepath)
         header = fits[0].header
         if len(fits) == 4:
-            if validate_time_format(fits[0].header['DATE-OBS'], '%d/%m/%Y'):
+            if is_time_in_given_format(fits[0].header['DATE-OBS'], '%d/%m/%Y'):
                 start_time = datetime.datetime.strptime(fits[0].header['DATE-OBS'], '%d/%m/%Y')
-            if validate_time_format(fits[0].header['DATE-OBS'], '%d/%m/%y'):
+            if is_time_in_given_format(fits[0].header['DATE-OBS'], '%d/%m/%y'):
                 start_time = datetime.datetime.strptime(fits[0].header['DATE-OBS'], '%d/%m/%y')
             xrsb = fits[2].data['FLUX'][0][:,0]
             xrsa = fits[2].data['FLUX'][0][:,1]
             seconds_from_start = fits[2].data['TIME'][0]
-        if len(fits) in (1, 2, 3):
+        if 1 <= len(fits) <= 3:
             start_time = parse_time(header['TIMEZERO'])
             seconds_from_start = fits[0].data[0]
             xrsb = fits[0].data[1]
             xrsa = fits[0].data[2]
             
-        times = [start_time + datetime.timedelta(seconds = int(floor(s)), microseconds = int((s - floor(s))*1e6)) for s in seconds_from_start]
+        times = [start_time + datetime.timedelta(seconds = int(floor(s)), 
+                    microseconds = int((s - floor(s))*1e6)) for s in seconds_from_start]
 
         # remove bad values as defined in header comments
         xrsb[xrsb == -99999] = nan
