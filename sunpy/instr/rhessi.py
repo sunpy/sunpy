@@ -81,8 +81,6 @@ def get_obssumm_dbase_file(time_range):
     
     f = urllib.urlretrieve(url)
     
-    print('Downloading file: ' + url)
-    
     return f
       
 def parse_obssumm_dbase_file(filename):
@@ -269,36 +267,6 @@ def parse_obssumm_file(filename):
     data = {'time': time_array, 'data': lightcurve_data, 'labels': labels}
        
     return header, data
-
-def show_obssumm(data_dict):
-    """show_obssum"""
-    t = data_dict.get('time')
-    data = data_dict.get('data')
-    labels = data_dict.get('labels')
-    
-    fig = plt.figure()
-    ax = fig.add_subplot(111)
-    dates = matplotlib.dates.date2num(t)
-
-    for i in xrange(9):
-        ax.plot_date(dates, data[:,i], '-', label = labels[i], color = lc_linecolors[i], lw = 2)
-
-    ax.set_yscale("log")
-
-    ax.set_title('RHESSI Observing Summary Count Rates, Corrected')
-    ax.set_ylabel('Corrected Count Rates s$^{-1}$ detector$^{-1}$')
-    ax.set_xlabel(datetime.isoformat(t[0])[0:10])
-        
-    ax.yaxis.grid(True, 'major')
-    ax.xaxis.grid(False, 'major')
-    ax.legend()
-    
-    formatter = matplotlib.dates.DateFormatter('%H:%M')
-    ax.xaxis.set_major_formatter(formatter)
-    
-    ax.fmt_xdata = matplotlib.dates.DateFormatter('%H:%M')
-    fig.autofmt_xdate()
-    fig.show()
 
 def _backproject(calibrated_event_list, detector=8, pixel_size=(1.,1.), image_dim=(64,64)):
     """
