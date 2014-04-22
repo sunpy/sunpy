@@ -1,13 +1,16 @@
 Latest
 ------
-  - changed _maps attribute in MapCube to a non-hidden type
-  - Added Nobeyama Radioheliograph data support to Lightcurve object.
-  - Fixed some tests on map method to support Windows
-  - Added a window/split method to time range
-  - Updates to spectrogram documentation
-  - Added method Database.add_from_hek_query_result to HEK database
-  - Added method Database.download_from_vso_query_result
+
+    * changed _maps attribute in MapCube to a non-hidden type
+    * Added Nobeyama Radioheliograph data support to Lightcurve object.
+    * Fixed some tests on map method to support Windows
+    * Added a window/split method to time range
+    * Updates to spectrogram documentation
+    * Added method Database.add_from_hek_query_result to HEK database
+    * Added method Database.download_from_vso_query_result
+    * GOES Lightcurve now makes use of a new source of GOES data, provides metadata, and data back to 1981.
     * Added support for NOAA solar cycle prediction in lightcurves
+
 0.4.0
 -----
 Features:
