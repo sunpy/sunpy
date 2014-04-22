@@ -77,6 +77,7 @@ class TestGOESLightCurve():
         assert g._get_goes_sat_num(timerange_a.start(), timerange_a.end()) == [10]
         assert g._get_goes_sat_num(timerange_b.start(), timerange_b.end()) == [7]
     
+    @pytest.mark.online
     def test_get_url(self):
         """Test the getting of urls"""
         g = sunpy.lightcurve.GOESLightCurve
