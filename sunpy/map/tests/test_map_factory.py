@@ -82,22 +82,6 @@ class TestMap:
         db_map = sunpy.map.Map(res)
         assert isinstance(db_map, sunpy.map.GenericMap)
 
-    # make sure mock DatabaseEntry works properly
-    def test_databaseentry_nosqlalchemy(self):
-        if HAS_SQLALCHEMY:
-            del sunpy.database.tables
-            sys.modules['sunpy.database.tables'] = None
-            reload(sunpy.map.map_factory)
-            DatabaseEntry = sunpy.map.map_factory.DatabaseEntry
-        else:
-            from sunpy.map.map_factory import DatabaseEntry
-        db_entry = DatabaseEntry()
-        # Make sure this isn't an actual DatabaseEntry object
-        with pytest.raises(AttributeError):
-            path = db_entry.path
-        # Make sure the DatabaseEntry class is empty
-        assert dir(db_entry) == ['__doc__', '__module__']
-
     @pytest.mark.online
     def test_url_pattern(self):
         # A URL
