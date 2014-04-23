@@ -7,6 +7,7 @@ Created on Fri Jun 21 15:05:09 2013
 import os
 import glob
 import numpy as np
+import sys
 
 import pytest
 
@@ -19,7 +20,6 @@ try:
     import sunpy.database
     HAS_SQLALCHEMY = True
 except ImportError:
-    from sunpy.map.map_factory import DatabaseEntry
     HAS_SQLALCHEMY = False
 
 filepath = sunpy.data.test.rootdir
@@ -83,8 +83,14 @@ class TestMap:
         assert isinstance(db_map, sunpy.map.GenericMap)
 
     # make sure mock DatabaseEntry works properly
-    @pytest.mark.skipif('HAS_SQLALCHEMY')
     def test_databaseentry_nosqlalchemy(self):
+        if HAS_SQLALCHEMY:
+            del sunpy.database.tables
+            sys.modules['sunpy.database.tables'] = None
+            reload(sunpy.map.map_factory)
+            DatabaseEntry = sunpy.map.map_factory.DatabaseEntry
+        else:
+            from sunpy.map.map_factory import DatabaseEntry
         db_entry = DatabaseEntry()
         # Make sure this isn't an actual DatabaseEntry object
         with pytest.raises(AttributeError):
