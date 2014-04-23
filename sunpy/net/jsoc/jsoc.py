@@ -242,7 +242,7 @@ class JSOCClient(object):
 
         downloader: sunpy.download.Downloder instance
             A Custom downloader to use
-        
+
         results: Results instance
             A Results manager to use.
 
@@ -283,7 +283,7 @@ class JSOCClient(object):
                     self.check_request(request_id)
 
         if urls:
-            for url, rcall in zip(urls, map(lambda x: results.require([x]), urls)):
+            for url, rcall in list(zip(urls, list(map(lambda x: results.require([x]), urls)))):
                 downloader.download(url, callback=rcall, path=path)
 
         else:
