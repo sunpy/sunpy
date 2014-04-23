@@ -22,7 +22,7 @@ class TestRHESSISummaryLightCurve():
     @pytest.mark.online
     def test_hsi_timerange(self):
         """Test creation with a TimeRange"""
-        lc1 = sunpy.lightcurve.GOESLightCurve.create(timerange_a)
+        lc1 = sunpy.lightcurve.RHESSISummaryLightCurve.create(timerange_a)
         assert isinstance(lc1, sunpy.lightcurve.RHESSISummaryLightCurve)
     
     @pytest.mark.online
