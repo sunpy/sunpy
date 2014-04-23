@@ -19,6 +19,7 @@ try:
     import sunpy.database
     HAS_SQLALCHEMY = True
 except ImportError:
+    from sunpy.map.map_factory import DatabaseEntry
     HAS_SQLALCHEMY = False
 
 filepath = sunpy.data.test.rootdir
@@ -80,6 +81,16 @@ class TestMap:
         res = db.get_entry_by_id(1)
         db_map = sunpy.map.Map(res)
         assert isinstance(db_map, sunpy.map.GenericMap)
+
+    # make sure mock DatabaseEntry works properly
+    @pytest.mark.skipif('HAS_SQLALCHEMY')
+    def test_databaseentry_nosqlalchemy(self):
+        db_entry = DatabaseEntry()
+        # Make sure this isn't an actual DatabaseEntry object
+        with pytest.raises(AttributeError):
+            path = db_entry.path
+        # Make sure the DatabaseEntry class is empty
+        assert dir(db_entry) == ['__doc__', '__module__']
 
     @pytest.mark.online
     def test_url_pattern(self):
