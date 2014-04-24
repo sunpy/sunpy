@@ -15,7 +15,7 @@ __all__ = ['RHESSISummaryLightCurve']
 
 class RHESSISummaryLightCurve(LightCurve):
     """
-    RHESSI X-ray LightCurve.
+    RHESSI X-ray Summary LightCurve.
 
     Examples
     --------
