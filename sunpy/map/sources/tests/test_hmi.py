@@ -1,10 +1,20 @@
-"""Test cases for SDO Map subclasses."""
-"""This particular test file pertains to HMIMap."""
+"""Test cases for SDO Map subclasses.
+This particular test file pertains to HMIMap.
+@Author: Pritish C. (VaticanCameos)
+"""
+
+import os
+import glob
 
 import pytest
+
 from sunpy.map.sources.sdo import HMIMap
 from sunpy.map import Map
+import sunpy.data.test
 #from sunpy.net import HelioviewerClient
+
+path = sunpy.data.test.rootdir
+fitspath = glob.glob(os.path.join(path, "HMI", "resampled_hmi.fits"))
 
 # This fixture is no longer used on Stuart's instructions. Downloading is expensive.
 @pytest.mark.online
@@ -18,23 +28,23 @@ def createHMI():
 # HMI Tests
 def test_fitstoHMI():
     """Tests the creation of HMIMap using FITS."""
-    assert (isinstance(Map('resampled_hmi.fits'), HMIMap) == True)
+    assert (isinstance(Map(fitspath), HMIMap) == True)
     
 def test_is_datasource_for():
     """Test the is_datasource_for method of HMIMap.
     Note that header data to be provided as an argument
     can be a MapMeta object, which in this case is
     hmi.meta."""
-    hmi = Map('resampled_hmi.fits')
+    hmi = Map(fitspath)
     assert (hmi.is_datasource_for(hmi.data, hmi.meta) == True)
 
 def test_observatory():
     """Tests the observatory property of the HMIMap object."""
-    hmi = Map('resampled_hmi.fits')
+    hmi = Map(fitspath)
     assert(hmi.observatory == "SDO")
 
 def test_measurement():
     """Tests the measurement property of the HMIMap object."""
-    hmi = Map('resampled_hmi.fits')
+    hmi = Map(fitspath)
     assert (hmi.measurement == "continuum")
 
