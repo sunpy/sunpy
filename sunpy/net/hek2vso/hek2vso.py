@@ -7,8 +7,8 @@
 #pylint: disable=W0142
 
 """
-This module is to interface the results from a HEK query into a VSO query
-and return the results from the VSO query to the user.
+This module translates the results of a HEK query into a VSO query
+and returns the results from the VSO query to the user.
 """
 
 from __future__ import absolute_import
@@ -213,7 +213,7 @@ class H2VClient(object):
         >>> tstart = '2011/08/09 07:23:56'
         >>> tend = '2011/08/09 12:40:29'
         >>> event_type = 'FL'
-        >>> q = h.query(hek.attrs.Time(tstart, tend), hek.attts.EventType(event_type))
+        >>> q = h.query(hek.attrs.Time(tstart, tend), hek.attrs.EventType(event_type))
         >>> h2v = hek2vso.H2VClient()
         >>> res = h2v.translate_and_query(q)
         """

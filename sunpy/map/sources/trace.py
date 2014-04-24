@@ -7,6 +7,7 @@ __email__ = "jack.ireland@nasa.gov"
 from sunpy.map import GenericMap
 from sunpy.cm import cm
 import numpy as np
+from matplotlib import colors
 
 __all__ = ['TRACEMap']
 
@@ -54,7 +55,7 @@ above concerning how to read "tri" files in SSWIDL.
     def measurement(self):
         return str(self.meta['wave_len'])
 
-    def _get_norm(self):
+    def _get_mpl_normalizer(self):
         """Returns a Normalize object to be used with TRACE data"""
         # byte-scaled images have most likely already been scaled
         if self.dtype == np.uint8:
