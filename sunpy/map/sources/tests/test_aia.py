@@ -1,5 +1,5 @@
-"""Test cases for SDO Map subclasses"""
-"""This particular test file pertains to AIAMap"""
+"""Test cases for SDO Map subclasses."""
+"""This particular test file pertains to AIAMap."""
 
 import pytest
 from sunpy.map.sources.sdo import AIAMap
@@ -11,6 +11,11 @@ def createAIAMap():
     """Creates an AIAMap as given in documentation examples, through AIA_171_IMAGE."""
     aia = Map(aiaimg)
     return aia
+
+# AIA Tests
+def test_AIAMap():
+    """Tests the creation of AIAMap from AIA_171_IMAGE."""
+    assert (isinstance(Map(aiaimg), AIAMap) == True)
 
 def test_is_datasource_for(createAIAMap):
     """Tests the is_datasource_for method of AIAMap."""
