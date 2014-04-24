@@ -1,7 +1,10 @@
-"""Test cases for SDO Map subclasses."""
-"""This particular test file pertains to AIAMap."""
+"""Test cases for SDO Map subclasses.
+This particular test file pertains to AIAMap.
+@Author: Pritish C. (VaticanCameos)
+"""
 
 import pytest
+
 from sunpy.map.sources.sdo import AIAMap
 from sunpy.map import Map
 from sunpy import AIA_171_IMAGE as aiaimg
