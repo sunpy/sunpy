@@ -14,7 +14,7 @@ import sunpy.data.test
 #from sunpy.net import HelioviewerClient
 
 path = sunpy.data.test.rootdir
-fitspath = glob.glob(os.path.join(path, "HMI", "resampled_hmi.fits"))
+fitspath = glob.glob(os.path.join(path, "resampled_hmi.fits"))
 
 # This fixture is no longer used on Stuart's instructions. Downloading is expensive.
 @pytest.mark.online
