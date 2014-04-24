@@ -29,9 +29,9 @@ are needed. SunPy will import even if these dependencies are not installed.
 
 - `sqlalchemy <http://www.sqlalchemy.org>`_: For the `database` package.
 
-- `suds <https://bitbucket.org/jurko/suds>`_: For `net.vso`.
+- `suds <https://bitbucket.org/jurko/suds>`_: For `net`.
 
-- `beautifulsoup4 <http://www.crummy.com/software/BeautifulSoup/>`_: For `Callisto` Spectrograms
+- `beautifulsoup4 <http://www.crummy.com/software/BeautifulSoup/>`_: For `Callisto` Spectrograms and `net.helio`
 
 - `glymur <https://glymur.readthedocs.org/en/latest/>`_ 0.5.9 or later: To enable reading of JPEG2000 files.
   Glymur requires the installation of the OpenJPEG C library. Which can be found `here <http://code.google.com/p/openjpeg/downloads/list>`.
@@ -60,23 +60,25 @@ The simplest method of obtaining a scientific Python distribution is to install 
 Using `pip`
 -----------
 
-To install SunPy with `pip`, simply run::
+To install SunPy with `pip` including optional dependencies (recommended), simply run::
+
+    pip install sunpy[all]
+
+To install SunPy with no optional dependencies::
 
     pip install sunpy
+
+To install SunPy with net-based dependencies (suds and beautifulsoup)::
+
+    pip install sunpy[net]
+
+To install SunPy with database dependencies (sqlalchemy)::
+
+    pip install sunpy[database]
 
 .. warning::
     Users of the Anaconda python distribution should follow the instructions
     for :ref:`anaconda_install`.
-
-.. note::
-
-    If you wish to have all the optional packages installed you can install them
-    using pip thus::
-
-        pip install sqlalchemy
-        pip install suds
-        pip install beautifulsoup4
-        pip install glymur
 
 .. note::
 
@@ -114,15 +116,15 @@ To install SunPy launch the Anaconda command prompt or a system prompt and run t
 To install SunPy's extra dependancies run::
 
     conda update astropy
-    conda install suds
+    pip install suds
 
 To install run::
  
- 	conda install sunpy
+ 	pip install sunpy
 
 To update to the latest version run::
 
-    conda update sunpy
+    pip install --upgrade sunpy
 
 .. note::
 
@@ -154,11 +156,6 @@ need the XCode command line tools.
 The `instructions for building Numpy from source
 <http://docs.scipy.org/doc/numpy/user/install.html>`_ are also a good
 resource for setting up your environment to build Python packages.
-
-You will also need `Cython <http://cython.org/>`_ installed to build
-from source, unless you are installing a numbered release. (The releases
-packages have the necessary C files packaged with them, and hence do not
-require Cython.)
 
 .. note:: If you are using MacOS X, you will need to the XCode command line
           tools.  One way to get them is to install `XCode

@@ -1,6 +1,5 @@
 from __future__ import absolute_import
 
-import os
 from sunpy.net import hek
 from sunpy.time import parse_time
 

@@ -27,11 +27,12 @@ These files have names like `sunpy.AIA_171_IMAGE` and `sunpy.RHESSI_IMAGE`.
 To create the sample AIA map type the following into your interactive Python shell::
 
     import sunpy
-    my_map = sunpy.Map(sunpy.AIA_171_IMAGE)
+    import sunpy.map
+    my_map = sunpy.map.Map(sunpy.AIA_171_IMAGE)
 
 The variable my_map is a SunPy Map object. To create a SunPy Map object from a local FITS file try something like the following ::
 
-    my_map = sunpy.Map('/mydirectory/mymap.fits')
+    my_map = sunpy.map.Map('/mydirectory/mymap.fits')
 
 SunPy automatically detects the type of file (e.g. FITS), what instrument it is 
 associated with (e.g. AIA, EIT, LASCO) and will automatically look in the appropriate places for the FITS
@@ -43,13 +44,13 @@ may vary. SunPy can also create maps from the jpg2000 files from
 2. Creating Custom Maps
 -----------------------
 It is also possible to create maps using custom data from a simulation for example. To do this you
-need to provide Map() with both the data array as well as some basic meta information. If no
+need to provide `Map()` with both the data array as well as some basic meta information. If no
 header is given then some default values as assumed. Here is a simple example::
 
     import numpy as np
     data = np.arange(0,100).reshape(10,10)
     header = {'cdelt1': 10, 'cdelt2': 10, 'telescop':'sunpy'}
-    my_map = sunpy.Map(data, header)
+    my_map = sunpy.map.Map(data, header)
 
 The format of the header follows the FITS standard.
 
@@ -58,7 +59,7 @@ The format of the header follows the FITS standard.
 A map contains a number of data-associated attributes. To get a quick look at your map simply
 type::
 
-    my_map = sunpy.Map(sunpy.AIA_171_IMAGE)
+    my_map = sunpy.map.Map(sunpy.AIA_171_IMAGE)
     my_map
     
 This will show a representation of the data as well as some of its associated
@@ -121,30 +122,29 @@ quickly view your map on the screen. To create a plot just type::
     
 This will open a matplotlib plot right on your screen.
 In addition, to enable users to modify the plot it is possible to grab the
-matplotlib figure object by using the plot() command instead of the show() 
-command. This makes it possible to use the SunPy plot as the foundation for a 
+matplotlib figure object by using the plot() command.
+This makes it possible to use the SunPy plot as the foundation for a 
 more complicated figure.
 
 6. Overlaying Maps
 ------------------
-The Map() method described above can also handle a list of maps. If a list in inputs
-is supplied, Map() will return a list of maps as the output.  However, if the
-'composite' keyword is set to True, then a CompositeMap object is returned.  This is useful if the maps are
+The `Map()` method described above can also handle a list of maps. If a list in inputs
+is supplied, `Map()` will return a list of maps as the output.  However, if the
+'composite' keyword is set to True, then a `CompositeMap` object is returned.  This is useful if the maps are
 of a different type (e.g. different instruments).  For example, to create a simple composite map::
 
-    my_maps = sunpy.Map(sunpy.EIT_195_IMAGE, sunpy.RHESSI_IMAGE, composite=True)
+    my_maps = sunpy.map.Map(sunpy.EIT_195_IMAGE, sunpy.RHESSI_IMAGE, composite=True)
 
 A CompositeMap is different from a regular SunPy Map objectand therefore different associated methods.
 To list which maps are part of your composite map use::
 
     my_maps.list_maps()
 
-Similar to all SunPy data objects, the composite map also has an associated show() method and a 
-number of associated methods to customize your plot. For example, the following code turns 
+The following code  
 adds a new map (which must be instantiated first), sets its transparency to 25%, turns on contours from 50% to 90% for the second map, 
 and then plots the result::
 
-    my_maps.add_map(sunpy.Map(sunpy.AIA_171_IMAGE))
+    my_maps.add_map(sunpy.map.Map(sunpy.AIA_171_IMAGE))
     my_maps.set_alpha(2,0.5)
     my_maps.set_levels(1,[50,60,70,80,90], percent = True)
     my_maps.peek()

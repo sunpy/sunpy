@@ -4,14 +4,11 @@
 from __future__ import absolute_import
 
 from datetime import datetime
-from itertools import izip_longest
 import pytest
 
 import numpy as np
 
 from numpy.testing import assert_array_almost_equal
-
-from scipy import ndimage
 
 from sunpy.spectra.spectrogram import(
     Spectrogram, LinearTimeSpectrogram, _LinearView
@@ -369,7 +366,7 @@ def test_join_gap():
         datetime(2010, 10, 11, 1, 15), 901, 1,
     )
     with pytest.raises(ValueError) as excinfo:
-        z = LinearTimeSpectrogram.join_many(
+        LinearTimeSpectrogram.join_many(
             [one, other], nonlinear=False, maxgap=0
         )
 
