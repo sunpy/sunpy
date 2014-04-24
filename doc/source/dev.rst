@@ -272,7 +272,10 @@ You can then proceed to push this change up to your branch.
 Coding Standards
 ----------------
 All code that is part of the SunPy project should follow The Style Guide for 
-Python (`PEP 8 <http://www.python.org/dev/peps/pep-0008/>`_). Additionally, all
+Python (`PEP 8 <http://www.python.org/dev/peps/pep-0008/>`_) and 
+the `coding style and convections proposed by Astropy 
+<https://astropy.readthedocs.org/en/stable/development/codeguide.html#coding-style-conventions>`_.
+Additionally, all
 code that goes in the trunk should be checked using `PyLint 
 <http://www.logilab.org/card/pylint_manual>`_. PyLint is an open source tool 
 which analyzes Python code and checks for compliance with PEP8, as well as 
@@ -473,7 +476,7 @@ Example (:class:`sunpy.map.Map`) ::
 
     Examples
     --------
-    >>> aia = sunpy.Map(sunpy.AIA_171_IMAGE)
+    >>> aia = sunpy.map.Map(sunpy.AIA_171_IMAGE)
     >>> aia.T
     Map([[ 0.3125,  1.    , -1.1875, ..., -0.625 ,  0.5625,  0.5   ],
     [-0.0625,  0.1875,  0.375 , ...,  0.0625,  0.0625, -0.125 ],

@@ -257,6 +257,14 @@ class CommandManager(object):
         self.undo_commands = []
         self.redo_commands = []
 
+    def clear_histories(self):
+        """Clears all entries from the undo and redo history. If one or
+        both of the histories are already empty, no exception is raised.
+
+        """
+        del self.undo_commands[:]
+        del self.redo_commands[:]
+
     def push_undo_command(self, command):
         """Push the given command to the undo command stack."""
         self.undo_commands.append(command)

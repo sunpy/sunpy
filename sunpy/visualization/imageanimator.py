@@ -298,8 +298,12 @@ class BaseFuncAnimator(object):
 #==============================================================================
 #   Build the figure and place the widgets
 #==============================================================================
+    def _get_main_axes(self):
+        """ Allow replacement of main axes by subclassing """
+        return self.fig.add_subplot(111)
+
     def _make_axes_grid(self):
-        self.axes = self.fig.add_subplot(111)
+        self.axes = self._get_main_axes()
 
         #Split up the current axes so there is space for a start and a stop button
         self.divider = make_axes_locatable(self.axes)

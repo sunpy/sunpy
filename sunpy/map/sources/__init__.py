@@ -9,8 +9,9 @@ __all__ = ['sdo', 'soho', 'stereo', 'rhessi', 'proba2', 'yohkoh', 'hinode',
 
 from .. map_factory import Map
 
-from hinode import XRTMap
+from hinode import XRTMap, SOTMap 
 Map.register(XRTMap, XRTMap.is_datasource_for)
+Map.register(SOTMap, SOTMap.is_datasource_for)
 
 from proba2 import SWAPMap
 Map.register(SWAPMap, SWAPMap.is_datasource_for)
@@ -39,3 +40,4 @@ Map.register(IRISMap, IRISMap.is_datasource_for)
 
 from trace import TRACEMap
 Map.register(TRACEMap, TRACEMap.is_datasource_for)
+

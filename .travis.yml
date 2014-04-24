@@ -38,7 +38,7 @@ before_install:
    - wget http://openjpeg.googlecode.com/files/openjpeg-1.5.0-Linux-x86_64.tar.gz
    - sudo tar -xvf openjpeg-1.5.0-Linux-x86_64.tar.gz --strip-components=1 -C /
 # Install coveralls
-   - pip install $PIP_WHEEL_COMMAND python-coveralls pytest-cov
+   - pip install $PIP_WHEEL_COMMAND coveralls pytest-cov
 
 # Install all SunPy dependacies using wheels.
 install:

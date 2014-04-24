@@ -103,9 +103,9 @@ For quick and easy access to a plot
 all sunpy base objects (e.g. map, spectra, lightcurve) define their own peek() command.
 For example you can do the following ::
 
-    import sunpy
+    import sunpy.map
     
-    smap = sunpy.Map(sunpy.EIT_195_IMAGE)
+    smap = sunpy.map.Map(sunpy.EIT_195_IMAGE)
     smap.peek(draw_limb=True)
 
 This creates a plot window with all axes defined, a plot title, and the image of the map
@@ -122,10 +122,10 @@ object for you if you haven't already. It returns a figure object and does not c
 plot window. With the figure object in your hands you can reach in and grab the axes
 and therefore manipulate the plot as you see fit. Here is an example of this at work ::
 
-    import sunpy
+    import sunpy.map
     import matplotlib.pyplot as plt
     
-    smap = sunpy.Map(sunpy.EIT_195_IMAGE)
+    smap = sunpy.map.Map(sunpy.EIT_195_IMAGE)
     smap.plot()
     smap.draw_limb()
     
@@ -162,9 +162,9 @@ using the show() command. Here is another example ::
 Finally, here is a more complex example, starting from the beginning::
 
     from matplotlib import patches
-    import sunpy
+    import sunpy.map
     import matplotlib.pyplot as plt
-    smap = sunpy.Map(sunpy.AIA_171_IMAGE)
+    smap = sunpy.map.Map(sunpy.AIA_171_IMAGE)
     submap = smap.submap([-100-250, -100+250], [-400-250, -400+250])
     rect = patches.Rectangle([-100-250, -400-250], 500, 500, color = 'white', fill=False)
         
@@ -209,11 +209,11 @@ A simple example on how to use the color maps provided by SunPy: ::
 
 These can be used with the standard commands to change the colormap::
 
-    import sunpy
+    import sunpy.map
     from sunpy.cm import cm
 
     cmap = cm.cmlist.get('sdoaia94')
-    smap = sunpy.Map(sunpy.AIA_171_IMAGE)
+    smap = sunpy.map.Map(sunpy.AIA_171_IMAGE)
     
     fig = plt.figure()
     ax = plt.subplot(1,1,1)
