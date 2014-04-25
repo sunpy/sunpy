@@ -4,7 +4,7 @@ from __future__ import absolute_import
 
 import datetime
 import matplotlib.dates
-from matplotlib import pyplot as plt  
+import matplotlib.pyplot as plt  
 from pandas import DataFrame
 
 from sunpy.lightcurve import LightCurve
@@ -90,7 +90,7 @@ class RHESSISummaryLightCurve(LightCurve):
             end = parse_time(args[1])
             time_range = TimeRange(start, end)
             if end < start:
-                print('Warning: start time (argument 1) > end time (argument 2)')
+                raise ValueError('start time (argument 1) > end time (argument 2)')
         url = rhessi.get_obssum_filename(time_range)
         print(url)
         return url
