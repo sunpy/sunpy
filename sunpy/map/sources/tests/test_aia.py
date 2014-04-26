@@ -2,18 +2,26 @@
 This particular test file pertains to AIAMap.
 @Author: Pritish C. (VaticanCameos)
 """
+import os
+import glob
 
 import pytest
 
 from sunpy.map.sources.sdo import AIAMap
 from sunpy.map import Map
 from sunpy import AIA_171_IMAGE as aiaimg
+import sunpy.data.test
 
-@pytest.fixture
-def createAIAMap():
-    """Creates an AIAMap as given in documentation examples, through AIA_171_IMAGE."""
-    aia = Map(aiaimg)
-    return aia
+path = sunpy.data.test.rootdir
+jp2path = glob.glob(os.path.join(path, "2013_06_24__17_31_30_84__SDO_AIA_AIA_193.jp2"))
+
+# The fixture is parameterized with aiaimg and jp2path.
+@pytest.fixture(scope="module", params=[aiaimg, jp2path])
+def createAIAMap(request):
+    """Creates an AIAMap as given in documentation examples, through AIA_171_IMAGE
+    or through the use of the JP2 file."""
+    aiaobj = Map(request.param)
+    return aiaobj
 
 # AIA Tests
 def test_AIAMap():
@@ -30,4 +38,6 @@ def test_observatory(createAIAMap):
 
 def test_measurement(createAIAMap):
     """Tests the measurement property of the AIAMap object."""
-    assert (createAIAMap.measurement == 171)
+    assert (createAIAMap.measurement == 171 or
+            createAIAMap.measurement == 193)
+    # aiaimg has 171, jp2path has 193.
