@@ -6,14 +6,19 @@ from scipy.ndimage.interpolation import shift
 from copy import deepcopy
 
 # Image co-registration by matching templates
-try:
-    from skimage.feature import match_template
-except ImportError:
-   match_template = None
+from skimage.feature import match_template
+
+# SunPy imports
+from sunpy.map.mapbase import GenericMap
 
 
+__all__ = ['calculate_shift', 'clip_edges', 'calculate_clipping',
+           'match_template_to_layer', 'find_best_match_location',
+           'get_correlation_shifts', 'parabolic_turning_point',
+           'repair_2dimage_nonfinite', 'mapcube_coalign_by_match_template']
 
-def default_fmap_function(data):
+
+def _default_fmap_function(data):
     """
     This function ensures that the data are floats.  It is the default data
     manipulation function for the coalignment method.
@@ -39,8 +44,8 @@ def calculate_shift(this_layer, template):
                      the input array.
     """
     # Repair any NANs, Infs, etc in the layer and the template
-    this_layer = repair_nonfinite(this_layer)
-    template = repair_nonfinite(template)
+    this_layer = repair_2dimage_nonfinite(this_layer)
+    template = repair_2dimage_nonfinite(template)
 
     # Calculate the correlation array matching the template to this layer
     corr = match_template_to_layer(this_layer, template)
@@ -135,10 +140,7 @@ def match_template_to_layer(layer, template):
     This function requires the "match_template" function in scikit image.
 
     """
-    if match_template is None:
-        raise ImportError("Can't import 'match_template' from skimage.feature.  Please install the scikit-image package.")
-    else:
-        return match_template(layer, template)
+    return match_template(layer, template)
 
 
 def find_best_match_location(corr):
@@ -238,10 +240,10 @@ def parabolic_turning_point(y):
     return numerator / denominator
 
 
-def repair_nonfinite(z):
+def repair_2dimage_nonfinite(z):
     """
-    Replace all the nonfinite entries in a layer with the local mean.  There is
-    probably a much smarter way of doing this.
+    Replace all the nonfinite entries in a 2d image with the local mean.
+    There is probably a much smarter way of doing this.
     """
     nx = z.shape[1]
     ny = z.shape[0]
@@ -272,33 +274,9 @@ def repair_nonfinite(z):
     return z
 
 
-# Public interface to all the coalignment methods.  Only one method just now!
-def mapcube_coalign(mc, method='coalign_by_match_template', **kwargs):
-    """
-    A public interface to the mapcube coalignment functions.  The user calls
-    this function, specifying coalignment method and any additional keywords
-    permitted by the coalignment method.  The existing coalignment methods are
-    
-    1. coalign_by_match_template
-    
-    To find out the details of each coalignment method,
-    
-    >>> from sunpy.image.coalignment import coalign_by_match_template
-    >>> help(coalign_by_match_template)
-    
-    Users can also call the coalignment method directly.
-
-    """
-    if method == 'coalign_by_match_template':
-        results = coalign_by_match_template(mc, **kwargs)
-    else:
-        raise ValueError('Only "coalign_by_match_template" is supported at present.')
-    return results
-
-
 # Coalignment by matching a template
-def coalign_by_match_template(mc, layer_index=0, clip=True,
-                               template=None, func=default_fmap_function,
+def mapcube_coalign_by_match_template(mc, layer_index=0, clip=True,
+                               template=None, func=_default_fmap_function,
                                apply_displacements=None,
                                return_displacements_only=False,
                                with_displacements=False):
