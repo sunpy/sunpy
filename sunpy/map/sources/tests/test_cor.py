@@ -29,7 +29,7 @@ def test_is_datasource_for():
 
 def test_measurement():
     """Tests the measurement property of the CORMap object."""
-    assert (cor.measurement == 171)
+    assert (cor.measurement == "white-light")
 
 def test_observatory():
     """Tests the observatory property of the CORMap object."""
