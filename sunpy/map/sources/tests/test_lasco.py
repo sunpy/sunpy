@@ -14,27 +14,23 @@ import sunpy.data.test
 
 path = sunpy.data.test.rootdir
 fitspath = glob.glob(os.path.join(path, "lasco_c2_25299383_s.fts"))
-
-@pytest.fixture
-def createLASCO():
-    """Creates a LASCOMap from a FITS file."""
-    return Map(fitspath)
+lasco = Map(fitspath)
 
 # LASCO Tests
-def test_fitstoEIT(createLASCO):
+def test_fitstoEIT():
     """Tests the creation of LASCOMap using FITS."""
-    assert (isinstance(createLASCO, LASCOMap) == True)
+    assert (isinstance(lasco, LASCOMap) == True)
 
-def test_is_datasource_for(createLASCO):
+def test_is_datasource_for():
     """Test the is_datasource_for method of LASCOMap.
     Note that header data to be provided as an argument
     can be a MapMeta object."""
-    assert (createLASCO.is_datasource_for(createLASCO.data, createLASCO.meta) == True)
+    assert (lasco.is_datasource_for(lasco.data, lasco.meta) == True)
 
-def test_measurement(createLASCO):
+def test_measurement():
     """Tests the measurement property of the LASCOMap object."""
-    assert (createLASCO.measurement == "white-light")
+    assert (lasco.measurement == "white-light")
 
-def test_observatory(createLASCO):
+def test_observatory():
     """Tests the observatory property of the LASCOMap object."""
-    assert(createLASCO.observatory == "SOHO")
+    assert(lasco.observatory == "SOHO")
