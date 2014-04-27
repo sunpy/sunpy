@@ -16,7 +16,7 @@ path = sunpy.data.test.rootdir
 fitspath = glob.glob(os.path.join(path, "euvi_20090615_000900_n4euA_s.fts"))
 euvi = Map(fitspath)
 
-# euvi Tests
+# EUVI Tests
 def test_fitstoEIT():
     """Tests the creation of EUVIMap using FITS."""
     assert (isinstance(euvi, EUVIMap) == True)
