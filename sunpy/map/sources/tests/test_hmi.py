@@ -15,6 +15,7 @@ import sunpy.data.test
 
 path = sunpy.data.test.rootdir
 fitspath = glob.glob(os.path.join(path, "resampled_hmi.fits"))
+hmi = Map(fitspath)
 
 # This fixture is no longer used on Stuart's instructions. Downloading is expensive.
 @pytest.mark.online
@@ -28,23 +29,20 @@ def createHMI():
 # HMI Tests
 def test_fitstoHMI():
     """Tests the creation of HMIMap using FITS."""
-    assert (isinstance(Map(fitspath), HMIMap) == True)
+    assert (isinstance(hmi, HMIMap) == True)
     
 def test_is_datasource_for():
     """Test the is_datasource_for method of HMIMap.
     Note that header data to be provided as an argument
     can be a MapMeta object, which in this case is
     hmi.meta."""
-    hmi = Map(fitspath)
     assert (hmi.is_datasource_for(hmi.data, hmi.meta) == True)
 
 def test_observatory():
     """Tests the observatory property of the HMIMap object."""
-    hmi = Map(fitspath)
     assert(hmi.observatory == "SDO")
 
 def test_measurement():
     """Tests the measurement property of the HMIMap object."""
-    hmi = Map(fitspath)
     assert (hmi.measurement == "continuum")
 
