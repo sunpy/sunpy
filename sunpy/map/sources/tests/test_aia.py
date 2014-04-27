@@ -24,9 +24,10 @@ def createAIAMap(request):
     return aiaobj
 
 # AIA Tests
-def test_AIAMap():
-    """Tests the creation of AIAMap from AIA_171_IMAGE."""
-    assert (isinstance(Map(aiaimg), AIAMap) == True)
+def test_AIAMap(createAIAMap):
+    """Tests the creation of AIAMap from AIA_171_IMAGE or through
+    use of the JP2 file."""
+    assert (isinstance(createAIAMap, AIAMap) == True)
 
 def test_is_datasource_for(createAIAMap):
     """Tests the is_datasource_for method of AIAMap."""
