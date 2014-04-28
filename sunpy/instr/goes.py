@@ -456,9 +456,26 @@ def goes_lx(longflux, shortflux, obstime, date=None):
 
     Examples
     --------
-    >>> longflux = np.array([7e-6,7e-6])
-    >>> shortflux = np.array([7e-7,7e-7])
-    >>> ????????????????????????????????????
+    >>> longflux = np.array([7e-6,7e-6,7e-6,7e-6,7e-6,7e-6])
+    >>> shortflux = np.array([7e-7,7e-7,7e-7,7e-7,7e-7,7e-7])
+    >>> obstime = np.array(["2014-01-01 00:00:00",
+                            "2014-01-01 00:00:02",
+                            "2014-01-01 00:00:04"
+                            "2014-01-01 00:00:06"
+                            "2014-01-01 00:00:08"
+                            "2014-01-01 00:00:10"])
+    >>> longlum, shortlum, longlum_int, shortlum_int = \
+        goes_lx(longflux, shortflux, obstime)
+    >>> longlum
+    array([  1.98650769e+25,   1.98650769e+25,   1.98650769e+25,
+             1.98650769e+25,   1.98650769e+25,   1.98650769e+25])
+    >>> shortlum
+    array([  1.98650769e+24,   1.98650769e+24,   1.98650769e+24,
+             1.98650769e+24,   1.98650769e+24,   1.98650769e+24])
+    >>> longlum_int
+    2.0337865720138238e+26
+    >>> shortlum_int
+    2.0337865720138235e+25
 
     """
 
@@ -469,11 +486,11 @@ def goes_lx(longflux, shortflux, obstime, date=None):
     # Next calculate the total energy radiated in the GOES bandpasses
     # during the flare.
     # First determine time intervals over which to intergrate each flux
-    # measurement.  If the measurement in question is t, define this
-    # interval as half-way between the previous time and t, to half-way 
-    # between t and the following measurement.  For the first and last
-    # time measurements, define the interval as from t to half way to
-    # the next/previous measurement respectively.
+    # measurement.  If the measurement in question is t_i, define this
+    # interval as half-way between the previous time, t_(i-1) and t_i,
+    # to half-way between t and the following measurement, t_(i+1).
+    # For the first and last time measurements, define the interval as
+    # from t to half way to the next/previous measurement respectively.
     obstime = obstime.astype("datetime64[ms]")  # convert to units of ms
     delta = (obstime[2:]-obstime[:-2]) / 2
     delta = np.insert(delta, 0, (obstime[1]-obstime[0])/2)
@@ -483,7 +500,7 @@ def goes_lx(longflux, shortflux, obstime, date=None):
     longlum_int = np.sum(longlum*delta)
     shortlum_int = np.sum(shortlum*delta)
     
-    return longlum, shortlum, longfluence, short, fluence
+    return longlum, shortlum, longlum_int, shortlum_int
 
 def goes_luminosity(flux, date=None):
     """
@@ -516,10 +533,10 @@ def goes_luminosity(flux, date=None):
 
     Examples
     --------
-    >>> flux = numpy.array([7e-6,7e-6])
+    >>> flux = np.array([7e-6,7e-6])
     >>> luminosity = goes_luminosity(flux, date="2014-04-21")
     >>> luminosity
-    ??????????????
+    array([  1.98650769e+25,   1.98650769e+25])
 
     """
     return 4 * np.pi * \
