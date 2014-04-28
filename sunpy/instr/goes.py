@@ -6,6 +6,7 @@ import scipy.interpolate as interpolate
 import datetime
 import dateutil
 import csv
+from itertools import dropwhile
 
 from sunpy.net import hek
 from sunpy.time import parse_time
@@ -410,8 +411,74 @@ def goes_get_chianti_em(longflux, temp, satellite=8, photospheric=False):
 
     return em
 
-def goes_rad_loss():
+def calc_rad_loss(temp, em):
+    """
+    Finds radiative loss rate of solar SXR plasma over all wavelengths.
+
+    Extended Summary
+    ----------------
+    This function calculates the luminosity of solar coronal soft
+    X-ray-emitting plasma across all wavelengths given an isothermal
+    temperature and emission measure.  The units of the results are
+    erg/s.  This function is based on calc_rad_loss.pro in SSW IDL.
+
+    Parameters
+    ----------
+    temp : numpy ndarray, dtype=float, units=[MK]
+           Array containing the temperature of the coronal plasma at
+           different times.
+    em : numpy ndarray, dtype=float, units=[cm**-3]
+         Array containing the emission measure of the coronal plasma
+         at the same times corresponding to the temperatures in temp.
     
+    Returns
+    -------
+    radlossrate : numpy ndarray, dtype=float
+                  Array containing radiative loss rates of the coronal
+                  plasma corresponding to temperatures and emission
+                  measures in temp and em arrays.
+
+    Notes
+    -----
+    This function calls a csv file containing a table of radiative loss
+    rate per unit emission measure at various temperatures.  The
+    appropriate values are then found via interpolation.
+    This table was generated using CHIANTI atomic physics database
+    employing the methods of Cox & Tucker (1969).  Coronal abundances,
+    default density of 10**10 cm**-3, and ionization equilibrium of
+    Mazzotta et al. (1998) were used.
+
+    Examples
+    --------
+    >>> temp = np.array([11.28295376, 11.28295376])
+    >>> em = np.array([4.78577516e+48, 4.78577516e+48])
+    >>> radlossrate = calc_rad_loss(temp, em)
+    >>> radlossrate
+    array([  3.57994116e+26,   3.57994116e+26])
+    
+    """
+
+    # Initialize lists to hold model data of temperature - rad loss rate
+    # relationship read in from csv file
+    modeltemp = [ ] # modelled temperature is in log_10 sapce in units of MK
+    modellossrate = [ ]
+
+    # Read data from csv file into lists, being sure to skip commented
+    # lines begining with "#"
+    with open("chianti_rad_loss.csv", "r") as csvfile:
+        startline = dropwhile(lambda l: l.startswith("#"), csvfile)
+        csvreader = csv.DictReader(startline, delimiter=";")
+        for row in csvreader:
+            modeltemp.append(float(row["temp_K"]))
+            modellossrate.append(float(row["rad_loss_rate_per_em"]))
+    modeltemp = np.array(modeltemp)
+    modellossrate = np.array(modellossrate)
+    # Perform spline fit to model data to get temperatures for input
+    # values of flux ratio
+    spline = interpolate.splrep(modeltemp, modellossrate, s=0)
+    radlossrate = em * interpolate.splev(temp*1e6, spline, der=0)
+
+    return radlossrate
 
 def goes_lx(longflux, shortflux, obstime, date=None):
     """Calculates solar X-ray luminosity in GOES wavelength ranges.
@@ -495,7 +562,7 @@ def goes_lx(longflux, shortflux, obstime, date=None):
     longlum_int = np.sum(longlum*dt)
     shortlum_int = np.sum(shortlum*dt)
     # put data together in a dictionary for output
-    lx_out = {"longflux":longflux, "shortflux":shortflux, "time";obstime,
+    lx_out = {"longflux":longflux, "shortflux":shortflux, "time":obstime,
               "longlum":longlum, "shortlum":shortlum,
               "longlum_int":longlum_int, "shortlum_int":shortlum_int, "dt":dt}
     
