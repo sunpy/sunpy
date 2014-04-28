@@ -180,7 +180,6 @@ map in the mapcube can be accessed by simply indexing the list:
 
 9. Coalignment of Mapcubes
 --------------------------
-
 A typical data preparation step when dealing with time series of images is to
 coalign images taken at different times so that features in different images
 remain in the same place.  A common approach to this problem is
