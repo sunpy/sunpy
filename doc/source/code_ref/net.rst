@@ -17,3 +17,5 @@ SunPy net
 .. automodapi:: sunpy.net.helio.hec
     :headings: ^#
 
+.. automodapi:: sunpy.net.jsoc
+
