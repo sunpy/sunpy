@@ -1,14 +1,15 @@
 from __future__ import absolute_import
 import sys
 
-import numpy
-import scipy.interpolate
+import numpy as np
+import scipy.interpolate as interpolate
 import datetime
 import dateutil
 import csv
 
 from sunpy.net import hek
 from sunpy.time import parse_time
+from sunpy.sun import sun
 
 __all__ = ['get_goes_event_list']
 
@@ -72,27 +73,27 @@ def goes_chianti_tem(longflux, shortflux, satellite=8,
     longflux, shortflux : numpy ndarray
                           Arrays containing the long and short GOES/XRS
                           flux measurements respectively as a function
-                          of time.  Must be of same length. [W/m^2].
-    satellite : int
+                          of time.  Must be of same length. [W/m**2].
+    satellite : int (optional)
                 Number of GOES satellite used to make observations.
                 Important for correct calibration of data.
                 Default=8
     date : datetime object or str
            Date when observations made.  Important for correct
            calibration.  Default=today
-    photospheric : bool
+    photospheric : bool (optional)
                    States whether photospheric or coronal abundances
                    should be assumed.
                    Default=False, i.e. coronal abundances assumed.
 
     Returns
     -------
-    temp : numpy array
+    temp : numpy ndarray
            Array of temperature values of same length as longflux and
            shortflux.  [MK]
-    em : numpy array
+    em : numpy ndarray
          Array of volume emission measure values of same length as
-         longflux and shortflux.  [10^49 cm^-3]
+         longflux and shortflux.  [10**49 cm**-3]
 
     Notes
     -----
@@ -102,7 +103,7 @@ def goes_chianti_tem(longflux, shortflux, satellite=8,
     of the short (0.5-4 angstrom) to long (1-8 angstrom) channels of the
     XRSs onboard various GOES satellites.  This method assumes an
     isothermal plasma, the ionisation equilibria of
-    Mazzotta et al. (1998), and a constant density of 10^10 cm^-3.
+    Mazzotta et al. (1998), and a constant density of 10**10 cm**-3.
     (See White et al. 2005 for justification of this last assumption.)
     This function is based on goes_chianti_tem.pro in SolarSoftWare
     written in IDL by Stephen White.
@@ -113,8 +114,8 @@ def goes_chianti_tem(longflux, shortflux, satellite=8,
     functions.
     Email Rodney Viereck (NOAA) for more information.
 
-    Measurements of short channel flux of less than 1e-10 W/m^2 or
-    long channel flux less than 3e-8 W/m^2 are not considered good.
+    Measurements of short channel flux of less than 1e-10 W/m**2 or
+    long channel flux less than 3e-8 W/m**2 are not considered good.
     Ratio values corresponding to suxh fluxes are set to 0.003.
          
     References
@@ -126,8 +127,8 @@ def goes_chianti_tem(longflux, shortflux, satellite=8,
 
     Examples
     --------
-    >>> longflux = numpy.array([7e-6, 7e-6])
-    >>> shortflux = numpy.array([7e-7, 7e-7])
+    >>> longflux = np.array([7e-6, 7e-6])
+    >>> shortflux = np.array([7e-7, 7e-7])
     >>> temp, em = goes_chianti_tem(longflux, shortflux, satellite=15,
                                     date='2014-04-16', photospheric=False)
     >>> temp
@@ -187,8 +188,8 @@ def goes_chianti_tem(longflux, shortflux, satellite=8,
     # Calculate short to long channel ratio.
     # Data which is not good have their ratio value set to 0.003.
     # See Notes section in docstring above.
-    index = numpy.where(shortflux_corrected < 1e-10) or \
-            numpy.where(longflux_corrected < 3e-8)
+    index = np.where(shortflux_corrected < 1e-10) or \
+            np.where(longflux_corrected < 3e-8)
     fluxratio = shortflux_corrected / longflux_corrected
     fluxratio[index] = 0.003
 
@@ -216,21 +217,21 @@ def goes_get_chianti_temp(fluxratio, satellite=8, photospheric=False):
 
     Parameters
     ----------
-    fluxratio : numpy ndarray
+    fluxratio : numpy ndarray, dtype=float
                 Array containing the ratio of short channel to long
                 channel GOES/XRS flux measurements.
-    satellite : int
+    satellite : int (optional)
                 Number of GOES satellite used to make observations.
                 Important for correct calibration of data.
                 Default=8
-    photospheric : bool
+    photospheric : bool (optional)
                    States whether photospheric or coronal abundances
                    should be assumed.
                    Default=False, i.e. coronal abundances assumed.
 
     Returns
     -------
-    temp : numpy array
+    temp : numpy ndarray
            Array of temperature values of same length as longflux and
            shortflux.  [MK]
 
@@ -248,7 +249,7 @@ def goes_get_chianti_temp(fluxratio, satellite=8, photospheric=False):
     of the ratio of the short (0.5-4 angstrom) to long (1-8 angstrom)
     channels of the XRSs onboard various GOES satellites.  This method
     assumes an isothermal plasma, the ionisation equilibria of
-    Mazzotta et al. (1998), and a constant density of 10^10 cm^-3.
+    Mazzotta et al. (1998), and a constant density of 10**10 cm**-3.
     (See White et al. 2005 for justification of this last assumption.)
     This function is based on goes_get_chianti_temp.pro in
     SolarSoftWare written in IDL by Stephen White.
@@ -265,7 +266,7 @@ def goes_get_chianti_temp(fluxratio, satellite=8, photospheric=False):
 
     Examples
     --------
-    >>> fluxratio = numpy.array([0.1,0.1])
+    >>> fluxratio = np.array([0.1,0.1])
     >>> temp = goes_get_chianti_temp(fluxratio, satellite=15,
                                      photospheric=False)
     >>> temp
@@ -291,13 +292,13 @@ def goes_get_chianti_temp(fluxratio, satellite=8, photospheric=False):
         for row in csvreader:
             modeltemp.append(float(row["log10temp_MK"]))
             modelratio.append(float(row[label]))
-    modeltemp = numpy.array(modeltemp)
-    modelratio = numpy.array(modelratio)
+    modeltemp = np.array(modeltemp)
+    modelratio = np.array(modelratio)
 
     # Perform spline fit to model data to get temperatures for input
     # values of flux ratio
-    spline = scipy.interpolate.splrep(modelratio, modeltemp, s=0)
-    temp = 10.**scipy.interpolate.splev(fluxratio, spline, der=0)
+    spline = interpolate.splrep(modelratio, modeltemp, s=0)
+    temp = 10.**interpolate.splev(fluxratio, spline, der=0)
 
     return temp
     
@@ -318,22 +319,24 @@ def goes_get_chianti_em(longflux, temp, satellite=8, photospheric=False):
 
     Parameters
     ----------
-    longflux : numpy ndarray
+    longflux : numpy ndarray, dtype=float
                Array containing the observed GOES/XRS long channel flux
-    satellite : int
+    temp : numpy ndarray, dtype=float
+           Array containing the GOES temperature
+    satellite : int (optional)
                 Number of GOES satellite used to make observations.
                 Important for correct calibration of data.
                 Default=8
-    photospheric : bool
+    photospheric : bool (optional)
                    States whether photospheric or coronal abundances
                    should be assumed.
                    Default=False, i.e. coronal abundances assumed.
 
     Returns
     -------
-    em : numpy array
+    em : numpy ndarray
          Array of emission measure values of same length as longflux
-         and temp.  [cm^-3]
+         and temp.  [cm**-3]
 
     Notes
     -----
@@ -352,7 +355,7 @@ def goes_get_chianti_em(longflux, temp, satellite=8, photospheric=False):
     satellites.  The emission measure can then be found by scaling the
     ratio of these two properties.  This method assumes an isothermal
     plasma, the ionisation equilibria of Mazzotta et al. (1998), and
-    a constant density of 10^10 cm^-3.
+    a constant density of 10**10 cm**-3.
     (See White et al. 2005 for justification of this last assumption.)
     This function is based on goes_get_chianti_temp.pro in
     SolarSoftWare written in IDL by Stephen White.
@@ -369,8 +372,8 @@ def goes_get_chianti_em(longflux, temp, satellite=8, photospheric=False):
 
     Examples
     --------
-    >>> longflux = numpy.array([7e-6,7e-6])
-    >>> temp = numpy.array([11,11])
+    >>> longflux = np.array([7e-6,7e-6])
+    >>> temp = np.array([11,11])
     >>> em = goes_get_chianti_em(longflux, temp, satellite=15,
                                 photospheric=False)
     >>> em
@@ -397,12 +400,127 @@ def goes_get_chianti_em(longflux, temp, satellite=8, photospheric=False):
         for row in csvreader:
             modeltemp.append(float(row["log10temp_MK"]))
             modelflux.append(float(row[label]))
-    modeltemp = numpy.array(modeltemp)
-    modelflux = numpy.array(modelflux)
+    modeltemp = np.array(modeltemp)
+    modelflux = np.array(modelflux)
 
     # Perform spline fit to model data
-    spline = scipy.interpolate.splrep(modeltemp, modelflux, s=0)
-    denom = scipy.interpolate.splev(numpy.log10(temp), spline, der=0)
+    spline = interpolate.splrep(modeltemp, modelflux, s=0)
+    denom = interpolate.splev(np.log10(temp), spline, der=0)
     em = longflux/denom * 1e55
 
     return em
+
+def goes_lx(longflux, shortflux, obstime, date=None):
+    """Calculates solar X-ray luminosity in GOES wavelength ranges.
+
+    Extended Summary
+    ----------------
+    This function calculates the X-ray luminosity from the Sun in the
+    GOES wavelength ranges (1-8 angstroms and 0.5-4 angstroms) based
+    on the observed GOES fluxes.  The units of the results are erg/s.
+    The calculation is made by simply assuming that the radiation is
+    emitted isotropically, i.e. is distributed over a spherical
+    surface area with a radius equal to the Sun-Earth distance.
+
+    Parameters
+    ----------
+    longflux : numpy ndarray, dtype=float
+               Array containing the observed GOES/XRS long channel flux
+    shortflux : numpy ndarray, dtype=float
+                Array containing the observed GOES/XRS short channel
+                flux
+    obstime : numpy ndarray, dtype=datetime64
+              Measurement times corresponding to each long/short
+              channel flux measurement.
+
+    Returns
+    -------
+    longlum : numpy ndarray
+              Array of luminosity in the long channel range
+              (1-8 angstroms)
+    shortlum : numpy ndarray
+               Array of luminosity in the short channel range
+               (0.5-4 angstroms)
+    longlum_int : float
+                  Long channel fluence, i.e. luminosity integrated
+                  over time.
+    shortlum_int : float
+                   Short channel fluence, i.e. luminosity integrated
+                   over time
+
+    Notes
+    -----
+    This function calls goes_luminosity() to calculate luminosities.
+    For more information on how this is done, see docstring of that
+    function.
+
+    Examples
+    --------
+    >>> longflux = np.array([7e-6,7e-6])
+    >>> shortflux = np.array([7e-7,7e-7])
+    >>> ????????????????????????????????????
+
+    """
+
+    # Calculate X-ray luminosities
+    longlum = goes_luminosity(longflux, date=date)
+    shortlum = goes_luminosity(shortflux, date=date)
+
+    # Next calculate the total energy radiated in the GOES bandpasses
+    # during the flare.
+    # First determine time intervals over which to intergrate each flux
+    # measurement.  If the measurement in question is t, define this
+    # interval as half-way between the previous time and t, to half-way 
+    # between t and the following measurement.  For the first and last
+    # time measurements, define the interval as from t to half way to
+    # the next/previous measurement respectively.
+    obstime = obstime.astype("datetime64[ms]")  # convert to units of ms
+    delta = (obstime[2:]-obstime[:-2]) / 2
+    delta = np.insert(delta, 0, (obstime[1]-obstime[0])/2)
+    delta = np.append(delta, (obstime[-1]-obstime[-2])/2)
+    delta = delta.astype(float) / 1e3 # convert from [ms] to [s]
+    # Calculate integrated X-ray radiative losses over time duration.
+    longlum_int = np.sum(longlum*delta)
+    shortlum_int = np.sum(shortlum*delta)
+    
+    return longlum, shortlum, longfluence, short, fluence
+
+def goes_luminosity(flux, date=None):
+    """
+    Calculates solar luminosity based on observed flux observed at 1AU.
+
+    Extended Summary
+    ----------------
+    This function calculates the luminosity from the Sun based
+    on observed flux in W/m**2.  The units of the results are erg/s.
+    The calculation is made by simply assuming that the radiation is
+    emitted isotropically, i.e. is distributed over a spherical
+    surface area with a radius equal to the Sun-Earth distance.
+
+    Parameters
+    ----------
+    flux : numpy ndarray
+           Array containing the observed solar flux
+
+    Returns
+    -------
+    luminosity : numpy array
+                Array of luminosity
+
+    Notes
+    -----
+    To convert from W/m**2 to erg/s:
+    1 W = 1 J/s = 10**7 erg/s
+    1 W/m**2 = 4*pi * AU**2 * 10**7 erg/s, where AU is the Sun-Earth
+    distance in metres.
+
+    Examples
+    --------
+    >>> flux = numpy.array([7e-6,7e-6])
+    >>> luminosity = goes_luminosity(flux, date="2014-04-21")
+    >>> luminosity
+    ??????????????
+
+    """
+    return 4 * np.pi * \
+      (sun.constants.au.value * sun.sunearth_distance(t=date))**2 * 1e7 * flux
