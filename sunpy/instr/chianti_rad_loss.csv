@@ -1,0 +1,58 @@
+# chianti_rad_loss.csv
+# Radiative loss rate calculated by CHIANTI 5.1
+# Default Density used
+# 
+# Elemental abundances
+# elemental abundances: Feldman, U., Mandelbaum, P., Seely, J.L., Doschek, G.A., Gursky H., 1992, ApJSS, 81, 387
+# produced as part of the Arcetri/Cambridge/NRL 'CHIANTI' atomic data base collaboration
+#
+# Enrico Landi Jun 2002
+# 
+# Ionization equilibrium
+# ionization equilibrium: Mazzotta,P., Mazzitelli,G., Colafrancesco,S., Vittorio,N., 1998, AASS, 133, 403
+# produced as part of the Arcetri/Cambridge/NRL 'CHIANTI' atomic data base collaboration
+#
+# Enrico Landi Jan 2003
+#
+temp_K;rad_loss_rate_per_em
+1.00e+004;1.43e-023
+1.26e+004;7.56e-023
+1.58e+004;2.08e-022
+2.00e+004;1.61e-022
+2.51e+004;1.07e-022
+3.16e+004;1.13e-022
+3.98e+004;1.49e-022
+5.01e+004;2.23e-022
+6.31e+004;3.55e-022
+7.94e+004;4.68e-022
+1.00e+005;5.27e-022
+1.26e+005;5.04e-022
+1.58e+005;5.51e-022
+2.00e+005;6.10e-022
+2.51e+005;6.18e-022
+3.16e+005;4.03e-022
+3.98e+005;3.06e-022
+5.01e+005;3.34e-022
+6.31e+005;3.53e-022
+7.94e+005;3.66e-022
+1.00e+006;3.65e-022
+1.26e+006;3.33e-022
+1.58e+006;3.00e-022
+2.00e+006;2.19e-022
+2.51e+006;1.30e-022
+3.16e+006;8.80e-023
+3.98e+006;7.55e-023
+5.01e+006;7.77e-023
+6.31e+006;8.52e-023
+7.94e+006;8.93e-023
+1.00e+007;8.29e-023
+1.26e+007;6.53e-023
+1.58e+007;4.52e-023
+2.00e+007;3.35e-023
+2.51e+007;2.84e-023
+3.16e+007;2.67e-023
+3.98e+007;2.68e-023
+5.01e+007;2.78e-023
+6.31e+007;2.94e-023
+7.94e+007;3.14e-023
+1.00e+008;3.35e-023
