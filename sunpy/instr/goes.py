@@ -57,6 +57,73 @@ def get_goes_event_list(trange,goes_class_filter=None):
 
     return goes_event_list
 
+def temp_em(goeslc, photospheric=False):
+    """
+    Finds and adds temperature and emission measure to a GOESLightCurve.
+
+    Extended Summary
+    ----------------
+    This function calculates the isothermal temperature and volume
+    emission measure of the solar soft X-ray emitting plasma observed by
+    the GOES/XRS.  This is done using the function goes_chianti_tem().
+    See that function for more details.  Once the temperature and
+    emission measure are found, they are added to goes.data under the
+    labels "temperature" and "em".
+
+    Parameters
+    ----------
+    goeslc : GOESLightCurve object
+    photospheric : bool (optional)
+                   States whether photospheric or coronal abundances
+                   should be assumed.
+                   Default=False, i.e. coronal abundances assumed.
+
+    Returns
+    -------
+    goes.data.temperature : pandas.core.series.Series
+                            Array of temperature values [MK]
+    goes.data.em : pandas.core.series.Series
+                   Array of volume emission measure values
+                   [10**49 cm**-3]
+
+    Examples
+    --------
+    >>> from sunpy.lightcurve as lc
+    >>> goeslc = lc.GOESLightCurve.create(time1, time2)
+    >>> goeslc.data
+                          xrsa   xrsb
+    2014-01-01 00:00:00  7e-07  7e-06
+    2014-01-01 00:00:02  7e-07  7e-06
+    2014-01-01 00:00:04  7e-07  7e-06
+    2014-01-01 00:00:06  7e-07  7e-06
+    >>> goeslc_new = temp_em(glc)
+    >>> goeslc_new.data
+                          xrsa   xrsb  temperature              em
+    2014-01-01 00:00:00  7e-07  7e-06  11.28295376  4.78577516e+48
+    2014-01-01 00:00:02  7e-07  7e-06  11.28295376  4.78577516e+48
+    2014-01-01 00:00:04  7e-07  7e-06  11.28295376  4.78577516e+48
+    2014-01-01 00:00:06  7e-07  7e-06  11.28295376  4.78577516e+48
+
+    """
+
+    # extract properties from GOESLightCurve object and change type to
+    # that required by goes_chianti_em
+    longflux = np.array(goeslc.data.xrsb)
+    shortflux = np.array(goeslc.data.xrsa)
+    satellite = int(goeslc.meta["TELESCOP"].split()[1])
+    date = str(goeslc.data.index[0])
+
+    # Find temperature and emission measure with goes_chianti_tem
+    temp, em = goes_chianti_tem(longflux, shortflux, satellite=satellite,
+                                date=date, photospheric=photospheric)
+
+    # Enter results into new version of GOES LightCurve Object
+    goeslc_new = goeslc
+    goeslc_new.data["temperature"] = temp
+    goeslc_new.data["em"] = em
+
+    return goeslc_new
+
 def goes_chianti_tem(longflux, shortflux, satellite=8,
                      date=datetime.datetime.today(), photospheric=False):
     """
