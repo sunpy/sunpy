@@ -410,6 +410,9 @@ def goes_get_chianti_em(longflux, temp, satellite=8, photospheric=False):
 
     return em
 
+def goes_rad_loss():
+    
+
 def goes_lx(longflux, shortflux, obstime, date=None):
     """Calculates solar X-ray luminosity in GOES wavelength ranges.
 
@@ -463,7 +466,8 @@ def goes_lx(longflux, shortflux, obstime, date=None):
                             "2014-01-01 00:00:04"
                             "2014-01-01 00:00:06"
                             "2014-01-01 00:00:08"
-                            "2014-01-01 00:00:10"])
+                            "2014-01-01 00:00:10"]
+                            dtype="datetime64[ms]")
     >>> lx_out = goes_lx(longflux, shortflux, obstime)
     >>> lx_out.longlum
     array([  1.98650769e+25,   1.98650769e+25,   1.98650769e+25,
@@ -485,22 +489,15 @@ def goes_lx(longflux, shortflux, obstime, date=None):
     # Next calculate the total energy radiated in the GOES bandpasses
     # during the flare.
     # First determine time intervals over which to intergrate each flux
-    # measurement.  If the measurement in question is t_i, define this
-    # interval as half-way between the previous time, t_(i-1) and t_i,
-    # to half-way between t and the following measurement, t_(i+1).
-    # For the first and last time measurements, define the interval as
-    # from t to half way to the next/previous measurement respectively.
-    obstime = obstime.astype("datetime64[ms]")  # convert to units of ms
-    delta = (obstime[2:]-obstime[:-2]) / 2
-    delta = np.insert(delta, 0, (obstime[1]-obstime[0])/2)
-    delta = np.append(delta, (obstime[-1]-obstime[-2])/2)
-    delta = delta.astype(float) / 1e3 # convert from [ms] to [s]
+    # measurement using time_intervals() function (below).
+    dt = time_intervals(obstime)
     # Calculate integrated X-ray radiative losses over time duration.
-    longlum_int = np.sum(longlum*delta)
-    shortlum_int = np.sum(shortlum*delta)
+    longlum_int = np.sum(longlum*dt)
+    shortlum_int = np.sum(shortlum*dt)
     # put data together in a dictionary for output
-    lx_out = {"longlum":longlum, "shortlum":shortlum,
-              "longlum_int":longlum_int, "shortlum_int":shortlum_int}
+    lx_out = {"longflux":longflux, "shortflux":shortflux, "time";obstime,
+              "longlum":longlum, "shortlum":shortlum,
+              "longlum_int":longlum_int, "shortlum_int":shortlum_int, "dt":dt}
     
     return lx_out
 
@@ -543,3 +540,54 @@ def goes_luminosity(flux, date=None):
     """
     return 4 * np.pi * \
       (sun.constants.au.value * sun.sunearth_distance(t=date))**2 * 1e7 * flux
+
+def time_intervals(obstime):
+    """
+    Calculates time intervals between measurement times in seconds.
+
+    Extended Summary
+    ----------------
+    This function calculates the time intervals between a series of
+    measurement times for use in siple integration over time.
+    Assume you have a series of times labelled t_1,...t_n.
+    The start of the time bin for time t_i is defined as
+    dt_i = ( t_(i+1) - t_(i-1) ) / 2
+    i.e. from halfway between t_i and the previous time, t_(i-1), to
+    halfway between t_i and the next time, t_(i+1).
+    The time intervals for t_1 and t_n are special cases.  These are
+    defined as
+    dt_1 = ( t_2 - t_1 ) / 2
+    dt_(n-1) = ( t_n - t_(n-1) ) / 2
+    
+
+    Parameters
+    ----------
+    obstime : numpy ndarray, dtype=datetime64
+              Array containing the time measurements.
+
+    Returns
+    -------
+    dt : numpy array, dtype=float
+         Array of time intervals in [s]
+
+    Examples
+    --------
+    >>> obstime = np.array(["2014-01-01 00:00:00",
+                            "2014-01-01 00:00:02",
+                            "2014-01-01 00:00:04"
+                            "2014-01-01 00:00:06"
+                            "2014-01-01 00:00:08"
+                            "2014-01-01 00:00:10"],
+                            dtype="datetime64[ms]")
+    >>> dt = time_intervals(obstime)
+    >>> dt
+    array([ 1.000,  2.000,  2.000,  2.000,  2.000,  1.000])
+
+    """
+
+    obstime = obstime.astype("datetime64[ms]")  # convert to units of ms
+    dt = (obstime[2:]-obstime[:-2]) / 2
+    dt = np.insert(dt, 0, (obstime[1]-obstime[0])/2)
+    dt = np.append(dt, (obstime[-1]-obstime[-2])/2)
+    dt = dt.astype(float) / 1e3 # convert from [ms] to [s]
+    return dt
