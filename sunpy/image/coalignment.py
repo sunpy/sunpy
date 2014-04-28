@@ -106,7 +106,8 @@ def calculate_clipping(y, x):
 # Helper functions for clipping edges
 #
 def _upper_clip(z):
-    """Find smallest integer bigger than all the entries in the input array.
+    """Find smallest integer bigger than all the positive entries in the input
+    array.
     """
     zupper = 0
     zcond = z >= 0
@@ -116,8 +117,8 @@ def _upper_clip(z):
 
 
 def _lower_clip(z):
-    """Find smallest integer less than than all the entries in the input
-    array."""
+    """Find smallest positive integer bigger than than all the absolute negative entries in the
+    input array."""
     zlower = 0
     zcond = z <= 0
     if np.any(zcond):
@@ -297,8 +298,10 @@ def mapcube_coalign_by_match_template(mc, layer_index=0, clip=True,
         the mapcube.
 
     layer_index : integer
-        The layer in the mapcube from which the template will be extracted, in
-        the range 0, nt - 1.
+        The template is assumed to refer to the image in the mapcube given by
+        the value of "layer_index".  Displacements are assumed to be relative
+        to this layer.  The displacements of the template relative to this
+        layer are therefore (0, 0).
 
     func : function
         A function which is applied to the data values before the coalignment
@@ -315,7 +318,8 @@ def mapcube_coalign_by_match_template(mc, layer_index=0, clip=True,
         affected by edges effects.
 
     template : {None | sunpy.map.Map | ndarray}
-        The template used in the matching.
+        The template used in the matching.  If an ndarray is passed, the
+        ndarray has to have two dimensions.
 
     return_displacements_only : bool
         If True return ONLY the x and y displacements applied to the input
@@ -340,6 +344,20 @@ def mapcube_coalign_by_match_template(mc, layer_index=0, clip=True,
         The results of the mapcube coalignment.  The output depends on the
         value of the parameters "return_displacements_only" and
         "with_displacements".
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> from sunpy.image.coalignment import mapcube_coalign_by_match_template as mc_coalign
+    >>> coaligned_mc = mc_coalign(mc)
+    >>> coaligned_mc = mc_coalign(mc, layer_index=-1)
+    >>> coaligned_mc = mc_coalign(mc, clip=False)
+    >>> coaligned_mc = mc_coalign(mc, template=sunpy_map)
+    >>> coaligned_mc = mc_coalign(mc, template=two_dimensional_ndarray)
+    >>> coaligned_mc = mc_coalign(mc, func=np.log)
+    >>> displacements = mc_coalign(mc, return_displacements_only=True)
+    >>> coaligned_mc, displacements = mc_coalign(mc, with_displacements=True)
+    >>> coaligned_mc = mc_coalign(mc, apply_displacements=displacements)
     """
     # Size of the data
     ny = mc.maps[layer_index].shape[0]
