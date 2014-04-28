@@ -10,6 +10,7 @@ Latest
  * Added method Database.download_from_vso_query_result
  * GOES Lightcurve now makes use of a new source of GOES data, provides metadata, and data back to 1981.
  * Removed sqlalchemy as a requirement for SunPy
+ * Added support for NOAA solar cycle prediction in lightcurves
 
 0.4.0
 -----
