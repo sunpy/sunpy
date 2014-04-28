@@ -99,7 +99,7 @@ def calculate_clipping(y, x):
     the datacube at the upper end of the range.  Negative values will clip off
     values at the lower end of the range.  
     """
-    return [_lower_clip(y), _upper_clip(y)], [_lower_clip(x), _upper_clip(x)], 
+    return [_lower_clip(y), _upper_clip(y)], [_lower_clip(x), _upper_clip(x)]
 
 
 #
