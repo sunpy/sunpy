@@ -411,7 +411,7 @@ def goes_get_chianti_em(longflux, temp, satellite=8, photospheric=False):
 
     return em
 
-def calc_rad_loss(temp, em):
+def calc_rad_loss(temp, em, obstime=None):
     """
     Finds radiative loss rate of solar SXR plasma over all wavelengths.
 
@@ -421,6 +421,9 @@ def calc_rad_loss(temp, em):
     X-ray-emitting plasma across all wavelengths given an isothermal
     temperature and emission measure.  The units of the results are
     erg/s.  This function is based on calc_rad_loss.pro in SSW IDL.
+    In addition, if obstime keyword is set, giving the times to which
+    the temperature and emission measure values correspond, the
+    radiated losses integrated over time are also calculated.
 
     Parameters
     ----------
@@ -430,6 +433,12 @@ def calc_rad_loss(temp, em):
     em : numpy ndarray, dtype=float, units=[cm**-3]
          Array containing the emission measure of the coronal plasma
          at the same times corresponding to the temperatures in temp.
+         Must be same length as temp
+    obstime : numpy array, dtype=datetime64, optional
+              array of measurement times to which temperature and
+              emission measure values correspond.  Must be same length
+              as temp and em.  If this keyword is set, the integrated
+              radiated energy is calculated.
     
     Returns
     -------
@@ -452,16 +461,16 @@ def calc_rad_loss(temp, em):
     --------
     >>> temp = np.array([11.28295376, 11.28295376])
     >>> em = np.array([4.78577516e+48, 4.78577516e+48])
-    >>> radlossrate = calc_rad_loss(temp, em)
-    >>> radlossrate
+    >>> rad_loss = calc_rad_loss(temp, em)
+    >>> rad_loss
     array([  3.57994116e+26,   3.57994116e+26])
     
     """
 
     # Initialize lists to hold model data of temperature - rad loss rate
     # relationship read in from csv file
-    modeltemp = [ ] # modelled temperature is in log_10 sapce in units of MK
-    modellossrate = [ ]
+    model_temp = [ ] # modelled temperature is in log_10 sapce in units of MK
+    model_loss_rate = [ ]
 
     # Read data from csv file into lists, being sure to skip commented
     # lines begining with "#"
@@ -469,16 +478,36 @@ def calc_rad_loss(temp, em):
         startline = dropwhile(lambda l: l.startswith("#"), csvfile)
         csvreader = csv.DictReader(startline, delimiter=";")
         for row in csvreader:
-            modeltemp.append(float(row["temp_K"]))
-            modellossrate.append(float(row["rad_loss_rate_per_em"]))
-    modeltemp = np.array(modeltemp)
-    modellossrate = np.array(modellossrate)
+            model_temp.append(float(row["temp_K"]))
+            model_loss_rate.append(float(row["rad_loss_rate_per_em"]))
+    model_temp = np.array(model_temp)
+    model_loss_rate = np.array(model_loss_rate)
     # Perform spline fit to model data to get temperatures for input
     # values of flux ratio
-    spline = interpolate.splrep(modeltemp, modellossrate, s=0)
-    radlossrate = em * interpolate.splev(temp*1e6, spline, der=0)
+    spline = interpolate.splrep(model_temp, model_loss_rate, s=0)
+    rad_loss_rate = em * interpolate.splev(temp*1e6, spline, der=0)
 
-    return radlossrate
+    # If obstime keyword giving measurement times is set, calculate
+    # radiative losses intergrated over time.
+    if obstime is not None:
+        try:
+            timetype = obstime.dtype.type
+        except AttributeError:
+            timetype = None
+        if timetype is np.datetime64:
+            dt = time_intervals(obstime)
+            rad_loss_int = np.sum(rad_loss_rate*dt)
+            rad_loss_out = {"rad_loss_rate":rad_loss_rate,
+                            "time": obstime,
+                            "rad_loss_int":rad_loss_int}
+        else:
+             print "Warning: obstime must be of type datetime64.  \n" + \
+               "         Integrated radiated losses will not be calculated."
+             rad_loss_out = {"rad_loss_rate":rad_loss_rate}
+    else:
+        rad_loss_out = {"rad_loss_rate":rad_loss_rate}
+
+    return rad_loss_out
 
 def goes_lx(longflux, shortflux, obstime, date=None):
     """Calculates solar X-ray luminosity in GOES wavelength ranges.
