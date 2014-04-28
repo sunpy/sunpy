@@ -81,11 +81,9 @@ def clip_edges(data, yclips, xclips):
         A 2d image with edges clipped off according to the positive and
         negative ceiling values in the yclips and xclips arrays.
     """
-
     # Datacube shape
     ny = data.shape[0]
     nx = data.shape[1]
-
     return data[yclips[0]: ny - yclips[1], xclips[0]: nx - xclips[1]]
 
 
@@ -117,8 +115,9 @@ def _upper_clip(z):
 
 
 def _lower_clip(z):
-    """Find smallest positive integer bigger than than all the absolute negative entries in the
-    input array."""
+    """Find smallest positive integer bigger than the absolute values of the
+    negative entries in the input array.
+    """
     zlower = 0
     zcond = z <= 0
     if np.any(zcond):
