@@ -338,7 +338,8 @@ def mapcube_coalign_by_match_template(mc, layer_index=0, clip=True,
     -------
     output : {sunpy.map.MapCube | dict | tuple}
         The results of the mapcube coalignment.  The output depends on the
-        value of return_displacements_only and with_displacements.
+        value of the parameters "return_displacements_only" and
+        "with_displacements".
     """
     # Size of the data
     ny = mc.maps[layer_index].shape[0]
