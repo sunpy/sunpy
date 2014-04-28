@@ -19,16 +19,14 @@ __all__ = ['calculate_shift', 'clip_edges', 'calculate_clipping',
 
 
 def _default_fmap_function(data):
-    """
-    This function ensures that the data are floats.  It is the default data
+    """This function ensures that the data are floats.  It is the default data
     manipulation function for the coalignment method.
     """
     return np.float64(data)
 
 
 def calculate_shift(this_layer, template):
-    """
-    Calculates the pixel shift required to put the template in the "best"
+    """Calculates the pixel shift required to put the template in the "best"
     position on a layer.
 
     Inputs
@@ -58,8 +56,7 @@ def calculate_shift(this_layer, template):
 # Remove the edges of a datacube
 #
 def clip_edges(data, yclips, xclips):
-    """
-    Clips off the y and x edges of a 2d array according to a list of pixel
+    """Clips off the y and x edges of a 2d array according to a list of pixel
     values.  This function is useful for removing data at the edge of
     2d images that may be affected by shifts from solar de-rotation and
     layer co-registration, leaving an image unaffected by edge effects.
@@ -90,8 +87,7 @@ def clip_edges(data, yclips, xclips):
 # input set of pixel shifts y and x
 #
 def calculate_clipping(y, x):
-    """
-    Return the upper and lower clipping values for the y and x directions an
+    """Return the upper and lower clipping values for the y and x directions an
     input set of pixel shifts y and x. Positive pixel values will clip off the
     datacube at the upper end of the range.  Negative values will clip off
     values at the lower end of the range.  
@@ -119,8 +115,7 @@ def _lower_clip(z):
 
 
 def match_template_to_layer(layer, template):
-    """
-    Calculate the correlation array that describes how well the template
+    """Calculate the correlation array that describes how well the template
     matches the layer.
     All inputs are assumed to be numpy arrays.
 
@@ -144,8 +139,7 @@ def match_template_to_layer(layer, template):
 
 
 def find_best_match_location(corr):
-    """
-    Calculate an estimate of the location of the peak of the correlation
+    """Calculate an estimate of the location of the peak of the correlation
     result.
 
     Inputs
@@ -175,8 +169,7 @@ def find_best_match_location(corr):
 
 
 def get_correlation_shifts(array):
-    """
-    Estimate the location of the maximum of a fit to the input array.  The
+    """Estimate the location of the maximum of a fit to the input array.  The
     estimation in the x and y directions are done separately. The location
     estimates can be used to implement subpixel shifts between two different
     images.
@@ -220,11 +213,10 @@ def get_correlation_shifts(array):
 
 
 def parabolic_turning_point(y):
-    """
-    Find the location of the turning point for a parabola f(x) = ax^2 + bx + c
-    The maximum is located at x0 = -b / 2a .  Assumes that the input array
-    represents an equally spaced sampling at the locations f(-1), f(0) and
-    f(1).
+    """Find the location of the turning point for a parabola
+    f(x) = ax^2 + bx + c.  The maximum is located at x0 = -b / 2a .  Assumes
+    that the input array represents an equally spaced sampling at the
+    locations f(-1), f(0) and f(1).
 
     Input
     -----
@@ -241,8 +233,7 @@ def parabolic_turning_point(y):
 
 
 def repair_2dimage_nonfinite(z):
-    """
-    Replace all the nonfinite entries in a 2d image with the local mean.
+    """Replace all the nonfinite entries in a 2d image with the local mean.
     There is probably a much smarter way of doing this.
     """
     nx = z.shape[1]
@@ -280,8 +271,7 @@ def mapcube_coalign_by_match_template(mc, layer_index=0, clip=True,
                                apply_displacements=None,
                                return_displacements_only=False,
                                with_displacements=False):
-    """
-    Co-register the layers in a mapcube according to a template taken from
+    """Co-register the layers in a mapcube according to a template taken from
     that mapcube.  This method REQUIRES that scikit-image be installed.
     When using this functionality, it is a good idea to check that the
     shifts that were applied to were reasonable and expected.  One way of
