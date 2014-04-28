@@ -156,8 +156,8 @@ def find_best_match_location(corr):
     corr : ndarray
         A 2-d correlation array.
 
-    Reurns
-    ------
+    Returns
+    -------
     shift : tuple
         The shift amounts (y, x).  Subpixel values are possible.
     """
@@ -191,7 +191,7 @@ def get_correlation_shifts(array):
         input array is at most a 3 x 3 array of correlation values calculated
         by matching a template to an image.
 
-    Outputs
+    Returns
     -------
     peakloc : tuple
         The (y, x) location of the peak of a parabolic fit.
@@ -322,17 +322,23 @@ def mapcube_coalign_by_match_template(mc, layer_index=0, clip=True,
         data in units of arcseconds.  The return value is a dictionary of the
         form {"x": xdisplacement, "y": ydisplacement}.
 
+    with_displacements : bool
+        If True, return the x and y displacements applied to the input data in
+        the same format as that returned using the return_displacements_only
+        option, along with the coaligned mapcube.  The format of the return is
+        (mapcube, displacements).
+
     apply_displacements : {None | dict}
         If not None, then use the displacements supplied by the user.  Must be
         in the same format as that returned using the
         return_displacements_only option.  Can be used when you want to appl
         the same displacements to multiple mapcubes.
 
-    with_displacements : bool
-        If True, return the x and y displacements applied to the input data in
-        the same format as that returned using the return_displacements_only
-        option, along with the coaligned mapcube.  The format of the return is
-        (mapcube, displacements).
+    Returns
+    -------
+    output : {sunpy.map.MapCube | dict | tuple}
+        The results of the mapcube coalignment.  The output depends on the
+        value of return_displacements_only and with_displacements.
     """
     # Size of the data
     ny = mc.maps[layer_index].shape[0]
