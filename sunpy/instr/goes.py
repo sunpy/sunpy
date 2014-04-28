@@ -464,17 +464,16 @@ def goes_lx(longflux, shortflux, obstime, date=None):
                             "2014-01-01 00:00:06"
                             "2014-01-01 00:00:08"
                             "2014-01-01 00:00:10"])
-    >>> longlum, shortlum, longlum_int, shortlum_int = \
-        goes_lx(longflux, shortflux, obstime)
-    >>> longlum
+    >>> lx_out = goes_lx(longflux, shortflux, obstime)
+    >>> lx_out.longlum
     array([  1.98650769e+25,   1.98650769e+25,   1.98650769e+25,
              1.98650769e+25,   1.98650769e+25,   1.98650769e+25])
-    >>> shortlum
+    >>> lx_out.shortlum
     array([  1.98650769e+24,   1.98650769e+24,   1.98650769e+24,
              1.98650769e+24,   1.98650769e+24,   1.98650769e+24])
-    >>> longlum_int
+    >>> lx_out.longlum_int
     2.0337865720138238e+26
-    >>> shortlum_int
+    >>> lx_out.shortlum_int
     2.0337865720138235e+25
 
     """
@@ -499,8 +498,11 @@ def goes_lx(longflux, shortflux, obstime, date=None):
     # Calculate integrated X-ray radiative losses over time duration.
     longlum_int = np.sum(longlum*delta)
     shortlum_int = np.sum(shortlum*delta)
+    # put data together in a dictionary for output
+    lx_out = {"longlum":longlum, "shortlum":shortlum,
+              "longlum_int":longlum_int, "shortlum_int":shortlum_int}
     
-    return longlum, shortlum, longlum_int, shortlum_int
+    return lx_out
 
 def goes_luminosity(flux, date=None):
     """
