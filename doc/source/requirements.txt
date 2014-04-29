@@ -8,3 +8,5 @@ pandas>=0.10
 beautifulsoup4
 astropy>=0.3.0
 pytest
+cython
+scikit-image
