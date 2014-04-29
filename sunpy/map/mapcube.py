@@ -38,7 +38,7 @@ class MapCube(object):
 
     Examples
     --------
-    >>> mapcube = sunpy.Map('images/*.fits', mapcube=True)
+    >>> mapcube = sunpy.map.Map('images/*.fits', mapcube=True)
 
     Mapcubes can be co-aligned using the routines in sunpy.image.coalignment.
     """
