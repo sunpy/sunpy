@@ -15,7 +15,7 @@ from sunpy.map.mapbase import GenericMap
 __all__ = ['calculate_shift', 'clip_edges', 'calculate_clipping',
            'match_template_to_layer', 'find_best_match_location',
            'get_correlation_shifts', 'parabolic_turning_point',
-           'repair_2dimage_nonfinite', 'mapcube_coalign_by_match_template']
+           'repair_image_nonfinite', 'mapcube_coalign_by_match_template']
 
 
 def _default_fmap_function(data):
@@ -45,8 +45,8 @@ def calculate_shift(this_layer, template):
         to the input array.
     """
     # Repair any NANs, Infs, etc in the layer and the template
-    this_layer = repair_2dimage_nonfinite(this_layer)
-    template = repair_2dimage_nonfinite(template)
+    this_layer = repair_image_nonfinite(this_layer)
+    template = repair_image_nonfinite(template)
 
     # Calculate the correlation array matching the template to this layer
     corr = match_template_to_layer(this_layer, template)
@@ -254,7 +254,8 @@ def parabolic_turning_point(y):
     Parameters
     ----------
     y : ndarray
-        An one dimensional numpy array of shape 3.
+        A one dimensional numpy array of shape 3 with entries that sample the
+        parabola at -1, 0, and 1.
 
     Returns
     -------
@@ -266,7 +267,7 @@ def parabolic_turning_point(y):
     return numerator / denominator
 
 
-def repair_2dimage_nonfinite(image):
+def repair_image_nonfinite(image):
     """Return a new image in which all the nonfinite entries of the original
     image have been replaced by the local mean.
 
