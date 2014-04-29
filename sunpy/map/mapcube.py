@@ -38,24 +38,9 @@ class MapCube(object):
 
     Examples
     --------
-    >>> mapcube = sunpy.Map('images/', mapcube=True)
-    >>> mapcube[0].plot()
-    >>> mapcube[3].reference_pixel['x']
-    2050.6599120000001
+    >>> mapcube = sunpy.Map('images/*.fits', mapcube=True)
 
-    To coalign layers in a mapcube, use the image coalignment functions.  They
-    are located in sunpy.image.coalignment.  Currently only one method of image
-    coalignment has been implemented.  It requires the scikit-image library
-    to be installed.
-
-    The mapcube coalignment can be accessed as follows:
-
-    >>> from sunpy.image.coalignment import mapcube_coalign
-    >>> coaligned_mapcube = mapcube_coalign(mapcube)
-
-    For more details on mapcube coalignment please see the code in 
-    sunpy.image.coalignment.
-
+    Mapcubes can be co-aligned using the routines in sunpy.image.coalignment.
     """
     #pylint: disable=W0613,E1101
     def __init__(self, *args, **kwargs):
