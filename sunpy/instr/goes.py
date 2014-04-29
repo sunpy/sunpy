@@ -6,6 +6,7 @@ import scipy.interpolate as interpolate
 import datetime
 import dateutil
 import csv
+import copy
 from itertools import dropwhile
 
 from sunpy.net import hek
@@ -67,9 +68,9 @@ def temp_em(goeslc, photospheric=False):
     emission measure of the solar soft X-ray emitting plasma observed by
     the GOES/XRS.  This is done using the function goes_chianti_tem().
     See that function for more details.  Once the temperature and
-    emission measure are found, they are added to goeslc.data under the
-    labels "temperature" and "em" where goeslc is the GOESLightCurve
-    object.
+    emission measure are found, they are added to a copy of the
+    original GOESLightCurve object as goeslc.data.temperature and
+    goeslc.data.em where goeslc is the GOESLightCurve object.
 
     Parameters
     ----------
@@ -81,11 +82,11 @@ def temp_em(goeslc, photospheric=False):
 
     Returns
     -------
-    goes.data.temperature : pandas.core.series.Series
-                            Array of temperature values [MK]
-    goes.data.em : pandas.core.series.Series
-                   Array of volume emission measure values
-                   [10**49 cm**-3]
+    goeslc.data.temperature : pandas.core.series.Series
+                              Array of temperature values [MK]
+    goeslc.data.em : pandas.core.series.Series
+                     Array of volume emission measure values
+                     [10**49 cm**-3]
 
     Examples
     --------
@@ -119,7 +120,7 @@ def temp_em(goeslc, photospheric=False):
                                 date=date, photospheric=photospheric)
 
     # Enter results into new version of GOES LightCurve Object
-    goeslc_new = goeslc
+    goeslc_new = copy.deepcopy(goeslc)
     goeslc_new.data["temperature"] = temp
     goeslc_new.data["em"] = em
 
@@ -479,6 +480,73 @@ def goes_get_chianti_em(longflux, temp, satellite=8, photospheric=False):
 
     return em
 
+def rad_loss_rate(goeslc):
+    """
+    Calculates and adds solar radiative loss rate to a GOESLightCurve.
+
+    Extended Summary
+    ----------------
+    This function calculates the radiative loss rate as a function of
+    time of solar coronal soft X-ray-emitting plasma across all
+    wavelengths given a GOESLightCurve object.  The units of the
+    results are erg/s. This is done by calling calc_rad_loss().
+    For more information see documentation in that function.  Once
+    the radiative loss rates have been found, it is added to a copy of
+    the original GOESLightCurve object as goeslc.data.rad_loss_rate",
+    where goeslc is the GOESLightCurve object.
+
+    Parameters
+    ----------
+    goeslc : GOESLightCurve object
+    
+    Returns
+    -------
+    goeslc.data.rad_loss_rate : pandas.core.series.Series
+                                Array of radiative loss rate of the
+                                coronal soft X-ray-emitting plasma
+                                across all wavelengths. [erg/s]
+
+    Examples
+    --------
+    >>> from sunpy.lightcurve as lc
+    >>> goeslc = lc.GOESLightCurve.create(time1, time2)
+    >>> goeslc.data
+                          xrsa   xrsb
+    2014-01-01 00:00:00  7e-07  7e-06
+    2014-01-01 00:00:02  7e-07  7e-06
+    2014-01-01 00:00:04  7e-07  7e-06
+    2014-01-01 00:00:06  7e-07  7e-06
+    >>> goeslc_new = rad_loss_rate(goeslc)
+    >>> goeslc_new.data
+                          xrsa   xrsb  luminosity_xrsa  luminosity_xrsb
+    2014-01-01 00:00:00  7e-07  7e-06     1.903523e+24     1.903523e+25
+    2014-01-01 00:00:02  7e-07  7e-06     1.903523e+24     1.903523e+25
+    2014-01-01 00:00:04  7e-07  7e-06     1.903523e+24     1.903523e+25
+    2014-01-01 00:00:06  7e-07  7e-06     1.903523e+24     1.903523e+25
+
+    """
+
+    # extract temperature and emission measure from GOESLightCurve
+    # object and change type to that required by calc_rad_loss().
+    # If GOESLightCurve object does not contain temperature and
+    # emissio measure, calculate using temp_em()
+    try:
+        temp = np.array(goeslc.data.temperature)
+        em = np.array(goeslc.data.em)
+        goeslc_new = copy.deepcopy(goeslc)
+    except AttributeError:
+        goeslc_new = temp_em(goeslc)
+        temp = np.array(goeslc_new.data.temperature)
+        em = np.array(goeslc_new.data.em)
+
+    # Find radiative loss rate with calc_rad_loss()
+    rad_loss_out = calc_rad_loss(temp, em)
+
+    # Enter results into new version of GOES LightCurve Object
+    goeslc_new.data["rad_loss_rate"] = rad_loss_out["rad_loss_rate"]
+
+    return goeslc_new
+
 def calc_rad_loss(temp, em, obstime=None):
     """
     Finds radiative loss rate of solar SXR plasma over all wavelengths.
@@ -592,26 +660,23 @@ def xray_luminosity(goeslc):
     radiation is emitted isotropically, i.e. is distributed over a
     spherical surface area with a radius equal to the Sun-Earth
     distance.  Once the luminosity in each GOES passband is found,
-    they are added to goeslc.data under the labels "luminosity_xrsa"
-    and "luminosity_xrsb" for the 0.5-4 angstrom and 1-8 angstrom
-    channels respectively.  Here, goeslc is the GOESLightCurve object.
+    they are added to a copy of the original GOESLightCurve object as
+    goeslc.data.luminosity_xrsa (for the 0.5-4 angstrom channel) and
+    goeslc.data.luminosity_xrsb (for the 1-8 angstrom channel), where
+    goeslc is the GOESLightCurve object.
 
     Parameters
     ----------
     goeslc : GOESLightCurve object
-    photospheric : bool (optional)
-                   States whether photospheric or coronal abundances
-                   should be assumed.
-                   Default=False, i.e. coronal abundances assumed.
 
     Returns
     -------
-    goes.data.luminosity_xrsa : pandas.core.series.Series
-                                Array of luminosity in the 0.5-4
-                                angstrom wavelength range [erg/s]
-    goes.data.luminosity_xrsb : pandas.core.series.Series
-                                Array of luminosity in the 1-8
-                                angstrom wavelength range [erg/s]
+    goeslc.data.luminosity_xrsa : pandas.core.series.Series
+                                  Array of luminosity in the 0.5-4
+                                  angstrom wavelength range [erg/s]
+    goeslc.data.luminosity_xrsb : pandas.core.series.Series
+                                  Array of luminosity in the 1-8
+                                  angstrom wavelength range [erg/s]
 
     Examples
     --------
@@ -643,7 +708,7 @@ def xray_luminosity(goeslc):
     lx_out = goes_lx(longflux, shortflux, date=date)
 
     # Enter results into new version of GOES LightCurve Object
-    goeslc_new = goeslc
+    goeslc_new = copy.deepcopy(goeslc)
     goeslc_new.data["luminosity_xrsa"] = lx_out["shortlum"]
     goeslc_new.data["luminosity_xrsb"] = lx_out["longlum"]
 
