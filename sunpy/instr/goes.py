@@ -59,7 +59,7 @@ def get_goes_event_list(trange,goes_class_filter=None):
 
 def temp_em(goeslc, photospheric=False):
     """
-    Finds and adds temperature and emission measure to a GOESLightCurve.
+    Calculates and adds temperature and EM to a GOESLightCurve.
 
     Extended Summary
     ----------------
@@ -67,8 +67,9 @@ def temp_em(goeslc, photospheric=False):
     emission measure of the solar soft X-ray emitting plasma observed by
     the GOES/XRS.  This is done using the function goes_chianti_tem().
     See that function for more details.  Once the temperature and
-    emission measure are found, they are added to goes.data under the
-    labels "temperature" and "em".
+    emission measure are found, they are added to goeslc.data under the
+    labels "temperature" and "em" where goeslc is the GOESLightCurve
+    object.
 
     Parameters
     ----------
@@ -96,7 +97,7 @@ def temp_em(goeslc, photospheric=False):
     2014-01-01 00:00:02  7e-07  7e-06
     2014-01-01 00:00:04  7e-07  7e-06
     2014-01-01 00:00:06  7e-07  7e-06
-    >>> goeslc_new = temp_em(glc)
+    >>> goeslc_new = temp_em(goeslc)
     >>> goeslc_new.data
                           xrsa   xrsb  temperature              em
     2014-01-01 00:00:00  7e-07  7e-06  11.28295376  4.78577516e+48
@@ -564,19 +565,91 @@ def calc_rad_loss(temp, em, obstime=None):
         if timetype is np.datetime64:
             dt = time_intervals(obstime)
             rad_loss_int = np.sum(rad_loss_rate*dt)
-            rad_loss_out = {"rad_loss_rate":rad_loss_rate,
-                            "time": obstime,
+            rad_loss_out = {"temperature":temp, "em":em,
+                            "rad_loss_rate":rad_loss_rate, "time": obstime,
                             "rad_loss_int":rad_loss_int}
         else:
              print "Warning: obstime must be of type datetime64.  \n" + \
                "         Integrated radiated losses will not be calculated."
-             rad_loss_out = {"rad_loss_rate":rad_loss_rate}
+             rad_loss_out = {"temperature":temp, "em":em,
+                             "rad_loss_rate":rad_loss_rate}
     else:
-        rad_loss_out = {"rad_loss_rate":rad_loss_rate}
+        rad_loss_out = {"temperature":temp, "em":em,
+                        "rad_loss_rate":rad_loss_rate}
 
     return rad_loss_out
 
-def goes_lx(longflux, shortflux, obstime, date=None):
+def xray_luminosity(goeslc):
+    """
+    Calculates and adds solar X-ray luminosity to a GOESLightCurve.
+
+    Extended Summary
+    ----------------
+    This function calculates the solar X-ray luminosity in the
+    GOES wavelength ranges (1-8 angstroms and 0.5-4 angstroms) based
+    on the observed GOES fluxes.  The units of the results are erg/s.
+    This is done by calling goes_lx().  This function assumes that the
+    radiation is emitted isotropically, i.e. is distributed over a
+    spherical surface area with a radius equal to the Sun-Earth
+    distance.  Once the luminosity in each GOES passband is found,
+    they are added to goeslc.data under the labels "luminosity_xrsa"
+    and "luminosity_xrsb" for the 0.5-4 angstrom and 1-8 angstrom
+    channels respectively.  Here, goeslc is the GOESLightCurve object.
+
+    Parameters
+    ----------
+    goeslc : GOESLightCurve object
+    photospheric : bool (optional)
+                   States whether photospheric or coronal abundances
+                   should be assumed.
+                   Default=False, i.e. coronal abundances assumed.
+
+    Returns
+    -------
+    goes.data.luminosity_xrsa : pandas.core.series.Series
+                                Array of luminosity in the 0.5-4
+                                angstrom wavelength range [erg/s]
+    goes.data.luminosity_xrsb : pandas.core.series.Series
+                                Array of luminosity in the 1-8
+                                angstrom wavelength range [erg/s]
+
+    Examples
+    --------
+    >>> from sunpy.lightcurve as lc
+    >>> goeslc = lc.GOESLightCurve.create(time1, time2)
+    >>> goeslc.data
+                          xrsa   xrsb
+    2014-01-01 00:00:00  7e-07  7e-06
+    2014-01-01 00:00:02  7e-07  7e-06
+    2014-01-01 00:00:04  7e-07  7e-06
+    2014-01-01 00:00:06  7e-07  7e-06
+    >>> goeslc_new = xray_luminosity(goeslc)
+    >>> goeslc_new.data
+                          xrsa   xrsb  luminosity_xrsa  luminosity_xrsb
+    2014-01-01 00:00:00  7e-07  7e-06     1.903523e+24     1.903523e+25
+    2014-01-01 00:00:02  7e-07  7e-06     1.903523e+24     1.903523e+25
+    2014-01-01 00:00:04  7e-07  7e-06     1.903523e+24     1.903523e+25
+    2014-01-01 00:00:06  7e-07  7e-06     1.903523e+24     1.903523e+25
+
+    """
+
+    # extract properties from GOESLightCurve object and change type to
+    # that required by goes_chianti_em
+    longflux = np.array(goeslc.data.xrsb)
+    shortflux = np.array(goeslc.data.xrsa)
+    date = str(goeslc.data.index[0])
+
+    # Find temperature and emission measure with goes_chianti_tem
+    lx_out = goes_lx(longflux, shortflux, date=date)
+
+    # Enter results into new version of GOES LightCurve Object
+    goeslc_new = goeslc
+    goeslc_new.data["luminosity_xrsa"] = lx_out["shortlum"]
+    goeslc_new.data["luminosity_xrsb"] = lx_out["longlum"]
+
+    return goeslc_new
+
+def goes_lx(longflux, shortflux, obstime=None, date=None):
     """Calculates solar X-ray luminosity in GOES wavelength ranges.
 
     Extended Summary
@@ -595,7 +668,7 @@ def goes_lx(longflux, shortflux, obstime, date=None):
     shortflux : numpy ndarray, dtype=float
                 Array containing the observed GOES/XRS short channel
                 flux
-    obstime : numpy ndarray, dtype=datetime64
+    obstime : numpy ndarray, dtype=datetime64, optional
               Measurement times corresponding to each long/short
               channel flux measurement.
 
@@ -649,18 +722,30 @@ def goes_lx(longflux, shortflux, obstime, date=None):
     longlum = goes_luminosity(longflux, date=date)
     shortlum = goes_luminosity(shortflux, date=date)
 
-    # Next calculate the total energy radiated in the GOES bandpasses
-    # during the flare.
-    # First determine time intervals over which to intergrate each flux
-    # measurement using time_intervals() function (below).
-    dt = time_intervals(obstime)
-    # Calculate integrated X-ray radiative losses over time duration.
-    longlum_int = np.sum(longlum*dt)
-    shortlum_int = np.sum(shortlum*dt)
-    # put data together in a dictionary for output
-    lx_out = {"longflux":longflux, "shortflux":shortflux, "time":obstime,
-              "longlum":longlum, "shortlum":shortlum,
-              "longlum_int":longlum_int, "shortlum_int":shortlum_int, "dt":dt}
+    # If obstime keyword giving measurement times is set, calculate
+    # total energy radiated in the GOES bandpasses during the flare.
+    if obstime is not None:
+        try:
+            timetype = obstime.dtype.type
+        except AttributeError:
+            timetype = None
+        if timetype is np.datetime64:
+            dt = time_intervals(obstime)
+            longlum_int = np.sum(longlum*dt)
+            shortlum_int = np.sum(shortlum*dt)
+            lx_out = {"longflux":longflux, "shortflux":shortflux,
+                      "time":obstime, "longlum":longlum, "shortlum":shortlum,
+                      "longlum_int":longlum_int, "shortlum_int":shortlum_int,
+                      "dt":dt}
+        else:
+             print "Warning: obstime must be of type datetime64.  \n" + \
+               "         Integrated X-ray radiated losses will not be " + \
+               "calculated."
+             lx_out = {"longflux":longflux, "shortflux":shortflux,
+                       "longlum":longlum, "shortlum":shortlum,}
+    else:
+        lx_out = {"longflux":longflux, "shortflux":shortflux,
+                  "longlum":longlum, "shortlum":shortlum,}
     
     return lx_out
 
@@ -714,13 +799,13 @@ def time_intervals(obstime):
     measurement times for use in siple integration over time.
     Assume you have a series of times labelled t_1,...t_n.
     The start of the time bin for time t_i is defined as
-    dt_i = ( t_(i+1) - t_(i-1) ) / 2
+    dt_i = (t_(i+1) - t_(i-1)) / 2
     i.e. from halfway between t_i and the previous time, t_(i-1), to
     halfway between t_i and the next time, t_(i+1).
     The time intervals for t_1 and t_n are special cases.  These are
     defined as
-    dt_1 = ( t_2 - t_1 ) / 2
-    dt_(n-1) = ( t_n - t_(n-1) ) / 2
+    dt_1 = (t_2 - t_1) / 2
+    dt_(n-1) = (t_n - t_(n-1)) / 2
     
 
     Parameters
