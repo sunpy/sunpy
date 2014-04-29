@@ -263,4 +263,6 @@ def extract_waveunit(header):
             if m is not None:
                 waveunit = m.group(1)
                 break
+    if waveunit == '': 
+        return None # To fix problems associated with HMI FITS.        
     return waveunit
