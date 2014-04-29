@@ -12,6 +12,7 @@ from itertools import dropwhile
 from sunpy.net import hek
 from sunpy.time import parse_time
 from sunpy.sun import sun
+import sunpy.lightcurve
 
 __all__ = ['get_goes_event_list']
 
@@ -107,6 +108,10 @@ def temp_em(goeslc, photospheric=False):
     2014-01-01 00:00:06  7e-07  7e-06  11.28295376  4.78577516e+48
 
     """
+
+    # Check that input argument is of correct type
+    if type(goeslc) is not sunpy.lightcurve.sources.goes.GOESLightCurve:
+        raise TypeError("goeslc must be GOESLightCurve object")
 
     # extract properties from GOESLightCurve object and change type to
     # that required by goes_chianti_em
@@ -526,18 +531,23 @@ def rad_loss_rate(goeslc):
 
     """
 
+    # Check that input argument is of correct type
+    if type(goeslc) is not sunpy.lightcurve.sources.goes.GOESLightCurve:
+        raise TypeError("goeslc must be GOESLightCurve object")
+    
     # extract temperature and emission measure from GOESLightCurve
     # object and change type to that required by calc_rad_loss().
     # If GOESLightCurve object does not contain temperature and
-    # emissio measure, calculate using temp_em()
+    # emission measure, calculate using temp_em()
     try:
         temp = np.array(goeslc.data.temperature)
         em = np.array(goeslc.data.em)
-        goeslc_new = copy.deepcopy(goeslc)
     except AttributeError:
         goeslc_new = temp_em(goeslc)
         temp = np.array(goeslc_new.data.temperature)
         em = np.array(goeslc_new.data.em)
+    else:
+        goeslc_new = copy.deepcopy(goeslc)
 
     # Find radiative loss rate with calc_rad_loss()
     rad_loss_out = calc_rad_loss(temp, em)
@@ -698,6 +708,10 @@ def xray_luminosity(goeslc):
 
     """
 
+    # Check that input argument is of correct type
+    if type(goeslc) is not sunpy.lightcurve.sources.goes.GOESLightCurve:
+        raise TypeError("goeslc must be GOESLightCurve object")
+    
     # extract properties from GOESLightCurve object and change type to
     # that required by goes_chianti_em
     longflux = np.array(goeslc.data.xrsb)
