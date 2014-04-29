@@ -213,38 +213,45 @@ def goes_chianti_tem(longflux, shortflux, satellite=8,
 
     """
 
-    # CHECK INPUTS ARE OF CORRECT TYPE
+    # Check inputs are of correct type
+    # Check longflux input
+    if type(longflux) is not np.ndarray or longflux.dtype != "float64":
+            raise TypeError("longflux must be a numpy array of type float64.")
+    # Check shortflux input
+    if type(shortflux) is not np.ndarray or shortflux.dtype != "float64":
+            raise TypeError("shortflux must be a numpy array of type float64.")
+    # Check satellite input
+    if type(satellite) is not int:
+        if type(satellite) is str:
+            try:
+                satellite = int(satellite)
+            except ValueError:
+                raise TypeError("satellite must be an integer.")
+            else:
+                if satellite < 1:
+                    raise ValueError("satellite must be the number of a " + \
+                                     "valid GOES satellite.")
+        else:
+            raise TypeError("satellite must be an integer.")
+    else:
+        if satellite < 1:
+            raise ValueError("satellite must be the number of a valid GOES" + \
+                             " satellite.")
+    # Check date input
+    if type(date) is not datetime.datetime:
+        if type(date) is str:
+            try: 
+                date = dateutil.parser.parse(date)
+            except TypeError:
+                raise TypeError("date must be a datetime object.")
+        else:
+            raise TypeError("date must be a datetime object.")
     # Check flux arrays are of same length.
     if len(longflux) != len(shortflux):
-        sys.exit("longflux and shortflux are not of same length.  Try again " +
-                 "with longflux an shortflux of same length.")
-    # Check satellite is an int and greater than zero
-    while type(satellite) is not int:
-        try:
-            satellite = int(satellite)
-        except ValueError:
-            print "Attention: satellite must be an integer.  Try again."
-            satellite = int(raw_input("Enter the number of the GOES " +
-                                      "satellite as an integer: "))
-        if type(satellite) is int and satellite < 1:
-            print "Attention: satellite must be greater than 0.  Try again."
-            satellite = raw_input("Enter GOES satellite number as integer "
-                                  "greater than 0: ")
-    # Ensure date is a datetime object or a string.
-    # If date is a string, convert it to a datetime object
-    while type(date) is not datetime.datetime and type(date) is not str:
-        print "Attention: date must be a datetime object or string.  Try again."
-        date = raw_input("Enter date as datetime object or string: ")
-    if type(date) is str:
-        date = dateutil.parser.parse(date)
-    # Ensure photospheric is a Boolean value
-    while type(photospheric) is not bool:
-        print "Attention: photospheric must be a boolean value."
-        photospheric = raw_input("Do you want to assume photospheric or " +
-                                 "coronal abundances? Enter True for " +
-                                 "photospheric and False for coronal.")
-    
-    # PREPARE DATA    
+        raise ValueError("longflux and shortflux must have same number of " + \
+                         "elements.")
+
+    # Prepare data
     # GOES 6 long channel flux before 1983-Jun-28 must be corrected by a
     # factor of 4.43/5.32
     if date < datetime.datetime(1983, 06, 28) and satellite == 6:
@@ -348,6 +355,17 @@ def goes_get_chianti_temp(fluxratio, satellite=8, photospheric=False):
     array([11.28295376, 11.28295376])
 
     """
+
+    # Check inputs are of correct type etc.
+    # Check fluxratio input
+    if type(fluxratio) is not np.ndarray or fluxratio.dtype != "float64":
+            raise TypeError("fluxratio must be a numpy array of type float64.")
+    # Check photospheric input
+    if type(photospheric) is not bool:
+        raise TypeError("photospheric must be True or False.  \n" +
+                        "False: assume coronal abundances (default).  \n" +
+                        "True: assume photosperic abundances.")
+    
     # Initialize lists to hold model data of flux ratio - temperature
     # relationship read in from csv file
     modeltemp = [ ] # modelled temperature is in log_10 sapce in units of MK
@@ -456,6 +474,19 @@ def goes_get_chianti_em(longflux, temp, satellite=8, photospheric=False):
 
     """
 
+    # Check inputs are of correct types
+    # Check longflux input
+    if type(longflux) is not np.ndarray or longflux.dtype != "float64":
+            raise TypeError("longflux must be a numpy array of type float64.")
+    # Check temp input
+    if type(temp) is not np.ndarray or temp.dtype != "float64":
+            raise TypeError("temp must be a numpy array of type float64.")
+    # Check photospheric input
+    if type(photospheric) is not bool:
+        raise TypeError("photospheric must be True or False.  \n" +
+                        "False: assume coronal abundances (default).  \n" +
+                        "True: assume photosperic abundances.")
+    
     # Initialize lists to hold model data of temperature - long channel
     # flux relationship read in from csv file.
     modeltemp = [ ] # modelled temperature is in log_10 sapce in units of MK
@@ -613,6 +644,14 @@ def calc_rad_loss(temp, em, obstime=None):
     
     """
 
+    # Check inputs are of correct types
+    # Check temp input
+    if type(temp) is not np.ndarray or temp.dtype != "float64":
+            raise TypeError("temp must be a numpy array of type float64.")
+    # Check em input
+    if type(em) is not np.ndarray or em.dtype != "float64":
+            raise TypeError("em must be a numpy array of type float64.")
+   
     # Initialize lists to hold model data of temperature - rad loss rate
     # relationship read in from csv file
     model_temp = [ ] # modelled temperature is in log_10 sapce in units of MK
@@ -636,21 +675,15 @@ def calc_rad_loss(temp, em, obstime=None):
     # If obstime keyword giving measurement times is set, calculate
     # radiative losses intergrated over time.
     if obstime is not None:
-        try:
-            timetype = obstime.dtype.type
-        except AttributeError:
-            timetype = None
-        if timetype is np.datetime64:
-            dt = time_intervals(obstime)
-            rad_loss_int = np.sum(rad_loss_rate*dt)
-            rad_loss_out = {"temperature":temp, "em":em,
-                            "rad_loss_rate":rad_loss_rate, "time": obstime,
-                            "rad_loss_int":rad_loss_int}
-        else:
-             print "Warning: obstime must be of type datetime64.  \n" + \
-               "         Integrated radiated losses will not be calculated."
-             rad_loss_out = {"temperature":temp, "em":em,
-                             "rad_loss_rate":rad_loss_rate}
+        dt = time_intervals(obstime)
+        # Check that times are in chronological order
+        if np.min(dt) =< 0:
+            raise InputError("times in obstime must be in " + \
+                             "chronological order.")
+        rad_loss_int = np.sum(rad_loss_rate*dt)
+        rad_loss_out = {"temperature":temp, "em":em,
+                        "rad_loss_rate":rad_loss_rate, "time": obstime,
+                        "rad_loss_int":rad_loss_int}
     else:
         rad_loss_out = {"temperature":temp, "em":em,
                         "rad_loss_rate":rad_loss_rate}
@@ -797,6 +830,14 @@ def goes_lx(longflux, shortflux, obstime=None, date=None):
 
     """
 
+    # Check inputs are of correct type
+    # Check longflux input
+    if type(longflux) is not np.ndarray or longflux.dtype != "float64":
+            raise TypeError("longflux must be a numpy array of type float64.")
+    # Check shortflux input
+    if type(shortflux) is not np.ndarray or shortflux.dtype != "float64":
+            raise TypeError("shortflux must be a numpy array of type float64.")
+    
     # Calculate X-ray luminosities
     longlum = goes_luminosity(longflux, date=date)
     shortlum = goes_luminosity(shortflux, date=date)
@@ -804,24 +845,17 @@ def goes_lx(longflux, shortflux, obstime=None, date=None):
     # If obstime keyword giving measurement times is set, calculate
     # total energy radiated in the GOES bandpasses during the flare.
     if obstime is not None:
-        try:
-            timetype = obstime.dtype.type
-        except AttributeError:
-            timetype = None
-        if timetype is np.datetime64:
-            dt = time_intervals(obstime)
-            longlum_int = np.sum(longlum*dt)
-            shortlum_int = np.sum(shortlum*dt)
-            lx_out = {"longflux":longflux, "shortflux":shortflux,
-                      "time":obstime, "longlum":longlum, "shortlum":shortlum,
-                      "longlum_int":longlum_int, "shortlum_int":shortlum_int,
-                      "dt":dt}
-        else:
-             print "Warning: obstime must be of type datetime64.  \n" + \
-               "         Integrated X-ray radiated losses will not be " + \
-               "calculated."
-             lx_out = {"longflux":longflux, "shortflux":shortflux,
-                       "longlum":longlum, "shortlum":shortlum,}
+        dt = time_intervals(obstime)
+        # Check that times are in chronological order
+        if np.min(dt) =< 0:
+            raise InputError("times in obstime must be in " + \
+                             "chronological order.")
+        longlum_int = np.sum(longlum*dt)
+        shortlum_int = np.sum(shortlum*dt)
+        lx_out = {"longflux":longflux, "shortflux":shortflux,
+                  "time":obstime, "longlum":longlum, "shortlum":shortlum,
+                  "longlum_int":longlum_int, "shortlum_int":shortlum_int,
+                  "dt":dt}
     else:
         lx_out = {"longflux":longflux, "shortflux":shortflux,
                   "longlum":longlum, "shortlum":shortlum,}
@@ -865,8 +899,12 @@ def goes_luminosity(flux, date=None):
     array([  1.98650769e+25,   1.98650769e+25])
 
     """
-    return 4 * np.pi * \
-      (sun.constants.au.value * sun.sunearth_distance(t=date))**2 * 1e7 * flux
+    
+    if type(flux) is not np.ndarray or flux.dtype != "float64":
+            raise TypeError("fluxratio must be a numpy array of type float64.")
+    else:
+        return 4 * np.pi * (sun.constants.au.value *
+                            sun.sunearth_distance(t=date))**2 * 1e7 * flux
 
 def time_intervals(obstime):
     """
@@ -911,10 +949,14 @@ def time_intervals(obstime):
     array([ 1.000,  2.000,  2.000,  2.000,  2.000,  1.000])
 
     """
-
-    obstime = obstime.astype("datetime64[ms]")  # convert to units of ms
-    dt = (obstime[2:]-obstime[:-2]) / 2
-    dt = np.insert(dt, 0, (obstime[1]-obstime[0])/2)
-    dt = np.append(dt, (obstime[-1]-obstime[-2])/2)
-    dt = dt.astype(float) / 1e3 # convert from [ms] to [s]
-    return dt
+    if type(obstime) is not np.ndarray or fluxratio.dtype != "datetime64":
+        raise TypeError("obstime must be a numpy array of type datetime64.")
+    elif len(obstime) < 3:
+        raise InputError("obstime must have 3 or more elements")
+    else:
+        obstime = obstime.astype("datetime64[ms]")  # convert to units of ms
+        dt = (obstime[2:]-obstime[:-2]) / 2
+        dt = np.insert(dt, 0, (obstime[1]-obstime[0])/2)
+        dt = np.append(dt, (obstime[-1]-obstime[-2])/2)
+        dt = dt.astype(float) / 1e3 # convert from [ms] to [s]
+        return dt
