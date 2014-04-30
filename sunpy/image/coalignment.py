@@ -15,7 +15,7 @@ from sunpy.map.mapbase import GenericMap
 __all__ = ['calculate_shift', 'clip_edges', 'calculate_clipping',
            'match_template_to_layer', 'find_best_match_location',
            'get_correlation_shifts', 'parabolic_turning_point',
-           'repair_2dimage_nonfinite', 'mapcube_coalign_by_match_template']
+           'repair_image_nonfinite', 'mapcube_coalign_by_match_template']
 
 
 def _default_fmap_function(data):
@@ -31,12 +31,12 @@ def calculate_shift(this_layer, template):
 
     Parameters
     ----------
-    template : ndarray
-        A numpy array of size (N, M) where N < ny and M < nx.
-
     this_layer : ndarray
         A numpy array of size (ny, nx), where the first two dimensions are
         spatial dimensions.
+
+    template : ndarray
+        A numpy array of size (N, M) where N < ny and M < nx.
 
     Returns
     -------
@@ -45,8 +45,8 @@ def calculate_shift(this_layer, template):
         to the input array.
     """
     # Repair any NANs, Infs, etc in the layer and the template
-    this_layer = repair_2dimage_nonfinite(this_layer)
-    template = repair_2dimage_nonfinite(template)
+    this_layer = repair_image_nonfinite(this_layer)
+    template = repair_image_nonfinite(template)
 
     # Calculate the correlation array matching the template to this layer
     corr = match_template_to_layer(this_layer, template)
@@ -92,10 +92,30 @@ def clip_edges(data, yclips, xclips):
 # input set of pixel shifts y and x
 #
 def calculate_clipping(y, x):
-    """Return the upper and lower clipping values for the y and x directions
-    an input set of pixel shifts y and x. Positive pixel values will clip off
-    the datacube at the upper end of the range.  Negative values will clip off
-    values at the lower end of the range.  
+    """Return the upper and lower clipping values for the y and x directions.
+
+    Parameters
+    ----------
+    y : ndarray
+        An array of pixel shifts in the y-direction for an image.
+
+    x : ndarray
+        An array of pixel shifts in the x-direction for an image.
+
+    Returns
+    -------
+    clipping : ([int, int], [int, int])
+        The number of (integer) pixels that need to be clipped off at each
+        edge in an image. The first element in the tuple is a list that gives
+        the number of pixels to clip in the y-direction.  The first element in
+        that list is the number of rows to clip at the lower edge of the image
+        in y.  The clipped image has "clipping[0][0]" rows removed from its
+        lower edge when compared to the original image.  The second element in
+        that list is the number of rows to clip at the upper edge of the image
+        in y.  The clipped image has "clipping[0][1]" rows removed from its
+        upper edge when compared to the original image.  The second element in
+        the "clipping" tuple applies similarly to the x-direction (image
+        columns).
     """
     return [_lower_clip(y), _upper_clip(y)], [_lower_clip(x), _upper_clip(x)]
 
@@ -132,11 +152,11 @@ def match_template_to_layer(layer, template):
 
     Parameters
     ----------
-    template : ndarray
-        A numpy array of size (N, M) where N < ny and M < nx.
-
     layer : ndarray
         A numpy array of size (ny, nx).
+
+    template : ndarray
+        A numpy array of size (N, M) where N < ny and M < nx.
 
     Returns
     -------
@@ -149,7 +169,7 @@ def match_template_to_layer(layer, template):
 
 def find_best_match_location(corr):
     """Calculate an estimate of the location of the peak of the correlation
-    result.
+    result in image pixels.
 
     Parameters
     ----------
@@ -159,7 +179,8 @@ def find_best_match_location(corr):
     Returns
     -------
     shift : tuple
-        The shift amounts (y, x).  Subpixel values are possible.
+        The shift amounts (y, x) in image pixels.  Subpixel values are
+        possible.
     """
     # Get the index of the maximum in the correlation function
     ij = np.unravel_index(np.argmax(corr), corr.shape)
@@ -194,7 +215,7 @@ def get_correlation_shifts(array):
     Returns
     -------
     peakloc : tuple
-        The (y, x) location of the peak of a parabolic fit.
+        The (y, x) location of the peak of a parabolic fit, in image pixels.
     """
     # Check input shape
     ny = array.shape[0]
@@ -225,14 +246,16 @@ def get_correlation_shifts(array):
 
 def parabolic_turning_point(y):
     """Find the location of the turning point for a parabola
-    f(x) = ax^2 + bx + c.  The maximum is located at x0 = -b / 2a .  Assumes
+    y(x) = ax^2 + bx + c, given input values y(-1), y(0), y(1).
+    The maximum is located at x0 = -b / 2a .  Assumes
     that the input array represents an equally spaced sampling at the
-    locations f(-1), f(0) and f(1).
+    locations y(-1), y(0) and y(1).
 
     Parameters
     ----------
     y : ndarray
-        An one dimensional numpy array of shape 3.
+        A one dimensional numpy array of shape 3 with entries that sample the
+        parabola at -1, 0, and 1.
 
     Returns
     -------
@@ -244,13 +267,28 @@ def parabolic_turning_point(y):
     return numerator / denominator
 
 
-def repair_2dimage_nonfinite(z):
-    """Replace all the nonfinite entries in a 2d image with the local mean.
-    There is probably a much smarter way of doing this.
+def repair_image_nonfinite(image):
+    """Return a new image in which all the nonfinite entries of the original
+    image have been replaced by the local mean.
+
+    Parameters
+    ----------
+    image : ndarray
+        A two-dimensional ndarray.
+
+    Returns
+    -------
+    repaired_image : ndarray
+        A two-dimensional ndarray of the same shape as the input that has all
+        the non-finite entries replaced by a local mean.  The algorithm
+        repairs one non-finite entry at every pass.  At each pass, the next
+        non-finite value is replaced by the mean of its finite valued nearest
+        neighbours.
     """
-    nx = z.shape[1]
-    ny = z.shape[0]
-    bad_index = np.where(np.logical_not(np.isfinite(z)))
+    repaired_image = deepcopy(image)
+    nx = repaired_image.shape[1]
+    ny = repaired_image.shape[0]
+    bad_index = np.where(np.logical_not(np.isfinite(repaired_image)))
     while bad_index[0].size != 0:
         by = bad_index[0][0]
         bx = bad_index[1][0]
@@ -271,17 +309,17 @@ def repair_2dimage_nonfinite(z):
 
         # Get the sub array around the bad index, and find the local mean
         # ignoring nans
-        subarray = z[y - 1: y + 2, x - 1: x + 2]
-        z[by, bx] = np.nanmean(subarray * np.isfinite(subarray))
-        bad_index = np.where(np.logical_not(np.isfinite(z)))
-    return z
+        subarray = repaired_image[y - 1: y + 2, x - 1: x + 2]
+        repaired_image[by, bx] = np.mean(subarray[np.isfinite(subarray)])
+        bad_index = np.where(np.logical_not(np.isfinite(repaired_image)))
+    return repaired_image
 
 
 # Coalignment by matching a template
-def mapcube_coalign_by_match_template(mc, layer_index=0, clip=True,
-                               template=None, func=_default_fmap_function,
-                               apply_displacements=None,
+def mapcube_coalign_by_match_template(mc, template=None, layer_index=0,
+                               func=_default_fmap_function, clip=True,
                                return_displacements_only=False,
+                               apply_displacements=None,
                                with_displacements=False):
     """Co-register the layers in a mapcube according to a template taken from
     that mapcube.  This method REQUIRES that scikit-image be installed.
@@ -290,17 +328,22 @@ def mapcube_coalign_by_match_template(mc, layer_index=0, clip=True,
     checking this is to animate the original mapcube, animate the coaligned
     mapcube, and compare the differences you see to the calculated shifts.
 
+
     Parameters
     ----------
     mc : sunpy.map.MapCube
         A mapcube of shape (ny, nx, nt), where nt is the number of layers in
         the mapcube.
 
-    layer_index : integer
-        The template is assumed to refer to the image in the mapcube given by
-        the value of "layer_index".  Displacements are assumed to be relative
-        to this layer.  The displacements of the template relative to this
-        layer are therefore (0, 0).
+    template : {None | sunpy.map.Map | ndarray}
+        The template used in the matching.  If an ndarray is passed, the
+        ndarray has to have two dimensions.
+
+    layer_index : int
+        The template is assumed to refer to the map in the mapcube indexed by
+        the value of "layer_index".  Displacements of all maps in the mapcube
+        are assumed to be relative to this layer.  The displacements of the
+        template relative to this layer are therefore (0, 0).
 
     func : function
         A function which is applied to the data values before the coalignment
@@ -316,26 +359,22 @@ def mapcube_coalign_by_match_template(mc, layer_index=0, clip=True,
         If True, thenclip off x, y edges in the datacube that are potentially
         affected by edges effects.
 
-    template : {None | sunpy.map.Map | ndarray}
-        The template used in the matching.  If an ndarray is passed, the
-        ndarray has to have two dimensions.
-
     return_displacements_only : bool
         If True return ONLY the x and y displacements applied to the input
         data in units of arcseconds.  The return value is a dictionary of the
         form {"x": xdisplacement, "y": ydisplacement}.
-
-    with_displacements : bool
-        If True, return the x and y displacements applied to the input data in
-        the same format as that returned using the return_displacements_only
-        option, along with the coaligned mapcube.  The format of the return is
-        (mapcube, displacements).
 
     apply_displacements : {None | dict}
         If not None, then use the displacements supplied by the user.  Must be
         in the same format as that returned using the
         return_displacements_only option.  Can be used when you want to appl
         the same displacements to multiple mapcubes.
+
+    with_displacements : bool
+        If True, return the x and y displacements applied to the input data in
+        the same format as that returned using the return_displacements_only
+        option, along with the coaligned mapcube.  The format of the return is
+        (mapcube, displacements).
 
     Returns
     -------
