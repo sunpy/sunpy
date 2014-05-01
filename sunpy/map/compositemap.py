@@ -159,14 +159,14 @@ class CompositeMap(object):
         else:
             return self._maps[index].cmap
 
-    def get_norm(self, index=None):
-        """Gets the normalization for a map within the
+    def get_mpl_color_normalizer(self, index=None):
+        """Gets the color normalizer for a map within the
         composite.
         """
         if index is None:
-            return [_map.norm for _map in self._maps]
+            return [_map.mpl_color_normalizer for _map in self._maps]
         else:
-            return self._maps[index].norm
+            return self._maps[index].mpl_color_normalizer
             
     def get_levels(self, index=None):
         """Gets the list of contour levels for a map within the
@@ -177,9 +177,9 @@ class CompositeMap(object):
         else:
             return self._maps[index].levels
 
-    def set_norm(self, index, norm):
-        """Sets the norm for a layer in the composite image"""
-        self._maps[index].norm = norm
+    def set_mpl_color_normalizer(self, index, norm):
+        """Sets the normalizer for a layer in the composite image."""
+        self._maps[index].mpl_color_normalizer = norm
 
     def set_levels(self, index, levels, percent=False):
         """Sets the contour levels for a layer in the composite image"""
@@ -323,7 +323,7 @@ class CompositeMap(object):
                 "origin": "lower",
                 "extent": m.xrange + m.yrange,
                 "cmap": m.cmap,
-                "norm": m.norm,
+                "norm": m.mpl_color_normalizer,
                 "alpha": m.alpha,
                 "zorder": m.zorder,
             }

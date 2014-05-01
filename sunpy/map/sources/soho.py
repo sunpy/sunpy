@@ -64,7 +64,7 @@ class EITMap(GenericMap):
         """Determines if header corresponds to an EIT image"""
         return header.get('instrume') == 'EIT'
 
-    def _get_norm(self):
+    def _get_mpl_normalizer(self):
         """Returns a Normalize object to be used with EIT data"""
         # byte-scaled images have most likely already been scaled
         # THIS WARNING IS KNOWN TO APPLY TO 0.3 code only.

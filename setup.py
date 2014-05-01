@@ -112,10 +112,15 @@ def install(setup): #pylint: disable=W0621
             'numpy>1.7.1',
             'astropy>=0.3.0',
             'scipy',
-            'pandas>=0.12.1',
+            'pandas>=0.12.0',
             'matplotlib>=1.1',
             'sqlalchemy',
         ],
+        extras_require={
+            'net': ["suds", "beautifulsoup4"],
+            'database': ["sqlalchemy"],
+            'all': ["suds", "beautifulsoup4", "sqlalchemy"]
+        },
         license="BSD",
         long_description="\n".join(DOCLINES[2:]),
         maintainer="SunPy Developers",
