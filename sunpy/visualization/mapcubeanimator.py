@@ -43,18 +43,19 @@ class MapCubeAnimator(imageanimator.BaseFuncAnimator):
         self.mapcube = mapcube
         self.annotate = annotate
         slider_functions = [self.updatefig]
-        slider_ranges = [[0,len(mapcube._maps)]]
+        slider_ranges = [[0,len(mapcube.maps)]]
 
-        imageanimator.BaseFuncAnimator.__init__(self, mapcube._maps, slider_functions,
+        imageanimator.BaseFuncAnimator.__init__(self, mapcube.maps, slider_functions,
                                         slider_ranges, **kwargs)
 
-        self._annotate_plot(0)
+        if annotate:
+            self._annotate_plot(0)
 
     def updatefig(self, val, im, slider):
         i = int(val)
         im.set_array(self.data[i].data)
         im.set_cmap(self.mapcube[i].cmap)
-        im.set_norm(self.mapcube[i].norm)
+        im.set_norm(self.mapcube[i].mpl_color_normalizer)
         # Having this line in means the plot will resize for non-homogenous
         # maps. However it also means that if you zoom in on the plot bad
         # things happen.

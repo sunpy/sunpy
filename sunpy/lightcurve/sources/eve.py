@@ -3,6 +3,7 @@
 from __future__ import absolute_import
 
 import os
+import numpy
 from datetime import datetime  
 
 import matplotlib.pyplot as plt
@@ -10,6 +11,7 @@ from pandas.io.parsers import read_csv
 from os.path import basename
 
 from sunpy.lightcurve import LightCurve
+from sunpy.util.odict import OrderedDict
 
 __all__ = ['EVELightCurve']
 
@@ -92,22 +94,37 @@ class EVELightCurve(LightCurve):
     @staticmethod
     def _parse_level_0cs(fp):
         """Parses and EVE Level 0CS file"""
+	is_missing_data = False      #boolean to check for missing data
+	missing_data_val = numpy.nan
         header = []
         fields = []
         line = fp.readline()
-        header.append(line)
         # Read header at top of file
         while line.startswith(";"):
             header.append(line)
+	    if '; Missing data:' in line :     
+		    is_missing_data = True
+		    missing_data_val = line.split(':')[1].strip()
+
+		   
             line = fp.readline()
+	
+	meta = OrderedDict()
+	for hline in header :
+		if hline == '; Format:\n' or hline == '; Column descriptions:\n':
+			continue
+		elif ('Created' in hline) or ('Source' in hline):
+			meta[hline.split(':',1)[0].replace(';',' ').strip()] = hline.split(':',1)[1].strip()
+		elif ':' in hline :
+			meta[hline.split(':')[0].replace(';',' ').strip()] = hline.split(':')[1].strip()
 
         fieldnames_start = False
-        for l in header:
-            if l.startswith("; Format:"):
+        for hline in header:
+            if hline.startswith("; Format:"):
                 fieldnames_start = False
             if fieldnames_start:
-                fields.append(l.split(":")[0].replace(';', ' ').strip())        
-            if l.startswith("; Column descriptions:"):
+                fields.append(hline.split(":")[0].replace(';', ' ').strip())        
+            if hline.startswith("; Column descriptions:"):
                 fieldnames_start = True
 
         # Next line is YYYY DOY MM DD        
@@ -125,5 +142,8 @@ class EVELightCurve(LightCurve):
         parser = lambda x: datetime(year, month, day, int(x[0:2]), int(x[2:4]))
 
         data = read_csv(fp, sep="\s*", names=fields, index_col=0, date_parser=parser, header = None)
+	if is_missing_data :   #If missing data specified in header
+		data[data == float(missing_data_val)] = numpy.nan
+	
         #data.columns = fields
-        return header, data
+        return meta, data
