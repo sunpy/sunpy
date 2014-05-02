@@ -25,17 +25,17 @@ def createEIT(request):
 # EIT Tests
 def test_fitstoEIT(createEIT):
     """Tests the creation of EITMap using FITS."""
-    assert (isinstance(createEIT, EITMap) == True)
+    assert isinstance(createEIT, EITMap)
 
 def test_is_datasource_for(createEIT):
     """Test the is_datasource_for method of EITMap.
     Note that header data to be provided as an argument
     can be a MapMeta object."""
-    assert (createEIT.is_datasource_for(createEIT.data, createEIT.meta) == True)
+    assert createEIT.is_datasource_for(createEIT.data, createEIT.meta)
 
 def test_observatory(createEIT):
     """Tests the observatory property of the EITMap object."""
-    assert(createEIT.observatory == "SOHO")
+    assert createEIT.observatory == "SOHO"
 
 def test_measurement(createEIT):
     """Tests the measurement property of the EITMap object."""
@@ -48,11 +48,11 @@ def test_normalizer(createEIT):
     lognorm = createEIT._get_mpl_normalizer()
     eit = createEIT
     if(eit.data.dtype == np.float32):
-        assert (lognorm == None)
+        assert lognorm == None
     else:
-        assert (isinstance(lognorm, colors.LogNorm) == True)
-        assert (lognorm.vmin == 1)
-        assert (lognorm.vmax == (min(eit.max(), eit.mean() + 5 * eit.std())))
+        assert isinstance(lognorm, colors.LogNorm)
+        assert lognorm.vmin == 1
+        assert lognorm.vmax == (min(eit.max(), eit.mean() + 5 * eit.std()))
         
      
     

@@ -21,32 +21,32 @@ xrt = Map(fitspath)
 # XRT Tests
 def test_fitstoXRT():
     """Tests the creation of XRTMap using FITS."""
-    assert (isinstance(xrt, XRTMap) == True)
+    assert isinstance(xrt, XRTMap)
 
 def test_is_datasource_for():
     """Test the is_datasource_for method of XRTMap.
     Note that header data to be provided as an argument
     can be a MapMeta object."""
-    assert (xrt.is_datasource_for(xrt.data, xrt.meta) == True)
+    assert xrt.is_datasource_for(xrt.data, xrt.meta)
 
 def test_observatory():
     """Tests the observatory property of the XRTMap object."""
-    assert(xrt.observatory == "Hinode")
+    assert xrt.observatory == "Hinode"
 
 def test_measurement():
     """Tests the measurement property of the XRTMap object."""
-    assert (xrt.measurement == "")
+    assert xrt.measurement == ""
 
 def test_normalizer():
     """Tests the creation of the Normalizer object,
     as well as its properties."""
     norm = xrt._get_mpl_normalizer()
     if(xrt.data.dtype == np.uint8):
-        assert (norm == None)
+        assert norm == None
     else:
-        assert (isinstance(norm, colors.Normalize) == True)
-        assert (norm.vmin == (max(0, xrt.mean() - 3 * xrt.std())))
-        assert (norm.vmax == (min(xrt.max(), xrt.mean() + 3 * xrt.std())))
+        assert isinstance(norm, colors.Normalize)
+        assert norm.vmin == (max(0, xrt.mean() - 3 * xrt.std()))
+        assert norm.vmax == (min(xrt.max(), xrt.mean() + 3 * xrt.std()))
 
 def test_wheel_measurements():
     """Tests the filter_wheel_measurements objects present

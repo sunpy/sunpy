@@ -19,18 +19,18 @@ mdi = Map(fitspath)
 # MDI Tests
 def test_fitstoMDI():
     """Tests the creation of MDIMap using FITS."""
-    assert (isinstance(mdi, MDIMap) == True)
+    assert isinstance(mdi, MDIMap)
 
 def test_is_datasource_for():
     """Test the is_datasource_for method of MDIMap.
     Note that header data to be provided as an argument
     can be a MapMeta object."""
-    assert (mdi.is_datasource_for(mdi.data, mdi.meta) == True)
+    assert mdi.is_datasource_for(mdi.data, mdi.meta)
 
 def test_observatory():
     """Tests the observatory property of the MDIMap object."""
-    assert(mdi.observatory == "SOHO")
+    assert mdi.observatory == "SOHO"
 
 def test_measurement():
     """Tests the measurement property of the MDIMap object."""
-    assert (mdi.measurement == "continuum")
+    assert mdi.measurement == "continuum"
