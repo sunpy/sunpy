@@ -1,8 +1,13 @@
-import unittest
+import pytest
 import datetime
 from .scrapper import Scrapper
 
-class ScrapperTests(unittest.TestCase):
+pattern_examples = [
+    ('%b%y', datetime.timedelta(days=31)),
+    ('%m%y', datetime.timedelta(days=31)),
+    ]
+
+class ScrapperTests:
 
     def testDirectoryDatePattern(self):
         s = Scrapper('%Y/%m/%d/%Y%m%d_%H%M%S_59.fit.gz')
@@ -33,6 +38,10 @@ class ScrapperTests(unittest.TestCase):
         startdate = datetime.datetime(2009,12,30)
         enddate = datetime.datetime(2010,1,3)
         self.failIf(s.range(startdate, enddate) == directory_list)
+    @pytest.mark.parametrize('pattern, mintime', pattern_examples)
+    def test_smallerPattern(self):
+        assert  mintime == Scrapper('')._smallerPattern(pattern)
+     
 # check when there's not directory structure (no /s)         
                         
 
