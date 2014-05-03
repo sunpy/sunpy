@@ -7,3 +7,9 @@ def test_gaussian():
     data = map.Map(AIA_171_IMAGE).data
     new_image = multiscale_gaussian(data)
     assert new_image.shape == data.shape
+
+
+def test_gaussian_weights():
+    data = map.Map(AIA_171_IMAGE).data
+    new_image = multiscale_gaussian(data, weights=[1, 2, 3, 4, 5, 6])
+    assert new_image.shape == data.shape
