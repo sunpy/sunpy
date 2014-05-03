@@ -1,9 +1,3 @@
-"""
-DOES STUFF TO YOUR IMAGE.
-
-IT WILL NEVER BE THE SAME EVERY AGAIN (UNLESS YOU MAKE A COPY)
-"""
-
 from __future__ import division
 import itertools
 import numpy as np
