@@ -147,6 +147,7 @@ Bug Fixes:
     * Some documentation fixes
     * fix file paths to use os.path.join for platform independance.
 
+ * Added a normalization module 
 
 0.4.0
 -----
