@@ -22,7 +22,7 @@ def resample_method(method):
 	assert resample_meta((2056, 2056), method, True, True) == (2056, 2056)
 
 def test_resample_neighbor():
-	resample_method('neighbor')
+    resample_method('neighbor')
 
 def test_resample_nearest():
 	resample_method('nearest')
