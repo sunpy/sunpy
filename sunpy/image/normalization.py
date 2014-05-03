@@ -50,6 +50,7 @@ def multiscale_gaussian(data, sigma=[1.25, 2.5, 5, 10, 20, 40], k=0.7,
     For most purposes, the weights can be set
     equal for all scales.
     """
+
     if not weights:
         weights = np.ones(len(sigma))
 
