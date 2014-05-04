@@ -195,3 +195,28 @@ class TimeRange:
         # Only a timedelta object is acceptable here
         self.t1 = self.t1 + t_backwards
         self.t2 = self.t2 + t_forwards
+    
+    def isInRange(self, time):
+        """
+        Checks whether the given time lies within this range.
+        Both limits are inclusive (i.e. isInRange(t1) and isInRange(t2) always return true)
+        
+        Parameters
+        ----------
+        time: datetime or str
+            The time to be checked
+        
+        Returns
+        -------
+        true if time lies between t1 and t2, false otherwise.
+        
+        Example
+        -------
+        isInRange('2014/05/04 13:54')
+        """
+        if isinstance(time, str):
+            t = parse_time(time)
+        else:
+            t = time
+        
+        return t >= self.t1 and t <= self.t2
