@@ -85,12 +85,12 @@ class TimeRange:
         t2 = self.t2.strftime(TIME_FORMAT)
         center = self.center().strftime(TIME_FORMAT)
 
-        return ('\tStart:'.ljust(11) + t1 +
-                '\n\tEnd:'.ljust(12) + t2 +
-                '\n\tCenter:'.ljust(12) + center +
-                '\n\tDuration:'.ljust(12) + str(self.days()) + ' days or' +
-                '\n\t'.ljust(12) +  str(self.minutes()) + ' minutes or' +
-                '\n\t'.ljust(12) +  str(self.seconds()) + ' seconds' +
+        return ('    Start:'.ljust(11) + t1 +
+                '\n    End:'.ljust(12) + t2 +
+                '\n    Center:'.ljust(12) + center +
+                '\n    Duration:'.ljust(12) + str(self.days()) + ' days or' +
+                '\n    '.ljust(12) +  str(self.minutes()) + ' minutes or' +
+                '\n    '.ljust(12) +  str(self.seconds()) + ' seconds' +
                 '\n')
 
     def center(self):
@@ -196,7 +196,7 @@ class TimeRange:
         self.t1 = self.t1 + t_backwards
         self.t2 = self.t2 + t_forwards
     
-    def isInRange(self, time):
+    def __contains__(self, time):
         """
         Checks whether the given time lies within this range.
         Both limits are inclusive (i.e. isInRange(t1) and isInRange(t2) always return true)
@@ -214,9 +214,7 @@ class TimeRange:
         -------
         isInRange('2014/05/04 13:54')
         """
-        if isinstance(time, str):
-            t = parse_time(time)
-        else:
-            t = time
+        t = parse_time(time)
+       
         
         return t >= self.t1 and t <= self.t2
