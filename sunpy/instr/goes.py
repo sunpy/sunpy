@@ -388,6 +388,14 @@ def goes_get_chianti_temp(fluxratio, satellite=8, photospheric=False):
     modeltemp = np.array(modeltemp)
     modelratio = np.array(modelratio)
 
+    # Ensure input values of flux ratio are within limits of model table
+    if np.min(fluxratio) < np.min(modelratio) or \
+      np.max(fluxratio) > np.max(modelratio):
+        raise ValueError("For GOES " + str(satellite) + ", all values in " +
+                         "fluxratio input must be within the range " +
+                         str(np.min(modelratio)) + " - " +
+                         str(np.max(modelratio)))
+
     # Perform spline fit to model data to get temperatures for input
     # values of flux ratio
     spline = interpolate.splrep(modelratio, modeltemp, s=0)
@@ -508,6 +516,19 @@ def goes_get_chianti_em(longflux, temp, satellite=8, photospheric=False):
             modelflux.append(float(row[label]))
     modeltemp = np.array(modeltemp)
     modelflux = np.array(modelflux)
+
+    # Ensure input values of flux ratio are within limits of model table
+    if np.min(longflux) < np.min(modelflux) or \
+      np.max(longflux) > np.max(modelflux):
+        raise ValueError("For GOES " + str(satellite) +
+                         ", all values in longflux must be within the range " +
+                         str(np.min(modelflux)) + " - " +
+                         str(np.max(modelflux)) + " W/m**2")
+    if np.min(np.log10(temp)) < np.min(modeltemp) or \
+      np.max(np.log10(temp)) > np.max(modeltemp):
+        raise ValueError("All values in temp must be within the range " +
+                         str(np.min(10**modeltemp)) + " - " +
+                         str(np.max(10**modeltemp)) + " MK.")
 
     # Perform spline fit to model data
     spline = interpolate.splrep(modeltemp, modelflux, s=0)
@@ -654,7 +675,7 @@ def calc_rad_loss(temp, em, obstime=None):
    
     # Initialize lists to hold model data of temperature - rad loss rate
     # relationship read in from csv file
-    model_temp = [ ] # modelled temperature is in log_10 sapce in units of MK
+    modeltemp = [ ] # modelled temperature is in log_10 sapce in units of MK
     model_loss_rate = [ ]
 
     # Read data from csv file into lists, being sure to skip commented
@@ -663,13 +684,19 @@ def calc_rad_loss(temp, em, obstime=None):
         startline = dropwhile(lambda l: l.startswith("#"), csvfile)
         csvreader = csv.DictReader(startline, delimiter=";")
         for row in csvreader:
-            model_temp.append(float(row["temp_K"]))
+            modeltemp.append(float(row["temp_K"]))
             model_loss_rate.append(float(row["rad_loss_rate_per_em"]))
-    model_temp = np.array(model_temp)
+    modeltemp = np.array(modeltemp)
     model_loss_rate = np.array(model_loss_rate)
+    # Ensure input values of flux ratio are within limits of model table
+    if np.min(temp*1e6) < np.min(modeltemp) or \
+      np.max(temp*1e6) > np.max(modeltemp):
+        raise ValueError("All values in temp must be within the range " +
+                         str(np.min(modeltemp/1e6)) + " - " +
+                         str(np.max(modeltemp/1e6)) + " MK.")
     # Perform spline fit to model data to get temperatures for input
     # values of flux ratio
-    spline = interpolate.splrep(model_temp, model_loss_rate, s=0)
+    spline = interpolate.splrep(modeltemp, model_loss_rate, s=0)
     rad_loss_rate = em * interpolate.splev(temp*1e6, spline, der=0)
 
     # If obstime keyword giving measurement times is set, calculate
@@ -677,8 +704,8 @@ def calc_rad_loss(temp, em, obstime=None):
     if obstime is not None:
         dt = time_intervals(obstime)
         # Check that times are in chronological order
-        if np.min(dt) =< 0:
-            raise InputError("times in obstime must be in " + \
+        if np.min(dt) <= 0:
+            raise InputError("times in obstime must be in " +
                              "chronological order.")
         rad_loss_int = np.sum(rad_loss_rate*dt)
         rad_loss_out = {"temperature":temp, "em":em,
@@ -847,7 +874,7 @@ def goes_lx(longflux, shortflux, obstime=None, date=None):
     if obstime is not None:
         dt = time_intervals(obstime)
         # Check that times are in chronological order
-        if np.min(dt) =< 0:
+        if np.min(dt) <= 0:
             raise InputError("times in obstime must be in " + \
                              "chronological order.")
         longlum_int = np.sum(longlum*dt)
