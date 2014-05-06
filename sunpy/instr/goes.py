@@ -942,8 +942,8 @@ def check_float(test, varname=None):
     """
     if type(varname) is not str:
         varname = "This variable"
-    if type(test) is not np.ndarray or (test.dtype != "float64" and \
-      test.dtype != "float32" and test.dtype != "float16"):
+    if type(test) is not np.ndarray or (test.dtype.type is not np.float64 and \
+      test.dtype.type is not np.float32 and test.dtype.type is not np.float16):
         raise TypeError(varname + " must be a numpy array of type float.")
 
 def check_goessat(test, varname=None):
@@ -1035,7 +1035,7 @@ def check_datetime64(test, varname=None):
     """
     if type(varname) is not str:
         varname = "This variable"
-    if type(test) is not np.ndarray or test.dtype != "datetime64":
+    if type(test) is not np.ndarray or test.dtype.type is not np.datetime64:
         raise TypeError(varname + " must be a numpy array of type datetime64.")
     
 def check_goeslc(test, varname=None):
