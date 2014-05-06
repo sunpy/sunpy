@@ -212,8 +212,8 @@ def goes_chianti_tem(longflux, shortflux, satellite=8,
 
     """
     # CHECK INPUTS ARE CORRECT
-    check_float64(longflux, varname="longflux") # Check longflux type
-    check_float64(shortflux, varname="shortflux") # Check shortflux type
+    check_float(longflux, varname="longflux") # Check longflux type
+    check_float(shortflux, varname="shortflux") # Check shortflux type
     satellite = check_goessat(satellite) # Check satellite type
     date = check_date(date) # Check date type
     # Check flux arrays are of same length.
@@ -323,7 +323,7 @@ def goes_get_chianti_temp(fluxratio, satellite=8, photospheric=False):
     """
 
     # check inputs are correct
-    check_float64(fluxratio, varname="fluxratio") # Check fluxratio type
+    check_float(fluxratio, varname="fluxratio") # Check fluxratio type
     satellite = check_goessat(satellite) # Check satellite type
     check_photospheric(photospheric) # Check photospheric input
 
@@ -443,8 +443,8 @@ def goes_get_chianti_em(longflux, temp, satellite=8, photospheric=False):
     """
 
     # Check inputs are correct
-    check_float64(longflux, varname="longflux") # Check longflux input
-    check_float64(temp, varname="temp") # Check temp input
+    check_float(longflux, varname="longflux") # Check longflux input
+    check_float(temp, varname="temp") # Check temp input
     satellite = check_goessat(satellite) # Check satellite type
     check_photospheric(photospheric) # Check photospheric input
     # check input arrays are of same length
@@ -616,8 +616,8 @@ def calc_rad_loss(temp, em, obstime=None):
     """
 
     # Check inputs are correct
-    check_float64(temp, varname="temp") # Check temp type
-    check_float64(em, varname="em") # Check em type
+    check_float(temp, varname="temp") # Check temp type
+    check_float(em, varname="em") # Check em type
    
     # Initialize lists to hold model data of temperature - rad loss rate
     # relationship read in from csv file
@@ -805,8 +805,8 @@ def goes_lx(longflux, shortflux, obstime=None, date=None):
     """
 
     # Check inputs are of correct type
-    check_float64(longflux, varname="longflux") # Check longflux type
-    check_float64(shortflux, varname="shortflux") # Check shortflux type
+    check_float(longflux, varname="longflux") # Check longflux type
+    check_float(shortflux, varname="shortflux") # Check shortflux type
     
     # Calculate X-ray luminosities
     longlum = calc_xraylum(longflux, date=date)
@@ -872,7 +872,7 @@ def calc_xraylum(flux, date=None):
 
     """
     # Check inputs are correct
-    check_float64(flux)
+    check_float(flux)
     if type(date) is not None:
         date = check_date(date)
     # Calculate and return luminosity
@@ -934,7 +934,7 @@ def time_intervals(obstime):
         dt = dt.astype(float) / 1e3 # convert from [ms] to [s]
         return dt
 
-def check_float64(test, varname=None):
+def check_float(test, varname=None):
     """Raises Exception if input isn't numpy array of dtype float64.
 
     Parameters
@@ -945,8 +945,9 @@ def check_float64(test, varname=None):
     """
     if type(varname) is not str:
         varname = "This variable"
-    if type(test) is not np.ndarray or test.dtype != "float64":
-        raise TypeError(varname + " must be a numpy array of type float64.")
+    if type(test) is not np.ndarray or (test.dtype != "float64" and \
+      test.dtype != "float32" and test.dtype != "float16"):
+        raise TypeError(varname + " must be a numpy array of type float.")
 
 def check_goessat(test, varname=None):
     """Raises Exception if test isn't an int of a GOES satellite, i.e > 1.
@@ -1051,5 +1052,5 @@ def check_goeslc(test, varname=None):
     """
     if type(varname) is not str:
         varname = "This variable"
-    if type(goeslc) is not sunpy.lightcurve.sources.goes.GOESLightCurve:
+    if type(test) is not sunpy.lightcurve.sources.goes.GOESLightCurve:
         raise TypeError(varname + " must be GOESLightCurve object.")
