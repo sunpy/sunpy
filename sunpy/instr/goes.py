@@ -809,8 +809,8 @@ def goes_lx(longflux, shortflux, obstime=None, date=None):
     check_float64(shortflux, varname="shortflux") # Check shortflux type
     
     # Calculate X-ray luminosities
-    longlum = goes_luminosity(longflux, date=date)
-    shortlum = goes_luminosity(shortflux, date=date)
+    longlum = calc_xraylum(longflux, date=date)
+    shortlum = calc_xray(shortflux, date=date)
 
     # If obstime keyword giving measurement times is set, calculate
     # total energy radiated in the GOES bandpasses during the flare.
@@ -832,7 +832,7 @@ def goes_lx(longflux, shortflux, obstime=None, date=None):
     
     return lx_out
 
-def goes_luminosity(flux, date=None):
+def calc_xraylum(flux, date=None):
     """
     Calculates solar luminosity based on observed flux observed at 1AU.
 
