@@ -191,7 +191,7 @@ def goes_chianti_tem(longflux, shortflux, satellite=8,
     Measurements of short channel flux of less than 1e-10 W/m**2 or
     long channel flux less than 3e-8 W/m**2 are not considered good.
     Ratio values corresponding to suxh fluxes are set to 0.003.
-         
+
     References
     ----------
     .. [1] White, S. M., Thomas, R. J., & Schwartz, R. A. 2005, Sol. Phys.,
@@ -241,7 +241,7 @@ def goes_chianti_tem(longflux, shortflux, satellite=8,
             np.where(longflux_corrected < 3e-8)
     fluxratio = shortflux_corrected / longflux_corrected
     fluxratio[index] = 0.003
-    
+
     # FIND TEMPERATURE AND EMISSION MEASURE FROM FUNCTIONS BELOW
     temp = goes_get_chianti_temp(fluxratio, satellite=satellite,
                                  photospheric=photospheric)
@@ -286,7 +286,7 @@ def goes_get_chianti_temp(fluxratio, satellite=8, photospheric=False):
     Notes
     -----
     This function uses csv files representing the modelled relationship
-    between temperature of the soft X-ray emitting plasma and the 
+    between temperature of the soft X-ray emitting plasma and the
     short to long channel GOES flux ratio.  goes_chianti_temp_cor.csv
     is used when coronal abundances are assumed while
     goes_chianti_temp_pho.csv is used when photospheric abundances are
@@ -304,7 +304,7 @@ def goes_get_chianti_temp(fluxratio, satellite=8, photospheric=False):
 
     For correct preparation of GOES data before calculating temperature
     see goes_chianti_tem() (Notes section of docstring).
-         
+
     References
     ----------
     .. [1] White, S. M., Thomas, R. J., & Schwartz, R. A. 2005, Sol. Phys.,
@@ -329,8 +329,8 @@ def goes_get_chianti_temp(fluxratio, satellite=8, photospheric=False):
 
     # Initialize lists to hold model data of flux ratio - temperature
     # relationship read in from csv file
-    modeltemp = [ ] # modelled temperature is in log_10 space in units of MK
-    modelratio = [ ]
+    modeltemp = [] # modelled temperature is in log_10 space in units of MK
+    modelratio = []
     # Determine name of column in csv file containing model ratio values
     # for relevant GOES satellite
     label = "ratioGOES"+str(satellite)
@@ -347,7 +347,7 @@ def goes_get_chianti_temp(fluxratio, satellite=8, photospheric=False):
             modelratio.append(float(row[label]))
     modeltemp = np.array(modeltemp)
     modelratio = np.array(modelratio)
-    
+
     # Ensure input values of flux ratio are within limits of model table
     if np.min(fluxratio) < np.min(modelratio) or \
       np.max(fluxratio) > np.max(modelratio):
@@ -355,14 +355,14 @@ def goes_get_chianti_temp(fluxratio, satellite=8, photospheric=False):
                          "fluxratio input must be within the range " +
                          str(np.min(modelratio)) + " - " +
                          str(np.max(modelratio)))
-     
+
     # Perform spline fit to model data to get temperatures for input
     # values of flux ratio
     spline = interpolate.splrep(modelratio, modeltemp, s=0)
     temp = 10.**interpolate.splev(fluxratio, spline, der=0)
 
     return temp
-    
+
 def goes_get_chianti_em(longflux, temp, satellite=8, photospheric=False):
     """Calculates emission measure from GOES 1-8A flux and temperature.
 
@@ -423,7 +423,7 @@ def goes_get_chianti_em(longflux, temp, satellite=8, photospheric=False):
 
     For correct preparation of GOES data before calculating temperature
     see goes_chianti_tem() (Notes section of docstring).
-         
+
     References
     ----------
     .. [1] White, S. M., Thomas, R. J., & Schwartz, R. A. 2005, Sol. Phys.,
@@ -451,11 +451,11 @@ def goes_get_chianti_em(longflux, temp, satellite=8, photospheric=False):
     if len(longflux) != len(temp):
         raise ValueError("longflux and temp must have same number of " + \
                          "elements.")
-    
+
     # Initialize lists to hold model data of temperature - long channel
     # flux relationship read in from csv file.
-    modeltemp = [ ] # modelled temperature is in log_10 sapce in units of MK
-    modelflux = [ ]
+    modeltemp = [] # modelled temperature is in log_10 sapce in units of MK
+    modelflux = []
     # Determine name of column in csv file containing model ratio values
     # for relevant GOES satellite
     label = "longfluxGOES"+str(satellite)
@@ -506,7 +506,7 @@ def rad_loss_rate(goeslc):
     Parameters
     ----------
     goeslc : GOESLightCurve object
-    
+
     Returns
     -------
     goeslc.data.rad_loss_rate : pandas.core.series.Series
@@ -536,7 +536,7 @@ def rad_loss_rate(goeslc):
 
     # Check that input argument is of correct type
     check_goeslc(goeslc, varname="goeslc")
-    
+
     # extract temperature and emission measure from GOESLightCurve
     # object and change type to that required by calc_rad_loss().
     # If GOESLightCurve object does not contain temperature and
@@ -587,7 +587,7 @@ def calc_rad_loss(temp, em, obstime=None):
               emission measure values correspond.  Must be same length
               as temp and em.  If this keyword is set, the integrated
               radiated energy is calculated.
-    
+
     Returns
     -------
     radlossrate : numpy ndarray, dtype=float
@@ -612,17 +612,16 @@ def calc_rad_loss(temp, em, obstime=None):
     >>> rad_loss = calc_rad_loss(temp, em)
     >>> rad_loss
     array([  3.57994116e+26,   3.57994116e+26])
-    
     """
 
     # Check inputs are correct
     check_float(temp, varname="temp") # Check temp type
     check_float(em, varname="em") # Check em type
-   
+
     # Initialize lists to hold model data of temperature - rad loss rate
     # relationship read in from csv file
-    modeltemp = [ ] # modelled temperature is in log_10 sapce in units of MK
-    model_loss_rate = [ ]
+    modeltemp = [] # modelled temperature is in log_10 sapce in units of MK
+    model_loss_rate = []
 
     # Read data from csv file into lists, being sure to skip commented
     # lines begining with "#"
@@ -711,12 +710,11 @@ def xray_luminosity(goeslc):
     2014-01-01 00:00:02  7e-07  7e-06     1.903523e+24     1.903523e+25
     2014-01-01 00:00:04  7e-07  7e-06     1.903523e+24     1.903523e+25
     2014-01-01 00:00:06  7e-07  7e-06     1.903523e+24     1.903523e+25
-
     """
 
     # Check that input argument is of correct type
     check_goeslc(goeslc, varname="goeslc")
-    
+
     # extract properties from GOESLightCurve object and change type to
     # that required by goes_chianti_em
     longflux = np.array(goeslc.data.xrsb)
@@ -807,7 +805,7 @@ def goes_lx(longflux, shortflux, obstime=None, date=None):
     # Check inputs are of correct type
     check_float(longflux, varname="longflux") # Check longflux type
     check_float(shortflux, varname="shortflux") # Check shortflux type
-    
+
     # Calculate X-ray luminosities
     longlum = calc_xraylum(longflux, date=date)
     shortlum = calc_xray(shortflux, date=date)
@@ -829,7 +827,7 @@ def goes_lx(longflux, shortflux, obstime=None, date=None):
     else:
         lx_out = {"longflux":longflux, "shortflux":shortflux,
                   "longlum":longlum, "shortlum":shortlum,}
-    
+
     return lx_out
 
 def calc_xraylum(flux, date=None):
@@ -896,7 +894,6 @@ def time_intervals(obstime):
     defined as
     dt_1 = (t_2 - t_1) / 2
     dt_(n-1) = (t_n - t_(n-1)) / 2
-    
 
     Parameters
     ----------
@@ -996,7 +993,7 @@ def check_photospheric(test, varname=None):
         raise TypeError(varname + " must be True or False.  \n" +
                         "False: assume coronal abundances (default).  \n" +
                         "True: assume photosperic abundances.")
-    
+
 def check_date(test, varname=None):
     """
     Raise Exception if test isn't/can't be converted to datetime object.
