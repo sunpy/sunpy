@@ -110,8 +110,7 @@ def temp_em(goeslc, photospheric=False):
     """
 
     # Check that input argument is of correct type
-    if type(goeslc) is not sunpy.lightcurve.sources.goes.GOESLightCurve:
-        raise TypeError("goeslc must be GOESLightCurve object")
+    check_goeslc(goeslc, varname="goeslc")
 
     # extract properties from GOESLightCurve object and change type to
     # that required by goes_chianti_em
@@ -212,53 +211,22 @@ def goes_chianti_tem(longflux, shortflux, satellite=8,
     array([  4.78577516e+48,   4.78577516e+48])
 
     """
-
-    # Check inputs are of correct type
-    # Check longflux input
-    if type(longflux) is not np.ndarray or longflux.dtype != "float64":
-            raise TypeError("longflux must be a numpy array of type float64.")
-    # Check shortflux input
-    if type(shortflux) is not np.ndarray or shortflux.dtype != "float64":
-            raise TypeError("shortflux must be a numpy array of type float64.")
-    # Check satellite input
-    if type(satellite) is not int:
-        if type(satellite) is str:
-            try:
-                satellite = int(satellite)
-            except ValueError:
-                raise TypeError("satellite must be an integer.")
-            else:
-                if satellite < 1:
-                    raise ValueError("satellite must be the number of a " + \
-                                     "valid GOES satellite.")
-        else:
-            raise TypeError("satellite must be an integer.")
-    else:
-        if satellite < 1:
-            raise ValueError("satellite must be the number of a valid GOES" + \
-                             " satellite.")
-    # Check date input
-    if type(date) is not datetime.datetime:
-        if type(date) is str:
-            try: 
-                date = dateutil.parser.parse(date)
-            except TypeError:
-                raise TypeError("date must be a datetime object.")
-        else:
-            raise TypeError("date must be a datetime object.")
+    # CHECK INPUTS ARE CORRECT
+    check_float64(longflux, varname="longflux") # Check longflux type
+    check_float64(shortflux, varname="shortflux") # Check shortflux type
+    satellite = check_goessat(satellite) # Check satellite type
+    date = check_date(date) # Check date type
     # Check flux arrays are of same length.
     if len(longflux) != len(shortflux):
         raise ValueError("longflux and shortflux must have same number of " + \
                          "elements.")
-
-    # Prepare data
+    # PREPARE DATA
     # GOES 6 long channel flux before 1983-Jun-28 must be corrected by a
     # factor of 4.43/5.32
     if date < datetime.datetime(1983, 06, 28) and satellite == 6:
         longflux_corrected = longflux * (4.43/5.32)
     else:
         longflux_corrected = longflux
-        
     # Un-scale fluxes if GOES satellite is after 7.  See 2nd paragraph
     # in Notes section of docstring above.
     if satellite > 7:
@@ -266,7 +234,6 @@ def goes_chianti_tem(longflux, shortflux, satellite=8,
         shortflux_corrected = shortflux / 0.85
     else:
         shortflux_corrected = shortflux
-        
     # Calculate short to long channel ratio.
     # Data which is not good have their ratio value set to 0.003.
     # See Notes section in docstring above.
@@ -274,13 +241,12 @@ def goes_chianti_tem(longflux, shortflux, satellite=8,
             np.where(longflux_corrected < 3e-8)
     fluxratio = shortflux_corrected / longflux_corrected
     fluxratio[index] = 0.003
-
+    
     # FIND TEMPERATURE AND EMISSION MEASURE FROM FUNCTIONS BELOW
     temp = goes_get_chianti_temp(fluxratio, satellite=satellite,
                                  photospheric=photospheric)
     em = goes_get_chianti_em(longflux_corrected, temp, satellite=satellite,
                              photospheric=photospheric)
-    
     return temp, em
 
 def goes_get_chianti_temp(fluxratio, satellite=8, photospheric=False):
@@ -356,24 +322,18 @@ def goes_get_chianti_temp(fluxratio, satellite=8, photospheric=False):
 
     """
 
-    # Check inputs are of correct type etc.
-    # Check fluxratio input
-    if type(fluxratio) is not np.ndarray or fluxratio.dtype != "float64":
-            raise TypeError("fluxratio must be a numpy array of type float64.")
-    # Check photospheric input
-    if type(photospheric) is not bool:
-        raise TypeError("photospheric must be True or False.  \n" +
-                        "False: assume coronal abundances (default).  \n" +
-                        "True: assume photosperic abundances.")
-    
+    # check inputs are correct
+    check_float64(fluxratio, varname="fluxratio") # Check fluxratio type
+    satellite = check_goessat(satellite) # Check satellite type
+    check_photospheric(photospheric) # Check photospheric input
+
     # Initialize lists to hold model data of flux ratio - temperature
     # relationship read in from csv file
-    modeltemp = [ ] # modelled temperature is in log_10 sapce in units of MK
+    modeltemp = [ ] # modelled temperature is in log_10 space in units of MK
     modelratio = [ ]
     # Determine name of column in csv file containing model ratio values
     # for relevant GOES satellite
     label = "ratioGOES"+str(satellite)
-
     # Read data representing appropriate temperature--flux ratio
     # relationship depending on satellite number and assumed abundances.
     if photospheric is False:
@@ -387,7 +347,7 @@ def goes_get_chianti_temp(fluxratio, satellite=8, photospheric=False):
             modelratio.append(float(row[label]))
     modeltemp = np.array(modeltemp)
     modelratio = np.array(modelratio)
-
+    
     # Ensure input values of flux ratio are within limits of model table
     if np.min(fluxratio) < np.min(modelratio) or \
       np.max(fluxratio) > np.max(modelratio):
@@ -395,7 +355,7 @@ def goes_get_chianti_temp(fluxratio, satellite=8, photospheric=False):
                          "fluxratio input must be within the range " +
                          str(np.min(modelratio)) + " - " +
                          str(np.max(modelratio)))
-
+     
     # Perform spline fit to model data to get temperatures for input
     # values of flux ratio
     spline = interpolate.splrep(modelratio, modeltemp, s=0)
@@ -482,18 +442,15 @@ def goes_get_chianti_em(longflux, temp, satellite=8, photospheric=False):
 
     """
 
-    # Check inputs are of correct types
-    # Check longflux input
-    if type(longflux) is not np.ndarray or longflux.dtype != "float64":
-            raise TypeError("longflux must be a numpy array of type float64.")
-    # Check temp input
-    if type(temp) is not np.ndarray or temp.dtype != "float64":
-            raise TypeError("temp must be a numpy array of type float64.")
-    # Check photospheric input
-    if type(photospheric) is not bool:
-        raise TypeError("photospheric must be True or False.  \n" +
-                        "False: assume coronal abundances (default).  \n" +
-                        "True: assume photosperic abundances.")
+    # Check inputs are correct
+    check_float64(longflux, varname="longflux") # Check longflux input
+    check_float64(temp, varname="temp") # Check temp input
+    satellite = check_goessat(satellite) # Check satellite type
+    check_photospheric(photospheric) # Check photospheric input
+    # check input arrays are of same length
+    if len(longflux) != len(temp):
+        raise ValueError("longflux and temp must have same number of " + \
+                         "elements.")
     
     # Initialize lists to hold model data of temperature - long channel
     # flux relationship read in from csv file.
@@ -518,12 +475,6 @@ def goes_get_chianti_em(longflux, temp, satellite=8, photospheric=False):
     modelflux = np.array(modelflux)
 
     # Ensure input values of flux ratio are within limits of model table
-    if np.min(longflux) < np.min(modelflux) or \
-      np.max(longflux) > np.max(modelflux):
-        raise ValueError("For GOES " + str(satellite) +
-                         ", all values in longflux must be within the range " +
-                         str(np.min(modelflux)) + " - " +
-                         str(np.max(modelflux)) + " W/m**2")
     if np.min(np.log10(temp)) < np.min(modeltemp) or \
       np.max(np.log10(temp)) > np.max(modeltemp):
         raise ValueError("All values in temp must be within the range " +
@@ -584,8 +535,7 @@ def rad_loss_rate(goeslc):
     """
 
     # Check that input argument is of correct type
-    if type(goeslc) is not sunpy.lightcurve.sources.goes.GOESLightCurve:
-        raise TypeError("goeslc must be GOESLightCurve object")
+    check_goeslc(goeslc, varname="goeslc")
     
     # extract temperature and emission measure from GOESLightCurve
     # object and change type to that required by calc_rad_loss().
@@ -665,13 +615,9 @@ def calc_rad_loss(temp, em, obstime=None):
     
     """
 
-    # Check inputs are of correct types
-    # Check temp input
-    if type(temp) is not np.ndarray or temp.dtype != "float64":
-            raise TypeError("temp must be a numpy array of type float64.")
-    # Check em input
-    if type(em) is not np.ndarray or em.dtype != "float64":
-            raise TypeError("em must be a numpy array of type float64.")
+    # Check inputs are correct
+    check_float64(temp, varname="temp") # Check temp type
+    check_float64(em, varname="em") # Check em type
    
     # Initialize lists to hold model data of temperature - rad loss rate
     # relationship read in from csv file
@@ -769,8 +715,7 @@ def xray_luminosity(goeslc):
     """
 
     # Check that input argument is of correct type
-    if type(goeslc) is not sunpy.lightcurve.sources.goes.GOESLightCurve:
-        raise TypeError("goeslc must be GOESLightCurve object")
+    check_goeslc(goeslc, varname="goeslc")
     
     # extract properties from GOESLightCurve object and change type to
     # that required by goes_chianti_em
@@ -810,6 +755,8 @@ def goes_lx(longflux, shortflux, obstime=None, date=None):
     obstime : numpy ndarray, dtype=datetime64, optional
               Measurement times corresponding to each long/short
               channel flux measurement.
+    date : datetime object or valid date strng, optional
+           Date at which measurements were taken.
 
     Returns
     -------
@@ -858,12 +805,8 @@ def goes_lx(longflux, shortflux, obstime=None, date=None):
     """
 
     # Check inputs are of correct type
-    # Check longflux input
-    if type(longflux) is not np.ndarray or longflux.dtype != "float64":
-            raise TypeError("longflux must be a numpy array of type float64.")
-    # Check shortflux input
-    if type(shortflux) is not np.ndarray or shortflux.dtype != "float64":
-            raise TypeError("shortflux must be a numpy array of type float64.")
+    check_float64(longflux, varname="longflux") # Check longflux type
+    check_float64(shortflux, varname="shortflux") # Check shortflux type
     
     # Calculate X-ray luminosities
     longlum = goes_luminosity(longflux, date=date)
@@ -905,6 +848,8 @@ def goes_luminosity(flux, date=None):
     ----------
     flux : numpy ndarray
            Array containing the observed solar flux
+    date : datetime object or valid date string, optional
+           Used to calculate a more accurate Sun-Earth distance
 
     Returns
     -------
@@ -926,12 +871,13 @@ def goes_luminosity(flux, date=None):
     array([  1.98650769e+25,   1.98650769e+25])
 
     """
-    
-    if type(flux) is not np.ndarray or flux.dtype != "float64":
-            raise TypeError("fluxratio must be a numpy array of type float64.")
-    else:
-        return 4 * np.pi * (sun.constants.au.value *
-                            sun.sunearth_distance(t=date))**2 * 1e7 * flux
+    # Check inputs are correct
+    check_float64(flux)
+    if type(date) is not None:
+        date = check_date(date)
+    # Calculate and return luminosity
+    return 4 * np.pi * (sun.constants.au.value *
+                        sun.sunearth_distance(t=date))**2 * 1e7 * flux
 
 def time_intervals(obstime):
     """
@@ -976,9 +922,9 @@ def time_intervals(obstime):
     array([ 1.000,  2.000,  2.000,  2.000,  2.000,  1.000])
 
     """
-    if type(obstime) is not np.ndarray or fluxratio.dtype != "datetime64":
-        raise TypeError("obstime must be a numpy array of type datetime64.")
-    elif len(obstime) < 3:
+    # check obstime is correct type and greater than min required length
+    obstime = check_datetime64(obstime, varname="obstime")
+    if len(obstime) < 3:
         raise InputError("obstime must have 3 or more elements")
     else:
         obstime = obstime.astype("datetime64[ms]")  # convert to units of ms
@@ -987,3 +933,123 @@ def time_intervals(obstime):
         dt = np.append(dt, (obstime[-1]-obstime[-2])/2)
         dt = dt.astype(float) / 1e3 # convert from [ms] to [s]
         return dt
+
+def check_float64(test, varname=None):
+    """Raises Exception if input isn't numpy array of dtype float64.
+
+    Parameters
+    ----------
+    test : variable to test
+    varname : string, optional
+              name of variable.  (Printed if exception is raised.)
+    """
+    if type(varname) is not str:
+        varname = "This variable"
+    if type(test) is not np.ndarray or test.dtype != "float64":
+        raise TypeError(varname + " must be a numpy array of type float64.")
+
+def check_goessat(test, varname=None):
+    """Raises Exception if test isn't an int of a GOES satellite, i.e > 1.
+
+    Parameters
+    ----------
+    test : variable to test
+    varname : string, optional
+              name of variable.  Default = 'satellite'
+              (Printed if exception is raised.)
+
+    Returns
+    -------
+    test : int
+           Returned as original int if exceptions aren't raised, or a
+           new int converted from input if input is a valid date string.
+    """
+    if type(varname) is not str:
+        varname = "satellite"
+    if type(test) is not int:
+        if type(test) is str:
+            try:
+                test = int(test)
+            except ValueError:
+                raise TypeError(varname + " must be an integer.")
+        else:
+            raise TypeError(varname + " must be an integer.")
+    if test < 1:
+        raise ValueError(varname + " must be the number (integer) of a " + \
+                         "valid GOES satellite.")
+    return test
+
+def check_photospheric(test, varname=None):
+    """Raises Exception if photospheric keyword isn't True or False.
+
+    Parameters
+    ----------
+    test : variable to test
+    varname : string, optional
+              name of variable.  Default = 'photospheric'
+              (Printed if exception is raised.)
+    """
+    if type(varname) is not str:
+        varname = "photospheric"
+    if type(test) is not bool:
+        raise TypeError(varname + " must be True or False.  \n" +
+                        "False: assume coronal abundances (default).  \n" +
+                        "True: assume photosperic abundances.")
+    
+def check_date(test, varname=None):
+    """
+    Raise Exception if test isn't/can't be converted to datetime object.
+
+    Parameters
+    ----------
+    test : variable to test
+    varname : string, optional
+              name of variable.  Default = 'date'
+              (Printed if exception is raised.)
+
+    Returns
+    -------
+    test : datetime object
+           Returned as original datetime object if exceptions aren't
+           raised, or a new datetime object converted from input if
+           input is a valid date string.
+    """
+    if type(varname) is not str:
+        varname = "date"
+    if type(test) is not datetime.datetime:
+        if type(test) is str:
+            try: 
+                test = dateutil.parser.parse(test)
+            except TypeError:
+                raise TypeError(varname + " must be a datetime object.")
+        else:
+            raise TypeError(varname + " must be a datetime object.")
+    return test
+        
+def check_datetime64(test, varname=None):
+    """Raise Exception if test isn't numpy array of dtype datetime64.
+
+    Parameters
+    ----------
+    test : variable to test
+    varname : string, optional
+              name of variable.  (Printed if exception is raised.)
+    """
+    if type(varname) is not str:
+        varname = "This variable"
+    if type(test) is not np.ndarray or test.dtype != "datetime64":
+        raise TypeError(varname + " must be a numpy array of type datetime64.")
+    
+def check_goeslc(test, varname=None):
+    """Raise Exception if test is not a GOESLightCurve object.
+
+    Parameters
+    ----------
+    test : variable to test
+    varname : string, optional
+              name of variable.  (Printed if exception is raised.)
+    """
+    if type(varname) is not str:
+        varname = "This variable"
+    if type(goeslc) is not sunpy.lightcurve.sources.goes.GOESLightCurve:
+        raise TypeError(varname + " must be GOESLightCurve object.")
