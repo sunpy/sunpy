@@ -650,7 +650,7 @@ def calc_rad_loss(temp, em, obstime=None):
         dt = time_intervals(obstime)
         # Check that times are in chronological order
         if np.min(dt) <= 0:
-            raise InputError("times in obstime must be in " +
+            raise ValueError("times in obstime must be in " +
                              "chronological order.")
         rad_loss_int = np.sum(rad_loss_rate*dt)
         rad_loss_out = {"temperature":temp, "em":em,
@@ -808,7 +808,7 @@ def goes_lx(longflux, shortflux, obstime=None, date=None):
 
     # Calculate X-ray luminosities
     longlum = calc_xraylum(longflux, date=date)
-    shortlum = calc_xray(shortflux, date=date)
+    shortlum = calc_xraylum(shortflux, date=date)
 
     # If obstime keyword giving measurement times is set, calculate
     # total energy radiated in the GOES bandpasses during the flare.
@@ -816,7 +816,7 @@ def goes_lx(longflux, shortflux, obstime=None, date=None):
         dt = time_intervals(obstime)
         # Check that times are in chronological order
         if np.min(dt) <= 0:
-            raise InputError("times in obstime must be in " + \
+            raise ValueError("times in obstime must be in " + \
                              "chronological order.")
         longlum_int = np.sum(longlum*dt)
         shortlum_int = np.sum(shortlum*dt)
@@ -847,7 +847,7 @@ def calc_xraylum(flux, date=None):
     flux : numpy ndarray
            Array containing the observed solar flux
     date : datetime object or valid date string, optional
-           Used to calculate a more accurate Sun-Earth distance
+           Used to calculate a more accurate Sun-Earth distance.
 
     Returns
     -------
@@ -869,13 +869,13 @@ def calc_xraylum(flux, date=None):
     array([  1.98650769e+25,   1.98650769e+25])
 
     """
-    # Check inputs are correct
     check_float(flux)
-    if type(date) is not None:
+    if date is not None:
         date = check_date(date)
-    # Calculate and return luminosity
-    return 4 * np.pi * (sun.constants.au.value *
-                        sun.sunearth_distance(t=date))**2 * 1e7 * flux
+        return 4 * np.pi * (sun.constants.au.value * 
+                            sun.sunearth_distance(t=date))**2 * 1e7 * flux
+    else:
+        return 4 * np.pi * (sun.constants.au.value)**2 * 1e7 * flux
 
 def time_intervals(obstime):
     """
@@ -920,7 +920,7 @@ def time_intervals(obstime):
 
     """
     # check obstime is correct type and greater than min required length
-    obstime = check_datetime64(obstime, varname="obstime")
+    check_datetime64(obstime, varname="obstime")
     if len(obstime) < 3:
         raise InputError("obstime must have 3 or more elements")
     else:
