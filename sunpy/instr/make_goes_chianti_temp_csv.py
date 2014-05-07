@@ -19,31 +19,21 @@ calibration etc. are not accounted for here.
 """
 import sys
 
-import numpy
-import scipy.interpolate as interpolate
+import numpy as np
 import csv
-import datetime
 
 # The data here was taken from goes_get_chianti_temp.pro on 2014-Apr-17
 DATETAKEN = '2014-04-17'
 # Define current number of GOES satellites
 NUMSATS = 15
-# Put in check for user that DATETAKEN and NUMSATS are correct.
-#check = raw_input("The data was taken from goes_get_chianti_temp.pro on " +
-#                  DATETAKEN + "and the current number of GOES satellites " +
-#                  "is still " + str(NUMSATS) ".  If this is not so, " +
-#                  "enter False.")
-#if check is False:
-#    sys.exit("Make necessary changes in source code " + 
-#             "(make_goes_chianti_temp.py) and try again.")
 
 # Initialize arrays
 # Array of temperatures from 0-100 MK in log_10-space in MK
-log10temp = numpy.arange(0,2.02,0.02)
+log10temp = np.arange(0,2.02,0.02)
 # Arrays to hold ratio values for each temperature for each satellite,
 # one for coronal abundances and one for photospheric
-r_cor = numpy.ndarray((NUMSATS,101))
-r_pho = numpy.ndarray((NUMSATS,101))
+r_cor = np.ndarray((NUMSATS,101))
+r_pho = np.ndarray((NUMSATS,101))
 
 # Copy and paste ratio values into r_cor from goes_get_chianti_temp.pro
 # assuming coronal abundances.
