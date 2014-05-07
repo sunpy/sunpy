@@ -1,5 +1,8 @@
-log10temp_MK;longfluxGOES1;longfluxGOES2;longfluxGOES3;longfluxGOES4;longfluxGOES5;longfluxGOES6;longfluxGOES7;longfluxGOES8;longfluxGOES9;longfluxGOES10;longfluxGOES11;longfluxGOES12;longfluxGOES13;longfluxGOES14;longfluxGOES15;date_taken_ssw
-0.0;5.17e-05;5.31e-05;5.31e-05;4.64e-05;4.37e-05;4.45e-05;3.84e-05;6.48e-05;6.83e-05;4.33e-05;5.40e-05;5.27e-05;5.43e-05;5.43e-05;6.27e-05;2014-04-18
+# The data in this file represent the relationship between the GOES long (1-8 angstroms) flux and the isothermal temperature of the solar soft X-ray-emitting plasma assuming photospheric abundances as modelled by CHIANTI.
+# The data in this file were obtained by copying and pasting from the SSW routine goes_get_chianti_em.pro on 2014-04-18.
+#
+log10temp_MK;longfluxGOES1;longfluxGOES2;longfluxGOES3;longfluxGOES4;longfluxGOES5;longfluxGOES6;longfluxGOES7;longfluxGOES8;longfluxGOES9;longfluxGOES10;longfluxGOES11;longfluxGOES12;longfluxGOES13;longfluxGOES14;longfluxGOES15
+0.0;3.87e-05;3.98e-05;3.98e-05;3.47e-05;3.27e-05;3.36e-05;2.83e-05;4.95e-05;5.24e-05;3.21e-05;4.08e-05;3.97e-05;4.10e-05;4.10e-05;4.78e-05
 0.02;6.90e-05;7.09e-05;7.09e-05;6.19e-05;5.83e-05;5.95e-05;5.11e-05;8.69e-05;9.16e-05;5.78e-05;7.23e-05;7.05e-05;7.26e-05;7.26e-05;8.41e-05
 0.040000000000000001;1.21e-04;1.24e-04;1.24e-04;1.08e-04;1.02e-04;1.04e-04;9.08e-05;1.50e-04;1.58e-04;1.02e-04;1.26e-04;1.23e-04;1.26e-04;1.26e-04;1.45e-04
 0.059999999999999998;2.07e-04;2.13e-04;2.13e-04;1.86e-04;1.75e-04;1.77e-04;1.57e-04;2.53e-04;2.66e-04;1.76e-04;2.15e-04;2.10e-04;2.16e-04;2.16e-04;2.46e-04
