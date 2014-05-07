@@ -45,7 +45,7 @@ def rad_loss_rate(goeslc):
     """
 
     # Check that input argument is of correct type
-    check_goeslc(goeslc, varname="goeslc")
+    exceptions.check_goeslc(goeslc, varname="goeslc")
 
     # extract temperature and emission measure from GOESLightCurve
     # object and change type to that required by calc_rad_loss().
@@ -125,8 +125,8 @@ def calc_rad_loss(temp, em, obstime=None):
     """
 
     # Check inputs are correct
-    check_float(temp, varname="temp") # Check temp type
-    check_float(em, varname="em") # Check em type
+    exceptions.check_float(temp, varname="temp") # Check temp type
+    exceptions.check_float(em, varname="em") # Check em type
 
     # Initialize lists to hold model data of temperature - rad loss rate
     # relationship read in from csv file
@@ -223,7 +223,7 @@ def xray_luminosity(goeslc):
     """
 
     # Check that input argument is of correct type
-    check_goeslc(goeslc, varname="goeslc")
+    exceptions.check_goeslc(goeslc, varname="goeslc")
 
     # extract properties from GOESLightCurve object and change type to
     # that required by goes_chianti_em
@@ -313,8 +313,8 @@ def goes_lx(longflux, shortflux, obstime=None, date=None):
     """
 
     # Check inputs are of correct type
-    check_float(longflux, varname="longflux") # Check longflux type
-    check_float(shortflux, varname="shortflux") # Check shortflux type
+    exceptions.check_float(longflux, varname="longflux") # Check longflux type
+    exceptions.check_float(shortflux, varname="shortflux") # Check shortflux type
 
     # Calculate X-ray luminosities
     longlum = calc_xraylum(longflux, date=date)
@@ -379,9 +379,9 @@ def calc_xraylum(flux, date=None):
     array([  1.98650769e+25,   1.98650769e+25])
 
     """
-    check_float(flux)
+    exceptions.check_float(flux)
     if date is not None:
-        date = check_date(date)
+        date = exceptions.check_date(date)
         return 4 * np.pi * (sun.constants.au.value * 
                             sun.sunearth_distance(t=date))**2 * 1e7 * flux
     else:
@@ -430,9 +430,9 @@ def time_intervals(obstime):
 
     """
     # check obstime is correct type and greater than min required length
-    check_datetime64(obstime, varname="obstime")
+    exceptions.check_datetime64(obstime, varname="obstime")
     if len(obstime) < 3:
-        raise InputError("obstime must have 3 or more elements")
+        raise ValueError("obstime must have 3 or more elements")
     else:
         obstime = obstime.astype("datetime64[ms]")  # convert to units of ms
         dt = (obstime[2:]-obstime[:-2]) / 2
