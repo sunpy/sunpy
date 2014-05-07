@@ -5,7 +5,8 @@ import dateutil
 import sunpy.lightcurve
 
 def check_float(test, varname=None):
-    """Raises Exception if input isn't numpy array of dtype float64.
+    """
+    Raises Exception if test isn't a float type numpy array.
 
     Parameters
     ----------
@@ -20,7 +21,8 @@ def check_float(test, varname=None):
         raise TypeError(varname + " must be a numpy array of type float.")
 
 def check_goessat(test, varname=None):
-    """Raises Exception if test isn't an int of a GOES satellite, i.e > 1.
+    """
+    Raises Exception if test isn't an int of a GOES satellite, i.e > 1.
 
     Parameters
     ----------
@@ -34,6 +36,7 @@ def check_goessat(test, varname=None):
     test : int
            Returned as original int if exceptions aren't raised, or a
            new int converted from input if input is a valid date string.
+
     """
     if type(varname) is not str:
         varname = "satellite"
@@ -84,6 +87,7 @@ def check_date(test, varname=None):
            Returned as original datetime object if exceptions aren't
            raised, or a new datetime object converted from input if
            input is a valid date string.
+           
     """
     if type(varname) is not str:
         varname = "date"
@@ -98,13 +102,15 @@ def check_date(test, varname=None):
     return test
     
 def check_goeslc(test, varname=None):
-    """Raise Exception if test is not a GOESLightCurve object.
+    """
+    Raise Exception if test is not a GOESLightCurve object.
 
     Parameters
     ----------
     test : variable to test
     varname : string, optional
               name of variable.  (Printed if exception is raised.)
+              
     """
     if type(varname) is not str:
         varname = "This variable"
