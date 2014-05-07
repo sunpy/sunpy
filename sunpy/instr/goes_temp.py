@@ -441,7 +441,7 @@ def time_intervals(obstime):
         dt = dt.astype(float) / 1e3 # convert from [ms] to [s]
         return dt
 
-def check_datetime64(test, varname=None):
+def check_datetime64(test, varname="This variable"):
     """Raise Exception if test isn't numpy array of dtype datetime64.
 
     Parameters
