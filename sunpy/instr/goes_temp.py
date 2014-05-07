@@ -135,7 +135,7 @@ def calc_rad_loss(temp, em, obstime=None):
 
     # Read data from csv file into lists, being sure to skip commented
     # lines begining with "#"
-    with open("chianti_rad_loss.csv", "r") as csvfile:
+    with open(INSTR_FILES_PATH + "chianti_rad_loss.csv", "r") as csvfile:
         startline = dropwhile(lambda l: l.startswith("#"), csvfile)
         csvreader = csv.DictReader(startline, delimiter=";")
         for row in csvreader:
