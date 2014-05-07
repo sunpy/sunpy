@@ -4,7 +4,7 @@ import dateutil
 
 import sunpy.lightcurve
 
-def check_float(test, varname=None):
+def check_float(test, varname="This variable"):
     """
     Raises Exception if test isn't a float type numpy array.
 
@@ -20,7 +20,7 @@ def check_float(test, varname=None):
       test.dtype.type is not np.float32 and test.dtype.type is not np.float16):
         raise TypeError(varname + " must be a numpy array of type float.")
 
-def check_goessat(test, varname=None):
+def check_goessat(test, varname="satellite"):
     """
     Raises Exception if test isn't an int of a GOES satellite, i.e > 1.
 
@@ -53,7 +53,7 @@ def check_goessat(test, varname=None):
                          "valid GOES satellite.")
     return test
 
-def check_photospheric(test, varname=None):
+def check_photospheric(test, varname="photospheric"):
     """Raises Exception if photospheric keyword isn't True or False.
 
     Parameters
@@ -70,7 +70,7 @@ def check_photospheric(test, varname=None):
                         "False: assume coronal abundances (default).  \n" +
                         "True: assume photosperic abundances.")
 
-def check_date(test, varname=None):
+def check_date(test, varname="date"):
     """
     Raise Exception if test isn't/can't be converted to datetime object.
 
@@ -101,7 +101,7 @@ def check_date(test, varname=None):
             raise TypeError(varname + " must be a datetime object.")
     return test
     
-def check_goeslc(test, varname=None):
+def check_goeslc(test, varname="This variable"):
     """
     Raise Exception if test is not a GOESLightCurve object.
 
