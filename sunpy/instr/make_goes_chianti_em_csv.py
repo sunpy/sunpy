@@ -496,17 +496,24 @@ b8_pho[14,:] = [4.78e-05,8.41e-05,1.45e-04,2.46e-04,4.07e-04,6.58e-04,1.04e-03,
 # Firstly csv file for coronal abundances using b8_cor array.
 with open('goes_chianti_em_cor.csv', 'wb') as csvfile:
     csvwriter = csv.writer(csvfile, delimiter=';')
-    # First create header containing column names and read into csv file
+    # Write comments at top of csv file
+    comment1 = ["# The data in this file represent the relationship " + \
+      "between the GOES long (1-8 angstroms) flux and the isothermal " + \
+      "temperature of the solar soft X-ray-emitting plasma assuming " + \
+      "coronal abundances as modelled by CHIANTI."]
+    comment2 = ["# The data in this file were obtained by copying and " + \
+      "pasting from the SSW routine goes_get_chianti_em.pro on " + \
+      DATETAKEN + "."]
+    comment3 = ["#"]
+    csvwriter.writerow(comment1)
+    csvwriter.writerow(comment2)
+    csvwriter.writerow(comment3)
+    # Create header containing column names and read into csv file
     header = ['longfluxGOES'+str(i) for i in range(1,NUMSATS+1)]
     header.insert(0, "log10temp")
-    header.append("date_taken_ssw")
     csvwriter.writerow(header)
     # Write in data row by row.
-    row = ["{:1.2e}".format(number) for number in b8_cor[:,0]]
-    row.insert(0, log10temp[0])
-    row.append(DATETAKEN)
-    csvwriter.writerow(row)
-    for i in range(1, len(log10temp)):
+    for i in range(0, len(log10temp)):
         row = ["{:1.2e}".format(number) for number in b8_cor[:,i]]
         row.insert(0, log10temp[i])
         csvwriter.writerow(row)
@@ -514,17 +521,24 @@ with open('goes_chianti_em_cor.csv', 'wb') as csvfile:
 # Next write csv file for photospheric abundances using b8_pho array.
 with open('goes_chianti_em_pho.csv', 'wb') as csvfile:
     csvwriter = csv.writer(csvfile, delimiter=';')
-    # First create header containing column names and read into csv file
+    # Write comments at top of csv file
+    comment1 = ["# The data in this file represent the relationship " + \
+      "between the GOES long (1-8 angstroms) flux and the isothermal " + \
+      "temperature of the solar soft X-ray-emitting plasma assuming " + \
+      "photospheric abundances as modelled by CHIANTI."]
+    comment2 = ["# The data in this file were obtained by copying and " + \
+      "pasting from the SSW routine goes_get_chianti_em.pro on " + \
+      DATETAKEN + "."]
+    comment3 = ["#"]
+    csvwriter.writerow(comment1)
+    csvwriter.writerow(comment2)
+    csvwriter.writerow(comment3)
+    # Create header containing column names and read into csv file
     header = ['longfluxGOES'+str(i) for i in range(1,NUMSATS+1)]
     header.insert(0, "log10temp_MK")
-    header.append("date_taken_ssw")
     csvwriter.writerow(header)
     # Write in data row by row.
-    row = ["{:1.2e}".format(number) for number in b8_cor[:,0]]
-    row.insert(0, log10temp[0])
-    row.append(DATETAKEN)
-    csvwriter.writerow(row)
-    for i in range(1, len(log10temp)):
+    for i in range(0, len(log10temp)):
         row = ["{:1.2e}".format(number) for number in b8_pho[:,i]]
         row.insert(0, log10temp[i])
         csvwriter.writerow(row)
