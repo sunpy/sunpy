@@ -341,7 +341,8 @@ def goes_get_chianti_temp(fluxratio, satellite=8, photospheric=False):
     else:
         abund = "pho"
     with open("goes_chianti_temp_"+abund+".csv", "r") as csvfile:
-        csvreader = csv.DictReader(csvfile, delimiter=";")
+        startline = dropwhile(lambda l: l.startswith("#"), csvfile)
+        csvreader = csv.DictReader(startline, delimiter=";")
         for row in csvreader:
             modeltemp.append(float(row["log10temp_MK"]))
             modelratio.append(float(row[label]))
@@ -467,7 +468,8 @@ def goes_get_chianti_em(longflux, temp, satellite=8, photospheric=False):
     else:
         abund = "pho"
     with open("goes_chianti_em_"+abund+".csv", "r") as csvfile:
-        csvreader = csv.DictReader(csvfile, delimiter=";")
+        startline = dropwhile(lambda l: l.startswith("#"), csvfile)
+        csvreader = csv.DictReader(startline, delimiter=";")
         for row in csvreader:
             modeltemp.append(float(row["log10temp_MK"]))
             modelflux.append(float(row[label]))
