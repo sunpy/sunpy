@@ -26,14 +26,6 @@ import csv
 DATETAKEN = '2014-04-18'
 # Define current number of GOES satellites
 NUMSATS = 15
-# Put in check for user that DATETAKEN and NUMSATS are correct.
-#check = raw_input("The data was taken from goes_get_chianti_temp.pro on " +
-#                  DATETAKEN + "and the current number of GOES satellites " +
-#                  "is still " + str(NUMSATS) ".  If this is not so, " +
-#                  "enter False.")
-#if check is False:
-#    sys.exit("Make necessary changes in source code " + 
-#             "(make_goes_chianti_temp.py) and try again.")
 
 # Initialize arrays
 # Array of temperatures from 0-100 MK in log_10-space in MK
