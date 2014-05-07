@@ -13,6 +13,7 @@ from sunpy.net import hek
 from sunpy.time import parse_time
 from sunpy.sun import sun
 import sunpy.lightcurve
+from sunpy.instr import exceptions
 
 __all__ = ['get_goes_event_list']
 
@@ -110,7 +111,7 @@ def temp_em(goeslc, photospheric=False):
     """
 
     # Check that input argument is of correct type
-    check_goeslc(goeslc, varname="goeslc")
+    exceptions.check_goeslc(goeslc, varname="goeslc")
 
     # extract properties from GOESLightCurve object and change type to
     # that required by goes_chianti_em
@@ -212,10 +213,10 @@ def goes_chianti_tem(longflux, shortflux, satellite=8,
 
     """
     # CHECK INPUTS ARE CORRECT
-    check_float(longflux, varname="longflux") # Check longflux type
-    check_float(shortflux, varname="shortflux") # Check shortflux type
-    satellite = check_goessat(satellite) # Check satellite type
-    date = check_date(date) # Check date type
+    exceptions.check_float(longflux, varname="longflux") # Check longflux type
+    exceptions.check_float(shortflux, varname="shortflux") # Check shortflux type
+    satellite = exceptions.check_goessat(satellite) # Check satellite type
+    date = exceptions.check_date(date) # Check date type
     # Check flux arrays are of same length.
     if len(longflux) != len(shortflux):
         raise ValueError("longflux and shortflux must have same number of " + \
@@ -323,9 +324,9 @@ def goes_get_chianti_temp(fluxratio, satellite=8, photospheric=False):
     """
 
     # check inputs are correct
-    check_float(fluxratio, varname="fluxratio") # Check fluxratio type
-    satellite = check_goessat(satellite) # Check satellite type
-    check_photospheric(photospheric) # Check photospheric input
+    exceptions.check_float(fluxratio, varname="fluxratio") # Check fluxratio type
+    satellite = exceptions.check_goessat(satellite) # Check satellite type
+    exceptions.check_photospheric(photospheric) # Check photospheric input
 
     # Initialize lists to hold model data of flux ratio - temperature
     # relationship read in from csv file
@@ -444,10 +445,10 @@ def goes_get_chianti_em(longflux, temp, satellite=8, photospheric=False):
     """
 
     # Check inputs are correct
-    check_float(longflux, varname="longflux") # Check longflux input
-    check_float(temp, varname="temp") # Check temp input
-    satellite = check_goessat(satellite) # Check satellite type
-    check_photospheric(photospheric) # Check photospheric input
+    exceptions.check_float(longflux, varname="longflux") # Check longflux input
+    exceptions.check_float(temp, varname="temp") # Check temp input
+    satellite = exceptions.check_goessat(satellite) # Check satellite type
+    exceptions.check_photospheric(photospheric) # Check photospheric input
     # check input arrays are of same length
     if len(longflux) != len(temp):
         raise ValueError("longflux and temp must have same number of " + \
@@ -489,110 +490,3 @@ def goes_get_chianti_em(longflux, temp, satellite=8, photospheric=False):
     em = longflux/denom * 1e55
 
     return em
-
-def check_float(test, varname=None):
-    """Raises Exception if input isn't numpy array of dtype float64.
-
-    Parameters
-    ----------
-    test : variable to test
-    varname : string, optional
-              name of variable.  (Printed if exception is raised.)
-    """
-    if type(varname) is not str:
-        varname = "This variable"
-    if type(test) is not np.ndarray or (test.dtype.type is not np.float64 and \
-      test.dtype.type is not np.float32 and test.dtype.type is not np.float16):
-        raise TypeError(varname + " must be a numpy array of type float.")
-
-def check_goessat(test, varname=None):
-    """Raises Exception if test isn't an int of a GOES satellite, i.e > 1.
-
-    Parameters
-    ----------
-    test : variable to test
-    varname : string, optional
-              name of variable.  Default = 'satellite'
-              (Printed if exception is raised.)
-
-    Returns
-    -------
-    test : int
-           Returned as original int if exceptions aren't raised, or a
-           new int converted from input if input is a valid date string.
-    """
-    if type(varname) is not str:
-        varname = "satellite"
-    if type(test) is not int:
-        if type(test) is str:
-            try:
-                test = int(test)
-            except ValueError:
-                raise TypeError(varname + " must be an integer.")
-        else:
-            raise TypeError(varname + " must be an integer.")
-    if test < 1:
-        raise ValueError(varname + " must be the number (integer) of a " + \
-                         "valid GOES satellite.")
-    return test
-
-def check_photospheric(test, varname=None):
-    """Raises Exception if photospheric keyword isn't True or False.
-
-    Parameters
-    ----------
-    test : variable to test
-    varname : string, optional
-              name of variable.  Default = 'photospheric'
-              (Printed if exception is raised.)
-    """
-    if type(varname) is not str:
-        varname = "photospheric"
-    if type(test) is not bool:
-        raise TypeError(varname + " must be True or False.  \n" +
-                        "False: assume coronal abundances (default).  \n" +
-                        "True: assume photosperic abundances.")
-
-def check_date(test, varname=None):
-    """
-    Raise Exception if test isn't/can't be converted to datetime object.
-
-    Parameters
-    ----------
-    test : variable to test
-    varname : string, optional
-              name of variable.  Default = 'date'
-              (Printed if exception is raised.)
-
-    Returns
-    -------
-    test : datetime object
-           Returned as original datetime object if exceptions aren't
-           raised, or a new datetime object converted from input if
-           input is a valid date string.
-    """
-    if type(varname) is not str:
-        varname = "date"
-    if type(test) is not datetime.datetime:
-        if type(test) is str:
-            try: 
-                test = dateutil.parser.parse(test)
-            except TypeError:
-                raise TypeError(varname + " must be a datetime object.")
-        else:
-            raise TypeError(varname + " must be a datetime object.")
-    return test
-    
-def check_goeslc(test, varname=None):
-    """Raise Exception if test is not a GOESLightCurve object.
-
-    Parameters
-    ----------
-    test : variable to test
-    varname : string, optional
-              name of variable.  (Printed if exception is raised.)
-    """
-    if type(varname) is not str:
-        varname = "This variable"
-    if type(test) is not sunpy.lightcurve.sources.goes.GOESLightCurve:
-        raise TypeError(varname + " must be GOESLightCurve object.")
