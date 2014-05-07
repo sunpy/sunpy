@@ -510,7 +510,7 @@ with open('goes_chianti_em_cor.csv', 'wb') as csvfile:
     csvwriter.writerow(comment3)
     # Create header containing column names and read into csv file
     header = ['longfluxGOES'+str(i) for i in range(1,NUMSATS+1)]
-    header.insert(0, "log10temp")
+    header.insert(0, "log10temp_MK")
     csvwriter.writerow(header)
     # Write in data row by row.
     for i in range(0, len(log10temp)):
