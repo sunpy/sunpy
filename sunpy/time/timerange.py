@@ -215,6 +215,4 @@ class TimeRange:
         isInRange('2014/05/04 13:54')
         """
         t = parse_time(time)
-       
-        
         return t >= self.t1 and t <= self.t2
