@@ -4,7 +4,7 @@ from __future__ import absolute_import
 
 import datetime
 import matplotlib.dates
-import matplotlib.pyplot as plt  
+import matplotlib.pyplot as plt
 from pandas import DataFrame
 
 from sunpy.lightcurve import LightCurve
@@ -13,6 +13,7 @@ from sunpy.instr import rhessi
 
 __all__ = ['RHESSISummaryLightCurve']
 
+
 class RHESSISummaryLightCurve(LightCurve):
     """
     RHESSI X-ray Summary LightCurve.
@@ -20,7 +21,6 @@ class RHESSISummaryLightCurve(LightCurve):
     Examples
     --------
     >>> from sunpy import lightcurve as lc
-    
     >>> goes = lc.RHESSISummaryLightCurve.create()
     >>> goes = lc.RHESSISummaryLightCurve.create('2012/06/01', '2012/06/05')
     >>> goes.peek()
@@ -37,18 +37,18 @@ class RHESSISummaryLightCurve(LightCurve):
 
         dates = matplotlib.dates.date2num(self.data.index)
 
-        lc_linecolors = ('black', 'pink', 'green', 'blue', 'brown', 'red', 
-                     'navy', 'orange', 'green')
-        
+        lc_linecolors = ('black', 'pink', 'green', 'blue', 'brown', 'red',
+                         'navy', 'orange', 'green')
+
         for item, frame in self.data.iteritems():
-            axes.plot_date(dates, frame.values, '-', label = item, lw = 2)
-        
+            axes.plot_date(dates, frame.values, '-', label=item, lw=2)
+
         axes.set_yscale("log")
         axes.set_xlabel(datetime.datetime.isoformat(self.data.index[0])[0:10])
 
         axes.set_title('RHESSI Observing Summary Count Rates, Corrected')
         axes.set_ylabel('Corrected Count Rates s$^{-1}$ detector$^{-1}$')
-   
+
         axes.yaxis.grid(True, 'major')
         axes.xaxis.grid(False, 'major')
         axes.legend()
@@ -66,9 +66,10 @@ class RHESSISummaryLightCurve(LightCurve):
         """Retrieve the latest RHESSI data."""
         today = datetime.datetime.today()
         days_back = 3
-        time_range = TimeRange(today - datetime.timedelta(days=days_back), today - datetime.timedelta(days=days_back-1))
+        time_range = TimeRange(today - datetime.timedelta(days=days_back),
+                               today - datetime.timedelta(days=days_back-1))
         return cls._get_url_for_date_range(time_range)
-       
+
     @staticmethod
     def _get_url_for_date_range(*args, **kwargs):
         """Returns a URL to the RHESSI data for the specified date range.
@@ -84,14 +85,14 @@ class RHESSISummaryLightCurve(LightCurve):
         elif len(args) == 2:
             time_range = TimeRange(parse_time(args[0]), parse_time(args[1]))
             if time_range.end() < time_range.start():
-                raise ValueError('start time (argument 1) > end time (argument 2)')
+                raise ValueError('start time > end time')
         url = rhessi.get_obssum_filename(time_range)
         return url
-        
+
     @staticmethod
     def _parse_fits(filepath):
         """Parses a RHESSI FITS file"""
         header, d = rhessi.parse_obssumm_file(filepath)
         data = DataFrame(d['data'], columns=d['labels'], index=d['time'])
-        
+
         return header, data
