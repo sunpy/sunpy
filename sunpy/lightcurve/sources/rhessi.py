@@ -30,8 +30,8 @@ class RHESSISummaryLightCurve(LightCurve):
     | http://sprg.ssl.berkeley.edu/~jimm/hessi/hsi_obs_summ_soc.html#hsi_obs_summ_rate
     """
 
-    def peek(self, title="GOES Xray Flux", **kwargs):
-        """Plots GOES light curve is the usual manner"""
+    def peek(self, title="RHESSI Observing Summary Count Rate", **kwargs):
+        """Plots RHESSI Count Rate light curve"""
         figure = plt.figure()
         axes = plt.gca()
 
@@ -79,20 +79,13 @@ class RHESSISummaryLightCurve(LightCurve):
             Date range should be specified using a TimeRange, or start
             and end dates at datetime instances or date strings.
         """
-        # TimeRange
         if len(args) == 1 and isinstance(args[0], TimeRange):
             time_range = args[0]
-            start = args[0].start()
-            end = args[0].end()
         elif len(args) == 2:
-            # Start & End date
-            start = parse_time(args[0])
-            end = parse_time(args[1])
-            time_range = TimeRange(start, end)
-            if end < start:
+            time_range = TimeRange(parse_time(args[0]), parse_time(args[1]))
+            if time_range.end() < time_range.start():
                 raise ValueError('start time (argument 1) > end time (argument 2)')
         url = rhessi.get_obssum_filename(time_range)
-        print(url)
         return url
         
     @staticmethod
