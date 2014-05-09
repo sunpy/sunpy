@@ -1,6 +1,6 @@
 
 """
-GOES LightCurve Tests
+RHESSI LightCurve Tests
 """
 from __future__ import absolute_import
 
