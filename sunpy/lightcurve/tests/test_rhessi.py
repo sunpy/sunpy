@@ -9,12 +9,13 @@ import sunpy.lightcurve
 from sunpy.time import TimeRange
 from numpy import all
 
+
 class TestRHESSISummaryLightCurve():
 
     @pytest.fixture
     def timerange_a(self):
         return TimeRange('2008/06/01', '2008/06/02')
-    
+
     @pytest.fixture
     def timerange_b(self):
         return TimeRange('2004/06/03', '2004/06/04')
@@ -30,13 +31,13 @@ class TestRHESSISummaryLightCurve():
         """Test creation with a TimeRange"""
         lc1 = sunpy.lightcurve.RHESSISummaryLightCurve.create(timerange_a)
         assert isinstance(lc1, sunpy.lightcurve.RHESSISummaryLightCurve)
-    
+
     @pytest.mark.online
     def test_hsi_default(self):
         """Test creation with no input"""
         lc1 = sunpy.lightcurve.RHESSISummaryLightCurve.create()
         assert isinstance(lc1, sunpy.lightcurve.RHESSISummaryLightCurve)
-    
+
     @pytest.mark.online
     def test_data(self, timerange_a, timerange_b):
         """Test presence of data"""
@@ -50,22 +51,22 @@ class TestRHESSISummaryLightCurve():
         """Test presence of TELESCOP in header"""
         lc1 = sunpy.lightcurve.RHESSISummaryLightCurve.create(timerange_b)
         assert lc1.header['TELESCOP'] == 'HESSI'
-    
+
     @pytest.mark.online
     def test_hsi_url(self):
         """Test creation with url"""
         url = 'http://hesperia.gsfc.nasa.gov/hessidata/metadata/catalog/hsi_obssumm_20030302_146.fits'
         lc1 = sunpy.lightcurve.RHESSISummaryLightCurve.create(url)
         assert isinstance(lc1, sunpy.lightcurve.RHESSISummaryLightCurve)
-    
+
     @pytest.mark.online
     def test_filename(self, timerange_a, timerange_b):
-        """Compare data from two different time ranges to make 
+        """Compare data from two different time ranges to make
         sure they are not the same"""
         lc1 = sunpy.lightcurve.RHESSISummaryLightCurve.create(timerange_a)
         lc2 = sunpy.lightcurve.RHESSISummaryLightCurve.create(timerange_b)
         assert all(lc1.data == lc2.data)
-        
+
     def test_get_url(self, timerange_a, timerange_b):
         """Test the getting of urls"""
         g = sunpy.lightcurve.RHESSISummaryLightCurve
