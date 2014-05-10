@@ -7,20 +7,26 @@ from __future__ import absolute_import
 import pytest
 import sunpy.lightcurve
 from sunpy.time import TimeRange
-
-timerange_a = TimeRange('2008/06/01', '2008/06/02')
-timerange_b = TimeRange('2004/06/03', '2004/06/04')
+from numpy import all
 
 class TestRHESSISummaryLightCurve():
+
+    @pytest.fixture
+    def timerange_a(self):
+        return TimeRange('2008/06/01', '2008/06/02')
     
+    @pytest.fixture
+    def timerange_b(self):
+        return TimeRange('2004/06/03', '2004/06/04')
+
     @pytest.mark.online
-    def test_hsi_range(self):
+    def test_hsi_range(self, timerange_a):
         """Test creation with two times"""
         lc1 = sunpy.lightcurve.RHESSISummaryLightCurve.create(timerange_a.start(), timerange_a.end())
         assert isinstance(lc1, sunpy.lightcurve.RHESSISummaryLightCurve)
 
     @pytest.mark.online
-    def test_hsi_timerange(self):
+    def test_hsi_timerange(self, timerange_a):
         """Test creation with a TimeRange"""
         lc1 = sunpy.lightcurve.RHESSISummaryLightCurve.create(timerange_a)
         assert isinstance(lc1, sunpy.lightcurve.RHESSISummaryLightCurve)
@@ -32,15 +38,15 @@ class TestRHESSISummaryLightCurve():
         assert isinstance(lc1, sunpy.lightcurve.RHESSISummaryLightCurve)
     
     @pytest.mark.online
-    def test_data(self):
+    def test_data(self, timerange_a, timerange_b):
         """Test presence of data"""
         lc1 = sunpy.lightcurve.RHESSISummaryLightCurve.create(timerange_b)
         lc2 = sunpy.lightcurve.RHESSISummaryLightCurve.create(timerange_a)
-        assert lc1.data.empty == False
-        assert lc2.data.empty == False
+        assert not lc1.data.empty
+        assert not lc2.data.empty
 
     @pytest.mark.online
-    def test_header(self):
+    def test_header(self, timerange_b):
         """Test presence of TELESCOP in header"""
         lc1 = sunpy.lightcurve.RHESSISummaryLightCurve.create(timerange_b)
         assert lc1.header['TELESCOP'] == 'HESSI'
@@ -53,24 +59,14 @@ class TestRHESSISummaryLightCurve():
         assert isinstance(lc1, sunpy.lightcurve.RHESSISummaryLightCurve)
     
     @pytest.mark.online
-    def compare(self,lc1,lc2):
-        try:
-            (lc1.data == lc2.data)
-        except:
-            raise Exception
-
-    @pytest.mark.online
-    def test_filename(self):
+    def test_filename(self, timerange_a, timerange_b):
         """Compare data from two different time ranges to make 
         sure they are not the same"""
         lc1 = sunpy.lightcurve.RHESSISummaryLightCurve.create(timerange_a)
         lc2 = sunpy.lightcurve.RHESSISummaryLightCurve.create(timerange_b)
-        #If the dataframes are non-idential it raises an error, if they are
-        #identical it returns True
-        with pytest.raises((Exception)):
-            self.compare(lc1, lc2)
+        assert all(lc1.data == lc2.data)
         
-    def test_get_url(self):
+    def test_get_url(self, timerange_a, timerange_b):
         """Test the getting of urls"""
         g = sunpy.lightcurve.RHESSISummaryLightCurve
         assert g._get_url_for_date_range(timerange_a) == 'http://hesperia.gsfc.nasa.gov/hessidata/metadata/catalog/hsi_obssumm_20080601_068.fits'
