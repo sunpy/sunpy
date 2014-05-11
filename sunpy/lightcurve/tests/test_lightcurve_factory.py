@@ -42,6 +42,14 @@ def test_goes_single():
     assert lc.time_range().start() == sunpy.time.parse_time('2012-01-01 00:17:11.547000')
     assert lc.time_range().end() == sunpy.time.parse_time('2012-01-01 23:54:09.617000')
 
+def test_eve_single_as_genericlc():
+    lc = LightCurve(os.path.join(base_path,'EVE_He_II_304_averages.csv')
+
+    assert isinstance(lc, GenericLightCurve)
+    assert lc.time_range().start() == sunpy.time.parse_time('2012-06-13T00:00:00Z')
+    assert lc.time_range().end() == sunpy.time.parse_time('2012-06-13T01:39:00Z')
+
+
 def test_goes_webapi():
     lc = LightCurve(os.path.join(base_path,'xrs_2s_webapi_shrunk.csv'), source='goes')
 
