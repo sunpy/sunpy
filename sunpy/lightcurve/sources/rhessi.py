@@ -21,9 +21,9 @@ class RHESSISummaryLightCurve(LightCurve):
     Examples
     --------
     >>> from sunpy import lightcurve as lc
-    >>> goes = lc.RHESSISummaryLightCurve.create()
-    >>> goes = lc.RHESSISummaryLightCurve.create('2012/06/01', '2012/06/05')
-    >>> goes.peek()
+    >>> rhessi = lc.RHESSISummaryLightCurve.create()
+    >>> rhessi = lc.RHESSISummaryLightCurve.create('2012/06/01', '2012/06/05')
+    >>> rhessi.peek()
 
     References
     ----------
