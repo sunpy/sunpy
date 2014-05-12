@@ -18,7 +18,7 @@ def check_float(test, varname="This variable"):
         varname = "This variable"
     if type(test) is not np.ndarray or (test.dtype.type is not np.float64 and \
       test.dtype.type is not np.float32 and test.dtype.type is not np.float16):
-        raise TypeError(varname + " must be a numpy array of type float.")
+        raise TypeError("{0} must be a numpy float array.".format(varname))
 
 def check_goessat(test, varname="satellite"):
     """
@@ -49,12 +49,12 @@ def check_goessat(test, varname="satellite"):
             try:
                 test = int(test)
             except ValueError:
-                raise TypeError(varname + " must be an integer.")
+                raise TypeError("{0} must be an integer.".format(varname))
         else:
-            raise TypeError(varname + " must be an integer.")
+            raise TypeError("{0]} must be an integer.".format(varname))
     if test < 1:
-        raise ValueError(varname + " must be the number (integer) of a " + \
-                         "valid GOES satellite.")
+        raise ValueError("{0} must be the number (integer) of a " + \
+                         "valid GOES satellite.".format(varname))
     return test
 
 def check_photospheric(test, varname="photospheric"):
@@ -70,9 +70,9 @@ def check_photospheric(test, varname="photospheric"):
     if type(varname) is not str:
         varname = "photospheric"
     if type(test) is not bool:
-        raise TypeError(varname + " must be True or False.  \n" +
+        raise TypeError("{0} must be True or False.  \n" +
                         "False: assume coronal abundances (default).  \n" +
-                        "True: assume photosperic abundances.")
+                        "True: assume photosperic abundances.".format(varname))
 
 def check_date(test, varname="date"):
     """
@@ -100,9 +100,10 @@ def check_date(test, varname="date"):
             try: 
                 test = dateutil.parser.parse(test)
             except TypeError:
-                raise TypeError(varname + " must be a datetime object.")
+                raise TypeError(
+                    "{0} must be a datetime object.".format(varname))
         else:
-            raise TypeError(varname + " must be a datetime object.")
+            raise TypeError("{0} must be a datetime object.".format(varname))
     return test
     
 def check_goeslc(test, varname="This variable"):
@@ -119,4 +120,4 @@ def check_goeslc(test, varname="This variable"):
     if type(varname) is not str:
         varname = "This variable"
     if type(test) is not sunpy.lightcurve.sources.goes.GOESLightCurve:
-        raise TypeError(varname + " must be GOESLightCurve object.")
+        raise TypeError("{0} must be GOESLightCurve object.".format(varname))

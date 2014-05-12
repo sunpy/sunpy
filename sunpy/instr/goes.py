@@ -222,8 +222,8 @@ def goes_chianti_tem(longflux, shortflux, satellite=8,
     date = exceptions.check_date(date) # Check date type
     # Check flux arrays are of same length.
     if len(longflux) != len(shortflux):
-        raise ValueError("longflux and shortflux must have same number of " + \
-                         "elements.")
+        raise ValueError(
+            "longflux and shortflux must have same number of elements.")
     # PREPARE DATA
     # GOES 6 long channel flux before 1983-Jun-28 must be corrected by a
     # factor of 4.43/5.32
@@ -344,8 +344,9 @@ def goes_get_chianti_temp(fluxratio, satellite=8, photospheric=False):
         abund = "cor"
     else:
         abund = "pho"
-    with open(os.path.join(INSTR_FILES_PATH, "goes_chianti_temp_"+ abund +
-                           ".csv"), "r") as csvfile:
+    with open(os.path.join(INSTR_FILES_PATH,
+                           "goes_chianti_temp_{0}.csv".format(abund)),
+                           "r") as csvfile:
         startline = dropwhile(lambda l: l.startswith("#"), csvfile)
         csvreader = csv.DictReader(startline, delimiter=";")
         for row in csvreader:
@@ -357,10 +358,11 @@ def goes_get_chianti_temp(fluxratio, satellite=8, photospheric=False):
     # Ensure input values of flux ratio are within limits of model table
     if np.min(fluxratio) < np.min(modelratio) or \
       np.max(fluxratio) > np.max(modelratio):
-        raise ValueError("For GOES " + str(satellite) + ", all values in " +
-                         "fluxratio input must be within the range " +
-                         str(np.min(modelratio)) + " - " +
-                         str(np.max(modelratio)))
+        raise ValueError(
+            "For GOES {0}, all values in fluxratio input must be within " +
+            "the range {1} - {2}.".format(str(satellite),
+                                          str(np.min(modelratio)),
+                                          str(np.max(modelratio))))
 
     # Perform spline fit to model data to get temperatures for input
     # values of flux ratio
@@ -472,8 +474,9 @@ def goes_get_chianti_em(longflux, temp, satellite=8, photospheric=False):
         abund = "cor"
     else:
         abund = "pho"
-    with open(os.path.join(INSTR_FILES_PATH, "goes_chianti_em_" + abund +
-                           ".csv"), "r") as csvfile:
+    with open(os.path.join(INSTR_FILES_PATH,
+                           "goes_chianti_em_{0}.csv".format(abund)),
+                           "r") as csvfile:
         startline = dropwhile(lambda l: l.startswith("#"), csvfile)
         csvreader = csv.DictReader(startline, delimiter=";")
         for row in csvreader:
@@ -486,8 +489,8 @@ def goes_get_chianti_em(longflux, temp, satellite=8, photospheric=False):
     if np.min(np.log10(temp)) < np.min(modeltemp) or \
       np.max(np.log10(temp)) > np.max(modeltemp):
         raise ValueError("All values in temp must be within the range " +
-                         str(np.min(10**modeltemp)) + " - " +
-                         str(np.max(10**modeltemp)) + " MK.")
+                         "{0} - {1} MK.".format(str(np.min(10**modeltemp)),
+                                                str(np.max(10**modeltemp))))
 
     # Perform spline fit to model data
     spline = interpolate.splrep(modeltemp, modelflux, s=0)
