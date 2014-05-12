@@ -65,7 +65,7 @@ class TestRHESSISummaryLightCurve():
         sure they are not the same"""
         lc1 = sunpy.lightcurve.RHESSISummaryLightCurve.create(timerange_a)
         lc2 = sunpy.lightcurve.RHESSISummaryLightCurve.create(timerange_b)
-        assert not all(lc1.data == lc2.data)
+        assert not all(lc1.data[lc1.data.columns[0]] == lc2.data[lc2.data.columns[0]])
 
     def test_get_url(self, timerange_a, timerange_b):
         """Test the getting of urls"""
