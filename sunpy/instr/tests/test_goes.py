@@ -28,7 +28,7 @@ def test_goes_event_list():
     assert result[0]['noaa_active_region'] == 11226
 
 def test_temp_em():
-    goeslc = lc.GOESLightCurve.create("2014-01-01 00:00", "2014-01-01 01:00")
+    assert goeslc = lc.GOESLightCurve.create("2014-01-01 00:00", "2014-01-01 01:00")
 
 def test_goes_chianti_tem():
     longflux = np.array([7e-6])
