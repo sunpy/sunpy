@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Provides programs to process and analyze GOES X-ray data."""
+"""Provides programs to process and analyze RHESSI X-ray data."""
 from __future__ import absolute_import
 
 import datetime
@@ -67,7 +67,7 @@ class RHESSISummaryLightCurve(LightCurve):
         today = datetime.datetime.today()
         days_back = 3
         time_range = TimeRange(today - datetime.timedelta(days=days_back),
-                               today - datetime.timedelta(days=days_back-1))
+                               today - datetime.timedelta(days=days_back - 1))
         return cls._get_url_for_date_range(time_range)
 
     @staticmethod
