@@ -148,8 +148,8 @@ def calc_rad_loss(temp, em, obstime=None):
     if np.min(temp*1e6) < np.min(modeltemp) or \
       np.max(temp*1e6) > np.max(modeltemp):
         raise ValueError("All values in temp must be within the range " +
-                         str(np.min(modeltemp/1e6)) + " - " +
-                         str(np.max(modeltemp/1e6)) + " MK.")
+                         "{0} - {1} MK.".format(str(np.min(modeltemp/1e6)),
+                                                str(np.max(modeltemp/1e6))))
     # Perform spline fit to model data to get temperatures for input
     # values of flux ratio
     spline = interpolate.splrep(modeltemp, model_loss_rate, s=0)
@@ -433,7 +433,7 @@ def time_intervals(obstime):
     # check obstime is correct type and greater than min required length
     exceptions.check_datetime64(obstime, varname="obstime")
     if len(obstime) < 3:
-        raise ValueError("obstime must have 3 or more elements")
+        raise ValueError("obstime must have 3 or more elements.")
     obstime = obstime.astype("datetime64[ms]")  # convert to units of ms
     dt = (obstime[2:]-obstime[:-2]) / 2
     dt = np.insert(dt, 0, (obstime[1]-obstime[0])/2)
@@ -453,4 +453,5 @@ def check_datetime64(test, varname="This variable"):
     if type(varname) is not str:
         varname = "This variable"
     if type(test) is not np.ndarray or test.dtype.type is not np.datetime64:
-        raise TypeError(varname + " must be a numpy array of type datetime64.")
+        raise TypeError(
+            "{0} must be a numpy array of type datetime64.".format(varname))
