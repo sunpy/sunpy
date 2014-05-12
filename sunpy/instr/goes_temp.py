@@ -433,13 +433,12 @@ def time_intervals(obstime):
     exceptions.check_datetime64(obstime, varname="obstime")
     if len(obstime) < 3:
         raise ValueError("obstime must have 3 or more elements")
-    else:
-        obstime = obstime.astype("datetime64[ms]")  # convert to units of ms
-        dt = (obstime[2:]-obstime[:-2]) / 2
-        dt = np.insert(dt, 0, (obstime[1]-obstime[0])/2)
-        dt = np.append(dt, (obstime[-1]-obstime[-2])/2)
-        dt = dt.astype(float) / 1e3 # convert from [ms] to [s]
-        return dt
+    obstime = obstime.astype("datetime64[ms]")  # convert to units of ms
+    dt = (obstime[2:]-obstime[:-2]) / 2
+    dt = np.insert(dt, 0, (obstime[1]-obstime[0])/2)
+    dt = np.append(dt, (obstime[-1]-obstime[-2])/2)
+    dt = dt.astype(float) / 1e3 # convert from [ms] to [s]
+    return dt
 
 def check_datetime64(test, varname="This variable"):
     """Raise Exception if test isn't numpy array of dtype datetime64.
