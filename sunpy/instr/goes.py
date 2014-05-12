@@ -1,5 +1,6 @@
 from __future__ import absolute_import
 import sys
+import os.path
 
 import numpy as np
 import scipy.interpolate as interpolate
@@ -17,7 +18,7 @@ from sunpy.instr import exceptions
 
 __all__ = ['get_goes_event_list']
 
-INSTR_FILES_PATH = "instr_files/"
+INSTR_FILES_PATH = "instr_files"
 
 def get_goes_event_list(trange,goes_class_filter=None):
     """A function to retrieve a list of flares detected by GOES within a given time range.
@@ -343,8 +344,8 @@ def goes_get_chianti_temp(fluxratio, satellite=8, photospheric=False):
         abund = "cor"
     else:
         abund = "pho"
-    with open(INSTR_FILES_PATH + "goes_chianti_temp_"+abund+".csv",
-              "r") as csvfile:
+    with open(os.path.join(INSTR_FILES_PATH, "goes_chianti_temp_"+ abund +
+                           ".csv"), "r") as csvfile:
         startline = dropwhile(lambda l: l.startswith("#"), csvfile)
         csvreader = csv.DictReader(startline, delimiter=";")
         for row in csvreader:
@@ -471,8 +472,8 @@ def goes_get_chianti_em(longflux, temp, satellite=8, photospheric=False):
         abund = "cor"
     else:
         abund = "pho"
-    with open(INSTR_FILES_PATH + "goes_chianti_em_"+abund+".csv",
-              "r") as csvfile:
+    with open(os.path.join(INSTR_FILES_PATH, "goes_chianti_em_" + abund +
+                           ".csv"), "r") as csvfile:
         startline = dropwhile(lambda l: l.startswith("#"), csvfile)
         csvreader = csv.DictReader(startline, delimiter=";")
         for row in csvreader:
