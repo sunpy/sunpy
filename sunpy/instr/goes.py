@@ -120,7 +120,7 @@ def temp_em(goeslc, photospheric=False):
     longflux = np.array(goeslc.data.xrsb)
     shortflux = np.array(goeslc.data.xrsa)
     satellite = int(goeslc.meta["TELESCOP"].split()[1])
-    date = str(goeslc.data.index[0])
+    date = goeslc.meta["DATE-OBS"]
 
     # Find temperature and emission measure with goes_chianti_tem
     temp, em = goes_chianti_tem(longflux, shortflux, satellite=satellite,
