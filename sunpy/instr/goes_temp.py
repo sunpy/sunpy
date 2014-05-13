@@ -148,8 +148,8 @@ def calc_rad_loss(temp, em, obstime=None):
     if np.min(temp*1e6) < np.min(modeltemp) or \
       np.max(temp*1e6) > np.max(modeltemp):
         raise ValueError("All values in temp must be within the range " +
-                         "{0} - {1} MK.".format(str(np.min(modeltemp/1e6)),
-                                                str(np.max(modeltemp/1e6))))
+                         "{0} - {1} MK.".format(np.min(modeltemp/1e6),
+                                                np.max(modeltemp/1e6)))
     # Perform spline fit to model data to get temperatures for input
     # values of flux ratio
     spline = interpolate.splrep(modeltemp, model_loss_rate, s=0)
