@@ -337,7 +337,7 @@ def goes_get_chianti_temp(fluxratio, satellite=8, photospheric=False):
     modelratio = []
     # Determine name of column in csv file containing model ratio values
     # for relevant GOES satellite
-    label = "ratioGOES"+str(satellite)
+    label = "ratioGOES{0}".format(satellite)
     # Read data representing appropriate temperature--flux ratio
     # relationship depending on satellite number and assumed abundances.
     if photospheric is False:
@@ -360,9 +360,8 @@ def goes_get_chianti_temp(fluxratio, satellite=8, photospheric=False):
       np.max(fluxratio) > np.max(modelratio):
         raise ValueError(
             "For GOES {0}, all values in fluxratio input must be within " +
-            "the range {1} - {2}.".format(str(satellite),
-                                          str(np.min(modelratio)),
-                                          str(np.max(modelratio))))
+            "the range {1} - {2}.".format(satellite, np.min(modelratio),
+                                          np.max(modelratio)))
 
     # Perform spline fit to model data to get temperatures for input
     # values of flux ratio
@@ -466,7 +465,7 @@ def goes_get_chianti_em(longflux, temp, satellite=8, photospheric=False):
     modelflux = []
     # Determine name of column in csv file containing model ratio values
     # for relevant GOES satellite
-    label = "longfluxGOES"+str(satellite)
+    label = "longfluxGOES{0}".format(satellite)
 
     # Read data representing appropriate temperature--long flux
     # relationship depending on satellite number and assumed abundances.
@@ -489,8 +488,8 @@ def goes_get_chianti_em(longflux, temp, satellite=8, photospheric=False):
     if np.min(np.log10(temp)) < np.min(modeltemp) or \
       np.max(np.log10(temp)) > np.max(modeltemp):
         raise ValueError("All values in temp must be within the range " +
-                         "{0} - {1} MK.".format(str(np.min(10**modeltemp)),
-                                                str(np.max(10**modeltemp))))
+                         "{0} - {1} MK.".format(np.min(10**modeltemp),
+                                                np.max(10**modeltemp)))
 
     # Perform spline fit to model data
     spline = interpolate.splrep(modeltemp, modelflux, s=0)
