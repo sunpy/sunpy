@@ -145,8 +145,8 @@ def calc_rad_loss(temp, em, obstime=None):
     modeltemp = np.array(modeltemp)
     model_loss_rate = np.array(model_loss_rate)
     # Ensure input values of flux ratio are within limits of model table
-    if np.min(temp*1e6) < np.min(modeltemp) or \
-      np.max(temp*1e6) > np.max(modeltemp):
+    if np.min(temp*1e6) < np.min(modeltemp) or
+        np.max(temp*1e6) > np.max(modeltemp):
         raise ValueError("All values in temp must be within the range " +
                          "{0} - {1} MK.".format(np.min(modeltemp/1e6),
                                                 np.max(modeltemp/1e6)))
@@ -327,7 +327,7 @@ def goes_lx(longflux, shortflux, obstime=None, date=None):
         dt = time_intervals(obstime)
         # Check that times are in chronological order
         if np.min(dt) <= 0:
-            raise ValueError("times in obstime must be in " + \
+            raise ValueError("times in obstime must be in "
                              "chronological order.")
         longlum_int = np.sum(longlum*dt)
         shortlum_int = np.sum(shortlum*dt)

@@ -356,8 +356,8 @@ def goes_get_chianti_temp(fluxratio, satellite=8, photospheric=False):
     modelratio = np.array(modelratio)
 
     # Ensure input values of flux ratio are within limits of model table
-    if np.min(fluxratio) < np.min(modelratio) or \
-      np.max(fluxratio) > np.max(modelratio):
+    if np.min(fluxratio) < np.min(modelratio) or
+        np.max(fluxratio) > np.max(modelratio):
         raise ValueError(
             "For GOES {0}, all values in fluxratio input must be within " +
             "the range {1} - {2}.".format(satellite, np.min(modelratio),
@@ -456,7 +456,7 @@ def goes_get_chianti_em(longflux, temp, satellite=8, photospheric=False):
     exceptions.check_photospheric(photospheric) # Check photospheric input
     # check input arrays are of same length
     if len(longflux) != len(temp):
-        raise ValueError("longflux and temp must have same number of " + \
+        raise ValueError("longflux and temp must have same number of "
                          "elements.")
 
     # Initialize lists to hold model data of temperature - long channel
@@ -485,9 +485,9 @@ def goes_get_chianti_em(longflux, temp, satellite=8, photospheric=False):
     modelflux = np.array(modelflux)
 
     # Ensure input values of flux ratio are within limits of model table
-    if np.min(np.log10(temp)) < np.min(modeltemp) or \
-      np.max(np.log10(temp)) > np.max(modeltemp):
-        raise ValueError("All values in temp must be within the range " +
+    if np.min(np.log10(temp)) < np.min(modeltemp) or
+        np.max(np.log10(temp)) > np.max(modeltemp):
+        raise ValueError("All values in temp must be within the range "
                          "{0} - {1} MK.".format(np.min(10**modeltemp),
                                                 np.max(10**modeltemp)))
 
