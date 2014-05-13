@@ -241,8 +241,8 @@ def goes_chianti_tem(longflux, shortflux, satellite=8,
     # Calculate short to long channel ratio.
     # Data which is not good have their ratio value set to 0.003.
     # See Notes section in docstring above.
-    index = np.where(shortflux_corrected < 1e-10) or \
-            np.where(longflux_corrected < 3e-8)
+    index = np.logical_or(shortflux_corrected < 1e-10,
+                          longflux_corrected < 3e-8)
     fluxratio = shortflux_corrected / longflux_corrected
     fluxratio[index] = 0.003
 
