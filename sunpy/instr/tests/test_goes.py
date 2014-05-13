@@ -1,11 +1,13 @@
 from __future__ import absolute_import
 
 import numpy as np
-
+import copy
 import datetime
+
 from sunpy.time import TimeRange
 from sunpy.instr import goes
 import sunpy.lightcurve as lc
+from pandas.util.testing import assert_frame_equal
 
 def test_goes_event_list():
     trange=TimeRange('2011-06-07 00:00','2011-06-08 00:00')
@@ -28,8 +30,27 @@ def test_goes_event_list():
     assert result[0]['noaa_active_region'] == 11226
 
 def test_temp_em():
-    assert goeslc = lc.GOESLightCurve.create("2014-01-01 00:00", "2014-01-01 01:00")
-
+    # Create GOESLightcurve object, then create new one with
+    # temperature & EM using with temp_em().
+    goeslc = lc.GOESLightCurve.create("2014-01-01 00:00", "2014-01-01 01:00")
+    goeslc_new = goes.temp_em(goeslc)
+    # Find temperature and EM manually with goes_chianti_tem()
+    t, em = goes.goes_chianti_tem(np.array(goeslc.data.xrsb),
+                                  np.array(goeslc.data.xrsa),
+                                  satellite = \
+                                  int(goeslc.meta["TELESCOP"].split()[1]),
+                                  date=goeslc.meta["DATE-OBS"])
+    # Check that temperature and EM arrays from goes_chianti_tem()
+    # are same as those in new GOESLightcurve object.
+    assert goeslc_new.data.temperature.all() == t.all()
+    assert goeslc_new.data.em.all() == em.all()
+    # Check rest of data frame of new GOESLightCurve object is same
+    # as that in original object.
+    goeslc_revert = copy.deepcopy(goeslc_new)
+    del goeslc_revert.data["temperature"]
+    del goeslc_revert.data["em"]
+    assert_frame_equal(goeslc_revert.data, goeslc.data)
+    
 def test_goes_chianti_tem():
     longflux = np.array([7e-6])
     shortflux = np.array([7e-7])
