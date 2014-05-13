@@ -51,7 +51,7 @@ def check_goessat(test, varname="satellite"):
             except ValueError:
                 raise TypeError("{0} must be an integer.".format(varname))
         else:
-            raise TypeError("{0]} must be an integer.".format(varname))
+            raise TypeError("{0} must be an integer.".format(varname))
     if test < 1:
         raise ValueError("{0} must be the number (integer) of a " + \
                          "valid GOES satellite.".format(varname))
