@@ -53,7 +53,7 @@ def check_goessat(test, varname="satellite"):
         else:
             raise TypeError("{0} must be an integer.".format(varname))
     if test < 1:
-        raise ValueError("{0} must be the number (integer) of a " + \
+        raise ValueError("{0} must be the number (integer) of a "
                          "valid GOES satellite.".format(varname))
     return test
 
@@ -70,8 +70,8 @@ def check_photospheric(test, varname="photospheric"):
     if type(varname) is not str:
         varname = "photospheric"
     if type(test) is not bool:
-        raise TypeError("{0} must be True or False.  \n" +
-                        "False: assume coronal abundances (default).  \n" +
+        raise TypeError("{0} must be True or False.  \n"
+                        "False: assume coronal abundances (default).  \n"
                         "True: assume photosperic abundances.".format(varname))
 
 def check_date(test, varname="date"):
