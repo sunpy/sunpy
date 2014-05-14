@@ -225,10 +225,10 @@ def goes_chianti_tem(longflux, shortflux, satellite=8,
 
     """
     # ENSURE INPUTS ARE OF CORRECT TYPE AND VALID VALUES
-    exceptions.check_float(longflux, varname="longflux") # Check longflux type
-    exceptions.check_float(shortflux, varname="shortflux") # Check shortflux type
+    longflux = np.array(longflux, dtype=np.float64)
+    shortflux = np.array(shortflux, dtype=np.float64)
     int(satellite)
-    if satellitte < 1:
+    if satellite < 1:
         raise ValueError("satellite must be the number of a "
                          "valid GOES satellite (>1).")
     date = parse_time(date)
@@ -337,9 +337,9 @@ def _goes_get_chianti_temp(fluxratio, satellite=8, photospheric=False):
     """
 
     # check inputs are correct
-    exceptions.check_float(fluxratio, varname="fluxratio") # Check fluxratio type
+    fluxratio = np.array(fluxratio, dtype=np.float64)
     int(satellite)
-    if satellitte < 1:
+    if satellite < 1:
         raise ValueError("satellite must be the number of a "
                          "valid GOES satellite (>1).")
     exceptions.check_photospheric(photospheric) # Check photospheric input
@@ -460,11 +460,11 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, photospheric=False):
 
     """
 
-    # Check inputs are correct
-    exceptions.check_float(longflux, varname="longflux") # Check longflux input
-    exceptions.check_float(temp, varname="temp") # Check temp input
+    # Check inputs are of correct type
+    longflux = np.array(longflux, dtype=np.float64)
+    temp = np.array(temp, dtype=np.float64)
     int(satellite)
-    if satellitte < 1:
+    if satellite < 1:
         raise ValueError("satellite must be the number of a "
                          "valid GOES satellite (>1).")
     exceptions.check_photospheric(photospheric) # Check photospheric input
