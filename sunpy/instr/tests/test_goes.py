@@ -54,11 +54,62 @@ def test_temp_em():
 def test_goes_chianti_tem():
     longflux = np.array([7e-6])
     shortflux = np.array([7e-7])
-    temp, em = goes.goes_chianti_tem(longflux, shortflux, satellite=15,
-                                     date='2014-04-16')
-    assert np.around(temp[0], decimals=2) == 11.28
-    assert em[0] < 4.79e+48 and em[0] > 4.78e+48
+    date = "2014-04-16"
+    # test case 1: satellite > 7, abundances = coronal
+    temp1, em1 = goes.goes_chianti_tem(longflux, shortflux, satellite=15,
+                                     date=date)
+    assert np.around(temp1[0], decimals=2) == 11.28
+    assert em1[0] < 4.79e+48 and em1[0] > 4.78e+48
 
+    # test case 2: satellite > 7, abundances = photospheric
+    temp2, em2 = goes.goes_chianti_tem(longflux, shortflux, satellite=15,
+                                       date=date,
+                                       abundances="photospheric")
+        assert temp1[0] < 11.25 and temp1[0] > 11.24
+    assert em2[0] < 1.12e+49 and em2[0] > 1.11e+49
+    
+    # test case 3: satellite < 8 and != 6, abundances = coronal
+    temp3, em3 = goes.goes_chianti_tem(longflux, shortflux, satellite=5,
+                                       date=date,
+                                       abundances="coronal")
+    assert temp3[0] < 11.43 and temp3[0] > 11.42
+    assert em3[0] < 3.85e+48 and em3[0] > 3.84e+48
+
+    # test case 4: satellite < 8 and != 6, abundances = photospheric
+    temp4, em4 = goes.goes_chianti_tem(longflux, shortflux, satellite=5,
+                                       date=date,
+                                       abundances="photospheric")
+    assert temp4[0] < 10.42 and temp4[0] > 10.41
+    assert em4[0] < 8.81e+48 and em4[0] > 8.80e+48
+
+    # test case 5: satellite = 6, date < 1983-06-28, abundances = coronal
+    temp5, em5 = goes.goes_chianti_tem(longflux, shortflux, satellite=6,
+                                       date="1983-06-27",
+                                       abundances="coronal")
+    assert temp5[0] < 12.30 and temp5[0] > 12.29
+    assert em5[0] < 3.13e+48 and em5[0] > 3.12e+48
+    
+    # test case 6: satellite = 6, date < 1983-06-28, abundances = photospheric
+    temp6, em6 = goes.goes_chianti_tem(longflux, shortflux, satellite=6,
+                                       date="1983-06-27",
+                                       abundances="photospheric")
+    assert temp6[0] < 11.44 and temp6[0] > 11.43
+    assert em6[0] < 6.74e+48 and em6[0] > 6.73e+48
+
+    # test case 7: satellite = 6, date > 1983-06-28, abundances = coronal
+    temp7, em7 = goes.goes_chianti_tem(longflux, shortflux, satellite=6,
+                                       date=date,
+                                       abundances="coronal")
+    assert temp7[0] < 11.34 and temp7[0] > 11.33
+    assert em7[0] < 4.08e+48 and em7[0] > 4.07e+48
+    
+    # test case 8: satellite = 6, date > 1983-06-28, abundances = photospheric
+    temp8, em8 = goes.goes_chianti_tem(longflux, shortflux, satellite=6,
+                                       date=date,
+                                       abundances="photospheric")
+    assert temp8[0] < 10.36 and temp8[0] > 10.35
+    assert em8[0] < 9.94e+48 and em8[0] > 9.93e+48
+    
 def test_goes_get_chianti_temp():
     fluxratio = np.array([0.1])
     temp = goes.goes_get_chianti_temp(fluxratio, satellite=15)
