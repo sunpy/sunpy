@@ -10,8 +10,8 @@
 Allow representation of queries as logic expressions. This module makes
 sure that attributes that are combined using the two logic operations AND (&)
 and OR (|) always are in disjunctive normal form, that is, there are only two
-levels ­- the first being disjunction and the second being conjunction. In other
-words, every combinations of attributes looks like this:
+levels ­- the first being disjunction and the second being conjunction.
+In other words, every combinations of attributes looks like this:
 (a AND b AND c) OR (d AND e).
 
 Walkers are used to traverse the tree that results from combining attributes.
@@ -29,6 +29,7 @@ from __future__ import absolute_import
 from sunpy.util.multimethod import MultiMethod
 
 # XXX: Maybe allow other normal forms.
+
 
 class Attr(object):
     """ This is the base for all attributes. """
@@ -252,6 +253,7 @@ def and_(*args):
     for elem in args:
         value &= elem
     return value
+
 
 def or_(*args):
     """ Trick operator precendence.

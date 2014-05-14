@@ -33,48 +33,55 @@ __all__ = ['Wave', 'Time', 'Extent', 'Field', 'Provider', 'Source',
 
 TIMEFORMAT = '%Y%m%d%H%M%S'
 
+
 class _Range(object):
+
     def __init__(self, min_, max_, create):
         self.min = min_
         self.max = max_
         self.create = create
-    
+
     def __xor__(self, other):
         if not isinstance(other, self.__class__):
             return NotImplemented
-        
+
         new = DummyAttr()
-        if self.min < other.min:            
+        if self.min < other.min:
             new |= self.create(self.min, min(other.min, self.max))
         if other.max < self.max:
             new |= self.create(other.max, self.max)
         return new
-    
+
     def __contains__(self, other):
         return self.min <= other.min and self.max >= other.max
 
 
 class Wave(Attr, _Range):
+
     def __init__(self, wavemin, wavemax, waveunit='Angstrom'):
         self.min, self.max = sorted(
             to_angstrom(v, waveunit) for v in [float(wavemin), float(wavemax)]
         )
         self.unit = 'Angstrom'
-        
+
         Attr.__init__(self)
         _Range.__init__(self, self.min, self.max, self.__class__)
-    
+
     def collides(self, other):
         return isinstance(other, self.__class__)
 
     def __repr__(self):
-	return '<Wave({0!r}, {1!r}, {2!r})>'.format(self.min, self.max, self.unit)
+        return '<Wave({0!r}, {1!r}, {2!r})>'.format(self.min,
+                                                    self.max,
+                                                    self.unit)
 
 
 class Time(Attr, _Range):
+
     def __init__(self, start, end=None, near=None):
         if end is None and not isinstance(start, TimeRange):
-            raise ValueError("Specify start and end or start has to be a TimeRange")
+            raise ValueError(
+                "Specify start and end or start has to be a TimeRange")
         if isinstance(start, TimeRange):
             self.start = start.t1
             self.end = start.t2
@@ -85,40 +92,42 @@ class Time(Attr, _Range):
 
         _Range.__init__(self, self.start, self.end, self.__class__)
         Attr.__init__(self)
-    
+
     def collides(self, other):
         return isinstance(other, self.__class__)
-    
+
     def __xor__(self, other):
         if not isinstance(other, self.__class__):
             raise TypeError
         if self.near is not None or other.near is not None:
             raise TypeError
         return _Range.__xor__(self, other)
-    
+
     def pad(self, timedelta):
         return Time(self.start - timedelta, self.start + timedelta)
-    
+
     def __repr__(self):
         return '<Time(%r, %r, %r)>' % (self.start, self.end, self.near)
 
 
 class Extent(Attr):
     # pylint: disable=R0913
+
     def __init__(self, x, y, width, length, atype):
         Attr.__init__(self)
-        
+
         self.x = x
         self.y = y
         self.width = width
         self.length = length
         self.type = atype
-    
+
     def collides(self, other):
         return isinstance(other, self.__class__)
 
 
 class Field(ValueAttr):
+
     def __init__(self, fielditem):
         ValueAttr.__init__(self, {
             ('field', 'fielditem'): fielditem
@@ -126,16 +135,18 @@ class Field(ValueAttr):
 
 
 class _VSOSimpleAttr(Attr):
+
     """ A _SimpleAttr is an attribute that is not composite, i.e. that only
     has a single value, such as, e.g., Instrument('eit'). """
+
     def __init__(self, value):
         Attr.__init__(self)
-        
+
         self.value = value
-    
+
     def collides(self, other):
         return isinstance(other, self.__class__)
-    
+
     def __repr__(self):
         return "<%s(%r)>" % (self.__class__.__name__, self.value)
 
@@ -197,6 +208,7 @@ walker = AttrWalker()
 # to the attribute tree passed in as root. Different attributes require
 # different functions for conversion into query blocks.
 
+
 @walker.add_creator(ValueAttr, AttrAnd)
 # pylint: disable=E0102,C0103,W0613
 def _create(wlk, root, api):
@@ -205,6 +217,7 @@ def _create(wlk, root, api):
     wlk.apply(root, api, value)
     return [value]
 
+
 @walker.add_applier(ValueAttr)
 # pylint: disable=E0102,C0103,W0613
 def _apply(wlk, root, api, queryblock):
@@ -212,11 +225,12 @@ def _apply(wlk, root, api, queryblock):
     for k, v in root.attrs.iteritems():
         lst = k[-1]
         rest = k[:-1]
-        
+
         block = queryblock
         for elem in rest:
             block = block[elem]
         block[lst] = v
+
 
 @walker.add_applier(AttrAnd)
 # pylint: disable=E0102,C0103,W0613
@@ -224,6 +238,7 @@ def _apply(wlk, root, api, queryblock):
     """ Implementation detail. """
     for attr in root.attrs:
         wlk.apply(attr, api, queryblock)
+
 
 @walker.add_creator(AttrOr)
 # pylint: disable=E0102,C0103,W0613
@@ -247,10 +262,10 @@ walker.add_converter(Extent)(
 
 walker.add_converter(Time)(
     lambda x: ValueAttr({
-            ('time', 'start'): x.start.strftime(TIMEFORMAT),
-            ('time', 'end'): x.end.strftime(TIMEFORMAT) ,
-            ('time', 'near'): (
-                x.near.strftime(TIMEFORMAT) if x.near is not None else None),
+        ('time', 'start'): x.start.strftime(TIMEFORMAT),
+        ('time', 'end'): x.end.strftime(TIMEFORMAT),
+        ('time', 'near'): (
+            x.near.strftime(TIMEFORMAT) if x.near is not None else None),
     })
 )
 
@@ -260,9 +275,9 @@ walker.add_converter(_VSOSimpleAttr)(
 
 walker.add_converter(Wave)(
     lambda x: ValueAttr({
-            ('wave', 'wavemin'): x.min,
-            ('wave', 'wavemax'): x.max,
-            ('wave', 'waveunit'): x.unit,
+        ('wave', 'wavemin'): x.min,
+        ('wave', 'wavemax'): x.max,
+        ('wave', 'waveunit'): x.unit,
     })
 )
 
@@ -278,6 +293,8 @@ filter_results = MultiMethod(lambda *a, **kw: (a[0], ))
 # that match all of them - this is implementing  by ANDing the pool of items
 # with the matched items - only the ones that match everything are there
 # after this.
+
+
 @filter_results.add_dec(AttrAnd)
 def _(attr, results):
     res = set(results)
@@ -288,6 +305,8 @@ def _(attr, results):
 # If we filter with ORed attributes, the only attributes that should be
 # removed are the ones that match none of them. That's why we build up the
 # resulting set by ORing all the matching items.
+
+
 @filter_results.add_dec(AttrOr)
 def _(attr, results):
     res = set()
@@ -296,6 +315,8 @@ def _(attr, results):
     return res
 
 # Filter out items by comparing attributes.
+
+
 @filter_results.add_dec(_VSOSimpleAttr)
 def _(attr, results):
     attrname = attr.__class__.__name__.lower()
@@ -307,6 +328,8 @@ def _(attr, results):
     )
 
 # The dummy attribute does not filter at all.
+
+
 @filter_results.add_dec(DummyAttr, Field)
 def _(attr, results):
     return set(results)
@@ -326,6 +349,7 @@ def _(attr, results):
         attr.max >= to_angstrom(float(it.wave.wavemin), it.wave.waveunit)
     )
 
+
 @filter_results.add_dec(Time)
 def _(attr, results):
     return set(
@@ -339,6 +363,7 @@ def _(attr, results):
         and
         attr.max >= datetime.strptime(it.time.start, TIMEFORMAT)
     )
+
 
 @filter_results.add_dec(Extent)
 def _(attr, results):

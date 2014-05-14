@@ -59,6 +59,7 @@ class Results(object):
     """ Returned by VSOClient.get. Use .wait to wait
     for completion of download.
     """
+
     def __init__(self, callback, n=0, done=None):
         self.callback = callback
         self.n = self.total = n
@@ -92,7 +93,7 @@ class Results(object):
         with self.lock:
             self.n -= 1
             if self.progress is not None:
-               self.progress.poke()
+                self.progress.poke()
             if not self.n:
                 if self.done is not None:
                     self.map_ = self.done(self.map_)
@@ -165,6 +166,7 @@ def iter_errors(response):
 
 
 class QueryResponse(list):
+
     def __init__(self, lst, queryresult=None):
         super(QueryResponse, self).__init__(lst)
         self.queryresult = queryresult
@@ -197,57 +199,66 @@ class QueryResponse(list):
         return (
             datetime.strptime(
                 min(record.time.start for record in self
-                  if record.time.start is not None), TIMEFORMAT),
+                    if record.time.start is not None), TIMEFORMAT),
             datetime.strptime(
                 max(record.time.end for record in self
-                  if record.time.end is not None), TIMEFORMAT)
+                    if record.time.end is not None), TIMEFORMAT)
         )
 
     def show(self):
         """Print out human-readable summary of records retrieved"""
 
         table = [
-          [
-            str(datetime.strptime(record.time.start, TIMEFORMAT))
-              if record.time.start is not None else 'N/A',
-            str(datetime.strptime(record.time.end, TIMEFORMAT))
-              if record.time.end is not None else 'N/A',
-            record.source,
-            record.instrument,
-            record.extent.type
-              if record.extent.type is not None else 'N/A'
-          ] for record in self]
-        table.insert(0, ['----------','--------','------','----------','----'])
-        table.insert(0, ['Start time','End time','Source','Instrument','Type'])
+            [
+                str(datetime.strptime(record.time.start, TIMEFORMAT))
+                    if record.time.start is not None else 'N/A',
+                str(datetime.strptime(record.time.end, TIMEFORMAT))
+                    if record.time.end is not None else 'N/A',
+                record.source,
+                record.instrument,
+                record.extent.type
+                    if record.extent.type is not None else 'N/A'
+            ] for record in self]
+        table.insert(0, ['----------', '--------', '------', '----------', '----'])
+        table.insert(0, ['Start time', 'End time', 'Source', 'Instrument', 'Type'])
 
-        print(print_table(table, colsep = '  ', linesep='\n'))
+        print(print_table(table, colsep='  ', linesep='\n'))
 
     def add_error(self, exception):
         self.errors.append(exception)
 
+
 class DownloadFailed(Exception):
     pass
+
 
 class MissingInformation(Exception):
     pass
 
+
 class UnknownMethod(Exception):
     pass
+
 
 class MultipleChoices(Exception):
     pass
 
+
 class UnknownVersion(Exception):
     pass
+
 
 class UnknownStatus(Exception):
     pass
 
+
 class VSOClient(object):
     """ Main VSO Client. """
+
     method_order = [
         'URL-TAR_GZ', 'URL-ZIP', 'URL-TAR', 'URL-FILE', 'URL-packaged'
     ]
+
     def __init__(self, url=None, port=None, api=None):
         if api is None:
             if url is None:
@@ -255,7 +266,7 @@ class VSOClient(object):
             if port is None:
                 port = DEFAULT_PORT
 
-            api = client.Client(url, transport = WellBehavedHttpTransport())
+            api = client.Client(url, transport=WellBehavedHttpTransport())
             api.set_options(port=port)
         self.api = api
 
@@ -299,7 +310,9 @@ class VSOClient(object):
 
         Returns
         -------
-        out : :py:class:`QueryResult` (enhanced list) of matched items. Return value of same type as the one of :py:meth:`VSOClient.query`.
+        out : :py:class:`QueryResult` (enhanced list) of matched items.
+              Return value of same type as the one of
+              :py:meth:`VSOClient.query`.
         """
         query = and_(*query)
 
@@ -334,7 +347,7 @@ class VSOClient(object):
                     continue
                 if not hasattr(provideritem.record, 'recorditem'):
                     continue
-                if not provideritem.provider in providers:
+                if provideritem.provider not in providers:
                     providers[provider] = provideritem
                     fileids |= set(
                         record_item.fileid
@@ -438,9 +451,11 @@ class VSOClient(object):
 
         Numeric Ranges:
 
-            - May be entered as a string or any numeric type for equality matching
+            - May be entered as a string or any numeric type for equality
+              matching
             - May be a string of the format '(min) - (max)' for range matching
-            - May be a string of the form '(operator) (number)' where operator is one of: lt gt le ge < > <= >=
+            - May be a string of the form '(operator) (number)' where operator
+              is one of: lt gt le ge < > <= >=
 
 
         Examples
@@ -453,7 +468,9 @@ class VSOClient(object):
 
         Returns
         -------
-        out : :py:class:`QueryResult` (enhanced list) of matched items. Return value of same type as the one of :py:class:`VSOClient.query`.
+        out : :py:class:`QueryResult` (enhanced list) of matched items.
+               Return value of same type as the one of
+               :py:class:`VSOClient.query`.
         """
         sdk = lambda key: lambda value: {key: value}
         ALIASES = {
@@ -512,12 +529,13 @@ class VSOClient(object):
     def latest(self):
         """ Return newest record (limited to last week). """
         return self.query_legacy(
-            datetime.utcnow()  - timedelta(7),
+            datetime.utcnow() - timedelta(7),
             datetime.utcnow(),
             time_near=datetime.utcnow()
         )
 
-    def get(self, query_response, path=None, methods=('URL-FILE',), downloader=None, site=None):
+    def get(self, query_response, path=None, methods=('URL-FILE',),
+            downloader=None, site=None):
         """
         Download data specified in the query_response.
 
@@ -528,8 +546,8 @@ class VSOClient(object):
         path : str
             Specify where the data is to be downloaded. Can refer to arbitrary
             fields of the QueryResponseItem (instrument, source, time, ...) via
-            string formatting, moreover the file-name of the file downloaded can
-            be refered to as file, e.g.
+            string formatting, moreover the file-name of the file downloaded
+            can be refered to as file, e.g.
             "{source}/{instrument}/{time.start}/{file}".
         methods : {list of str}
             Methods acceptable to user.
@@ -553,7 +571,8 @@ class VSOClient(object):
 
         Returns
         -------
-        out : :py:class:`Results` object that supplies a list of filenames with meta attributes containing the respective QueryResponse.
+        out : :py:class:`Results` object that supplies a list of filenames with
+              meta attributes containing the respective QueryResponse.
 
         Examples
         --------
@@ -571,7 +590,7 @@ class VSOClient(object):
                 lambda _: None, 1, lambda mp: self.link(query_response, mp)
             )
         if path is None:
-            path = os.path.join(config.get('downloads','download_dir'),
+            path = os.path.join(config.get('downloads', 'download_dir'),
                                 '{file}')
         fileids = VSOClient.by_fileid(query_response)
         if not fileids:
@@ -580,12 +599,12 @@ class VSOClient(object):
         # Adding the site parameter to the info
         info = {}
         if site is not None:
-            info['site']=site
+            info['site'] = site
 
         self.download_all(
             self.api.service.GetData(
                 self.make_getdatarequest(query_response, methods, info)
-                ),
+            ),
             methods, downloader, path,
             fileids, res
         )
@@ -632,7 +651,8 @@ class VSOClient(object):
             request__method__methodtype=methods,
             request__info=info,
             request__datacontainer__datarequestitem=[
-                self.make('DataRequestItem', provider=k, fileiditem__fileid=[v])
+                self.make('DataRequestItem', provider=k,
+                          fileiditem__fileid=[v])
                 for k, v in maps.iteritems()
             ]
         )
@@ -720,8 +740,8 @@ class VSOClient(object):
         """ Override to costumize download action. """
         if method.startswith('URL'):
             return dw.download(url, partial(self.mk_filename, *args),
-                        callback, errback
-            )
+                               callback, errback
+                               )
         raise NoData
 
     @staticmethod
@@ -758,6 +778,7 @@ class VSOClient(object):
 
 class InteractiveVSOClient(VSOClient):
     """ Client for use in the REPL. Prompts user for data if required. """
+
     def multiple_choices(self, choices, response):
         while True:
             for n, elem in enumerate(choices):
@@ -795,7 +816,8 @@ class InteractiveVSOClient(VSOClient):
         else:
             return self.query_legacy(*args, **kwargs)
 
-    def get(self, query_response, path=None, methods=('URL-FILE',), downloader=None):
+    def get(self, query_response, path=None, methods=('URL-FILE',),
+            downloader=None):
         """The path expands ``~`` to refer to the user's home directory.
         If the given path is an already existing directory, ``{file}`` is
         appended to this path. After that, all received parameters (including
@@ -810,6 +832,8 @@ class InteractiveVSOClient(VSOClient):
 
 
 g_client = None
+
+
 def search(*args, **kwargs):
     # pylint: disable=W0603
     global g_client
@@ -818,6 +842,7 @@ def search(*args, **kwargs):
     return g_client.search(*args, **kwargs)
 
 search.__doc__ = InteractiveVSOClient.search.__doc__
+
 
 def get(query_response, path=None, methods=('URL-FILE',), downloader=None):
     # pylint: disable=W0603
@@ -836,4 +861,3 @@ if __name__ == "__main__":
         vso.attrs.Time((2011, 1, 1), (2011, 1, 1, 10)),
         vso.attrs.Instrument('aia')
     )
-    #res = client.get(result, path="/download/path").wait()

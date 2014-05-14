@@ -20,13 +20,16 @@ from sunpy.util.net import download_fileobj
 
 __all__ = ['HelioviewerClient']
 
+
 class HelioviewerClient:
     """Helioviewer.org Client"""
+
     def __init__(self, url="http://helioviewer.org/api/"):
         self._api = url
 
     def get_data_sources(self, **kwargs):
-        """Returns a structured list of datasources available at Helioviewer.org"""
+        """Returns a structured list of datasources available at Helioviewer.org
+        """
         params = {"action": "getDataSources"}
         params.update(kwargs)
 
@@ -57,7 +60,8 @@ class HelioviewerClient:
         Returns
         -------
         out : dict
-            A dictionary containing metainformation for the closest image matched
+            A dictionary containing metainformation for the closest image
+            matched
 
         Examples
         --------
@@ -82,8 +86,8 @@ class HelioviewerClient:
 
     def download_jp2(self, date, directory=None, overwrite=False, **kwargs):
         """
-        Downloads the JPEG 2000 that most closely matches the specified time and
-        data source.
+        Downloads the JPEG 2000 that most closely matches the specified time
+        and data source.
 
         The data source may be specified either using it's sourceId from the
         get_data_sources query, or a combination of observatory, instrument,
@@ -161,7 +165,8 @@ class HelioviewerClient:
             of 2. The full-res scale of an AIA image is 0.6.
         layers : string
             Each layer string is comma-separated with these values, e.g.:
-            "[sourceId,visible,opacity]" or "[obs,inst,det,meas,visible,opacity]"
+            "[sourceId,visible,opacity]" or
+            "[obs,inst,det,meas,visible,opacity]".
             Mulitple layer string are by commas: "[layer1],[layer2],[layer3]"
         directory : string
             (Optional)  Directory to download JPEG 2000 image to.
@@ -238,7 +243,8 @@ class HelioviewerClient:
 
         response = self._request(params)
         try:
-            filepath = download_fileobj(response, directory, overwrite=overwrite)
+            filepath = download_fileobj(
+                response, directory, overwrite=overwrite)
         finally:
             response.close()
 
