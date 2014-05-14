@@ -136,17 +136,16 @@ def extract_time(string):
     return bestmatch
 
 
-def parse_time(time_string, tai=False):
+def parse_time(time_string, time_format=basestring):
     """Given a time string will parse and return a datetime object.
     Similar to the anytim function in IDL.
-
+    utime -- Time since epoch 1 Jan 1979
     Parameters
     ----------
     time_string : [ int, time_string, datetime ]
-        Date to parse which can be either time_string, int, datetime object
-    tai : bool
-        tai = True if time_string is to be parsed according to TAI ( International Time Seconds)
-	
+        Date to parse which can be either time_string, int, datetime object.
+    format : {string, utime, tai}
+	Specifies the format user has provided the time_string in.
     Returns
     -------
     out : datetime
@@ -163,9 +162,9 @@ def parse_time(time_string, tai=False):
         return time_string
     elif isinstance(time_string, tuple):
         return datetime(*time_string)
-    elif tai and  ( isinstance( time_string, int) or isinstance( time_string, float) ) :
+    elif time_format == 'tai' and  ( isinstance( time_string, int) or isinstance( time_string, float) ) :
         return datetime(1958, 1, 1) + timedelta(0, time_string)
-    elif isinstance(time_string, int) or isinstance(time_string, float):
+    elif time_format == 'utime' and ( isinstance(time_string, int) or isinstance(time_string, float) ) :
         return datetime(1979, 1, 1) + timedelta(0, time_string)
     else:
         # remove trailing zeros and the final dot to allow any
@@ -187,7 +186,7 @@ def parse_time(time_string, tai=False):
         raise ValueError("%s is not a valid time string!" % time_string)
     
 
-def is_time(time_string, tai=False):
+def is_time(time_string, time_format=basestring):
     """
     Returns true if the input is a valid date/time representation
     
@@ -216,7 +215,7 @@ def is_time(time_string, tai=False):
         return True
 
     try:
-        parse_time(time_string, tai)
+        parse_time(time_string,format)
     except ValueError:
         return False
     else:
@@ -251,7 +250,7 @@ def day_of_year(time_string):
     time_diff = time - datetime(time.year, 1, 1, 0, 0, 0)
     return time_diff.days + time_diff.seconds / SECONDS_IN_DAY + 1
 
-def break_time(t=None, tai=False):
+def break_time(t=None, time_format=False):
     """Given a time returns a string. Useful for naming files."""
     #TODO: should be able to handle a time range
     return parse_time(t, tai).strftime("%Y%m%d_%H%M%S")
