@@ -124,7 +124,8 @@ def temp_em(goeslc, photospheric=False):
     """
 
     # Check that input argument is of correct type
-    exceptions.check_goeslc(goeslc, varname="goeslc")
+    if not isinstance(goeslc, GOESLightCurve):
+        raise ValueError("goeslc must be a GOESLightCurve object.")
 
     # extract properties from GOESLightCurve object and change type to
     # that required by goes_chianti_em
