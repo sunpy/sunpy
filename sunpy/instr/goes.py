@@ -231,7 +231,7 @@ def goes_chianti_tem(longflux, shortflux, satellite=8,
     if satellitte < 1:
         raise ValueError("satellite must be the number of a "
                          "valid GOES satellite (>1).")
-    date = exceptions.check_date(date) # Check date type
+    date = parse_time(date)
     # Check flux arrays are of same length.
     if len(longflux) != len(shortflux):
         raise ValueError(
