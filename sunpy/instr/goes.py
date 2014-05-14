@@ -224,10 +224,13 @@ def goes_chianti_tem(longflux, shortflux, satellite=8,
     array([  4.78577516e+48,   4.78577516e+48])
 
     """
-    # CHECK INPUTS ARE CORRECT
+    # ENSURE INPUTS ARE OF CORRECT TYPE AND VALID VALUES
     exceptions.check_float(longflux, varname="longflux") # Check longflux type
     exceptions.check_float(shortflux, varname="shortflux") # Check shortflux type
-    satellite = exceptions.check_goessat(satellite) # Check satellite type
+    int(satellite)
+    if satellitte < 1:
+        raise ValueError("satellite must be the number of a "
+                         "valid GOES satellite (>1).")
     date = exceptions.check_date(date) # Check date type
     # Check flux arrays are of same length.
     if len(longflux) != len(shortflux):
@@ -335,7 +338,10 @@ def _goes_get_chianti_temp(fluxratio, satellite=8, photospheric=False):
 
     # check inputs are correct
     exceptions.check_float(fluxratio, varname="fluxratio") # Check fluxratio type
-    satellite = exceptions.check_goessat(satellite) # Check satellite type
+    int(satellite)
+    if satellitte < 1:
+        raise ValueError("satellite must be the number of a "
+                         "valid GOES satellite (>1).")
     exceptions.check_photospheric(photospheric) # Check photospheric input
 
     # Initialize lists to hold model data of flux ratio - temperature
@@ -457,7 +463,10 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, photospheric=False):
     # Check inputs are correct
     exceptions.check_float(longflux, varname="longflux") # Check longflux input
     exceptions.check_float(temp, varname="temp") # Check temp input
-    satellite = exceptions.check_goessat(satellite) # Check satellite type
+    int(satellite)
+    if satellitte < 1:
+        raise ValueError("satellite must be the number of a "
+                         "valid GOES satellite (>1).")
     exceptions.check_photospheric(photospheric) # Check photospheric input
     # check input arrays are of same length
     if len(longflux) != len(temp):
