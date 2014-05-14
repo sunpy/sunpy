@@ -34,8 +34,6 @@ def get_goes_event_list(trange,goes_class_filter=None):
                        inclusion in the list, e.g. 'M1', 'X2'.
 
     """
-    
-    
     # use HEK module to search for GOES events
     client=hek.HEKClient()
     event_type='FL'
@@ -125,19 +123,14 @@ def temp_em(goeslc, abundances="coronal"):
     """
 
     # Check that input argument is of correct type
-    if not isinstance(goeslc, GOESLightCurve):
+    if not isinstance(goeslc, sunpy.lightcurve.GOESLightCurve):
         raise ValueError("goeslc must be a GOESLightCurve object.")
 
-    # extract properties from GOESLightCurve object and change type to
-    # that required by goes_chianti_em
-    longflux = np.array(goeslc.data.xrsb)
-    shortflux = np.array(goeslc.data.xrsa)
-    satellite = int(goeslc.meta["TELESCOP"].split()[1])
-    date = goeslc.meta["DATE-OBS"]
-
     # Find temperature and emission measure with goes_chianti_tem
-    temp, em = goes_chianti_tem(longflux, shortflux, satellite=satellite,
-                                date=date, abundances=abundances)
+    temp, em = goes_chianti_tem(goeslc.data.xrsb, goeslc.data.xrsa,
+                                satellite=goeslc.meta["TELESCOP"].split()[1],
+                                date=goeslc.data.index[0],
+                                abundances=abundances)
 
     # Enter results into new version of GOES LightCurve Object
     goeslc_new = copy.deepcopy(goeslc)
