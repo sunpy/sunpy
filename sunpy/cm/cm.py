@@ -37,6 +37,11 @@ yohkohsxtal = ct.sxt_color_table('al')
 yohkohsxtwh = ct.sxt_color_table('wh')
 
 hinodexrt = ct.xrt_color_table()
+hinodesotintensity = ct.sot_color_table('intensity')
+#hinodesotstokesquv = ct.sot_color_table('stokesQUV')
+#hinodesotmagneticf = ct.sot_color_table('magnetic field')
+#hinodesotvelocity = ct.sot_color_table('velocity')
+#hinodesotwidth =  ct.sot_color_table('width')
 
 trace171 = ct.trace_color_table('171')
 trace195 = ct.trace_color_table('195')
@@ -70,6 +75,11 @@ cmlist = {
           'yohkohsxtal': yohkohsxtal,
           'yohkohsxtwh': yohkohsxtwh,
           'hinodexrt': hinodexrt,
+          'hinodesotintensity': hinodesotintensity,
+          #'hinodesotstokesquv': hinodesotstokesquv,
+          #'hinodesotmagneticf': hinodesotmagneticf,
+          #'hinodesotvelocity': hinodesotvelocity,
+          #'hinodesotwidth': hinodesotwidth,
           'trace171': trace171,
           'trace195': trace195,
           'trace284': trace284,
