@@ -75,7 +75,7 @@ def get_goes_event_list(trange,goes_class_filter=None):
 
     return goes_event_list
 
-def temp_em(goeslc, photospheric=False):
+def temp_em(goeslc, abundances="coronal"):
     """
     Calculates and adds temperature and EM to a GOESLightCurve.
 
@@ -90,10 +90,11 @@ def temp_em(goeslc, photospheric=False):
     Parameters
     ----------
     goeslc : GOESLightCurve object
-    photospheric : bool (optional)
-                   States whether photospheric or coronal abundances
-                   should be assumed.
-                   Default=False, i.e. coronal abundances assumed.
+    abundances : (optional) string equalling either 'coronal' or
+                 'photospheric'.
+                 States whether photospheric or coronal abundances
+                 should be assumed.
+                 Default='coronal'
 
     Returns
     -------
@@ -136,7 +137,7 @@ def temp_em(goeslc, photospheric=False):
 
     # Find temperature and emission measure with goes_chianti_tem
     temp, em = goes_chianti_tem(longflux, shortflux, satellite=satellite,
-                                date=date, photospheric=photospheric)
+                                date=date, abundances=abundances)
 
     # Enter results into new version of GOES LightCurve Object
     goeslc_new = copy.deepcopy(goeslc)
@@ -146,7 +147,7 @@ def temp_em(goeslc, photospheric=False):
     return goeslc_new
 
 def goes_chianti_tem(longflux, shortflux, satellite=8,
-                     date=datetime.datetime.today(), photospheric=False):
+                     date=datetime.datetime.today(), abundances="coronal"):
     """
     Calculates temperature and emission measure from GOES/XRS data.
 
@@ -168,10 +169,11 @@ def goes_chianti_tem(longflux, shortflux, satellite=8,
     date : datetime object or str
            Date when observations made.  Important for correct
            calibration.  Default=today
-    photospheric : bool (optional)
-                   States whether photospheric or coronal abundances
-                   should be assumed.
-                   Default=False, i.e. coronal abundances assumed.
+    abundances : (optional) string equalling either 'coronal' or
+                 'photospheric'.
+                 States whether photospheric or coronal abundances
+                 should be assumed.
+                 Default='coronal'
 
     Returns
     -------
@@ -217,7 +219,7 @@ def goes_chianti_tem(longflux, shortflux, satellite=8,
     >>> longflux = np.array([7e-6, 7e-6])
     >>> shortflux = np.array([7e-7, 7e-7])
     >>> temp, em = goes_chianti_tem(longflux, shortflux, satellite=15,
-                                    date='2014-04-16', photospheric=False)
+                                    date='2014-04-16', abundances="coronal")
     >>> temp
     array([11.28295376, 11.28295376])
     >>> em
@@ -260,12 +262,12 @@ def goes_chianti_tem(longflux, shortflux, satellite=8,
 
     # FIND TEMPERATURE AND EMISSION MEASURE FROM FUNCTIONS BELOW
     temp = _goes_get_chianti_temp(fluxratio, satellite=satellite,
-                                 photospheric=photospheric)
+                                  abundances=abundances)
     em = _goes_get_chianti_em(longflux_corrected, temp, satellite=satellite,
-                             photospheric=photospheric)
+                              abundances=abundances)
     return temp, em
 
-def _goes_get_chianti_temp(fluxratio, satellite=8, photospheric=False):
+def _goes_get_chianti_temp(fluxratio, satellite=8, abundances="coronal"):
     """Calculates temperature from GOES flux ratio.
 
     This function calculates the isothermal temperature of the solar
@@ -286,10 +288,11 @@ def _goes_get_chianti_temp(fluxratio, satellite=8, photospheric=False):
                 Number of GOES satellite used to make observations.
                 Important for correct calibration of data.
                 Default=8
-    photospheric : bool (optional)
-                   States whether photospheric or coronal abundances
-                   should be assumed.
-                   Default=False, i.e. coronal abundances assumed.
+    abundances : (optional) string equalling either 'coronal' or
+                 'photospheric'.
+                 States whether photospheric or coronal abundances
+                 should be assumed.
+                 Default='coronal'
 
     Returns
     -------
@@ -330,7 +333,7 @@ def _goes_get_chianti_temp(fluxratio, satellite=8, photospheric=False):
     --------
     >>> fluxratio = np.array([0.1,0.1])
     >>> temp = _goes_get_chianti_temp(fluxratio, satellite=15,
-                                    photospheric=False)
+                                    abundances="coronal")
     >>> temp
     array([11.28295376, 11.28295376])
 
@@ -342,7 +345,9 @@ def _goes_get_chianti_temp(fluxratio, satellite=8, photospheric=False):
     if satellite < 1:
         raise ValueError("satellite must be the number of a "
                          "valid GOES satellite (>1).")
-    exceptions.check_photospheric(photospheric) # Check photospheric input
+    # if abundance input is valid create file suffix, abund, equalling
+    # of 'cor' or 'pho'.
+    abund = _set_abundances(abundances)
 
     # Initialize lists to hold model data of flux ratio - temperature
     # relationship read in from csv file
@@ -353,10 +358,6 @@ def _goes_get_chianti_temp(fluxratio, satellite=8, photospheric=False):
     label = "ratioGOES{0}".format(satellite)
     # Read data representing appropriate temperature--flux ratio
     # relationship depending on satellite number and assumed abundances.
-    if photospheric is False:
-        abund = "cor"
-    else:
-        abund = "pho"
     with open(os.path.join(INSTR_FILES_PATH,
                            "goes_chianti_temp_{0}.csv".format(abund)),
                            "r") as csvfile:
@@ -383,7 +384,7 @@ def _goes_get_chianti_temp(fluxratio, satellite=8, photospheric=False):
 
     return temp
 
-def _goes_get_chianti_em(longflux, temp, satellite=8, photospheric=False):
+def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal"):
     """Calculates emission measure from GOES 1-8A flux and temperature.
 
     This function calculates the emission measure of the solar
@@ -406,10 +407,11 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, photospheric=False):
                 Number of GOES satellite used to make observations.
                 Important for correct calibration of data.
                 Default=8
-    photospheric : bool (optional)
-                   States whether photospheric or coronal abundances
-                   should be assumed.
-                   Default=False, i.e. coronal abundances assumed.
+    abundances : (optional) string equalling either 'coronal' or
+                 'photospheric'.
+                 States whether photospheric or coronal abundances
+                 should be assumed.
+                 Default='coronal'
 
     Returns
     -------
@@ -454,7 +456,7 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, photospheric=False):
     >>> longflux = np.array([7e-6,7e-6])
     >>> temp = np.array([11,11])
     >>> em = _goes_get_chianti_em(longflux, temp, satellite=15,
-                                  photospheric=False)
+                                  abundances="coronal")
     >>> em
     array([  3.45200672e+48,   3.45200672e+48])
 
@@ -467,7 +469,9 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, photospheric=False):
     if satellite < 1:
         raise ValueError("satellite must be the number of a "
                          "valid GOES satellite (>1).")
-    exceptions.check_photospheric(photospheric) # Check photospheric input
+    # if abundance input is valid create file suffix, abund, equalling
+    # of 'cor' or 'pho'.
+    abund = _set_abundances(abundances)
     # check input arrays are of same length
     if len(longflux) != len(temp):
         raise ValueError("longflux and temp must have same number of "
@@ -483,10 +487,6 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, photospheric=False):
 
     # Read data representing appropriate temperature--long flux
     # relationship depending on satellite number and assumed abundances.
-    if photospheric is False:
-        abund = "cor"
-    else:
-        abund = "pho"
     with open(os.path.join(INSTR_FILES_PATH,
                            "goes_chianti_em_{0}.csv".format(abund)),
                            "r") as csvfile:
@@ -511,3 +511,37 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, photospheric=False):
     em = longflux/denom * 1e55
 
     return em
+
+def _set_abundances(abundances):
+    """
+    Returns either 'cor' or 'pho' given input of 'coronal' or photospheric'.
+
+    Parameters
+    ----------
+    abundances : string
+                 Equals either 'coronal' or 'photoshperic'.  In fact, works
+                 if first character of abundances is 'c' or 'p'.
+
+    Returns
+    -------
+    abund : string
+            Equals 'cor' if input is 'coronal' or 'pho' if input is
+            'photospheric'.
+
+    Example
+    -------
+    >>> abund = _set_abundances('photospheric')
+    >>> abund
+    'pho'
+
+    """
+    if type(abundances) is str:
+        if abundances[0] == "p":
+            abund = "pho"
+        elif abundances[0] == "c":
+            abund = "cor"
+        else:
+            raise ValueError("abundances must equal either 'photospheric' "
+                             "or 'coronal'.")
+    else:
+        raise TypeError("abundances must be a string.")
