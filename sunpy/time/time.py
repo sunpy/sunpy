@@ -2,7 +2,8 @@ import re
 from datetime import datetime
 from datetime import timedelta
 
-__all__ = ['find_time', 'extract_time', 'parse_time', 'is_time', 'day_of_year', 'break_time', 'get_day']
+__all__ = ['find_time', 'extract_time', 'parse_time', 'is_time', 'day_of_year',
+           'break_time', 'get_day']
 
 # Mapping of time format codes to regular expressions.
 REGEX = {
@@ -18,28 +19,28 @@ REGEX = {
 }
 
 TIME_FORMAT_LIST = [
-    "%Y-%m-%dT%H:%M:%S.%f",    # Example 2007-05-04T21:08:12.999999
-    "%Y/%m/%dT%H:%M:%S.%f",    # Example 2007/05/04T21:08:12.999999
-    "%Y-%m-%dT%H:%M:%S.%fZ",   # Example 2007-05-04T21:08:12.999Z
-    "%Y-%m-%dT%H:%M:%S",       # Example 2007-05-04T21:08:12
-    "%Y/%m/%dT%H:%M:%S",       # Example 2007/05/04T21:08:12
-    "%Y%m%dT%H%M%S.%f",        # Example 20070504T210812.999999
-    "%Y%m%dT%H%M%S",           # Example 20070504T210812
-    "%Y/%m/%d %H:%M:%S",       # Example 2007/05/04 21:08:12
-    "%Y/%m/%d %H:%M",          # Example 2007/05/04 21:08
-    "%Y/%m/%d %H:%M:%S.%f",    # Example 2007/05/04 21:08:12.999999
-    "%Y-%m-%d %H:%M:%S.%f",    # Example 2007-05-04 21:08:12.999999
-    "%Y-%m-%d %H:%M:%S",       # Example 2007-05-04 21:08:12
-    "%Y-%m-%d %H:%M",          # Example 2007-05-04 21:08
-    "%Y-%b-%d %H:%M:%S",       # Example 2007-May-04 21:08:12
-    "%Y-%b-%d %H:%M",          # Example 2007-May-04 21:08
-    "%Y-%b-%d",                # Example 2007-May-04
-    "%Y-%m-%d",                # Example 2007-05-04
-    "%Y/%m/%d",                # Example 2007/05/04
-    "%d-%b-%Y",                # Example 04-May-2007
-    "%Y%m%d_%H%M%S",           # Example 20070504_210812
-    "%Y:%j:%H:%M:%S",          # Example 2012:124:21:08:12
-    "%Y:%j:%H:%M:%S.%f",       # Example 2012:124:21:08:12.999999
+    "%Y-%m-%dT%H:%M:%S.%f",  # Example 2007-05-04T21:08:12.999999
+    "%Y/%m/%dT%H:%M:%S.%f",  # Example 2007/05/04T21:08:12.999999
+    "%Y-%m-%dT%H:%M:%S.%fZ",  # Example 2007-05-04T21:08:12.999Z
+    "%Y-%m-%dT%H:%M:%S",  # Example 2007-05-04T21:08:12
+    "%Y/%m/%dT%H:%M:%S",  # Example 2007/05/04T21:08:12
+    "%Y%m%dT%H%M%S.%f",  # Example 20070504T210812.999999
+    "%Y%m%dT%H%M%S",  # Example 20070504T210812
+    "%Y/%m/%d %H:%M:%S",  # Example 2007/05/04 21:08:12
+    "%Y/%m/%d %H:%M",  # Example 2007/05/04 21:08
+    "%Y/%m/%d %H:%M:%S.%f",  # Example 2007/05/04 21:08:12.999999
+    "%Y-%m-%d %H:%M:%S.%f",  # Example 2007-05-04 21:08:12.999999
+    "%Y-%m-%d %H:%M:%S",  # Example 2007-05-04 21:08:12
+    "%Y-%m-%d %H:%M",  # Example 2007-05-04 21:08
+    "%Y-%b-%d %H:%M:%S",  # Example 2007-May-04 21:08:12
+    "%Y-%b-%d %H:%M",  # Example 2007-May-04 21:08
+    "%Y-%b-%d",  # Example 2007-May-04
+    "%Y-%m-%d",  # Example 2007-05-04
+    "%Y/%m/%d",  # Example 2007/05/04
+    "%d-%b-%Y",  # Example 04-May-2007
+    "%Y%m%d_%H%M%S",  # Example 20070504_210812
+    "%Y:%j:%H:%M:%S",  # Example 2012:124:21:08:12
+    "%Y:%j:%H:%M:%S.%f",  # Example 2012:124:21:08:12.999999
 ]
 
 
@@ -51,8 +52,10 @@ def _group_or_none(match, group, fun):
     else:
         return fun(ret)
 
+
 def _n_or_eq(a, b):
     return a is None or a == b
+
 
 def _regex_parse_time(inp, format):
     # Parser for finding out the minute value so we can adjust the string
@@ -95,6 +98,7 @@ def find_time(string, format):
 
 
 find_time.__doc__ += ', '.join(REGEX.keys())
+
 
 def _iter_empty(iter):
     try:
@@ -170,10 +174,11 @@ def parse_time(time_string):
         # number of zeros. This solves issue #289
         if '.' in time_string:
             time_string = time_string.rstrip("0").rstrip(".")
-        for time_format in TIME_FORMAT_LIST: 
+        for time_format in TIME_FORMAT_LIST:
             try:
                 try:
-                    ts, time_delta = _regex_parse_time(time_string, time_format)
+                    ts, time_delta = _regex_parse_time(time_string,
+                                                       time_format)
                 except TypeError:
                     break
                 if ts is None:
@@ -181,14 +186,13 @@ def parse_time(time_string):
                 return datetime.strptime(ts, time_format) + time_delta
             except ValueError:
                 pass
-    
         raise ValueError("%s is not a valid time string!" % time_string)
-    
+
 
 def is_time(time_string):
     """
     Returns true if the input is a valid date/time representation
-    
+
     Parameters
     ----------
     time_string : string
@@ -205,9 +209,10 @@ def is_time(time_string):
     >>> sunpy.time.parse_time('2005-08-04T00:01:02.000Z')
 
     .. todo::
-    
-        add ability to parse tai (International Atomic Time seconds since Jan 1, 1958)
-    
+
+        add ability to parse tai (International Atomic Time seconds
+        since Jan 1, 1958)
+
     """
     if time_string is None:
         return False
@@ -224,7 +229,7 @@ def is_time(time_string):
 
 def day_of_year(time_string):
     """Returns the (fractional) day of year.
-        
+
     Parameters
     ----------
     time_string : string
@@ -250,14 +255,13 @@ def day_of_year(time_string):
     time_diff = time - datetime(time.year, 1, 1, 0, 0, 0)
     return time_diff.days + time_diff.seconds / SECONDS_IN_DAY + 1
 
+
 def break_time(t=None):
     """Given a time returns a string. Useful for naming files."""
-    #TODO: should be able to handle a time range
+    # TODO: should be able to handle a time range
     return parse_time(t).strftime("%Y%m%d_%H%M%S")
 
 
 def get_day(dt):
     """ Return datetime for the beginning of the day of given datetime. """
     return datetime(dt.year, dt.month, dt.day)
-
-

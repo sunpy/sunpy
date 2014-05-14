@@ -153,7 +153,7 @@ def show_colormaps():
 
     plt.show()
 
-#def test_equalize(data):
+# def test_equalize(data):
 #    """Returns a color map which performs histogram equalization on the data.
 #
 #    Parameters
