@@ -37,9 +37,10 @@ except ImportError:
 
 __all__ = ['Map', 'MapFactory']
 
+
 class MapFactory(BasicRegistrationFactory):
     """
-    Map factory class.  Used to create a variety of Map objects.  Valid map types
+    Map factory class. Used to create a variety of Map objects. Valid map types
     are specified by registering them with the factory.
 
 
@@ -54,7 +55,8 @@ class MapFactory(BasicRegistrationFactory):
 
     >>> mymap = sunpy.map.Map((data, header))
 
-    headers are some base of `dict` or `collections.OrderedDict`, including `sunpy.io.header.FileHeader` or `sunpy.map.header.MapMeta` classes.
+    headers are some base of `dict` or `collections.OrderedDict`, including
+    `sunpy.io.header.FileHeader` or `sunpy.map.header.MapMeta` classes.
 
     * data, header pairs, not in tuples
 
@@ -82,11 +84,13 @@ class MapFactory(BasicRegistrationFactory):
 
     * Lists of any of the above
 
-    >>> mymap = sunpy.Map(['file1.fits', 'file2.fits', 'file3.fits', 'directory1/'])
+    >>> mymap = sunpy.Map(['file1.fits', 'file2.fits',
+                           'file3.fits', 'directory1/'])
 
     * Any mixture of the above not in a list
 
-    >>> mymap = sunpy.Map((data, header), data2, header2, 'file1.fits', url_str, 'eit_*.fits')
+    >>> mymap = sunpy.Map((data, header), data2, header2, 'file1.fits',
+                          url_str, 'eit_*.fits')
     """
 
     def _read_file(self, fname, **kwargs):
@@ -110,7 +114,7 @@ class MapFactory(BasicRegistrationFactory):
 
     def _parse_args(self, *args, **kwargs):
         """
-        Parses an args list for data-header pairs.  args can contain any mixture
+        Parses an args list for data-header pairs. args can contain any mixture
         of the following entries:
         * tuples of data,header
         * data, header not in a tuple
@@ -145,27 +149,27 @@ class MapFactory(BasicRegistrationFactory):
 
             # Data-header pair in a tuple
             if ((type(arg) in [tuple, list]) and
-                 len(arg) == 2 and
-                 isinstance(arg[0],np.ndarray) and
-                 isinstance(arg[1],dict)):
-                data_header_pairs.append(arg)
+                len(arg) == 2 and
+                isinstance(arg[0], np.ndarray) and
+                isinstance(arg[1], dict)):
+                    data_header_pairs.append(arg)
 
             # Data-header pair not in a tuple
             elif (isinstance(arg, np.ndarray) and
-                  isinstance(args[i+1],dict)):
+                  isinstance(args[i+1], dict)):
                 pair = (args[i], args[i+1])
                 data_header_pairs.append(pair)
-                i += 1 # an extra increment to account for the data-header pairing
+                i += 1  # extra increment to account for the data-header pairing
 
             # File name
-            elif (isinstance(arg,basestring) and
+            elif (isinstance(arg, basestring) and
                   os.path.isfile(os.path.expanduser(arg))):
                 path = os.path.expanduser(arg)
                 pairs = self._read_file(path, **kwargs)
                 data_header_pairs += pairs
 
             # Directory
-            elif (isinstance(arg,basestring) and
+            elif (isinstance(arg, basestring) and
                   os.path.isdir(os.path.expanduser(arg))):
                 path = os.path.expanduser(arg)
                 files = [os.path.join(path, elem) for elem in os.listdir(path)]
@@ -173,8 +177,8 @@ class MapFactory(BasicRegistrationFactory):
                     data_header_pairs += self._read_file(afile, **kwargs)
 
             # Glob
-            elif (isinstance(arg,basestring) and '*' in arg):
-                files = glob.glob( os.path.expanduser(arg) )
+            elif (isinstance(arg, basestring) and '*' in arg):
+                files = glob.glob(os.path.expanduser(arg))
                 for afile in files:
                     data_header_pairs += self._read_file(afile, **kwargs)
 
@@ -183,7 +187,7 @@ class MapFactory(BasicRegistrationFactory):
                 already_maps.append(arg)
 
             # A URL
-            elif (isinstance(arg,basestring) and
+            elif (isinstance(arg, basestring) and
                   _is_url(arg)):
                 default_dir = sunpy.config.get("downloads", "download_dir")
                 url = arg
@@ -204,7 +208,6 @@ class MapFactory(BasicRegistrationFactory):
         # order as the input, currently they are not.
         return data_header_pairs, already_maps
 
-
     def __call__(self, *args, **kwargs):
         """ Method for running the factory. Takes arbitrary arguments and
         keyword arguments and passes them to a sequence of pre-registered types
@@ -218,7 +221,8 @@ class MapFactory(BasicRegistrationFactory):
         ----------
 
         composite : boolean, optional
-            Indicates if collection of maps should be returned as a CompositeMap
+            Indicates if collection of maps should be returned as a
+            CompositeMap
 
         cube : boolean, optional
             Indicates if collection of maps should be returned as a MapCube
@@ -301,20 +305,24 @@ def _is_url(arg):
         return False
     return True
 
+
 @Deprecated("Please use the new factory sunpy.Map")
 def make_map(*args, **kwargs):
     __doc__ = MapFactory.__doc__
     return Map(*args, **kwargs)
+
 
 class InvalidMapInput(ValueError):
     """Exception to raise when input variable is not a Map instance and does
     not point to a valid Map input file."""
     pass
 
+
 class InvalidMapType(ValueError):
-    """Exception to raise when an invalid type of map is requested with make_map
-    """
+    """Exception to raise when an invalid type of map is
+    requested with make_map."""
     pass
+
 
 class NoMapsFound(ValueError):
     """Exception to raise when input does not point to any valid maps or files
