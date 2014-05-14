@@ -17,7 +17,7 @@ from sunpy.sun import sun
 import sunpy.lightcurve
 from sunpy.instr import exceptions
 
-__all__ = ['get_goes_event_list']
+__all__ = ['get_goes_event_list', 'temp_em', 'goes_chianti_tem']
 
 INSTR_FILES_PATH = "instr_files"
 
@@ -79,8 +79,6 @@ def temp_em(goeslc, photospheric=False):
     """
     Calculates and adds temperature and EM to a GOESLightCurve.
 
-    Extended Summary
-    ----------------
     This function calculates the isothermal temperature and volume
     emission measure of the solar soft X-ray emitting plasma observed by
     the GOES/XRS.  This is done using the function goes_chianti_tem().
@@ -151,8 +149,6 @@ def goes_chianti_tem(longflux, shortflux, satellite=8,
     """
     Calculates temperature and emission measure from GOES/XRS data.
 
-    Extended Summary
-    ----------------
     This function calculates the isothermal temperature and volume
     emission measure of the solar soft X-ray emitting plasma observed by
     the GOES/XRS.  This is done using the observed flux ratio of the
@@ -259,17 +255,15 @@ def goes_chianti_tem(longflux, shortflux, satellite=8,
     fluxratio[index] = 0.003
 
     # FIND TEMPERATURE AND EMISSION MEASURE FROM FUNCTIONS BELOW
-    temp = goes_get_chianti_temp(fluxratio, satellite=satellite,
+    temp = _goes_get_chianti_temp(fluxratio, satellite=satellite,
                                  photospheric=photospheric)
-    em = goes_get_chianti_em(longflux_corrected, temp, satellite=satellite,
+    em = _goes_get_chianti_em(longflux_corrected, temp, satellite=satellite,
                              photospheric=photospheric)
     return temp, em
 
-def goes_get_chianti_temp(fluxratio, satellite=8, photospheric=False):
+def _goes_get_chianti_temp(fluxratio, satellite=8, photospheric=False):
     """Calculates temperature from GOES flux ratio.
 
-    Extended Summary
-    ----------------
     This function calculates the isothermal temperature of the solar
     soft X-ray emitting plasma observed by the GOES/XRS from the
     observed flux ratio of the short (0.5-4 angstrom) to
@@ -331,8 +325,8 @@ def goes_get_chianti_temp(fluxratio, satellite=8, photospheric=False):
     Examples
     --------
     >>> fluxratio = np.array([0.1,0.1])
-    >>> temp = goes_get_chianti_temp(fluxratio, satellite=15,
-                                     photospheric=False)
+    >>> temp = _goes_get_chianti_temp(fluxratio, satellite=15,
+                                    photospheric=False)
     >>> temp
     array([11.28295376, 11.28295376])
 
@@ -382,11 +376,9 @@ def goes_get_chianti_temp(fluxratio, satellite=8, photospheric=False):
 
     return temp
 
-def goes_get_chianti_em(longflux, temp, satellite=8, photospheric=False):
+def _goes_get_chianti_em(longflux, temp, satellite=8, photospheric=False):
     """Calculates emission measure from GOES 1-8A flux and temperature.
 
-    Extended Summary
-    ----------------
     This function calculates the emission measure of the solar
     soft X-ray emitting plasma observed by the GOES/XRS from the
     the ratio of the isothermal temperature and observed long channel
@@ -454,8 +446,8 @@ def goes_get_chianti_em(longflux, temp, satellite=8, photospheric=False):
     --------
     >>> longflux = np.array([7e-6,7e-6])
     >>> temp = np.array([11,11])
-    >>> em = goes_get_chianti_em(longflux, temp, satellite=15,
-                                photospheric=False)
+    >>> em = _goes_get_chianti_em(longflux, temp, satellite=15,
+                                  photospheric=False)
     >>> em
     array([  3.45200672e+48,   3.45200672e+48])
 
