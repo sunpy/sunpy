@@ -39,7 +39,7 @@ def test_temp_em():
                                   np.array(goeslc.data.xrsa),
                                   satellite = \
                                   int(goeslc.meta["TELESCOP"].split()[1]),
-                                  date=goeslc.meta["DATE-OBS"])
+                                  date="2014-01-01")
     # Check that temperature and EM arrays from goes_chianti_tem()
     # are same as those in new GOESLightcurve object.
     assert goeslc_new.data.temperature.all() == t.all()
