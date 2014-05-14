@@ -238,6 +238,7 @@ def goes_chianti_tem(longflux, shortflux, satellite=8,
     if len(longflux) != len(shortflux):
         raise ValueError(
             "longflux and shortflux must have same number of elements.")
+    
     # PREPARE DATA
     # GOES 6 long channel flux before 1983-Jun-28 must be corrected by a
     # factor of 4.43/5.32
@@ -545,3 +546,4 @@ def _set_abundances(abundances):
                              "or 'coronal'.")
     else:
         raise TypeError("abundances must be a string.")
+    return abund
