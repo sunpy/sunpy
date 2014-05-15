@@ -25,6 +25,8 @@ except ImportError:
 filepath = sunpy.data.test.rootdir
 a_list_of_many = glob.glob(os.path.join(filepath, "EIT", "*"))
 a_fname = a_list_of_many[0]
+
+
 #==============================================================================
 # Map Factory Tests
 #==============================================================================
@@ -37,7 +39,7 @@ class TestMap:
     def test_composite(self):
         #Test making a CompositeMap
         comp = sunpy.map.Map(sunpy.AIA_171_IMAGE, sunpy.RHESSI_IMAGE,
-                         composite=True)
+                             composite=True)
         assert isinstance(comp, sunpy.map.CompositeMap)
 
     def test_patterns(self):
@@ -48,18 +50,18 @@ class TestMap:
         # Directory
         maps = sunpy.map.Map(os.path.join(filepath, "EIT"))
         assert isinstance(maps, list)
-        assert ([isinstance(amap,sunpy.map.GenericMap) for amap in maps])
+        assert ([isinstance(amap, sunpy.map.GenericMap) for amap in maps])
         # Glob
         maps = sunpy.map.Map(os.path.join(filepath, "EIT", "*"))
         assert isinstance(maps, list)
-        assert ([isinstance(amap,sunpy.map.GenericMap) for amap in maps])
+        assert ([isinstance(amap, sunpy.map.GenericMap) for amap in maps])
         # Already a Map
         amap = sunpy.map.Map(maps[0])
         assert isinstance(amap, sunpy.map.GenericMap)
         # A list of filenames
         maps = sunpy.map.Map(a_list_of_many)
         assert isinstance(maps, list)
-        assert ([isinstance(amap,sunpy.map.GenericMap) for amap in maps])
+        assert ([isinstance(amap, sunpy.map.GenericMap) for amap in maps])
         # Data-header pair in a tuple
         pair_map = sunpy.map.Map((amap.data, amap.meta))
         assert isinstance(pair_map, sunpy.map.GenericMap)
@@ -67,15 +69,16 @@ class TestMap:
         pair_map = sunpy.map.Map(amap.data, amap.meta)
         assert isinstance(pair_map, sunpy.map.GenericMap)
         #Custom Map
-        data = np.arange(0,100).reshape(10,10)
-        header = {'cdelt1': 10, 'cdelt2': 10, 'telescop':'sunpy'}
+        data = np.arange(0, 100).reshape(10, 10)
+        header = {'cdelt1': 10, 'cdelt2': 10, 'telescop': 'sunpy'}
         pair_map = sunpy.map.Map(data, header)
         assert isinstance(pair_map, sunpy.map.GenericMap)
 
     # requires sqlalchemy to run properly
     @pytest.mark.skipif('not HAS_SQLALCHEMY')
     def test_databaseentry(self):
-        db = sunpy.database.Database(url='sqlite://', default_waveunit='angstrom')
+        db = sunpy.database.Database(url='sqlite://',
+                                     default_waveunit='angstrom')
         db.add_from_file(a_fname)
 
         res = db.get_entry_by_id(1)
@@ -102,40 +105,47 @@ class TestMap:
     def test_sdo(self):
         #Test an AIAMap
         aia = sunpy.map.Map(sunpy.AIA_171_IMAGE)
-        assert isinstance(aia,sunpy.map.sources.AIAMap)
+        assert isinstance(aia, sunpy.map.sources.AIAMap)
         #Test a HMIMap
 
     def test_soho(self):
         #Test EITMap, LASCOMap & MDIMap
-        eit = sunpy.map.Map(os.path.join(filepath, "EIT", "efz20040301.000010_s.fits"))
-        assert isinstance(eit,sunpy.map.sources.EITMap)
+        eit = sunpy.map.Map(os.path.join(filepath,
+                                         "EIT", "efz20040301.000010_s.fits"))
+        assert isinstance(eit, sunpy.map.sources.EITMap)
 
-        lasco = sunpy.map.Map(os.path.join(filepath, "lasco_c2_25299383_s.fts"))
-        assert isinstance(lasco,sunpy.map.sources.LASCOMap)
+        lasco = sunpy.map.Map(os.path.join(filepath,
+                                           "lasco_c2_25299383_s.fts"))
+        assert isinstance(lasco, sunpy.map.sources.LASCOMap)
 
-        mdi_c = sunpy.map.Map(os.path.join(filepath, "mdi_fd_Ic_6h_01d.5871.0000_s.fits"))
-        assert isinstance(mdi_c,sunpy.map.sources.MDIMap)
+        mdi_c = sunpy.map.Map(os.path.join(filepath,
+                                           "mdi_fd_Ic_6h_01d.5871.0000_s.fits"))
+        assert isinstance(mdi_c, sunpy.map.sources.MDIMap)
 
-        mdi_m = sunpy.map.Map(os.path.join(filepath, "mdi_fd_M_96m_01d.5874.0005_s.fits"))
-        assert isinstance(mdi_m,sunpy.map.sources.MDIMap)
+        mdi_m = sunpy.map.Map(os.path.join(filepath,
+                                           "mdi_fd_M_96m_01d.5874.0005_s.fits"))
+        assert isinstance(mdi_m, sunpy.map.sources.MDIMap)
 
     def test_stereo(self):
         #Test EUVIMap & CORMap
-        euvi = sunpy.map.Map(os.path.join(filepath, "euvi_20090615_000900_n4euA_s.fts"))
-        assert isinstance(euvi,sunpy.map.sources.EUVIMap)
+        euvi = sunpy.map.Map(os.path.join(filepath,
+                                          "euvi_20090615_000900_n4euA_s.fts"))
+        assert isinstance(euvi, sunpy.map.sources.EUVIMap)
 
-        cor = sunpy.map.Map(os.path.join(filepath, "cor1_20090615_000500_s4c1A.fts"))
-        assert isinstance(cor,sunpy.map.sources.CORMap)
+        cor = sunpy.map.Map(os.path.join(filepath,
+                                         "cor1_20090615_000500_s4c1A.fts"))
+        assert isinstance(cor, sunpy.map.sources.CORMap)
 
     def test_rhessi(self):
         #Test RHESSIMap
         rhessi = sunpy.map.Map(sunpy.RHESSI_IMAGE)
-        assert isinstance(rhessi,sunpy.map.sources.RHESSIMap)
-    
+        assert isinstance(rhessi, sunpy.map.sources.RHESSIMap)
+
     def test_sot(self):
         #Test SOTMap
-        sot = sunpy.map.Map(os.path.join(filepath , "FGMG4_20110214_030443.7.fits"))
-        assert isinstance(sot,sunpy.map.sources.SOTMap)
+        sot = sunpy.map.Map(os.path.join(filepath,
+                                         "FGMG4_20110214_030443.7.fits"))
+        assert isinstance(sot, sunpy.map.sources.SOTMap)
 
         #Test SWAPMap
 

@@ -226,7 +226,7 @@ def test_submap(generic_map):
     height = generic_map.shape[0]
 
     # Create a submap of the top-right quadrant of the image
-    submap = generic_map.submap([height/2.,height], [width/2.,width],
+    submap = generic_map.submap([height/2., height], [width/2., width],
                                 units='pixels')
 
     # Expected offset for center
@@ -246,7 +246,7 @@ def test_submap(generic_map):
     assert submap.meta['naxis2'] == height / 2.
 
     # Check data
-    assert (generic_map.data[height/2:height, 
+    assert (generic_map.data[height/2:height,
                              width/2:width] == submap.data).all()
 
 
@@ -254,6 +254,7 @@ resample_test_data = [('linear', (100, 200)),
                       ('neighbor', (128, 256)),
                       ('nearest', (512, 128)),
                       ('spline', (200, 200))]
+
 
 @pytest.mark.parametrize('sample_method, new_dimensions', resample_test_data)
 def test_resample_dimensions(generic_map, sample_method, new_dimensions):
@@ -282,7 +283,7 @@ def test_resample_metadata(generic_map, sample_method, new_dimensions):
                        'crval1', 'crval2'):
             assert resampled_map.meta[key] == generic_map.meta[key]
 
-        
+
 def test_superpixel(aia_map_large):
     dimensions = (2, 2)
     superpixel_map_sum = aia_map_large.superpixel(dimensions)
@@ -298,8 +299,8 @@ def test_superpixel(aia_map_large):
     assert superpixel_map_avg.shape[0] == aia_map_large.shape[0]/dimensions[1]
     assert superpixel_map_avg.shape[1] == aia_map_large.shape[1]/dimensions[0]
     assert superpixel_map_avg.data[0][0] == (aia_map_large.data[0][0] +
-                                             aia_map_large.data[0][1] + 
-                                             aia_map_large.data[1][0] + 
+                                             aia_map_large.data[0][1] +
+                                             aia_map_large.data[1][0] +
                                              aia_map_large.data[1][1])/4.0
 
 
@@ -321,10 +322,10 @@ def test_rotate():
     np.testing.assert_allclose(rotated_map_2.rotation_matrix,
                                np.dot(aia_map.rotation_matrix,
                                       calc_new_matrix(40).T))
-    
-    # Rotation of a square map by non-integral multiple of 90 degrees cuts off the corners
-    # and assigns the value of 0 to corner pixels. This results in reduction
-    # of the mean and an increase in standard deviation.
+
+    # Rotation of a square map by non-integral multiple of 90 degrees cuts off
+    # the corners and assigns the value of 0 to corner pixels. This results in
+    # reduction of the mean and an increase in standard deviation.
     assert rotated_map_2.mean() < rotated_map_1.mean() < aia_map.mean()
     assert rotated_map_2.std() > rotated_map_1.std() > aia_map.std()
 
@@ -342,11 +343,12 @@ def test_rotate():
 def test_rotate_recenter(aia_map):
     # Check recentering
     image_center = np.array((200, 100))
-    rotated_map_6 = aia_map.rotate(20, image_center=image_center, recenter=True)
-    
+    rotated_map_6 = aia_map.rotate(20, image_center=image_center,
+                                   recenter=True)
+
     # shift is image_center - map_center
     shift = image_center - ((np.array(aia_map.shape)/2.) + 0.5)
-    
+
     # y shift is inverted because the data in the map is origin lower.
     np.testing.assert_allclose(rotated_map_6.reference_pixel.values(),
                                np.array([aia_map.reference_pixel.values()[1] - shift[1],
@@ -368,12 +370,13 @@ def test_rotate_scale_cdelt(generic_map):
 def test_rotate_new_matrix(generic_map):
     # Rotate by CW90 to go from CCW 90 in generic map to CCW 180
     rot_map = generic_map.rotate(rmatrix=np.matrix([[0, 1], [-1, 0]]))
-    np.testing.assert_allclose(rot_map.rotation_matrix, np.matrix([[-1, 0], [0, -1]]))
+    np.testing.assert_allclose(rot_map.rotation_matrix,
+                               np.matrix([[-1, 0], [0, -1]]))
 
 
 def test_rotate_rmatrix_angle(generic_map):
     with pytest.raises(ValueError):
-        generic_map.rotate(angle=5, rmatrix=np.matrix([[1,0], [0, 1]]))
+        generic_map.rotate(angle=5, rmatrix=np.matrix([[1, 0], [0, 1]]))
 
 
 def test_rotate_invalid_order(generic_map):

@@ -41,9 +41,9 @@ class GOESLightCurve(LightCurve):
         dates = matplotlib.dates.date2num(self.data.index)
 
         axes.plot_date(dates, self.data['xrsa'], '-',
-                     label='0.5--4.0 $\AA$', color='blue', lw=2)
+                       label='0.5--4.0 $\AA$', color='blue', lw=2)
         axes.plot_date(dates, self.data['xrsb'], '-',
-                     label='1.0--8.0 $\AA$', color='red', lw=2)
+                       label='1.0--8.0 $\AA$', color='red', lw=2)
 
         axes.set_yscale("log")
         axes.set_ylim(1e-9, 1e-2)
@@ -78,6 +78,7 @@ class GOESLightCurve(LightCurve):
         days_back = 3
         time_range = TimeRange(today - datetime.timedelta(days=days_back),
                                today - datetime.timedelta(days=days_back - 1))
+
         return cls._get_url_for_date_range(time_range)
 
     @classmethod
@@ -105,6 +106,7 @@ class GOESLightCurve(LightCurve):
                 (end > goes_operational[sat_num].start() and
                  end < goes_operational[sat_num].end())):
                     # if true then the satellite with sat_num is available
+
                     sat_list.append(sat_num)
 
         if not sat_list:
@@ -139,15 +141,16 @@ class GOESLightCurve(LightCurve):
             raise ValueError('start time > end time')
 
         # find out which satellite and datatype to query from the query times
+
         sat_num = GOESLightCurve._get_goes_sat_num(start, end)
         base_url = 'http://umbra.nascom.nasa.gov/goes/fits/'
 
         if start < parse_time('1999/01/15'):
             url = (base_url + "%s/go%02d%s.fits") % (start.strftime("%Y"),
-                sat_num[0], start.strftime("%y%m%d"))
+                   sat_num[0], start.strftime("%y%m%d"))
         else:
             url = (base_url + "%s/go%02d%s.fits") % (start.strftime("%Y"),
-                sat_num[0], start.strftime("%Y%m%d"))
+                   sat_num[0], start.strftime("%Y%m%d"))
         return url
 
     @staticmethod
@@ -158,7 +161,7 @@ class GOESLightCurve(LightCurve):
         header = fits[0].header
         if len(fits) == 4:
             if is_time_in_given_format(fits[0].header['DATE-OBS'], '%d/%m/%Y'):
-                start_time = datetime.datetime.strptime(fits[0].header['DATE-OBS'], '%d/%m/%Y')
+                start_time = datetime.datetime.strptime(fits[0].header['DATE-OBS'], +'%d/%m/%Y')
             elif is_time_in_given_format(fits[0].header['DATE-OBS'], '%d/%m/%y'):
                 start_time = datetime.datetime.strptime(fits[0].header['DATE-OBS'], '%d/%m/%y')
             else:
