@@ -336,7 +336,8 @@ Dimension:\t [%d, %d]
         """Heliographic latitude in degrees"""
         heliographic_latitude = self.meta.get('hglt_obs',
                                               self.meta.get('crlt_obs',
-                                                            self.meta.get('solar_b0', None)))
+                                                            self.meta.get('solar_b0',
+                                                                          None)))
 
         if heliographic_latitude is None:
             warnings.warn_explicit("Missing metadata for heliographic latitude: assuming Earth-based observer",

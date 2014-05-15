@@ -148,10 +148,10 @@ class MapFactory(BasicRegistrationFactory):
 
             # Data-header pair in a tuple
             if ((type(arg) in [tuple, list]) and
-                len(arg) == 2 and
-                isinstance(arg[0], np.ndarray) and
-                isinstance(arg[1], dict)):
-                    data_header_pairs.append(arg)
+                 len(arg) == 2 and
+                 isinstance(arg[0], np.ndarray) and
+                 isinstance(arg[1], dict)):
+                data_header_pairs.append(arg)
 
             # Data-header pair not in a tuple
             elif (isinstance(arg, np.ndarray) and
