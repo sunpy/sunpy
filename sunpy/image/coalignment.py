@@ -1,5 +1,18 @@
 #
-# Image coalignment
+# Image coalignment by template matching. Written by J. Ireland May 2014.
+# Partially inspired by the SSWIDL routine tr_get_disp.pro, available at 
+# http://hesperia.gsfc.nasa.gov/ssw/trace/idl/util/routines/tr_get_disp.pro
+# The routine tr_get_disp.pro implements a template matching via 2d FFT
+# transforms.  In the implementation below, the template matching is handled
+# via the scikit-image routine "match_template".  See the scikit-image
+# documentation for further details.  At time of writing (May 2014), the
+# relevant documentation of the template matching algorithm can be found at
+# http://scribblethink.org/Work/nvisionInterface/nip.html.  An earlier version
+# can be found at
+# http://www.scribblethink.org/Work/nvisionInterface/vi95_lewis.pdf (J.P.
+# Lewis, Fast Template Matching, Vision Interface 95, Canadian Image
+# Processing and Pattern Recognition Society, Quebec City, Canada, May 15-19,
+# 1995, p. 120-123).
 #
 import numpy as np
 from scipy.ndimage.interpolation import shift
