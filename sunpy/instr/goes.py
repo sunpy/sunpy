@@ -15,7 +15,6 @@ from sunpy.net import hek
 from sunpy.time import parse_time
 from sunpy.sun import sun
 import sunpy.lightcurve
-from sunpy.instr import exceptions
 
 __all__ = ['get_goes_event_list', 'temp_em', 'goes_chianti_tem']
 
