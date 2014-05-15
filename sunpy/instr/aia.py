@@ -30,14 +30,10 @@ def aiaprep(aiamap):
     rmatrix = np.array([[c, s], [-s, c]])
 
     rotation_center = aiamap.reference_pixel['y'], aiamap.reference_pixel['x']
-    #center = (np.array(aiamap.data.shape)-1)/2.0
-    #shift = np.array(rotation_center) - np.array(center)
-    #print shift
 
     newmap = deepcopy(aiamap)
     newmap.data = affine_transform(aiamap.data.copy(), rmatrix=rmatrix, recenter=True,
-                                   scale=scale_factor, rotation_center=rotation_center)
-                                   
+                                   scale=scale_factor, rotation_center=rotation_center,#)
 
     # Update header values as needed
     newmap.meta['crpix1'] = newmap.shape[1]/2.0 + 0.5
