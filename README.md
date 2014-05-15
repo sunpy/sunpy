@@ -8,7 +8,7 @@ Installation
 
 To begin, install the following requirements:
 
- * [Python]([Python](http://www.python.org) (2.6+)
+ * [Python](http://www.python.org) (2.6+)
  * [Astropy](http://astropy.org) (0.3.0)
  * [NumPy](http://numpy.scipy.org/)
  * [SciPy](http://www.scipy.org/)
