@@ -13,6 +13,7 @@ from sunpy.util import expand_list
 
 __all__ = ['MapCube']
 
+
 class MapCube(object):
     """
     MapCube(input)
@@ -33,7 +34,8 @@ class MapCube(object):
     Attributes
     ----------
     maps : {List}
-        This attribute holds the list of Map instances obtained from parameter args.
+        This attribute holds the list of Map instances obtained from the
+        parameter args.
 
     Examples
     --------
@@ -114,7 +116,7 @@ class MapCube(object):
     # Sorting methods
     @classmethod
     def _sort_by_date(cls):
-        return lambda m: m.date # maps.sort(key=attrgetter('date'))
+        return lambda m: m.date  # maps.sort(key=attrgetter('date'))
 
     def _derotate(self):
         """Derotates the layers in the MapCube"""
@@ -214,11 +216,12 @@ class MapCube(object):
             if annotate:
                 annotate_frame(i)
 
-        ani = matplotlib.animation.FuncAnimation(fig, updatefig,
-                                            frames=range(0,len(self.maps)),
-                                            fargs=[im,annotate,ani_data],
-                                            interval=interval,
-                                            blit=False)
+        mpl_ani = matplotlib.animation
+        ani = mpl_ani.FuncAnimation(fig, updatefig,
+                                    frames=range(0, len(self.maps)),
+                                    fargs=[im, annotate, ani_data],
+                                    interval=interval,
+                                    blit=False)
 
         return ani
 
