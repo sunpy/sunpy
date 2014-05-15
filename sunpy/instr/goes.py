@@ -124,7 +124,7 @@ def temp_em(goeslc, abundances="coronal"):
 
     # Check that input argument is of correct type
     if not isinstance(goeslc, sunpy.lightcurve.GOESLightCurve):
-        raise ValueError("goeslc must be a GOESLightCurve object.")
+        raise TypeError("goeslc must be a GOESLightCurve object.")
 
     # Find temperature and emission measure with goes_chianti_tem
     temp, em = goes_chianti_tem(goeslc.data.xrsb, goeslc.data.xrsa,
