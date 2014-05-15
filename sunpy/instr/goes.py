@@ -341,7 +341,7 @@ def _goes_get_chianti_temp(fluxratio, satellite=8, abundances="coronal"):
                          "valid GOES satellite (>1).")
     # if abundance input is valid create file suffix, abund, equalling
     # of 'cor' or 'pho'.
-    abund = _set_abundances(abundances)
+    abund = _set_abundance_suffix(abundances)
 
     # Initialize lists to hold model data of flux ratio - temperature
     # relationship read in from csv file
@@ -465,7 +465,7 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal"):
                          "valid GOES satellite (>1).")
     # if abundance input is valid create file suffix, abund, equalling
     # of 'cor' or 'pho'.
-    abund = _set_abundances(abundances)
+    abund = _set_abundance_suffix(abundances)
     # check input arrays are of same length
     if len(longflux) != len(temp):
         raise ValueError("longflux and temp must have same number of "
@@ -506,7 +506,7 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal"):
 
     return em
 
-def _set_abundances(abundances):
+def _set_abundance_suffix(abundances):
     """
     Returns either 'cor' or 'pho' given input of 'coronal' or photospheric'.
 
@@ -514,7 +514,7 @@ def _set_abundances(abundances):
     ----------
     abundances : string
                  Equals either 'coronal' or 'photoshperic'.  In fact, works
-                 if first character of abundances is 'c' or 'p'.
+                 so long as first character of abundances is 'c' or 'p'.
 
     Returns
     -------
@@ -524,7 +524,7 @@ def _set_abundances(abundances):
 
     Example
     -------
-    >>> abund = _set_abundances('photospheric')
+    >>> abund = _set_abundance_suffix('photospheric')
     >>> abund
     'pho'
 
