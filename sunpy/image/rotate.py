@@ -19,14 +19,20 @@ def affine_transform(image, rmatrix=None, angle=None, scale=1.0, rotation_center
         Image to be rotated.
     rmatrix: NxN
         Linear transformation rotation matrix. Either rmatrix or angle should be specified (not both).
-    #shift: tuple
-    #    Amount by which to translate image (optional).
     angle: float
         Angle to rotate the image by (in radians). Either angle or rmatrix should be specified (not both).
+    scale: float
+        A scale factor for the image. Default is no scaling.
+    rotation_center: tuple
+        The point in the image to rotate around (axis of rotation).
+        Default: centre of the array.
+    recenter: bool or array-like
+        Move the axis of rotation to the centre of the array or recenter coords.
+        Default: True, recentre to the centre of the array.
 
     Returns
     -------
-    Image rotated by angle or using rmatrix
+    New rotated, scaled and translated image.
     """
 
     rmatrix = rmatrix / scale
