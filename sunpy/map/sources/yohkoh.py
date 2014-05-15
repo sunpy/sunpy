@@ -13,49 +13,53 @@ from sunpy.sun import constants
 
 __all__ = ['SXTMap']
 
+
 class SXTMap(GenericMap):
     """SXT Image Map definition
-    
+
     References
     ----------
     For a description of SXT headers
     http://proba2.oma.be/index.html/swap/swap-analysis-manual/article/data-products?menu=23
     """
-    
+
     def __init__(self, data, header, **kwargs):
-        
+
         GenericMap.__init__(self, data, header, **kwargs)
-        
+
         self.meta['detector'] = "SXT"
         self.meta['telescop'] = "Yohkoh"
-        
+
         self._name = self.observatory + " " + self.wavelength_string
-    
+
         self.cmap = cm.get_cmap(name='yohkohsxt' + self.wavelength_string[0:2].lower())
-    
+
         # 2012/12/19 - the SXT headers do not have a value of the distance from
         # the spacecraft to the center of the Sun.  The FITS keyword 'DSUN_OBS'
-        # appears to refer to the observed diameter of the Sun.  Until such 
-        # time as that is calculated and properly included in the file, we will 
-        # use simple trigonometry to calculate the distance of the center of 
+        # appears to refer to the observed diameter of the Sun.  Until such
+        # time as that is calculated and properly included in the file, we will
+        # use simple trigonometry to calculate the distance of the center of
         # the Sun from the spacecraft.  Note that the small angle approximation
-        # is used, and the solar radius stored in SXT FITS files is in arcseconds.
+        # is used, and the solar radius stored in SXT FITS files is
+        # in arcseconds.
         self.meta['dsun_apparent'] = constants.au
         if 'solar_r' in self.meta:
-            self.meta['dsun_apparent'] = constants.radius/(np.deg2rad(self.meta['solar_r']/3600.0))
-   
+            solar_r = self.meta['solar_r']/3600.0
+            dsun_apparent = constants.radius/(np.deg2rad(solar_r))
+            self.meta['dsun_apparent'] = dsun_apparent
+
     @property
     def dsun(self):
         """ For Yohkoh Maps, dsun_obs is not always defined. Uses approximation
         defined above it is not defined."""
         return self.meta.get('dsun_obs', self.meta['dsun_apparent'])
-    
+
     @property
     def wavelength_string(self):
         s = self.meta.get('wavelnth', '')
         if s == 'Al.1':
-            s = 'Al01' 
-        elif s.lower() ==  'open':
+            s = 'Al01'
+        elif s.lower() == 'open':
             s = 'white light'
         return s
 
@@ -67,10 +71,10 @@ class SXTMap(GenericMap):
 
         mean = self.mean()
         std = self.std()
-        
+
         vmin = max(0, mean - 3 * std)
         vmax = min(self.max(), mean + 3 * std)
-        
+
         return colors.Normalize(vmin, vmax)
 
     @classmethod
