@@ -187,8 +187,9 @@ class CompositeMap(object):
         if percent is False:
             self._maps[index].levels = levels
         else:
-            newlvls = [self._maps[index].max()*level/100.0 for level in levels]
-            self._maps[index].levels = newlvls
+            max_data = self._maps[index].max()
+            new_levels = [max_data * level / 100.0 for level in levels]
+            self._maps[index].levels = new_levels
 
     def set_colors(self, index, cm):
         """Sets the color map for a layer in the composite image"""
