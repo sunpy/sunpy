@@ -291,8 +291,9 @@ Dimension:\t [%d, %d]
     @property
     def heliographic_latitude(self):
         """Heliographic latitude in degrees"""
-        return self.meta.get('hglt_obs', self.meta.get('crlt_obs',
-                             self.meta.get('solar_b0', 0.)))
+        return self.meta.get('hglt_obs',
+                             self.meta.get('crlt_obs',
+                                 self.meta.get('solar_b0', 0.)))
 
     @property
     def heliographic_longitude(self):
