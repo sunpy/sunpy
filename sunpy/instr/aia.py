@@ -21,6 +21,8 @@ def aiaprep(aiamap):
     """
     assert isinstance(aiamap, AIAMap)
 
+    scale_ref = 0.6
+    scale_factor = aiamap.scale['x'] / scale_ref
     angle = np.radians(-aiamap.rotation_angle['y'])
 
     c = np.cos(angle)
@@ -28,18 +30,20 @@ def aiaprep(aiamap):
     rmatrix = np.array([[c, s], [-s, c]])
 
     rotation_center = aiamap.reference_pixel['y'], aiamap.reference_pixel['x']
-    center = (np.array(aiamap.data.shape)-1)/2.0
-    shift = np.array(rotation_center) - np.array(center)
-    print shift
+    #center = (np.array(aiamap.data.shape)-1)/2.0
+    #shift = np.array(rotation_center) - np.array(center)
+    #print shift
 
     newmap = deepcopy(aiamap)
-    newmap.data = affine_transform(aiamap.data.copy(), rmatrix=rmatrix, shift=shift)
+    newmap.data = affine_transform(aiamap.data.copy(), rmatrix=rmatrix, recenter=True,
+                                   scale=scale_factor, rotation_center=rotation_center)
+                                   
 
     # Update header values as needed
     newmap.meta['crpix1'] = newmap.shape[1]/2.0 + 0.5
     newmap.meta['crpix2'] = newmap.shape[0]/2.0 + 0.5
-    #
-    #
+    newmap.meta['cdelt1'] = scale_ref
+    newmap.meta['cdelt2'] = scale_ref
     newmap.meta['crota1'] = 0.0
     newmap.meta['crota2'] = 0.0
     newmap.meta['lvl_num'] = 1.5
