@@ -13,7 +13,7 @@ import numpy as np
 from itertools import izip
 
 import pytest
-     
+
 # Try different dimensions to ensure that the resample method works
 # correctly in cases where the dimensions of the original map are
 # are exactly divisible by those of the output map as well as the cases
@@ -24,6 +24,7 @@ resample_params = [
     ('nearest', (512, 128)),
     ('spline', (200, 200)),
 ]
+
 
 class TestGenericMap:
     """Tests the Map class"""
@@ -176,7 +177,7 @@ class TestGenericMap:
             if key not in ('cdelt1', 'cdelt2', 'crpix1', 'crpix2',
                            'crval1', 'crval2'):
                 assert resampled_map.meta[key] == self.map.meta[key]
-            
+
 
     def test_superpixel(self):
 
