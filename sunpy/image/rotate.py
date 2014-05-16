@@ -9,7 +9,8 @@ __all__ = ['affine_transform']
 
 #TODO: Add functionality to specify interpolation method and missing value
 def affine_transform(image, rmatrix=None, angle=None, scale=1.0, rotation_center=None,
-                     recenter=True, rotate_func='skimage'):
+                     recenter=True, rotate_func='skimage', missing=0.0, interp_type='bicubic',
+                     interp_param=None):
     """Rotates and shifts an image using an affine transform. Intended to replace Map.rotate().
     Currently uses the old C extension function to rotate and shif the image, though this will be
     replaced with scikit-image's AffineTransform class and warp() function.
@@ -37,6 +38,14 @@ def affine_transform(image, rmatrix=None, angle=None, scale=1.0, rotation_center
     """
 
     assert rotate_func in ['skimage', 'Crotate']
+    assert interp_type in ['nearest', 'spline', 'bilinear', 'bicubic']
+    if interp_param is None:
+        if interpolation is 'spline':
+            interp_param = 3
+        elif interpolation is 'bicubic':
+            interp_param = 0.5 # Not convinced this shouldn't be -0.5
+        else:
+            interp_param = 0
 
     rmatrix = rmatrix / scale
     center = (np.array(image.shape)-1)/2.0
@@ -55,13 +64,25 @@ def affine_transform(image, rmatrix=None, angle=None, scale=1.0, rotation_center
         skmatrix[:2, :2] = rmatrix
         skmatrix[2, 2] = 1.0
         skmatrix[:2, 2] = [shift[1], shift[0]]
+        if interp_type is 'nearest':
+            kernel = Crotate.NEAREST
+        elif interp_type is 'bilinear':
+            kernel = Crotate.BILINEAR
+        elif interp_type is 'bicubic':
+            kernel = Crotate.BICUBIC
         im_max = image.max()
         tform = tf.AffineTransform(skmatrix)
         rotated_image = tf.warp(image/im_max, tform, order=3,
-                     mode='constant', cval=image.min()) * im_max
+                    mode='constant', cval=missing) * im_max
     elif rotate_func == 'Crotate':
+        if interp_type is 'nearest':
+            kernel = Crotate.NEAREST
+        elif interp_type is 'bilinear':
+            kernel = Crotate.BILINEAR
+        elif interp_type is 'bicubic':
+            kernel = Crotate.BICUBIC
         rotated_image = Crotate.affine_transform(image, rmatrix, offset=shift,
-                    kernel=Crotate.BICUBIC, cubic=-0.5, mode='constant',
-                    cval=image.min())
+                    kernel=kernel, cubic=-0.5, mode='constant',
+                    cval=missing)
 
     return rotated_image
