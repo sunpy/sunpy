@@ -133,8 +133,8 @@ def equation_of_center(t=None):
     T = julian_centuries(t)
     mna = mean_anomaly(t) 
     result = ((1.9194600 - 0.0047890 * T - 0.0000140 * T
-    ** 2) * np.sin(np.radians(mna) + (0.0200940 - 0.0001000 * T) *
-    np.sin(np.radians(2 * mna)) + 0.0002930 * np.sin(np.radians(3 * mna))))
+    ** 2) * np.sin(np.radians(mna)) + (0.0200940 - 0.0001000 * T) *
+    np.sin(np.radians(2 * mna)) + 0.0002930 * np.sin(np.radians(3 * mna)))
     return result
 
 def true_longitude(t=None): 
