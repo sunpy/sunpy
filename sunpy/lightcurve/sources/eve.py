@@ -95,29 +95,28 @@ class EVELightCurve(LightCurve):
     @staticmethod
     def _parse_level_0cs(fp):
         """Parses and EVE Level 0CS file"""
-    is_missing_data = False  # boolean to check for missing data
-    missing_data_val = numpy.nan
+        is_missing_data = False  # boolean to check for missing data
+        missing_data_val = numpy.nan
         header = []
         fields = []
         line = fp.readline()
         # Read header at top of file
         while line.startswith(";"):
             header.append(line)
-        if '; Missing data:' in line :
-            is_missing_data = True
-            missing_data_val = line.split(':')[1].strip()
-
+            if '; Missing data:' in line:
+                is_missing_data = True
+                missing_data_val = line.split(':')[1].strip()
 
             line = fp.readline()
 
-    meta = OrderedDict()
-    for hline in header :
-        if hline == '; Format:\n' or hline == '; Column descriptions:\n':
-            continue
-        elif ('Created' in hline) or ('Source' in hline):
-            meta[hline.split(':', 1)[0].replace(';', ' ').strip()] = hline.split(':', 1)[1].strip()
-        elif ':' in hline:
-            meta[hline.split(':')[0].replace(';',' ').strip()] = hline.split(':')[1].strip()
+        meta = OrderedDict()
+        for hline in header:
+            if hline == '; Format:\n' or hline == '; Column descriptions:\n':
+                continue
+            elif ('Created' in hline) or ('Source' in hline):
+                meta[hline.split(':', 1)[0].replace(';', ' ').strip()] = hline.split(':', 1)[1].strip()
+            elif ':' in hline:
+                meta[hline.split(':')[0].replace(';', ' ').strip()] = hline.split(':')[1].strip()
 
         fieldnames_start = False
         for hline in header:
@@ -144,8 +143,8 @@ class EVELightCurve(LightCurve):
 
         data = read_csv(fp, sep="\s*", names=fields, index_col=0,
                         date_parser=parser, header=None)
-    if is_missing_data:  # If missing data specified in header
-        data[data == float(missing_data_val)] = numpy.nan
+        if is_missing_data:  # If missing data specified in header
+            data[data == float(missing_data_val)] = numpy.nan
 
         #data.columns = fields
         return meta, data
