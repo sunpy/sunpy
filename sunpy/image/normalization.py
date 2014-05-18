@@ -58,9 +58,9 @@ def multiscale_gaussian(data, sigma=[1.25, 2.5, 5, 10, 20, 40], k=0.7,
     image = np.zeros(data.shape)
 
     for s, weight in itertools.izip(sigma, weights):
-        conv = ndimage.filters.gaussian_filter(data, sigma=s)
+        conv = ndimage.filters.gaussian_filter(data, sigma=s, truncate=3)
         lm_sub = data - conv
-        sigmaw = np.sqrt(ndimage.filters.gaussian_filter(lm_sub ** 2, sigma=s))
+        sigmaw = np.sqrt(ndimage.filters.gaussian_filter(lm_sub ** 2, sigma=s, truncate=3))
         image += np.arctan(k * (lm_sub / sigmaw)) * weight
 
     data_min = data.min()
