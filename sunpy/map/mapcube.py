@@ -56,8 +56,8 @@ class MapCube(object):
 
         for m in self.maps:
             if not isinstance(m, GenericMap):
-                raise ValueError(
-                           'CompositeMap expects pre-constructed map objects.')
+                raise ValueError('CompositeMap expects pre-constructed ' +
+                                 'map objects.')
 
         # Optionally sort data
         if sortby is not None:
@@ -127,7 +127,8 @@ class MapCube(object):
         >>> ani = cube.plot(controls=False)
 
         >>> Writer = animation.writers['ffmpeg']
-        >>> writer = Writer(fps=10, metadata=dict(artist='SunPy'), bitrate=1800)
+        >>> writer = Writer(fps=10, metadata=dict(artist='SunPy'),
+        ...                 bitrate=1800)
 
         >>> ani.save('mapcube_animation.mp4', writer=writer)
         """
