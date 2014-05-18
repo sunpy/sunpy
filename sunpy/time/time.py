@@ -140,11 +140,12 @@ def parse_time(time_string, time_format=basestring):
     """Given a time string will parse and return a datetime object.
     Similar to the anytim function in IDL.
     utime -- Time since epoch 1 Jan 1979
+    tai   -- Time since epoch 1 Jan 1958
     Parameters
     ----------
-    time_string : [ int, time_string, datetime ]
+    time_string : [ int, float, time_string, datetime ]
         Date to parse which can be either time_string, int, datetime object.
-    format : {string, utime, tai}
+    format : [ basestring, utime, tai ]
 	Specifies the format user has provided the time_string in.
     Returns
     -------
@@ -155,7 +156,7 @@ def parse_time(time_string, time_format=basestring):
     --------
     >>> sunpy.time.parse_time('2012/08/01')
     >>> sunpy.time.parse_time('2005-08-04T00:01:02.000Z')
-    >>> sunpy.time.parse_time(1164585600, True) 
+    >>> sunpy.time.parse_time(1164585600, 'tai') 
 
     """
     if isinstance(time_string, datetime):
@@ -192,11 +193,11 @@ def is_time(time_string, time_format=basestring):
     
     Parameters
     ----------
-    time_string : [ int, time_string, datetime ]
-        Date to parse which can be either time_string, int, datetime object
-    tai : bool
-        tai = true if time_string is to be parsed according to TAI ( International Time Seconds)
-	
+    time_string : [ int, float, time_string, datetime ]
+        Date to parse which can be either time_string, int, datetime object.
+    format : [ basestring, utime, tai ]
+	Specifies the format user has provided the time_string in.
+   
     Returns
     -------
     out : bool
@@ -206,7 +207,7 @@ def is_time(time_string, time_format=basestring):
     --------
     >>> sunpy.time.parse_time('2012/08/01')
     >>> sunpy.time.parse_time('2005-08-04T00:01:02.000Z')
-    >>> sunpy.time.parse_time(1164585600, True) 
+    >>> sunpy.time.parse_time(1164585600, 'tai') 
 
     """
     if time_string is None:
@@ -215,7 +216,7 @@ def is_time(time_string, time_format=basestring):
         return True
 
     try:
-        parse_time(time_string,format)
+        parse_time(time_string,time_format)
     except ValueError:
         return False
     else:
@@ -250,16 +251,16 @@ def day_of_year(time_string):
     time_diff = time - datetime(time.year, 1, 1, 0, 0, 0)
     return time_diff.days + time_diff.seconds / SECONDS_IN_DAY + 1
 
-def break_time(t=None, time_format=False):
+def break_time(t=None, time_format=basestring):
     """Given a time returns a string. Useful for naming files."""
     #TODO: should be able to handle a time range
-    return parse_time(t, tai).strftime("%Y%m%d_%H%M%S")
+    return parse_time(t, time_format).strftime("%Y%m%d_%H%M%S")
 
 def get_day(dt):
     """ Return datetime for the beginning of the day of given datetime. """
     return datetime(dt.year, dt.month, dt.day)
 
-def is_time_in_given_format(time_string, time_format):
+def is_time_in_given_format(time_string, time_format=basestring):
     """Tests whether a time string is formatted according to the given time format."""
     try:
         datetime.strptime(time_string, time_format)
