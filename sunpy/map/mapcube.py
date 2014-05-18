@@ -57,8 +57,8 @@ class MapCube(object):
 
         for m in self.maps:
             if not isinstance(m, GenericMap):
-                raise ValueError(
-                           'CompositeMap expects pre-constructed map objects.')
+                raise ValueError('CompositeMap expects pre-constructed ' +
+                                 'map objects.')
 
         # Optionally sort data
         if sortby is not None:
@@ -102,7 +102,8 @@ class MapCube(object):
             # try shifting 1 pixel in each direction
             for x in (-1, 0, 1):
                 for y in (-1, 0, 1):
-                    # calculate differenand hasattr(self, '_coalign_%s' % coalign):
+                    # calculate differenand hasattr(self,
+                                                    '_coalign_%s' % coalign):
             getattr(self, '_coalign_%s' % coalign)()ce for intersecting pixels
                     # if < min_diff['value'], store new value/offset
 
@@ -167,7 +168,8 @@ class MapCube(object):
         >>> ani = cube.plot(controls=False)
 
         >>> Writer = animation.writers['ffmpeg']
-        >>> writer = Writer(fps=10, metadata=dict(artist='SunPy'), bitrate=1800)
+        >>> writer = Writer(fps=10, metadata=dict(artist='SunPy'),
+        ...                 bitrate=1800)
 
         >>> ani.save('mapcube_animation.mp4', writer=writer)
         """

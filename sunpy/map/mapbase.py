@@ -12,7 +12,7 @@ import warnings
 
 import numpy as np
 import matplotlib.pyplot as plt
-import scipy.ndimage.interpolation
+import scipy.ndimage.interpolation as interp
 from matplotlib import patches
 from matplotlib import cm
 
@@ -112,35 +112,35 @@ class GenericMap(astropy.nddata.NDData):
 
     def __getitem__(self, key):
         """ This should allow indexing by physical coordinate """
-        raise NotImplementedError(
-    "The ability to index Map by physical coordinate is not yet implemented.")
+        raise NotImplementedError("The ability to index Map by physical" +
+                                  " coordinate is not yet implemented.")
 
     def __repr__(self):
         if not hasattr(self, 'observatory'):
             return self.data.__repr__()
-        return (
-"""SunPy %s
----------
-Observatory:\t %s
-Instrument:\t %s
-Detector:\t %s
-Measurement:\t %s
-Obs Date:\t %s
-dt:\t\t %f
-Dimension:\t [%d, %d]
-[dx, dy] =\t [%f, %f]
+        return ("""
+                   SunPy %s
+                   ---------
+                   Observatory:\t %s
+                   Instrument:\t %s
+                   Detector:\t %s
+                   Measurement:\t %s
+                   Obs Date:\t %s
+                   dt:\t\t %f
+                   Dimension:\t [%d, %d]
+                   [dx, dy] =\t [%f, %f]
 
-""" % (self.__class__.__name__,
-       self.observatory,
-       self.instrument,
-       self.detector,
-       self.measurement,
-       self.date, self.exposure_time,
-       self.data.shape[1],
-       self.data.shape[0],
-       self.scale['x'],
-       self.scale['y'])
-     + self.data.__repr__())
+                """ % (self.__class__.__name__,
+                       self.observatory,
+                       self.instrument,
+                       self.detector,
+                       self.measurement,
+                       self.date, self.exposure_time,
+                       self.data.shape[1],
+                       self.data.shape[0],
+                       self.scale['x'],
+                       self.scale['y'])
+                + self.data.__repr__())
 
     #Some numpy extraction
     @property
@@ -395,9 +395,11 @@ Dimension:\t [%d, %d]
         height = self.shape[0]
 
         if (x is not None) & (x > width-1):
-            raise ValueError("X pixel value larger than image width (%s)." % width)
+            raise ValueError("X pixel value larger than image width (%s)." %
+                             width)
         if (x is not None) & (y > height-1):
-            raise ValueError("Y pixel value larger than image height (%s)." % height)
+            raise ValueError("Y pixel value larger than image height (%s)." %
+                             height)
         if (x is not None) & (x < 0):
             raise ValueError("X pixel value cannot be less than 0.")
         if (x is not None) & (y < 0):
@@ -601,7 +603,6 @@ Dimension:\t [%d, %d]
         # kpos and mati are the two transform constants, kpos is a 2x2 array
         rsmat, offs = mati, np.squeeze((kpos[0, 0], kpos[1, 0]))
 
-        interp = scipy.ndimage.interpolation
         if interpolation == 'spline':
             # This is the scipy call
             data = interp.affine_transform(image, rsmat, offset=offs,
