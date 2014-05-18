@@ -577,16 +577,17 @@ hmi_mag_b = [0.0784314, 0.0666667, 0.0666667, 0.0666667, 0.0666667, 0.0666667, 0
 def hmi_mag_color_table():
     '''Returns an alternate HMI Magnetogram color table;  from Stanford University / JSOC
            Reference: http://jsoc.stanford.edu/data/hmi/HMI_M.ColorTable.pdf
+
+       Example usage:
+           import numpy as np
+           import matplotlib.pyplot as plt
+           import sunpy.map
+           import sunpy.cm as cm
+           hmi = sunpy.map.Map('fblos.fits')
+           hmi.data = np.clip(hmi.data, -1500.0, 1500.0)
+           hmi.cmap = cm.get_cmap('hmimag')
+           hmi.peek()
     '''
-    # Example usage:
-    #    import numpy as np
-    #    import matplotlib.pyplot as plt
-    #    import sunpy.map
-    #    import sunpy.cm as cm
-    #    hmi = sunpy.map.Map('fblos.fits')
-    #    hmi.data = np.clip(hmi.data, -1500.0, 1500.0)
-    #    hmi.cmap = cm.get_cmap('hmimag')
-    #    hmi.peek()
     
     i = np.linspace(0, 1, 256)
     
@@ -594,8 +595,6 @@ def hmi_mag_color_table():
         (name, list(zip(i, el, el)))
         for el, name in [(hmi_mag_r, 'red'), (hmi_mag_g, 'green'), (hmi_mag_b, 'blue')]
     )
-    
-    #cdict = create_cdict(np.array(hmi_mag_r) * 255.0, np.array(hmi_mag_g) * 255.0, np.array(hmi_mag_b) * 255.0)    
     
     return colors.LinearSegmentedColormap('mytable', cdict)
 
