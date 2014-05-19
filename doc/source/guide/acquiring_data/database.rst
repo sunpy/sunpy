@@ -101,23 +101,17 @@ download_time          The date and time when the files connected to a
 starred                Entries can be starred to mark them. By default,
                        this value is False.
 fits_header_entries    A list of :class:`tables.FitsHeaderEntry` instances.
+fits_key_comments      A list of :class:`tables.FitsKeyComment` instances.
 tags                   A list of :class:`tables.Tag` instances.
 ====================== ===================================================
 
-The ``id`` attribute is automatically set if an entry is added to a
-database. The attributes ``source``, ``provider``, ``physobs``,
-``fileid``, ``observation_time_start``, ``observation_time_end``,
-``instrument``, ``size``, ``wavemin``, and ``wavemax`` are set by methods
-which use the VSO interface. In particular, these are
-:meth:`Database.add_from_vso_query_result`, :meth:`Database.download` and
-possibly :meth:`Database.fetch`. The attributes ``path`` and
-``download_time`` are set by the method :meth:`Database.download` and also
-possibly by :meth:`Database.fetch`. ``starred`` is set or changed via the
-method :meth:`Database.star` or :meth:`unstar`, respectively. Analogously,
-``tags`` is set via the methods :meth:`Database.tag` and
-:meth:`Database.remove_tag`. The attribute ``fits_header_entries`` is set
-by the methods :meth:`Database.download`, :meth:`Database.add_from_dir`,
-and :meth:`Database.add_from_file`.
+* The ``id`` attribute is automatically set if an entry is added to a database. 
+
+* The attributes ``source``, ``provider``, ``physobs``, ``fileid``, ``observation_time_start``, ``observation_time_end``, ``instrument``, ``size``, ``wavemin``, and ``wavemax`` are set by methods which use the VSO interface. In particular, these are :meth:`Database.add_from_vso_query_result`, :meth:`Database.download` and possibly :meth:`Database.fetch`.
+
+* The attributes ``path`` and ``download_time`` are set by the method :meth:`Database.download` and also possibly by :meth:`Database.fetch`. ``starred`` is set or changed via the method :meth:`Database.star` or :meth:`unstar`, respectively. Analogously, ``tags`` is set via the methods :meth:`Database.tag` and :meth:`Database.remove_tag`. 
+
+* The attribute ``fits_header_entries`` is set by the methods :meth:`Database.download`, :meth:`Database.add_from_dir`, and :meth:`Database.add_from_file`.
 
 2.1 Adding entries from one FITS file
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
