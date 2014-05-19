@@ -340,7 +340,11 @@ def _goes_get_chianti_temp(fluxratio, satellite=8, abundances="coronal"):
                          "valid GOES satellite (>1).")
     # if abundance input is valid create file suffix, abund, equalling
     # of 'cor' or 'pho'.
-    abund = _set_abundance_suffix(abundances)
+    if abundances == "coronal" or abundances == "photospheric":
+        abund = abundances[0:3]
+    else:
+        raise ValueError("abundances must be a string equalling "
+                         "'coronal' or 'photospheric'.")
 
     # Initialize lists to hold model data of flux ratio - temperature
     # relationship read in from csv file
@@ -464,7 +468,11 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal"):
                          "valid GOES satellite (>1).")
     # if abundance input is valid create file suffix, abund, equalling
     # of 'cor' or 'pho'.
-    abund = _set_abundance_suffix(abundances)
+    if abundances == "coronal" or abundances == "photospheric":
+        abund = abundances[0:3]
+    else:
+        raise ValueError("abundances must be a string equalling "
+                         "'coronal' or 'photospheric'.")
     # check input arrays are of same length
     if len(longflux) != len(temp):
         raise ValueError("longflux and temp must have same number of "
@@ -504,38 +512,3 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal"):
     em = longflux/denom * 1e55
 
     return em
-
-def _set_abundance_suffix(abundances):
-    """
-    Returns either 'cor' or 'pho' given input of 'coronal' or photospheric'.
-
-    Parameters
-    ----------
-    abundances : string
-                 Equals either 'coronal' or 'photoshperic'.  In fact, works
-                 so long as first character of abundances is 'c' or 'p'.
-
-    Returns
-    -------
-    abund : string
-            Equals 'cor' if input is 'coronal' or 'pho' if input is
-            'photospheric'.
-
-    Example
-    -------
-    >>> abund = _set_abundance_suffix('photospheric')
-    >>> abund
-    'pho'
-
-    """
-    if type(abundances) is str:
-        if abundances[0] == "p":
-            abund = "pho"
-        elif abundances[0] == "c":
-            abund = "cor"
-        else:
-            raise ValueError("abundances must equal either 'photospheric' "
-                             "or 'coronal'.")
-    else:
-        raise TypeError("abundances must be a string.")
-    return abund
