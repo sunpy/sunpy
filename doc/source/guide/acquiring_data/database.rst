@@ -17,13 +17,20 @@ instead of downloading it again from a remote server. The package
 
 1. Connecting and initializing the database
 -------------------------------------------
-To start a new connection to an already existing or to a new database,
-instantiate a new :class:`Database` object. The first parameter of
-``Database`` receives one mandatory argument: A URL which describes how to
-connect to the database. This value is directly passed to
-:func:`sqlalchemy.create_engine`. The supported formal of this URL is
-described by the documentation of :func:`sqlalchemy.create_engine` as
-follows:
+To start a connection to an existing or a new database, instantiate 
+a :class:`Database` object. 
+
+    >>> from sunpy.database import Database
+    >>> database = Database('sqlite:///sunpydata.sqlite')
+
+The database object in our example above connects to a new SQLite database with
+the file name "sunpydata.sqlite" in the current directory.
+    
+The first parameter of ``Database`` receives one mandatory argument: 
+a URL which describes how to connect to the database. This value is 
+directly passed to :func:`sqlalchemy.create_engine`. The supported 
+format of this URL is described by the documentation of :func:`sqlalchemy.create_engine` 
+as follows:
 
     "The string form of the URL is
     ``dialect+driver://user:password@host/dbname[?key=value..]``, where
@@ -31,14 +38,9 @@ follows:
     etc., and driver the name of a DBAPI, such as ``psycopg2``,
     ``pyodbc``, ``cx_oracle``, etc."
 
-The database object in our example connects to a new SQLite database with
-the file name "sunpydata.sqlite" in the current directory. Note that a
-connection is only established when it's really needed, i.e. if some query
-is sent to the database to read from it. Transactions can also be
-committed explicitly using the :meth:`Database.commit` method.
-
-    >>> from sunpy.database import Database
-    >>> database = Database('sqlite:///sunpydata.sqlite')
+Note that a connection is only established when it's really needed, i.e. if some query
+is sent to the database to read from it. Transactions can also be committed explicitly 
+using the :meth:`Database.commit` method.
 
 .. warning::
 
