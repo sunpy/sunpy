@@ -25,7 +25,7 @@ import sunpy.sun.constants as sun
 from sunpy.sun.sun import solar_semidiameter_angular_size
 from sunpy.sun.sun import sunearth_distance
 
-__all__ = ['get_obssumm_dbase_file', 'parse_obssumm_dbase_file', 'get_obssum_filename', 'get_obssumm_file', 'parse_obssumm_file', 'show_obssumm', 'backprojection']
+__all__ = ['get_obssumm_dbase_file', 'parse_obssumm_dbase_file', 'get_obssum_filename', 'get_obssumm_file', 'parse_obssumm_file', 'backprojection']
 
 # Measured fixed grid parameters
 grid_pitch = (4.52467, 7.85160, 13.5751, 23.5542, 40.7241, 70.5309, 122.164, 
@@ -80,8 +80,6 @@ def get_obssumm_dbase_file(time_range):
     url = url_root + _time_range.t1.strftime("hsi_obssumm_filedb_%Y%m.txt")
     
     f = urllib.urlretrieve(url)
-    
-    print('Downloading file: ' + url)
     
     return f
       
@@ -177,12 +175,14 @@ def get_obssum_filename(time_range):
     # need to download and inspect the dbase file to determine the filename
     # for the observing summary data
     f = get_obssumm_dbase_file(time_range)
+    data_location = 'metadata/catalog/'
+   
     result = parse_obssumm_dbase_file(f[0])
     _time_range = TimeRange(time_range)
-   
+    
     index_number = int(_time_range.t1.strftime('%d')) - 1
     
-    return result.get('filename')[index_number]
+    return data_servers[0] + data_location + result.get('filename')[index_number] + 's'
 
 def get_obssumm_file(time_range):
     """
@@ -217,7 +217,7 @@ def get_obssumm_file(time_range):
     #TODO need to check which is the closest servers
     url_root = data_servers[0] + data_location
         
-    url = url_root + get_obssum_filename(time_range) + 's'
+    url = url_root + get_obssum_filename(time_range)
     
     print('Downloading file: ' + url)
     f = urllib.urlretrieve(url)
@@ -247,6 +247,7 @@ def parse_obssumm_file(filename):
     """
 
     afits = fits.open(filename)
+    header = afits[0].header
     
     reference_time_ut = parse_time(afits[5].data.field('UT_REF')[0])
     time_interval_sec = afits[5].data.field('TIME_INTV')[0]
@@ -263,39 +264,9 @@ def parse_obssumm_file(filename):
     time_array = [reference_time_ut + timedelta(0,time_interval_sec*a) for a in np.arange(dim)]
 
     #TODO generate the labels for the dict automatically from labels
-    result = {'time': time_array, 'data': lightcurve_data, 'labels': labels}
+    data = {'time': time_array, 'data': lightcurve_data, 'labels': labels}
        
-    return result
-
-def show_obssumm(data_dict):
-    """show_obssum"""
-    t = data_dict.get('time')
-    data = data_dict.get('data')
-    labels = data_dict.get('labels')
-    
-    fig = plt.figure()
-    ax = fig.add_subplot(111)
-    dates = matplotlib.dates.date2num(t)
-
-    for i in xrange(9):
-        ax.plot_date(dates, data[:,i], '-', label = labels[i], color = lc_linecolors[i], lw = 2)
-
-    ax.set_yscale("log")
-
-    ax.set_title('RHESSI Observing Summary Count Rates, Corrected')
-    ax.set_ylabel('Corrected Count Rates s$^{-1}$ detector$^{-1}$')
-    ax.set_xlabel(datetime.isoformat(t[0])[0:10])
-        
-    ax.yaxis.grid(True, 'major')
-    ax.xaxis.grid(False, 'major')
-    ax.legend()
-    
-    formatter = matplotlib.dates.DateFormatter('%H:%M')
-    ax.xaxis.set_major_formatter(formatter)
-    
-    ax.fmt_xdata = matplotlib.dates.DateFormatter('%H:%M')
-    fig.autofmt_xdate()
-    fig.show()
+    return header, data
 
 def _backproject(calibrated_event_list, detector=8, pixel_size=(1.,1.), image_dim=(64,64)):
     """
