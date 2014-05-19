@@ -406,10 +406,13 @@ entry and returns a list of every 10th entry from there.
 
 4. Removing entries
 -------------------
-Let's imagine we want to only have database entries which have some
-observation time saved. To remove all entries where the value of both
-``observation_time_start`` and ``observation_time_end`` is None, one
-simply iterates over the database and uses the :meth:`Database.remove`
+``database.remove()`` can be used to remove database entries from the SunPy 
+database. It takes a ``tables.DatabaseEntry`` object as argument.
+
+For example, let us imagine we want to only have database entries which have some
+observation time saved. To remove all entries where the value of both 
+``observation_time_start`` and ``observation_time_end`` is None, one can 
+simply iterate over the database and uses the :meth:`Database.remove`
 method to remove those where the just described predicate is true:
 
     >>> for database_entry in database:
