@@ -18,7 +18,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas
 
-import sunpy
+from sunpy import config
 from sunpy.time import is_time, TimeRange, parse_time
 from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
 from sunpy.util.odict import OrderedDict
@@ -199,7 +199,7 @@ for compatability with map, please use meta instead""", Warning)
         if "directory" in kwargs:
             download_dir = os.path.expanduser(kwargs["directory"])
         else:
-            download_dir = sunpy.config.get("downloads", "download_dir")
+            download_dir = config.get("downloads", "download_dir")
 
         # overwrite the existing file if the keyword is present
         if "overwrite" in kwargs:
