@@ -62,7 +62,7 @@ def solar_cycle_number(t=None):
     result = (time.year + 8) % 28 + 1
     return result
 
-def solar_semidiameter_angular_size(t=None):  # not done
+def solar_semidiameter_angular_size(t=None):  #done
     r"""
     Return the angular size of the semi-diameter of the Sun as 
     a function of time as viewed from Earth (in arcsec)
@@ -78,8 +78,8 @@ def solar_semidiameter_angular_size(t=None):  # not done
         Radius_{\odot}[rad]=\frac{<Radius_{\odot}[m]>}{D_{\odot \oplus}(t)[m]}
 
     """
-    solar_semidiameter_rad = constants.radius / (sunearth_distance(t) * constants.au)
-    return np.rad2deg(solar_semidiameter_rad * u.deg) * 60. * 60.
+    solar_semidiameter_rad = (constants.radius * u.AU) / (sunearth_distance(t) * constants.au)
+    return solar_semidiameter_rad.to(u.arcsec, equivalencies = u.dimensionless_angles())
  
 def position(t=None):   #done
     """Returns the position of the Sun (right ascension and declination)
