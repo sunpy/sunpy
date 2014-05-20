@@ -3,6 +3,7 @@ from __future__ import division
 __all__ = ['diff_rot']
 import numpy as np
 import datetime
+from astropy import units as u
 
 __author__ = ["Jose Ivan Campos Rozo","Stuart Mumford"]
 __all__ = ['diff_rot']
@@ -56,6 +57,12 @@ def diff_rot(ddays,latitude,rot_type='howard',frame_time='sidereal'):
     
     if not isinstance(ddays,datetime.timedelta):
         delta = datetime.timedelta(days=ddays)
+
+    if not isinstance(latitude, u.Quantity):
+	raise TypeError("Expecting Quantity")
+
+    if not(latitude.unit == 'deg'):
+	raise TypeError("Expecting unit as deg")
     
     delta_seconds = (delta.microseconds + (delta.seconds + delta.days * 24 * 3600) *
                     10**6) / 10**6
@@ -85,4 +92,4 @@ def diff_rot(ddays,latitude,rot_type='howard',frame_time='sidereal'):
     if frame_time == 'synodic':
         rotation_deg -= 0.9856 * delta_days
     
-    return np.round(rotation_deg,4)
+    return (np.round(rotation_deg,4)) * u.deg
