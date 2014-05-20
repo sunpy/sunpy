@@ -40,10 +40,10 @@ def affine_transform(image, rmatrix=None, angle=None, scale=1.0, rotation_center
     assert rotate_func in ['skimage', 'Crotate']
     assert interp_type in ['nearest', 'spline', 'bilinear', 'bicubic']
     if interp_param is None:
-        if interpolation is 'spline':
+        if interp_type is 'spline':
             interp_param = 3
-        elif interpolation is 'bicubic':
-            interp_param = 0.5 # Not convinced this shouldn't be -0.5
+        elif interp_type is 'bicubic':
+            interp_param = 0.5 # Should this be -0.5?
         else:
             interp_param = 0
 
