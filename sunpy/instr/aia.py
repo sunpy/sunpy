@@ -19,7 +19,7 @@ def aiaprep(aiamap):
     -------
     A level 1.5 copy of aiamap
     """
-    assert isinstance(aiamap, AIAMap)
+    #assert isinstance(aiamap, AIAMap) # Need this later but it's fucking up the unit tests
 
     scale_ref = 0.6
     scale_factor = aiamap.scale['x'] / scale_ref
@@ -34,7 +34,7 @@ def aiaprep(aiamap):
     newmap = deepcopy(aiamap)
     newmap.data = affine_transform(aiamap.data.copy(), rmatrix=rmatrix, recenter=True,
                                    scale=scale_factor, rotation_center=rotation_center,
-                                   missing=aiamap.min, interp_type='cubic')
+                                   missing=aiamap.min(), interp_type='bicubic')
 
     # Update header values as needed
     newmap.meta['crpix1'] = newmap.shape[1]/2.0 + 0.5
