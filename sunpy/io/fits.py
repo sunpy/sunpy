@@ -171,12 +171,12 @@ def write(fname, data, header, **kwargs):
                 comments = str(v).split('\n')
                 for com in comments:
                     fits_header.add_comments(com)
-            elif k in 'history':
+            elif k is 'history':
                 hists = str(v).split('\n')
                 for hist in hists:
                     fits_header.add_history(hist)
-            else:
-                fits_header.append(fits.Card(k, str(v)))
+            elif k is not '':
+                fits_header.append(fits.Card(k, str(v).split('\n')))
         else:
             fits_header.append(fits.Card(k,v))
 
