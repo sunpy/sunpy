@@ -9,16 +9,27 @@ import datetime
 import dateutil
 import csv
 import copy
+import urllib
 from itertools import dropwhile
 
 from sunpy.net import hek
 from sunpy.time import parse_time
 from sunpy.sun import sun
+from sunpy import config
 import sunpy.lightcurve
 
 __all__ = ['get_goes_event_list', 'temp_em', 'goes_chianti_tem']
 
-INSTR_FILES_PATH = "instr_files"
+# Check required data files are present in user's default download dir
+# Define location where GOES data files are stored.
+GOES_REMOTE_PATH = "http://hesperia.gsfc.nasa.gov/ssw/gen/idl/synoptic/goes/"
+# Define location where data files should be downloaded to.
+DATA_PATH = config.get("downloads", "download_dir")
+# Define variables for file names
+FILE_TEMP_COR = "goes_chianti_temp_cor.csv"
+FILE_TEMP_PHO = "goes_chianti_temp_pho.csv"
+FILE_EM_COR = "goes_chianti_em_cor.csv"
+FILE_EM_PHO = "goes_chianti_em_pho.csv"
 
 def get_goes_event_list(trange,goes_class_filter=None):
     """
@@ -72,7 +83,7 @@ def get_goes_event_list(trange,goes_class_filter=None):
 
     return goes_event_list
 
-def temp_em(goeslc, abundances="coronal"):
+def temp_em(goeslc, abundances="coronal", download=False):
     """
     Calculates and adds temperature and EM to a GOESLightCurve.
 
@@ -92,6 +103,13 @@ def temp_em(goeslc, abundances="coronal"):
                  States whether photospheric or coronal abundances
                  should be assumed.
                  Default='coronal'
+    download : (optional) bool
+               If True, the GOES temperature and emission measure data
+               files are downloaded.  It is important to do this if a
+               new version of the files has been generated due to a new
+               CHIANTI version being released or the launch of new GOES
+               satellites since these files were originally downloaded.
+               Default=False
 
     Returns
     -------
@@ -129,7 +147,7 @@ def temp_em(goeslc, abundances="coronal"):
     temp, em = goes_chianti_tem(goeslc.data.xrsb, goeslc.data.xrsa,
                                 satellite=goeslc.meta["TELESCOP"].split()[1],
                                 date=goeslc.data.index[0],
-                                abundances=abundances)
+                                abundances=abundances, download=download)
 
     # Enter results into new version of GOES LightCurve Object
     goeslc_new = copy.deepcopy(goeslc)
@@ -139,7 +157,8 @@ def temp_em(goeslc, abundances="coronal"):
     return goeslc_new
 
 def goes_chianti_tem(longflux, shortflux, satellite=8,
-                     date=datetime.datetime.today(), abundances="coronal"):
+                     date=datetime.datetime.today(), abundances="coronal",
+                     download=False):
     """
     Calculates temperature and emission measure from GOES/XRS data.
 
@@ -166,6 +185,13 @@ def goes_chianti_tem(longflux, shortflux, satellite=8,
                  States whether photospheric or coronal abundances
                  should be assumed.
                  Default='coronal'
+    download : (optional) bool
+               If True, the GOES temperature and emission measure data
+               files are downloaded.  It is important to do this if a
+               new version of the files has been generated due to a new
+               CHIANTI version being released or the launch of new GOES
+               satellites since these files were originally downloaded.
+               Default=False
 
     Returns
     -------
@@ -255,13 +281,15 @@ def goes_chianti_tem(longflux, shortflux, satellite=8,
 
     # FIND TEMPERATURE AND EMISSION MEASURE FROM FUNCTIONS BELOW
     temp = _goes_get_chianti_temp(fluxratio, satellite=satellite,
-                                  abundances=abundances)
+                                  abundances=abundances, download=download)
     em = _goes_get_chianti_em(longflux_corrected, temp, satellite=satellite,
-                              abundances=abundances)
+                              abundances=abundances, download=download)
     return temp, em
 
-def _goes_get_chianti_temp(fluxratio, satellite=8, abundances="coronal"):
-    """Calculates temperature from GOES flux ratio.
+def _goes_get_chianti_temp(fluxratio, satellite=8, abundances="coronal",
+                           download=False):
+    """
+    Calculates temperature from GOES flux ratio.
 
     This function calculates the isothermal temperature of the solar
     soft X-ray emitting plasma observed by the GOES/XRS from the
@@ -286,6 +314,13 @@ def _goes_get_chianti_temp(fluxratio, satellite=8, abundances="coronal"):
                  States whether photospheric or coronal abundances
                  should be assumed.
                  Default='coronal'
+    download : (optional) bool
+               If True, the GOES temperature data files are
+               downloaded.  It is important to do this if a new version
+               of the files has been generated due to a new CHIANTI
+               version being released or the launch of new GOES
+               satellites since these files were originally downloaded.
+               Default=False
 
     Returns
     -------
@@ -331,6 +366,12 @@ def _goes_get_chianti_temp(fluxratio, satellite=8, abundances="coronal"):
     array([11.28295376, 11.28295376])
 
     """
+    # If download kwarg is True, download required data files
+    if download:
+        urllib.urlretrieve(os.path.join(GOES_REMOTE_PATH, FILE_TEMP_COR),
+                           os.path.join(localpath, FILE_TEMP_COR))
+        urllib.urlretrieve(os.path.join(GOES_REMOTE_PATH, FILE_TEMP_PHO),
+                           os.path.join(localpath, FILE_TEMP_PHO))
 
     # check inputs are correct
     fluxratio = np.array(fluxratio, dtype=np.float64)
@@ -340,8 +381,10 @@ def _goes_get_chianti_temp(fluxratio, satellite=8, abundances="coronal"):
                          "valid GOES satellite (>1).")
     # if abundance input is valid create file suffix, abund, equalling
     # of 'cor' or 'pho'.
-    if abundances == "coronal" or abundances == "photospheric":
-        abund = abundances[0:3]
+    if abundances == "coronal":
+        data_file = FILE_TEMP_COR
+    elif abundances == "photospheric":
+        data_file = FILE_TEMP_PHO
     else:
         raise ValueError("abundances must be a string equalling "
                          "'coronal' or 'photospheric'.")
@@ -355,9 +398,7 @@ def _goes_get_chianti_temp(fluxratio, satellite=8, abundances="coronal"):
     label = "ratioGOES{0}".format(satellite)
     # Read data representing appropriate temperature--flux ratio
     # relationship depending on satellite number and assumed abundances.
-    with open(os.path.join(INSTR_FILES_PATH,
-                           "goes_chianti_temp_{0}.csv".format(abund)),
-                           "r") as csvfile:
+    with open(os.path.join(DATA_PATH, data_file), "r") as csvfile:
         startline = dropwhile(lambda l: l.startswith("#"), csvfile)
         csvreader = csv.DictReader(startline, delimiter=";")
         for row in csvreader:
@@ -381,8 +422,10 @@ def _goes_get_chianti_temp(fluxratio, satellite=8, abundances="coronal"):
 
     return temp
 
-def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal"):
-    """Calculates emission measure from GOES 1-8A flux and temperature.
+def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal",
+                         download=False):
+    """
+    Calculates emission measure from GOES 1-8A flux and temperature.
 
     This function calculates the emission measure of the solar
     soft X-ray emitting plasma observed by the GOES/XRS from the
@@ -409,6 +452,13 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal"):
                  States whether photospheric or coronal abundances
                  should be assumed.
                  Default='coronal'
+    download : (optional) bool
+               If True, the GOES emission measure data files are
+               downloaded.  It is important to do this if a new version
+               of the files has been generated due to a new CHIANTI
+               version being released or the launch of new GOES
+               satellites since these files were originally downloaded.
+               Default=False
 
     Returns
     -------
@@ -458,7 +508,13 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal"):
     array([  3.45200672e+48,   3.45200672e+48])
 
     """
-
+    # If download kwarg is True, download required data files
+    if download:
+        urllib.urlretrieve(os.path.join(GOES_REMOTE_PATH, FILE_EM_COR),
+                           os.path.join(localpath, FILE_EM_COR))
+        urllib.urlretrieve(os.path.join(GOES_REMOTE_PATH, FILE_EM_PHO),
+                           os.path.join(localpath, FILE_EM_PHO))
+    
     # Check inputs are of correct type
     longflux = np.array(longflux, dtype=np.float64)
     temp = np.array(temp, dtype=np.float64)
@@ -468,8 +524,10 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal"):
                          "valid GOES satellite (>1).")
     # if abundance input is valid create file suffix, abund, equalling
     # of 'cor' or 'pho'.
-    if abundances == "coronal" or abundances == "photospheric":
-        abund = abundances[0:3]
+    if abundances == "coronal":
+        data_file = FILE_EM_COR
+    elif abundances == "photospheric":
+        data_file = FILE_EM_PHO
     else:
         raise ValueError("abundances must be a string equalling "
                          "'coronal' or 'photospheric'.")
@@ -488,9 +546,7 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal"):
 
     # Read data representing appropriate temperature--long flux
     # relationship depending on satellite number and assumed abundances.
-    with open(os.path.join(INSTR_FILES_PATH,
-                           "goes_chianti_em_{0}.csv".format(abund)),
-                           "r") as csvfile:
+    with open(os.path.join(DATA_PATH, data_file), "r") as csvfile:
         startline = dropwhile(lambda l: l.startswith("#"), csvfile)
         csvreader = csv.DictReader(startline, delimiter=";")
         for row in csvreader:
@@ -512,3 +568,51 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal"):
     em = longflux/denom * 1e55
 
     return em
+
+def _check_download_file(filename, remotepath, localpath=os.path.curdir,
+                         remotename=""):
+    """
+    Downloads a file from remotepath to localpath if it isn't there.
+
+    This function checks whether a file with name filename exists in the
+    location, localpath, on the user's local machine.  If it doesn't,
+    it downloads the file from remotepath.
+    
+    Parameters
+    ----------
+    filename : string
+               Name of file.
+    remotepath : string
+                 URL of the remote location from which filename can be
+                 dowloaded.
+    localpath : string
+                Path of the directory in which filename should be
+                stored.
+                Default is current directory
+    remotename : (optional) string
+                 filename under which the file is stored remotely.
+                 Default is same as filename.
+
+    Examples
+    --------
+    >>> pwd
+    u'Users/user/Desktop/'
+    >>> ls
+    file.py
+    >>> remotepath = "http://www.download_repository.com/downloads/"
+    >>> _check_download_file("filename.txt", remotepath)
+    >>> ls
+    file.py    filename.txt
+
+    """
+    if remotename == "":
+        remotename = filename
+    if not os.path.isfile(os.path.join(localpath, filename)):
+        urllib.urlretrieve(os.path.join(remotepath, remotename),
+                           os.path.join(localpath, filename))
+
+# Check, and if necessary, download files
+_check_download_file(FILE_TEMP_COR, GOES_REMOTE_PATH, localpath=DATA_PATH)
+_check_download_file(FILE_TEMP_PHO, GOES_REMOTE_PATH, localpath=DATA_PATH)
+_check_download_file(FILE_EM_COR, GOES_REMOTE_PATH, localpath=DATA_PATH)
+_check_download_file(FILE_EM_PHO, GOES_REMOTE_PATH, localpath=DATA_PATH)
