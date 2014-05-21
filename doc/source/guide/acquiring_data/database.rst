@@ -29,8 +29,8 @@ the file name "sunpydata.sqlite" in the current directory.
 The first parameter of ``Database`` receives one mandatory argument: 
 a URL which describes how to connect to the database. This value is 
 directly passed to :func:`sqlalchemy.create_engine`. The supported 
-format of this URL is described by the documentation of :func:`sqlalchemy.create_engine` 
-as follows:
+format of this URL is described by the documentation of 
+:func:`sqlalchemy.create_engine` as follows:
 
     "The string form of the URL is
     ``dialect+driver://user:password@host/dbname[?key=value..]``, where
@@ -107,11 +107,21 @@ tags                   A list of :class:`tables.Tag` instances.
 
 * The ``id`` attribute is automatically set if an entry is added to a database. 
 
-* The attributes ``source``, ``provider``, ``physobs``, ``fileid``, ``observation_time_start``, ``observation_time_end``, ``instrument``, ``size``, ``wavemin``, and ``wavemax`` are set by methods which use the VSO interface. In particular, these are :meth:`Database.add_from_vso_query_result`, :meth:`Database.download` and possibly :meth:`Database.fetch`.
+* The attributes ``source``, ``provider``, ``physobs``, ``fileid``, 
+  ``observation_time_start``, ``observation_time_end``, ``instrument``,  ``size``, 
+  ``wavemin``, and ``wavemax`` are set by methods which use the VSO interface. In 
+  particular, these are :meth:`Database.add_from_vso_query_result`, 
+  :meth:`Database.download` and   possibly :meth:`Database.fetch`.
 
-* The attributes ``path`` and ``download_time`` are set by the method :meth:`Database.download` and also possibly by :meth:`Database.fetch`. ``starred`` is set or changed via the method :meth:`Database.star` or :meth:`unstar`, respectively. Analogously, ``tags`` is set via the methods :meth:`Database.tag` and :meth:`Database.remove_tag`. 
+* The attributes ``path`` and ``download_time`` are set by the method 
+  :meth:`Database.download` and also possibly by :meth:`Database.fetch`. ``starred`` 
+  is set or changed via the method   :meth:`Database.star` or :meth:`unstar`, 
+  respectively. Analogously, ``tags`` is set via the methods :meth:`Database.tag` 
+  and :meth:`Database.remove_tag`. 
 
-* The attribute ``fits_header_entries`` is set by the methods :meth:`Database.download`, :meth:`Database.add_from_dir`, and :meth:`Database.add_from_file`.
+* The attribute ``fits_header_entries`` is set by the methods 
+  :meth:`Database.download`, :meth:`Database.add_from_dir`, and 
+  :meth:`Database.add_from_file`.
 
 2.1 Adding entries from one FITS file
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
