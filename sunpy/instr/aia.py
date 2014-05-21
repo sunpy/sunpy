@@ -34,7 +34,8 @@ def aiaprep(aiamap):
     newmap = deepcopy(aiamap)
     newmap.data = affine_transform(aiamap.data.copy(), rmatrix=rmatrix, recenter=True,
                                    scale=scale_factor, rotation_center=rotation_center,
-                                   missing=aiamap.min(), interp_type='bicubic')
+                                   missing=aiamap.min(), interp_type='bicubic',
+                                   rotate_func='Crotate')
 
     # Update header values as needed
     newmap.meta['crpix1'] = newmap.shape[1]/2.0 + 0.5

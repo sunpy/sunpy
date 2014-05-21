@@ -65,14 +65,14 @@ def affine_transform(image, rmatrix=None, angle=None, scale=1.0, rotation_center
         skmatrix[2, 2] = 1.0
         skmatrix[:2, 2] = [shift[1], shift[0]]
         if interp_type is 'nearest':
-            kernel = Crotate.NEAREST
+            order = 0
         elif interp_type is 'bilinear':
-            kernel = Crotate.BILINEAR
+            order = 1
         elif interp_type is 'bicubic':
-            kernel = Crotate.BICUBIC
+            order = 3
         im_max = image.max()
         tform = tf.AffineTransform(skmatrix)
-        rotated_image = tf.warp(image/im_max, tform, order=3,
+        rotated_image = tf.warp(image/im_max, tform, order=order,
                     mode='constant', cval=missing) * im_max
     elif rotate_func == 'Crotate':
         if interp_type is 'nearest':
