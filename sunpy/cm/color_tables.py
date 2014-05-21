@@ -575,18 +575,35 @@ hmi_mag_b = np.array([0.0784314, 0.0666667, 0.0666667, 0.0666667, 0.0666667, 0.0
              0.556863, 0.549020, 0.529412, 0.521569, 0.474510, 0.427451, 0.376471, 0.329412, 0.286275])
 
 def hmi_mag_color_table():
-    '''Returns an alternate HMI Magnetogram color table;  from Stanford University / JSOC
+    '''Returns an alternate HMI Magnetogram color table; from Stanford University / JSOC
            Reference: http://jsoc.stanford.edu/data/hmi/HMI_M.ColorTable.pdf
 
-       Example usage:
-           import numpy as np
-           import matplotlib.pyplot as plt
+      Example usage for NRT data:
            import sunpy.map
-           import sunpy.cm as cm
+           import sunpy.cm
            hmi = sunpy.map.Map('fblos.fits')
-           hmi.data = np.clip(hmi.data, -1500.0, 1500.0)
-           hmi.cmap = cm.get_cmap('hmimag')
-           hmi.peek()
+           hmi.cmap = sunpy.cm.get_cmap('hmimag')
+           hmi.peek(vmin=-1500.0, vmax=1500.0)
+           
+           OR (for a basic plot with pixel values on the axes)
+               import numpy as np
+               import matplotlib.pyplot as plt
+               import sunpy.map
+               import sunpy.cm
+               hmi = sunpy.map.Map('fblos.fits')
+               plt.imshow(np.clip(hmi.data, -1500.0, 1500.0), cmap=sunpy.cm.get_cmap('hmimag'), origin='lower')
+               plt.show()
+
+      Example usage for science (Level 1.0) data:
+            import numpy as np
+            import sunpy.map
+            import sunpy.cm
+            hmi = sunpy.map.Map('hmi.m_45s.2014.05.11_12_00_45_TAI.magnetogram.fits')
+            hmir = hmi.rotate(-np.radians(hmi.rotation_angle['y']),
+                              rotation_center=(hmi.reference_pixel['y']-1.0,
+                              hmi.reference_pixel['x']-1.0))
+            hmir.cmap = sunpy.cm.get_cmap('hmimag')
+            hmir.peek(vmin=-1500.0, vmax=1500.0)
     '''
     
     i = np.linspace(0, 1, 256)
