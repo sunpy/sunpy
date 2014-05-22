@@ -1,7 +1,6 @@
 from __future__ import absolute_import
 from __future__ import division
 
-import sys
 import os.path
 import datetime
 import csv
@@ -31,7 +30,7 @@ FILE_TEMP_PHO = "goes_chianti_temp_pho.csv"
 FILE_EM_COR = "goes_chianti_em_cor.csv"
 FILE_EM_PHO = "goes_chianti_em_pho.csv"
 
-def get_goes_event_list(trange,goes_class_filter=None):
+def get_goes_event_list(trange, goes_class_filter=None):
     """
     Retrieve list of flares detected by GOES within a given time range.
 
@@ -45,20 +44,20 @@ def get_goes_event_list(trange,goes_class_filter=None):
 
     """
     # use HEK module to search for GOES events
-    client=hek.HEKClient()
-    event_type='FL'
-    tstart=trange.start()
-    tend=trange.end()
+    client = hek.HEKClient()
+    event_type = 'FL'
+    tstart = trange.start()
+    tend = trange.end()
 
     # query the HEK for a list of events detected by the GOES instrument
     # between tstart and tend (using a GOES-class filter)
     if goes_class_filter:
-        result = client.query(hek.attrs.Time(tstart,tend),
+        result = client.query(hek.attrs.Time(tstart, tend),
                               hek.attrs.EventType(event_type),
                               hek.attrs.FL.GOESCls > goes_class_filter,
                               hek.attrs.OBS.Observatory == 'GOES')
     else:
-        result = client.query(hek.attrs.Time(tstart,tend),
+        result = client.query(hek.attrs.Time(tstart, tend),
                               hek.attrs.EventType(event_type),
                               hek.attrs.OBS.Observatory == 'GOES')
 
@@ -67,17 +66,17 @@ def get_goes_event_list(trange,goes_class_filter=None):
     # keep event data, start time, peak time, end time, GOES-class,
     # location, active region source (as per GOES list standard)
     # make this into a list of dictionaries
-    goes_event_list=[]
+    goes_event_list = []
 
     for r in result:
-        goes_event={}
+        goes_event = {}
         goes_event['event_date'] = \
           parse_time(r['event_starttime']).date().strftime('%Y-%m-%d')
         goes_event['start_time'] = parse_time(r['event_starttime'])
         goes_event['peak_time'] = parse_time(r['event_peaktime'])
         goes_event['end_time'] = parse_time(r['event_endtime'])
         goes_event['goes_class'] = str(r['fl_goescls'])
-        goes_event['goes_location'] = r['event_coord1'],r['event_coord2']
+        goes_event['goes_location'] = r['event_coord1'], r['event_coord2']
         goes_event['noaa_active_region'] = r['ar_noaanum']
         goes_event_list.append(goes_event)
 
@@ -256,7 +255,7 @@ def goes_chianti_tem(longflux, shortflux, satellite=8,
     if len(longflux) != len(shortflux):
         raise ValueError(
             "longflux and shortflux must have same number of elements.")
-    
+
     # PREPARE DATA
     # GOES 6 long channel flux before 1983-Jun-28 must be corrected by a
     # factor of 4.43/5.32
@@ -369,9 +368,9 @@ def _goes_get_chianti_temp(fluxratio, satellite=8, abundances="coronal",
     # If download kwarg is True, download required data files
     if download:
         urllib.urlretrieve(os.path.join(GOES_REMOTE_PATH, FILE_TEMP_COR),
-                           os.path.join(localpath, FILE_TEMP_COR))
+                           os.path.join(DATA_PATH, FILE_TEMP_COR))
         urllib.urlretrieve(os.path.join(GOES_REMOTE_PATH, FILE_TEMP_PHO),
-                           os.path.join(localpath, FILE_TEMP_PHO))
+                           os.path.join(DATA_PATH, FILE_TEMP_PHO))
 
     # check inputs are correct
     fluxratio = np.array(fluxratio, dtype=np.float64)
@@ -511,10 +510,10 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal",
     # If download kwarg is True, download required data files
     if download:
         urllib.urlretrieve(os.path.join(GOES_REMOTE_PATH, FILE_EM_COR),
-                           os.path.join(localpath, FILE_EM_COR))
+                           os.path.join(DATA_PATH, FILE_EM_COR))
         urllib.urlretrieve(os.path.join(GOES_REMOTE_PATH, FILE_EM_PHO),
-                           os.path.join(localpath, FILE_EM_PHO))
-    
+                           os.path.join(DATA_PATH, FILE_EM_PHO))
+
     # Check inputs are of correct type
     longflux = np.array(longflux, dtype=np.float64)
     temp = np.array(temp, dtype=np.float64)
@@ -577,7 +576,7 @@ def _check_download_file(filename, remotepath, localpath=os.path.curdir,
     This function checks whether a file with name filename exists in the
     location, localpath, on the user's local machine.  If it doesn't,
     it downloads the file from remotepath.
-    
+
     Parameters
     ----------
     filename : string
