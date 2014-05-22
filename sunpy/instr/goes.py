@@ -6,6 +6,7 @@ import datetime
 import csv
 import copy
 import urllib
+import urllib2
 from itertools import dropwhile
 
 import numpy as np
@@ -365,12 +366,12 @@ def _goes_get_chianti_temp(fluxratio, satellite=8, abundances="coronal",
     array([11.28295376, 11.28295376])
 
     """
-    # If download kwarg is True, download required data files
-    if download:
-        urllib.urlretrieve(os.path.join(GOES_REMOTE_PATH, FILE_TEMP_COR),
-                           os.path.join(DATA_PATH, FILE_TEMP_COR))
-        urllib.urlretrieve(os.path.join(GOES_REMOTE_PATH, FILE_TEMP_PHO),
-                           os.path.join(DATA_PATH, FILE_TEMP_PHO))
+    # If download kwarg is True, or required data files cannot be
+    # found locally, download required data files.
+    _check_download_file(FILE_TEMP_COR, GOES_REMOTE_PATH, localpath=DATA_PATH,
+                         force_download=download)
+    _check_download_file(FILE_TEMP_PHO, GOES_REMOTE_PATH, localpath=DATA_PATH,
+                         force_download=download)
 
     # check inputs are correct
     fluxratio = np.array(fluxratio, dtype=np.float64)
@@ -507,12 +508,12 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal",
     array([  3.45200672e+48,   3.45200672e+48])
 
     """
-    # If download kwarg is True, download required data files
-    if download:
-        urllib.urlretrieve(os.path.join(GOES_REMOTE_PATH, FILE_EM_COR),
-                           os.path.join(DATA_PATH, FILE_EM_COR))
-        urllib.urlretrieve(os.path.join(GOES_REMOTE_PATH, FILE_EM_PHO),
-                           os.path.join(DATA_PATH, FILE_EM_PHO))
+    # If download kwarg is True, or required data files cannot be
+    # found locally, download required data files.
+    _check_download_file(FILE_EM_COR, GOES_REMOTE_PATH, localpath=DATA_PATH,
+                         force_download=download)
+    _check_download_file(FILE_EM_PHO, GOES_REMOTE_PATH, localpath=DATA_PATH,
+                         force_download=download)
 
     # Check inputs are of correct type
     longflux = np.array(longflux, dtype=np.float64)
@@ -569,7 +570,7 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal",
     return em
 
 def _check_download_file(filename, remotepath, localpath=os.path.curdir,
-                         remotename=None):
+                         remotename=None, force_download=False):
     """
     Downloads a file from remotepath to localpath if it isn't there.
 
@@ -591,6 +592,8 @@ def _check_download_file(filename, remotepath, localpath=os.path.curdir,
     remotename : (optional) string
                  filename under which the file is stored remotely.
                  Default is same as filename.
+    force_download : (optional) bool
+                     If True, 
 
     Examples
     --------
@@ -604,14 +607,29 @@ def _check_download_file(filename, remotepath, localpath=os.path.curdir,
     file.py    filename.txt
 
     """
-    if not os.path.isfile(os.path.join(localpath, filename)):
+    # Check if file already exists locally.  If not, try downloading it.
+    if force_download or not os.path.isfile(os.path.join(localpath, filename)):
+        # set local and remote file names be the same unless specified
+        # by user.
         if type(remotename) is not str:
             remotename = filename
-        urllib.urlretrieve(os.path.join(remotepath, remotename),
-                           os.path.join(localpath, filename))
-
-# Check, and if necessary, download files
-_check_download_file(FILE_TEMP_COR, GOES_REMOTE_PATH, localpath=DATA_PATH)
-_check_download_file(FILE_TEMP_PHO, GOES_REMOTE_PATH, localpath=DATA_PATH)
-_check_download_file(FILE_EM_COR, GOES_REMOTE_PATH, localpath=DATA_PATH)
-_check_download_file(FILE_EM_PHO, GOES_REMOTE_PATH, localpath=DATA_PATH)
+        try:
+            # Check if the host server can be connected to.
+            response = urllib2.urlopen(remotepath+remotename, timeout=1)
+            # Try downloading file
+            urllib.urlretrieve(os.path.join(remotepath, remotename),
+                               os.path.join(localpath, filename))
+            # Check if file has been downloaded.  If not, raise error.
+            if not os.path.isfile(os.path.join(localpath, filename)):
+                raise NameError(filename + " was not downloaded from " +
+                                remotepath + " .")
+        except urllib2.URLError as e:
+            # If the host server couldn't be cannected to, raise Error.
+            raise e(remotename + " could not be downloaded from\n" +
+                    remotepath + " as connection could not be made.")
+        except urllib2.HTTPError as e:
+            raise e
+            # If file does not exist on server, print that info.
+            if e.reason == "Not Found":
+                print remotename + " could be not be found at " + \
+                  remotepath + " ."
