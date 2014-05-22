@@ -572,7 +572,7 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal",
     return em
 
 def _check_download_file(filename, remotepath, localpath=os.path.curdir,
-                         remotename=""):
+                         remotename=None):
     """
     Downloads a file from remotepath to localpath if it isn't there.
 
@@ -607,9 +607,9 @@ def _check_download_file(filename, remotepath, localpath=os.path.curdir,
     file.py    filename.txt
 
     """
-    if remotename == "":
-        remotename = filename
     if not os.path.isfile(os.path.join(localpath, filename)):
+        if type(remotename) is not str:
+            remotename = filename
         urllib.urlretrieve(os.path.join(remotepath, remotename),
                            os.path.join(localpath, filename))
 
