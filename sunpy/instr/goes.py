@@ -3,7 +3,6 @@ from __future__ import division
 
 import sys
 import os.path
-
 import datetime
 import csv
 import copy
