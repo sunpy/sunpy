@@ -15,8 +15,8 @@ header = {'cdelt1': 0.6,
           'cdelt2': 0.6,
           #crota1?
           #crota2: 
-          'crpix1': data.shape[1]/2.0 + 0.5,
-          'crpix2': data.shape[0]/2.0 + 0.5,
+          'crpix1': data.shape[1]/2.0 - 0.5,
+          'crpix2': data.shape[0]/2.0 - 0.5,
           #crval1:
           #crval2:
           'cunit1': 'arcsec',
@@ -61,23 +61,19 @@ def plot_results(expect, result, diff):
 
 
 def test_aiaprep_rotation():
-    # Check 360 degree rotation against original image
-    original.meta['crota2'] = 360.0
-    rot_map = aiaprep(original)
-    diff_map = sunpy.map.GenericMap(original.data-rot_map.data, rot_map.meta)
-    plot_results(original, rot_map, diff_map)
-    assert np.allclose(original.data, rot_map.data, atol=atol)
-    assert abs(original.data.mean() - rot_map.data.mean()) <= atol
-    plt.close()
-    
-    # Check incremental 360 degree rotation against original image
-
     # Test 90 degree rotation against expected outcome
     original.meta['crota2'] = 90.0
     expected = sunpy.map.GenericMap(np.rot90(original.data.copy()), original.meta.copy())
     rot_map = aiaprep(original)
     diff_map = sunpy.map.GenericMap(expected.data-rot_map.data, rot_map.meta)
     plot_results(expected, rot_map, diff_map)
+    fig2 = plt.figure()
+    fig2.add_subplot(1, 2, 1)
+    plt.plot(original.data[:, 50])
+    fig2.add_subplot(1, 2, 2)
+    plt.plot(rot_map.data[:, 50])
+    print original.reference_pixel
+    print rot_map.reference_pixel
     assert np.allclose(expected.data, rot_map.data, atol=atol)
     assert abs(expected.data.mean() - rot_map.data.mean()) <= atol
     plt.close()
@@ -101,6 +97,17 @@ def test_aiaprep_rotation():
     assert np.allclose(expected.data, rot_map.data, atol=atol)
     assert abs(expected.data.mean() - rot_map.data.mean()) <= atol
     plt.close()
+
+    # Check 360 degree rotation against original image
+    original.meta['crota2'] = 360.0
+    rot_map = aiaprep(original)
+    diff_map = sunpy.map.GenericMap(original.data-rot_map.data, rot_map.meta)
+    plot_results(original, rot_map, diff_map)
+    assert np.allclose(original.data, rot_map.data, atol=atol)
+    assert abs(original.data.mean() - rot_map.data.mean()) <= atol
+    plt.close()
+    
+    # Check incremental 360 degree rotation against original image
 
     # Check rotated and derotated image against original
     original.meta['crota2'] = 10.0
@@ -130,7 +137,7 @@ def test_aiaprep_shift():
 
     # Check shifted and unshifted shape against original image
     shift_map = aiaprep(original)
-    shift_map.meta['crpix1'], shift_map.meta['crpix2'] = data.shape[1]/2.0 + 0.5, data.shape[0]/2.0 + 0.5
+    shift_map.meta['crpix1'], shift_map.meta['crpix2'] = data.shape[1]/2.0 - 0.5, data.shape[0]/2.0 - 0.5
     shift_map = aiaprep(shift_map)
     diff_map = sunpy.map.GenericMap(original.data-shift_map.data, shift_map.meta)
     plot_results(original, shift_map, diff_map)
@@ -183,7 +190,7 @@ def test_aiaprep_all():
     original.meta['crota2'] = 10.0
     prep_map = aiaprep(original)
     prep_map.meta['crota2'] = -10.0
-    prep_map.meta['crpix1'], original.meta['crpix2'] = data.shape[1]/2.0 + 0.5, data.shape[0]/2.0 + 0.5 # Not entirely sure about this either
+    prep_map.meta['crpix1'], original.meta['crpix2'] = data.shape[1]/2.0 - 0.5, data.shape[0]/2.0 - 0.5 # Not entirely sure about this either
     prep_map.meta['cdelt1'], original.meta['cdelt2'] = 1.2, 1.2
     prep_map = aiaprep(prep_map)
     diff_map = sunpy.map.GenericMap(original.data-prep_map.data, prep_map.meta)
@@ -196,8 +203,8 @@ def test_aiaprep_all():
     # Check all of these for Map attributes and .meta values?
     # Also may be worth checking they stay the same when saved, I'm sure I've had issues with that before.
     # Check crpix values
-    assert prep_map.meta['crpix1'] == prep_map.shape[1]/2.0 + 0.5
-    assert prep_map.meta['crpix2'] == prep_map.shape[1]/2.0 + 0.5
+    assert prep_map.meta['crpix1'] == prep_map.shape[1]/2.0 - 0.5
+    assert prep_map.meta['crpix2'] == prep_map.shape[1]/2.0 - 0.5
     # Check cdelt values
     assert prep_map.meta['cdelt1'] == 0.6
     assert prep_map.meta['cdelt2'] == 0.6
