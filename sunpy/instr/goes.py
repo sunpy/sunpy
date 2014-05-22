@@ -3,7 +3,6 @@ from __future__ import division
 
 import sys
 import os.path
-
 import datetime
 import csv
 import copy
@@ -12,7 +11,6 @@ from itertools import dropwhile
 
 import numpy as np
 import scipy.interpolate as interpolate
-
 
 from sunpy.net import hek
 from sunpy.time import parse_time
