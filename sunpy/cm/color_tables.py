@@ -606,12 +606,7 @@ def hmi_mag_color_table():
             hmir.peek(vmin=-1500.0, vmax=1500.0)
     '''
     
-    i = np.linspace(0, 1, 256)
-    
-    cdict = dict(
-        (name, list(zip(i, el, el)))
-        for el, name in [(hmi_mag_r, 'red'), (hmi_mag_g, 'green'), (hmi_mag_b, 'blue')]
-    )
+    cdict = create_cdict(hmi_mag_r * 255, hmi_mag_g * 255, hmi_mag_b * 255)
     
     return colors.LinearSegmentedColormap('mytable', cdict)
 
