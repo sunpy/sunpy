@@ -13,7 +13,7 @@ import sunpy.time
 from sunpy.lightcurve.lightcurve_factory import LightCurve
 from sunpy.lightcurve.sources import *
 from sunpy.util.odict import OrderedDict
-
+import glob
 from astropy.io import fits
 
 base_path = os.path.join(sunpy.data.test.rootdir, 'lightcurve/')
@@ -43,12 +43,12 @@ def test_goes_single():
     assert lc.time_range().end() == sunpy.time.parse_time('2012-01-01 23:54:09.617000')
 
 def test_eve_single_as_genericlc():
-    lc = LightCurve(os.path.join(base_path,'EVE_He_II_304_averages.csv')
+    lc = LightCurve(os.path.join(base_path,'EVE_He_II_304_averages.csv'))
 
     assert isinstance(lc, GenericLightCurve)
     assert lc.time_range().start() == sunpy.time.parse_time('2012-06-13T00:00:00Z')
     assert lc.time_range().end() == sunpy.time.parse_time('2012-06-13T01:39:00Z')
-
+    
 
 def test_goes_webapi():
     lc = LightCurve(os.path.join(base_path,'xrs_2s_webapi_shrunk.csv'), source='goes')
@@ -99,8 +99,37 @@ def test_multi():
     assert isinstance(lc[0], LYRALightCurve)
     assert isinstance(lc[1], GOESLightCurve)
 
-#def test_glob():
-#    lc = LightCurve(base_path + '*.fits')
+def give_source_for_fname(fname):
+    if 'eve' in fname:
+    	return 'eve'
+    if 'lyra' in fname:
+    	return 'lyra'
+    if 'norh' in fname: 
+    	return 'norh'
+    if 'xrs' in fname:
+    	return 'goes'
+    return None
+
+
+@pytest.mark.parametrize(("inp", "source"),
+[('*.fits', None),
+ #('*.csv', [give_source_for_fname(x.lower()) for x in glob.glob(base_path + '*.csv')])]) eve_csv file not recognised
+ ('*.csv', None),
+ ('', None ]) # test for directories
+def test_glob_dir(inp,source):
+    oeve = EVELightCurve
+    ogoes = GOESLightCurve
+    onorh = NoRHLightCurve
+    olyra = LYRALightCurve
+    map_ = {}
+    map_['eve'] = oeve
+    map_['geos'] = ogoes
+    map_['norh'] = onorh
+    map_['lyra'] = olyra
+    lc = LightCurve(base_path + inp,source=source)
+    #for i,ilc in enumerate(lc):                     lc is not iterable, concatenate flag required 
+    #    assert isinstance(ilc,map_[source[i]])
+
 
 def test_one_from_many():
     lc = LightCurve([os.path.join(base_path,'lyra_20120101-000000_lev2_std.fits'),
