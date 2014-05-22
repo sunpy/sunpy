@@ -6,16 +6,14 @@ from sunpy.net.download  import Downloader
 
 class EVEDownloader(object):
 
-    @classmethod
-    def _get_url_from_timerange(cls,timerange,**kwargs)
+    def _get_url_from_timerange(self,timerange,**kwargs):
          days = timerange.get_days()
 	 urls = []
 	 for day in days:
 	     urls.append(cls._get_url_for_date(day,**kwargs))
 	 return urls
 
-    @classmethod
-    def _get_url_for_date(cls,date,**kwargs):
+    def _get_url_for_date(self,date,**kwargs):
         
     #	if date < datetime.date(2010,1,1):
     #        raise ERROR (Define error class showing data not available for this date
@@ -23,7 +21,7 @@ class EVEDownloader(object):
         return urlparse.urljoin(base_url, date.strftime('%Y/%Y%m%d') + '_EVE_L0CS_DIODES_1m.txt')
     
     @staticmethod
-    def makeargs(map_,*args,**kwargs)
+    def makeargs(map_,*args,**kwargs):
        '''map_:Dict'''
        for elem in args:
            if issubclass(elem.__class__,Time):
@@ -34,27 +32,28 @@ class EVEDownloader(object):
 	       except Exception:
 	           map_[attr.__class__.__name__]=None
      
-     def download(self,*args,**kwargs):
+    def download(self,*args,**kwargs):
          
-	 map_ = {}
+         map_ = {}
 	 makeargs(map_,*args,**kwargs)
 	 urls = EVEDownloader._get_url_for_timerange(map_.get('TimeRange'),**kwargs)
 	 dobj = Downloader(max_conn=len(urls),max_total=len(urls))
 	 for url in urls:
-	     dobj.download(url,**map_)
+	     dobj.download(url,map_.get('Path',None),map_.get('CallBack',None),map_.get('ErrorBack',None))
          
          #add to database
 	 #eve_add_to_database(conn_url)
 
      
-     @staticmethod
-     def eve_add_to_database(conn_url):
-          
+    @staticmethod
+    def eve_add_to_database(conn_url):
 	  pass
+    
+   
+    def download_legacy(self,timerange,path=None,callback=None,errback=None):
 
-     def download_legacy(timerange,path=None,callback=None,errback=None)
-
-         urls = EVEDownloader._get_url_for_timerange(timerange)
+	 print dir(EVEDownloader)
+         urls = self._get_url_for_timerange(timerange)
 	 dobj = Downloader(max_conn=len(urls),max_total=len(urls))
 	 for url, in urls:
 	     dobj.download(url,path,callback,errback)
