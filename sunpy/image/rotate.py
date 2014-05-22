@@ -64,6 +64,7 @@ def affine_transform(image, rmatrix=None, angle=None, scale=1.0, rotation_center
         skmatrix[:2, :2] = rmatrix
         skmatrix[2, 2] = 1.0
         skmatrix[:2, 2] = [shift[1], shift[0]]
+        print skmatrix
         if interp_type is 'nearest':
             order = 0
         elif interp_type is 'bilinear':
