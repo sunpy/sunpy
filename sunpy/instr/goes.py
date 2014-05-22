@@ -1,16 +1,18 @@
 from __future__ import absolute_import
 from __future__ import division
+
 import sys
 import os.path
 
-import numpy as np
-import scipy.interpolate as interpolate
 import datetime
-import dateutil
 import csv
 import copy
 import urllib
 from itertools import dropwhile
+
+import numpy as np
+import scipy.interpolate as interpolate
+
 
 from sunpy.net import hek
 from sunpy.time import parse_time
