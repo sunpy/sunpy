@@ -63,7 +63,7 @@ def solar_cycle_number(t=None):
     result = (time.year + 8) % 28 + 1
     return result
 
-def solar_semidiameter_angular_size(t=None):  #done
+def solar_semidiameter_angular_size(t=None):
     r"""
     Return the angular size of the semi-diameter of the Sun as 
     a function of time as viewed from Earth (in arcsec)
@@ -80,9 +80,9 @@ def solar_semidiameter_angular_size(t=None):  #done
 
     """
     solar_semidiameter_rad = (constants.radius * u.AU) / (sunearth_distance(t) * constants.au)
-    return solar_semidiameter_rad.to(u.arcsec, equivalencies = u.dimensionless_angles())
+    return Angle(solar_semidiameter_rad.to(u.arcsec, equivalencies = u.dimensionless_angles()))
  
-def position(t=None):   #done
+def position(t=None):
     """Returns the position of the Sun (right ascension and declination)
     on the celestial sphere using the equatorial coordinate system in arcsec.
     """
@@ -91,13 +91,13 @@ def position(t=None):   #done
     result = [ra,dec]
     return result
     
-def eccentricity_SunEarth_orbit(t=None):  #not required
+def eccentricity_SunEarth_orbit(t=None):
     """Returns the eccentricity of the Sun Earth Orbit."""
     T = julian_centuries(t)
     result = 0.016751040 - 0.00004180 * T - 0.0000001260 * T ** 2
     return result
 
-def mean_ecliptic_longitude(t=None):    #done12
+def mean_ecliptic_longitude(t=None):
     """Returns the mean ecliptic longitude."""
     T = julian_centuries(t)
     result = 279.696680 + 36000.76892 * T + 0.0003025 * T ** 2
@@ -108,7 +108,7 @@ def longitude_Sun_perigee(t=None): # pylint: disable=W0613
     # T = julian_centuries(t)
     return 1
     
-def mean_anomaly(t=None):   #done12
+def mean_anomaly(t=None):
     """Returns the mean anomaly (the angle through which the Sun has moved
     assuming a circular orbit) as a function of time."""
     T = julian_centuries(t)
@@ -116,20 +116,20 @@ def mean_anomaly(t=None):   #done12
     result = result % 360.0
     return Angle(result, u.deg)
 
-def carrington_rotation_number(t=None):  #not required
+def carrington_rotation_number(t=None):
     """Return the Carrington Rotation number"""
     jd = julian_day(t)
     result = (1. / 27.2753) * (jd - 2398167.0) + 1.0
     return result
 
-def geometric_mean_longitude(t=None):  #done12
+def geometric_mean_longitude(t=None):
     """Returns the geometric mean longitude (in degrees)"""   
     T = julian_centuries(t)
     result = 279.696680 + 36000.76892 * T + 0.0003025 * T ** 2
     result = result % 360.0
     return Longitude(result, u.deg)
   
-def equation_of_center(t=None):  #done12
+def equation_of_center(t=None):
     """Returns the Sun's equation of center (in degrees)"""
     T = julian_centuries(t)
     mna = mean_anomaly(t) 
@@ -139,19 +139,19 @@ def equation_of_center(t=None):  #done12
     result = result * u.deg
     return Angle(result)
 
-def true_longitude(t=None): #done12
+def true_longitude(t=None):
     """Returns the Sun's true geometric longitude (in degrees) 
     (Refered to the mean equinox of date.  Question: Should the higher
     accuracy terms from which app_long is derived be added to true_long?)"""
     result = (equation_of_center(t) + geometric_mean_longitude(t)) % (360.0 * u.deg)
     return Longitude(result)
 
-def true_anomaly(t=None): #done12
+def true_anomaly(t=None):
     """Returns the Sun's true anomaly (in degress)."""
     result = (mean_anomaly(t) + equation_of_center(t)) % (360.0 * u.deg)
     return result
 
-def sunearth_distance(t=None): #done1
+def sunearth_distance(t=None):
     """Returns the Sun Earth distance (AU). There are a set of higher 
     accuracy terms not included here."""  
     ta = true_anomaly(t)
@@ -159,7 +159,7 @@ def sunearth_distance(t=None): #done1
     result = 1.00000020 * (1.0 - e ** 2) / (1.0 + e * np.cos(np.radians(ta)))
     return result * u.AU
 
-def apparent_longitude(t=None):  #done1
+def apparent_longitude(t=None):
     """Returns the apparent longitude of the Sun."""
     T = julian_centuries(t)
     omega = 259.18 - 1934.142 * T
@@ -175,29 +175,29 @@ def true_latitude(t=None): # pylint: disable=W0613
 def apparent_latitude(t=None): # pylint: disable=W0613
     return 0
 
-def true_obliquity_of_ecliptic(t=None): #done1
+def true_obliquity_of_ecliptic(t=None):
     T = julian_centuries(t)
     result = 23.452294 - 0.0130125 * T - 0.00000164 * T ** 2 + 0.000000503 * T ** 3
     return Angle(result, u.deg)
 
-def true_rightascenscion(t=None):  #done1
+def true_rightascenscion(t=None):
     true_long = true_longitude(t)
     ob = true_obliquity_of_ecliptic(t)
     result = np.cos(np.radians(ob)) * np.sin(np.radians(true_long))
     result = result * u.deg
     return Longitude(result)
 
-def true_declination(t=None):   #done1
+def true_declination(t=None):
     result = np.cos(np.radians(true_longitude(t)))
     result = result * u.deg
     return Latitude(result)
 
-def apparent_obliquity_of_ecliptic(t=None):  #done1
+def apparent_obliquity_of_ecliptic(t=None):
     omega = apparent_longitude(t)
     result = true_obliquity_of_ecliptic(t) + (0.00256 * np.cos(np.radians(omega))) * u.deg
     return result
 
-def apparent_rightascenscion(t=None):  #done1
+def apparent_rightascenscion(t=None):
     """Returns the apparent right ascenscion of the Sun."""
     y = np.cos(np.radians(apparent_obliquity_of_ecliptic(t))) * np.sin(np.radians(apparent_longitude(t)))
     x = np.cos(np.radians(apparent_longitude(t)))
@@ -207,14 +207,14 @@ def apparent_rightascenscion(t=None):  #done1
     result = app_ra/15.0 
     return Longitude(result) 
 
-def apparent_declination(t=None):  #no changes
+def apparent_declination(t=None):
     """Returns the apparent declination of the Sun."""
     ob = apparent_obliquity_of_ecliptic(t)
     app_long = apparent_longitude(t)
     result = np.degrees(np.arcsin(np.sin(np.radians(ob))) * np.sin(np.radians(app_long)))
     return Latitude(result)
 
-def solar_north(t=None):  #done
+def solar_north(t=None):
     """Returns the position of the Solar north pole in degrees."""
     T = julian_centuries(t)
     ob1 = true_obliquity_of_ecliptic(t)
@@ -230,7 +230,7 @@ def solar_north(t=None):  #done
     result = x + y
     return Angle(result)
 
-def heliographic_solar_center(t=None):  #done
+def heliographic_solar_center(t=None):
     """Returns the position of the solar center in heliographic coordinates."""
     jd = julian_day(t)
     T = julian_centuries(t)
