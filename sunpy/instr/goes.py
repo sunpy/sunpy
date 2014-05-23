@@ -508,21 +508,19 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal",
     array([  3.45200672e+48,   3.45200672e+48])
 
     """
-<<<<<<< HEAD
     # If download kwarg is True, or required data files cannot be
     # found locally, download required data files.
     _check_download_file(FILE_EM_COR, GOES_REMOTE_PATH, localpath=DATA_PATH,
                          force_download=download)
     _check_download_file(FILE_EM_PHO, GOES_REMOTE_PATH, localpath=DATA_PATH,
                          force_download=download)
-=======
+
     # If download kwarg is True, download required data files
     if download:
         urllib.urlretrieve(os.path.join(GOES_REMOTE_PATH, FILE_EM_COR),
                            os.path.join(localpath, FILE_EM_COR))
         urllib.urlretrieve(os.path.join(GOES_REMOTE_PATH, FILE_EM_PHO),
                            os.path.join(localpath, FILE_EM_PHO))
->>>>>>> 13d3ef35bfd12c6fc32b4958680295a80db13b2f
 
     # Check inputs are of correct type
     longflux = np.array(longflux, dtype=np.float64)
@@ -631,10 +629,10 @@ def _check_download_file(filename, remotepath, localpath=os.path.curdir,
                                os.path.join(localpath, filename))
             # Check if file has been downloaded.  If not, raise error.
             if not os.path.isfile(os.path.join(localpath, filename)):
-                raise NameError(filename + " was not downloaded from " +
+                raise NameError(remotename + " was not downloaded from " +
                                 remotepath + " .")
         except urllib2.URLError as e:
-            # If the host server couldn't be cannected to, raise Error.
+            # If the host server couldn't be connected to, raise Error.
             raise e(remotename + " could not be downloaded from\n" +
                     remotepath + " as connection could not be made.")
         except urllib2.HTTPError as e:
@@ -642,4 +640,4 @@ def _check_download_file(filename, remotepath, localpath=os.path.curdir,
             # If file does not exist on server, print that info.
             if e.reason == "Not Found":
                 print remotename + " could be not be found at " + \
-                  remotepath + " ."
+                  remotepath + "."
