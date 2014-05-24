@@ -11,7 +11,6 @@ facilitate the interfacing between further modules and HELIO.
 """
 from __future__ import absolute_import
 from urllib2 import urlopen, URLError
-#import sunpy.util.etree as EL 
 import xml.etree.ElementTree as EL
 from sunpy.net.helio import registry_links as RL
 from bs4 import BeautifulSoup
@@ -61,8 +60,8 @@ def webservice_parser(service='HEC'):
     root = EL.fromstring(xml)
     links = []
 
-    #WARNING: getiterator is deprecated in Python 2.7+
-    #Fix for 3.x support
+    # WARNING: getiterator is deprecated in Python 2.7+
+    # Fix for 3.x support
     for interface in root.getiterator('interface'):
         service_type = interface.attrib
         key = service_type.keys()

@@ -24,16 +24,18 @@ from datetime import datetime
 from sunpy.net import attr
 from sunpy.time import parse_time
 
+
 class _ParamAttr(attr.Attr):
     """ A _ParamAttr is used to represent equality or inequality checks
     for certain parameters. It stores the attribute's name, the operator to
     compare with, and the value to compare to. """
+
     def __init__(self, name, op, value):
         attr.Attr.__init__(self)
         self.name = name
         self.op = op
         self.value = value
-    
+
     def collides(self, other):
         if not isinstance(other, self.__class__):
             return False
@@ -44,13 +46,13 @@ class _ParamAttr(attr.Attr):
 class _BoolParamAttr(_ParamAttr):
     def __init__(self, name, value='true'):
         _ParamAttr.__init__(self, name, '=', value)
-    
+
     def __neg__(self):
         if self.value == 'true':
             return _BoolParamAttr(self.name, 'false')
         else:
             return _BoolParamAttr(self.name)
-    
+
     def __pos__(self):
         return _BoolParamAttr(self.name)
 
@@ -59,20 +61,21 @@ class _ListAttr(attr.Attr):
     """ A _ListAttr is used when the server expects a list of things with
     the name (GET parameter name) key. By adding the _ListAttr to the query,
     item is added to that list. """
+
     def __init__(self, key, item):
         attr.Attr.__init__(self)
-        
+
         self.key = key
         self.item = item
-    
+
     def collides(self, other):
         return False
-    
+
     def __eq__(self, other):
         if not isinstance(other, self.__class__):
             return False
         return vars(self) == vars(other)
-    
+
     def __hash__(self):
         return hash(tuple(vars(self).itervalues()))
 
@@ -81,10 +84,10 @@ class EventType(attr.Attr):
     def __init__(self, item):
         attr.Attr.__init__(self)
         self.item = item
-    
+
     def collides(self, other):
         return isinstance(other, EventType)
-    
+
     def __or__(self, other):
         if isinstance(other, EventType):
             return EventType(self.item + ',' + other.item)
@@ -95,22 +98,23 @@ class EventType(attr.Attr):
 # XXX: XOR
 class Time(attr.Attr):
     """ Restrict query to time range between start and end. """
+
     def __init__(self, start, end):
         attr.Attr.__init__(self)
         self.start = start
         self.end = end
-    
+
     def collides(self, other):
         return isinstance(other, Time)
-    
+
     def __eq__(self, other):
         if not isinstance(other, self.__class__):
             return False
         return vars(self) == vars(other)
-    
+
     def __hash__(self):
         return hash(tuple(vars(self).itervalues()))
-    
+
     @classmethod
     def dt(cls, start, end):
         return cls(datetime(*start), datetime(*end))
@@ -118,24 +122,24 @@ class Time(attr.Attr):
 
 # pylint: disable=R0913
 class SpatialRegion(attr.Attr):
-    def __init__(
-        self, x1=-1200, y1=-1200, x2=1200, y2=1200, sys='helioprojective'):
+    def __init__(self, x1=-1200, y1=-1200, x2=1200, y2=1200,
+                 sys='helioprojective'):
         attr.Attr.__init__(self)
-        
+
         self.x1 = x1
         self.y1 = y1
         self.x2 = x2
         self.y2 = y2
         self.sys = sys
-    
+
     def collides(self, other):
         return isinstance(other, SpatialRegion)
-    
+
     def __eq__(self, other):
         if not isinstance(other, self.__class__):
             return False
         return vars(self) == vars(other)
-    
+
     def __hash__(self):
         return hash(tuple(vars(self).itervalues()))
 
@@ -144,15 +148,15 @@ class Contains(attr.Attr):
     def __init__(self, *types):
         attr.Attr.__init__(self)
         self.types = types
-    
+
     def collides(self, other):
         return False
-    
+
     def __eq__(self, other):
         if not isinstance(other, self.__class__):
             return False
         return vars(self) == vars(other)
-    
+
     def __hash__(self):
         return hash(tuple(vars(self).itervalues()))
 
@@ -160,22 +164,22 @@ class Contains(attr.Attr):
 class _ComparisonParamAttrWrapper(object):
     def __init__(self, name):
         self.name = name
-    
+
     def __lt__(self, other):
         return _ParamAttr(self.name, '<', other)
-    
+
     def __le__(self, other):
         return _ParamAttr(self.name, '<=', other)
-    
+
     def __gt__(self, other):
         return _ParamAttr(self.name, '>', other)
-    
+
     def __ge__(self, other):
         return _ParamAttr(self.name, '>=', other)
-    
+
     def __eq__(self, other):
         return _ParamAttr(self.name, '=', other)
-    
+
     def __ne__(self, other):
         return _ParamAttr(self.name, '!=', other)
 
@@ -188,25 +192,26 @@ class _StringParamAttrWrapper(_ComparisonParamAttrWrapper):
 class _NumberParamAttrWrapper(_ComparisonParamAttrWrapper):
     pass
 
-
 # The walker is what traverses the attribute tree and converts it to a format
 # that is understood by the server we are querying. The HEK walker builds up
 # a dictionary of GET parameters to be sent to the server.
 walker = attr.AttrWalker()
 
+
 @walker.add_applier(Contains)
 # pylint: disable=E0102,C0103,W0613
 def _a(wlk, root, state, dct):
     dct['type'] = 'contains'
-    if not Contains in state:
+    if Contains not in state:
         state[Contains] = 1
-    
+
     nid = state[Contains]
     n = 0
     for n, type_ in enumerate(root.types):
         dct['event_type%d' % (nid + n)] = type_
     state[Contains] += n
     return dct
+
 
 @walker.add_creator(
     Time, SpatialRegion, EventType, _ParamAttr, attr.AttrAnd, Contains)
@@ -216,12 +221,15 @@ def _c(wlk, root, state):
     wlk.apply(root, state, value)
     return [value]
 
+
 @walker.add_applier(Time)
 # pylint: disable=E0102,C0103,W0613
 def _a(wlk, root, state, dct):
-    dct['event_starttime'] = parse_time(root.start).strftime('%Y-%m-%dT%H:%M:%S')
+    dct['event_starttime'] = parse_time(root.start).strftime(
+        '%Y-%m-%dT%H:%M:%S')
     dct['event_endtime'] = parse_time(root.end).strftime('%Y-%m-%dT%H:%M:%S')
     return dct
+
 
 @walker.add_applier(SpatialRegion)
 # pylint: disable=E0102,C0103,W0613
@@ -233,6 +241,7 @@ def _a(wlk, root, state, dct):
     dct['event_coordsys'] = root.sys
     return dct
 
+
 @walker.add_applier(EventType)
 # pylint: disable=E0102,C0103,W0613
 def _a(wlk, root, state, dct):
@@ -241,12 +250,13 @@ def _a(wlk, root, state, dct):
     dct['event_type'] = root.item
     return dct
 
+
 @walker.add_applier(_ParamAttr)
 # pylint: disable=E0102,C0103,W0613
 def _a(wlk, root, state, dct):
-    if not _ParamAttr in state:
+    if _ParamAttr not in state:
         state[_ParamAttr] = 0
-    
+
     nid = state[_ParamAttr]
     dct['param%d' % nid] = root.name
     dct['op%d' % nid] = root.op
@@ -254,11 +264,13 @@ def _a(wlk, root, state, dct):
     state[_ParamAttr] += 1
     return dct
 
+
 @walker.add_applier(attr.AttrAnd)
 # pylint: disable=E0102,C0103,W0613
 def _a(wlk, root, state, dct):
     for attribute in root.attrs:
         wlk.apply(attribute, state, dct)
+
 
 @walker.add_creator(attr.AttrOr)
 # pylint: disable=E0102,C0103,W0613
@@ -267,7 +279,6 @@ def _c(wlk, root, state):
     for attribute in root.attrs:
         blocks.extend(wlk.create(attribute, state))
     return blocks
-
 
 
 @apply
@@ -295,8 +306,10 @@ class AR(EventType):
     SpotAreaReprUncert = _StringParamAttrWrapper('AR_SpotAreaReprUncert')
     SpotAreaReprUnit = _StringParamAttrWrapper('AR_SpotAreaReprUnit')
     ZurichCls = _StringParamAttrWrapper('AR_ZurichCls')
+
     def __init__(self):
         EventType.__init__(self, 'ar')
+
 
 @apply
 class CE(EventType):
@@ -314,8 +327,10 @@ class CE(EventType):
     RadialLinVelStddev = _StringParamAttrWrapper('CME_RadialLinVelStddev')
     RadialLinVelUncert = _StringParamAttrWrapper('CME_RadialLinVelUncert')
     RadialLinVelUnit = _StringParamAttrWrapper('CME_RadialLinVelUnit')
+
     def __init__(self):
         EventType.__init__(self, 'ce')
+
 
 @apply
 class CD(EventType):
@@ -328,12 +343,14 @@ class CD(EventType):
     Volume = _StringParamAttrWrapper('CD_Volume')
     VolumeUncert = _StringParamAttrWrapper('CD_VolumeUncert')
     VolumeUnit = _StringParamAttrWrapper('CD_VolumeUnit')
+
     def __init__(self):
         EventType.__init__(self, 'cd')
 
 CH = EventType('ch')
 
 CW = EventType('cw')
+
 
 @apply
 class FI(EventType):
@@ -344,12 +361,14 @@ class FI(EventType):
     Length = _StringParamAttrWrapper('FI_Length')
     LengthUnit = _StringParamAttrWrapper('FI_LengthUnit')
     Tilt = _StringParamAttrWrapper('FI_Tilt')
+
     def __init__(self):
         EventType.__init__(self, 'fi')
 
 FE = EventType('fe')
 
 FA = EventType('fa')
+
 
 @apply
 class FL(EventType):
@@ -364,6 +383,7 @@ class FL(EventType):
     PeakFluxUnit = _StringParamAttrWrapper('FL_PeakFluxUnit')
     PeakTemp = _StringParamAttrWrapper('FL_PeakTemp')
     PeakTempUnit = _StringParamAttrWrapper('FL_PeakTempUnit')
+
     def __init__(self):
         EventType.__init__(self, 'fl')
 
@@ -371,12 +391,15 @@ LP = EventType('lp')
 
 OS = EventType('os')
 
+
 @apply
 class SS(EventType):
     SpinRate = _StringParamAttrWrapper('SS_SpinRate')
     SpinRateUnit = _StringParamAttrWrapper('SS_SpinRateUnit')
+
     def __init__(self):
         EventType.__init__(self, 'ss')
+
 
 @apply
 class EF(EventType):
@@ -394,6 +417,7 @@ class EF(EventType):
     ProximityRatio = _StringParamAttrWrapper('EF_ProximityRatio')
     SumNegSignedFlux = _StringParamAttrWrapper('EF_SumNegSignedFlux')
     SumPosSignedFlux = _StringParamAttrWrapper('EF_SumPosSignedFlux')
+
     def __init__(self):
         EventType.__init__(self, 'ef')
 
@@ -405,6 +429,7 @@ OT = EventType('ot')
 
 NR = EventType('nr')
 
+
 @apply
 class SG(EventType):
     AspectRatio = _StringParamAttrWrapper('SG_AspectRatio')
@@ -413,6 +438,7 @@ class SG(EventType):
     Orientation = _StringParamAttrWrapper('SG_Orientation')
     PeakContrast = _StringParamAttrWrapper('SG_PeakContrast')
     Shape = _StringParamAttrWrapper('SG_Shape')
+
     def __init__(self):
         EventType.__init__(self, 'sg')
 
@@ -420,23 +446,29 @@ SP = EventType('sp')
 
 CR = EventType('cr')
 
+
 @apply
 class CC(EventType):
     AxisUnit = _StringParamAttrWrapper('CC_AxisUnit')
     MajorAxis = _StringParamAttrWrapper('CC_MajorAxis')
     MinorAxis = _StringParamAttrWrapper('CC_MinorAxis')
-    TiltAngleMajorFromRadial = _StringParamAttrWrapper('CC_TiltAngleMajorFromRadial')
+    TiltAngleMajorFromRadial = _StringParamAttrWrapper(
+        'CC_TiltAngleMajorFromRadial')
     TiltAngleUnit = _StringParamAttrWrapper('CC_TiltAngleUnit')
+
     def __init__(self):
         EventType.__init__(self, 'cc')
 
 ER = EventType('er')
 
+
 @apply
 class TO(EventType):
     Shape = _StringParamAttrWrapper('TO_Shape')
+
     def __init__(self):
         EventType.__init__(self, 'to')
+
 
 @apply
 class Wave(object):
@@ -574,7 +606,8 @@ class Outflow(object):
 class Misc(object):
     KB_Archivist = _StringParamAttrWrapper('KB_Archivist')
     MaxMagFieldStrength = _StringParamAttrWrapper('MaxMagFieldStrength')
-    MaxMagFieldStrengthUnit = _StringParamAttrWrapper('MaxMagFieldStrengthUnit')
+    MaxMagFieldStrengthUnit = _StringParamAttrWrapper(
+        'MaxMagFieldStrengthUnit')
     OscillNPeriods = _StringParamAttrWrapper('OscillNPeriods')
     OscillNPeriodsUncert = _StringParamAttrWrapper('OscillNPeriodsUncert')
     PeakPower = _StringParamAttrWrapper('PeakPower')

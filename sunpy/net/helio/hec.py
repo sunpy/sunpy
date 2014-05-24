@@ -15,13 +15,12 @@ __version__ = 'September 22nd, 2013'
 __all__ = ['HECClient']
 
 
-        
-
 def suds_unwrapper(wrapped_data):
     """
     Removes suds wrapping from returned xml data
 
-    When grabbing data via votable_interceptor.last_payload from the suds.client.Client
+    When grabbing data via
+    votable_interceptor.last_payload from the suds.client.Client
     module, it returns the xml data in an un-helpful "<s:Envelope>" that needs
     to be removed. This function politely cleans it up.
 
@@ -116,13 +115,14 @@ class VotableInterceptor(suds.plugin.MessagePlugin):
     '''
     Adapted example from http://stackoverflow.com/questions/15259929/configure-suds-to-use-custom-response-xml-parser-for-big-response-payloads
     '''
+
     def __init__(self, *args, **kwargs):
         self.last_payload = None
 
     def received(self, context):
-        #recieved xml as a string
+        # recieved xml as a string
         self.last_payload = unicode(suds_unwrapper(context.reply))
-        #clean up reply to prevent parsing
+        # clean up reply to prevent parsing
         context.reply = ""
         return context
 
@@ -152,7 +152,8 @@ class HECClient(object):
             link = parser.wsdl_retriever()
 
         self.votable_interceptor = VotableInterceptor()
-        self.hec_client = C(link, plugins=[self.votable_interceptor], transport=WellBehavedHttpTransport())
+        self.hec_client = C(link, plugins=[self.votable_interceptor],
+                            transport=WellBehavedHttpTransport())
 
     def time_query(self, start_time, end_time, table=None, max_records=None):
         """
@@ -214,7 +215,8 @@ class HECClient(object):
         """
         Returns a list of the available tables to query
 
-        Returns the names of all the tables that can be queried via the webservice
+        Returns the names of all the tables that can be queried via the
+        webservice
 
         Returns
         -------
@@ -273,7 +275,7 @@ class HECClient(object):
                 table_list.append(table)
         table_list.sort()
         for index, table in enumerate(table_list):
-            print ('{number:3d}) {table}'.format(number = index + 1, table = table))
+            print('{number:3d}) {table}'.format(number=index + 1, table=table))
         while True:
             input = raw_input("\nPlease enter a table number between 1 and %i "
                               "('e' to exit): " % len(table_list))
@@ -288,4 +290,3 @@ class HECClient(object):
             else:
                 print "Choice outside of bounds"
         return temp
-

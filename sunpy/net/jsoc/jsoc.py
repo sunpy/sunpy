@@ -24,7 +24,9 @@ __all__ = ['JSOCClient']
 JSOC_URL = 'http://jsoc.stanford.edu/cgi-bin/ajax/jsoc_fetch'
 BASE_DL_URL = 'http://jsoc.stanford.edu'
 
+
 class JSOCClient(object):
+
     """
     This is a Client to the JSOC Data Export service.
 
@@ -34,12 +36,15 @@ class JSOCClient(object):
 
     Notes
     -----
-    This Client mocks input to this site: http://jsoc.stanford.edu/ajax/exportdata.html
+    This Client mocks input to this site:
+    http://jsoc.stanford.edu/ajax/exportdata.html
     Therefore that is a good resource if things are mis-behaving.
-    The full list of 'series' is availible through this site: http://jsoc.stanford.edu/
+    The full list of 'series' is availible through this site:
+    http://jsoc.stanford.edu/
 
-    You can build more complex queries by specifiying parameters to POST to JSOC via keyword
-    arguments. You can generate these kwargs using the Export Data page at JSOC.
+    You can build more complex queries by specifiying parameters to POST to
+    JSOC via keyword arguments. You can generate these kwargs using the Export
+    Data page at JSOC.
 
     Examples
     --------
@@ -49,8 +54,8 @@ class JSOCClient(object):
     >>> client = jsoc.JSOCClient()
     >>> IDs = client.jsoc_query('2012/1/1T00:00:00', '2012/1/1T00:00:45', 'hmi.m_45s')
 
-    The returned `IDs` is a list of JSOC request identifiers, you can check the status of
-    a request thus:
+    The returned `IDs` is a list of JSOC request identifiers, you can check the
+    status of a request thus:
 
     >>> status = client.check_status(IDs)
 
@@ -75,13 +80,16 @@ class JSOCClient(object):
             The time in UTC (or astropy.time object) specifying the end time.
 
         series: string
-            A string representing the JSOC data series to download e.g. 'hmi.M_45s'
+            A string representing the JSOC data series to download e.g.
+            'hmi.M_45s'
 
         notify: string
-            An email address to get a notification to when JSOC has staged your request
+            An email address to get a notification to when JSOC has staged your
+            request
 
         protocol: string
-            The type of download to request one of ("FITS", "JPEG", "MPG", "MP4", or "as-is").
+            The type of download to request one of ("FITS", "JPEG", "MPG",
+            "MP4", or "as-is").
             Only FITS is supported, the others will require extra keywords.
 
         compression: string
@@ -106,14 +114,15 @@ class JSOCClient(object):
         responses = self._multi_request(start_time, end_time, series, **kwargs)
 
         for i, response in enumerate(responses):
-            #TODD: catch non 200 return
+            # TODD: catch non 200 return
             if response.json()['status'] != 2:
                 warnings.warn(
-                Warning("Query {0} retuned status {1} with error {2}".format(i,
-                                                     response.json()['status'],
-                                                     response.json()['error'])))
+                    Warning("Query {0} retuned status {1} with error {2}"
+                            .format(i,
+                                    response.json()['status'],
+                                    response.json()['error'])))
                 responses.pop(i)
-        #Extract the IDs from the JSON
+        # Extract the IDs from the JSON
         requestIDs = [response.json()['requestid'] for response in responses]
 
         if return_resp:
@@ -136,7 +145,8 @@ class JSOCClient(object):
             A list of status' that were returned by JSOC
         """
         # Convert IDs to a list if not already
-        if not astropy.utils.misc.isiterable(requestIDs) or isinstance(requestIDs, basestring):
+        if (not astropy.utils.misc.isiterable(requestIDs)
+                or isinstance(requestIDs, basestring)):
             requestIDs = [requestIDs]
 
         allstatus = []
@@ -144,23 +154,24 @@ class JSOCClient(object):
             u = self._request_status(request_id)
             status = int(u.json()['status'])
 
-            if status == 0: #Data ready to download
-                print("Request {0} was exported at {1} and is ready to download.".format(u.json()['requestid'],
-                                                                                       u.json()['exptime']))
+            if status == 0:  # Data ready to download
+                print("Request {0} was exported at {1} "
+                      "and is ready to download.".format(u.json()['requestid'],
+                                                         u.json()['exptime']))
             elif status == 1:
-                print("Request {0} was submitted {1} seconds ago, it is not ready to download.".format(
-                                                             u.json()['requestid'], u.json()['wait']))
+                print("Request {0} was submitted {1} seconds ago, it is not "
+                      "ready to download.".format(
+                          u.json()['requestid'], u.json()['wait']))
             else:
                 print("Request returned status: {0} with error: {1}".format(
-                                    u.json()['status'], u.json()['error']))
+                    u.json()['status'], u.json()['error']))
 
             allstatus.append(status)
 
         return allstatus
 
-
     def wait_get(self, requestIDs, path=None, overwrite=False, progress=True,
-            max_conn=5, sleep=10):
+                 max_conn=5, sleep=10):
         """
         Same as get() excepts it will wait until the download has been staged.
 
@@ -185,8 +196,8 @@ class JSOCClient(object):
             A Custom downloader to use
 
         sleep: int
-            The number of seconds to wait between calls to JSOC to check the status
-            of the request.
+            The number of seconds to wait between calls to JSOC to check the
+            status of the request.
 
         Returns
         -------
@@ -194,7 +205,8 @@ class JSOCClient(object):
             A Downloader instance
         """
         # Convert IDs to a list if not already
-        if not astropy.utils.misc.isiterable(requestIDs) or isinstance(requestIDs, basestring):
+        if (not astropy.utils.misc.isiterable(requestIDs)
+                or isinstance(requestIDs, basestring)):
             requestIDs = [requestIDs]
 
         r = Results(lambda x: None)
@@ -209,7 +221,7 @@ class JSOCClient(object):
                 if u.status_code == 200 and u.json()['status'] == '0':
                     rID = requestIDs.pop(i)
                     r = self.get(rID, path=path, overwrite=overwrite,
-                             progress=progress, results=r)
+                                 progress=progress, results=r)
 
                 else:
                     time.sleep(sleep)
@@ -253,11 +265,12 @@ class JSOCClient(object):
         """
 
         # Convert IDs to a list if not already
-        if not astropy.utils.misc.isiterable(requestIDs) or isinstance(requestIDs, basestring):
+        if (not astropy.utils.misc.isiterable(requestIDs)
+                or isinstance(requestIDs, basestring)):
             requestIDs = [requestIDs]
 
         if path is None:
-            path = config.get('downloads','download_dir')
+            path = config.get('downloads', 'download_dir')
 
         if downloader is None:
             downloader = Downloader(max_conn=max_conn, max_total=max_conn)
@@ -273,10 +286,14 @@ class JSOCClient(object):
 
             if u.status_code == 200 and u.json()['status'] == '0':
                 for ar in u.json()['data']:
-                    if overwrite or not os.path.isfile(os.path.join(path, ar['filename'])):
-                        urls.append(urlparse.urljoin(BASE_DL_URL + u.json()['dir']+'/', ar['filename']))
+                    if (overwrite or
+                            not os.path.isfile(os.path.join(path, ar['filename']))):
+                        urls.append(urlparse.urljoin(BASE_DL_URL
+                                                     + u.json()['dir']
+                                                     + '/', ar['filename']))
                 if progress:
-                    print("{0} URLs found for Download. Totalling {1}MB".format(len(urls), u.json()['size']))
+                    print("{0} URLs found for Download. Totalling {1}MB"
+                          .format(len(urls), u.json()['size']))
 
             else:
                 if progress:
@@ -287,7 +304,7 @@ class JSOCClient(object):
                 downloader.download(url, callback=rcall, path=path)
 
         else:
-            #Make Results think it has finished.
+            # Make Results think it has finished.
             results.require([])
 
         results.poke()
@@ -315,9 +332,8 @@ class JSOCClient(object):
 
         return time.datetime
 
-
     def _make_query_payload(self, start_time, end_time, series, notify='',
-                          protocol='FITS', compression='rice', **kwargs):
+                            protocol='FITS', compression='rice', **kwargs):
         """
         Build the POST payload for the query parameters
         """
@@ -329,36 +345,39 @@ class JSOCClient(object):
         else:
             jprotocol = protocol
 
-        payload = {'ds':'{0}[{1}-{2}]'.format(series, start_time.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
-                                           end_time.strftime("%Y.%m.%d_%H:%M:%S_TAI")),
-                   'format':'json',
-                   'method':'url',
-                   'notify':notify,
-                   'op':'exp_request',
-                   'process':'n=0|no_op',
-                   'protocol':jprotocol,
-                   'requestor':'none',
-                   'filenamefmt':'{0}.{{T_REC:A}}.{{CAMERA}}.{{segment}}'.format(series)}
+        payload = {'ds': '{0}[{1}-{2}]'.format(series,
+                       start_time.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
+                       end_time.strftime("%Y.%m.%d_%H:%M:%S_TAI")),
+                   'format': 'json',
+                   'method': 'url',
+                   'notify': notify,
+                   'op': 'exp_request',
+                   'process': 'n=0|no_op',
+                   'protocol': jprotocol,
+                   'requestor': 'none',
+                   'filenamefmt': '{0}.{{T_REC:A}}.{{CAMERA}}.{{segment}}'.format(series)}
 
         payload.update(kwargs)
 
         return payload
 
     def _send_jsoc_request(self, start_time, end_time, series, notify='',
-                          protocol='FITS', compression='rice', **kwargs):
+                           protocol='FITS', compression='rice', **kwargs):
         """
         Request that JSOC stages data for download
 
         This routine puts in a POST request to JSOC
         """
 
-        payload = self._make_query_payload(start_time, end_time, series, notify=notify,
-                          protocol=protocol, compression=compression, **kwargs)
+        payload = self._make_query_payload(start_time, end_time, series,
+                                           notify=notify, protocol=protocol,
+                                           compression=compression, **kwargs)
 
         r = requests.post(JSOC_URL, data=payload)
 
         if r.status_code != 200:
-            raise Exception("JSOC POST Request returned code {0}".format(r.status_code))
+            raise Exception("JSOC POST Request returned code {0}"
+                            .format(r.status_code))
 
         return r, r.json()
 
@@ -369,11 +388,16 @@ class JSOCClient(object):
         tr = TimeRange(start_time, end_time)
         returns = []
 
-        response, json_response = self._send_jsoc_request(start_time, end_time, series, **kwargs)
+        response, json_response = self._send_jsoc_request(start_time, end_time,
+                                                          series, **kwargs)
 
-        if json_response['status'] == 3 and json_response['error'] == 'Request exceeds max byte limit of 100000MB':
-            returns.append(self._multi_request(tr.start(), tr.center(), series, **kwargs)[0])
-            returns.append(self._multi_request(tr.center(), tr.end(), series, **kwargs)[0])
+        if (json_response['status'] == 3
+            and json_response['error'] ==
+                'Request exceeds max byte limit of 100000MB'):
+            returns.append(self._multi_request(tr.start(), tr.center(),
+                                               series, **kwargs)[0])
+            returns.append(self._multi_request(tr.center(), tr.end(),
+                                               series, **kwargs)[0])
         else:
             returns.append(response)
 
@@ -383,7 +407,7 @@ class JSOCClient(object):
         """
         GET the status of a request ID
         """
-        payload = {'op':'exp_status', 'requestid':request_id}
+        payload = {'op': 'exp_status', 'requestid': request_id}
         u = requests.get(JSOC_URL, params=payload)
 
         return u
