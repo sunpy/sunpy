@@ -29,6 +29,7 @@ def test_goes_event_list():
     assert result[0]['goes_class'] == 'M2.5'
     assert result[0]['noaa_active_region'] == 11226
 
+@pytest.mark.online
 def test_temp_em():
     # Create GOESLightcurve object, then create new one with
     # temperature & EM using with temp_em().
@@ -50,7 +51,8 @@ def test_temp_em():
     del goeslc_revert.data["temperature"]
     del goeslc_revert.data["em"]
     assert_frame_equal(goeslc_revert.data, goeslc.data)
-    
+
+@pytest.mark.online
 def test_goes_chianti_tem():
     longflux = np.array([7e-6])
     shortflux = np.array([7e-7])
