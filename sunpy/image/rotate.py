@@ -69,14 +69,13 @@ def affine_transform(image, rmatrix=None, angle=None, scale=1.0, rotation_center
         skmatrix[:2, :2] = rmatrix
         skmatrix[2, 2] = 1.0
         skmatrix[:2, 2] = [shift[1], shift[0]]
-        print skmatrix
+        #print skmatrix
         if interp_type is 'nearest':
             order = 0
         elif interp_type is 'bilinear':
             order = 1
         elif interp_type is 'bicubic':
             order = 3
-        print order
         im_max = image.max()
         tform = tf.AffineTransform(skmatrix)
         rotated_image = tf.warp(image, tform, order=4,#order,

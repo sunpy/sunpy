@@ -30,7 +30,6 @@ def aiaprep(aiamap):
     rmatrix = np.array([[c, s], [-s, c]])
 
     rotation_center = aiamap.reference_pixel['y'], aiamap.reference_pixel['x']
-    print rotation_center
 
     newmap = deepcopy(aiamap)
     newmap.data = affine_transform(aiamap.data.copy(), rmatrix=rmatrix, recenter=True,
