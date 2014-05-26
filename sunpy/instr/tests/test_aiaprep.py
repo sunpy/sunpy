@@ -195,7 +195,9 @@ def test_aiaprep_all(scale=0.5):
     original.meta['crpix2'] += 20*scale
     original.meta['cdelt1'] = 0.6*scale
     original.meta['cdelt2'] = 0.6*scale
+    print original.reference_pixel
     prep_map = aiaprep(original)
+    print prep_map.reference_pixel
     diff_map = sunpy.map.GenericMap(abs(expected.data-prep_map.data), prep_map.meta)
     plot_results(expected, prep_map, diff_map)
     compare_results(expected.data, prep_map.data, 'combined aiaprep() things')
