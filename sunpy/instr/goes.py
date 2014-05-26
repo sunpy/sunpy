@@ -630,15 +630,15 @@ def _check_download_file(filename, remotepath, localpath=os.path.curdir,
                                os.path.join(localpath, filename))
             # Check if file has been downloaded.  If not, raise error.
             if not os.path.isfile(os.path.join(localpath, filename)):
-                raise NameError(remotename + " was not downloaded from " +
+                raise IOError(remotename + " was not downloaded from " +
                                 remotepath + " .")
         except urllib2.URLError as e:
             # If the host server couldn't be connected to, raise Error.
             raise e(remotename + " could not be downloaded from\n" +
                     remotepath + " as connection could not be made.")
         except urllib2.HTTPError as e:
-            raise e
             # If file does not exist on server, print that info.
             if e.reason == "Not Found":
                 print remotename + " could be not be found at " + \
                   remotepath + "."
+            raise e
