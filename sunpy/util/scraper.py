@@ -3,7 +3,7 @@ import urllib2
 from bs4 import BeautifulSoup
 import re
 
-class Scrapper:
+class Scraper:
     def __init__(self, pattern, **kwargs):
         self.pattern = pattern.format(**kwargs)
         self.now = datetime.datetime.now().strftime(self.pattern)
