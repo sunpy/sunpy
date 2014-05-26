@@ -5,11 +5,13 @@ from sunpy.instr.aia import aiaprep
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
+import skimage.data as images
 
 # Define test image first so it's accessable to all functions.
 #original = sunpy.map.Map(sunpy.AIA_171_IMAGE)
-data = np.zeros((101, 101))
-data[50:60, 50:80] = 1.0
+#data = np.zeros((101, 101))
+#data[50:60, 50:80] = 1.0
+data = images.checkerboard()
 # An entirely made up test header.
 header = {'cdelt1': 0.6,
           'cdelt2': 0.6,
@@ -62,7 +64,7 @@ def plot_results(expect, result, diff):
 
 def test_aiaprep_rotation():
     # Test 90 degree rotation against expected outcome
-    original.meta['crota2'] = 90.0
+    original.meta['crota2'] = 10.0#90.0
     expected = sunpy.map.GenericMap(np.rot90(original.data.copy()), original.meta.copy())
     rot_map = aiaprep(original)
     diff_map = sunpy.map.GenericMap(expected.data-rot_map.data, rot_map.meta)
