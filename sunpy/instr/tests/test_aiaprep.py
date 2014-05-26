@@ -8,10 +8,11 @@ import matplotlib.cm as cm
 import skimage.data as images
 
 # Define test image first so it's accessable to all functions.
-#original = sunpy.map.Map(sunpy.AIA_171_IMAGE)
+#startmap = sunpy.map.Map(sunpy.AIA_171_IMAGE)
+#data = startmap.data
 #data = np.zeros((101, 101))
 #data[50:60, 50:80] = 1.0
-data = images.checkerboard()
+data = images.camera()#checkerboard()
 # An entirely made up test header.
 header = {'cdelt1': 0.6,
           'cdelt2': 0.6,
@@ -44,7 +45,7 @@ for item in header:
 
 # Tolerance for tests - high for now just so they run. I'll make it much smaller
 # when actually testing
-atol = 0.1
+rtol = 0.2
 
 def plot_results(expect, result, diff):
     fig = plt.figure()
@@ -58,26 +59,30 @@ def plot_results(expect, result, diff):
     plt.colorbar(orientation='horizontal')
     
     fig.add_subplot(1, 3, 3)
-    diff.plot(cmap=cm.coolwarm)
+    diff.plot(cmap=cm.binary)#coolwarm)
     plt.colorbar(orientation='horizontal')
 
 
 def test_aiaprep_rotation():
     # Test 90 degree rotation against expected outcome
-    original.meta['crota2'] = 10.0#90.0
+    original.meta['crota2'] = 90.0
     expected = sunpy.map.GenericMap(np.rot90(original.data.copy()), original.meta.copy())
     rot_map = aiaprep(original)
-    diff_map = sunpy.map.GenericMap(expected.data-rot_map.data, rot_map.meta)
+    diff_map = sunpy.map.GenericMap(abs(expected.data-rot_map.data), rot_map.meta)
     plot_results(expected, rot_map, diff_map)
     fig2 = plt.figure()
-    fig2.add_subplot(1, 2, 1)
-    plt.plot(original.data[:, 50])
-    fig2.add_subplot(1, 2, 2)
-    plt.plot(rot_map.data[:, 50])
-    print original.reference_pixel
-    print rot_map.reference_pixel
-    assert np.allclose(expected.data, rot_map.data, atol=atol)
-    assert abs(expected.data.mean() - rot_map.data.mean()) <= atol
+    fig2.add_subplot(1, 3, 1)
+    plt.plot(expected.data[50,:])
+    fig2.add_subplot(1, 3, 2)
+    plt.plot(rot_map.data[50,:])
+    fig2.add_subplot(1, 3, 3)
+    plt.plot(abs(expected.data[50,:]-rot_map.data[50,:]))
+    print expected.max(), expected.min()
+    print diff_map.data.max(), diff_map.data.min(), diff_map.data.mean()
+    print original.data.mean(), expected.data.mean(), rot_map.data.mean(), abs(expected.data.mean() - rot_map.data.mean())
+    assert abs(expected.data.mean() - rot_map.data.mean()) <= rtol
+    assert np.allclose(expected.data, rot_map.data, rtol=rtol)
+    raise AssertionError
     plt.close()
 
     # Test 90 degree rotation against -270 degree rotation
@@ -86,8 +91,8 @@ def test_aiaprep_rotation():
     rot_map = aiaprep(original)
     diff_map = sunpy.map.GenericMap(expected.data-rot_map.data, rot_map.meta)
     plot_results(expected, rot_map, diff_map)
-    assert np.allclose(expected.data, rot_map.data, atol=atol)
-    assert abs(expected.data.mean() - rot_map.data.mean()) <= atol
+    assert np.allclose(expected.data, rot_map.data, rtol=rtol)
+    assert abs(expected.data.mean() - rot_map.data.mean()) <= rtol
     plt.close()
 
     # Test -90 degree rotation against 270 degree rotation
@@ -96,8 +101,8 @@ def test_aiaprep_rotation():
     rot_map = aiaprep(original)
     diff_map = sunpy.map.GenericMap(expected.data-rot_map.data, rot_map.meta)
     plot_results(expected, rot_map, diff_map)
-    assert np.allclose(expected.data, rot_map.data, atol=atol)
-    assert abs(expected.data.mean() - rot_map.data.mean()) <= atol
+    assert np.allclose(expected.data, rot_map.data, rtol=rtol)
+    assert abs(expected.data.mean() - rot_map.data.mean()) <= rtol
     plt.close()
 
     # Check 360 degree rotation against original image
@@ -105,8 +110,8 @@ def test_aiaprep_rotation():
     rot_map = aiaprep(original)
     diff_map = sunpy.map.GenericMap(original.data-rot_map.data, rot_map.meta)
     plot_results(original, rot_map, diff_map)
-    assert np.allclose(original.data, rot_map.data, atol=atol)
-    assert abs(original.data.mean() - rot_map.data.mean()) <= atol
+    assert np.allclose(original.data, rot_map.data, rtol=rtol)
+    assert abs(original.data.mean() - rot_map.data.mean()) <= rtol
     plt.close()
     
     # Check incremental 360 degree rotation against original image
@@ -118,8 +123,8 @@ def test_aiaprep_rotation():
     rot_map = aiaprep(rot_map)
     diff_map = sunpy.map.GenericMap(original.data-rot_map.data, rot_map.meta)
     plot_results(original, rot_map, diff_map)
-    assert np.allclose(original.data, rot_map.data, atol=atol)
-    assert abs(original.data.mean() - rot_map.data.mean()) <= atol
+    assert np.allclose(original.data, rot_map.data, rtol=rtol)
+    assert abs(original.data.mean() - rot_map.data.mean()) <= rtol
     plt.close()
 
 
@@ -133,8 +138,8 @@ def test_aiaprep_shift():
     shift_map = aiaprep(original)
     diff_map = sunpy.map.GenericMap(expected.data-shift_map.data, shift_map.meta)
     plot_results(expected, shift_map, diff_map)
-    assert np.allclose(expected.data, shift_map.data, atol=atol)
-    assert abs(expected.data.mean() - shift_map.data.mean()) <= atol
+    assert np.allclose(expected.data, shift_map.data, rtol=rtol)
+    assert abs(expected.data.mean() - shift_map.data.mean()) <= rtol
     plt.close()
 
     # Check shifted and unshifted shape against original image
@@ -143,8 +148,8 @@ def test_aiaprep_shift():
     shift_map = aiaprep(shift_map)
     diff_map = sunpy.map.GenericMap(original.data-shift_map.data, shift_map.meta)
     plot_results(original, shift_map, diff_map)
-    assert np.allclose(original.data, shift_map.data, atol=atol)
-    assert abs(original.data.mean() - shift_map.data.mean()) <= atol
+    assert np.allclose(original.data, shift_map.data, rtol=rtol)
+    assert abs(original.data.mean() - shift_map.data.mean()) <= rtol
     plt.close()
 
 
@@ -158,8 +163,8 @@ def test_aiaprep_scale():
     scale_map = aiaprep(original)
     diff_map = sunpy.map.GenericMap(expected.data-scale_map.data, scale_map.meta)
     plot_results(expected, scale_map, diff_map)
-    assert np.allclose(expected.data, scale_map.data, atol=atol)
-    assert abs(expected.data.mean() - scale_map.data.mean()) <= atol
+    assert np.allclose(expected.data, scale_map.data, rtol=rtol)
+    assert abs(expected.data.mean() - scale_map.data.mean()) <= rtol
     plt.close()
     
     # Check a scaled and descaled image against the original
@@ -168,8 +173,8 @@ def test_aiaprep_scale():
     scale_map = aiaprep(scale_map)
     diff_map = sunpy.map.GenericMap(original.data-scale_map.data, scale_map.meta)
     plot_results(original, scale_map, diff_map)
-    assert np.allclose(original.data, scale_map.data, atol=atol)
-    assert abs(original.data.mean() - scale_map.data.mean()) <= atol
+    assert np.allclose(original.data, scale_map.data, rtol=rtol)
+    assert abs(original.data.mean() - scale_map.data.mean()) <= rtol
     plt.close()
 
 
@@ -184,8 +189,8 @@ def test_aiaprep_all():
     prep_map = aiaprep(original)
     diff_map = sunpy.map.GenericMap(expected.data-prep_map.data, prep_map.meta)
     plot_results(expected, prep_map, diff_map)
-    assert np.allclose(expected.data, prep_map.data, atol=atol)
-    assert abs(expected.data.mean() - prep_map.data.mean()) <= atol
+    assert np.allclose(expected.data, prep_map.data, rtol=rtol)
+    assert abs(expected.data.mean() - prep_map.data.mean()) <= rtol
     plt.close()
 
     # Check a prepped and de-prepped shape against original image
@@ -197,8 +202,8 @@ def test_aiaprep_all():
     prep_map = aiaprep(prep_map)
     diff_map = sunpy.map.GenericMap(original.data-prep_map.data, prep_map.meta)
     plot_results(original, prep_map, diff_map)
-    assert np.allclose(expected.data, prep_map.data, atol=atol)
-    assert abs(expected.data.mean() - prep_map.data.mean()) <= atol
+    assert np.allclose(expected.data, prep_map.data, rtol=rtol)
+    assert abs(expected.data.mean() - prep_map.data.mean()) <= rtol
     plt.close()
 
     # Test that header info for the map has been correctly updated
