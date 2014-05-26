@@ -58,9 +58,9 @@ def affine_transform(image, rmatrix=None, angle=None, scale=1.0, rotation_center
         shift = np.array(rotation_center) - np.array(recenter)
     else:
         shift = np.array([0.0, 0.0])
-    
+
     displacement = np.array([rmatrix[0,0]*center[1] + rmatrix[1,0]*center[0],
-                            rmatrix[0,1]*center[1] + rmatrix[1,1]*center[0]])
+                        rmatrix[0,1]*center[1] + rmatrix[1,1]*center[0]])
     center_shift = displacement - center
     shift -= center_shift
 
@@ -76,9 +76,10 @@ def affine_transform(image, rmatrix=None, angle=None, scale=1.0, rotation_center
             order = 1
         elif interp_type is 'bicubic':
             order = 3
+        print order
         im_max = image.max()
         tform = tf.AffineTransform(skmatrix)
-        rotated_image = tf.warp(image/im_max, tform, order=order,
+        rotated_image = tf.warp(image, tform, order=4,#order,
                     mode='constant', cval=missing) * im_max
     elif rotate_func == 'Crotate':
         if interp_type is 'nearest':
