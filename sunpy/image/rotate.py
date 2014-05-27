@@ -8,10 +8,11 @@ from skimage import transform as tf
 __all__ = ['affine_transform']
 
 #TODO: Add functionality to specify interpolation method and missing value
-def affine_transform(image, rmatrix=None, angle=None, scale=1.0, rotation_center=None,
-                     recenter=True, rotate_func='skimage', missing=0.0, interp_type='bicubic',
-                     interp_param=None):
-    """Rotates and shifts an image using an affine transform. Intended to replace Map.rotate().
+def affine_transform(image, rmatrix=None, angle=None, scale=1.0,
+                     rotation_center=None, recenter=True, rotate_func='skimage',
+                     missing=0.0, interp_type='biquartic', interp_param=None):
+    """    
+    Rotates and shifts an image using an affine transform. Intended to replace Map.rotate().
     Currently uses the old C extension function to rotate and shif the image, though this will be
     replaced with scikit-image's AffineTransform class and warp() function.
 
@@ -38,7 +39,7 @@ def affine_transform(image, rmatrix=None, angle=None, scale=1.0, rotation_center
     """
 
     assert rotate_func in ['skimage', 'Crotate']
-    assert interp_type in ['nearest', 'spline', 'bilinear', 'bicubic']
+    assert interp_type in ['nearest', 'spline', 'bilinear', 'bicubic', 'biquartic']
     if interp_param is None:
         if interp_type is 'spline':
             interp_param = 3
@@ -54,7 +55,7 @@ def affine_transform(image, rmatrix=None, angle=None, scale=1.0, rotation_center
     elif recenter == False:
         recenter = rotation_center
 
-    if rotation_center:
+    if rotation_center is not None:
         shift = np.array(rotation_center) - np.array(recenter)
     else:
         shift = np.array([0.0, 0.0])
@@ -76,9 +77,11 @@ def affine_transform(image, rmatrix=None, angle=None, scale=1.0, rotation_center
             order = 1
         elif interp_type is 'bicubic':
             order = 3
+        elif interp_type is 'biquartic':
+            order = 4
         im_max = image.max()
         tform = tf.AffineTransform(skmatrix)
-        rotated_image = tf.warp(image, tform, order=4,#order,
+        rotated_image = tf.warp(image, tform, order=order,
                     mode='constant', cval=missing) * im_max
     """elif rotate_func == 'Crotate':
         if interp_type is 'nearest':
