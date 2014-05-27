@@ -1,8 +1,8 @@
 from __future__ import absolute_import
 
-import sunpy
 from sunpy.image.rotate import affine_transform as aff
 import numpy as np
+import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 from skimage import transform as tf
 import skimage.data as images
@@ -20,16 +20,19 @@ def plot_results(expect, result, diff):
     fig = plt.figure()
     
     fig.add_subplot(1, 3, 1)
-    plt.imshow(expect)
+    plt.imshow(expect, cmap=cm.gray)
     plt.colorbar(orientation='horizontal')
+    plt.title('Expected image')
     
     fig.add_subplot(1, 3, 2)
-    plt.imshow(result)
+    plt.imshow(result, cmap=cm.gray)
     plt.colorbar(orientation='horizontal')
+    plt.title('Output produced')
     
     fig.add_subplot(1, 3, 3)
-    plt.imshow(diff)
+    plt.imshow(diff, cmap=cm.gray)
     plt.colorbar(orientation='horizontal')
+    plt.title('Difference in images')
 
 
 def compare_results(expect, result, testmessg):
@@ -144,12 +147,15 @@ def test_scale(scale_factor=0.5):
     rmatrix = np.array([[1.0, 0.0], [0.0, 1.0]])
     
     # Check a scaled image against the expected outcome
-    expect_data = tf.rescale(original, scale_factor, order=4, mode='constant') * original.max()
+    newim = tf.rescale(original, scale_factor, order=4, mode='constant') * original.max()
+    # Old width and new centre of image
     w = original.shape[0]/2.0
-    new_w = expect_data.shape[0]/2.0
-    newim = expect_data.copy()
+    new_c = (newim.shape[0]/2.0)
     expected = np.zeros(original.shape)
-    expected[w-new_w:w+new_w, w-new_w:w+new_w] = newim
+    if scale_factor > 1:
+        expected = newim[new_c-w:new_c+w, new_c-w:new_c+w]
+    else:
+        expected[w-new_c:w+new_c, w-new_c:w+new_c] = newim
     scale = aff(original, rmatrix=rmatrix, scale=scale_factor, recenter=True, rotation_center=rotation_center)
     diff = abs(expected-scale)
     plot_results(expected, scale, diff)
@@ -167,34 +173,39 @@ def test_scale(scale_factor=0.5):
     plt.close()"""
 
 
-def test_all(scale=0.5):
+def test_all(scale_factor=0.5):
     print '\n==== Combined tests ===='
+    angle = np.radians(-90.0)
+    rotation_center = np.array(original.shape)/2.0 - 0.5
     # Check a shifted, rotated and scaled shape against expected outcome
-    # Rotate original image
-    #rot_data = np.rot90(original.data.copy(), -1)
-    # Shift rotated image
-    shift_data = np.zeros(original.shape)
-    shift_data[:-20, 100:] = original.data.copy()[20:, :-100]
-    """# Scale rotated image
-    newim = tf.rescale(rot_data.copy(), scale, order=4, mode='constant', cval=original.min()) * rot_data.max()
-    w = original.shape[0]/2.0
-    new_w = newim.shape[0]/2.0
-    scale_data = np.zeros(original.shape)
-    scale_data[w-new_w:w+new_w, w-new_w:w+new_w] = newim
-    input = sunpy.map.GenericMap(shift_data, original.meta.copy())"""
-    input = sunpy.map.GenericMap(shift_data.copy(), original.meta.copy())
-    # Adjust header values so aiaprep() will reproduce expect_data
-    #input.meta['crota2'] = 90.0
-    #input.meta['crpix1'] -= 100#*scale
-    #input.meta['crpix2'] += 20#*scale
-    input.meta['cdelt1'] = 0.6#*scale
-    input.meta['cdelt2'] = 0.6#*scale
-    print input.reference_pixel
-    prep_map = aiaprep(original)#input)
-    print prep_map.reference_pixel
-    diff_map = sunpy.map.GenericMap(abs(original.data-prep_map.data), prep_map.meta)
-    plot_results(original, prep_map, diff_map)
-    compare_results(original.data, prep_map.data, 'combined aiaprep() functionality')
+    c = np.cos(angle); s = np.sin(angle)
+    rmatrix = np.array([[c, s], [-s, c]])
+    plt.figure(); plt.imshow(original, cmap=cm.gray); plt.show()
+    scale = tf.rescale(original, scale_factor, order=4, mode='constant') * original.max()
+    new = np.zeros(original.shape)
+    # Old width and new centre of image
+    w = np.array(scale.shape)#/2.0 - 0.5
+    new_c = (np.array(scale.shape)/2.0 - 0.5)# + disp
+    im_min = rotation_center - new_c
+    if scale_factor > 1:
+        new = scale[new_c-w:new_c+w, new_c-w:new_c+w]
+    else:
+        new[im_min[0]:w[0]+im_min[0], im_min[1]:w[1]+im_min[1]] = scale
+    plt.figure(); plt.imshow(new, cmap=cm.gray); plt.show()
+    rot = np.rot90(new)
+    plt.figure(); plt.imshow(rot, cmap=cm.gray); plt.show()
+    shift = np.zeros(rot.shape)
+    disp = np.array([20, -100])
+    shift[:-disp[0], -disp[1]:] = rot[disp[0]:, :disp[1]]
+    rcen = rotation_center + disp
+    print rcen
+    plt.figure(); plt.imshow(shift, cmap=cm.gray); plt.show()
+    expected = shift
+    rotscaleshift = aff(original, rmatrix=rmatrix, scale=scale_factor, recenter=True, rotation_center=rcen)
+    diff = abs(expected-rotscaleshift)
+    plot_results(expected, rotscaleshift, diff)
+    compare_results(expected, rotscaleshift, 'combined rotation, scaling and translation')
+    #raise AssertionError
     plt.close()
 
     """# Check a prepped and de-prepped shape against original image
@@ -215,7 +226,7 @@ try:
     test_rotation()
     test_shift()
     test_scale()
-    #test_all()
+    test_all()
 except AssertionError:
     print 'Failed'
     plt.show()
