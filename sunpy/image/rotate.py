@@ -59,11 +59,15 @@ def affine_transform(image, rmatrix=None, angle=None, scale=1.0,
         shift = np.array(rotation_center) - np.array(recenter)
     else:
         shift = np.array([0.0, 0.0])
+    shift /= scale
+    print shift
 
     displacement = np.array([rmatrix[0,0]*center[1] + rmatrix[1,0]*center[0],
                         rmatrix[0,1]*center[1] + rmatrix[1,1]*center[0]])
     center_shift = displacement - center
+    print center_shift
     shift -= center_shift
+    print shift
 
     if rotate_func == 'skimage':
         skmatrix = np.zeros((3, 3))
