@@ -1,5 +1,6 @@
 Latest
 ------
+    * Added functions that implement image coalignment for MapCubes. 
     * changed _maps attribute in MapCube to a non-hidden type
     * Added Nobeyama Radioheliograph data support to Lightcurve object.
     * Fixed some tests on map method to support Windows
