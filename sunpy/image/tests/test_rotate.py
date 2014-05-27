@@ -99,16 +99,19 @@ def test_rotation():
     
     # Check incremental 360 degree rotation against original image
 
-    # This doesn't work but I have no idea why just now.
-    """# Check rotated and derotated image against original
-    original.meta['crota2'] = 10.0
-    rot_map = aiaprep(original)
-    rot_map.meta['crota2'] = -10.0
-    rot_map = aiaprep(rot_map)
-    diff_map = sunpy.map.GenericMap(abs(original.data-rot_map.data), rot_map.meta)
-    plot_results(original, rot_map, diff_map)
-    compare_results(original.data, rot_map.data, 'rotation and derotation')
-    plt.close()"""
+    # Check rotated and derotated image against original
+    angle = np.radians(-10.0)
+    c = np.cos(angle); s = np.sin(angle)
+    rmatrix = np.array([[c, s], [-s, c]])
+    rot = aff(original, rmatrix=rmatrix, recenter=True, rotation_center=rotation_center)
+    angle = np.radians(-10.0)
+    c = np.cos(angle); s = np.sin(angle)
+    rmatrix = np.array([[c, s], [-s, c]])
+    derot = aff(rot, rmatrix=rmatrix, recenter=True, rotation_center=rotation_center)
+    diff = abs(original-derot)
+    plot_results(original, derot, diff)
+    compare_results(original, derot, 'rotation and derotation')
+    plt.close()
 
 
 def test_shift():
@@ -128,15 +131,14 @@ def test_shift():
     compare_results(expected, shift, 'translation')
     plt.close()
 
-    # This doesn't work either
-    """# Check shifted and unshifted shape against original image
-    shift_map = aiaprep(original)
-    shift_map.meta['crpix1'], shift_map.meta['crpix2'] = data.shape[1]/2.0 - 0.5, data.shape[0]/2.0 - 0.5
-    shift_map = aiaprep(shift_map)
-    diff_map = sunpy.map.GenericMap(abs(original.data-shift_map.data), shift_map.meta)
-    plot_results(original, shift_map, diff_map)
-    compare_results(original.data, shift_map.data, 'translation and detranslation')
-    plt.close()"""
+    # Check shifted and unshifted shape against original image
+    rcen = rotation_center + np.array([20, -100])
+    shift = aff(original, rmatrix=rmatrix, recenter=True, rotation_center=rcen)
+    unshift = aff(shift, rmatrix=rmatrix, recenter=True, rotation_center=rotation_center)
+    diff = abs(original-unshift)
+    plot_results(original, unshift, diff)
+    compare_results(original, unshift, 'translation and inverse translation')
+    plt.close()
 
 
 def test_scale(scale_factor=0.5):
@@ -162,15 +164,13 @@ def test_scale(scale_factor=0.5):
     compare_results(expected, scale, 'scaling')
     plt.close()
     
-    # I doubt this will work based on the other similar tests
-    """# Check a scaled and descaled image against the original
-    scale_map = aiaprep(original)
-    scale_map.meta['cdelt1'], scale_map.meta['cdelt2'] = 1.2, 1.2 # I think this should be the same as changing the target scale in aiaprep()
-    scale_map = aiaprep(scale_map)
-    diff_map = sunpy.map.GenericMap(abs(original.data-scale_map.data), scale_map.meta)
-    plot_results(original, scale_map, diff_map)
-    compare_results(original.data, scale_map.data, 'scaling and descaling')
-    plt.close()"""
+    # Check a scaled and descaled image against the original
+    scale = aff(original, rmatrix=rmatrix, scale=scale_factor, recenter=True, rotation_center=rotation_center)
+    descale = aff(original, rmatrix=rmatrix, scale=1.0/scale_factor, recenter=True, rotation_center=rotation_center)
+    diff = abs(original-descale)
+    plot_results(expected, descale, diff)
+    compare_results(expected, descale, 'scaling and inverse scaling')
+    plt.close()
 
 
 def test_all(scale_factor=0.5):
@@ -202,18 +202,21 @@ def test_all(scale_factor=0.5):
     compare_results(expected, rotscaleshift, 'combined rotation, scaling and translation')
     plt.close()
 
-    """# Check a prepped and de-prepped shape against original image
-    original.meta['crota2'] = 10.0
-    prep_map = aiaprep(original)
-    prep_map.meta['crota2'] = -10.0
-    prep_map.meta['crpix1'], original.meta['crpix2'] = data.shape[1]/2.0 - 0.5, data.shape[0]/2.0 - 0.5 # Not entirely sure about this either
-    prep_map.meta['cdelt1'], original.meta['cdelt2'] = 1.2, 1.2
-    prep_map = aiaprep(prep_map)
-    diff_map = sunpy.map.GenericMap(original.data-prep_map.data, prep_map.meta)
-    plot_results(original, prep_map, diff_map)
-    assert np.allclose(expected.data, prep_map.data, rtol=rtol)
-    assert abs(expected.data.mean() - prep_map.data.mean()) <= rtol
-    plt.close()"""
+    # Check a prepped and de-prepped shape against original image
+    angle = np.radians(-20.0)
+    rotation_center = np.array(original.shape)/2.0 - 0.5
+    c = np.cos(angle); s = np.sin(angle)
+    rmatrix = np.array([[c, s], [-s, c]])
+    rcen = rotation_center + np.array([20, -100])
+    transformed = aff(original, rmatrix=rmatrix, scale=scale_factor, recenter=True, rotation_center=rcen)
+    angle = np.radians(20.0)
+    c = np.cos(angle); s = np.sin(angle)
+    rmatrix = np.array([[c, s], [-s, c]])
+    inverse = aff(transformed, rmatrix=rmatrix, scale=scale_factor, recenter=True, rotation_center=rotation_center)
+    diff = abs(original-inverse)
+    plot_results(original, inverse, diff)
+    compare_results(original, inverse, 'combined rotation, scaling and translation')
+    plt.close()
 
 
 try:
