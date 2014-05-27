@@ -97,17 +97,17 @@ def test_rotation():
     compare_results(original, rot, '360 degree rotation')
     plt.close()
     
-    # Check incremental 360 degree rotation against original image
+    # TODO: Check incremental 360 degree rotation against original image
 
     # Check rotated and derotated image against original
     angle = np.radians(-10.0)
     c = np.cos(angle); s = np.sin(angle)
     rmatrix = np.array([[c, s], [-s, c]])
     rot = aff(original, rmatrix=rmatrix, recenter=True, rotation_center=rotation_center)
-    angle = np.radians(-10.0)
+    angle = np.radians(10.0)
     c = np.cos(angle); s = np.sin(angle)
     rmatrix = np.array([[c, s], [-s, c]])
-    derot = aff(rot, rmatrix=rmatrix, recenter=True, rotation_center=rotation_center)
+    derot = aff(rot/rot.max(), rmatrix=rmatrix, recenter=True, rotation_center=rotation_center) * rot.max()
     diff = abs(original-derot)
     plot_results(original, derot, diff)
     compare_results(original, derot, 'rotation and derotation')
