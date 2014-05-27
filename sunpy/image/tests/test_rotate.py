@@ -219,12 +219,16 @@ def test_all(scale_factor=0.5):
     plt.close()
 
 
-try:
-    test_rotation()
-    test_shift()
-    test_scale()
-    test_all()
-except AssertionError:
-    print 'Failed'
-    plt.show()
-    raise
+def alltests():
+    try:
+        test_rotation()
+        test_shift()
+        test_scale()
+        test_all()
+    except AssertionError:
+        print 'Failed'
+        plt.show()
+        raise
+
+if __name__ == "__main__":
+    alltests()
