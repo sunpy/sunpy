@@ -180,32 +180,26 @@ def test_all(scale_factor=0.5):
     # Check a shifted, rotated and scaled shape against expected outcome
     c = np.cos(angle); s = np.sin(angle)
     rmatrix = np.array([[c, s], [-s, c]])
-    plt.figure(); plt.imshow(original, cmap=cm.gray); plt.show()
     scale = tf.rescale(original, scale_factor, order=4, mode='constant') * original.max()
     new = np.zeros(original.shape)
     # Old width and new centre of image
-    w = np.array(scale.shape)#/2.0 - 0.5
-    new_c = (np.array(scale.shape)/2.0 - 0.5)# + disp
+    w = np.array(scale.shape)
+    new_c = (np.array(scale.shape)/2.0 - 0.5)
     im_min = rotation_center - new_c
     if scale_factor > 1:
         new = scale[new_c-w:new_c+w, new_c-w:new_c+w]
     else:
         new[im_min[0]:w[0]+im_min[0], im_min[1]:w[1]+im_min[1]] = scale
-    plt.figure(); plt.imshow(new, cmap=cm.gray); plt.show()
-    rot = np.rot90(new)
-    plt.figure(); plt.imshow(rot, cmap=cm.gray); plt.show()
-    shift = np.zeros(rot.shape)
+    shift = np.zeros(new.shape)
     disp = np.array([20, -100])
-    shift[:-disp[0], -disp[1]:] = rot[disp[0]:, :disp[1]]
+    shift[:-disp[0], -disp[1]:] = new[disp[0]:, :disp[1]]
     rcen = rotation_center + disp
-    print rcen
-    plt.figure(); plt.imshow(shift, cmap=cm.gray); plt.show()
-    expected = shift
+    rot = np.rot90(shift)
+    expected = rot
     rotscaleshift = aff(original, rmatrix=rmatrix, scale=scale_factor, recenter=True, rotation_center=rcen)
     diff = abs(expected-rotscaleshift)
     plot_results(expected, rotscaleshift, diff)
     compare_results(expected, rotscaleshift, 'combined rotation, scaling and translation')
-    #raise AssertionError
     plt.close()
 
     """# Check a prepped and de-prepped shape against original image
