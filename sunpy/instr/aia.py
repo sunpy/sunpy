@@ -8,7 +8,8 @@ from sunpy.map.sources.sdo import AIAMap
 from copy import deepcopy
 
 def aiaprep(aiamap):
-    """Processes a level 1 AIAMap into a level 1.5 AIAMap
+    """    
+    Processes a level 1 AIAMap into a level 1.5 AIAMap
 
     Parameters
     ----------
