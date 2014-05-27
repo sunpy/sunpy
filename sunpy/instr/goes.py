@@ -169,7 +169,9 @@ def goes_chianti_tem(longflux, shortflux, satellite=8,
 
     Parameters
     ----------
-    longflux, shortflux : numpy ndarray
+    longflux, shortflux : float64 numpy array or any format that can be
+                          correctly converted to float64 numpy array,
+                          e.g. a list.
                           Arrays containing the long and short GOES/XRS
                           flux measurements respectively as a function
                           of time.  Must be of same length. [W/m**2].
@@ -195,10 +197,10 @@ def goes_chianti_tem(longflux, shortflux, satellite=8,
 
     Returns
     -------
-    temp : numpy ndarray
+    temp : numpy array
            Array of temperature values of same length as longflux and
            shortflux.  [MK]
-    em : numpy ndarray
+    em : numpy array
          Array of volume emission measure values of same length as
          longflux and shortflux.  [10**49 cm**-3]
 
@@ -302,7 +304,8 @@ def _goes_get_chianti_temp(fluxratio, satellite=8, abundances="coronal",
 
     Parameters
     ----------
-    fluxratio : numpy ndarray, dtype=float
+    fluxratio : float64 numpy array or any format that can be correctly
+                converted to float64 numpy array, e.g. a list.
                 Array containing the ratio of short channel to long
                 channel GOES/XRS flux measurements.
     satellite : int (optional)
@@ -324,7 +327,7 @@ def _goes_get_chianti_temp(fluxratio, satellite=8, abundances="coronal",
 
     Returns
     -------
-    temp : numpy ndarray
+    temp : numpy array
            Array of temperature values of same length as longflux and
            shortflux.  [MK]
 
@@ -439,9 +442,11 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal",
 
     Parameters
     ----------
-    longflux : numpy ndarray, dtype=float
+    longflux : float64 numpy array or any format that can be correctly
+               converted to float64 numpy array, e.g. a list.
                Array containing the observed GOES/XRS long channel flux
-    temp : numpy ndarray, dtype=float
+    temp : float64 numpy array or any format that can be correctly
+           converted to float64 numpy array, e.g. a list.
            Array containing the GOES temperature
     satellite : int (optional)
                 Number of GOES satellite used to make observations.
@@ -462,7 +467,7 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal",
 
     Returns
     -------
-    em : numpy ndarray
+    em : numpy array
          Array of emission measure values of same length as longflux
          and temp.  [cm**-3]
 
