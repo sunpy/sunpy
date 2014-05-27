@@ -2,7 +2,7 @@
 from __future__ import absolute_import
 
 import numpy as np
-import sunpy.image.Crotate as Crotate
+#import sunpy.image.Crotate as Crotate
 from skimage import transform as tf
 
 __all__ = ['affine_transform']
@@ -80,7 +80,7 @@ def affine_transform(image, rmatrix=None, angle=None, scale=1.0, rotation_center
         tform = tf.AffineTransform(skmatrix)
         rotated_image = tf.warp(image, tform, order=4,#order,
                     mode='constant', cval=missing) * im_max
-    elif rotate_func == 'Crotate':
+    """elif rotate_func == 'Crotate':
         if interp_type is 'nearest':
             kernel = Crotate.NEAREST
         elif interp_type is 'bilinear':
@@ -89,6 +89,6 @@ def affine_transform(image, rmatrix=None, angle=None, scale=1.0, rotation_center
             kernel = Crotate.BICUBIC
         rotated_image = Crotate.affine_transform(image, rmatrix, offset=shift,
                     kernel=kernel, cubic=-0.5, mode='constant',
-                    cval=missing)
+                    cval=missing)"""
 
     return rotated_image

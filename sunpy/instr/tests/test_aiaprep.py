@@ -178,29 +178,30 @@ def test_aiaprep_all(scale=0.5):
     print '\n==== Combined tests ===='
     # Check a shifted, rotated and scaled shape against expected outcome
     # Rotate original image
-    rot_data = np.rot90(original.data.copy())
-    # Scale rotated image
-    newim = tf.rescale(rot_data.copy(), scale, order=4, mode='constant', cval=original.min()) * original.max()
+    rot_data = np.rot90(original.data.copy(), -1)
+    # Shift rotated image
+    shift_data = np.zeros(original.shape)
+    shift_data[:-20, 100:] = rot_data[20:, :-100]
+    """# Scale rotated image
+    newim = tf.rescale(rot_data.copy(), scale, order=4, mode='constant', cval=original.min()) * rot_data.max()
     w = original.shape[0]/2.0
     new_w = newim.shape[0]/2.0
     scale_data = np.zeros(original.shape)
     scale_data[w-new_w:w+new_w, w-new_w:w+new_w] = newim
-    # Shift rotated image
-    shift_data = np.zeros(original.shape)
-    shift_data[:-20, 100:] = scale_data[20:, :-100]
-    expected = sunpy.map.GenericMap(shift_data, original.meta.copy())
+    input = sunpy.map.GenericMap(shift_data, original.meta.copy())"""
+    input = sunpy.map.GenericMap(shift_data, original.meta.copy())
     # Adjust header values so aiaprep() will reproduce expect_data
-    original.meta['crota2'] = 90.0
-    original.meta['crpix1'] -= 100*scale
-    original.meta['crpix2'] += 20*scale
-    original.meta['cdelt1'] = 0.6*scale
-    original.meta['cdelt2'] = 0.6*scale
-    print original.reference_pixel
-    prep_map = aiaprep(original)
+    input.meta['crota2'] = 90.0
+    input.meta['crpix1'] -= 0.0#100#*scale
+    input.meta['crpix2'] += 0.0#20#*scale
+    input.meta['cdelt1'] = 0.6#*scale
+    input.meta['cdelt2'] = 0.6#*scale
+    print input.reference_pixel
+    prep_map = aiaprep(input)
     print prep_map.reference_pixel
-    diff_map = sunpy.map.GenericMap(abs(expected.data-prep_map.data), prep_map.meta)
-    plot_results(expected, prep_map, diff_map)
-    compare_results(expected.data, prep_map.data, 'combined aiaprep() things')
+    diff_map = sunpy.map.GenericMap(abs(original.data-prep_map.data), prep_map.meta)
+    plot_results(original, prep_map, diff_map)
+    compare_results(original.data, prep_map.data, 'combined aiaprep() functionality')
     plt.close()
 
     """# Check a prepped and de-prepped shape against original image
@@ -219,6 +220,7 @@ def test_aiaprep_all(scale=0.5):
     # Test that header info for the map has been correctly updated
     # Check all of these for Map attributes and .meta values?
     # Also may be worth checking they stay the same when saved, I'm sure I've had issues with that before.
+    print 'Testing header values ...',
     # Check crpix values
     assert prep_map.meta['crpix1'] == prep_map.shape[1]/2.0 - 0.5
     assert prep_map.meta['crpix2'] == prep_map.shape[1]/2.0 - 0.5
@@ -230,6 +232,7 @@ def test_aiaprep_all(scale=0.5):
     assert prep_map.meta['crota2'] == 0.0
     # Check level number
     assert prep_map.meta['lvl_num'] == 1.5
+    print 'Passed'
 
 
 try:
