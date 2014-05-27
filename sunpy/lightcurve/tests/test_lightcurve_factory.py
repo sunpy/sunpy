@@ -12,11 +12,12 @@ import sunpy.data.test
 import sunpy.time
 from sunpy.lightcurve.lightcurve_factory import LightCurve
 from sunpy.lightcurve.sources import *
+from sunpy.lightcurve import GenericLightCurve
 from sunpy.util.odict import OrderedDict
 import glob
 from astropy.io import fits
 
-base_path = os.path.join(sunpy.data.test.rootdir, 'lightcurve/')
+base_path = os.path.join(sunpy.data.test.rootdir, 'lightcurve')
 
 #def test_generic_dhp():
 #    hdus = fits.open(os.path.join(base_path,'lyra_20120101-000000_lev2_std.fits'))
@@ -100,35 +101,25 @@ def test_multi():
     assert isinstance(lc[1], GOESLightCurve)
 
 def give_source_for_fname(fname):
-    if 'eve' in fname:
-    	return 'eve'
-    if 'lyra' in fname:
-    	return 'lyra'
-    if 'norh' in fname: 
-    	return 'norh'
-    if 'xrs' in fname:
-    	return 'goes'
-    return None
+   mapp={'eve':'eve','lyra':'lyra','goes':'goes','norh':'norh'}
+   for k,v in mapp.itervalues():
+       if k in fname:
+           return v
+   return None
+
 
 
 @pytest.mark.parametrize(("inp", "source"),
-[('*.fits', None),
- #('*.csv', [give_source_for_fname(x.lower()) for x in glob.glob(base_path + '*.csv')])]) eve_csv file not recognised
- ('*.csv', None),
- ('', None ]) # test for directories
-def test_glob_dir(inp,source):
-    oeve = EVELightCurve
-    ogoes = GOESLightCurve
-    onorh = NoRHLightCurve
-    olyra = LYRALightCurve
-    map_ = {}
-    map_['eve'] = oeve
-    map_['geos'] = ogoes
-    map_['norh'] = onorh
-    map_['lyra'] = olyra
-    lc = LightCurve(base_path + inp,source=source)
-    #for i,ilc in enumerate(lc):                     lc is not iterable, concatenate flag required 
-    #    assert isinstance(ilc,map_[source[i]])
+[
+ ('*EVE*','eve'),
+ ('norh*','norh'),
+ ('*xrs*','goes'),
+ ('lyra*','lyra')
+])
+def test_glob(inp,source):
+    map_ = {'eve':EVELightCurve,'goes':GOESLightCurve,'lyra':LYRALightCurve,'norh':NoRHLightCurve}
+    lc = LightCurve(os.path.join(base_path,inp),source=source)
+    assert isinstance(lc,map_[source])
 
 
 def test_one_from_many():
