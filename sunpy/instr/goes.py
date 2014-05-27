@@ -71,13 +71,12 @@ def get_goes_event_list(trange, goes_class_filter=None):
 
     for r in result:
         goes_event = {
-            'event_date': parse_time(r['event_starttime']
-                                     ).date().strftime('%Y-%m-%d')
-            'start_time': parse_time(r['event_starttime'])
-            'peak_time': parse_time(r['event_peaktime'])
-            'end_time': parse_time(r['event_endtime'])
-            'goes_class': str(r['fl_goescls'])
-            'goes_location': r['event_coord1'], r['event_coord2']
+            'event_date': parse_time(r['event_starttime']).date().strftime('%Y-%m-%d'),
+            'start_time': parse_time(r['event_starttime']),
+            'peak_time': parse_time(r['event_peaktime']),
+            'end_time': parse_time(r['event_endtime']),
+            'goes_class': str(r['fl_goescls']),
+            'goes_location': [r['event_coord1'], r['event_coord2']],
             'noaa_active_region': r['ar_noaanum']
             }
         goes_event_list.append(goes_event)
@@ -639,6 +638,7 @@ def _check_download_file(filename, remotepath, localpath=os.path.curdir,
         except urllib2.HTTPError as e:
             # If file does not exist on server, print that info.
             if e.reason == "Not Found":
-                print remotename + " could be not be found at " + \
-                  remotepath + "."
-            raise e
+                raise e(remotename + " could be not be found at " + \
+                  remotepath + ".")
+            else:
+                raise e
