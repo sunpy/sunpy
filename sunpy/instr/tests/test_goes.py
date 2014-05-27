@@ -1,8 +1,10 @@
 from __future__ import absolute_import
 
-import numpy as np
 import copy
 import datetime
+import pytest
+
+import numpy as np
 
 from sunpy.time import TimeRange
 from sunpy.instr import goes
