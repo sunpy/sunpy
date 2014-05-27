@@ -245,10 +245,10 @@ Dimension:\t [%d, %d]
 
     @property
     def center(self):
-        """Returns the offset between the center of the Sun and the center of 
+        """Returns the offset between the center of the Sun and the center of
         the map."""
-        return {'x': wcs.get_center(self.shape[1], self.scale['x'], 
-                                    self.reference_pixel['x'], 
+        return {'x': wcs.get_center(self.shape[1], self.scale['x'],
+                                    self.reference_pixel['x'],
                                     self.reference_coordinate['x']),
                 'y': wcs.get_center(self.shape[0], self.scale['y'],
                                     self.reference_pixel['y'],
@@ -311,12 +311,36 @@ Dimension:\t [%d, %d]
         return {'x': self.meta.get('cunit1', 'arcsec'),
                 'y': self.meta.get('cunit2', 'arcsec'),}
 
-    #TODO: This needs to be WCS compliant!
     @property
-    def rotation_angle(self):
+    def rotation_matrix(self):
         """The Rotation angle of each axis"""
-        return {'x': self.meta.get('crota1', 0.),
-                'y': self.meta.get('crota2', 0.),}
+        if self.meta.get('PC1_1', None) is not None:
+            return np.matrix([[self.meta['PC1_1'], self.meta['PC1_2']],
+                              [self.meta['PC2_1'], self.meta['PC2_2']]])
+
+        elif self.meta.get('CD1_1', None) is not None:
+            div = 1. / (self.scale['x'] - self.scale['y'])
+
+            deltm = np.matrix([[self.scale['y']/div, 0],
+                               [0, self.scale['x']/ div]])
+
+            cd = np.matrix([[self.meta['CD1_1'], self.meta['CD1_2']],
+                            [self.meta['CD2_1'], self.meta['CD2_2']]])
+
+            return deltm * cd
+        else:
+            return self._matrix_from_crota()
+
+    def _matrix_from_crota(self):
+        """
+        This method converts the deprecated CROTA FITS kwargs to the new
+        PC rotation matrix
+        """
+        lam = self.scale['y'] / self.scale['x']
+        p = self.meta['CROTA2']
+
+        return np.matrix([[np.cos(p), -1 * lam * np.sin(p)],
+                          [1/lam * np.sin(p), np.cos(p)]])
 
 # #### Miscellaneous #### #
 
@@ -481,10 +505,12 @@ Dimension:\t [%d, %d]
         new_map.data = new_data
         new_map.meta = new_meta
         return new_map
-    
-    def rotate(self, angle=None, rmatrix=None, scale=1.0, rotation_center=None, recenter=True,
+
+    def rotate(self, angle=None, rmatrix=None, scale=1.0, recenter=False,
                missing=0.0, interpolation='bicubic', interp_param=-0.5):
-        """Returns a new rotated, rescaled and shifted map.
+        """
+        Returns a new rotated, rescaled and shifted map.
+        The Map is rotated around the reference pixel.
 
         Parameters
         ----------
@@ -494,9 +520,6 @@ Dimension:\t [%d, %d]
             Linear transformation rotation matrix. Specify angle or matrix.
         scale: float
            A scale factor for the image, default is no scaling
-        rotation_center: tuple
-           The point in the image to rotate around (Axis of rotation).
-           Default: center of the array
         recenter: bool, or array-like
            Move the centroid (axis of rotation) to the center of the array
            or recenter coords.
@@ -531,9 +554,15 @@ Dimension:\t [%d, %d]
         For more infomation see:
         http://sunpy.readthedocs.org/en/latest/guide/troubleshooting.html#crotate-warning
         """
-        assert angle is None or rmatrix is None
+        if angle is not None and rmatrix is not None:
+            raise ValueError("Please specify either angle or matrix")
+
+        if angle is None and rmatrix is None:
+            rmatrix = self.rotation_matrix
+
         #Interpolation parameter Sanity
-        assert interpolation in ['nearest','spline','bilinear','bicubic']
+        if interpolation not in ['nearest','spline','bilinear','bicubic']:
+            raise ValueError("interpolation must be one of 'nearest','spline','bilinear','bicubic'")
         #Set defaults based on interpolation
         if interp_param is None:
             if interpolation is 'spline':
@@ -550,17 +579,12 @@ Dimension:\t [%d, %d]
         #Define Size and center of array
         center = (np.array(self.data.shape)-1)/2.0
 
-        #If rotation_center is not set (None or False),
-        #set rotation_center to the center of the image.
-        if rotation_center is None:
-            rotation_center = center
-        else:
-            #Else check rotation_center is a vector with shape (2,1)
-            rotation_center = np.array(rotation_center).reshape(2,1)
+        #set rotation_center to the center of the Sun
+        rotation_center = self.center #TODO: check this
 
         #recenter to the rotation_center if recenter is True
         if isinstance(recenter, bool):
-            #if rentre is False then this will be (0,0)
+            #if recentre is False then this will be (0,0)
             shift = np.array(rotation_center) - np.array(center)
         else:
             #recenter to recenter vector otherwise
@@ -568,7 +592,7 @@ Dimension:\t [%d, %d]
 
         image = self.data.copy()
 
-        if not angle is None:
+        if not angle is None and not rmatrix:
             #Calulate the parameters for the affline_transform
             c = np.cos(angle)
             s = np.sin(angle)
@@ -611,6 +635,19 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         #Return a new map
         #Copy Header
         new_map = deepcopy(self)
+        pc_C = self.rotation_matrix * (rmatrix * scale).T
+        new_map.meta['PC1_1'] = pc_C[0,0]
+        new_map.meta['PC1_2'] = pc_C[0,1]
+        new_map.meta['PC2_1'] = pc_C[1,0]
+        new_map.meta['PC2_2'] = pc_C[1,1]
+        new_map.meta['CDELT1'] = self.scale['x'] * scale
+        new_map.meta['CDELT2'] = self.scale['y'] * scale
+        new_map.meta['CRPIX1'] = new_map.meta['CRPIX1'] + shift[0]
+        new_map.meta['CRPIX2'] = new_map.meta['CRPIX2'] + shift[1]
+
+        #Remove old CROTA kwargs
+        new_map.meta.pop('CROTA1', None)
+        new_map.meta.pop('CROTA2', None)
 
         # Create new map instance
         new_map.data = data
