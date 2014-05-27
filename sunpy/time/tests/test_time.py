@@ -74,7 +74,7 @@ def test_break_time():
 def test_day_of_year():
     # Note that 2012 is a leap year, 2011 is a standard year
     # test that it starts at 1
-    assert time.day_of_year('2012/01/01') == 1.0
+    assert time.day_of_year('2011/01/01') == 1.0
     # test fractional day
     assert time.day_of_year('2011/01/01 06:00') == 1.25
     assert time.day_of_year('2011/01/01 12:00') == 1.50
@@ -93,4 +93,3 @@ def test_day_of_year():
     assert time.day_of_year('2012/04/10') == 101
     assert time.day_of_year('2012/01/31') == 31
     assert time.day_of_year('2012/09/30') == 274
-    assert time.day_of_year('2005-08-04T00:18:02.000Z') == 216.01252314814815
