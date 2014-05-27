@@ -76,7 +76,7 @@ def get_goes_event_list(trange, goes_class_filter=None):
             'peak_time': parse_time(r['event_peaktime']),
             'end_time': parse_time(r['event_endtime']),
             'goes_class': str(r['fl_goescls']),
-            'goes_location': [r['event_coord1'], r['event_coord2']],
+            'goes_location': (r['event_coord1'], r['event_coord2']),
             'noaa_active_region': r['ar_noaanum']
             }
         goes_event_list.append(goes_event)
