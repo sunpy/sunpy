@@ -169,9 +169,9 @@ def goes_chianti_tem(longflux, shortflux, satellite=8,
 
     Parameters
     ----------
-    longflux, shortflux : float64 numpy array or any format that can be
-                          correctly converted to float64 numpy array,
-                          e.g. a list.
+    longflux, shortflux : ndarray or array-like which can be converted
+                          to float64 type, such as an np.array, tuple,
+                          list.
                           Arrays containing the long and short GOES/XRS
                           flux measurements respectively as a function
                           of time.  Must be of same length. [W/m**2].
@@ -247,8 +247,8 @@ def goes_chianti_tem(longflux, shortflux, satellite=8,
 
     """
     # ENSURE INPUTS ARE OF CORRECT TYPE AND VALID VALUES
-    longflux = np.array(longflux, dtype=np.float64)
-    shortflux = np.array(shortflux, dtype=np.float64)
+    longflux = np.asanyarray(longflux, dtype=np.float64)
+    shortflux = np.asanyarray(shortflux, dtype=np.float64)
     int(satellite)
     if satellite < 1:
         raise ValueError("satellite must be the number of a "
@@ -304,8 +304,8 @@ def _goes_get_chianti_temp(fluxratio, satellite=8, abundances="coronal",
 
     Parameters
     ----------
-    fluxratio : float64 numpy array or any format that can be correctly
-                converted to float64 numpy array, e.g. a list.
+    fluxratio : ndarray or array-like which can be converted to float64
+                type, such as an np.array, tuple, list.
                 Array containing the ratio of short channel to long
                 channel GOES/XRS flux measurements.
     satellite : int (optional)
@@ -377,7 +377,7 @@ def _goes_get_chianti_temp(fluxratio, satellite=8, abundances="coronal",
                          force_download=download)
 
     # check inputs are correct
-    fluxratio = np.array(fluxratio, dtype=np.float64)
+    fluxratio = np.asanyarray(fluxratio, dtype=np.float64)
     int(satellite)
     if satellite < 1:
         raise ValueError("satellite must be the number of a "
@@ -407,8 +407,8 @@ def _goes_get_chianti_temp(fluxratio, satellite=8, abundances="coronal",
         for row in csvreader:
             modeltemp.append(float(row["log10temp_MK"]))
             modelratio.append(float(row[label]))
-    modeltemp = np.array(modeltemp)
-    modelratio = np.array(modelratio)
+    modeltemp = np.asarray(modeltemp)
+    modelratio = np.asarray(modelratio)
 
     # Ensure input values of flux ratio are within limits of model table
     if np.min(fluxratio) < np.min(modelratio) or \
@@ -442,11 +442,11 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal",
 
     Parameters
     ----------
-    longflux : float64 numpy array or any format that can be correctly
-               converted to float64 numpy array, e.g. a list.
+    longflux : ndarray or array-like which can be converted to float64
+               type, such as an np.array, tuple, list.
                Array containing the observed GOES/XRS long channel flux
-    temp : float64 numpy array or any format that can be correctly
-           converted to float64 numpy array, e.g. a list.
+    temp : ndarray or array-like which can be converted to float64
+           type, such as an np.array, tuple, list.
            Array containing the GOES temperature
     satellite : int (optional)
                 Number of GOES satellite used to make observations.
@@ -528,8 +528,8 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal",
                            os.path.join(localpath, FILE_EM_PHO))
 
     # Check inputs are of correct type
-    longflux = np.array(longflux, dtype=np.float64)
-    temp = np.array(temp, dtype=np.float64)
+    longflux = np.asanyarray(longflux, dtype=np.float64)
+    temp = np.asanyarray(temp, dtype=np.float64)
     int(satellite)
     if satellite < 1:
         raise ValueError("satellite must be the number of a "
@@ -564,8 +564,8 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal",
         for row in csvreader:
             modeltemp.append(float(row["log10temp_MK"]))
             modelflux.append(float(row[label]))
-    modeltemp = np.array(modeltemp)
-    modelflux = np.array(modelflux)
+    modeltemp = np.asarray(modeltemp)
+    modelflux = np.asarray(modelflux)
 
     # Ensure input values of flux ratio are within limits of model table
     if np.min(np.log10(temp)) < np.min(modeltemp) or \
