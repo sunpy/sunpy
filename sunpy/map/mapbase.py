@@ -489,9 +489,9 @@ Dimension:\t [%d, %d]
         Parameters
         ----------
         angle: float
-           The angle to rotate the image by (radians). Specify angle or matrix.
+           The angle (degrees) to rotate counterclockwise. Do not also specify rotation matrix.
         rmatrix: NxN
-            Linear transformation rotation matrix. Specify angle or matrix.
+            Linear transformation rotation matrix. Do not also specify angle.
         scale: float
            A scale factor for the image, default is no scaling
         rotation_center: tuple
@@ -542,10 +542,10 @@ Dimension:\t [%d, %d]
         image = self.data.copy()
 
         if not angle is None:
-            #Calulate the parameters for the affline_transform
-            c = np.cos(angle)
-            s = np.sin(angle)
-            rsmat = np.array([[c, s],[-s, c]]) / scale
+            #Calulate the parameters for the affine_transform
+            c = np.cos(np.deg2rad(angle))
+            s = np.sin(np.deg2rad(angle))
+            rsmat = np.array([[c, -s], [s, c]]) / scale
         if not rmatrix is None:
             rsmat = rmatrix / scale
 
