@@ -48,23 +48,19 @@ def affine_transform(image, rmatrix=None, angle=None, scale=1.0,
         else:
             interp_param = 0
 
+    # A rename to make things clearer.
+    # TODO: Deal with this properly and change it in the keywords
+    image_center = rotation_center
     rmatrix = rmatrix / scale
-    center = (np.array(image.shape)-1)/2.0
+    array_center = (np.array(image.shape)-1)/2.0
     if recenter == True:
-        recenter = center
+        rot_center = array_center
     elif recenter == False:
-        recenter = rotation_center
+        rot_center = image_center
 
-    if rotation_center is not None:
-        shift = np.array(rotation_center) - np.array(recenter)
-    else:
-        shift = np.array([0.0, 0.0])
-    shift /= scale
-
-    displacement = np.array([rmatrix[0,0]*center[1] + rmatrix[1,0]*center[0],
-                        rmatrix[0,1]*center[1] + rmatrix[1,1]*center[0]])
-    center_shift = displacement - center
-    shift -= center_shift
+    displacement = np.array([rmatrix[0,0]*image_center[1] + rmatrix[1,0]*image_center[0],
+                        rmatrix[0,1]*image_center[1] + rmatrix[1,1]*image_center[0]])
+    shift = rot_center - displacement
 
     if rotate_func == 'skimage':
         skmatrix = np.zeros((3, 3))

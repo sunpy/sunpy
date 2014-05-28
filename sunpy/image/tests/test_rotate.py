@@ -12,7 +12,7 @@ import skimage.data as images
 original = images.camera()
 
 # Tolerance for tests
-rtol = 1.0e-6
+rtol = 1.0e-5
 
 def plot_results(expect, result, diff):
     """
@@ -44,7 +44,8 @@ def compare_results(expect, result, testmessg):
     # Outermost pixels can contain artefacts which will be ignored.
     exp = expect[1:-1, 1:-1]
     res = result[1:-1, 1:-1]
-    print 'Testing', testmessg, '...',
+    print 'Testing', testmessg, '...'#,
+    print exp.mean(), res.mean()
     assert abs(exp.mean() - res.mean()) <= rtol*exp.mean()
     assert np.allclose(exp, res, rtol=rtol)
     print 'Passed'
@@ -125,7 +126,7 @@ def test_shift():
     # Check a shifted shape against expected outcome
     expected = np.zeros(original.shape)
     expected[:-20, 100:] = original[20:, :-100]
-    rcen = rotation_center + np.array([20, -100])
+    rcen = rotation_center + np.array([100, -20])
     shift = aff(original, rmatrix=rmatrix, recenter=True, rotation_center=rcen)
     diff = abs(expected-shift)
     plot_results(expected, shift, diff)
@@ -133,12 +134,14 @@ def test_shift():
     plt.close()
 
     # Check shifted and unshifted shape against original image
-    rcen = rotation_center + np.array([20, -100])
+    rcen = rotation_center + np.array([100, -20])
     shift = aff(original, rmatrix=rmatrix, recenter=True, rotation_center=rcen)
-    unshift = aff(shift, rmatrix=rmatrix, recenter=True, rotation_center=rotation_center)
+    rcen = rotation_center - np.array([100, -20])
+    unshift = aff(shift/shift.max(), rmatrix=rmatrix, recenter=True, rotation_center=rcen) * shift.max()
     diff = abs(original-unshift)
     plot_results(original, unshift, diff)
-    compare_results(original, unshift, 'translation and inverse translation')
+    # Need to ignore the portion of the image cut off by the first shift
+    compare_results(original[20:,:-100], unshift[20:,:-100], 'translation and inverse translation')
     plt.close()
 
 
@@ -152,13 +155,16 @@ def test_scale(scale_factor=0.5):
     # Check a scaled image against the expected outcome
     newim = tf.rescale(original, scale_factor, order=4, mode='constant') * original.max()
     # Old width and new centre of image
-    w = original.shape[0]/2.0
-    new_c = (newim.shape[0]/2.0)
+    w = original.shape[0]/2.0 - 0.5
+    new_c = (newim.shape[0]/2.0) -0.5
     expected = np.zeros(original.shape)
+    upper = w+new_c+1
     if scale_factor > 1:
-        expected = newim[new_c-w:new_c+w, new_c-w:new_c+w]
+        lower = new_c-w
+        expected = newim[lower:upper, lower:upper]
     else:
-        expected[w-new_c:w+new_c, w-new_c:w+new_c] = newim
+        lower = w-new_c
+        expected[lower:upper, lower:upper] = newim
     scale = aff(original, rmatrix=rmatrix, scale=scale_factor, recenter=True, rotation_center=rotation_center)
     diff = abs(expected-scale)
     plot_results(expected, scale, diff)
@@ -166,11 +172,20 @@ def test_scale(scale_factor=0.5):
     plt.close()
     
     # Check a scaled and descaled image against the original
+    print scale_factor, 1.0/scale_factor
     scale = aff(original, rmatrix=rmatrix, scale=scale_factor, recenter=True, rotation_center=rotation_center)
-    descale = aff(original, rmatrix=rmatrix, scale=1.0/scale_factor, recenter=True, rotation_center=rotation_center)
+    descale = aff(scale/scale.max(), rmatrix=rmatrix, scale=1.0/scale_factor, recenter=True, rotation_center=rotation_center) * scale.max()
     diff = abs(original-descale)
-    plot_results(expected, descale, diff)
-    compare_results(expected, descale, 'scaling and inverse scaling')
+    if scale_factor > 1:
+        # Need to ignore the parts of the image cropped by the initial scaling
+        scl_w = (original.shape[0]/2.0 - 0.5)/scale_factor
+        lower = w-scl_w
+        upper = w+scl_w+1
+        plot_results(original[lower:upper, lower:upper], descale[lower:upper, lower:upper], diff[lower:upper, lower:upper])
+        compare_results(original[lower:upper, lower:upper], descale[lower:upper, lower:upper], 'scaling and inverse scaling')
+    else:
+        plot_results(original, descale, diff)
+        compare_results(original, descale, 'scaling and inverse scaling')
     plt.close()
 
 
@@ -192,8 +207,10 @@ def test_all(scale_factor=0.5):
     else:
         new[im_min[0]:w[0]+im_min[0], im_min[1]:w[1]+im_min[1]] = scale
     shift = np.zeros(new.shape)
-    disp = np.array([20, -100])
-    shift[:-disp[0], -disp[1]:] = new[disp[0]:, :disp[1]]
+    #expected[:-20, 100:] = original[20:, :-100]
+    #rcen = rotation_center + np.array([100, -20])
+    disp = np.dot(rmatrix, np.array([100, -20]))
+    shift[:disp[1], disp[0]:] = new[-disp[1]:, :-disp[0]]
     rcen = rotation_center + disp
     rot = np.rot90(shift)
     expected = rot
@@ -224,8 +241,8 @@ def alltests():
     try:
         test_rotation()
         test_shift()
-        test_scale()
-        test_all()
+        test_scale(1.0)
+        test_all(1.0)
     except AssertionError:
         print 'Failed'
         plt.show()
