@@ -8,6 +8,9 @@ from __future__ import absolute_import
 __authors__ = ["Keith Hughitt"]
 __email__ = "keith.hughitt@nasa.gov"
 
+import os.path
+import shutil
+import urllib2
 import warnings
 
 import pandas
@@ -66,38 +69,12 @@ class GenericLightCurve(object):
 
     def __init__(self, data, meta=None):
         self.data = pandas.DataFrame(data)
-        self.meta = MapMeta(meta)
-
-    def __add__(self, other):
-        """
-        List like concatenation for lightcurves
-        """
-        if not isinstance(other, GenericLightCurve):
-            raise NotImplementedError
-
-        new_data = self.data.append(other.data)
-
-        new_dict = MapMeta()
-        new_dict.update(self.meta)
-        new_dict.update(other.meta)
-
-        return self.__class__(new_data, new_dict)
-
-    def __radd__(self, other):
-        """
-        List like concatenation for lightcurves
-        """
-        if not isinstance(other, GenericLightCurve):
-            raise NotImplementedError
-
-        new_data = other.data.append(self.data)
-
-        new_dict = MapMeta()
-        new_dict.update(other.meta)
-        new_dict.update(self.meta)
-
-        return self.__class__(new_data, new_dict)
-
+        if meta == '' or meta is None:
+	     self.meta = OrderedDict()
+	else:	
+             self.meta = OrderedDict(meta)
+	
+    
     @property
     def header(self):
         """
@@ -109,6 +86,101 @@ class GenericLightCurve(object):
         warnings.warn("""lightcurve.header has been renamed to lightcurve.meta
 for compatability with map, please use meta instead""", Warning)
         return self.meta
+
+    @classmethod
+    def from_time(cls, time, **kwargs):
+        '''Called by Conditional Dispatch object when valid time is passed as input to create method.'''
+	date = parse_time(time)
+        url = cls._get_url_for_date(date, **kwargs)
+        filepath = cls._download(
+            url, kwargs, err="Unable to download data for specified date"
+        )
+        return cls.from_file(filepath)
+
+    @classmethod
+    def from_range(cls, start, end, **kwargs):
+        '''Called by Conditional Dispatch object when start and end time are passed as input to create method.'''
+        url = cls._get_url_for_date_range(parse_time(start), parse_time(end))
+        filepath = cls._download(
+            url, kwargs, 
+            err = "Unable to download data for specified date range"
+        )
+        result = cls.from_file(filepath)
+        result.data = result.data.truncate(start,end)
+        return result
+
+    @classmethod
+    def from_timerange(cls, timerange, **kwargs):
+        '''Called by Conditional Dispatch object when time range is passed as input to create method.'''
+        url = cls._get_url_for_date_range(timerange)
+        filepath = cls._download(
+            url, kwargs,
+            err = "Unable to download data for specified date range"
+        )
+        result = cls.from_file(filepath)
+        result.data = result.data.truncate(timerange.start(), timerange.end())
+        return result
+
+    @classmethod
+    def from_file(cls, filename):
+        '''Used to return Light Curve object by reading the given filename
+
+	Parameters:
+	    filename: Path of the file to be read.
+
+	'''
+
+        filename = os.path.expanduser(filename)
+        meta, data = cls._parse_filepath(filename)
+        if data.empty:
+            raise ValueError("No data found!")
+        else:               
+            return cls(data, meta)
+
+    @classmethod
+    def from_url(cls, url, **kwargs):
+        '''
+	Downloads a file from the given url, reads and returns a Light Curve object.
+
+	Parameters:
+	    url : string 
+	        Uniform Resource Locator pointing to the file.
+
+	    kwargs :Dict
+	        Dict object containing other related parameters to assist in download.
+
+        '''
+        try:
+            filepath = cls._download(url, kwargs)
+        except (urllib2.HTTPError, urllib2.URLError, ValueError):
+            err = ("Unable to read location %s.") % url
+            raise ValueError(err)
+        return cls.from_file(filepath)
+
+    @classmethod
+    def from_data(cls, data, index=None, meta=None):
+        '''
+	Called by Conditional Dispatch object to create Light Curve object when corresponding data is passed
+	to create method.
+	'''
+
+	return cls(
+            pandas.DataFrame(data, index=index),
+            meta
+        )
+
+    @classmethod
+    def from_yesterday(cls):
+        return cls.from_url(cls._get_default_uri())
+
+    @classmethod
+    def from_dataframe(cls, dataframe, meta=None):
+        '''
+	Called by Conditional Dispatch object to create Light Curve object when Pandas DataFrame is passed
+	to create method.
+	'''
+
+	return cls(dataframe, meta)
 
     def plot(self, axes=None, **plot_args):
         """Plot a plot of the light curve
@@ -144,6 +216,41 @@ for compatability with map, please use meta instead""", Warning)
 
         return figure
 
+    @staticmethod
+    def _download(uri, kwargs, 
+                  err='Unable to download data at specified URL'):
+        """Attempts to download data at the specified URI"""
+                    
+        _filename = os.path.basename(uri).split("?")[0]
+        
+        # user specifies a download directory
+        if "directory" in kwargs:
+            download_dir = os.path.expanduser(kwargs["directory"])
+        else:
+            download_dir = sunpy.config.get("downloads", "download_dir")
+
+        # overwrite the existing file if the keyword is present
+        if "overwrite" in kwargs:
+            overwrite = kwargs["overwrite"]
+        else:
+            overwrite = False
+
+        # If the file is not already there, download it
+        filepath = os.path.join(download_dir, _filename)
+
+        if not(os.path.isfile(filepath)) or (overwrite and 
+                                             os.path.isfile(filepath)):
+            try:
+                response = urllib2.urlopen(uri)
+            except (urllib2.HTTPError, urllib2.URLError):
+                raise urllib2.URLError(err)
+            with open(filepath, 'wb') as fp:
+                shutil.copyfileobj(response, fp)
+        else:
+            warnings.warn("Using existing file rather than downloading, use overwrite=True to override.", RuntimeWarning)
+
+        return filepath
+
     @classmethod
     def _get_url_from_timerange(cls, timerange, **kwargs):
         """Returns a URL to the data for the specified date range"""
@@ -166,6 +273,27 @@ for compatability with map, please use meta instead""", Warning)
             #Make a DataFrame
             data = pandas.DataFrame(np.asarray(data), index=index)
             return [data, MapMeta()]
+    
+    def _parse_csv(filepath):
+        """Place holder method to parse CSV files."""
+        msg = "Generic CSV parsing not yet implemented for LightCurve"
+        raise NotImplementedError(msg)
+
+    @staticmethod
+    def _parse_fits(filepath):
+        """Place holder method to parse FITS files."""
+        msg = "Generic FITS parsing not yet implemented for LightCurve"
+        raise NotImplementedError(msg)
+
+    @classmethod
+    def _parse_filepath(cls, filepath):
+        """Check the file extension to see how to parse the file"""
+        filename, extension = os.path.splitext(filepath)
+
+        if extension.lower() in (".csv", ".txt"):
+            return cls._parse_csv(filepath)
+        else:
+            return cls._parse_fits(filepath)
 
     def truncate(self, a, b=None):
         """Returns a truncated version of the timeseries object"""

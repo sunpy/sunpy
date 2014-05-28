@@ -8,7 +8,7 @@ Installation
 
 To begin, install the following requirements:
 
- * [Python]([Python](http://www.python.org) (2.6+)
+ * [Python](http://www.python.org) (2.6+)
  * [Astropy](http://astropy.org) (0.3.0)
  * [NumPy](http://numpy.scipy.org/)
  * [SciPy](http://www.scipy.org/)
@@ -35,9 +35,9 @@ Usage
 Here is a quick example of plotting an AIA image:
 
 ```python
->>> import sunpy
+>>> import sunpy.map
 >>> import matplotlib.cm as cm
->>> aia = sunpy.Map(sunpy.AIA_171_IMAGE)
+>>> aia = sunpy.map.Map(sunpy.AIA_171_IMAGE)
 >>> aia.peek(cmap=cm.hot)
 ```
 

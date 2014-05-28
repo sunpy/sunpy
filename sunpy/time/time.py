@@ -2,7 +2,7 @@ import re
 from datetime import datetime
 from datetime import timedelta
 
-__all__ = ['find_time', 'extract_time', 'parse_time', 'is_time', 'day_of_year', 'break_time', 'get_day']
+__all__ = ['find_time', 'extract_time', 'parse_time', 'is_time', 'day_of_year', 'break_time', 'get_day', 'is_time_in_given_format']
 
 # Mapping of time format codes to regular expressions.
 REGEX = {
@@ -256,9 +256,14 @@ def break_time(t=None):
     #TODO: should be able to handle a time range
     return parse_time(t).strftime("%Y%m%d_%H%M%S")
 
-
 def get_day(dt):
     """ Return datetime for the beginning of the day of given datetime. """
     return datetime(dt.year, dt.month, dt.day)
 
-
+def is_time_in_given_format(time_string, time_format):
+    """Tests whether a time string is formatted according to the given time format."""
+    try:
+        datetime.strptime(time_string, time_format)
+        return True
+    except ValueError:
+        return False
