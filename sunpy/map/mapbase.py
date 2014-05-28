@@ -549,7 +549,8 @@ Dimension:\t [%d, %d]
         if not rmatrix is None:
             rsmat = rmatrix / scale
 
-        center = (np.array(self.data.shape).T-1)/2.0
+        # The following are swapped compared to the x-y convention
+        center = (np.array(self.data.shape)-1)/2.0
         offs = center - np.dot(rsmat, center)
 
         if interpolation == 'spline':
@@ -587,7 +588,7 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         new_map.data = data
 
         # Retrieve old coordinates for the center of the array
-        old_center = np.array(new_map.pixel_to_data(center[0], center[1]))
+        old_center = np.array(new_map.pixel_to_data(center[1], center[0]))
 
         # Calculate new coordinates for the center of the array
         new_center = rotation_center - np.dot(rsmat, rotation_center - old_center)
@@ -595,8 +596,8 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         # Define a new reference pixel in the rotated space
         new_map.meta['crval1'] = new_center[0]
         new_map.meta['crval2'] = new_center[1]
-        new_map.meta['crpix1'] = center[0] + 1 # FITS counts pixels from 1
-        new_map.meta['crpix2'] = center[1] + 1 # FITS counts pixels from 1
+        new_map.meta['crpix1'] = center[1] + 1 # FITS counts pixels from 1
+        new_map.meta['crpix2'] = center[0] + 1 # FITS counts pixels from 1
 
         return new_map
 
