@@ -25,10 +25,25 @@
 # Thus, any C-extensions that are needed to build the documentation will *not*
 # be accessible, and the documentation will not build correctly.
 
-# Load all of the global Astropy configuration
-from astropy.sphinx.conf import *
+# -- Mock Modules -------------------------------------------------------------
+
+import sys
+from mock import Mock
+mock = Mock()
+
+modules = {}
+
+try:
+    import skimage 
+except ImportError:
+    modules.update({'skimage':mock, 'skimage.feature':mock.module})
+
+sys.modules.update(modules)
 
 # -- General configuration ----------------------------------------------------
+
+# Load all of the global Astropy configuration
+from astropy.sphinx.conf import *
 
 # If your documentation needs a minimal Sphinx version, state it here.
 needs_sphinx = '1.1'
@@ -63,6 +78,8 @@ intersphinx_mapping.pop('h5py',None)
 intersphinx_mapping['astropy'] = ('http://docs.astropy.org/en/stable/', None)
 intersphinx_mapping['sqlalchemy'] = ('http://docs.sqlalchemy.org/en/rel_0_8/', None)
 intersphinx_mapping['pandas'] = ('http://pandas.pydata.org/pandas-docs/stable/', None)
+intersphinx_mapping['skimage'] = ('http://scikit-image.org/docs/stable/', None)
+
 # -- Options for HTML output ---------------------------------------------------
 
 # A NOTE ON HTML THEMES
