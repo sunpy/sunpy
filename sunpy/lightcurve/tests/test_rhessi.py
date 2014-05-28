@@ -67,6 +67,7 @@ class TestRHESSISummaryLightCurve():
         lc2 = sunpy.lightcurve.RHESSISummaryLightCurve.create(timerange_b)
         assert not all(lc1.data[lc1.data.columns[0]] == lc2.data[lc2.data.columns[0]])
 
+    @pytest.mark.online
     def test_get_url(self, timerange_a, timerange_b):
         """Test the getting of urls"""
         g = sunpy.lightcurve.RHESSISummaryLightCurve
