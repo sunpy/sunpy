@@ -28,8 +28,9 @@ class MapCube(object):
         Method by which the MapCube should be sorted along the z-axis.
     derotate : {None}
         Apply a derotation to the data (Not Implemented)
-    coalign : {None}
-        Apply fine coalignment to the data (Not Implemented)
+
+    To coalign a mapcube so that solar features remain on the same pixels,
+    please see the "Coalignment of mapcubes" note below.
 
     Attributes
     ----------
@@ -39,10 +40,9 @@ class MapCube(object):
 
     Examples
     --------
-    >>> mapcube = sunpy.Map('images/', mapcube=True)
-    >>> mapcube[0].plot()
-    >>> mapcube[3].reference_pixel['x']
-    2050.6599120000001
+    >>> mapcube = sunpy.map.Map('images/*.fits', mapcube=True)
+
+    Mapcubes can be co-aligned using the routines in sunpy.image.coalignment.
     """
     #pylint: disable=W0613,E1101
     def __init__(self, *args, **kwargs):
@@ -50,7 +50,6 @@ class MapCube(object):
 
         # Hack to get around Python 2.x not backporting PEP 3102.
         sortby = kwargs.pop('sortby', 'date')
-        coalign = kwargs.pop('coalign', False)
         derotate = kwargs.pop('derotate', False)
 
         self.maps = expand_list(args)
@@ -66,13 +65,6 @@ class MapCube(object):
                 self.maps.sort(key=self._sort_by_date())
             else:
                 raise ValueError("Only sort by date is supported")
-
-        # Coalignment
-        if coalign:
-            if coalign == 'diff':
-                self.coalign("diff")
-            else:
-                raise ValueError("That coalignment method is not supported")
 
         if derotate:
             self._derotate()

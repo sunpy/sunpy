@@ -53,6 +53,7 @@ def test_wave_unit_catcher():
 
     assert np.allclose(test_wavel, test_values, rtol=1e-05, atol=1e-8)
 
+@pytest.mark.online
 def test_translate_results_to_query():
     """Make sure that conversion of HEK results to VSO queries is accurate"""
     h = hek.HEKClient()
@@ -66,6 +67,10 @@ def test_translate_results_to_query():
         #Comparing types of both queries
         assert type(hek_query) == type(vso_query)
 
+<<<<<<< HEAD
+=======
+@pytest.mark.online
+>>>>>>> master
 def test_vso_attribute_parse():
     """Make sure that Parsing of VSO attributes from HEK queries is accurate"""
     h = hek.HEKClient()

@@ -78,7 +78,6 @@ class LightCurve(object):
         else:
             self.meta = OrderedDict(meta)
 
-
     @property
     def header(self):
         """
@@ -149,6 +148,7 @@ for compatability with map, please use meta instead""", Warning)
 	Parameters:
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	    url : string
 =======
 	    url : string 
@@ -156,6 +156,9 @@ for compatability with map, please use meta instead""", Warning)
 =======
 	    url : string
 >>>>>>> 817e49b00eb6dc3e54df4ea1f7bb058e6c9b378b
+=======
+	    url : string 
+>>>>>>> master
 	        Uniform Resource Locator pointing to the file.
 
 	    kwargs :Dict
