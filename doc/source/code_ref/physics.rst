@@ -1,4 +1,4 @@
-SunPy Physics
+SunPy physics
 =============
 
 .. automodapi:: sunpy.physics
