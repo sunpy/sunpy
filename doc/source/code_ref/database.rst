@@ -1,4 +1,4 @@
-SunPy Database
+SunPy database
 ==============
 ..
     TODO:
