@@ -27,8 +27,9 @@ class MapCube(object):
         Method by which the MapCube should be sorted along the z-axis.
     derotate : {None}
         Apply a derotation to the data (Not Implemented)
-    coalign : {None}
-        Apply fine coalignment to the data (Not Implemented)
+
+    To coalign a mapcube so that solar features remain on the same pixels,
+    please see the "Coalignment of mapcubes" note below.
 
     Attributes
     ----------
@@ -37,10 +38,9 @@ class MapCube(object):
 
     Examples
     --------
-    >>> mapcube = sunpy.Map('images/', mapcube=True)
-    >>> mapcube[0].plot()
-    >>> mapcube[3].reference_pixel['x']
-    2050.6599120000001
+    >>> mapcube = sunpy.map.Map('images/*.fits', mapcube=True)
+
+    Mapcubes can be co-aligned using the routines in sunpy.image.coalignment.
     """
     #pylint: disable=W0613,E1101
     def __init__(self, *args, **kwargs):
@@ -48,7 +48,6 @@ class MapCube(object):
 
         # Hack to get around Python 2.x not backporting PEP 3102.
         sortby = kwargs.pop('sortby', 'date')
-        coalign = kwargs.pop('coalign', False)
         derotate = kwargs.pop('derotate', False)
 
         self.maps = expand_list(args)
@@ -65,51 +64,12 @@ class MapCube(object):
             else:
                 raise ValueError("Only sort by date is supported")
 
-        # Coalignment
-        if coalign:
-            if coalign == 'diff':
-                self.coalign("diff")
-            else:
-                raise ValueError("That coalignment method is not supported")
-
         if derotate:
             self._derotate()
 
     def __getitem__(self, key):
         """Overiding indexing operation"""
         return self.maps[key]
-
-    def coalign(self, method="diff"):
-        """ Fine coalign the data"""
-        if method == 'diff':
-            return self._coalign_diff(self)
-
-    # Coalignment methods
-    def _coalign_diff(self):
-        """Difference-based coalignment
-
-        Coaligns data by minimizing the difference between subsequent images
-        before and after shifting the images one to several pixels in each
-        direction.
-
-        pseudo-code:
-
-        for i len(self):
-            min_diff = {'value': (), 'offset': (0, 0)} # () is pos infinity
-
-            # try shifting 1 pixel in each direction
-            for x in (-1, 0, 1):
-                for y in (-1, 0, 1):
-                    # calculate differenand hasattr(self, '_coalign_%s' % coalign):
-            getattr(self, '_coalign_%s' % coalign)()ce for intersecting pixels
-                    # if < min_diff['value'], store new value/offset
-
-            # shift image
-            if min_diff['offset'] != (0, 0):
-                # shift and clip image
-
-        """
-        raise NotImplementedError("Sorry this is not yet supported")
 
     # Sorting methods
     @classmethod
