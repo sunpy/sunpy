@@ -25,10 +25,25 @@
 # Thus, any C-extensions that are needed to build the documentation will *not*
 # be accessible, and the documentation will not build correctly.
 
-# Load all of the global Astropy configuration
-from astropy.sphinx.conf import *
+# -- Mock Modules -------------------------------------------------------------
+
+import sys
+from mock import Mock
+mock = Mock()
+
+modules = {}
+
+try:
+    import skimage 
+except ImportError:
+    modules.update({'skimage':mock})
+
+sys.modules.update(modules)
 
 # -- General configuration ----------------------------------------------------
+
+# Load all of the global Astropy configuration
+from astropy.sphinx.conf import *
 
 # If your documentation needs a minimal Sphinx version, state it here.
 needs_sphinx = '1.1'
