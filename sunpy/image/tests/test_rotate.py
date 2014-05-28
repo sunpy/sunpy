@@ -14,7 +14,7 @@ original = images.camera()
 # Tolerance for tests
 rtol = 1.0e-6
 
-def plot_results(expect, result, diff, minmax=None):
+def plot_results(expect, result, diff):
     """
     Function to plot the results to be shown in the event that the test fails.
     """
@@ -45,7 +45,6 @@ def compare_results(expect, result, testmessg):
     exp = expect[1:-1, 1:-1]
     res = result[1:-1, 1:-1]
     print 'Testing', testmessg, '...',
-    print exp.mean(), res.mean(), abs(exp.mean()-res.mean())
     assert abs(exp.mean() - res.mean()) <= rtol*exp.mean()
     assert np.allclose(exp, res, rtol=rtol)
     print 'Passed'
