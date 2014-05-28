@@ -13,6 +13,7 @@ Latest
  * Added support for NOAA solar cycle prediction in lightcurves
  * Fix algorithm in sunpy.sun.equation_of_center
  * Added Docstrings to LightCurve methods.
+ * Added tests for classes in sunpy.map.sources. Note that some classes (TRACE, RHESSI) were left out because SunPy is not able to read their FITS files.
 
 0.4.0
 -----
