@@ -484,27 +484,28 @@ Dimension:\t [%d, %d]
     
     def rotate(self, angle=None, rmatrix=None, scale=1.0, rotation_center=(0, 0), recenter=False,
                missing=0.0, interpolation='bicubic', interp_param=-0.5):
-        """Returns a new rotated and rescaled map.  If neither an angle or a
+        """Returns a new rotated and rescaled map.  Specify either a rotation
+        angle or a rotation matrix, but not both.  If neither an angle or a
         rotation matrix are specified, the map will be rotated by the rotation
         angle in the metadata.
 
         Parameters
         ----------
         angle: float
-           The angle (degrees) to rotate counterclockwise. Do not also specify rotation matrix.
+            The angle (degrees) to rotate counterclockwise.
         rmatrix: NxN
-            Linear transformation rotation matrix. Do not also specify angle.
+            Linear transformation rotation matrix.
         scale: float
-           A scale factor for the image, default is no scaling
+            A scale factor for the image, default is no scaling
         rotation_center: tuple
             The axis of rotation
-            Default: the origin in the coordinate system
+            Default: the origin in the data coordinate system
         recenter: bool
             If True, position the axis of rotation at the center of the new map
             Default: False
         missing: float
-           The numerical value to fill any missing points after rotation.
-           Default: 0.0
+            The numerical value to fill any missing points after rotation.
+            Default: 0.0
         interpolation: {'nearest' | 'bilinear' | 'spline' | 'bicubic'}
             Interpolation method to use in the transform.
             Spline uses the
