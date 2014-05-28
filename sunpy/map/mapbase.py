@@ -481,6 +481,10 @@ Dimension:\t [%d, %d]
         rotation matrix are specified, the map will be rotated by the rotation
         angle in the metadata.
 
+        If the rotation is specified as an angle (either explicitly or
+        implicitly) and the metadata contains the CROTA2 keyword, that keyword
+        will be changed appropriately to account for the rotation.
+
         Parameters
         ----------
         angle: float
@@ -613,8 +617,7 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         new_map.meta['crpix1'] = map_center[1] + 1 # FITS counts pixels from 1
         new_map.meta['crpix2'] = map_center[0] + 1 # FITS counts pixels from 1
 
-        if not angle is None:
-            new_map.meta['crota1'] = 0.
+        if angle is not None and new_map.meta.get('crota2') is not None:
             new_map.meta['crota2'] = new_map.rotation_angle['y'] - angle
 
         return new_map
