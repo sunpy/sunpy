@@ -54,3 +54,5 @@ if __name__ == "__main__":
     except AssertionError:
         print 'Failed'
         raise
+    else:
+        print 'All tests completed successfully'
