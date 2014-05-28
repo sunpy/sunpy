@@ -482,7 +482,7 @@ Dimension:\t [%d, %d]
         new_map.meta = new_meta
         return new_map
     
-    def rotate(self, angle=None, rmatrix=None, scale=1.0, rotation_center=None,
+    def rotate(self, angle=None, rmatrix=None, scale=1.0, rotation_center=(0, 0),
                missing=0.0, interpolation='bicubic', interp_param=-0.5):
         """Returns a new rotated, rescaled and shifted map.
 
@@ -495,8 +495,8 @@ Dimension:\t [%d, %d]
         scale: float
            A scale factor for the image, default is no scaling
         rotation_center: tuple
-           The point in the image to rotate around (Axis of rotation).
-           Default: center of the array
+            The axis of rotation
+            Default: the origin in the coordinate system
         missing: float
            The numerical value to fill any missing points after rotation.
            Default: 0.0
@@ -585,6 +585,19 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
 
         # Create new map instance
         new_map.data = data
+
+        # Retrieve old coordinates for the center of the array
+        old_center = np.array(new_map.pixel_to_data(center[0], center[1]))
+
+        # Calculate new coordinates for the center of the array
+        new_center = rotation_center - np.dot(rsmat, rotation_center - old_center)
+
+        # Define a new reference pixel in the rotated space
+        new_map.meta['crval1'] = new_center[0]
+        new_map.meta['crval2'] = new_center[1]
+        new_map.meta['crpix1'] = center[0] + 1 # FITS counts pixels from 1
+        new_map.meta['crpix2'] = center[1] + 1 # FITS counts pixels from 1
+
         return new_map
 
     def submap(self, range_a, range_b, units="data"):
