@@ -54,18 +54,21 @@ install:
    - pip install $PIP_WHEEL_COMMAND $SUDS_PKG beautifulsoup4 requests
    - pip install $PIP_WHEEL_COMMAND pytest 
    - pip install $PIP_WHEEL_COMMAND glymur
-#Install sphinx if needed
+# Install scikit-image package - originally included in order to test image coalignment functionality
+   - pip install $PIP_WHEEL_COMMAND cython
+   - pip install $PIP_WHEEL_COMMAND scikit-image
+# Install sphinx if needed
    - if [[ $TEST_MODE == 'sphinx' ]]; then pip install $PIP_WHEEL_COMMAND sphinx>=1.2; fi 
 
 # Install SunPy and run tests.
 script:
    - python setup.py develop
    - if [[ $TEST_MODE == 'sphinx' ]]; then cd doc/source && sphinx-build -W -b html -d _build/doctrees   . _build/html; fi
-   - if [[ $TEST_MODE == 'tests' ]]; then py.test -cov-report html --cov sunpy; fi
+   - if [[ $TEST_MODE == 'tests' ]]; then py.test --cov-report html --cov sunpy; fi
    - if [[ $TEST_MODE == 'offline' ]]; then py.test --cov-report html --cov sunpy -k-online; fi
 
 after_success:
-   - coveralls
+   - if [[ $TEST_MODE == 'tests' ]]; then coveralls; fi
 
 # Notify the IRC channel of build status
 notifications:
