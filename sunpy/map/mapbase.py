@@ -476,7 +476,9 @@ Dimension:\t [%d, %d]
     
     def rotate(self, angle=None, rmatrix=None, scale=1.0, rotation_center=(0, 0),
                missing=0.0, interpolation='bicubic', interp_param=-0.5):
-        """Returns a new rotated, rescaled and shifted map.
+        """Returns a new rotated and rescaled map.  If neither an angle or a
+        rotation matrix are specified, the map will be rotated by the rotation
+        angle in the metadata.
 
         Parameters
         ----------
@@ -532,6 +534,9 @@ Dimension:\t [%d, %d]
                 interp_param = 0 #Default value for nearest or bilinear
 
         image = self.data.copy()
+
+        if angle is None and rmatrix is None:
+            angle = self.rotation_angle['y']
 
         if not angle is None:
             #Calulate the parameters for the affine_transform
@@ -590,6 +595,10 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         new_map.meta['crval2'] = new_center[1]
         new_map.meta['crpix1'] = center[1] + 1 # FITS counts pixels from 1
         new_map.meta['crpix2'] = center[0] + 1 # FITS counts pixels from 1
+
+        if not angle is None:
+            new_map.meta['crota1'] = 0.
+            new_map.meta['crota2'] = new_map.rotation_angle['y'] - angle
 
         return new_map
 
