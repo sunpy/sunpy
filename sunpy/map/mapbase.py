@@ -553,7 +553,7 @@ Dimension:\t [%d, %d]
             s = np.sin(np.deg2rad(angle))
             rsmat = np.array([[c, -s], [s, c]]) / scale
         if not rmatrix is None:
-            rsmat = rmatrix / scale
+            rsmat = np.asarray(rmatrix) / scale
 
         # map_center is swapped compared to the x-y convention
         map_center = (np.array(self.data.shape)-1)/2.0
