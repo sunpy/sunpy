@@ -474,7 +474,7 @@ Dimension:\t [%d, %d]
         new_map.meta = new_meta
         return new_map
     
-    def rotate(self, angle=None, rmatrix=None, scale=1.0, rotation_center=(0, 0),
+    def rotate(self, angle=None, rmatrix=None, scale=1.0, rotation_center=(0, 0), recenter=False,
                missing=0.0, interpolation='bicubic', interp_param=-0.5):
         """Returns a new rotated and rescaled map.  If neither an angle or a
         rotation matrix are specified, the map will be rotated by the rotation
@@ -491,6 +491,9 @@ Dimension:\t [%d, %d]
         rotation_center: tuple
             The axis of rotation
             Default: the origin in the coordinate system
+        recenter: bool
+            If True, position the axis of rotation at the center of the new map
+            Default: False
         missing: float
            The numerical value to fill any missing points after rotation.
            Default: 0.0
@@ -546,9 +549,19 @@ Dimension:\t [%d, %d]
         if not rmatrix is None:
             rsmat = rmatrix / scale
 
-        # The following are swapped compared to the x-y convention
-        center = (np.array(self.data.shape)-1)/2.0
-        offs = center - np.dot(rsmat, center)
+        # map_center is swapped compared to the x-y convention
+        map_center = (np.array(self.data.shape)-1)/2.0
+
+        # axis is swapped compared to the x-y convention
+        if recenter:
+            axis_x = self.data_to_pixel(rotation_center[0], 'x')
+            axis_y = self.data_to_pixel(rotation_center[1], 'y')
+            axis = (axis_y, axis_x)
+        else:
+            axis = map_center
+
+        # offs is swapped compared to the x-y convention
+        offs = axis - np.dot(rsmat, map_center)
 
         if interpolation == 'spline':
             # This is the scipy call
@@ -584,17 +597,20 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         # Create new map instance
         new_map.data = data
 
-        # Retrieve old coordinates for the center of the array
-        old_center = np.array(new_map.pixel_to_data(center[1], center[0]))
+        if recenter:
+            new_center = rotation_center
+        else:
+            # Retrieve old coordinates for the center of the array
+            old_center = np.array(new_map.pixel_to_data(map_center[1], map_center[0]))
 
-        # Calculate new coordinates for the center of the array
-        new_center = rotation_center - np.dot(rsmat, rotation_center - old_center)
+            # Calculate new coordinates for the center of the array
+            new_center = rotation_center - np.dot(rsmat, rotation_center - old_center)
 
         # Define a new reference pixel in the rotated space
         new_map.meta['crval1'] = new_center[0]
         new_map.meta['crval2'] = new_center[1]
-        new_map.meta['crpix1'] = center[1] + 1 # FITS counts pixels from 1
-        new_map.meta['crpix2'] = center[0] + 1 # FITS counts pixels from 1
+        new_map.meta['crpix1'] = map_center[1] + 1 # FITS counts pixels from 1
+        new_map.meta['crpix2'] = map_center[0] + 1 # FITS counts pixels from 1
 
         if not angle is None:
             new_map.meta['crota1'] = 0.
