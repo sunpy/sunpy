@@ -12,7 +12,7 @@ import warnings
 
 import numpy as np
 import matplotlib.pyplot as plt
-import scipy.ndimage.interpolation
+import scipy.ndimage.interpolation as interp
 from matplotlib import patches
 from matplotlib import cm
 
@@ -482,7 +482,8 @@ Dimension:\t [%d, %d]
         new_map.meta = new_meta
         return new_map
     
-    def rotate(self, angle=None, rmatrix=None, scale=1.0, rotation_center=(0, 0), recenter=False,
+    def rotate(self, angle=None, rmatrix=None, scale=1.0,
+               rotation_center=(0, 0), recenter=False,
                missing=0.0, interpolation='bicubic', interp_param=-0.5):
         """Returns a new rotated and rescaled map.  Specify either a rotation
         angle or a rotation matrix, but not both.  If neither an angle or a
@@ -538,16 +539,16 @@ Dimension:\t [%d, %d]
         http://sunpy.readthedocs.org/en/latest/guide/troubleshooting.html#crotate-warning
         """
         assert angle is None or rmatrix is None
-        #Interpolation parameter Sanity
-        assert interpolation in ['nearest','spline','bilinear','bicubic']
-        #Set defaults based on interpolation
+        # Interpolation parameter sanity
+        assert interpolation in ['nearest', 'spline', 'bilinear', 'bicubic']
+        # Set defaults based on interpolation
         if interp_param is None:
             if interpolation is 'spline':
                 interp_param = 3
             elif interpolation is 'bicubic':
                 interp_param = 0.5
             else:
-                interp_param = 0 #Default value for nearest or bilinear
+                interp_param = 0 # Default value for nearest or bilinear
 
         image = self.data.copy()
 
@@ -578,17 +579,17 @@ Dimension:\t [%d, %d]
 
         if interpolation == 'spline':
             # This is the scipy call
-            data = scipy.ndimage.interpolation.affine_transform(image, rsmat,
-                           offset=offs, order=interp_param, mode='constant',
-                           cval=missing)
+            data = interp.affine_transform(image, rsmat, offset=offs,
+                                           order=interp_param, mode='constant',
+                                           cval=missing)
         else:
             #Use C extension Package
             if not 'Crotate' in globals():
                 warnings.warn("""The C extension sunpy.image.Crotate is not
 installed, falling back to the interpolation='spline' of order=3""" ,Warning)
-                data = scipy.ndimage.interpolation.affine_transform(image, rsmat,
-                           offset=offs, order=3, mode='constant',
-                           cval=missing)
+                data = interp.affine_transform(image, rsmat, offset=offs,
+                                               order=3, mode='constant',
+                                               cval=missing)
             else:
                 #Set up call parameters depending on interp type.
                 if interpolation == 'nearest':
@@ -599,9 +600,11 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
                     interp_type = Crotate.BICUBIC
                 #Make call to extension
                 data = Crotate.affine_transform(image,
-                                      rsmat, offset=offs,
-                                      kernel=interp_type, cubic=interp_param,
-                                      mode='constant', cval=missing)
+                                                rsmat, offset=offs,
+                                                kernel=interp_type,
+                                                cubic=interp_param,
+                                                mode='constant',
+                                                cval=missing)
 
         #Return a new map
         #Copy Header
