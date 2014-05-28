@@ -4,6 +4,7 @@ from sunpy.image.rotate import affine_transform as aff
 import numpy as np
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
+from matplotlib import patches
 from skimage import transform as tf
 import skimage.data as images
 
@@ -13,7 +14,7 @@ original = images.camera()
 # Tolerance for tests
 rtol = 1.0e-6
 
-def plot_results(expect, result, diff):
+def plot_results(expect, result, diff, minmax=None):
     """
     Function to plot the results to be shown in the event that the test fails.
     """
@@ -44,12 +45,13 @@ def compare_results(expect, result, testmessg):
     exp = expect[1:-1, 1:-1]
     res = result[1:-1, 1:-1]
     print 'Testing', testmessg, '...',
+    print exp.mean(), res.mean(), abs(exp.mean()-res.mean())
     assert abs(exp.mean() - res.mean()) <= rtol*exp.mean()
     assert np.allclose(exp, res, rtol=rtol)
     print 'Passed'
 
 
-def test_rotation():    
+def test_rotation():
     print '\n==== Testing rotation ===='
     # Rotation center for all rotation tests.
     rotation_center = np.array(original.shape)/2.0 - 0.5
@@ -100,11 +102,11 @@ def test_rotation():
     # TODO: Check incremental 360 degree rotation against original image
 
     # Check rotated and derotated image against original
-    angle = np.radians(-10.0)
+    angle = np.radians(-90.0)
     c = np.cos(angle); s = np.sin(angle)
     rmatrix = np.array([[c, s], [-s, c]])
-    rot = aff(original, rmatrix=rmatrix, recenter=True, rotation_center=rotation_center)
-    angle = np.radians(10.0)
+    rot = aff(original, rmatrix=rmatrix, recenter=True, rotation_center=rotation_center, missing=original.mean()/original.max())
+    angle = np.radians(90.0)
     c = np.cos(angle); s = np.sin(angle)
     rmatrix = np.array([[c, s], [-s, c]])
     derot = aff(rot/rot.max(), rmatrix=rmatrix, recenter=True, rotation_center=rotation_center) * rot.max()
