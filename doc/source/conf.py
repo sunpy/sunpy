@@ -35,8 +35,9 @@ modules = {}
 
 try:
     import skimage 
+    raise ImportError
 except ImportError:
-    modules.update({'skimage':mock})
+    modules.update({'skimage':mock, 'skimage.feature':mock.module})
 
 sys.modules.update(modules)
 
