@@ -40,10 +40,11 @@ class Downloader(object):
     def _start_download(self, url, path, callback, errback):
         try:
             server = self._get_server(url)
-            
-            self.connections[server] += 1
-            self.conns += 1
-            
+        
+	    with self.mutex:
+                self.connections[server] += 1
+                self.conns += 1
+	            
             with closing(urllib2.urlopen(url)) as sock:
                 fullname = path(sock, url)
 

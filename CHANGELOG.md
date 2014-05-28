@@ -12,6 +12,7 @@ Latest
  * Removed sqlalchemy as a requirement for SunPy
  * Added support for NOAA solar cycle prediction in lightcurves
  * Fix algorithm in sunpy.sun.equation_of_center
+ * Added Docstrings to LightCurve methods.
 
 0.4.0
 -----

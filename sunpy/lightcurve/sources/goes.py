@@ -165,7 +165,7 @@ class GOESLightCurve(LightCurve):
         header = fits[0].header
         if len(fits) == 4:
             if is_time_in_given_format(fits[0].header['DATE-OBS'], '%d/%m/%Y'):
-                start_time = datetime.datetime.strptime(fits[0].header['DATE-OBS'], +'%d/%m/%Y')
+                start_time = datetime.datetime.strptime(fits[0].header['DATE-OBS'], '%d/%m/%Y')
             elif is_time_in_given_format(fits[0].header['DATE-OBS'], '%d/%m/%y'):
                 start_time = datetime.datetime.strptime(fits[0].header['DATE-OBS'], '%d/%m/%y')
             else:
