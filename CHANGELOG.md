@@ -13,7 +13,6 @@ Latest
  * Added support for NOAA solar cycle prediction in lightcurves
  * Fix algorithm in sunpy.sun.equation_of_center
  * Added Docstrings to LightCurve methods.
- * Added contains functionality to TimeRange module
 
 0.4.0
 -----
