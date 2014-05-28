@@ -7,6 +7,7 @@ from sunpy.time import parse_time
 
 __all__ = ['TimeRange']
 
+
 class TimeRange:
     """
     Timerange(a, b) or Timerange((a, b))
@@ -64,7 +65,7 @@ class TimeRange:
             self.t2 = parse_time(y)
 
         # Datetime
-        if isinstance(y,datetime):
+        if isinstance(y, datetime):
             self.t2 = y
 
         # Timedelta
@@ -78,7 +79,8 @@ class TimeRange:
         self.dt = self.t2 - self.t1
 
     def __repr__(self):
-        """Returns a human-readable representation of the TimeRange instance."""
+        """
+        Returns a human-readable representation of the TimeRange instance."""
         TIME_FORMAT = "%Y/%m/%d %H:%M:%S"
 
         t1 = self.t1.strftime(TIME_FORMAT)
@@ -89,15 +91,15 @@ class TimeRange:
                 '\n    End:'.ljust(12) + t2 +
                 '\n    Center:'.ljust(12) + center +
                 '\n    Duration:'.ljust(12) + str(self.days()) + ' days or' +
-                '\n    '.ljust(12) +  str(self.minutes()) + ' minutes or' +
-                '\n    '.ljust(12) +  str(self.seconds()) + ' seconds' +
+                '\n    '.ljust(12) + str(self.minutes()) + ' minutes or' +
+                '\n    '.ljust(12) + str(self.seconds()) + ' seconds' +
                 '\n')
 
     def center(self):
         """Gets the center of the TimeRange instance"""
         return self.t1 + self.dt / 2
 
-    def split(self,n=2):
+    def split(self, n=2):
         """Splits the TimeRange into multiple equally sized parts
 
         Accepts a value greater than or equal to 1 as input, and
@@ -115,7 +117,7 @@ class TimeRange:
         next_time = None
         for _ in range(n):
             next_time = previous_time + self.dt/n
-            next_range = TimeRange(previous_time,next_time)
+            next_range = TimeRange(previous_time, next_time)
             subsections.append(next_range)
             previous_time = next_time
         return subsections
@@ -152,7 +154,8 @@ class TimeRange:
         n = 1
         times = [TimeRange(self.t1, self.t1 + window)]
         while times[-1].t2 < self.t2:
-            times.append(TimeRange(self.t1 + cadence*n, self.t1 + cadence*n + window))
+            times.append(TimeRange(self.t1 + cadence*n,
+                                   self.t1 + cadence*n + window))
             n += 1
         return times
 
@@ -170,7 +173,8 @@ class TimeRange:
 
     def seconds(self):
         """Gets the number of seconds elapsed."""
-        return (self.dt.microseconds + (self.dt.seconds + self.dt.days * 24 * 3600) * 1e6) / 1e6
+        return (self.dt.microseconds +
+               (self.dt.seconds + self.dt.days * 24 * 3600) * 1e6) / 1e6
 
     def minutes(self):
         """Gets the number of minutes elapsed."""
@@ -195,24 +199,26 @@ class TimeRange:
         # Only a timedelta object is acceptable here
         self.t1 = self.t1 + t_backwards
         self.t2 = self.t2 + t_forwards
-    
+
     def __contains__(self, time):
         """
         Checks whether the given time lies within this range.
-        Both limits are inclusive (i.e. isInRange(t1) and isInRange(t2) always return true)
-        
+        Both limits are inclusive (i.e. __contains__(t1) and __contains__(t2)
+        always return true)
+
         Parameters
         ----------
         time: datetime or str
             The time to be checked
-        
+
         Returns
         -------
         true if time lies between t1 and t2, false otherwise.
-        
+
         Example
         -------
-        isInRange('2014/05/04 13:54')
+        >>> time_range = TimeRange('2014/05/04 13:54', '2018/02/03 12:12')
+        >>> time in time_range
         """
         t = parse_time(time)
         return t >= self.t1 and t <= self.t2
