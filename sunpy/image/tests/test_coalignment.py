@@ -10,7 +10,7 @@ from scipy.ndimage.interpolation import shift
 from sunpy import AIA_171_IMAGE
 from sunpy import map
 from sunpy.image.coalignment import parabolic_turning_point, \
-repair_2dimage_nonfinite, _default_fmap_function, _lower_clip, _upper_clip, \
+repair_image_nonfinite, _default_fmap_function, _lower_clip, _upper_clip, \
 calculate_clipping, get_correlation_shifts, find_best_match_location, \
 match_template_to_layer, clip_edges, calculate_shift, \
 mapcube_coalign_by_match_template
@@ -31,13 +31,13 @@ def test_parabolic_turning_point():
     assert(parabolic_turning_point(np.asarray([6.0, 2.0, 0.0])) == 1.5)
 
 
-def test_repair_2dimage_nonfinite():
-    a = np.ones((9))
+def test_repair_image_nonfinite():
     for i in range(0, 9):
         for non_number in [np.nan, np.inf]:
+            a = np.ones((9))
             a[i] = non_number
             b = a.reshape(3, 3)
-            c = repair_2dimage_nonfinite(b)
+            c = repair_image_nonfinite(b)
             assert(np.isfinite(c).all())
 
 
