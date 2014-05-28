@@ -15,6 +15,7 @@ Latest
  * Added Docstrings to LightCurve methods.
  * Added functions that implement image coalignment with support for MapCubes. 
  * Cleaned up the sunpy namespace, removed .units, /ssw and .sphinx. Also moved .coords .physics.transforms. 
+ * Added contains functionality to TimeRange module
 
 0.4.0
 -----
