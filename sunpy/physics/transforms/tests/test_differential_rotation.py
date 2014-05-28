@@ -1,7 +1,7 @@
 from __future__ import absolute_import
 import unittest
 import numpy as np
-from sunpy.coords import diff_rot
+from sunpy.physics.transforms.differential_rotation import diff_rot
 #pylint: disable=C0103,R0904,W0201,W0212,W0232,E1103
 
 class DiffRotTest(unittest.TestCase):
