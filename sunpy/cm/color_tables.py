@@ -11,7 +11,6 @@ __all__ = ['aia_color_table', 'lasco_color_table', 'eit_color_table',
            'sxt_color_table', 'xrt_color_table', 'trace_color_table',
            'sot_color_table', 'hmi_mag_color_table']
 
-
 # FIXME: Give me a proper name.
 def _mkx(i, steps, n):
     """ Generate list according to pattern of g0 and b0. """
@@ -1052,7 +1051,6 @@ def sot_color_table(measurement):
     cdict = create_cdict(r, g, b)
     return colors.LinearSegmentedColormap('mytable', cdict)
 
-
 hmi_mag_r = np.array(
       [137, 140, 142, 144, 149, 151, 154, 158, 161, 163, 167, 170, 172,
        175, 179, 182, 184, 188, 191, 193, 195, 200, 202, 205, 209, 212,
@@ -1124,6 +1122,7 @@ def hmi_mag_color_table():
        University/JSOC
        Reference: http://jsoc.stanford.edu/data/hmi/HMI_M.ColorTable.pdf
 
+
       Example usage for NRT data:
            import sunpy.map
            import sunpy.cm
@@ -1150,6 +1149,7 @@ def hmi_mag_color_table():
             hmir.peek(vmin=-1500.0, vmax=1500.0)
     '''
     cdict = create_cdict(hmi_mag_r, hmi_mag_g, hmi_mag_b)
+
     return colors.LinearSegmentedColormap('mytable', cdict)
 
 def create_cdict(r, g, b):

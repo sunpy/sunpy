@@ -78,6 +78,7 @@ class LightCurve(object):
         else:
             self.meta = OrderedDict(meta)
 
+
     @property
     def header(self):
         """
