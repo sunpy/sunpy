@@ -34,7 +34,7 @@ class TestGenericMap:
         self.fits.verify('silentfix')
 
         # include full comment
-        fits_comment = self.fits[0].header.get_comment()
+        fits_comment = self.fits[0].header['COMMENT']
 
         # PyFITS 2.x
         if isinstance(fits_comment[0], basestring):
@@ -47,7 +47,7 @@ class TestGenericMap:
         # touch data to apply scaling up front
         self.fits[0].data
 
-        self.fits[0].header.update('COMMENT', comment)
+        self.fits[0].header['COMMENT'] = comment
 
     def teardown_class(self):
         self.map = None

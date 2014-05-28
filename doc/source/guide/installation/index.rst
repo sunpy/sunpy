@@ -33,6 +33,8 @@ are needed. SunPy will import even if these dependencies are not installed.
 
 - `beautifulsoup4 <http://www.crummy.com/software/BeautifulSoup/>`_: For `Callisto` Spectrograms and `net.helio`
 
+- `requests <http://docs.python-requests.org/en/latest/>`_: For the `net.jsoc` submodule.
+
 - `glymur <https://glymur.readthedocs.org/en/latest/>`_ 0.5.9 or later: To enable reading of JPEG2000 files.
   Glymur requires the installation of the OpenJPEG C library. Which can be found `here <http://code.google.com/p/openjpeg/downloads/list>`.
   
