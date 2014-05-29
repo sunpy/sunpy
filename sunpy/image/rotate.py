@@ -2,14 +2,18 @@
 from __future__ import absolute_import
 
 import numpy as np
-#import sunpy.image.Crotate as Crotate
-from skimage import transform as tf
+from scipy.ndimage import interpolation as sp
+try:
+    from skimage import transform as sk
+    force_scipy = False
+except:
+    force_scipy = True
 
 __all__ = ['affine_transform']
 
 #TODO: Add functionality to specify interpolation method and missing value
 def affine_transform(image, rmatrix=None, angle=None, scale=1.0,
-                     rotation_center=None, recenter=True, rotate_func='skimage',
+                     rotation_center=None, recenter=True, scipy=False,
                      missing=0.0, interp_type='biquartic', interp_param=None):
     """    
     Rotates and shifts an image using an affine transform. Intended to replace Map.rotate().
@@ -38,8 +42,11 @@ def affine_transform(image, rmatrix=None, angle=None, scale=1.0,
     New rotated, scaled and translated image.
     """
 
-    assert rotate_func in ['skimage', 'Crotate']
-    assert interp_type in ['nearest', 'spline', 'bilinear', 'bicubic', 'biquartic']
+    interps = ['nearest', 'bilinear', 'biquadratic', 'bicubic', 'biquartic',
+               'biquintic', 'spline']
+    if force_scipy or scipy:
+        interp_type = 'spline'
+    assert interp_type in interps
     if interp_param is None:
         if interp_type is 'spline':
             interp_param = 3
@@ -62,32 +69,21 @@ def affine_transform(image, rmatrix=None, angle=None, scale=1.0,
                         rmatrix[0,1]*image_center[1] + rmatrix[1,1]*image_center[0]])
     shift = rot_center - displacement
 
-    if rotate_func == 'skimage':
+    if interp_type == 'spline':
+        # This is the scipy call
+        rotated_image = sp.affine_transform(image, rmatrix, offset=shift,
+                                            order=interp_param, mode='constant',
+                                            cval=missing)
+    else:
         skmatrix = np.zeros((3, 3))
         skmatrix[:2, :2] = rmatrix
         skmatrix[2, 2] = 1.0
         skmatrix[:2, 2] = [shift[1], shift[0]]
-        if interp_type is 'nearest':
-            order = 0
-        elif interp_type is 'bilinear':
-            order = 1
-        elif interp_type is 'bicubic':
-            order = 3
-        elif interp_type is 'biquartic':
-            order = 4
+        order = interps.index(interp_type)
         im_max = image.max()
-        tform = tf.AffineTransform(skmatrix)
-        rotated_image = tf.warp(image, tform, order=order,
-                    mode='constant', cval=missing) * im_max
-    """elif rotate_func == 'Crotate':
-        if interp_type is 'nearest':
-            kernel = Crotate.NEAREST
-        elif interp_type is 'bilinear':
-            kernel = Crotate.BILINEAR
-        elif interp_type is 'bicubic':
-            kernel = Crotate.BICUBIC
-        rotated_image = Crotate.affine_transform(image, rmatrix, offset=shift,
-                    kernel=kernel, cubic=-0.5, mode='constant',
-                    cval=missing)"""
+        tform = sk.AffineTransform(skmatrix)
+        rotated_image = sk.warp(image, tform, order=order, mode='constant',
+                                cval=missing) * im_max
+    
 
     return rotated_image
