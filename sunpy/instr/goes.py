@@ -581,6 +581,88 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal",
 
     return em
 
+def rad_loss_rate(goeslc, download=False):
+    """
+    Calculates and adds solar radiative loss rate to a GOESLightCurve.
+
+    This function calculates the radiative loss rate as a function of
+    time of solar coronal soft X-ray-emitting plasma across all
+    wavelengths given a GOESLightCurve object.  The units of the
+    results are erg/s. This is done by calling calc_rad_loss().
+    For more information see documentation in that function.  Once
+    the radiative loss rates have been found, it is added to a copy of
+    the original GOESLightCurve object as goeslc.data.rad_loss_rate",
+    where goeslc is the GOESLightCurve object.
+
+    Parameters
+    ----------
+    goeslc : GOESLightCurve object
+    download : (optional) bool
+               If True, the GOES CHIANTI radiative loss data
+               files are downloaded.  It is important to do this if a
+               new version of the files has been generated due to a new
+               CHIANTI version being released or the launch of new GOES
+               satellites since these files were originally downloaded.
+               Default=False
+
+    Returns
+    -------
+    goeslc.data.rad_loss_rate : pandas.core.series.Series
+                                Array of radiative loss rate of the
+                                coronal soft X-ray-emitting plasma
+                                across all wavelengths. [erg/s]
+
+    Examples
+    --------
+    >>> from sunpy.lightcurve as lc
+    >>> goeslc = lc.GOESLightCurve.create(time1, time2)
+    >>> goeslc.data
+                          xrsa   xrsb
+    2014-01-01 00:00:00  7e-07  7e-06
+    2014-01-01 00:00:02  7e-07  7e-06
+    2014-01-01 00:00:04  7e-07  7e-06
+    2014-01-01 00:00:06  7e-07  7e-06
+    >>> goeslc_new = rad_loss_rate(goeslc)
+    >>> goeslc_new.data
+                          xrsa   xrsb  luminosity_xrsa  luminosity_xrsb
+    2014-01-01 00:00:00  7e-07  7e-06     1.903523e+24     1.903523e+25
+    2014-01-01 00:00:02  7e-07  7e-06     1.903523e+24     1.903523e+25
+    2014-01-01 00:00:04  7e-07  7e-06     1.903523e+24     1.903523e+25
+    2014-01-01 00:00:06  7e-07  7e-06     1.903523e+24     1.903523e+25
+
+    """
+
+    # Check that input argument is of correct type
+    if not isinstance(goeslc, sunpy.lightcurve.GOESLightCurve):
+        raise TypeError("goeslc must be a GOESLightCurve object.")
+
+    # extract temperature and emission measure from GOESLightCurve
+    # object and change type to that required by calc_rad_loss().
+    # If GOESLightCurve object does not contain temperature and
+    # emission measure, calculate using temp_em()
+    try:
+        temp = np.asarray(goeslc.data.temperature, dtype=np.float64)
+        em = np.asarray(goeslc.data.em, dtype=np.float64)
+    except AttributeError as error:
+        if error.message ==
+            "'DataFrame' object has no attribute 'temperature'" or
+            error.message == "'DataFrame' object has no attribute 'em'":
+            goeslc_new = temp_em(goeslc)
+            temp = np.asarray(goeslc_new.data.temperature, dtype=np.float64)
+            em = np.asarray(goeslc_new.data.em, dtype=np.float64)
+        else:
+            raise error
+    else:
+        goeslc_new = copy.deepcopy(goeslc)
+
+    # Find radiative loss rate with calc_rad_loss()
+    rad_loss_out = calc_rad_loss(temp, em)
+
+    # Enter results into new version of GOES LightCurve Object
+    goeslc_new.data["rad_loss_rate"] = rad_loss_out["rad_loss_rate"]
+
+    return goeslc_new
+
 def _check_download_file(filename, remotepath, localpath=os.path.curdir,
                          remotename=None, force_download=False):
     """
@@ -647,72 +729,3 @@ def _check_download_file(filename, remotepath, localpath=os.path.curdir,
                   remotepath + ".")
             else:
                 raise e
-
-def rad_loss_rate(goeslc):
-    """
-    Calculates and adds solar radiative loss rate to a GOESLightCurve.
-
-    This function calculates the radiative loss rate as a function of
-    time of solar coronal soft X-ray-emitting plasma across all
-    wavelengths given a GOESLightCurve object.  The units of the
-    results are erg/s. This is done by calling calc_rad_loss().
-    For more information see documentation in that function.  Once
-    the radiative loss rates have been found, it is added to a copy of
-    the original GOESLightCurve object as goeslc.data.rad_loss_rate",
-    where goeslc is the GOESLightCurve object.
-
-    Parameters
-    ----------
-    goeslc : GOESLightCurve object
-
-    Returns
-    -------
-    goeslc.data.rad_loss_rate : pandas.core.series.Series
-                                Array of radiative loss rate of the
-                                coronal soft X-ray-emitting plasma
-                                across all wavelengths. [erg/s]
-
-    Examples
-    --------
-    >>> from sunpy.lightcurve as lc
-    >>> goeslc = lc.GOESLightCurve.create(time1, time2)
-    >>> goeslc.data
-                          xrsa   xrsb
-    2014-01-01 00:00:00  7e-07  7e-06
-    2014-01-01 00:00:02  7e-07  7e-06
-    2014-01-01 00:00:04  7e-07  7e-06
-    2014-01-01 00:00:06  7e-07  7e-06
-    >>> goeslc_new = rad_loss_rate(goeslc)
-    >>> goeslc_new.data
-                          xrsa   xrsb  luminosity_xrsa  luminosity_xrsb
-    2014-01-01 00:00:00  7e-07  7e-06     1.903523e+24     1.903523e+25
-    2014-01-01 00:00:02  7e-07  7e-06     1.903523e+24     1.903523e+25
-    2014-01-01 00:00:04  7e-07  7e-06     1.903523e+24     1.903523e+25
-    2014-01-01 00:00:06  7e-07  7e-06     1.903523e+24     1.903523e+25
-
-    """
-
-    # Check that input argument is of correct type
-    exceptions.check_goeslc(goeslc, varname="goeslc")
-
-    # extract temperature and emission measure from GOESLightCurve
-    # object and change type to that required by calc_rad_loss().
-    # If GOESLightCurve object does not contain temperature and
-    # emission measure, calculate using temp_em()
-    try:
-        temp = np.array(goeslc.data.temperature)
-        em = np.array(goeslc.data.em)
-    except AttributeError:
-        goeslc_new = temp_em(goeslc)
-        temp = np.array(goeslc_new.data.temperature)
-        em = np.array(goeslc_new.data.em)
-    else:
-        goeslc_new = copy.deepcopy(goeslc)
-
-    # Find radiative loss rate with calc_rad_loss()
-    rad_loss_out = calc_rad_loss(temp, em)
-
-    # Enter results into new version of GOES LightCurve Object
-    goeslc_new.data["rad_loss_rate"] = rad_loss_out["rad_loss_rate"]
-
-    return goeslc_new
