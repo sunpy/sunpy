@@ -80,22 +80,6 @@ class LYRALightCurve(LightCurve):
         figure.show()
 
         return figure
-
-
-    @staticmethod
-    def _get_url_for_date(date,**kwargs):
-        """Returns a URL to the LYRA data for the specified date
-        """
-        dt = parse_time(date or datetime.datetime.utcnow())
-
-        # Filename
-        filename = "lyra_{0:%Y%m%d-}000000_lev{1:d}_std.fits".format(
-            dt, kwargs.get('level',2))
-        # URL
-        base_url = "http://proba2.oma.be/lyra/data/bsd/"
-        url_path = urlparse.urljoin(dt.strftime('%Y/%m/%d/'), filename)
-        return urlparse.urljoin(base_url, url_path)
-
     @classmethod
     def _get_default_uri(cls):
         """Look for and download today's LYRA data"""

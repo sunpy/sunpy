@@ -52,20 +52,6 @@ class NoRHLightCurve(LightCurve):
         axes.legend()
         plt.show()
 
-    @classmethod
-    def _get_url_for_date(cls,date, **kwargs):
-        """This method retrieves the url for NoRH correlation data for the given date."""
-        #default urllib password anonymous@ is not accepted by the NoRH FTP server.
-        #include an accepted password in base url
-        baseurl='ftp://anonymous:mozilla@example.com@solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/'
-        #date is a datetime object
-        if 'wavelength' in kwargs:
-            if kwargs['wavelength'] == '34':
-                final_url=urlparse.urljoin(baseurl,date.strftime('%Y/%m/tcz%y%m%d'))
-        else:
-            final_url=urlparse.urljoin(baseurl, date.strftime('%Y/%m/tca%y%m%d'))
-
-        return final_url
 
     @staticmethod
     def _parse_fits(filepath):
@@ -86,3 +72,11 @@ class NoRHLightCurve(LightCurve):
             norh_time.append(obs_start_time + datetime.timedelta(0,s))
 
         return header, pandas.DataFrame(data, index=norh_time)
+
+    @classmethod
+    def _is_datasource_for(cls, data, meta, source=None):
+        if meta is not None:
+            return meta.pop('telescop', '').upper() == 'RADIOHELIOGRAPH'
+        if source is not None:
+            source = source.lower()
+            return source == 'norh'
