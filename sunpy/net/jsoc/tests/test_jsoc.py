@@ -113,7 +113,7 @@ def test_post_pass():
 
 @pytest.mark.online
 def test_post_fail(recwarn):
-    client.jsoc_query(attrs.Time('2012/1/1T00:00:00', '2012/1/1T00:00:45'),attrs.Series( 'none'), return_resp=True)
+    client.jsoc_query(attrs.Time('2012/1/1T00:00:00', '2012/1/1T00:00:45'), attrs.Series( 'none'), return_resp=True)
     w = recwarn.pop(Warning)
     assert issubclass(w.category, Warning)
     assert "Query 0 retuned status 4 with error Cannot export series 'none' - it does not exist." in str(w.message)
@@ -127,7 +127,7 @@ def test_request_status_fail():
 
 @pytest.mark.online
 def test_wait_get():
-    responses = client.jsoc_query(attrs.Time('2012/1/3T00:00:00', '2012/1/3T00:00:45'),attrs.Series( 'hmi.M_45s'))
+    responses = client.jsoc_query(attrs.Time('2012/1/3T00:00:00', '2012/1/3T00:00:45'), attrs.Series( 'hmi.M_45s'))
     res = client.wait_get(responses[0])
     assert isinstance(res, Results)
     assert res.total == 2
