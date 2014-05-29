@@ -45,7 +45,7 @@ def compare_results(expect, result, testmessg):
     exp = expect[1:-1, 1:-1]
     res = result[1:-1, 1:-1]
     print 'Testing', testmessg, '...'#,
-    print exp.mean(), res.mean()
+    print exp.mean(), res.mean(), abs(exp.mean() - res.mean())
     assert abs(exp.mean() - res.mean()) <= rtol*exp.mean()
     assert np.allclose(exp, res, rtol=rtol)
     print 'Passed'
@@ -182,22 +182,31 @@ def test_all(scale_factor=0.5):
     scale = tf.rescale(original, scale_factor, order=4, mode='constant') * original.max()
     new = np.zeros(original.shape)
     # Old width and new centre of image
-    w = np.array(scale.shape)
-    new_c = (np.array(scale.shape)/2.0 - 0.5)
-    im_min = rotation_center - new_c
+    w = np.array(original.shape[0])/2.0 - 0.5
+    new_c = (np.array(scale.shape[0])/2.0 - 0.5)
+    upper = w+new_c+1
     if scale_factor > 1:
-        new = scale[new_c-w:new_c+w, new_c-w:new_c+w]
+        lower = new_c-w
+        new = scale[lower:upper, lower:upper]
     else:
-        new[im_min[0]:w[0]+im_min[0], im_min[1]:w[1]+im_min[1]] = scale
-    shift = np.zeros(new.shape)
-    #expected[:-20, 100:] = original[20:, :-100]
-    #rcen = rotation_center + np.array([100, -20])
-    disp = np.dot(rmatrix, np.array([100, -20]))
-    shift[:disp[1], disp[0]:] = new[-disp[1]:, :-disp[0]]
+        lower = w-new_c
+        new[lower:upper, lower:upper] = scale
+    disp = np.array([100, -20])
     rcen = rotation_center + disp
-    rot = np.rot90(shift)
-    expected = rot
+    rot = np.rot90(new)
+    shift = np.zeros(rot.shape)
+    shift[:disp[1], disp[0]:] = rot[-disp[1]:, :-disp[0]]
+    expected = shift
     rotscaleshift = aff(original, rmatrix=rmatrix, scale=scale_factor, recenter=True, rotation_center=rcen)
+    w = np.array(expected.shape[0])/2.0 - 0.5
+    new_c = (np.array(rotscaleshift.shape[0])/2.0 - 0.5)
+    upper = w+new_c+1
+    if scale_factor > 1:
+        lower = new_c-w
+        expected = rotscaleshift[lower:upper, lower:upper]
+    else:
+        lower = w-new_c
+        expected[lower:upper, lower:upper] = rotscaleshift
     diff = abs(expected-rotscaleshift)
     plot_results(expected, rotscaleshift, diff)
     compare_results(expected, rotscaleshift, 'combined rotation, scaling and translation')
@@ -211,9 +220,10 @@ def test_all(scale_factor=0.5):
     rcen = rotation_center + np.array([20, -100])
     transformed = aff(original, rmatrix=rmatrix, scale=scale_factor, recenter=True, rotation_center=rcen)
     angle = np.radians(20.0)
+    rcen = rotation_center - (np.dot(rmatrix, np.array([20, -100]) / scale_factor))
     c = np.cos(angle); s = np.sin(angle)
     rmatrix = np.array([[c, s], [-s, c]])
-    inverse = aff(transformed, rmatrix=rmatrix, scale=scale_factor, recenter=True, rotation_center=rotation_center)
+    inverse = aff(transformed/transformed.max(), rmatrix=rmatrix, scale=1.0/scale_factor, recenter=True, rotation_center=rcen) * transformed.max()
     diff = abs(original-inverse)
     plot_results(original, inverse, diff)
     compare_results(original, inverse, 'combined rotation, scaling and translation')
@@ -225,7 +235,7 @@ def alltests():
         test_rotation()
         test_shift()
         test_scale()
-        test_all(1.0)
+        test_all()
     except AssertionError:
         print 'Failed'
         plt.show()
