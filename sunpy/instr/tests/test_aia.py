@@ -3,12 +3,9 @@ from __future__ import absolute_import
 import sunpy
 from sunpy.instr.aia import aiaprep
 from sunpy.image.tests.test_rotate import alltests as test_rotation
-import numpy as np
 import matplotlib.pyplot as plt
-import skimage.data as images
-import datetime as dt
 
-# Define test image first so it's accessable to all functions.
+"""# Define test image first so it's accessable to all functions.
 data = images.camera()
 # An entirely made up test header.
 header = {'cdelt1': 0.6,
@@ -21,19 +18,22 @@ header = {'cdelt1': 0.6,
           'naxis': 2,
           'naxis1': data.shape[1],
           'naxis2': data.shape[0],
-          'date-obs': sunpy.time.parse_time(dt.datetime.now())}
-original = sunpy.map.Map(data, header)
+          'date-obs': sunpy.time.parse_time(dt.datetime.now())}"""
+#original = sunpy.map.Map(data, header)
+original = sunpy.map.Map('aiaprep_test_image.fits')
 
 
 def test_aiaprep():
     # Test that the affine transformation is working first
     test_rotation()
     
+    print 'Prepping AIA test image'
+    prep_map = aiaprep(original)
+
     # Test that header info for the map has been correctly updated
     # Check all of these for Map attributes and .meta values?
     # Also may be worth checking they stay the same when saved, I'm sure I've had issues with that before.
     print 'Testing header values ...',
-    prep_map = aiaprep(original)
     # Check crpix values
     assert prep_map.meta['crpix1'] == prep_map.shape[1]/2.0 - 0.5
     assert prep_map.meta['crpix2'] == prep_map.shape[1]/2.0 - 0.5
