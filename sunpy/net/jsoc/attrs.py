@@ -2,17 +2,17 @@ from __future__ import absolute_import
 from sunpy.net.attr import (Attr, AttrWalker, AttrAnd, AttrOr )
 from sunpy.net.vso.attrs import Time, _VSOSimpleAttr
 
-__all__ = ['series', 'protocol','notify','compression','walker']
-class series(_VSOSimpleAttr):
+__all__ = ['Series', 'Protocol','Notify','Compression','walker']
+class Series(_VSOSimpleAttr):
     pass
 
-class protocol(_VSOSimpleAttr):
+class Protocol(_VSOSimpleAttr):
     pass
 
-class notify(_VSOSimpleAttr):
+class Notify(_VSOSimpleAttr):
     pass 
 
-class compression(_VSOSimpleAttr):
+class Compression(_VSOSimpleAttr):
     pass
 
 walker = AttrWalker()
@@ -33,7 +33,7 @@ def _apply(wlk,query,imap):
 @walker.add_applier(_VSOSimpleAttr)
 def _apply(wlk,query,imap):
 
-    imap[query.__class__.__name__] = query.value
+    imap[query.__class__.__name__.lower()] = query.value
 
 @walker.add_applier(Time)
 def _apply(wlk,query,imap):
