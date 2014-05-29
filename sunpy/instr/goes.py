@@ -663,6 +663,108 @@ def rad_loss_rate(goeslc, download=False):
 
     return goeslc_new
 
+def calc_rad_loss(temp, em, obstime=None):
+    """
+    Finds radiative loss rate of solar SXR plasma over all wavelengths.
+
+    This function calculates the luminosity of solar coronal soft
+    X-ray-emitting plasma across all wavelengths given an isothermal
+    temperature and emission measure.  The units of the results are
+    erg/s.  This function is based on calc_rad_loss.pro in SSW IDL.
+    In addition, if obstime keyword is set, giving the times to which
+    the temperature and emission measure values correspond, the
+    radiated losses integrated over time are also calculated.
+
+    Parameters
+    ----------
+    temp : numpy ndarray, dtype=float, units=[MK]
+           Array containing the temperature of the coronal plasma at
+           different times.
+    em : numpy ndarray, dtype=float, units=[cm**-3]
+         Array containing the emission measure of the coronal plasma
+         at the same times corresponding to the temperatures in temp.
+         Must be same length as temp
+    obstime : numpy array, dtype=datetime64, optional
+              array of measurement times to which temperature and
+              emission measure values correspond.  Must be same length
+              as temp and em.  If this keyword is set, the integrated
+              radiated energy is calculated.
+
+    Returns
+    -------
+    radlossrate : numpy ndarray, dtype=float
+                  Array containing radiative loss rates of the coronal
+                  plasma corresponding to temperatures and emission
+                  measures in temp and em arrays.
+
+    Notes
+    -----
+    This function calls a csv file containing a table of radiative loss
+    rate per unit emission measure at various temperatures.  The
+    appropriate values are then found via interpolation.
+    This table was generated using CHIANTI atomic physics database
+    employing the methods of Cox & Tucker (1969).  Coronal abundances,
+    default density of 10**10 cm**-3, and ionization equilibrium of
+    Mazzotta et al. (1998) were used.
+
+    Examples
+    --------
+    >>> temp = np.array([11.28295376, 11.28295376])
+    >>> em = np.array([4.78577516e+48, 4.78577516e+48])
+    >>> rad_loss = calc_rad_loss(temp, em)
+    >>> rad_loss
+    array([  3.57994116e+26,   3.57994116e+26])
+    """
+
+    # Check inputs are correct
+    exceptions.check_float(temp, varname="temp") # Check temp type
+    exceptions.check_float(em, varname="em") # Check em type
+
+    # Initialize lists to hold model data of temperature - rad loss rate
+    # relationship read in from csv file
+    modeltemp = [] # modelled temperature is in log_10 sapce in units of MK
+    model_loss_rate = []
+
+    # Read data from csv file into lists, being sure to skip commented
+    # lines begining with "#"
+    with open(os.path.join(INSTR_FILES_PATH, "chianti_rad_loss.csv"),
+              "r") as csvfile:
+        startline = dropwhile(lambda l: l.startswith("#"), csvfile)
+        csvreader = csv.DictReader(startline, delimiter=";")
+        for row in csvreader:
+            modeltemp.append(float(row["temp_K"]))
+            model_loss_rate.append(float(row["rad_loss_rate_per_em"]))
+    modeltemp = np.array(modeltemp)
+    model_loss_rate = np.array(model_loss_rate)
+    # Ensure input values of flux ratio are within limits of model table
+    if np.min(temp*1e6) < np.min(modeltemp) or
+        np.max(temp*1e6) > np.max(modeltemp):
+        raise ValueError("All values in temp must be within the range " +
+                         "{0} - {1} MK.".format(np.min(modeltemp/1e6),
+                                                np.max(modeltemp/1e6)))
+    # Perform spline fit to model data to get temperatures for input
+    # values of flux ratio
+    spline = interpolate.splrep(modeltemp, model_loss_rate, s=0)
+    rad_loss_rate = em * interpolate.splev(temp*1e6, spline, der=0)
+
+    # If obstime keyword giving measurement times is set, calculate
+    # radiative losses intergrated over time.
+    if obstime is not None:
+        dt = _time_intervals(obstime)
+        # Check that times are in chronological order
+        if np.min(dt) <= 0:
+            raise ValueError("times in obstime must be in " +
+                             "chronological order.")
+        rad_loss_int = np.sum(rad_loss_rate*dt)
+        rad_loss_out = {"temperature":temp, "em":em,
+                        "rad_loss_rate":rad_loss_rate, "time": obstime,
+                        "rad_loss_int":rad_loss_int}
+    else:
+        rad_loss_out = {"temperature":temp, "em":em,
+                        "rad_loss_rate":rad_loss_rate}
+
+    return rad_loss_out
+
 def _check_download_file(filename, remotepath, localpath=os.path.curdir,
                          remotename=None, force_download=False):
     """
