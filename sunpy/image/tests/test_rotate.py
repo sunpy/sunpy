@@ -170,23 +170,6 @@ def test_scale(scale_factor=0.5):
     plot_results(expected, scale, diff)
     compare_results(expected, scale, 'scaling')
     plt.close()
-    
-    # Check a scaled and descaled image against the original
-    print scale_factor, 1.0/scale_factor
-    scale = aff(original, rmatrix=rmatrix, scale=scale_factor, recenter=True, rotation_center=rotation_center)
-    descale = aff(scale/scale.max(), rmatrix=rmatrix, scale=1.0/scale_factor, recenter=True, rotation_center=rotation_center) * scale.max()
-    diff = abs(original-descale)
-    if scale_factor > 1:
-        # Need to ignore the parts of the image cropped by the initial scaling
-        scl_w = (original.shape[0]/2.0 - 0.5)/scale_factor
-        lower = w-scl_w
-        upper = w+scl_w+1
-        plot_results(original[lower:upper, lower:upper], descale[lower:upper, lower:upper], diff[lower:upper, lower:upper])
-        compare_results(original[lower:upper, lower:upper], descale[lower:upper, lower:upper], 'scaling and inverse scaling')
-    else:
-        plot_results(original, descale, diff)
-        compare_results(original, descale, 'scaling and inverse scaling')
-    plt.close()
 
 
 def test_all(scale_factor=0.5):
@@ -241,7 +224,7 @@ def alltests():
     try:
         test_rotation()
         test_shift()
-        test_scale(1.0)
+        test_scale()
         test_all(1.0)
     except AssertionError:
         print 'Failed'
