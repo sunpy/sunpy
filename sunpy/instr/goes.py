@@ -663,7 +663,7 @@ def rad_loss_rate(goeslc, download=False):
 
     return goeslc_new
 
-def calc_rad_loss(temp, em, obstime=None):
+def calc_rad_loss(temp, em, obstime=None, Download=False):
     """
     Finds radiative loss rate of solar SXR plasma over all wavelengths.
 
@@ -677,22 +677,33 @@ def calc_rad_loss(temp, em, obstime=None):
 
     Parameters
     ----------
-    temp : numpy ndarray, dtype=float, units=[MK]
+    temp : ndarray or array-like which can be converted to float64
+           type, such as an np.array, tuple, list.  Units=[MK]
            Array containing the temperature of the coronal plasma at
            different times.
-    em : numpy ndarray, dtype=float, units=[cm**-3]
+    em : ndarray or array-like which can be converted to float64 type,
+         such as an np.array, tuple, list.  Units=[cm**-3]
          Array containing the emission measure of the coronal plasma
          at the same times corresponding to the temperatures in temp.
          Must be same length as temp
-    obstime : numpy array, dtype=datetime64, optional
-              array of measurement times to which temperature and
+    obstime : (optional) ndaray array or array-like whose entries are
+              (or can be converted to) datetime64 type, e.g. np.array,
+              list, string array.
+              Array of measurement times to which temperature and
               emission measure values correspond.  Must be same length
               as temp and em.  If this keyword is set, the integrated
               radiated energy is calculated.
+    download : (optional) bool
+               If True, the GOES temperature data files are
+               downloaded.  It is important to do this if a new version
+               of the files has been generated due to a new CHIANTI
+               version being released or the launch of new GOES
+               satellites since these files were originally downloaded.
+               Default=False
 
     Returns
     -------
-    radlossrate : numpy ndarray, dtype=float
+    radlossrate : numpy ndarray, dtype=float, units=[erg]
                   Array containing radiative loss rates of the coronal
                   plasma corresponding to temperatures and emission
                   measures in temp and em arrays.
@@ -717,8 +728,8 @@ def calc_rad_loss(temp, em, obstime=None):
     """
 
     # Check inputs are correct
-    exceptions.check_float(temp, varname="temp") # Check temp type
-    exceptions.check_float(em, varname="em") # Check em type
+    temp = np.asanyarray(temp, dtype=np.float64)
+    em = np.asanyarray(em, dtype=np.float64)
 
     # Initialize lists to hold model data of temperature - rad loss rate
     # relationship read in from csv file
@@ -734,8 +745,8 @@ def calc_rad_loss(temp, em, obstime=None):
         for row in csvreader:
             modeltemp.append(float(row["temp_K"]))
             model_loss_rate.append(float(row["rad_loss_rate_per_em"]))
-    modeltemp = np.array(modeltemp)
-    model_loss_rate = np.array(model_loss_rate)
+    modeltemp = np.asarray(modeltemp)
+    model_loss_rate = np.asarray(model_loss_rate)
     # Ensure input values of flux ratio are within limits of model table
     if np.min(temp*1e6) < np.min(modeltemp) or
         np.max(temp*1e6) > np.max(modeltemp):
