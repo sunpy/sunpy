@@ -30,12 +30,12 @@ def aiaprep(aiamap):
     s = np.sin(angle)
     rmatrix = np.array([[c, s], [-s, c]])
 
-    rotation_center = aiamap.reference_pixel['y'], aiamap.reference_pixel['x']
+    map_center = aiamap.reference_pixel['y'], aiamap.reference_pixel['x']
 
     newmap = deepcopy(aiamap)
     data = aiamap.data.copy()
     newmap.data = affine_transform(data/data.max(), rmatrix=rmatrix, recenter=True,
-                                   scale=scale_factor, rotation_center=rotation_center,
+                                   scale=scale_factor, rotation_center=map_center,
                                    missing=aiamap.min(), interp_type='bicubic') * data.max()
 
     # Update header values as needed

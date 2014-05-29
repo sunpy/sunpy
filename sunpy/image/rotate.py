@@ -13,7 +13,7 @@ __all__ = ['affine_transform']
 
 #TODO: Add functionality to specify interpolation method and missing value
 def affine_transform(image, rmatrix=None, angle=None, scale=1.0,
-                     rotation_center=None, recenter=True, scipy=False,
+                     rotation_center=None, recenter=False, scipy=False,
                      missing=0.0, interp_type='biquartic', interp_param=None):
     """    
     Rotates and shifts an image using an affine transform. Intended to replace Map.rotate().
