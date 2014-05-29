@@ -93,6 +93,7 @@ def test_process_time_astropy_tai():
     start = client._process_time(astropy.time.Time('2012-01-01T00:00:00', format='isot', scale='tai'))
     assert start == datetime.datetime(year=2012, month=1, day=1, second=0)
 
+@pytest.mark.online
 def test_status_request():
     r = client._request_status('none')
     assert r.json() == {u'status': 4, u'error': u"Bad RequestID 'none' provided."}

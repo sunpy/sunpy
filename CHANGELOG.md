@@ -13,7 +13,13 @@ Latest
  * Added support for NOAA solar cycle prediction in lightcurves
  * Fix algorithm in sunpy.sun.equation_of_center
  * Added Docstrings to LightCurve methods.
+<<<<<<< HEAD
  * Added tests for classes in sunpy.map.sources. Note that some classes (TRACE, RHESSI) were left out because SunPy is not able to read their FITS files.
+=======
+ * Added functions that implement image coalignment with support for MapCubes. 
+ * Cleaned up the sunpy namespace, removed .units, /ssw and .sphinx. Also moved .coords .physics.transforms. 
+ * Added contains functionality to TimeRange module
+>>>>>>> upstream/master
 
 0.4.0
 -----
