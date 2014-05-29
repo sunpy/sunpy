@@ -43,7 +43,7 @@ def compare_results(expect, result, testmessg):
     # Outermost pixels can contain artefacts which will be ignored.
     exp = expect[1:-1, 1:-1]
     res = result[1:-1, 1:-1]
-    print 'Testing', testmessg, '...'#,
+    print 'Testing', testmessg, '...',
     assert abs(exp.mean() - res.mean()) <= rtol*exp.mean()
     assert np.allclose(exp, res, rtol=rtol)
     print 'Passed'
