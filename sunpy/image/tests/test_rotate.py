@@ -4,7 +4,6 @@ from sunpy.image.rotate import affine_transform as aff
 import numpy as np
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
-from matplotlib import patches
 from skimage import transform as tf
 import skimage.data as images
 
@@ -45,7 +44,6 @@ def compare_results(expect, result, testmessg):
     exp = expect[1:-1, 1:-1]
     res = result[1:-1, 1:-1]
     print 'Testing', testmessg, '...'#,
-    print exp.mean(), res.mean(), abs(exp.mean() - res.mean())
     assert abs(exp.mean() - res.mean()) <= rtol*exp.mean()
     assert np.allclose(exp, res, rtol=rtol)
     print 'Passed'
@@ -212,21 +210,23 @@ def test_all(scale_factor=0.5):
     compare_results(expected, rotscaleshift, 'combined rotation, scaling and translation')
     plt.close()
 
-    # Check a prepped and de-prepped shape against original image
-    angle = np.radians(-20.0)
+    # Check a rotated/shifted and restored image against original
+    angle = np.radians(-90.0)
     rotation_center = np.array(original.shape)/2.0 - 0.5
     c = np.cos(angle); s = np.sin(angle)
     rmatrix = np.array([[c, s], [-s, c]])
     rcen = rotation_center + np.array([20, -100])
-    transformed = aff(original, rmatrix=rmatrix, scale=scale_factor, recenter=True, rotation_center=rcen)
-    angle = np.radians(20.0)
-    rcen = rotation_center - (np.dot(rmatrix, np.array([20, -100]) / scale_factor))
+    transformed = aff(original, rmatrix=rmatrix, scale=1.0, recenter=True, rotation_center=rcen)
+    angle = np.radians(90.0)
+    rcen = rotation_center - np.dot(rmatrix, np.array([20, -100]))
     c = np.cos(angle); s = np.sin(angle)
     rmatrix = np.array([[c, s], [-s, c]])
-    inverse = aff(transformed/transformed.max(), rmatrix=rmatrix, scale=1.0/scale_factor, recenter=True, rotation_center=rcen) * transformed.max()
+    inverse = aff(transformed/transformed.max(), rmatrix=rmatrix, scale=1.0, recenter=True, rotation_center=rcen) * transformed.max()
     diff = abs(original-inverse)
     plot_results(original, inverse, diff)
-    compare_results(original, inverse, 'combined rotation, scaling and translation')
+    # Need to ignore the portion of the image cut off by the first shift
+    # (which isn't the portion you'd expect, because of the rotation)
+    compare_results(original[:-20,:-100], inverse[:-20,:-100], 'combined rotation, scaling and translation')
     plt.close()
 
 
