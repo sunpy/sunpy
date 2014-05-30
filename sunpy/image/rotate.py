@@ -55,9 +55,9 @@ def affine_transform(image, rmatrix=None, angle=None, scale=1.0,
         else:
             interp_param = 0
 
-    # A rename to make things clearer.
+    # A rename to make things clearer. Also make sure it's an array
     # TODO: Deal with this properly and change it in the keywords
-    image_center = rotation_center
+    image_center = np.array(rotation_center)
     rmatrix = rmatrix / scale
     array_center = (np.array(image.shape)-1)/2.0
     if recenter == True:
@@ -65,9 +65,8 @@ def affine_transform(image, rmatrix=None, angle=None, scale=1.0,
     elif recenter == False:
         rot_center = image_center
 
-    displacement = np.array([rmatrix[0,0]*image_center[1] + rmatrix[1,0]*image_center[0],
-                        rmatrix[0,1]*image_center[1] + rmatrix[1,1]*image_center[0]])
-    shift = rot_center - displacement
+    displacement = np.dot(rmatrix, image_center)
+    shift = displacement - rot_center
 
     if interp_type == 'spline':
         # This is the scipy call
@@ -78,7 +77,7 @@ def affine_transform(image, rmatrix=None, angle=None, scale=1.0,
         skmatrix = np.zeros((3, 3))
         skmatrix[:2, :2] = rmatrix
         skmatrix[2, 2] = 1.0
-        skmatrix[:2, 2] = [shift[1], shift[0]]
+        skmatrix[:2, 2] = shift
         order = interps.index(interp_type)
         im_max = image.max()
         tform = sk.AffineTransform(skmatrix)

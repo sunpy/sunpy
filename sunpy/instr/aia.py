@@ -30,7 +30,7 @@ def aiaprep(aiamap):
     s = np.sin(angle)
     rmatrix = np.array([[c, s], [-s, c]])
 
-    map_center = aiamap.reference_pixel['y'], aiamap.reference_pixel['x']
+    map_center = aiamap.reference_pixel['x'], aiamap.reference_pixel['y']
 
     newmap = deepcopy(aiamap)
     data = aiamap.data.copy()
