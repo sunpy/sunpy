@@ -196,20 +196,28 @@ class TestGenericMap:
 
     def test_rotate(self):
 
-        rotated_map_1 = self.map.rotate(0.5)
-        rotated_map_2 = rotated_map_1.rotate(0.5)
-        rotated_map_3 = self.map.rotate(0, scale=1.5)
-        rotated_map_4 = self.map.rotate(np.pi/2, scale=1.5)
-        rotated_map_5 = self.map.rotate(np.pi, scale=1.5)
+        rotated_map_1 = self.map.rotate(20)
+        rotated_map_2 = rotated_map_1.rotate(20)
+        assert rotated_map_2.center == rotated_map_1.center == self.map.center
         assert rotated_map_2.shape == rotated_map_1.shape == self.map.shape
-        assert dict(rotated_map_2.meta) == dict(rotated_map_1.meta) == dict(self.map.meta)
-        # Rotation of a map by non-integral multiple of pi/2 cuts off the corners
+        assert rotated_map_1.rotation_angle['y'] == self.map.rotation_angle['y']-20
+        assert rotated_map_2.rotation_angle['y'] == self.map.rotation_angle['y']-40
+        # Rotation of a square map by non-integral multiple of 90 degrees cuts off the corners
         # and assigns the value of 0 to corner pixels. This results in reduction
         # of the mean and an increase in standard deviation.
         assert rotated_map_2.mean() < rotated_map_1.mean() < self.map.mean()
         assert rotated_map_2.std() > rotated_map_1.std() > self.map.std()
+
+        rotated_map_3 = self.map.rotate(0, scale=1.5)
         assert rotated_map_3.mean() > self.map.mean()
+
         # Mean and std should be equal when angle of rotation is integral multiple
-        # of pi/2
+        # of 90 degrees for a square map
+        rotated_map_4 = self.map.rotate(90, scale=1.5)
+        rotated_map_5 = self.map.rotate(180, scale=1.5)
         assert int(rotated_map_3.mean()) == int(rotated_map_4.mean()) == int(rotated_map_5.mean())
         assert int(rotated_map_3.std()) == int(rotated_map_4.std()) == int(rotated_map_5.std())
+
+        # Check recentering
+        rotated_map_6 = self.map.rotate(20, rotation_center=(200, 100), recenter=True)
+        assert rotated_map_6.center == {'y': 100, 'x': 200 }

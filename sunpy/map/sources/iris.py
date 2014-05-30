@@ -56,12 +56,10 @@ class IRISMap(GenericMap):
 
         cords = np.matrix([[self.meta['pc1_1'], self.meta['pc1_2']],
                            [self.meta['pc2_1'], self.meta['pc2_2']]])
-        center = [self.meta['CRPIX1'], self.meta['CRPIX2']]
 
         #Return a new map
-        img2 = self.rotate(rmatrix=cords, rotation_center=center,
-                           recenter=False, missing=missing,
-                           interpolation=interpolation,
+        img2 = self.rotate(rmatrix=cords, recenter=False,
+                           missing=missing, interpolation=interpolation,
                            interp_param=interp_param)
 
         # modify the header to show the fact it's been corrected

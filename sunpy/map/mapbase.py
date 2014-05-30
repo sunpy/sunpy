@@ -503,29 +503,35 @@ class GenericMap(astropy.nddata.NDData):
         new_map.meta = new_meta
         return new_map
 
-    def rotate(self, angle=None, rmatrix=None, scale=1.0,
-               rotation_center=None, recenter=True,
+def rotate(self, angle=None, rmatrix=None, scale=1.0,
+               rotation_center=(0, 0), recenter=False,
                missing=0.0, interpolation='bicubic', interp_param=-0.5):
-        """Returns a new rotated, rescaled and shifted map.
+        """Returns a new rotated and rescaled map.  Specify either a rotation
+        angle or a rotation matrix, but not both.  If neither an angle or a
+        rotation matrix are specified, the map will be rotated by the rotation
+        angle in the metadata.
+
+        If the rotation is specified as an angle (either explicitly or
+        implicitly) and the metadata contains the CROTA2 keyword, that keyword
+        will be changed appropriately to account for the rotation.
 
         Parameters
         ----------
         angle: float
-           The angle to rotate the image by (radians). Specify angle or matrix.
+            The angle (degrees) to rotate counterclockwise.
         rmatrix: NxN
-            Linear transformation rotation matrix. Specify angle or matrix.
+            Linear transformation rotation matrix.
         scale: float
-           A scale factor for the image, default is no scaling
+            A scale factor for the image, default is no scaling
         rotation_center: tuple
-           The point in the image to rotate around (Axis of rotation).
-           Default: center of the array
-        recenter: bool, or array-like
-           Move the centroid (axis of rotation) to the center of the array
-           or recenter coords.
-           Default: True, recenter to the center of the array.
+            The axis of rotation
+            Default: the origin in the data coordinate system
+        recenter: bool
+            If True, position the axis of rotation at the center of the new map
+            Default: False
         missing: float
-           The numerical value to fill any missing points after rotation.
-           Default: 0.0
+            The numerical value to fill any missing points after rotation.
+            Default: 0.0
         interpolation: {'nearest' | 'bilinear' | 'spline' | 'bicubic'}
             Interpolation method to use in the transform.
             Spline uses the
@@ -543,7 +549,7 @@ class GenericMap(astropy.nddata.NDData):
 
         Returns
         -------
-        New rotated, rescaled, translated map
+        New rotated and rescaled map
 
         Notes
         -----
@@ -554,7 +560,11 @@ class GenericMap(astropy.nddata.NDData):
         http://sunpy.readthedocs.org/en/latest/guide/troubleshooting.html#crotate-warning
         """
         assert angle is None or rmatrix is None
+<<<<<<< HEAD
         # Interpolation parameter Sanity
+=======
+        # Interpolation parameter sanity
+>>>>>>> upstream/master
         assert interpolation in ['nearest', 'spline', 'bilinear', 'bicubic']
         # Set defaults based on interpolation
         if interp_param is None:
@@ -563,15 +573,22 @@ class GenericMap(astropy.nddata.NDData):
             elif interpolation is 'bicubic':
                 interp_param = 0.5
             else:
+<<<<<<< HEAD
                 interp_param = 0  # Default value for nearest or bilinear
 
         #Make sure recenter is a vector with shape (2,1)
         if not isinstance(recenter, bool):
             recenter = np.array(recenter).reshape(2, 1)
+=======
+                interp_param = 0 # Default value for nearest or bilinear
 
-        #Define Size and center of array
-        center = (np.array(self.data.shape)-1)/2.0
+        image = self.data.copy()
+>>>>>>> upstream/master
 
+        if angle is None and rmatrix is None:
+            angle = self.rotation_angle['y']
+
+<<<<<<< HEAD
         #If rotation_center is not set (None or False),
         #set rotation_center to the center of the image.
         if rotation_center is None:
@@ -579,17 +596,28 @@ class GenericMap(astropy.nddata.NDData):
         else:
             #Else check rotation_center is a vector with shape (2, 1)
             rotation_center = np.array(rotation_center).reshape(2, 1)
+=======
+        if not angle is None:
+            #Calulate the parameters for the affine_transform
+            c = np.cos(np.deg2rad(angle))
+            s = np.sin(np.deg2rad(angle))
+            rsmat = np.array([[c, -s], [s, c]]) / scale
+        if not rmatrix is None:
+            rsmat = np.asarray(rmatrix) / scale
+>>>>>>> upstream/master
 
-        #recenter to the rotation_center if recenter is True
-        if isinstance(recenter, bool):
-            #if rentre is False then this will be (0,0)
-            shift = np.array(rotation_center) - np.array(center)
+        # map_center is swapped compared to the x-y convention
+        map_center = (np.array(self.data.shape)-1)/2.0
+
+        # axis is swapped compared to the x-y convention
+        if recenter:
+            axis_x = self.data_to_pixel(rotation_center[0], 'x')
+            axis_y = self.data_to_pixel(rotation_center[1], 'y')
+            axis = (axis_y, axis_x)
         else:
-            #recenter to recenter vector otherwise
-            shift = np.array(recenter) - np.array(center)
+            axis = map_center
 
-        image = self.data.copy()
-
+<<<<<<< HEAD
         if not angle is None:
             #Calulate the parameters for the affline_transform
             c = np.cos(angle)
@@ -602,6 +630,10 @@ class GenericMap(astropy.nddata.NDData):
         kpos = center - np.dot(mati, (center + shift))
         # kpos and mati are the two transform constants, kpos is a 2x2 array
         rsmat, offs = mati, np.squeeze((kpos[0, 0], kpos[1, 0]))
+=======
+        # offs is swapped compared to the x-y convention
+        offs = axis - np.dot(rsmat, map_center)
+>>>>>>> upstream/master
 
         if interpolation == 'spline':
             # This is the scipy call
@@ -612,7 +644,11 @@ class GenericMap(astropy.nddata.NDData):
             #Use C extension Package
             if not 'Crotate' in globals():
                 warnings.warn("""The C extension sunpy.image.Crotate is not
+<<<<<<< HEAD
 installed, falling back to the interpolation='spline' of order=3""", Warning)
+=======
+installed, falling back to the interpolation='spline' of order=3""" ,Warning)
+>>>>>>> upstream/master
                 data = interp.affine_transform(image, rsmat, offset=offs,
                                                order=3, mode='constant',
                                                cval=missing)
@@ -638,6 +674,25 @@ installed, falling back to the interpolation='spline' of order=3""", Warning)
 
         # Create new map instance
         new_map.data = data
+
+        if recenter:
+            new_center = rotation_center
+        else:
+            # Retrieve old coordinates for the center of the array
+            old_center = np.array(new_map.pixel_to_data(map_center[1], map_center[0]))
+
+            # Calculate new coordinates for the center of the array
+            new_center = rotation_center - np.dot(rsmat, rotation_center - old_center)
+
+        # Define a new reference pixel in the rotated space
+        new_map.meta['crval1'] = new_center[0]
+        new_map.meta['crval2'] = new_center[1]
+        new_map.meta['crpix1'] = map_center[1] + 1 # FITS counts pixels from 1
+        new_map.meta['crpix2'] = map_center[0] + 1 # FITS counts pixels from 1
+
+        if angle is not None and new_map.meta.get('crota2') is not None:
+            new_map.meta['crota2'] = new_map.rotation_angle['y'] - angle
+
         return new_map
 
     def submap(self, range_a, range_b, units="data"):
