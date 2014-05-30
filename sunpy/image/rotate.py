@@ -55,11 +55,14 @@ def affine_transform(image, rmatrix=None, angle=None, scale=1.0,
         else:
             interp_param = 0
 
-    # A rename to make things clearer. Also make sure it's an array
-    # TODO: Deal with this properly and change it in the keywords
-    image_center = np.array(rotation_center)
     rmatrix = rmatrix / scale
     array_center = (np.array(image.shape)-1)/2.0
+    # A rename to make things clearer. Also make sure it's an array
+    # TODO: Deal with this properly and change it in the keywords
+    if rotation_center is not None:
+        image_center = np.array(rotation_center)
+    else:
+        image_center = array_center
     if recenter == True:
         rot_center = array_center
     elif recenter == False:
