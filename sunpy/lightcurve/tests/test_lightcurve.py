@@ -19,15 +19,15 @@ import pandas
 # Generate input test data
 base = datetime.datetime.today()
 dates = [base - datetime.timedelta(minutes=x) for x in range(0, 24 * 60)]
-
+base_input = np.arange(24 * 60)
 
 @pytest.mark.parametrize(("data", "index"), [
-    (range(24 * 60), dates),
-    (np.arange(24 * 60), dates),
-    ({"param": range(24 * 60)}, dates),
-    ({"instr1": range(24*60), "instr2": range(24*60), "instr3": range(24*60)}, dates),
-    ([{'instr1': x, 'instr2': x+1, 'instr3': x+2} for x in range(24*60)], dates),
-    (pandas.Series(range(24*60)), dates),
+    (base_input, dates),
+    (base_input, dates),
+    ({"param": base_input}, dates),
+    ({"instr1": base_input, "instr2": base_input, "instr3": base_input}, dates),
+    ([{'instr1': x, 'instr2': x+1, 'instr3': x+2} for x in base_input], dates),
+    (pandas.Series(base_input), dates),
 
 ])
 def test_input(data, index):
@@ -37,7 +37,7 @@ def test_input(data, index):
     assert isinstance(lc.data, pandas.DataFrame)
     assert len(lc.data.index) == 24*60
     assert lc.data.index[0] == base
-    assert lc.data.index[-1] == base - datetime.timedelta(minutes=24*60-1)
+    assert lc.data.index[-1] == base - datetime.timedelta(minutes=24 * 60 - 1)
 
 
 @pytest.mark.parametrize(("bad_input"), [
