@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Provides programs to process and analyze GOES data."""
+"""Provides programs to process and analyze GOES X-ray data."""
 from __future__ import absolute_import
 
 import datetime
@@ -20,7 +20,8 @@ __all__ = ['GOESLightCurve']
 
 class GOESLightCurve(GenericLightCurve):
     """
-    GOES LightCurve.
+    GOES X-ray LightCurve. Provides GOES data back to 1981-01-01. Most recent data is
+    usually available one or two days late.
 
     Examples
     --------
@@ -32,8 +33,7 @@ class GOESLightCurve(GenericLightCurve):
 
     References
     ----------
-    | http://www.ngdc.noaa.gov/goes/sem
-    | http://www.ngdc.noaa.gov/goes/sem/getData/goes15
+    | http://umbra.nascom.nasa.gov/goes/fits/
     """
 
     def peek(self, title="GOES Xray Flux", **kwargs):
@@ -46,7 +46,7 @@ class GOESLightCurve(GenericLightCurve):
         axes.plot_date(dates, self.data['A_FLUX'], '-',
                      label='0.5--4.0 $\AA$', color='blue', lw=2)
         axes.plot_date(dates, self.data['B_FLUX'], '-',
-                     label='1.0--8.0 $\AA$', color='red', lw=2)
+	             label='1.0--8.0 $\AA$', color='red', lw=2)
 
         axes.set_yscale("log")
         axes.set_ylim(1e-9, 1e-2)
@@ -74,83 +74,47 @@ class GOESLightCurve(GenericLightCurve):
 
         return figure
 
-    @staticmethod
-    def _read_file(filepath):
-        header = MapMeta()
-
-        #csv files downloaded from the goes archive have a big header find it
-        data_start = 0
-        fp = open(filepath, 'rb')
-        lines = fp.readlines()
-        for i, line in enumerate(lines):
-            if line.find('data:') != -1:
-                data_start = i + 1
-                break
-
-        #read the data
-        data = ascii.read(lines[data_start:])
-        #Find the index that is strings and times:
-        inds = [i for i,v in enumerate(data[0]) if isinstance(v, basestring) if sunpy.time.is_time(v)]
-        if len(inds) != 1:
-            raise IOError("Can not automatically parse file, can't find time column")
-        #Parse time that column
-        index = [sunpy.time.parse_time(v) for v in data[data.keys()[inds[0]]]]
-        #remove that column
-        data.remove_column(data.keys()[inds[0]])
-        #Make a DataFrame
-        data = pandas.DataFrame(np.asarray(data), index=index)
-        
-        #add the header to the header
-        for i,line in enumerate(lines[:data_start]):
-            eqs = line.split('=')
-            if len(eqs) == 1:
-                header.update({str(i): eqs[0]})
-            elif len(eqs) == 2:
-                header.update({eqs[0]: eqs[1]})
-            else:
-                header.update({eqs[0]: "".join(eqs[1:])})
-        
-        return (data, header)
-
+    @classmethod
+    def _get_default_uri(cls):
+        """Retrieve latest GOES data if no other data is specified"""
+        today = datetime.datetime.today()
+        days_back = 3
+        time_range = TimeRange(today - datetime.timedelta(days=days_back), today - datetime.timedelta(days=days_back-1))
+        return cls._get_url_for_date_range(time_range)
 
     @classmethod
-    def _get_goes_sat_num_and_data_type(self,start,end):
-        """Parses the query time to determine which GOES satellite to use and the correct data type
-        The operational times and dataformats are sourced from the GOES SEM API site:
-        http://www.ngdc.noaa.gov/goes/sem/getData"""
-
+    def _get_goes_sat_num(self,start,end):
+        """Parses the query time to determine which GOES satellite to use."""
+       
         goes_operational={
-        5:TimeRange('1986-01-01','1987-03-31'),
-        6:TimeRange('1986-01-01','1994-12-31'),
-        7:TimeRange('1987-03-01','1996-08-31'),
-        8:TimeRange('1995-01-01','2003-06-16'),
-        9:TimeRange('1996-04-01','1998-07-31'),
-        10:TimeRange('1998-07-01','2009-12-31'),
-        11:TimeRange('2000-07-01','2011-02-28'),
-        12:TimeRange('2003-01-01','2010-08-31'),
-        13:TimeRange('2006-08-01','2013-11-19'),
-        14:TimeRange('2009-09-01','2012-11-24'),
-        15:TimeRange('2010-03-26',datetime.datetime.utcnow())}
-
-        goes_dformat={5:'xrs_1m', 6:'xrs_1m', 7:'xrs_1m', 8:'xrs_1m', 9:'xrs_1m', 10:'xrs_1m',
-                      11:'xrs_1m', 12:'xrs_1m',13:'xrs_2s',14:'xrs_2s',15:'xrs_2s'}
-
-        #find out which satellites were available. Start with newest first.
-        for sat_num in range(15,5,-1):
-
+        2:TimeRange('1981-01-01','1983-04-30'),
+        5:TimeRange('1983-05-02','1984-07-31'),
+        6:TimeRange('1983-06-01','1994-08-18'),
+        7:TimeRange('1994-01-01','1996-08-13'),
+        8:TimeRange('1996-03-21','2003-06-18'),
+        9:TimeRange('1997-01-01','1998-09-08'),
+        10:TimeRange('1998-07-10','2009-12-01'),
+        11:TimeRange('2006-06-20','2008-02-15'),
+        12:TimeRange('2002-12-13','2007-05-08'),
+        13:TimeRange('2006-08-01','2006-08-01'),
+        14:TimeRange('2009-12-02','2012-11-04'),
+        15:TimeRange('2010-09-01',datetime.datetime.utcnow())}
+	    
+        sat_list = []
+        for sat_num in goes_operational:
             if ((start > goes_operational[sat_num].start() and start < goes_operational[sat_num].end()) and
                 (end > goes_operational[sat_num].start() and end < goes_operational[sat_num].end())):
-                #if true then the satellite with sat_num is available
-                return sat_num,goes_dformat[sat_num]
-
-
-
-        #if no satellites were found then raise an exception
-        raise Exception, 'No operational GOES satellites found within specified time range'
-
-
-    @classmethod
-    def _get_url_from_timerange(cls, timerange, **kwargs):
+                    #if true then the satellite with sat_num is available
+                    sat_list.append(sat_num)
+    
+        if not sat_list:
+            #if no satellites were found then raise an exception
+            raise Exception, 'No operational GOES satellites within time range'
+        else:
+            return sat_list
+        
+    @staticmethod
+    def _get_url_for_date_range(*args, **kwargs):
         """Returns a URL to the GOES data for the specified date.
 
         Parameters
@@ -165,31 +129,65 @@ class GOESLightCurve(GenericLightCurve):
             types depend on the satellite number specified. (default = xrs_2s)
         """
         # TimeRange
-        start = timerange.start()
-        end = timerange.end()
+       if len(args) == 1 and isinstance(args[0], TimeRange):
+            time_range = args[0]
+            start = args[0].start()
+            end = args[0].end()
+        elif len(args) == 2:
+            # Start & End date
+            start = parse_time(args[0])
+            end = parse_time(args[1])
+            time_range = TimeRange(start, end)
+            if end < start:
+                raise ValueError('start time (argument 1) > end time (argument 2)')
 
         #find out which satellite and datatype to query from the query times
+        sat_num = GOESLightCurve._get_goes_sat_num(start,end)
+        base_url = 'http://umbra.nascom.nasa.gov/goes/fits/'
 
+        if start < parse_time('1999/01/15'):
+            url = (base_url + "%s/go%02d%s.fits") % (start.strftime("%Y"), 
+                sat_num[0], start.strftime("%y%m%d"))
+        else:
+            url = (base_url + "%s/go%02d%s.fits") % (start.strftime("%Y"), 
+                sat_num[0], start.strftime("%Y%m%d"))
+            
+        return url
+        
+    @staticmethod
+    def _parse_fits(filepath):
+        """Parses a GOES FITS file from http://umbra.nascom.nasa.gov/goes/fits/"""
+        fits = pyfits.open(filepath)
+        header = fits[0].header
+        if len(fits) == 4:
+            if is_time_in_given_format(fits[0].header['DATE-OBS'], '%d/%m/%Y'):
+                start_time = datetime.datetime.strptime(fits[0].header['DATE-OBS'], '%d/%m/%Y')
+            elif is_time_in_given_format(fits[0].header['DATE-OBS'], '%d/%m/%y'):
+                start_time = datetime.datetime.strptime(fits[0].header['DATE-OBS'], '%d/%m/%y')
+            else:
+               raise ValueError("Date not recognized")
+            xrsb = fits[2].data['FLUX'][0][:,0]
+            xrsa = fits[2].data['FLUX'][0][:,1]
+            seconds_from_start = fits[2].data['TIME'][0]
+        elif 1 <= len(fits) <= 3:
+            start_time = parse_time(header['TIMEZERO'])
+            seconds_from_start = fits[0].data[0]
+            xrsb = fits[0].data[1]
+            xrsa = fits[0].data[2]
+        else:
+            raise ValueError("Don't know how to parse this file")
+            
+        times = [start_time + datetime.timedelta(seconds = int(floor(s)), 
+                    microseconds = int((s - floor(s))*1e6)) for s in seconds_from_start]
 
-        sat_num, dtype = cls._get_goes_sat_num_and_data_type(start,end)
-        # GOES query parameters
-        params = {
-            "satellite_number": sat_num,
-            "data_type": dtype
-        }
-        params.update(kwargs)
+        # remove bad values as defined in header comments
+        xrsb[xrsb == -99999] = nan
+        xrsa[xrsa == -99999] = nan
 
-        base_url = 'http://www.ngdc.noaa.gov/goes/sem/getData/goes%d/%s.csv'
-        query_str = "?fromDate=%s&toDate=%s&file=true"
-
-        url = (base_url + query_str) % (params['satellite_number'],
-                                        params['data_type'],
-                                        start.strftime("%Y%m%d"),
-                                        end.strftime("%Y%m%d"))
-
-        return [url]
-
-    @classmethod
-    def _is_datasource_for(cls, data, meta, source=None):
-        if source is not None:
-            return source.lower() == 'goes'
+        # fix byte ordering
+        newxrsa = xrsa.byteswap().newbyteorder()
+        newxrsb = xrsb.byteswap().newbyteorder()
+        
+        data = DataFrame({'xrsa': newxrsa, 'xrsb': newxrsb}, index=times)
+        
+        return header, data

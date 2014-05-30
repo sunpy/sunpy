@@ -4,6 +4,7 @@ from __future__ import absolute_import
 
 import datetime
 import urlparse
+import sys
 
 import numpy as np
 from matplotlib import pyplot as plt
@@ -85,8 +86,9 @@ class LYRALightCurve(GenericLightCurve):
 
         """Shows a plot of all four light curves"""
         figure = plt.figure()
+        plt.subplots_adjust(left=0.17,top=0.94,right=0.94,bottom=0.15)
         axes = plt.gca()
-
+        
         axes = self.data.plot(ax=axes, subplots=True, sharex=True, **kwargs)
         #plt.legend(loc='best')
 
@@ -94,11 +96,13 @@ class LYRALightCurve(GenericLightCurve):
             if names < 3:
                 name = lyranames[names][i]
             else:
-                name = lyranames[0][i] + ' (' + lyranames[1][i] + ')'
-            axes[i].set_ylabel("%s (%s)" % (name, "W/m**2"))
+                name = lyranames[0][i] + ' \n (' + lyranames[1][i] + ')'
+            axes[i].set_ylabel( "%s %s" % (name, "\n (W/m**2)"),fontsize=9.5)
 
         axes[0].set_title("LYRA ("+ self.data.index[0].strftime('%Y-%m-%d') +")")
         axes[-1].set_xlabel("Time")
+        for axe in axes:
+            axe.locator_params(axis='y',nbins=6)
 
         figure.show()
 
@@ -127,10 +131,53 @@ class LYRALightCurve(GenericLightCurve):
         return urlparse.urljoin(base_url, url_path)
 
     @classmethod
+<<<<<<< HEAD
     def _is_datasource_for(cls, data, meta, source=None):
         if meta is not None:
             return meta.pop('instrume', '').upper() == 'LYRA'
         if source is not None:
             source = source.lower()
             return source == 'lyra'
+=======
+    def _get_default_uri(cls):
+        """Look for and download today's LYRA data"""
+        return cls._get_url_for_date(datetime.datetime.utcnow())
+
+    @staticmethod
+    def _parse_fits(filepath):
+        """Loads LYRA data from a FITS file"""
+        # Open file with PyFITS
+        hdulist = fits.open(filepath)
+        fits_record = hdulist[1].data
+        #secondary_header = hdulist[1].header
+
+        # Start and end dates.  Different LYRA FITS files have
+        # different tags for the date obs.
+        if 'date-obs' in hdulist[0].header:
+            start_str = hdulist[0].header['date-obs']
+        elif 'date_obs' in hdulist[0].header:
+            start_str = hdulist[0].header['date_obs']
+        #end_str = hdulist[0].header['date-end']
+
+        #start = datetime.datetime.strptime(start_str, '%Y-%m-%dT%H:%M:%S.%f')
+        start = parse_time(start_str)
+        #end = datetime.datetime.strptime(end_str, '%Y-%m-%dT%H:%M:%S.%f')
+
+        # First column are times
+        times = [start + datetime.timedelta(0, n) for n in fits_record.field(0)]
+
+        # Rest of columns are the data
+        table = {}
+
+        for i, col in enumerate(fits_record.columns[1:-1]):
+            #temporary patch for big-endian data bug on pandas 0.13
+            if fits_record.field(i+1).dtype.byteorder == '>' and sys.byteorder =='little':
+                table[col.name] = fits_record.field(i + 1).byteswap().newbyteorder()
+            else:
+                table[col.name] = fits_record.field(i + 1)
+
+        # Return the header and the data
+        return OrderedDict(hdulist[0].header), pandas.DataFrame(table, index=times)
+
+>>>>>>> upstream/master
 

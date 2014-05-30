@@ -49,6 +49,12 @@ def query_result():
         vso.attrs.Time('20130801T200000', '20130801T200030'),
         vso.attrs.Instrument('PLASTIC'))
 
+@pytest.fixture
+def download_qr():
+    return vso.VSOClient().query(
+        vso.attrs.Time('2012-03-29', '2012-03-29'),
+        vso.attrs.Instrument('AIA'))
+
 
 @pytest.fixture
 def empty_query():
@@ -353,6 +359,8 @@ def test_add_many(database):
     database.add_many((DatabaseEntry() for _ in xrange(5)))
     assert len(database) == 5
     database.undo()
+    with pytest.raises(EmptyCommandStackError):
+        database.undo()
     assert len(database) == 0
     database.redo()
     assert len(database) == 5
@@ -398,6 +406,27 @@ def test_add_entry_from_hek_qr(database):
     assert len(database) == 0
     database.add_from_hek_query_result(hek_res)
     assert len(database) == 2133
+
+
+@pytest.mark.online
+@pytest.mark.skipif(
+        sys.version_info[:2] == (2,6),
+        reason='for some unknown reason, this test fails on Python 2.6')
+def test_download_from_qr(database, download_qr, tmpdir):
+    assert len(database) == 0
+    database.download_from_vso_query_result(
+        download_qr, path=str(tmpdir.join('{file}.fits')))
+    fits_pattern = str(tmpdir.join('*.fits'))
+    num_of_fits_headers = sum(
+        len(fits.get_header(file)) for file in glob.glob(fits_pattern))
+    assert len(database) == num_of_fits_headers > 0
+    for entry in database:
+        assert os.path.dirname(entry.path) == str(tmpdir)
+    database.undo()
+    assert len(database) == 0
+    database.redo()
+    assert len(database) == num_of_fits_headers > 0
+
 
 @pytest.mark.online
 def test_add_entry_from_qr(database, query_result):
@@ -483,6 +512,22 @@ def test_edit_entry(database):
     assert entry.id == 1
     database.edit(entry, id=42)
     assert entry.id == 42
+
+
+def test_remove_many_entries(filled_database):
+    bar = Tag('bar')
+    bar.id = 2
+    # required to check if `remove_many` adds any entries to undo-history
+    filled_database.clear_histories()
+    filled_database.remove_many(filled_database[:8])
+    assert len(filled_database) == 2
+    assert list(filled_database) == [
+        DatabaseEntry(id=9),
+        DatabaseEntry(id=10, tags=[bar])]
+    filled_database.undo()
+    assert len(filled_database) == 10
+    with pytest.raises(EmptyCommandStackError):
+        filled_database.undo()
 
 
 def test_remove_existing_entry(database):
@@ -714,7 +759,7 @@ def test_download_duplicates(database, download_query, tmpdir):
     database.default_waveunit = 'angstrom'
     database.download(
         *download_query, path=str(tmpdir.join('{file}.fits')), progress=True)
-    assert len(database) == 4
+    assert len(database) == 4 
     download_time = database[0].download_time
     database.download(*download_query, path=str(tmpdir.join('{file}.fits')))
     assert len(database) == 4

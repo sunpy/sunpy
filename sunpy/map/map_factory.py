@@ -17,8 +17,6 @@ from sunpy.map.mapcube import MapCube
 from sunpy.io.file_tools import read_file
 from sunpy.io.header import FileHeader
 
-from sunpy.database.tables import DatabaseEntry
-
 from sunpy.util.net import download_file
 from sunpy.util import expand_list
 from sunpy.util.factory_helpers import is_url, is_file
@@ -27,6 +25,14 @@ from sunpy.util.datatype_factory_base import BasicRegistrationFactory
 from sunpy.util.datatype_factory_base import NoMatchError
 from sunpy.util.datatype_factory_base import MultipleMatchError
 from sunpy.util.datatype_factory_base import ValidationFunctionError
+
+# Make a mock DatabaseEntry class if sqlalchemy is not installed
+
+try:
+    from sunpy.database.tables import DatabaseEntry
+except ImportError:
+    class DatabaseEntry:
+        pass
 
 __all__ = ['Map', 'MapFactory']
 
