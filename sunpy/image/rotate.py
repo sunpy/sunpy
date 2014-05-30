@@ -12,9 +12,8 @@ except:
 __all__ = ['affine_transform']
 
 #TODO: Add functionality to specify interpolation method and missing value
-def affine_transform(image, rmatrix=None, angle=None, scale=1.0,
-                     rotation_center=None, recenter=False, scipy=False,
-                     missing=0.0, interp_type='biquartic', interp_param=None):
+def affine_transform(image, rmatrix, order=4, scale=1.0, rotation_center=None,
+                     recenter=False, missing=0.0, scipy=False):
     """    
     Rotates and shifts an image using an affine transform. Intended to replace Map.rotate().
     Currently uses the old C extension function to rotate and shif the image, though this will be
@@ -23,11 +22,15 @@ def affine_transform(image, rmatrix=None, angle=None, scale=1.0,
     Parameters
     ----------
     image: ndarray
-        Image to be rotated.
-    rmatrix: NxN
-        Linear transformation rotation matrix. Either rmatrix or angle should be specified (not both).
-    angle: float
-        Angle to rotate the image by (in radians). Either angle or rmatrix should be specified (not both).
+        2D Image to be rotated.
+    rmatrix: 2x2
+        Linear transformation rotation matrix.
+    order: int 0-5
+        Interpolation order to be used, when using scikit-image this parameter
+        is passed into :fun:`skimage.transform.warp`.
+        When using scipy it is passed into 
+        :fun:`scipy.ndimage.interpolation.affine_transform` where it controls 
+        thwe order of the spline.
     scale: float
         A scale factor for the image. Default is no scaling.
     rotation_center: tuple
@@ -36,31 +39,23 @@ def affine_transform(image, rmatrix=None, angle=None, scale=1.0,
     recenter: bool or array-like
         Move the axis of rotation to the centre of the array or recenter coords.
         Default: True, recentre to the centre of the array.
+    missing: flot
+        The value to replace any missing data after the transformation.
+    scipy: bool
+        Force use of :fun:`scipy.ndimage.interpolation.affine_transform`.
+        This defaults to False unless sckit-image is not installed.
 
     Returns
     -------
     New rotated, scaled and translated image.
     """
 
-    interps = ['nearest', 'bilinear', 'biquadratic', 'bicubic', 'biquartic',
-               'biquintic', 'spline']
-    if force_scipy or scipy:
-        interp_type = 'spline'
-    assert interp_type in interps
-    if interp_param is None:
-        if interp_type is 'spline':
-            interp_param = 3
-        elif interp_type is 'bicubic':
-            interp_param = 0.5 # Should this be -0.5?
-        else:
-            interp_param = 0
-
     rmatrix = rmatrix / scale
     array_center = (np.array(image.shape)-1)/2.0
     # A rename to make things clearer. Also make sure it's an array
     # TODO: Deal with this properly and change it in the keywords
     if rotation_center is not None:
-        image_center = np.array(rotation_center)
+        image_center = np.asanyarray(rotation_center)
     else:
         image_center = array_center
     if recenter == True:
@@ -71,17 +66,16 @@ def affine_transform(image, rmatrix=None, angle=None, scale=1.0,
     displacement = np.dot(rmatrix, image_center)
     shift = displacement - rot_center
 
-    if interp_type == 'spline':
+    if scipy or force_scipy:
         # This is the scipy call
         rotated_image = sp.affine_transform(image, rmatrix, offset=shift,
-                                            order=interp_param, mode='constant',
+                                            order=order, mode='constant',
                                             cval=missing)
     else:
         skmatrix = np.zeros((3, 3))
         skmatrix[:2, :2] = rmatrix
         skmatrix[2, 2] = 1.0
         skmatrix[:2, 2] = shift
-        order = interps.index(interp_type)
         im_max = image.max()
         tform = sk.AffineTransform(skmatrix)
         rotated_image = sk.warp(image, tform, order=order, mode='constant',
