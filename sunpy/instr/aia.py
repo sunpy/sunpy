@@ -36,7 +36,7 @@ def aiaprep(aiamap):
     data = aiamap.data.copy()
     newmap.data = affine_transform(data/data.max(), rmatrix=rmatrix, recenter=True,
                                    scale=scale_factor, rotation_center=map_center,
-                                   missing=aiamap.min(), interp_type='bicubic') * data.max()
+                                   missing=aiamap.min()) * data.max()
 
     # Update header values as needed
     newmap.meta['crpix1'] = newmap.shape[1]/2.0 - 0.5
