@@ -177,7 +177,7 @@ class GOESLightCurve(LightCurve):
             raise ValueError("Don't know how to parse this file")
 
         times = [start_time + datetime.timedelta(seconds=int(floor(s)),
-                    microseconds=int((s - floor(s)) * 1e6)) for s in seconds_from_start]
+                                                 microseconds=int((s - floor(s)) * 1e6)) for s in seconds_from_start]
 
         # remove bad values as defined in header comments
         xrsb[xrsb == -99999] = nan
