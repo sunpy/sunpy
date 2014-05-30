@@ -140,12 +140,11 @@ def parse_time(time_string, time_format=basestring):
     """Given a time string will parse and return a datetime object.
     Similar to the anytim function in IDL.
     utime -- Time since epoch 1 Jan 1979
-    tai   -- Time since epoch 1 Jan 1958
     Parameters
     ----------
     time_string : [ int, float, time_string, datetime ]
         Date to parse which can be either time_string, int, datetime object.
-    format : [ basestring, utime, tai ]
+    format : [ basestring, utime, datetime ]
 	Specifies the format user has provided the time_string in.
     Returns
     -------
@@ -156,15 +155,12 @@ def parse_time(time_string, time_format=basestring):
     --------
     >>> sunpy.time.parse_time('2012/08/01')
     >>> sunpy.time.parse_time('2005-08-04T00:01:02.000Z')
-    >>> sunpy.time.parse_time(1164585600, 'tai') 
 
     """
-    if isinstance(time_string, datetime):
+    if isinstance(time_string, datetime) and time_format == 'datetime':
         return time_string
     elif isinstance(time_string, tuple):
         return datetime(*time_string)
-    elif time_format == 'tai' and  ( isinstance( time_string, int) or isinstance( time_string, float) ) :
-        return datetime(1958, 1, 1) + timedelta(0, time_string)
     elif time_format == 'utime' and ( isinstance(time_string, int) or isinstance(time_string, float) ) :
         return datetime(1979, 1, 1) + timedelta(0, time_string)
     else:
@@ -195,7 +191,7 @@ def is_time(time_string, time_format=basestring):
     ----------
     time_string : [ int, float, time_string, datetime ]
         Date to parse which can be either time_string, int, datetime object.
-    format : [ basestring, utime, tai ]
+    format : [ basestring, utime, datetime ]
 	Specifies the format user has provided the time_string in.
    
     Returns
@@ -207,7 +203,6 @@ def is_time(time_string, time_format=basestring):
     --------
     >>> sunpy.time.parse_time('2012/08/01')
     >>> sunpy.time.parse_time('2005-08-04T00:01:02.000Z')
-    >>> sunpy.time.parse_time(1164585600, 'tai') 
 
     """
     if time_string is None:

@@ -23,16 +23,6 @@ def test_parse_time_tuple():
 def test_parse_time_int():
     assert parse_time(765548612.0,'utime') == datetime(2003, 4, 5, 12, 23, 32)
     assert parse_time(1009685652.0,'utime') == datetime(2010, 12, 30, 4, 14, 12)
-    
-def test_parse_time_tai():
-    assert parse_time(0, "tai") == datetime(1958, 1, 1, 0, 0)
-    assert parse_time(86401, "tai") == datetime(1958, 1, 2, 0, 0 ,1 )
-    assert parse_time(1391342400, "tai") == datetime(2002, 2, 2, 12, 0)
-    assert parse_time(1391342400.0, "tai") == datetime(2002, 2 , 2, 12, 0)
-    assert parse_time(-1391342400, "tai") == datetime(1913, 11, 29, 12, 0)
-    assert parse_time(1164585600, "tai") == datetime(1994, 11, 27, 0, 0)
-    assert parse_time(-1164585600, "tai") == datetime(1921, 2, 5, 0, 0)
-
 
 def test_parse_time_ISO():
     assert parse_time('1966-02-03') == LANDING
