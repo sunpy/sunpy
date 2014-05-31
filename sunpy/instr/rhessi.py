@@ -18,14 +18,16 @@ import matplotlib.pyplot as plt
 import matplotlib.dates
 
 from astropy.io import fits
+from astropy import units as u
 
 import sunpy
+import sunpy.map.header
 from sunpy.time import TimeRange, parse_time
 import sunpy.sun.constants as sun
 from sunpy.sun.sun import solar_semidiameter_angular_size
 from sunpy.sun.sun import sunearth_distance
 
-__all__ = ['get_obssumm_dbase_file', 'parse_obssumm_dbase_file', 'get_obssum_filename', 'get_obssumm_file', 'parse_obssumm_file', 'show_obssumm', 'backprojection']
+__all__ = ['get_obssumm_dbase_file', 'parse_obssumm_dbase_file', 'get_obssum_filename', 'get_obssumm_file', 'parse_obssumm_file', 'backprojection']
 
 # Measured fixed grid parameters
 grid_pitch = (4.52467, 7.85160, 13.5751, 23.5542, 40.7241, 70.5309, 122.164, 
@@ -80,8 +82,6 @@ def get_obssumm_dbase_file(time_range):
     url = url_root + _time_range.t1.strftime("hsi_obssumm_filedb_%Y%m.txt")
     
     f = urllib.urlretrieve(url)
-    
-    print('Downloading file: ' + url)
     
     return f
       
@@ -177,12 +177,14 @@ def get_obssum_filename(time_range):
     # need to download and inspect the dbase file to determine the filename
     # for the observing summary data
     f = get_obssumm_dbase_file(time_range)
+    data_location = 'metadata/catalog/'
+   
     result = parse_obssumm_dbase_file(f[0])
     _time_range = TimeRange(time_range)
-   
+    
     index_number = int(_time_range.t1.strftime('%d')) - 1
     
-    return result.get('filename')[index_number]
+    return data_servers[0] + data_location + result.get('filename')[index_number] + 's'
 
 def get_obssumm_file(time_range):
     """
@@ -217,7 +219,7 @@ def get_obssumm_file(time_range):
     #TODO need to check which is the closest servers
     url_root = data_servers[0] + data_location
         
-    url = url_root + get_obssum_filename(time_range) + 's'
+    url = url_root + get_obssum_filename(time_range)
     
     print('Downloading file: ' + url)
     f = urllib.urlretrieve(url)
@@ -247,6 +249,7 @@ def parse_obssumm_file(filename):
     """
 
     afits = fits.open(filename)
+    header = afits[0].header
     
     reference_time_ut = parse_time(afits[5].data.field('UT_REF')[0])
     time_interval_sec = afits[5].data.field('TIME_INTV')[0]
@@ -263,39 +266,9 @@ def parse_obssumm_file(filename):
     time_array = [reference_time_ut + timedelta(0,time_interval_sec*a) for a in np.arange(dim)]
 
     #TODO generate the labels for the dict automatically from labels
-    result = {'time': time_array, 'data': lightcurve_data, 'labels': labels}
+    data = {'time': time_array, 'data': lightcurve_data, 'labels': labels}
        
-    return result
-
-def show_obssumm(data_dict):
-    """show_obssum"""
-    t = data_dict.get('time')
-    data = data_dict.get('data')
-    labels = data_dict.get('labels')
-    
-    fig = plt.figure()
-    ax = fig.add_subplot(111)
-    dates = matplotlib.dates.date2num(t)
-
-    for i in xrange(9):
-        ax.plot_date(dates, data[:,i], '-', label = labels[i], color = lc_linecolors[i], lw = 2)
-
-    ax.set_yscale("log")
-
-    ax.set_title('RHESSI Observing Summary Count Rates, Corrected')
-    ax.set_ylabel('Corrected Count Rates s$^{-1}$ detector$^{-1}$')
-    ax.set_xlabel(datetime.isoformat(t[0])[0:10])
-        
-    ax.yaxis.grid(True, 'major')
-    ax.xaxis.grid(False, 'major')
-    ax.legend()
-    
-    formatter = matplotlib.dates.DateFormatter('%H:%M')
-    ax.xaxis.set_major_formatter(formatter)
-    
-    ax.fmt_xdata = matplotlib.dates.DateFormatter('%H:%M')
-    fig.autofmt_xdate()
-    fig.show()
+    return header, data
 
 def _backproject(calibrated_event_list, detector=8, pixel_size=(1.,1.), image_dim=(64,64)):
     """
@@ -355,7 +328,8 @@ def _backproject(calibrated_event_list, detector=8, pixel_size=(1.,1.), image_di
         
     return bproj_image
 
-def backprojection(calibrated_event_list, pixel_size=(1.,1.), image_dim=(64,64)):
+
+def backprojection(calibrated_event_list, pixel_size=(1.,1.) * u.deg, image_dim=(64,64) * u.pix):
     """
     Given a stacked calibrated event list fits file create a back 
     projection image.
@@ -385,34 +359,38 @@ def backprojection(calibrated_event_list, pixel_size=(1.,1.), image_dim=(64,64))
     >>> map.show()
 
     """
-    
+    if not isinstance(pixel_size, u.Quantity):
+        raise ValueError("Must be astropy Quantity in arcseconds")
+    if not isinstance(image_dim, u.Quantity):
+        raise ValueError("Must be astropy Quantity in pixels")
     calibrated_event_list = sunpy.RHESSI_EVENT_LIST
     afits = fits.open(calibrated_event_list)
     info_parameters = afits[2]
     xyoffset = info_parameters.data.field('USED_XYOFFSET')[0]
     time_range = TimeRange(info_parameters.data.field('ABSOLUTE_TIME_RANGE')[0])
     
-    image = np.zeros(image_dim)
+    image = np.zeros(image_dim.value)
     
     #find out what detectors were used
     det_index_mask = afits[1].data.field('det_index_mask')[0]    
     detector_list = (np.arange(9)+1) * np.array(det_index_mask)
     for detector in detector_list:
         if detector > 0:
-            image = image + _backproject(calibrated_event_list, detector=detector, pixel_size=pixel_size, image_dim=image_dim)
+            image = image + _backproject(calibrated_event_list, detector=detector, pixel_size=pixel_size/u.arcsec
+										 , image_dim=image_dim/u.pix)
     
     dict_header = {
         "DATE-OBS": time_range.center().strftime("%Y-%m-%d %H:%M:%S"), 
         "CDELT1": pixel_size[0],
         "NAXIS1": image_dim[0],
         "CRVAL1": xyoffset[0],
-        "CRPIX1": image_dim[0]/2 + 0.5, 
+        "CRPIX1": image_dim[0].value/2 + 0.5, 
         "CUNIT1": "arcsec",
         "CTYPE1": "HPLN-TAN",
         "CDELT2": pixel_size[1],
         "NAXIS2": image_dim[1],
         "CRVAL2": xyoffset[1],
-        "CRPIX2": image_dim[0]/2 + 0.5,
+        "CRPIX2": image_dim[0].value/2 + 0.5,
         "CUNIT2": "arcsec",
         "CTYPE2": "HPLT-TAN",
         "HGLT_OBS": 0,
@@ -422,7 +400,8 @@ def backprojection(calibrated_event_list, pixel_size=(1.,1.), image_dim=(64,64))
         "DSUN_OBS": sunearth_distance(time_range.center()) * sunpy.sun.constants.au
     }
     
-    header = sunpy.map.MapHeader(dict_header)
+    header = sunpy.map.MapMeta(dict_header)
     result_map = sunpy.map.Map(image, header)
             
     return result_map
+
