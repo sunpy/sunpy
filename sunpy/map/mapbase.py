@@ -716,7 +716,7 @@ class GenericMap(astropy.nddata.NDData):
         return new_map
 
 
-def submap(self, range_a, range_b, units="data"):
+    def submap(self, range_a, range_b, units="data"):
         """Returns a submap of the map with the specified range
 
         Parameters
@@ -798,6 +798,7 @@ def submap(self, range_a, range_b, units="data"):
         # Create new map instance
         new_map.data = new_data
         return new_map
+
 
     def superpixel(self, dimensions, method='sum'):
         """Returns a new map consisting of superpixels formed from the
