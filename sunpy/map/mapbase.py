@@ -715,7 +715,8 @@ class GenericMap(astropy.nddata.NDData):
 
         return new_map
 
-    def submap(self, range_a, range_b, units="data"):
+
+def submap(self, range_a, range_b, units="data"):
         """Returns a submap of the map with the specified range
 
         Parameters
