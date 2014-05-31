@@ -17,6 +17,9 @@ __all__ = ['physical_constants']
 
 physical_constants = {}
 
+#references
+gsfc_fact = "Sun Fact Sheet - David R. Williams - http://nssdc.gsfc.nasa.gov/planetary/factsheet/sunfact.html"
+
 physical_constants['mass'] = astrocon.M_sun
 physical_constants['radius'] = astrocon.R_sun
 physical_constants['luminosity'] = astrocon.L_sun
@@ -87,3 +90,36 @@ physical_constants['effective temperature'] = Constant('T', "The effective black
 
 physical_constants['mass conversion rate'] = Constant('dm/dt', "Mass conversion rate", 4300e6, 
                                                  'kg s**-1', 0, "", system='si')
+
+# following needs error estimate if appropriate
+physical_constant['center density'] = Constant('rho_center', "Center density",
+                                               1.622e5, 'kg m**-3', 0, 
+                                               gsfc_fact, system='si')
+
+# following needs error estimate if appropriate
+physical_constant['center temperature'] = Constant('T_center', "Center temperature",
+                                                   1.571e7, 'K', 0, 
+                                                   gsfc_fact, system='si')
+
+# following needs error estimate if appropriate
+physical_constant['absolute magnitude'] = Constant('M_abs', "Absolute magnitude",
+                                                   +4.83, '', 0, 
+                                                   gsfc_fact, system='si')
+# following needs error estimate if appropriate
+physical_constant['mean energy production'] = Constant('', "mean energy production",
+                                                       0.1937e-3, 'J kg**-1', 0,
+                                                       gsfc_fact, system='si')
+
+# following needs error estimate if appropriate
+physical_constant['ellipticity'] = Constant('', "ellipticity",
+                                            5e-5, '', 0, 
+                                            gsfc_fact, system='si')
+
+# following needs error estimate if appropriate
+physical_constant['GM'] = Constant('mu', "standard gravitational parameter",
+                                   132.712e6, 'km**3 s**-2', 0, 
+                                   gsfc_fact, system='si')
+
+
+
+
