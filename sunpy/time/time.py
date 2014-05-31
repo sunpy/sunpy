@@ -157,7 +157,7 @@ def parse_time(time_string, time_format=basestring):
     >>> sunpy.time.parse_time('2005-08-04T00:01:02.000Z')
 
     """
-    if isinstance(time_string, datetime) and time_format == 'datetime':
+    if isinstance(time_string, datetime) or time_format == 'datetime':
         return time_string
     elif isinstance(time_string, tuple):
         return datetime(*time_string)
