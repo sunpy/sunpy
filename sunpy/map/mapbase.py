@@ -503,7 +503,8 @@ class GenericMap(astropy.nddata.NDData):
         new_map.meta = new_meta
         return new_map
 
-def rotate(self, angle=None, rmatrix=None, scale=1.0,
+
+    def rotate(self, angle=None, rmatrix=None, scale=1.0,
            rotation_center=(0, 0), recenter=False,
            missing=0.0, interpolation='bicubic', interp_param=-0.5):
         """Returns a new rotated and rescaled map.  Specify either a rotation
@@ -653,7 +654,7 @@ installed, falling back to the interpolation='spline' of order=3""", Warning)
         return new_map
 
 
-def submap(self, range_a, range_b, units="data"):
+    def submap(self, range_a, range_b, units="data"):
         """Returns a submap of the map with the specified range
 
         Parameters
@@ -735,6 +736,7 @@ def submap(self, range_a, range_b, units="data"):
         # Create new map instance
         new_map.data = new_data
         return new_map
+
 
     def superpixel(self, dimensions, method='sum'):
         """Returns a new map consisting of superpixels formed from the
