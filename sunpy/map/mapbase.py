@@ -586,7 +586,8 @@ class GenericMap(astropy.nddata.NDData):
         return new_map
 
     def rotate(self, angle=None, rmatrix=None, order=3, scale=1.0,
-               image_center=None, recenter=False, missing=0.0, use_scipy=False):
+               image_center=None, recenter=False, missing=0.0,
+               use_scipy=False):
         """
         Returns a new rotated and rescaled map.  Specify either a rotation
         angle or a rotation matrix, but not both.  If neither an angle or a
