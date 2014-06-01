@@ -92,7 +92,7 @@ physical_constants['escape velocity'] = Constant('v',
                                                  6.177e5, 'm s**-1', 0,
                                                  allen, system='si')
 
-physical_constants['oblateness'] = Constant('v', "oblateness",
+physical_constants['oblateness'] = Constant('', "oblateness",
                                             8.01, 'marcsec', 0.14,
                                             fivian, system='si')
 
@@ -102,7 +102,7 @@ physical_constants['metallicity'] = Constant('Z', "Metallicity",
                                              asplund, system='si')
 
 sunspot_cycle_exp = "Average duration of sunspot cycle"
-physical_constants['sunspot cycle'] = Constant('v', sunspot_cycle_exp,
+physical_constants['sunspot cycle'] = Constant('', sunspot_cycle_exp,
                                                11.4, 'year', 0,
                                                "", system='si')
 
