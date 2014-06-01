@@ -2,7 +2,7 @@ from __future__ import absolute_import
 from sunpy.net.attr import (Attr, AttrWalker, AttrAnd, AttrOr)
 from sunpy.net.vso.attrs import Time, _VSOSimpleAttr
 
-__all__ = ['Series', 'Protocol', 'Notify', 'Compression', 'walker']
+__all__ = ['Series', 'Protocol', 'Notify', 'Compression', 'WaveLength', 'walker']
 
 
 class Series(_VSOSimpleAttr):
@@ -21,12 +21,24 @@ class Compression(_VSOSimpleAttr):
     pass
 
 
+class WaveLength(_VSOSimpleAttr):
+
+    def __or__(self, other):
+        
+	if isinstance(other,self.__class__):
+	     return self.__class__([self.value ,other.value])
+	if self == other:
+	     return self
+	return AttrOr([self, other])
+    __ror__ = __or__
+
+
 walker = AttrWalker()
 
 
 @walker.add_creator(AttrAnd, _VSOSimpleAttr, Time)
 def _create(wlk, query):
-
+    
     map_ = {}
     wlk.apply(query, map_)
     return [map_]

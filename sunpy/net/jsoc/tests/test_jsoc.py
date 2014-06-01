@@ -102,14 +102,31 @@ def test_status_request():
 def test_post():
     responses = client.jsoc_query(attrs.Time('2012/1/1T00:00:00', '2012/1/1T00:00:45'), attrs.Series('hmi.M_45s'))
     assert isinstance(responses, list)
-    assert responses[0][0][:4] == 'JSOC'
+    assert responses[0][:4] == 'JSOC'
 
 @pytest.mark.online
 def test_post_pass():
     responses = client.jsoc_query(attrs.Time('2012/1/1T00:00:00', '2012/1/1T00:00:45'), attrs.Series('hmi.M_45s'), return_resp=True)
-    responses[0][0].json()['status'] == 2
-    responses[0][0].json()['protocol'] == 'FITS,compress Rice'
-    responses[0][0].json()['method'] == 'url'
+    assert responses[0].json()['status'] == 2
+    assert responses[0].json()['protocol'] == 'FITS,compress Rice'
+    assert responses[0].json()['method'] == 'url'
+
+
+@pytest.mark.online
+def test_post_wavelength():
+    responses = client.jsoc_query(attrs.Time('2010/07/30T13:30:00','2010/07/30T14:00:00'),attrs.Series('aia.lev1_euv_12s'),attrs.WaveLength(193) | attrs.WaveLength(335),return_resp=True)
+    
+    assert responses[0].json()['status'] == 2
+    assert responses[0].json()['protocol'] == 'FITS,compress Rice'
+    assert responses[0].json()['method'] == 'url'
+    assert responses[0].json()['rcount'] == 302
+
+@pytest.mark.online()
+def test_post_wave_series():
+    responses = client.jsoc_query(attrs.Time('2012/1/1T00:00:00', '2012/1/1T00:00:45'), attrs.Series('hmi.M_45s')|attrs.Series('aia.lev1_euv_12s'),attrs.WaveLength(193)|attrs.WaveLength(335), return_resp=True)
+    assert responses[0].json()['status'] == 2
+    assert responses[1].json()['status'] == 2
+
 
 @pytest.mark.online
 def test_post_fail(recwarn):
@@ -128,6 +145,6 @@ def test_request_status_fail():
 @pytest.mark.online
 def test_wait_get():
     responses = client.jsoc_query(attrs.Time('2012/1/3T00:00:00', '2012/1/3T00:00:45'), attrs.Series( 'hmi.M_45s'))
-    res = client.wait_get(responses[0])
+    res = client.wait_get(responses)
     assert isinstance(res, Results)
     assert res.total == 2
