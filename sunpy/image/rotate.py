@@ -64,7 +64,7 @@ def affine_transform(image, rmatrix, order=4, scale=1.0, rotation_center=None,
         rot_center = image_center
 
     displacement = np.dot(rmatrix, image_center)
-    shift = displacement - rot_center
+    shift = rot_center - displacement
 
     if scipy or force_scipy:
         # This is the scipy call
