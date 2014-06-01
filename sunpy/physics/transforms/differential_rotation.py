@@ -3,6 +3,8 @@ from __future__ import division
 __all__ = ['diff_rot']
 import numpy as np
 import datetime
+from astropy import units as u
+from astropy.coordinates import Angle, Longitude
 
 __author__ = ["Jose Ivan Campos Rozo","Stuart Mumford"]
 __all__ = ['diff_rot']
@@ -56,12 +58,15 @@ def diff_rot(ddays,latitude,rot_type='howard',frame_time='sidereal'):
     
     if not isinstance(ddays,datetime.timedelta):
         delta = datetime.timedelta(days=ddays)
+
+    if not isinstance(latitude, Angle):
+	raise TypeError("Expecting Angle Quantity")
     
     delta_seconds = (delta.microseconds + (delta.seconds + delta.days * 24 * 3600) *
                     10**6) / 10**6
     delta_days = delta_seconds / 24 / 3600
     
-    sin2l = (np.sin(np.deg2rad(latitude)))**2
+    sin2l = (np.sin(latitude))**2
     sin4l = sin2l**2
     
     rot_params = {'howard': [2.894, -0.428, -0.370],
@@ -85,4 +90,4 @@ def diff_rot(ddays,latitude,rot_type='howard',frame_time='sidereal'):
     if frame_time == 'synodic':
         rotation_deg -= 0.9856 * delta_days
     
-    return np.round(rotation_deg,4)
+    return Longitude((np.round(rotation_deg,4)),u.deg)
