@@ -32,17 +32,18 @@ from __future__ import absolute_import
 from __future__ import division
 
 import os.path
-import datetime
+from datetime import datetime
+from sunpy.time import parse_time
 
 import sqlite3
-import numpy as np
-from sunpy import parse_time
+from itertools import chain
 
 # Define location of LYRA Annotation Files
 LYTAF_PATH = os.path.join(os.path.curdir, "data")
 
 def extract_combined_lytaf(tstart, tend,
-                           combine_files=["lyra", "manual", "ppt", "science"])
+                           combine_files=["lyra", "manual", "ppt", "science"]):
+    
     """
     Extracts combined lytaf file for given time range.
 
@@ -95,18 +96,17 @@ def extract_combined_lytaf(tstart, tend,
     Examples
     --------
     
-
     """
     # Check inputs
     # Check start_time is a date string or datetime object
-    if type(start_time) is str:
-        start_time = parse_time(start_time)
-    if type(start_time) is not datetime.datetime:
+    if type(tstart) is str:
+        tstart = parse_time(tstart)
+    if type(tstart) is not datetime.datetime:
         raise TypeError("start_time must be a date string or datetime object")
     # Check start_time is a date string or datetime object
-    if type(end_time) is str:
-        end_time = parse_time(end_time)
-    if type(end_time) is not datetime.datetime:
+    if type(tend) is str:
+        tend = parse_time(tend)
+    if type(tend) is not datetime.datetime:
         raise TypeError("end_time must be a date string or datetime object")
     # Check combine_files contains correct inputs
     if not all(suffix in ["lyra", "manual", "ppt", "science"]
@@ -115,80 +115,84 @@ def extract_combined_lytaf(tstart, tend,
                         "'lyra', 'manual', 'ppt', or 'science'.")
     # Remove any duplicates from combine_files input
     combine_files = list(set(combine_files))
+    combine_files.sort()
+    # Convert input times to UNIX timestamp format since this is the
+    # time format in the annotation files
+    tstart_uts = tstart - datetime(1973,1,1).total_seconds()
+    tend_uts = tend - datetime(1973,1,1).total_seconds()
 
     # Access annotation files
-    insertion_time = []
-    begin_time = []
-    reference_time = []
-    end_time = []
-    eventType_id = []
-    _id = []
-    _type = []
-    _definition = []
-    for suffix in combine_files:
+    # Define list to hold data from event tables in annotation files.
+    # First element is defined as empty list for convenience in for loop below.
+    # This will be deleted afterwards.
+    event_rows = [[]]
+    for i, suffix in enumerate(combine_files):
         # Open SQLITE3 annotation files
         connection = sqlite3.connect(os.path.join(LYTAF_PATH, "annotation_"
                                                      + suffix + ".db"))
         # Create cursor to manipulate data in annotation file
         cursor = connection.cursor()
-        # Select and extract the data from event table within file
-        cursor.row_factory = sqlite3.Row
-        cursor.execute("SELECT * FROM event")
-        event_rows = cursor.fetchall()
-        for row in event_rows:
-            insertion_time.append(row["insertion_time"])
-            begin_time.append(row["begin_time"])
-            reference_time.append(row["reference_time"])
-            end_time.append(row["end_time"])
-            # As each LYTAF files use same numbering for its event
-            # types, change these numbers to distinguish different event
-            # types from different LYTAF files.
-            # lyra types -> 100s, e.g. lyra type 1 -> 101
-            # manual types -> 200s, e.g. manual type 1 -> 201
-            # ppt types -> 300s, e.g. ppt type 1 -> 301
-            # science types -> 400s, e.g. science type 1 -> 401
-            if suffix == "lyra":
-                eventType_id.append(row["eventType_id"]+100)
-            elif suffix == "ppt":
-                eventType_id.append(row["eventType_id"]+300)
-            elif suffix == "manual":
-                eventType_id.append(row["eventType_id"]+200)
-            elif suffix == "science":
-                eventType_id.append(row["eventType_id"]+400)
+        # Select and extract the data from event table within file within
+        # given time range
+        cursor.execute("select insertion_time, begin_time, reference_time, "
+                       "end_time, eventType_id from event where begin_time >= "
+                       + tstart_uts + " and begin_time <= " + tend_uts)
+        event_rows.append(cursor.fetchall())
         # Select and extract the event types from eventType table
-        cursor.execute("SELECT * FROM eventType")
+        cursor.row_factory = sqlite3.Row
+        cursor.execute("select * from eventType")
         eventType_rows = cursor.fetchall()
-        for row in eventType_rows:
-            _type.append(row["type"])
-            _definition.append(row["definition"])
-            # Alter id numbers so event types from different LYTAF
-            # files can be distinguished, as above.
-            if suffix == "lyra":
-                _id.append(row["id"]+100)
-            elif suffix == "ppt":
-                _id.append(row["id"]+300)
-            elif suffix == "manual":
-                _id.append(row["id"]+200)
-            elif suffix == "science":
-                _id.append(row["id"]+400)
-        
-        # Sort arrays in order of increasing start time.
-        # INSERT CODE HERE
+        eventType_id = []
+        eventType_type = []
+        eventType_definition = []
+        for j, row in enumerate(eventType_rows):
+            eventType_id.append(row["id"])
+            eventType_type.append(row["type"])
+            eventType_definition.append(row["definition"])
+        # Replace event type IDs with event type description
+        for j, row in enumerate(event_rows[i+1]):
+            _id = eventType_id.index(event_rows[i+1][j][4])
+            event_rows[i+1][j] = (event_rows[i+1][j][0], event_rows[i+1][j][1],
+                                  event_rows[i+1][j][2], event_rows[i+1][j][3],
+                                  eventType_rows[_id][1],
+                                  eventType_rows[_id][2])
+        # Close file
+        cursor.close()
+        connection.close()
+    # Delete empty string as first element in event_rows
+    del(event_rows[0])
+    
+    # Format and Output data
+    # Make event_rows a unified list rather than a list of lists
+    # where each sublist corresponds to an annotation file.
+    event_rows = list(chain.from_iterable(event_rows))
+    # Sort arrays in order of increasing start time.
+    event_rows.sort(key=lambda tup: tup[1])
 
-        # Convert times to datetime objects
-        # INSERT CODE HERE
+    # Convert times to datetime objects
+    # INSERT CODE HERE
 
-        # Create dictionary of results and return it
-        lytaf = {"insertion_time": insertion_time,
-                 "begin_time": begin_time
-                 "reference_time": reference_time
-                 "end_time": end_time
-                 "eventType_id": eventType_id
-                 "type": np.asanyarray(_type, dtype=str)
-                 "definition": np.asanyarray(_definition, dtype=str)
-                 }
+    # Create dictionary to hold results
+    lytaf = {"insertion_time": [],
+             "begin_time": [],
+             "reference_time": [],
+             "end_time": [],
+             "event_type": [],
+             "event_definition": []
+            }
+    # Put results into dictionary using for loop
+    for i, row in enumerate(event_rows):
+        lytaf["insertion_time"].append(datetime.fromtimestamp(
+            event_rows[i][0]))
+        lytaf["begin_time"].append(datetime.fromtimestamp(event_rows[i][1]))
+        lytaf["reference_time"].append(datetime.fromtimestamp(
+            event_rows[i][2]))
+        lytaf["end_time"].append(datetime.fromtimestamp(event_rows[i][3]))
+        lytaf["event_type"].append(event_rows[i][4])
+        lytaf["event_definition"].append(event_rows[i][5])
 
-        return lytaf
+    #return event_rows, eventType_rows
+    return lytaf
     
 def find_lyra_events(flux, time):
     """
@@ -233,3 +237,13 @@ def find_lyra_events(flux, time):
     # Get LYTAF file for given time range
     lytaf = extract_combined_lytaf(time[0], time[-1])
     # Extract
+
+
+
+
+#Get list of lists
+#Replace eventType_id with eventtype for each tuple in each sublist using nested for loops.
+#Unpack list of lists
+#Order by event start time
+#Generate output structure ?Dictionary?
+#return
