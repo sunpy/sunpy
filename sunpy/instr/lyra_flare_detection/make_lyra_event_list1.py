@@ -192,19 +192,12 @@ def extract_combined_lytaf(tstart, tend,
     
 def find_lyra_events(flux, time):
     """
-    Finds events in a times series satisfying GOES event definitions.
+    Finds events in a times series satisfying LYRA event definitions.
 
     This function finds events in an input time series which satisfy
-    the GOES event list definitions and returns the start, peak and end
-    times.  The event list definitions are:
-    Start time:
-    1) There must be a continuous increase in 1-minute-averaged data
-    over 4 minutes.
-    2) The flux in the 4th minute must be at least 1.4 times the flux
-    in the first minute.
-    End time:
-    1) The end time is when the flux falls to half-way between the peak
-    and initial fluxes.
+    the LYRA event definitions and returns the start, peak and end
+    times.  For LYRA event definitions, see Notes section of this
+    docstring.
 
     Parameters
     ----------
@@ -216,9 +209,20 @@ def find_lyra_events(flux, time):
 
     Returns
     -------
-    event_list : 
+    event_list :
 
-    Refernces
+    Notes
+    -----
+    Start time:
+    1) There must be a continuous increase in 1-minute-averaged data
+    over 4 minutes.
+    2) The flux in the 4th minute must be at least 1.4 times the flux
+    in the first minute.
+    End time:
+    1) The end time is when the flux falls to half-way between the peak
+    and initial fluxes.
+
+    References
     ---------
     http://www.swpc.noaa.gov/ftpdir/indices/events/README
 
@@ -226,4 +230,6 @@ def find_lyra_events(flux, time):
     --------                
     
     """
-    # Define 
+    # Get LYTAF file for given time range
+    lytaf = extract_combined_lytaf(time[0], time[-1])
+    # Extract
