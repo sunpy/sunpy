@@ -2,7 +2,6 @@ from __future__ import absolute_import
 
 import sunpy
 from sunpy.instr.aia import aiaprep
-import sunpy.image.tests.test_rotate as testrot
 import matplotlib.pyplot as plt
 
 # Define the original and prepped images first so they're available to all functions
@@ -11,9 +10,6 @@ prep_map = aiaprep(original)
 
 
 def test_aiaprep():
-    # Test that the affine transformation is working first
-    testrot.alltests()
-    
     # Test that header info for the map has been correctly updated
     # Check all of these for Map attributes and .meta values?
     # Check crpix values
