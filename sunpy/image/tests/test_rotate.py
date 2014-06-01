@@ -73,10 +73,10 @@ def test_rotation():
     plt.close()
 
     # Test -90 degree rotation against 270 degree rotation
-    angle = np.radians(-90.0)
+    angle = np.radians(90.0)
     c = np.cos(angle); s = np.sin(angle)
     rmatrix = np.array([[c, s], [-s, c]])
-    expected = np.rot90(original, -3)
+    expected = np.rot90(original, 3)
     rot = aff(original, rmatrix=rmatrix, recenter=True, rotation_center=rotation_center)
     plot_results(expected, rot)
     compare_results(expected, rot)#, '-90 degree rotation against 270 degree rotation')
