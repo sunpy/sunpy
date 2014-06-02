@@ -11,7 +11,7 @@ except:
 
 __all__ = ['affine_transform']
 
-def affine_transform(image, rmatrix, order=4, scale=1.0, rotation_center=None,
+def affine_transform(image, rmatrix, order=4, scale=1.0, image_center=None,
                      recenter=False, missing=0.0, scipy=False):
     """    
     Rotates and shifts an image using an affine transform. Intended to replace Map.rotate().
@@ -51,10 +51,9 @@ def affine_transform(image, rmatrix, order=4, scale=1.0, rotation_center=None,
 
     rmatrix = rmatrix / scale
     array_center = (np.array(image.shape)-1)/2.0
-    # A rename to make things clearer. Also make sure it's an array
-    # TODO: Deal with this properly and change it in the keywords
-    if rotation_center is not None:
-        image_center = np.asanyarray(rotation_center)
+    # Make sure the image center is an array and is where it's supposed to be
+    if image_center is not None:
+        image_center = np.asanyarray(image_center)
     else:
         image_center = array_center
     if recenter == True:
