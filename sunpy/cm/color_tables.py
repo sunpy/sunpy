@@ -599,9 +599,7 @@ def hmi_mag_color_table():
             import sunpy.map
             import sunpy.cm
             hmi = sunpy.map.Map('hmi.m_45s.2014.05.11_12_00_45_TAI.magnetogram.fits')
-            hmir = hmi.rotate(-np.radians(hmi.rotation_angle['y']),
-                              rotation_center=(hmi.reference_pixel['y']-1.0,
-                              hmi.reference_pixel['x']-1.0))
+            hmir = hmi.rotate()
             hmir.cmap = sunpy.cm.get_cmap('hmimag')
             hmir.peek(vmin=-1500.0, vmax=1500.0)
     '''
