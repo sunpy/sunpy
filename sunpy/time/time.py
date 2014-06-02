@@ -150,7 +150,9 @@ def parse_time(time_string, time_format=basestring):
     -------
     out : datetime
         DateTime corresponding to input date string
-
+    
+    Note:
+    If time_string is an instance of float, then it is assumed to be in unix time format.
     Examples
     --------
     >>> sunpy.time.parse_time('2012/08/01')
@@ -161,7 +163,7 @@ def parse_time(time_string, time_format=basestring):
         return time_string
     elif isinstance(time_string, tuple):
         return datetime(*time_string)
-    elif time_format == 'utime' and ( isinstance(time_string, int) or isinstance(time_string, float) ) :
+    elif time_format == 'utime' or ( isinstance(time_string, int) or isinstance(time_string, float) ) :
         return datetime(1979, 1, 1) + timedelta(0, time_string)
     else:
         # remove trailing zeros and the final dot to allow any
@@ -199,6 +201,8 @@ def is_time(time_string, time_format=basestring):
     out : bool
         True if can be parsed by parse_time
 
+    Note:
+    If time_string is an instance of float, then it is assumed to be in unix time format.
     Examples
     --------
     >>> sunpy.time.parse_time('2012/08/01')
