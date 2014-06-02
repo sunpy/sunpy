@@ -14,28 +14,6 @@ original = images.camera()
 # Tolerance for tests
 rtol = 1.0e-5
 
-def plot_results(expect, result):
-    """
-    Function to plot the results to be shown in the event that the test fails.
-    """
-    diff = abs(expect - result)
-
-    fig = plt.figure()
-    fig.add_subplot(1, 3, 1)
-    plt.imshow(expect, cmap=cm.gray)
-    plt.colorbar(orientation='horizontal')
-    plt.title('Expected image')
-    
-    fig.add_subplot(1, 3, 2)
-    plt.imshow(result, cmap=cm.gray)
-    plt.colorbar(orientation='horizontal')
-    plt.title('Output produced')
-    
-    fig.add_subplot(1, 3, 3)
-    plt.imshow(diff, cmap=cm.gray)
-    plt.colorbar(orientation='horizontal')
-    plt.title('Difference in images')
-
 
 def compare_results(expect, result):
     """
@@ -49,7 +27,7 @@ def compare_results(expect, result):
     assert np.allclose(exp, res, rtol=rtol)
 
 
-@pytest.mark.parametrize("angle, k", [(-90.0, 1), (90.0, -1), (270.0, -1),
+@pytest.mark.parametrize("angle, k", [(-90.0, 1), (90.0, -1), (270.0, 1),
                                        (90.0, 3), (360.0, 0), (-360.0, 0)])
 def test_rotation(angle, k):
     # Test rotation against expected outcome
@@ -58,7 +36,6 @@ def test_rotation(angle, k):
     rmatrix = np.array([[c, s], [-s, c]])
     expected = np.rot90(original, k=k)
     rot = aff(original, rmatrix=rmatrix)
-    plot_results(expected, rot)
     compare_results(expected, rot)
     plt.close()
     
@@ -67,11 +44,10 @@ def test_rotation(angle, k):
     # Check derotated image against original
     rmatrix = np.array([[c, -s], [s, c]])
     derot = aff(rot/rot.max(), rmatrix=rmatrix) * rot.max()
-    plot_results(original, derot)
     compare_results(original, derot)
     plt.close()
 
-dx_values, dy_values = range(-100, 101, 50) * 5, range(-100, 101, 50) * 50
+dx_values, dy_values = range(-100, 101, 100)*3, range(-100, 101, 100)*3
 dy_values.sort()
 @pytest.mark.parametrize("dx, dy", zip(dx_values, dy_values))
 def test_shift(dx, dy):
@@ -81,20 +57,21 @@ def test_shift(dx, dy):
     rmatrix = np.array([[1.0, 0.0], [0.0, 1.0]])
 
     # Check a shifted shape against expected outcome
-    expected = np.zeros(original.shape)
-    expected[:dy, dx:] = original[-dy:, :-dx]
+    expected = np.roll(np.roll(original, dx, axis=1), dy, axis=0)
     rcen = image_center + np.array([dx, dy])
     shift = aff(original, rmatrix=rmatrix, recenter=True, rotation_center=rcen)
-    plot_results(expected, shift)
-    compare_results(expected, shift)
+    ymin, ymax = max([0, dy]), min([original.shape[1], original.shape[1]+dy])
+    xmin, xmax = max([0, dx]), min([original.shape[0], original.shape[0]+dx])
+    compare_results(expected[ymin:ymax, xmin:xmax], shift[ymin:ymax, xmin:xmax])
     plt.close()
 
     # Check shifted and unshifted shape against original image
     rcen = image_center - np.array([dx, dy])
     unshift = aff(shift/shift.max(), rmatrix=rmatrix, recenter=True, rotation_center=rcen) * shift.max()
-    plot_results(original, unshift)
     # Need to ignore the portion of the image cut off by the first shift
-    compare_results(original[-dy:,:-dx], unshift[-dy:,:-dx])
+    ymin, ymax = max([0, -dy]), min([original.shape[1], original.shape[1]-dy])
+    xmin, xmax = max([0, -dx]), min([original.shape[0], original.shape[0]-dx])
+    compare_results(original[ymin:ymax, xmin:xmax], unshift[ymin:ymax, xmin:xmax])
     plt.close()
 
 
@@ -117,7 +94,6 @@ def test_scale(scale_factor):
         lower = w-new_c
         expected[lower:upper, lower:upper] = newim
     scale = aff(original, rmatrix=rmatrix, scale=scale_factor)
-    plot_results(expected, scale)
     compare_results(expected, scale)
     plt.close()
 
@@ -144,11 +120,10 @@ def test_all(angle, dx, dy, scale_factor):
     else:
         lower = w-new_c
         new[lower:upper, lower:upper] = scale
-    disp = np.array([dy, dx])
+    disp = np.array([dx, dy])
     rcen = image_center + disp
     rot = np.rot90(new, k=k)
-    shift = np.zeros(rot.shape)
-    shift[:dy, dx:] = rot[-dy:, :-dx]
+    shift = np.roll(np.roll(rot, dx, axis=1), dy, axis=0)
     expected = shift
     rotscaleshift = aff(original, rmatrix=rmatrix, scale=scale_factor, recenter=True, rotation_center=rcen)
     w = np.array(expected.shape[0])/2.0 - 0.5
@@ -160,17 +135,18 @@ def test_all(angle, dx, dy, scale_factor):
     else:
         lower = w-new_c
         expected[lower:upper, lower:upper] = rotscaleshift
-    plot_results(expected, rotscaleshift)
     compare_results(expected, rotscaleshift)
     plt.close()
 
     # Check a rotated/shifted and restored image against original
     transformed = aff(original, rmatrix=rmatrix, scale=1.0, recenter=True, rotation_center=rcen)
     rcen = image_center - np.dot(rmatrix, np.array([dx, dy]))
+    dx, dy = np.dot(rmatrix, disp)
     rmatrix = np.array([[c, -s], [s, c]])
     inverse = aff(transformed/transformed.max(), rmatrix=rmatrix, scale=1.0, recenter=True, rotation_center=rcen) * transformed.max()
-    plot_results(original, inverse)
     # Need to ignore the portion of the image cut off by the first shift
     # (which isn't the portion you'd expect, because of the rotation)
-    compare_results(original[:-dy,:dx], inverse[:-dy,:-dx])
+    ymin, ymax = max([0, -dy]), min([original.shape[1], original.shape[1]-dy])
+    xmin, xmax = max([0, -dx]), min([original.shape[0], original.shape[0]-dx])
+    compare_results(original[ymin:ymax, xmin:xmax], inverse[ymin:ymax, xmin:xmax])
     plt.close()
