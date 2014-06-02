@@ -11,6 +11,7 @@ Latest
  * GOES Lightcurve now makes use of a new source of GOES data, provides metadata, and data back to 1981.
  * Removed sqlalchemy as a requirement for SunPy
  * Added support for NOAA solar cycle prediction in lightcurves
+ * Some basic tests for GenericLightCurve on types of expected input.
  * Fix algorithm in sunpy.sun.equation_of_center
  * Added Docstrings to LightCurve methods.
  * Added functions that implement image coalignment with support for MapCubes. 
