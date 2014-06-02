@@ -17,15 +17,6 @@ path = sunpy.data.test.rootdir
 fitspath = glob.glob(os.path.join(path, "resampled_hmi.fits"))
 hmi = Map(fitspath)
 
-# This fixture is no longer used on Stuart's instructions. Downloading is expensive.
-@pytest.mark.online
-@pytest.fixture
-def createHMI():
-    """Downloads a HMIMap jp2 object through the use of HelioviewerClient."""
-    hv = HelioviewerClient()
-    filepath = hv.download_jp2('2012/07/05 00:30:00', observatory='SDO', instrument='HMI', detector='HMI', measurement='continuum')
-    return filepath
-
 # HMI Tests
 def test_fitstoHMI():
     """Tests the creation of HMIMap using FITS."""
