@@ -25,10 +25,25 @@
 # Thus, any C-extensions that are needed to build the documentation will *not*
 # be accessible, and the documentation will not build correctly.
 
-# Load all of the global Astropy configuration
-from astropy.sphinx.conf import *
+# -- Mock Modules -------------------------------------------------------------
+
+import sys
+from mock import Mock
+mock = Mock()
+
+modules = {}
+
+try:
+    import skimage 
+except ImportError:
+    modules.update({'skimage':mock, 'skimage.feature':mock.module})
+
+sys.modules.update(modules)
 
 # -- General configuration ----------------------------------------------------
+
+# Load all of the global Astropy configuration
+from astropy.sphinx.conf import *
 
 # If your documentation needs a minimal Sphinx version, state it here.
 needs_sphinx = '1.1'
@@ -63,6 +78,8 @@ intersphinx_mapping.pop('h5py',None)
 intersphinx_mapping['astropy'] = ('http://docs.astropy.org/en/stable/', None)
 intersphinx_mapping['sqlalchemy'] = ('http://docs.sqlalchemy.org/en/rel_0_8/', None)
 intersphinx_mapping['pandas'] = ('http://pandas.pydata.org/pandas-docs/stable/', None)
+intersphinx_mapping['skimage'] = ('http://scikit-image.org/docs/stable/', None)
+
 # -- Options for HTML output ---------------------------------------------------
 
 # A NOTE ON HTML THEMES
@@ -120,9 +137,7 @@ man_pages = [('index', project.lower(), project + u' Documentation',
 
 ## -- Options for the edit_on_github extension ----------------------------------------
 #
-#extensions = filter(lambda a: a != 'astropy.sphinx.ext.automodapi', extensions)
 extensions += ['astropy.sphinx.ext.edit_on_github', 'sphinx.ext.doctest']
-extensions += ['sunpy.sphinx.ext.automodapi']
 
 ## Don't import the module as "version" or it will override the
 ## "version" configuration parameter
