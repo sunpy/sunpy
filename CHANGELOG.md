@@ -12,6 +12,11 @@ Latest
  * Removed sqlalchemy as a requirement for SunPy
  * Added support for NOAA solar cycle prediction in lightcurves
  * Added ability to download level3 data for lyra Light Curve,some tests.
+ * Fix algorithm in sunpy.sun.equation_of_center
+ * Added Docstrings to LightCurve methods.
+ * Added functions that implement image coalignment with support for MapCubes. 
+ * Cleaned up the sunpy namespace, removed .units, /ssw and .sphinx. Also moved .coords .physics.transforms. 
+ * Added contains functionality to TimeRange module
 
 0.4.0
 -----
