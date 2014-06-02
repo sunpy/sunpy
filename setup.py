@@ -35,10 +35,7 @@ AUTHOR_EMAIL = metadata.get('author_email', 'sunpy@googlegroups.com')
 LICENSE = metadata.get('license', 'BSD 2-Clause')
 URL = metadata.get('url', 'http://sunpy.org')
 
-# Get the long description from the package's docstring
-#__import__(PACKAGENAME)
-#package = sys.modules[PACKAGENAME]
-LONG_DESCRIPTION = "SunPy is awesome"
+LONG_DESCRIPTION = "SunPy is a Python library for solar physics data analysis."
 
 # Store the package name in a built-in variable so it's easy
 # to get from other parts of the setup infrastructure
@@ -91,8 +88,6 @@ for root, dirs, files in os.walk(PACKAGENAME):
                     os.path.relpath(root, PACKAGENAME), filename))
 package_info['package_data'][PACKAGENAME].extend(c_files)
 
-print package_info
-
 extras_require = {'database': ["sqlalchemy"],
                   'image': ["scikit-image"],
                   'jpeg2000': ["glymur"],
@@ -104,7 +99,7 @@ setup(name=PACKAGENAME,
       description=DESCRIPTION,
       scripts=scripts,
       install_requires=['numpy>1.7.1',
-                        'astropy>=0.3.0',
+                        'astropy>=0.4.0',
                         'scipy',
                         'pandas>=0.12.0',
                         'matplotlib>=1.1'],
