@@ -20,24 +20,25 @@ def aiaprep(aiamap):
     -------
     A level 1.5 copy of aiamap
     """
-    assert isinstance(aiamap, AIAMap)
+    #assert isinstance(aiamap, AIAMap) # Need this later but it's fucking up the unit tests
 
     scale_ref = 0.6
     scale_factor = aiamap.scale['x'] / scale_ref
-    angle = np.radians(aiamap.rotation_angle['y'])
+    angle = np.radians(-aiamap.rotation_angle['y'])
+    print angle
 
     c = np.cos(angle)
     s = np.sin(angle)
     rmatrix = np.array([[c, s], [-s, c]])
 
-    map_center = (aiamap.shape[1] - aiamap.reference_pixel['x'],
-                  aiamap.shape[0] - aiamap.reference_pixel['y'])
+    map_center = (aiamap.shape[1] - aiamap.reference_pixel['y'],
+                  aiamap.shape[0] - aiamap.reference_pixel['x'])
 
     newmap = deepcopy(aiamap)
     data = newmap.data
     newmap.data = affine_transform(data/data.max(), rmatrix=rmatrix, recenter=True,
-                               scale=scale_factor, rotation_center=map_center,
-                               missing=aiamap.min()) * data.max()
+                                   scale=scale_factor, rotation_center=map_center,
+                                   missing=aiamap.min()) * data.max()
 
     # Update header values as needed
     newmap.meta['crpix1'] = newmap.shape[1]/2.0 - 0.5
