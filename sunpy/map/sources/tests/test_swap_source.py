@@ -39,8 +39,3 @@ def test_measurement(createSWAP):
     """Tests the measurement property of the SWAPMap object."""
     assert createSWAP.measurement == 174
 
-        
-        
-    
-        
-        

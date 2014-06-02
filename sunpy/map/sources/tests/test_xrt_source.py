@@ -55,7 +55,4 @@ def test_wheel_measurements():
             ["Al_med", "Al_poly", "Be_med", "Be_thin", "C_poly", "Open"])
     assert (xrt.filter_wheel2_measurements ==
             ["Open", "Al_mesh", "Al_thick", "Be_thick", "Gband", "Ti_poly"])
-        
-    
-        
-        
+         
