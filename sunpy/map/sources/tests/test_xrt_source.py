@@ -41,8 +41,8 @@ def test_normalizer():
     """Tests the creation of the Normalizer object,
     as well as its properties."""
     norm = xrt._get_mpl_normalizer()
-    if(xrt.data.dtype == np.uint8):
-        assert norm == None
+    if xrt.data.dtype == np.uint8:
+        assert norm is None
     else:
         assert isinstance(norm, colors.Normalize)
         assert norm.vmin == (max(0, xrt.mean() - 3 * xrt.std()))

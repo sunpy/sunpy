@@ -27,7 +27,7 @@ def createAIAMap(request):
 def test_AIAMap(createAIAMap):
     """Tests the creation of AIAMap from AIA_171_IMAGE or through
     use of the JP2 file."""
-    assert (createAIAMap, AIAMap)
+    assert isinstance(createAIAMap, AIAMap)
 
 def test_is_datasource_for(createAIAMap):
     """Tests the is_datasource_for method of AIAMap."""
@@ -39,6 +39,5 @@ def test_observatory(createAIAMap):
 
 def test_measurement(createAIAMap):
     """Tests the measurement property of the AIAMap object."""
-    assert (createAIAMap.measurement == 171 or
-            createAIAMap.measurement == 193)
+    assert createAIAMap.measurement in [171, 193]
     # aiaimg has 171, jp2path has 193.

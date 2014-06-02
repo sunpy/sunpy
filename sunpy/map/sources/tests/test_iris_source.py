@@ -22,8 +22,7 @@ irislist = Map(fitspath)
 def test_fitstoIRIS():
     """Tests the creation of IRISMap using FITS."""
     for amap in irislist:
-        assert (isinstance(amap, IRISMap) or
-                isinstance(amap, GenericMap))
+        assert (isinstance(amap, (IRISMap, GenericMap)))
 
 def test_is_datasource_for():
     """Test the is_datasource_for method of IRISMap.
