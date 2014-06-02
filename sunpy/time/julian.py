@@ -1,7 +1,6 @@
 from __future__ import absolute_import
 
 from sunpy.time import parse_time
-from astropy.units import cds
 
 __all__ = ['julian_day', 'julian_centuries']
 
@@ -33,10 +32,11 @@ def julian_day(t='now'):
     else:
         result = result + 0.5
 
-    return result * cds.JD
+    return result
 
 def julian_centuries(t='now'):
     """Returns the number of Julian centuries since 1900 January 0.5."""
     DAYS_IN_YEAR = 36525.0
 
     return (julian_day(t) - JULIAN_DAY_ON_NOON01JAN1900) / DAYS_IN_YEAR
+
