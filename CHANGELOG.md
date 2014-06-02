@@ -1,3 +1,8 @@
+0.4.1
+-----
+Bug Fixes:
+    * Fix map.rotate() functionality
+
 0.4.0
 -----
 Features:
