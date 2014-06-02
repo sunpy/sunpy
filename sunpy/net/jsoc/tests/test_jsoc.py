@@ -123,9 +123,8 @@ def test_post_wavelength():
 
 @pytest.mark.online()
 def test_post_wave_series():
-    responses = client.jsoc_query(attrs.Time('2012/1/1T00:00:00', '2012/1/1T00:00:45'), attrs.Series('hmi.M_45s')|attrs.Series('aia.lev1_euv_12s'),attrs.WaveLength(193)|attrs.WaveLength(335), return_resp=True)
-    assert responses[0].json()['status'] == 2
-    assert responses[1].json()['status'] == 2
+    with pytest.raises(TypeError):
+        client.jsoc_query(attrs.Time('2012/1/1T00:00:00', '2012/1/1T00:00:45'), attrs.Series('hmi.M_45s')|attrs.Series('aia.lev1_euv_12s'),attrs.WaveLength(193)|attrs.WaveLength(335), return_resp=True)
 
 
 @pytest.mark.online
