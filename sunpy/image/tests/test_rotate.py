@@ -49,7 +49,7 @@ def compare_results(expect, result):
     assert np.allclose(exp, res, rtol=rtol)
 
 
-@pytest.mark.parameterize("angle, k", [(-90.0, 1), (90.0, -1), (270.0, -1),
+@pytest.mark.parametrize("angle, k", [(-90.0, 1), (90.0, -1), (270.0, -1),
                                        (90.0, 3), (360.0, 0), (-360.0, 0)])
 def test_rotation(angle, k):
     # Test rotation against expected outcome
@@ -73,7 +73,7 @@ def test_rotation(angle, k):
 
 dx_values, dy_values = range(-100, 101, 50) * 5, range(-100, 101, 50) * 50
 dy_values.sort()
-@pytest.mark.parameterize("dx, dy", zip(dx_values, dy_values))
+@pytest.mark.parametrize("dx, dy", zip(dx_values, dy_values))
 def test_shift(dx, dy):
     # Rotation center for all translation tests.
     image_center = np.array(original.shape)/2.0 - 0.5
@@ -98,7 +98,7 @@ def test_shift(dx, dy):
     plt.close()
 
 
-@pytest.mark.parameterize("scale_factor", [0.25, 0.5, 0.75, 1.0, 1.25, 1.5])
+@pytest.mark.parametrize("scale_factor", [0.25, 0.5, 0.75, 1.0, 1.25, 1.5])
 def test_scale(scale_factor):
     # No rotation for all scaling tests.
     rmatrix = np.array([[1.0, 0.0], [0.0, 1.0]])
@@ -122,7 +122,7 @@ def test_scale(scale_factor):
     plt.close()
 
 
-@pytest.mark.parameterize("angle, dx, dy, scale_factor", [(90, -100, 50, 0.25),
+@pytest.mark.parametrize("angle, dx, dy, scale_factor", [(90, -100, 50, 0.25),
                                                           (-90, 50, -100, 0.75),
                                                           (180, 100, 50, 1.5)])
 def test_all(angle, dx, dy, scale_factor):
