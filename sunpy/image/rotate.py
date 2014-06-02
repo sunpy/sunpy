@@ -11,7 +11,6 @@ except:
 
 __all__ = ['affine_transform']
 
-#TODO: Add functionality to specify interpolation method and missing value
 def affine_transform(image, rmatrix, order=4, scale=1.0, rotation_center=None,
                      recenter=False, missing=0.0, scipy=False):
     """    
@@ -72,14 +71,21 @@ def affine_transform(image, rmatrix, order=4, scale=1.0, rotation_center=None,
                                             order=order, mode='constant',
                                             cval=missing)
     else:
+        # Make the rotation matrix 3x3 to include translation of the image
         skmatrix = np.zeros((3, 3))
         skmatrix[:2, :2] = rmatrix
         skmatrix[2, 2] = 1.0
         skmatrix[:2, 2] = shift
-        im_max = image.max()
+        # Normalise image values to between 0 and 1.
+        im_min = image.min()
         tform = sk.AffineTransform(skmatrix)
+        norm_image = image - im_min
+        normed_max = norm_image.max()
+        norm_image = norm_image/normed_max
+        # Transform the image
         rotated_image = sk.warp(image, tform, order=order, mode='constant',
-                                cval=missing) * im_max
-    
+                                cval=missing)
+        # Restore image values to previous distribution
+        output_image = (rotated_image*normed_max) + im_min
 
-    return rotated_image
+    return output_image
