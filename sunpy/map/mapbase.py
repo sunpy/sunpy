@@ -516,9 +516,8 @@ Dimension:\t [%d, %d]
         new_map.meta = new_meta
         return new_map
     
-    def rotate(self, angle=None, rmatrix=None, scale=1.0,
-               rotation_center=(0, 0), recenter=False,
-               missing=0.0, interpolation='bicubic', interp_param=-0.5):
+    def rotate(self, angle=None, rmatrix=None, order=4, scale=1.0,
+               image_center=None, recenter=False, missing=0.0, scipy=False):
         """Returns a new rotated and rescaled map.  Specify either a rotation
         angle or a rotation matrix, but not both.  If neither an angle or a
         rotation matrix are specified, the map will be rotated by the rotation
@@ -534,9 +533,15 @@ Dimension:\t [%d, %d]
             The angle (degrees) to rotate counterclockwise.
         rmatrix: NxN
             Linear transformation rotation matrix.
+        order: int
+            Order of interpolation to use for the transform. Must be in the
+            range 0-5: 0 - Nearest-neighbour; 1 - bi-linear; 2 - bi-quadradtic;
+            3 - bi-cubic; 4 - bi-quartic; 5 - bi-quintic. Not used if keyword
+            scipy is True or if the skimage transform cannot be imported.
+            Default: 4
         scale: float
             A scale factor for the image, default is no scaling
-        rotation_center: tuple
+        image_center: tuple
             The axis of rotation
             Default: the origin in the data coordinate system
         recenter: bool
@@ -545,182 +550,15 @@ Dimension:\t [%d, %d]
         missing: float
             The numerical value to fill any missing points after rotation.
             Default: 0.0
-        interpolation: {'nearest' | 'bilinear' | 'spline' | 'bicubic'}
-            Interpolation method to use in the transform.
-            Spline uses the
-            scipy.ndimage.interpolation.affline_transform routine.
-            nearest, bilinear and bicubic all replicate the IDL rot() function.
-            Default: 'bicubic'
-        interp_par: Int or Float
-            Optional parameter for controlling the interpolation.
-            Spline interpolation requires an integer value between 1 and 5 for
-            the degree of the spline fit.
-            Default: 3
-            BiCubic interpolation requires a flaot value between -1 and 0.
-            Default: 0.5
-            Other interpolation options ingore the argument.
+        scipy: bool
+            If True, forces the rotation to use the scipy affine_transform(),
+            otherwise it uses the AffineTransform class and warp() function
+            from skimage.transform
+            Default:False
 
         Returns
         -------
         New rotated and rescaled map
-
-        Notes
-        -----
-        Apart from interpolation='spline' all other options use a compiled
-        C-API extension. If for some reason this is not compiled correctly this
-        routine will fall back upon the scipy implementation of order = 3.
-        For more infomation see:
-        http://sunpy.readthedocs.org/en/latest/guide/troubleshooting.html#crotate-warning
-        """
-        assert angle is None or rmatrix is None
-        # Interpolation parameter sanity
-        assert interpolation in ['nearest', 'spline', 'bilinear', 'bicubic']
-        # Set defaults based on interpolation
-        if interp_param is None:
-            if interpolation is 'spline':
-                interp_param = 3
-            elif interpolation is 'bicubic':
-                interp_param = 0.5
-            else:
-                interp_param = 0 # Default value for nearest or bilinear
-
-        image = self.data.copy()
-
-        if angle is None and rmatrix is None:
-            angle = self.rotation_angle['y']
-
-        if not angle is None:
-            #Calulate the parameters for the affine_transform
-            c = np.cos(np.deg2rad(angle))
-            s = np.sin(np.deg2rad(angle))
-            rsmat = np.array([[c, -s], [s, c]]) / scale
-        if not rmatrix is None:
-            rsmat = np.asarray(rmatrix) / scale
-
-        # map_center is swapped compared to the x-y convention
-        map_center = (np.array(self.data.shape)-1)/2.0
-
-        # axis is swapped compared to the x-y convention
-        if recenter:
-            axis_x = self.data_to_pixel(rotation_center[0], 'x')
-            axis_y = self.data_to_pixel(rotation_center[1], 'y')
-            axis = (axis_y, axis_x)
-        else:
-            axis = map_center
-
-        # offs is swapped compared to the x-y convention
-        offs = axis - np.dot(rsmat, map_center)
-
-        if interpolation == 'spline':
-            # This is the scipy call
-            data = interp.affine_transform(image, rsmat, offset=offs,
-                                           order=interp_param, mode='constant',
-                                           cval=missing)
-        else:
-            #Use C extension Package
-            if not 'Crotate' in globals():
-                warnings.warn("""The C extension sunpy.image.Crotate is not
-installed, falling back to the interpolation='spline' of order=3""" ,Warning)
-                data = interp.affine_transform(image, rsmat, offset=offs,
-                                               order=3, mode='constant',
-                                               cval=missing)
-            else:
-                #Set up call parameters depending on interp type.
-                if interpolation == 'nearest':
-                    interp_type = Crotate.NEAREST
-                elif interpolation == 'bilinear':
-                    interp_type = Crotate.BILINEAR
-                elif interpolation == 'bicubic':
-                    interp_type = Crotate.BICUBIC
-                #Make call to extension
-                data = Crotate.affine_transform(image,
-                                                rsmat, offset=offs,
-                                                kernel=interp_type,
-                                                cubic=interp_param,
-                                                mode='constant',
-                                                cval=missing)
-
-        #Return a new map
-        #Copy Header
-        new_map = deepcopy(self)
-
-        # Create new map instance
-        new_map.data = data
-
-        if recenter:
-            new_center = rotation_center
-        else:
-            # Retrieve old coordinates for the center of the array
-            old_center = np.array(new_map.pixel_to_data(map_center[1], map_center[0]))
-
-            # Calculate new coordinates for the center of the array
-            new_center = rotation_center - np.dot(rsmat, rotation_center - old_center)
-
-        # Define a new reference pixel in the rotated space
-        new_map.meta['crval1'] = new_center[0]
-        new_map.meta['crval2'] = new_center[1]
-        new_map.meta['crpix1'] = map_center[1] + 1 # FITS counts pixels from 1
-        new_map.meta['crpix2'] = map_center[0] + 1 # FITS counts pixels from 1
-
-        if angle is not None and new_map.meta.get('crota2') is not None:
-            new_map.meta['crota2'] = new_map.rotation_angle['y'] - angle
-
-        return new_map
-
-    def rotate_alt(self, angle=None, rmatrix=None, order=4, scale=1.0,
-                   image_center=None, recenter=False, missing=0.0, scipy=False):
-        """Returns a new rotated and rescaled map.  Specify either a rotation
-        angle or a rotation matrix, but not both.  If neither an angle or a
-        rotation matrix are specified, the map will be rotated by the rotation
-        angle in the metadata.
-
-        If the rotation is specified as an angle (either explicitly or
-        implicitly) and the metadata contains the CROTA2 keyword, that keyword
-        will be changed appropriately to account for the rotation.
-
-        Parameters
-        ----------
-        angle: float
-            The angle (degrees) to rotate counterclockwise.
-        rmatrix: NxN
-            Linear transformation rotation matrix.
-        scale: float
-            A scale factor for the image, default is no scaling
-        rotation_center: tuple
-            The axis of rotation
-            Default: the origin in the data coordinate system
-        recenter: bool
-            If True, position the axis of rotation at the center of the new map
-            Default: False
-        missing: float
-            The numerical value to fill any missing points after rotation.
-            Default: 0.0
-        interpolation: {'nearest' | 'bilinear' | 'spline' | 'bicubic'}
-            Interpolation method to use in the transform.
-            Spline uses the
-            scipy.ndimage.interpolation.affline_transform routine.
-            nearest, bilinear and bicubic all replicate the IDL rot() function.
-            Default: 'bicubic'
-        interp_par: Int or Float
-            Optional parameter for controlling the interpolation.
-            Spline interpolation requires an integer value between 1 and 5 for
-            the degree of the spline fit.
-            Default: 3
-            BiCubic interpolation requires a flaot value between -1 and 0.
-            Default: 0.5
-            Other interpolation options ingore the argument.
-
-        Returns
-        -------
-        New rotated and rescaled map
-
-        Notes
-        -----
-        Apart from interpolation='spline' all other options use a compiled
-        C-API extension. If for some reason this is not compiled correctly this
-        routine will fall back upon the scipy implementation of order = 3.
-        For more infomation see:
-        http://sunpy.readthedocs.org/en/latest/guide/troubleshooting.html#crotate-warning
         """
         if not angle is None or not rmatrix is None:
             raise ValueError
@@ -739,6 +577,9 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
             c = np.cos(np.deg2rad(angle))
             s = np.sin(np.deg2rad(angle))
             rmatrix = np.array([[c, -s], [s, c]])
+        
+        if image_center is None:
+            image_center = (self.reference_pixel['x'], self.reference_pixel['y'])
 
         new_map.data = aff_tr(new_map.data, rmatrix, order=order, scale=scale,
                               image_center=image_center, recenter=recenter,
@@ -749,6 +590,7 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
             new_center = map_center
         else:
             new_center = image_center
+        new_center = self.pixel_to_data(x=new_center[0], y=new_center[1])
 
         # Define a new reference pixel in the rotated space
         new_map.meta['crval1'] = new_center[0]
