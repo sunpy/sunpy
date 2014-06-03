@@ -23,7 +23,6 @@ def aiaprep(aiamap):
     scale_ref = 0.6
     scale_factor = aiamap.scale['x'] / scale_ref
 
-    newmap = deepcopy(aiamap)
     newmap = aiamap.rotate(recenter=True, scale=scale_factor,
                            missing=aiamap.min())
 
