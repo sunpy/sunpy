@@ -276,4 +276,3 @@ def is_time_in_given_format(time_string, time_format):
         return True
     except ValueError:
         return False
-
