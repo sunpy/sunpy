@@ -23,6 +23,7 @@ try:
     import sunpy.image.Crotate as Crotate
 except ImportError:
     pass
+from sunpy.image.rotate import affine_transform as aff_tr
 
 import sunpy.io as io
 import sunpy.wcs as wcs
@@ -666,9 +667,8 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
 
         return new_map
 
-    def rotate_alt(self, angle=None, rmatrix=None, scale=1.0,
-               rotation_center=(0, 0), recenter=False,
-               missing=0.0, interpolation='bicubic', interp_param=-0.5):
+    def rotate_alt(self, angle=None, rmatrix=None, order=4, scale=1.0,
+                   image_center=None, recenter=False, missing=0.0, scipy=False):
         """Returns a new rotated and rescaled map.  Specify either a rotation
         angle or a rotation matrix, but not both.  If neither an angle or a
         rotation matrix are specified, the map will be rotated by the rotation
@@ -722,65 +722,33 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         For more infomation see:
         http://sunpy.readthedocs.org/en/latest/guide/troubleshooting.html#crotate-warning
         """
-        assert angle is None or rmatrix is None
-        # Interpolation parameter sanity
-        assert interpolation in ['nearest', 'spline', 'bilinear', 'bicubic']
-        # Set defaults based on interpolation
-        if interp_param is None:
-            if interpolation is 'spline':
-                interp_param = 3
-            elif interpolation is 'bicubic':
-                interp_param = 0.5
-            else:
-                interp_param = 0 # Default value for nearest or bilinear
-
-        image = self.data.copy()
-
-        if angle is None and rmatrix is None:
+        if not angle is None or not rmatrix is None:
+            raise ValueError
+        elif angle is None and rmatrix is None:
             angle = self.rotation_angle['y']
+
+        # Interpolation parameter sanity
+        if order not in range(6):
+            raise ValueError
+
+        # Copy Map
+        new_map = deepcopy(self)
 
         if not angle is None:
             #Calulate the parameters for the affine_transform
             c = np.cos(np.deg2rad(angle))
             s = np.sin(np.deg2rad(angle))
-            rsmat = np.array([[c, -s], [s, c]]) / scale
-        if not rmatrix is None:
-            rsmat = np.asarray(rmatrix) / scale
+            rmatrix = np.array([[c, -s], [s, c]])
 
-        # map_center is swapped compared to the x-y convention
-        map_center = (np.array(self.data.shape)-1)/2.0
+        new_map.data = aff_tr(new_map.data, rmatrix, order=order, scale=scale,
+                              image_center=image_center, recenter=recenter,
+                              missing=missing, scipy=scipy)
 
-        # axis is swapped compared to the x-y convention
-        if recenter:
-            axis_x = self.data_to_pixel(rotation_center[0], 'x')
-            axis_y = self.data_to_pixel(rotation_center[1], 'y')
-            axis = (axis_y, axis_x)
+        map_center = np.array(self.shape/2.0) - 0.5
+        if recenter == True:
+            new_center = map_center
         else:
-            axis = map_center
-
-        # offs is swapped compared to the x-y convention
-        offs = axis - np.dot(rsmat, map_center)
-
-        # Need to sort out order of interpolation and scipy
-        # Need to figure out what's going in as image_center
-        data = affine_transform(image, rmatrix, order=4, scale=scale, image_center=None,
-                     recenter=recenter, missing=missing, scipy=False)
-
-        #Return a new map
-        #Copy Header
-        new_map = deepcopy(self)
-
-        # Create new map instance
-        new_map.data = data
-
-        if recenter:
-            new_center = rotation_center
-        else:
-            # Retrieve old coordinates for the center of the array
-            old_center = np.array(new_map.pixel_to_data(map_center[1], map_center[0]))
-
-            # Calculate new coordinates for the center of the array
-            new_center = rotation_center - np.dot(rsmat, rotation_center - old_center)
+            new_center = image_center
 
         # Define a new reference pixel in the rotated space
         new_map.meta['crval1'] = new_center[0]
