@@ -2,10 +2,8 @@ from __future__ import absolute_import
 
 from datetime import datetime
 
-from numpy.testing import assert_almost_equal
-
 from sunpy import time
-from sunpy.time import parse_time, julian
+from sunpy.time import parse_time
 
 LANDING = datetime(1966, 2, 3)
 

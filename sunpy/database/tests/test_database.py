@@ -5,10 +5,10 @@
 
 from __future__ import absolute_import
 
-from datetime import datetime
 import glob
 import ConfigParser
 import os.path
+import sys
 
 import pytest
 import sqlalchemy
@@ -90,7 +90,7 @@ def test_config_url(monkeypatch):
 def test_config_url_none(monkeypatch):
     monkeypatch.setattr("sunpy.config", ConfigParser.SafeConfigParser())
     with pytest.raises(ConfigParser.NoSectionError):
-        database = Database()
+        Database()
 
 def test_tags_unique(database):
     entry = DatabaseEntry()
@@ -676,7 +676,9 @@ def test_download_empty_query_result(database, empty_query):
 
 
 @pytest.mark.online
-@pytest.mark.fails_on_travis
+@pytest.mark.skipif(
+        sys.version_info[:2] == (2,6),
+        reason='for some unknown reason, this test fails on Python 2.6')
 def test_download(database, download_query, tmpdir):
     assert len(database) == 0
     database.default_waveunit = 'angstrom'
@@ -685,26 +687,28 @@ def test_download(database, download_query, tmpdir):
     fits_pattern = str(tmpdir.join('*.fits'))
     num_of_fits_headers = sum(
         len(fits.get_header(file)) for file in glob.glob(fits_pattern))
-    assert len(database) == num_of_fits_headers == 2
+    assert len(database) == num_of_fits_headers
     for entry in database:
         assert os.path.dirname(entry.path) == str(tmpdir)
     database.undo()
     assert len(database) == 0
     database.redo()
-    assert len(database) == 2
+    assert len(database) == 4
 
 
 @pytest.mark.online
-@pytest.mark.fails_on_travis
+@pytest.mark.skipif(
+        sys.version_info[:2] == (2,6),
+        reason='for some unknown reason, this test fails on Python 2.6')
 def test_download_duplicates(database, download_query, tmpdir):
     assert len(database) == 0
     database.default_waveunit = 'angstrom'
     database.download(
         *download_query, path=str(tmpdir.join('{file}.fits')), progress=True)
-    assert len(database) == 2
+    assert len(database) == 4
     download_time = database[0].download_time
     database.download(*download_query, path=str(tmpdir.join('{file}.fits')))
-    assert len(database) == 2
+    assert len(database) == 4
     assert database[0].download_time != download_time
 
 
@@ -719,20 +723,24 @@ def test_fetch_unexpected_kwarg(database):
 
 
 @pytest.mark.online
-@pytest.mark.fails_on_travis
+@pytest.mark.skipif(
+        sys.version_info[:2] == (2,6),
+        reason='for some unknown reason, this test fails on Python 2.6')
 def test_fetch(database, download_query, tmpdir):
     assert len(database) == 0
     database.default_waveunit = 'angstrom'
     database.fetch(*download_query, path=str(tmpdir.join('{file}.fits')))
-    assert len(database) == 2
+    assert len(database) == 4
     download_time = database[0].download_time
     database.fetch(*download_query, path=str(tmpdir.join('{file}.fits')))
-    assert len(database) == 2
+    assert len(database) == 4
     assert database[0].download_time == download_time
 
 
 @pytest.mark.online
-@pytest.mark.fails_on_travis
+@pytest.mark.skipif(
+        sys.version_info[:2] == (2,6),
+        reason='for some unknown reason, this test fails on Python 2.6')
 def test_disable_undo(database, download_query, tmpdir):
     entry = DatabaseEntry()
     with disable_undo(database) as db:

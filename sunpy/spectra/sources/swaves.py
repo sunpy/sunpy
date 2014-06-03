@@ -8,7 +8,7 @@ import datetime
 
 import numpy as np
 
-from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
+from sunpy.util.cond_dispatch import ConditionalDispatch
 from sunpy.spectra.spectrogram import LinearTimeSpectrogram, REFERENCE, get_day
 
 __all__ = ['SWavesSpectrogram']

@@ -3,7 +3,6 @@
 from __future__ import absolute_import
 
 import os
-import numpy as np
 from datetime import datetime  
 
 import matplotlib.pyplot as plt
@@ -96,7 +95,6 @@ class EVELightCurve(LightCurve):
         header = []
         fields = []
         line = fp.readline()
-        header.append(line)
         # Read header at top of file
         while line.startswith(";"):
             header.append(line)

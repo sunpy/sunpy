@@ -6,7 +6,6 @@ import sqlite3
 import numpy as np
 import os
 from sunpy.time import parse_time
-import sunpy.net.download
 import urllib
 
 def download_lytaf_database(lytaf_dir=''):
