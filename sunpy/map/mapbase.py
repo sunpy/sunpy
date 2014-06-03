@@ -18,12 +18,7 @@ from matplotlib import patches
 from matplotlib import cm
 
 import astropy.nddata
-
-try:
-    import sunpy.image.Crotate as Crotate
-except ImportError:
-    pass
-from sunpy.image.rotate import affine_transform as aff_tr
+from sunpy.image.rotate import affine_transform
 
 import sunpy.io as io
 import sunpy.wcs as wcs
@@ -536,8 +531,9 @@ Dimension:\t [%d, %d]
         order: int
             Order of interpolation to use for the transform. Must be in the
             range 0-5: 0 - Nearest-neighbour; 1 - bi-linear; 2 - bi-quadradtic;
-            3 - bi-cubic; 4 - bi-quartic; 5 - bi-quintic. Not used if keyword
-            scipy is True or if the skimage transform cannot be imported.
+            3 - bi-cubic; 4 - bi-quartic; 5 - bi-quintic. Passed to the scipy
+            affine transformation function if keyword scipy is True or if the
+            skimage transform cannot be imported.
             Default: 4
         scale: float
             A scale factor for the image, default is no scaling
@@ -560,19 +556,19 @@ Dimension:\t [%d, %d]
         -------
         New rotated and rescaled map
         """
-        if not angle is None or not rmatrix is None:
-            raise ValueError
+        if angle is not None or rmatrix is not None:
+            raise ValueError("You  cannot specify both an angle and a matrix")
         elif angle is None and rmatrix is None:
             angle = self.rotation_angle['y']
 
         # Interpolation parameter sanity
         if order not in range(6):
-            raise ValueError
+            raise ValueError("Order must be between 0 and 5")
 
         # Copy Map
         new_map = deepcopy(self)
 
-        if not angle is None:
+        if angle is not None:
             #Calulate the parameters for the affine_transform
             c = np.cos(np.deg2rad(angle))
             s = np.sin(np.deg2rad(angle))
@@ -581,9 +577,10 @@ Dimension:\t [%d, %d]
         if image_center is None:
             image_center = (self.reference_pixel['x'], self.reference_pixel['y'])
 
-        new_map.data = aff_tr(new_map.data, rmatrix, order=order, scale=scale,
-                              image_center=image_center, recenter=recenter,
-                              missing=missing, scipy=scipy)
+        new_map.data = affine_transform(new_map.data, rmatrix, order=order,
+                                        scale=scale, image_center=image_center,
+                                        recenter=recenter, missing=missing,
+                                        scipy=scipy)
 
         map_center = np.array(self.shape/2.0) - 0.5
         if recenter == True:
