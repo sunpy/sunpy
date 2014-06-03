@@ -41,7 +41,7 @@ before_install:
    - wget http://openjpeg.googlecode.com/files/openjpeg-1.5.0-Linux-x86_64.tar.gz
    - sudo tar -xvf openjpeg-1.5.0-Linux-x86_64.tar.gz --strip-components=1 -C /
 # Install coveralls
-   - pip install $PIP_WHEEL_COMMAND coveralls pytest-cov
+   - pip install $PIP_WHEEL_COMMAND coveralls pytest-cov pytest-xdist
 
 # Install all SunPy dependacies using wheels.
 install:
@@ -64,8 +64,8 @@ install:
 script:
    - python setup.py develop
    - if [[ $TEST_MODE == 'sphinx' ]]; then cd doc/source && sphinx-build -W -b html -d _build/doctrees   . _build/html; fi
-   - if [[ $TEST_MODE == 'tests' ]]; then py.test --cov-report html --cov sunpy; fi
-   - if [[ $TEST_MODE == 'offline' ]]; then py.test --cov-report html --cov sunpy -k-online; fi
+   - if [[ $TEST_MODE == 'tests' ]]; then py.test -n 8 --cov-report html --cov sunpy; fi
+   - if [[ $TEST_MODE == 'offline' ]]; then py.test -n 8 --cov-report html --cov sunpy -k-online; fi
 
 after_success:
    - if [[ $TEST_MODE == 'tests' ]]; then coveralls; fi
