@@ -45,61 +45,62 @@ def test_mean_anomaly():
 #These values are tested from the functions after the integration of astropy.units
 
 def test_solar_cycle_number():
-	assert_array_almost_equal(sun.solar_cycle_number("2012/11/11"), 5, decimal=0)
-	assert_array_almost_equal(sun.solar_cycle_number("2011/2/22"), 4, decimal=0)
-	assert_array_almost_equal(sun.solar_cycle_number("2034/1/15"), 27, decimal=0)
+    assert_array_almost_equal(sun.solar_cycle_number("2012/11/11"), 5, decimal=0)
+    assert_array_almost_equal(sun.solar_cycle_number("2011/2/22"), 4, decimal=0)
+    assert_array_almost_equal(sun.solar_cycle_number("2034/1/15"), 27, decimal=0)
 
 def test_solar_semidiameter_angular_size():
-	assert_array_almost_equal(sun.solar_semidiameter_angular_size("2012/11/11"), 968.383 * u.arcsec, decimal=3)
-	assert_array_almost_equal(sun.solar_semidiameter_angular_size("2043/03/01"), 968.274 * u.arcsec, decimal=3)
-	assert_array_almost_equal(sun.solar_semidiameter_angular_size("2001/07/21"), 943.706 * u.arcsec, decimal=3)
+    assert_array_almost_equal(sun.solar_semidiameter_angular_size("2012/11/11"), 968.383 * u.arcsec, decimal=3)
+    assert_array_almost_equal(sun.solar_semidiameter_angular_size("2043/03/01"), 968.274 * u.arcsec, decimal=3)
+    assert_array_almost_equal(sun.solar_semidiameter_angular_size("2001/07/21"), 943.706 * u.arcsec, decimal=3)
 
 def test_mean_ecliptic_longitude():
-	assert_array_almost_equal(sun.mean_ecliptic_longitude("2012/11/11"), 229.558 * u.deg, decimal=3)
-	assert_array_almost_equal(sun.mean_ecliptic_longitude("2101/04/29"), 35.824 * u.deg, decimal=3)
-	assert_array_almost_equal(sun.mean_ecliptic_longitude("2003/09/15"), 172.568 * u.deg, decimal =3)
+    assert_array_almost_equal(sun.mean_ecliptic_longitude("2012/11/11"), 229.558 * u.deg, decimal=3)
+    assert_array_almost_equal(sun.mean_ecliptic_longitude("2101/04/29"), 35.824 * u.deg, decimal=3)
+    assert_array_almost_equal(sun.mean_ecliptic_longitude("2003/09/15"), 172.568 * u.deg, decimal =3)
 
 def test_equation_of_center():
-	assert_array_almost_equal(sun.equation_of_center("2012/11/11"), -1.559 * u.deg, decimal=3)
-	assert_array_almost_equal(sun.equation_of_center("2014/05/27"), 1.203 * u.deg, decimal=3)
-	assert_array_almost_equal(sun.equation_of_center("2134/01/01"), -0.194 * u.deg, decimal=3)
+    assert_array_almost_equal(sun.equation_of_center("2012/11/11"), -1.559 * u.deg, decimal=3)
+    assert_array_almost_equal(sun.equation_of_center("2014/05/27"), 1.203 * u.deg, decimal=3)
+    assert_array_almost_equal(sun.equation_of_center("2134/01/01"), -0.194 * u.deg, decimal=3)
 
 def test_true_anomaly():
-	assert_array_almost_equal(sun.true_anomaly("2012/11/11"), 304.837 * u.deg, decimal=3)
-	assert_array_almost_equal(sun.true_anomaly("2242/06/29"), 169.055 * u.deg, decimal=3)
-	assert_array_almost_equal(sun.true_anomaly("2020/01/01"), 355.715 * u.deg, decimal=3)
+    assert_array_almost_equal(sun.true_anomaly("2012/11/11"), 304.837 * u.deg, decimal=3)
+    assert_array_almost_equal(sun.true_anomaly("2242/06/29"), 169.055 * u.deg, decimal=3)
+    assert_array_almost_equal(sun.true_anomaly("2020/01/01"), 355.715 * u.deg, decimal=3)
 
 def test_apparent_longitude():
-	assert_array_almost_equal(sun.apparent_longitude("2012/11/11"), 227.989 * u.deg, decimal=3)
-	assert_array_almost_equal(sun.apparent_longitude("2014/05/27"), 64.687 * u.deg, decimal=3)
-	assert_array_almost_equal(sun.apparent_longitude("2134/02/12"), 322.053 * u.deg, decimal=3)
+    assert_array_almost_equal(sun.apparent_longitude("2012/11/11"), 227.989 * u.deg, decimal=3)
+    assert_array_almost_equal(sun.apparent_longitude("2014/05/27"), 64.687 * u.deg, decimal=3)
+    assert_array_almost_equal(sun.apparent_longitude("2134/02/12"), 322.053 * u.deg, decimal=3)
 
 def test_true_obliquity_of_ecliptic():
-	assert_array_almost_equal(sun.true_obliquity_of_ecliptic("2012/11/11"), 23.437 * u.deg, decimal=3)
-	assert_array_almost_equal(sun.true_obliquity_of_ecliptic("2132/12/29"), 23.421 * u.deg, decimal=3)
-	assert_array_almost_equal(sun.true_obliquity_of_ecliptic("2002/03/15"), 23.438 * u.deg, decimal=3)
+    assert_array_almost_equal(sun.true_obliquity_of_ecliptic("2012/11/11"), 23.437 * u.deg, decimal=3)
+    assert_array_almost_equal(sun.true_obliquity_of_ecliptic("2132/12/29"), 23.421 * u.deg, decimal=3)
+    assert_array_almost_equal(sun.true_obliquity_of_ecliptic("2002/03/15"), 23.438 * u.deg, decimal=3)
 
 def test_true_rightascenscion():
-	assert_array_almost_equal(sun.true_rightascenscion("2012/11/11"), 359.318 * u.deg, decimal=3)
-	assert_array_almost_equal(sun.true_rightascenscion("2142/02/03"), 359.328 * u.deg, decimal=3)
-	assert_array_almost_equal(sun.true_rightascenscion("2013/12/11"), 359.102 * u.deg, decimal=3)
+    assert_array_almost_equal(sun.true_rightascenscion("2012/11/11"), 359.318 * u.deg, decimal=3)
+    assert_array_almost_equal(sun.true_rightascenscion("2142/02/03"), 359.328 * u.deg, decimal=3)
+    assert_array_almost_equal(sun.true_rightascenscion("2013/12/11"), 359.102 * u.deg, decimal=3)
 
 def test_true_declination():
-	assert_array_almost_equal(sun.true_declination("2012/11/11"), -0.669 * u.deg, decimal=3)
-	assert_array_almost_equal(sun.true_declination("2245/12/01"), -0.380 * u.deg, decimal=3)
-	assert_array_almost_equal(sun.true_declination("2014/05/27"), 0.427 * u.deg, decimal=3)
+    assert_array_almost_equal(sun.true_declination("2012/11/11"), -0.669 * u.deg, decimal=3)
+    assert_array_almost_equal(sun.true_declination("2245/12/01"), -0.380 * u.deg, decimal=3)
+    assert_array_almost_equal(sun.true_declination("2014/05/27"), 0.427 * u.deg, decimal=3)
 
 def test_apparent_obliquity_of_ecliptic():
-	assert_array_almost_equal(sun.apparent_obliquity_of_ecliptic("2012/11/11"), 23.435 * u.deg, decimal=3)
-	assert_array_almost_equal(sun.apparent_obliquity_of_ecliptic("2014/05/27"), 23.438 * u.deg, decimal=3)
-	assert_array_almost_equal(sun.apparent_obliquity_of_ecliptic("2412/02/26"), 23.388 * u.deg, decimal=3)
+    assert_array_almost_equal(sun.apparent_obliquity_of_ecliptic("2012/11/11"), 23.435 * u.deg, decimal=3)
+    assert_array_almost_equal(sun.apparent_obliquity_of_ecliptic("2014/05/27"), 23.438 * u.deg, decimal=3)
+    assert_array_almost_equal(sun.apparent_obliquity_of_ecliptic("2412/02/26"), 23.388 * u.deg, decimal=3)
 
 def test_apparent_rightascenscion():
-	assert_array_almost_equal(sun.apparent_rightascenscion("2012/11/11"), 15.035 * u.deg, decimal=3)
-	assert_array_almost_equal(sun.apparent_rightascenscion("2013/12/13"), 17.282 * u.deg, decimal=3)
-	assert_array_almost_equal(sun.apparent_rightascenscion("2512/04/09"), 1.134 * u.deg, decimal=3)
+    assert_array_almost_equal(sun.apparent_rightascenscion("2012/11/11"), 15.035 * u.deg, decimal=3)
+    assert_array_almost_equal(sun.apparent_rightascenscion("2013/12/13"), 17.282 * u.deg, decimal=3)
+    assert_array_almost_equal(sun.apparent_rightascenscion("2512/04/09"), 1.134 * u.deg, decimal=3)
 
 def test_solar_north():
-	assert_array_almost_equal(sun.solar_north("2012/11/11"), 15.149 * u.deg, decimal=3)
-	assert_array_almost_equal(sun.solar_north("2019/10/10"), -1.693 * u.deg, decimal=3)
-	assert_array_almost_equal(sun.solar_north("2542/02/20"), 41.351 * u.deg, decimal=3)
+    assert_array_almost_equal(sun.solar_north("2012/11/11"), 15.149 * u.deg, decimal=3)
+    assert_array_almost_equal(sun.solar_north("2019/10/10"), -1.693 * u.deg, decimal=3)
+    assert_array_almost_equal(sun.solar_north("2542/02/20"), 41.351 * u.deg, decimal=3)
+
