@@ -22,6 +22,4 @@ def test_degrees_to_arc():
     assert ut.degrees_to_arc(78.12 * u.deg) == [78.0 * u.deg, 7.0 * u.arcmin,
 						  12.000000000016371 * u.arcsec], "value mismatch"
     assert ut.degrees_to_arc(284.982 * u.deg) == [284.0 * u.deg, 58.0 * u.arcmin,
-						    55.20000000009986 * u.arcsec], "value mismatch"	
-	
-	
+						    55.20000000009986 * u.arcsec], "value mismatch"
