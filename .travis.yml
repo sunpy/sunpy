@@ -52,10 +52,11 @@ install:
    - pip install $PIP_WHEEL_COMMAND pandas==$PANDAS_VERSION
    - pip install $PIP_WHEEL_COMMAND astropy>=0.3.1
    - pip install $PIP_WHEEL_COMMAND $SUDS_PKG beautifulsoup4 requests
-   - pip install $PIP_WHEEL_COMMAND pytest 
-   - pip install $PIP_WHEEL_COMMAND glymur
+   - pip install $PIP_WHEEL_COMMAND sqlalchemy 
+   - pip install pytest 
+   - pip install glymur
 # Install sphinx if needed
-   - if [[ $TEST_MODE == 'sphinx' ]]; then pip install $PIP_WHEEL_COMMAND sphinx>=1.2; fi 
+   - if [[ $TEST_MODE == 'sphinx' ]]; then pip install sphinx>=1.2; fi 
 
 # Install SunPy and run tests.
 script:
