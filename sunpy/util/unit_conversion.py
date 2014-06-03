@@ -13,7 +13,7 @@ def degrees_to_hours(angle):
     """Converts an angle from the degree notation to the hour, arcmin, arcsec
     notation (returned as a tuple)."""
     if not isinstance(angle, units.Quantity):
-		raise ValueError("angle should be a Quantity")
+        raise ValueError("angle should be a Quantity")
     hour = (np.floor(angle / 15)) / units.deg
     remainder = ((angle / 15.0) / units.deg) - hour
     arcminute = (np.floor(remainder * 60)) 
@@ -37,17 +37,17 @@ def to_angstrom(value, unit):
     """Given a value with a unit (given in a string), convert to angstroms"""
     value_quantity = value * units.Unit(unit)
     return value_quantity.to(units.angstrom, equivalencies=units.spectral()).value
-	
+
 def kelvin_to_keV(temperature):
     """Convert from temperature expressed in Kelvin to a 
     temperature expressed in keV."""
     if not isinstance(temperature, units.Quantity):
-		raise ValueError("temperature should be kelvin Quantity")
+        raise ValueError("temperature should be kelvin Quantity")
     return temperature / ((constants.e * units.J / units.eV) / (constants.k * boltz_unit) * 1000.0) 
 	
 def keV_to_kelvin(temperature):
     """Convert from temperature expressed in keV to a temperature 
     expressed in Kelvin."""
     if not isinstance(temperature, units.Quantity):
-		raise ValueError("temperature should be keV Quantity")
+        raise ValueError("temperature should be keV Quantity")
     return temperature * ((constants.e * units.J / units.eV) / (constants.k * boltz_unit) * 1000.0) 
