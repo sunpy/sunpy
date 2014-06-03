@@ -28,7 +28,7 @@ def aiaprep(aiamap):
 
     c = np.cos(angle)
     s = np.sin(angle)
-    rmatrix = np.array([[c, s], [-s, c]])
+    rmatrix = np.array([[c, -s], [s, c]])
 
     map_center = (aiamap.shape[1] - aiamap.reference_pixel['x'],
                   aiamap.shape[0] - aiamap.reference_pixel['y'])
