@@ -14,7 +14,7 @@ class IRISMap(GenericMap):
     def __init__(self, data, header, **kwargs):    
         GenericMap.__init__(self, data, header, **kwargs)
 
-    def iris_rot(self, missing=0.0, interpolation='bicubic', interp_param=-0.5):
+    def iris_rot(self, missing=0.0, order=3):
         """
         Return aligned map based on header keywords
         
@@ -23,20 +23,12 @@ class IRISMap(GenericMap):
         missing: float
            The numerical value to fill any missing points after rotation.
            Default: 0.0
-        interpolation: {'nearest' | 'bilinear' | 'spline' | 'bicubic'}
-            Interpolation method to use in the transform. 
-            Spline uses the 
-            scipy.ndimage.interpolation.affline_transform routine.
-            nearest, bilinear and bicubic all replicate the IDL rot() function.
-            Default: 'bicubic'
-        interp_par: Int or Float
-            Optional parameter for controlling the interpolation.
-            Spline interpolation requires an integer value between 1 and 5 for 
-            the degree of the spline fit.
-            Default: 3
-            BiCubic interpolation requires a flaot value between -1 and 0.
-            Default: 0.5
-            Other interpolation options ingore the argument.
+        order: int 0-5
+            Interpolation order to be used. When using scikit-image this parameter
+            is passed into :fun:`skimage.transform.warp`.
+            When using scipy it is passed into 
+            :fun:`scipy.ndimage.interpolation.affine_transform` where it controls 
+            the order of the spline.
             
         Returns
         -------
@@ -56,16 +48,15 @@ class IRISMap(GenericMap):
         
         #Return a new map
         img2 = self.rotate(rmatrix=cords, recenter=False,
-                           missing=missing, interpolation=interpolation,
-                           interp_param=interp_param)
-             
+                           missing=missing, order=order)
+        
         # modify the header to show the fact it's been corrected
         img2.meta['pc1_1'] = 1
         img2.meta['pc1_2'] = 0
         img2.meta['pc2_1'] = 0
         img2.meta['pc2_2'] = 1
     
-        return img2    
+        return img2
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):

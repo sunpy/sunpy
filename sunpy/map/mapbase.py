@@ -531,9 +531,9 @@ Dimension:\t [%d, %d]
         order: int
             Order of interpolation to use for the transform. Must be in the
             range 0-5: 0 - Nearest-neighbour; 1 - bi-linear; 2 - bi-quadradtic;
-            3 - bi-cubic; 4 - bi-quartic; 5 - bi-quintic. Passed to the scipy
-            affine transformation function if keyword scipy is True or if the
-            skimage transform cannot be imported.
+            3 - bi-cubic; 4 - bi-quartic; 5 - bi-quintic. Passed to 
+            :fun:'scipy.ndimage.interpolation.affine_transform' if keyword 
+            scipy is True or if scikit-image cannot be imported.
             Default: 4
         scale: float
             A scale factor for the image, default is no scaling
@@ -547,16 +547,20 @@ Dimension:\t [%d, %d]
             The numerical value to fill any missing points after rotation.
             Default: 0.0
         scipy: bool
-            If True, forces the rotation to use the scipy affine_transform(),
-            otherwise it uses the AffineTransform class and warp() function
-            from skimage.transform
+            If True, forces the rotation to use
+            :fun:'scipy.ndimage.interpolation.affine_transform', otherwise it
+            uses the :class:'skimage.transform.AffineTransform' class and
+            :fun:'skimage.transform.warp'
+            The function will also automatically fall back to
+            :fun:'scipy.ndimage.interpolation.affine_transform' if scikit-image
+            can't be imported
             Default:False
 
         Returns
         -------
         New rotated and rescaled map
         """
-        if angle is not None or rmatrix is not None:
+        if angle is not None and rmatrix is not None:
             raise ValueError("You  cannot specify both an angle and a matrix")
         elif angle is None and rmatrix is None:
             angle = self.rotation_angle['y']
