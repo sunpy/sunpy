@@ -127,6 +127,7 @@ def install(setup): #pylint: disable=W0621
         provides=['sunpy'],
         url="http://www.sunpy.org/",
         use_2to3=True,
+        include_package_data=True,
         version=VERSION,
         ext_modules = ext_modules
     )
