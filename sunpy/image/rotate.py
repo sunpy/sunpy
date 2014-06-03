@@ -83,7 +83,7 @@ def affine_transform(image, rmatrix, order=4, scale=1.0, rotation_center=None,
         normed_max = norm_image.max()
         norm_image = norm_image/normed_max
         # Transform the image
-        rotated_image = sk.warp(image, tform, order=order, mode='constant',
+        rotated_image = sk.warp(norm_image, tform, order=order, mode='constant',
                                 cval=missing)
         # Restore image values to previous distribution
         output_image = (rotated_image*normed_max) + im_min

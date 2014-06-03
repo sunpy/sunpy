@@ -47,6 +47,7 @@ def test_rotation(angle, k):
     compare_results(original, derot)
     plt.close()
 
+
 dx_values, dy_values = range(-100, 101, 100)*3, range(-100, 101, 100)*3
 dy_values.sort()
 @pytest.mark.parametrize("dx, dy", zip(dx_values, dy_values))
