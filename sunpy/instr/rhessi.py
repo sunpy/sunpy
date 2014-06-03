@@ -18,11 +18,10 @@ import matplotlib.pyplot as plt
 import matplotlib.dates
 
 from astropy.io import fits
-from astropy import units as u
 
 import sunpy
-import sunpy.map.header
 from sunpy.time import TimeRange, parse_time
+import sunpy.sun.constants as sun
 from sunpy.sun.sun import solar_semidiameter_angular_size
 from sunpy.sun.sun import sunearth_distance
 
@@ -327,8 +326,7 @@ def _backproject(calibrated_event_list, detector=8, pixel_size=(1.,1.), image_di
 
     return bproj_image
 
-
-def backprojection(calibrated_event_list, pixel_size=(1.,1.) * u.deg, image_dim=(64,64) * u.pix):
+def backprojection(calibrated_event_list, pixel_size=(1.,1.), image_dim=(64,64)):
     """
     Given a stacked calibrated event list fits file create a back
     projection image.
@@ -358,38 +356,34 @@ def backprojection(calibrated_event_list, pixel_size=(1.,1.) * u.deg, image_dim=
     >>> map.peek()
 
     """
-    if not isinstance(pixel_size, u.Quantity):
-        raise ValueError("Must be astropy Quantity in arcseconds")
-    if not isinstance(image_dim, u.Quantity):
-        raise ValueError("Must be astropy Quantity in pixels")
+    
     calibrated_event_list = sunpy.RHESSI_EVENT_LIST
     afits = fits.open(calibrated_event_list)
     info_parameters = afits[2]
     xyoffset = info_parameters.data.field('USED_XYOFFSET')[0]
     time_range = TimeRange(info_parameters.data.field('ABSOLUTE_TIME_RANGE')[0])
-
-    image = np.zeros(image_dim.value)
-
+    
+    image = np.zeros(image_dim)
+    
     #find out what detectors were used
     det_index_mask = afits[1].data.field('det_index_mask')[0]
     detector_list = (np.arange(9)+1) * np.array(det_index_mask)
     for detector in detector_list:
         if detector > 0:
-            image = image + _backproject(calibrated_event_list, detector=detector, pixel_size=pixel_size/u.arcsec
-										 , image_dim=image_dim/u.pix)
+            image = image + _backproject(calibrated_event_list, detector=detector, pixel_size=pixel_size, image_dim=image_dim)
     
     dict_header = {
         "DATE-OBS": time_range.center().strftime("%Y-%m-%d %H:%M:%S"),
         "CDELT1": pixel_size[0],
         "NAXIS1": image_dim[0],
         "CRVAL1": xyoffset[0],
-        "CRPIX1": image_dim[0].value/2 + 0.5,
+        "CRPIX1": image_dim[0]/2 + 0.5, 
         "CUNIT1": "arcsec",
         "CTYPE1": "HPLN-TAN",
         "CDELT2": pixel_size[1],
         "NAXIS2": image_dim[1],
         "CRVAL2": xyoffset[1],
-        "CRPIX2": image_dim[0].value/2 + 0.5,
+        "CRPIX2": image_dim[0]/2 + 0.5,
         "CUNIT2": "arcsec",
         "CTYPE2": "HPLT-TAN",
         "HGLT_OBS": 0,
