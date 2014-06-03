@@ -259,7 +259,7 @@ def get_day(dt):
     """ Return datetime for the beginning of the day of given datetime. """
     return datetime(dt.year, dt.month, dt.day)
 
-def is_time_in_given_format(time_string, time_format):
+def validate_time_format(time_string, time_format):
     """Tests whether a time string is formatted according to the given time format."""
     try:
         datetime.strptime(time_string, time_format)

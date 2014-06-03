@@ -1,5 +1,5 @@
 """
-LightCurve is a generic LightCurve class from which all other LightCurve classes 
+LightCurve is a generic LightCurve class from which all other LightCurve classes
 inherit from.
 """
 from __future__ import absolute_import
@@ -41,7 +41,7 @@ class LightCurve(object):
     meta : string, dict
         The comment string or header associated with the light curve input
     data : pandas.DataFrame
-        An pandas DataFrame prepresenting one or more fields as they vary with 
+        An pandas DataFrame prepresenting one or more fields as they vary with
         respect to time.
 
     Examples
@@ -72,7 +72,7 @@ class LightCurve(object):
     def __init__(self, data, meta=None):
         self.data = pandas.DataFrame(data)
         self.meta = meta
-    
+
     @property
     def header(self):
         """
@@ -98,7 +98,7 @@ for compatability with map, please use meta instead""", Warning)
     def from_range(cls, start, end, **kwargs):
         url = cls._get_url_for_date_range(parse_time(start), parse_time(end))
         filepath = cls._download(
-            url, kwargs, 
+            url, kwargs,
             err = "Unable to download data for specified date range"
         )
         result = cls.from_file(filepath)
@@ -113,7 +113,7 @@ for compatability with map, please use meta instead""", Warning)
             err = "Unable to download data for specified date range"
         )
         result = cls.from_file(filepath)
-        result.data = result.data.ix[ts.index.indexer_between_time(timerange.start(), timerange.end())]
+        result.data = result.data.truncate(timerange.start(), timerange.end())
         return result
 
     @classmethod
@@ -122,7 +122,7 @@ for compatability with map, please use meta instead""", Warning)
         meta, data = cls._parse_filepath(filename)
         if data.empty:
             raise ValueError("No data found!")
-        else:               
+        else:
             return cls(data, meta)
 
     @classmethod
@@ -156,7 +156,7 @@ for compatability with map, please use meta instead""", Warning)
         Parameters
         ----------
         axes: matplotlib.axes object or None
-            If provided the image will be plotted on the given axes. Else the 
+            If provided the image will be plotted on the given axes. Else the
             current matplotlib axes will be used.
 
         **plot_args : dict
@@ -185,12 +185,12 @@ for compatability with map, please use meta instead""", Warning)
         return figure
 
     @staticmethod
-    def _download(uri, kwargs, 
+    def _download(uri, kwargs,
                   err='Unable to download data at specified URL'):
         """Attempts to download data at the specified URI"""
-                    
+
         _filename = os.path.basename(uri).split("?")[0]
-        
+
         # user specifies a download directory
         if "directory" in kwargs:
             download_dir = os.path.expanduser(kwargs["directory"])
@@ -206,7 +206,7 @@ for compatability with map, please use meta instead""", Warning)
         # If the file is not already there, download it
         filepath = os.path.join(download_dir, _filename)
 
-        if not(os.path.isfile(filepath)) or (overwrite and 
+        if not(os.path.isfile(filepath)) or (overwrite and
                                              os.path.isfile(filepath)):
             try:
                 response = urllib2.urlopen(uri)
