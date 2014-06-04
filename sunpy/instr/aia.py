@@ -3,7 +3,6 @@
 Provides processing routines for data captured with the AIA instrument on SDO.
 """
 from sunpy.map.sources.sdo import AIAMap
-from copy import deepcopy
 
 def aiaprep(aiamap):
     """    
