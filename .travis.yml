@@ -3,6 +3,7 @@ language: python
 python:
   - 2.6
   - 2.7
+
 virtualenv:
      system_site_packages: false
 
@@ -15,13 +16,15 @@ env:
         - SUDS_PKG='suds-jurko==0.4.1.jurko.4'
         - TEST_MODE='tests'
     matrix:
-        - NUMPY_VERSION=1.8.0 PANDAS_VERSION=0.13.1
+        - NUMPY_VERSION=1.8.1 PANDAS_VERSION=0.13.1
         - NUMPY_VERSION=1.7.1 PANDAS_VERSION=0.13.1
-        - NUMPY_VERSION=1.8.0 PANDAS_VERSION=0.12.0
+        - NUMPY_VERSION=1.8.1 PANDAS_VERSION=0.12.0
 matrix:
      include:
         - python: 2.7
-          env: TEST_MODE='sphinx' NUMPY_VERSION=1.8.0 PANDAS_VERSION=0.13.1
+          env: TEST_MODE='sphinx' NUMPY_VERSION=1.8.1 PANDAS_VERSION=0.13.1
+        - python: 2.7
+          env: TEST_MODE='offline' NUMPY_VERSION=1.8.1 PANDAS_VERSION=0.13.1
 
 before_install:
 # Pick the suds version based on the python version
@@ -38,7 +41,7 @@ before_install:
    - wget http://openjpeg.googlecode.com/files/openjpeg-1.5.0-Linux-x86_64.tar.gz
    - sudo tar -xvf openjpeg-1.5.0-Linux-x86_64.tar.gz --strip-components=1 -C /
 # Install coveralls
-   - pip install $PIP_WHEEL_COMMAND python-coveralls pytest-cov
+   - pip install $PIP_WHEEL_COMMAND coveralls pytest-cov
 
 # Install all SunPy dependacies using wheels.
 install:
@@ -46,23 +49,24 @@ install:
    - pip install $PIP_WHEEL_COMMAND numpy==$NUMPY_VERSION
    - pip install $PIP_WHEEL_COMMAND matplotlib
    - pip install $PIP_WHEEL_COMMAND scipy
-# Manually install pandas deps due to a pip 1.4 / pytz bug
-   - pip install $PIP_WHEEL_COMMAND pytz==2013b python-dateutil
    - pip install $PIP_WHEEL_COMMAND pandas==$PANDAS_VERSION
-   - pip install $PIP_WHEEL_COMMAND astropy>=0.3.0
+   - pip install $PIP_WHEEL_COMMAND astropy>=0.3.1
    - pip install $PIP_WHEEL_COMMAND $SUDS_PKG beautifulsoup4 requests
+   - pip install $PIP_WHEEL_COMMAND sqlalchemy 
    - pip install $PIP_WHEEL_COMMAND pytest 
    - pip install $PIP_WHEEL_COMMAND glymur
-#Install sphinx if needed
-   - if [[ $TEST_MODE == 'sphinx' ]]; then pip install $PIP_WHEEL_COMMAND sphinx>=1.2; fi 
+# Install sphinx if needed
+   - if [[ $TEST_MODE == 'sphinx' ]]; then pip install sphinx>=1.2; fi 
+
 # Install SunPy and run tests.
 script:
    - python setup.py develop
    - if [[ $TEST_MODE == 'sphinx' ]]; then cd doc/source && sphinx-build -W -b html -d _build/doctrees   . _build/html; fi
-   - if [[ $TEST_MODE == 'tests' ]]; then py.test -s --cov-report html --cov sunpy; fi
+   - if [[ $TEST_MODE == 'tests' ]]; then py.test --cov-report html --cov sunpy; fi
+   - if [[ $TEST_MODE == 'offline' ]]; then py.test --cov-report html --cov sunpy -k-online; fi
 
 after_success:
-   - coveralls
+   - if [[ $TEST_MODE == 'tests' ]]; then coveralls; fi
 
 # Notify the IRC channel of build status
 notifications:

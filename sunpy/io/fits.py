@@ -168,11 +168,15 @@ def write(fname, data, header, **kwargs):
     for k,v in header.items():
         if isinstance(v, fits.header._HeaderCommentaryCards):
             if k is 'comments':
-                fits_header.add_comments(str(v))
-            elif k in 'history':
-                fits_header.add_history(str(v))
-            else:
-                fits_header.append(fits.Card(k, str(v)))
+                comments = str(v).split('\n')
+                for com in comments:
+                    fits_header.add_comments(com)
+            elif k is 'history':
+                hists = str(v).split('\n')
+                for hist in hists:
+                    fits_header.add_history(hist)
+            elif k is not '':
+                fits_header.append(fits.Card(k, str(v).split('\n')))
         else:
             fits_header.append(fits.Card(k,v))
 

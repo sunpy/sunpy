@@ -1,3 +1,12 @@
+0.4.1
+-----
+Bug Fixes:
+    * Fix map.rotate() functionality
+    * Change of source for GOES data.
+    * Fix EIT test data and sunpy FITS saving
+    * Some documentation fixes
+    * fix file paths to use os.path.join for platform independance.
+
 0.4.0
 -----
 Features:
