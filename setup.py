@@ -57,7 +57,6 @@ def install(setup): #pylint: disable=W0621
     #Crotate Module
     from distutils.core import Extension
     from os.path import dirname, join
-    cwd = dirname(__file__)
     try:
         import numpy as np
     except ImportError:
@@ -65,8 +64,8 @@ def install(setup): #pylint: disable=W0621
 
     if 'np' in locals():
         module = 'sunpy.image.Crotate'   # import this
-        sourcefiles = [join(cwd, 'sunpy', 'image', 'src', 'rot_extn.c'),
-                       join(cwd, 'sunpy', 'image', 'src', 'transform', 'aff_tr.c')]
+        sourcefiles = [join('sunpy', 'image', 'src', 'rot_extn.c'),
+                       join('sunpy', 'image', 'src', 'transform', 'aff_tr.c')]
         libs = ['m']
         # -ON for compile optimise
         gcc_args = ['-std=c99', '-O3']
@@ -78,22 +77,22 @@ def install(setup): #pylint: disable=W0621
                             libraries = libs,
                             extra_compile_args = gcc_args,
                             include_dirs =
-                            [np.get_include(), join(cwd, 'sunpy', 'image', 'src')]
+                            [np.get_include(), join('sunpy', 'image', 'src')]
                             )
 
         module_ana = 'sunpy.io._pyana'
-        sourcefiles_ana = [join(cwd, 'sunpy', 'io', 'src', 'ana', 'anacompress.c'),
-                       join(cwd, 'sunpy', 'io', 'src', 'ana', 'anadecompress.c'),
-                       join(cwd, 'sunpy', 'io', 'src', 'ana', 'anarw.c'),
-                       join(cwd, 'sunpy', 'io', 'src', 'ana', 'testrw.c'),
-                       join(cwd, 'sunpy', 'io', 'src', 'ana', '_pyana.c')]
+        sourcefiles_ana = [join('sunpy', 'io', 'src', 'ana', 'anacompress.c'),
+                           join('sunpy', 'io', 'src', 'ana', 'anadecompress.c'),
+                           join('sunpy', 'io', 'src', 'ana', 'anarw.c'),
+                           join('sunpy', 'io', 'src', 'ana', 'testrw.c'),
+                           join('sunpy', 'io', 'src', 'ana', '_pyana.c')]
 
         ana = Extension(module_ana,
                             sources = sourcefiles_ana,
                             libraries = libs,
                             extra_compile_args = gcc_args,
                             include_dirs =
-                            [np.get_include(), join(cwd, 'sunpy', 'io', 'src')]
+                            [np.get_include(), join('sunpy', 'io', 'src')]
                             )
     ext_modules = []
     if 'crotate' in locals():
