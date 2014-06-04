@@ -9,7 +9,7 @@ import skimage.data as images
 import pytest
 
 # Define test image first so it's accessable to all functions.
-original = images.camera()
+original = images.camera().astype('float')
 
 # Tolerance for tests
 rtol = 1.0e-5
@@ -36,6 +36,7 @@ def test_rotation(angle, k):
     rmatrix = np.array([[c, -s], [s, c]])
     expected = np.rot90(original, k=k)
     print original.min(), original.mean(), original.max()
+    print expected.min(), expected.mean(), expected.max()
     rot = aff(original, rmatrix=rmatrix)
     print rot.min(), rot.mean(), rot.max()
     print expected.mean(), rot.mean()
@@ -45,14 +46,13 @@ def test_rotation(angle, k):
     # TODO: Check incremental 360 degree rotation against original image
 
     # Check derotated image against original
-    rmatrix = np.array([[c, -s], [s, c]])
-    #derot = aff(rot/rot.max(), rmatrix=rmatrix) * rot.max()
+    rmatrix = np.array([[c, s], [-s, c]])
     derot = aff(rot, rmatrix=rmatrix)
     compare_results(original, derot)
     plt.close()
 
 
-"""dx_values, dy_values = range(-100, 101, 100)*3, range(-100, 101, 100)*3
+dx_values, dy_values = range(-100, 101, 100)*3, range(-100, 101, 100)*3
 dy_values.sort()
 @pytest.mark.parametrize("dx, dy", zip(dx_values, dy_values))
 def test_shift(dx, dy):
@@ -72,7 +72,7 @@ def test_shift(dx, dy):
 
     # Check shifted and unshifted shape against original image
     rcen = image_center - np.array([dx, dy])
-    unshift = aff(shift/shift.max(), rmatrix=rmatrix, recenter=True, image_center=rcen) * shift.max()
+    unshift = aff(shift, rmatrix=rmatrix, recenter=True, image_center=rcen)
     # Need to ignore the portion of the image cut off by the first shift
     ymin, ymax = max([0, -dy]), min([original.shape[1], original.shape[1]-dy])
     xmin, xmax = max([0, -dx]), min([original.shape[0], original.shape[0]-dx])
@@ -86,10 +86,11 @@ def test_scale(scale_factor):
     rmatrix = np.array([[1.0, 0.0], [0.0, 1.0]])
     
     # Check a scaled image against the expected outcome
-    newim = tf.rescale(original, scale_factor, order=4, mode='constant') * original.max()
+    newim = tf.rescale(original/original.max(), scale_factor, order=4,
+                       mode='constant') * original.max()
     # Old width and new centre of image
     w = original.shape[0]/2.0 - 0.5
-    new_c = (newim.shape[0]/2.0) -0.5
+    new_c = (newim.shape[0]/2.0) - 0.5
     expected = np.zeros(original.shape)
     upper = w+new_c+1
     if scale_factor > 1:
@@ -107,13 +108,14 @@ def test_scale(scale_factor):
                                                           (-90, 50, -100, 0.75),
                                                           (180, 100, 50, 1.5)])
 def test_all(angle, dx, dy, scale_factor):
-    k = -int(angle/90)
+    k = int(angle/90)
     angle = np.radians(angle)
     image_center = np.array(original.shape)/2.0 - 0.5
     # Check a shifted, rotated and scaled shape against expected outcome
     c = np.cos(angle); s = np.sin(angle)
-    rmatrix = np.array([[c, s], [-s, c]])
-    scale = tf.rescale(original, scale_factor, order=4, mode='constant') * original.max()
+    rmatrix = np.array([[c, -s], [s, c]])
+    scale = tf.rescale(original/original.max(), scale_factor, order=4,
+                       mode='constant') * original.max()
     new = np.zeros(original.shape)
     # Old width and new centre of image
     w = np.array(original.shape[0])/2.0 - 0.5
@@ -130,7 +132,8 @@ def test_all(angle, dx, dy, scale_factor):
     rot = np.rot90(new, k=k)
     shift = np.roll(np.roll(rot, dx, axis=1), dy, axis=0)
     expected = shift
-    rotscaleshift = aff(original, rmatrix=rmatrix, scale=scale_factor, recenter=True, image_center=rcen)
+    rotscaleshift = aff(original, rmatrix=rmatrix, scale=scale_factor,
+                        recenter=True, image_center=rcen)
     w = np.array(expected.shape[0])/2.0 - 0.5
     new_c = (np.array(rotscaleshift.shape[0])/2.0 - 0.5)
     upper = w+new_c+1
@@ -144,15 +147,16 @@ def test_all(angle, dx, dy, scale_factor):
     plt.close()
 
     # Check a rotated/shifted and restored image against original
-    transformed = aff(original, rmatrix=rmatrix, scale=1.0, recenter=True, image_center=rcen)
+    transformed = aff(original, rmatrix=rmatrix, scale=1.0, recenter=True,
+                      image_center=rcen)
     rcen = image_center - np.dot(rmatrix, np.array([dx, dy]))
     dx, dy = np.dot(rmatrix, disp)
-    rmatrix = np.array([[c, -s], [s, c]])
-    inverse = aff(transformed/transformed.max(), rmatrix=rmatrix, scale=1.0, recenter=True, image_center=rcen) * transformed.max()
+    rmatrix = np.array([[c, s], [-s, c]])
+    inverse = aff(transformed, rmatrix=rmatrix, scale=1.0, recenter=True,
+                  image_center=rcen)
     # Need to ignore the portion of the image cut off by the first shift
     # (which isn't the portion you'd expect, because of the rotation)
     ymin, ymax = max([0, -dy]), min([original.shape[1], original.shape[1]-dy])
     xmin, xmax = max([0, -dx]), min([original.shape[0], original.shape[0]-dx])
     compare_results(original[ymin:ymax, xmin:xmax], inverse[ymin:ymax, xmin:xmax])
     plt.close()
-"""

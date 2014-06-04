@@ -563,7 +563,7 @@ Dimension:\t [%d, %d]
         if angle is not None and rmatrix is not None:
             raise ValueError("You  cannot specify both an angle and a matrix")
         elif angle is None and rmatrix is None:
-            angle = self.rotation_angle['y']
+            angle = -self.rotation_angle['y']
 
         # Interpolation parameter sanity
         if order not in range(6):
@@ -579,19 +579,20 @@ Dimension:\t [%d, %d]
             rmatrix = np.array([[c, -s], [s, c]])
         
         if image_center is None:
-            image_center = (self.reference_pixel['x'], self.reference_pixel['y'])
+            image_center = (self.shape[1] - self.reference_pixel['x'],
+                            self.shape[0] - self.reference_pixel['y'])
 
         new_map.data = affine_transform(new_map.data, rmatrix, order=order,
                                         scale=scale, image_center=image_center,
                                         recenter=recenter, missing=missing,
                                         scipy=scipy)
 
-        map_center = np.array(self.shape/2.0) - 0.5
+        map_center = (np.array(self.shape)/2.0) - 0.5
         if recenter == True:
-            new_center = map_center
+            new_center = (0.0, 0.0)
         else:
-            new_center = image_center
-        new_center = self.pixel_to_data(x=new_center[0], y=new_center[1])
+            old_center = self.pixel_to_data(image_center)
+            new_center = np.dot(rmatrix, old_center)
 
         # Define a new reference pixel in the rotated space
         new_map.meta['crval1'] = new_center[0]
