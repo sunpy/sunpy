@@ -14,9 +14,9 @@ __all__ = ['affine_transform']
 def affine_transform(image, rmatrix, order=4, scale=1.0, image_center=None,
                      recenter=False, missing=0.0, scipy=False):
     """    
-    Rotates and shifts an image using an affine transform. Intended to replace Map.rotate().
-    Currently uses the old C extension function to rotate and shif the image, though this will be
-    replaced with scikit-image's AffineTransform class and warp() function.
+    Rotates, shifts and scales an image using :func:`skimage.transform.warp`, or
+    :func:`scipy.ndimage.interpolation.affine_transform` if specified. Falls back to
+    the scipy function if scikit-image can't be imported.
 
     Parameters
     ----------
