@@ -18,6 +18,8 @@ from math import floor
 import numpy as np
 from numpy import ma
 
+from astropy import units as u
+
 from scipy import ndimage
 
 from matplotlib import pyplot as plt
@@ -191,15 +193,19 @@ class TimeFreq(object):
     ----------
     start : datetime
         Start time of the plot.
-    time : array
+    time : array of astropy.units.quantity.Quantity
         Time of the data points as offset from start in seconds.
-    freq : array
+    freq : array of astropy.units.quantity.Quantity
         Frequency of the data points in MHz.
     """
     def __init__(self, start, time, freq):
         self.start = start
         self.time = time
+        if not isinstance(time, u.Quantity):
+            raise ValueError("time must be astropy quantity")
         self.freq = freq
+        if not isinstance(freq, u.Quantity):
+            raise ValueError("Frequency must be astropy quantity")
 
     def plot(self, time_fmt="%H:%M:%S", **kwargs):
         figure = plt.gcf()
@@ -352,7 +358,7 @@ class Spectrogram(Parent):
 
         self.t_init = t_init
 
-        self.time_axis = time_axis
+        self.time_axis = time_axis        #quantity
         self.freq_axis = freq_axis
 
         self.content = content
@@ -429,7 +435,7 @@ class Spectrogram(Parent):
             delt = yres
             if delt is not None:
                 delt = max(
-                    (self.freq_axis[0] - self.freq_axis[-1]) / (yres - 1),
+                    (self.freq_axis[0] - self.freq_axis[-1]) / (yres - 1),      #point of interest
                     _min_delt(self.freq_axis) / 2.
                 )
                 delt = float(delt)
@@ -468,7 +474,7 @@ class Spectrogram(Parent):
             FuncFormatter(self.time_formatter)
         )
 
-        if linear:
+        if linear:     #interest
             # Start with a number that is divisible by 5.
             init = (self.freq_axis[0] % 5) / data.delt
             nticks = 15.
@@ -490,7 +496,7 @@ class Spectrogram(Parent):
                     dist / data.delt / 10, init
                 )
             )
-            def freq_fmt(x, pos):
+            def freq_fmt(x, pos):   #interest
                 # This is necessary because matplotlib somehow tries to get
                 # the mid-point of the row, which we do not need here.
                 x = x + 0.5
