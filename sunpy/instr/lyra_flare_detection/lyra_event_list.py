@@ -38,10 +38,8 @@ from sunpy.time import parse_time
 import sqlite3
 from itertools import chain
 
-# Define location of LYRA Annotation Files
-LYTAF_PATH = os.path.join(os.path.curdir, "data")
-
 def extract_combined_lytaf(tstart, tend,
+                           lytaf_path=os.path.join(os.path.curdir, "data")
                            combine_files=["lyra", "manual", "ppt", "science"]):
     
     """
@@ -128,7 +126,7 @@ def extract_combined_lytaf(tstart, tend,
     event_rows = [[]]
     for i, suffix in enumerate(combine_files):
         # Open SQLITE3 annotation files
-        connection = sqlite3.connect(os.path.join(LYTAF_PATH, "annotation_"
+        connection = sqlite3.connect(os.path.join(lytaf_path, "annotation_"
                                                      + suffix + ".db"))
         # Create cursor to manipulate data in annotation file
         cursor = connection.cursor()
