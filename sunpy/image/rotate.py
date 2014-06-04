@@ -75,16 +75,9 @@ def affine_transform(image, rmatrix, order=4, scale=1.0, image_center=None,
         skmatrix[:2, :2] = rmatrix
         skmatrix[2, 2] = 1.0
         skmatrix[:2, 2] = shift
-        # Normalise image values to between 0 and 1.
-        im_min = image.min()
         tform = sk.AffineTransform(skmatrix)
-        norm_image = image - im_min
-        normed_max = norm_image.max()
-        norm_image = norm_image/normed_max
         # Transform the image
-        rotated_image = sk.warp(norm_image, tform, order=order, mode='constant',
-                                cval=missing)
-        # Restore image values to previous distribution
-        output_image = (rotated_image*normed_max) + im_min
+        rotated_image = sk.warp(image/image.max(), tform, order=order,
+                                mode='constant', cval=missing) * image.max()
 
-    return output_image
+    return rotated_image
