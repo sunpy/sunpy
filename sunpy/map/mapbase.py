@@ -532,7 +532,7 @@ Dimension:\t [%d, %d]
             Order of interpolation to use for the transform. Must be in the
             range 0-5: 0 - Nearest-neighbour; 1 - bi-linear; 2 - bi-quadradtic;
             3 - bi-cubic; 4 - bi-quartic; 5 - bi-quintic. Passed to 
-            :fun:'scipy.ndimage.interpolation.affine_transform' if keyword 
+            :func:`scipy.ndimage.interpolation.affine_transform` if keyword 
             scipy is True or if scikit-image cannot be imported.
             Default: 4
         scale: float
@@ -548,12 +548,12 @@ Dimension:\t [%d, %d]
             Default: 0.0
         scipy: bool
             If True, forces the rotation to use
-            :fun:'scipy.ndimage.interpolation.affine_transform', otherwise it
-            uses the :class:'skimage.transform.AffineTransform' class and
-            :fun:'skimage.transform.warp'
+            :func:`scipy.ndimage.interpolation.affine_transform`, otherwise it
+            uses the :class:`skimage.transform.AffineTransform` class and
+            :func:`skimage.transform.warp`.
             The function will also automatically fall back to
-            :fun:'scipy.ndimage.interpolation.affine_transform' if scikit-image
-            can't be imported
+            :func:`scipy.ndimage.interpolation.affine_transform` if scikit-image
+            can't be imported.
             Default:False
 
         Returns
@@ -599,6 +599,11 @@ Dimension:\t [%d, %d]
         new_map.meta['crval2'] = new_center[1]
         new_map.meta['crpix1'] = map_center[1] + 1 # FITS counts pixels from 1
         new_map.meta['crpix2'] = map_center[0] + 1 # FITS counts pixels from 1
+        
+        # Update pixel size if image has been scaled.
+        if scale != 1.0:
+            new_map.meta['cdelt1'] = self.scale['x'] / scale
+            new_map.meta['cdelt2'] = self.scale['y'] / scale
 
         if angle is not None and new_map.meta.get('crota2') is not None:
             new_map.meta['crota2'] = new_map.rotation_angle['y'] - angle

@@ -26,9 +26,9 @@ def affine_transform(image, rmatrix, order=4, scale=1.0, image_center=None,
         Linear transformation rotation matrix.
     order: int 0-5
         Interpolation order to be used. When using scikit-image this parameter
-        is passed into :fun:`skimage.transform.warp`.
+        is passed into :func:`skimage.transform.warp`.
         When using scipy it is passed into 
-        :fun:`scipy.ndimage.interpolation.affine_transform` where it controls 
+        :func:`scipy.ndimage.interpolation.affine_transform` where it controls 
         the order of the spline.
     scale: float
         A scale factor for the image. Default is no scaling.
@@ -41,8 +41,8 @@ def affine_transform(image, rmatrix, order=4, scale=1.0, image_center=None,
     missing: flot
         The value to replace any missing data after the transformation.
     scipy: bool
-        Force use of :fun:`scipy.ndimage.interpolation.affine_transform`.
-        This defaults to False unless sckit-image is not installed.
+        Force use of :func:`scipy.ndimage.interpolation.affine_transform`.
+        Default: False unless sckit-image is not installed.
 
     Returns
     -------
