@@ -19,15 +19,12 @@ def aiaprep(aiamap):
     """
     assert isinstance(aiamap, AIAMap)
 
-    scale_ref = 0.6
-    scale_factor = aiamap.scale['x'] / scale_ref
+    scale_factor = aiamap.scale['x'] / 0.6
 
     newmap = aiamap.rotate(recenter=True, scale=scale_factor,
                            missing=aiamap.min())
 
     # Update header values as needed
-    newmap.meta['cdelt1'] = scale_ref
-    newmap.meta['cdelt2'] = scale_ref
     newmap.meta['lvl_num'] = 1.5
 
     return newmap
