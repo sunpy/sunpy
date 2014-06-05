@@ -608,7 +608,7 @@ Dimension:\t [%d, %d]
             new_map.meta['cdelt2'] = self.scale['y'] / scale
 
         if angle is not None and new_map.meta.get('crota2') is not None:
-            new_map.meta['crota2'] = new_map.rotation_angle['y'] + angle
+            new_map.meta['crota2'] = self.rotation_angle['y'] + angle
 
         return new_map
 
