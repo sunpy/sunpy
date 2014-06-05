@@ -1,7 +1,9 @@
 import urlparse
-from sunpy.net.vso.attrs import Time
+from sunpy.net.vso.attrs import Time,Instrument
 from sunpy.net.lcsources.client import GenericClient
+from sunpy.net.lcsources.factbase import UnifiedDownloader
 
+__all__ = ['Time','Instrument']
 class EVEClient(GenericClient):
 
     def _get_url_for_timerange(cls,timerange,**kwargs):
@@ -28,3 +30,14 @@ class EVEClient(GenericClient):
        self.map_['instrument'] = 'eve'
        self.map_['phyobs'] = 'irradiance'
     
+    @classmethod
+    def _can_handle_query(cls,*query):
+        
+	print [type(x) for x in query]
+	return all([x.__class__.__name__ in __all__ for x in query])
+
+ 
+
+
+
+

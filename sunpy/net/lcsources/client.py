@@ -91,7 +91,7 @@ class GenericClient(object):
          
 	 GenericClient.makeargs(self,*args,**kwargs)
 	 urls = self._get_url_for_timerange(self.map_.get('TimeRange'),**kwargs)
-         return queryresponse.create(self.map_,urls)
+	 return queryresponse.create(self.map_,urls)
 
     
     def get(self,qres):
@@ -122,8 +122,6 @@ class GenericClient(object):
     def download_legacy(self,timerange,path=None,callback=None,errback=None):
 	
         urls = EVEDownloader._get_url_for_timerange(timerange)
-	print urls
-	print len(urls)
 	dobj = Downloader(max_conn=len(urls),max_total=len(urls))
 	for url in urls:
 	    dobj.download(url,path,callback,errback)
