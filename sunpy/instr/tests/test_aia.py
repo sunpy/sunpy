@@ -1,11 +1,12 @@
 from __future__ import absolute_import
 
 import sunpy
+import sunpy.data.test as test
 from sunpy.instr.aia import aiaprep
 import matplotlib.pyplot as plt
 
 # Define the original and prepped images first so they're available to all functions
-original = sunpy.map.Map('~/sunpy/sunpy/data/test/aiaprep_test_image.fits')
+original = sunpy.map.Map(test.aiaprep_testmap)
 prep_map = aiaprep(original)
 
 
