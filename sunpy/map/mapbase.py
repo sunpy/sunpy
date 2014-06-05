@@ -590,7 +590,7 @@ Dimension:\t [%d, %d]
                                         scipy=scipy)
 
         map_center = (np.array(self.shape)/2.0) - 0.5
-        if recenter == True:
+        if recenter:
             new_center = (0.0, 0.0)
         else:
             old_center = self.pixel_to_data(x=image_center[1], y=image_center[0])

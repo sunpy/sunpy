@@ -6,7 +6,7 @@ from scipy.ndimage import interpolation as sp
 try:
     from skimage import transform as sk
     force_scipy = False
-except:
+except ImportError:
     force_scipy = True
 
 __all__ = ['affine_transform']
@@ -56,9 +56,9 @@ def affine_transform(image, rmatrix, order=4, scale=1.0, image_center=None,
         image_center = np.asanyarray(image_center)
     else:
         image_center = array_center
-    if recenter == True:
+    if recenter:
         rot_center = array_center
-    elif recenter == False:
+    else:
         rot_center = image_center
 
     displacement = np.dot(rmatrix, image_center)
