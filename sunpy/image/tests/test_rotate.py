@@ -35,13 +35,8 @@ def test_rotation(angle, k):
     c = np.cos(angle); s = np.sin(angle)
     rmatrix = np.array([[c, -s], [s, c]])
     expected = np.rot90(original, k=k)
-    print original.min(), original.mean(), original.max()
-    print expected.min(), expected.mean(), expected.max()
     rot = aff(original, rmatrix=rmatrix)
-    print rot.min(), rot.mean(), rot.max()
-    print expected.mean(), rot.mean()
     compare_results(expected, rot)
-    plt.close()
     
     # TODO: Check incremental 360 degree rotation against original image
 
@@ -49,7 +44,6 @@ def test_rotation(angle, k):
     rmatrix = np.array([[c, s], [-s, c]])
     derot = aff(rot, rmatrix=rmatrix)
     compare_results(original, derot)
-    plt.close()
 
 
 dx_values, dy_values = range(-100, 101, 100)*3, range(-100, 101, 100)*3
@@ -68,7 +62,6 @@ def test_shift(dx, dy):
     ymin, ymax = max([0, dy]), min([original.shape[1], original.shape[1]+dy])
     xmin, xmax = max([0, dx]), min([original.shape[0], original.shape[0]+dx])
     compare_results(expected[ymin:ymax, xmin:xmax], shift[ymin:ymax, xmin:xmax])
-    plt.close()
 
     # Check shifted and unshifted shape against original image
     rcen = image_center - np.array([dx, dy])
@@ -77,7 +70,6 @@ def test_shift(dx, dy):
     ymin, ymax = max([0, -dy]), min([original.shape[1], original.shape[1]-dy])
     xmin, xmax = max([0, -dx]), min([original.shape[0], original.shape[0]-dx])
     compare_results(original[ymin:ymax, xmin:xmax], unshift[ymin:ymax, xmin:xmax])
-    plt.close()
 
 
 @pytest.mark.parametrize("scale_factor", [0.25, 0.5, 0.75, 1.0, 1.25, 1.5])
@@ -101,7 +93,6 @@ def test_scale(scale_factor):
         expected[lower:upper, lower:upper] = newim
     scale = aff(original, rmatrix=rmatrix, scale=scale_factor)
     compare_results(expected, scale)
-    plt.close()
 
 
 @pytest.mark.parametrize("angle, dx, dy, scale_factor", [(90, -100, 50, 0.25),
@@ -144,7 +135,6 @@ def test_all(angle, dx, dy, scale_factor):
         lower = w-new_c
         expected[lower:upper, lower:upper] = rotscaleshift
     compare_results(expected, rotscaleshift)
-    plt.close()
 
     # Check a rotated/shifted and restored image against original
     transformed = aff(original, rmatrix=rmatrix, scale=1.0, recenter=True,
@@ -159,4 +149,3 @@ def test_all(angle, dx, dy, scale_factor):
     ymin, ymax = max([0, -dy]), min([original.shape[1], original.shape[1]-dy])
     xmin, xmax = max([0, -dx]), min([original.shape[0], original.shape[0]-dx])
     compare_results(original[ymin:ymax, xmin:xmax], inverse[ymin:ymax, xmin:xmax])
-    plt.close()
