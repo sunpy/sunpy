@@ -22,7 +22,6 @@ from astropy.io import fits
 import sunpy
 import sunpy.map
 from sunpy.time import TimeRange, parse_time
-import sunpy.sun.constants as sun
 from sunpy.sun.sun import solar_semidiameter_angular_size
 from sunpy.sun.sun import sunearth_distance
 
@@ -390,7 +389,7 @@ def backprojection(calibrated_event_list, pixel_size=(1.,1.), image_dim=(64,64))
         "HGLT_OBS": 0,
         "HGLN_OBS": 0,
         "RSUN_OBS": solar_semidiameter_angular_size(time_range.center()).value,
-        "RSUN_REF": sun.radius.value,
+        "RSUN_REF": sunpy.sun.constants.radius.value,
         "DSUN_OBS": sunearth_distance(time_range.center()) * sunpy.sun.constants.au.value
     }
     
