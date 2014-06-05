@@ -23,4 +23,4 @@ AIA_193_JP2 = os.path.join(rootdir,
 #
 # aiaprep() test Map
 #
-aiaprep_testmap = os.path.join(rootdir, "aiaprep_test_image.fits")
+aia_171_level1 = os.path.join(rootdir, "aia_171_level1.fits")

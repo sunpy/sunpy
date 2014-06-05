@@ -25,7 +25,13 @@ def aiaprep(aiamap):
     newmap : A level 1.5 copy of aiamap
     """
     assert isinstance(aiamap, AIAMap)
-    scale_factor = aiamap.scale['x'] / 0.6
+    # Taget scale is 0.6 arcsec/pixel, but this needs to be adjusted if the map
+    # has already been rescaled.
+    if round(aiamap.scale['x']/0.6) != 1.0:
+        scale = round(aiamap.scale['x']/0.6) * 0.6
+    else:
+        scale = 0.6
+    scale_factor = aiamap.scale['x'] / scale
     newmap = aiamap.rotate(recenter=True, scale=scale_factor, missing=aiamap.min())
     newmap.meta['lvl_num'] = 1.5
 
