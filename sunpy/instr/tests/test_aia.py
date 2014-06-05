@@ -6,7 +6,7 @@ from sunpy.instr.aia import aiaprep
 import matplotlib.pyplot as plt
 
 # Define the original and prepped images first so they're available to all functions
-original = sunpy.map.Map(test.aiaprep_testmap)
+original = sunpy.map.Map(test.aia_171_level1)
 prep_map = aiaprep(original)
 
 
@@ -17,8 +17,8 @@ def test_aiaprep():
     assert prep_map.meta['crpix1'] == prep_map.shape[1]/2.0 + 0.5
     assert prep_map.meta['crpix2'] == prep_map.shape[0]/2.0 + 0.5
     # Check cdelt values
-    assert prep_map.meta['cdelt1'] == 0.6
-    assert prep_map.meta['cdelt2'] == 0.6
+    assert prep_map.meta['cdelt1']/0.6 == int(prep_map.meta['cdelt1']/0.6)
+    assert prep_map.meta['cdelt2']/0.6 == int(prep_map.meta['cdelt2']/0.6)
     # Check rotation value
     assert prep_map.meta['crota2'] == 0.0
     # Check level number
@@ -34,8 +34,8 @@ def test_filesave():
     assert load_map.meta['crpix1'] == prep_map.shape[1]/2.0 + 0.5
     assert load_map.meta['crpix2'] == prep_map.shape[0]/2.0 + 0.5
     # Check cdelt values
-    assert load_map.meta['cdelt1'] == 0.6
-    assert load_map.meta['cdelt2'] == 0.6
+    assert load_map.meta['cdelt1']/0.6 == int(load_map.meta['cdelt1']/0.6)
+    assert load_map.meta['cdelt2']/0.6 == int(load_map.meta['cdelt2']/0.6)
     # Check rotation value
     assert load_map.meta['crota2'] == 0.0
     # Check level number
