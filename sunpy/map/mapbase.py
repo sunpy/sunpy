@@ -524,29 +524,29 @@ Dimension:\t [%d, %d]
 
         Parameters
         ----------
-        angle: float
+        angle : float
             The angle (degrees) to rotate counterclockwise.
-        rmatrix: NxN
+        rmatrix : NxN
             Linear transformation rotation matrix.
-        order: int
+        order : int
             Order of interpolation to use for the transform. Must be in the
             range 0-5: 0 - Nearest-neighbour; 1 - bi-linear; 2 - bi-quadradtic;
             3 - bi-cubic; 4 - bi-quartic; 5 - bi-quintic. Passed to 
             :func:`scipy.ndimage.interpolation.affine_transform` if keyword 
             scipy is True or if scikit-image cannot be imported.
-            Default: 4
-        scale: float
+            Default: 4, bi-quartic
+        scale : float
             A scale factor for the image, default is no scaling
-        image_center: tuple
+        image_center : tuple
             The axis of rotation
             Default: the origin in the data coordinate system
-        recenter: bool
+        recenter : bool
             If True, position the axis of rotation at the center of the new map
             Default: False
-        missing: float
+        missing : float
             The numerical value to fill any missing points after rotation.
             Default: 0.0
-        scipy: bool
+        scipy : bool
             If True, forces the rotation to use
             :func:`scipy.ndimage.interpolation.affine_transform`, otherwise it
             uses the :class:`skimage.transform.AffineTransform` class and
@@ -554,11 +554,13 @@ Dimension:\t [%d, %d]
             The function will also automatically fall back to
             :func:`scipy.ndimage.interpolation.affine_transform` if scikit-image
             can't be imported.
-            Default:False
+            Default: False
 
         Returns
         -------
-        New rotated and rescaled map
+        new_map : AIAMap
+            A new AIAMap instance containing the rotated and rescaled data of
+            the original map.
         """
         if angle is not None and rmatrix is not None:
             raise ValueError("You  cannot specify both an angle and a matrix")
@@ -765,10 +767,10 @@ Dimension:\t [%d, %d]
 
         Parameters
         ----------
-        axes: matplotlib.axes object or None
-        Axes to plot limb on or None to use current axes.
+        axes : matplotlib.axes object or None
+            Axes to plot limb on or None to use current axes.
 
-        grid_spacing: float
+        grid_spacing : float
             Spacing (in degrees) for longitude and latitude grid.
 
         Returns
@@ -832,7 +834,7 @@ Dimension:\t [%d, %d]
 
             Parameters
             ----------
-            axes: matplotlib.axes object or None
+            axes : matplotlib.axes object or None
                 Axes to plot limb on or None to use current axes.
 
             Returns
@@ -933,7 +935,7 @@ Dimension:\t [%d, %d]
             If true, the data is plotted at it's natural scale; with
             title and axis labels.
 
-        axes: matplotlib.axes object or None
+        axes : matplotlib.axes object or None
             If provided the image will be plotted on the given axes. Else the
             current matplotlib axes will be used.
 
