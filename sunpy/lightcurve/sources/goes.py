@@ -137,8 +137,8 @@ class GOESLightCurve(LightCurve):
             # Start & End date
             start = parse_time(args[0])
             end = parse_time(args[1])
-            if end < start:
-                raise ValueError('start time (argument 1) > end time (argument 2)')
+        if end < start:
+            raise ValueError('start time (argument 1) > end time (argument 2)')
 
         # find out which satellite and datatype to query from the query times
         sat_num = GOESLightCurve._get_goes_sat_num(start, end)
