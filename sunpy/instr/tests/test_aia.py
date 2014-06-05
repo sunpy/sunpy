@@ -5,7 +5,7 @@ from sunpy.instr.aia import aiaprep
 import matplotlib.pyplot as plt
 
 # Define the original and prepped images first so they're available to all functions
-original = sunpy.map.Map('~/sunpy/sunpy/instr/tests/aiaprep_test_image.fits')
+original = sunpy.map.Map('~/sunpy/sunpy/data/test/aiaprep_test_image.fits')
 prep_map = aiaprep(original)
 
 

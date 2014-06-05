@@ -593,7 +593,7 @@ Dimension:\t [%d, %d]
         if recenter == True:
             new_center = (0.0, 0.0)
         else:
-            old_center = self.pixel_to_data(image_center)
+            old_center = self.pixel_to_data(x=image_center[1], y=image_center[0])
             new_center = np.dot(rmatrix, old_center)
 
         # Define a new reference pixel in the rotated space
@@ -608,7 +608,7 @@ Dimension:\t [%d, %d]
             new_map.meta['cdelt2'] = self.scale['y'] / scale
 
         if angle is not None and new_map.meta.get('crota2') is not None:
-            new_map.meta['crota2'] = new_map.rotation_angle['y'] - angle
+            new_map.meta['crota2'] = new_map.rotation_angle['y'] + angle
 
         return new_map
 
