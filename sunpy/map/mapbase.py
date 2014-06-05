@@ -594,7 +594,7 @@ Dimension:\t [%d, %d]
             new_center = (0.0, 0.0)
         else:
             old_center = self.pixel_to_data(x=image_center[1], y=image_center[0])
-            new_center = np.dot(rmatrix, old_center)
+            new_center = np.dot(rmatrix, old_center).reshape(2, 1)
 
         # Define a new reference pixel in the rotated space
         new_map.meta['crval1'] = new_center[0]
