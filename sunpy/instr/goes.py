@@ -909,11 +909,6 @@ def goes_lx(longflux, shortflux, obstime=None, date=None):
     2.0337865720138235e+25
 
     """
-
-    # Check inputs are of correct type
-    longflux = np.asanyarray(longflux, dtype=np.float64)
-    shortflux = np.asanyarray(shortflux, dtype=np.float64)
-
     # Calculate X-ray luminosities
     longlum = _calc_xraylum(longflux, date=date)
     shortlum = _calc_xraylum(shortflux, date=date)
