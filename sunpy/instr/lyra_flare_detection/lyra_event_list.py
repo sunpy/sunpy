@@ -39,7 +39,7 @@ import sqlite3
 from itertools import chain
 
 def extract_combined_lytaf(tstart, tend,
-                           lytaf_path=os.path.join(os.path.curdir, "data")
+                           lytaf_path=os.path.join(os.path.curdir, "data"),
                            combine_files=["lyra", "manual", "ppt", "science"]):
     
     """
@@ -99,12 +99,12 @@ def extract_combined_lytaf(tstart, tend,
     # Check start_time is a date string or datetime object
     if type(tstart) is str:
         tstart = parse_time(tstart)
-    if type(tstart) is not datetime.datetime:
+    if type(tstart) is not datetime:
         raise TypeError("start_time must be a date string or datetime object")
     # Check start_time is a date string or datetime object
     if type(tend) is str:
         tend = parse_time(tend)
-    if type(tend) is not datetime.datetime:
+    if type(tend) is not datetime:
         raise TypeError("end_time must be a date string or datetime object")
     # Check combine_files contains correct inputs
     if not all(suffix in ["lyra", "manual", "ppt", "science"]
@@ -116,8 +116,8 @@ def extract_combined_lytaf(tstart, tend,
     combine_files.sort()
     # Convert input times to UNIX timestamp format since this is the
     # time format in the annotation files
-    tstart_uts = tstart - datetime(1973,1,1).total_seconds()
-    tend_uts = tend - datetime(1973,1,1).total_seconds()
+    tstart_uts = (tstart - datetime(1973,1,1)).total_seconds()
+    tend_uts = (tend - datetime(1973,1,1)).total_seconds()
 
     # Access annotation files
     # Define list to hold data from event tables in annotation files.
@@ -126,16 +126,21 @@ def extract_combined_lytaf(tstart, tend,
     event_rows = [[]]
     for i, suffix in enumerate(combine_files):
         # Open SQLITE3 annotation files
-        connection = sqlite3.connect(os.path.join(lytaf_path, "annotation_"
-                                                     + suffix + ".db"))
+        connection = sqlite3.connect(
+            os.path.join(lytaf_path, "annotation_{0}.db".format(suffix)))
         # Create cursor to manipulate data in annotation file
         cursor = connection.cursor()
         # Select and extract the data from event table within file within
         # given time range
         cursor.execute("select insertion_time, begin_time, reference_time, "
                        "end_time, eventType_id from event where begin_time >= "
-                       + tstart_uts + " and begin_time <= " + tend_uts)
+                       "{0} and begin_time <= {1}".format(tstart_uts, tend_uts))
+        print "select insertion_time, begin_time, reference_time, end_time, " \
+          "eventType_id from event where begin_time >= {0} and begin_time <=" \
+          " {1}".format(tstart_uts, tend_uts)
         event_rows.append(cursor.fetchall())
+        print len(event_rows)
+        print len(event_rows[len(event_rows)-1])
         # Select and extract the event types from eventType table
         cursor.row_factory = sqlite3.Row
         cursor.execute("select * from eventType")
@@ -166,9 +171,6 @@ def extract_combined_lytaf(tstart, tend,
     event_rows = list(chain.from_iterable(event_rows))
     # Sort arrays in order of increasing start time.
     event_rows.sort(key=lambda tup: tup[1])
-
-    # Convert times to datetime objects
-    # INSERT CODE HERE
 
     # Create dictionary to hold results
     lytaf = {"insertion_time": [],
