@@ -835,7 +835,8 @@ def xray_luminosity(goeslc):
     date = str(goeslc.data.index[0])
 
     # Find temperature and emission measure with goes_chianti_tem
-    lx_out = goes_lx(longflux, shortflux, date=date)
+    lx_out = goes_lx(goeslc.data.xrsb, goeslc.data.xrsa,
+                     date=str(goeslc.data.index[0]))
 
     # Enter results into new version of GOES LightCurve Object
     goeslc_new = copy.deepcopy(goeslc)
