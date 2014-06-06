@@ -823,15 +823,12 @@ def xray_luminosity(goeslc):
     2014-01-01 00:00:04  7e-07  7e-06     1.903523e+24     1.903523e+25
     2014-01-01 00:00:06  7e-07  7e-06     1.903523e+24     1.903523e+25
     """
-
     # Check that input argument is of correct type
     if not isinstance(goeslc, sunpy.lightcurve.GOESLightCurve):
         raise TypeError("goeslc must be a GOESLightCurve object.")
-
     # Find temperature and emission measure with goes_chianti_tem
     lx_out = goes_lx(goeslc.data.xrsb, goeslc.data.xrsa,
                      date=str(goeslc.data.index[0]))
-
     # Enter results into new version of GOES LightCurve Object
     goeslc_new = copy.deepcopy(goeslc)
     goeslc_new.data["luminosity_xrsa"] = lx_out["shortlum"]
@@ -1046,3 +1043,54 @@ def _check_download_file(filename, remotepath, localpath=os.path.curdir,
                   remotepath + ".")
             else:
                 raise e
+
+def _time_intervals(obstime):
+    """
+    Calculates time intervals between measurement times in seconds.
+
+    This function calculates the time intervals between a series of
+    measurement times for use in siple integration over time.
+    Assume you have a series of times labelled t_1,...t_n.
+    The start of the time bin for time t_i is defined as
+    dt_i = (t_(i+1) - t_(i-1)) / 2
+    i.e. from halfway between t_i and the previous time, t_(i-1), to
+    halfway between t_i and the next time, t_(i+1).
+    The time intervals for t_1 and t_n are special cases.  These are
+    defined as
+    dt_1 = (t_2 - t_1) / 2
+    dt_(n-1) = (t_n - t_(n-1)) / 2
+
+    Parameters
+    ----------
+    obstime : numpy ndarray, dtype=datetime64
+              Array containing the time measurements.
+
+    Returns
+    -------
+    dt : numpy array, dtype=float
+         Array of time intervals in [s]
+
+    Examples
+    --------
+    >>> obstime = np.array(["2014-01-01 00:00:00",
+                            "2014-01-01 00:00:02",
+                            "2014-01-01 00:00:04"
+                            "2014-01-01 00:00:06"
+                            "2014-01-01 00:00:08"
+                            "2014-01-01 00:00:10"],
+                            dtype="datetime64[ms]")
+    >>> dt = _time_intervals(obstime)
+    >>> dt
+    array([ 1.000,  2.000,  2.000,  2.000,  2.000,  1.000])
+
+    """
+    # check obstime is correct type and greater than min required length
+    exceptions.check_datetime64(obstime, varname="obstime")
+    if len(obstime) < 3:
+        raise ValueError("obstime must have 3 or more elements.")
+    obstime = obstime.astype("datetime64[ms]")  # convert to units of ms
+    dt = (obstime[2:]-obstime[:-2]) / 2
+    dt = np.insert(dt, 0, (obstime[1]-obstime[0])/2)
+    dt = np.append(dt, (obstime[-1]-obstime[-2])/2)
+    dt = dt.astype(float) / 1e3 # convert from [ms] to [s]
+    return dt
