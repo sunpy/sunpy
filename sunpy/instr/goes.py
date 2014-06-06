@@ -1049,7 +1049,7 @@ def _time_intervals(obstime):
     Calculates time intervals between measurement times in seconds.
 
     This function calculates the time intervals between a series of
-    measurement times for use in siple integration over time.
+    measurement times for use in simple integration over time.
     Assume you have a series of times labelled t_1,...t_n.
     The start of the time bin for time t_i is defined as
     dt_i = (t_(i+1) - t_(i-1)) / 2
@@ -1059,10 +1059,14 @@ def _time_intervals(obstime):
     defined as
     dt_1 = (t_2 - t_1) / 2
     dt_(n-1) = (t_n - t_(n-1)) / 2
+    In the case where only two time measurements are given, two
+    "time intervals" are given which are equal to half the time
+    difference between the two times given.
 
     Parameters
     ----------
-    obstime : numpy ndarray, dtype=datetime64
+    obstime : ndarray or array-like which can be converted to
+              datetime64 type.
               Array containing the time measurements.
 
     Returns
@@ -1084,13 +1088,19 @@ def _time_intervals(obstime):
     array([ 1.000,  2.000,  2.000,  2.000,  2.000,  1.000])
 
     """
-    # check obstime is correct type and greater than min required length
-    exceptions.check_datetime64(obstime, varname="obstime")
-    if len(obstime) < 3:
-        raise ValueError("obstime must have 3 or more elements.")
-    obstime = obstime.astype("datetime64[ms]")  # convert to units of ms
-    dt = (obstime[2:]-obstime[:-2]) / 2
-    dt = np.insert(dt, 0, (obstime[1]-obstime[0])/2)
-    dt = np.append(dt, (obstime[-1]-obstime[-2])/2)
-    dt = dt.astype(float) / 1e3 # convert from [ms] to [s]
+    # check obstime is correct type and in units of milliseconds
+    obstime = np.asarray(obstime, dtype="datetime64[ms]")
+    # Ensure obstime has more than one element.  If so, calculate
+    # difference between each time measurement.
+    if len(obstime) < 2:
+        raise IOError("obstime must have 2 or more elements.")
+    elif len(obstime) == 2:
+        dt = np.array((obstime[1]-obstime[0])/2)
+        dt = np.append(dt, dt)
+    else:
+        dt = (obstime[2:]-obstime[:-2]) / 2
+        dt = np.insert(dt, 0, (obstime[1]-obstime[0])/2)
+        dt = np.append(dt, (obstime[-1]-obstime[-2])/2)
+    # Finally, convert from [ms] to [s]
+    dt = dt.astype(float) / 1e3
     return dt
