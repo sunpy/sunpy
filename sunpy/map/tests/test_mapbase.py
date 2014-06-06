@@ -199,8 +199,8 @@ class TestGenericMap:
         rotated_map_2 = rotated_map_1.rotate(20)
         assert rotated_map_2.center == rotated_map_1.center == self.map.center
         assert rotated_map_2.shape == rotated_map_1.shape == self.map.shape
-        assert rotated_map_1.rotation_angle['y'] == self.map.rotation_angle['y']-20
-        assert rotated_map_2.rotation_angle['y'] == self.map.rotation_angle['y']-40
+        assert rotated_map_1.rotation_angle['y'] == self.map.rotation_angle['y']+20
+        assert rotated_map_2.rotation_angle['y'] == self.map.rotation_angle['y']+40
         # Rotation of a square map by non-integral multiple of 90 degrees cuts off the corners
         # and assigns the value of 0 to corner pixels. This results in reduction
         # of the mean and an increase in standard deviation.
