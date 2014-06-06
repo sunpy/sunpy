@@ -825,12 +825,13 @@ def xray_luminosity(goeslc):
     """
 
     # Check that input argument is of correct type
-    exceptions.check_goeslc(goeslc, varname="goeslc")
+    if not isinstance(goeslc, sunpy.lightcurve.GOESLightCurve):
+        raise TypeError("goeslc must be a GOESLightCurve object.")
 
     # extract properties from GOESLightCurve object and change type to
     # that required by goes_chianti_em
-    longflux = np.array(goeslc.data.xrsb)
-    shortflux = np.array(goeslc.data.xrsa)
+    longflux = np.asanyarray(goeslc.data.xrsb, dtype=np.float64)
+    shortflux = np.asanyarray(goeslc.data.xrsadtype=np.float64)
     date = str(goeslc.data.index[0])
 
     # Find temperature and emission measure with goes_chianti_tem
