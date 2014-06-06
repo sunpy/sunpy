@@ -856,15 +856,17 @@ def goes_lx(longflux, shortflux, obstime=None, date=None):
 
     Parameters
     ----------
-    longflux : numpy ndarray, dtype=float
+    longflux : ndarray or array-like which can be converted to float64
+               type, such as an np.array, tuple, list.
                Array containing the observed GOES/XRS long channel flux
-    shortflux : numpy ndarray, dtype=float
+    shortflux : ndarray or array-like which can be converted to float64
+                type, such as an np.array, tuple, list.
                 Array containing the observed GOES/XRS short channel
                 flux
-    obstime : numpy ndarray, dtype=datetime64, optional
+    obstime : (optional) numpy ndarray, dtype=datetime64
               Measurement times corresponding to each long/short
               channel flux measurement.
-    date : datetime object or valid date strng, optional
+    date : (optional) datetime object or valid date string
            Date at which measurements were taken.
 
     Returns
@@ -914,8 +916,8 @@ def goes_lx(longflux, shortflux, obstime=None, date=None):
     """
 
     # Check inputs are of correct type
-    exceptions.check_float(longflux, varname="longflux") # Check longflux type
-    exceptions.check_float(shortflux, varname="shortflux") # Check shortflux type
+    longflux = np.asanyarray(longflux, dtype=np.float64)
+    shortflux = np.asanyarray(shortflux, dtype=np.float64)
 
     # Calculate X-ray luminosities
     longlum = _calc_xraylum(longflux, date=date)
