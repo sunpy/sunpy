@@ -776,6 +776,73 @@ def calc_rad_loss(temp, em, obstime=None, Download=False):
 
     return rad_loss_out
 
+def xray_luminosity(goeslc):
+    """
+    Calculates and adds solar X-ray luminosity to a GOESLightCurve.
+
+    This function calculates the solar X-ray luminosity in the
+    GOES wavelength ranges (1-8 angstroms and 0.5-4 angstroms) based
+    on the observed GOES fluxes.  The units of the results are erg/s.
+    This is done by calling goes_lx().  This function assumes that the
+    radiation is emitted isotropically, i.e. is distributed over a
+    spherical surface area with a radius equal to the Sun-Earth
+    distance.  Once the luminosity in each GOES passband is found,
+    they are added to a copy of the original GOESLightCurve object as
+    goeslc.data.luminosity_xrsa (for the 0.5-4 angstrom channel) and
+    goeslc.data.luminosity_xrsb (for the 1-8 angstrom channel), where
+    goeslc is the GOESLightCurve object.
+
+    Parameters
+    ----------
+    goeslc : GOESLightCurve object
+
+    Returns
+    -------
+    goeslc.data.luminosity_xrsa : pandas.core.series.Series
+                                  Array of luminosity in the 0.5-4
+                                  angstrom wavelength range [erg/s]
+    goeslc.data.luminosity_xrsb : pandas.core.series.Series
+                                  Array of luminosity in the 1-8
+                                  angstrom wavelength range [erg/s]
+
+    Examples
+    --------
+    >>> from sunpy.lightcurve as lc
+    >>> goeslc = lc.GOESLightCurve.create(time1, time2)
+    >>> goeslc.data
+                          xrsa   xrsb
+    2014-01-01 00:00:00  7e-07  7e-06
+    2014-01-01 00:00:02  7e-07  7e-06
+    2014-01-01 00:00:04  7e-07  7e-06
+    2014-01-01 00:00:06  7e-07  7e-06
+    >>> goeslc_new = xray_luminosity(goeslc)
+    >>> goeslc_new.data
+                          xrsa   xrsb  luminosity_xrsa  luminosity_xrsb
+    2014-01-01 00:00:00  7e-07  7e-06     1.903523e+24     1.903523e+25
+    2014-01-01 00:00:02  7e-07  7e-06     1.903523e+24     1.903523e+25
+    2014-01-01 00:00:04  7e-07  7e-06     1.903523e+24     1.903523e+25
+    2014-01-01 00:00:06  7e-07  7e-06     1.903523e+24     1.903523e+25
+    """
+
+    # Check that input argument is of correct type
+    exceptions.check_goeslc(goeslc, varname="goeslc")
+
+    # extract properties from GOESLightCurve object and change type to
+    # that required by goes_chianti_em
+    longflux = np.array(goeslc.data.xrsb)
+    shortflux = np.array(goeslc.data.xrsa)
+    date = str(goeslc.data.index[0])
+
+    # Find temperature and emission measure with goes_chianti_tem
+    lx_out = goes_lx(longflux, shortflux, date=date)
+
+    # Enter results into new version of GOES LightCurve Object
+    goeslc_new = copy.deepcopy(goeslc)
+    goeslc_new.data["luminosity_xrsa"] = lx_out["shortlum"]
+    goeslc_new.data["luminosity_xrsb"] = lx_out["longlum"]
+
+    return goeslc_new
+
 def _check_download_file(filename, remotepath, localpath=os.path.curdir,
                          remotename=None, force_download=False):
     """
