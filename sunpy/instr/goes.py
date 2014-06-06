@@ -844,6 +844,103 @@ def xray_luminosity(goeslc):
 
     return goeslc_new
 
+def goes_lx(longflux, shortflux, obstime=None, date=None):
+    """Calculates solar X-ray luminosity in GOES wavelength ranges.
+
+    This function calculates the X-ray luminosity from the Sun in the
+    GOES wavelength ranges (1-8 angstroms and 0.5-4 angstroms) based
+    on the observed GOES fluxes.  The units of the results are erg/s.
+    The calculation is made by simply assuming that the radiation is
+    emitted isotropically, i.e. is distributed over a spherical
+    surface area with a radius equal to the Sun-Earth distance.
+
+    Parameters
+    ----------
+    longflux : numpy ndarray, dtype=float
+               Array containing the observed GOES/XRS long channel flux
+    shortflux : numpy ndarray, dtype=float
+                Array containing the observed GOES/XRS short channel
+                flux
+    obstime : numpy ndarray, dtype=datetime64, optional
+              Measurement times corresponding to each long/short
+              channel flux measurement.
+    date : datetime object or valid date strng, optional
+           Date at which measurements were taken.
+
+    Returns
+    -------
+    longlum : numpy ndarray
+              Array of luminosity in the long channel range
+              (1-8 angstroms)
+    shortlum : numpy ndarray
+               Array of luminosity in the short channel range
+               (0.5-4 angstroms)
+    longlum_int : float
+                  Long channel fluence, i.e. luminosity integrated
+                  over time.
+    shortlum_int : float
+                   Short channel fluence, i.e. luminosity integrated
+                   over time
+
+    Notes
+    -----
+    This function calls goes_luminosity() to calculate luminosities.
+    For more information on how this is done, see docstring of that
+    function.
+
+    Examples
+    --------
+    >>> longflux = np.array([7e-6,7e-6,7e-6,7e-6,7e-6,7e-6])
+    >>> shortflux = np.array([7e-7,7e-7,7e-7,7e-7,7e-7,7e-7])
+    >>> obstime = np.array(["2014-01-01 00:00:00",
+                            "2014-01-01 00:00:02",
+                            "2014-01-01 00:00:04"
+                            "2014-01-01 00:00:06"
+                            "2014-01-01 00:00:08"
+                            "2014-01-01 00:00:10"]
+                            dtype="datetime64[ms]")
+    >>> lx_out = goes_lx(longflux, shortflux, obstime)
+    >>> lx_out.longlum
+    array([  1.98650769e+25,   1.98650769e+25,   1.98650769e+25,
+             1.98650769e+25,   1.98650769e+25,   1.98650769e+25])
+    >>> lx_out.shortlum
+    array([  1.98650769e+24,   1.98650769e+24,   1.98650769e+24,
+             1.98650769e+24,   1.98650769e+24,   1.98650769e+24])
+    >>> lx_out.longlum_int
+    2.0337865720138238e+26
+    >>> lx_out.shortlum_int
+    2.0337865720138235e+25
+
+    """
+
+    # Check inputs are of correct type
+    exceptions.check_float(longflux, varname="longflux") # Check longflux type
+    exceptions.check_float(shortflux, varname="shortflux") # Check shortflux type
+
+    # Calculate X-ray luminosities
+    longlum = _calc_xraylum(longflux, date=date)
+    shortlum = _calc_xraylum(shortflux, date=date)
+
+    # If obstime keyword giving measurement times is set, calculate
+    # total energy radiated in the GOES bandpasses during the flare.
+    if obstime is not None:
+        dt = _time_intervals(obstime)
+        # Check that times are in chronological order
+        if np.min(dt) <= 0:
+            raise ValueError("times in obstime must be in "
+                             "chronological order.")
+        longlum_int = np.sum(longlum*dt)
+        shortlum_int = np.sum(shortlum*dt)
+        lx_out = {"longflux":longflux, "shortflux":shortflux,
+                  "time":obstime, "longlum":longlum, "shortlum":shortlum,
+                  "longlum_int":longlum_int, "shortlum_int":shortlum_int,
+                  "dt":dt}
+    else:
+        lx_out = {"longflux":longflux, "shortflux":shortflux,
+                  "longlum":longlum, "shortlum":shortlum,}
+
+    return lx_out
+
 def _check_download_file(filename, remotepath, localpath=os.path.curdir,
                          remotename=None, force_download=False):
     """
