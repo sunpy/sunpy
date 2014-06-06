@@ -828,12 +828,6 @@ def xray_luminosity(goeslc):
     if not isinstance(goeslc, sunpy.lightcurve.GOESLightCurve):
         raise TypeError("goeslc must be a GOESLightCurve object.")
 
-    # extract properties from GOESLightCurve object and change type to
-    # that required by goes_chianti_em
-    longflux = np.asanyarray(goeslc.data.xrsb, dtype=np.float64)
-    shortflux = np.asanyarray(goeslc.data.xrsadtype=np.float64)
-    date = str(goeslc.data.index[0])
-
     # Find temperature and emission measure with goes_chianti_tem
     lx_out = goes_lx(goeslc.data.xrsb, goeslc.data.xrsa,
                      date=str(goeslc.data.index[0]))
@@ -943,6 +937,51 @@ def goes_lx(longflux, shortflux, obstime=None, date=None):
                   "longlum":longlum, "shortlum":shortlum,}
 
     return lx_out
+
+def _calc_xraylum(flux, date=None):
+    """
+    Calculates solar luminosity based on observed flux observed at 1AU.
+
+    This function calculates the luminosity from the Sun based
+    on observed flux in W/m**2.  The units of the results are erg/s.
+    The calculation is made by simply assuming that the radiation is
+    emitted isotropically, i.e. is distributed over a spherical
+    surface area with a radius equal to the Sun-Earth distance.
+
+    Parameters
+    ----------
+    flux : numpy ndarray
+           Array containing the observed solar flux
+    date : datetime object or valid date string, optional
+           Used to calculate a more accurate Sun-Earth distance.
+
+    Returns
+    -------
+    luminosity : numpy array
+                Array of luminosity
+
+    Notes
+    -----
+    To convert from W/m**2 to erg/s:
+    1 W = 1 J/s = 10**7 erg/s
+    1 W/m**2 = 4*pi * AU**2 * 10**7 erg/s, where AU is the Sun-Earth
+    distance in metres.
+
+    Examples
+    --------
+    >>> flux = np.array([7e-6,7e-6])
+    >>> luminosity = _calc_xraylum(flux, date="2014-04-21")
+    >>> luminosity
+    array([  1.98650769e+25,   1.98650769e+25])
+
+    """
+    exceptions.check_float(flux)
+    if date is not None:
+        date = exceptions.check_date(date, varname="date")
+        return 4 * np.pi * (sun.constants.au.value * 
+                            sun.sunearth_distance(t=date))**2 * 1e7 * flux
+    else:
+        return 4 * np.pi * (sun.constants.au.value)**2 * 1e7 * flux
 
 def _check_download_file(filename, remotepath, localpath=os.path.curdir,
                          remotename=None, force_download=False):
