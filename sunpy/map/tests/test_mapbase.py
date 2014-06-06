@@ -218,5 +218,5 @@ class TestGenericMap:
         assert int(rotated_map_3.std()) == int(rotated_map_4.std()) == int(rotated_map_5.std())
 
         # Check recentering
-        rotated_map_6 = self.map.rotate(20, rotation_center=(200, 100), recenter=True)
+        rotated_map_6 = self.map.rotate(20, image_center=(200, 100), recenter=True)
         assert rotated_map_6.center == {'y': 100, 'x': 200 }
