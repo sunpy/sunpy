@@ -116,8 +116,8 @@ def extract_combined_lytaf(tstart, tend,
     combine_files.sort()
     # Convert input times to UNIX timestamp format since this is the
     # time format in the annotation files
-    tstart_uts = (tstart - datetime(1973,1,1)).total_seconds()
-    tend_uts = (tend - datetime(1973,1,1)).total_seconds()
+    tstart_uts = tstart.strftime("%s")
+    tend_uts = tend.strftime("%s")
 
     # Access annotation files
     # Define list to hold data from event tables in annotation files.
@@ -139,8 +139,6 @@ def extract_combined_lytaf(tstart, tend,
           "eventType_id from event where begin_time >= {0} and begin_time <=" \
           " {1}".format(tstart_uts, tend_uts)
         event_rows.append(cursor.fetchall())
-        print len(event_rows)
-        print len(event_rows[len(event_rows)-1])
         # Select and extract the event types from eventType table
         cursor.row_factory = sqlite3.Row
         cursor.execute("select * from eventType")
