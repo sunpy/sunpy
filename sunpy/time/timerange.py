@@ -171,6 +171,20 @@ class TimeRange:
         """Gets the start date"""
         return self.t2
 
+    def min(self):
+        """Gets the smaller value of the TimeRange"""
+        if self.t1 < self.t2:
+            return self.t1
+        else:
+            return self.t2
+
+    def max(self):
+        """Gets the largest value of the TimeRange"""
+        if self.t2 > self.t1:
+            return self.t2
+        else:
+            return self.t1
+
     def seconds(self):
         """Gets the number of seconds elapsed."""
         return (self.dt.microseconds +
