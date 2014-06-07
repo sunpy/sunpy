@@ -195,8 +195,9 @@ class TimeRange:
         return self
 
     def extend(self, t_backwards, t_forwards):
-        """Extend the time range forwards and backwards by arbitrary amounts"""
-        # Only a timedelta object is acceptable here
+        """Extend the time range forwards and backwards by arbitrary amounts
+           Only timedelta objects are acceptable here
+        """
         self.t1 = self.t1 + t_backwards
         self.t2 = self.t2 + t_forwards
 
