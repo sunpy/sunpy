@@ -815,7 +815,7 @@ class Spectrogram(Parent):
             Datetime to find the x coordinate for.
         """
         diff = time - self.start
-        diff_s = SECONDS_PER_DAY * diff.days + diff.seconds
+        diff_s = (SECONDS_PER_DAY * diff.days + diff.seconds) * u.second
         if self.time_axis[-1] < diff_s < 0:
             raise ValueError("Out of bounds")
         for n, elem in enumerate(self.time_axis):
@@ -994,7 +994,7 @@ class LinearTimeSpectrogram(Spectrogram):
             xs.append(x)
             diff = last.shape[1] - x
 
-            if maxgap is not None and -diff > maxgap / min_delt:
+            if maxgap is not None and -diff > maxgap / min_delt.value:
                 raise ValueError("Too large gap.")
 
             # If we leave out undefined values, we do not want to
@@ -1013,7 +1013,7 @@ class LinearTimeSpectrogram(Spectrogram):
         # We do that here so the user can pass a memory mapped
         # array if they'd like to.
         arr = mk_arr((data.shape[0], size), dtype_)
-        time_axis = np.zeros((size,))
+        time_axis = np.zeros((size,)) * u.second
         sx = 0
         # Amount of pixels left out due to nonlinearity. Needs to be
         # considered for correct time axes.
@@ -1039,8 +1039,8 @@ class LinearTimeSpectrogram(Spectrogram):
                     e_time_axis = np.concatenate([
                         e_time_axis,
                         np.linspace(
-                            minimum.value + min_delt,
-                            minimum.value + diff * min_delt,
+                            minimum + min_delt,
+                            minimum + diff * min_delt,
                             diff
                         )
                     ])
@@ -1051,7 +1051,7 @@ class LinearTimeSpectrogram(Spectrogram):
                 if mask is None:
                     mask = np.zeros((data.shape[0], size), dtype=np.uint8)
                 mask[:, sx + x - diff:sx + x] = 1
-            time_axis[sx:sx + x] = e_time_axis[:x] * u.second + data.t_delt * (sx + sd)
+            time_axis[sx:sx + x] = (e_time_axis[:x].value + data.t_delt.value * (sx + sd)) * u.second
             if nonlinear:
                 sd += max(0, diff)
             sx += x

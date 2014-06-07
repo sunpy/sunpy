@@ -36,7 +36,7 @@ def dict_eq(one, other):
 
 def mk_spec(image):
     return Spectrogram(
-        image, np.linspace(0, image.shape[1] - 1, image.shape[1]) * u.sec,
+        image, np.linspace(0, image.shape[1] - 1, image.shape[1]) * u.second,
         np.linspace(0, image.shape[0] - 1, image.shape[0]) * u.MHz,
         datetime(2010, 10, 10), datetime(2010, 10, 10, 1), 0
     )
@@ -141,11 +141,11 @@ def test_time_to_x():
     spectrogram = LinearTimeSpectrogram(
         image, np.linspace(0, image.shape[1] - 1, image.shape[1]) * u.second,
         np.linspace(0, image.shape[0] - 1, image.shape[0]) * u.MHz,
-        datetime(2010, 10, 10), datetime(2010, 10, 10, 1), 0, 1
+        datetime(2010, 10, 10), datetime(2010, 10, 10, 1), 0, 1 * u.second
     )
     ret = spectrogram.time_to_x(datetime(2010, 10, 10, 0, 0, 59))
-    assert isinstance(ret, int)
-    assert ret == 59
+    assert isinstance(ret, float)
+    assert ret == 59.0
 
 
 def test_time_to_x_nonlinear():
@@ -165,7 +165,7 @@ def test_join():
     one = LinearTimeSpectrogram(
         image, np.linspace(0, 0.5 * (image.shape[1] - 1), image.shape[1]) * u.second,
         np.linspace(0, image.shape[0] - 1, image.shape[0]) * u.MHz,
-        datetime(2010, 10, 10), datetime(2010, 10, 10, 0, 30), 0, 0.5,
+        datetime(2010, 10, 10), datetime(2010, 10, 10, 0, 30), 0, 0.5 * u.second,
     )
 
     image = np.random.rand(200, 3600)
@@ -173,7 +173,7 @@ def test_join():
         image, np.linspace(0, image.shape[1] - 1, image.shape[1]) * u.second,
         np.linspace(0, image.shape[0] - 1, image.shape[0]) * u.MHz,
         datetime(2010, 10, 10, 0, 29),
-        datetime(2010, 10, 10, 1, 29), 1799, 1,
+        datetime(2010, 10, 10, 1, 29), 1799, 1 * u.second,
     )
 
     z = LinearTimeSpectrogram.join_many(
@@ -197,7 +197,7 @@ def test_join_dtype():
     one = LinearTimeSpectrogram(
         image, np.linspace(0, 0.5 * (image.shape[1] - 1), image.shape[1]) * u.second,
         np.linspace(0, image.shape[0] - 1, image.shape[0]) * u.MHz,
-        datetime(2010, 10, 10), datetime(2010, 10, 10, 0, 30), 0, 0.5,
+        datetime(2010, 10, 10), datetime(2010, 10, 10, 0, 30), 0, 0.5 * u.second,
     )
 
     image = np.random.rand(200, 3600).astype(np.uint8)
@@ -205,7 +205,7 @@ def test_join_dtype():
         image, np.linspace(0, image.shape[1] - 1, image.shape[1]) * u.second,
         np.linspace(0, image.shape[0] - 1, image.shape[0]) * u.MHz,
         datetime(2010, 10, 10, 0, 29),
-        datetime(2010, 10, 10, 1, 29), 1799, 1,
+        datetime(2010, 10, 10, 1, 29), 1799, 1 * u.second,
     )
     
     z = LinearTimeSpectrogram.join_many(
@@ -219,7 +219,7 @@ def test_join_different_dtype():
     one = LinearTimeSpectrogram(
         image, np.linspace(0, 0.5 * (image.shape[1] - 1), image.shape[1]) * u.second,
         np.linspace(0, image.shape[0] - 1, image.shape[0]) * u.MHz,
-        datetime(2010, 10, 10), datetime(2010, 10, 10, 0, 30), 0, 0.5,
+        datetime(2010, 10, 10), datetime(2010, 10, 10, 0, 30), 0, 0.5 * u.second,
     )
 
     image = np.random.rand(200, 3600).astype(np.uint8)
@@ -227,7 +227,7 @@ def test_join_different_dtype():
         image, np.linspace(0, image.shape[1] - 1, image.shape[1]) * u.second,
         np.linspace(0, image.shape[0] - 1, image.shape[0]) * u.MHz,
         datetime(2010, 10, 10, 0, 29),
-        datetime(2010, 10, 10, 1, 29), 1799, 1,
+        datetime(2010, 10, 10, 1, 29), 1799, 1 * u.second,
     )
     
     z = LinearTimeSpectrogram.join_many(
@@ -242,14 +242,14 @@ def test_join_midnight():
         image, np.linspace(0, 0.5 * (image.shape[1] - 1), image.shape[1]) * u.second,
         np.linspace(0, image.shape[0] - 1, image.shape[0]) * u.MHz,
         datetime(2010, 10, 10, 23, 30),
-        datetime(2010, 10, 10, 23, 59, 59), 84600, 0.5,
+        datetime(2010, 10, 10, 23, 59, 59), 84600, 0.5 * u.second,
     )
 
     image = np.random.rand(200, 3600)
     other = LinearTimeSpectrogram(
         image, np.linspace(0, image.shape[1] - 1, image.shape[1]) * u.second,
         np.linspace(0, image.shape[0] - 1, image.shape[0]) * u.MHz,
-        datetime(2010, 10, 11, 0, 0), datetime(2010, 10, 11, 1), 0, 1,
+        datetime(2010, 10, 11, 0, 0), datetime(2010, 10, 11, 1), 0, 1 * u.second,
     )
 
     z = LinearTimeSpectrogram.join_many(
@@ -270,14 +270,14 @@ def test_join_month():
         image, np.linspace(0, 0.5 * (image.shape[1] - 1), image.shape[1]) * u.second,
         np.linspace(0, image.shape[0] - 1, image.shape[0]) * u.MHz,
         datetime(2012, 7, 31, 23, 30),
-        datetime(2012, 7, 31, 23, 59, 59), 84600, 0.5,
+        datetime(2012, 7, 31, 23, 59, 59), 84600, 0.5 * u.second,
     )
 
     image = np.random.rand(200, 3600)
     other = LinearTimeSpectrogram(
         image, np.linspace(0, image.shape[1] - 1, image.shape[1]) * u.second,
         np.linspace(0, image.shape[0] - 1, image.shape[0]) * u.MHz,
-        datetime(2012, 8, 1), datetime(2012, 8, 1, 1), 0, 1,
+        datetime(2012, 8, 1), datetime(2012, 8, 1, 1), 0, 1 * u.second,
     )
 
     z = LinearTimeSpectrogram.join_many(
@@ -298,14 +298,14 @@ def test_join_year():
         image, np.linspace(0, 0.5 * (image.shape[1] - 1), image.shape[1]) * u.second,
         np.linspace(0, image.shape[0] - 1, image.shape[0]) * u.MHz,
         datetime(2012, 12, 31, 23, 30),
-        datetime(2013, 1, 1, 0, 0, 0), 84600, 0.5,
+        datetime(2013, 1, 1, 0, 0, 0), 84600, 0.5 * u.second,
     )
 
     image = np.random.rand(200, 3600)
     other = LinearTimeSpectrogram(
         image, np.linspace(0, image.shape[1] - 1, image.shape[1]) * u.second,
         np.linspace(0, image.shape[0] - 1, image.shape[0]) * u.MHz,
-        datetime(2013, 1, 1), datetime(2013, 1, 1, 1), 0, 1,
+        datetime(2013, 1, 1), datetime(2013, 1, 1, 1), 0, 1 * u.second,
     )
 
     z = LinearTimeSpectrogram.join_many(
@@ -326,13 +326,13 @@ def test_join_over_midnight():
         image, np.linspace(0, 0.5 * (image.shape[1] - 1), image.shape[1]) * u.second,
         np.linspace(0, image.shape[0] - 1, image.shape[0]) * u.MHz,
         datetime(2010, 10, 10, 23, 45),
-        datetime(2010, 10, 11, 0, 15,), 85500, 0.5,
+        datetime(2010, 10, 11, 0, 15,), 85500, 0.5 * u.second,
     )
     image = np.random.rand(200, 3600)
     other = LinearTimeSpectrogram(
         image, np.linspace(0, image.shape[1] - 1, image.shape[1]) * u.second,
         np.linspace(0, image.shape[0] - 1, image.shape[0]) * u.MHz,
-        datetime(2010, 10, 11, 0, 15), datetime(2010, 10, 11, 1, 15), 900, 1,
+        datetime(2010, 10, 11, 0, 15), datetime(2010, 10, 11, 1, 15), 900, 1 * u.second,
     )
 
     z = LinearTimeSpectrogram.join_many(
@@ -356,7 +356,7 @@ def test_join_gap():
         image, np.linspace(0, 0.5 * (image.shape[1] - 1), image.shape[1]) * u.second,
         np.linspace(0, image.shape[0] - 1, image.shape[0]) * u.MHz,
         datetime(2010, 10, 10, 23, 45),
-        datetime(2010, 10, 11, 0, 15,), 85500, 0.5,
+        datetime(2010, 10, 11, 0, 15,), 85500, 0.5 * u.second,
     )
 
     image = np.random.rand(200, 3600)
@@ -364,7 +364,7 @@ def test_join_gap():
         image, np.linspace(0, image.shape[1] - 1, image.shape[1]) * u.second,
         np.linspace(0, image.shape[0] - 1, image.shape[0]) * u.MHz,
         datetime(2010, 10, 11, 0, 15, 1),
-        datetime(2010, 10, 11, 1, 15), 901, 1,
+        datetime(2010, 10, 11, 1, 15), 901, 1 * u.second,
     )
     with pytest.raises(ValueError) as excinfo:
         LinearTimeSpectrogram.join_many(
@@ -469,7 +469,7 @@ def test_join_nonlinear():
 
     assert np.array_equal(z.data[:, :3600], one.data)
     assert np.array_equal(z.time_axis[:3600], one.time_axis)
-    assert np.array_equal(z.time_axis[3600:], oz.time_axis + 1801)
+    assert np.array_equal(z.time_axis[3600:], oz.time_axis + 1801 * u.second)
     assert isinstance(z, Spectrogram)
 
 
