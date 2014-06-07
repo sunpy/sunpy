@@ -98,9 +98,10 @@ def test_end():
 
 
 def test_minmax():
-    timerange = sunpy.time.TimeRange('2012/1/2', '2012/1/1')
-    assert timerange.max() == end
-    assert timerange.min() == start
+    timerangePos = sunpy.time.TimeRange('2012/1/1', '2012/1/2')
+    timerangeNeg = sunpy.time.TimeRange('2012/1/2', '2012/1/1')
+    assert timerangePos.max() == timerangeNeg.max()
+    assert timerangePos.min() == timerangeNeg.min()
 
 
 def test_seconds():
