@@ -21,7 +21,7 @@ from astropy.io import fits
 from astropy import units as u
 
 import sunpy
-import sunpy.map.header
+import sunpy.map
 from sunpy.time import TimeRange, parse_time
 import sunpy.sun.constants as sun
 from sunpy.sun.sun import solar_semidiameter_angular_size
@@ -356,7 +356,7 @@ def backprojection(calibrated_event_list, pixel_size=(1.,1.) * u.deg, image_dim=
     --------
     >>> import sunpy.instr.rhessi as rhessi
     >>> map = rhessi.backprojection(sunpy.RHESSI_EVENT_LIST)
-    >>> map.show()
+    >>> map.peek()
 
     """
     if not isinstance(pixel_size, u.Quantity):
@@ -395,8 +395,8 @@ def backprojection(calibrated_event_list, pixel_size=(1.,1.) * u.deg, image_dim=
         "CTYPE2": "HPLT-TAN",
         "HGLT_OBS": 0,
         "HGLN_OBS": 0,
-        "RSUN_OBS": solar_semidiameter_angular_size(time_range.center()),
-        "RSUN_REF": sun.radius,
+        "RSUN_OBS": solar_semidiameter_angular_size(time_range.center()).value,
+        "RSUN_REF": sun.radius.value,
         "DSUN_OBS": sunearth_distance(time_range.center()) * sunpy.sun.constants.au
     }
     
