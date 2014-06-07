@@ -144,7 +144,7 @@ class TimeRange:
         --------
         To get one 12 second long window every hour within the timerange:
 
-        >>> TimeRange.window(60*60, window=12)
+        >>> TimeRange.window(60 * 60, window=12)
         """
         if not isinstance(window, timedelta):
             window = timedelta(seconds=window)
@@ -154,8 +154,8 @@ class TimeRange:
         n = 1
         times = [TimeRange(self.t1, self.t1 + window)]
         while times[-1].t2 < self.t2:
-            times.append(TimeRange(self.t1 + cadence*n,
-                                   self.t1 + cadence*n + window))
+            times.append(TimeRange(self.t1 + cadence * n,
+                                   self.t1 + cadence * n + window))
             n += 1
         return times
 
