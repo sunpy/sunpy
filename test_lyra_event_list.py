@@ -61,4 +61,5 @@ def test_extract_combined_lytaf():
                       "event_type": event_type,
                       "event_description": event_description}
     # Assert that extract_combined_lytaf gives the right result
-    unittest.TestCase.assertDictEqual(self, lytaf_test, lytaf_expected)
+    assert lytaf_test == lytaf_expected
+    
