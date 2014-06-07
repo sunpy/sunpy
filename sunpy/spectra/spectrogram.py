@@ -990,7 +990,7 @@ class LinearTimeSpectrogram(Spectrogram):
                     get_day(elem.start) - get_day(start_day)
                 ).days + elem.t_init
             )
-            x = int((e_init - last.t_init) / min_delt)
+            x = int((e_init - last.t_init) / min_delt.value)
             xs.append(x)
             diff = last.shape[1] - x
 
@@ -1136,7 +1136,7 @@ class LinearTimeSpectrogram(Spectrogram):
 
         new = np.zeros((fsize, one.shape[1]), dtype=dtype_)
 
-        freq_axis = np.zeros((fsize,))
+        freq_axis = np.zeros((fsize,)) * u.MHz
 
 
         for n, (data, row) in enumerate(merge(
