@@ -29,6 +29,7 @@
 # scikit-image will not install on RTD, so if it is no present we
 # use Mock instead so the docs will still build correctly.
 
+import os
 import sys
 
 modules = {}
@@ -41,6 +42,18 @@ except ImportError:
     modules.update({'skimage':mock, 'skimage.feature':mock.module})
 
 sys.modules.update(modules)
+
+# -- Load astropy_helpers -----------------------------------------------------
+
+try:
+    # Has astropy_helpers been installed via pip or similar?
+    import astropy_helpers
+except ImportError:
+    # Building from the doc/source directory?
+    if os.path.basename(os.getcwd()) == 'source':
+        a_h_path = os.path.abspath(os.path.join('..', '..', 'astropy_helpers'))
+        if os.path.isdir(a_h_path):
+            sys.path.insert(1, a_h_path)
 
 # -- General configuration ----------------------------------------------------
 
