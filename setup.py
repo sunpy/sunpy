@@ -7,6 +7,7 @@ import glob
 import os
 import sys
 
+import test_helper
 import ah_bootstrap
 from setuptools import setup
 
@@ -54,6 +55,10 @@ if not RELEASE:
 # invoking any other functionality from distutils since it can potentially
 # modify distutils' behavior.
 cmdclassd = register_commands(PACKAGENAME, VERSION, RELEASE)
+
+# Overwrite the Astropy Testing framework
+cmdclassd['test'] = type('SunPyTest', (test_helper.SunPyTest,),
+                        {'package_name': 'sunpy'})
 
 # Adjust the compiler in case the default on this platform is to use a
 # broken one.
