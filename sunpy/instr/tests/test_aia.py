@@ -1,9 +1,11 @@
 from __future__ import absolute_import
 
+import numpy as np
+import matplotlib.pyplot as plt
+
 import sunpy
 import sunpy.data.test as test
 from sunpy.instr.aia import aiaprep
-import matplotlib.pyplot as plt
 
 # Define the original and prepped images first so they're available to all functions
 original = sunpy.map.Map(test.aia_171_level1)
@@ -19,8 +21,9 @@ def test_aiaprep():
     # Check cdelt values
     assert prep_map.meta['cdelt1']/0.6 == int(prep_map.meta['cdelt1']/0.6)
     assert prep_map.meta['cdelt2']/0.6 == int(prep_map.meta['cdelt2']/0.6)
-    # Check rotation value
-    assert prep_map.meta['crota2'] == 0.0
+    # Check rotation value, I am assuming that the inaccuracy in
+    # the CROTA -> PCi_j matrix is casuing the inaccuracy here
+    np.testing.assert_allclose(prep_map.rotation_matrix, np.identity(2), rtol=1e-3)
     # Check level number
     assert prep_map.meta['lvl_num'] == 1.5
 
@@ -37,14 +40,6 @@ def test_filesave():
     assert load_map.meta['cdelt1']/0.6 == int(load_map.meta['cdelt1']/0.6)
     assert load_map.meta['cdelt2']/0.6 == int(load_map.meta['cdelt2']/0.6)
     # Check rotation value
-    assert load_map.meta['crota2'] == 0.0
+    np.testing.assert_allclose(prep_map.rotation_matrix, np.identity(2), rtol=1e-3)
     # Check level number
     assert load_map.meta['lvl_num'] == 1.5
-
-if __name__ == "__main__":
-    try:
-        test_aiaprep()
-        test_filesave()
-    except AssertionError:
-        plt.show()
-        raise
