@@ -134,8 +134,8 @@ def equation_of_center(t=None):
     T = julian_centuries(t)
     mna = mean_anomaly(t)
     result = ((1.9194600 - 0.0047890 * T - 0.0000140 * T
-    ** 2) * np.sin(np.radians(mna)) + (0.0200940 - 0.0001000 * T) *
-    np.sin(np.radians(2 * mna)) + 0.0002930 * np.sin(np.radians(3 * mna)))
+    ** 2) * np.sin(mna) + (0.0200940 - 0.0001000 * T) *
+    np.sin(2 * mna) + 0.0002930 * np.sin(3 * mna))
     result = result * u.deg
     return Angle(result)
 
@@ -156,7 +156,7 @@ def sunearth_distance(t=None):
     accuracy terms not included here."""  
     ta = true_anomaly(t)
     e = eccentricity_SunEarth_orbit(t)
-    result = 1.00000020 * (1.0 - e ** 2) / (1.0 + e * np.cos(np.radians(ta)))
+    result = 1.00000020 * (1.0 - e ** 2) / (1.0 + e * np.cos(ta))
     return result * u.AU
 
 def apparent_longitude(t=None):
@@ -183,24 +183,24 @@ def true_obliquity_of_ecliptic(t=None):
 def true_rightascenscion(t=None):
     true_long = true_longitude(t)
     ob = true_obliquity_of_ecliptic(t)
-    result = np.cos(np.radians(ob)) * np.sin(np.radians(true_long))
+    result = np.cos(ob) * np.sin(true_long)
     result = result * u.deg
     return Longitude(result)
 
 def true_declination(t=None):
-    result = np.cos(np.radians(true_longitude(t)))
+    result = np.cos(true_longitude(t))
     result = result * u.deg
     return Latitude(result)
 
 def apparent_obliquity_of_ecliptic(t=None):
     omega = apparent_longitude(t)
-    result = true_obliquity_of_ecliptic(t) + (0.00256 * np.cos(np.radians(omega))) * u.deg
+    result = true_obliquity_of_ecliptic(t) + (0.00256 * np.cos(omega)) * u.deg
     return result
 
 def apparent_rightascenscion(t=None):
     """Returns the apparent right ascenscion of the Sun."""
-    y = np.cos(np.radians(apparent_obliquity_of_ecliptic(t))) * np.sin(np.radians(apparent_longitude(t)))
-    x = np.cos(np.radians(apparent_longitude(t)))
+    y = np.cos(apparent_obliquity_of_ecliptic(t)) * np.sin(apparent_longitude(t))
+    x = np.cos(apparent_longitude(t))
     rpol = np.rad2deg(np.arctan2(y, x))
     app_ra = rpol % (360.0 * u.deg)
     if app_ra < 0: app_ra += (360.0 * u.deg)
@@ -211,7 +211,7 @@ def apparent_declination(t=None):
     """Returns the apparent declination of the Sun."""
     ob = apparent_obliquity_of_ecliptic(t)
     app_long = apparent_longitude(t)
-    result = np.degrees(np.arcsin(np.sin(np.radians(ob))) * np.sin(np.radians(app_long)))
+    result = np.degrees(np.arcsin(np.sin(ob)) * np.sin(app_long))
     return Latitude(result)
 
 def solar_north(t=None):
@@ -223,8 +223,8 @@ def solar_north(t=None):
     k = (74.3646 + 1.395833 * T) * u.deg
     lamda = true_longitude(t) - (0.00569 * u.deg)
     omega = apparent_longitude(t)
-    lamda2 = lamda - (0.00479 * np.sin(np.radians(omega))) * u.deg
-    diff = np.radians(lamda - k)
+    lamda2 = lamda - (0.00479 * np.sin(omega)) * u.deg
+    diff = lamda - k
     x = np.degrees(np.arctan(-np.cos(np.radians(lamda2)*np.tan(np.radians(ob1)))))
     y = np.degrees(np.arctan(-np.cos(diff) * np.tan(np.radians(i))))
     result = x + y
@@ -241,18 +241,15 @@ def heliographic_solar_center(t=None):
     lamda = true_longitude(t) - 0.00569 * u.deg
     #omega = apparent_longitude(t)
     #lamda2 = lamda - 0.00479 * math.sin(np.radians(omega))
-    diff = np.radians(lamda - k)
+    diff = lamda - k
     # Latitude at center of disk (deg):
-    he_lat = np.degrees(np.arcsin(np.sin(diff)*np.sin(np.radians(i))))
+    he_lat = np.degrees(np.arcsin(np.sin(diff)*np.sin(i)))
     # Longitude at center of disk (deg):
-    y = -np.sin(diff)*np.cos(np.radians(i))
+    y = -np.sin(diff)*np.cos(i)
     x = -np.cos(diff)
     rpol = np.rad2deg(np.arctan2(y, x))
     he_lon = rpol - theta
-    he_lon = he_lon % (360 * u.deg)
-    if he_lon < 0:
-        he_lon = he_lon + (360.0 * u.deg)
-
+ 
     return [Longitude(he_lon), Latitude(he_lat)]
 
 def print_params(t='now'):
