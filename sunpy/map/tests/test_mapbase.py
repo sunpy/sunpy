@@ -3,9 +3,9 @@ Map tests
 """
 from __future__ import absolute_import
 
-#pylint: disable=C0103,R0904,W0201,W0212,W0232,E1103
 import sunpy
 import sunpy.map
+import sunpy.data.test
 
 from astropy.io import fits
 import numpy as np
@@ -13,7 +13,10 @@ import numpy as np
 from itertools import izip
 
 import pytest
-     
+
+filepath = sunpy.data.test.rootdir
+
+
 # Try different dimensions to ensure that the resample method works
 # correctly in cases where the dimensions of the original map are
 # are exactly divisible by those of the output map as well as the cases

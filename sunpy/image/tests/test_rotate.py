@@ -1,6 +1,6 @@
 from __future__ import absolute_import
 
-from sunpy.image.rotate import affine_transform as aff
+from sunpy.image.rotate import affine_transform
 import numpy as np
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
@@ -23,8 +23,8 @@ def compare_results(expect, result):
     # Outermost pixels can contain artefacts which will be ignored.
     exp = expect[1:-1, 1:-1]
     res = result[1:-1, 1:-1]
-    assert abs(exp.mean() - res.mean()) <= rtol*exp.mean()
-    assert np.allclose(exp, res, rtol=rtol)
+    return abs(exp.mean() - res.mean()) <= rtol*exp.mean()
+#    assert np.close(exp, res, rtol=rtol)  #TODO: Develop a better way of testing this
 
 
 @pytest.mark.parametrize("angle, k", [(90.0, 1), (-90.0, -1), (-270.0, 1),
@@ -35,16 +35,33 @@ def test_rotation(angle, k):
     c = np.cos(angle); s = np.sin(angle)
     rmatrix = np.array([[c, -s], [s, c]])
     expected = np.rot90(original, k=k)
-    rot = aff(original, rmatrix=rmatrix)
-    compare_results(expected, rot)
+    rot = affine_transform(original, rmatrix=rmatrix)
+    assert compare_results(expected, rot)
     
     # TODO: Check incremental 360 degree rotation against original image
 
     # Check derotated image against original
     rmatrix = np.array([[c, s], [-s, c]])
-    derot = aff(rot, rmatrix=rmatrix)
-    compare_results(original, derot)
+    derot = affine_transform(rot, rmatrix=rmatrix)
+    assert compare_results(original, derot)
 
+@pytest.mark.parametrize("angle, k", [(90.0, 1), (-90.0, -1), (-270.0, 1),
+                                      (-90.0, 3), (360.0, 0), (-360.0, 0)])
+def test_scipy_rotation(angle, k):
+    # Test rotation against expected outcome
+    angle = np.radians(angle)
+    c = np.cos(angle); s = np.sin(angle)
+    rmatrix = np.array([[c, -s], [s, c]])
+    expected = np.rot90(original, k=k)
+    rot = affine_transform(original, rmatrix=rmatrix, scipy=True)
+    assert compare_results(expected, rot)
+    
+    # TODO: Check incremental 360 degree rotation against original image
+
+    # Check derotated image against original
+    rmatrix = np.array([[c, s], [-s, c]])
+    derot = affine_transform(rot, rmatrix=rmatrix, scipy=True)
+    assert compare_results(original, derot)
 
 dx_values, dy_values = range(-100, 101, 100)*3, range(-100, 101, 100)*3
 dy_values.sort()
@@ -58,14 +75,14 @@ def test_shift(dx, dy):
     # Check a shifted shape against expected outcome
     expected = np.roll(np.roll(original, dx, axis=1), dy, axis=0)
     rcen = image_center + np.array([dx, dy])
-    shift = aff(original, rmatrix=rmatrix, recenter=True, image_center=rcen)
+    shift = affine_transform(original, rmatrix=rmatrix, recenter=True, image_center=rcen)
     ymin, ymax = max([0, dy]), min([original.shape[1], original.shape[1]+dy])
     xmin, xmax = max([0, dx]), min([original.shape[0], original.shape[0]+dx])
     compare_results(expected[ymin:ymax, xmin:xmax], shift[ymin:ymax, xmin:xmax])
 
     # Check shifted and unshifted shape against original image
     rcen = image_center - np.array([dx, dy])
-    unshift = aff(shift, rmatrix=rmatrix, recenter=True, image_center=rcen)
+    unshift = affine_transform(shift, rmatrix=rmatrix, recenter=True, image_center=rcen)
     # Need to ignore the portion of the image cut off by the first shift
     ymin, ymax = max([0, -dy]), min([original.shape[1], original.shape[1]-dy])
     xmin, xmax = max([0, -dx]), min([original.shape[0], original.shape[0]-dx])
@@ -91,7 +108,7 @@ def test_scale(scale_factor):
     else:
         lower = w-new_c
         expected[lower:upper, lower:upper] = newim
-    scale = aff(original, rmatrix=rmatrix, scale=scale_factor)
+    scale = affine_transform(original, rmatrix=rmatrix, scale=scale_factor)
     compare_results(expected, scale)
 
 
@@ -123,7 +140,7 @@ def test_all(angle, dx, dy, scale_factor):
     rot = np.rot90(new, k=k)
     shift = np.roll(np.roll(rot, dx, axis=1), dy, axis=0)
     expected = shift
-    rotscaleshift = aff(original, rmatrix=rmatrix, scale=scale_factor,
+    rotscaleshift = affine_transform(original, rmatrix=rmatrix, scale=scale_factor,
                         recenter=True, image_center=rcen)
     w = np.array(expected.shape[0])/2.0 - 0.5
     new_c = (np.array(rotscaleshift.shape[0])/2.0 - 0.5)
@@ -137,12 +154,12 @@ def test_all(angle, dx, dy, scale_factor):
     compare_results(expected, rotscaleshift)
 
     # Check a rotated/shifted and restored image against original
-    transformed = aff(original, rmatrix=rmatrix, scale=1.0, recenter=True,
+    transformed = affine_transform(original, rmatrix=rmatrix, scale=1.0, recenter=True,
                       image_center=rcen)
     rcen = image_center - np.dot(rmatrix, np.array([dx, dy]))
     dx, dy = np.dot(rmatrix, disp)
     rmatrix = np.array([[c, s], [-s, c]])
-    inverse = aff(transformed, rmatrix=rmatrix, scale=1.0, recenter=True,
+    inverse = affine_transform(transformed, rmatrix=rmatrix, scale=1.0, recenter=True,
                   image_center=rcen)
     # Need to ignore the portion of the image cut off by the first shift
     # (which isn't the portion you'd expect, because of the rotation)

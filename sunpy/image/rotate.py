@@ -6,8 +6,8 @@ from scipy.ndimage import interpolation as sp
 try:
     from skimage import transform as sk
     force_scipy = False
-except ImportError:
-    force_scipy = True
+except ImportError:  # pragma: no cover
+    force_scipy = True  # pragma: no cover
 
 __all__ = ['affine_transform']
 
