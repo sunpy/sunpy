@@ -7,13 +7,11 @@ from __future__ import absolute_import
 __authors__ = ["Russell Hewett, Stuart Mumford, Keith Hughitt, Steven Christe"]
 __email__ = "stuart@mumford.me.uk"
 
-from copy import deepcopy
 import warnings
-import inspect
+from copy import deepcopy
 
 import numpy as np
 import matplotlib.pyplot as plt
-import scipy.ndimage.interpolation as interp
 from matplotlib import patches
 from matplotlib import cm
 
@@ -23,15 +21,10 @@ from sunpy.image.rotate import affine_transform
 import sunpy.io as io
 import sunpy.wcs as wcs
 from sunpy.visualization import toggle_pylab
-# from sunpy.io import read_file, read_file_header
 from sunpy.sun import constants
-from sunpy.sun import sun
 from sunpy.time import parse_time, is_time
 from sunpy.image.rescale import reshape_image_to_4d_superpixel
 from sunpy.image.rescale import resample as sunpy_image_resample
-
-#from sunpy.util.cond_dispatch import ConditionalDispatch
-#from sunpy.util.create import Parent
 
 __all__ = ['GenericMap']
 
@@ -83,7 +76,27 @@ class GenericMap(astropy.nddata.NDData):
     | http://docs.scipy.org/doc/numpy/user/basics.subclassing.html
     | http://docs.scipy.org/doc/numpy/reference/ufuncs.html
     | http://www.scipy.org/Subclasses
+    
+    Notes
+    -----
+    
+    This class makes some assumptions about the WCS information contained in
+    the meta data. The first and most extensive assumption is that it is 
+    FITS-like WCS information as defined in the FITS WCS papers.
+    
+    Within this scope it also makes some other assumptions.
+    
+    * In the case of APIS convention headers where the CROTAi/j arguments are 
+      provided it assumes that these can be converted to the standard PCi_j
+      notation using equations 32 in Thompson (2006).
 
+    * If a CDi_j matrix is provided it is assumed that it can be converted to a
+      PCi_j matrx and CDELT keywords as descirbed in Greisen & Calabretta (2002).
+    
+    * The 'standard' FITS keywords that are used by this class are the PCi_j 
+      matrix and CDELT, along with the other keywords specified in the WCS papers.
+      All subclasses of this class must convert their header information to
+      this formalism. The CROTA to PCi_j conversion is done in this class.
     """
 
     def __init__(self, data, header, **kwargs):
@@ -366,7 +379,7 @@ Dimension:\t [%d, %d]
         PC rotation matrix
         """
         lam = self.scale['y'] / self.scale['x']
-        p = self.meta['CROTA2']
+        p = -1 * np.deg2rad(self.meta['CROTA2'])
 
         return np.matrix([[np.cos(p), -1 * lam * np.sin(p)],
                           [1/lam * np.sin(p), np.cos(p)]])
@@ -599,17 +612,19 @@ Dimension:\t [%d, %d]
         new_map = deepcopy(self)
 
         if angle is not None:
+            angle *= -1  # Counter-clockwise rotation
             #Calulate the parameters for the affine_transform
             c = np.cos(np.deg2rad(angle))
             s = np.sin(np.deg2rad(angle))
-            rmatrix = np.array([[c, -s], [s, c]])
+            rmatrix = np.matrix([[c, -s], [s, c]])
         
         if image_center is None:
             image_center = (self.shape[1] - self.reference_pixel['x'],
                             self.shape[0] - self.reference_pixel['y'])
 
-        new_map.data = affine_transform(new_map.data, rmatrix, order=order,
-                                        scale=scale, image_center=image_center,
+        new_map.data = affine_transform(new_map.data, np.array(rmatrix),
+                                        order=order, scale=scale,
+                                        image_center=image_center,
                                         recenter=recenter, missing=missing,
                                         scipy=scipy)
 
@@ -618,13 +633,10 @@ Dimension:\t [%d, %d]
             new_center = (0.0, 0.0)
         else:
             old_center = self.pixel_to_data(x=image_center[1], y=image_center[0])
-            new_center = np.dot(rmatrix, old_center).reshape(2, 1)
+            new_center = np.array(np.dot(rmatrix, old_center).reshape(2, 1))[:,0]
 
+        pc_C = np.dot(self.rotation_matrix, np.dot(rmatrix, scale).T)
 
-        if angle is not None and new_map.meta.get('crota2') is not None:
-            new_map.meta['crota2'] = self.rotation_angle['y'] + angle
-
-        pc_C = self.rotation_matrix * (rmatrix * scale).T
         new_map.meta['PC1_1'] = pc_C[0,0]
         new_map.meta['PC1_2'] = pc_C[0,1]
         new_map.meta['PC2_1'] = pc_C[1,0]
@@ -633,15 +645,18 @@ Dimension:\t [%d, %d]
         if scale != 1.0:
             new_map.meta['cdelt1'] = self.scale['x'] / scale
             new_map.meta['cdelt2'] = self.scale['y'] / scale
-        # Define a new reference pixel in the rotated space
-        new_map.meta['crval1'] = new_center[0]
-        new_map.meta['crval2'] = new_center[1]
-        new_map.meta['crpix1'] = map_center[1] + 1 # FITS counts pixels from 1
-        new_map.meta['crpix2'] = map_center[0] + 1 # FITS counts pixels from 1
+        
+        if recenter:
+            # Define a new reference pixel in the rotated space
+            new_map.meta['crval1'] = new_center[0]
+            new_map.meta['crval2'] = new_center[1]
+            new_map.meta['crpix1'] = map_center[1] + 1 # FITS counts pixels from 1
+            new_map.meta['crpix2'] = map_center[0] + 1 # FITS counts pixels from 1
         
         #Remove old CROTA kwargs
         new_map.meta.pop('CROTA1', None)
         new_map.meta.pop('CROTA2', None)
+
         return new_map
 
     def submap(self, range_a, range_b, units="data"):
@@ -987,7 +1002,10 @@ Dimension:\t [%d, %d]
         aia.draw_limb()
         aia.draw_grid()
         """
-
+        # Check that the image is properly aligned
+        if not np.array_equal(self.rotation_matrix, np.matrix(np.identity(2))):
+            warnings.warn("This map is not aligned. Plot axes may be incorrect",
+                          Warning)
         #Get current axes
         if not axes:
             axes = plt.gca()
@@ -1018,8 +1036,7 @@ Dimension:\t [%d, %d]
         if gamma is not None:
             cmap.set_gamma(gamma)
 
-            #make imshow kwargs a dict
-
+        # make imshow kwargs a dict
         kwargs = {'origin':'lower',
                   'cmap':cmap,
                   'norm':self.mpl_color_normalizer,
