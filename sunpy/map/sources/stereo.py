@@ -26,6 +26,17 @@ class EUVIMap(GenericMap):
         if ('date_obs' in self.meta) and not('date-obs' in self.meta):
             self.meta['date-obs'] = self.meta['date_obs']
 
+    @property
+    def rsun_arcseconds(self):
+        """
+        Radius of the sun in arcseconds.
+        
+        References
+        ----------
+        http://sohowww.nascom.nasa.gov/solarsoft/stereo/secchi/doc/FITS_keywords.pdf
+        """
+        return self.meta.get('rsun', None)
+
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an EUVI image"""
