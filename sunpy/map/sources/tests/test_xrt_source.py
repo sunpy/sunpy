@@ -45,10 +45,11 @@ def test_normalizer():
         assert norm is None
     else:
         assert isinstance(norm, colors.Normalize)
-        assert norm.vmin == (max(0, xrt.mean() - 3 * xrt.std()))
-        assert norm.vmax == (min(xrt.max(), xrt.mean() + 3 * xrt.std()))
-	#assert norm.vmin == 0 # Max of 0 and -9.6202650635081
-	#assert norm.vmax == 581.56145769046122 # Min of 4095 and 581.56145769046122
+        #assert norm.vmin == (max(0, xrt.mean() - 3 * xrt.std()))
+        #assert norm.vmax == (min(xrt.max(), xrt.mean() + 3 * xrt.std()))
+	assert norm.vmin == 0 # Max of 0 and -9.6202650635081
+	np.testing.assert_allclose(norm.vmax, 581.56145769046122, rtol=1.00001)
+        # Min of 4095 and 581.56145769046122
 
 def test_wheel_measurements():
     """Tests the filter_wheel_measurements objects present
