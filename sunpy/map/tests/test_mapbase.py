@@ -193,14 +193,25 @@ class TestGenericMap:
         assert superpixel_map_avg.data[0][0] == (self.map.data[0][0] + self.map.data[0][1] + self.map.data[1][0] + self.map.data[1][1])/4.0
 
 
+    def calc_new_matrix(self, angle):
+        angle *= -1  # Counter-clockwise rotation
+        #Calulate the parameters for the affine_transform
+        c = np.cos(np.deg2rad(angle))
+        s = np.sin(np.deg2rad(angle))
+        return np.matrix([[c, -s], [s, c]])
+
     def test_rotate(self):
 
         rotated_map_1 = self.map.rotate(20)
         rotated_map_2 = rotated_map_1.rotate(20)
         assert rotated_map_2.center == rotated_map_1.center == self.map.center
         assert rotated_map_2.shape == rotated_map_1.shape == self.map.shape
-        assert rotated_map_1.rotation_angle['y'] == self.map.rotation_angle['y']+20
-        assert rotated_map_2.rotation_angle['y'] == self.map.rotation_angle['y']+40
+        np.testing.assert_allclose(rotated_map_1.rotation_matrix,
+                                   np.dot(self.map.rotation_matrix,
+                                          self.calc_new_matrix(20).T))
+        np.testing.assert_allclose(rotated_map_2.rotation_matrix,
+                                   np.dot(self.map.rotation_matrix,
+                                          self.calc_new_matrix(40).T))
         # Rotation of a square map by non-integral multiple of 90 degrees cuts off the corners
         # and assigns the value of 0 to corner pixels. This results in reduction
         # of the mean and an increase in standard deviation.
@@ -217,6 +228,10 @@ class TestGenericMap:
         assert int(rotated_map_3.mean()) == int(rotated_map_4.mean()) == int(rotated_map_5.mean())
         assert int(rotated_map_3.std()) == int(rotated_map_4.std()) == int(rotated_map_5.std())
 
+    def test_rotate_recenter(self):
         # Check recentering
-        rotated_map_6 = self.map.rotate(20, image_center=(200, 100), recenter=True)
-        assert rotated_map_6.center == {'y': 100, 'x': 200 }
+        image_center = np.array((200, 100))
+        rotated_map_6 = self.map.rotate(20, image_center=image_center, recenter=True)
+        shift = image_center - np.array(self.map.data.shape)/2. + 0.5
+        np.testing.assert_allclose(rotated_map_6.reference_pixel.values(),
+                                   np.array(self.map.reference_pixel.values()) + shift[::-1])
