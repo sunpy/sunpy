@@ -575,7 +575,7 @@ Dimension:\t [%d, %d]
         scale : float
             A scale factor for the image, default is no scaling
         image_center : tuple
-            The axis of rotation
+            The axis of rotation in pixel coordinates
             Default: the origin in the data coordinate system
         recenter : bool
             If True, position the axis of rotation at the center of the new map
@@ -629,14 +629,8 @@ Dimension:\t [%d, %d]
                                         scipy=scipy)
 
         map_center = (np.array(self.shape)/2.0) - 0.5
-        if recenter:
-            new_center = (0.0, 0.0)
-        else:
-            old_center = self.pixel_to_data(x=image_center[1], y=image_center[0])
-            new_center = np.array(np.dot(rmatrix, old_center).reshape(2, 1))[:,0]
 
         pc_C = np.dot(self.rotation_matrix, np.dot(rmatrix, scale).T)
-
         new_map.meta['PC1_1'] = pc_C[0,0]
         new_map.meta['PC1_2'] = pc_C[0,1]
         new_map.meta['PC2_1'] = pc_C[1,0]
@@ -645,15 +639,14 @@ Dimension:\t [%d, %d]
         if scale != 1.0:
             new_map.meta['cdelt1'] = self.scale['x'] / scale
             new_map.meta['cdelt2'] = self.scale['y'] / scale
-        
+
         if recenter:
-            # Define a new reference pixel in the rotated space
-            new_map.meta['crval1'] = new_center[0]
-            new_map.meta['crval2'] = new_center[1]
-            new_map.meta['crpix1'] = map_center[1] + 1 # FITS counts pixels from 1
-            new_map.meta['crpix2'] = map_center[0] + 1 # FITS counts pixels from 1
-        
-        #Remove old CROTA kwargs
+            # Move the reference pixel based on the image shift.
+            shift = image_center - map_center
+            new_map.meta['crpix1'] += shift[0]
+            new_map.meta['crpix2'] += shift[1]
+
+        #Remove old CROTA kwargs because we have saved a new PCi_j matrix.
         new_map.meta.pop('CROTA1', None)
         new_map.meta.pop('CROTA2', None)
 
