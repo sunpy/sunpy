@@ -18,6 +18,8 @@ Latest
  * Added functions that implement image coalignment with support for MapCubes. 
  * Cleaned up the sunpy namespace, removed .units, /ssw and .sphinx. Also moved .coords .physics.transforms. 
  * Added contains functionality to TimeRange module
+ * Added t='now' to parse_time to privide utcnow datetime.
+ * Fixed time dependant functions (.sun) to default to t='now'
 
 0.4.0
 -----
