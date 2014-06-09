@@ -95,9 +95,9 @@ def test_apparent_obliquity_of_ecliptic():
     assert_array_almost_equal(sun.apparent_obliquity_of_ecliptic("2412/02/26"), 23.388 * u.deg, decimal=3)
 
 def test_apparent_rightascenscion():
-    assert_array_almost_equal(sun.apparent_rightascenscion("2012/11/11"), 15.035 * u.deg, decimal=3)
-    assert_array_almost_equal(sun.apparent_rightascenscion("2013/12/13"), 17.282 * u.deg, decimal=3)
-    assert_array_almost_equal(sun.apparent_rightascenscion("2512/04/09"), 1.134 * u.deg, decimal=3)
+    assert_array_almost_equal(sun.apparent_rightascenscion("2012/11/11"), 15.035 * u.hourangle, decimal=3)
+    assert_array_almost_equal(sun.apparent_rightascenscion("2013/12/13"), 17.282 * u.hourangle, decimal=3)
+    assert_array_almost_equal(sun.apparent_rightascenscion("2512/04/09"), 1.134 * u.hourangle, decimal=3)
 
 def test_solar_north():
     assert_array_almost_equal(sun.solar_north("2012/11/11"), 15.149 * u.deg, decimal=3)
