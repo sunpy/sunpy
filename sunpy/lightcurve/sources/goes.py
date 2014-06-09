@@ -148,7 +148,6 @@ class GOESLightCurve(LightCurve):
         else:
             url = (base_url + "%s/go%02d%s.fits") % (start.strftime("%Y"),
                 sat_num[0], start.strftime("%Y%m%d"))
-        print(url)
         return url
 
     @staticmethod
