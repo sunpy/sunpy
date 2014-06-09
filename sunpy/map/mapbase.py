@@ -16,7 +16,7 @@ from matplotlib import patches
 from matplotlib import cm
 
 import astropy.nddata
-from sunpy.image.rotate import affine_transform
+from sunpy.image.transform import affine_transform
 
 import sunpy.io as io
 import sunpy.wcs as wcs
@@ -91,7 +91,7 @@ class GenericMap(astropy.nddata.NDData):
       notation using equations 32 in Thompson (2006).
 
     * If a CDi_j matrix is provided it is assumed that it can be converted to a
-      PCi_j matrx and CDELT keywords as descirbed in Greisen & Calabretta (2002).
+      PCi_j matrix and CDELT keywords as descirbed in Greisen & Calabretta (2002).
     
     * The 'standard' FITS keywords that are used by this class are the PCi_j 
       matrix and CDELT, along with the other keywords specified in the WCS papers.
@@ -377,12 +377,15 @@ Dimension:\t [%d, %d]
 
             return deltm * cd
         else:
-            return self._matrix_from_crota()
+            return self._rotation_matrix_from_crota()
 
-    def _matrix_from_crota(self):
+    def _rotation_matrix_from_crota(self):
         """
         This method converts the deprecated CROTA FITS kwargs to the new
-        PC rotation matrix
+        PC rotation matrix.
+        
+        This method can be overriden if an instruments header does not use this
+        conversion.
         """
         lam = self.scale['y'] / self.scale['x']
         p = -1 * np.deg2rad(self.meta['CROTA2'])
@@ -555,8 +558,9 @@ Dimension:\t [%d, %d]
         return new_map
     
     def rotate(self, angle=None, rmatrix=None, order=4, scale=1.0,
-               image_center=None, recenter=False, missing=0.0, scipy=False):
-        """Returns a new rotated and rescaled map.  Specify either a rotation
+               image_center=None, recenter=False, missing=0.0, use_scipy=False):
+        """
+        Returns a new rotated and rescaled map.  Specify either a rotation
         angle or a rotation matrix, but not both.  If neither an angle or a
         rotation matrix are specified, the map will be rotated by the rotation
         angle in the metadata.
@@ -589,7 +593,7 @@ Dimension:\t [%d, %d]
         missing : float
             The numerical value to fill any missing points after rotation.
             Default: 0.0
-        scipy : bool
+        use_scipy : bool
             If True, forces the rotation to use
             :func:`scipy.ndimage.interpolation.affine_transform`, otherwise it
             uses the :class:`skimage.transform.AffineTransform` class and
@@ -609,6 +613,10 @@ Dimension:\t [%d, %d]
         -----
         This function will remove old CROTA keywords from the header.
         This function will also convert a CDi_j matrix to a PCi_j matrix.
+
+        This function is not numerically equalivalent to IDL's rot() see the
+        :func:`sunpy.image.transform.affine_transform` documentation for a 
+        detailed description of the differences.
         """
         if angle is not None and rmatrix is not None:
             raise ValueError("You  cannot specify both an angle and a matrix")
@@ -637,7 +645,7 @@ Dimension:\t [%d, %d]
                                         order=order, scale=scale,
                                         image_center=image_center,
                                         recenter=recenter, missing=missing,
-                                        scipy=scipy)
+                                        use_scipy=use_scipy)
 
         map_center = (np.array(self.shape)/2.0) - 0.5
 

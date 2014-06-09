@@ -1,6 +1,6 @@
 from __future__ import absolute_import
 
-from sunpy.image.rotate import affine_transform
+from sunpy.image.transform import affine_transform
 import numpy as np
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
@@ -12,7 +12,7 @@ import pytest
 original = images.camera().astype('float')
 
 # Tolerance for tests
-rtol = 1.0e-5
+rtol = 1.0e-4
 
 
 def compare_results(expect, result):
@@ -35,14 +35,15 @@ def test_rotation(angle, k):
     c = np.cos(angle); s = np.sin(angle)
     rmatrix = np.array([[c, -s], [s, c]])
     expected = np.rot90(original, k=k)
-    rot = affine_transform(original, rmatrix=rmatrix)
+    #Run the tests at order 4 as it produces more accurate 90 deg rotations
+    rot = affine_transform(original, order=4, rmatrix=rmatrix)
     assert compare_results(expected, rot)
     
     # TODO: Check incremental 360 degree rotation against original image
 
     # Check derotated image against original
     derot_matrix = np.array([[c, s], [-s, c]])
-    derot = affine_transform(rot, rmatrix=derot_matrix)
+    derot = affine_transform(rot, order=4, rmatrix=derot_matrix)
     assert compare_results(original, derot)
 
 @pytest.mark.parametrize("angle, k", [(90.0, 1), (-90.0, -1), (-270.0, 1),
@@ -53,14 +54,14 @@ def test_scipy_rotation(angle, k):
     c = np.cos(angle); s = np.sin(angle)
     rmatrix = np.array([[c, -s], [s, c]])
     expected = np.rot90(original, k=k)
-    rot = affine_transform(original, rmatrix=rmatrix, scipy=True)
+    rot = affine_transform(original, rmatrix=rmatrix, use_scipy=True)
     assert compare_results(expected, rot)
     
     # TODO: Check incremental 360 degree rotation against original image
 
     # Check derotated image against original
-    rmatrix = np.array([[c, s], [-s, c]])
-    derot = affine_transform(rot, rmatrix=rmatrix, scipy=True)
+    derot_matrix = np.array([[c, s], [-s, c]])
+    derot = affine_transform(rot, rmatrix=derot_matrix, use_scipy=True)
     assert compare_results(original, derot)
 
 dx_values, dy_values = range(-100, 101, 100)*3, range(-100, 101, 100)*3

@@ -1,4 +1,7 @@
-"""Image rotation function(s)"""
+"""
+Functions for geometrical image transformation and warping.
+"""
+
 from __future__ import absolute_import
 
 import numpy as np
@@ -11,7 +14,7 @@ except ImportError:  # pragma: no cover
 
 __all__ = ['affine_transform']
 
-def affine_transform(image, rmatrix, order=4, scale=1.0, image_center=None,
+def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
                      recenter=False, missing=0.0, use_scipy=False):
     """    
     Rotates, shifts and scales an image using :func:`skimage.transform.warp`, or
@@ -47,6 +50,25 @@ def affine_transform(image, rmatrix, order=4, scale=1.0, image_center=None,
     Returns
     -------
     New rotated, scaled and translated image.
+    
+    Notes
+    -----
+    This function is used throughout the SunPy code base as an equivalent to 
+    the IDL's rot() function. However, this function does not use the same 
+    algorithm as the IDL rot() function.
+    IDL's rot() calls the `POLY_2D <http://www.exelisvis.com/docs/poly_2d.html>`_
+    method to calculate the inverse mapping of original to target pixel 
+    coordinates. This is a polynominal geometrical transformation.
+    Then optionally it uses a bicubic convolution interpolation 
+    algorithm to map the original to target pixel values.
+    
+    This algorithm uses a affine transformation as opposed to a polynomial 
+    geometrical transformation. It then defaults to a bicubic convolution 
+    interpolation.
+    
+    No direct comparision between this function and the IDL rot() function has
+    been performed as it is a different transformation, however both are 
+    assumed to be mathamatically vaild.
     """
 
     rmatrix = rmatrix / scale
