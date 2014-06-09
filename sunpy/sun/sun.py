@@ -79,7 +79,7 @@ def solar_semidiameter_angular_size(t=None):
 
     """
     solar_semidiameter_rad = constants.radius / (sunearth_distance(t) * constants.au)
-    return np.rad2deg(solar_semidiameter_rad * u.degree) * 60. * 60.
+    return (np.rad2deg(solar_semidiameter_rad * u.rad)).to(u.arcsec)
  
 def position(t=None):
     """Returns the position of the Sun (right ascension and declination)
