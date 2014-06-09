@@ -41,8 +41,8 @@ def test_rotation(angle, k):
     # TODO: Check incremental 360 degree rotation against original image
 
     # Check derotated image against original
-    rmatrix = np.array([[c, s], [-s, c]])
-    derot = affine_transform(rot, rmatrix=rmatrix)
+    derot_matrix = np.array([[c, s], [-s, c]])
+    derot = affine_transform(rot, rmatrix=derot_matrix)
     assert compare_results(original, derot)
 
 @pytest.mark.parametrize("angle, k", [(90.0, 1), (-90.0, -1), (-270.0, 1),
@@ -69,6 +69,7 @@ dy_values.sort()
 def test_shift(dx, dy):
     # Rotation center for all translation tests.
     image_center = np.array(original.shape)/2.0 - 0.5
+    
     # No rotation for all translation tests.
     rmatrix = np.array([[1.0, 0.0], [0.0, 1.0]])
 
@@ -116,15 +117,21 @@ def test_scale(scale_factor):
                                                           (-90, 50, -100, 0.75),
                                                           (180, 100, 50, 1.5)])
 def test_all(angle, dx, dy, scale_factor):
+    """
+    Tests to make sure that combinations of scaling, shifting and rotation
+    produce the expected output.
+    """
     k = int(angle/90)
     angle = np.radians(angle)
     image_center = np.array(original.shape)/2.0 - 0.5
+    
     # Check a shifted, rotated and scaled shape against expected outcome
     c = np.cos(angle); s = np.sin(angle)
     rmatrix = np.array([[c, -s], [s, c]])
     scale = tf.rescale(original/original.max(), scale_factor, order=4,
                        mode='constant') * original.max()
     new = np.zeros(original.shape)
+
     # Old width and new centre of image
     w = np.array(original.shape[0])/2.0 - 0.5
     new_c = (np.array(scale.shape[0])/2.0 - 0.5)
@@ -161,6 +168,7 @@ def test_all(angle, dx, dy, scale_factor):
     rmatrix = np.array([[c, s], [-s, c]])
     inverse = affine_transform(transformed, rmatrix=rmatrix, scale=1.0, recenter=True,
                   image_center=rcen)
+
     # Need to ignore the portion of the image cut off by the first shift
     # (which isn't the portion you'd expect, because of the rotation)
     ymin, ymax = max([0, -dy]), min([original.shape[1], original.shape[1]-dy])
