@@ -245,10 +245,10 @@ Dimension:\t [%d, %d]
 
     @property
     def center(self):
-        """Returns the offset between the center of the Sun and the center of 
+        """Returns the offset between the center of the Sun and the center of
         the map."""
-        return {'x': wcs.get_center(self.shape[1], self.scale['x'], 
-                                    self.reference_pixel['x'], 
+        return {'x': wcs.get_center(self.shape[1], self.scale['x'],
+                                    self.reference_pixel['x'],
                                     self.reference_coordinate['x']),
                 'y': wcs.get_center(self.shape[0], self.scale['y'],
                                     self.reference_pixel['y'],
@@ -263,7 +263,7 @@ Dimension:\t [%d, %d]
     def rsun_arcseconds(self):
         """Radius of the sun in arcseconds"""
         return self.meta.get('rsun_obs', self.meta.get('solar_r',
-                                         self.meta.get('radius', constants.average_angular_size.to('arcsec').value)))
+                                         self.meta.get('radius', None)))
 
     @property
     def coordinate_system(self):
@@ -481,7 +481,7 @@ Dimension:\t [%d, %d]
         new_map.data = new_data
         new_map.meta = new_meta
         return new_map
-    
+
     def rotate(self, angle=None, rmatrix=None, scale=1.0,
                rotation_center=(0, 0), recenter=False,
                missing=0.0, interpolation='bicubic', interp_param=-0.5):
