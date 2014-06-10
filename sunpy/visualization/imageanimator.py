@@ -372,9 +372,9 @@ class BaseFuncAnimator(object):
             self.sliders[-1].set_axes_locator(locator)
             sframe = SliderPB(self.sliders[-1], "%i"%i,
                                     self.slider_ranges[i][0],
-                                    self.slider_ranges[i][1]-1,
+                                    self.slider_ranges[i][-1]-1,
                                     valinit=self.slider_ranges[i][0],
-                                    valfmt = '%i')
+                                    valfmt = '%4.2f')
             sframe.on_changed(self._slider_changed, sframe)
             sframe.slider_ind = i
             sframe.cval = sframe.val
@@ -495,8 +495,9 @@ class ImageAnimator(BaseFuncAnimator):
         #Handle negative indexes
         self.image_axes = [all_axes[i] for i in image_axes]
 
-        slider_axes = list(range(self.naxis))
-        [slider_axes.remove(x) for x in self.image_axes]
+        self.slider_axes = list(range(self.naxis))
+        for x in self.image_axes:
+			self.slider_axes.remove(x)
 
         if len(slider_axes) != self.num_sliders:
             raise ValueError("Specific the same number of axes as sliders!")
@@ -553,21 +554,59 @@ class ImageAnimator(BaseFuncAnimator):
         return im
 
     def _parse_axis_range(self, axis_range, data):
-        #Make axes_range argument and replace instances where min == max
-        if not axis_range:
+        """
+        The outputted axis_range defines the physical coordinate space of the different axis.
+		For image_axis these need to be [min, max] pairs that are passed to imshow's extent 
+		keyword arg. For slider axes they need to be a list of all possible values.
+
+		This method converts various input into the above output format.
+		It will parse every element of the input axis_range list as either:
+		
+		* None: Build a min,max pair or linspace array of array indicies
+		* [min, max]: leave for image axes or convert to a array for slider axes (from min to max in axis length steps)
+		* [min, max] pair where min == max: convert to array indies min,max pair or array.
+		* array of axis length, check that it was passed for a slider axes and do nothing if it was, error if it is not.
+        """
+        #If no axis range at all make it all [min,max] pairs
+        if axis_range is None:
             axis_range = [[0, i] for i in data.shape]
-        else:
-            if len(axis_range) != data.ndim:
-                raise ValueError("axis_range must equal number of axes")
-            for i,d in enumerate(data.shape):
+
+        #need the same numer of axis ranges as axes
+        if len(axis_range) != data.ndim:
+            raise ValueError("axis_range must equal number of axes")
+
+        #For each axis validate and translate the axis_range
+        for i,d in enumerate(data.shape):
+            #If [min,max] pair or None
+            if axis_range[i] is None or len(axis_range[i]) == 2:
+                #If min==max or None
                 if axis_range[i] is None or axis_range[i][0] == axis_range[i][1]:
-                    axis_range[i] = [0, d]
+                    if i in slider_axes:
+                        axis_range[i] = np.linspace(0,d,d)
+                    else:
+                        axis_range[i] = [0, d]
+				# min max pair for slider axes should be converted to a index array
+				elif i in self.slider_axes:
+					axis_range[i] = np.linspace(axis_range[i][0], axis_range[i][1], d)
+
+            #If we have a whole list of values for the axis, make sure we are a slider axis.
+            elif len(axis_range[i]) == d:
+                if i not in self.slider_axes:
+                    raise ValueError("Slider axes mis-match, non-slider axes need [min,max] pairs")
+                else:
+                    #Make sure the resulting element is a ndarray
+                    axis_range[i] = np.array(axis_range[i])
+
+            #panic
+            else:
+                raise ValueError("axis_range should be either: None, [min,max], or a linspace for slider axes")
         return axis_range
 
     def _updateimage(self, val, im, slider):
         val = int(val)
         ax = self.slider_axes[slider.slider_ind]
-        self.frame_slice[ax] = val
+        ind = np.argmin(np.abs(self.axis_range[ax] - val))
+        self.frame_slice[ax] = ind
         if val != slider.cval:
             im.set_array(self.data[self.frame_slice])
             slider.cval = val
