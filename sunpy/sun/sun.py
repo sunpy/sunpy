@@ -244,7 +244,6 @@ def heliographic_solar_center(t=None):
     x = -np.cos(diff)
     rpol = np.rad2deg(np.arctan2(y, x))
     he_lon = rpol - theta
- 
     return [Longitude(he_lon), Latitude(he_lat)]
 
 def print_params(t='now'):
