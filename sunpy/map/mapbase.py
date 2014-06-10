@@ -102,6 +102,8 @@ class GenericMap(astropy.nddata.NDData):
         This class currently assumes that a header with the CDi_j matrix 
         information also includes the CDELT keywords, without these keywords
         this class will not process the WCS information. This will be fixed.
+        Also the rotation_matrix does not work if the CDELT1 and CDELT2 
+        keywords are exactly equal.
     """
 
     def __init__(self, data, header, **kwargs):
@@ -132,7 +134,7 @@ class GenericMap(astropy.nddata.NDData):
     "The ability to index Map by physical coordinate is not yet implemented.")
 
     def __repr__(self):
-        if not hasattr(self, 'observatory'):
+        if not self.observatory:
             return self.data.__repr__()
         return (
 """SunPy %s
