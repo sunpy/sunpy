@@ -14,7 +14,7 @@
 # 7.  Take where derivative is positive.
 # 8.  Take where derivative is negative.
 # 9.  Copy time array and shift by 4 elements.
-# 10.  Subtract one from other and find where result = 4 minutes.
+# 10. Subtract one from other and find where result = 4 minutes.
 # 11. Define earlier time corresponding to previous step as preliminary
 #     start times.
 #-----Find end and peak times---------
@@ -133,11 +133,8 @@ def extract_combined_lytaf(tstart, tend,
         # Select and extract the data from event table within file within
         # given time range
         cursor.execute("select insertion_time, begin_time, reference_time, "
-                       "end_time, eventType_id from event where begin_time >= "
+                       "end_time, eventType_id from event where end_time >= "
                        "{0} and begin_time <= {1}".format(tstart_uts, tend_uts))
-        print "select insertion_time, begin_time, reference_time, end_time, " \
-          "eventType_id from event where begin_time >= {0} and begin_time <=" \
-          " {1}".format(tstart_uts, tend_uts)
         event_rows.append(cursor.fetchall())
         # Select and extract the event types from eventType table
         cursor.row_factory = sqlite3.Row
@@ -188,6 +185,12 @@ def extract_combined_lytaf(tstart, tend,
         lytaf["end_time"].append(datetime.fromtimestamp(event_rows[i][3]))
         lytaf["event_type"].append(event_rows[i][4])
         lytaf["event_definition"].append(event_rows[i][5])
+    lytaf["insertion_time"] = np.asarray(lytaf["insertion_time"])
+    lytaf["begin_time"] = np.asarray(lytaf["begin_time"])
+    lytaf["reference_time"] = np.asarray(lytaf["reference_time"])
+    lytaf["end_time"] = np.asarray(lytaf["end_time"])
+    lytaf["event_type"] = np.asarray(lytaf["event_type"])
+    lytaf["event_definition"] = np.asarray(lytaf["event_definition"])
 
     #return event_rows, eventType_rows
     return lytaf
@@ -234,14 +237,12 @@ def find_lyra_events(flux, time):
     """
     # Get LYTAF file for given time range
     lytaf = extract_combined_lytaf(time[0], time[-1])
-    # Extract
-
-
-
-
-#Get list of lists
-#Replace eventType_id with eventtype for each tuple in each sublist using nested for loops.
-#Unpack list of lists
-#Order by event start time
-#Generate output structure ?Dictionary?
-#return
+    # Find events in lytaf which are to be removed from time series.
+    artifacts = np.logical_or(lytaf["event_type"] == u'UV occ.',
+                              lytaf["event_type"] == u'Offpoint',
+                              lytaf["event_type"] == u'LAR',
+                              lytaf["event_type"] == u'Calibration')
+    # Set periods in flux during artifacts to -1
+    for artifact in np.arange(len(artifacts))[artifacts]:
+        flux[np.logical_and(flux > lytaf["begin_time"][index],
+                            flux < lytaf["end_time"][index])] = -1
