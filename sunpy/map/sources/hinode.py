@@ -78,7 +78,9 @@ class SOTMap(GenericMap):
 	
 	References
 	----------
-	For a description of SOT headers
+	Hinode Solar Optical Telescope 
+    Data Analysis Guide:
+    http://hesperia.gsfc.nasa.gov/ssw/hinode/sot/doc/guide/SAGv3.3.pdf
 	"""
 	#TODO: get a link for the SOT FITS headers
 	# Add in some information about the the possible instrument, observation type,
