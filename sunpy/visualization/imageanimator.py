@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import numpy as np
+
 import matplotlib.pyplot as plt
 import matplotlib.widgets as widgets
 import matplotlib.animation as mplanim
@@ -374,7 +376,7 @@ class BaseFuncAnimator(object):
                                     self.slider_ranges[i][0],
                                     self.slider_ranges[i][-1]-1,
                                     valinit=self.slider_ranges[i][0],
-                                    valfmt = '%4.2f')
+                                    valfmt = '%4.1f')
             sframe.on_changed(self._slider_changed, sframe)
             sframe.slider_ind = i
             sframe.cval = sframe.val
@@ -495,9 +497,9 @@ class ImageAnimator(BaseFuncAnimator):
         #Handle negative indexes
         self.image_axes = [all_axes[i] for i in image_axes]
 
-        self.slider_axes = list(range(self.naxis))
+        slider_axes = list(range(self.naxis))
         for x in self.image_axes:
-			self.slider_axes.remove(x)
+			slider_axes.remove(x)
 
         if len(slider_axes) != self.num_sliders:
             raise ValueError("Specific the same number of axes as sliders!")
@@ -581,13 +583,13 @@ class ImageAnimator(BaseFuncAnimator):
             if axis_range[i] is None or len(axis_range[i]) == 2:
                 #If min==max or None
                 if axis_range[i] is None or axis_range[i][0] == axis_range[i][1]:
-                    if i in slider_axes:
+                    if i in self.slider_axes:
                         axis_range[i] = np.linspace(0,d,d)
                     else:
                         axis_range[i] = [0, d]
 				# min max pair for slider axes should be converted to a index array
-				elif i in self.slider_axes:
-					axis_range[i] = np.linspace(axis_range[i][0], axis_range[i][1], d)
+                elif i in self.slider_axes:
+                   axis_range[i] = np.linspace(axis_range[i][0], axis_range[i][1], d)
 
             #If we have a whole list of values for the axis, make sure we are a slider axis.
             elif len(axis_range[i]) == d:
