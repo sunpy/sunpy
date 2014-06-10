@@ -559,7 +559,7 @@ Dimension:\t [%d, %d]
         new_map.meta = new_meta
         return new_map
     
-    def rotate(self, angle=None, rmatrix=None, order=4, scale=1.0,
+    def rotate(self, angle=None, rmatrix=None, order=3, scale=1.0,
                image_center=None, recenter=False, missing=0.0, use_scipy=False):
         """
         Returns a new rotated and rescaled map.  Specify either a rotation
@@ -607,9 +607,9 @@ Dimension:\t [%d, %d]
 
         Returns
         -------
-        new_map : AIAMap
-            A new AIAMap instance containing the rotated and rescaled data of
-            the original map.
+        new_map : Map
+            A new Map instance containing the rotated and rescaled data of the
+            original map.
         
         Notes
         -----
