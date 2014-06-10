@@ -6,7 +6,7 @@ SunPy image
 .. automodapi:: sunpy.image.rescale
     :headings: ".#"
 
-.. automodapi:: sunpy.image.rotate
+.. automodapi:: sunpy.image.transform
     :headings: ".#"
 
 .. automodapi:: sunpy.image.coalignment
