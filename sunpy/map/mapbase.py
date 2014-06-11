@@ -807,7 +807,6 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
             axes = plt.gca()
 
         x, y = self.pixel_to_data()
-        rsun = self.rsun_meters
         dsun = self.dsun
 
         b0 = self.heliographic_latitude
@@ -820,46 +819,28 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
                    'zorder':100}
         plot_kw.update(kwargs)
 
-        #TODO: This function could be optimized. Does not need to convert the entire image
-        # coordinates
-        #lon_self, lat_self = wcs.convert_hpc_hg(rsun, dsun, angle_units = units[0], b0, l0, x, y)
-        lon_self, lat_self = wcs.convert_hpc_hg(x, y, b0_deg=b0, l0_deg=l0, dsun_meters=dsun, angle_units='arcsec')
-        # define the number of points for each latitude or longitude line
-        num_points = 20
-
-        #TODO: The following code is ugly. Fix it.
-        lon_range = [lon_self.min(), lon_self.max()]
-        lat_range = [lat_self.min(), lat_self.max()]
-        if np.isfinite(lon_range[0]) == False:
-            lon_range[0] = -90 + self.heliographic_longitude
-        if np.isfinite(lon_range[1]) == False:
-            lon_range[1] = 90 + self.heliographic_longitude
-        if np.isfinite(lat_range[0]) == False:
-            lat_range[0] = -90 + self.heliographic_latitude
-        if np.isfinite(lat_range[1]) == False:
-            lat_range[1] = 90 + self.heliographic_latitude
-
-        hg_longitude_deg = np.linspace(lon_range[0], lon_range[1], num=num_points)
-        hg_latitude_deg = np.arange(lat_range[0], lat_range[1]+grid_spacing, grid_spacing)
+        hg_longitude_deg = np.linspace(-180, 180, num=361) + self.heliographic_longitude
+        hg_latitude_deg = np.arange(-90, 90, grid_spacing)
 
         # draw the latitude lines
         for lat in hg_latitude_deg:
-            hg_latitude_deg_mesh, hg_longitude_deg_mesh = np.meshgrid(
-                lat * np.ones(num_points), hg_longitude_deg)
-            x, y = wcs.convert_hg_hpc(hg_longitude_deg_mesh, hg_latitude_deg_mesh, b0_deg=b0, l0_deg=l0,
-                    dsun_meters=dsun, angle_units=units[0], occultation=False)
-
+            x, y = wcs.convert_hg_hpc(hg_longitude_deg, lat * np.ones(361), b0_deg=b0, l0_deg=l0,
+                    dsun_meters=dsun, angle_units=units[0], occultation=True)
+            valid = np.logical_and(np.isfinite(x), np.isfinite(y))
+            x = x[valid]
+            y = y[valid]
             axes.plot(x, y, **plot_kw)
 
-        hg_longitude_deg = np.arange(lon_range[0], lon_range[1]+grid_spacing, grid_spacing)
-        hg_latitude_deg = np.linspace(lat_range[0], lat_range[1], num=num_points)
+        hg_longitude_deg = np.arange(-180, 180, grid_spacing) + self.heliographic_longitude
+        hg_latitude_deg = np.linspace(-90, 90, num=181)
 
         # draw the longitude lines
         for lon in hg_longitude_deg:
-            hg_longitude_deg_mesh, hg_latitude_deg_mesh = np.meshgrid(
-                lon * np.ones(num_points), hg_latitude_deg)
-            x, y = wcs.convert_hg_hpc(hg_longitude_deg_mesh, hg_latitude_deg_mesh, b0_deg=b0, l0_deg=l0,
-                    dsun_meters=dsun, angle_units=units[0], occultation=False)
+            x, y = wcs.convert_hg_hpc(lon * np.ones(181), hg_latitude_deg, b0_deg=b0, l0_deg=l0,
+                    dsun_meters=dsun, angle_units=units[0], occultation=True)
+            valid = np.logical_and(np.isfinite(x), np.isfinite(y))
+            x = x[valid]
+            y = y[valid]
             axes.plot(x, y, **plot_kw)
 
         axes.set_ylim(self.yrange)
