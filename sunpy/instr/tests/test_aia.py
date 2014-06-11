@@ -23,7 +23,7 @@ def test_aiaprep():
     assert prep_map.meta['cdelt2']/0.6 == int(prep_map.meta['cdelt2']/0.6)
     # Check rotation value, I am assuming that the inaccuracy in
     # the CROTA -> PCi_j matrix is casuing the inaccuracy here
-    np.testing.assert_allclose(prep_map.rotation_matrix, np.identity(2), rtol=1e-3)
+    np.testing.assert_allclose(prep_map.rotation_matrix, np.identity(2), rtol=1e-5)
     # Check level number
     assert prep_map.meta['lvl_num'] == 1.5
 
@@ -40,6 +40,6 @@ def test_filesave():
     assert load_map.meta['cdelt1']/0.6 == int(load_map.meta['cdelt1']/0.6)
     assert load_map.meta['cdelt2']/0.6 == int(load_map.meta['cdelt2']/0.6)
     # Check rotation value
-    np.testing.assert_allclose(prep_map.rotation_matrix, np.identity(2), rtol=1e-3)
+    np.testing.assert_allclose(prep_map.rotation_matrix, np.identity(2), rtol=1e-5)
     # Check level number
     assert load_map.meta['lvl_num'] == 1.5
