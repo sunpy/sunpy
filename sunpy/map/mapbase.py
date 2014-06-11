@@ -621,7 +621,7 @@ Dimension:\t [%d, %d]
         detailed description of the differences.
         """
         if angle is not None and rmatrix is not None:
-            raise ValueError("You  cannot specify both an angle and a matrix")
+            raise ValueError("You cannot specify both an angle and a matrix")
         elif angle is None and rmatrix is None:
             rmatrix = self.rotation_matrix
 
@@ -639,17 +639,26 @@ Dimension:\t [%d, %d]
             rmatrix = np.matrix([[c, -s], [s, c]])
         
         if image_center is None:
-            image_center = (self.shape[1] - self.reference_pixel['x'] + 1, # FITS pixels  count from 1 (curse you, FITS!)
+            # FITS pixels  count from 1 (curse you, FITS!)
+            image_center = (self.shape[1] - self.reference_pixel['x'] + 1, 
                             self.reference_pixel['y'])
 
-        new_map.data = np.flipud(affine_transform(np.flipud(new_map.data), np.array(rmatrix),
-                                        order=order, scale=scale,
-                                        image_center=image_center,
-                                        recenter=recenter, missing=missing,
-                                        use_scipy=use_scipy))
+        # Because map data has the origin at the bottom left not the top left
+        # as is convention for images vertically flip the image for the 
+        # transform and then flip it back again.
+        new_map.data = np.flipud(affine_transform(np.flipud(new_map.data),
+                                                  np.array(rmatrix),
+                                                  order=order, scale=scale,
+                                                  image_center=image_center,
+                                                  recenter=recenter, missing=missing,
+                                                  use_scipy=use_scipy))
 
         map_center = (np.array(self.shape)/2.0) + 0.5
 
+        # Calculate the new rotation matrix to store in the header by 
+        # "subtracting" the rotation matrix used in the rotate from the old one
+        # That being calculate the dot product of the old header data with the 
+        # inverse of the rotation matrix.
         pc_C = np.dot(self.rotation_matrix, rmatrix.I)
         new_map.meta['PC1_1'] = pc_C[0,0]
         new_map.meta['PC1_2'] = pc_C[0,1]
@@ -662,6 +671,8 @@ Dimension:\t [%d, %d]
 
         if recenter:
             # Move the reference pixel based on the image shift.
+            # The y coordinate is inverted due to the map having the origin in
+            # the lower left rather than the upper left.
             shift = image_center - map_center
             new_map.meta['crpix1'] += shift[0]
             new_map.meta['crpix2'] -= shift[1]

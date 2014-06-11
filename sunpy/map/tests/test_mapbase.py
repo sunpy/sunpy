@@ -33,10 +33,10 @@ def generic_map():
               'CRPIX2': 5,
               'CDELT1': 10,
               'CDELT2': 10,
-              'PC1_1': 1,
-              'PC1_2': 0,
-              'PC2_1': 0,
-              'PC2_2': 1,
+              'PC1_1': 0,
+              'PC1_2': -1,
+              'PC2_1': 1,
+              'PC2_2': 0,
               'NAXIS1': 6,
               'NAXIS2': 6}
     return sunpy.map.Map((data, header))
@@ -137,12 +137,12 @@ def test_units(generic_map):
 
 def test_rotation_matrix_pci_j(generic_map):
     np.testing.assert_allclose (generic_map.rotation_matrix,
-                                np.matrix([[1., 0.], [0., 1.]]))
+                                np.matrix([[0., -1.], [1., 0.]]))
 
 def test_rotation_matrix_crota(aia_map):
     np.testing.assert_allclose (aia_map.rotation_matrix,
-                                np.matrix([[  9.99999943e-01,   3.38820761e-04],
-                                           [ -3.38820761e-04,   9.99999943e-01]]))
+                                np.matrix([[9.99999943e-01, -3.38820761e-04],
+                                           [3.38820761e-04, 9.99999943e-01]]))
 
 def test_rotation_matrix_cd_cdelt():
     data = np.ones([6,6], dtype=np.float64)
@@ -152,14 +152,14 @@ def test_rotation_matrix_cd_cdelt():
               'CRPIX2': 5,
               'CDELT1': 10,
               'CDELT2': 9,
-              'CD1_1': 1,
-              'CD1_2': 0,
-              'CD2_1': 0,
-              'CD2_2': 1,
+              'CD1_1': 0,
+              'CD1_2': -1,
+              'CD2_1': 1,
+              'CD2_2': 0,
               'NAXIS1': 6,
               'NAXIS2': 6}
     cd_map = sunpy.map.Map((data, header))
-    np.testing.assert_allclose(cd_map.rotation_matrix, np.matrix([[9, 0.], [0., 10]]))
+    np.testing.assert_allclose(cd_map.rotation_matrix, np.matrix([[0., -9], [10., 0]]))
 
 
 def test_data_range(generic_map):
@@ -269,7 +269,6 @@ def test_superpixel(aia_map_large):
                                              aia_map_large.data[1][1])/4.0
 
 def calc_new_matrix(angle):
-    #Calulate the parameters for the affine_transform
     c = np.cos(np.deg2rad(angle))
     s = np.sin(np.deg2rad(angle))
     return np.matrix([[c, -s], [s, c]])
@@ -306,6 +305,37 @@ def test_rotate_recenter(aia_map):
     # Check recentering
     image_center = np.array((200, 100))
     rotated_map_6 = aia_map.rotate(20, image_center=image_center, recenter=True)
-    shift = image_center - np.array(aia_map.data.shape)/2. + 0.5
+    
+    # shift is image_centre - map_centre
+    shift = image_center - ((np.array(aia_map.shape)/2.) + 0.5)
+    
+    # y shift is inverted because the data in the map is origin lower.
     np.testing.assert_allclose(rotated_map_6.reference_pixel.values(),
-                               np.array(aia_map.reference_pixel.values()) + shift[::-1])
+                               np.array([aia_map.reference_pixel.values()[1] - shift[1],
+                                         aia_map.reference_pixel.values()[0] + shift[0]]))
+
+def test_rotate_crota_remove(aia_map):
+    rot_map = aia_map.rotate()
+    assert rot_map.meta.get('CROTA1', None) is None
+    assert rot_map.meta.get('CROTA2', None) is None
+
+def test_rotate_scale_cdelt(generic_map):
+    rot_map = generic_map.rotate(scale=10.)
+    assert rot_map.meta['CDELT1'] == generic_map.meta['CDELT1']/10.
+    assert rot_map.meta['CDELT2'] == generic_map.meta['CDELT2']/10.
+
+def test_rotate_new_matrix(generic_map):
+    # Rotate by CW90 to go from CCW 90 in generic map to CCW 180
+    rot_map = generic_map.rotate(rmatrix=np.matrix([[0, 1], [-1, 0]]))
+    np.testing.assert_allclose(rot_map.rotation_matrix, np.matrix([[-1, 0], [0, -1]]))
+    
+
+def test_rotate_rmatrix_angle(generic_map):
+    with pytest.raises(ValueError):
+        generic_map.rotate(angle=5, rmatrix=np.matrix([[1,0], [0, 1]]))
+
+def test_rotate_invalid_order(generic_map):
+    with pytest.raises(ValueError):
+        generic_map.rotate(order=6)
+    with pytest.raises(ValueError):
+        generic_map.rotate(order=-1)

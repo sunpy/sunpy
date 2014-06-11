@@ -12,10 +12,9 @@ import pytest
 original = images.camera().astype('float')
 
 # Tolerance for tests
-rtol = 1.0e-4
+rtol = 1.0e-15
 
-
-def compare_results(expect, result):
+def compare_results(expect, result, allclose=True):
     """
     Function to check that the obtained results are what was expected, to
     within the relative tolerance defined above.
@@ -23,9 +22,15 @@ def compare_results(expect, result):
     # Outermost pixels can contain artefacts which will be ignored.
     exp = expect[1:-1, 1:-1]
     res = result[1:-1, 1:-1]
-    return abs(exp.mean() - res.mean()) <= rtol*exp.mean()
-#    assert np.close(exp, res, rtol=rtol)  #TODO: Develop a better way of testing this
-
+    t1 = abs(exp.mean() - res.mean()) <= rtol*exp.mean()
+    
+    #Don't do the allclose test for scipy as the bicubic algorthm has edge effects
+    if allclose:    
+        t2 = np.allclose(exp, res, rtol=rtol)  #TODO: Develop a better way of testing this
+    else:
+        t2 = True
+    
+    return t1 and t2
 
 @pytest.mark.parametrize("angle, k", [(90.0, 1), (-90.0, -1), (-270.0, 1),
                                       (-90.0, 3), (360.0, 0), (-360.0, 0)])
@@ -35,6 +40,7 @@ def test_rotation(angle, k):
     c = np.cos(angle); s = np.sin(angle)
     rmatrix = np.array([[c, -s], [s, c]])
     expected = np.rot90(original, k=k)
+
     #Run the tests at order 4 as it produces more accurate 90 deg rotations
     rot = affine_transform(original, order=4, rmatrix=rmatrix)
     assert compare_results(expected, rot)
@@ -55,14 +61,14 @@ def test_scipy_rotation(angle, k):
     rmatrix = np.array([[c, -s], [s, c]])
     expected = np.rot90(original, k=k)
     rot = affine_transform(original, rmatrix=rmatrix, use_scipy=True)
-    assert compare_results(expected, rot)
+    assert compare_results(expected, rot, allclose=False)
     
     # TODO: Check incremental 360 degree rotation against original image
 
     # Check derotated image against original
     derot_matrix = np.array([[c, s], [-s, c]])
     derot = affine_transform(rot, rmatrix=derot_matrix, use_scipy=True)
-    assert compare_results(original, derot)
+    assert compare_results(original, derot, allclose=False)
 
 dx_values, dy_values = range(-100, 101, 100)*3, range(-100, 101, 100)*3
 dy_values.sort()
