@@ -46,8 +46,11 @@ def test_mean_anomaly():
 
 def test_solar_cycle_number():
     assert_array_almost_equal(sun.solar_cycle_number("2012/11/11"), 5, decimal=0)
+    #76
     assert_array_almost_equal(sun.solar_cycle_number("2011/2/22"), 4, decimal=0)
+    #23
     assert_array_almost_equal(sun.solar_cycle_number("2034/1/15"), 27, decimal=0)
+    
 
 def test_solar_semidiameter_angular_size():
     assert_array_almost_equal(sun.solar_semidiameter_angular_size("2012/11/11"), 968.383 * u.arcsec, decimal=3)
