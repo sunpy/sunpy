@@ -269,7 +269,6 @@ def test_superpixel(aia_map_large):
                                              aia_map_large.data[1][1])/4.0
 
 def calc_new_matrix(angle):
-    angle *= -1  # Counter-clockwise rotation
     #Calulate the parameters for the affine_transform
     c = np.cos(np.deg2rad(angle))
     s = np.sin(np.deg2rad(angle))
