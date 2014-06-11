@@ -824,8 +824,9 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
 
         # draw the latitude lines
         for lat in hg_latitude_deg:
-            x, y = wcs.convert_hg_hpc(hg_longitude_deg, lat * np.ones(361), b0_deg=b0, l0_deg=l0,
-                    dsun_meters=dsun, angle_units=units[0], occultation=True)
+            x, y = wcs.convert_hg_hpc(hg_longitude_deg, lat * np.ones(361),
+                                      b0_deg=b0, l0_deg=l0, dsun_meters=dsun,
+                                      angle_units=units[0], occultation=True)
             valid = np.logical_and(np.isfinite(x), np.isfinite(y))
             x = x[valid]
             y = y[valid]
@@ -836,8 +837,9 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
 
         # draw the longitude lines
         for lon in hg_longitude_deg:
-            x, y = wcs.convert_hg_hpc(lon * np.ones(181), hg_latitude_deg, b0_deg=b0, l0_deg=l0,
-                    dsun_meters=dsun, angle_units=units[0], occultation=True)
+            x, y = wcs.convert_hg_hpc(lon * np.ones(181), hg_latitude_deg,
+                                      b0_deg=b0, l0_deg=l0, dsun_meters=dsun,
+                                      angle_units=units[0], occultation=True)
             valid = np.logical_and(np.isfinite(x), np.isfinite(y))
             x = x[valid]
             y = y[valid]
