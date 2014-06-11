@@ -390,7 +390,7 @@ Dimension:\t [%d, %d]
         conversion.
         """
         lam = self.scale['y'] / self.scale['x']
-        p = -1 * np.deg2rad(self.meta['CROTA2'])
+        p = np.deg2rad(self.meta['CROTA2'])
 
         return np.matrix([[np.cos(p), -1 * lam * np.sin(p)],
                           [1/lam * np.sin(p), np.cos(p)]])
@@ -633,7 +633,6 @@ Dimension:\t [%d, %d]
         new_map = deepcopy(self)
 
         if angle is not None:
-            angle *= -1  # Counter-clockwise rotation
             #Calulate the parameters for the affine_transform
             c = np.cos(np.deg2rad(angle))
             s = np.sin(np.deg2rad(angle))
@@ -641,17 +640,17 @@ Dimension:\t [%d, %d]
         
         if image_center is None:
             image_center = (self.shape[1] - self.reference_pixel['x'],
-                            self.shape[0] - self.reference_pixel['y'])
+                            self.reference_pixel['y'])
 
-        new_map.data = affine_transform(new_map.data, np.array(rmatrix),
+        new_map.data = np.flipud(affine_transform(np.flipud(new_map.data), np.array(rmatrix),
                                         order=order, scale=scale,
                                         image_center=image_center,
                                         recenter=recenter, missing=missing,
-                                        use_scipy=use_scipy)
+                                        use_scipy=use_scipy))
 
         map_center = (np.array(self.shape)/2.0) - 0.5
 
-        pc_C = np.dot(self.rotation_matrix, np.dot(rmatrix, scale).T)
+        pc_C = np.dot(self.rotation_matrix, rmatrix.I)#np.dot(rmatrix, scale).I)
         new_map.meta['PC1_1'] = pc_C[0,0]
         new_map.meta['PC1_2'] = pc_C[0,1]
         new_map.meta['PC2_1'] = pc_C[1,0]
@@ -665,7 +664,7 @@ Dimension:\t [%d, %d]
             # Move the reference pixel based on the image shift.
             shift = image_center - map_center
             new_map.meta['crpix1'] += shift[0]
-            new_map.meta['crpix2'] += shift[1]
+            new_map.meta['crpix2'] -= shift[1]
 
         # Remove old CROTA kwargs because we have saved a new PCi_j matrix.
         new_map.meta.pop('CROTA1', None)
