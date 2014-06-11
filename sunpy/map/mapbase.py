@@ -639,7 +639,7 @@ Dimension:\t [%d, %d]
             rmatrix = np.matrix([[c, -s], [s, c]])
         
         if image_center is None:
-            image_center = (self.shape[1] - self.reference_pixel['x'],
+            image_center = (self.shape[1] - self.reference_pixel['x'] + 1, # FITS pixels  count from 1 (curse you, FITS!)
                             self.reference_pixel['y'])
 
         new_map.data = np.flipud(affine_transform(np.flipud(new_map.data), np.array(rmatrix),
@@ -648,9 +648,9 @@ Dimension:\t [%d, %d]
                                         recenter=recenter, missing=missing,
                                         use_scipy=use_scipy))
 
-        map_center = (np.array(self.shape)/2.0) - 0.5
+        map_center = (np.array(self.shape)/2.0) + 0.5
 
-        pc_C = np.dot(self.rotation_matrix, rmatrix.I)#np.dot(rmatrix, scale).I)
+        pc_C = np.dot(self.rotation_matrix, rmatrix.I)
         new_map.meta['PC1_1'] = pc_C[0,0]
         new_map.meta['PC1_2'] = pc_C[0,1]
         new_map.meta['PC2_1'] = pc_C[1,0]
