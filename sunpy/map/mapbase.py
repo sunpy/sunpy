@@ -28,7 +28,7 @@ import sunpy.io as io
 import sunpy.wcs as wcs
 from sunpy.visualization import toggle_pylab
 # from sunpy.io import read_file, read_file_header
-from sunpy.sun import constants, solar_semidiameter_angular_size, sunearth_distance
+from sunpy.sun import constants, solar_semidiameter_angular_size, sunearth_distance, heliographic_solar_center
 from sunpy.time import parse_time, is_time
 from sunpy.image.rescale import reshape_image_to_4d_superpixel
 from sunpy.image.rescale import resample as sunpy_image_resample
@@ -290,13 +290,28 @@ Dimension:\t [%d, %d]
     @property
     def carrington_longitude(self):
         """Carrington longitude (crln_obs)"""
-        return self.meta.get('crln_obs', 0.)
+        carrington_longitude = self.meta.get('crln_obs', None)
+
+        if carrington_longitude is None:
+            warnings.warn_explicit("Missing metadata for Carrington longitude: assuming Earth-based observer",
+                                   Warning, __file__, inspect.currentframe().f_back.f_lineno)
+            carrington_longitude = (heliographic_solar_center(self.date))[0]
+
+        return carrington_longitude
 
     @property
     def heliographic_latitude(self):
         """Heliographic latitude in degrees"""
-        return self.meta.get('hglt_obs', self.meta.get('crlt_obs',
-                                         self.meta.get('solar_b0', 0.)))
+        heliographic_latitude = self.meta.get('hglt_obs',
+                                              self.meta.get('crlt_obs',
+                                                            self.meta.get('solar_b0', None)))
+
+        if heliographic_latitude is None:
+            warnings.warn_explicit("Missing metadata for heliographic latitude: assuming Earth-based observer",
+                                   Warning, __file__, inspect.currentframe().f_back.f_lineno)
+            heliographic_latitude = (heliographic_solar_center(self.date))[1]
+
+        return heliographic_latitude
 
     @property
     def heliographic_longitude(self):
