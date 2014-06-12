@@ -63,7 +63,7 @@ Websites
 
 from __future__ import absolute_import
 
-from sunpy.sun import _si as _con # pylint: disable=E0611
+from sunpy.sun import _constants as _con # pylint: disable=E0611
 
 physical_constants = _con.physical_constants
 
