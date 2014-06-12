@@ -13,7 +13,9 @@ from pandas.util.testing import assert_frame_equal
 
 @pytest.mark.online
 def test_goes_event_list():
+    # Set a time range to search
     trange = TimeRange('2011-06-07 00:00','2011-06-08 00:00')
+    # Test case where GOES class filter is applied
     result = goes.get_goes_event_list(trange, goes_class_filter='M1')
     assert type(result) == list
     assert type(result[0]) == dict
@@ -31,6 +33,25 @@ def test_goes_event_list():
     assert result[0]['end_time'] == datetime.datetime(2011,6,7,6,59)
     assert result[0]['goes_class'] == 'M2.5'
     assert result[0]['noaa_active_region'] == 11226
+    # Test case where GOES class filter not applied
+    result = goes.get_goes_event_list(trange)
+    assert type(result) == list
+    assert type(result[0]) == dict
+    assert type(result[0]['event_date'] == str)
+    assert type(result[0]['goes_location'] == tuple)
+    assert type(result[0]['peak_time'] == datetime)
+    assert type(result[0]['start_time'] == datetime)
+    assert type(result[0]['end_time'] == datetime)
+    assert type(result[0]['goes_class'] == str)
+    assert type(result[0]['noaa_active_region'] == int)
+    assert result[0]['event_date'] == '2011-06-07'
+    assert result[0]['goes_location'] == (54, -21)
+    assert result[0]['start_time'] == datetime.datetime(2011,6,7,6,16)
+    assert result[0]['peak_time'] == datetime.datetime(2011,6,7,6,41)
+    assert result[0]['end_time'] == datetime.datetime(2011,6,7,6,59)
+    assert result[0]['goes_class'] == 'M2.5'
+    assert result[0]['noaa_active_region'] == 11226
+    
 
 @pytest.mark.online
 def test_temp_em():
@@ -38,6 +59,10 @@ def test_temp_em():
     # temperature & EM using with temp_em().
     goeslc = lc.GOESLightCurve.create("2014-01-01 00:00", "2014-01-01 01:00")
     goeslc_new = goes.temp_em(goeslc)
+    # Test correct exception is raised if a GOESLightCurve object is
+    # not inputted.
+    with pytest.raises(TypeError):
+        goes.temp_em([])
     # Find temperature and EM manually with goes_chianti_tem()
     t, em = goes.goes_chianti_tem(np.array(goeslc.data.xrsb),
                                   np.array(goeslc.data.xrsa),
@@ -59,7 +84,37 @@ def test_temp_em():
 def test_goes_chianti_tem():
     longflux = np.array([7e-6])
     shortflux = np.array([7e-7])
+    ratio = shortflux/longflux
+    shortflux_toomany = np.append(shortflux, 0)
+    shortflux_toosmall = copy.deepcopy(shortflux)
+    shortflux_toosmall[0] = -1
+    shortflux_toobig = copy.deepcopy(shortflux)
+    shortflux_toobig[0] = 1
+    temp_test = np.zeros(len(longflux))+10
+    temp_test_toomany = np.append(temp_test, 0)
+    temp_test_toosmall = copy.deepcopy(temp_test)
+    temp_test_toosmall[0] = -1
+    temp_test_toobig = copy.deepcopy(temp_test)
+    temp_test_toobig[0] = 101
     date = "2014-04-16"
+    # First test correct exceptions are raised if incorrect inputs are
+    # entered.
+    with pytest.raises(ValueError):
+        temp, em = goes.goes_chianti_tem(longflux, shortflux, satellite=-1)
+        temp, em = goes.goes_chianti_tem(longflux, shortflux_toomany)
+        temp = goes._goes_get_chianti_temp(ratio, satellite=-1)
+        temp, em = goes.goes_chianti_tem(longflux, shortflux,
+                                         abundances="Neither")
+        temp = goes._goes_get_chianti_temp(ratio, abundances="Neither")
+        temp, em = goes.goes_chianti_tem(longflux, shortflux_toosmall)
+        temp, em = goes.goes_chianti_tem(longflux, shortflux_toobig)
+        em = goes._goes_get_chianti_em(longflux, temp_test, satellite=-1)
+        em = goes._goes_get_chianti_em(longflux, temp_test,
+                                       abundances="Neither")
+        em = goes._goes_get_chianti_em(longflux, temp_test_toomany)
+        em = goes._goes_get_chianti_em(longflux, temp_test_toosmall)
+        em = goes._goes_get_chianti_em(longflux, temp_test_toobig)
+        
     # test case 1: satellite > 7, abundances = coronal
     temp1, em1 = goes.goes_chianti_tem(longflux, shortflux, satellite=15,
                                      date=date)
