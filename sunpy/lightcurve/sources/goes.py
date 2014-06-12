@@ -78,7 +78,6 @@ class GOESLightCurve(LightCurve):
         days_back = 3
         time_range = TimeRange(today - datetime.timedelta(days=days_back),
                                today - datetime.timedelta(days=days_back - 1))
-
         return cls._get_url_for_date_range(time_range)
 
     @classmethod
@@ -98,6 +97,7 @@ class GOESLightCurve(LightCurve):
                             14: TimeRange('2009-12-02', '2010-10-04'),
                             15: TimeRange('2010-09-01',
                                           datetime.datetime.utcnow())}
+
 
         sat_list = []
         for sat_num in goes_operational:
@@ -151,7 +151,6 @@ class GOESLightCurve(LightCurve):
             url = (base_url + "%s/go%02d%s.fits") % (start.strftime("%Y"),
                                                      sat_num[0],
                                                      start.strftime("%Y%m%d"))
-
         return url
 
     @staticmethod
