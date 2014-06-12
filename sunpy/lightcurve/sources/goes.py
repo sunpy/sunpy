@@ -24,9 +24,8 @@ class GOESLightCurve(LightCurve):
     Examples
     --------
     >>> from sunpy import lightcurve as lc
-
-    >>> goes = lc.GOESLightCurve.create()
-    >>> goes = lc.GOESLightCurve.create('2012/06/01', '2012/06/05')
+    >>> from sunpy.time import TimeRange
+    >>> goes = lc.GOESLightCurve.create(TimeRange('2012/06/01', '2012/06/05'))
     >>> goes.peek()
 
     References
@@ -34,7 +33,7 @@ class GOESLightCurve(LightCurve):
     | http://umbra.nascom.nasa.gov/goes/fits/
     """
 
-    def peek(self, title="GOES Xray Flux", **kwargs):
+    def peek(self, title="GOES Xray Flux"):
         """Plots GOES light curve is the usual manner"""
         figure = plt.figure()
         axes = plt.gca()
@@ -78,7 +77,8 @@ class GOESLightCurve(LightCurve):
         today = datetime.datetime.today()
         days_back = 3
         time_range = TimeRange(today - datetime.timedelta(days=days_back),
-                               today - datetime.timedelta(days=days_back-1))
+                               today - datetime.timedelta(days=days_back - 1))
+
         return cls._get_url_for_date_range(time_range)
 
     @classmethod
@@ -95,27 +95,27 @@ class GOESLightCurve(LightCurve):
                             11: TimeRange('2006-06-20', '2008-02-15'),
                             12: TimeRange('2002-12-13', '2007-05-08'),
                             13: TimeRange('2006-08-01', '2006-08-01'),
-                            14: TimeRange('2009-12-02', '2012-11-04'),
+                            14: TimeRange('2009-12-02', '2010-10-04'),
                             15: TimeRange('2010-09-01',
                                           datetime.datetime.utcnow())}
 
         sat_list = []
         for sat_num in goes_operational:
-            if (start > goes_operational[sat_num].start() and
-                start < goes_operational[sat_num].end() and
-                end > goes_operational[sat_num].start() and
-                end < goes_operational[sat_num].end()):
-                    #if true then the satellite with sat_num is available
+            if ((start > goes_operational[sat_num].start() and
+                 start < goes_operational[sat_num].end()) and
+                (end > goes_operational[sat_num].start() and
+                 end < goes_operational[sat_num].end())):
+                    # if true then the satellite with sat_num is available
                     sat_list.append(sat_num)
 
         if not sat_list:
-            #if no satellites were found then raise an exception
-            raise Exception, 'No operational GOES satellites within time range'
+            # if no satellites were found then raise an exception
+            raise Exception('No operational GOES satellites within time range')
         else:
             return sat_list
 
     @staticmethod
-    def _get_url_for_date_range(*args, **kwargs):
+    def _get_url_for_date_range(*args):
         """Returns a URL to the GOES data for the specified date.
 
         Parameters
@@ -131,18 +131,15 @@ class GOESLightCurve(LightCurve):
         """
         # TimeRange
         if len(args) == 1 and isinstance(args[0], TimeRange):
-            time_range = args[0]
             start = args[0].start()
             end = args[0].end()
         elif len(args) == 2:
-            # Start & End date
             start = parse_time(args[0])
             end = parse_time(args[1])
-            time_range = TimeRange(start, end)
-            if end < start:
-                raise ValueError('start time (argument 1) > end time (argument 2)')
+        if end < start:
+            raise ValueError('start time > end time')
 
-        #find out which satellite and datatype to query from the query times
+        # find out which satellite and datatype to query from the query times
         sat_num = GOESLightCurve._get_goes_sat_num(start, end)
         base_url = 'http://umbra.nascom.nasa.gov/goes/fits/'
 
@@ -182,7 +179,7 @@ class GOESLightCurve(LightCurve):
             raise ValueError("Don't know how to parse this file")
 
         times = [start_time + datetime.timedelta(seconds=int(floor(s)),
-                 microseconds=int((s-floor(s)) * 1e6)) for s in seconds_from_start]
+                                                 microseconds=int((s - floor(s)) * 1e6)) for s in seconds_from_start]
 
         # remove bad values as defined in header comments
         xrsb[xrsb == -99999] = nan
