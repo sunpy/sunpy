@@ -65,7 +65,8 @@ class GenericMap(astropy.nddata.NDData):
 
     Examples
     --------
-    >>> aia = sunpy.make_map(sunpy.AIA_171_IMAGE)
+    >>> import sunpy.map
+    >>> aia = sunpy.map.Map(sunpy.AIA_171_IMAGE)
     >>> aia.T
     AIAMap([[ 0.3125,  1.    , -1.1875, ..., -0.625 ,  0.5625,  0.5   ],
     [-0.0625,  0.1875,  0.375 , ...,  0.0625,  0.0625, -0.125 ],

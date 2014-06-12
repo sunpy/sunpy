@@ -22,6 +22,7 @@ Latest
  * Fixed time dependant functions (.sun) to default to t='now'
  * Fixed solar_semidiameter_angular_size
  * Improved line quality and performances issues with map.draw_grid()
+ * Remove deprecated make_map command.
 
 0.4.0
 -----
