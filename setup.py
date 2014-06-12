@@ -103,6 +103,14 @@ def install(setup): #pylint: disable=W0621
 
     write_version_py()
 
+    # Define the extra requirements in a sensible manner.
+    extras_require = {'database': ["sqlalchemy"],
+                      'image': ["scikit-image"],
+                      'jpeg2000': ["glymur"],
+                      'net': ["suds", "beautifulsoup4", "requests"]}
+    # All is everything except glymur.
+    extras_require['all'] = extras_require['database'] + extras_require['image'] + extras_require['net']
+
     setup(
 	author="Steven Christe, Russell Hewett, Keith Hughitt, Jack Ireland, Florian Mayer, Stuart Mumford,  Albert Shih, David Perez-Suarez et. al",
         author_email="sunpy@googlegroups.com",
@@ -116,6 +124,7 @@ def install(setup): #pylint: disable=W0621
             'matplotlib>=1.1',
             'sqlalchemy',
         ],
+        extra_requires=extras_require,
         license="BSD",
         long_description="\n".join(DOCLINES[2:]),
         maintainer="SunPy Developers",
