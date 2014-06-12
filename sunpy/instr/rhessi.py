@@ -20,8 +20,10 @@ import matplotlib.dates
 from astropy.io import fits
 
 import sunpy
+import sunpy.map
+import sunpy.sun.constants
+
 from sunpy.time import TimeRange, parse_time
-import sunpy.sun.constants as sun
 from sunpy.sun.sun import solar_semidiameter_angular_size
 from sunpy.sun.sun import sunearth_distance
 
@@ -353,7 +355,7 @@ def backprojection(calibrated_event_list, pixel_size=(1.,1.), image_dim=(64,64))
     --------
     >>> import sunpy.instr.rhessi as rhessi
     >>> map = rhessi.backprojection(sunpy.RHESSI_EVENT_LIST)
-    >>> map.show()
+    >>> map.peek()
 
     """
     
@@ -388,12 +390,12 @@ def backprojection(calibrated_event_list, pixel_size=(1.,1.), image_dim=(64,64))
         "CTYPE2": "HPLT-TAN",
         "HGLT_OBS": 0,
         "HGLN_OBS": 0,
-        "RSUN_OBS": solar_semidiameter_angular_size(time_range.center()),
-        "RSUN_REF": sun.radius,
-        "DSUN_OBS": sunearth_distance(time_range.center()) * sunpy.sun.constants.au
+        "RSUN_OBS": solar_semidiameter_angular_size(time_range.center()).value,
+        "RSUN_REF": sunpy.sun.constants.radius.value,
+        "DSUN_OBS": sunearth_distance(time_range.center()) * sunpy.sun.constants.au.value
     }
     
-    header = sunpy.map.MapHeader(dict_header)
+    header = sunpy.map.MapMeta(dict_header)
     result_map = sunpy.map.Map(image, header)
             
     return result_map
