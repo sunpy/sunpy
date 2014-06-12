@@ -13,7 +13,7 @@ import shutil
 
 # For Content-Disposition parsing
 from urllib2 import urlopen
-from urlparse import urlparse
+import urlparse
 from email.parser import FeedParser
 from unicodedata import normalize
 from itertools import ifilter
@@ -22,7 +22,7 @@ from sunpy.util import replacement_filename
 
 __all__ = ['slugify','get_content_disposition', 'get_filename',
            'get_system_filename', 'get_system_filename_slugify',
-           'download_file', 'download_fileobj']
+           'download_file', 'download_fileobj', 'check_download_file']
 
 # Characters not allowed in slugified version.
 _punct_re = re.compile(r'[:\t !"#$%&\'()*\-/<=>?@\[\\\]^_`{|},.]+')
@@ -62,7 +62,7 @@ def get_filename(sock, url):
             pass
 
     if not name:
-        parsed = urlparse(url)
+        parsed = urlparse.urlparse(url)
         name = parsed.path.rstrip('/').rsplit('/', 1)[-1]
     return unicode(name)
 
@@ -112,3 +112,52 @@ def download_fileobj(opn, directory, url='', default=u"file", overwrite=False):
     with open(path, 'wb') as fd:
         shutil.copyfileobj(opn, fd)
     return path
+
+def check_download_file(filename, remotepath, download_dir, remotename=None,
+                        replace=False):
+    """
+    Downloads a file from remotepath to localpath if it isn't there.
+
+    This function checks whether a file with name filename exists in the
+    location, localpath, on the user's local machine.  If it doesn't,
+    it downloads the file from remotepath.
+
+    Parameters
+    ----------
+    filename : string
+        Name of file.
+
+    remotepath : string
+        URL of the remote location from which filename can be dowloaded.
+
+    download_dir : string
+        The files directory.
+
+    remotename : (optional) string
+        filename under which the file is stored remotely.
+        Default is same as filename.
+
+    replace : (optional) bool
+        If True, file will be downloaded whether or not file already exists 
+        locally.
+    
+    Examples
+    --------
+    >>> pwd
+    u'Users/user/Desktop/'
+    >>> ls
+    file.py
+    >>> remotepath = "http://www.download_repository.com/downloads/"
+    >>> _check_download_file("filename.txt", remotepath)
+    >>> ls
+    file.py    filename.txt
+    """
+    # Check if file already exists locally.  If not, try downloading it.
+    if replace or not os.path.isfile(os.path.join(download_dir, filename)):
+        # set local and remote file names be the same unless specified
+        # by user.
+        if not isinstance(remotename, basestring):
+            remotename = filename
+
+        download_file(urlparse.urljoin(remotepath, remotename),
+                      download_dir, default=filename, overwrite=replace)

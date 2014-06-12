@@ -13,8 +13,8 @@ from pandas.util.testing import assert_frame_equal
 
 @pytest.mark.online
 def test_goes_event_list():
-    trange=TimeRange('2011-06-07 00:00','2011-06-08 00:00')
-    result=goes.get_goes_event_list(trange,goes_class_filter='M1')
+    trange = TimeRange('2011-06-07 00:00','2011-06-08 00:00')
+    result = goes.get_goes_event_list(trange, goes_class_filter='M1')
     assert type(result) == list
     assert type(result[0]) == dict
     assert type(result[0]['event_date'] == str)
