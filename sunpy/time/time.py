@@ -165,6 +165,8 @@ def parse_time(time_string):
         return datetime(*time_string)
     elif isinstance(time_string, int) or isinstance(time_string, float):
         return datetime(1979, 1, 1) + timedelta(0, time_string)
+    elif time_string is 'now':
+        return datetime.utcnow()
     else:
         # remove trailing zeros and the final dot to allow any
         # number of zeros. This solves issue #289
@@ -250,7 +252,7 @@ def day_of_year(time_string):
     time_diff = time - datetime(time.year, 1, 1, 0, 0, 0)
     return time_diff.days + time_diff.seconds / SECONDS_IN_DAY + 1
 
-def break_time(t=None):
+def break_time(t='now'):
     """Given a time returns a string. Useful for naming files."""
     #TODO: should be able to handle a time range
     return parse_time(t).strftime("%Y%m%d_%H%M%S")
