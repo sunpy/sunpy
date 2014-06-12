@@ -23,33 +23,33 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
 
     Parameters
     ----------
-    image: ndarray
+    image : ndarray
         2D Image to be rotated.
-    rmatrix: 2x2
+    rmatrix : 2x2
         Linear transformation rotation matrix.
-    order: int 0-5
+    order : int 0-5
         Interpolation order to be used. When using scikit-image this parameter
         is passed into :func:`skimage.transform.warp`.
         When using scipy it is passed into 
         :func:`scipy.ndimage.interpolation.affine_transform` where it controls 
         the order of the spline.
-    scale: float
+    scale : float
         A scale factor for the image. Default is no scaling.
-    rotation_center: tuple
+    rotation_center : tuple
         The point in the image to rotate around (axis of rotation).
         Default: center of the array.
-    recenter: bool or array-like
+    recenter : bool or array-like
         Move the axis of rotation to the center of the array or recenter coords.
         Default: True, recenter to the center of the array.
-    missing: float
+    missing : float
         The value to replace any missing data after the transformation.
-    scipy: bool
+    scipy : bool
         Force use of :func:`scipy.ndimage.interpolation.affine_transform`.
         Default: False unless sckit-image is not installed.
 
     Returns
     -------
-    New rotated, scaled and translated image.
+    out : New rotated, scaled and translated image.
     
     Notes
     -----
@@ -62,7 +62,7 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
     Then optionally it uses a bicubic convolution interpolation 
     algorithm to map the original to target pixel values.
     
-    This algorithm uses a affine transformation as opposed to a polynomial 
+    This algorithm uses an affine transformation as opposed to a polynomial 
     geometrical transformation. It then defaults to a bicubic convolution 
     interpolation.
     
