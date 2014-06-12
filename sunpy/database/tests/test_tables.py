@@ -254,7 +254,6 @@ def test_entries_from_dir_recursively_false():
         entries_from_dir(testdir, False, default_waveunit='angstrom'))
     assert len(entries) == 15
 
-
 @pytest.mark.online
 def test_entries_from_query_result(query_result):
     entries = list(entries_from_query_result(query_result))
