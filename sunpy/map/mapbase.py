@@ -363,7 +363,8 @@ Dimension:\t [%d, %d]
 
     @property
     def rotation_matrix(self):
-        """The Rotation angle of each axis"""
+        """Matrix describing the rotation required to align solar North with
+        the top of the image."""
         if self.meta.get('PC1_1', None) is not None:
             return np.matrix([[self.meta['PC1_1'], self.meta['PC1_2']],
                               [self.meta['PC2_1'], self.meta['PC2_2']]])
@@ -567,15 +568,14 @@ Dimension:\t [%d, %d]
         rotation matrix are specified, the map will be rotated by the rotation
         angle in the metadata.
 
-        If the rotation is specified as an angle (either explicitly or
-        implicitly) and the metadata contains the CROTA2 keyword, that keyword
-        will be changed appropriately to account for the rotation.
+        Also updates the rotation_matrix attribute and any appropriate header
+        data so that they correctly describe the new map.
 
         Parameters
         ----------
         angle : float
             The angle (degrees) to rotate counterclockwise.
-        rmatrix : NxN
+        rmatrix : 2x2
             Linear transformation rotation matrix.
         order : int
             Order of interpolation to use for the transform. Must be in the
@@ -607,7 +607,7 @@ Dimension:\t [%d, %d]
 
         Returns
         -------
-        new_map : Map
+        out : Map
             A new Map instance containing the rotated and rescaled data of the
             original map.
         
