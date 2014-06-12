@@ -5,6 +5,7 @@
 #
 
 import numpy as np
+from astropy import units as u
 from numpy.testing import assert_allclose
 from scipy.ndimage.interpolation import shift
 from sunpy import AIA_171_IMAGE
@@ -100,7 +101,7 @@ def test_upper_clip():
 
 def test_calculate_clipping():
     answer = calculate_clipping(clip_test_array, clip_test_array)
-    assert(answer == ([2.0, 1.0], [2.0, 1.0]))
+    assert answer == ([2.0, 1.0] * u.pix, [2.0, 1.0] * u.pix)
 
 
 def test_clip_edges():
@@ -187,3 +188,4 @@ def test_mapcube_coalign_by_match_template():
     test_mc = mapcube_coalign_by_match_template(mc, clip=False)
     assert(test_mc[0].data.shape == testmap.data.shape)
     assert(test_mc[1].data.shape == testmap.data.shape)
+

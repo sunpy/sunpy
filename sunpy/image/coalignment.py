@@ -21,6 +21,7 @@ Template matching algorithm:
 import numpy as np
 from scipy.ndimage.interpolation import shift
 from copy import deepcopy
+from astropy import units as u
 
 # Image co-registration by matching templates
 from skimage.feature import match_template
@@ -135,7 +136,7 @@ def calculate_clipping(y, x):
         the "clipping" tuple applies similarly to the x-direction (image
         columns).
     """
-    return [_lower_clip(y), _upper_clip(y)], [_lower_clip(x), _upper_clip(x)]
+    return [_lower_clip(y), _upper_clip(y)] * u.pix, [_lower_clip(x), _upper_clip(x)] * u.pix
 
 
 #
@@ -211,8 +212,8 @@ def find_best_match_location(corr):
     get_correlation_shifts(array_around_maximum)
 
     # Get shift relative to correlation array
-    y_shift_relative_to_correlation_array = y_shift_relative_to_maximum + cor_max_y
-    x_shift_relative_to_correlation_array = x_shift_relative_to_maximum + cor_max_x
+    y_shift_relative_to_correlation_array = y_shift_relative_to_maximum + cor_max_y * u.pix
+    x_shift_relative_to_correlation_array = x_shift_relative_to_maximum + cor_max_x * u.pix
 
     return y_shift_relative_to_correlation_array, x_shift_relative_to_correlation_array
 
@@ -259,7 +260,7 @@ def get_correlation_shifts(array):
     else:
         x_location = 1.0 * x_max_location
 
-    return y_location, x_location
+    return y_location * u.pix, x_location * u.pix
 
 
 def parabolic_turning_point(y):
@@ -459,8 +460,8 @@ def mapcube_coalign_by_match_template(mc, template=None, layer_index=0,
             yshift, xshift = calculate_shift(this_layer, tplate)
 
             # Keep shifts in pixels
-            yshift_keep[i] = yshift
-            xshift_keep[i] = xshift
+            yshift_keep[i] = yshift.value
+            xshift_keep[i] = xshift.value
 
         # Calculate shifts relative to the template layer
         yshift_keep = yshift_keep - yshift_keep[layer_index]
@@ -474,7 +475,7 @@ def mapcube_coalign_by_match_template(mc, template=None, layer_index=0,
 
     # Return only the displacements
     if return_displacements_only:
-        return {"x": xshift_arcseconds, "y": yshift_arcseconds}
+        return {"x": xshift_arcseconds * u.arcsec, "y": yshift_arcseconds * u.arcsec}
 
     # New mapcube for the new data
     newmc = deepcopy(mc)
@@ -484,7 +485,7 @@ def mapcube_coalign_by_match_template(mc, template=None, layer_index=0,
         shifted_data = shift(m.data, [-yshift_keep[i], -xshift_keep[i]])
         if clip:
             yclips, xclips = calculate_clipping(yshift_keep, xshift_keep)
-            shifted_data = clip_edges(shifted_data, yclips, xclips)
+            shifted_data = clip_edges(shifted_data, yclips.value, xclips.value)
 
         # Update the mapcube image data
         newmc.maps[i].data = shifted_data
@@ -496,6 +497,7 @@ def mapcube_coalign_by_match_template(mc, template=None, layer_index=0,
     # Return the mapcube, or optionally, the mapcube and the displacements
     # used to create the mapcube.
     if with_displacements:
-        return newmc, {"x": xshift_arcseconds, "y": yshift_arcseconds}
+        return newmc, {"x": xshift_arcseconds * u.arcsec, "y": yshift_arcseconds * u.arcsec}
     else:
         return newmc
+
