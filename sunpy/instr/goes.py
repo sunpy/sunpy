@@ -7,6 +7,7 @@ import csv
 import copy
 import urllib
 import urllib2
+import socket
 from itertools import dropwhile
 
 import numpy as np
@@ -21,7 +22,9 @@ __all__ = ['get_goes_event_list', 'temp_em', 'goes_chianti_tem']
 
 # Check required data files are present in user's default download dir
 # Define location where GOES data files are stored.
-GOES_REMOTE_PATH = "http://hesperia.gsfc.nasa.gov/ssw/gen/idl/synoptic/goes/"
+# Manually resolve the hostname
+HOST = socket.gethostbyname_ex('hesperia.gsfc.nasa.gov')[-1][0]
+GOES_REMOTE_PATH = "http://{0}/ssw/gen/idl/synoptic/goes/".format(HOST)
 # Define location where data files should be downloaded to.
 DATA_PATH = config.get("downloads", "download_dir")
 # Define variables for file names
@@ -83,7 +86,7 @@ def get_goes_event_list(timerange, goes_class_filter=None):
 
     return goes_event_list
 
-def temp_em(goeslc, abundances="coronal", download=False):
+def temp_em(goeslc, abundances="coronal", download=False, download_dir=DATA_PATH):
     """
     Calculates and adds temperature and EM to a GOESLightCurve.
 
@@ -109,14 +112,19 @@ def temp_em(goeslc, abundances="coronal", download=False):
         generated due to a new CHIANTI version being released or the launch of 
         new GOES satellites since these files were originally downloaded.
         Default=False
+    
+    download_dir : (optional) string
+        The directory to download the GOES temperature and emission measure 
+        data files to.
+        Default=SunPy default download directory
 
     Returns
     -------
     goeslc.data.temperature : pandas.core.series.Series
-                              Array of temperature values [MK]
+        Array of temperature values [MK]
+
     goeslc.data.em : pandas.core.series.Series
-                     Array of volume emission measure values
-                     [10**49 cm**-3]
+        Array of volume emission measure values [10**49 cm**-3]
 
     Examples
     --------
@@ -146,7 +154,8 @@ def temp_em(goeslc, abundances="coronal", download=False):
     temp, em = goes_chianti_tem(goeslc.data.xrsb, goeslc.data.xrsa,
                                 satellite=goeslc.meta["TELESCOP"].split()[1],
                                 date=goeslc.data.index[0],
-                                abundances=abundances, download=download)
+                                abundances=abundances, download=download,
+                                download_dir=download_dir)
 
     # Enter results into new version of GOES LightCurve Object
     goeslc_new = copy.deepcopy(goeslc)
@@ -157,7 +166,7 @@ def temp_em(goeslc, abundances="coronal", download=False):
 
 def goes_chianti_tem(longflux, shortflux, satellite=8,
                      date=datetime.datetime.today(), abundances="coronal",
-                     download=False):
+                     download=False, download_dir=DATA_PATH):
     """
     Calculates temperature and emission measure from GOES/XRS data.
 
@@ -192,15 +201,19 @@ def goes_chianti_tem(longflux, shortflux, satellite=8,
         launch of new GOES satellites since these files were originally downloaded.
         Default=False
 
+    download_dir : (optional) string
+        The directory to download the GOES temperature and emission measure 
+        data files to.
+        Default=SunPy default download directory
+
     Returns
     -------
     temp : numpy array
-           Array of temperature values of same length as longflux and
-           shortflux. [MK]
+        Array of temperature values of same length as longflux and shortflux. [MK]
 
     em : numpy array
-         Array of volume emission measure values of same length as
-         longflux and shortflux.  [10**49 cm**-3]
+        Array of volume emission measure values of same length as longflux 
+        and shortflux.  [10**49 cm**-3]
 
     Notes
     -----
@@ -281,13 +294,15 @@ def goes_chianti_tem(longflux, shortflux, satellite=8,
 
     # FIND TEMPERATURE AND EMISSION MEASURE FROM FUNCTIONS BELOW
     temp = _goes_get_chianti_temp(fluxratio, satellite=satellite,
-                                  abundances=abundances, download=download)
+                                  abundances=abundances, download=download,
+                                  download_dir=download_dir)
     em = _goes_get_chianti_em(longflux_corrected, temp, satellite=satellite,
-                              abundances=abundances, download=download)
+                              abundances=abundances, download=download,
+                              download_dir=download_dir)
     return temp, em
 
 def _goes_get_chianti_temp(fluxratio, satellite=8, abundances="coronal",
-                           download=False):
+                           download=False, download_dir=DATA_PATH):
     """
     Calculates temperature from GOES flux ratio.
 
@@ -321,6 +336,11 @@ def _goes_get_chianti_temp(fluxratio, satellite=8, abundances="coronal",
         generated due to a new CHIANTI version being released or the launch
         of new GOES satellites since these files were originally downloaded.
         Default=False
+    
+    download_dir : (optional) string
+        The directory to download the GOES temperature and emission measure 
+        data files to.
+        Default=SunPy default download directory
 
     Returns
     -------
@@ -367,10 +387,10 @@ def _goes_get_chianti_temp(fluxratio, satellite=8, abundances="coronal",
     """
     # If download kwarg is True, or required data files cannot be
     # found locally, download required data files.
-    _check_download_file(FILE_TEMP_COR, GOES_REMOTE_PATH, localpath=DATA_PATH,
-                         force_download=download)
-    _check_download_file(FILE_TEMP_PHO, GOES_REMOTE_PATH, localpath=DATA_PATH,
-                         force_download=download)
+    _check_download_file(FILE_TEMP_COR, GOES_REMOTE_PATH,
+                         force_download=download, download_dir=download_dir)
+    _check_download_file(FILE_TEMP_PHO, GOES_REMOTE_PATH,
+                         force_download=download, download_dir=download_dir)
 
     # check inputs are correct
     fluxratio = np.asanyarray(fluxratio, dtype=np.float64)
@@ -422,7 +442,7 @@ def _goes_get_chianti_temp(fluxratio, satellite=8, abundances="coronal",
     return temp
 
 def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal",
-                         download=False):
+                         download=False, download_dir=DATA_PATH):
     """
     Calculates emission measure from GOES 1-8A flux and temperature.
 
@@ -459,6 +479,11 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal",
         generated due to a new CHIANTI version being released or the launch of 
         new GOES satellites since these files were originally downloaded.
         Default=False
+    
+    download_dir : (optional) string
+        The directory to download the GOES temperature and emission measure 
+        data files to.
+        Default=SunPy default download directory
 
     Returns
     -------
@@ -510,17 +535,10 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal",
     """
     # If download kwarg is True, or required data files cannot be
     # found locally, download required data files.
-    _check_download_file(FILE_EM_COR, GOES_REMOTE_PATH, localpath=DATA_PATH,
-                         force_download=download)
-    _check_download_file(FILE_EM_PHO, GOES_REMOTE_PATH, localpath=DATA_PATH,
-                         force_download=download)
-
-    # If download kwarg is True, download required data files
-#    if download:
-#        urllib.urlretrieve(os.path.join(GOES_REMOTE_PATH, FILE_EM_COR),
-#                           os.path.join(localpath, FILE_EM_COR))
-#        urllib.urlretrieve(os.path.join(GOES_REMOTE_PATH, FILE_EM_PHO),
-#                           os.path.join(localpath, FILE_EM_PHO))
+    _check_download_file(FILE_EM_COR, GOES_REMOTE_PATH,
+                         force_download=download, download_dir=download_dir)
+    _check_download_file(FILE_EM_PHO, GOES_REMOTE_PATH,
+                         force_download=download, download_dir=download_dir)
 
     # Check inputs are of correct type
     longflux = np.asanyarray(longflux, dtype=np.float64)
@@ -576,8 +594,8 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal",
 
     return em
 
-def _check_download_file(filename, remotepath, localpath=os.path.curdir,
-                         remotename=None, force_download=False):
+def _check_download_file(filename, remotepath, remotename=None,
+                         force_download=False, download_dir=DATA_PATH):
     """
     Downloads a file from remotepath to localpath if it isn't there.
 
@@ -593,17 +611,18 @@ def _check_download_file(filename, remotepath, localpath=os.path.curdir,
     remotepath : string
         URL of the remote location from which filename can be dowloaded.
 
-    localpath : string
-        Path of the directory in which filename should be stored.
-        Default is current directory
-
     remotename : (optional) string
         filename under which the file is stored remotely.
-                 Default is same as filename.
+        Default is same as filename.
 
     force_download : (optional) bool
         If True, file will be downloaded whether or not file already exists 
         locally.
+    
+    download_dir : (optional) string
+        The directory to download the GOES temperature and emission measure 
+        data files to.
+        Default=SunPy default download directory
 
     Examples
     --------
@@ -618,19 +637,19 @@ def _check_download_file(filename, remotepath, localpath=os.path.curdir,
 
     """
     # Check if file already exists locally.  If not, try downloading it.
-    if force_download or not os.path.isfile(os.path.join(localpath, filename)):
+    if force_download or not os.path.isfile(os.path.join(download_dir, filename)):
         # set local and remote file names be the same unless specified
         # by user.
         if not isinstance(remotename, basestring):
             remotename = filename
         try:
             # Check if the host server can be connected to.
-            response = urllib2.urlopen(remotepath+remotename, timeout=5)
+            response = urllib2.urlopen(remotepath+remotename, timeout=1)
             # Try downloading file
             urllib.urlretrieve(os.path.join(remotepath, remotename),
-                               os.path.join(localpath, filename))
+                               os.path.join(download_dir, filename))
             # Check if file has been downloaded.  If not, raise error.
-            if not os.path.isfile(os.path.join(localpath, filename)):
+            if not os.path.isfile(os.path.join(download_dir, filename)):
                 raise IOError(remotename + " was not downloaded from " +
                                 remotepath + " .")
         except urllib2.URLError as e:
