@@ -21,6 +21,7 @@ Latest
  * Added t='now' to parse_time to privide utcnow datetime.
  * Fixed time dependant functions (.sun) to default to t='now'
  * Fixed solar_semidiameter_angular_size
+ * Improved line quality and performances issues with map.draw_grid()
 
 0.4.0
 -----
