@@ -815,7 +815,7 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
 
 # #### Visualization #### #
 
-    def draw_grid(self, axes=None, grid_spacing=20, **kwargs):
+    def draw_grid(self, axes=None, grid_spacing=15, **kwargs):
         """Draws a grid over the surface of the Sun
 
         Parameters
