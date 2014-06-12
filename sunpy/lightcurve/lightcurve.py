@@ -94,7 +94,7 @@ for compatability with map, please use meta instead""", Warning)
     @classmethod
     def from_time(cls, time, **kwargs):
         '''Called by Conditional Dispatch object when valid time is passed as input to create method.'''
-	date = parse_time(time)
+    date = parse_time(time)
         url = cls._get_url_for_date(date, **kwargs)
         filepath = cls._download(
             url, kwargs, err="Unable to download data for specified date"
@@ -129,10 +129,10 @@ for compatability with map, please use meta instead""", Warning)
     def from_file(cls, filename):
         '''Used to return Light Curve object by reading the given filename
 
-	Parameters:
-	    filename: Path of the file to be read.
+    Parameters:
+        filename: Path of the file to be read.
 
-	'''
+    '''
 
         filename = os.path.expanduser(filename)
         meta, data = cls._parse_filepath(filename)
@@ -164,11 +164,11 @@ for compatability with map, please use meta instead""", Warning)
     @classmethod
     def from_data(cls, data, index=None, meta=None):
         '''
-	Called by Conditional Dispatch object to create Light Curve object when corresponding data is passed
-	to create method.
-	'''
+    Called by Conditional Dispatch object to create Light Curve object when corresponding data is passed
+    to create method.
+    '''
 
-	return cls(
+    return cls(
             pandas.DataFrame(data, index=index),
             meta
         )
@@ -180,11 +180,11 @@ for compatability with map, please use meta instead""", Warning)
     @classmethod
     def from_dataframe(cls, dataframe, meta=None):
         '''
-	Called by Conditional Dispatch object to create Light Curve object when Pandas DataFrame is passed
-	to create method.
-	'''
+    Called by Conditional Dispatch object to create Light Curve object when Pandas DataFrame is passed
+    to create method.
+    '''
 
-	return cls(dataframe, meta)
+    return cls(dataframe, meta)
 
     def plot(self, axes=None, **plot_args):
         """Plot a plot of the light curve
