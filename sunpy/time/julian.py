@@ -8,7 +8,7 @@ __all__ = ['julian_day', 'julian_centuries']
 # 12:00 noon Jan 1, 4713 BC
 JULIAN_DAY_ON_NOON01JAN1900 = 2415021.0
 
-def julian_day(t=None):
+def julian_day(t='now'):
     """Returns the (fractional) Julian day defined as the number of days 
     between the queried day and the reference date of 12:00 (noon) Jan 1, 4713 
     BC."""
@@ -34,7 +34,7 @@ def julian_day(t=None):
 
     return result
 
-def julian_centuries(t=None):
+def julian_centuries(t='now'):
     """Returns the number of Julian centuries since 1900 January 0.5."""
     DAYS_IN_YEAR = 36525.0
 
