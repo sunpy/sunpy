@@ -14,7 +14,6 @@ change.
 
    sunpy
    cm
-   coords
    database
    image
    instr/index
@@ -22,6 +21,7 @@ change.
    lightcurve
    map
    net
+   physics
    roi
    spectra
    sun

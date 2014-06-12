@@ -73,9 +73,9 @@ class LightCurve(object):
     def __init__(self, data, meta=None):
         self.data = pandas.DataFrame(data)
 	if meta == '' or meta is None:
-		self.meta = OrderedDict()
+	     self.meta = OrderedDict()
 	else:	
-        	self.meta = OrderedDict(meta)
+             self.meta = OrderedDict(meta)
 	
     
     @property
@@ -92,7 +92,8 @@ for compatability with map, please use meta instead""", Warning)
 
     @classmethod
     def from_time(cls, time, **kwargs):
-        date = parse_time(time)
+        '''Called by Conditional Dispatch object when valid time is passed as input to create method.'''
+	date = parse_time(time)
         url = cls._get_url_for_date(date, **kwargs)
         filepath = cls._download(
             url, kwargs, err="Unable to download data for specified date"
@@ -101,6 +102,7 @@ for compatability with map, please use meta instead""", Warning)
 
     @classmethod
     def from_range(cls, start, end, **kwargs):
+        '''Called by Conditional Dispatch object when start and end time are passed as input to create method.'''
         url = cls._get_url_for_date_range(parse_time(start), parse_time(end))
         filepath = cls._download(
             url, kwargs, 
@@ -112,6 +114,7 @@ for compatability with map, please use meta instead""", Warning)
 
     @classmethod
     def from_timerange(cls, timerange, **kwargs):
+        '''Called by Conditional Dispatch object when time range is passed as input to create method.'''
         url = cls._get_url_for_date_range(timerange)
         filepath = cls._download(
             url, kwargs,
@@ -123,6 +126,13 @@ for compatability with map, please use meta instead""", Warning)
 
     @classmethod
     def from_file(cls, filename):
+        '''Used to return Light Curve object by reading the given filename
+
+	Parameters:
+	    filename: Path of the file to be read.
+
+	'''
+
         filename = os.path.expanduser(filename)
         meta, data = cls._parse_filepath(filename)
         if data.empty:
@@ -132,6 +142,17 @@ for compatability with map, please use meta instead""", Warning)
 
     @classmethod
     def from_url(cls, url, **kwargs):
+        '''
+	Downloads a file from the given url, reads and returns a Light Curve object.
+
+	Parameters:
+	    url : string 
+	        Uniform Resource Locator pointing to the file.
+
+	    kwargs :Dict
+	        Dict object containing other related parameters to assist in download.
+
+        '''
         try:
             filepath = cls._download(url, kwargs)
         except (urllib2.HTTPError, urllib2.URLError, ValueError):
@@ -141,7 +162,12 @@ for compatability with map, please use meta instead""", Warning)
 
     @classmethod
     def from_data(cls, data, index=None, meta=None):
-        return cls(
+        '''
+	Called by Conditional Dispatch object to create Light Curve object when corresponding data is passed
+	to create method.
+	'''
+
+	return cls(
             pandas.DataFrame(data, index=index),
             meta
         )
@@ -152,7 +178,12 @@ for compatability with map, please use meta instead""", Warning)
 
     @classmethod
     def from_dataframe(cls, dataframe, meta=None):
-        return cls(dataframe, meta)
+        '''
+	Called by Conditional Dispatch object to create Light Curve object when Pandas DataFrame is passed
+	to create method.
+	'''
+
+	return cls(dataframe, meta)
 
     def plot(self, axes=None, **plot_args):
         """Plot a plot of the light curve
@@ -271,7 +302,7 @@ for compatability with map, please use meta instead""", Warning)
             time_range = TimeRange(a,b)
 
         truncated = self.data.truncate(time_range.start(), time_range.end())
-        return LightCurve(truncated, self.meta.copy())
+        return self.__class__.create(truncated, self.meta.copy())
 
     def extract(self, a):
         """Extract a set of particular columns from the DataFrame"""
