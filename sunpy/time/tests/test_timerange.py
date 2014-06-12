@@ -117,3 +117,19 @@ def test_extend():
     assert timerange.t1 == start + delta
     assert timerange.t2 == end + delta
     assert timerange.dt == delta
+    
+def test_contains():
+    before = datetime.datetime(year=1990, month=1, day=1)
+    after = datetime.datetime(year=2022, month=1, day=1)
+    between = datetime.datetime(year=2014, month=5, day=4)
+    timerange = sunpy.time.TimeRange('2014/05/03 12:00', '2014/05/05 21:00')
+    assert between in timerange
+    assert before not in timerange
+    assert after not in timerange
+    assert timerange.t1 in timerange
+    assert timerange.t2 in timerange
+    assert '2014/05/04 15:21' in timerange
+    assert '1975/4/13' not in timerange
+    assert '2100/1/1'not in timerange
+    assert '2014/05/03 12:00' in timerange
+    assert '2014/05/05 21:00' in timerange

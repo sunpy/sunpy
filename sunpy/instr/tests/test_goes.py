@@ -11,6 +11,7 @@ from sunpy.instr import goes
 import sunpy.lightcurve as lc
 from pandas.util.testing import assert_frame_equal
 
+@pytest.mark.online
 def test_goes_event_list():
     trange=TimeRange('2011-06-07 00:00','2011-06-08 00:00')
     result=goes.get_goes_event_list(trange,goes_class_filter='M1')
