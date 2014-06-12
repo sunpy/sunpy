@@ -14,9 +14,8 @@ import scipy.interpolate as interpolate
 
 from sunpy.net import hek
 from sunpy.time import parse_time
-from sunpy.sun import sun
 from sunpy import config
-import sunpy.lightcurve
+from sunpy import lightcurve
 
 __all__ = ['get_goes_event_list', 'temp_em', 'goes_chianti_tem']
 
@@ -140,7 +139,7 @@ def temp_em(goeslc, abundances="coronal", download=False):
     """
 
     # Check that input argument is of correct type
-    if not isinstance(goeslc, sunpy.lightcurve.GOESLightCurve):
+    if not isinstance(goeslc, lightcurve.GOESLightCurve):
         raise TypeError("goeslc must be a GOESLightCurve object.")
 
     # Find temperature and emission measure with goes_chianti_tem
