@@ -30,24 +30,25 @@ FILE_TEMP_PHO = "goes_chianti_temp_pho.csv"
 FILE_EM_COR = "goes_chianti_em_cor.csv"
 FILE_EM_PHO = "goes_chianti_em_pho.csv"
 
-def get_goes_event_list(trange, goes_class_filter=None):
+def get_goes_event_list(timerange, goes_class_filter=None):
     """
     Retrieve list of flares detected by GOES within a given time range.
 
     Parameters
     ----------
-    trange: a SunPy TimeRange object
+    timerange: sunpy.time.TimeRange
+        The time range to download the event list for.
 
     goes_class_filter: (optional) string
-                       a string specifying a minimum GOES class for
-                       inclusion in the list, e.g. 'M1', 'X2'.
+        A string specifying a minimum GOES class for inclusion in the list,
+        e.g. 'M1', 'X2'.
 
     """
     # use HEK module to search for GOES events
     client = hek.HEKClient()
     event_type = 'FL'
-    tstart = trange.start()
-    tend = trange.end()
+    tstart = timerange.start()
+    tend = timerange.end()
 
     # query the HEK for a list of events detected by the GOES instrument
     # between tstart and tend (using a GOES-class filter)
@@ -97,18 +98,17 @@ def temp_em(goeslc, abundances="coronal", download=False):
     Parameters
     ----------
     goeslc : GOESLightCurve object
-    abundances : (optional) string equalling either 'coronal' or
-                 'photospheric'.
-                 States whether photospheric or coronal abundances
-                 should be assumed.
-                 Default='coronal'
+
+    abundances : (optional) string equalling either 'coronal' or 'photospheric'.
+        States whether photospheric or coronal abundances should be assumed.
+        Default='coronal'
+
     download : (optional) bool
-               If True, the GOES temperature and emission measure data
-               files are downloaded.  It is important to do this if a
-               new version of the files has been generated due to a new
-               CHIANTI version being released or the launch of new GOES
-               satellites since these files were originally downloaded.
-               Default=False
+        If True, the GOES temperature and emission measure data files are downloaded.
+        It is important to do this if a new version of the files has been 
+        generated due to a new CHIANTI version being released or the launch of 
+        new GOES satellites since these files were originally downloaded.
+        Default=False
 
     Returns
     -------
@@ -168,37 +168,36 @@ def goes_chianti_tem(longflux, shortflux, satellite=8,
 
     Parameters
     ----------
-    longflux, shortflux : ndarray or array-like which can be converted
-                          to float64 type, such as an np.array, tuple,
-                          list.
-                          Arrays containing the long and short GOES/XRS
-                          flux measurements respectively as a function
-                          of time.  Must be of same length. [W/m**2].
+    longflux, shortflux : ndarray or array-like which can be converted to float64 type, such as an np.array, tuple, list.
+        Arrays containing the long and short GOES/XRS flux measurements 
+        respectively as a function of time.  Must be of same length. [W/m**2].
+
     satellite : int (optional)
-                Number of GOES satellite used to make observations.
-                Important for correct calibration of data.
-                Default=8
+        Number of GOES satellite used to make observations, important for 
+        correct calibration of data.
+        Default=8
+
     date : datetime object or str
-           Date when observations made.  Important for correct
-           calibration.  Default=today
-    abundances : (optional) string equalling either 'coronal' or
-                 'photospheric'.
-                 States whether photospheric or coronal abundances
-                 should be assumed.
-                 Default='coronal'
+         Date when observations made.  Important for correctcalibration.
+         Default=today
+
+    abundances : (optional) string equalling either 'coronal' or 'photospheric'.
+        States whether photospheric or coronal abundances should be assumed.
+        Default='coronal'
+
     download : (optional) bool
-               If True, the GOES temperature and emission measure data
-               files are downloaded.  It is important to do this if a
-               new version of the files has been generated due to a new
-               CHIANTI version being released or the launch of new GOES
-               satellites since these files were originally downloaded.
-               Default=False
+        If True, the GOES temperature and emission measure data files are 
+        downloaded.  It is important to do this if a new version of the files 
+        has been generated due to a new CHIANTI version being released or the 
+        launch of new GOES satellites since these files were originally downloaded.
+        Default=False
 
     Returns
     -------
     temp : numpy array
            Array of temperature values of same length as longflux and
-           shortflux.  [MK]
+           shortflux. [MK]
+
     em : numpy array
          Array of volume emission measure values of same length as
          longflux and shortflux.  [10**49 cm**-3]
@@ -303,32 +302,30 @@ def _goes_get_chianti_temp(fluxratio, satellite=8, abundances="coronal",
 
     Parameters
     ----------
-    fluxratio : ndarray or array-like which can be converted to float64
-                type, such as an np.array, tuple, list.
-                Array containing the ratio of short channel to long
-                channel GOES/XRS flux measurements.
+    fluxratio : ndarray or array-like which can be converted to float64 type, such as an np.array, tuple, list.
+        Array containing the ratio of short channel to long channel GOES/XRS
+        flux measurements.
+
     satellite : int (optional)
-                Number of GOES satellite used to make observations.
-                Important for correct calibration of data.
-                Default=8
-    abundances : (optional) string equalling either 'coronal' or
-                 'photospheric'.
-                 States whether photospheric or coronal abundances
-                 should be assumed.
-                 Default='coronal'
+        Number of GOES satellite used to make observations. Important for 
+        correct calibration of data.
+        Default=8
+
+    abundances : (optional) string equalling either 'coronal' or 'photospheric'.
+        States whether photospheric or coronal abundances should be assumed.
+        Default='coronal'
+
     download : (optional) bool
-               If True, the GOES temperature data files are
-               downloaded.  It is important to do this if a new version
-               of the files has been generated due to a new CHIANTI
-               version being released or the launch of new GOES
-               satellites since these files were originally downloaded.
-               Default=False
+        If True, the GOES temperature data files are downloaded.
+        It is important to do this if a new version of the files has been 
+        generated due to a new CHIANTI version being released or the launch
+        of new GOES satellites since these files were originally downloaded.
+        Default=False
 
     Returns
     -------
     temp : numpy array
-           Array of temperature values of same length as longflux and
-           shortflux.  [MK]
+        Array of temperature values of same length as longflux and shortflux. [MK]
 
     Notes
     -----
@@ -441,28 +438,27 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal",
 
     Parameters
     ----------
-    longflux : ndarray or array-like which can be converted to float64
-               type, such as an np.array, tuple, list.
-               Array containing the observed GOES/XRS long channel flux
-    temp : ndarray or array-like which can be converted to float64
-           type, such as an np.array, tuple, list.
-           Array containing the GOES temperature
+    longflux : ndarray or array-like which can be converted to float64 type, such as an np.array, tuple, list.
+        Array containing the observed GOES/XRS long channel flux
+
+    temp : ndarray or array-like which can be converted to float64 type, such as an np.array, tuple, list.
+        Array containing the GOES temperature
+
     satellite : int (optional)
-                Number of GOES satellite used to make observations.
-                Important for correct calibration of data.
-                Default=8
-    abundances : (optional) string equalling either 'coronal' or
-                 'photospheric'.
-                 States whether photospheric or coronal abundances
-                 should be assumed.
-                 Default='coronal'
+        Number of GOES satellite used to make observations.
+        Important for correct calibration of data.
+        Default=8
+
+    abundances : (optional) string equalling either 'coronal' or 'photospheric'.
+        States whether photospheric or coronal abundances should be assumed.
+        Default='coronal'
+
     download : (optional) bool
-               If True, the GOES emission measure data files are
-               downloaded.  It is important to do this if a new version
-               of the files has been generated due to a new CHIANTI
-               version being released or the launch of new GOES
-               satellites since these files were originally downloaded.
-               Default=False
+        If True, the GOES emission measure data files are downloaded.
+        It is important to do this if a new version of the files has been 
+        generated due to a new CHIANTI version being released or the launch of 
+        new GOES satellites since these files were originally downloaded.
+        Default=False
 
     Returns
     -------
@@ -520,11 +516,11 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal",
                          force_download=download)
 
     # If download kwarg is True, download required data files
-    if download:
-        urllib.urlretrieve(os.path.join(GOES_REMOTE_PATH, FILE_EM_COR),
-                           os.path.join(localpath, FILE_EM_COR))
-        urllib.urlretrieve(os.path.join(GOES_REMOTE_PATH, FILE_EM_PHO),
-                           os.path.join(localpath, FILE_EM_PHO))
+#    if download:
+#        urllib.urlretrieve(os.path.join(GOES_REMOTE_PATH, FILE_EM_COR),
+#                           os.path.join(localpath, FILE_EM_COR))
+#        urllib.urlretrieve(os.path.join(GOES_REMOTE_PATH, FILE_EM_PHO),
+#                           os.path.join(localpath, FILE_EM_PHO))
 
     # Check inputs are of correct type
     longflux = np.asanyarray(longflux, dtype=np.float64)
@@ -592,20 +588,22 @@ def _check_download_file(filename, remotepath, localpath=os.path.curdir,
     Parameters
     ----------
     filename : string
-               Name of file.
+        Name of file.
+
     remotepath : string
-                 URL of the remote location from which filename can be
-                 dowloaded.
+        URL of the remote location from which filename can be dowloaded.
+
     localpath : string
-                Path of the directory in which filename should be
-                stored.
-                Default is current directory
+        Path of the directory in which filename should be stored.
+        Default is current directory
+
     remotename : (optional) string
-                 filename under which the file is stored remotely.
+        filename under which the file is stored remotely.
                  Default is same as filename.
+
     force_download : (optional) bool
-                     If True, file will be downloaded whether or not
-                     file already exists locally.
+        If True, file will be downloaded whether or not file already exists 
+        locally.
 
     Examples
     --------
@@ -623,11 +621,11 @@ def _check_download_file(filename, remotepath, localpath=os.path.curdir,
     if force_download or not os.path.isfile(os.path.join(localpath, filename)):
         # set local and remote file names be the same unless specified
         # by user.
-        if type(remotename) is not str:
+        if not isinstance(remotename, basestring):
             remotename = filename
         try:
             # Check if the host server can be connected to.
-            response = urllib2.urlopen(remotepath+remotename, timeout=1)
+            response = urllib2.urlopen(remotepath+remotename, timeout=5)
             # Try downloading file
             urllib.urlretrieve(os.path.join(remotepath, remotename),
                                os.path.join(localpath, filename))
