@@ -9,8 +9,8 @@ def aiaprep(aiamap):
     Processes a level 1 AIAMap into a level 1.5 AIAMap. Rotates, scales and
     translates the image so that solar North is aligned with the y axis, each
     pixel is 0.6 arcsec across, and the centre of the sun is at the centre of
-    the image. The actual transformation is done by
-    :meth:`~sunpy.map.mapbase.GenericMap.rotate`.
+    the image. The actual transformation is done by Map's
+    :meth:`~sunpy.map.mapbase.GenericMap.rotate` method.
     
     This function is similar in functionality to aia_prep() in SSWIDL, but
     it does not use the same transformation to rotate the image and it handles
@@ -28,8 +28,9 @@ def aiaprep(aiamap):
     
     Notes
     -----
-    This routine makes use of :meth:`~sunpy.map.mapbase.GenericMap.rotate`
-    which modifes the header information to the standard PCi_j WCS formalism.
+    This routine makes use of Map's :meth:`~sunpy.map.mapbase.GenericMap.rotate`
+    method, which modifes the header information to the standard PCi_j WCS
+    formalism.
     The FITS header resulting in saving a file after this procedure will
     therefore differ from the original file.
     """
