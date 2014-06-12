@@ -28,7 +28,8 @@ import sunpy.io as io
 import sunpy.wcs as wcs
 from sunpy.visualization import toggle_pylab
 # from sunpy.io import read_file, read_file_header
-from sunpy.sun import constants, solar_semidiameter_angular_size, sunearth_distance, heliographic_solar_center
+from sunpy.sun import constants
+from sunpy.sun import sun
 from sunpy.time import parse_time, is_time
 from sunpy.image.rescale import reshape_image_to_4d_superpixel
 from sunpy.image.rescale import resample as sunpy_image_resample
@@ -208,7 +209,7 @@ Dimension:\t [%d, %d]
         if dsun is None:
             warnings.warn_explicit("Missing metadata for Sun-spacecraft separation: assuming Sun-Earth distance",
                                    Warning, __file__, inspect.currentframe().f_back.f_lineno)
-            dsun = sunearth_distance(self.date) * constants.au.si.value
+            dsun = sun.sunearth_distance(self.date) * constants.au.si.value
 
         return dsun
 
@@ -277,7 +278,7 @@ Dimension:\t [%d, %d]
         if rsun_arcseconds is None:
             warnings.warn_explicit("Missing metadata for solar radius: assuming photospheric limb as seen from Earth",
                                    Warning, __file__, inspect.currentframe().f_back.f_lineno)
-            rsun_arcseconds = solar_semidiameter_angular_size(self.date).value
+            rsun_arcseconds = sun.solar_semidiameter_angular_size(self.date).value
 
         return rsun_arcseconds
 
@@ -295,7 +296,7 @@ Dimension:\t [%d, %d]
         if carrington_longitude is None:
             warnings.warn_explicit("Missing metadata for Carrington longitude: assuming Earth-based observer",
                                    Warning, __file__, inspect.currentframe().f_back.f_lineno)
-            carrington_longitude = (heliographic_solar_center(self.date))[0]
+            carrington_longitude = (sun.heliographic_solar_center(self.date))[0]
 
         return carrington_longitude
 
@@ -309,7 +310,7 @@ Dimension:\t [%d, %d]
         if heliographic_latitude is None:
             warnings.warn_explicit("Missing metadata for heliographic latitude: assuming Earth-based observer",
                                    Warning, __file__, inspect.currentframe().f_back.f_lineno)
-            heliographic_latitude = (heliographic_solar_center(self.date))[1]
+            heliographic_latitude = (sun.heliographic_solar_center(self.date))[1]
 
         return heliographic_latitude
 
