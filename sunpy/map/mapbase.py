@@ -9,6 +9,7 @@ __email__ = "stuart@mumford.me.uk"
 
 from copy import deepcopy
 import warnings
+import inspect
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -205,7 +206,8 @@ Dimension:\t [%d, %d]
         dsun = self.meta.get('dsun_obs', None)
 
         if dsun is None:
-            print("Missing metadata for Sun-spacecraft separation: assuming Sun-Earth distance")
+            warnings.warn_explicit("Missing metadata for Sun-spacecraft separation: assuming Sun-Earth distance",
+                                   Warning, __file__, inspect.currentframe().f_back.f_lineno)
             dsun = sunearth_distance(self.date) * constants.au.si.value
 
         return dsun
@@ -273,7 +275,8 @@ Dimension:\t [%d, %d]
                                                       self.meta.get('radius', None)))
 
         if rsun_arcseconds is None:
-            print("Missing metadata for solar radius: assuming photospheric limb as seen from Earth")
+            warnings.warn_explicit("Missing metadata for solar radius: assuming photospheric limb as seen from Earth",
+                                   Warning, __file__, inspect.currentframe().f_back.f_lineno)
             rsun_arcseconds = solar_semidiameter_angular_size(self.date).value
 
         return rsun_arcseconds
