@@ -302,7 +302,7 @@ for compatability with map, please use meta instead""", Warning)
             time_range = TimeRange(a,b)
 
         truncated = self.data.truncate(time_range.start(), time_range.end())
-        return LightCurve(truncated, self.meta.copy())
+        return self.__class__.create(truncated, self.meta.copy())
 
     def extract(self, a):
         """Extract a set of particular columns from the DataFrame"""
