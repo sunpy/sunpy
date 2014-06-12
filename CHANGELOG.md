@@ -14,9 +14,13 @@ Latest
  * Some basic tests for GenericLightCurve on types of expected input.
  * Fix algorithm in sunpy.sun.equation_of_center
  * Added Docstrings to LightCurve methods.
+ * Added tests for classes in sunpy.map.sources. Note that some classes (TRACE, RHESSI) were left out because SunPy is not able to read their FITS files.
  * Added functions that implement image coalignment with support for MapCubes. 
  * Cleaned up the sunpy namespace, removed .units, /ssw and .sphinx. Also moved .coords .physics.transforms. 
  * Added contains functionality to TimeRange module
+ * Added t='now' to parse_time to privide utcnow datetime.
+ * Fixed time dependant functions (.sun) to default to t='now'
+ * Fixed solar_semidiameter_angular_size
 
 0.4.0
 -----
