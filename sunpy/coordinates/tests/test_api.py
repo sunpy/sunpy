@@ -7,7 +7,7 @@ added.
 
 import numpy as np
 from numpy import testing as npt
-#import six
+from astropy.extern import six
 
 from astropy.coordinates import units as u
 
