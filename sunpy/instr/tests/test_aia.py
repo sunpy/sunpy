@@ -43,6 +43,3 @@ def test_filesave():
     np.testing.assert_allclose(prep_map.rotation_matrix, np.identity(2), rtol=1e-5, atol=1e-8)
     # Check level number
     assert load_map.meta['lvl_num'] == 1.5
-
-
-test_aiaprep()

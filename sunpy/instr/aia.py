@@ -9,7 +9,8 @@ def aiaprep(aiamap):
     Processes a level 1 AIAMap into a level 1.5 AIAMap. Rotates, scales and
     translates the image so that solar North is aligned with the y axis, each
     pixel is 0.6 arcsec across, and the centre of the sun is at the centre of
-    the image. The actual transformation is done by :func:`Map.rotate`.
+    the image. The actual transformation is done by
+    :meth:`sunpy.map.GenericMap.rotate`.
     
     This function is similar in functionality to aia_prep() in SSWIDL, but
     it does not use the same transformation to rotate the image and it handles
@@ -32,7 +33,8 @@ def aiaprep(aiamap):
     So the FITS header resulting in saving a file after this procedure will 
     differ from the original file.
     """
-    assert isinstance(aiamap, AIAMap)
+    if not isinstance(aiamap, AIAMap):
+        raise ValueError("Input must be an AIAMap")
     # Taget scale is 0.6 arcsec/pixel, but this needs to be adjusted if the map
     # has already been rescaled.
     if round(aiamap.scale['x']/0.6) != 1.0:

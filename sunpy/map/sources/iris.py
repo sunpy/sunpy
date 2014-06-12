@@ -20,15 +20,12 @@ class IRISMap(GenericMap):
         
         Parameters
         ----------
-        missing: float
+        missing : float
            The numerical value to fill any missing points after rotation.
            Default: 0.0
-        order: int 0-5
-            Interpolation order to be used. When using scikit-image this parameter
-            is passed into :fun:`skimage.transform.warp`.
-            When using scipy it is passed into 
-            :fun:`scipy.ndimage.interpolation.affine_transform` where it controls 
-            the order of the spline.
+        order : int 0-5
+            Interpolation order to be passed to
+            :meth:`sunpy.map.GenericMap.rotate`
             
         Returns
         -------
