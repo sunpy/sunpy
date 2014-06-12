@@ -12,7 +12,7 @@ import warnings
 
 import numpy as np
 import matplotlib.pyplot as plt
-import scipy.ndimage.interpolation
+import scipy.ndimage.interpolation as interp
 from matplotlib import patches
 from matplotlib import cm
 
@@ -482,28 +482,35 @@ Dimension:\t [%d, %d]
         new_map.meta = new_meta
         return new_map
     
-    def rotate(self, angle=None, rmatrix=None, scale=1.0, rotation_center=None, recenter=True,
+    def rotate(self, angle=None, rmatrix=None, scale=1.0,
+               rotation_center=(0, 0), recenter=False,
                missing=0.0, interpolation='bicubic', interp_param=-0.5):
-        """Returns a new rotated, rescaled and shifted map.
+        """Returns a new rotated and rescaled map.  Specify either a rotation
+        angle or a rotation matrix, but not both.  If neither an angle or a
+        rotation matrix are specified, the map will be rotated by the rotation
+        angle in the metadata.
+
+        If the rotation is specified as an angle (either explicitly or
+        implicitly) and the metadata contains the CROTA2 keyword, that keyword
+        will be changed appropriately to account for the rotation.
 
         Parameters
         ----------
         angle: float
-           The angle to rotate the image by (radians). Specify angle or matrix.
+            The angle (degrees) to rotate counterclockwise.
         rmatrix: NxN
-            Linear transformation rotation matrix. Specify angle or matrix.
+            Linear transformation rotation matrix.
         scale: float
-           A scale factor for the image, default is no scaling
+            A scale factor for the image, default is no scaling
         rotation_center: tuple
-           The point in the image to rotate around (Axis of rotation).
-           Default: center of the array
-        recenter: bool, or array-like
-           Move the centroid (axis of rotation) to the center of the array
-           or recenter coords.
-           Default: True, recenter to the center of the array.
+            The axis of rotation
+            Default: the origin in the data coordinate system
+        recenter: bool
+            If True, position the axis of rotation at the center of the new map
+            Default: False
         missing: float
-           The numerical value to fill any missing points after rotation.
-           Default: 0.0
+            The numerical value to fill any missing points after rotation.
+            Default: 0.0
         interpolation: {'nearest' | 'bilinear' | 'spline' | 'bicubic'}
             Interpolation method to use in the transform.
             Spline uses the
@@ -521,7 +528,7 @@ Dimension:\t [%d, %d]
 
         Returns
         -------
-        New rotated, rescaled, translated map
+        New rotated and rescaled map
 
         Notes
         -----
@@ -532,68 +539,57 @@ Dimension:\t [%d, %d]
         http://sunpy.readthedocs.org/en/latest/guide/troubleshooting.html#crotate-warning
         """
         assert angle is None or rmatrix is None
-        #Interpolation parameter Sanity
-        assert interpolation in ['nearest','spline','bilinear','bicubic']
-        #Set defaults based on interpolation
+        # Interpolation parameter sanity
+        assert interpolation in ['nearest', 'spline', 'bilinear', 'bicubic']
+        # Set defaults based on interpolation
         if interp_param is None:
             if interpolation is 'spline':
                 interp_param = 3
             elif interpolation is 'bicubic':
                 interp_param = 0.5
             else:
-                interp_param = 0 #Default value for nearest or bilinear
-
-        #Make sure recenter is a vector with shape (2,1)
-        if not isinstance(recenter, bool):
-            recenter = np.array(recenter).reshape(2,1)
-
-        #Define Size and center of array
-        center = (np.array(self.data.shape)-1)/2.0
-
-        #If rotation_center is not set (None or False),
-        #set rotation_center to the center of the image.
-        if rotation_center is None:
-            rotation_center = center
-        else:
-            #Else check rotation_center is a vector with shape (2,1)
-            rotation_center = np.array(rotation_center).reshape(2,1)
-
-        #recenter to the rotation_center if recenter is True
-        if isinstance(recenter, bool):
-            #if rentre is False then this will be (0,0)
-            shift = np.array(rotation_center) - np.array(center)
-        else:
-            #recenter to recenter vector otherwise
-            shift = np.array(recenter) - np.array(center)
+                interp_param = 0 # Default value for nearest or bilinear
 
         image = self.data.copy()
 
+        if angle is None and rmatrix is None:
+            angle = self.rotation_angle['y']
+
         if not angle is None:
-            #Calulate the parameters for the affline_transform
-            c = np.cos(angle)
-            s = np.sin(angle)
-            mati = np.array([[c, s],[-s, c]]) / scale   # res->orig
+            #Calulate the parameters for the affine_transform
+            c = np.cos(np.deg2rad(angle))
+            s = np.sin(np.deg2rad(angle))
+            rsmat = np.array([[c, -s], [s, c]]) / scale
         if not rmatrix is None:
-            mati = rmatrix / scale   # res->orig
-        center = np.array([center]).transpose()  # the center of rotn
-        shift = np.array([shift]).transpose()    # the shift
-        kpos = center - np.dot(mati, (center + shift))
-        # kpos and mati are the two transform constants, kpos is a 2x2 array
-        rsmat, offs =  mati, np.squeeze((kpos[0,0], kpos[1,0]))
+            rsmat = np.asarray(rmatrix) / scale
+
+        # map_center is swapped compared to the x-y convention
+        map_center = (np.array(self.data.shape)-1)/2.0
+
+        # axis is swapped compared to the x-y convention
+        if recenter:
+            axis_x = self.data_to_pixel(rotation_center[0], 'x')
+            axis_y = self.data_to_pixel(rotation_center[1], 'y')
+            axis = (axis_y, axis_x)
+        else:
+            axis = map_center
+
+        # offs is swapped compared to the x-y convention
+        offs = axis - np.dot(rsmat, map_center)
 
         if interpolation == 'spline':
             # This is the scipy call
-            data = scipy.ndimage.interpolation.affine_transform(image, rsmat,
-                           offset=offs, order=interp_param, mode='constant',
-                           cval=missing)
+            data = interp.affine_transform(image, rsmat, offset=offs,
+                                           order=interp_param, mode='constant',
+                                           cval=missing)
         else:
             #Use C extension Package
             if not 'Crotate' in globals():
                 warnings.warn("""The C extension sunpy.image.Crotate is not
 installed, falling back to the interpolation='spline' of order=3""" ,Warning)
-                data = scipy.ndimage.interpolation.affine_transform(image, rsmat,
-                           offset=offs, order=3, mode='constant',
-                           cval=missing)
+                data = interp.affine_transform(image, rsmat, offset=offs,
+                                               order=3, mode='constant',
+                                               cval=missing)
             else:
                 #Set up call parameters depending on interp type.
                 if interpolation == 'nearest':
@@ -604,9 +600,11 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
                     interp_type = Crotate.BICUBIC
                 #Make call to extension
                 data = Crotate.affine_transform(image,
-                                      rsmat, offset=offs,
-                                      kernel=interp_type, cubic=interp_param,
-                                      mode='constant', cval=missing)
+                                                rsmat, offset=offs,
+                                                kernel=interp_type,
+                                                cubic=interp_param,
+                                                mode='constant',
+                                                cval=missing)
 
         #Return a new map
         #Copy Header
@@ -614,6 +612,25 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
 
         # Create new map instance
         new_map.data = data
+
+        if recenter:
+            new_center = rotation_center
+        else:
+            # Retrieve old coordinates for the center of the array
+            old_center = np.array(new_map.pixel_to_data(map_center[1], map_center[0]))
+
+            # Calculate new coordinates for the center of the array
+            new_center = rotation_center - np.dot(rsmat, rotation_center - old_center)
+
+        # Define a new reference pixel in the rotated space
+        new_map.meta['crval1'] = new_center[0]
+        new_map.meta['crval2'] = new_center[1]
+        new_map.meta['crpix1'] = map_center[1] + 1 # FITS counts pixels from 1
+        new_map.meta['crpix2'] = map_center[0] + 1 # FITS counts pixels from 1
+
+        if angle is not None and new_map.meta.get('crota2') is not None:
+            new_map.meta['crota2'] = new_map.rotation_angle['y'] - angle
+
         return new_map
 
     def submap(self, range_a, range_b, units="data"):
@@ -885,7 +902,7 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         return axes
 
     @toggle_pylab
-    def peek(self, draw_limb=True, draw_grid=False, gamma=None,
+    def peek(self, draw_limb=False, draw_grid=False, gamma=None,
                    colorbar=True, basic_plot=False, **matplot_args):
         """Displays the map in a new figure
 
