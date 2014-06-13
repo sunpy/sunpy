@@ -116,7 +116,7 @@ def test_nickname_set(generic_map):
     
 
 def test_date(generic_map):
-    assert generic_map.date is None
+    assert generic_map.date is 'now'
     
 
 def test_date_aia(aia_map):
@@ -128,7 +128,8 @@ def test_detector(generic_map):
     
 
 def test_dsun(generic_map):
-    assert generic_map.dsun == sunpy.sun.constants.au
+    assert generic_map.dsun == (sunpy.sun.sunearth_distance(generic_map.date) *
+                                sunpy.sun.constants.au.si.value)
 
 
 def test_rsun_meters(generic_map):
@@ -136,7 +137,7 @@ def test_rsun_meters(generic_map):
     
 
 def test_rsun_arcseconds(generic_map):
-    assert generic_map.rsun_arcseconds == sunpy.sun.constants.average_angular_size.to('arcsec').value
+    assert generic_map.rsun_arcseconds == sunpy.sun.solar_semidiameter_angular_size(generic_map.date).value
 
 
 def test_coordinate_system(generic_map): 
@@ -144,11 +145,11 @@ def test_coordinate_system(generic_map):
 
 
 def test_carrington_longitude(generic_map): 
-    assert generic_map.carrington_longitude == 0 
+    assert generic_map.carrington_longitude == (sunpy.sun.heliographic_solar_center(generic_map.date))[0]
 
 
 def test_heliographic_latitude(generic_map): 
-    assert generic_map.heliographic_latitude == 0.
+    assert generic_map.heliographic_latitude == (sunpy.sun.heliographic_solar_center(generic_map.date))[1]
 
 
 def test_heliographic_longitude(generic_map): 

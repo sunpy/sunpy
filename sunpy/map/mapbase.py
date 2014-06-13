@@ -8,6 +8,7 @@ __authors__ = ["Russell Hewett, Stuart Mumford, Keith Hughitt, Steven Christe"]
 __email__ = "stuart@mumford.me.uk"
 
 import warnings
+import inspect
 from copy import deepcopy
 
 import numpy as np
@@ -22,6 +23,7 @@ import sunpy.io as io
 import sunpy.wcs as wcs
 from sunpy.visualization import toggle_pylab
 from sunpy.sun import constants
+from sunpy.sun import sun
 from sunpy.time import parse_time, is_time
 from sunpy.image.rescale import reshape_image_to_4d_superpixel
 from sunpy.image.rescale import resample as sunpy_image_resample
@@ -205,7 +207,7 @@ Dimension:\t [%d, %d]
     @property
     def date(self):
         """Image observation time"""
-        return self.meta.get('date-obs', None)
+        return self.meta.get('date-obs', 'now')
 #    @date.setter
 #    def date(self, new_date):
 #        self.meta['date-obs'] = new_date
