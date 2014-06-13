@@ -35,7 +35,7 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
         the order of the spline.
     scale : float
         A scale factor for the image. Default is no scaling.
-    rotation_center : tuple
+    image_center : tuple
         The point in the image to rotate around (axis of rotation).
         Default: center of the array.
     recenter : bool or array-like
@@ -43,7 +43,7 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
         Default: True, recenter to the center of the array.
     missing : float
         The value to replace any missing data after the transformation.
-    scipy : bool
+    use_scipy : bool
         Force use of :func:`scipy.ndimage.interpolation.affine_transform`.
         Default: False unless sckit-image is not installed.
 
