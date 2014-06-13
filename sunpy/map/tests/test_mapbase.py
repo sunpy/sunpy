@@ -343,7 +343,7 @@ def test_rotate_recenter(aia_map):
     image_center = np.array((200, 100))
     rotated_map_6 = aia_map.rotate(20, image_center=image_center, recenter=True)
     
-    # shift is image_centre - map_centre
+    # shift is image_center - map_center
     shift = image_center - ((np.array(aia_map.shape)/2.) + 0.5)
     
     # y shift is inverted because the data in the map is origin lower.

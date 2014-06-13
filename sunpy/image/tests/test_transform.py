@@ -105,7 +105,7 @@ def test_scale(scale_factor):
     # Check a scaled image against the expected outcome
     newim = tf.rescale(original/original.max(), scale_factor, order=4,
                        mode='constant') * original.max()
-    # Old width and new centre of image
+    # Old width and new center of image
     w = original.shape[0]/2.0 - 0.5
     new_c = (newim.shape[0]/2.0) - 0.5
     expected = np.zeros(original.shape)
@@ -139,7 +139,7 @@ def test_all(angle, dx, dy, scale_factor):
                        mode='constant') * original.max()
     new = np.zeros(original.shape)
 
-    # Old width and new centre of image
+    # Old width and new center of image
     w = np.array(original.shape[0])/2.0 - 0.5
     new_c = (np.array(scale.shape[0])/2.0 - 0.5)
     upper = w+new_c+1
