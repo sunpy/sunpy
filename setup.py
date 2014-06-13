@@ -22,7 +22,7 @@ CLASSIFIERS = [
     'Operating System :: MacOS'
 ]
 
-VERSION = '0.4.0'
+VERSION = '0.4.1'
 
 def git_description():
     import subprocess
@@ -103,6 +103,14 @@ def install(setup): #pylint: disable=W0621
 
     write_version_py()
 
+    # Define the extra requirements in a sensible manner.
+    extras_require = {'database': ["sqlalchemy"],
+                      'image': ["scikit-image"],
+                      'jpeg2000': ["glymur"],
+                      'net': ["suds", "beautifulsoup4", "requests"]}
+    # All is everything except glymur.
+    extras_require['all'] = extras_require['database'] + extras_require['image'] + extras_require['net']
+
     setup(
 	author="Steven Christe, Russell Hewett, Keith Hughitt, Jack Ireland, Florian Mayer, Stuart Mumford,  Albert Shih, David Perez-Suarez et. al",
         author_email="sunpy@googlegroups.com",
@@ -112,15 +120,11 @@ def install(setup): #pylint: disable=W0621
             'numpy>1.7.1',
             'astropy>=0.3.0',
             'scipy',
-            'pandas>=0.12.0',
+            'pandas>=0.12.1',
             'matplotlib>=1.1',
             'sqlalchemy',
         ],
-        extras_require={
-            'net': ["suds", "beautifulsoup4"],
-            'database': ["sqlalchemy"],
-            'all': ["suds", "beautifulsoup4", "sqlalchemy"]
-        },
+        extra_requires=extras_require,
         license="BSD",
         long_description="\n".join(DOCLINES[2:]),
         maintainer="SunPy Developers",
@@ -132,6 +136,7 @@ def install(setup): #pylint: disable=W0621
         provides=['sunpy'],
         url="http://www.sunpy.org/",
         use_2to3=True,
+        include_package_data=True,
         version=VERSION,
         ext_modules = ext_modules
     )
