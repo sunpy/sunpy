@@ -1,6 +1,7 @@
 Latest
 ------
 
+ * Added additional functionality to the GOES module i.e. the ability to calculate GOES temperature and emission measure from GOES fluxes.  This can be done simply with a GOESLightCurve object using the function temp_em() or from numpy arrays of the GOES fluxes using goes_chianti_tem().
  * changed _maps attribute in MapCube to a non-hidden type
  * Added Nobeyama Radioheliograph data support to Lightcurve object.
  * Fixed some tests on map method to support Windows
