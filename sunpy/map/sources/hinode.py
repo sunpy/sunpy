@@ -76,9 +76,9 @@ class XRTMap(GenericMap):
 class SOTMap(GenericMap):
 	"""SOT Image Map definition
 	
-	References
-	----------
-	Hinode Solar Optical Telescope 
+    References
+    ----------
+    Hinode Solar Optical Telescope 
     Data Analysis Guide:
     http://hesperia.gsfc.nasa.gov/ssw/hinode/sot/doc/guide/SAGv3.3.pdf
 	"""
