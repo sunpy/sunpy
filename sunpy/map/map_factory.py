@@ -20,7 +20,6 @@ from sunpy.io.header import FileHeader
 
 from sunpy.util.net import download_file
 from sunpy.util import expand_list
-from sunpy.util import Deprecated
 
 from sunpy.util.datatype_factory_base import BasicRegistrationFactory
 from sunpy.util.datatype_factory_base import NoMatchError
@@ -301,18 +300,13 @@ def _is_url(arg):
         return False
     return True
 
-@Deprecated("Please use the new factory sunpy.Map")
-def make_map(*args, **kwargs):
-    __doc__ = MapFactory.__doc__
-    return Map(*args, **kwargs)
-
 class InvalidMapInput(ValueError):
     """Exception to raise when input variable is not a Map instance and does
     not point to a valid Map input file."""
     pass
 
 class InvalidMapType(ValueError):
-    """Exception to raise when an invalid type of map is requested with make_map
+    """Exception to raise when an invalid type of map is requested with Map
     """
     pass
 
