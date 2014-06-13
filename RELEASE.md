@@ -38,19 +38,25 @@ New Features:
 The people who have contributed to this release are:
 
     Stuart Mumford
-    Simon Liedtke
+    Daniel Ryan *
+    Andrew Leonard
     Steven Christe
-    Jack Ireland
-    Andrew Inglis
-    Nabil Freij
-    Samuel Bennett
-    David Perez-Suarez
     Pritish Chakraborty
+    Jack Ireland
+    David Pérez-Suárez
+    Andrew Inglis
+    Michael Mueller *
+    Rishabh Sharma *
     Albert Y. Shih
-    John Evans
-    Michael Malocha
-    Florian Mayer
+    Jose Ivan Campos Rozo
+    Simon Liedtke
+    Rajul Srivastava *
+    Larry Manley *
+    Mateo Inchaurrandieta *
+    Asish Panda *
+    Daniel Williams *
+    Nabil Freij
     Russell Hewett
-    Jose Iván Campos
-    Keith Hughitt
-    Tiago Pereira
+    freekv *
+
+Where a * indicates their first contribution.
