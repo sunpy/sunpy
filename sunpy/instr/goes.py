@@ -581,7 +581,8 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal",
 
     # Ensure input values of flux ratio are within limits of model table
     if np.min(np.log10(temp)) < np.min(modeltemp) or \
-      np.max(np.log10(temp)) > np.max(modeltemp):
+      np.max(np.log10(temp)) > np.max(modeltemp) or \
+      np.isnan(np.min(np.log10(temp))):
         raise ValueError("All values in temp must be within the range "
                          "{0} - {1} MK.".format(np.min(10**modeltemp),
                                                 np.max(10**modeltemp)))

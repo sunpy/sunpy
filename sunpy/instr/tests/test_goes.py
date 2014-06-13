@@ -85,7 +85,7 @@ def test_goes_chianti_tem():
     longflux = np.array([7e-6])
     shortflux = np.array([7e-7])
     ratio = shortflux/longflux
-    shortflux_toomany = np.append(shortflux, 0)
+    shortflux_toomany = np.append(shortflux, shortflux[0])
     shortflux_toosmall = copy.deepcopy(shortflux)
     shortflux_toosmall[0] = -1
     shortflux_toobig = copy.deepcopy(shortflux)
@@ -101,18 +101,27 @@ def test_goes_chianti_tem():
     # entered.
     with pytest.raises(ValueError):
         temp, em = goes.goes_chianti_tem(longflux, shortflux, satellite=-1)
+    with pytest.raises(ValueError):
         temp, em = goes.goes_chianti_tem(longflux, shortflux_toomany)
+    with pytest.raises(ValueError):
         temp = goes._goes_get_chianti_temp(ratio, satellite=-1)
+    with pytest.raises(ValueError):
         temp, em = goes.goes_chianti_tem(longflux, shortflux,
                                          abundances="Neither")
+    with pytest.raises(ValueError):
         temp = goes._goes_get_chianti_temp(ratio, abundances="Neither")
-        temp, em = goes.goes_chianti_tem(longflux, shortflux_toosmall)
+    with pytest.raises(ValueError):
         temp, em = goes.goes_chianti_tem(longflux, shortflux_toobig)
+    with pytest.raises(ValueError):
         em = goes._goes_get_chianti_em(longflux, temp_test, satellite=-1)
+    with pytest.raises(ValueError):
         em = goes._goes_get_chianti_em(longflux, temp_test,
                                        abundances="Neither")
+    with pytest.raises(ValueError):
         em = goes._goes_get_chianti_em(longflux, temp_test_toomany)
+    with pytest.raises(ValueError):
         em = goes._goes_get_chianti_em(longflux, temp_test_toosmall)
+    with pytest.raises(ValueError):
         em = goes._goes_get_chianti_em(longflux, temp_test_toobig)
         
     # test case 1: satellite > 7, abundances = coronal
