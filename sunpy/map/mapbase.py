@@ -78,33 +78,33 @@ class GenericMap(astropy.nddata.NDData):
     | http://docs.scipy.org/doc/numpy/user/basics.subclassing.html
     | http://docs.scipy.org/doc/numpy/reference/ufuncs.html
     | http://www.scipy.org/Subclasses
-    
+
     Notes
     -----
-    
+
     This class makes some assumptions about the WCS information contained in
-    the meta data. The first and most extensive assumption is that it is 
+    the meta data. The first and most extensive assumption is that it is
     FITS-like WCS information as defined in the FITS WCS papers.
-    
+
     Within this scope it also makes some other assumptions.
-    
-    * In the case of APIS convention headers where the CROTAi/j arguments are 
+
+    * In the case of APIS convention headers where the CROTAi/j arguments are
       provided it assumes that these can be converted to the standard PCi_j
       notation using equations 32 in Thompson (2006).
 
     * If a CDi_j matrix is provided it is assumed that it can be converted to a
       PCi_j matrix and CDELT keywords as descirbed in Greisen & Calabretta (2002).
-    
-    * The 'standard' FITS keywords that are used by this class are the PCi_j 
+
+    * The 'standard' FITS keywords that are used by this class are the PCi_j
       matrix and CDELT, along with the other keywords specified in the WCS papers.
       All subclasses of this class must convert their header information to
       this formalism. The CROTA to PCi_j conversion is done in this class.
 
     .. warning::
-        This class currently assumes that a header with the CDi_j matrix 
+        This class currently assumes that a header with the CDi_j matrix
         information also includes the CDELT keywords, without these keywords
         this class will not process the WCS information. This will be fixed.
-        Also the rotation_matrix does not work if the CDELT1 and CDELT2 
+        Also the rotation_matrix does not work if the CDELT1 and CDELT2
         keywords are exactly equal.
     """
 
@@ -388,7 +388,7 @@ Dimension:\t [%d, %d]
         """
         This method converts the deprecated CROTA FITS kwargs to the new
         PC rotation matrix.
-        
+
         This method can be overriden if an instruments header does not use this
         conversion.
         """
@@ -561,7 +561,7 @@ Dimension:\t [%d, %d]
         new_map.data = new_data
         new_map.meta = new_meta
         return new_map
-    
+
     def rotate(self, angle=None, rmatrix=None, order=3, scale=1.0,
                image_center=None, recenter=False, missing=0.0, use_scipy=False):
         """
@@ -579,13 +579,12 @@ Dimension:\t [%d, %d]
             The angle (degrees) to rotate counterclockwise.
         rmatrix : 2x2
             Linear transformation rotation matrix.
-        order : int
-            Order of interpolation to use for the transform. Must be in the
-            range 0-5: 0 - Nearest-neighbour; 1 - bi-linear; 2 - bi-quadradtic;
-            3 - bi-cubic; 4 - bi-quartic; 5 - bi-quintic. Passed to 
-            :func:`scipy.ndimage.interpolation.affine_transform` if keyword 
-            scipy is True or if scikit-image cannot be imported.
-            Default: 4, bi-quartic
+        order : int 0-5
+            Interpolation order to be used. When using scikit-image this parameter
+            is passed into :func:`skimage.transform.warp`.
+            When using scipy it is passed into
+            :func:`scipy.ndimage.interpolation.affine_transform` where it controls
+            the order of the spline.
         scale : float
             A scale factor for the image, default is no scaling
         image_center : tuple
@@ -612,14 +611,14 @@ Dimension:\t [%d, %d]
         out : Map
             A new Map instance containing the rotated and rescaled data of the
             original map.
-        
+
         Notes
         -----
         This function will remove old CROTA keywords from the header.
         This function will also convert a CDi_j matrix to a PCi_j matrix.
 
         This function is not numerically equalivalent to IDL's rot() see the
-        :func:`sunpy.image.transform.affine_transform` documentation for a 
+        :func:`sunpy.image.transform.affine_transform` documentation for a
         detailed description of the differences.
         """
         if angle is not None and rmatrix is not None:
@@ -639,14 +638,14 @@ Dimension:\t [%d, %d]
             c = np.cos(np.deg2rad(angle))
             s = np.sin(np.deg2rad(angle))
             rmatrix = np.matrix([[c, -s], [s, c]])
-        
+
         if image_center is None:
             # FITS pixels  count from 1 (curse you, FITS!)
-            image_center = (self.shape[1] - self.reference_pixel['x'] + 1, 
+            image_center = (self.shape[1] - self.reference_pixel['x'] + 1,
                             self.reference_pixel['y'])
 
         # Because map data has the origin at the bottom left not the top left
-        # as is convention for images vertically flip the image for the 
+        # as is convention for images vertically flip the image for the
         # transform and then flip it back again.
         new_map.data = np.flipud(affine_transform(np.flipud(new_map.data),
                                                   np.array(rmatrix),
@@ -657,9 +656,9 @@ Dimension:\t [%d, %d]
 
         map_center = (np.array(self.shape)/2.0) + 0.5
 
-        # Calculate the new rotation matrix to store in the header by 
+        # Calculate the new rotation matrix to store in the header by
         # "subtracting" the rotation matrix used in the rotate from the old one
-        # That being calculate the dot product of the old header data with the 
+        # That being calculate the dot product of the old header data with the
         # inverse of the rotation matrix.
         pc_C = np.dot(self.rotation_matrix, rmatrix.I)
         new_map.meta['PC1_1'] = pc_C[0,0]
