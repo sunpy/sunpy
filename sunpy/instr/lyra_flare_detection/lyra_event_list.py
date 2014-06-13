@@ -32,10 +32,11 @@ from __future__ import division
 
 import os.path
 from datetime import datetime
-from sunpy.time import parse_time
 
+import numpy as np
 import sqlite3
 from itertools import chain
+from sunpy.time import parse_time
 
 RISE_FACTOR = 1.4
 FALL_FACTOR = 0.5
@@ -68,8 +69,8 @@ def extract_combined_lytaf(tstart, tend,
 
     Returns
     -------
-    lytaf : dictionary containing the various parameters stored in the
-            LYTAF files.
+    lytaf : numpy record array containing the various parameters stored
+            in the LYTAF files.
 
     Notes
     -----
@@ -121,11 +122,15 @@ def extract_combined_lytaf(tstart, tend,
     tstart_uts = tstart.strftime("%s")
     tend_uts = tend.strftime("%s")
 
+    # Define numpy record array which will hold the information from
+    # the annotation file.
+    lytaf = np.empty((0,), dtype=[("insertion_time", object),
+                               ("begin_time", object),
+                               ("reference_time", object),
+                               ("end_time", object),
+                               ("event_type", object),
+                               ("event_definition", object)])
     # Access annotation files
-    # Define list to hold data from event tables in annotation files.
-    # First element is defined as empty list for convenience in for loop below.
-    # This will be deleted afterwards.
-    event_rows = [[]]
     for i, suffix in enumerate(combine_files):
         # Open SQLITE3 annotation files
         connection = sqlite3.connect(
@@ -137,7 +142,7 @@ def extract_combined_lytaf(tstart, tend,
         cursor.execute("select insertion_time, begin_time, reference_time, "
                        "end_time, eventType_id from event where end_time >= "
                        "{0} and begin_time <= {1}".format(tstart_uts, tend_uts))
-        event_rows.append(cursor.fetchall())
+        event_rows = cursor.fetchall()
         # Select and extract the event types from eventType table
         cursor.row_factory = sqlite3.Row
         cursor.execute("select * from eventType")
@@ -145,54 +150,28 @@ def extract_combined_lytaf(tstart, tend,
         eventType_id = []
         eventType_type = []
         eventType_definition = []
-        for j, row in enumerate(eventType_rows):
-            eventType_id.append(row["id"])
-            eventType_type.append(row["type"])
-            eventType_definition.append(row["definition"])
-        # Replace event type IDs with event type description
-        for j, row in enumerate(event_rows[i+1]):
-            _id = eventType_id.index(event_rows[i+1][j][4])
-            event_rows[i+1][j] = (event_rows[i+1][j][0], event_rows[i+1][j][1],
-                                  event_rows[i+1][j][2], event_rows[i+1][j][3],
-                                  eventType_rows[_id][1],
-                                  eventType_rows[_id][2])
+        for eventType_row in eventType_rows:
+            eventType_id.append(eventType_row["id"])
+            eventType_type.append(eventType_row["type"])
+            eventType_definition.append(eventType_row["definition"])
+        # Enter desired information into the lytaf numpy record array
+        for event_row in event_rows:
+            id_index = eventType_id.index(event_row[4])
+            lytaf = np.append(lytaf,
+                              np.array((datetime.fromtimestamp(event_row[0]),
+                                        datetime.fromtimestamp(event_row[1]),
+                                        datetime.fromtimestamp(event_row[2]),
+                                        datetime.fromtimestamp(event_row[3]),
+                                        eventType_type[id_index],
+                                        eventType_definition[id_index]),
+                                        dtype=lytaf.dtype))
         # Close file
         cursor.close()
         connection.close()
-    # Delete empty string as first element in event_rows
-    del(event_rows[0])
-    
-    # Format and Output data
-    # Make event_rows a unified list rather than a list of lists
-    # where each sublist corresponds to an annotation file.
-    event_rows = list(chain.from_iterable(event_rows))
-    # Sort arrays in order of increasing start time.
-    event_rows.sort(key=lambda tup: tup[1])
-
-    # Create dictionary to hold results
-    lytaf = {"insertion_time": [],
-             "begin_time": [],
-             "reference_time": [],
-             "end_time": [],
-             "event_type": [],
-             "event_definition": []
-            }
-    # Put results into dictionary using for loop
-    for i, row in enumerate(event_rows):
-        lytaf["insertion_time"].append(datetime.fromtimestamp(
-            event_rows[i][0]))
-        lytaf["begin_time"].append(datetime.fromtimestamp(event_rows[i][1]))
-        lytaf["reference_time"].append(datetime.fromtimestamp(
-            event_rows[i][2]))
-        lytaf["end_time"].append(datetime.fromtimestamp(event_rows[i][3]))
-        lytaf["event_type"].append(event_rows[i][4])
-        lytaf["event_definition"].append(event_rows[i][5])
-    lytaf["insertion_time"] = np.asarray(lytaf["insertion_time"])
-    lytaf["begin_time"] = np.asarray(lytaf["begin_time"])
-    lytaf["reference_time"] = np.asarray(lytaf["reference_time"])
-    lytaf["end_time"] = np.asarray(lytaf["end_time"])
-    lytaf["event_type"] = np.asarray(lytaf["event_type"])
-    lytaf["event_definition"] = np.asarray(lytaf["event_definition"])
+    # Delete initial empty entry in lytaf
+    np.delete(lytaf, 0)
+    # Sort lytaf in ascending order of begin time
+    np.recarray.sort(lytaf, order="begin_time")    
 
     #return event_rows, eventType_rows
     return lytaf
@@ -266,8 +245,8 @@ def find_lyra_events(flux, time):
     # Find all possible flare start times.
     for i in np.arange(len(pos_deriv)):
         # Start time criteria
-        if pos_deriv[i:i+4]-pos_deriv[i] == np.arange(5) and dt4[i] == 4 and
-            flux[pos_deriv[i+4]] / flux[pos_deriv[i]] >= RISE_FACTOR:
+        if pos_deriv[i:i+4]-pos_deriv[i] == np.arange(5) and dt4[i] == 4 and \
+          flux[pos_deriv[i+4]] / flux[pos_deriv[i]] >= RISE_FACTOR:
             # Next, find index of flare end time.
             jj = np.where(neg_deriv > pos_deriv[i])[0]
             j = neg_deriv[jj[0]]
