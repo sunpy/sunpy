@@ -7,35 +7,24 @@ from __future__ import absolute_import
 __authors__ = ["Russell Hewett, Stuart Mumford, Keith Hughitt, Steven Christe"]
 __email__ = "stuart@mumford.me.uk"
 
-from copy import deepcopy
 import warnings
-import inspect
+from copy import deepcopy
 
 import numpy as np
 import matplotlib.pyplot as plt
-import scipy.ndimage.interpolation as interp
 from matplotlib import patches
 from matplotlib import cm
 
 import astropy.nddata
-
-try:
-    import sunpy.image.Crotate as Crotate
-except ImportError:
-    pass
+from sunpy.image.transform import affine_transform
 
 import sunpy.io as io
 import sunpy.wcs as wcs
 from sunpy.visualization import toggle_pylab
-# from sunpy.io import read_file, read_file_header
 from sunpy.sun import constants
-from sunpy.sun import sun
 from sunpy.time import parse_time, is_time
 from sunpy.image.rescale import reshape_image_to_4d_superpixel
 from sunpy.image.rescale import resample as sunpy_image_resample
-
-#from sunpy.util.cond_dispatch import ConditionalDispatch
-#from sunpy.util.create import Parent
 
 __all__ = ['GenericMap']
 
@@ -87,7 +76,34 @@ class GenericMap(astropy.nddata.NDData):
     | http://docs.scipy.org/doc/numpy/user/basics.subclassing.html
     | http://docs.scipy.org/doc/numpy/reference/ufuncs.html
     | http://www.scipy.org/Subclasses
+    
+    Notes
+    -----
+    
+    This class makes some assumptions about the WCS information contained in
+    the meta data. The first and most extensive assumption is that it is 
+    FITS-like WCS information as defined in the FITS WCS papers.
+    
+    Within this scope it also makes some other assumptions.
+    
+    * In the case of APIS convention headers where the CROTAi/j arguments are 
+      provided it assumes that these can be converted to the standard PCi_j
+      notation using equations 32 in Thompson (2006).
 
+    * If a CDi_j matrix is provided it is assumed that it can be converted to a
+      PCi_j matrix and CDELT keywords as descirbed in Greisen & Calabretta (2002).
+    
+    * The 'standard' FITS keywords that are used by this class are the PCi_j 
+      matrix and CDELT, along with the other keywords specified in the WCS papers.
+      All subclasses of this class must convert their header information to
+      this formalism. The CROTA to PCi_j conversion is done in this class.
+
+    .. warning::
+        This class currently assumes that a header with the CDi_j matrix 
+        information also includes the CDELT keywords, without these keywords
+        this class will not process the WCS information. This will be fixed.
+        Also the rotation_matrix does not work if the CDELT1 and CDELT2 
+        keywords are exactly equal.
     """
 
     def __init__(self, data, header, **kwargs):
@@ -118,7 +134,7 @@ class GenericMap(astropy.nddata.NDData):
     "The ability to index Map by physical coordinate is not yet implemented.")
 
     def __repr__(self):
-        if not hasattr(self, 'observatory'):
+        if not self.observatory:
             return self.data.__repr__()
         return (
 """SunPy %s
@@ -255,10 +271,10 @@ Dimension:\t [%d, %d]
 
     @property
     def center(self):
-        """Returns the offset between the center of the Sun and the center of 
+        """Returns the offset between the center of the Sun and the center of
         the map."""
-        return {'x': wcs.get_center(self.shape[1], self.scale['x'], 
-                                    self.reference_pixel['x'], 
+        return {'x': wcs.get_center(self.shape[1], self.scale['x'],
+                                    self.reference_pixel['x'],
                                     self.reference_coordinate['x']),
                 'y': wcs.get_center(self.shape[0], self.scale['y'],
                                     self.reference_pixel['y'],
@@ -335,6 +351,7 @@ Dimension:\t [%d, %d]
     @property
     def scale(self):
         """Image scale along the x and y axes in units/pixel (cdelt1/2)"""
+        #TODO: Fix this if only CDi_j matrix is provided
         return {'x': self.meta.get('cdelt1', 1.),
                 'y': self.meta.get('cdelt2', 1.),}
 
@@ -344,12 +361,40 @@ Dimension:\t [%d, %d]
         return {'x': self.meta.get('cunit1', 'arcsec'),
                 'y': self.meta.get('cunit2', 'arcsec'),}
 
-    #TODO: This needs to be WCS compliant!
     @property
-    def rotation_angle(self):
-        """The Rotation angle of each axis"""
-        return {'x': self.meta.get('crota1', 0.),
-                'y': self.meta.get('crota2', 0.),}
+    def rotation_matrix(self):
+        """Matrix describing the rotation required to align solar North with
+        the top of the image."""
+        if self.meta.get('PC1_1', None) is not None:
+            return np.matrix([[self.meta['PC1_1'], self.meta['PC1_2']],
+                              [self.meta['PC2_1'], self.meta['PC2_2']]])
+
+        elif self.meta.get('CD1_1', None) is not None:
+            div = 1. / (self.scale['x'] - self.scale['y'])
+
+            deltm = np.matrix([[self.scale['y']/div, 0],
+                               [0, self.scale['x']/ div]])
+
+            cd = np.matrix([[self.meta['CD1_1'], self.meta['CD1_2']],
+                            [self.meta['CD2_1'], self.meta['CD2_2']]])
+
+            return deltm * cd
+        else:
+            return self._rotation_matrix_from_crota()
+
+    def _rotation_matrix_from_crota(self):
+        """
+        This method converts the deprecated CROTA FITS kwargs to the new
+        PC rotation matrix.
+        
+        This method can be overriden if an instruments header does not use this
+        conversion.
+        """
+        lam = self.scale['y'] / self.scale['x']
+        p = np.deg2rad(self.meta['CROTA2'])
+
+        return np.matrix([[np.cos(p), -1 * lam * np.sin(p)],
+                          [1/lam * np.sin(p), np.cos(p)]])
 
 # #### Miscellaneous #### #
 
@@ -515,154 +560,131 @@ Dimension:\t [%d, %d]
         new_map.meta = new_meta
         return new_map
     
-    def rotate(self, angle=None, rmatrix=None, scale=1.0,
-               rotation_center=(0, 0), recenter=False,
-               missing=0.0, interpolation='bicubic', interp_param=-0.5):
-        """Returns a new rotated and rescaled map.  Specify either a rotation
+    def rotate(self, angle=None, rmatrix=None, order=3, scale=1.0,
+               image_center=None, recenter=False, missing=0.0, use_scipy=False):
+        """
+        Returns a new rotated and rescaled map.  Specify either a rotation
         angle or a rotation matrix, but not both.  If neither an angle or a
         rotation matrix are specified, the map will be rotated by the rotation
         angle in the metadata.
 
-        If the rotation is specified as an angle (either explicitly or
-        implicitly) and the metadata contains the CROTA2 keyword, that keyword
-        will be changed appropriately to account for the rotation.
+        Also updates the rotation_matrix attribute and any appropriate header
+        data so that they correctly describe the new map.
 
         Parameters
         ----------
-        angle: float
+        angle : float
             The angle (degrees) to rotate counterclockwise.
-        rmatrix: NxN
+        rmatrix : 2x2
             Linear transformation rotation matrix.
-        scale: float
+        order : int
+            Order of interpolation to use for the transform. Must be in the
+            range 0-5: 0 - Nearest-neighbour; 1 - bi-linear; 2 - bi-quadradtic;
+            3 - bi-cubic; 4 - bi-quartic; 5 - bi-quintic. Passed to 
+            :func:`scipy.ndimage.interpolation.affine_transform` if keyword 
+            scipy is True or if scikit-image cannot be imported.
+            Default: 4, bi-quartic
+        scale : float
             A scale factor for the image, default is no scaling
-        rotation_center: tuple
-            The axis of rotation
+        image_center : tuple
+            The axis of rotation in pixel coordinates
             Default: the origin in the data coordinate system
-        recenter: bool
+        recenter : bool
             If True, position the axis of rotation at the center of the new map
             Default: False
-        missing: float
+        missing : float
             The numerical value to fill any missing points after rotation.
             Default: 0.0
-        interpolation: {'nearest' | 'bilinear' | 'spline' | 'bicubic'}
-            Interpolation method to use in the transform.
-            Spline uses the
-            scipy.ndimage.interpolation.affline_transform routine.
-            nearest, bilinear and bicubic all replicate the IDL rot() function.
-            Default: 'bicubic'
-        interp_par: Int or Float
-            Optional parameter for controlling the interpolation.
-            Spline interpolation requires an integer value between 1 and 5 for
-            the degree of the spline fit.
-            Default: 3
-            BiCubic interpolation requires a flaot value between -1 and 0.
-            Default: 0.5
-            Other interpolation options ingore the argument.
+        use_scipy : bool
+            If True, forces the rotation to use
+            :func:`scipy.ndimage.interpolation.affine_transform`, otherwise it
+            uses the :class:`skimage.transform.AffineTransform` class and
+            :func:`skimage.transform.warp`.
+            The function will also automatically fall back to
+            :func:`scipy.ndimage.interpolation.affine_transform` if scikit-image
+            can't be imported.
+            Default: False
 
         Returns
         -------
-        New rotated and rescaled map
-
+        out : Map
+            A new Map instance containing the rotated and rescaled data of the
+            original map.
+        
         Notes
         -----
-        Apart from interpolation='spline' all other options use a compiled
-        C-API extension. If for some reason this is not compiled correctly this
-        routine will fall back upon the scipy implementation of order = 3.
-        For more infomation see:
-        http://sunpy.readthedocs.org/en/latest/guide/troubleshooting.html#crotate-warning
+        This function will remove old CROTA keywords from the header.
+        This function will also convert a CDi_j matrix to a PCi_j matrix.
+
+        This function is not numerically equalivalent to IDL's rot() see the
+        :func:`sunpy.image.transform.affine_transform` documentation for a 
+        detailed description of the differences.
         """
-        assert angle is None or rmatrix is None
+        if angle is not None and rmatrix is not None:
+            raise ValueError("You cannot specify both an angle and a matrix")
+        elif angle is None and rmatrix is None:
+            rmatrix = self.rotation_matrix
+
         # Interpolation parameter sanity
-        assert interpolation in ['nearest', 'spline', 'bilinear', 'bicubic']
-        # Set defaults based on interpolation
-        if interp_param is None:
-            if interpolation is 'spline':
-                interp_param = 3
-            elif interpolation is 'bicubic':
-                interp_param = 0.5
-            else:
-                interp_param = 0 # Default value for nearest or bilinear
+        if order not in range(6):
+            raise ValueError("Order must be between 0 and 5")
 
-        image = self.data.copy()
+        # Copy Map
+        new_map = deepcopy(self)
 
-        if angle is None and rmatrix is None:
-            angle = self.rotation_angle['y']
-
-        if not angle is None:
+        if angle is not None:
             #Calulate the parameters for the affine_transform
             c = np.cos(np.deg2rad(angle))
             s = np.sin(np.deg2rad(angle))
-            rsmat = np.array([[c, -s], [s, c]]) / scale
-        if not rmatrix is None:
-            rsmat = np.asarray(rmatrix) / scale
+            rmatrix = np.matrix([[c, -s], [s, c]])
+        
+        if image_center is None:
+            # FITS pixels  count from 1 (curse you, FITS!)
+            image_center = (self.shape[1] - self.reference_pixel['x'] + 1, 
+                            self.reference_pixel['y'])
 
-        # map_center is swapped compared to the x-y convention
-        map_center = (np.array(self.data.shape)-1)/2.0
+        # Because map data has the origin at the bottom left not the top left
+        # as is convention for images vertically flip the image for the 
+        # transform and then flip it back again.
+        new_map.data = np.flipud(affine_transform(np.flipud(new_map.data),
+                                                  np.array(rmatrix),
+                                                  order=order, scale=scale,
+                                                  image_center=image_center,
+                                                  recenter=recenter, missing=missing,
+                                                  use_scipy=use_scipy))
 
-        # axis is swapped compared to the x-y convention
-        if recenter:
-            axis_x = self.data_to_pixel(rotation_center[0], 'x')
-            axis_y = self.data_to_pixel(rotation_center[1], 'y')
-            axis = (axis_y, axis_x)
-        else:
-            axis = map_center
+        map_center = (np.array(self.shape)/2.0) + 0.5
 
-        # offs is swapped compared to the x-y convention
-        offs = axis - np.dot(rsmat, map_center)
-
-        if interpolation == 'spline':
-            # This is the scipy call
-            data = interp.affine_transform(image, rsmat, offset=offs,
-                                           order=interp_param, mode='constant',
-                                           cval=missing)
-        else:
-            #Use C extension Package
-            if not 'Crotate' in globals():
-                warnings.warn("""The C extension sunpy.image.Crotate is not
-installed, falling back to the interpolation='spline' of order=3""" ,Warning)
-                data = interp.affine_transform(image, rsmat, offset=offs,
-                                               order=3, mode='constant',
-                                               cval=missing)
-            else:
-                #Set up call parameters depending on interp type.
-                if interpolation == 'nearest':
-                    interp_type = Crotate.NEAREST
-                elif interpolation == 'bilinear':
-                    interp_type = Crotate.BILINEAR
-                elif interpolation == 'bicubic':
-                    interp_type = Crotate.BICUBIC
-                #Make call to extension
-                data = Crotate.affine_transform(image,
-                                                rsmat, offset=offs,
-                                                kernel=interp_type,
-                                                cubic=interp_param,
-                                                mode='constant',
-                                                cval=missing)
-
-        #Return a new map
-        #Copy Header
-        new_map = deepcopy(self)
-
-        # Create new map instance
-        new_map.data = data
+        # Calculate the new rotation matrix to store in the header by 
+        # "subtracting" the rotation matrix used in the rotate from the old one
+        # That being calculate the dot product of the old header data with the 
+        # inverse of the rotation matrix.
+        pc_C = np.dot(self.rotation_matrix, rmatrix.I)
+        new_map.meta['PC1_1'] = pc_C[0,0]
+        new_map.meta['PC1_2'] = pc_C[0,1]
+        new_map.meta['PC2_1'] = pc_C[1,0]
+        new_map.meta['PC2_2'] = pc_C[1,1]
+        # Update pixel size if image has been scaled.
+        if scale != 1.0:
+            new_map.meta['cdelt1'] = self.scale['x'] / scale
+            new_map.meta['cdelt2'] = self.scale['y'] / scale
 
         if recenter:
-            new_center = rotation_center
-        else:
-            # Retrieve old coordinates for the center of the array
-            old_center = np.array(new_map.pixel_to_data(map_center[1], map_center[0]))
+            # Move the reference pixel based on the image shift.
+            # The y coordinate is inverted due to the map having the origin in
+            # the lower left rather than the upper left.
+            shift = image_center - map_center
+            new_map.meta['crpix1'] += shift[0]
+            new_map.meta['crpix2'] -= shift[1]
 
-            # Calculate new coordinates for the center of the array
-            new_center = rotation_center - np.dot(rsmat, rotation_center - old_center)
-
-        # Define a new reference pixel in the rotated space
-        new_map.meta['crval1'] = new_center[0]
-        new_map.meta['crval2'] = new_center[1]
-        new_map.meta['crpix1'] = map_center[1] + 1 # FITS counts pixels from 1
-        new_map.meta['crpix2'] = map_center[0] + 1 # FITS counts pixels from 1
-
-        if angle is not None and new_map.meta.get('crota2') is not None:
-            new_map.meta['crota2'] = new_map.rotation_angle['y'] - angle
+        # Remove old CROTA kwargs because we have saved a new PCi_j matrix.
+        new_map.meta.pop('CROTA1', None)
+        new_map.meta.pop('CROTA2', None)
+        # Remove CDi_j header
+        new_map.meta.pop('CD1_1', None)
+        new_map.meta.pop('CD1_2', None)
+        new_map.meta.pop('CD2_1', None)
+        new_map.meta.pop('CD2_2', None)
 
         return new_map
 
@@ -1009,7 +1031,10 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         aia.draw_limb()
         aia.draw_grid()
         """
-
+        # Check that the image is properly aligned
+        if not np.array_equal(self.rotation_matrix, np.matrix(np.identity(2))):
+            warnings.warn("This map is not aligned. Plot axes may be incorrect",
+                          Warning)
         #Get current axes
         if not axes:
             axes = plt.gca()
@@ -1040,8 +1065,7 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         if gamma is not None:
             cmap.set_gamma(gamma)
 
-            #make imshow kwargs a dict
-
+        # make imshow kwargs a dict
         kwargs = {'origin':'lower',
                   'cmap':cmap,
                   'norm':self.mpl_color_normalizer,

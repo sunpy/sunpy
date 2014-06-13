@@ -64,22 +64,8 @@ def install(setup): #pylint: disable=W0621
         print("SunPy WARNING: NumPy must be installed first to build the C extension")
 
     if 'np' in locals():
-        module = 'sunpy.image.Crotate'   # import this
-        sourcefiles = [join(cwd, 'sunpy', 'image', 'src', 'rot_extn.c'),
-                       join(cwd, 'sunpy', 'image', 'src', 'transform', 'aff_tr.c')]
         libs = ['m']
-        # -ON for compile optimise
         gcc_args = ['-std=c99', '-O3']
-        # gcc_args = ['-std=c99']
-
-        # need *module* name here
-        crotate = Extension(module,
-                            sources = sourcefiles,
-                            libraries = libs,
-                            extra_compile_args = gcc_args,
-                            include_dirs =
-                            [np.get_include(), join(cwd, 'sunpy', 'image', 'src')]
-                            )
 
         module_ana = 'sunpy.io._pyana'
         sourcefiles_ana = [join(cwd, 'sunpy', 'io', 'src', 'ana', 'anacompress.c'),
