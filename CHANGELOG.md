@@ -1,7 +1,7 @@
-Latest
-------
+0.5.0
+-----
 
- * Added additional functionality to the GOES module i.e. the ability to calculate GOES temperature and emission measure from GOES fluxes.  This can be done simply with a GOESLightCurve object using the function temp_em() or from numpy arrays of the GOES fluxes using goes_chianti_tem().
+ * Added additional functionality to the GOES module i.e. the ability to calculate GOES temperature and emission measure from GOES fluxes.
  * changed _maps attribute in MapCube to a non-hidden type
  * Added Nobeyama Radioheliograph data support to Lightcurve object.
  * Fixed some tests on map method to support Windows
@@ -24,6 +24,15 @@ Latest
  * Fixed solar_semidiameter_angular_size
  * Improved line quality and performances issues with map.draw_grid()
  * Remove deprecated make_map command.
+
+0.4.1
+-----
+Bug Fixes:
+    * Fix map.rotate() functionality
+    * Change of source for GOES data.
+    * Fix EIT test data and sunpy FITS saving
+    * Some documentation fixes
+    * fix file paths to use os.path.join for platform independance.
 
 0.4.0
 -----
