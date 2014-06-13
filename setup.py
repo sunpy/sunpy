@@ -22,7 +22,7 @@ CLASSIFIERS = [
     'Operating System :: MacOS'
 ]
 
-VERSION = '0.4.1'
+VERSION = '0.5.0'
 
 def git_description():
     import subprocess
@@ -57,7 +57,7 @@ def install(setup): #pylint: disable=W0621
     #Crotate Module
     from distutils.core import Extension
     from os.path import dirname, join
-    cwd = dirname(__file__)
+
     try:
         import numpy as np
     except ImportError:
@@ -68,22 +68,20 @@ def install(setup): #pylint: disable=W0621
         gcc_args = ['-std=c99', '-O3']
 
         module_ana = 'sunpy.io._pyana'
-        sourcefiles_ana = [join(cwd, 'sunpy', 'io', 'src', 'ana', 'anacompress.c'),
-                       join(cwd, 'sunpy', 'io', 'src', 'ana', 'anadecompress.c'),
-                       join(cwd, 'sunpy', 'io', 'src', 'ana', 'anarw.c'),
-                       join(cwd, 'sunpy', 'io', 'src', 'ana', 'testrw.c'),
-                       join(cwd, 'sunpy', 'io', 'src', 'ana', '_pyana.c')]
+        sourcefiles_ana = [join('.', 'sunpy', 'io', 'src', 'ana', 'anacompress.c'),
+                           join('.', 'sunpy', 'io', 'src', 'ana', 'anadecompress.c'),
+                           join('.', 'sunpy', 'io', 'src', 'ana', 'anarw.c'),
+                           join('.', 'sunpy', 'io', 'src', 'ana', 'testrw.c'),
+                           join('.', 'sunpy', 'io', 'src', 'ana', '_pyana.c')]
 
         ana = Extension(module_ana,
                             sources = sourcefiles_ana,
                             libraries = libs,
                             extra_compile_args = gcc_args,
                             include_dirs =
-                            [np.get_include(), join(cwd, 'sunpy', 'io', 'src')]
+                            [np.get_include(), join('.', 'sunpy', 'io', 'src')]
                             )
     ext_modules = []
-    if 'crotate' in locals():
-        ext_modules.append(crotate)
     if 'ana' in locals():
         ext_modules.append(ana)
 
@@ -104,13 +102,12 @@ def install(setup): #pylint: disable=W0621
         description=DOCLINES[0],
         install_requires=[
             'numpy>1.7.1',
-            'astropy>=0.3.0',
+            'astropy>=0.3.1',
             'scipy',
             'pandas>=0.12.1',
             'matplotlib>=1.1',
-            'sqlalchemy',
         ],
-        extra_requires=extras_require,
+        extras_require=extras_require,
         license="BSD",
         long_description="\n".join(DOCLINES[2:]),
         maintainer="SunPy Developers",
@@ -123,6 +120,7 @@ def install(setup): #pylint: disable=W0621
         url="http://www.sunpy.org/",
         use_2to3=True,
         include_package_data=True,
+        zip_safe=False,
         version=VERSION,
         ext_modules = ext_modules
     )
