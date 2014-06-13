@@ -40,7 +40,7 @@ def aiaprep(aiamap):
 
     # Taget scale is 0.6 arcsec/pixel, but this needs to be adjusted if the map
     # has already been rescaled.
-    if round(aiamap.scale['x']/0.6) != 1.0:
+    if round(aiamap.scale['x']/0.6) != 1.0 and aiamap.shape != (4096, 4096):
         scale = round(aiamap.scale['x']/0.6) * 0.6
     else:
         scale = 0.6 # pragma: no cover # can't test this because it needs a full res image
