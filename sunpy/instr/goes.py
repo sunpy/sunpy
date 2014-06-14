@@ -31,6 +31,7 @@ FILE_TEMP_COR = "goes_chianti_temp_cor.csv"
 FILE_TEMP_PHO = "goes_chianti_temp_pho.csv"
 FILE_EM_COR = "goes_chianti_em_cor.csv"
 FILE_EM_PHO = "goes_chianti_em_pho.csv"
+FILE_RAD_COR = "chianti_rad_loss.csv"
 
 def get_goes_event_list(timerange, goes_class_filter=None):
     """
@@ -144,7 +145,6 @@ def temp_em(goeslc, abundances="coronal", download=False, download_dir=DATA_PATH
     2014-01-01 00:00:06  7e-07  7e-06  11.28295376  4.78577516e+48
 
     """
-
     # Check that input argument is of correct type
     if not isinstance(goeslc, lightcurve.GOESLightCurve):
         raise TypeError("goeslc must be a GOESLightCurve object.")
@@ -594,7 +594,7 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal",
 
     return em
 
-def rad_loss_rate(goeslc, download=False):
+def rad_loss_rate(goeslc, download=False, download_dir=DATA_PATH):
     """
     Calculates and adds solar radiative loss rate to a GOESLightCurve.
 
@@ -644,7 +644,6 @@ def rad_loss_rate(goeslc, download=False):
     2014-01-01 00:00:06  7e-07  7e-06     1.903523e+24     1.903523e+25
 
     """
-
     # Check that input argument is of correct type
     if not isinstance(goeslc, sunpy.lightcurve.GOESLightCurve):
         raise TypeError("goeslc must be a GOESLightCurve object.")
@@ -669,14 +668,16 @@ def rad_loss_rate(goeslc, download=False):
         goeslc_new = copy.deepcopy(goeslc)
 
     # Find radiative loss rate with calc_rad_loss()
-    rad_loss_out = calc_rad_loss(temp, em)
+    rad_loss_out = calc_rad_loss(temp, em, download=download,
+                                 download_dir=download_dir)
 
     # Enter results into new version of GOES LightCurve Object
     goeslc_new.data["rad_loss_rate"] = rad_loss_out["rad_loss_rate"]
 
     return goeslc_new
 
-def calc_rad_loss(temp, em, obstime=None, Download=False):
+def calc_rad_loss(temp, em, obstime=None, Download=False,
+                  download_dir=DATA_PATH):
     """
     Finds radiative loss rate of solar SXR plasma over all wavelengths.
 
@@ -739,10 +740,13 @@ def calc_rad_loss(temp, em, obstime=None, Download=False):
     >>> rad_loss
     array([  3.57994116e+26,   3.57994116e+26])
     """
-
     # Check inputs are correct
     temp = np.asanyarray(temp, dtype=np.float64)
     em = np.asanyarray(em, dtype=np.float64)
+    # If download kwarg is True, or required data files cannot be
+    # found locally, download required data files.
+    check_download_file(FILE_RAD_COR, GOES_REMOTE_PATH, download_dir,
+                        replace=download)
 
     # Initialize lists to hold model data of temperature - rad loss rate
     # relationship read in from csv file
@@ -751,7 +755,7 @@ def calc_rad_loss(temp, em, obstime=None, Download=False):
 
     # Read data from csv file into lists, being sure to skip commented
     # lines begining with "#"
-    with open(os.path.join(INSTR_FILES_PATH, "chianti_rad_loss.csv"),
+    with open(os.path.join(INSTR_FILES_PATH, FILE_RAD_COR),
               "r") as csvfile:
         startline = dropwhile(lambda l: l.startswith("#"), csvfile)
         csvreader = csv.DictReader(startline, delimiter=";")
