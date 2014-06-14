@@ -831,13 +831,11 @@ def calc_rad_loss(temp, em, obstime=None, cumulative=False, Download=False,
             for i in range(n):
                 rad_loss_cumul[i] = np.sum(rad_loss_rate[:i]*dt[:i])
             # Enter results into output dictionary.
-            rad_loss_out = {"temperature":temp, "em":em,
-                            "rad_loss_rate":rad_loss_rate, "time": obstime,
+            rad_loss_out = {"rad_loss_rate":rad_loss_rate,
                             "rad_loss_cumul" : rad_loss_cumul,
                             "rad_loss_int":rad_loss_int}
         else:
-            rad_loss_out = {"temperature":temp, "em":em,
-                            "rad_loss_rate":rad_loss_rate, "time": obstime,
+            rad_loss_out = {"rad_loss_rate":rad_loss_rate,
                             "rad_loss_int":rad_loss_int}
     else:
         # Ensure cumulative kwarg wasn't set without setting obstime.
@@ -848,8 +846,7 @@ def calc_rad_loss(temp, em, obstime=None, cumulative=False, Download=False,
                           "times must be given via the obstime keyword.")
         # If keyword assignments are OK, enter results into output
         # dictionary.
-        rad_loss_out = {"temperature":temp, "em":em,
-                        "rad_loss_rate":rad_loss_rate}
+        rad_loss_out = {"rad_loss_rate":rad_loss_rate}
 
     return rad_loss_out
 
