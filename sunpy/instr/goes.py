@@ -790,11 +790,11 @@ def calc_rad_loss(temp, em, obstime=None, cumulative=False, download=False,
     # lines begining with "#"
     with open(os.path.join(DATA_PATH, FILE_RAD_COR),
               "r") as csvfile:
-        startline = dropwhile(lambda l: l.startswith("#"), csvfile)
-        csvreader = csv.DictReader(startline, delimiter=";")
+        startline = dropwhile(lambda l: l.startswith(";"), csvfile)
+        csvreader = csv.reader(startline, delimiter=";")
         for row in csvreader:
-            modeltemp.append(float(row["temp_K"]))
-            model_loss_rate.append(float(row["rad_loss_rate_per_em"]))
+            modeltemp.append(float(row[0]))
+            model_loss_rate.append(float(row[1]))
     modeltemp = np.asarray(modeltemp)
     model_loss_rate = np.asarray(model_loss_rate)
     # Ensure input values of flux ratio are within limits of model table
