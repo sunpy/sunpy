@@ -610,30 +610,30 @@ def rad_loss_rate(goeslc, download=False, download_dir=DATA_PATH):
     Parameters
     ----------
     goeslc : GOESLightCurve object
+    
     download : (optional) bool
-            If True, the GOES CHIANTI radiative loss data
-            files are downloaded.  It is important to do this if a
-            new version of the files has been generated due to a new
-            CHIANTI version being released or the launch of new GOES
-            satellites since these files were originally downloaded.
-            Default=False
+        If True, the GOES temperature data files are downloaded.  It is
+        important to do this if a new version of the files has been
+        generated due to a new CHIANTI version being released or the
+        launch of new GOES satellites.
+        Default=False
+
     download_dir : (optional) string
-                The directory to download the GOES temperature and
-                emission measure data files to.
-                Default=SunPy default download directory
+        The directory to download the GOES temperature and emission
+        measure data files to.
+        Default=SunPy default download directory
 
     Returns
     -------
     goeslc_new : a copy of the input GOESLightCurve object with an
-            additional field, goeslc_new.data.rad_loss_rate
-            (type=pandas.core.series.Series), which contains the
-            radiative loss rate of the coronal soft X-ray-emitting
-            plasma across all wavelengths in erg/s.  N.B. if the
-            original GOESLightCurve object does not contain fields
-            named goeslc_new.data.temperature and goeslc_new.data.em
-            containing the temperature and emission measure values,
-            these are also generated and added to goeslc_new using
-            goes_chianti_tem() (See documentation for that function.)
+        additional field, goeslc_new.data.rad_loss_rate
+        (type=pandas.core.series.Series), which contains the radiative
+        loss rate of the coronal soft X-ray-emitting plasma across all
+        wavelengths in erg/s.  N.B. if the original GOESLightCurve
+        object does not contain fields named goeslc_new.data.temperature
+        and goeslc_new.data.em containing the temperature and emission
+        measure values, these are also generated and added to goeslc_new
+        using goes_chianti_tem() (See documentation for that function.)
 
     Examples
     --------
@@ -689,10 +689,10 @@ def rad_loss_rate(goeslc, download=False, download_dir=DATA_PATH):
 def calc_rad_loss(temp, em, obstime=None, Download=False,
                   download_dir=DATA_PATH):
     """
-    Finds radiative loss rate of solar SXR plasma over all wavelengths.
+    Finds radiative loss rate of coronal plasma over all wavelengths.
 
-    This function calculates the luminosity of solar coronal soft
-    X-ray-emitting plasma across all wavelengths given an isothermal
+    This function calculates the radiative loss rate of solar coronal
+    soft X-ray-emitting plasma across all wavelengths given an isothermal
     temperature and emission measure.  The units of the results are
     erg/s.  This function is based on calc_rad_loss.pro in SSW IDL.
     In addition, if obstime keyword is set, giving the times to which
@@ -701,46 +701,59 @@ def calc_rad_loss(temp, em, obstime=None, Download=False,
 
     Parameters
     ----------
-    temp : ndarray or array-like which can be converted to float64
-           type, such as an np.array, tuple, list.  Units=[MK]
-           Array containing the temperature of the coronal plasma at
-           different times.
+    temp : ndarray or array-like which can be converted to float64 type,
+        such as an np.array, tuple, list.  Units=[MK]
+        Array containing the temperature of the coronal plasma at
+        different times.
+        
     em : ndarray or array-like which can be converted to float64 type,
-         such as an np.array, tuple, list.  Units=[cm**-3]
-         Array containing the emission measure of the coronal plasma
-         at the same times corresponding to the temperatures in temp.
-         Must be same length as temp
-    obstime : (optional) ndaray array or array-like whose entries are
-              (or can be converted to) datetime64 type, e.g. np.array,
-              list, string array.
-              Array of measurement times to which temperature and
-              emission measure values correspond.  Must be same length
-              as temp and em.  If this keyword is set, the integrated
-              radiated energy is calculated.
+        such as an np.array, tuple, list.  Units=[cm**-3]
+        Array containing the emission measure of the coronal plasma
+        at the same times corresponding to the temperatures in temp.
+        Must be same length as temp.
+        
+    obstime : (optional) ndarray array or array-like whose entries are
+        (or can be converted to) datetime64 type, e.g. np.array, list,
+        string array.
+        Array of measurement times to which temperature and
+        emission measure values correspond.  Must be same length
+        as temp and em.  If this keyword is set, the integrated
+        radiated energy is calculated.
+        
     download : (optional) bool
-               If True, the GOES temperature data files are
-               downloaded.  It is important to do this if a new version
-               of the files has been generated due to a new CHIANTI
-               version being released or the launch of new GOES
-               satellites since these files were originally downloaded.
-               Default=False
+        If True, the GOES temperature data files are downloaded.  It is
+        important to do this if a new version of the files has been
+        generated due to a new CHIANTI version being released or the
+        launch of new GOES satellites.
+        Default=False
+
+    download_dir : (optional) string
+        The directory to download the GOES temperature and emission
+        measure data files to.
+        Default=SunPy default download directory
 
     Returns
     -------
     radlossrate : numpy ndarray, dtype=float, units=[erg]
-                  Array containing radiative loss rates of the coronal
-                  plasma corresponding to temperatures and emission
-                  measures in temp and em arrays.
+        Array containing radiative loss rates of the coronal plasma
+        corresponding to temperatures and emission measures in temp and
+        em arrays.
 
     Notes
     -----
     This function calls a csv file containing a table of radiative loss
     rate per unit emission measure at various temperatures.  The
-    appropriate values are then found via interpolation.
-    This table was generated using CHIANTI atomic physics database
-    employing the methods of Cox & Tucker (1969).  Coronal abundances,
-    default density of 10**10 cm**-3, and ionization equilibrium of
+    appropriate values are then found via interpolation.  This table
+    was generated using CHIANTI atomic physics database employing the
+    methods of Cox & Tucker (1969).  Coronal abundances, a default
+    density of 10**10 cm**-3, and ionization equilibrium of
     Mazzotta et al. (1998) were used.
+
+    References
+    ----------
+    .. [1] Cox, D. P., Tucker, W. H. 1969, ApJ, 157, 1157
+    .. [2] Mazzotta, P., Mazzitelli, G., Colafrancesco, S., & Vittorio, N.
+       1998, A&AS, 133, 339
 
     Examples
     --------
