@@ -811,6 +811,12 @@ def calc_rad_loss(temp, em, obstime=None, Download=False,
     # If obstime keyword giving measurement times is set, calculate
     # radiative losses intergrated over time.
     if obstime is not None:
+        # First ensure longflux, shortflux, and obstime are all of same
+        # length.
+        if len(longflux) != len(shortflux) != len(obstime):
+            raise ValueError("longflux, shortflux, and obstime must all have "
+                             "same number of elements.")
+        # Calculate time intervals between time measurements.
         dt = _time_intervals(obstime)
         # Check that times are in chronological order
         if np.min(dt) <= 0:
@@ -978,7 +984,6 @@ def goes_lx(longflux, shortflux, obstime=None, date=None, cumulative=False):
         if len(longflux) != len(shortflux) != len(obstime):
             raise ValueError("longflux, shortflux, and obstime must all have "
                              "same number of elements.")
-        n = len(obstime)
         # Calculate time intervals between each measurement.
         dt = _time_intervals(obstime)
         # Check that times are in chronological order
@@ -990,6 +995,7 @@ def goes_lx(longflux, shortflux, obstime=None, date=None, cumulative=False):
         # If cumulative kwarg True, calculate cumulative radiated energy
         # in each GOES channel as a function of time.
         if cumulative:
+            n = len(obstime)
             longlum_cumul = np.zeros(n)
             shortlum_cumul = np.zeros(n)
             for i in range(n):
