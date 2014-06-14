@@ -1032,7 +1032,7 @@ def _time_intervals(obstime):
     This function calculates the time intervals between a series of
     measurement times for use in simple integration over time.
     Assume you have a series of times labelled t_1,...t_n.
-    The start of the time bin for time t_i is defined as
+    The time bin for time t_i is defined as
     dt_i = (t_(i+1) - t_(i-1)) / 2
     i.e. from halfway between t_i and the previous time, t_(i-1), to
     halfway between t_i and the next time, t_(i+1).
@@ -1047,13 +1047,13 @@ def _time_intervals(obstime):
     Parameters
     ----------
     obstime : ndarray or array-like which can be converted to
-              datetime64 type.
-              Array containing the time measurements.
+        datetime64 type.
+        Array containing the time measurements.
 
     Returns
     -------
     dt : numpy array, dtype=float
-         Array of time intervals in [s]
+        Array of time intervals in [s].
 
     Examples
     --------
