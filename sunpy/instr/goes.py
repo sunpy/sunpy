@@ -16,6 +16,7 @@ from sunpy.time import parse_time
 from sunpy import config
 from sunpy import lightcurve
 from sunpy.util.net import check_download_file
+from sunpy.sun import sun
 
 __all__ = ['get_goes_event_list', 'temp_em', 'goes_chianti_tem']
 
@@ -972,21 +973,21 @@ def goes_lx(longflux, shortflux, obstime=None, date=None, cumulative=False):
     >>> shortflux = np.array([7e-7,7e-7,7e-7,7e-7,7e-7,7e-7])
     >>> obstime = np.array(["2014-01-01 00:00:00",
                             "2014-01-01 00:00:02",
-                            "2014-01-01 00:00:04"
-                            "2014-01-01 00:00:06"
-                            "2014-01-01 00:00:08"
-                            "2014-01-01 00:00:10"]
+                            "2014-01-01 00:00:04",
+                            "2014-01-01 00:00:06",
+                            "2014-01-01 00:00:08",
+                            "2014-01-01 00:00:10"],
                             dtype="datetime64[ms]")
     >>> lx_out = goes_lx(longflux, shortflux, obstime)
-    >>> lx_out.longlum
+    >>> lx_out["longlum"]
     array([  1.98650769e+25,   1.98650769e+25,   1.98650769e+25,
              1.98650769e+25,   1.98650769e+25,   1.98650769e+25])
-    >>> lx_out.shortlum
+    >>> lx_out["shortlum"]
     array([  1.98650769e+24,   1.98650769e+24,   1.98650769e+24,
              1.98650769e+24,   1.98650769e+24,   1.98650769e+24])
-    >>> lx_out.longlum_int
+    >>> lx_out["longlum_int"]
     2.0337865720138238e+26
-    >>> lx_out.shortlum_int
+    >>> lx_out["shortlum_int"]
     2.0337865720138235e+25
 
     """
