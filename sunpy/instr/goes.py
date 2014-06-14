@@ -987,16 +987,19 @@ def _calc_xraylum(flux, date=None):
 
     Parameters
     ----------
-    flux : ndarray or array-like which can be converted to float64
-           type, such as an np.array, tuple, list.
-           Array containing the observed solar flux
+    flux : ndarray or array-like which can be converted to float64 type,
+        such as an np.array, tuple, list.
+        Array containing the observed solar flux in units of W/m**2
+           
     date : (optional) datetime object or valid date string
-           Used to calculate a more accurate Sun-Earth distance.
+        Used to calculate a more accurate Sun-Earth distance based on
+        Earth's orbit at that date.  If date is not set, standard value
+        for 1AU used.
 
     Returns
     -------
-    luminosity : numpy array
-                 Array of luminosity
+    xraylum : numpy array, dtype=float, units=erg/s.
+        Array of X-ray luminosity.
 
     Notes
     -----
@@ -1008,8 +1011,8 @@ def _calc_xraylum(flux, date=None):
     Examples
     --------
     >>> flux = np.array([7e-6,7e-6])
-    >>> luminosity = _calc_xraylum(flux, date="2014-04-21")
-    >>> luminosity
+    >>> xraylum = _calc_xraylum(flux, date="2014-04-21")
+    >>> xraylum
     array([  1.98650769e+25,   1.98650769e+25])
 
     """
