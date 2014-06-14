@@ -107,15 +107,15 @@ def temp_em(goeslc, abundances="coronal", download=False, download_dir=DATA_PATH
         Default='coronal'
 
     download : (optional) bool
-        If True, the GOES temperature and emission measure data files are downloaded.
-        It is important to do this if a new version of the files has been 
-        generated due to a new CHIANTI version being released or the launch of 
-        new GOES satellites since these files were originally downloaded.
+        If True, the GOES temperature and emission measure data files
+        are downloaded.  It is important to do this if a new version of
+        the files has been generated due to a new CHIANTI version being
+        released or the launch of new GOES satellites.
         Default=False
-    
+
     download_dir : (optional) string
-        The directory to download the GOES temperature and emission measure 
-        data files to.
+        The directory to download the GOES temperature and emission
+        measure data files to.
         Default=SunPy default download directory
 
     Returns
@@ -194,15 +194,15 @@ def goes_chianti_tem(longflux, shortflux, satellite=8,
         Default='coronal'
 
     download : (optional) bool
-        If True, the GOES temperature and emission measure data files are 
-        downloaded.  It is important to do this if a new version of the files 
-        has been generated due to a new CHIANTI version being released or the 
-        launch of new GOES satellites since these files were originally downloaded.
+        If True, the GOES temperature and emission measure data files
+        are downloaded.  It is important to do this if a new version of
+        the files has been generated due to a new CHIANTI version being
+        released or the launch of new GOES satellites.
         Default=False
 
     download_dir : (optional) string
-        The directory to download the GOES temperature and emission measure 
-        data files to.
+        The directory to download the GOES temperature and emission
+        measure data files to.
         Default=SunPy default download directory
 
     Returns
@@ -330,15 +330,14 @@ def _goes_get_chianti_temp(fluxratio, satellite=8, abundances="coronal",
         Default='coronal'
 
     download : (optional) bool
-        If True, the GOES temperature data files are downloaded.
-        It is important to do this if a new version of the files has been 
-        generated due to a new CHIANTI version being released or the launch
-        of new GOES satellites since these files were originally downloaded.
+        If True, the GOES temperature data file is downloaded.  It is
+        important to do this if a new version of the files has been
+        generated due to a new CHIANTI version being released or the
+        launch of new GOES satellites.
         Default=False
-    
+
     download_dir : (optional) string
-        The directory to download the GOES temperature and emission measure 
-        data files to.
+        The directory to download the GOES temperature data file to.
         Default=SunPy default download directory
 
     Returns
@@ -473,15 +472,14 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal",
         Default='coronal'
 
     download : (optional) bool
-        If True, the GOES emission measure data files are downloaded.
-        It is important to do this if a new version of the files has been 
-        generated due to a new CHIANTI version being released or the launch of 
-        new GOES satellites since these files were originally downloaded.
+        If True, the GOES emission measure data file is downloaded.
+        It is important to do this if a new version of the files has
+        been generated due to a new CHIANTI version being released or
+        the launch of new GOES satellites.
         Default=False
-    
+
     download_dir : (optional) string
-        The directory to download the GOES temperature and emission measure 
-        data files to.
+        The directory to download the GOES emission measure data file to.
         Default=SunPy default download directory
 
     Returns
@@ -612,15 +610,14 @@ def rad_loss_rate(goeslc, download=False, download_dir=DATA_PATH):
     goeslc : GOESLightCurve object
     
     download : (optional) bool
-        If True, the GOES temperature data files are downloaded.  It is
-        important to do this if a new version of the files has been
-        generated due to a new CHIANTI version being released or the
-        launch of new GOES satellites.
+        If True, the GOES radiative loss data file is downloaded.
+        It is important to do this if a new version of the files has
+        been generated due to a new CHIANTI version being released or
+        the launch of new GOES satellites.
         Default=False
 
     download_dir : (optional) string
-        The directory to download the GOES temperature and emission
-        measure data files to.
+        The directory to download the GOES radiative loss data file to.
         Default=SunPy default download directory
 
     Returns
@@ -722,15 +719,14 @@ def calc_rad_loss(temp, em, obstime=None, Download=False,
         radiated energy is calculated.
         
     download : (optional) bool
-        If True, the GOES temperature data files are downloaded.  It is
+        If True, the GOES radiative loss data file is downloaded.  It is
         important to do this if a new version of the files has been
         generated due to a new CHIANTI version being released or the
         launch of new GOES satellites.
         Default=False
 
     download_dir : (optional) string
-        The directory to download the GOES temperature and emission
-        measure data files to.
+        The directory to download the GOES radiative loss data file to.
         Default=SunPy default download directory
 
     Returns
