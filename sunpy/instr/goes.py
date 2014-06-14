@@ -697,7 +697,7 @@ def rad_loss_rate(goeslc, download=False, download_dir=DATA_PATH):
 
     return goeslc_new
 
-def calc_rad_loss(temp, em, obstime=None, Download=False,
+def calc_rad_loss(temp, em, obstime=None, cumulative=False, Download=False,
                   download_dir=DATA_PATH):
     """
     Finds radiative loss rate of coronal plasma over all wavelengths.
@@ -823,10 +823,31 @@ def calc_rad_loss(temp, em, obstime=None, Download=False,
             raise ValueError("times in obstime must be in " +
                              "chronological order.")
         rad_loss_int = np.sum(rad_loss_rate*dt)
-        rad_loss_out = {"temperature":temp, "em":em,
-                        "rad_loss_rate":rad_loss_rate, "time": obstime,
-                        "rad_loss_int":rad_loss_int}
+        # If cumulative kwarg True, calculate cumulative radiated energy
+        # in each GOES channel as a function of time.
+        if cumulative:
+            n = len(obstime)
+            rad_loss_cumul = np.zeros(n)
+            for i in range(n):
+                rad_loss_cumul[i] = np.sum(rad_loss_rate[:i]*dt[:i])
+            # Enter results into output dictionary.
+            rad_loss_out = {"temperature":temp, "em":em,
+                            "rad_loss_rate":rad_loss_rate, "time": obstime,
+                            "rad_loss_cumul" : rad_loss_cumul,
+                            "rad_loss_int":rad_loss_int}
+        else:
+            rad_loss_out = {"temperature":temp, "em":em,
+                            "rad_loss_rate":rad_loss_rate, "time": obstime,
+                            "rad_loss_int":rad_loss_int}
     else:
+        # Ensure cumulative kwarg wasn't set without setting obstime.
+        if cumulative:
+            raise IOError("cumulative keyword is True but obstime keyword is "
+                          "None.  In order to calculate cumulative radiated "
+                          "losses, cumulative must be True and measurement "
+                          "times must be given via the obstime keyword.")
+        # If keyword assignments are OK, enter results into output
+        # dictionary.
         rad_loss_out = {"temperature":temp, "em":em,
                         "rad_loss_rate":rad_loss_rate}
 
@@ -1014,11 +1035,11 @@ def goes_lx(longflux, shortflux, obstime=None, date=None, cumulative=False):
     else:
         # Ensure cumulative kwarg wasn't set without setting obstime.
         if cumulative:
-            raise IOError("cumulative keyword is True but obstime "
-                          "keyword is None.  In order to calculate "
-                          "cumulative X-ray radiated energies, "
-                          "cumulative must be True and measurement times"
-                          " must be given via the obstime keyword.")
+            raise IOError("cumulative keyword is True but obstime keyword is "
+                          "None.  In order to calculate cumulative X-ray "
+                          "radiated energies, cumulative must be True and "
+                          "measurement times must be given via the obstime "
+                          "keyword.")
         # If keyword assignments are OK, enter results into output
         # dictionary.
         lx_out = {"longlum":longlum, "shortlum":shortlum}
