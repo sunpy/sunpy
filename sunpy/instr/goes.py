@@ -791,7 +791,7 @@ def calc_rad_loss(temp, em, obstime=None, cumulative=False, download=False,
     with open(os.path.join(DATA_PATH, FILE_RAD_COR),
               "r") as csvfile:
         startline = dropwhile(lambda l: l.startswith(";"), csvfile)
-        csvreader = csv.reader(startline, delimiter=";")
+        csvreader = csv.reader(startline, delimiter=" ")
         for row in csvreader:
             modeltemp.append(float(row[0]))
             model_loss_rate.append(float(row[1]))
