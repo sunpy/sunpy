@@ -788,7 +788,7 @@ def calc_rad_loss(temp, em, obstime=None, cumulative=False, download=False,
 
     # Read data from csv file into lists, being sure to skip commented
     # lines begining with "#"
-    with open(os.path.join(INSTR_FILES_PATH, FILE_RAD_COR),
+    with open(os.path.join(DATA_PATH, FILE_RAD_COR),
               "r") as csvfile:
         startline = dropwhile(lambda l: l.startswith("#"), csvfile)
         csvreader = csv.DictReader(startline, delimiter=";")
