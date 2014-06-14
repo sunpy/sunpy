@@ -52,6 +52,8 @@ trace1600 = ct.trace_color_table('1600')
 trace1700 = ct.trace_color_table('1700')
 traceWL = ct.trace_color_table('WL')
 
+hmimag = ct.hmi_mag_color_table()
+
 cmlist = {
           'sdoaia94': sdoaia94,
           'sdoaia131': sdoaia131,
@@ -87,7 +89,8 @@ cmlist = {
           'trace1550': trace1550,
           'trace1600': trace1600,
           'trace1700': trace1700,
-          'traceWL': traceWL
+          'traceWL': traceWL,
+          'hmimag': hmimag
           }
 
 
@@ -163,7 +166,7 @@ def show_colormaps():
 
     plt.show()
 
-#def test_equalize(data):
+# def test_equalize(data):
 #    """Returns a color map which performs histogram equalization on the data.
 #
 #    Parameters

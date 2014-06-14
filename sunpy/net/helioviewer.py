@@ -116,11 +116,11 @@ class HelioviewerClient:
 
         Examples
         --------
-        >>> import sunpy
+        >>> import sunpy.map
         >>> from sunpy.net import helioviewer
         >>> hv = helioviewer.HelioviewerClient()
         >>> filepath = hv.download_jp2('2012/07/03 14:30:00', observatory='SDO', instrument='AIA', detector='AIA', measurement='171')
-        >>> aia = sunpy.make_map(filepath)
+        >>> aia = sunpy.map.Map(filepath)
         >>> aia.show()
 
         >>> data_sources = hv.get_data_sources()

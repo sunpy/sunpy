@@ -14,7 +14,7 @@ The map object currently supports the following data sources
 
 - SDO/AIA, SDO/HMI
 - STEREO/EUVI, STEREO/COR
-- Hinode/XRT
+- Hinode/XRT, Hinode/SOT
 - SOHO/EIT, SOHO/LASCO, SOHO/MDI
 - PROBA2/SWAP
 - Yohkoh/SXT
@@ -162,3 +162,46 @@ a list of the methods available for a map type::
     
 and check out the methods section!
 
+8. Mapcubes
+-----------
+A mapcube is a list of maps.  A mapcube can be created by supplying multiple
+existing maps::
+
+    mc = sunpy.map.Map([map1, map2], cube=True)
+
+or by providing a directory full of image files::
+
+    mc = sunpy.map.Map('path/to/my/files/*.fits', cube=True)
+
+By default, the maps are ordered by their observation date.  The earliest 
+map in the mapcube can be accessed by simply indexing the list:
+
+    mc[0]
+
+9. Coalignment of Mapcubes
+--------------------------
+A typical data preparation step when dealing with time series of images is to
+coalign images taken at different times so that features in different images
+remain in the same place.  A common approach to this problem is
+to take a representative template that contains the features you are interested
+in, and match that to your images.  The location of the best match tells you
+where the template is in your image.  The images are then shifted to the
+location of the best match.  This aligns your images to the position of the
+features in your representative template.
+
+SunPy provides a function to coalign mapcubes.  The implementation of this
+functionality requires the installation of the scikit-image library, a
+commonly used image processing library.  To coalign a mapcube, simply import
+the function and apply it to yout mapcube::
+
+    from sunpy.image.coalignment import mapcube_coalign_by_match_template
+    coaligned = mapcube_coalign_by_match_template(mc)
+
+This will return a new mapcube, coaligned to a template extracted from the
+center of the first map in the mapcube, with the map dimensions clipped as
+required.  The coalignment algorithm provides many more options for handling
+the coalignment of mapcubes; type::
+
+    help(mapcube_coalign_by_match_template)
+
+for a full list of options and functionality.
