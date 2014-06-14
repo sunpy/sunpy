@@ -879,7 +879,8 @@ def xray_luminosity(goeslc):
     return goeslc_new
 
 def goes_lx(longflux, shortflux, obstime=None, date=None):
-    """Calculates solar X-ray luminosity in GOES wavelength ranges.
+    """
+    Calculates solar X-ray luminosity in GOES wavelength ranges.
 
     This function calculates the X-ray luminosity from the Sun in the
     GOES wavelength ranges (1-8 angstroms and 0.5-4 angstroms) based
@@ -891,36 +892,38 @@ def goes_lx(longflux, shortflux, obstime=None, date=None):
     Parameters
     ----------
     longflux : ndarray or array-like which can be converted to float64
-               type, such as an np.array, tuple, list.
-               Array containing the observed GOES/XRS long channel flux
+        type, such as an np.array, tuple, list.
+        Array containing the observed GOES/XRS long channel flux.
+        
     shortflux : ndarray or array-like which can be converted to float64
-                type, such as an np.array, tuple, list.
-                Array containing the observed GOES/XRS short channel
-                flux
+        type, such as an np.array, tuple, list.
+        Array containing the observed GOES/XRS short channel flux.
+        
     obstime : (optional) numpy ndarray, dtype=datetime64
-              Measurement times corresponding to each long/short
-              channel flux measurement.
-    date : (optional) datetime object or valid date string
-           Date at which measurements were taken.
+        Measurement times corresponding to each flux measurement.
+        Assumes each pair of 0.5-4 and 1-8 angstrom flux measurements
+        were taken simultaneously.
+        
+    date : (optional) datetime object or valid date string.
+        Date at which measurements were taken.
 
     Returns
     -------
-    longlum : numpy ndarray
-              Array of luminosity in the long channel range
-              (1-8 angstroms)
-    shortlum : numpy ndarray
-               Array of luminosity in the short channel range
-               (0.5-4 angstroms)
-    longlum_int : float
-                  Long channel fluence, i.e. luminosity integrated
-                  over time.
-    shortlum_int : float
-                   Short channel fluence, i.e. luminosity integrated
-                   over time
+    lx_out : dictionary
+        dictionary containing the following fields.
+        longlum : numpy ndarray, dtype=float, units=[erg/s]
+            Array of luminosity in the 1-8 angstroms range.
+
+        shortlum : numpy ndarray, dtype=float, units=[erg/s]
+            Array of luminosity in the 0.5-4 angstroms range.
+
+        longlum_int : (only present if obstime kwarg is set)
+
+        shortlum_int : (only present if obstime kwarg is set)
 
     Notes
     -----
-    This function calls goes_luminosity() to calculate luminosities.
+    This function calls _calc_xraylum() to calculate luminosities.
     For more information on how this is done, see docstring of that
     function.
 
