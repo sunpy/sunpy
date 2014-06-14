@@ -974,13 +974,11 @@ def goes_lx(longflux, shortflux, obstime=None, date=None):
                              "chronological order.")
         longlum_int = np.sum(longlum*dt)
         shortlum_int = np.sum(shortlum*dt)
-        lx_out = {"longflux":longflux, "shortflux":shortflux,
-                  "time":obstime, "longlum":longlum, "shortlum":shortlum,
+        lx_out = {"longlum":longlum, "shortlum":shortlum,
                   "longlum_int":longlum_int, "shortlum_int":shortlum_int,
                   "dt":dt}
     else:
-        lx_out = {"longflux":longflux, "shortflux":shortflux,
-                  "longlum":longlum, "shortlum":shortlum,}
+        lx_out = {"longlum":longlum, "shortlum":shortlum}
 
     return lx_out
 
