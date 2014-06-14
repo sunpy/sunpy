@@ -625,8 +625,9 @@ def rad_loss_rate(goeslc, download=False, download_dir=DATA_PATH):
 
     Returns
     -------
-    goeslc_new : a copy of the input GOESLightCurve object with an
-        additional field, goeslc_new.data.rad_loss_rate
+    goeslc_new : GOESLightCurve object
+        a copy of the input GOESLightCurve object with an additional
+        field, goeslc_new.data.rad_loss_rate
         (type=pandas.core.series.Series), which contains the radiative
         loss rate of the coronal soft X-ray-emitting plasma across all
         wavelengths in erg/s.  N.B. if the original GOESLightCurve
@@ -818,19 +819,19 @@ def calc_rad_loss(temp, em, obstime=None, Download=False,
 
 def xray_luminosity(goeslc):
     """
-    Calculates and adds solar X-ray luminosity to a GOESLightCurve.
+    Calculates and adds GOES solar X-ray luminosity to a GOESLightCurve.
 
-    This function calculates the solar X-ray luminosity in the
-    GOES wavelength ranges (1-8 angstroms and 0.5-4 angstroms) based
-    on the observed GOES fluxes.  The units of the results are erg/s.
-    This is done by calling goes_lx().  This function assumes that the
+    This function calculates the solar X-ray luminosity in the GOES
+    wavelength ranges (1-8 angstroms and 0.5-4 angstroms) based on the
+    observed GOES fluxes.  The units of the results are erg/s. This is
+    done by calling goes_lx().  This function assumes that the
     radiation is emitted isotropically, i.e. is distributed over a
     spherical surface area with a radius equal to the Sun-Earth
-    distance.  Once the luminosity in each GOES passband is found,
-    they are added to a copy of the original GOESLightCurve object as
-    goeslc.data.luminosity_xrsa (for the 0.5-4 angstrom channel) and
-    goeslc.data.luminosity_xrsb (for the 1-8 angstrom channel), where
-    goeslc is the GOESLightCurve object.
+    distance.  Once the luminosity in each GOES passband is found, they
+    are added to a copy of the original GOESLightCurve object as
+    goeslc_new.data.luminosity_xrsa (for the 0.5-4 angstrom channel) and
+    goeslc_new.data.luminosity_xrsb (for the 1-8 angstrom channel),
+    where goeslc_new is the new GOESLightCurve object which is returned.
 
     Parameters
     ----------
@@ -838,12 +839,13 @@ def xray_luminosity(goeslc):
 
     Returns
     -------
-    goeslc.data.luminosity_xrsa : pandas.core.series.Series
-                                  Array of luminosity in the 0.5-4
-                                  angstrom wavelength range [erg/s]
-    goeslc.data.luminosity_xrsb : pandas.core.series.Series
-                                  Array of luminosity in the 1-8
-                                  angstrom wavelength range [erg/s]
+    goeslc_new : GOESLightCurve object
+        A copy of the input GOESLightCurve object with two additional
+        fields, goeslc_new.data.luminosity_xrsa and
+        goeslc_new.data.luminosity_xrsb (each of type
+        pandas.core.series.Series) which hold the X-ray luminosity in
+        the 0.5-4 and 1-8 angstrom wavelength ranges, respectively.
+        Units=[erg/s].
 
     Examples
     --------
