@@ -57,6 +57,7 @@ install:
 # Install scikit-image package - originally included in order to test image coalignment functionality
    - pip install $PIP_WHEEL_COMMAND cython
    - pip install $PIP_WHEEL_COMMAND scikit-image
+   - pip install $PIP_WHEEL_COMMAND sqlalchemy
 # Install sphinx if needed
    - if [[ $TEST_MODE == 'sphinx' ]]; then pip install $PIP_WHEEL_COMMAND sphinx>=1.2; fi 
 

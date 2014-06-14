@@ -33,6 +33,7 @@ import sunpy
 import Ui_RGBComposite
 import numpy as np
 from sunpy.net.helioviewer import HelioviewerClient
+import sunpy.map
 from sunpy.map import Map
 from sunpy.util import toggle_pylab
 from PyQt4 import QtGui, QtCore
@@ -97,9 +98,9 @@ class RGBCompositeImageApp(QtGui.QMainWindow):
         g = self._hv.download_jp2(now, sourceId=self._datasources['193']['sourceId'])
         b = self._hv.download_jp2(now, sourceId=self._datasources['171']['sourceId'])
         
-        self.red = sunpy.make_map(r)
-        self.green = sunpy.make_map(g)
-        self.blue = sunpy.make_map(b)
+        self.red = sunpy.map.Map(r)
+        self.green = sunpy.map.Map(g)
+        self.blue = sunpy.map.Map(b)
         
         self._updateRedPreview()
         self._updateGreenPreview()
@@ -200,9 +201,9 @@ class RGBCompositeImageApp(QtGui.QMainWindow):
         g = self._hv.download_jp2(dt, sourceId=self._datasources['193']['sourceId'])
         b = self._hv.download_jp2(dt, sourceId=self._datasources['171']['sourceId'])
         
-        self.red = sunpy.make_map(r)
-        self.green = sunpy.make_map(g)
-        self.blue = sunpy.make_map(b)
+        self.red = sunpy.map.Map(r)
+        self.green = sunpy.map.Map(g)
+        self.blue = sunpy.map.Map(b)
         
         self._updateRedPreview()
         self._updateGreenPreview()
@@ -277,7 +278,7 @@ class RGBCompositePlot(SunPyPlot):
 #        """Preview image default size"""
 #        return QtCore.QSize(self._widthHint, self._heightHint)
     
-class RGBCompositeMap(sunpy.MapCube):
+class RGBCompositeMap(sunpy.map.MapCube):
     """A composite map where each color channel is associated with a separate
        datasource."""
     def __new__(cls, red, green, blue, **kwargs):
