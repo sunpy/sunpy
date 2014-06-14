@@ -887,7 +887,7 @@ def xray_luminosity(goeslc):
 
     return goeslc_new
 
-def goes_lx(longflux, shortflux, obstime=None, date=None):
+def goes_lx(longflux, shortflux, obstime=None, date=None, cumulative=False):
     """
     Calculates solar X-ray luminosity in GOES wavelength ranges.
 
@@ -915,6 +915,12 @@ def goes_lx(longflux, shortflux, obstime=None, date=None):
         
     date : (optional) datetime object or valid date string.
         Date at which measurements were taken.
+
+    cumulative : (optional) bool
+        If True and obstime is set, the cumulative radiated energy in
+        each of the GOES wavelength bands is calculated as a function
+        of time.
+        Default=False
 
     Returns
     -------
@@ -967,6 +973,7 @@ def goes_lx(longflux, shortflux, obstime=None, date=None):
     # If obstime keyword giving measurement times is set, calculate
     # total energy radiated in the GOES bandpasses during the flare.
     if obstime is not None:
+        n = len(obstime)
         dt = _time_intervals(obstime)
         # Check that times are in chronological order
         if np.min(dt) <= 0:
@@ -974,10 +981,34 @@ def goes_lx(longflux, shortflux, obstime=None, date=None):
                              "chronological order.")
         longlum_int = np.sum(longlum*dt)
         shortlum_int = np.sum(shortlum*dt)
-        lx_out = {"longlum":longlum, "shortlum":shortlum,
-                  "longlum_int":longlum_int, "shortlum_int":shortlum_int,
-                  "dt":dt}
+        # If cumulative kwarg True, calculate cumulative radiated energy
+        # in each GOES channel as a function of time.
+        if cumulative:
+            longlum_cumul = np.zeros(n)
+            shortlum_cumul = np.zeros(n)
+            for i in range(n):
+                longlum_cumul[i] = np.sum(longlum[:i]*dt[:i])
+                shortlum_cumul[i] = np.sum(shortlum[:i]*dt[:i])
+            # Enter results into output dictionary
+            lx_out = {"longlum":longlum, "shortlum":shortlum,
+                      "longlum_cumul":longlum_cumul,
+                      "shortlum_cumul":shortlum_cumul,
+                      "longlum_int":longlum_int, "shortlum_int":shortlum_int,
+                      "dt":dt}
+        else:
+            lx_out = {"longlum":longlum, "shortlum":shortlum,
+                      "longlum_int":longlum_int, "shortlum_int":shortlum_int,
+                      "dt":dt}
     else:
+        # Ensure cumulative kwarg wasn't set without setting obstime.
+        if cumulative:
+            raise IOError("cumulative keyword is True but obstime "
+                          "keyword is None.  In order to calculate "
+                          "cumulative X-ray radiated energies, "
+                          "cumulative must be True and measurement times"
+                          " must be given via the obstime keyword.")
+        # If keyword assignments are OK, enter results into output
+        # dictionary.
         lx_out = {"longlum":longlum, "shortlum":shortlum}
 
     return lx_out
