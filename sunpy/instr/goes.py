@@ -102,8 +102,9 @@ def temp_em(goeslc, abundances="coronal", download=False, download_dir=DATA_PATH
     ----------
     goeslc : GOESLightCurve object
 
-    abundances : (optional) string equalling either 'coronal' or 'photospheric'.
-        States whether photospheric or coronal abundances should be assumed.
+    abundances : (optional) string equalling 'coronal' or 'photospheric'
+        States whether photospheric or coronal abundances should be
+        assumed.
         Default='coronal'
 
     download : (optional) bool
@@ -176,21 +177,24 @@ def goes_chianti_tem(longflux, shortflux, satellite=8,
 
     Parameters
     ----------
-    longflux, shortflux : ndarray or array-like which can be converted to float64 type, such as an np.array, tuple, list.
+    longflux, shortflux : ndarray or array-like which can be converted
+        to float64 type, such as an np.array, tuple, list.
         Arrays containing the long and short GOES/XRS flux measurements 
-        respectively as a function of time.  Must be of same length. [W/m**2].
+        respectively as a function of time.  Must be of same length.
+        Units=[W/m**2].
 
     satellite : int (optional)
-        Number of GOES satellite used to make observations, important for 
-        correct calibration of data.
+        Number of GOES satellite used to make observations, important
+        for correct calibration of data.
         Default=8
 
-    date : datetime object or str
-         Date when observations made.  Important for correctcalibration.
-         Default=today
+    date : datetime object or valid time string.
+        Date when observations made.  Important for correct calibration.
+        Default=today
 
-    abundances : (optional) string equalling either 'coronal' or 'photospheric'.
-        States whether photospheric or coronal abundances should be assumed.
+    abundances : (optional) string equalling 'coronal' or 'photospheric'
+        States whether photospheric or coronal abundances should be
+        assumed.
         Default='coronal'
 
     download : (optional) bool
@@ -208,11 +212,12 @@ def goes_chianti_tem(longflux, shortflux, satellite=8,
     Returns
     -------
     temp : numpy array
-        Array of temperature values of same length as longflux and shortflux. [MK]
+        Array of temperature values of same length as longflux and
+        shortflux. Units=[MK]
 
     em : numpy array
-        Array of volume emission measure values of same length as longflux 
-        and shortflux.  [10**49 cm**-3]
+        Array of volume emission measure values of same length as
+        longflux and shortflux.  Units=[10**49 cm**-3]
 
     Notes
     -----
@@ -239,17 +244,18 @@ def goes_chianti_tem(longflux, shortflux, satellite=8,
 
     References
     ----------
-    .. [1] White, S. M., Thomas, R. J., & Schwartz, R. A. 2005, Sol. Phys.,
-       227, 231
-    .. [2] Mazzotta, P., Mazzitelli, G., Colafrancesco, S., & Vittorio, N.
-       1998, A&AS, 133, 339
+    .. [1] White, S. M., Thomas, R. J., & Schwartz, R. A. 2005,
+        Sol. Phys., 227, 231
+    .. [2] Mazzotta, P., Mazzitelli, G., Colafrancesco, S., &
+        Vittorio, N. 1998, A&AS, 133, 339
 
     Examples
     --------
     >>> longflux = np.array([7e-6, 7e-6])
     >>> shortflux = np.array([7e-7, 7e-7])
     >>> temp, em = goes_chianti_tem(longflux, shortflux, satellite=15,
-                                    date='2014-04-16', abundances="coronal")
+                                    date='2014-04-16',
+                                    abundances="coronal")
     >>> temp
     array([11.28295376, 11.28295376])
     >>> em
@@ -316,17 +322,19 @@ def _goes_get_chianti_temp(fluxratio, satellite=8, abundances="coronal",
 
     Parameters
     ----------
-    fluxratio : ndarray or array-like which can be converted to float64 type, such as an np.array, tuple, list.
-        Array containing the ratio of short channel to long channel GOES/XRS
-        flux measurements.
+    fluxratio : ndarray or array-like which can be converted to float64
+        type, such as an np.array, tuple, list.
+        Array containing the ratio of short channel to long channel
+        GOES/XRS flux measurements.
 
     satellite : int (optional)
-        Number of GOES satellite used to make observations. Important for 
-        correct calibration of data.
+        Number of GOES satellite used to make observations. Important
+        for correct calibration of data.
         Default=8
 
-    abundances : (optional) string equalling either 'coronal' or 'photospheric'.
-        States whether photospheric or coronal abundances should be assumed.
+    abundances : (optional) string equalling 'coronal' or 'photospheric'
+        States whether photospheric or coronal abundances should be
+        assumed.
         Default='coronal'
 
     download : (optional) bool
@@ -343,7 +351,8 @@ def _goes_get_chianti_temp(fluxratio, satellite=8, abundances="coronal",
     Returns
     -------
     temp : numpy array
-        Array of temperature values of same length as longflux and shortflux. [MK]
+        Array of temperature values of same length as longflux and
+        shortflux. Units=[MK]
 
     Notes
     -----
@@ -369,10 +378,10 @@ def _goes_get_chianti_temp(fluxratio, satellite=8, abundances="coronal",
 
     References
     ----------
-    .. [1] White, S. M., Thomas, R. J., & Schwartz, R. A. 2005, Sol. Phys.,
-       227, 231
-    .. [2] Mazzotta, P., Mazzitelli, G., Colafrancesco, S., & Vittorio, N.
-       1998, A&AS, 133, 339
+    .. [1] White, S. M., Thomas, R. J., & Schwartz, R. A. 2005,
+        Sol. Phys., 227, 231
+    .. [2] Mazzotta, P., Mazzitelli, G., Colafrancesco, S., &
+        Vittorio, N. 1998, A&AS, 133, 339
 
     Examples
     --------
@@ -456,19 +465,23 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal",
 
     Parameters
     ----------
-    longflux : ndarray or array-like which can be converted to float64 type, such as an np.array, tuple, list.
-        Array containing the observed GOES/XRS long channel flux
+    longflux : ndarray or array-like which can be converted to float64
+        type, such as an np.array, tuple, list.
+        Array containing the observed GOES/XRS long channel flux.
+        Units=[W/m**2]
 
-    temp : ndarray or array-like which can be converted to float64 type, such as an np.array, tuple, list.
-        Array containing the GOES temperature
+    temp : ndarray or array-like which can be converted to float64 type,
+        such as an np.array, tuple, list.
+        Array containing the GOES temperature.  Units=[MK]
 
     satellite : int (optional)
         Number of GOES satellite used to make observations.
         Important for correct calibration of data.
         Default=8
 
-    abundances : (optional) string equalling either 'coronal' or 'photospheric'.
-        States whether photospheric or coronal abundances should be assumed.
+    abundances : (optional) string equalling 'coronal' or 'photospheric'
+        States whether photospheric or coronal abundances should be
+        assumed.
         Default='coronal'
 
     download : (optional) bool
@@ -515,10 +528,10 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal",
 
     References
     ----------
-    .. [1] White, S. M., Thomas, R. J., & Schwartz, R. A. 2005, Sol. Phys.,
-       227, 231
-    .. [2] Mazzotta, P., Mazzitelli, G., Colafrancesco, S., & Vittorio, N.
-       1998, A&AS, 133, 339
+    .. [1] White, S. M., Thomas, R. J., & Schwartz, R. A. 2005,
+        Sol. Phys., 227, 231
+    .. [2] Mazzotta, P., Mazzitelli, G., Colafrancesco, S., &
+        Vittorio, N. 1998, A&AS, 133, 339
 
     Examples
     --------
