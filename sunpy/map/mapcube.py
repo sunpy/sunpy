@@ -3,7 +3,7 @@ from __future__ import absolute_import
 #pylint: disable=W0401,W0614,W0201,W0212,W0404
 
 import numpy as np
-import matplotlib.animation
+import matplotlib.animation as animation
 import matplotlib.pyplot as plt
 
 from sunpy.map import GenericMap
@@ -210,12 +210,11 @@ class MapCube(object):
             if annotate:
                 annotate_frame(i)
 
-        mpl_ani = matplotlib.animation
-        ani = mpl_ani.FuncAnimation(fig, updatefig,
-                                    frames=range(0, len(self.maps)),
-                                    fargs=[im, annotate, ani_data],
-                                    interval=interval,
-                                    blit=False)
+        ani = animation.FuncAnimation(fig, updatefig,
+                                      frames=range(0, len(self.maps)),
+                                      fargs=[im, annotate, ani_data],
+                                      interval=interval,
+                                      blit=False)
 
         return ani
 

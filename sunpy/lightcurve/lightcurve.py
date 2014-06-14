@@ -18,7 +18,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas
 
-import sunpy
+from sunpy import config
 from sunpy.time import is_time, TimeRange, parse_time
 from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
 from sunpy.util.odict import OrderedDict
@@ -93,7 +93,7 @@ for compatability with map, please use meta instead""", Warning)
     @classmethod
     def from_time(cls, time, **kwargs):
         '''Called by Conditional Dispatch object when valid time is passed as input to create method.'''
-    date = parse_time(time)
+        date = parse_time(time)
         url = cls._get_url_for_date(date, **kwargs)
         filepath = cls._download(
             url, kwargs, err="Unable to download data for specified date"
@@ -167,7 +167,7 @@ for compatability with map, please use meta instead""", Warning)
     to create method.
     '''
 
-    return cls(
+        return cls(
             pandas.DataFrame(data, index=index),
             meta
         )
@@ -183,7 +183,7 @@ for compatability with map, please use meta instead""", Warning)
     to create method.
     '''
 
-    return cls(dataframe, meta)
+        return cls(dataframe, meta)
 
     def plot(self, axes=None, **plot_args):
         """Plot a plot of the light curve
@@ -230,7 +230,7 @@ for compatability with map, please use meta instead""", Warning)
         if "directory" in kwargs:
             download_dir = os.path.expanduser(kwargs["directory"])
         else:
-            download_dir = sunpy.config.get("downloads", "download_dir")
+            download_dir = config.get("downloads", "download_dir")
 
         # overwrite the existing file if the keyword is present
         if "overwrite" in kwargs:
