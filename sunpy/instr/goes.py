@@ -596,7 +596,7 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal",
 
 def rad_loss_rate(goeslc, download=False, download_dir=DATA_PATH):
     """
-    Calculates and adds solar radiative loss rate to a GOESLightCurve.
+    Calculates flare radiative loss rate and adds it to GOESLightCurve.
 
     This function calculates the radiative loss rate as a function of
     time of solar coronal soft X-ray-emitting plasma across all
@@ -604,26 +604,36 @@ def rad_loss_rate(goeslc, download=False, download_dir=DATA_PATH):
     results are erg/s. This is done by calling calc_rad_loss().
     For more information see documentation in that function.  Once
     the radiative loss rates have been found, it is added to a copy of
-    the original GOESLightCurve object as goeslc.data.rad_loss_rate",
-    where goeslc is the GOESLightCurve object.
+    the original GOESLightCurve object as goeslc_new.data.rad_loss_rate",
+    where goeslc_new is the new GOESLightCurve object which is returned.
 
     Parameters
     ----------
     goeslc : GOESLightCurve object
     download : (optional) bool
-               If True, the GOES CHIANTI radiative loss data
-               files are downloaded.  It is important to do this if a
-               new version of the files has been generated due to a new
-               CHIANTI version being released or the launch of new GOES
-               satellites since these files were originally downloaded.
-               Default=False
+            If True, the GOES CHIANTI radiative loss data
+            files are downloaded.  It is important to do this if a
+            new version of the files has been generated due to a new
+            CHIANTI version being released or the launch of new GOES
+            satellites since these files were originally downloaded.
+            Default=False
+    download_dir : (optional) string
+                The directory to download the GOES temperature and
+                emission measure data files to.
+                Default=SunPy default download directory
 
     Returns
     -------
-    goeslc.data.rad_loss_rate : pandas.core.series.Series
-                                Array of radiative loss rate of the
-                                coronal soft X-ray-emitting plasma
-                                across all wavelengths. [erg/s]
+    goeslc_new : a copy of the input GOESLightCurve object with an
+            additional field, goeslc_new.data.rad_loss_rate
+            (type=pandas.core.series.Series), which contains the
+            radiative loss rate of the coronal soft X-ray-emitting
+            plasma across all wavelengths in erg/s.  N.B. if the
+            original GOESLightCurve object does not contain fields
+            named goeslc_new.data.temperature and goeslc_new.data.em
+            containing the temperature and emission measure values,
+            these are also generated and added to goeslc_new using
+            goes_chianti_tem() (See documentation for that function.)
 
     Examples
     --------
@@ -637,11 +647,11 @@ def rad_loss_rate(goeslc, download=False, download_dir=DATA_PATH):
     2014-01-01 00:00:06  7e-07  7e-06
     >>> goeslc_new = rad_loss_rate(goeslc)
     >>> goeslc_new.data
-                          xrsa   xrsb  luminosity_xrsa  luminosity_xrsb
-    2014-01-01 00:00:00  7e-07  7e-06     1.903523e+24     1.903523e+25
-    2014-01-01 00:00:02  7e-07  7e-06     1.903523e+24     1.903523e+25
-    2014-01-01 00:00:04  7e-07  7e-06     1.903523e+24     1.903523e+25
-    2014-01-01 00:00:06  7e-07  7e-06     1.903523e+24     1.903523e+25
+                          xrsa   xrsb  rad_loss_rate
+    2014-01-01 00:00:00  7e-07  7e-06     ??????????
+    2014-01-01 00:00:02  7e-07  7e-06     ??????????
+    2014-01-01 00:00:04  7e-07  7e-06     ??????????
+    2014-01-01 00:00:06  7e-07  7e-06     ??????????
 
     """
     # Check that input argument is of correct type
