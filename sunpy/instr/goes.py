@@ -697,7 +697,7 @@ def rad_loss_rate(goeslc, download=False, download_dir=DATA_PATH):
 
     return goeslc_new
 
-def calc_rad_loss(temp, em, obstime=None, cumulative=False, Download=False,
+def calc_rad_loss(temp, em, obstime=None, cumulative=False, download=False,
                   download_dir=DATA_PATH):
     """
     Finds radiative loss rate of coronal plasma over all wavelengths.
