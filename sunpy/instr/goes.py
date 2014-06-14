@@ -677,8 +677,8 @@ def rad_loss_rate(goeslc, download=False, download_dir=DATA_PATH):
         temp = np.asarray(goeslc.data.temperature, dtype=np.float64)
         em = np.asarray(goeslc.data.em, dtype=np.float64)
     except AttributeError as error:
-        if error.message ==
-            "'DataFrame' object has no attribute 'temperature'" or
+        if error.message == \
+            "'DataFrame' object has no attribute 'temperature'" or \
             error.message == "'DataFrame' object has no attribute 'em'":
             goeslc_new = temp_em(goeslc)
             temp = np.asarray(goeslc_new.data.temperature, dtype=np.float64)
@@ -798,7 +798,7 @@ def calc_rad_loss(temp, em, obstime=None, cumulative=False, Download=False,
     modeltemp = np.asarray(modeltemp)
     model_loss_rate = np.asarray(model_loss_rate)
     # Ensure input values of flux ratio are within limits of model table
-    if np.min(temp*1e6) < np.min(modeltemp) or
+    if np.min(temp*1e6) < np.min(modeltemp) or \
         np.max(temp*1e6) > np.max(modeltemp):
         raise ValueError("All values in temp must be within the range " +
                          "{0} - {1} MK.".format(np.min(modeltemp/1e6),
