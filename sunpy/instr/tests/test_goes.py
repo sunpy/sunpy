@@ -317,6 +317,7 @@ def test_goes_lx():
                        rtol=0.0001)
     assert np.allclose(lx_test["shortlum_int"], lx_expected["shortlum_int"],
                        rtol=0.0001)
+    assert np.allclose(lx_test["dt"], lx_expected["dt"], rtol=0.0001)
 
     # Test case 4: obstime and cumulative keywords set
     lx_test = goes.goes_lx(longflux, shortflux, obstime, cumulative=True)
@@ -350,3 +351,4 @@ def test_goes_lx():
                        rtol=0.0001)
     assert np.allclose(lx_test["shortlum_cumul"],
                        lx_expected["shortlum_cumul"], rtol=0.0001)
+    assert np.allclose(lx_test["dt"], lx_expected["dt"], rtol=0.0001)
