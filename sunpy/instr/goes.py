@@ -1014,7 +1014,7 @@ def goes_lx(longflux, shortflux, obstime=None, date=None, cumulative=False):
         shortlum_int = np.sum(shortlum*dt)
         # If cumulative kwarg True, calculate cumulative radiated energy
         # in each GOES channel as a function of time.
-        if cumulative:
+        if cumulative is True:
             n = len(obstime)
             longlum_cumul = np.zeros(n)
             shortlum_cumul = np.zeros(n)
@@ -1033,7 +1033,7 @@ def goes_lx(longflux, shortflux, obstime=None, date=None, cumulative=False):
                       "dt":dt}
     else:
         # Ensure cumulative kwarg wasn't set without setting obstime.
-        if cumulative:
+        if cumulative is True:
             raise IOError("cumulative keyword is True but obstime keyword is "
                           "None.  In order to calculate cumulative X-ray "
                           "radiated energies, cumulative must be True and "
