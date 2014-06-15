@@ -1082,7 +1082,7 @@ def _calc_xraylum(flux, date=None):
     >>> flux = np.array([7e-6,7e-6])
     >>> xraylum = _calc_xraylum(flux, date="2014-04-21")
     >>> xraylum
-    array([  1.98650769e+25,   1.98650769e+25])
+    array([  1.98649103e+25,   1.98649103e+25])
 
     """
     # Ensure input is of correct type
