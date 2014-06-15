@@ -225,3 +225,21 @@ def test_goes_lx():
     assert lx_test == lx_expected
 
     # Test case 4: obstime and cumulative keywords set
+    lx_test = goes.goes_lx(longflux, shortflux, obstime, cumulative=True)
+    lx_expected = {"longlum": np.array([1.96860565e+25, 1.96860565e+25,
+                                        1.96860565e+25, 1.96860565e+25,
+                                        1.96860565e+25, 1.96860565e+25]),
+                   "shortlum": np.array([1.96860565e+24, 1.96860565e+24,
+                                         1.96860565e+24, 1.96860565e+24,
+                                         1.96860565e+24, 1.96860565e+24]),
+                    "longlum_int": 1.96860565412e+26,
+                    "shortlum_int": 1.96860565412e+25,
+                    "longlum_cumul": np.array([1.96860565e+25, 5.90581696e+25,
+                                               9.84302827e+25, 1.37802396e+26,
+                                               1.77174509e+26, 1.96860565e+26])
+                    "shortlum_cumul": np.array([1.96860565e+24, 5.90581696e+24,
+                                                9.84302827e+24,
+                                                1.37802396e+25,
+                                                1.77174509e+25,
+                                                1.96860565e+25])}
+    assert lx_test == lx_expected
