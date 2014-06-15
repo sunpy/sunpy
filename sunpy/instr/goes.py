@@ -893,11 +893,12 @@ def xray_luminosity(goeslc):
     2014-01-01 00:00:06  7e-07  7e-06
     >>> goeslc_new = xray_luminosity(goeslc)
     >>> goeslc_new.data
-                          xrsa   xrsb  luminosity_xrsa  luminosity_xrsb
-    2014-01-01 00:00:00  7e-07  7e-06     1.903523e+24     1.903523e+25
-    2014-01-01 00:00:02  7e-07  7e-06     1.903523e+24     1.903523e+25
-    2014-01-01 00:00:04  7e-07  7e-06     1.903523e+24     1.903523e+25
-    2014-01-01 00:00:06  7e-07  7e-06     1.903523e+24     1.903523e+25
+                          xrsa   xrsb    luminosity_xrsa luminosity_xrsb
+    2014-01-01 00:00:00  7e-07  7e-06     1.96860565e+24  1.96860565e+25
+    2014-01-01 00:00:02  7e-07  7e-06     1.96860565e+24  1.96860565e+25
+    2014-01-01 00:00:04  7e-07  7e-06     1.96860565e+24  1.96860565e+25
+    2014-01-01 00:00:06  7e-07  7e-06     1.96860565e+24  1.96860565e+25
+
     """
     # Check that input argument is of correct type
     if not isinstance(goeslc, sunpy.lightcurve.GOESLightCurve):
