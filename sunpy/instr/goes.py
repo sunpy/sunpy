@@ -583,8 +583,8 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal",
     # Read data representing appropriate temperature--long flux
     # relationship depending on satellite number and assumed abundances.
     with open(os.path.join(DATA_PATH, data_file), "r") as csvfile:
-        startline = dropwhile(lambda l: l.startswith(";"), csvfile)
-        csvreader = csv.DictReader(startline, delimiter=" ")
+        startline = dropwhile(lambda l: l.startswith("#"), csvfile)
+        csvreader = csv.DictReader(startline, delimiter=";")
         for row in csvreader:
             modeltemp.append(float(row["log10temp_MK"]))
             modelflux.append(float(row[label]))
