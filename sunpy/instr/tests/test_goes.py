@@ -190,6 +190,7 @@ def test_goes_lx():
     longflux_toolong = np.append(longflux, 0)
     obstime_nonchrono = copy.deepcopy(obstime)
     obstime_nonchrono[1] = obstime[-1]
+    obstime_1time = np.array(["2014-01-01 00:00:00"], dtype="datetime64[ms]")
     # First ensure correct exceptions are raised.
     with pytest.raises(ValueError):
         lx_test = goes.goes_lx(longflux_toolong, shortflux, obstime)
@@ -198,9 +199,9 @@ def test_goes_lx():
     with pytest.raises(IOError):
         lx_test = goes.goes_lx(longflux, shortflux, cumulative=True)
     with pytest.raises(IOError):
-        lx_test = goes.goes_lx(longflux, shortflux, obstime=obstime[0])
+        lx_test = goes.goes_lx(longflux, shortflux, obstime_1time)
     # Test case 1: no keywords set
-    lx_test = goes_lx(longflux, shortflux)
+    lx_test = goes.goes_lx(longflux[:2], shortflux[:2])
     lx_expected = {"longlum": np.array([1.96860565e+25, 1.96860565e+25]),
                    "shortlum": np.array([1.96860565e+24, 1.96860565e+24])}
     assert lx_test == lx_expected
@@ -223,4 +224,4 @@ def test_goes_lx():
                     "shortlum_int": 1.96860565412e+25}
     assert lx_test == lx_expected
 
-    # Test case 4: obstime and cumulative keywords set    
+    # Test case 4: obstime and cumulative keywords set
