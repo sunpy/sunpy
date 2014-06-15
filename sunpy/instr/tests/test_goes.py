@@ -178,3 +178,49 @@ def test_goes_chianti_tem():
                                        abundances="photospheric")
     assert temp8[0] < 10.36 and temp8[0] > 10.35
     assert em8[0] < 9.39e+48 and em8[0] > 9.38e+48
+
+def test_goes_lx():
+    # Define input values of flux and time.
+    longflux = np.array([7e-6,7e-6,7e-6,7e-6,7e-6,7e-6])
+    shortflux = np.array([7e-7,7e-7,7e-7,7e-7,7e-7,7e-7])
+    obstime = np.array(["2014-01-01 00:00:00", "2014-01-01 00:00:02",
+                        "2014-01-01 00:00:04", "2014-01-01 00:00:06",
+                        "2014-01-01 00:00:08", "2014-01-01 00:00:10"],
+                        dtype="datetime64[ms]")
+    longflux_toolong = np.append(longflux, 0)
+    obstime_nonchrono = copy.deepcopy(obstime)
+    obstime_nonchrono[1] = obstime[-1]
+    # First ensure correct exceptions are raised.
+    with pytest.raises(ValueError):
+        lx_test = goes.goes_lx(longflux_toolong, shortflux, obstime)
+    with pytest.raises(ValueError):
+        lx_test = goes.goes_lx(longflux, shortflux, obstime_nonchrono)
+    with pytest.raises(IOError):
+        lx_test = goes.goes_lx(longflux, shortflux, cumulative=True)
+    with pytest.raises(IOError):
+        lx_test = goes.goes_lx(longflux, shortflux, obstime=obstime[0])
+    # Test case 1: no keywords set
+    lx_test = goes_lx(longflux, shortflux)
+    lx_expected = {"longlum": np.array([1.96860565e+25, 1.96860565e+25]),
+                   "shortlum": np.array([1.96860565e+24, 1.96860565e+24])}
+    assert lx_test == lx_expected
+    
+    # Test case 2: date keyword set only
+    lx_test = goes.goes_lx(longflux[:2], shortflux[:2], date="2014-04-21")
+    lx_expected = {"longlum": np.array([1.98649103e+25, 1.98649103e+25]),
+                   "shortlum": np.array([1.98649103e+24, 1.98649103e+24])}
+    assert lx_test == lx_expected
+
+    # Test case 3: obstime keyword set only
+    lx_test = goes.goes_lx(longflux, shortflux, obstime)
+    lx_expected = {"longlum": np.array([1.96860565e+25, 1.96860565e+25,
+                                        1.96860565e+25, 1.96860565e+25,
+                                        1.96860565e+25, 1.96860565e+25]),
+                   "shortlum": np.array([1.96860565e+24, 1.96860565e+24,
+                                         1.96860565e+24, 1.96860565e+24,
+                                         1.96860565e+24, 1.96860565e+24]),
+                    "longlum_int": 1.96860565412e+26,
+                    "shortlum_int": 1.96860565412e+25}
+    assert lx_test == lx_expected
+
+    # Test case 4: obstime and cumulative keywords set    
