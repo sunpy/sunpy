@@ -87,7 +87,8 @@ def get_goes_event_list(timerange, goes_class_filter=None):
 
     return goes_event_list
 
-def temp_em(goeslc, abundances="coronal", download=False, download_dir=DATA_PATH):
+def temp_em(goeslc, abundances="coronal",
+            download=False, download_dir=DATA_PATH):
     """
     Calculates and adds temperature and EM to a GOESLightCurve.
 
@@ -814,8 +815,8 @@ def calc_rad_loss(temp, em, obstime=None, cumulative=False, download=False,
     if obstime is not None:
         # First ensure longflux, shortflux, and obstime are all of same
         # length.
-        if len(longflux) != len(shortflux) != len(obstime):
-            raise ValueError("longflux, shortflux, and obstime must all have "
+        if len(temp) != len(em) != len(obstime):
+            raise ValueError("temp, em, and obstime must all have "
                              "same number of elements.")
         # Calculate time intervals between time measurements.
         dt = _time_intervals(obstime)
@@ -830,7 +831,7 @@ def calc_rad_loss(temp, em, obstime=None, cumulative=False, download=False,
             n = len(obstime)
             rad_loss_cumul = np.zeros(n)
             for i in range(n):
-                rad_loss_cumul[i] = np.sum(rad_loss_rate[:i]*dt[:i])
+                rad_loss_cumul[i] = np.sum(rad_loss_rate[:i+1]*dt[:i+1])
             # Enter results into output dictionary.
             rad_loss_out = {"rad_loss_rate":rad_loss_rate,
                             "rad_loss_cumul" : rad_loss_cumul,
