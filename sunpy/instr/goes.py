@@ -1019,8 +1019,8 @@ def goes_lx(longflux, shortflux, obstime=None, date=None, cumulative=False):
             longlum_cumul = np.zeros(n)
             shortlum_cumul = np.zeros(n)
             for i in range(n):
-                longlum_cumul[i] = np.sum(longlum[:i]*dt[:i])
-                shortlum_cumul[i] = np.sum(shortlum[:i]*dt[:i])
+                longlum_cumul[i] = np.sum(longlum[:i+1]*dt[:i+1])
+                shortlum_cumul[i] = np.sum(shortlum[:i+1]*dt[:i+1])
             # Enter results into output dictionary
             lx_out = {"longlum":longlum, "shortlum":shortlum,
                       "longlum_cumul":longlum_cumul,
