@@ -836,10 +836,10 @@ def calc_rad_loss(temp, em, obstime=None, cumulative=False, download=False,
             # Enter results into output dictionary.
             rad_loss_out = {"rad_loss_rate":rad_loss_rate,
                             "rad_loss_cumul" : rad_loss_cumul,
-                            "rad_loss_int":rad_loss_int}
+                            "rad_loss_int":rad_loss_int, "dt":dt}
         else:
             rad_loss_out = {"rad_loss_rate":rad_loss_rate,
-                            "rad_loss_int":rad_loss_int}
+                            "rad_loss_int":rad_loss_int, "dt":dt}
     else:
         # Ensure cumulative kwarg wasn't set without setting obstime.
         if cumulative:
