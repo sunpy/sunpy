@@ -223,16 +223,16 @@ def test_calc_rad_loss():
                                                     3.01851392e+26,
                                                     3.01851392e+26,
                                                     3.01851392e+26]),
-                    "rad_loss_int": 3.01851392e+27}#,
-                    #"dt": np.array([1, 2, 2, 2, 2, 1], dtype="float64")}
+                    "rad_loss_int": 3.01851392e+27,
+                    "dt": np.array([1, 2, 2, 2, 2, 1], dtype="float64")}
     assert sorted(rad_loss_test.keys()) == sorted(rad_loss_expected.keys())
     assert np.allclose(rad_loss_test["rad_loss_rate"],
                        rad_loss_expected["rad_loss_rate"],
                        rtol=0.01)
     assert np.allclose(rad_loss_test["rad_loss_int"],
                        rad_loss_expected["rad_loss_int"], rtol=0.01)
-    #assert np.allclose(rad_loss_test["dt"], rad_loss_expected["dt"],
-    #                   rtol=0.0001)
+    assert np.allclose(rad_loss_test["dt"], rad_loss_expected["dt"],
+                       rtol=0.0001)
 
     # Test case 3: obstime and cumulative kwargs set
     rad_loss_test = goes.calc_rad_loss(temp, em, obstime, cumulative=True)
@@ -246,8 +246,8 @@ def test_calc_rad_loss():
                     "rad_loss_cumul": np.array([3.01851392e+26, 9.05554175e+26,
                                                 1.50925696e+27, 2.11295974e+27,
                                                 2.71666252e+27,
-                                                3.01851392e+27])}#,
-                    #"dt": np.array([1, 2, 2, 2, 2, 1], dtype="float64")}
+                                                3.01851392e+27]),
+                    "dt": np.array([1, 2, 2, 2, 2, 1], dtype="float64")}
     assert sorted(rad_loss_test.keys()) == sorted(rad_loss_expected.keys())
     assert np.allclose(rad_loss_test["rad_loss_rate"],
                        rad_loss_expected["rad_loss_rate"], rtol=0.0001)
@@ -255,8 +255,8 @@ def test_calc_rad_loss():
                        rad_loss_expected["rad_loss_int"], rtol=0.0001)
     assert np.allclose(rad_loss_test["rad_loss_cumul"],
                        rad_loss_expected["rad_loss_cumul"], rtol=0.0001)
-    #assert np.allclose(rad_loss_test["dt"], rad_loss_expected["dt"],
-    #                   rtol=0.0001)
+    assert np.allclose(rad_loss_test["dt"], rad_loss_expected["dt"],
+                       rtol=0.0001)
 
 def test_goes_lx():
     # Define input values of flux and time.
