@@ -821,7 +821,7 @@ def calc_rad_loss(temp, em, obstime=None, cumulative=False, download=False,
             raise ValueError("obstime must have same number of elements as "
                              "temp and em.")
         # Calculate time intervals between time measurements.
-        dt = _time_intervals(obstime)
+        dt = _time_steps(obstime)
         # Check that times are in chronological order
         if np.min(dt) <= 0:
             raise ValueError("times in obstime must be in " +
@@ -1007,7 +1007,7 @@ def goes_lx(longflux, shortflux, obstime=None, date=None, cumulative=False):
             raise ValueError("longflux, shortflux, and obstime must all have "
                              "same number of elements.")
         # Calculate time intervals between each measurement.
-        dt = _time_intervals(obstime)
+        dt = _time_steps(obstime)
         # Check that times are in chronological order
         if np.min(dt) <= 0:
             raise ValueError("times in obstime must be in "
@@ -1097,7 +1097,7 @@ def _calc_xraylum(flux, date=None):
     else:
         return 4 * np.pi * (sun.constants.au.value)**2 * 1e7 * flux
 
-def _time_intervals(obstime):
+def _time_steps(obstime):
     """
     Calculates time intervals between measurement times in seconds.
 
@@ -1136,7 +1136,7 @@ def _time_intervals(obstime):
                             "2014-01-01 00:00:08"
                             "2014-01-01 00:00:10"],
                             dtype="datetime64[ms]")
-    >>> dt = _time_intervals(obstime)
+    >>> dt = _time_steps(obstime)
     >>> dt
     array([ 1.000,  2.000,  2.000,  2.000,  2.000,  1.000])
 
