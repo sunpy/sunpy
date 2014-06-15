@@ -769,11 +769,11 @@ def calc_rad_loss(temp, em, obstime=None, cumulative=False, download=False,
 
     Examples
     --------
-    >>> temp = np.array([11.28295376, 11.28295376])
-    >>> em = np.array([4.78577516e+48, 4.78577516e+48])
+    >>> temp = np.array([11.0, 11.0])
+    >>> em = np.array([4.0e+48, 4.0e+48])
     >>> rad_loss = calc_rad_loss(temp, em)
-    >>> rad_loss
-    array([  3.57994116e+26,   3.57994116e+26])
+    >>> rad_loss["rad_loss_rate"]
+    array([  3.01851392e+26,   3.01851392e+26])
     """
     # Check inputs are correct
     temp = np.asanyarray(temp, dtype=np.float64)
