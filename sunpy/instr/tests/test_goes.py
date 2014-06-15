@@ -200,17 +200,24 @@ def test_goes_lx():
         lx_test = goes.goes_lx(longflux, shortflux, cumulative=True)
     with pytest.raises(IOError):
         lx_test = goes.goes_lx(longflux, shortflux, obstime_1time)
+
     # Test case 1: no keywords set
     lx_test = goes.goes_lx(longflux[:2], shortflux[:2])
     lx_expected = {"longlum": np.array([1.96860565e+25, 1.96860565e+25]),
                    "shortlum": np.array([1.96860565e+24, 1.96860565e+24])}
-    assert lx_test == lx_expected
+    assert sorted(lx_test.keys()) == sorted(lx_expected.keys())
+    assert np.allclose(lx_test["longlum"], lx_expected["longlum"], rtol=0.0001)
+    assert np.allclose(lx_test["shortlum"], lx_expected["shortlum"],
+                       rtol=0.0001)
     
     # Test case 2: date keyword set only
     lx_test = goes.goes_lx(longflux[:2], shortflux[:2], date="2014-04-21")
     lx_expected = {"longlum": np.array([1.98649103e+25, 1.98649103e+25]),
                    "shortlum": np.array([1.98649103e+24, 1.98649103e+24])}
-    assert lx_test == lx_expected
+    assert sorted(lx_test.keys()) == sorted(lx_expected.keys())
+    assert np.allclose(lx_test["longlum"], lx_expected["longlum"], rtol=0.0001)
+    assert np.allclose(lx_test["shortlum"], lx_expected["shortlum"],
+                       rtol=0.0001)
 
     # Test case 3: obstime keyword set only
     lx_test = goes.goes_lx(longflux, shortflux, obstime)
@@ -221,8 +228,16 @@ def test_goes_lx():
                                          1.96860565e+24, 1.96860565e+24,
                                          1.96860565e+24, 1.96860565e+24]),
                     "longlum_int": 1.96860565412e+26,
-                    "shortlum_int": 1.96860565412e+25}
-    assert lx_test == lx_expected
+                    "shortlum_int": 1.96860565412e+25,
+                    "dt": np.array([1, 2, 2, 2, 2, 1], dtype="float64")}
+    assert sorted(lx_test.keys()) == sorted(lx_expected.keys())
+    assert np.allclose(lx_test["longlum"], lx_expected["longlum"], rtol=0.0001)
+    assert np.allclose(lx_test["shortlum"], lx_expected["shortlum"],
+                       rtol=0.0001)
+    assert np.allclose(lx_test["longlum_int"], lx_expected["longlum_int"],
+                       rtol=0.0001)
+    assert np.allclose(lx_test["shortlum_int"], lx_expected["shortlum_int"],
+                       rtol=0.0001)
 
     # Test case 4: obstime and cumulative keywords set
     lx_test = goes.goes_lx(longflux, shortflux, obstime, cumulative=True)
@@ -236,10 +251,23 @@ def test_goes_lx():
                     "shortlum_int": 1.96860565412e+25,
                     "longlum_cumul": np.array([1.96860565e+25, 5.90581696e+25,
                                                9.84302827e+25, 1.37802396e+26,
-                                               1.77174509e+26, 1.96860565e+26])
+                                               1.77174509e+26,
+                                               1.96860565e+26]),
                     "shortlum_cumul": np.array([1.96860565e+24, 5.90581696e+24,
                                                 9.84302827e+24,
                                                 1.37802396e+25,
                                                 1.77174509e+25,
-                                                1.96860565e+25])}
-    assert lx_test == lx_expected
+                                                1.96860565e+25]),
+                    "dt": np.array([1, 2, 2, 2, 2, 1], dtype="float64")}
+    assert sorted(lx_test.keys()) == sorted(lx_expected.keys())
+    assert np.allclose(lx_test["longlum"], lx_expected["longlum"], rtol=0.0001)
+    assert np.allclose(lx_test["shortlum"], lx_expected["shortlum"],
+                       rtol=0.0001)
+    assert np.allclose(lx_test["longlum_int"], lx_expected["longlum_int"],
+                       rtol=0.0001)
+    assert np.allclose(lx_test["shortlum_int"], lx_expected["shortlum_int"],
+                       rtol=0.0001)
+    assert np.allclose(lx_test["longlum_cumul"], lx_expected["longlum_cumul"],
+                       rtol=0.0001)
+    assert np.allclose(lx_test["shortlum_cumul"],
+                       lx_expected["shortlum_cumul"], rtol=0.0001)
