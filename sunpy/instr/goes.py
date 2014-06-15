@@ -778,6 +778,8 @@ def calc_rad_loss(temp, em, obstime=None, cumulative=False, download=False,
     # Check inputs are correct
     temp = np.asanyarray(temp, dtype=np.float64)
     em = np.asanyarray(em, dtype=np.float64)
+    if len(temp) != len(em):
+        raise ValueError("temp and em must all have same number of elements.")
     # If download kwarg is True, or required data files cannot be
     # found locally, download required data files.
     check_download_file(FILE_RAD_COR, GOES_REMOTE_PATH, download_dir,
@@ -813,11 +815,11 @@ def calc_rad_loss(temp, em, obstime=None, cumulative=False, download=False,
     # If obstime keyword giving measurement times is set, calculate
     # radiative losses intergrated over time.
     if obstime is not None:
-        # First ensure longflux, shortflux, and obstime are all of same
-        # length.
-        if len(temp) != len(em) != len(obstime):
-            raise ValueError("temp, em, and obstime must all have "
-                             "same number of elements.")
+        # First ensure obstime is of same length as temp and em.
+        n = len(temp)
+        if len(obstime) != n:
+            raise ValueError("obstime must have same number of elements as "
+                             "temp and em.")
         # Calculate time intervals between time measurements.
         dt = _time_intervals(obstime)
         # Check that times are in chronological order
@@ -828,7 +830,6 @@ def calc_rad_loss(temp, em, obstime=None, cumulative=False, download=False,
         # If cumulative kwarg True, calculate cumulative radiated energy
         # in each GOES channel as a function of time.
         if cumulative:
-            n = len(obstime)
             rad_loss_cumul = np.zeros(n)
             for i in range(n):
                 rad_loss_cumul[i] = np.sum(rad_loss_rate[:i+1]*dt[:i+1])
