@@ -980,15 +980,15 @@ def goes_lx(longflux, shortflux, obstime=None, date=None, cumulative=False):
                             dtype="datetime64[ms]")
     >>> lx_out = goes_lx(longflux, shortflux, obstime)
     >>> lx_out["longlum"]
-    array([  1.98650769e+25,   1.98650769e+25,   1.98650769e+25,
-             1.98650769e+25,   1.98650769e+25,   1.98650769e+25])
+    array([  1.96860565e+25,   1.96860565e+25,   1.96860565e+25,
+             1.96860565e+25,   1.96860565e+25,   1.96860565e+25])
     >>> lx_out["shortlum"]
-    array([  1.98650769e+24,   1.98650769e+24,   1.98650769e+24,
-             1.98650769e+24,   1.98650769e+24,   1.98650769e+24])
+    array([  1.96860565e+24,   1.96860565e+24,   1.96860565e+24,
+             1.96860565e+24,   1.96860565e+24,   1.96860565e+24])
     >>> lx_out["longlum_int"]
-    2.0337865720138238e+26
+    1.96860565412e+26
     >>> lx_out["shortlum_int"]
-    2.0337865720138235e+25
+    1.96860565412e+25
 
     """
     # Calculate X-ray luminosities
