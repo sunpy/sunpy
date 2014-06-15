@@ -164,7 +164,7 @@ def apparent_longitude(t=None):
     T = julian_centuries(t)
     omega = (259.18 - 1934.142 * T) * u.deg
     true_long = true_longitude(t)        
-    result = true_long - (0.00569 - 0.00479 * np.sin(np.radians(omega))) * u.deg
+    result = true_long - (0.00569 - 0.00479 * np.sin(omega)) * u.deg
     return Longitude(result) 
 
 def true_latitude(t='now'): # pylint: disable=W0613
@@ -201,7 +201,7 @@ def apparent_rightascenscion(t=None):
     """Returns the apparent right ascenscion of the Sun."""
     y = np.cos(apparent_obliquity_of_ecliptic(t)) * np.sin(apparent_longitude(t))
     x = np.cos(apparent_longitude(t))
-    app_ra = np.rad2deg(np.arctan2(y, x))
+    app_ra = np.arctan2(y, x)
     return Longitude(app_ra.to(u.hourangle)) 
 
 def apparent_declination(t=None):
@@ -242,7 +242,7 @@ def heliographic_solar_center(t=None):
     # Longitude at center of disk (deg):
     y = -np.sin(diff)*np.cos(i)
     x = -np.cos(diff)
-    rpol = np.rad2deg(np.arctan2(y, x))
+    rpol = (np.arctan2(y, x))
     he_lon = rpol - theta
     return [Longitude(he_lon), Latitude(he_lat)]
 
