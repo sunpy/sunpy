@@ -824,14 +824,14 @@ def calc_rad_loss(temp, em, obstime=None, cumulative=False, download=False,
         # First ensure obstime is of same length as temp and em.
         n = len(temp)
         if len(obstime) != n:
-            raise ValueError("obstime must have same number of elements as "
-                             "temp and em.")
+            raise IOError("obstime must have same number of elements as "
+                          "temp and em.")
         # Calculate time intervals between time measurements.
         dt = _time_steps(obstime)
         # Check that times are in chronological order
         if np.min(dt) <= 0:
-            raise ValueError("times in obstime must be in " +
-                             "chronological order.")
+            raise ValueError("times in obstime must be in chronological order."
+                             )
         rad_loss_int = np.sum(rad_loss*dt)
         # If cumulative kwarg True, calculate cumulative radiated energy
         # in each GOES channel as a function of time.
