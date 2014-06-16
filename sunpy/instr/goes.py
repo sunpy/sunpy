@@ -903,7 +903,7 @@ def xray_luminosity(goeslc):
 
     """
     # Check that input argument is of correct type
-    if not isinstance(goeslc, sunpy.lightcurve.GOESLightCurve):
+    if not isinstance(goeslc, lightcurve.GOESLightCurve):
         raise TypeError("goeslc must be a GOESLightCurve object.")
     # Find temperature and emission measure with goes_chianti_tem
     lx_out = goes_lx(goeslc.data.xrsb, goeslc.data.xrsa,
