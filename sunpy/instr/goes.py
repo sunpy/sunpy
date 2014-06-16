@@ -75,7 +75,8 @@ def get_goes_event_list(timerange, goes_class_filter=None):
 
     for r in result:
         goes_event = {
-            'event_date': parse_time(r['event_starttime']).date().strftime('%Y-%m-%d'),
+            'event_date': parse_time(r['event_starttime']).date().strftime(
+                '%Y-%m-%d'),
             'start_time': parse_time(r['event_starttime']),
             'peak_time': parse_time(r['event_peaktime']),
             'end_time': parse_time(r['event_endtime']),
@@ -181,7 +182,7 @@ def goes_chianti_tem(longflux, shortflux, satellite=8,
     ----------
     longflux, shortflux : ndarray or array-like which can be converted
         to float64 type, such as an np.array, tuple, list.
-        Arrays containing the long and short GOES/XRS flux measurements 
+        Arrays containing the long and short GOES/XRS flux measurements
         respectively as a function of time.  Must be of same length.
         Units=[W/m**2].
 
@@ -623,7 +624,7 @@ def rad_loss_rate(goeslc, download=False, download_dir=DATA_PATH):
     Parameters
     ----------
     goeslc : GOESLightCurve object
-    
+
     download : (optional) bool
         If True, the GOES radiative loss data file is downloaded.
         It is important to do this if a new version of the files has
@@ -662,11 +663,11 @@ def rad_loss_rate(goeslc, download=False, download_dir=DATA_PATH):
     >>> goeslc_new = rad_loss_rate(goeslc)
     >>> goeslc_new.data
                                xrsa   xrsb  temperature            em  \
-    2014-01-01 00:00:00  9.1873e-08  4e-06     6.270239  6.440648e+48         
-    2014-01-01 00:00:02  9.1873e-08  4e-06     6.270239  6.440648e+48       
-    2014-01-01 00:00:04  9.1873e-08  4e-06     6.273917  6.422207e+48       
-    2014-01-01 00:00:06  9.2988e-08  4e-06     6.304001  6.350370e+48       
-    2014-01-01 00:00:08  9.1873e-08  4e-06     6.277604  6.403795e+48       
+    2014-01-01 00:00:00  9.1873e-08  4e-06     6.270239  6.440648e+48
+    2014-01-01 00:00:02  9.1873e-08  4e-06     6.270239  6.440648e+48
+    2014-01-01 00:00:04  9.1873e-08  4e-06     6.273917  6.422207e+48
+    2014-01-01 00:00:06  9.2988e-08  4e-06     6.304001  6.350370e+48
+    2014-01-01 00:00:08  9.1873e-08  4e-06     6.277604  6.403795e+48
 
                           rad_loss_rate
     2014-01-01 00:00:00  5.44914366e+26
@@ -727,13 +728,13 @@ def calc_rad_loss(temp, em, obstime=None, cumulative=False, download=False,
         such as an np.array, tuple, list.  Units=[MK]
         Array containing the temperature of the coronal plasma at
         different times.
-        
+
     em : ndarray or array-like which can be converted to float64 type,
         such as an np.array, tuple, list.  Units=[cm**-3]
         Array containing the emission measure of the coronal plasma
         at the same times corresponding to the temperatures in temp.
         Must be same length as temp.
-        
+
     obstime : (optional) ndarray array or array-like whose entries are
         (or can be converted to) datetime64 type, e.g. np.array, list,
         string array.
@@ -741,7 +742,7 @@ def calc_rad_loss(temp, em, obstime=None, cumulative=False, download=False,
         emission measure values correspond.  Must be same length
         as temp and em.  If this keyword is set, the integrated
         radiated energy is calculated.
-        
+
     download : (optional) bool
         If True, the GOES radiative loss data file is downloaded.  It is
         important to do this if a new version of the files has been
@@ -819,7 +820,7 @@ def calc_rad_loss(temp, em, obstime=None, cumulative=False, download=False,
     # Perform spline fit to model data to get temperatures for input
     # values of flux ratio
     spline = interpolate.splrep(modeltemp, model_loss_rate, s=0)
-    rad_loss_rate = em * interpolate.splev(temp*1e6, spline, der=0)
+    rad_loss = em * interpolate.splev(temp*1e6, spline, der=0)
 
     # If obstime keyword giving measurement times is set, calculate
     # radiative losses intergrated over time.
@@ -835,19 +836,19 @@ def calc_rad_loss(temp, em, obstime=None, cumulative=False, download=False,
         if np.min(dt) <= 0:
             raise ValueError("times in obstime must be in " +
                              "chronological order.")
-        rad_loss_int = np.sum(rad_loss_rate*dt)
+        rad_loss_int = np.sum(rad_loss*dt)
         # If cumulative kwarg True, calculate cumulative radiated energy
         # in each GOES channel as a function of time.
         if cumulative:
             rad_loss_cumul = np.zeros(n)
             for i in range(n):
-                rad_loss_cumul[i] = np.sum(rad_loss_rate[:i+1]*dt[:i+1])
+                rad_loss_cumul[i] = np.sum(rad_loss[:i+1]*dt[:i+1])
             # Enter results into output dictionary.
-            rad_loss_out = {"rad_loss_rate":rad_loss_rate,
+            rad_loss_out = {"rad_loss_rate":rad_loss,
                             "rad_loss_cumul" : rad_loss_cumul,
                             "rad_loss_int":rad_loss_int, "dt":dt}
         else:
-            rad_loss_out = {"rad_loss_rate":rad_loss_rate,
+            rad_loss_out = {"rad_loss_rate":rad_loss,
                             "rad_loss_int":rad_loss_int, "dt":dt}
     else:
         # Ensure cumulative kwarg wasn't set without setting obstime.
@@ -858,7 +859,7 @@ def calc_rad_loss(temp, em, obstime=None, cumulative=False, download=False,
                           "times must be given via the obstime keyword.")
         # If keyword assignments are OK, enter results into output
         # dictionary.
-        rad_loss_out = {"rad_loss_rate":rad_loss_rate}
+        rad_loss_out = {"rad_loss_rate":rad_loss}
 
     return rad_loss_out
 
@@ -940,16 +941,16 @@ def goes_lx(longflux, shortflux, obstime=None, date=None, cumulative=False):
     longflux : ndarray or array-like which can be converted to float64
         type, such as an np.array, tuple, list.
         Array containing the observed GOES/XRS long channel flux.
-        
+
     shortflux : ndarray or array-like which can be converted to float64
         type, such as an np.array, tuple, list.
         Array containing the observed GOES/XRS short channel flux.
-        
+
     obstime : (optional) numpy ndarray, dtype=datetime64
         Measurement times corresponding to each flux measurement.
         Assumes each pair of 0.5-4 and 1-8 angstrom flux measurements
         were taken simultaneously.
-        
+
     date : (optional) datetime object or valid date string.
         Date at which measurements were taken.
 
@@ -1071,7 +1072,7 @@ def _calc_xraylum(flux, date=None):
     flux : ndarray or array-like which can be converted to float64 type,
         such as an np.array, tuple, list.
         Array containing the observed solar flux in units of W/m**2
-           
+
     date : (optional) datetime object or valid date string
         Used to calculate a more accurate Sun-Earth distance based on
         Earth's orbit at that date.  If date is not set, standard value
@@ -1101,7 +1102,7 @@ def _calc_xraylum(flux, date=None):
     flux = np.asanyarray(flux, dtype=np.float64)
     if date is not None:
         date = parse_time(date) # Ensure date is of correct type
-        return 4 * np.pi * (sun.constants.au.value * 
+        return 4 * np.pi * (sun.constants.au.value *
                             sun.sunearth_distance(t=date))**2 * 1e7 * flux
     else:
         return 4 * np.pi * (sun.constants.au.value)**2 * 1e7 * flux

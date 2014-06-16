@@ -14,7 +14,7 @@ from pandas.util.testing import assert_frame_equal
 @pytest.mark.online
 def test_goes_event_list():
     # Set a time range to search
-    trange = TimeRange('2011-06-07 00:00','2011-06-08 00:00')
+    trange = TimeRange('2011-06-07 00:00', '2011-06-08 00:00')
     # Test case where GOES class filter is applied
     result = goes.get_goes_event_list(trange, goes_class_filter='M1')
     assert type(result) == list
@@ -28,9 +28,9 @@ def test_goes_event_list():
     assert type(result[0]['noaa_active_region'] == int)
     assert result[0]['event_date'] == '2011-06-07'
     assert result[0]['goes_location'] == (54, -21)
-    assert result[0]['start_time'] == datetime.datetime(2011,6,7,6,16)
-    assert result[0]['peak_time'] == datetime.datetime(2011,6,7,6,41)
-    assert result[0]['end_time'] == datetime.datetime(2011,6,7,6,59)
+    assert result[0]['start_time'] == datetime.datetime(2011, 6, 7, 6, 16)
+    assert result[0]['peak_time'] == datetime.datetime(2011, 6, 7, 6, 41)
+    assert result[0]['end_time'] == datetime.datetime(2011, 6, 7, 6, 59)
     assert result[0]['goes_class'] == 'M2.5'
     assert result[0]['noaa_active_region'] == 11226
     # Test case where GOES class filter not applied
@@ -46,12 +46,12 @@ def test_goes_event_list():
     assert type(result[0]['noaa_active_region'] == int)
     assert result[0]['event_date'] == '2011-06-07'
     assert result[0]['goes_location'] == (54, -21)
-    assert result[0]['start_time'] == datetime.datetime(2011,6,7,6,16)
-    assert result[0]['peak_time'] == datetime.datetime(2011,6,7,6,41)
-    assert result[0]['end_time'] == datetime.datetime(2011,6,7,6,59)
+    assert result[0]['start_time'] == datetime.datetime(2011, 6, 7, 6, 16)
+    assert result[0]['peak_time'] == datetime.datetime(2011, 6, 7, 6, 41)
+    assert result[0]['end_time'] == datetime.datetime(2011, 6, 7, 6, 59)
     assert result[0]['goes_class'] == 'M2.5'
     assert result[0]['noaa_active_region'] == 11226
-    
+
 
 @pytest.mark.online
 def test_temp_em():
@@ -64,14 +64,12 @@ def test_temp_em():
     with pytest.raises(TypeError):
         goes.temp_em([])
     # Find temperature and EM manually with goes_chianti_tem()
-    t, em = goes.goes_chianti_tem(np.array(goeslc.data.xrsb),
-                                  np.array(goeslc.data.xrsa),
-                                  satellite = \
-                                  int(goeslc.meta["TELESCOP"].split()[1]),
-                                  date="2014-01-01")
+    temp, em = goes.goes_chianti_tem(
+        np.array(goeslc.data.xrsb), np.array(goeslc.data.xrsa),
+        satellite=int(goeslc.meta["TELESCOP"].split()[1]), date="2014-01-01")
     # Check that temperature and EM arrays from goes_chianti_tem()
     # are same as those in new GOESLightcurve object.
-    assert goeslc_new.data.temperature.all() == t.all()
+    assert goeslc_new.data.temperature.all() == temp.all()
     assert goeslc_new.data.em.all() == em.all()
     # Check rest of data frame of new GOESLightCurve object is same
     # as that in original object.
@@ -123,10 +121,10 @@ def test_goes_chianti_tem():
         em = goes._goes_get_chianti_em(longflux, temp_test_toosmall)
     with pytest.raises(ValueError):
         em = goes._goes_get_chianti_em(longflux, temp_test_toobig)
-        
+
     # test case 1: satellite > 7, abundances = coronal
     temp1, em1 = goes.goes_chianti_tem(longflux, shortflux, satellite=15,
-                                     date=date)
+                                       date=date)
     assert np.around(temp1[0], decimals=2) == 11.28
     assert em1[0] < 4.79e+48 and em1[0] > 4.78e+48
 
@@ -136,7 +134,7 @@ def test_goes_chianti_tem():
                                        abundances="photospheric")
     assert temp2[0] < 10.25 and temp2[0] > 10.24
     assert em2[0] < 1.12e+49 and em2[0] > 1.11e+49
-    
+
     # test case 3: satellite < 8 and != 6, abundances = coronal
     temp3, em3 = goes.goes_chianti_tem(longflux, shortflux, satellite=5,
                                        date=date,
@@ -157,7 +155,7 @@ def test_goes_chianti_tem():
                                        abundances="coronal")
     assert temp5[0] < 12.30 and temp5[0] > 12.29
     assert em5[0] < 3.13e+48 and em5[0] > 3.12e+48
-    
+
     # test case 6: satellite = 6, date < 1983-06-28, abundances = photospheric
     temp6, em6 = goes.goes_chianti_tem(longflux, shortflux, satellite=6,
                                        date="1983-06-27",
@@ -171,7 +169,7 @@ def test_goes_chianti_tem():
                                        abundances="coronal")
     assert temp7[0] < 11.34 and temp7[0] > 11.33
     assert em7[0] < 4.08e+48 and em7[0] > 4.07e+48
-    
+
     # test case 8: satellite = 6, date > 1983-06-28, abundances = photospheric
     temp8, em8 = goes.goes_chianti_tem(longflux, shortflux, satellite=6,
                                        date=date,
@@ -195,13 +193,13 @@ def test_calc_rad_loss():
     em = np.array([4.0e+48, 4.0e+48, 4.0e+48, 4.0e+48, 4.0e+48, 4.0e+48])
     obstime = np.array(["2014-01-01 00:00:00", "2014-01-01 00:00:02",
                         "2014-01-01 00:00:04", "2014-01-01 00:00:06",
-                        "2014-01-01 00:00:08", "2014-01-01 00:00:10"],
-                        dtype="datetime64[ms]")
+                        "2014-01-01 00:00:08",
+                        "2014-01-01 00:00:10"], dtype="datetime64[ms]")
     temp_toolong = np.append(temp, 0)
     obstime_toolong = np.array(["2014-01-01 00:00:00", "2014-01-01 00:00:02",
-                        "2014-01-01 00:00:04", "2014-01-01 00:00:06",
-                        "2014-01-01 00:00:08", "2014-01-01 00:00:10",
-                        "2014-01-01 00:00:12"], dtype="datetime64[ms]")
+                                "2014-01-01 00:00:04", "2014-01-01 00:00:06",
+                                "2014-01-01 00:00:08", "2014-01-01 00:00:10",
+                                "2014-01-01 00:00:12"], dtype="datetime64[ms]")
     obstime_nonchrono = copy.deepcopy(obstime)
     obstime_nonchrono[1] = obstime[-1]
     obstime_1time = np.array(["2014-01-01 00:00:00"], dtype="datetime64[ms]")
@@ -227,14 +225,13 @@ def test_calc_rad_loss():
 
     # Test case 2: obstime kwarg set
     rad_loss_test = goes.calc_rad_loss(temp, em, obstime)
-    rad_loss_expected = {"rad_loss_rate": np.array([3.01851392e+26,
-                                                    3.01851392e+26,
-                                                    3.01851392e+26,
-                                                    3.01851392e+26,
-                                                    3.01851392e+26,
-                                                    3.01851392e+26]),
-                    "rad_loss_int": 3.01851392e+27,
-                    "dt": np.array([1, 2, 2, 2, 2, 1], dtype="float64")}
+    rad_loss_expected = {
+        "rad_loss_rate": np.array([3.01851392e+26, 3.01851392e+26,
+                                   3.01851392e+26, 3.01851392e+26,
+                                   3.01851392e+26, 3.01851392e+26]),
+        "rad_loss_int": 3.01851392e+27,
+        "dt": np.array([1, 2, 2, 2, 2, 1], dtype="float64")
+        }
     assert sorted(rad_loss_test.keys()) == sorted(rad_loss_expected.keys())
     assert np.allclose(rad_loss_test["rad_loss_rate"],
                        rad_loss_expected["rad_loss_rate"],
@@ -246,18 +243,16 @@ def test_calc_rad_loss():
 
     # Test case 3: obstime and cumulative kwargs set
     rad_loss_test = goes.calc_rad_loss(temp, em, obstime, cumulative=True)
-    rad_loss_expected = {"rad_loss_rate": np.array([3.01851392e+26,
-                                                    3.01851392e+26,
-                                                    3.01851392e+26,
-                                                    3.01851392e+26,
-                                                    3.01851392e+26,
-                                                    3.01851392e+26]),
-                    "rad_loss_int": 3.01851392e+27,
-                    "rad_loss_cumul": np.array([3.01851392e+26, 9.05554175e+26,
-                                                1.50925696e+27, 2.11295974e+27,
-                                                2.71666252e+27,
-                                                3.01851392e+27]),
-                    "dt": np.array([1, 2, 2, 2, 2, 1], dtype="float64")}
+    rad_loss_expected = {
+        "rad_loss_rate": np.array([3.01851392e+26, 3.01851392e+26,
+                                   3.01851392e+26, 3.01851392e+26,
+                                   3.01851392e+26, 3.01851392e+26]),
+        "rad_loss_int": 3.01851392e+27,
+        "rad_loss_cumul": np.array([3.01851392e+26, 9.05554175e+26,
+                                    1.50925696e+27, 2.11295974e+27,
+                                    2.71666252e+27, 3.01851392e+27]),
+        "dt": np.array([1, 2, 2, 2, 2, 1], dtype="float64")
+        }
     assert sorted(rad_loss_test.keys()) == sorted(rad_loss_expected.keys())
     assert np.allclose(rad_loss_test["rad_loss_rate"],
                        rad_loss_expected["rad_loss_rate"], rtol=0.0001)
@@ -283,12 +278,12 @@ def test_xray_luminosity():
 
 def test_goes_lx():
     # Define input values of flux and time.
-    longflux = np.array([7e-6,7e-6,7e-6,7e-6,7e-6,7e-6])
-    shortflux = np.array([7e-7,7e-7,7e-7,7e-7,7e-7,7e-7])
+    longflux = np.array([7e-6, 7e-6, 7e-6, 7e-6, 7e-6, 7e-6])
+    shortflux = np.array([7e-7, 7e-7, 7e-7, 7e-7, 7e-7, 7e-7])
     obstime = np.array(["2014-01-01 00:00:00", "2014-01-01 00:00:02",
                         "2014-01-01 00:00:04", "2014-01-01 00:00:06",
-                        "2014-01-01 00:00:08", "2014-01-01 00:00:10"],
-                        dtype="datetime64[ms]")
+                        "2014-01-01 00:00:08",
+                        "2014-01-01 00:00:10"], dtype="datetime64[ms]")
     longflux_toolong = np.append(longflux, 0)
     obstime_nonchrono = copy.deepcopy(obstime)
     obstime_nonchrono[1] = obstime[-1]
@@ -311,7 +306,7 @@ def test_goes_lx():
     assert np.allclose(lx_test["longlum"], lx_expected["longlum"], rtol=0.0001)
     assert np.allclose(lx_test["shortlum"], lx_expected["shortlum"],
                        rtol=0.0001)
-    
+
     # Test case 2: date keyword set only
     lx_test = goes.goes_lx(longflux[:2], shortflux[:2], date="2014-04-21")
     lx_expected = {"longlum": np.array([1.98649103e+25, 1.98649103e+25]),
@@ -323,15 +318,15 @@ def test_goes_lx():
 
     # Test case 3: obstime keyword set only
     lx_test = goes.goes_lx(longflux, shortflux, obstime)
-    lx_expected = {"longlum": np.array([1.96860565e+25, 1.96860565e+25,
-                                        1.96860565e+25, 1.96860565e+25,
-                                        1.96860565e+25, 1.96860565e+25]),
-                   "shortlum": np.array([1.96860565e+24, 1.96860565e+24,
-                                         1.96860565e+24, 1.96860565e+24,
-                                         1.96860565e+24, 1.96860565e+24]),
-                    "longlum_int": 1.96860565412e+26,
-                    "shortlum_int": 1.96860565412e+25,
-                    "dt": np.array([1, 2, 2, 2, 2, 1], dtype="float64")}
+    lx_expected = {
+        "longlum": np.array([1.96860565e+25, 1.96860565e+25, 1.96860565e+25,
+                             1.96860565e+25, 1.96860565e+25, 1.96860565e+25]),
+        "shortlum": np.array([1.96860565e+24, 1.96860565e+24, 1.96860565e+24,
+                              1.96860565e+24, 1.96860565e+24, 1.96860565e+24]),
+        "longlum_int": 1.96860565412e+26,
+        "shortlum_int": 1.96860565412e+25,
+        "dt": np.array([1, 2, 2, 2, 2, 1], dtype="float64")
+        }
     assert sorted(lx_test.keys()) == sorted(lx_expected.keys())
     assert np.allclose(lx_test["longlum"], lx_expected["longlum"], rtol=0.0001)
     assert np.allclose(lx_test["shortlum"], lx_expected["shortlum"],
@@ -344,24 +339,20 @@ def test_goes_lx():
 
     # Test case 4: obstime and cumulative keywords set
     lx_test = goes.goes_lx(longflux, shortflux, obstime, cumulative=True)
-    lx_expected = {"longlum": np.array([1.96860565e+25, 1.96860565e+25,
-                                        1.96860565e+25, 1.96860565e+25,
-                                        1.96860565e+25, 1.96860565e+25]),
-                   "shortlum": np.array([1.96860565e+24, 1.96860565e+24,
-                                         1.96860565e+24, 1.96860565e+24,
-                                         1.96860565e+24, 1.96860565e+24]),
-                    "longlum_int": 1.96860565412e+26,
-                    "shortlum_int": 1.96860565412e+25,
-                    "longlum_cumul": np.array([1.96860565e+25, 5.90581696e+25,
-                                               9.84302827e+25, 1.37802396e+26,
-                                               1.77174509e+26,
-                                               1.96860565e+26]),
-                    "shortlum_cumul": np.array([1.96860565e+24, 5.90581696e+24,
-                                                9.84302827e+24,
-                                                1.37802396e+25,
-                                                1.77174509e+25,
-                                                1.96860565e+25]),
-                    "dt": np.array([1, 2, 2, 2, 2, 1], dtype="float64")}
+    lx_expected = {
+        "longlum": np.array([1.96860565e+25, 1.96860565e+25, 1.96860565e+25,
+                             1.96860565e+25, 1.96860565e+25, 1.96860565e+25]),
+        "shortlum": np.array([1.96860565e+24, 1.96860565e+24, 1.96860565e+24,
+                              1.96860565e+24, 1.96860565e+24, 1.96860565e+24]),
+        "longlum_int": 1.96860565412e+26,
+        "shortlum_int": 1.96860565412e+25,
+        "longlum_cumul": np.array([1.96860565e+25, 5.90581696e+25,
+                                   9.84302827e+25, 1.37802396e+26,
+                                   1.77174509e+26, 1.96860565e+26]),
+        "shortlum_cumul": np.array([1.96860565e+24, 5.90581696e+24,
+                                    9.84302827e+24, 1.37802396e+25,
+                                    1.77174509e+25, 1.96860565e+25]),
+        "dt": np.array([1, 2, 2, 2, 2, 1], dtype="float64")}
     assert sorted(lx_test.keys()) == sorted(lx_expected.keys())
     assert np.allclose(lx_test["longlum"], lx_expected["longlum"], rtol=0.0001)
     assert np.allclose(lx_test["shortlum"], lx_expected["shortlum"],
@@ -377,9 +368,10 @@ def test_goes_lx():
     assert np.allclose(lx_test["dt"], lx_expected["dt"], rtol=0.0001)
 
 def test__time_steps():
-    obstime = np.array(["2014-01-01 00:00:00", "2014-01-01 00:00:02",                                  "2014-01-01 00:00:04", "2014-01-01 00:00:06",
-                        "2014-01-01 00:00:08", "2014-01-01 00:00:10"],
-                        dtype="datetime64[ms]")
+    obstime = np.array(["2014-01-01 00:00:00", "2014-01-01 00:00:02",
+                        "2014-01-01 00:00:04", "2014-01-01 00:00:06",
+                        "2014-01-01 00:00:08",
+                        "2014-01-01 00:00:10"], dtype="datetime64[ms]")
     dt_test = goes._time_steps(obstime)
-    dt_expected = np.array([ 1.0, 2.0, 2.0, 2.0, 2.0, 1.0])
+    dt_expected = np.array([1.0, 2.0, 2.0, 2.0, 2.0, 1.0])
     assert (dt_test == dt_expected).all()
