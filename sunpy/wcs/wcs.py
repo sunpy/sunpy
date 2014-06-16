@@ -24,7 +24,7 @@ def _convert_angle_units(unit='arcsec'):
     elif unit == 'mas':
         return np.deg2rad(1) / (60 * 60 * 1000.0)
     else:
-	raise ValueError("The units specified are either invalid or is not supported at this time.")
+        raise ValueError("The units specified are either invalid or is not supported at this time.")
 
 def convert_pixel_to_data(size, scale, reference_pixel, 
                           reference_coordinate, x=None, y=None):
