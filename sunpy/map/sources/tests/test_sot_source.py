@@ -45,7 +45,7 @@ def test_waves():
     assert (sot.Waves == ['6302A', 'BFI no move',
             'CN bandhead 3883', 'Ca II H line',
             'G band 4305', 'NFI no move', 'TF Fe I 6302',
-            'TF Mg I 5172', 'TF Na I 5896', 
+            'TF Mg I 5172', 'TF Na I 5896',
             'blue cont 4504', 'green cont 5550',
             'red cont 6684'])
 

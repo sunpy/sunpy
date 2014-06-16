@@ -30,23 +30,23 @@ from sunpy.sun.sun import sunearth_distance
 __all__ = ['get_obssumm_dbase_file', 'parse_obssumm_dbase_file', 'get_obssum_filename', 'get_obssumm_file', 'parse_obssumm_file', 'backprojection']
 
 # Measured fixed grid parameters
-grid_pitch = (4.52467, 7.85160, 13.5751, 23.5542, 40.7241, 70.5309, 122.164, 
+grid_pitch = (4.52467, 7.85160, 13.5751, 23.5542, 40.7241, 70.5309, 122.164,
               211.609, 366.646)
-grid_orientation = (3.53547, 2.75007, 3.53569, 2.74962, 3.92596, 2.35647, 
+grid_orientation = (3.53547, 2.75007, 3.53569, 2.74962, 3.92596, 2.35647,
                     0.786083, 0.00140674, 1.57147)
 
-data_servers = ('http://hesperia.gsfc.nasa.gov/hessidata/', 
+data_servers = ('http://hesperia.gsfc.nasa.gov/hessidata/',
                 'http://hessi.ssl.berkeley.edu/hessidata/',
                 'http://soleil.i4ds.ch/hessidata/')
 
-lc_linecolors = ('black', 'pink', 'green', 'blue', 'brown', 'red', 
+lc_linecolors = ('black', 'pink', 'green', 'blue', 'brown', 'red',
                      'navy', 'orange', 'green')
 
 def get_obssumm_dbase_file(time_range):
     """
-    Download the RHESSI observing summary database file. This file lists the 
-    name of observing summary files for specific time ranges. 
-    
+    Download the RHESSI observing summary database file. This file lists the
+    name of observing summary files for specific time ranges.
+
     Parameters
     ----------
     time_range : str, TimeRange
@@ -55,8 +55,8 @@ def get_obssumm_dbase_file(time_range):
     Returns
     -------
     value : tuple
-        Return a tuple (filename, headers) where filename is the local file 
-        name under which the object can be found, and headers is 
+        Return a tuple (filename, headers) where filename is the local file
+        name under which the object can be found, and headers is
         whatever the info() method of the object returned by urlopen.
 
     Examples
@@ -72,25 +72,25 @@ def get_obssumm_dbase_file(time_range):
         This API is currently limited to providing data from whole days only.
 
     """
-    
+
     #    http://hesperia.gsfc.nasa.gov/hessidata/dbase/hsi_obssumm_filedb_200311.txt
-    
+
     _time_range = TimeRange(time_range)
     data_location = 'dbase/'
-    
+
     url_root = data_servers[0] + data_location
     url = url_root + _time_range.t1.strftime("hsi_obssumm_filedb_%Y%m.txt")
-    
+
     f = urllib.urlretrieve(url)
-    
+
     return f
-      
+
 def parse_obssumm_dbase_file(filename):
     """
-    Parse the RHESSI observing summary database file. This file lists the 
-    name of observing summary files for specific time ranges along with other 
+    Parse the RHESSI observing summary database file. This file lists the
+    name of observing summary files for specific time ranges along with other
     info
-    
+
     Parameters
     ----------
     filename : str
@@ -121,7 +121,7 @@ def parse_obssumm_dbase_file(filename):
         headerline = reader.next()
         headerline = reader.next()
         headerline = reader.next()
-        
+
         obssumm_filename = []
         orbit_start = []
         orbit_end = []
@@ -129,7 +129,7 @@ def parse_obssumm_dbase_file(filename):
         end_time = []
         status_flag = []
         number_of_packets = []
-        
+
         for row in reader:
             obssumm_filename.append(row[0])
             orbit_start.append(int(row[1]))
@@ -151,13 +151,13 @@ def parse_obssumm_dbase_file(filename):
 
 def get_obssum_filename(time_range):
     """
-    Download the RHESSI observing summary data from one of the RHESSI 
+    Download the RHESSI observing summary data from one of the RHESSI
     servers, parses it, and returns the name of the obssumm file relevant for
     the time range
 
     Parameters
     ----------
-    time_range : str, TimeRange 
+    time_range : str, TimeRange
         A TimeRange or time range compatible string
 
     Returns
@@ -178,18 +178,18 @@ def get_obssum_filename(time_range):
     # for the observing summary data
     f = get_obssumm_dbase_file(time_range)
     data_location = 'metadata/catalog/'
-   
+
     result = parse_obssumm_dbase_file(f[0])
     _time_range = TimeRange(time_range)
-    
+
     index_number = int(_time_range.t1.strftime('%d')) - 1
-    
+
     return data_servers[0] + data_location + result.get('filename')[index_number] + 's'
 
 def get_obssumm_file(time_range):
     """
-    Download the RHESSI observing summary data from one of the RHESSI 
-    servers. 
+    Download the RHESSI observing summary data from one of the RHESSI
+    servers.
 
     Parameters
     ----------
@@ -199,8 +199,8 @@ def get_obssumm_file(time_range):
     Returns
     -------
     out : tuple
-        Return a tuple (filename, headers) where filename is the local file 
-        name under which the object can be found, and headers is 
+        Return a tuple (filename, headers) where filename is the local file
+        name under which the object can be found, and headers is
         whatever the info() method of the object returned by urlopen.
 
     Examples
@@ -212,18 +212,18 @@ def get_obssumm_file(time_range):
         This API is currently limited to providing data from whole days only.
 
     """
-    
+
     time_range = TimeRange(time_range)
     data_location = 'metadata/catalog/'
-    
+
     #TODO need to check which is the closest servers
     url_root = data_servers[0] + data_location
-        
+
     url = url_root + get_obssum_filename(time_range)
-    
+
     print('Downloading file: ' + url)
     f = urllib.urlretrieve(url)
-    
+
     return f
 
 def parse_obssumm_file(filename):
@@ -250,29 +250,29 @@ def parse_obssumm_file(filename):
 
     afits = fits.open(filename)
     header = afits[0].header
-    
+
     reference_time_ut = parse_time(afits[5].data.field('UT_REF')[0])
     time_interval_sec = afits[5].data.field('TIME_INTV')[0]
     # label_unit = fits[5].data.field('DIM1_UNIT')[0]
     # labels = fits[5].data.field('DIM1_IDS')
-    labels = ['3 - 6 keV', '6 - 12 keV', '12 - 25 keV', '25 - 50 keV', 
+    labels = ['3 - 6 keV', '6 - 12 keV', '12 - 25 keV', '25 - 50 keV',
               '50 - 100 keV', '100 - 300 keV', '300 - 800 keV', '800 - 7000 keV',
               '7000 - 20000 keV']
 
     lightcurve_data = np.array(afits[6].data.field('countrate'))
 
     dim = np.array(lightcurve_data[:,0]).size
- 
+
     time_array = [reference_time_ut + timedelta(0,time_interval_sec*a) for a in np.arange(dim)]
 
     #TODO generate the labels for the dict automatically from labels
     data = {'time': time_array, 'data': lightcurve_data, 'labels': labels}
-       
+
     return header, data
 
 def _backproject(calibrated_event_list, detector=8, pixel_size=(1.,1.), image_dim=(64,64)):
     """
-    Given a stacked calibrated event list fits file create a back 
+    Given a stacked calibrated event list fits file create a back
     projection image for an individual detectors. This function is used by
     backprojection.
 
@@ -298,10 +298,10 @@ def _backproject(calibrated_event_list, detector=8, pixel_size=(1.,1.), image_di
 
     """
     afits = fits.open(calibrated_event_list)
-    
-    #info_parameters = fits[2]    
+
+    #info_parameters = fits[2]
     #detector_efficiency = info_parameters.data.field('cbe_det_eff$$REL')
-    
+
     afits = fits.open(calibrated_event_list)
 
     fits_detector_index = detector + 2
@@ -319,20 +319,20 @@ def _backproject(calibrated_event_list, detector=8, pixel_size=(1.,1.), image_di
     tempb = tempa.reshape(image_dim[0],image_dim[1]).transpose().reshape(image_dim[0]*image_dim[1])
 
     pixel = np.array(zip(tempa,tempb))*pixel_size[0]
-    phase_pixel = (2*np.pi/harm_ang_pitch)* ( np.outer(pixel[:,0], np.cos(this_roll_angle - grid_angle)) - 
+    phase_pixel = (2*np.pi/harm_ang_pitch)* ( np.outer(pixel[:,0], np.cos(this_roll_angle - grid_angle)) -
                                               np.outer(pixel[:,1], np.sin(this_roll_angle - grid_angle))) + phase_map_center
-    phase_modulation = np.cos(phase_pixel)    
+    phase_modulation = np.cos(phase_pixel)
     gridmod = modamp * grid_transmission
     probability_of_transmission = gridmod*phase_modulation + grid_transmission
     bproj_image = np.inner(probability_of_transmission, count).reshape(image_dim)
-        
+
     return bproj_image
 
 def backprojection(calibrated_event_list, pixel_size=(1.,1.), image_dim=(64,64)):
     """
-    Given a stacked calibrated event list fits file create a back 
+    Given a stacked calibrated event list fits file create a back
     projection image.
-    
+
     .. warning:: The image is not in the right orientation!
 
     Parameters
@@ -358,28 +358,28 @@ def backprojection(calibrated_event_list, pixel_size=(1.,1.), image_dim=(64,64))
     >>> map.peek()
 
     """
-    
+
     calibrated_event_list = sunpy.RHESSI_EVENT_LIST
     afits = fits.open(calibrated_event_list)
     info_parameters = afits[2]
     xyoffset = info_parameters.data.field('USED_XYOFFSET')[0]
     time_range = TimeRange(info_parameters.data.field('ABSOLUTE_TIME_RANGE')[0])
-    
+
     image = np.zeros(image_dim)
-    
+
     #find out what detectors were used
-    det_index_mask = afits[1].data.field('det_index_mask')[0]    
+    det_index_mask = afits[1].data.field('det_index_mask')[0]
     detector_list = (np.arange(9)+1) * np.array(det_index_mask)
     for detector in detector_list:
         if detector > 0:
             image = image + _backproject(calibrated_event_list, detector=detector, pixel_size=pixel_size, image_dim=image_dim)
-    
+
     dict_header = {
-        "DATE-OBS": time_range.center().strftime("%Y-%m-%d %H:%M:%S"), 
+        "DATE-OBS": time_range.center().strftime("%Y-%m-%d %H:%M:%S"),
         "CDELT1": pixel_size[0],
         "NAXIS1": image_dim[0],
         "CRVAL1": xyoffset[0],
-        "CRPIX1": image_dim[0]/2 + 0.5, 
+        "CRPIX1": image_dim[0]/2 + 0.5,
         "CUNIT1": "arcsec",
         "CTYPE1": "HPLN-TAN",
         "CDELT2": pixel_size[1],
@@ -394,8 +394,8 @@ def backprojection(calibrated_event_list, pixel_size=(1.,1.), image_dim=(64,64))
         "RSUN_REF": sunpy.sun.constants.radius.value,
         "DSUN_OBS": sunearth_distance(time_range.center()) * sunpy.sun.constants.au.value
     }
-    
+
     header = sunpy.map.MapMeta(dict_header)
     result_map = sunpy.map.Map(image, header)
-            
+
     return result_map

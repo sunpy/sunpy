@@ -117,7 +117,7 @@ def test_extend():
     assert timerange.t1 == start + delta
     assert timerange.t2 == end + delta
     assert timerange.dt == delta
-    
+
 def test_contains():
     before = datetime.datetime(year=1990, month=1, day=1)
     after = datetime.datetime(year=2022, month=1, day=1)

@@ -38,18 +38,18 @@ class _Range(object):
         self.min = min_
         self.max = max_
         self.create = create
-    
+
     def __xor__(self, other):
         if not isinstance(other, self.__class__):
             return NotImplemented
-        
+
         new = DummyAttr()
-        if self.min < other.min:            
+        if self.min < other.min:
             new |= self.create(self.min, min(other.min, self.max))
         if other.max < self.max:
             new |= self.create(other.max, self.max)
         return new
-    
+
     def __contains__(self, other):
         return self.min <= other.min and self.max >= other.max
 
@@ -60,15 +60,15 @@ class Wave(Attr, _Range):
             to_angstrom(v, waveunit) for v in [float(wavemin), float(wavemax)]
         )
         self.unit = 'Angstrom'
-        
+
         Attr.__init__(self)
         _Range.__init__(self, self.min, self.max, self.__class__)
-    
+
     def collides(self, other):
         return isinstance(other, self.__class__)
 
     def __repr__(self):
-	return '<Wave({0!r}, {1!r}, {2!r})>'.format(self.min, self.max, self.unit)
+        return '<Wave({0!r}, {1!r}, {2!r})>'.format(self.min, self.max, self.unit)
 
 
 class Time(Attr, _Range):
@@ -85,20 +85,20 @@ class Time(Attr, _Range):
 
         _Range.__init__(self, self.start, self.end, self.__class__)
         Attr.__init__(self)
-    
+
     def collides(self, other):
         return isinstance(other, self.__class__)
-    
+
     def __xor__(self, other):
         if not isinstance(other, self.__class__):
             raise TypeError
         if self.near is not None or other.near is not None:
             raise TypeError
         return _Range.__xor__(self, other)
-    
+
     def pad(self, timedelta):
         return Time(self.start - timedelta, self.start + timedelta)
-    
+
     def __repr__(self):
         return '<Time(%r, %r, %r)>' % (self.start, self.end, self.near)
 
@@ -107,13 +107,13 @@ class Extent(Attr):
     # pylint: disable=R0913
     def __init__(self, x, y, width, length, atype):
         Attr.__init__(self)
-        
+
         self.x = x
         self.y = y
         self.width = width
         self.length = length
         self.type = atype
-    
+
     def collides(self, other):
         return isinstance(other, self.__class__)
 
@@ -130,12 +130,12 @@ class _VSOSimpleAttr(Attr):
     has a single value, such as, e.g., Instrument('eit'). """
     def __init__(self, value):
         Attr.__init__(self)
-        
+
         self.value = value
-    
+
     def collides(self, other):
         return isinstance(other, self.__class__)
-    
+
     def __repr__(self):
         return "<%s(%r)>" % (self.__class__.__name__, self.value)
 
@@ -212,7 +212,7 @@ def _apply(wlk, root, api, queryblock):
     for k, v in root.attrs.iteritems():
         lst = k[-1]
         rest = k[:-1]
-        
+
         block = queryblock
         for elem in rest:
             block = block[elem]
