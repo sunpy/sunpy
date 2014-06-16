@@ -258,6 +258,19 @@ def test_calc_rad_loss():
     assert np.allclose(rad_loss_test["dt"], rad_loss_expected["dt"],
                        rtol=0.0001)
 
+def test_xray_luminosity():
+    goeslc_input = lc.GOESLightCurve.create("2014-01-01 00:00:00",
+                                            "2014-01-01 00:00:10")
+    goeslc_test = goes.xray_luminosity(goeslc_input)
+    goeslc_expected = copy.deepcopy(goeslc_input)
+    goeslc_expected.data["luminosity_xrsa"] = \
+      np.array([2.49831950e+23, 2.49831950e+23, 2.49831950e+23,
+                2.52864004e+23, 2.49831950e+23])
+    goeslc_expected.data["luminosity_xrsb"] = \
+      np.array([9.54399250e+24, 9.54399250e+24, 9.52985195e+24,
+                9.52985195e+24, 9.51571139e+24])
+    assert_frame_equal(goeslc_test.data, goeslc_expected.data)
+
 def test_goes_lx():
     # Define input values of flux and time.
     longflux = np.array([7e-6,7e-6,7e-6,7e-6,7e-6,7e-6])
