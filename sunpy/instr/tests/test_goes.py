@@ -218,18 +218,18 @@ def test_calc_rad_loss():
                                 "2014-01-01 00:00:12"], dtype="datetime64[ms]")
     obstime_nonchrono = copy.deepcopy(obstime)
     obstime_nonchrono[1] = obstime[-1]
-    obstime_1time = np.array(["2014-01-01 00:00:00"], dtype="datetime64[ms]")
+    temp_outofrange = np.array([101, 11.0, 11.0, 11.0, 11.0, 11.0])
     # Ensure correct exceptions are raised.
     with pytest.raises(ValueError):
-        lx_test = goes.goes_lx(temp_toolong, em, obstime)
+        rad_loss_test = goes.calc_rad_loss(temp_toolong, em, obstime)
     with pytest.raises(ValueError):
-        lx_test = goes.goes_lx(temp, em, obstime_toolong)
+        rad_loss_test = goes.calc_rad_loss(temp_outofrange, em, obstime)
+    with pytest.raises(IOError):
+        rad_loss_test = goes.calc_rad_loss(temp, em, obstime_toolong)
     with pytest.raises(ValueError):
-        lx_test = goes.goes_lx(temp, em, obstime_nonchrono)
+        rad_loss_test = goes.calc_rad_loss(temp, em, obstime_nonchrono)
     with pytest.raises(IOError):
-        lx_test = goes.goes_lx(temp, em, cumulative=True)
-    with pytest.raises(IOError):
-        lx_test = goes.goes_lx(temp, em, obstime_1time)
+        rad_loss_test = goes.calc_rad_loss(temp, em, cumulative=True)
 
     # Test case 1: No kwargs set
     rad_loss_test = goes.calc_rad_loss(temp[:2], em[:2])
