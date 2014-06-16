@@ -668,7 +668,7 @@ def rad_loss_rate(goeslc, download=False, download_dir=DATA_PATH):
 
     """
     # Check that input argument is of correct type
-    if not isinstance(goeslc, sunpy.lightcurve.GOESLightCurve):
+    if not isinstance(goeslc, lightcurve.GOESLightCurve):
         raise TypeError("goeslc must be a GOESLightCurve object.")
 
     # extract temperature and emission measure from GOESLightCurve
