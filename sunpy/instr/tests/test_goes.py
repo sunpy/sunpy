@@ -280,6 +280,11 @@ def test_calc_rad_loss():
                        rtol=0.0001)
 
 def test_xray_luminosity():
+    # Check correct exceptions are raised to incorrect inputs
+    not_goeslc = []
+    with pytest.raises(TypeError):
+        goes_test = goes.xray_luminosity(not_goeslc)
+    # Check function gives correct results.
     goeslc_input = lc.GOESLightCurve.create("2014-01-01 00:00:00",
                                             "2014-01-01 00:00:10")
     goeslc_test = goes.xray_luminosity(goeslc_input)
