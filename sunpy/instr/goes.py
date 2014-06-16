@@ -32,7 +32,7 @@ FILE_TEMP_COR = "goes_chianti_temp_cor.csv"
 FILE_TEMP_PHO = "goes_chianti_temp_pho.csv"
 FILE_EM_COR = "goes_chianti_em_cor.csv"
 FILE_EM_PHO = "goes_chianti_em_pho.csv"
-FILE_RAD_COR = "chianti_rad_loss.csv"
+FILE_RAD_COR = "chianti7p1_rad_loss.txt"
 
 def get_goes_event_list(timerange, goes_class_filter=None):
     """
@@ -804,7 +804,7 @@ def calc_rad_loss(temp, em, obstime=None, cumulative=False, download=False,
     # lines begining with "#"
     with open(os.path.join(DATA_PATH, FILE_RAD_COR),
               "r") as csvfile:
-        startline = dropwhile(lambda l: l.startswith(";"), csvfile)
+        startline = csvfile.readlines()[7:]
         csvreader = csv.reader(startline, delimiter=" ")
         for row in csvreader:
             modeltemp.append(float(row[0]))
