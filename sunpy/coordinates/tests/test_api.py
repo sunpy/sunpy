@@ -66,9 +66,9 @@ def test_highlevel_api():
                                           distance=1*u.kpc),
                   frame="heliographic")
 
-    # Heliocentric coordinates are in parsecs.
+    # Heliocentric coordinates are in kilometres.
     sc = SkyCoord(lon=10*u.deg, lat=10*u.deg, frame="heliographic")
-    sc = SkyCoord(x=10*u.pc, y=10*u.pc, z=10*u.pc, frame="heliocentric")
+    sc = SkyCoord(x=10*u.km, y=10*u.km, z=10*u.km, frame="heliocentric")
 
     # One can initialize using low-level objects.
     sc = SkyCoord(HelioGraphic(lon=8*u.deg, lat=10*u.deg))
@@ -104,6 +104,7 @@ def test_highlevel_api():
     sc = SkyCoord(lon=8*u.deg, lat=10*u.deg, frame="heliographic")
     sc_helioprojective = sc.helioprojective
     assert repr(sc_helioprojective).startswith('<SkyCoord (HelioProjective):')
+    
 
     
     
