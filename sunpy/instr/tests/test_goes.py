@@ -308,7 +308,6 @@ def test_goes_lx():
     longflux_toolong = np.append(longflux, 0)
     obstime_nonchrono = copy.deepcopy(obstime)
     obstime_nonchrono[1] = obstime[-1]
-    obstime_1time = np.array(["2014-01-01 00:00:00"], dtype="datetime64[ms]")
     # First ensure correct exceptions are raised.
     with pytest.raises(ValueError):
         lx_test = goes.goes_lx(longflux_toolong, shortflux, obstime)
@@ -316,8 +315,6 @@ def test_goes_lx():
         lx_test = goes.goes_lx(longflux, shortflux, obstime_nonchrono)
     with pytest.raises(IOError):
         lx_test = goes.goes_lx(longflux, shortflux, cumulative=True)
-    with pytest.raises(IOError):
-        lx_test = goes.goes_lx(longflux, shortflux, obstime_1time)
 
     # Test case 1: no keywords set
     lx_test = goes.goes_lx(longflux[:2], shortflux[:2])
@@ -389,6 +386,12 @@ def test_goes_lx():
     assert np.allclose(lx_test["dt"], lx_expected["dt"], rtol=0.0001)
 
 def test__time_steps():
+    # Check correct exceptions are raised when incorrect input supplied.
+    obstime_1time = np.array(["2014-01-01 00:00:00"], dtype="datetime64[ms]")
+    with pytest.raises(IOError):
+        dt_test = goes._time_steps(obstime_1time)
+
+    # Test case 1: len(obstime) > 2
     obstime = np.array(["2014-01-01 00:00:00", "2014-01-01 00:00:02",
                         "2014-01-01 00:00:04", "2014-01-01 00:00:06",
                         "2014-01-01 00:00:08",
@@ -396,6 +399,8 @@ def test__time_steps():
     dt_test = goes._time_steps(obstime)
     dt_expected = np.array([1.0, 2.0, 2.0, 2.0, 2.0, 1.0])
     assert (dt_test == dt_expected).all()
+
+    # Test case 1: len(obstime) == 2
     obstime = np.array(["2014-01-01 00:00:00", "2014-01-01 00:00:02"])
     dt_test = goes._time_steps(obstime)
     dt_expected = np.array([1.0, 1.0])
