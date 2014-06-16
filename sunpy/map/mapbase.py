@@ -563,7 +563,7 @@ Dimension:\t [%d, %d]
         return new_map
 
     def rotate(self, angle=None, rmatrix=None, order=3, scale=1.0,
-               image_center=None, recenter=False, missing=0.0, use_scipy=False):
+               image_center=(0,0), recenter=False, missing=0.0, use_scipy=False):
         """
         Returns a new rotated and rescaled map.  Specify either a rotation
         angle or a rotation matrix, but not both.  If neither an angle or a
@@ -588,7 +588,7 @@ Dimension:\t [%d, %d]
         scale : float
             A scale factor for the image, default is no scaling
         image_center : tuple
-            The axis of rotation in pixel coordinates
+            The axis of rotation in data coordinates
             Default: the origin in the data coordinate system
         recenter : bool
             If True, position the axis of rotation at the center of the new map
@@ -639,10 +639,10 @@ Dimension:\t [%d, %d]
             s = np.sin(np.deg2rad(angle))
             rmatrix = np.matrix([[c, -s], [s, c]])
 
-        if image_center is None:
-            # FITS pixels  count from 1 (curse you, FITS!)
-            image_center = (self.shape[1] - self.reference_pixel['x'] + 1,
-                            self.reference_pixel['y'])
+        # image_center should be given in data coordinates but needs to be converted to pixel values for the transformation
+        x = self.data_to_pixel(image_center[0], 'x')
+        y = self.data_to_pixel(image_center[1], 'y')
+        image_center = (x, y)
 
         # Because map data has the origin at the bottom left not the top left
         # as is convention for images vertically flip the image for the
