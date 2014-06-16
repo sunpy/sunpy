@@ -180,10 +180,14 @@ def goes_chianti_tem(longflux, shortflux, satellite=8,
 
     Parameters
     ----------
-    longflux, shortflux : ndarray or array-like which can be converted
-        to float64 type, such as an np.array, tuple, list.
-        Arrays containing the long and short GOES/XRS flux measurements
-        respectively as a function of time.  Must be of same length.
+    longflux : ndarray/array-like convertible to float64, e.g. np.array, list
+        Arrays containing the long GOES/XRS flux measurements as a function
+        of time.
+        Units=[W/m**2].
+
+    shortflux : ndarray/array-like convertible to float64, e.g. np.array, list
+        Arrays containing the short GOES/XRS flux measurements as a function
+        of time.  Must be of same length as longflux.
         Units=[W/m**2].
 
     satellite : int (optional)
@@ -325,8 +329,7 @@ def _goes_get_chianti_temp(fluxratio, satellite=8, abundances="coronal",
 
     Parameters
     ----------
-    fluxratio : ndarray or array-like which can be converted to float64
-        type, such as an np.array, tuple, list.
+    fluxratio : ndarray/array-like convertible to float64, e.g. np.array, list
         Array containing the ratio of short channel to long channel
         GOES/XRS flux measurements.
 
@@ -468,13 +471,11 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal",
 
     Parameters
     ----------
-    longflux : ndarray or array-like which can be converted to float64
-        type, such as an np.array, tuple, list.
+    longflux : ndarray/array-like convertible to float64, e.g. np.array, list
         Array containing the observed GOES/XRS long channel flux.
         Units=[W/m**2]
 
-    temp : ndarray or array-like which can be converted to float64 type,
-        such as an np.array, tuple, list.
+    temp : ndarray/array-like convertible to float64, e.g. np.array, list
         Array containing the GOES temperature.  Units=[MK]
 
     satellite : int (optional)
@@ -720,20 +721,16 @@ def calc_rad_loss(temp, em, obstime=None, cumulative=False, download=False,
 
     Parameters
     ----------
-    temp : ndarray or array-like which can be converted to float64 type,
-        such as an np.array, tuple, list.  Units=[MK]
+    temp : ndarray/array-like convertible to float64, e.g. np.array, list
         Array containing the temperature of the coronal plasma at
-        different times.
+        different times.  Units=[MK]
 
-    em : ndarray or array-like which can be converted to float64 type,
-        such as an np.array, tuple, list.  Units=[cm**-3]
+    em : ndarray/array-like convertible to float64, e.g. np.array, list
         Array containing the emission measure of the coronal plasma
         at the same times corresponding to the temperatures in temp.
-        Must be same length as temp.
+        Must be same length as temp.  Units=[cm**-3]
 
-    obstime : (optional) ndarray array or array-like whose entries are
-        (or can be converted to) datetime64 type, e.g. np.array, list,
-        string array.
+    obstime : (optional) array-like convertible to datetime64 e.g.np.array/list
         Array of measurement times to which temperature and
         emission measure values correspond.  Must be same length
         as temp and em.  If this keyword is set, the integrated
@@ -934,15 +931,15 @@ def goes_lx(longflux, shortflux, obstime=None, date=None, cumulative=False):
 
     Parameters
     ----------
-    longflux : ndarray or array-like which can be converted to float64
-        type, such as an np.array, tuple, list.
+    longflux : ndarray/array-like convertible to float64, e.g. np.array, list
         Array containing the observed GOES/XRS long channel flux.
+        Units=[W/m**2]
 
-    shortflux : ndarray or array-like which can be converted to float64
-        type, such as an np.array, tuple, list.
+    shortflux : ndarray/array-like convertible to float64, e.g. np.array, list
         Array containing the observed GOES/XRS short channel flux.
+        Units=[W/m**2]
 
-    obstime : (optional) numpy ndarray, dtype=datetime64
+    obstime : (optional) array-like convertible to datetime64 e.g.np.array/list
         Measurement times corresponding to each flux measurement.
         Assumes each pair of 0.5-4 and 1-8 angstrom flux measurements
         were taken simultaneously.
@@ -1066,9 +1063,8 @@ def _calc_xraylum(flux, date=None):
 
     Parameters
     ----------
-    flux : ndarray or array-like which can be converted to float64 type,
-        such as an np.array, tuple, list.
-        Array containing the observed solar flux in units of W/m**2
+    flux : ndarray/array-like convertible to float64, e.g. np.array, list
+        Array containing the observed solar flux.  Units=[W/m**2]
 
     date : (optional) datetime object or valid date string
         Used to calculate a more accurate Sun-Earth distance based on
@@ -1125,8 +1121,7 @@ def _time_steps(obstime):
 
     Parameters
     ----------
-    obstime : ndarray or array-like which can be converted to
-        datetime64 type.
+    obstime : ndarray or array-like which can be converted to datetime64.
         Array containing the time measurements.
 
     Returns
@@ -1138,11 +1133,11 @@ def _time_steps(obstime):
     --------
     >>> obstime = np.array(["2014-01-01 00:00:00",
                             "2014-01-01 00:00:02",
-                            "2014-01-01 00:00:04"
-                            "2014-01-01 00:00:06"
-                            "2014-01-01 00:00:08"
+                            "2014-01-01 00:00:04",
+                            "2014-01-01 00:00:06",
+                            "2014-01-01 00:00:08",
                             "2014-01-01 00:00:10"],
-                            dtype="datetime64[ms]")
+                            dtype="datetime64[s]")
     >>> dt = _time_steps(obstime)
     >>> dt
     array([ 1.000,  2.000,  2.000,  2.000,  2.000,  1.000])
