@@ -1007,9 +1007,10 @@ def goes_lx(longflux, shortflux, obstime=None, date=None, cumulative=False):
     # If obstime keyword giving measurement times is set, calculate
     # total energy radiated in the GOES bandpasses during the flare.
     if obstime is not None:
+        obstime = np.asanyarray(obstime, dtype="datetime64[ms]")
         # First ensure longflux, shortflux, and obstime are all of
         # equal length.
-        if len(longflux) != len(shortflux) != len(obstime):
+        if not len(longflux) == len(shortflux) == len(obstime):
             raise ValueError("longflux, shortflux, and obstime must all have "
                              "same number of elements.")
         # Calculate time intervals between each measurement.
