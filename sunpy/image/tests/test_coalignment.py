@@ -128,7 +128,7 @@ def test_mapcube_coalign_by_match_template():
     pixel_displacements = np.asarray([1.6, 10.1])
     known_displacements = {'x':np.asarray([0.0, pixel_displacements[1] * testmap.scale['x']]), 'y':np.asarray([0.0, pixel_displacements[0] * testmap.scale['y']])}
 
-    # Create a map that has been shifted a known amount. 
+    # Create a map that has been shifted a known amount.
     d1 = shift(testmap.data, pixel_displacements)
     m1 = map.Map((d1, testmap.meta))
 
@@ -141,7 +141,7 @@ def test_mapcube_coalign_by_match_template():
     # Assert
     assert_allclose(test_displacements['x'], known_displacements['x'], rtol=5e-2, atol=0)
     assert_allclose(test_displacements['y'], known_displacements['y'], rtol=5e-2, atol=0 )
-    
+
     # Test setting the template as a ndarray
     template_ndarray = testmap.data[ny / 4: 3 * ny / 4, nx / 4: 3 * nx / 4]
     test_displacements = mapcube_coalign_by_match_template(mc, template=template_ndarray, return_displacements_only=True)

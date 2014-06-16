@@ -51,7 +51,7 @@ def test_query():
         "BIR_20110922_053000_03.fit.gz",
         "BIR_20110922_054500_03.fit.gz",
     ]
-    
+
     RESULTS.sort()
     # Should be sorted anyway, but better to assume as little as possible.
     result.sort()
@@ -189,7 +189,7 @@ def test_closest():
 
 def test_homogenize_factor():
     a = np.float64(np.random.randint(0, 255, 3600))[np.newaxis, :]
-    
+
     c1 = CallistoSpectrogram(
         a,
         np.arange(3600),
@@ -223,11 +223,11 @@ def test_homogenize_factor():
         None,
         False
     )
-    
+
     pairs_indices, factors, constants = c1._homogenize_params(
         c2, 0
     )
-    
+
     assert pairs_indices == [(0, 0)]
     assert_array_almost_equal(factors, [0.5], 2)
     assert_array_almost_equal(constants, [0], 2)
@@ -235,7 +235,7 @@ def test_homogenize_factor():
 
 def test_homogenize_constant():
     a = np.float64(np.random.randint(0, 255, 3600))[np.newaxis, :]
-    
+
     c1 = CallistoSpectrogram(
         a,
         np.arange(3600),
@@ -269,11 +269,11 @@ def test_homogenize_constant():
         None,
         False
     )
-    
+
     pairs_indices, factors, constants = c1._homogenize_params(
         c2, 0
     )
-    
+
     assert pairs_indices == [(0, 0)]
     assert_array_almost_equal(factors, [1], 2)
     assert_array_almost_equal(constants, [-10], 2)
@@ -281,7 +281,7 @@ def test_homogenize_constant():
 
 def test_homogenize_both():
     a = np.float64(np.random.randint(0, 255, 3600))[np.newaxis, :]
-    
+
     c1 = CallistoSpectrogram(
         a,
         np.arange(3600),
@@ -315,11 +315,11 @@ def test_homogenize_both():
         None,
         False
     )
-    
+
     pairs_indices, factors, constants = c1._homogenize_params(
         c2, 0
     )
-    
+
     assert pairs_indices == [(0, 0)]
     assert_array_almost_equal(factors, [0.5], 2)
     assert_array_almost_equal(constants, [-0.5], 2)
@@ -327,7 +327,7 @@ def test_homogenize_both():
 
 def test_homogenize_rightfq():
     a = np.float64(np.random.randint(0, 255, 3600))[np.newaxis, :]
-        
+
     c1 = CallistoSpectrogram(
         a,
         np.arange(3600),
@@ -366,7 +366,7 @@ def test_homogenize_rightfq():
     )
     pairs_indices, factors, constants = c1._homogenize_params(
         c2, 0
-    )    
+    )
     assert pairs_indices == [(0, 1)]
     assert_array_almost_equal(factors, [0.5], 2)
     assert_array_almost_equal(constants, [-0.5], 2)
