@@ -695,10 +695,6 @@ def rad_loss_rate(goeslc, download=False, download_dir=DATA_PATH):
             goeslc_new = temp_em(goeslc)
             temp = np.asarray(goeslc_new.data.temperature, dtype=np.float64)
             em = np.asarray(goeslc_new.data.em, dtype=np.float64)
-        else:
-            raise error
-    else:
-        goeslc_new = copy.deepcopy(goeslc)
 
     # Find radiative loss rate with calc_rad_loss()
     rad_loss_out = calc_rad_loss(temp, em, download=download,
