@@ -178,13 +178,29 @@ def test_goes_chianti_tem():
     assert em8[0] < 9.39e+48 and em8[0] > 9.38e+48
 
 def test_rad_loss_rate():
+    # Define input variables.
     goeslc_input = lc.GOESLightCurve.create("2014-01-01 00:00:00",
                                             "2014-01-01 00:00:10")
+    not_goeslc = []
+    goeslc_no_em = goes.temp_em(goeslc_input)
+    del goeslc_no_em.data["em"]
+    
+    # Check correct exceptions are raised to incorrect inputs
+    with pytest.raises(TypeError):
+        goes_test = goes.rad_loss_rate(not_goeslc)
+
+    # Check function gives correct results.
+    # Test case 1: GOESLightCurve object with only flux data
     goeslc_test = goes.rad_loss_rate(goeslc_input)
     goeslc_expected = goes.temp_em(goeslc_input)
     goeslc_expected.data["rad_loss_rate"] = \
       np.array([5.44914366e+26, 5.44914366e+26, 5.43465905e+26,
                 5.38282295e+26, 5.42019309e+26])
+    assert_frame_equal(goeslc_test.data, goeslc_expected.data)
+
+    # Test case 2: GOESLightCurve object with flux and temperature
+    # data, but no EM data.
+    goes_test = goes.rad_loss_rate(goeslc_no_em)
     assert_frame_equal(goeslc_test.data, goeslc_expected.data)
 
 def test_calc_rad_loss():
@@ -374,4 +390,8 @@ def test__time_steps():
                         "2014-01-01 00:00:10"], dtype="datetime64[ms]")
     dt_test = goes._time_steps(obstime)
     dt_expected = np.array([1.0, 2.0, 2.0, 2.0, 2.0, 1.0])
+    assert (dt_test == dt_expected).all()
+    obstime = np.array(["2014-01-01 00:00:00", "2014-01-01 00:00:02"])
+    dt_test = goes._time_steps(obstime)
+    dt_expected = np.array([1.0, 1.0])
     assert (dt_test == dt_expected).all()
