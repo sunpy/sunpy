@@ -24,7 +24,7 @@ class NoRHLightCurve(LightCurve):
     Examples
     --------
     >>> import sunpy
-    
+
     >>> norh = sunpy.lightcurve.NoRHLightCurve.create('~/Data/norh/tca110607')
     >>> norh = sunpy.lightcurve.NoRHLightCurve.create('2011/08/10')
     >>> norh = sunpy.lightcurve.NoRHLightCurve.create('2011/08/10',wavelength='34')
@@ -58,10 +58,10 @@ class NoRHLightCurve(LightCurve):
         #date is a datetime object
         if 'wavelength' in kwargs:
             if kwargs['wavelength'] == '34':
-                final_url=urlparse.urljoin(baseurl,date.strftime('%Y/%m/' + 'tcz' + '%y%m%d')) 
+                final_url=urlparse.urljoin(baseurl,date.strftime('%Y/%m/' + 'tcz' + '%y%m%d'))
         else:
-            final_url=urlparse.urljoin(baseurl, date.strftime('%Y/%m/' + 'tca' + '%y%m%d')) 
-        
+            final_url=urlparse.urljoin(baseurl, date.strftime('%Y/%m/' + 'tca' + '%y%m%d'))
+
         return final_url
 
     @staticmethod

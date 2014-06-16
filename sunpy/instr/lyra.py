@@ -15,7 +15,7 @@ def download_lytaf_database(lytaf_dir=''):
     url='http://proba2.oma.be/lyra/data/lytaf/annotation_ppt.db'
     destination=os.path.join(lytaf_dir,'annotation_ppt.db')
     urllib.urlretrieve(url,destination)
-    
+
     return
 
 
@@ -27,7 +27,7 @@ def get_lytaf_events(timerange,lytaf_dir=''):
     start_ts=calendar.timegm(st_timerange.timetuple())
     en_timerange=timerange.end()
     end_ts=calendar.timegm(en_timerange.timetuple())
-    
+
     #involves executing SQLite commands from within python.
     #connect to the SQlite database
     #conn=sqlite3.connect(lytaf_dir + 'annotation_ppt.db')
@@ -38,10 +38,10 @@ def get_lytaf_events(timerange,lytaf_dir=''):
     query_tup=(start_ts,end_ts,start_ts,end_ts,start_ts,end_ts)
 
     #search only for events within the time range of interest (the lightcurve start/end). Return records ordered by start time
-    result=(cursor.execute('select * from event WHERE((begin_time > ? AND begin_time < ?) OR (end_time > ? AND end_time < ?)' +  
+    result=(cursor.execute('select * from event WHERE((begin_time > ? AND begin_time < ?) OR (end_time > ? AND end_time < ?)' +
                 'OR (begin_time < ? AND end_time > ?)) ORDER BY begin_time ASC',query_tup))
-    
-    #get all records from the query in python list format. 
+
+    #get all records from the query in python list format.
     list=result.fetchall()
 
     #times are in unix time - want to use datetime instead
@@ -59,7 +59,7 @@ def get_lytaf_events(timerange,lytaf_dir=''):
         #entry=(insertion_time,start_time,ref_time,end_time,event_type,event_type_info[0])
         #output a list of dictionaries
         output.append(lar_entry)
-    
+
     return output
 
 def split_series_using_lytaf(timearray,data,lar):
@@ -76,7 +76,7 @@ def split_series_using_lytaf(timearray,data,lar):
     Output
     ------
     A list of dictionaries. Each dictionary contains a sub-series corresponding to an interval of 'good data'
-    """    
+    """
     #lar is a dictionary with tags:
     #'start_time'
     #'end_time'
@@ -85,7 +85,7 @@ def split_series_using_lytaf(timearray,data,lar):
     #'event_type_description'
     #'event_type_id'
 
-    
+
     n=len(timearray)
     mask=np.ones(n)
     el=len(lar)
@@ -94,7 +94,7 @@ def split_series_using_lytaf(timearray,data,lar):
     datetime_array=[]
     for tim in timearray:
         datetime_array.append(parse_time(tim))
-        
+
 
         #scan through each entry retrieved from the LYTAF database
     for j in range(0,el):
@@ -118,17 +118,17 @@ def split_series_using_lytaf(timearray,data,lar):
     if len(disc) == 0:
         print 'No events found within time series interval. Returning original series.'
         return [{'subtimes':datetime_array,'subdata':data}]
-    
+
     #-1 in diffmask means went from good data to bad
     #+1 means went from bad data to good
 
     #want to get the data between a +1 and the next -1
 
-    #if the first discontinuity is a -1 then the start of the series was good. 
+    #if the first discontinuity is a -1 then the start of the series was good.
     if diffmask[disc[0]] == -1.0:
         #make sure we can always start from disc[0] below
         disc=np.insert(disc,0,0)
-    
+
     split_series=[]
 
     limit=len(disc)

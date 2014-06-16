@@ -206,7 +206,7 @@ def test_join_dtype():
         datetime(2010, 10, 10, 0, 29),
         datetime(2010, 10, 10, 1, 29), 1799, 1,
     )
-    
+
     z = LinearTimeSpectrogram.join_many(
         [one, other], nonlinear=False, maxgap=0
     )
@@ -228,7 +228,7 @@ def test_join_different_dtype():
         datetime(2010, 10, 10, 0, 29),
         datetime(2010, 10, 10, 1, 29), 1799, 1,
     )
-    
+
     z = LinearTimeSpectrogram.join_many(
         [one, other], nonlinear=False, maxgap=0
     )
@@ -601,7 +601,7 @@ def test_join_diff_freq():
         1800,
         0.25
     )
-    
+
     with pytest.raises(ValueError) as excinfo:
         LinearTimeSpectrogram.join_many([spec, spec2])
     assert excinfo.value.message == "Frequency channels do not match."
@@ -685,7 +685,7 @@ def test_in_interval():
         900,
         1
     )
-    
+
     assert np.array_equal(spec.in_interval("00:15", "00:30").data, spec.data)
 
 
@@ -699,7 +699,7 @@ def test_in_interval2():
         900,
         1
     )
-    
+
     assert np.array_equal(
         spec.in_interval("2010-01-01T00:15:00", "00:30").data, spec.data
     )
@@ -718,16 +718,16 @@ def test_linearize():
     # 0   1   2   3   4   5  6  7  8
     # -------- ----------- ----- ---
     # 20 17.5 15 12.5 10 7.5 5 2.5 0
-    
+
     linear = spec.linearize_freqs()
     assert ((linear.freq_axis[:-1] - linear.freq_axis[1:]) == 2.5).all()
-    
+
     assert (linear[0] == image[0, :]).all()
     assert (linear[1] == image[0, :]).all()
     assert (linear[2] == image[0, :]).all()
     assert (linear[3] == image[1, :]).all()
     assert (linear[4] == image[1, :]).all()
-    assert (linear[5] == image[1, :]).all()    
+    assert (linear[5] == image[1, :]).all()
     assert (linear[6] == image[2, :]).all()
     assert (linear[7] == image[2, :]).all()
     assert (linear[8] == image[3, :]).all()
@@ -743,16 +743,16 @@ def test_linear_view():
         900,
         1
     )
-    
+
     linear = _LinearView(spec)
     # assert ((linear.freq_axis[:-1] - linear.freq_axis[1:]) == 2.5).all()
-    
+
     assert (linear[0] == image[0, :]).all()
     assert (linear[1] == image[0, :]).all()
     assert (linear[2] == image[0, :]).all()
     assert (linear[3] == image[1, :]).all()
     assert (linear[4] == image[1, :]).all()
-    assert (linear[5] == image[1, :]).all()    
+    assert (linear[5] == image[1, :]).all()
     assert (linear[6] == image[2, :]).all()
     assert (linear[7] == image[2, :]).all()
     assert (linear[8] == image[3, :]).all()
@@ -768,7 +768,7 @@ def test_linear_view_indexerror():
         900,
         1
     )
-    
+
     linear = _LinearView(spec)
     # assert ((linear.freq_axis[:-1] - linear.freq_axis[1:]) == 2.5).all()
     with pytest.raises(IndexError):
@@ -785,7 +785,7 @@ def test_linear_view_negative():
         900,
         1
     )
-    
+
     linear = _LinearView(spec)
     # assert ((linear.freq_axis[:-1] - linear.freq_axis[1:]) == 2.5).all()
     assert (linear[8] == image[3, :]).all()
@@ -802,10 +802,10 @@ def test_linear_view_freqs():
         900,
         1
     )
-    
+
     linear = _LinearView(spec)
     # assert ((linear.freq_axis[:-1] - linear.freq_axis[1:]) == 2.5).all()
-    
+
     assert linear.get_freq(0) == 20
     assert linear.get_freq(1) == 20
     assert linear.get_freq(2) == 20

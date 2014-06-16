@@ -45,9 +45,9 @@ def test_wave_unit_catcher():
     """Make sure that inter-unit conversion of wavelengths is accurate"""
     # Implementing the example test cases
     test_wavel = [
-        hek2vso.wave_unit_catcher(2.11e-06, 'cm'), 
+        hek2vso.wave_unit_catcher(2.11e-06, 'cm'),
         hek2vso.wave_unit_catcher(9.4e-07, 'cm'),
-        hek2vso.wave_unit_catcher(5e-08, 'mm') 
+        hek2vso.wave_unit_catcher(5e-08, 'mm')
     ]
     test_values = [211.0, 94.0, 0.5]
 
@@ -80,10 +80,10 @@ def test_vso_attribute_parse():
 
     # Checking Observatory
     assert vso_query[1].value == hek_query[0]['obs_observatory']
-    
+
     # Checking Instrument
     assert vso_query[2].value == hek_query[0]['obs_instrument']
-    
+
     # Checking Wavelength
     assert vso_query[3].min == hek2vso.wave_unit_catcher(hek_query[0]['obs_meanwavel'], hek_query[0]['obs_wavelunit'])
     assert vso_query[3].max == hek2vso.wave_unit_catcher(hek_query[0]['obs_meanwavel'], hek_query[0]['obs_wavelunit'])

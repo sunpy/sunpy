@@ -1,16 +1,16 @@
 """
 This module provides routines for the coalignment of images and mapcubes.
 
-Currently this module provides image coalignment by template matching. 
-Which is partially inspired by the SSWIDL routine 
+Currently this module provides image coalignment by template matching.
+Which is partially inspired by the SSWIDL routine
 `tr_get_disp.pro <http://hesperia.gsfc.nasa.gov/ssw/trace/idl/util/routines/tr_get_disp.pro>`_.
 
-In this implementation, the template matching is handled via 
+In this implementation, the template matching is handled via
 the scikit-image routine :func:`skimage.feature.match_template`.
 
 References
 ----------
-Template matching algorithm: 
+Template matching algorithm:
 
  * http://scribblethink.org/Work/nvisionInterface/nip.html
  * J.P. Lewis, Fast Template Matching, Vision Interface 95, Canadian Image
@@ -205,7 +205,7 @@ def find_best_match_location(corr):
     cor_max_x, cor_max_y = ij[::-1]
 
     # Get the correlation function around the maximum
-    array_around_maximum = corr[np.max([0, cor_max_y - 1]): np.min([cor_max_y + 2, corr.shape[0] - 1]), 
+    array_around_maximum = corr[np.max([0, cor_max_y - 1]): np.min([cor_max_y + 2, corr.shape[0] - 1]),
                                   np.max([0, cor_max_x - 1]): np.min([cor_max_x + 2, corr.shape[1] - 1])]
     y_shift_relative_to_maximum, x_shift_relative_to_maximum = \
     get_correlation_shifts(array_around_maximum)

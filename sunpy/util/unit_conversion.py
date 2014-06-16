@@ -4,11 +4,11 @@ import numpy as np
 from scipy.constants import constants
 from astropy import units
 
-__all__ = ['degrees_to_hours', 'degrees_to_arc', 'kelvin_to_keV', 
+__all__ = ['degrees_to_hours', 'degrees_to_arc', 'kelvin_to_keV',
            'keV_to_kelvin', 'to_angstrom']
-           
+
 def degrees_to_hours(angle):
-    """Converts an angle from the degree notation to the hour, arcmin, arcsec 
+    """Converts an angle from the degree notation to the hour, arcmin, arcsec
     notation (returned as a tuple)."""
     hour = int(np.floor(angle / 15))
     remainder = angle / 15.0 - hour
@@ -18,7 +18,7 @@ def degrees_to_hours(angle):
     return [hour, arcminute, arcsecond]
 
 def degrees_to_arc(angle):
-    """Converts decimal degrees to degree, arcminute, 
+    """Converts decimal degrees to degree, arcminute,
     arcsecond (returned as a tuple)."""
     degree = int(np.floor(angle))
     remainder = angle - degree
@@ -33,11 +33,11 @@ def to_angstrom(value, unit):
     return value_quantity.to(units.angstrom, equivalencies=units.spectral()).value
 
 def kelvin_to_keV(temperature):
-    """Convert from temperature expressed in Kelvin to a 
+    """Convert from temperature expressed in Kelvin to a
     temperature expressed in keV"""
-    return temperature / (constants.e / constants.k * 1000.0) 
+    return temperature / (constants.e / constants.k * 1000.0)
 
 def keV_to_kelvin(temperature):
-    """Convert from temperature expressed in keV to a temperature 
+    """Convert from temperature expressed in keV to a temperature
     expressed in Kelvin"""
-    return temperature * (constants.e / constants.k * 1000.0) 
+    return temperature * (constants.e / constants.k * 1000.0)

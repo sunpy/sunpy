@@ -10,12 +10,12 @@ from sunpy.time import TimeRange
 timerange_a = TimeRange('2004/01/01', '2007/01/01')
 
 class TestNOAAIndicesLightCurve():
-    
+
     @pytest.mark.online
     def test_create(self):
-       lc = sunpy.lightcurve.NOAAIndicesLightCurve.create()
-       assert isinstance(lc, sunpy.lightcurve.NOAAIndicesLightCurve)
-    
+        lc = sunpy.lightcurve.NOAAIndicesLightCurve.create()
+        assert isinstance(lc, sunpy.lightcurve.NOAAIndicesLightCurve)
+
     @pytest.mark.online
     def test_isempty(self):
         lc = sunpy.lightcurve.NOAAIndicesLightCurve.create()
@@ -38,14 +38,14 @@ class TestNOAAIndicesLightCurve():
         """Test the getting of url"""
         g = sunpy.lightcurve.NOAAIndicesLightCurve
         assert g._get_url_for_date_range(timerange_a) == 'http://www.swpc.noaa.gov/ftpdir/weekly/RecentIndices.txt'
-        
+
     @pytest.mark.online
     def test_header(self):
         """Test presence of GOES satellite number in header"""
         lc1 = sunpy.lightcurve.NOAAIndicesLightCurve.create()
         assert lc1.header.keys() == ['comments']
 
-    
+
 class TestNOAAPredictIndicesLightCurve():
 
     @pytest.mark.online
@@ -53,7 +53,7 @@ class TestNOAAPredictIndicesLightCurve():
         """Test creation with no input"""
         lc = sunpy.lightcurve.NOAAPredictIndicesLightCurve.create()
         assert isinstance(lc, sunpy.lightcurve.NOAAPredictIndicesLightCurve)
-    
+
     @pytest.mark.online
     def test_isempty(self):
         """Test presence of data"""
@@ -77,7 +77,7 @@ class TestNOAAPredictIndicesLightCurve():
         """Test the getting of url"""
         g = sunpy.lightcurve.NOAAPredictIndicesLightCurve
         assert g._get_url_for_date_range(timerange_a) == 'http://www.swpc.noaa.gov/ftpdir/weekly/Predict.txt'
-        
+
     @pytest.mark.online
     def test_header(self):
         """Test presence of GOES satellite number in header"""

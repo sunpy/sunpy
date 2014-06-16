@@ -116,8 +116,8 @@ class BaseFuncAnimator(object):
         widget instance passed to them, i.e.: update_slider(val, im, slider)
 
     slider_ranges: list
-        list of [min,max] pairs to set the ranges for each slider or an array 
-        of values for all points of the slider. 
+        list of [min,max] pairs to set the ranges for each slider or an array
+        of values for all points of the slider.
         (The slider update function decides which to support.)
 
     fig: mpl.figure
@@ -474,9 +474,9 @@ class ImageAnimator(BaseFuncAnimator):
         If a list it should contain one element for each axis of the numpy array.
         For the image axes a [min, max] pair should be specified which will be
         passed to :func:`matplotlib.pyplot.imshow` as extent.
-        For the slider axes a [min, max] pair can be specified or an array the 
+        For the slider axes a [min, max] pair can be specified or an array the
         same length as the axis which will provide all values for that slider.
-        If None is specified for an axis then the array indicies will be used 
+        If None is specified for an axis then the array indicies will be used
         for that axis.
 
     interval: int
@@ -565,23 +565,23 @@ class ImageAnimator(BaseFuncAnimator):
 
     def _sanitize_axis_range(self, axis_range, data):
         """
-        This method takes the various allowed values of axis_range and returns 
+        This method takes the various allowed values of axis_range and returns
         them in a standadized way for the rest of the class to use.
-        
-        The outputted axis range describes the physical coordinates of the 
+
+        The outputted axis range describes the physical coordinates of the
         array axes.
-        
+
         The allowed values of axis range is either None or a list.
-        If axis_range is None then all axis are assumed to be not scaled and 
+        If axis_range is None then all axis are assumed to be not scaled and
         use array indicies.
-        
+
         Where axis_range is a list it must have the same length as the number
         of axis as the array and each element must be one of the following:
-        
-		* None: Build a min,max pair or linspace array of array indicies
-		* [min, max]: leave for image axes or convert to a array for slider axes (from min to max in axis length steps)
-		* [min, max] pair where min == max: convert to array indies min,max pair or array.
-		* array of axis length, check that it was passed for a slider axes and do nothing if it was, error if it is not.		
+
+                * None: Build a min,max pair or linspace array of array indicies
+                * [min, max]: leave for image axes or convert to a array for slider axes (from min to max in axis length steps)
+                * [min, max] pair where min == max: convert to array indies min,max pair or array.
+                * array of axis length, check that it was passed for a slider axes and do nothing if it was, error if it is not.
         """
         #If no axis range at all make it all [min,max] pairs
         if axis_range is None:
@@ -601,9 +601,9 @@ class ImageAnimator(BaseFuncAnimator):
                         axis_range[i] = np.linspace(0,d,d)
                     else:
                         axis_range[i] = [0, d]
-			# min max pair for slider axes should be converted to an array
+                        # min max pair for slider axes should be converted to an array
                 elif i in self.slider_axes:
-                   axis_range[i] = np.linspace(axis_range[i][0], axis_range[i][1], d)
+                    axis_range[i] = np.linspace(axis_range[i][0], axis_range[i][1], d)
 
             #If we have a whole list of values for the axis, make sure we are a slider axis.
             elif len(axis_range[i]) == d:
