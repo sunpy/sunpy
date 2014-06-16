@@ -179,6 +179,16 @@ def test_goes_chianti_tem():
     assert temp8[0] < 10.36 and temp8[0] > 10.35
     assert em8[0] < 9.39e+48 and em8[0] > 9.38e+48
 
+def test_rad_loss_rate():
+    goeslc_input = lc.GOESLightCurve.create("2014-01-01 00:00:00",
+                                            "2014-01-01 00:00:10")
+    goeslc_test = goes.rad_loss_rate(goeslc_input)
+    goeslc_expected = goes.temp_em(goeslc_input)
+    goeslc_expected.data["rad_loss_rate"] = \
+      np.array([5.44914366e+26, 5.44914366e+26, 5.43465905e+26,
+                5.38282295e+26, 5.42019309e+26])
+    assert_frame_equal(goeslc_test.data, goeslc_expected.data)
+
 def test_calc_rad_loss():
     # Define input variables
     temp = np.array([11.0, 11.0, 11.0, 11.0, 11.0, 11.0])
