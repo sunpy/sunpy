@@ -187,9 +187,9 @@ def find_lyra_events(flux, time):
 
     Parameters
     ----------
-    flux : numpy float64 array
+    flux : ndarray/array-like convertible to float64, e.g. np.array, list
            Contains flux/irradiance measurements
-    time : sunpy datetime object or string array/list
+    time : ndarray/array-like convertible to datetime64, e.g. list, string array.
            Contains measurement times corresponding to each element in
            flux.  Must be same length as flux.
 
@@ -216,6 +216,9 @@ def find_lyra_events(flux, time):
     --------                
     
     """
+    # Ensure inputs are of correct type
+    flux = np.asanyarray(flux, dtype="float64")
+    time = np.asanyarray(time, dtype="datetime64[s]")
     # Define variables to be used later
     flare_indices = []
     flare_times = []
@@ -233,32 +236,36 @@ def find_lyra_events(flux, time):
         flux = np.delete(flux, bad_period)
         time = np.delete(time, bad_period)
     # get derivative of flux wrt time
-    dt = time[0:-2] - time[1:-1]
-    dfdt = np.gradient(flux[0:-2], dt)
-    dfdt = np.append(dfdt, 0)
+    dt = time[1:-1]-time[0:-2]
+    dfdt = np.gradient(flux[0:-2], np.asanyarray(dt, dtype="float64"))
     # Get locations where derivative is positive
     pos_deriv = np.where(dfdt > 0)[0]
     neg_deriv = np.where(dfdt < 0)[0]
     # Find difference between each time point and the one 4
     # observations ahead.
-    dt4 = time[0:-5] - time[4:-1]
+    dt4 = time[4:-1]-time[0:-5]
+    i=0
     # Find all possible flare start times.
-    for i in np.arange(len(pos_deriv)):
+    while i < len(pos_deriv)-3:
+        print i
         # Start time criteria
-        if pos_deriv[i:i+4]-pos_deriv[i] == np.arange(5) and dt4[i] == 4 and \
-          flux[pos_deriv[i+4]] / flux[pos_deriv[i]] >= RISE_FACTOR:
+        if (pos_deriv[i:i+4]-pos_deriv[i] == np.arange(4)).all() and \
+          dt4[i] > 210 and dt4[i] < 270 and \
+          flux[pos_deriv[i+3]]/flux[pos_deriv[i]] >= RISE_FACTOR:
             # Next, find index of flare end time.
             jj = np.where(neg_deriv > pos_deriv[i])[0]
             j = neg_deriv[jj[0]]
-            end_index = np.where(flux[j:] <=
-                                 max(flux[i:j]) - (max(flux[i:j])-flux[i]) *
-                                 FALL_FACTOR)[0][0] + j
+            end_index = np.where(flux[j:] <= \
+                                 max(flux[pos_deriv[i]:j])- \
+                                 (max(flux[pos_deriv[i]:j])-flux[pos_deriv[i]]) \
+                                 *FALL_FACTOR)[0][0]+j
             # find index of peak time
-            peak_index = np.where(flux == max(flux[pos_deriv[i]:j]))[0][0]
+            peak_index = np.where(
+                flux == max(flux[pos_deriv[i]:end_index]))[0][0]
             # Record flare start, peak and end times
-            flare_indices.append(pos_deriv[i]], peak_index, end_index)
-            flare_times.append(time[pos_deriv[i]],
-                               time[peak_index], time[end_index])
+            flare_indices.append((pos_deriv[i], peak_index, end_index))
+            flare_times.append((time[pos_deriv[i]],
+                               time[peak_index], time[end_index]))
             # If the most recently found flare is during the decay phase
             # of another reset end time of previous flare to start time
             # of this flare.
@@ -277,5 +284,7 @@ def find_lyra_events(flux, time):
             # ensures that flares during the decay phase are also
             # located.
             i = peak_index
+        else:
+            i = i+1
 
     return flare_times
