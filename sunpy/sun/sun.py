@@ -109,10 +109,20 @@ def longitude_Sun_perigee(t='now'): # pylint: disable=W0613
     
 def mean_anomaly(t='now'):
     """Returns the mean anomaly (the angle through which the Sun has moved
-    assuming a circular orbit) as a function of time."""
+    assuming a circular orbit) as a function of time referred to the mean
+    equinox of the date.
+    The mean anomaly of the Sun is the same as the mean anomaly of the Earth
+    (Meeus, 2005)
+    """
     T = julian_centuries(t)
-    result = 358.475830 + 35999.049750 * T - 0.0001500 * T ** 2 - 0.00000330 * T ** 3
-    result = result % 360.0
+    mean_longitude_earth = np.array([100.466457, 36000.7698278, 3.0322e-4,
+                                     2.0e-8]) * u.deg
+    lon_perihelium_earth = np.array([102.937348,     1.7195366, 4.5688e-4,
+                                    -1.8e-8]) * u.deg
+    polinomial_order = np.array([[1, T, T**2, T**3]])
+    mean_anomaly = (mean_longitude_earth - lon_perihelium_earth) * polinomial_order
+    result = mean_anomaly.sum()      
+    result = result % (360.0 * u.deg)
     return result
 
 def carrington_rotation_number(t='now'):
