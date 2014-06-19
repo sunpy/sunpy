@@ -15,38 +15,40 @@ from sunpy.time import parse_time
 from sunpy.util.odict import OrderedDict
 
 
-__all__ = ['GBMLightCurve']
+__all__ = ['GBMSummaryLightCurve']
 
-class GBMLightCurve(LightCurve):
+class GBMSummaryLightCurve(LightCurve):
     """
-    Nobeyama Radioheliograph LightCurve.
+    Fermi/GBM Summary Lightcurve.
 
     Examples
     --------
     >>> import sunpy
     
-    >>> norh = sunpy.lightcurve.NoRHLightCurve.create('~/Data/norh/tca110607')
-    >>> norh = sunpy.lightcurve.NoRHLightCurve.create('2011/08/10')
-    >>> norh = sunpy.lightcurve.NoRHLightCurve.create('2011/08/10',wavelength='34')
-    >>> norh.peek()
+    >>> gbm = sunpy.lightcurve.GBMLightCurve.create('2011-06-07')
+    >>> gbm.peek()
 
     References
     ----------
-    | http://solar.nro.nao.ac.jp/norh/
+    | http://gammaray.nsstc.nasa.gov/gbm/
     """
 
     def peek(self, **kwargs):
-        """Plots the NoRH lightcurve"""
-        plt.figure()
+        """Plots the GBM lightcurve"""
+        figure=plt.figure()
+        figure.autofmt_xdate()
         axes = plt.gca()
-        #data_lab=self.meta['OBS-FREQ'][0:2] + ' ' + self.meta['OBS-FREQ'][2:5]
-        axes.plot(self.data.index,self.data,label=data_lab)
+        data_lab=self.data.columns.values
+
+        for d in data_lab:
+            axes.plot(self.data.index,self.data[d],label=d)
+        
         axes.set_yscale("log")
-        axes.set_ylim(1e-4,1)
-        axes.set_title('Fermi GBM')
+        axes.set_title('Fermi GBM Summary data ' + self.meta['DETNAM'])
         axes.set_xlabel('Start time: ' + self.data.index[0].strftime('%Y-%m-%d %H:%M:%S UT'))
-        axes.set_ylabel('Counts')
+        axes.set_ylabel('Counts/s/keV')
         axes.legend()
+       
         plt.show()
 
     @classmethod
@@ -54,8 +56,13 @@ class GBMLightCurve(LightCurve):
         """This method retrieves the url for Fermi/GBM data for the given date."""
         baseurl='http://heasarc.gsfc.nasa.gov/FTP/fermi/data/gbm/daily/'
         #date is a datetime object
-        final_url=urlparse.urljoin(baseurl, date.strftime('%Y/%m/%d/' + 'current/' + 'glg_cspec_n1_%y%m%d_v00.pha'))
-        print final_url
+        if 'detector' in kwargs:
+            det=_parse_detector(kwargs['detector'])
+            final_url=urlparse.urljoin(baseurl, date.strftime('%Y/%m/%d/' + 'current/' + 'glg_cspec_'+det+'_%y%m%d_v00.pha'))
+        else:
+            #want to work out the best detector automatically by default
+            det='n1'
+            final_url=urlparse.urljoin(baseurl, date.strftime('%Y/%m/%d/' + 'current/' + 'glg_cspec_'+det+'_%y%m%d_v00.pha'))
         
         return final_url
      
@@ -124,3 +131,17 @@ def _bin_data_for_summary(energy_bins,count_data):
                                 (count_data['exposure'][i] * (energy_bins['e_max'][indices[7]] - energy_bins['e_min'][indices[6]]))])
 
     return summary_counts
+
+def _parse_detector(detector):
+    oklist=['n0','n1','n2','n3','n4','n5','n6','n7','n8','n9']
+    altlist=['0','1','2','3','4','5','6','7','8','9']
+    if detector in oklist:
+        return detector
+    elif detector in altlist:
+        return 'n'+detector
+    else:
+        raise ValueError('Detector string could not be interpreted')
+    
+        
+        
+
