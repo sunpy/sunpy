@@ -33,10 +33,10 @@ class HelioGraphicStonyhurst(BaseCoordinateFrame):
     ----------
     representation: `BaseRepresentation` or None
         A representation object or None to have no data.
-    lon: `Angle` object.
+    lon: `Angle` object, optional, must be keyword.
         The longitude for this object (``lat`` must also be given and ``representation``
         must be None).
-    lat: `Angle` object.
+    lat: `Angle` object, optional, must be keyword.
         The latitude for this object (``lon`` must also be given and ``representation``
         must be None).
     rad: `astropy.units.Quantity` object, optional, must be keyword.
@@ -51,8 +51,18 @@ class HelioGraphicStonyhurst(BaseCoordinateFrame):
         'spherical': {'names': ('lon', 'lat', 'rad'), 'units': (u.deg, u.deg, u.km)},
         }
 
-    def __init__(self, lon, lat, rad=RADIUS*u.km):
-        super(HelioGraphicStonyhurst, self).__init__(lon, lat, rad)
+    def __init__(self, *args, **kwargs):
+        if kwargs is None:
+            # If only lon and lat are specified.
+            if len(args) < 3:
+                args.append(RADIUS*u.km)
+        elif args is None:
+            if 'rad' not in kwargs:
+                kwargs['rad'] = RADIUS*u.km
+        else:
+            # Any other cases?
+            pass
+        super(HelioGraphicStonyhurst, self).__init__(args, kwargs)
 
 def _carrington_offset():
     # This method is to return the Carrington offset.
@@ -83,11 +93,7 @@ class HelioGraphicCarrington(HelioGraphicStonyhurst):
         'spherical': {'names': ('lon', 'lat', 'rad'), 'units': (u.deg, u.deg, u.km)},
         }
 
-    def __init__(self, lon, lat, rad=RADIUS*u.km):
-        # Assume input longitude is already adjusted.
-        # If not, throw error.
-        offset = _carrington_offset()
-        if lon < offset:
-            throw ValueError("The Longitude {0} must be greater than the Carrington offset.",
-                             .format(lon))
-        super(HelioGraphicCarrington, self).__init__(lon, lat, rad)
+    def __init__(self, *args, **kwargs):
+
+        # TODO: Understand how Carrington offset works.
+        super(HelioGraphicCarrington, self).__init__(args, kwargs)
