@@ -103,12 +103,12 @@ def extract_combined_lytaf(tstart, tend,
     if type(tstart) is str:
         tstart = parse_time(tstart)
     if type(tstart) is not datetime:
-        raise TypeError("start_time must be a date string or datetime object")
+        raise TypeError("tstart must be a date string or datetime object")
     # Check start_time is a date string or datetime object
     if type(tend) is str:
         tend = parse_time(tend)
     if type(tend) is not datetime:
-        raise TypeError("end_time must be a date string or datetime object")
+        raise TypeError("tend must be a date string or datetime object")
     # Check combine_files contains correct inputs
     if not all(suffix in ["lyra", "manual", "ppt", "science"]
                for suffix in combine_files):
@@ -189,7 +189,7 @@ def find_lyra_events(flux, time):
     ----------
     flux : ndarray/array-like convertible to float64, e.g. np.array, list
            Contains flux/irradiance measurements
-    time : ndarray/array-like convertible to datetime64, e.g. list, string array.
+    time : ndarray/array-like of of datetime objects, e.g. np.array, list
            Contains measurement times corresponding to each element in
            flux.  Must be same length as flux.
 
@@ -218,34 +218,58 @@ def find_lyra_events(flux, time):
     """
     # Ensure inputs are of correct type
     flux = np.asanyarray(flux, dtype="float64")
-    time = np.asanyarray(time, dtype="datetime64[s]")
+    if (np.array([type(t) for t in time]) == datetime).all():
+        time = np.asanyarray(time)
+    else:
+        # If elements of time are not datetime objects, try converting.
+        try:
+            time = np.array([datetime(t) for t in time])
+        except TypeError:
+            try:
+                # If cannot be converted simply, elements may be strings
+                # Try converting to datetime using sunpy.time.parse_time
+                time = np.array([parse_time(t) for t in time])
+            except:
+                # Otherwise raise error telling user to input an array
+                # of datetime objects.
+                raise IOError("time must be an array or array-like of datetime"
+                              " objects or valid time strings.")
+        else:
+            raise IOError("time must be an array or array-like of datetime"
+                          " objects or valid time strings.")
     # Define variables to be used later
     flare_indices = []
     flare_times = []
     # Get LYTAF file for given time range
-    lytaf = extract_combined_lytaf(time[0], time[-1])
+    #lytaf = extract_combined_lytaf(time[0], time[-1])
     # Find events in lytaf which are to be removed from time series.
-    artifacts = np.logical_or(lytaf["event_type"] == u'UV occ.',
-                              lytaf["event_type"] == u'Offpoint',
-                              lytaf["event_type"] == u'LAR',
-                              lytaf["event_type"] == u'Calibration')
+    #artifacts = np.logical_or(lytaf["event_type"] == u'UV occ.',
+    #                          lytaf["event_type"] == u'Offpoint',
+    #                          lytaf["event_type"] == u'LAR',
+    #                          lytaf["event_type"] == u'Calibration')
     # Remove periods corresponding to artifacts from flux and time arrays
-    for artifact in np.arange(len(artifacts))[artifacts]:
-        bad_period = np.logical_and(flux > lytaf["begin_time"][index],
-                                    flux < lytaf["end_time"][index])
-        flux = np.delete(flux, bad_period)
-        time = np.delete(time, bad_period)
+    #for artifact in np.arange(len(artifacts))[artifacts]:
+    #    bad_period = np.logical_and(flux > lytaf["begin_time"][index],
+    #                                flux < lytaf["end_time"][index])
+    #    flux = np.delete(flux, bad_period)
+    #    time = np.delete(time, bad_period)
     # get derivative of flux wrt time
-    dt = time[1:-1]-time[0:-2]
-    dfdt = np.gradient(flux[0:-2], np.asanyarray(dt, dtype="float64"))
+    time_timedelta = time[1:-1]-time[0:-2]
+    dt = np.zeros(len(time_timedelta))
+    for i, t, in enumerate(time_timedelta):
+        dt[i] = t.total_seconds()
+    dfdt = np.gradient(flux[0:-2], dt)
     # Get locations where derivative is positive
     pos_deriv = np.where(dfdt > 0)[0]
     neg_deriv = np.where(dfdt < 0)[0]
     # Find difference between each time point and the one 4
     # observations ahead.
-    dt4 = time[4:-1]-time[0:-5]
-    i=0
+    time_timedelta4 = time[4:-1]-time[0:-5]
+    dt4 = np.zeros(len(time_timedelta4))
+    for i, t, in enumerate(time_timedelta4):
+        dt4[i] = t.total_seconds()
     # Find all possible flare start times.
+    i=0
     while i < len(pos_deriv)-3:
         print i
         # Start time criteria
@@ -269,14 +293,14 @@ def find_lyra_events(flux, time):
             # If the most recently found flare is during the decay phase
             # of another reset end time of previous flare to start time
             # of this flare.
-            if flare_indices[-2][2] > flare_indices[-1][0]:
-                new_peak_index = np.where(flux == max(
-                    flux[flare_indices[-2][0]:flare_indices[-1][0]]))[0][0]
-                flare_indices[-2] = (flare_indices[-2][0],
-                                     new_peak_index, flare_indices[-1][0])
-                flare_times[-2] = (time[flare_indices[-2][0]],
-                                   time[new_peak_index],
-                                   time[flare_indices[-1][0]])
+            #if flare_indices[-2][2] > flare_indices[-1][0]:
+            #    new_peak_index = np.where(flux == max(
+            #        flux[flare_indices[-2][0]:flare_indices[-1][0]]))[0][0]
+            #    flare_indices[-2] = (flare_indices[-2][0],
+            #                         new_peak_index, flare_indices[-1][0])
+            #    flare_times[-2] = (time[flare_indices[-2][0]],
+            #                       time[new_peak_index],
+            #                       time[flare_indices[-1][0]])
             # Finally, set principle iterator, i, to the peak of the
             # flare just found so that algorithm will start looking for
             # flares during the decay phase of this flare and beyond,
