@@ -132,3 +132,39 @@ class HelioCentric(BaseCoordinateFrame):
         'cylindrical': {'names': ('rho', 'psi', 'z'), 'units': (None, u.deg, u.km)}
         }
     
+class HelioProjective(BaseCoordinateFrame):
+    """
+    A coordinate or frame in the Helioprojective
+    system.
+    This is the projected equivalent of the Heliocentric
+    coordinate system. As such, the Cartesian representation
+    has degrees for each of the units, and the cylindrical
+    representation has the rho parameter replaced by Trho,
+    or theta_rho.
+
+    Parameters
+    ----------
+    representation: `BaseRepresentation` or None.
+        A representation object. If specified, other parameters must
+        be in keyword form.
+    Tx: `Angle` object.
+        X-axis coordinate, specified in degrees.
+    Ty: `Angle` object.
+        Y-axis coordinate, specified in degrees.
+    zeta: Z-axis coordinate.
+        Defined as zeta = D0 - d.
+        D0 = Distance between observer and Sun center.
+        d = Distance between observer and feature.
+    """
+
+    default_representation = CartesianRepresentation
+
+    frame_attr_names = {}
+
+    _frame_specific_representation_info = {
+        'cartesian': {'names': ('Tx', 'Ty', 'zeta'), 'units': (u.deg, u.deg, None)},
+        'cylindrical': {'names': ('Trho', 'psi', 'z'), 'units': (u.deg, u.deg, None)}
+        }
+    # Note that Trho = Drho + 90, and Drho is the declination parameter.
+    # According to Thompson, we use Trho internally and Drho as part of
+    # the (Drho, psi) pair when defining a coordinate in this system.
