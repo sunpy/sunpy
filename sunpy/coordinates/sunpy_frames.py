@@ -49,7 +49,6 @@ class HelioGraphicStonyhurst(BaseCoordinateFrame):
 
     _frame_specific_representation_info = {
         'spherical': {'names': ('lon', 'lat', 'rad'), 'units': (u.deg, u.deg, u.km)},
-        'cylindrical': {'names': ('rho', 'phi', 'z'), 'units': (u.deg, u.deg, u.km)}
         }
 
     def __init__(self, lon, lat, rad=RADIUS*u.km):
@@ -82,7 +81,6 @@ class HelioGraphicCarrington(HelioGraphicStonyhurst):
 
     _frame_specific_representation_info = {
         'spherical': {'names': ('lon', 'lat', 'rad'), 'units': (u.deg, u.deg, u.km)},
-        'cylindrical': {'names': ('rho', 'phi', 'z'), 'units': (u.deg, u.deg, u.km)}
         }
 
     def __init__(self, lon, lat, rad=RADIUS*u.km):
