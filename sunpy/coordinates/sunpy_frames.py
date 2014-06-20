@@ -52,7 +52,7 @@ class HelioGraphicStonyhurst(BaseCoordinateFrame):
         'spherical': {'names': ('lon', 'lat', 'rad'), 'units': (u.deg, u.deg, u.km)},
         }
 
-    rad = FrameAttribute(default=RSUN*u.km)
+    rad = FrameAttribute(default=((RSUN.value/1000)*u.km))
 
 def _carrington_offset():
     # This method is to return the Carrington offset.
@@ -85,7 +85,7 @@ class HelioGraphicCarrington(HelioGraphicStonyhurst):
         'spherical': {'names': ('lon', 'lat', 'rad'), 'units': (u.deg, u.deg, u.km)},
         }
 
-    rad = FrameAttribute(default=RSUN*u.km)
+    rad = FrameAttribute(default=((RSUN.value/1000)*u.km))
 
 class HelioCentric(BaseCoordinateFrame):
     """
@@ -126,8 +126,8 @@ class HelioCentric(BaseCoordinateFrame):
         'cylindrical': {'names': ('rho', 'psi', 'z'), 'units': (None, u.deg, u.km)}
         }
 
-    d = FrameAttribute(default=1*u.au)
-    D0 = FrameAttribute(default=RSUN)
+    d = FrameAttribute(default=(1*u.au).to(u.km))
+    D0 = FrameAttribute(default=((RSUN.value/1000)*u.km))
     
 class HelioProjective(BaseCoordinateFrame):
     """
@@ -156,7 +156,7 @@ class HelioProjective(BaseCoordinateFrame):
     default_representation = CartesianRepresentation
 
     _frame_specific_representation_info = {
-        'cartesian': {'names': ('Tx', 'Ty', 'zeta'), 'units': (u.deg, u.deg, None)},
+        'cartesian': {'names': ('Tx', 'Ty', 'zeta'), 'units': (u.deg, u.deg, u.km)},
         'cylindrical': {'names': ('Trho', 'psi', 'z'), 'units': (u.deg, u.deg, None)}
         }
 
@@ -180,3 +180,19 @@ def hcg_to_hcs(hcgcoord, hcsframe):
     representation = SphericalRepresentation(s_lon, hcgcoord.spherical.lat)
     return HelioGraphicStonyhurst(representation)
 
+@frame_transform_graph.transform(FunctionTransform, HelioCentric, HelioProjective)
+def helioc_to_heliop(helioccoord, heliopframe):
+    mult_factor = 180/(np.pi * helioccoord.d.value)
+    Tx = mult_factor * helioccoord.cartesian.x.value * u.deg
+    Ty = mult_factor * helioccoord.cartesian.y.value * u.deg
+    zeta = helioccoord.D0 - helioccoord.d
+    representation = CartesianRepresentation(Tx, Ty, zeta)
+    return HelioProjective(representation)
+
+@frame_transform_graph.transform(FunctionTransform, HelioProjective, HelioCentric)
+def heliop_to_helioc(heliopcoord, heliocframe):
+    # mult_factor = (np.pi * heliocframe.d.value)/180
+    # x = mult_factor * heliopcoord.cartesian.x.value * u.km
+    # y = mult_factor * heliopcoord.cartesian.y.value * u.km
+    pass
+    
