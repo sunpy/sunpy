@@ -14,6 +14,7 @@ from astropy import units as u
 from astropy.coordinates.representation import (SphericalRepresentation, CylindricalRepresentation,
                                                 CartesianRepresentation)
 from astropy.coordinates.baseframe import BaseCoordinateFrame, frame_transform_graph
+from astropy.coordinates.transformations import FunctionTransform
 
 # SunPy imports
 from sunpy import sun as s # For Carrington rotation number
@@ -168,3 +169,20 @@ class HelioProjective(BaseCoordinateFrame):
     # Note that Trho = Drho + 90, and Drho is the declination parameter.
     # According to Thompson, we use Trho internally and Drho as part of
     # the (Drho, psi) pair when defining a coordinate in this system.
+
+# ------------------ Transformation Framework -------------------------
+# This portion is reserved for the implementation of transformations
+# as defined by Thompson.
+
+@frame_transform_graph.transform(FunctionTransform, HelioGraphicStonyhurst, HelioGraphicCarrington)
+def hcs_to_hcg(hcscoord, hcgframe):
+    c_lon = hcscoord.spherical.lon + _carrington_offset()
+    representation = SphericalRepresentation(c_lon, hcscoord.spherical.lat)
+    return HelioGraphicCarrington(representation)
+
+@frame_transform_graph.transform(FunctionTransform, HelioGraphicCarrington, HelioGraphicStonyhurst)
+def hcg_to_hcs(hcgcoord, hcsframe):
+    s_lon = hcgcoord.spherical.lon - _carrington_offset()
+    representation = SphericalRepresentation(s_lon, hcgcoord.spherical.lat)
+    return HelioGraphicStonyhurst(representation)
+
