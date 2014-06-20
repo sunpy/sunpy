@@ -353,21 +353,28 @@ def extract_lyra_artifacts(time, fluxes=None, artifacts="All",
     time = _check_datetime(time)
     if not all(isinstance(artifact_type, str) for artifact_type in artifacts):
         raise TypeError("All elements in artifacts must in strings.")
-    
+    # Define outputs
+    clean_time = copy.deepcopy(time)
+    clean_fluxes = copy.deepcopy(fluxes)
     # Get LYTAF file for given time range
     lytaf = extract_combined_lytaf(time[0], time[-1])
     # Find events in lytaf which are to be removed from time series.
-    artifact_indices = np.empty(0, dtype="int64")
-    for artifact_type in artifacts:
-        artifact_indices = np.concatenate((
-            artifact_indices, np.where(lytaf["event_type"] == artifact_type)))
-    artifact_indices.sort()
+    if artifacts == "All":
+        artifact_indices = np.arange(len(lytaf["begin_time"]))
+    else:
+        artifact_indices = np.empty(0, dtype="int64")
+        for artifact_type in artifacts:
+            artifact_indices = np.concatenate((
+                artifact_indices, np.where(lytaf["event_type"] == artifact_type)))
+        artifact_indices.sort()
     # Remove periods corresponding to artifacts from flux and time arrays
     for index in artifact_indices:
         bad_period = np.logical_and(time > lytaf["begin_time"][index],
                                     time < lytaf["end_time"][index])
-        flux = np.delete(flux, bad_period)
         time = np.delete(time, bad_period)
+        if fluxes is not None:
+            for flux in clean_fluxes:
+                flux = np.delete(flux, bad_period)
 
 def _check_datetime(time):
     """
