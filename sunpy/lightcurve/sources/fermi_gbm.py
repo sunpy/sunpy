@@ -75,7 +75,7 @@ class GBMSummaryLightCurve(LightCurve):
         #these GBM files have three FITS extensions.
         #extn1 - this gives the energy range for each of the 128 energy bins
         #extn2 - this contains the data, e.g. counts, exposure time, time of observation
-        #extn3 - ???
+        #extn3 - eclipse times?
         energy_bins=hdulist[1].data
         count_data=hdulist[2].data
         misc=hdulist[3].data
@@ -106,29 +106,17 @@ def _bin_data_for_summary(energy_bins,count_data):
     for e in ebands:
         indices.append(np.searchsorted(energy_bins['e_max'],e))
         
-    #get energy indices for summary count bins
-    #indices=_get_summary_bin_indices(energy_bins)
-    #print indices
-
     #rebin the 128 energy channels into some summary ranges
     #4-15 keV, 15 - 25 keV, 25-50 keV, 50-100 keV, 100-300 keV, 300-800 keV, 800 - 2000 keV
     #put the data in the units of counts/s/keV
     summary_counts=[]
     for i in range(0,len(count_data['counts'])):
-        summary_counts.append([np.sum(count_data['counts'][i][0:indices[1]]) /
-                               (count_data['exposure'][i] * (energy_bins['e_max'][indices[1]] - energy_bins['e_min'][0])),
-                                np.sum(count_data['counts'][i][indices[1]:indices[2]]) /
-                                (count_data['exposure'][i] * (energy_bins['e_max'][indices[2]] - energy_bins['e_min'][indices[1]])),
-                               np.sum(count_data['counts'][i][indices[2]:indices[3]]) /
-                                 (count_data['exposure'][i] * (energy_bins['e_max'][indices[3]] - energy_bins['e_min'][indices[2]])),
-                               np.sum(count_data['counts'][i][indices[3]:indices[4]]) /
-                                 (count_data['exposure'][i] * (energy_bins['e_max'][indices[4]] - energy_bins['e_min'][indices[3]])),
-                               np.sum(count_data['counts'][i][indices[4]:indices[5]]) /
-                                (count_data['exposure'][i] * (energy_bins['e_max'][indices[5]] - energy_bins['e_min'][indices[4]])),
-                               np.sum(count_data['counts'][i][indices[5]:indices[6]]) /
-                                (count_data['exposure'][i] * (energy_bins['e_max'][indices[6]] - energy_bins['e_min'][indices[5]])),
-                               np.sum(count_data['counts'][i][indices[6]:indices[7]]) /
-                                (count_data['exposure'][i] * (energy_bins['e_max'][indices[7]] - energy_bins['e_min'][indices[6]]))])
+        counts_in_bands=[]
+        for j in range(1,len(ebands)):
+            counts_in_bands.append(np.sum(count_data['counts'][i][indices[j-1]:indices[j]]) /
+                               (count_data['exposure'][i] * (energy_bins['e_max'][indices[j]] - energy_bins['e_min'][indices[j-1]])))
+            
+        summary_counts.append(counts_in_bands)
 
     return summary_counts
 
