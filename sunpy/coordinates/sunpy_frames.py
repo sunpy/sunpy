@@ -14,7 +14,8 @@ from astropy import units as u
 from astropy.coordinates.representation import (SphericalRepresentation, CylindricalRepresentation,
                                                 CartesianRepresentation)
 from astropy.coordinates.baseframe import BaseCoordinateFrame, frame_transform_graph
-from astropy.coordinates.transformations import FunctionTransform
+from astropy.coordinates.transformations import FunctionTransform, DynamicMatrixTransform
+from astropy.coordinates import FrameAttribute
 
 # SunPy imports
 from sunpy import sun as s # For Carrington rotation number
@@ -42,29 +43,16 @@ class HelioGraphicStonyhurst(BaseCoordinateFrame):
         must be None).
     rad: `astropy.units.Quantity` object.
         This quantity holds the radial distance. If not specified, it is, by default,
-        the solar radius.
+        the solar radius. Optional, must be keyword.
     """
     
     default_representation = SphericalRepresentation
-
-    frame_attr_names = {}
 
     _frame_specific_representation_info = {
         'spherical': {'names': ('lon', 'lat', 'rad'), 'units': (u.deg, u.deg, u.km)},
         }
 
-    def __init__(self, *args, **kwargs):
-        if kwargs is None:
-            # If only lon and lat are specified.
-            if len(args) < 3:
-                args.append(RSUN*u.km)
-        elif args is None:
-            if 'rad' not in kwargs:
-                kwargs['rad'] = RSUN*u.km
-        else:
-            # Any other cases?
-            pass
-        super(HelioGraphicStonyhurst, self).__init__(args, kwargs)
+    rad = FrameAttribute(default=RSUN*u.km)
 
 def _carrington_offset():
     # This method is to return the Carrington offset.
@@ -88,19 +76,16 @@ class HelioGraphicCarrington(HelioGraphicStonyhurst):
         must be None).
     rad: `astropy.units.Quantity` object, optional, must be keyword.
         This quantity holds the radial distance. If not specified, it is, by default,
-        the solar radius.
+        the solar radius. Optional, must be keyword.
     """
     
     default_representation = SphericalRepresentation
-
-    frame_attr_names = {}
 
     _frame_specific_representation_info = {
         'spherical': {'names': ('lon', 'lat', 'rad'), 'units': (u.deg, u.deg, u.km)},
         }
 
-    def __init__(self, *args, **kwargs):
-        super(HelioGraphicCarrington, self).__init__(args, kwargs)
+    rad = FrameAttribute(default=RSUN*u.km)
 
 class HelioCentric(BaseCoordinateFrame):
     """
@@ -115,23 +100,34 @@ class HelioCentric(BaseCoordinateFrame):
     ----------
     representation: `~astropy.coordinates.BaseRepresentation` or None.
         A representation object. If specified, other parameters must
-        be in keyword form.
+        be in keyword form and if x, y and z are specified, it must
+        be None.
     x: `Quantity` object.
-        X-axis coordinate, specified in kilometres.
+        X-axis coordinate, specified in kilometres. Optional, must
+        be keyword.
     y: `Quantity` object.
-        Y-axis coordinate, specified in kilometres.
+        Y-axis coordinate, specified in kilometres. Optional, must
+        be keyword.
     z: `Quantity` object. Shared by both representations.
-        Z-axis coordinate, specified in kilometres.
+        Z-axis coordinate, specified in kilometres. Optional, must
+        be keyword.
+    d: `Quantity` object.
+        Represents the distance between the observer and the feature.
+        Defaults to 1AU.
+    D0: `Quantity` object.
+        Represents the distance between the observer and the Sun center.
+        Defaults to 1RSUN.
     """
 
     default_representation = CartesianRepresentation
-
-    frame_attr_names = {}
 
     _frame_specific_representation_info = {
         'cartesian': {'names': ('x', 'y', 'z'), 'units': (u.km, u.km, u.km)},
         'cylindrical': {'names': ('rho', 'psi', 'z'), 'units': (None, u.deg, u.km)}
         }
+
+    d = FrameAttribute(default=1*u.au)
+    D0 = FrameAttribute(default=RSUN)
     
 class HelioProjective(BaseCoordinateFrame):
     """
@@ -153,19 +149,17 @@ class HelioProjective(BaseCoordinateFrame):
     Ty: `Angle` object.
         Y-axis coordinate, specified in degrees.
     zeta: Z-axis coordinate.
-        Defined as zeta = D0 - d.
-        D0 = Distance between observer and Sun center.
-        d = Distance between observer and feature.
+        Defined as D0 - d when transforming from Heliocentric
+        coordinates.
     """
 
     default_representation = CartesianRepresentation
-
-    frame_attr_names = {}
 
     _frame_specific_representation_info = {
         'cartesian': {'names': ('Tx', 'Ty', 'zeta'), 'units': (u.deg, u.deg, None)},
         'cylindrical': {'names': ('Trho', 'psi', 'z'), 'units': (u.deg, u.deg, None)}
         }
+
     # Note that Trho = Drho + 90, and Drho is the declination parameter.
     # According to Thompson, we use Trho internally and Drho as part of
     # the (Drho, psi) pair when defining a coordinate in this system.
