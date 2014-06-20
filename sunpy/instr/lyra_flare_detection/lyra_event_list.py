@@ -88,20 +88,10 @@ def find_lyra_events(flux, time):
     # Define variables to be used later
     flare_indices = []
     flare_times = []
-    # Get LYTAF file for given time range
-    #lytaf = extract_combined_lytaf(time[0], time[-1])
-    # Find events in lytaf which are to be removed from time series.
-    #artifacts = np.logical_or(lytaf["event_type"] == u'UV occ.',
-    #                          lytaf["event_type"] == u'Offpoint',
-    #                          lytaf["event_type"] == u'LAR',
-    #                          lytaf["event_type"] == u'Calibration')
-    # Remove periods corresponding to artifacts from flux and time arrays
-    #for artifact in np.arange(len(artifacts))[artifacts]:
-    #    bad_period = np.logical_and(flux > lytaf["begin_time"][index],
-    #                                flux < lytaf["end_time"][index])
-    #    flux = np.delete(flux, bad_period)
-    #    time = np.delete(time, bad_period)
-    # get derivative of flux wrt time
+    # Remove LYRA artifacts from timeseries
+    time, flux = extract_lyra_artifacts(
+        time, [flux], artifacts=["UV occ.", "Offpoint", "LAR", "Calibration"])
+    # Get derivative of flux wrt time
     time_timedelta = time[1:-1]-time[0:-2]
     dt = np.zeros(len(time_timedelta))
     for i, t, in enumerate(time_timedelta):
@@ -127,10 +117,10 @@ def find_lyra_events(flux, time):
             # Next, find index of flare end time.
             jj = np.where(neg_deriv > pos_deriv[i])[0]
             j = neg_deriv[jj[0]]
-            end_index = np.where(flux[j:] <= \
-                                 max(flux[pos_deriv[i]:j])- \
-                                 (max(flux[pos_deriv[i]:j])-flux[pos_deriv[i]]) \
-                                 *FALL_FACTOR)[0][0]+j
+            end_index = np.where(
+                flux[j:] <= max(flux[pos_deriv[i]:j]) - \
+                (max(flux[pos_deriv[i]:j])-flux[pos_deriv[i]]) * \
+                FALL_FACTOR)[0][0]+j
             # find index of peak time
             peak_index = np.where(
                 flux == max(flux[pos_deriv[i]:end_index]))[0][0]
