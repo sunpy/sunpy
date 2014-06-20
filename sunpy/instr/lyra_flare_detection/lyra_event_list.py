@@ -42,141 +42,6 @@ from sunpy.time import parse_time
 RISE_FACTOR = 1.4
 FALL_FACTOR = 0.5
 
-def extract_combined_lytaf(tstart, tend,
-                           lytaf_path=os.path.join(os.path.curdir, "data"),
-                           combine_files=["lyra", "manual", "ppt", "science"]):
-    
-    """
-    Extracts combined lytaf file for given time range.
-
-    Given a time range defined by start_time and end_time, this
-    function extracts the segments of each LYRA annotation file and
-    combines them.
-
-    Parameters
-    ----------
-    start_time : datetime object or string
-                 Start time of period for which annotation file is
-                 required.
-    end_time : datetime object or string
-               End time of period for which annotation file is
-               required.
-    combine_files : (optional) list of strings
-                    States which LYRA annotation files are to be
-                    combined.
-                    Default is all four, i.e. lyra, manual, ppt,
-                    science.
-                    See Notes section for an explanation of each.
-
-    Returns
-    -------
-    lytaf : numpy record array containing the various parameters stored
-            in the LYTAF files.
-
-    Notes
-    -----
-    There are four LYRA annotation files which mark different types of
-    events or artifacts in the data.  They are named
-    annotation_suffix.db where suffix is a variable equalling either
-    lyra, manual, ppt, or science.
-    annotation_lyra.db : contains entries regarding possible effects to
-                        the data due to normal operation of LYRA
-                        instrument.
-    annotation_manual.db : contains entries regarding possible effects
-                           to the data due to unusual or manually
-                           logged events.
-    annotation_ppt.db : contains entries regarding possible effects to
-                        the data due to pointing or positioning of
-                        PROBA2.
-    annotation_science.db : contains events in the data scientifically
-                            interesting, e.g. flares.
-
-    References
-    ----------
-    Further documentation: http://proba2.oma.be/data/TARDIS
-
-    Examples
-    --------
-    
-    """
-    # Check inputs
-    # Check start_time is a date string or datetime object
-    if type(tstart) is str:
-        tstart = parse_time(tstart)
-    if type(tstart) is not datetime:
-        raise TypeError("tstart must be a date string or datetime object")
-    # Check start_time is a date string or datetime object
-    if type(tend) is str:
-        tend = parse_time(tend)
-    if type(tend) is not datetime:
-        raise TypeError("tend must be a date string or datetime object")
-    # Check combine_files contains correct inputs
-    if not all(suffix in ["lyra", "manual", "ppt", "science"]
-               for suffix in combine_files):
-        raise TypeError("Elements in combine_files must be strings equalling "
-                        "'lyra', 'manual', 'ppt', or 'science'.")
-    # Remove any duplicates from combine_files input
-    combine_files = list(set(combine_files))
-    combine_files.sort()
-    # Convert input times to UNIX timestamp format since this is the
-    # time format in the annotation files
-    tstart_uts = tstart.strftime("%s")
-    tend_uts = tend.strftime("%s")
-
-    # Define numpy record array which will hold the information from
-    # the annotation file.
-    lytaf = np.empty((0,), dtype=[("insertion_time", object),
-                               ("begin_time", object),
-                               ("reference_time", object),
-                               ("end_time", object),
-                               ("event_type", object),
-                               ("event_definition", object)])
-    # Access annotation files
-    for i, suffix in enumerate(combine_files):
-        # Open SQLITE3 annotation files
-        connection = sqlite3.connect(
-            os.path.join(lytaf_path, "annotation_{0}.db".format(suffix)))
-        # Create cursor to manipulate data in annotation file
-        cursor = connection.cursor()
-        # Select and extract the data from event table within file within
-        # given time range
-        cursor.execute("select insertion_time, begin_time, reference_time, "
-                       "end_time, eventType_id from event where end_time >= "
-                       "{0} and begin_time <= {1}".format(tstart_uts, tend_uts))
-        event_rows = cursor.fetchall()
-        # Select and extract the event types from eventType table
-        cursor.row_factory = sqlite3.Row
-        cursor.execute("select * from eventType")
-        eventType_rows = cursor.fetchall()
-        eventType_id = []
-        eventType_type = []
-        eventType_definition = []
-        for eventType_row in eventType_rows:
-            eventType_id.append(eventType_row["id"])
-            eventType_type.append(eventType_row["type"])
-            eventType_definition.append(eventType_row["definition"])
-        # Enter desired information into the lytaf numpy record array
-        for event_row in event_rows:
-            id_index = eventType_id.index(event_row[4])
-            lytaf = np.append(lytaf,
-                              np.array((datetime.fromtimestamp(event_row[0]),
-                                        datetime.fromtimestamp(event_row[1]),
-                                        datetime.fromtimestamp(event_row[2]),
-                                        datetime.fromtimestamp(event_row[3]),
-                                        eventType_type[id_index],
-                                        eventType_definition[id_index]),
-                                        dtype=lytaf.dtype))
-        # Close file
-        cursor.close()
-        connection.close()
-    # Delete initial empty entry in lytaf
-    np.delete(lytaf, 0)
-    # Sort lytaf in ascending order of begin time
-    np.recarray.sort(lytaf, order="begin_time")    
-
-    #return event_rows, eventType_rows
-    return lytaf
-    
 def find_lyra_events(flux, time):
     """
     Finds events in a times series satisfying LYRA event definitions.
@@ -431,6 +296,141 @@ def extract_lyra_artifacts(time, fluxes=None, artifacts="All",
             return clean_time
         else:
             return clean_time, clean_fluxes
+
+def extract_combined_lytaf(tstart, tend,
+                           lytaf_path=os.path.join(os.path.curdir, "data"),
+                           combine_files=["lyra", "manual", "ppt", "science"]):
+    
+    """
+    Extracts combined lytaf file for given time range.
+
+    Given a time range defined by start_time and end_time, this
+    function extracts the segments of each LYRA annotation file and
+    combines them.
+
+    Parameters
+    ----------
+    start_time : datetime object or string
+                 Start time of period for which annotation file is
+                 required.
+    end_time : datetime object or string
+               End time of period for which annotation file is
+               required.
+    combine_files : (optional) list of strings
+                    States which LYRA annotation files are to be
+                    combined.
+                    Default is all four, i.e. lyra, manual, ppt,
+                    science.
+                    See Notes section for an explanation of each.
+
+    Returns
+    -------
+    lytaf : numpy record array containing the various parameters stored
+            in the LYTAF files.
+
+    Notes
+    -----
+    There are four LYRA annotation files which mark different types of
+    events or artifacts in the data.  They are named
+    annotation_suffix.db where suffix is a variable equalling either
+    lyra, manual, ppt, or science.
+    annotation_lyra.db : contains entries regarding possible effects to
+                        the data due to normal operation of LYRA
+                        instrument.
+    annotation_manual.db : contains entries regarding possible effects
+                           to the data due to unusual or manually
+                           logged events.
+    annotation_ppt.db : contains entries regarding possible effects to
+                        the data due to pointing or positioning of
+                        PROBA2.
+    annotation_science.db : contains events in the data scientifically
+                            interesting, e.g. flares.
+
+    References
+    ----------
+    Further documentation: http://proba2.oma.be/data/TARDIS
+
+    Examples
+    --------
+    
+    """
+    # Check inputs
+    # Check start_time is a date string or datetime object
+    if type(tstart) is str:
+        tstart = parse_time(tstart)
+    if type(tstart) is not datetime:
+        raise TypeError("tstart must be a date string or datetime object")
+    # Check start_time is a date string or datetime object
+    if type(tend) is str:
+        tend = parse_time(tend)
+    if type(tend) is not datetime:
+        raise TypeError("tend must be a date string or datetime object")
+    # Check combine_files contains correct inputs
+    if not all(suffix in ["lyra", "manual", "ppt", "science"]
+               for suffix in combine_files):
+        raise TypeError("Elements in combine_files must be strings equalling "
+                        "'lyra', 'manual', 'ppt', or 'science'.")
+    # Remove any duplicates from combine_files input
+    combine_files = list(set(combine_files))
+    combine_files.sort()
+    # Convert input times to UNIX timestamp format since this is the
+    # time format in the annotation files
+    tstart_uts = tstart.strftime("%s")
+    tend_uts = tend.strftime("%s")
+
+    # Define numpy record array which will hold the information from
+    # the annotation file.
+    lytaf = np.empty((0,), dtype=[("insertion_time", object),
+                               ("begin_time", object),
+                               ("reference_time", object),
+                               ("end_time", object),
+                               ("event_type", object),
+                               ("event_definition", object)])
+    # Access annotation files
+    for i, suffix in enumerate(combine_files):
+        # Open SQLITE3 annotation files
+        connection = sqlite3.connect(
+            os.path.join(lytaf_path, "annotation_{0}.db".format(suffix)))
+        # Create cursor to manipulate data in annotation file
+        cursor = connection.cursor()
+        # Select and extract the data from event table within file within
+        # given time range
+        cursor.execute("select insertion_time, begin_time, reference_time, "
+                       "end_time, eventType_id from event where end_time >= "
+                       "{0} and begin_time <= {1}".format(tstart_uts, tend_uts))
+        event_rows = cursor.fetchall()
+        # Select and extract the event types from eventType table
+        cursor.row_factory = sqlite3.Row
+        cursor.execute("select * from eventType")
+        eventType_rows = cursor.fetchall()
+        eventType_id = []
+        eventType_type = []
+        eventType_definition = []
+        for eventType_row in eventType_rows:
+            eventType_id.append(eventType_row["id"])
+            eventType_type.append(eventType_row["type"])
+            eventType_definition.append(eventType_row["definition"])
+        # Enter desired information into the lytaf numpy record array
+        for event_row in event_rows:
+            id_index = eventType_id.index(event_row[4])
+            lytaf = np.append(lytaf,
+                              np.array((datetime.fromtimestamp(event_row[0]),
+                                        datetime.fromtimestamp(event_row[1]),
+                                        datetime.fromtimestamp(event_row[2]),
+                                        datetime.fromtimestamp(event_row[3]),
+                                        eventType_type[id_index],
+                                        eventType_definition[id_index]),
+                                        dtype=lytaf.dtype))
+        # Close file
+        cursor.close()
+        connection.close()
+    # Delete initial empty entry in lytaf
+    np.delete(lytaf, 0)
+    # Sort lytaf in ascending order of begin time
+    np.recarray.sort(lytaf, order="begin_time")    
+
+    #return event_rows, eventType_rows
+    return lytaf
 
 def _check_datetime(time):
     """
