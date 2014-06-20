@@ -32,6 +32,7 @@ from __future__ import division
 
 import os.path
 from datetime import datetime
+from warnings import warn
 
 import numpy as np
 import sqlite3
@@ -356,25 +357,80 @@ def extract_lyra_artifacts(time, fluxes=None, artifacts="All",
     # Define outputs
     clean_time = copy.deepcopy(time)
     clean_fluxes = copy.deepcopy(fluxes)
+    artifacts_not_found =[]
     # Get LYTAF file for given time range
     lytaf = extract_combined_lytaf(time[0], time[-1])
+    
     # Find events in lytaf which are to be removed from time series.
     if artifacts == "All":
         artifact_indices = np.arange(len(lytaf["begin_time"]))
     else:
         artifact_indices = np.empty(0, dtype="int64")
         for artifact_type in artifacts:
-            artifact_indices = np.concatenate((
-                artifact_indices, np.where(lytaf["event_type"] == artifact_type)))
+            indices = np.where(lytaf["event_type"] == artifact_type)[0]
+            # If none of a given type of artifact is found, record this
+            # type in artifact_not_found list.
+            if (indices == np.empty(0, dtype=indices.dtype).all() is True:
+                artifacts_not_found.append(artifact_type)
+            else:
+                # Else, record the indices of the artifacts of this type
+                artifact_indices = np.concatenate((artifact_indices, indices))
         artifact_indices.sort()
-    # Remove periods corresponding to artifacts from flux and time arrays
-    for index in artifact_indices:
-        bad_period = np.logical_and(time > lytaf["begin_time"][index],
-                                    time < lytaf["end_time"][index])
-        time = np.delete(time, bad_period)
-        if fluxes is not None:
-            for flux in clean_fluxes:
-                flux = np.delete(flux, bad_period)
+
+    # Remove relevant artifacts from timeseries. If none of the
+    # artifacts the user wanted removed were found, raise a warning and
+    # continue with code.
+    if (artifact_indices == np.empty(
+        0, dtype=artifact_indices.dtype).all() is True:
+        warn("None of user supplied artifacts were found.")
+        artifacts_not_found = artifacts
+    else:
+        # Remove periods corresponding to artifacts from flux and time
+        # arrays.
+        for index in artifact_indices:
+            bad_period = np.logical_and(time > lytaf["begin_time"][index],
+                                        time < lytaf["end_time"][index])
+            time = np.delete(time, bad_period)
+            if fluxes is not None:
+                for flux in clean_fluxes:
+                    flux = np.delete(flux, bad_period)
+
+    # If return_artifacts kwarg is True, return a list containing
+    # information on what artifacts found, removed, etc.  See docstring.
+    if return_artifacts is True:
+        # Define output list for artifact info
+        artifact_status = []
+        if artifacts_not_found == artifacts:
+            # Artifacts found in annotation file
+            artifact_status.append(lytaf)
+            # Artifacts removed
+            artifact_status.append(None)
+            # Artifacts not removed
+            artifact_status.append(None)
+            # Artifacts not found
+            artifact_status.append(artifacts_not_found)
+        else:
+            # Artifacts found in annotation file
+            artifact_status.append(lytaf)
+            # Artifacts removed            
+            artifact_status.append(lytaf[artifact_indices])
+            # Artifacts not removed
+            artifact_status.append(np.delete(lytaf, artifact_indices)) 
+            # Artifacts not found
+            if artifacts == "All":
+                artifact_status.append(None)
+            else:
+                artifact_status.append(artifacts_not_found)
+        # Return values
+        if fluxes is None:
+            return clean_time, artifact_status
+        else:
+            return clean_time, clean_fluxes, artifact_status
+    else:
+        if fluxes is None:
+            return clean_time
+        else:
+            return clean_time, clean_fluxes
 
 def _check_datetime(time):
     """
