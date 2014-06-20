@@ -218,25 +218,7 @@ def find_lyra_events(flux, time):
     """
     # Ensure inputs are of correct type
     flux = np.asanyarray(flux, dtype="float64")
-    if (np.array([type(t) for t in time]) == datetime).all():
-        time = np.asanyarray(time)
-    else:
-        # If elements of time are not datetime objects, try converting.
-        try:
-            time = np.array([datetime(t) for t in time])
-        except TypeError:
-            try:
-                # If cannot be converted simply, elements may be strings
-                # Try converting to datetime using sunpy.time.parse_time
-                time = np.array([parse_time(t) for t in time])
-            except:
-                # Otherwise raise error telling user to input an array
-                # of datetime objects.
-                raise IOError("time must be an array or array-like of datetime"
-                              " objects or valid time strings.")
-        else:
-            raise IOError("time must be an array or array-like of datetime"
-                          " objects or valid time strings.")
+    time = _check_datetime(time)
     # Define variables to be used later
     flare_indices = []
     flare_times = []
@@ -312,3 +294,108 @@ def find_lyra_events(flux, time):
             i = i+1
 
     return flare_times
+
+def extract_lyra_artifacts(time, fluxes=None, artifacts="All",
+                           return_artifacts=False):
+    """
+    Removes periods of LYRA artifacts from a time series.
+
+    This functions removes periods correspoding to certain artifacts recorded
+    in the LYRA annotation file from an array of times given by the time input.
+    If a list of arrays of other properties is supplied through the fluxes
+    kwarg, then the relevant values from these arrays are also removed.  This
+    is done by assuming that each element in each array supplied coresponds to
+    the time in the same index in time array.  The artifacts to be removed are
+    given via the artifacts kwarg.  The default is "all", meaning that all
+    artifacts will be removed.  However, a subset of artifacts can be removed
+    by supplying a list of strings of the desired artifact types.
+
+    Parameters
+    ----------
+    time : ndarray/array-like of datetime objects
+        Gives the times of the timeseries.
+
+    fluxes : (optional) list of ndarrays/array-likes convertible to float64.
+        Contains the fluxes/properties taken at the times in the time array.
+        Each element in the list must have the same number of elements as time.
+
+    artifacts : list of strings
+        Contain the artifact types to be removed.  For list of artifact types
+        see reference [1].  For example, if user wants to remove only large
+        angle rotations, listed at reference [1] as LAR, let artifacts=["LAR"].
+
+    return_artifacts : (optional) bool
+        Set to True to return a numpy recarray containing the start time, end
+        time and type of all artifacts removed.
+        Default=False
+        
+    Returns
+    -------
+    clean_time : ndarray/array-like of datetime objects
+        time array with artifact periods removed.
+
+    clean_fluxes : (optional) list ndarrays/array-likes convertible to float64
+        list of fluxes with artifact periods removed.
+
+    artifacts_removed : (optional) numpy recarray
+        Three columns, "start_time", "end_time", "type", containing start
+        time, end time and type of artifacts removed.
+
+    References
+    ----------
+    [1] http://proba2.oma.be/data/TARDIS
+
+    Example
+    -------
+
+    """
+    # Check inputs
+    time = _check_datetime(time)
+    if not all(isinstance(artifact_type, str) for artifact_type in artifacts):
+        raise TypeError("All elements in artifacts must in strings.")
+    
+    # Get LYTAF file for given time range
+    lytaf = extract_combined_lytaf(time[0], time[-1])
+    # Find events in lytaf which are to be removed from time series.
+    artifact_indices = np.empty(0, dtype="int64")
+    for artifact_type in artifacts:
+        artifact_indices = np.concatenate((
+            artifact_indices, np.where(lytaf["event_type"] == artifact_type)))
+    artifact_indices.sort()
+    # Remove periods corresponding to artifacts from flux and time arrays
+    for index in artifact_indices:
+        bad_period = np.logical_and(time > lytaf["begin_time"][index],
+                                    time < lytaf["end_time"][index])
+        flux = np.delete(flux, bad_period)
+        time = np.delete(time, bad_period)
+
+def _check_datetime(time):
+    """
+    Checks or tries to convert input array to array of datetime objects.
+
+    Returns input time array with elements as datetime objects or raises an
+    TypeError if time not of valid format.  Input format can be anything
+    convertible to datetime by datetime() function or any time string valid as
+    an input to sunpy.time.parse_time().
+
+    """
+    if (np.array([type(t) for t in time]) == datetime).all():
+        time = np.asanyarray(time)
+    else:
+        # If elements of time are not datetime objects, try converting.
+        try:
+            time = np.array([datetime(t) for t in time])
+        except TypeError:
+            try:
+                # If cannot be converted simply, elements may be strings
+                # Try converting to datetime using sunpy.time.parse_time
+                time = np.array([parse_time(t) for t in time])
+            except:
+                # Otherwise raise error telling user to input an array
+                # of datetime objects.
+                raise TypeError("time must be an array or array-like of "
+                                "datetime objects or valid time strings.")
+        else:
+            raise TypeError("time must be an array or array-like of "
+                            "datetime objects or valid time strings.")
+    return time
