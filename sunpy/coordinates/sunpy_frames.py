@@ -19,7 +19,7 @@ from astropy.coordinates.baseframe import BaseCoordinateFrame, frame_transform_g
 from sunpy import sun as s # For Carrington rotation number
 from sunpy.sun import constants
 
-RADIUS = constants.constant('radius')
+RSUN = constants.constant('radius')
 
 class HelioGraphicStonyhurst(BaseCoordinateFrame):
     """
@@ -31,7 +31,7 @@ class HelioGraphicStonyhurst(BaseCoordinateFrame):
 
     Parameters
     ----------
-    representation: `BaseRepresentation` or None
+    representation: `~astropy.coordinates.BaseRepresentation` or None
         A representation object or None to have no data.
     lon: `Angle` object.
         The longitude for this object (``lat`` must also be given and ``representation``
@@ -43,6 +43,7 @@ class HelioGraphicStonyhurst(BaseCoordinateFrame):
         This quantity holds the radial distance. If not specified, it is, by default,
         the solar radius.
     """
+    
     default_representation = SphericalRepresentation
 
     frame_attr_names = {}
@@ -55,10 +56,10 @@ class HelioGraphicStonyhurst(BaseCoordinateFrame):
         if kwargs is None:
             # If only lon and lat are specified.
             if len(args) < 3:
-                args.append(RADIUS*u.km)
+                args.append(RSUN*u.km)
         elif args is None:
             if 'rad' not in kwargs:
-                kwargs['rad'] = RADIUS*u.km
+                kwargs['rad'] = RSUN*u.km
         else:
             # Any other cases?
             pass
@@ -66,7 +67,7 @@ class HelioGraphicStonyhurst(BaseCoordinateFrame):
 
 def _carrington_offset():
     # This method is to return the Carrington offset.
-    pass
+    return s.heliographic_solar_center()[0]
 
 class HelioGraphicCarrington(HelioGraphicStonyhurst):
     """
@@ -75,7 +76,7 @@ class HelioGraphicCarrington(HelioGraphicStonyhurst):
     This frame differs from the Stonyhurst version in the
     definition of the longitude, which is defined using
     an offset which is a time-dependent scalar value.
-    representation: `BaseRepresentation` or None.
+    representation: `~astropy.coordinates.BaseRepresentation` or None.
         A representation object. If specified, other parameters must
         be in keyword form.
     lon: `Angle` object.
@@ -88,6 +89,7 @@ class HelioGraphicCarrington(HelioGraphicStonyhurst):
         This quantity holds the radial distance. If not specified, it is, by default,
         the solar radius.
     """
+    
     default_representation = SphericalRepresentation
 
     frame_attr_names = {}
@@ -97,8 +99,6 @@ class HelioGraphicCarrington(HelioGraphicStonyhurst):
         }
 
     def __init__(self, *args, **kwargs):
-
-        # TODO: Understand how Carrington offset works.
         super(HelioGraphicCarrington, self).__init__(args, kwargs)
 
 class HelioCentric(BaseCoordinateFrame):
@@ -112,7 +112,7 @@ class HelioCentric(BaseCoordinateFrame):
 
     Parameters
     ----------
-    representation: `BaseRepresentation` or None.
+    representation: `~astropy.coordinates.BaseRepresentation` or None.
         A representation object. If specified, other parameters must
         be in keyword form.
     x: `Quantity` object.
@@ -144,7 +144,7 @@ class HelioProjective(BaseCoordinateFrame):
 
     Parameters
     ----------
-    representation: `BaseRepresentation` or None.
+    representation: `~astropy.coordinates.BaseRepresentation` or None.
         A representation object. If specified, other parameters must
         be in keyword form.
     Tx: `Angle` object.
