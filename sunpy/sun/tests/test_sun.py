@@ -1,7 +1,15 @@
 from __future__ import absolute_import
 
-from sunpy.sun import sun
+import pytest
 from numpy.testing import assert_array_almost_equal
+from itertools import product
+import datetime
+
+from astropy.coordinates import Longitude
+from astropy import units as u
+
+from sunpy.sun import sun
+from sunpy.time import parse_time
 
 def test_sunearth_distance():
     # Source for these values
@@ -33,10 +41,25 @@ def test_apparent_declination():
     assert_array_almost_equal(sun.apparent_declination("2013/02/26"), -8.547, decimal=0)
     assert_array_almost_equal(sun.apparent_declination("2014/05/1"), 15.141, decimal=0)
 
-def test_mean_anomaly():
-    assert_array_almost_equal(sun.mean_anomaly("2002/12/12"), 337.538, decimal=0)
-    assert_array_almost_equal(sun.mean_anomaly("2003/03/25"), 79.055, decimal=0)
-    assert_array_almost_equal(sun.mean_anomaly("2005/06/05"), 150.492, decimal=0)
-    assert_array_almost_equal(sun.mean_anomaly("2006/11/17"), 312.860, decimal=0)
-    assert_array_almost_equal(sun.mean_anomaly("2008/07/29"), 203.933, decimal=0)
-    assert_array_almost_equal(sun.mean_anomaly("2011/01/31"), 26.742, decimal=0)
+# From Astronomical Almanac for the Year YYYY (U.s. Nautical Almanac Office) http://asa.usno.navy.mil
+# (a0 + a1 * d) * u.deg
+# Last parameter is the precission expected
+# where d is the interval in days from YYYY January 0, 0h TT.
+almanaque_mean_anomaly = {'2009': [357.528,    0.9856003,  0],
+                          '2011': [357.528,    0.9856003 , 0],
+                          '2013': [356.666444, 0.98560028, 6],
+                          '2014': [356.410547, 0.98560028, 6],
+                          '2015': [356.154649, 0.98560028, 6]}
+dates = ['{}-01-01T12:00:00', '{}-05-31T13:00:00', '{}-07-31T13:00:00', '{}-08-23T00:25:00']
+
+@pytest.mark.parametrize("year, date", product(almanaque_mean_anomaly.keys(), dates))
+def test_mean_anomaly(year, date):
+    d0 = datetime.datetime(int(year) - 1, 12, 31)
+    date = date.format(year)
+    parameters = almanaque_mean_anomaly[year]
+
+    number_of_days = lambda d: (parse_time(d) - d0).total_seconds()/3600./24.
+    almanaque_eq = lambda d: Longitude((parameters[0] + parameters[1] * d)* u.deg)
+    almanaque = almanaque_eq(number_of_days(date))
+    assert_array_almost_equal(sun.mean_anomaly(date), almanaque, decimal=parameters[2])
+
