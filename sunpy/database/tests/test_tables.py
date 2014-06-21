@@ -245,13 +245,14 @@ def test_entries_from_dir():
 def test_entries_from_dir_recursively_true():
     entries = list(
         entries_from_dir(testdir, True, default_waveunit='angstrom'))
-    assert len(entries) == 28
+    assert len(entries) == 36
+    # Older val = 31.
 
 
 def test_entries_from_dir_recursively_false():
     entries = list(
         entries_from_dir(testdir, False, default_waveunit='angstrom'))
-    assert len(entries) == 11
+    assert len(entries) == 15
 
 
 @pytest.mark.online

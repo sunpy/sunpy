@@ -18,7 +18,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas
 
-import sunpy
+from sunpy import config
 from sunpy.time import is_time, TimeRange, parse_time
 from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
 from sunpy.util.odict import OrderedDict
@@ -230,7 +230,7 @@ for compatability with map, please use meta instead""", Warning)
         if "directory" in kwargs:
             download_dir = os.path.expanduser(kwargs["directory"])
         else:
-            download_dir = sunpy.config.get("downloads", "download_dir")
+            download_dir = config.get("downloads", "download_dir")
 
         # overwrite the existing file if the keyword is present
         if "overwrite" in kwargs:
@@ -302,7 +302,7 @@ for compatability with map, please use meta instead""", Warning)
             time_range = TimeRange(a,b)
 
         truncated = self.data.truncate(time_range.start(), time_range.end())
-        return LightCurve(truncated, self.meta.copy())
+        return self.__class__.create(truncated, self.meta.copy())
 
     def extract(self, a):
         """Extract a set of particular columns from the DataFrame"""

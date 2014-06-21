@@ -1,12 +1,12 @@
-recursive-include doc/html *
 recursive-include sunpy *.py
 recursive-include sunpy *.h
 recursive-include sunpy *.c
-recursive-include sunpy/data/sample *
-recursive-include sunpy/data/test *
+recursive-include sunpy/data *
+recursive-include sunpy *.txt
+include README.md
+include RELEASE.md
+include CHANGELOG.md
+include LICENSE.txt
 include sunpy/data/sunpyrc
-include *.txt
-include *.md
 include setup.py
 include distribute_setup.py
-include pavement.py
