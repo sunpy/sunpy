@@ -21,7 +21,8 @@ from astropy.coordinates import FrameAttribute
 from sunpy import sun as s # For Carrington rotation number
 from sunpy.sun import constants
 
-RSUN = constants.constant('radius')
+RSUN_METERS = constants.constant('radius').si.value
+DSUN_METERS = constants.constant('diameter').si.value
 
 class HelioGraphicStonyhurst(BaseCoordinateFrame):
     """
@@ -52,7 +53,7 @@ class HelioGraphicStonyhurst(BaseCoordinateFrame):
         'spherical': {'names': ('lon', 'lat', 'rad'), 'units': (u.deg, u.deg, u.km)},
         }
 
-    rad = FrameAttribute(default=((RSUN.value/1000)*u.km))
+    rad = FrameAttribute(default=((RSUN_METERS/1000)*u.km))
 
 def _carrington_offset():
     # This method is to return the Carrington offset.
@@ -85,7 +86,7 @@ class HelioGraphicCarrington(HelioGraphicStonyhurst):
         'spherical': {'names': ('lon', 'lat', 'rad'), 'units': (u.deg, u.deg, u.km)},
         }
 
-    rad = FrameAttribute(default=((RSUN.value/1000)*u.km))
+    rad = FrameAttribute(default=((RSUN_METERS/1000)*u.km))
 
 class HelioCentric(BaseCoordinateFrame):
     """
@@ -127,7 +128,7 @@ class HelioCentric(BaseCoordinateFrame):
         }
 
     d = FrameAttribute(default=(1*u.au).to(u.km))
-    D0 = FrameAttribute(default=((RSUN.value/1000)*u.km))
+    D0 = FrameAttribute(default=((RSUN_METERS/1000)*u.km))
     
 class HelioProjective(BaseCoordinateFrame):
     """
@@ -182,17 +183,37 @@ def hcg_to_hcs(hcgcoord, hcsframe):
 
 @frame_transform_graph.transform(FunctionTransform, HelioCentric, HelioProjective)
 def helioc_to_heliop(helioccoord, heliopframe):
-    mult_factor = 180/(np.pi * helioccoord.d.value)
-    Tx = mult_factor * helioccoord.cartesian.x.value * u.deg
-    Ty = mult_factor * helioccoord.cartesian.y.value * u.deg
-    zeta = helioccoord.D0 - helioccoord.d
-    representation = CartesianRepresentation(Tx, Ty, zeta)
-    return HelioProjective(representation)
+    # Calculate z, assuming it is on the Sun's surface.
+    x = helioccoord.cartesian.x.value
+    y = helioccoord.cartesian.y.value
+    z = np.sqrt(RSUN_METERS ** 2 - x ** 2 - y ** 2)
+    zeta = DSUN_METERS - z
 
+    distance = np.sqrt(x ** 2 + y ** 2 + zeta ** 2)
+    hpcx = np.rad2deg(np.arctan2(x, zeta))
+    hpcy = np.rad2deg(np.arcsin(y / distance))
+
+    representation = CartesianRepresentation(hpcx, hpcy, zeta)
+    return HelioProjective(representation)
+    
 @frame_transform_graph.transform(FunctionTransform, HelioProjective, HelioCentric)
 def heliop_to_helioc(heliopcoord, heliocframe):
-    # mult_factor = (np.pi * heliocframe.d.value)/180
-    # x = mult_factor * heliopcoord.cartesian.x.value * u.km
-    # y = mult_factor * heliopcoord.cartesian.y.value * u.km
-    pass
+    x = heliopcoord.cartesian.x.value
+    y = heliopcoord.cartesian.y.value
+    c = np.array([(np.deg2rad(1)/3600.0), (np.deg2rad(1)/3600.0)])
+
+    cosx = np.cos(x * c[0])
+    sinx = np.sin(x * c[0])
+    cosy = np.cos(y * c[1])
+    siny = np.sin(y * c[1])
     
+    q = DSUN_METERS * cosy * cosx
+    distance = q ** 2 - DSUN_METERS ** 2 + RSUN_METERS ** 2
+    distance = q - np.sqrt(distance)
+
+    rx = distance * cosy * sinx
+    ry = distance * siny
+    rz = DSUN_METERS - distance * cosy * cosx
+
+    representation = CartesianRepresentation(rx, ry, rz)
+    return HelioCentric(representation)
