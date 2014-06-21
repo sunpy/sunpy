@@ -238,3 +238,32 @@ def hcc_to_hgs(helioccoord, heliogframe):
                                              np.rad2deg(hglt),
                                              hecr)
     return HelioGraphicStonyhurst(representation)
+
+@frame_transform_graph.transfor(FunctionTransform, HelioGraphicStonyhurst, HelioCentric)
+def hgs_to_hcc(heliogcoord, heliopframe):
+    hglon = heliogcoord.spherical.lon.value
+    hglat = heliogcoord.spherical.lat.value
+    r = heliogcoord.spherical.distance.value
+
+    l0_deg = _carrington_offset()
+    b0_deg = s.heliographic_solar_center()[1]
+
+    lon = np.deg2rad(hglon)
+    lat = np.deg2rad(hglat)
+
+    cosb = np.cos(np.deg2rad(b0_deg))
+    sinb = np.sin(np.deg2rad(b0_deg))
+
+    lon = lon - np.deg2rad(l0_deg)
+
+    cosx = np.cos(lon)
+    sinx = np.sin(lon)
+    cosy = np.cos(lat)
+    siny = np.sin(lat)
+
+    x = r * cosy * sinx
+    y = r * (siny * cosb - cosy * cosx * sinb)
+    zz = r * (siny * sinb + cosy * cosx * cosb)
+
+    representation = CartesianRepresentation(x, y, zz)
+    return HelioCentric(representation)
