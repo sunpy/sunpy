@@ -14,7 +14,7 @@ The map object currently supports the following data sources
 
 - SDO/AIA, SDO/HMI
 - STEREO/EUVI, STEREO/COR
-- Hinode/XRT
+- Hinode/XRT, Hinode/SOT
 - SOHO/EIT, SOHO/LASCO, SOHO/MDI
 - PROBA2/SWAP
 - Yohkoh/SXT
