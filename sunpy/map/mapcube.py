@@ -38,7 +38,7 @@ class MapCube(object):
 
     Examples
     --------
-    >>> mapcube = sunpy.map.Map('images/*.fits', mapcube=True)
+    >>> mapcube = sunpy.map.Map('images/*.fits', cube=True)
 
     Mapcubes can be co-aligned using the routines in sunpy.image.coalignment.
     """
@@ -241,10 +241,36 @@ class MapCube(object):
             self[0].cmap.set_gamma(gamma)
 
         if resample:
-            #This assumes that the maps a homogenous!
-            #TODO: Update this!
-            resample = np.array(len(self.maps)-1) * np.array(resample)
-            for amap in self.maps:
-                amap.resample(resample)
+            if self._maps_have_same_number_of_x_and_y_pixels:
+                resample = np.array(len(self.maps)-1) * np.array(resample)
+                for amap in self.maps:
+                    amap.resample(resample)
+            else:
+                raise ValueError('Maps in mapcube do not all have the same shape.')
 
         return MapCubeAnimator(self, **kwargs)
+
+    def _maps_have_same_number_of_x_and_y_pixels(self):
+        """
+        Tests if all the maps have the same number pixels in the x and y
+        directions.
+        """
+        return np.all([m.data.shape == self.maps[0].data.shape for m in self.maps])
+
+    def data(self):
+        """
+        Returns a three dimensional numpy array of the data in the mapcube.
+        The output array has shape (ny, nx, nt).  If the maps in the map cube
+        do not all have the same shape, an error is thrown and a numpy array is
+        not returned.
+        """
+        if self._maps_have_same_number_of_x_and_y_pixels:
+            return np.swapaxes(np.swapaxes(np.asarray([m.data for m in self.maps]), 0, 1), 1, 2)
+        else:
+            raise ValueError('Maps in mapcube do not all have the same shape.')
+
+    def meta(self):
+        """
+        Returns a list of the meta objects for each map in the mapcube.
+        """
+        return [m.meta for m in self.maps]
