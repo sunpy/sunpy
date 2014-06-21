@@ -184,8 +184,8 @@ def hcg_to_hcs(hcgcoord, hcsframe):
 @frame_transform_graph.transform(FunctionTransform, HelioCentric, HelioProjective)
 def helioc_to_heliop(helioccoord, heliopframe):
     # Calculate z, assuming it is on the Sun's surface.
-    x = helioccoord.cartesian.x.value
-    y = helioccoord.cartesian.y.value
+    x = helioccoord.cartesian.x.value * 1000
+    y = helioccoord.cartesian.y.value * 1000
     z = np.sqrt(RSUN_METERS ** 2 - x ** 2 - y ** 2)
     zeta = DSUN_METERS - z
 
@@ -198,9 +198,9 @@ def helioc_to_heliop(helioccoord, heliopframe):
     
 @frame_transform_graph.transform(FunctionTransform, HelioProjective, HelioCentric)
 def heliop_to_helioc(heliopcoord, heliocframe):
-    x = heliopcoord.cartesian.x.value
+    x = heliopcoord.cartesian.x.value 
     y = heliopcoord.cartesian.y.value
-    c = np.array([(np.deg2rad(1)/3600.0), (np.deg2rad(1)/3600.0)])
+    c = np.array([np.deg2rad(1), np.deg2rad(1)])
 
     cosx = np.cos(x * c[0])
     sinx = np.sin(x * c[0])
