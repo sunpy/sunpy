@@ -22,7 +22,7 @@ from sunpy import sun as s # For Carrington rotation number
 from sunpy.sun import constants
 
 RSUN_METERS = constants.constant('radius').si.value
-DSUN_METERS = constants.constant('diameter').si.value
+DSUN_METERS = constants.constant.au.si.value
 
 class HelioGraphicStonyhurst(BaseCoordinateFrame):
     """
@@ -217,3 +217,4 @@ def heliop_to_helioc(heliopcoord, heliocframe):
 
     representation = CartesianRepresentation(rx, ry, rz)
     return HelioCentric(representation)
+
