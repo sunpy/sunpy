@@ -198,7 +198,7 @@ def helioc_to_heliop(helioccoord, heliopframe):
     
 @frame_transform_graph.transform(FunctionTransform, HelioProjective, HelioCentric)
 def heliop_to_helioc(heliopcoord, heliocframe):
-    x = heliopcoord.cartesian.x.value 
+    x = heliopcoord.cartesian.x.value
     y = heliopcoord.cartesian.y.value
     c = np.array([np.deg2rad(1), np.deg2rad(1)])
 
@@ -220,9 +220,9 @@ def heliop_to_helioc(heliopcoord, heliocframe):
 
 @frame_transform_graph.transform(FunctionTransform, HelioCentric, HelioGraphicStonyhurst)
 def hcc_to_hgs(helioccoord, heliogframe):
-    x = helioccoord.cartesian.x.value
-    y = helioccoord.cartesian.y.value
-    z = helioccoord.cartesian.z.value
+    x = helioccoord.cartesian.x.value * 1000
+    y = helioccoord.cartesian.y.value * 1000
+    z = helioccoord.cartesian.z.value * 1000
     
     l0_deg = _carrington_offset()
     b0_deg = s.heliographic_solar_center()[1]
@@ -267,3 +267,4 @@ def hgs_to_hcc(heliogcoord, heliopframe):
 
     representation = CartesianRepresentation(x, y, zz)
     return HelioCentric(representation)
+
