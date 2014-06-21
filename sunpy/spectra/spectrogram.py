@@ -333,7 +333,8 @@ class Spectrogram(Parent):
         return new
 
     def __init__(self, data, time_axis, freq_axis, start, end, t_init=None,
-        t_label="Time", f_label="Frequency", content="", instruments=None):
+                 t_label="Time", f_label="Frequency", content="",
+                 instruments=None):
         # Because of how object creation works, there is no avoiding
         # unused arguments in this case.
         self.data = data

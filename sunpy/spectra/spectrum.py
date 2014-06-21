@@ -18,7 +18,7 @@ class Spectrum(np.ndarray):
     freq_axis : np.ndarray
         one-dimensional array with the frequency values at every data point
 
-    data\ : np.ndarray
+    data : np.ndarray
         one-dimensional array which the intensity at a particular frequency at every data-point.
     """
     def __new__(cls, data, *args, **kwargs):
