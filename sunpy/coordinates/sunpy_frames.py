@@ -158,7 +158,7 @@ class HelioProjective(BaseCoordinateFrame):
 
     _frame_specific_representation_info = {
         'cartesian': {'names': ('Tx', 'Ty', 'zeta'), 'units': (u.deg, u.deg, u.km)},
-        'cylindrical': {'names': ('Trho', 'psi', 'z'), 'units': (u.deg, u.deg, None)}
+        'cylindrical': {'names': ('Trho', 'psi', 'z'), 'units': (u.deg, u.deg, u.km)}
         }
 
     # Note that Trho = Drho + 90, and Drho is the declination parameter.
@@ -186,7 +186,7 @@ def helioc_to_heliop(helioccoord, heliopframe):
     # Calculate z, assuming it is on the Sun's surface.
     x = helioccoord.cartesian.x.value * 1000
     y = helioccoord.cartesian.y.value * 1000
-    z = np.sqrt(RSUN_METERS ** 2 - x ** 2 - y ** 2)
+    z = helioccoord.cartesian.z.value * 1000
     zeta = DSUN_METERS - z
 
     distance = np.sqrt(x ** 2 + y ** 2 + zeta ** 2)
@@ -243,7 +243,7 @@ def hcc_to_hgs(helioccoord, heliogframe):
 def hgs_to_hcc(heliogcoord, heliopframe):
     hglon = heliogcoord.spherical.lon.value
     hglat = heliogcoord.spherical.lat.value
-    r = heliogcoord.spherical.distance.value
+    r = heliogcoord.spherical.distance.value * 1000
 
     l0_deg = _carrington_offset()
     b0_deg = s.heliographic_solar_center()[1]
