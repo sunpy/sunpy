@@ -105,8 +105,14 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
         # Transform the image using the skimage function
         # Image data is normalised because warp() requires an array of values
         # between -1 and 1.
-        rotated_image = skimage.transform.warp(image/abs(image).max(), tform,
-                                               order=order, mode='constant',
-                                               cval=missing) * abs(image).max()
+        im_min = np.nanmin(image)
+        image -= im_min
+        im_max = np.nanmax(image)
+        image /= im_max
+        rotated_image = skimage.transform.warp(image, tform, order=order,
+                                               mode='constant', cval=missing)
 
+
+        rotated_image *= im_max
+        rotated_image += im_min
     return rotated_image
