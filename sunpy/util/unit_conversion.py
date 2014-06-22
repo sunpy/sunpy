@@ -4,8 +4,7 @@ import numpy as np
 from scipy.constants import constants
 from astropy import units
 
-__all__ = ['degrees_to_hours', 'degrees_to_arc', 'kelvin_to_keV',
-           'keV_to_kelvin', 'to_angstrom']
+__all__ = ['kelvin_to_keV', 'keV_to_kelvin', 'to_angstrom']
 
 boltz_unit = units.J / units.K
 
