@@ -1,45 +1,62 @@
-The SunPy development team is pleased to announce the release of SunPy 0.4.0.
-This release contains many new features, some of which are contributed by people 
-who participated in GSOC 2013. It includes the addition of a new local database for storing
-and searching data, it features a HEK to VSO translator and a new HELIO module in net.
-As well as this major work has been undertaken on the documentation and a new website developed.
+The SunPy project is happy to announce the release of SunPy 0.5.0.
+This release consists of x commits from y people, including the ability to
+co-align map cubes via template matching in scikit image, massive improvements
+to Map.rotate() including an implementation of an aiaprep calibration routine for
+SDO/AIA data and the ability to calculate GOES temperature and emission
+measure from GOES fluxes.
 
-This release contains 1025 commits from 19 people.
+Special mentions to Daniel Ryan and Andrew Leonard who have both contributed
+their first major features to SunPy for this release. They contributed the
+GOES temperature and aiaprep code respectively.
 
 New Features:
 
-    * **Major** documentation refactor. A far reaching re-write and restructure.
-    * Add a SunPy Database to store and search local data.
-    * Add beta support for querying the HELIO HEC
-    * Add beta HEK to VSO query translation.
-    * Add the ability to download the GOES event list.
-    * Add support for downloading and querying the LYTAF database.
-    * Add support for ANA data.
-    * Updated sun.constants to use astropy.constants objects which include units, source,
-    and error instide. For more info check out http://docs.astropy.org/en/latest/constants/index.html
-    * Add some beta support for IRIS data products
-    * Add a new MapCubeAnimator class with interactive widgets which is returned by mapcube.peek().
-    * The Glymur library is now used to read JPEG2000 files.
-    * GOESLightCurve now supports all GOES satellites.
-
-
+    * map.rotate() improvements and the additon of a aiaprep routine.
+    * GOES temperature and emission measure calculation.
+    * Added functions that implement image coalignment with support for MapCubes.
+    * MapCube._maps changed to MapCube.maps.
+    * Added Nobeyama Radioheliograph data support to Lightcurve object.
+    * Added support for NOAA solar cycle prediction in lightcurves.
+    * Improved line quality and performances issues with map.draw_grid().
+    * Most tests should pass on windows and on installed versions of SunPy.
+    * Added a window/split method to time range.
+    * Updates to spectrogram documentation.
+    * Added method Database.add_from_hek_query_result to HEK database.
+    * Added method Database.download_from_vso_query_result.
+    * GOES Lightcurve now makes use of a new source of GOES data, provides metadata, and data back to 1981.
+    * Fix algorithm in sunpy.sun.equation_of_center.
+    * Added contains functionality to TimeRange module
+    * Added t='now' to parse_time to privide utcnow datetime.
+    * Fixed time dependant functions (.sun) to default to t='now'
+    * Fixed solar_semidiameter_angular_size
+    * Removed sqlalchemy as a requirement for SunPy
+    * Some basic tests for GenericLightCurve on types of expected input.
+    * Added Docstrings to LightCurve methods.
+    * Added tests for classes in sunpy.map.sources.
+    * Cleaned up the sunpy namespace, removed .units, /ssw and .sphinx. Also moved .coords .physics.transforms.
 
 The people who have contributed to this release are:
 
     Stuart Mumford
-    Simon Liedtke
+    Daniel Ryan *
+    Andrew Leonard
     Steven Christe
-    Jack Ireland
-    Andrew Inglis
-    Nabil Freij
-    Samuel Bennett
-    David Perez-Suarez
     Pritish Chakraborty
+    Jack Ireland
+    David Pérez-Suárez
+    Andrew Inglis
+    Michael Mueller *
+    Rishabh Sharma *
     Albert Y. Shih
-    John Evans
-    Michael Malocha
-    Florian Mayer
+    Jose Ivan Campos Rozo
+    Simon Liedtke
+    Rajul Srivastava *
+    Larry Manley *
+    Mateo Inchaurrandieta *
+    Asish Panda *
+    Daniel Williams *
+    Nabil Freij
     Russell Hewett
-    Jose Iván Campos
-    Keith Hughitt
-    Tiago Pereira
+    freekv *
+
+Where a * indicates their first contribution.
