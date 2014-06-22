@@ -267,9 +267,9 @@ class MapCube(object):
 
     def as_array(self):
         """
-        If all the map shapes are the same, then the data is returned as a
-        single ndarray. The ndarray is ordered as (ny, nx, nt).  Otherwise, an
-        error is thrown.
+        If all the map shapes are the same, then their image data is compiled
+        into a single single ndarray. The ndarray is ordered as (ny, nx, nt).
+        Otherwise, an error is thrown.
         """
         if self.all_maps_same_shape:
             return np.swapaxes(np.swapaxes(np.asarray([m.data for m in self.maps]), 0, 1), 1, 2)
