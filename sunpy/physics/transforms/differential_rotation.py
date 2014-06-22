@@ -59,8 +59,8 @@ def diff_rot(ddays,latitude,rot_type='howard',frame_time='sidereal'):
     if not isinstance(ddays,datetime.timedelta):
         delta = datetime.timedelta(days=ddays)
 
-    if not isinstance(latitude, Angle):
-	raise TypeError("Expecting Angle Quantity")
+    if not isinstance(latitude, u.Quantity):
+	raise TypeError("Expecting astropy Quantity")
     
     delta_seconds = (delta.microseconds + (delta.seconds + delta.days * 24 * 3600) *
                     10**6) / 10**6
