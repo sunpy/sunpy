@@ -21,7 +21,9 @@ from astropy.io import fits
 from astropy import units as u
 
 import sunpy
-import sunpy.map.header
+import sunpy.map
+import sunpy.sun.constants
+
 from sunpy.time import TimeRange, parse_time
 import sunpy.sun.constants as sun
 from sunpy.sun.sun import solar_semidiameter_angular_size
