@@ -136,7 +136,7 @@ def extract_time(string):
     return bestmatch
 
 
-def parse_time(time_string, time_format=basestring):
+def parse_time(time_string, time_format=''):
     """Given a time string will parse and return a datetime object.
     Similar to the anytim function in IDL.
     utime -- Time since epoch 1 Jan 1979
@@ -144,7 +144,7 @@ def parse_time(time_string, time_format=basestring):
     ----------
     time_string : [ int, float, time_string, datetime ]
         Date to parse which can be either time_string, int, datetime object.
-    format : [ basestring, utime, datetime ]
+    time_format : [ basestring, utime, datetime ]
 	Specifies the format user has provided the time_string in.
     Returns
     -------
@@ -163,7 +163,7 @@ def parse_time(time_string, time_format=basestring):
         return time_string
     elif isinstance(time_string, tuple):
         return datetime(*time_string)
-    elif time_format == 'utime' or ( isinstance(time_string, int) or isinstance(time_string, float) ) :
+    elif time_format == 'utime' or  isinstance(time_string, (int, float))  :
         return datetime(1979, 1, 1) + timedelta(0, time_string)
     else:
         # remove trailing zeros and the final dot to allow any
@@ -193,7 +193,7 @@ def is_time(time_string, time_format=basestring):
     ----------
     time_string : [ int, float, time_string, datetime ]
         Date to parse which can be either time_string, int, datetime object.
-    format : [ basestring, utime, datetime ]
+    time_format : [ basestring, utime, datetime ]
 	Specifies the format user has provided the time_string in.
    
     Returns
