@@ -19,10 +19,9 @@ from astropy.coordinates import FrameAttribute
 
 # SunPy imports
 from sunpy import sun as s # For Carrington rotation number
-from sunpy.sun import constants
 
-RSUN_METERS = constants.constant('radius').si.value
-DSUN_METERS = constants.constant.au.si.value
+RSUN_METERS = s.constants.constant('radius').si.value
+DSUN_METERS = s.constants.constant.au.si.value
 
 class HelioGraphicStonyhurst(BaseCoordinateFrame):
     """
@@ -187,7 +186,7 @@ def helioc_to_heliop(helioccoord, heliopframe):
     x = helioccoord.cartesian.x.value * 1000
     y = helioccoord.cartesian.y.value * 1000
     z = helioccoord.cartesian.z.value * 1000
-    zeta = DSUN_METERS - z
+    zeta = helioccoord.d * 1000 - z
 
     distance = np.sqrt(x ** 2 + y ** 2 + zeta ** 2)
     hpcx = np.rad2deg(np.arctan2(x, zeta))
@@ -207,13 +206,13 @@ def heliop_to_helioc(heliopcoord, heliocframe):
     cosy = np.cos(y * c[1])
     siny = np.sin(y * c[1])
     
-    q = DSUN_METERS * cosy * cosx
-    distance = q ** 2 - DSUN_METERS ** 2 + RSUN_METERS ** 2
+    q = heliocframe.d * 1000 * cosy * cosx
+    distance = q ** 2 - (heliocframe.d * 1000) ** 2 + (heliocframe.D0 * 1000) ** 2
     distance = q - np.sqrt(distance)
 
     rx = distance * cosy * sinx
     ry = distance * siny
-    rz = DSUN_METERS - distance * cosy * cosx
+    rz = (heliocframe.d * 1000) - distance * cosy * cosx
 
     representation = CartesianRepresentation(rx, ry, rz)
     return HelioCentric(representation)
