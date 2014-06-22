@@ -33,6 +33,7 @@ from __future__ import division
 import os.path
 from datetime import datetime
 from warnings import warn
+import copy
 
 import numpy as np
 import sqlite3
@@ -87,13 +88,16 @@ def find_lyra_events(flux, time):
     time = _check_datetime(time)
     # Define variables to be used later
     flare_indices = []
-    flare_times = []
-    # Remove LYRA artifacts from timeseries
-    time, flux = extract_lyra_artifacts(
-        time, [flux], artifacts=["UV occ.", "Offpoint", "LAR", "Calibration"])
+    lyra_events = np.empty((0,), dtype=[("start_time", object),
+                               ("peak_time", object),
+                               ("end_time", object),
+                               ("comments", object)])
+    # object LYRA artifacts from timeseries
+    #time, flux = extract_lyra_artifacts(
+    #    time, [flux], artifacts=["UV occ.", "Offpoint", "LAR", "Calibration"])
     # Get derivative of flux wrt time
     time_timedelta = time[1:-1]-time[0:-2]
-    dt = np.zeros(len(time_timedelta))
+    dt = np.zeros(len(time_timedelta), dtype="float64")
     for i, t, in enumerate(time_timedelta):
         dt[i] = t.total_seconds()
     dfdt = np.gradient(flux[0:-2], dt)
@@ -126,8 +130,11 @@ def find_lyra_events(flux, time):
                 flux == max(flux[pos_deriv[i]:end_index]))[0][0]
             # Record flare start, peak and end times
             flare_indices.append((pos_deriv[i], peak_index, end_index))
-            flare_times.append((time[pos_deriv[i]],
-                               time[peak_index], time[end_index]))
+            lyra_events = np.append(lyra_events,
+                                    np.empty(1, dtype=lyra_events.dtype))
+            lyra_events[-1]["start_time"] = time[pos_deriv[i]]
+            lyra_events[-1]["peak_time"] = time[peak_index]
+            lyra_events[-1]["end_time"] = time[end_index]
             # If the most recently found flare is during the decay phase
             # of another reset end time of previous flare to start time
             # of this flare.
@@ -136,20 +143,19 @@ def find_lyra_events(flux, time):
             #        flux[flare_indices[-2][0]:flare_indices[-1][0]]))[0][0]
             #    flare_indices[-2] = (flare_indices[-2][0],
             #                         new_peak_index, flare_indices[-1][0])
-            #    flare_times[-2] = (time[flare_indices[-2][0]],
+            #    lyra_events[-2] = (time[flare_indices[-2][0]],
             #                       time[new_peak_index],
             #                       time[flare_indices[-1][0]])
             # Finally, set principle iterator, i, to the peak of the
             # flare just found so that algorithm will start looking for
-            # flares during the decay phase of this flare and beyond,
-            # thereby skipping the rise phase of this flare.  This
-            # ensures that flares during the decay phase are also
+            # flares during the decay phase of this flare and beyond.
+            # This ensures that flares during the decay phase are also
             # located.
             i = peak_index
         else:
             i = i+1
 
-    return flare_times
+    return lyra_events
 
 def extract_lyra_artifacts(time, fluxes=None, artifacts="All",
                            return_artifacts=False):
@@ -225,7 +231,7 @@ def extract_lyra_artifacts(time, fluxes=None, artifacts="All",
             indices = np.where(lytaf["event_type"] == artifact_type)[0]
             # If none of a given type of artifact is found, record this
             # type in artifact_not_found list.
-            if (indices == np.empty(0, dtype=indices.dtype).all() is True:
+            if (indices == np.empty(0, dtype=indices.dtype)).all() is True:
                 artifacts_not_found.append(artifact_type)
             else:
                 # Else, record the indices of the artifacts of this type
@@ -236,7 +242,7 @@ def extract_lyra_artifacts(time, fluxes=None, artifacts="All",
     # artifacts the user wanted removed were found, raise a warning and
     # continue with code.
     if (artifact_indices == np.empty(
-        0, dtype=artifact_indices.dtype).all() is True:
+        0, dtype=artifact_indices.dtype)).all() is True:
         warn("None of user supplied artifacts were found.")
         artifacts_not_found = artifacts
     else:
