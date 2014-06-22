@@ -18,8 +18,6 @@ from math import floor
 import numpy as np
 from numpy import ma
 
-from astropy import units as u
-
 from scipy import ndimage
 
 from matplotlib import pyplot as plt
@@ -115,7 +113,7 @@ class _LinearView(object):
         self.max_mp_delt = np.min(self.midpoints[1:] - self.midpoints[:-1])
 
         self.freq_axis = np.arange(
-            self.arr.freq_axis[0].value, self.arr.freq_axis[-1].value, -self.delt.value
+            self.arr.freq_axis[0], self.arr.freq_axis[-1], -self.delt
         )
         self.time_axis = self.arr.time_axis
 
@@ -135,9 +133,9 @@ class _LinearView(object):
         # The idea is that when we take the biggest delta in the mid points,
         # we do not have to search anything that is between the beginning and
         # the first item that can possibly be that frequency.
-        min_mid = max(0, (freq.value - self.midpoints[0].value) // self.max_mp_delt)
+        min_mid = max(0, (freq - self.midpoints[0]) // self.max_mp_delt)
         for n, mid in enumerate(self.midpoints[min_mid:]):
-            if mid.value <= freq.value:
+            if mid <= freq:
                 return arr[min_mid + n]
         return arr[min_mid + n]
 
@@ -193,19 +191,15 @@ class TimeFreq(object):
     ----------
     start : datetime
         Start time of the plot.
-    time : array of astropy.units.quantity.Quantity
+    time : array
         Time of the data points as offset from start in seconds.
-    freq : array of astropy.units.quantity.Quantity
+    freq : array
         Frequency of the data points in MHz.
     """
     def __init__(self, start, time, freq):
         self.start = start
         self.time = time
-        if not isinstance(time, u.Quantity):
-            raise ValueError("time must be astropy quantity")
         self.freq = freq
-        if not isinstance(freq, u.Quantity):
-            raise ValueError("Frequency must be astropy quantity")
 
     def plot(self, time_fmt="%H:%M:%S", **kwargs):
         figure = plt.gcf()
@@ -326,10 +320,10 @@ class Spectrogram(Parent):
             'freq_axis': self.freq_axis[
                 y_range.start:y_range.stop:y_range.step],
             'start': self.start + datetime.timedelta(
-                seconds=self.time_axis[soffset].value),
+                seconds=self.time_axis[soffset]),
             'end': self.start + datetime.timedelta(
-                seconds=self.time_axis[eoffset].value),
-            't_init': self.t_init + self.time_axis[soffset].value,
+                seconds=self.time_axis[eoffset]),
+            't_init': self.t_init + self.time_axis[soffset],
         })
         return self.__class__(data, **params)
 
@@ -359,11 +353,8 @@ class Spectrogram(Parent):
         self.t_init = t_init
 
         self.time_axis = time_axis
-        if not isinstance(time_axis, u.Quantity):
-            raise ValueError("Must be astropy Quantity")       #quantity
         self.freq_axis = freq_axis
-        if not isinstance(freq_axis, u.Quantity):
-            raise ValueError("Must be astropy Quantity") 
+
         self.content = content
         self.instruments = instruments
 
@@ -377,7 +368,7 @@ class Spectrogram(Parent):
             return ""
         return self.format_time(
             self.start + datetime.timedelta(
-                seconds=float(self.time_axis[x])   #use .value
+                seconds=float(self.time_axis[x])
             )
         )
 
@@ -434,20 +425,18 @@ class Spectrogram(Parent):
         """
         # [] as default argument is okay here because it is only read.
         # pylint: disable=W0102,R0914
-        if not(isinstance(vmin, u.Quantity) and isinstance(vmax, u.Quantity)):
-            raise ValueError("Must be astropy Quantities")
         if linear:
             delt = yres
             if delt is not None:
                 delt = max(
-                    (self.freq_axis[0] - self.freq_axis[-1]).value / (yres - 1),      #point of interest
-                    _min_delt(self.freq_axis).value / 2.
+                    (self.freq_axis[0] - self.freq_axis[-1]) / (yres - 1),
+                    _min_delt(self.freq_axis) / 2.
                 )
                 delt = float(delt)
 
             data = _LinearView(self.clip_values(vmin, vmax), delt)
             freqs = np.arange(
-                self.freq_axis[0].value, self.freq_axis[-1].value, -data.delt
+                self.freq_axis[0], self.freq_axis[-1], -data.delt
             )
         else:
             data = np.array(self.clip_values(vmin, vmax))
@@ -479,12 +468,12 @@ class Spectrogram(Parent):
             FuncFormatter(self.time_formatter)
         )
 
-        if linear:     #interest
+        if linear:
             # Start with a number that is divisible by 5.
-            init = (self.freq_axis[0].value % 5) / data.delt
+            init = (self.freq_axis[0] % 5) / data.delt
             nticks = 15.
             # Calculate MHz difference between major ticks.
-            dist = (self.freq_axis[0] - self.freq_axis[-1]).value / nticks
+            dist = (self.freq_axis[0] - self.freq_axis[-1]) / nticks
             # Round to next multiple of 10, at least ten.
             dist = max(round(dist, -1), 10)
             # One pixel in image space is data.delt MHz, thus we can convert
@@ -501,11 +490,11 @@ class Spectrogram(Parent):
                     dist / data.delt / 10, init
                 )
             )
-            def freq_fmt(x, pos):   #interest
+            def freq_fmt(x, pos):
                 # This is necessary because matplotlib somehow tries to get
                 # the mid-point of the row, which we do not need here.
                 x = x + 0.5
-                return self.format_freq(self.freq_axis[0].value - x * data.delt)
+                return self.format_freq(self.freq_axis[0] - x * data.delt)
         else:
             freq_fmt = _list_formatter(freqs, self.format_freq)
             ya.set_major_locator(MaxNLocator(integer=True, steps=[1, 5, 10]))
@@ -584,8 +573,6 @@ class Spectrogram(Parent):
         max\_ : float
             All frequencies in the result are smaller or equal to this.
         """
-        if not(isinstance(vmin, u.Quantity) and isinstance(vmax, u.Quantity)):
-            raise ValueError("must be astropy quantities")
         left = 0
         if vmax is not None:
             while self.freq_axis[left] > vmax:
@@ -690,13 +677,10 @@ class Spectrogram(Parent):
 
         if vmax is None:
             vmax = int(self.data.max())
-        if not(isinstance(vmin, u.Quantity) and isinstance(vmax, u.Quantity)):
-            raise ValueError("must be astropy quantities")        
 
         return self._with_data(self.data.clip(vmin, vmax, out))
 
-    def rescale(self, vmin=0 * u.W/u.m**2, vmax=1* u.W/u.m**2, 
-                dtype=np.dtype('float32')):
+    def rescale(self, vmin=0, vmax=1, dtype=np.dtype('float32')):
         u"""
         Rescale intensities to [min\_, max\_].
         Note that min\_ ≠ max\_ and spectrogram.min() ≠ spectrogram.max().
@@ -710,15 +694,13 @@ class Spectrogram(Parent):
         dtype : np.dtype
             Data-type of the resulting spectogram.
         """
-        if not(isinstance(vmin, u.Quantity) and isinstance(vmax, u.Quantity)):
-            raise ValueError("should be astropy quantity")
-        if vmax == vmin: #quantity
+        if vmax == vmin:
             raise ValueError("Maximum and minimum must be different.")
         if self.data.max() == self.data.min():
             raise ValueError("Spectrogram needs to contain distinct values.")
         data = self.data.astype(dtype) # pylint: disable=E1101
         return self._with_data(
-            (vmin + (vmax - vmin)).value * (data - self.data.min()) / # pylint: disable=E1101
+            vmin + (vmax - vmin) * (data - self.data.min()) / # pylint: disable=E1101
             (self.data.max() - self.data.min()) # pylint: disable=E1101
         )
 
@@ -733,8 +715,6 @@ class Spectrogram(Parent):
             Unknown frequency for which to lineary interpolate the intensities.
             freq_axis[0] >= frequency >= self_freq_axis[-1]
         """
-        if not isinstance(frequency, u.Quantity):
-            raise ValueError("Must be an astropy Quantity")        #check what is freq
         lfreq, lvalue = None, None
         for freq, value in izip(self.freq_axis, self.data[:, :]):
             if freq < frequency:
@@ -815,7 +795,7 @@ class Spectrogram(Parent):
             Datetime to find the x coordinate for.
         """
         diff = time - self.start
-        diff_s = (SECONDS_PER_DAY * diff.days + diff.seconds) * u.second
+        diff_s = SECONDS_PER_DAY * diff.days + diff.seconds
         if self.time_axis[-1] < diff_s < 0:
             raise ValueError("Out of bounds")
         for n, elem in enumerate(self.time_axis):
@@ -869,8 +849,6 @@ class LinearTimeSpectrogram(Spectrogram):
             content, instruments
         )
         self.t_delt = t_delt
-        if not isinstance(t_delt, u.Quantity):
-            raise ValueError("should be astropy quantity")
 
     @staticmethod
     def make_array(shape, dtype=np.dtype('float32')):
@@ -910,11 +888,9 @@ class LinearTimeSpectrogram(Spectrogram):
         new_delt : float
             New delta between consecutive values.
         """
-        if not isinstance(new_delt, u.Quantity):
-            raise ValueError("Must be astropy Quantity")
         if self.t_delt == new_delt:
             return self
-        factor = float(self.t_delt / (new_delt))
+        factor = self.t_delt / float(new_delt)
 
         # The last data-point does not change!
         new_size = floor((self.shape[1] - 1) * factor + 1) # pylint: disable=E1101
@@ -924,7 +900,7 @@ class LinearTimeSpectrogram(Spectrogram):
         params.update({
             'time_axis': np.linspace(
                 self.time_axis[0],
-                self.time_axis[(new_size - 1) * float(new_delt / self.t_delt)],
+                self.time_axis[(new_size - 1) * new_delt / self.t_delt],
                 new_size
             ),
             't_delt': new_delt,
@@ -990,11 +966,11 @@ class LinearTimeSpectrogram(Spectrogram):
                     get_day(elem.start) - get_day(start_day)
                 ).days + elem.t_init
             )
-            x = int((e_init - last.t_init) / min_delt.value)
+            x = int((e_init - last.t_init) / min_delt)
             xs.append(x)
             diff = last.shape[1] - x
 
-            if maxgap is not None and -diff > maxgap / min_delt.value:
+            if maxgap is not None and -diff > maxgap / min_delt:
                 raise ValueError("Too large gap.")
 
             # If we leave out undefined values, we do not want to
@@ -1013,7 +989,7 @@ class LinearTimeSpectrogram(Spectrogram):
         # We do that here so the user can pass a memory mapped
         # array if they'd like to.
         arr = mk_arr((data.shape[0], size), dtype_)
-        time_axis = np.zeros((size,)) * u.second
+        time_axis = np.zeros((size,))
         sx = 0
         # Amount of pixels left out due to nonlinearity. Needs to be
         # considered for correct time axes.
@@ -1051,7 +1027,7 @@ class LinearTimeSpectrogram(Spectrogram):
                 if mask is None:
                     mask = np.zeros((data.shape[0], size), dtype=np.uint8)
                 mask[:, sx + x - diff:sx + x] = 1
-            time_axis[sx:sx + x] = (e_time_axis[:x].value + data.t_delt.value * (sx + sd)) * u.second
+            time_axis[sx:sx + x] = e_time_axis[:x] + data.t_delt * (sx + sd)
             if nonlinear:
                 sd += max(0, diff)
             sx += x
@@ -1088,7 +1064,7 @@ class LinearTimeSpectrogram(Spectrogram):
         time = parse_time(time)
         diff = time - self.start
         diff_s = SECONDS_PER_DAY * diff.days + diff.seconds
-        result = diff_s // self.t_delt.value
+        result = diff_s // self.t_delt
         if 0 <= result <= self.shape[1]: # pylint: disable=E1101
             return result
         raise ValueError("Out of range.")
@@ -1109,7 +1085,7 @@ class LinearTimeSpectrogram(Spectrogram):
         # XXX: Could do without resampling by using
         # sp.t_init below, not sure if good idea.
         specs = [sp.resample_time(delt) for sp in specs]
-        cut = [sp[:, (start - sp.t_init) / delt.value:] for sp in specs]
+        cut = [sp[:, (start - sp.t_init) / delt:] for sp in specs]
 
         length = min(sp.shape[1] for sp in cut)
         return [sp[:, :length] for sp in cut]
@@ -1136,7 +1112,7 @@ class LinearTimeSpectrogram(Spectrogram):
 
         new = np.zeros((fsize, one.shape[1]), dtype=dtype_)
 
-        freq_axis = np.zeros((fsize,)) * u.MHz
+        freq_axis = np.zeros((fsize,))
 
 
         for n, (data, row) in enumerate(merge(
@@ -1185,7 +1161,7 @@ class LinearTimeSpectrogram(Spectrogram):
             err = abs(err_factor * avg)
         elif err_factor is not None:
             raise TypeError("Only supply err or err_factor, not both")
-        return (abs(deltas.value - avg) <= err).all()
+        return (abs(deltas - avg) <= err).all()
 
     def in_interval(self, start=None, end=None):
         """ Return part of spectrogram that lies in [start, end).
@@ -1227,3 +1203,4 @@ class LinearTimeSpectrogram(Spectrogram):
                 )
             end = self.time_to_x(end)
         return self[:, start:end]
+
