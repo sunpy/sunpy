@@ -5,8 +5,6 @@ from __future__ import absolute_import
 
 import numpy as np
 
-from astropy import units as u
-
 from matplotlib import pyplot as plt
 
 __all__ = ['Spectrum']
@@ -28,11 +26,7 @@ class Spectrum(np.ndarray):
 
     def __init__(self, data, freq_axis):
         self.data = data
-        if not isinstance(freq_axis, u.Quantity):
-            raise ValueError("should be an astropy quantity")   #units W/m2
         self.freq_axis = freq_axis
-        if not isinstance(freq_axis, u.Quantity):
-            raise ValueError("should be an astropy quantity")
 
     def plot(self, axes=None, **matplot_args):
         """
@@ -80,3 +74,4 @@ class Spectrum(np.ndarray):
         figure.show()
 
         return figure
+
