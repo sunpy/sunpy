@@ -7,33 +7,26 @@ from __future__ import absolute_import
 __authors__ = ["Russell Hewett, Stuart Mumford, Keith Hughitt, Steven Christe"]
 __email__ = "stuart@mumford.me.uk"
 
-from copy import deepcopy
 import warnings
+import inspect
+from copy import deepcopy
 
 import numpy as np
 import matplotlib.pyplot as plt
-import scipy.ndimage.interpolation
 from matplotlib import patches
 from matplotlib import cm
 
 import astropy.nddata
-
-try:
-    import sunpy.image.Crotate as Crotate
-except ImportError:
-    pass
+from sunpy.image.transform import affine_transform
 
 import sunpy.io as io
 import sunpy.wcs as wcs
 from sunpy.visualization import toggle_pylab
-# from sunpy.io import read_file, read_file_header
 from sunpy.sun import constants
+from sunpy.sun import sun
 from sunpy.time import parse_time, is_time
 from sunpy.image.rescale import reshape_image_to_4d_superpixel
 from sunpy.image.rescale import resample as sunpy_image_resample
-
-#from sunpy.util.cond_dispatch import ConditionalDispatch
-#from sunpy.util.create import Parent
 
 __all__ = ['GenericMap']
 
@@ -65,7 +58,8 @@ class GenericMap(astropy.nddata.NDData):
 
     Examples
     --------
-    >>> aia = sunpy.make_map(sunpy.AIA_171_IMAGE)
+    >>> import sunpy.map
+    >>> aia = sunpy.map.Map(sunpy.AIA_171_IMAGE)
     >>> aia.T
     AIAMap([[ 0.3125,  1.    , -1.1875, ..., -0.625 ,  0.5625,  0.5   ],
     [-0.0625,  0.1875,  0.375 , ...,  0.0625,  0.0625, -0.125 ],
@@ -85,6 +79,33 @@ class GenericMap(astropy.nddata.NDData):
     | http://docs.scipy.org/doc/numpy/reference/ufuncs.html
     | http://www.scipy.org/Subclasses
 
+    Notes
+    -----
+
+    This class makes some assumptions about the WCS information contained in
+    the meta data. The first and most extensive assumption is that it is
+    FITS-like WCS information as defined in the FITS WCS papers.
+
+    Within this scope it also makes some other assumptions.
+
+    * In the case of APIS convention headers where the CROTAi/j arguments are
+      provided it assumes that these can be converted to the standard PCi_j
+      notation using equations 32 in Thompson (2006).
+
+    * If a CDi_j matrix is provided it is assumed that it can be converted to a
+      PCi_j matrix and CDELT keywords as descirbed in Greisen & Calabretta (2002).
+
+    * The 'standard' FITS keywords that are used by this class are the PCi_j
+      matrix and CDELT, along with the other keywords specified in the WCS papers.
+      All subclasses of this class must convert their header information to
+      this formalism. The CROTA to PCi_j conversion is done in this class.
+
+    .. warning::
+        This class currently assumes that a header with the CDi_j matrix
+        information also includes the CDELT keywords, without these keywords
+        this class will not process the WCS information. This will be fixed.
+        Also the rotation_matrix does not work if the CDELT1 and CDELT2
+        keywords are exactly equal.
     """
 
     def __init__(self, data, header, **kwargs):
@@ -115,7 +136,7 @@ class GenericMap(astropy.nddata.NDData):
     "The ability to index Map by physical coordinate is not yet implemented.")
 
     def __repr__(self):
-        if not hasattr(self, 'observatory'):
+        if not self.observatory:
             return self.data.__repr__()
         return (
 """SunPy %s
@@ -186,7 +207,7 @@ Dimension:\t [%d, %d]
     @property
     def date(self):
         """Image observation time"""
-        return self.meta.get('date-obs', None)
+        return self.meta.get('date-obs', 'now')
 #    @date.setter
 #    def date(self, new_date):
 #        self.meta['date-obs'] = new_date
@@ -202,7 +223,14 @@ Dimension:\t [%d, %d]
     @property
     def dsun(self):
         """The observer distance from the Sun."""
-        return self.meta.get('dsun_obs', constants.au)
+        dsun = self.meta.get('dsun_obs', None)
+
+        if dsun is None:
+            warnings.warn_explicit("Missing metadata for Sun-spacecraft separation: assuming Sun-Earth distance",
+                                   Warning, __file__, inspect.currentframe().f_back.f_lineno)
+            dsun = sun.sunearth_distance(self.date) * constants.au.si.value
+
+        return dsun
 
     @property
     def exposure_time(self):
@@ -245,10 +273,10 @@ Dimension:\t [%d, %d]
 
     @property
     def center(self):
-        """Returns the offset between the center of the Sun and the center of 
+        """Returns the offset between the center of the Sun and the center of
         the map."""
-        return {'x': wcs.get_center(self.shape[1], self.scale['x'], 
-                                    self.reference_pixel['x'], 
+        return {'x': wcs.get_center(self.shape[1], self.scale['x'],
+                                    self.reference_pixel['x'],
                                     self.reference_coordinate['x']),
                 'y': wcs.get_center(self.shape[0], self.scale['y'],
                                     self.reference_pixel['y'],
@@ -262,8 +290,16 @@ Dimension:\t [%d, %d]
     @property
     def rsun_arcseconds(self):
         """Radius of the sun in arcseconds"""
-        return self.meta.get('rsun_obs', self.meta.get('solar_r',
-                                         self.meta.get('radius', constants.average_angular_size.to('arcsec').value)))
+        rsun_arcseconds = self.meta.get('rsun_obs',
+                                        self.meta.get('solar_r',
+                                                      self.meta.get('radius', None)))
+
+        if rsun_arcseconds is None:
+            warnings.warn_explicit("Missing metadata for solar radius: assuming photospheric limb as seen from Earth",
+                                   Warning, __file__, inspect.currentframe().f_back.f_lineno)
+            rsun_arcseconds = sun.solar_semidiameter_angular_size(self.date).value
+
+        return rsun_arcseconds
 
     @property
     def coordinate_system(self):
@@ -274,13 +310,28 @@ Dimension:\t [%d, %d]
     @property
     def carrington_longitude(self):
         """Carrington longitude (crln_obs)"""
-        return self.meta.get('crln_obs', 0.)
+        carrington_longitude = self.meta.get('crln_obs', None)
+
+        if carrington_longitude is None:
+            warnings.warn_explicit("Missing metadata for Carrington longitude: assuming Earth-based observer",
+                                   Warning, __file__, inspect.currentframe().f_back.f_lineno)
+            carrington_longitude = (sun.heliographic_solar_center(self.date))[0]
+
+        return carrington_longitude
 
     @property
     def heliographic_latitude(self):
         """Heliographic latitude in degrees"""
-        return self.meta.get('hglt_obs', self.meta.get('crlt_obs',
-                                         self.meta.get('solar_b0', 0.)))
+        heliographic_latitude = self.meta.get('hglt_obs',
+                                              self.meta.get('crlt_obs',
+                                                            self.meta.get('solar_b0', None)))
+
+        if heliographic_latitude is None:
+            warnings.warn_explicit("Missing metadata for heliographic latitude: assuming Earth-based observer",
+                                   Warning, __file__, inspect.currentframe().f_back.f_lineno)
+            heliographic_latitude = (sun.heliographic_solar_center(self.date))[1]
+
+        return heliographic_latitude
 
     @property
     def heliographic_longitude(self):
@@ -302,6 +353,7 @@ Dimension:\t [%d, %d]
     @property
     def scale(self):
         """Image scale along the x and y axes in units/pixel (cdelt1/2)"""
+        #TODO: Fix this if only CDi_j matrix is provided
         return {'x': self.meta.get('cdelt1', 1.),
                 'y': self.meta.get('cdelt2', 1.),}
 
@@ -311,12 +363,40 @@ Dimension:\t [%d, %d]
         return {'x': self.meta.get('cunit1', 'arcsec'),
                 'y': self.meta.get('cunit2', 'arcsec'),}
 
-    #TODO: This needs to be WCS compliant!
     @property
-    def rotation_angle(self):
-        """The Rotation angle of each axis"""
-        return {'x': self.meta.get('crota1', 0.),
-                'y': self.meta.get('crota2', 0.),}
+    def rotation_matrix(self):
+        """Matrix describing the rotation required to align solar North with
+        the top of the image."""
+        if self.meta.get('PC1_1', None) is not None:
+            return np.matrix([[self.meta['PC1_1'], self.meta['PC1_2']],
+                              [self.meta['PC2_1'], self.meta['PC2_2']]])
+
+        elif self.meta.get('CD1_1', None) is not None:
+            div = 1. / (self.scale['x'] - self.scale['y'])
+
+            deltm = np.matrix([[self.scale['y']/div, 0],
+                               [0, self.scale['x']/ div]])
+
+            cd = np.matrix([[self.meta['CD1_1'], self.meta['CD1_2']],
+                            [self.meta['CD2_1'], self.meta['CD2_2']]])
+
+            return deltm * cd
+        else:
+            return self._rotation_matrix_from_crota()
+
+    def _rotation_matrix_from_crota(self):
+        """
+        This method converts the deprecated CROTA FITS kwargs to the new
+        PC rotation matrix.
+
+        This method can be overriden if an instruments header does not use this
+        conversion.
+        """
+        lam = self.scale['y'] / self.scale['x']
+        p = np.deg2rad(self.meta['CROTA2'])
+
+        return np.matrix([[np.cos(p), -1 * lam * np.sin(p)],
+                          [1/lam * np.sin(p), np.cos(p)]])
 
 # #### Miscellaneous #### #
 
@@ -481,139 +561,132 @@ Dimension:\t [%d, %d]
         new_map.data = new_data
         new_map.meta = new_meta
         return new_map
-    
-    def rotate(self, angle=None, rmatrix=None, scale=1.0, rotation_center=None, recenter=True,
-               missing=0.0, interpolation='bicubic', interp_param=-0.5):
-        """Returns a new rotated, rescaled and shifted map.
+
+    def rotate(self, angle=None, rmatrix=None, order=3, scale=1.0,
+               image_center=None, recenter=False, missing=0.0, use_scipy=False):
+        """
+        Returns a new rotated and rescaled map.  Specify either a rotation
+        angle or a rotation matrix, but not both.  If neither an angle or a
+        rotation matrix are specified, the map will be rotated by the rotation
+        angle in the metadata.
+
+        Also updates the rotation_matrix attribute and any appropriate header
+        data so that they correctly describe the new map.
 
         Parameters
         ----------
-        angle: float
-           The angle to rotate the image by (radians). Specify angle or matrix.
-        rmatrix: NxN
-            Linear transformation rotation matrix. Specify angle or matrix.
-        scale: float
-           A scale factor for the image, default is no scaling
-        rotation_center: tuple
-           The point in the image to rotate around (Axis of rotation).
-           Default: center of the array
-        recenter: bool, or array-like
-           Move the centroid (axis of rotation) to the center of the array
-           or recenter coords.
-           Default: True, recenter to the center of the array.
-        missing: float
-           The numerical value to fill any missing points after rotation.
-           Default: 0.0
-        interpolation: {'nearest' | 'bilinear' | 'spline' | 'bicubic'}
-            Interpolation method to use in the transform.
-            Spline uses the
-            scipy.ndimage.interpolation.affline_transform routine.
-            nearest, bilinear and bicubic all replicate the IDL rot() function.
-            Default: 'bicubic'
-        interp_par: Int or Float
-            Optional parameter for controlling the interpolation.
-            Spline interpolation requires an integer value between 1 and 5 for
-            the degree of the spline fit.
-            Default: 3
-            BiCubic interpolation requires a flaot value between -1 and 0.
-            Default: 0.5
-            Other interpolation options ingore the argument.
+        angle : float
+            The angle (degrees) to rotate counterclockwise.
+        rmatrix : 2x2
+            Linear transformation rotation matrix.
+        order : int 0-5
+            Interpolation order to be used. When using scikit-image this parameter
+            is passed into :func:`skimage.transform.warp`.
+            When using scipy it is passed into
+            :func:`scipy.ndimage.interpolation.affine_transform` where it controls
+            the order of the spline.
+        scale : float
+            A scale factor for the image, default is no scaling
+        image_center : tuple
+            The axis of rotation in pixel coordinates
+            Default: the origin in the data coordinate system
+        recenter : bool
+            If True, position the axis of rotation at the center of the new map
+            Default: False
+        missing : float
+            The numerical value to fill any missing points after rotation.
+            Default: 0.0
+        use_scipy : bool
+            If True, forces the rotation to use
+            :func:`scipy.ndimage.interpolation.affine_transform`, otherwise it
+            uses the :class:`skimage.transform.AffineTransform` class and
+            :func:`skimage.transform.warp`.
+            The function will also automatically fall back to
+            :func:`scipy.ndimage.interpolation.affine_transform` if scikit-image
+            can't be imported.
+            Default: False
 
         Returns
         -------
-        New rotated, rescaled, translated map
+        out : Map
+            A new Map instance containing the rotated and rescaled data of the
+            original map.
 
         Notes
         -----
-        Apart from interpolation='spline' all other options use a compiled
-        C-API extension. If for some reason this is not compiled correctly this
-        routine will fall back upon the scipy implementation of order = 3.
-        For more infomation see:
-        http://sunpy.readthedocs.org/en/latest/guide/troubleshooting.html#crotate-warning
+        This function will remove old CROTA keywords from the header.
+        This function will also convert a CDi_j matrix to a PCi_j matrix.
+
+        This function is not numerically equalivalent to IDL's rot() see the
+        :func:`sunpy.image.transform.affine_transform` documentation for a
+        detailed description of the differences.
         """
-        assert angle is None or rmatrix is None
-        #Interpolation parameter Sanity
-        assert interpolation in ['nearest','spline','bilinear','bicubic']
-        #Set defaults based on interpolation
-        if interp_param is None:
-            if interpolation is 'spline':
-                interp_param = 3
-            elif interpolation is 'bicubic':
-                interp_param = 0.5
-            else:
-                interp_param = 0 #Default value for nearest or bilinear
+        if angle is not None and rmatrix is not None:
+            raise ValueError("You cannot specify both an angle and a matrix")
+        elif angle is None and rmatrix is None:
+            rmatrix = self.rotation_matrix
 
-        #Make sure recenter is a vector with shape (2,1)
-        if not isinstance(recenter, bool):
-            recenter = np.array(recenter).reshape(2,1)
+        # Interpolation parameter sanity
+        if order not in range(6):
+            raise ValueError("Order must be between 0 and 5")
 
-        #Define Size and center of array
-        center = (np.array(self.data.shape)-1)/2.0
-
-        #If rotation_center is not set (None or False),
-        #set rotation_center to the center of the image.
-        if rotation_center is None:
-            rotation_center = center
-        else:
-            #Else check rotation_center is a vector with shape (2,1)
-            rotation_center = np.array(rotation_center).reshape(2,1)
-
-        #recenter to the rotation_center if recenter is True
-        if isinstance(recenter, bool):
-            #if rentre is False then this will be (0,0)
-            shift = np.array(rotation_center) - np.array(center)
-        else:
-            #recenter to recenter vector otherwise
-            shift = np.array(recenter) - np.array(center)
-
-        image = self.data.copy()
-
-        if not angle is None:
-            #Calulate the parameters for the affline_transform
-            c = np.cos(angle)
-            s = np.sin(angle)
-            mati = np.array([[c, s],[-s, c]]) / scale   # res->orig
-        if not rmatrix is None:
-            mati = rmatrix / scale   # res->orig
-        center = np.array([center]).transpose()  # the center of rotn
-        shift = np.array([shift]).transpose()    # the shift
-        kpos = center - np.dot(mati, (center + shift))
-        # kpos and mati are the two transform constants, kpos is a 2x2 array
-        rsmat, offs =  mati, np.squeeze((kpos[0,0], kpos[1,0]))
-
-        if interpolation == 'spline':
-            # This is the scipy call
-            data = scipy.ndimage.interpolation.affine_transform(image, rsmat,
-                           offset=offs, order=interp_param, mode='constant',
-                           cval=missing)
-        else:
-            #Use C extension Package
-            if not 'Crotate' in globals():
-                warnings.warn("""The C extension sunpy.image.Crotate is not
-installed, falling back to the interpolation='spline' of order=3""" ,Warning)
-                data = scipy.ndimage.interpolation.affine_transform(image, rsmat,
-                           offset=offs, order=3, mode='constant',
-                           cval=missing)
-            else:
-                #Set up call parameters depending on interp type.
-                if interpolation == 'nearest':
-                    interp_type = Crotate.NEAREST
-                elif interpolation == 'bilinear':
-                    interp_type = Crotate.BILINEAR
-                elif interpolation == 'bicubic':
-                    interp_type = Crotate.BICUBIC
-                #Make call to extension
-                data = Crotate.affine_transform(image,
-                                      rsmat, offset=offs,
-                                      kernel=interp_type, cubic=interp_param,
-                                      mode='constant', cval=missing)
-
-        #Return a new map
-        #Copy Header
+        # Copy Map
         new_map = deepcopy(self)
 
-        # Create new map instance
-        new_map.data = data
+        if angle is not None:
+            #Calulate the parameters for the affine_transform
+            c = np.cos(np.deg2rad(angle))
+            s = np.sin(np.deg2rad(angle))
+            rmatrix = np.matrix([[c, -s], [s, c]])
+
+        if image_center is None:
+            # FITS pixels  count from 1 (curse you, FITS!)
+            image_center = (self.shape[1] - self.reference_pixel['x'] + 1,
+                            self.reference_pixel['y'])
+
+        # Because map data has the origin at the bottom left not the top left
+        # as is convention for images vertically flip the image for the
+        # transform and then flip it back again.
+        new_map.data = np.flipud(affine_transform(np.flipud(new_map.data),
+                                                  np.array(rmatrix),
+                                                  order=order, scale=scale,
+                                                  image_center=image_center,
+                                                  recenter=recenter, missing=missing,
+                                                  use_scipy=use_scipy))
+
+        map_center = (np.array(self.shape)/2.0) + 0.5
+
+        # Calculate the new rotation matrix to store in the header by
+        # "subtracting" the rotation matrix used in the rotate from the old one
+        # That being calculate the dot product of the old header data with the
+        # inverse of the rotation matrix.
+        pc_C = np.dot(self.rotation_matrix, rmatrix.I)
+        new_map.meta['PC1_1'] = pc_C[0,0]
+        new_map.meta['PC1_2'] = pc_C[0,1]
+        new_map.meta['PC2_1'] = pc_C[1,0]
+        new_map.meta['PC2_2'] = pc_C[1,1]
+        # Update pixel size if image has been scaled.
+        if scale != 1.0:
+            new_map.meta['cdelt1'] = self.scale['x'] / scale
+            new_map.meta['cdelt2'] = self.scale['y'] / scale
+
+        if recenter:
+            # Move the reference pixel based on the image shift.
+            # The y coordinate is inverted due to the map having the origin in
+            # the lower left rather than the upper left.
+            shift = image_center - map_center
+            new_map.meta['crpix1'] += shift[0]
+            new_map.meta['crpix2'] -= shift[1]
+
+        # Remove old CROTA kwargs because we have saved a new PCi_j matrix.
+        new_map.meta.pop('CROTA1', None)
+        new_map.meta.pop('CROTA2', None)
+        # Remove CDi_j header
+        new_map.meta.pop('CD1_1', None)
+        new_map.meta.pop('CD1_2', None)
+        new_map.meta.pop('CD2_1', None)
+        new_map.meta.pop('CD2_2', None)
+
         return new_map
 
     def submap(self, range_a, range_b, units="data"):
@@ -766,7 +839,7 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
 
 # #### Visualization #### #
 
-    def draw_grid(self, axes=None, grid_spacing=20, **kwargs):
+    def draw_grid(self, axes=None, grid_spacing=15, **kwargs):
         """Draws a grid over the surface of the Sun
 
         Parameters
@@ -790,7 +863,6 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
             axes = plt.gca()
 
         x, y = self.pixel_to_data()
-        rsun = self.rsun_meters
         dsun = self.dsun
 
         b0 = self.heliographic_latitude
@@ -803,46 +875,30 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
                    'zorder':100}
         plot_kw.update(kwargs)
 
-        #TODO: This function could be optimized. Does not need to convert the entire image
-        # coordinates
-        #lon_self, lat_self = wcs.convert_hpc_hg(rsun, dsun, angle_units = units[0], b0, l0, x, y)
-        lon_self, lat_self = wcs.convert_hpc_hg(x, y, b0_deg=b0, l0_deg=l0, dsun_meters=dsun, angle_units='arcsec')
-        # define the number of points for each latitude or longitude line
-        num_points = 20
-
-        #TODO: The following code is ugly. Fix it.
-        lon_range = [lon_self.min(), lon_self.max()]
-        lat_range = [lat_self.min(), lat_self.max()]
-        if np.isfinite(lon_range[0]) == False:
-            lon_range[0] = -90 + self.heliographic_longitude
-        if np.isfinite(lon_range[1]) == False:
-            lon_range[1] = 90 + self.heliographic_longitude
-        if np.isfinite(lat_range[0]) == False:
-            lat_range[0] = -90 + self.heliographic_latitude
-        if np.isfinite(lat_range[1]) == False:
-            lat_range[1] = 90 + self.heliographic_latitude
-
-        hg_longitude_deg = np.linspace(lon_range[0], lon_range[1], num=num_points)
-        hg_latitude_deg = np.arange(lat_range[0], lat_range[1]+grid_spacing, grid_spacing)
+        hg_longitude_deg = np.linspace(-180, 180, num=361) + self.heliographic_longitude
+        hg_latitude_deg = np.arange(-90, 90, grid_spacing)
 
         # draw the latitude lines
         for lat in hg_latitude_deg:
-            hg_latitude_deg_mesh, hg_longitude_deg_mesh = np.meshgrid(
-                lat * np.ones(num_points), hg_longitude_deg)
-            x, y = wcs.convert_hg_hpc(hg_longitude_deg_mesh, hg_latitude_deg_mesh, b0_deg=b0, l0_deg=l0,
-                    dsun_meters=dsun, angle_units=units[0], occultation=False)
-
+            x, y = wcs.convert_hg_hpc(hg_longitude_deg, lat * np.ones(361),
+                                      b0_deg=b0, l0_deg=l0, dsun_meters=dsun,
+                                      angle_units=units[0], occultation=True)
+            valid = np.logical_and(np.isfinite(x), np.isfinite(y))
+            x = x[valid]
+            y = y[valid]
             axes.plot(x, y, **plot_kw)
 
-        hg_longitude_deg = np.arange(lon_range[0], lon_range[1]+grid_spacing, grid_spacing)
-        hg_latitude_deg = np.linspace(lat_range[0], lat_range[1], num=num_points)
+        hg_longitude_deg = np.arange(-180, 180, grid_spacing) + self.heliographic_longitude
+        hg_latitude_deg = np.linspace(-90, 90, num=181)
 
         # draw the longitude lines
         for lon in hg_longitude_deg:
-            hg_longitude_deg_mesh, hg_latitude_deg_mesh = np.meshgrid(
-                lon * np.ones(num_points), hg_latitude_deg)
-            x, y = wcs.convert_hg_hpc(hg_longitude_deg_mesh, hg_latitude_deg_mesh, b0_deg=b0, l0_deg=l0,
-                    dsun_meters=dsun, angle_units=units[0], occultation=False)
+            x, y = wcs.convert_hg_hpc(lon * np.ones(181), hg_latitude_deg,
+                                      b0_deg=b0, l0_deg=l0, dsun_meters=dsun,
+                                      angle_units=units[0], occultation=True)
+            valid = np.logical_and(np.isfinite(x), np.isfinite(y))
+            x = x[valid]
+            y = y[valid]
             axes.plot(x, y, **plot_kw)
 
         axes.set_ylim(self.yrange)
@@ -885,7 +941,7 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         return axes
 
     @toggle_pylab
-    def peek(self, draw_limb=True, draw_grid=False, gamma=None,
+    def peek(self, draw_limb=False, draw_grid=False, gamma=None,
                    colorbar=True, basic_plot=False, **matplot_args):
         """Displays the map in a new figure
 
@@ -976,7 +1032,10 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         aia.draw_limb()
         aia.draw_grid()
         """
-
+        # Check that the image is properly aligned
+        if not np.array_equal(self.rotation_matrix, np.matrix(np.identity(2))):
+            warnings.warn("This map is not aligned. Plot axes may be incorrect",
+                          Warning)
         #Get current axes
         if not axes:
             axes = plt.gca()
@@ -1007,8 +1066,7 @@ installed, falling back to the interpolation='spline' of order=3""" ,Warning)
         if gamma is not None:
             cmap.set_gamma(gamma)
 
-            #make imshow kwargs a dict
-
+        # make imshow kwargs a dict
         kwargs = {'origin':'lower',
                   'cmap':cmap,
                   'norm':self.mpl_color_normalizer,

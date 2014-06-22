@@ -3,6 +3,7 @@ __email__ = "dps.helio-?-gmail.com"
 
 import numpy as np
 
+
 class Chaincode(np.ndarray):
     """
     Chaincode(origin, chaincode, xdelta=1, ydelta=1)
@@ -15,7 +16,7 @@ class Chaincode(np.ndarray):
     origin : numpy.ndarray, list
         The 2 points of the origin of the chaincode
     chaincode : string
-        A list of the numbers (0-7) that indicate the path of the 
+        A list of the numbers (0-7) that indicate the path of the
         chaincode.  0 moves horizontally to the left and the rest
         follows anticlockwise.
     xdelta : Float
@@ -30,9 +31,9 @@ class Chaincode(np.ndarray):
 
     Examples
     --------
-    >>> cc = Chaincode([-88, 812], "44464655567670006011212222324", 
+    >>> cc = Chaincode([-88, 812], "44464655567670006011212222324",
     ...     xdelta=2.629, ydelta=2.629)
-    
+
     >>> fig = plt.figure()
     >>> ax = fig.add_subplot(111)
     >>> x,y = zip(cc.coordinates)
@@ -49,30 +50,33 @@ class Chaincode(np.ndarray):
     def __init__(self, origin, chaincode, xdelta=1, ydelta=1):
         x_steps = [-1, -1, 0, 1, 1, 1, 0, -1]
         y_steps = [0, -1, -1, -1, 0, 1, 1, 1]
-        self.coordinates = np.ndarray((2, len(chaincode)+1))
-        self.coordinates[:,0] = origin
+        self.coordinates = np.ndarray((2, len(chaincode) + 1))
+        self.coordinates[:, 0] = origin
         if chaincode.isdigit():
             for index, step in enumerate(chaincode):
-                self.coordinates[:,index + 1] = self.coordinates[:,index] + \
-                    [[x_steps[int(step)] * xdelta, y_steps[int(step)] * ydelta]]
+                self.coordinates[:, index + 1] = self.coordinates[:, index] + \
+                    [[x_steps[int(step)] * xdelta,
+                      y_steps[int(step)] * ydelta]]
 
     def matchend(self, end):
-        return np.alltrue(np.equal(self.coordinates[:,-1], np.asarray(end)))
+        return np.alltrue(np.equal(self.coordinates[:, -1], np.asarray(end)))
 
     def matchany(self, coordinates, index):
-        return np.alltrue(np.allclose(self.coordinates[:,index], np.asarray(coordinates)))
+        return np.alltrue(np.allclose(self.coordinates[:, index],
+                                      np.asarray(coordinates)))
 
     def BoundingBox(self):
         '''
         Extract the coordinates of the chaincode
         [[x0,x1],[y0,y1]]
         '''
-        bb = np.zeros((2,2))
-        bb[:,0] = self.coordinates.min(1)
-        bb[:,1] = self.coordinates.max(1)
+        bb = np.zeros((2, 2))
+        bb[:, 0] = self.coordinates.min(1)
+        bb[:, 1] = self.coordinates.max(1)
         return bb
 
-    def area(self):# should we add a mask for possible not flat objects (eg. Sun)?
+    def area(self):
+        # should we add a mask for possible not flat objects (eg. Sun)?
         # Check whehter it is a closed object
         pass
 
@@ -87,11 +91,11 @@ class Chaincode(np.ndarray):
 # It needs to check whether the input are lists and with 2 elements..
 #        try:
 #            if (type(xedge) == list) or (type(yedge) == list):
-#                
+#
         if xedge != None:
             edge = xedge
             IndexMask = 0  # we want to mask X
-            IndexValue = 1 # we want to extract the MinMax from Y
+            IndexValue = 1  # we want to extract the MinMax from Y
         elif yedge != None:
             edge = yedge
             IndexMask = 1
@@ -99,8 +103,8 @@ class Chaincode(np.ndarray):
         else:
             print "Not edges input"
             return None
-        mask = (self.coordinates[IndexMask,:] >= edge[0]) & \
-            (self.coordinates[IndexMask,:] <= edge[1])
+        mask = (self.coordinates[IndexMask, :] >= edge[0]) & \
+            (self.coordinates[IndexMask, :] <= edge[1])
 # Should the edges be included?
-        mx = np.ma.masked_array(self.coordinates[IndexValue,:], mask=(~mask))
+        mx = np.ma.masked_array(self.coordinates[IndexValue, :], mask=(~mask))
         return [mx.min(), mx.max()]
