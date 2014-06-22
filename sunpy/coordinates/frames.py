@@ -103,20 +103,14 @@ class HelioCentric(BaseCoordinateFrame):
         be in keyword form and if x, y and z are specified, it must
         be None.
     x: `Quantity` object.
-        X-axis coordinate, specified in kilometres. Optional, must
-        be keyword.
+        X-axis coordinate, optional, must be keyword.
     y: `Quantity` object.
-        Y-axis coordinate, specified in kilometres. Optional, must
-        be keyword.
+        Y-axis coordinate, optional, must be keyword.
     z: `Quantity` object. Shared by both representations.
-        Z-axis coordinate, specified in kilometres. Optional, must
-        be keyword.
-    d: `Quantity` object.
-        Represents the distance between the observer and the feature.
-        Defaults to 1AU.
+        Z-axis coordinate, optional, must be keyword.
     D0: `Quantity` object.
         Represents the distance between the observer and the Sun center.
-        Defaults to 1RSUN.
+        Defaults to 1AU.
     """
 
     default_representation = CartesianRepresentation
@@ -126,8 +120,8 @@ class HelioCentric(BaseCoordinateFrame):
         'cylindrical': {'names': ('rho', 'psi', 'z'), 'units': (None, u.deg, u.km)}
         }
 
-    d = FrameAttribute(default=(1*u.au).to(u.km))
-    D0 = FrameAttribute(default=((RSUN_METERS/1000)*u.km))
+   # d = FrameAttribute(default=(1*u.au).to(u.km))
+    D0 = FrameAttribute(default=(1*u.au).to(u.km))
     
 class HelioProjective(BaseCoordinateFrame):
     """
@@ -149,8 +143,14 @@ class HelioProjective(BaseCoordinateFrame):
     Ty: `Angle` object.
         Y-axis coordinate, specified in degrees.
     zeta: Z-axis coordinate.
-        Defined as D0 - d when transforming from Heliocentric
-        coordinates.
+        Represents the radial distance between the solar center
+        and the observer.
+    d: `Quantity` object.
+        Represents the distance between observer and feature/point.
+        Defaults to 1AU.
+    D0: `Quantity` object.
+        Represents the distance between observer and solar center.
+        Defaults to 1AU.
     """
 
     default_representation = CartesianRepresentation
@@ -160,6 +160,9 @@ class HelioProjective(BaseCoordinateFrame):
         'cylindrical': {'names': ('Trho', 'psi', 'z'), 'units': (u.deg, u.deg, u.km)}
         }
 
+    d = FrameAttribute(default=(1*u.au).to(u.km))
+    D0 = FrameAttribute(default=(1*u.au).to(u.km))
+    
     # Note that Trho = Drho + 90, and Drho is the declination parameter.
     # According to Thompson, we use Trho internally and Drho as part of
     # the (Drho, psi) pair when defining a coordinate in this system.
@@ -182,11 +185,15 @@ def hcg_to_hcs(hcgcoord, hcsframe):
 
 @frame_transform_graph.transform(FunctionTransform, HelioCentric, HelioProjective)
 def helioc_to_heliop(helioccoord, heliopframe):
-    # Calculate z, assuming it is on the Sun's surface.
     x = helioccoord.cartesian.x.value * 1000
     y = helioccoord.cartesian.y.value * 1000
     z = helioccoord.cartesian.z.value * 1000
-    zeta = helioccoord.d * 1000 - z
+
+    # d is calculated as the distance between the points
+    # (x,y,z) and (0,0,D0).
+    d = np.sqrt(x**2 + y**2 + (z - (helioccoord.D0 * 1000))**2)
+    # zeta is then calculated as given in Thompson.
+    zeta = d - z
 
     distance = np.sqrt(x ** 2 + y ** 2 + zeta ** 2)
     hpcx = np.rad2deg(np.arctan2(x, zeta))
@@ -207,12 +214,12 @@ def heliop_to_helioc(heliopcoord, heliocframe):
     siny = np.sin(y * c[1])
     
     q = heliocframe.d * 1000 * cosy * cosx
-    distance = q ** 2 - (heliocframe.d * 1000) ** 2 + (heliocframe.D0 * 1000) ** 2
+    distance = q ** 2 - (heliopcoord.d * 1000) ** 2 + (heliopcoord.D0 * 1000) ** 2
     distance = q - np.sqrt(distance)
 
     rx = distance * cosy * sinx
     ry = distance * siny
-    rz = (heliocframe.d * 1000) - distance * cosy * cosx
+    rz = (heliopcoord.d * 1000) - distance * cosy * cosx
 
     representation = CartesianRepresentation(rx, ry, rz)
     return HelioCentric(representation)
