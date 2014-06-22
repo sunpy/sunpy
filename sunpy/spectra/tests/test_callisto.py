@@ -13,6 +13,8 @@ import pytest
 import numpy as np
 from numpy.testing import assert_array_almost_equal
 
+from astropy import units as u
+
 import sunpy.data.test
 from sunpy.data.sample import CALLISTO_IMAGE
 from sunpy.spectra.sources.callisto import (
@@ -28,7 +30,7 @@ def test_read():
         (datetime(2011, 9, 22, 10, 30) - datetime(2011, 9, 22)).seconds
     )
     assert ca.shape == (200, 3600)
-    assert ca.t_delt == 0.25
+    assert ca.t_delt == 0.25 * u.second
     # Test linearity of time axis.
     assert np.array_equal(
         ca.time_axis, np.linspace(0, 0.25 * (ca.shape[1] - 1), ca.shape[1])
@@ -192,12 +194,12 @@ def test_homogenize_factor():
     
     c1 = CallistoSpectrogram(
         a,
-        np.arange(3600),
-        np.array([1]),
+        np.arange(3600) * u.second,
+        np.array([1]) * u.MHz,
         datetime(2011, 1, 1),
         datetime(2011, 1, 1, 1),
         0,
-        1,
+        1 * u.second,
         'Time',
         'Frequency',
         'Test',
@@ -209,12 +211,12 @@ def test_homogenize_factor():
     b = 2 * a
     c2 = CallistoSpectrogram(
         b,
-        np.arange(3600),
-        np.array([1]),
+        np.arange(3600) * u.second,
+        np.array([1]) * u.MHz,
         datetime(2011, 1, 1),
         datetime(2011, 1, 1, 1),
         0,
-        1,
+        1 * u.second,
         'Time',
         'Frequency',
         'Test',
@@ -238,12 +240,12 @@ def test_homogenize_constant():
     
     c1 = CallistoSpectrogram(
         a,
-        np.arange(3600),
-        np.array([1]),
+        np.arange(3600) * u.second,
+        np.array([1]) * u.MHz,
         datetime(2011, 1, 1),
         datetime(2011, 1, 1, 1),
         0,
-        1,
+        1 * u.second,
         'Time',
         'Frequency',
         'Test',
@@ -255,12 +257,12 @@ def test_homogenize_constant():
     b = a + 10
     c2 = CallistoSpectrogram(
         b,
-        np.arange(3600),
-        np.array([1]),
+        np.arange(3600) * u.second,
+        np.array([1]) * u.MHz,
         datetime(2011, 1, 1),
         datetime(2011, 1, 1, 1),
         0,
-        1,
+        1 * u.second,
         'Time',
         'Frequency',
         'Test',
@@ -284,12 +286,12 @@ def test_homogenize_both():
     
     c1 = CallistoSpectrogram(
         a,
-        np.arange(3600),
-        np.array([1]),
+        np.arange(3600) * u.second,
+        np.array([1]) * u.MHz,
         datetime(2011, 1, 1),
         datetime(2011, 1, 1, 1),
         0,
-        1,
+        1 * u.second,
         'Time',
         'Frequency',
         'Test',
@@ -301,12 +303,12 @@ def test_homogenize_both():
     b = 2 * a + 1
     c2 = CallistoSpectrogram(
         b,
-        np.arange(3600),
-        np.array([1]),
+        np.arange(3600) * u.second,
+        np.array([1]) * u.MHz,
         datetime(2011, 1, 1),
         datetime(2011, 1, 1, 1),
         0,
-        1,
+        1 * u.second,
         'Time',
         'Frequency',
         'Test',
@@ -330,12 +332,12 @@ def test_homogenize_rightfq():
         
     c1 = CallistoSpectrogram(
         a,
-        np.arange(3600),
-        np.array([1]),
+        np.arange(3600) * u.second,
+        np.array([1]) * u.MHz,
         datetime(2011, 1, 1),
         datetime(2011, 1, 1, 1),
         0,
-        1,
+        1 * u.second,
         'Time',
         'Frequency',
         'Test',
@@ -350,12 +352,12 @@ def test_homogenize_rightfq():
             np.arange(3600)[np.newaxis, :], b,
             np.arange(3600)[np.newaxis, :]
             ], 0),
-        np.arange(3600),
-        np.array([0, 1, 2]),
+        np.arange(3600) * u.second,
+        np.array([0, 1, 2]) * u.MHz,
         datetime(2011, 1, 1),
         datetime(2011, 1, 1, 1),
         0,
-        1,
+        1 * u.second,
         'Time',
         'Frequency',
         'Test',
@@ -378,3 +380,4 @@ def test_extend():
     im2 = im.extend()
     # Not too stable test, but works.
     assert im2.data.shape == (200, 7196)
+

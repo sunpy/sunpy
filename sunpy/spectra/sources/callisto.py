@@ -9,6 +9,7 @@ import urllib2
 import numpy as np
 
 from astropy.io import fits
+from astropy import units as u
 
 from collections import defaultdict
 
@@ -261,7 +262,7 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         instruments = set([header["INSTRUME"]])
     
         return cls(
-            data, time_axis, freq_axis, start, end, t_init, t_delt,
+            data, time_axis * u.second, freq_axis * u.MHz, start, end, t_init, t_delt * u.second,
             t_label, f_label, content, instruments, 
             header, axes.header, swapped
         )
@@ -500,3 +501,4 @@ if __name__ == "__main__":
     opn.subtract_bg().clip(0).plot(ratio=2).show()
     print "Press return to exit"
     raw_input()
+
