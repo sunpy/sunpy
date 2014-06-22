@@ -642,20 +642,44 @@ Dimension:\t [%d, %d]
         # image_center should be given in data coordinates but needs to be converted to pixel values for the transformation
         x = self.data_to_pixel(image_center[0], 'x')
         y = self.data_to_pixel(image_center[1], 'y')
-        image_center = (x, y)
+        rotation_center = (x, y)
+
+        # map_center is swapped compared to the x-y convention
+        map_center = (np.array(self.data.shape)-1)/2.0
+
+        #Return a new map
+        #Copy Header
+        new_map = deepcopy(self)
 
         # Because map data has the origin at the bottom left not the top left
         # as is convention for images vertically flip the image for the
         # transform and then flip it back again.
         new_map.data = np.flipud(affine_transform(np.flipud(new_map.data),
-                                                  np.array(rmatrix),
+                                                  np.asarray(rmatrix),
                                                   order=order, scale=scale,
-                                                  image_center=image_center,
+                                                  image_center=rotation_center,
                                                   recenter=recenter, missing=missing,
                                                   use_scipy=use_scipy))
 
-        map_center = (np.array(self.shape)/2.0) + 0.5
 
+        # Calculate new reference pixel and coordinate at the center of the
+        # image.
+        if recenter:
+            new_center = image_center
+        else:
+            # Retrieve old coordinates for the center of the array
+            old_center = np.asarray(self.pixel_to_data(map_center[1], map_center[0]))
+
+            # Calculate new coordinates for the center of the array
+            new_center = image_center - np.dot(rmatrix, image_center - old_center)
+            new_center = np.asarray(new_center)[0]
+
+        # Define a new reference pixel in the rotated space
+        new_map.meta['crval1'] = new_center[0]
+        new_map.meta['crval2'] = new_center[1]
+        new_map.meta['crpix1'] = map_center[1] + 1 # FITS counts pixels from 1
+        new_map.meta['crpix2'] = map_center[0] + 1 # FITS counts pixels from 1
+        
         # Calculate the new rotation matrix to store in the header by
         # "subtracting" the rotation matrix used in the rotate from the old one
         # That being calculate the dot product of the old header data with the
@@ -665,18 +689,11 @@ Dimension:\t [%d, %d]
         new_map.meta['PC1_2'] = pc_C[0,1]
         new_map.meta['PC2_1'] = pc_C[1,0]
         new_map.meta['PC2_2'] = pc_C[1,1]
+
         # Update pixel size if image has been scaled.
         if scale != 1.0:
             new_map.meta['cdelt1'] = self.scale['x'] / scale
             new_map.meta['cdelt2'] = self.scale['y'] / scale
-
-        if recenter:
-            # Move the reference pixel based on the image shift.
-            # The y coordinate is inverted due to the map having the origin in
-            # the lower left rather than the upper left.
-            shift = image_center - map_center
-            new_map.meta['crpix1'] += shift[0]
-            new_map.meta['crpix2'] -= shift[1]
 
         # Remove old CROTA kwargs because we have saved a new PCi_j matrix.
         new_map.meta.pop('CROTA1', None)
