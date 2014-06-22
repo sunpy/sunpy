@@ -140,17 +140,16 @@ class GenericMap(astropy.nddata.NDData):
         if not self.observatory:
             return self.data.__repr__()
         return ("""
-                   SunPy %s
-                   ---------
-                   Observatory:\t %s
-                   Instrument:\t %s
-                   Detector:\t %s
-                   Measurement:\t %s
-                   Obs Date:\t %s
-                   dt:\t\t %f
-                   Dimension:\t [%d, %d]
-                   [dx, dy] =\t [%f, %f]
-
+SunPy %s
+---------
+Observatory:\t %s
+Instrument:\t %s
+Detector:\t %s
+Measurement:\t %s
+Obs Date:\t %s
+dt:\t\t %f
+Dimension:\t [%d, %d]
+[dx, dy] =\t [%f, %f]
                 """ % (self.__class__.__name__,
                        self.observatory,
                        self.instrument,
@@ -414,7 +413,6 @@ class GenericMap(astropy.nddata.NDData):
         return np.matrix([[np.cos(p), -1 * lam * np.sin(p)],
                           [1/lam * np.sin(p), np.cos(p)]])
 
-
 # #### Miscellaneous #### #
 
     def _fix_date(self):
@@ -585,6 +583,7 @@ class GenericMap(astropy.nddata.NDData):
         new_map.meta = new_meta
         return new_map
 
+
     def rotate(self, angle=None, rmatrix=None, order=3, scale=1.0,
                image_center=None, recenter=False, missing=0.0,
                use_scipy=False):
@@ -712,7 +711,6 @@ class GenericMap(astropy.nddata.NDData):
         new_map.meta.pop('CD1_2', None)
         new_map.meta.pop('CD2_1', None)
         new_map.meta.pop('CD2_2', None)
-
         return new_map
 
 

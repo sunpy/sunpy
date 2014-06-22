@@ -24,7 +24,6 @@ testpath = sunpy.data.test.rootdir
 def aia_map():
     return sunpy.map.Map(os.path.join(testpath, 'aia_171_level1.fits'))
 
-
 @pytest.fixture
 def generic_map():
     data = np.ones([6,6], dtype=np.float64)
@@ -53,7 +52,7 @@ def test_fits_data_comparison(aia_map_large):
     fit = fits.open(sunpy.AIA_171_IMAGE)[0].data
     np.testing.assert_allclose(aia_map_large.data, fit)
 
-    
+
 def test_get_item(generic_map):
     with pytest.raises(NotImplementedError):
         generic_map[10,10]
@@ -74,7 +73,7 @@ def test_dtype(generic_map):
 def test_size(generic_map):
     assert generic_map.size == 36
 
-    
+
 def test_min(generic_map):
     assert generic_map.min() == 1
 
@@ -82,7 +81,7 @@ def test_min(generic_map):
 def test_max(generic_map):
     assert generic_map.max() == 1
 
-    
+
 def test_mean(generic_map):
     assert generic_map.mean() == 1
 
@@ -93,7 +92,7 @@ def test_std(generic_map):
 
 #==============================================================================
 # Test the default value of a load of properties
-# TODO: Test the header keyword extraction    
+# TODO: Test the header keyword extraction
 #==============================================================================
 def test_name(generic_map):
     assert generic_map.name == ' '
@@ -113,11 +112,11 @@ def test_nickname_set(generic_map):
     assert generic_map.nickname == ''
     generic_map.nickname = 'hi'
     assert generic_map.nickname == 'hi'
-    
+
 
 def test_date(generic_map):
     assert generic_map.date is 'now'
-    
+
 
 def test_date_aia(aia_map):
     assert aia_map.date == '2011-02-15T00:00:00.34'
@@ -125,7 +124,7 @@ def test_date_aia(aia_map):
 
 def test_detector(generic_map):
     assert generic_map.detector == ''
-    
+
 
 def test_dsun(generic_map):
     assert generic_map.dsun == (sunpy.sun.sunearth_distance(generic_map.date) *
@@ -134,30 +133,30 @@ def test_dsun(generic_map):
 
 def test_rsun_meters(generic_map):
     assert generic_map.rsun_meters == sunpy.sun.constants.radius
-    
+
 
 def test_rsun_arcseconds(generic_map):
     assert generic_map.rsun_arcseconds == sunpy.sun.solar_semidiameter_angular_size(generic_map.date).value
 
 
-def test_coordinate_system(generic_map): 
-    assert generic_map.coordinate_system == {'x':'HPLN-TAN', 'y': 'HPLT-TAN'} 
+def test_coordinate_system(generic_map):
+    assert generic_map.coordinate_system == {'x':'HPLN-TAN', 'y': 'HPLT-TAN'}
 
 
-def test_carrington_longitude(generic_map): 
+def test_carrington_longitude(generic_map):
     assert generic_map.carrington_longitude == (sunpy.sun.heliographic_solar_center(generic_map.date))[0]
 
 
-def test_heliographic_latitude(generic_map): 
+def test_heliographic_latitude(generic_map):
     assert generic_map.heliographic_latitude == (sunpy.sun.heliographic_solar_center(generic_map.date))[1]
 
 
-def test_heliographic_longitude(generic_map): 
+def test_heliographic_longitude(generic_map):
     assert generic_map.heliographic_longitude == 0.
 
 
-def test_units(generic_map): 
-    generic_map.units == {'x': 'arcsec', 'y': 'arcsec'} 
+def test_units(generic_map):
+    generic_map.units == {'x': 'arcsec', 'y': 'arcsec'}
 
 
 #==============================================================================

@@ -3,7 +3,7 @@ from __future__ import absolute_import
 #pylint: disable=W0401,W0614,W0201,W0212,W0404
 
 import numpy as np
-import matplotlib.animation
+import matplotlib.animation as animation
 import matplotlib.pyplot as plt
 
 from sunpy.map import GenericMap
@@ -44,7 +44,7 @@ class MapCube(object):
 
     Mapcubes can be co-aligned using the routines in sunpy.image.coalignment.
     """
-    #pylint: disable=W0613,E1101
+    # pylint: disable=W0613,E1101
     def __init__(self, *args, **kwargs):
         """Creates a new Map instance"""
 
@@ -72,6 +72,39 @@ class MapCube(object):
     def __getitem__(self, key):
         """Overiding indexing operation"""
         return self.maps[key]
+
+    def coalign(self, method="diff"):
+        """ Fine coalign the data"""
+        if method == 'diff':
+            return self._coalign_diff(self)
+
+    # Coalignment methods
+    def _coalign_diff(self):
+        """Difference-based coalignment
+
+        Coaligns data by minimizing the difference between subsequent images
+        before and after shifting the images one to several pixels in each
+        direction.
+
+        pseudo-code:
+
+        for i len(self):
+            min_diff = {'value': (), 'offset': (0, 0)} # () is pos infinity
+
+            # try shifting 1 pixel in each direction
+            for x in (-1, 0, 1):
+                for y in (-1, 0, 1):
+                    # calculate differenand hasattr(self,
+                                                    '_coalign_%s' % coalign):
+            getattr(self, '_coalign_%s' % coalign)()ce for intersecting pixels
+                    # if < min_diff['value'], store new value/offset
+
+            # shift image
+            if min_diff['offset'] != (0, 0):
+                # shift and clip image
+
+        """
+        raise NotImplementedError("Sorry this is not yet supported")
 
     # Sorting methods
     @classmethod
@@ -155,18 +188,18 @@ class MapCube(object):
             axes.set_xlabel(xlabel)
             axes.set_ylabel(ylabel)
 
-        if gamma is not None:
-            self[0].cmap.set_gamma(gamma)
+            if gamma is not None:
+                self[0].cmap.set_gamma(gamma)
 
-        if resample:
-            #This assumes that the maps a homogenous!
-            #TODO: Update this!
-            resample = np.array(len(self.maps)-1) * np.array(resample)
-            ani_data = [x.resample(resample) for x in self]
-        else:
-            ani_data = self
+            if resample:
+                # This assumes that the maps a homogenous!
+                # TODO: Update this!
+                resample = np.array(len(self.maps)-1) * np.array(resample)
+                ani_data = [x.resample(resample) for x in self]
+            else:
+                ani_data = self
 
-        im = ani_data[0].plot(**kwargs)
+            im = ani_data[0].plot(**kwargs)
 
         def updatefig(i, im, annotate, ani_data):
 
@@ -177,14 +210,13 @@ class MapCube(object):
             if annotate:
                 annotate_frame(i)
 
-        mpl_ani = matplotlib.animation
-        ani = mpl_ani.FuncAnimation(fig, updatefig,
-                                    frames=range(0, len(self.maps)),
-                                    fargs=[im, annotate, ani_data],
-                                    interval=interval,
-                                    blit=False)
+            ani = animation.FuncAnimation(fig, updatefig,
+                                          frames=range(0, len(self.maps)),
+                                          fargs=[im, annotate, ani_data],
+                                          interval=interval,
+                                          blit=False)
 
-        return ani
+            return ani
 
     def peek(self, gamma=None, resample=None, **kwargs):
         """
@@ -245,8 +277,8 @@ class MapCube(object):
             self[0].cmap.set_gamma(gamma)
 
         if resample:
-            #This assumes that the maps a homogenous!
-            #TODO: Update this!
+            # This assumes that the maps a homogenous!
+            # TODO: Update this!
             resample = np.array(len(self.maps)-1) * np.array(resample)
             for amap in self.maps:
                 amap.resample(resample)
