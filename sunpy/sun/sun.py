@@ -222,7 +222,7 @@ def solar_north(t=None):
     omega = apparent_longitude(t)
     lamda2 = lamda - (0.00479 * np.sin(omega)) * u.deg
     diff = lamda - k
-    x = np.arctan(-np.cos(lamda2) * np.tan(ob1))
+    x = np.arctan(-np.cos((lamda2) * np.tan(ob1)))
     y = np.arctan(-np.cos(diff) * np.tan(i))
     result = x + y
     return Angle(result.to(u.deg))
