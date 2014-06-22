@@ -249,7 +249,7 @@ class MapCube(object):
             self[0].cmap.set_gamma(gamma)
 
         if resample:
-            if self._maps_have_same_number_of_x_and_y_pixels:
+            if self.all_maps_same_shape:
                 resample = np.array(len(self.maps)-1) * np.array(resample)
                 for amap in self.maps:
                     amap.resample(resample)
@@ -258,27 +258,26 @@ class MapCube(object):
 
         return MapCubeAnimator(self, **kwargs)
 
-    def _maps_have_same_number_of_x_and_y_pixels(self):
+    def all_maps_same_shape(self):
         """
         Tests if all the maps have the same number pixels in the x and y
         directions.
         """
         return np.all([m.data.shape == self.maps[0].data.shape for m in self.maps])
 
-    def data(self):
+    def as_array(self):
         """
-        Returns a three dimensional numpy array of the data in the mapcube.
-        The output array has shape (ny, nx, nt).  If the maps in the map cube
-        do not all have the same shape, an error is thrown and a numpy array is
-        not returned.
+        If all the map shapes are the same, then the data is returned as a
+        single ndarray. The ndarray is ordered as (ny, nx, nt).  Otherwise, an
+        error is thrown.
         """
-        if self._maps_have_same_number_of_x_and_y_pixels:
+        if self.all_maps_same_shape:
             return np.swapaxes(np.swapaxes(np.asarray([m.data for m in self.maps]), 0, 1), 1, 2)
         else:
-            raise ValueError('Maps in mapcube do not all have the same shape.')
+            raise ValueError('Not all maps have the same shape.')
 
-    def meta(self):
+    def all_meta(self):
         """
-        Returns a list of the meta objects for each map in the mapcube.
+        Return all the meta objects as a list.
         """
         return [m.meta for m in self.maps]
