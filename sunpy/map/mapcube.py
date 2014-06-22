@@ -267,7 +267,7 @@ class MapCube(object):
 
     def as_array(self):
         """
-        If all the map shapes are the same, then their image data is compiled
+        If all the map shapes are the same, their image data is compiled
         into a single single ndarray. The ndarray is ordered as (ny, nx, nt).
         Otherwise, an error is thrown.
         """
