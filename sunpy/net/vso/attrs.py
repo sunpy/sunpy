@@ -19,11 +19,12 @@ from __future__ import absolute_import
 
 from datetime import datetime
 
+from astropy import units as u
+
 from sunpy.time import TimeRange
 from sunpy.net.attr import (
     Attr, ValueAttr, AttrWalker, AttrAnd, AttrOr, DummyAttr, ValueAttr
 )
-from sunpy.util import to_angstrom
 from sunpy.util.multimethod import MultiMethod
 from sunpy.time import parse_time
 
@@ -55,9 +56,14 @@ class _Range(object):
 
 
 class Wave(Attr, _Range):
-    def __init__(self, wavemin, wavemax, waveunit='Angstrom'):
+    def __init__(self, wavemin, wavemax):
+        if not isinstance(wavemin, u.Quantity):
+            raise ValueError("Must be astropy Quantity")
+        if not isinstance(wavemax, u.Quantity):
+            raise ValueError("Must be astropy Quantity")
         self.min, self.max = sorted(
-            to_angstrom(v, waveunit) for v in [float(wavemin), float(wavemax)]
+            v.to(u.angstrom, equivalencies=u.spectral())
+            for v in [wavemin, wavemax]
         )
         self.unit = 'Angstrom'
 
