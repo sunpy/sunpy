@@ -185,15 +185,15 @@ def hcg_to_hcs(hcgcoord, hcsframe):
 
 @frame_transform_graph.transform(FunctionTransform, HelioCentric, HelioProjective)
 def helioc_to_heliop(helioccoord, heliopframe):
-    x = helioccoord.cartesian.x.value * 1000
-    y = helioccoord.cartesian.y.value * 1000
-    z = helioccoord.cartesian.z.value * 1000
+    x = helioccoord.cartesian.x.to(u.m).value
+    y = helioccoord.cartesian.y.to(u.m).value
+    z = helioccoord.cartesian.z.to(u.m).value
 
     # d is calculated as the distance between the points
     # (x,y,z) and (0,0,D0).
-    d = np.sqrt(x**2 + y**2 + (z - (helioccoord.D0 * 1000))**2)
+    d = np.sqrt(x**2 + y**2 + (z - (helioccoord.D0.to(u.m).value))**2)
     # zeta is then calculated as given in Thompson.
-    zeta = d - z
+    zeta = helioccoord.D0.to(u.m).value - d
 
     distance = np.sqrt(x ** 2 + y ** 2 + zeta ** 2)
     hpcx = np.rad2deg(np.arctan2(x, zeta))
@@ -214,21 +214,22 @@ def heliop_to_helioc(heliopcoord, heliocframe):
     siny = np.sin(y * c[1])
     
     q = heliocframe.d * 1000 * cosy * cosx
-    distance = q ** 2 - (heliopcoord.d * 1000) ** 2 + (heliopcoord.D0 * 1000) ** 2
+    distance = q ** 2 - (heliopcoord.d.to(u.m).value) ** 2 +
+    (heliopcoord.D0.to(u.m).value) ** 2
     distance = q - np.sqrt(distance)
 
     rx = distance * cosy * sinx
     ry = distance * siny
-    rz = (heliopcoord.d * 1000) - distance * cosy * cosx
+    rz = (heliopcoord.d.to(u.m).value) - distance * cosy * cosx
 
     representation = CartesianRepresentation(rx, ry, rz)
     return HelioCentric(representation)
 
 @frame_transform_graph.transform(FunctionTransform, HelioCentric, HelioGraphicStonyhurst)
 def hcc_to_hgs(helioccoord, heliogframe):
-    x = helioccoord.cartesian.x.value * 1000
-    y = helioccoord.cartesian.y.value * 1000
-    z = helioccoord.cartesian.z.value * 1000
+    x = helioccoord.cartesian.x.to(u.m).value
+    y = helioccoord.cartesian.y.to(u.m).value
+    z = helioccoord.cartesian.z.to(u.m).value
     
     l0_deg = _carrington_offset()
     b0_deg = s.heliographic_solar_center()[1]
@@ -249,7 +250,7 @@ def hcc_to_hgs(helioccoord, heliogframe):
 def hgs_to_hcc(heliogcoord, heliopframe):
     hglon = heliogcoord.spherical.lon.value
     hglat = heliogcoord.spherical.lat.value
-    r = heliogcoord.spherical.distance.value * 1000
+    r = heliogcoord.spherical.distance.to(u.m).value
 
     l0_deg = _carrington_offset()
     b0_deg = s.heliographic_solar_center()[1]
