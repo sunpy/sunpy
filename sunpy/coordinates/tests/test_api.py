@@ -11,16 +11,16 @@ from astropy.extern import six
 import pytest
 
 from astropy import units as u
-from astropy.coordinates import SphericalRepresentation, \
-         CylindricalRepresentation, CartesianRepresentation
+from astropy.coordinates import (SphericalRepresentation,
+                                 CylindricalRepresentation, CartesianRepresentation)
 
 def test_frame_api():
-    from ..sunpy_frames import HelioGraphic, HelioCentric, \
-         HelioProjective
+    from ..frames import (HelioGraphicStonyhurst, HelioCentric,
+                                HelioProjective)
     # This method will test the use of the Coordinates API
     # in a way similar to that of Astropy's testing methods.
 
-    hgic = HelioGraphic(SphericalRepresentation(lon=3*u.deg, lat=10*u.deg))
+    hgic = HelioGraphicStonyhurst(SphericalRepresentation(lon=3*u.deg, lat=10*u.deg))
 
     # Check the data attribute.
     assert hgic.data.lon == 3*u.deg
@@ -45,8 +45,8 @@ def test_frame_api():
     # This is the on-sky separation.
     # The radius attribute, if not specified, is defaulted
     # to the solar radius.
-    coord1 = HelioGraphic(lon=0*u.deg, lat=0*u.deg)
-    coord2 = HelioGraphic(lon=0*u.deg, lat=1*u.deg)
+    coord1 = HelioGraphicStonyhurst(lon=0*u.deg, lat=0*u.deg)
+    coord2 = HelioGraphicStonyhurst(lon=0*u.deg, lat=1*u.deg)
     assert coord1.separation(coord2).degree == 1.0
 
     # Now try the same with the 3D separation.
@@ -56,7 +56,7 @@ def test_frame_api():
 
 def test_highlevel_api():
     from astropy.coordinates import SkyCoord
-    from ..sunpy_frames import HelioGraphic, HelioCentric
+    from ..frames import HelioGraphicStonyhurstStonyhurst, HelioCentric
     
     # This method tests the high-level API as is done in Astropy.
     # SkyCoord should be SunPy-ready by the time the coordinates
@@ -71,7 +71,7 @@ def test_highlevel_api():
     sc = SkyCoord(x=10*u.km, y=10*u.km, z=10*u.km, frame="heliocentric")
 
     # One can initialize using low-level objects.
-    sc = SkyCoord(HelioGraphic(lon=8*u.deg, lat=10*u.deg))
+    sc = SkyCoord(HelioGraphicStonyhurst(lon=8*u.deg, lat=10*u.deg))
 
     # An error is induced as a high-level object needs position data.
     # Frames can be initialized without this data, SkyCoord cannot.
@@ -80,16 +80,16 @@ def test_highlevel_api():
 
     # The underlying frame object of the high-level object, when
     # accessed in a call to `repr`, is printed in the following
-    # way - '<HelioGraphic Coordinate: lon=10*u.deg, lat=10*u.deg>'
+    # way - '<HelioGraphicStonyhurst Coordinate: lon=10*u.deg, lat=10*u.deg>'
     string_f = repr(sc.frame)
-    assert '<HelioGraphic Coordinate: lon=' in string
+    assert '<HelioGraphicStonyhurst Coordinate: lon=' in string
     assert 'deg, lat=' in string
     assert 'deg>' in string
 
     # Similarly, `repr(sc)` should look like -:
-    # '<SkyCoord (HelioGraphic): lon=10*u.deg, lat=10*u.deg>'
+    # '<SkyCoord (HelioGraphicStonyhurst): lon=10*u.deg, lat=10*u.deg>'
     string = repr(sc)
-    assert '<SkyCoord (HelioGraphic): lon=' in string
+    assert '<SkyCoord (HelioGraphicStonyhurst): lon=' in string
     assert 'deg, lat=' in string
     assert 'deg>' in string
 
@@ -104,7 +104,4 @@ def test_highlevel_api():
     sc = SkyCoord(lon=8*u.deg, lat=10*u.deg, frame="heliographic")
     sc_helioprojective = sc.helioprojective
     assert repr(sc_helioprojective).startswith('<SkyCoord (HelioProjective):')
-    
-
-    
     
