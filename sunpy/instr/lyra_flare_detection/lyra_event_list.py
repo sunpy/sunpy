@@ -95,6 +95,7 @@ def find_lyra_events(flux, time):
     # object LYRA artifacts from timeseries
     time, flux = remove_lyra_artifacts(
         time, [flux], artifacts=["UV occ.", "Offpoint", "LAR", "Calibration"])
+    flux = flux[0]
     # Get derivative of flux wrt time
     time_timedelta = time[1:-1]-time[0:-2]
     dt = np.zeros(len(time_timedelta), dtype="float64")
