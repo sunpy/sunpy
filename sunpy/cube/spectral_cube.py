@@ -5,15 +5,16 @@ import spectral_cube as sc
 import numpy as np
 import matplotlib.pyplot as plt
 from astropy.io import fits
+import astropy.nddata
 
 
-class SpectralCube(object):
+class SpectralCube(astropy.nddata.NDData):
     ''' Class representing spectral cubes.
 
         Attributes
         ----------
-        data_cubes: str to spectral_cube dictionary
-            The mapping of wavelengths to their data
+        cube: spectral_cube
+            the spectral cube holding data and coordinates
 
         data_header: astropy.io.fits.Header
             Header containing the wavelength-specific metadata
@@ -22,12 +23,12 @@ class SpectralCube(object):
             Main header containing metadata pertaining to the whole file
     '''
 
-    def __init__(self, data_cubes, data_header=None, primary_header=None):
-        self.data_cubes = data_cubes
+    def __init__(self, cube, data_header=None, primary_header=None):
+        self.cube = cube
         self.data_header = data_header
         self.primary_header = primary_header
 
-    def plot_wavelength_slice(self, primary_wavelength, offset, axes=None,
+    def plot_wavelength_slice(self, offset, axes=None,
                               style='imshow', **kwargs):
         '''
         Plots an x-y graph at a certain specified wavelength onto the current
@@ -35,12 +36,6 @@ class SpectralCube(object):
 
         Parameters
         ----------
-        primary_wavelength: str or int
-            The available cube to plot from. If it is an int then it'll plot
-            the nth cube in the dictionary. If it's a string then it will plot
-            the given wavelength. It will default to the first cube if no match
-            is found.
-
         offset: int or float
             The offset from the primary wavelength to plot. If it's an int it
             will plot the nth wavelength from the primary; if it's a float then
@@ -56,13 +51,9 @@ class SpectralCube(object):
         if axes is None:
             axes = plt.gca()
 
-        cube = self._choose_cube(primary_wavelength)
-        if cube is None:
-            cube = self.data_cubes.values()[0]
-
-        data = SpectralCube._choose_wavelength_slice(cube, offset)
+        data = SpectralCube._choose_wavelength_slice(offset)
         if data is None:
-            data = cube.unmasked_data[0, :, :]
+            data = self.cube.unmasked_data[0, :, :]
 
         if style is 'imshow':
             plot = axes.imshow(data, **kwargs)
@@ -89,29 +80,26 @@ class SpectralCube(object):
 
         return None
 
-    @classmethod
-    def _choose_wavelength_slice(cls, cube, offset):
+    def _choose_wavelength_slice(self, offset):
         '''Retrieves an x-y slice at a wavelength specified by the cube's
         primary wavelength plus the given offset.
 
         Parameters
         ----------
-        cube: spectral_cube.SpectralCube
-            The cube to take the data from
         offset: int or float
             Offset from the cube's primary wavelength. If the value is an int,
             then it returns that slice. Otherwise, it will return the nearest
             wavelength to the one specified.
         '''
         if (isinstance(offset, int) and offset >= 0 and
-            offset < len(cube.spectral_axis)):
-            return cube.unmasked_data[offset, :, :]
+            offset < len(self.cube.spectral_axis)):
+            return self.cube.unmasked_data[offset, :, :]
 
         if isinstance(offset, float):
-            delta = cube.spectral_axis[1] - cube.spectral_axis[0]
+            delta = self.cube.spectral_axis[1] - self.cube.spectral_axis[0]
             wloffset = offset / delta
             wloffset = int(wloffset)
-            if wloffset >= 0 and wloffset < len(cube.spectral_axis):
-                return cube.unmasked_data[wloffset, :, :]
+            if wloffset >= 0 and wloffset < len(self.cube.spectral_axis):
+                return self.cube.unmasked_data[wloffset, :, :]
 
             return None
