@@ -7,8 +7,7 @@ import spectral_cube as sc
 import numpy as np
 from astropy.io import fits
 from astropy import wcs
-#from pylab import *
-
+from sunpy.cube import SpectralCube
 
 __all__ = ['EISSpectralCube']
 
@@ -27,16 +26,20 @@ def _clean(header):
     header['naxis'] = 3
     return header
 
+
 class EISSpectralCube(SpectralCube):
     # TODO: write docstring
     def __init__(self, cubes, wavelengths, dataHeader, primaryHeader):
-        # TODO: write this (obviously!)
-    
+        dic = dict(zip(wavelengths, cubes))
+        super(SpectralCube, self).__init__(data_cubes=dic,
+                                           data_header=dataHeader,
+                                           primary_header=primaryHeader)
+
     @classmethod
     def read(cls, filename, **kwargs):
         """ Reads in a given FITS file and returns a new EISSpectralCube.
         Additional parameters are given to fits.open.
-        
+
         Parameters
         ----------
         filename : string
@@ -51,5 +54,3 @@ class EISSpectralCube(SpectralCube):
         return EISSpectralCube(cubes=cubes, wavelengths=wavelengths,
                                dataHeader=hdulist[1].header,
                                primaryHeader=header)
-
-        
