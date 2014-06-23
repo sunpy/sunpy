@@ -420,8 +420,6 @@ def extract_combined_lytaf(tstart, tend,
         # Close file
         cursor.close()
         connection.close()
-    # Delete initial empty entry in lytaf
-    np.delete(lytaf, 0)
     # Sort lytaf in ascending order of begin time
     np.recarray.sort(lytaf, order="begin_time")    
 
