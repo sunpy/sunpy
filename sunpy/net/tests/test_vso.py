@@ -8,6 +8,10 @@ from __future__ import absolute_import
 import datetime
 import pytest
 
+from numpy.testing import assert_array_almost_equal
+
+from astropy import units as u
+
 from sunpy.time import TimeRange
 from sunpy.net import vso
 from sunpy.net.vso import attrs as va
@@ -111,34 +115,29 @@ def test_attror_and():
 
 
 def test_wave_toangstrom():
-    frequency = [
-        ('Hz', 1),
-        ('kHz', 1e3),
-        ('MHz', 1e6),
-        ('GHz', 1e9)]
+    frequency = [1 * u.Hz, 1e3 * u.kHz, 1e6 * u.MHz, 1e9 * u.GHz]
 
-    energy = [
-        ('eV', 1),
-        ('keV', 1e3),
-        ('MeV', 1e6)]
+    energy = [1 * u.eV, 1e3 * u.keV, 1e6 * u.MeV]
 
-    for name, factor in energy:
-        w = va.Wave(62 / factor, 62 / factor, name)
-        assert int(w.min) == 199
+    for factor in energy:
+        w = va.Wave(62 * factor.unit**2 / factor, 62* factor.unit**2 / factor)
+        assert_array_almost_equal(w.min, 199 * u.Angstrom, decimal = 0)
+    
+    w = va.Wave(62 * u.eV, 62 * u.eV)
+    assert_array_almost_equal(w.min, 199* u.angstrom, decimal = 0)
+    
+    w = va.Wave(62e-3 * u.keV, 62e-3 * u.keV)
+    assert_array_almost_equal(w.min, 199* u.angstrom, decimal = 0)
 
-    w = va.Wave(62, 62, 'eV')
-    assert int(w.min) == 199
-    w = va.Wave(62e-3, 62e-3, 'keV')
-    assert int(w.min) == 199
+    for factor in frequency:
+        w = va.Wave(1.506e16 * factor.unit**2 / factor, 
+                    1.506e16 * factor.unit**2 / factor)
+        assert_array_almost_equal(w.min, 199* u.angstrom, decimal = 0)
 
-    for name, factor in frequency:
-        w = va.Wave(1.506e16 / factor, 1.506e16 / factor, name)
-        assert int(w.min) == 199
-
-    w = va.Wave(1.506e16, 1.506e16, 'Hz')
-    assert int(w.min) == 199
-    w = va.Wave(1.506e7, 1.506e7, 'GHz')
-    assert int(w.min) == 199
+    w = va.Wave(1.506e16 * u.Hz, 1.506e16 * u.Hz)
+    assert_array_almost_equal(w.min, 199* u.angstrom, decimal = 0)
+    w = va.Wave(1.506e7 * u.GHz, 1.506e7 * u.GHz)
+    assert_array_almost_equal(w.min, 199 * u.angstrom, decimal = 0)
 
 
 def test_time_xor():
@@ -159,15 +158,18 @@ def test_time_xor():
 
 
 def test_wave_xor():
-    one = va.Wave(0, 1000)
-    a = one ^ va.Wave(200, 400)
+    one = va.Wave(0 * u.angstrom, 1000 * u.angstrom)
+    a = one ^ va.Wave(200 * u.angstrom, 400 * u.angstrom)
 
-    assert a == attr.AttrOr([va.Wave(0, 200), va.Wave(400, 1000)])
-
-    a ^= va.Wave(600, 800)
+    assert a == attr.AttrOr([va.Wave(0 * u.angstrom, 200 * u.angstrom),
+                             va.Wave(400 * u.angstrom, 1000 * u.angstrom)])
+    
+    a ^= va.Wave(600 * u.angstrom, 800 * u.angstrom)
 
     assert a == attr.AttrOr(
-        [va.Wave(0, 200), va.Wave(400, 600), va.Wave(800, 1000)])
+        [va.Wave(0 * u.angstrom, 200 * u.angstrom), 
+         va.Wave(400 * u.angstrom, 600 * u.angstrom), 
+         va.Wave(800 * u.angstrom, 1000 * u.angstrom)])
 
 
 def test_err_dummyattr_create():
@@ -181,7 +183,7 @@ def test_err_dummyattr_apply():
 
 def test_wave_repr():
     """Tests the __repr__ method of class vso.attrs.Wave"""
-    wav = vso.attrs.Wave(12, 16)
-    moarwav = vso.attrs.Wave(15, 12, "Angstrom")
-    assert repr(wav) == "<Wave(12.0, 16.0, 'Angstrom')>"
-    assert repr(moarwav) == "<Wave(12.0, 15.0, 'Angstrom')>"
+    wav = vso.attrs.Wave(12 * u.angstrom, 16 * u.angstrom)
+    moarwav = vso.attrs.Wave(15 * u.angstrom, 12 * u.angstrom)
+    assert repr(wav) == "<Wave(<Quantity 12.0 Angstrom>, <Quantity 16.0 Angstrom>, 'Angstrom')>"
+    assert repr(moarwav) == "<Wave(<Quantity 12.0 Angstrom>, <Quantity 15.0 Angstrom>, 'Angstrom')>"
