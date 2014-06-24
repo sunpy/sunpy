@@ -57,16 +57,13 @@ class _Range(object):
 
 class Wave(Attr, _Range):
     def __init__(self, wavemin, wavemax):
-        if not isinstance(wavemin, u.Quantity):
-            raise ValueError("Must be astropy Quantity")
-        if not isinstance(wavemax, u.Quantity):
+        if not isinstance(wavemin or wavemax, u.Quantity):
             raise ValueError("Must be astropy Quantity")
         self.min, self.max = sorted(
             v.to(u.angstrom, equivalencies=u.spectral())
             for v in [wavemin, wavemax]
         )
-        self.unit = 'Angstrom'
-
+        
         Attr.__init__(self)
         _Range.__init__(self, self.min, self.max, self.__class__)
 
@@ -74,7 +71,7 @@ class Wave(Attr, _Range):
         return isinstance(other, self.__class__)
 
     def __repr__(self):
-        return '<Wave({0!r}, {1!r}, {2!r})>'.format(self.min, self.max, self.unit)
+	return '<Wave({0!r}, {1!r}, {2!r})>'.format(self.min, self.max)
 
 
 class Time(Attr, _Range):

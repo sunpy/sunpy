@@ -6,7 +6,7 @@ from sunpy.database.serialize import QueryEncoder, query_decode
 
 
 def test_vso_wave():
-    attr = vso.attrs.Wave(100, 200)
+    attr = vso.attrs.Wave(100 * u.AA, 200 * u.AA)
     expected = '{"Wave": [100.0, 200.0, "Angstrom"]}'
     assert json.dumps(attr, cls=QueryEncoder) == expected
 

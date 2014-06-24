@@ -255,7 +255,7 @@ def _convert(attr):
 
 @walker.add_converter(vso_attrs.Wave)
 def _convert(attr):
-    return ValueAttr({('wave', ): (attr.min, attr.max, attr.unit)})
+    return ValueAttr({('wave', ): (attr.min, attr.max)})
 
 
 @walker.add_converter(vso_attrs.Time)

@@ -19,7 +19,7 @@ class QueryEncoder(json.JSONEncoder):
                 # sort by dictionary keys to be order-invariant
                 values = sorted(o.attrs, key=attrgetter('__class__.__name__'))
             elif isinstance(o, vso.attrs.Wave):
-                values = o.min, o.max, o.unit
+                values = o.min, o.max,
             elif isinstance(o, vso.attrs.Time):
                 values = o.start, o.end, o.near
             elif isinstance(o, (vso.attrs._VSOSimpleAttr, db_attrs.Starred)):
