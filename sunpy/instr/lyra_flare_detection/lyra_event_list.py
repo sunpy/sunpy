@@ -40,7 +40,7 @@ import sqlite3
 from itertools import chain
 from sunpy.time import parse_time
 
-RISE_FACTOR = 1.4
+RISE_FACTOR = 1.01
 FALL_FACTOR = 0.5
 
 def find_lyra_events(flux, time):
@@ -114,7 +114,6 @@ def find_lyra_events(flux, time):
     # Find all possible flare start times.
     i=0
     while i < len(pos_deriv)-3:
-        print i
         # Start time criteria
         if (pos_deriv[i:i+4]-pos_deriv[i] == np.arange(4)).all() and \
           dt4[i] > 210 and dt4[i] < 270 and \
@@ -152,7 +151,7 @@ def find_lyra_events(flux, time):
             # flares during the decay phase of this flare and beyond.
             # This ensures that flares during the decay phase are also
             # located.
-            i = peak_index
+            i = np.where(pos_deriv > peak_index)[0][0]
         else:
             i = i+1
 
@@ -232,7 +231,7 @@ def remove_lyra_artifacts(time, fluxes=None, artifacts="All",
             indices = np.where(lytaf["event_type"] == artifact_type)[0]
             # If none of a given type of artifact is found, record this
             # type in artifact_not_found list.
-            if (indices == np.empty(0, dtype=indices.dtype)).all() is True:
+            if len(indices) == 0:
                 artifacts_not_found.append(artifact_type)
             else:
                 # Else, record the indices of the artifacts of this type
@@ -242,21 +241,22 @@ def remove_lyra_artifacts(time, fluxes=None, artifacts="All",
     # Remove relevant artifacts from timeseries. If none of the
     # artifacts the user wanted removed were found, raise a warning and
     # continue with code.
-    if (artifact_indices == np.empty(
-        0, dtype=artifact_indices.dtype)).all() is True:
+    if len(artifact_indices) == 0:
         warn("None of user supplied artifacts were found.")
         artifacts_not_found = artifacts
     else:
         # Remove periods corresponding to artifacts from flux and time
         # arrays.
+        bad_indices = np.empty(0, dtype="int64")
+        all_indices = np.arange(len(time))
         for index in artifact_indices:
-            bad_period = np.logical_and(time > lytaf["begin_time"][index],
-                                        time < lytaf["end_time"][index])
-            time = np.delete(time, bad_period)
-            if fluxes is not None:
-                for flux in clean_fluxes:
-                    flux = np.delete(flux, bad_period)
-
+            bad_period = np.logical_and(time >= lytaf["begin_time"][index],
+                                        time <= lytaf["end_time"][index])
+            bad_indices = np.append(bad_indices, all_indices[bad_period])
+        clean_time = np.delete(time, bad_indices)
+        if fluxes is not None:
+            for i, f in enumerate(clean_fluxes):
+                clean_fluxes[i] = np.delete(f, bad_indices)
     # If return_artifacts kwarg is True, return a list containing
     # information on what artifacts found, removed, etc.  See docstring.
     if return_artifacts is True:
@@ -372,8 +372,8 @@ def extract_combined_lytaf(tstart, tend,
     combine_files.sort()
     # Convert input times to UNIX timestamp format since this is the
     # time format in the annotation files
-    tstart_uts = tstart.strftime("%s")
-    tend_uts = tend.strftime("%s")
+    tstart_uts = (tstart - datetime(1970, 1, 1)).total_seconds()
+    tend_uts = (tend - datetime(1970, 1, 1)).total_seconds()
 
     # Define numpy record array which will hold the information from
     # the annotation file.
@@ -410,14 +410,14 @@ def extract_combined_lytaf(tstart, tend,
         # Enter desired information into the lytaf numpy record array
         for event_row in event_rows:
             id_index = eventType_id.index(event_row[4])
-            lytaf = np.append(lytaf,
-                              np.array((datetime.fromtimestamp(event_row[0]),
-                                        datetime.fromtimestamp(event_row[1]),
-                                        datetime.fromtimestamp(event_row[2]),
-                                        datetime.fromtimestamp(event_row[3]),
-                                        eventType_type[id_index],
-                                        eventType_definition[id_index]),
-                                        dtype=lytaf.dtype))
+            lytaf = np.append(
+                lytaf, np.array((datetime.utcfromtimestamp(event_row[0]),
+                                 datetime.utcfromtimestamp(event_row[1]),
+                                 datetime.utcfromtimestamp(event_row[2]),
+                                 datetime.utcfromtimestamp(event_row[3]),
+                                 eventType_type[id_index],
+                                 eventType_definition[id_index]),
+                                 dtype=lytaf.dtype))
         # Close file
         cursor.close()
         connection.close()
