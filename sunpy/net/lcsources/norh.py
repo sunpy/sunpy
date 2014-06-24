@@ -1,3 +1,8 @@
+from sunpy.net.vso.attrs import Time, Instrument
+from sunpy.net.lcsources.client import GenericClient
+import datetime,urlparse
+
+__all__ = ['Time', 'Instrument']
 class NoRHClient(GenericClient):
     
     def _get_url_from_timerange(cls, timerange, **kwargs):
@@ -25,11 +30,20 @@ class NoRHClient(GenericClient):
 
         return final_url
 
-    def makeimap(self,*args,**kwargs):
+    def _makeimap(self):
        '''map_:Dict'''
-       GenericClient.makeargs(self,args,kwargs)
        self.map_['source']= 'NAOJ'
        self.map_['provider'] ='NRO'
        self.map_['instrument'] = 'RadioHelioGraph'
        self.map_['phyobs'] = ''
     
+    @classmethod
+    def _can_handle_query(cls,*query):
+        
+	chkattr =  ['Time','Instrument']
+        chklist =  [x.__class__.__name__ in chkattr for x in query]
+        for x in query:
+	    if x.__class__.__name__ == 'Instrument' and x.value == 'norh':
+                return all(chklist)
+	return False
+ 

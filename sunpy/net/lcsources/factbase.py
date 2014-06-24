@@ -12,7 +12,7 @@ qwalker = AttrWalker()
 def _create(wlk,query,dobj):
     
     qresponseobj,qclient = dobj._get_registered_widget(*query.attrs)
-    return [qresponseobj,qclient]
+    return [(qresponseobj,qclient)]
 
 
 @qwalker.add_creator(AttrOr)

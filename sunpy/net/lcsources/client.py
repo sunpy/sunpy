@@ -77,6 +77,8 @@ class GenericClient(object):
 	           self.map_[elem.__class__.__name__]=elem.value
 	       except Exception:
 	           self.map_[elem.__class__.__name__]=None
+       self._makeimap()
+
     
     def _get_url_for_timerange(cls,timerange,**kwargs):
        
