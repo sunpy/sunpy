@@ -29,16 +29,15 @@ def _clean(header):
 
 class EISSpectralCube(SpectralCube):
     # TODO: write docstring
-    def __init__(self, cubes, wavelengths, dataHeader, primaryHeader):
-        dic = dict(zip(wavelengths, cubes))
-        super(SpectralCube, self).__init__(data_cubes=dic,
+    def __init__(self, cube, dataHeader, primaryHeader):
+        super(SpectralCube, self).__init__(cube=cube,
                                            data_header=dataHeader,
                                            primary_header=primaryHeader)
 
     @classmethod
     def read(cls, filename, **kwargs):
-        """ Reads in a given FITS file and returns a new EISSpectralCube.
-        Additional parameters are given to fits.open.
+        """ Reads in a given FITS file and returns a dictionary of new
+        EISSpectralCubes. Additional parameters are given to fits.open.
 
         Parameters
         ----------
@@ -51,6 +50,5 @@ class EISSpectralCube(SpectralCube):
         wavelengths = [c.name for c in hdulist[1].columns if c.dim is not None]
         data = [hdulist[1].data[wav] for wav in wavelengths]
         cubes = [sc.SpectralCube(data=d, wcs=w) for d in data]
-        return EISSpectralCube(cubes=cubes, wavelengths=wavelengths,
-                               dataHeader=hdulist[1].header,
-                               primaryHeader=header)
+        scubes = [EISSpectralCube(c, hdulist[1], hdulist[0]) for c in cubes]
+        return dict(zip(wavelengths, scubes))
