@@ -1,5 +1,9 @@
+from sunpy.net.vso.attrs import Time,Instrument
 from sunpy.net.lcsources.client import GenericClient
 import datetime,urlparse
+
+__all__ = ['Time','Instrument']
+
 class LYRAClient(GenericClient):
 
         def _get_url_for_timerange(cls, timerange, **kwargs):
@@ -19,12 +23,21 @@ class LYRAClient(GenericClient):
             url_path = urlparse.urljoin(date.strftime('%Y/%m/%d/'), filename)
 	    return urlparse.urljoin(base_url, url_path)
 
-        def _makeimap(self,*args,**kwargs):
+        def _makeimap(self):
 	    '''map_:Dict'''
-            GenericClient.makeargs(self,args,kwargs)
 	    self.map_['source'] = 'Proba2'
 	    self.map_['instrument'] = 'lyra'
 	    self.map_['phyobs'] = 'irradiance'
 	    self.map_['provider'] = 'esa'
-
+        
+        @classmethod
+        def _can_handle_query(cls,*query):
+        
+	    chkattr =  ['Time','Instrument']
+            chklist =  [x.__class__.__name__ in chkattr for x in query]
+            for x in query:
+	        if x.__class__.__name__ == 'Instrument' and x.value == 'lyra':
+                    return all(chklist)
+	    return False
+ 
 
