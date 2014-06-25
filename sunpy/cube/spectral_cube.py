@@ -7,8 +7,10 @@ import matplotlib.pyplot as plt
 from astropy.io import fits
 import astropy.nddata
 
+__all__ = ['SpectralCube']
 
-class SpectralCube(astropy.nddata.NDData):
+
+class SpectralCube(object):
     ''' Class representing spectral cubes.
 
         Attributes
@@ -16,10 +18,10 @@ class SpectralCube(astropy.nddata.NDData):
         cube: spectral_cube
             the spectral cube holding data and coordinates
 
-        data_header: astropy.io.fits.Header
+        data_header: astropy.io.fits.Header object
             Header containing the wavelength-specific metadata
 
-        primary_header: astropy.io.fits.Header
+        primary_header: astropy.io.fits.Header object
             Main header containing metadata pertaining to the whole file
     '''
 
@@ -51,7 +53,7 @@ class SpectralCube(astropy.nddata.NDData):
         if axes is None:
             axes = plt.gca()
 
-        data = SpectralCube._choose_wavelength_slice(offset)
+        data = self._choose_wavelength_slice(offset)
         if data is None:
             data = self.cube.unmasked_data[0, :, :]
 
@@ -91,15 +93,16 @@ class SpectralCube(astropy.nddata.NDData):
             then it returns that slice. Otherwise, it will return the nearest
             wavelength to the one specified.
         '''
+        a = None
         if (isinstance(offset, int) and offset >= 0 and
             offset < len(self.cube.spectral_axis)):
-            return self.cube.unmasked_data[offset, :, :]
+            a = self.cube.unmasked_data[offset, :, :]
 
         if isinstance(offset, float):
             delta = self.cube.spectral_axis[1] - self.cube.spectral_axis[0]
             wloffset = offset / delta
             wloffset = int(wloffset)
             if wloffset >= 0 and wloffset < len(self.cube.spectral_axis):
-                return self.cube.unmasked_data[wloffset, :, :]
+                a = self.cube.unmasked_data[wloffset, :, :]
 
-            return None
+        return np.array(a)

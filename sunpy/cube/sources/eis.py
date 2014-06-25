@@ -29,8 +29,8 @@ def _clean(header):
 
 class EISSpectralCube(SpectralCube):
     # TODO: write docstring
-    def __init__(self, cube, dataHeader, primaryHeader):
-        super(SpectralCube, self).__init__(cube=cube,
+    def __init__(self, cube, dataHeader=None, primaryHeader=None):
+        SpectralCube.__init__(self, cube,
                                            data_header=dataHeader,
                                            primary_header=primaryHeader)
 
@@ -50,5 +50,9 @@ class EISSpectralCube(SpectralCube):
         wavelengths = [c.name for c in hdulist[1].columns if c.dim is not None]
         data = [hdulist[1].data[wav] for wav in wavelengths]
         cubes = [sc.SpectralCube(data=d, wcs=w) for d in data]
-        scubes = [EISSpectralCube(c, hdulist[1], hdulist[0]) for c in cubes]
+        scubes = [EISSpectralCube(c, dataHeader=hdulist[1], primaryHeader=hdulist[0]) for c in cubes]
         return dict(zip(wavelengths, scubes))
+
+    @classmethod
+    def is_datasource_for(cls, data, header, **kwargs):
+        return True
