@@ -201,14 +201,13 @@ def _create(wlk, root, session):
             else:
                 query = query.filter(DatabaseEntry.path == path)
         elif typ == 'wave':
-            min_, max_, unit = value
-            waveunit = Unit(unit)
+            min_, max_ = value
             # convert min_ and max_ to nm from the unit `waveunit`
-            wavemin = waveunit.to(nm, min_, equivalencies.spectral())
-            wavemax = waveunit.to(nm, max_, equivalencies.spectral())
+            wavemin = min_.to(nm, equivalencies.spectral())
+            wavemax = max_.to(nm, equivalencies.spectral())
             query = query.filter(and_(
-                DatabaseEntry.wavemin >= wavemin,
-                DatabaseEntry.wavemax <= wavemax))
+                DatabaseEntry.wavemin >= wavemin.value,
+                DatabaseEntry.wavemax <= wavemax.value))
         elif typ == 'time':
             start, end, near = value
             query = query.filter(and_(
