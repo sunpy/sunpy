@@ -195,6 +195,23 @@ def remove_lyra_artifacts(time, fluxes=None, artifacts="All",
         Set to True to return a numpy recarray containing the start time, end
         time and type of all artifacts removed.
         Default=False
+
+    fitsfile : (optional) string
+        file name (including file path) of output fits file which is generated
+        if this kwarg is not None.
+        Default=None, i.e. not csv file is output.
+
+    csvfile : (optional) string
+        file name (including file path) of output csv file which is generated
+        if this kwarg is not None.
+        Default=None, i.e. not csv file is output.
+
+    filecolumns : (optional) list of strings
+        Gives names of columns of any output files produced.  Although
+        initially set to None above, the default is in fact
+        ["time", "fluxes0", "fluxes1",..."fluxesN"]
+        where N is the number of flux arrays in the fluxes input
+        (assuming 0-indexed counting).
         
     Returns
     -------
@@ -296,7 +313,7 @@ def remove_lyra_artifacts(time, fluxes=None, artifacts="All",
         # generate generic filecolumns (see docstring og function called
         # below.
         string_time, filecolumns = _prep_columns(time, fluxes, filecolumns)
-        # Prepare column objects
+        # Prepare column objects.
         cols = [fits.Column(name=filecolumns[0], format="26A",
                             array=string_time)]
         if fluxes != None:
@@ -307,9 +324,9 @@ def remove_lyra_artifacts(time, fluxes=None, artifacts="All",
         tbhdu = fits.new_table(coldefs)
         hdu = fits.PrimaryHDU()
         tbhdulist = fits.HDUList([hdu, tbhdu])
-        # Write data to fit file
+        # Write data to fits file.
         tbhdulist.writeto(fitsfile)
-    # Output csv file if fits kwarg is set
+    # Output csv file if fits kwarg is set.
     if csvfile != None:
         # Create time array of time strings rather than datetime objects
         # and verify filecolumns have been correctly input.  If None,
@@ -319,9 +336,9 @@ def remove_lyra_artifacts(time, fluxes=None, artifacts="All",
         # Open and write data to csv file.
         with open(csvfile, 'w') as openfile:
             csvwriter = csv.writer(openfile, delimiter=';')
-            # Write header
+            # Write header.
             csvwriter.writerow(filecolumns)
-            # Write data
+            # Write data.
             if fluxes == None:
                 for i in range(len(time)):
                     csvwriter.writerow(string_time[i])
@@ -331,7 +348,7 @@ def remove_lyra_artifacts(time, fluxes=None, artifacts="All",
                     for f in fluxes:
                         row.append(f[i])
                     csvwriter.writerow(row)
-    # Return values
+    # Return values.
     if return_artifacts is True:
         if fluxes is None:
             return clean_time, artifact_status
