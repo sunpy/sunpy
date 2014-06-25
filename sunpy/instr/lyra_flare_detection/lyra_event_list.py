@@ -34,11 +34,13 @@ import os.path
 from datetime import datetime
 from warnings import warn
 import copy
+import csv
 
 import numpy as np
 import sqlite3
 from itertools import chain
 from sunpy.time import parse_time
+from astropy.io import fits
 
 RISE_FACTOR = 1.01
 FALL_FACTOR = 0.5
@@ -159,7 +161,8 @@ def find_lyra_events(flux, time):
     return lyra_events
 
 def remove_lyra_artifacts(time, fluxes=None, artifacts="All",
-                           return_artifacts=False):
+                          return_artifacts=False, fitsfile=None,
+                          csvfile=None, filecolumns=None):
     """
     Removes periods of LYRA artifacts from a time series.
 
@@ -284,7 +287,51 @@ def remove_lyra_artifacts(time, fluxes=None, artifacts="All",
                 artifact_status.append(None)
             else:
                 artifact_status.append(artifacts_not_found)
-        # Return values
+
+    # Output FITS file if fits kwarg is set
+    if fitsfile != None:
+        # Create time array of time strings rather than datetime objects
+        # and verify filecolumns have been correctly input.  If None,
+        # generate generic filecolumns (see docstring og function called
+        # below.
+        string_time, filecolumns = _prep_columns(time, fluxes, filecolumns)
+        # Prepare column objects
+        cols = [fits.Column(name=filecolumns[0], format="26A",
+                            array=string_time)]
+        if fluxes != None:
+            for i, f in enumerate(fluxes):
+                cols.append(fits.Column(name=filecolumns[i+1], format="D",
+                                        array=f))
+        coldefs = fits.ColDefs(cols)
+        tbhdu = fits.new_table(coldefs)
+        hdu = fits.PrimaryHDU()
+        tbhdulist = fits.HDUList([hdu, tbhdu])
+        # Write data to fit file
+        tbhdulist.writeto(fitsfile)
+    # Output csv file if fits kwarg is set
+    if csvfile != None:
+        # Create time array of time strings rather than datetime objects
+        # and verify filecolumns have been correctly input.  If None,
+        # generate generic filecolumns (see docstring og function called
+        # below.
+        string_time, filecolumns = prep_columns(time, fluxes, filecolumns)
+        # Open and write data to csv file.
+        with open(csvfile, 'w') as openfile:
+            csvwriter = csv.writer(openfile, delimiter=';')
+            # Write header
+            csvwriter.writerow(filecolumns)
+            # Write data
+            if fluxes == None:
+                for i in range(len(time)):
+                    csvwriter.writerow(string_time[i])
+            else:
+                for i in range(len(time)):
+                    row = [string_time[i]]
+                    for f in fluxes:
+                        row.append(f[i])
+                    csvwriter.writerow(row)
+    # Return values
+    if return_artifacts is True:
         if fluxes is None:
             return clean_time, artifact_status
         else:
@@ -458,3 +505,51 @@ def _check_datetime(time):
             raise TypeError("time must be an array or array-like of "
                             "datetime objects or valid time strings.")
     return time
+
+def _prep_columns(time, fluxes, filecolumns):
+    """
+    Checks and prepares data to be written out to a file.
+
+    Firstly, this function converts the elements of time, whose entries are
+    assumed to be datetime objects, to time strings.  Secondly, it checks
+    whether the number of elements in an input list of columns names,
+    filenames, is equal to the number of arrays in the list, fluxes.  If not,
+    a Value Error is raised.  If however filecolumns equals None, a filenames
+    list is generated equal to ["time", "fluxes0", "fluxes1",...,"fluxesN"]
+    where N is the number of arrays in the list, fluxes
+    (assuming 0-indexed counting).
+
+    """
+    # Convert time which contains datetime objects to time strings.
+    string_time = np.empty(len(time), dtype="S26")
+    for i, t in enumerate(time):
+        string_time[i] = t.strftime("%Y-%m-%dT%H:%M:%S.%f")
+
+    # If filenames is given...
+    if filecolumns != None:
+        # ...check all the elements are strings...
+        if all(isinstance(column, str) for column in filecolumns) is False:
+            raise TypeError("All elements in filecolumns must by strings.")
+        # ...and that there are the same number of elements as there
+        # are arrays in fluxes, plus 1 for a time array.  Otherwise
+        # raise a ValueError.
+        if fluxes != None:
+            ncol = 1 + len(fluxes)
+        else:
+            ncol = 1
+        if len(filecolumns) != ncol:
+            raise ValueError("Number of elements in filecolumns must be "
+                             "equal to the number of input data arrays, "
+                             "i.e. time + elements in fluxes.")
+    # If filenames not given, create a list of columns names of the
+    # form: ["time", "fluxes0", "fluxes1",...,"fluxesN"] where N is the
+    # number of arrays in fluxes (assuming 0-indexed counting).
+    else:
+        if fluxes != None:
+            filecolumns = ["fluxes{0}".format(fluxnum)
+                           for fluxnum in range(len(fluxes))]
+            filecolumns.insert(0, "time")
+        else:
+            filecolumns = ["time"]
+
+    return string_time, filecolumns
