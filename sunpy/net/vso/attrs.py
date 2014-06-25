@@ -263,8 +263,8 @@ walker.add_converter(_VSOSimpleAttr)(
 
 walker.add_converter(Wave)(
     lambda x: ValueAttr({
-            ('wave', 'wavemin'): x.min,
-            ('wave', 'wavemax'): x.max,
+            ('wave', 'wavemin'): x.min.value,
+            ('wave', 'wavemax'): x.max.value,
     })
 )
 
