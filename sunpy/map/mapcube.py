@@ -267,12 +267,12 @@ class MapCube(object):
 
     def as_array(self):
         """
-        If all the map shapes are the same, their image data is compiled
+        If all the map shapes are the same, their image data is copied
         into a single single ndarray. The ndarray is ordered as (ny, nx, nt).
         Otherwise, an error is thrown.
         """
         if self.all_maps_same_shape:
-            return np.swapaxes(np.swapaxes(np.asarray([m.data for m in self.maps]), 0, 1), 1, 2)
+            return np.swapaxes(np.swapaxes(np.asarray([m.data for m in self.maps]), 0, 1), 1, 2).copy()
         else:
             raise ValueError('Not all maps have the same shape.')
 
