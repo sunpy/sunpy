@@ -25,6 +25,7 @@ from sunpy.util.odict import OrderedDict
 
 __all__ = ['LightCurve']
 
+
 class LightCurve(object):
     """
     LightCurve(filepath)
@@ -191,7 +192,7 @@ for compatability with map, please use meta instead""", Warning)
         Parameters
         ----------
         axes: matplotlib.axes object or None
-            If provided the image will be plotted on the given axes. Else the 
+            If provided the image will be plotted on the given axes. Else the
             current matplotlib axes will be used.
 
         **plot_args : dict
@@ -212,12 +213,9 @@ for compatability with map, please use meta instead""", Warning)
         """Displays the light curve in a new figure"""
 
         figure = plt.figure()
-
         self.plot(**kwargs)
-
         figure.show()
 
-        return figure
 
     @staticmethod
     def _download(uri, kwargs, 
