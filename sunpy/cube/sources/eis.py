@@ -49,8 +49,9 @@ class EISSpectralCube(SpectralCube):
         w = wcs.WCS(header=header, naxis=3)
         wavelengths = [c.name for c in hdulist[1].columns if c.dim is not None]
         data = [hdulist[1].data[wav] for wav in wavelengths]
-        cubes = [sc.SpectralCube(data=d, wcs=w) for d in data]
-        scubes = [EISSpectralCube(c, dataHeader=hdulist[1], primaryHeader=hdulist[0]) for c in cubes]
+        cubes = [sc.SpectralCube(data=d.T, wcs=w) for d in data]
+        scubes = [EISSpectralCube(c, hdulist[1].header,
+                                  hdulist[0].header) for c in cubes]
         return dict(zip(wavelengths, scubes))
 
     @classmethod
