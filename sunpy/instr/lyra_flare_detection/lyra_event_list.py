@@ -35,6 +35,7 @@ from datetime import datetime
 from warnings import warn
 import copy
 import csv
+from datetime import timedelta
 
 import numpy as np
 import sqlite3
@@ -91,9 +92,9 @@ def find_lyra_events(flux, time):
     # Define variables to be used later
     flare_indices = []
     lyra_events = np.empty((0,), dtype=[("start_time", object),
-                               ("peak_time", object),
-                               ("end_time", object),
-                               ("comments", object)])
+                                        ("peak_time", object),
+                                        ("end_time", object),
+                                        ("comments", object)])
     # object LYRA artifacts from timeseries
     time, flux = remove_lyra_artifacts(
         time, [flux], artifacts=["UV occ.", "Offpoint", "LAR", "Calibration",
@@ -109,6 +110,8 @@ def find_lyra_events(flux, time):
     # Get locations where derivative is positive
     pos_deriv = np.where(dfdt > 0)[0]
     neg_deriv = np.where(dfdt < 0)[0]
+    pos_deriv0 = np.where(dfdt >= 0)[0]
+    neg_deriv0 = np.where(dfdt <= 0)[0]
     # Find difference between each time point and the one 4
     # observations ahead.
     time_timedelta4 = time[4:-1]-time[0:-5]
@@ -122,21 +125,27 @@ def find_lyra_events(flux, time):
         if (pos_deriv[i:i+4]-pos_deriv[i] == np.arange(4)).all() and \
           dt4[i] > 210 and dt4[i] < 270 and \
           flux[pos_deriv[i+3]]/flux[pos_deriv[i]] >= RISE_FACTOR:
+            # Find start time which is defined as earliest continuous
+            # increase in flux before the point found by the above
+            # criteria.
+            k = np.where(neg_deriv0 < pos_deriv[i])[0][-1]
+            start_index = neg_deriv0[k]+1
             # Next, find index of flare end time.
-            jj = np.where(neg_deriv > pos_deriv[i])[0]
-            j = neg_deriv[jj[0]]
-            end_index = np.where(
-                flux[j:] <= max(flux[pos_deriv[i]:j]) - \
+            jj = np.where(neg_deriv > start_index)[0][0]
+            j = neg_deriv[jj]
+            l = np.where(flux[j:] <= max(flux[pos_deriv[i]:j]) - \
                 (max(flux[pos_deriv[i]:j])-flux[pos_deriv[i]]) * \
                 FALL_FACTOR)[0][0]+j
+            m = np.where(pos_deriv0 > l)[0][0]
+            end_index = pos_deriv0[m]-1
             # find index of peak time
             peak_index = np.where(
-                flux == max(flux[pos_deriv[i]:end_index]))[0][0]
+                flux == max(flux[start_index:end_index]))[0][0]
             # Record flare start, peak and end times
-            flare_indices.append((pos_deriv[i], peak_index, end_index))
+            flare_indices.append((start_index, peak_index, end_index))
             lyra_events = np.append(lyra_events,
                                     np.empty(1, dtype=lyra_events.dtype))
-            lyra_events[-1]["start_time"] = time[pos_deriv[i]]
+            lyra_events[-1]["start_time"] = time[start_index]
             lyra_events[-1]["peak_time"] = time[peak_index]
             lyra_events[-1]["end_time"] = time[end_index]
             # If the most recently found flare is during the decay phase
@@ -237,7 +246,7 @@ def remove_lyra_artifacts(time, fluxes=None, artifacts="All",
     time = _check_datetime(time)
     if not all(isinstance(artifact_type, str) for artifact_type in artifacts):
         raise TypeError("All elements in artifacts must in strings.")
-    if type(fluxes) is not None or type(fluxes) is not list:
+    if type(fluxes) is not None and type(fluxes) is not list:
         raise TypeError("fluxes must be None or a list of numpy arrays of "
                         "dtype 'float64'.")
     # Define outputs
@@ -574,3 +583,16 @@ def _prep_columns(time, fluxes, filecolumns):
             filecolumns = ["time"]
 
     return string_time, filecolumns
+
+def testing_find_lyra_events():
+    file = "../data/LYRA/fits/lyra_20140621-000000_lev3_std.fits"
+    ly = fits.open(file)
+    t = ly[1].data["TIME"]
+    orig_flux = ly[1].data["CHANNEL4"]
+    orig_time = np.empty(len(t), dtype="object")
+    for i, tt in enumerate(t):
+        orig_time[i] = datetime(2014,6,21,0,0)+timedelta(0,0,0,0,int(tt))
+    time = copy.deepcopy(orig_time)
+    flux = copy.deepcopy(orig_flux)
+    return orig_time, orig_flux, time, flux
+    
