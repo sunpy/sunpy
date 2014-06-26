@@ -92,7 +92,7 @@ class CompositeMap(object):
         zorders = range(0, 10 * len(self._maps), 10)
         levels = [False] * len(self._maps)
 
-        # Set z-order and alpha values for the map     
+        # Set z-order and alpha values for the map
         for i, m in enumerate(self._maps):
             m.zorder = zorders[i]
             m.alpha = alphas[i]
@@ -184,7 +184,7 @@ class CompositeMap(object):
 
     def set_levels(self, index, levels, percent=False):
         """Sets the contour levels for a layer in the composite image"""
-        if percent is False: 
+        if percent is False:
             self._maps[index].levels = levels
         else:
             self._maps[index].levels = [self._maps[index].max()*level/100.0 for level in levels]
@@ -207,7 +207,7 @@ class CompositeMap(object):
         self._maps[index].zorder = zorder
 
     def draw_limb(self, index=None, axes=None):
-        """Draws a circle representing the solar limb 
+        """Draws a circle representing the solar limb
 
             Parameters
             ----------
@@ -222,12 +222,12 @@ class CompositeMap(object):
             matplotlib.axes object
         """
         if index is None:
-            for i,amap in enumerate(self._maps):
-                if hasattr(amap,'rsun_arcseconds'):
+            for i, amap in enumerate(self._maps):
+                if hasattr(amap, 'rsun_arcseconds'):
                     index = i
                     break
 
-        index_check = hasattr(self._maps[index],'rsun_arcseconds')
+        index_check = hasattr(self._maps[index], 'rsun_arcseconds')
         if not index_check or index is None:
             raise ValueError("Specified index does not have all the required attributes to draw limb.")
 
@@ -235,7 +235,7 @@ class CompositeMap(object):
 
     def draw_grid(self, index=None, axes=None, grid_spacing=20):
         """Draws a grid over the surface of the Sun
-        
+
         Parameters
         ----------
         index: integer
@@ -255,11 +255,11 @@ class CompositeMap(object):
                             'heliographic_longitude']
         if index is None:
             for i, amap in enumerate(self._maps):
-                if all([hasattr(amap,k) for k in needed_attrs]):
+                if all([hasattr(amap, k) for k in needed_attrs]):
                     index = i
                     break
 
-        index_check = all([hasattr(self._maps[index],k) for k in needed_attrs])
+        index_check = all([hasattr(self._maps[index], k) for k in needed_attrs])
         if not index_check or index is None:
             raise ValueError("Specified index does not have all the required attributes to draw grid.")
 
@@ -273,9 +273,9 @@ class CompositeMap(object):
         Parameters
         ----------
         axes: matplotlib.axes object or None
-            If provided the image will be plotted on the given axes. Else the 
+            If provided the image will be plotted on the given axes. Else the
             current matplotlib axes will be used.
- 
+
         gamma : float
             Gamma value to use for the color map
 
@@ -348,7 +348,7 @@ class CompositeMap(object):
         plt.sci(ret[0])
         return ret
 
-    def peek(self, gamma=None, colorbar=True, basic_plot=False, draw_limb=True,
+    def peek(self, colorbar=True, basic_plot=False, draw_limb=True,
              draw_grid=False, **matplot_args):
         """Displays the map in a new figure
 
@@ -356,20 +356,20 @@ class CompositeMap(object):
         ----------
         gamma : float
             Gamma value to use for the color map
-            
+
         colorbar : bool or int
             Whether to display a colorbar next to the plot.
             If specified as an integer a colorbar is plotted for that index.
-            
+
         basic_plot : bool
             If true, the data is plotted by itself at it's natural scale; no
             title, labels, or axes are shown.
-            
+
         **matplot_args : dict
             Matplotlib Any additional imshow arguments that should be used
             when plotting the image.
         """
-        
+
         # Create a figure and add title and axes
         figure = plt.figure(frameon=not basic_plot)
 
@@ -378,33 +378,31 @@ class CompositeMap(object):
             axes = plt.Axes(figure, [0., 0., 1., 1.])
             axes.set_axis_off()
             figure.add_axes(axes)
-            matplot_args.update({'annotate':False})
+            matplot_args.update({'annotate': False})
         else:
             axes = figure.add_subplot(111)
 
-        ret = self.plot(axes=axes,**matplot_args)        
-        
+        ret = self.plot(axes=axes, **matplot_args)
+
         if not isinstance(colorbar, bool) and isinstance(colorbar, int):
             figure.colorbar(ret[colorbar])
         elif colorbar:
             plt.colorbar()
         if draw_limb:
             self.draw_limb(axes=axes)
-        
+
         if isinstance(draw_grid, bool):
             if draw_grid:
                 self.draw_grid(axes=axes)
-        
+
         elif isinstance(draw_grid, (int, long, float)):
             self.draw_grid(axes=axes, grid_spacing=draw_grid)
         else:
             raise TypeError("draw_grid should be bool, int, long or float")
 
         figure.show()
-        
-        return figure
 
-        
+
 class OutOfRangeAlphaValue(ValueError):
     """Exception to raise when an alpha value outside of the range 0-1 is
     requested.
