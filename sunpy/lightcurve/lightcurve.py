@@ -1,6 +1,6 @@
 """
-LightCurve is a generic LightCurve class from which all other LightCurve classes 
-inherit from.
+LightCurve is a generic LightCurve class from which all other LightCurve
+classes inherit from.
 """
 from __future__ import absolute_import
 
@@ -43,7 +43,7 @@ class LightCurve(object):
     meta : string, dict
         The comment string or header associated with the light curve input
     data : pandas.DataFrame
-        An pandas DataFrame prepresenting one or more fields as they vary with 
+        An pandas DataFrame prepresenting one or more fields as they vary with
         respect to time.
 
     Examples
@@ -73,12 +73,11 @@ class LightCurve(object):
 
     def __init__(self, data, meta=None):
         self.data = pandas.DataFrame(data)
-	if meta == '' or meta is None:
-	     self.meta = OrderedDict()
-	else:	
-             self.meta = OrderedDict(meta)
-	
-    
+        if meta == '' or meta is None:
+            self.meta = OrderedDict()
+        else:
+            self.meta = OrderedDict(meta)
+
     @property
     def header(self):
         """
@@ -93,8 +92,10 @@ for compatability with map, please use meta instead""", Warning)
 
     @classmethod
     def from_time(cls, time, **kwargs):
-        '''Called by Conditional Dispatch object when valid time is passed as input to create method.'''
-	date = parse_time(time)
+        """Called by Conditional Dispatch object when valid time is passed as
+        input to create method."""
+
+        date = parse_time(time)
         url = cls._get_url_for_date(date, **kwargs)
         filepath = cls._download(
             url, kwargs, err="Unable to download data for specified date"
@@ -103,23 +104,27 @@ for compatability with map, please use meta instead""", Warning)
 
     @classmethod
     def from_range(cls, start, end, **kwargs):
-        '''Called by Conditional Dispatch object when start and end time are passed as input to create method.'''
+        """Called by Conditional Dispatch object when start and end time are
+        passed as input to create method."""
+
         url = cls._get_url_for_date_range(parse_time(start), parse_time(end))
         filepath = cls._download(
-            url, kwargs, 
-            err = "Unable to download data for specified date range"
+            url, kwargs,
+            err="Unable to download data for specified date range"
         )
         result = cls.from_file(filepath)
-        result.data = result.data.truncate(start,end)
+        result.data = result.data.truncate(start, end)
         return result
 
     @classmethod
     def from_timerange(cls, timerange, **kwargs):
-        '''Called by Conditional Dispatch object when time range is passed as input to create method.'''
+        """Called by Conditional Dispatch object when time range is passed
+        as input to create method."""
+
         url = cls._get_url_for_date_range(timerange)
         filepath = cls._download(
             url, kwargs,
-            err = "Unable to download data for specified date range"
+            err="Unable to download data for specified date range"
         )
         result = cls.from_file(filepath)
         result.data = result.data.truncate(timerange.start(), timerange.end())
@@ -127,33 +132,33 @@ for compatability with map, please use meta instead""", Warning)
 
     @classmethod
     def from_file(cls, filename):
-        '''Used to return Light Curve object by reading the given filename
+        """Used to return Light Curve object by reading the given filename
 
-	Parameters:
-	    filename: Path of the file to be read.
-
-	'''
+            Parameters:
+                filename: Path of the file to be read.
+        """
 
         filename = os.path.expanduser(filename)
         meta, data = cls._parse_filepath(filename)
         if data.empty:
             raise ValueError("No data found!")
-        else:               
+        else:
             return cls(data, meta)
 
     @classmethod
     def from_url(cls, url, **kwargs):
-        '''
-	Downloads a file from the given url, reads and returns a Light Curve object.
+        """Downloads a file from the given url, reads and returns a Light Curve
+        object.
 
-	Parameters:
-	    url : string 
-	        Uniform Resource Locator pointing to the file.
+        Parameters:
+            url : string
+            Uniform Resource Locator pointing to the file.
 
-	    kwargs :Dict
-	        Dict object containing other related parameters to assist in download.
+        kwargs :Dict
+            Dict object containing other related parameters to assist in
+            download.
 
-        '''
+        """
         try:
             filepath = cls._download(url, kwargs)
         except (urllib2.HTTPError, urllib2.URLError, ValueError):
@@ -163,12 +168,11 @@ for compatability with map, please use meta instead""", Warning)
 
     @classmethod
     def from_data(cls, data, index=None, meta=None):
-        '''
-	Called by Conditional Dispatch object to create Light Curve object when corresponding data is passed
-	to create method.
-	'''
+        """Called by Conditional Dispatch object to create Light Curve object
+        when corresponding data is passed to create method.
+        """
 
-	return cls(
+        return cls(
             pandas.DataFrame(data, index=index),
             meta
         )
@@ -179,12 +183,11 @@ for compatability with map, please use meta instead""", Warning)
 
     @classmethod
     def from_dataframe(cls, dataframe, meta=None):
-        '''
-	Called by Conditional Dispatch object to create Light Curve object when Pandas DataFrame is passed
-	to create method.
-	'''
+        """Called by Conditional Dispatch object to create Light Curve object
+        when Pandas DataFrame is passed to create method.
+        """
 
-	return cls(dataframe, meta)
+    return cls(dataframe, meta)
 
     def plot(self, axes=None, **plot_args):
         """Plot a plot of the light curve
@@ -216,14 +219,13 @@ for compatability with map, please use meta instead""", Warning)
         self.plot(**kwargs)
         figure.show()
 
-
     @staticmethod
-    def _download(uri, kwargs, 
+    def _download(uri, kwargs,
                   err='Unable to download data at specified URL'):
         """Attempts to download data at the specified URI"""
-                    
+
         _filename = os.path.basename(uri).split("?")[0]
-        
+
         # user specifies a download directory
         if "directory" in kwargs:
             download_dir = os.path.expanduser(kwargs["directory"])
@@ -239,7 +241,7 @@ for compatability with map, please use meta instead""", Warning)
         # If the file is not already there, download it
         filepath = os.path.join(download_dir, _filename)
 
-        if not(os.path.isfile(filepath)) or (overwrite and 
+        if not(os.path.isfile(filepath)) or (overwrite and
                                              os.path.isfile(filepath)):
             try:
                 response = urllib2.urlopen(uri)
@@ -297,7 +299,7 @@ for compatability with map, please use meta instead""", Warning)
         if isinstance(a, TimeRange):
             time_range = a
         else:
-            time_range = TimeRange(a,b)
+            time_range = TimeRange(a, b)
 
         truncated = self.data.truncate(time_range.start(), time_range.end())
         return self.__class__.create(truncated, self.meta.copy())
