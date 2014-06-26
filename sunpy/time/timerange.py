@@ -144,7 +144,7 @@ class TimeRange:
         --------
         To get one 12 second long window every hour within the timerange:
 
-        >>> TimeRange.window(60*60, window=12)
+        >>> TimeRange.window(60 * 60, window=12)
         """
         if not isinstance(window, timedelta):
             window = timedelta(seconds=window)
@@ -154,8 +154,8 @@ class TimeRange:
         n = 1
         times = [TimeRange(self.t1, self.t1 + window)]
         while times[-1].t2 < self.t2:
-            times.append(TimeRange(self.t1 + cadence*n,
-                                   self.t1 + cadence*n + window))
+            times.append(TimeRange(self.t1 + cadence * n,
+                                   self.t1 + cadence * n + window))
             n += 1
         return times
 
@@ -170,6 +170,20 @@ class TimeRange:
     def end(self):
         """Gets the start date"""
         return self.t2
+
+    def min(self):
+        """Gets the smaller value of the TimeRange"""
+        if self.t1 < self.t2:
+            return self.t1
+        else:
+            return self.t2
+
+    def max(self):
+        """Gets the largest value of the TimeRange"""
+        if self.t2 > self.t1:
+            return self.t2
+        else:
+            return self.t1
 
     def seconds(self):
         """Gets the number of seconds elapsed."""
@@ -195,8 +209,9 @@ class TimeRange:
         return self
 
     def extend(self, t_backwards, t_forwards):
-        """Extend the time range forwards and backwards by arbitrary amounts"""
-        # Only a timedelta object is acceptable here
+        """Extend the time range forwards and backwards by arbitrary amounts
+           Only timedelta objects are acceptable here
+        """
         self.t1 = self.t1 + t_backwards
         self.t2 = self.t2 + t_forwards
 
