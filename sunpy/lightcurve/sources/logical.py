@@ -9,11 +9,12 @@ import numpy as np
 from sunpy.lightcurve import LightCurve
 from scipy.ndimage import label
 from sunpy.time import TimeRange
+import matplotlib.pyplot as plt
 
 __all__ = ['LogicalLightCurve']
 
-# TODO Change the init to accept a list of TimeRange objects.  Durations between
-# the start and end time of each TimeRange object are labeled 'True'.
+#TODO Change the init to accept a list of TimeRange objects.  Durations
+# between the start and end time of each TimeRange object are labeled 'True'.
 
 class LogicalLightCurve(LightCurve):
     """
@@ -33,6 +34,18 @@ class LogicalLightCurve(LightCurve):
     >>> z = [True for x in range(0, 24 * 60)]
     >>> light_curve = lightcurve.LogicalLightCurve.create({"param1": z}, index=dates)
     """
+
+    def plot(self, axes=None, title="Logical", **plot_args):
+        """Plot the logical lightcurve"""
+        if axes is None:
+            axes = plt.gca()
+
+        axes = self.data.plot(ax=axes, **plot_args)
+        axes.fill_between(self.data.index,
+                          self.data[self.data.columns[0]].values)
+        axes.set_title(title)
+
+        return axes
 
     def complement(self):
         """ Define the complement of the passed lightcurve """

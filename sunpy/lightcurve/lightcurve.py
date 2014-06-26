@@ -187,7 +187,7 @@ for compatability with map, please use meta instead""", Warning)
         when Pandas DataFrame is passed to create method.
         """
 
-    return cls(dataframe, meta)
+        return cls(dataframe, meta)
 
     def plot(self, axes=None, **plot_args):
         """Plot a plot of the light curve
