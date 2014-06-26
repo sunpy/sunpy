@@ -941,7 +941,7 @@ Dimension:\t [%d, %d]
         return axes
 
     @toggle_pylab
-    def peek(self, draw_limb=False, draw_grid=False, gamma=None,
+    def peek(self, draw_limb=False, draw_grid=False,
                    colorbar=True, basic_plot=False, **matplot_args):
         """Displays the map in a new figure
 
@@ -950,8 +950,8 @@ Dimension:\t [%d, %d]
         draw_limb : bool
             Whether the solar limb should be plotted.
         draw_grid : bool or number
-            Whether solar meridians and parallels are plotted. If float then sets
-            degree difference between parallels and meridians.
+            Whether solar meridians and parallels are plotted. If float then
+            sets degree difference between parallels and meridians.
         gamma : float
             Gamma value to use for the color map
         colorbar : bool
@@ -972,13 +972,13 @@ Dimension:\t [%d, %d]
             axes = plt.Axes(figure, [0., 0., 1., 1.])
             axes.set_axis_off()
             figure.add_axes(axes)
-            matplot_args.update({'annotate':False})
+            matplot_args.update({'annotate': False})
 
         # Normal plot
         else:
             axes = figure.gca()
 
-        im = self.plot(axes=axes,**matplot_args)
+        im = self.plot(axes=axes, **matplot_args)
 
         if colorbar and not basic_plot:
             figure.colorbar(im)
@@ -995,8 +995,6 @@ Dimension:\t [%d, %d]
             raise TypeError("draw_grid should be bool, int, long or float")
 
         figure.show()
-
-        return figure
 
     @toggle_pylab
     def plot(self, gamma=None, annotate=True, axes=None, **imshow_args):
