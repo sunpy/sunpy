@@ -321,11 +321,11 @@ def _(attr, results):
         if
         it.wave.wavemax is not None
         and
-        attr.min <= to_angstrom(float(it.wave.wavemax), it.wave.waveunit)
+        attr.min <= it.wave.wavemax.to(u.angstrom, equivalencies=u.spectral())
         and
         it.wave.wavemin is not None
         and
-        attr.max >= to_angstrom(float(it.wave.wavemin), it.wave.waveunit)
+        attr.max >= it.wave.wavemin.to(u.angstrom, equivalencies=u.spectral())
     )
 
 @filter_results.add_dec(Time)
