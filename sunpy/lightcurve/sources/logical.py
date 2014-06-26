@@ -13,8 +13,9 @@ import matplotlib.pyplot as plt
 
 __all__ = ['LogicalLightCurve']
 
-#TODO Change the init to accept a list of TimeRange objects.  Durations
+#TODO: Change the init to accept a list of TimeRange objects.  Durations
 # between the start and end time of each TimeRange object are labeled 'True'.
+
 
 class LogicalLightCurve(LightCurve):
     """
