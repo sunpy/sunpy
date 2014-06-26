@@ -20,18 +20,17 @@ class LogicalLightCurve(LightCurve):
     """
     Logical LightCurve.
 
-    Originated from a need to analyze the times of HEK
-    results, where 'True' indicates an event was observed, and 'False'
-    indicates an event was not observed.
+    A lightcurve which contains only True or False values.
 
     Examples
     --------
     >>> import sunpy.lightcurve as lightcurve
     >>> import datetime
-
+    # Create a logical lightcurve which is true every minute divisible by 5
+    # in the last hour
     >>> base = datetime.datetime.today()
-    >>> dates = [base - datetime.timedelta(minutes=x) for x in range(0, 24 * 60)]
-    >>> z = [True for x in range(0, 24 * 60)]
+    >>> dates = [base - datetime.timedelta(seconds=x) for x in range(0, 1 * 60 * 60)]
+    >>> z = [((d.minute % 5) == 0) for d in dates]
     >>> light_curve = lightcurve.LogicalLightCurve.create({"param1": z}, index=dates)
     """
 
@@ -42,7 +41,7 @@ class LogicalLightCurve(LightCurve):
 
         axes = self.data.plot(ax=axes, **plot_args)
         axes.fill_between(self.data.index,
-                          self.data[self.data.columns[0]].values)
+                          self.data[self.data.columns[0]].values, alpha=0.5)
         axes.set_title(title)
 
         return axes
