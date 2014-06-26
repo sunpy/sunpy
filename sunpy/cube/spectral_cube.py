@@ -28,7 +28,7 @@ class SpectralCube(astropy.nddata.NDData):
     '''
 
     def __init__(self, cube, data_header=None, primary_header=None, **kwargs):
-        astropy.nddata.NDData.__init__(data=cube.unmasked_data,
+        astropy.nddata.NDData.__init__(self, data=cube.unmasked_data,
                                        wcs=cube.wcs,
                                        **kwargs)
         self.cube = cube
@@ -175,5 +175,5 @@ class SpectralCube(astropy.nddata.NDData):
         else:
             maparray = self.cube.unmasked_data[chunk, :, :]
         # TODO: send a proper header
-        m = GenericMap(data=maparray, header=None)
+        m = GenericMap(data=maparray, header={})
         return m
