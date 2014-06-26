@@ -15,6 +15,7 @@ __all__ = ['CompositeMap']
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
+
 class CompositeMap(object):
     """
     CompositeMap(map1 [,map2,..])
@@ -47,15 +48,15 @@ class CompositeMap(object):
     set_norm(self, index, norm)
         Sets the norm for a layer in the composite image
     set_levels(index, levels, percent=False)
-        Sets the contour levels for a layer in the CompositeMap       
+        Sets the contour levels for a layer in the CompositeMap
     set_colors(index=None, cm)
         Sets the color map for a layer in the CompositeMap
     set_alpha(index=None, alpha)
         Sets the alpha-channel value for a layer in the CompositeMap
     set_zorder(index=None, zorder)
         Set the layering preference (z-order) for a map within the CompositeMap
-    plot(figure=None, overlays=None, draw_limb=False, gamma=1.0, 
-    draw_grid=False, colorbar=True, basic_plot=False,title="SunPy Plot", 
+    plot(figure=None, overlays=None, draw_limb=False, gamma=1.0,
+    draw_grid=False, colorbar=True, basic_plot=False,title="SunPy Plot",
     matplot_args)
         Plots the composite map object using matplotlib
 
@@ -68,29 +69,29 @@ class CompositeMap(object):
     >>> comp_map.add_map(sunpy.Map(sunpy.RHESSI_IMAGE))
     >>> comp_map.peek()
 
-    """    
+    """
     def __init__(self, *args, **kwargs):
         """
         Create a CompositeMap
-        
+
         Parameters
         ----------
         Maps: SunPy Maps
             A sequence of maps
         """
-        
+
         self._maps = expand_list(args)
-        
+
         for m in self._maps:
             if not isinstance(m, GenericMap):
                 raise ValueError(
                            'CompositeMap expects pre-constructed map objects.')
-        
+
         # Default alpha and zorder values
         alphas = [1] * len(self._maps)
         zorders = range(0, 10 * len(self._maps), 10)
         levels = [False] * len(self._maps)
-        
+
         # Set z-order and alpha values for the map     
         for i, m in enumerate(self._maps):
             m.zorder = zorders[i]
@@ -99,7 +100,7 @@ class CompositeMap(object):
 
     def add_map(self, amap, zorder=None, alpha=1, levels=False):
         """Adds a map to the CompositeMap
-        
+
         Parameters
         ----------
         map : sunpy.map
@@ -117,32 +118,32 @@ class CompositeMap(object):
         """
         if zorder is None:
             zorder = max([m.zorder for m in self._maps]) + 10
-        
+
         amap.zorder = zorder
         amap.alpha = alpha
         amap.levels = levels
-        
+
         self._maps.append(amap)
-        
+
     def remove_map(self, index):
         """Removes and returns the map with the given index"""
         return self._maps.pop(index)
-    
+
     def list_maps(self):
         """Prints a list of the currently included maps"""
         print [m.__class__ for m in self._maps]
-    
+
     def get_map(self, index):
         """ Returns the map with given index """
         return self._maps[index]
-        
+
     def get_alpha(self, index=None):
         """Gets the alpha-channel value for a layer in the composite image"""
         if index is None:
             return [_map.alpha for _map in self._maps]
         else:
             return self._maps[index].alpha
-        
+
     def get_zorder(self, index=None):
         """Gets the layering preference (z-order) for a map within the
         composite.
@@ -167,7 +168,7 @@ class CompositeMap(object):
             return [_map.mpl_color_normalizer for _map in self._maps]
         else:
             return self._maps[index].mpl_color_normalizer
-            
+
     def get_levels(self, index=None):
         """Gets the list of contour levels for a map within the
         composite.
@@ -198,7 +199,7 @@ class CompositeMap(object):
             self._maps[index].alpha = alpha
         else:
             raise OutOfRangeAlphaValue("Alpha value must be between 0 and 1.")
-        
+
     def set_zorder(self, index, zorder):
         """Set the layering preference (z-order) for a map within the
         composite.
@@ -207,15 +208,15 @@ class CompositeMap(object):
 
     def draw_limb(self, index=None, axes=None):
         """Draws a circle representing the solar limb 
-        
+
             Parameters
             ----------
             index: integer
                 Map index to use to plot limb.
-                
+
             axes: matplotlib.axes object or None
                 Axes to plot limb on or None to use current axes.
-        
+
             Returns
             -------
             matplotlib.axes object
@@ -225,13 +226,13 @@ class CompositeMap(object):
                 if hasattr(amap,'rsun_arcseconds'):
                     index = i
                     break
-                
+
         index_check = hasattr(self._maps[index],'rsun_arcseconds')
         if not index_check or index is None:
             raise ValueError("Specified index does not have all the required attributes to draw limb.")
-            
+
         return self._maps[index].draw_limb(axes=axes)
-        
+
     def draw_grid(self, index=None, axes=None, grid_spacing=20):
         """Draws a grid over the surface of the Sun
         
@@ -239,13 +240,13 @@ class CompositeMap(object):
         ----------
         index: integer
             Index to determine which map to use to draw grid.
-            
+
         axes: matplotlib.axes object or None
             Axes to plot limb on or None to use current axes.
-        
+
         grid_spacing: float
             Spacing (in degrees) for longitude and latitude grid.
-        
+
         Returns
         -------
         matplotlib.axes object
@@ -257,18 +258,18 @@ class CompositeMap(object):
                 if all([hasattr(amap,k) for k in needed_attrs]):
                     index = i
                     break
-        
+
         index_check = all([hasattr(self._maps[index],k) for k in needed_attrs])
         if not index_check or index is None:
             raise ValueError("Specified index does not have all the required attributes to draw grid.")
-        
+
         ax = self._maps[index].draw_grid(axes=axes, grid_spacing=grid_spacing)
         return ax
-        
+
     def plot(self, axes=None, gamma=None, annotate=True, # pylint: disable=W0613
              title="SunPy Composite Plot", **matplot_args):
         """Plots the composite map object using matplotlib
-        
+
         Parameters
         ----------
         axes: matplotlib.axes object or None
@@ -281,39 +282,39 @@ class CompositeMap(object):
         annotate : bool
             If true, the data is plotted at it's natural scale; with
             title and axis labels.
-            
+
         **matplot_args : dict
             Matplotlib Any additional imshow arguments that should be used
             when plotting the image.
-            
+
         Returns
         -------
         ret : List
             List of axes image or quad contour sets that have been plotted.
         """
-        
+
         #Get current axes
         if not axes:
             axes = plt.gca()
-        
+
         if annotate:
             # x-axis label
             if self._maps[0].coordinate_system['x'] == 'HG':
                 xlabel = 'Longitude [%s]' % self._maps[0].units['x']
             else:
                 xlabel = 'X-position [%s]' % self._maps[0].units['x']
-    
+
             # y-axis label
             if self._maps[0].coordinate_system['y'] == 'HG':
                 ylabel = 'Latitude [%s]' % self._maps[0].units['y']
             else:
                 ylabel = 'Y-position [%s]' % self._maps[0].units['y']
-                
+
             axes.set_xlabel(xlabel)
             axes.set_ylabel(ylabel)
-    
+
             axes.set_title(title)
-        
+
         #Define a list of plotted objects
         ret = []
         # Plot layers of composite map
@@ -328,10 +329,10 @@ class CompositeMap(object):
                 "zorder": m.zorder,
             }
             params.update(matplot_args)
-            
+
             if m.levels is False:
                 ret.append(axes.imshow(m.data, **params))
-            
+
             # Use contour for contour data, and imshow otherwise
             if m.levels is not False:
                 # Set data with values <= 0 to transparent
@@ -339,14 +340,14 @@ class CompositeMap(object):
                 ret.append(axes.contour(m.data, m.levels, **params))
                 #Set the label of the first line so a legend can be created
                 ret[-1].collections[0].set_label(m.name)
-                                
+
         # Adjust axes extents to include all data
         axes.axis('image')
-        
+
         #Set current image (makes colorbar work)
         plt.sci(ret[0])
         return ret
-        
+
     def peek(self, gamma=None, colorbar=True, basic_plot=False, draw_limb=True,
              draw_grid=False, **matplot_args):
         """Displays the map in a new figure
