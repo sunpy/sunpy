@@ -96,7 +96,7 @@ def test_attr_and():
 
 
 def test_decode_wave():
-    dump = '{"Wave": [10.0 * u.AA, 20.0 * u.AA]}'
+    dump = '{"Wave": [10.0, 20.0 ]}'
     assert json.loads(dump, object_hook=query_decode) == vso.attrs.Wave(10*u.AA, 20*u.AA)
 
 
