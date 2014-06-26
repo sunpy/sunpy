@@ -13,15 +13,16 @@ from astropy.utils.compat.odict import OrderedDict
 from astropy import units as u
 from astropy.coordinates.representation import (SphericalRepresentation, CylindricalRepresentation,
                                                 CartesianRepresentation)
-from astropy.coordinates.baseframe import BaseCoordinateFrame, frame_transform_graph
+from astropy.coordinates.baseframe import (BaseCoordinateFrame, frame_transform_graph,
+                                           RepresentationMapping)
 from astropy.coordinates.transformations import FunctionTransform, DynamicMatrixTransform
 from astropy.coordinates import FrameAttribute
 
 # SunPy imports
 from sunpy import sun as s # For Carrington rotation number
 
-RSUN_METERS = s.constants.constant('radius').si.value
-DSUN_METERS = s.constants.constant.au.si.value
+RSUN_METERS = s.constants.constant('radius').si.value 
+DSUN_METERS = s.constants.constant('mean distance').si.value
 
 class HelioGraphicStonyhurst(BaseCoordinateFrame):
     """
@@ -35,24 +36,41 @@ class HelioGraphicStonyhurst(BaseCoordinateFrame):
     ----------
     representation: `~astropy.coordinates.BaseRepresentation` or None
         A representation object or None to have no data.
-    lon: `Angle` object.
+    hlon: `Angle` object.
         The longitude for this object (``lat`` must also be given and ``representation``
         must be None).
-    lat: `Angle` object.
+    hlat: `Angle` object.
         The latitude for this object (``lon`` must also be given and ``representation``
         must be None).
     rad: `astropy.units.Quantity` object.
         This quantity holds the radial distance. If not specified, it is, by default,
-        the solar radius. Optional, must be keyword.
+        the solar radius. Optional, must be keyword
     """
     
     default_representation = SphericalRepresentation
 
     _frame_specific_representation_info = {
-        'spherical': {'names': ('lon', 'lat', 'rad'), 'units': (u.deg, u.deg, u.km)},
+        'spherical': [RepresentationMapping('lon', 'hlon', 'recommended'),
+                      RepresentationMapping('lat', 'hlat', 'recommended'),
+                      RepresentationMapping('distance', 'rad', 'recommended')],
         }
 
-    rad = FrameAttribute(default=((RSUN_METERS/1000)*u.km))
+    #rad = FrameAttribute(default=((RSUN_METERS/1000)*u.km))
+
+    def __init__(self, *args, **kwargs):
+        print(args, kwargs)
+        if not args:
+            print('In kwargs section')
+            if 'rad' not in kwargs:
+                kwargs['rad'] = (RSUN_METERS/1000)*u.km
+        elif not kwargs:
+            print('In args section')
+            if len(args) == 2:
+                args = list(args)
+                args.append((RSUN_METERS/1000)*u.km)
+                args = tuple(args)
+        print(args, kwargs)
+        super(HelioGraphicStonyhurst, self).__init__(*args, **kwargs)
 
 def _carrington_offset():
     # This method is to return the Carrington offset.
@@ -68,10 +86,10 @@ class HelioGraphicCarrington(HelioGraphicStonyhurst):
     representation: `~astropy.coordinates.BaseRepresentation` or None.
         A representation object. If specified, other parameters must
         be in keyword form.
-    lon: `Angle` object.
+    hlon: `Angle` object.
         The longitude for this object (``lat`` must also be given and ``representation``
         must be None).
-    lat: `Angle` object.
+    hlat: `Angle` object.
         The latitude for this object (``lon`` must also be given and ``representation``
         must be None).
     rad: `astropy.units.Quantity` object, optional, must be keyword.
@@ -82,10 +100,15 @@ class HelioGraphicCarrington(HelioGraphicStonyhurst):
     default_representation = SphericalRepresentation
 
     _frame_specific_representation_info = {
-        'spherical': {'names': ('lon', 'lat', 'rad'), 'units': (u.deg, u.deg, u.km)},
+        'spherical': [RepresentationMapping('lon', 'hlon', 'recommended'),
+                      RepresentationMapping('lat', 'hlat', 'recommended'),
+                      RepresentationMapping('distance', 'rad', 'recommended')]
         }
 
-    rad = FrameAttribute(default=((RSUN_METERS/1000)*u.km))
+    #rad = FrameAttribute(default=((RSUN_METERS/1000)*u.km))
+
+    def __init__(self, *args, **kwargs):
+        super(HelioGraphicCarrington, self).__init__(*args, **kwargs)
 
 class HelioCentric(BaseCoordinateFrame):
     """
@@ -116,9 +139,7 @@ class HelioCentric(BaseCoordinateFrame):
     default_representation = CartesianRepresentation
 
     _frame_specific_representation_info = {
-        'cartesian': {'names': ('x', 'y', 'z'), 'units': (u.km, u.km, u.km)},
-        'cylindrical': {'names': ('rho', 'psi', 'z'), 'units': (None, u.deg, u.km)}
-        }
+        'cylindrical': [RepresentationMapping('phi', 'psi', u.deg)]}
 
    # d = FrameAttribute(default=(1*u.au).to(u.km))
     D0 = FrameAttribute(default=(1*u.au).to(u.km))
@@ -156,9 +177,11 @@ class HelioProjective(BaseCoordinateFrame):
     default_representation = CartesianRepresentation
 
     _frame_specific_representation_info = {
-        'cartesian': {'names': ('Tx', 'Ty', 'zeta'), 'units': (u.deg, u.deg, u.km)},
-        'cylindrical': {'names': ('Trho', 'psi', 'z'), 'units': (u.deg, u.deg, u.km)}
-        }
+        'cartesian': [RepresentationMapping('x', 'Tx', u.deg),
+                      RepresentationMapping('y', 'Ty', u.deg),
+                      RepresentationMapping('z', 'zeta', u.km)],
+        'cylindrical': [RepresentationMapping('rho', 'Trho', u.deg),
+                        RepresentationMapping('phi', 'psi', u.deg)]}
 
     d = FrameAttribute(default=(1*u.au).to(u.km))
     D0 = FrameAttribute(default=(1*u.au).to(u.km))
@@ -185,15 +208,15 @@ def hcg_to_hcs(hcgcoord, hcsframe):
 
 @frame_transform_graph.transform(FunctionTransform, HelioCentric, HelioProjective)
 def helioc_to_heliop(helioccoord, heliopframe):
-    x = helioccoord.cartesian.x.to(u.m).value
-    y = helioccoord.cartesian.y.to(u.m).value
-    z = helioccoord.cartesian.z.to(u.m).value
+    x = helioccoord.x.to(u.m)
+    y = helioccoord.y.to(u.m)
+    z = helioccoord.z.to(u.m)
 
     # d is calculated as the distance between the points
     # (x,y,z) and (0,0,D0).
-    d = np.sqrt(x**2 + y**2 + (z - (helioccoord.D0.to(u.m).value))**2)
+    d = np.sqrt(x**2 + y**2 + (z - (helioccoord.D0.to(u.m)))**2)
     # zeta is then calculated as given in Thompson.
-    zeta = helioccoord.D0.to(u.m).value - d
+    zeta = helioccoord.D0.to(u.m) - d
 
     distance = np.sqrt(x ** 2 + y ** 2 + zeta ** 2)
     hpcx = np.rad2deg(np.arctan2(x, zeta))
@@ -204,8 +227,8 @@ def helioc_to_heliop(helioccoord, heliopframe):
     
 @frame_transform_graph.transform(FunctionTransform, HelioProjective, HelioCentric)
 def heliop_to_helioc(heliopcoord, heliocframe):
-    x = heliopcoord.cartesian.x.value
-    y = heliopcoord.cartesian.y.value
+    x = heliopcoord.x
+    y = heliopcoord.y
     c = np.array([np.deg2rad(1), np.deg2rad(1)])
 
     cosx = np.cos(x * c[0])
@@ -214,22 +237,22 @@ def heliop_to_helioc(heliopcoord, heliocframe):
     siny = np.sin(y * c[1])
     
     q = heliocframe.d * 1000 * cosy * cosx
-    distance = q ** 2 - (heliopcoord.d.to(u.m).value) ** 2 +
-    (heliopcoord.D0.to(u.m).value) ** 2
+    distance = (q ** 2 - (heliopcoord.d.to(u.m)) ** 2 +
+    (heliopcoord.D0.to(u.m)) ** 2)
     distance = q - np.sqrt(distance)
 
     rx = distance * cosy * sinx
     ry = distance * siny
-    rz = (heliopcoord.d.to(u.m).value) - distance * cosy * cosx
+    rz = (heliopcoord.d.to(u.m)) - distance * cosy * cosx
 
     representation = CartesianRepresentation(rx, ry, rz)
     return HelioCentric(representation)
 
 @frame_transform_graph.transform(FunctionTransform, HelioCentric, HelioGraphicStonyhurst)
 def hcc_to_hgs(helioccoord, heliogframe):
-    x = helioccoord.cartesian.x.to(u.m).value
-    y = helioccoord.cartesian.y.to(u.m).value
-    z = helioccoord.cartesian.z.to(u.m).value
+    x = helioccoord.x.to(u.m)
+    y = helioccoord.y.to(u.m)
+    z = helioccoord.z.to(u.m)
     
     l0_deg = _carrington_offset()
     b0_deg = s.heliographic_solar_center()[1]
@@ -246,11 +269,11 @@ def hcc_to_hgs(helioccoord, heliogframe):
                                              hecr)
     return HelioGraphicStonyhurst(representation)
 
-@frame_transform_graph.transfor(FunctionTransform, HelioGraphicStonyhurst, HelioCentric)
+@frame_transform_graph.transform(FunctionTransform, HelioGraphicStonyhurst, HelioCentric)
 def hgs_to_hcc(heliogcoord, heliopframe):
-    hglon = heliogcoord.spherical.lon.value
-    hglat = heliogcoord.spherical.lat.value
-    r = heliogcoord.spherical.distance.to(u.m).value
+    hglon = heliogcoord.hlon
+    hglat = heliogcoord.hlat
+    r = heliogcoord.rad.to(u.m)
 
     l0_deg = _carrington_offset()
     b0_deg = s.heliographic_solar_center()[1]
@@ -274,4 +297,3 @@ def hgs_to_hcc(heliogcoord, heliopframe):
 
     representation = CartesianRepresentation(x, y, zz)
     return HelioCentric(representation)
-
