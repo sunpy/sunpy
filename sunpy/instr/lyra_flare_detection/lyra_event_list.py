@@ -237,6 +237,9 @@ def remove_lyra_artifacts(time, fluxes=None, artifacts="All",
     time = _check_datetime(time)
     if not all(isinstance(artifact_type, str) for artifact_type in artifacts):
         raise TypeError("All elements in artifacts must in strings.")
+    if type(fluxes) is not None or type(fluxes) is not list:
+        raise TypeError("fluxes must be None or a list of numpy arrays of "
+                        "dtype 'float64'.")
     # Define outputs
     clean_time = copy.deepcopy(time)
     clean_fluxes = copy.deepcopy(fluxes)
