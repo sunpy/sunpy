@@ -30,23 +30,22 @@ class RHESSISummaryLightCurve(LightCurve):
     | http://sprg.ssl.berkeley.edu/~jimm/hessi/hsi_obs_summ_soc.html#hsi_obs_summ_rate
     """
 
-    def peek(self, title="RHESSI Observing Summary Count Rate", **kwargs):
-        """Plots RHESSI Count Rate light curve"""
-        figure = plt.figure()
-        axes = plt.gca()
+    def plot(self, axes=None, title="RHESSI Observing Summary Count Rate, Corrected", **plot_args):
+        """Plots the RHESSI Observing Summary Count rate"""
+        if axes is None:
+            axes = plt.gca()
 
-        dates = matplotlib.dates.date2num(self.data.index)
+        self.data.plot(ax=axes, **plot_args)
 
         lc_linecolors = ('black', 'pink', 'green', 'blue', 'brown', 'red',
                          'navy', 'orange', 'green')
 
-        for item, frame in self.data.iteritems():
-            axes.plot_date(dates, frame.values, '-', label=item, lw=2)
+#        for item, frame in self.data.iteritems():
+#            axes.plot_date(dates, frame.values, '-', label=item, lw=2)
 
         axes.set_yscale("log")
-        axes.set_xlabel(datetime.datetime.isoformat(self.data.index[0])[0:10])
 
-        axes.set_title('RHESSI Observing Summary Count Rates, Corrected')
+        axes.set_title(title)
         axes.set_ylabel('Corrected Count Rates s$^{-1}$ detector$^{-1}$')
 
         axes.yaxis.grid(True, 'major')
@@ -56,10 +55,8 @@ class RHESSISummaryLightCurve(LightCurve):
         # @todo: display better tick labels for date range (e.g. 06/01 - 06/05)
         formatter = matplotlib.dates.DateFormatter('%H:%M')
         axes.xaxis.set_major_formatter(formatter)
-
         axes.fmt_xdata = matplotlib.dates.DateFormatter('%H:%M')
-        figure.autofmt_xdate()
-        figure.show()
+        return axes
 
     @classmethod
     def _get_default_uri(cls):
