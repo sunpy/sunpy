@@ -130,14 +130,14 @@ class _LinearView(object):
         if item >= len(self):
             raise IndexError
 
-        freq_offset = item * self.delt
-        freq = self.arr.freq_axis[0] - freq_offset
+        freq_offset = item * self.delt.value
+        freq = self.arr.freq_axis[0].value - freq_offset
         # The idea is that when we take the biggest delta in the mid points,
         # we do not have to search anything that is between the beginning and
         # the first item that can possibly be that frequency.
-        min_mid = max(0, (freq.value - self.midpoints[0].value) // self.max_mp_delt)
+        min_mid = max(0, (freq - self.midpoints[0].value) // self.max_mp_delt.value)
         for n, mid in enumerate(self.midpoints[min_mid:]):
-            if mid.value <= freq.value:
+            if mid <= freq:
                 return arr[min_mid + n]
         return arr[min_mid + n]
 
@@ -584,7 +584,7 @@ class Spectrogram(Parent):
         max\_ : float
             All frequencies in the result are smaller or equal to this.
         """
-        if not(isinstance(vmin, u.Quantity) and isinstance(vmax, u.Quantity)):
+        if not(isinstance(vmin, u.Quantity) or isinstance(vmax, u.Quantity)):
             raise ValueError("must be astropy quantities")
         left = 0
         if vmax is not None:
@@ -690,7 +690,7 @@ class Spectrogram(Parent):
 
         if vmax is None:
             vmax = int(self.data.max())
-        if not(isinstance(vmin, u.Quantity) and isinstance(vmax, u.Quantity)):
+        if not(isinstance(vmin, u.Quantity) or isinstance(vmax, u.Quantity)):
             raise ValueError("must be astropy quantities")        
 
         return self._with_data(self.data.clip(vmin, vmax, out))
@@ -761,11 +761,13 @@ class Spectrogram(Parent):
         if delta_freq is None:
             # Nyquist–Shannon sampling theorem
             delta_freq = _min_delt(self.freq_axis) / 2.
-        nsize = (self.freq_axis.max() - self.freq_axis.min()) / delta_freq + 1
+        if not isinstance(delta_freq, u.Quantity):
+            raise ValueError("Must be astropy quantity")
+        nsize = ((self.freq_axis.max() - self.freq_axis.min()) / delta_freq).value + 1
         new = np.zeros((nsize, self.shape[1]), dtype=self.data.dtype)
 
         freqs = self.freq_axis - self.freq_axis.max()
-        freqs = freqs / delta_freq
+        freqs = (freqs / delta_freq).value
 
         midpoints = np.round((freqs[:-1] + freqs[1:]) / 2)
         fillto = np.concatenate(
