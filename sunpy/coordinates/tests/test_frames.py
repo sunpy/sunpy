@@ -23,19 +23,19 @@ def test_frame_attributes():
 
     class MyProj(HelioProjective):
         # Inherit D0, change d to something else, create a newattr.
-        d = (2*u.au).to(u.km)
+        d = FrameAttribute(default=(2*u.au).to(u.km))
         newattr = FrameAttribute(default='anattr')
 
     myproj = MyProj()
     assert myproj.D0 == (1*u.au).to(u.km)
     assert myproj.d == (2*u.au).to(u.km)
-    assert myproj.newattr.value == 'anattr'
-    assert set(myproj.get_frame_attr_names()) == set([(1*u.au).to(u.km),
-                                                      (2*u.au).to(u.km),
-                                                      'anattr'])
+    assert myproj.newattr == 'anattr'
+    assert set(myproj.get_frame_attr_names()) == set(['D0',
+                                                      'd',
+                                                      'newattr'])
 
     myproj = MyProj(D0=1*u.km, d=2*u.km, newattr='changed')
     assert myproj.D0 == 1*u.km
     assert myproj.d == 2*u.km
-    assert myproj.newattr.value == 'changed'
+    assert myproj.newattr == 'changed'
     
