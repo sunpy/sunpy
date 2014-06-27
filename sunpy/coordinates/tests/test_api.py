@@ -77,7 +77,7 @@ def test_highlevel_api():
     # An error is induced as a high-level object needs position data.
     # Frames can be initialized without this data, SkyCoord cannot.
     with pytest.raises(ValueError):
-        sc = SkyCoord(frame="heliographicstonyhurst")
+        sc = SkyCoord(frame="heliocentric")
 
     # The underlying frame object of the high-level object, when
     # accessed in a call to `repr`, is printed in the following
@@ -85,14 +85,14 @@ def test_highlevel_api():
     string = repr(sc.frame)
     assert '<HelioGraphicStonyhurst Coordinate: hlon=' in string
     assert 'deg, hlat=' in string
-    assert 'deg>' in string
+    assert 'km>' in string
 
     # Similarly, `repr(sc)` should look like -:
     # '<SkyCoord (HelioGraphicStonyhurst): lon=10*u.deg, lat=10*u.deg>'
     string = repr(sc)
     assert '<SkyCoord (HelioGraphicStonyhurst): hlon=' in string
     assert 'deg, hlat=' in string
-    assert 'deg>' in string
+    assert 'km>' in string
 
     # Transformation between frames is delegated by SkyCoord
     # to lower-level frame classes.
