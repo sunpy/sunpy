@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 # Author: Mateo Inchaurrandieta <mateo.inchaurrandieta@gmail.com>
+'''EIS spectral cube definitions'''
 
 from __future__ import absolute_import
 
@@ -28,8 +29,29 @@ def _clean(header):
 
 
 class EISSpectralCube(SpectralCube):
-    # TODO: write docstring
+    '''EIS Spectral Cube subclass.
+
+    References
+    ----------
+    For an overview of the mission
+    http://solarb.mssl.ucl.ac.uk/SolarB/
+    '''
     def __init__(self, cube, window=1, dataHeader=None, primaryHeader=None):
+        '''
+        Constructor function.
+
+        Parameters
+        ----------
+        cube: spectral_cube.SpectralCube object
+            The cube containing the data and wcs for the cube
+        window: int
+            The window this cube belongs to in the file. Used to fetch the
+            correct metadata from the header
+        dataHeader: astropy.io.fits.Header object
+            The header for the BINTableHDU section of the FITS file
+        primaryHeader: astropy.io.fits.Header object
+            The main header for the whole file.
+        '''
         h = _dictionarize_header(dataHeader, primaryHeader, window)
         SpectralCube.__init__(self, cube, header=h)
 
