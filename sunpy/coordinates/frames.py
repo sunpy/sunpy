@@ -60,11 +60,15 @@ class HelioGraphicStonyhurst(BaseCoordinateFrame):
     def __init__(self, *args, **kwargs):
         print(args, kwargs)
         if not args:
-            print('In kwargs section')
+            #print('In kwargs section')
             if 'rad' not in kwargs:
                 kwargs['rad'] = (RSUN_METERS/1000)*u.km
+            if 'hlon' not in kwargs:
+                kwargs['hlon'] = 1*u.deg
+            if 'hlat' not in kwargs:
+                kwargs['hlat'] = 1*u.deg
         elif not kwargs:
-            print('In args section')
+            #print('In args section')
             if len(args) == 2:
                 args = list(args)
                 args.append((RSUN_METERS/1000)*u.km)
@@ -254,8 +258,8 @@ def hcc_to_hgs(helioccoord, heliogframe):
     y = helioccoord.y.to(u.m)
     z = helioccoord.z.to(u.m)
     
-    l0_deg = _carrington_offset()
-    b0_deg = s.heliographic_solar_center()[1]
+    l0_deg = _carrington_offset() * u.deg
+    b0_deg = s.heliographic_solar_center()[1] * u.deg
 
     cosb = np.cos(np.deg2rad(b0_deg))
     sinb = np.sin(np.deg2rad(b0_deg))
@@ -275,8 +279,8 @@ def hgs_to_hcc(heliogcoord, heliopframe):
     hglat = heliogcoord.hlat
     r = heliogcoord.rad.to(u.m)
 
-    l0_deg = _carrington_offset()
-    b0_deg = s.heliographic_solar_center()[1]
+    l0_deg = _carrington_offset() * u.deg
+    b0_deg = s.heliographic_solar_center()[1] * u.deg
 
     lon = np.deg2rad(hglon)
     lat = np.deg2rad(hglat)
