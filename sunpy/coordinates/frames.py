@@ -58,22 +58,18 @@ class HelioGraphicStonyhurst(BaseCoordinateFrame):
     #rad = FrameAttribute(default=((RSUN_METERS/1000)*u.km))
 
     def __init__(self, *args, **kwargs):
-        print(args, kwargs)
         if not args:
-            #print('In kwargs section')
-            if 'rad' not in kwargs:
+            if 'rad' not in kwargs: # This default is required by definition.
                 kwargs['rad'] = (RSUN_METERS/1000)*u.km
-            if 'hlon' not in kwargs:
+            if 'hlon' not in kwargs: # hlon/hlat defaults are for SkyCoord.
                 kwargs['hlon'] = 1*u.deg
             if 'hlat' not in kwargs:
                 kwargs['hlat'] = 1*u.deg
         elif not kwargs:
-            #print('In args section')
             if len(args) == 2:
                 args = list(args)
                 args.append((RSUN_METERS/1000)*u.km)
                 args = tuple(args)
-        print(args, kwargs)
         super(HelioGraphicStonyhurst, self).__init__(*args, **kwargs)
 
 def _carrington_offset():
@@ -181,9 +177,9 @@ class HelioProjective(BaseCoordinateFrame):
     default_representation = CartesianRepresentation
 
     _frame_specific_representation_info = {
-        'cartesian': [RepresentationMapping('x', 'Tx', u.deg),
-                      RepresentationMapping('y', 'Ty', u.deg),
-                      RepresentationMapping('z', 'zeta', u.km)],
+        'spherical': [RepresentationMapping('lon', 'Tx', u.deg),
+                      RepresentationMapping('lat', 'Ty', u.deg),
+                      RepresentationMapping('distance', 'zeta', u.km)],
         'cylindrical': [RepresentationMapping('rho', 'Trho', u.deg),
                         RepresentationMapping('phi', 'psi', u.deg)]}
 
@@ -226,7 +222,7 @@ def helioc_to_heliop(helioccoord, heliopframe):
     hpcx = np.rad2deg(np.arctan2(x, zeta))
     hpcy = np.rad2deg(np.arcsin(y / distance))
 
-    representation = CartesianRepresentation(hpcx, hpcy, zeta)
+    representation = SphericalRepresentation(hpcx, hpcy, zeta)
     return HelioProjective(representation)
     
 @frame_transform_graph.transform(FunctionTransform, HelioProjective, HelioCentric)
