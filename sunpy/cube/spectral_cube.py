@@ -12,7 +12,6 @@ __all__ = ['SpectralCube']
 
 
 class SpectralCube(astropy.nddata.NDData):
-    # TODO: Should the headers be header objects or dicts? I think dicts...
     ''' Class representing spectral cubes.
 
         Attributes
@@ -20,20 +19,18 @@ class SpectralCube(astropy.nddata.NDData):
         cube: spectral_cube
             the spectral cube holding data and coordinates
 
-        data_header: astropy.io.fits.Header object
-            Header containing the wavelength-specific metadata
-
-        primary_header: astropy.io.fits.Header object
-            Main header containing metadata pertaining to the whole file
+        header: dictionary
+            Header containing the wavelength-specific metadata as well as the
+            whole-file metadata
     '''
 
-    def __init__(self, cube, data_header=None, primary_header=None, **kwargs):
+    def __init__(self, cube, header=None, **kwargs):
         astropy.nddata.NDData.__init__(self, data=cube.unmasked_data,
+                                       meta=header,
                                        wcs=cube.wcs,
                                        **kwargs)
         self.cube = cube
-        self.data_header = data_header
-        self.primary_header = primary_header
+        self.header = header
 
     def plot_wavelength_slice(self, offset, axes=None,
                               style='imshow', **kwargs):
@@ -116,7 +113,7 @@ class SpectralCube(astropy.nddata.NDData):
         '''
         a = None
         if (isinstance(offset, int) and offset >= 0 and
-            offset < len(self.cube.spectral_axis)):
+           offset < len(self.cube.spectral_axis)):
             a = self.cube.unmasked_data[offset, :, :]
 
         # TODO: this currently fails because delta is a numpy vector
@@ -143,7 +140,7 @@ class SpectralCube(astropy.nddata.NDData):
         '''
         a = None
         if (isinstance(offset, int) and offset >= 0 and
-            offset < self.cube.shape[2]):
+           offset < self.cube.shape[2]):
             a = self.cube.unmasked_data[:, :, offset]
 
         # TODO: This fails because delta is not a scalar (and it actually gets
@@ -174,6 +171,5 @@ class SpectralCube(astropy.nddata.NDData):
             maparray = self.cube.unmasked_data[chunk[0]:chunk[1], :, :].sum(0)
         else:
             maparray = self.cube.unmasked_data[chunk, :, :]
-        # TODO: send a proper header
-        m = GenericMap(data=maparray, header={})
+        m = GenericMap(data=np.array(maparray), header=self.header)
         return m

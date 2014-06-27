@@ -4,10 +4,10 @@
 from __future__ import absolute_import
 
 import spectral_cube as sc
-import numpy as np
 from astropy.io import fits
 from astropy import wcs
 from sunpy.cube import SpectralCube
+import re
 
 __all__ = ['EISSpectralCube']
 
@@ -29,10 +29,9 @@ def _clean(header):
 
 class EISSpectralCube(SpectralCube):
     # TODO: write docstring
-    def __init__(self, cube, dataHeader=None, primaryHeader=None):
-        SpectralCube.__init__(self, cube,
-                                           data_header=dataHeader,
-                                           primary_header=primaryHeader)
+    def __init__(self, cube, window=1, dataHeader=None, primaryHeader=None):
+        h = _dictionarize_header(dataHeader, primaryHeader, window)
+        SpectralCube.__init__(self, cube, header=h)
 
     @classmethod
     def read(cls, filename, **kwargs):
@@ -50,10 +49,32 @@ class EISSpectralCube(SpectralCube):
         wavelengths = [c.name for c in hdulist[1].columns if c.dim is not None]
         data = [hdulist[1].data[wav] for wav in wavelengths]
         cubes = [sc.SpectralCube(data=d.T, wcs=w) for d in data]
-        scubes = [EISSpectralCube(c, hdulist[1].header,
-                                  hdulist[0].header) for c in cubes]
+        scubes = [EISSpectralCube(cubes[i], i+1, dataHeader=hdulist[1].header,
+                                  primaryHeader=hdulist[0].header)
+                  for i in range(len(cubes))]
         return dict(zip(wavelengths, scubes))
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
+        # TODO: This will have to be changed once other sources are added.
         return True
+
+
+def _isInWindow(key, window):
+    l = re.findall(r'\d+$', key)  # finds numbers at the end of the key
+    if len(l) == 0:
+        return False
+    else:
+        return window == int(l[0])
+
+
+def _dictionarize_header(dataHeader, primaryHeader, window):
+    ph = dict(primaryHeader)
+    dh = {}
+    for k in dataHeader:
+        if _isInWindow(k, window):
+            newkey = re.sub(r'\d+$', '', k)
+            dh[newkey] = dataHeader[k]
+
+    ph.update(dh)
+    return ph
