@@ -230,7 +230,7 @@ Dimension:\t [%d, %d]
                                    Warning, __file__, inspect.currentframe().f_back.f_lineno)
             dsun = sun.sunearth_distance(self.date) * constants.au.si.value
 
-        return dsun
+        return dsun * u.meter
 
     @property
     def exposure_time(self):
@@ -262,14 +262,14 @@ Dimension:\t [%d, %d]
         """Return the X range of the image in arcsec from edge to edge."""
         xmin = self.center['x'] - self.shape[1] / 2. * self.scale['x']
         xmax = self.center['x'] + self.shape[1] / 2. * self.scale['x']
-        return [xmin, xmax]
+        return [xmin, xmax] * u.arcsec
 
     @property
     def yrange(self):
         """Return the Y range of the image in arcsec from edge to edge."""
         ymin = self.center['y'] - self.shape[0] / 2. * self.scale['y']
         ymax = self.center['y'] + self.shape[0] / 2. * self.scale['y']
-        return [ymin, ymax]
+        return [ymin, ymax] * u.arcsec
 
     @property
     def center(self):
