@@ -127,12 +127,10 @@ class Results(object):
                 self.progress = ProgressBar(self.total, self.total - self.n)
                 self.progress.start()
                 self.progress.draw()
-
         while not self.evt.wait(timeout):
             pass
         if progress:
             self.progress.finish()
-
         return self.map_
 
     def add_error(self, exception):
@@ -781,6 +779,14 @@ class VSOClient(object):
     def unknown_method(self, response):
         """ Override to pick a new method if the current one is unknown. """
         raise NoData
+    
+    @classmethod
+    def _can_handle_query(cls,*query):
+
+        chkattr = ['Wave', 'Time', 'Extent', 'Field', 'Provider', 'Source',
+            'Instrument', 'Physobs', 'Pixels', 'Level', 'Resolution',
+            'Detector', 'Filter', 'Sample', 'Quicklook', 'PScale']
+        return all([x.__class__.__name__ in chkattr for x in query])
 
 
 class InteractiveVSOClient(VSOClient):
