@@ -101,7 +101,7 @@ def test_upper_clip():
 
 def test_calculate_clipping():
     answer = calculate_clipping(clip_test_array, clip_test_array)
-    np.allclose(answer, ([2.0, 1.0]*u.pix, [2.0, 1.0]*u.pix))
+    assert answer ==([2.0, 1.0]*u.pix, [2.0, 1.0]*u.pix)
 
 
 def test_clip_edges():
