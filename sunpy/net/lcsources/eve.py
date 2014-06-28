@@ -6,7 +6,7 @@ __all__ = ['Time','Instrument']
 class EVEClient(GenericClient):
 
     def _get_url_for_timerange(cls,timerange,**kwargs):
-         if not timerange:
+	 if not timerange:
               return []
          days = timerange.get_days()
 	 urls = []
