@@ -6,7 +6,7 @@
 
 import numpy as np
 from astropy import units as u
-from numpy.testing import assert_allclose
+from numpy.testing import assert_allclose, assert_array_almost_equal
 from scipy.ndimage.interpolation import shift
 from sunpy import AIA_171_IMAGE
 from sunpy import map
@@ -101,7 +101,7 @@ def test_upper_clip():
 
 def test_calculate_clipping():
     answer = calculate_clipping(clip_test_array, clip_test_array)
-    assert answer ==([2.0, 1.0]*u.pix, [2.0, 1.0]*u.pix)
+    assert_array_almost_equal(answer, ([2.0, 1.0]*u.pix, [2.0, 1.0]*u.pix))
 
 
 def test_clip_edges():
