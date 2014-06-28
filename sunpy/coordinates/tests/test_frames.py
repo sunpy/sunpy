@@ -121,5 +121,44 @@ def test_ordered_data_frames():
         cr = CartesianRepresentation(1*u.km, 2*u.km, 3*u.km)
         HelioCentric(cr, 4*u.km)
 
+def test_nodata_frames():
+    # Tests frames which have no data.
 
+    hgs = HelioGraphicStonyhurst()
+    assert len(hgs.get_frame_attr_names()) == 0
+    # Heliographic frames are either completely empty, or true 3D.
+    # Nothing in between.
+
+    hcc = HelioCentric()
+    assert hcc.D0 == HelioCentric.get_frame_attr_names()['D0']
+    assert len(hcc.get_frame_attr_names()) == 1
+
+    hp = HelioProjective()
+    assert hp.D0 == HelioProjective.get_frame_attr_names()['D0']
+    assert hp.d == HelioProjective.get_frame_attr_names()['d']
+    assert len(hp.get_frame_attr_names()) == 2
+
+def test_frame_repr():
+    # Tests the repr() of a frame.
+
+    hgc = HelioGraphicCarrington()
+    assert repr(hgc) == '<HelioGraphicCarrington Frame>'
+
+    hcc = HelioCentric()
+    assert repr(hcc).startswith('<HelioCentric Frame: D0=')
+
+    hp = HelioProjective()
+    assert '<HelioProjective Frame:' in repr(hp)
+    assert 'D0=' in repr(hp)
+    assert 'd=' in repr(hp)
+
+    hgs_1 = HelioGraphicStonyhurst(1*u.deg, 2*u.deg)
+    hgs_2 = HelioGraphicStonyhurst(1*u.deg, 2*u.deg, 3*u.km)
+
+    assert repr(hgs_1) == ('<HelioGraphicStonyhurst Coordinate: ' \
+                           'hlon=1.0 deg, hlat=2.0 deg, rad=695508.0 km>')
+    assert repr(hgs_2) == ('<HelioGraphicStonyhurst Coordinate: ' \
+                           'hlon=1.0 deg, hlat=2.0 deg, rad=3.0 km>')
+
+    
     
