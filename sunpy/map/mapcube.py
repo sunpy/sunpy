@@ -272,7 +272,7 @@ class MapCube(object):
         Otherwise, an error is thrown.
         """
         if self.all_maps_same_shape:
-            return np.swapaxes(np.swapaxes(np.asarray([m.data for m in self.maps]), 0, 1), 1, 2)
+            return np.swapaxes(np.swapaxes(np.asarray([m.data for m in self.maps]), 0, 1), 1, 2).copy()
         else:
             raise ValueError('Not all maps have the same shape.')
 
