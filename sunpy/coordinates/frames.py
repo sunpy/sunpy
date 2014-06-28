@@ -174,7 +174,7 @@ class HelioProjective(BaseCoordinateFrame):
         Defaults to 1AU.
     """
 
-    default_representation = CartesianRepresentation
+    default_representation = SphericalRepresentation
 
     _frame_specific_representation_info = {
         'spherical': [RepresentationMapping('lon', 'Tx', u.deg),
@@ -196,14 +196,14 @@ class HelioProjective(BaseCoordinateFrame):
 
 @frame_transform_graph.transform(FunctionTransform, HelioGraphicStonyhurst, HelioGraphicCarrington)
 def hcs_to_hcg(hcscoord, hcgframe):
-    c_lon = hcscoord.spherical.lon + _carrington_offset()
-    representation = SphericalRepresentation(c_lon, hcscoord.spherical.lat)
+    c_lon = hcscoord.spherical.lon + _carrington_offset() * u.deg
+    representation = SphericalRepresentation(c_lon, hcscoord.hlat, hcscoord.rad)
     return HelioGraphicCarrington(representation)
 
 @frame_transform_graph.transform(FunctionTransform, HelioGraphicCarrington, HelioGraphicStonyhurst)
 def hcg_to_hcs(hcgcoord, hcsframe):
-    s_lon = hcgcoord.spherical.lon - _carrington_offset()
-    representation = SphericalRepresentation(s_lon, hcgcoord.spherical.lat)
+    s_lon = hcgcoord.spherical.lon - _carrington_offset() * u.deg
+    representation = SphericalRepresentation(s_lon, hcgcoord.hlat, hcgcoord.rad)
     return HelioGraphicStonyhurst(representation)
 
 @frame_transform_graph.transform(FunctionTransform, HelioCentric, HelioProjective)
@@ -227,8 +227,8 @@ def helioc_to_heliop(helioccoord, heliopframe):
     
 @frame_transform_graph.transform(FunctionTransform, HelioProjective, HelioCentric)
 def heliop_to_helioc(heliopcoord, heliocframe):
-    x = heliopcoord.x
-    y = heliopcoord.y
+    x = np.deg2rad(heliopcoord.Tx)
+    y = np.deg2rad(heliopcoord.Ty)
     c = np.array([np.deg2rad(1), np.deg2rad(1)])
 
     cosx = np.cos(x * c[0])
@@ -236,7 +236,7 @@ def heliop_to_helioc(heliopcoord, heliocframe):
     cosy = np.cos(y * c[1])
     siny = np.sin(y * c[1])
     
-    q = heliocframe.d * 1000 * cosy * cosx
+    q = heliopcoord.d.to(u.m) * cosy * cosx
     distance = (q ** 2 - (heliopcoord.d.to(u.m)) ** 2 +
     (heliopcoord.D0.to(u.m)) ** 2)
     distance = q - np.sqrt(distance)

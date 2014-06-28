@@ -94,3 +94,32 @@ def test_create_data_cartesian_frames():
 
     with pytest.raises(AttributeError):
         coord1.x = 1*u.km
+
+def test_ordered_data_frames():
+    # Need a similar test function for transformations
+    # involving heliographic frames - due to L0/B0.
+
+    # Tolerance level.
+    TOL = 1e-10*u.deg
+
+    hgs = HelioGraphicStonyhurst(1*u.deg, 2*u.deg)
+    assert (hgs.hlon - 1*u.deg) < TOL
+    assert (hgs.hlat - 2*u.deg) < TOL
+
+    hgc = HelioGraphicCarrington(1*u.deg, 2*u.deg)
+    assert (hgc.hlon - 1*u.deg) < TOL
+    assert (hgc.hlat - 2*u.deg) < TOL
+
+    hp = HelioProjective(1*u.deg, 2*u.deg, 3*u.km)
+    assert (hp.Tx - 1*u.deg) < TOL
+    assert (hp.Ty - 2*u.deg) < TOL
+
+    with pytest.raises(TypeError):
+        HelioCentric(1*u.km, 2*u.km, 3*u.km, 4*u.km)
+
+    with pytest.raises(TypeError):
+        cr = CartesianRepresentation(1*u.km, 2*u.km, 3*u.km)
+        HelioCentric(cr, 4*u.km)
+
+
+    
