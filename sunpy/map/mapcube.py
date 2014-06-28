@@ -75,10 +75,6 @@ class MapCube(object):
         """Return the number of maps in a mapcube."""
         return len(self.maps)
 
-    def __iter__(self):
-        """Mapcubes are iterable on the maps in the mapcube."""
-        return iter(self.maps)
-
     # Sorting methods
     @classmethod
     def _sort_by_date(cls):
