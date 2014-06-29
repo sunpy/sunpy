@@ -13,6 +13,8 @@ __version__ = 'June 11th, 2013'
 
 import pytest
 
+from astropy import units as u
+
 from sunpy.net import hek
 from sunpy.net import vso
 from sunpy.net import hek2vso
@@ -49,9 +51,11 @@ def test_wave_unit_catcher():
         hek2vso.wave_unit_catcher(9.4e-07, 'cm'),
         hek2vso.wave_unit_catcher(5e-08, 'mm')
     ]
-    test_values = [211.0, 94.0, 0.5]
+    test_values = [211.0 * u.AA, 94.0 * u.AA, 0.5 * u.AA]
 
-    assert np.allclose(test_wavel, test_values, rtol=1e-05, atol=1e-8)
+    np.allclose(test_wavel[0], test_values[0], rtol=1e-05, atol=1e-8)
+    np.allclose(test_wavel[1], test_values[1], rtol=1e-05, atol=1e-8)
+    np.allclose(test_wavel[2], test_values[2], rtol=1e-05, atol=1e-8)
 
 @pytest.mark.online
 def test_translate_results_to_query():
