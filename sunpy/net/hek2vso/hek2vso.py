@@ -55,7 +55,7 @@ def wave_unit_catcher(wavelength, wave_units):
                                                         wavelength)
     except AttributeError:
         raise AttributeError("'%s' is not a supported unit" % wave_units)
-    return converted_value
+    return converted_value * units.AA
 
 
 def translate_results_to_query(results):
@@ -131,8 +131,7 @@ def vso_attribute_parse(phrase):
                  vso.attrs.Instrument(phrase['obs_instrument'])]
         avg_wave_len = wave_unit_catcher(phrase['obs_meanwavel'],
                                          phrase['obs_wavelunit'])
-        query.append(vso.attrs.Wave(avg_wave_len * units.Angstrom, 
-                     avg_wave_len * units.Angstrom))
+        query.append(vso.attrs.Wave(avg_wave_len, avg_wave_len))
     except KeyError, TypeError:
         raise TypeError("'%s' is an improper data type" % type(phrase))
     return query
