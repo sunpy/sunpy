@@ -10,10 +10,10 @@ from numpy import testing as npt
 
 # Astropy
 from astropy import units as u
-from astropy.coordinates import (SphericalRepresentation,
-                                 CylindricalRepresentation,
-                                 CartesianRepresentation,
-                                 UnitSphericalRepresentation)
+from astropy.coordinates.representation import (SphericalRepresentation,
+                                                CylindricalRepresentation,
+                                                CartesianRepresentation,
+                                                UnitSphericalRepresentation)
 
 # Pytest
 import pytest
