@@ -2,6 +2,8 @@ from operator import attrgetter
 from datetime import datetime
 import json
 
+import astropy
+
 from sunpy.net import vso
 from sunpy.database import attrs as db_attrs
 from sunpy.net.attr import Attr, AttrOr, AttrAnd
@@ -46,6 +48,10 @@ def query_decode(json_object):
         if key in json_object:
             Attr = getattr(vso.attrs, key)
             return Attr(json_object[key])
+    for key in ['Quantity']:
+        if key in json_object:
+            Attr = getattr(astropy.units, key)
+            return Attr(*json_object[key])
     for key in ['Wave', 'Time']:
         if key in json_object:
             Attr = getattr(vso.attrs, key)
