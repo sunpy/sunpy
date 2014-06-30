@@ -17,6 +17,7 @@ from matplotlib import patches
 from matplotlib import cm
 
 import astropy.nddata
+import astropy.units as u
 from sunpy.image.transform import affine_transform
 
 import sunpy.io as io
@@ -152,7 +153,7 @@ Dimension:\t [%d, %d]
 
 """ % (self.__class__.__name__,
        self.observatory, self.instrument, self.detector, self.measurement,
-       self.date, self.exposure_time,
+       self.date, self.exposure_time.value,
        self.data.shape[1], self.data.shape[0], self.scale['x'], self.scale['y'])
      + self.data.__repr__())
 
@@ -235,7 +236,7 @@ Dimension:\t [%d, %d]
     @property
     def exposure_time(self):
         """Exposure time of the image in seconds."""
-        return self.meta.get('exptime', 0.0)
+        return self.meta.get('exptime', 0.0) * u.second
 
     @property
     def instrument(self):
@@ -285,7 +286,7 @@ Dimension:\t [%d, %d]
     @property
     def rsun_meters(self):
         """Radius of the sun in meters"""
-        return self.meta.get('rsun_ref', constants.radius)
+        return self.meta.get('rsun_ref', constants.radius) * u.meter
 
     @property
     def rsun_arcseconds(self):
@@ -299,7 +300,7 @@ Dimension:\t [%d, %d]
                                    Warning, __file__, inspect.currentframe().f_back.f_lineno)
             rsun_arcseconds = sun.solar_semidiameter_angular_size(self.date).value
 
-        return rsun_arcseconds
+        return rsun_arcseconds * u.arcsec
 
     @property
     def coordinate_system(self):
@@ -317,7 +318,7 @@ Dimension:\t [%d, %d]
                                    Warning, __file__, inspect.currentframe().f_back.f_lineno)
             carrington_longitude = (sun.heliographic_solar_center(self.date))[0]
 
-        return carrington_longitude
+        return carrington_longitude * u.deg     #should be changed after sun module astropy integration
 
     @property
     def heliographic_latitude(self):
@@ -331,12 +332,12 @@ Dimension:\t [%d, %d]
                                    Warning, __file__, inspect.currentframe().f_back.f_lineno)
             heliographic_latitude = (sun.heliographic_solar_center(self.date))[1]
 
-        return heliographic_latitude
+        return heliographic_latitude * u.deg      #should be changed after sun module astropy integration
 
     @property
     def heliographic_longitude(self):
         """Heliographic longitude in degrees"""
-        return self.meta.get('hgln_obs', 0.)
+        return self.meta.get('hgln_obs', 0.) * u.deg
 
     @property
     def reference_coordinate(self):
@@ -347,8 +348,8 @@ Dimension:\t [%d, %d]
     @property
     def reference_pixel(self):
         """Reference point axes in pixels (crpix1/2)"""
-        return {'x': self.meta.get('crpix1', (self.meta.get('naxis1') + 1) / 2.),
-                'y': self.meta.get('crpix2', (self.meta.get('naxis2') + 1) / 2.),}
+        return {'x': self.meta.get('crpix1', (self.meta.get('naxis1') + 1) / 2.) * u.pix,
+                'y': self.meta.get('crpix2', (self.meta.get('naxis2') + 1) / 2.) * u.pix,}
 
     @property
     def scale(self):
