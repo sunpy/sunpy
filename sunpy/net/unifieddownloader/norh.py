@@ -1,5 +1,5 @@
 from sunpy.net.vso.attrs import Time, Instrument
-from sunpy.net.lcsources.client import GenericClient
+from sunpy.net.unifieddownloader.client import GenericClient
 import datetime,urlparse
 
 __all__ = ['Time', 'Instrument']

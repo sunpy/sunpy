@@ -1,6 +1,6 @@
 import urlparse
 from sunpy.net.vso.attrs import Time,Instrument
-from sunpy.net.lcsources.client import GenericClient
+from sunpy.net.unifieddownloader.client import GenericClient
 
 __all__ = ['Time','Instrument']
 class EVEClient(GenericClient):

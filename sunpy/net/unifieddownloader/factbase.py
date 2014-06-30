@@ -3,7 +3,7 @@ from sunpy.net.attr import *
 from sunpy.net.vso.attrs import *
 from sunpy.util.datatype_factory_base import NoMatchError
 from sunpy.util.datatype_factory_base import MultipleMatchError
-from sunpy.net.lcsources.client import GenericClient
+from sunpy.net.unifieddownloader.client import GenericClient
 __all__=['UnifiedDownloader']
 
 qwalker = AttrWalker()
