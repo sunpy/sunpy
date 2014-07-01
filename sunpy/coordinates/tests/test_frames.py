@@ -182,4 +182,31 @@ def test_realize_frames():
     assert hp_2.D0 != HelioProjective.get_frame_attr_names()['D0']
     assert hp_2.d != HelioProjective.get_frame_attr_names()['d']
 
+def test_transform_architecture():
+    # This does not test the accuracy of transforms.
 
+    hgs = HelioGraphicStonyhurst(hlon=[1,2]*u.deg,
+                                 hlat=[3,4]*u.deg)
+    hcc = hgs.transform_to(HelioCentric)
+    hgs_2 = hcc.transform_to(HelioGraphicStonyhurst)
+    hgc = hgs_2.transform_to(HelioGraphicCarrington)
+
+    assert hgs_2.data.__class__ != UnitSphericalRepresentation
+    assert hgc.data.__class__ != UnitSphericalRepresentation
+
+    npt.assert_allclose(hgs.hlon, hgs_2.hlon)
+    npt.assert_allclose(hgs.hlat, hgs_2.hlat)
+
+    # Self transforms
+
+    hgs_3 = hgs.transform_to(HelioGraphicStonyhurst)
+
+    npt.assert_allclose(hgs.hlon, hgs_3.hlon)
+    npt.assert_allclose(hgs.hlat, hgs_3.hlat)
+    npt.assert_allclose(hgs.rad, hgs_3.rad)
+
+
+
+    
+
+    
