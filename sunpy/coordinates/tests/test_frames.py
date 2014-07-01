@@ -160,5 +160,26 @@ def test_frame_repr():
     assert repr(hgs_2) == ('<HelioGraphicStonyhurst Coordinate: ' \
                            'hlon=1.0 deg, hlat=2.0 deg, rad=3.0 km>')
 
-    
-    
+def test_realize_frames():
+    # Tests for the realize_frame() method.
+
+    rep = SphericalRepresentation(1*u.deg, 2*u.deg, 3*u.km)
+
+    hgs_1 = HelioGraphicStonyhurst()
+    hgs_2 = hgs_1.realize_frame(rep)
+
+    assert not hgs_1.has_data
+    assert hgs_2.has_data
+
+    hp_1 = HelioProjective(d=1*u.km, D0=2*u.km)
+    hp_2 = hp_1.realize_frame(rep)
+
+    assert not hp_1.has_data
+    assert hp_2.has_data
+
+    assert hp_1.D0 == hp_2.D0
+    assert hp_1.d == hp_2.d
+    assert hp_2.D0 != HelioProjective.get_frame_attr_names()['D0']
+    assert hp_2.d != HelioProjective.get_frame_attr_names()['d']
+
+
