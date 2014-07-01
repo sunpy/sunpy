@@ -188,18 +188,20 @@ class HelioProjective(BaseCoordinateFrame):
     D0 = FrameAttribute(default=(1*u.au).to(u.km))
 
     def __init__(self, *args, **kwargs):
-        if not args and not kwargs:
+        if not args and not kwargs: # Empty frame case.
             super(HelioProjective, self).__init__(*args, **kwargs)
         elif not args:
-            if 'zeta' not in kwargs:
+            if 'Tx' not in kwargs and 'Ty' not in kwargs: # Empty frame case.
+                super(HelioProjective, self).__init__(*args, **kwargs)
+            elif 'zeta' not in kwargs:
                 kwargs['zeta'] = 0*u.km
         elif not kwargs:
-            if len(args) >= 2:
+            if len(args) == 2: # For args, the first two args will always be Tx,Ty.
                 args = list(args)
                 args.append(0*u.km)
                 args = tuple(args)
         super(HelioProjective, self).__init__(*args, **kwargs)
-            
+           
     # Note that Trho = Drho + 90, and Drho is the declination parameter.
     # According to Thompson, we use Trho internally and Drho as part of
     # the (Drho, psi) pair when defining a coordinate in this system.
