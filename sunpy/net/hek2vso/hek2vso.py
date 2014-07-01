@@ -18,6 +18,7 @@ from astropy import units
 
 from sunpy.net import hek
 from sunpy.net import vso
+from sunpy.net.vso.attrs import Wave
 from sunpy.util.progressbar import TTYProgressBar
 
 __author__ = 'Michael Malocha'

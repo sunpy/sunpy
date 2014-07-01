@@ -57,11 +57,12 @@ class _Range(object):
 
 class Wave(Attr, _Range):
     def __init__(self, wavemin, wavemax):
-        # TODO: raise if not quantities
+        if not isinstance(wavemin or wavemax, u.Quantity):
+            raise ValueError("Must be astropy Quantity")
         self.min, self.max = sorted(
-            value.to(wavemin.unit) for value in [wavemin, wavemax]
-            )
-        self.unit = wavemin.unit
+            v.to(u.angstrom, equivalencies=u.spectral())
+            for v in [wavemin, wavemax]
+        )
         
         Attr.__init__(self)
         _Range.__init__(self, self.min, self.max, self.__class__)
@@ -266,7 +267,7 @@ walker.add_converter(Wave)(
     lambda x: ValueAttr({
             ('wave', 'wavemin'): x.min.value,
             ('wave', 'wavemax'): x.max.value,
-            ('wave', 'waveunit'): x.unit,
+            ('wave', 'waveunit'): x.max.unit
     })
 )
 
@@ -323,11 +324,11 @@ def _(attr, results):
         if
         it.wave.wavemax is not None
         and
-        attr.min <= to_angstrom(float(it.wave.wavemax), it.wave.waveunit)
+        attr.min <= it.wave.wavemax.to(u.angstrom, equivalencies=u.spectral())
         and
         it.wave.wavemin is not None
         and
-        attr.max >= to_angstrom(float(it.wave.wavemin), it.wave.waveunit)
+        attr.max >= it.wave.wavemin.to(u.angstrom, equivalencies=u.spectral())
     )
 
 @filter_results.add_dec(Time)
