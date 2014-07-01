@@ -175,11 +175,11 @@ class HelioProjective(BaseCoordinateFrame):
     default_representation = SphericalRepresentation
 
     _frame_specific_representation_info = {
-        'spherical': [RepresentationMapping('lon', 'Tx', u.deg),
-                      RepresentationMapping('lat', 'Ty', u.deg),
+        'spherical': [RepresentationMapping('lon', 'Tx', u.arcsec),
+                      RepresentationMapping('lat', 'Ty', u.arcsec),
                       RepresentationMapping('distance', 'zeta', u.km)],
-        'cylindrical': [RepresentationMapping('rho', 'Trho', u.deg),
-                        RepresentationMapping('phi', 'psi', u.deg)]}
+        'cylindrical': [RepresentationMapping('rho', 'Trho', u.arcsec),
+                        RepresentationMapping('phi', 'psi', u.arcsec)]}
 
     d = FrameAttribute(default=(1*u.au).to(u.km))
     D0 = FrameAttribute(default=(1*u.au).to(u.km))
