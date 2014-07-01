@@ -227,12 +227,11 @@ def helioc_to_heliop(helioccoord, heliopframe):
 def heliop_to_helioc(heliopcoord, heliocframe):
     x = np.deg2rad(heliopcoord.Tx)
     y = np.deg2rad(heliopcoord.Ty)
-    c = np.array([np.deg2rad(1), np.deg2rad(1)])
 
-    cosx = np.cos(x * c[0])
-    sinx = np.sin(x * c[0])
-    cosy = np.cos(y * c[1])
-    siny = np.sin(y * c[1])
+    cosx = np.cos(x)
+    sinx = np.sin(x)
+    cosy = np.cos(y)
+    siny = np.sin(y)
     
     q = heliopcoord.d.to(u.m) * cosy * cosx
     distance = (q ** 2 - (heliopcoord.d.to(u.m)) ** 2 +

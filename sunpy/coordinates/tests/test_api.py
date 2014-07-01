@@ -11,12 +11,13 @@ from astropy.extern import six
 import pytest
 
 from astropy import units as u
-from astropy.coordinates import (SphericalRepresentation,
-                                 CylindricalRepresentation, CartesianRepresentation)
+from astropy.coordinates.representation import (SphericalRepresentation,
+                                                CylindricalRepresentation,
+                                                CartesianRepresentation)
 
 def test_frame_api():
     from ..frames import (HelioGraphicStonyhurst, HelioCentric,
-                                HelioProjective)
+                          HelioProjective)
     # This method will test the use of the Coordinates API
     # in a way similar to that of Astropy's testing methods.
 
