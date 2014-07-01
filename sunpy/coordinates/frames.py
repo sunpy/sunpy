@@ -195,7 +195,7 @@ class HelioProjective(BaseCoordinateFrame):
                 super(HelioProjective, self).__init__(*args, **kwargs)
             elif 'zeta' not in kwargs:
                 kwargs['zeta'] = 0*u.km
-        elif not kwargs:
+        elif not kwargs or (args and kwargs):
             if len(args) == 2: # For args, the first two args will always be Tx,Ty.
                 args = list(args)
                 args.append(0*u.km)
