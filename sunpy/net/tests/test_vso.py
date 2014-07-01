@@ -9,10 +9,6 @@ import datetime
 import pytest
 from astropy import units as u
 
-from numpy.testing import assert_array_almost_equal
-
-from astropy import units as u
-
 from sunpy.time import TimeRange
 from sunpy.net import vso
 from sunpy.net.vso import attrs as va
@@ -157,7 +153,8 @@ def test_wave_toangstrom():
 
     with pytest.raises(ValueError) as excinfo:
         va.Wave(10 * u.g, 23 * u.g)
-    assert excinfo.value.message == "'g' is not a spectral supported unit"
+    # Python2.6 does not like excinfo.value.message
+    assert str(excinfo.value) == "'g' is not a spectral supported unit"
 
 
 def test_time_xor():
@@ -185,8 +182,6 @@ def test_wave_xor():
     
     a ^= va.Wave(600 * u.AA, 800 * u.AA)
     
-    a ^= va.Wave(600 * u.angstrom, 800 * u.angstrom)
-
     assert a == attr.AttrOr(
         [va.Wave(0 * u.AA, 200 * u.AA), va.Wave(400 * u.AA, 600 * u.AA), va.Wave(800 * u.AA, 1000 * u.AA)])
 
