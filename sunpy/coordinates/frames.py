@@ -21,8 +21,11 @@ from astropy.coordinates import FrameAttribute
 # SunPy imports
 from sunpy import sun as s # For Carrington rotation number
 
-RSUN_METERS = s.constants.constant('radius').si.value 
+RSUN_METERS = s.constants.constant('radius').si.value
 DSUN_METERS = s.constants.constant('mean distance').si.value
+
+__all__ = ['HelioGraphicStonyhurst', 'HelioGraphicCarrington',
+           'HelioCentric', 'HelioProjective']
 
 class HelioGraphicStonyhurst(BaseCoordinateFrame):
     """
@@ -46,7 +49,7 @@ class HelioGraphicStonyhurst(BaseCoordinateFrame):
         This quantity holds the radial distance. If not specified, it is, by default,
         the solar radius. Optional, must be keyword
     """
-    
+
     default_representation = SphericalRepresentation
 
     _frame_specific_representation_info = {
@@ -94,7 +97,7 @@ class HelioGraphicCarrington(HelioGraphicStonyhurst):
         This quantity holds the radial distance. If not specified, it is, by default,
         the solar radius. Optional, must be keyword.
     """
-    
+
     default_representation = SphericalRepresentation
 
     _frame_specific_representation_info = {
@@ -141,7 +144,7 @@ class HelioCentric(BaseCoordinateFrame):
 
    # d = FrameAttribute(default=(1*u.au).to(u.km))
     D0 = FrameAttribute(default=(1*u.au).to(u.km))
-    
+
 class HelioProjective(BaseCoordinateFrame):
     """
     A coordinate or frame in the Helioprojective
@@ -184,19 +187,6 @@ class HelioProjective(BaseCoordinateFrame):
     d = FrameAttribute(default=(1*u.au).to(u.km))
     D0 = FrameAttribute(default=(1*u.au).to(u.km))
 
-    def __init__(self, *args, **kwargs):
-        if not args and not kwargs:
-            super(HelioProjective, self).__init__(*args, **kwargs)
-        elif not args:
-            if 'zeta' not in kwargs:
-                kwargs['zeta'] = 0*u.km
-        elif not kwargs:
-            if len(args) >= 2:
-                args = list(args)
-                args.append(0*u.km)
-                args = tuple(args)
-        super(HelioProjective, self).__init__(*args, **kwargs)
-            
     # Note that Trho = Drho + 90, and Drho is the declination parameter.
     # According to Thompson, we use Trho internally and Drho as part of
     # the (Drho, psi) pair when defining a coordinate in this system.
@@ -235,7 +225,7 @@ def helioc_to_heliop(helioccoord, heliopframe):
 
     representation = SphericalRepresentation(hpcx, hpcy, zeta)
     return HelioProjective(representation)
-    
+
 @frame_transform_graph.transform(FunctionTransform, HelioProjective, HelioCentric)
 def heliop_to_helioc(heliopcoord, heliocframe):
     x = np.deg2rad(heliopcoord.Tx)
@@ -258,7 +248,7 @@ def hcc_to_hgs(helioccoord, heliogframe):
     x = helioccoord.x.to(u.m)
     y = helioccoord.y.to(u.m)
     z = helioccoord.z.to(u.m)
-    
+
     l0_deg = _carrington_offset() * u.deg
     b0_deg = s.heliographic_solar_center()[1] * u.deg
 
