@@ -57,12 +57,15 @@ class _Range(object):
 
 class Wave(Attr, _Range):
     def __init__(self, wavemin, wavemax):
-        if not isinstance(wavemin or wavemax, u.Quantity):
-            raise ValueError("Must be astropy Quantity")
+        # TODO: raise if not quantities
+        convert = {'m': u.AA, 'Hz': u.GHz, 'eV': u.keV}
+        for k in convert.keys():
+            if wavemin.decompose().unit == u.Unit(k):
+                unit = convert[k]
         self.min, self.max = sorted(
-            v.to(u.angstrom, equivalencies=u.spectral())
-            for v in [wavemin, wavemax]
-        )
+            value.to(unit) for value in [wavemin, wavemax]
+            )
+        self.unit = unit
         
         Attr.__init__(self)
         _Range.__init__(self, self.min, self.max, self.__class__)
