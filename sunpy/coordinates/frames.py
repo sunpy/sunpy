@@ -232,15 +232,10 @@ def heliop_to_helioc(heliopcoord, heliocframe):
     sinx = np.sin(x)
     cosy = np.cos(y)
     siny = np.sin(y)
-    
-    q = heliopcoord.d.to(u.m) * cosy * cosx
-    distance = (q ** 2 - (heliopcoord.d.to(u.m)) ** 2 +
-    (heliopcoord.D0.to(u.m)) ** 2)
-    distance = q - np.sqrt(distance)
 
-    rx = distance * cosy * sinx
-    ry = distance * siny
-    rz = (heliopcoord.d.to(u.m)) - distance * cosy * cosx
+    rx = (heliopcoord.d.to(u.m)) * cosy * sinx
+    ry = (heliopcoord.d.to(u.m)) * siny
+    rz = (heliopcoord.D0.to(u.m)) - (heliopcoord.d.to(u.m)) * cosy * cosx
 
     representation = CartesianRepresentation(rx, ry, rz)
     return HelioCentric(representation)
