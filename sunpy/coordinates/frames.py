@@ -205,7 +205,7 @@ class HelioProjective(BaseCoordinateFrame):
         elif args and kwargs:
             if isinstance(args[0], BaseRepresentation):
                 if 'zeta' in kwargs:
-                    raise TypeError("zeta is not a valid kwarg here for the {0} frame.").format(self.__class__)
+                    raise TypeError("zeta is not a valid kwarg here for the {0} frame.".format(self.__class__))
             elif len(args) < 3:
                 if 'd' not in kwargs and 'zeta' in kwargs:
                     if 'D0' in kwargs:
@@ -213,10 +213,10 @@ class HelioProjective(BaseCoordinateFrame):
                     else:
                         kwargs['d'] = self.D0 - kwargs['zeta']
                 elif 'd' in kwargs and 'zeta' in kwargs:
-                    raise TypeError("zeta is not a valid kwarg here for the {0} frame.").format(self.__class__)
+                    raise TypeError("zeta is not a valid kwarg here for the {0} frame.".format(self.__class__))
             elif len(args) == 3:
                 if 'zeta' in kwargs:
-                    raise TypeError("zeta is not a valid kwarg here for the {0} frame.").format(self.__class__)
+                    raise TypeError("zeta is not a valid kwarg here for the {0} frame.".format(self.__class__))
         elif not kwargs:
             if len(args) == 2:
                 args = list(args)
@@ -229,7 +229,7 @@ class HelioProjective(BaseCoordinateFrame):
                 else:
                     kwargs['d'] = self.D0 - kwargs['zeta']
             elif 'd' in kwargs and 'zeta' in kwargs:
-                raise TypeError("zeta is not a valid kwarg here for the {0} frame.").format(self.__class__)
+                raise TypeError("zeta is not a valid kwarg here for the {0} frame.".format(self.__class__))
         super(HelioProjective, self).__init__(*args, **kwargs)
            
     # Note that Trho = Drho + 90, and Drho is the declination parameter.
