@@ -8,6 +8,8 @@ import matplotlib.pyplot as plt
 
 from sunpy.map import GenericMap
 
+from astropy import units as u
+
 from sunpy.util import expand_list
 
 __all__ = ['CompositeMap']
@@ -232,7 +234,7 @@ class CompositeMap(object):
             
         return self._maps[index].draw_limb(axes=axes)
         
-    def draw_grid(self, index=None, axes=None, grid_spacing=20):
+    def draw_grid(self, index=None, axes=None, grid_spacing=20*u.deg):
         """Draws a grid over the surface of the Sun
         
         Parameters
@@ -243,13 +245,15 @@ class CompositeMap(object):
         axes: matplotlib.axes object or None
             Axes to plot limb on or None to use current axes.
         
-        grid_spacing: float
+        grid_spacing: astropy.Quantity
             Spacing (in degrees) for longitude and latitude grid.
         
         Returns
         -------
         matplotlib.axes object
         """
+        if not isinstance(grid_spacing, u.Quantity):
+            raise ValueError("Needs to astropy Quantity")
         needed_attrs = ['rsun_meters', 'dsun', 'heliographic_latitude',
                             'heliographic_longitude']
         if index is None:

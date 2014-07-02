@@ -277,10 +277,10 @@ Dimension:\t [%d, %d]
         """Returns the offset between the center of the Sun and the center of
         the map."""
         return {'x': wcs.get_center(self.shape[1], self.scale['x'],
-                                    self.reference_pixel['x'],
+                                    self.reference_pixel['x'].value,
                                     self.reference_coordinate['x']),
                 'y': wcs.get_center(self.shape[0], self.scale['y'],
-                                    self.reference_pixel['y'],
+                                    self.reference_pixel['y'].value,
                                     self.reference_coordinate['y']),}
 
     @property
@@ -470,7 +470,7 @@ Dimension:\t [%d, %d]
             raise ValueError("Y pixel value cannot be less than 0.")
 
         scale = np.array([self.scale['x'], self.scale['y']])
-        crpix = np.array([self.reference_pixel['x'], self.reference_pixel['y']])
+        crpix = np.array([self.reference_pixel['x'].value, self.reference_pixel['y'].value])
         crval = np.array([self.reference_coordinate['x'], self.reference_coordinate['y']])
         coordinate_system = [self.coordinate_system['x'], self.coordinate_system['y']]
         x,y = wcs.convert_pixel_to_data(self.shape, scale, crpix, crval, x = x, y = y)
@@ -563,7 +563,7 @@ Dimension:\t [%d, %d]
         new_map.meta = new_meta
         return new_map
 
-    def rotate(self, angle=None, rmatrix=None, order=3, scale=1.0,
+    def rotate(self, angle=None, rmatrix=None, order=3, scale=1.0,    #manually check if it works
                image_center=None, recenter=False, missing=0.0, use_scipy=False):
         """
         Returns a new rotated and rescaled map.  Specify either a rotation
@@ -576,7 +576,7 @@ Dimension:\t [%d, %d]
 
         Parameters
         ----------
-        angle : float
+        angle : astropy.Quantity
             The angle (degrees) to rotate counterclockwise.
         rmatrix : 2x2
             Linear transformation rotation matrix.
@@ -622,6 +622,8 @@ Dimension:\t [%d, %d]
         :func:`sunpy.image.transform.affine_transform` documentation for a
         detailed description of the differences.
         """
+        if not isinstance(angle, u.Quantity):
+            raise ValueError("Must be astropy Quantity")
         if angle is not None and rmatrix is not None:
             raise ValueError("You cannot specify both an angle and a matrix")
         elif angle is None and rmatrix is None:
@@ -636,14 +638,14 @@ Dimension:\t [%d, %d]
 
         if angle is not None:
             #Calulate the parameters for the affine_transform
-            c = np.cos(np.deg2rad(angle))
-            s = np.sin(np.deg2rad(angle))
+            c = np.cos(angle)
+            s = np.sin(angle)
             rmatrix = np.matrix([[c, -s], [s, c]])
 
         if image_center is None:
             # FITS pixels  count from 1 (curse you, FITS!)
-            image_center = (self.shape[1] - self.reference_pixel['x'] + 1,
-                            self.reference_pixel['y'])
+            image_center = (self.shape[1] - self.reference_pixel['x'].value + 1,
+                            self.reference_pixel['y'].value)
 
         # Because map data has the origin at the bottom left not the top left
         # as is convention for images vertically flip the image for the
@@ -840,7 +842,7 @@ Dimension:\t [%d, %d]
 
 # #### Visualization #### #
 
-    def draw_grid(self, axes=None, grid_spacing=15, **kwargs):
+    def draw_grid(self, axes=None, grid_spacing=15*u.deg, **kwargs):   #Manual check again
         """Draws a grid over the surface of the Sun
 
         Parameters
@@ -848,7 +850,7 @@ Dimension:\t [%d, %d]
         axes: matplotlib.axes object or None
         Axes to plot limb on or None to use current axes.
 
-        grid_spacing: float
+        grid_spacing: astropy.Quantity
             Spacing (in degrees) for longitude and latitude grid.
 
         Returns
@@ -859,15 +861,17 @@ Dimension:\t [%d, %d]
         -----
         keyword arguments are passed onto matplotlib.pyplot.plot
         """
+        if not isinstance(grid_spacing, u.Quantity):
+            raise ValueError("Must be astropy.Quantity")
 
         if not axes:
             axes = plt.gca()
 
         x, y = self.pixel_to_data()
-        dsun = self.dsun
+        dsun = self.dsun.value
 
-        b0 = self.heliographic_latitude
-        l0 = self.heliographic_longitude
+        b0 = self.heliographic_latitude.value
+        l0 = self.heliographic_longitude.value
         units = [self.units['x'], self.units['y']]
 
         #Prep the plot kwargs
@@ -876,8 +880,8 @@ Dimension:\t [%d, %d]
                    'zorder':100}
         plot_kw.update(kwargs)
 
-        hg_longitude_deg = np.linspace(-180, 180, num=361) + self.heliographic_longitude
-        hg_latitude_deg = np.arange(-90, 90, grid_spacing)
+        hg_longitude_deg = np.linspace(-180, 180, num=361) + self.heliographic_longitude.value
+        hg_latitude_deg = np.arange(-90, 90, grid_spacing.value)
 
         # draw the latitude lines
         for lat in hg_latitude_deg:
@@ -889,7 +893,7 @@ Dimension:\t [%d, %d]
             y = y[valid]
             axes.plot(x, y, **plot_kw)
 
-        hg_longitude_deg = np.arange(-180, 180, grid_spacing) + self.heliographic_longitude
+        hg_longitude_deg = np.arange(-180, 180, grid_spacing.value) + self.heliographic_longitude.value
         hg_latitude_deg = np.linspace(-90, 90, num=181)
 
         # draw the longitude lines
@@ -902,8 +906,8 @@ Dimension:\t [%d, %d]
             y = y[valid]
             axes.plot(x, y, **plot_kw)
 
-        axes.set_ylim(self.yrange)
-        axes.set_xlim(self.xrange)
+        axes.set_ylim(self.yrange.value)
+        axes.set_xlim(self.xrange.value)
 
         return axes
 
