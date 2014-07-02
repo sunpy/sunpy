@@ -4,6 +4,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import astropy.nddata
+import sunpy.util.util as util
 from sunpy.map import GenericMap
 
 __all__ = ['SpectralCube']
@@ -14,21 +15,26 @@ class SpectralCube(astropy.nddata.NDData):
 
         Attributes
         ----------
-        cube: spectral_cube
-            the spectral cube holding data and coordinates
+        data: numpy ndarray
+            The spectral cube holding the actual data in this object. The axes
+            are always [spectral dimension, spatial dimension, extra dimension]
+            where the extra dimension can be time or another spatial dimension.
 
-        header: dictionary
+        wcs: astropy WCS object
+            The WCS object containing the axes' information
+
+        meta: dict
             Header containing the wavelength-specific metadata as well as the
             whole-file metadata
     '''
 
-    def __init__(self, cube, header=None, **kwargs):
-        astropy.nddata.NDData.__init__(self, data=cube.unmasked_data,
-                                       meta=header,
-                                       wcs=cube.wcs,
+    def __init__(self, data, wcs, meta=None, **kwargs):
+        data, wcs = _orient(data, wcs)
+        astropy.nddata.NDData.__init__(self, data=data,
+                                       meta=meta,
                                        **kwargs)
-        self.cube = cube
-        self.header = header
+        self.wcs = wcs  # We don't send this to NDData because it's not
+                        # supported as of astropy 0.3.2. Eventually we will.
 
     def plot_wavelength_slice(self, offset, axes=None,
                               style='imshow', **kwargs):
@@ -55,7 +61,7 @@ class SpectralCube(astropy.nddata.NDData):
 
         data = self._choose_wavelength_slice(offset)
         if data is None:
-            data = self.cube.unmasked_data[0, :, :]
+            data = self.data[0, :, :]
 
         if style is 'imshow':
             plot = axes.imshow(data, **kwargs)
@@ -89,7 +95,7 @@ class SpectralCube(astropy.nddata.NDData):
 
         data = self._choose_x_slice(offset)
         if data is None:
-            data = self.cube.unmasked_data[:, 0, :]
+            data = self.data[:, 0, :]
 
         if style is 'imshow':
             plot = axes.imshow(data, **kwargs)
@@ -111,16 +117,16 @@ class SpectralCube(astropy.nddata.NDData):
         '''
         a = None
         if (isinstance(offset, int) and offset >= 0 and
-           offset < len(self.cube.spectral_axis)):
+           offset < len(self.data)):
             a = self.cube.unmasked_data[offset, :, :]
 
         # TODO: this currently fails because delta is a numpy vector
         if isinstance(offset, float):
-            delta = self.cube.spectral_axis[1] - self.cube.spectral_axis[0]
-            wloffset = offset / float(delta.decompose())
+            delta = self.wcs.wcs.cdelt[2]
+            wloffset = offset / delta
             wloffset = int(wloffset)
-            if wloffset >= 0 and wloffset < len(self.cube.spectral_axis):
-                a = self.cube.unmasked_data[wloffset, :, :]
+            if wloffset >= 0 and wloffset < len(self.data):
+                a = self.data[wloffset, :, :]
 
         return np.array(a)
 
@@ -138,17 +144,17 @@ class SpectralCube(astropy.nddata.NDData):
         '''
         a = None
         if (isinstance(offset, int) and offset >= 0 and
-           offset < self.cube.shape[2]):
+           offset < self.data.shape[2]):
             a = self.cube.unmasked_data[:, :, offset]
 
         # TODO: This fails because delta is not a scalar (and it actually gets
         # a wavelength slice, but nevermind...)
         if isinstance(offset, float):
-            delta = self.cube.spectral_axis[1] - self.cube.spectral_axis[0]
+            delta = self.wcs.wcs.cdelt[0]
             wloffset = offset / delta
             wloffset = int(wloffset)
-            if wloffset >= 0 and wloffset < len(self.cube.spectral_axis):
-                a = self.cube.unmasked_data[wloffset, :, :]
+            if wloffset >= 0 and wloffset < len(self.data):
+                a = self.data[:, :, wloffset]
 
         return np.array(a).T
 
@@ -166,8 +172,53 @@ class SpectralCube(astropy.nddata.NDData):
             aggregate the given range.
         '''
         if isinstance(chunk, tuple):
-            maparray = self.cube.unmasked_data[chunk[0]:chunk[1], :, :].sum(0)
+            maparray = self.data[chunk[0]:chunk[1], :, :].sum(0)
         else:
-            maparray = self.cube.unmasked_data[chunk, :, :]
-        m = GenericMap(data=np.array(maparray), header=self.header)
+            maparray = self.data[chunk, :, :]
+        m = GenericMap(data=np.array(maparray), header=self.meta)
         return m
+
+
+def _orient(array, wcs):
+    # This is mostly lifted from astropy's spectral cube.
+    """
+    Given a 3-d spectral cube and WCS, swap around the axes so that the
+    spectral axis cube is the first in Numpy notation, and the last in WCS
+    notation.
+
+    Parameters
+    ----------
+    array : `~numpy.ndarray`
+        The input 3-d array with two position dimensions and one spectral
+        dimension.
+    wcs : `~astropy.wcs.WCS`
+        The input 3-d WCS with two position dimensions and one spectral
+        dimension.
+    """
+
+    if array.ndim != 3:
+        raise ValueError("Input array must be 3-dimensional")
+
+    if wcs.wcs.naxis != 3:
+        raise ValueError("Input WCS must be 3-dimensional")
+
+    # reverse from wcs -> numpy convention
+    axtypes = wcs.get_axis_types()[::-1]
+
+    types = [a['coordinate_type'] for a in axtypes]
+
+    # header sanitization removed to allow for arbitrary axes, including time.
+
+    nums = [None if a['coordinate_type'] == 'spectral' else a['number']
+            for a in axtypes]
+
+    if 'stokes' in types:
+        raise ValueError("Input WCS should not contain stokes")
+
+    t = [types.index('spectral'), nums.index(1), nums.index(0)]
+    result_array = array.transpose(t)
+
+    t = wcs.wcs.naxis - np.array(t[::-1]) - 1
+    result_wcs = util.reindex_wcs(wcs, t)
+
+    return result_array, result_wcs

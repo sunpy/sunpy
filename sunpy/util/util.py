@@ -9,13 +9,13 @@ import numpy as np
 
 __all__ = ['to_signed', 'unique', 'print_table',
            'replacement_filename', 'goes_flare_class', 'merge', 'common_base',
-           'minimal_pairs', 'polyfun_at', 
+           'minimal_pairs', 'polyfun_at',
            'expand_list', 'expand_list_generator', 'Deprecated']
 
 def to_signed(dtype):
     """ Return dtype that can hold data of passed dtype but is signed.
     Raise ValueError if no such dtype exists.
-    
+
     Parameters
     ----------
     dtype : np.dtype
@@ -81,25 +81,25 @@ def polyfun_at(coeff, p):
 def minimal_pairs(one, other):
     """ Find pairs of values in one and other with minimal distance.
     Assumes one and other are sorted in the same sort sequence.
-    
+
     one, other : sequence
         Sequence of scalars to find pairs from.
     """
     lbestdiff = bestdiff = bestj = besti = None
     for i, freq in enumerate(one):
         lbestj = bestj
-        
+
         bestdiff, bestj = None, None
         for j, o_freq in enumerate(other[lbestj:]):
             j = lbestj + j if lbestj else j
             diff = abs(freq - o_freq)
             if bestj is not None and diff > bestdiff:
                 break
-            
+
             if bestj is None or bestdiff > diff:
                 bestj = j
                 bestdiff = diff
-        
+
         if lbestj is not None and lbestj != bestj:
             yield (besti, lbestj, lbestdiff)
             besti = i
@@ -107,7 +107,7 @@ def minimal_pairs(one, other):
         elif lbestdiff is None or bestdiff < lbestdiff:
             besti = i
             lbestdiff = bestdiff
-    
+
     yield (besti, bestj, lbestdiff)
 
 
@@ -148,7 +148,7 @@ def merge(items, key=(lambda x: x)):
             continue
         else:
             state[item] = (first, key(first))
-    
+
     while state:
         for item, (value, tk) in state.iteritems():
             # Value is biggest.
@@ -185,7 +185,7 @@ def replacement_filename(path):
 def expand_list(input):
 	return [item for item in expand_list_generator(input)]
 
-def expand_list_generator(input):    
+def expand_list_generator(input):
     for item in input:
        if type(item) in [list, tuple]:
            for nested_item in expand_list_generator(item):
@@ -200,7 +200,7 @@ def expand_list_generator(input):
 class Deprecated(object):
     """ Use this decorator to deprecate a function or method, you can pass an
     additional message to the decorator:
-    
+
     @Deprecated("no more")
     """
     def __init__(self, message=""):
@@ -213,8 +213,47 @@ class Deprecated(object):
                                                                 self.message),
                           category=Warning, stacklevel=2)
             return func(*args, **kwargs)
-        
+
         newFunc.__name__ = func.__name__
         newFunc.__doc__ = func.__doc__
         newFunc.__dict__.update(func.__dict__)
         return newFunc
+
+
+def reindex_wcs(wcs, inds):
+    # From astropy.spectral_cube.wcs_utils
+    """
+    Re-index a WCS given indices.  The number of axes may be reduced.
+
+    Parameters
+    ----------
+    wcs: astropy.wcs.WCS
+        The WCS to be manipulated
+    inds: np.array(dtype='int')
+        The indices of the array to keep in the output.
+        e.g. swapaxes: [0,2,1,3]
+        dropaxes: [0,1,3]
+    """
+
+    if not isinstance(inds, np.ndarray):
+        raise TypeError("Indices must be an ndarray")
+
+    if inds.dtype.kind != 'i':
+        raise TypeError('Indices must be integers')
+
+    outwcs = WCS(naxis=len(inds))
+    for par in wcs_parameters_to_preserve:
+        setattr(outwcs.wcs, par, getattr(wcs.wcs, par))
+
+    cdelt = wcs.wcs.get_cdelt()
+    pc = wcs.wcs.get_pc()
+
+    outwcs.wcs.crpix = wcs.wcs.crpix[inds]
+    outwcs.wcs.cdelt = cdelt[inds]
+    outwcs.wcs.crval = wcs.wcs.crval[inds]
+    outwcs.wcs.cunit = [wcs.wcs.cunit[i] for i in inds]
+    outwcs.wcs.ctype = [wcs.wcs.ctype[i] for i in inds]
+    outwcs.wcs.cname = [wcs.wcs.cname[i] for i in inds]
+    outwcs.wcs.pc = pc[inds[:, None], inds[None, :]]
+
+    return outwcs
