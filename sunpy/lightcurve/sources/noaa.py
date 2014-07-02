@@ -4,27 +4,31 @@ from __future__ import absolute_import
 
 import datetime
 
-import matplotlib
-from matplotlib import pyplot as plt  
+from matplotlib import pyplot as plt
 from pandas.io.parsers import read_csv
 import numpy as np
 
 from sunpy.lightcurve import LightCurve
-from sunpy.time import parse_time, TimeRange
 
 __all__ = ['NOAAIndicesLightCurve', 'NOAAPredictIndicesLightCurve']
 
+
 class NOAAIndicesLightCurve(LightCurve):
-    """NOAA Solar Cycle monthly indices. 
-        
-    Solar activity is measured by a number of different values. The NOAA Solar Weather
-    Prediction Center (SWPC) publishes the following indices. All of these indices are 
-    also provided as a 13-month running smoothed value.
-      
-    * The SWO sunspot number is issued by the NOAA Space Weather Prediction Center (SWPC) 
-    * The RI sunspot number is the official International Sunspot Number and is issued by the `Solar Influence Data Analysis Center (SDIC) <http://sidc.oma.be>`_ in Brussels, Belgium.
+    """NOAA Solar Cycle monthly indices.
+
+    Solar activity is measured by a number of different values. The NOAA Solar
+    Weather Prediction Center (SWPC) publishes the following indices. All of
+    these indices are also provided as a 13-month running smoothed value.
+
+    * The SWO sunspot number is issued by the NOAA Space Weather Prediction
+        Center (SWPC)
+    * The RI sunspot number is the official International Sunspot Number and is
+        issued by the
+        `Solar Influence Data Analysis Center (SDIC) <http://sidc.oma.be>`_
+        in Brussels, Belgium.
     * The ratio between the SWO and RI indices.
-    * Radio flux at 10.7 cm is produced by `Penticon/Ottawa <http://www.ngdc.noaa.gov/stp/solar/flux.html>`_ and the units are in sfu.
+    * Radio flux at 10.7 cm is produced by
+        `Penticon/Ottawa <http://www.ngdc.noaa.gov/stp/solar/flux.html>`_ and the units are in sfu.
     * The Ap Geomagnetic Index is produced by the United States Air Force (USAF).
 
     Examples
@@ -41,11 +45,11 @@ class NOAAIndicesLightCurve(LightCurve):
     | http://www.swpc.noaa.gov/SolarCycle/
     """
 
-    def peek(self, axes=None, type='sunspot SWO', **plot_args):
+    def plot(self, axes=None, type='sunspot SWO', **plot_args):
         """Plots NOAA Indices as a function of time"""
-        figure = plt.figure()
-        axes = plt.gca()
-       
+        if axes is None:
+            axes = plt.gca()
+
         if type == 'sunspot SWO':
             axes = self.data['sunspot SWO'].plot()
             self.data['sunspot SWO smooth'].plot()
@@ -66,16 +70,15 @@ class NOAAIndicesLightCurve(LightCurve):
             axes = self.data['geomagnetic ap'].plot()
             self.data['geomagnetic ap smooth'].plot()
             axes.set_ylabel('Geomagnetic AP Index')
-     
+
         axes.set_ylim(0)
         axes.set_title('Solar Cycle Progression')
 
         axes.yaxis.grid(True, 'major')
         axes.xaxis.grid(True, 'major')
         axes.legend()
-       
-        figure.show()
-        return figure
+
+        return axes
 
     @classmethod
     def _get_default_uri(cls):
@@ -83,10 +86,10 @@ class NOAAIndicesLightCurve(LightCurve):
         return "http://www.swpc.noaa.gov/ftpdir/weekly/RecentIndices.txt"
 
     @staticmethod
-    def _get_url_for_date_range(*args, **kwargs):
+    def _get_url_for_date_range():
         """Returns a URL for the specified date."""
         return NOAAIndicesLightCurve._get_default_uri()
-        
+
     @staticmethod
     def _parse_csv(filepath):
         """Parses an NOAA indices csv"""
@@ -107,18 +110,24 @@ class NOAAIndicesLightCurve(LightCurve):
             data = data.drop('yyyy',1)
             return {'comments': header}, data
 
+
 class NOAAPredictIndicesLightCurve(LightCurve):
     """NOAA Solar Cycle Predicted Progression
 
-    The predictions are updated monthly and are produced by ISES. Observed values are 
-    initially the preliminary values which are replaced with the final values as they 
-    become available.
-        
+    The predictions are updated monthly and are produced by ISES. Observed
+    values are initially the preliminary values which are replaced with the
+    final values as they become available.
+
     The following predicted values are available.
-              
-    * The predicted RI sunspot number is the official International Sunspot Number and is issued by the `Solar Influence Data Analysis Center (SDIC) <http://sidc.oma.be>`_ in Brussels, Belgium.  
-    * The predicted radio flux at 10.7 cm is produced by `Penticon/Ottawa <http://www.ngdc.noaa.gov/stp/solar/flux.html>`_ and the units are in sfu.
-    
+
+    * The predicted RI sunspot number is the official International Sunspot
+        Number and is issued by the
+        `Solar Influence Data Analysis Center (SDIC) <http://sidc.oma.be>`_
+        in Brussels, Belgium.
+    * The predicted radio flux at 10.7 cm is produced by
+        `Penticon/Ottawa <http://www.ngdc.noaa.gov/stp/solar/flux.html>`_
+        and the units are in sfu.
+
     Examples
     --------
     >>> from sunpy import lightcurve as lc
@@ -132,10 +141,10 @@ class NOAAPredictIndicesLightCurve(LightCurve):
     | http://www.swpc.noaa.gov/SolarCycle/
     """
 
-    def peek(self, axes=None, **plot_args):
+    def plot(self, axes=None, **plot_args):
         """Plots NOAA Indices as a function of time"""
-        figure = plt.figure()
-        axes = plt.gca()
+        if axes is None:
+            axes = plt.gca()
 
         axes = self.data['sunspot'].plot(color='b')
         self.data['sunspot low'].plot(linestyle='--', color='b')
@@ -149,9 +158,8 @@ class NOAAPredictIndicesLightCurve(LightCurve):
         axes.yaxis.grid(True, 'major')
         axes.xaxis.grid(True, 'major')
         axes.legend()
-        
-        figure.show()
-        return figure
+
+        return axes
 
     @classmethod
     def _get_default_uri(cls):
@@ -159,7 +167,7 @@ class NOAAPredictIndicesLightCurve(LightCurve):
         return "http://www.swpc.noaa.gov/ftpdir/weekly/Predict.txt"
 
     @staticmethod
-    def _get_url_for_date_range(*args, **kwargs):
+    def _get_url_for_date_range():
         """Returns a URL for the specified date."""
         return NOAAPredictIndicesLightCurve._get_default_uri()
 

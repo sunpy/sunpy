@@ -36,26 +36,11 @@ class LYRALightCurve(LightCurve):
     | http://proba2.sidc.be/data/LYRA
     """
 
-    def plot(self, axes=None, names=3, **kwargs):
-        """Plots the LYRA data
-
-        See: http://pandas.sourceforge.net/visualization.html
-        """
+    def plot(self, axes=None, names=3, title="LYRA", **kwargs, ):
+        """Plots the LYRA data. Shows a plot of all four light curves"""
         lyranames = (('Lyman alpha','Herzberg cont.','Al filter','Zr filter'),
                  ('120-123nm','190-222nm','17-80nm + <5nm','6-20nm + <2nm'))
 
-        # Choose title if none was specified
-        #if not kwargs.has_key("title"):
-        #    if len(self.data.columns) > 1:
-        #        kwargs['title'] = 'LYRA data'
-        #    else:
-        #        if self._filename is not None:
-        #            base = self._filename
-        #            kwargs['title'] = os.path.splitext(base)[0]
-        #        else:
-        #            kwargs['title'] = 'LYRA data'
-
-        """Shows a plot of all four light curves"""
         if axes is None:
             axes = plt.gca()
 
@@ -70,8 +55,8 @@ class LYRALightCurve(LightCurve):
                 name = lyranames[0][i] + ' \n (' + lyranames[1][i] + ')'
             axes[i].set_ylabel("%s %s" % (name, "\n (W/m**2)"), fontsize=9.5)
 
-        axes[0].set_title("LYRA ("+ self.data.index[0].strftime('%Y-%m-%d') + ")")
-        axes[-1].set_xlabel("Time")
+        axes[0].set_title(title)
+        axes[-1].set_xlabel("Time " + self.data.index[0].strftime('%Y-%m-%d') + ")")
         for axe in axes:
             axe.locator_params(axis='y', nbins=6)
 
