@@ -225,9 +225,9 @@ class HelioProjective(BaseCoordinateFrame):
         elif not args:
             if 'd' not in kwargs and 'zeta' in kwargs:
                 if 'D0' in kwargs:
-                        kwargs['d'] = kwargs['D0'] - kwargs['zeta']
-                    else:
-                        kwargs['d'] = self.D0 - kwargs['zeta']
+                    kwargs['d'] = kwargs['D0'] - kwargs['zeta']
+                else:
+                    kwargs['d'] = self.D0 - kwargs['zeta']
             elif 'd' in kwargs and 'zeta' in kwargs:
                 raise TypeError("zeta is not a valid kwarg here for the {0} frame.").format(self.__class__)
         super(HelioProjective, self).__init__(*args, **kwargs)
