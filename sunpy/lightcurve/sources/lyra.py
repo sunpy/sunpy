@@ -10,11 +10,12 @@ from matplotlib import pyplot as plt
 from astropy.io import fits
 import pandas
 
-from sunpy.lightcurve import LightCurve 
+from sunpy.lightcurve import LightCurve
 from sunpy.time import parse_time
 from sunpy.util.odict import OrderedDict
 
 __all__ = ['LYRALightCurve']
+
 
 class LYRALightCurve(LightCurve):
     """
@@ -23,7 +24,7 @@ class LYRALightCurve(LightCurve):
     Examples
     --------
     >>> import sunpy
-    
+
     >>> lyra = sunpy.lightcurve.LYRALightCurve.create()
     >>> lyra = sunpy.lightcurve.LYRALightCurve.create('~/Data/lyra/lyra_20110810-000000_lev2_std.fits')
     >>> lyra = sunpy.lightcurve.LYRALightCurve.create('2011/08/10')
@@ -35,7 +36,7 @@ class LYRALightCurve(LightCurve):
     | http://proba2.sidc.be/data/LYRA
     """
 
-    def peek(self, names=3, **kwargs):
+    def plot(self, axes=None, names=3, **kwargs):
         """Plots the LYRA data
 
         See: http://pandas.sourceforge.net/visualization.html
@@ -55,10 +56,10 @@ class LYRALightCurve(LightCurve):
         #            kwargs['title'] = 'LYRA data'
 
         """Shows a plot of all four light curves"""
-        figure = plt.figure()
-        plt.subplots_adjust(left=0.17,top=0.94,right=0.94,bottom=0.15)
-        axes = plt.gca()
-        
+        if axes is None:
+            axes = plt.gca()
+
+        plt.subplots_adjust(left=0.17, top=0.94, right=0.94, bottom=0.15)
         axes = self.data.plot(ax=axes, subplots=True, sharex=True, **kwargs)
         #plt.legend(loc='best')
 
@@ -67,17 +68,14 @@ class LYRALightCurve(LightCurve):
                 name = lyranames[names][i]
             else:
                 name = lyranames[0][i] + ' \n (' + lyranames[1][i] + ')'
-            axes[i].set_ylabel( "%s %s" % (name, "\n (W/m**2)"),fontsize=9.5)
+            axes[i].set_ylabel("%s %s" % (name, "\n (W/m**2)"), fontsize=9.5)
 
-        axes[0].set_title("LYRA ("+ self.data.index[0].strftime('%Y-%m-%d') +")")
+        axes[0].set_title("LYRA ("+ self.data.index[0].strftime('%Y-%m-%d') + ")")
         axes[-1].set_xlabel("Time")
         for axe in axes:
-            axe.locator_params(axis='y',nbins=6)
+            axe.locator_params(axis='y', nbins=6)
 
-        figure.show()
-
-        return figure
-
+        return axes
 
     @staticmethod
     def _get_url_for_date(date):
@@ -133,5 +131,3 @@ class LYRALightCurve(LightCurve):
 
         # Return the header and the data
         return OrderedDict(hdulist[0].header), pandas.DataFrame(table, index=times)
-
-
