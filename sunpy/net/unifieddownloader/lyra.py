@@ -7,7 +7,12 @@ __all__ = ['Time','Instrument']
 class LYRAClient(GenericClient):
 
         def _get_url_for_timerange(cls, timerange, **kwargs):
-            
+            """
+            Helper function:
+            Input:
+            timerange: Time-range over which data is to be downloaded
+	    Output: List of urls
+            """               
 	    days = timerange.get_days()
             urls = []
 	    for day in days:
@@ -24,7 +29,7 @@ class LYRAClient(GenericClient):
 	    return urlparse.urljoin(base_url, url_path)
 
         def _makeimap(self):
-	    '''map_:Dict'''
+	    '''Helper Function:used to hold information about source. '''
 	    self.map_['source'] = 'Proba2'
 	    self.map_['instrument'] = 'lyra'
 	    self.map_['phyobs'] = 'irradiance'
@@ -32,7 +37,8 @@ class LYRAClient(GenericClient):
         
         @classmethod
         def _can_handle_query(cls,*query):
-        
+            """Boolean Function:Answers whether client can service the query.
+            """
 	    chkattr =  ['Time','Instrument']
             chklist =  [x.__class__.__name__ in chkattr for x in query]
             for x in query:
