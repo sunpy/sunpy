@@ -36,7 +36,7 @@ class LYRALightCurve(LightCurve):
     | http://proba2.sidc.be/data/LYRA
     """
 
-    def plot(self, axes=None, names=3, title="LYRA", **kwargs, ):
+    def plot(self, axes=None, names=3, title="LYRA", **kwargs):
         """Plots the LYRA data. Shows a plot of all four light curves"""
         lyranames = (('Lyman alpha','Herzberg cont.','Al filter','Zr filter'),
                  ('120-123nm','190-222nm','17-80nm + <5nm','6-20nm + <2nm'))

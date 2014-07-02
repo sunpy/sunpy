@@ -86,7 +86,7 @@ class NOAAIndicesLightCurve(LightCurve):
         return "http://www.swpc.noaa.gov/ftpdir/weekly/RecentIndices.txt"
 
     @staticmethod
-    def _get_url_for_date_range():
+    def _get_url_for_date_range(*args, **kwargs):
         """Returns a URL for the specified date."""
         return NOAAIndicesLightCurve._get_default_uri()
 
@@ -141,17 +141,17 @@ class NOAAPredictIndicesLightCurve(LightCurve):
     | http://www.swpc.noaa.gov/SolarCycle/
     """
 
-    def plot(self, axes=None, **plot_args):
+    def plot(self, title="Solar Cycle Sunspot Number Prediction", axes=None, **plot_args):
         """Plots NOAA Indices as a function of time"""
         if axes is None:
             axes = plt.gca()
 
-        axes = self.data['sunspot'].plot(color='b')
-        self.data['sunspot low'].plot(linestyle='--', color='b')
-        self.data['sunspot high'].plot(linestyle='--', color='b')
+        axes = self.data['sunspot'].plot()
+        plt.fill_between(self.data['sunspot'].index, self.data['sunspot low'],
+                         self.data['sunspot high'], alpha=0.5)
 
         axes.set_ylim(0)
-        axes.set_title('Solar Cycle Sunspot Number Prediction')
+        axes.set_title(title)
         axes.set_ylabel('Sunspot Number')
         #axes.set_xlabel(datetime.datetime.isoformat(self.data.index[0])[0:10])
 
@@ -167,7 +167,7 @@ class NOAAPredictIndicesLightCurve(LightCurve):
         return "http://www.swpc.noaa.gov/ftpdir/weekly/Predict.txt"
 
     @staticmethod
-    def _get_url_for_date_range():
+    def _get_url_for_date_range(*args, **kwargs):
         """Returns a URL for the specified date."""
         return NOAAPredictIndicesLightCurve._get_default_uri()
 
