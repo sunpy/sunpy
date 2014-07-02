@@ -10,14 +10,14 @@ qwalker = AttrWalker()
 
 @qwalker.add_creator(AttrAnd)
 def _create(wlk,query,dobj):
-    
+    #qwalker calls this function on finding AttrAnd object in query.
     qresponseobj,qclient = dobj._get_registered_widget(*query.attrs)
     return [(qresponseobj,qclient)]
 
 
 @qwalker.add_creator(AttrOr)
 def _create(wlk,query,dobj):    
-    
+    #qwalker calls this function on finding Attror object in query.
     qblocks = []
     for iattr in query.attrs:
         qblocks.extend(wlk.create(iattr,dobj))
@@ -29,12 +29,25 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
 
 
     def query(self,*query):
-        
-        query = and_(*query)
+        '''
+        and_ tranforms query into disjunctive normal form 
+	ie. query is now of form A & B or ((A & B) | (C & D))
+	This helps in modularising query into parts and handling each of the parts individually.
+	Input:
+	query: VSO style query.Attributes from JSOC,VSO both can be used.
+	output: List of tuples of form(queryresponse,instance of selected client).
+        '''
+	query = and_(*query)	
         return qwalker.create(query,self)
 
     def get(self,qr,**kwargs):
-        
+        '''
+	Downloads the data.
+	Input:
+	List of tuples of form(queryresponse,instance of selected client).
+	Output: 
+	List of Results objects returned by individual clients
+	'''
 	reslist =[]
     	for block in qr:
 		reslist.append(block[1].get(block[0]))
@@ -46,7 +59,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
 
 
     def _check_registered_widgets(self,*args,**kwargs):
-    
+        '''Factory helper function'''
         candidate_widget_types = list()
 	for key in self.registry:
 	    
@@ -68,10 +81,12 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         return candidate_widget_types
 
     def _get_registered_widget(self,*args,**kwargs):
-
+        '''Factory helper function'''
         candidate_widget_types = self._check_registered_widgets(*args)
 	tmpclient = candidate_widget_types[0]()
 	return tmpclient.query(*args),tmpclient
 
 
 UnifiedDownloader = UnifiedDownloaderFactory(additional_validation_functions = ['_can_handle_query'])
+
+
