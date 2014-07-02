@@ -60,9 +60,11 @@ class Wave(Attr, _Range):
         if not all(isinstance(var, u.Quantity) for var in [wavemin, wavemax]):
             raise TypeError("Wave inputs must be astropy Quantities")
 
-        # VSO just accept inputs as Angstroms, GHz or keV, the following
+        # VSO just accept inputs as Angstroms, kHz or keV, the following
         # converts to any of these units depending on the spectral inputs
-        convert = {'m': u.AA, 'Hz': u.GHz, 'eV': u.keV}
+        # Note: the website asks for GHz, however it seems that using GHz produces
+        # weird responses on VSO.
+        convert = {'m': u.AA, 'Hz': u.kHz, 'eV': u.keV}
         for k in convert.keys():
             if wavemin.decompose().unit == (1 * u.Unit(k)).decompose().unit:
                 unit = convert[k]
