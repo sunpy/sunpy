@@ -10,14 +10,12 @@ from sunpy.net.attr import Attr, AttrOr, AttrAnd
    (attrs.Notify('email@somemail.com'), attrs.Notify('someemail@somemail.com')),
    (attrs.Compression('rice'), attrs.Compression('rice'))])
 def test_and():
-    
     a1 = attrs.Series('aia.lev1')
     a2 = attrs.Series('hmi.M_45s')
     pytest.raises(TypeError, lambda: a1 & a2)
 
 
 def test_basicquery():
-
     a1 = attrs.Series('foo')
     t1 = attrs.Time('2012/01/01', '2013/1/2')
     ans1 = jsoc.jsoc.and_(a1, t1)
@@ -26,7 +24,6 @@ def test_basicquery():
 
 
 def test_mediumquery():
-    
     a1 = attrs.Series('foo1')
     a2 = attrs.Series('foo2')
     t1 = attrs.Time('2012/01/01', '2013/1/2')
@@ -37,7 +34,6 @@ def test_mediumquery():
 
 
 def test_complexquery():
-
     a1 = attrs.Series('foo1')
     a2 = attrs.Series('foo2')
     t1 = attrs.Time('2012/01/01', '2013/1/2')
@@ -46,5 +42,5 @@ def test_complexquery():
     assert isinstance(ans1.attrs[0], AttrOr)
     assert isinstance(ans1.attrs[0].attrs[0], AttrAnd)
     assert isinstance(ans1.attrs[0].attrs[1], AttrAnd)
- 
-    
+
+
