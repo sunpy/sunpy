@@ -62,7 +62,7 @@ class HelioGraphicStonyhurst(BaseCoordinateFrame):
 
     def __init__(self, *args, **kwargs):
         if not args and not kwargs: # Empty frame use case.
-            super(HelioGraphicStonyhurst, self).__init__(*args, **kwargs)
+            pass
         elif args and kwargs: # Mixed use case.
             if len(args) == 1 and 'rad' not in kwargs:
                 # If one of hlon/hlat are in args
@@ -168,12 +168,13 @@ class HelioProjective(BaseCoordinateFrame):
         X-axis coordinate, specified in degrees.
     Ty: `Angle` object.
         Y-axis coordinate, specified in degrees.
-    zeta: Z-axis coordinate.
+    d: Z-axis coordinate.
         Represents the radial distance between the solar center
         and the observer.
-    d: `Quantity` object.
-        Represents the distance between observer and feature/point.
         Defaults to 1AU.
+    zeta: `Quantity` object.
+        Represents the distance between observer and feature/point.
+        Defaults to 0.
     D0: `Quantity` object.
         Represents the distance between observer and solar center.
         Defaults to 1AU.
@@ -184,31 +185,51 @@ class HelioProjective(BaseCoordinateFrame):
     _frame_specific_representation_info = {
         'spherical': [RepresentationMapping('lon', 'Tx', u.arcsec),
                       RepresentationMapping('lat', 'Ty', u.arcsec),
-                      RepresentationMapping('distance', 'zeta', u.km)],
+                      RepresentationMapping('distance', 'd', u.km)],
         'cylindrical': [RepresentationMapping('rho', 'Trho', u.arcsec),
                         RepresentationMapping('phi', 'psi', u.arcsec)]}
 
-    d = FrameAttribute(default=(1*u.au).to(u.km))
+    #d = FrameAttribute(default=(1*u.au).to(u.km))
     D0 = FrameAttribute(default=(1*u.au).to(u.km))
 
+    @property
+    def zeta(self):
+        """zeta is defined as a property."""
+        return self.D0 - self.d
+
     def __init__(self, *args, **kwargs):
-        if not args and not kwargs: # Empty frame case.
-            super(HelioProjective, self).__init__(*args, **kwargs)
+        if not args and (not kwargs or
+                         len(kwargs == 1)):
+            # Empty frame use case.
+            pass
         elif args and kwargs:
-            if len(args) == 1 and isinstance(args[0], BaseRepresentation):
-                pass # Do nothing here as Tx,Ty,zeta should be in representation.
-            elif len(args) >= 1 and 'zeta' not in kwargs:
-                kwargs['zeta'] = 0*u.km
-        elif not args:
-            if 'Tx' not in kwargs and 'Ty' not in kwargs: # Empty frame case.
-                super(HelioProjective, self).__init__(*args, **kwargs)
-            elif 'zeta' not in kwargs:
-                kwargs['zeta'] = 0*u.km
+            if isinstance(args[0], BaseRepresentation):
+                if 'zeta' in kwargs:
+                    raise TypeError("zeta is not a valid kwarg here for the {0} frame.").format(self.__class__)
+            elif len(args) < 3:
+                if 'd' not in kwargs and 'zeta' in kwargs:
+                    if 'D0' in kwargs:
+                        kwargs['d'] = kwargs['D0'] - kwargs['zeta']
+                    else:
+                        kwargs['d'] = self.D0 - kwargs['zeta']
+                elif 'd' in kwargs and 'zeta' in kwargs:
+                    raise TypeError("zeta is not a valid kwarg here for the {0} frame.").format(self.__class__)
+            elif len(args) == 3:
+                if 'zeta' in kwargs:
+                    raise TypeError("zeta is not a valid kwarg here for the {0} frame.").format(self.__class__)
         elif not kwargs:
-            if len(args) == 2: # For args, the first two args will always be Tx,Ty.
+            if len(args) == 2:
                 args = list(args)
-                args.append(0*u.km)
+                args.append((1*u.au).to(u.km))
                 args = tuple(args)
+        elif not args:
+            if 'd' not in kwargs and 'zeta' in kwargs:
+                if 'D0' in kwargs:
+                        kwargs['d'] = kwargs['D0'] - kwargs['zeta']
+                    else:
+                        kwargs['d'] = self.D0 - kwargs['zeta']
+            elif 'd' in kwargs and 'zeta' in kwargs:
+                raise TypeError("zeta is not a valid kwarg here for the {0} frame.").format(self.__class__)
         super(HelioProjective, self).__init__(*args, **kwargs)
            
     # Note that Trho = Drho + 90, and Drho is the declination parameter.
