@@ -61,12 +61,16 @@ class HelioGraphicStonyhurst(BaseCoordinateFrame):
     #rad = FrameAttribute(default=((RSUN_METERS/1000)*u.km))
 
     def __init__(self, *args, **kwargs):
-        if not args and not kwargs:
+        if not args and not kwargs: # Empty frame use case.
             super(HelioGraphicStonyhurst, self).__init__(*args, **kwargs)
-        elif not args:
+        elif args and kwargs: # Mixed use case.
+            if len(args) == 1 and 'rad' not in kwargs:
+                # If one of hlon/hlat are in args
+                kwargs['rad'] = (RSUN_METERS/1000)*u.km
+        elif not args: # kwargs-only use case.
             if 'rad' not in kwargs: # This default is required by definition.
                 kwargs['rad'] = (RSUN_METERS/1000)*u.km
-        elif not kwargs:
+        elif not kwargs: # args-only use case.
             if len(args) == 2:
                 args = list(args)
                 args.append((RSUN_METERS/1000)*u.km)
