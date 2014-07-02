@@ -201,13 +201,10 @@ def _create(wlk, root, session):
             else:
                 query = query.filter(DatabaseEntry.path == path)
         elif typ == 'wave':
-            min_, max_ = value
-            # convert min_ and max_ to nm from the unit `waveunit`
-            wavemin = min_.to(nm, equivalencies.spectral())
-            wavemax = max_.to(nm, equivalencies.spectral())
+            wavemin, wavemax, waveunit = value
             query = query.filter(and_(
-                DatabaseEntry.wavemin >= wavemin.value,
-                DatabaseEntry.wavemax <= wavemax.value))
+                DatabaseEntry.wavemin >= wavemin,
+                DatabaseEntry.wavemax <= wavemax))
         elif typ == 'time':
             start, end, near = value
             query = query.filter(and_(
@@ -254,7 +251,7 @@ def _convert(attr):
 
 @walker.add_converter(vso_attrs.Wave)
 def _convert(attr):
-    return ValueAttr({('wave', ): (attr.min, attr.max)})
+    return ValueAttr({('wave', ): (attr.min.value, attr.max.value, str(attr.unit))})
 
 
 @walker.add_converter(vso_attrs.Time)

@@ -6,6 +6,7 @@
 from datetime import datetime
 
 import pytest
+from astropy import units as u
 
 from astropy import units as u
 

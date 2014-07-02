@@ -1,8 +1,7 @@
 from operator import attrgetter
 from datetime import datetime
 import json
-
-import astropy
+from astropy import units as u
 
 from sunpy.net import vso
 from sunpy.database import attrs as db_attrs
@@ -21,7 +20,7 @@ class QueryEncoder(json.JSONEncoder):
                 # sort by dictionary keys to be order-invariant
                 values = sorted(o.attrs, key=attrgetter('__class__.__name__'))
             elif isinstance(o, vso.attrs.Wave):
-                values = o.min.value, o.max.value
+                values = o.min.value, o.max.value, str(o.unit)
             elif isinstance(o, vso.attrs.Time):
                 values = o.start, o.end, o.near
             elif isinstance(o, (vso.attrs._VSOSimpleAttr, db_attrs.Starred)):
@@ -48,14 +47,13 @@ def query_decode(json_object):
         if key in json_object:
             Attr = getattr(vso.attrs, key)
             return Attr(json_object[key])
-    for key in ['Quantity']:
-        if key in json_object:
-            Attr = getattr(astropy.units, key)
-            return Attr(*json_object[key])
-    for key in ['Wave', 'Time']:
-        if key in json_object:
-            Attr = getattr(vso.attrs, key)
-            return Attr(*json_object[key])
+    if 'Wave' in json_object:
+        Attr = getattr(vso.attrs, 'Wave')
+        wavemin, wavemax, unit = json_object['Wave']
+        return Attr(wavemin * u.Unit(unit), wavemax * u.Unit(unit))
+    if 'Time' in json_object:
+        Attr = getattr(vso.attrs, 'Time')
+        return Attr(*json_object['Time'])
     for key in ['Tag', 'Path', 'DownloadTime', 'FitsHeaderEntry']:
         if key in json_object:
             Attr = getattr(db_attrs, key)
