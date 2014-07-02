@@ -57,16 +57,22 @@ class _Range(object):
 
 class Wave(Attr, _Range):
     def __init__(self, wavemin, wavemax):
-        # TODO: raise if not quantities
+        if not all(isinstance(var, u.Quantity) for var in [wavemin, wavemax]):
+            raise TypeError("Wave inputs must be astropy Quantities")
+
+        # VSO just accept inputs as Angstroms, GHz or keV, the following
+        # converts to any of these units depending on the spectral inputs
         convert = {'m': u.AA, 'Hz': u.GHz, 'eV': u.keV}
         for k in convert.keys():
-            if wavemin.decompose().unit == u.Unit(k):
+            if wavemin.decompose().unit == (1 * u.Unit(k)).decompose().unit:
                 unit = convert[k]
-        self.min, self.max = sorted(
-            value.to(unit) for value in [wavemin, wavemax]
-            )
-        self.unit = unit
-        
+        try:
+            self.min, self.max = sorted(
+                value.to(unit) for value in [wavemin, wavemax]
+                )
+            self.unit = unit
+        except NameError:
+            raise ValueError("'{}' is not a spectral supported unit".format(wavemin.unit))
         Attr.__init__(self)
         _Range.__init__(self, self.min, self.max, self.__class__)
 

@@ -115,8 +115,20 @@ def test_attror_and():
     assert one == other
 
 
+def test_wave_inputQuantity():
+    wrong_type_mesage = "Wave inputs must be astropy Quantities"
+    with pytest.raises(TypeError) as excinfo:
+        va.Wave(10, 23)
+    assert excinfo.value.message == wrong_type_mesage
+    with pytest.raises(TypeError) as excinfo:
+        va.Wave(10 * u.AA, 23)
+    assert excinfo.value.message == wrong_type_mesage
+
+
 def test_wave_toangstrom():
-    frequency = [(1 , 1 * u.Hz),
+    # TODO: this test shoul test that inputs are in any of spectral units
+    # more than just converted to Angstoms.
+    frequency = [(1, 1 * u.Hz),
                  (1e3, 1 * u.kHz),
                  (1e6, 1 * u.MHz),
                  (1e9, 1 * u.GHz)]
@@ -142,6 +154,10 @@ def test_wave_toangstrom():
     assert int(w.min.to(u.AA, u.equivalencies.spectral()).value) == 199
     w = va.Wave(1.506e7 * u.GHz, 1.506e7 * u.GHz)
     assert int(w.min.to(u.AA, u.equivalencies.spectral()).value) == 199
+
+    with pytest.raises(ValueError) as excinfo:
+        va.Wave(10 * u.deg_C, 23 * u.deg_C)
+    assert excinfo.value.message == "'deg_C' is not a spectral supported unit"
 
 
 def test_time_xor():
