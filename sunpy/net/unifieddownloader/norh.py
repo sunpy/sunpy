@@ -6,6 +6,12 @@ __all__ = ['Time', 'Instrument']
 class NoRHClient(GenericClient):
     
     def _get_url_from_timerange(cls, timerange, **kwargs):
+        """
+        Helper function:
+        Input:
+        timerange: Time-range over which data is to be downloaded
+	Output: List of urls
+        """
         days = timerange.get_days()
         urls = []
         for day in days:
@@ -31,15 +37,16 @@ class NoRHClient(GenericClient):
         return final_url
 
     def _makeimap(self):
-       '''map_:Dict'''
-       self.map_['source']= 'NAOJ'
-       self.map_['provider'] ='NRO'
-       self.map_['instrument'] = 'RadioHelioGraph'
-       self.map_['phyobs'] = ''
+        '''Helper Function:used to hold information about source. '''
+        self.map_['source']= 'NAOJ'
+        self.map_['provider'] ='NRO'
+        self.map_['instrument'] = 'RadioHelioGraph'
+        self.map_['phyobs'] = ''
     
     @classmethod
     def _can_handle_query(cls,*query):
-        
+        """Boolean Function:Answers whether client can service the query.
+	"""
 	chkattr =  ['Time','Instrument']
         chklist =  [x.__class__.__name__ in chkattr for x in query]
         for x in query:
