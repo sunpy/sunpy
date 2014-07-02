@@ -43,20 +43,6 @@ def hek_client():
 def vso_client():
     vso.VSOClient()
 
-def test_wave_unit_catcher():
-    """Make sure that inter-unit conversion of wavelengths is accurate"""
-    # Implementing the example test cases
-    test_wavel = [
-        hek2vso.wave_unit_catcher(2.11e-06, 'cm'),
-        hek2vso.wave_unit_catcher(9.4e-07, 'cm'),
-        hek2vso.wave_unit_catcher(5e-08, 'mm')
-    ]
-    test_values = [211.0 * u.AA, 94.0 * u.AA, 0.5 * u.AA]
-
-    np.allclose(test_wavel[0], test_values[0], rtol=1e-05, atol=1e-8)
-    np.allclose(test_wavel[1], test_values[1], rtol=1e-05, atol=1e-8)
-    np.allclose(test_wavel[2], test_values[2], rtol=1e-05, atol=1e-8)
-
 @pytest.mark.online
 def test_translate_results_to_query():
     """Make sure that conversion of HEK results to VSO queries is accurate"""
@@ -89,8 +75,9 @@ def test_vso_attribute_parse():
     assert vso_query[2].value == hek_query[0]['obs_instrument']
 
     # Checking Wavelength
-    assert vso_query[3].min == hek2vso.wave_unit_catcher(hek_query[0]['obs_meanwavel'], hek_query[0]['obs_wavelunit'])
-    assert vso_query[3].max == hek2vso.wave_unit_catcher(hek_query[0]['obs_meanwavel'], hek_query[0]['obs_wavelunit'])
+    assert vso_query[3].min == hek_query[0]['obs_meanwavel'] * u.Unit(hek_query[0]['obs_wavelunit'])
+    assert vso_query[3].max == hek_query[0]['obs_meanwavel'] * u.Unit( hek_query[0]['obs_wavelunit'])
+    assert vso_query[3].unit == u.Unit('Angstrom')
 
 class TestH2VClient:
     """Tests the H2V class"""
