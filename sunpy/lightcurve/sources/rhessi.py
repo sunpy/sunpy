@@ -35,7 +35,7 @@ class RHESSISummaryLightCurve(LightCurve):
         if axes is None:
             axes = plt.gca()
 
-        self.data.plot(ax=axes, **plot_args)
+        axes = self.data.plot(ax=axes, **plot_args)
 
         lc_linecolors = ('black', 'pink', 'green', 'blue', 'brown', 'red',
                          'navy', 'orange', 'green')

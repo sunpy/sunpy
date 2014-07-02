@@ -36,7 +36,7 @@ class NoRHLightCurve(LightCurve):
     | http://solar.nro.nao.ac.jp/norh/
     """
 
-    def plot(self, axes=None, **kwargs):
+    def plot(self, title="Nobeyama Radioheliograph", axes=None, **kwargs):
         """Plots the NoRH lightcurve"""
         if axes is None:
             axes = plt.gca()
@@ -45,7 +45,7 @@ class NoRHLightCurve(LightCurve):
         axes.plot(self.data.index, self.data, label=data_lab, **kwargs)
         axes.set_yscale("log")
         axes.set_ylim(1e-4, 1)
-        axes.set_title('Nobeyama Radioheliograph')
+        axes.set_title(title)
         axes.set_xlabel('Start time: ' + self.data.index[0].strftime('%Y-%m-%d %H:%M:%S UT'))
         axes.set_ylabel('Correlation')
         axes.legend()

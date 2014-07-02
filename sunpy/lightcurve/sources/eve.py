@@ -50,12 +50,12 @@ class EVELightCurve(LightCurve):
                     kwargs['title'] = 'EVE Averages'
 
         if column is None:
-            self.plot(**kwargs)
+            axes = self.data.plot(**kwargs)
         else:
             data = self.data[column]
             if not kwargs.has_key("title"):
                 kwargs['title'] = 'EVE ' + column.replace('_', ' ')
-            data.plot(**kwargs)
+            axes = data.plot(**kwargs)
         return axes
 
     @staticmethod
@@ -73,6 +73,11 @@ class EVELightCurve(LightCurve):
         base_url = 'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/'
         return base_url + date.strftime('%Y/%Y%m%d') + '_EVE_L0CS_DIODES_1m.txt'
 
+    @staticmethod
+    def _get_url_for_date_range(timerange):
+        """Returns a URL for the specified time range."""
+        return EVELightCurve._get_url_for_date(timerange.start())
+    
     @classmethod
     def _parse_csv(cls, filepath):
         """Parses an EVE CSV file"""
