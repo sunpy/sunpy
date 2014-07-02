@@ -348,14 +348,14 @@ class JSOCClient(object):
                    'filenamefmt':'{0}.{{T_REC:A}}.{{CAMERA}}.{{segment}}'.format(series)}
 
         if kwargs.has_key('wavelength'):
-	    if not series[0:3] == 'aia':
+	    if series[0:3] != 'aia':
 	        raise TypeError
 	    else:
 	       if isinstance(kwargs['wavelength'],list):
-	           tmp = '{0}'.format(kwargs['wavelength'])
+	           tmp = str(kwargs['wavelength'])
 	       else:
 	           tmp = '[{0}]'.format(kwargs['wavelength'])
-	       payload['ds'] = payload['ds'] + tmp
+	       payload['ds'] += tmp
             kwargs.pop('wavelength')
 	
         payload.update(kwargs)
