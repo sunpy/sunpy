@@ -12,7 +12,7 @@ from astropy.extern import six
 from astropy.utils.compat.odict import OrderedDict
 from astropy import units as u
 from astropy.coordinates.representation import (SphericalRepresentation, CylindricalRepresentation,
-                                                CartesianRepresentation)
+                                                CartesianRepresentation, BaseRepresentation)
 from astropy.coordinates.baseframe import (BaseCoordinateFrame, frame_transform_graph,
                                            RepresentationMapping)
 from astropy.coordinates.transformations import FunctionTransform, DynamicMatrixTransform
@@ -194,12 +194,17 @@ class HelioProjective(BaseCoordinateFrame):
     def __init__(self, *args, **kwargs):
         if not args and not kwargs: # Empty frame case.
             super(HelioProjective, self).__init__(*args, **kwargs)
+        elif args and kwargs:
+            if len(args) == 1 and isinstance(args[0], BaseRepresentation):
+                pass # Do nothing here as Tx,Ty,zeta should be in representation.
+            elif len(args) >= 1 and 'zeta' not in kwargs:
+                kwargs['zeta'] = 0*u.km
         elif not args:
             if 'Tx' not in kwargs and 'Ty' not in kwargs: # Empty frame case.
                 super(HelioProjective, self).__init__(*args, **kwargs)
             elif 'zeta' not in kwargs:
                 kwargs['zeta'] = 0*u.km
-        elif not kwargs or (args and kwargs):
+        elif not kwargs:
             if len(args) == 2: # For args, the first two args will always be Tx,Ty.
                 args = list(args)
                 args.append(0*u.km)
