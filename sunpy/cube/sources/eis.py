@@ -4,7 +4,6 @@
 
 from __future__ import absolute_import
 
-import spectral_cube as sc
 from astropy.io import fits
 from astropy import wcs
 from sunpy.cube import SpectralCube
@@ -36,14 +35,17 @@ class EISSpectralCube(SpectralCube):
     For an overview of the mission
     http://solarb.mssl.ucl.ac.uk/SolarB/
     '''
-    def __init__(self, cube, window=1, dataHeader=None, primaryHeader=None):
+    def __init__(self,
+                 data, wcs, window=1, dataHeader=None, primaryHeader=None):
         '''
         Constructor function.
 
         Parameters
         ----------
-        cube: spectral_cube.SpectralCube object
-            The cube containing the data and wcs for the cube
+        data: numpy ndarray
+            The cube containing the data
+        wcs: astropy.wcs.WCS object
+            The world coordinate system for the array.
         window: int
             The window this cube belongs to in the file. Used to fetch the
             correct metadata from the header
@@ -53,7 +55,7 @@ class EISSpectralCube(SpectralCube):
             The main header for the whole file.
         '''
         h = _dictionarize_header(dataHeader, primaryHeader, window)
-        SpectralCube.__init__(self, cube, header=h)
+        SpectralCube.__init__(self, data, wcs, meta=h)
 
     @classmethod
     def read(cls, filename, **kwargs):
@@ -67,14 +69,14 @@ class EISSpectralCube(SpectralCube):
         """
         hdulist = fits.open(name=filename, **kwargs)
         header = _clean(hdulist[0].header)
+        # TODO: Make sure each cube ahas a correct wcs.
         w = wcs.WCS(header=header, naxis=3)
         wavelengths = [c.name for c in hdulist[1].columns if c.dim is not None]
         data = [hdulist[1].data[wav] for wav in wavelengths]
-        cubes = [sc.SpectralCube(data=d.T, wcs=w) for d in data]
-        scubes = [EISSpectralCube(cubes[i], i+1, dataHeader=hdulist[1].header,
-                                  primaryHeader=hdulist[0].header)
-                  for i in range(len(cubes))]
-        return dict(zip(wavelengths, scubes))
+        cubes = [EISSpectralCube(data[i], w, i+1, dataHeader=hdulist[1].header,
+                                 primaryHeader=hdulist[0].header)
+                 for i in range(len(data))]
+        return dict(zip(wavelengths, cubes))
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
