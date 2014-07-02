@@ -2,8 +2,7 @@
 """Provides programs to process and analyze NOAA Solar Cycle data."""
 from __future__ import absolute_import
 
-import datetime
-
+from datetime import datetime
 from matplotlib import pyplot as plt
 from pandas.io.parsers import read_csv
 import numpy as np
@@ -73,10 +72,7 @@ class NOAAIndicesLightCurve(LightCurve):
 
         axes.set_ylim(0)
         axes.set_title('Solar Cycle Progression')
-
-        axes.yaxis.grid(True, 'major')
-        axes.xaxis.grid(True, 'major')
-        axes.legend()
+        axes.set_xlabel(self.data.index[0].strftime("%Y-%m-%d %H:%M:%S"))
 
         return axes
 
@@ -103,7 +99,7 @@ class NOAAIndicesLightCurve(LightCurve):
             fields = ('yyyy', 'mm', 'sunspot SWO', 'sunspot RI', 'sunspot ratio', 'sunspot SWO smooth', 'sunspot RI smooth', 'radio flux', 'radio flux smooth', 'geomagnetic ap', 'geomagnetic smooth')
             data = read_csv(fp, delim_whitespace=True, names = fields, comment='#', dtype={'yyyy':np.str, 'mm':np.str})
             data = data.dropna(how='any')
-            timeindex = [datetime.datetime.strptime(x + '/' + y, '%Y/%m') for x,y in zip(data['yyyy'], data['mm'])]
+            timeindex = [datetime.strptime(x + '/' + y, '%Y/%m') for x,y in zip(data['yyyy'], data['mm'])]
             data['time']=timeindex
             data = data.set_index('time')
             data = data.drop('mm',1)
@@ -146,18 +142,15 @@ class NOAAPredictIndicesLightCurve(LightCurve):
         if axes is None:
             axes = plt.gca()
 
-        axes = self.data['sunspot'].plot()
+        axes = self.data['sunspot'].plot(title=title, **plot_args)
         plt.fill_between(self.data['sunspot'].index, self.data['sunspot low'],
                          self.data['sunspot high'], alpha=0.5)
 
         axes.set_ylim(0)
-        axes.set_title(title)
         axes.set_ylabel('Sunspot Number')
         #axes.set_xlabel(datetime.datetime.isoformat(self.data.index[0])[0:10])
 
-        axes.yaxis.grid(True, 'major')
-        axes.xaxis.grid(True, 'major')
-        axes.legend()
+        axes.set_xlabel(datetime.isoformat(self.data.index[0]))
 
         return axes
 
@@ -184,7 +177,7 @@ class NOAAPredictIndicesLightCurve(LightCurve):
             fields = ('yyyy', 'mm', 'sunspot', 'sunspot low', 'sunspot high', 'radio flux', 'radio flux low', 'radio flux high')
             data = read_csv(filepath, delim_whitespace=True, names = fields, comment='#', skiprows=2, dtype={'yyyy':np.str, 'mm':np.str})
             data = data.dropna(how='any')
-            timeindex = [datetime.datetime.strptime(x + '/' + y, '%Y/%m') for x,y in zip(data['yyyy'], data['mm'])]
+            timeindex = [datetime.strptime(x + '/' + y, '%Y/%m') for x,y in zip(data['yyyy'], data['mm'])]
             data['time']=timeindex
             data = data.set_index('time')
             data = data.drop('mm',1)

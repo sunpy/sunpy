@@ -50,12 +50,14 @@ class EVELightCurve(LightCurve):
                     kwargs['title'] = 'EVE Averages'
 
         if column is None:
-            axes = self.data.plot(**kwargs)
+            self.data.plot(ax=axes, **kwargs)
         else:
             data = self.data[column]
             if not kwargs.has_key("title"):
                 kwargs['title'] = 'EVE ' + column.replace('_', ' ')
-            axes = data.plot(**kwargs)
+                data.plot(ax=axes, **kwargs)
+        axes.set_xlabel(self.data.index[0].strftime("%Y-%m-%d %H:%M:%S"))
+
         return axes
 
     @staticmethod

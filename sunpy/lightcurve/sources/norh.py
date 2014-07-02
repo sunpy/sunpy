@@ -2,7 +2,7 @@
 
 from __future__ import absolute_import
 
-import datetime
+from datetime import datetime, timedelta
 import urlparse
 import numpy as np
 import matplotlib.pyplot as plt
@@ -42,13 +42,12 @@ class NoRHLightCurve(LightCurve):
             axes = plt.gca()
 
         data_lab = self.meta['OBS-FREQ'][0:2] + ' ' + self.meta['OBS-FREQ'][2:5]
-        axes.plot(self.data.index, self.data, label=data_lab, **kwargs)
-        axes.set_yscale("log")
+        self.data.plot(ax=axes, logy=True, **kwargs)
+
         axes.set_ylim(1e-4, 1)
-        axes.set_title(title)
-        axes.set_xlabel('Start time: ' + self.data.index[0].strftime('%Y-%m-%d %H:%M:%S UT'))
+        axes.set_xlabel(self.data.index[0].strftime("%Y-%m-%d %H:%M:%S"))
+
         axes.set_ylabel('Correlation')
-        axes.legend()
         return axes
 
     @classmethod
@@ -85,6 +84,6 @@ class NoRHLightCurve(LightCurve):
 
         norh_time = []
         for s in sec_array:
-            norh_time.append(obs_start_time + datetime.timedelta(0, s))
+            norh_time.append(obs_start_time + timedelta(0, s))
 
         return header, pandas.DataFrame(data, index=norh_time)

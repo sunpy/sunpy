@@ -2,7 +2,7 @@
 """Provides programs to process and analyze RHESSI X-ray data."""
 from __future__ import absolute_import
 
-import datetime
+from datetime import datetime, timedelta
 import matplotlib.dates
 import matplotlib.pyplot as plt
 from pandas import DataFrame
@@ -35,7 +35,7 @@ class RHESSISummaryLightCurve(LightCurve):
         if axes is None:
             axes = plt.gca()
 
-        axes = self.data.plot(ax=axes, **plot_args)
+        self.data.plot(ax=axes, title=title, **plot_args)
 
         lc_linecolors = ('black', 'pink', 'green', 'blue', 'brown', 'red',
                          'navy', 'orange', 'green')
@@ -44,27 +44,18 @@ class RHESSISummaryLightCurve(LightCurve):
 #            axes.plot_date(dates, frame.values, '-', label=item, lw=2)
 
         axes.set_yscale("log")
-
-        axes.set_title(title)
+        axes.set_xlabel(self.data.index[0].strftime("%Y-%m-%d %H:%M:%S"))
         axes.set_ylabel('Corrected Count Rates s$^{-1}$ detector$^{-1}$')
 
-        axes.yaxis.grid(True, 'major')
-        axes.xaxis.grid(False, 'major')
-        axes.legend()
-
-        # @todo: display better tick labels for date range (e.g. 06/01 - 06/05)
-        formatter = matplotlib.dates.DateFormatter('%H:%M')
-        axes.xaxis.set_major_formatter(formatter)
-        axes.fmt_xdata = matplotlib.dates.DateFormatter('%H:%M')
         return axes
 
     @classmethod
     def _get_default_uri(cls):
         """Retrieve the latest RHESSI data."""
-        today = datetime.datetime.today()
+        today = datetime.today()
         days_back = 3
-        time_range = TimeRange(today - datetime.timedelta(days=days_back),
-                               today - datetime.timedelta(days=days_back - 1))
+        time_range = TimeRange(today - timedelta(days=days_back),
+                               today - timedelta(days=days_back - 1))
         return cls._get_url_for_date_range(time_range)
 
     @staticmethod

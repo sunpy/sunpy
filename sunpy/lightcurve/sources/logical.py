@@ -6,6 +6,7 @@ from __future__ import absolute_import
 
 import numpy as np
 
+from datetime import datetime
 from sunpy.lightcurve import LightCurve
 from scipy.ndimage import label
 from sunpy.time import TimeRange
@@ -40,10 +41,10 @@ class LogicalLightCurve(LightCurve):
         if axes is None:
             axes = plt.gca()
 
-        axes = self.data.plot(ax=axes, **plot_args)
+        self.data.plot(ax=axes, title=title, legend=False, **plot_args)
         axes.fill_between(self.data.index,
                           self.data[self.data.columns[0]].values, alpha=0.5)
-        axes.set_title(title)
+        axes.set_xlabel(self.data.index[0].strftime("%Y-%m-%d %H:%M:%S"))
 
         return axes
 

@@ -2,10 +2,10 @@
 """Provides programs to process and analyze PROBA2/LYRA data."""
 from __future__ import absolute_import
 
-import datetime
 import urlparse
 import sys
 
+from datetime import datetime, timedelta
 from matplotlib import pyplot as plt
 from astropy.io import fits
 import pandas
@@ -56,7 +56,8 @@ class LYRALightCurve(LightCurve):
             axes[i].set_ylabel("%s %s" % (name, "\n (W/m**2)"), fontsize=9.5)
 
         axes[0].set_title(title)
-        axes[-1].set_xlabel("Time " + self.data.index[0].strftime('%Y-%m-%d') + ")")
+        axes[-1].set_xlabel(self.data.index[0].strftime("%Y-%m-%d %H:%M:%S"))
+
         for axe in axes:
             axe.locator_params(axis='y', nbins=6)
 
@@ -66,7 +67,7 @@ class LYRALightCurve(LightCurve):
     def _get_url_for_date(date):
         """Returns a URL to the LYRA data for the specified date
         """
-        dt = parse_time(date or datetime.datetime.utcnow())
+        dt = parse_time(date or datetime.utcnow())
 
         # Filename
         filename = "lyra_%s000000_lev%d_%s.fits" % (dt.strftime('%Y%m%d-'),
@@ -79,7 +80,7 @@ class LYRALightCurve(LightCurve):
     @classmethod
     def _get_default_uri(cls):
         """Look for and download today's LYRA data"""
-        return cls._get_url_for_date(datetime.datetime.utcnow())
+        return cls._get_url_for_date(datetime.utcnow())
 
     @staticmethod
     def _parse_fits(filepath):
@@ -102,7 +103,7 @@ class LYRALightCurve(LightCurve):
         #end = datetime.datetime.strptime(end_str, '%Y-%m-%dT%H:%M:%S.%f')
 
         # First column are times
-        times = [start + datetime.timedelta(0, n) for n in fits_record.field(0)]
+        times = [start + timedelta(0, n) for n in fits_record.field(0)]
 
         # Rest of columns are the data
         table = {}
