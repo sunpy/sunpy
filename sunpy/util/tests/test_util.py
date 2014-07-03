@@ -5,6 +5,7 @@ from __future__ import absolute_import
 from sunpy.util import util
 import numpy as np
 import warnings
+from astropy.wcs import WCS
 
 def test_to_signed():
     """
@@ -142,3 +143,18 @@ def test_deprecated():
         depr_func = depr(lambda x: x)
         depr_func(1)
         assert len(current_warnings) == 1
+
+
+def test_reindex_wcs():
+    emptywcs = WCS(naxis=3)
+    emptyreindexed = util.reindex_wcs(emptywcs, np.array([0, 1, 2]))
+    assert emptyreindexed.get_axis_types() == emptywcs.get_axis_types()
+    h = {'CTYPE1': 'HPLN-TAN', 'CUNIT1': 'deg',
+         'CTYPE2': 'HPLT-TAN', 'CUNIT2': 'deg'}
+    testwcs = WCS(header=h, naxis=2)
+    nochange = util.reindex_wcs(testwcs, np.array([0, 1]))
+    swapped = util.reindex_wcs(testwcs, np.array([1, 0]))
+    assert (testwcs.wcs.ctype[0] == nochange.wcs.ctype[0] and
+            testwcs.wcs.ctype[1] == nochange.wcs.ctype[1])
+    assert (testwcs.wcs.ctype[0] == swapped.wcs.ctype[1] and
+            testwcs.wcs.ctype[1] == swapped.wcs.ctype[0])
