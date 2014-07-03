@@ -3,6 +3,7 @@ from __future__ import absolute_import
 import os
 import types
 import warnings
+from astropy.wcs import WCS
 from itertools import izip, imap, count
 
 import numpy as np
@@ -11,6 +12,7 @@ __all__ = ['to_signed', 'unique', 'print_table',
            'replacement_filename', 'goes_flare_class', 'merge', 'common_base',
            'minimal_pairs', 'polyfun_at',
            'expand_list', 'expand_list_generator', 'Deprecated']
+
 
 def to_signed(dtype):
     """ Return dtype that can hold data of passed dtype but is signed.
@@ -27,11 +29,13 @@ def to_signed(dtype):
         dtype = "int%d" % (min(dtype.itemsize * 2 * 8, 64))
     return np.dtype(dtype)
 
+
 def goes_flare_class(gcls):
     """Convert GOES classes into a number to aid size comparison.  Units are
     watts per meter squared."""
     def calc(gcls):
-        powers_of_ten = {'A':1e-08, 'B':1e-07, 'C':1e-06, 'M':1e-05, 'X':1e-04}
+        powers_of_ten = {'A': 1e-08, 'B': 1e-07, 'C': 1e-06,
+                         'M': 1e-05, 'X': 1e-04}
         power = gcls[0].upper()
         if power in powers_of_ten:
             return powers_of_ten[power] * float(gcls[1:])
@@ -57,6 +61,7 @@ def unique(itr, key=None):
             if x not in items:
                 yield elem
                 items.add(x)
+
 
 def print_table(lst, colsep=' ', linesep='\n'):
     width = [max(imap(len, col)) for col in izip(*lst)]
@@ -152,8 +157,8 @@ def merge(items, key=(lambda x: x)):
     while state:
         for item, (value, tk) in state.iteritems():
             # Value is biggest.
-            if all(tk >= k for it, (v, k)
-                in state.iteritems() if it is not item):
+            if (all(tk >= k for it, (v, k)
+               in state.iteritems() if it is not item)):
                 yield value
                 break
         try:
@@ -161,6 +166,7 @@ def merge(items, key=(lambda x: x)):
             state[item] = (n, key(n))
         except StopIteration:
             del state[item]
+
 
 def replacement_filename(path):
     """ Return replacement path for already used path. Enumerates
@@ -179,24 +185,26 @@ def replacement_filename(path):
                 return newpath
 
 
-#==============================================================================
+# =============================================================================
 # expand list from :http://stackoverflow.com/a/2185971/2486799
-#==============================================================================
+# =============================================================================
 def expand_list(input):
-	return [item for item in expand_list_generator(input)]
+    return [item for item in expand_list_generator(input)]
+
 
 def expand_list_generator(input):
     for item in input:
-       if type(item) in [list, tuple]:
-           for nested_item in expand_list_generator(item):
-               yield nested_item
-       else:
-           yield item
+        if type(item) in [list, tuple]:
+            for nested_item in expand_list_generator(item):
+                yield nested_item
+        else:
+            yield item
 
-#==============================================================================
+
+# =============================================================================
 # Deprecation decorator: http://code.activestate.com/recipes/391367-deprecated/
 # and http://www.artima.com/weblogs/viewpost.jsp?thread=240845
-#==============================================================================
+# =============================================================================
 class Deprecated(object):
     """ Use this decorator to deprecate a function or method, you can pass an
     additional message to the decorator:
@@ -208,7 +216,7 @@ class Deprecated(object):
 
     def __call__(self, func):
         def newFunc(*args, **kwargs):
-            warnings.warn("Call to deprecated function %s. \n %s" %(
+            warnings.warn("Call to deprecated function %s. \n %s" % (
                                                                 func.__name__,
                                                                 self.message),
                           category=Warning, stacklevel=2)
@@ -242,7 +250,12 @@ def reindex_wcs(wcs, inds):
         raise TypeError('Indices must be integers')
 
     outwcs = WCS(naxis=len(inds))
-    for par in wcs_parameters_to_preserve:
+    wcs_params_to_preserve = ['cel_offset', 'dateavg', 'dateobs', 'equinox',
+                              'latpole', 'lonpole', 'mjdavg', 'mjdobs', 'name',
+                              'obsgeo', 'phi0', 'radesys', 'restfrq',
+                              'restwav', 'specsys', 'ssysobs', 'ssyssrc',
+                              'theta0', 'velangl', 'velosys', 'zsource']
+    for par in wcs_params_to_preserve:
         setattr(outwcs.wcs, par, getattr(wcs.wcs, par))
 
     cdelt = wcs.wcs.get_cdelt()
