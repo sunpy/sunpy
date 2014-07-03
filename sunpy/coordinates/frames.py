@@ -199,13 +199,17 @@ class HelioProjective(BaseCoordinateFrame):
 
     def __init__(self, *args, **kwargs):
         if args or (kwargs and len(kwargs) != 1):
-            # Non-empty frame use case
+            # Non-empty frame use case.
             if args and kwargs:
+                # If we have both args and kwargs.
                 if isinstance(args[0], BaseRepresentation):
+                    # The case when first arg is a representation.
                     if 'zeta' in kwargs:
+                        # zeta cannot be provided as SphericalRep takes three arguments.
                         raise TypeError("zeta cannot be specified with a representation"
                                         "for the {0} frame.".format(self.__class__))
                 elif len(args) < 3:
+                    # If we have either args(Tx) and rest kwargs, or args(Tx, Ty) and rest kwargs.
                     if 'distance' not in kwargs and 'zeta' in kwargs:
                         if 'D0' in kwargs:
                             kwargs['distance'] = kwargs['D0'] - kwargs['zeta']
@@ -215,15 +219,19 @@ class HelioProjective(BaseCoordinateFrame):
                         raise TypeError("zeta and distance cannot both be "
                                         "specified in the {0} frame.".format(self.__class__))
                 elif len(args) == 3:
+                    # If we have args(Tx, Ty, distance).
                     if 'zeta' in kwargs:
                         raise TypeError("zeta and distance cannot both"
                                         "be specified here for the {0} frame.".format(self.__class__))
             elif not kwargs:
+                # The case when kwargs are not present.
                 if len(args) == 2:
+                    # args(Tx, Ty) provided.
                     args = list(args)
                     args.append((1*u.au).to(u.km))
                     args = tuple(args)
             elif not args:
+                # The case when args are not present.
                 if 'distance' not in kwargs and 'zeta' in kwargs:
                     if 'D0' in kwargs:
                         kwargs['distance'] = kwargs['D0'] - kwargs['zeta']
@@ -232,6 +240,7 @@ class HelioProjective(BaseCoordinateFrame):
                 elif 'distance' in kwargs and 'zeta' in kwargs:
                     raise TypeError("zeta and distance cannot both be"
                                     "specified here for the {0} frame.".format(self.__class__))
+        # Finally, make a call to the super constructor.
         super(HelioProjective, self).__init__(*args, **kwargs)
            
     # Note that Trho = Drho + 90, and Drho is the declination parameter.
