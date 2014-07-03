@@ -19,6 +19,12 @@ Latest
 * Added a few tests for the sunpy.roi module
  * Added a few tests for the sunpy.roi module
 
+ *Unified Downloader:
+  *Custom Light Curve clients added for downloading files:(EVE,LYRA,NORH,NOAA,RHESSI)
+  *VSO module compatability
+  *Factory based implementation of UnifiedDownloader
+  *VSO esque query style
+  
 0.5.0
 -----
 
