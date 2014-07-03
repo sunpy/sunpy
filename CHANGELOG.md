@@ -1,7 +1,6 @@
-0.5.0
------
+Latest
+------
 
- * Added additional functionality to the GOES module i.e. the ability to calculate GOES temperature and emission measure from GOES fluxes.
  * changed _maps attribute in MapCube to a non-hidden type
  * Added Nobeyama Radioheliograph data support to Lightcurve object.
  * Fixed some tests on map method to support Windows
