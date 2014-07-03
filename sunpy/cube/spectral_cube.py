@@ -167,7 +167,7 @@ class SpectralCube(astropy.nddata.NDData):
                 a = self.data[:, :, wloffset]
                 a = a.T
 
-        return np.array(a).T
+        return a
 
     def slice_to_map(self, chunk, *args, **kwargs):
         # TODO: implement slice-by-float functionality

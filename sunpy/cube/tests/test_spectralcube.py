@@ -58,3 +58,25 @@ def test_choose_wavelength_slice():
     assert qos is None
 
     assert f is None
+
+
+def test_choose_x_slice():
+    ius = cube._choose_x_slice(-1)  # integer, under range slice
+    iis = cube._choose_x_slice(1)  # integer, in range slice
+    ios = cube._choose_x_slice(11)  # integer, over range slice
+
+    qus = cube._choose_x_slice(-1 * u.deg)  # quantity, under
+    qis = cube._choose_x_slice(1.5 * u.deg)  # quantity, in
+    qos = cube._choose_x_slice(8 * u.deg)  # quantity, over
+
+    f = cube._choose_x_slice(0.4)  # no units given
+
+    assert ius is None
+    assert np.all(iis == [[2, 4, -1], [4, 5, 3]])
+    assert ios is None
+
+    assert qus is None
+    assert np.all(qis == [[4, 3, 3], [1, 2, 0]])
+    assert qos is None
+
+    assert f is None
