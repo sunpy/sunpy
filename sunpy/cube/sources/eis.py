@@ -22,7 +22,7 @@ def _clean(header):
     """
     header['ctype1'] = 'HPLN-TAN'  # Helioprojective longitude, TAN projection
     header['ctype2'] = 'HPLT-TAN'  # Helioprojective latitude, TAN projection
-    header['ctype3'] = 'WAVE-   '  # Wavelength axis, default (TAB) projection
+    header['ctype3'] = 'WAVE   '  # Wavelength axis, default (TAB) projection
     header['naxis'] = 3
     return header
 
@@ -55,7 +55,9 @@ class EISSpectralCube(SpectralCube):
             The main header for the whole file.
         '''
         h = _dictionarize_header(dataHeader, primaryHeader, window)
-        SpectralCube.__init__(self, data, wcs, meta=h)
+        SpectralCube.__init__(self, data.T, wcs, meta=h)
+        # Data is transposed here because EIS orders (y, lambda) by x or time,
+        # not (y, x) by lambda.
 
     @classmethod
     def read(cls, filename, **kwargs):

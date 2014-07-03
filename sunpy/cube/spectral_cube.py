@@ -118,7 +118,7 @@ class SpectralCube(astropy.nddata.NDData):
         a = None
         if (isinstance(offset, int) and offset >= 0 and
            offset < len(self.data)):
-            a = self.cube.unmasked_data[offset, :, :]
+            a = self.data[offset, :, :]
 
         # TODO: this currently fails because delta is a numpy vector
         if isinstance(offset, float):
@@ -145,7 +145,7 @@ class SpectralCube(astropy.nddata.NDData):
         a = None
         if (isinstance(offset, int) and offset >= 0 and
            offset < self.data.shape[2]):
-            a = self.cube.unmasked_data[:, :, offset]
+            a = self.data[:, :, offset]
 
         # TODO: This fails because delta is not a scalar (and it actually gets
         # a wavelength slice, but nevermind...)
