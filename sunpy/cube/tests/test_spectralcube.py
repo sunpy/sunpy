@@ -7,6 +7,7 @@ import sunpy.cube.spectral_cube as sc
 import numpy as np
 from astropy.wcs import WCS
 import pytest
+import astropy.units as u
 
 
 # sample data for tests
@@ -35,4 +36,25 @@ def test_slice_to_map():
     m1 = cube.slice_to_map((0, 3))
     assert np.all(m0.data == cube.data[0])
     assert np.all(m1.data == cube.data.sum(0))
-    
+
+
+def test_choose_wavelength_slice():
+    ius = cube._choose_wavelength_slice(-1)  # integer, under range slice
+    iis = cube._choose_wavelength_slice(1)  # integer, in range slice
+    ios = cube._choose_wavelength_slice(11)  # integer, over range slice
+
+    qus = cube._choose_wavelength_slice(-1 * u.Angstrom)  # quantity, under
+    qis = cube._choose_wavelength_slice(0.5 * u.Angstrom)  # quantity, in
+    qos = cube._choose_wavelength_slice(8 * u.Angstrom)  # quantity, over
+
+    f = cube._choose_wavelength_slice(0.4)  # no units given
+
+    assert ius is None
+    assert np.all(iis == [[2, 4, 5, 3], [10, 5, 2, 2]])
+    assert ios is None
+
+    assert qus is None
+    assert np.all(qis == [[0, -1, 2, 3], [10, 3, 3, 0]])
+    assert qos is None
+
+    assert f is None

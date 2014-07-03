@@ -7,6 +7,7 @@ import astropy.nddata
 import sunpy.util.util as util
 from sunpy.map import GenericMap
 from sunpy.visualization.imageanimator import ImageAnimator
+import astropy.units as u
 
 __all__ = ['SpectralCube']
 
@@ -120,7 +121,7 @@ class SpectralCube(astropy.nddata.NDData):
 
         Parameters
         ----------
-        offset: int or float
+        offset: int or astropy quantity
             Offset from the cube's primary wavelength. If the value is an int,
             then it returns that slice. Otherwise, it will return the nearest
             wavelength to the one specified.
@@ -130,15 +131,14 @@ class SpectralCube(astropy.nddata.NDData):
            offset < len(self.data)):
             a = self.data[offset, :, :]
 
-        # TODO: this currently fails because delta is a numpy vector
-        if isinstance(offset, float):
-            delta = self.wcs.wcs.cdelt[2]
-            wloffset = offset / delta
+        if isinstance(offset, u.Quantity):
+            delta = self.wcs.wcs.cdelt[2] * u.m
+            wloffset = offset.to(u.m) / delta
             wloffset = int(wloffset)
             if wloffset >= 0 and wloffset < len(self.data):
                 a = self.data[wloffset, :, :]
 
-        return np.array(a)
+        return a
 
     def _choose_x_slice(self, offset):
         '''
@@ -147,7 +147,7 @@ class SpectralCube(astropy.nddata.NDData):
 
         Parameters
         ----------
-        offset: int or float
+        offset: int or astropy quantity
             Offset from the cube's initial x. If the value is an int,
             then it returns that slice. Otherwise, it will return the nearest
             wavelength to the one specified.
@@ -156,15 +156,16 @@ class SpectralCube(astropy.nddata.NDData):
         if (isinstance(offset, int) and offset >= 0 and
            offset < self.data.shape[2]):
             a = self.data[:, :, offset]
+            a = a.T
 
-        # TODO: This fails because delta is not a scalar (and it actually gets
-        # a wavelength slice, but nevermind...)
-        if isinstance(offset, float):
-            delta = self.wcs.wcs.cdelt[0]
-            wloffset = offset / delta
+        if isinstance(offset, u.Quantity):
+            unit = self.wcs.wcs.cunit[0]
+            delta = self.wcs.wcs.cdelt[0] * unit
+            wloffset = offset.to(unit) / delta
             wloffset = int(wloffset)
-            if wloffset >= 0 and wloffset < len(self.data):
+            if wloffset >= 0 and wloffset < self.data.shape[2]:
                 a = self.data[:, :, wloffset]
+                a = a.T
 
         return np.array(a).T
 
