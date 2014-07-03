@@ -279,15 +279,12 @@ def helioc_to_heliop(helioccoord, heliopframe):
 
     # d is calculated as the distance between the points
     # (x,y,z) and (0,0,D0).
-    d = np.sqrt(x**2 + y**2 + (z - (helioccoord.D0.to(u.m)))**2)
-    # zeta is then calculated as given in Thompson.
-    zeta = helioccoord.D0.to(u.m) - d
+    distance = np.sqrt(x**2 + y**2 + (helioccoord.D0.to(u.m) - z)**2)
 
-    distance = np.sqrt(x ** 2 + y ** 2 + zeta ** 2)
-    hpcx = np.rad2deg(np.arctan2(x, zeta))
+    hpcx = np.rad2deg(np.arctan2(x, helioccoord.D0 - z))
     hpcy = np.rad2deg(np.arcsin(y / distance))
 
-    representation = SphericalRepresentation(hpcx, hpcy, zeta)
+    representation = SphericalRepresentation(hpcx, hpcy, distance)
     return HelioProjective(representation)
 
 @frame_transform_graph.transform(FunctionTransform, HelioProjective, HelioCentric)
@@ -300,11 +297,11 @@ def heliop_to_helioc(heliopcoord, heliocframe):
     cosy = np.cos(y)
     siny = np.sin(y)
 
-    rx = (heliopcoord.d.to(u.m)) * cosy * sinx
-    ry = (heliopcoord.d.to(u.m)) * siny
-    rz = (heliopcoord.D0.to(u.m)) - (heliopcoord.d.to(u.m)) * cosy * cosx
+    rx = (heliopcoord.distance.to(u.m)) * cosy * sinx
+    ry = (heliopcoord.distance.to(u.m)) * siny
+    rz = (heliopcoord.D0.to(u.m)) - (heliopcoord.distance.to(u.m)) * cosy * cosx
 
-    representation = CartesianRepresentation(rx, ry, rz)
+    representation = CartesianRepresentation(rx.to(u.km), ry.to(u.km), rz.to(u.km))
     return HelioCentric(representation)
 
 @frame_transform_graph.transform(FunctionTransform, HelioCentric, HelioGraphicStonyhurst)
@@ -354,5 +351,5 @@ def hgs_to_hcc(heliogcoord, heliopframe):
     y = r * (siny * cosb - cosy * cosx * sinb)
     zz = r * (siny * sinb + cosy * cosx * cosb)
 
-    representation = CartesianRepresentation(x, y, zz)
+    representation = CartesianRepresentation(x.to(u.km), y.to(u.km), zz.to(u.km))
     return HelioCentric(representation)
