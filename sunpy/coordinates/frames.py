@@ -185,7 +185,7 @@ class HelioProjective(BaseCoordinateFrame):
     _frame_specific_representation_info = {
         'spherical': [RepresentationMapping('lon', 'Tx', u.arcsec),
                       RepresentationMapping('lat', 'Ty', u.arcsec),
-                      RepresentationMapping('distance', 'd', u.km)],
+                      RepresentationMapping('distance', 'distance', u.km)],
         'cylindrical': [RepresentationMapping('rho', 'Trho', u.arcsec),
                         RepresentationMapping('phi', 'psi', u.arcsec)]}
 
@@ -195,41 +195,43 @@ class HelioProjective(BaseCoordinateFrame):
     @property
     def zeta(self):
         """zeta is defined as a property."""
-        return self.D0 - self.d
+        return self.D0 - self.distance
 
     def __init__(self, *args, **kwargs):
-        if not args and (not kwargs or
-                         len(kwargs == 1)):
-            # Empty frame use case.
-            pass
-        elif args and kwargs:
-            if isinstance(args[0], BaseRepresentation):
-                if 'zeta' in kwargs:
-                    raise TypeError("zeta is not a valid kwarg here for the {0} frame.".format(self.__class__))
-            elif len(args) < 3:
-                if 'd' not in kwargs and 'zeta' in kwargs:
+        if args or (kwargs and len(kwargs) != 1):
+            # Non-empty frame use case
+            if args and kwargs:
+                if isinstance(args[0], BaseRepresentation):
+                    if 'zeta' in kwargs:
+                        raise TypeError("zeta cannot be specified with a representation"
+                                        "for the {0} frame.".format(self.__class__))
+                elif len(args) < 3:
+                    if 'distance' not in kwargs and 'zeta' in kwargs:
+                        if 'D0' in kwargs:
+                            kwargs['distance'] = kwargs['D0'] - kwargs['zeta']
+                        else:
+                            kwargs['distance'] = self.D0 - kwargs['zeta']
+                    elif 'distance' in kwargs and 'zeta' in kwargs:
+                        raise TypeError("zeta and distance cannot both be "
+                                        "specified in the {0} frame.".format(self.__class__))
+                elif len(args) == 3:
+                    if 'zeta' in kwargs:
+                        raise TypeError("zeta and distance cannot both"
+                                        "be specified here for the {0} frame.".format(self.__class__))
+            elif not kwargs:
+                if len(args) == 2:
+                    args = list(args)
+                    args.append((1*u.au).to(u.km))
+                    args = tuple(args)
+            elif not args:
+                if 'distance' not in kwargs and 'zeta' in kwargs:
                     if 'D0' in kwargs:
-                        kwargs['d'] = kwargs['D0'] - kwargs['zeta']
+                        kwargs['distance'] = kwargs['D0'] - kwargs['zeta']
                     else:
-                        kwargs['d'] = self.D0 - kwargs['zeta']
-                elif 'd' in kwargs and 'zeta' in kwargs:
-                    raise TypeError("zeta is not a valid kwarg here for the {0} frame.".format(self.__class__))
-            elif len(args) == 3:
-                if 'zeta' in kwargs:
-                    raise TypeError("zeta is not a valid kwarg here for the {0} frame.".format(self.__class__))
-        elif not kwargs:
-            if len(args) == 2:
-                args = list(args)
-                args.append((1*u.au).to(u.km))
-                args = tuple(args)
-        elif not args:
-            if 'd' not in kwargs and 'zeta' in kwargs:
-                if 'D0' in kwargs:
-                    kwargs['d'] = kwargs['D0'] - kwargs['zeta']
-                else:
-                    kwargs['d'] = self.D0 - kwargs['zeta']
-            elif 'd' in kwargs and 'zeta' in kwargs:
-                raise TypeError("zeta is not a valid kwarg here for the {0} frame.".format(self.__class__))
+                        kwargs['distance'] = self.D0 - kwargs['zeta']
+                elif 'distance' in kwargs and 'zeta' in kwargs:
+                    raise TypeError("zeta and distance cannot both be"
+                                    "specified here for the {0} frame.".format(self.__class__))
         super(HelioProjective, self).__init__(*args, **kwargs)
            
     # Note that Trho = Drho + 90, and Drho is the declination parameter.
