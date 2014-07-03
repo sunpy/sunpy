@@ -211,10 +211,7 @@ class HelioProjective(BaseCoordinateFrame):
                 elif len(args) < 3:
                     # If we have either args(Tx) and rest kwargs, or args(Tx, Ty) and rest kwargs.
                     if 'distance' not in kwargs and 'zeta' in kwargs:
-                        if 'D0' in kwargs:
-                            kwargs['distance'] = kwargs['D0'] - kwargs['zeta']
-                        else:
-                            kwargs['distance'] = self.D0 - kwargs['zeta']
+                        kwargs['distance'] = kwargs.get('D0', self.D0) - kwargs['zeta']
                     elif 'distance' in kwargs and 'zeta' in kwargs:
                         raise TypeError("zeta and distance cannot both be "
                                         "specified in the {0} frame.".format(self.__class__))
@@ -233,10 +230,7 @@ class HelioProjective(BaseCoordinateFrame):
             elif not args:
                 # The case when args are not present.
                 if 'distance' not in kwargs and 'zeta' in kwargs:
-                    if 'D0' in kwargs:
-                        kwargs['distance'] = kwargs['D0'] - kwargs['zeta']
-                    else:
-                        kwargs['distance'] = self.D0 - kwargs['zeta']
+                    kwargs['distance'] = kwargs.get('D0', self.D0) - kwargs['zeta']
                 elif 'distance' in kwargs and 'zeta' in kwargs:
                     raise TypeError("zeta and distance cannot both be"
                                     "specified here for the {0} frame.".format(self.__class__))
