@@ -15,9 +15,9 @@ class queryrequestblock(object):
 	self.phyobs = map_.get('phyobs',"Data not Available")
 	self.instrument = map_.get('instrument',"Data not Available")
 	self.url = url
-	'''self.time = {}
-	self.time['start'] = datetime.datetime.strptime(url.split('/')[-1].split('_')[0],'%Y%m%d')
-	self.time['end'] = self.time['start'] + datetime.timedelta(days=1)'''
+	self.time = {}
+	self.time['start'] = map_.get('Time_start',"Data not Available")
+	self.time['end]' = map_.get('Time_end',"Data not available")
 
 def iter_urls(map_,url_list):
     """Helper Function"""
@@ -53,8 +53,8 @@ class queryresponse(list):
         """Presents data within container in a presentable manner"""
         table = [
 	         [ 
-		  #qrblock.time['start'].strftime('%Y/%m/%d'),
-		  #qrblock.time['end'].strftime('%Y/%m/%d'),
+		  qrblock.time['start'].strftime('%Y/%m/%d'),
+		  qrblock.time['end'].strftime('%Y/%m/%d'),
 		  qrblock.source,
 		  qrblock.instrument
 		 ] 
@@ -75,6 +75,8 @@ class GenericClient(object):
        for elem in args:
            if issubclass(elem.__class__,Time):
                self.map_['TimeRange']=TimeRange(elem.start,elem.end)
+	       self.map_['Time_start']=elem.start
+	       self.map_['Time_end']=elem.end
 	   else:
 	       try:
 	           self.map_[elem.__class__.__name__]=elem.value
