@@ -244,7 +244,11 @@ class HelioProjective(BaseCoordinateFrame):
                     kwargs['distance'] = kwargs.get('D0', self.D0) - kwargs['zeta']
                     kwargs.pop('zeta')
                 elif 'distance' not in kwargs and 'zeta' not in kwargs:
-                    kwargs['distance'] = (1*u.au).to(u.km)
+                    if 'Tx' in kwargs and 'Ty' in kwargs:
+                        # This if clause was added to deal with a frame
+                        # which does not have Tx, Ty, distance but may
+                        # have other kwargs (FrameAttributes).
+                        kwargs['distance'] = (1*u.au).to(u.km)
                 elif 'distance' in kwargs and 'zeta' in kwargs:
                     raise TypeError("zeta and distance cannot both be "
                                     "specified here for the {0} frame.".format(self.__class__))
@@ -284,7 +288,7 @@ def helioc_to_heliop(helioccoord, heliopframe):
     hpcx = np.rad2deg(np.arctan2(x, helioccoord.D0 - z))
     hpcy = np.rad2deg(np.arcsin(y / distance))
 
-    representation = SphericalRepresentation(hpcx, hpcy, distance)
+    representation = SphericalRepresentation(hpcx, hpcy, distance.to(u.km))
     return HelioProjective(representation)
 
 @frame_transform_graph.transform(FunctionTransform, HelioProjective, HelioCentric)
@@ -322,7 +326,7 @@ def hcc_to_hgs(helioccoord, heliogframe):
 
     representation = SphericalRepresentation(np.rad2deg(hgln),
                                              np.rad2deg(hglt),
-                                             hecr)
+                                             hecr.to(u.km))
     return HelioGraphicStonyhurst(representation)
 
 @frame_transform_graph.transform(FunctionTransform, HelioGraphicStonyhurst, HelioCentric)

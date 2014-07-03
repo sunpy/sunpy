@@ -135,8 +135,7 @@ def test_nodata_frames():
 
     hp = HelioProjective()
     assert hp.D0 == HelioProjective.get_frame_attr_names()['D0']
-    assert hp.d == HelioProjective.get_frame_attr_names()['d']
-    assert len(hp.get_frame_attr_names()) == 2
+    assert len(hp.get_frame_attr_names()) == 1
 
 def test_frame_repr():
     # Tests the repr() of a frame.
@@ -150,8 +149,7 @@ def test_frame_repr():
     hp = HelioProjective()
     assert '<HelioProjective Frame:' in repr(hp)
     assert 'D0=' in repr(hp)
-    assert 'd=' in repr(hp)
-
+    
     hgs_1 = HelioGraphicStonyhurst(1*u.deg, 2*u.deg)
     hgs_2 = HelioGraphicStonyhurst(1*u.deg, 2*u.deg, 3*u.km)
 
@@ -171,16 +169,14 @@ def test_realize_frames():
     assert not hgs_1.has_data
     assert hgs_2.has_data
 
-    hp_1 = HelioProjective(d=1*u.km, D0=2*u.km)
+    hp_1 = HelioProjective(D0=2*u.km)
     hp_2 = hp_1.realize_frame(rep)
 
     assert not hp_1.has_data
     assert hp_2.has_data
 
     assert hp_1.D0 == hp_2.D0
-    assert hp_1.d == hp_2.d
     assert hp_2.D0 != HelioProjective.get_frame_attr_names()['D0']
-    assert hp_2.d != HelioProjective.get_frame_attr_names()['d']
 
 def test_transform_architecture():
     # This does not test the accuracy of transforms.
