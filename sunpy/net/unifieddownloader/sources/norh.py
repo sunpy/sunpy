@@ -5,7 +5,7 @@ import datetime,urlparse
 __all__ = ['Time', 'Instrument']
 class NoRHClient(GenericClient):
     
-    def _get_url_from_timerange(cls, timerange, **kwargs):
+    def _get_url_for_timerange(cls, timerange, **kwargs):
         """
         Helper function:
         Input:

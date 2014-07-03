@@ -4,7 +4,7 @@ from sunpy.instr import rhessi
 
 __all__ = ['Time','Instrument']
 
-class RHEESIClient(GenericClient):
+class RHESSIClient(GenericClient):
         @classmethod
         def _get_url_for_timerange(cls,timerange,**kwargs):
             """Returns a URL to the RHESSI data for the specified date range.

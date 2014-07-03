@@ -1,3 +1,4 @@
+import sunpy
 import urlparse
 from sunpy.net.vso.attrs import Time,Instrument
 from sunpy.net.unifieddownloader.client import GenericClient
@@ -12,7 +13,7 @@ class EVEClient(GenericClient):
 	Output: List of urls 
         """
 	if not timerange:
-            return []
+            return []   
         days = timerange.get_days()
 	urls = []
 	for day in days:
