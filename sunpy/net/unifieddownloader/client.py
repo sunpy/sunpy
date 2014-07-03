@@ -17,7 +17,7 @@ class queryrequestblock(object):
 	self.url = url
 	self.time = {}
 	self.time['start'] = map_.get('Time_start',"Data not Available")
-	self.time['end]' = map_.get('Time_end',"Data not available")
+	self.time['end'] = map_.get('Time_end',"Data not available")
 
 def iter_urls(map_,url_list):
     """Helper Function"""

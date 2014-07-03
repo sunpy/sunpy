@@ -1,8 +1,8 @@
-from sunpy.net.vso.attrs import Time,Instrument
+from sunpy.net.vso.attrs import Time,Instrument,Level
 from sunpy.net.unifieddownloader.client import GenericClient
 import datetime,urlparse
 
-__all__ = ['Time','Instrument']
+__all__ = ['Time','Instrument','Level']
 
 class LYRAClient(GenericClient):
 
@@ -39,7 +39,7 @@ class LYRAClient(GenericClient):
         def _can_handle_query(cls,*query):
             """Boolean Function:Answers whether client can service the query.
             """
-	    chkattr =  ['Time','Instrument']
+	    chkattr =  ['Time','Instrument','Level']
             chklist =  [x.__class__.__name__ in chkattr for x in query]
             for x in query:
 	        if x.__class__.__name__ == 'Instrument' and x.value == 'lyra':
