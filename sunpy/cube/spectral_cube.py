@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import astropy.nddata
 import sunpy.util.util as util
 from sunpy.map import GenericMap
+from sunpy.visualization.imageanimator import ImageAnimator
 
 __all__ = ['SpectralCube']
 
@@ -33,8 +34,9 @@ class SpectralCube(astropy.nddata.NDData):
         astropy.nddata.NDData.__init__(self, data=data,
                                        meta=meta,
                                        **kwargs)
-        self.wcs = wcs  # We don't send this to NDData because it's not
-                        # supported as of astropy 0.3.2. Eventually we will.
+        self.wcs = wcs
+        # We don't send this to NDData because it's not
+        # supported as of astropy 0.3.2. Eventually we will.
 
     def plot_wavelength_slice(self, offset, axes=None,
                               style='imshow', **kwargs):
@@ -103,6 +105,14 @@ class SpectralCube(astropy.nddata.NDData):
             plot = axes.pcolormesh(data, **kwargs)
 
         return plot
+
+    def animate(self, *args, **kwargs):
+        '''Plots an interactive visualization of this cube with a slider
+        controlling the wavelength axis.
+        Parameters other than data are passed to ImageAnimator, which in turn
+        passes them to imshow.'''
+        i = ImageAnimator(data=self.data, *args, **kwargs)
+        return i
 
     def _choose_wavelength_slice(self, offset):
         '''Retrieves an x-y slice at a wavelength specified by the cube's
