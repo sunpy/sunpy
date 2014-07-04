@@ -639,27 +639,28 @@ Dimension:\t [%d, %d]
             s = np.sin(np.deg2rad(angle))
             rmatrix = np.matrix([[c, -s], [s, c]])
 
-        # image_center should be given in data coordinates but needs to be converted to pixel values for the transformation
-        x = self.data_to_pixel(image_center[0], 'x')
-        y = self.data_to_pixel(image_center[1], 'y')
-        rotation_center = (x, y)
-
         # map_center is swapped compared to the x-y convention
         map_center = (np.array(self.data.shape)-1)/2.0
+
+        # rotation_center is swapped compared to the x-y convention
+        if recenter:
+            # Convert the axis of rotation from data coordinates to pixel coordinates
+            x = self.data_to_pixel(image_center[0], 'x')
+            y = self.data_to_pixel(image_center[1], 'y')
+            rotation_center = (y, x)
+        else:
+            rotation_center = map_center
 
         #Return a new map
         #Copy Header
         new_map = deepcopy(self)
 
-        # Because map data has the origin at the bottom left not the top left
-        # as is convention for images vertically flip the image for the
-        # transform and then flip it back again.
-        new_map.data = np.flipud(affine_transform(np.flipud(new_map.data),
-                                                  np.asarray(rmatrix),
-                                                  order=order, scale=scale,
-                                                  image_center=rotation_center,
-                                                  recenter=recenter, missing=missing,
-                                                  use_scipy=use_scipy))
+        new_map.data = affine_transform(new_map.data,
+                                        np.asarray(rmatrix),
+                                        order=order, scale=scale,
+                                        image_center=rotation_center,
+                                        recenter=recenter, missing=missing,
+                                        use_scipy=use_scipy)
 
 
         # Calculate new reference pixel and coordinate at the center of the

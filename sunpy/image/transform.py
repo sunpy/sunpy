@@ -86,8 +86,8 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
     else:
         rot_center = image_center
 
-    displacement = np.dot(rmatrix, image_center)
-    shift = rot_center - displacement
+    displacement = np.dot(rmatrix, rot_center)
+    shift = image_center - displacement
 
     if use_scipy or scikit_image_not_found:
         # Transform the image using the scipy affine transform
@@ -109,8 +109,8 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
         image -= im_min
         im_max = np.nanmax(image)
         image /= im_max
-        rotated_image = skimage.transform.warp(image, tform, order=order,
-                                               mode='constant', cval=missing)
+        rotated_image = skimage.transform.warp(image.T, tform, order=order,
+                                               mode='constant', cval=missing).T
 
 
         rotated_image *= im_max
