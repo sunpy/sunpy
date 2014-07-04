@@ -174,9 +174,34 @@ or by providing a directory full of image files::
     mc = sunpy.map.Map('path/to/my/files/*.fits', cube=True)
 
 By default, the maps are ordered by their observation date.  The earliest 
-map in the mapcube can be accessed by simply indexing the list:
+map in the mapcube can be accessed by simply indexing the list::
 
     mc[0]
+
+Mapcubes can hold maps that have different shapes.  To test if all the
+maps in a mapcube have the same shape::
+
+    mc.all_maps_same_shape()
+
+It is often useful to return the image data in a mapcube as a single
+three dimensional numpy ndarray::
+
+    mc.as_array()
+
+Note that an array is returned only if all the maps have the same
+shape.  If this is not true, an error is returned.  If all the maps
+have nx pixels in the x-direction, and ny pixels in the y-direction,
+and there are nt maps in the mapcube, the ndarray array that is
+returned has shape (ny, nx, nt).  The data in the map j appears in the
+ndarray in position (ny, nx, j), that is, the order of maps in the
+mapcube is reproduced in the returned ndarray.
+
+The meta data from each map can be obtained using::
+
+    mc.all_meta()
+
+This returns a list of map meta objects that have the same order as
+the maps in the mapcube.
 
 9. Coalignment of Mapcubes
 --------------------------
