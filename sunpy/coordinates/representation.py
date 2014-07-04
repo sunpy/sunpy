@@ -15,6 +15,23 @@ from astropy.coordinates.representation import (SphericalRepresentation,
                                                 broadcast_quantity)
 from astropy.coordinates import Longitude, Latitude, Distance
 
+def broadcast_quantity_180(*args, **kwargs):
+    """
+    A Quantity-aware version of np.broadcast_arrays
+    """
+    new_arrays = np.broadcast_arrays(*args)
+    new_quantities = []
+    for i in range(len(new_arrays)):
+        if args[i].__class__ is Longitude:
+            new_quantities.append(args[i].__class__(new_arrays[i],
+                                                    unit=args[i].unit,
+                                                    wrap_angle=180*u.deg,
+                                                    **kwargs))
+        else:
+            new_quantities.append(args[i].__class__(new_arrays[i],
+                                                  unit=args[i].unit, **kwargs))
+    return tuple(new_quantities)
+
 class SphericalRepresentation180(SphericalRepresentation):
     """
     Representation of points in 3D Spherical coordinates.
@@ -59,7 +76,7 @@ class SphericalRepresentation180(SphericalRepresentation):
             distance = distance.view(Distance)
 
         try:
-            lon, lat, distance = broadcast_quantity(lon, lat, distance, copy=copy)
+            lon, lat, distance = broadcast_quantity_180(lon, lat, distance, copy=copy)
         except:
             raise ValueError("Input parameters lon, lat and distance cannot be broadcast.")
 
