@@ -11,7 +11,8 @@ import numpy as np
 from astropy.extern import six
 from astropy.utils.compat.odict import OrderedDict
 from astropy import units as u
-from astropy.coordinates.representation import SphericalRepresentation
+from astropy.coordinates.representation import (SphericalRepresentation,
+                                                broadcast_quantity)
 from astropy.coordinates import Longitude, Latitude, Distance
 
 class SphericalRepresentation180(SphericalRepresentation):
