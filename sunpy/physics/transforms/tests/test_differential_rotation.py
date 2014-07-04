@@ -2,6 +2,7 @@ from __future__ import absolute_import
 import unittest
 import numpy as np
 from astropy import units as u
+from astropy.coordinates import Longitude
 from sunpy.physics.transforms.differential_rotation import diff_rot
 #pylint: disable=C0103,R0904,W0201,W0212,W0232,E1103
 
@@ -16,7 +17,7 @@ class DiffRotTest(unittest.TestCase):
         
     def test_array(self):
         rot = diff_rot(10, np.linspace(-70, 70, 2) * u.deg)
-        self.failUnless(np.array_equal(rot, np.array([110.2725,  110.2725]) * u.deg))
+        self.failUnless(np.array_equal(rot, Longitude(np.array([110.2725,  110.2725]) * u.deg)))
         
     def test_synodic(self):
         rot = diff_rot(10, 30 * u.deg, rot_type='howard', frame_time='synodic')
