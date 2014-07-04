@@ -11,8 +11,10 @@ from astropy.coordinates.representation import (SphericalRepresentation,
                                                 broadcast_quantity)
 from astropy.coordinates import Longitude, Latitude, Distance
 
+__all__ = ['Longitude180', 'SphericalRepresentation180']
+
 class Longitude180(Longitude):
-    def __new__(cls, angle, unit=None, wrap_angle=180 * u.deg, **kwargs):
+    def __new__(cls, angle, unit=None, wrap_angle=180*u.deg, **kwargs):
         self = super(Longitude180, cls).__new__(cls, angle, unit=unit,
                                                 wrap_angle=wrap_angle, **kwargs)
         return self

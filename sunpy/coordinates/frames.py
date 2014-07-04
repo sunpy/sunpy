@@ -189,7 +189,8 @@ class HelioProjective(BaseCoordinateFrame):
                       RepresentationMapping('lat', 'Ty', u.arcsec),
                       RepresentationMapping('distance', 'distance', u.km)],
         'cylindrical': [RepresentationMapping('rho', 'Trho', u.arcsec),
-                        RepresentationMapping('phi', 'psi', u.arcsec)]}
+                        RepresentationMapping('phi', 'psi', u.arcsec),
+                        RepresentationMapping('distance', 'distance', u.km)]}
 
     #d = FrameAttribute(default=(1*u.au).to(u.km))
     D0 = FrameAttribute(default=(1*u.au).to(u.km))
@@ -208,6 +209,8 @@ class HelioProjective(BaseCoordinateFrame):
         If 'zeta' is present, 'distance' can be calculated as given.
         Both 'zeta' and 'distance' cannot be present at the same time.
         """
+        print "args", args
+        print "kwargs", kwargs
         if args or (kwargs and len(kwargs) != 1):
             # Non-empty frame use case.
             if args and kwargs:
