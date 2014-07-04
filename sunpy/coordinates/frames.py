@@ -21,6 +21,8 @@ from astropy.coordinates import FrameAttribute
 # SunPy imports
 from sunpy import sun as s # For Carrington rotation number
 
+from .representation import SphericalRepresentation180
+
 RSUN_METERS = s.constants.constant('radius').si.value
 DSUN_METERS = s.constants.constant('mean distance').si.value
 
@@ -50,7 +52,7 @@ class HelioGraphicStonyhurst(BaseCoordinateFrame):
         the solar radius. Optional, must be keyword
     """
 
-    default_representation = SphericalRepresentation
+    default_representation = SphericalRepresentation180
 
     _frame_specific_representation_info = {
         'spherical': [RepresentationMapping('lon', 'hlon', 'recommended'),
@@ -102,7 +104,7 @@ class HelioGraphicCarrington(HelioGraphicStonyhurst):
         the solar radius. Optional, must be keyword.
     """
 
-    default_representation = SphericalRepresentation
+    default_representation = SphericalRepresentation180
 
     _frame_specific_representation_info = {
         'spherical': [RepresentationMapping('lon', 'hlon', 'recommended'),
@@ -180,7 +182,7 @@ class HelioProjective(BaseCoordinateFrame):
         Defaults to 1AU.
     """
 
-    default_representation = SphericalRepresentation
+    default_representation = SphericalRepresentation180
 
     _frame_specific_representation_info = {
         'spherical': [RepresentationMapping('lon', 'Tx', u.arcsec),
