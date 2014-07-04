@@ -21,7 +21,7 @@ from astropy.coordinates import FrameAttribute
 # SunPy imports
 from sunpy import sun as s # For Carrington rotation number
 
-from .representation import SphericalRepresentation180
+from .representation import SphericalWrap180Representation
 
 RSUN_METERS = s.constants.constant('radius').si.value
 DSUN_METERS = s.constants.constant('mean distance').si.value
@@ -52,12 +52,12 @@ class HelioGraphicStonyhurst(BaseCoordinateFrame):
         the solar radius. Optional, must be keyword
     """
 
-    default_representation = SphericalRepresentation180
+    default_representation = SphericalWrap180Representation
 
     _frame_specific_representation_info = {
-        'spherical': [RepresentationMapping('lon', 'hlon', 'recommended'),
-                      RepresentationMapping('lat', 'hlat', 'recommended'),
-                      RepresentationMapping('distance', 'rad', 'recommended')],
+        'sphericalwrap180': [RepresentationMapping('lon', 'hlon', 'recommended'),
+                             RepresentationMapping('lat', 'hlat', 'recommended'),
+                             RepresentationMapping('distance', 'rad', 'recommended')],
         }
 
     #rad = FrameAttribute(default=((RSUN_METERS/1000)*u.km))
@@ -104,12 +104,12 @@ class HelioGraphicCarrington(HelioGraphicStonyhurst):
         the solar radius. Optional, must be keyword.
     """
 
-    default_representation = SphericalRepresentation180
+    default_representation = SphericalWrap180Representation
 
     _frame_specific_representation_info = {
-        'spherical': [RepresentationMapping('lon', 'hlon', 'recommended'),
-                      RepresentationMapping('lat', 'hlat', 'recommended'),
-                      RepresentationMapping('distance', 'rad', 'recommended')]
+        'sphericalwrap180': [RepresentationMapping('lon', 'hlon', 'recommended'),
+                             RepresentationMapping('lat', 'hlat', 'recommended'),
+                             RepresentationMapping('distance', 'rad', 'recommended')]
         }
 
     #rad = FrameAttribute(default=((RSUN_METERS/1000)*u.km))
@@ -182,12 +182,12 @@ class HelioProjective(BaseCoordinateFrame):
         Defaults to 1AU.
     """
 
-    default_representation = SphericalRepresentation180
+    default_representation = SphericalWrap180Representation
 
     _frame_specific_representation_info = {
-        'spherical': [RepresentationMapping('lon', 'Tx', u.arcsec),
-                      RepresentationMapping('lat', 'Ty', u.arcsec),
-                      RepresentationMapping('distance', 'distance', u.km)],
+        'sphericalwrap180': [RepresentationMapping('lon', 'Tx', u.arcsec),
+                             RepresentationMapping('lat', 'Ty', u.arcsec),
+                             RepresentationMapping('distance', 'distance', u.km)],
         'cylindrical': [RepresentationMapping('rho', 'Trho', u.arcsec),
                         RepresentationMapping('phi', 'psi', u.arcsec),
                         RepresentationMapping('distance', 'distance', u.km)]}
@@ -209,8 +209,6 @@ class HelioProjective(BaseCoordinateFrame):
         If 'zeta' is present, 'distance' can be calculated as given.
         Both 'zeta' and 'distance' cannot be present at the same time.
         """
-        print "args", args
-        print "kwargs", kwargs
         if args or (kwargs and len(kwargs) != 1):
             # Non-empty frame use case.
             if args and kwargs:
@@ -249,7 +247,7 @@ class HelioProjective(BaseCoordinateFrame):
                     kwargs['distance'] = kwargs.get('D0', self.D0) - kwargs['zeta']
                     kwargs.pop('zeta')
                 elif 'distance' not in kwargs and 'zeta' not in kwargs:
-                    if 'Tx' in kwargs and 'Ty' in kwargs:
+                    if 'Tx' in kwargs and 'Ty' in kwargs or 'lon' in kwargs and 'lat' in kwargs:
                         # This if clause was added to deal with a frame
                         # which does not have Tx, Ty, distance but may
                         # have other kwargs (FrameAttributes).
