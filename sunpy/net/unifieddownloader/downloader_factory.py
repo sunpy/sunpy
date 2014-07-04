@@ -50,7 +50,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
 	'''
 	reslist =[]
     	for block in qr:
-		reslist.append(block[1].get(block[0]))
+		reslist.append(block[1].get(block[0],**kwargs))
 	
 	return reslist
 

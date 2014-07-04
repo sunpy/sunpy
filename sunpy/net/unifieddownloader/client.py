@@ -56,11 +56,12 @@ class queryresponse(list):
 		  qrblock.time['start'].strftime('%Y/%m/%d'),
 		  qrblock.time['end'].strftime('%Y/%m/%d'),
 		  qrblock.source,
-		  qrblock.instrument
+		  qrblock.instrument,
+		  qrblock.url
 		 ] 
 		  for qrblock in self
 		]
-	table.insert(0,['Start time','End time','Source','Instrument'])
+	table.insert(0,['Start time','End time','Source','Instrument','URL'])
 	print print_table(table, colsep='  ', linesep='\n')
 
 
@@ -104,7 +105,7 @@ class GenericClient(object):
 	 return queryresponse.create(self.map_,urls)
 
     
-    def get(self,qres):
+    def get(self,qres,**kwargs):
          """
 	 Input:
 	 qres : queryresponse object.
@@ -120,7 +121,7 @@ class GenericClient(object):
 
 	 dobj = Downloader(max_conn=len(urls),max_total=len(urls))
 	 for aurl,ncall in list(zip(urls,map(lambda x:res.require([x]),urls))):
-	     dobj.download(aurl,self.map_.get('Path',None),ncall,self.map_.get('ErrorBack',None))
+	     dobj.download(aurl,kwargs.get('Path',None),ncall,kwargs.get('ErrorBack',None))
          
 	 return res
 
