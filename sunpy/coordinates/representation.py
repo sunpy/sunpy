@@ -7,9 +7,8 @@ Part of the proposed Coordinates API.
 # Astropy
 from astropy.utils.compat.odict import OrderedDict
 from astropy import units as u
-from astropy.coordinates.representation import (SphericalRepresentation,
-                                                broadcast_quantity)
-from astropy.coordinates import Longitude, Latitude, Distance
+from astropy.coordinates.representation import SphericalRepresentation
+from astropy.coordinates import Longitude, Latitude
 
 __all__ = ['Longitude180', 'SphericalWrap180Representation']
 
@@ -48,25 +47,3 @@ class SphericalWrap180Representation(SphericalRepresentation):
                                 ('distance', u.Quantity)])
     recommended_units = {'lon': u.deg, 'lat': u.deg}
 
-    def __init__(self, lon, lat, distance, copy=True):
-
-        if not isinstance(lon, u.Quantity) or isinstance(lon, Latitude):
-            raise TypeError('lon should be a Quantity, Angle or Longitude.')
-        if not isinstance(lat, u.Quantity) or isinstance(lat, Longitude):
-            raise TypeError('lat should be a Quantity, Angle or Latitude.')
-
-        lon = Longitude180(lon, copy=copy)
-        lat = Latitude(lat, copy=copy)
-
-        distance = u.Quantity(distance, copy=copy)
-        if distance.unit.physical_type == 'length':
-            distance = distance.view(Distance)
-
-        try:
-            lon, lat, distance = broadcast_quantity(lon, lat, distance, copy=copy)
-        except:
-            raise ValueError("Input parameters lon, lat and distance cannot be broadcast.")
-
-        self._lon = lon
-        self._lat = lat
-        self._distance = distance
