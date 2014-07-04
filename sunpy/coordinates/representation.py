@@ -11,7 +11,7 @@ from astropy.coordinates.representation import (SphericalRepresentation,
                                                 broadcast_quantity)
 from astropy.coordinates import Longitude, Latitude, Distance
 
-__all__ = ['Longitude180', 'SphericalRepresentation180']
+__all__ = ['Longitude180', 'SphericalWrap180Representation']
 
 class Longitude180(Longitude):
     def __new__(cls, angle, unit=None, wrap_angle=180*u.deg, **kwargs):
@@ -19,7 +19,7 @@ class Longitude180(Longitude):
                                                 wrap_angle=wrap_angle, **kwargs)
         return self
 
-class SphericalRepresentation180(SphericalRepresentation):
+class SphericalWrap180Representation(SphericalRepresentation):
     """
     Representation of points in 3D Spherical coordinates.
     This representation allows for a negative Longitude.
