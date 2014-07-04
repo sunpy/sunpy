@@ -4,33 +4,18 @@ Part of the proposed Coordinates API.
 @author: Pritish C. (VaticanCameos)
 """
 
-# NumPy
-import numpy as np
-
 # Astropy
-from astropy.extern import six
 from astropy.utils.compat.odict import OrderedDict
 from astropy import units as u
 from astropy.coordinates.representation import (SphericalRepresentation,
                                                 broadcast_quantity)
 from astropy.coordinates import Longitude, Latitude, Distance
 
-def broadcast_quantity_180(*args, **kwargs):
-    """
-    A Quantity-aware version of np.broadcast_arrays
-    """
-    new_arrays = np.broadcast_arrays(*args)
-    new_quantities = []
-    for i in range(len(new_arrays)):
-        if args[i].__class__ is Longitude:
-            new_quantities.append(args[i].__class__(new_arrays[i],
-                                                    unit=args[i].unit,
-                                                    wrap_angle=180*u.deg,
-                                                    **kwargs))
-        else:
-            new_quantities.append(args[i].__class__(new_arrays[i],
-                                                  unit=args[i].unit, **kwargs))
-    return tuple(new_quantities)
+class Longitude180(Longitude):
+    def __new__(cls, angle, unit=None, wrap_angle=180 * u.deg, **kwargs):
+        self = super(Longitude180, cls).__new__(cls, angle, unit=unit,
+                                                wrap_angle=wrap_angle, **kwargs)
+        return self
 
 class SphericalRepresentation180(SphericalRepresentation):
     """
@@ -43,7 +28,7 @@ class SphericalRepresentation180(SphericalRepresentation):
     lon, lat: `~astropy.units.Quantity`
         The longitude and latitude of the point(s) in angular units. The
         latitude should be between -90 and +90 degrees, and the longitude
-        is allowed to have any value between -360 to 360 degrees. These
+        is allowed to have any value between -180 to 180 degrees. These
         can also be instances of `~astropy.units.Angle`,
         `~astropy.coordinates.Longitude`, or `~astropy.coordinates.Latitude`.
 
@@ -56,7 +41,7 @@ class SphericalRepresentation180(SphericalRepresentation):
         If True, arrays will be copied rather than referenced.
     """
 
-    attr_classes = OrderedDict([('lon', Longitude),
+    attr_classes = OrderedDict([('lon', Longitude180),
                                 ('lat', Latitude),
                                 ('distance', u.Quantity)])
     recommended_units = {'lon': u.deg, 'lat': u.deg}
@@ -68,7 +53,7 @@ class SphericalRepresentation180(SphericalRepresentation):
         if not isinstance(lat, u.Quantity) or isinstance(lat, Longitude):
             raise TypeError('lat should be a Quantity, Angle or Latitude.')
 
-        lon = Longitude(lon, copy=copy, wrap_angle=180*u.deg)
+        lon = Longitude180(lon, copy=copy)
         lat = Latitude(lat, copy=copy)
 
         distance = u.Quantity(distance, copy=copy)
@@ -76,31 +61,10 @@ class SphericalRepresentation180(SphericalRepresentation):
             distance = distance.view(Distance)
 
         try:
-            lon, lat, distance = broadcast_quantity_180(lon, lat, distance, copy=copy)
+            lon, lat, distance = broadcast_quantity(lon, lat, distance, copy=copy)
         except:
             raise ValueError("Input parameters lon, lat and distance cannot be broadcast.")
 
         self._lon = lon
         self._lat = lat
         self._distance = distance
-
-    @property
-    def lon(self):
-        """
-        The longitude of the point(s).
-        """
-        return self._lon
-
-    @property
-    def lat(self):
-        """
-        The latitude of the point(s).
-        """
-        return self._lat
-
-    @property
-    def distance(self):
-        """
-        The distance to the point(s).
-        """
-        return self._distance
