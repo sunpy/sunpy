@@ -76,7 +76,7 @@ def read(filepath, hdus=None):
         elif isinstance(hdus, collections.Iterable):
             hdulist = [hdulist[i] for i in hdus]
     try:
-        hdulist.verify('silentfix')
+        hdulist.verify('fix+warn')
 
         headers = get_header(hdulist)
         pairs = []
