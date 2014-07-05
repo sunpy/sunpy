@@ -138,17 +138,30 @@ class GOESLightCurve(LightCurve):
         if end < start:
             raise ValueError('start time > end time')
 
-        # find out which satellite and datatype to query from the query times
-        sat_num = GOESLightCurve._get_goes_sat_num(start, end)
-        base_url = 'http://umbra.nascom.nasa.gov/goes/fits/'
+        length = (end - start)
+        length = float(length.days) + float(length.seconds)/float(60*24*60) \
+                 + (float(length.microseconds)/float(1000*60*24))
 
-        if start < parse_time('1999/01/15'):
-            url = (base_url + "%s/go%02d%s.fits") % (start.strftime("%Y"),
-                sat_num[0], start.strftime("%y%m%d"))
-        else:
-            url = (base_url + "%s/go%02d%s.fits") % (start.strftime("%Y"),
-                sat_num[0], start.strftime("%Y%m%d"))
-        return url
+        length = int(math.ceil(length))
+        urls = []
+        one_day = datetime.timedelta(days=1)
+        for day in range(length):
+            file_start = start + one_day * day
+            file_end = start + one_day * (day+1)
+            
+            # find out which satellite and datatype to query from the query times
+            sat_num = GOESLightCurve._get_goes_sat_num(start, end)
+            base_url = 'http://umbra.nascom.nasa.gov/goes/fits/'
+
+            if start < parse_time('1999/01/15'):
+                url = (base_url + "%s/go%02d%s.fits") % (start.strftime("%Y"),
+                                                         sat_num[0], start.strftime("%y%m%d"))
+            else:
+                url = (base_url + "%s/go%02d%s.fits") % (start.strftime("%Y"),
+                                                         sat_num[0], start.strftime("%Y%m%d"))
+                
+            urls.append(url)
+        return urls
 
     @staticmethod
     def _parse_fits(filepath):

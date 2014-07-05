@@ -223,9 +223,7 @@ for compatability with map, please use meta instead""", Warning)
     def _download(uri, kwargs,
                   err='Unable to download data at specified URL'):
         """Attempts to download data at the specified URI"""
-
-        _filename = os.path.basename(uri).split("?")[0]
-
+                    
         # user specifies a download directory
         if "directory" in kwargs:
             download_dir = os.path.expanduser(kwargs["directory"])
@@ -238,21 +236,31 @@ for compatability with map, please use meta instead""", Warning)
         else:
             overwrite = False
 
-        # If the file is not already there, download it
-        filepath = os.path.join(download_dir, _filename)
+        if not isinstance(uris, list):
+            uris = [uris]
 
-        if not(os.path.isfile(filepath)) or (overwrite and
-                                             os.path.isfile(filepath)):
-            try:
-                response = urllib2.urlopen(uri)
-            except (urllib2.HTTPError, urllib2.URLError):
-                raise urllib2.URLError(err)
-            with open(filepath, 'wb') as fp:
-                shutil.copyfileobj(response, fp)
-        else:
-            warnings.warn("Using existing file rather than downloading, use overwrite=True to override.", RuntimeWarning)
+        filepaths = []
 
-        return filepath
+        for uri in uris:
+            _filename = os.path.basename(uri).split("?")[0]
+
+            # If the file is not already there, download it
+            filepath = os.path.join(download_dir, _filename)
+
+            if not(os.path.isfile(filepath)) or (overwrite and 
+                                                 os.path.isfile(filepath)):
+                try:
+                    response = urllib2.urlopen(uri)
+                except (urllib2.HTTPError, urllib2.URLError):
+                    raise urllib2.URLError(err)
+                    with open(filepath, 'wb') as fp:
+                        shutil.copyfileobj(response, fp)
+                    else:
+                        warnings.warn("Using existing file rather than downloading, use overwrite=True to override.", RuntimeWarning)
+
+            filepaths.append(filepath)
+
+        return filepaths
 
     @classmethod
     def _get_default_uri(cls):
