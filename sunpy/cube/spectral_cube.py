@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
 # Author: Mateo Inchaurrandieta <mateo.inchaurrandieta@gmail.com>
+'''
+Main class for representing spectral cubes - 3D sets of data where one axis is
+a spectral dimension.
+'''
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -126,19 +130,19 @@ class SpectralCube(astropy.nddata.NDData):
             then it returns that slice. Otherwise, it will return the nearest
             wavelength to the one specified.
         '''
-        a = None
+        arr = None
         if (isinstance(offset, int) and offset >= 0 and
            offset < len(self.data)):
-            a = self.data[offset, :, :]
+            arr = self.data[offset, :, :]
 
         if isinstance(offset, u.Quantity):
             delta = self.wcs.wcs.cdelt[2] * u.m
             wloffset = offset.to(u.m) / delta
             wloffset = int(wloffset)
             if wloffset >= 0 and wloffset < len(self.data):
-                a = self.data[wloffset, :, :]
+                arr = self.data[wloffset, :, :]
 
-        return a
+        return arr
 
     def _choose_x_slice(self, offset):
         '''
@@ -152,11 +156,11 @@ class SpectralCube(astropy.nddata.NDData):
             then it returns that slice. Otherwise, it will return the nearest
             wavelength to the one specified.
         '''
-        a = None
+        arr = None
         if (isinstance(offset, int) and offset >= 0 and
            offset < self.data.shape[2]):
-            a = self.data[:, :, offset]
-            a = a.T
+            arr = self.data[:, :, offset]
+            arr = arr.T
 
         if isinstance(offset, u.Quantity):
             unit = self.wcs.wcs.cunit[0]
@@ -164,10 +168,10 @@ class SpectralCube(astropy.nddata.NDData):
             wloffset = offset.to(unit) / delta
             wloffset = int(wloffset)
             if wloffset >= 0 and wloffset < self.data.shape[2]:
-                a = self.data[:, :, wloffset]
-                a = a.T
+                arr = self.data[:, :, wloffset]
+                arr = arr.T
 
-        return a
+        return arr
 
     def slice_to_map(self, chunk, *args, **kwargs):
         # TODO: implement slice-by-float functionality
@@ -186,8 +190,9 @@ class SpectralCube(astropy.nddata.NDData):
             maparray = self.data[chunk[0]:chunk[1], :, :].sum(0)
         else:
             maparray = self.data[chunk, :, :]
-        m = GenericMap(data=np.array(maparray), header=self.meta)
-        return m
+        gmap = GenericMap(data=np.array(maparray), header=self.meta,
+                          *args, **kwargs)
+        return gmap
 
 
 def _orient(array, wcs):
@@ -226,10 +231,11 @@ def _orient(array, wcs):
     if 'stokes' in types:
         raise ValueError("Input WCS should not contain stokes")
 
-    t = [types.index('spectral'), nums.index(1), nums.index(0)]
-    result_array = array.transpose(t)
+    order = [types.index('spectral'), nums.index(1), nums.index(0)]
+    result_array = array.transpose(order)
 
-    t = wcs.wcs.naxis - np.array(t[::-1]) - 1
-    result_wcs = util.reindex_wcs(wcs, t)
+    order = wcs.wcs.naxis - np.array(order[::-1]) - 1
+    result_wcs = util.reindex_wcs(wcs, order)
 
     return result_array, result_wcs
+    

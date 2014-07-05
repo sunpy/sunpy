@@ -5,7 +5,7 @@
 from __future__ import absolute_import
 
 from astropy.io import fits
-from astropy import wcs
+from astropy.wcs import WCS
 from sunpy.cube import SpectralCube
 import re
 
@@ -54,8 +54,8 @@ class EISSpectralCube(SpectralCube):
         primaryHeader: astropy.io.fits.Header object
             The main header for the whole file.
         '''
-        h = _dictionarize_header(dataHeader, primaryHeader, window)
-        SpectralCube.__init__(self, data.T, wcs, meta=h)
+        header = _dictionarize_header(dataHeader, primaryHeader, window)
+        SpectralCube.__init__(self, data.T, wcs, meta=header)
         # Data is transposed here because EIS orders (y, lambda) by x or time,
         # not (y, x) by lambda.
 
@@ -71,8 +71,8 @@ class EISSpectralCube(SpectralCube):
         """
         hdulist = fits.open(name=filename, **kwargs)
         header = _clean(hdulist[0].header)
-        # TODO: Make sure each cube ahas a correct wcs.
-        w = wcs.WCS(header=header, naxis=3)
+        # TODO: Make sure each cube has a correct wcs.
+        w = WCS(header=header, naxis=3)
         wavelengths = [c.name for c in hdulist[1].columns if c.dim is not None]
         data = [hdulist[1].data[wav] for wav in wavelengths]
         cubes = [EISSpectralCube(data[i], w, i+1, dataHeader=hdulist[1].header,
@@ -86,21 +86,44 @@ class EISSpectralCube(SpectralCube):
         return True
 
 
-def _isInWindow(key, window):
-    l = re.findall(r'\d+$', key)  # finds numbers at the end of the key
-    if len(l) == 0:
+def _is_in_window(key, window):
+    '''
+    Checks if a given key forms part of the specified spectral window.
+
+    Parameters
+    ----------
+    key: str
+        The key to be validated
+    window: int
+        The desired window
+    '''
+    end = re.findall(r'\d+$', key)  # finds numbers at the end of the key
+    if len(end) == 0:
         return False
     else:
-        return window == int(l[0])
+        return window == int(end[0])
 
 
-def _dictionarize_header(dataHeader, primaryHeader, window):
-    ph = dict(primaryHeader)
+def _dictionarize_header(data_header, primary_header, window):
+    '''
+    Combines the given FITS primary header and the bintable header for a
+    specified window into a dictionary.
+
+    Parameters
+    ----------
+    data_header: astropy.io.fits.Header object, dict, or dict-like object.
+        secondary header to be pruned for the specified window
+    primary_header: astropy.io.fits.Header object, dict, or dict-like object.
+        The main FITS file header
+    window: int
+        The window to be chosen out of the data header.
+    '''
+    ph = dict(primary_header)
     dh = {}
-    for k in dataHeader:
-        if _isInWindow(k, window):
+    for k in data_header:
+        if _is_in_window(k, window):
             newkey = re.sub(r'\d+$', '', k)
-            dh[newkey] = dataHeader[k]
+            dh[newkey] = data_header[k]
 
     ph.update(dh)
     return ph
