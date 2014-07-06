@@ -14,12 +14,13 @@ from astropy.coordinates.representation import (SphericalRepresentation, Cylindr
 from astropy.coordinates.baseframe import (BaseCoordinateFrame, frame_transform_graph,
                                            RepresentationMapping)
 from astropy.coordinates.transformations import FunctionTransform
-from astropy.coordinates import FrameAttribute
+from astropy.coordinates import FrameAttribute, TimeFrameAttribute
 
 # SunPy imports
 from sunpy import sun as s # For Carrington rotation number
+from representation import SphericalWrap180Representation
 
-from .representation import SphericalWrap180Representation
+from datetime import datetime
 
 RSUN_METERS = s.constants.constant('radius').si.value
 DSUN_METERS = s.constants.constant('mean distance').si.value
@@ -59,22 +60,29 @@ class HelioGraphicStonyhurst(BaseCoordinateFrame):
         }
 
     #rad = FrameAttribute(default=((RSUN_METERS/1000)*u.km))
+    dateobs = TimeFrameAttribute()
 
     def __init__(self, *args, **kwargs):
-        if not args and not kwargs: # Empty frame use case.
-            pass
-        elif args and kwargs: # Mixed use case.
-            if len(args) == 1 and 'rad' not in kwargs:
-                # If one of hlon/hlat are in args
-                kwargs['rad'] = (RSUN_METERS/1000)*u.km
-        elif not args: # kwargs-only use case.
-            if 'rad' not in kwargs: # This default is required by definition.
-                kwargs['rad'] = (RSUN_METERS/1000)*u.km
-        elif not kwargs: # args-only use case.
-            if len(args) == 2:
-                args = list(args)
-                args.append((RSUN_METERS/1000)*u.km)
-                args = tuple(args)
+        if args or kwargs: # Non-empty frame use case.
+            if args and kwargs: # Mixed use case.
+                if not isinstance(args[0], BaseRepresentation):
+                    if len(args) == 1 and 'rad' not in kwargs:
+                    # If one of hlon/hlat are in args
+                        kwargs['rad'] = (RSUN_METERS/1000)*u.km
+                if 'dateobs' not in kwargs:
+                    kwargs['dateobs'] = datetime.now()
+            elif not args: # kwargs-only use case.
+                if not isinstance(args[0], BaseRepresentation):
+                    if 'rad' not in kwargs: # This default is required by definition.
+                        kwargs['rad'] = (RSUN_METERS/1000)*u.km
+                if 'dateobs' not in kwargs:
+                    kwargs['dateobs'] = datetime.now()
+            elif not kwargs: # args-only use case.
+                if len(args) == 2:
+                    args = list(args)
+                    args.append((RSUN_METERS/1000)*u.km)
+                    args = tuple(args)
+                kwargs['dateobs'] = datetime.now()
         super(HelioGraphicStonyhurst, self).__init__(*args, **kwargs)
 
 def _carrington_offset():
