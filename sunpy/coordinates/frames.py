@@ -8,14 +8,12 @@ Part of the proposed Coordinates API.
 import numpy as np
 
 # Astropy imports
-from astropy.extern import six
-from astropy.utils.compat.odict import OrderedDict
 from astropy import units as u
 from astropy.coordinates.representation import (SphericalRepresentation, CylindricalRepresentation,
                                                 CartesianRepresentation, BaseRepresentation)
 from astropy.coordinates.baseframe import (BaseCoordinateFrame, frame_transform_graph,
                                            RepresentationMapping)
-from astropy.coordinates.transformations import FunctionTransform, DynamicMatrixTransform
+from astropy.coordinates.transformations import FunctionTransform
 from astropy.coordinates import FrameAttribute
 
 # SunPy imports
