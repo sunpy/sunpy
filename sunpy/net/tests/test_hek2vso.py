@@ -29,29 +29,34 @@ instrument = 'eit'
 hekTime = hek.attrs.Time(startTime, endTime)
 hekEvent = hek.attrs.EventType(eventType)
 
+
 @pytest.fixture
 def h2v_client():
     return hek2vso.H2VClient()
+
 
 @pytest.fixture
 def hek_client():
     return hek.HEKClient()
 
+
 @pytest.fixture
 def vso_client():
     vso.VSOClient()
+
 
 def test_wave_unit_catcher():
     """Make sure that inter-unit conversion of wavelengths is accurate"""
     # Implementing the example test cases
     test_wavel = [
-        hek2vso.wave_unit_catcher(2.11e-06, 'cm'), 
+        hek2vso.wave_unit_catcher(2.11e-06, 'cm'),
         hek2vso.wave_unit_catcher(9.4e-07, 'cm'),
-        hek2vso.wave_unit_catcher(5e-08, 'mm') 
+        hek2vso.wave_unit_catcher(5e-08, 'mm')
     ]
     test_values = [211.0, 94.0, 0.5]
 
     assert np.allclose(test_wavel, test_values, rtol=1e-05, atol=1e-8)
+
 
 @pytest.mark.online
 def test_translate_results_to_query():
@@ -67,6 +72,7 @@ def test_translate_results_to_query():
         #Comparing types of both queries
         assert type(hek_query) == type(vso_query)
 
+
 @pytest.mark.online
 def test_vso_attribute_parse():
     """Make sure that Parsing of VSO attributes from HEK queries is accurate"""
@@ -80,14 +86,17 @@ def test_vso_attribute_parse():
 
     # Checking Observatory
     assert vso_query[1].value == hek_query[0]['obs_observatory']
-    
+
     # Checking Instrument
     assert vso_query[2].value == hek_query[0]['obs_instrument']
-    
+
     # Checking Wavelength
-    assert vso_query[3].min == hek2vso.wave_unit_catcher(hek_query[0]['obs_meanwavel'], hek_query[0]['obs_wavelunit'])
-    assert vso_query[3].max == hek2vso.wave_unit_catcher(hek_query[0]['obs_meanwavel'], hek_query[0]['obs_wavelunit'])
+    assert vso_query[3].min == hek2vso.wave_unit_catcher(hek_query[0]['obs_meanwavel'],
+                                                         hek_query[0]['obs_wavelunit'])
+    assert vso_query[3].max == hek2vso.wave_unit_catcher(hek_query[0]['obs_meanwavel'],
+                                                         hek_query[0]['obs_wavelunit'])
     assert vso_query[3].unit == 'Angstrom'
+
 
 class TestH2VClient:
     """Tests the H2V class"""

@@ -5,10 +5,12 @@ import sunpy.map
 #==============================================================================
 # Test, read, get_header and write through the file independant layer
 #==============================================================================
+
+
 class TestMapMeta():
-    
+
     def test_upcasing(self):
-        meta = sunpy.map.MapMeta({'wibble':1, 'WOBBLE':2})
+        meta = sunpy.map.MapMeta({'wibble': 1, 'WOBBLE': 2})
         #__getitem__
         assert meta['wibble'] == meta['WIBBLE']
         #get
@@ -21,12 +23,12 @@ class TestMapMeta():
         #pop
         assert meta.pop('wibble') == meta2.pop('WIBBLE')
         #update
-        meta.update({'spam':'eggs'})
-        meta2.update({'SPAM':'eggs'})
+        meta.update({'spam': 'eggs'})
+        meta2.update({'SPAM': 'eggs'})
         assert meta == meta2
         #setdefault
-        meta.setdefault('dave',3)
-        meta2.setdefault('DAVE',3)
+        meta.setdefault('dave', 3)
+        meta2.setdefault('DAVE', 3)
         assert meta.get('DAVE') == meta2.get('dave')
         #__setitem__
         meta['wibble'] = 10
