@@ -655,12 +655,12 @@ Dimension:\t [%d, %d]
         #Copy Header
         new_map = deepcopy(self)
 
-        new_map.data = affine_transform(new_map.data,
+        new_map.data = affine_transform(new_map.data.T,
                                         np.asarray(rmatrix),
                                         order=order, scale=scale,
                                         image_center=rotation_center,
                                         recenter=recenter, missing=missing,
-                                        use_scipy=use_scipy)
+                                        use_scipy=use_scipy).T
 
 
         # Calculate new reference pixel and coordinate at the center of the
