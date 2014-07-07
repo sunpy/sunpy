@@ -13,7 +13,7 @@ class LYRAClient(GenericClient):
             timerange: Time-range over which data is to be downloaded
 	    Output: List of urls
             """               
-	    days = timerange.get_days()
+	    days = timerange.get_dates()
             urls = []
 	    for day in days:
                 urls.append(cls._get_url_for_date(day, **kwargs))
