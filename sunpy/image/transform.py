@@ -4,6 +4,8 @@ Functions for geometrical image transformation and warping.
 
 from __future__ import absolute_import
 
+import warnings
+
 import numpy as np
 import scipy.ndimage.interpolation
 try:
@@ -45,6 +47,7 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
         The value to replace any missing data after the transformation.
     use_scipy : bool
         Force use of :func:`scipy.ndimage.interpolation.affine_transform`.
+        Will set all NaNs in image to zero before doing the transform.
         Default: False unless sckit-image is not installed.
 
     Returns
@@ -90,6 +93,8 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
     shift = image_center - displacement
 
     if use_scipy or scikit_image_not_found:
+        if np.any(np.isnan(image)):
+            warnings.warn("Setting NaNs to 0 for SciPy rotation", Warning)
         # Transform the image using the scipy affine transform
         rotated_image = scipy.ndimage.interpolation.affine_transform(
                 np.nan_to_num(image).T, rmatrix, offset=shift, order=order,
