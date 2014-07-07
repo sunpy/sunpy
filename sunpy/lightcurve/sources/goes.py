@@ -2,6 +2,8 @@
 """Provides programs to process and analyze GOES X-ray data."""
 from __future__ import absolute_import
 
+import math
+
 import datetime
 import matplotlib.dates
 from matplotlib import pyplot as plt
