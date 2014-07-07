@@ -11,7 +11,7 @@ from astropy.io import fits
 import pandas
 
 from sunpy.lightcurve import LightCurve
-from sunpy.time import parse_time
+from sunpy.time import parse_time, TimeRange
 from sunpy.util.odict import OrderedDict
 
 __all__ = ['LYRALightCurve']
@@ -78,8 +78,22 @@ class LYRALightCurve(LightCurve):
 
         return figure
 
-    @classmethod
-    def _get_url_from_timerange(cls, timerange, **kwargs):
+    @staticmethod
+    def _get_url_for_date_range(cls, *args, **kwargs):
+        """Returns a URL to the GOES data for the specified date.
+
+        Parameters
+        ----------
+        args : TimeRange, datetimes, date strings
+        Date range should be specified using a TimeRange, or start
+        and end dates at datetime instances or date strings.
+        """
+        # TimeRange
+        if len(args) == 1 and isinstance(args[0], TimeRange):
+            timerange = args[0]
+        elif len(args) == 2:
+            timerange = TimeRange(args[0], args[1])
+
         days = timerange.get_days()
         urls = []
         for day in days:
