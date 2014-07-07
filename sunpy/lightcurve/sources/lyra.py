@@ -78,6 +78,13 @@ class LYRALightCurve(LightCurve):
 
         return figure
 
+    @classmethod
+    def _get_url_from_timerange(cls, timerange, **kwargs):
+        days = timerange.get_days()
+        urls = []
+        for day in days:
+            urls.append(cls._get_url_for_date(day, **kwargs))
+        return urls
 
     @staticmethod
     def _get_url_for_date(date):
