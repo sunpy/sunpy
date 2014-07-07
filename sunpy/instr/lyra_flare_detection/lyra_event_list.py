@@ -45,8 +45,11 @@ from astropy.io import fits
 from datetime import timedelta
 import matplotlib.pyplot as plt
 
-RISE_FACTOR = 1.01
+RISE_FACTOR = 1.005
 FALL_FACTOR = 0.5
+# Set mean daily minimum irradiance in Zr channel from first light
+# (Jan 2010) until mid 2014.
+NORM = 0.001
 
 def find_lyra_events(flux, time):
     """
@@ -98,18 +101,21 @@ def find_lyra_events(flux, time):
                                         ("end_time", object),
                                         ("comments", object)])
     # object LYRA artifacts from timeseries
-    time, flux, artifact_status = remove_lyra_artifacts(time, [flux],
+    clean_time, fluxlist, artifact_status = remove_lyra_artifacts(time, [flux],
         artifacts=["UV occ.", "Offpoint", "LAR", "Calibration", "SAA",
                    "Vis occ.", "Operational Anomaly", "Glitch", "ASIC reload"],
                    return_artifacts=True)
-    flux = flux[0]
+    clean_flux = fluxlist[0]
     artifacts_removed = artifact_status[1]
+    # Perform subtraction so median irradiance of time series is at
+    # average daily minimum from first 4 years of mission.
+    clean_flux = clean_flux - (np.median(clean_flux)-NORM)
     # Get derivative of flux wrt time
-    time_timedelta = time[1:-1]-time[0:-2]
+    time_timedelta = clean_time[1:-1]-clean_time[0:-2]
     dt = np.zeros(len(time_timedelta), dtype="float64")
     for i, t, in enumerate(time_timedelta):
         dt[i] = t.total_seconds()
-    dfdt = np.gradient(flux[0:-2], dt)
+    dfdt = np.gradient(clean_flux[0:-2], dt)
     # Get locations where derivative is positive
     pos_deriv = np.where(dfdt > 0)[0]
     neg_deriv = np.where(dfdt < 0)[0]
@@ -117,7 +123,7 @@ def find_lyra_events(flux, time):
     neg_deriv0 = np.where(dfdt <= 0)[0]
     # Find difference between each time point and the one 4
     # observations ahead.
-    time_timedelta4 = time[4:-1]-time[0:-5]
+    time_timedelta4 = clean_time[4:-1]-clean_time[0:-5]
     dt4 = np.zeros(len(time_timedelta4))
     for i, t, in enumerate(time_timedelta4):
         dt4[i] = t.total_seconds()
@@ -127,7 +133,7 @@ def find_lyra_events(flux, time):
         # Start time criteria
         if (pos_deriv[i:i+4]-pos_deriv[i] == np.arange(4)).all() and \
           dt4[pos_deriv[i]] > 210 and dt4[pos_deriv[i]] < 270 and \
-          flux[pos_deriv[i+4]]/flux[pos_deriv[i]] >= RISE_FACTOR:
+          clean_flux[pos_deriv[i+4]]/clean_flux[pos_deriv[i]] >= RISE_FACTOR:
             # Find start time which is defined as earliest continuous
             # increase in flux before the point found by the above
             # criteria.
@@ -140,20 +146,21 @@ def find_lyra_events(flux, time):
             # If artifact is at start of flare, set start time to
             # directly afterwards.
             artifact_check = np.logical_and(
-                artifacts_removed["end_time"] > time[start_index],
-                artifacts_removed["end_time"] < time[pos_deriv[kk+2]])
+                artifacts_removed["end_time"] > clean_time[start_index],
+                artifacts_removed["end_time"] < clean_time[pos_deriv[kk+2]])
             if artifact_check.any() == True:
                 new_index = \
-                  np.where(time[pos_deriv] > \
+                  np.where(clean_time[pos_deriv] > \
                            artifacts_removed[artifact_check][-1]["end_time"])
                 start_index = pos_deriv[new_index[0][0]]
             # Next, find index of flare end time.
             jj = np.where(neg_deriv > start_index)[0][0]
             j = neg_deriv[jj]
             try:
-                l = np.where(flux[j:] <= max(flux[pos_deriv[i]:j]) - \
-                    (max(flux[pos_deriv[i]:j])-flux[pos_deriv[i]]) * \
-                    FALL_FACTOR)[0][0]+j
+                l = np.where(
+                    clean_flux[j:] <= max(clean_flux[pos_deriv[i]:j]) - \
+                    (max(clean_flux[pos_deriv[i]:j]) - \
+                     clean_flux[pos_deriv[i]]) * FALL_FACTOR)[0][0]+j
             except IndexError:
                 i = i+1
             else:
@@ -166,22 +173,24 @@ def find_lyra_events(flux, time):
                     # If artifact is at end of flare, set end time to
                     # directly beforehand.
                     artifact_check = np.logical_and(
-                      artifacts_removed["begin_time"] < time[end_index],
-                        artifacts_removed["begin_time"] > time[end_index-2])
+                      artifacts_removed["begin_time"] < clean_time[end_index],
+                        artifacts_removed["begin_time"] > \
+                        clean_time[end_index-2])
                     if artifact_check.any() == True:
-                        new_index = np.where(time < \
+                        new_index = np.where(clean_time < \
                             artifacts_removed[artifact_check][0]["begin_time"])
                         end_index = new_index[0][-1]
                     # find index of peak time
                     peak_index = np.where(
-                        flux == max(flux[start_index:end_index]))[0][0]
+                        clean_flux == max(clean_flux[start_index:end_index]))
+                    peak_index = peak_index[0][0]
                     # Record flare start, peak and end times
                     flare_indices.append((start_index, peak_index, end_index))
                     lyra_events = np.append(
                         lyra_events, np.empty(1, dtype=lyra_events.dtype))
-                    lyra_events[-1]["start_time"] = time[start_index]
-                    lyra_events[-1]["peak_time"] = time[peak_index]
-                    lyra_events[-1]["end_time"] = time[end_index]
+                    lyra_events[-1]["start_time"] = clean_time[start_index]
+                    lyra_events[-1]["peak_time"] = clean_time[peak_index]
+                    lyra_events[-1]["end_time"] = clean_time[end_index]
                     # If the most recently found flare is during the decay phase
                     # of another reset end time of previous flare to start time
                     # of this flare.
@@ -629,8 +638,8 @@ def testing_find_lyra_events(find_events=False):
     #fitsname = "lyra_20140606-000000_lev3_std.fits"
     #fitsname = "lyra_20140607-000000_lev3_std.fits"
     #fitsname = "lyra_20100601-000000_lev3_std.fits"
-    #fitsname = "lyra_20100602-000000_lev3_std.fits"
-    #fitsname = "lyra_20100603-000000_lev3_std.fits"
+    fitsname = "lyra_20100602-000000_lev3_std.fits"
+    fitsname = "lyra_20100603-000000_lev3_std.fits"
     #fitsname = "lyra_20100604-000000_lev3_std.fits"
     #fitsname = "lyra_20111001-000000_lev3_std.fits"
     fitsfile = fitspath + fitsname
