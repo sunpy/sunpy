@@ -92,8 +92,8 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
     if use_scipy or scikit_image_not_found:
         # Transform the image using the scipy affine transform
         rotated_image = scipy.ndimage.interpolation.affine_transform(
-                image, rmatrix, offset=shift, order=order, mode='constant',
-                cval=missing)
+                np.nan_to_num(image), rmatrix, offset=shift, order=order,
+                mode='constant', cval=missing)
     else:
         # Make the rotation matrix 3x3 to include translation of the image
         skmatrix = np.zeros((3, 3))
