@@ -78,7 +78,7 @@ class LYRALightCurve(LightCurve):
 
         return figure
 
-    @staticmethod
+    @classmethod
     def _get_url_for_date_range(cls, *args, **kwargs):
         """Returns a URL to the GOES data for the specified date.
 
@@ -94,11 +94,9 @@ class LYRALightCurve(LightCurve):
         elif len(args) == 2:
             timerange = TimeRange(args[0], args[1])
 
-        days = timerange.get_days()
-        urls = []
-        for day in days:
-            urls.append(cls._get_url_for_date(day, **kwargs))
-        return urls
+        days = timerange.get_dates()
+
+        return [cls._get_url_for_date(day, **kwargs) for day in days]
 
     @staticmethod
     def _get_url_for_date(date):

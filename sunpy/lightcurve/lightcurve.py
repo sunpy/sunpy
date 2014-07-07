@@ -72,12 +72,41 @@ class LightCurve(object):
 
     def __init__(self, data, meta=None):
         self.data = pandas.DataFrame(data)
-        if meta == '' or meta is None:
-            self.meta = OrderedDict()
-        else:
-            self.meta = OrderedDict(meta)
+	if meta == '' or meta is None:
+	     self.meta = OrderedDict()
+	else:
+             self.meta = OrderedDict(meta)
 
+    def __add__(self, other):
+        """
+        List like concatenation for lightcurves
+        """
+        if not isinstance(other, LightCurve):
+            raise NotImplementedError
 
+        new_data = self.data.append(other.data)
+
+        new_dict = dict()
+        new_dict.update(self.meta)
+        new_dict.update(other.meta)
+
+        return self.__class__(new_data, new_dict)
+
+    def __radd__(self, other):
+        """
+        List like concatenation for lightcurves
+        """
+        if not isinstance(other, LightCurve):
+            raise NotImplementedError
+
+        new_data = other.data.append(self.data)
+
+        new_dict = dict()
+        new_dict.update(other.meta)
+        new_dict.update(self.meta)
+
+        return self.__class__(new_data, new_dict)
+    
     @property
     def header(self):
         """
@@ -126,19 +155,29 @@ for compatability with map, please use meta instead""", Warning)
 
     @classmethod
     def from_file(cls, filename):
-        '''Used to return Light Curve object by reading the given filename
+        '''
+        Used to return Light Curve object by reading the given filename
 
         Parameters:
-            filename: Path of the file to be read.
-
+    	    filename: Path of the file to be read.
         '''
+        if not isinstance(filename, list):
+            filename = [filename]
 
-        filename = os.path.expanduser(filename)
-        meta, data = cls._parse_filepath(filename)
-        if data.empty:
-            raise ValueError("No data found!")
-        else:
-            return cls(data, meta)
+        classes = []
+        for afname in filename:
+            filename = os.path.expanduser(afname)
+            meta, data = cls._parse_filepath(afname)
+            if data.empty:
+                raise ValueError("No data found!")
+            else:               
+                classes.append(cls(data, meta))
+
+        cls1 = classes.pop(0)
+        for aclass in classes:
+            cls1 = cls1 + aclass
+
+        return cls1
 
     @classmethod
     def from_url(cls, url, **kwargs):
@@ -220,7 +259,7 @@ for compatability with map, please use meta instead""", Warning)
         return figure
 
     @staticmethod
-    def _download(uri, kwargs,
+    def _download(uris, kwargs,
                   err='Unable to download data at specified URL'):
         """Attempts to download data at the specified URI"""
                     
