@@ -14,7 +14,7 @@ class EVEClient(GenericClient):
         """
 	if not timerange:
             return []   
-        days = timerange.get_days()
+        days = timerange.get_dates()
 	urls = []
 	for day in days:
             urls.append(cls._get_url_for_date(day,**kwargs))

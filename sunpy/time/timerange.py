@@ -300,13 +300,12 @@ class TimeRange(object):
         self._t1 = self._t1 + dt_start
         self._t2 = self._t2 + dt_end
 
-    def get_days(self):
+    def get_dates(self):
         """
         Return all partial days contained within the timerange
         """
         dates = []
-        for i in range(self.days() + 1):
-            dates.append(self.t1.date() + timedelta(days=i))
+        dates =[ self.t1.date() + timedelta(days=i) for i in range( self.days() + 1) ]
 	return dates
     
     def __contains__(self, time):
