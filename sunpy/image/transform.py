@@ -72,7 +72,7 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
     """
 
     rmatrix = rmatrix / scale
-    array_center = (np.array(image.shape)-1)/2.0
+    array_center = (np.array(image.shape)[::-1]-1)/2.0
 
     # Make sure the image center is an array and is where it's supposed to be
     if image_center is not None:
@@ -82,7 +82,7 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
 
     # Determine center of rotation based on use (or not) of the recenter keyword
     if recenter:
-        rot_center = array_center[::-1]
+        rot_center = array_center
     else:
         rot_center = image_center
 
