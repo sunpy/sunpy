@@ -92,7 +92,7 @@ class Results(object):
         with self.lock:
             self.n -= 1
             if self.progress is not None:
-               self.progress.poke()
+                self.progress.poke()
             if not self.n:
                 if self.done is not None:
                     self.map_ = self.done(self.map_)
