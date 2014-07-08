@@ -51,7 +51,7 @@ def test_goes_event_list():
     assert result[0]['end_time'] == datetime.datetime(2011,6,7,6,59)
     assert result[0]['goes_class'] == 'M2.5'
     assert result[0]['noaa_active_region'] == 11226
-    
+
 
 @pytest.mark.online
 def test_temp_em():
@@ -123,7 +123,7 @@ def test_goes_chianti_tem():
         em = goes._goes_get_chianti_em(longflux, temp_test_toosmall)
     with pytest.raises(ValueError):
         em = goes._goes_get_chianti_em(longflux, temp_test_toobig)
-        
+
     # test case 1: satellite > 7, abundances = coronal
     temp1, em1 = goes.goes_chianti_tem(longflux, shortflux, satellite=15,
                                      date=date)
@@ -136,7 +136,7 @@ def test_goes_chianti_tem():
                                        abundances="photospheric")
     assert temp2[0] < 10.25 and temp2[0] > 10.24
     assert em2[0] < 1.12e+49 and em2[0] > 1.11e+49
-    
+
     # test case 3: satellite < 8 and != 6, abundances = coronal
     temp3, em3 = goes.goes_chianti_tem(longflux, shortflux, satellite=5,
                                        date=date,
@@ -157,7 +157,7 @@ def test_goes_chianti_tem():
                                        abundances="coronal")
     assert temp5[0] < 12.30 and temp5[0] > 12.29
     assert em5[0] < 3.13e+48 and em5[0] > 3.12e+48
-    
+
     # test case 6: satellite = 6, date < 1983-06-28, abundances = photospheric
     temp6, em6 = goes.goes_chianti_tem(longflux, shortflux, satellite=6,
                                        date="1983-06-27",
@@ -171,7 +171,7 @@ def test_goes_chianti_tem():
                                        abundances="coronal")
     assert temp7[0] < 11.34 and temp7[0] > 11.33
     assert em7[0] < 4.08e+48 and em7[0] > 4.07e+48
-    
+
     # test case 8: satellite = 6, date > 1983-06-28, abundances = photospheric
     temp8, em8 = goes.goes_chianti_tem(longflux, shortflux, satellite=6,
                                        date=date,
