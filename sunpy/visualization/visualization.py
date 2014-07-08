@@ -3,8 +3,8 @@ from matplotlib import pyplot
 
 def toggle_pylab(fn):
     """ A decorator to prevent functions from opening matplotlib windows
-        unexpectedly when sunpy is run in interactive shells like ipython 
-        --pylab. 
+        unexpectedly when sunpy is run in interactive shells like ipython
+        --pylab.
 
         Toggles the value of matplotlib.pyplot.isinteractive() to preserve the
         users' expections of pylab's behaviour in general. """

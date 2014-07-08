@@ -16,7 +16,7 @@ __all__ = ['affine_transform']
 
 def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
                      recenter=False, missing=0.0, use_scipy=False):
-    """    
+    """
     Rotates, shifts and scales an image using :func:`skimage.transform.warp`, or
     :func:`scipy.ndimage.interpolation.affine_transform` if specified. Falls back to
     the scipy function if scikit-image can't be imported.
@@ -30,8 +30,8 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
     order : int 0-5
         Interpolation order to be used. When using scikit-image this parameter
         is passed into :func:`skimage.transform.warp`.
-        When using scipy it is passed into 
-        :func:`scipy.ndimage.interpolation.affine_transform` where it controls 
+        When using scipy it is passed into
+        :func:`scipy.ndimage.interpolation.affine_transform` where it controls
         the order of the spline.
     scale : float
         A scale factor for the image. Default is no scaling.
@@ -50,36 +50,36 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
     Returns
     -------
     out : New rotated, scaled and translated image.
-    
+
     Notes
     -----
-    This function is used throughout the SunPy code base as an equivalent to 
-    the IDL's rot() function. However, this function does not use the same 
+    This function is used throughout the SunPy code base as an equivalent to
+    the IDL's rot() function. However, this function does not use the same
     algorithm as the IDL rot() function.
     IDL's rot() calls the `POLY_2D <http://www.exelisvis.com/docs/poly_2d.html>`_
-    method to calculate the inverse mapping of original to target pixel 
+    method to calculate the inverse mapping of original to target pixel
     coordinates. This is a polynominal geometrical transformation.
-    Then optionally it uses a bicubic convolution interpolation 
+    Then optionally it uses a bicubic convolution interpolation
     algorithm to map the original to target pixel values.
-    
-    This algorithm uses an affine transformation as opposed to a polynomial 
-    geometrical transformation. It then defaults to a bicubic convolution 
+
+    This algorithm uses an affine transformation as opposed to a polynomial
+    geometrical transformation. It then defaults to a bicubic convolution
     interpolation.
-    
+
     No direct comparision between this function and the IDL rot() function has
-    been performed as it is a different transformation, however both are 
+    been performed as it is a different transformation, however both are
     assumed to be mathamatically vaild.
     """
 
     rmatrix = rmatrix / scale
     array_center = (np.array(image.shape)-1)/2.0
-    
+
     # Make sure the image center is an array and is where it's supposed to be
     if image_center is not None:
         image_center = np.asanyarray(image_center)
     else:
         image_center = array_center
-    
+
     # Determine center of rotation based on use (or not) of the recenter keyword
     if recenter:
         rot_center = array_center
@@ -101,7 +101,7 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
         skmatrix[2, 2] = 1.0
         skmatrix[:2, 2] = shift
         tform = skimage.transform.AffineTransform(skmatrix)
-        
+
         # Transform the image using the skimage function
         # Image data is normalised because warp() requires an array of values
         # between -1 and 1.
