@@ -1,32 +1,3 @@
-# Outline of code
-#-------Prepare data-------
-# 1.  Create LYRALightcurve object for given time interval from level 3
-#     fits files (1-min averaged).
-# 2.  Download LYTAF file from server.  Add keyword to allow user to
-#     define local file.
-# 3.  Remove data during UV occulations, offpoints, calibrations, and
-#     large angle rotations.  (Also remove recovery times?)
-# 4.  Download Ingolf's comb-like masks.  Add keyword so they can be
-#     defined locally.
-# 5.  Use the masks to remove comb-like features.
-#------Find possible start times flares--------
-# 6.  Take derivative of time series.
-# 7.  Take where derivative is positive.
-# 8.  Take where derivative is negative.
-# 9.  Copy time array and shift by 4 elements.
-# 10. Subtract one from other and find where result = 4 minutes.
-# 11. Define earlier time corresponding to previous step as preliminary
-#     start times.
-#-----Find end and peak times---------
-# 12. Loop through start times.
-# 13. Find next time where derivative in negative.
-# 14. While end time criterion not reached, loop through following times
-#     where derivative is negative and find when end criterion is
-#     reached.
-# 15. Define peak time as time of maximum between start and end time.
-#-----Look for flares during decay phase------
-# 16. If there are possible start times between peak and end time,
-#     repeat steps 13-16.
 from __future__ import absolute_import
 from __future__ import division
 
@@ -35,6 +6,7 @@ from datetime import datetime
 from warnings import warn
 import copy
 import csv
+import urllib
 
 import numpy as np
 import sqlite3
@@ -50,6 +22,152 @@ FALL_FACTOR = 0.5
 # Set mean daily minimum irradiance in Zr channel from first light
 # (Jan 2010) until mid 2014.
 NORM = 0.001
+
+def lyra_event_list(tstart, tend,
+                    data_path=os.path.expanduser(
+                        os.path.join("~", "pro", "data", "LYRA", "fits"))):
+    """
+    Returns a list of LYRA flares based on input start and end time.
+
+    """
+
+def get_lyra_timeseries(tstart, tend, level=2, unit_preference=["std", "bst"],
+                        data_path=os.path.expanduser(
+                            os.path.join("~", "pro", "data", "LYRA", "fits"))):
+    """
+    Returns LYRA timeseries for a given time range.
+
+    This function returns a numpy record array containing the timeseries of
+    the four LYRA channels between the input start and end time.  This is
+
+    Parameters
+    ----------
+    tstart : datetime object or timestring
+        Start time of time range.
+
+    tend : datetime object or timestring
+        End time of time range.
+
+    level : int
+        Level of LYRA data user wishes to use.  Options are 1, 2, or 3.
+        See reference [1] for explanations on the differences between each
+        level of data.
+
+    unit_preference : list of strings
+        Denotes whether user prefers data from nominal or back-up units.
+        'std' denotes nominal unit, 'bst' denotes back-up units.
+        ['std', 'bst'] means data from nominal unit will be searched for
+        first, but if such data can't be found, back-up unit data will be
+        used.
+        ['bst', 'std'] means data from back-up units will be searched for
+        first, but if such data can't be found, nominal unit data will be
+        used.
+        ['std'] means only data from nominal unit will be searched for.  If
+        nominal unit data cannot be found, a data gap will appear in
+        timeseries.
+        ['bst'] means only data from back-up unit will be searched for.  If
+        back-up unit data cannot be found, a data gap will appear in
+        timeseries.
+
+    data_path : string
+        directory path in which to save/search for required LYRA fits files.
+
+    Returns
+    -------
+    timeseries : numpy record array
+        Resulting timeseries for the time range in question.
+
+    References
+    ----------
+    [1]  http://proba2.oma.be/data/LYRA
+
+    Examples
+    --------
+
+    """
+    # Check inputs are of correct types etc.
+    parse_time(tstart)
+    if type(tstart) is not datetime.datetime:
+        raise TypeError("tstart must be a datetime object or valid time "
+                        "string.")
+    parse_time(tend)
+    if type(tend) is not datetime.datetime:
+        raise TypeError("tend must be a datetime object or valid time string.")
+    if tstart >= tend:
+        raise ValueError("Start time must be before end time.")
+    if type(level) is not int:
+        raise TypeError("{0} must be an int.".format(level))
+    elif level != 1 or level != 2 or level != 3:
+        raise ValueError("{0} must be equal to either 1, 2, or "
+                         "3.".format(level))
+    if type(unit_preference) != list:
+        raise TypeError("unit_preference must be a list of strings.")
+    if not all(unit=='std' or unit=='bst' for unit in unit_preference):
+        raise ValueError("All elements in unit_perference must be either "
+                         "'std' or 'bst'.")
+    if len(unit_preference) < 1 or len(unit_preference) > 2:
+        raise ValueError("unit_preference must have either 1 or 2 elements.")
+    if not os.path.isdir(data_path):
+        raise ValueError("{0} is not a valid directory.".format(data_path))
+    # Define values needed later
+    num_units = len(unit_preference)
+    remote_level_dir = ['eng', 'bsd', 'bsd']
+    
+    # Determine what files are needed for requested time range.
+    # Find dates of start and end times.
+    filedates = [datetime(tstart.year, tstart.month, tstart.day),
+                 datetime(tend.year, tend.month, tend.day)]
+    # Create list of LYRA fits file name tags for each required date
+    # and enter date of start time.
+    filetags = ["lyra_{0}{1}{2}-000000_lev{3}".format(
+        filedates[0].year, filedates[0].month, filedates[0].day, level)]
+    if filedates[0] != filedates[-1]:
+        # If start and end time are on different days create tags for
+        # days after start end time
+        dayrange = range(1, (filedates[1]-filedates[0]).days)
+        for i in dayrange:
+            filedate = filedates[0]+timedelta(i)
+            filetags.append("lyra_{0}{1}{2}-000000_lev{3}".format(
+                filedate.year, filedate.month, filedate.day, level))
+
+    # Search if files exist in data_path.  If not, download them.
+    filenames = []
+    for tag in filetags:
+        filenames.append(os.path.join(
+            data_path, tag, "_{0}.fits".format(unit_preference[0])))
+        if not os.path.isfile(filenames[-1]):
+            getfile = urllib.URLopener()
+            try:
+                getfile.retrieve(
+                    "http://http://proba2.oma.be/lyra/data/{0}/{1}/{2}/{3}/"
+                    "{4}_{5}.fits".format(
+                        remote_level_dir[level-1], tag[5:9], tag[9:11],
+                        tag[11:13], tag, unit_preference[0]), filenames[-1])
+            except IOError:
+                # If data file for first preference unit cannot be found
+                # Try downloading data file for second preference unit.
+                if num_units > 1:
+                    try:
+                        getfile.retrieve(
+                            "http://http://proba2.oma.be/lyra/data/{0}/{1}/"
+                            "{2}/{3}/{4}_{5}.fits".format(
+                                remote_level_dir[level-1], tag[5:9], tag[9:11],
+                                tag[11:13], tag, unit_preference[0]),
+                            filenames[-1])
+                    except IOError:
+                        del(filenames[-1])
+                        raise Warning("File for {0}/{1}/{2} could not be "
+                                      "found.".format(tag[5:9], tag[9:11],
+                                                      tag[11:13]))
+                else:
+                    del(filenames[-1])
+                    raise Warning("File for {0}/{1}/{2} could not be "
+                                      "found.".format(tag[5:9], tag[9:11],
+                                                      tag[11:13]))
+    # 
+            
+    
+    
 
 def find_lyra_events(flux, time):
     """
