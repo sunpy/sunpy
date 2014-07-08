@@ -6,7 +6,7 @@ from __future__ import absolute_import
 
 from astropy.io import fits
 from astropy.wcs import WCS
-from sunpy.cube import SpectralCube
+from sunpy.cube import Cube
 import re
 
 __all__ = ['EISSpectralCube']
@@ -27,7 +27,7 @@ def _clean(header):
     return header
 
 
-class EISSpectralCube(SpectralCube):
+class EISSpectralCube(Cube):
     '''EIS Spectral Cube subclass.
 
     References
@@ -55,7 +55,7 @@ class EISSpectralCube(SpectralCube):
             The main header for the whole file.
         '''
         header = _dictionarize_header(dataHeader, primaryHeader, window)
-        SpectralCube.__init__(self, data.T, wcs, meta=header)
+        Cube.__init__(self, data.T, wcs, meta=header)
         # Data is transposed here because EIS orders (y, lambda) by x or time,
         # not (y, x) by lambda.
 

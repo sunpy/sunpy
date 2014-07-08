@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 # Author: Mateo Inchaurrandieta <mateo.inchaurrandieta@gmail.com>
+# pylint: disable=E1101
 '''Miscellaneous WCS utilities'''
 from astropy.wcs import WCS
 import numpy as np

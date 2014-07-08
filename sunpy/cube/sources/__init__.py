@@ -1,5 +1,5 @@
 
 __all__ =['eis']
 
-from .. spectral_cube import SpectralCube
+from .. cube import Cube
 from eis import EISSpectralCube

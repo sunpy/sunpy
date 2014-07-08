@@ -1,9 +1,13 @@
 # -*- coding: utf-8 -*-
 # Author: Mateo Inchaurrandieta <mateo.inchaurrandieta@gmail.com>
+# pylint: disable=E1101
 '''
-Main class for representing spectral cubes - 3D sets of data where one axis is
+Main class for representing cubes - 3D sets of data where one axis is
 a spectral dimension.
 '''
+# NOTE: This module uses version 1.02 of "Time coordinates in FITS" by
+# Rots et al, available at http://hea-www.cfa.harvard.edu/~arots/TimeWCS/
+# This draft standard may change.
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -13,18 +17,20 @@ from sunpy.map import GenericMap
 from sunpy.visualization.imageanimator import ImageAnimator
 import astropy.units as u
 
-__all__ = ['SpectralCube']
+__all__ = ['Cube', 'CubeError']
 
 
-class SpectralCube(astropy.nddata.NDData):
+class Cube(astropy.nddata.NDData):
     ''' Class representing spectral cubes.
 
         Attributes
         ----------
         data: numpy ndarray
-            The spectral cube holding the actual data in this object. The axes
-            are always [spectral dimension, spatial dimension, extra dimension]
-            where the extra dimension can be time or another spatial dimension.
+            The spectral cube holding the actual data in this object. The axes'
+            priorities are time, spectral, celestial. This means that if
+            present, each of these axis will take precedence over the others.
+            For example, in an x, y, t cube the order would be (t,x,y) and in a
+            lambda, t, y cube the order will be (t, lambda, y).
 
         axes_wcs: astropy WCS object
             The WCS object containing the axes' information
@@ -196,10 +202,10 @@ class SpectralCube(astropy.nddata.NDData):
                           *args, **kwargs)
         return gmap
 
-    def __getitem__(self, item):
-        print item
-        new_data = self.data[item]
-        return new_data
+    def slice_to_lightcurve(self, wavelength, y_coord):
+        if self.wcs.wcs.ctype[2] in ['TIME', 'UTC']:
+            raise CubeError(1, 'Cannot create a lightcurve with no time axis')
+        # TODO: implement this!
 
 
 def _orient(array, wcs):
@@ -245,4 +251,21 @@ def _orient(array, wcs):
     result_wcs = util.reindex_wcs(wcs, order)
 
     return result_array, result_wcs
-    
+
+
+class CubeError(Exception):
+    '''
+    Class for handling Cube errors.
+
+    Error Codes
+    -----------
+    0: Unspecified error
+    1: Time dimension not present
+    2: Spectral Dimension not present
+    '''
+    def __init__(self, value, msg):
+        self.value = value
+        self.message = msg
+
+    def __str__(self):
+        return 'ERROR ' + repr(self.value) + ': ' + self.message
