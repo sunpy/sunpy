@@ -12,9 +12,9 @@ import astropy.units as u
 
 # sample data for tests
 # TODO: use a fixture reading from a test file. file TBD.
-h = {'CTYPE1': 'HPLN-TAN', 'CUNIT1': 'deg', 'CDELT1': 0.5,
+h = {'CTYPE1': 'HPLT-TAN', 'CUNIT1': 'deg', 'CDELT1': 0.5,
      'CTYPE2': 'WAVE    ', 'CUNIT2': 'Angstrom', 'CDELT2': 0.2,
-     'CTYPE3': 'HPLT-TAN', 'CUNIT3': 'deg', 'CDELT3': 0.4}
+     'CTYPE3': 'TIME    ', 'CUNIT3': 'min', 'CDELT3': 0.4}
 w = WCS(header=h, naxis=3)
 data = np.array([[[1,2,3,4], [2,4,5,3], [0,-1,2,3]],
                  [[2,4,5,1], [10,5,2,2], [10,3,3,0]]])
@@ -23,8 +23,9 @@ cube = c.Cube(data, w)
 
 def test_orient():
     newdata, newwcs = c._orient(data, w)
-    assert newwcs.wcs.axis_types[2] == 3000  # code for a spectral dimension
-    assert newdata.shape == (3, 2, 4)  # the spectral dimension should be first
+    assert newwcs.wcs.axis_types[1] == 3000  # code for a spectral dimension
+    assert newwcs.wcs.axis_types[0] == 0  # code for an unknown axis - time
+    assert newdata.shape == (4, 3, 2)  # the time dimension should be first
     with pytest.raises(ValueError):
         c._orient(np.zeros((1, 2)), w)
         c._orient(np.zeros((1, 2, 3, 4)), w)
@@ -80,3 +81,23 @@ def test_choose_x_slice():
     assert qos is None
 
     assert f is None
+
+
+def test_select_order():
+    lists = [['TIME', 'WAVE', 'HPLT-TAN', 'HPLN-TAN'],
+             ['WAVE', 'HPLT-TAN', 'UTC', 'HPLN-TAN'],
+             ['HPLT-TAN', 'TIME', 'HPLN-TAN'],
+             ['HPLT-TAN', 'DEC--TAN', 'WAVE'],
+             [],
+             ['UTC', 'TIME', 'WAVE', 'HPLT-TAN']]
+
+    results = [[0, 1, 2, 3],
+               [2, 0, 1, 3],
+               [1, 2, 0],  # Second order is alphabetical
+               [2, 1, 0],
+               [],
+               [1, 0, 2, 3]]
+
+    for (l, r) in zip(lists, results):
+        assert c._select_order(l) == r
+    

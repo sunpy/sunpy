@@ -38,8 +38,8 @@ def reindex_wcs(wcs, inds):
     for par in wcs_params_to_preserve:
         setattr(outwcs.wcs, par, getattr(wcs.wcs, par))
 
-    cdelt = wcs.wcs.get_cdelt()
-    pc = wcs.wcs.get_pc()
+    cdelt = wcs.wcs.cdelt
+    pc = wcs.wcs.pc
 
     outwcs.wcs.crpix = wcs.wcs.crpix[inds]
     outwcs.wcs.cdelt = cdelt[inds]

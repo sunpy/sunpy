@@ -12,10 +12,11 @@ a spectral dimension.
 import numpy as np
 import matplotlib.pyplot as plt
 import astropy.nddata
-import sunpy.util.util as util
 from sunpy.map import GenericMap
 from sunpy.visualization.imageanimator import ImageAnimator
 import astropy.units as u
+from astropy.wcs._wcs import InconsistentAxisTypesError
+from sunpy.wcs import wcs_util
 
 __all__ = ['Cube', 'CubeError']
 
@@ -211,7 +212,7 @@ class Cube(astropy.nddata.NDData):
 def _orient(array, wcs):
     # This is mostly lifted from astropy's spectral cube.
     """
-    Given a 3-d spectral cube and WCS, swap around the axes so that the
+    Given a 3-d cube and a WCS, swap around the axes so that the
     spectral axis cube is the first in Numpy notation, and the last in WCS
     notation.
 
@@ -231,26 +232,31 @@ def _orient(array, wcs):
     if wcs.wcs.naxis != 3:
         raise ValueError("Input WCS must be 3-dimensional")
 
-    # reverse from wcs -> numpy convention
-    axtypes = wcs.get_axis_types()[::-1]
+    axtypes = list(wcs.wcs.ctype)
 
-    types = [a['coordinate_type'] for a in axtypes]
-
-    # header sanitization removed to allow for arbitrary axes, including time.
-
-    nums = [None if a['coordinate_type'] == 'spectral' else a['number']
-            for a in axtypes]
-
-    if 'stokes' in types:
-        raise ValueError("Input WCS should not contain stokes")
-
-    order = [types.index('spectral'), nums.index(1), nums.index(0)]
+    order = _select_order(axtypes)
     result_array = array.transpose(order)
 
-    order = wcs.wcs.naxis - np.array(order[::-1]) - 1
-    result_wcs = util.reindex_wcs(wcs, order)
-
+    try:
+        wcs.get_axis_types()
+    except InconsistentAxisTypesError:
+        # This means there's an unmatched celestial axis.
+        wcs = wcs_util.add_celestial_axis(wcs)
+        order = order + [3]
+        
+    result_wcs = wcs_util.reindex_wcs(wcs, np.array(order))
+    print result_wcs.wcs.axis_types
     return result_array, result_wcs
+
+
+def _select_order(axtypes):
+    order = [(0, t) if t in ['TIME', 'UTC'] else
+             (1, t) if t == 'WAVE' else
+             (2, t) if axtypes.index(t) != 3 else
+             (3, t) for t in axtypes]
+    order.sort()
+    result = [axtypes.index(s) for (f, s) in order]
+    return result
 
 
 class CubeError(Exception):
