@@ -26,7 +26,7 @@ class SpectralCube(astropy.nddata.NDData):
             are always [spectral dimension, spatial dimension, extra dimension]
             where the extra dimension can be time or another spatial dimension.
 
-        wcs: astropy WCS object
+        axes_wcs: astropy WCS object
             The WCS object containing the axes' information
 
         meta: dict
@@ -39,9 +39,11 @@ class SpectralCube(astropy.nddata.NDData):
         astropy.nddata.NDData.__init__(self, data=data,
                                        meta=meta,
                                        **kwargs)
-        self.wcs = wcs
+        self.axes_wcs = wcs
         # We don't send this to NDData because it's not
         # supported as of astropy 0.3.2. Eventually we will.
+        # Also it's called axes_wcs because wcs belongs to astropy.nddata and
+        # that messes up slicing.
 
     def plot_wavelength_slice(self, offset, axes=None,
                               style='imshow', **kwargs):
@@ -136,7 +138,7 @@ class SpectralCube(astropy.nddata.NDData):
             arr = self.data[offset, :, :]
 
         if isinstance(offset, u.Quantity):
-            delta = self.wcs.wcs.cdelt[2] * u.m
+            delta = self.axes_wcs.wcs.cdelt[2] * u.m
             wloffset = offset.to(u.m) / delta
             wloffset = int(wloffset)
             if wloffset >= 0 and wloffset < len(self.data):
@@ -163,8 +165,8 @@ class SpectralCube(astropy.nddata.NDData):
             arr = arr.T
 
         if isinstance(offset, u.Quantity):
-            unit = self.wcs.wcs.cunit[0]
-            delta = self.wcs.wcs.cdelt[0] * unit
+            unit = self.axes_wcs.wcs.cunit[0]
+            delta = self.axes_wcs.wcs.cdelt[0] * unit
             wloffset = offset.to(unit) / delta
             wloffset = int(wloffset)
             if wloffset >= 0 and wloffset < self.data.shape[2]:
@@ -193,6 +195,11 @@ class SpectralCube(astropy.nddata.NDData):
         gmap = GenericMap(data=np.array(maparray), header=self.meta,
                           *args, **kwargs)
         return gmap
+
+    def __getitem__(self, item):
+        print item
+        new_data = self.data[item]
+        return new_data
 
 
 def _orient(array, wcs):

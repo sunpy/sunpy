@@ -5,13 +5,14 @@ from __future__ import absolute_import
 from sunpy.util import util
 import numpy as np
 import warnings
-from astropy.wcs import WCS
+
 
 def test_to_signed():
     """
     This should return a signed type that can hold uint32.
     """
     assert util.to_signed(np.dtype('uint32')) == np.dtype('int64')
+
 
 def test_goes_flare_class():
     """
@@ -20,6 +21,7 @@ def test_goes_flare_class():
     lst = ['A1.0', 'M1.0', 'C1.0', 'B1.0', 'X1.0']
     assert util.goes_flare_class(lst) == \
         [1.0e-08, 1.0e-05, 1.0e-06, 1.0e-07, 1.0e-04]
+
 
 def test_unique():
     """
@@ -30,6 +32,7 @@ def test_unique():
     for elem in util.unique(itr):
         unique_list.append(elem)
     assert unique_list == [6, 1, 2, 7, 41.2, '41.2']
+
 
 def test_unique_key():
     """
@@ -42,20 +45,22 @@ def test_unique_key():
         unique_list.append(elem)
     assert unique_list == [7, 3, 104, 6, 10]
 
+
 def test_print_table():
     """
     This should return a string representation of lst with table elements
     left-justified and with columns separated by dashes.
     """
-    lst = [['n', 'sqrt(n)', 'n^2'], \
-           ['1', '1', '1'], \
-           ['4', '2', '16'], \
+    lst = [['n', 'sqrt(n)', 'n^2'],
+           ['1', '1', '1'],
+           ['4', '2', '16'],
            ['3', '1.732', '9']]
     expected = ('n|sqrt(n)|n^2\n'
-               '1|1      |1  \n'
-               '4|2      |16 \n'
-               '3|1.732  |9  ')
+                '1|1      |1  \n'
+                '4|2      |16 \n'
+                '3|1.732  |9  ')
     assert util.print_table(lst, colsep='|') == expected
+
 
 def test_findpeaks():
     """
@@ -65,12 +70,14 @@ def test_findpeaks():
     data = np.array([1.0, 3.5, 3.0, 4.0, -9.0, 0.0, 0.5, 0.3, 9.5])
     assert np.array_equal(util.findpeaks(data), np.array([0, 2, 5]))
 
+
 def test_polyfun_at():
     """
     This should evaluate the polynomial x^3 + 5x^2 - 6x + 3 at x = 5.
     """
     coeff = [1, 5, -6, 3]
     assert util.polyfun_at(coeff, 5) == 223
+
 
 def test_minimal_pairs():
     """
@@ -81,6 +88,7 @@ def test_minimal_pairs():
     list2 = [3, 12, 19, 21, 26, 29]
     assert list(util.minimal_pairs(list1, list2)) == [(1, 0, 2), (2, 1, 2),
                                                       (4, 2, 1), (5, 4, 1)]
+
 
 def test_find_next():
     """
@@ -93,6 +101,7 @@ def test_find_next():
     assert list(util.find_next(list1, list2, None)) == [(1, 2), (2, 3), (3, 5),
                         (4, 5), (5, 9), (6, 10), (7, 15), (8, None), (9, None)]
 
+
 def test_common_base():
     """
     This should return the base class common to each object in objs.
@@ -100,9 +109,11 @@ def test_common_base():
     class TestA(object):
         """Base test class."""
         pass
+
     class TestB(TestA):
         """First inherited class."""
         pass
+
     class TestC(TestA):
         """Second inherited class."""
         pass
@@ -110,6 +121,7 @@ def test_common_base():
     inst_c = TestC()
     objs = [inst_b, inst_c]
     assert util.common_base(objs) == TestA
+
 
 def test_merge():
     """
@@ -121,11 +133,13 @@ def test_merge():
     result = list(util.merge([list1, list2]))
     assert result[::-1] == sorted(result)
 
+
 def test_replacement_filename():
     """
     This should return a replacement path for the current file.
     """
     assert util.replacement_filename(__file__).endswith('test_util.0.py')
+
 
 def test_expand_list():
     """
@@ -133,6 +147,7 @@ def test_expand_list():
     """
     lst = [1, 2, 3, [4, 5, 6], 7, (8, 9)]
     assert util.expand_list(lst) == [1, 2, 3, 4, 5, 6, 7, 8, 9]
+
 
 def test_deprecated():
     """
@@ -143,18 +158,3 @@ def test_deprecated():
         depr_func = depr(lambda x: x)
         depr_func(1)
         assert len(current_warnings) == 1
-
-
-def test_reindex_wcs():
-    emptywcs = WCS(naxis=3)
-    emptyreindexed = util.reindex_wcs(emptywcs, np.array([0, 1, 2]))
-    assert emptyreindexed.get_axis_types() == emptywcs.get_axis_types()
-    h = {'CTYPE1': 'HPLN-TAN', 'CUNIT1': 'deg',
-         'CTYPE2': 'HPLT-TAN', 'CUNIT2': 'deg'}
-    testwcs = WCS(header=h, naxis=2)
-    nochange = util.reindex_wcs(testwcs, np.array([0, 1]))
-    swapped = util.reindex_wcs(testwcs, np.array([1, 0]))
-    assert (testwcs.wcs.ctype[0] == nochange.wcs.ctype[0] and
-            testwcs.wcs.ctype[1] == nochange.wcs.ctype[1])
-    assert (testwcs.wcs.ctype[0] == swapped.wcs.ctype[1] and
-            testwcs.wcs.ctype[1] == swapped.wcs.ctype[0])
