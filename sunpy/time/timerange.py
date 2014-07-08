@@ -226,6 +226,10 @@ class TimeRange:
     def get_dates(self):
         """
         Return all partial dates contained within the timerange
+        
+        Returns
+        -------
+        dates : list of datetime.date objects
         """
         return [self.t1.date() + timedelta(days=i) for i in range(self.days() + 1)]
         

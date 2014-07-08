@@ -150,8 +150,9 @@ def parse_time(time_string):
 
     Returns
     -------
-    out : datetime object or date object
-        DateTime corresponding to input date string
+    out : datetime object
+        DateTime corresponding to input date string, dates without times are 
+        assumed to refer to midnight (start of day).
 
     Examples
     --------
@@ -165,7 +166,8 @@ def parse_time(time_string):
     if isinstance(time_string, datetime.datetime):
         return time_string
     elif isinstance(time_string, datetime.date):
-        return time_string
+        return datetime.datetime.combine(time_string,
+                                         datetime.datetime.min.time())
     elif isinstance(time_string, tuple):
         return datetime.datetime(*time_string)
     elif isinstance(time_string, int) or isinstance(time_string, float):
