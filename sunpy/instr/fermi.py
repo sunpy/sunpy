@@ -7,6 +7,7 @@ import urlparse
 import urllib
 import tempfile
 import datetime
+import os
 import matplotlib.pyplot as plt
 from sunpy.time import parse_time, TimeRange
 from sunpy import sun
@@ -14,8 +15,11 @@ from astropy.io import fits
 #from sunpy.instr import fermi
 
 def download_weekly_pointing_file(date):
+    '''Downloads the FERMI/LAT weekly pointing file corresponding to the specified date. This file
+    contains 1 minute cadence data on the spacecraft pointing, useful for calculating detector angles.'''
     #use a temp directory to hold the file
     tmp_dir=tempfile.mkdtemp()
+    #tmp_dir=''
     #use Fermi data server to access weekly LAT pointing file.
     base_url = 'http://fermi.gsfc.nasa.gov/ssc/observations/timeline/ft2/files/'
     fbasename='FERMI_POINTING_FINAL_'
@@ -35,14 +39,14 @@ def download_weekly_pointing_file(date):
     start_year_str=str(start_date.year) + '-01-01'
     day_in_year_start=(start_date - parse_time(start_year_str)).days + 1
 
-    start_str = start_year_str+str(day_in_year_start)
+    start_str = str(start_date.year)+str(day_in_year_start)
 
     #now end string
-    end_date = weekly_file_start + datetimetimedelta((weekdiff+1)*7)
+    end_date = weekly_file_start + datetime.timedelta((weekdiff+1)*7)
     end_year_str=str(end_date.year) + '-01-01'
     day_in_year_end=(end_date - parse_time(end_year_str)).days + 1
 
-    end_str = end_year_str + str(day_in_year_end)
+    end_str = str(end_date.year) + str(day_in_year_end)
 
     #need version number. Usually 00 but how to be sure?
     version='00'
