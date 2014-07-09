@@ -59,7 +59,7 @@ def download_weekly_pointing_file(date):
     return destination
 
 
-def get_detector_sun_angles_for_time(time, file)
+def get_detector_sun_angles_for_time(time, file):
     '''get the GBM detector angles vs the sun for a single time.'''
     scx, scz, tt = fermi.get_scx_scz_at_time(tran,file)
 
