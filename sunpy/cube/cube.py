@@ -139,17 +139,21 @@ class Cube(astropy.nddata.NDData):
             then it returns that slice. Otherwise, it will return the nearest
             wavelength to the one specified.
         '''
+        if 'WAVE' not in self.axes_wcs.wcs.ctype:
+            raise CubeError(2, "Spectral dimension not present")
+
+        axis = list(self.axes_wcs.wcs.ctype).index('WAVE')
         arr = None
         if (isinstance(offset, int) and offset >= 0 and
            offset < len(self.data)):
-            arr = self.data[offset, :, :]
+            arr = self.data.take(offset, axis=axis)
 
         if isinstance(offset, u.Quantity):
-            delta = self.axes_wcs.wcs.cdelt[2] * u.m
+            delta = self.axes_wcs.wcs.cdelt[axis] * u.m
             wloffset = offset.to(u.m) / delta
             wloffset = int(wloffset)
-            if wloffset >= 0 and wloffset < len(self.data):
-                arr = self.data[wloffset, :, :]
+            if wloffset >= 0 and wloffset < self.data.shape[axis]:
+                arr = self.data.take(wloffset, axis=axis)
 
         return arr
 
@@ -166,19 +170,18 @@ class Cube(astropy.nddata.NDData):
             wavelength to the one specified.
         '''
         arr = None
+        axis = 1 if self.axes_wcs.wcs.ctype[1] != 'WAVE' else 2
         if (isinstance(offset, int) and offset >= 0 and
-           offset < self.data.shape[2]):
-            arr = self.data[:, :, offset]
-            arr = arr.T
+           offset < self.data.shape[axis]):
+            arr = self.data.take(offset, axis=axis)
 
         if isinstance(offset, u.Quantity):
-            unit = self.axes_wcs.wcs.cunit[0]
-            delta = self.axes_wcs.wcs.cdelt[0] * unit
+            unit = self.axes_wcs.wcs.cunit[axis]
+            delta = self.axes_wcs.wcs.cdelt[axis] * unit
             wloffset = offset.to(unit) / delta
             wloffset = int(wloffset)
-            if wloffset >= 0 and wloffset < self.data.shape[2]:
-                arr = self.data[:, :, wloffset]
-                arr = arr.T
+            if wloffset >= 0 and wloffset < self.data.shape[axis]:
+                arr = self.data.take(wloffset, axis=axis)
 
         return arr
 
@@ -195,16 +198,19 @@ class Cube(astropy.nddata.NDData):
             then it will return that single-slice map, otherwise it will
             aggregate the given range.
         '''
+        if self.axes_wcs.wcs.ctype[1] == 'WAVE':
+            raise CubeError(3, "Cannot construct a map with only one spatial dimension")
+
         if isinstance(chunk, tuple):
             maparray = self.data[chunk[0]:chunk[1], :, :].sum(0)
         else:
             maparray = self.data[chunk, :, :]
-        gmap = GenericMap(data=np.array(maparray), header=self.meta,
+        gmap = GenericMap(data=maparray, header=self.meta,
                           *args, **kwargs)
         return gmap
 
     def slice_to_lightcurve(self, wavelength, y_coord):
-        if self.wcs.wcs.ctype[2] in ['TIME', 'UTC']:
+        if self.axes_wcs.wcs.ctype[0] in ['TIME', 'UTC']:
             raise CubeError(1, 'Cannot create a lightcurve with no time axis')
         # TODO: implement this!
 
@@ -243,9 +249,8 @@ def _orient(array, wcs):
         # This means there's an unmatched celestial axis.
         wcs = wcs_util.add_celestial_axis(wcs)
         order = order + [3]
-        
+
     result_wcs = wcs_util.reindex_wcs(wcs, np.array(order))
-    print result_wcs.wcs.axis_types
     return result_array, result_wcs
 
 
@@ -262,16 +267,17 @@ def _select_order(axtypes):
 class CubeError(Exception):
     '''
     Class for handling Cube errors.
-
-    Error Codes
-    -----------
-    0: Unspecified error
-    1: Time dimension not present
-    2: Spectral Dimension not present
     '''
+    errors = {0: 'Unspecified error',
+              1: 'Time dimension not present',
+              2: 'Spectral dimension not present',
+              3: 'Insufficient spatial dimensions'}
+
     def __init__(self, value, msg):
         self.value = value
         self.message = msg
 
     def __str__(self):
-        return 'ERROR ' + repr(self.value) + ': ' + self.message
+        return 'ERROR ' + repr(self.value) + ' (' \
+               + self.errors.get(self.value, '') + '): ' + self.message
+        
