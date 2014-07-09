@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 from sunpy.time import parse_time, TimeRange
 from sunpy import sun
 from astropy.io import fits
-from sunpy.instr import fermi
+#from sunpy.instr import fermi
 
 def download_weekly_pointing_file(date):
     #use a temp directory to hold the file
@@ -61,42 +61,42 @@ def download_weekly_pointing_file(date):
 
 def get_detector_sun_angles_for_time(time, file):
     '''get the GBM detector angles vs the sun for a single time.'''
-    scx, scz, tt = fermi.get_scx_scz_at_time(tran,file)
-
+    #scx, scz, tt = fermi.get_scx_scz_at_time(tran,file)
+    scx, scz, tt = get_scx_scz_at_time(time,file)
     #retrieve the detector angle information in spacecraft coordinates
-    detectors=fermi.nai_detector_angles()
+    detectors=nai_detector_angles()
 
     #get the detector pointings in RA/DEC given the input spacecraft x and z axes
-    detector_radecs=fermi.nai_detector_radecs(detectors, scx, scz)
+    detector_radecs=nai_detector_radecs(detectors, scx, scz)
 
     #this gets the sun position with RA in hours in decimal format (e.g. 4.3). DEC is already in degrees
-    sunpos_ra_not_in_deg=[sun.sun.apparent_rightascenscion(times[i]),sun.sun.apparent_declination(times[i])]
+    sunpos_ra_not_in_deg=[sun.sun.apparent_rightascenscion(time),sun.sun.apparent_declination(time)]
     #now Sun position with RA in degrees
     sun_pos=[ (sunpos_ra_not_in_deg[0] / 24) * 360., sunpos_ra_not_in_deg[1]]
     #now get the angle between each detector and the Sun
-    detector_to_sun_angles = (fermi.get_detector_separation_angles(detector_radecs,sun_pos))
+    detector_to_sun_angles = (get_detector_separation_angles(detector_radecs,sun_pos))
 
     return detector_to_sun_angles
     
 def get_detector_sun_angles_for_date(date, file, plot=True):
     '''get the GBM detector angles vs the sun as a function of time for a given date'''
     tran=TimeRange(date, date + datetime.timedelta(1))
-    scx, scz, times = fermi.get_scx_scz_in_timerange(tran,file)
+    scx, scz, times = get_scx_scz_in_timerange(tran,file)
 
     #retrive the detector angle information in spacecraft coordinates
-    detectors=fermi.nai_detector_angles()
+    detectors=nai_detector_angles()
 
     detector_to_sun_angles=[]
     #get the detector vs Sun angles for each t and store in a list of dictionaries
     for i in range(0,len(scx)):
-        detector_radecs=fermi.nai_detector_radecs(detectors, scx[i], scz[i])
+        detector_radecs=nai_detector_radecs(detectors, scx[i], scz[i])
 
         #this gets the sun position with RA in hours in decimal format (e.g. 4.3). DEC is already in degrees
         sunpos_ra_not_in_deg=[sun.sun.apparent_rightascenscion(times[i]),sun.sun.apparent_declination(times[i])]
         #now Sun position with RA in degrees
         sun_pos=[ (sunpos_ra_not_in_deg[0] / 24) * 360., sunpos_ra_not_in_deg[1]]
         #now get the angle between each detector and the Sun
-        detector_to_sun_angles.append(fermi.get_detector_separation_angles(detector_radecs,sun_pos))
+        detector_to_sun_angles.append(get_detector_separation_angles(detector_radecs,sun_pos))
 
     #slice the list of dictionaries to get the angles for each detector in a list form
     n0 = [item['n0'] for item in detector_to_sun_angles]
@@ -142,7 +142,7 @@ def get_scx_scz_at_time(time, file):
     hdulist=fits.open(file)
     timesinutc=[]
     for tim in hdulist[1].data['START']:
-        timesinutc.append(fermi.met_to_utc(tim))
+        timesinutc.append(met_to_utc(tim))
     ind = np.searchsorted(timesinutc,time)
     
     scx_radec = (hdulist[1].data['RA_SCX'][ind],hdulist[1].data['DEC_SCX'][ind])
@@ -155,7 +155,7 @@ def get_scx_scz_in_timerange(timerange,file):
     hdulist=fits.open(file)
     timesinutc=[]
     for tim in hdulist[1].data['START']:
-        timesinutc.append(fermi.met_to_utc(tim))
+        timesinutc.append(met_to_utc(tim))
 
     startind = np.searchsorted(timesinutc,timerange.start())
     endind = np.searchsorted(timesinutc,timerange.end())
