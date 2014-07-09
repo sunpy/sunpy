@@ -61,7 +61,7 @@ def test_simpleattr_and_duplicate():
 
 def test_simpleattr_or_eq():
     attr = va.Instrument('eit')
-    
+
     assert attr | attr == attr
     assert attr | va.Instrument('eit') == attr
 
@@ -95,7 +95,7 @@ def test_complexattr_and_duplicate():
 
 def test_complexattr_or_eq():
     attr = va.Time((2011, 1, 1), (2011, 1, 1, 1))
-    
+
     assert attr | attr == attr
     assert attr | va.Time((2011, 1, 1), (2011, 1, 1, 1)) == attr
 
@@ -104,7 +104,7 @@ def test_attror_and():
     attr = va.Instrument('foo') | va.Instrument('bar')
     one = attr & va.Source('bar')
     other = (
-        (va.Instrument('foo') & va.Source('bar')) | 
+        (va.Instrument('foo') & va.Source('bar')) |
         (va.Instrument('bar') & va.Source('bar'))
     )
     assert one == other
@@ -125,7 +125,7 @@ def test_wave_toangstrom():
     for name, factor in energy:
         w = va.Wave(62 / factor, 62 / factor, name)
         assert int(w.min) == 199
-    
+
     w = va.Wave(62, 62, 'eV')
     assert int(w.min) == 199
     w = va.Wave(62e-3, 62e-3, 'keV')
@@ -134,7 +134,7 @@ def test_wave_toangstrom():
     for name, factor in frequency:
         w = va.Wave(1.506e16 / factor, 1.506e16 / factor, name)
         assert int(w.min) == 199
-    
+
     w = va.Wave(1.506e16, 1.506e16, 'Hz')
     assert int(w.min) == 199
     w = va.Wave(1.506e7, 1.506e7, 'GHz')
@@ -144,12 +144,12 @@ def test_wave_toangstrom():
 def test_time_xor():
     one = va.Time((2010, 1, 1), (2010, 1, 2))
     a = one ^ va.Time((2010, 1, 1, 1), (2010, 1, 1, 2))
-    
+
     assert a == attr.AttrOr(
         [va.Time((2010, 1, 1), (2010, 1, 1, 1)),
          va.Time((2010, 1, 1, 2), (2010, 1, 2))]
     )
-    
+
     a ^= va.Time((2010, 1, 1, 4), (2010, 1, 1, 5))
     assert a == attr.AttrOr(
         [va.Time((2010, 1, 1), (2010, 1, 1, 1)),
@@ -161,11 +161,11 @@ def test_time_xor():
 def test_wave_xor():
     one = va.Wave(0, 1000)
     a = one ^ va.Wave(200, 400)
-    
+
     assert a == attr.AttrOr([va.Wave(0, 200), va.Wave(400, 1000)])
-    
+
     a ^= va.Wave(600, 800)
-    
+
     assert a == attr.AttrOr(
         [va.Wave(0, 200), va.Wave(400, 600), va.Wave(800, 1000)])
 
@@ -185,4 +185,3 @@ def test_wave_repr():
     moarwav = vso.attrs.Wave(15, 12, "Angstrom")
     assert repr(wav) == "<Wave(12.0, 16.0, 'Angstrom')>"
     assert repr(moarwav) == "<Wave(12.0, 15.0, 'Angstrom')>"
-
