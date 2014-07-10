@@ -199,7 +199,8 @@ class Cube(astropy.nddata.NDData):
             aggregate the given range.
         '''
         if self.axes_wcs.wcs.ctype[-2] == 'WAVE':
-            raise CubeError(3, "Cannot construct a map with only one spatial dimension")
+            error = "Cannot construct a map with only one spatial dimension"
+            raise CubeError(3, error)
 
         if isinstance(chunk, tuple):
             maparray = self.data[chunk[0]:chunk[1], :, :].sum(0)
@@ -240,26 +241,39 @@ def _orient(array, wcs):
 
     axtypes = list(wcs.wcs.ctype)
 
-    order = _select_order(axtypes)
-    result_array = array.transpose(order)
+    array_order = _select_order(axtypes[::-1])
+    result_array = array.transpose(array_order)
 
     try:
         wcs.get_axis_types()
     except InconsistentAxisTypesError:
         # This means there's an unmatched celestial axis.
         wcs = wcs_util.add_celestial_axis(wcs)
-        order = order + [3]
 
-    result_wcs = wcs_util.reindex_wcs(wcs, np.array(order)[::-1])
+    wcs_order = np.array(_select_order(list(wcs.wcs.ctype)))[::-1]
+    result_wcs = wcs_util.reindex_wcs(wcs, wcs_order)
     return result_array, result_wcs
 
 
 def _select_order(axtypes):
+    '''
+    Returns the indices of the correct axis priority for the given list of WCS
+    CTYPEs. For example, given ['HPLN-TAN', 'TIME', 'WAVE'] it will return
+    [1, 2, 0] because index 1 (time) has the highest priority, followed by
+    wavelength and finally solar-x. When two or more celestial axes are in the
+    list, order is preserved between them (i.e. only TIME, UTC and WAVE are
+    moved)
+
+    Parameters
+    ----------
+    axtypes: str list
+        The list of CTYPEs to be modified.
+    '''
     order = [(0, t) if t in ['TIME', 'UTC'] else
              (1, t) if t == 'WAVE' else
              (axtypes.index(t) + 2, t) for t in axtypes]
     order.sort()
-    result = [axtypes.index(s) for (f, s) in order]
+    result = [axtypes.index(s) for (_, s) in order]
     return result
 
 
