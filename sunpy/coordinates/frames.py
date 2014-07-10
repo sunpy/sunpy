@@ -22,6 +22,7 @@ from representation import SphericalWrap180Representation
 
 from datetime import datetime
 
+
 RSUN_METERS = s.constants.constant('radius').si.value
 DSUN_METERS = s.constants.constant('mean distance').si.value
 
@@ -63,26 +64,28 @@ class HelioGraphicStonyhurst(BaseCoordinateFrame):
     dateobs = TimeFrameAttribute()
 
     def __init__(self, *args, **kwargs):
+        time = datetime.now()
         if args or kwargs: # Non-empty frame use case.
             if args and kwargs: # Mixed use case.
-                if not isinstance(args[0], BaseRepresentation):
-                    if len(args) == 1 and 'rad' not in kwargs:
+                if args and not isinstance(args[0], BaseRepresentation):
+                    if len(args) > 0 and len(args) <= 2 and 'rad' not in kwargs:
                     # If one of hlon/hlat are in args
-                        kwargs['rad'] = (RSUN_METERS/1000)*u.km
-                if 'dateobs' not in kwargs:
-                    kwargs['dateobs'] = datetime.now()
-            elif not args: # kwargs-only use case.
-                if not isinstance(args[0], BaseRepresentation):
-                    if 'rad' not in kwargs: # This default is required by definition.
-                        kwargs['rad'] = (RSUN_METERS/1000)*u.km
-                if 'dateobs' not in kwargs:
-                    kwargs['dateobs'] = datetime.now()
+                        kwargs['rad'] = kwargs.get('rad', (RSUN_METERS/1000)*u.km)
+            elif not args: # kwargs-only use case
+                if 'representation' not in kwargs:
+                    #if 'rad' not in kwargs: # This default is required by definition.
+                    if 'hlon' in kwargs and 'hlat' in kwargs:
+                        kwargs['rad'] = kwargs.get('rad', (RSUN_METERS/1000)*u.km)
             elif not kwargs: # args-only use case.
                 if len(args) == 2:
                     args = list(args)
                     args.append((RSUN_METERS/1000)*u.km)
                     args = tuple(args)
-                kwargs['dateobs'] = datetime.now()
+        if 'dateobs' not in kwargs:
+        # Common block for all subcases.
+        # By adding it to kwargs forcefully, we are letting
+        # the superclass handle it.
+            kwargs['dateobs'] = time
         super(HelioGraphicStonyhurst, self).__init__(*args, **kwargs)
 
 def _carrington_offset():
@@ -119,6 +122,7 @@ class HelioGraphicCarrington(HelioGraphicStonyhurst):
         }
 
     #rad = FrameAttribute(default=((RSUN_METERS/1000)*u.km))
+    dateobs = TimeFrameAttribute()
 
     def __init__(self, *args, **kwargs):
         super(HelioGraphicCarrington, self).__init__(*args, **kwargs)
