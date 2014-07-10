@@ -21,6 +21,8 @@ import pytest
 # SunPy
 from ..frames import (HelioGraphicStonyhurst, HelioGraphicCarrington,
                       HelioCentric, HelioProjective)
+from ..representation import SphericalWrap180Representation
+from datetime import datetime
 
 def test_frame_attributes():
     from ..frames import HelioProjective
@@ -125,8 +127,9 @@ def test_nodata_frames():
     # Tests frames which have no data.
 
     hgs = HelioGraphicStonyhurst()
-    assert len(hgs.get_frame_attr_names()) == 0
-    # Heliographic frames are either completely empty, or true 3D.
+    assert len(hgs.get_frame_attr_names()) == 1
+    # Heliographic frames are either completely empty (with the dateobs kwarg),
+    # or true 3D.
     # Nothing in between.
 
     hcc = HelioCentric()
@@ -141,7 +144,7 @@ def test_frame_repr():
     # Tests the repr() of a frame.
 
     hgc = HelioGraphicCarrington()
-    assert repr(hgc) == '<HelioGraphicCarrington Frame>'
+    assert repr(hgc).startswith('<HelioGraphicCarrington Frame: dateobs=')
 
     hcc = HelioCentric()
     assert repr(hcc).startswith('<HelioCentric Frame: D0=')
@@ -153,10 +156,14 @@ def test_frame_repr():
     hgs_1 = HelioGraphicStonyhurst(1*u.deg, 2*u.deg)
     hgs_2 = HelioGraphicStonyhurst(1*u.deg, 2*u.deg, 3*u.km)
 
-    assert repr(hgs_1) == ('<HelioGraphicStonyhurst Coordinate: ' \
-                           'hlon=1.0 deg, hlat=2.0 deg, rad=695508.0 km>')
-    assert repr(hgs_2) == ('<HelioGraphicStonyhurst Coordinate: ' \
-                           'hlon=1.0 deg, hlat=2.0 deg, rad=3.0 km>')
+    string1 = repr(hgs_1)
+    string2 = repr(hgs_2)
+    assert '<HelioGraphicStonyhurst Coordinate: ' in string1
+    assert 'dateobs=' in string1
+    assert 'hlon=1.0 deg, hlat=2.0 deg, rad=695508.0 km>' in string1
+    assert '<HelioGraphicStonyhurst Coordinate: ' in string2
+    assert 'dateobs=' in string2
+    assert 'hlon=1.0 deg, hlat=2.0 deg, rad=3.0 km>' in string2
 
 def test_realize_frames():
     # Tests for the realize_frame() method.
@@ -201,7 +208,19 @@ def test_transform_architecture():
     npt.assert_allclose(hgs.hlat, hgs_3.hlat)
     npt.assert_allclose(hgs.rad, hgs_3.rad)
 
+def test_heliographic_stonyhurst():
+    # A test function for testing the several ways
+    # to create HGS frames.
 
+    HelioGraphicStonyhurst(1*u.deg, 1*u.deg, dateobs=datetime.now())
+    HelioGraphicStonyhurst(1*u.deg, 1*u.deg, 1*u.km, dateobs=datetime.now())
+    HelioGraphicStonyhurst(SphericalWrap180Representation(1*u.deg, 1*u.deg, 1*u.km), dateobs=datetime.now())
+    HelioGraphicStonyhurst(SphericalWrap180Representation(1*u.deg, 1*u.deg, 1*u.km))
+    HelioGraphicStonyhurst(dateobs=datetime.now())
+    HelioGraphicStonyhurst(1*u.deg, hlat=1*u.deg, rad=1*u.km, dateobs=datetime.now())
+    HelioGraphicStonyhurst(1*u.deg, hlat=1*u.deg, rad=1*u.km)
+    HelioGraphicStonyhurst(hlon=1*u.deg, hlat=1*u.deg, rad=1*u.km, dateobs=datetime.now())
+    HelioGraphicStonyhurst(hlon=1*u.deg, hlat=1*u.deg, rad=1*u.km)
 
     
 

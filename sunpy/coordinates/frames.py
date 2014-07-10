@@ -279,13 +279,13 @@ class HelioProjective(BaseCoordinateFrame):
 @frame_transform_graph.transform(FunctionTransform, HelioGraphicStonyhurst, HelioGraphicCarrington)
 def hcs_to_hcg(hcscoord, hcgframe):
     c_lon = hcscoord.spherical.lon + _carrington_offset() * u.deg
-    representation = SphericalRepresentation(c_lon, hcscoord.hlat, hcscoord.rad)
+    representation = SphericalWrap180Representation(c_lon, hcscoord.hlat, hcscoord.rad)
     return HelioGraphicCarrington(representation)
 
 @frame_transform_graph.transform(FunctionTransform, HelioGraphicCarrington, HelioGraphicStonyhurst)
 def hcg_to_hcs(hcgcoord, hcsframe):
     s_lon = hcgcoord.spherical.lon - _carrington_offset() * u.deg
-    representation = SphericalRepresentation(s_lon, hcgcoord.hlat, hcgcoord.rad)
+    representation = SphericalWrap180Representation(s_lon, hcgcoord.hlat, hcgcoord.rad)
     return HelioGraphicStonyhurst(representation)
 
 @frame_transform_graph.transform(FunctionTransform, HelioCentric, HelioProjective)
@@ -301,7 +301,7 @@ def helioc_to_heliop(helioccoord, heliopframe):
     hpcx = np.rad2deg(np.arctan2(x, helioccoord.D0 - z))
     hpcy = np.rad2deg(np.arcsin(y / distance))
 
-    representation = SphericalRepresentation(hpcx, hpcy, distance.to(u.km))
+    representation = SphericalWrap180Representation(hpcx, hpcy, distance.to(u.km))
     return HelioProjective(representation)
 
 @frame_transform_graph.transform(FunctionTransform, HelioProjective, HelioCentric)
@@ -337,7 +337,7 @@ def hcc_to_hgs(helioccoord, heliogframe):
     hgln = np.arctan2(x, z * cosb - y * sinb) + np.deg2rad(l0_deg)
     hglt = np.arcsin((y * cosb + z * sinb) / hecr)
 
-    representation = SphericalRepresentation(np.rad2deg(hgln),
+    representation = SphericalWrap180Representation(np.rad2deg(hgln),
                                              np.rad2deg(hglt),
                                              hecr.to(u.km))
     return HelioGraphicStonyhurst(representation)
