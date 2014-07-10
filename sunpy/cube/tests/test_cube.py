@@ -29,8 +29,8 @@ cubem = c.Cube(data, wm)
 
 def test_orient_with_time():
     newdata, newwcs = c._orient(data, wt)
-    assert newwcs.wcs.axis_types[1] == 3000  # code for a spectral dimension
-    assert newwcs.wcs.axis_types[0] == 0  # code for an unknown axis - time
+    assert newwcs.wcs.axis_types[-2] == 3000  # code for a spectral dimension
+    assert newwcs.wcs.axis_types[-1] == 0  # code for an unknown axis - time
     assert newwcs.naxis == 4
     assert newdata.shape == (4, 3, 2)  # the time dimension should be first
     with pytest.raises(ValueError):
@@ -43,8 +43,8 @@ def test_orient_with_time():
 
 def test_orient_no_time():
     newdata, newwcs = c._orient(data, wm)
-    assert newwcs.wcs.axis_types[0] == 3000
-    assert newdata.shape == (3, 4, 2)
+    assert newwcs.wcs.axis_types[-1] == 3000
+    assert newdata.shape == (3, 2, 4)
 
 
 def test_slice_to_map_with_time():
@@ -61,7 +61,7 @@ def test_slice_to_map_no_time():
     assert np.all(m1.data == cubem.data.sum(0))
 
 
-def test_choose_wavelength_slice():
+def test_choose_wavelength_slice_with_time():
     ius = cube._choose_wavelength_slice(-1)  # integer, under range slice
     iis = cube._choose_wavelength_slice(1)  # integer, in range slice
     ios = cube._choose_wavelength_slice(11)  # integer, over range slice
@@ -78,6 +78,28 @@ def test_choose_wavelength_slice():
 
     assert qus is None
     assert np.all(qis == [[0, 10], [-1, 3], [2, 3], [3, 0]])
+    assert qos is None
+
+    assert f is None
+
+
+def test_choose_wavelength_no_time():
+    ius = cubem._choose_wavelength_slice(-1)  # integer, under range slice
+    iis = cubem._choose_wavelength_slice(1)  # integer, in range slice
+    ios = cubem._choose_wavelength_slice(11)  # integer, over range slice
+
+    qus = cubem._choose_wavelength_slice(-1 * u.Angstrom)  # quantity, under
+    qis = cubem._choose_wavelength_slice(0.4 * u.Angstrom)  # quantity, in
+    qos = cubem._choose_wavelength_slice(8 * u.Angstrom)  # quantity, over
+
+    f = cubem._choose_wavelength_slice(0.4)  # no units given
+
+    assert ius is None
+    assert np.all(iis == [[2, 4, 5, 3], [10, 5, 2, 2]])
+    assert ios is None
+
+    assert qus is None
+    assert np.all(qis == [[0, -1, 2, 3], [10, 3, 3, 0]])
     assert qos is None
 
     assert f is None
@@ -115,8 +137,8 @@ def test_select_order():
 
     results = [[0, 1, 2, 3],
                [2, 0, 1, 3],
-               [1, 2, 0],  # Second order is alphabetical
-               [2, 1, 0],
+               [1, 0, 2],  # Second order is initial order
+               [2, 0, 1],
                [],
                [1, 0, 2, 3]]
 

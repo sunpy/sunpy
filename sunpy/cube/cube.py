@@ -77,7 +77,7 @@ class Cube(astropy.nddata.NDData):
 
         data = self._choose_wavelength_slice(offset)
         if data is None:
-            data = self.data[0, :, :]
+            data = self._choose_wavelength_slice(0)
 
         if style is 'imshow':
             plot = axes.imshow(data, **kwargs)
@@ -111,7 +111,7 @@ class Cube(astropy.nddata.NDData):
 
         data = self._choose_x_slice(offset)
         if data is None:
-            data = self.data[:, 0, :]
+            data = self._choose_x_slice(0)
 
         if style is 'imshow':
             plot = axes.imshow(data, **kwargs)
@@ -142,14 +142,14 @@ class Cube(astropy.nddata.NDData):
         if 'WAVE' not in self.axes_wcs.wcs.ctype:
             raise CubeError(2, "Spectral dimension not present")
 
-        axis = list(self.axes_wcs.wcs.ctype).index('WAVE')
+        axis = 1 if self.axes_wcs.wcs.ctype[-1] in ['TIME', 'UTC'] else 0
         arr = None
         if (isinstance(offset, int) and offset >= 0 and
-           offset < len(self.data)):
+           offset < self.data.shape[axis]):
             arr = self.data.take(offset, axis=axis)
 
         if isinstance(offset, u.Quantity):
-            delta = self.axes_wcs.wcs.cdelt[axis] * u.m
+            delta = self.axes_wcs.wcs.cdelt[-1 - axis] * u.m
             wloffset = offset.to(u.m) / delta
             wloffset = int(wloffset)
             if wloffset >= 0 and wloffset < self.data.shape[axis]:
@@ -170,14 +170,14 @@ class Cube(astropy.nddata.NDData):
             wavelength to the one specified.
         '''
         arr = None
-        axis = 1 if self.axes_wcs.wcs.ctype[1] != 'WAVE' else 2
+        axis = 1 if self.axes_wcs.wcs.ctype[-2] != 'WAVE' else 2
         if (isinstance(offset, int) and offset >= 0 and
            offset < self.data.shape[axis]):
             arr = self.data.take(offset, axis=axis)
 
         if isinstance(offset, u.Quantity):
-            unit = self.axes_wcs.wcs.cunit[axis]
-            delta = self.axes_wcs.wcs.cdelt[axis] * unit
+            unit = self.axes_wcs.wcs.cunit[-1 - axis]
+            delta = self.axes_wcs.wcs.cdelt[-1 - axis] * unit
             wloffset = offset.to(unit) / delta
             wloffset = int(wloffset)
             if wloffset >= 0 and wloffset < self.data.shape[axis]:
@@ -198,7 +198,7 @@ class Cube(astropy.nddata.NDData):
             then it will return that single-slice map, otherwise it will
             aggregate the given range.
         '''
-        if self.axes_wcs.wcs.ctype[1] == 'WAVE':
+        if self.axes_wcs.wcs.ctype[-2] == 'WAVE':
             raise CubeError(3, "Cannot construct a map with only one spatial dimension")
 
         if isinstance(chunk, tuple):
@@ -210,7 +210,7 @@ class Cube(astropy.nddata.NDData):
         return gmap
 
     def slice_to_lightcurve(self, wavelength, y_coord):
-        if self.axes_wcs.wcs.ctype[0] in ['TIME', 'UTC']:
+        if self.axes_wcs.wcs.ctype[-1] in ['TIME', 'UTC']:
             raise CubeError(1, 'Cannot create a lightcurve with no time axis')
         # TODO: implement this!
 
@@ -250,15 +250,14 @@ def _orient(array, wcs):
         wcs = wcs_util.add_celestial_axis(wcs)
         order = order + [3]
 
-    result_wcs = wcs_util.reindex_wcs(wcs, np.array(order))
+    result_wcs = wcs_util.reindex_wcs(wcs, np.array(order)[::-1])
     return result_array, result_wcs
 
 
 def _select_order(axtypes):
     order = [(0, t) if t in ['TIME', 'UTC'] else
              (1, t) if t == 'WAVE' else
-             (2, t) if axtypes.index(t) != 3 else
-             (3, t) for t in axtypes]
+             (axtypes.index(t) + 2, t) for t in axtypes]
     order.sort()
     result = [axtypes.index(s) for (f, s) in order]
     return result
