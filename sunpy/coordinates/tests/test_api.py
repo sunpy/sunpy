@@ -14,6 +14,7 @@ from astropy import units as u
 from astropy.coordinates.representation import (SphericalRepresentation,
                                                 CylindricalRepresentation,
                                                 CartesianRepresentation)
+from ..representation import SphericalWrap180Representation
 
 def test_frame_api():
     from ..frames import (HelioGraphicStonyhurst, HelioCentric,
@@ -37,7 +38,7 @@ def test_frame_api():
     npt.assert_allclose(hgic.hlat.to(u.deg), 10*u.deg)
     npt.assert_allclose(hgic.hlon.to(u.deg), 3*u.deg)
 
-    assert hgic.representation is SphericalRepresentation
+    assert hgic.representation is SphericalWrap180Representation
 
     # Now we try a low-level initialization of hgic.
     hgic_2 = HelioGraphicStonyhurst(3*u.deg, 8*u.deg, 1*u.kpc)
@@ -84,14 +85,16 @@ def test_highlevel_api():
     # accessed in a call to `repr`, is printed in the following
     # way - '<HelioGraphicStonyhurst Coordinate: lon=10*u.deg, lat=10*u.deg>'
     string = repr(sc.frame)
-    assert '<HelioGraphicStonyhurst Coordinate: hlon=' in string
+    assert '<HelioGraphicStonyhurst Coordinate: dateobs=' in string
+    assert 'hlon=' in string
     assert 'deg, hlat=' in string
     assert 'km>' in string
 
     # Similarly, `repr(sc)` should look like -:
     # '<SkyCoord (HelioGraphicStonyhurst): lon=10*u.deg, lat=10*u.deg>'
     string = repr(sc)
-    assert '<SkyCoord (HelioGraphicStonyhurst): hlon=' in string
+    assert '<SkyCoord (HelioGraphicStonyhurst): dateobs=' in string
+    assert 'hlon=' in string
     assert 'deg, hlat=' in string
     assert 'km>' in string
 
