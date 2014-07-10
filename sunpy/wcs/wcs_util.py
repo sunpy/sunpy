@@ -39,7 +39,11 @@ def reindex_wcs(wcs, inds):
         setattr(outwcs.wcs, par, getattr(wcs.wcs, par))
 
     cdelt = wcs.wcs.cdelt
-    pc = wcs.wcs.pc
+
+    try:
+        outwcs.wcs.pc = wcs.wcs.pc[inds[:, None], inds[None, :]]
+    except AttributeError:
+        outwcs.wcs.pc = np.eye(wcs.naxis)
 
     outwcs.wcs.crpix = wcs.wcs.crpix[inds]
     outwcs.wcs.cdelt = cdelt[inds]
@@ -47,7 +51,6 @@ def reindex_wcs(wcs, inds):
     outwcs.wcs.cunit = [wcs.wcs.cunit[i] for i in inds]
     outwcs.wcs.ctype = [wcs.wcs.ctype[i] for i in inds]
     outwcs.wcs.cname = [wcs.wcs.cname[i] for i in inds]
-    outwcs.wcs.pc = pc[inds[:, None], inds[None, :]]
 
     return outwcs
 

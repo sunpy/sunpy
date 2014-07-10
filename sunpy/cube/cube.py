@@ -2,8 +2,8 @@
 # Author: Mateo Inchaurrandieta <mateo.inchaurrandieta@gmail.com>
 # pylint: disable=E1101
 '''
-Main class for representing cubes - 3D sets of data where one axis is
-a spectral dimension.
+Main class for representing cubes - 3D sets of continuous data by time and/or
+wavelength
 '''
 # NOTE: This module uses version 1.02 of "Time coordinates in FITS" by
 # Rots et al, available at http://hea-www.cfa.harvard.edu/~arots/TimeWCS/
@@ -14,6 +14,7 @@ import matplotlib.pyplot as plt
 import astropy.nddata
 from sunpy.map import GenericMap
 from sunpy.visualization.imageanimator import ImageAnimator
+from sunpy.lightcurve import LightCurve
 import astropy.units as u
 from astropy.wcs._wcs import InconsistentAxisTypesError
 from sunpy.wcs import wcs_util
@@ -211,9 +212,13 @@ class Cube(astropy.nddata.NDData):
         return gmap
 
     def slice_to_lightcurve(self, wavelength, y_coord):
-        if self.axes_wcs.wcs.ctype[-1] in ['TIME', 'UTC']:
+        if self.axes_wcs.wcs.ctype[-1] not in ['TIME', 'UTC']:
             raise CubeError(1, 'Cannot create a lightcurve with no time axis')
-        # TODO: implement this!
+        if self.axes_wcs.wcs.ctype[-2] != 'WAVE':
+            raise CubeError(2, 'A spectral axis is needed in a lightcurve')
+        data = self._choose_wavelength_slice(wavelength)
+        lc = LightCurve(data=data, meta=self.meta)
+        return lc
 
 
 def _orient(array, wcs):
@@ -247,7 +252,7 @@ def _orient(array, wcs):
     try:
         wcs.get_axis_types()
     except InconsistentAxisTypesError:
-        # This means there's an unmatched celestial axis.
+        raise Warning("Only one spatial axis found. Adding another one...")
         wcs = wcs_util.add_celestial_axis(wcs)
 
     wcs_order = np.array(_select_order(list(wcs.wcs.ctype)))[::-1]
