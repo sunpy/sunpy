@@ -32,7 +32,7 @@ def test_orient_with_time():
     assert newwcs.wcs.axis_types[-2] == 3000  # code for a spectral dimension
     assert newwcs.wcs.axis_types[-1] == 0  # code for an unknown axis - time
     assert newwcs.naxis == 4
-    assert newdata.shape == (4, 3, 2)  # the time dimension should be first
+    assert newdata.shape == (2, 3, 4)  # the time dimension should be first
     with pytest.raises(ValueError):
         c._orient(np.zeros((1, 2)), wt)
     with pytest.raises(ValueError):
@@ -73,11 +73,11 @@ def test_choose_wavelength_slice_with_time():
     f = cube._choose_wavelength_slice(0.4)  # no units given
 
     assert ius is None
-    assert np.all(iis == [[2, 10], [4, 5], [5, 2], [3, 2]])
+    assert np.all(iis == [[2, 4, 5, 3], [10, 5, 2, 2]])
     assert ios is None
 
     assert qus is None
-    assert np.all(qis == [[0, 10], [-1, 3], [2, 3], [3, 0]])
+    assert np.all(qis == [[0, -1, 2, 3], [10, 3, 3, 0]])
     assert qos is None
 
     assert f is None
@@ -111,17 +111,17 @@ def test_choose_x_slice():
     ios = cube._choose_x_slice(11)  # integer, over range slice
 
     qus = cube._choose_x_slice(-1 * u.deg)  # quantity, under
-    qis = cube._choose_x_slice(0.4 * u.deg)  # quantity, in
+    qis = cube._choose_x_slice(1.5 * u.deg)  # quantity, in
     qos = cube._choose_x_slice(8 * u.deg)  # quantity, over
 
     f = cube._choose_x_slice(0.4)  # no units given
 
     assert ius is None
-    assert np.all(iis == [[2, 10, 10], [4, 5, 3], [5, 2, 3], [1, 2, 0]])
+    assert np.all(iis == [[2, 4, -1], [4, 5, 3]])
     assert ios is None
 
     assert qus is None
-    assert np.all(qis == [[1, 2, 0], [2, 4, -1], [3, 5, 2], [4, 3, 3]])
+    assert np.all(qis == [[4, 3, 3], [1, 2, 0]])
     assert qos is None
 
     assert f is None
