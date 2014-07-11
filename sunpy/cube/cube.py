@@ -18,6 +18,7 @@ from sunpy.lightcurve import LightCurve
 import astropy.units as u
 from astropy.wcs._wcs import InconsistentAxisTypesError
 from sunpy.wcs import wcs_util
+import warnings
 
 __all__ = ['Cube', 'CubeError']
 
@@ -216,7 +217,7 @@ class Cube(astropy.nddata.NDData):
             raise CubeError(1, 'Cannot create a lightcurve with no time axis')
         if self.axes_wcs.wcs.ctype[-2] != 'WAVE':
             raise CubeError(2, 'A spectral axis is needed in a lightcurve')
-        data = self._choose_wavelength_slice(wavelength)
+        data = self._choose_wavelength_slice(wavelength)[:, y_coord]
         lc = LightCurve(data=data, meta=self.meta)
         return lc
 
@@ -252,7 +253,8 @@ def _orient(array, wcs):
     try:
         wcs.get_axis_types()
     except InconsistentAxisTypesError:
-        raise Warning("Only one spatial axis found. Adding another one...")
+        warnings.warn("Only one spatial axis found. Adding another one...",
+                      UserWarning)
         wcs = wcs_util.add_celestial_axis(wcs)
 
     wcs_order = np.array(_select_order(list(wcs.wcs.ctype)))[::-1]
