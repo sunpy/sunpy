@@ -4,7 +4,7 @@ __all__ = ['diff_rot']
 import numpy as np
 import datetime
 from astropy import units as u
-from astropy.coordinates import Angle, Longitude
+from astropy.coordinates import Longitude
 
 __author__ = ["Jose Ivan Campos Rozo","Stuart Mumford"]
 __all__ = ['diff_rot']
@@ -19,7 +19,7 @@ def diff_rot(ddays,latitude,rot_type='howard',frame_time='sidereal'):
     ddays: float or timedelta
         Number of days to rotate over, or timedelta object.
 
-    latitude: float or array-like
+    latitude: astropy.units.Quantity
         heliographic coordinate latitude in Degrees.
 
     rot_type: {'howard' | 'snodgrass' | 'allen'}
@@ -32,7 +32,7 @@ def diff_rot(ddays,latitude,rot_type='howard',frame_time='sidereal'):
 
     Returns
     -------
-    longditude_delta: ndarray
+    longditude_delta: astropy.units.Quantity     
         The change in longitude over days (units=degrees)
 
     Notes
@@ -44,16 +44,16 @@ def diff_rot(ddays,latitude,rot_type='howard',frame_time='sidereal'):
     Examples
     --------
     Default rotation calculation over two days at 30 degrees latitude:
-
-    >>> rotation = diff_rot(2, 30)
-
+    
+    >>> rotation = diff_rot(2, 30 * u.deg)
+    
     Default rotation over two days for a number of latitudes:
-
-    >>> rotation = diff_rot(2, np.linspace(-70, 70, 20))
-
+    
+    >>> rotation = diff_rot(2, np.linspace(-70, 70, 20) * u.deg)
+    
     With rotation type 'allen':
-
-    >>> rotation = diff_rot(2, np.linspace(-70, 70, 20), 'allen')
+    
+    >>> rotation = diff_rot(2, np.linspace(-70, 70, 20) * u.deg, 'allen')
     """
 
     if not isinstance(ddays,datetime.timedelta):
