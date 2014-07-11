@@ -88,10 +88,10 @@ def clip_edges(data, yclips, xclips):
     data : ndarray
         A numpy array of shape (ny, nx).
 
-    yclips : ndarray
+    yclips : ndarray of astropy.units.Quantity
         The amount to clip in the y-direction of the data.
 
-    xclips : ndarray
+    xclips : ndarray of astropy.units.Quantity
         The amount to clip in the x-direction of the data.
 
     Returns
@@ -100,10 +100,12 @@ def clip_edges(data, yclips, xclips):
         A 2d image with edges clipped off according to the positive and
         negative ceiling values in the yclips and xclips arrays.
     """
+    if not isinstance(yclips and xclips, u.Quantity):
+        raise ValueError("Must be astropy QUantity")
     # Datacube shape
     ny = data.shape[0]
     nx = data.shape[1]
-    return data[yclips[0]: ny - yclips[1], xclips[0]: nx - xclips[1]]
+    return data[yclips[0].value: ny - yclips[1].value, xclips[0].value: nx - xclips[1].value]
 
 
 #
@@ -115,15 +117,15 @@ def calculate_clipping(y, x):
 
     Parameters
     ----------
-    y : ndarray
+    y : ndarray of type astropy.units.Quantity
         An array of pixel shifts in the y-direction for an image.
 
-    x : ndarray
+    x : ndarray of type astropy.units.Quantity
         An array of pixel shifts in the x-direction for an image.
 
     Returns
     -------
-    clipping : ([int, int], [int, int])
+    clipping : ([int, int], [int, int]) of type astropy.Quantity
         The number of (integer) pixels that need to be clipped off at each
         edge in an image. The first element in the tuple is a list that gives
         the number of pixels to clip in the y-direction.  The first element in
@@ -136,7 +138,12 @@ def calculate_clipping(y, x):
         the "clipping" tuple applies similarly to the x-direction (image
         columns).
     """
-    return [_lower_clip(y), _upper_clip(y)] * u.pix, [_lower_clip(x), _upper_clip(x)] * u.pix
+    if not isinstance(y, u.Quantity):
+        raise ValueError("Must be astropy Quantites")
+    if not isinstance(x, u.Quantity):
+        raise ValueError("Must be astropy Quantites")
+    return [_lower_clip(y.value), _upper_clip(y.value)] * u.pix, 
+    [_lower_clip(x.value), _upper_clip(x.value)] * u.pix
 
 
 #
@@ -197,7 +204,7 @@ def find_best_match_location(corr):
 
     Returns
     -------
-    shift : tuple
+    shift : tuple of type astropy.Quantity
         The shift amounts (y, x) in image pixels.  Subpixel values are
         possible.
     """
@@ -233,7 +240,7 @@ def get_correlation_shifts(array):
 
     Returns
     -------
-    peakloc : tuple
+    peakloc : tuple of type astropy.units.Quantity
         The (y, x) location of the peak of a parabolic fit, in image pixels.
     """
     # Check input shape

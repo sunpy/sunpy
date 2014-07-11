@@ -3,6 +3,7 @@
 The following code is heavily based on IDL function get_sun.pro which itself
 is based on algorithms presented in the book Astronomical Formulae for
 Calculators, by Jean Meeus.
+Every function returning a quantity is of type astropy.units.Quantity
 
 A correct answer set to compare to
 

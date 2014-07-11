@@ -80,10 +80,13 @@ sets the instrument we are looking for. The third argument:
 
     ``vso.attrs.Wave(142*u.AA, 123*u.AA)``
 
-sets the values for wavelength i.e, for wavemax(maximum value) and similarly
-wavemin(for minimum value) for the query. Also the ``u.AA`` part comes
-from ``astropy.units.Quantity`` where `AA` is Angstrom. To know more 
-check `astropy.units <https://astropy.readthedocs.org/en/stable/units/index.html>`_. 
+sets the values for wavelength i.e, for wavemax(maximum value) and 
+similarly wavemin(for minimum value) for the query. Also the ``u.AA``
+part comes from ``astropy.units.Quantity`` where `AA` is Angstrom. It 
+should be noted that specifying spectral units in arugements is 
+necessary or an error will be raised. To know more check
+`astropy.units <https://astropy.readthedocs.org/en/stable/units/index.html>`_. 
+
 So what is going on here?
 The notion is that a VSO query has a set of attribute objects -
 described in ``vso.attrs`` - that are specifed to construct the query.
