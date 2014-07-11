@@ -4,9 +4,8 @@ import numpy as np
 from scipy.constants import constants
 from astropy import units
 
-__all__ = ['degrees_to_hours', 'degrees_to_arc', 'kelvin_to_keV',
-           'keV_to_kelvin', 'to_angstrom']
-
+__all__ = ['kelvin_to_keV', 'keV_to_kelvin', 'to_angstrom']
+           
 def degrees_to_hours(angle):
     """Converts an angle from the degree notation to the hour, arcmin, arcsec
     notation (returned as a tuple)."""
@@ -40,4 +39,4 @@ def kelvin_to_keV(temperature):
 def keV_to_kelvin(temperature):
     """Convert from temperature expressed in keV to a temperature
     expressed in Kelvin"""
-    return temperature * (constants.e / constants.k * 1000.0)
+    return temperature * (constants.e / constants.k * 1000.0) 
