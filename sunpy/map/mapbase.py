@@ -17,6 +17,7 @@ from matplotlib import patches
 from matplotlib import cm
 
 import astropy.nddata
+import astropy.units as u
 from sunpy.image.transform import affine_transform
 
 import sunpy.io as io
@@ -152,7 +153,7 @@ Dimension:\t [%d, %d]
 
 """ % (self.__class__.__name__,
        self.observatory, self.instrument, self.detector, self.measurement,
-       self.date, self.exposure_time,
+       self.date, self.exposure_time.value,
        self.data.shape[1], self.data.shape[0], self.scale['x'], self.scale['y'])
      + self.data.__repr__())
 
@@ -230,12 +231,12 @@ Dimension:\t [%d, %d]
                                    Warning, __file__, inspect.currentframe().f_back.f_lineno)
             dsun = sun.sunearth_distance(self.date) * constants.au.si.value
 
-        return dsun
+        return dsun * u.meter
 
     @property
     def exposure_time(self):
         """Exposure time of the image in seconds."""
-        return self.meta.get('exptime', 0.0)
+        return self.meta.get('exptime', 0.0) * u.second
 
     @property
     def instrument(self):
@@ -262,30 +263,30 @@ Dimension:\t [%d, %d]
         """Return the X range of the image in arcsec from edge to edge."""
         xmin = self.center['x'] - self.shape[1] / 2. * self.scale['x']
         xmax = self.center['x'] + self.shape[1] / 2. * self.scale['x']
-        return [xmin, xmax]
+        return [xmin, xmax] * u.arcsec
 
     @property
     def yrange(self):
         """Return the Y range of the image in arcsec from edge to edge."""
         ymin = self.center['y'] - self.shape[0] / 2. * self.scale['y']
         ymax = self.center['y'] + self.shape[0] / 2. * self.scale['y']
-        return [ymin, ymax]
+        return [ymin, ymax] * u.arcsec
 
     @property
     def center(self):
         """Returns the offset between the center of the Sun and the center of
         the map."""
         return {'x': wcs.get_center(self.shape[1], self.scale['x'],
-                                    self.reference_pixel['x'],
+                                    self.reference_pixel['x'].value,
                                     self.reference_coordinate['x']),
                 'y': wcs.get_center(self.shape[0], self.scale['y'],
-                                    self.reference_pixel['y'],
+                                    self.reference_pixel['y'].value,
                                     self.reference_coordinate['y']),}
 
     @property
     def rsun_meters(self):
         """Radius of the sun in meters"""
-        return self.meta.get('rsun_ref', constants.radius)
+        return self.meta.get('rsun_ref', constants.radius) * u.meter
 
     @property
     def rsun_arcseconds(self):
@@ -299,7 +300,7 @@ Dimension:\t [%d, %d]
                                    Warning, __file__, inspect.currentframe().f_back.f_lineno)
             rsun_arcseconds = sun.solar_semidiameter_angular_size(self.date).value
 
-        return rsun_arcseconds
+        return rsun_arcseconds * u.arcsec
 
     @property
     def coordinate_system(self):
@@ -317,7 +318,7 @@ Dimension:\t [%d, %d]
                                    Warning, __file__, inspect.currentframe().f_back.f_lineno)
             carrington_longitude = (sun.heliographic_solar_center(self.date))[0]
 
-        return carrington_longitude
+        return carrington_longitude * u.deg     #should be changed after sun module astropy integration
 
     @property
     def heliographic_latitude(self):
@@ -331,12 +332,12 @@ Dimension:\t [%d, %d]
                                    Warning, __file__, inspect.currentframe().f_back.f_lineno)
             heliographic_latitude = (sun.heliographic_solar_center(self.date))[1]
 
-        return heliographic_latitude
+        return heliographic_latitude * u.deg      #should be changed after sun module astropy integration
 
     @property
     def heliographic_longitude(self):
         """Heliographic longitude in degrees"""
-        return self.meta.get('hgln_obs', 0.)
+        return self.meta.get('hgln_obs', 0.) * u.deg
 
     @property
     def reference_coordinate(self):
@@ -347,8 +348,8 @@ Dimension:\t [%d, %d]
     @property
     def reference_pixel(self):
         """Reference point axes in pixels (crpix1/2)"""
-        return {'x': self.meta.get('crpix1', (self.meta.get('naxis1') + 1) / 2.),
-                'y': self.meta.get('crpix2', (self.meta.get('naxis2') + 1) / 2.),}
+        return {'x': self.meta.get('crpix1', (self.meta.get('naxis1') + 1) / 2.) * u.pix,
+                'y': self.meta.get('crpix2', (self.meta.get('naxis2') + 1) / 2.) * u.pix,}
 
     @property
     def scale(self):
@@ -469,7 +470,7 @@ Dimension:\t [%d, %d]
             raise ValueError("Y pixel value cannot be less than 0.")
 
         scale = np.array([self.scale['x'], self.scale['y']])
-        crpix = np.array([self.reference_pixel['x'], self.reference_pixel['y']])
+        crpix = np.array([self.reference_pixel['x'].value, self.reference_pixel['y'].value])
         crval = np.array([self.reference_coordinate['x'], self.reference_coordinate['y']])
         coordinate_system = [self.coordinate_system['x'], self.coordinate_system['y']]
         x,y = wcs.convert_pixel_to_data(self.shape, scale, crpix, crval, x = x, y = y)
@@ -562,7 +563,7 @@ Dimension:\t [%d, %d]
         new_map.meta = new_meta
         return new_map
 
-    def rotate(self, angle=None, rmatrix=None, order=3, scale=1.0,
+    def rotate(self, angle=None, rmatrix=None, order=3, scale=1.0,    #manually check if it works
                image_center=None, recenter=False, missing=0.0, use_scipy=False):
         """
         Returns a new rotated and rescaled map.  Specify either a rotation
@@ -575,7 +576,7 @@ Dimension:\t [%d, %d]
 
         Parameters
         ----------
-        angle : float
+        angle : astropy.Quantity
             The angle (degrees) to rotate counterclockwise.
         rmatrix : 2x2
             Linear transformation rotation matrix.
@@ -621,6 +622,8 @@ Dimension:\t [%d, %d]
         :func:`sunpy.image.transform.affine_transform` documentation for a
         detailed description of the differences.
         """
+        if not isinstance(angle, u.Quantity):
+            raise ValueError("Must be astropy Quantity")
         if angle is not None and rmatrix is not None:
             raise ValueError("You cannot specify both an angle and a matrix")
         elif angle is None and rmatrix is None:
@@ -635,14 +638,14 @@ Dimension:\t [%d, %d]
 
         if angle is not None:
             #Calulate the parameters for the affine_transform
-            c = np.cos(np.deg2rad(angle))
-            s = np.sin(np.deg2rad(angle))
+            c = np.cos(angle)
+            s = np.sin(angle)
             rmatrix = np.matrix([[c, -s], [s, c]])
 
         if image_center is None:
             # FITS pixels  count from 1 (curse you, FITS!)
-            image_center = (self.shape[1] - self.reference_pixel['x'] + 1,
-                            self.reference_pixel['y'])
+            image_center = (self.shape[1] - self.reference_pixel['x'].value + 1,
+                            self.reference_pixel['y'].value)
 
         # Because map data has the origin at the bottom left not the top left
         # as is convention for images vertically flip the image for the
@@ -839,7 +842,7 @@ Dimension:\t [%d, %d]
 
 # #### Visualization #### #
 
-    def draw_grid(self, axes=None, grid_spacing=15, **kwargs):
+    def draw_grid(self, axes=None, grid_spacing=15*u.deg, **kwargs):   #Manual check again
         """Draws a grid over the surface of the Sun
 
         Parameters
@@ -847,7 +850,7 @@ Dimension:\t [%d, %d]
         axes: matplotlib.axes object or None
         Axes to plot limb on or None to use current axes.
 
-        grid_spacing: float
+        grid_spacing: astropy.Quantity
             Spacing (in degrees) for longitude and latitude grid.
 
         Returns
@@ -858,15 +861,17 @@ Dimension:\t [%d, %d]
         -----
         keyword arguments are passed onto matplotlib.pyplot.plot
         """
+        if not isinstance(grid_spacing, u.Quantity):
+            raise ValueError("Must be astropy.Quantity")
 
         if not axes:
             axes = plt.gca()
 
         x, y = self.pixel_to_data()
-        dsun = self.dsun
+        dsun = self.dsun.value
 
-        b0 = self.heliographic_latitude
-        l0 = self.heliographic_longitude
+        b0 = self.heliographic_latitude.value
+        l0 = self.heliographic_longitude.value
         units = [self.units['x'], self.units['y']]
 
         #Prep the plot kwargs
@@ -875,8 +880,8 @@ Dimension:\t [%d, %d]
                    'zorder':100}
         plot_kw.update(kwargs)
 
-        hg_longitude_deg = np.linspace(-180, 180, num=361) + self.heliographic_longitude
-        hg_latitude_deg = np.arange(-90, 90, grid_spacing)
+        hg_longitude_deg = np.linspace(-180, 180, num=361) + self.heliographic_longitude.value
+        hg_latitude_deg = np.arange(-90, 90, grid_spacing.value)
 
         # draw the latitude lines
         for lat in hg_latitude_deg:
@@ -888,7 +893,7 @@ Dimension:\t [%d, %d]
             y = y[valid]
             axes.plot(x, y, **plot_kw)
 
-        hg_longitude_deg = np.arange(-180, 180, grid_spacing) + self.heliographic_longitude
+        hg_longitude_deg = np.arange(-180, 180, grid_spacing.value) + self.heliographic_longitude.value
         hg_latitude_deg = np.linspace(-90, 90, num=181)
 
         # draw the longitude lines
@@ -901,8 +906,8 @@ Dimension:\t [%d, %d]
             y = y[valid]
             axes.plot(x, y, **plot_kw)
 
-        axes.set_ylim(self.yrange)
-        axes.set_xlim(self.xrange)
+        axes.set_ylim(self.yrange.value)
+        axes.set_xlim(self.xrange.value)
 
         return axes
 
