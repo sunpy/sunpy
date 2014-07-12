@@ -74,4 +74,3 @@ class Spectrum(np.ndarray):
         figure.show()
 
         return figure
-

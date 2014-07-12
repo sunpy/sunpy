@@ -262,7 +262,7 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
 
         return cls(
             data, time_axis, freq_axis, start, end, t_init, t_delt,
-            t_label, f_label, content, instruments, 
+            t_label, f_label, content, instruments,
             header, axes.header, swapped
         )
 
