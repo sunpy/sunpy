@@ -721,7 +721,7 @@ def test_linearize():
 
     linear = spec.linearize_freqs()
     assert ((linear.freq_axis[:-1] - linear.freq_axis[1:]) == 2.5).all()
-    
+
     assert (linear[0] == image[0, :]).all()
     assert (linear[1] == image[0, :]).all()
     assert (linear[2] == image[0, :]).all()
@@ -805,7 +805,7 @@ def test_linear_view_freqs():
 
     linear = _LinearView(spec)
     # assert ((linear.freq_axis[:-1] - linear.freq_axis[1:]) == 2.5).all()
-    
+
     assert linear.get_freq(0) == 20
     assert linear.get_freq(1) == 20
     assert linear.get_freq(2) == 20

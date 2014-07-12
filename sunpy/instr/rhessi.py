@@ -220,7 +220,7 @@ def get_obssumm_file(time_range):
 
     #TODO need to check which is the closest servers
     url_root = data_servers[0] + data_location
-        
+
     url = url_root + get_obssum_filename(time_range)
 
     print('Downloading file: ' + url)
