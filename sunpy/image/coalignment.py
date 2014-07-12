@@ -100,8 +100,9 @@ def clip_edges(data, yclips, xclips):
         A 2d image with edges clipped off according to the positive and
         negative ceiling values in the yclips and xclips arrays.
     """
-    if not isinstance(yclips and xclips, u.Quantity):
-        raise ValueError("Must be astropy QUantity")
+    if not (isinstance(yclips and xclips, u.Quantity) and
+    (yclips.unit and xclips.unit == 'pix')):
+        raise ValueError("Must be astropy.units.Quantity with 'pixel' units")
     # Datacube shape
     ny = data.shape[0]
     nx = data.shape[1]
@@ -138,12 +139,12 @@ def calculate_clipping(y, x):
         the "clipping" tuple applies similarly to the x-direction (image
         columns).
     """
-    if not isinstance(y, u.Quantity):
-        raise ValueError("Must be astropy Quantites")
-    if not isinstance(x, u.Quantity):
-        raise ValueError("Must be astropy Quantites")
-    return [_lower_clip(y.value), _upper_clip(y.value)] * u.pix, 
-    [_lower_clip(x.value), _upper_clip(x.value)] * u.pix
+    if not (isinstance(y, u.Quantity) and y.unit == 'pix'):
+        raise ValueError("Must be astropy Quantites with pixel unit")
+    if not (isinstance(x, u.Quantity) and x.unit == 'pix'):
+        raise ValueError("Must be astropy Quantites with pixel unit")
+    return ([_lower_clip(y.value), _upper_clip(y.value)] * u.pix, 
+            [_lower_clip(x.value), _upper_clip(x.value)] * u.pix)
 
 
 #
@@ -491,8 +492,8 @@ def mapcube_coalign_by_match_template(mc, template=None, layer_index=0,
     for i, m in enumerate(newmc.maps):
         shifted_data = shift(m.data, [-yshift_keep[i], -xshift_keep[i]])
         if clip:
-            yclips, xclips = calculate_clipping(yshift_keep, xshift_keep)
-            shifted_data = clip_edges(shifted_data, yclips.value, xclips.value)
+            yclips, xclips = calculate_clipping(yshift_keep*u.pix, xshift_keep*u.pix)
+            shifted_data = clip_edges(shifted_data, yclips, xclips)
 
         # Update the mapcube image data
         newmc.maps[i].data = shifted_data
