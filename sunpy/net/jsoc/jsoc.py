@@ -99,9 +99,7 @@ class JSOCClient(object):
 
         # A little (hidden) debug feature
         return_resp = kwargs.pop('return_resp', False)
-        #start_time = self._process_time(start_time)
-        #end_time = self._process_time(end_time)
-	return_response = []
+        return_response = []
         return_reqid = []
         query = and_(*query)
         for block in walker.create(query):
@@ -390,7 +388,7 @@ class JSOCClient(object):
 	    return []
         start_time = self._process_time(start_time)
 	end_time = self._process_time(end_time)
-	tr = TimeRange(start_time, end_time)
+        tr = TimeRange(start_time, end_time)
         returns = []
 
         response, json_response = self._send_jsoc_request(start_time, end_time, series, **kwargs)
@@ -407,7 +405,8 @@ class JSOCClient(object):
         """
         GET the status of a request ID
         """
-	payload = {'op':'exp_status', 'requestid':request_id}
+        payload = {'op':'exp_status', 'requestid':request_id}
         u = requests.get(JSOC_URL, params=payload)
 
         return u
+	
