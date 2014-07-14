@@ -77,7 +77,7 @@ class LightCurve(object):
 	else:
              self.meta = OrderedDict(meta)
 
-    def __add__(self, other):
+    def append(self, other):
         """
         List like concatenation for lightcurves
         """
@@ -89,21 +89,6 @@ class LightCurve(object):
         new_dict = dict()
         new_dict.update(self.meta)
         new_dict.update(other.meta)
-
-        return self.__class__(new_data, new_dict)
-
-    def __radd__(self, other):
-        """
-        List like concatenation for lightcurves
-        """
-        if not isinstance(other, LightCurve):
-            raise NotImplementedError
-
-        new_data = other.data.append(self.data)
-
-        new_dict = dict()
-        new_dict.update(other.meta)
-        new_dict.update(self.meta)
 
         return self.__class__(new_data, new_dict)
     
@@ -175,7 +160,7 @@ for compatability with map, please use meta instead""", Warning)
 
         cls1 = classes.pop(0)
         for aclass in classes:
-            cls1 += aclass
+            cls1.append(aclass)
 
         return cls1
 
