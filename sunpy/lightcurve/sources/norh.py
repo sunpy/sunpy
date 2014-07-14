@@ -42,7 +42,7 @@ class NoRHLightCurve(LightCurve):
             axes = plt.gca()
 
         data_lab = self.meta['OBS-FREQ'][0:2] + ' ' + self.meta['OBS-FREQ'][2:5]
-        self.data.plot(ax=axes, logy=True, **kwargs)
+        self.data.plot(ax=axes, logy=True, title=title, **kwargs)
 
         axes.set_ylim(1e-4, 1)
         axes.set_xlabel(self.data.index[0].strftime("%Y-%m-%d %H:%M:%S"))
