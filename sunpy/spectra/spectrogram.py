@@ -203,9 +203,14 @@ class TimeFreq(object):
         self.time = time
         if not isinstance(time, u.Quantity):
             raise ValueError("time must be astropy quantity")
+        time = time.to(u.second)     #is it necessary?
         self.freq = freq
         if not isinstance(freq, u.Quantity):
             raise ValueError("Frequency must be astropy quantity")
+        try:
+            freq = freq.to(u.MHz, equivalencies = u.spectral())
+        except:
+            ValueError("'{0} is not a valid frequency quantity".format(freq.unit))
 
     def plot(self, time_fmt="%H:%M:%S", **kwargs):
         figure = plt.gcf()
@@ -251,10 +256,10 @@ class Spectrogram(Parent):
     ----------
     data : np.ndarray
         two-dimensional array of the image data of the spectrogram.
-    time_axis : np.ndarray
+    time_axis : np.ndarray of astropy.units.Quantity
         one-dimensional array containing the offset from the start
         for each column of data.
-    freq_axis : np.ndarray
+    freq_axis : np.ndarray of astropy.units.Quantity
         one-dimensional array containing information about the
         frequencies each row of the image corresponds to.
     start : datetime
@@ -360,7 +365,7 @@ class Spectrogram(Parent):
 
         self.time_axis = time_axis
         if not isinstance(time_axis, u.Quantity):
-            raise ValueError("Must be astropy Quantity")       #quantity
+            raise ValueError("Must be astropy Quantity")
         self.freq_axis = freq_axis
         if not isinstance(freq_axis, u.Quantity):
             raise ValueError("Must be astropy Quantity") 
@@ -377,7 +382,7 @@ class Spectrogram(Parent):
             return ""
         return self.format_time(
             self.start + datetime.timedelta(
-                seconds=float(self.time_axis[x])   #use .value
+                seconds=float(self.time_axis[x])
             )
         )
 
@@ -440,7 +445,7 @@ class Spectrogram(Parent):
             delt = yres
             if delt is not None:
                 delt = max(
-                    (self.freq_axis[0] - self.freq_axis[-1]).value / (yres - 1),      #point of interest
+                    (self.freq_axis[0] - self.freq_axis[-1]).value / (yres - 1),
                     _min_delt(self.freq_axis).value / 2.
                 )
                 delt = float(delt)
@@ -579,9 +584,9 @@ class Spectrogram(Parent):
 
         Parameters
         ----------
-        min\_ : float
+        min\_ : astropy.units.Quantity
             All frequencies in the result are greater or equal to this.
-        max\_ : float
+        max\_ : astropy.units.Quantity
             All frequencies in the result are smaller or equal to this.
         """
         if not(isinstance(vmin, u.Quantity) or isinstance(vmax, u.Quantity)):
@@ -679,9 +684,9 @@ class Spectrogram(Parent):
 
         Parameters
         ----------
-        min\_ : int or float
+        min\_ : astropy.units.Quantity
             New minimum value for intensities.
-        max\_ : int or float
+        max\_ : astropy.units.Quantity
             New maximum value for intensities
         """
         # pylint: disable=E1101
@@ -712,7 +717,7 @@ class Spectrogram(Parent):
         """
         if not(isinstance(vmin, u.Quantity) and isinstance(vmax, u.Quantity)):
             raise ValueError("should be astropy quantity")
-        if vmax == vmin: #quantity
+        if vmax == vmin:
             raise ValueError("Maximum and minimum must be different.")
         if self.data.max() == self.data.min():
             raise ValueError("Spectrogram needs to contain distinct values.")
@@ -729,12 +734,12 @@ class Spectrogram(Parent):
 
         Parameters
         ----------
-        frequency : float or int
+        frequency : astropy.units.Quantity
             Unknown frequency for which to lineary interpolate the intensities.
             freq_axis[0] >= frequency >= self_freq_axis[-1]
         """
         if not isinstance(frequency, u.Quantity):
-            raise ValueError("Must be an astropy Quantity")        #check what is freq
+            raise ValueError("Must be an astropy Quantity")
         lfreq, lvalue = None, None
         for freq, value in izip(self.freq_axis, self.data[:, :]):
             if freq < frequency:
@@ -753,7 +758,7 @@ class Spectrogram(Parent):
 
         Parameters
         ----------
-        delta_freq : float
+        delta_freq : astropy.units.Quantity
             Difference between consecutive values on the new frequency axis.
             Defaults to half of smallest delta in current frequency axis.
             Compare Nyquist-Shannon sampling theorem.
@@ -763,6 +768,8 @@ class Spectrogram(Parent):
             delta_freq = _min_delt(self.freq_axis) / 2.
         if not isinstance(delta_freq, u.Quantity):
             raise ValueError("Must be astropy quantity")
+        if not(delta_freq.unit == self.freq_axis.unit):
+            delta_freq.to(freq_axis.unit, u.spectral())
         nsize = ((self.freq_axis.max() - self.freq_axis.min()) / delta_freq).value + 1
         new = np.zeros((nsize, self.shape[1]), dtype=self.data.dtype)
 
@@ -852,7 +859,7 @@ class LinearTimeSpectrogram(Spectrogram):
 
     Attributes
     ----------
-    t_delt : float
+    t_delt : astropy.units.Quantity
         difference between the items on the time axis
     """
     # pylint: disable=E1002
@@ -872,7 +879,7 @@ class LinearTimeSpectrogram(Spectrogram):
         )
         self.t_delt = t_delt
         if not isinstance(t_delt, u.Quantity):
-            raise ValueError("should be astropy quantity")
+            raise ValueError("Should be astropy quantity")
 
     @staticmethod
     def make_array(shape, dtype=np.dtype('float32')):
@@ -909,7 +916,7 @@ class LinearTimeSpectrogram(Spectrogram):
 
         Parameters
         ----------
-        new_delt : float
+        new_delt : astropy.units.Quantity
             New delta between consecutive values.
         """
         if not isinstance(new_delt, u.Quantity):
