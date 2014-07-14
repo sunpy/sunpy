@@ -347,7 +347,7 @@ class JSOCClient(object):
 
         if kwargs.has_key('wavelength'):
 	    if series[0:3] != 'aia':
-	        raise TypeError
+	        raise TypeError("This series does not support wavelength attribute.")
 	    else:
 	       if isinstance(kwargs['wavelength'],list):
 	           tmp = str(kwargs['wavelength'])
