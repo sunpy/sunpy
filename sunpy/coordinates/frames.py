@@ -9,21 +9,18 @@ import numpy as np
 
 # Astropy imports
 from astropy import units as u
-from astropy.coordinates.representation import (SphericalRepresentation, CylindricalRepresentation,
-                                                CartesianRepresentation, BaseRepresentation)
+from astropy.coordinates.representation import (BaseRepresentation,
+                                                CartesianRepresentation)
 from astropy.coordinates.baseframe import (BaseCoordinateFrame, frame_transform_graph,
                                            RepresentationMapping)
 from astropy.coordinates.transformations import FunctionTransform
-from astropy.coordinates import FrameAttribute, TimeFrameAttribute
+from astropy.coordinates import FrameAttribute
 
 # SunPy imports
 from sunpy import sun as s # For Carrington rotation number
 from representation import SphericalWrap180Representation
 
-from datetime import datetime
-
-from frameattributes import TimeFrameAttributeSunPy
-
+from .frameattributes import TimeFrameAttributeSunPy
 
 RSUN_METERS = s.constants.constant('radius').si
 DSUN_METERS = s.constants.constant('mean distance').si
@@ -83,14 +80,6 @@ class HelioGraphicStonyhurst(BaseCoordinateFrame):
                     args = tuple(args)
 
         super(HelioGraphicStonyhurst, self).__init__(*args, **kwargs)
-
-        # If we have got this far and there is no dateobs, make it now!
-#        if self.dateobs is None:
-#            self._dateobs = time
-
-def _carrington_offset(dateobs):
-    # This method is to return the Carrington offset.
-    return s.heliographic_solar_center(dateobs)[0]
 
 class HelioGraphicCarrington(HelioGraphicStonyhurst):
     """
@@ -203,7 +192,6 @@ class HelioProjective(BaseCoordinateFrame):
                         RepresentationMapping('phi', 'psi', u.arcsec),
                         RepresentationMapping('distance', 'distance', u.km)]}
 
-    #d = FrameAttribute(default=(1*u.au).to(u.km))
     D0 = FrameAttribute(default=(1*u.au).to(u.km))
     dateobs = TimeFrameAttributeSunPy()
 
@@ -274,27 +262,29 @@ class HelioProjective(BaseCoordinateFrame):
     # According to Thompson, we use Trho internally and Drho as part of
     # the (Drho, psi) pair when defining a coordinate in this system.
 
+
+def _carrington_offset(dateobs):
+    if dateobs is None:
+        raise ValueError("To perform this transformation the coordinate Frame needs a dateobs Attribute")
+    # This method is to return the Carrington offset.
+    return s.heliographic_solar_center(dateobs)[0]
+
+
 # ------------------ Transformation Framework -------------------------
 # This portion is reserved for the implementation of transformations
 # as defined by Thompson.
 
 @frame_transform_graph.transform(FunctionTransform, HelioGraphicStonyhurst, HelioGraphicCarrington)
 def hgs_to_hgc(hgscoord, hgcframe):
-    if hgscoord.dateobs is None:
-        raise ValueError("To transform to HelioGraphicCarrington you must specify a dateobs")
-
     c_lon = hgscoord.spherical.lon + _carrington_offset(hgscoord.dateobs) * u.deg
     representation = SphericalWrap180Representation(c_lon, hgscoord.hlat, hgscoord.rad)
-    return HelioGraphicCarrington(representation)
+    return hgcframe.realize_frame(representation)
 
 @frame_transform_graph.transform(FunctionTransform, HelioGraphicCarrington, HelioGraphicStonyhurst)
 def hgc_to_hgs(hgccoord, hgsframe):
-    if hgccoord.dateobs is None:
-        raise ValueError("To transform to HelioGraphicStonyhurst you must specify a dateobs")
-
     s_lon = hgccoord.spherical.lon - _carrington_offset(hgccoord.dateobs) * u.deg
     representation = SphericalWrap180Representation(s_lon, hgccoord.hlat, hgccoord.rad)
-    return HelioGraphicStonyhurst(representation)
+    return hgsframe.realize_frame(representation)
 
 @frame_transform_graph.transform(FunctionTransform, HelioCentric, HelioProjective)
 def helioc_to_heliop(helioccoord, heliopframe):
@@ -310,7 +300,7 @@ def helioc_to_heliop(helioccoord, heliopframe):
     hpcy = np.rad2deg(np.arcsin(y / distance))
 
     representation = SphericalWrap180Representation(hpcx, hpcy, distance.to(u.km))
-    return HelioProjective(representation)
+    return heliopframe.realize_frame(representation)
 
 @frame_transform_graph.transform(FunctionTransform, HelioProjective, HelioCentric)
 def heliop_to_helioc(heliopcoord, heliocframe):
@@ -327,7 +317,7 @@ def heliop_to_helioc(heliopcoord, heliocframe):
     rz = (heliopcoord.D0.to(u.m)) - (heliopcoord.distance.to(u.m)) * cosy * cosx
 
     representation = CartesianRepresentation(rx.to(u.km), ry.to(u.km), rz.to(u.km))
-    return HelioCentric(representation)
+    return heliocframe.realize_frame(representation)
 
 @frame_transform_graph.transform(FunctionTransform, HelioCentric, HelioGraphicStonyhurst)
 def hcc_to_hgs(helioccoord, heliogframe):
@@ -348,10 +338,10 @@ def hcc_to_hgs(helioccoord, heliogframe):
     representation = SphericalWrap180Representation(np.rad2deg(hgln),
                                              np.rad2deg(hglt),
                                              hecr.to(u.km))
-    return HelioGraphicStonyhurst(representation)
+    return heliogframe.realize_frame(representation)
 
 @frame_transform_graph.transform(FunctionTransform, HelioGraphicStonyhurst, HelioCentric)
-def hgs_to_hcc(heliogcoord, heliopframe):
+def hgs_to_hcc(heliogcoord, heliocframe):
     hglon = heliogcoord.hlon
     hglat = heliogcoord.hlat
     r = heliogcoord.rad.to(u.m)
@@ -377,4 +367,4 @@ def hgs_to_hcc(heliogcoord, heliopframe):
     zz = r * (siny * sinb + cosy * cosx * cosb)
 
     representation = CartesianRepresentation(x.to(u.km), y.to(u.km), zz.to(u.km))
-    return HelioCentric(representation)
+    return heliocframe.realize_frame(representation)
