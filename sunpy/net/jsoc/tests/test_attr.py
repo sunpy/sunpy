@@ -4,15 +4,13 @@ import sunpy.net.jsoc.attrs as attrs
 from sunpy.net.attr import Attr, AttrOr, AttrAnd
 
 
-@pytest.mark.paramtrize(('attr1', 'attr2'),
+@pytest.mark.parametrize(("attr1, attr2"),
 [  (attrs.Series('foo'), attrs.Series('boo')),
    (attrs.Protocol('a1'), attrs.Protocol('a2')),
    (attrs.Notify('email@somemail.com'), attrs.Notify('someemail@somemail.com')),
    (attrs.Compression('rice'), attrs.Compression('rice'))])
-def test_and():
-    a1 = attrs.Series('aia.lev1')
-    a2 = attrs.Series('hmi.M_45s')
-    pytest.raises(TypeError, lambda: a1 & a2)
+def test_and(attr1,attr2):
+   pytest.raises(TypeError, lambda: attr1 & attr2)
 
 
 def test_basicquery():
