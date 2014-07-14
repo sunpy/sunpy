@@ -122,7 +122,7 @@ class HelioGraphicCarrington(HelioGraphicStonyhurst):
         }
 
     #rad = FrameAttribute(default=((RSUN_METERS/1000)*u.km))
-    dateobs = TimeFrameAttribute()
+    dateobs = TimeFrameAttributeSunPy()
 
     def __init__(self, *args, **kwargs):
         super(HelioGraphicCarrington, self).__init__(*args, **kwargs)
