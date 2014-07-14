@@ -381,16 +381,15 @@ class JSOCClient(object):
         """
         Make a series of requests to avoid the 100GB limit
         """
-	start_time = kwargs.pop('start_time',None)
-	end_time = kwargs.pop('end_time',None)
-	series = kwargs.pop('series',None)
-	if any(x is None for x in (start_time, end_time, series)):
-	    return []
+        start_time = kwargs.pop('start_time',None)
+        end_time = kwargs.pop('end_time',None)
+        series = kwargs.pop('series',None)
+        if any(x is None for x in (start_time, end_time, series)):
+            return []
         start_time = self._process_time(start_time)
-	end_time = self._process_time(end_time)
-	tr = TimeRange(start_time, end_time)
-	returns = []
-
+        end_time = self._process_time(end_time)
+        tr = TimeRange(start_time, end_time)
+        returns = []
         response, json_response = self._send_jsoc_request(start_time, end_time, series, **kwargs)
 
         if json_response['status'] == 3 and json_response['error'] == 'Request exceeds max byte limit of 100000MB':
