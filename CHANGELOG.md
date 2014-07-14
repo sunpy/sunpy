@@ -1,3 +1,7 @@
+Latest
+------
+ * Added ability to download level3 data for lyra Light Curve along with corresponding tests.
+
 0.5.0
 -----
 
@@ -12,7 +16,6 @@
  * GOES Lightcurve now makes use of a new source of GOES data, provides metadata, and data back to 1981.
  * Removed sqlalchemy as a requirement for SunPy
  * Added support for NOAA solar cycle prediction in lightcurves
- * Added ability to download level3 data for lyra Light Curve along with corresponding tests.
  * Some basic tests for GenericLightCurve on types of expected input.
  * Fix algorithm in sunpy.sun.equation_of_center
  * Added Docstrings to LightCurve methods.
