@@ -155,7 +155,7 @@ def parse_time(time_string, time_format=''):
         DateTime corresponding to input date string
     
     Note:
-    If time_string is an instance of float, then it is assumed to be in unix time format.
+    If time_string is an instance of float, then it is assumed to be in utime format.
     Examples
     --------
     >>> sunpy.time.parse_time('2012/08/01')
