@@ -117,11 +117,11 @@ class JSOCClient(object):
                                                      response.json()['error'])))
                     responses.pop(i)
             #Extract the IDs from the JSON
-            requestIDs = [response.json()['requestid'] for response in responses]
-            return_reqid.extend(requestIDs)
+	    requestIDs = [response.json()['requestid'] for response in responses]
+	    return_reqid.extend(requestIDs)
 	    return_response.extend(responses)
-
-        if return_resp:
+	
+	if return_resp:
             return return_response
 
         return return_reqid
@@ -388,8 +388,8 @@ class JSOCClient(object):
 	    return []
         start_time = self._process_time(start_time)
 	end_time = self._process_time(end_time)
-        tr = TimeRange(start_time, end_time)
-        returns = []
+	tr = TimeRange(start_time, end_time)
+	returns = []
 
         response, json_response = self._send_jsoc_request(start_time, end_time, series, **kwargs)
 
