@@ -9,16 +9,23 @@ wavelength
 # Rots et al, available at http://hea-www.cfa.harvard.edu/~arots/TimeWCS/
 # This draft standard may change.
 
+# standard libraries
+import warnings
+
+# external libraries
 import numpy as np
 import matplotlib.pyplot as plt
 import astropy.nddata
+import astropy.units as u
+from astropy.wcs._wcs import InconsistentAxisTypesError
+
+# Sunpy modules
 from sunpy.map import GenericMap
 from sunpy.visualization.imageanimator import ImageAnimator
 from sunpy.lightcurve import LightCurve
-import astropy.units as u
-from astropy.wcs._wcs import InconsistentAxisTypesError
 from sunpy.wcs import wcs_util
-import warnings
+from sunpy.spectra.spectrum import Spectrum
+from sunpy.spectra.spectrogram import Spectrogram
 
 __all__ = ['Cube', 'CubeError']
 
@@ -213,6 +220,18 @@ class Cube(astropy.nddata.NDData):
         return gmap
 
     def slice_to_lightcurve(self, wavelength, y_coord):
+        '''
+        For a time-lambda-y cube, returns a lightcurve with curves at the
+        specified wavelength and given y-coordinate. If no y is given, all of
+        them will be used (meaning the lightcurve object could contain more
+        than one timecurve.)
+        Parameters
+        ----------
+        wavelength: int or float
+            The wavelength to take the y-coordinates from
+        y_coord: int, optional
+            The y-coordinate to take the lightcurve from.
+        '''
         if self.axes_wcs.wcs.ctype[-1] not in ['TIME', 'UTC']:
             raise CubeError(1, 'Cannot create a lightcurve with no time axis')
         if self.axes_wcs.wcs.ctype[-2] != 'WAVE':
@@ -220,6 +239,181 @@ class Cube(astropy.nddata.NDData):
         data = self._choose_wavelength_slice(wavelength)[:, y_coord]
         lc = LightCurve(data=data, meta=self.meta)
         return lc
+
+    def slice_to_spectrum(self, fst_coord, snd_coord):
+        '''
+        For a cube containing a spectral dimension, returns a sunpy spectrum.
+        The given coordinates represent which values to take. If they are None,
+        then the corresponding axis is summed.
+        Parameters
+        ----------
+        fst_coord: int or None
+            The first coordinate to pick. Keep in mind that depending on the
+            cube, this may be in the first or second axis. If None, the whole
+            axis will be taken and its values summed.
+        snd_coord: int or None
+            The second coordinate to pick. This will always correspond to the
+            third axis. If None, the whole axis will be taken and its values
+            summed.
+        '''
+        if 'WAVE' not in self.axes_wcs.wcs.ctype:
+            raise CubeError(2, 'Spectral axis needed to create a spectrum')
+        axis = 0 if self.axes_wcs.wcs.ctype[-1] == 'WAVE' else 1
+
+        if axis == 0:
+            data = self.data[:, fst_coord, snd_coord]
+        else:
+            data = self.data[fst_coord, :, snd_coord]
+
+        if snd_coord is None:
+            data = data.sum(axis=2)
+        if fst_coord is None:
+            sumaxis = 1 if axis == 0 else 0
+            data = data.sum(axis=sumaxis)
+
+        freq_axis = self.freq_axis()
+        return Spectrum(data=data, freq_axis=freq_axis)
+
+    def slice_to_spectrogram(self, y_coord, **kwargs):
+        # TODO: make this not take only an int.
+        '''
+        For a time-lambda-y cube, given a y-coordinate, returns a sunpy
+        spectrogram. Keyword arguments are passed on to Spectrogram's __init__.
+        Parameters
+        ----------
+        y_coord: int
+            The y-coordinate to pick when converting to a spectrogram.
+        '''
+        if self.axes_wcs.wcs.ctype[-1] not in ['TIME', 'UTC']:
+            raise CubeError(1, 'Cannot create a spectrogram with no time axis')
+        if self.axes_wcs.wcs.ctype[-2] != 'WAVE':
+            raise CubeError(2, 'A spectral axis is needed in a spectrogram')
+        data = self.data[:, :, y_coord]
+        time_axis = self.time_axis()
+        freq_axis = self.freq_axis()
+        start = time_axis[0]
+        end = time_axis[-1]
+        return Spectrogram(data=data, time_axis=time_axis, freq_axis=freq_axis,
+                           start=start, end=end, **kwargs)
+
+    def time_axis(self):
+        '''
+        Returns an aray containing the time values for the cube's temporal
+        dimension.
+        '''
+        if self.axes_wcs.wcs.ctype[-1] not in ['TIME', 'UTC']:
+            raise CubeError(1, 'No time axis present')
+        delta = self.axes_wcs.wcs.cdelt[-1]
+        crpix = self.axes_wcs.wcs.crpix[-1]
+        crval = self.axes_wcs.wcs.crval[-1]
+        start = crval - crpix * delta
+        stop = start + len(self.data) * delta
+        return range(start, stop, delta)
+
+    def freq_axis(self):
+        '''
+        Returns an aray containing the frequency values for the cube's spectral
+        dimension.
+        '''
+        if 'WAVE' not in self.axes_wcs.wcs.ctype:
+            raise CubeError(2, 'No energy (wavelength, frequency) axis found')
+        axis = 0 if self.axes_wcs.wcs.ctype[-1] == 'WAVE' else 1
+        delta = self.axes_wcs.wcs.cdelt[-1 - axis]
+        crpix = self.axes_wcs.wcs.crpix[-1 - axis]
+        crval = self.axes_wcs.wcs.crval[-1 - axis]
+        start = crval - crpix * delta
+        stop = start + len(self.data) * delta
+        return range(start, stop, delta)
+
+    def _reduce_dim(self, axis, keys):
+        '''
+        Given an axis and a slice object, returns a new cube with the slice
+        applied along teh given dimension. For example, in a time-x-y cube,
+        a reduction along the x axis (axis 1) with a slice value (1, 4, None)
+        would return a cube where the only x values were 1 to 3 of the original
+        cube.
+        Parameters
+        ----------
+        axis: int
+            The dimension to reduce
+        keys: slice object
+            The slicing to apply
+        '''
+        waxis = -1 - axis
+        start = keys.start if keys.start is not None else 0
+        stop = keys.stop if keys.stop is not None else self.data.shape[axis]
+        step = keys.step if keys.step is not None else 1
+        indices = range(start, stop, step)
+        newdata = self.data.take(indices, axis=axis)
+        newwcs = self.axes_wcs.deepcopy()
+        if keys.step is not None:
+            newwcs.wcs.cdelt[waxis] *= keys.step
+        if keys.start is not None:
+            start = keys.start
+            newwcs.wcs.crpix[waxis] = 0
+            newwcs.wcs.crval[waxis] = (self.axes_wcs.wcs.crval[waxis] +
+                                       self.axes_wcs.wcs.cdelt[waxis] * start)
+        return self.__class__(data=newdata, wcs=newwcs)
+
+    def __getitem__(self, item):
+        if isinstance(item, int):
+            if self.axes_wcs.wcs.ctype[-2] != 'WAVE':
+                return self.slice_to_map(item)
+            else:
+                # FIXME: should a lambda, x be collapsed into a spectrum?
+                return self.slice_to_spectrum(item, None)
+        elif isinstance(item, slice):
+            return self._reduce_dim(0, item)
+        else:  # Then it's a tuple...
+            c = self._reduce_dim(0, slice(None, None, None))
+            for i in range(len(item)):
+                if isinstance(item[i], slice):
+                    c = c._reduce_dim(i, item[i])
+
+            # c is now the reduced cube. Time to deal with ints.
+            if isinstance(item[0], int):
+                if isinstance(item[1], int):
+                    if len(item) == 3:
+                        if isinstance(item[2], int):  # c[1, 2, 3]
+                            return self.data[item]
+                        else:  # c[1, 2, 3:4]
+                            return c.data[item[0], item[1], :]
+                    else:  # c[1, 2]
+                        return c.data[item]
+                else:  # second one is a slice
+                    if len(item) == 3:
+                        if isinstance(item[2, int]):  # c[1, 2:3, 4]
+                            if self.axes_wcs.wcs.ctype[-2] == 'WAVE':
+                                return c.slice_to_spectrum(item[0], item[2])
+                            else:
+                                return c.data[item[0], :, item[2]]
+                    else:  # c[1, 2:3] or c[1, 2:3, 4:5]
+                        return c[item[0]]
+            else:  # first one is a slice
+                if isinstance(item[1], int):
+                    if len(item) == 3:
+                        if isinstance(item[2], int):  # c[1:2, 3, 4]
+                            if self.axes_wcs.wcs.ctype[-1] == 'WAVE':
+                                return c.slice_to_spectrum(item[1], item[2])
+                            elif self.axes_wcs.wcs.ctype[-2] == 'WAVE':
+                                return c.slice_to_lightcurve(item[1], item[2])
+                            else:
+                                return c.data[:, item[1], item[2]]
+                    else:  # c[1:2, 3, 4:5] or c[1:2, 3]
+                        if self.axes_wcs.wcs.ctype[-2] == 'WAVE':
+                            return c.slice_to_lightcurve(item[1])
+                        else:
+                            # FIXME: What if this is a time-x?
+                            return c.data[:, item[1], :]
+                else:  # first and second one are slices
+                    if len(item) == 3:
+                        if isinstance(item[2], int):  # c[1:2, 3:4, 5]
+                            if self.axes_wcs.wcs.ctype[-2] == 'WAVE':
+                                return c.slice_to_spectrogram(item[2])
+                            else:  # FIXME: again, time-x
+                                return c.data[:, :, item[2]]
+                    else:  # c[1:2, 3:4, 5:6] or c[1:2, 3:4]
+                        return c
 
 
 def _orient(array, wcs):
@@ -300,4 +494,3 @@ class CubeError(Exception):
     def __str__(self):
         return 'ERROR ' + repr(self.value) + ' (' \
                + self.errors.get(self.value, '') + '): ' + self.message
-        
