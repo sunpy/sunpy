@@ -292,10 +292,12 @@ for compatability with map, please use meta instead""", Warning)
                     response = urllib2.urlopen(uri)
                 except (urllib2.HTTPError, urllib2.URLError):
                     raise urllib2.URLError(err)
-                    with open(filepath, 'wb') as fp:
-                        shutil.copyfileobj(response, fp)
-                    else:
-                        warnings.warn("Using existing file rather than downloading, use overwrite=True to override.", RuntimeWarning)
+
+                with open(filepath, 'wb') as fp:
+                    shutil.copyfileobj(response, fp)
+
+            else:
+                warnings.warn("Using existing file rather than downloading, use overwrite=True to override.", RuntimeWarning)
 
             filepaths.append(filepath)
 
