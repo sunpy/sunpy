@@ -260,7 +260,7 @@ def day_of_year(time_string):
     time_diff = time - datetime(time.year, 1, 1, 0, 0, 0)
     return time_diff.days + time_diff.seconds / SECONDS_IN_DAY + 1
 
-def break_time(t=None, time_format=''):
+def break_time(t='now', time_format=''):
     """Given a time returns a string. Useful for naming files."""
     #TODO: should be able to handle a time range
     return parse_time(t, time_format).strftime("%Y%m%d_%H%M%S")
