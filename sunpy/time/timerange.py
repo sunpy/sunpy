@@ -116,7 +116,7 @@ class TimeRange:
         >>> time in time_range
         """
         t = parse_time(time)
-        return t >= self.t1 and t <= self.t2
+        return self.t1 <= t <= self.t2
 
     def center(self):
         """Gets the center of the TimeRange instance"""

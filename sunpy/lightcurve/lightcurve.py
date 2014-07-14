@@ -175,7 +175,7 @@ for compatability with map, please use meta instead""", Warning)
 
         cls1 = classes.pop(0)
         for aclass in classes:
-            cls1 = cls1 + aclass
+            cls1 += aclass
 
         return cls1
 
