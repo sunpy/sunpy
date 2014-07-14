@@ -13,6 +13,7 @@ import sqlite3
 from itertools import chain
 from sunpy.time import parse_time
 from astropy.io import fits
+import sunpy.lightcurve as lightcurve
 
 from datetime import timedelta
 import matplotlib.pyplot as plt
@@ -23,153 +24,25 @@ FALL_FACTOR = 0.5
 # (Jan 2010) until mid 2014.
 NORM = 0.001
 
-def lyra_event_list(tstart, tend,
-                    data_path=os.path.expanduser(
-                        os.path.join("~", "pro", "data", "LYRA", "fits"))):
+def lyra_event_list(start_time, end_time):
     """
-    Returns a list of LYRA flares based on input start and end time.
-
-    """
-
-def get_lyra_timeseries(tstart, tend, level=2, unit_preference=["std", "bst"],
-                        data_path=os.path.expanduser(
-                            os.path.join("~", "pro", "data", "LYRA", "fits"))):
-    """
-    Returns LYRA timeseries for a given time range.
-
-    This function returns a numpy record array containing the timeseries of
-    the four LYRA channels between the input start and end time.  This is
+    Returns a LYRA flare list based on an input start and end time.
 
     Parameters
     ----------
-    tstart : datetime object or timestring
-        Start time of time range.
-
-    tend : datetime object or timestring
-        End time of time range.
-
-    level : int
-        Level of LYRA data user wishes to use.  Options are 1, 2, or 3.
-        See reference [1] for explanations on the differences between each
-        level of data.
-
-    unit_preference : list of strings
-        Denotes whether user prefers data from nominal or back-up units.
-        'std' denotes nominal unit, 'bst' denotes back-up units.
-        ['std', 'bst'] means data from nominal unit will be searched for
-        first, but if such data can't be found, back-up unit data will be
-        used.
-        ['bst', 'std'] means data from back-up units will be searched for
-        first, but if such data can't be found, nominal unit data will be
-        used.
-        ['std'] means only data from nominal unit will be searched for.  If
-        nominal unit data cannot be found, a data gap will appear in
-        timeseries.
-        ['bst'] means only data from back-up unit will be searched for.  If
-        back-up unit data cannot be found, a data gap will appear in
-        timeseries.
-
-    data_path : string
-        directory path in which to save/search for required LYRA fits files.
-
-    Returns
-    -------
-    timeseries : numpy record array
-        Resulting timeseries for the time range in question.
-
-    References
-    ----------
-    [1]  http://proba2.oma.be/data/LYRA
-
-    Examples
-    --------
+    
 
     """
-    # Check inputs are of correct types etc.
-    parse_time(tstart)
-    if type(tstart) is not datetime.datetime:
-        raise TypeError("tstart must be a datetime object or valid time "
-                        "string.")
-    parse_time(tend)
-    if type(tend) is not datetime.datetime:
-        raise TypeError("tend must be a datetime object or valid time string.")
-    if tstart >= tend:
-        raise ValueError("Start time must be before end time.")
-    if type(level) is not int:
-        raise TypeError("{0} must be an int.".format(level))
-    elif level != 1 or level != 2 or level != 3:
-        raise ValueError("{0} must be equal to either 1, 2, or "
-                         "3.".format(level))
-    if type(unit_preference) != list:
-        raise TypeError("unit_preference must be a list of strings.")
-    if not all(unit=='std' or unit=='bst' for unit in unit_preference):
-        raise ValueError("All elements in unit_perference must be either "
-                         "'std' or 'bst'.")
-    if len(unit_preference) < 1 or len(unit_preference) > 2:
-        raise ValueError("unit_preference must have either 1 or 2 elements.")
-    if not os.path.isdir(data_path):
-        raise ValueError("{0} is not a valid directory.".format(data_path))
-    # Define values needed later
-    num_units = len(unit_preference)
-    remote_level_dir = ['eng', 'bsd', 'bsd']
-    
-    # Determine what files are needed for requested time range.
-    # Find dates of start and end times.
-    filedates = [datetime(tstart.year, tstart.month, tstart.day),
-                 datetime(tend.year, tend.month, tend.day)]
-    # Create list of LYRA fits file name tags for each required date
-    # and enter date of start time.
-    filetags = ["lyra_{0}{1}{2}-000000_lev{3}".format(
-        filedates[0].year, filedates[0].month, filedates[0].day, level)]
-    if filedates[0] != filedates[-1]:
-        # If start and end time are on different days create tags for
-        # days after start end time
-        dayrange = range(1, (filedates[1]-filedates[0]).days)
-        for i in dayrange:
-            filedate = filedates[0]+timedelta(i)
-            filetags.append("lyra_{0}{1}{2}-000000_lev{3}".format(
-                filedate.year, filedate.month, filedate.day, level))
+    # Create LYRALightCurve object from start and end times
+    lyralc = lightcurve.LYRALightCurve.create(start_time, end_time, level=3)
+    # Convert to lightcurve time to datetime objects
+    dtlc = lyralc.data.index.to_pydatetime()
+    # Create LYRA event list
+    lyra_events = find_lyra_events(dtlc, lyralc.data["CHANNEL4"])
+    # Return result
+    return lyra_events
 
-    # Search if files exist in data_path.  If not, download them.
-    filenames = []
-    for tag in filetags:
-        filenames.append(os.path.join(
-            data_path, tag, "_{0}.fits".format(unit_preference[0])))
-        if not os.path.isfile(filenames[-1]):
-            getfile = urllib.URLopener()
-            try:
-                getfile.retrieve(
-                    "http://http://proba2.oma.be/lyra/data/{0}/{1}/{2}/{3}/"
-                    "{4}_{5}.fits".format(
-                        remote_level_dir[level-1], tag[5:9], tag[9:11],
-                        tag[11:13], tag, unit_preference[0]), filenames[-1])
-            except IOError:
-                # If data file for first preference unit cannot be found
-                # Try downloading data file for second preference unit.
-                if num_units > 1:
-                    try:
-                        getfile.retrieve(
-                            "http://http://proba2.oma.be/lyra/data/{0}/{1}/"
-                            "{2}/{3}/{4}_{5}.fits".format(
-                                remote_level_dir[level-1], tag[5:9], tag[9:11],
-                                tag[11:13], tag, unit_preference[0]),
-                            filenames[-1])
-                    except IOError:
-                        del(filenames[-1])
-                        raise Warning("File for {0}/{1}/{2} could not be "
-                                      "found.".format(tag[5:9], tag[9:11],
-                                                      tag[11:13]))
-                else:
-                    del(filenames[-1])
-                    raise Warning("File for {0}/{1}/{2} could not be "
-                                      "found.".format(tag[5:9], tag[9:11],
-                                                      tag[11:13]))
-    # 
-            
-    
-    
-
-def find_lyra_events(flux, time):
+def find_lyra_events(time, flux):
     """
     Finds events in a times series satisfying LYRA event definitions.
 
@@ -188,7 +61,7 @@ def find_lyra_events(flux, time):
 
     Returns
     -------
-    event_list :
+    lyra_events :
 
     Notes
     -----
@@ -221,8 +94,8 @@ def find_lyra_events(flux, time):
     # object LYRA artifacts from timeseries
     clean_time, fluxlist, artifact_status = remove_lyra_artifacts(time, [flux],
         artifacts=["UV occ.", "Offpoint", "LAR", "Calibration", "SAA",
-                   "Vis occ.", "Operational Anomaly", "Glitch", "ASIC reload"],
-                   return_artifacts=True)
+                   "Vis occ.", "Operational Anomaly", "Glitch", "ASIC reload",
+                   "Moon in LYRA", "Recovery"], return_artifacts=True)
     clean_flux = fluxlist[0]
     artifacts_removed = artifact_status[1]
     # Perform subtraction so median irradiance of time series is at
@@ -246,6 +119,7 @@ def find_lyra_events(flux, time):
     for i, t, in enumerate(time_timedelta4):
         dt4[i] = t.total_seconds()
     # Find all possible flare start times.
+    end_series = len(clean_flux)-1
     i=0
     while i < len(pos_deriv)-4:
         # Start time criteria
@@ -259,7 +133,7 @@ def find_lyra_events(flux, time):
                 k = np.where(neg_deriv0 < pos_deriv[i])[0][-1]
                 kk = np.where(pos_deriv > neg_deriv0[k])[0][0]
             except IndexError:
-                kk = i                
+                kk = i
             start_index = pos_deriv[kk]
             # If artifact is at start of flare, set start time to
             # directly afterwards.
@@ -274,16 +148,17 @@ def find_lyra_events(flux, time):
             # Next, find index of flare end time.
             jj = np.where(neg_deriv > start_index)[0][0]
             j = neg_deriv[jj]
-            try:
-                l = np.where(
-                    clean_flux[j:] <= max(clean_flux[pos_deriv[i]:j]) - \
-                    (max(clean_flux[pos_deriv[i]:j]) - \
-                     clean_flux[pos_deriv[i]]) * FALL_FACTOR)[0][0]+j
-            except IndexError:
+            end_condition = False
+            while end_condition == False and j < end_series:
+                j = j+1
+                maxflux = max(clean_flux[start_index:j])
+                end_condition = clean_flux[j] <= \
+                  maxflux - (maxflux-clean_flux[start_index])*FALL_FACTOR
+            if j >= end_series:
                 i = i+1
             else:
                 try:
-                    m = np.where(pos_deriv0 > l)[0][0]
+                    m = np.where(pos_deriv0 > j)[0][0]
                 except IndexError:
                     i = i+1
                 else:
@@ -530,10 +405,9 @@ def remove_lyra_artifacts(time, fluxes=None, artifacts="All",
         else:
             return clean_time, clean_fluxes
 
-def extract_combined_lytaf(tstart, tend,
-                           lytaf_path=os.path.join(os.path.curdir, "data"),
-                           combine_files=["lyra", "manual", "ppt", "science"]):
-    
+def extract_combined_lytaf(tstart, tend, lytaf_path=os.path.expanduser(
+    os.path.join("~", "pro", "lyra_flare_detection", "data")),
+    combine_files=["lyra", "manual", "ppt", "science"]):
     """
     Extracts combined lytaf file for given time range.
 
@@ -674,16 +548,18 @@ def _check_datetime(time):
 
     """
     if (np.array([type(t) for t in time]) == datetime).all():
-        time = np.asanyarray(time)
+        new_time = np.asanyarray(time)
+    elif type(time) == pandas.tseries.index.DatetimeIndex:
+        new_time = time.to_pydatetime()        
     else:
         # If elements of time are not datetime objects, try converting.
         try:
-            time = np.array([datetime(t) for t in time])
+            new_time = np.array([datetime(t) for t in time])
         except TypeError:
             try:
                 # If cannot be converted simply, elements may be strings
                 # Try converting to datetime using sunpy.time.parse_time
-                time = np.array([parse_time(t) for t in time])
+                new_time = np.array([parse_time(t) for t in time])
             except:
                 # Otherwise raise error telling user to input an array
                 # of datetime objects.
@@ -692,7 +568,7 @@ def _check_datetime(time):
         else:
             raise TypeError("time must be an array or array-like of "
                             "datetime objects or valid time strings.")
-    return time
+    return new_time
 
 def _prep_columns(time, fluxes, filecolumns):
     """
@@ -744,22 +620,54 @@ def _prep_columns(time, fluxes, filecolumns):
 
 def testing_find_lyra_events(find_events=False):
     fitspath = "../data/LYRA/fits/"
-    #fitsname = "lyra_20140621-000000_lev3_std.fits"
-    #fitsname = "lyra_20140101-000000_lev3_std.fits"
-    #fitsname = "lyra_20140102-000000_lev3_std.fits"
-    #fitsname = "lyra_20140103-000000_lev3_std.fits"
-    #fitsname = "lyra_20140601-000000_lev3_std.fits"
-    #fitsname = "lyra_20140602-000000_lev3_std.fits"
-    #fitsname = "lyra_20140603-000000_lev3_std.fits"
-    #fitsname = "lyra_20140604-000000_lev3_std.fits"
-    #fitsname = "lyra_20140605-000000_lev3_std.fits"
-    #fitsname = "lyra_20140606-000000_lev3_std.fits"
-    #fitsname = "lyra_20140607-000000_lev3_std.fits"
+    #fitsname = "lyra_20100201-000000_lev3_std.fits"
+    #fitsname = "lyra_20100301-000000_lev3_std.fits"
+    #fitsname = "lyra_20100309-000000_lev3_std.fits"
+    #fitsname = "lyra_20100401-000000_lev3_std.fits"
+    #fitsname = "lyra_20100501-000000_lev3_std.fits"
     #fitsname = "lyra_20100601-000000_lev3_std.fits"
-    fitsname = "lyra_20100602-000000_lev3_std.fits"
-    fitsname = "lyra_20100603-000000_lev3_std.fits"
-    #fitsname = "lyra_20100604-000000_lev3_std.fits"
+    #fitsname = "lyra_20100701-000000_lev3_std.fits"
+    #fitsname = "lyra_20100801-000000_lev3_std.fits"
+    #fitsname = "lyra_20100901-000000_lev3_std.fits"
+    #fitsname = "lyra_20101001-000000_lev3_std.fits"
+    #fitsname = "lyra_20101101-000000_lev3_std.fits"
+    #fitsname = "lyra_20101201-000000_lev3_std.fits"
+    #fitsname = "lyra_20110101-000000_lev3_std.fits"
+    #fitsname = "lyra_20110201-000000_lev3_std.fits"
+    #fitsname = "lyra_20110301-000000_lev3_std.fits"
+    #fitsname = "lyra_20110401-000000_lev3_std.fits"
+    #fitsname = "lyra_20110501-000000_lev3_std.fits"
+    #fitsname = "lyra_20110601-000000_lev3_std.fits"
+    #fitsname = "lyra_20110701-000000_lev3_std.fits"
+    fitsname = "lyra_20110801-000000_lev3_std.fits"
+    #fitsname = "lyra_20110901-000000_lev3_std.fits"
     #fitsname = "lyra_20111001-000000_lev3_std.fits"
+    #fitsname = "lyra_20111101-000000_lev3_std.fits"
+    #fitsname = "lyra_20111201-000000_lev3_std.fits"
+    #fitsname = "lyra_20120101-000000_lev3_std.fits"
+    #fitsname = "lyra_20120201-000000_lev3_std.fits"
+    #fitsname = "lyra_20120301-000000_lev3_std.fits"
+    #fitsname = "lyra_20120401-000000_lev3_std.fits"
+    #fitsname = "lyra_20120501-000000_lev3_std.fits"
+    #fitsname = "lyra_20120601-000000_lev3_std.fits"
+    #fitsname = "lyra_20120701-000000_lev3_std.fits"
+    #fitsname = "lyra_20120801-000000_lev3_std.fits"
+    #fitsname = "lyra_20120901-000000_lev3_std.fits"
+    #fitsname = "lyra_20121001-000000_lev3_std.fits"
+    #fitsname = "lyra_20121101-000000_lev3_std.fits"
+    #fitsname = "lyra_20121201-000000_lev3_std.fits"
+    #fitsname = "lyra_20130101-000000_lev3_std.fits"
+    #fitsname = "lyra_20130201-000000_lev3_std.fits"
+    #fitsname = "lyra_20130301-000000_lev3_std.fits"
+    #fitsname = "lyra_20130401-000000_lev3_std.fits"
+    #fitsname = "lyra_20130501-000000_lev3_std.fits"
+    #fitsname = "lyra_20130601-000000_lev3_std.fits"
+    #fitsname = "lyra_20130701-000000_lev3_std.fits"
+    #fitsname = "lyra_20130801-000000_lev3_std.fits"
+    #fitsname = "lyra_20130901-000000_lev3_std.fits"
+    #fitsname = "lyra_20131001-000000_lev3_std.fits"
+    #fitsname = "lyra_20131101-000000_lev3_std.fits"
+    #fitsname = "lyra_20131201-000000_lev3_std.fits"
     fitsfile = fitspath + fitsname
     ly = fits.open(fitsfile)
     t = ly[1].data["TIME"]
@@ -771,19 +679,64 @@ def testing_find_lyra_events(find_events=False):
                                 timedelta(0,0,0,0,int(tt))
     time = copy.deepcopy(orig_time)
     flux = copy.deepcopy(orig_flux)
-    time, flux = remove_lyra_artifacts(time, [flux],
+    time, flux, artifacts = remove_lyra_artifacts(time, [flux],
         artifacts=["UV occ.", "Offpoint", "LAR", "Calibration", "SAA",
-                   "Vis occ.", "Operational Anomaly", "Glitch", "ASIC reload"])
+                   "Vis occ.", "Operational Anomaly", "Glitch", "ASIC reload"],
+                   return_artifacts=True)
     flux = flux[0]
     if find_events is False:
-        return orig_time, orig_flux, time, flux
+        return orig_time, orig_flux, time, flux, artifacts
     else:
-        ev = find_lyra_events(flux, time)
+        ev = find_lyra_events(time, flux)
         ind = []
+        start_ind = []
+        end_ind = []
         for i in range(len(ev)):
             ind.append(np.where(time==ev[i]["start_time"])[0][0])
             ind.append(np.where(time==ev[i]["end_time"])[0][0])
+            start_ind.append(np.where(time==ev[i]["start_time"])[0][0])
+            end_ind.append(np.where(time==ev[i]["end_time"])[0][0])
         plt.ion()
         plt.plot(time, flux, 'o', color='blue')
-        plt.plot(time[ind], flux[ind], 'o', color='red')
-        return orig_time, orig_flux, time, flux, ev, ind
+        plt.plot(time[start_ind], flux[start_ind], 'o', color='green')
+        plt.plot(time[end_ind], flux[end_ind], 'o', color='red')
+        return orig_time, orig_flux, time, flux, artifacts, ev, ind
+
+def test_cal():
+    lla = extract_combined_lytaf("2010-03-01", "2014-07-01",
+                                 combine_files=["lyra"])
+    ical = np.where(lla["event_type"] == u'Calibration')[0]
+    fitspath = "../data/LYRA/fits/"
+    i=0
+    st = lla["end_time"][ical[i]]
+    lytaf = extract_combined_lytaf(
+        "{0}-{1}-{2} 00:00".format(
+            st.year, st.strftime('%m'), st.strftime('%d')),
+            "{0}-{1}-{2} 23:59".format(
+            st.year, st.strftime('%m'), st.strftime('%d')))
+    fitsname = "lyra_{0}{1}{2}-000000_lev3_std.fits".format(
+        st.year, st.strftime('%m'), st.strftime('%d'))
+    fitsfile = fitspath + fitsname
+    urllib.urlretrieve(
+        "http://proba2.oma.be/lyra/data/bsd/{0}/{1}/{2}/{3}".format(
+            st.year, st.strftime('%m'), st.strftime('%d'), fitsname), fitsfile)
+    ly = fits.open(fitsfile)
+    flux = ly[1].data["CHANNEL4"]
+    t = ly[1].data["TIME"]
+    time = np.empty(len(t), dtype="object")
+    for j, tt in enumerate(t):
+        time[j] = datetime(int(fitsname[5:9]), int(fitsname[9:11]),
+                           int(fitsname[11:13]), 0, 0) + \
+                           timedelta(0,0,0,0,int(tt))
+    clean_time, fluxlist = remove_lyra_artifacts(time, [flux],
+        artifacts=["UV occ.", "Offpoint", "LAR", "Calibration", "SAA",
+                   "Vis occ.", "Operational Anomaly", "Glitch", "ASIC reload",
+                   "Moon in LYRA"])
+    clean_flux = fluxlist[0]
+    ly.close()
+    print lla["begin_time"][ical[i]], lla["end_time"][ical[i]]
+    plt.ion()
+    plt.plot(clean_time, clean_flux, 'o')
+    plt.title("{0}/{1}/{2}".format(clean_time[0].year, clean_time[0].month,
+                                   clean_time[0].day))
+    return lytaf
