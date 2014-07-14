@@ -22,9 +22,11 @@ from representation import SphericalWrap180Representation
 
 from datetime import datetime
 
+from .frameattributes import TimeFrameAttributeSunPy
 
-RSUN_METERS = s.constants.constant('radius').si.value
-DSUN_METERS = s.constants.constant('mean distance').si.value
+
+RSUN_METERS = s.constants.constant('radius').si
+DSUN_METERS = s.constants.constant('mean distance').si
 
 __all__ = ['HelioGraphicStonyhurst', 'HelioGraphicCarrington',
            'HelioCentric', 'HelioProjective']
@@ -60,37 +62,35 @@ class HelioGraphicStonyhurst(BaseCoordinateFrame):
                              RepresentationMapping('distance', 'rad', 'recommended')],
         }
 
-    #rad = FrameAttribute(default=((RSUN_METERS/1000)*u.km))
-    dateobs = TimeFrameAttribute()
+    dateobs = TimeFrameAttributeSunPy()
 
     def __init__(self, *args, **kwargs):
-        time = datetime.now()
         if args or kwargs: # Non-empty frame use case.
             if args and kwargs: # Mixed use case.
                 if args and not isinstance(args[0], BaseRepresentation):
                     if len(args) > 0 and len(args) <= 2 and 'rad' not in kwargs:
                     # If one of hlon/hlat are in args
-                        kwargs['rad'] = kwargs.get('rad', (RSUN_METERS/1000)*u.km)
+                        kwargs['rad'] = kwargs.get('rad', RSUN_METERS.to(u.km))
             elif not args: # kwargs-only use case
                 if 'representation' not in kwargs:
                     #if 'rad' not in kwargs: # This default is required by definition.
                     if 'hlon' in kwargs and 'hlat' in kwargs:
-                        kwargs['rad'] = kwargs.get('rad', (RSUN_METERS/1000)*u.km)
+                        kwargs['rad'] = kwargs.get('rad', RSUN_METERS.to(u.km))
             elif not kwargs: # args-only use case.
                 if len(args) == 2:
                     args = list(args)
-                    args.append((RSUN_METERS/1000)*u.km)
+                    args.append(RSUN_METERS.to(u.km))
                     args = tuple(args)
-        if 'dateobs' not in kwargs:
-        # Common block for all subcases.
-        # By adding it to kwargs forcefully, we are letting
-        # the superclass handle it.
-            kwargs['dateobs'] = time
+
         super(HelioGraphicStonyhurst, self).__init__(*args, **kwargs)
 
-def _carrington_offset():
+        # If we have got this far and there is no dateobs, make it now!
+#        if self.dateobs is None:
+#            self._dateobs = time
+
+def _carrington_offset(dateobs):
     # This method is to return the Carrington offset.
-    return s.heliographic_solar_center()[0]
+    return s.heliographic_solar_center(dateobs)[0]
 
 class HelioGraphicCarrington(HelioGraphicStonyhurst):
     """
@@ -160,6 +160,7 @@ class HelioCentric(BaseCoordinateFrame):
 
    # d = FrameAttribute(default=(1*u.au).to(u.km))
     D0 = FrameAttribute(default=(1*u.au).to(u.km))
+    dateobs = TimeFrameAttributeSunPy()
 
 class HelioProjective(BaseCoordinateFrame):
     """
@@ -204,6 +205,7 @@ class HelioProjective(BaseCoordinateFrame):
 
     #d = FrameAttribute(default=(1*u.au).to(u.km))
     D0 = FrameAttribute(default=(1*u.au).to(u.km))
+    dateobs = TimeFrameAttributeSunPy()
 
     @property
     def zeta(self):
@@ -277,15 +279,21 @@ class HelioProjective(BaseCoordinateFrame):
 # as defined by Thompson.
 
 @frame_transform_graph.transform(FunctionTransform, HelioGraphicStonyhurst, HelioGraphicCarrington)
-def hcs_to_hcg(hcscoord, hcgframe):
-    c_lon = hcscoord.spherical.lon + _carrington_offset() * u.deg
-    representation = SphericalWrap180Representation(c_lon, hcscoord.hlat, hcscoord.rad)
+def hgs_to_hgc(hgscoord, hgcframe):
+    if hgscoord.dateobs is None:
+        raise ValueError("To transform to HelioGraphicCarrington you must specify a dateobs")
+
+    c_lon = hgscoord.spherical.lon + _carrington_offset(hgscoord.dateobs) * u.deg
+    representation = SphericalWrap180Representation(c_lon, hgscoord.hlat, hgscoord.rad)
     return HelioGraphicCarrington(representation)
 
 @frame_transform_graph.transform(FunctionTransform, HelioGraphicCarrington, HelioGraphicStonyhurst)
-def hcg_to_hcs(hcgcoord, hcsframe):
-    s_lon = hcgcoord.spherical.lon - _carrington_offset() * u.deg
-    representation = SphericalWrap180Representation(s_lon, hcgcoord.hlat, hcgcoord.rad)
+def hgc_to_hgs(hgccoord, hgsframe):
+    if hgccoord.dateobs is None:
+        raise ValueError("To transform to HelioGraphicStonyhurst you must specify a dateobs")
+
+    s_lon = hgccoord.spherical.lon - _carrington_offset(hgccoord.dateobs) * u.deg
+    representation = SphericalWrap180Representation(s_lon, hgccoord.hlat, hgccoord.rad)
     return HelioGraphicStonyhurst(representation)
 
 @frame_transform_graph.transform(FunctionTransform, HelioCentric, HelioProjective)
@@ -327,7 +335,7 @@ def hcc_to_hgs(helioccoord, heliogframe):
     y = helioccoord.y.to(u.m)
     z = helioccoord.z.to(u.m)
 
-    l0_deg = _carrington_offset() * u.deg
+    l0_deg = _carrington_offset(helioccoord.dateobs) * u.deg
     b0_deg = s.heliographic_solar_center()[1] * u.deg
 
     cosb = np.cos(np.deg2rad(b0_deg))
@@ -348,7 +356,7 @@ def hgs_to_hcc(heliogcoord, heliopframe):
     hglat = heliogcoord.hlat
     r = heliogcoord.rad.to(u.m)
 
-    l0_deg = _carrington_offset() * u.deg
+    l0_deg = _carrington_offset(heliogcoord.dateobs) * u.deg
     b0_deg = s.heliographic_solar_center()[1] * u.deg
 
     lon = np.deg2rad(hglon)
