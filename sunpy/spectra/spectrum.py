@@ -28,12 +28,9 @@ class Spectrum(np.ndarray):
 
     def __init__(self, data, freq_axis):
         self.data = data
-        if not isinstance(data, u.Quantity):   #decide which unit
-            raise ValueError("should be an astropy quantity")
         self.freq_axis = freq_axis
-        if not (isinstance(freq_axis, u.Quantity) and freq_axis.unit in 
-        u.Hz.find_equivalent_units(equivalencies=u.spectral())):
-            raise ValueError("'{0}' must be astropy Quantity convertible to Hz".format(freq_axis))
+        if not isinstance(freq_axis, u.Quantity):
+            raise ValueError("Must be astropy Quantity") 
 
     def plot(self, axes=None, **matplot_args):
         """

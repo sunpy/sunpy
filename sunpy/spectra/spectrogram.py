@@ -110,8 +110,7 @@ class _LinearView(object):
         self.delt = delt
 
         midpoints = (self.arr.freq_axis[:-1] + self.arr.freq_axis[1:]) / 2
-        self.midpoints = np.concatenate([midpoints, arr.freq_axis[-1:]])
-
+        self.midpoints = np.concatenate([midpoints.value, arr.freq_axis[-1:].value]) * midpoints.unit 
         self.max_mp_delt = np.min(self.midpoints[1:] - self.midpoints[:-1])
 
         self.freq_axis = np.arange(
@@ -137,7 +136,7 @@ class _LinearView(object):
         # the first item that can possibly be that frequency.
         min_mid = max(0, (freq - self.midpoints[0].value) // self.max_mp_delt.value)
         for n, mid in enumerate(self.midpoints[min_mid:]):
-            if mid <= freq:
+            if mid.value <= freq:
                 return arr[min_mid + n]
         return arr[min_mid + n]
 
