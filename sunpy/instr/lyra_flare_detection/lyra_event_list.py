@@ -18,7 +18,7 @@ import sunpy.lightcurve as lightcurve
 from datetime import timedelta
 import matplotlib.pyplot as plt
 
-RISE_FACTOR = 1.005
+RISE_FACTOR = 1.01
 FALL_FACTOR = 0.5
 # Set mean daily minimum irradiance in Zr channel from first light
 # (Jan 2010) until mid 2014.
