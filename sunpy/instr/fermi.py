@@ -17,11 +17,49 @@ from astropy.io import fits
 def download_weekly_pointing_file(date):
     '''Downloads the FERMI/LAT weekly pointing file corresponding to the specified date. This file
     contains 1 minute cadence data on the spacecraft pointing, useful for calculating detector angles.'''
-    # use a temp directory to hold the file
-    tmp_dir = tempfile.mkdtemp() = os.path.join(tmp_dir, full_fname)
-    urllib.urlretrieve(pointing_file_url, destination)
+    #use a temp directory to hold the file
+    tmp_dir=tempfile.mkdtemp()
+    #tmp_dir=''
+    #use Fermi data server to access weekly LAT pointing file.
+    base_url = 'http://fermi.gsfc.nasa.gov/ssc/observations/timeline/ft2/files/'
+    fbasename='FERMI_POINTING_FINAL_'
+    
+    #find out which file to get based on date
+    #earliest file in the FERMI server is for mission week 23, beginning 2008 November 6.
+    weekly_file_start=parse_time('2008-11-06')
+    base_week=23
 
-    # return the location of the downloaded file
+    #find out which mission week corresponds to date
+    time_diff=date-weekly_file_start
+    weekdiff = time_diff.days/7
+    week = weekdiff + base_week
+
+    #find out the rest of the file name. Need the year and the day-in-year for start and end of file
+    start_date = weekly_file_start + datetime.timedelta(weekdiff*7)
+    start_year_str=str(start_date.year) + '-01-01'
+    day_in_year_start=(start_date - parse_time(start_year_str)).days + 1
+
+    start_str = str(start_date.year)+str(day_in_year_start)
+
+    #now end string
+    end_date = weekly_file_start + datetime.timedelta((weekdiff+1)*7)
+    end_year_str=str(end_date.year) + '-01-01'
+    day_in_year_end=(end_date - parse_time(end_year_str)).days + 1
+
+    end_str = str(end_date.year) + str(day_in_year_end)
+
+    #need version number. Usually 00 but how to be sure?
+    version='00'
+    
+    #construct the full url for the weekly pointing file
+    full_fname=fbasename + str(week) + '_' + start_str + '_' + end_str + '_' + version + '.fits'
+    pointing_file_url=urlparse.urljoin(base_url,full_fname)
+
+    #download the file
+    destination=os.path.join(tmp_dir,full_fname)
+    urllib.urlretrieve(pointing_file_url,destination)
+
+    #return the location of the downloaded file
     return destination
 
 
