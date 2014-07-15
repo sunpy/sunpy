@@ -6,6 +6,19 @@ from sunpy.util.datatype_factory_base import MultipleMatchError
 from sunpy.net.unifieddownloader.client import GenericClient
 __all__=['UnifiedDownloader']
 
+class UnifiedResponse(list): 
+
+    def __init__(self,lst):
+        tmplst=[]
+        for block in lst:
+	    block[0].client = block[1]
+	    tmplst.append(block[0])
+	super(UnifiedResponse,self).__init__(tmplst)
+    
+    def num_records(self):
+    	return len(self)
+
+
 qwalker = AttrWalker()
 
 @qwalker.add_creator(AttrAnd)
@@ -38,7 +51,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
 	output: List of tuples of form(queryresponse,instance of selected client).
         '''
 	query = and_(*query)	
-        return qwalker.create(query,self)
+        return UnifiedResponse(qwalker.create(query,self))
 
     def get(self,qr,**kwargs):
         '''
@@ -50,7 +63,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
 	'''
 	reslist =[]
     	for block in qr:
-		reslist.append(block[1].get(block[0],**kwargs))
+		reslist.append(block.client.get(block,**kwargs))
 	
 	return reslist
 
