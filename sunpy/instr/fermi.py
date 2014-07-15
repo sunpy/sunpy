@@ -194,7 +194,8 @@ def nai_detector_angles():
     return detectors
 
 def nai_detector_radecs(detectors, scx, scz):
-    '''calculates the RA/DEC for each NaI detector given spacecraft z and x RA/DEC positions.'''
+    '''calculates the RA/DEC for each NaI detector given spacecraft z and x RA/DEC positions.
+    NB: This routine is based on code found in GTBURST, originally written by Dr Giacamo Vianello for the Fermi Science Tools.'''
     
     scx_vector = (np.array([np.cos(np.deg2rad(scx[0]))*np.cos(np.deg2rad(scx[1])), 
                         np.sin(np.deg2rad(scx[0]))*np.cos(np.deg2rad(scx[1])),
