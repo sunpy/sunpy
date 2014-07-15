@@ -1,5 +1,7 @@
 from __future__ import absolute_import
 
+import tempfile
+
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -31,8 +33,9 @@ def test_aiaprep():
 def test_filesave():
     # Test that adjusted header values are still correct after saving the map
     # and reloading it.
-    prep_map.save('prepped_map_save_test.fits',clobber=True)
-    load_map = sunpy.map.Map('prepped_map_save_test.fits')
+    afilename = tempfile.NamedTemporaryFile(suffix='fits').name
+    prep_map.save(afilename,clobber=True)
+    load_map = sunpy.map.Map(afilename)
     # Check crpix values
     assert load_map.meta['crpix1'] == prep_map.shape[1]/2.0 + 0.5
     assert load_map.meta['crpix2'] == prep_map.shape[0]/2.0 + 0.5
