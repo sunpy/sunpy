@@ -417,7 +417,7 @@ def remove_lyra_artifacts(time, fluxes=None, artifacts="All",
 
 def extract_combined_lytaf(tstart, tend, lytaf_path=os.path.expanduser(
     os.path.join("~", "pro", "lyra_flare_detection", "data")),
-    combine_files=["lyra", "manual", "ppt", "science"]):
+    combine_files=["lyra", "manual", "ppt", "science"], csvfile=None):
     """
     Extracts combined lytaf file for given time range.
 
@@ -542,7 +542,25 @@ def extract_combined_lytaf(tstart, tend, lytaf_path=os.path.expanduser(
         cursor.close()
         connection.close()
     # Sort lytaf in ascending order of begin time
-    np.recarray.sort(lytaf, order="begin_time")    
+    np.recarray.sort(lytaf, order="begin_time")
+
+    # If csvfile kwarg is set, write out lytaf to csv file
+    if csvfile != None:
+        # Open and write data to csv file.
+        with open(csvfile, 'w') as openfile:
+            csvwriter = csv.writer(openfile, delimiter=';')
+            # Write header.
+            csvwriter.writerow(lytaf.dtype.names)
+            # Write data.
+            for row in lytaf:
+                new_row = []
+                new_row.append(row[0].strftime("%Y-%m-%dT%H:%M:%S"))
+                new_row.append(row[1].strftime("%Y-%m-%dT%H:%M:%S"))
+                new_row.append(row[2].strftime("%Y-%m-%dT%H:%M:%S"))
+                new_row.append(row[3].strftime("%Y-%m-%dT%H:%M:%S"))
+                new_row.append(row[4])
+                new_row.append(row[5])
+                csvwriter.writerow(new_row)
 
     #return event_rows, eventType_rows
     return lytaf
@@ -587,7 +605,7 @@ def _prep_columns(time, fluxes, filecolumns):
     Firstly, this function converts the elements of time, whose entries are
     assumed to be datetime objects, to time strings.  Secondly, it checks
     whether the number of elements in an input list of columns names,
-    filenames, is equal to the number of arrays in the list, fluxes.  If not,
+    filecolumns, is equal to the number of arrays in the list, fluxes.  If not,
     a Value Error is raised.  If however filecolumns equals None, a filenames
     list is generated equal to ["time", "fluxes0", "fluxes1",...,"fluxesN"]
     where N is the number of arrays in the list, fluxes
