@@ -5,20 +5,23 @@ import datetime,urlparse
 __all__ = ['Time', 'Instrument']
 class NoRHClient(GenericClient):
     
-    def _get_url_for_timerange(cls, timerange, **kwargs):
+    def _get_url_for_timerange(self, timerange, **kwargs):
         """
         Helper function:
         Input:
         timerange: Time-range over which data is to be downloaded
 	Output: List of urls
         """
+	if not timerange:
+	    return []
+	
         days = timerange.get_dates()
         urls = []
         for day in days:
-            urls.append(cls._get_url_for_date(day, **kwargs))
+            urls.append(self._get_url_for_date(day, **kwargs))
         return urls
 
-    def _get_url_for_date(cls, date, **kwargs):
+    def _get_url_for_date(self, date, **kwargs):
         """This method retrieves the url for NoRH correlation data for the given date."""
 
         # Hack to get around Python 2.x not backporting PEP 3102.
