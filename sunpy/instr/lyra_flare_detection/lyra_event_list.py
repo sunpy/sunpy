@@ -48,39 +48,60 @@ def find_lyra_events(time, flux):
     Finds events in a times series satisfying LYRA event definitions.
 
     This function finds events/flares in an input time series which satisfy
-    the LYRA event definitions and returns the start, peak and end
-    times.  For LYRA event definitions, see Notes section of this
+    the LYRA event definitions and returns the start, peak and end times
+    and fluxes.  For LYRA event definitions, see Notes section of this
     docstring.
 
     Parameters
     ----------
     flux : ndarray/array-like convertible to float64, e.g. np.array, list
-           Contains flux/irradiance measurements
+        Contains flux/irradiance measurements
     time : ndarray/array-like of of datetime objects, e.g. np.array, list
-           Contains measurement times corresponding to each element in
-           flux.  Must be same length as flux.
+        Contains measurement times corresponding to each element in
+        flux.  Must be same length as flux.
 
     Returns
     -------
-    lyra_events :
+    lyra_events : numpy recarray
+        Contains the start, peak and end times and flux values fo each event
+        found.  The fields of the recarray are: 'start_time', 'peak_time',
+        'end_time', 'start_flux', 'peak_flux', 'end_flux'.
 
     Notes
     -----
-    Start time:
-    1) There must be a continuous increase in 1-minute-averaged data
-    over 4 minutes.
-    2) The flux in the 4th minute must be at least 1.4 times the flux
-    in the first minute.
-    End time:
-    1) The end time is when the flux falls to half-way between the peak
-    and initial fluxes.
+    Start time definition:
+    1) There must be 4 consecutive minutes when the gradient of the
+    1-minute-averaged flux is positive.
+    2) The flux in the 4th minute must be at least 1% greater than that in
+    the first minute.
+    3) The start time is then the earliest consecutive positive gradient before
+    the time identified by crieteria 1) and 2).
+    N.B. The time series is additively scaled so that the median is
+    0.001 W/m^2.  Criteria 2) is applied to this scaled data, not the observed.
+    This helps reduce the bias of detections due to variability in the solar
+    background flux.
+
+    End time definition:
+    1) The flux must fall to half-way between the peak and initial fluxes.
+    2) The end time is  then the latest consecutive negative gradient after
+    the time identifie by criterion 1).
+
+    Artifacts:
+    The following artifacts, as defined in the LYRA time annotation file,
+    (see reference [1]) are removed from the time series:
+    "UV occ.", "Offpoint", "LAR", "Calibration", "SAA", "Vis occ.",
+    "Operational Anomaly", "Glitch", "ASIC reload", "Moon in LYRA", "Recovery".
+    In some cases this may cause a flare start or end times to be recorded
+    slightly differently to what the eye would intuitively identify in the
+    full data.  It may also cause some flares not be detected at all.
+    However, it also drastically cuts down on false detections.
 
     References
     ---------
-    http://www.swpc.noaa.gov/ftpdir/indices/events/README
+    [1] http://proba2.oma.be/data/TARDIS
 
     Examples
-    --------                
+    --------
     
     """
     # Ensure inputs are of correct type
@@ -93,7 +114,6 @@ def find_lyra_events(time, flux):
                                         ("start_flux", float),
                                         ("peak_flux", float),
                                         ("end_flux", float),
-                                        ("comments", object)])
     # object LYRA artifacts from timeseries
     clean_time, fluxlist, artifact_status = remove_lyra_artifacts(time, [flux],
         artifacts=["UV occ.", "Offpoint", "LAR", "Calibration", "SAA",
@@ -219,11 +239,11 @@ def remove_lyra_artifacts(time, fluxes=None, artifacts="All",
     """
     Removes periods of LYRA artifacts from a time series.
 
-    This functions removes periods correspoding to certain artifacts recorded
+    This functions removes periods corresponding to certain artifacts recorded
     in the LYRA annotation file from an array of times given by the time input.
     If a list of arrays of other properties is supplied through the fluxes
     kwarg, then the relevant values from these arrays are also removed.  This
-    is done by assuming that each element in each array supplied coresponds to
+    is done by assuming that each element in each array supplied corresponds to
     the time in the same index in time array.  The artifacts to be removed are
     given via the artifacts kwarg.  The default is "all", meaning that all
     artifacts will be removed.  However, a subset of artifacts can be removed
@@ -242,6 +262,7 @@ def remove_lyra_artifacts(time, fluxes=None, artifacts="All",
         Contain the artifact types to be removed.  For list of artifact types
         see reference [1].  For example, if user wants to remove only large
         angle rotations, listed at reference [1] as LAR, let artifacts=["LAR"].
+        Default='All', i.e. all artifacts will be removed.
 
     return_artifacts : (optional) bool
         Set to True to return a numpy recarray containing the start time, end
@@ -249,19 +270,19 @@ def remove_lyra_artifacts(time, fluxes=None, artifacts="All",
         Default=False
 
     fitsfile : (optional) string
-        file name (including file path) of output fits file which is generated
-        if this kwarg is not None.
-        Default=None, i.e. not csv file is output.
+        file name (including file path and suffix, .fits) of output fits file
+        which is generated if this kwarg is not None.
+        Default=None, i.e. no fits file is output.
 
     csvfile : (optional) string
-        file name (including file path) of output csv file which is generated
-        if this kwarg is not None.
-        Default=None, i.e. not csv file is output.
+        file name (including file path and suffix, .csv) of output csv file
+        which is generated if this kwarg is not None.
+        Default=None, i.e. no csv file is output.
 
     filecolumns : (optional) list of strings
         Gives names of columns of any output files produced.  Although
         initially set to None above, the default is in fact
-        ["time", "fluxes0", "fluxes1",..."fluxesN"]
+        ["time", "flux0", "flux1",..."fluxN"]
         where N is the number of flux arrays in the fluxes input
         (assuming 0-indexed counting).
         
@@ -273,9 +294,20 @@ def remove_lyra_artifacts(time, fluxes=None, artifacts="All",
     clean_fluxes : (optional) list ndarrays/array-likes convertible to float64
         list of fluxes with artifact periods removed.
 
-    artifacts_removed : (optional) numpy recarray
-        Three columns, "start_time", "end_time", "type", containing start
-        time, end time and type of artifacts removed.
+    artifact_status : (optional) list
+        List of 4 variables containing information on what artifacts were
+        found, removed, etc. from the time series.
+        artifact_status[0] = artifacts found : numpy recarray
+            The full LYRA annotation file for the time series time range
+            output by extract_combined_lytaf().
+        artifact_status[1] = artifacts removed : numpy recarray
+            Artifacts which were found and removed from from time series.
+        artifact_status[2] = artifacts found but not removed : numpy recarray
+            Artifacts which were found but not removed as they were not
+            included when user defined artifacts kwarg.
+        artifact_status[3] = artifacts not found : list of strings
+            Artifacts listed to be removed by user when defining artifacts
+            kwarg which were not found in time series time range.
 
     References
     ----------
@@ -415,53 +447,44 @@ def remove_lyra_artifacts(time, fluxes=None, artifacts="All",
         else:
             return clean_time, clean_fluxes
 
-def extract_combined_lytaf(tstart, tend, lytaf_path=os.path.expanduser(
+def extract_combined_lytaf(start_time, end_time, lytaf_path=os.path.expanduser(
     os.path.join("~", "pro", "lyra_flare_detection", "data")),
     combine_files=["lyra", "manual", "ppt", "science"], csvfile=None):
     """
     Extracts combined lytaf file for given time range.
 
-    Given a time range defined by start_time and end_time, this
-    function extracts the segments of each LYRA annotation file and
-    combines them.
+    Given a time range defined by start_time and end_time, this function
+    extracts the segments of each LYRA annotation file and combines them.
 
     Parameters
     ----------
     start_time : datetime object or string
-                 Start time of period for which annotation file is
-                 required.
+        Start time of period for which annotation file is required.
     end_time : datetime object or string
-               End time of period for which annotation file is
-               required.
+        End time of period for which annotation file is required.
     combine_files : (optional) list of strings
-                    States which LYRA annotation files are to be
-                    combined.
-                    Default is all four, i.e. lyra, manual, ppt,
-                    science.
-                    See Notes section for an explanation of each.
+        States which LYRA annotation files are to be combined.
+        Default is all four, i.e. lyra, manual, ppt, science.
+        See Notes section for an explanation of each.
 
     Returns
     -------
     lytaf : numpy record array containing the various parameters stored
-            in the LYTAF files.
+        in the LYTAF files.
 
     Notes
     -----
-    There are four LYRA annotation files which mark different types of
-    events or artifacts in the data.  They are named
-    annotation_suffix.db where suffix is a variable equalling either
-    lyra, manual, ppt, or science.
+    There are four LYRA annotation files which mark different types of events
+    or artifacts in the data.  They are named annotation_suffix.db where
+    suffix is a variable equalling either lyra, manual, ppt, or science.
     annotation_lyra.db : contains entries regarding possible effects to
-                        the data due to normal operation of LYRA
-                        instrument.
+        the data due to normal operation of LYRA instrument.
     annotation_manual.db : contains entries regarding possible effects
-                           to the data due to unusual or manually
-                           logged events.
+        to the data due to unusual or manually logged events.
     annotation_ppt.db : contains entries regarding possible effects to
-                        the data due to pointing or positioning of
-                        PROBA2.
+        the data due to pointing or positioning of PROBA2.
     annotation_science.db : contains events in the data scientifically
-                            interesting, e.g. flares.
+        interesting, e.g. GOES flares.
 
     References
     ----------
@@ -473,15 +496,15 @@ def extract_combined_lytaf(tstart, tend, lytaf_path=os.path.expanduser(
     """
     # Check inputs
     # Check start_time is a date string or datetime object
-    if type(tstart) is str:
-        tstart = parse_time(tstart)
-    if type(tstart) is not datetime:
-        raise TypeError("tstart must be a date string or datetime object")
+    if type(start_time) is str:
+        start_time = parse_time(start_time)
+    if type(start_time) is not datetime:
+        raise TypeError("start_time must be a date string or datetime object")
     # Check start_time is a date string or datetime object
-    if type(tend) is str:
-        tend = parse_time(tend)
-    if type(tend) is not datetime:
-        raise TypeError("tend must be a date string or datetime object")
+    if type(end_time) is str:
+        end_time = parse_time(end_time)
+    if type(end_time) is not datetime:
+        raise TypeError("end_time must be a date string or datetime object")
     # Check combine_files contains correct inputs
     if not all(suffix in ["lyra", "manual", "ppt", "science"]
                for suffix in combine_files):
@@ -492,8 +515,8 @@ def extract_combined_lytaf(tstart, tend, lytaf_path=os.path.expanduser(
     combine_files.sort()
     # Convert input times to UNIX timestamp format since this is the
     # time format in the annotation files
-    tstart_uts = (tstart - datetime(1970, 1, 1)).total_seconds()
-    tend_uts = (tend - datetime(1970, 1, 1)).total_seconds()
+    start_time_uts = (start_time - datetime(1970, 1, 1)).total_seconds()
+    end_time_uts = (end_time - datetime(1970, 1, 1)).total_seconds()
 
     # Define numpy record array which will hold the information from
     # the annotation file.
@@ -514,7 +537,8 @@ def extract_combined_lytaf(tstart, tend, lytaf_path=os.path.expanduser(
         # given time range
         cursor.execute("select insertion_time, begin_time, reference_time, "
                        "end_time, eventType_id from event where end_time >= "
-                       "{0} and begin_time <= {1}".format(tstart_uts, tend_uts))
+                       "{0} and begin_time <= "
+                       "{1}".format(start_time_uts, end_time_uts))
         event_rows = cursor.fetchall()
         # Select and extract the event types from eventType table
         cursor.row_factory = sqlite3.Row
@@ -638,7 +662,7 @@ def _prep_columns(time, fluxes, filecolumns):
     # number of arrays in fluxes (assuming 0-indexed counting).
     else:
         if fluxes != None:
-            filecolumns = ["fluxes{0}".format(fluxnum)
+            filecolumns = ["flux{0}".format(fluxnum)
                            for fluxnum in range(len(fluxes))]
             filecolumns.insert(0, "time")
         else:
