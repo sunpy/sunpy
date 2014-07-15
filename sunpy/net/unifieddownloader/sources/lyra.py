@@ -6,20 +6,23 @@ __all__ = ['Time','Instrument','Level']
 
 class LYRAClient(GenericClient):
 
-        def _get_url_for_timerange(cls, timerange, **kwargs):
+        def _get_url_for_timerange(self, timerange, **kwargs):
             """
             Helper function:
             Input:
             timerange: Time-range over which data is to be downloaded
 	    Output: List of urls
             """               
+            if not timerange:
+	        return []
+
 	    days = timerange.get_dates()
             urls = []
 	    for day in days:
-                urls.append(cls._get_url_for_date(day, **kwargs))
+                urls.append(self._get_url_for_date(day, **kwargs))
             return urls
 
-        def _get_url_for_date(cls, date, **kwargs):
+        def _get_url_for_date(self, date, **kwargs):
             """Returns a URL to the LYRA data for the specified date"""
             if not isinstance(date, datetime.date):
                 raise ValueError("This method requires a date")
