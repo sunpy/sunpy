@@ -5,8 +5,8 @@ from sunpy.instr import rhessi
 __all__ = ['Time','Instrument']
 
 class RHESSIClient(GenericClient):
-        @classmethod
-        def _get_url_for_timerange(cls,timerange,**kwargs):
+        
+	def _get_url_for_timerange(self,timerange,**kwargs):
             """Returns a URL to the RHESSI data for the specified date range.
 
             Parameters
@@ -15,6 +15,9 @@ class RHESSIClient(GenericClient):
             Date range should be specified using a TimeRange, or start
             and end dates at datetime instances or date strings.
             """
+	    if not timerange:
+	        return []
+
             url = rhessi.get_obssum_filename(timerange)
             return [url]
 

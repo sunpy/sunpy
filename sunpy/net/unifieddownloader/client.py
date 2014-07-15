@@ -44,9 +44,9 @@ class queryresponse(list):
 
     def time_range(self):
     	"""Returns the time-span query extends over"""
-	return (datetime.strftime(
+	return (datetime.date.strftime(
 	        min(qrblock.time['start'] for qrblock in self),'%Y/%m/%d'),
-		datetime.strftime(
+		datetime.date.strftime(
 		max(qrblock.time['end'] for qrblock in self),'%Y/%m/%d'))
     
     def show(self):
@@ -91,7 +91,10 @@ class GenericClient(object):
 
     def _get_url_for_date(cls,date,**kwargs):
        raise NotImplementedError
-
+    
+    @classmethod
+    def _can_handle_query(cls,*query):
+        raise NotImplementedError
     
     def query(self,*args,**kwargs):
          """
