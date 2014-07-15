@@ -118,7 +118,7 @@ def find_lyra_events(time, flux):
                                         ("end_time", object),
                                         ("start_flux", float),
                                         ("peak_flux", float),
-                                        ("end_flux", float),
+                                        ("end_flux", float)])
     # object LYRA artifacts from timeseries
     clean_time, fluxlist, artifact_status = remove_lyra_artifacts(time, [flux],
         artifacts=["UV occ.", "Offpoint", "LAR", "Calibration", "SAA",
