@@ -49,7 +49,8 @@ def find_lyra_events(time, flux):
 
     This function finds events/flares in an input time series which satisfy
     the LYRA event definitions and returns the start, peak and end times
-    and fluxes.  For LYRA event definitions, see Notes section of this
+    and fluxes.  The LYRA event definitions have been devised for the
+    Zirconium channel (channel 4).  For more info, see Notes section of this
     docstring.
 
     Parameters
@@ -69,6 +70,9 @@ def find_lyra_events(time, flux):
 
     Notes
     -----
+    The LYRA event definitions have been devised for the Zirconium channel
+    (channel 4).
+
     Start time definition:
     1) There must be 4 consecutive minutes when the gradient of the
     1-minute-averaged flux is positive.
@@ -77,9 +81,10 @@ def find_lyra_events(time, flux):
     3) The start time is then the earliest consecutive positive gradient before
     the time identified by crieteria 1) and 2).
     N.B. The time series is additively scaled so that the median is
-    0.001 W/m^2.  Criteria 2) is applied to this scaled data, not the observed.
-    This helps reduce the bias of detections due to variability in the solar
-    background flux.
+    0.001 W/m^2 (The mean flux for LYRA channel 4 from the start of the
+    mission to mid 2014).  Criteria 2) is applied to this scaled data, not the
+    observed.  This helps reduce the bias of detections due to variability in
+    the solar background flux.
 
     End time definition:
     1) The flux must fall to half-way between the peak and initial fluxes.
