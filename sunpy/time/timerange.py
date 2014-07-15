@@ -51,30 +51,35 @@ class TimeRange:
 
         # Normalize different input types
         if b is None:
-            x = a[0]
+            x = parse_time(a[0])
             y = a[1]
         else:
-            x = a
+            x = parse_time(a)
             y = b
-
-        # Start time
-        self.t1 = parse_time(x)
-
-        # End date
+        print(x)
+        print(y)
         if isinstance(y, str):
-            self.t2 = parse_time(y)
+            y = parse_time(y)
 
-        # Datetime
         if isinstance(y, datetime):
-            self.t2 = y
+            if x < y:
+                self.t1 = x
+                self.t2 = y
+            else:
+                self.t1 = y
+                self.t2 = x
+
+        if isinstance(y, (float, int)):
+            y = timedelta(0, y)
 
         # Timedelta
         if isinstance(y, timedelta):
-            self.t2 = self.t1 + y
-
-        # Seconds offset
-        if isinstance(y, (float, int)):
-            self.t2 = self.t1 + timedelta(0, y)
+            if y.total_seconds() > 0:
+                self.t1 = x
+                self.t2 = x + y
+            else:
+                self.t1 = x + y
+                self.t2 = x
 
         self.dt = self.t2 - self.t1
 
@@ -116,7 +121,7 @@ class TimeRange:
         previous_time = self.start()
         next_time = None
         for _ in range(n):
-            next_time = previous_time + self.dt/n
+            next_time = previous_time + self.dt / n
             next_range = TimeRange(previous_time, next_time)
             subsections.append(next_range)
             previous_time = next_time
@@ -154,8 +159,8 @@ class TimeRange:
         n = 1
         times = [TimeRange(self.t1, self.t1 + window)]
         while times[-1].t2 < self.t2:
-            times.append(TimeRange(self.t1 + cadence*n,
-                                   self.t1 + cadence*n + window))
+            times.append(TimeRange(self.t1 + cadence * n,
+                                   self.t1 + cadence * n + window))
             n += 1
         return times
 
