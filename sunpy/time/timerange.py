@@ -56,8 +56,7 @@ class TimeRange:
         else:
             x = parse_time(a)
             y = b
-        print(x)
-        print(y)
+
         if isinstance(y, str):
             y = parse_time(y)
 
