@@ -6,19 +6,7 @@ import pytest
 
 from sunpy.io import ana
 
-# Skip ana tests if we are on Windows or we can't import the c extension.
-import platform
-if platform.system() == 'Windows':
-    skip_ana = True
-else:
-    skip_ana = False
-
-try:
-    import sunpy.io._pyana
-except ImportError:
-    skip_ana = True
-else:
-    skip_ana = skip_ana or False
+from sunpy.tests.helpers import skip_ana 
 
 # Create a test image, store it, reread it and compare
 img_size = (456, 345)
@@ -31,42 +19,42 @@ img_i16 = img_i16.astype(np.int16)
 img_f32 = img_src*1.0/img_src.max()
 img_f32 = img_f32.astype(np.float32)
 
-@pytest.mark.skipif("skip_ana is True")
+@skip_ana
 def test_i8c():
     # Test int 8 compressed functions
     ana.write('/tmp/pyana-testi8c', img_i8, 'testcase', 0)
     img_i8c_rec = ana.read('/tmp/pyana-testi8c')
     assert np.sum(img_i8c_rec[0][0] - img_i8) == 0
 
-@pytest.mark.skipif("skip_ana is True")
+@skip_ana
 def test_i8u():
     # Test int 8 uncompressed functions
     ana.write('/tmp/pyana-testi8u', img_i8, 'testcase', 0)
     img_i8u_rec = ana.read('/tmp/pyana-testi8u')
     assert np.sum(img_i8u_rec[0][0] - img_i8) == 0
 
-@pytest.mark.skipif("skip_ana is True")
+@skip_ana
 def test_i16c():
     # Test int 16 compressed functions
     ana.write('/tmp/pyana-testi16c', img_i16, 'testcase', 0)
     img_i16c_rec = ana.read('/tmp/pyana-testi16c')
     assert np.sum(img_i16c_rec[0][0] - img_i16) == 0
 
-@pytest.mark.skipif("skip_ana is True")
+@skip_ana
 def test_i16u():
     # Test int 16 uncompressed functions
     ana.write('/tmp/pyana-testi16u', img_i16, 'testcase', 0)
     img_i16u_rec = ana.read('/tmp/pyana-testi16u')
     assert np.sum(img_i16u_rec[0][0] - img_i16) == 0
 
-@pytest.mark.skipif("skip_ana is True")
+@skip_ana
 def test_f32u():
     # Test float 32 uncompressed functions
     ana.write('/tmp/pyana-testf32u', img_f32, 'testcase', 0)
     img_f32u_rec = ana.read('/tmp/pyana-testf32u')
     assert np.sum(img_f32u_rec[0][0]- img_f32) == 0
 
-@pytest.mark.skipif("skip_ana is True")
+@skip_ana
 def test_f32c():
     # Test if float 32 compressed functions
     #TODO: Bug with same code. Needs to be tracked down.
