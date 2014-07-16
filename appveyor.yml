@@ -29,17 +29,16 @@ install:
     - "conda create -q --yes -n test -c astropy-ci-extras python=%PYTHON_VERSION%"
     - "activate test"
     # Install all of SunPy's dependancies that are conda packages
-    - "conda install -q --yes pip numpy scipy astropy matplotlib pandas requests beautiful-soup sqlalchemy pytest mingw libpython"
+    - "conda install -q --yes pip mingw libpython"
+    - "conda install -q --yes numpy scipy astropy matplotlib pandas requests beautiful-soup sqlalchemy scikit-image pytest"
     # Install non-conda packages
     - "pip install suds"
+    - "pip install pytest-xdist"
 
 # Not a .NET project, we build SunPy in the install step instead
 build: false
 
 test_script:
   - "python setup.py develop"
-
-  # Skip joblib tests that require multiprocessing as they are prone to random
-  # slow down
-  - "python -c \"import sunpy sunpy.selftest()\""
+  - "py.test -n 8"
 
