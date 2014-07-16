@@ -98,6 +98,7 @@ class TimeRange:
         else:
             raise ValueError("t1 must be earlier than t2")
 
+    @property
     def t2(self):
         """The end time of the time range"""
         return self._t2
