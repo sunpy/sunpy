@@ -32,10 +32,10 @@ __all__ = ["print_params"
            ,"heliographic_solar_center"
            ,"solar_north"
            ,"apparent_declination"
-           ,"apparent_rightascenscion"
+           ,"apparent_rightascension"
            ,"apparent_obliquity_of_ecliptic"
            ,"true_declination"
-           ,"true_rightascenscion"
+           ,"true_rightascension"
            ,"true_obliquity_of_ecliptic"
            ,"apparent_latitude"
            ,"true_latitude"
@@ -85,7 +85,7 @@ def position(t='now'):
     """Returns the position of the Sun (right ascension and declination)
     on the celestial sphere using the equatorial coordinate system in arcsec.
     """
-    ra = true_rightascenscion(t)
+    ra = true_rightascension(t)
     dec = true_declination(t)
     result = [ra,dec]
     return result
@@ -178,7 +178,7 @@ def true_obliquity_of_ecliptic(t='now'):
     result = 23.452294 - 0.0130125 * T - 0.00000164 * T ** 2 + 0.000000503 * T ** 3
     return result
 
-def true_rightascenscion(t='now'):
+def true_rightascension(t='now'):
     true_long = true_longitude(t)
     ob = true_obliquity_of_ecliptic(t)
     result = np.cos(np.radians(ob)) * np.sin(np.radians(true_long))
@@ -193,8 +193,8 @@ def apparent_obliquity_of_ecliptic(t='now'):
     result = true_obliquity_of_ecliptic(t) + 0.00256 * np.cos(np.radians(omega))
     return result
 
-def apparent_rightascenscion(t='now'):
-    """Returns the apparent right ascenscion of the Sun."""
+def apparent_rightascension(t='now'):
+    """Returns the apparent right ascension of the Sun."""
     y = np.cos(np.radians(apparent_obliquity_of_ecliptic(t))) * np.sin(np.radians(apparent_longitude(t)))
     x = np.cos(np.radians(apparent_longitude(t)))
     rpol = np.rad2deg(np.arctan2(y, x))
@@ -262,9 +262,9 @@ def print_params(t='now'):
                                                  + str(true_latitude(t)) + ')')
     print('Apparent (long, lat) in degrees = (' + str(apparent_longitude(t)) + ','
                                                  + str(apparent_latitude(t)) + ')')
-    print('True (RA, Dec) = (' + str(true_rightascenscion(t)) + ','
+    print('True (RA, Dec) = (' + str(true_rightascension(t)) + ','
           + str(true_declination(t)))
-    print('Apparent (RA, Dec) = (' + str(apparent_rightascenscion(t)) + ','
+    print('Apparent (RA, Dec) = (' + str(apparent_rightascension(t)) + ','
           + str(apparent_declination(t)))
     print('Heliographic long. and lat of disk center in deg = (' + str(heliographic_solar_center(t)) + ')')
     print('Position angle of north pole in deg = ' + str(solar_north(t)))
