@@ -20,7 +20,9 @@ from astropy.coordinates import FrameAttribute
 from sunpy import sun as s # For Carrington rotation number
 from representation import SphericalWrap180Representation
 
-from .frameattributes import TimeFrameAttributeSunPy
+from datetime import datetime
+
+from frameattributes import TimeFrameAttributeSunPy
 
 RSUN_METERS = s.constants.constant('radius').si
 DSUN_METERS = s.constants.constant('mean distance').si

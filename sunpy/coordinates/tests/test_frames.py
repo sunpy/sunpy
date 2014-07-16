@@ -14,6 +14,7 @@ from astropy.coordinates.representation import (SphericalRepresentation,
                                                 CylindricalRepresentation,
                                                 CartesianRepresentation,
                                                 UnitSphericalRepresentation)
+from astropy.coordinates import SkyCoord
 
 # Pytest
 import pytest
@@ -39,7 +40,8 @@ def test_frame_attributes():
     assert myproj.newattr == 'anattr'
     assert set(myproj.get_frame_attr_names()) == set(['D0',
                                                       'd',
-                                                      'newattr'])
+                                                      'newattr',
+                                                      'dateobs'])
 
     myproj = MyProj(D0=1*u.km, d=2*u.km, newattr='changed')
     assert myproj.D0 == 1*u.km
@@ -134,11 +136,11 @@ def test_nodata_frames():
 
     hcc = HelioCentric()
     assert hcc.D0 == HelioCentric.get_frame_attr_names()['D0']
-    assert len(hcc.get_frame_attr_names()) == 1
+    assert len(hcc.get_frame_attr_names()) == 2
 
     hp = HelioProjective()
     assert hp.D0 == HelioProjective.get_frame_attr_names()['D0']
-    assert len(hp.get_frame_attr_names()) == 1
+    assert len(hp.get_frame_attr_names()) == 2
 
 def test_frame_repr():
     # Tests the repr() of a frame.
@@ -147,7 +149,7 @@ def test_frame_repr():
     assert repr(hgc).startswith('<HelioGraphicCarrington Frame: dateobs=')
 
     hcc = HelioCentric()
-    assert repr(hcc).startswith('<HelioCentric Frame: D0=')
+    assert repr(hcc).startswith('<HelioCentric Frame: dateobs=')
 
     hp = HelioProjective()
     assert '<HelioProjective Frame:' in repr(hp)
@@ -188,8 +190,8 @@ def test_realize_frames():
 def test_transform_architecture():
     # This does not test the accuracy of transforms.
 
-    hgs = HelioGraphicStonyhurst(hlon=[1,2]*u.deg,
-                                 hlat=[3,4]*u.deg)
+    hgs = SkyCoord(HelioGraphicStonyhurst(hlon=[1,2]*u.deg, hlat=[3,4]*u.deg,
+                                 dateobs="2011/01/01T00:00:45"))
     hcc = hgs.transform_to(HelioCentric)
     hgs_2 = hcc.transform_to(HelioGraphicStonyhurst)
     hgc = hgs_2.transform_to(HelioGraphicCarrington)
