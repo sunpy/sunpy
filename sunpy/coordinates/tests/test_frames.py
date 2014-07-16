@@ -208,19 +208,32 @@ def test_transform_architecture():
     npt.assert_allclose(hgs.hlat, hgs_3.hlat)
     npt.assert_allclose(hgs.rad, hgs_3.rad)
 
-def test_heliographic_stonyhurst():
+@pytest.mark.parametrize("hgs1, hgs2", [
+    (HelioGraphicStonyhurst(1*u.deg, 1*u.deg, dateobs=datetime.now()),
+     HelioGraphicStonyhurst(1*u.deg, 1*u.deg, 1*u.km, dateobs=datetime.now())),
+    (HelioGraphicStonyhurst(SphericalWrap180Representation(1*u.deg, 1*u.deg, 1*u.km), dateobs=datetime.now()),
+     HelioGraphicStonyhurst(SphericalWrap180Representation(1*u.deg, 1*u.deg, 1*u.km))),
+    (HelioGraphicStonyhurst(1*u.deg, hlat=1*u.deg, rad=1*u.km, dateobs=datetime.now()),
+     HelioGraphicStonyhurst(1*u.deg, hlat=1*u.deg, rad=1*u.km)),
+    (HelioGraphicStonyhurst(hlon=1*u.deg, hlat=1*u.deg, rad=1*u.km, dateobs=datetime.now()),
+     HelioGraphicStonyhurst(hlon=1*u.deg, hlat=1*u.deg, rad=1*u.km)),
+    (HelioGraphicStonyhurst(dateobs=datetime.now()), None)])
+def test_heliographic_stonyhurst(hgs1, hgs2):
     # A test function for testing the several ways
     # to create HGS frames.
 
-    HelioGraphicStonyhurst(1*u.deg, 1*u.deg, dateobs=datetime.now())
-    HelioGraphicStonyhurst(1*u.deg, 1*u.deg, 1*u.km, dateobs=datetime.now())
-    HelioGraphicStonyhurst(SphericalWrap180Representation(1*u.deg, 1*u.deg, 1*u.km), dateobs=datetime.now())
-    HelioGraphicStonyhurst(SphericalWrap180Representation(1*u.deg, 1*u.deg, 1*u.km))
-    HelioGraphicStonyhurst(dateobs=datetime.now())
-    HelioGraphicStonyhurst(1*u.deg, hlat=1*u.deg, rad=1*u.km, dateobs=datetime.now())
-    HelioGraphicStonyhurst(1*u.deg, hlat=1*u.deg, rad=1*u.km)
-    HelioGraphicStonyhurst(hlon=1*u.deg, hlat=1*u.deg, rad=1*u.km, dateobs=datetime.now())
-    HelioGraphicStonyhurst(hlon=1*u.deg, hlat=1*u.deg, rad=1*u.km)
+    if hgs2 is not None:
+        npt.assert_allclose(hgs1.hlon, hgs2.hlon)
+        npt.assert_allclose(hgs1.hlat, hgs2.hlat)
+        assert hgs1.dateobs != hgs2.dateobs
+    else:
+        # Deals with empty frame case.
+        assert len(hgs1.get_frame_attr_names()) == 1 # Should only be dateobs
+        assert hgs1.dateobs is not None
+
+    
+    
+
 
     
 
