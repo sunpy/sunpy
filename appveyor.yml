@@ -14,7 +14,6 @@ environment:
         NUMPY_VERSION: "1.7.1"
 
 platform:
-    - x86
     - x64
 
 install:
