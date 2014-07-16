@@ -2,12 +2,7 @@
 # Windows
 
 environment:
-  global:
-    # SDK v7.0 MSVC Express 2008's SetEnv.cmd script will fail if the
-    # /E:ON and /V:ON options are not enabled in the batch script intepreter
-    # See: http://stackoverflow.com/a/13751649/163740
-    CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\run_with_env.cmd"
-
+  
   matrix:
     - PYTHON: "C:\\conda"
       MINICONDA_VERSION: "3.5.5"
@@ -33,12 +28,12 @@ install:
     - "conda install -q --yes numpy scipy astropy matplotlib pandas requests beautiful-soup sqlalchemy scikit-image pytest"
     # Install non-conda packages
     - "pip install suds"
-    - "pip install pytest-xdist"
 
 # Not a .NET project, we build SunPy in the install step instead
 build: false
 
 test_script:
   - "python setup.py develop"
-  - "py.test -n 8"
+  # Build env has 1 Virtual core, so double thread for a small boost.
+  - "py.test"
 
