@@ -24,7 +24,7 @@ install:
     - "conda create -q --yes -n test -c astropy-ci-extras python=%PYTHON_VERSION%"
     - "activate test"
     # Install all of SunPy's dependancies that are conda packages
-    - "conda install -q --yes numpy scipy astropy matplotlib pandas requests beautiful-soup sqlalchemy pytest"
+    - "conda install -q --yes pip numpy scipy astropy matplotlib pandas requests beautiful-soup sqlalchemy pytest"
     # Install non-conda packages
     - "pip install suds"
 
@@ -32,7 +32,7 @@ install:
 build: false
 
 test_script:
-  - "pip install -e .[all]"
+  - "python setup.py develop"
 
   # Skip joblib tests that require multiprocessing as they are prone to random
   # slow down
