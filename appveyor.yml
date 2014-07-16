@@ -27,16 +27,12 @@ install:
     - "conda install -q --yes numpy scipy astropy matplotlib pandas requests beautiful-soup sqlalchemy pytest"
     # Install non-conda packages
     - "pip install suds"
-    - "pip install sunpy"
 
 # Not a .NET project, we build SunPy in the install step instead
 build: false
 
 test_script:
-  # Change to a non-source folder to make sure we run the tests on the
-  # installed library.
-  - "SET PROJECT_DIR=%CD%"
-  - "cd C:\\"
+  - "pip install -e .[all]"
 
   # Skip joblib tests that require multiprocessing as they are prone to random
   # slow down
