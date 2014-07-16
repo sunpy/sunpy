@@ -67,14 +67,15 @@ def test_highlevel_api():
 
     sc = SkyCoord(SphericalRepresentation(lon=10*u.deg, lat=10*u.deg,
                                           distance=1*u.kpc),
-                  frame="heliographicstonyhurst")
+                  frame="heliographicstonyhurst",dateobs="2011/01/01T00:00:45")
 
     # Heliocentric coordinates are in kilometres.
     sc = SkyCoord(hlon=10*u.deg, hlat=10*u.deg, frame="heliographicstonyhurst")
     sc = SkyCoord(x=10*u.km, y=10*u.km, z=10*u.km, frame="heliocentric")
 
     # One can initialize using low-level objects.
-    sc = SkyCoord(HelioGraphicStonyhurst(hlon=8*u.deg, hlat=10*u.deg))
+    sc = SkyCoord(HelioGraphicStonyhurst(hlon=8*u.deg, hlat=10*u.deg, dateobs=
+    "2011/01/01T00:00:45"))
 
     # An error is induced as a high-level object needs position data.
     # Frames can be initialized without this data, SkyCoord cannot.
@@ -106,6 +107,7 @@ def test_highlevel_api():
 
     # SkyCoord also contains transformations to other frames as part of
     # its attributes.
-    sc = SkyCoord(hlon=8*u.deg, hlat=10*u.deg, frame="heliographicstonyhurst")
+    sc = SkyCoord(hlon=8*u.deg, hlat=10*u.deg, frame="heliographicstonyhurst",
+                  dateobs="2011/01/01T00:00:45")
     sc_helioprojective = sc.helioprojective
     assert repr(sc_helioprojective).startswith('<SkyCoord (HelioProjective):')
