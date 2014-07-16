@@ -509,7 +509,7 @@ def test_rescale_error():
     )
 
     with pytest.raises(ValueError) as excinfo:
-        spec.rescale(0 * u.W/u.m**2, 1* u.W/u.m**2)
+        spec.rescale(0 * u.ct, 1* u.ct)
     assert (
         excinfo.value.message ==
         "Spectrogram needs to contain distinct values."
@@ -526,7 +526,7 @@ def test_rescale_error2():
     )
 
     with pytest.raises(ValueError) as excinfo:
-        spec.rescale(1* u.W/u.m**2, 1* u.W/u.m**2)
+        spec.rescale(1 * u.ct, 1 * u.ct)
     assert excinfo.value.message == "Maximum and minimum must be different."
 
 

@@ -192,9 +192,9 @@ class TimeFreq(object):
     ----------
     start : datetime
         Start time of the plot.
-    time : array of astropy.units.quantity.Quantity
+    time : `~astropy.units.Quantity` instance
         Time of the data points as offset from start in seconds.
-    freq : array of astropy.units.quantity.Quantity
+    freq : `~astropy.units.Quantity` instance
         Frequency of the data points in MHz.
     """
     def __init__(self, start, time, freq):
@@ -209,7 +209,7 @@ class TimeFreq(object):
         try:
             freq = freq.to(u.MHz, equivalencies = u.spectral())
         except:
-            ValueError("'{0} is not a valid frequency quantity".format(freq.unit))
+            ValueError("'{0} is not a valid frequency unit".format(freq.unit))
 
     def plot(self, time_fmt="%H:%M:%S", **kwargs):
         figure = plt.gcf()
@@ -255,10 +255,10 @@ class Spectrogram(Parent):
     ----------
     data : np.ndarray
         two-dimensional array of the image data of the spectrogram.
-    time_axis : np.ndarray of astropy.units.Quantity
+    time_axis : `~astropy.units.Quantity` instance
         one-dimensional array containing the offset from the start
         for each column of data.
-    freq_axis : np.ndarray of astropy.units.Quantity
+    freq_axis : `~astropy.units.Quantity` instance
         one-dimensional array containing information about the
         frequencies each row of the image corresponds to.
     start : datetime
@@ -417,9 +417,9 @@ class Spectrogram(Parent):
         colorbar : bool
             Flag that determines whether or not to draw a colorbar. If existing
             figure is passed, it is attempted to overdraw old colorbar.
-        vmin : float
+        vmin : `~astropy.units.Quantity` instance
             Clip intensities lower than vmin before drawing.
-        vmax : float
+        vmax : `~astropy.units.Quantity` instance
             Clip intensities higher than vmax before drawing.
         linear :  bool
             If set to True, "stretch" image to make frequency axis linear.
@@ -483,7 +483,7 @@ class Spectrogram(Parent):
             FuncFormatter(self.time_formatter)
         )
 
-        if linear:     #interest
+        if linear:
             # Start with a number that is divisible by 5.
             init = (self.freq_axis[0].value % 5) / data.delt
             nticks = 15.
@@ -583,12 +583,12 @@ class Spectrogram(Parent):
 
         Parameters
         ----------
-        min\_ : astropy.units.Quantity
+        min\_ : `~astropy.units.Quantity` instance
             All frequencies in the result are greater or equal to this.
-        max\_ : astropy.units.Quantity
+        max\_ : `~astropy.units.Quantity` instance
             All frequencies in the result are smaller or equal to this.
         """
-        if not(isinstance(vmin, u.Quantity) or isinstance(vmax, u.Quantity)):
+        if not(isinstance(vmin, u.Quantity) and isinstance(vmax, u.Quantity)):
             raise ValueError("must be astropy quantities")
         left = 0
         if vmax is not None:
@@ -683,13 +683,13 @@ class Spectrogram(Parent):
 
         Parameters
         ----------
-        min\_ : astropy.units.Quantity
+        min\_ : `~astropy.units.Quantity` instance
             New minimum value for intensities.
-        max\_ : astropy.units.Quantity
+        max\_ : `~astropy.units.Quantity` instance
             New maximum value for intensities
         """
         # pylint: disable=E1101
-        if vmin is None:
+        if vmin is None:     #If none this will always give error
             vmin = int(self.data.min())
 
         if vmax is None:
@@ -699,7 +699,7 @@ class Spectrogram(Parent):
 
         return self._with_data(self.data.clip(vmin, vmax, out))
 
-    def rescale(self, vmin=0 * u.W/u.m**2, vmax=1* u.W/u.m**2, 
+    def rescale(self, vmin=0 * u.ct, vmax=1 * u.ct, 
                 dtype=np.dtype('float32')):
         u"""
         Rescale intensities to [min\_, max\_].
@@ -733,7 +733,7 @@ class Spectrogram(Parent):
 
         Parameters
         ----------
-        frequency : astropy.units.Quantity
+        frequency : `~astropy.units.Quantity` instance
             Unknown frequency for which to lineary interpolate the intensities.
             freq_axis[0] >= frequency >= self_freq_axis[-1]
         """
@@ -757,7 +757,7 @@ class Spectrogram(Parent):
 
         Parameters
         ----------
-        delta_freq : astropy.units.Quantity
+        delta_freq : `~astropy.units.Quantity` instance
             Difference between consecutive values on the new frequency axis.
             Defaults to half of smallest delta in current frequency axis.
             Compare Nyquist-Shannon sampling theorem.
@@ -858,7 +858,7 @@ class LinearTimeSpectrogram(Spectrogram):
 
     Attributes
     ----------
-    t_delt : astropy.units.Quantity
+    t_delt : `~astropy.units.Quantity` instance
         difference between the items on the time axis
     """
     # pylint: disable=E1002
@@ -915,7 +915,7 @@ class LinearTimeSpectrogram(Spectrogram):
 
         Parameters
         ----------
-        new_delt : astropy.units.Quantity
+        new_delt : `~astropy.units.Quantity` instance
             New delta between consecutive values.
         """
         if not isinstance(new_delt, u.Quantity):
