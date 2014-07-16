@@ -45,6 +45,9 @@ class TimeRange:
     def __init__(self, a, b=None):
         """Creates a new TimeRange instance"""
         # If a is a TimeRange object, copy attributes to new instance.
+        self._t1 = None
+        self._t2 = None
+
         if isinstance(a, TimeRange):
             self.__dict__ = a.__dict__.copy()
             return
@@ -62,11 +65,11 @@ class TimeRange:
 
         if isinstance(y, datetime):
             if x < y:
-                self.t1 = x
-                self.t2 = y
+                self._t1 = x
+                self._t2 = y
             else:
-                self.t1 = y
-                self.t2 = x
+                self._t1 = y
+                self._t2 = x
 
         if isinstance(y, (float, int)):
             y = timedelta(0, y)
@@ -74,17 +77,41 @@ class TimeRange:
         # Timedelta
         if isinstance(y, timedelta):
             if y.total_seconds() > 0:
-                self.t1 = x
-                self.t2 = x + y
+                self._t1 = x
+                self._t2 = x + y
             else:
-                self.t1 = x + y
-                self.t2 = x
+                self._t1 = x + y
+                self._t2 = x
 
-        self.dt = self.t2 - self.t1
+        self.dt = self._t2 - self._t1
+
+    @property
+    def t1(self):
+        """The start time of the time range"""
+        return self._t1
+
+    @t1.setter
+    def t1(self, value):
+        t = parse_time(value)
+        if t < self._t2:
+            self._t1 = t
+        else:
+            raise ValueError("t1 must be earlier than t2")
+
+    def t2(self):
+        """The end time of the time range"""
+        return self._t2
+
+    @t2.setter
+    def t2(self, value):
+        t = parse_time(value)
+        if t > self._t1:
+            self._t2 = t
+        else:
+            raise ValueError("t2 must be later than t1")
 
     def __repr__(self):
-        """
-        Returns a human-readable representation of the TimeRange instance."""
+        """Returns a human-readable representation of the TimeRange instance."""
         TIME_FORMAT = "%Y/%m/%d %H:%M:%S"
 
         t1 = self.t1.strftime(TIME_FORMAT)
