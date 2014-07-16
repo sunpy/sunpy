@@ -6,9 +6,10 @@ Created on Fri Jun 21 15:05:09 2013
 """
 import os
 import glob
-import numpy as np
 import sys
+import tempfile
 
+import numpy as np
 import pytest
 
 import sunpy
@@ -91,10 +92,10 @@ class TestMap:
     def test_save(self):
         #Test save out
         eitmap = sunpy.map.Map(a_fname)
-        eitmap.save("eit_save.fits", filetype='fits', clobber=True)
-        backin = sunpy.map.Map("eit_save.fits")
+        afilename = tempfile.NamedTemporaryFile(suffix='fits').name
+        eitmap.save(afilename, filetype='fits', clobber=True)
+        backin = sunpy.map.Map(afilename)
         assert isinstance(backin, sunpy.map.sources.EITMap)
-        os.remove("eit_save.fits")
 
 #==============================================================================
 # Sources Tests
