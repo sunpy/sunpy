@@ -8,7 +8,7 @@ from sunpy.time import parse_time
 __all__ = ['TimeRange']
 
 
-class TimeRange:
+class TimeRange(object):
     """
     An object to handle time ranges.
 
@@ -90,20 +90,39 @@ class TimeRange:
                 self._t1 = x + y
                 self._t2 = x
 
-        self.dt = self._t2 - self._t1
-
     @property
     def start(self):
-        """Gets the start time"""
+        """Get the start time
+
+        Returns
+        -------
+        start : datetime
+        """
         return self._t1
 
     @property
     def end(self):
-        """Gets the end time"""
+        """Get the end time
+
+        Returns
+        -------
+        end : datetime
+        """
         return self._t2
 
+    @property
+    def dt(self):
+        """Get the length of the time range
+
+        Returns
+        -------
+        dt : timedelta
+        """
+        return self._t2 - self._t1
+
     def __repr__(self):
-        """Returns a human-readable representation of the TimeRange instance."""
+        """Returns a human-readable representation of the TimeRange
+        instance."""
         TIME_FORMAT = "%Y/%m/%d %H:%M:%S"
 
         t1 = self.start.strftime(TIME_FORMAT)
@@ -119,20 +138,34 @@ class TimeRange:
                 '\n')
 
     def center(self):
-        """Gets the center of the TimeRange instance"""
+        """Gets the center of the TimeRange instance
+
+        Returns
+        -------
+        value : datetime
+        """
         return self.start + self.dt / 2
 
     def split(self, n=2):
         """Splits the TimeRange into multiple equally sized parts
 
-        Accepts a value greater than or equal to 1 as input, and
-        returns an array of equally sized TimeRange objects between
-        t1 and t2.
+        Parameters
+        ----------
+        n : int
+            The number of times to split the time range
+            (must be an integer greater than 1)
 
-        Raises a ValueError if requested amount is less than 1
+        Returns
+        -------
+        time ranges: list
+            An list of equally sized TimeRange objects between
+            the start and end times.
 
+        Raises
+        ------
+        ValueError
+            If requested amount is less than 1
         """
-
         if n <= 0:
             raise ValueError('n must be greater than or equal to 1')
         subsections = []
@@ -159,14 +192,13 @@ class TimeRange:
 
         Returns
         -------
-        times: list
+        time ranges: list
             A list of TimeRange objects, that are window long and seperated by
             cadence.
 
         Examples
         --------
-        To get one 12 second long window every hour within the timerange:
-
+        # To get one 12 second long window every hour within the timerange:
         >>> TimeRange.window(60*60, window=12)
         """
         if not isinstance(window, timedelta):
@@ -197,23 +229,31 @@ class TimeRange:
 
     def next(self):
         """Shift the time range forward by the amount of time elapsed"""
-        self.start = self.start + self.dt
-        self.end = self.end + self.dt
+        self._t1 = self._t1 + self.dt
+        self._t2 = self._t2 + self.dt
 
         return self
 
     def previous(self):
         """Shift the time range backward by the amount of time elapsed"""
-        self.start = self.start - self.dt
-        self.end = self.end - self.dt
+        self._t1 = self._t1 - self.dt
+        self._t2 = self._t2 - self.dt
 
         return self
 
-    def extend(self, t_backwards, t_forwards):
-        """Extend the time range forwards and backwards by arbitrary amounts"""
+    def extend(self, dt_start, dt_end):
+        """Extend the time range forwards and backwards
+
+        Parameters
+        ----------
+        dtt_start : timedelta
+            The amount to shift the start time
+        dt_end : timedelta
+            The amount to shift the end time
+        """
         # Only a timedelta object is acceptable here
-        self.start = self.start + t_backwards
-        self.end = self.end + t_forwards
+        self._t1 = self._t1 + dt_start
+        self._t2 = self._t2 + dt_end
 
     def __contains__(self, time):
         """
@@ -224,11 +264,12 @@ class TimeRange:
         Parameters
         ----------
         time: datetime or str
-            The time to be checked
+            A parse_time-compatible time to be checked.
 
         Returns
         -------
-        true if time lies between t1 and t2, false otherwise.
+        value : bool
+            True if time lies between start and end, False otherwise.
 
         Example
         -------
