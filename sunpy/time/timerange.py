@@ -85,6 +85,16 @@ class TimeRange:
 
         self.dt = self._t2 - self._t1
 
+    @property
+    def start(self):
+        """Gets the start time"""
+        return self._t1
+
+    @property
+    def end(self):
+        """Gets the end time"""
+        return self._t2
+
     def __repr__(self):
         """Returns a human-readable representation of the TimeRange instance."""
         TIME_FORMAT = "%Y/%m/%d %H:%M:%S"
@@ -168,16 +178,6 @@ class TimeRange:
     def days(self):
         """Gets the number of days elapsed."""
         return self.dt.days
-
-    @property
-    def start(self):
-        """Gets the start time"""
-        return self._t1
-
-    @property
-    def end(self):
-        """Gets the end time"""
-        return self._t2
 
     def seconds(self):
         """Gets the number of seconds elapsed."""
