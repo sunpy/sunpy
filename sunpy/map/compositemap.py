@@ -245,7 +245,7 @@ class CompositeMap(object):
         axes: matplotlib.axes object or None
             Axes to plot limb on or None to use current axes.
         
-        grid_spacing: astropy.Quantity
+        grid_spacing: `~astropy.units.Quantity` instance
             Spacing (in degrees) for longitude and latitude grid.
 
         Returns
@@ -254,6 +254,7 @@ class CompositeMap(object):
         """
         if not isinstance(grid_spacing, u.Quantity):
             raise ValueError("Needs to astropy Quantity")
+        grid_spacing = grid_spacing.to(u.deg)
         needed_attrs = ['rsun_meters', 'dsun', 'heliographic_latitude',
                             'heliographic_longitude']
         if index is None:

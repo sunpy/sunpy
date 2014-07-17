@@ -576,7 +576,7 @@ Dimension:\t [%d, %d]
 
         Parameters
         ----------
-        angle : astropy.Quantity
+        angle : `~astropy.units.Quantity` instance
             The angle (degrees) to rotate counterclockwise.
         rmatrix : 2x2
             Linear transformation rotation matrix.
@@ -852,7 +852,7 @@ Dimension:\t [%d, %d]
         axes: matplotlib.axes object or None
         Axes to plot limb on or None to use current axes.
 
-        grid_spacing: astropy.Quantity
+        grid_spacing: `~astropy.units.Quantity` instance
             Spacing (in degrees) for longitude and latitude grid.
 
         Returns
