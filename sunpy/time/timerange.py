@@ -85,32 +85,6 @@ class TimeRange:
 
         self.dt = self._t2 - self._t1
 
-    @property
-    def t1(self):
-        """The start time of the time range"""
-        return self._t1
-
-    @t1.setter
-    def t1(self, value):
-        t = parse_time(value)
-        if t < self._t2:
-            self._t1 = t
-        else:
-            raise ValueError("t1 must be earlier than t2")
-
-    @property
-    def t2(self):
-        """The end time of the time range"""
-        return self._t2
-
-    @t2.setter
-    def t2(self, value):
-        t = parse_time(value)
-        if t > self._t1:
-            self._t2 = t
-        else:
-            raise ValueError("t2 must be later than t1")
-
     def __repr__(self):
         """Returns a human-readable representation of the TimeRange instance."""
         TIME_FORMAT = "%Y/%m/%d %H:%M:%S"
@@ -195,13 +169,15 @@ class TimeRange:
         """Gets the number of days elapsed."""
         return self.dt.days
 
+    @property
     def start(self):
-        """Gets the start date"""
-        return self.t1
+        """Gets the start time"""
+        return self._t1
 
+    @property
     def end(self):
-        """Gets the start date"""
-        return self.t2
+        """Gets the end time"""
+        return self._t2
 
     def seconds(self):
         """Gets the number of seconds elapsed."""
