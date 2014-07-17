@@ -640,7 +640,7 @@ Dimension:\t [%d, %d]
             rmatrix = np.matrix([[c, -s], [s, c]])
 
         # map_center is swapped compared to the x-y convention
-        map_center = (np.array(self.data.shape)-1)/2.0
+        array_center = (np.array(self.data.shape)-1)/2.0
 
         # rotation_center is swapped compared to the x-y convention
         if recenter:
@@ -649,7 +649,7 @@ Dimension:\t [%d, %d]
             y = self.data_to_pixel(image_center[1], 'y')
             rotation_center = (y, x)
         else:
-            rotation_center = map_center
+            rotation_center = array_center
 
         #Return a new map
         #Copy Header
@@ -669,7 +669,7 @@ Dimension:\t [%d, %d]
             new_center = image_center
         else:
             # Retrieve old coordinates for the center of the array
-            old_center = np.asarray(self.pixel_to_data(map_center[1], map_center[0]))
+            old_center = np.asarray(self.pixel_to_data(array_center[1], array_center[0]))
 
             # Calculate new coordinates for the center of the array
             new_center = image_center - np.dot(rmatrix, image_center - old_center)
@@ -678,8 +678,8 @@ Dimension:\t [%d, %d]
         # Define a new reference pixel in the rotated space
         new_map.meta['crval1'] = new_center[0]
         new_map.meta['crval2'] = new_center[1]
-        new_map.meta['crpix1'] = map_center[1] + 1 # FITS counts pixels from 1
-        new_map.meta['crpix2'] = map_center[0] + 1 # FITS counts pixels from 1
+        new_map.meta['crpix1'] = array_center[1] + 1 # FITS counts pixels from 1
+        new_map.meta['crpix2'] = array_center[0] + 1 # FITS counts pixels from 1
         
         # Calculate the new rotation matrix to store in the header by
         # "subtracting" the rotation matrix used in the rotate from the old one
