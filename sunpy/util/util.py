@@ -3,6 +3,7 @@ from __future__ import absolute_import
 import os
 import types
 import warnings
+import fnmatch
 from itertools import izip, imap, count
 
 import numpy as np
@@ -178,7 +179,6 @@ def replacement_filename(path):
             if not os.path.exists(newpath):
                 return newpath
 
-
 #==============================================================================
 # expand list from :http://stackoverflow.com/a/2185971/2486799
 #==============================================================================
@@ -218,3 +218,37 @@ class Deprecated(object):
         newFunc.__doc__ = func.__doc__
         newFunc.__dict__.update(func.__dict__)
         return newFunc
+
+def file_search(path, pattern):
+    """
+    Returns filenames matching pattern from given path and its subdirectories.
+
+    Parameters
+    ----------
+    path : string
+        directory path in which files will searched for.  Files will be sought
+        in subdirectories as well.
+    pattern : string
+        pattern which must be matched in filename.  wildcards such as * and ?
+        are allowed.
+
+    Returns
+    -------
+    files : list of strings
+        file names of files found matching pattern.
+
+    Examples
+    --------
+    >>> ls dir
+    file1.txt    subdir
+    >>> pattern = '*.txt'
+    >>> path = 'dir'
+    >>> files = file_search(path, pattern)
+    >>> files
+    ['dir/file1.txt', 'dir/subdir/subdir/file2.txt']
+    
+    """
+    files = [os.path.join(dirpath, f)
+             for dirpath, dirnames, filenames in os.walk(path)
+             for f in fnmatch.filter(filenames, pattern)]
+    return files

@@ -2,6 +2,8 @@
 
 from __future__ import absolute_import
 
+import os
+
 from sunpy.util import util
 import numpy as np
 import warnings
@@ -142,3 +144,14 @@ def test_deprecated():
         depr_func = depr(lambda x: x)
         depr_func(1)
         assert len(current_warnings) == 1
+
+def test_file_search():
+    path = os.path.curdir
+    pattern = 'file_search_test_file*'
+    files = util.file_search(path, pattern)
+    expected_files = [os.path.join(path, 'file_search_test_file1.txt'),
+                      os.path.join(path, 'test_file_search_subdir',
+                                   'file_search_test_file2.txt')]
+    assert files[0][-26:] == 'file_search_test_file1.txt'
+    assert files[1][-50:] == os.path.join('test_file_search_subdir',
+                                          'file_search_test_file2.txt')
