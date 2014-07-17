@@ -37,7 +37,7 @@ def lyra_event_list(start_time, end_time):
     lyralc = lightcurve.LYRALightCurve.create(start_time, end_time, level=3)
     # Convert to lightcurve time to datetime objects
     dtlc = lyralc.data.index.to_pydatetime()
-    flux = lyralc.data["CHANNEL4"]
+    flux = np.asanyarray(lyralc.data["CHANNEL4"])
     # Create LYRA event list
     lyra_events = find_lyra_events(dtlc, flux)
     # Return result
@@ -202,7 +202,7 @@ def find_lyra_events(time, flux):
                             artifacts_removed["begin_time"] < clean_time[end_index],
                             artifacts_removed["begin_time"] > clean_time[end_index-2])
                         if artifact_check.any() == True:
-                            artfact_at_end = artifacts_removed[artifact_check][0]
+                            artifact_at_end = artifacts_removed[artifact_check][0]
                             new_index = np.where(
                                 clean_time < artifact_at_end["begin_time"])
                             end_index = new_index[0][-1]
