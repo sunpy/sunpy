@@ -157,8 +157,11 @@ def test_contains():
 @pytest.mark.parametrize("ainput", [
     (tbegin_str, tfin_str),
     (tfin_str, -dt_int),
+    (tfin_str, tbegin_str)
     ])
 def test_start_lessthan_end(ainput):
+    """Test that the start and end time for a timerange is always in the
+    right order"""
     timerange = sunpy.time.TimeRange(ainput)
     t1 = timerange.start
     t2 = timerange.end
