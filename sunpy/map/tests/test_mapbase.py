@@ -134,22 +134,22 @@ def test_dsun(generic_map):
 
 
 def test_rsun_meters(generic_map):
-    assert generic_map.rsun_meters == sunpy.sun.constants.radius
+    assert generic_map.rsun_meters.value == sunpy.sun.constants.radius
 
 
 def test_rsun_arcseconds(generic_map):
-    assert generic_map.rsun_arcseconds == sunpy.sun.solar_semidiameter_angular_size(generic_map.date).value
+    assert generic_map.rsun_arcseconds == sunpy.sun.solar_semidiameter_angular_size(generic_map.date)
 
 
 def test_coordinate_system(generic_map):
     assert generic_map.coordinate_system == {'x':'HPLN-TAN', 'y': 'HPLT-TAN'}
 
 
-def test_carrington_longitude(generic_map):
+def test_carrington_longitude(generic_map):    #this should pass after the units branch is merged
     assert generic_map.carrington_longitude == (sunpy.sun.heliographic_solar_center(generic_map.date))[0]
 
 
-def test_heliographic_latitude(generic_map):
+def test_heliographic_latitude(generic_map):   #this should pass after the units branch is merged
     assert generic_map.heliographic_latitude == (sunpy.sun.heliographic_solar_center(generic_map.date))[1]
 
 
@@ -195,8 +195,8 @@ def test_rotation_matrix_cd_cdelt():
 
 def test_data_range(generic_map):
     """Make sure xrange and yrange work"""
-    assert generic_map.xrange[1] - generic_map.xrange[0] == generic_map.meta['cdelt1'] * generic_map.meta['naxis1']
-    assert generic_map.yrange[1] - generic_map.yrange[0] == generic_map.meta['cdelt2'] * generic_map.meta['naxis2']
+    assert (generic_map.xrange[1] - generic_map.xrange[0]).value == generic_map.meta['cdelt1'] * generic_map.meta['naxis1']
+    assert (generic_map.yrange[1] - generic_map.yrange[0]).value == generic_map.meta['cdelt2'] * generic_map.meta['naxis2']
 
     assert np.average(generic_map.xrange) == generic_map.center['x']
     assert np.average(generic_map.yrange) == generic_map.center['y']
@@ -237,8 +237,8 @@ def test_submap(generic_map):
     }
 
     # Check to see if submap properties were updated properly
-    assert submap.reference_pixel['x'] == offset['x']
-    assert submap.reference_pixel['y'] == offset['y']
+    assert submap.reference_pixel['x'].value == offset['x']
+    assert submap.reference_pixel['y'].value == offset['y']
     assert submap.shape[0] == width / 2.
     assert submap.shape[1] == height / 2.
 
@@ -312,8 +312,8 @@ def calc_new_matrix(angle):
 
 def test_rotate():
     aia_map = sunpy.map.Map(sunpy.AIA_171_IMAGE)
-    rotated_map_1 = aia_map.rotate(20)
-    rotated_map_2 = rotated_map_1.rotate(20)
+    rotated_map_1 = aia_map.rotate(20*u.deg)
+    rotated_map_2 = rotated_map_1.rotate(20*u.deg)
     assert rotated_map_2.center == rotated_map_1.center == aia_map.center
     assert rotated_map_2.shape == rotated_map_1.shape == aia_map.shape
     np.testing.assert_allclose(rotated_map_1.rotation_matrix,
@@ -329,13 +329,13 @@ def test_rotate():
     assert rotated_map_2.mean() < rotated_map_1.mean() < aia_map.mean()
     assert rotated_map_2.std() > rotated_map_1.std() > aia_map.std()
 
-    rotated_map_3 = aia_map.rotate(0, scale=1.5)
+    rotated_map_3 = aia_map.rotate(0*u.deg, scale=1.5)
     assert rotated_map_3.mean() > aia_map.mean()
 
     # Mean and std should be equal when angle of rotation is integral multiple
     # of 90 degrees for a square map
-    rotated_map_4 = aia_map.rotate(90, scale=1.5)
-    rotated_map_5 = aia_map.rotate(180, scale=1.5)
+    rotated_map_4 = aia_map.rotate(90*u.deg, scale=1.5)
+    rotated_map_5 = aia_map.rotate(180*u.deg, scale=1.5)
     assert int(rotated_map_3.mean()) == int(rotated_map_4.mean()) == int(rotated_map_5.mean())
     assert int(rotated_map_3.std()) == int(rotated_map_4.std()) == int(rotated_map_5.std())
 
@@ -343,7 +343,7 @@ def test_rotate():
 def test_rotate_recenter(aia_map):
     # Check recentering
     image_center = np.array((200, 100))
-    rotated_map_6 = aia_map.rotate(20, image_center=image_center, recenter=True)
+    rotated_map_6 = aia_map.rotate(20*u.deg, image_center=image_center, recenter=True)
 
     # shift is image_center - map_center
     shift = image_center - ((np.array(aia_map.shape)/2.) + 0.5)

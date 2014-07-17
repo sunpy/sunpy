@@ -622,9 +622,10 @@ Dimension:\t [%d, %d]
         :func:`sunpy.image.transform.affine_transform` documentation for a
         detailed description of the differences.
         """
-        if not isinstance(angle, u.Quantity):
+        if angle is not None and not isinstance(angle, u.Quantity):
             raise ValueError("Must be astropy Quantity")
-        angle = angle.to(u.deg)
+        if angle is not None:
+            angle = angle.to(u.deg)
         if angle is not None and rmatrix is not None:
             raise ValueError("You cannot specify both an angle and a matrix")
         elif angle is None and rmatrix is None:
@@ -768,8 +769,8 @@ Dimension:\t [%d, %d]
 
         # Make a copy of the header with updated centering information
         new_map = deepcopy(self)
-        new_map.meta['crpix1'] = self.reference_pixel['x'] - x_pixels[0]
-        new_map.meta['crpix2'] = self.reference_pixel['y'] - y_pixels[0]
+        new_map.meta['crpix1'] = self.reference_pixel['x'].value - x_pixels[0]
+        new_map.meta['crpix2'] = self.reference_pixel['y'].value - y_pixels[0]
         new_map.meta['naxis1'] = new_data.shape[1]
         new_map.meta['naxis2'] = new_data.shape[0]
 
