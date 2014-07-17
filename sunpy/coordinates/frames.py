@@ -51,6 +51,17 @@ class HelioGraphicStonyhurst(BaseCoordinateFrame):
     rad: `astropy.units.Quantity` object.
         This quantity holds the radial distance. If not specified, it is, by default,
         the solar radius. Optional, must be keyword
+        
+    Examples
+    --------
+    >>> sc = SkyCoord(1*u.deg, 1*u.deg, 2*u.km, frame="heliographicstonyhurst", dateobs="2010/01/01T00:00:45")
+    >>> sc
+    <SkyCoord (HelioGraphicStonyhurst): dateobs=2010-01-01 00:00:45, hlon=1.0 deg, hlat=1.0 deg, rad=2.0 km>
+    >>> sc.frame
+    <HelioGraphicStonyhurst Coordinate: dateobs=2010-01-01 00:00:45, hlon=1.0 deg, hlat=1.0 deg, rad=2.0 km>
+    >>> sc = SkyCoord(HelioGraphicStonyhurst(-10*u.deg, 2*u.deg))
+    >>> sc
+    <SkyCoord (HelioGraphicStonyhurst): dateobs=None, hlon=-10.0 deg, hlat=2.0 deg, rad=695508.0 km>
     """
 
     default_representation = SphericalWrap180Representation
