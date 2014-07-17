@@ -63,6 +63,11 @@ def test_split_n_0_error():
         timerange.split(n=0)
 
 
+def test_input_error():
+    with pytest.raises(ValueError):
+        sunpy.time.TimeRange((tbegin_str))
+
+
 def test_window():
     timerange = sunpy.time.TimeRange(tbegin_str, tfin_str)
     window = timerange.window(12 * 60 * 60, 10)
