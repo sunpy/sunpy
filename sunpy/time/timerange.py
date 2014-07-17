@@ -10,32 +10,39 @@ __all__ = ['TimeRange']
 
 class TimeRange:
     """
-    Timerange(a, b) or Timerange((a, b))
-
     An object to handle time ranges.
 
     Parameters
     ----------
-    a : the start time specified as a time string, or datetime object
-        A 2d list or ndarray containing the map data
-    b : the end time specified as a time string or datetime object
-        or the length of the time range specified as a timedelta object, or
-        number of seconds
+    a : str, number, datetime,
+        A time (usually the start time) specified as a parse_time-compatible
+        time string or number, or a datetime object.
+    b : str, number, timedelta
+        Another time (usually the end time) specified as a
+        parse_time-compatible time string, or a datetime object.
+        May also be the size of the time range specified as a timedelta object,
+        or the number of seconds (positive or negative)
+
+    Properties
+    ----------
+    start : datetime
+        The start time of the time range (always the smaller time)
+    end : datetime
+        The end time of the time range (always the larger time)
 
     Attributes
     ----------
-    t1 : datetime
-        The start time of the time range
-    t2 : datetime
-        The end time of the time range
     dt : timediff
-        The difference in time between the start time and end time
+        The difference in time between the start and end time. Always a
+        positive value.
 
     Examples
     --------
+    >>> from sunpy.time import TimeRange
     >>> time_range = TimeRange('2010/03/04 00:10', '2010/03/04 00:20')
-
+    >>> time_range = TimeRange(('2010/03/04 00:10', '2010/03/04 00:20'))
     >>> time_range = TimeRange('2010/03/04 00:10', 400)
+    >>> time_range = TimeRange('2010/03/04 00:10', -400)
 
     References
     ----------
