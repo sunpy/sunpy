@@ -54,14 +54,18 @@ class HelioGraphicStonyhurst(BaseCoordinateFrame):
         
     Examples
     --------
-    >>> sc = SkyCoord(1*u.deg, 1*u.deg, 2*u.km, frame="heliographicstonyhurst", dateobs="2010/01/01T00:00:45")
+    >>> sc = SkyCoord(1*u.deg, 1*u.deg, 2*u.km, frame="heliographicstonyhurst",
+    dateobs="2010/01/01T00:00:45")
     >>> sc
-    <SkyCoord (HelioGraphicStonyhurst): dateobs=2010-01-01 00:00:45, hlon=1.0 deg, hlat=1.0 deg, rad=2.0 km>
+    <SkyCoord (HelioGraphicStonyhurst): dateobs=2010-01-01 00:00:45, 
+    hlon=1.0 deg, hlat=1.0 deg, rad=2.0 km>
     >>> sc.frame
-    <HelioGraphicStonyhurst Coordinate: dateobs=2010-01-01 00:00:45, hlon=1.0 deg, hlat=1.0 deg, rad=2.0 km>
+    <HelioGraphicStonyhurst Coordinate: dateobs=2010-01-01 00:00:45, 
+    hlon=1.0 deg, hlat=1.0 deg, rad=2.0 km>
     >>> sc = SkyCoord(HelioGraphicStonyhurst(-10*u.deg, 2*u.deg))
     >>> sc
-    <SkyCoord (HelioGraphicStonyhurst): dateobs=None, hlon=-10.0 deg, hlat=2.0 deg, rad=695508.0 km>
+    <SkyCoord (HelioGraphicStonyhurst): dateobs=None, hlon=-10.0 deg, 
+    hlat=2.0 deg, rad=695508.0 km>
     """
 
     default_representation = SphericalWrap180Representation
@@ -101,6 +105,9 @@ class HelioGraphicCarrington(HelioGraphicStonyhurst):
     This frame differs from the Stonyhurst version in the
     definition of the longitude, which is defined using
     an offset which is a time-dependent scalar value.
+    
+    Parameters
+    ----------
     representation: `~astropy.coordinates.BaseRepresentation` or None.
         A representation object. If specified, other parameters must
         be in keyword form.
@@ -113,6 +120,20 @@ class HelioGraphicCarrington(HelioGraphicStonyhurst):
     rad: `astropy.units.Quantity` object, optional, must be keyword.
         This quantity holds the radial distance. If not specified, it is, by default,
         the solar radius. Optional, must be keyword.
+        
+    Examples
+    --------
+    >>> sc = SkyCoord(1*u.deg, 2*u.deg, 3*u.km, frame="heliographiccarrington",
+    dateobs="2010/01/01T00:00:30")
+    >>> sc
+    <SkyCoord (HelioGraphicCarrington): dateobs=2010-01-01 00:00:30, 
+    hlon=1.0 deg, hlat=2.0 deg, rad=3.0 km>
+    >>> sc = SkyCoord([1,2,3]*u.deg, [4,5,6]*u.deg, [5,6,7]*u.km, 
+    dateobs="2010/01/01T00:00:45", frame="heliographiccarrington")
+    >>> sc
+    <SkyCoord (HelioGraphicCarrington): dateobs=2010-01-01 00:00:45, 
+    (hlon, hlat, rad) in (deg, deg, km)
+        [(1.0, 4.0, 5.0), (2.0, 5.0, 6.0), (3.0, 6.0, 7.0)]>
     """
 
     default_representation = SphericalWrap180Representation
