@@ -134,7 +134,7 @@ def test_dsun(generic_map):
 
 
 def test_rsun_meters(generic_map):
-    assert generic_map.rsun_meters.value == sunpy.sun.constants.radius
+    assert generic_map.rsun_meters == sunpy.sun.constants.radius
 
 
 def test_rsun_arcseconds(generic_map):
