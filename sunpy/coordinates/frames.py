@@ -174,6 +174,20 @@ class HelioCentric(BaseCoordinateFrame):
     D0: `Quantity` object.
         Represents the distance between the observer and the Sun center.
         Defaults to 1AU.
+    
+    Examples
+    --------   
+    >>> sc = SkyCoord(CartesianRepresentation(10*u.km, 1*u.km, 2*u.km), 
+    dateobs="2011/01/05T00:00:50", frame="heliocentric")
+    >>> sc
+    <SkyCoord (HelioCentric): dateobs=2011-01-05 00:00:50, D0=149597870.7 km, 
+    x=10.0 km, y=1.0 km, z=2.0 km>
+    >>> sc = SkyCoord([1,2]*u.km, [3,4]*u.m, [5,6]*u.cm, frame="heliocentric", 
+    dateobs="2011/01/01T00:00:54")
+    >>> sc
+    <SkyCoord (HelioCentric): dateobs=2011-01-01 00:00:54, D0=149597870.7 km, 
+    (x, y, z) in (km, m, cm)
+        [(1.0, 3.0, 5.0), (2.0, 4.0, 6.0)]>
     """
 
     default_representation = CartesianRepresentation
@@ -217,18 +231,25 @@ class HelioProjective(BaseCoordinateFrame):
         
     Examples
     --------
-    >>> sc = SkyCoord(CartesianRepresentation(10*u.km, 1*u.km, 2*u.km), 
-    dateobs="2011/01/05T00:00:50", frame="heliocentric")
+    >>> sc = SkyCoord(0*u.deg, 0*u.deg, 5*u.km, dateobs="2010/01/01T00:00:00", 
+    frame="helioprojective")
     >>> sc
-    <SkyCoord (HelioCentric): dateobs=2011-01-05 00:00:50, D0=149597870.7 km, 
-    x=10.0 km, y=1.0 km, z=2.0 km>
-    >>> sc = SkyCoord([1,2]*u.km, [3,4]*u.m, [5,6]*u.cm, frame="heliocentric", 
-    dateobs="2011/01/01T00:00:54")
+    <SkyCoord (HelioProjective): dateobs=2010-01-01 00:00:00, D0=149597870.7 km
+    , Tx=0.0 arcsec, Ty=0.0 arcsec, distance=5.0 km>
+    >>> sc = SkyCoord(0*u.deg, 0*u.deg, dateobs="2010/01/01T00:00:00", 
+    frame="helioprojective")
     >>> sc
-    <SkyCoord (HelioCentric): dateobs=2011-01-01 00:00:54, D0=149597870.7 km, 
-    (x, y, z) in (km, m, cm)
-        [(1.0, 3.0, 5.0), (2.0, 4.0, 6.0)]>
-    >>> 
+    <SkyCoord (HelioProjective): dateobs=2010-01-01 00:00:00, D0=149597870.7 km
+    , Tx=0.0 arcsec, Ty=0.0 arcsec, distance=149597870.7 km>
+    >>> hp = HelioProjective(0*u.deg, 0*u.deg, zeta=1*u.km, 
+    dateobs="2010/01/01T00:00:00")
+    >>> hp
+    <HelioProjective Coordinate: dateobs=2010-01-01 00:00:00, D0=149597870.7 km
+    , Tx=0.0 arcsec, Ty=0.0 arcsec, distance=149597869.7 km>
+    >>> sc = SkyCoord(hp)
+    >>> sc
+    <SkyCoord (HelioProjective): dateobs=2010-01-01 00:00:00, D0=149597870.7 km
+    , Tx=0.0 arcsec, Ty=0.0 arcsec, distance=149597869.7 km>  
     """
 
     default_representation = SphericalWrap180Representation
@@ -252,7 +273,7 @@ class HelioProjective(BaseCoordinateFrame):
     def __init__(self, *args, **kwargs):
         """
         This is the custom constructor method for HelioProjective frames.
-        It is required as we wish to default 'distance' to 1AU when it
+        It is required as we wish to default 'distance' to D0 - zeta when it
         itself is not present and there are no supporting arguments.
         'zeta' is a supporting argument that must be specified as a kwarg.
         If 'zeta' is present, 'distance' can be calculated as given.
