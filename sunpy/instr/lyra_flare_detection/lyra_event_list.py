@@ -14,6 +14,7 @@ from itertools import chain
 from sunpy.time import parse_time
 from astropy.io import fits
 import sunpy.lightcurve as lightcurve
+from sunpy.util.net import check_file_download
 
 from datetime import timedelta
 import matplotlib.pyplot as plt
@@ -24,6 +25,7 @@ FALL_FACTOR = 0.5
 # (Jan 2010) until mid 2014.
 NORM = 0.001
 
+LYTAF_REMOTE_PATH = "http://proba2.oma.be/lyra/data/lytaf/"
 LYTAF_PATH = os.path.expanduser(os.path.join("~", "pro",
                                              "lyra_flare_detection", "data"))
 
@@ -545,11 +547,35 @@ def extract_combined_lytaf(start_time, end_time, lytaf_path=LYTAF_PATH,
                                ("event_definition", object)])
     # Access annotation files
     for i, suffix in enumerate(combine_files):
+        # Check database files are present
+        dbname = "annotation_{0}.db".format(suffix)
+        check_file_download(dbname, LYTAF_REMOTE_PATH, lytaf_path)
         # Open SQLITE3 annotation files
-        connection = sqlite3.connect(
-            os.path.join(lytaf_path, "annotation_{0}.db".format(suffix)))
+        connection = sqlite3.connect(os.path.join(lytaf_path, dbname))
         # Create cursor to manipulate data in annotation file
         cursor = connection.cursor()
+        # Check if lytaf file spans the start and end times defined by
+        # user.  If not, download newest version.
+        # First get start time of first event and end time of last event in lytaf.
+        cursor.execute("select begin_time from event order by begin_time asc "
+                       "limit 1;")
+        db_first_begin_time = cursor.fetchone()
+        db_first_begin_time = datetime.fromtimestamp(db_first_begin_time)
+        cursor.execute("select end_time from event order by end_time desc "
+                       "limit 1;")
+        db_last_end_time = cursor.fetchone()
+        db_last_end_time = datetime.fromtimestamp(db_last_end_time)
+        # If lytaf does not include entire input time range...
+        if end_time > db_last_end_time or start_time < db_first_start_time:
+            # ...close lytaf file...
+            cursor.close()
+            connection.close()
+            # ...Download latest lytaf file...
+            check_file_download(dbname, LYTAF_REMOTE_PATH, lytaf_path,
+                                replace=True)
+            # ...and open new version of lytaf database.
+            connection = sqlite3.connect(os.path.join(lytaf_path, dbname))
+            cursor = connection.cursor()
         # Select and extract the data from event table within file within
         # given time range
         cursor.execute("select insertion_time, begin_time, reference_time, "
