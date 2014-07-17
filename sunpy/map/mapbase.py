@@ -624,7 +624,8 @@ Dimension:\t [%d, %d]
         """
         if angle is not None and not isinstance(angle, u.Quantity):
             raise ValueError("Must be astropy Quantity")
-        angle = angle.to(u.deg)
+        if angle is not None:
+            angle = angle.to(u.deg)
         if angle is not None and rmatrix is not None:
             raise ValueError("You cannot specify both an angle and a matrix")
         elif angle is None and rmatrix is None:
