@@ -10,7 +10,7 @@ class NOAAIndicesClient(GenericClient):
             """
             Helper function:
             """               
-            return "http://www.swpc.noaa.gov/ftpdir/weekly/RecentIndices.txt"
+            return ["http://www.swpc.noaa.gov/ftpdir/weekly/RecentIndices.txt"]
 
         def _makeimap(self):
 	    '''Helper Function:used to hold information about source. '''
@@ -36,7 +36,7 @@ class NOAAPredictClient(GenericClient):
             """
             Helper function:
             """        
-            return "http://www.swpc.noaa.gov/ftpdir/weekly/Predict.txt"	    
+            return ["http://www.swpc.noaa.gov/ftpdir/weekly/Predict.txt"]	    
 
         def _makeimap(self):
 	    '''Helper Function:used to hold information about source. '''
