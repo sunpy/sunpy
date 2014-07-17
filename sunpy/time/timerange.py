@@ -229,15 +229,17 @@ class TimeRange(object):
 
     def next(self):
         """Shift the time range forward by the amount of time elapsed"""
-        self._t1 = self._t1 + self.dt
-        self._t2 = self._t2 + self.dt
+        dt = self.dt
+        self._t1 = self._t1 + dt
+        self._t2 = self._t2 + dt
 
         return self
 
     def previous(self):
         """Shift the time range backward by the amount of time elapsed"""
-        self._t1 = self._t1 - self.dt
-        self._t2 = self._t2 - self.dt
+        dt = self.dt
+        self._t1 = self._t1 - dt
+        self._t2 = self._t2 - dt
 
         return self
 
@@ -246,7 +248,7 @@ class TimeRange(object):
 
         Parameters
         ----------
-        dtt_start : timedelta
+        dt_start : timedelta
             The amount to shift the start time
         dt_end : timedelta
             The amount to shift the end time

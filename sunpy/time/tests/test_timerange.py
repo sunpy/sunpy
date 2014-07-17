@@ -57,7 +57,7 @@ def test_split():
     assert all([wi.start == ex.start and wi.end == ex.end for wi, ex in zip(split, expect)])
 
 
-def test_split_n_0():
+def test_split_n_0_error():
     timerange = sunpy.time.TimeRange(tbegin_str, tfin_str)
     with pytest.raises(ValueError):
         timerange.split(n=0)
