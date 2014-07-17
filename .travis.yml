@@ -16,15 +16,15 @@ env:
         - SUDS_PKG='suds-jurko==0.4.1.jurko.4'
         - TEST_MODE='tests'
     matrix:
-        - NUMPY_VERSION=1.8.1 PANDAS_VERSION=0.14.0
-        - NUMPY_VERSION=1.7.1 PANDAS_VERSION=0.14.0
+        - NUMPY_VERSION=1.8.1 PANDAS_VERSION=0.14.1
+        - NUMPY_VERSION=1.7.1 PANDAS_VERSION=0.14.1
         - NUMPY_VERSION=1.8.1 PANDAS_VERSION=0.13.1
 matrix:
      include:
         - python: 2.7
-          env: TEST_MODE='sphinx' NUMPY_VERSION=1.8.1 PANDAS_VERSION=0.14.0
+          env: TEST_MODE='sphinx' NUMPY_VERSION=1.8.1 PANDAS_VERSION=0.14.1
         - python: 2.7
-          env: TEST_MODE='offline' NUMPY_VERSION=1.8.1 PANDAS_VERSION=0.14.0
+          env: TEST_MODE='offline' NUMPY_VERSION=1.8.1 PANDAS_VERSION=0.14.1
 
 before_install:
 # Pick the suds version based on the python version
@@ -50,11 +50,10 @@ install:
    - pip install $PIP_WHEEL_COMMAND matplotlib
    - pip install $PIP_WHEEL_COMMAND scipy
    - pip install $PIP_WHEEL_COMMAND openpyxl==1.8.6 pandas==$PANDAS_VERSION
-   - pip install $PIP_WHEEL_COMMAND astropy>=0.3.1
+   - pip install $PIP_WHEEL_COMMAND astropy>=0.4.0
    - pip install $PIP_WHEEL_COMMAND $SUDS_PKG beautifulsoup4 requests
    - pip install $PIP_WHEEL_COMMAND pytest 
    - pip install $PIP_WHEEL_COMMAND glymur
-# Install scikit-image package - originally included in order to test image coalignment functionality
    - pip install $PIP_WHEEL_COMMAND cython
    - pip install $PIP_WHEEL_COMMAND scikit-image
    - pip install $PIP_WHEEL_COMMAND sqlalchemy
