@@ -214,6 +214,21 @@ class HelioProjective(BaseCoordinateFrame):
     D0: `Quantity` object.
         Represents the distance between observer and solar center.
         Defaults to 1AU.
+        
+    Examples
+    --------
+    >>> sc = SkyCoord(CartesianRepresentation(10*u.km, 1*u.km, 2*u.km), 
+    dateobs="2011/01/05T00:00:50", frame="heliocentric")
+    >>> sc
+    <SkyCoord (HelioCentric): dateobs=2011-01-05 00:00:50, D0=149597870.7 km, 
+    x=10.0 km, y=1.0 km, z=2.0 km>
+    >>> sc = SkyCoord([1,2]*u.km, [3,4]*u.m, [5,6]*u.cm, frame="heliocentric", 
+    dateobs="2011/01/01T00:00:54")
+    >>> sc
+    <SkyCoord (HelioCentric): dateobs=2011-01-01 00:00:54, D0=149597870.7 km, 
+    (x, y, z) in (km, m, cm)
+        [(1.0, 3.0, 5.0), (2.0, 4.0, 6.0)]>
+    >>> 
     """
 
     default_representation = SphericalWrap180Representation
