@@ -415,9 +415,11 @@ def hgs_to_hcc(heliogcoord, heliocframe):
     hglon = heliogcoord.hlon
     hglat = heliogcoord.hlat
     r = heliogcoord.rad.to(u.m)
+    
+    l0b0_pair = s.heliographic_solar_center() * u.deg
 
-    l0_deg = _carrington_offset(heliogcoord.dateobs) * u.deg
-    b0_deg = s.heliographic_solar_center()[1] * u.deg
+    l0_deg = l0b0_pair[0]
+    b0_deg = l0b0_pair[1]
 
     lon = np.deg2rad(hglon)
     lat = np.deg2rad(hglat)
