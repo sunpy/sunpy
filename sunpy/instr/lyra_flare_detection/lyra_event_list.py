@@ -24,7 +24,10 @@ FALL_FACTOR = 0.5
 # (Jan 2010) until mid 2014.
 NORM = 0.001
 
-def lyra_event_list(start_time, end_time):
+LYTAF_PATH = os.path.expanduser(os.path.join("~", "pro",
+                                             "lyra_flare_detection", "data"))
+
+def lyra_event_list(start_time, end_time, lytaf_path=LYTAF_PATH):
     """
     Returns a LYRA flare list based on an input start and end time.
 
@@ -39,11 +42,11 @@ def lyra_event_list(start_time, end_time):
     dtlc = lyralc.data.index.to_pydatetime()
     flux = np.asanyarray(lyralc.data["CHANNEL4"])
     # Create LYRA event list
-    lyra_events = find_lyra_events(dtlc, flux)
+    lyra_events = find_lyra_events(dtlc, flux, lytaf_path=lytaf_path)
     # Return result
     return lyra_events, dtlc, flux
 
-def find_lyra_events(time, flux):
+def find_lyra_events(time, flux, lytaf_path=LYTAF_PATH):
     """
     Finds events in a times series satisfying LYRA event definitions.
 
@@ -60,6 +63,8 @@ def find_lyra_events(time, flux):
     time : ndarray/array-like of of datetime objects, e.g. np.array, list
         Contains measurement times corresponding to each element in
         flux.  Must be same length as flux.
+    lytaf_path : string
+        directory path where the LYRA annotation files are stored.
 
     Returns
     -------
@@ -123,7 +128,8 @@ def find_lyra_events(time, flux):
     clean_time, fluxlist, artifact_status = remove_lyra_artifacts(time, [flux],
         artifacts=["UV occ.", "Offpoint", "LAR", "Calibration", "SAA",
                    "Vis occ.", "Operational Anomaly", "Glitch", "ASIC reload",
-                   "Moon in LYRA", "Recovery"], return_artifacts=True)
+                   "Moon in LYRA", "Recovery"], return_artifacts=True,
+                   lytaf_path=lytaf_path)
     clean_flux = fluxlist[0]
     artifacts_removed = artifact_status[1]
     # Perform subtraction so median irradiance of time series is at
@@ -240,7 +246,8 @@ def find_lyra_events(time, flux):
 
 def remove_lyra_artifacts(time, fluxes=None, artifacts="All",
                           return_artifacts=False, fitsfile=None,
-                          csvfile=None, filecolumns=None):
+                          csvfile=None, filecolumns=None,
+                          lytaf_path=LYTAF_PATH):
     """
     Removes periods of LYRA artifacts from a time series.
 
@@ -290,6 +297,9 @@ def remove_lyra_artifacts(time, fluxes=None, artifacts="All",
         ["time", "flux0", "flux1",..."fluxN"]
         where N is the number of flux arrays in the fluxes input
         (assuming 0-indexed counting).
+
+    lytaf_path : string
+        directory path where the LYRA annotation files are stored.
         
     Returns
     -------
@@ -334,7 +344,7 @@ def remove_lyra_artifacts(time, fluxes=None, artifacts="All",
     clean_fluxes = copy.deepcopy(fluxes)
     artifacts_not_found =[]
     # Get LYTAF file for given time range
-    lytaf = extract_combined_lytaf(time[0], time[-1])
+    lytaf = extract_combined_lytaf(time[0], time[-1], lytaf_path=lytaf_path)
     
     # Find events in lytaf which are to be removed from time series.
     if artifacts == "All":
@@ -452,9 +462,9 @@ def remove_lyra_artifacts(time, fluxes=None, artifacts="All",
         else:
             return clean_time, clean_fluxes
 
-def extract_combined_lytaf(start_time, end_time, lytaf_path=os.path.expanduser(
-    os.path.join("~", "pro", "lyra_flare_detection", "data")),
-    combine_files=["lyra", "manual", "ppt", "science"], csvfile=None):
+def extract_combined_lytaf(start_time, end_time, lytaf_path=LYTAF_PATH,
+                           combine_files=["lyra", "manual", "ppt", "science"],
+                           csvfile=None):
     """
     Extracts combined lytaf file for given time range.
 
@@ -467,6 +477,8 @@ def extract_combined_lytaf(start_time, end_time, lytaf_path=os.path.expanduser(
         Start time of period for which annotation file is required.
     end_time : datetime object or string
         End time of period for which annotation file is required.
+    lytaf_path : string
+        directory path where the LYRA annotation files are stored.
     combine_files : (optional) list of strings
         States which LYRA annotation files are to be combined.
         Default is all four, i.e. lyra, manual, ppt, science.
