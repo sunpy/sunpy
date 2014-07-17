@@ -62,7 +62,10 @@ class TimeRange(object):
         # Normalize different input types
         if b is None:
             x = parse_time(a[0])
-            y = a[1]
+            if len(a) != 2:
+                raise ValueError('If b is None a must have two elements')
+            else:
+                y = a[1]
         else:
             x = parse_time(a)
             y = b
@@ -79,7 +82,7 @@ class TimeRange(object):
                 self._t2 = x
 
         if isinstance(y, (float, int)):
-            y = timedelta(0, y)
+            y = timedelta(seconds=y)
 
         # Timedelta
         if isinstance(y, timedelta):
