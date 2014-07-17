@@ -92,12 +92,12 @@ def test_days():
 
 def test_start():
     timerange = sunpy.time.TimeRange(tbegin_str, tfin_str)
-    assert timerange.start() == start
+    assert timerange.start == start
 
 
 def test_end():
     timerange = sunpy.time.TimeRange(tbegin_str, tfin_str)
-    assert timerange.end() == end
+    assert timerange.end == end
 
 
 def test_seconds():
@@ -165,11 +165,3 @@ def test_start_lessthan_end(ainput):
     assert t1 < t2
     assert timerange.start == start
     assert timerange.end == end
-
-
-def test_SimpleErrorHandling():
-    # don't care about the specific message
-    with pytest.raises(ValueError):
-        timerange = sunpy.time.TimeRange('2014/05/03 12:00',
-                                         '2014/05/05 21:00')
-        timerange.start = "2014/05/05 22:00"
