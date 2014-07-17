@@ -99,8 +99,8 @@ class TimeRange:
         """Returns a human-readable representation of the TimeRange instance."""
         TIME_FORMAT = "%Y/%m/%d %H:%M:%S"
 
-        t1 = self.t1.strftime(TIME_FORMAT)
-        t2 = self.t2.strftime(TIME_FORMAT)
+        t1 = self.start.strftime(TIME_FORMAT)
+        t2 = self.end.strftime(TIME_FORMAT)
         center = self.center().strftime(TIME_FORMAT)
 
         return ('    Start:'.ljust(11) + t1 +
@@ -113,7 +113,7 @@ class TimeRange:
 
     def center(self):
         """Gets the center of the TimeRange instance"""
-        return self.t1 + self.dt / 2
+        return self.start + self.dt / 2
 
     def split(self, n=2):
         """Splits the TimeRange into multiple equally sized parts
@@ -129,7 +129,7 @@ class TimeRange:
         if n <= 0:
             raise ValueError('n must be greater than or equal to 1')
         subsections = []
-        previous_time = self.start()
+        previous_time = self.start
         next_time = None
         for _ in range(n):
             next_time = previous_time + self.dt / n
@@ -168,10 +168,10 @@ class TimeRange:
             cadence = timedelta(seconds=cadence)
 
         n = 1
-        times = [TimeRange(self.t1, self.t1 + window)]
-        while times[-1].t2 < self.t2:
-            times.append(TimeRange(self.t1 + cadence * n,
-                                   self.t1 + cadence * n + window))
+        times = [TimeRange(self.start, self.start + window)]
+        while times[-1].end < self.end:
+            times.append(TimeRange(self.start + cadence * n,
+                                   self.start + cadence * n + window))
             n += 1
         return times
 
@@ -190,23 +190,23 @@ class TimeRange:
 
     def next(self):
         """Shift the time range forward by the amount of time elapsed"""
-        self.t1 = self.t1 + self.dt
-        self.t2 = self.t2 + self.dt
+        self.start = self.start + self.dt
+        self.end = self.end + self.dt
 
         return self
 
     def previous(self):
         """Shift the time range backward by the amount of time elapsed"""
-        self.t1 = self.t1 - self.dt
-        self.t2 = self.t2 - self.dt
+        self.start = self.start - self.dt
+        self.end = self.end - self.dt
 
         return self
 
     def extend(self, t_backwards, t_forwards):
         """Extend the time range forwards and backwards by arbitrary amounts"""
         # Only a timedelta object is acceptable here
-        self.t1 = self.t1 + t_backwards
-        self.t2 = self.t2 + t_forwards
+        self.start = self.start + t_backwards
+        self.end = self.end + t_forwards
 
     def __contains__(self, time):
         """
@@ -229,4 +229,4 @@ class TimeRange:
         >>> time in time_range
         """
         t = parse_time(time)
-        return t >= self.t1 and t <= self.t2
+        return t >= self.start and t <= self.end
