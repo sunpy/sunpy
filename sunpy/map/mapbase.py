@@ -286,7 +286,7 @@ Dimension:\t [%d, %d]
     @property
     def rsun_meters(self):
         """Radius of the sun in meters"""
-        return self.meta.get('rsun_ref', constants.radius) * u.meter
+        return self.meta.get('rsun_ref', constants.radius)
 
     @property
     def rsun_arcseconds(self):

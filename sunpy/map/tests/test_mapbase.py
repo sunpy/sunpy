@@ -129,12 +129,12 @@ def test_detector(generic_map):
 
 
 def test_dsun(generic_map):
-    assert generic_map.dsun == (sunpy.sun.sunearth_distance(generic_map.date) *
+    assert generic_map.dsun.value == (sunpy.sun.sunearth_distance(generic_map.date) *
                                 sunpy.sun.constants.au.si.value)
 
 
 def test_rsun_meters(generic_map):
-    assert generic_map.rsun_meters.value == sunpy.sun.constants.radius
+    assert generic_map.rsun_meters == sunpy.sun.constants.radius
 
 
 def test_rsun_arcseconds(generic_map):
@@ -215,10 +215,10 @@ def test_data_to_pixel(generic_map):
 
     # Check conversion of map edges
     # Note: data coords are at pixel centers, so edges are 0.5 pixels wider
-    assert generic_map.data_to_pixel(generic_map.xrange[0], 'x') == 0. - 0.5
-    assert generic_map.data_to_pixel(generic_map.yrange[0], 'y') == 0. - 0.5
-    assert generic_map.data_to_pixel(generic_map.xrange[1], 'x') == (generic_map.meta['naxis1'] - 1) + 0.5
-    assert generic_map.data_to_pixel(generic_map.yrange[1], 'y') == (generic_map.meta['naxis2'] - 1) + 0.5
+    assert generic_map.data_to_pixel(generic_map.xrange[0].value, 'x') == 0. - 0.5
+    assert generic_map.data_to_pixel(generic_map.yrange[0].value, 'y') == 0. - 0.5
+    assert generic_map.data_to_pixel(generic_map.xrange[1].value, 'x') == (generic_map.meta['naxis1'] - 1) + 0.5
+    assert generic_map.data_to_pixel(generic_map.yrange[1].value, 'y') == (generic_map.meta['naxis2'] - 1) + 0.5
 
 
 def test_submap(generic_map):
@@ -346,7 +346,7 @@ def test_rotate_recenter(aia_map):
     rotated_map_6 = aia_map.rotate(20*u.deg, image_center=image_center, recenter=True)
 
     # shift is image_center - map_center
-    shift = image_center - ((np.array(aia_map.shape)/2.) + 0.5)
+    shift = image_center*u.pix - ((np.array(aia_map.shape)/2.)*u.pix + 0.5*u.pix)
 
     # y shift is inverted because the data in the map is origin lower.
     np.testing.assert_allclose(rotated_map_6.reference_pixel.values(),
