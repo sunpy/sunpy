@@ -386,30 +386,19 @@ def remove_lyra_artifacts(time, fluxes=None, artifacts="All",
     # If return_artifacts kwarg is True, return a list containing
     # information on what artifacts found, removed, etc.  See docstring.
     if return_artifacts is True:
-        # Define output list for artifact info
-        artifact_status = []
         if artifacts_not_found == artifacts:
-            # Artifacts found in annotation file
-            artifact_status.append(lytaf)
-            # Artifacts removed
-            artifact_status.append(None)
-            # Artifacts not removed
-            artifact_status.append(None)
-            # Artifacts not found
-            artifact_status.append(artifacts_not_found)
+            artifact_status = {"lytaf": lytaf,
+                               "removed": lytaf[artifact_indices],
+                               "not_removed": None,
+                               "not_found": artifacts_not_found}
         else:
-            # Artifacts found in annotation file
-            artifact_status.append(lytaf)
-            # Artifacts removed            
-            artifact_status.append(lytaf[artifact_indices])
-            # Artifacts not removed
-            artifact_status.append(np.delete(lytaf, artifact_indices)) 
-            # Artifacts not found
+            artifacts_removed = lytaf[artifact_indices]
+            artifacts_not_removed = np.delete(lytaf, artifact_indices)
             if artifacts == "All":
-                artifact_status.append(None)
-            else:
-                artifact_status.append(artifacts_not_found)
-
+                artifacts_not_found = None
+            artifact_status = {"lytaf": lytaf, "removed": artifacts_removed,
+                               "not_removed": artifacts_not_removed,
+                               "not_found": artifacts_not_found}
     # Output FITS file if fits kwarg is set
     if fitsfile != None:
         # Create time array of time strings rather than datetime objects
