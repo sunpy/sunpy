@@ -32,6 +32,9 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
     order : int 0-5
         Interpolation order to be used. When using scikit-image this parameter
         is passed into :func:`skimage.transform.warp`.
+        The default value of order 3 is a bicubic interpolation when using
+        :func:`skimage.transform.warp` and a cubic spline interpolation
+        when using :func:`scipy.ndimage.interpolation.affine_transform`.
         When using scipy it is passed into
         :func:`scipy.ndimage.interpolation.affine_transform` where it controls
         the order of the spline.
