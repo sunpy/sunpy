@@ -384,24 +384,3 @@ def test_goes_lx():
     assert np.allclose(lx_test["shortlum_cumul"],
                        lx_expected["shortlum_cumul"], rtol=0.0001)
     assert np.allclose(lx_test["dt"], lx_expected["dt"], rtol=0.0001)
-
-def test__time_steps():
-    # Check correct exceptions are raised when incorrect input supplied.
-    obstime_1time = np.array(["2014-01-01 00:00:00"], dtype="datetime64[ms]")
-    with pytest.raises(IOError):
-        dt_test = goes._time_steps(obstime_1time)
-
-    # Test case 1: len(obstime) > 2
-    obstime = np.array(["2014-01-01 00:00:00", "2014-01-01 00:00:02",
-                        "2014-01-01 00:00:04", "2014-01-01 00:00:06",
-                        "2014-01-01 00:00:08",
-                        "2014-01-01 00:00:10"], dtype="datetime64[ms]")
-    dt_test = goes._time_steps(obstime)
-    dt_expected = np.array([1.0, 2.0, 2.0, 2.0, 2.0, 1.0])
-    assert (dt_test == dt_expected).all()
-
-    # Test case 1: len(obstime) == 2
-    obstime = np.array(["2014-01-01 00:00:00", "2014-01-01 00:00:02"])
-    dt_test = goes._time_steps(obstime)
-    dt_expected = np.array([1.0, 1.0])
-    assert (dt_test == dt_expected).all()
