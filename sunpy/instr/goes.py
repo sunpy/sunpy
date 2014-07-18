@@ -9,7 +9,10 @@ import socket
 from itertools import dropwhile
 
 import numpy as np
-import scipy.interpolate as interpolate
+from scipy import interpolate
+from scipy.integrate import trapz
+from scipy.integrate import cumtrapz
+
 
 from sunpy.net import hek
 from sunpy.time import parse_time
@@ -831,26 +834,25 @@ def calc_rad_loss(temp, em, obstime=None, cumulative=False, download=False,
         if not all(type(obst) == datetime.datetime for obst in obstime):
             raise TypeError("obstime must be an array-like whose elements are"
                             " convertible to datetime objects.")
-        # Calculate time intervals between time measurements.
-        dt = _time_steps(obstime)
-        # Check that times are in chronological order
-        if np.min(dt) <= 0:
-            raise ValueError("times in obstime must be in chronological order."
-                             )
-        rad_loss_int = np.sum(rad_loss*dt)
+        # Next, get measurement times in seconds from time of first
+        # measurement.
+        obstime_seconds = obstime.to_pydatetime()
+        obstime_seconds = obstime_seconds - obstime_seconds[0]
+        for i in range(len(obstime)):
+            obstime_seconds[i] = obstime_seconds[i].total_seonds()
+        # Finally, integrate using trapezoid rule
+        rad_loss_int = integrate.trapz(rad_loss, obstime_seconds)
         # If cumulative kwarg True, calculate cumulative radiated energy
         # in each GOES channel as a function of time.
         if cumulative:
-            rad_loss_cumul = np.zeros(n)
-            for i in range(n):
-                rad_loss_cumul[i] = np.sum(rad_loss[:i+1]*dt[:i+1])
+            rad_loss_cumul = integrate.cumtrapz(rad_loss, obstime_seconds)
             # Enter results into output dictionary.
             rad_loss_out = {"rad_loss_rate":rad_loss,
                             "rad_loss_cumul" : rad_loss_cumul,
-                            "rad_loss_int":rad_loss_int, "dt":dt}
+                            "rad_loss_int":rad_loss_int}
         else:
             rad_loss_out = {"rad_loss_rate":rad_loss,
-                            "rad_loss_int":rad_loss_int, "dt":dt}
+                            "rad_loss_int":rad_loss_int}
     else:
         # Ensure cumulative kwarg wasn't set without setting obstime.
         if cumulative:
