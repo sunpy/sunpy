@@ -22,7 +22,7 @@ CLASSIFIERS = [
     'Operating System :: MacOS'
 ]
 
-VERSION = '0.5.0'
+VERSION = '0.5.1'
 
 def git_description():
     import subprocess
