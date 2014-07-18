@@ -34,7 +34,7 @@ def test_filesave():
     # Test that adjusted header values are still correct after saving the map
     # and reloading it.
     afilename = tempfile.NamedTemporaryFile(suffix='fits').name
-    prep_map.save(afilename,clobber=True)
+    prep_map.save(afilename, clobber=True)
     load_map = sunpy.map.Map(afilename)
     # Check crpix values
     assert load_map.meta['crpix1'] == prep_map.shape[1]/2.0 + 0.5
