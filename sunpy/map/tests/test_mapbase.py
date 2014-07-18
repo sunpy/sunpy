@@ -340,11 +340,11 @@ def test_rotate():
 
 
 def test_rotate_recenter(aia_map):
-    map_center = (np.array(aia_map.data.shape)-1)/2.0
-    
+    array_center = (np.array(aia_map.data.shape)-1)/2.0
+
     # New image center in data coordinates
     new_center = np.asarray((200, 100))
-    
+
     rotated_map = aia_map.rotate(20, image_center=new_center, recenter=True)
 
     # Retrieve pixel coordinates for the centers from the new map
@@ -352,7 +352,7 @@ def test_rotate_recenter(aia_map):
     new_y = rotated_map.data_to_pixel(new_center[1], 'y')
 
     # The new desired image center should be in the map center
-    np.testing.assert_allclose((new_y, new_x), map_center)
+    np.testing.assert_allclose((new_y, new_x), array_center)
 
 
 def test_rotate_crota_remove(aia_map):
