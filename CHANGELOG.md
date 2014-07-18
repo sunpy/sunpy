@@ -1,3 +1,9 @@
+0.4.2
+-----
+Bug Fixes:
+    * Fixes to the operational range of GOES satellites
+    * Fix the URL for HELIO queries.
+
 0.4.1
 -----
 Bug Fixes:
