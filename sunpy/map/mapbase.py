@@ -585,6 +585,8 @@ Dimension:\t [%d, %d]
             When using scipy it is passed into
             :func:`scipy.ndimage.interpolation.affine_transform` where it controls
             the order of the spline.
+            Higher accuracy maybe obtained at the cost of performance by using higher
+            values.
         scale : float
             A scale factor for the image, default is no scaling
         image_center : tuple
@@ -612,10 +614,20 @@ Dimension:\t [%d, %d]
             A new Map instance containing the rotated and rescaled data of the
             original map.
 
+        See Also
+        --------
+        sunpy.image.transform.affine_transform : The routine this method calls for the rotation.
+
         Notes
         -----
         This function will remove old CROTA keywords from the header.
         This function will also convert a CDi_j matrix to a PCi_j matrix.
+
+        The two affine transform routines this method,
+        :func:`scipy.ndimage.interpolation.affine_transform` and
+        :func:`skimage.transform.warp` do not use the same interpolation
+        algorithm and therefore should not be expected to give idential output,
+        the scikit-image routines are preferred.
 
         This function is not numerically equalivalent to IDL's rot() see the
         :func:`sunpy.image.transform.affine_transform` documentation for a
@@ -680,7 +692,7 @@ Dimension:\t [%d, %d]
         new_map.meta['crval2'] = new_center[1]
         new_map.meta['crpix1'] = array_center[1] + 1 # FITS counts pixels from 1
         new_map.meta['crpix2'] = array_center[0] + 1 # FITS counts pixels from 1
-        
+
         # Calculate the new rotation matrix to store in the header by
         # "subtracting" the rotation matrix used in the rotate from the old one
         # That being calculate the dot product of the old header data with the
