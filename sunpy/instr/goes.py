@@ -1026,33 +1026,27 @@ def goes_lx(longflux, shortflux, obstime=None, date=None, cumulative=False):
         if not all(type(obst) == datetime.datetime for obst in obstime):
             raise TypeError("obstime must be an array-like whose elements are"
                             " convertible to datetime objects.")
-        # Calculate time intervals between each measurement.
-        dt = _time_steps(obstime)
-        # Check that times are in chronological order
-        if np.min(dt) <= 0:
-            raise ValueError("times in obstime must be in "
-                             "chronological order.")
-        longlum_int = np.sum(longlum*dt)
-        shortlum_int = np.sum(shortlum*dt)
+        # Next, get measurement times in seconds from time of first
+        # measurement.
+        obstime_seconds = obstime.to_pydatetime()
+        obstime_seconds = obstime_seconds - obstime_seconds[0]
+        for i in range(len(obstime)):
+            obstime_seconds[i] = obstime_seconds[i].total_seonds()
+        # Finally, integrate using trapezoid rule
+        longlum_int = integrate.trapz(longlum, obstime_seconds)
+        shortlum_int = integrate.trapz(shortlum, obstime_seconds)
         # If cumulative kwarg True, calculate cumulative radiated energy
         # in each GOES channel as a function of time.
         if cumulative is True:
-            n = len(obstime)
-            longlum_cumul = np.zeros(n)
-            shortlum_cumul = np.zeros(n)
-            for i in range(n):
-                longlum_cumul[i] = np.sum(longlum[:i+1]*dt[:i+1])
-                shortlum_cumul[i] = np.sum(shortlum[:i+1]*dt[:i+1])
-            # Enter results into output dictionary
+            longlum_cumul = integrate.cumtrapz(longlum, obstime_seconds)
+            shortlum_cumul = integrate.cumtrapz(shortlum, obstime_seconds)
             lx_out = {"longlum":longlum, "shortlum":shortlum,
                       "longlum_cumul":longlum_cumul,
                       "shortlum_cumul":shortlum_cumul,
-                      "longlum_int":longlum_int, "shortlum_int":shortlum_int,
-                      "dt":dt}
+                      "longlum_int":longlum_int, "shortlum_int":shortlum_int}
         else:
             lx_out = {"longlum":longlum, "shortlum":shortlum,
-                      "longlum_int":longlum_int, "shortlum_int":shortlum_int,
-                      "dt":dt}
+                      "longlum_int":longlum_int, "shortlum_int":shortlum_int}
     else:
         # Ensure cumulative kwarg wasn't set without setting obstime.
         if cumulative is True:
