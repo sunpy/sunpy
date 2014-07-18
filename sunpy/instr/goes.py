@@ -730,7 +730,7 @@ def calc_rad_loss(temp, em, obstime=None, cumulative=False, download=False,
         at the same times corresponding to the temperatures in temp.
         Must be same length as temp.  Units=[cm**-3]
 
-    obstime : (optional) array-like convertible to datetime64 e.g.np.array/list
+    obstime : (optional) array-like of datetime objects
         Array of measurement times to which temperature and
         emission measure values correspond.  Must be same length
         as temp and em.  If this keyword is set, the integrated
@@ -818,11 +818,19 @@ def calc_rad_loss(temp, em, obstime=None, cumulative=False, download=False,
     # If obstime keyword giving measurement times is set, calculate
     # radiative losses intergrated over time.
     if obstime is not None:
-        # First ensure obstime is of same length as temp and em.
+        # First ensure obstime is of same length as temp and em and of
+        # correct type.
         n = len(temp)
         if len(obstime) != n:
             raise IOError("obstime must have same number of elements as "
                           "temp and em.")
+        if type(obstime) == pandas.tseries.index.DatetimeIndex:
+            obstime = obstime.to_pydatetime
+        if any(type(obst) == str for obst in obstime):
+            parse_time(obstime)
+        if not all(type(obst) == datetime.datetime for obst in obstime):
+            raise TypeError("obstime must be an array-like whose elements are"
+                            " convertible to datetime objects.")
         # Calculate time intervals between time measurements.
         dt = _time_steps(obstime)
         # Check that times are in chronological order
@@ -939,7 +947,7 @@ def goes_lx(longflux, shortflux, obstime=None, date=None, cumulative=False):
         Array containing the observed GOES/XRS short channel flux.
         Units=[W/m**2]
 
-    obstime : (optional) array-like convertible to datetime64 e.g.np.array/list
+    obstime : (optional) array-like of datetime objects
         Measurement times corresponding to each flux measurement.
         Assumes each pair of 0.5-4 and 1-8 angstrom flux measurements
         were taken simultaneously.
@@ -1004,12 +1012,18 @@ def goes_lx(longflux, shortflux, obstime=None, date=None, cumulative=False):
     # If obstime keyword giving measurement times is set, calculate
     # total energy radiated in the GOES bandpasses during the flare.
     if obstime is not None:
-        obstime = np.asanyarray(obstime, dtype="datetime64[ms]")
         # First ensure longflux, shortflux, and obstime are all of
-        # equal length.
+        # equal length and obstime is of correct type.
         if not len(longflux) == len(shortflux) == len(obstime):
             raise ValueError("longflux, shortflux, and obstime must all have "
                              "same number of elements.")
+        if type(obstime) == pandas.tseries.index.DatetimeIndex:
+            obstime = obstime.to_pydatetime
+        if any(type(obst) == str for obst in obstime):
+            parse_time(obstime)
+        if not all(type(obst) == datetime.datetime for obst in obstime):
+            raise TypeError("obstime must be an array-like whose elements are"
+                            " convertible to datetime objects.")
         # Calculate time intervals between each measurement.
         dt = _time_steps(obstime)
         # Check that times are in chronological order
