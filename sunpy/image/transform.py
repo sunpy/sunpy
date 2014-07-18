@@ -69,6 +69,12 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
     geometrical transformation. It then defaults to a bicubic convolution
     interpolation.
 
+    The two affine transform routines this method,
+    :func:`scipy.ndimage.interpolation.affine_transform` and
+    :func:`skimage.transform.warp` do not use the same interpolation
+    algorithm and therefore should not be expected to give identical output,
+    the scikit-image routines are preferred.
+
     No direct comparision between this function and the IDL rot() function has
     been performed as it is a different transformation, however both are
     assumed to be mathamatically vaild.

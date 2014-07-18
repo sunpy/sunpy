@@ -585,8 +585,8 @@ Dimension:\t [%d, %d]
             When using scipy it is passed into
             :func:`scipy.ndimage.interpolation.affine_transform` where it controls
             the order of the spline.
-            Higher accuracy maybe obtained at the cost of performance by using higher
-            values.
+            Higher accuracy may be obtained at the cost of performance by using
+            higher values.
         scale : float
             A scale factor for the image, default is no scaling
         image_center : tuple
@@ -623,11 +623,8 @@ Dimension:\t [%d, %d]
         This function will remove old CROTA keywords from the header.
         This function will also convert a CDi_j matrix to a PCi_j matrix.
 
-        The two affine transform routines this method,
-        :func:`scipy.ndimage.interpolation.affine_transform` and
-        :func:`skimage.transform.warp` do not use the same interpolation
-        algorithm and therefore should not be expected to give idential output,
-        the scikit-image routines are preferred.
+        The scikit-image and scipy affine_transform routines do not use the same algorithm,
+        see :func:`sunpy.image.transform.affine_transform` for details.
 
         This function is not numerically equalivalent to IDL's rot() see the
         :func:`sunpy.image.transform.affine_transform` documentation for a
