@@ -234,7 +234,7 @@ def file_search(path, pattern):
 
     Returns
     -------
-    files : list of strings
+    files : generator
         file names of files found matching pattern.
 
     Examples
@@ -248,7 +248,7 @@ def file_search(path, pattern):
     ['dir/file1.txt', 'dir/subdir/subdir/file2.txt']
 
     """
-    files = [os.path.join(dirpath, f)
+    files = (os.path.join(dirpath, f)
              for dirpath, dirnames, filenames in os.walk(path)
-             for f in fnmatch.filter(filenames, pattern)]
+             for f in fnmatch.filter(filenames, pattern))
     return files
