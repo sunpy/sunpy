@@ -146,7 +146,7 @@ def test_deprecated():
 def test_file_search():
     path = os.path.curdir
     pattern = 'file_search_test_file*'
-    files = util.file_search(path, pattern)
+    files = list(util.file_search(path, pattern))
     assert files[0][:len(path)] == path
     assert files[0][len(path):] == 'file_search_test_file1.txt'
     assert files[1][:len(path)] == path
