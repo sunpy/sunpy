@@ -219,7 +219,7 @@ class Deprecated(object):
         newFunc.__dict__.update(func.__dict__)
         return newFunc
 
-def file_search(path, pattern):
+def file_search(path, pattern, return_list=False):
     """
     Returns filenames matching pattern from given path and its subdirectories.
 
@@ -231,10 +231,13 @@ def file_search(path, pattern):
     pattern : string
         pattern which must be matched in filename.  wildcards such as * are
         allowed.
+    return_list : (optional) bool
+        If this is set to True, a list from the generator is returned instead
+        of the generator istelf.  (See Returns section below.)
 
     Returns
     -------
-    files : generator
+    files : generator (But if return_list kwarg is True: list of strings)
         file names of files found matching pattern.
 
     Examples
@@ -251,4 +254,6 @@ def file_search(path, pattern):
     files = (os.path.join(dirpath, f)
              for dirpath, dirnames, filenames in os.walk(path)
              for f in fnmatch.filter(filenames, pattern))
+    if return_list == True:
+        files = list(files)
     return files
