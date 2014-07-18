@@ -1,3 +1,15 @@
+0.5.1
+-----
+Bug Fixes:
+
+    * MAJOR FIX: map.rotate() now works correctly for all submaps and off center rotations.
+    * HELIO URL updated, querys should now work as expected.
+    * All tabs removed from the code base.
+    * All tests now use tempfile rather than creating files in the current directory.
+    * Documentation builds under newer sphinx versions.
+    * ANA and JP2 tests are skipped if dependancies are missing.
+    * ANA tests are skipped on windows.
+
 0.5.0
 -----
 
@@ -28,6 +40,7 @@
 0.4.1
 -----
 Bug Fixes:
+
     * Fix map.rotate() functionality
     * Change of source for GOES data.
     * Fix EIT test data and sunpy FITS saving
