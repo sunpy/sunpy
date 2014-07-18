@@ -88,10 +88,10 @@ def clip_edges(data, yclips, xclips):
     data : ndarray
         A numpy array of shape (ny, nx).
 
-    yclips : ndarray of astropy.units.Quantity
+    yclips : `~astropy.units.Quantity` instance
         The amount to clip in the y-direction of the data.
 
-    xclips : ndarray of astropy.units.Quantity
+    xclips : `~astropy.units.Quantity` instance
         The amount to clip in the x-direction of the data.
 
     Returns
@@ -118,10 +118,10 @@ def calculate_clipping(y, x):
 
     Parameters
     ----------
-    y : ndarray of type astropy.units.Quantity
+    y : `~astropy.units.Quantity` instance
         An array of pixel shifts in the y-direction for an image.
 
-    x : ndarray of type astropy.units.Quantity
+    x : `~astropy.units.Quantity` instance
         An array of pixel shifts in the x-direction for an image.
 
     Returns
@@ -205,7 +205,7 @@ def find_best_match_location(corr):
 
     Returns
     -------
-    shift : tuple of type astropy.Quantity
+    shift : `~astropy.units.Quantity` instance
         The shift amounts (y, x) in image pixels.  Subpixel values are
         possible.
     """
@@ -241,7 +241,7 @@ def get_correlation_shifts(array):
 
     Returns
     -------
-    peakloc : tuple of type astropy.units.Quantity
+    peakloc : `~astropy.units.Quantity` instance
         The (y, x) location of the peak of a parabolic fit, in image pixels.
     """
     # Check input shape

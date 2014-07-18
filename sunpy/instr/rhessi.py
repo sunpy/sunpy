@@ -344,9 +344,9 @@ def backprojection(calibrated_event_list, pixel_size=(1.,1.) * u.arcsec, image_d
         filename of a RHESSI calibrated event list
     detector : int
         the detector number
-    pixel_size : 2-tuple of astropy.units.Quantity type
+    pixel_size : `~astropy.units.Quantity` instance
         the size of the pixels in arcseconds. Default is (1,1).
-    image_dim : 2-tuple of astropy.units.Quantity type
+    image_dim : `~astropy.units.Quantity` instance
         the size of the output image in number of pixels
 
     Returns
@@ -361,8 +361,12 @@ def backprojection(calibrated_event_list, pixel_size=(1.,1.) * u.arcsec, image_d
     >>> map.peek()
 
     """
-    if not (isinstance(pixel_size, u.Quantity) and pixel_size.unit == 'arcsec'):
+    if not isinstance(pixel_size, u.Quantity):
         raise ValueError("Must be astropy Quantity in arcseconds")
+    try:
+       pixel_size = pixel_size.to(u.arcsec)
+    except:
+       raise ValueError("'{0}' is not a valid pixel_size unit".format(pixel_size.unit))
     if not (isinstance(image_dim, u.Quantity) and image_dim.unit == 'pix'):
         raise ValueError("Must be astropy Quantity in pixels")
     calibrated_event_list = sunpy.RHESSI_EVENT_LIST

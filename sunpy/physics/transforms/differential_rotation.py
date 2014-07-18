@@ -19,7 +19,7 @@ def diff_rot(ddays,latitude,rot_type='howard',frame_time='sidereal'):
     ddays: float or timedelta
         Number of days to rotate over, or timedelta object.
 
-    latitude: astropy.units.Quantity
+    latitude: '~astropy.units.Quantity` instance
         heliographic coordinate latitude in Degrees.
 
     rot_type: {'howard' | 'snodgrass' | 'allen'}
@@ -61,7 +61,8 @@ def diff_rot(ddays,latitude,rot_type='howard',frame_time='sidereal'):
 
     if not isinstance(latitude, u.Quantity):
 	raise TypeError("Expecting astropy Quantity")
-    
+
+    latitude = latitude.to(u.deg)
     delta_seconds = (delta.microseconds + (delta.seconds + delta.days * 24 * 3600) *
                     10**6) / 10**6
     delta_days = delta_seconds / 24 / 3600
