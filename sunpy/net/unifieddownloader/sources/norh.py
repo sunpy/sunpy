@@ -1,6 +1,6 @@
 from sunpy.net.vso.attrs import Time, Instrument
 from sunpy.net.unifieddownloader.client import GenericClient
-import datetime,urlparse
+import datetime, urlparse
 
 __all__ = ['Time', 'Instrument']
 class NoRHClient(GenericClient):
@@ -29,28 +29,28 @@ class NoRHClient(GenericClient):
 
         #default urllib password anonymous@ is not accepted by the NoRH FTP server.
         #include an accepted password in base url
-        baseurl='ftp://anonymous:mozilla@example.com@solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/'
+        baseurl = 'ftp://anonymous:mozilla@example.com@solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/'
 
         #date is a datetime.date object
         if wavelength == '34':
-            final_url=urlparse.urljoin(baseurl,date.strftime('%Y/%m/' + 'tcz' + '%y%m%d'))
+            final_url = urlparse.urljoin(baseurl, date.strftime('%Y/%m/' + 'tcz' + '%y%m%d'))
         else:
-            final_url=urlparse.urljoin(baseurl, date.strftime('%Y/%m/' + 'tca' + '%y%m%d'))
+            final_url = urlparse.urljoin(baseurl, date.strftime('%Y/%m/' + 'tca' + '%y%m%d'))
 
         return final_url
 
     def _makeimap(self):
         '''Helper Function:used to hold information about source. '''
-        self.map_['source']= 'NAOJ'
+        self.map_['source'] = 'NAOJ'
         self.map_['provider'] ='NRO'
         self.map_['instrument'] = 'RadioHelioGraph'
         self.map_['phyobs'] = ''
     
     @classmethod
-    def _can_handle_query(cls,*query):
+    def _can_handle_query(cls, *query):
         """Boolean Function:Answers whether client can service the query.
 	"""
-	chkattr =  ['Time','Instrument']
+	chkattr =  ['Time', 'Instrument']
         chklist =  [x.__class__.__name__ in chkattr for x in query]
         for x in query:
 	    if x.__class__.__name__ == 'Instrument' and x.value == 'norh':

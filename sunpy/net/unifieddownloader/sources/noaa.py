@@ -1,8 +1,8 @@
-from sunpy.net.vso.attrs import Time,Instrument
+from sunpy.net.vso.attrs import Time, Instrument
 from sunpy.net.unifieddownloader.client import GenericClient
 
 
-__all__ = ['Time','Instrument']
+__all__ = ['Time', 'Instrument']
 
 class NOAAIndicesClient(GenericClient):
 
@@ -20,11 +20,11 @@ class NOAAIndicesClient(GenericClient):
 	    self.map_['provider'] = 'swpc'
         
         @classmethod
-        def _can_handle_query(cls,*query):
+        def _can_handle_query(cls, *query):
             """Boolean Function:Answers whether client can service the query.
             """
-	    chkattr =  ['Time','Instrument']
-            chklist =  [x.__class__.__name__ in chkattr for x in query]
+	    chkattr = ['Time', 'Instrument']
+            chklist = [x.__class__.__name__ in chkattr for x in query]
             for x in query:
 	        if x.__class__.__name__ == 'Instrument' and x.value == 'noaa-indices':
                     return all(chklist)
@@ -46,11 +46,11 @@ class NOAAPredictClient(GenericClient):
 	    self.map_['provider'] = 'swpc'
         
         @classmethod
-        def _can_handle_query(cls,*query):
+        def _can_handle_query(cls, *query):
             """Boolean Function:Answers whether client can service the query.
             """
-	    chkattr =  ['Time','Instrument']
-            chklist =  [x.__class__.__name__ in chkattr for x in query]
+	    chkattr = ['Time', 'Instrument']
+            chklist = [x.__class__.__name__ in chkattr for x in query]
             for x in query:
 	        if x.__class__.__name__ == 'Instrument' and x.value == 'noaa-predict':
                     return all(chklist)
