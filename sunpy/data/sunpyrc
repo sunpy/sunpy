@@ -22,6 +22,7 @@
 ; and download files will be stored.
 ; Default Value: <user's home directory>/sunpy
 ; working_dir = /home/$USER/sunpy
+time_format = %%Y/%%m/%%d %%H:%%M:%%S
 
 ;;;;;;;;;;;;;
 ; Downloads ;
