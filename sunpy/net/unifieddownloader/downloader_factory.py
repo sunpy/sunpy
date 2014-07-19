@@ -4,16 +4,16 @@ from sunpy.net.vso.attrs import *
 from sunpy.util.datatype_factory_base import NoMatchError
 from sunpy.util.datatype_factory_base import MultipleMatchError
 from sunpy.net.unifieddownloader.client import GenericClient
-__all__=['UnifiedDownloader']
+__all__ = ['UnifiedDownloader']
 
 class UnifiedResponse(list): 
 
-    def __init__(self,lst):
-        tmplst=[]
+    def __init__(self, lst):
+        tmplst = []
         for block in lst:
 	    block[0].client = block[1]
 	    tmplst.append(block[0])
-	super(UnifiedResponse,self).__init__(tmplst)
+	super(UnifiedResponse, self).__init__(tmplst)
     
     def num_records(self):
     	return len(self)
@@ -22,18 +22,18 @@ class UnifiedResponse(list):
 qwalker = AttrWalker()
 
 @qwalker.add_creator(AttrAnd)
-def _create(wlk,query,dobj):
+def _create(wlk, query, dobj):
     #qwalker calls this function on finding AttrAnd object in query.
-    qresponseobj,qclient = dobj._get_registered_widget(*query.attrs)
-    return [(qresponseobj,qclient)]
+    qresponseobj, qclient = dobj._get_registered_widget(*query.attrs)
+    return [(qresponseobj, qclient)]
 
 
 @qwalker.add_creator(AttrOr)
-def _create(wlk,query,dobj):    
+def _create(wlk, query, dobj):    
     #qwalker calls this function on finding Attror object in query.
     qblocks = []
     for iattr in query.attrs:
-        qblocks.extend(wlk.create(iattr,dobj))
+        qblocks.extend(wlk.create(iattr, dobj))
     
     return qblocks
 
@@ -41,7 +41,7 @@ def _create(wlk,query,dobj):
 class UnifiedDownloaderFactory(BasicRegistrationFactory):
 
 
-    def query(self,*query):
+    def query(self, *query):
         '''
         and_ tranforms query into disjunctive normal form 
 	ie. query is now of form A & B or ((A & B) | (C & D))
@@ -51,9 +51,9 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
 	output: List of tuples of form(queryresponse,instance of selected client).
         '''
 	query = and_(*query)	
-        return UnifiedResponse(qwalker.create(query,self))
+        return UnifiedResponse(qwalker.create(query, self))
 
-    def get(self,qr,**kwargs):
+    def get(self, qr, **kwargs):
         '''
 	Downloads the data.
 	Input:
@@ -63,15 +63,15 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
 	'''
 	reslist =[]
     	for block in qr:
-		reslist.append(block.client.get(block,**kwargs))
+		reslist.append(block.client.get(block, **kwargs))
 	
 	return reslist
 
-    def __call__(self,*args,**kwargs):
+    def __call__(self, *args, **kwargs):
         pass
 
 
-    def _check_registered_widgets(self,*args,**kwargs):
+    def _check_registered_widgets(self, *args, **kwargs):
         '''Factory helper function'''
         candidate_widget_types = list()
 	for key in self.registry:
@@ -93,11 +93,11 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
 
         return candidate_widget_types
 
-    def _get_registered_widget(self,*args,**kwargs):
+    def _get_registered_widget(self, *args, **kwargs):
         '''Factory helper function'''
         candidate_widget_types = self._check_registered_widgets(*args)
 	tmpclient = candidate_widget_types[0]()
-	return tmpclient.query(*args),tmpclient
+	return tmpclient.query(*args), tmpclient
 
 
 UnifiedDownloader = UnifiedDownloaderFactory(additional_validation_functions = ['_can_handle_query'])
