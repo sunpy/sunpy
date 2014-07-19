@@ -1,8 +1,8 @@
-from sunpy.net.vso.attrs import Time,Instrument,Level
+from sunpy.net.vso.attrs import Time, Instrument, Level
 from sunpy.net.unifieddownloader.client import GenericClient
-import datetime,urlparse
+import datetime, urlparse
 
-__all__ = ['Time','Instrument','Level']
+__all__ = ['Time', 'Instrument', 'Level']
 
 class LYRAClient(GenericClient):
 
@@ -26,7 +26,7 @@ class LYRAClient(GenericClient):
             """Returns a URL to the LYRA data for the specified date"""
             if not isinstance(date, datetime.date):
                 raise ValueError("This method requires a date")
-	    filename = "lyra_%s000000_lev%d_%s.fits" % (date.strftime('%Y%m%d-'),2, 'std')
+	    filename = "lyra_%s000000_lev%d_%s.fits" % (date.strftime('%Y%m%d-'), 2, 'std')
 	    base_url = "http://proba2.oma.be/lyra/data/bsd/"
             url_path = urlparse.urljoin(date.strftime('%Y/%m/%d/'), filename)
 	    return urlparse.urljoin(base_url, url_path)
@@ -39,10 +39,10 @@ class LYRAClient(GenericClient):
 	    self.map_['provider'] = 'esa'
         
         @classmethod
-        def _can_handle_query(cls,*query):
+        def _can_handle_query(cls, *query):
             """Boolean Function:Answers whether client can service the query.
             """
-	    chkattr =  ['Time','Instrument','Level']
+	    chkattr =  ['Time', 'Instrument', 'Level']
             chklist =  [x.__class__.__name__ in chkattr for x in query]
             for x in query:
 	        if x.__class__.__name__ == 'Instrument' and x.value == 'lyra':
