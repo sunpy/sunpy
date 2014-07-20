@@ -13,7 +13,7 @@ from sunpy.tests.helpers import skip_ana, skip_glymur
 #==============================================================================
 # Test, read, get_header and write through the file independant layer
 #==============================================================================
-class TestFiletools():
+class TestFiletools(object):
 
     def test_read_file_fits(self):
         #Test read FITS
