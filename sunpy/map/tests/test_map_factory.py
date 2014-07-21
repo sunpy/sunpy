@@ -29,7 +29,7 @@ a_fname = a_list_of_many[0]
 #==============================================================================
 # Map Factory Tests
 #==============================================================================
-class TestMap:
+class TestMap(object):
     def test_mapcube(self):
         #Test making a MapCube
         cube = sunpy.map.Map(a_list_of_many, cube=True)

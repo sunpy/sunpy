@@ -31,7 +31,7 @@ from sunpy.util.datatype_factory_base import ValidationFunctionError
 try:
     from sunpy.database.tables import DatabaseEntry
 except ImportError:
-    class DatabaseEntry:
+    class DatabaseEntry(object):
         pass
 
 __all__ = ['Map', 'MapFactory']

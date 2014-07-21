@@ -89,6 +89,6 @@ def test_vso_attribute_parse():
     assert vso_query[3].max == hek2vso.wave_unit_catcher(hek_query[0]['obs_meanwavel'], hek_query[0]['obs_wavelunit'])
     assert vso_query[3].unit == 'Angstrom'
 
-class TestH2VClient:
+class TestH2VClient(object):
     """Tests the H2V class"""
     # TODO

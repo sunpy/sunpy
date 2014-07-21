@@ -10,7 +10,7 @@ TIME_FORMAT = config.get('general', 'time_format')
 __all__ = ['TimeRange']
 
 
-class TimeRange:
+class TimeRange(object):
     """
     Timerange(a, b) or Timerange((a, b))
 
