@@ -6,7 +6,7 @@ from sunpy.time import parse_time
 __all__ = ['roi']
 
 
-class roi:
+class roi(object):
     """
     A generalized region of interest (ROI) object
 
