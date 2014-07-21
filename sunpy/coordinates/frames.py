@@ -331,8 +331,18 @@ class HelioProjective(BaseCoordinateFrame):
     # Note that Trho = Drho + 90, and Drho is the declination parameter.
     # According to Thompson, we use Trho internally and Drho as part of
     # the (Drho, psi) pair when defining a coordinate in this system.
+           
+    def hpc_separation_angle(self):
+        return np.arccos(np.cos(self.Tx) * np.cos(self.Ty)).to(self.Tx.unit)
 
-
+    def get_distance_hpc(self):
+        alpha = hpc_separation_angle()
+        c = (self.D0.to(u.m))**2 - RSUN_METERS**2
+        b = -2 * self.D0.to(u.m) * np.cos(alpha)
+        d = ((-1*b) - np.sqrt(b**2 - 4*c)) / 2
+        
+        return d.to(self.distance.unit)        
+        
 def _carrington_offset(dateobs):
     if dateobs is None:
         raise ValueError("To perform this transformation the coordinate Frame needs a dateobs Attribute")
