@@ -82,10 +82,10 @@ def test_true_obliquity_of_ecliptic():
     assert_array_almost_equal(sun.true_obliquity_of_ecliptic("2132/12/29"), 23.421 * u.deg, decimal=3)
     assert_array_almost_equal(sun.true_obliquity_of_ecliptic("2002/03/15"), 23.438 * u.deg, decimal=3)
 
-def test_true_rightascenscion():
-    assert_array_almost_equal(sun.true_rightascenscion("2012/11/11"), 359.318 * u.deg, decimal=3)
-    assert_array_almost_equal(sun.true_rightascenscion("2142/02/03"), 359.328 * u.deg, decimal=3)
-    assert_array_almost_equal(sun.true_rightascenscion("2013/12/11"), 359.102 * u.deg, decimal=3)
+def test_true_rightasenscion():
+    assert_array_almost_equal(sun.true_rightascension("2012/11/11"), 359.318 * u.deg, decimal=3)
+    assert_array_almost_equal(sun.true_rightascension("2142/02/03"), 359.328 * u.deg, decimal=3)
+    assert_array_almost_equal(sun.true_rightascension("2013/12/11"), 359.102 * u.deg, decimal=3)
 
 def test_true_declination():
     assert_array_almost_equal(sun.true_declination("2012/11/11"), -0.669 * u.deg, decimal=3)
@@ -97,10 +97,10 @@ def test_apparent_obliquity_of_ecliptic():
     assert_array_almost_equal(sun.apparent_obliquity_of_ecliptic("2014/05/27"), 23.438 * u.deg, decimal=3)
     assert_array_almost_equal(sun.apparent_obliquity_of_ecliptic("2412/02/26"), 23.388 * u.deg, decimal=3)
 
-def test_apparent_rightascenscion():
-    assert_array_almost_equal(sun.apparent_rightascenscion("2012/11/11"), 15.035 * u.hourangle, decimal=3)
-    assert_array_almost_equal(sun.apparent_rightascenscion("2013/12/13"), 17.282 * u.hourangle, decimal=3)
-    assert_array_almost_equal(sun.apparent_rightascenscion("2512/04/09"), 1.134 * u.hourangle, decimal=3)
+def test_apparent_rightascension():
+    assert_array_almost_equal(sun.apparent_rightascension("2012/11/11"), 15.035 * u.hourangle, decimal=3)
+    assert_array_almost_equal(sun.apparent_rightascension("2013/12/13"), 17.282 * u.hourangle, decimal=3)
+    assert_array_almost_equal(sun.apparent_rightascension("2512/04/09"), 1.134 * u.hourangle, decimal=3)
 
 def test_solar_north():
     assert_array_almost_equal(sun.solar_north("2012/11/11"), 15.149 * u.deg, decimal=3)
