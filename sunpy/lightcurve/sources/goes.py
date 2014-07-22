@@ -103,7 +103,7 @@ class GOESLightCurve(LightCurve):
             if ((start > goes_operational[sat_num].start and
                  start < goes_operational[sat_num].end and
                 (end > goes_operational[sat_num].start and
-                 end < goes_operational[sat_num].end):
+                 end < goes_operational[sat_num].end))):
                 # if true then the satellite with sat_num is available
                 sat_list.append(sat_num)
 
