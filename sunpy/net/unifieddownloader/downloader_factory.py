@@ -30,8 +30,8 @@ class UnifiedResponse(list):
         
 	table =[
 	        [
-		     (qrblock.time.t1.date() + timedelta(days=i)).strftime('%Y/%m/%d'),
-		     (qrblock.time.t2.date() + timedelta(days=i)).strftime('%Y/%m/%d'),
+		     (qrblock.time.t1.date() + timedelta(days=i)).strftime('%Y/%m/%d'), #vso serviced query will break here
+		     (qrblock.time.t2.date() + timedelta(days=i)).strftime('%Y/%m/%d'), #time.t1 --> time.start required
 		     qrblock.source,
 		     qrblock.instrument,
 		     qrblock.url
@@ -42,6 +42,20 @@ class UnifiedResponse(list):
 	table.insert(0,['Start time', 'End time', 'Source', 'Instrument', 'URL'])
 
         return print_table(table, colsep = '  ', linesep = '\n')
+
+class downloadresponse(list):
+    
+    def __init__(self,lst):
+        
+	super(downloadresponse, self).__init__(lst)
+   
+    def wait(self):
+        
+	filelist = []
+	for resobj in self:
+	    filelist.extend(resobj.wait())
+        
+	return filelist
 
 
 qwalker = AttrWalker()
@@ -90,7 +104,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
     	for block in qr:
 		reslist.append(block.client.get(block, **kwargs))
 	
-	return reslist
+	return downloadresponse(reslist)
 
     def __call__(self, *args, **kwargs):
         pass
