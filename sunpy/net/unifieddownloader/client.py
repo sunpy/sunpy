@@ -15,9 +15,7 @@ class queryrequestblock(object):
         self.phyobs = map_.get('phyobs', "Data not Available")
         self.instrument = map_.get('instrument', "Data not Available")
         self.url = url
-        self.time = {}
-        self.time['start'] = map_.get('Time_start', "Data not Available")
-        self.time['end'] = map_.get('Time_end', "Data not available")
+        self.time = TimeRange(map_.get('Time_start'),map_.get('Time_end'))
 
 def iter_urls(map_, url_list):
     """Helper Function"""
@@ -41,25 +39,26 @@ class queryresponse(list):
     def time_range(self):
     	"""Returns the time-span query extends over"""
 	return (datetime.date.strftime(
-	        min(qrblock.time['start'] for qrblock in self), '%Y/%m/%d'),
+	        min(qrblock.time.t1 for qrblock in self), '%Y/%m/%d'),
 		datetime.date.strftime(
-		max(qrblock.time['end'] for qrblock in self), '%Y/%m/%d'))
+		max(qrblock.time.t2 for qrblock in self), '%Y/%m/%d'))
     
-    def show(self):
+    def __str__(self):
         """Presents data within container in a presentable manner"""
-        table = [
+	
+	table = [
 	         [ 
-		  qrblock.time['start'].strftime('%Y/%m/%d'),
-		  qrblock.time['end'].strftime('%Y/%m/%d'),
+		  qrblock.time.t1.strftime('%Y/%m/%d'),
+		  qrblock.time.t2.strftime('%Y/%m/%d'),
 		  qrblock.source,
 		  qrblock.instrument,
 		  qrblock.url
 		 ] 
 		  for qrblock in self
 		]
+        table.insert(0, ['----------', '--------', '------', '----------', '---'])
 	table.insert(0, ['Start time', 'End time', 'Source', 'Instrument', 'URL'])
-	print print_table(table, colsep='  ', linesep='\n')
-
+	return print_table(table, colsep='  ', linesep='\n')
 
 
 class GenericClient(object):    

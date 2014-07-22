@@ -36,7 +36,7 @@ def test_can_handle_query():
 def test_query():
     qr1 = LCClient.query(Time('2011/4/9','2011/4/9'),Instrument('rhessi'))
     assert isinstance(qr1,queryresponse)
-    assert qr1.num_records() == 1
+    assert len(qr1) == 1
     assert qr1.time_range()[0] == '2011/04/09'
     assert qr1.time_range()[1] == '2011/04/09'
     
@@ -50,5 +50,5 @@ def test_get(time,instrument):
     qr1 = LCClient.query(time,instrument)
     res = LCClient.get(qr1)
     download_list = res.wait()
-    assert len(download_list) == qr1.num_records()
+    assert len(download_list) == len(qr1)
 

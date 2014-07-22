@@ -36,7 +36,7 @@ def test_get(time,instrument):
     unifiedresp = UnifiedDownloader.query(time,instrument)
     res = UnifiedDownloader.get(unifiedresp)
     download_list = res[0].wait()
-    assert len(download_list) == unifiedresp[0].num_records()
+    assert len(download_list) == len(unifiedresp[0])
 
 
 @pytest.mark.online
@@ -50,7 +50,7 @@ def test_get(time,instrument):
 def test_multiple_time(time1,time2,instrument):
 
     unifiedresp = UnifiedDownloader.query(time1 | time2, instrument)
-    num_files_to_download = sum([block.num_records() for block in unifiedresp])
+    num_files_to_download = len(unifiedresp)
     res = UnifiedDownloader.get(unifiedresp)
     files_downloaded = sum([len(resobj.wait()) for resobj in res])
     assert files_downloaded == num_files_to_download
@@ -65,7 +65,7 @@ def test_multiple_time(time1,time2,instrument):
 def test_multiple_clients(time, instrument1, instrument2):
 
     unifiedresp = UnifiedDownloader.query(time, instrument1 | instrument2)
-    num_files_to_download = sum([block.num_records() for block in unifiedresp])
+    num_files_to_download = len(unifiedresp)
     res = UnifiedDownloader.get(unifiedresp)
     files_downloaded = sum([len(resobj.wait()) for resobj in res])
     assert files_downloaded == num_files_to_download
