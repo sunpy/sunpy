@@ -295,21 +295,21 @@ class HelioProjective(BaseCoordinateFrame):
                         kwargs['distance'] = kwargs.get('D0', self.D0) - kwargs['zeta']
                         kwargs.pop('zeta')
                     elif 'distance' not in kwargs and 'zeta' not in kwargs:
-                        kwargs['distance'] = (1*u.au).to(u.km)
+                        kwargs['distance'] = self.get_distance_hpc(*args, **kwargs)
                     elif 'distance' in kwargs and 'zeta' in kwargs:
                         raise TypeError("zeta and distance cannot both be "
-                                        "specified in the {0} frame.".format(self.__class__))
+                                        "specified in the {0} frame.".format(self.__class__.name))
                 elif len(args) == 3:
                     # If we have args(Tx, Ty, distance).
                     if 'zeta' in kwargs:
                         raise TypeError("zeta and distance cannot both "
-                                        "be specified here for the {0} frame.".format(self.__class__))
+                                        "be specified here for the {0} frame.".format(self.__class__.name))
             elif not kwargs:
                 # The case when kwargs are not present.
                 if len(args) == 2:
                     # args(Tx, Ty) provided.
                     args = list(args)
-                    args.append((1*u.au).to(u.km))
+                    args.append(self.get_distance_hpc(*tuple(args)))
                     args = tuple(args)
             elif not args:
                 # The case when args are not present.
@@ -321,7 +321,7 @@ class HelioProjective(BaseCoordinateFrame):
                         # This if clause was added to deal with a frame
                         # which does not have Tx, Ty, distance but may
                         # have other kwargs (FrameAttributes).
-                        kwargs['distance'] = (1*u.au).to(u.km)
+                        kwargs['distance'] = self.get_distance_hpc(**kwargs)
                 elif 'distance' in kwargs and 'zeta' in kwargs:
                     raise TypeError("zeta and distance cannot both be "
                                     "specified here for the {0} frame.".format(self.__class__))
@@ -331,14 +331,51 @@ class HelioProjective(BaseCoordinateFrame):
     # Note that Trho = Drho + 90, and Drho is the declination parameter.
     # According to Thompson, we use Trho internally and Drho as part of
     # the (Drho, psi) pair when defining a coordinate in this system.
-
-    def get_distance_hpc(self):
-        alpha = np.arccos(np.cos(self.Tx) * np.cos(self.Ty)).to(self.Tx.unit)
-        c = (self.D0.to(u.m))**2 - RSUN_METERS**2
-        b = -2 * self.D0.to(u.m) * np.cos(alpha)
+           
+    def get_distance_hpc(self, *args, **kwargs):
+        """
+        This method calculates the 'distance' parameter if it is not specifed.
+        It takes Tx, Ty and possibly D0 as its input.
+        It returns distance in kilometers.
+        """
+        c, b = None, None
+        list_params = self._get_input_params(*args, **kwargs)        
+        
+        alpha = np.arccos(np.cos(list_params[0]) * np.cos(list_params[1]))\
+                .to(list_params[0].unit)
+        if len(list_params) == 3:
+            c = (list_params[2].to(u.m))**2 - RSUN_METERS**2
+            b = -2 * list_params[2].to(u.m) * np.cos(alpha)
+        else:
+            c = (self.D0.to(u.m))**2 - RSUN_METERS**2
+            b = -2 * self.D0.to(u.m) * np.cos(alpha)
         d = ((-1*b) - np.sqrt(b**2 - 4*c)) / 2
         
-        return d.to(self.distance.unit)        
+        return d.to(u.km)
+
+    def _get_input_params(self, *args, **kwargs):
+        """
+        This method prunes the args and kwargs to find Tx, Ty and D0.
+        It is used by get_distance_hpc(). It returns a list of these values
+        in the order [Tx, Ty, D0] or [Tx, Ty].
+        If D0 is not specified, get_distance_hpc() uses the default D0 instead.
+        """
+        list_params = []
+        if len(args) == 2:
+            list_params = list(args)
+        elif len(args) == 1:
+            if 'Tx' in kwargs:
+                list_params.append(kwargs['Tx'])
+                list_params.append(args[0])
+            elif 'Ty' in kwargs:
+                list_params = list(args)
+                list_params.append(kwargs['Ty'])
+        elif not args:
+            list_params.append(kwargs['Tx'])
+            list_params.append(kwargs['Ty'])
+        if 'D0' in kwargs:
+            list_params.append(kwargs['D0'])
+        return list_params
         
 def _carrington_offset(dateobs):
     if dateobs is None:
