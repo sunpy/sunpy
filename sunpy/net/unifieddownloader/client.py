@@ -1,6 +1,6 @@
 from sunpy.net.download  import Downloader
 from sunpy.time import TimeRange
-import datetime
+from datetime import timedelta
 from sunpy.net.vso.vso import Results
 from sunpy.util import print_table
 from sunpy.net.vso.attrs import Time
@@ -48,13 +48,13 @@ class queryresponse(list):
 	
 	table = [
 	         [ 
-		  qrblock.time.t1.strftime('%Y/%m/%d'),
-		  qrblock.time.t2.strftime('%Y/%m/%d'),
+		  (qrblock.time.t1.date() + timedelta(days=i)).strftime('%Y/%m/%d'),
+		  (qrblock.time.t2.date() + timedelta(days=i)).strftime('%Y/%m/%d'),
 		  qrblock.source,
 		  qrblock.instrument,
 		  qrblock.url
 		 ] 
-		  for qrblock in self
+		  for i,qrblock in enumerate(self)
 		]
         table.insert(0, ['----------', '--------', '------', '----------', '---'])
 	table.insert(0, ['Start time', 'End time', 'Source', 'Instrument', 'URL'])

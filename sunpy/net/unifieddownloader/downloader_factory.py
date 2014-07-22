@@ -1,3 +1,4 @@
+from datetime import timedelta
 from sunpy.util.datatype_factory_base import BasicRegistrationFactory
 from sunpy.net.attr import *
 from sunpy.net.vso.attrs import *
@@ -29,13 +30,13 @@ class UnifiedResponse(list):
         
 	table =[
 	        [
-		     qrblock.time.t1.strftime('%Y/%m/%d'),
-		     qrblock.time.t2.strftime('%Y/%m/%d'),
+		     (qrblock.time.t1.date() + timedelta(days=i)).strftime('%Y/%m/%d'),
+		     (qrblock.time.t2.date() + timedelta(days=i)).strftime('%Y/%m/%d'),
 		     qrblock.source,
 		     qrblock.instrument,
 		     qrblock.url
 		]
-		for block in self for qrblock in block
+		for block in self for i,qrblock in enumerate(block)
 	       ]
 	table.insert(0,['----------', '--------', '------', '----------', '---'])
 	table.insert(0,['Start time', 'End time', 'Source', 'Instrument', 'URL'])
