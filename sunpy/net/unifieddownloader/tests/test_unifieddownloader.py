@@ -11,8 +11,8 @@ from sunpy.net.unifieddownloader.downloader_factory import UnifiedDownloader
 (attrs.Time('2012/3/5','2012/3/7'),attrs.Instrument('lyra'),"LYRAClient"),
 (attrs.Time('2012/1/8','2012/1/9'),attrs.Instrument('norh'),"NoRHClient"),
 (attrs.Time('2012/4/22','2012/4/25'),attrs.Instrument('rhessi'),"RHESSIClient"),
-#(attrs.Time('2012/1/8','2012/3/9'),attrs.Instrument('noaa-indices'),"NOAAIndicesClient"),
-#(attrs.Time('2012/12/8','2012/12/9'),attrs.Instrument('noaa-predict'),"NOAAPredictClient"),
+(attrs.Time('2012/1/8','2012/3/9'),attrs.Instrument('noaa-indices'),"NOAAIndicesClient"),
+(attrs.Time('2012/12/8','2012/12/9'),attrs.Instrument('noaa-predict'),"NOAAPredictClient"),
 ])
 def test_query(time,instrument,client):
     
@@ -35,7 +35,7 @@ def test_get(time,instrument):
     
     unifiedresp = UnifiedDownloader.query(time,instrument)
     res = UnifiedDownloader.get(unifiedresp)
-    download_list = res[0].wait()
+    download_list = res.wait()
     assert len(download_list) == len(unifiedresp[0])
 
 
@@ -52,7 +52,7 @@ def test_multiple_time(time1,time2,instrument):
     unifiedresp = UnifiedDownloader.query(time1 | time2, instrument)
     num_files_to_download = len(unifiedresp)
     res = UnifiedDownloader.get(unifiedresp)
-    files_downloaded = sum([len(resobj.wait()) for resobj in res])
+    files_downloaded = len(res.wait())
     assert files_downloaded == num_files_to_download
 
 
@@ -67,7 +67,7 @@ def test_multiple_clients(time, instrument1, instrument2):
     unifiedresp = UnifiedDownloader.query(time, instrument1 | instrument2)
     num_files_to_download = len(unifiedresp)
     res = UnifiedDownloader.get(unifiedresp)
-    files_downloaded = sum([len(resobj.wait()) for resobj in res])
+    files_downloaded = len(res.wait())
     assert files_downloaded == num_files_to_download
 
 
@@ -78,6 +78,6 @@ def test_vso():
     attrs.Wave(304,304), attrs.Sample(600))
     num_files_to_download = sum([block.num_records() for block in unifiedresp])
     res = UnifiedDownloader.get(unifiedresp)
-    files_downloaded = sum([len(resobj.wait()) for resobj in res])
+    files_downloaded = len(res.wait())
     assert files_downloaded == num_files_to_download
 
