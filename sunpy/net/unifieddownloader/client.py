@@ -38,10 +38,6 @@ class queryresponse(list):
     	
 	return cls(iter_urls(map_, lst))
     
-    def num_records(self):
-	"""Returns the number of files retrieved in relation to given time-range"""
-        return len(self)
-
     def time_range(self):
     	"""Returns the time-span query extends over"""
 	return (datetime.date.strftime(
