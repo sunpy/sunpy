@@ -198,7 +198,7 @@ def apparent_obliquity_of_ecliptic(t='now'):
     result = true_obliquity_of_ecliptic(t) + (0.00256 * np.cos(omega)) * u.deg
     return result
 
-def apparent_rightascenscion(t='now'):
+def apparent_rightascension(t='now'):
     """Returns the apparent right ascenscion of the Sun."""
     y = np.cos(apparent_obliquity_of_ecliptic(t)) * np.sin(apparent_longitude(t))
     x = np.cos(apparent_longitude(t))
