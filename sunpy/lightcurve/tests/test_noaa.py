@@ -9,7 +9,7 @@ from sunpy.time import TimeRange
 
 timerange_a = TimeRange('2004/01/01', '2007/01/01')
 
-class TestNOAAIndicesLightCurve():
+class TestNOAAIndicesLightCurve(object):
 
     @pytest.mark.online
     def test_create(self):
@@ -46,7 +46,7 @@ class TestNOAAIndicesLightCurve():
         assert lc1.header.keys() == ['comments']
 
 
-class TestNOAAPredictIndicesLightCurve():
+class TestNOAAPredictIndicesLightCurve(object):
 
     @pytest.mark.online
     def test_create(self):
