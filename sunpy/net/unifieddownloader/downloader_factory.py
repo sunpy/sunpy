@@ -4,24 +4,45 @@ from sunpy.net.vso.attrs import *
 from sunpy.util.datatype_factory_base import NoMatchError
 from sunpy.util.datatype_factory_base import MultipleMatchError
 from sunpy.net.unifieddownloader.client import GenericClient
+from sunpy.util import print_table
+
 __all__ = ['UnifiedDownloader']
 
 class UnifiedResponse(list): 
 
     def __init__(self, lst):
-        tmplst = []
+        
+	tmplst = []
         for block in lst:
 	    block[0].client = block[1]
 	    tmplst.append(block[0])
 	super(UnifiedResponse, self).__init__(tmplst)
     
     def __len__(self):
-        ans = 0
+        
+	ans = 0
 	for qblock in self:
-	    ans+ = len(block)
+	    ans += len(qblock)
 	return ans
     
-    
+    def __str__(self):
+        
+	table =[
+	        [
+		     qrblock.time.t1.strftime('%Y/%m/%d'),
+		     qrblock.time.t2.strftime('%Y/%m/%d'),
+		     qrblock.source,
+		     qrblock.instrument,
+		     qrblock.url
+		]
+		for block in self for qrblock in block
+	       ]
+	table.insert(0,['----------', '--------', '------', '----------', '---'])
+	table.insert(0,['Start time', 'End time', 'Source', 'Instrument', 'URL'])
+
+        return print_table(table, colsep = '  ', linesep = '\n')
+
+
 qwalker = AttrWalker()
 
 @qwalker.add_creator(AttrAnd)
