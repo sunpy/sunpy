@@ -57,8 +57,8 @@ class queryresponse(list):
 		  for i,qrblock in enumerate(self)
 		]
         table.insert(0, ['----------', '--------', '------', '----------', '---'])
-	table.insert(0, ['Start time', 'End time', 'Source', 'Instrument', 'URL'])
-	return print_table(table, colsep='  ', linesep='\n')
+        table.insert(0, ['Start time', 'End time', 'Source', 'Instrument', 'URL'])
+        return print_table(table, colsep='  ', linesep='\n')
 
 
 class GenericClient(object):    
@@ -70,7 +70,7 @@ class GenericClient(object):
        '''Convert Attribute in query to internal dictionary'''
        for elem in args:
            if issubclass(elem.__class__, Time):
-               self.map_['TimeRange'] = TimeRange(elem.start, elem.end)
+	       self.map_['TimeRange'] = TimeRange(elem.start, elem.end)
 	       self.map_['Time_start'] = elem.start
 	       self.map_['Time_end'] = elem.end
 	   else:
@@ -92,36 +92,35 @@ class GenericClient(object):
         raise NotImplementedError
     
     def query(self, *args, **kwargs):
-         """
-	 Input:
-	 args: list of attributes
+        """
+	Input:
+	args: list of attributes
 
-	 Output: queryresponse object.
-	 """
-	 GenericClient.makeargs(self, *args, **kwargs)
-	 urls = self._get_url_for_timerange(self.map_.get('TimeRange'), **kwargs)
-	 return queryresponse.create(self.map_, urls)
+	Output: queryresponse object.
+	"""
+	GenericClient.makeargs(self, *args, **kwargs)
+	urls = self._get_url_for_timerange(self.map_.get('TimeRange'), **kwargs)
+	return queryresponse.create(self.map_, urls)
 
     
     def get(self, qres, **kwargs):
-         """
-	 Input:
-	 qres : queryresponse object.
+        """
+	Input:
+	qres : queryresponse object.
+        Output:
+        vso.Results object.To wait for download to complete call .wait() on returned Results object.
+	"""
+	urls = []
+	for qrblock in qres:
+	    urls.append(qrblock.url)
 
-	 Output:
-         vso.Results object.To wait for download to complete call .wait() on returned Results object.
-	 """
-	 urls = []
-	 for qrblock in qres:
-	     urls.append(qrblock.url)
+        res = Results(lambda x: None, 0, lambda map_:self.link(map_))
 
-         res = Results(lambda x: None, 0, lambda map_:self.link(map_))
-
-	 dobj = Downloader(max_conn=len(urls), max_total=len(urls))
-	 for aurl, ncall in list(zip(urls, map(lambda x:res.require([x]), urls))):
-	     dobj.download(aurl, kwargs.get('Path',None), ncall, kwargs.get('ErrorBack', None))
+	dobj = Downloader(max_conn=len(urls), max_total=len(urls))
+	for aurl, ncall in list(zip(urls, map(lambda x:res.require([x]), urls))):
+	    dobj.download(aurl, kwargs.get('Path',None), ncall, kwargs.get('ErrorBack', None))
          
-	 return res
+	return res
 
     def link(self, map_):
  	"""Helper Function"""

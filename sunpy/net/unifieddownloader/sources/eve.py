@@ -9,16 +9,16 @@ class EVEClient(GenericClient):
     def _get_url_for_timerange(self, timerange, **kwargs):
         """Helper function:
         Input:
-        timerange: Time-range over which data is to be downloaded
-	Output: List of urls 
+        timerange: Time-range over which data is to be downloadedO
+        Output: List of urls 
         """
-	if not timerange:
+        if not timerange:
             return []   
         days = timerange.get_dates()
-	urls = []
-	for day in days:
+        urls = []
+        for day in days:
             urls.append(self._get_url_for_date(day, **kwargs))
-        return urls
+	return urls
 
     def _get_url_for_date(self, date, **kwargs):
         """Helper Function
@@ -38,12 +38,12 @@ class EVEClient(GenericClient):
     @classmethod
     def _can_handle_query(cls, *query):
         """Boolean Function:Answers whether client can service the query.
-        """
-	chkattr =  ['Time', 'Instrument']
+	"""
+        chkattr =  ['Time', 'Instrument']
         chklist =  [x.__class__.__name__ in chkattr for x in query]
-	for x in query:
-	    if isinstance(x, Instrument) and x.value == 'eve':
+        for x in query:
+            if isinstance(x, Instrument) and x.value == 'eve':
                 return all(chklist)
-	return False 
+        return False 
 
 

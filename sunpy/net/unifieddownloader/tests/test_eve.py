@@ -36,12 +36,12 @@ def test_get_url_for_date():
 
 
 def test_can_handle_query():
-   ans1 = eve.EVEClient._can_handle_query(Time('2012/8/9','2012/8/10'),Instrument('eve'))
-   assert ans1 == True
-   ans2 = eve.EVEClient._can_handle_query(Time('2012/7/7','2012/7/7'))
-   assert ans2 == False
-   ans3 = eve.EVEClient._can_handle_query(Time('2012/8/9','2012/8/10'),Instrument('eve'),Source('sdo'))
-   assert ans3 ==False
+    ans1 = eve.EVEClient._can_handle_query(Time('2012/8/9','2012/8/10'),Instrument('eve'))
+    assert ans1 == True
+    ans2 = eve.EVEClient._can_handle_query(Time('2012/7/7','2012/7/7'))
+    assert ans2 == False
+    ans3 = eve.EVEClient._can_handle_query(Time('2012/8/9','2012/8/10'),Instrument('eve'),Source('sdo'))
+    assert ans3 ==False
 
 def test_query():
     qr1 = LCClient.query(Time('2012/8/9','2012/8/10'),Instrument('eve'))
