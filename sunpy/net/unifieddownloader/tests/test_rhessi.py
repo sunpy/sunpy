@@ -28,10 +28,10 @@ def test_fail_get_url_for_time_range():
     assert len(urls) == 0
 
 def test_can_handle_query():
-   ans1 = rhessi.RHESSIClient._can_handle_query(Time('2012/8/9','2012/8/9'),Instrument('rhessi'))
-   assert ans1 == True
-   ans2 = rhessi.RHESSIClient._can_handle_query(Time('2013/2/7','2013/2/7'))
-   assert ans2 == False
+    ans1 = rhessi.RHESSIClient._can_handle_query(Time('2012/8/9','2012/8/9'),Instrument('rhessi'))
+    assert ans1 == True
+    ans2 = rhessi.RHESSIClient._can_handle_query(Time('2013/2/7','2013/2/7'))
+    assert ans2 == False
 
 def test_query():
     qr1 = LCClient.query(Time('2011/4/9','2011/4/9'),Instrument('rhessi'))

@@ -17,7 +17,7 @@ class UnifiedResponse(list):
         for block in lst:
 	    block[0].client = block[1]
 	    tmplst.append(block[0])
-	super(UnifiedResponse, self).__init__(tmplst)
+        super(UnifiedResponse, self).__init__(tmplst)
     
     def __len__(self):
         
@@ -38,8 +38,8 @@ class UnifiedResponse(list):
 		]
 		for block in self for i,qrblock in enumerate(block)
 	       ]
-	table.insert(0,['----------', '--------', '------', '----------', '---'])
-	table.insert(0,['Start time', 'End time', 'Source', 'Instrument', 'URL'])
+        table.insert(0,['----------', '--------', '------', '----------', '---'])
+        table.insert(0,['Start time', 'End time', 'Source', 'Instrument', 'URL'])
 
         return print_table(table, colsep = '  ', linesep = '\n')
 
@@ -83,13 +83,13 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
     def query(self, *query):
         '''
         and_ tranforms query into disjunctive normal form 
-	ie. query is now of form A & B or ((A & B) | (C & D))
-	This helps in modularising query into parts and handling each of the parts individually.
-	Input:
-	query: VSO style query.Attributes from JSOC,VSO both can be used.
-	output: List of tuples of form(queryresponse,instance of selected client).
+        ie. query is now of form A & B or ((A & B) | (C & D))
+        This helps in modularising query into parts and handling each of the parts individually.
+        Input:
+        query: VSO style query.Attributes from JSOC,VSO both can be used.
+        output: List of tuples of form(queryresponse,instance of selected client).
         '''
-	query = and_(*query)	
+        query = and_(*query)	
         return UnifiedResponse(qwalker.create(query, self))
 
     def get(self, qr, **kwargs):
@@ -135,8 +135,8 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
     def _get_registered_widget(self, *args, **kwargs):
         '''Factory helper function'''
         candidate_widget_types = self._check_registered_widgets(*args)
-	tmpclient = candidate_widget_types[0]()
-	return tmpclient.query(*args), tmpclient
+        tmpclient = candidate_widget_types[0]()
+        return tmpclient.query(*args), tmpclient
 
 
 UnifiedDownloader = UnifiedDownloaderFactory(additional_validation_functions = ['_can_handle_query'])
