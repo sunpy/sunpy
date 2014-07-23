@@ -254,6 +254,18 @@ for compatability with map, please use meta instead""", Warning)
 
         return filepath
 
+    
+    def __repr__(self):
+        return (
+    """    SunPy %s
+    ---------------------------
+
+    """ % (self.__class__.__name__)
+    + self.time_range().__repr__()
+    + '\n'  
+    + self.data.__repr__() )
+    
+    
     @classmethod
     def _get_default_uri(cls):
         """Default data to load when none is specified"""
