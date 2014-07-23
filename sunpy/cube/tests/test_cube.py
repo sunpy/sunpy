@@ -4,6 +4,9 @@ Tests for Cube
 '''
 from __future__ import absolute_import
 import sunpy.cube.cube as c
+from sunpy.map.mapbase import GenericMap
+from sunpy.spectra.spectrum import Spectrum
+from sunpy.spectra.spectrogram import Spectrogram
 import numpy as np
 from astropy.wcs import WCS
 import pytest
@@ -144,4 +147,28 @@ def test_select_order():
 
     for (l, r) in zip(lists, results):
         assert c._select_order(l) == r
+
+
+def test_slicing_first_axis():
+    # lambda-x-y slices
+    s1 = cubem[1]
+    s2 = cubem[0:2]
+    s3 = cubem[:]
+
+    # time-lambda-y slices
+    s4 = cube[1]
+    s5 = cube[0:2]
+    s6 = cube[:]
+
+    assert isinstance(s1, GenericMap)
+    assert isinstance(s2, c.Cube)
+    assert isinstance(s3, c.Cube)
+    assert isinstance(s4, Spectrum)
+    assert isinstance(s5, c.Cube)
+    assert isinstance(s6, c.Cube)
+    with pytest.raises(IndexError):
+        cubem[None]
+    with pytest.raises(IndexError):
+        cube[None]
+
     

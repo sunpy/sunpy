@@ -298,7 +298,7 @@ class Cube(astropy.nddata.NDData):
 
     def time_axis(self):
         '''
-        Returns an aray containing the time values for the cube's temporal
+        Returns a numpy array containing the time values for the cube's time
         dimension.
         '''
         if self.axes_wcs.wcs.ctype[-1] not in ['TIME', 'UTC']:
@@ -308,12 +308,12 @@ class Cube(astropy.nddata.NDData):
         crval = self.axes_wcs.wcs.crval[-1]
         start = crval - crpix * delta
         stop = start + len(self.data) * delta
-        return range(start, stop, delta)
+        return np.arange(start, stop, delta)
 
     def freq_axis(self):
         '''
-        Returns an aray containing the frequency values for the cube's spectral
-        dimension.
+        Returns a numpy array containing the frequency values for the cube's
+        spectral dimension.
         '''
         if 'WAVE' not in self.axes_wcs.wcs.ctype:
             raise CubeError(2, 'No energy (wavelength, frequency) axis found')
@@ -323,12 +323,12 @@ class Cube(astropy.nddata.NDData):
         crval = self.axes_wcs.wcs.crval[-1 - axis]
         start = crval - crpix * delta
         stop = start + len(self.data) * delta
-        return range(start, stop, delta)
+        return np.arange(start, stop, delta)
 
     def _reduce_dim(self, axis, keys):
         '''
         Given an axis and a slice object, returns a new cube with the slice
-        applied along teh given dimension. For example, in a time-x-y cube,
+        applied along the given dimension. For example, in a time-x-y cube,
         a reduction along the x axis (axis 1) with a slice value (1, 4, None)
         would return a cube where the only x values were 1 to 3 of the original
         cube.
@@ -345,7 +345,10 @@ class Cube(astropy.nddata.NDData):
         step = keys.step if keys.step is not None else 1
         indices = range(start, stop, step)
         newdata = self.data.take(indices, axis=axis)
-        newwcs = self.axes_wcs.deepcopy()
+        if self.axes_wcs.naxis == 4:  # if there's a redundant axis
+            newwcs = wcs_util.reindex_wcs(self.axes_wcs, np.array([1, 2, 3]))
+        else:
+            newwcs = self.axes_wcs.deepcopy()
         if keys.step is not None:
             newwcs.wcs.cdelt[waxis] *= keys.step
         if keys.start is not None:
@@ -356,6 +359,9 @@ class Cube(astropy.nddata.NDData):
         return self.__class__(data=newdata, wcs=newwcs)
 
     def __getitem__(self, item):
+        if item is None:
+            raise IndexError("None indices not supported")
+
         if isinstance(item, int):
             if self.axes_wcs.wcs.ctype[-2] != 'WAVE':
                 return self.slice_to_map(item)
@@ -365,6 +371,9 @@ class Cube(astropy.nddata.NDData):
         elif isinstance(item, slice):
             return self._reduce_dim(0, item)
         else:  # Then it's a tuple...
+            if None in item:
+                raise IndexError("None indices not supported")
+
             c = self._reduce_dim(0, slice(None, None, None))
             for i in range(len(item)):
                 if isinstance(item[i], slice):
