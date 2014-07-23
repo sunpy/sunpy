@@ -4,7 +4,7 @@ import datetime, urlparse
 
 __all__ = ['Time', 'Instrument']
 class NoRHClient(GenericClient):
-    
+
     def _get_url_for_timerange(self, timerange, **kwargs):
         """
         Helper function:
@@ -14,7 +14,7 @@ class NoRHClient(GenericClient):
         """
         if not timerange:
             return []
-	
+
         days = timerange.get_dates()
         urls = []
         for day in days:
@@ -45,7 +45,7 @@ class NoRHClient(GenericClient):
         self.map_['provider'] ='NRO'
         self.map_['instrument'] = 'RadioHelioGraph'
         self.map_['phyobs'] = ''
-    
+
     @classmethod
     def _can_handle_query(cls, *query):
         """
@@ -54,7 +54,6 @@ class NoRHClient(GenericClient):
         chkattr =  ['Time', 'Instrument']
         chklist =  [x.__class__.__name__ in chkattr for x in query]
         for x in query:
-           if x.__class__.__name__ == 'Instrument' and x.value == 'norh':
-               return all(chklist)
+            if x.__class__.__name__ == 'Instrument' and x.value == 'norh':
+                return all(chklist)
         return False
-
