@@ -38,10 +38,10 @@ def test_get_url_for_date():
     assert url == 'http://proba2.oma.be/lyra/data/bsd/2013/02/13/lyra_20130213-000000_lev2_std.fits'
 
 def test_can_handle_query():
-   ans1 = lyra.LYRAClient._can_handle_query(Time('2011/8/9','2011/8/10'),Instrument('lyra'))
-   assert ans1 == True
-   ans2 = lyra.LYRAClient._can_handle_query(Time('2013/1/7','2013/1/7'))
-   assert ans2 == False
+    ans1 = lyra.LYRAClient._can_handle_query(Time('2011/8/9','2011/8/10'),Instrument('lyra'))
+    assert ans1 == True
+    ans2 = lyra.LYRAClient._can_handle_query(Time('2013/1/7','2013/1/7'))
+    assert ans2 == False
 
 
 def test_query():

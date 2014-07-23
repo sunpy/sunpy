@@ -10,10 +10,10 @@ class NoRHClient(GenericClient):
         Helper function:
         Input:
         timerange: Time-range over which data is to be downloaded
-	Output: List of urls
+        Output: List of urls
         """
-	if not timerange:
-	    return []
+        if not timerange:
+            return []
 	
         days = timerange.get_dates()
         urls = []
@@ -48,12 +48,13 @@ class NoRHClient(GenericClient):
     
     @classmethod
     def _can_handle_query(cls, *query):
-        """Boolean Function:Answers whether client can service the query.
-	"""
-	chkattr =  ['Time', 'Instrument']
+        """
+        Boolean Function:Answers whether client can service the query.
+        """
+        chkattr =  ['Time', 'Instrument']
         chklist =  [x.__class__.__name__ in chkattr for x in query]
         for x in query:
-	    if x.__class__.__name__ == 'Instrument' and x.value == 'norh':
-                return all(chklist)
-	return False
- 
+           if x.__class__.__name__ == 'Instrument' and x.value == 'norh':
+               return all(chklist)
+        return False
+

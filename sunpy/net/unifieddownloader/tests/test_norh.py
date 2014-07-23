@@ -39,10 +39,10 @@ def test_get_url_for_date():
 
 
 def test_can_handle_query():
-   ans1 = norh.NoRHClient._can_handle_query(Time('2012/8/9','2012/8/10'),Instrument('norh'))
-   assert ans1 == True
-   ans2 = norh.NoRHClient._can_handle_query(Time('2012/7/7','2012/7/7'))
-   assert ans2 == False
+    ans1 = norh.NoRHClient._can_handle_query(Time('2012/8/9','2012/8/10'),Instrument('norh'))
+    assert ans1 == True
+    ans2 = norh.NoRHClient._can_handle_query(Time('2012/7/7','2012/7/7'))
+    assert ans2 == False
 
 def test_query():
     qr1 = LCClient.query(Time('2012/8/9','2012/8/10'),Instrument('norh'))
