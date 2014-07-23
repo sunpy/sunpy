@@ -219,7 +219,7 @@ class Cube(astropy.nddata.NDData):
                           *args, **kwargs)
         return gmap
 
-    def slice_to_lightcurve(self, wavelength, y_coord):
+    def slice_to_lightcurve(self, wavelength, y_coord=None):
         '''
         For a time-lambda-y cube, returns a lightcurve with curves at the
         specified wavelength and given y-coordinate. If no y is given, all of
@@ -236,7 +236,10 @@ class Cube(astropy.nddata.NDData):
             raise CubeError(1, 'Cannot create a lightcurve with no time axis')
         if self.axes_wcs.wcs.ctype[-2] != 'WAVE':
             raise CubeError(2, 'A spectral axis is needed in a lightcurve')
-        data = self._choose_wavelength_slice(wavelength)[:, y_coord]
+
+        data = self._choose_wavelength_slice(wavelength)
+        if y_coord is not None:
+            data = data[:, y_coord]
         lc = LightCurve(data=data, meta=self.meta)
         return lc
 
@@ -322,7 +325,7 @@ class Cube(astropy.nddata.NDData):
         crpix = self.axes_wcs.wcs.crpix[-1 - axis]
         crval = self.axes_wcs.wcs.crval[-1 - axis]
         start = crval - crpix * delta
-        stop = start + len(self.data) * delta
+        stop = start + self.data.shape[axis] * delta
         return np.arange(start, stop, delta)
 
     def _reduce_dim(self, axis, keys):

@@ -7,6 +7,7 @@ import sunpy.cube.cube as c
 from sunpy.map.mapbase import GenericMap
 from sunpy.spectra.spectrum import Spectrum
 from sunpy.spectra.spectrogram import Spectrogram
+from sunpy.lightcurve.lightcurve import LightCurve
 import numpy as np
 from astropy.wcs import WCS
 import pytest
@@ -149,6 +150,21 @@ def test_select_order():
         assert c._select_order(l) == r
 
 
+def test_freq_axis():
+    f1 = cube.freq_axis()
+    f2 = cubem.freq_axis()
+    # the e-11 are the conversions from angstrom to meters
+    assert np.allclose(f1, [0, 2.0e-11, 4.0e-11])
+    assert np.allclose(f2, [0, 2.0e-11, 4.0e-11])
+
+
+def test_time_axis():
+    t1 = cube.time_axis()
+    assert np.allclose(t1, [0, 0.4])
+    with pytest.raises(c.CubeError):
+        cubem.time_axis()
+
+
 def test_slicing_first_axis():
     # lambda-x-y slices
     s1 = cubem[1]
@@ -170,5 +186,27 @@ def test_slicing_first_axis():
         cubem[None]
     with pytest.raises(IndexError):
         cube[None]
+
+
+def test_slicing_second_axis():
+    # lambda-x-y
+    slices = [cubem[:, 1],
+              cubem[:, 0:2],
+              cubem[:, :],
+              cubem[1, 1],
+              cubem[1, 0:2],
+              cubem[1, :],
+              # time-lambda-y
+              cube[:, 1],
+              cube[:, 0:2],
+              cube[:, :],
+              cube[1, 1],
+              cube[1, 0:2],
+              cube[1, :]]
+
+    types = [np.ndarray, c.Cube, c.Cube, np.ndarray, GenericMap, GenericMap,
+             LightCurve, c.Cube, c.Cube, np.ndarray, Spectrum, Spectrum]
+    for (s, t) in zip(slices, types):
+        assert isinstance(s, t)
 
     
