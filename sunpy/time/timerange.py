@@ -86,7 +86,7 @@ class TimeRange(object):
 
         # Timedelta
         if isinstance(y, timedelta):
-            if y.days > 0:
+            if y.days >= 0:
                 self._t1 = x
                 self._t2 = x + y
             else:
