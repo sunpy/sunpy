@@ -7,6 +7,8 @@ from collections import Hashable
 from datetime import datetime
 import os.path
 
+from astropy import units as u
+
 from sunpy.database import Database
 from sunpy.database.tables import FitsHeaderEntry, FitsKeyComment, Tag,\
     DatabaseEntry, entries_from_query_result, entries_from_dir,\
@@ -37,7 +39,7 @@ def qr_block_with_missing_physobs():
     return vso.VSOClient().query(
         vso.attrs.Time('20130805T120000', '20130805T121000'),
         vso.attrs.Instrument('SWAVES'), vso.attrs.Source('STEREO_A'),
-        vso.attrs.Provider('SSC'), vso.attrs.Wave(10, 160, 'kHz'))[0]
+        vso.attrs.Provider('SSC'), vso.attrs.Wave(10 * u.kHz, 160 * u.kHz))[0]
 
 
 @pytest.fixture
