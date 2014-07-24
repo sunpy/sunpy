@@ -31,26 +31,6 @@ wm = WCS(header=hm, naxis=3)
 cubem = c.Cube(data, wm)
 
 
-def test_orient_with_time():
-    newdata, newwcs = c._orient(data, wt)
-    assert newwcs.wcs.axis_types[-2] == 3000  # code for a spectral dimension
-    assert newwcs.wcs.axis_types[-1] == 0  # code for an unknown axis - time
-    assert newwcs.naxis == 4
-    assert newdata.shape == (2, 3, 4)  # the time dimension should be first
-    with pytest.raises(ValueError):
-        c._orient(np.zeros((1, 2)), wt)
-    with pytest.raises(ValueError):
-        c._orient(np.zeros((1, 2, 3, 4)), wt)
-    with pytest.raises(ValueError):
-        c._orient(data, WCS(naxis=2))
-
-
-def test_orient_no_time():
-    newdata, newwcs = c._orient(data, wm)
-    assert newwcs.wcs.axis_types[-1] == 3000
-    assert newdata.shape == (3, 2, 4)
-
-
 def test_slice_to_map_with_time():
     with pytest.raises(c.CubeError):
         cube.slice_to_map(0)
@@ -129,25 +109,6 @@ def test_choose_x_slice():
     assert qos is None
 
     assert f is None
-
-
-def test_select_order():
-    lists = [['TIME', 'WAVE', 'HPLT-TAN', 'HPLN-TAN'],
-             ['WAVE', 'HPLT-TAN', 'UTC', 'HPLN-TAN'],
-             ['HPLT-TAN', 'TIME', 'HPLN-TAN'],
-             ['HPLT-TAN', 'DEC--TAN', 'WAVE'],
-             [],
-             ['UTC', 'TIME', 'WAVE', 'HPLT-TAN']]
-
-    results = [[0, 1, 2, 3],
-               [2, 0, 1, 3],
-               [1, 0, 2],  # Second order is initial order
-               [2, 0, 1],
-               [],
-               [1, 0, 2, 3]]
-
-    for (l, r) in zip(lists, results):
-        assert c._select_order(l) == r
 
 
 def test_freq_axis():

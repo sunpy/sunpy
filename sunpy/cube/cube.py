@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # Author: Mateo Inchaurrandieta <mateo.inchaurrandieta@gmail.com>
-# pylint: disable=E1101
+# pylint: disable=E1101, E0611
 '''
 Main class for representing cubes - 3D sets of continuous data by time and/or
 wavelength
@@ -10,7 +10,6 @@ wavelength
 # This draft standard may change.
 
 # standard libraries
-import warnings
 import datetime
 
 # external libraries
@@ -18,7 +17,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import astropy.nddata
 import astropy.units as u
-from astropy.wcs._wcs import InconsistentAxisTypesError
 from astropy.units import sday  # sidereal day
 
 # Sunpy modules
@@ -28,6 +26,7 @@ from sunpy.lightcurve import LightCurve
 from sunpy.wcs import wcs_util
 from sunpy.spectra.spectrum import Spectrum
 from sunpy.spectra.spectrogram import Spectrogram
+from sunpy.cube import cube_utils as cu
 
 __all__ = ['Cube', 'CubeError']
 
@@ -53,7 +52,7 @@ class Cube(astropy.nddata.NDData):
     '''
 
     def __init__(self, data, wcs, meta=None, **kwargs):
-        data, wcs = _orient(data, wcs)
+        data, wcs = cu.orient(data, wcs)
         astropy.nddata.NDData.__init__(self, data=data,
                                        meta=meta,
                                        **kwargs)
@@ -242,8 +241,7 @@ class Cube(astropy.nddata.NDData):
         data = self._choose_wavelength_slice(wavelength)
         if y_coord is not None:
             data = data[:, y_coord]
-        lc = LightCurve(data=data, meta=self.meta)
-        return lc
+        return LightCurve(data=data, meta=self.meta)
 
     def slice_to_spectrum(self, fst_coord, snd_coord):
         '''
@@ -445,66 +443,7 @@ class Cube(astropy.nddata.NDData):
                     return c
 
 
-def _orient(array, wcs):
-    # This is mostly lifted from astropy's spectral cube.
-    """
-    Given a 3-d cube and a WCS, swap around the axes so that the
-    spectral axis cube is the first in Numpy notation, and the last in WCS
-    notation.
 
-    Parameters
-    ----------
-    array : `~numpy.ndarray`
-        The input 3-d array with two position dimensions and one spectral
-        dimension.
-    wcs : `~astropy.wcs.WCS`
-        The input 3-d WCS with two position dimensions and one spectral
-        dimension.
-    """
-
-    if array.ndim != 3:
-        raise ValueError("Input array must be 3-dimensional")
-
-    if wcs.wcs.naxis != 3:
-        raise ValueError("Input WCS must be 3-dimensional")
-
-    axtypes = list(wcs.wcs.ctype)
-
-    array_order = _select_order(axtypes[::-1])
-    result_array = array.transpose(array_order)
-
-    try:
-        wcs.get_axis_types()
-    except InconsistentAxisTypesError:
-        warnings.warn("Only one spatial axis found. Adding another one...",
-                      UserWarning)
-        wcs = wcs_util.add_celestial_axis(wcs)
-
-    wcs_order = np.array(_select_order(list(wcs.wcs.ctype)))[::-1]
-    result_wcs = wcs_util.reindex_wcs(wcs, wcs_order)
-    return result_array, result_wcs
-
-
-def _select_order(axtypes):
-    '''
-    Returns the indices of the correct axis priority for the given list of WCS
-    CTYPEs. For example, given ['HPLN-TAN', 'TIME', 'WAVE'] it will return
-    [1, 2, 0] because index 1 (time) has the highest priority, followed by
-    wavelength and finally solar-x. When two or more celestial axes are in the
-    list, order is preserved between them (i.e. only TIME, UTC and WAVE are
-    moved)
-
-    Parameters
-    ----------
-    axtypes: str list
-        The list of CTYPEs to be modified.
-    '''
-    order = [(0, t) if t in ['TIME', 'UTC'] else
-             (1, t) if t == 'WAVE' else
-             (axtypes.index(t) + 2, t) for t in axtypes]
-    order.sort()
-    result = [axtypes.index(s) for (_, s) in order]
-    return result
 
 
 class CubeError(Exception):
