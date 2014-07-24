@@ -1,3 +1,7 @@
+Latest
+------
+* Update to TimeRange API, removed t1 and t0, start and end are now read-only attributes
+
 0.5.0
 -----
 
@@ -24,7 +28,6 @@
  * Fixed solar_semidiameter_angular_size
  * Improved line quality and performances issues with map.draw_grid()
  * Remove deprecated make_map command.
- * Update to TimeRange API, removed t1 and t0, start and end are now read-only attributes
 
 0.4.1
 -----
