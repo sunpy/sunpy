@@ -4,16 +4,16 @@ __all__ = ['OrderedDict']
 
 from astropy.utils.compat.odict import OrderedDict
 
-def __meta_repr__(self):
+def __meta_str__(self):
     '''This function overrides the default __repr__ function for
     OrderedDict to make the output more human-readable. This is
     particularly relevant for displaying lightcurve.meta information.'''
-    totalstring=''
-    for l,d in self.items():
-        out = (str(l) + ':\t' + str(d) + '\n').expandtabs(20)
-        totalstring=totalstring + out
+    out=[]
+    for l,d in self.iteritems():
+        out.append((str(l) + ':\t' + str(d)).expandtabs(20))
+    totalstring = '\n'.join(out)
             
-    return (totalstring)
+    return totalstring
 
 
-OrderedDict.__repr__ = __meta_repr__
+OrderedDict.__str__ = __meta_str__

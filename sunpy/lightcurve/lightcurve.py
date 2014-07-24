@@ -255,7 +255,7 @@ for compatability with map, please use meta instead""", Warning)
         return filepath
 
     
-    def __repr__(self):
+    def __str__(self):
         return (
     """    SunPy %s
     ---------------------------
