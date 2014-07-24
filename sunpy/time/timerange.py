@@ -23,16 +23,6 @@ class TimeRange(object):
         May also be the size of the time range specified as a timedelta object,
         or the number of seconds (positive or negative)
 
-    Attributes
-    ----------
-    start : datetime
-        The start time of the time range (always the smaller time)
-    end : datetime
-        The end time of the time range (always the larger time)
-    dt : timediff
-        The difference in time between the start and end time. Always a
-        positive value.
-
     Examples
     --------
     >>> from sunpy.time import TimeRange
@@ -112,7 +102,7 @@ class TimeRange(object):
 
     @property
     def dt(self):
-        """Get the length of the time range
+        """Get the length of the time range. Always a positive value.
 
         Returns
         -------
