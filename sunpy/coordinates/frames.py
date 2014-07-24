@@ -147,9 +147,6 @@ class HelioGraphicCarrington(HelioGraphicStonyhurst):
     #rad = FrameAttribute(default=((RSUN_METERS/1000)*u.km))
     dateobs = TimeFrameAttributeSunPy()
 
-    def __init__(self, *args, **kwargs):
-        super(HelioGraphicCarrington, self).__init__(*args, **kwargs)
-
 class HelioCentric(BaseCoordinateFrame):
     """
     A coordinate or frame in the Heliocentric system.
