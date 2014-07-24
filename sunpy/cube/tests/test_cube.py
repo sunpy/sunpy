@@ -190,23 +190,37 @@ def test_slicing_first_axis():
 
 def test_slicing_second_axis():
     # lambda-x-y
-    slices = [cubem[:, 1],
-              cubem[:, 0:2],
-              cubem[:, :],
-              cubem[1, 1],
-              cubem[1, 0:2],
-              cubem[1, :],
+    slices = [cubem[:, 1], cubem[:, 0:2], cubem[:, :],
+              cubem[1, 1], cubem[1, 0:2], cubem[1, :],
               # time-lambda-y
-              cube[:, 1],
-              cube[:, 0:2],
-              cube[:, :],
-              cube[1, 1],
-              cube[1, 0:2],
-              cube[1, :]]
+              cube[:, 1], cube[:, 0:2], cube[:, :],
+              cube[1, 1], cube[1, 0:2], cube[1, :]]
 
     types = [np.ndarray, c.Cube, c.Cube, np.ndarray, GenericMap, GenericMap,
              LightCurve, c.Cube, c.Cube, np.ndarray, Spectrum, Spectrum]
     for (s, t) in zip(slices, types):
         assert isinstance(s, t)
 
-    
+
+def test_slicing_third_axis():
+    slices = [cubem[:, :, 1], cubem[:, :, 0:2], cubem[:, :, :],
+              cubem[:, 1, 1], cubem[:, 1, 0:2], cubem[:, 1, :],
+              cubem[1, :, 1], cubem[1, :, 0:2], cubem[1, :, :],
+              cubem[1, 1, 1], cubem[1, 1, 0:2], cubem[1, 1, :],
+              # time-lambda-y
+              cube[:, :, 1], cube[:, :, 0:2], cube[:, :, :],
+              cube[:, 1, 1], cube[:, 1, 0:2], cube[:, 1, :],
+              cube[1, :, 1], cube[1, :, 0:2], cube[1, :, :],
+              cube[1, 1, 1], cube[1, 1, 0:2], cube[1, 1, :]]
+
+    types = [np.ndarray, c.Cube, c.Cube,
+             Spectrum, np.ndarray, np.ndarray,
+             np.ndarray, GenericMap, GenericMap,
+             int, np.ndarray, np.ndarray,
+
+             Spectrogram, c.Cube, c.Cube,
+             LightCurve, LightCurve, LightCurve,
+             Spectrum, Spectrum, Spectrum,
+             int, np.ndarray, np.ndarray]
+    for (s, t) in zip(slices, types):
+        assert isinstance(s, t)

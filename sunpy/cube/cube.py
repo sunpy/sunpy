@@ -11,6 +11,7 @@ wavelength
 
 # standard libraries
 import warnings
+import datetime
 
 # external libraries
 import numpy as np
@@ -18,6 +19,7 @@ import matplotlib.pyplot as plt
 import astropy.nddata
 import astropy.units as u
 from astropy.wcs._wcs import InconsistentAxisTypesError
+from astropy.units import sday  # sidereal day
 
 # Sunpy modules
 from sunpy.map import GenericMap
@@ -275,7 +277,7 @@ class Cube(astropy.nddata.NDData):
             data = data.sum(axis=sumaxis)
 
         freq_axis = self.freq_axis()
-        return Spectrum(data=data, freq_axis=freq_axis)
+        return Spectrum(np.array(data), np.array(freq_axis))
 
     def slice_to_spectrogram(self, y_coord, **kwargs):
         # TODO: make this not take only an int.
@@ -294,8 +296,23 @@ class Cube(astropy.nddata.NDData):
         data = self.data[:, :, y_coord]
         time_axis = self.time_axis()
         freq_axis = self.freq_axis()
-        start = time_axis[0]
-        end = time_axis[-1]
+
+        if 'DATE_OBS'in self.meta:
+            tformat = '%Y-%m-%dT%H:%M:%S.%f'
+            start = datetime.datetime.strptime(self.meta['DATE_OBS'], tformat)
+        else:
+            start = datetime.datetime(1, 1, 1)
+
+        if 'DATE_END' in self.meta:
+            tformat = '%Y-%m-%dT%H:%M:%S.%f'
+            end = datetime.datetime.strptime(self.meta['DATE_END'], tformat)
+        else:
+            dif = time_axis[-1] - time_axis[0]
+            unit = self.axes_wcs.wcs.cunit[-1]
+            dif = dif * u.Unit(unit)
+            days = dif.to(sday)
+            lapse = datetime.timedelta(days.value)
+            end = start + lapse
         return Spectrogram(data=data, time_axis=time_axis, freq_axis=freq_axis,
                            start=start, end=end, **kwargs)
 
@@ -394,13 +411,13 @@ class Cube(astropy.nddata.NDData):
                         return c.data[item]
                 else:  # second one is a slice
                     if len(item) == 3:
-                        if isinstance(item[2, int]):  # c[1, 2:3, 4]
+                        if isinstance(item[2], int):  # c[1, 2:3, 4]
                             if self.axes_wcs.wcs.ctype[-2] == 'WAVE':
                                 return c.slice_to_spectrum(item[0], item[2])
                             else:
                                 return c.data[item[0], :, item[2]]
-                    else:  # c[1, 2:3] or c[1, 2:3, 4:5]
-                        return c[item[0]]
+                    # c[1, 2:3] or c[1, 2:3, 4:5]
+                    return c[item[0]]
             else:  # first one is a slice
                 if isinstance(item[1], int):
                     if len(item) == 3:
@@ -411,12 +428,12 @@ class Cube(astropy.nddata.NDData):
                                 return c.slice_to_lightcurve(item[1], item[2])
                             else:
                                 return c.data[:, item[1], item[2]]
-                    else:  # c[1:2, 3, 4:5] or c[1:2, 3]
-                        if self.axes_wcs.wcs.ctype[-2] == 'WAVE':
-                            return c.slice_to_lightcurve(item[1])
-                        else:
-                            # FIXME: What if this is a time-x?
-                            return c.data[:, item[1], :]
+                    # c[1:2, 3, 4:5] or c[1:2, 3]
+                    if self.axes_wcs.wcs.ctype[-2] == 'WAVE':
+                        return c.slice_to_lightcurve(item[1])
+                    else:
+                        # FIXME: What if this is a time-x?
+                        return c.data[:, item[1], :]
                 else:  # first and second one are slices
                     if len(item) == 3:
                         if isinstance(item[2], int):  # c[1:2, 3:4, 5]
@@ -424,8 +441,8 @@ class Cube(astropy.nddata.NDData):
                                 return c.slice_to_spectrogram(item[2])
                             else:  # FIXME: again, time-x
                                 return c.data[:, :, item[2]]
-                    else:  # c[1:2, 3:4, 5:6] or c[1:2, 3:4]
-                        return c
+                    # c[1:2, 3:4, 5:6] or c[1:2, 3:4]
+                    return c
 
 
 def _orient(array, wcs):
