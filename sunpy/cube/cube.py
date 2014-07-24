@@ -28,7 +28,7 @@ from sunpy.spectra.spectrum import Spectrum
 from sunpy.spectra.spectrogram import Spectrogram
 from sunpy.cube import cube_utils as cu
 
-__all__ = ['Cube', 'CubeError']
+__all__ = ['Cube']
 
 
 class Cube(astropy.nddata.NDData):
@@ -150,7 +150,7 @@ class Cube(astropy.nddata.NDData):
             wavelength to the one specified.
         '''
         if 'WAVE' not in self.axes_wcs.wcs.ctype:
-            raise CubeError(2, "Spectral dimension not present")
+            raise cu.CubeError(2, "Spectral dimension not present")
 
         axis = 1 if self.axes_wcs.wcs.ctype[-1] in ['TIME', 'UTC'] else 0
         arr = None
@@ -210,7 +210,7 @@ class Cube(astropy.nddata.NDData):
         '''
         if self.axes_wcs.wcs.ctype[-2] == 'WAVE':
             error = "Cannot construct a map with only one spatial dimension"
-            raise CubeError(3, error)
+            raise cu.CubeError(3, error)
 
         if isinstance(chunk, tuple):
             maparray = self.data[chunk[0]:chunk[1], :, :].sum(0)
@@ -234,9 +234,10 @@ class Cube(astropy.nddata.NDData):
             The y-coordinate to take the lightcurve from.
         '''
         if self.axes_wcs.wcs.ctype[-1] not in ['TIME', 'UTC']:
-            raise CubeError(1, 'Cannot create a lightcurve with no time axis')
+            raise cu.CubeError(1,
+                               'Cannot create a lightcurve with no time axis')
         if self.axes_wcs.wcs.ctype[-2] != 'WAVE':
-            raise CubeError(2, 'A spectral axis is needed in a lightcurve')
+            raise cu.CubeError(2, 'A spectral axis is needed in a lightcurve')
 
         data = self._choose_wavelength_slice(wavelength)
         if y_coord is not None:
@@ -260,7 +261,7 @@ class Cube(astropy.nddata.NDData):
             summed.
         '''
         if 'WAVE' not in self.axes_wcs.wcs.ctype:
-            raise CubeError(2, 'Spectral axis needed to create a spectrum')
+            raise cu.CubeError(2, 'Spectral axis needed to create a spectrum')
         axis = 0 if self.axes_wcs.wcs.ctype[-1] == 'WAVE' else 1
 
         if axis == 0:
@@ -288,9 +289,10 @@ class Cube(astropy.nddata.NDData):
             The y-coordinate to pick when converting to a spectrogram.
         '''
         if self.axes_wcs.wcs.ctype[-1] not in ['TIME', 'UTC']:
-            raise CubeError(1, 'Cannot create a spectrogram with no time axis')
+            raise cu.CubeError(1,
+                               'Cannot create a spectrogram with no time axis')
         if self.axes_wcs.wcs.ctype[-2] != 'WAVE':
-            raise CubeError(2, 'A spectral axis is needed in a spectrogram')
+            raise cu.CubeError(2, 'A spectral axis is needed in a spectrogram')
         data = self.data[:, :, y_coord]
         time_axis = self.time_axis()
         freq_axis = self.freq_axis()
@@ -320,7 +322,7 @@ class Cube(astropy.nddata.NDData):
         dimension.
         '''
         if self.axes_wcs.wcs.ctype[-1] not in ['TIME', 'UTC']:
-            raise CubeError(1, 'No time axis present')
+            raise cu.CubeError(1, 'No time axis present')
         delta = self.axes_wcs.wcs.cdelt[-1]
         crpix = self.axes_wcs.wcs.crpix[-1]
         crval = self.axes_wcs.wcs.crval[-1]
@@ -334,7 +336,8 @@ class Cube(astropy.nddata.NDData):
         spectral dimension.
         '''
         if 'WAVE' not in self.axes_wcs.wcs.ctype:
-            raise CubeError(2, 'No energy (wavelength, frequency) axis found')
+            raise cu.CubeError(2,
+                               'No energy (wavelength, frequency) axis found')
         axis = 0 if self.axes_wcs.wcs.ctype[-1] == 'WAVE' else 1
         delta = self.axes_wcs.wcs.cdelt[-1 - axis]
         crpix = self.axes_wcs.wcs.crpix[-1 - axis]
@@ -441,24 +444,3 @@ class Cube(astropy.nddata.NDData):
                                 return c.data[:, :, item[2]]
                     # c[1:2, 3:4, 5:6] or c[1:2, 3:4]
                     return c
-
-
-
-
-
-class CubeError(Exception):
-    '''
-    Class for handling Cube errors.
-    '''
-    errors = {0: 'Unspecified error',
-              1: 'Time dimension not present',
-              2: 'Spectral dimension not present',
-              3: 'Insufficient spatial dimensions'}
-
-    def __init__(self, value, msg):
-        self.value = value
-        self.message = msg
-
-    def __str__(self):
-        return 'ERROR ' + repr(self.value) + ' (' \
-               + self.errors.get(self.value, '') + '): ' + self.message

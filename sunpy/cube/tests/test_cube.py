@@ -4,6 +4,7 @@ Tests for Cube
 '''
 from __future__ import absolute_import
 import sunpy.cube.cube as c
+import sunpy.cube.cube_utils as cu
 from sunpy.map.mapbase import GenericMap
 from sunpy.spectra.spectrum import Spectrum
 from sunpy.spectra.spectrogram import Spectrogram
@@ -32,9 +33,9 @@ cubem = c.Cube(data, wm)
 
 
 def test_slice_to_map_with_time():
-    with pytest.raises(c.CubeError):
+    with pytest.raises(cu.CubeError):
         cube.slice_to_map(0)
-    with pytest.raises(c.CubeError):
+    with pytest.raises(cu.CubeError):
         cube.slice_to_map((0, 3))
 
 
@@ -122,7 +123,7 @@ def test_freq_axis():
 def test_time_axis():
     t1 = cube.time_axis()
     assert np.allclose(t1, [0, 0.4])
-    with pytest.raises(c.CubeError):
+    with pytest.raises(cu.CubeError):
         cubem.time_axis()
 
 

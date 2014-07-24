@@ -1,4 +1,10 @@
 # -*- coding: utf-8 -*-
+# Author: Mateo Inchaurrandieta <mateo.inchaurrandieta@gmail.com>
+# pylint: disable=E1101
+''''
+Utilities used in the sunpy.cube.cube module. Moved here to prevent clutter and
+aid readability.
+'''
 
 import warnings
 from astropy.wcs._wcs import InconsistentAxisTypesError
@@ -66,3 +72,21 @@ def select_order(axtypes):
     order.sort()
     result = [axtypes.index(s) for (_, s) in order]
     return result
+
+
+class CubeError(Exception):
+    '''
+    Class for handling Cube errors.
+    '''
+    errors = {0: 'Unspecified error',
+              1: 'Time dimension not present',
+              2: 'Spectral dimension not present',
+              3: 'Insufficient spatial dimensions'}
+
+    def __init__(self, value, msg):
+        self.value = value
+        self.message = msg
+
+    def __str__(self):
+        return 'ERROR ' + repr(self.value) + ' (' \
+               + self.errors.get(self.value, '') + '): ' + self.message
