@@ -19,11 +19,12 @@ from __future__ import absolute_import
 
 from datetime import datetime
 
+from astropy import units as u
+
 from sunpy.time import TimeRange
 from sunpy.net.attr import (
     Attr, ValueAttr, AttrWalker, AttrAnd, AttrOr, DummyAttr, ValueAttr
 )
-from sunpy.util import to_angstrom
 from sunpy.util.multimethod import MultiMethod
 from sunpy.time import parse_time
 
@@ -55,12 +56,25 @@ class _Range(object):
 
 
 class Wave(Attr, _Range):
-    def __init__(self, wavemin, wavemax, waveunit='Angstrom'):
-        self.min, self.max = sorted(
-            to_angstrom(v, waveunit) for v in [float(wavemin), float(wavemax)]
-        )
-        self.unit = 'Angstrom'
+    def __init__(self, wavemin, wavemax):
+        if not all(isinstance(var, u.Quantity) for var in [wavemin, wavemax]):
+            raise TypeError("Wave inputs must be astropy Quantities")
 
+        # VSO just accept inputs as Angstroms, kHz or keV, the following
+        # converts to any of these units depending on the spectral inputs
+        # Note: the website asks for GHz, however it seems that using GHz produces
+        # weird responses on VSO.
+        convert = {'m': u.AA, 'Hz': u.kHz, 'eV': u.keV}
+        for k in convert.keys():
+            if wavemin.decompose().unit == (1 * u.Unit(k)).decompose().unit:
+                unit = convert[k]
+        try:
+            self.min, self.max = sorted(
+                value.to(unit) for value in [wavemin, wavemax]
+                )
+            self.unit = unit
+        except NameError:
+            raise ValueError("'{0}' is not a spectral supported unit".format(wavemin.unit))
         Attr.__init__(self)
         _Range.__init__(self, self.min, self.max, self.__class__)
 
@@ -68,7 +82,9 @@ class Wave(Attr, _Range):
         return isinstance(other, self.__class__)
 
     def __repr__(self):
-        return '<Wave({0!r}, {1!r}, {2!r})>'.format(self.min, self.max, self.unit)
+	return '<Wave({0!r}, {1!r}, {2!r})>'.format(self.min.value,
+                                                self.max.value,
+                                                str(self.unit))
 
 
 class Time(Attr, _Range):
@@ -260,8 +276,8 @@ walker.add_converter(_VSOSimpleAttr)(
 
 walker.add_converter(Wave)(
     lambda x: ValueAttr({
-            ('wave', 'wavemin'): x.min,
-            ('wave', 'wavemax'): x.max,
+            ('wave', 'wavemin'): x.min.value,
+            ('wave', 'wavemax'): x.max.value,
             ('wave', 'waveunit'): x.unit,
     })
 )
@@ -319,11 +335,11 @@ def _(attr, results):
         if
         it.wave.wavemax is not None
         and
-        attr.min <= to_angstrom(float(it.wave.wavemax), it.wave.waveunit)
+        attr.min <= it.wave.wavemax.to(u.angstrom, equivalencies=u.spectral())
         and
         it.wave.wavemin is not None
         and
-        attr.max >= to_angstrom(float(it.wave.wavemin), it.wave.waveunit)
+        attr.max >= it.wave.wavemin.to(u.angstrom, equivalencies=u.spectral())
     )
 
 @filter_results.add_dec(Time)

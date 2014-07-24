@@ -5,7 +5,8 @@
 #
 
 import numpy as np
-from numpy.testing import assert_allclose
+from astropy import units as u
+from numpy.testing import assert_allclose, assert_array_almost_equal
 from scipy.ndimage.interpolation import shift
 from sunpy import AIA_171_IMAGE
 from sunpy import map
@@ -99,17 +100,17 @@ def test_upper_clip():
 
 
 def test_calculate_clipping():
-    answer = calculate_clipping(clip_test_array, clip_test_array)
-    assert(answer == ([2.0, 1.0], [2.0, 1.0]))
+    answer = calculate_clipping(clip_test_array *u.pix, clip_test_array *u.pix)
+    assert_array_almost_equal(answer, ([2.0, 1.0]*u.pix, [2.0, 1.0]*u.pix))
 
 
 def test_clip_edges():
     a = np.zeros(shape=(341, 156))
-    yclip = [4, 0]
-    xclip = [1, 2]
+    yclip = [4, 0] * u.pix
+    xclip = [1, 2] * u.pix
     new_a = clip_edges(a, yclip, xclip)
-    assert(a.shape[0] - (yclip[0] + yclip[1]) == 337)
-    assert(a.shape[1] - (xclip[0] + xclip[1]) == 153)
+    assert(a.shape[0] - (yclip[0].value + yclip[1].value) == 337)
+    assert(a.shape[1] - (xclip[0].value + xclip[1].value) == 153)
 
 
 def test_calculate_shift():
@@ -187,3 +188,4 @@ def test_mapcube_coalign_by_match_template():
     test_mc = mapcube_coalign_by_match_template(mc, clip=False)
     assert(test_mc[0].data.shape == testmap.data.shape)
     assert(test_mc[1].data.shape == testmap.data.shape)
+
