@@ -53,3 +53,13 @@ def test_select_order():
 
     for (l, r) in zip(lists, results):
         assert cu.select_order(l) == r
+
+
+def test_iter_isinstance():
+    obj = (1, 'x', 2.5)
+    assert cu.iter_isinstance(obj, int, str, float)
+    assert cu.iter_isinstance(obj, (int, float), (str, int), float)
+    assert not cu.iter_isinstance(obj, int, str)
+    assert not cu.iter_isinstance(obj, int, str, float, int)
+    assert not cu.iter_isinstance(1, int)  # only works for tuples
+    assert not cu.iter_isinstance(int, float)

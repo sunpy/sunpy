@@ -154,8 +154,8 @@ class Cube(astropy.nddata.NDData):
 
         axis = 1 if self.axes_wcs.wcs.ctype[-1] in ['TIME', 'UTC'] else 0
         arr = None
-        if (isinstance(offset, int) and offset >= 0 and
-           offset < self.data.shape[axis]):
+        length = self.data.shape[axis]
+        if isinstance(offset, int) and offset >= 0 and offset < length:
             arr = self.data.take(offset, axis=axis)
 
         if isinstance(offset, u.Quantity):
@@ -181,8 +181,8 @@ class Cube(astropy.nddata.NDData):
         '''
         arr = None
         axis = 1 if self.axes_wcs.wcs.ctype[-2] != 'WAVE' else 2
-        if (isinstance(offset, int) and offset >= 0 and
-           offset < self.data.shape[axis]):
+        length = self.data.shape[axis]
+        if isinstance(offset, int) and offset >= 0 and offset < length:
             arr = self.data.take(offset, axis=axis)
 
         if isinstance(offset, u.Quantity):
@@ -413,25 +413,28 @@ class Cube(astropy.nddata.NDData):
 
         if slice_to_map:
             if isinstance(item, int):
-                return c.slice_to_map(item)
+                gmap = c.slice_to_map(item)
             else:
-                return c.slice_to_map(item[0])
+                gmap = c.slice_to_map(item[0])
+            return gmap
         elif slice_to_spectrum:
             if isinstance(item, int):
-                return c.slice_to_spectrum(item, None)
+                spec = c.slice_to_spectrum(item, None)
             elif cu.iter_isinstance(item, int, slice, int):
-                return c.slice_to_spectrum(item[0], item[2])
+                spec = c.slice_to_spectrum(item[0], item[2])
             elif cu.iter_isinstance(item, slice, int, int):
-                return c.slice_to_spectrum(item[1], item[2])
+                spec = c.slice_to_spectrum(item[1], item[2])
             else:
-                return c.slice_to_spectrum(item[0], None)
+                spec = c.slice_to_spectrum(item[0], None)
+            return spec
         elif slice_to_spectrogram:
             return c.slice_to_spectrogram(item[2])
         elif slice_to_lightcurve:
             if cu.iter_isinstance(item, slice, int, int):
-                return c.slice_to_lightcurve(item[1], item[2])
+                lightc = c.slice_to_lightcurve(item[1], item[2])
             else:
-                return c.slice_to_lightcurve(item[1])
+                lightc = c.slice_to_lightcurve(item[1])
+            return lightc
         elif stay_as_cube:
             return c
         else:
