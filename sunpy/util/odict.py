@@ -10,7 +10,7 @@ def __meta_str__(self):
     particularly relevant for displaying lightcurve.meta information.'''
     out=[]
     for l,d in self.iteritems():
-        out.append((str(l) + ':\t' + str(d)).expandtabs(20))
+        out.append( ("""%s: \t %s""" % (l,d)).expandtabs(20))
     totalstring = '\n'.join(out)
             
     return totalstring
