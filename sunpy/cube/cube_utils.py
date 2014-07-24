@@ -74,6 +74,24 @@ def select_order(axtypes):
     return result
 
 
+def iter_isinstance(obj, *types):
+    '''
+    Given an iterable object and a list of types, classes or tuples of types
+    and classes determine if the given object's items are instances of the
+    given types.
+
+    Parameters
+    ----------
+    obj: tuple
+        The object to check
+    *types: any number of types or classes
+        The classes to check against
+    '''
+    if not isinstance(obj, tuple) or len(obj) != len(types):
+        return False
+    return all(isinstance(o, t) for o, t in zip(obj, types))
+
+
 class CubeError(Exception):
     '''
     Class for handling Cube errors.

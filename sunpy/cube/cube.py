@@ -380,67 +380,59 @@ class Cube(astropy.nddata.NDData):
         return self.__class__(data=newdata, wcs=newwcs)
 
     def __getitem__(self, item):
-        if item is None:
+        if item is None or (isinstance(item, tuple) and None in item):
             raise IndexError("None indices not supported")
+        axes = self.axes_wcs.wcs.ctype
+        slice_to_map = (axes[-2] != 'WAVE' and
+                        (isinstance(item, int) or
+                         cu.iter_isinstance(item, int, slice) or
+                         cu.iter_isinstance(item, int, slice, slice)))
+        slice_to_spectrum = (((isinstance(item, int) or
+                               cu.iter_isinstance(item, int, slice) or
+                               cu.iter_isinstance(item, int, slice, slice) or
+                               cu.iter_isinstance(item, int, slice, int))
+                              and axes[-2] == 'WAVE')
+                             or (axes[-1] == 'WAVE' and
+                                 cu.iter_isinstance(item, slice, int, int)))
+        slice_to_spectrogram = (cu.iter_isinstance(item, slice, slice, int)
+                                and axes[-2] == 'WAVE')
+        slice_to_lightcurve = (axes[-2] == 'WAVE' and
+                               (cu.iter_isinstance(item, slice, int, int)
+                                or cu.iter_isinstance(item, slice, int)
+                                or cu.iter_isinstance(item,
+                                                      slice, int, slice)))
+        stay_as_cube = (isinstance(item, slice) or
+                        (isinstance(item, tuple) and
+                         not any(isinstance(i, int) for i in item)))
 
-        if isinstance(item, int):
-            if self.axes_wcs.wcs.ctype[-2] != 'WAVE':
-                return self.slice_to_map(item)
-            else:
-                # FIXME: should a lambda, x be collapsed into a spectrum?
-                return self.slice_to_spectrum(item, None)
-        elif isinstance(item, slice):
-            return self._reduce_dim(0, item)
-        else:  # Then it's a tuple...
-            if None in item:
-                raise IndexError("None indices not supported")
-
-            c = self._reduce_dim(0, slice(None, None, None))
+        c = self._reduce_dim(0, slice(None, None, None))
+        if isinstance(item, tuple):
             for i in range(len(item)):
                 if isinstance(item[i], slice):
                     c = c._reduce_dim(i, item[i])
 
-            # c is now the reduced cube. Time to deal with ints.
-            if isinstance(item[0], int):
-                if isinstance(item[1], int):
-                    if len(item) == 3:
-                        if isinstance(item[2], int):  # c[1, 2, 3]
-                            return self.data[item]
-                        else:  # c[1, 2, 3:4]
-                            return c.data[item[0], item[1], :]
-                    else:  # c[1, 2]
-                        return c.data[item]
-                else:  # second one is a slice
-                    if len(item) == 3:
-                        if isinstance(item[2], int):  # c[1, 2:3, 4]
-                            if self.axes_wcs.wcs.ctype[-2] == 'WAVE':
-                                return c.slice_to_spectrum(item[0], item[2])
-                            else:
-                                return c.data[item[0], :, item[2]]
-                    # c[1, 2:3] or c[1, 2:3, 4:5]
-                    return c[item[0]]
-            else:  # first one is a slice
-                if isinstance(item[1], int):
-                    if len(item) == 3:
-                        if isinstance(item[2], int):  # c[1:2, 3, 4]
-                            if self.axes_wcs.wcs.ctype[-1] == 'WAVE':
-                                return c.slice_to_spectrum(item[1], item[2])
-                            elif self.axes_wcs.wcs.ctype[-2] == 'WAVE':
-                                return c.slice_to_lightcurve(item[1], item[2])
-                            else:
-                                return c.data[:, item[1], item[2]]
-                    # c[1:2, 3, 4:5] or c[1:2, 3]
-                    if self.axes_wcs.wcs.ctype[-2] == 'WAVE':
-                        return c.slice_to_lightcurve(item[1])
-                    else:
-                        # FIXME: What if this is a time-x?
-                        return c.data[:, item[1], :]
-                else:  # first and second one are slices
-                    if len(item) == 3:
-                        if isinstance(item[2], int):  # c[1:2, 3:4, 5]
-                            if self.axes_wcs.wcs.ctype[-2] == 'WAVE':
-                                return c.slice_to_spectrogram(item[2])
-                            else:  # FIXME: again, time-x
-                                return c.data[:, :, item[2]]
-                    # c[1:2, 3:4, 5:6] or c[1:2, 3:4]
-                    return c
+        if slice_to_map:
+            if isinstance(item, int):
+                return c.slice_to_map(item)
+            else:
+                return c.slice_to_map(item[0])
+        elif slice_to_spectrum:
+            if isinstance(item, int):
+                return c.slice_to_spectrum(item, None)
+            elif cu.iter_isinstance(item, int, slice, int):
+                return c.slice_to_spectrum(item[0], item[2])
+            elif cu.iter_isinstance(item, slice, int, int):
+                return c.slice_to_spectrum(item[1], item[2])
+            else:
+                return c.slice_to_spectrum(item[0], None)
+        elif slice_to_spectrogram:
+            return c.slice_to_spectrogram(item[2])
+        elif slice_to_lightcurve:
+            if cu.iter_isinstance(item, slice, int, int):
+                return c.slice_to_lightcurve(item[1], item[2])
+            else:
+                return c.slice_to_lightcurve(item[1])
+        elif stay_as_cube:
+            return c
+        else:
+            return self.data[item]
