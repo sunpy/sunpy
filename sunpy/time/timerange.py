@@ -29,9 +29,6 @@ class TimeRange(object):
         The start time of the time range (always the smaller time)
     end : datetime
         The end time of the time range (always the larger time)
-
-    Attributes
-    ----------
     dt : timediff
         The difference in time between the start and end time. Always a
         positive value.
