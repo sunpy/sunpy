@@ -23,7 +23,7 @@ class TimeRange(object):
         May also be the size of the time range specified as a timedelta object,
         or the number of seconds (positive or negative)
 
-    Properties
+    Attributes
     ----------
     start : datetime
         The start time of the time range (always the smaller time)
