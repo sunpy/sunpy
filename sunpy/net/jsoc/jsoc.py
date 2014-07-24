@@ -69,6 +69,9 @@ class JSOCClient(object):
 
     Examples
     --------
+    
+    *Example 1*
+    
     Query JSOC for some HMI data at 45 second cadence:
 
     >>> from sunpy.net import jsoc
@@ -96,6 +99,7 @@ class JSOCClient(object):
 
     >>> res.wait(progress=True)
     
+    *Example 2*
     
     Query the JSOC for some AIA 171 data, and seperate out the staging and the 
     download steps:
@@ -147,11 +151,11 @@ class JSOCClient(object):
         """
         Build a JSOC query and submit it to JSOC for processing.
 
-        Takes a variable number of `sunpy.net.jsoc.attrs` as parameters,
-        which are chained together using AND.
+        Takes a variable number of :mod:`sunpy.net.jsoc.attrs` as parameters,
+        which are chained together using the AND (`&`) operator.
 
         Complex queries to be easily formed using logical operators such as
-        & and |.
+        `&` and `|`, in the same way as the VSO client.
 
         Examples
         --------
