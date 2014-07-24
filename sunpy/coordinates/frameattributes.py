@@ -50,7 +50,7 @@ class TimeFrameAttributeSunPy(TimeFrameAttribute):
         if value is None:
             return None, False
         
-        if value is 'now':
+        if value == 'now':
             return datetime.datetime.now(), True
 
         if isinstance(value, Time):
