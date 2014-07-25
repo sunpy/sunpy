@@ -593,3 +593,15 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal",
     em = longflux/denom * 1e55
 
     return em
+
+
+def convert_flareclass_goesflux(flareclass):
+    """
+    Converts a GOES flare class into the corresponding X-ray flux.
+    """
+    flareclass = flareclass.upper()
+    conversions = {'A': 1.0e-8, 'B': 1.0e-7, 'C': 1.0e-6, 'M': 1.0e-5,
+                   'X': 1.0e-4}
+    flux = float(flareclass[1:]) * conversions[flareclass[0]]
+    
+    return flux
