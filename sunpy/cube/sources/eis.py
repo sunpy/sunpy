@@ -13,6 +13,7 @@ __all__ = ['EISSpectralCube']
 
 
 def _clean(header):
+    # TODO: find a way to identify cubes containing time
     """ Fixes non-standard or deprecated CTYPEn FITS keywords.
 
     Parameters

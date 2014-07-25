@@ -11,6 +11,7 @@ wavelength
 
 # standard libraries
 import datetime
+from copy import deepcopy
 
 # external libraries
 import numpy as np
@@ -366,10 +367,7 @@ class Cube(astropy.nddata.NDData):
         step = keys.step if keys.step is not None else 1
         indices = range(start, stop, step)
         newdata = self.data.take(indices, axis=axis)
-        if self.axes_wcs.naxis == 4:  # if there's a redundant axis
-            newwcs = wcs_util.reindex_wcs(self.axes_wcs, np.array([1, 2, 3]))
-        else:
-            newwcs = self.axes_wcs.deepcopy()
+        newwcs = self.axes_wcs.deepcopy()
         if keys.step is not None:
             newwcs.wcs.cdelt[waxis] *= keys.step
         if keys.start is not None:
@@ -377,7 +375,10 @@ class Cube(astropy.nddata.NDData):
             newwcs.wcs.crpix[waxis] = 0
             newwcs.wcs.crval[waxis] = (self.axes_wcs.wcs.crval[waxis] +
                                        self.axes_wcs.wcs.cdelt[waxis] * start)
-        return self.__class__(data=newdata, wcs=newwcs)
+        newcube = deepcopy(self)
+        newcube.data = newdata
+        newcube.axes_wcs = newwcs
+        return newcube
 
     def __getitem__(self, item):
         if item is None or (isinstance(item, tuple) and None in item):
