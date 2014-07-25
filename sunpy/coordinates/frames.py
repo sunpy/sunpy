@@ -387,13 +387,13 @@ def _carrington_offset(dateobs):
 
 @frame_transform_graph.transform(FunctionTransform, HelioGraphicStonyhurst, HelioGraphicCarrington)
 def hgs_to_hgc(hgscoord, hgcframe):
-    c_lon = hgscoord.spherical.lon + _carrington_offset(hgscoord.dateobs) * u.deg
+    c_lon = hgscoord.spherical.lon + _carrington_offset(hgscoord.dateobs).to(u.deg)
     representation = SphericalWrap180Representation(c_lon, hgscoord.hlat, hgscoord.rad)
     return hgcframe.realize_frame(representation)
 
 @frame_transform_graph.transform(FunctionTransform, HelioGraphicCarrington, HelioGraphicStonyhurst)
 def hgc_to_hgs(hgccoord, hgsframe):
-    s_lon = hgccoord.spherical.lon - _carrington_offset(hgccoord.dateobs) * u.deg
+    s_lon = hgccoord.spherical.lon - _carrington_offset(hgccoord.dateobs).to(u.deg)
     representation = SphericalWrap180Representation(s_lon, hgccoord.hlat, hgccoord.rad)
     return hgsframe.realize_frame(representation)
 
@@ -436,14 +436,16 @@ def hcc_to_hgs(helioccoord, heliogframe):
     y = helioccoord.y.to(u.m)
     z = helioccoord.z.to(u.m)
 
-    l0_deg = _carrington_offset(helioccoord.dateobs) * u.deg
-    b0_deg = s.heliographic_solar_center()[1] * u.deg
+    l0b0_pair = s.heliographic_solar_center()
+
+    l0_rad = l0b0_pair[0]
+    b0_deg = l0b0_pair[1]
 
     cosb = np.cos(np.deg2rad(b0_deg))
     sinb = np.sin(np.deg2rad(b0_deg))
 
     hecr = np.sqrt(x**2 + y**2 + z**2)
-    hgln = np.arctan2(x, z * cosb - y * sinb) + np.deg2rad(l0_deg)
+    hgln = np.arctan2(x, z * cosb - y * sinb) + l0_rad
     hglt = np.arcsin((y * cosb + z * sinb) / hecr)
 
     representation = SphericalWrap180Representation(np.rad2deg(hgln),
@@ -457,18 +459,18 @@ def hgs_to_hcc(heliogcoord, heliocframe):
     hglat = heliogcoord.hlat
     r = heliogcoord.rad.to(u.m)
     
-    l0b0_pair = s.heliographic_solar_center() * u.deg
+    l0b0_pair = s.heliographic_solar_center()
 
-    l0_deg = l0b0_pair[0]
+    l0_rad = l0b0_pair[0]
     b0_deg = l0b0_pair[1]
 
     lon = np.deg2rad(hglon)
     lat = np.deg2rad(hglat)
 
-    cosb = np.cos(np.deg2rad(b0_deg))
-    sinb = np.sin(np.deg2rad(b0_deg))
+    cosb = np.cos(b0_deg.to(u.rad))
+    sinb = np.sin(b0_deg.to(u.rad))
 
-    lon = lon - np.deg2rad(l0_deg)
+    lon = lon - l0_rad
 
     cosx = np.cos(lon)
     sinx = np.sin(lon)
