@@ -9,7 +9,7 @@ import sunpy.lightcurve
 from sunpy.time import TimeRange
 
 
-class TestGOESLightCurve():
+class TestGOESLightCurve(object):
 
     @pytest.fixture
     def timerange_a(self):

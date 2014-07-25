@@ -41,4 +41,3 @@ def test_lytaf_utils():
     assert split[0]['subtimes'][-1] == datetime.datetime(2010, 6, 13, 2, 7, 2)
     assert split[3]['subtimes'][0] == datetime.datetime(2010, 6, 13, 2, 59, 41)
     assert split[3]['subtimes'][-1] == datetime.datetime(2010, 6, 13, 2, 59, 58)
-    
