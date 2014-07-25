@@ -20,7 +20,7 @@ from sunpy.util.net import download_fileobj
 
 __all__ = ['HelioviewerClient']
 
-class HelioviewerClient:
+class HelioviewerClient(object):
     """Helioviewer.org Client"""
     def __init__(self, url="http://helioviewer.org/api/"):
         self._api = url

@@ -52,13 +52,13 @@ class CCTests(unittest.TestCase):
         cc = Chaincode([0, 0], "002")
         boundingbox = [[-1, 0], [-1, 0]]
         self.failIf(np.all(cc.BoundingBox() != np.array(boundingbox)))
-                      
+
     def testSubBoundingBoxX(self):
-        cc = Chaincode([0, 0], "44464660012075602223") 
+        cc = Chaincode([0, 0], "44464660012075602223")
         self.failUnless(cc.subBoundingBox(xedge=[0.1, 2]) == [0, 3])
 
     def testSubBoundingBoxY(self):
-        cc = Chaincode([0, 0], "44464660012075602223") 
+        cc = Chaincode([0, 0], "44464660012075602223")
         self.failUnless(cc.subBoundingBox(yedge=[-1, 0.5]) == [0, 3])
 
 

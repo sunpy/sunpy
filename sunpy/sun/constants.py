@@ -1,8 +1,8 @@
 """
 Fundamental Solar Physical Constants
 ------------------------------------
-These constants are taken from various sources. The structure of this module is heavily 
-based on if not directly copied from the SciPy constants module but contains olar 
+These constants are taken from various sources. The structure of this module is heavily
+based on if not directly copied from the SciPy constants module but contains olar
 Physical constants.
 
 Object
@@ -14,13 +14,13 @@ Object
 
     average density:
          The average density of the Sun.
-    average_angular_size: 
+    average_angular_size:
         The average angular size of the Sun as seen from Earth in arcseconds.
     effective temperature:
-        The effective black-body temperature of the Sun in Kelvin.  
-    oblateness: 
+        The effective black-body temperature of the Sun in Kelvin.
+    oblateness:
         The ellipticity of the Sun.
-    escape velocity: 
+    escape velocity:
         The velocity which an object needs to escape from the gravitational pull of the Sun.
     luminosity:
         The luminosity of the Sun.
@@ -32,7 +32,7 @@ Object
         The mean rate at which the Sun produces energy.
     mean intensity:
         The mean intensity of the Sun.
-    metallicity: 
+    metallicity:
         The metallicity of the Sun.
     radius:
         The radius of the Sun at the equator.
@@ -41,7 +41,7 @@ Object
     sunspot cycle:
         The average duration of the solar activity cycle.
     surface area:
-        The surface area of the Sun. 
+        The surface area of the Sun.
     surface gravity:
         The gravitational acceleration at the surface of the Sun as measured at the equator.
     visual magnitude:
@@ -52,8 +52,8 @@ Object
 
 Attributes
 ----------
-A number of variables from physical_constants are made available for convenience as 
-attributes. 
+A number of variables from physical_constants are made available for convenience as
+attributes.
 
 Websites
 --------
@@ -70,7 +70,7 @@ physical_constants = _con.physical_constants
 def constant(key) :
     """
     The constant in physical_constants index by key
-    
+
     Parameters
     ----------
     key : Python string or unicode
@@ -90,7 +90,7 @@ def constant(key) :
     --------
     >>> from sunpy.sun import constants
     >>> constants.constant('mass')
-    
+
     """
     return physical_constants[key]
 
@@ -173,7 +173,7 @@ def uncertainty(key) :
     --------
     >>> from sunpy.sun import constants
     >>> constants.uncertainty('mass')
-    
+
 
     """
     return constant(key).uncertainty
@@ -221,7 +221,7 @@ def print_all(key = None):
     """
     Prints out the complete list of physical_constants to the screen or
     one single value
-    
+
     Parameters
     ----------
     key : Python string or unicode
@@ -238,20 +238,20 @@ def print_all(key = None):
 
     """
     column_width = [25, 20, 20, 20]
-    table_width = (column_width[0] + column_width[1] + column_width[2] 
+    table_width = (column_width[0] + column_width[1] + column_width[2]
                    + column_width[3])
-    format_string = ('{0:<' + str(column_width[0]) + '}' + '{1:>' + 
-                    str(column_width[1]) + '}' + '{2:>' + str(column_width[2]) 
+    format_string = ('{0:<' + str(column_width[0]) + '}' + '{1:>' +
+                    str(column_width[1]) + '}' + '{2:>' + str(column_width[2])
                     + '}' + '{3:>' + str(column_width[3]) + '}')
     print(format_string.format('Name', 'Value', 'Units', 'Error'))
     print(('{:-^' + str(table_width) + '}').format(''))
 
     if key is None:
         for key in physical_constants:
-            print(format_string.format(key, str(value(key)), unit(key), 
+            print(format_string.format(key, str(value(key)), unit(key),
                                        str(uncertainty(key))))
-    else: 
-        print(format_string.format(key, str(value(key)), unit(key), 
+    else:
+        print(format_string.format(key, str(value(key)), unit(key),
                                    str(uncertainty(key))))
 
 # Spectral class is not included in physical constants since it is not a number
@@ -259,7 +259,7 @@ spectral_classification = 'G2V'
 
 au = astronomical_unit = constant('mean distance')
 
-# The following variables from _constants are brought out by making them 
+# The following variables from _constants are brought out by making them
 # accessible through a call such as sun.volume
 mass = constant('mass')
 equatorial_radius = radius = constant('radius')

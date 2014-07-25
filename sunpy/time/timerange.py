@@ -8,7 +8,7 @@ from sunpy.time import parse_time
 __all__ = ['TimeRange']
 
 
-class TimeRange:
+class TimeRange(object):
     """
     Timerange(a, b) or Timerange((a, b))
 
