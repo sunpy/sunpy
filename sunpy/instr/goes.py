@@ -598,6 +598,27 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal",
 def convert_flareclass_goesflux(flareclass):
     """
     Converts a GOES flare class into the corresponding X-ray flux.
+    
+    Parameters
+    ----------
+    flareclass : string
+        The flare class to convert into X-ray flux, as a string. 
+        E.g.: 'X3.2', 'm1.5', 'A9.6'.
+    
+    Returns
+    -------
+    flux : float
+        X-ray flux between 1 and 8 Angstroms as measured near Earth in W/m^2
+    
+    Examples
+    --------
+    >>> convert_flareclass_goesflux('A1.0')
+    1e-08
+    >>> convert_flareclass_goesflux('c4.7')
+    4.7e-06
+    >>> convert_flareclass_goesflux('X2.4')
+    0.00024
+
     """
     flareclass = flareclass.upper()
     conversions = {'A': 1.0e-8, 'B': 1.0e-7, 'C': 1.0e-6, 'M': 1.0e-5,
