@@ -68,7 +68,7 @@ class GenericClient(object):
     def __init__(self):
         self.map_ = {}
 
-    def makeargs(self, *args, **kwargs):
+    def _makeargs(self, *args, **kwargs):
         '''Convert Attribute in query to internal dictionary'''
         for elem in args:
             if issubclass(elem.__class__, Time):
@@ -100,7 +100,7 @@ class GenericClient(object):
 
         Output: queryresponse object.
         """
-        GenericClient.makeargs(self, *args, **kwargs)
+        GenericClient._makeargs(self, *args, **kwargs)
         urls = self._get_url_for_timerange(self.map_.get('TimeRange'), **kwargs)
         return queryresponse.create(self.map_, urls)
 

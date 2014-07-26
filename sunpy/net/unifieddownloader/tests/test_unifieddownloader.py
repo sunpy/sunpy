@@ -1,8 +1,9 @@
 import datetime
 import pytest
+
 import sunpy
-import sunpy.net.vso.attrs as attrs 
 from sunpy.time.timerange import TimeRange
+import sunpy.net.vso.attrs as attrs 
 from sunpy.net.unifieddownloader.downloader_factory import UnifiedDownloader
 
 @pytest.mark.parametrize("time,instrument,client",
