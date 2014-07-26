@@ -1,9 +1,9 @@
-import sunpy
 import urlparse
-from sunpy.net.vso.attrs import Time, Instrument
+import sunpy
 from sunpy.net.unifieddownloader.client import GenericClient
 
-__all__ = ['Time', 'Instrument']
+__all__ = ['EVEClient']
+
 class EVEClient(GenericClient):
 
     def _get_url_for_timerange(self, timerange, **kwargs):
