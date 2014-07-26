@@ -1,8 +1,6 @@
-from sunpy.net.vso.attrs import Time, Instrument
 from sunpy.net.unifieddownloader.client import GenericClient
 
-
-__all__ = ['Time', 'Instrument']
+__all__ = ['NOAAIndicesClient', 'NOAAPredictClient']
 
 class NOAAIndicesClient(GenericClient):
     def _get_url_for_timerange(cls, timerange, **kwargs):

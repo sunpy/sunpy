@@ -1,8 +1,7 @@
-from sunpy.net.vso.attrs import Time, Instrument
-from sunpy.net.unifieddownloader.client import GenericClient
 from sunpy.instr import rhessi
+from sunpy.net.unifieddownloader.client import GenericClient
 
-__all__ = ['Time', 'Instrument']
+__all__ = ['RHESSIClient']
 
 class RHESSIClient(GenericClient):
 

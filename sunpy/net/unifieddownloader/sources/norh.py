@@ -1,8 +1,9 @@
-from sunpy.net.vso.attrs import Time, Instrument
-from sunpy.net.unifieddownloader.client import GenericClient
-import datetime, urlparse
+import datetime
+import urlparse
 
-__all__ = ['Time', 'Instrument']
+from sunpy.net.unifieddownloader.client import GenericClient
+
+__all__ = ['NoRHClient']
 class NoRHClient(GenericClient):
 
     def _get_url_for_timerange(self, timerange, **kwargs):
