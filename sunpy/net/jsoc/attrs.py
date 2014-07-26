@@ -1,4 +1,8 @@
 from __future__ import absolute_import
+
+import numpy as np
+import astropy.units as u
+
 from sunpy.net.attr import (Attr, AttrWalker, AttrAnd, AttrOr)
 from sunpy.net.vso.attrs import Time, _VSOSimpleAttr
 
@@ -22,7 +26,8 @@ class Series(_VSOSimpleAttr):
 
 class Segment(_VSOSimpleAttr):
     """
-    Segments are some kind of Series sub catogories.
+    Segments choose which files to download when there are more than
+    one present for each record e.g. 'image'
     """
     pass
 
@@ -56,6 +61,12 @@ class Wavelength(_VSOSimpleAttr):
     Wavelength or list of wavelengths to download. Must be specified in correct
     units for the series.
     """
+    def __init__(self, value):
+        if not isinstance(value, u.Quantity):
+            raise TypeError("Wave inputs must be astropy Quantities")
+        Attr.__init__(self)
+        
+        self.value = int(np.ceil(value.to(u.AA).value))
 
     def __or__(self, other):
         

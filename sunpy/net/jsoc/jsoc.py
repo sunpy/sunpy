@@ -108,7 +108,7 @@ class JSOCClient(object):
     >>> client = jsoc.JSOCClient()
     >>> response = client.query(jsoc.Time('2014/1/1T00:00:00', '2014/1/1T00:00:36'),
                                 jsoc.Series('aia.lev1_euv_12s'), jsoc.Segment('image'),
-                                jsoc.Wavelength(171))
+                                jsoc.Wave(171))
 
     the response object holds the records that your query will return:
     
@@ -511,11 +511,11 @@ class JSOCClient(object):
                     'key': str(keywords)[1:-1].replace(' ', '').replace("'", ''),
                     'seg': '**NONE**',
                     'link': '**NONE**'}
-        print(postthis['ds'])
+
         r = requests.get(JSOC_INFO_URL, params=postthis)
         
         result = r.json()
-        print(result)
+
         out_table = {}
         for col in result['keywords']:
             out_table.update({col['name']:col['values']})
