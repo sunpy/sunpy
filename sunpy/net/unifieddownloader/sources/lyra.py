@@ -1,8 +1,9 @@
-from sunpy.net.vso.attrs import Time, Instrument, Level
-from sunpy.net.unifieddownloader.client import GenericClient
-import datetime, urlparse
+import datetime
+import urlparse
 
-__all__ = ['Time', 'Instrument', 'Level']
+from sunpy.net.unifieddownloader.client import GenericClient
+
+__all__ = ['LYRAClient']
 
 class LYRAClient(GenericClient):
     def _get_url_for_timerange(self, timerange, **kwargs):

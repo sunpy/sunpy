@@ -1,9 +1,10 @@
-from sunpy.net.download  import Downloader
-from sunpy.time import TimeRange
 import datetime
 from datetime import timedelta
-from sunpy.net.vso.vso import Results
+
+from sunpy.time import TimeRange
 from sunpy.util import print_table
+from sunpy.net.download  import Downloader
+from sunpy.net.vso.vso import Results
 from sunpy.net.vso.attrs import Time
 
 class queryrequestblock(object):
