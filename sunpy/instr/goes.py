@@ -620,6 +620,7 @@ def flareclass_to_flux(flareclass):
     0.00024
 
     """
+    assert isinstance(flareclass, str)
     flareclass = flareclass.upper()
     conversions = {'A': 1.0e-8, 'B': 1.0e-7, 'C': 1.0e-6, 'M': 1.0e-5,
                    'X': 1.0e-4}
@@ -644,11 +645,11 @@ def flux_to_flareclass(goesflux):
     
     Examples
     --------
-    >>> convert_goesflux_flareclass(1e-08)
+    >>> flux_to_flareclass(1e-08)
     'A1.0'
-    >>> convert_goesflux_flareclass(4.7e-06)
+    >>> flux_to_flareclass(4.7e-06)
     'C4.7'
-    >>> convert_goesflux_flareclass(0.00024)
+    >>> flux_to_flareclass(0.00024)
     'X2.4'
 
     """
