@@ -17,6 +17,8 @@ from sunpy import config
 from sunpy import lightcurve
 from sunpy.util.net import check_download_file
 
+from astropy import units
+
 __all__ = ['get_goes_event_list', 'temp_em', 'goes_chianti_tem']
 
 # Check required data files are present in user's default download dir
@@ -624,7 +626,8 @@ def flareclass_to_flux(flareclass):
     flareclass = flareclass.upper()
     conversions = {'A': 1.0e-8, 'B': 1.0e-7, 'C': 1.0e-6, 'M': 1.0e-5,
                    'X': 1.0e-4}
-    flux = float(flareclass[1:]) * conversions[flareclass[0]]
+    fluxval = float(flareclass[1:]) * conversions[flareclass[0]]
+    flux = units.Quantity(fluxval, "W/m^2")
     
     return flux
 
