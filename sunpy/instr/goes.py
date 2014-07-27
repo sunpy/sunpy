@@ -595,7 +595,7 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal",
     return em
 
 
-def convert_flareclass_goesflux(flareclass):
+def flareclass_to_flux(flareclass):
     """
     Converts a GOES flare class into the corresponding X-ray flux.
     
@@ -627,7 +627,7 @@ def convert_flareclass_goesflux(flareclass):
     
     return flux
 
-def convert_goesflux_flareclass(goesflux):
+def flux_to_flareclass(goesflux):
     """
     Converts X-ray flux into the corresponding GOES flare class.
     
