@@ -626,3 +626,44 @@ def convert_flareclass_goesflux(flareclass):
     flux = float(flareclass[1:]) * conversions[flareclass[0]]
     
     return flux
+
+def convert_goesflux_flareclass(goesflux):
+    """
+    Converts X-ray flux into the corresponding GOES flare class.
+    
+    Parameters
+    ----------
+    flux : float
+        X-ray flux between 1 and 8 Angstroms as measured near Earth in W/m^2
+    
+    Returns
+    -------
+    flareclass : string
+        The flare class to convert into X-ray flux, as a string. 
+        E.g.: 'X3.2', 'M1.5', 'A9.6'.
+    
+    Examples
+    --------
+    >>> convert_goesflux_flareclass(1e-08)
+    'A1.0'
+    >>> convert_goesflux_flareclass(4.7e-06)
+    'C4.7'
+    >>> convert_goesflux_flareclass(0.00024)
+    'X2.4'
+
+    """
+    check = False
+    # It has been tried using 1e-x instead of 10**-x
+    # However, it produces C1 and B1 to be B10 and A10.
+    expo = -3
+    while not check:
+        expo -= 1
+        factor = int(goesflux/10**(expo))
+        check = (factor != 0)
+    levels = {'X': 1.0e-4, 'M': 1.0e-5, 'C': 1.0e-6, 
+              'B': 1.0e-7, 'A': 1.0e-8}
+    for elem in levels:
+        if abs(levels[elem]-10**(expo)) < 1e-21 :
+            return '%s%2.1f'%(elem,goesflux/10**(expo))
+
+    return None #What do we return when smaller than A?
