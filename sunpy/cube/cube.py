@@ -21,10 +21,9 @@ import astropy.units as u
 from astropy.units import sday  # sidereal day
 
 # Sunpy modules
-from sunpy.map import GenericMap
+from sunpy.map import GenericMap, MapMeta
 from sunpy.visualization.imageanimator import ImageAnimator
 from sunpy.lightcurve import LightCurve
-from sunpy.wcs import wcs_util
 from sunpy.spectra.spectrum import Spectrum
 from sunpy.spectra.spectrogram import Spectrogram
 from sunpy.cube import cube_utils as cu
@@ -214,11 +213,11 @@ class Cube(astropy.nddata.NDData):
             raise cu.CubeError(3, error)
 
         if isinstance(chunk, tuple):
-            maparray = self.data[chunk[0]:chunk[1], :, :].sum(0)
+            mapArray = self.data[chunk[0]:chunk[1], :, :].sum(0)
         else:
-            maparray = self.data[chunk, :, :]
-        gmap = GenericMap(data=maparray, header=self.meta,
-                          *args, **kwargs)
+            mapArray = self.data[chunk, :, :]
+        mapHeader = MapMeta(self.meta)
+        gmap = GenericMap(data=mapArray, header=mapHeader, *args, **kwargs)
         return gmap
 
     def slice_to_lightcurve(self, wavelength, y_coord=None):
@@ -364,6 +363,10 @@ class Cube(astropy.nddata.NDData):
         waxis = -1 - axis
         start = keys.start if keys.start is not None else 0
         stop = keys.stop if keys.stop is not None else self.data.shape[axis]
+        if stop > self.data.shape[axis]:
+            stop = self.data.shape[axis]
+        if start < 0:
+            start = 0
         step = keys.step if keys.step is not None else 1
         indices = range(start, stop, step)
         newdata = self.data.take(indices, axis=axis)
@@ -406,37 +409,37 @@ class Cube(astropy.nddata.NDData):
                         (isinstance(item, tuple) and
                          not any(isinstance(i, int) for i in item)))
 
-        c = self._reduce_dim(0, slice(None, None, None))
+        reducedcube = self._reduce_dim(0, slice(None, None, None))
         if isinstance(item, tuple):
             for i in range(len(item)):
                 if isinstance(item[i], slice):
-                    c = c._reduce_dim(i, item[i])
+                    reducedcube = reducedcube._reduce_dim(i, item[i])
 
         if slice_to_map:
             if isinstance(item, int):
-                gmap = c.slice_to_map(item)
+                gmap = reducedcube.slice_to_map(item)
             else:
-                gmap = c.slice_to_map(item[0])
+                gmap = reducedcube.slice_to_map(item[0])
             return gmap
         elif slice_to_spectrum:
             if isinstance(item, int):
-                spec = c.slice_to_spectrum(item, None)
+                spec = reducedcube.slice_to_spectrum(item, None)
             elif cu.iter_isinstance(item, int, slice, int):
-                spec = c.slice_to_spectrum(item[0], item[2])
+                spec = reducedcube.slice_to_spectrum(item[0], item[2])
             elif cu.iter_isinstance(item, slice, int, int):
-                spec = c.slice_to_spectrum(item[1], item[2])
+                spec = reducedcube.slice_to_spectrum(item[1], item[2])
             else:
-                spec = c.slice_to_spectrum(item[0], None)
+                spec = reducedcube.slice_to_spectrum(item[0], None)
             return spec
         elif slice_to_spectrogram:
-            return c.slice_to_spectrogram(item[2])
+            return reducedcube.slice_to_spectrogram(item[2])
         elif slice_to_lightcurve:
             if cu.iter_isinstance(item, slice, int, int):
-                lightc = c.slice_to_lightcurve(item[1], item[2])
+                lightc = reducedcube.slice_to_lightcurve(item[1], item[2])
             else:
-                lightc = c.slice_to_lightcurve(item[1])
+                lightc = reducedcube.slice_to_lightcurve(item[1])
             return lightc
         elif stay_as_cube:
-            return c
+            return reducedcube
         else:
             return self.data[item]

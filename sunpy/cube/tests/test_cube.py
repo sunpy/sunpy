@@ -186,3 +186,14 @@ def test_slicing_third_axis():
              int, np.ndarray, np.ndarray]
     for (s, t) in zip(slices, types):
         assert isinstance(s, t)
+
+
+def test_reduce_dim():
+    slices = [slice(s, e, t) for s, e, t in [(None, None, None), (0, 2, None),
+                                             (None, None, 2)]]
+    assert np.all(cube.data == cube._reduce_dim(0, slices[0]))
+    assert np.all(cube.data == cube._reduce_dim(0, slices[1]))
+    assert cubem._reduce_dim(0, slices[1]).data.shape == (2, 2, 4)
+    assert cubem._reduce_dim(2, slices[2]).data.shape == (3, 2, 2)
+    assert cube._reduce_dim(2, slices[2]).axes_wcs.wcs.cdelt[1] == 1
+    
