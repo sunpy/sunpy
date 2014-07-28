@@ -24,7 +24,7 @@ def test_add_celestial_axis():
     h = {'CTYPE1': 'TIME    ', 'CUNIT1': 'min', 'CDELT1': 0.5,
          'CTYPE2': 'WAVE    ', 'CUNIT2': 'Angstrom', 'CDELT2': 0.2,
          'CTYPE3': 'HPLT-TAN', 'CUNIT3': 'deg', 'CDELT3': 0.4}
-    w = WCS(header=h, naxis=3)
+    w = WCS(header=h, naxis=3, _do_set=False)
     w.wcs.pc = [[1, 2, 3], [3, 0, 1.2], [1, 1, 1]]
     nw = wu.add_celestial_axis(w)
     assert nw.wcs.ctype[3] == 'HPLN-TAN'

@@ -7,6 +7,7 @@ aid readability.
 '''
 
 import warnings
+from copy import deepcopy
 from astropy.wcs._wcs import InconsistentAxisTypesError
 import numpy as np
 from sunpy.wcs import wcs_util
@@ -90,6 +91,109 @@ def iter_isinstance(obj, *types):
     if not isinstance(obj, tuple) or len(obj) != len(types):
         return False
     return all(isinstance(o, t) for o, t in zip(obj, types))
+
+
+def handle_slice_to_spectrum(cube, item):
+    '''
+    Given a cube and a getitem argument, with the knowledge that that slice
+    represents a spectrum, return the spectrum that corresponds to that slice.
+
+    Parameters
+    ----------
+    cube: sunpy.cube.Cube
+        The cube to slice
+    item: int or slice object or tuple of these
+        The slice to make
+    '''
+    if isinstance(item, int):
+        spec = cube.slice_to_spectrum(item, None)
+    elif iter_isinstance(item, int, slice, int):
+        spec = cube.slice_to_spectrum(item[0], item[2])
+    elif iter_isinstance(item, slice, int, int):
+        spec = cube.slice_to_spectrum(item[1], item[2])
+    else:
+        spec = cube.slice_to_spectrum(item[0], None)
+    return spec
+
+
+def handle_slice_to_lightcurve(cube, item):
+    '''
+    Given a cube and a getitem argument, with the knowledge that that slice
+    represents a lightcurve, return the lightcurve that corresponds to that
+    slice.
+
+    Parameters
+    ----------
+    cube: sunpy.cube.Cube
+        The cube to slice
+    item: int or slice object or tuple of these
+        The slice to make
+    '''
+    if iter_isinstance(item, slice, int, int):
+        lightc = cube.slice_to_lightcurve(item[1], item[2])
+    else:
+        lightc = cube.slice_to_lightcurve(item[1])
+    return lightc
+
+
+def handle_slice_to_map(cube, item):
+    '''
+    Given a cube and a getitem argument, with the knowledge that that slice
+    represents a map, return the map that corresponds to that slice.
+
+    Parameters
+    ----------
+    cube: sunpy.cube.Cube
+        The cube to slice
+    item: int or slice object or tuple of these
+        The slice to make
+    '''
+    if isinstance(item, int):
+        gmap = cube.slice_to_map(item)
+    else:
+        gmap = cube.slice_to_map(item[0])
+    return gmap
+
+
+def reduce_dim(cube, axis, keys):
+    '''
+    Given an axis and a slice object, returns a new cube with the slice
+    applied along the given dimension. For example, in a time-x-y cube,
+    a reduction along the x axis (axis 1) with a slice value (1, 4, None)
+    would return a cube where the only x values were 1 to 3 of the original
+    cube.
+
+    Parameters
+    ----------
+    cube: sunpy.cube.Cube
+        The cube to reduce
+    axis: int
+        The dimension to reduce
+    keys: slice object
+        The slicing to apply
+    '''
+    waxis = -1 - axis
+    start = keys.start if keys.start is not None else 0
+    stop = keys.stop if keys.stop is not None else cube.data.shape[axis]
+    if stop > cube.data.shape[axis]:
+        stop = cube.data.shape[axis]
+    if start < 0:
+        start = 0
+    step = keys.step if keys.step is not None else 1
+    indices = range(start, stop, step)
+    newdata = cube.data.take(indices, axis=axis)
+    newwcs = cube.axes_wcs.deepcopy()
+    if keys.step is not None:
+        newwcs.wcs.cdelt[waxis] *= keys.step
+    if keys.start is not None:
+        start = keys.start
+        newwcs.wcs.crpix[waxis] = 0
+        newwcs.wcs.crval[waxis] = (cube.axes_wcs.wcs.crval[waxis] +
+                                   cube.axes_wcs.wcs.cdelt[waxis] * start)
+    newcube = deepcopy(cube)
+    newcube.data = newdata
+    newcube.axes_wcs = newwcs
+    return newcube
 
 
 class CubeError(Exception):

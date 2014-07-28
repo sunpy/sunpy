@@ -11,7 +11,6 @@ wavelength
 
 # standard libraries
 import datetime
-from copy import deepcopy
 
 # external libraries
 import numpy as np
@@ -213,11 +212,11 @@ class Cube(astropy.nddata.NDData):
             raise cu.CubeError(3, error)
 
         if isinstance(chunk, tuple):
-            mapArray = self.data[chunk[0]:chunk[1], :, :].sum(0)
+            maparray = self.data[chunk[0]:chunk[1], :, :].sum(0)
         else:
-            mapArray = self.data[chunk, :, :]
-        mapHeader = MapMeta(self.meta)
-        gmap = GenericMap(data=mapArray, header=mapHeader, *args, **kwargs)
+            maparray = self.data[chunk, :, :]
+        mapheader = MapMeta(self.meta)
+        gmap = GenericMap(data=maparray, header=mapheader, *args, **kwargs)
         return gmap
 
     def slice_to_lightcurve(self, wavelength, y_coord=None):
@@ -346,43 +345,6 @@ class Cube(astropy.nddata.NDData):
         stop = start + self.data.shape[axis] * delta
         return np.arange(start, stop, delta)
 
-    def _reduce_dim(self, axis, keys):
-        '''
-        Given an axis and a slice object, returns a new cube with the slice
-        applied along the given dimension. For example, in a time-x-y cube,
-        a reduction along the x axis (axis 1) with a slice value (1, 4, None)
-        would return a cube where the only x values were 1 to 3 of the original
-        cube.
-        Parameters
-        ----------
-        axis: int
-            The dimension to reduce
-        keys: slice object
-            The slicing to apply
-        '''
-        waxis = -1 - axis
-        start = keys.start if keys.start is not None else 0
-        stop = keys.stop if keys.stop is not None else self.data.shape[axis]
-        if stop > self.data.shape[axis]:
-            stop = self.data.shape[axis]
-        if start < 0:
-            start = 0
-        step = keys.step if keys.step is not None else 1
-        indices = range(start, stop, step)
-        newdata = self.data.take(indices, axis=axis)
-        newwcs = self.axes_wcs.deepcopy()
-        if keys.step is not None:
-            newwcs.wcs.cdelt[waxis] *= keys.step
-        if keys.start is not None:
-            start = keys.start
-            newwcs.wcs.crpix[waxis] = 0
-            newwcs.wcs.crval[waxis] = (self.axes_wcs.wcs.crval[waxis] +
-                                       self.axes_wcs.wcs.cdelt[waxis] * start)
-        newcube = deepcopy(self)
-        newcube.data = newdata
-        newcube.axes_wcs = newwcs
-        return newcube
-
     def __getitem__(self, item):
         if item is None or (isinstance(item, tuple) and None in item):
             raise IndexError("None indices not supported")
@@ -409,36 +371,20 @@ class Cube(astropy.nddata.NDData):
                         (isinstance(item, tuple) and
                          not any(isinstance(i, int) for i in item)))
 
-        reducedcube = self._reduce_dim(0, slice(None, None, None))
+        reducedcube = cu.reduce_dim(self, 0, slice(None, None, None))
         if isinstance(item, tuple):
             for i in range(len(item)):
                 if isinstance(item[i], slice):
-                    reducedcube = reducedcube._reduce_dim(i, item[i])
+                    reducedcube = cu.reduce_dim(reducedcube, i, item[i])
 
         if slice_to_map:
-            if isinstance(item, int):
-                gmap = reducedcube.slice_to_map(item)
-            else:
-                gmap = reducedcube.slice_to_map(item[0])
-            return gmap
+            return cu.handle_slice_to_map(reducedcube, item)
         elif slice_to_spectrum:
-            if isinstance(item, int):
-                spec = reducedcube.slice_to_spectrum(item, None)
-            elif cu.iter_isinstance(item, int, slice, int):
-                spec = reducedcube.slice_to_spectrum(item[0], item[2])
-            elif cu.iter_isinstance(item, slice, int, int):
-                spec = reducedcube.slice_to_spectrum(item[1], item[2])
-            else:
-                spec = reducedcube.slice_to_spectrum(item[0], None)
-            return spec
+            return cu.handle_slice_to_spectrum(reducedcube, item)
         elif slice_to_spectrogram:
             return reducedcube.slice_to_spectrogram(item[2])
         elif slice_to_lightcurve:
-            if cu.iter_isinstance(item, slice, int, int):
-                lightc = reducedcube.slice_to_lightcurve(item[1], item[2])
-            else:
-                lightc = reducedcube.slice_to_lightcurve(item[1])
-            return lightc
+            return cu.handle_slice_to_lightcurve(reducedcube, item)
         elif stay_as_cube:
             return reducedcube
         else:

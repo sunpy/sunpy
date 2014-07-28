@@ -7,7 +7,7 @@ from astropy.wcs import WCS
 ht = {'CTYPE1': 'HPLT-TAN', 'CUNIT1': 'deg', 'CDELT1': 0.5,
       'CTYPE2': 'WAVE    ', 'CUNIT2': 'Angstrom', 'CDELT2': 0.2,
       'CTYPE3': 'TIME    ', 'CUNIT3': 'min', 'CDELT3': 0.4}
-wt = WCS(header=ht, naxis=3)
+wt = WCS(header=ht, naxis=3, _do_set=False)
 hm = {'CTYPE1': 'HPLT-TAN', 'CUNIT1': 'deg', 'CDELT1': 0.5,
       'CTYPE2': 'WAVE    ', 'CUNIT2': 'Angstrom', 'CDELT2': 0.2,
       'CTYPE3': 'HPLN-TAN', 'CUNIT3': 'deg', 'CDELT3': 0.4}

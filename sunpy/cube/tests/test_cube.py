@@ -20,7 +20,7 @@ import astropy.units as u
 ht = {'CTYPE1': 'HPLT-TAN', 'CUNIT1': 'deg', 'CDELT1': 0.5,
       'CTYPE2': 'WAVE    ', 'CUNIT2': 'Angstrom', 'CDELT2': 0.2,
       'CTYPE3': 'TIME    ', 'CUNIT3': 'min', 'CDELT3': 0.4}
-wt = WCS(header=ht, naxis=3)
+wt = WCS(header=ht, naxis=3, _do_set=False)
 data = np.array([[[1,2,3,4], [2,4,5,3], [0,-1,2,3]],
                  [[2,4,5,1], [10,5,2,2], [10,3,3,0]]])
 cube = c.Cube(data, wt)
@@ -191,9 +191,9 @@ def test_slicing_third_axis():
 def test_reduce_dim():
     slices = [slice(s, e, t) for s, e, t in [(None, None, None), (0, 2, None),
                                              (None, None, 2)]]
-    assert np.all(cube.data == cube._reduce_dim(0, slices[0]))
-    assert np.all(cube.data == cube._reduce_dim(0, slices[1]))
-    assert cubem._reduce_dim(0, slices[1]).data.shape == (2, 2, 4)
-    assert cubem._reduce_dim(2, slices[2]).data.shape == (3, 2, 2)
-    assert cube._reduce_dim(2, slices[2]).axes_wcs.wcs.cdelt[1] == 1
+    assert np.all(cube.data == cu.reduce_dim(cube, 0, slices[0]))
+    assert np.all(cube.data == cu.reduce_dim(cube, 0, slices[1]))
+    assert cu.reduce_dim(cubem, 0, slices[1]).data.shape == (2, 2, 4)
+    assert cu.reduce_dim(cubem, 2, slices[2]).data.shape == (3, 2, 2)
+    assert cu.reduce_dim(cube, 2, slices[2]).axes_wcs.wcs.cdelt[1] == 1
     
