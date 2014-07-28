@@ -72,12 +72,26 @@ class LightCurve(object):
 
     def __init__(self, data, meta=None):
         self.data = pandas.DataFrame(data)
-        if meta == '' or meta is None:
-            self.meta = OrderedDict()
-        else:
-            self.meta = OrderedDict(meta)
+	if meta == '' or meta is None:
+	     self.meta = OrderedDict()
+	else:
+             self.meta = OrderedDict(meta)
 
+    def append(self, other):
+        """
+        List like concatenation for lightcurves
+        """
+        if not isinstance(other, LightCurve):
+            raise NotImplementedError
 
+        new_data = self.data.append(other.data)
+
+        new_dict = dict()
+        new_dict.update(self.meta)
+        new_dict.update(other.meta)
+
+        return self.__class__(new_data, new_dict)
+    
     @property
     def header(self):
         """
@@ -126,19 +140,29 @@ for compatability with map, please use meta instead""", Warning)
 
     @classmethod
     def from_file(cls, filename):
-        '''Used to return Light Curve object by reading the given filename
+        '''
+        Used to return Light Curve object by reading the given filename
 
         Parameters:
-            filename: Path of the file to be read.
-
+    	    filename: Path of the file to be read.
         '''
+        if not isinstance(filename, list):
+            filename = [filename]
 
-        filename = os.path.expanduser(filename)
-        meta, data = cls._parse_filepath(filename)
-        if data.empty:
-            raise ValueError("No data found!")
-        else:
-            return cls(data, meta)
+        classes = []
+        for afname in filename:
+            filename = os.path.expanduser(afname)
+            meta, data = cls._parse_filepath(afname)
+            if data.empty:
+                raise ValueError("No data found!")
+            else:               
+                classes.append(cls(data, meta))
+
+        cls1 = classes.pop(0)
+        for aclass in classes:
+            cls1.append(aclass)
+
+        return cls1
 
     @classmethod
     def from_url(cls, url, **kwargs):
@@ -220,12 +244,10 @@ for compatability with map, please use meta instead""", Warning)
         return figure
 
     @staticmethod
-    def _download(uri, kwargs,
+    def _download(uris, kwargs,
                   err='Unable to download data at specified URL'):
         """Attempts to download data at the specified URI"""
-
-        _filename = os.path.basename(uri).split("?")[0]
-
+                    
         # user specifies a download directory
         if "directory" in kwargs:
             download_dir = os.path.expanduser(kwargs["directory"])
@@ -238,21 +260,33 @@ for compatability with map, please use meta instead""", Warning)
         else:
             overwrite = False
 
-        # If the file is not already there, download it
-        filepath = os.path.join(download_dir, _filename)
+        if not isinstance(uris, list):
+            uris = [uris]
 
-        if not(os.path.isfile(filepath)) or (overwrite and
-                                             os.path.isfile(filepath)):
-            try:
-                response = urllib2.urlopen(uri)
-            except (urllib2.HTTPError, urllib2.URLError):
-                raise urllib2.URLError(err)
-            with open(filepath, 'wb') as fp:
-                shutil.copyfileobj(response, fp)
-        else:
-            warnings.warn("Using existing file rather than downloading, use overwrite=True to override.", RuntimeWarning)
+        filepaths = []
 
-        return filepath
+        for uri in uris:
+            _filename = os.path.basename(uri).split("?")[0]
+
+            # If the file is not already there, download it
+            filepath = os.path.join(download_dir, _filename)
+
+            if not(os.path.isfile(filepath)) or (overwrite and 
+                                                 os.path.isfile(filepath)):
+                try:
+                    response = urllib2.urlopen(uri)
+                except (urllib2.HTTPError, urllib2.URLError):
+                    raise urllib2.URLError(err)
+
+                with open(filepath, 'wb') as fp:
+                    shutil.copyfileobj(response, fp)
+
+            else:
+                warnings.warn("Using existing file rather than downloading, use overwrite=True to override.", RuntimeWarning)
+
+            filepaths.append(filepath)
+
+        return filepaths
 
     @classmethod
     def _get_default_uri(cls):

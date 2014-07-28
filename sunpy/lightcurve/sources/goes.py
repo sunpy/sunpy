@@ -2,6 +2,8 @@
 """Provides programs to process and analyze GOES X-ray data."""
 from __future__ import absolute_import
 
+import math
+
 import datetime
 import matplotlib.dates
 from matplotlib import pyplot as plt
@@ -113,42 +115,44 @@ class GOESLightCurve(LightCurve):
         else:
             return sat_list
 
-    @staticmethod
-    def _get_url_for_date_range(*args):
+
+    @classmethod
+    def _get_url_for_date_range(cls, *args, **kwargs):
         """Returns a URL to the GOES data for the specified date.
 
         Parameters
         ----------
         args : TimeRange, datetimes, date strings
-            Date range should be specified using a TimeRange, or start
-            and end dates at datetime instances or date strings.
-        satellite_number : int
-            GOES satellite number (default = 15)
-        data_type : string
-            Data type to return for the particular GOES satellite. Supported
-            types depend on the satellite number specified. (default = xrs_2s)
+        Date range should be specified using a TimeRange, or start
+        and end dates at datetime instances or date strings.
         """
         # TimeRange
         if len(args) == 1 and isinstance(args[0], TimeRange):
-            start = args[0].start()
-            end = args[0].end()
+            timerange = args[0]
         elif len(args) == 2:
-            start = parse_time(args[0])
-            end = parse_time(args[1])
-        if end < start:
-            raise ValueError('start time > end time')
+            timerange = TimeRange(args[0], args[1])
 
-        # find out which satellite and datatype to query from the query times
-        sat_num = GOESLightCurve._get_goes_sat_num(start, end)
-        base_url = 'http://umbra.nascom.nasa.gov/goes/fits/'
+        days = timerange.get_dates()
+        
+        urls = []
+        for day in days:
+            start = datetime.datetime.combine(day, datetime.datetime.min.time())
+            end = datetime.datetime.combine(day, datetime.datetime.max.time())
+            # find out which satellite and datatype to query from the query times
+            sat_num = GOESLightCurve._get_goes_sat_num(start, end)
 
-        if start < parse_time('1999/01/15'):
-            url = (base_url + "%s/go%02d%s.fits") % (start.strftime("%Y"),
-                sat_num[0], start.strftime("%y%m%d"))
-        else:
-            url = (base_url + "%s/go%02d%s.fits") % (start.strftime("%Y"),
-                sat_num[0], start.strftime("%Y%m%d"))
-        return url
+            base_url = 'http://umbra.nascom.nasa.gov/goes/fits/'
+
+            if start < parse_time('1999/01/15'):
+                url = start.strftime("{0}%Y/go{1}%y%m%d.fits").format(base_url,
+                                                                      sat_num[0])
+            else:
+                url = start.strftime("{0}%Y/go{1}%Y%m%d.fits").format(base_url,
+                                                                      sat_num[0])
+                
+            urls.append(url)
+
+        return urls
 
     @staticmethod
     def _parse_fits(filepath):

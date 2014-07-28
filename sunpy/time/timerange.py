@@ -96,6 +96,29 @@ class TimeRange(object):
                 '\n    '.ljust(12) + str(self.seconds()) + ' seconds' +
                 '\n')
 
+    def __contains__(self, time):
+        """
+        Checks whether the given time lies within this range.
+        Both limits are inclusive (i.e. __contains__(t1) and __contains__(t2)
+        always return true)
+
+        Parameters
+        ----------
+        time: datetime or str
+            The time to be checked
+
+        Returns
+        -------
+        true if time lies between t1 and t2, false otherwise.
+
+        Example
+        -------
+        >>> time_range = TimeRange('2014/05/04 13:54', '2018/02/03 12:12')
+        >>> time in time_range
+        """
+        t = parse_time(time)
+        return self.t1 <= t <= self.t2
+
     def center(self):
         """Gets the center of the TimeRange instance"""
         return self.t1 + self.dt / 2
@@ -201,25 +224,13 @@ class TimeRange(object):
         self.t1 = self.t1 + t_backwards
         self.t2 = self.t2 + t_forwards
 
-    def __contains__(self, time):
+    def get_dates(self):
         """
-        Checks whether the given time lies within this range.
-        Both limits are inclusive (i.e. __contains__(t1) and __contains__(t2)
-        always return true)
-
-        Parameters
-        ----------
-        time: datetime or str
-            The time to be checked
-
+        Return all partial dates contained within the timerange
+        
         Returns
         -------
-        true if time lies between t1 and t2, false otherwise.
-
-        Example
-        -------
-        >>> time_range = TimeRange('2014/05/04 13:54', '2018/02/03 12:12')
-        >>> time in time_range
+        dates : list of datetime.date objects
         """
-        t = parse_time(time)
-        return t >= self.t1 and t <= self.t2
+        return [self.t1.date() + timedelta(days=i) for i in range(self.days() + 1)]
+        

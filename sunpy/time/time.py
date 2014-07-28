@@ -1,8 +1,8 @@
 import re
-from datetime import datetime
-from datetime import timedelta
+import datetime
 
-__all__ = ['find_time', 'extract_time', 'parse_time', 'is_time', 'day_of_year', 'break_time', 'get_day', 'is_time_in_given_format']
+__all__ = ['find_time', 'extract_time', 'parse_time', 'is_time', 'day_of_year',
+           'break_time', 'get_day', 'is_time_in_given_format']
 
 # Mapping of time format codes to regular expressions.
 REGEX = {
@@ -68,15 +68,15 @@ def _regex_parse_time(inp, format):
     try:
         hour = match.group("hour")
     except IndexError:
-        return inp, timedelta(days=0)
+        return inp, datetime.timedelta(days=0)
     if match.group("hour") == "24":
         if not all(_n_or_eq(_group_or_none(match, g, int), 00)
             for g in ["minute", "second", "microsecond"]
         ):
             raise ValueError
         from_, to = match.span("hour")
-        return inp[:from_] + "00" + inp[to:], timedelta(days=1)
-    return inp, timedelta(days=0)
+        return inp[:from_] + "00" + inp[to:], datetime.timedelta(days=1)
+    return inp, datetime.timedelta(days=0)
 
 
 def find_time(string, format):
@@ -89,7 +89,7 @@ def find_time(string, format):
     for match in matches:
         try:
             matchstr = string[slice(*match.span())]
-            dt = datetime.strptime(matchstr, format)
+            dt = datetime.datetime.strptime(matchstr, format)
         except ValueError:
             continue
         else:
@@ -150,8 +150,9 @@ def parse_time(time_string):
 
     Returns
     -------
-    out : datetime
-        DateTime corresponding to input date string
+    out : datetime object
+        DateTime corresponding to input date string, dates without times are 
+        assumed to refer to midnight (start of day).
 
     Examples
     --------
@@ -162,14 +163,17 @@ def parse_time(time_string):
         add ability to parse tai (International Atomic Time seconds since
         Jan 1, 1958)
     """
-    if isinstance(time_string, datetime):
+    if isinstance(time_string, datetime.datetime):
         return time_string
+    elif isinstance(time_string, datetime.date):
+        return datetime.datetime.combine(time_string,
+                                         datetime.datetime.min.time())
     elif isinstance(time_string, tuple):
-        return datetime(*time_string)
+        return datetime.datetime(*time_string)
     elif isinstance(time_string, int) or isinstance(time_string, float):
-        return datetime(1979, 1, 1) + timedelta(0, time_string)
+        return datetime.datetime(1979, 1, 1) + datetime.timedelta(0, time_string)
     elif time_string is 'now':
-        return datetime.utcnow()
+        return datetime.datetime.utcnow()
     else:
         # remove trailing zeros and the final dot to allow any
         # number of zeros. This solves issue #289
@@ -184,7 +188,7 @@ def parse_time(time_string):
                     break
                 if ts is None:
                     continue
-                return datetime.strptime(ts, time_format) + time_delta
+                return datetime.datetime.strptime(ts, time_format) + time_delta
             except ValueError:
                 pass
         raise ValueError("%s is not a valid time string!" % time_string)
@@ -217,7 +221,7 @@ def is_time(time_string):
     """
     if time_string is None:
         return False
-    elif isinstance(time_string, datetime):
+    elif isinstance(time_string, datetime.datetime):
         return True
 
     try:
@@ -253,7 +257,7 @@ def day_of_year(time_string):
     """
     SECONDS_IN_DAY = 60 * 60 * 24.0
     time = parse_time(time_string)
-    time_diff = time - datetime(time.year, 1, 1, 0, 0, 0)
+    time_diff = time - datetime.datetime(time.year, 1, 1, 0, 0, 0)
     return time_diff.days + time_diff.seconds / SECONDS_IN_DAY + 1
 
 
@@ -265,14 +269,14 @@ def break_time(t='now'):
 
 def get_day(dt):
     """ Return datetime for the beginning of the day of given datetime. """
-    return datetime(dt.year, dt.month, dt.day)
+    return datetime.datetime(dt.year, dt.month, dt.day)
 
 
 def is_time_in_given_format(time_string, time_format):
     """Tests whether a time string is formatted according to the given time
     format."""
     try:
-        datetime.strptime(time_string, time_format)
+        datetime.datetime.strptime(time_string, time_format)
         return True
     except ValueError:
         return False
