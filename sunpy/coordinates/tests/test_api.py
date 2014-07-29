@@ -96,9 +96,12 @@ def test_highlevel_api():
     # Similarly, `repr(sc)` should look like -:
     # '<SkyCoord (HelioGraphicStonyhurst): lon=10*u.deg, lat=10*u.deg>'
     string = repr(sc)
-    assert '<SkyCoord (HelioGraphicStonyhurst): dateobs=' in string
+    assert '<SkyCoord (HelioGraphicStonyhurst): B0=' in string
+    assert '<HelioGraphicStonyhurst Coordinate: B0=' in string
     assert 'hlon=' in string
     assert 'deg, hlat=' in string
+    assert 'rad=' in string
+    assert 'L0=' in string
     assert 'km>' in string
 
     # Transformation between frames is delegated by SkyCoord
