@@ -132,7 +132,7 @@ def test_nodata_frames():
     # Tests frames which have no data.
 
     hgs = HelioGraphicStonyhurst()
-    assert len(hgs.get_frame_attr_names()) == 1
+    assert len(hgs.get_frame_attr_names()) == 3
     # Heliographic frames are either completely empty (with the dateobs kwarg),
     # or true 3D.
     # Nothing in between.
