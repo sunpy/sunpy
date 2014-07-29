@@ -149,10 +149,10 @@ def test_frame_repr():
     # Tests the repr() of a frame.
 
     hgc = HelioGraphicCarrington()
-    assert repr(hgc).startswith('<HelioGraphicCarrington Frame: dateobs=')
+    assert repr(hgc).startswith('<HelioGraphicCarrington Frame: B0=')
 
     hcc = HelioCentric()
-    assert repr(hcc).startswith('<HelioCentric Frame: dateobs=')
+    assert repr(hcc).startswith('<HelioCentric Frame: B0=')
 
     hp = HelioProjective()
     assert '<HelioProjective Frame:' in repr(hp)
