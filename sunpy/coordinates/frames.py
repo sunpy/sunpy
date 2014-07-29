@@ -444,9 +444,9 @@ def hcc_to_hgs(helioccoord, heliogframe):
     y = helioccoord.y.to(u.m)
     z = helioccoord.z.to(u.m)
 
-    l0b0_pair = s.heliographic_solar_center()
+    l0b0_pair = [helioccoord.L0, helioccoord.B0]
 
-    l0_rad = l0b0_pair[0]
+    l0_rad = l0b0_pair[0].to(u.rad)
     b0_deg = l0b0_pair[1]
 
     cosb = np.cos(np.deg2rad(b0_deg))
@@ -467,9 +467,9 @@ def hgs_to_hcc(heliogcoord, heliocframe):
     hglat = heliogcoord.hlat
     r = heliogcoord.rad.to(u.m)
     
-    l0b0_pair = s.heliographic_solar_center()
+    l0b0_pair = [heliogcoord.L0, heliogcoord.B0]
 
-    l0_rad = l0b0_pair[0]
+    l0_rad = l0b0_pair[0].to(u.rad)
     b0_deg = l0b0_pair[1]
 
     lon = np.deg2rad(hglon)
