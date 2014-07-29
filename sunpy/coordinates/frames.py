@@ -77,6 +77,8 @@ class HelioGraphicStonyhurst(BaseCoordinateFrame):
         }
 
     dateobs = TimeFrameAttributeSunPy()
+    L0 = FrameAttribute(default=0*u.deg)
+    B0 = FrameAttribute(default=0*u.deg)
 
     def __init__(self, *args, **kwargs):
         if args or kwargs: # Non-empty frame use case.
@@ -146,6 +148,8 @@ class HelioGraphicCarrington(HelioGraphicStonyhurst):
 
     #rad = FrameAttribute(default=((RSUN_METERS/1000)*u.km))
     dateobs = TimeFrameAttributeSunPy()
+    L0 = FrameAttribute(default=0*u.deg)
+    B0 = FrameAttribute(default=0*u.deg)
 
 class HelioCentric(BaseCoordinateFrame):
     """
@@ -195,6 +199,8 @@ class HelioCentric(BaseCoordinateFrame):
    # d = FrameAttribute(default=(1*u.au).to(u.km))
     D0 = FrameAttribute(default=(1*u.au).to(u.km))
     dateobs = TimeFrameAttributeSunPy()
+    L0 = FrameAttribute(default=0*u.deg)
+    B0 = FrameAttribute(default=0*u.deg)
 
 class HelioProjective(BaseCoordinateFrame):
     """
@@ -261,6 +267,8 @@ class HelioProjective(BaseCoordinateFrame):
 
     D0 = FrameAttribute(default=(1*u.au).to(u.km))
     dateobs = TimeFrameAttributeSunPy()
+    L0 = FrameAttribute(default=0*u.deg)
+    B0 = FrameAttribute(default=0*u.deg)
 
     @property
     def zeta(self):
