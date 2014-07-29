@@ -143,7 +143,7 @@ def test_nodata_frames():
 
     hp = HelioProjective()
     assert hp.D0 == HelioProjective.get_frame_attr_names()['D0']
-    assert len(hp.get_frame_attr_names()) == 2
+    assert len(hp.get_frame_attr_names()) == 4
 
 def test_frame_repr():
     # Tests the repr() of a frame.
