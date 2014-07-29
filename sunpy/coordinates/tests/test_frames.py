@@ -48,7 +48,7 @@ def test_frame_attributes():
     assert myproj.D0 == 1*u.km
     assert myproj.d == 2*u.km
     assert myproj.L0 == 0*u.deg
-    assert myproj.D0 == 0*u.deg
+    assert myproj.B0 == 0*u.deg
     assert myproj.newattr == 'changed'
 
     
