@@ -139,7 +139,7 @@ def test_nodata_frames():
 
     hcc = HelioCentric()
     assert hcc.D0 == HelioCentric.get_frame_attr_names()['D0']
-    assert len(hcc.get_frame_attr_names()) == 2
+    assert len(hcc.get_frame_attr_names()) == 4
 
     hp = HelioProjective()
     assert hp.D0 == HelioProjective.get_frame_attr_names()['D0']
