@@ -14,7 +14,15 @@ from itertools import chain
 from sunpy.time import parse_time
 from astropy.io import fits
 import sunpy.lightcurve as lightcurve
-from sunpy.util.net import check_file_download
+#from sunpy.util.net import check_file_download
+try:
+    from sunpy.util.net import check_file_download
+except ImportError:
+    import imp
+    check_download_file = imp.load_source(
+        "check_download_file", os.path.expanduser(os.path.join(
+            "~", "P2SC_repos", "trunk", "p2sc", "bin", "LY-LEV", "source",
+            "util.py")))
 
 from datetime import timedelta
 import matplotlib.pyplot as plt
