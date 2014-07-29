@@ -233,13 +233,8 @@ def test_heliographic_stonyhurst(hgs1, hgs2):
         assert hgs1.dateobs != hgs2.dateobs
     else:
         # Deals with empty frame case.
-        assert len(hgs1.get_frame_attr_names()) == 1 # Should only be dateobs
+        assert len(hgs1.get_frame_attr_names()) == 3 # Should only be dateobs
         assert hgs1.dateobs is not None
-
-    
-    
-
-
-    
+        
 
     
