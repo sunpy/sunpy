@@ -41,11 +41,14 @@ def test_frame_attributes():
     assert set(myproj.get_frame_attr_names()) == set(['D0',
                                                       'd',
                                                       'newattr',
-                                                      'dateobs'])
+                                                      'dateobs',
+                                                      'L0','B0'])
 
     myproj = MyProj(D0=1*u.km, d=2*u.km, newattr='changed')
     assert myproj.D0 == 1*u.km
     assert myproj.d == 2*u.km
+    assert myproj.L0 == 0*u.deg
+    assert myproj.D0 == 0*u.deg
     assert myproj.newattr == 'changed'
 
     
