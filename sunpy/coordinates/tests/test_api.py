@@ -97,7 +97,6 @@ def test_highlevel_api():
     # '<SkyCoord (HelioGraphicStonyhurst): lon=10*u.deg, lat=10*u.deg>'
     string = repr(sc)
     assert '<SkyCoord (HelioGraphicStonyhurst): B0=' in string
-    assert '<HelioGraphicStonyhurst Coordinate: B0=' in string
     assert 'hlon=' in string
     assert 'deg, hlat=' in string
     assert 'rad=' in string
