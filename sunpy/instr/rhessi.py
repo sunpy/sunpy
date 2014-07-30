@@ -495,13 +495,11 @@ class RHESSIFlareList(object):
     def find_events_by_date_range(self,start_date,end_date):
         '''Return events from the flare list that between the given dates'''
         t1 = parse_time(start_date)
-        t2 = parse_time(end_date)
+        t2 = parse_time(end_date) + timedelta(1)
         
-        
-        event_dates = [parse_time(item['Start date']) for item in self.flare_list]
-        start_ind = np.searchsorted(event_dates,t1)
-        end_ind = np.searchsorted(event_dates,t2)
-        
-        return self.flare_list[start_ind:end_ind]
+        records = [item for item in self.flare_list if parse_time(item['Start date']) >= t1 and parse_time(item['Start date']) <= t2]
+        return records
+
+
     
     
