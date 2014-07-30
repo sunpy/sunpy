@@ -456,6 +456,8 @@ class RHESSIFlareList(object):
         
         #use CSV reader on the trimmed file
         csvfile = csv.reader(file_with_trimmed_header_and_footer)
+
+
         #the flare list will be a list of dictionaries
         flare_list=[]
         
@@ -480,13 +482,15 @@ class RHESSIFlareList(object):
                     #Flags is the last keyword and can have multiple entries, so dump everything remaining in the line to there
                     if key_list[i] == 'Flags':
                         flare_event_dict[key_list[i]] = flare_info[i:]
+                    elif key_list[i] in ['Dur (s)','Peak c/s','Total Counts','X pos (arcsec)','Y pos (arcsec)','Radial (arcsec)']:
+                        flare_event_dict[key_list[i]] = float(flare_info[i])
                     else:
                         flare_event_dict[key_list[i]] = flare_info[i]
                 #append the flare list
                 flare_list.append(flare_event_dict)
 
         self.flare_list = flare_list
-
+        
 
     def find_events_by_date_range(self,start_date,end_date):
         '''Return events from the flare list that between the given dates'''
@@ -497,7 +501,7 @@ class RHESSIFlareList(object):
         event_dates = [parse_time(item['Start date']) for item in self.flare_list]
         start_ind = np.searchsorted(event_dates,t1)
         end_ind = np.searchsorted(event_dates,t2)
-
+        
         return self.flare_list[start_ind:end_ind]
     
     
