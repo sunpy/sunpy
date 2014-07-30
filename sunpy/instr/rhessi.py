@@ -426,7 +426,13 @@ class RHESSIFlareList(object):
         A list of dictionaries. Each dictionary contains an event from the RHESSI flare list
     meta : string
         String information describing the flare list properties in more detail
-        '''
+
+    Methods
+    -------
+    None
+    '''
+
+    
  
     def __init__(self):     
        # '''Read in the RHESSI flare list from a remote file.'''
