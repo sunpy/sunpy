@@ -41,4 +41,4 @@ def test_rhessi_flare_list_by_date_range():
     assert subflares[0]['Y pos (arcsec)'] == -238.0
     assert subflares[0]['Radial (arcsec)'] == 413.0
     assert subflares[0]['AR'] == '1150'
-    assert subflares[0]['Flags'] == ['A0', 'DF', 'P1',' Q1']
+    assert subflares[0]['Flags'] == ['A0', 'DF', 'P1', 'Q1']
