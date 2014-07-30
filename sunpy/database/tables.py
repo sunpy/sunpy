@@ -21,6 +21,9 @@ from sunpy.time import parse_time
 from sunpy.io import fits, file_tools as sunpy_filetools
 from sunpy.util import print_table
 
+from sunpy import config
+TIME_FORMAT = config.get("general", "time_format")
+
 __all__ = [
     'WaveunitNotFoundError', 'WaveunitNotConvertibleError', 'JSONDump',
     'FitsHeaderEntry', 'FitsKeyComment', 'Tag', 'DatabaseEntry',
@@ -613,7 +616,7 @@ def display_entries(database_entries, columns):
                 if time is None:
                     formatted_time = 'N/A'
                 else:
-                    formatted_time = time.strftime('%Y-%m-%d %H:%M:%S')
+                    formatted_time = time.strftime(TIME_FORMAT)
                 row.append(formatted_time)
             else:
                 row.append(str(getattr(entry, col) or 'N/A'))

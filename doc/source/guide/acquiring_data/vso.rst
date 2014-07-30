@@ -50,7 +50,7 @@ Constructing a Query
 Let's start with a very simple query.  We could ask for all SOHO/EIT 
 data between January 1st and 2nd, 2001.
 
-    >>> qr = client.query(vso.attrs.Time('2001/1/1', '2001/1/2'), vso.attrs.Instrument('eit'))
+    >>> qr = client.query(vso.attrs.Time('2001/1/1', '2001/1/2'), vso.attrs.Instrument('eit'), vso.attrs.Wave(142*u.AA, 123*u.AA))
 
 The variable ``qr`` is a Python list of
 response objects, each one of which is a record found by the VSO. You can find how many
@@ -76,7 +76,18 @@ can be used to specify dates and time).  The second argument:
 
     ``vso.attrs.Instrument('eit')``
 
-sets the instrument we are looking for.  So what is going on here?
+sets the instrument we are looking for. The third argument: 
+
+    ``vso.attrs.Wave(142*u.AA, 123*u.AA)``
+
+sets the values for wavelength i.e, for wavemax(maximum value) and 
+similarly wavemin(for minimum value) for the query. Also the ``u.AA``
+part comes from ``astropy.units.Quantity`` where `AA` is Angstrom. It 
+should be noted that specifying spectral units in arugements is 
+necessary or an error will be raised. To know more check
+`astropy.units <https://astropy.readthedocs.org/en/stable/units/index.html>`_. 
+
+So what is going on here?
 The notion is that a VSO query has a set of attribute objects -
 described in ``vso.attrs`` - that are specifed to construct the query.
 For the full list of vso attributes, use
@@ -115,7 +126,7 @@ Each of the arguments in this query style can be thought of as
 setting conditions that the returned records must satisfy.  You can
 set the wavelength; for example, to return the 171 Angstrom EIT results
 
-    >>> qr=client.query(vso.attrs.Time('2001/1/1', '2001/1/2'), vso.attrs.Instrument('eit'), vso.attrs.Wave(171,171) )
+    >>> qr=client.query(vso.attrs.Time('2001/1/1', '2001/1/2'), vso.attrs.Instrument('eit'), vso.attrs.Wave(171*u.AA,171*u.AA) )
     >>> qr.num_records()
     4
 

@@ -21,7 +21,7 @@ hmi = Map(fitspath)
 def test_fitstoHMI():
     """Tests the creation of HMIMap using FITS."""
     assert isinstance(hmi, HMIMap)
-    
+
 def test_is_datasource_for():
     """Test the is_datasource_for method of HMIMap.
     Note that header data to be provided as an argument
@@ -36,4 +36,3 @@ def test_observatory():
 def test_measurement():
     """Tests the measurement property of the HMIMap object."""
     assert hmi.measurement == "continuum"
-

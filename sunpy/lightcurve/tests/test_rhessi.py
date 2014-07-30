@@ -10,7 +10,7 @@ from sunpy.time import TimeRange
 from numpy import all
 
 
-class TestRHESSISummaryLightCurve():
+class TestRHESSISummaryLightCurve(object):
 
     @pytest.fixture
     def timerange_a(self):
