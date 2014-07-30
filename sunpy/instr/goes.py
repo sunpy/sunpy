@@ -609,16 +609,16 @@ def flareclass_to_flux(flareclass):
     
     Returns
     -------
-    flux : float
+    flux : astropy.units.Quantity
         X-ray flux between 1 and 8 Angstroms as measured near Earth in W/m^2
     
     Examples
     --------
-    >>> convert_flareclass_goesflux('A1.0')
+    >>> flareclass_to_flux('A1.0')
     1e-08
-    >>> convert_flareclass_goesflux('c4.7')
+    >>> flareclass_to_flux('c4.7')
     4.7e-06
-    >>> convert_flareclass_goesflux('X2.4')
+    >>> flareclass_to_flux('X2.4')
     0.00024
 
     """
