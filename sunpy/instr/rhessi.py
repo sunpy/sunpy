@@ -422,14 +422,14 @@ class RHESSIFlareList(object):
 
     Attributes
     ----------
-    file_list : list
+    flare_list : list
         A list of dictionaries. Each dictionary contains an event from the RHESSI flare list
     meta : string
         String information describing the flare list properties in more detail
 
     Methods
     -------
-    None
+    find_events_by_date_range : returns a list of events that lie between the given start and end dates
     '''
 
     
@@ -440,7 +440,7 @@ class RHESSIFlareList(object):
         filepath=urllib.urlretrieve(base_url)
 
         #define the header information for this file - info in actual file not parser-friendly
-        key_list = ['Flare','Start date','Start time','Peak','End','Dur (s)','Peak c/s','Total Counts','Energy (keV)',
+        key_list = ['Flare ID','Start date','Start time','Peak','End','Dur (s)','Peak c/s','Total Counts','Energy (keV)',
                     'X pos (arcsec)','Y pos (arcsec)','Radial (arcsec)','AR','Flags']
 
         #do some manipulation of the input file
@@ -488,5 +488,16 @@ class RHESSIFlareList(object):
         self.flare_list = flare_list
 
 
+    def find_events_by_date_range(self,start_date,end_date):
+        '''Return events from the flare list that between the given dates'''
+        t1 = parse_time(start_date)
+        t2 = parse_time(end_date)
+        
+        
+        event_dates = [parse_time(item['Start date']) for item in self.flare_list]
+        start_ind = np.searchsorted(event_dates,t1)
+        end_ind = np.searchsorted(event_dates,t2)
 
+        return self.flare_list[start_ind:end_ind]
+    
     
