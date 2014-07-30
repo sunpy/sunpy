@@ -9,6 +9,7 @@ import csv
 import urllib
 
 import numpy as np
+import pandas
 import sqlite3
 from itertools import chain
 from sunpy.time import parse_time
@@ -16,13 +17,13 @@ from astropy.io import fits
 import sunpy.lightcurve as lightcurve
 #from sunpy.util.net import check_file_download
 try:
-    from sunpy.util.net import check_file_download
+    from sunpy.util.net import check_download_file
 except ImportError:
     import imp
-    check_download_file = imp.load_source(
-        "check_download_file", os.path.expanduser(os.path.join(
-            "~", "P2SC_repos", "trunk", "p2sc", "bin", "LY-LEV", "source",
-            "util.py")))
+    util = imp.load_source("util", os.path.expanduser(os.path.join(
+        "~", "P2SC_repos", "trunk", "p2sc", "bin", "LY-LEV", "source",
+        "util.py")))
+    check_download_file = util.check_download_file
 
 from datetime import timedelta
 import matplotlib.pyplot as plt
@@ -141,7 +142,7 @@ def find_lyra_events(time, flux, lytaf_path=LYTAF_PATH):
                    "Moon in LYRA", "Recovery"], return_artifacts=True,
                    lytaf_path=lytaf_path)
     clean_flux = fluxlist[0]
-    artifacts_removed = artifact_status[1]
+    artifacts_removed = artifact_status["removed"]
     # Perform subtraction so median irradiance of time series is at
     # average daily minimum from first 4 years of mission.
     clean_flux = clean_flux - (np.median(clean_flux)-NORM)
@@ -546,7 +547,7 @@ def extract_combined_lytaf(start_time, end_time, lytaf_path=LYTAF_PATH,
     for i, suffix in enumerate(combine_files):
         # Check database files are present
         dbname = "annotation_{0}.db".format(suffix)
-        check_file_download(dbname, LYTAF_REMOTE_PATH, lytaf_path)
+        util.check_download_file(dbname, LYTAF_REMOTE_PATH, lytaf_path)
         # Open SQLITE3 annotation files
         connection = sqlite3.connect(os.path.join(lytaf_path, dbname))
         # Create cursor to manipulate data in annotation file
@@ -556,19 +557,19 @@ def extract_combined_lytaf(start_time, end_time, lytaf_path=LYTAF_PATH,
         # First get start time of first event and end time of last event in lytaf.
         cursor.execute("select begin_time from event order by begin_time asc "
                        "limit 1;")
-        db_first_begin_time = cursor.fetchone()
+        db_first_begin_time = cursor.fetchone()[0]
         db_first_begin_time = datetime.fromtimestamp(db_first_begin_time)
         cursor.execute("select end_time from event order by end_time desc "
                        "limit 1;")
-        db_last_end_time = cursor.fetchone()
+        db_last_end_time = cursor.fetchone()[0]
         db_last_end_time = datetime.fromtimestamp(db_last_end_time)
         # If lytaf does not include entire input time range...
-        if end_time > db_last_end_time or start_time < db_first_start_time:
+        if end_time > db_last_end_time or start_time < db_first_begin_time:
             # ...close lytaf file...
             cursor.close()
             connection.close()
             # ...Download latest lytaf file...
-            check_file_download(dbname, LYTAF_REMOTE_PATH, lytaf_path,
+            check_download_file(dbname, LYTAF_REMOTE_PATH, lytaf_path,
                                 replace=True)
             # ...and open new version of lytaf database.
             connection = sqlite3.connect(os.path.join(lytaf_path, dbname))
