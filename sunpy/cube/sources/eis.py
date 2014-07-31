@@ -5,7 +5,7 @@
 from __future__ import absolute_import
 
 from astropy.io import fits
-from astropy.wcs import WCS
+from sunpy.wcs.wcs import WCS
 from sunpy.cube import Cube
 import re
 
@@ -45,7 +45,7 @@ class EISSpectralCube(Cube):
         ----------
         data: numpy ndarray
             The cube containing the data
-        wcs: astropy.wcs.WCS object
+        wcs: sunpy.wcs.wcs.WCS object
             The world coordinate system for the array.
         window: int
             The window this cube belongs to in the file. Used to fetch the
