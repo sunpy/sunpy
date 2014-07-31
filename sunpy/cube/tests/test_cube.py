@@ -10,7 +10,7 @@ from sunpy.spectra.spectrum import Spectrum
 from sunpy.spectra.spectrogram import Spectrogram
 from sunpy.lightcurve.lightcurve import LightCurve
 import numpy as np
-from astropy.wcs import WCS
+from sunpy.wcs.wcs import WCS
 import pytest
 import astropy.units as u
 
@@ -20,7 +20,7 @@ import astropy.units as u
 ht = {'CTYPE1': 'HPLT-TAN', 'CUNIT1': 'deg', 'CDELT1': 0.5,
       'CTYPE2': 'WAVE    ', 'CUNIT2': 'Angstrom', 'CDELT2': 0.2,
       'CTYPE3': 'TIME    ', 'CUNIT3': 'min', 'CDELT3': 0.4}
-wt = WCS(header=ht, naxis=3, _do_set=False)
+wt = WCS(header=ht, naxis=3)
 data = np.array([[[1,2,3,4], [2,4,5,3], [0,-1,2,3]],
                  [[2,4,5,1], [10,5,2,2], [10,3,3,0]]])
 cube = c.Cube(data, wt)

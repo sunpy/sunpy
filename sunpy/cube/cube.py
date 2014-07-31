@@ -42,7 +42,7 @@ class Cube(astropy.nddata.NDData):
             For example, in an x, y, t cube the order would be (t,x,y) and in a
             lambda, t, y cube the order will be (t, lambda, y).
 
-        axes_wcs: astropy WCS object
+        axes_wcs: sunpy.wcs.wcs.WCS object
             The WCS object containing the axes' information
 
         meta: dict

@@ -6,9 +6,7 @@ Utilities used in the sunpy.cube.cube module. Moved here to prevent clutter and
 aid readability.
 '''
 
-import warnings
 from copy import deepcopy
-from astropy.wcs._wcs import InconsistentAxisTypesError
 import numpy as np
 from sunpy.wcs import wcs_util
 
@@ -33,22 +31,16 @@ def orient(array, wcs):
     if array.ndim != 3:
         raise ValueError("Input array must be 3-dimensional")
 
-    if wcs.wcs.naxis != 3:
+    if wcs.wcs.naxis != 3 and not (wcs.wcs.naxis == 4 and
+                                   wcs.wcs.cname[-1][:9] == 'redundant'):
         raise ValueError("Input WCS must be 3-dimensional")
 
     axtypes = list(wcs.wcs.ctype)
 
-    array_order = select_order(axtypes[::-1])
+    array_order = select_order(axtypes[2::-1])
     result_array = array.transpose(array_order)
 
-    try:
-        wcs.get_axis_types()
-    except InconsistentAxisTypesError:
-        warnings.warn("Only one spatial axis found. Adding another one...",
-                      UserWarning)
-        wcs = wcs_util.add_celestial_axis(wcs)
-
-    wcs_order = np.array(select_order(list(wcs.wcs.ctype)))[::-1]
+    wcs_order = np.array(select_order(axtypes))[::-1]
     result_wcs = wcs_util.reindex_wcs(wcs, wcs_order)
     return result_array, result_wcs
 

@@ -5,6 +5,7 @@ import numpy as np
 import sunpy.sun as sun
 from astropy.wcs import InconsistentAxisTypesError
 import astropy.wcs as wcs
+from copy import deepcopy
 import re
 
 import astropy.units
@@ -15,7 +16,7 @@ __all__ = ['_convert_angle_units', 'convert_pixel_to_data', 'convert_hpc_hg',
            'convert_data_to_pixel', 'convert_hpc_hcc', 'convert_hcc_hpc',
            'convert_hcc_hg', 'convert_hg_hcc', 'proj_tan',
            'convert_hg_hpc', 'convert_to_coord',
-           'get_center']
+           'get_center', 'WCS']
 
 
 def _convert_angle_units(unit='arcsec'):
@@ -537,7 +538,7 @@ class WCS(astropy.wcs.WCS):
             header = WCS._augment(header, naxis)
             if naxis is not None:
                 naxis = naxis + 1
-        astropy.wcs.WCS.__init__(header=header, naxis=naxis, **kwargs)
+        astropy.wcs.WCS.__init__(self, header=header, naxis=naxis, **kwargs)
 
     @classmethod
     def _needs_augmenting(cls, header):
@@ -550,17 +551,18 @@ class WCS(astropy.wcs.WCS):
 
     @classmethod
     def _augment(cls, header, naxis):
-        new_wcs_axes_params = {'crpix': 0, 'cdelt': 1, 'crval': 0,
-                               'cname': 'redundant axis', 'ctype': 'HPLN-TAN',
-                               'crota': 0, 'cunit': 'deg'}
-        axis = max(header.get('NAXIS', 0), naxis) + 1
+        newheader = deepcopy(header)
+        new_wcs_axes_params = {'CRPIX': 0, 'CDELT': 1, 'CRVAL': 0,
+                               'CNAME': 'redundant axis', 'CTYPE': 'HPLN-TAN',
+                               'CROTA': 0, 'CUNIT': 'deg'}
+        axis = max(newheader.get('NAXIS', 0), naxis) + 1
         axis = str(axis)
         for param in new_wcs_axes_params:
             attr = new_wcs_axes_params[param]
-            header[param + axis] = attr
+            newheader[param + axis] = attr
         try:
-            wcs.WCS(header=header).get_axis_types()
+            wcs.WCS(header=newheader).get_axis_types()
         except InconsistentAxisTypesError as err:
             projection = re.findall(r'expected [^,]+', err.message)[0][9:]
             header['CTYPE' + axis] = projection
-        return header
+        return newheader

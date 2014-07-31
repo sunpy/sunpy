@@ -2,12 +2,12 @@
 import pytest
 from sunpy.cube import cube_utils as cu
 import numpy as np
-from astropy.wcs import WCS
+from sunpy.wcs.wcs import WCS
 
 ht = {'CTYPE1': 'HPLT-TAN', 'CUNIT1': 'deg', 'CDELT1': 0.5,
       'CTYPE2': 'WAVE    ', 'CUNIT2': 'Angstrom', 'CDELT2': 0.2,
       'CTYPE3': 'TIME    ', 'CUNIT3': 'min', 'CDELT3': 0.4}
-wt = WCS(header=ht, naxis=3, _do_set=False)
+wt = WCS(header=ht, naxis=3)
 hm = {'CTYPE1': 'HPLT-TAN', 'CUNIT1': 'deg', 'CDELT1': 0.5,
       'CTYPE2': 'WAVE    ', 'CUNIT2': 'Angstrom', 'CDELT2': 0.2,
       'CTYPE3': 'HPLN-TAN', 'CUNIT3': 'deg', 'CDELT3': 0.4}
