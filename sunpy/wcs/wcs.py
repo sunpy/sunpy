@@ -3,6 +3,9 @@ from __future__ import absolute_import
 
 import numpy as np
 import sunpy.sun as sun
+from astropy.wcs import InconsistentAxisTypesError
+import astropy.wcs as wcs
+import re
 
 import astropy.units
 
@@ -525,3 +528,39 @@ def convert_to_coord(x, y, from_coord, to_coord, b0_deg=0, l0_deg=0,
                                  angle_units=angle_units)
 
     return rx, ry
+
+
+class WCS(astropy.wcs.WCS):
+
+    def __init__(self, header=None, naxis=None, **kwargs):
+        if WCS._needs_augmenting(header):
+            header = WCS._augment(header, naxis)
+            if naxis is not None:
+                naxis = naxis + 1
+        astropy.wcs.WCS.__init__(header=header, naxis=naxis, **kwargs)
+
+    @classmethod
+    def _needs_augmenting(cls, header):
+        try:
+            wcs.WCS(header=header)
+        except InconsistentAxisTypesError as err:
+            if re.search(r'Unmatched celestial axes', err.message):
+                return True
+        return False
+
+    @classmethod
+    def _augment(cls, header, naxis):
+        new_wcs_axes_params = {'crpix': 0, 'cdelt': 1, 'crval': 0,
+                               'cname': 'redundant axis', 'ctype': 'HPLN-TAN',
+                               'crota': 0, 'cunit': 'deg'}
+        axis = max(header.get('NAXIS', 0), naxis) + 1
+        axis = str(axis)
+        for param in new_wcs_axes_params:
+            attr = new_wcs_axes_params[param]
+            header[param + axis] = attr
+        try:
+            wcs.WCS(header=header).get_axis_types()
+        except InconsistentAxisTypesError as err:
+            projection = re.findall(r'expected [^,]+', err.message)[0][9:]
+            header['CTYPE' + axis] = projection
+        return header
