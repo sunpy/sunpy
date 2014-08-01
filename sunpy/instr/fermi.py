@@ -5,11 +5,12 @@ import numpy as np
 import copy
 import math
 import urlparse
-import urllib
+import urllib, urllib2
 import tempfile
 import datetime
 import os
 import matplotlib.pyplot as plt
+from BeautifulSoup import BeautifulSoup
 from sunpy.time import parse_time, TimeRange
 from sunpy import sun
 from astropy.io import fits
@@ -40,23 +41,48 @@ def download_weekly_pointing_file(date):
     start_year_str=str(start_date.year) + '-01-01'
     day_in_year_start=(start_date - parse_time(start_year_str)).days + 1
 
-    start_str = str(start_date.year)+str(day_in_year_start)
+    #make sure the day string is always of length 3
+    day_in_year_start_string = "%03d" % day_in_year_start 
+    start_str = str(start_date.year) + day_in_year_start_string 
 
     #now end string
     end_date = weekly_file_start + datetime.timedelta((weekdiff+1)*7)
     end_year_str=str(end_date.year) + '-01-01'
     day_in_year_end=(end_date - parse_time(end_year_str)).days + 1
 
-    end_str = str(end_date.year) + str(day_in_year_end)
+    #make sure the day string is always of length 3
+    day_in_year_end_string = "%03d" % day_in_year_end 
+    end_str = str(end_date.year) + day_in_year_end_string 
 
-    #need version number. Usually 00 but how to be sure?
-    version='00'
-    
     #construct the full url for the weekly pointing file
-    full_fname=fbasename + str(week) + '_' + start_str + '_' + end_str + '_' + version + '.fits'
-    pointing_file_url=urlparse.urljoin(base_url,full_fname)
+    full_fname_start=fbasename + str(week) + '_' + start_str + '_' + end_str + '_'
+    full_fname_extension='.fits'
+    #the full filename will be full_fname_start + version number + full_fname_extension, but version number unknown
+    #multiple versions may exist for each week.
+    print full_fname_start
+    print full_fname_extension
+    #Parse the base_url page for all file links. Find all matching files for the desired week
+    resp=urllib2.urlopen(base_url)
+    #get the returned html as a string
+    html_string=resp.read().decode('utf-8')
+    #parse the html string using BeautifulSoup 
+    parsed_html = BeautifulSoup(html_string)
+    #find all the links in the html
+    links=parsed_html.body.findAll('a')
 
+    #print full_fname_start
+    #print full_fname_extension
+    #print links
+    #find all files matching the desired week
+    matching_files = [l.text for l in links if (l.text.startswith(full_fname_start) and l.text.endswith(full_fname_extension))]
+    #find the file with the highest version number
+    matching_files.sort()
+    print matching_files
+    #this is the correct pointing file
+    full_fname=matching_files[-1]
+    
     #download the file
+    pointing_file_url=urlparse.urljoin(base_url,full_fname)
     destination=os.path.join(tmp_dir,full_fname)
     urllib.urlretrieve(pointing_file_url,destination)
 
