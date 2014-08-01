@@ -320,18 +320,19 @@ def remove_lyra_artifacts(time, fluxes=None, artifacts="All",
     clean_fluxes : (optional) list ndarrays/array-likes convertible to float64
         list of fluxes with artifact periods removed.
 
-    artifact_status : (optional) list
+    artifact_status : (optional) dictionary
         List of 4 variables containing information on what artifacts were
         found, removed, etc. from the time series.
-        artifact_status[0] = artifacts found : numpy recarray
+        artifact_status["lytaf"] = artifacts found : numpy recarray
             The full LYRA annotation file for the time series time range
             output by extract_combined_lytaf().
-        artifact_status[1] = artifacts removed : numpy recarray
+        artifact_status["removed"] = artifacts removed : numpy recarray
             Artifacts which were found and removed from from time series.
-        artifact_status[2] = artifacts found but not removed : numpy recarray
+        artifact_status["not_removed"] = artifacts found but not removed :
+              numpy recarray
             Artifacts which were found but not removed as they were not
             included when user defined artifacts kwarg.
-        artifact_status[3] = artifacts not found : list of strings
+        artifact_status["not_found"] = artifacts not found : list of strings
             Artifacts listed to be removed by user when defining artifacts
             kwarg which were not found in time series time range.
 
