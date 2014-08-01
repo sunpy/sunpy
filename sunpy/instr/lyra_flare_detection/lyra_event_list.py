@@ -145,13 +145,13 @@ def find_lyra_events(time, flux, lytaf_path=LYTAF_PATH):
     artifacts_removed = artifact_status["removed"]
     # Perform subtraction so median irradiance of time series is at
     # average daily minimum from first 4 years of mission.
-    clean_flux = clean_flux - (np.median(clean_flux)-NORM)
+    clean_flux_scaled = clean_flux - (np.median(clean_flux)-NORM)
     # Get derivative of flux wrt time
     time_timedelta = clean_time[1:-1]-clean_time[0:-2]
     dt = np.zeros(len(time_timedelta), dtype="float64")
     for i, t, in enumerate(time_timedelta):
         dt[i] = t.total_seconds()
-    dfdt = np.gradient(clean_flux[0:-2], dt)
+    dfdt = np.gradient(clean_flux_scaled[0:-2], dt)
     # Get locations where derivative is positive
     pos_deriv = np.where(dfdt > 0)[0]
     neg_deriv = np.where(dfdt < 0)[0]
@@ -164,13 +164,14 @@ def find_lyra_events(time, flux, lytaf_path=LYTAF_PATH):
     for i, t, in enumerate(time_timedelta4):
         dt4[i] = t.total_seconds()
     # Find all possible flare start times.
-    end_series = len(clean_flux)-1
+    end_series = len(clean_flux_scaled)-1
     i=0
     while i < len(pos_deriv)-4:
         # Start time criteria
         if (pos_deriv[i:i+4]-pos_deriv[i] == np.arange(4)).all() and \
           dt4[pos_deriv[i]] > 210 and dt4[pos_deriv[i]] < 270 and \
-          clean_flux[pos_deriv[i+4]]/clean_flux[pos_deriv[i]] >= RISE_FACTOR:
+          clean_flux_scaled[pos_deriv[i+4]]/clean_flux_scaled[pos_deriv[i]] \
+          >= RISE_FACTOR:
             # Find start time which is defined as earliest continuous
             # increase in flux before the point found by the above
             # criteria.
@@ -201,9 +202,10 @@ def find_lyra_events(time, flux, lytaf_path=LYTAF_PATH):
                 end_condition = False
                 while end_condition == False and j < end_series:
                     j = j+1
-                    maxflux = max(clean_flux[start_index:j])
-                    end_condition = clean_flux[j] <= \
-                      maxflux - (maxflux-clean_flux[start_index])*FALL_FACTOR
+                    maxflux = max(clean_flux_scaled[start_index:j])
+                    end_condition = clean_flux_scaled[j] <= \
+                      maxflux - (maxflux-clean_flux_scaled[start_index]) \
+                      *FALL_FACTOR
                 if j >= end_series:
                     i = i+1
                 else:
@@ -224,8 +226,8 @@ def find_lyra_events(time, flux, lytaf_path=LYTAF_PATH):
                                 clean_time < artifact_at_end["begin_time"])
                             end_index = new_index[0][-1]
                         # find index of peak time
-                        peak_index = np.where(
-                          clean_flux == max(clean_flux[start_index:end_index]))
+                        peak_index = np.where(clean_flux_scaled == \
+                            max(clean_flux_scaled[start_index:end_index]))
                         peak_index = peak_index[0][0]
                         # Record flare start, peak and end times
                         lyra_events = np.append(
