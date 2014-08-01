@@ -167,7 +167,9 @@ def get_detector_sun_angles_for_date(date, file, plot=True):
         figure.autofmt_xdate()
         plt.show()
 
-    return n0, n1, n2, n3, n4, n5, n6, n7, n8, n9, n10, n11
+        
+    return {'n0':n0, 'n1':n1, 'n2':n2, 'n3':n3, 'n4':n4,
+            'n5':n5, 'n6':n6, 'n7':n7, 'n8':n8, 'n9':n9, 'n10':n10, 'n11':n11}
 
 
 def get_scx_scz_at_time(time, file):
