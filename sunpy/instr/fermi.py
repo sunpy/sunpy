@@ -59,8 +59,7 @@ def download_weekly_pointing_file(date):
     full_fname_extension='.fits'
     #the full filename will be full_fname_start + version number + full_fname_extension, but version number unknown
     #multiple versions may exist for each week.
-    print full_fname_start
-    print full_fname_extension
+
     #Parse the base_url page for all file links. Find all matching files for the desired week
     resp=urllib2.urlopen(base_url)
     #get the returned html as a string
