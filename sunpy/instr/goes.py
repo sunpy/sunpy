@@ -637,7 +637,7 @@ def flux_to_flareclass(goesflux):
     
     Parameters
     ----------
-    flux : float
+    flux : float or astropy.units.Quantity
         X-ray flux between 1 and 8 Angstroms as measured near Earth in W/m^2
     
     Returns
@@ -656,6 +656,11 @@ def flux_to_flareclass(goesflux):
     'X2.4'
 
     """
+    assert isinstance(goesflux, float) or isinstance(goesflux, units.Quantity)
+    
+    if isinstance(goesflux, units.Quantity):
+        goesflux = goesflux.value
+    
     check = False
     # It has been tried using 1e-x instead of 10**-x
     # However, it produces C1 and B1 to be B10 and A10.
@@ -668,6 +673,6 @@ def flux_to_flareclass(goesflux):
               'B': 1.0e-7, 'A': 1.0e-8}
     for elem in levels:
         if abs(levels[elem]-10**(expo)) < 1e-21 :
-            return '%s%2.1f'%(elem,goesflux/10**(expo))
+            return '%s%2.1f'%(elem, goesflux/10**(expo))
 
     return None #What do we return when smaller than A?
