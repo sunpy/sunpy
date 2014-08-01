@@ -1,4 +1,5 @@
 from __future__ import absolute_import
+from __future__ import division
 
 import numpy as np
 import copy
@@ -31,7 +32,7 @@ def download_weekly_pointing_file(date):
 
     #find out which mission week corresponds to date
     time_diff=date-weekly_file_start
-    weekdiff = time_diff.days/7
+    weekdiff = time_diff.days//7
     week = weekdiff + base_week
 
     #find out the rest of the file name. Need the year and the day-in-year for start and end of file
