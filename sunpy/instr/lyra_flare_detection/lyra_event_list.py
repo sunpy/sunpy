@@ -15,15 +15,7 @@ from itertools import chain
 from sunpy.time import parse_time
 from astropy.io import fits
 import sunpy.lightcurve as lightcurve
-#from sunpy.util.net import check_file_download
-try:
-    from sunpy.util.net import check_download_file
-except ImportError:
-    import imp
-    util = imp.load_source("util", os.path.expanduser(os.path.join(
-        "~", "P2SC_repos", "trunk", "p2sc", "bin", "LY-LEV", "source",
-        "util.py")))
-    check_download_file = util.check_download_file
+from sunpy.util.net import check_file_download
 
 from datetime import timedelta
 import matplotlib.pyplot as plt
@@ -204,7 +196,7 @@ def find_lyra_events(time, flux, lytaf_path=LYTAF_PATH):
                     j = j+1
                     maxflux = max(clean_flux_scaled[start_index:j])
                     end_condition = clean_flux_scaled[j] <= \
-                      maxflux - (maxflux-clean_flux_scaled[start_index]) \
+                      maxflux-(maxflux-clean_flux_scaled[start_index]) \
                       *FALL_FACTOR
                 if j >= end_series:
                     i = i+1
@@ -764,6 +756,7 @@ def testing_find_lyra_events(find_events=False):
     #fitsname = "lyra_20131001-000000_lev3_std.fits"
     #fitsname = "lyra_20131101-000000_lev3_std.fits"
     #fitsname = "lyra_20131201-000000_lev3_std.fits"
+    fitsname = "lyra_20100505-000000_lev3_std.fits"
     fitsfile = fitspath + fitsname
     ly = fits.open(fitsfile)
     t = ly[1].data["TIME"]
