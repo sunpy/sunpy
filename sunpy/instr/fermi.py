@@ -74,6 +74,8 @@ def download_weekly_pointing_file(date):
     #print links
     #find all files matching the desired week
     matching_files = [l.text for l in links if (l.text.startswith(full_fname_start) and l.text.endswith(full_fname_extension))]
+    if not matching_files:
+        raise ValueError('No Fermi pointing files found for given date!')
     #find the file with the highest version number
     matching_files.sort()
     print matching_files
