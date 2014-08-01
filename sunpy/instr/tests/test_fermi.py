@@ -38,16 +38,16 @@ def test_detector_angles():
     assert type(det2) == dict
     assert_almost_equal(det2['n0'], 87.24744,decimal=2)
     assert_almost_equal(det2['n1'], 69.90883,decimal=2)
-    assert_almost_equal(det2['n2'], 123.56429,decimal=2)
-    assert_almost_equal(det2['n3'], 167.26615,decimal=2)
-    assert_almost_equal(det2['n4'], 59.82642,decimal=2)
-    assert_almost_equal(det2['n5'], 69.18959,decimal=2)
-    assert_almost_equal(det2['n6'], 56.83158,decimal=2)
-    assert_almost_equal(det2['n7'], 12.49959,decimal=2)
-    assert_almost_equal(det2['n8'], 115.31259,decimal=2)
-    assert_almost_equal(det2['n9'], 129.49283,decimal=2)
-    assert_almost_equal(det2['n10'], 121.91083,decimal=2)
-    assert_almost_equal(det2['n11'], 130.04144,decimal=2)
+    assert_almost_equal(det2['n10'], 123.56429,decimal=2)
+    assert_almost_equal(det2['n11'], 167.26615,decimal=2)
+    assert_almost_equal(det2['n2'], 59.82642,decimal=2)
+    assert_almost_equal(det2['n3'], 69.18959,decimal=2)
+    assert_almost_equal(det2['n4'], 56.83158,decimal=2)
+    assert_almost_equal(det2['n5'], 12.49959,decimal=2)
+    assert_almost_equal(det2['n6'], 115.31259,decimal=2)
+    assert_almost_equal(det2['n7'], 129.49283,decimal=2)
+    assert_almost_equal(det2['n8'], 121.91083,decimal=2)
+    assert_almost_equal(det2['n9'], 130.04144,decimal=2)
     
 
     
