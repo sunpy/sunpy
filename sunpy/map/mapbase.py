@@ -18,6 +18,7 @@ from matplotlib import cm
 
 import astropy.nddata
 import astropy.units as u
+from astropy.wcs import WCS
 from sunpy.image.transform import affine_transform
 
 import sunpy.io as io
@@ -229,7 +230,7 @@ Dimension:\t [%d, %d]
         if dsun is None:
             warnings.warn_explicit("Missing metadata for Sun-spacecraft separation: assuming Sun-Earth distance",
                                    Warning, __file__, inspect.currentframe().f_back.f_lineno)
-            dsun = sun.sunearth_distance(self.date) * constants.au.si.value
+            dsun = sun.sunearth_distance(self.date).value * constants.au.si.value
 
         return dsun * u.meter
 
@@ -318,7 +319,7 @@ Dimension:\t [%d, %d]
                                    Warning, __file__, inspect.currentframe().f_back.f_lineno)
             carrington_longitude = (sun.heliographic_solar_center(self.date))[0]
 
-        return carrington_longitude * u.deg     #should be changed after sun module astropy integration
+        return carrington_longitude
 
     @property
     def heliographic_latitude(self):
@@ -332,7 +333,7 @@ Dimension:\t [%d, %d]
                                    Warning, __file__, inspect.currentframe().f_back.f_lineno)
             heliographic_latitude = (sun.heliographic_solar_center(self.date))[1]
 
-        return heliographic_latitude * u.deg      #should be changed after sun module astropy integration
+        return heliographic_latitude
 
     @property
     def heliographic_longitude(self):
@@ -454,7 +455,7 @@ Dimension:\t [%d, %d]
         size = self.shape[dim == 'x']  # 1 if dim == 'x', 0 if dim == 'y'.
 
         return (value - self.center[dim]) / self.scale[dim] + ((size - 1) / 2.)
-
+        
     def pixel_to_data(self, x=None, y=None):
         """Convert from pixel coordinates to data coordinates (e.g. arcsec)"""
         width = self.shape[1]
@@ -469,13 +470,23 @@ Dimension:\t [%d, %d]
         if (x is not None) & (y < 0):
             raise ValueError("Y pixel value cannot be less than 0.")
 
-        scale = np.array([self.scale['x'], self.scale['y']])
-        crpix = np.array([self.reference_pixel['x'].value, self.reference_pixel['y'].value])
-        crval = np.array([self.reference_coordinate['x'], self.reference_coordinate['y']])
-        coordinate_system = [self.coordinate_system['x'], self.coordinate_system['y']]
-        x,y = wcs.convert_pixel_to_data(self.shape, scale, crpix, crval, x = x, y = y)
+        w = get_wcs(self)
+        x,y = w.wcs_pix2world(
+        return x,y
 
-        return x, y
+# #### astropy.wcs object genertaion #### #
+
+    def get_wcs(self):
+        # this function generates a astropy.wcs object
+        w2 = WCS(naxis=2)
+        w2.wcs.crpix = [self.reference_pixel['x'].value, self.reference_pixel['y'].value]
+        w2.wcs.cdelt = [self.scale['x'], self.scale['y']]
+        w2.wcs.crval = [self.reference_coordinate['x'], self.reference_coordinate['y']]
+        w2.wcs.ctype = [self.coordinate_system['x'], self.coordinate_system['y']]
+        w2.wcs.pc = self.rotation_matrix
+        w2.wcs.cunit = [self.units['x'], self.units['y']]
+
+        return w2
 
 # #### I/O routines #### #
 
