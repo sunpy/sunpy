@@ -202,7 +202,7 @@ class TimeFreq(object):
         self.time = time
         if not isinstance(time, u.Quantity):
             raise ValueError("time must be astropy quantity")
-        time = time.to(u.second)     #is it necessary?
+        time = time.to(u.second)
         self.freq = freq
         if not isinstance(freq, u.Quantity):
             raise ValueError("Frequency must be astropy quantity")
@@ -505,7 +505,7 @@ class Spectrogram(Parent):
                     dist / data.delt / 10, init
                 )
             )
-            def freq_fmt(x, pos):   #interest
+            def freq_fmt(x, pos):
                 # This is necessary because matplotlib somehow tries to get
                 # the mid-point of the row, which we do not need here.
                 x = x + 0.5
@@ -689,7 +689,7 @@ class Spectrogram(Parent):
             New maximum value for intensities
         """
         # pylint: disable=E1101
-        if vmin is None:     #If none this will always give error
+        if vmin is None:     
             vmin = int(self.data.min())
 
         if vmax is None:
@@ -1156,7 +1156,7 @@ class LinearTimeSpectrogram(Spectrogram):
             new[n, :] = data[row, :]
             freq_axis[n] = data.freq_axis[row]
         params = {
-            'time_axis': one.time_axis, # Should be equal
+            'time_axis': one.time_axis,
             'freq_axis': freq_axis,
             'start': one.start,
             'end': one.end,
