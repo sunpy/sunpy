@@ -386,6 +386,7 @@ Dimension:\t [%d, %d]
         else:
             return self._rotation_matrix_from_crota()
 
+
     def _rotation_matrix_from_crota(self):
         """
         This method converts the deprecated CROTA FITS kwargs to the new
@@ -399,6 +400,20 @@ Dimension:\t [%d, %d]
 
         return np.matrix([[np.cos(p), -1 * lam * np.sin(p)],
                           [1/lam * np.sin(p), np.cos(p)]])
+
+# #### astropy.wcs object genertaion #### #
+
+    @property
+    def wcs(self):
+        # this function generates a astropy.wcs object
+        w2 = WCS(naxis=2)
+        w2.wcs.crpix = [self.reference_pixel['x'].value, self.reference_pixel['y'].value]
+        w2.wcs.cdelt = [self.scale['x'], self.scale['y']]
+        w2.wcs.crval = [self.reference_coordinate['x'], self.reference_coordinate['y']]
+        w2.wcs.ctype = [self.coordinate_system['x'], self.coordinate_system['y']]
+        w2.wcs.pc = self.rotation_matrix
+        w2.wcs.cunit = [self.units['x'], self.units['y']]
+        return w2
 
 # #### Miscellaneous #### #
 
@@ -471,22 +486,8 @@ Dimension:\t [%d, %d]
             raise ValueError("Y pixel value cannot be less than 0.")
 
         w = get_wcs(self)
-        x,y = w.wcs_pix2world(
-        return x,y
+        return x
 
-# #### astropy.wcs object genertaion #### #
-
-    def get_wcs(self):
-        # this function generates a astropy.wcs object
-        w2 = WCS(naxis=2)
-        w2.wcs.crpix = [self.reference_pixel['x'].value, self.reference_pixel['y'].value]
-        w2.wcs.cdelt = [self.scale['x'], self.scale['y']]
-        w2.wcs.crval = [self.reference_coordinate['x'], self.reference_coordinate['y']]
-        w2.wcs.ctype = [self.coordinate_system['x'], self.coordinate_system['y']]
-        w2.wcs.pc = self.rotation_matrix
-        w2.wcs.cunit = [self.units['x'], self.units['y']]
-
-        return w2
 
 # #### I/O routines #### #
 
