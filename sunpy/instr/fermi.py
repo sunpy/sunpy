@@ -10,7 +10,7 @@ import tempfile
 import datetime
 import os
 import matplotlib.pyplot as plt
-from BeautifulSoup import BeautifulSoup
+from bs4 import BeautifulSoup
 from sunpy.time import parse_time, TimeRange
 from sunpy import sun
 from astropy.io import fits
