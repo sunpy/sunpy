@@ -174,7 +174,7 @@ or by providing a directory full of image files::
     mc = sunpy.map.Map('path/to/my/files/*.fits', cube=True)
 
 By default, the maps are ordered by their observation date.  The earliest 
-map in the mapcube can be accessed by simply indexing the list::
+map in the mapcube can be accessed by simply indexing the maps list::
 
     mc.maps[0]
 
