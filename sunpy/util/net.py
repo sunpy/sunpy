@@ -32,7 +32,7 @@ def slugify(text, delim=u'_', encoding="ascii"):
     text = normalize('NFKD', text)
     return unicode(delim).join(ifilter(None, (
         word.encode(encoding, 'ignore')
-        for word in _punct_re.split(text.lower())        
+        for word in _punct_re.split(text.lower())
         )))
 
 
@@ -138,9 +138,9 @@ def check_download_file(filename, remotepath, download_dir, remotename=None,
         Default is same as filename.
 
     replace : (optional) bool
-        If True, file will be downloaded whether or not file already exists 
+        If True, file will be downloaded whether or not file already exists
         locally.
-    
+
     Examples
     --------
     >>> pwd

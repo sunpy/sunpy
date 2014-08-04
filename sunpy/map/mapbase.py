@@ -563,7 +563,7 @@ Dimension:\t [%d, %d]
         return new_map
 
     def rotate(self, angle=None, rmatrix=None, order=3, scale=1.0,
-               image_center=None, recenter=False, missing=0.0, use_scipy=False):
+               image_center=(0,0), recenter=False, missing=0.0, use_scipy=False):
         """
         Returns a new rotated and rescaled map.  Specify either a rotation
         angle or a rotation matrix, but not both.  If neither an angle or a
@@ -585,10 +585,12 @@ Dimension:\t [%d, %d]
             When using scipy it is passed into
             :func:`scipy.ndimage.interpolation.affine_transform` where it controls
             the order of the spline.
+            Higher accuracy may be obtained at the cost of performance by using
+            higher values.
         scale : float
             A scale factor for the image, default is no scaling
         image_center : tuple
-            The axis of rotation in pixel coordinates
+            The axis of rotation in data coordinates
             Default: the origin in the data coordinate system
         recenter : bool
             If True, position the axis of rotation at the center of the new map
@@ -612,10 +614,17 @@ Dimension:\t [%d, %d]
             A new Map instance containing the rotated and rescaled data of the
             original map.
 
+        See Also
+        --------
+        sunpy.image.transform.affine_transform : The routine this method calls for the rotation.
+
         Notes
         -----
         This function will remove old CROTA keywords from the header.
         This function will also convert a CDi_j matrix to a PCi_j matrix.
+
+        The scikit-image and scipy affine_transform routines do not use the same algorithm,
+        see :func:`sunpy.image.transform.affine_transform` for details.
 
         This function is not numerically equalivalent to IDL's rot() see the
         :func:`sunpy.image.transform.affine_transform` documentation for a
@@ -639,22 +648,47 @@ Dimension:\t [%d, %d]
             s = np.sin(np.deg2rad(angle))
             rmatrix = np.matrix([[c, -s], [s, c]])
 
-        if image_center is None:
-            # FITS pixels  count from 1 (curse you, FITS!)
-            image_center = (self.shape[1] - self.reference_pixel['x'] + 1,
-                            self.reference_pixel['y'])
+        # map_center is swapped compared to the x-y convention
+        array_center = (np.array(self.data.shape)-1)/2.0
 
-        # Because map data has the origin at the bottom left not the top left
-        # as is convention for images vertically flip the image for the
-        # transform and then flip it back again.
-        new_map.data = np.flipud(affine_transform(np.flipud(new_map.data),
-                                                  np.array(rmatrix),
-                                                  order=order, scale=scale,
-                                                  image_center=image_center,
-                                                  recenter=recenter, missing=missing,
-                                                  use_scipy=use_scipy))
+        # rotation_center is swapped compared to the x-y convention
+        if recenter:
+            # Convert the axis of rotation from data coordinates to pixel coordinates
+            x = self.data_to_pixel(image_center[0], 'x')
+            y = self.data_to_pixel(image_center[1], 'y')
+            rotation_center = (y, x)
+        else:
+            rotation_center = array_center
 
-        map_center = (np.array(self.shape)/2.0) + 0.5
+        #Return a new map
+        #Copy Header
+        new_map = deepcopy(self)
+
+        new_map.data = affine_transform(new_map.data.T,
+                                        np.asarray(rmatrix),
+                                        order=order, scale=scale,
+                                        image_center=rotation_center,
+                                        recenter=recenter, missing=missing,
+                                        use_scipy=use_scipy).T
+
+
+        # Calculate new reference pixel and coordinate at the center of the
+        # image.
+        if recenter:
+            new_center = image_center
+        else:
+            # Retrieve old coordinates for the center of the array
+            old_center = np.asarray(self.pixel_to_data(array_center[1], array_center[0]))
+
+            # Calculate new coordinates for the center of the array
+            new_center = image_center - np.dot(rmatrix, image_center - old_center)
+            new_center = np.asarray(new_center)[0]
+
+        # Define a new reference pixel in the rotated space
+        new_map.meta['crval1'] = new_center[0]
+        new_map.meta['crval2'] = new_center[1]
+        new_map.meta['crpix1'] = array_center[1] + 1 # FITS counts pixels from 1
+        new_map.meta['crpix2'] = array_center[0] + 1 # FITS counts pixels from 1
 
         # Calculate the new rotation matrix to store in the header by
         # "subtracting" the rotation matrix used in the rotate from the old one
@@ -665,18 +699,11 @@ Dimension:\t [%d, %d]
         new_map.meta['PC1_2'] = pc_C[0,1]
         new_map.meta['PC2_1'] = pc_C[1,0]
         new_map.meta['PC2_2'] = pc_C[1,1]
+
         # Update pixel size if image has been scaled.
         if scale != 1.0:
             new_map.meta['cdelt1'] = self.scale['x'] / scale
             new_map.meta['cdelt2'] = self.scale['y'] / scale
-
-        if recenter:
-            # Move the reference pixel based on the image shift.
-            # The y coordinate is inverted due to the map having the origin in
-            # the lower left rather than the upper left.
-            shift = image_center - map_center
-            new_map.meta['crpix1'] += shift[0]
-            new_map.meta['crpix2'] -= shift[1]
 
         # Remove old CROTA kwargs because we have saved a new PCi_j matrix.
         new_map.meta.pop('CROTA1', None)

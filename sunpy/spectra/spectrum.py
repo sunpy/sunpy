@@ -12,7 +12,7 @@ __all__ = ['Spectrum']
 class Spectrum(np.ndarray):
     """
     Class representing a spectrum.
-    
+
     Attributes
     ----------
     freq_axis : np.ndarray
@@ -31,28 +31,28 @@ class Spectrum(np.ndarray):
     def plot(self, axes=None, **matplot_args):
         """
         Plot spectrum onto current axes. Behaves like matplotlib.pylot.plot()
-        
+
         Parameters
         ----------
         axes: matplotlib.axes object or None
-            If provided the spectrum will be plotted on the given axes. 
+            If provided the spectrum will be plotted on the given axes.
             Else the current matplotlib axes will be used.
         """
-        
+
         #Get current axes
         if not axes:
             axes = plt.gca()
-        
+
         params = {}
         params.update(matplot_args)
-        
+
         #This is taken from mpl.pyplot.plot() as we are trying to
         #replicate that functionality
-        
+
         # allow callers to override the hold state by passing hold=True|False
         washold = axes.ishold()
         hold = matplot_args.pop('hold', None)
-        
+
         if hold is not None:
             axes.hold(hold)
         try:
@@ -61,17 +61,16 @@ class Spectrum(np.ndarray):
             axes.hold(washold)
 
         return lines
-    
+
     def peek(self, **matplot_args):
         """
         Plot spectrum onto a new figure.
         """
-        
-        figure = plt.figure()
-        
-        lines = self.plot(**matplot_args)
-        
-        figure.show()
-        
-        return figure
 
+        figure = plt.figure()
+
+        lines = self.plot(**matplot_args)
+
+        figure.show()
+
+        return figure
