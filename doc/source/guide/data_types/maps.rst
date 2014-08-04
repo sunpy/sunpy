@@ -176,7 +176,7 @@ or by providing a directory full of image files::
 By default, the maps are ordered by their observation date.  The earliest 
 map in the mapcube can be accessed by simply indexing the list::
 
-    mc[0]
+    mc.maps[0]
 
 Mapcubes can hold maps that have different shapes.  To test if all the
 maps in a mapcube have the same shape::
