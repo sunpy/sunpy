@@ -14,6 +14,9 @@ from sunpy.lightcurve import LightCurve
 from sunpy.time import parse_time
 from sunpy.util.odict import OrderedDict
 
+from sunpy import config
+TIME_FORMAT = config.get("general", "time_format")
+
 __all__ = ['LYRALightCurve']
 
 class LYRALightCurve(LightCurve):
@@ -69,7 +72,7 @@ class LYRALightCurve(LightCurve):
                 name = lyranames[0][i] + ' \n (' + lyranames[1][i] + ')'
             axes[i].set_ylabel( "%s %s" % (name, "\n (W/m**2)"),fontsize=9.5)
 
-        axes[0].set_title("LYRA ("+ self.data.index[0].strftime('%Y-%m-%d') +")")
+        axes[0].set_title("LYRA ("+ self.data.index[0].strftime(TIME_FORMAT) +")")
         axes[-1].set_xlabel("Time")
         for axe in axes:
             axe.locator_params(axis='y',nbins=6)

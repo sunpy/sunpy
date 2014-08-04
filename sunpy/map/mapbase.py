@@ -30,6 +30,9 @@ from sunpy.image.rescale import resample as sunpy_image_resample
 
 __all__ = ['GenericMap']
 
+from sunpy import config
+TIME_FORMAT = config.get("general", "time_format")
+
 """
 Questions
 ---------
@@ -1069,7 +1072,7 @@ Dimension:\t [%d, %d]
 
         # Normal plot
         if annotate:
-            axes.set_title("%s %s" % (self.name, parse_time(self.date).strftime("%Y-%m-%d %H:%M:%S.%f")))
+            axes.set_title("%s %s" % (self.name, parse_time(self.date).strftime(TIME_FORMAT)))
 
             # x-axis label
             if self.coordinate_system['x'] == 'HG':
