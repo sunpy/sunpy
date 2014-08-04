@@ -4,6 +4,8 @@ from datetime import timedelta
 from datetime import datetime
 
 from sunpy.time import parse_time
+from sunpy import config
+TIME_FORMAT = config.get('general', 'time_format')
 
 __all__ = ['TimeRange']
 
@@ -111,9 +113,8 @@ class TimeRange(object):
         return self._t2 - self._t1
 
     def __repr__(self):
-        """Returns a human-readable representation of the TimeRange
-        instance."""
-        TIME_FORMAT = "%Y/%m/%d %H:%M:%S"
+        """
+        Returns a human-readable representation of the TimeRange instance."""
 
         t1 = self.start.strftime(TIME_FORMAT)
         t2 = self.end.strftime(TIME_FORMAT)
