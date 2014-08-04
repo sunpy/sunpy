@@ -1,5 +1,5 @@
 # [SunPy](http://sunpy.org) 
-[![Downloads](https://pypip.in/d/sunpy/badge.png)](https://pypi.python.org/pypi/sunpy/) [![Latest Version](https://pypip.in/v/sunpy/badge.png)](https://pypi.python.org/pypi/sunpy/) [![Build Status](https://secure.travis-ci.org/sunpy/sunpy.png)] (http://travis-ci.org/sunpy/sunpy) [![Coverage Status](https://coveralls.io/repos/sunpy/sunpy/badge.png?branch=master)](https://coveralls.io/r/sunpy/sunpy?branch=master) [![Code Health](https://landscape.io/github/sunpy/sunpy/master/landscape.png)](https://landscape.io/github/sunpy/sunpy/master)
+[![Downloads](https://pypip.in/d/sunpy/badge.png)](https://pypi.python.org/pypi/sunpy/) [![Latest Version](https://pypip.in/v/sunpy/badge.png)](https://pypi.python.org/pypi/sunpy/) [![Build Status](https://secure.travis-ci.org/sunpy/sunpy.png)] (http://travis-ci.org/sunpy/sunpy) [![Build status](https://ci.appveyor.com/api/projects/status/v1lkgwg0taum5q49/branch/master)](https://ci.appveyor.com/project/Cadair/sunpy/branch/master) [![Coverage Status](https://coveralls.io/repos/sunpy/sunpy/badge.png?branch=master)](https://coveralls.io/r/sunpy/sunpy?branch=master) [![Code Health](https://landscape.io/github/sunpy/sunpy/master/landscape.png)](https://landscape.io/github/sunpy/sunpy/master)
 
 SunPy is an open-source Python library for solar physics data analysis.
 
