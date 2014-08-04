@@ -1203,4 +1203,3 @@ class LinearTimeSpectrogram(Spectrogram):
                 )
             end = self.time_to_x(end)
         return self[:, start:end]
-

@@ -10,7 +10,7 @@ from matplotlib import pyplot as plt
 from astropy.io import fits
 import pandas
 
-from sunpy.lightcurve import LightCurve 
+from sunpy.lightcurve import LightCurve
 from sunpy.time import parse_time
 from sunpy.util.odict import OrderedDict
 
@@ -23,7 +23,7 @@ class LYRALightCurve(LightCurve):
     Examples
     --------
     >>> import sunpy
-    
+
     >>> lyra = sunpy.lightcurve.LYRALightCurve.create()
     >>> lyra = sunpy.lightcurve.LYRALightCurve.create('~/Data/lyra/lyra_20110810-000000_lev2_std.fits')
     >>> lyra = sunpy.lightcurve.LYRALightCurve.create('2011/08/10')
@@ -58,7 +58,7 @@ class LYRALightCurve(LightCurve):
         figure = plt.figure()
         plt.subplots_adjust(left=0.17,top=0.94,right=0.94,bottom=0.15)
         axes = plt.gca()
-        
+
         axes = self.data.plot(ax=axes, subplots=True, sharex=True, **kwargs)
         #plt.legend(loc='best')
 
@@ -142,5 +142,3 @@ class LYRALightCurve(LightCurve):
 
         # Return the header and the data
         return OrderedDict(hdulist[0].header), pandas.DataFrame(table, index=times)
-
-
