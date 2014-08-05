@@ -33,17 +33,18 @@ class GOESLightCurve(LightCurve):
     | http://umbra.nascom.nasa.gov/goes/fits/
     """
 
-    def peek(self, title="GOES Xray Flux"):
+    def plot(self, title="GOES Xray Flux", axes=None, **plot_args):
         """Plots GOES light curve is the usual manner"""
-        figure = plt.figure()
-        axes = plt.gca()
+                #Get current axes
+        if axes is None:
+            axes = plt.gca()
 
         dates = matplotlib.dates.date2num(self.data.index)
 
         axes.plot_date(dates, self.data['xrsa'], '-',
-                     label='0.5--4.0 $\AA$', color='blue', lw=2)
+                     label='0.5--4.0 $\AA$', color='blue', lw=2, **plot_args)
         axes.plot_date(dates, self.data['xrsb'], '-',
-                     label='1.0--8.0 $\AA$', color='red', lw=2)
+                     label='1.0--8.0 $\AA$', color='red', lw=2, **plot_args)
 
         axes.set_yscale("log")
         axes.set_ylim(1e-9, 1e-2)
@@ -66,10 +67,7 @@ class GOESLightCurve(LightCurve):
         axes.xaxis.set_major_formatter(formatter)
 
         axes.fmt_xdata = matplotlib.dates.DateFormatter('%H:%M')
-        figure.autofmt_xdate()
-        figure.show()
-
-        return figure
+        return axes
 
     @classmethod
     def _get_default_uri(cls):

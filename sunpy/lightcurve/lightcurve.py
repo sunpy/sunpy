@@ -212,12 +212,9 @@ for compatability with map, please use meta instead""", Warning)
         """Displays the light curve in a new figure"""
 
         figure = plt.figure()
-
         self.plot(**kwargs)
-
         figure.show()
 
-        return figure
 
     @staticmethod
     def _download(uri, kwargs, 
