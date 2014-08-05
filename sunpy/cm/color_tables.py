@@ -1130,7 +1130,7 @@ def hmi_mag_color_table():
            hmi = sunpy.map.Map('fblos.fits')
            hmi.cmap = sunpy.cm.get_cmap('hmimag')
            hmi.peek(vmin=-1500.0, vmax=1500.0)
-           
+
            OR (for a basic plot with pixel values on the axes)
                import numpy as np
                import matplotlib.pyplot as plt

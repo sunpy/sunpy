@@ -14,6 +14,9 @@ from sunpy.lightcurve import LightCurve
 from sunpy.time import parse_time
 from sunpy.util.odict import OrderedDict
 
+from sunpy import config
+TIME_FORMAT = config.get("general", "time_format")
+
 __all__ = ['LYRALightCurve']
 
 
@@ -53,10 +56,11 @@ class LYRALightCurve(LightCurve):
         #            kwargs['title'] = 'LYRA data'
 
         """Shows a plot of all four light curves"""
-        if axes is None:
-            axes = plt.gca()
+        figure = plt.figure()
+        plt.subplots_adjust(left=0.17,top=0.94,right=0.94,bottom=0.15)
+        axes = plt.gca()
 
-        self.data.plot(ax=axes, subplots=True, sharex=True, **kwargs)
+        axes = self.data.plot(ax=axes, subplots=True, sharex=True, **kwargs)
         #plt.legend(loc='best')
 
         for i, name in enumerate(self.data.columns):

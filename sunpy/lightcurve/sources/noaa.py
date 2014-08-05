@@ -91,7 +91,7 @@ class NOAAIndicesLightCurve(LightCurve):
     def _get_url_for_date_range(*args, **kwargs):
         """Returns a URL for the specified date."""
         return NOAAIndicesLightCurve._get_default_uri()
-        
+
     @staticmethod
     def _parse_csv(filepath):
         """Parses an NOAA indices csv"""
@@ -101,7 +101,7 @@ class NOAAIndicesLightCurve(LightCurve):
             # Read header at top of file
             while line.startswith((":", "#")):
                 header += line
-                line = fp.readline()	
+                line = fp.readline()
             fields = ('yyyy', 'mm', 'sunspot SWO', 'sunspot RI', 'sunspot ratio', 'sunspot SWO smooth', 'sunspot RI smooth', 'radio flux', 'radio flux smooth', 'geomagnetic ap', 'geomagnetic smooth')
             data = read_csv(fp, delim_whitespace=True, names = fields, comment='#', dtype={'yyyy':np.str, 'mm':np.str})
             data = data.dropna(how='any')

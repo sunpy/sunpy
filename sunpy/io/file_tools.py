@@ -123,7 +123,7 @@ def write_file(fname, data, header, filetype='auto', **kwargs):
     filetype : string
         {'auto', 'fits', 'jp2'} Filetype to savem if auto fname extension will
         be detected, else specifiy a supported file extension.
-    
+
     Notes
     -----
     * Other keyword arguments will be passes to the writer function used.
