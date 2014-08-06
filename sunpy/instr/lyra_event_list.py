@@ -644,18 +644,11 @@ def _check_datetime(time):
         try:
             new_time = np.array([datetime(t) for t in time])
         except TypeError:
-            try:
-                # If cannot be converted simply, elements may be strings
-                # Try converting to datetime using sunpy.time.parse_time
-                new_time = np.array([parse_time(t) for t in time])
-            except:
-                # Otherwise raise error telling user to input an array
-                # of datetime objects.
-                raise TypeError("time must be an array or array-like of "
-                                "datetime objects or valid time strings.")
-        else:
-            raise TypeError("time must be an array or array-like of "
-                            "datetime objects or valid time strings.")
+            # Otherwise raise error telling user to input an array
+            # of datetime objects.
+            raise TypeError("time must be an array or array-like of datetime "
+                            "objects, valid time strings, or pandas "
+                            "DatetimeIndexes.")
     return new_time
 
 def _prep_columns(time, fluxes, filecolumns):
