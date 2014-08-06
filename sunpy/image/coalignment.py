@@ -21,6 +21,7 @@ Template matching algorithm:
 import numpy as np
 from scipy.ndimage.interpolation import shift
 from copy import deepcopy
+from astropy import units as u
 
 # Image co-registration by matching templates
 from skimage.feature import match_template
@@ -87,10 +88,10 @@ def clip_edges(data, yclips, xclips):
     data : ndarray
         A numpy array of shape (ny, nx).
 
-    yclips : ndarray
+    yclips : `~astropy.units.Quantity` instance
         The amount to clip in the y-direction of the data.
 
-    xclips : ndarray
+    xclips : `~astropy.units.Quantity` instance
         The amount to clip in the x-direction of the data.
 
     Returns
@@ -99,10 +100,13 @@ def clip_edges(data, yclips, xclips):
         A 2d image with edges clipped off according to the positive and
         negative ceiling values in the yclips and xclips arrays.
     """
+    if not (isinstance(yclips and xclips, u.Quantity) and
+    (yclips.unit and xclips.unit == 'pix')):
+        raise ValueError("Must be astropy.units.Quantity with 'pixel' units")
     # Datacube shape
     ny = data.shape[0]
     nx = data.shape[1]
-    return data[yclips[0]: ny - yclips[1], xclips[0]: nx - xclips[1]]
+    return data[yclips[0].value: ny - yclips[1].value, xclips[0].value: nx - xclips[1].value]
 
 
 #
@@ -114,15 +118,15 @@ def calculate_clipping(y, x):
 
     Parameters
     ----------
-    y : ndarray
+    y : `~astropy.units.Quantity` instance
         An array of pixel shifts in the y-direction for an image.
 
-    x : ndarray
+    x : `~astropy.units.Quantity` instance
         An array of pixel shifts in the x-direction for an image.
 
     Returns
     -------
-    clipping : ([int, int], [int, int])
+    clipping : ([int, int], [int, int]) of type astropy.Quantity
         The number of (integer) pixels that need to be clipped off at each
         edge in an image. The first element in the tuple is a list that gives
         the number of pixels to clip in the y-direction.  The first element in
@@ -135,7 +139,12 @@ def calculate_clipping(y, x):
         the "clipping" tuple applies similarly to the x-direction (image
         columns).
     """
-    return [_lower_clip(y), _upper_clip(y)], [_lower_clip(x), _upper_clip(x)]
+    if not (isinstance(y, u.Quantity) and y.unit == 'pix'):
+        raise ValueError("Must be astropy Quantites with pixel unit")
+    if not (isinstance(x, u.Quantity) and x.unit == 'pix'):
+        raise ValueError("Must be astropy Quantites with pixel unit")
+    return ([_lower_clip(y.value), _upper_clip(y.value)] * u.pix, 
+            [_lower_clip(x.value), _upper_clip(x.value)] * u.pix)
 
 
 #
@@ -196,7 +205,7 @@ def find_best_match_location(corr):
 
     Returns
     -------
-    shift : tuple
+    shift : `~astropy.units.Quantity` instance
         The shift amounts (y, x) in image pixels.  Subpixel values are
         possible.
     """
@@ -211,8 +220,8 @@ def find_best_match_location(corr):
     get_correlation_shifts(array_around_maximum)
 
     # Get shift relative to correlation array
-    y_shift_relative_to_correlation_array = y_shift_relative_to_maximum + cor_max_y
-    x_shift_relative_to_correlation_array = x_shift_relative_to_maximum + cor_max_x
+    y_shift_relative_to_correlation_array = y_shift_relative_to_maximum + cor_max_y * u.pix
+    x_shift_relative_to_correlation_array = x_shift_relative_to_maximum + cor_max_x * u.pix
 
     return y_shift_relative_to_correlation_array, x_shift_relative_to_correlation_array
 
@@ -232,7 +241,7 @@ def get_correlation_shifts(array):
 
     Returns
     -------
-    peakloc : tuple
+    peakloc : `~astropy.units.Quantity` instance
         The (y, x) location of the peak of a parabolic fit, in image pixels.
     """
     # Check input shape
@@ -259,7 +268,7 @@ def get_correlation_shifts(array):
     else:
         x_location = 1.0 * x_max_location
 
-    return y_location, x_location
+    return y_location * u.pix, x_location * u.pix
 
 
 def parabolic_turning_point(y):
@@ -426,8 +435,8 @@ def mapcube_coalign_by_match_template(mc, template=None, layer_index=0,
 
     # Use the displacements supplied
     if apply_displacements is not None:
-        xshift_arcseconds = apply_displacements["x"]
-        yshift_arcseconds = apply_displacements["y"]
+        xshift_arcseconds = apply_displacements["x"].value
+        yshift_arcseconds = apply_displacements["y"].value
         for i, m in enumerate(mc.maps):
             xshift_keep[i] = xshift_arcseconds[i] / m.scale['x']
             yshift_keep[i] = yshift_arcseconds[i] / m.scale['y']
@@ -459,8 +468,8 @@ def mapcube_coalign_by_match_template(mc, template=None, layer_index=0,
             yshift, xshift = calculate_shift(this_layer, tplate)
 
             # Keep shifts in pixels
-            yshift_keep[i] = yshift
-            xshift_keep[i] = xshift
+            yshift_keep[i] = yshift.value
+            xshift_keep[i] = xshift.value
 
         # Calculate shifts relative to the template layer
         yshift_keep = yshift_keep - yshift_keep[layer_index]
@@ -474,7 +483,7 @@ def mapcube_coalign_by_match_template(mc, template=None, layer_index=0,
 
     # Return only the displacements
     if return_displacements_only:
-        return {"x": xshift_arcseconds, "y": yshift_arcseconds}
+        return {"x": xshift_arcseconds * u.arcsec, "y": yshift_arcseconds * u.arcsec}
 
     # New mapcube for the new data
     newmc = deepcopy(mc)
@@ -483,7 +492,7 @@ def mapcube_coalign_by_match_template(mc, template=None, layer_index=0,
     for i, m in enumerate(newmc.maps):
         shifted_data = shift(m.data, [-yshift_keep[i], -xshift_keep[i]])
         if clip:
-            yclips, xclips = calculate_clipping(yshift_keep, xshift_keep)
+            yclips, xclips = calculate_clipping(yshift_keep*u.pix, xshift_keep*u.pix)
             shifted_data = clip_edges(shifted_data, yclips, xclips)
 
         # Update the mapcube image data
@@ -496,6 +505,7 @@ def mapcube_coalign_by_match_template(mc, template=None, layer_index=0,
     # Return the mapcube, or optionally, the mapcube and the displacements
     # used to create the mapcube.
     if with_displacements:
-        return newmc, {"x": xshift_arcseconds, "y": yshift_arcseconds}
+        return newmc, {"x": xshift_arcseconds * u.arcsec, "y": yshift_arcseconds * u.arcsec}
     else:
         return newmc
+

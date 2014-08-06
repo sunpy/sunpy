@@ -6,6 +6,7 @@
 from datetime import datetime
 
 import pytest
+from astropy import units as u
 
 from sunpy.database.database import Database
 from sunpy.database import tables
@@ -423,9 +424,9 @@ def test_walker_create_vso_instrument(vso_session):
 
 @pytest.mark.online
 def test_walker_create_wave(vso_session):
-    entries = walker.create(vso.attrs.Wave(0, 10), vso_session)
+    entries = walker.create(vso.attrs.Wave(0 * u.AA, 10 * u.AA), vso_session)
     assert len(entries) == 2
-    entries = walker.create(vso.attrs.Wave(5, 10), vso_session)
+    entries = walker.create(vso.attrs.Wave(5 * u.AA, 10 * u.AA), vso_session)
     assert len(entries) == 0
 
 

@@ -9,6 +9,8 @@ import sunpy.map
 import pytest
 from sunpy.net.helioviewer import HelioviewerClient
 
+from sunpy.tests.helpers import skip_glymur
+
 # If server is not accessible, skip Helioviewer tests
 client = HelioviewerClient()
 if not client.is_online():
@@ -52,6 +54,7 @@ class TestHelioviewerClient:
 
         assert im1 == im2
 
+    @skip_glymur
     @pytest.mark.online
     @pytest.mark.skipif("__SKIP_TESTS__ is True")
     def test_download_jp2(self):
