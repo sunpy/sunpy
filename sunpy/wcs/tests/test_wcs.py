@@ -4,10 +4,14 @@ from __future__ import absolute_import
 import numpy as np
 from numpy.testing import assert_allclose
 
+import astropy.units as u
+
 import sunpy
 import sunpy.map
 import sunpy.wcs as wcs
 import sunpy.sun as sun
+
+from numpy.testing import assert_array_almost_equal
 
 img = sunpy.map.Map(sunpy.AIA_171_IMAGE)
 
@@ -23,43 +27,38 @@ wcs.wcs.rsun_meters = img.rsun_meters
 #    scale = [img.scale['x'], img.scale['y']]
 #    actual = wcs.convert_pixel_to_data(scale,img.shape, reference_pixel, reference_coordinate, 0, 0)
 
-def test_convert_angle_units():
-    actual = np.array([wcs._convert_angle_units(), wcs._convert_angle_units('arcsec'),
-        wcs._convert_angle_units('arcmin'), wcs._convert_angle_units('degrees'),
-        wcs._convert_angle_units('mas')])
-    desired = np.array([np.deg2rad(1) / (60 * 60), np.deg2rad(1) / (60 * 60),
-        np.deg2rad(1) / 60.0, np.deg2rad(1), np.deg2rad(1) / (60 * 60 * 1000)])
-    assert_allclose(actual, desired, rtol=1e-2, atol=0)
 
 def test_conv_hpc_hcc():
-    coord = [40.0, 32.0]
-    result = wcs.convert_hpc_hcc(coord[0], coord[1], angle_units=img.units['x'])
-    known_answer = [28748691, 22998953]
-    assert_allclose(result, known_answer, rtol=1e-2, atol=0)
+    coord = [40.0 * u.arcsec, 32.0 * u.arcsec]
+    result = wcs.convert_hpc_hcc(coord[0], coord[1])
+    known_answer = [28748691 * u.meter, 22998953 * u.meter]
+    assert_allclose(result[0], known_answer[0], rtol=1e-2, atol=0)
+    assert_allclose(result[1], known_answer[1], rtol=1e-2, atol=0)
 
     # Test the dsun_meters parameter for a distance of 0.5 AU
-    dist = 0.5 * sun.constants.au.si.value
-    result = wcs.convert_hpc_hcc(coord[0], coord[1], dist, img.units['x'])
-    known_answer = [14370494, 11496395]
-    assert_allclose(result, known_answer, rtol=1e-2, atol=0)
+    dist = 0.5 * sun.constants.au.si
+    result = wcs.convert_hpc_hcc(coord[0], coord[1], dist)
+    known_answer = [14370494 * u.meter, 11496395 * u.meter]
+    assert_allclose(result[1], known_answer[1], rtol=1e-2, atol=0)
+    assert_allclose(result[0], known_answer[0], rtol=1e-2, atol=0)
 
     # Make sure that z coordinate is returned if parameter z is True
-    result = wcs.convert_hpc_hcc(coord[0], coord[1], angle_units=img.units['x'],
-                                                     z=True)
-    known_answer = [28748691, 22998953, 695016924]
-    assert_allclose(result, known_answer, rtol=1e-2, atol=0)
+    result = wcs.convert_hpc_hcc(coord[0], coord[1], z=True)
+    known_answer = [28748691*u.meter, 22998953*u.meter, 695016924*u.meter]
+    assert_allclose(result[1], known_answer[1], rtol=1e-2, atol=0)
+    assert_allclose(result[0], known_answer[0], rtol=1e-2, atol=0)
 
 def test_conv_hcc_hpc():
-    coord = [28748691, 22998953]
-    result = wcs.convert_hcc_hpc(coord[0], coord[1], dsun_meters=img.dsun,
-        angle_units=img.units['x'])
-    known_answer = [40.0, 32.0]
-    assert_allclose(result, known_answer, rtol=1e-4, atol=0)
+    coord = [28748691*u.meter, 22998953*u.meter]
+    result = wcs.convert_hcc_hpc(coord[0], coord[1], dsun_meters=img.dsun)
+    known_answer = [40.0*u.arcsec.to(u.deg), 32.0*u.arcsec.to(u.deg)]
+    assert_allclose(result[0], known_answer[0], rtol=1e-2, atol = 0)
+    assert_allclose(result[1], known_answer[1], rtol=1e-2, atol = 0)
 
 def test_conv_hcc_hg():
     coord = [13.0, 58.0]
     result = wcs.convert_hcc_hg(coord[0], coord[1], b0_deg=img.heliographic_latitude, l0_deg=img.heliographic_longitude)
-    known_answer = [1.0791282e-06, -7.0640732]
+    known_answer = [1.0791282e-06 * u.deg, -7.0640732 * u.deg]
     assert_allclose(result, known_answer, rtol=1e-2, atol=0)
 
     # Make sure that r value is returned if radius=True

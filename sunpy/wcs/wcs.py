@@ -3,28 +3,16 @@ from __future__ import absolute_import
 import numpy as np
 import sunpy.sun as sun
 
-import astropy.units
+import astropy.units as u
 
-rsun_meters = sun.constants.radius.si.value
+rsun_meters = sun.constants.radius.si
 
-__all__ = ['_convert_angle_units', 'convert_pixel_to_data', 'convert_hpc_hg',
+__all__ = ['convert_pixel_to_data', 'convert_hpc_hg',
            'convert_data_to_pixel', 'convert_hpc_hcc', 'convert_hcc_hpc',
            'convert_hcc_hg', 'convert_hg_hcc', 'proj_tan',
            'convert_hg_hpc',  'convert_to_coord',
            'get_center']
 
-def _convert_angle_units(unit='arcsec'):
-    """Determine the conversion factor between the data units and radians."""
-    if unit == 'degrees':
-        return np.deg2rad(1)
-    elif unit == 'arcmin':
-        return np.deg2rad(1) / 60.0
-    elif unit == 'arcsec':
-        return np.deg2rad(1) / (60 * 60.0)
-    elif unit == 'mas':
-        return np.deg2rad(1) / (60 * 60 * 1000.0)
-    else:
-        raise ValueError("The units specified are either invalid or is not supported at this time.")
 
 def convert_pixel_to_data(size, scale, reference_pixel,
                           reference_coordinate, x=None, y=None):
@@ -129,7 +117,7 @@ def convert_data_to_pixel(x, y, scale, reference_pixel, reference_coordinate):
     cdelt = np.array(scale)
     crpix = np.array(reference_pixel)
     crval = np.array(reference_coordinate)
-    # De-apply any tabular projections.
+    # De-apply any tabular projections.l
     # coord = inv_proj_tan(coord)
 
     # note that crpix[] counts pixels starting at 1
@@ -138,25 +126,23 @@ def convert_data_to_pixel(x, y, scale, reference_pixel, reference_coordinate):
 
     return pixelx, pixely
 
-def convert_hpc_hcc(x, y, dsun_meters=None, angle_units='arcsec', z=False):
+def convert_hpc_hcc(x, y, dsun_meters=None, z=False):
     """Converts from Helioprojective-Cartesian (HPC) coordinates into
     Heliocentric-Cartesian (HCC) coordinates. Returns all three dimensions, x, y, z in
     meters.
 
     Parameters
     ----------
-    x, y : float
-        Data coordinate in angle units (default is arcsec)
-    dsun_meters : float
+    x, y : ~'astropy.units.instance'
+        Data coordinate in angle units
+    dsun_meters : ~'astropy.units.instance'
         Distance from the observer to the Sun in meters. Default is 1 AU.
-    angle_units : str
-        Units of the data coordinates (e.g. arcsec, arcmin, degrees). Default is arcsec.
     z : Bool
         If true return the z coordinate as well.
 
     Returns
     -------
-    out : ndarray
+    out : ~'astropy.units.instance'
         The data coordinates (x,y,z) in heliocentric cartesian coordinates in meters.
 
     Notes
@@ -169,19 +155,18 @@ def convert_hpc_hcc(x, y, dsun_meters=None, angle_units='arcsec', z=False):
     (28876152.176423457, 23100922.071266972, 694524220.8157959)
 
     """
-
-    c = np.array([_convert_angle_units(unit=angle_units),
-                  _convert_angle_units(unit=angle_units)])
-
-    cosx = np.cos(x * c[0])
-    sinx = np.sin(x * c[0])
-    cosy = np.cos(y * c[1])
-    siny = np.sin(y * c[1])
+    rsun_meters = sun.constants.radius.si
+    if not isinstance(x and y, u.Quantity):
+        raise ValueError("Must be astropy.Quantity instance")
+    cosx = np.cos(x)
+    sinx = np.sin(x)
+    cosy = np.cos(y)
+    siny = np.sin(y)
 
     if dsun_meters is None:
-        dsun_meters = sun.constants.au.si.value
-    elif isinstance(dsun_meters, astropy.units.Quantity):
-        dsun_meters = dsun_meters.si.value
+        dsun_meters = sun.constants.au.si
+    if not isinstance(dsun_meters, u.Quantity):
+        raise ValueError("Must be astropy.Quantity instance")
 
     q = dsun_meters * cosy * cosx
     distance = q ** 2 - dsun_meters ** 2 + rsun_meters ** 2
@@ -197,23 +182,21 @@ def convert_hpc_hcc(x, y, dsun_meters=None, angle_units='arcsec', z=False):
     else:
         return rx, ry
 
-def convert_hcc_hpc(x, y, dsun_meters=None, angle_units='arcsec'):
+def convert_hcc_hpc(x, y, dsun_meters=None):
     """Convert Heliocentric-Cartesian (HCC) to angular
     Helioprojective-Cartesian (HPC) coordinates (in degrees).
 
     Parameters
     ----------
-    x, y : float (meters)
+    x, y : ~'astropy.units.instance'
         Data coordinate in meters.
-    dsun_meters : float
+    dsun_meters : ~'astropy.units.instance'
         Distance from the observer to the Sun in meters. Default is 1 AU.
-    angle_units : str
-        Units of the data coordinates (e.g. arcsec, arcmin, degrees). Default is arcsec.
 
     Returns
     -------
-    out : ndarray
-        The  data coordinates (x,y) in helioprojective cartesian coordinates in arcsec.
+    out : ~'astropy.units.instance'
+        The  data coordinates (x,y) in helioprojective cartesian coordinates in degrees.
 
     Notes
     -----
@@ -226,25 +209,28 @@ def convert_hcc_hpc(x, y, dsun_meters=None, angle_units='arcsec'):
 
     """
 
+    rsun_meters = sun.constants.radius.si
+    if not isinstance(x and y, u.Quantity):
+       raise ValueError("Must be astropy.Quantity instance")
+
+    if x.unit != 'meter':
+       x = x.to('meter')
+    if y.unit != 'meter':
+       y = y.to('meter')
+
     # Calculate the z coordinate by assuming that it is on the surface of the Sun
     z = np.sqrt(rsun_meters ** 2 - x ** 2 - y ** 2)
 
     if dsun_meters is None:
-        dsun_meters = sun.constants.au.si.value
-    elif isinstance(dsun_meters, astropy.units.Quantity):
-        dsun_meters = dsun_meters.si.value
+        dsun_meters = sun.constants.au.si
+    if not isinstance(dsun_meters, u.Quantity):
+        raise ValueError("Must be astropy.units.instance")
+    dsun_meters = dsun_meters.to('meter')
 
     zeta = dsun_meters - z
     distance = np.sqrt(x**2 + y**2 + zeta**2)
-    hpcx = np.rad2deg(np.arctan2(x, zeta))
-    hpcy = np.rad2deg(np.arcsin(y / distance))
-
-    if angle_units == 'arcsec':
-        hpcx = 60 * 60 * hpcx
-        hpcy = 60 * 60 * hpcy
-    elif angle_units == 'arcmin':
-        hpcx = 60 * hpcx
-        hpcy = 60 * hpcy
+    hpcx = np.arctan2(x, zeta).to(u.deg)
+    hpcy = np.arcsin(y / distance).to(u.deg)
 
     return hpcx, hpcy
 
@@ -255,16 +241,16 @@ def convert_hcc_hg(x, y, z=None, b0_deg=0, l0_deg=0, radius=False):
 
     Parameters
     ----------
-    x, y : float (meters)
+    x, y : ~'astropy.units.instance'
         Data coordinate in meters.
-    z : float (meters)
+    z : ~'astropy.units.instance'
         Data coordinate in meters.  If None, then the z-coordinate is assumed
         to be on the Sun.
-    b0_deg : float (degrees)
+    b0_deg : ~'astropy.units.instance'
         Tilt of the solar North rotational axis toward the observer
         (heliographic latitude of the observer). Usually given as SOLAR_B0,
         HGLT_OBS, or CRLT_OBS. Default is 0.
-    l0_deg : float (degrees)
+    l0_deg : ~'astropy.units.instance'
         Carrington longitude of central meridian as seen from Earth. Default is 0.
     radius : Bool
         If true, forces the output to return a triple of (lon, lat, r). If
@@ -288,20 +274,27 @@ def convert_hcc_hg(x, y, z=None, b0_deg=0, l0_deg=0, radius=False):
     z=695508000.0 + 8000000.0, radius=True)
     (0.01873188196651189, 3.6599471896203317, 704945784.41465974)
     """
+
+    if not isinstance(x and y, u.Quantity):
+        raise ValueError("Must be astropy.units.instance")
     if z is None:
         z = np.sqrt(rsun_meters**2 - x**2 - y**2)
+    if not isinstance(z, u.Quantity):
+        raise ValueError("Must be astropy.units.instance")
+    if not isinstance(b0_deg and l0_deg, u.Quantity):
+        raise ValueError("Must be astropy.units.instance")
 
-    cosb = np.cos(np.deg2rad(b0_deg))
-    sinb = np.sin(np.deg2rad(b0_deg))
+    cosb = np.cos(b0_deg)
+    sinb = np.sin(b0_deg)
 
     hecr = np.sqrt(x**2 + y**2 + z**2)
-    hgln = np.arctan2(x, z * cosb - y * sinb) + np.deg2rad(l0_deg)
+    hgln = np.arctan2(x, z * cosb - y * sinb) + l0_deg.to(u.rad)
     hglt = np.arcsin((y * cosb + z * sinb) / hecr)
 
     if radius:
-        return np.rad2deg(hgln), np.rad2deg(hglt), hecr
+        return hgln.to(u.deg), hglt.to(u.deg), hecr
     else:
-        return np.rad2deg(hgln), np.rad2deg(hglt)
+        return hgln.to(u.deg), hglt.to(u.deg)
 
 def convert_hg_hcc(hglon_deg, hglat_deg, b0_deg=0, l0_deg=0, occultation=False,
                    z=False, r=rsun_meters):
@@ -310,19 +303,19 @@ def convert_hg_hcc(hglon_deg, hglat_deg, b0_deg=0, l0_deg=0, occultation=False,
 
     Parameters
     ----------
-    hglon_deg, hglat_deg : float (degrees)
+    hglon_deg, hglat_deg : ~'astropy.units.instance'
         Heliographic longitude and latitude in degrees.
-    b0_deg : float (degrees)
+    b0_deg : ~'astropy.units.instance'
         Tilt of the solar North rotational axis toward the observer
         (heliographic latitude of the observer). Usually given as SOLAR_B0,
         HGLT_OBS, or CRLT_OBS. Default is 0.
-    l0_deg : float (degrees)
+    l0_deg : ~'astropy.units.instance'
         Carrington longitude of central meridian as seen from Earth. Default is 0.
     occultation : Bool
         If true set all points behind the Sun (e.g. not visible) to Nan.
     z : Bool
         If true return the z coordinate as well.
-    r : float (meters)
+    r : ~'astropy.units.instance'
         Heliographic radius
 
     Returns
@@ -342,13 +335,17 @@ def convert_hg_hcc(hglon_deg, hglat_deg, b0_deg=0, l0_deg=0, occultation=False,
     r=704945784.41465974, z=True)
     (230000.0, 45000000.0, 703508000.0)
     """
-    lon = np.deg2rad(hglon_deg)
-    lat = np.deg2rad(hglat_deg)
+    if not isinstance(hglon_deg and hglat_deg, u.Quantity):
+        raise ValueError("Must be astropy.units.Quantity instance")
+    if not isinstance(b0_deg and l0_deg, u.Quantity):
+        raise ValueError("Must be astropy.units.Quantity instance")
+    lon = hglon_deg
+    lat = hglat_deg
 
-    cosb = np.cos(np.deg2rad(b0_deg))
-    sinb = np.sin(np.deg2rad(b0_deg))
+    cosb = np.cos(b0_deg)
+    sinb = np.sin(b0_deg)
 
-    lon = lon - np.deg2rad(l0_deg)
+    lon = lon - l0_deg
 
     cosx = np.cos(lon)
     sinx = np.sin(lon)
@@ -369,31 +366,30 @@ def convert_hg_hcc(hglon_deg, hglat_deg, b0_deg=0, l0_deg=0, occultation=False,
     else:
         return x, y
 
-def convert_hg_hpc(hglon_deg, hglat_deg, b0_deg=0, l0_deg=0, dsun_meters=None, angle_units='arcsec',
+def convert_hg_hpc(hglon_deg, hglat_deg, b0_deg=0, l0_deg=0, dsun_meters=None,
                    occultation=False):
     """Convert from Heliographic coordinates (HG) to Helioprojective-Cartesian
     (HPC).
 
     Parameters
     ----------
-    hglon_deg, hglat_deg : float (degrees)
+    hglon_deg, hglat_deg : ~'astropy.units.instance'
         Heliographic longitude and latitude in degrees.
-    b0_deg : float (degrees)
+    b0_deg : ~'astropy.units.instance'
         Tilt of the solar North rotational axis toward the observer
         (heliographic latitude of the observer). Usually given as SOLAR_B0,
         HGLT_OBS, or CRLT_OBS. Default is 0.
-    l0_deg : float (degrees)
+    l0_deg : ~'astropy.units.instance'
         Carrington longitude of central meridian as seen from Earth. Default is 0.
     occultation : Bool
         If true set all points behind the Sun (e.g. not visible) to Nan.
-    dsun_meters : float (meters)
+    dsun_meters : ~'astropy.units.instance'
         Distance between the observer and the Sun.
-    angle_units : str
 
 
     Returns
     -------
-    out : ndarray (arcsec)
+    out : ~'astropy.units.Quantity instance'
         The data coordinates (x,y) in Helioprojective-Cartesian coordinates.
 
     Notes
@@ -405,33 +401,35 @@ def convert_hg_hpc(hglon_deg, hglat_deg, b0_deg=0, l0_deg=0, dsun_meters=None, a
     >>> sunpy.wcs.convert_hg_hpc(34.0, 45.0, b0_deg=-7.064078, l0_deg=0.0)
     (380.05656560308898, 743.78281283290016)
     """
-
+    
+    if not isinstance(hglon_deg and hglat_deg, u.Quantity):
+        raise ValueError("Must be astropy.units.Quantity instance")
+    if not isinstance(l0_deg and dsun_meters, u.Quantity):
+        raise ValueError("Must be astropy.units.Quanitity instance")
     tempx, tempy = convert_hg_hcc(hglon_deg, hglat_deg, b0_deg=b0_deg, l0_deg=l0_deg, occultation=occultation)
-    x, y = convert_hcc_hpc(tempx, tempy, dsun_meters=dsun_meters, angle_units=angle_units)
+    x, y = convert_hcc_hpc(tempx, tempy, dsun_meters=dsun_meters)
     return x, y
 
-def convert_hpc_hg(x, y, b0_deg=0, l0_deg=0, dsun_meters=None, angle_units='arcsec'):
+def convert_hpc_hg(x, y, b0_deg=0, l0_deg=0, dsun_meters=None):
     """Convert from Helioprojective-Cartesian (HPC) to Heliographic coordinates
     (HG) in degrees.
 
     Parameters
     ----------
-    x, y : float ()
+    x, y : ~'astropy.units.instance'
         Data coordinate in angle units.
-    b0 : float (degrees)
+    b0_deg : ~'astropy.units.instance'
         Tilt of the solar North rotational axis toward the observer
         (heliographic latitude of the observer). Usually given as SOLAR_B0,
         HGLT_OBS, or CRLT_OBS. Default is 0.
-    l0 : float (degrees)
+    l0_deg : ~'astropy.units.instance'
         Carrington longitude of central meridian as seen from Earth. Default is 0.
-    dsun_meters : float (meters)
+    dsun_meters : ~'astropy.units.instance'
         Distance between the observer and the Sun.
-    angle_units : str
-        Units used for input x and y. Default is arcsec.
 
     Returns
     -------
-    out : ndarray (degrees)
+    out : ~'astropy.units.instance'
         The  data coordinates (hglongitude, hglatitude) in Heliographic coordinates.
 
     Notes
@@ -444,7 +442,11 @@ def convert_hpc_hg(x, y, b0_deg=0, l0_deg=0, dsun_meters=None, angle_units='arcs
     (34.504653439914669, 45.443143275518182)
     """
 
-    tempx, tempy = convert_hpc_hcc(x, y, dsun_meters=dsun_meters, angle_units=angle_units)
+    if not isinstance(x and y, u.Quantity):
+        raise ValueError("Must be astropy.units.Quantity instance")
+    if not isinstance(b0_deg and l0_deg, u.Quantity):
+        raise ValueError("Must be astropy.units.Quantity instance")    
+    tempx, tempy = convert_hpc_hcc(x, y, dsun_meters=dsun_meters)
     lon, lat = convert_hcc_hg(tempx, tempy, b0_deg=b0_deg, l0_deg=l0_deg)
     return lon, lat
 
@@ -457,21 +459,25 @@ def proj_tan(x, y, force=False):
     # TODO: write proj_tan function
     return x, y
 
-def convert_to_coord(x, y, from_coord, to_coord, b0_deg=0, l0_deg=0, dsun_meters=None, angle_units='arcsec'):
+def convert_to_coord(x, y, from_coord, to_coord, b0_deg=0, l0_deg=0, dsun_meters=None):
     """Apply a coordinate transform to coordinates. Right now can only do hpc
     to hcc to hg"""
 
+    if not isinstance(x and y, u.Quantity):
+        raise ValueError("Must be astropy.units.Quanitity instance")
+    if not isinstance(b0_deg and l0_deg, u.Quantity):
+        raise ValueError("Must be astropy.units.Quantity instance")
     if (from_coord == 'hcc') and (to_coord == 'hg'):
         rx, ry = convert_hcc_hg(x, y, b0_deg=b0_deg, l0_deg=l0_deg)
     elif (from_coord == 'hpc') and (to_coord == 'hg'):
-        rx, ry = convert_hpc_hg(x, y, b0_deg=b0_deg, l0_deg=l0_deg, dsun_meters=dsun_meters, angle_units=angle_units)
+        rx, ry = convert_hpc_hg(x, y, b0_deg=b0_deg, l0_deg=l0_deg, dsun_meters=dsun_meters)
     elif (from_coord == 'hg') and (to_coord == 'hcc'):
         rx, ry = convert_hg_hcc(x, y, b0_deg=b0_deg, l0_deg=l0_deg)
     elif (from_coord == 'hcc') and (to_coord == 'hpc'):
-        rx, ry = convert_hcc_hpc(x, y, dsun_meters=dsun_meters, angle_units=angle_units)
+        rx, ry = convert_hcc_hpc(x, y, dsun_meters=dsun_meters)
     elif (from_coord == 'hg') and (to_coord == 'hpc'):
-        rx, ry = convert_hg_hpc(x, y, b0_deg=b0_deg, l0_deg=l0_deg, dsun_meters=dsun_meters, angle_units=angle_units)
+        rx, ry = convert_hg_hpc(x, y, b0_deg=b0_deg, l0_deg=l0_deg, dsun_meters=dsun_meters)
     elif (from_coord == 'hpc') and (to_coord == 'hcc'):
-        rx, ry = convert_hpc_hcc(x, y, dsun_meters=dsun_meters, angle_units=angle_units)
+        rx, ry = convert_hpc_hcc(x, y, dsun_meters=dsun_meters)
 
     return rx, ry

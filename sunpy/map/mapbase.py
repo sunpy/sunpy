@@ -121,6 +121,7 @@ class GenericMap(astropy.nddata.NDData):
         # Setup some attributes
         self._name = self.observatory + " " + str(self.measurement)
         self._nickname = self.detector
+        self.wcs = self.get_wcs
 
         # Visualization attributes
         self.cmap = cm.gray
@@ -402,9 +403,8 @@ Dimension:\t [%d, %d]
                           [1/lam * np.sin(p), np.cos(p)]])
 
 # #### astropy.wcs object genertaion #### #
-
     @property
-    def wcs(self):
+    def get_wcs(self):
         # this function generates a astropy.wcs object
         w2 = WCS(naxis=2)
         w2.wcs.crpix = [self.reference_pixel['x'].value, self.reference_pixel['y'].value]
@@ -485,9 +485,9 @@ Dimension:\t [%d, %d]
         if (x is not None) & (y < 0):
             raise ValueError("Y pixel value cannot be less than 0.")
 
-        w = get_wcs(self)
-        return x
+        x,y = self.wcs.wcs_pix2world(x = x, y = y)
 
+        return x, y
 
 # #### I/O routines #### #
 
