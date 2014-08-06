@@ -83,14 +83,14 @@ class LYRALightCurve(LightCurve):
 
 
     @staticmethod
-    def _get_url_for_date(date):
+    def _get_url_for_date(date,**kwargs):
         """Returns a URL to the LYRA data for the specified date
         """
         dt = parse_time(date or datetime.datetime.utcnow())
 
         # Filename
         filename = "lyra_%s000000_lev%d_%s.fits" % (dt.strftime('%Y%m%d-'),
-                                                    2, 'std')
+                                                    kwargs.get('level',2), 'std')
         # URL
         base_url = "http://proba2.oma.be/lyra/data/bsd/"
         url_path = urlparse.urljoin(dt.strftime('%Y/%m/%d/'), filename)
@@ -121,8 +121,17 @@ class LYRALightCurve(LightCurve):
         start = parse_time(start_str)
         #end = datetime.datetime.strptime(end_str, '%Y-%m-%dT%H:%M:%S.%f')
 
-        # First column are times
-        times = [start + datetime.timedelta(0, n) for n in fits_record.field(0)]
+        # First column are times.  For level 2 data, the units are [s].
+        # For level 3 data, the units are [min]
+        if hdulist[1].header['TUNIT1'] == 's':
+            times = [start + datetime.timedelta(seconds=int(n))
+                     for n in fits_record.field(0)]
+        elif hdulist[1].header['TUNIT1'] == 'MIN':
+            times = [start + datetime.timedelta(minutes=int(n))
+                     for n in fits_record.field(0)]
+        else:
+            raise ValueError("Time unit in LYRA fits file not recognised.  "
+                             "Value = {0}".format(hdulist[1].header['TUNIT1']))
 
         # Rest of columns are the data
         table = {}
