@@ -51,11 +51,6 @@ class UnifiedResponse(list):
 class downloadresponse(list):
     """
     List of Results object returned by clients servicing the query.
-    Returned by UnifiedDownloader.get method.
-
-    Methods
-    -------
-    wait: Waits for all files to download completely.
     """
     def __init__(self,lst):
 
@@ -96,8 +91,8 @@ def _create(wlk, query, dobj):
 class UnifiedDownloaderFactory(BasicRegistrationFactory):
     """
     Downloads data from multiple LightCurves clients.
-    Additional clients can be registered with this class.They should ideally 
-    contain a class method which returns a boolean value,analysing if the query can be handled.
+    Additional clients can be registered with this class. They should 
+    contain a class method which returns a boolean value, analysing if the query can be handled.
     """
 
     def query(self, *query):
@@ -111,13 +106,13 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
 	>>> unifresp = UnifiedDownloader.query(Time('2012/3/4','2012/3/6'),Instrument('AIA'),
 	               Wave(304, 304),Sample(60*10))
 
-	Parameters:
+	Parameters
 	----------
-	query: Mutiple parameters,VSO-styled query.Attributes from JSOC,VSO both can be used.
+	query: Mutiple parameters,VSO-styled query. Attributes from JSOC, VSO both can be used.
         
-        Returns:
+        Returns
 	-------
-        UnifiedResponse object
+        UnifiedResponse object: Container of responses returned by clients servicing query.
 
 	Notes
 	-----
@@ -131,14 +126,21 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
     def get(self, qr, **kwargs):
         '''
         Downloads the data.
-        Parameters:
-	-----------
+        Parameters
+	----------
 	qr : UnifiedResponse Object
+	    Container returned by query method.
         
-        Returns:
-	--------
+        Returns
+	-------
 	DownloadResponse Object
-	
+	    List of Results object with an additional wait method.
+
+	Example
+	--------
+	>>> unifresp = UnifiedDownloader.query(Time('2012/3/4','2012/3/6'),Instrument('AIA'))
+	>>> downresp = UnifiedDownloader.get(unifresp)
+	>>> file_paths = downresp.wait()
 	'''
         reslist =[]
         for block in qr:
