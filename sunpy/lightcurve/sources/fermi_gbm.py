@@ -140,8 +140,8 @@ def _bin_data_for_summary(energy_bins,count_data):
 
    
 def _parse_detector(detector):
-    oklist=['n0','n1','n2','n3','n4','n5','n6','n7','n8','n9']
-    altlist=['0','1','2','3','4','5','6','7','8','9']
+    oklist=['n0','n1','n2','n3','n4','n5','n6','n7','n8','n9','n10','n11']
+    altlist = [str(i) for i in range(12)]
     if detector in oklist:
         return detector
     elif detector in altlist:
