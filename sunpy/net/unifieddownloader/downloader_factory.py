@@ -94,7 +94,11 @@ def _create(wlk, query, dobj):
 
 
 class UnifiedDownloaderFactory(BasicRegistrationFactory):
-
+    """
+    Downloads data from multiple LightCurves clients.
+    Additional clients can be registered with this class.They should ideally 
+    contain a class method which returns a boolean value,analysing if the query can be handled.
+    """
 
     def query(self, *query):
         '''
