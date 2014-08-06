@@ -3,6 +3,7 @@ from __future__ import division
 
 import os.path
 from datetime import datetime
+from datetime import timedelta
 from warnings import warn
 import copy
 import csv
@@ -16,10 +17,10 @@ from astropy.io import fits
 
 from sunpy.time import parse_time
 from sunpy import config
-import sunpy.lightcurve as lightcurve
+from sunpy.lightcurve import LYRALightCurve
 from sunpy.util.net import check_download_file
+from sunpy.time.timerange import TimeRange
 
-from datetime import timedelta
 import matplotlib.pyplot as plt
 
 RISE_FACTOR = 1.01
@@ -75,7 +76,11 @@ def lyra_event_list(start_time, end_time, lytaf_path=LYTAF_PATH):
 
     """
     # Create LYRALightCurve object from start and end times
-    lyralc = lightcurve.LYRALightCurve.create(start_time, end_time, level=3)
+    t = TimeRange(start_time, end_time)
+    lyralc = LYRALightCurve.create(t.t1.date().strftime("%Y/%m/%d"), level=3)
+    for day in [t.t1.date()+timedelta(days=i) for i in range(1, t.days()+1)]:
+        lyralc.data = lyralc.data.append(
+            LYRALightCurve.create(day.strftime("%Y/%m/%d"), level=3).data)
     # Convert to lightcurve time to datetime objects
     time = lyralc.data.index.to_pydatetime()
     flux = np.asanyarray(lyralc.data["CHANNEL4"])
