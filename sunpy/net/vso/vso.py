@@ -34,6 +34,9 @@ from sunpy.net.vso.attrs import walker, TIMEFORMAT
 from sunpy.util import print_table, replacement_filename
 from sunpy.time import parse_time
 
+from sunpy import config
+TIME_FORMAT = config.get("general", "time_format")
+
 DEFAULT_URL = 'http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl'
 DEFAULT_PORT = 'nsoVSOi'
 RANGE = re.compile(r'(\d+)(\s*-\s*(\d+))?(\s*([a-zA-Z]+))?')
@@ -208,9 +211,9 @@ class QueryResponse(list):
 
         table = [
           [
-            str(datetime.strptime(record.time.start, TIMEFORMAT))
+            str(datetime.strptime(record.time.start, TIME_FORMAT))
               if record.time.start is not None else 'N/A',
-            str(datetime.strptime(record.time.end, TIMEFORMAT))
+            str(datetime.strptime(record.time.end, TIME_FORMAT))
               if record.time.end is not None else 'N/A',
             record.source,
             record.instrument,
