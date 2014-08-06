@@ -8,10 +8,16 @@ from sunpy.net.vso.vso import Results
 from sunpy.net.vso.attrs import Time
 
 class queryrequestblock(object):
-    """ Aims to provide user with additional information. Client.query returns
-    container for queryrequestblock(s).It shall contain information about source,related URL.
+    """ 
+    Represents url, source along with other information
     """
     def __init__(self, map_, url):
+        """
+	Parameters
+	----------
+	map_ : Dict with relevant information
+	url  : Uniform Resource Locator 
+	"""
         self.source = map_.get('source', "Data not Available")
         self.provider = map_.get('provider', "Data not Available")
         self.phyobs = map_.get('phyobs', "Data not Available")
@@ -27,7 +33,9 @@ def iter_urls(map_, url_list):
 
 
 class queryresponse(list):
-    """Returned by client.query.Attempt to ape QueryResponse object in vso module.
+    """
+    Container of QueryRequestBlocks
+
     """
     def __init__(self, lst):
 
@@ -39,7 +47,9 @@ class queryresponse(list):
         return cls(iter_urls(map_, lst))
 
     def time_range(self):
-        """Returns the time-span query extends over"""
+        """
+	Returns the time-span for which records are available
+	"""
         return (datetime.date.strftime(
                 min(qrblock.time.t1 for qrblock in self), '%Y/%m/%d'),
                 datetime.date.strftime(
@@ -95,11 +105,8 @@ class GenericClient(object):
 
     def query(self, *args, **kwargs):
         """
-        Input:
-        args: list of attributes
-
-        Output: queryresponse object.
-        """
+	Query the web service of the source for urls pertaining to incoming arguements.
+	"""
         GenericClient._makeargs(self, *args, **kwargs)
         urls = self._get_url_for_timerange(self.map_.get('TimeRange'), **kwargs)
         return queryresponse.create(self.map_, urls)
@@ -107,11 +114,14 @@ class GenericClient(object):
 
     def get(self, qres, **kwargs):
         """
-        Input:
-        qres : queryresponse object.
-        Output:
-        vso.Results object.To wait for download to complete call .wait() on returned Results object.
-        """
+        Parameters
+	----------
+	qres : queryresponse object
+        
+	Returns
+	-------
+	Results Object
+	"""
         urls = []
         for qrblock in qres:
             urls.append(qrblock.url)
@@ -143,7 +153,7 @@ class GenericClient(object):
         errorback: Function to be called when error is thrown during download.
 
         """
-        urls = EVEDownloader._get_url_for_timerange(timerange)
+        urls = self._get_url_for_timerange(timerange)
         dobj = Downloader(max_conn=len(urls), max_total=len(urls))
         for url in urls:
             dobj.download(url, path, callback, errback)
