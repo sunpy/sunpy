@@ -164,8 +164,9 @@ and check out the methods section!
 
 8. Mapcubes
 -----------
-A mapcube is an ordered list of maps.  A mapcube can be created by supplying
-multiple existing maps::
+A mapcube is an ordered list of maps.  By default, the maps are ordered by
+their observation date, from earlier maps to later maps.  A mapcube can be
+created by supplying multiple existing maps::
 
     mc = sunpy.map.Map([map1, map2], cube=True)
 
@@ -173,8 +174,8 @@ or by providing a directory full of image files::
 
     mc = sunpy.map.Map('path/to/my/files/*.fits', cube=True)
 
-By default, the maps are ordered by their observation date.  The earliest 
-map in the mapcube can be accessed by simply indexing the maps list::
+The earliest map in the mapcube can be accessed by simply indexing the maps
+list::
 
     mc.maps[0]
 
