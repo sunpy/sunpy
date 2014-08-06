@@ -245,8 +245,8 @@ class MapCube(object):
             self[0].cmap.set_gamma(gamma)
 
         if resample:
-            if self.all_maps_same_shape:
-                resample = np.array(len(self.maps)-1) * np.array(resample)
+            if self.all_maps_same_shape():
+                resample = np.array(len(self.maps) - 1) * np.array(resample)
                 for amap in self.maps:
                     amap.resample(resample)
             else:
