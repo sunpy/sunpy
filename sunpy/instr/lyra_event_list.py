@@ -17,15 +17,15 @@ from astropy.io import fits
 from sunpy.time import parse_time
 from sunpy import config
 import sunpy.lightcurve as lightcurve
-from sunpy.util.net import check_file_download
+from sunpy.util.net import check_download_file
 
 from datetime import timedelta
 import matplotlib.pyplot as plt
 
 RISE_FACTOR = 1.01
 FALL_FACTOR = 0.5
-# Set mean daily minimum irradiance in Zr channel from first light
-# (Jan 2010) until mid 2014.
+# Set NORM to mean daily minimum irradiance in Zr channel from first
+# light (Jan 2010) until mid 2014.
 NORM = 0.001
 
 LYTAF_REMOTE_PATH = "http://proba2.oma.be/lyra/data/lytaf/"
@@ -577,7 +577,7 @@ def extract_combined_lytaf(start_time, end_time, lytaf_path=LYTAF_PATH,
     for i, suffix in enumerate(combine_files):
         # Check database files are present
         dbname = "annotation_{0}.db".format(suffix)
-        util.check_download_file(dbname, LYTAF_REMOTE_PATH, lytaf_path)
+        check_download_file(dbname, LYTAF_REMOTE_PATH, lytaf_path)
         # Open SQLITE3 annotation files
         connection = sqlite3.connect(os.path.join(lytaf_path, dbname))
         # Create cursor to manipulate data in annotation file
@@ -735,7 +735,7 @@ def _prep_columns(time, fluxes, filecolumns):
     return string_time, filecolumns
 
 def testing_find_lyra_events(find_events=False):
-    fitspath = "../data/LYRA/fits/"
+    fitspath = "/Users/danielr/pro/data/LYRA/fits/"
     #fitsname = "lyra_20100201-000000_lev3_std.fits"
     #fitsname = "lyra_20100301-000000_lev3_std.fits"
     #fitsname = "lyra_20100309-000000_lev3_std.fits"
@@ -784,7 +784,7 @@ def testing_find_lyra_events(find_events=False):
     #fitsname = "lyra_20131001-000000_lev3_std.fits"
     #fitsname = "lyra_20131101-000000_lev3_std.fits"
     #fitsname = "lyra_20131201-000000_lev3_std.fits"
-    fitsname = "lyra_20100505-000000_lev3_std.fits"
+    fitsname = "lyra_20100508-000000_lev3_std.fits"
     fitsfile = fitspath + fitsname
     ly = fits.open(fitsfile)
     t = ly[1].data["TIME"]
