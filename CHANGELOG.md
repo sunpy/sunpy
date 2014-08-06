@@ -1,3 +1,7 @@
+Latest
+------
+ * Added ability to download level3 data for lyra Light Curve along with corresponding tests.
+
 0.5.0
 -----
 
