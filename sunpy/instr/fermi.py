@@ -39,20 +39,11 @@ def download_weekly_pointing_file(date):
     #find out the rest of the file name. Need the year and the day-in-year for start and end of file
     start_date = weekly_file_start + datetime.timedelta(weekdiff*7)
     start_year_str=str(start_date.year) + '-01-01'
-    day_in_year_start=(start_date - parse_time(start_year_str)).days + 1
-
-    #make sure the day string is always of length 3
-    day_in_year_start_string = "%03d" % day_in_year_start 
-    start_str = str(start_date.year) + day_in_year_start_string 
+    start_str = start_date.strftime('%Y%j')
 
     #now end string
     end_date = weekly_file_start + datetime.timedelta((weekdiff+1)*7)
-    end_year_str=str(end_date.year) + '-01-01'
-    day_in_year_end=(end_date - parse_time(end_year_str)).days + 1
-
-    #make sure the day string is always of length 3
-    day_in_year_end_string = "%03d" % day_in_year_end 
-    end_str = str(end_date.year) + day_in_year_end_string 
+    end_str = end_date.strftime('%Y%j')
 
     #construct the full url for the weekly pointing file
     full_fname_start=fbasename + str(week) + '_' + start_str + '_' + end_str + '_'
@@ -75,7 +66,6 @@ def download_weekly_pointing_file(date):
         raise ValueError('No Fermi pointing files found for given date!')
     #find the file with the highest version number
     matching_files.sort()
-    print matching_files
     #this is the correct pointing file
     full_fname=matching_files[-1]
     
