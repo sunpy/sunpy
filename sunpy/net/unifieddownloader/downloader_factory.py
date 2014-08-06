@@ -34,9 +34,10 @@ class UnifiedResponse(list):
 
         table =[
                 [
-                     (qrblock.time.t1.date() + timedelta(days=i)).strftime('%Y/%m/%d'), #vso serviced query will break here
-                     (qrblock.time.t2.date() + timedelta(days=i)).strftime('%Y/%m/%d'), #time.t1 --> time.start required
-                     qrblock.source,
+                     (qrblock.time.t1.date() + timedelta(days=i)).strftime('%Y/%m/%d'), 
+		     #vso serviced query will break here, time.t1 --> time.start required
+                     (qrblock.time.t2.date() + timedelta(days=i)).strftime('%Y/%m/%d'),
+		     qrblock.source,
                      qrblock.instrument,
                      qrblock.url
                 ]
@@ -48,13 +49,26 @@ class UnifiedResponse(list):
         return print_table(table, colsep = '  ', linesep = '\n')
 
 class downloadresponse(list):
+    """
+    List of Results object returned by clients servicing the query.
+    Returned by UnifiedDownloader.get method.
 
+    Methods
+    -------
+    wait: Waits for all files to download completely.
+    """
     def __init__(self,lst):
 
         super(downloadresponse, self).__init__(lst)
 
     def wait(self):
-
+        """
+	Waits for all the files to download completely.
+	
+	Returns
+	-------
+        list of file paths to which files have been downloaded.
+	"""
         filelist = []
         for resobj in self:
             filelist.extend(resobj.wait())
@@ -66,14 +80,12 @@ qwalker = AttrWalker()
 
 @qwalker.add_creator(AttrAnd)
 def _create(wlk, query, dobj):
-    #qwalker calls this function on finding AttrAnd object in query.
     qresponseobj, qclient = dobj._get_registered_widget(*query.attrs)
     return [(qresponseobj, qclient)]
 
 
 @qwalker.add_creator(AttrOr)
 def _create(wlk, query, dobj):
-    #qwalker calls this function on finding Attror object in query.
     qblocks = []
     for iattr in query.attrs:
         qblocks.extend(wlk.create(iattr, dobj))
@@ -86,24 +98,44 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
 
     def query(self, *query):
         '''
+        Query for data in form of multiple parameters.
+	Examples
+	--------
+	Query for LYRALightCurve data from timerange('2012/3/4','2012/3/6')
+	>>> unifresp = UnifiedDownloader.query(Time('2012/3/4','2012/3/6'),Instrument('lyra'))
+	>>> unifresp = UnifiedDownloader.query(Time('2012/3/4','2012/3/6'),Instrument('norh') | Instrument('rhessi'))
+	>>> unifresp = UnifiedDownloader.query(Time('2012/3/4','2012/3/6'),Instrument('AIA'),
+	               Wave(304, 304),Sample(60*10))
+
+	Parameters:
+	----------
+	query: Mutiple parameters,VSO-styled query.Attributes from JSOC,VSO both can be used.
+        
+        Returns:
+	-------
+        UnifiedResponse object
+
+	Notes
+	-----
         and_ tranforms query into disjunctive normal form
         ie. query is now of form A & B or ((A & B) | (C & D))
         This helps in modularising query into parts and handling each of the parts individually.
-        Input:
-        query: VSO style query.Attributes from JSOC,VSO both can be used.
-        output: List of tuples of form(queryresponse,instance of selected client).
-        '''
+	'''
         query = and_(*query)
         return UnifiedResponse(qwalker.create(query, self))
 
     def get(self, qr, **kwargs):
         '''
         Downloads the data.
-        Input:
-        List of tuples of form(queryresponse,instance of selected client).
-        Output:
-        List of Results objects returned by individual clients
-        '''
+        Parameters:
+	-----------
+	qr : UnifiedResponse Object
+        
+        Returns:
+	--------
+	DownloadResponse Object
+	
+	'''
         reslist =[]
         for block in qr:
             reslist.append(block.client.get(block, **kwargs))
