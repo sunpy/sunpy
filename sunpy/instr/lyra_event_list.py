@@ -12,8 +12,10 @@ import numpy as np
 import pandas
 import sqlite3
 from itertools import chain
-from sunpy.time import parse_time
 from astropy.io import fits
+
+from sunpy.time import parse_time
+from sunpy import config
 import sunpy.lightcurve as lightcurve
 from sunpy.util.net import check_file_download
 
@@ -27,8 +29,7 @@ FALL_FACTOR = 0.5
 NORM = 0.001
 
 LYTAF_REMOTE_PATH = "http://proba2.oma.be/lyra/data/lytaf/"
-LYTAF_PATH = os.path.expanduser(os.path.join("~", "pro",
-                                             "lyra_flare_detection", "data"))
+LYTAF_PATH = config.get("downloads", "download_dir")
 
 def lyra_event_list(start_time, end_time, lytaf_path=LYTAF_PATH):
     """
@@ -36,18 +37,52 @@ def lyra_event_list(start_time, end_time, lytaf_path=LYTAF_PATH):
 
     Parameters
     ----------
-    
+    start_time : string
+        Valid time string giving the start of the period for which a LYRA
+        flare list is required.  Date format must be valid for input to
+        LYRALightCurve.create(), e.g. '2014-08-06 00:00'.
+
+    end_time : string
+        Valid time string giving the end of the period for which a LYRA
+        flare list is required.  Date format must be valid for input to
+        LYRALightCurve.create(), e.g. '2014-08-06 00:00'.
+
+    lytaf_path : string
+        directory path where LYRA annotation files are stored.
+        Default: sunpy download directory obtained from
+        sunpy.config("downloads", download_dir").
+
+    Returns
+    -------
+    lyra_events : numpy recarray
+        Contains following tags giving information on flares found.
+        lyra_events["start_time"] : datetime object
+            Flare start time.
+        lyra_events["peak_time"] : datetime object
+            Flare peak time.
+        lyra_events["end_time"] : datetime object
+            Flare end time.
+        lyra_events["start_flux"] : float
+            Irradiance at flare start time.  Unit=[W/m**2]
+        lyra_events["peak_flux"] : float
+            Irradiance at flare peak time.  Unit=[W/m**2]
+        lyra_events["end_flux"] : float
+            Irradiance at flare end time.  Unit=[W/m**2]
+
+    Examples
+    --------
+    >>> lyra_events = lyra_event_list('2014-08-01 00:00', '2014-08-01 12:00')
 
     """
     # Create LYRALightCurve object from start and end times
     lyralc = lightcurve.LYRALightCurve.create(start_time, end_time, level=3)
     # Convert to lightcurve time to datetime objects
-    dtlc = lyralc.data.index.to_pydatetime()
+    time = lyralc.data.index.to_pydatetime()
     flux = np.asanyarray(lyralc.data["CHANNEL4"])
     # Create LYRA event list
-    lyra_events = find_lyra_events(dtlc, flux, lytaf_path=lytaf_path)
+    lyra_events = find_lyra_events(time, flux, lytaf_path=lytaf_path)
     # Return result
-    return lyra_events, dtlc, flux
+    return lyra_events
 
 def find_lyra_events(time, flux, lytaf_path=LYTAF_PATH):
     """
