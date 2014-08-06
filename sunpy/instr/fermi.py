@@ -14,6 +14,7 @@ from bs4 import BeautifulSoup
 from sunpy.time import parse_time, TimeRange
 from sunpy import sun
 from astropy.io import fits
+from astropy.utils.compat.odict import OrderedDict
 
 
 def download_weekly_pointing_file(date):
@@ -21,7 +22,6 @@ def download_weekly_pointing_file(date):
     contains 1 minute cadence data on the spacecraft pointing, useful for calculating detector angles.'''
     #use a temp directory to hold the file
     tmp_dir=tempfile.mkdtemp()
-    #tmp_dir=''
     #use Fermi data server to access weekly LAT pointing file.
     base_url = 'http://fermi.gsfc.nasa.gov/ssc/observations/timeline/ft2/files/'
     fbasename='FERMI_POINTING_FINAL_'
@@ -69,9 +69,6 @@ def download_weekly_pointing_file(date):
     #find all the links in the html
     links=parsed_html.body.findAll('a')
 
-    #print full_fname_start
-    #print full_fname_extension
-    #print links
     #find all files matching the desired week
     matching_files = [l.text for l in links if (l.text.startswith(full_fname_start) and l.text.endswith(full_fname_extension))]
     if not matching_files:
@@ -102,7 +99,7 @@ def get_detector_sun_angles_for_time(time, file):
     detector_radecs = nai_detector_radecs(detectors, scx, scz)
 
     # this gets the sun position with RA in hours in decimal format (e.g. 4.3). DEC is already in degrees
-    sunpos_ra_not_in_deg = [sun.sun.apparent_rightascension(time), sun.sun.apparent_declination(time)]
+    sunpos_ra_not_in_deg = [sun.sun.apparent_rightascenscion(time), sun.sun.apparent_declination(time)]
     # now Sun position with RA in degrees
     sun_pos = [(sunpos_ra_not_in_deg[0] / 24) * 360., sunpos_ra_not_in_deg[1]]
     # now get the angle between each detector and the Sun
@@ -125,52 +122,32 @@ def get_detector_sun_angles_for_date(date, file, plot=True):
         detector_radecs = nai_detector_radecs(detectors, scx[i], scz[i])
 
         # this gets the sun position with RA in hours in decimal format (e.g. 4.3). DEC is already in degrees
-        sunpos_ra_not_in_deg = [sun.sun.apparent_rightascension(times[i]), sun.sun.apparent_declination(times[i])]
+        sunpos_ra_not_in_deg = [sun.sun.apparent_rightascenscion(times[i]), sun.sun.apparent_declination(times[i])]
         # now Sun position with RA in degrees
         sun_pos = [(sunpos_ra_not_in_deg[0] / 24) * 360., sunpos_ra_not_in_deg[1]]
         # now get the angle between each detector and the Sun
         detector_to_sun_angles.append(get_detector_separation_angles(detector_radecs, sun_pos))
 
     # slice the list of dictionaries to get the angles for each detector in a list form
-    n0 = [item['n0'] for item in detector_to_sun_angles]
-    n1 = [item['n1'] for item in detector_to_sun_angles]
-    n2 = [item['n2'] for item in detector_to_sun_angles]
-    n3 = [item['n3'] for item in detector_to_sun_angles]
-    n4 = [item['n4'] for item in detector_to_sun_angles]
-    n5 = [item['n5'] for item in detector_to_sun_angles]
-    n6 = [item['n6'] for item in detector_to_sun_angles]
-    n7 = [item['n7'] for item in detector_to_sun_angles]
-    n8 = [item['n8'] for item in detector_to_sun_angles]
-    n9 = [item['n9'] for item in detector_to_sun_angles]
-    n10 = [item['n10'] for item in detector_to_sun_angles]
-    n11 = [item['n11'] for item in detector_to_sun_angles]
-
+    angles = OrderedDict()
+    key_list = ['n0','n1','n2','n3','n4','n5','n6','n7','n8','n9','n10','n11']
+    for i in range(12):
+        angles[key_list[i]] = [item[key_list[i]] for item in detector_to_sun_angles]
+    
     if plot: 
         # now make a plot showing the angles vs time
         figure = plt.figure(1)
-        plt.plot(times, n0, label='n0 (' + str(np.mean(n0))[0:5] + ')')
-        plt.plot(times, n1, label='n1 (' + str(np.mean(n1))[0:5] + ')')
-        plt.plot(times, n2, label='n2 (' + str(np.mean(n2))[0:5] + ')')
-        plt.plot(times, n3, label='n3 (' + str(np.mean(n3))[0:5] + ')')
-        plt.plot(times, n4, label='n4 (' + str(np.mean(n4))[0:5] + ')')
-        plt.plot(times, n5, label='n5 (' + str(np.mean(n5))[0:5] + ')')
-        plt.plot(times, n6, label='n6 (' + str(np.mean(n6))[0:5] + ')')
-        plt.plot(times, n7, label='n7 (' + str(np.mean(n7))[0:5] + ')')
-        plt.plot(times, n8, label='n8 (' + str(np.mean(n8))[0:5] + ')')
-        plt.plot(times, n9, label='n9 (' + str(np.mean(n9))[0:5] + ')')
-        plt.plot(times, n10, label='n10 (' + str(np.mean(n10))[0:5] + ')')
-        plt.plot(times, n11, label='n11 (' + str(np.mean(n11))[0:5] + ')')
-
+        for n in angles.keys():
+            plt.plot(times,angles[n], label = '{lab} ({val})' .format(lab=n, val = str(np.mean(angles[n]))[0:5]))
         plt.ylim(180,0)
         plt.ylabel('angle (degrees)')
+        plt.xlabel('Start time: ' + times[0].isoformat())
         plt.title('Detector pointing angle from Sun')
         plt.legend(fontsize=10)
         figure.autofmt_xdate()
         plt.show()
 
-        
-    return {'n0':n0, 'n1':n1, 'n2':n2, 'n3':n3, 'n4':n4,
-            'n5':n5, 'n6':n6, 'n7':n7, 'n8':n8, 'n9':n9, 'n10':n10, 'n11':n11}
+    return angles  
 
 
 def get_scx_scz_at_time(time, file):
@@ -210,19 +187,19 @@ def nai_detector_angles():
     see Meegan et al. (2009) for details and detector angles.'''
 
     # angles listed as [azimuth, zenith]
-    detectors = {}
-    detectors['n0'] = [45.89, 20.58]
-    detectors['n1'] = [45.11, 45.31]
-    detectors['n2'] = [58.44, 90.21]
-    detectors['n3'] = [314.87, 45.24]
-    detectors['n4'] = [303.15, 90.27]
-    detectors['n5'] = [3.35, 89.79]
-    detectors['n6'] = [224.93, 20.43]
-    detectors['n7'] = [224.62, 46.18]
-    detectors['n8'] = [236.61, 89.97]
-    detectors['n9'] = [135.19, 45.55]
-    detectors['n10'] = [123.73, 90.42]
-    detectors['n11'] = [183.74, 90.32]
+    detectors = {'n0': [45.89, 20.58],
+                 'n1': [45.11, 45.31],
+                 'n2': [58.44, 90.21],
+                 'n3': [314.87, 45.24],
+                 'n4': [303.15, 90.27],
+                 'n5': [3.35, 89.79],
+                 'n6': [224.93, 20.43],
+                 'n7': [224.62, 46.18],
+                 'n8': [236.61, 89.97],
+                 'n9': [135.19, 45.55],
+                 'n10': [123.73, 90.42],
+                 'n11': [183.74, 90.32]
+                 }
 
     return detectors
 
