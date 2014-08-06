@@ -190,8 +190,8 @@ three dimensional numpy ndarray::
     mc.as_array()
 
 Note that an array is returned only if all the maps have the same
-shape.  If this is not true, an error is returned.  If all the maps
-have nx pixels in the x-direction, and ny pixels in the y-direction,
+shape.  If this is not true, an error (ValueError) is returned.  If all the
+maps have nx pixels in the x-direction, and ny pixels in the y-direction,
 and there are nt maps in the mapcube, the ndarray array that is
 returned has shape (ny, nx, nt).  The data in the map j appears in the
 ndarray in position (ny, nx, j), that is, the order of maps in the
