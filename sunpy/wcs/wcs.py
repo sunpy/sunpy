@@ -73,7 +73,7 @@ def convert_pixel_to_data(size, scale, reference_pixel,
     # Correct for Gnomic projection
     coordx, coordy = proj_tan(coordx, coordy)
 
-    return coordx, coordy
+    return np.array([coordx.value, coordy.value]) * u.arcsec
 
 def get_center(size, scale, reference_pixel, reference_coordinate):
     """Returns the center of the image in data coordinates.
@@ -145,7 +145,7 @@ def convert_data_to_pixel(x, y, scale, reference_pixel, reference_coordinate):
     pixelx = ((x - crval[0]) / cdelt[0]) * u.pix + (crpix[1] - 1 * u.pix)
     pixely = ((y - crval[1]) / cdelt[1]) * u.pix + (crpix[1] - 1 * u.pix)
 
-    return pixelx, pixely
+    return np.array([pixelx.value, pixely.value]) * u.pix
 
 def convert_hpc_hcc(x, y, dsun_meters=None, z=False):
     """Converts from Helioprojective-Cartesian (HPC) coordinates into

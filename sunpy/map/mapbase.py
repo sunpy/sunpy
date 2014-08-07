@@ -159,7 +159,8 @@ Dimension:\t [%d, %d]
 """ % (self.__class__.__name__,
        self.observatory, self.instrument, self.detector, self.measurement,
        self.date, self.exposure_time.value,
-       self.data.shape[1], self.data.shape[0], self.scale['x'], self.scale['y'])
+       self.data.shape[1].value, self.data.shape[0].value, 
+       self.scale['x'].value, self.scale['y'].value)
      + self.data.__repr__())
 
 
@@ -266,15 +267,15 @@ Dimension:\t [%d, %d]
     @property
     def xrange(self):
         """Return the X range of the image in arcsec from edge to edge."""
-        xmin = self.center['x'] - self.shape[1] / 2. * self.scale['x']
-        xmax = self.center['x'] + self.shape[1] / 2. * self.scale['x']
+        xmin = self.center['x'].value - self.shape[1].value / 2. * self.scale['x'].value
+        xmax = self.center['x'].value + self.shape[1].value / 2. * self.scale['x'].value
         return [xmin, xmax] * u.arcsec
 
     @property
     def yrange(self):
         """Return the Y range of the image in arcsec from edge to edge."""
-        ymin = self.center['y'] - self.shape[0] / 2. * self.scale['y']
-        ymax = self.center['y'] + self.shape[0] / 2. * self.scale['y']
+        ymin = self.center['y'].value - self.shape[0].value / 2. * self.scale['y'].value
+        ymax = self.center['y'].value + self.shape[0].value / 2. * self.scale['y'].value
         return [ymin, ymax] * u.arcsec
 
     @property
@@ -468,15 +469,21 @@ Dimension:\t [%d, %d]
         #TODO: This function should be renamed. It is confusing as data
         # coordinates are in something like arcsec but this function just changes how you
         # count pixels
+        if not isinstance(value, u.Quantity):
+            raise ValueError("Must be astropy.units instance")
         if dim not in ['x', 'y']:
             raise ValueError("Invalid dimension. Must be one of 'x' or 'y'.")
 
         size = self.shape[dim == 'x']  # 1 if dim == 'x', 0 if dim == 'y'.
 
-        return (value - self.center[dim].value) / self.scale[dim].value + ((size.value - 1) / 2.) * u.pix
+        return np.array((value.value - self.center[dim].value) / self.scale[dim].value + ((size.value - 1) / 2.)) * u.pix
         
     def pixel_to_data(self, x=None, y=None):
         """Convert from pixel coordinates to data coordinates (e.g. arcsec)"""
+        if (x is not None) and not (isinstance(x, u.Quantity)):
+            raise ValueError("Must be astropy.units instance")
+        if (y is not None) and not (isinstance(y, u.Quantity)):
+            raise ValueError("Must be astropy.units instance")
         width = self.shape[1]
         height = self.shape[0]
 
@@ -588,8 +595,8 @@ Dimension:\t [%d, %d]
         new_map.meta = new_meta
         return new_map
 
-    def rotate(self, angle=None, rmatrix=None, order=3, scale=1.0,    #manually check if it works
-               image_center=(0,0), recenter=False, missing=0.0, use_scipy=False):
+    def rotate(self, angle=None, rmatrix=None, order=3, scale=1.0,
+               image_center=np.array([0,0]) * u.arcsec, recenter=False, missing=0.0, use_scipy=False):
         """
         Returns a new rotated and rescaled map.  Specify either a rotation
         angle or a rotation matrix, but not both.  If neither an angle or a
@@ -615,7 +622,7 @@ Dimension:\t [%d, %d]
             higher values.
         scale : float
             A scale factor for the image, default is no scaling
-        image_center : tuple
+        image_center : `~astropy.units.Quantity`
             The axis of rotation in data coordinates
             Default: the origin in the data coordinate system
         recenter : bool
@@ -679,7 +686,7 @@ Dimension:\t [%d, %d]
             rmatrix = np.matrix([[c, -s], [s, c]])
 
         # map_center is swapped compared to the x-y convention
-        array_center = (np.array(self.data.shape)-1)/2.0
+        array_center = ((np.array(self.data.shape)-1)/2.0) * u.pix
 
         # rotation_center is swapped compared to the x-y convention
         if recenter:
@@ -708,17 +715,19 @@ Dimension:\t [%d, %d]
             new_center = image_center
         else:
             # Retrieve old coordinates for the center of the array
-            old_center = np.asarray(self.pixel_to_data(array_center[1], array_center[0]))
+            old_center = self.pixel_to_data(array_center[1], array_center[0])
+            # make old_center an array from tuple
+            old_center = [old_center[0].value, old_center[1].value] * u.arcsec
 
             # Calculate new coordinates for the center of the array
-            new_center = image_center - np.dot(rmatrix, image_center - old_center)
-            new_center = np.asarray(new_center)[0]
+            new_center = (image_center.value - np.dot(rmatrix, image_center.value - old_center.value))
+            new_center = np.asarray(new_center)[0] * u.arcsec
 
         # Define a new reference pixel in the rotated space
-        new_map.meta['crval1'] = new_center[0]
-        new_map.meta['crval2'] = new_center[1]
-        new_map.meta['crpix1'] = array_center[1] + 1 # FITS counts pixels from 1
-        new_map.meta['crpix2'] = array_center[0] + 1 # FITS counts pixels from 1
+        new_map.meta['crval1'] = new_center[0].value
+        new_map.meta['crval2'] = new_center[1].value
+        new_map.meta['crpix1'] = array_center[1].value + 1 # FITS counts pixels from 1
+        new_map.meta['crpix2'] = array_center[0].value + 1 # FITS counts pixels from 1
 
         # Calculate the new rotation matrix to store in the header by
         # "subtracting" the rotation matrix used in the rotate from the old one
@@ -732,8 +741,8 @@ Dimension:\t [%d, %d]
 
         # Update pixel size if image has been scaled.
         if scale != 1.0:
-            new_map.meta['cdelt1'] = self.scale['x'] / scale
-            new_map.meta['cdelt2'] = self.scale['y'] / scale
+            new_map.meta['cdelt1'] = self.scale['x'].value / scale
+            new_map.meta['cdelt2'] = self.scale['y'].value / scale
 
         # Remove old CROTA kwargs because we have saved a new PCi_j matrix.
         new_map.meta.pop('CROTA1', None)

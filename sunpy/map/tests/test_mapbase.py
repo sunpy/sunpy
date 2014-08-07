@@ -129,7 +129,7 @@ def test_detector(generic_map):
 
 
 def test_dsun(generic_map):
-    assert generic_map.dsun.value == (sunpy.sun.sunearth_distance(generic_map.date) *
+    assert generic_map.dsun == (sunpy.sun.sunearth_distance(generic_map.date) *
                                 sunpy.sun.constants.au.si.value)
 
 
@@ -206,12 +206,12 @@ def test_data_to_pixel(generic_map):
     """Make sure conversion from data units to pixels is accurate"""
     # Check conversion of reference pixel
     # Note: FITS pixels starts from 1,1
-    assert generic_map.data_to_pixel(generic_map.meta['crval1'], 'x') == generic_map.meta['crpix1'] - 1
-    assert generic_map.data_to_pixel(generic_map.meta['crval2'], 'y') == generic_map.meta['crpix2'] - 1
+    assert generic_map.data_to_pixel(generic_map.meta['crval1'] * u.arcsec, 'x') == (generic_map.meta['crpix1'] - 1) * u.pix
+    assert generic_map.data_to_pixel(generic_map.meta['crval2'] * u.arcsec, 'y') == (generic_map.meta['crpix2'] - 1) * u.pix
 
     # Check conversion of map center
-    assert generic_map.data_to_pixel(generic_map.center['x'], 'x') == (generic_map.meta['naxis1'] - 1) / 2.
-    assert generic_map.data_to_pixel(generic_map.center['y'], 'y') == (generic_map.meta['naxis2'] - 1) / 2.
+    assert generic_map.data_to_pixel(generic_map.center['x'], 'x') == ((generic_map.meta['naxis1'] - 1) / 2.) * u.pix
+    assert generic_map.data_to_pixel(generic_map.center['y'], 'y') == ((generic_map.meta['naxis2'] - 1) / 2.) * u.pix
 
     # Check conversion of map edges
     # Note: data coords are at pixel centers, so edges are 0.5 pixels wider
