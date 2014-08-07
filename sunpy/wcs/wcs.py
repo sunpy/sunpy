@@ -20,21 +20,21 @@ def convert_pixel_to_data(size, scale, reference_pixel,
 
     Parameters
     ----------
-    size : 2d ndarray
+    size : ~'astropy.units.instance', 2d array
         Number of pixels in width and height.
-    scale : 2d ndarray
+    scale : ~'astropy.units.instance', 2d array
         The size of a pixel (dx,dy) in data coordinates (equivalent to WCS/CDELT)
-    reference_pixel : 2d ndarray
+    reference_pixel : ~'astropy.units.instance', 2d array
         The reference pixel (x,y) at which the reference coordinate is given (equivalent to WCS/CRPIX)
-    reference_coordinate : 2d ndarray
+    reference_coordinate : ~'astropy.units.instance', 2d array
         The data coordinate (x, y) as measured at the reference pixel (equivalent to WCS/CRVAL)
-    x,y : int or ndarray
+    x,y : ~'astropy.units.instance'
         The pixel values at which data coordinates are requested. If none are given,
         returns coordinates for every pixel.
 
     Returns
     -------
-    out : ndarray
+    out : ~'astropy.units.instance'
         The data coordinates at pixel (x,y).
 
     Notes
@@ -46,18 +46,29 @@ def convert_pixel_to_data(size, scale, reference_pixel,
     --------
 
     """
-    cdelt = np.array(scale)
-    crpix = np.array(reference_pixel)
-    crval = np.array(reference_coordinate)
-
-    # first assume that coord is just [x,y]
+    if not isinstance(scale or reference_pixel or reference_coordinate
+                      or size, u.Quantity):
+        raise ValueError("Must be astropy.units instance")
+    
+    if (x != None) and (y != None):
+        if not isinstance(x or y, u.Quantity):
+            raise ValueError("Must be astropy.units instance")
+    
     if (x is None) and (y is None):
+        # first assume that coord is just [x,y]
         x, y = np.meshgrid(np.arange(size[0]), np.arange(size[1]))
+        x *= u.pix
+        y *= u.pix
+
+    cdelt = np.array(scale) * u.Unit(scale.unit)
+    crpix = np.array(reference_pixel) * u.Unit(reference_pixel.unit)
+    crval = np.array(reference_coordinate) * u.Unit(reference_coordinate.unit)
+
 
     # note that crpix[] counts pixels starting at 1
 
-    coordx = (x - (crpix[0] - 1)) * cdelt[0] + crval[0]
-    coordy = (y - (crpix[1] - 1)) * cdelt[1] + crval[1]
+    coordx = ((x - (crpix[0] - 1*u.pix))).value * cdelt[0] + crval[0]
+    coordy = ((y - (crpix[1] - 1*u.pix))).value * cdelt[1] + crval[1]
 
     # Correct for Gnomic projection
     coordx, coordy = proj_tan(coordx, coordy)
@@ -69,9 +80,9 @@ def get_center(size, scale, reference_pixel, reference_coordinate):
 
     Parameters
     ----------
-    size : ~'astropy.units.instance', 2d array
+    size : ~'astropy.units.instance'
         Number of pixels in width and height.
-    scale : ~'astropy.units.instance', 2d array
+    scale : ~'astropy.units.instance'
         The size of a pixel (dx,dy) in data coordinates (equivalent to WCS/CDELT)
     reference_pixel : ~'astropy.units.instance', 2d array
         The reference pixel (x,y) at which the reference coordinate is given (equivalent to WCS/CRPIX)
@@ -98,35 +109,41 @@ def convert_data_to_pixel(x, y, scale, reference_pixel, reference_coordinate):
 
     Parameters
     ----------
-    x, y : float
+    x, y : ~'astropy.units.instance'
         Data coordinate in same units as reference coordinate
-    scale : 2d ndarray
+    scale : ~'astropy.units.instance'
         The size of a pixel (dx,dy) in data coordinates (equivalent to WCS/CDELT)
-    reference_pixel : 2d ndarray
+    reference_pixel : ~'astropy.units.instance'
         The reference pixel (x,y) at which the reference coordinate is given (equivalent to WCS/CRPIX)
-    reference_coordinate : 2d ndarray
+    reference_coordinate : ~'astropy.units.instance'
         The data coordinate (x, y) as measured at the reference pixel (equivalent to WCS/CRVAL)
 
     Returns
     -------
-    out : ndarray
+    out : ~'astropy.units.instance'
         The  pixel coordinates (x,y) at that data coordinate.
 
     Examples
     --------
 
     """
-
+    
+    if not isinstance(scale or reference_pixel or reference_coordinate,
+                      u.Quantity):
+        raise ValueError("Must be astropy.units instance")
+    
+    if not isinstance(x or y, u.Quantity):
+        raise ValueError("Must be astropy.units instance")
     # TODO: Needs to check what coordinate system the data is given in
-    cdelt = np.array(scale)
-    crpix = np.array(reference_pixel)
-    crval = np.array(reference_coordinate)
+    cdelt = np.array(scale) * u.Unit(scale.unit)
+    crpix = np.array(reference_pixel) * u.Unit(reference_pixel.unit)
+    crval = np.array(reference_coordinate) * u.Unit(reference_coordinate.unit)
     # De-apply any tabular projections.l
     # coord = inv_proj_tan(coord)
 
     # note that crpix[] counts pixels starting at 1
-    pixelx = (x - crval[0]) / cdelt[0] + (crpix[1] - 1)
-    pixely = (y - crval[1]) / cdelt[1] + (crpix[1] - 1)
+    pixelx = ((x - crval[0]) / cdelt[0]) * u.pix + (crpix[1] - 1 * u.pix)
+    pixely = ((y - crval[1]) / cdelt[1]) * u.pix + (crpix[1] - 1 * u.pix)
 
     return pixelx, pixely
 

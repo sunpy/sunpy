@@ -473,25 +473,30 @@ Dimension:\t [%d, %d]
 
         size = self.shape[dim == 'x']  # 1 if dim == 'x', 0 if dim == 'y'.
 
-        return (value - self.center[dim]) / self.scale[dim] + ((size - 1) / 2.)
+        return (value - self.center[dim].value) / self.scale[dim].value + ((size.value - 1) / 2.) * u.pix
         
     def pixel_to_data(self, x=None, y=None):
         """Convert from pixel coordinates to data coordinates (e.g. arcsec)"""
         width = self.shape[1]
         height = self.shape[0]
 
-        if (x is not None) & (x > width-1):
+        if (x is not None) and (x.value > width.value-1):
             raise ValueError("X pixel value larger than image width (%s)." % width)
-        if (x is not None) & (y > height-1):
+        if (x is not None) and (y.value > height.value-1):
             raise ValueError("Y pixel value larger than image height (%s)." % height)
-        if (x is not None) & (x < 0):
+        if (x is not None) and (x.value < 0):
             raise ValueError("X pixel value cannot be less than 0.")
-        if (x is not None) & (y < 0):
+        if (x is not None) and (y.value < 0):
             raise ValueError("Y pixel value cannot be less than 0.")
 
-        scale = np.array([self.scale['x'], self.scale['y']])
-        crpix = np.array([self.reference_pixel['x'], self.reference_pixel['y']])
-        crval = np.array([self.reference_coordinate['x'], self.reference_coordinate['y']])
+        scale = np.array([self.scale['x'].value, self.scale['y'].value]) \
+                * u.Unit(self.scale['x'].unit)
+        crpix = np.array([self.reference_pixel['x'].value, 
+                          self.reference_pixel['y'].value]) \
+                * u.Unit(self.reference_pixel['x'].unit)
+        crval = np.array([self.reference_coordinate['x'].value, 
+                         self.reference_coordinate['y'].value]) \
+                * u.Unit(self.reference_coordinate['x'].unit)
         coordinate_system = [self.coordinate_system['x'], self.coordinate_system['y']]
         x,y = wcs.convert_pixel_to_data(self.shape, scale, crpix, crval, x = x, y = y)
 
@@ -584,7 +589,7 @@ Dimension:\t [%d, %d]
         return new_map
 
     def rotate(self, angle=None, rmatrix=None, order=3, scale=1.0,    #manually check if it works
-               image_center=None, recenter=False, missing=0.0, use_scipy=False):
+               image_center=(0,0), recenter=False, missing=0.0, use_scipy=False):
         """
         Returns a new rotated and rescaled map.  Specify either a rotation
         angle or a rotation matrix, but not both.  If neither an angle or a
@@ -673,10 +678,8 @@ Dimension:\t [%d, %d]
             s = np.sin(angle)
             rmatrix = np.matrix([[c, -s], [s, c]])
 
-        if image_center is None:
-            # FITS pixels  count from 1 (curse you, FITS!)
-            image_center = (self.shape[1] - self.reference_pixel['x'].value + 1,
-                            self.reference_pixel['y'].value)
+        # map_center is swapped compared to the x-y convention
+        array_center = (np.array(self.data.shape)-1)/2.0
 
         # rotation_center is swapped compared to the x-y convention
         if recenter:
@@ -731,14 +734,6 @@ Dimension:\t [%d, %d]
         if scale != 1.0:
             new_map.meta['cdelt1'] = self.scale['x'] / scale
             new_map.meta['cdelt2'] = self.scale['y'] / scale
-
-        if recenter:
-            # Move the reference pixel based on the image shift.
-            # The y coordinate is inverted due to the map having the origin in
-            # the lower left rather than the upper left.
-            shift = image_center - map_center
-            new_map.meta['crpix1'] += shift[0]
-            new_map.meta['crpix2'] -= shift[1]
 
         # Remove old CROTA kwargs because we have saved a new PCi_j matrix.
         new_map.meta.pop('CROTA1', None)

@@ -20,18 +20,42 @@ img = sunpy.map.Map(sunpy.AIA_171_IMAGE)
 
 wcs.wcs.rsun_meters = img.rsun_meters
 
-#def test_convert_pixel_to_data():
-#    actual =
-#    reference_pixel = [img.reference_pixel['x'], img.reference_pixel['y']]
-#    reference_coordinate = [img.reference_coordinate['x'], img.reference_coordinate['y']]
-#    scale = [img.scale['x'], img.scale['y']]
-#    actual = wcs.convert_pixel_to_data(scale,img.shape, reference_pixel, reference_coordinate, 0, 0)
+def test_convert_pixel_to_data():
+        scale = np.array([img.scale['x'].value, img.scale['y'].value]) \
+                * u.Unit(img.scale['x'].unit)
+        crpix = np.array([img.reference_pixel['x'].value, 
+                          img.reference_pixel['y'].value]) \
+                * u.Unit(img.reference_pixel['x'].unit)
+        crval = np.array([img.reference_coordinate['x'].value, 
+                         img.reference_coordinate['y'].value]) \
+                * u.Unit(img.reference_coordinate['x'].unit)
+        x = 40 * u.pix
+        y = 100 * u.pix
+        known_answer = [-1131, -987] * u.arcsec
+        result = wcs.convert_pixel_to_data(img.shape, scale, crpix, crval,x,y)
+        assert_array_almost_equal(result[0], known_answer[0], decimal = 0)
+        assert_array_almost_equal(result[1], known_answer[1], decimal = 0)
 
-
+def test_convert_data_to_pixel():
+        scale = np.array([img.scale['x'].value, img.scale['y'].value]) \
+                * u.Unit(img.scale['x'].unit)
+        crpix = np.array([img.reference_pixel['x'].value, 
+                          img.reference_pixel['y'].value]) \
+                * u.Unit(img.reference_pixel['x'].unit)
+        crval = np.array([img.reference_coordinate['x'].value, 
+                         img.reference_coordinate['y'].value]) \
+                * u.Unit(img.reference_coordinate['x'].unit)
+        x = -1131 * u.arcsec
+        y = -987 * u.arcsec
+        result = wcs.convert_data_to_pixel(x, y, scale, crpix, crval)
+        known_answer = [40, 100] * u.pix
+        assert_array_almost_equal(result[0], known_answer[0], decimal = 0)
+        assert_array_almost_equal(result[1], known_answer[1], decimal = 0)
+        
 def test_conv_hpc_hcc():
     coord = [40.0 * u.arcsec, 32.0 * u.arcsec]
     result = wcs.convert_hpc_hcc(coord[0], coord[1])
-    known_answer = [28748691 * u.meter, 22998953 * u.meter]
+    known_answer = [28748691, 22998953] * u.meter
     assert_allclose(result[0], known_answer[0], rtol=1e-2, atol=0)
     assert_allclose(result[1], known_answer[1], rtol=1e-2, atol=0)
 
