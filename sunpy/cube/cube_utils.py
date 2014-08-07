@@ -15,25 +15,25 @@ def orient(array, wcs):
     # This is mostly lifted from astropy's spectral cube.
     """
     Given a 3-d cube and a WCS, swap around the axes so that the
-    spectral axis cube is the first in Numpy notation, and the last in WCS
-    notation.
+    axes are in the correct order: the first in Numpy notation, and the last
+    in WCS notation.
 
     Parameters
     ----------
     array : `~numpy.ndarray`
-        The input 3-d array with two position dimensions and one spectral
+        The input 3- or 4-d array with two position dimensions and one spectral
         dimension.
     wcs : `~astropy.wcs.WCS`
-        The input 3-d WCS with two position dimensions and one spectral
+        The input 3- or 4-d WCS with two position dimensions and one spectral
         dimension.
     """
 
-    if array.ndim != 3:
-        raise ValueError("Input array must be 3-dimensional")
+    if array.ndim != 3 and array.ndim != 4:
+        raise ValueError("Input array must be 3- or 4-dimensional")
 
     if wcs.wcs.naxis != 3 and not (wcs.wcs.naxis == 4 and
                                    wcs.wcs.cname[-1][:9] == 'redundant'):
-        raise ValueError("Input WCS must be 3-dimensional")
+        raise ValueError("WCS must have the same dimensions as the array")
 
     axtypes = list(wcs.wcs.ctype)
 
@@ -121,10 +121,13 @@ def handle_slice_to_lightcurve(cube, item):
     item: int or slice object or tuple of these
         The slice to make
     '''
-    if iter_isinstance(item, slice, int, int):
-        lightc = cube.slice_to_lightcurve(item[1], item[2])
+    if cube.data.ndim == 3:
+        if iter_isinstance(item, slice, int, int):
+            lightc = cube.slice_to_lightcurve(item[1], item[2])
+        else:
+            lightc = cube.slice_to_lightcurve(item[1])
     else:
-        lightc = cube.slice_to_lightcurve(item[1])
+        
     return lightc
 
 
@@ -138,13 +141,33 @@ def handle_slice_to_map(cube, item):
     cube: sunpy.cube.Cube
         The cube to slice
     item: int or slice object or tuple of these
-        The slice to make
+        The slice to convert
     '''
-    if isinstance(item, int):
-        gmap = cube.slice_to_map(item)
+    if cube.data.ndim == 3:
+        if isinstance(item, int):
+            gmap = cube.slice_to_map(item)
+        else:
+            gmap = cube.slice_to_map(item[0])
     else:
-        gmap = cube.slice_to_map(item[0])
+        gmap = cube.slice_to_map(item[0], item[1])
     return gmap
+
+
+def handle_slice_to_cube(hypcube, item):
+    '''
+    Given a hypercube and a getitem argument, with the knowledge that the slice
+    represents a 3D cube, return the cube that corresponds to that slice.
+
+    Parameters
+    ----------
+    hypcube: sunpy.cube.Cube
+        The 4D hypercube to slice
+    item: int or slice, or tuple of these
+        The slice to convert
+    '''
+    chunk = [i for i in item if isinstance(i, int)][0]
+    axis = item.index(chunk)
+    return hypcube.slice_to_cube(axis, chunk)
 
 
 def reduce_dim(cube, axis, keys):
@@ -188,6 +211,112 @@ def reduce_dim(cube, axis, keys):
     return newcube
 
 
+def getitem_3d(cube, item):
+    '''
+    Handles Cube's __getitem__ method for 3-dimensional cubes.
+
+    Parameters
+    ----------
+    cube: sunpy.cube object
+        The cube to get the item from
+    item: int, slice object, or tuple of these
+        The item to get from the cube
+    '''
+    axes = cube.axes_wcs.wcs.ctype
+    slice_to_map = (axes[-2] != 'WAVE' and
+                    (isinstance(item, int) or
+                     iter_isinstance(item, int, slice) or
+                     iter_isinstance(item, int, slice, slice)))
+    slice_to_spectrum = (((isinstance(item, int) or
+                           iter_isinstance(item, int, slice) or
+                           iter_isinstance(item, int, slice, slice) or
+                           iter_isinstance(item, int, slice, int))
+                          and axes[-2] == 'WAVE')
+                         or (axes[-1] == 'WAVE' and
+                             iter_isinstance(item, slice, int, int)))
+    slice_to_spectrogram = (iter_isinstance(item, slice, slice, int)
+                            and axes[-2] == 'WAVE')
+    slice_to_lightcurve = (axes[-2] == 'WAVE' and
+                           (iter_isinstance(item, slice, int, int)
+                            or iter_isinstance(item, slice, int)
+                            or iter_isinstance(item, slice, int, slice)))
+    stay_as_cube = (isinstance(item, slice) or
+                    (isinstance(item, tuple) and
+                     not any(isinstance(i, int) for i in item)))
+
+    reducedcube = reduce_dim(cube, 0, slice(None, None, None))
+    if isinstance(item, tuple):
+        for i in range(len(item)):
+            if isinstance(item[i], slice):
+                reducedcube = reduce_dim(reducedcube, i, item[i])
+
+    if slice_to_map:
+        result = handle_slice_to_map(reducedcube, item)
+    elif slice_to_spectrum:
+        result = handle_slice_to_spectrum(reducedcube, item)
+    elif slice_to_spectrogram:
+        result = reducedcube.slice_to_spectrogram(item[2])
+    elif slice_to_lightcurve:
+        result = handle_slice_to_lightcurve(reducedcube, item)
+    elif stay_as_cube:
+        result = reducedcube
+    else:
+        result = cube.data[item]
+    return result
+
+
+def getitem_4d(cube, item):
+    '''
+    Handles Cube's __getitem__ method for 4-dimensional hypercubes.
+
+    Parameters
+    ----------
+    cube: sunpy.cube object
+        The cube to get the item from
+    item: int, slice object, or tuple of these
+        The item to get from the cube
+    '''
+    slice_to_map = (iter_isinstance(item, int, int) or
+                    iter_isinstance(item, int, int, slice) or
+                    iter_isinstance(item, int, int, slice, slice))
+    slice_to_spectrogram = iter_isinstance(item, slice, slice, int, int)
+    slice_to_spectrum = (iter_isinstance(item, int, slice, int, int) or
+                         iter_isinstance(item, int, slice, int) or
+                         iter_isinstance(item, int, slice, int, slice) or
+                         iter_isinstance(item, int, slice, slice, int))
+    slice_to_cube = (isinstance(item, int) or
+                     (isinstance(item, tuple) and
+                      len([i for i in item if isinstance(i, int)]) == 1))
+    slice_to_lightcurve = (iter_isinstance(item, slice, int, int, int) or
+                           iter_isinstance(item, slice, int, int) or
+                           iter_isinstance(item, slice, int, int, slice) or
+                           iter_isinstance(item, slice, int, slice, int))
+    stay_as_hypercube = (isinstance(item, slice) or
+                         (isinstance(item, tuple) and
+                          not any(isinstance(i, int) for i in item)))
+    reducedcube = reduce_dim(cube, 0, slice(None, None, None))
+    if isinstance(item, tuple):
+        for i in range(len(item)):
+            if isinstance(item[i], slice):
+                reducedcube = reduce_dim(reducedcube, i, item[i])
+
+    if slice_to_map:
+        result = handle_slice_to_map(reducedcube, item)
+    elif slice_to_spectrum:
+        result = handle_slice_to_spectrum(reducedcube, item)
+    elif slice_to_spectrogram:
+        result = reducedcube.slice_to_spectrogram(item[2], item[3])
+    elif slice_to_lightcurve:
+        result = handle_slice_to_lightcurve(reducedcube, item)
+    elif slice_to_cube:
+        result = handle_slice_to_cube(reducedcube, item)
+    elif stay_as_hypercube:
+        result = reducedcube
+    else:
+        result = cube.data[item]
+    return result
+
+
 class CubeError(Exception):
     '''
     Class for handling Cube errors.
@@ -195,11 +324,12 @@ class CubeError(Exception):
     errors = {0: 'Unspecified error',
               1: 'Time dimension not present',
               2: 'Spectral dimension not present',
-              3: 'Insufficient spatial dimensions'}
+              3: 'Insufficient spatial dimensions',
+              4: 'Dimension error'}
 
     def __init__(self, value, msg):
+        Exception.__init__(self, msg)
         self.value = value
-        self.message = msg
 
     def __str__(self):
         return 'ERROR ' + repr(self.value) + ' (' \

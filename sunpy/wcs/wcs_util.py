@@ -2,7 +2,7 @@
 # Author: Mateo Inchaurrandieta <mateo.inchaurrandieta@gmail.com>
 # pylint: disable=E1101
 '''Miscellaneous WCS utilities'''
-from astropy.wcs import WCS
+from sunpy.wcs.wcs import WCS
 import numpy as np
 from astropy.wcs._wcs import InconsistentAxisTypesError
 import re
@@ -15,7 +15,7 @@ def reindex_wcs(wcs, inds):
 
     Parameters
     ----------
-    wcs: astropy.wcs.WCS
+    wcs: sunpy.wcs.wcs.WCS
         The WCS to be manipulated
     inds: np.array(dtype='int')
         The indices of the array to keep in the output.
@@ -63,7 +63,7 @@ def add_celestial_axis(wcs):
 
     Parameters
     ----------
-    wcs: astropy.wcs.WCS object
+    wcs: sunpy.wcs.wcs.WCS object
         The world coordinate system to add an axis to.
     '''
     outwcs = WCS(naxis=wcs.naxis + 1)

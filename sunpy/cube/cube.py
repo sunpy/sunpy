@@ -26,6 +26,7 @@ from sunpy.lightcurve import LightCurve
 from sunpy.spectra.spectrum import Spectrum
 from sunpy.spectra.spectrogram import Spectrogram
 from sunpy.cube import cube_utils as cu
+from sunpy.wcs import wcs_util as wu
 
 __all__ = ['Cube']
 
@@ -57,7 +58,7 @@ class Cube(astropy.nddata.NDData):
                                        **kwargs)
         self.axes_wcs = wcs
         # We don't send this to NDData because it's not
-        # supported as of astropy 0.3.2. Eventually we will.
+        # supported as of astropy 0.4. Eventually we will.
         # Also it's called axes_wcs because wcs belongs to astropy.nddata and
         # that messes up slicing.
 
@@ -194,8 +195,8 @@ class Cube(astropy.nddata.NDData):
 
         return arr
 
-    def slice_to_map(self, chunk, *args, **kwargs):
-        # TODO: implement slice-by-float functionality
+    def slice_to_map(self, chunk, snd_dim=None, *args, **kwargs):
+        # TODO: make this take quantities
         '''
         Converts a given frequency chunk to a SunPy Map. Extra parameters are
         passed on to Map.
@@ -207,19 +208,31 @@ class Cube(astropy.nddata.NDData):
             then it will return that single-slice map, otherwise it will
             aggregate the given range.
         '''
-        if self.axes_wcs.wcs.ctype[-2] == 'WAVE':
+        if self.axes_wcs.wcs.ctype[-2] == 'WAVE' and self.data.ndim == 3:
             error = "Cannot construct a map with only one spatial dimension"
             raise cu.CubeError(3, error)
 
         if isinstance(chunk, tuple):
-            maparray = self.data[chunk[0]:chunk[1], :, :].sum(0)
+            maparray = self.data[chunk[0]:chunk[1]].sum(0)
         else:
-            maparray = self.data[chunk, :, :]
+            maparray = self.data[chunk]
+
+        if self.data.ndim == 4:
+            if snd_dim is None:
+                error = "snd_dim must be given when slicing hypercubes"
+                raise cu.CubeError(4, error)
+
+            if isinstance(snd_dim, tuple):
+                maparray = maparray[snd_dim[0]:snd_dim[1]].sum(0)
+            else:
+                maparray = maparray[snd_dim]
+
         mapheader = MapMeta(self.meta)
         gmap = GenericMap(data=maparray, header=mapheader, *args, **kwargs)
         return gmap
 
-    def slice_to_lightcurve(self, wavelength, y_coord=None):
+    def slice_to_lightcurve(self, wavelength, y_coord=None, x_coord=None):
+        # TODO: make this take quantities
         '''
         For a time-lambda-y cube, returns a lightcurve with curves at the
         specified wavelength and given y-coordinate. If no y is given, all of
@@ -231,6 +244,7 @@ class Cube(astropy.nddata.NDData):
             The wavelength to take the y-coordinates from
         y_coord: int, optional
             The y-coordinate to take the lightcurve from.
+        x_coord: in
         '''
         if self.axes_wcs.wcs.ctype[-1] not in ['TIME', 'UTC']:
             raise cu.CubeError(1,
@@ -244,6 +258,7 @@ class Cube(astropy.nddata.NDData):
         return LightCurve(data=data, meta=self.meta)
 
     def slice_to_spectrum(self, fst_coord, snd_coord):
+        # TODO: make this take quantities
         '''
         For a cube containing a spectral dimension, returns a sunpy spectrum.
         The given coordinates represent which values to take. If they are None,
@@ -277,22 +292,30 @@ class Cube(astropy.nddata.NDData):
         freq_axis = self.freq_axis()
         return Spectrum(np.array(data), np.array(freq_axis))
 
-    def slice_to_spectrogram(self, y_coord, **kwargs):
-        # TODO: make this not take only an int.
+    def slice_to_spectrogram(self, y_coord, x_coord=None, **kwargs):
+        # TODO: make this take quantities
         '''
         For a time-lambda-y cube, given a y-coordinate, returns a sunpy
         spectrogram. Keyword arguments are passed on to Spectrogram's __init__.
+
         Parameters
         ----------
         y_coord: int
             The y-coordinate to pick when converting to a spectrogram.
+        x_coord: int
+            The x-coordinate to pick. This is only used for hypercubes.
         '''
         if self.axes_wcs.wcs.ctype[-1] not in ['TIME', 'UTC']:
             raise cu.CubeError(1,
                                'Cannot create a spectrogram with no time axis')
         if self.axes_wcs.wcs.ctype[-2] != 'WAVE':
             raise cu.CubeError(2, 'A spectral axis is needed in a spectrogram')
-        data = self.data[:, :, y_coord]
+        if self.data.ndim == 3:
+            data = self.data[:, :, y_coord]
+        else:
+            if x_coord is None:
+                raise cu.CubeError(4, 'An x-coordinate is needed for 4D cubes')
+            data = self.data[:, :, y_coord, x_coord]
         time_axis = self.time_axis()
         freq_axis = self.freq_axis()
 
@@ -314,6 +337,37 @@ class Cube(astropy.nddata.NDData):
             end = start + lapse
         return Spectrogram(data=data, time_axis=time_axis, freq_axis=freq_axis,
                            start=start, end=end, **kwargs)
+
+    def slice_to_cube(self, axis, chunk, **kwargs):
+        # TODO: make this take quantities
+        '''
+        For a hypercube, return a 3-D cube that has been cut along the given
+        axis and with data corresponding to the given chunk.
+
+        Parameters
+        ----------
+        axis: int
+            The axis to cut from the hypercube
+        chunk: int or tuple:
+            The data to take from the axis
+        '''
+        if self.data.ndim == 3:
+            raise cu.CubeError(4, 'Can only slice a hypercube into a cube')
+
+        item = [slice(None, None, None) for _ in range(4)]
+        if isinstance(chunk, int):
+            item[axis] = chunk
+            newdata = self.data[item]
+        else:
+            item[axis] = slice(chunk[0], chunk[1], None)
+            newdata = self.data[item].sum(axis)
+        wcs_indices = [0, 1, 2, 3]
+        wcs_indices.remove(3 - axis)
+        newwcs = wu.reindex_wcs(self.axes_wcs, wcs_indices)
+        if axis == 2 or axis == 3:
+            newwcs = wu.add_celestial_axis(newwcs)
+        cube = Cube(newdata, newwcs, self.meta, **kwargs)
+        return cube
 
     def time_axis(self):
         '''
@@ -348,44 +402,7 @@ class Cube(astropy.nddata.NDData):
     def __getitem__(self, item):
         if item is None or (isinstance(item, tuple) and None in item):
             raise IndexError("None indices not supported")
-        axes = self.axes_wcs.wcs.ctype
-        slice_to_map = (axes[-2] != 'WAVE' and
-                        (isinstance(item, int) or
-                         cu.iter_isinstance(item, int, slice) or
-                         cu.iter_isinstance(item, int, slice, slice)))
-        slice_to_spectrum = (((isinstance(item, int) or
-                               cu.iter_isinstance(item, int, slice) or
-                               cu.iter_isinstance(item, int, slice, slice) or
-                               cu.iter_isinstance(item, int, slice, int))
-                              and axes[-2] == 'WAVE')
-                             or (axes[-1] == 'WAVE' and
-                                 cu.iter_isinstance(item, slice, int, int)))
-        slice_to_spectrogram = (cu.iter_isinstance(item, slice, slice, int)
-                                and axes[-2] == 'WAVE')
-        slice_to_lightcurve = (axes[-2] == 'WAVE' and
-                               (cu.iter_isinstance(item, slice, int, int)
-                                or cu.iter_isinstance(item, slice, int)
-                                or cu.iter_isinstance(item,
-                                                      slice, int, slice)))
-        stay_as_cube = (isinstance(item, slice) or
-                        (isinstance(item, tuple) and
-                         not any(isinstance(i, int) for i in item)))
-
-        reducedcube = cu.reduce_dim(self, 0, slice(None, None, None))
-        if isinstance(item, tuple):
-            for i in range(len(item)):
-                if isinstance(item[i], slice):
-                    reducedcube = cu.reduce_dim(reducedcube, i, item[i])
-
-        if slice_to_map:
-            return cu.handle_slice_to_map(reducedcube, item)
-        elif slice_to_spectrum:
-            return cu.handle_slice_to_spectrum(reducedcube, item)
-        elif slice_to_spectrogram:
-            return reducedcube.slice_to_spectrogram(item[2])
-        elif slice_to_lightcurve:
-            return cu.handle_slice_to_lightcurve(reducedcube, item)
-        elif stay_as_cube:
-            return reducedcube
+        if self.data.ndim == 3:
+            return cu.getitem_3d(self, item)
         else:
-            return self.data[item]
+            return cu.getitem_4d(self, item)
