@@ -145,9 +145,11 @@ class GenericClient(object):
 
     def download_legacy(self, timerange, path=None, callback=None, errback=None):
         """
-        Aims to provide a simple way for downloading data by passing attribute usage.
-        Input:
-        timerange: Time-range over which to download data.
+        Download required data using keyword arguements.
+        
+	Parameters
+	----------
+	timerange: Time-range over which to download data.
         path: Defaults to None in which case path used is one defined in sunpyrc file.
         callback: Function to be invoked at completion of download successfully.
         errorback: Function to be called when error is thrown during download.

@@ -8,10 +8,13 @@ __all__ = ['LYRAClient']
 class LYRAClient(GenericClient):
     def _get_url_for_timerange(self, timerange, **kwargs):
         """
-        Helper function:
-        Input:
-        timerange: Time-range over which data is to be downloaded
-        Output: List of urls
+        Returns list of URLS corresponding to TimeRange.
+        Parameters
+	----------
+        timerange: TimeRange for which data is to be downloaded.
+        Returns
+	-------
+	List of urls
         """
         if not timerange:
             return []
@@ -23,7 +26,16 @@ class LYRAClient(GenericClient):
         return urls
 
     def _get_url_for_date(self, date, **kwargs):
-        """Returns a URL to the LYRA data for the specified date"""
+        """
+        Return URL for corresponding date.
+	Parameters
+	----------
+	date : datetime 
+
+        Returns
+	-------
+	string representing URL
+	"""
         if not isinstance(date, datetime.date):
             raise ValueError("This method requires a date")
         filename = "lyra_%s000000_lev%d_%s.fits" % (date.strftime('%Y%m%d-'), 2, 'std')
