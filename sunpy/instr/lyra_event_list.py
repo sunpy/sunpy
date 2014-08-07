@@ -32,7 +32,7 @@ NORM = 0.001
 LYTAF_REMOTE_PATH = "http://proba2.oma.be/lyra/data/lytaf/"
 LYTAF_PATH = config.get("downloads", "download_dir")
 
-def lyra_event_list(start_date, end_date, lytaf_path=LYTAF_PATH,
+def make_lyra_flare_list(start_date, end_date, lytaf_path=LYTAF_PATH,
                     return_timeseries=False):
     """
     Returns a LYRA flare list based on an input start and end time.
@@ -80,7 +80,7 @@ def lyra_event_list(start_date, end_date, lytaf_path=LYTAF_PATH,
 
     Examples
     --------
-    >>> lyra_events = lyra_event_list('2014-08-01 00:00', '2014-08-01 12:00')
+    >>> lyra_events = make_lyra_flare_list('2014-08-01', '2014-08-02')
 
     """
     # Create LYRALightCurve object from start and end times
@@ -93,14 +93,14 @@ def lyra_event_list(start_date, end_date, lytaf_path=LYTAF_PATH,
     time = lyralc.data.index.to_pydatetime()
     flux = np.asanyarray(lyralc.data["CHANNEL4"])
     # Create LYRA event list
-    lyra_events = find_lyra_events(time, flux, lytaf_path=lytaf_path)
+    lyra_events = find_lyra_flares(time, flux, lytaf_path=lytaf_path)
     # Return result
     if return_timeseries == True:
         return lyra_events, time, flux
     else:
         return lyra_events
 
-def find_lyra_events(time, flux, lytaf_path=LYTAF_PATH):
+def find_lyra_flares(time, flux, lytaf_path=LYTAF_PATH):
     """
     Finds events in a times series satisfying LYRA event definitions.
 
@@ -370,7 +370,7 @@ def remove_lyra_artifacts(time, fluxes=None, artifacts="All",
         found, removed, etc. from the time series.
         artifact_status["lytaf"] = artifacts found : numpy recarray
             The full LYRA annotation file for the time series time range
-            output by extract_combined_lytaf().
+            output by get_lytaf_events().
         artifact_status["removed"] = artifacts removed : numpy recarray
             Artifacts which were found and removed from from time series.
         artifact_status["not_removed"] = artifacts found but not removed :
@@ -401,7 +401,7 @@ def remove_lyra_artifacts(time, fluxes=None, artifacts="All",
     clean_fluxes = copy.deepcopy(fluxes)
     artifacts_not_found =[]
     # Get LYTAF file for given time range
-    lytaf = extract_combined_lytaf(time[0], time[-1], lytaf_path=lytaf_path)
+    lytaf = get_lytaf_events(time[0], time[-1], lytaf_path=lytaf_path)
     
     # Find events in lytaf which are to be removed from time series.
     if artifacts == "All":
@@ -508,7 +508,7 @@ def remove_lyra_artifacts(time, fluxes=None, artifacts="All",
         else:
             return clean_time, clean_fluxes
 
-def extract_combined_lytaf(start_time, end_time, lytaf_path=LYTAF_PATH,
+def get_lytaf_events(start_time, end_time, lytaf_path=LYTAF_PATH,
                            combine_files=["lyra", "manual", "ppt", "science"],
                            csvfile=None):
     """
@@ -750,7 +750,7 @@ def _prep_columns(time, fluxes, filecolumns):
 
     return string_time, filecolumns
 
-def testing_find_lyra_events(find_events=False):
+def testing_find_lyra_flares(find_events=False):
     fitspath = "/Users/danielr/pro/data/LYRA/fits/"
     #fitsname = "lyra_20100201-000000_lev3_std.fits"
     #fitsname = "lyra_20100301-000000_lev3_std.fits"
@@ -820,7 +820,7 @@ def testing_find_lyra_events(find_events=False):
     if find_events is False:
         return orig_time, orig_flux, time, flux, artifacts
     else:
-        ev = find_lyra_events(time, flux)
+        ev = find_lyra_flares(time, flux)
         ind = []
         start_ind = []
         end_ind = []
@@ -836,13 +836,13 @@ def testing_find_lyra_events(find_events=False):
         return orig_time, orig_flux, time, flux, artifacts, ev, ind
 
 def test_cal():
-    lla = extract_combined_lytaf("2010-03-01", "2014-07-01",
+    lla = get_lytaf_events("2010-03-01", "2014-07-01",
                                  combine_files=["lyra"])
     ical = np.where(lla["event_type"] == u'Calibration')[0]
     fitspath = "../data/LYRA/fits/"
     i=0
     st = lla["end_time"][ical[i]]
-    lytaf = extract_combined_lytaf(
+    lytaf = get_lytaf_events(
         "{0}-{1}-{2} 00:00".format(
             st.year, st.strftime('%m'), st.strftime('%d')),
             "{0}-{1}-{2} 23:59".format(
