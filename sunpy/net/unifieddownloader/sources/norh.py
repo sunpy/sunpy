@@ -8,10 +8,13 @@ class NoRHClient(GenericClient):
 
     def _get_url_for_timerange(self, timerange, **kwargs):
         """
-        Helper function:
-        Input:
-        timerange: Time-range over which data is to be downloaded
-        Output: List of urls
+        Returns list of URLS corresponding to TimeRange.
+        Parameters
+	----------
+        timerange: TimeRange for which data is to be downloaded.
+        Returns
+	-------
+	List of urls
         """
         if not timerange:
             return []
@@ -23,8 +26,15 @@ class NoRHClient(GenericClient):
         return urls
 
     def _get_url_for_date(self, date, **kwargs):
-        """This method retrieves the url for NoRH correlation data for the given date."""
+        """Return URL for corresponding date.
+	Parameters
+	----------
+	date : datetime 
 
+        Returns
+	-------
+	string representing URL
+        """
         # Hack to get around Python 2.x not backporting PEP 3102.
         wavelength = kwargs.pop('wavelength', None)
 
