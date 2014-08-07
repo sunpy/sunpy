@@ -265,7 +265,7 @@ class MapCube(object):
         """
         If all the map shapes are the same, their image data is copied
         into a single single ndarray. The ndarray is ordered as (ny, nx, nt).
-        Otherwise, an error is thrown.
+        Otherwise, a ValueError is thrown.
         """
         if self.all_maps_same_shape():
             return np.swapaxes(np.swapaxes(np.asarray([m.data for m in self.maps]), 0, 1).copy(), 1, 2).copy()
