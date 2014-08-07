@@ -257,7 +257,7 @@ class Cube(astropy.nddata.NDData):
             data = data[:, y_coord]
         return LightCurve(data=data, meta=self.meta)
 
-    def slice_to_spectrum(self, fst_coord, snd_coord):
+    def slice_to_spectrum(self, *coords):
         # TODO: make this take quantities
         '''
         For a cube containing a spectral dimension, returns a sunpy spectrum.
@@ -278,16 +278,26 @@ class Cube(astropy.nddata.NDData):
             raise cu.CubeError(2, 'Spectral axis needed to create a spectrum')
         axis = 0 if self.axes_wcs.wcs.ctype[-1] == 'WAVE' else 1
 
+        item = range(len(coords))
         if axis == 0:
-            data = self.data[:, fst_coord, snd_coord]
+            item[1:] = coords
+            item[0] = slice(None, None, None)
+            item = map((lambda x: slice(None, None, None) if x is None else x),
+                       item)
         else:
-            data = self.data[fst_coord, :, snd_coord]
+            item[0] = coords[0]
+            item[1] = slice(None, None, None)
+            item = map((lambda x: slice(None, None, None) if x is None else x),
+                       item)
 
-        if snd_coord is None:
-            data = data.sum(axis=2)
-        if fst_coord is None:
-            sumaxis = 1 if axis == 0 else 0
-            data = data.sum(axis=sumaxis)
+        data = self.data[item]
+        for i in range(len(coords)):
+            if coords[i] is None:
+                if i == 0:
+                    sumaxis = 1 if axis == 0 else 0
+                else:
+                    sumaxis = i
+                data = data.sum(axis=sumaxis)
 
         freq_axis = self.freq_axis()
         return Spectrum(np.array(data), np.array(freq_axis))

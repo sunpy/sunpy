@@ -97,14 +97,23 @@ def handle_slice_to_spectrum(cube, item):
     item: int or slice object or tuple of these
         The slice to make
     '''
-    if isinstance(item, int):
-        spec = cube.slice_to_spectrum(item, None)
-    elif iter_isinstance(item, int, slice, int):
-        spec = cube.slice_to_spectrum(item[0], item[2])
-    elif iter_isinstance(item, slice, int, int):
-        spec = cube.slice_to_spectrum(item[1], item[2])
+    if cube.data.ndim == 3:
+        if isinstance(item, int):
+            spec = cube.slice_to_spectrum(item, None)
+        elif iter_isinstance(item, int, slice, int):
+            spec = cube.slice_to_spectrum(item[0], item[2])
+        elif iter_isinstance(item, slice, int, int):
+            spec = cube.slice_to_spectrum(item[1], item[2])
+        else:
+            spec = cube.slice_to_spectrum(item[0], None)
     else:
-        spec = cube.slice_to_spectrum(item[0], None)
+        if iter_isinstance(item, int, slice, int, int):
+            spec = cube.slice_to_spectrum(item[0], item[2], item[3])
+        elif (iter_isinstance(item, int, slice, int, slice) or
+              iter_isinstance(item, int, slice, int)):
+            spec = cube.slice_to_spectrum(item[0], item[2], None)
+        elif iter_isinstance(item, int, slice, slice, int):
+            spec = cube.slice_to_spectrum(item[0], None, item[3])
     return spec
 
 
@@ -127,7 +136,7 @@ def handle_slice_to_lightcurve(cube, item):
         else:
             lightc = cube.slice_to_lightcurve(item[1])
     else:
-        
+        lightc = None
     return lightc
 
 
