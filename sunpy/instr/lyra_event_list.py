@@ -705,51 +705,33 @@ def _check_datetime(time):
                             "DatetimeIndexes.")
     return new_time
 
-def _prep_columns(time, fluxes, filecolumns):
+def _prep_columns(time, channels, filecolumns):
     """
     Checks and prepares data to be written out to a file.
 
     Firstly, this function converts the elements of time, whose entries are
     assumed to be datetime objects, to time strings.  Secondly, it checks
     whether the number of elements in an input list of columns names,
-    filecolumns, is equal to the number of arrays in the list, fluxes.  If not,
-    a Value Error is raised.  If however filecolumns equals None, a filenames
-    list is generated equal to ["time", "fluxes0", "fluxes1",...,"fluxesN"]
-    where N is the number of arrays in the list, fluxes
-    (assuming 0-indexed counting).
+    filecolumns, is equal to the number of arrays in the list, channels.  If not,
+    a Value Error is raised.
 
     """
     # Convert time which contains datetime objects to time strings.
-    string_time = np.empty(len(time), dtype="S26")
-    for i, t in enumerate(time):
-        string_time[i] = t.strftime("%Y-%m-%dT%H:%M:%S.%f")
-
-    # If filenames is given...
-    if filecolumns != None:
-        # ...check all the elements are strings...
-        if all(isinstance(column, str) for column in filecolumns) is False:
-            raise TypeError("All elements in filecolumns must by strings.")
-        # ...and that there are the same number of elements as there
-        # are arrays in fluxes, plus 1 for a time array.  Otherwise
-        # raise a ValueError.
-        if fluxes != None:
-            ncol = 1 + len(fluxes)
-        else:
-            ncol = 1
-        if len(filecolumns) != ncol:
-            raise ValueError("Number of elements in filecolumns must be "
-                             "equal to the number of input data arrays, "
-                             "i.e. time + elements in fluxes.")
-    # If filenames not given, create a list of columns names of the
-    # form: ["time", "fluxes0", "fluxes1",...,"fluxesN"] where N is the
-    # number of arrays in fluxes (assuming 0-indexed counting).
+    string_time = np.array([t.strftime("%Y-%m-%dT%H:%M:%S.%f") for t in time])
+    # Check all the elements of filenames are strings...
+    if all(isinstance(column, str) for column in filecolumns) is False:
+        raise TypeError("All elements in filecolumns must by strings.")
+    # Check filecolumns have the same number of elements as there are
+    # arrays in channels, plus 1 for a time array.  Otherwise raise a
+    # ValueError.
+    if channels != None:
+        ncol = 1 + len(channels)
     else:
-        if fluxes != None:
-            filecolumns = ["flux{0}".format(fluxnum)
-                           for fluxnum in range(len(fluxes))]
-            filecolumns.insert(0, "time")
-        else:
-            filecolumns = ["time"]
+        ncol = 1
+    if len(filecolumns) != ncol:
+        raise ValueError("Number of elements in filecolumns must be equal to "
+                         "the number of input data arrays, "
+                         "i.e. time + channels.")
 
     return string_time, filecolumns
 
