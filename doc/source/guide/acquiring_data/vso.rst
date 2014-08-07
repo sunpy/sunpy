@@ -1,14 +1,13 @@
-------------
-Getting data
-------------
+-----------------------------
+Downloading Data from the VSO
+-----------------------------
 
 The main interface which SunPy provides to search for and download data is provided by
-SunPy VSO module. This module provides an interface to the 
+SunPy's VSO module. This module provides an interface to the 
 `Virtual Solar Observatory (VSO) <http://virtualsolar.org>`_
-is a service which presents a
-homogenoeous interface to heterogeneous data-sets and services.  Using
-the VSO, a user can query multiple data providers simultaneously, and
-then download the relevant data.  SunPy uses the VSO through the ``vso``
+which is a service which presents a homogenoeous interface to heterogeneous 
+data-sets and services.  Using the VSO, a user can query multiple data providers 
+simultaneously, and then download the relevant data.  SunPy uses the VSO through the ``vso``
 module, which was developed through support from the `European Space
 Agency Summer of Code in Space (ESA-SOCIS) 2011 
 <http://sophia.estec.esa.int/socis2011/>`_.
@@ -23,29 +22,35 @@ SunPy's VSO module is in ``sunpy.net``.  It can be imported as follows:
 
 This creates your client object. Obtaining data via the VSO is a two-stage process.  
 You first ask the VSO to find the data you want.  The VSO
-queries various data-providers looking for your data.  After that you choose the data
-you want to download, if there is any data that matches your
-request.  The VSO client handles the particulars of how the data from
+queries various data-providers looking for your data. If there is any data 
+that matches your request, you choose the data you want to download.
+The VSO client handles the particulars of how the data from
 the data provider is downloaded to your computer.
 
 Searching the VSO
 -----------------
 
-The vso module can be used in two different ways, an advanced 
-query style and a simpler one based on the 
-`SSWIDL's VSO query client <http://docs.virtualsolar.org/wiki/VsoIDL>`_, `vso_search.pro <http://docs.virtualsolar.org/wiki/VsoIDL/VsoSearch>`_ (simple).
+To search the VSO, your query needs at minimum a start time, an end
+time, and an instrument.  Two styles of constructing the query are
+supported by SunPy's VSO module.  The first style is very flexible, as
+it allows users to issue complex queries in a single command.  This
+query style is described below.
 
-To search the VSO, you need at least a start time and end time, 
-and an instrument. Different examples are shown in the following sections.
-We will first cover the advanced style. You can skip to the simpler style below.
+The second query style - known as the ``legacy query`` is useful for
+making quick VSO queries, and is based on the function call to
+`SSWIDL's VSO query client <http://docs.virtualsolar.org/wiki/VsoIDL>`_.
 
-Advanced Query
-^^^^^^^^^^^^^^
+The section below first describe the more flexible query style.  The
+next section then describes the legacy query.  The final section
+describes how to download data from those query results.
+
+Constructing a Query
+^^^^^^^^^^^^^^^^^^^^
 
 Let's start with a very simple query.  We could ask for all SOHO/EIT 
 data between January 1st and 2nd, 2001.
 
-    >>> qr = client.query(vso.attrs.Time('2001/1/1', '2001/1/2'), vso.attrs.Instrument('eit'))
+    >>> qr = client.query(vso.attrs.Time('2001/1/1', '2001/1/2'), vso.attrs.Instrument('eit'), vso.attrs.Wave(142*u.AA, 123*u.AA))
 
 The variable ``qr`` is a Python list of
 response objects, each one of which is a record found by the VSO. You can find how many
@@ -71,7 +76,18 @@ can be used to specify dates and time).  The second argument:
 
     ``vso.attrs.Instrument('eit')``
 
-sets the instrument we are looking for.  So what is going on here?
+sets the instrument we are looking for. The third argument: 
+
+    ``vso.attrs.Wave(142*u.AA, 123*u.AA)``
+
+sets the values for wavelength i.e, for wavemax(maximum value) and 
+similarly wavemin(for minimum value) for the query. Also the ``u.AA``
+part comes from ``astropy.units.Quantity`` where `AA` is Angstrom. It 
+should be noted that specifying spectral units in arugements is 
+necessary or an error will be raised. To know more check
+`astropy.units <https://astropy.readthedocs.org/en/stable/units/index.html>`_. 
+
+So what is going on here?
 The notion is that a VSO query has a set of attribute objects -
 described in ``vso.attrs`` - that are specifed to construct the query.
 For the full list of vso attributes, use
@@ -110,16 +126,16 @@ Each of the arguments in this query style can be thought of as
 setting conditions that the returned records must satisfy.  You can
 set the wavelength; for example, to return the 171 Angstrom EIT results
 
-    >>> qr=client.query(vso.attrs.Time('2001/1/1', '2001/1/2'), vso.attrs.Instrument('eit'), vso.attrs.Wave(171,171) )
+    >>> qr=client.query(vso.attrs.Time('2001/1/1', '2001/1/2'), vso.attrs.Instrument('eit'), vso.attrs.Wave(171*u.AA,171*u.AA) )
     >>> qr.num_records()
     4
 
-Simple Query
-^^^^^^^^^^^^
+Using the Legacy Query Style
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-If you just need to do a quick query or don't want to do anything too complicated you
-can use the simple query. Let's show now how the first example is executed with the 
-legacy mode.
+If you just need to do a quick query or don't want to do anything too
+complicated you can use the legacy query style. Here is the first
+example from the above section executed using a legacy query.
 
 As before,  we want EIT data between 2001/01/01 and 2001/01/02
 

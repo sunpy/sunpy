@@ -1,4 +1,3 @@
-
 =================
 Developer's Guide
 =================
@@ -235,8 +234,7 @@ your changes are complete and they are ready to be added to the main SunPy repo.
 All contributed code to SunPy must be submitted as a "pull request". To do this go to the github
 website and to your repo (remember to select the branch) then click on the "Pull
 Request" button (in the upper right hand corner next to the Fork button which you've
-used before). All initial pull requests must be done to the staging branch of sunpy 
-(NEVER TO THE MAIN BRANCH!). The staging branch is used as a test bed for new code. 
+used before). All initial pull requests must be made to the master branch unless they are a fix for specific version.
 This will submit your code to a review. You will likely
 receive some constructive comments on your code. To address these you can simply work
 on your code and push those changes to your local repo. Those changes will be reflected
@@ -274,7 +272,10 @@ You can then proceed to push this change up to your branch.
 Coding Standards
 ----------------
 All code that is part of the SunPy project should follow The Style Guide for 
-Python (`PEP 8 <http://www.python.org/dev/peps/pep-0008/>`_). Additionally, all
+Python (`PEP 8 <http://www.python.org/dev/peps/pep-0008/>`_) and 
+the `coding style and convections proposed by Astropy 
+<https://astropy.readthedocs.org/en/stable/development/codeguide.html#coding-style-conventions>`_.
+Additionally, all
 code that goes in the trunk should be checked using `PyLint 
 <http://www.logilab.org/card/pylint_manual>`_. PyLint is an open source tool 
 which analyzes Python code and checks for compliance with PEP8, as well as 
@@ -330,6 +331,14 @@ disabled at three different levels: globally (using a .pylintrc file),
 file-wide, and for a single line.
 
 (To be finished...) 
+
+Global Settings
+---------------
+SunPy makes use of a settings file (:file:`sunpyrc`). This file contains a
+number of global settings such as where files should be downloaded by default
+or the default format for displaying times. When developing new functionality
+check this file and make use of the default values if appropriate or, if needed,
+define a new value. More information can be found in :doc:`guide/customization`.
 
 Documentation
 -------------
@@ -475,7 +484,7 @@ Example (:class:`sunpy.map.Map`) ::
 
     Examples
     --------
-    >>> aia = sunpy.Map(sunpy.AIA_171_IMAGE)
+    >>> aia = sunpy.map.Map(sunpy.AIA_171_IMAGE)
     >>> aia.T
     Map([[ 0.3125,  1.    , -1.1875, ..., -0.625 ,  0.5625,  0.5   ],
     [-0.0625,  0.1875,  0.375 , ...,  0.0625,  0.0625, -0.125 ],
@@ -634,11 +643,12 @@ passes.
 
 The example given above is one in which the function and test reside in the
 same module. In SunPy, functions and tests are separated and the latter can be
-found in the `sunpy/tests` directory, organised by module. The convention is
-to have one test module per science module, with the names for the test modules
-being the same as those for the science modules prefixed with `test_`. For 
-example, the modules `util.py` and `multimethod.py` in `sunpy/util` have 
-corresponding test modules `test_util.py` and `test_multimethod.py`.
+found in the `tests` directory within the directory containing the module.
+The convention is to have one test module per module, with the names for
+the test modules being the same as those for the modules prefixed with
+`test_`. For example, the modules `xml.py` and `multimethod.py` in `sunpy/util`
+have corresponding test modules `test_xml.py` and `test_multimethod.py` in
+`sunpy/util/tests`.
 
 There are some tests for functions and methods in SunPy that require a
 working connection to the internet. pytest is configured in a way that it
@@ -660,9 +670,9 @@ from the root of the SunPy tree (i.e. the directory containing `INSTALL.TXT`,
 want to run only selected test modules at a time. This is done by specifying
 the module on the command line, e.g.::
 
- py.test sunpy/tests/util/test_util.py
+ py.test sunpy/util/tests/test_xml.py
 
-for the tests for `sunpy.util.util`.
+for the tests for `sunpy.util.xml`.
 
 To run only tests that been marked with a specific pytest mark using the
 deocrator ``@pytest.mark`` (the the section *Writing a unit test*), use the
@@ -709,6 +719,17 @@ When to write unit tests
 ^^^^^^^^^^^^^^^^^^^^^^^^
 A rule of thumb for unit testing is to have at least one unit test per public
 function.
+
+Testing Your Code Before Commiting
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+When you commit your changes and make a Pull Request to the main SunPy repo on
+GitHub, your code will be tested by Travis CI to make sure that all the tests
+pass and the documentation builds without any warnings. Before you commit your
+code you should check that this is the case. There is a helper script in
+`sunpy/tools/pre-commit.sh` that is designed to run these tests automatically
+everytime you run `git commit` to install it copy the file from
+`sunpy/tools/pre-commit.sh` to `sunpy/.git/hooks/pre-commit`, you should also
+check the script to make sure that it is configured properly for your system.
 
 Continuous Intergration
 ^^^^^^^^^^^^^^^^^^^^^^^

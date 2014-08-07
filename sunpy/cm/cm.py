@@ -37,6 +37,11 @@ yohkohsxtal = ct.sxt_color_table('al')
 yohkohsxtwh = ct.sxt_color_table('wh')
 
 hinodexrt = ct.xrt_color_table()
+hinodesotintensity = ct.sot_color_table('intensity')
+#hinodesotstokesquv = ct.sot_color_table('stokesQUV')
+#hinodesotmagneticf = ct.sot_color_table('magnetic field')
+#hinodesotvelocity = ct.sot_color_table('velocity')
+#hinodesotwidth =  ct.sot_color_table('width')
 
 trace171 = ct.trace_color_table('171')
 trace195 = ct.trace_color_table('195')
@@ -46,6 +51,8 @@ trace1550 = ct.trace_color_table('1550')
 trace1600 = ct.trace_color_table('1600')
 trace1700 = ct.trace_color_table('1700')
 traceWL = ct.trace_color_table('WL')
+
+hmimag = ct.hmi_mag_color_table()
 
 cmlist = {
           'sdoaia94': sdoaia94,
@@ -70,6 +77,11 @@ cmlist = {
           'yohkohsxtal': yohkohsxtal,
           'yohkohsxtwh': yohkohsxtwh,
           'hinodexrt': hinodexrt,
+          'hinodesotintensity': hinodesotintensity,
+          #'hinodesotstokesquv': hinodesotstokesquv,
+          #'hinodesotmagneticf': hinodesotmagneticf,
+          #'hinodesotvelocity': hinodesotvelocity,
+          #'hinodesotwidth': hinodesotwidth,
           'trace171': trace171,
           'trace195': trace195,
           'trace284': trace284,
@@ -77,7 +89,8 @@ cmlist = {
           'trace1550': trace1550,
           'trace1600': trace1600,
           'trace1700': trace1700,
-          'traceWL': traceWL
+          'traceWL': traceWL,
+          'hmimag': hmimag
           }
 
 
@@ -153,7 +166,7 @@ def show_colormaps():
 
     plt.show()
 
-#def test_equalize(data):
+# def test_equalize(data):
 #    """Returns a color map which performs histogram equalization on the data.
 #
 #    Parameters

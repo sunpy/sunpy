@@ -9,12 +9,11 @@ tutorial check out the rest of the :doc:`User Guide </guide/index>` for a more
 thorough look at the functionality available.
 
 
-1. Maps
--------
+Maps
+----
 Maps are the primary data type in SunPy they are spatially and / or temporally aware 
-data arrays. There are types of maps for a 2D image, a time series of 2D images or 
-1D spectra or 2D spectrograms. Making a map of your data is the normally the first 
-step in using SunPy to work with your data. 
+data arrays. There are maps for a 2D image, a time series of 2D images or temporally aligned 2D images. 
+Making a map of your data is the normally the first step in using SunPy to work with your data. 
 
 **Creating a Map**
 
@@ -24,15 +23,53 @@ a map from one of the supported data products is with the `Map()` class from the
 
 `Map()` takes either a filename, a list of filenames or a data array and header pair. We can test map with::
 
-    import sunpy
-    from sunpy.map import Map
-    aia = Map(sunpy.AIA_171_IMAGE)
+    import sunpy.map
+    aia = sunpy.map.Map(sunpy.AIA_171_IMAGE)
 
-This returns a map named aia which can be manipulated with standard SunPy map commands.
+This returns a map named `aia` which can be manipulated with standard SunPy map commands.
 For more information about maps checkout the :doc:`map guide <data_types/maps>`.
 
-2. Plotting
------------
+Lightcurve
+----------
+
+SunPy handles time series data, fundamental to the study of any real world phenomenon,
+by creating a lightcurve object. Currently lightcurve supports
+
+- SDO/EVE
+- GOES XRS
+- PROBA2/LYRA
+
+A lightcurve consits of two parts; times and measurements taken at those times. The 
+data can either be in your current Python session, alternatively within a local or 
+remote file. Let's create some fake data and pass it into a lightcurve object::
+
+    >>> from sunpy.lightcurve import LightCurve
+    >>> light_curve = LightCurve.create({"param1": range(24*60)})
+
+Within LightCurve.create, we have a dictionary that contains a single entry with key
+"param1" containing a list of 1440 entries (0-1439). As there are no times provided,
+so a default set of times are generated.
+
+Spectra
+-------
+
+SunPy has spectral support for instruments which have such a capacity. CALLISTO, 
+an international network of Solar Radio Spectrometers, is a specfic example.
+Below is the example built into sunpy::
+    
+    import matplotlib.pyplot as plt
+    import sunpy.spectra
+
+    from sunpy.spectra.sources.callisto import CallistoSpectrogram
+    image = CallistoSpectrogram.read(sunpy.CALLISTO_IMAGE)
+    
+    image.peek()        
+
+.. image:: ../images/spectra_ex1.png
+
+
+Plotting
+--------
 
 Let's begin by creating a simple plot of an AIA image. To make things easy,
 SunPy includes several example files which are used throughout the docs. These
@@ -40,9 +77,8 @@ files have names like `sunpy.AIA_171_IMAGE` and `sunpy.RHESSI_IMAGE`.
 
 Try typing the below example into your interactive Python shell::
 
-    import sunpy
-    from sunpy.map import Map
-    aia = Map(sunpy.AIA_171_IMAGE)
+    import sunpy.map
+    aia = sunpy.map.Map(sunpy.AIA_171_IMAGE)
     aia.peek()
 
 If everything has been configured properly you should see an AIA image with
@@ -59,11 +95,10 @@ On the last line we then plot the map object, using the built in 'quick plot' fu
 SunPy uses a matplotlib like interface to it's plotting so more complex plots can be built by combining
 SunPy with matplotlib::
 
-    import sunpy
-    from sunpy.map import Map
+    import sunpy.map
     import matplotlib.pyplot as plt
 
-    aia = Map(sunpy.AIA_171_IMAGE)
+    aia = sunpy.map.Map(sunpy.AIA_171_IMAGE)
     
     fig = plt.figure()
     ax = plt.subplot(111)
@@ -78,8 +113,8 @@ This should output something like the image below:
 
 .. image:: ../images/plotting_ex3.png
 
-3. Solar Physical Constants
----------------------------
+Solar Physical Constants
+------------------------
 
 SunPy contains a convienient list of solar-related physical constants. Here is 
 a short bit of code to get you started: ::
@@ -87,10 +122,10 @@ a short bit of code to get you started: ::
     from sunpy.sun import constants as con
 
     # one astronomical unit (the average distance between the Sun and Earth)
-    print(con.au)
+    print con.au
 
     # the solar radius
-    print(con.radius)
+    print con.radius
 
 Not all constants have a shortcut assigned to them (as above). The rest of the constants 
 are stored in a dictionary. The following code grabs the dictionary and gets all of the
@@ -107,77 +142,36 @@ available. ::
 These constants are provided as a convenience so that everyone is using the same 
 (accepted values). More will be added over time.
 
-4. Spectra
-----------
-
-SunPy has spectral support for instruments which have such a capacity. CALLISTO, 
-an international network of Solar Radio Spectrometers, is a specfic example.
-The main class used for this is :py:class:CallistoSpectrogram.
-Below is the example built into sunpy::
-    
-    from matplotlib import pyplot as plt
-    import sunpy
-
-    from sunpy.spectra.sources.callisto import CallistoSpectrogram
-    image = CallistoSpectrogram.read(sunpy.CALLISTO_IMAGE)
-    
-    image.peek()        
-
-.. image:: ../images/spectra_ex1.png
-
-
-5. Lightcurves
---------------
-
-SunPy handles time series data, fundamental to the study of any real world phenomenon,
-by creating a lightcurve object. Currently lightcurve supports
-
-- SDO/EVE
-- GOES XRS
-- PROBA2/LYRA
-
-A lightcurve consits of two parts; times and measurements taken at those times. The 
-data can either be in your current Python session, alternatively within a local or 
-remote file. Let's create some fake data and pass it into a lightcurve object::
-
-    from sunpy.lightcurve import LightCurve
-    light_curve = LightCurve.create({"param1": range(24*60)})
-
-Within LightCurve.create, we have a dictionary that contains a single entry with key
-"param1" containing a list of 1440 entries (0-1439). As there are no times provided,
-so a default set of times are generated.
-
-
-6. Working with Times
----------------------
+Working with Times
+------------------
 
 SunPy also contains a number of convenience functions for working with dates
 and times. Here is a short example: ::
 
-    from sunpy.time import *
-    
+    import sunpy.time
+
     # parsing a standard time strings
-    parse_time('2004/02/05 12:00')
+    sunpy.time.parse_time('2004/02/05 12:00')
     
     # This returns a datetime object. All SunPy functions which require 
     # time as an input sanitize the input using parse_time.
-    day_of_year('2004-Jul-05 12:00:02')
+    sunpy.time.day_of_year('2004-Jul-05 12:00:02')
     
     # the julian day
-    julian_day((2010,4,30))
+    sunpy.time.julian_day((2010,4,30))
     
     # TimeRange objects are useful for representing ranges of time
-    time_range = TimeRange('2010/03/04 00:10', '2010/03/04 00:20')
+    sunpy.time.time_range = TimeRange('2010/03/04 00:10', '2010/03/04 00:20')
     time_range.center()
 
 For more information about working with time in SunPy checkout the :doc:`time guide <time>`.
 
 
-7. Getting at Data
-------------------
+Getting at Data
+---------------
 
 Querying the VSO
--------------------
+----------------
 There are a couple different ways to query and download data from the VSO using
 SunPy. The method you should use depends first on your preference with respect
 to query style: the main method of querying uses a syntax that is unique to
@@ -214,7 +208,7 @@ will simply be downloaded into a temporary directory (e.g. /tmp/xyz).
 For more information about vso client checkout the :doc:`vso guide <acquiring_data/vso>`.
 
 Database Package
--------------------
+----------------
 
 The database package offers the possibility to save retrieved data (e.g. via the
 :mod:'sunpy.net.vso' package) onto a local or remote database. The database may be 
@@ -252,10 +246,8 @@ the database -> query the VSO, add new entries to database, remember query hash.
 In the second fetch, entries is not None because the query has already been used and 
 returns a list of database entries.
 
-
-
-8. Querying Helioviewer.org
----------------------------
+Querying Helioviewer.org
+------------------------
 
 SunPy can be used to make several basic requests using the The `Helioviewer.org API <http://helioviewer.org/api/>`__
 including generating a PNG and downloading a `JPEG 2000 <http://wiki.helioviewer.org/wiki/JPEG_2000>`__
@@ -281,5 +273,3 @@ The result is:
 .. image:: ../images/helioviewer_download_png_ex1.png
 
 For more information checkout the :doc:`helioviewer guide <acquiring_data/helioviewer>`.
-
-

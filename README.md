@@ -1,4 +1,5 @@
-# [SunPy](http://http://sunpy.github.io) [![Build Status](https://secure.travis-ci.org/sunpy/sunpy.png)](http://travis-ci.org/sunpy/sunpy)[![Coverage Status](https://coveralls.io/repos/sunpy/sunpy/badge.png?branch=master)](https://coveralls.io/r/sunpy/sunpy?branch=master)
+# [SunPy](http://sunpy.org) 
+[![Downloads](https://pypip.in/d/sunpy/badge.png)](https://pypi.python.org/pypi/sunpy/) [![Latest Version](https://pypip.in/v/sunpy/badge.png)](https://pypi.python.org/pypi/sunpy/) [![Build Status](https://secure.travis-ci.org/sunpy/sunpy.png)] (http://travis-ci.org/sunpy/sunpy) [![Build status](https://ci.appveyor.com/api/projects/status/v1lkgwg0taum5q49/branch/master)](https://ci.appveyor.com/project/Cadair/sunpy/branch/master) [![Coverage Status](https://coveralls.io/repos/sunpy/sunpy/badge.png?branch=master)](https://coveralls.io/r/sunpy/sunpy?branch=master) [![Code Health](https://landscape.io/github/sunpy/sunpy/master/landscape.png)](https://landscape.io/github/sunpy/sunpy/master)
 
 SunPy is an open-source Python library for solar physics data analysis.
 
@@ -7,8 +8,8 @@ Installation
 
 To begin, install the following requirements:
 
- * [Python]([Python](http://www.python.org) (2.6+)
- * [Astropy](http://astropy.org) (0.3.0)
+ * [Python](http://www.python.org) (2.6+)
+ * [Astropy](http://astropy.org) (0.4.0)
  * [NumPy](http://numpy.scipy.org/)
  * [SciPy](http://www.scipy.org/)
  * [Matplotlib](http://matplotlib.sourceforge.net/) (1.1+)
@@ -34,9 +35,9 @@ Usage
 Here is a quick example of plotting an AIA image:
 
 ```python
->>> import sunpy
+>>> import sunpy.map
 >>> import matplotlib.cm as cm
->>> aia = sunpy.Map(sunpy.AIA_171_IMAGE)
+>>> aia = sunpy.map.Map(sunpy.AIA_171_IMAGE)
 >>> aia.peek(cmap=cm.hot)
 ```
 

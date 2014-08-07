@@ -1,14 +1,12 @@
 # -*- coding: utf-8 -*-
-import os
-import copy
 
 import sunpy
 import sunpy.map
 #==============================================================================
 # Test, read, get_header and write through the file independant layer
 #==============================================================================
-class TestMapMeta():
-    
+class TestMapMeta(object):
+
     def test_upcasing(self):
         meta = sunpy.map.MapMeta({'wibble':1, 'WOBBLE':2})
         #__getitem__

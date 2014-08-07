@@ -22,7 +22,7 @@ CLASSIFIERS = [
     'Operating System :: MacOS'
 ]
 
-VERSION = '0.3.2'
+VERSION = '0.5.1'
 
 def git_description():
     import subprocess
@@ -57,66 +57,57 @@ def install(setup): #pylint: disable=W0621
     #Crotate Module
     from distutils.core import Extension
     from os.path import dirname, join
-    cwd = dirname(__file__)
+
     try:
         import numpy as np
     except ImportError:
         print("SunPy WARNING: NumPy must be installed first to build the C extension")
 
     if 'np' in locals():
-        module = 'sunpy.image.Crotate'   # import this
-        sourcefiles = [join(cwd, 'sunpy', 'image', 'src', 'rot_extn.c'),
-                       join(cwd, 'sunpy', 'image', 'src', 'transform', 'aff_tr.c')]
         libs = ['m']
-        # -ON for compile optimise
         gcc_args = ['-std=c99', '-O3']
-        # gcc_args = ['-std=c99']
-
-        # need *module* name here
-        crotate = Extension(module,
-                            sources = sourcefiles,
-                            libraries = libs,
-                            extra_compile_args = gcc_args,
-                            include_dirs =
-                            [np.get_include(), join(cwd, 'sunpy', 'image', 'src')]
-                            )
 
         module_ana = 'sunpy.io._pyana'
-        sourcefiles_ana = [join(cwd, 'sunpy', 'io', 'src', 'ana', 'anacompress.c'),
-                       join(cwd, 'sunpy', 'io', 'src', 'ana', 'anadecompress.c'),
-                       join(cwd, 'sunpy', 'io', 'src', 'ana', 'anarw.c'),
-                       join(cwd, 'sunpy', 'io', 'src', 'ana', 'testrw.c'),
-                       join(cwd, 'sunpy', 'io', 'src', 'ana', '_pyana.c')]
+        sourcefiles_ana = [join('.', 'sunpy', 'io', 'src', 'ana', 'anacompress.c'),
+                           join('.', 'sunpy', 'io', 'src', 'ana', 'anadecompress.c'),
+                           join('.', 'sunpy', 'io', 'src', 'ana', 'anarw.c'),
+                           join('.', 'sunpy', 'io', 'src', 'ana', 'testrw.c'),
+                           join('.', 'sunpy', 'io', 'src', 'ana', '_pyana.c')]
 
         ana = Extension(module_ana,
                             sources = sourcefiles_ana,
                             libraries = libs,
                             extra_compile_args = gcc_args,
                             include_dirs =
-                            [np.get_include(), join(cwd, 'sunpy', 'io', 'src')]
+                            [np.get_include(), join('.', 'sunpy', 'io', 'src')]
                             )
     ext_modules = []
-    if 'crotate' in locals():
-        ext_modules.append(crotate)
     if 'ana' in locals():
         ext_modules.append(ana)
 
     write_version_py()
 
+    # Define the extra requirements in a sensible manner.
+    extras_require = {'database': ["sqlalchemy"],
+                      'image': ["scikit-image"],
+                      'jpeg2000': ["glymur"],
+                      'net': ["suds", "beautifulsoup4", "requests"]}
+    # All is everything except glymur.
+    extras_require['all'] = extras_require['database'] + extras_require['image'] + extras_require['net']
+
     setup(
-	author="Steven Christe, Matt Earnshaw,  Russell Hewett, Keith Hughitt, Jack Ireland, Florian Mayer, Stuart Mumford,  Albert Shih, David Perez-Suarez et. al",
+	author="Steven Christe, Russell Hewett, Keith Hughitt, Jack Ireland, Florian Mayer, Stuart Mumford,  Albert Shih, David Perez-Suarez et. al",
         author_email="sunpy@googlegroups.com",
         classifiers=CLASSIFIERS,
         description=DOCLINES[0],
-        download_url="http://www.sunpy.org/download/",
         install_requires=[
-            'numpy>1.6.0',
-            'astropy>=0.3.0',
+            'numpy>1.7.1',
+            'astropy>=0.4.0',
             'scipy',
-            'pandas>=0.10.0',
+            'pandas>=0.12.1',
             'matplotlib>=1.1',
-            'sqlalchemy',
         ],
+        extras_require=extras_require,
         license="BSD",
         long_description="\n".join(DOCLINES[2:]),
         maintainer="SunPy Developers",
@@ -128,6 +119,8 @@ def install(setup): #pylint: disable=W0621
         provides=['sunpy'],
         url="http://www.sunpy.org/",
         use_2to3=True,
+        include_package_data=True,
+        zip_safe=False,
         version=VERSION,
         ext_modules = ext_modules
     )
