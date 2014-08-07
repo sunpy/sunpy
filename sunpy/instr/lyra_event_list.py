@@ -689,21 +689,19 @@ def _check_datetime(time):
     an input to sunpy.time.parse_time().
 
     """
-    if (np.array([type(t) for t in time]) == datetime).all():
-        new_time = np.asanyarray(time)
-    elif type(time) == pandas.tseries.index.DatetimeIndex:
-        new_time = time.to_pydatetime()        
-    else:
-        # If elements of time are not datetime objects, try converting.
-        try:
-            new_time = np.array([datetime(t) for t in time])
-        except TypeError:
-            # Otherwise raise error telling user to input an array
-            # of datetime objects.
-            raise TypeError("time must be an array or array-like of datetime "
-                            "objects, valid time strings, or pandas "
-                            "DatetimeIndexes.")
-    return new_time
+    if not all(isinstance(t, datetime) for t in time):
+        if type(time) == pandas.tseries.index.DatetimeIndex:
+            time = time.to_pydatetime()
+        elif all(isinstance(t, str) for t in time):
+            time = np.array([parse_time(t) for t in time])
+        else:
+            try:
+                time = np.array([datetime(t) for t in time])
+            except TypeError:
+                raise TypeError("time must be an array-like of datetime "
+                                "objects, valid time strings, or pandas "
+                                "DatetimeIndexes.")
+    return time
 
 def _prep_columns(time, channels, filecolumns):
     """
