@@ -7,7 +7,7 @@ from sunpy.net.download  import Downloader
 from sunpy.net.vso.vso import Results
 from sunpy.net.vso.attrs import Time
 
-class queryrequestblock(object):
+class QueryResponseBlock(object):
     """ 
     Represents url, source along with other information
     """
@@ -28,18 +28,18 @@ class queryrequestblock(object):
 def iter_urls(map_, url_list):
     """Helper Function"""
     for aurl in url_list:
-        tmp = queryrequestblock(map_, aurl)
+        tmp = QueryResponseBlock(map_, aurl)
         yield tmp
 
 
-class queryresponse(list):
+class QueryResponse(list):
     """
-    Container of QueryRequestBlocks
+    Container of QueryResponseBlocks
 
     """
     def __init__(self, lst):
 
-        super(queryresponse, self).__init__(lst)
+        super(QueryResponse, self).__init__(lst)
 
     @classmethod
     def create(cls, map_, lst):
@@ -79,7 +79,7 @@ class GenericClient(object):
         self.map_ = {}
 
     def _makeargs(self, *args, **kwargs):
-        '''Convert Attribute in query to internal dictionary'''
+        '''Map attributes in the query to internal dictionary'''
         for elem in args:
             if issubclass(elem.__class__, Time):
                 self.map_['TimeRange'] = TimeRange(elem.start, elem.end)
@@ -109,14 +109,14 @@ class GenericClient(object):
 	"""
         GenericClient._makeargs(self, *args, **kwargs)
         urls = self._get_url_for_timerange(self.map_.get('TimeRange'), **kwargs)
-        return queryresponse.create(self.map_, urls)
+        return QueryResponse.create(self.map_, urls)
 
 
     def get(self, qres, **kwargs):
         """
         Parameters
 	----------
-	qres : queryresponse object
+	qres : QueryResponse object
         
 	Returns
 	-------
