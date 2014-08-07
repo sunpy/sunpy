@@ -133,7 +133,3 @@ class EVELightCurve(LightCurve):
         #data.columns = fields
         return data, meta
 
-    @classmethod
-    def _is_datasource_for(cls, data, meta, source=None):
-        if source is not None:
-            return source.lower() == 'eve'
