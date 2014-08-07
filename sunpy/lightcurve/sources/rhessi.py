@@ -62,7 +62,6 @@ class RHESSISummaryLightCurve(LightCurve):
         figure.autofmt_xdate()
         figure.show()
 
-
     @staticmethod
     def _parse_fits(filepath):
         """Parses a RHESSI FITS file"""

@@ -73,10 +73,3 @@ class NoRHLightCurve(LightCurve):
 
         return header, pandas.DataFrame(data, index=norh_time)
 
-    @classmethod
-    def _is_datasource_for(cls, data, meta, source=None):
-        if meta is not None:
-            return meta.pop('telescop', '').upper() == 'RADIOHELIOGRAPH'
-        if source is not None:
-            source = source.lower()
-            return source == 'norh'
