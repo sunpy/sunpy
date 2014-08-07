@@ -57,9 +57,7 @@ class downloadresponse(list):
         super(downloadresponse, self).__init__(lst)
 
     def wait(self):
-        """
-	Waits for all the files to download completely.
-	
+        """Waits for all the files to download completely.
 	Returns
 	-------
         list of file paths to which files have been downloaded.
@@ -125,8 +123,8 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
 
     def get(self, qr, **kwargs):
         '''
-        Downloads the data.
-        Parameters
+        Downloads the files pointed at by URLS contained within UnifiedResponse Object.
+	Parameters
 	----------
 	qr : UnifiedResponse Object
 	    Container returned by query method.

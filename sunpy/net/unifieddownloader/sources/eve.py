@@ -8,10 +8,13 @@ __all__ = ['EVEClient']
 class EVEClient(GenericClient):
 
     def _get_url_for_timerange(self, timerange, **kwargs):
-        """Helper function:
-        Input:
-        timerange: Time-range over which data is to be downloadedO
-        Output: List of urls
+        """Returns list of URLS corresponding to TimeRange.
+        Parameters
+	----------
+        timerange: TimeRange for which data is to be downloaded.
+        Returns
+	-------
+	List of urls
         """
         if not timerange:
             return []
@@ -22,10 +25,15 @@ class EVEClient(GenericClient):
         return urls
 
     def _get_url_for_date(self, date, **kwargs):
-        """Helper Function
+        """Return URL for corresponding date.
+	Parameters
+	----------
+	date : datetime 
+
+        Returns
+	-------
+	string representing URL
         """
-    #   if date < datetime.date(2010,1,1):
-    #        raise ERROR (Define error class showing data not available for this date
         base_url = 'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/'
         return urlparse.urljoin(base_url, date.strftime('%Y/%Y%m%d') + '_EVE_L0CS_DIODES_1m.txt')
 
