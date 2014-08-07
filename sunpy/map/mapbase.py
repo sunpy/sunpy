@@ -332,9 +332,9 @@ Dimension:\t [%d, %d]
         if heliographic_latitude is None:
             warnings.warn_explicit("Missing metadata for heliographic latitude: assuming Earth-based observer",
                                    Warning, __file__, inspect.currentframe().f_back.f_lineno)
-            heliographic_latitude = (sun.heliographic_solar_center(self.date))[1]
+            heliographic_latitude = (sun.heliographic_solar_center(self.date))[1].value
 
-        return heliographic_latitude
+        return heliographic_latitude * u.deg
 
     @property
     def heliographic_longitude(self):

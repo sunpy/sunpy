@@ -156,7 +156,7 @@ def convert_hpc_hcc(x, y, dsun_meters=None, z=False):
 
     """
     rsun_meters = sun.constants.radius.si
-    if not isinstance(x and y, u.Quantity):
+    if not isinstance(x or y, u.Quantity):
         raise ValueError("Must be astropy.Quantity instance")
     cosx = np.cos(x)
     sinx = np.sin(x)
@@ -234,7 +234,7 @@ def convert_hcc_hpc(x, y, dsun_meters=None):
 
     return hpcx, hpcy
 
-def convert_hcc_hg(x, y, z=None, b0_deg=0, l0_deg=0, radius=False):
+def convert_hcc_hg(x, y, z=None, b0_deg=0 * u.deg, l0_deg=0 * u.deg, radius=False):
     """Convert from Heliocentric-Cartesian (HCC) (given in meters) to
     Stonyhurst Heliographic coordinates (HG) given in degrees, with
     radial output in meters.
@@ -275,8 +275,11 @@ def convert_hcc_hg(x, y, z=None, b0_deg=0, l0_deg=0, radius=False):
     (0.01873188196651189, 3.6599471896203317, 704945784.41465974)
     """
 
+    rsun_meters = sun.constants.radius.si
     if not isinstance(x and y, u.Quantity):
         raise ValueError("Must be astropy.units.instance")
+    x = x.to(u.meter)
+    y = y.to(u.meter)
     if z is None:
         z = np.sqrt(rsun_meters**2 - x**2 - y**2)
     if not isinstance(z, u.Quantity):
@@ -297,7 +300,7 @@ def convert_hcc_hg(x, y, z=None, b0_deg=0, l0_deg=0, radius=False):
         return hgln.to(u.deg), hglt.to(u.deg)
 
 def convert_hg_hcc(hglon_deg, hglat_deg, b0_deg=0, l0_deg=0, occultation=False,
-                   z=False, r=rsun_meters):
+                   z=False, r=sun.constants.radius.si):
     """Convert from Stonyhurst Heliographic coordinates (given in degrees) to
     Heliocentric-Cartesian coordinates (given in meters).
 
@@ -335,9 +338,9 @@ def convert_hg_hcc(hglon_deg, hglat_deg, b0_deg=0, l0_deg=0, occultation=False,
     r=704945784.41465974, z=True)
     (230000.0, 45000000.0, 703508000.0)
     """
-    if not isinstance(hglon_deg and hglat_deg, u.Quantity):
+    if not isinstance(hglon_deg or hglat_deg, u.Quantity):
         raise ValueError("Must be astropy.units.Quantity instance")
-    if not isinstance(b0_deg and l0_deg, u.Quantity):
+    if not isinstance(b0_deg or l0_deg, u.Quantity):
         raise ValueError("Must be astropy.units.Quantity instance")
     lon = hglon_deg
     lat = hglat_deg
@@ -402,9 +405,9 @@ def convert_hg_hpc(hglon_deg, hglat_deg, b0_deg=0, l0_deg=0, dsun_meters=None,
     (380.05656560308898, 743.78281283290016)
     """
     
-    if not isinstance(hglon_deg and hglat_deg, u.Quantity):
+    if not isinstance(hglon_deg or hglat_deg, u.Quantity):
         raise ValueError("Must be astropy.units.Quantity instance")
-    if not isinstance(l0_deg and dsun_meters, u.Quantity):
+    if not isinstance(l0_deg or dsun_meters, u.Quantity):
         raise ValueError("Must be astropy.units.Quanitity instance")
     tempx, tempy = convert_hg_hcc(hglon_deg, hglat_deg, b0_deg=b0_deg, l0_deg=l0_deg, occultation=occultation)
     x, y = convert_hcc_hpc(tempx, tempy, dsun_meters=dsun_meters)
@@ -442,9 +445,9 @@ def convert_hpc_hg(x, y, b0_deg=0, l0_deg=0, dsun_meters=None):
     (34.504653439914669, 45.443143275518182)
     """
 
-    if not isinstance(x and y, u.Quantity):
+    if not isinstance(x or  y, u.Quantity):
         raise ValueError("Must be astropy.units.Quantity instance")
-    if not isinstance(b0_deg and l0_deg, u.Quantity):
+    if not isinstance(b0_deg or l0_deg, u.Quantity):
         raise ValueError("Must be astropy.units.Quantity instance")    
     tempx, tempy = convert_hpc_hcc(x, y, dsun_meters=dsun_meters)
     lon, lat = convert_hcc_hg(tempx, tempy, b0_deg=b0_deg, l0_deg=l0_deg)
@@ -459,13 +462,13 @@ def proj_tan(x, y, force=False):
     # TODO: write proj_tan function
     return x, y
 
-def convert_to_coord(x, y, from_coord, to_coord, b0_deg=0, l0_deg=0, dsun_meters=None):
+def convert_to_coord(x, y, from_coord, to_coord, b0_deg=0 * u.deg, l0_deg=0 * u.deg, dsun_meters=None):
     """Apply a coordinate transform to coordinates. Right now can only do hpc
     to hcc to hg"""
 
-    if not isinstance(x and y, u.Quantity):
+    if not isinstance(x or y, u.Quantity):
         raise ValueError("Must be astropy.units.Quanitity instance")
-    if not isinstance(b0_deg and l0_deg, u.Quantity):
+    if not isinstance(b0_deg or l0_deg, u.Quantity):
         raise ValueError("Must be astropy.units.Quantity instance")
     if (from_coord == 'hcc') and (to_coord == 'hg'):
         rx, ry = convert_hcc_hg(x, y, b0_deg=b0_deg, l0_deg=l0_deg)
