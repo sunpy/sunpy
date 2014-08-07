@@ -69,25 +69,29 @@ def get_center(size, scale, reference_pixel, reference_coordinate):
 
     Parameters
     ----------
-    size : 2d ndarray
+    size : ~'astropy.units.instance', 2d array
         Number of pixels in width and height.
-    scale : 2d ndarray
+    scale : ~'astropy.units.instance', 2d array
         The size of a pixel (dx,dy) in data coordinates (equivalent to WCS/CDELT)
-    reference_pixel : 2d ndarray
+    reference_pixel : ~'astropy.units.instance', 2d array
         The reference pixel (x,y) at which the reference coordinate is given (equivalent to WCS/CRPIX)
-    reference_coordinate : 2d ndarray
+    reference_coordinate : ~'astropy.units.instance', array
         The data coordinate (x, y) as measured at the reference pixel (equivalent to WCS/CRVAL)
 
     Returns
     -------
-    out : ndarray
+    out : ~'astropy.units.instance'
         The data coordinates
 
     Examples
     --------
 
     """
-    return scale * (size - 1) / 2. + reference_coordinate - (reference_pixel - 1) * scale
+    if not isinstance(size or scale or reference_pixel or reference_coordinate,
+                       u.Quantity):
+        raise ValueError("Must be astropy.quantity instance")
+    return (scale.value * (size.value - 1) / 2. + reference_coordinate.value 
+           - (reference_pixel.value - 1) * scale.value) * scale.unit
 
 def convert_data_to_pixel(x, y, scale, reference_pixel, reference_coordinate):
     """Calculate the pixel indices for a given data coordinate.

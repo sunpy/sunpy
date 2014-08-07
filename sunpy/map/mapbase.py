@@ -163,7 +163,7 @@ Dimension:\t [%d, %d]
     #Some numpy extraction
     @property
     def shape(self):
-        return self.data.shape
+        return self.data.shape * u.pix
 
     @property
     def dtype(self):
@@ -279,10 +279,10 @@ Dimension:\t [%d, %d]
         """Returns the offset between the center of the Sun and the center of
         the map."""
         return {'x': wcs.get_center(self.shape[1], self.scale['x'],
-                                    self.reference_pixel['x'].value,
+                                    self.reference_pixel['x'],
                                     self.reference_coordinate['x']),
                 'y': wcs.get_center(self.shape[0], self.scale['y'],
-                                    self.reference_pixel['y'].value,
+                                    self.reference_pixel['y'],
                                     self.reference_coordinate['y']),}
 
     @property
@@ -344,8 +344,8 @@ Dimension:\t [%d, %d]
     @property
     def reference_coordinate(self):
         """Reference point WCS axes in data units (crval1/2)"""
-        return {'x': self.meta.get('crval1', 0.),
-                'y': self.meta.get('crval2', 0.),}
+        return {'x': self.meta.get('crval1', 0.) * u.Unit(self.units['x']),
+                'y': self.meta.get('crval2', 0.) * u.Unit(self.units['x']),}
 
     @property
     def reference_pixel(self):
@@ -357,8 +357,8 @@ Dimension:\t [%d, %d]
     def scale(self):
         """Image scale along the x and y axes in units/pixel (cdelt1/2)"""
         #TODO: Fix this if only CDi_j matrix is provided
-        return {'x': self.meta.get('cdelt1', 1.),
-                'y': self.meta.get('cdelt2', 1.),}
+        return {'x': self.meta.get('cdelt1', 1.) * u.Unit(self.units['x']),
+                'y': self.meta.get('cdelt2', 1.) * u.Unit(self.units['x']),}
 
     @property
     def units(self):
@@ -408,8 +408,9 @@ Dimension:\t [%d, %d]
         # this function generates a astropy.wcs object
         w2 = WCS(naxis=2)
         w2.wcs.crpix = [self.reference_pixel['x'].value, self.reference_pixel['y'].value]
-        w2.wcs.cdelt = [self.scale['x'], self.scale['y']]
-        w2.wcs.crval = [self.reference_coordinate['x'], self.reference_coordinate['y']]
+        w2.wcs.cdelt = [self.scale['x'].value, self.scale['y'].value]
+        w2.wcs.crval = [self.reference_coordinate['x'].value, 
+                        self.reference_coordinate['y'].value]
         w2.wcs.ctype = [self.coordinate_system['x'], self.coordinate_system['y']]
         w2.wcs.pc = self.rotation_matrix
         w2.wcs.cunit = [self.units['x'], self.units['y']]
@@ -485,7 +486,11 @@ Dimension:\t [%d, %d]
         if (x is not None) & (y < 0):
             raise ValueError("Y pixel value cannot be less than 0.")
 
-        x,y = self.wcs.wcs_pix2world(x = x, y = y)
+        scale = np.array([self.scale['x'], self.scale['y']])
+        crpix = np.array([self.reference_pixel['x'], self.reference_pixel['y']])
+        crval = np.array([self.reference_coordinate['x'], self.reference_coordinate['y']])
+        coordinate_system = [self.coordinate_system['x'], self.coordinate_system['y']]
+        x,y = wcs.convert_pixel_to_data(self.shape, scale, crpix, crval, x = x, y = y)
 
         return x, y
 
