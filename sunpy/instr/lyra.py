@@ -163,7 +163,7 @@ def find_lyra_flares(time, irradiance, lytaf_path=LYTAF_PATH):
 
     Examples
     --------
-    
+
     """
     # Ensure inputs are of correct type
     irradiance = np.asanyarray(irradiance, dtype="float64")
@@ -177,16 +177,17 @@ def find_lyra_flares(time, irradiance, lytaf_path=LYTAF_PATH):
                                         ("end_irrad", float)])
     # object LYRA artifacts from timeseries
     clean_time, irradiance_list, artifact_status = remove_lyra_artifacts(
-        time, [irradiance],
-        artifacts=["UV occ.", "Offpoint", "LAR", "Calibration", "SAA",
-                   "Vis occ.", "Operational Anomaly", "Glitch", "ASIC reload",
-                   "Moon in LYRA", "Recovery"], return_artifacts=True,
-                   lytaf_path=lytaf_path)
+        time, [irradiance], artifacts=["UV occ.", "Offpoint", "LAR", "SAA",
+                                       "Calibration", "Vis occ.", "Glitch",
+                                       "ASIC reload", "Operational Anomaly",
+                                       "Moon in LYRA", "Recovery"],
+        return_artifacts=True, lytaf_path=lytaf_path)
     clean_irradiance = irradiance_list[0]
     artifacts_removed = artifact_status["removed"]
     # Perform subtraction so median irradiance of time series is at
     # average daily minimum from first 4 years of mission.
-    clean_irradiance_scaled = clean_irradiance-(np.median(clean_irradiance)-NORM)
+    clean_irradiance_scaled = \
+      clean_irradiance - (np.median(clean_irradiance)-NORM)
     # Get derivative of irradiance wrt time
     time_timedelta = clean_time[1:-1]-clean_time[0:-2]
     dt = np.zeros(len(time_timedelta), dtype="float64")
@@ -206,7 +207,7 @@ def find_lyra_flares(time, irradiance, lytaf_path=LYTAF_PATH):
         dt4[i] = t.total_seconds()
     # Find all possible flare start times.
     end_series = len(clean_irradiance_scaled)-1
-    i=0
+    i = 0
     while i < len(pos_deriv)-4:
         # Start time criteria
         if (pos_deriv[i:i+4]-pos_deriv[i] == np.arange(4)).all() and \
@@ -244,9 +245,8 @@ def find_lyra_flares(time, irradiance, lytaf_path=LYTAF_PATH):
                 while end_condition == False and j < end_series:
                     j = j+1
                     max_irradiance = max(clean_irradiance_scaled[start_index:j])
-                    end_condition = clean_irradiance_scaled[j] <= \
-                      max_irradiance-(max_irradiance-clean_irradiance_scaled[start_index]) \
-                      *FALL_FACTOR
+                    end_condition = clean_irradiance_scaled[j] <= max_irradiance - \
+                      (max_irradiance-clean_irradiance_scaled[start_index])*FALL_FACTOR
                 if j >= end_series:
                     i = i+1
                 else:
@@ -355,7 +355,7 @@ def remove_lyra_artifacts(time, channels=None, artifacts="All",
 
     lytaf_path : string
         directory path where the LYRA annotation files are stored.
-        
+
     Returns
     -------
     clean_time : ndarray/array-like of datetime objects
@@ -398,10 +398,10 @@ def remove_lyra_artifacts(time, channels=None, artifacts="All",
     # Define outputs
     clean_time = copy.deepcopy(time)
     clean_channels = copy.deepcopy(channels)
-    artifacts_not_found =[]
+    artifacts_not_found = []
     # Get LYTAF file for given time range
     lytaf = get_lytaf_events(time[0], time[-1], lytaf_path=lytaf_path)
-    
+
     # Find events in lytaf which are to be removed from time series.
     if artifacts == "All":
         artifact_indices = np.arange(len(lytaf["begin_time"]))
@@ -554,7 +554,7 @@ def get_lytaf_events(start_time, end_time, lytaf_path=LYTAF_PATH,
 
     Examples
     --------
-    
+
     """
     # Check inputs
     # Check start_time is a date string or datetime object
@@ -583,11 +583,11 @@ def get_lytaf_events(start_time, end_time, lytaf_path=LYTAF_PATH,
     # Define numpy record array which will hold the information from
     # the annotation file.
     lytaf = np.empty((0,), dtype=[("insertion_time", object),
-                               ("begin_time", object),
-                               ("reference_time", object),
-                               ("end_time", object),
-                               ("event_type", object),
-                               ("event_definition", object)])
+                                  ("begin_time", object),
+                                  ("reference_time", object),
+                                  ("end_time", object),
+                                  ("event_type", object),
+                                  ("event_definition", object)])
     # Access annotation files
     for i, suffix in enumerate(combine_files):
         # Check database files are present
@@ -599,7 +599,8 @@ def get_lytaf_events(start_time, end_time, lytaf_path=LYTAF_PATH,
         cursor = connection.cursor()
         # Check if lytaf file spans the start and end times defined by
         # user.  If not, download newest version.
-        # First get start time of first event and end time of last event in lytaf.
+        # First get start time of first event and end time of last
+        # event in lytaf.
         cursor.execute("select begin_time from event order by begin_time asc "
                        "limit 1;")
         db_first_begin_time = cursor.fetchone()[0]
@@ -706,8 +707,8 @@ def _prep_columns(time, channels, filecolumns):
     Firstly, this function converts the elements of time, whose entries are
     assumed to be datetime objects, to time strings.  Secondly, it checks
     whether the number of elements in an input list of columns names,
-    filecolumns, is equal to the number of arrays in the list, channels.  If not,
-    a Value Error is raised.
+    filecolumns, is equal to the number of arrays in the list, channels.
+    If not, a Value Error is raised.
 
     """
     # Convert time which contains datetime objects to time strings.
@@ -729,20 +730,24 @@ def _prep_columns(time, channels, filecolumns):
 
     return string_time, filecolumns
 
-def split_series_using_lytaf(timearray,data,lar):
+def split_series_using_lytaf(timearray, data, lar):
     """
-    Proba-2 analysis code for splitting up LYRA timeseries around locations where LARs
-    (and other data events) are observed.
+    Proba-2 analysis code for splitting up LYRA timeseries around locations
+    where LARs (and other data events) are observed.
 
     Inputs
     ------
-    timearray - an array of times that can be understood by the SunPy parse_time function
+    timearray - array of times understandable by SunPy parse_time function.
     data - data array corresponding to the given time array
-    lar - list of events obtained from querying the LYTAF database using lyra.get_lytaf_events()
+    lar - list
+        Events obtained from querying LYTAF database using
+        lyra.get_lytaf_events().
 
     Output
     ------
-    A list of dictionaries. Each dictionary contains a sub-series corresponding to an interval of 'good data'
+    output : list of dictionaries
+        Each dictionary contains a sub-series corresponding to an interval of
+        'good data'.
     """
     #lar is a dictionary with tags:
     #'start_time'
@@ -752,39 +757,38 @@ def split_series_using_lytaf(timearray,data,lar):
     #'event_type_description'
     #'event_type_id'
 
-
-    n=len(timearray)
-    mask=np.ones(n)
-    el=len(lar)
+    n = len(timearray)
+    mask = np.ones(n)
+    el = len(lar)
 
     #make the input time array a list of datetime objects
-    datetime_array=[]
+    datetime_array = []
     for tim in timearray:
         datetime_array.append(parse_time(tim))
 
 
-        #scan through each entry retrieved from the LYTAF database
-    for j in range(0,el):
+    #scan through each entry retrieved from the LYTAF database
+    for j in range(0, el):
         #want to mark all times with events as bad in the mask, i.e. = 0
-        start_dt=lar[j]['start_time']
-        end_dt=lar[j]['end_time']
+        start_dt = lar[j]['start_time']
+        end_dt = lar[j]['end_time']
 
         #find the start and end indices for each event
-        start_ind=np.searchsorted(datetime_array,start_dt)
-        end_ind=np.searchsorted(datetime_array,end_dt)
+        start_ind = np.searchsorted(datetime_array, start_dt)
+        end_ind = np.searchsorted(datetime_array, end_dt)
 
         #append the mask to mark event as 'bad'
         mask[start_ind:end_ind] = 0
 
-
-    diffmask=np.diff(mask)
-    tmp_discontinuity=np.where(diffmask != 0.)
+    diffmask = np.diff(mask)
+    tmp_discontinuity = np.where(diffmask != 0.)
     #disc contains the indices of mask where there are discontinuities
     disc = tmp_discontinuity[0]
 
     if len(disc) == 0:
-        print 'No events found within time series interval. Returning original series.'
-        return [{'subtimes':datetime_array,'subdata':data}]
+        print 'No events found within time series interval. '\
+          +'Returning original series.'
+        return [{'subtimes':datetime_array, 'subdata':data}]
 
     #-1 in diffmask means went from good data to bad
     #+1 means went from bad data to good
@@ -794,34 +798,34 @@ def split_series_using_lytaf(timearray,data,lar):
     #if the first discontinuity is a -1 then the start of the series was good.
     if diffmask[disc[0]] == -1.0:
         #make sure we can always start from disc[0] below
-        disc=np.insert(disc,0,0)
+        disc = np.insert(disc, 0, 0)
 
-    split_series=[]
+    split_series = []
 
-    limit=len(disc)
+    limit = len(disc)
     #now extract the good data regions and ignore the bad ones
-    for h in range(0,limit,2):
+    for h in range(0, limit, 2):
 
         if h == limit-1:
             #can't index h+1 here. Go to end of series
-            subtimes=datetime_array[disc[h]:-1]
-            subdata=data[disc[h]:-1]
-            subseries={'subtimes':subtimes,'subdata':subdata}
+            subtimes = datetime_array[disc[h]:-1]
+            subdata = data[disc[h]:-1]
+            subseries = {'subtimes':subtimes, 'subdata':subdata}
             split_series.append(subseries)
         else:
-            subtimes=datetime_array[disc[h]:disc[h+1]]
-            subdata=data[disc[h]:disc[h+1]]
-            subseries={'subtimes':subtimes,'subdata':subdata}
+            subtimes = datetime_array[disc[h]:disc[h+1]]
+            subdata = data[disc[h]:disc[h+1]]
+            subseries = {'subtimes':subtimes, 'subdata':subdata}
             split_series.append(subseries)
 
     return split_series
 
 def _lytaf_event2string(integers):
     if type(integers) == int:
-        integers=[integers]
+        integers = [integers]
     #else:
     #    n=len(integers)
-    out=[]
+    out = []
 
     for i in integers:
         if i == 1:
