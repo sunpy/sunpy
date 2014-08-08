@@ -14,7 +14,7 @@ from sunpy.wcs import wcs_util
 def orient(array, wcs):
     # This is mostly lifted from astropy's spectral cube.
     """
-    Given a 3-d cube and a WCS, swap around the axes so that the
+    Given a 3 or 4D cube and a WCS, swap around the axes so that the
     axes are in the correct order: the first in Numpy notation, and the last
     in WCS notation.
 
@@ -31,13 +31,17 @@ def orient(array, wcs):
     if array.ndim != 3 and array.ndim != 4:
         raise ValueError("Input array must be 3- or 4-dimensional")
 
-    if wcs.wcs.naxis != 3 and not (wcs.wcs.naxis == 4 and
-                                   wcs.wcs.cname[-1][:9] == 'redundant'):
+    if not ((wcs.wcs.naxis == 3 and array.ndim == 3) or
+            (wcs.wcs.naxis == 4 and array.ndim == 4 and not wcs.was_augmented)
+            or (wcs.wcs.naxis == 4 and array.ndim == 3 and wcs.was_augmented)):
         raise ValueError("WCS must have the same dimensions as the array")
 
     axtypes = list(wcs.wcs.ctype)
 
-    array_order = select_order(axtypes[2::-1])
+    if wcs.was_augmented:
+        array_order = select_order(axtypes[2::-1])
+    else:
+        array_order = select_order(axtypes)
     result_array = array.transpose(array_order)
 
     wcs_order = np.array(select_order(axtypes))[::-1]
@@ -179,8 +183,12 @@ def handle_slice_to_cube(hypcube, item):
     item: int or slice, or tuple of these
         The slice to convert
     """
-    chunk = [i for i in item if isinstance(i, int)][0]
-    axis = item.index(chunk)
+    if isinstance(item, int):
+        chunk = item
+        axis = 0
+    else:
+        chunk = [i for i in item if isinstance(i, int)][0]
+        axis = item.index(chunk)
     return hypcube.slice_to_cube(axis, chunk)
 
 

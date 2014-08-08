@@ -31,6 +31,17 @@ hm = {'CTYPE1': 'HPLT-TAN', 'CUNIT1': 'deg', 'CDELT1': 0.5,
 wm = WCS(header=hm, naxis=3)
 cubem = c.Cube(data, wm)
 
+h4 = {'CTYPE1': 'HPLT-TAN', 'CUNIT1': 'deg', 'CDELT1': 0.5,
+      'CTYPE2': 'WAVE    ', 'CUNIT2': 'Angstrom', 'CDELT2': 0.2,
+      'CTYPE3': 'HPLN-TAN', 'CUNIT3': 'deg', 'CDELT3': 0.4,
+      'CTYPE4': 'TIME    ', 'CUNIT4': 'min', 'CDELT4': 0.6}
+w4 = WCS(header=h4, naxis=4)
+data4 = np.array([[[[1,2,3,4], [2,4,5,3], [0,-1,2,3]],
+                   [[2,4,5,1], [10,5,2,2], [10,3,3,0]]],
+
+                  [[[4,6,3,5], [1,0,5,3], [-4,8,7,6]],
+                   [[7,3,2,6], [1,7,8,7], [2,4,0,1]]]])
+hcube = c.Cube(data4, w4)
 
 def test_slice_to_map_with_time():
     with pytest.raises(cu.CubeError):
@@ -186,6 +197,53 @@ def test_slicing_third_axis():
              int, np.ndarray, np.ndarray]
     for (s, t) in zip(slices, types):
         assert isinstance(s, t)
+
+
+def test_4d_getitem_to_array():
+    slices = [hcube[1, 1, 1, 1], hcube[0, 1, 1],
+              hcube[2, 0, 1, :], hcube[3, 1, :, 2]]
+    assert isinstance(slices[0], int)
+    for s in slices[1:]:
+        assert isinstance(s, np.ndarray)
+
+
+def test_4d_getitem_to_map():
+    slices = [hcube[2, 0], hcube[1, 1, :], hcube[1, 1, :, 0:2]]
+    for s in slices:
+        assert isinstance(s, GenericMap)
+
+
+def test_4d_getitem_to_spectrum():
+    slices = [hcube[1, :, 1, 2], hcube[3, :, 0], hcube[2, :, 1, 0:2],
+              hcube[0, :, :, 0]]
+    for s in slices:
+        assert isinstance(s, Spectrum)
+
+
+def test_4d_getitem_to_cube():
+    slices = [hcube[2], hcube[1, 0:1], hcube[3, :, 0:2], hcube[0, :, :, 0:2],
+              hcube[1:3, 1], hcube[0:2, 0, :], hcube[:, 0, :, 0:2],
+              hcube[1:3, :, 1, 1:2], hcube[:, :, 0], hcube[:, :, :, 2]]
+    for s in slices:
+        assert isinstance(s, c.Cube) and s.data.ndim == 3
+
+
+def test_4d_getitem_to_hypercube():
+    slices = [hcube[1:3, :, :, 0:1], hcube[1:, :1, :], hcube[2:, :], hcube[1:]]
+    for s in slices:
+        assert isinstance(s, c.Cube) and s.data.ndim == 4
+
+
+def test_4d_getitem_to_spectrogram():
+    s = hcube[2:, :, 1, 2]
+    assert isinstance(s, Spectrogram)
+
+
+def test_4d_getitem_to_lightcurve():
+    slices = [hcube[:, 0, 0, 0], hcube[:, 1, 1, :], hcube[:, 1, 0],
+              hcube[:, 1, :, 2]]
+    for s in slices:
+        assert isinstance(s, LightCurve)
 
 
 def test_reduce_dim():

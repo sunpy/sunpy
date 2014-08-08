@@ -303,6 +303,7 @@ class Cube(astropy.nddata.NDData):
         else:
             item[0] = coords[0]
             item[1] = slice(None, None, None)
+            item[2:] = coords[1:]
             item = map((lambda x: slice(None, None, None) if x is None else x),
                        item)
 
@@ -312,7 +313,7 @@ class Cube(astropy.nddata.NDData):
                 if i == 0:
                     sumaxis = 1 if axis == 0 else 0
                 else:
-                    sumaxis = i
+                    sumaxis = 1 if i == 2 else i
                 data = data.sum(axis=sumaxis)
 
         freq_axis = self.freq_axis()
@@ -389,9 +390,10 @@ class Cube(astropy.nddata.NDData):
             newdata = self.data[item].sum(axis)
         wcs_indices = [0, 1, 2, 3]
         wcs_indices.remove(3 - axis)
-        newwcs = wu.reindex_wcs(self.axes_wcs, wcs_indices)
+        newwcs = wu.reindex_wcs(self.axes_wcs, np.array(wcs_indices))
         if axis == 2 or axis == 3:
             newwcs = wu.add_celestial_axis(newwcs)
+            newwcs.was_augmented = True
         cube = Cube(newdata, newwcs, self.meta, **kwargs)
         return cube
 

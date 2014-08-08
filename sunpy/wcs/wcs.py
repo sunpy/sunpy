@@ -535,9 +535,12 @@ class WCS(astropy.wcs.WCS):
 
     def __init__(self, header=None, naxis=None, **kwargs):
         if WCS._needs_augmenting(header):
+            self.was_augmented = True
             header = WCS._augment(header, naxis)
             if naxis is not None:
                 naxis = naxis + 1
+        else:
+            self.was_augmented = False
         astropy.wcs.WCS.__init__(self, header=header, naxis=naxis, **kwargs)
 
     @classmethod
