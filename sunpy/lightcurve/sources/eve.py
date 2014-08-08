@@ -131,5 +131,5 @@ class EVELightCurve(LightCurve):
             data[data == float(missing_data_val)] = numpy.nan
 
         #data.columns = fields
-        return data, meta
+        return meta, data
 
