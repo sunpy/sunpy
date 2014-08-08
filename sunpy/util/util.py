@@ -4,6 +4,7 @@ import os
 import types
 import warnings
 from itertools import izip, imap, count
+import fnmatch
 
 import numpy as np
 
@@ -218,3 +219,56 @@ class Deprecated(object):
         newFunc.__doc__ = func.__doc__
         newFunc.__dict__.update(func.__dict__)
         return newFunc
+
+def file_search(path, pattern):
+    """
+    Returns filenames matching pattern from given path and its subdirectories.
+
+    Parameters
+    ----------
+    path : string
+        directory path in which files will searched for.  Files will be sought
+        in subdirectories as well.
+    pattern : string
+        pattern which must be matched in filename.  wildcards such as * are
+        allowed.
+    return_list : (optional) bool
+        If this is set to True, a list from the generator is returned instead
+        of the generator istelf.  (See Returns section below.)
+
+    Returns
+    -------
+    files : generator
+        File names of files found matching pattern.
+        A generator is not very memory hungry and useful if you want to
+        iterate through each found file, e.g.
+        >>> for file in files:
+                print file
+        'path/file0.name'
+        'path/file1.name'
+        etc.  However, to access elements by index, find the number of files
+        found (i.e. len()) etc., this must be converted to a list or numpy
+        array.  By converting it to a numpy array, functions such as
+        numpy.where, numpy.logical_or, etc., can also be applied to find
+        entries satisfying more specific criteria.  To produce a list or array
+        from the generator, simply type
+        >>> files_list = list(file_search(path, pattern))
+        for a list, or
+        >>> files_array = np.asarray(list(file_search(path, pattern)))
+        for a numpy array.
+
+    Examples
+    --------
+    >>> ls dir
+    file1.txt    subdir
+    >>> pattern = '*.txt'
+    >>> path = 'dir'
+    >>> files = file_search(path, pattern)
+    >>> files
+    ['dir/file1.txt', 'dir/subdir/subdir/file2.txt']
+
+    """
+    files = (os.path.join(dirpath, f)
+             for dirpath, dirnames, filenames in os.walk(path)
+             for f in fnmatch.filter(filenames, pattern))
+    return files
