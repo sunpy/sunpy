@@ -1,8 +1,10 @@
 
 import pytest
+import collections
 from numpy.testing import assert_almost_equal
 from sunpy.instr import fermi
 from sunpy.time import parse_time
+
 
 
 @pytest.mark.online
@@ -19,7 +21,7 @@ def test_detector_angles():
     file = fermi.download_weekly_pointing_file(date)
     det=fermi.get_detector_sun_angles_for_date(parse_time('2012-02-15'),file,plot=False)
     assert len(det) == 12
-    assert type(det) == dict
+    assert type(det) == collections.OrderedDict
     assert_almost_equal(det['n0'][0], 20.30309,decimal=2)
     assert_almost_equal(det['n1'][0], 30.30430, decimal=2)
     assert_almost_equal(det['n2'][0], 74.86032, decimal=2)
