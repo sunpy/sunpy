@@ -91,7 +91,8 @@ def get_detector_sun_angles_for_time(time, file):
     # this gets the sun position with RA in hours in decimal format (e.g. 4.3). DEC is already in degrees
     sunpos_ra_not_in_deg = [sun.sun.apparent_rightascension(time), sun.sun.apparent_declination(time)]
     # now Sun position with RA in degrees
-    sun_pos = [(sunpos_ra_not_in_deg[0] / 24) * 360., sunpos_ra_not_in_deg[1]]
+    sun_pos = [sunpos_ra_not_in_deg[0].to('deg').value, sunpos_ra_not_in_deg[1].value]
+    #sun_pos = [(sunpos_ra_not_in_deg[0] / 24) * 360., sunpos_ra_not_in_deg[1]]
     # now get the angle between each detector and the Sun
     detector_to_sun_angles = (get_detector_separation_angles(detector_radecs, sun_pos))
 
@@ -114,7 +115,7 @@ def get_detector_sun_angles_for_date(date, file, plot=True):
         # this gets the sun position with RA in hours in decimal format (e.g. 4.3). DEC is already in degrees
         sunpos_ra_not_in_deg = [sun.sun.apparent_rightascension(times[i]), sun.sun.apparent_declination(times[i])]
         # now Sun position with RA in degrees
-        sun_pos = [(sunpos_ra_not_in_deg[0] / 24) * 360., sunpos_ra_not_in_deg[1]]
+        sun_pos = [sunpos_ra_not_in_deg[0].to('deg').value, sunpos_ra_not_in_deg[1].value]
         # now get the angle between each detector and the Sun
         detector_to_sun_angles.append(get_detector_separation_angles(detector_radecs, sun_pos))
 
