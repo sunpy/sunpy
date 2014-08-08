@@ -5,7 +5,8 @@
 #
 
 import numpy as np
-from numpy.testing import assert_allclose
+from astropy import units as u
+from numpy.testing import assert_allclose, assert_array_almost_equal
 from scipy.ndimage.interpolation import shift
 from sunpy import AIA_171_IMAGE
 from sunpy import map
@@ -99,17 +100,17 @@ def test_upper_clip():
 
 
 def test_calculate_clipping():
-    answer = calculate_clipping(clip_test_array, clip_test_array)
-    assert(answer == ([2.0, 1.0], [2.0, 1.0]))
+    answer = calculate_clipping(clip_test_array *u.pix, clip_test_array *u.pix)
+    assert_array_almost_equal(answer, ([2.0, 1.0]*u.pix, [2.0, 1.0]*u.pix))
 
 
 def test_clip_edges():
     a = np.zeros(shape=(341, 156))
-    yclip = [4, 0]
-    xclip = [1, 2]
+    yclip = [4, 0] * u.pix
+    xclip = [1, 2] * u.pix
     new_a = clip_edges(a, yclip, xclip)
-    assert(a.shape[0] - (yclip[0] + yclip[1]) == 337)
-    assert(a.shape[1] - (xclip[0] + xclip[1]) == 153)
+    assert(a.shape[0] - (yclip[0].value + yclip[1].value) == 337)
+    assert(a.shape[1] - (xclip[0].value + xclip[1].value) == 153)
 
 
 def test_calculate_shift():
@@ -128,7 +129,7 @@ def test_mapcube_coalign_by_match_template():
     pixel_displacements = np.asarray([1.6, 10.1])
     known_displacements = {'x':np.asarray([0.0, pixel_displacements[1] * testmap.scale['x']]), 'y':np.asarray([0.0, pixel_displacements[0] * testmap.scale['y']])}
 
-    # Create a map that has been shifted a known amount. 
+    # Create a map that has been shifted a known amount.
     d1 = shift(testmap.data, pixel_displacements)
     m1 = map.Map((d1, testmap.meta))
 
@@ -141,7 +142,7 @@ def test_mapcube_coalign_by_match_template():
     # Assert
     assert_allclose(test_displacements['x'], known_displacements['x'], rtol=5e-2, atol=0)
     assert_allclose(test_displacements['y'], known_displacements['y'], rtol=5e-2, atol=0 )
-    
+
     # Test setting the template as a ndarray
     template_ndarray = testmap.data[ny / 4: 3 * ny / 4, nx / 4: 3 * nx / 4]
     test_displacements = mapcube_coalign_by_match_template(mc, template=template_ndarray, return_displacements_only=True)
@@ -187,3 +188,4 @@ def test_mapcube_coalign_by_match_template():
     test_mc = mapcube_coalign_by_match_template(mc, clip=False)
     assert(test_mc[0].data.shape == testmap.data.shape)
     assert(test_mc[1].data.shape == testmap.data.shape)
+

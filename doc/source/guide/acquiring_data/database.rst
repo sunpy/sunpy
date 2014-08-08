@@ -664,13 +664,14 @@ added in section 2.3.2, "Downloading":
     __init__ of the Wave attribute)
 
 When using the :class:`sunpy.net.vso.attrs.Wave` attribute, you have to
-know that the third parameter (unit) is 'angstrom' per default. So if it
-was not passed in the following example, the database would have been
-queried for all entries with a wavelength from 1 nm to 2 nm (10 Ångstrom
-are 1 nm) and therefore, an empty list would have been returned.
-
+specify a unit using ``astropy.units.Quantity``. If not an error is 
+raised. This also implies that there is no default unit that is 
+used by the class. To know how you can specify a detail using astropy
+check `astropy.units <https://astropy.readthedocs.org/en/stable/units/index.html>`_. 
+    
+    >>> from astropy import units as u
     >>> print display_entries(
-    ...     database.query(vso.attrs.Wave(10, 20, 'nm')),
+    ...     database.query(vso.attrs.Wave(10*u.nm, 20*u.nm)),
     ...     ['id', 'observation_time_start', 'observation_time_end', 'instrument', 'wavemin', 'wavemax'])
     id observation_time_start     observation_time_end       instrument wavemin wavemax
     -- ----------------------     --------------------       ---------- ------- -------

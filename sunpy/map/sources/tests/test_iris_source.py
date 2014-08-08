@@ -37,4 +37,3 @@ def test_observatory():
     for amap in irislist:
         if isinstance(amap, IRISMap):
             assert amap.observatory == "IRIS"
-
