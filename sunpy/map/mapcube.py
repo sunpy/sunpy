@@ -38,7 +38,7 @@ class MapCube(object):
 
     Examples
     --------
-    >>> mapcube = sunpy.map.Map('images/*.fits', mapcube=True)
+    >>> mapcube = sunpy.map.Map('images/*.fits', cube=True)
 
     Mapcubes can be co-aligned using the routines in sunpy.image.coalignment.
     """
@@ -70,6 +70,10 @@ class MapCube(object):
     def __getitem__(self, key):
         """Overiding indexing operation"""
         return self.maps[key]
+
+    def __len__(self):
+        """Return the number of maps in a mapcube."""
+        return len(self.maps)
 
     # Sorting methods
     @classmethod
@@ -241,10 +245,35 @@ class MapCube(object):
             self[0].cmap.set_gamma(gamma)
 
         if resample:
-            #This assumes that the maps a homogenous!
-            #TODO: Update this!
-            resample = np.array(len(self.maps)-1) * np.array(resample)
-            for amap in self.maps:
-                amap.resample(resample)
+            if self.all_maps_same_shape():
+                resample = np.array(len(self.maps) - 1) * np.array(resample)
+                for amap in self.maps:
+                    amap.resample(resample)
+            else:
+                raise ValueError('Maps in mapcube do not all have the same shape.')
 
         return MapCubeAnimator(self, **kwargs)
+
+    def all_maps_same_shape(self):
+        """
+        Tests if all the maps have the same number pixels in the x and y
+        directions.
+        """
+        return np.all([m.data.shape == self.maps[0].data.shape for m in self.maps])
+
+    def as_array(self):
+        """
+        If all the map shapes are the same, their image data is copied
+        into a single single ndarray. The ndarray is ordered as (ny, nx, nt).
+        Otherwise, a ValueError is thrown.
+        """
+        if self.all_maps_same_shape():
+            return np.swapaxes(np.swapaxes(np.asarray([m.data for m in self.maps]), 0, 1).copy(), 1, 2).copy()
+        else:
+            raise ValueError('Not all maps have the same shape.')
+
+    def all_meta(self):
+        """
+        Return all the meta objects as a list.
+        """
+        return [m.meta for m in self.maps]
