@@ -558,7 +558,7 @@ class VSOClient(object):
             "{source}/{instrument}/{time.start}/{file}".
         methods : {list of str}
             Methods acceptable to user.
-        downloader : sunpy.net.downloader.Downloader
+        downloader : sunpy.net.downloader.FileDownloader
             Downloader used to download the data.
         site: str
             There are a number of caching mirrors for SDO and other
@@ -585,7 +585,7 @@ class VSOClient(object):
         >>> res = get(qr).wait() # doctest:+SKIP
         """
         if downloader is None:
-            downloader = download.Downloader()
+            downloader = download.FileDownloader()
             downloader.init()
             res = Results(
                 lambda _: downloader.stop(), 1,
