@@ -1,3 +1,7 @@
+#Author: Rishabh Sharma <rishabh.sharma.gunner@gmail.com>
+#This Module was developed under funding provided by 
+#Google Summer of Code 2014
+
 import datetime
 import urlparse
 
