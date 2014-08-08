@@ -38,10 +38,10 @@ class UnifiedResponse(list):
 
         table =[
                 [
-                     (qrblock.time.t1.date() + timedelta(days=i)).strftime('%Y/%m/%d'), 
-		     #vso serviced query will break here, time.t1 --> time.start required
+                     (qrblock.time.t1.date() + timedelta(days=i)).strftime('%Y/%m/%d'),
+                     #vso serviced query will break here, time.t1 --> time.start required
                      (qrblock.time.t2.date() + timedelta(days=i)).strftime('%Y/%m/%d'),
-		     qrblock.source,
+                     qrblock.source,
                      qrblock.instrument,
                      qrblock.url
                 ]
@@ -61,12 +61,12 @@ class downloadresponse(list):
         super(downloadresponse, self).__init__(lst)
 
     def wait(self):
-        """Waits for all files to  be downloaded completely.
-
-	Returns
-	-------
+        """
+        Waits for all files to download completely and then return.
+        Returns
+        -------
         list of file paths to which files have been downloaded.
-	"""
+        """
         filelist = []
         for resobj in self:
             filelist.extend(resobj.wait())
@@ -96,50 +96,50 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
     def query(self, *query):
         '''
         Query for data in form of multiple parameters.
-	Examples
-	--------
-	Query for LYRALightCurve data from timerange('2012/3/4','2012/3/6')
-	>>> unifresp = UnifiedDownloader.query(Time('2012/3/4','2012/3/6'),Instrument('lyra'))
-	>>> unifresp = UnifiedDownloader.query(Time('2012/3/4','2012/3/6'),Instrument('norh') | Instrument('rhessi'))
-	>>> unifresp = UnifiedDownloader.query(Time('2012/3/4','2012/3/6'),Instrument('AIA'),
-	               Wave(304, 304),Sample(60*10))
+        Examples
+        --------
+        Query for LYRALightCurve data from timerange('2012/3/4','2012/3/6')
+        >>> unifresp = UnifiedDownloader.query(Time('2012/3/4','2012/3/6'),Instrument('lyra'))
+        >>> unifresp = UnifiedDownloader.query(Time('2012/3/4','2012/3/6'),Instrument('norh') | Instrument('rhessi'))
+        >>> unifresp = UnifiedDownloader.query(Time('2012/3/4','2012/3/6'),Instrument('AIA'),
+                       Wave(304, 304),Sample(60*10))
 
-	Parameters
-	----------
-	query: Mutiple parameters,VSO-styled query. Attributes from JSOC, VSO both can be used.
-        
+        Parameters
+        ----------
+        query: Mutiple parameters,VSO-styled query. Attributes from JSOC, VSO both can be used.
+
         Returns
-	-------
+        -------
         UnifiedResponse object: Container of responses returned by clients servicing query.
 
-	Notes
-	-----
+        Notes
+        -----
         and_ tranforms query into disjunctive normal form
         ie. query is now of form A & B or ((A & B) | (C & D))
         This helps in modularising query into parts and handling each of the parts individually.
-	'''
+        '''
         query = and_(*query)
         return UnifiedResponse(qwalker.create(query, self))
 
     def get(self, qr, **kwargs):
         '''
         Downloads the files pointed at by URLS contained within UnifiedResponse Object.
-	Parameters
-	----------
-	qr : UnifiedResponse Object
-	    Container returned by query method.
-        
-        Returns
-	-------
-	DownloadResponse Object
-	    List of Results object with an additional wait method.
+        Parameters
+        ----------
+        qr : UnifiedResponse Object
+            Container returned by query method.
 
-	Example
-	--------
-	>>> unifresp = UnifiedDownloader.query(Time('2012/3/4','2012/3/6'),Instrument('AIA'))
-	>>> downresp = UnifiedDownloader.get(unifresp)
-	>>> file_paths = downresp.wait()
-	'''
+        Returns
+        -------
+        DownloadResponse Object
+            List of Results object with an additional wait method.
+
+        Example
+        --------
+        >>> unifresp = UnifiedDownloader.query(Time('2012/3/4','2012/3/6'),Instrument('AIA'))
+        >>> downresp = UnifiedDownloader.get(unifresp)
+        >>> file_paths = downresp.wait()
+        '''
         reslist =[]
         for block in qr:
             reslist.append(block.client.get(block, **kwargs))
