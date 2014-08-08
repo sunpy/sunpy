@@ -52,5 +52,4 @@ def test_normalizer(createEIT):
         assert isinstance(lognorm, colors.LogNorm)
         assert lognorm.vmin == 1
         #assert lognorm.vmax == (min(eit.max(), eit.mean() + 5 * eit.std()))
-	np.testing.assert_allclose(lognorm.vmax, 1234.1161862241358, rtol=1.00001) # Min of 1887.75 and 1234.1161862241358
-
+        np.testing.assert_allclose(lognorm.vmax, 1234.1161862241358, rtol=1.00001) # Min of 1887.75 and 1234.1161862241358

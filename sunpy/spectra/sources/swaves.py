@@ -28,7 +28,7 @@ __all__ = ['SWavesSpectrogram']
 #        max_wave = 0.016
 #    elif band.lower() != 'low':
 #        band = 'high' # range 0.125 - 16 MHz
-#        min_wave = 0.00017 
+#        min_wave = 0.00017
 #        max_wave = 0.016
 #    elif band.lower() == 'low': # range 10 - 160 KHz
 #        min_wave = 0.00001
@@ -73,20 +73,20 @@ class SWavesSpectrogram(LinearTimeSpectrogram):
         content = ''
         t_label = 'Time [UT]'
         f_label = 'Frequency [KHz]'
-        
+
         freq_axis = freq_axis[::-1]
         data = data[::-1, :]
-        
+
         return cls(data, time_axis, freq_axis, start, end, t_init, t_delt,
             t_label, f_label, content, bg)
 
-        
+
     def __init__(self, data, time_axis, freq_axis, start, end,
             t_init, t_delt, t_label, f_label, content, bg):
         # Because of how object creation works, there is no avoiding
         # unused arguments in this case.
         # pylint: disable=W0613
-        
+
         super(SWavesSpectrogram, self).__init__(
             data, time_axis, freq_axis, start, end,
             t_init, t_delt, t_label, f_label,
