@@ -53,7 +53,7 @@ def test_convert_data_to_pixel():
         assert_array_almost_equal(result[1], known_answer[1], decimal = 0)
         
 def test_conv_hpc_hcc():
-    coord = [40.0 * u.arcsec, 32.0 * u.arcsec]
+    coord = [40.0, 32.0] * u.arcsec
     result = wcs.convert_hpc_hcc(coord[0], coord[1])
     known_answer = [28748691, 22998953] * u.meter
     assert_allclose(result[0], known_answer[0], rtol=1e-2, atol=0)
@@ -68,19 +68,19 @@ def test_conv_hpc_hcc():
 
     # Make sure that z coordinate is returned if parameter z is True
     result = wcs.convert_hpc_hcc(coord[0], coord[1], z=True)
-    known_answer = [28748691*u.meter, 22998953*u.meter, 695016924*u.meter]
+    known_answer = [28748691, 22998953, 695016924] * u.meter
     assert_allclose(result[1], known_answer[1], rtol=1e-2, atol=0)
     assert_allclose(result[0], known_answer[0], rtol=1e-2, atol=0)
 
 def test_conv_hcc_hpc():
-    coord = [28748691*u.meter, 22998953*u.meter]
+    coord = [28748691, 22998953] * u.meter
     result = wcs.convert_hcc_hpc(coord[0], coord[1], dsun_meters=img.dsun)
-    known_answer = [40.0*u.arcsec.to(u.deg), 32.0*u.arcsec.to(u.deg)]
+    known_answer = ([40.0, 32.0] * u.arcsec).to(u.deg)
     assert_allclose(result[0], known_answer[0], rtol=1e-2, atol = 0)
     assert_allclose(result[1], known_answer[1], rtol=1e-2, atol = 0)
 
 def test_conv_hcc_hg():
-    coord = [13.0*u.meter, 58.0*u.meter]
+    coord = [13.0, 58.0] * u.meter
     result = wcs.convert_hcc_hg(coord[0], coord[1], b0_deg=img.heliographic_latitude, l0_deg=img.heliographic_longitude)
     known_answer = [1.0791282e-06 * u.deg, -7.0640732 * u.deg]
     assert_allclose(result[0], known_answer[0], rtol=1e-2, atol=0)
@@ -92,12 +92,13 @@ def test_conv_hcc_hg():
     known_answer = [1.0791282e-06 * u.deg, -7.0640732 * u.deg, sun.constants.radius.si]
     assert_allclose(result[0], known_answer[0], rtol=1e-2, atol=0)
     assert_allclose(result[1], known_answer[1], rtol=1e-2, atol=0)
+    assert_allclose(result[2], known_answer[2], rtol=1e-2, atol=0)
 
 def test_conv_hg_hcc():
-    coord = [34.0 * u.deg, 96.0 * u.deg]
+    coord = [34.0, 96.0] * u.deg
     result = wcs.convert_hg_hcc(coord[0], coord[1], b0_deg=img.heliographic_latitude,
                                 l0_deg=img.heliographic_longitude)
-    known_answer = [-40653538.0 * u.meter, 6.7903529e8 * u.meter]
+    known_answer = [-40653538.0, 6.7903529e8] * u.meter
     assert_allclose(result[0], known_answer[0], rtol=1e-2, atol=0)
     assert_allclose(result[1], known_answer[1], rtol=1e-2, atol=0)
 
@@ -110,42 +111,42 @@ def test_conv_hg_hcc():
     assert_allclose(result[1], known_answer[1], rtol=1e-2, atol=0)
 
     # Make sure that z coordinates are returned if z=True
-    known_answer = [-40653538.0 * u.meter, 6.7903529e8 * u.meter, -1.4487837e8 * u.meter]
+    known_answer = [-40653538.0, 6.7903529e8, -1.4487837e8] * u.meter
     result = wcs.convert_hg_hcc(coord[0], coord[1], b0_deg=img.heliographic_latitude,
                                 l0_deg=img.heliographic_longitude, z=True)
     assert_allclose(result[0], known_answer[0], rtol=1e-2, atol=0)
     assert_allclose(result[1], known_answer[1], rtol=1e-2, atol=0)
 
     # If z < 0, using occultation should make the return coordinates nan
-    coord2 = [55.0 * u.deg, 56.0 * u.deg]
+    coord2 = [55.0, 56.0] * u.deg
     known_answer = [[np.nan, 3.1858718e8 * u.meter], [np.nan, 5.9965928e8 * u.meter]]
-    coords = zip(coord, coord2)
-    result = wcs.convert_hg_hcc(*coords, b0_deg=img.heliographic_latitude,
+    result = wcs.convert_hg_hcc(coord,coord2, b0_deg=img.heliographic_latitude,
                                 l0_deg=img.heliographic_longitude, occultation=True)
     assert_allclose(result[0], known_answer[0], rtol=1e-2, atol=0)
     assert_allclose(result[1], known_answer[1], rtol=1e-2, atol=0)
 
 def test_conv_hg_hpc():
-    coord = [34.0 * u.deg, 45.0 * u.deg]
+    coord = [34.0, 45.0] * u.deg
     result = wcs.convert_hg_hpc(coord[0], coord[1], dsun_meters=img.dsun,
                                 b0_deg=img.heliographic_latitude,
                                 l0_deg=img.heliographic_longitude)
-    known_answer = [381.737592 * u.arcsec.to(u.deg), 747.072612 * u.arcsec.to(u.deg)]
+    known_answer = ([381.737592, 747.072612] * u.arcsec).to(u.deg)
     assert_allclose(result[0], known_answer[0], rtol=1e-2, atol=0)
     assert_allclose(result[1], known_answer[1], rtol=1e-2, atol=0)
 
     # Test to make sure occultation parameter works
-    coord = [34.0, 96.0]
-    coord2 = [55.0, 56.0]
+    coord = [34.0, 96.0] * u.deg
+    coord2 = [55.0, 56.0] * u.deg
     known_answer = [[np.nan, 441.65710359], [np.nan, 831.30194808]]
     coords = zip(coord, coord2)
-    result = wcs.convert_hg_hpc(*coords, dsun_meters=img.dsun,
+    result = wcs.convert_hg_hpc(coord, coord2, dsun_meters=img.dsun,
                 b0_deg=img.heliographic_latitude, l0_deg=img.heliographic_longitude,
                 occultation=True)
-    assert_allclose(result, known_answer, rtol=1e-2, atol=0)
+    assert_allclose(result[0], known_answer[0], rtol=1e-2, atol=0)
+    assert_allclose(result[1], known_answer[1], rtol=1e-2, atol=0)
 
 def test_conv_hpc_hg():
-    coord = [382 * u.arcsec, 748 * u.arcsec]
+    coord = [382, 748] * u.arcsec
     known_answer = [34.091299 * u.deg, 45.095130 * u.deg]
     result = wcs.convert_hpc_hg(coord[0], coord[1], dsun_meters=img.dsun,
                                 b0_deg=img.heliographic_latitude,
@@ -191,14 +192,23 @@ def test_convert_to_coord():
 def test_convert_back():
     # Make sure transformation followed by inverse transformation returns
     # the original coordinates
-    coord = [40.0 * u.deg, 32.0 * u.deg]
-    assert_allclose(wcs.convert_hcc_hpc(*wcs.convert_hpc_hcc(*coord))[0],
+    coord = [40.0, 32.0] * u.arcsec
+    result = wcs.convert_hpc_hcc(coord[0], coord[1])
+    assert_allclose(wcs.convert_hcc_hpc(result[0], result[1])[0].to(u.arcsec),
                     coord[0], rtol=1e-2, atol=0)
-    assert_allclose(wcs.convert_hcc_hpc(*wcs.convert_hpc_hcc(*coord))[1],
-                    coord[1], rtol=1e-2, atol=0)    
-    coord = [13.0 * u.meter, 58.0 * u.meter]
-    assert_allclose(wcs.convert_hg_hcc(*wcs.convert_hcc_hg(*coord)),
-                    coord, rtol=1e-2, atol=0)
-    coord = [34.0 * u.deg, 45.0 * u.deg]
-    assert_allclose(wcs.convert_hpc_hg(*wcs.convert_hg_hpc(*coord)),
-                    coord, rtol=1e-2, atol=0)
+    assert_allclose(wcs.convert_hcc_hpc(result[0], result[1])[1].to(u.arcsec),
+                    coord[1], rtol=1e-2, atol=0)  
+
+    coord = [13.0, 58.0] * u.deg
+    result = wcs.convert_hg_hcc(coord[0], coord[1])
+    assert_allclose(wcs.convert_hcc_hg(result[0], result[1])[0],
+                    coord[0], rtol=1e-2, atol=0)
+    assert_allclose(wcs.convert_hcc_hg(result[0], result[1])[1],
+                    coord[1], rtol=1e-2, atol=0)
+
+    coord = [34.0, 45.0] * u.arcsec
+    result = wcs.convert_hpc_hg(coord[0], coord[1])
+    assert_allclose(wcs.convert_hg_hpc(result[0], result[1])[0].to(u.arcsec),
+                    coord[0], rtol=1e-2, atol=0)
+    assert_allclose(wcs.convert_hg_hpc(result[0], result[1])[1].to(u.arcsec),
+                    coord[1], rtol=1e-2, atol=0)

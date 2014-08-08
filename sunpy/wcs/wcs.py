@@ -320,7 +320,7 @@ def convert_hcc_hg(x, y, z=None, b0_deg=0 * u.deg, l0_deg=0 * u.deg, radius=Fals
     else:
         return hgln.to(u.deg), hglt.to(u.deg)
 
-def convert_hg_hcc(hglon_deg, hglat_deg, b0_deg=0, l0_deg=0, occultation=False,
+def convert_hg_hcc(hglon_deg, hglat_deg, b0_deg=0 * u.deg, l0_deg=0 * u.deg, occultation=False,
                    z=False, r=sun.constants.radius.si):
     """Convert from Stonyhurst Heliographic coordinates (given in degrees) to
     Heliocentric-Cartesian coordinates (given in meters).
@@ -377,20 +377,20 @@ def convert_hg_hcc(hglon_deg, hglat_deg, b0_deg=0, l0_deg=0, occultation=False,
     siny = np.sin(lat)
 
     # Perform the conversion.
-    x = r * cosy * sinx
-    y = r * (siny * cosb - cosy * cosx * sinb)
-    zz = r * (siny * sinb + cosy * cosx * cosb)
+    x = np.array([(r * cosy * sinx).value])
+    y = np.array([(r * (siny * cosb - cosy * cosx * sinb)).value])
+    zz = np.array([(r * (siny * sinb + cosy * cosx * cosb)).value])
 
     if occultation:
         x[zz < 0] = np.nan
         y[zz < 0] = np.nan
 
     if np.all(z == True):
-        return x, y, zz
+        return [x, y, zz] * u.meter
     else:
-        return x, y
+        return [x, y] * u.meter
 
-def convert_hg_hpc(hglon_deg, hglat_deg, b0_deg=0, l0_deg=0, dsun_meters=None,
+def convert_hg_hpc(hglon_deg, hglat_deg, b0_deg=0 * u.deg, l0_deg=0 * u.deg, dsun_meters=None,
                    occultation=False):
     """Convert from Heliographic coordinates (HG) to Helioprojective-Cartesian
     (HPC).
@@ -434,7 +434,7 @@ def convert_hg_hpc(hglon_deg, hglat_deg, b0_deg=0, l0_deg=0, dsun_meters=None,
     x, y = convert_hcc_hpc(tempx, tempy, dsun_meters=dsun_meters)
     return x, y
 
-def convert_hpc_hg(x, y, b0_deg=0, l0_deg=0, dsun_meters=None):
+def convert_hpc_hg(x, y, b0_deg=0 * u.deg, l0_deg=0 * u.deg, dsun_meters=None):
     """Convert from Helioprojective-Cartesian (HPC) to Heliographic coordinates
     (HG) in degrees.
 
@@ -469,7 +469,7 @@ def convert_hpc_hg(x, y, b0_deg=0, l0_deg=0, dsun_meters=None):
     if not isinstance(x or  y, u.Quantity):
         raise ValueError("Must be astropy.units.Quantity instance")
     if not isinstance(b0_deg or l0_deg, u.Quantity):
-        raise ValueError("Must be astropy.units.Quantity instance")    
+        raise ValueError("Must be astropy.units.Quantity instance")   
     tempx, tempy = convert_hpc_hcc(x, y, dsun_meters=dsun_meters)
     lon, lat = convert_hcc_hg(tempx, tempy, b0_deg=b0_deg, l0_deg=l0_deg)
     return lon, lat

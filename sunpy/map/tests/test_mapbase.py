@@ -342,11 +342,11 @@ def test_rotate():
 
 def test_rotate_recenter(aia_map):
     # Check recentering
-    image_center = np.array((200, 100))
+    image_center = np.array((200, 100)) * u.arcsec
     rotated_map_6 = aia_map.rotate(20*u.deg, image_center=image_center, recenter=True)
 
     # shift is image_center - map_center
-    shift = image_center*u.pix - ((np.array(aia_map.shape)/2.)*u.pix + 0.5*u.pix)
+    shift = (image_center.value - ((np.array(aia_map.shape)/2.) + 0.5)) * u.pix
 
     # y shift is inverted because the data in the map is origin lower.
     np.testing.assert_allclose(rotated_map_6.reference_pixel.values(),
