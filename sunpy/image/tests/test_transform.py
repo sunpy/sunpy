@@ -23,13 +23,13 @@ def compare_results(expect, result, allclose=True):
     exp = expect[1:-1, 1:-1]
     res = result[1:-1, 1:-1]
     t1 = abs(exp.mean() - res.mean()) <= rtol*exp.mean()
-    
+
     #Don't do the allclose test for scipy as the bicubic algorthm has edge effects
-    if allclose:    
+    if allclose:
         t2 = np.allclose(exp, res, rtol=rtol)  #TODO: Develop a better way of testing this
     else:
         t2 = True
-    
+
     return t1 and t2
 
 @pytest.mark.parametrize("angle, k", [(90.0, 1), (-90.0, -1), (-270.0, 1),
@@ -44,7 +44,7 @@ def test_rotation(angle, k):
     #Run the tests at order 4 as it produces more accurate 90 deg rotations
     rot = affine_transform(original, order=4, rmatrix=rmatrix)
     assert compare_results(expected, rot)
-    
+
     # TODO: Check incremental 360 degree rotation against original image
 
     # Check derotated image against original
@@ -62,7 +62,7 @@ def test_scipy_rotation(angle, k):
     expected = np.rot90(original, k=k)
     rot = affine_transform(original, rmatrix=rmatrix, use_scipy=True)
     assert compare_results(expected, rot, allclose=False)
-    
+
     # TODO: Check incremental 360 degree rotation against original image
 
     # Check derotated image against original
@@ -76,7 +76,7 @@ dy_values.sort()
 def test_shift(dx, dy):
     # Rotation center for all translation tests.
     image_center = np.array(original.shape)/2.0 - 0.5
-    
+
     # No rotation for all translation tests.
     rmatrix = np.array([[1.0, 0.0], [0.0, 1.0]])
 
@@ -101,7 +101,7 @@ def test_shift(dx, dy):
 def test_scale(scale_factor):
     # No rotation for all scaling tests.
     rmatrix = np.array([[1.0, 0.0], [0.0, 1.0]])
-    
+
     # Check a scaled image against the expected outcome
     newim = tf.rescale(original/original.max(), scale_factor, order=4,
                        mode='constant') * original.max()
@@ -131,7 +131,7 @@ def test_all(angle, dx, dy, scale_factor):
     k = int(angle/90)
     angle = np.radians(angle)
     image_center = np.array(original.shape)/2.0 - 0.5
-    
+
     # Check a shifted, rotated and scaled shape against expected outcome
     c = np.cos(angle); s = np.sin(angle)
     rmatrix = np.array([[c, -s], [s, c]])

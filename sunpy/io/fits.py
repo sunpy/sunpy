@@ -76,7 +76,7 @@ def read(filepath, hdus=None):
         elif isinstance(hdus, collections.Iterable):
             hdulist = [hdulist[i] for i in hdus]
     try:
-        hdulist.verify('silentfix')
+        hdulist.verify('fix+warn')
 
         headers = get_header(hdulist)
         pairs = []
@@ -267,6 +267,6 @@ def extract_waveunit(header):
             if m is not None:
                 waveunit = m.group(1)
                 break
-    if waveunit == '': 
-        return None # To fix problems associated with HMI FITS.        
+    if waveunit == '':
+        return None # To fix problems associated with HMI FITS.
     return waveunit
