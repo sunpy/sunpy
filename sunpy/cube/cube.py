@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 # Author: Mateo Inchaurrandieta <mateo.inchaurrandieta@gmail.com>
 # pylint: disable=E1101, E0611
-'''
+"""
 Main class for representing cubes - 3D sets of continuous data by time and/or
 wavelength
-'''
+"""
 # NOTE: This module uses version 1.02 of "Time coordinates in FITS" by
 # Rots et al, available at http://hea-www.cfa.harvard.edu/~arots/TimeWCS/
 # This draft standard may change.
@@ -32,24 +32,25 @@ __all__ = ['Cube']
 
 
 class Cube(astropy.nddata.NDData):
-    ''' Class representing spectral cubes.
+    """
+    Class representing spectral cubes.
 
-        Attributes
-        ----------
-        data: numpy ndarray
-            The spectral cube holding the actual data in this object. The axes'
-            priorities are time, spectral, celestial. This means that if
-            present, each of these axis will take precedence over the others.
-            For example, in an x, y, t cube the order would be (t,x,y) and in a
-            lambda, t, y cube the order will be (t, lambda, y).
+    Attributes
+    ----------
+    data: numpy ndarray
+        The spectral cube holding the actual data in this object. The axes'
+        priorities are time, spectral, celestial. This means that if
+        present, each of these axis will take precedence over the others.
+        For example, in an x, y, t cube the order would be (t,x,y) and in a
+        lambda, t, y cube the order will be (t, lambda, y).
 
-        axes_wcs: sunpy.wcs.wcs.WCS object
-            The WCS object containing the axes' information
+    axes_wcs: sunpy.wcs.wcs.WCS object
+        The WCS object containing the axes' information
 
-        meta: dict
-            Header containing the wavelength-specific metadata as well as the
-            whole-file metadata
-    '''
+    meta: dict
+        Header containing the wavelength-specific metadata as well as the
+        whole-file metadata
+    """
 
     def __init__(self, data, wcs, meta=None, **kwargs):
         data, wcs = cu.orient(data, wcs)
@@ -64,7 +65,7 @@ class Cube(astropy.nddata.NDData):
 
     def plot_wavelength_slice(self, offset, axes=None,
                               style='imshow', **kwargs):
-        '''
+        """
         Plots an x-y graph at a certain specified wavelength onto the current
         axes. Keyword arguments are passed on to matplotlib.
 
@@ -81,7 +82,7 @@ class Cube(astropy.nddata.NDData):
 
         style: 'imshow' or 'pcolormesh'
             The style of plot to be used. Default is 'imshow'
-        '''
+        """
         if axes is None:
             axes = plt.gca()
 
@@ -98,7 +99,7 @@ class Cube(astropy.nddata.NDData):
 
     def plot_x_slice(self, offset, axes=None,
                      style='imshow', **kwargs):
-        '''
+        """
         Plots an x-y graph at a certain specified wavelength onto the current
         axes. Keyword arguments are passed on to matplotlib.
 
@@ -115,7 +116,7 @@ class Cube(astropy.nddata.NDData):
 
         style: 'imshow' or 'pcolormesh'
             The style of plot to be used. Default is 'imshow'
-        '''
+        """
         if axes is None:
             axes = plt.gca()
 
@@ -131,15 +132,18 @@ class Cube(astropy.nddata.NDData):
         return plot
 
     def animate(self, *args, **kwargs):
-        '''Plots an interactive visualization of this cube with a slider
+        """
+        Plots an interactive visualization of this cube with a slider
         controlling the wavelength axis.
         Parameters other than data are passed to ImageAnimator, which in turn
-        passes them to imshow.'''
+        passes them to imshow.
+        """
         i = ImageAnimator(data=self.data, *args, **kwargs)
         return i
 
     def _choose_wavelength_slice(self, offset):
-        '''Retrieves an x-y slice at a wavelength specified by the cube's
+        """
+        Retrieves an x-y slice at a wavelength specified by the cube's
         primary wavelength plus the given offset.
 
         Parameters
@@ -148,7 +152,7 @@ class Cube(astropy.nddata.NDData):
             Offset from the cube's primary wavelength. If the value is an int,
             then it returns that slice. Otherwise, it will return the nearest
             wavelength to the one specified.
-        '''
+        """
         if 'WAVE' not in self.axes_wcs.wcs.ctype:
             raise cu.CubeError(2, "Spectral dimension not present")
 
@@ -168,7 +172,7 @@ class Cube(astropy.nddata.NDData):
         return arr
 
     def _choose_x_slice(self, offset):
-        '''
+        """
         Retrieves a lambda-y slice at an x coordinate specified by the cube's
         primary wavelength plus the given offset.
 
@@ -178,7 +182,7 @@ class Cube(astropy.nddata.NDData):
             Offset from the cube's initial x. If the value is an int,
             then it returns that slice. Otherwise, it will return the nearest
             wavelength to the one specified.
-        '''
+        """
         arr = None
         axis = 1 if self.axes_wcs.wcs.ctype[-2] != 'WAVE' else 2
         length = self.data.shape[axis]
@@ -197,7 +201,7 @@ class Cube(astropy.nddata.NDData):
 
     def slice_to_map(self, chunk, snd_dim=None, *args, **kwargs):
         # TODO: make this take quantities
-        '''
+        """
         Converts a given frequency chunk to a SunPy Map. Extra parameters are
         passed on to Map.
 
@@ -207,7 +211,7 @@ class Cube(astropy.nddata.NDData):
             The piece of the cube to convert to a map. If it's a single number,
             then it will return that single-slice map, otherwise it will
             aggregate the given range.
-        '''
+        """
         if self.axes_wcs.wcs.ctype[-2] == 'WAVE' and self.data.ndim == 3:
             error = "Cannot construct a map with only one spatial dimension"
             raise cu.CubeError(3, error)
@@ -233,7 +237,7 @@ class Cube(astropy.nddata.NDData):
 
     def slice_to_lightcurve(self, wavelength, y_coord=None, x_coord=None):
         # TODO: make this take quantities
-        '''
+        """
         For a time-lambda-y cube, returns a lightcurve with curves at the
         specified wavelength and given y-coordinate. If no y is given, all of
         them will be used (meaning the lightcurve object could contain more
@@ -244,22 +248,34 @@ class Cube(astropy.nddata.NDData):
             The wavelength to take the y-coordinates from
         y_coord: int, optional
             The y-coordinate to take the lightcurve from.
-        x_coord: in
-        '''
+        x_coord: int, optional
+            In the case of hypercubes, specify an extra celestial coordinate.
+        """
         if self.axes_wcs.wcs.ctype[-1] not in ['TIME', 'UTC']:
             raise cu.CubeError(1,
                                'Cannot create a lightcurve with no time axis')
         if self.axes_wcs.wcs.ctype[-2] != 'WAVE':
             raise cu.CubeError(2, 'A spectral axis is needed in a lightcurve')
 
-        data = self._choose_wavelength_slice(wavelength)
-        if y_coord is not None:
-            data = data[:, y_coord]
+        if self.data.ndim == 3:
+            data = self._choose_wavelength_slice(wavelength)
+            if y_coord is not None:
+                data = data[:, y_coord]
+        else:
+            if y_coord is None and x_coord is None:
+                raise cu.CubeError(4, "At least one coordinate must be given")
+            if y_coord is None:
+                y_coord = slice(None, None, None)
+            if x_coord is None:
+                x_coord = slice(None, None, None)
+            item = (slice(None, None, None), wavelength, y_coord, x_coord)
+            data = self.data[item]
+
         return LightCurve(data=data, meta=self.meta)
 
     def slice_to_spectrum(self, *coords):
         # TODO: make this take quantities
-        '''
+        """
         For a cube containing a spectral dimension, returns a sunpy spectrum.
         The given coordinates represent which values to take. If they are None,
         then the corresponding axis is summed.
@@ -273,7 +289,7 @@ class Cube(astropy.nddata.NDData):
             The second coordinate to pick. This will always correspond to the
             third axis. If None, the whole axis will be taken and its values
             summed.
-        '''
+        """
         if 'WAVE' not in self.axes_wcs.wcs.ctype:
             raise cu.CubeError(2, 'Spectral axis needed to create a spectrum')
         axis = 0 if self.axes_wcs.wcs.ctype[-1] == 'WAVE' else 1
@@ -304,7 +320,7 @@ class Cube(astropy.nddata.NDData):
 
     def slice_to_spectrogram(self, y_coord, x_coord=None, **kwargs):
         # TODO: make this take quantities
-        '''
+        """
         For a time-lambda-y cube, given a y-coordinate, returns a sunpy
         spectrogram. Keyword arguments are passed on to Spectrogram's __init__.
 
@@ -314,7 +330,7 @@ class Cube(astropy.nddata.NDData):
             The y-coordinate to pick when converting to a spectrogram.
         x_coord: int
             The x-coordinate to pick. This is only used for hypercubes.
-        '''
+        """
         if self.axes_wcs.wcs.ctype[-1] not in ['TIME', 'UTC']:
             raise cu.CubeError(1,
                                'Cannot create a spectrogram with no time axis')
@@ -350,7 +366,7 @@ class Cube(astropy.nddata.NDData):
 
     def slice_to_cube(self, axis, chunk, **kwargs):
         # TODO: make this take quantities
-        '''
+        """
         For a hypercube, return a 3-D cube that has been cut along the given
         axis and with data corresponding to the given chunk.
 
@@ -360,7 +376,7 @@ class Cube(astropy.nddata.NDData):
             The axis to cut from the hypercube
         chunk: int or tuple:
             The data to take from the axis
-        '''
+        """
         if self.data.ndim == 3:
             raise cu.CubeError(4, 'Can only slice a hypercube into a cube')
 
@@ -380,10 +396,10 @@ class Cube(astropy.nddata.NDData):
         return cube
 
     def time_axis(self):
-        '''
+        """
         Returns a numpy array containing the time values for the cube's time
         dimension.
-        '''
+        """
         if self.axes_wcs.wcs.ctype[-1] not in ['TIME', 'UTC']:
             raise cu.CubeError(1, 'No time axis present')
         delta = self.axes_wcs.wcs.cdelt[-1]
@@ -394,10 +410,10 @@ class Cube(astropy.nddata.NDData):
         return np.arange(start, stop, delta)
 
     def freq_axis(self):
-        '''
+        """
         Returns a numpy array containing the frequency values for the cube's
         spectral dimension.
-        '''
+        """
         if 'WAVE' not in self.axes_wcs.wcs.ctype:
             raise cu.CubeError(2,
                                'No energy (wavelength, frequency) axis found')
