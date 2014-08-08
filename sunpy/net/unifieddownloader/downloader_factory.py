@@ -1,3 +1,7 @@
+#Author: Rishabh Sharma <rishabh.sharma.gunner@gmail.com>
+#This module was developed under funding provided by
+#Google Summer of Code 2014
+
 from datetime import timedelta
 
 from sunpy.util import print_table
@@ -57,7 +61,8 @@ class downloadresponse(list):
         super(downloadresponse, self).__init__(lst)
 
     def wait(self):
-        """Waits for all the files to download completely.
+        """Waits for all files to  be downloaded completely.
+
 	Returns
 	-------
         list of file paths to which files have been downloaded.
@@ -87,11 +92,6 @@ def _create(wlk, query, dobj):
 
 
 class UnifiedDownloaderFactory(BasicRegistrationFactory):
-    """
-    Downloads data from multiple LightCurves clients.
-    Additional clients can be registered with this class. They should 
-    contain a class method which returns a boolean value, analysing if the query can be handled.
-    """
 
     def query(self, *query):
         '''

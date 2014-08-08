@@ -1,3 +1,7 @@
+#Author: Rishabh Sharma <rishabh.sharma.gunner@gmail.com>
+#This module was developed under funding provided by
+#Google Summer of Code 2014
+
 from sunpy.instr import rhessi
 
 from sunpy.net.unifieddownloader.client import GenericClient

@@ -18,3 +18,13 @@ UnifiedDownloader.register(VSOClient,VSOClient._can_handle_query)
 UnifiedDownloader.register(NOAAIndicesClient,NOAAIndicesClient._can_handle_query)
 UnifiedDownloader.register(NOAAPredictClient,NOAAPredictClient._can_handle_query)
 UnifiedDownloader.register(RHESSIClient,RHESSIClient._can_handle_query)
+
+"""
+class UnifiedDownloaderFactory(BasicRegistrationFactory):
+      Downloads data from multiple LightCurves clients.
+      Additional clients can be registered with this class. They should 
+      contain a class method which returns a boolean value, analysing if the query can be handled.
+      Query method builds a container of URLS.These URLS pertain to data being sought by the query.
+      Get method downloads the data from the URLS.
+"""
+
