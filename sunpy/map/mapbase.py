@@ -575,8 +575,8 @@ Dimension:\t [%d, %d]
 
         # Note that 'x' and 'y' correspond to 1 and 0 in self.shape,
         # respectively
-        scale_factor_x = (float(self.shape[1]) / dimensions[0])
-        scale_factor_y = (float(self.shape[0]) / dimensions[1])
+        scale_factor_x = (float(self.shape[1].value) / dimensions[0])
+        scale_factor_y = (float(self.shape[0].value) / dimensions[1])
 
         new_map = deepcopy(self)
         # Update image scale and number of pixels
@@ -587,8 +587,8 @@ Dimension:\t [%d, %d]
         new_meta['cdelt2'] *= scale_factor_y
         new_meta['crpix1'] = (dimensions[0] + 1) / 2.
         new_meta['crpix2'] = (dimensions[1] + 1) / 2.
-        new_meta['crval1'] = self.center['x']
-        new_meta['crval2'] = self.center['y']
+        new_meta['crval1'] = self.center['x'].value
+        new_meta['crval2'] = self.center['y'].value
 
         # Create new map instance
         new_map.data = new_data
@@ -693,7 +693,7 @@ Dimension:\t [%d, %d]
             # Convert the axis of rotation from data coordinates to pixel coordinates
             x = self.data_to_pixel(image_center[0], 'x')
             y = self.data_to_pixel(image_center[1], 'y')
-            rotation_center = (y, x)
+            rotation_center = np.array([y.value, x.value]) * u.Unit(x.unit)
         else:
             rotation_center = array_center
 
@@ -704,7 +704,7 @@ Dimension:\t [%d, %d]
         new_map.data = affine_transform(new_map.data.T,
                                         np.asarray(rmatrix),
                                         order=order, scale=scale,
-                                        image_center=rotation_center,
+                                        image_center=rotation_center.value,
                                         recenter=recenter, missing=missing,
                                         use_scipy=use_scipy).T
 
@@ -888,16 +888,16 @@ Dimension:\t [%d, %d]
 
         # Note that 'x' and 'y' correspond to 1 and 0 in self.shape,
         # respectively
-        new_nx = self.shape[1] / dimensions[0]
-        new_ny = self.shape[0] / dimensions[1]
+        new_nx = self.shape[1].value / dimensions[0]
+        new_ny = self.shape[0].value / dimensions[1]
 
         # Update metadata
-        new_meta['cdelt1'] = dimensions[0] * self.scale['x']
-        new_meta['cdelt2'] = dimensions[1] * self.scale['y']
+        new_meta['cdelt1'] = dimensions[0] * self.scale['x'].value
+        new_meta['cdelt2'] = dimensions[1] * self.scale['y'].value
         new_meta['crpix1'] = (new_nx + 1) / 2.
         new_meta['crpix2'] = (new_ny + 1) / 2.
-        new_meta['crval1'] = self.center['x']
-        new_meta['crval2'] = self.center['y']
+        new_meta['crval1'] = self.center['x'].value
+        new_meta['crval2'] = self.center['y'].value
 
         # Create new map instance
         new_map.data = new_data

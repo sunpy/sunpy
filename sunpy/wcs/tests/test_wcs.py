@@ -119,7 +119,7 @@ def test_conv_hg_hcc():
 
     # If z < 0, using occultation should make the return coordinates nan
     coord2 = [55.0, 56.0] * u.deg
-    known_answer = [[np.nan, 3.1858718e8 * u.meter], [np.nan, 5.9965928e8 * u.meter]]
+    known_answer = [[np.nan, 3.1858718e8], [np.nan, 5.9965928e8]] * u.meter
     result = wcs.convert_hg_hcc(coord,coord2, b0_deg=img.heliographic_latitude,
                                 l0_deg=img.heliographic_longitude, occultation=True)
     assert_allclose(result[0], known_answer[0], rtol=1e-2, atol=0)
@@ -137,11 +137,11 @@ def test_conv_hg_hpc():
     # Test to make sure occultation parameter works
     coord = [34.0, 96.0] * u.deg
     coord2 = [55.0, 56.0] * u.deg
-    known_answer = [[np.nan, 441.65710359], [np.nan, 831.30194808]]
-    coords = zip(coord, coord2)
+    known_answer = [[np.nan, 441.65710359], [np.nan, 831.30194808]] * u.arcsec
     result = wcs.convert_hg_hpc(coord, coord2, dsun_meters=img.dsun,
                 b0_deg=img.heliographic_latitude, l0_deg=img.heliographic_longitude,
                 occultation=True)
+    
     assert_allclose(result[0], known_answer[0], rtol=1e-2, atol=0)
     assert_allclose(result[1], known_answer[1], rtol=1e-2, atol=0)
 
