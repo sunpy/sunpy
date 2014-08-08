@@ -1,8 +1,13 @@
+#Author :Rishabh Sharma <rishabh.sharma.gunner@gmail.com>
+#This module was developed under funding provided by
+#Google Summer of Code 2014
+
 import datetime
 from datetime import timedelta
 
 from sunpy.time import TimeRange
 from sunpy.util import print_table
+
 from sunpy.net.download  import Downloader
 from sunpy.net.vso.vso import Results
 from sunpy.net.vso.attrs import Time

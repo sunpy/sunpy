@@ -1,6 +1,9 @@
+#Author: Rishabh Sharma <rishabh.sharma.gunner@gmail.com>
+#This module was developed under funding by
+#Google Summer of Code 2014
+
 import urlparse
 
-import sunpy
 from sunpy.net.unifieddownloader.client import GenericClient
 
 __all__ = ['EVEClient']
