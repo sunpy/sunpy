@@ -15,7 +15,7 @@ from functools import partial
 
 import sunpy
 
-from sunpy.net.download import Downloader, default_name
+from sunpy.net.download import FileDownloader, default_name
 
 
 class CalledProxy(object):
@@ -54,7 +54,7 @@ def path_fun(*args, **kwargs):
 @pytest.mark.online
 def test_path_exception():
     x = threading.Event()
-    dw = Downloader(1, 2)
+    dw = FileDownloader(1, 2)
     dw.download(
         "http://google.at", path_fun, errback=wait_for(1, lambda a: x.set())
     )
@@ -81,7 +81,8 @@ def test_download_http():
     tmp = tempfile.mkdtemp()
     path_fun = partial(default_name, tmp)
 
-    dw = Downloader(1, 1)
+    dw = FileDownloader(1, 1)
+    _stop = lambda _: dw.stop()
 
     timeout = CalledProxy(dw.stop)
     timer = threading.Timer(60, timeout)
@@ -114,7 +115,7 @@ def test_download_default_dir():
             "downloads", {"download_dir": tmpdir}
         )
 
-        dw = Downloader(1, 1)
+        dw = FileDownloader(1, 1)
         _stop = lambda _: dw.stop()
 
         timeout = CalledProxy(dw.stop)
@@ -140,7 +141,7 @@ def test_download_default_dir():
 def test_download_dir():
     tmpdir = tempfile.mkdtemp()
 
-    dw = Downloader(1, 1)
+    dw = FileDownloader(1, 1)
     _stop = lambda _: dw.stop()
     timeout = CalledProxy(dw.stop)
     errback = CalledProxy(_stop)

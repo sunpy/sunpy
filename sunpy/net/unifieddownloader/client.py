@@ -8,7 +8,7 @@ from datetime import timedelta
 from sunpy.time import TimeRange
 from sunpy.util import print_table
 
-from sunpy.net.download  import Downloader
+from sunpy.net.download  import FileDownloader
 from sunpy.net.vso.vso import Results
 from sunpy.net.vso.attrs import Time
 
@@ -133,7 +133,7 @@ class GenericClient(object):
 
         res = Results(lambda x: None, 0, lambda map_:self.link(map_))
 
-        dobj = Downloader(max_conn=len(urls), max_total=len(urls))
+        dobj = FileDownloader(max_conn=len(urls), max_total=len(urls))
         for aurl, ncall in list(zip(urls, map(lambda x:res.require([x]), urls))):
             dobj.download(aurl, kwargs.get('Path',None), ncall, kwargs.get('ErrorBack', None))
 
@@ -159,8 +159,14 @@ class GenericClient(object):
         callback: Function to be invoked at completion of download successfully.
         errorback: Function to be called when error is thrown during download.
 
+	Examples
+	--------
+	>>> import sunpy.net.unifieddownloader.sources.eve as eve
+	>>> cl = eve.EVEClient()
+	>>> cl.download_legacy(Time('2012/2/2','2012/2/3'))
+
         """
         urls = self._get_url_for_timerange(timerange)
-        dobj = Downloader(max_conn=len(urls), max_total=len(urls))
+        dobj = FileDownloader(max_conn=len(urls), max_total=len(urls))
         for url in urls:
             dobj.download(url, path, callback, errback)
