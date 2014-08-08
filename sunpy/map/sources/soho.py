@@ -22,7 +22,7 @@ def _dsunAtSoho(date, rad_d, rad_1au = None):
     d_{\sun,Object} =
             D_{\sun\eart} \frac{radius_{1au}[rad]}{radius_{d}[rad]}
     since radius_{1au} and radius_{d} are dividing each other we can use [arcsec]
-    instead. 
+    instead.
 
     ---
     TODO: Does this apply just to observations on the same Earth-Sun line?
@@ -37,24 +37,24 @@ def _dsunAtSoho(date, rad_d, rad_1au = None):
 
 class EITMap(GenericMap):
     """EIT Image Map definition"""
-    
+
     def __init__(self, data, header, **kwargs):
-        
+
         GenericMap.__init__(self, data, header, **kwargs)
-        
+
         # Fill in some missing info
         self.meta['detector'] = "EIT"
         self._fix_dsun()
-        
+
         self._name = self.detector + " " + str(self.measurement)
         self._nickname = self.detector
-        
+
         self.cmap = cm.get_cmap('sohoeit%d' % self.wavelength)
-    
+
     @property
     def rsun_arcseconds(self):
         return self.meta['solar_r'] * self.meta['cdelt1']
-        
+
     def _fix_dsun(self):
         dsun = _dsunAtSoho(self.date, self.rsun_arcseconds)
         self.meta['dsun_obs'] = dsun
@@ -70,7 +70,7 @@ class EITMap(GenericMap):
         # THIS WARNING IS KNOWN TO APPLY TO 0.3 code only.
         # NOT TESTED in sunpy 0.4 when the glymur library
         # is used instead of pyopenjpeg.  It seems that EIT JP2 files read by
-        # pyopenjpeg and openjpeg using the j2k_to_image command, returns 
+        # pyopenjpeg and openjpeg using the j2k_to_image command, returns
         # np.float32 arrays.  For comparison, AIA JP2 files read the same way
         # return np.uint8 arrays.  EIT JP2 files have already been
         # byte-scaled when they are created by the Helioviewer Project.
@@ -80,10 +80,10 @@ class EITMap(GenericMap):
         # was never picked up.
         if self.data.dtype == np.float32:
             return None
-        
+
         mean = self.mean()
         std = self.std()
-        
+
         vmin = 1
         vmax = min(self.max(), mean + 5 * std)
 
@@ -91,11 +91,11 @@ class EITMap(GenericMap):
 
 class LASCOMap(GenericMap):
     """LASCO Image Map definition"""
-    
+
     def __init__(self, data, header, **kwargs):
-        
+
         GenericMap.__init__(self, data, header, **kwargs)
-        
+
         # Fill in some missing or broken info
         datestr = "%sT%s" % (self.meta.get('date-obs',self.meta.get('date_obs')),
                      self.meta.get('time-obs',self.meta.get('time_obs')))
@@ -108,7 +108,7 @@ class LASCOMap(GenericMap):
         self._name = self.instrument + " " + self.detector + " " + self.measurement
         self._nickname = self.instrument + "-" + self.detector
         self.cmap = cm.get_cmap('soholasco%s' % self.detector[1])
-        
+
     @property
     def measurement(self):
         # TODO: This needs to do more than white-light.  Should give B, pB, etc.
@@ -118,26 +118,26 @@ class LASCOMap(GenericMap):
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an LASCO image"""
         return header.get('instrume') == 'LASCO'
-        
+
 class MDIMap(GenericMap):
     """MDI Image Map definition"""
-    
+
     def __init__(self, data, header, **kwargs):
-        
+
         GenericMap.__init__(self, data, header, **kwargs)
-        
+
         # Fill in some missing or broken info
         self.meta['detector'] = "MDI"
         self._fix_dsun()
-        
+
         self._name = self.detector + " " + self.measurement
         self._nickname = self.detector + " " + self.measurement
-        
+
     @property
     def measurement(self):
         # TODO: This needs to do more than white-light.  Should give B, pB, etc.
         return "magnetogram" if self.meta['dpc_obsr'].find('Mag') != -1 else "continuum"
-        
+
     def _fix_dsun(self):
         """ Solar radius in arc-seconds at 1 au
             previous value radius_1au = 959.644
@@ -156,15 +156,14 @@ class MDIMap(GenericMap):
         radius_in_pixels = self.meta.get('r_sun', self.meta.get('radius'))
         radius = scale * radius_in_pixels
         self.meta['radius'] = radius
-        
+
         if not radius:
 #            radius = sun.angular_size(self.date)
             self.meta['dsun_obs'] = constants.au
         else:
             self.meta['dsun_obs'] = _dsunAtSoho(self.date, radius)
-        
+
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an MDI image"""
         return header.get('instrume') == 'MDI'
-

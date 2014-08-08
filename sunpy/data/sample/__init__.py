@@ -6,7 +6,7 @@ import os
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
-rootdir = os.path.join(os.path.dirname(sunpy.__file__), "data", "sample") 
+rootdir = os.path.join(os.path.dirname(sunpy.__file__), "data", "sample")
 
 #
 # AIA20110319_105400_0171.fits

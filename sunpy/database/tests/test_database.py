@@ -759,7 +759,7 @@ def test_download_duplicates(database, download_query, tmpdir):
     database.default_waveunit = 'angstrom'
     database.download(
         *download_query, path=str(tmpdir.join('{file}.fits')), progress=True)
-    assert len(database) == 4 
+    assert len(database) == 4
     download_time = database[0].download_time
     database.download(*download_query, path=str(tmpdir.join('{file}.fits')))
     assert len(database) == 4
