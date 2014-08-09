@@ -1,0 +1,51 @@
+# AppVeyor.com is a Continuous Integration service to build and run tests under
+# Windows
+
+environment:
+  PYTHON: "C:\\conda"
+  MINICONDA_VERSION: "3.5.5"
+  PYTHON_ARCH: "64"
+
+  matrix:
+      - PYTHON_VERSION: "2.7"
+        NUMPY_VERSION: "1.8.1"
+
+      - PYTHON_VERSION: "2.7"
+        NUMPY_VERSION: "1.7.1"
+
+platform:
+    - x64
+
+install:
+    # Install miniconda using a powershell script.
+    - "powershell ./.install-miniconda.ps1"
+    - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
+  
+    # Check that we have the expected version and architecture for Python
+    - "python --version"
+  
+    # Install the build and runtime dependencies of the project.
+    - "conda update --yes conda"
+    # Create a conda environment using the astropy bonus packages
+    - "conda create -q --yes -n test -c astropy-ci-extras python=%PYTHON_VERSION%"
+    - "activate test"
+
+    # Install all of SunPy's dependancies that are conda packages
+    # Install build deps for SunPy's ANA
+    - "conda install -q --yes pip mingw libpython"
+    # Install specified version of numpy
+    - "conda install -q --yes numpy=%NUMPY_VERSION%"
+    # Install everything else.
+    - "conda install -q --yes scipy astropy matplotlib pandas requests beautiful-soup sqlalchemy scikit-image pytest"
+
+    # Install non-conda packages
+    - "pip install suds"
+
+# Not a .NET project, we build SunPy in the install step instead
+build: false
+
+test_script:
+  - "python setup.py develop"
+  # Build env has 1 Virtual core, so double thread for a small boost.
+  - "py.test"
+
