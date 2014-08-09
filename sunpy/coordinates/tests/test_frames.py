@@ -246,6 +246,7 @@ def test_transform_accuracy():
     working out the equations by hand.
     """
     from sunpy import sun as s
+    from sunpy.coordinates.representation import Longitude180
     
     RSun = s.constants.constant('radius').si.to(u.km)
     diff = (1*u.au).to(u.km) - RSun
@@ -254,6 +255,7 @@ def test_transform_accuracy():
     # defaulting capability here.
     sc_zero = SkyCoord(0*u.deg, 0*u.deg, RSun, frame='heliographicstonyhurst',
                        dateobs='2011/01/01T00:00:45')
+    dateobs_calc = s.heliographic_solar_center(sc_zero.dateobs)
     sc_zero_hp = sc_zero.transform_to('helioprojective')
     sc_zero_hcc = sc_zero.transform_to('heliocentric')
     sc_zero_hgc = sc_zero.transform_to('heliographiccarrington')
@@ -264,5 +266,9 @@ def test_transform_accuracy():
 
     npt.assert_allclose(sc_zero.hlon.value, sc_zero_hcc.x.value)
     npt.assert_allclose(sc_zero.hlat.value, sc_zero_hcc.y.value)
-    npt.assert_allclose(sc_zero_hcc.z, RSun)          
+    npt.assert_allclose(sc_zero_hcc.z, RSun)
+
+    npt.assert_allclose(sc_zero.hlon, sc_zero_hgc.hlon - Longitude180(dateobs_calc[0]))
+    npt.assert_allclose(sc_zero.hlat, sc_zero_hgc.hlat)
+    npt.assert_allclose(sc_zero.rad, sc_zero_hgc.rad)          
     
