@@ -237,4 +237,25 @@ def test_heliographic_stonyhurst(hgs1, hgs2):
         assert hgs1.dateobs is not None
         
 
+def test_transform_accuracy():
+    """
+    This tests the accuracy of transforms.
+    Some input values are fed and output is checked to be
+    equal within an allowed tolerance level to expected output.
+    Here expected output is the output that was obtained by
+    working out the equations by hand.
+    """
+    from sunpy import sun as s
+    
+    diff = (1*u.au).to(u.km) - s.constants.constant('radius').si.to(u.km)
+    # First work on (0,0,RSun) case.    
+    sc_zero = SkyCoord(0*u.deg, 0*u.deg, frame='heliographicstonyhurst',
+                       dateobs='2011/01/01T00:00:45')
+    sc_zero_hp = sc_zero.transform_to('helioprojective')
+    sc_zero_hcc = sc_zero.transform_to('heliocentric')
+    sc_zero_hgc = sc_zero.transform_to('heliographiccarrington')
+    
+    npt.assert_allclose(sc_zero.hlon.value, sc_zero_hp.Tx.value)
+    npt.assert_allclose(sc_zero.hlat.value, sc_zero_hp.Ty.value)
+    npt.assert_allclose(sc_zero_hp.distance, diff)            
     
