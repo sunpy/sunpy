@@ -260,5 +260,9 @@ def test_transform_accuracy():
     
     npt.assert_allclose(sc_zero.hlon.value, sc_zero_hp.Tx.value)
     npt.assert_allclose(sc_zero.hlat.value, sc_zero_hp.Ty.value)
-    npt.assert_allclose(sc_zero_hp.distance, diff)            
+    npt.assert_allclose(sc_zero_hp.distance, diff)  
+
+    npt.assert_allclose(sc_zero.hlon.value, sc_zero_hcc.x.value)
+    npt.assert_allclose(sc_zero.hlat.value, sc_zero_hcc.y.value)
+    npt.assert_allclose(sc_zero_hcc.z, RSun)          
     
