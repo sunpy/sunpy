@@ -595,7 +595,7 @@ Dimension:\t [%d, %d]
         return new_map
 
     def rotate(self, angle=None, rmatrix=None, order=3, scale=1.0,
-               image_center=np.array([0,0]) * u.arcsec, recenter=False, missing=0.0, use_scipy=False):
+               image_center=[0,0] * u.arcsec, recenter=False, missing=0.0, use_scipy=False):
         """
         Returns a new rotated and rescaled map.  Specify either a rotation
         angle or a rotation matrix, but not both.  If neither an angle or a
