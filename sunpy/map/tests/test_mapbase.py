@@ -129,8 +129,8 @@ def test_detector(generic_map):
 
 
 def test_dsun(generic_map):
-    assert generic_map.dsun == (sunpy.sun.sunearth_distance(generic_map.date) *
-                                sunpy.sun.constants.au.si.value)
+    assert generic_map.dsun == (sunpy.sun.sunearth_distance(generic_map.date).value *
+                                sunpy.sun.constants.au.si)
 
 
 def test_rsun_meters(generic_map):
@@ -223,12 +223,13 @@ def test_data_to_pixel(generic_map):
 
 def test_submap(generic_map):
     """Check data and header information for a submap"""
-    width = generic_map.shape[1]
-    height = generic_map.shape[0]
+    #.shape is in pixels but we take its value since it won't play good
+    # here otherwise
+    width = generic_map.shape[1].value
+    height = generic_map.shape[0].value
 
     # Create a submap of the top-right quadrant of the image
-    submap = generic_map.submap([height/2.,height], [width/2.,width],
-                                units='pixels')
+    submap = generic_map.submap([height/2.,height] * u.pix, [width/2.,width] * u.pix)
 
     # Expected offset for center
     offset = {
@@ -239,8 +240,8 @@ def test_submap(generic_map):
     # Check to see if submap properties were updated properly
     assert submap.reference_pixel['x'].value == offset['x']
     assert submap.reference_pixel['y'].value == offset['y']
-    assert submap.shape[0] == width / 2.
-    assert submap.shape[1] == height / 2.
+    assert submap.shape[0] == (width / 2.) * u.pix
+    assert submap.shape[1] == (height / 2.) * u.pix
 
     # Check to see if header was updated
     assert submap.meta['naxis1'] == width / 2.
@@ -315,7 +316,8 @@ def test_rotate():
     rotated_map_1 = aia_map.rotate(20*u.deg)
     rotated_map_2 = rotated_map_1.rotate(20*u.deg)
     assert rotated_map_2.center == rotated_map_1.center == aia_map.center
-    assert rotated_map_2.shape == rotated_map_1.shape == aia_map.shape
+    assert rotated_map_2.shape[1] == rotated_map_1.shape[1] == aia_map.shape[1]
+    assert rotated_map_2.shape[0] == rotated_map_1.shape[0] == aia_map.shape[0]
     np.testing.assert_allclose(rotated_map_1.rotation_matrix,
                                np.dot(aia_map.rotation_matrix,
                                       calc_new_matrix(20).T))
@@ -341,17 +343,20 @@ def test_rotate():
 
 
 def test_rotate_recenter(aia_map):
-    # Check recentering
-    image_center = np.array((200, 100)) * u.arcsec
-    rotated_map_6 = aia_map.rotate(20*u.deg, image_center=image_center, recenter=True)
+    array_center = ((np.array(aia_map.data.shape)-1)/2.0) * u.pix
 
-    # shift is image_center - map_center
-    shift = (image_center.value - ((np.array(aia_map.shape)/2.) + 0.5))
+    # New image center in data coordinates
+    new_center = np.asarray((200, 100)) * u.arcsec
 
-    # y shift is inverted because the data in the map is origin lower.
-    np.testing.assert_allclose(rotated_map_6.reference_pixel.values(),
-                               np.array([aia_map.reference_pixel.values()[1].value - shift[1],
-                                         aia_map.reference_pixel.values()[0].value + shift[0]]) * u.pix)
+    rotated_map = aia_map.rotate(20 * u.deg, image_center=new_center, recenter=True)
+
+    # Retrieve pixel coordinates for the centers from the new map
+    new_x = rotated_map.data_to_pixel(new_center[0], 'x')
+    new_y = rotated_map.data_to_pixel(new_center[1], 'y')
+
+    # The new desired image center should be in the map center
+    np.testing.assert_allclose(new_x, array_center[0])
+    np.testing.assert_allclose(new_y, array_center[1])
 
 
 def test_rotate_crota_remove(aia_map):

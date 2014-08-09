@@ -142,8 +142,8 @@ def test_conv_hg_hpc():
                 b0_deg=img.heliographic_latitude, l0_deg=img.heliographic_longitude,
                 occultation=True)
     
-    assert_allclose(result[0], known_answer[0], rtol=1e-2, atol=0)
-    assert_allclose(result[1], known_answer[1], rtol=1e-2, atol=0)
+    assert_allclose(result[0].to(u.arcsec), known_answer[0], rtol=1e-2, atol=0)
+    assert_allclose(result[1].to(u.arcsec), known_answer[1], rtol=1e-2, atol=0)
 
 def test_conv_hpc_hg():
     coord = [382, 748] * u.arcsec

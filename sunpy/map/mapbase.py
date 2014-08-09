@@ -379,10 +379,10 @@ Dimension:\t [%d, %d]
                               [self.meta['PC2_1'], self.meta['PC2_2']]])
 
         elif self.meta.get('CD1_1', None) is not None:
-            div = 1. / (self.scale['x'] - self.scale['y'])
+            div = 1. / (self.scale['x'].value - self.scale['y'].value)
 
-            deltm = np.matrix([[self.scale['y']/div, 0],
-                               [0, self.scale['x']/ div]])
+            deltm = np.matrix([[self.scale['y'].value/div, 0],
+                               [0, self.scale['x'].value/ div]])
 
             cd = np.matrix([[self.meta['CD1_1'], self.meta['CD1_2']],
                             [self.meta['CD2_1'], self.meta['CD2_2']]])
@@ -400,7 +400,7 @@ Dimension:\t [%d, %d]
         This method can be overriden if an instruments header does not use this
         conversion.
         """
-        lam = self.scale['y'] / self.scale['x']
+        lam = float(self.scale['y'] / self.scale['x'])
         p = np.deg2rad(self.meta['CROTA2'])
 
         return np.matrix([[np.cos(p), -1 * lam * np.sin(p)],
@@ -416,7 +416,6 @@ Dimension:\t [%d, %d]
         w2.wcs.crval = [self.reference_coordinate['x'].value, 
                         self.reference_coordinate['y'].value]
         w2.wcs.ctype = [self.coordinate_system['x'], self.coordinate_system['y']]
-        w2.wcs.pc = self.rotation_matrix
         w2.wcs.cunit = [self.units['x'], self.units['y']]
         return w2
 
@@ -432,9 +431,9 @@ Dimension:\t [%d, %d]
     def _fix_naxis(self):
         # If naxis is not specified, get it from the array shape
         if 'naxis1' not in self.meta:
-            self.meta['naxis1'] = self.shape[1]
+            self.meta['naxis1'] = self.shape[1].value
         if 'naxis2' not in self.meta:
-            self.meta['naxis2'] = self.shape[0]
+            self.meta['naxis2'] = self.shape[0].value
         if 'naxis' not in self.meta:
             self.meta['naxis'] = self.ndim
 
@@ -755,7 +754,7 @@ Dimension:\t [%d, %d]
 
         return new_map
 
-    def submap(self, range_a, range_b, units="data"):
+    def submap(self, range_a, range_b):
         """Returns a submap of the map with the specified range
 
         Parameters
@@ -764,8 +763,6 @@ Dimension:\t [%d, %d]
             The range of the Map to select across either the x axis.
         range_b : list
             The range of the Map to select across either the y axis.
-        units : {'data' | 'pixels'}, optional
-            The units for the supplied ranges.
 
         Returns
         -------
@@ -774,21 +771,25 @@ Dimension:\t [%d, %d]
 
         Examples
         --------
-        >>> aia.submap([-5,5],[-5,5])
+        >>> aia.submap([-5,5] * u.arcsec,[-5,5] * u.arcsec)
         AIAMap([[ 341.3125,  266.5   ,  329.375 ,  330.5625,  298.875 ],
         [ 347.1875,  273.4375,  247.4375,  303.5   ,  305.3125],
         [ 322.8125,  302.3125,  298.125 ,  299.    ,  261.5   ],
         [ 334.875 ,  289.75  ,  269.25  ,  256.375 ,  242.3125],
         [ 273.125 ,  241.75  ,  248.8125,  263.0625,  249.0625]])
 
-        >>> aia.submap([0,5],[0,5], units='pixels')
+        >>> aia.submap([0,5] * u.pix,[0,5] * u.pix)
         AIAMap([[ 0.3125, -0.0625, -0.125 ,  0.    , -0.375 ],
         [ 1.    ,  0.1875, -0.8125,  0.125 ,  0.3125],
         [-1.1875,  0.375 , -0.5   ,  0.25  , -0.4375],
         [-0.6875, -0.3125,  0.8125,  0.0625,  0.1875],
         [-0.875 ,  0.25  ,  0.1875,  0.    , -0.6875]])
         """
-        if units is "data":
+        if not isinstance(range_a or range_b, u.Quantity):
+            raise ValueError("Must be astropy.units instance")
+        if range_a.unit != 'pix':
+            range_a, range_b = range_a.to(u.arcsec), range_b.to(u.arcsec)
+        if range_a.unit == "arcsec":
             # Check edges (e.g. [:512,..] or [:,...])
             if range_a[0] is None:
                 range_a[0] = self.xrange[0]
@@ -805,7 +806,7 @@ Dimension:\t [%d, %d]
             #y_pixels = [self.data_to_pixel(elem, 'y') for elem in range_b]
             y_pixels = [np.ceil(self.data_to_pixel(range_b[0], 'y')),
                         np.floor(self.data_to_pixel(range_b[1], 'y')) + 1]
-        elif units is "pixels":
+        elif range_a.unit == "pix":
             # Check edges
             if range_a[0] is None:
                 range_a[0] = 0
@@ -824,14 +825,14 @@ Dimension:\t [%d, %d]
 
 
         # Get ndarray representation of submap
-        xslice = slice(x_pixels[0], x_pixels[1])
-        yslice = slice(y_pixels[0], y_pixels[1])
+        xslice = slice(x_pixels[0].value, x_pixels[1].value)
+        yslice = slice(y_pixels[0].value, y_pixels[1].value)
         new_data = self.data[yslice, xslice].copy()
 
         # Make a copy of the header with updated centering information
         new_map = deepcopy(self)
-        new_map.meta['crpix1'] = self.reference_pixel['x'].value - x_pixels[0]
-        new_map.meta['crpix2'] = self.reference_pixel['y'].value - y_pixels[0]
+        new_map.meta['crpix1'] = self.reference_pixel['x'].value - x_pixels[0].value
+        new_map.meta['crpix2'] = self.reference_pixel['y'].value - y_pixels[0].value
         new_map.meta['naxis1'] = new_data.shape[1]
         new_map.meta['naxis2'] = new_data.shape[0]
 
