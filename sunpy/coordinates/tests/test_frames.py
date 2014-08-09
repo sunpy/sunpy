@@ -247,9 +247,12 @@ def test_transform_accuracy():
     """
     from sunpy import sun as s
     
-    diff = (1*u.au).to(u.km) - s.constants.constant('radius').si.to(u.km)
+    RSun = s.constants.constant('radius').si.to(u.km)
+    diff = (1*u.au).to(u.km) - RSun
     # First work on (0,0,RSun) case.    
-    sc_zero = SkyCoord(0*u.deg, 0*u.deg, frame='heliographicstonyhurst',
+    # Explicitly pass RSun because we're not testing the constructor's
+    # defaulting capability here.
+    sc_zero = SkyCoord(0*u.deg, 0*u.deg, RSun, frame='heliographicstonyhurst',
                        dateobs='2011/01/01T00:00:45')
     sc_zero_hp = sc_zero.transform_to('helioprojective')
     sc_zero_hcc = sc_zero.transform_to('heliocentric')
