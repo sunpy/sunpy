@@ -159,7 +159,7 @@ Dimension:\t [%d, %d]
 """ % (self.__class__.__name__,
        self.observatory, self.instrument, self.detector, self.measurement,
        self.date, self.exposure_time.value,
-       self.data.shape[1].value, self.data.shape[0].value, 
+       self.data.shape[1], self.data.shape[0], 
        self.scale['x'].value, self.scale['y'].value)
      + self.data.__repr__())
 
