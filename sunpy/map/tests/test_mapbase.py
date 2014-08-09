@@ -12,6 +12,7 @@ import numpy as np
 import pytest
 
 from astropy.io import fits
+from astropy import units as u
 
 import sunpy
 import sunpy.sun
@@ -128,8 +129,8 @@ def test_detector(generic_map):
 
 
 def test_dsun(generic_map):
-    assert generic_map.dsun == (sunpy.sun.sunearth_distance(generic_map.date) *
-                                sunpy.sun.constants.au.si.value)
+    assert generic_map.dsun == (sunpy.sun.sunearth_distance(generic_map.date).value *
+                                sunpy.sun.constants.au.si)
 
 
 def test_rsun_meters(generic_map):
@@ -137,18 +138,18 @@ def test_rsun_meters(generic_map):
 
 
 def test_rsun_arcseconds(generic_map):
-    assert generic_map.rsun_arcseconds == sunpy.sun.solar_semidiameter_angular_size(generic_map.date).value
+    assert generic_map.rsun_arcseconds == sunpy.sun.solar_semidiameter_angular_size(generic_map.date)
 
 
 def test_coordinate_system(generic_map):
     assert generic_map.coordinate_system == {'x':'HPLN-TAN', 'y': 'HPLT-TAN'}
 
 
-def test_carrington_longitude(generic_map):
+def test_carrington_longitude(generic_map):    #this should pass after the units branch is merged
     assert generic_map.carrington_longitude == (sunpy.sun.heliographic_solar_center(generic_map.date))[0]
 
 
-def test_heliographic_latitude(generic_map):
+def test_heliographic_latitude(generic_map):   #this should pass after the units branch is merged
     assert generic_map.heliographic_latitude == (sunpy.sun.heliographic_solar_center(generic_map.date))[1]
 
 
@@ -194,40 +195,41 @@ def test_rotation_matrix_cd_cdelt():
 
 def test_data_range(generic_map):
     """Make sure xrange and yrange work"""
-    assert generic_map.xrange[1] - generic_map.xrange[0] == generic_map.meta['cdelt1'] * generic_map.meta['naxis1']
-    assert generic_map.yrange[1] - generic_map.yrange[0] == generic_map.meta['cdelt2'] * generic_map.meta['naxis2']
+    assert (generic_map.xrange[1] - generic_map.xrange[0]).value == generic_map.meta['cdelt1'] * generic_map.meta['naxis1']
+    assert (generic_map.yrange[1] - generic_map.yrange[0]).value == generic_map.meta['cdelt2'] * generic_map.meta['naxis2']
 
-    assert np.average(generic_map.xrange) == generic_map.center['x']
-    assert np.average(generic_map.yrange) == generic_map.center['y']
+    assert np.average(generic_map.xrange.value) * u.Unit(generic_map.xrange.unit) == generic_map.center['x']
+    assert np.average(generic_map.yrange.value) * u.Unit(generic_map.yrange.unit) == generic_map.center['y']
 
 
 def test_data_to_pixel(generic_map):
     """Make sure conversion from data units to pixels is accurate"""
     # Check conversion of reference pixel
     # Note: FITS pixels starts from 1,1
-    assert generic_map.data_to_pixel(generic_map.meta['crval1'], 'x') == generic_map.meta['crpix1'] - 1
-    assert generic_map.data_to_pixel(generic_map.meta['crval2'], 'y') == generic_map.meta['crpix2'] - 1
+    assert generic_map.data_to_pixel(generic_map.meta['crval1'] * u.arcsec, 'x') == (generic_map.meta['crpix1'] - 1) * u.pix
+    assert generic_map.data_to_pixel(generic_map.meta['crval2'] * u.arcsec, 'y') == (generic_map.meta['crpix2'] - 1) * u.pix
 
     # Check conversion of map center
-    assert generic_map.data_to_pixel(generic_map.center['x'], 'x') == (generic_map.meta['naxis1'] - 1) / 2.
-    assert generic_map.data_to_pixel(generic_map.center['y'], 'y') == (generic_map.meta['naxis2'] - 1) / 2.
+    assert generic_map.data_to_pixel(generic_map.center['x'], 'x') == ((generic_map.meta['naxis1'] - 1) / 2.) * u.pix
+    assert generic_map.data_to_pixel(generic_map.center['y'], 'y') == ((generic_map.meta['naxis2'] - 1) / 2.) * u.pix
 
     # Check conversion of map edges
     # Note: data coords are at pixel centers, so edges are 0.5 pixels wider
-    assert generic_map.data_to_pixel(generic_map.xrange[0], 'x') == 0. - 0.5
-    assert generic_map.data_to_pixel(generic_map.yrange[0], 'y') == 0. - 0.5
-    assert generic_map.data_to_pixel(generic_map.xrange[1], 'x') == (generic_map.meta['naxis1'] - 1) + 0.5
-    assert generic_map.data_to_pixel(generic_map.yrange[1], 'y') == (generic_map.meta['naxis2'] - 1) + 0.5
+    assert generic_map.data_to_pixel(generic_map.xrange[0], 'x') == (0. - 0.5) * u.pix
+    assert generic_map.data_to_pixel(generic_map.yrange[0], 'y') == (0. - 0.5) * u.pix
+    assert generic_map.data_to_pixel(generic_map.xrange[1], 'x') == ((generic_map.meta['naxis1'] - 1) + 0.5) * u.pix
+    assert generic_map.data_to_pixel(generic_map.yrange[1], 'y') == ((generic_map.meta['naxis2'] - 1) + 0.5) * u.pix
 
 
 def test_submap(generic_map):
     """Check data and header information for a submap"""
-    width = generic_map.shape[1]
-    height = generic_map.shape[0]
+    #.shape is in pixels but we take its value since it won't play good
+    # here otherwise
+    width = generic_map.shape[1].value
+    height = generic_map.shape[0].value
 
     # Create a submap of the top-right quadrant of the image
-    submap = generic_map.submap([height/2.,height], [width/2.,width],
-                                units='pixels')
+    submap = generic_map.submap([height/2.,height] * u.pix, [width/2.,width] * u.pix)
 
     # Expected offset for center
     offset = {
@@ -236,10 +238,10 @@ def test_submap(generic_map):
     }
 
     # Check to see if submap properties were updated properly
-    assert submap.reference_pixel['x'] == offset['x']
-    assert submap.reference_pixel['y'] == offset['y']
-    assert submap.shape[0] == width / 2.
-    assert submap.shape[1] == height / 2.
+    assert submap.reference_pixel['x'].value == offset['x']
+    assert submap.reference_pixel['y'].value == offset['y']
+    assert submap.shape[0] == (width / 2.) * u.pix
+    assert submap.shape[1] == (height / 2.) * u.pix
 
     # Check to see if header was updated
     assert submap.meta['naxis1'] == width / 2.
@@ -259,8 +261,8 @@ resample_test_data = [('linear', (100, 200)),
 def test_resample_dimensions(generic_map, sample_method, new_dimensions):
     """Check that resampled map has expected dimensions."""
     resampled_map = generic_map.resample(new_dimensions, method=sample_method)
-    assert resampled_map.shape[1] == new_dimensions[0]
-    assert resampled_map.shape[0] == new_dimensions[1]
+    assert resampled_map.shape[1].value == new_dimensions[0]
+    assert resampled_map.shape[0].value == new_dimensions[1]
 
 
 @pytest.mark.parametrize('sample_method, new_dimensions', resample_test_data)
@@ -270,13 +272,13 @@ def test_resample_metadata(generic_map, sample_method, new_dimensions):
     """
     resampled_map = generic_map.resample(new_dimensions, method=sample_method)
     assert float(resampled_map.meta['cdelt1']) / generic_map.meta['cdelt1'] \
-        == float(generic_map.shape[1]) / resampled_map.shape[1]
+        == float(generic_map.shape[1].value) / resampled_map.shape[1].value
     assert float(resampled_map.meta['cdelt2']) / generic_map.meta['cdelt2'] \
-        == float(generic_map.shape[0]) / resampled_map.shape[0]
-    assert resampled_map.meta['crpix1'] == (resampled_map.shape[1] + 1) / 2.
-    assert resampled_map.meta['crpix2'] == (resampled_map.shape[0] + 1) / 2.
-    assert resampled_map.meta['crval1'] == generic_map.center['x']
-    assert resampled_map.meta['crval2'] == generic_map.center['y']
+        == float(generic_map.shape[0].value) / resampled_map.shape[0].value
+    assert resampled_map.meta['crpix1'] == (resampled_map.shape[1].value + 1) / 2.
+    assert resampled_map.meta['crpix2'] == (resampled_map.shape[0].value + 1) / 2.
+    assert resampled_map.meta['crval1'] == generic_map.center['x'].value
+    assert resampled_map.meta['crval2'] == generic_map.center['y'].value
     for key in generic_map.meta:
         if key not in ('cdelt1', 'cdelt2', 'crpix1', 'crpix2',
                        'crval1', 'crval2'):
@@ -311,10 +313,11 @@ def calc_new_matrix(angle):
 
 def test_rotate():
     aia_map = sunpy.map.Map(sunpy.AIA_171_IMAGE)
-    rotated_map_1 = aia_map.rotate(20)
-    rotated_map_2 = rotated_map_1.rotate(20)
+    rotated_map_1 = aia_map.rotate(20*u.deg)
+    rotated_map_2 = rotated_map_1.rotate(20*u.deg)
     assert rotated_map_2.center == rotated_map_1.center == aia_map.center
-    assert rotated_map_2.shape == rotated_map_1.shape == aia_map.shape
+    assert rotated_map_2.shape[1] == rotated_map_1.shape[1] == aia_map.shape[1]
+    assert rotated_map_2.shape[0] == rotated_map_1.shape[0] == aia_map.shape[0]
     np.testing.assert_allclose(rotated_map_1.rotation_matrix,
                                np.dot(aia_map.rotation_matrix,
                                       calc_new_matrix(20).T))
@@ -328,31 +331,32 @@ def test_rotate():
     assert rotated_map_2.mean() < rotated_map_1.mean() < aia_map.mean()
     assert rotated_map_2.std() > rotated_map_1.std() > aia_map.std()
 
-    rotated_map_3 = aia_map.rotate(0, scale=1.5)
+    rotated_map_3 = aia_map.rotate(0*u.deg, scale=1.5)
     assert rotated_map_3.mean() > aia_map.mean()
 
     # Mean and std should be equal when angle of rotation is integral multiple
     # of 90 degrees for a square map
-    rotated_map_4 = aia_map.rotate(90, scale=1.5)
-    rotated_map_5 = aia_map.rotate(180, scale=1.5)
+    rotated_map_4 = aia_map.rotate(90*u.deg, scale=1.5)
+    rotated_map_5 = aia_map.rotate(180*u.deg, scale=1.5)
     assert int(rotated_map_3.mean()) == int(rotated_map_4.mean()) == int(rotated_map_5.mean())
     assert int(rotated_map_3.std()) == int(rotated_map_4.std()) == int(rotated_map_5.std())
 
 
 def test_rotate_recenter(aia_map):
-    array_center = (np.array(aia_map.data.shape)-1)/2.0
+    array_center = ((np.array(aia_map.data.shape)-1)/2.0) * u.pix
 
     # New image center in data coordinates
-    new_center = np.asarray((200, 100))
+    new_center = np.asarray((200, 100)) * u.arcsec
 
-    rotated_map = aia_map.rotate(20, image_center=new_center, recenter=True)
+    rotated_map = aia_map.rotate(20 * u.deg, image_center=new_center, recenter=True)
 
     # Retrieve pixel coordinates for the centers from the new map
     new_x = rotated_map.data_to_pixel(new_center[0], 'x')
     new_y = rotated_map.data_to_pixel(new_center[1], 'y')
 
     # The new desired image center should be in the map center
-    np.testing.assert_allclose((new_y, new_x), array_center)
+    np.testing.assert_allclose(new_x, array_center[0])
+    np.testing.assert_allclose(new_y, array_center[1])
 
 
 def test_rotate_crota_remove(aia_map):
