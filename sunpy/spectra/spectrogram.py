@@ -330,9 +330,9 @@ class Spectrogram(Parent):
             'freq_axis': self.freq_axis[
                 y_range.start:y_range.stop:y_range.step],
             'start': self.start + datetime.timedelta(
-                seconds=self.time_axis[soffset].value),
+                seconds=self.time_axis[soffset].to(u.second).value),
             'end': self.start + datetime.timedelta(
-                seconds=self.time_axis[eoffset].value),
+                seconds=self.time_axis[eoffset].to(u.second).value),
             't_init': self.t_init + self.time_axis[soffset].value,
         })
         return self.__class__(data, **params)

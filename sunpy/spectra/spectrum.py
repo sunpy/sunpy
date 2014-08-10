@@ -17,7 +17,7 @@ class Spectrum(np.ndarray):
 
     Attributes
     ----------
-    freq_axis : np.ndarray of astropy.units.Quantity type
+    freq_axis : ~`astropy.units.Quantity` instance
         one-dimensional array with the frequency values at every data point
 
     data\ : np.ndarray
