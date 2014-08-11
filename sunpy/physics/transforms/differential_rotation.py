@@ -63,7 +63,7 @@ def diff_rot(ddays, latitude, rot_type='howard', frame_time='sidereal'):
         delta = datetime.timedelta(days=ddays)
 
     if not isinstance(latitude, u.Quantity):
-	raise TypeError("Expecting astropy Quantity")
+        raise TypeError("Expecting astropy Quantity")
 
     latitude = latitude.to(u.deg)
     delta_seconds = (delta.microseconds + (delta.seconds + delta.days * 24 * 3600) *
@@ -193,7 +193,7 @@ def calc_P_B0_SD(date, spacecraft=None, arcsec=False):
     -----------
     date: a date/time object
 
-    spacecraft: { "soho" | "stereo_a" | "stereo_b" }
+    spacecraft: { None | "soho" | "stereo_a" | "stereo_b" }
         calculate the solar P, B0 angles and the semi-diameter from the point
         of view of either SOHO or either of the STEREO spacecraft.  SOHO sits
         at the Lagrange L1 point which is about 1% closer to the Sun than the
