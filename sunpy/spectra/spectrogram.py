@@ -209,7 +209,7 @@ class TimeFreq(object):
         try:
             freq = freq.to(u.MHz, equivalencies = u.spectral())
         except:
-            ValueError("'{0} is not a valid frequency unit".format(freq.unit))
+            raise ValueError("'{0}' is not a valid frequency unit".format(freq.unit))
 
     def plot(self, time_fmt="%H:%M:%S", **kwargs):
         figure = plt.gcf()
