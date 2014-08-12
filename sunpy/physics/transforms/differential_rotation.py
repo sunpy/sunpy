@@ -3,7 +3,7 @@ from __future__ import division
 import numpy as np
 import datetime
 from astropy import units as u
-from astropy.coordinates import Longitude, Latitude
+from astropy.coordinates import Longitude, Latitude, Angle
 from sunpy.time import parse_time, julian_day
 
 from sunpy.wcs import convert_hpc_hg, convert_hg_hpc
@@ -419,4 +419,4 @@ def _sun_pos(date, is_julian=False, since_2415020=False):
             "ra": Lontitude(ra, u.deg),
             "dec": Latitude(dec, u,deg),
             "app_long": Longitude(l, u.deg),
-            "obliq": oblt}
+            "obliq": Angle(oblt, u.deg)}
