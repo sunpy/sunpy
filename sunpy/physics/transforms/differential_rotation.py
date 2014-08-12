@@ -3,14 +3,14 @@ from __future__ import division
 import numpy as np
 import datetime
 from astropy import units as u
-from astropy.coordinates import Longitude
+from astropy.coordinates import Longitude, Latitude
 from sunpy.time import parse_time, julian_day
 
 from sunpy.wcs import convert_hpc_hg, convert_hg_hpc
 from sunpy.sun import constants, sun
 
 __author__ = ["Jose Ivan Campos Rozo", "Stuart Mumford", "Jack Ireland"]
-__all__ = ['diff_rot', 'sun_pos', 'calc_P_B0_SD', 'rot_hpc']
+__all__ = ['diff_rot', '_sun_pos', '_calc_P_B0_SD', 'rot_hpc']
 
 
 def diff_rot(ddays, latitude, rot_type='howard', frame_time='sidereal'):
@@ -186,8 +186,11 @@ point of view and the STEREO A, B point of views.
     return newx, newy
 
 
-def calc_P_B0_SD(date, spacecraft=None, arcsec=False):
-    """To calculate the solar P, B0 angles and the semi-diameter.
+def _calc_P_B0_SD(date, spacecraft=None, arcsec=False):
+    """To calculate the solar P, B0 angles and the semi-diameter.  This
+    function is assigned as being internal as these quantities should be
+    calculated in a part of SunPy that can calculate these quantities
+    accurately.
 
     Parameters
     -----------
@@ -225,7 +228,7 @@ def calc_P_B0_SD(date, spacecraft=None, arcsec=False):
     de = julian_day(date) - 2415020.0
 
     # get the longitude of the sun etc.
-    sun_position = sun_pos(date)
+    sun_position = _sun_pos(date)
     longmed = sun_position["longitude"]
     #ra = sun_position["ra"]
     #dec = sun_position["dec"]
@@ -281,12 +284,14 @@ def calc_P_B0_SD(date, spacecraft=None, arcsec=False):
         return {"p": p, "b0": b, "sd": sd, "l0": 0.0}
 
 
-def sun_pos(date, is_julian=False, since_2415020=False):
+def _sun_pos(date, is_julian=False, since_2415020=False):
     """ Calculate solar ephemeris parameters.  Allows for planetary and lunar
     perturbations in the calculation of solar longitude at date and various
     other solar positional parameters. This routine is a truncated version of
     Newcomb's Sun and is designed to give apparent angular coordinates (T.E.D)
-    to a precision of one second of time.
+    to a precision of one second of time.  This function is assigned to be
+    internal at the moment as it should really be replaced by accurate
+    ephemeris calculations in the part of SunPy that handles ephemeris.
 
     Parameters
     -----------
@@ -408,6 +413,10 @@ def sun_pos(date, is_julian=False, since_2415020=False):
                                 np.sin(np.deg2rad(oblt))))
 
     # convert the internal variables to those listed in the top of the
-    # comment section in this code and in the original IDL code.
-    return {"longitude": longmed, "ra": ra, "dec": dec, "app_long": l,
+    # comment section in this code and in the original IDL code.  Quantities
+    # are assigned following the advice in Astropy "Working with Angles"
+    return {"longitude": Longitude(longmed, u.deg),
+            "ra": Lontitude(ra, u.deg),
+            "dec": Latitude(dec, u,deg),
+            "app_long": Longitude(l, u.deg),
             "obliq": oblt}
