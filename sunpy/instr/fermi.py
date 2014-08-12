@@ -86,7 +86,7 @@ def get_detector_sun_angles_for_time(time, file):
     detectors = nai_detector_angles()
 
     # get the detector pointings in RA/DEC given the input spacecraft x and z axes
-    detector_radecs = nai_detector_radecs(detectors, scx, scz)
+    detector_radecs = nai_detector_radecs(detectors, scx, scz, tt)
 
     # this gets the sun position with RA in hours in decimal format (e.g. 4.3). DEC is already in degrees
     sunpos_ra_not_in_deg = [sun.sun.apparent_rightascension(time), sun.sun.apparent_declination(time)]
@@ -99,7 +99,7 @@ def get_detector_sun_angles_for_time(time, file):
     return detector_to_sun_angles
 
 
-def get_detector_sun_angles_for_date(date, file, plot=True):
+def get_detector_sun_angles_for_date(date, file):
     '''get the GBM detector angles vs the sun as a function of time for a given date'''
     tran = TimeRange(date, date + datetime.timedelta(1))
     scx, scz, times = get_scx_scz_in_timerange(tran, file)
@@ -110,7 +110,7 @@ def get_detector_sun_angles_for_date(date, file, plot=True):
     detector_to_sun_angles = []
     # get the detector vs Sun angles for each t and store in a list of dictionaries
     for i in range(0, len(scx)):
-        detector_radecs = nai_detector_radecs(detectors, scx[i], scz[i])
+        detector_radecs = nai_detector_radecs(detectors, scx[i], scz[i], times[i])
 
         # this gets the sun position with RA in hours in decimal format (e.g. 4.3). DEC is already in degrees
         sunpos_ra_not_in_deg = [sun.sun.apparent_rightascension(times[i]), sun.sun.apparent_declination(times[i])]
@@ -121,24 +121,27 @@ def get_detector_sun_angles_for_date(date, file, plot=True):
 
     # slice the list of dictionaries to get the angles for each detector in a list form
     angles = OrderedDict()
-    key_list = ['n0','n1','n2','n3','n4','n5','n6','n7','n8','n9','n10','n11']
-    for i in range(12):
+    key_list = ['n0','n1','n2','n3','n4','n5','n6','n7','n8','n9','n10','n11','time']
+    for i in range(13):
         angles[key_list[i]] = [item[key_list[i]] for item in detector_to_sun_angles]
-    
-    if plot: 
-        # now make a plot showing the angles vs time
-        figure = plt.figure(1)
-        for n in angles.keys():
-            plt.plot(times,angles[n], label = '{lab} ({val})' .format(lab=n, val = str(np.mean(angles[n]))[0:5]))
-        plt.ylim(180,0)
-        plt.ylabel('angle (degrees)')
-        plt.xlabel('Start time: ' + times[0].isoformat())
-        plt.title('Detector pointing angle from Sun')
-        plt.legend(fontsize=10)
-        figure.autofmt_xdate()
-        plt.show()
 
     return angles  
+
+
+def plot_detector_sun_angles(angles):
+
+    #make a plot showing the angles vs time
+    figure = plt.figure(1)
+    for n in angles.keys():
+        if not n == 'time':
+            plt.plot(angles['time'],angles[n], label = '{lab} ({val})' .format(lab=n, val = str(np.mean(angles[n]))[0:5]))
+    plt.ylim(180,0)
+    plt.ylabel('angle (degrees)')
+    plt.xlabel('Start time: ' + angles['time'][0].isoformat())
+    plt.title('Detector pointing angle from Sun')
+    plt.legend(fontsize=10)
+    figure.autofmt_xdate()
+    plt.show()
 
 
 def get_scx_scz_at_time(time, file):
@@ -195,7 +198,7 @@ def nai_detector_angles():
     return detectors
 
 
-def nai_detector_radecs(detectors, scx, scz):
+def nai_detector_radecs(detectors, scx, scz, time):
     '''calculates the RA/DEC for each NaI detector given spacecraft z and x RA/DEC positions.
     NB: This routine is based on code found in GTBURST, originally written by Dr Giacamo Vianello for the Fermi Science Tools.'''
 
@@ -231,6 +234,7 @@ def nai_detector_radecs(detectors, scx, scz):
         # save the RA/DEC in a dictionary
         detector_radecs[l] = [ra, dec]
 
+    detector_radecs['time'] = time
     return detector_radecs
 
 
@@ -255,8 +259,9 @@ def get_detector_separation_angles(detector_radecs, sunpos):
     # record the separation angle in degrees between the sun and each NaI detector
     angles = copy.deepcopy(detector_radecs)
     for l, d in detector_radecs.items():
-        angle = separation_angle(d, sunpos)
-        angles[l] = angle
+        if not l == 'time':
+            angle = separation_angle(d, sunpos)
+            angles[l] = angle
     return angles
 
 
