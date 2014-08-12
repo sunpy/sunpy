@@ -4,7 +4,7 @@ import pytest
 import sunpy
 from sunpy.time.timerange import TimeRange
 from sunpy.net.vso.attrs import Time,Instrument,Source 
-from sunpy.net.unifieddownloader.client import queryresponse
+from sunpy.net.unifieddownloader.client import QueryResponse
 import sunpy.net.unifieddownloader.sources.eve as eve
 
 LCClient = eve.EVEClient()
@@ -46,7 +46,7 @@ def test_can_handle_query():
 
 def test_query():
     qr1 = LCClient.query(Time('2012/8/9','2012/8/10'),Instrument('eve'))
-    assert isinstance(qr1,queryresponse)
+    assert isinstance(qr1,QueryResponse)
     assert len(qr1) == 2
     assert qr1.time_range()[0] == '2012/08/09'
     assert qr1.time_range()[1] == '2012/08/10'
