@@ -6,6 +6,7 @@ import urlparse
 
 from sunpy.net.unifieddownloader.client import GenericClient
 
+
 __all__ = ['EVEClient']
 
 class EVEClient(GenericClient):
@@ -54,6 +55,6 @@ class EVEClient(GenericClient):
         chkattr =  ['Time', 'Instrument']
         chklist =  [x.__class__.__name__ in chkattr for x in query]
         for x in query:
-            if isinstance(x, Instrument) and x.value == 'eve':
+            if x.__class__.__name__ == 'Instrument' and x.value == 'eve':
                 return all(chklist)
         return False
