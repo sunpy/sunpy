@@ -4,7 +4,7 @@ import pytest
 import sunpy
 from sunpy.time.timerange import TimeRange
 from sunpy.net.vso.attrs import Time,Instrument,Source 
-from sunpy.net.unifieddownloader.client import queryresponse
+from sunpy.net.unifieddownloader.client import QueryResponse
 import sunpy.net.unifieddownloader.sources.rhessi as rhessi
 
 LCClient = rhessi.RHESSIClient()
