@@ -229,11 +229,11 @@ def _calc_P_B0_SD(date, spacecraft=None, arcsec=False):
 
     # get the longitude of the sun etc.
     sun_position = _sun_pos(date)
-    longmed = sun_position["longitude"]
+    longmed = sun_position["longitude"].to(u.deg)
     #ra = sun_position["ra"]
     #dec = sun_position["dec"]
-    appl = sun_position["app_long"]
-    oblt = sun_position["obliq"]
+    appl = sun_position["app_long"].to(u.deg)
+    oblt = sun_position["obliq"].to(u.deg)
 
     # form the aberrated longitude
     Lambda = longmed - (20.50 / 3600.0)
@@ -289,7 +289,8 @@ def _sun_pos(date, is_julian=False, since_2415020=False):
     perturbations in the calculation of solar longitude at date and various
     other solar positional parameters. This routine is a truncated version of
     Newcomb's Sun and is designed to give apparent angular coordinates (T.E.D)
-    to a precision of one second of time.  This function is assigned to be
+    to a precision of one second of time.  This function replicates the SSW/
+    IDL function "sun_pos.pro".  This function is assigned to be
     internal at the moment as it should really be replaced by accurate
     ephemeris calculations in the part of SunPy that handles ephemeris.
 
@@ -313,7 +314,7 @@ def _sun_pos(date, is_julian=False, since_2415020=False):
     ra         -  Apparent RA for true equinox of date (degs)
     dec        -  Apparent declination for true equinox of date (degs)
     app_long   -  Apparent longitude (degs)
-    obliq      -  True obliquity (degs)longditude_delta:
+    obliq      -  True obliquity (degs)
 
     See Also
     --------
