@@ -430,8 +430,8 @@ class Cube(astropy.nddata.NDData):
     def __getitem__(self, item):
         if item is None or (isinstance(item, tuple) and None in item):
             raise IndexError("None indices not supported")
-        pixels = cu.pixelize_slice(item, self.axes_wcs)
+        # pixels = cu.pixelize_slice(item, self.axes_wcs)
         if self.data.ndim == 3:
-            return cu.getitem_3d(self, pixels)
+            return cu.getitem_3d(self, item)
         else:
-            return cu.getitem_4d(self, pixels)
+            return cu.getitem_4d(self, item)

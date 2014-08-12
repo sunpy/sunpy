@@ -353,69 +353,72 @@ def pixelize_slice(item, wcs):
     wcs: Sunpy.wcs.wcs.WCS
         The WCS object representing the array/
     """
-    naxis = wcs.wcs.naxis if not wcs.was_augmented else wcs.wcs.naxis - 1
-
-    def convert_point(value, unit, axis):
-        cunit = u.Unit(wcs.wcs.cunit[naxis - axis])
-        crpix = wcs.wcs.crpix[naxis - axis]
-        crval = wcs.wcs.crval[naxis - axis] * cunit
-        cdelt = wcs.wcs.cdelt[naxis - axis] * cunit
-
-        point = (value * unit).to(cunit)
-        pointdelta = ((point - crval) / cdelt).value
-        point = crpix + pointdelta
-
-        return point
-
-    def convert_slice(sl, axis):
-        steps = [sl.start, sl.stop, sl.step]
-        values = [None, None, None]
-        unit = None
-        for i in range(3):
-            if isinstance(steps[i], u.Quantity):
-                if unit is not None and steps[i].unit != unit:
-                    raise CubeError(5, "Only one unit per axis may be given")
-                else:
-                    unit = steps[i].unit
-                    values[i] = steps[i].value
-            else:
-                values[i] = steps[i]
-        if unit is None:
-            return sl
-
-        if values[2] is None:
-            delta = None
-        else:
-            cunit = u.Unit(wcs.wcs.cunit[naxis - axis])
-            cdelt = wcs.wcs.cdelt[naxis - axis] * cunit
-            delta = ((values[2] * unit).to(cunit) / cdelt).value
-
-        if values[0] is None:
-            start = None
-        else:
-            start = convert_point(values[0], unit, axis)
-
-        if values[1] is None:
-            end = None
-        else:
-            end = convert_point(values[1], unit, axis)
-
-        return slice(start, end, delta)
-
     if isinstance(item, tuple):
-        result = item.copy
+        result = list(range(len(item)))
         for axis in range(len(item)):
             if isinstance(item[axis], slice):
-                result[axis] = convert_slice(item[axis], axis)
+                result[axis] = _convert_slice(item[axis], wcs, axis)
             elif isinstance(item[axis], u.Quantity):
-                result[axis] = convert_point(item[axis].value, item[axis].unit,
-                                             axis)
+                result[axis] = _convert_point(item[axis].value,
+                                              item[axis].unit, wcs, axis)
+        result = tuple(result)
     elif isinstance(item, u.Quantity):
-        result = convert_point(item.value, item.unit, 0)
+        result = _convert_point(item.value, item.unit, wcs, 0)
     else:
         result = item
 
     return result
+
+
+def _convert_point(value, unit, wcs, axis):
+    naxis = wcs.wcs.naxis if not wcs.was_augmented else wcs.wcs.naxis - 1
+    cunit = u.Unit(wcs.wcs.cunit[naxis - 1 - axis])
+    crpix = wcs.wcs.crpix[naxis - 1 - axis]
+    crval = wcs.wcs.crval[naxis - 1 - axis] * cunit
+    cdelt = wcs.wcs.cdelt[naxis - 1 - axis] * cunit
+
+    point = (value * unit).to(cunit)
+    pointdelta = ((point - crval) / cdelt).value
+    point = crpix + pointdelta
+
+    return int(np.round(point))
+
+
+def _convert_slice(sl, wcs, axis):
+    naxis = wcs.wcs.naxis
+    steps = [sl.start, sl.stop, sl.step]
+    values = [None, None, None]
+    unit = None
+    for i in range(3):
+        if isinstance(steps[i], u.Quantity):
+            if unit is not None and steps[i].unit != unit:
+                raise CubeError(5, "Only one unit per axis may be given")
+            else:
+                unit = steps[i].unit
+                values[i] = steps[i].value
+        else:
+            values[i] = steps[i]
+    if unit is None:
+        return sl
+
+    if values[2] is None:
+        delta = None
+    else:
+        cunit = u.Unit(wcs.wcs.cunit[naxis - 1 - axis])
+        cdelt = wcs.wcs.cdelt[naxis - 1 - axis] * cunit
+        delta = ((values[2] * unit).to(cunit) / cdelt).value
+
+    if values[0] is None:
+        start = None
+    else:
+        start = _convert_point(values[0], unit, wcs, axis)
+
+    if values[1] is None:
+        end = None
+    else:
+        end = _convert_point(values[1], unit, wcs, axis)
+
+    return slice(start, end, delta)
 
 
 class CubeError(Exception):

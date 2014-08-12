@@ -3,14 +3,15 @@ import pytest
 from sunpy.cube import cube_utils as cu
 import numpy as np
 from sunpy.wcs.wcs import WCS
+from astropy import units as u
 
-ht = {'CTYPE1': 'HPLT-TAN', 'CUNIT1': 'deg', 'CDELT1': 0.5,
-      'CTYPE2': 'WAVE    ', 'CUNIT2': 'Angstrom', 'CDELT2': 0.2,
-      'CTYPE3': 'TIME    ', 'CUNIT3': 'min', 'CDELT3': 0.4}
+ht = {'CTYPE1': 'HPLT-TAN', 'CUNIT1': 'deg', 'CDELT1': 0.5, 'CRPIX1': 0, 'CRVAL1': 0,
+      'CTYPE2': 'WAVE    ', 'CUNIT2': 'Angstrom', 'CDELT2': 0.2, 'CRPIX2': 0, 'CRVAL2': 0,
+      'CTYPE3': 'TIME    ', 'CUNIT3': 'min', 'CDELT3': 0.4, 'CRPIX3': 0, 'CRVAL3': 0}
 wt = WCS(header=ht, naxis=3)
-hm = {'CTYPE1': 'HPLT-TAN', 'CUNIT1': 'deg', 'CDELT1': 0.5,
-      'CTYPE2': 'WAVE    ', 'CUNIT2': 'Angstrom', 'CDELT2': 0.2,
-      'CTYPE3': 'HPLN-TAN', 'CUNIT3': 'deg', 'CDELT3': 0.4}
+hm = {'CTYPE1': 'HPLT-TAN', 'CUNIT1': 'deg', 'CDELT1': 0.5, 'CRPIX1': 2, 'CRVAL1': 0.5,
+      'CTYPE2': 'WAVE    ', 'CUNIT2': 'Angstrom', 'CDELT2': 0.2, 'CRPIX2': 0, 'CRVAL2': 10,
+      'CTYPE3': 'HPLN-TAN', 'CUNIT3': 'deg', 'CDELT3': 0.4, 'CRPIX3': 2, 'CRVAL3': 1}
 wm = WCS(header=hm, naxis=3)
 data = np.array([[[1,2,3,4], [2,4,5,3], [0,-1,2,3]],
                  [[2,4,5,1], [10,5,2,2], [10,3,3,0]]])
@@ -63,3 +64,18 @@ def test_iter_isinstance():
     assert not cu.iter_isinstance(obj, int, str, float, int)
     assert not cu.iter_isinstance(1, int)  # only works for tuples
     assert not cu.iter_isinstance(int, float)
+
+
+def test_convert_point():
+    assert cu._convert_point(10.0, u.Angstrom, wm, 1) == 0
+    assert cu._convert_point(10.2, u.Angstrom, wm, 1) == 1
+    assert cu._convert_point(9.6, u.Angstrom, wm, 1) == -2
+    assert cu._convert_point(10.3, u.Angstrom, wm, 1) == 2
+    assert cu._convert_point(0.001, u.mm, wm, 1) == 49950
+
+    assert cu._convert_point(0, u.min, wt, 0) == 0
+    assert cu._convert_point(3.1, u.min, wt, 0) == 8
+    assert cu._convert_point(-2.4, u.min, wt, 0) == -6
+    assert cu._convert_point(0, u.s, wt, 0) == 0
+    assert cu._convert_point(24, u.s, wt, 0) == 1
+    assert cu._convert_point(-72, u.s, wt, 0) == -3
