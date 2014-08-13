@@ -12,6 +12,8 @@ import numpy as np
 from scipy import interpolate
 from scipy.integrate import trapz
 from scipy.integrate import cumtrapz
+import astropy
+from astropy.units.quantity import Quantity
 
 
 from sunpy.net import hek
@@ -135,7 +137,7 @@ def temp_em(goeslc, abundances="coronal",
 
     Examples
     --------
-    >>> from sunpy.lightcurve as lc
+    >>> import sunpy.lightcurve as lc
     >>> goeslc = lc.GOESLightCurve.create(time1, time2)
     >>> goeslc.data
                           xrsa   xrsb
@@ -183,7 +185,7 @@ def goes_chianti_tem(longflux, shortflux, satellite=8,
 
     Parameters
     ----------
-    longflux, shortflux : array-like convertible to float64 e.g. np.array.
+    longflux, shortflux :astropy Quantity
         Arrays containing the long and short GOES/XRS flux measurements
         respectively as a function of time.  Must be of same length. [W/m**2].
 
@@ -215,11 +217,11 @@ def goes_chianti_tem(longflux, shortflux, satellite=8,
 
     Returns
     -------
-    temp : numpy array
+    temp : astropy Quantity
         Array of temperature values of same length as longflux and
         shortflux. Units=[MK]
 
-    em : numpy array
+    em : astropy Quantity
         Array of volume emission measure values of same length as longflux
         and shortflux.  Units=[10**49 cm**-3]
 
@@ -267,8 +269,10 @@ def goes_chianti_tem(longflux, shortflux, satellite=8,
 
     """
     # ENSURE INPUTS ARE OF CORRECT TYPE AND VALID VALUES
-    longflux = np.asanyarray(longflux, dtype=np.float64)
-    shortflux = np.asanyarray(shortflux, dtype=np.float64)
+    if type(longflux) != astropy.units.quantity.Quantity:
+        longflux = Quantity(longflux, unit='W/m**2')
+    if type(shortflux) != astropy.units.quantity.Quantity:
+        shortflux = Quantity(shortflux, unit='W/m**2')
     int(satellite)
     if satellite < 1:
         raise ValueError("satellite must be the number of a "
@@ -283,7 +287,7 @@ def goes_chianti_tem(longflux, shortflux, satellite=8,
     # GOES 6 long channel flux before 1983-Jun-28 must be corrected by a
     # factor of 4.43/5.32
     if date < datetime.datetime(1983, 06, 28) and satellite == 6:
-        longflux_corrected = longflux * (4.43/5.32)
+        longflux_corrected = longflux*(4.43/5.32)
     else:
         longflux_corrected = longflux
     # Un-scale fluxes if GOES satellite is after 7.  See 2nd paragraph
@@ -296,10 +300,10 @@ def goes_chianti_tem(longflux, shortflux, satellite=8,
     # Calculate short to long channel ratio.
     # Data which is not good have their ratio value set to 0.003.
     # See Notes section in docstring above.
-    index = np.logical_or(shortflux_corrected < 1e-10,
-                          longflux_corrected < 3e-8)
+    index = np.logical_or(shortflux_corrected.value < 1e-10,
+                          longflux_corrected.value < 3e-8)
     fluxratio = shortflux_corrected / longflux_corrected
-    fluxratio[index] = 0.003
+    fluxratio.value[index] = 0.003
 
     # FIND TEMPERATURE AND EMISSION MEASURE FROM FUNCTIONS BELOW
     temp = _goes_get_chianti_temp(fluxratio, satellite=satellite,
@@ -326,7 +330,7 @@ def _goes_get_chianti_temp(fluxratio, satellite=8, abundances="coronal",
 
     Parameters
     ----------
-    fluxratio : ndarray/array-like convertible to float64, e.g. np.array, list
+    fluxratio : astropy Quantity
         Array containing the ratio of short channel to long channel
         GOES/XRS flux measurements.
 
@@ -403,7 +407,8 @@ def _goes_get_chianti_temp(fluxratio, satellite=8, abundances="coronal",
                         replace=download)
 
     # check inputs are correct
-    fluxratio = np.asanyarray(fluxratio, dtype=np.float64)
+    if type(fluxratio) != astropy.units.quantity.Quantity:
+        fluxratio = Quantity(fluxratio)
     int(satellite)
     if satellite < 1:
         raise ValueError("satellite must be the number of a "
@@ -447,7 +452,8 @@ def _goes_get_chianti_temp(fluxratio, satellite=8, abundances="coronal",
     # Perform spline fit to model data to get temperatures for input
     # values of flux ratio
     spline = interpolate.splrep(modelratio, modeltemp, s=0)
-    temp = 10.**interpolate.splev(fluxratio, spline, der=0)
+    temp = 10.**interpolate.splev(fluxratio.value, spline, der=0)
+    temp = Quantity(temp, unit='MK')
 
     return temp
 
@@ -468,11 +474,11 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal",
 
     Parameters
     ----------
-    longflux : ndarray/array-like convertible to float64, e.g. np.array, list
+    longflux : astropy Quantity
         Array containing the observed GOES/XRS long channel flux.
         Units=[W/m**2]
 
-    temp : ndarray/array-like convertible to float64, e.g. np.array, list
+    temp : astropy Quantity
         Array containing the GOES temperature.  Units=[MK]
 
     satellite : int (optional)
@@ -552,8 +558,14 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal",
                         replace=download)
 
     # Check inputs are of correct type
-    longflux = np.asanyarray(longflux, dtype=np.float64)
-    temp = np.asanyarray(temp, dtype=np.float64)
+    if type(longflux) != astropy.units.quantity.Quantity:
+        longflux = Quantity(longflux, unit='W/m**2')
+    else:
+        longflux.to(astropy.units.W/astropy.units.m/astropy.units.m)
+    if type(temp) != astropy.units.quantity.Quantity:
+        temp = Quantity(temp, unit='MK')
+    else:
+        temp = temp.to(astropy.units.MK)
     int(satellite)
     if satellite < 1:
         raise ValueError("satellite must be the number of a "
@@ -592,17 +604,18 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal",
     modelflux = np.asarray(modelflux)
 
     # Ensure input values of flux ratio are within limits of model table
-    if np.min(np.log10(temp)) < np.min(modeltemp) or \
-      np.max(np.log10(temp)) > np.max(modeltemp) or \
-      np.isnan(np.min(np.log10(temp))):
+    if np.min(np.log10(temp.value)) < np.min(modeltemp) or \
+      np.max(np.log10(temp.value)) > np.max(modeltemp) or \
+      np.isnan(np.min(np.log10(temp.value))):
         raise ValueError("All values in temp must be within the range "
                          "{0} - {1} MK.".format(np.min(10**modeltemp),
                                                 np.max(10**modeltemp)))
 
     # Perform spline fit to model data
     spline = interpolate.splrep(modeltemp, modelflux, s=0)
-    denom = interpolate.splev(np.log10(temp), spline, der=0)
-    em = longflux/denom * 1e55
+    denom = interpolate.splev(np.log10(temp.value), spline, der=0)
+    em = longflux.value/denom * 1e55
+    em = Quantity(em, unit='cm**(-3)')
 
     return em
 
