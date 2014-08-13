@@ -844,12 +844,12 @@ def calc_rad_loss(temp, em, obstime=None, cumulative=False,
         obstime_seconds = np.array([(ot-obstime[0]).total_seconds()
                                     for ot in obstime], dtype="float64")
         # Finally, integrate using trapezoid rule
-        rad_loss_int = integrate.trapz(rad_loss.value, obstime_seconds)
+        rad_loss_int = trapz(rad_loss.value, obstime_seconds)
         rad_loss_int = Quantity(rad_loss_int, unit='J')
         # If cumulative kwarg True, calculate cumulative radiated energy
         # in each GOES channel as a function of time.
         if cumulative:
-            rad_loss_cumul = integrate.cumtrapz(rad_loss, obstime_seconds)
+            rad_loss_cumul = cumtrapz(rad_loss, obstime_seconds)
             rad_loss_cumul = Quantity(rad_loss_cumul, unit='J')
             # Enter results into output dictionary.
             rad_loss_out = {"rad_loss_rate":rad_loss,
