@@ -606,7 +606,7 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal",
 
     return em
 
-def rad_loss_rate(goeslc, download=False, download_dir=DATA_PATH):
+def radiative_loss_rate(goeslc, download=False, download_dir=DATA_PATH):
     """
     Calculates flare radiative loss rate and adds it to GOESLightCurve.
 
