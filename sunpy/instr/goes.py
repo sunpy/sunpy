@@ -947,11 +947,11 @@ def goes_lx(longflux, shortflux, obstime=None, date=None, cumulative=False):
 
     Parameters
     ----------
-    longflux : ndarray/array-like convertible to float64, e.g. np.array, list
+    longflux : astropy Quantity
         Array containing the observed GOES/XRS long channel flux.
         Units=[W/m**2]
 
-    shortflux : ndarray/array-like convertible to float64, e.g. np.array, list
+    shortflux : astropy Quantity
         Array containing the observed GOES/XRS short channel flux.
         Units=[W/m**2]
 
@@ -973,10 +973,10 @@ def goes_lx(longflux, shortflux, obstime=None, date=None, cumulative=False):
     -------
     lx_out : dictionary
         dictionary containing the following fields.
-        longlum : numpy ndarray, dtype=float, units=[erg/s]
+        longlum : astropy Quantity
             Array of luminosity in the 1-8 angstroms range.
 
-        shortlum : numpy ndarray, dtype=float, units=[erg/s]
+        shortlum : astropy Quantity
             Array of luminosity in the 0.5-4 angstroms range.
 
         longlum_int : (only present if obstime kwarg is set)
@@ -991,15 +991,16 @@ def goes_lx(longflux, shortflux, obstime=None, date=None, cumulative=False):
 
     Examples
     --------
-    >>> longflux = np.array([7e-6,7e-6,7e-6,7e-6,7e-6,7e-6])
-    >>> shortflux = np.array([7e-7,7e-7,7e-7,7e-7,7e-7,7e-7])
-    >>> obstime = np.array(["2014-01-01 00:00:00",
-                            "2014-01-01 00:00:02",
-                            "2014-01-01 00:00:04",
-                            "2014-01-01 00:00:06",
-                            "2014-01-01 00:00:08",
-                            "2014-01-01 00:00:10"],
-                            dtype="datetime64[ms]")
+    >>> from datetime import datetime
+    >>> from astropy.units.quantity import Quantity
+    >>> longflux = Quantity([7e-6,7e-6,7e-6,7e-6,7e-6,7e-6], unit='W/m**2')
+    >>> shortflux = Quantity([7e-7,7e-7,7e-7,7e-7,7e-7,7e-7], unit='W/m**2')
+    >>> obstime = np.array([datetime(2014,1,1,0,0,0),
+                            datetime(2014,1,1,0,0,2),
+                            datetime(2014,1,1,0,0,4),
+                            datetime(2014,1,1,0,0,6),
+                            datetime(2014,1,1,0,0,8),
+                            datetime(2014,1,1,0,0,10),], dtype=object)
     >>> lx_out = goes_lx(longflux, shortflux, obstime)
     >>> lx_out["longlum"]
     array([  1.96860565e+25,   1.96860565e+25,   1.96860565e+25,
@@ -1037,13 +1038,19 @@ def goes_lx(longflux, shortflux, obstime=None, date=None, cumulative=False):
         obstime_seconds = np.array([(ot-obstime[0]).total_seconds()
                                     for ot in obstime], dtype="float64")
         # Finally, integrate using trapezoid rule
-        longlum_int = trapz(longlum, obstime_seconds)
-        shortlum_int = trapz(shortlum, obstime_seconds)
+        longlum_int = trapz(longlum.value, obstime_seconds)
+        longlum_int = Quantity(longlum_int, unit=longlum.unit*units.s)
+        longlum_int = longlum_int.to(units.J)
+        shortlum_int = trapz(shortlum.value, obstime_seconds)
+        shortlum_int = Quantity(shortlum_int, unit=shortlum.unit*units.s)
+        shortlum_int = shortlum_int.to(units.J)
         # If cumulative kwarg True, calculate cumulative radiated energy
         # in each GOES channel as a function of time.
         if cumulative is True:
-            longlum_cumul = cumtrapz(longlum, obstime_seconds)
-            shortlum_cumul = cumtrapz(shortlum, obstime_seconds)
+            longlum_cumul = cumtrapz(longlum.value, obstime_seconds)
+            longlum_cumul = Quantity(longlum_cumul, unit='J/s')
+            shortlum_cumul = cumtrapz(shortlum.value, obstime_seconds)
+            shortlum_cumul = Quantity(shortlum_cumul, unit='J/s')
             lx_out = {"longlum":longlum, "shortlum":shortlum,
                       "longlum_cumul":longlum_cumul,
                       "shortlum_cumul":shortlum_cumul,
@@ -1077,8 +1084,8 @@ def _calc_xraylum(flux, date=None):
 
     Parameters
     ----------
-    flux : ndarray/array-like convertible to float64, e.g. np.array, list
-        Array containing the observed solar flux.  Units=[W/m**2]
+    flux : astropy Quantity
+       Containing the observed solar flux.  Units=[W/m**2]
 
     date : (optional) datetime object or valid date string
         Used to calculate a more accurate Sun-Earth distance based on
@@ -1106,10 +1113,14 @@ def _calc_xraylum(flux, date=None):
 
     """
     # Ensure input is of correct type
-    flux = np.asanyarray(flux, dtype=np.float64)
-    if date is not None:
-        date = parse_time(date) # Ensure date is of correct type
-        return 4 * np.pi * (sun.constants.au.value *
-                            sun.sunearth_distance(t=date))**2 * 1e7 * flux
+    if type(flux) != astropy.units.quantity.Quantity:
+        flux = Quantity(flux, unit='W/m**2')
     else:
-        return 4 * np.pi * (sun.constants.au.value)**2 * 1e7 * flux
+        flux = flux.to(units.W/units.m**2)
+    if date is not None:
+        date = parse_time(date)
+        xraylum = 4 * np.pi * (sun.sunearth_distance(t=date))**2 * flux
+    else:
+        xraylum = 4 * np.pi * (sun.sunearth_distance())**2 * flux
+    xraylum = xraylum.si
+    return xraylum
