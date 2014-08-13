@@ -606,7 +606,7 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal",
 
     return em
 
-def radiative_loss_rate(goeslc, download=False, download_dir=DATA_PATH):
+def radiative_loss_rate(goeslc, force_download=False, download_dir=DATA_PATH):
     """
     Calculates flare radiative loss rate and adds it to GOESLightCurve.
 
@@ -623,7 +623,7 @@ def radiative_loss_rate(goeslc, download=False, download_dir=DATA_PATH):
     ----------
     goeslc : GOESLightCurve object
 
-    download : (optional) bool
+    force_download : (optional) bool
         If True, the GOES radiative loss data file is downloaded.
         It is important to do this if a new version of the files has
         been generated due to a new CHIANTI version being released or
@@ -688,7 +688,7 @@ def radiative_loss_rate(goeslc, download=False, download_dir=DATA_PATH):
     em = np.asarray(em, dtype=np.float64)
 
     # Find radiative loss rate with calc_rad_loss()
-    rad_loss_out = calc_rad_loss(temp, em, download=download,
+    rad_loss_out = calc_rad_loss(temp, em, force_download=force_download,
                                  download_dir=download_dir)
 
     # Enter results into new version of GOES LightCurve Object
@@ -696,8 +696,8 @@ def radiative_loss_rate(goeslc, download=False, download_dir=DATA_PATH):
 
     return goeslc_new
 
-def calc_rad_loss(temp, em, obstime=None, cumulative=False, download=False,
-                  download_dir=DATA_PATH):
+def calc_rad_loss(temp, em, obstime=None, cumulative=False,
+                  force_download=False, download_dir=DATA_PATH):
     """
     Finds radiative loss rate of coronal plasma over all wavelengths.
 
@@ -726,7 +726,7 @@ def calc_rad_loss(temp, em, obstime=None, cumulative=False, download=False,
         as temp and em.  If this keyword is set, the integrated
         radiated energy is calculated.
 
-    download : (optional) bool
+    force_download : (optional) bool
         If True, the GOES radiative loss data file is downloaded.  It is
         important to do this if a new version of the files has been
         generated due to a new CHIANTI version being released or the
@@ -773,10 +773,10 @@ def calc_rad_loss(temp, em, obstime=None, cumulative=False, download=False,
     em = np.asanyarray(em, dtype=np.float64)
     if len(temp) != len(em):
         raise ValueError("temp and em must all have same number of elements.")
-    # If download kwarg is True, or required data files cannot be
+    # If force_download kwarg is True, or required data files cannot be
     # found locally, download required data files.
     check_download_file(FILE_RAD_COR, GOES_REMOTE_PATH, download_dir,
-                        replace=download)
+                        replace=force_download)
 
     # Initialize lists to hold model data of temperature - rad loss rate
     # relationship read in from csv file
