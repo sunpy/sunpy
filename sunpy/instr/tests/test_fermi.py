@@ -20,7 +20,7 @@ def test_detector_angles():
     #set a test date
     date = parse_time('2012-02-15')
     file = fermi.download_weekly_pointing_file(date)
-    det=fermi.get_detector_sun_angles_for_date(date,file,plot=False)
+    det=fermi.get_detector_sun_angles_for_date(date,file)
     assert len(det) == 12
     #assert type(det) == collections.OrderedDict
     assert_almost_equal(det['n0'][0], 20.30309,decimal=1)
