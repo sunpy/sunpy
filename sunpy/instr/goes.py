@@ -676,16 +676,16 @@ def rad_loss_rate(goeslc, download=False, download_dir=DATA_PATH):
     # object and change type to that required by calc_rad_loss().
     # If GOESLightCurve object does not contain temperature and
     # emission measure, calculate using temp_em()
-    try:
-        temp = np.asarray(goeslc.data.temperature, dtype=np.float64)
-        em = np.asarray(goeslc.data.em, dtype=np.float64)
-    except AttributeError as error:
-        if error.message == \
-            "'DataFrame' object has no attribute 'temperature'" or \
-            error.message == "'DataFrame' object has no attribute 'em'":
-            goeslc_new = temp_em(goeslc)
-            temp = np.asarray(goeslc_new.data.temperature, dtype=np.float64)
-            em = np.asarray(goeslc_new.data.em, dtype=np.float64)
+    if 'temperature' in goeslc.data and 'em' in goeslc.data:
+        temp = goeslc.data.temperature
+        em = goeslc.data.em
+    else:
+        goeslc2 = temp_em(goeslc)
+        temp = goeslc2.data.temperature
+        em = goeslc2.data.em
+
+    temp = np.asarray(temp, dtype=np.float64)
+    em = np.asarray(em, dtype=np.float64)
 
     # Find radiative loss rate with calc_rad_loss()
     rad_loss_out = calc_rad_loss(temp, em, download=download,
