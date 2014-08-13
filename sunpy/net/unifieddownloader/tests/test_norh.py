@@ -18,9 +18,9 @@ LCClient = norh.NoRHClient()
 'ftp://anonymous:mozilla@example.com@solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/2012/12/tca121201',
 'ftp://anonymous:mozilla@example.com@solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/2012/12/tca121202'
 ),
-(TimeRange('2012/7/7','2012/7/14'),
-'ftp://anonymous:mozilla@example.com@solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/2012/07/tca120707',
-'ftp://anonymous:mozilla@example.com@solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/2012/07/tca120714'
+(TimeRange('2012/3/7','2012/3/14'),
+'ftp://anonymous:mozilla@example.com@solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/2012/03/tca120307',
+'ftp://anonymous:mozilla@example.com@solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/2012/03/tca120314'
 )
 ])
 def test_get_url_for_time_range(timerange, url_start, url_end):
@@ -35,22 +35,22 @@ def test_fail_get_url_for_time_range():
     assert len(urls) == 0
 
 def test_get_url_for_date():
-    url = LCClient._get_url_for_date(datetime.date(2011,1,14))
-    assert url =='ftp://anonymous:mozilla@example.com@solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/2011/01/tca110114'
+    url = LCClient._get_url_for_date(datetime.date(2011,3,14))
+    assert url =='ftp://anonymous:mozilla@example.com@solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/2011/03/tca110314'
 
 
 def test_can_handle_query():
     ans1 = norh.NoRHClient._can_handle_query(Time('2012/8/9','2012/8/10'),Instrument('norh'))
     assert ans1 == True
-    ans2 = norh.NoRHClient._can_handle_query(Time('2012/7/7','2012/7/7'))
+    ans2 = norh.NoRHClient._can_handle_query(Time('2012/2/7','2012/2/7'))
     assert ans2 == False
 
 def test_query():
-    qr1 = LCClient.query(Time('2012/8/9','2012/8/10'),Instrument('norh'))
+    qr1 = LCClient.query(Time('2012/1/9','2012/1/10'),Instrument('norh'))
     assert isinstance(qr1,QueryResponse)
-    assert qr1.file_num == 2
-    assert qr1.time_range()[0] == '2012/08/09'
-    assert qr1.time_range()[1] == '2012/08/10'
+    assert len(qr1) == 2
+    assert qr1.time_range()[0] == '2012/01/09'
+    assert qr1.time_range()[1] == '2012/01/10'
     
 
 @pytest.mark.online
@@ -62,5 +62,5 @@ def test_get(time,instrument):
     qr1 = LCClient.query(time,instrument)
     res = LCClient.get(qr1)
     download_list = res.wait()
-    assert len(download_list) == qr1.file_num
+    assert len(download_list) == len(qr1)
 
