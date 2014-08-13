@@ -1037,13 +1037,13 @@ def goes_lx(longflux, shortflux, obstime=None, date=None, cumulative=False):
         obstime_seconds = np.array([(ot-obstime[0]).total_seconds()
                                     for ot in obstime], dtype="float64")
         # Finally, integrate using trapezoid rule
-        longlum_int = integrate.trapz(longlum, obstime_seconds)
-        shortlum_int = integrate.trapz(shortlum, obstime_seconds)
+        longlum_int = trapz(longlum, obstime_seconds)
+        shortlum_int = trapz(shortlum, obstime_seconds)
         # If cumulative kwarg True, calculate cumulative radiated energy
         # in each GOES channel as a function of time.
         if cumulative is True:
-            longlum_cumul = integrate.cumtrapz(longlum, obstime_seconds)
-            shortlum_cumul = integrate.cumtrapz(shortlum, obstime_seconds)
+            longlum_cumul = cumtrapz(longlum, obstime_seconds)
+            shortlum_cumul = cumtrapz(shortlum, obstime_seconds)
             lx_out = {"longlum":longlum, "shortlum":shortlum,
                       "longlum_cumul":longlum_cumul,
                       "shortlum_cumul":shortlum_cumul,
