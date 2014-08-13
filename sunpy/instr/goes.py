@@ -13,7 +13,9 @@ from scipy import interpolate
 from scipy.integrate import trapz
 from scipy.integrate import cumtrapz
 import astropy
+from astropy import units
 from astropy.units.quantity import Quantity
+import pandas
 
 
 from sunpy.net import hek
@@ -561,11 +563,11 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal",
     if type(longflux) != astropy.units.quantity.Quantity:
         longflux = Quantity(longflux, unit='W/m**2')
     else:
-        longflux.to(astropy.units.W/astropy.units.m/astropy.units.m)
+        longflux.to(units.W/units.m**2)
     if type(temp) != astropy.units.quantity.Quantity:
         temp = Quantity(temp, unit='MK')
     else:
-        temp = temp.to(astropy.units.MK)
+        temp = temp.to(units.MK)
     int(satellite)
     if satellite < 1:
         raise ValueError("satellite must be the number of a "
@@ -720,11 +722,11 @@ def calc_rad_loss(temp, em, obstime=None, cumulative=False,
 
     Parameters
     ----------
-    temp : ndarray/array-like convertible to float64, e.g. np.array, list
+    temp : astropy Quantity
         Array containing the temperature of the coronal plasma at
         different times.  Units=[MK]
 
-    em : ndarray/array-like convertible to float64, e.g. np.array, list
+    em : astropy Quantity
         Array containing the emission measure of the coronal plasma
         at the same times corresponding to the temperatures in temp.
         Must be same length as temp.  Units=[cm**-3]
@@ -778,8 +780,13 @@ def calc_rad_loss(temp, em, obstime=None, cumulative=False,
     array([  3.01851392e+26,   3.01851392e+26])
     """
     # Check inputs are correct
-    temp = np.asanyarray(temp, dtype=np.float64)
-    em = np.asanyarray(em, dtype=np.float64)
+    if type(temp) != astropy.units.quantity.Quantity:
+        temp = Quantity(temp, unit='MK')
+    temp = temp.to(units.K)
+    if type(em) != astropy.units.quantity.Quantity:
+        em = Quantity(em, unit='cm**(-3)')
+    else:
+        em = em.to(1/units.cm**3)
     if len(temp) != len(em):
         raise ValueError("temp and em must all have same number of elements.")
     # If force_download kwarg is True, or required data files cannot be
@@ -804,15 +811,17 @@ def calc_rad_loss(temp, em, obstime=None, cumulative=False,
     modeltemp = np.asarray(modeltemp)
     model_loss_rate = np.asarray(model_loss_rate)
     # Ensure input values of flux ratio are within limits of model table
-    if np.min(temp*1e6) < np.min(modeltemp) or \
-        np.max(temp*1e6) > np.max(modeltemp):
+    if np.min(temp.value) < np.min(modeltemp) or \
+        np.max(temp.value) > np.max(modeltemp):
         raise ValueError("All values in temp must be within the range " +
                          "{0} - {1} MK.".format(np.min(modeltemp/1e6),
                                                 np.max(modeltemp/1e6)))
     # Perform spline fit to model data to get temperatures for input
     # values of flux ratio
     spline = interpolate.splrep(modeltemp, model_loss_rate, s=0)
-    rad_loss = em * interpolate.splev(temp*1e6, spline, der=0)
+    rad_loss = em.value * interpolate.splev(temp.value, spline, der=0)
+    rad_loss = Quantity(rad_loss, unit='erg/s')
+    rad_loss = rad_loss.to(units.J/units.s)
 
     # If obstime keyword giving measurement times is set, calculate
     # radiative losses intergrated over time.
@@ -837,11 +846,13 @@ def calc_rad_loss(temp, em, obstime=None, cumulative=False,
         for i in range(len(obstime)):
             obstime_seconds[i] = obstime_seconds[i].total_seonds()
         # Finally, integrate using trapezoid rule
-        rad_loss_int = integrate.trapz(rad_loss, obstime_seconds)
+        rad_loss_int = integrate.trapz(rad_loss.value, obstime_seconds)
+        rad_loss_int = Quantity(rad_loss_int, unit='J')
         # If cumulative kwarg True, calculate cumulative radiated energy
         # in each GOES channel as a function of time.
         if cumulative:
             rad_loss_cumul = integrate.cumtrapz(rad_loss, obstime_seconds)
+            rad_loss_cumul = Quantity(rad_loss_cumul, unit='J')
             # Enter results into output dictionary.
             rad_loss_out = {"rad_loss_rate":rad_loss,
                             "rad_loss_cumul" : rad_loss_cumul,
