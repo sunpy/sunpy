@@ -361,6 +361,8 @@ def pixelize_slice(item, wcs):
             elif isinstance(item[axis], u.Quantity):
                 result[axis] = _convert_point(item[axis].value,
                                               item[axis].unit, wcs, axis)
+            else:
+                result[axis] = item[axis]
         result = tuple(result)
     elif isinstance(item, u.Quantity):
         result = _convert_point(item.value, item.unit, wcs, 0)
@@ -385,7 +387,7 @@ def _convert_point(value, unit, wcs, axis):
 
 
 def _convert_slice(sl, wcs, axis):
-    naxis = wcs.wcs.naxis
+    naxis = wcs.wcs.naxis if not wcs.was_augmented else wcs.wcs.naxis - 1
     steps = [sl.start, sl.stop, sl.step]
     values = [None, None, None]
     unit = None
@@ -406,7 +408,7 @@ def _convert_slice(sl, wcs, axis):
     else:
         cunit = u.Unit(wcs.wcs.cunit[naxis - 1 - axis])
         cdelt = wcs.wcs.cdelt[naxis - 1 - axis] * cunit
-        delta = ((values[2] * unit).to(cunit) / cdelt).value
+        delta = int(np.round(((values[2] * unit).to(cunit) / cdelt).value))
 
     if values[0] is None:
         start = None

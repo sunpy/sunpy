@@ -98,3 +98,17 @@ def test_convert_slice():
         assert cu._convert_slice(*slices[i]) == results[i]
     with pytest.raises(cu.CubeError):
         cu._convert_slice(slice(2 * u.m, 3, 4 * u.mm), wm, 0)
+
+
+def test_pixelize_slice():
+    sl = [((slice(1, None, 3), 3.2, slice(None, None, 2)), wt),
+          ((0.3 * u.deg, 0.0001 * u.mm, 5400 * u.arcsec), wm),
+          ((slice(None, 3 * u.deg, 2), slice(5 * u.nm, 6, 1 * u.nm),
+            slice(90 * u.arcmin, 300, 60)), wm)]
+
+    results = [(slice(1, None, 3), 3.2, slice(None, None, 2)),
+               (0, 4950, 4),
+               (slice(None, 7, 5), slice(200, 250, 50), slice(4, 11, 2))]
+
+    for i in range(len(sl)):
+        assert cu.pixelize_slice(*sl[i]) == results[i]
