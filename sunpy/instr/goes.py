@@ -839,10 +839,11 @@ def calc_rad_loss(temp, em, obstime=None, cumulative=False,
     else:
         # Ensure cumulative kwarg wasn't set without setting obstime.
         if cumulative:
-            raise IOError("cumulative keyword is True but obstime keyword is "
-                          "None.  In order to calculate cumulative radiated "
-                          "losses, cumulative must be True and measurement "
-                          "times must be given via the obstime keyword.")
+            raise ValueError("cumulative keyword is True but obstime keyword "
+                             "is None.  In order to calculate cumulative "
+                             "radiated losses, cumulative must be True and "
+                             "measurement times must be given via the "
+                             "obstime kwarg.")
         # If keyword assignments are OK, enter results into output
         # dictionary.
         rad_loss_out = {"rad_loss_rate":rad_loss}
