@@ -1034,10 +1034,8 @@ def goes_lx(longflux, shortflux, obstime=None, date=None, cumulative=False):
                             " convertible to datetime objects.")
         # Next, get measurement times in seconds from time of first
         # measurement.
-        obstime_seconds = obstime.to_pydatetime()
-        obstime_seconds = obstime_seconds - obstime_seconds[0]
-        for i in range(len(obstime)):
-            obstime_seconds[i] = obstime_seconds[i].total_seonds()
+        obstime_seconds = np.array([(ot-obstime[0]).total_seconds()
+                                    for ot in obstime], dtype="float64")
         # Finally, integrate using trapezoid rule
         longlum_int = integrate.trapz(longlum, obstime_seconds)
         shortlum_int = integrate.trapz(shortlum, obstime_seconds)
