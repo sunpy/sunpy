@@ -47,8 +47,8 @@ def test_can_handle_query():
 
 def test_query():
     qr1 = LCClient.query(Time('2012/11/10','2012/11/11'),Instrument('lyra'))
-    assert isinstance(qr1,queryresponse)
-    assert len(qr1) == 2
+    assert isinstance(qr1,QueryResponse)
+    assert qr1.file_num == 2
     assert qr1.time_range()[0] == '2012/11/10'
     assert qr1.time_range()[1] == '2012/11/11'
     
@@ -62,5 +62,5 @@ def test_get(time,instrument):
     qr1 = LCClient.query(time,instrument)
     res = LCClient.get(qr1)
     download_list = res.wait()
-    assert len(download_list) == len(qr1)
+    assert len(download_list) == qr1.file_num
 
