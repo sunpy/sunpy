@@ -79,3 +79,22 @@ def test_convert_point():
     assert cu._convert_point(0, u.s, wt, 0) == 0
     assert cu._convert_point(24, u.s, wt, 0) == 1
     assert cu._convert_point(-72, u.s, wt, 0) == -3
+
+
+def test_convert_slice():
+    slices = [(slice(1, None, 2.2), wt, 2),
+              (slice(9.6, 10.2 * u.Angstrom, None), wm, 1),
+              (slice(9.6 * u.Angstrom, 10.2 * u.Angstrom, None), wm, 1),
+              (slice(None, None, 0.8 * u.min), wt, 0),
+              (slice(3 * u.deg, 14.5, 2), wm, 2)]
+
+    results = [slice(1, None, 2.2),
+               slice(-2, 1, None),
+               slice(-2, 1, None),
+               slice(None, None, 2),
+               slice(7, 30, 4)]
+
+    for i in range(len(slices)):
+        assert cu._convert_slice(*slices[i]) == results[i]
+    with pytest.raises(cu.CubeError):
+        cu._convert_slice(slice(2 * u.m, 3, 4 * u.mm), wm, 0)
