@@ -65,13 +65,21 @@ def test_mean_anomaly(year, date):
 
 #These values are tested from the functions after the integration of astropy.units
 
-def test_solar_cycle_number():
-    assert_array_almost_equal(sun.solar_cycle_number("2012/11/11"), 5, decimal=0)
-    #76
-    assert_array_almost_equal(sun.solar_cycle_number("2011/2/22"), 4, decimal=0)
-    #23
-    assert_array_almost_equal(sun.solar_cycle_number("2034/1/15"), 27, decimal=0)
-    
+# Peak solar cycle dates for each solar cycle from solar cycle 1.
+scdates = ['1761-06', '1769-10', '1778-05', '1787-11', '1804-12',
+           '1816-03', '1829-06', '1837-02', '1847-11', '1860-07',
+           '1884-01', '1893-08', '1905-10', '1917-08', '1928-06',
+           '1937-05', '1947-07', '1957-11', '1989-02', '1979-11',
+           '1989-10', '2000-01']
+
+@pytest.mark.parametrize('date, cycle', zip(scdates, range(1, len(scdates)+1))) 
+def test_solar_cycle_number(date, cycle):
+    """
+    Function to test the solar cycle number extracting the peaks from
+    http://users.telenet.be/j.janssens/Engzonnecyclus.html#Overzicht
+    """
+    assert_array_almost_equal(sun.solar_cycle_number(date+'-01'), cycle, decimal=0)
+
 
 def test_solar_semidiameter_angular_size():
     assert_array_almost_equal(sun.solar_semidiameter_angular_size("2012/11/11"), 968.383 * u.arcsec, decimal=3)

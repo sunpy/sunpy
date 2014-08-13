@@ -60,8 +60,16 @@ __authors__ = ["Steven Christe"]
 __email__ = "steven.d.christe@nasa.gov"
 
 def solar_cycle_number(t='now'):
+    """
+    Returns approximately the solar cycle number from 1755 assuming an average
+    of 10.66 years per cycle. The average has been obtained having into account
+    Usoskin et al. (2009) results about the total number of cycles between
+    1699 till 2008.
+
+    Usoskin et al. (2009) -  doi:10.1088/0004-637X/700/2/L154
+    """
     time = parse_time(t)
-    result = (time.year + 8) % 28 + 1
+    result = int((time.year - 1755) / 10.66)
     return result
 
 def solar_semidiameter_angular_size(t='now'):
