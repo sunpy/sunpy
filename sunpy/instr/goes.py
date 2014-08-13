@@ -841,10 +841,8 @@ def calc_rad_loss(temp, em, obstime=None, cumulative=False,
                             " convertible to datetime objects.")
         # Next, get measurement times in seconds from time of first
         # measurement.
-        obstime_seconds = obstime.to_pydatetime()
-        obstime_seconds = obstime_seconds - obstime_seconds[0]
-        for i in range(len(obstime)):
-            obstime_seconds[i] = obstime_seconds[i].total_seonds()
+        obstime_seconds = np.array([(ot-obstime[0]).total_seconds()
+                                    for ot in obstime], dtype="float64")
         # Finally, integrate using trapezoid rule
         rad_loss_int = integrate.trapz(rad_loss.value, obstime_seconds)
         rad_loss_int = Quantity(rad_loss_int, unit='J')
