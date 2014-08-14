@@ -195,7 +195,7 @@ def test_goes_chianti_tem():
     assert all(em8 < Quantity(9.39e+48, unit="1/cm**3")) and \
       all(em8 > Quantity(9.38e+48, unit="1/cm**3"))
 
-def test_rad_loss_rate():
+def test_radiative_loss_rate():
     # Define input variables.
     goeslc_input = lc.GOESLightCurve.create("2014-01-01 00:00:00",
                                             "2014-01-01 00:00:10")
@@ -205,20 +205,20 @@ def test_rad_loss_rate():
     
     # Check correct exceptions are raised to incorrect inputs
     with pytest.raises(TypeError):
-        goes_test = goes.rad_loss_rate(not_goeslc)
+        goes_test = goes.radiative_loss_rate(not_goeslc)
 
     # Check function gives correct results.
     # Test case 1: GOESLightCurve object with only flux data
-    goeslc_test = goes.rad_loss_rate(goeslc_input)
+    goeslc_test = goes.radiative_loss_rate(goeslc_input)
     goeslc_expected = goes.temp_em(goeslc_input)
     goeslc_expected.data["rad_loss_rate"] = \
-      np.array([5.44914366e+26, 5.44914366e+26, 5.43465905e+26,
-                5.38282295e+26, 5.42019309e+26])
+      np.array([5.44914366e+19, 5.44914366e+19, 5.43465905e+19,
+                5.38282295e+19, 5.42019309e+19])
     assert_frame_equal(goeslc_test.data, goeslc_expected.data)
 
     # Test case 2: GOESLightCurve object with flux and temperature
     # data, but no EM data.
-    goes_test = goes.rad_loss_rate(goeslc_no_em)
+    goes_test = goes.radiative_loss_rate(goeslc_no_em)
     assert_frame_equal(goeslc_test.data, goeslc_expected.data)
 
 def test_calc_rad_loss():
