@@ -128,7 +128,7 @@ def test_goes_chianti_tem_errors():
     with pytest.raises(ValueError):
         em = goes._goes_get_chianti_em(longflux, temp_test_toobig)
 
-def test_goes_chianti_tem_satgt7_coronal():
+def test_goes_chianti_tem_case1():
     # Define input variables.
     longflux = Quantity([7e-6], unit="W/m**2")
     shortflux = Quantity([7e-7], unit="W/m**2")
@@ -140,7 +140,7 @@ def test_goes_chianti_tem_satgt7_coronal():
     assert all(em1 < Quantity([4.79e+48], unit="1/cm**3")) and \
       em1 > Quantity([4.78e+48], unit="1/cm**3")
 
-def test_goes_chianti_tem_satgt7_photospheric():
+def test_goes_chianti_tem_case2():
     # Define input variables.
     longflux = Quantity([7e-6], unit="W/m**2")
     shortflux = Quantity([7e-7], unit="W/m**2")
