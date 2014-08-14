@@ -221,22 +221,28 @@ def test_radiative_loss_rate():
     goes_test = goes.radiative_loss_rate(goeslc_no_em)
     assert_frame_equal(goeslc_test.data, goeslc_expected.data)
 
-def test_calc_rad_loss():
+def test_calc_rad_loss_errors():
     # Define input variables
-    temp = np.array([11.0, 11.0, 11.0, 11.0, 11.0, 11.0])
-    em = np.array([4.0e+48, 4.0e+48, 4.0e+48, 4.0e+48, 4.0e+48, 4.0e+48])
-    obstime = np.array(["2014-01-01 00:00:00", "2014-01-01 00:00:02",
-                        "2014-01-01 00:00:04", "2014-01-01 00:00:06",
-                        "2014-01-01 00:00:08",
-                        "2014-01-01 00:00:10"], dtype="datetime64[ms]")
-    temp_toolong = np.append(temp, 0)
-    obstime_toolong = np.array(["2014-01-01 00:00:00", "2014-01-01 00:00:02",
-                                "2014-01-01 00:00:04", "2014-01-01 00:00:06",
-                                "2014-01-01 00:00:08", "2014-01-01 00:00:10",
-                                "2014-01-01 00:00:12"], dtype="datetime64[ms]")
+    temp = Quantity([11.0, 11.0, 11.0, 11.0, 11.0, 11.0], unit="MK")
+    em = Quantity([4.0e+48, 4.0e+48, 4.0e+48, 4.0e+48, 4.0e+48, 4.0e+48],
+                  unit="1/cm**3")
+    obstime = np.array([datetime(2014, 1, 1, 0, 0, 0),
+                        datetime(2014, 1, 1, 0, 0, 2),
+                        datetime(2014, 1, 1, 0, 0, 4),
+                        datetime(2014, 1, 1, 0, 0, 6),
+                        datetime(2014, 1, 1, 0, 0, 8),
+                        datetime(2014, 1, 1, 0, 0, 10)], dtype=object)
+    temp_toolong = Quantity(np.append(temp, 0), unit="MK")
+    obstime_toolong =  np.array([datetime(2014, 1, 1, 0, 0, 0),
+                        datetime(2014, 1, 1, 0, 0, 2),
+                        datetime(2014, 1, 1, 0, 0, 4),
+                        datetime(2014, 1, 1, 0, 0, 6),
+                        datetime(2014, 1, 1, 0, 0, 8),
+                        datetime(2014, 1, 1, 0, 0, 10),
+                        datetime(2014, 1, 1, 0, 0, 12)], dtype=object))
     obstime_nonchrono = copy.deepcopy(obstime)
     obstime_nonchrono[1] = obstime[-1]
-    temp_outofrange = np.array([101, 11.0, 11.0, 11.0, 11.0, 11.0])
+    temp_outofrange = Quantity([101, 11.0, 11.0, 11.0, 11.0, 11.0], unit="MK")
     # Ensure correct exceptions are raised.
     with pytest.raises(ValueError):
         rad_loss_test = goes.calc_rad_loss(temp_toolong, em, obstime)
@@ -249,6 +255,16 @@ def test_calc_rad_loss():
     with pytest.raises(IOError):
         rad_loss_test = goes.calc_rad_loss(temp, em, cumulative=True)
 
+def test_calc_rad_loss():
+    # Define input variables
+    temp = np.array[11.0, 11.0, 11.0, 11.0, 11.0, 11.0])
+    em = np.array([4.0e+48, 4.0e+48, 4.0e+48, 4.0e+48, 4.0e+48, 4.0e+48])
+    obstime = np.array([datetime(2014, 1, 1, 0, 0, 0),
+                        datetime(2014, 1, 1, 0, 0, 2),
+                        datetime(2014, 1, 1, 0, 0, 4),
+                        datetime(2014, 1, 1, 0, 0, 6),
+                        datetime(2014, 1, 1, 0, 0, 8),
+                        datetime(2014, 1, 1, 0, 0, 10)], dtype=object)
     # Test case 1: No kwargs set
     rad_loss_test = goes.calc_rad_loss(temp[:2], em[:2])
     rad_loss_expected = {"rad_loss_rate": np.array([3.01851392e+26,
