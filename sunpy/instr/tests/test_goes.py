@@ -139,7 +139,10 @@ def test_goes_chianti_tem_satgt7_coronal():
     assert all(em1 < Quantity([4.79e+48], unit="1/cm**3")) and \
       em1 > Quantity([4.78e+48], unit="1/cm**3")
 
-def test_goes_chianti_tem():
+def test_goes_chianti_tem_satgt7_photospheric():
+    # Define input variables.
+    longflux = Quantity([7e-6], unit="W/m**2")
+    shortflux = Quantity([7e-7], unit="W/m**2")
     # test case 2: satellite > 7, abundances = photospheric
     temp2, em2 = goes.goes_chianti_tem(longflux, shortflux, satellite=15,
                                        date=date, abundances="photospheric")
@@ -148,6 +151,7 @@ def test_goes_chianti_tem():
     assert all(em2 < Quantity([1.12e+49], unit="1/cm**3")) and \
       all(em2 > Quantity([1.11e+49], unit="1/cm**3"))
 
+def test_goes_chianti_tem():
     # test case 3: satellite < 8 and != 6, abundances = coronal
     temp3, em3 = goes.goes_chianti_tem(longflux, shortflux, satellite=5,
                                        date=date,
