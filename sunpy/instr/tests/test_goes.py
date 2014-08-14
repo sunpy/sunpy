@@ -347,18 +347,20 @@ def test_xray_luminosity():
                          unit="J/s")
     assert_frame_equal(goeslc_test.data, goeslc_expected.data)
 
-def test_goes_lx():
+def test_goes_lx_errors():
     # Define input values of flux and time.
-    longflux = np.array([7e-6, 7e-6, 7e-6, 7e-6, 7e-6, 7e-6])
-    shortflux = np.array([7e-7, 7e-7, 7e-7, 7e-7, 7e-7, 7e-7])
-    obstime = np.array(["2014-01-01 00:00:00", "2014-01-01 00:00:02",
-                        "2014-01-01 00:00:04", "2014-01-01 00:00:06",
-                        "2014-01-01 00:00:08",
-                        "2014-01-01 00:00:10"], dtype="datetime64[ms]")
+    longflux = Quantity([7e-6, 7e-6, 7e-6, 7e-6, 7e-6, 7e-6], unit="W/m**2")
+    shortflux = Quantity([7e-7, 7e-7, 7e-7, 7e-7, 7e-7, 7e-7], unit="W/m**2")
+    obstime = np.array([datetime(2014, 1, 1, 0, 0, 0),
+                        datetime(2014, 1, 1, 0, 0, 2),
+                        datetime(2014, 1, 1, 0, 0, 4),
+                        datetime(2014, 1, 1, 0, 0, 6),
+                        datetime(2014, 1, 1, 0, 0, 8),
+                        datetime(2014, 1, 1, 0, 0, 10)], dtype=object)
     longflux_toolong = np.append(longflux, 0)
     obstime_nonchrono = copy.deepcopy(obstime)
     obstime_nonchrono[1] = obstime[-1]
-    # First ensure correct exceptions are raised.
+    # Ensure correct exceptions are raised.
     with pytest.raises(ValueError):
         lx_test = goes.goes_lx(longflux_toolong, shortflux, obstime)
     with pytest.raises(ValueError):
@@ -366,6 +368,16 @@ def test_goes_lx():
     with pytest.raises(IOError):
         lx_test = goes.goes_lx(longflux, shortflux, cumulative=True)
 
+def test_goes_lx():
+    # Define input values of flux and time.
+    longflux = Quantity([7e-6, 7e-6, 7e-6, 7e-6, 7e-6, 7e-6], unit="W/m**2")
+    shortflux = Quantity([7e-7, 7e-7, 7e-7, 7e-7, 7e-7, 7e-7], unit="W/m**2")
+    obstime = np.array([datetime(2014, 1, 1, 0, 0, 0),
+                        datetime(2014, 1, 1, 0, 0, 2),
+                        datetime(2014, 1, 1, 0, 0, 4),
+                        datetime(2014, 1, 1, 0, 0, 6),
+                        datetime(2014, 1, 1, 0, 0, 8),
+                        datetime(2014, 1, 1, 0, 0, 10)], dtype=object)
     # Test case 1: no keywords set
     lx_test = goes.goes_lx(longflux[:2], shortflux[:2])
     lx_expected = {"longlum": np.array([1.96860565e+25, 1.96860565e+25]),
