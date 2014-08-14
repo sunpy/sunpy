@@ -83,6 +83,7 @@ def test_temp_em():
 
 @pytest.mark.online
 def test_goes_chianti_tem_errors():
+    # Define input variables.
     longflux = Quantity([7e-6], unit="W/m**2")
     shortflux = Quantity([7e-7], unit="W/m**2")
     ratio = shortflux/longflux
@@ -127,7 +128,10 @@ def test_goes_chianti_tem_errors():
     with pytest.raises(ValueError):
         em = goes._goes_get_chianti_em(longflux, temp_test_toobig)
 
-def test_goes_chianti_tem():
+def test_goes_chianti_tem_satgt7_coronal():
+    # Define input variables.
+    longflux = Quantity([7e-6], unit="W/m**2")
+    shortflux = Quantity([7e-7], unit="W/m**2")
     # test case 1: satellite > 7, abundances = coronal
     temp1, em1 = goes.goes_chianti_tem(longflux, shortflux, satellite=15,
                                        date=date)
@@ -135,6 +139,7 @@ def test_goes_chianti_tem():
     assert all(em1 < Quantity([4.79e+48], unit="1/cm**3")) and \
       em1 > Quantity([4.78e+48], unit="1/cm**3")
 
+def test_goes_chianti_tem():
     # test case 2: satellite > 7, abundances = photospheric
     temp2, em2 = goes.goes_chianti_tem(longflux, shortflux, satellite=15,
                                        date=date, abundances="photospheric")
