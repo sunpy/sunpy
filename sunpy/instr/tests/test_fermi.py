@@ -21,7 +21,7 @@ def test_detector_angles():
     date = parse_time('2012-02-15')
     file = fermi.download_weekly_pointing_file(date)
     det=fermi.get_detector_sun_angles_for_date(date,file)
-    assert len(det) == 12
+    assert len(det) == 13
     #assert type(det) == collections.OrderedDict
     assert_almost_equal(det['n0'][0], 20.30309,decimal=1)
     assert_almost_equal(det['n1'][0], 30.30430, decimal=1)
@@ -37,7 +37,7 @@ def test_detector_angles():
     assert_almost_equal(det['n11'][0], 119.69057, decimal=1)
 
     det2=fermi.get_detector_sun_angles_for_time(parse_time('2012-02-15 02:00'),file)
-    assert len(det2) == 12
+    assert len(det2) == 13
     assert type(det2) == dict
     assert_almost_equal(det2['n0'], 87.24744,decimal=1)
     assert_almost_equal(det2['n1'], 69.90883,decimal=1)
