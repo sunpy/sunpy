@@ -925,7 +925,8 @@ def xray_luminosity(goeslc):
     if not isinstance(goeslc, lightcurve.GOESLightCurve):
         raise TypeError("goeslc must be a GOESLightCurve object.")
     # Find temperature and emission measure with goes_chianti_tem
-    lx_out = goes_lx(goeslc.data.xrsb, goeslc.data.xrsa,
+    lx_out = goes_lx(Quantity(goeslc.data.xrsb, unit="W/m**2"),
+                     Quantity(goeslc.data.xrsa, unit="W/m**2"),
                      date=str(goeslc.data.index[0]))
     # Enter results into new version of GOES LightCurve Object
     goeslc_new = copy.deepcopy(goeslc)
