@@ -280,12 +280,6 @@ def test_calc_rad_loss_obstime():
     temp = Quantity([11.0, 11.0, 11.0, 11.0, 11.0, 11.0], unit="MK")
     em = Quantity([4.0e+48, 4.0e+48, 4.0e+48, 4.0e+48, 4.0e+48, 4.0e+48],
                   unit="1/cm**3")
-    obstime = np.array([datetime(2014, 1, 1, 0, 0, 0),
-                        datetime(2014, 1, 1, 0, 0, 2),
-                        datetime(2014, 1, 1, 0, 0, 4),
-                        datetime(2014, 1, 1, 0, 0, 6),
-                        datetime(2014, 1, 1, 0, 0, 8),
-                        datetime(2014, 1, 1, 0, 0, 10)], dtype=object)
     # Test output is correct when obstime kwag is set.
     rad_loss_test = goes.calc_rad_loss(temp, em, obstime)
     rad_loss_expected = {
