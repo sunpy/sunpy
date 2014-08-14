@@ -5,6 +5,7 @@ import datetime
 import pytest
 
 import numpy as np
+from astropy.units.quantity import Quantity
 
 from sunpy.time import TimeRange
 from sunpy.instr import goes
@@ -65,12 +66,13 @@ def test_temp_em():
         goes.temp_em([])
     # Find temperature and EM manually with goes_chianti_tem()
     temp, em = goes.goes_chianti_tem(
-        np.array(goeslc.data.xrsb), np.array(goeslc.data.xrsa),
+        Quantity(goeslc.data.xrsb, unit='W/m**2'),
+        Quantity(goeslc.data.xrsa, unit='W/m**2'),
         satellite=int(goeslc.meta["TELESCOP"].split()[1]), date="2014-01-01")
     # Check that temperature and EM arrays from goes_chianti_tem()
     # are same as those in new GOESLightcurve object.
-    assert goeslc_new.data.temperature.all() == temp.all()
-    assert goeslc_new.data.em.all() == em.all()
+    assert goeslc_new.data.temperature.all() == temp.value.all()
+    assert goeslc_new.data.em.all() == em.value.all()
     # Check rest of data frame of new GOESLightCurve object is same
     # as that in original object.
     goeslc_revert = copy.deepcopy(goeslc_new)
