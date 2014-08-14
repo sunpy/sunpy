@@ -338,11 +338,13 @@ def test_xray_luminosity():
     goeslc_test = goes.xray_luminosity(goeslc_input)
     goeslc_expected = copy.deepcopy(goeslc_input)
     goeslc_expected.data["luminosity_xrsa"] = \
-      np.array([2.49831950e+23, 2.49831950e+23, 2.49831950e+23,
-                2.52864004e+23, 2.49831950e+23])
+      Quantity(np.array([2.49831950e+16, 2.49831950e+16, 2.49831950e+16,
+                         2.52864004e+16, 2.49831950e+16], dtype="float32"),
+                         unit="J/s")
     goeslc_expected.data["luminosity_xrsb"] = \
-      np.array([9.54399250e+24, 9.54399250e+24, 9.52985195e+24,
-                9.52985195e+24, 9.51571139e+24])
+      Quantity(np.array([9.54399250e+17, 9.54399250e+17, 9.52985195e+17,
+                         9.52985195e+17, 9.51571139e+17], dtype="float32"),
+                         unit="J/s")
     assert_frame_equal(goeslc_test.data, goeslc_expected.data)
 
 def test_goes_lx():
