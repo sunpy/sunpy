@@ -296,7 +296,7 @@ def test_calc_rad_loss_obstime():
     assert np.allclose(rad_loss_test["rad_loss_int"],
                        rad_loss_expected["rad_loss_int"], rtol=0.01)
 
-def test_calc_rad_loss():
+def test_calc_rad_loss_cumulative():
     # Define input variables
     temp = Quantity([11.0, 11.0, 11.0, 11.0, 11.0, 11.0], unit="MK")
     em = Quantity([4.0e+48, 4.0e+48, 4.0e+48, 4.0e+48, 4.0e+48, 4.0e+48],
@@ -307,17 +307,17 @@ def test_calc_rad_loss():
                         datetime(2014, 1, 1, 0, 0, 6),
                         datetime(2014, 1, 1, 0, 0, 8),
                         datetime(2014, 1, 1, 0, 0, 10)], dtype=object)
-    # Test case 3: obstime and cumulative kwargs set
+    # Test output is correct when obstime and cumulative kwargs are set.
     rad_loss_test = goes.calc_rad_loss(temp, em, obstime, cumulative=True)
     rad_loss_expected = {
-        "rad_loss_rate": np.array([3.01851392e+26, 3.01851392e+26,
-                                   3.01851392e+26, 3.01851392e+26,
-                                   3.01851392e+26, 3.01851392e+26]),
-        "rad_loss_int": 3.01851392e+27,
-        "rad_loss_cumul": np.array([3.01851392e+26, 9.05554175e+26,
-                                    1.50925696e+27, 2.11295974e+27,
-                                    2.71666252e+27, 3.01851392e+27]),
-        "dt": np.array([1, 2, 2, 2, 2, 1], dtype="float64")
+        "rad_loss_rate": Quantity([3.01851392e+19, 3.01851392e+19,
+                                   3.01851392e+19, 3.01851392e+19,
+                                   3.01851392e+19, 3.01851392e+19],
+                                   unit="J/s"),
+        "rad_loss_int": Quantity(3.01851392e+20, unit="J"),
+        "rad_loss_cumul": Quantity([6.03702783e+19, 1.20740557e+20,
+                                    1.81110835e+20, 2.41481113e+20,
+                                    3.01851392e+20], unit="J")
         }
     assert sorted(rad_loss_test.keys()) == sorted(rad_loss_expected.keys())
     assert np.allclose(rad_loss_test["rad_loss_rate"],
@@ -326,8 +326,6 @@ def test_calc_rad_loss():
                        rad_loss_expected["rad_loss_int"], rtol=0.0001)
     assert np.allclose(rad_loss_test["rad_loss_cumul"],
                        rad_loss_expected["rad_loss_cumul"], rtol=0.0001)
-    assert np.allclose(rad_loss_test["dt"], rad_loss_expected["dt"],
-                       rtol=0.0001)
 
 def test_xray_luminosity():
     # Check correct exceptions are raised to incorrect inputs
