@@ -18,44 +18,13 @@ from astropy import units
 
 from sunpy.net import hek
 from sunpy.net import vso
+from sunpy.net.vso.attrs import Wave
 from sunpy.util.progressbar import TTYProgressBar
 
 __author__ = 'Michael Malocha'
 __version__ = 'Aug 10th, 2013'
 
-__all__ = ['wave_unit_catcher', 'translate_results_to_query', 'vso_attribute_parse', 'H2VClient']
-
-def wave_unit_catcher(wavelength, wave_units):
-    """
-    Catch and convert wavelength to angstroms.
-
-    Designed to discover the units of the wavelength passed in and convert
-    it into angstroms. Returns an integer or None.
-
-    Parameters
-    ----------
-    wavelength : int
-        Wavelength value.
-    units : str
-        Units of the wavelength.
-
-    Examples
-    --------
-    >>> wave_unit_catcher(2.11e-06, 'cm')
-    210.99999999999997
-
-    >>> wave_unit_catcher(9.4e-07, 'cm')
-    93.99999999999999
-
-    >>> wave_unit_catcher(5e-08, 'mm')
-    0.4999999999999999
-    """
-    try:
-        converted_value = getattr(units, wave_units).to(units.angstrom,
-                                                        wavelength)
-    except AttributeError:
-        raise AttributeError("'%s' is not a supported unit" % wave_units)
-    return converted_value
+__all__ = ['translate_results_to_query', 'vso_attribute_parse', 'H2VClient']
 
 
 def translate_results_to_query(results):
@@ -129,8 +98,7 @@ def vso_attribute_parse(phrase):
                                 phrase['event_endtime']),
                  vso.attrs.Source(phrase['obs_observatory']),
                  vso.attrs.Instrument(phrase['obs_instrument'])]
-        avg_wave_len = wave_unit_catcher(phrase['obs_meanwavel'],
-                                         phrase['obs_wavelunit'])
+        avg_wave_len = phrase['obs_meanwavel'] * units.Unit(phrase['obs_wavelunit'])
         query.append(vso.attrs.Wave(avg_wave_len, avg_wave_len))
     except KeyError, TypeError:
         raise TypeError("'%s' is an improper data type" % type(phrase))

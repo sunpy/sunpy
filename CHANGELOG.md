@@ -1,6 +1,11 @@
 Latest
 ------
+ * Added ability to download level3 data for lyra Light Curve along with corresponding tests.
 
+0.5.0
+-----
+
+ * Added additional functionality to the GOES module i.e. the ability to calculate GOES temperature and emission measure from GOES fluxes.
  * changed _maps attribute in MapCube to a non-hidden type
  * Added Nobeyama Radioheliograph data support to Lightcurve object.
  * Fixed some tests on map method to support Windows
@@ -11,8 +16,7 @@ Latest
  * GOES Lightcurve now makes use of a new source of GOES data, provides metadata, and data back to 1981.
  * Removed sqlalchemy as a requirement for SunPy
  * Added support for NOAA solar cycle prediction in lightcurves
- * 
-Some basic tests for GenericLightCurve on types of expected input.
+ * Some basic tests for GenericLightCurve on types of expected input.
  * Fix algorithm in sunpy.sun.equation_of_center
  * Added Docstrings to LightCurve methods.
  * Added tests for classes in sunpy.map.sources. Note that some classes (TRACE, RHESSI) were left out because SunPy is not able to read their FITS files.

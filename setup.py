@@ -22,7 +22,7 @@ CLASSIFIERS = [
     'Operating System :: MacOS'
 ]
 
-VERSION = '0.5.0'
+VERSION = '0.5.1'
 
 def git_description():
     import subprocess
@@ -102,7 +102,7 @@ def install(setup): #pylint: disable=W0621
         description=DOCLINES[0],
         install_requires=[
             'numpy>1.7.1',
-            'astropy>=0.3.1',
+            'astropy>=0.4.0',
             'scipy',
             'pandas>=0.12.1',
             'matplotlib>=1.1',
