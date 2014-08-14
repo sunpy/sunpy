@@ -398,17 +398,26 @@ def test_goes_lx_date():
     assert np.allclose(lx_test["shortlum"], lx_expected["shortlum"],
                        rtol=0.0001)
 
-def test_goes_lx():
-    # Test case 3: obstime keyword set only
+def test_goes_lx_obstime():
+    # Define input values of flux and time.
+    longflux = Quantity([7e-6, 7e-6, 7e-6, 7e-6, 7e-6, 7e-6], unit="W/m**2")
+    shortflux = Quantity([7e-7, 7e-7, 7e-7, 7e-7, 7e-7, 7e-7], unit="W/m**2")
+    obstime = np.array([datetime(2014, 1, 1, 0, 0, 0),
+                        datetime(2014, 1, 1, 0, 0, 2),
+                        datetime(2014, 1, 1, 0, 0, 4),
+                        datetime(2014, 1, 1, 0, 0, 6),
+                        datetime(2014, 1, 1, 0, 0, 8),
+                        datetime(2014, 1, 1, 0, 0, 10)], dtype=object)
+    # Test output when obstime kwarg is set.
     lx_test = goes.goes_lx(longflux, shortflux, obstime)
     lx_expected = {
-        "longlum": np.array([1.96860565e+25, 1.96860565e+25, 1.96860565e+25,
-                             1.96860565e+25, 1.96860565e+25, 1.96860565e+25]),
-        "shortlum": np.array([1.96860565e+24, 1.96860565e+24, 1.96860565e+24,
-                              1.96860565e+24, 1.96860565e+24, 1.96860565e+24]),
-        "longlum_int": 1.96860565412e+26,
-        "shortlum_int": 1.96860565412e+25,
-        "dt": np.array([1, 2, 2, 2, 2, 1], dtype="float64")
+        "longlum": Quantity([2.02061956e+18, 2.02061956e+18, 2.02061956e+18,
+                             2.02061956e+18, 2.02061956e+18, 2.02061956e+18],
+                             unit="W"),
+        "shortlum": np.array([2.02061956e+17, 2.02061956e+17, 2.02061956e+17,
+                              2.02061956e+17, 2.02061956e+17, 2.02061956e+17]),
+        "longlum_int": Quantity([2.0206195564361613e+19], unit="J"),
+        "shortlum_int": Quantity([2.0206195564361613e+18], unit="J"),
         }
     assert sorted(lx_test.keys()) == sorted(lx_expected.keys())
     assert np.allclose(lx_test["longlum"], lx_expected["longlum"], rtol=0.0001)
@@ -418,8 +427,8 @@ def test_goes_lx():
                        rtol=0.0001)
     assert np.allclose(lx_test["shortlum_int"], lx_expected["shortlum_int"],
                        rtol=0.0001)
-    assert np.allclose(lx_test["dt"], lx_expected["dt"], rtol=0.0001)
 
+def test_goes_lx():
     # Test case 4: obstime and cumulative keywords set
     lx_test = goes.goes_lx(longflux, shortflux, obstime, cumulative=True)
     lx_expected = {
