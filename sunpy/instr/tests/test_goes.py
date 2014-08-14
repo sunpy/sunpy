@@ -372,7 +372,7 @@ def test_goes_lx_nokwargs():
     # Define input values of flux and time.
     longflux = Quantity([7e-6, 7e-6, 7e-6, 7e-6, 7e-6, 7e-6], unit="W/m**2")
     shortflux = Quantity([7e-7, 7e-7, 7e-7, 7e-7, 7e-7, 7e-7], unit="W/m**2")
-    # Test case 1: no keywords set
+    # Test output when no kwargs are set.
     lx_test = goes.goes_lx(longflux[:2], shortflux[:2])
     lx_expected = {"longlum": Quantity([2.02063844e+18, 2.02063844e+18],
                                        unit="W"),
@@ -383,16 +383,22 @@ def test_goes_lx_nokwargs():
     assert np.allclose(lx_test["shortlum"], lx_expected["shortlum"],
                        rtol=0.0001)
 
-def test_goes_lx():
-    # Test case 2: date keyword set only
+def test_goes_lx_date():
+    # Define input values of flux and time.
+    longflux = Quantity([7e-6, 7e-6, 7e-6, 7e-6, 7e-6, 7e-6], unit="W/m**2")
+    shortflux = Quantity([7e-7, 7e-7, 7e-7, 7e-7, 7e-7, 7e-7], unit="W/m**2")
+    # Test output when date kwarg is set.
     lx_test = goes.goes_lx(longflux[:2], shortflux[:2], date="2014-04-21")
-    lx_expected = {"longlum": np.array([1.98649103e+25, 1.98649103e+25]),
-                   "shortlum": np.array([1.98649103e+24, 1.98649103e+24])}
+    lx_expected = {"longlum": Quantity([1.98649103e+18, 1.98649103e+18],
+                                       unit="W"),
+                   "shortlum": Quantity([1.98649103e+17, 1.98649103e+17],
+                                        unit="W")}
     assert sorted(lx_test.keys()) == sorted(lx_expected.keys())
     assert np.allclose(lx_test["longlum"], lx_expected["longlum"], rtol=0.0001)
     assert np.allclose(lx_test["shortlum"], lx_expected["shortlum"],
                        rtol=0.0001)
 
+def test_goes_lx():
     # Test case 3: obstime keyword set only
     lx_test = goes.goes_lx(longflux, shortflux, obstime)
     lx_expected = {
