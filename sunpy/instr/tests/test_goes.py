@@ -368,25 +368,22 @@ def test_goes_lx_errors():
     with pytest.raises(IOError):
         lx_test = goes.goes_lx(longflux, shortflux, cumulative=True)
 
-def test_goes_lx():
+def test_goes_lx_nokwargs():
     # Define input values of flux and time.
     longflux = Quantity([7e-6, 7e-6, 7e-6, 7e-6, 7e-6, 7e-6], unit="W/m**2")
     shortflux = Quantity([7e-7, 7e-7, 7e-7, 7e-7, 7e-7, 7e-7], unit="W/m**2")
-    obstime = np.array([datetime(2014, 1, 1, 0, 0, 0),
-                        datetime(2014, 1, 1, 0, 0, 2),
-                        datetime(2014, 1, 1, 0, 0, 4),
-                        datetime(2014, 1, 1, 0, 0, 6),
-                        datetime(2014, 1, 1, 0, 0, 8),
-                        datetime(2014, 1, 1, 0, 0, 10)], dtype=object)
     # Test case 1: no keywords set
     lx_test = goes.goes_lx(longflux[:2], shortflux[:2])
-    lx_expected = {"longlum": np.array([1.96860565e+25, 1.96860565e+25]),
-                   "shortlum": np.array([1.96860565e+24, 1.96860565e+24])}
+    lx_expected = {"longlum": Quantity([2.02063844e+18, 2.02063844e+18],
+                                       unit="W"),
+                   "shortlum": Quantity([2.02063844e+17, 2.02063844e+17],
+                                       unit="W")}
     assert sorted(lx_test.keys()) == sorted(lx_expected.keys())
     assert np.allclose(lx_test["longlum"], lx_expected["longlum"], rtol=0.0001)
     assert np.allclose(lx_test["shortlum"], lx_expected["shortlum"],
                        rtol=0.0001)
 
+def test_goes_lx():
     # Test case 2: date keyword set only
     lx_test = goes.goes_lx(longflux[:2], shortflux[:2], date="2014-04-21")
     lx_expected = {"longlum": np.array([1.98649103e+25, 1.98649103e+25]),
