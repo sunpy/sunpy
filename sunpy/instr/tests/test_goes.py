@@ -428,23 +428,33 @@ def test_goes_lx_obstime():
     assert np.allclose(lx_test["shortlum_int"], lx_expected["shortlum_int"],
                        rtol=0.0001)
 
-def test_goes_lx():
-    # Test case 4: obstime and cumulative keywords set
+def test_goes_lx_cumulative():
+    # Define input values of flux and time.
+    longflux = Quantity([7e-6, 7e-6, 7e-6, 7e-6, 7e-6, 7e-6], unit="W/m**2")
+    shortflux = Quantity([7e-7, 7e-7, 7e-7, 7e-7, 7e-7, 7e-7], unit="W/m**2")
+    obstime = np.array([datetime(2014, 1, 1, 0, 0, 0),
+                        datetime(2014, 1, 1, 0, 0, 2),
+                        datetime(2014, 1, 1, 0, 0, 4),
+                        datetime(2014, 1, 1, 0, 0, 6),
+                        datetime(2014, 1, 1, 0, 0, 8),
+                        datetime(2014, 1, 1, 0, 0, 10)], dtype=object)
+    # Test output when obstime and cumulative kwargs are set.
     lx_test = goes.goes_lx(longflux, shortflux, obstime, cumulative=True)
     lx_expected = {
-        "longlum": np.array([1.96860565e+25, 1.96860565e+25, 1.96860565e+25,
-                             1.96860565e+25, 1.96860565e+25, 1.96860565e+25]),
-        "shortlum": np.array([1.96860565e+24, 1.96860565e+24, 1.96860565e+24,
-                              1.96860565e+24, 1.96860565e+24, 1.96860565e+24]),
-        "longlum_int": 1.96860565412e+26,
-        "shortlum_int": 1.96860565412e+25,
-        "longlum_cumul": np.array([1.96860565e+25, 5.90581696e+25,
-                                   9.84302827e+25, 1.37802396e+26,
-                                   1.77174509e+26, 1.96860565e+26]),
-        "shortlum_cumul": np.array([1.96860565e+24, 5.90581696e+24,
-                                    9.84302827e+24, 1.37802396e+25,
-                                    1.77174509e+25, 1.96860565e+25]),
-        "dt": np.array([1, 2, 2, 2, 2, 1], dtype="float64")}
+        "longlum": Quantity([2.02061108e+18, 2.02061108e+18, 2.02061108e+18,
+                             2.02061108e+18, 2.02061108e+18, 2.02061108e+18],
+                             unit="W"),
+        "shortlum": Quantity([2.02061108e+17, 2.02061108e+17, 2.02061108e+17,
+                              2.02061108e+17, 2.02061108e+17, 2.02061108e+17],
+                              unit="W"),
+        "longlum_int": Quantity([2.020611084165002e+19], unit="J"),
+        "shortlum_int": Quantity([2.020611084165002e+18], unit="J"),
+        "longlum_cumul": Quantity([4.04119000e+18, 8.08238000e+18,
+                                   1.21235700e+19, 1.61647600e+19,
+                                   2.02059500e+19], unit="J"),
+        "shortlum_cumul": Quantity([4.04119000e+17, 8.08238000e+17,
+                                   1.21235700e+18, 1.61647600e+18,
+                                   2.02059500e+18], unit="J")}
     assert sorted(lx_test.keys()) == sorted(lx_expected.keys())
     assert np.allclose(lx_test["longlum"], lx_expected["longlum"], rtol=0.0001)
     assert np.allclose(lx_test["shortlum"], lx_expected["shortlum"],
@@ -457,4 +467,3 @@ def test_goes_lx():
                        rtol=0.0001)
     assert np.allclose(lx_test["shortlum_cumul"],
                        lx_expected["shortlum_cumul"], rtol=0.0001)
-    assert np.allclose(lx_test["dt"], lx_expected["dt"], rtol=0.0001)
