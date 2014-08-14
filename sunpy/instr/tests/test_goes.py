@@ -13,6 +13,12 @@ from sunpy.instr import goes
 import sunpy.lightcurve as lc
 from pandas.util.testing import assert_frame_equal
 
+# Define input variables to be used in test functions for
+# goes_chianti_tem.
+LONGFLUX = Quantity([7e-6], unit="W/m**2")
+SHORTFLUX = Quantity([7e-7], unit="W/m**2")
+DATE = "2014-04-16"
+
 @pytest.mark.online
 def test_goes_event_list():
     # Set a time range to search
@@ -84,83 +90,68 @@ def test_temp_em():
 @pytest.mark.online
 def test_goes_chianti_tem_errors():
     # Define input variables.
-    longflux = Quantity([7e-6], unit="W/m**2")
-    shortflux = Quantity([7e-7], unit="W/m**2")
-    ratio = shortflux/longflux
+    ratio = SHORTFLUX/LONGFLUX
     shortflux_toomany = Quantity(
-        np.append(shortflux.value, shortflux.value[0]), unit="W/m**2")
-    shortflux_toosmall = copy.deepcopy(shortflux)
+        np.append(SHORTFLUX.value, SHORTFLUX.value[0]), unit="W/m**2")
+    shortflux_toosmall = copy.deepcopy(SHORTFLUX)
     shortflux_toosmall.value[0] = -1
-    shortflux_toobig = copy.deepcopy(shortflux)
+    shortflux_toobig = copy.deepcopy(SHORTFLUX)
     shortflux_toobig.value[0] = 1
-    temp_test = Quantity(np.zeros(len(longflux))+10, unit="MK")
+    temp_test = Quantity(np.zeros(len(LONGFLUX))+10, unit="MK")
     temp_test_toomany = Quantity(np.append(temp_test, 0), unit="MK")
     temp_test_toosmall = copy.deepcopy(temp_test)
     temp_test_toosmall.value[0] = -1
     temp_test_toobig = copy.deepcopy(temp_test)
     temp_test_toobig.value[0] = 101
-    date = "2014-04-16"
     # First test correct exceptions are raised if incorrect inputs are
     # entered.
     with pytest.raises(ValueError):
-        temp, em = goes.goes_chianti_tem(longflux, shortflux, satellite=-1)
+        temp, em = goes.goes_chianti_tem(LONGFLUX, SHORTFLUX, satellite=-1)
     with pytest.raises(ValueError):
-        temp, em = goes.goes_chianti_tem(longflux, shortflux_toomany)
+        temp, em = goes.goes_chianti_tem(LONGFLUX, shortflux_toomany)
     with pytest.raises(ValueError):
         temp = goes._goes_get_chianti_temp(ratio, satellite=-1)
     with pytest.raises(ValueError):
-        temp, em = goes.goes_chianti_tem(longflux, shortflux,
+        temp, em = goes.goes_chianti_tem(LONGFLUX, SHORTFLUX,
                                          abundances="Neither")
     with pytest.raises(ValueError):
         temp = goes._goes_get_chianti_temp(ratio, abundances="Neither")
     with pytest.raises(ValueError):
-        temp, em = goes.goes_chianti_tem(longflux, shortflux_toobig)
+        temp, em = goes.goes_chianti_tem(LONGFLUX, shortflux_toobig)
     with pytest.raises(ValueError):
-        em = goes._goes_get_chianti_em(longflux, temp_test, satellite=-1)
+        em = goes._goes_get_chianti_em(LONGFLUX, temp_test, satellite=-1)
     with pytest.raises(ValueError):
-        em = goes._goes_get_chianti_em(longflux, temp_test,
+        em = goes._goes_get_chianti_em(LONGFLUX, temp_test,
                                        abundances="Neither")
     with pytest.raises(ValueError):
-        em = goes._goes_get_chianti_em(longflux, temp_test,
+        em = goes._goes_get_chianti_em(LONGFLUX, temp_test,
                                        abundances="Neither")
     with pytest.raises(ValueError):
-        em = goes._goes_get_chianti_em(longflux, temp_test_toosmall)
+        em = goes._goes_get_chianti_em(LONGFLUX, temp_test_toosmall)
     with pytest.raises(ValueError):
-        em = goes._goes_get_chianti_em(longflux, temp_test_toobig)
+        em = goes._goes_get_chianti_em(LONGFLUX, temp_test_toobig)
 
 def test_goes_chianti_tem_case1():
-    # Define input variables.
-    longflux = Quantity([7e-6], unit="W/m**2")
-    shortflux = Quantity([7e-7], unit="W/m**2")
-    date = "2014-04-16"
     # test case 1: satellite > 7, abundances = coronal
-    temp1, em1 = goes.goes_chianti_tem(longflux, shortflux, satellite=15,
-                                       date=date)
+    temp1, em1 = goes.goes_chianti_tem(LONGFLUX, SHORTFLUX, satellite=15,
+                                       date=DATE)
     np.testing.assert_allclose(temp1, Quantity([11.28], unit="MK"), rtol=0.01)
     assert all(em1 < Quantity([4.79e+48], unit="1/cm**3")) and \
       em1 > Quantity([4.78e+48], unit="1/cm**3")
 
 def test_goes_chianti_tem_case2():
-    # Define input variables.
-    longflux = Quantity([7e-6], unit="W/m**2")
-    shortflux = Quantity([7e-7], unit="W/m**2")
-    date = "2014-04-16"
     # test case 2: satellite > 7, abundances = photospheric
-    temp2, em2 = goes.goes_chianti_tem(longflux, shortflux, satellite=15,
-                                       date=date, abundances="photospheric")
+    temp2, em2 = goes.goes_chianti_tem(LONGFLUX, SHORTFLUX, satellite=15,
+                                       date=DATE, abundances="photospheric")
     assert all(temp2 < Quantity([10.25], unit="MK")) and \
       all(temp2 > Quantity([10.24], unit="MK"))
     assert all(em2 < Quantity([1.12e+49], unit="1/cm**3")) and \
       all(em2 > Quantity([1.11e+49], unit="1/cm**3"))
 
 def test_goes_chianti_tem_case3():
-    # Define input variables.
-    longflux = Quantity([7e-6], unit="W/m**2")
-    shortflux = Quantity([7e-7], unit="W/m**2")
-    date = "2014-04-16"
     # test case 3: satellite < 8 and != 6, abundances = coronal
-    temp3, em3 = goes.goes_chianti_tem(longflux, shortflux, satellite=5,
-                                       date=date,
+    temp3, em3 = goes.goes_chianti_tem(LONGFLUX, SHORTFLUX, satellite=5,
+                                       date=DATE,
                                        abundances="coronal")
     assert all(temp3 < Quantity([11.43], unit="MK")) and \
       all(temp3 > Quantity([11.42], unit="MK"))
@@ -168,13 +159,9 @@ def test_goes_chianti_tem_case3():
       all(em3 > Quantity([3.84e+48], unit="1/cm**3"))
 
 def test_goes_chianti_tem_case4():
-    # Define input variables.
-    longflux = Quantity([7e-6], unit="W/m**2")
-    shortflux = Quantity([7e-7], unit="W/m**2")
-    date = "2014-04-16"
     # test case 4: satellite < 8 and != 6, abundances = photospheric
-    temp4, em4 = goes.goes_chianti_tem(longflux, shortflux, satellite=5,
-                                       date=date,
+    temp4, em4 = goes.goes_chianti_tem(LONGFLUX, SHORTFLUX, satellite=5,
+                                       date=DATE,
                                        abundances="photospheric")
     assert all(temp4 < Quantity([10.42], unit="MK")) and \
       all(temp4 > Quantity([10.41], unit="MK"))
@@ -182,12 +169,8 @@ def test_goes_chianti_tem_case4():
       all(em4 > Quantity(8.80e+48, unit="1/cm**3"))
 
 def test_goes_chianti_tem_case5():
-    # Define input variables.
-    longflux = Quantity([7e-6], unit="W/m**2")
-    shortflux = Quantity([7e-7], unit="W/m**2")
-    date = "2014-04-16"
     # test case 5: satellite = 6, date < 1983-06-28, abundances = coronal
-    temp5, em5 = goes.goes_chianti_tem(longflux, shortflux, satellite=6,
+    temp5, em5 = goes.goes_chianti_tem(LONGFLUX, SHORTFLUX, satellite=6,
                                        date="1983-06-27",
                                        abundances="coronal")
     assert all(temp5 < Quantity(12.30, unit="MK")) and \
@@ -196,12 +179,8 @@ def test_goes_chianti_tem_case5():
       all(em5 > Quantity(3.12e+48, unit="1/cm**3"))
 
 def test_goes_chianti_tem_case6():
-    # Define input variables.
-    longflux = Quantity([7e-6], unit="W/m**2")
-    shortflux = Quantity([7e-7], unit="W/m**2")
-    date = "2014-04-16"
     # test case 6: satellite = 6, date < 1983-06-28, abundances = photospheric
-    temp6, em6 = goes.goes_chianti_tem(longflux, shortflux, satellite=6,
+    temp6, em6 = goes.goes_chianti_tem(LONGFLUX, SHORTFLUX, satellite=6,
                                        date="1983-06-27",
                                        abundances="photospheric")
     assert all(temp6 < Quantity(11.44, unit="MK")) and \
@@ -210,13 +189,9 @@ def test_goes_chianti_tem_case6():
       all(em6 > Quantity(6.73e+48, unit="1/cm**3"))
 
 def test_goes_chianti_tem_case7():
-    # Define input variables.
-    longflux = Quantity([7e-6], unit="W/m**2")
-    shortflux = Quantity([7e-7], unit="W/m**2")
-    date = "2014-04-16"
     # test case 7: satellite = 6, date > 1983-06-28, abundances = coronal
-    temp7, em7 = goes.goes_chianti_tem(longflux, shortflux, satellite=6,
-                                       date=date,
+    temp7, em7 = goes.goes_chianti_tem(LONGFLUX, SHORTFLUX, satellite=6,
+                                       date=DATE,
                                        abundances="coronal")
     assert all(temp7 < Quantity(11.34, unit="MK")) and \
       all(temp7 > Quantity(11.33, unit="MK"))
@@ -224,13 +199,9 @@ def test_goes_chianti_tem_case7():
       all(em7 > Quantity(4.07e+48, unit="1/cm**3"))
 
 def test_goes_chianti_tem_case8():
-    # Define input variables.
-    longflux = Quantity([7e-6], unit="W/m**2")
-    shortflux = Quantity([7e-7], unit="W/m**2")
-    date = "2014-04-16"
     # test case 8: satellite = 6, date > 1983-06-28, abundances = photospheric
-    temp8, em8 = goes.goes_chianti_tem(longflux, shortflux, satellite=6,
-                                       date=date,
+    temp8, em8 = goes.goes_chianti_tem(LONGFLUX, SHORTFLUX, satellite=6,
+                                       date=DATE,
                                        abundances="photospheric")
     assert all(temp8 < Quantity(10.36, unit="MK")) and \
       all(temp8 > Quantity(10.35, unit="MK"))
