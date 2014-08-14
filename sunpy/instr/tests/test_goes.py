@@ -82,7 +82,7 @@ def test_temp_em():
     assert_frame_equal(goeslc_revert.data, goeslc.data)
 
 @pytest.mark.online
-def test_goes_chianti_tem():
+def test_goes_chianti_tem_errors():
     longflux = Quantity([7e-6], unit="W/m**2")
     shortflux = Quantity([7e-7], unit="W/m**2")
     ratio = shortflux/longflux
@@ -127,6 +127,7 @@ def test_goes_chianti_tem():
     with pytest.raises(ValueError):
         em = goes._goes_get_chianti_em(longflux, temp_test_toobig)
 
+def test_goes_chianti_tem():
     # test case 1: satellite > 7, abundances = coronal
     temp1, em1 = goes.goes_chianti_tem(longflux, shortflux, satellite=15,
                                        date=date)
