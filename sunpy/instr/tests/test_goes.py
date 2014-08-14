@@ -223,7 +223,11 @@ def test_goes_chianti_tem_case7():
     assert all(em7 < Quantity(4.08e+48, unit="1/cm**3")) and \
       all(em7 > Quantity(4.07e+48, unit="1/cm**3"))
 
-def test_goes_chianti_tem():
+def test_goes_chianti_tem_case8():
+    # Define input variables.
+    longflux = Quantity([7e-6], unit="W/m**2")
+    shortflux = Quantity([7e-7], unit="W/m**2")
+    date = "2014-04-16"
     # test case 8: satellite = 6, date > 1983-06-28, abundances = photospheric
     temp8, em8 = goes.goes_chianti_tem(longflux, shortflux, satellite=6,
                                        date=date,
