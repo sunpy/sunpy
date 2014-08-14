@@ -267,13 +267,40 @@ def test_calc_rad_loss_nokwags():
                         datetime(2014, 1, 1, 0, 0, 6),
                         datetime(2014, 1, 1, 0, 0, 8),
                         datetime(2014, 1, 1, 0, 0, 10)], dtype=object)
-    # Test output is correct when no kwags are set
+    # Test output is correct when no kwags are set.
     rad_loss_test = goes.calc_rad_loss(temp[:2], em[:2])
     rad_loss_expected = {"rad_loss_rate": Quantity(
         [3.01851392e+19, 3.01851392e+19], unit="J/s")}
     assert sorted(rad_loss_test.keys()) == sorted(rad_loss_expected.keys())
     assert np.allclose(rad_loss_test["rad_loss_rate"],
                        rad_loss_expected["rad_loss_rate"], rtol=0.01)
+
+def test_calc_rad_loss_obstime():
+    # Define input variables
+    temp = Quantity([11.0, 11.0, 11.0, 11.0, 11.0, 11.0], unit="MK")
+    em = Quantity([4.0e+48, 4.0e+48, 4.0e+48, 4.0e+48, 4.0e+48, 4.0e+48],
+                  unit="1/cm**3")
+    obstime = np.array([datetime(2014, 1, 1, 0, 0, 0),
+                        datetime(2014, 1, 1, 0, 0, 2),
+                        datetime(2014, 1, 1, 0, 0, 4),
+                        datetime(2014, 1, 1, 0, 0, 6),
+                        datetime(2014, 1, 1, 0, 0, 8),
+                        datetime(2014, 1, 1, 0, 0, 10)], dtype=object)
+    # Test output is correct when obstime kwag is set.
+    rad_loss_test = goes.calc_rad_loss(temp, em, obstime)
+    rad_loss_expected = {
+        "rad_loss_rate": Quantity([3.01851392e+19, 3.01851392e+19,
+                                   3.01851392e+19, 3.01851392e+19,
+                                   3.01851392e+19, 3.01851392e+19],
+                                   unit='J/s'),
+        "rad_loss_int": Quantity([3.01851392e+20], unit='J')
+        }
+    assert sorted(rad_loss_test.keys()) == sorted(rad_loss_expected.keys())
+    assert np.allclose(rad_loss_test["rad_loss_rate"],
+                       rad_loss_expected["rad_loss_rate"],
+                       rtol=0.01)
+    assert np.allclose(rad_loss_test["rad_loss_int"],
+                       rad_loss_expected["rad_loss_int"], rtol=0.01)
 
 def test_calc_rad_loss():
     # Define input variables
@@ -286,24 +313,6 @@ def test_calc_rad_loss():
                         datetime(2014, 1, 1, 0, 0, 6),
                         datetime(2014, 1, 1, 0, 0, 8),
                         datetime(2014, 1, 1, 0, 0, 10)], dtype=object)
-    # Test case 2: obstime kwarg set
-    rad_loss_test = goes.calc_rad_loss(temp, em, obstime)
-    rad_loss_expected = {
-        "rad_loss_rate": np.array([3.01851392e+26, 3.01851392e+26,
-                                   3.01851392e+26, 3.01851392e+26,
-                                   3.01851392e+26, 3.01851392e+26]),
-        "rad_loss_int": 3.01851392e+27,
-        "dt": np.array([1, 2, 2, 2, 2, 1], dtype="float64")
-        }
-    assert sorted(rad_loss_test.keys()) == sorted(rad_loss_expected.keys())
-    assert np.allclose(rad_loss_test["rad_loss_rate"],
-                       rad_loss_expected["rad_loss_rate"],
-                       rtol=0.01)
-    assert np.allclose(rad_loss_test["rad_loss_int"],
-                       rad_loss_expected["rad_loss_int"], rtol=0.01)
-    assert np.allclose(rad_loss_test["dt"], rad_loss_expected["dt"],
-                       rtol=0.0001)
-
     # Test case 3: obstime and cumulative kwargs set
     rad_loss_test = goes.calc_rad_loss(temp, em, obstime, cumulative=True)
     rad_loss_expected = {
