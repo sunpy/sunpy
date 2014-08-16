@@ -22,8 +22,7 @@ from representation import SphericalWrap180Representation
 
 from datetime import datetime
 
-# TODO: Changed to .frameattributes at the end.
-from frameattributes import TimeFrameAttributeSunPy
+from .frameattributes import TimeFrameAttributeSunPy
 
 RSUN_METERS = s.constants.constant('radius').si
 DSUN_METERS = s.constants.constant('mean distance').si
