@@ -383,6 +383,11 @@ class HelioProjective(BaseCoordinateFrame):
         It is used by get_distance_hpc(). It returns a list of these values
         in the order [Tx, Ty, D0] or [Tx, Ty].
         If D0 is not specified, get_distance_hpc() uses the default D0 instead.
+        
+        Returns
+        -------
+        A list object containing ~astropy.coordinates.SphericalRepresentation
+        compatible values, for the ~sunpy.coordinates.HelioProjective class.
         """
         list_params = []
         if len(args) == 2:
