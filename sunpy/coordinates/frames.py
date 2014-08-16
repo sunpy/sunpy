@@ -356,6 +356,11 @@ class HelioProjective(BaseCoordinateFrame):
         This method calculates the 'distance' parameter if it is not specifed.
         It takes Tx, Ty and possibly D0 as its input.
         It returns distance in kilometers.
+        
+        Returns
+        -------
+        A ~astropy.units.Quantity object which contains the value of the HPC-
+        distance.
         """
         c, b = None, None
         list_params = self._get_input_params(*args, **kwargs)        
