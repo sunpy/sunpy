@@ -247,6 +247,7 @@ def test_transform_accuracy():
     """
     from sunpy import sun as s
     from sunpy.coordinates.representation import Longitude180
+    from numpy import sqrt
     
     RSun = s.constants.constant('radius').si.to(u.km)
     diff = (1*u.au).to(u.km) - RSun
@@ -270,5 +271,32 @@ def test_transform_accuracy():
 
     npt.assert_allclose(sc_zero.hlon, sc_zero_hgc.hlon - Longitude180(dateobs_calc[0]))
     npt.assert_allclose(sc_zero.hlat, sc_zero_hgc.hlat)
-    npt.assert_allclose(sc_zero.rad, sc_zero_hgc.rad)          
+    npt.assert_allclose(sc_zero.rad, sc_zero_hgc.rad)
+
+    # TODO: WCS Tests
+    
+    # Cadair's analytical test
+    # See: http://nbviewer.ipython.org/gist/Cadair/63d405b956c3478bfa64
+    # Params: lon=45deg, lat=45deg, rad=RSun, L0=0deg, B0=0deg
+    
+    sc_hgs = SkyCoord(45*u.deg, 45*u.deg, RSun, L0=0*u.deg, B0=0*u.deg,
+                      frame='heliographicstonyhurst',
+                      dateobs='2011/01/01T00:00:45')
+                      
+    # Now in HCC, we should have x=RSun/2, y=RSun/root2, z=RSun/2.
+    
+    expect_x = RSun/2
+    expect_y = RSun/sqrt(2)
+    expect_z = RSun/2
+    
+    sc_hcc = sc_hgs.transform_to('heliocentric')
+    
+    npt.assert_allclose(sc_hcc.x, expect_x)
+    npt.assert_allclose(sc_hcc.y, expect_y)
+    npt.assert_allclose(sc_hcc.z, expect_z)
+    
+    # Now in HPC, we have a complex bunch of equations. 
+    # TODO: Fix the Ty problem in this HGS-HPC test.
+    
+    
     
