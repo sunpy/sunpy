@@ -293,6 +293,10 @@ class HelioProjective(BaseCoordinateFrame):
         'zeta' is a supporting argument that must be specified as a kwarg.
         If 'zeta' is present, 'distance' can be calculated as given.
         Both 'zeta' and 'distance' cannot be present at the same time.
+        
+        Returns
+        -------
+        A ~sunpy.coordinates.HelioProjective object with the requisite properties.
         """
         if args or (kwargs and len(kwargs) != 1):
             # Non-empty frame use case.
