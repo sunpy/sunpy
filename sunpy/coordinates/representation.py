@@ -13,6 +13,35 @@ from astropy.coordinates import Longitude, Latitude
 __all__ = ['Longitude180', 'SphericalWrap180Representation']
 
 class Longitude180(Longitude):
+    """
+    Quantity class that represents Longitude.
+    This version of Longitude allows for a negative value.
+    It does so by setting wrap_angle to 180 degrees.
+    
+    Parameters
+    ----------
+    angle : array, list, scalar, `~astropy.units.Quantity`,
+       :class:`~astropy.coordinates.Angle` The angle value(s). If a tuple,
+       will be interpreted as ``(h, m s)`` or ``(d, m, s)`` depending
+       on ``unit``. If a string, it will be interpreted following the
+       rules described for :class:`~astropy.coordinates.Angle`.
+     
+       If ``angle`` is a sequence or array of strings, the resulting
+       values will be in the given ``unit``, or if `None` is provided,
+       the unit will be taken from the first given value.
+       
+    unit : :class:`~astropy.units.UnitBase`, str, optional
+       The unit of the value specified for the angle.  This may be
+       any string that `~astropy.units.Unit` understands, but it is
+       better to give an actual unit object.  Must be an angular
+       unit.
+
+    wrap_angle : :class:`~astropy.coordinates.Angle` or equivalent, or None
+       Angle at which to wrap back to ``wrap_angle - 180 deg``.
+       If ``None`` (default), it will be taken to be 180 deg unless ``angle``
+       has a ``wrap_angle`` attribute already (i.e., is a ``Longitude``),
+       in which case it will be taken from there.
+    """
     def __new__(cls, angle, unit=None, wrap_angle=180*u.deg, **kwargs):
         self = super(Longitude180, cls).__new__(cls, angle, unit=unit,
                                                 wrap_angle=wrap_angle, **kwargs)
