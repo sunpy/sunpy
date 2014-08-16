@@ -81,6 +81,16 @@ class HelioGraphicStonyhurst(BaseCoordinateFrame):
     B0 = FrameAttribute(default=0*u.deg)
 
     def __init__(self, *args, **kwargs):
+        """
+        This custom constructor is used to default certain attributes.
+        It takes the usual arguments, such as a ~astropy.coordinates.BaseRepres
+        entation object or representation arguments and other keyword arguments.
+        
+        Returns
+        -------
+        A ~sunpy.coordinates.HelioGraphicStonyhurst object with the requisite
+        properties.
+        """
         if args or kwargs: # Non-empty frame use case.
             if args and kwargs: # Mixed use case.
                 if args and not isinstance(args[0], BaseRepresentation):
