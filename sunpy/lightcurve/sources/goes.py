@@ -13,6 +13,9 @@ from pandas import DataFrame
 from sunpy.lightcurve import LightCurve
 from sunpy.time import parse_time, TimeRange, is_time_in_given_format
 
+from sunpy import config
+TIME_FORMAT = config.get("general", "time_format")
+
 __all__ = ['GOESLightCurve']
 
 
@@ -33,7 +36,7 @@ class GOESLightCurve(LightCurve):
     | http://umbra.nascom.nasa.gov/goes/fits/
     """
 
-    def plot(self, title="GOES Xray Flux", axes=None, **plot_args):
+    def plot(self, title="GOES X-ray Flux", axes=None, **plot_args):
         """Plots GOES light curve is the usual manner"""
                 #Get current axes
         if axes is None:
@@ -50,7 +53,7 @@ class GOESLightCurve(LightCurve):
         axes.set_ylim(1e-9, 1e-2)
         axes.set_title(title)
         axes.set_ylabel('Watts m$^{-2}$')
-        axes.set_xlabel(datetime.datetime.isoformat(self.data.index[0])[0:10])
+        axes.set_xlabel('Start time: ' + self.data.index[0].strftime(TIME_FORMAT))
 
         ax2 = axes.twinx()
         ax2.set_yscale("log")
@@ -59,14 +62,10 @@ class GOESLightCurve(LightCurve):
         ax2.set_yticklabels((' ', 'A', 'B', 'C', 'M', 'X', ' '))
 
         axes.yaxis.grid(True, 'major')
-        axes.xaxis.grid(False, 'major')
-        axes.legend()
-
-        # @todo: display better tick labels for date range (e.g. 06/01 - 06/05)
-        formatter = matplotlib.dates.DateFormatter('%H:%M')
-        axes.xaxis.set_major_formatter(formatter)
-
-        axes.fmt_xdata = matplotlib.dates.DateFormatter('%H:%M')
+        axes.xaxis.grid(True, 'major')
+        axes.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+        plt.gcf().autofmt_xdate()
+        
         return axes
 
     @classmethod

@@ -72,6 +72,7 @@ class LightCurve(object):
 
     def __init__(self, data, meta=None):
         self.data = pandas.DataFrame(data)
+        self._plot_types = None
         if meta == '' or meta is None:
             self.meta = OrderedDict()
         else:
@@ -87,8 +88,15 @@ class LightCurve(object):
             Use .meta instead
         """
         warnings.warn("""lightcurve.header has been renamed to lightcurve.meta
-for compatability with map, please use meta instead""", Warning)
+                         for compatability with map, please use meta instead""", Warning)
         return self.meta
+    
+    @property
+    def plot_types(self):
+        """
+        Returns the types of plot available.
+        """
+        return self._plot_types
 
     @classmethod
     def from_time(cls, time, **kwargs):
@@ -210,10 +218,15 @@ for compatability with map, please use meta instead""", Warning)
 
     def peek(self, **kwargs):
         """Displays the light curve in a new figure"""
+        num_plots = len(self._plot_types)
+        fig = plt.figure()
 
-        figure = plt.figure()
-        self.plot(**kwargs)
-        figure.show()
+        for plot_type, plot_num in zip(self.plot_types, np.arange(0, num_plots)):
+            print(plot_type, plot_num)
+            ax = fig.add_subplot(num_plots, 1, plot_num)
+            self.plot(axes = ax, type=plot_type)        
+        
+        fig.show()
 
 
     @staticmethod

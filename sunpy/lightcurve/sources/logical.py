@@ -11,6 +11,8 @@ from scipy.ndimage import label
 from sunpy.time import TimeRange
 import matplotlib.pyplot as plt
 
+from sunpy import config
+TIME_FORMAT = config.get("general", "time_format")
 
 __all__ = ['LogicalLightCurve']
 
@@ -43,10 +45,15 @@ class LogicalLightCurve(LightCurve):
         if axes is None:
             axes = plt.gca()
         self.data.plot(ax=axes, **plot_args)
-        plt.fill_between(self.data.index, self.data['param1'])
+        plt.fill_between(self.data.index, self.data['param1'], alpha=0.5)
         axes.set_title(title)
         axes.yaxis.grid(True, 'major')
-        axes.xaxis.grid(False, 'major')
+        axes.xaxis.grid(True, 'major')
+        axes.set_xlabel('Start time: ' + self.data.index[0].strftime(TIME_FORMAT))
+
+        axes.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+        plt.gcf().autofmt_xdate()
+        
         return axes
 
     def complement(self):
