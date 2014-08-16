@@ -7,6 +7,8 @@ from astropy.coordinates.baseframe import TimeFrameAttribute
 
 from sunpy.time import parse_time
 
+__all__ = [TimeFrameAttributeSunpy]
+
 class TimeFrameAttributeSunPy(TimeFrameAttribute):
     """
     Frame attribute descriptor for quantities that are Time objects.
