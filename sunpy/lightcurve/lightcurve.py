@@ -72,7 +72,6 @@ class LightCurve(object):
 
     def __init__(self, data, meta=None):
         self.data = pandas.DataFrame(data)
-        self._plot_types = None
         if meta == '' or meta is None:
             self.meta = OrderedDict()
         else:
@@ -96,7 +95,7 @@ class LightCurve(object):
         """
         Returns the types of plot available.
         """
-        return self._plot_types
+        return self._get_plot_types()
 
     @classmethod
     def from_time(cls, time, **kwargs):
@@ -218,7 +217,7 @@ class LightCurve(object):
 
     def peek(self, **kwargs):
         """Displays the light curve in a new figure"""
-        num_plots = len(self._plot_types)
+        num_plots = len(self._get_plot_types())
         fig = plt.figure()
 
         for plot_type, plot_num in zip(self.plot_types, np.arange(0, num_plots)):
@@ -280,6 +279,11 @@ class LightCurve(object):
     def _get_url_for_date_range(cls, *args, **kwargs):
         """Returns a URL to the data for the specified date range"""
         msg = "Date-range based downloads not supported for for %s"
+        raise NotImplementedError(msg % cls.__name__)
+
+    @classmethod
+    def _get_plot_types(cls):
+        """Returns the plot types available."""
         raise NotImplementedError(msg % cls.__name__)
 
     @staticmethod

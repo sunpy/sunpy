@@ -79,7 +79,7 @@ class NOAAIndicesLightCurve(LightCurve):
             axes = self.data['radio flux'].plot()
             self.data['radio flux smooth'].plot()
             ylabel = 'Radio Flux [sfu]'
-        if type == 'geo':
+        if type == 'ap index':
             axes = self.data['geomagnetic ap'].plot()
             self.data['geomagnetic ap smooth'].plot()
             ylabel = 'Geomagnetic AP Index'
@@ -101,6 +101,10 @@ class NOAAIndicesLightCurve(LightCurve):
     def _get_default_uri(cls):
         """Return the url to download indices"""
         return "http://www.swpc.noaa.gov/ftpdir/weekly/RecentIndices.txt"
+
+    @classmethod
+    def _get_plot_types(cls):
+        return ['sunspot SWO', 'sunspot RI', 'sunspot compare', 'radio', 'ap index']
 
     @staticmethod
     def _get_url_for_date_range(*args, **kwargs):
