@@ -60,26 +60,27 @@ class LYRALightCurve(LightCurve):
             axes = plt.gca()
 
         if type == 'channel 1':
-            axes = self.data['sunspot SWO'].plot()
-            self.data['sunspot SWO smooth'].plot()
-            ylabel = 'Sunspot Number'
-        if type == 'sunspot RI':
-  
+            axes = self.data['CHANNEL1'].plot(ax=axes, **plot_args)
+            ylabel = lyranames[0][0] + ' \n (' + lyranames[1][0] + ')'
+        if type == 'channel 2':
+            axes = self.data['CHANNEL2'].plot(ax=axes, **plot_args)
+            ylabel = lyranames[0][1] + ' \n (' + lyranames[1][1] + ')'
+        if type == 'channel 3':
+            axes = self.data['CHANNEL3'].plot(ax=axes, **plot_args)
+            ylabel = lyranames[0][2] + ' \n (' + lyranames[1][2] + ')'
+        if type == 'channel 4':
+            axes = self.data['CHANNEL4'].plot(ax=axes, **plot_args)
+            ylabel = lyranames[0][3] + ' \n (' + lyranames[1][3] + ')'
+            
+        ylabel+= "\n (W/m**2)"
 
-        axes = self.data.plot(ax=axes, subplots=True, sharex=True, **kwargs)
-        #plt.legend(loc='best')
-
-        for i, name in enumerate(self.data.columns):
-            if names < 3:
-                name = lyranames[names][i]
-            else:
-                name = lyranames[0][i] + ' \n (' + lyranames[1][i] + ')'
-            axes[i].set_ylabel("%s %s" % (name, "\n (W/m**2)"))
-
-        axes[0].set_title(title)
-        for axe in axes:
-            axe.locator_params(axis='y', nbins=6)
-
+        axes.set_xlabel('Start time: ' + self.data['CHANNEL1'].index[0].strftime(TIME_FORMAT))
+        axes.set_ylabel(ylabel)
+        axes.yaxis.grid(True, 'major')
+        axes.xaxis.grid(True, 'major')
+        axes.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+        plt.gcf().autofmt_xdate()
+        
         return axes
 
     @classmethod
