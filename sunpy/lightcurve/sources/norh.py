@@ -60,6 +60,10 @@ class NoRHLightCurve(LightCurve):
         return axes
 
     @classmethod
+    def _get_plot_types(cls):
+        return ['norh']
+
+    @classmethod
     def _get_url_for_date(cls,date, **kwargs):
         """This method retrieves the url for NoRH correlation data for the given date."""
         #default urllib password anonymous@ is not accepted by the NoRH FTP server.

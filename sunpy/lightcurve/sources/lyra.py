@@ -39,7 +39,7 @@ class LYRALightCurve(LightCurve):
     | http://proba2.sidc.be/data/LYRA
     """
 
-    def plot(self, title="LYRA", axes=None, names=3, **kwargs):
+    def plot(self, title="LYRA", axes=None, type='channel 1', **plot_args):
         """Plots the LYRA data"""
         lyranames = (('Lyman alpha', 'Herzberg cont.', 'Al filter', 'Zr filter'),
                  ('120-123nm', '190-222nm', '17-80nm + <5nm', '6-20nm + <2nm'))
@@ -56,9 +56,15 @@ class LYRALightCurve(LightCurve):
         #            kwargs['title'] = 'LYRA data'
 
         """Shows a plot of all four light curves"""
-        figure = plt.figure()
-        plt.subplots_adjust(left=0.17,top=0.94,right=0.94,bottom=0.15)
-        axes = plt.gca()
+        if axes is None:
+            axes = plt.gca()
+
+        if type == 'channel 1':
+            axes = self.data['sunspot SWO'].plot()
+            self.data['sunspot SWO smooth'].plot()
+            ylabel = 'Sunspot Number'
+        if type == 'sunspot RI':
+  
 
         axes = self.data.plot(ax=axes, subplots=True, sharex=True, **kwargs)
         #plt.legend(loc='best')
@@ -76,6 +82,10 @@ class LYRALightCurve(LightCurve):
 
         return axes
 
+    @classmethod
+    def _get_plot_types(cls):
+        return ['channel 1', 'channel 2', 'channel 3', 'channel 4']
+        
     @staticmethod
     def _get_url_for_date(date,**kwargs):
         """Returns a URL to the LYRA data for the specified date

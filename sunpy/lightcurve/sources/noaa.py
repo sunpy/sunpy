@@ -64,24 +64,21 @@ class NOAAIndicesLightCurve(LightCurve):
             axes = self.data['sunspot SWO'].plot()
             self.data['sunspot SWO smooth'].plot()
             ylabel = 'Sunspot Number'
-            xlabel = 'Start time: ' + self.data['sunspot SWO'].index[0].strftime(TIME_FORMAT)
         if type == 'sunspot RI':
             axes = self.data['sunspot RI'].plot()
             self.data['sunspot RI smooth'].plot()
             ylabel = 'Sunspot Number'
-            xlabel = 'Start time: ' + self.data['sunspot RI'].index[0].strftime(TIME_FORMAT)
         if type == 'sunspot compare':
             axes = self.data['sunspot RI'].plot()
             self.data['sunspot SWO'].plot()
             ylabel = 'Sunspot Number'
-            xlabel = 'Start time: ' + self.data['sunspot SWO'].index[0].strftime(TIME_FORMAT)
         if type == 'radio':
             axes = self.data['radio flux'].plot()
             self.data['radio flux smooth'].plot()
             ylabel = 'Radio Flux [sfu]'
         if type == 'ap index':
             axes = self.data['geomagnetic ap'].plot()
-            self.data['geomagnetic ap smooth'].plot()
+            self.data['geomagnetic smooth'].plot()
             ylabel = 'Geomagnetic AP Index'
 
         axes.set_ylim(0)
@@ -90,7 +87,7 @@ class NOAAIndicesLightCurve(LightCurve):
 
         axes.yaxis.grid(True, 'major')
         axes.xaxis.grid(True, 'major')
-        axes.set_xlabel(xlabel)
+        axes.set_xlabel('Start time: ' + self.data['sunspot SWO'].index[0].strftime(TIME_FORMAT))
 
         axes.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
         plt.gcf().autofmt_xdate()
@@ -163,19 +160,27 @@ class NOAAPredictIndicesLightCurve(LightCurve):
     | http://www.swpc.noaa.gov/SolarCycle/
     """
 
-    def plot(self, axes=None, title='Solar Cycle Prediction', **plot_args):
+    def plot(self, axes=None, title='Solar Cycle Prediction', type='sunspot', **plot_args):
         """Plots NOAA Indices as a function of time"""
         if axes is None:
             axes = plt.gca()
 
-        axes = self.data['sunspot'].plot(**plot_args)
-        plt.fill_between(self.data.index, self.data['sunspot high'],
+        if type == 'sunspot':
+            ylabel = 'Sunspot Number'
+            axes = self.data['sunspot'].plot(**plot_args)
+            plt.fill_between(self.data.index, self.data['sunspot high'],
                          y2=self.data['sunspot low'], interpolate=True,
+                         alpha=0.5)
+        if type == 'radio':
+            ylabel = 'Radio flux'
+            axes = self.data['radio flux'].plot(**plot_args)
+            plt.fill_between(self.data.index, self.data['radio flux high'],
+                         y2=self.data['radio flux low'], interpolate=True,
                          alpha=0.5)
 
         axes.set_ylim(0)
         axes.set_title(title)
-        axes.set_ylabel('Sunspot Number')
+        axes.set_ylabel(ylabel)
         #axes.set_xlabel(datetime.datetime.isoformat(self.data.index[0])[0:10])
 
         axes.yaxis.grid(True, 'major')
@@ -185,6 +190,10 @@ class NOAAPredictIndicesLightCurve(LightCurve):
         plt.gcf().autofmt_xdate()        
 
         return axes
+
+    @classmethod
+    def _get_plot_types(cls):
+        return ['sunspot', 'radio']
 
     @classmethod
     def _get_default_uri(cls):

@@ -63,6 +63,10 @@ class EVELightCurve(LightCurve):
         """Load latest level 0CS if no other data is specified"""
         return "http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/LATEST_EVE_L0CS_DIODES_1m.txt"
 
+    @classmethod
+    def _get_plot_types(cls):
+        return ['eve 0cs']
+
     @staticmethod
     def _get_url_for_date(date):
         """Returns a URL to the EVE data for the specified date

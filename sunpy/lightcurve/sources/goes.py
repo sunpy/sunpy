@@ -36,7 +36,7 @@ class GOESLightCurve(LightCurve):
     | http://umbra.nascom.nasa.gov/goes/fits/
     """
 
-    def plot(self, title="GOES X-ray Flux", axes=None, **plot_args):
+    def plot(self, title="GOES X-ray Flux", axes=None, type='goes', **plot_args):
         """Plots GOES light curve is the usual manner"""
                 #Get current axes
         if axes is None:
@@ -76,6 +76,10 @@ class GOESLightCurve(LightCurve):
         time_range = TimeRange(today - datetime.timedelta(days=days_back),
                                today - datetime.timedelta(days=days_back - 1))
         return cls._get_url_for_date_range(time_range)
+
+    @classmethod
+    def _get_plot_types(cls):
+        return ['goes']
 
     @classmethod
     def _get_goes_sat_num(self, start, end):

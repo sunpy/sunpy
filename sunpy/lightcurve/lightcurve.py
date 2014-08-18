@@ -221,7 +221,6 @@ class LightCurve(object):
         fig = plt.figure()
 
         for plot_type, plot_num in zip(self.plot_types, np.arange(0, num_plots)):
-            print(plot_type, plot_num)
             ax = fig.add_subplot(num_plots, 1, plot_num)
             self.plot(axes = ax, type=plot_type)        
         

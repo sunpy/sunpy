@@ -40,7 +40,7 @@ class LogicalLightCurve(LightCurve):
     >>> light_curve = lightcurve.LogicalLightCurve.create({"param1": z}, index=dates)
     """
 
-    def plot(self, axes=None, title="Logical", **plot_args):
+    def plot(self, axes=None, title="Logical", type='logical', **plot_args):
         """Plots RHESSI Count Rate light curve"""
         if axes is None:
             axes = plt.gca()
@@ -55,6 +55,10 @@ class LogicalLightCurve(LightCurve):
         plt.gcf().autofmt_xdate()
         
         return axes
+
+    @classmethod
+    def _get_plot_types(cls):
+        return ['logical']
 
     def complement(self):
         """ Define the complement of the passed lightcurve """

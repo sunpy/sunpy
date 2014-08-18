@@ -43,7 +43,7 @@ class RHESSISummaryLightCurve(LightCurve):
     | http://sprg.ssl.berkeley.edu/~jimm/hessi/hsi_obs_summ_soc.html#hsi_obs_summ_rate
     """
 
-    def plot(self, title="RHESSI Observing Summary Count Rate", axes=None, **plot_args):
+    def plot(self, title="RHESSI Observing Summary Count Rate", axes=None, type='rhessi', **plot_args):
         """Plots RHESSI Count Rate light curve"""
 
         if axes is None:
@@ -66,7 +66,11 @@ class RHESSISummaryLightCurve(LightCurve):
         plt.gcf().autofmt_xdate()
         
         return axes
-        
+
+    @classmethod
+    def _get_plot_types(cls):
+        return ['rhessi']
+      
     @classmethod
     def _get_default_uri(cls):
         """Retrieve the latest RHESSI data."""
