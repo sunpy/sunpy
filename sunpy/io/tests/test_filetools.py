@@ -33,6 +33,16 @@ class TestFiletools(object):
         assert all([isinstance(p[1],
                                sunpy.io.header.FileHeader) for p in pairs])
 
+    def test_read_file_fits_gzip(self):
+        # Test read gzipped fits file
+        pair = sunpy.io.read_file(os.path.join(sunpy.data.test.rootdir, "gzip_test.fits.gz"))
+        assert isinstance(pair, list)
+        assert len(pair) == 1
+        assert len(pair[0]) == 2
+        assert isinstance(pair[0][0], np.ndarray)
+        assert isinstance(pair[0][1], sunpy.io.header.FileHeader)
+        assert np.all(pair[0][0] == np.tile(np.arange(512), (512, 1)).transpose())
+
     @skip_glymur
     def test_read_file_jp2(self):
         #Test read jp2
