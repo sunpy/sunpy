@@ -2,7 +2,6 @@
 """Provides programs to process and analyze EVE data."""
 from __future__ import absolute_import
 
-import os
 import numpy
 from datetime import datetime
 
@@ -12,6 +11,9 @@ from os.path import basename
 
 from sunpy.lightcurve import LightCurve
 from sunpy.util.odict import OrderedDict
+
+from sunpy import config
+TIME_FORMAT = config.get("general", "time_format")
 
 __all__ = ['EVELightCurve']
 
@@ -35,27 +37,49 @@ class EVELightCurve(LightCurve):
     | http://lasp.colorado.edu/home/eve/data/data-access/
     """
 
-    def plot(self, axes=None, column=None, **plot_args):
+    def plot(self, axes=None, type='eve 0cs', title = 'SDO/EVE', **plot_args):
+        """Plots EVE light curve is the usual manner"""
         if axes is None:
             axes = plt.gca()
-        # Choose title if none was specified
-        if not plot_args.has_key("title") and column is None:
-            if len(self.data.columns) > 1:
-                plot_args['title'] = 'EVE (1 minute data)'
-            else:
-                if self._filename is not None:
-                    base = self._filename.replace('_', ' ')
-                    plot_args['title'] = os.path.splitext(base)[0]
-                else:
-                    plot_args['title'] = 'EVE Averages'
-
-        if column is None:
-            self.data.plot(ax=axes, **plot_args)
-        else:
-            data = self.data[column]
-            if not plot_args.has_key("title"):
-                plot_args['title'] = 'EVE ' + column.replace('_', ' ')
-            data.plot(**plot_args)
+       
+        if type == 'goes proxy':
+            self.data['XRS-B proxy'].plot(ax=axes, label='1.0--8.0 $\AA$', color='red', lw=2, **plot_args)
+            self.data['XRS-A proxy'].plot(ax=axes, label='0.5--4.0 $\AA$', color='blue', lw=2, **plot_args)
+            axes.set_yscale("log")
+            axes.set_ylim(1e-9, 1e-2)
+            axes.set_title(title)
+            axes.set_ylabel('Watts m$^{-2}$')
+            #ax2 = axes.twinx()
+            #ax2.set_yscale("log")
+            #ax2.set_ylim(1e-9, 1e-2)
+            #ax2.set_yticks((1e-9, 1e-8, 1e-7, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2))
+            #ax2.set_yticklabels((' ', 'A', 'B', 'C', 'M', 'X', ' '))
+        if type == 'esp quad':
+            self.data['q0ESP'].plot(ax=axes, label='ESP 0', **plot_args)
+            self.data['q1ESP'].plot(ax=axes, label='ESP 1', **plot_args)
+            self.data['q2ESP'].plot(ax=axes, label='ESP 2', **plot_args)
+            self.data['q3ESP'].plot(ax=axes, label='ESP 3', **plot_args)
+        if type == 'position':
+            self.data['CMLat'].plot(ax=axes, label='Latitude', **plot_args)
+            self.data['CMLon'].plot(ax=axes, label='Longitude', **plot_args)
+        if type == 'sem':
+            self.data['SEM proxy'].plot(ax=axes, label='SEM Proxy', **plot_args)
+        if type == 'esp':
+            self.data['17.1ESP'].plot(ax=axes, label='17.1', **plot_args)
+            self.data['25.7ESP'].plot(ax=axes, label='25.7', **plot_args)
+            self.data['30.4ESP'].plot(ax=axes, label='30.4', **plot_args)
+            self.data['36.6ESP'].plot(ax=axes, label='36.6', **plot_args)
+        if type == 'dark':
+            self.data['darkESP'].plot(ax=axes, label='ESP', **plot_args)
+            self.data['darkMEGS-P'].plot(ax=axes, label='MEGS-P', **plot_args)
+            
+        axes.set_xlabel('Start time: ' + self.data.index[0].strftime(TIME_FORMAT))
+        axes.set_title(title)            
+        axes.yaxis.grid(True, 'major')
+        axes.xaxis.grid(True, 'major')
+        axes.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+        plt.gcf().autofmt_xdate()
+            
         return axes
 
     @staticmethod
@@ -65,7 +89,25 @@ class EVELightCurve(LightCurve):
 
     @classmethod
     def _get_plot_types(cls):
-        return ['eve 0cs']
+        return ['goes proxy', 'esp quad', 'position', 'sem', 'esp', 'dark']
+        
+    @staticmethod
+    def _get_url_for_date_range(tr):
+        """Returns a URL to the GOES data for the specified date.
+
+        Parameters
+        ----------
+        args : TimeRange, datetimes, date strings
+            Date range should be specified using a TimeRange, or start
+            and end dates at datetime instances or date strings.
+        satellite_number : int
+            GOES satellite number (default = 15)
+        data_type : string
+            Data type to return for the particular GOES satellite. Supported
+            types depend on the satellite number specified. (default = xrs_2s)
+        """
+        base_url = 'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/'
+        return base_url + tr.start().strftime('%Y/%Y%m%d') + '_EVE_L0CS_DIODES_1m.txt'
 
     @staticmethod
     def _get_url_for_date(date):
