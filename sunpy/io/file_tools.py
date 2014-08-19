@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 
 import re
+import os
 
 try:
     from . import fits
@@ -161,7 +162,14 @@ def _detect_filetype(filepath):
     #
     # Checks for "KEY_WORD  =" at beginning of file
     match = re.match(r"[A-Z0-9_]{0,8} *=", first80)
+    
+    filepath_rest_ext1, ext1 = os.path.splitext(filepath)
+    _, ext2 = os.path.splitext(filepath_rest_ext1)
 
+    gzip_extensions = [".gz"]
+    fits_extensions = [".fts", ".fits"]
+    if (ext1 in gzip_extensions and ext2 in fits_extensions):
+        return 'fits'
     if match is not None:
         return 'fits'
 
