@@ -152,6 +152,9 @@ point of view and the STEREO A, B point of views.
     if np.array(x).shape != np.array(y).shape:
         raise ValueError('Input co-ordinates must have the same shape.')
 
+    # Ensure that both x and y are both astropy
+    if not isinstance(x, u.Quantity) or not isinstance(y, u.Quantity):
+        raise TypeError("At least one of the input co-ordinates is not an astropy Quantity.")
     # Make sure we have enough time information to perform a solar differential
     # rotation
     # Start time
@@ -160,30 +163,34 @@ point of view and the STEREO A, B point of views.
     interval = dend - dstart
 
     # Get the Sun's position from the vantage point at the start time
-    vstart = kwargs.get("vstart", calc_P_B0_SD(dstart, spacecraft=spacecraft))
+    vstart = kwargs.get("vstart", _calc_P_B0_SD(dstart, spacecraft=spacecraft))
     # Compute heliographic co-ordinates - returns (longitude, latitude). Points
     # off the limb are returned as nan
-    longitude, latitude = convert_hpc_hg(x, y, b0_deg=vstart["b0"],
-                                         l0_deg=vstart["l0"], 
-                    dsun_meters=constants.au * sun.sunearth_distance(t=dstart),
+    longitude, latitude = convert_hpc_hg(x.to(u.arcsec).value,
+                                         y.to(u.arcsec).value,
+                                         b0_deg=vstart["b0"].to(u.deg).value,
+                                         l0_deg=vstart["l0"].to(u.deg).value, 
+                                         dsun_meters=(constants.au * sun.sunearth_distance(t=dstart)).value,
                                          angle_units='arcsec')
     # Compute the differential rotation
     drot = diff_rot(interval, latitude, frame_time=frame_time,
                     rot_type=rot_type)
 
     # Convert back to heliocentric cartesian in units of arcseconds
-    vend = kwargs.get("vend", calc_P_B0_SD(dend, spacecraft=spacecraft))
+    vend = kwargs.get("vend", _calc_P_B0_SD(dend, spacecraft=spacecraft))
 
     # It appears that there is a difference in how the SSWIDL function
     # hel2arcmin and the sunpy function below performs this co-ordinate
     # transform.
 
-    newx, newy = convert_hg_hpc(longitude + drot, latitude,b0_deg=vend["b0"],
-                                l0_deg=vend["l0"],
-                                dsun_meters=constants.au * sun.sunearth_distance(t=dend),
-                                angle_units='arcsec', occultation=False)
+    newx, newy = convert_hg_hpc(longitude.to(u.deg).value + drot.to(u.deg).value,
+                                latitude.to(u.deg).value,
+                                b0_deg=vend["b0"].to(u.deg).value,
+                                l0_deg=vend["l0"].to(u.deg).value,
+                                dsun_meters=(constants.au * sun.sunearth_distance(t=dend)).value,
+                                occultation=False)
 
-    return newx, newy
+    return newx.to(u.arcsec), newy.to(u.arcsec)
 
 
 def _calc_P_B0_SD(date, spacecraft=None, arcsec=False):
@@ -229,11 +236,11 @@ def _calc_P_B0_SD(date, spacecraft=None, arcsec=False):
 
     # get the longitude of the sun etc.
     sun_position = _sun_pos(date)
-    longmed = sun_position["longitude"].to(u.deg)
+    longmed = sun_position["longitude"].to(u.deg).value
     #ra = sun_position["ra"]
     #dec = sun_position["dec"]
-    appl = sun_position["app_long"].to(u.deg)
-    oblt = sun_position["obliq"].to(u.deg)
+    appl = sun_position["app_long"].to(u.deg).value
+    oblt = sun_position["obliq"].to(u.deg).value
 
     # form the aberrated longitude
     Lambda = longmed - (20.50 / 3600.0)
@@ -278,10 +285,10 @@ def _calc_P_B0_SD(date, spacecraft=None, arcsec=False):
         raise ValueError("SOHO correction (on the order of 1% " + \
                         "since SOHO sets at L1) not yet supported.")
 
-    if arcsec:
-        return {"p": p, "b0": b, "sd": sd * 60.0}
-    else:
-        return {"p": p, "b0": b, "sd": sd, "l0": 0.0}
+    return {"p": Angle(p, u.deg),
+            "b": Angle(b, u.deg),
+            "sd": Angle(sd.value, u.arcmin), # check this
+            "l0": Angle(0.0, u.deg)}
 
 
 def _sun_pos(date, is_julian=False, since_2415020=False):
@@ -417,7 +424,7 @@ def _sun_pos(date, is_julian=False, since_2415020=False):
     # comment section in this code and in the original IDL code.  Quantities
     # are assigned following the advice in Astropy "Working with Angles"
     return {"longitude": Longitude(longmed, u.deg),
-            "ra": Lontitude(ra, u.deg),
-            "dec": Latitude(dec, u,deg),
+            "ra": Longitude(ra, u.deg),
+            "dec": Latitude(dec, u.deg),
             "app_long": Longitude(l, u.deg),
             "obliq": Angle(oblt, u.deg)}
