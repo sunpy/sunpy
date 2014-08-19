@@ -155,6 +155,8 @@ class Cube(astropy.nddata.NDData):
         """
         if 'WAVE' not in self.axes_wcs.wcs.ctype:
             raise cu.CubeError(2, "Spectral dimension not present")
+        if self.data.ndim == 4:
+            raise cu.CubeError(4, "Can only work with 3D cubes")
 
         axis = 1 if self.axes_wcs.wcs.ctype[-1] in ['TIME', 'UTC'] else 0
         arr = None
@@ -298,14 +300,12 @@ class Cube(astropy.nddata.NDData):
         if axis == 0:
             item[1:] = coords
             item[0] = slice(None, None, None)
-            item = map((lambda x: slice(None, None, None) if x is None else x),
-                       item)
+            item = [slice(None, None, None) if i is None else i for i in item]
         else:
             item[0] = coords[0]
             item[1] = slice(None, None, None)
             item[2:] = coords[1:]
-            item = map((lambda x: slice(None, None, None) if x is None else x),
-                       item)
+            item = [slice(None, None, None) if i is None else i for i in item]
 
         data = self.data[item]
         for i in range(len(coords)):

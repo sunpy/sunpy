@@ -373,6 +373,23 @@ def pixelize_slice(item, wcs):
 
 
 def _convert_point(value, unit, wcs, axis):
+    """
+    Takes a point on an axis specified by the given wcs and returns the pixel
+    coordinate.
+
+    Parameters
+    ----------
+    value: int or float
+        The magnitude of the specified point.
+    unit: astropy.unit.Unit
+        The unit for the given value. Note this doesn't take in a quantity to
+        simplify _convert_slice.
+    wcs: sunpy.wcs.wcs.WCS
+        The WCS describing the axes system.
+    axis: int
+        The axis the value corresponds to, in numpy-style ordering (i.e.
+        opposite WCS convention)
+    """
     naxis = wcs.wcs.naxis if not wcs.was_augmented else wcs.wcs.naxis - 1
     cunit = u.Unit(wcs.wcs.cunit[naxis - 1 - axis])
     crpix = wcs.wcs.crpix[naxis - 1 - axis]
@@ -386,9 +403,27 @@ def _convert_point(value, unit, wcs, axis):
     return int(np.round(point))
 
 
-def _convert_slice(sl, wcs, axis):
+def _convert_slice(item, wcs, axis):
+    """
+    Takes in a slice object that may or may not contain units and translates it
+    to pixel coordinates along the given wcs and axis. If there are no units,
+    returns the same slice; if there is more than one non-identical unit,
+    raises a CubeError.
+
+    Parameters
+    ----------
+    item: slice object
+        The slice to convert to pixels. It may be composed of Nones, ints,
+        floats or astropy Quantities, in any combination (with the restriction
+        noted above)
+    wcs: sunpy.wcs.wcs.WCS
+        The WCS describing this system
+    axis: int
+        The axis the slice corresponds to, in numpy-style ordering (i.e.
+        opposite WCS convention)
+    """
     naxis = wcs.wcs.naxis if not wcs.was_augmented else wcs.wcs.naxis - 1
-    steps = [sl.start, sl.stop, sl.step]
+    steps = [item.start, item.stop, item.step]
     values = [None, None, None]
     unit = None
     for i in range(3):
@@ -401,7 +436,7 @@ def _convert_slice(sl, wcs, axis):
         else:
             values[i] = steps[i]
     if unit is None:
-        return sl
+        return item
 
     if values[2] is None:
         delta = None
