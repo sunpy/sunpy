@@ -16,6 +16,8 @@ class TestDiffRot():
     def test_single(self):
         rot = diff_rot(10, 30 * u.deg)
         np.testing.assert_almost_equal(rot.to(u.deg).value, 136.8216, decimal=4)
+        isinstance(rot, Longitude)
+        rot.unit == u.deg
 
     def test_array(self):
         rot = diff_rot(10, np.linspace(-70, 70, 2) * u.deg)
