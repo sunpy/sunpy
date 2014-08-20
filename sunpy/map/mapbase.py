@@ -124,7 +124,6 @@ class GenericMap(astropy.nddata.NDData):
         # Setup some attributes
         self._name = self.observatory + " " + str(self.measurement)
         self._nickname = self.detector
-        self.wcs = self.get_wcs
 
         # Visualization attributes
         self.cmap = cm.gray
@@ -374,41 +373,12 @@ Dimension:\t [%d, %d]
     def rotation_matrix(self):
         """Matrix describing the rotation required to align solar North with
         the top of the image."""
-        if self.meta.get('PC1_1', None) is not None:
-            return np.matrix([[self.meta['PC1_1'], self.meta['PC1_2']],
-                              [self.meta['PC2_1'], self.meta['PC2_2']]])
-
-        elif self.meta.get('CD1_1', None) is not None:
-            div = 1. / (self.scale['x'].value - self.scale['y'].value)
-
-            deltm = np.matrix([[self.scale['y'].value/div, 0],
-                               [0, self.scale['x'].value/ div]])
-
-            cd = np.matrix([[self.meta['CD1_1'], self.meta['CD1_2']],
-                            [self.meta['CD2_1'], self.meta['CD2_2']]])
-
-            return deltm * cd
-        else:
-            return self._rotation_matrix_from_crota()
-
-
-    def _rotation_matrix_from_crota(self):
-        """
-        This method converts the deprecated CROTA FITS kwargs to the new
-        PC rotation matrix.
-
-        This method can be overriden if an instruments header does not use this
-        conversion.
-        """
-        lam = float(self.scale['y'] / self.scale['x'])
-        p = np.deg2rad(self.meta['CROTA2'])
-
-        return np.matrix([[np.cos(p), -1 * lam * np.sin(p)],
-                          [1/lam * np.sin(p), np.cos(p)]])
+        
+        return np.matrix(self.wcs.wcs.get_pc())
 
 # #### astropy.wcs object genertaion #### #
     @property
-    def get_wcs(self):
+    def wcs(self):
         # this function generates a astropy.wcs object
         w2 = WCS(naxis=2)
         w2.wcs.crpix = [self.reference_pixel['x'].value, self.reference_pixel['y'].value]
@@ -417,7 +387,31 @@ Dimension:\t [%d, %d]
                         self.reference_coordinate['y'].value]
         w2.wcs.ctype = [self.coordinate_system['x'], self.coordinate_system['y']]
         w2.wcs.cunit = [self.units['x'], self.units['y']]
+        
+        if self.meta.get('PC1_1', None) is not None:
+            w2.wcs.pc = np.array([[self.meta['PC1_1'], self.meta['PC1_2']],
+                                  [self.meta['PC2_1'], self.meta['PC2_2']]])
+
+        elif self.meta.get('CD1_1', None) is not None:
+            cd = np.matrix([[self.meta['CD1_1'], self.meta['CD1_2']],
+                            [self.meta['CD2_1'], self.meta['CD2_2']]])
+
+            if self.meta.get('CDELT1', None) is not None:
+                pc = cd / u.Quantity(self.scale.values()).value
+                w2.wcs.pc = pc
+            
+            else:
+                w2.wcs.cd = cd
+                
+        else:
+            w2.wcs.crota = [self.meta.get('CROTA1', 0), 
+                            self.meta.get('CROTA2', 0)]
         return w2
+    
+    @wcs.setter
+    def wcs(self, wcs):
+        if wcs is not None:
+            raise ValueError("The WCS object is not settable")
 
 # #### Miscellaneous #### #
 
@@ -720,8 +714,8 @@ Dimension:\t [%d, %d]
 
             # Calculate new coordinates for the center of the array
             new_center = (image_center.value - np.dot(rmatrix, image_center.value - old_center.value))
-            new_center = np.asarray(new_center)[0] * u.arcsec
-
+            new_center = u.Quantity(new_center, unit=u.arcsec)[0]
+            print new_center.shape
         # Define a new reference pixel in the rotated space
         new_map.meta['crval1'] = new_center[0].value
         new_map.meta['crval2'] = new_center[1].value
@@ -1129,7 +1123,7 @@ Dimension:\t [%d, %d]
             axes.set_ylabel(ylabel)
 
         # Determine extent
-        extent = self.xrange + self.yrange
+        extent = list(self.xrange.value) + list(self.yrange.value)
 
         cmap = deepcopy(self.cmap)
         if gamma is not None:
