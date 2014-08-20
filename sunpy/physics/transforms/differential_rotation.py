@@ -102,28 +102,29 @@ def diff_rot(ddays, latitude, rot_type='howard', frame_time='sidereal'):
 def rot_hpc(x, y, tstart, tend, spacecraft=None, frame_time='synodic',
             rot_type='howard', **kwargs):
     """Given a location on the Sun referred to using the Helioprojective
-    Cartesian co-ordinate system in the units of arcseconds, use the solar
-    rotation profile to find that location at some later or earlier time.
+    Cartesian co-ordinate system (typically quaoted in the units of arcseconds)
+    use the solar rotation profile to find that location at some later or
+    earlier time.
 
     Parameters
     -----------
-    x: float or numpy ndarray
-        helio-projective x-co-ordinate in arcseconds
+    x : helio-projective x-co-ordinate in arcseconds using astropy units (can
+        be an array)
 
-    y: float or numpy ndarray
-        helio-projective y-co-ordinate in arcseconds
+    y : helio-projective y-co-ordinate in arcseconds using astropy units (can
+        be an array)
 
-    tstart: date/time to which x and y are referred; can be in any acceptable
+    tstart : date/time to which x and y are referred; can be in any acceptable
             time format.
 
-    tend: Date/time at which x and y will be rotated to; can be
+    tend : date/time at which x and y will be rotated to; can be
           in any acceptable time format.
 
-    spacecraft: { None | "soho" | "stereo_a" | "stereo_b" }
-                calculate the rotation from the point of view of the SOHO,
-                STEREO A, or STEREO B spacecraft.
+    spacecraft : { None | "soho" | "stereo_a" | "stereo_b" }
+                 calculate the rotation from the point of view of the SOHO,
+                 STEREO A, or STEREO B spacecraft.
                 
-    rot_type: {'howard' | 'snodgrass' | 'allen'}
+    rot_type : {'howard' | 'snodgrass' | 'allen'}
         howard: Use values for small magnetic features from Howard et al.
         snodgrass: Use Values from Snodgrass et. al
         allen: Use values from Allen, Astrophysical Quantities, and simplier
@@ -131,8 +132,19 @@ def rot_hpc(x, y, tstart, tend, spacecraft=None, frame_time='synodic',
 
     frame_time: {'sidereal' | 'synodic'}
         Choose 'type of day' time reference frame.
-TODO: the ability to do this rotation for data from the SOHO
-point of view and the STEREO A, B point of views.
+    
+    Returns
+    -------
+    x, y : the rotated helio-projective co-ordinates (in astropy Angle
+           Quantities in units of arcseconds), with the same shape as the input
+           co-ordinates.
+
+    Examples
+    --------
+    >>> import astropy.units as u
+    >>> from sunpy.physics.transforms.differential_rotation import rot_hpc
+    >>> rot_hpc( -570 * u.arcsec, 120 * u.arcsec, '2010-09-10 12:34:56', '2010-09-10 13:34:56')
+    (<Angle -562.9105822671319 arcsec>, <Angle 119.31920621992195 arcsec>)
 
     See Also
     --------
@@ -140,8 +152,8 @@ point of view and the STEREO A, B point of views.
         http://hesperia.gsfc.nasa.gov/ssw/gen/idl/solar/rot_xy.pro
 
     Note: rot_xy uses arcmin2hel.pro and hel2arcmin.pro to implement the
-    same functionality.  These two functions seem to perform inverse
-    operations of each other to a high accuracy.  The corresponding
+    same functionality as this function.  These two functions seem to perform
+    inverse operations of each other to a high accuracy.  The corresponding
     equivalent functions here are convert_hpc_hg and convert_hg_hpc
     respectively. These two functions seem to perform inverse
     operations of each other to a high accuracy.  However, the values
@@ -149,6 +161,8 @@ point of view and the STEREO A, B point of views.
     by convert_hpc_hg.  This leads to very slightly different results from
     rot_hpc compared to rot_xy.
 
+    TODO: the ability to do this rotation for data from the SOHO
+    point of view and the STEREO A, B point of views.
 """
     # must have pairs of co-ordinates
     if np.array(x).shape != np.array(y).shape:
@@ -292,7 +306,7 @@ def _calc_P_B0_SD(date, spacecraft=None, arcsec=False):
 
     return {"p": Angle(p, u.deg),
             "b0": Angle(b, u.deg),
-            "sd": Angle(sd.value, u.arcmin), # check this
+            "sd": Angle(sd.value, u.arcmin),
             "l0": Angle(0.0, u.deg)}
 
 
@@ -335,7 +349,7 @@ def _sun_pos(date, is_julian=False, since_2415020=False):
 
     Examples
     --------
-    >>> sp = sun_pos('2013-03-27')
+    >>> sp = _sun_pos('2013-03-27')
 
     """
     # check the time input
