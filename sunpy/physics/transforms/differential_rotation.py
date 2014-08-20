@@ -61,6 +61,8 @@ def diff_rot(ddays, latitude, rot_type='howard', frame_time='sidereal'):
 
     if not isinstance(ddays,datetime.timedelta):
         delta = datetime.timedelta(days=ddays)
+    else:
+        delta = ddays
 
     if not isinstance(latitude, u.Quantity):
         raise TypeError("Expecting astropy Quantity")
@@ -172,6 +174,8 @@ point of view and the STEREO A, B point of views.
                                          l0_deg=vstart["l0"].to(u.deg).value, 
                                          dsun_meters=(constants.au * sun.sunearth_distance(t=dstart)).value,
                                          angle_units='arcsec')
+    longitude = Longitude(longitude, u.deg)
+    latitude = Angle(latitude, u.deg)
     # Compute the differential rotation
     drot = diff_rot(interval, latitude, frame_time=frame_time,
                     rot_type=rot_type)
@@ -189,7 +193,8 @@ point of view and the STEREO A, B point of views.
                                 l0_deg=vend["l0"].to(u.deg).value,
                                 dsun_meters=(constants.au * sun.sunearth_distance(t=dend)).value,
                                 occultation=False)
-
+    newx = Angle(newx, u.arcsec)
+    newy = Angle(newy, u.arcsec)
     return newx.to(u.arcsec), newy.to(u.arcsec)
 
 
@@ -286,7 +291,7 @@ def _calc_P_B0_SD(date, spacecraft=None, arcsec=False):
                         "since SOHO sets at L1) not yet supported.")
 
     return {"p": Angle(p, u.deg),
-            "b": Angle(b, u.deg),
+            "b0": Angle(b, u.deg),
             "sd": Angle(sd.value, u.arcmin), # check this
             "l0": Angle(0.0, u.deg)}
 
