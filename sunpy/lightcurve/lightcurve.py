@@ -103,7 +103,7 @@ for compatability with map, please use meta instead""", Warning)
     @classmethod
     def from_range(cls, start, end, **kwargs):
         '''Called by Conditional Dispatch object when start and end time are passed as input to create method.'''
-        url = cls._get_url_for_date_range(parse_time(start), parse_time(end))
+        url = cls._get_url_for_date_range(parse_time(start), parse_time(end), **kwargs)
         filepath = cls._download(
             url, kwargs,
             err = "Unable to download data for specified date range"
@@ -115,7 +115,7 @@ for compatability with map, please use meta instead""", Warning)
     @classmethod
     def from_timerange(cls, timerange, **kwargs):
         '''Called by Conditional Dispatch object when time range is passed as input to create method.'''
-        url = cls._get_url_for_date_range(timerange)
+        url = cls._get_url_for_date_range(timerange, **kwargs)
         filepath = cls._download(
             url, kwargs,
             err = "Unable to download data for specified date range"
