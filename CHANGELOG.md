@@ -1,6 +1,7 @@
 Latest
 ------
-* Update to TimeRange API, removed t1 and t0, start and end are now read-only attributes
+ * Update to TimeRange API, removed t1 and t0, start and end are now read-only attributes
+ * Added ability to download level3 data for lyra Light Curve along with corresponding tests.
 
 0.5.0
 -----
@@ -152,4 +153,3 @@ Below are the main features that have been added for this release:
     * Resample method
     * Superpixel method
     * The addition of the rotate() method for 2D maps.
-
