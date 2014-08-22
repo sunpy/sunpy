@@ -44,7 +44,7 @@ def test_timerange_input(ainput):
 
 def test_center():
     timerange = sunpy.time.TimeRange(tbegin_str, tfin_str)
-    assert timerange.center() == datetime.datetime(year=2012, day=1, month=1,
+    assert timerange.center == datetime.datetime(year=2012, day=1, month=1,
                                                    hour=12)
 
 
