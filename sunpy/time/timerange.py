@@ -112,6 +112,16 @@ class TimeRange(object):
         """
         return self._t2 - self._t1
 
+    @property
+    def center(self):
+        """Gets the center of the TimeRange instance
+
+        Returns
+        -------
+        value : datetime
+        """
+        return self.start + self.dt / 2
+        
     def __repr__(self):
         """
         Returns a human-readable representation of the TimeRange instance."""
@@ -127,15 +137,6 @@ class TimeRange(object):
                 '\n    '.ljust(12) + str(self.minutes()) + ' minutes or' +
                 '\n    '.ljust(12) + str(self.seconds()) + ' seconds' +
                 '\n')
-
-    def center(self):
-        """Gets the center of the TimeRange instance
-
-        Returns
-        -------
-        value : datetime
-        """
-        return self.start + self.dt / 2
 
     def split(self, n=2):
         """Splits the TimeRange into multiple equally sized parts
