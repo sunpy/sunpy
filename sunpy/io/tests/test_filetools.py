@@ -2,8 +2,6 @@
 import numpy as np
 import os
 
-import pytest
-
 import sunpy
 import sunpy.io
 import sunpy.data.test

@@ -474,6 +474,7 @@ Dimension:\t [%d, %d]
         scale = np.array([self.scale['x'], self.scale['y']])
         crpix = np.array([self.reference_pixel['x'], self.reference_pixel['y']])
         crval = np.array([self.reference_coordinate['x'], self.reference_coordinate['y']])
+        # FIXME: not used?!
         coordinate_system = [self.coordinate_system['x'], self.coordinate_system['y']]
         x,y = wcs.convert_pixel_to_data(self.shape, scale, crpix, crval, x = x, y = y)
 

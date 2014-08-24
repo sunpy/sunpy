@@ -14,8 +14,6 @@ from datetime import datetime
 from datetime import timedelta
 
 import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib.dates
 
 from astropy.io import fits
 from astropy import units as u
@@ -25,7 +23,6 @@ import sunpy.map
 import sunpy.sun.constants
 
 from sunpy.time import TimeRange, parse_time
-import sunpy.sun.constants as sun
 from sunpy.sun.sun import solar_semidiameter_angular_size
 from sunpy.sun.sun import sunearth_distance
 
