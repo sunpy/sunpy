@@ -5,9 +5,6 @@ This particular test file pertains to IRISMap.
 
 import os
 import glob
-import numpy as np
-
-import pytest
 
 from sunpy.map import Map
 from sunpy.map.sources.iris import IRISMap

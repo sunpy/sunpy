@@ -23,7 +23,7 @@ from astropy import units as u
 
 from sunpy.time import TimeRange
 from sunpy.net.attr import (
-    Attr, ValueAttr, AttrWalker, AttrAnd, AttrOr, DummyAttr, ValueAttr
+    Attr, AttrWalker, AttrAnd, AttrOr, DummyAttr, ValueAttr
 )
 from sunpy.util.multimethod import MultiMethod
 from sunpy.time import parse_time

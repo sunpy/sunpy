@@ -310,6 +310,7 @@ class Spectrogram(Parent):
         eoffset = self.shape[1] if x_range.stop is None else x_range.stop # pylint: disable=E1101
         eoffset -= 1
 
+        # FIXME: `fsoffset` and `feoffset` are not used?!
         fsoffset = 0 if y_range.start is None else y_range.start
         feoffset = self.shape[0] if y_range.stop is None else y_range.stop # pylint: disable=E1101
 
@@ -955,7 +956,6 @@ class LinearTimeSpectrogram(Spectrogram):
         size = sum(sp.shape[1] for sp in specs)
 
         data = specs[0]
-        init = data.t_init
         start_day = data.start
 
         xs = []

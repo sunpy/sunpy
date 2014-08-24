@@ -5,7 +5,6 @@ Test Generic Map
 from __future__ import absolute_import
 
 import os
-from itertools import izip
 
 import numpy as np
 
