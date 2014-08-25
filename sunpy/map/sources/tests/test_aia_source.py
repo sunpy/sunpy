@@ -15,8 +15,15 @@ import sunpy.data.test
 path = sunpy.data.test.rootdir
 jp2path = glob.glob(os.path.join(path, "2013_06_24__17_31_30_84__SDO_AIA_AIA_193.jp2"))
 
+from sunpy.tests.helpers import SKIP_GLYMUR
+
+if SKIP_GLYMUR:
+    params = [aiaimg]
+else:
+    params = [aiaimg, jp2path]
+
 # The fixture is parameterized with aiaimg and jp2path.
-@pytest.fixture(scope="module", params=[aiaimg, jp2path])
+@pytest.fixture(scope="module", params=params)
 def createAIAMap(request):
     """Creates an AIAMap as given in documentation examples, through AIA_171_IMAGE
     or through the use of the JP2 file."""

@@ -161,6 +161,9 @@ def parse_time(time_string, time_format=''):
     >>> sunpy.time.parse_time('2012/08/01')
     >>> sunpy.time.parse_time('2005-08-04T00:01:02.000Z')
 
+    Todo:
+    Add ability to parse tai (International Atomic Time seconds since
+    Jan 1, 1958)
     """
     if isinstance(time_string, datetime) or time_format == 'datetime':
         return time_string

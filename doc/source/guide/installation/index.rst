@@ -17,7 +17,7 @@ SunPy has the following strict requirements:
 
 - `SciPy <http://www.scipy.org/>`_ 0.10.0 or later
 
-- `AstroPy <http://www.astropy.org/>`__ 0.3.0 or later
+- `AstroPy <http://www.astropy.org/>`__ 0.4.0 or later
 
 SunPy also depends on other packages for optional features.
 However, note that these only need to be installed if those particular features
@@ -234,7 +234,7 @@ Building documentation
     Building the documentation is in general not necessary unless you
     are writing new documentation or do not have internet access, because
     the latest (and archive) versions of SunPy's documentation should
-    be available at `sunpy.readthedocs.org <http://sunpy.readthedocs.org>`_ .
+    be available at `docs.sunpy.org <http://docs.sunpy.org>`_ .
 
 Building the documentation requires the SunPy source code and some additional
 packages:
