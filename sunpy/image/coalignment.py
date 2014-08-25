@@ -486,11 +486,12 @@ def mapcube_coalign_by_match_template(mc, template=None, layer_index=0,
 
     # Use the displacements supplied
     if apply_displacements is not None:
-        xshift_arcseconds = apply_displacements["x"].value
-        yshift_arcseconds = apply_displacements["y"].value
-        for i, m in enumerate(mc.maps):
-            xshift_keep[i] = xshift_arcseconds[i] / m.scale['x']
-            yshift_keep[i] = yshift_arcseconds[i] / m.scale['y']
+        if _is_pixel_unit(apply_displacements["x"]) and _is_pixel_unit(apply_displacements["y"]):
+            xshift_arcseconds = apply_displacements["x"].value
+            yshift_arcseconds = apply_displacements["y"].value
+            for i, m in enumerate(mc.maps):
+                xshift_keep[i] = xshift_arcseconds[i] / m.scale['x']
+                yshift_keep[i] = yshift_arcseconds[i] / m.scale['y']
     else:
         xshift_arcseconds = np.zeros_like(xshift_keep)
         yshift_arcseconds = np.zeros_like(xshift_keep)
