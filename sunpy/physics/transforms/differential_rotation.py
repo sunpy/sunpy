@@ -3,14 +3,14 @@ from __future__ import division
 import numpy as np
 import datetime
 from astropy import units as u
-from astropy.coordinates import Longitude
+from astropy.coordinates import Longitude, Latitude, Angle
 from sunpy.time import parse_time, julian_day
 
 from sunpy.wcs import convert_hpc_hg, convert_hg_hpc
 from sunpy.sun import constants, sun
 
 __author__ = ["Jose Ivan Campos Rozo", "Stuart Mumford", "Jack Ireland"]
-__all__ = ['diff_rot', 'sun_pos', 'calc_P_B0_SD', 'rot_hpc']
+__all__ = ['diff_rot', '_sun_pos', '_calc_P_B0_SD', 'rot_hpc']
 
 
 def diff_rot(ddays, latitude, rot_type='howard', frame_time='sidereal'):
@@ -61,9 +61,11 @@ def diff_rot(ddays, latitude, rot_type='howard', frame_time='sidereal'):
 
     if not isinstance(ddays,datetime.timedelta):
         delta = datetime.timedelta(days=ddays)
+    else:
+        delta = ddays
 
     if not isinstance(latitude, u.Quantity):
-	raise TypeError("Expecting astropy Quantity")
+        raise TypeError("Expecting astropy Quantity")
 
     latitude = latitude.to(u.deg)
     delta_seconds = (delta.microseconds + (delta.seconds + delta.days * 24 * 3600) *
@@ -100,28 +102,29 @@ def diff_rot(ddays, latitude, rot_type='howard', frame_time='sidereal'):
 def rot_hpc(x, y, tstart, tend, spacecraft=None, frame_time='synodic',
             rot_type='howard', **kwargs):
     """Given a location on the Sun referred to using the Helioprojective
-    Cartesian co-ordinate system in the units of arcseconds, use the solar
-    rotation profile to find that location at some later or earlier time.
+    Cartesian co-ordinate system (typically quaoted in the units of arcseconds)
+    use the solar rotation profile to find that location at some later or
+    earlier time.
 
     Parameters
     -----------
-    x: float or numpy ndarray
-        helio-projective x-co-ordinate in arcseconds
+    x : helio-projective x-co-ordinate in arcseconds using astropy units (can
+        be an array)
 
-    y: float or numpy ndarray
-        helio-projective y-co-ordinate in arcseconds
+    y : helio-projective y-co-ordinate in arcseconds using astropy units (can
+        be an array)
 
-    tstart: date/time to which x and y are referred; can be in any acceptable
+    tstart : date/time to which x and y are referred; can be in any acceptable
             time format.
 
-    tend: Date/time at which x and y will be rotated to; can be
+    tend : date/time at which x and y will be rotated to; can be
           in any acceptable time format.
 
-    spacecraft: { None | "soho" | "stereo_a" | "stereo_b" }
-                calculate the rotation from the point of view of the SOHO,
-                STEREO A, or STEREO B spacecraft.
+    spacecraft : { None | "soho" | "stereo_a" | "stereo_b" }
+                 calculate the rotation from the point of view of the SOHO,
+                 STEREO A, or STEREO B spacecraft.
                 
-    rot_type: {'howard' | 'snodgrass' | 'allen'}
+    rot_type : {'howard' | 'snodgrass' | 'allen'}
         howard: Use values for small magnetic features from Howard et al.
         snodgrass: Use Values from Snodgrass et. al
         allen: Use values from Allen, Astrophysical Quantities, and simplier
@@ -129,8 +132,19 @@ def rot_hpc(x, y, tstart, tend, spacecraft=None, frame_time='synodic',
 
     frame_time: {'sidereal' | 'synodic'}
         Choose 'type of day' time reference frame.
-TODO: the ability to do this rotation for data from the SOHO
-point of view and the STEREO A, B point of views.
+    
+    Returns
+    -------
+    x, y : the rotated helio-projective co-ordinates (in astropy Angle
+           Quantities in units of arcseconds), with the same shape as the input
+           co-ordinates.
+
+    Examples
+    --------
+    >>> import astropy.units as u
+    >>> from sunpy.physics.transforms.differential_rotation import rot_hpc
+    >>> rot_hpc( -570 * u.arcsec, 120 * u.arcsec, '2010-09-10 12:34:56', '2010-09-10 13:34:56')
+    (<Angle -562.9105822671319 arcsec>, <Angle 119.31920621992195 arcsec>)
 
     See Also
     --------
@@ -138,8 +152,8 @@ point of view and the STEREO A, B point of views.
         http://hesperia.gsfc.nasa.gov/ssw/gen/idl/solar/rot_xy.pro
 
     Note: rot_xy uses arcmin2hel.pro and hel2arcmin.pro to implement the
-    same functionality.  These two functions seem to perform inverse
-    operations of each other to a high accuracy.  The corresponding
+    same functionality as this function.  These two functions seem to perform
+    inverse operations of each other to a high accuracy.  The corresponding
     equivalent functions here are convert_hpc_hg and convert_hg_hpc
     respectively. These two functions seem to perform inverse
     operations of each other to a high accuracy.  However, the values
@@ -147,11 +161,16 @@ point of view and the STEREO A, B point of views.
     by convert_hpc_hg.  This leads to very slightly different results from
     rot_hpc compared to rot_xy.
 
+    TODO: the ability to do this rotation for data from the SOHO
+    point of view and the STEREO A, B point of views.
 """
     # must have pairs of co-ordinates
     if np.array(x).shape != np.array(y).shape:
         raise ValueError('Input co-ordinates must have the same shape.')
 
+    # Ensure that both x and y are both astropy
+    if not isinstance(x, u.Quantity) or not isinstance(y, u.Quantity):
+        raise TypeError("At least one of the input co-ordinates is not an astropy Quantity.")
     # Make sure we have enough time information to perform a solar differential
     # rotation
     # Start time
@@ -160,40 +179,50 @@ point of view and the STEREO A, B point of views.
     interval = dend - dstart
 
     # Get the Sun's position from the vantage point at the start time
-    vstart = kwargs.get("vstart", calc_P_B0_SD(dstart, spacecraft=spacecraft))
+    vstart = kwargs.get("vstart", _calc_P_B0_SD(dstart, spacecraft=spacecraft))
     # Compute heliographic co-ordinates - returns (longitude, latitude). Points
     # off the limb are returned as nan
-    longitude, latitude = convert_hpc_hg(x, y, b0_deg=vstart["b0"],
-                                         l0_deg=vstart["l0"], 
-                    dsun_meters=constants.au * sun.sunearth_distance(t=dstart),
+    longitude, latitude = convert_hpc_hg(x.to(u.arcsec).value,
+                                         y.to(u.arcsec).value,
+                                         b0_deg=vstart["b0"].to(u.deg).value,
+                                         l0_deg=vstart["l0"].to(u.deg).value, 
+                                         dsun_meters=(constants.au * sun.sunearth_distance(t=dstart)).value,
                                          angle_units='arcsec')
+    longitude = Longitude(longitude, u.deg)
+    latitude = Angle(latitude, u.deg)
     # Compute the differential rotation
     drot = diff_rot(interval, latitude, frame_time=frame_time,
                     rot_type=rot_type)
 
     # Convert back to heliocentric cartesian in units of arcseconds
-    vend = kwargs.get("vend", calc_P_B0_SD(dend, spacecraft=spacecraft))
+    vend = kwargs.get("vend", _calc_P_B0_SD(dend, spacecraft=spacecraft))
 
     # It appears that there is a difference in how the SSWIDL function
     # hel2arcmin and the sunpy function below performs this co-ordinate
     # transform.
 
-    newx, newy = convert_hg_hpc(longitude + drot, latitude,b0_deg=vend["b0"],
-                                l0_deg=vend["l0"],
-                                dsun_meters=constants.au * sun.sunearth_distance(t=dend),
-                                angle_units='arcsec', occultation=False)
+    newx, newy = convert_hg_hpc(longitude.to(u.deg).value + drot.to(u.deg).value,
+                                latitude.to(u.deg).value,
+                                b0_deg=vend["b0"].to(u.deg).value,
+                                l0_deg=vend["l0"].to(u.deg).value,
+                                dsun_meters=(constants.au * sun.sunearth_distance(t=dend)).value,
+                                occultation=False)
+    newx = Angle(newx, u.arcsec)
+    newy = Angle(newy, u.arcsec)
+    return newx.to(u.arcsec), newy.to(u.arcsec)
 
-    return newx, newy
 
-
-def calc_P_B0_SD(date, spacecraft=None, arcsec=False):
-    """To calculate the solar P, B0 angles and the semi-diameter.
+def _calc_P_B0_SD(date, spacecraft=None, arcsec=False):
+    """To calculate the solar P, B0 angles and the semi-diameter.  This
+    function is assigned as being internal as these quantities should be
+    calculated in a part of SunPy that can calculate these quantities
+    accurately.
 
     Parameters
     -----------
     date: a date/time object
 
-    spacecraft: { "soho" | "stereo_a" | "stereo_b" }
+    spacecraft: { None | "soho" | "stereo_a" | "stereo_b" }
         calculate the solar P, B0 angles and the semi-diameter from the point
         of view of either SOHO or either of the STEREO spacecraft.  SOHO sits
         at the Lagrange L1 point which is about 1% closer to the Sun than the
@@ -225,12 +254,12 @@ def calc_P_B0_SD(date, spacecraft=None, arcsec=False):
     de = julian_day(date) - 2415020.0
 
     # get the longitude of the sun etc.
-    sun_position = sun_pos(date)
-    longmed = sun_position["longitude"]
+    sun_position = _sun_pos(date)
+    longmed = sun_position["longitude"].to(u.deg).value
     #ra = sun_position["ra"]
     #dec = sun_position["dec"]
-    appl = sun_position["app_long"]
-    oblt = sun_position["obliq"]
+    appl = sun_position["app_long"].to(u.deg).value
+    oblt = sun_position["obliq"].to(u.deg).value
 
     # form the aberrated longitude
     Lambda = longmed - (20.50 / 3600.0)
@@ -275,18 +304,21 @@ def calc_P_B0_SD(date, spacecraft=None, arcsec=False):
         raise ValueError("SOHO correction (on the order of 1% " + \
                         "since SOHO sets at L1) not yet supported.")
 
-    if arcsec:
-        return {"p": p, "b0": b, "sd": sd * 60.0}
-    else:
-        return {"p": p, "b0": b, "sd": sd, "l0": 0.0}
+    return {"p": Angle(p, u.deg),
+            "b0": Angle(b, u.deg),
+            "sd": Angle(sd.value, u.arcmin),
+            "l0": Angle(0.0, u.deg)}
 
 
-def sun_pos(date, is_julian=False, since_2415020=False):
+def _sun_pos(date, is_julian=False, since_2415020=False):
     """ Calculate solar ephemeris parameters.  Allows for planetary and lunar
     perturbations in the calculation of solar longitude at date and various
     other solar positional parameters. This routine is a truncated version of
     Newcomb's Sun and is designed to give apparent angular coordinates (T.E.D)
-    to a precision of one second of time.
+    to a precision of one second of time.  This function replicates the SSW/
+    IDL function "sun_pos.pro".  This function is assigned to be
+    internal at the moment as it should really be replaced by accurate
+    ephemeris calculations in the part of SunPy that handles ephemeris.
 
     Parameters
     -----------
@@ -308,7 +340,7 @@ def sun_pos(date, is_julian=False, since_2415020=False):
     ra         -  Apparent RA for true equinox of date (degs)
     dec        -  Apparent declination for true equinox of date (degs)
     app_long   -  Apparent longitude (degs)
-    obliq      -  True obliquity (degs)longditude_delta:
+    obliq      -  True obliquity (degs)
 
     See Also
     --------
@@ -317,7 +349,7 @@ def sun_pos(date, is_julian=False, since_2415020=False):
 
     Examples
     --------
-    >>> sp = sun_pos('2013-03-27')
+    >>> sp = _sun_pos('2013-03-27')
 
     """
     # check the time input
@@ -408,6 +440,10 @@ def sun_pos(date, is_julian=False, since_2415020=False):
                                 np.sin(np.deg2rad(oblt))))
 
     # convert the internal variables to those listed in the top of the
-    # comment section in this code and in the original IDL code.
-    return {"longitude": longmed, "ra": ra, "dec": dec, "app_long": l,
-            "obliq": oblt}
+    # comment section in this code and in the original IDL code.  Quantities
+    # are assigned following the advice in Astropy "Working with Angles"
+    return {"longitude": Longitude(longmed, u.deg),
+            "ra": Longitude(ra, u.deg),
+            "dec": Latitude(dec, u.deg),
+            "app_long": Longitude(l, u.deg),
+            "obliq": Angle(oblt, u.deg)}

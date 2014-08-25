@@ -34,7 +34,8 @@ __author__ = 'J. Ireland'
 __all__ = ['calculate_shift', 'clip_edges', 'calculate_clipping',
            'match_template_to_layer', 'find_best_match_location',
            'get_correlation_shifts', 'parabolic_turning_point',
-           'repair_image_nonfinite', 'mapcube_coalign_by_match_template']
+           'repair_image_nonfinite', 'apply_shifts',
+           'mapcube_coalign_by_match_template']
 
 
 def _default_fmap_function(data):
@@ -342,6 +343,28 @@ def repair_image_nonfinite(image):
     return repaired_image
 
 
+def apply_shifts(mc, yshift, xshift, clip=True):
+    """Apply a set of pixel shifts to a mapcube, and return a new mapcube.
+    """
+    newmc = deepcopy(mc)
+
+    # Shift the data and construct the mapcube
+    for i, m in enumerate(newmc.maps):
+        shifted_data = shift(m.data, [-yshift_keep[i], -xshift_keep[i]])
+        if clip:
+            yclips, xclips = calculate_clipping(yshift_keep*u.pix, xshift_keep*u.pix)
+            shifted_data = clip_edges(shifted_data, yclips, xclips)
+
+        # Update the mapcube image data
+        newmc.maps[i].data = shifted_data
+
+        # Adjust the positioning information accordingly.
+        newmc.maps[i].meta['crpix1'] = newmc.maps[i].meta['crpix1'] + xshift_arcseconds[i]
+        newmc.maps[i].meta['crpix2'] = newmc.maps[i].meta['crpix2'] + yshift_arcseconds[i]
+
+    return newmc
+
+
 # Coalignment by matching a template
 def mapcube_coalign_by_match_template(mc, template=None, layer_index=0,
                                func=_default_fmap_function, clip=True,
@@ -485,9 +508,9 @@ def mapcube_coalign_by_match_template(mc, template=None, layer_index=0,
     if return_displacements_only:
         return {"x": xshift_arcseconds * u.arcsec, "y": yshift_arcseconds * u.arcsec}
 
-    # New mapcube for the new data
-    newmc = deepcopy(mc)
-
+    # Apply the shifts
+    newmc = apply_shifts(mc, -yshift_keep, -xshift_keep, clip=True)
+    """
     # Shift the data and construct the mapcube
     for i, m in enumerate(newmc.maps):
         shifted_data = shift(m.data, [-yshift_keep[i], -xshift_keep[i]])
@@ -501,7 +524,7 @@ def mapcube_coalign_by_match_template(mc, template=None, layer_index=0,
         # Adjust the positioning information accordingly.
         newmc.maps[i].meta['crpix1'] = newmc.maps[i].meta['crpix1'] + xshift_arcseconds[i]
         newmc.maps[i].meta['crpix2'] = newmc.maps[i].meta['crpix2'] + yshift_arcseconds[i]
-
+    """
     # Return the mapcube, or optionally, the mapcube and the displacements
     # used to create the mapcube.
     if with_displacements:
@@ -509,3 +532,70 @@ def mapcube_coalign_by_match_template(mc, template=None, layer_index=0,
     else:
         return newmc
 
+
+def mapcube_solar_derotate(mc, layer_index=0, clip=True,
+                               return_displacements_only=False,
+                               with_displacements=False):
+    """Move the layers in a mapcube according to solar rotation.  The center
+    of the map is used to calculate the position of each mapcube layer.  Shifts
+    are calculated relative to a specified layer in the mapcube.
+    When using this functionality, it is a good idea to check that the
+    shifts that were applied to were reasonable and expected.  One way of
+    checking this is to animate the original mapcube, animate the derotated
+    mapcube, and compare the differences you see to the calculated shifts.
+
+
+    Parameters
+    ----------
+    mc : sunpy.map.MapCube
+        A mapcube of shape (ny, nx, nt), where nt is the number of layers in
+        the mapcube.
+
+    layer_index : int
+        Solar derotation displacements of all maps in the mapcube are assumed
+        to be relative to the layer in the mapcube indexed by layer_index.
+
+    clip : bool
+        If True, then clip off x, y edges in the datacube that are potentially
+        affected by edges effects.
+
+    return_displacements_only : bool
+        If True return ONLY the x and y displacements applied to the input
+        data in units of arcseconds.  The return value is a dictionary of the
+        form {"x": xdisplacement, "y": ydisplacement}.
+
+    with_displacements : bool
+        If True, return the x and y displacements applied to the input data in
+        the same format as that returned using the return_displacements_only
+        option, along with the derotated mapcube.  The format of the return is
+        (mapcube, displacements).
+
+    Returns
+    -------
+    output : {sunpy.map.MapCube | dict | tuple}
+        The results of the mapcube coalignment.  The output depends on the
+        value of the parameters "return_displacements_only" and
+        "with_displacements".
+"""
+    # Size of the data
+    ny = mc.maps[layer_index].shape[0]
+    nx = mc.maps[layer_index].shape[1]
+    nt = len(mc.maps)
+
+    # Storage for the pixel shifts and the shifts in arcseconds
+    xshift_keep = np.zeros((nt))
+    yshift_keep = np.zeros_like(xshift_keep)
+
+    # Return only the displacements
+    if return_displacements_only:
+        return {"x": xshift_arcseconds * u.arcsec, "y": yshift_arcseconds * u.arcsec}
+
+    # Apply the pixel shifts
+    newmc = apply_shifts(mc, -yshift_keep, -xshift_keep, clip=True)
+
+   # Return the mapcube, or optionally, the mapcube and the displacements
+    # used to create the mapcube.
+    if with_displacements:
+        return newmc, {"x": xshift_arcseconds * u.arcsec, "y": yshift_arcseconds * u.arcsec}
+    else:
+        return newmc
