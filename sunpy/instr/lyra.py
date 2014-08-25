@@ -28,34 +28,19 @@ NORM = 0.001  # mean daily minimum in LYRA Zr channel, Jan 2010 to mid 2014.
 LYTAF_REMOTE_PATH = "http://proba2.oma.be/lyra/data/lytaf/"
 LYTAF_PATH = config.get("downloads", "download_dir")
 
-def make_lyra_flare_list(start_date, end_date, lytaf_path=LYTAF_PATH,
-                         return_timeseries=False):
+def make_lyra_flare_list(lyralightcurve, lytaf_path=LYTAF_PATH):
     """
-    Returns a LYRA flare list based on an input start and end time.
+    Returns a LYRA flare list based on an input LYRALightCurve.
 
     Parameters
     ----------
-    start_time : string
-        Valid time string giving the start of the period for which a LYRA
-        flare list is required.  Date format must be valid for input to
-        LYRALightCurve.create(), e.g. '2014-08-06'.
-
-    end_time : string
-        Valid time string giving the end of the period for which a LYRA
-        flare list is required.  Date format must be valid for input to
-        LYRALightCurve.create(), e.g. '2014-08-06'.  end_date is inclusive,
-        i.e. if end_date is '2014-08-06', flares will be looked for until
-        2014-08-06 23:59:59.999999.
+    lyralightcurve : LYRALightCurve object
+        LYRALightCurve of time period during which flares should be found.
 
     lytaf_path : string
         directory path where LYRA annotation files are stored.
         Default: sunpy download directory obtained from
         sunpy.config("downloads", download_dir").
-
-    return_timerseries: bool (optional)
-        If True, arrays hold time and irradiances of input period are return
-        as well as lyra_events.
-        Default=False
 
     Returns
     -------
@@ -79,22 +64,13 @@ def make_lyra_flare_list(start_date, end_date, lytaf_path=LYTAF_PATH,
     >>> lyra_events = make_lyra_flare_list('2014-08-01', '2014-08-02')
 
     """
-    # Create LYRALightCurve object from start and end times
-    t = TimeRange(start_date, end_date)
-    lyralc = LYRALightCurve.create(t.t1.date().strftime("%Y/%m/%d"), level=3)
-    for day in [t.t1.date()+timedelta(days=i) for i in range(1, t.days()+1)]:
-        lyralc.data = lyralc.data.append(
-            LYRALightCurve.create(day.strftime("%Y/%m/%d"), level=3).data)
     # Convert to lightcurve time to datetime objects
     time = lyralc.data.index.to_pydatetime()
     irradiance = np.asanyarray(lyralc.data["CHANNEL4"])
     # Create LYRA event list
     lyra_events = find_lyra_flares(time, irradiance, lytaf_path=lytaf_path)
     # Return result
-    if return_timeseries == True:
-        return lyra_events, time, irradiance
-    else:
-        return lyra_events
+    return lyra_events
 
 def find_lyra_flares(time, irradiance, lytaf_path=LYTAF_PATH):
     """
