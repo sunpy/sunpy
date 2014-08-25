@@ -48,10 +48,13 @@ def _default_fmap_function(data):
 def _is_pixel_unit(a):
     """Tests the inut to see if it is an astropy Quantity with units in
     pixels."""
-    if not (isinstance(a, u.Quantity) and a.unit == 'pix'):
-        raise ValueError("Must be astropy Quantites with pixel unit")
-    else:
-        return True
+    return (isinstance(a, u.Quantity) and a.unit == 'pix')
+
+
+def _is_arcsec_unit(a):
+    """Tests the inut to see if it is an astropy Quantity with units in
+    arcsecondss."""
+    return (isinstance(a, u.Quantity) and a.unit == 'arcsec')
 
 
 def calculate_shift(this_layer, template):
@@ -115,6 +118,8 @@ def clip_edges(data, yclips, xclips):
         ny = data.shape[0]
         nx = data.shape[1]
         return data[yclips[0].value: ny - yclips[1].value, xclips[0].value: nx - xclips[1].value]
+    else:
+        raise ValueError("Both x and y clip arrays must be astropy Quantites with pixel unit.")
 
 
 #
@@ -150,6 +155,8 @@ def calculate_clipping(y, x):
     if _is_pixel_unit(y) and _is_pixel_unit(x):
         return ([_lower_clip(y.value), _upper_clip(y.value)] * u.pix,
                 [_lower_clip(x.value), _upper_clip(x.value)] * u.pix)
+    else:
+        raise ValueError("Both inputs must be astropy Quantites with pixel unit")
 
 
 #
@@ -391,6 +398,9 @@ def apply_shifts(mc, yshift, xshift, clip=True):
             newmc.maps[i].meta['crpix2'] = newmc.maps[i].meta['crpix2'] + yshift_arcseconds[i]
 
         return newmc
+    else:
+        raise ValueError("Both x and y shifts must be astropy Quantites with pixel unit")
+
 
 
 # Coalignment by matching a template
@@ -486,11 +496,12 @@ def mapcube_coalign_by_match_template(mc, template=None, layer_index=0,
 
     # Use the displacements supplied
     if apply_displacements is not None:
-        xshift_arcseconds = apply_displacements["x"].value
-        yshift_arcseconds = apply_displacements["y"].value
-        for i, m in enumerate(mc.maps):
-            xshift_keep[i] = xshift_arcseconds[i] / m.scale['x']
-            yshift_keep[i] = yshift_arcseconds[i] / m.scale['y']
+        if _is_arcsec_unit(apply_displacements["x"]) and _is_arcsec_unit(apply_displacements["y"]):
+            xshift_arcseconds = apply_displacements["x"].value
+            yshift_arcseconds = apply_displacements["y"].value
+            for i, m in enumerate(mc.maps):
+                xshift_keep[i] = xshift_arcseconds[i] / m.scale['x']
+                yshift_keep[i] = yshift_arcseconds[i] / m.scale['y']
     else:
         xshift_arcseconds = np.zeros_like(xshift_keep)
         yshift_arcseconds = np.zeros_like(xshift_keep)
