@@ -23,6 +23,11 @@
 ; Default Value: <user's home directory>/sunpy
 ; working_dir = /home/$USER/sunpy
 
+; Time Format to be used for displaying time in output (e.g. graphs)
+; The default time format is based on ISO8601 (replacing the T with space)
+; note that the extra '%'s are escape characters
+time_format = %%Y-%%m-%%d %%H:%%M:%%S
+
 ;;;;;;;;;;;;;
 ; Downloads ;
 ;;;;;;;;;;;;;

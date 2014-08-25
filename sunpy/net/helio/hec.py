@@ -15,7 +15,7 @@ __version__ = 'September 22nd, 2013'
 __all__ = ['HECClient']
 
 
-        
+
 
 def suds_unwrapper(wrapped_data):
     """
@@ -288,4 +288,3 @@ class HECClient(object):
             else:
                 print "Choice outside of bounds"
         return temp
-
