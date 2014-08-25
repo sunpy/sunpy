@@ -45,6 +45,15 @@ def _default_fmap_function(data):
     return np.float64(data)
 
 
+def _is_pixel_unit(a):
+    """Tests the inut to see if it is an astropy Quantity with units in
+    pixels."""
+    if not (isinstance(a, u.Quantity) and a.unit == 'pix'):
+        raise ValueError("Must be astropy Quantites with pixel unit")
+    else:
+        return True
+
+
 def calculate_shift(this_layer, template):
     """Calculates the pixel shift required to put the template in the "best"
     position on a layer.
@@ -101,13 +110,11 @@ def clip_edges(data, yclips, xclips):
         A 2d image with edges clipped off according to the positive and
         negative ceiling values in the yclips and xclips arrays.
     """
-    if not (isinstance(yclips and xclips, u.Quantity) and
-    (yclips.unit and xclips.unit == 'pix')):
-        raise ValueError("Must be astropy.units.Quantity with 'pixel' units")
-    # Datacube shape
-    ny = data.shape[0]
-    nx = data.shape[1]
-    return data[yclips[0].value: ny - yclips[1].value, xclips[0].value: nx - xclips[1].value]
+    if _is_pixel_unit(yclips) and _is_pixel_unit(xclips):
+        # Datacube shape
+        ny = data.shape[0]
+        nx = data.shape[1]
+        return data[yclips[0].value: ny - yclips[1].value, xclips[0].value: nx - xclips[1].value]
 
 
 #
@@ -140,12 +147,9 @@ def calculate_clipping(y, x):
         the "clipping" tuple applies similarly to the x-direction (image
         columns).
     """
-    if not (isinstance(y, u.Quantity) and y.unit == 'pix'):
-        raise ValueError("Must be astropy Quantites with pixel unit")
-    if not (isinstance(x, u.Quantity) and x.unit == 'pix'):
-        raise ValueError("Must be astropy Quantites with pixel unit")
-    return ([_lower_clip(y.value), _upper_clip(y.value)] * u.pix, 
-            [_lower_clip(x.value), _upper_clip(x.value)] * u.pix)
+    if _is_pixel_unit(y) and _is_pixel_unit(x):
+        return ([_lower_clip(y.value), _upper_clip(y.value)] * u.pix,
+                [_lower_clip(x.value), _upper_clip(x.value)] * u.pix)
 
 
 #
@@ -345,24 +349,48 @@ def repair_image_nonfinite(image):
 
 def apply_shifts(mc, yshift, xshift, clip=True):
     """Apply a set of pixel shifts to a mapcube, and return a new mapcube.
+
+    Parameters
+    ----------
+    mc : sunpy.map.MapCube
+        A mapcube of shape (ny, nx, nt), where nt is the number of layers in
+        the mapcube.  'ny' is the number of pixels in the y direction, 'nx'
+        is the number of pixels in the 'x' direction.
+
+    yshift : `~astropy.units.Quantity` instance
+        An array of pixel shifts in the y-direction for an image.
+
+    xshift : `~astropy.units.Quantity` instance
+        An array of pixel shifts in the x-direction for an image.
+
+    clip : bool
+        If True, then clip off x, y edges in the datacube that are potentially
+        affected by edges effects.
+
+    Returns
+    -------
+    sunpy.map.MapCube
+        A mapcube of the same shape as the input.  All layers in the mapcube
+        have been shifted according the input shifts.
     """
     newmc = deepcopy(mc)
 
-    # Shift the data and construct the mapcube
-    for i, m in enumerate(newmc.maps):
-        shifted_data = shift(m.data, [-yshift_keep[i], -xshift_keep[i]])
-        if clip:
-            yclips, xclips = calculate_clipping(yshift_keep*u.pix, xshift_keep*u.pix)
-            shifted_data = clip_edges(shifted_data, yclips, xclips)
+    if _is_pixel_unit(yshift) and _is_pixel_unit(xshift):
+        # Shift the data and construct the mapcube
+        for i, m in enumerate(newmc.maps):
+            shifted_data = shift(m.data, [yshift_keep[i], xshift_keep[i]])
+            if clip:
+                yclips, xclips = calculate_clipping(yshift_keep*u.pix, xshift_keep*u.pix)
+                shifted_data = clip_edges(shifted_data, yclips, xclips)
+    
+            # Update the mapcube image data
+            newmc.maps[i].data = shifted_data
+    
+            # Adjust the positioning information accordingly.
+            newmc.maps[i].meta['crpix1'] = newmc.maps[i].meta['crpix1'] + xshift_arcseconds[i]
+            newmc.maps[i].meta['crpix2'] = newmc.maps[i].meta['crpix2'] + yshift_arcseconds[i]
 
-        # Update the mapcube image data
-        newmc.maps[i].data = shifted_data
-
-        # Adjust the positioning information accordingly.
-        newmc.maps[i].meta['crpix1'] = newmc.maps[i].meta['crpix1'] + xshift_arcseconds[i]
-        newmc.maps[i].meta['crpix2'] = newmc.maps[i].meta['crpix2'] + yshift_arcseconds[i]
-
-    return newmc
+        return newmc
 
 
 # Coalignment by matching a template
@@ -506,25 +534,13 @@ def mapcube_coalign_by_match_template(mc, template=None, layer_index=0,
 
     # Return only the displacements
     if return_displacements_only:
-        return {"x": xshift_arcseconds * u.arcsec, "y": yshift_arcseconds * u.arcsec}
+        return {"x": xshift_arcseconds * u.arcsec,
+                "y": yshift_arcseconds * u.arcsec}
 
     # Apply the shifts
-    newmc = apply_shifts(mc, -yshift_keep, -xshift_keep, clip=True)
-    """
-    # Shift the data and construct the mapcube
-    for i, m in enumerate(newmc.maps):
-        shifted_data = shift(m.data, [-yshift_keep[i], -xshift_keep[i]])
-        if clip:
-            yclips, xclips = calculate_clipping(yshift_keep*u.pix, xshift_keep*u.pix)
-            shifted_data = clip_edges(shifted_data, yclips, xclips)
+    newmc = apply_shifts(mc, -yshift_keep * u.pix, -xshift_keep * u.pix,
+                         clip=clip)
 
-        # Update the mapcube image data
-        newmc.maps[i].data = shifted_data
-
-        # Adjust the positioning information accordingly.
-        newmc.maps[i].meta['crpix1'] = newmc.maps[i].meta['crpix1'] + xshift_arcseconds[i]
-        newmc.maps[i].meta['crpix2'] = newmc.maps[i].meta['crpix2'] + yshift_arcseconds[i]
-    """
     # Return the mapcube, or optionally, the mapcube and the displacements
     # used to create the mapcube.
     if with_displacements:
@@ -591,7 +607,7 @@ def mapcube_solar_derotate(mc, layer_index=0, clip=True,
         return {"x": xshift_arcseconds * u.arcsec, "y": yshift_arcseconds * u.arcsec}
 
     # Apply the pixel shifts
-    newmc = apply_shifts(mc, -yshift_keep, -xshift_keep, clip=True)
+    newmc = apply_shifts(mc, -yshift_keep * u.pix, -xshift_keep * u.pix, clip=True)
 
    # Return the mapcube, or optionally, the mapcube and the displacements
     # used to create the mapcube.
@@ -599,3 +615,4 @@ def mapcube_solar_derotate(mc, layer_index=0, clip=True,
         return newmc, {"x": xshift_arcseconds * u.arcsec, "y": yshift_arcseconds * u.arcsec}
     else:
         return newmc
+
