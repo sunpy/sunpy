@@ -23,6 +23,7 @@ from functools import partial
 from collections import defaultdict
 from suds import client, TypeNotFound
 
+import astropy
 from astropy.table import Table, Column
 import astropy.units as u
 
@@ -235,20 +236,37 @@ class QueryResponse(list):
         ALT_TIME_FORMAT = '%Y%m%d%H%M%S'
         
         for record in self:
-            record_items = [
-                str(datetime.strptime(record.time.start, ALT_TIME_FORMAT))
-                    if record.time.start is not None else 'N/A',
-                str(datetime.strptime(record.time.end, ALT_TIME_FORMAT))
-                    if record.time.end is not None else 'N/A',
-                record.source,
-                record.instrument,
-                record.extent.type
-                    if record.extent.type is not None else 'N/A'
-            ]
+            record_items = {
+                'Start time': 
+                    str(datetime.strptime(record.time.start, ALT_TIME_FORMAT))
+                        if record.time.start is not None else 'N/A',
+                'End time':
+                    str(datetime.strptime(record.time.end, ALT_TIME_FORMAT))
+                        if record.time.end is not None else 'N/A',
+                'Source':
+                    str(record.source),
+                'Instrument':
+                    str(record.instrument),
+                'Type':
+                    str(record.extent.type)
+                        if record.extent.type is not None else 'N/A'
+            }
+            
+            # record_items = [
+            #     str(datetime.strptime(record.time.start, ALT_TIME_FORMAT))
+            #         if record.time.start is not None else 'N/A',
+            #     str(datetime.strptime(record.time.end, ALT_TIME_FORMAT))
+            #         if record.time.end is not None else 'N/A',
+            #     str(record.source),
+            #     str(record.instrument),
+            #     str(record.extent.type)
+            #         if record.extent.type is not None else 'N/A'
+            # ]
 
-            record_table = Table([record_items])
+            self.table.add_row(record_items)
 
-            self.table = astropy.table.vstack([self.table, record_table])
+            # record_table = Table([record_items])
+            # self.table = astropy.table.vstack([self.table, record_table])
 
     def add_error(self, exception):
         self.errors.append(exception)
