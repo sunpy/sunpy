@@ -173,7 +173,7 @@ class QueryResponse(list):
         super(QueryResponse, self).__init__(lst)
         self.queryresult = queryresult
         self.errors = []
-        self.table = table
+        self.table = None
 
     def query(self, *query):
         """ Furtherly reduce the query response by matching it against
@@ -241,7 +241,9 @@ class QueryResponse(list):
                     if record.extent.type is not None else 'N/A'
             ]
 
-            self.table = astropy.table.vstack([self.table, record_items])
+            record_table = Table([record_items])
+
+            self.table = astropy.table.vstack([self.table, record_table])
 
     def add_error(self, exception):
         self.errors.append(exception)
