@@ -239,7 +239,7 @@ class QueryResponse(list):
                 record.source,
                 record.instrument,
                 record.extent.type
-                    isf record.extent.type is not None else 'N/A'
+                    if record.extent.type is not None else 'N/A'
             ]
 
             record_table = Table([record_items])
