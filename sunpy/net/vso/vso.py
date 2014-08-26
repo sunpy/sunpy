@@ -230,11 +230,14 @@ class QueryResponse(list):
     
     def build_table(self):
         self.table = Table(names = ('Start time','End time','Source','Instrument','Type'))
+
+        ALT_TIME_FORMAT = '%Y%m%d%H%M%S'
+        
         for record in self:
             record_items = [
-                str(datetime.strptime(record.time.start, TIME_FORMAT))
+                str(datetime.strptime(record.time.start, ALT_TIME_FORMAT))
                     if record.time.start is not None else 'N/A',
-                str(datetime.strptime(record.time.end, TIME_FORMAT))
+                str(datetime.strptime(record.time.end, ALT_TIME_FORMAT))
                     if record.time.end is not None else 'N/A',
                 record.source,
                 record.instrument,
