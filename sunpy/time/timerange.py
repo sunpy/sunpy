@@ -128,7 +128,7 @@ class TimeRange(object):
 
         t1 = self.start.strftime(TIME_FORMAT)
         t2 = self.end.strftime(TIME_FORMAT)
-        center = self.center().strftime(TIME_FORMAT)
+        center = self.center.strftime(TIME_FORMAT)
 
         return ('    Start:'.ljust(11) + t1 +
                 '\n    End:'.ljust(12) + t2 +
