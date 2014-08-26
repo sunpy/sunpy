@@ -359,20 +359,20 @@ def pixelize_slice(item, wcs):
             if isinstance(item[axis], slice):
                 result[axis] = _convert_slice(item[axis], wcs, axis)
             elif isinstance(item[axis], u.Quantity):
-                result[axis] = _convert_point(item[axis].value,
-                                              item[axis].unit, wcs, axis)
+                result[axis] = convert_point(item[axis].value,
+                                             item[axis].unit, wcs, axis)
             else:
                 result[axis] = item[axis]
         result = tuple(result)
     elif isinstance(item, u.Quantity):
-        result = _convert_point(item.value, item.unit, wcs, 0)
+        result = convert_point(item.value, item.unit, wcs, 0)
     else:
         result = item
 
     return result
 
 
-def _convert_point(value, unit, wcs, axis):
+def convert_point(value, unit, wcs, axis):
     """
     Takes a point on an axis specified by the given wcs and returns the pixel
     coordinate.
@@ -390,6 +390,13 @@ def _convert_point(value, unit, wcs, axis):
         The axis the value corresponds to, in numpy-style ordering (i.e.
         opposite WCS convention)
     """
+    if value is None:
+        return None  # This is used to simplify None coordinates during slicing
+    if unit is None or unit == u.pix or unit == u.pixel:
+        return int(value)
+    if isinstance(value, u.Quantity):
+        value = value.value
+        unit = value.unit
     naxis = wcs.wcs.naxis if not wcs.was_augmented else wcs.wcs.naxis - 1
     cunit = u.Unit(wcs.wcs.cunit[naxis - 1 - axis])
     crpix = wcs.wcs.crpix[naxis - 1 - axis]
@@ -448,12 +455,12 @@ def _convert_slice(item, wcs, axis):
     if values[0] is None:
         start = None
     else:
-        start = _convert_point(values[0], unit, wcs, axis)
+        start = convert_point(values[0], unit, wcs, axis)
 
     if values[1] is None:
         end = None
     else:
-        end = _convert_point(values[1], unit, wcs, axis)
+        end = convert_point(values[1], unit, wcs, axis)
 
     return slice(start, end, delta)
 

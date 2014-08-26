@@ -67,18 +67,23 @@ def test_iter_isinstance():
 
 
 def test_convert_point():
-    assert cu._convert_point(10.0, u.Angstrom, wm, 1) == 0
-    assert cu._convert_point(10.2, u.Angstrom, wm, 1) == 1
-    assert cu._convert_point(9.6, u.Angstrom, wm, 1) == -2
-    assert cu._convert_point(10.3, u.Angstrom, wm, 1) == 2
-    assert cu._convert_point(0.001, u.mm, wm, 1) == 49950
+    assert cu.convert_point(10.0, u.Angstrom, wm, 1) == 0
+    assert cu.convert_point(10.2, u.Angstrom, wm, 1) == 1
+    assert cu.convert_point(9.6, u.Angstrom, wm, 1) == -2
+    assert cu.convert_point(10.3, u.Angstrom, wm, 1) == 2
+    assert cu.convert_point(0.001, u.mm, wm, 1) == 49950
 
-    assert cu._convert_point(0, u.min, wt, 0) == 0
-    assert cu._convert_point(3.1, u.min, wt, 0) == 8
-    assert cu._convert_point(-2.4, u.min, wt, 0) == -6
-    assert cu._convert_point(0, u.s, wt, 0) == 0
-    assert cu._convert_point(24, u.s, wt, 0) == 1
-    assert cu._convert_point(-72, u.s, wt, 0) == -3
+    assert cu.convert_point(0, u.min, wt, 0) == 0
+    assert cu.convert_point(3.1, u.min, wt, 0) == 8
+    assert cu.convert_point(-2.4, u.min, wt, 0) == -6
+    assert cu.convert_point(0, u.s, wt, 0) == 0
+    assert cu.convert_point(24, u.s, wt, 0) == 1
+    assert cu.convert_point(-72, u.s, wt, 0) == -3
+
+    assert cu.convert_point(12, None, wt, 0) == 12
+    assert cu.convert_point(15.7, None, wm, 3) == 15
+    assert cu.convert_point(4, u.pix, wm, 2) == 4
+    assert cu.convert_point(7.2, u.pixel, wt, 1) == 7
 
 
 def test_convert_slice():

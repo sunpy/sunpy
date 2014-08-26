@@ -16,7 +16,7 @@ import datetime
 import numpy as np
 import matplotlib.pyplot as plt
 import astropy.nddata
-import astropy.units as u
+from astropy import units as u
 from astropy.units import sday  # sidereal day
 
 # Sunpy modules
@@ -276,7 +276,6 @@ class Cube(astropy.nddata.NDData):
         return LightCurve(data=data, meta=self.meta)
 
     def slice_to_spectrum(self, *coords):
-        # TODO: make this take quantities
         """
         For a cube containing a spectral dimension, returns a sunpy spectrum.
         The given coordinates represent which values to take. If they are None,
@@ -296,20 +295,25 @@ class Cube(astropy.nddata.NDData):
             raise cu.CubeError(2, 'Spectral axis needed to create a spectrum')
         axis = 0 if self.axes_wcs.wcs.ctype[-1] == 'WAVE' else 1
 
-        item = range(len(coords))
+        def pixelize(coord):
+            '''shorthand for convert_point'''
+            unit = coord.unit if isinstance(coord, u.Quantity) else None
+            cu.convert_point(coord, unit, self.axes_wcs, axis)
+        pixels = [pixelize(coord) for coord in coords]
+        item = range(len(pixels))
         if axis == 0:
-            item[1:] = coords
+            item[1:] = pixels
             item[0] = slice(None, None, None)
             item = [slice(None, None, None) if i is None else i for i in item]
         else:
-            item[0] = coords[0]
+            item[0] = pixels[0]
             item[1] = slice(None, None, None)
-            item[2:] = coords[1:]
+            item[2:] = pixels[1:]
             item = [slice(None, None, None) if i is None else i for i in item]
 
         data = self.data[item]
-        for i in range(len(coords)):
-            if coords[i] is None:
+        for i in range(len(pixels)):
+            if pixels[i] is None:
                 if i == 0:
                     sumaxis = 1 if axis == 0 else 0
                 else:
@@ -366,7 +370,6 @@ class Cube(astropy.nddata.NDData):
                            start=start, end=end, **kwargs)
 
     def slice_to_cube(self, axis, chunk, **kwargs):
-        # TODO: make this take quantities
         """
         For a hypercube, return a 3-D cube that has been cut along the given
         axis and with data corresponding to the given chunk.
@@ -375,19 +378,30 @@ class Cube(astropy.nddata.NDData):
         ----------
         axis: int
             The axis to cut from the hypercube
-        chunk: int or tuple:
+        chunk: int, astropy Quantity or tuple:
             The data to take from the axis
         """
         if self.data.ndim == 3:
             raise cu.CubeError(4, 'Can only slice a hypercube into a cube')
 
         item = [slice(None, None, None) for _ in range(4)]
-        if isinstance(chunk, int):
-            item[axis] = chunk
-            newdata = self.data[item]
-        else:
-            item[axis] = slice(chunk[0], chunk[1], None)
+        if isinstance(chunk, tuple):
+            if cu.iter_isinstance(chunk, u.Quantity, u.Quantity):
+                pixel0 = cu.convert_point(chunk[0].value, chunk[0].unit,
+                                          self.axes_wcs, axis)
+                pixel1 = cu.convert_point(chunk[1].value, chunk[1].unit,
+                                          self.axes_wcs, axis)
+                item[axis] = slice(pixel0, pixel1, None)
+            elif cu.iter_isinstance(chunk, int, int):
+                item[axis] = slice(chunk[0], chunk[1], None)
+            else:
+                raise cu.CubeError(5, "Parameters must be of the same type")
             newdata = self.data[item].sum(axis)
+        else:
+            unit = chunk.unit if isinstance(chunk, u.Quantity) else None
+            pixel = cu.convert_point(chunk, unit, self.axes_wcs, axis)
+            item[axis] = pixel
+            newdata = self.data[item]
         wcs_indices = [0, 1, 2, 3]
         wcs_indices.remove(3 - axis)
         newwcs = wu.reindex_wcs(self.axes_wcs, np.array(wcs_indices))
