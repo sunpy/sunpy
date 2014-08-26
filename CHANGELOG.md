@@ -1,6 +1,8 @@
 Latest
 ------
  * Added ability to download level3 data for lyra Light Curve along with corresponding tests.
+ * Added 3D/4D Cubes module
+ * Added astropy.wcs.WCS subclass that supports unmatched celestial axes
 
 0.5.0
 -----
