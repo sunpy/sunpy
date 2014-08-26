@@ -23,6 +23,8 @@ from functools import partial
 from collections import defaultdict
 from suds import client, TypeNotFound
 
+from astropy.table import Table, Column
+
 from sunpy import config
 from sunpy.net import download
 from sunpy.net.proxyfix import WellBehavedHttpTransport
@@ -168,10 +170,11 @@ def iter_errors(response):
 
 
 class QueryResponse(list):
-    def __init__(self, lst, queryresult=None):
+    def __init__(self, lst, queryresult=None, table=None):
         super(QueryResponse, self).__init__(lst)
         self.queryresult = queryresult
         self.errors = []
+        self.table = table
 
     def query(self, *query):
         """ Furtherly reduce the query response by matching it against
@@ -224,16 +227,38 @@ class QueryResponse(list):
         table.insert(0, ['Start time','End time','Source','Instrument','Type'])
 
         print(print_table(table, colsep = '  ', linesep='\n'))
+    
+    def build_table(self):
+        self.table = Table(names = ('Start time','End time','Source','Instrument','Type'))
+        for record in self:
+            record_items = [
+                str(datetime.strptime(record.time.start, TIME_FORMAT))
+                    if record.time.start is not None else 'N/A',
+                str(datetime.strptime(record.time.end, TIME_FORMAT))
+                    if record.time.end is not None else 'N/A',
+                record.source,
+                record.instrument,
+                record.extent.type
+                    if record.extent.type is not None else 'N/A'
+            ]
+
+            self.table = astropy.table.vstack([self.table, record_items])
 
     def add_error(self, exception):
         self.errors.append(exception)
+
+    def __str__(self):
+        """Print out human-readable summary of records retrieved"""
+
+        self.build_table()
+        return self.table.__str__()
 
 class DownloadFailed(Exception):
     pass
 
 class MissingInformation(Exception):
     pass
-
+    
 class UnknownMethod(Exception):
     pass
 
