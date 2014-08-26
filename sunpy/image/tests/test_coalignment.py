@@ -14,7 +14,8 @@ from sunpy.image.coalignment import parabolic_turning_point, \
 repair_image_nonfinite, _default_fmap_function, _lower_clip, _upper_clip, \
 calculate_clipping, get_correlation_shifts, find_best_match_location, \
 match_template_to_layer, clip_edges, calculate_shift, \
-mapcube_coalign_by_match_template
+mapcube_coalign_by_match_template, _is_pixel_unit, _is_arcsec_unit, \
+apply_shifts
 
 # Map and template we will use in testing
 testmap = map.Map(AIA_171_IMAGE)
@@ -189,3 +190,15 @@ def test_mapcube_coalign_by_match_template():
     assert(test_mc[0].data.shape == testmap.data.shape)
     assert(test_mc[1].data.shape == testmap.data.shape)
 
+
+def test_is_pixel_unit():
+    _is_pixel_unit(1.0 * u.pix)
+    not(_is_pixel_unit(1.0))
+
+
+def test_is_arcsec_unit():
+    _is_arcsec_unit(1.0 * u.arcsec)
+    not(_is_arcsec_unit(1.0))
+
+
+def test_apply_shifts():
