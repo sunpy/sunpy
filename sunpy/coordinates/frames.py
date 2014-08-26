@@ -10,7 +10,8 @@ import numpy as np
 # Astropy imports
 from astropy import units as u
 from astropy.coordinates.representation import (BaseRepresentation,
-                                                CartesianRepresentation)
+                                                CartesianRepresentation,
+                                                UnitSphericalRepresentation)
 from astropy.coordinates.baseframe import (BaseCoordinateFrame, frame_transform_graph,
                                            RepresentationMapping)
 from astropy.coordinates.transformations import FunctionTransform
@@ -92,6 +93,11 @@ class HelioGraphicStonyhurst(BaseCoordinateFrame):
         properties.
         """
         if args or kwargs: # Non-empty frame use case.
+            # Default where radius is dimensionless unscaled.
+            if isinstance(kwargs.get('rad', None), u.Quantity) and kwargs['rad'].unit.is_unity():
+                kwargs['rad'] = RSUN_METERS.to(u.km)
+            if args and isinstance(args[0], UnitSphericalRepresentation):
+                args = (args[0].lon, args[0].lat)
             if args and kwargs: # Mixed use case.
                 if args and not isinstance(args[0], BaseRepresentation):
                     if len(args) > 0 and len(args) <= 2 and 'rad' not in kwargs:
@@ -299,6 +305,8 @@ class HelioProjective(BaseCoordinateFrame):
         A ~sunpy.coordinates.HelioProjective object with the requisite properties.
         """
         if args or (kwargs and len(kwargs) != 1):
+            if args and isinstance(args[0], UnitSphericalRepresentation):
+                args = (args[0].lon, args[0].lat)
             # Non-empty frame use case.
             if args and kwargs:
                 # If we have both args and kwargs.
@@ -344,6 +352,10 @@ class HelioProjective(BaseCoordinateFrame):
                 elif 'distance' in kwargs and 'zeta' in kwargs:
                     raise TypeError("zeta and distance cannot both be "
                                     "specified here for the {0} frame.".format(self.__class__))
+                elif isinstance(kwargs.get('distance', None), u.Quantity) and kwargs['distance'].unit.is_unity():
+                    kwargs['distance'] = self.get_distance_hpc(**kwargs)
+                    
+
         # Finally, make a call to the super constructor.
         super(HelioProjective, self).__init__(*args, **kwargs)
            
@@ -374,7 +386,7 @@ class HelioProjective(BaseCoordinateFrame):
             c = (self.D0.to(u.m))**2 - RSUN_METERS**2
             b = -2 * self.D0.to(u.m) * np.cos(alpha)
         d = ((-1*b) - np.sqrt(b**2 - 4*c)) / 2
-        
+
         return d.to(u.km)
 
     def _get_input_params(self, *args, **kwargs):
