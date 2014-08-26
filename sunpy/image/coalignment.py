@@ -28,6 +28,7 @@ from skimage.feature import match_template
 
 # SunPy imports
 from sunpy.map.mapbase import GenericMap
+from sunpy.physics.transforms.differential_rotation import rot_hpc
 
 __author__ = 'J. Ireland'
 
@@ -46,14 +47,14 @@ def _default_fmap_function(data):
 
 
 def _is_pixel_unit(a):
-    """Tests the inut to see if it is an astropy Quantity with units in
+    """Tests the input to see if it is an astropy Quantity with units in
     pixels."""
     return (isinstance(a, u.Quantity) and a.unit == 'pix')
 
 
 def _is_arcsec_unit(a):
-    """Tests the inut to see if it is an astropy Quantity with units in
-    arcsecondss."""
+    """Tests the input to see if it is an astropy Quantity with units in
+    arcseconds."""
     return (isinstance(a, u.Quantity) and a.unit == 'arcsec')
 
 
@@ -119,7 +120,7 @@ def clip_edges(data, yclips, xclips):
         nx = data.shape[1]
         return data[yclips[0].value: ny - yclips[1].value, xclips[0].value: nx - xclips[1].value]
     else:
-        raise ValueError("Both x and y clip arrays must be astropy Quantites with pixel unit.")
+        raise ValueError("Both x and y clip arrays must be astropy Quantities with pixel unit.")
 
 
 #
@@ -156,7 +157,7 @@ def calculate_clipping(y, x):
         return ([_lower_clip(y.value), _upper_clip(y.value)] * u.pix,
                 [_lower_clip(x.value), _upper_clip(x.value)] * u.pix)
     else:
-        raise ValueError("Both inputs must be astropy Quantites with pixel unit")
+        raise ValueError("Both inputs must be astropy Quantities with pixel unit")
 
 
 #
@@ -399,8 +400,7 @@ def apply_shifts(mc, yshift, xshift, clip=True):
 
         return newmc
     else:
-        raise ValueError("Both x and y shifts must be astropy Quantites with pixel unit")
-
+        raise ValueError("Both x and y shifts must be astropy Quantities with pixel unit")
 
 
 # Coalignment by matching a template
@@ -502,6 +502,8 @@ def mapcube_coalign_by_match_template(mc, template=None, layer_index=0,
             for i, m in enumerate(mc.maps):
                 xshift_keep[i] = xshift_arcseconds[i] / m.scale['x']
                 yshift_keep[i] = yshift_arcseconds[i] / m.scale['y']
+        else:
+            raise ValueError("Both displacements must be astropy Quantities with units of arcsec.")
     else:
         xshift_arcseconds = np.zeros_like(xshift_keep)
         yshift_arcseconds = np.zeros_like(xshift_keep)
@@ -562,7 +564,7 @@ def mapcube_coalign_by_match_template(mc, template=None, layer_index=0,
 
 def mapcube_solar_derotate(mc, layer_index=0, clip=True,
                                return_displacements_only=False,
-                               with_displacements=False):
+                               with_displacements=False, **kwargs):
     """Move the layers in a mapcube according to solar rotation.  The center
     of the map is used to calculate the position of each mapcube layer.  Shifts
     are calculated relative to a specified layer in the mapcube.
@@ -613,12 +615,16 @@ def mapcube_solar_derotate(mc, layer_index=0, clip=True,
     xshift_keep = np.zeros((nt))
     yshift_keep = np.zeros_like(xshift_keep)
 
+    # Calculate the rotations and the shifts
+    for i, m in enumerate(mc):
+        newx, newy = rot_hpc(xc, yc, date_layer_index, m.date, **kwargs)
+
     # Return only the displacements
     if return_displacements_only:
         return {"x": xshift_arcseconds * u.arcsec, "y": yshift_arcseconds * u.arcsec}
 
     # Apply the pixel shifts
-    newmc = apply_shifts(mc, -yshift_keep * u.pix, -xshift_keep * u.pix, clip=True)
+    newmc = apply_shifts(mc, -yshift_keep * u.pix, -xshift_keep * u.pix, clip=clip)
 
    # Return the mapcube, or optionally, the mapcube and the displacements
     # used to create the mapcube.
