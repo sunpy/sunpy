@@ -232,7 +232,6 @@ class TimeFreq(object):
         plt.figure()
         ret = self.plot(*args, **kwargs)
         plt.show()
-        return ret
 
 
 class Spectrogram(Parent):
@@ -386,7 +385,6 @@ class Spectrogram(Parent):
         figure()
         ret = self.plot(*args, **kwargs)
         plt.show()
-        return ret
 
     def plot(self, figure=None, overlays=[], colorbar=True, vmin=None, vmax=None,
              linear=True, showz=True, yres=DEFAULT_YRES,

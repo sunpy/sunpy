@@ -40,20 +40,11 @@ class LYRALightCurve(LightCurve):
     """
 
     def plot(self, title="LYRA", axes=None, type='channel 1', **plot_args):
-        """Plots the LYRA data"""
+        """Plots the LYRA data. Available plot types are
+        
+        """
         lyranames = (('Lyman alpha', 'Herzberg cont.', 'Al filter', 'Zr filter'),
                  ('120-123nm', '190-222nm', '17-80nm + <5nm', '6-20nm + <2nm'))
-
-        # Choose title if none was specified
-        #if not kwargs.has_key("title"):
-        #    if len(self.data.columns) > 1:
-        #        kwargs['title'] = 'LYRA data'
-        #    else:
-        #        if self._filename is not None:
-        #            base = self._filename
-        #            kwargs['title'] = os.path.splitext(base)[0]
-        #        else:
-        #            kwargs['title'] = 'LYRA data'
 
         """Shows a plot of all four light curves"""
         if axes is None:
