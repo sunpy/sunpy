@@ -24,6 +24,7 @@ from collections import defaultdict
 from suds import client, TypeNotFound
 
 from astropy.table import Table, Column
+import astropy.units as u
 
 from sunpy import config
 from sunpy.net import download
@@ -239,7 +240,7 @@ class QueryResponse(list):
                 record.source,
                 record.instrument,
                 record.extent.type
-                    if record.extent.type is not None else 'N/A'
+                    isf record.extent.type is not None else 'N/A'
             ]
 
             record_table = Table([record_items])
