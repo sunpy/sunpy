@@ -281,6 +281,9 @@ class CompositeMap(object):
         annotate : bool
             If true, the data is plotted at it's natural scale; with
             title and axis labels.
+        
+        title : str
+            Add a title to the plot.
 
         **matplot_args : dict
             Matplotlib Any additional imshow arguments that should be used
@@ -400,8 +403,6 @@ class CompositeMap(object):
             raise TypeError("draw_grid should be bool, int, long or float")
 
         figure.show()
-
-        return figure
 
 
 class OutOfRangeAlphaValue(ValueError):

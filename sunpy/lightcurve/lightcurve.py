@@ -87,8 +87,15 @@ class LightCurve(object):
             Use .meta instead
         """
         warnings.warn("""lightcurve.header has been renamed to lightcurve.meta
-for compatability with map, please use meta instead""", Warning)
+                         for compatability with map, please use meta instead""", Warning)
         return self.meta
+    
+    @property
+    def plot_types(self):
+        """
+        Returns the types of plot available.
+        """
+        return self._get_plot_types()
 
     @classmethod
     def from_time(cls, time, **kwargs):
@@ -121,7 +128,7 @@ for compatability with map, please use meta instead""", Warning)
             err = "Unable to download data for specified date range"
         )
         result = cls.from_file(filepath)
-        result.data = result.data.truncate(timerange.start(), timerange.end())
+        result.data = result.data.truncate(timerange.start, timerange.end)
         return result
 
     @classmethod
@@ -210,14 +217,15 @@ for compatability with map, please use meta instead""", Warning)
 
     def peek(self, **kwargs):
         """Displays the light curve in a new figure"""
+        num_plots = len(self._get_plot_types())
+        fig = plt.figure()
 
-        figure = plt.figure()
+        for plot_type, plot_num in zip(self.plot_types, np.arange(0, num_plots)):
+            ax = fig.add_subplot(num_plots, 1, plot_num)
+            self.plot(axes = ax, type=plot_type)        
+        
+        fig.show()
 
-        self.plot(**kwargs)
-
-        figure.show()
-
-        return figure
 
     @staticmethod
     def _download(uri, kwargs,
@@ -272,6 +280,11 @@ for compatability with map, please use meta instead""", Warning)
         msg = "Date-range based downloads not supported for for %s"
         raise NotImplementedError(msg % cls.__name__)
 
+    @classmethod
+    def _get_plot_types(cls):
+        """Returns the plot types available."""
+        raise NotImplementedError(msg % cls.__name__)
+
     @staticmethod
     def _parse_csv(filepath):
         """Place holder method to parse CSV files."""
@@ -301,7 +314,7 @@ for compatability with map, please use meta instead""", Warning)
         else:
             time_range = TimeRange(a,b)
 
-        truncated = self.data.truncate(time_range.start(), time_range.end())
+        truncated = self.data.truncate(time_range.start, time_range.end)
         return self.__class__.create(truncated, self.meta.copy())
 
     def extract(self, a):

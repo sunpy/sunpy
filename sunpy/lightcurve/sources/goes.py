@@ -13,6 +13,9 @@ from pandas import DataFrame
 from sunpy.lightcurve import LightCurve
 from sunpy.time import parse_time, TimeRange, is_time_in_given_format
 
+from sunpy import config
+TIME_FORMAT = config.get("general", "time_format")
+
 __all__ = ['GOESLightCurve']
 
 
@@ -33,23 +36,24 @@ class GOESLightCurve(LightCurve):
     | http://umbra.nascom.nasa.gov/goes/fits/
     """
 
-    def peek(self, title="GOES Xray Flux"):
+    def plot(self, title="GOES X-ray Flux", axes=None, type='goes', **plot_args):
         """Plots GOES light curve is the usual manner"""
-        figure = plt.figure()
-        axes = plt.gca()
+                #Get current axes
+        if axes is None:
+            axes = plt.gca()
 
         dates = matplotlib.dates.date2num(self.data.index)
 
         axes.plot_date(dates, self.data['xrsa'], '-',
-                     label='0.5--4.0 $\AA$', color='blue', lw=2)
+                     label='0.5--4.0 $\AA$', color='blue', lw=2, **plot_args)
         axes.plot_date(dates, self.data['xrsb'], '-',
-                     label='1.0--8.0 $\AA$', color='red', lw=2)
+                     label='1.0--8.0 $\AA$', color='red', lw=2, **plot_args)
 
         axes.set_yscale("log")
         axes.set_ylim(1e-9, 1e-2)
         axes.set_title(title)
         axes.set_ylabel('Watts m$^{-2}$')
-        axes.set_xlabel(datetime.datetime.isoformat(self.data.index[0])[0:10])
+        axes.set_xlabel('Start time: ' + self.data.index[0].strftime(TIME_FORMAT))
 
         ax2 = axes.twinx()
         ax2.set_yscale("log")
@@ -58,18 +62,11 @@ class GOESLightCurve(LightCurve):
         ax2.set_yticklabels((' ', 'A', 'B', 'C', 'M', 'X', ' '))
 
         axes.yaxis.grid(True, 'major')
-        axes.xaxis.grid(False, 'major')
-        axes.legend()
-
-        # @todo: display better tick labels for date range (e.g. 06/01 - 06/05)
-        formatter = matplotlib.dates.DateFormatter('%H:%M')
-        axes.xaxis.set_major_formatter(formatter)
-
-        axes.fmt_xdata = matplotlib.dates.DateFormatter('%H:%M')
-        figure.autofmt_xdate()
-        figure.show()
-
-        return figure
+        axes.xaxis.grid(True, 'major')
+        axes.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+        plt.gcf().autofmt_xdate()
+        
+        return axes
 
     @classmethod
     def _get_default_uri(cls):
@@ -79,6 +76,10 @@ class GOESLightCurve(LightCurve):
         time_range = TimeRange(today - datetime.timedelta(days=days_back),
                                today - datetime.timedelta(days=days_back - 1))
         return cls._get_url_for_date_range(time_range)
+
+    @classmethod
+    def _get_plot_types(cls):
+        return ['goes']
 
     @classmethod
     def _get_goes_sat_num(self, start, end):
@@ -100,10 +101,10 @@ class GOESLightCurve(LightCurve):
 
         sat_list = []
         for sat_num in goes_operational:
-            if ((start > goes_operational[sat_num].start() and
-                 start < goes_operational[sat_num].end()) and
-                (end > goes_operational[sat_num].start() and
-                 end < goes_operational[sat_num].end())):
+            if ((start > goes_operational[sat_num].start and
+                 start < goes_operational[sat_num].end and
+                (end > goes_operational[sat_num].start and
+                 end < goes_operational[sat_num].end))):
                 # if true then the satellite with sat_num is available
                 sat_list.append(sat_num)
 
@@ -130,8 +131,8 @@ class GOESLightCurve(LightCurve):
         """
         # TimeRange
         if len(args) == 1 and isinstance(args[0], TimeRange):
-            start = args[0].start()
-            end = args[0].end()
+            start = args[0].start
+            end = args[0].end
         elif len(args) == 2:
             start = parse_time(args[0])
             end = parse_time(args[1])
