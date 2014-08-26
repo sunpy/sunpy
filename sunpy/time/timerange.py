@@ -2,6 +2,8 @@ from __future__ import absolute_import
 
 from datetime import timedelta
 from datetime import datetime
+from astropy.units import Quantity
+from astropy.units import Unit
 
 from sunpy.time import parse_time
 from sunpy import config
@@ -19,19 +21,20 @@ class TimeRange(object):
     a : str, number, datetime,
         A time (usually the start time) specified as a parse_time-compatible
         time string or number, or a datetime object.
-    b : str, number, timedelta
+    b : str, timedelta, astropy.Quantity (time)
         Another time (usually the end time) specified as a
         parse_time-compatible time string, or a datetime object.
         May also be the size of the time range specified as a timedelta object,
-        or the number of seconds (positive or negative)
+        or an `~astropy.units.Quantity`.
 
     Examples
     --------
     >>> from sunpy.time import TimeRange
     >>> time_range = TimeRange('2010/03/04 00:10', '2010/03/04 00:20')
     >>> time_range = TimeRange(('2010/03/04 00:10', '2010/03/04 00:20'))
-    >>> time_range = TimeRange('2010/03/04 00:10', 400)
-    >>> time_range = TimeRange('2010/03/04 00:10', -400)
+    >>> from astropy.units import Unit
+    >>> time_range = TimeRange('2010/03/04 00:10', 400 * Unit('s'))
+    >>> time_range = TimeRange('2010/03/04 00:10', -400 * Unit('day'))
 
     References
     ----------
@@ -70,8 +73,8 @@ class TimeRange(object):
                 self._t1 = y
                 self._t2 = x
 
-        if isinstance(y, (float, int)):
-            y = timedelta(seconds=y)
+        if isinstance(y, Quantity):
+            y = timedelta(seconds=y.to('s').value)
 
         # Timedelta
         if isinstance(y, timedelta):
@@ -121,7 +124,59 @@ class TimeRange(object):
         value : datetime
         """
         return self.start + self.dt / 2
+
+    @property
+    def days(self):
+        """Gets the number of days elapsed.
+
+        Returns
+        -------
+        value: `~astropy.units.Quantity`
+        """
         
+        return self._duration.to('d')
+
+    @property
+    def hours(self):
+        """Get the number of hours elapsed.
+        
+        Returns
+        -------
+        value: `~astropy.units.Quantity`
+        """
+        return self._duration.to('hour')
+
+    @property
+    def seconds(self):
+        """Gets the number of seconds elapsed.
+        
+        Returns
+        -------
+        value: `~astropy.units.Quantity`
+        """
+        return self._duration.to('s')
+
+    @property
+    def minutes(self):
+        """Gets the number of minutes elapsed.
+        
+        Returns
+        -------
+        value: `~astropy.units.Quantity`
+        """
+        return self._duration.to('min')
+
+    @property
+    def _duration(self):
+        """The duration of the time range.
+
+        Returns
+        -------
+        value: `~astropy.units.Quantity`
+        """
+        result = self.dt.microseconds * Unit('us') + self.dt.seconds * Unit('s') + self.dt.days * Unit('day') 
+        return result
+
     def __repr__(self):
         """
         Returns a human-readable representation of the TimeRange instance."""
@@ -133,9 +188,10 @@ class TimeRange(object):
         return ('    Start:'.ljust(11) + t1 +
                 '\n    End:'.ljust(12) + t2 +
                 '\n    Center:'.ljust(12) + center +
-                '\n    Duration:'.ljust(12) + str(self.days()) + ' days or' +
-                '\n    '.ljust(12) + str(self.minutes()) + ' minutes or' +
-                '\n    '.ljust(12) + str(self.seconds()) + ' seconds' +
+                '\n    Duration:'.ljust(12) + str(self.days.value) + ' days or' +
+                '\n    '.ljust(12) + str(self.hours.value) + ' hours or' +
+                '\n    '.ljust(12) + str(self.minutes.value) + ' minutes or' +
+                '\n    '.ljust(12) + str(self.seconds.value) + ' seconds' +
                 '\n')
 
     def split(self, n=2):
@@ -205,19 +261,6 @@ class TimeRange(object):
                                    self.start + cadence * n + window))
             n += 1
         return times
-
-    def days(self):
-        """Gets the number of days elapsed."""
-        return self.dt.days
-
-    def seconds(self):
-        """Gets the number of seconds elapsed."""
-        return (self.dt.microseconds +
-               (self.dt.seconds + self.dt.days * 24 * 3600) * 1e6) / 1e6
-
-    def minutes(self):
-        """Gets the number of minutes elapsed."""
-        return self.seconds() / 60.0
 
     def next(self):
         """Shift the time range forward by the amount of time elapsed"""
