@@ -9,11 +9,14 @@ import numpy as np
 from sunpy.lightcurve import LightCurve
 from scipy.ndimage import label
 from sunpy.time import TimeRange
+import matplotlib.pyplot as plt
+
+from sunpy import config
+TIME_FORMAT = config.get("general", "time_format")
 
 __all__ = ['LogicalLightCurve']
 
-#
-#
+
 # Logical Lightcurve
 # TODO
 # Change the init to accept a list of TimeRange objects.  Durations between the
@@ -36,6 +39,26 @@ class LogicalLightCurve(LightCurve):
     >>> z = [True for x in range(0, 24 * 60)]
     >>> light_curve = lightcurve.LogicalLightCurve.create({"param1": z}, index=dates)
     """
+
+    def plot(self, axes=None, title="Logical", type='logical', **plot_args):
+        """Plots RHESSI Count Rate light curve"""
+        if axes is None:
+            axes = plt.gca()
+        self.data.plot(ax=axes, **plot_args)
+        plt.fill_between(self.data.index, self.data['param1'], alpha=0.5)
+        axes.set_title(title)
+        axes.yaxis.grid(True, 'major')
+        axes.xaxis.grid(True, 'major')
+        axes.set_xlabel('Start time: ' + self.data.index[0].strftime(TIME_FORMAT))
+
+        axes.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+        plt.gcf().autofmt_xdate()
+        
+        return axes
+
+    @classmethod
+    def _get_plot_types(cls):
+        return ['logical']
 
     def complement(self):
         """ Define the complement of the passed lightcurve """

@@ -210,7 +210,7 @@ Dimension:\t [%d, %d]
     @property
     def date(self):
         """Image observation time"""
-        return self.meta.get('date-obs', 'now')
+        return parse_time(self.meta.get('date-obs', 'now')).strftime(TIME_FORMAT)
 #    @date.setter
 #    def date(self, new_date):
 #        self.meta['date-obs'] = new_date
@@ -1026,7 +1026,6 @@ Dimension:\t [%d, %d]
 
         figure.show()
 
-        return figure
 
     @toggle_pylab
     def plot(self, gamma=None, annotate=True, axes=None, **imshow_args):

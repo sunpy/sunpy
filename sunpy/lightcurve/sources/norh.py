@@ -21,7 +21,9 @@ __all__ = ['NoRHLightCurve']
 
 class NoRHLightCurve(LightCurve):
     """
-    Nobeyama Radioheliograph LightCurve.
+    Nobeyama Radioheliograph LightCurve. The columns in this data are
+    
+    * **0** - The radio corrlation index.
 
     Examples
     --------
@@ -37,19 +39,29 @@ class NoRHLightCurve(LightCurve):
     | http://solar.nro.nao.ac.jp/norh/
     """
 
-    def peek(self, **kwargs):
+    def plot(self, title='Nobeyama Radioheliograph', axes=None, **plot_args):
         """Plots the NoRH lightcurve"""
-        plt.figure()
-        axes = plt.gca()
-        data_lab=self.meta['OBS-FREQ'][0:2] + ' ' + self.meta['OBS-FREQ'][2:5]
-        axes.plot(self.data.index,self.data,label=data_lab)
+ 
+        if axes is None:
+            axes = plt.gca()
+
+        data_label = self.meta['OBS-FREQ'][0:2] + ' ' + self.meta['OBS-FREQ'][2:5]
+        axes.plot(self.data.index, self.data, label=data_label)
         axes.set_yscale("log")
         axes.set_ylim(1e-4,1)
-        axes.set_title('Nobeyama Radioheliograph')
+        axes.set_title(title)
         axes.set_xlabel('Start time: ' + self.data.index[0].strftime(TIME_FORMAT))
         axes.set_ylabel('Correlation')
-        axes.legend()
-        plt.show()
+        axes.yaxis.grid(True, 'major')
+        axes.xaxis.grid(True, 'major')
+        axes.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+        plt.gcf().autofmt_xdate()
+        
+        return axes
+
+    @classmethod
+    def _get_plot_types(cls):
+        return ['norh']
 
     @classmethod
     def _get_url_for_date(cls,date, **kwargs):
