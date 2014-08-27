@@ -26,6 +26,15 @@ def mapcube_solar_derotate(mc, layer_index=0, clip=True,
     checking this is to animate the original mapcube, animate the derotated
     mapcube, and compare the differences you see to the calculated shifts.
 
+    An example use is as follows.  If you select data from the SDO cutout
+    service, it is common to not use the solar tracking implemented by this
+    service.  This is because (at time of writing) the solar tracking
+    implemented by that service moves the image by single pixels at a time.
+    This is not optimal for many use cases, as it introduces artificial jumps
+    in the data.  So with solar tracking not chosen, the selected area is
+    like a window through which you can see the Sun rotating underneath.  If
+    you read all those in to a mapcube, this function will shift the images
+    to compensate for solar rotation.
 
     Parameters
     ----------
@@ -58,6 +67,15 @@ def mapcube_solar_derotate(mc, layer_index=0, clip=True,
         The results of the mapcube coalignment.  The output depends on the
         value of the parameters "return_displacements_only" and
         "with_displacements".
+
+    Examples
+    --------
+    >>> from sunpy.image.solar_differential_rotation import mapcube_solar_derotate
+    >>> derotated_mc = mapcube_solar_derotate(mc)
+    >>> derotated_mc = mapcube_solar_derotate(mc, layer_index=-1)
+    >>> derotated_mc = mapcube_solar_derotate(mc, clip=False)
+    >>> displacements = mapcube_solar_derotate(mc, return_displacements_only=True)
+    >>> derotated_mc, displacements = mapcube_solar_derotate(mc, with_displacements=True)
 """
     # Size of the data
     ny = mc.maps[layer_index].shape[0]
@@ -71,6 +89,9 @@ def mapcube_solar_derotate(mc, layer_index=0, clip=True,
     # Calculate the rotations and the shifts
     for i, m in enumerate(mc):
         newx, newy = rot_hpc(xc, yc, mc.maps[layer_index].date, m.date, **kwargs)
+    # TODO: finish this!
+
+
 
     # Return only the displacements
     if return_displacements_only:
