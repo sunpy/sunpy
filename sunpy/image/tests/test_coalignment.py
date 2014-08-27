@@ -201,4 +201,6 @@ def test_is_arcsec_unit():
     not(_is_arcsec_unit(1.0))
 
 
+# TODO: finish this test!
 def test_apply_shifts():
+    pass
