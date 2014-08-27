@@ -23,6 +23,9 @@ gsfc_fact = ("Sun Fact Sheet - David R. Williams - "
 allen = "Allen's Astrophysical Quantities 4th Ed."
 asplund = "Asplund et al. 2006"
 fivian = "Fivian et al. 2008"
+meeus = ("Astronomical Algorithms 2nd Ed. - Jean Meeus 2005 - "
+         "ISBN: 0-943396-61-1")
+usoskin = "Usoskin et al. 2009 - doi:10.1088/0004-637X/700/2/L154"
 
 physical_constants['mass'] = astrocon.M_sun
 physical_constants['radius'] = astrocon.R_sun
@@ -103,8 +106,8 @@ physical_constants['metallicity'] = Constant('Z', "Metallicity",
 
 sunspot_cycle_exp = "Average duration of sunspot cycle"
 physical_constants['sunspot cycle'] = Constant('', sunspot_cycle_exp,
-                                               11.4, 'year', 0,
-                                               "", system='si')
+                                               10.66, 'year', 0,
+                                               usoskin, system='si')
 
 physical_constants['average intensity'] = Constant('I', "Mean Intensity",
                                                    2.009e7, 'W m**-2 sr**-1',
@@ -153,3 +156,27 @@ physical_constants['ellipticity'] = Constant('', "ellipticity",
 physical_constants['GM'] = Constant('mu', "standard gravitational parameter",
                                     132.712e6, 'km**3 s**-2', 0,
                                     gsfc_fact, system='si')
+
+#
+# Orbital and ephemerides related parameters
+#
+sideral_period_exp = "Sun's sideral period of rotation in days."
+# This values has been fixed conventionally by Carrington and must be treated
+# as exact
+physical_constants['sideral period of rotation'] = Constant('Sun_sid_period',
+                                                           sideral_period_exp,
+                                                           25.38, 'day', 0,
+                                                           meeus, system = 'si')
+
+inclin_solar_exp = "Inclination of the solar equator on the ecliptic"
+# Though the plane of the ecliptic slowly rotates (47"/century) is common practice
+# to use I as a constant.
+physical_constants['inclination solar equator'] = Constant('I', inclin_solar_exp,
+                                                          7.25, 'deg', 0,
+                                                          meeus, system = 'si')
+
+
+physical_constants['mean synodic period'] = Constant('synodic period',
+                                                    'mean synodic period',
+                                                    27.2752, 'day', 0,
+                                                    meeus, system = 'si')

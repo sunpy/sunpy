@@ -69,7 +69,7 @@ def solar_cycle_number(t='now'):
     Usoskin et al. (2009) -  doi:10.1088/0004-637X/700/2/L154
     """
     time = parse_time(t)
-    result = int((time.year - 1755) / 10.66)
+    result = int((time.year - 1755) * u.yr / constants.constant('sunspot cycle'))
     return result
 
 def solar_semidiameter_angular_size(t='now'):
