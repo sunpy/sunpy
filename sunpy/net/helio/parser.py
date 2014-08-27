@@ -21,7 +21,7 @@ __author__ = 'Michael Malocha'
 __version__ = 'September 22nd, 2013'
 
 # Lifespan in seconds before a link times-out
-LINK_TIMEOUT = 3
+LINK_TIMEOUT = 1
 
 
 def webservice_parser(service='HEC'):
@@ -60,7 +60,6 @@ def webservice_parser(service='HEC'):
         return xml
     root = EL.fromstring(xml)
     links = []
-
     #WARNING: getiterator is deprecated in Python 2.7+
     #Fix for 3.x support
     for interface in root.getiterator('interface'):
@@ -181,13 +180,13 @@ def link_test(link):
     >>> print parser.link_test('http://rrnx.invalid_url5523.com')
     None
     """
+    
     try:
-        with closing(urlopen(link)) as fd:
-            return fd.read()
+        response = urlopen(link, timeout=LINK_TIMEOUT)
+        return response.read()
     except (ValueError, URLError):
         return None
-
-
+    
 def wsdl_retriever(service='HEC'):
     """
     Retrieves a link to a taverna WSDL file
@@ -232,7 +231,7 @@ def wsdl_retriever(service='HEC'):
     if wsdl_links is None:
         return None
     for end_point in wsdl_links:
-        if end_point is not None and link_test(end_point) is not None:
+        if end_point is not None and link_test(end_point) is not False:
             wsdl = end_point
             break
     return wsdl
