@@ -231,7 +231,7 @@ def wsdl_retriever(service='HEC'):
     if wsdl_links is None:
         return None
     for end_point in wsdl_links:
-        if end_point is not None and link_test(end_point) is not False:
+        if end_point is not None and link_test(end_point) is not None:
             wsdl = end_point
             break
     return wsdl
