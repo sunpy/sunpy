@@ -25,6 +25,7 @@ from __future__ import absolute_import
 import numpy as np
 
 import astropy.units as u
+import astropy.time
 from astropy.coordinates import Angle, Longitude, Latitude
 
 from sunpy.time import parse_time, julian_day, julian_centuries
@@ -229,12 +230,23 @@ def apparent_declination(t='now'):
     result = np.degrees(np.arcsin(np.sin(ob)) * np.sin(app_long))
     return Latitude(result)
 
+def longitude_ascending_node(t='now'):
+    """Returns the longitude of the ascending node of the solar equator on
+    the ecliptic.
+
+    Astronomical Algorithms 2nd Ed. - Jean Meeus 2005  - ISBN: 0-943396-61-1
+    """
+    ut = astropy.time.Time(parse_time(t), scale = 'utc')
+    jd_ephem = ut.tt.jd
+    k = 73.6667 * u.deg + 1.3958333 * u.deg * (jd_ephem - 2396758)/36525
+    return Longitude(k)
+    
 def solar_north(t='now'):
     """Returns the position of the Solar north pole in degrees."""
     T = julian_centuries(t)
     ob1 = true_obliquity_of_ecliptic(t)
     # in degrees
-    i = 7.25 * u.deg 
+    i = constants.constant('inclination solar equator')
     k = (74.3646 + 1.395833 * T) * u.deg
     lamda = true_longitude(t) - (0.00569 * u.deg)
     omega = apparent_longitude(t)
@@ -251,7 +263,7 @@ def heliographic_solar_center(t='now'):
     T = julian_centuries(t)
     # Heliographic coordinates in degrees
     theta = ((jd - 2398220)*360/25.38) * u.deg
-    i = 7.25 * u.deg
+    i = constants.constant('inclination solar equator')
     k = (74.3646 + 1.395833 * T) * u.deg
     lamda = true_longitude(t) - 0.00569 * u.deg
     diff = lamda - k

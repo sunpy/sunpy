@@ -131,6 +131,13 @@ def test_apparent_rightascension():
     assert_array_almost_equal(sun.apparent_rightascension("2013/12/13"), 17.282 * u.hourangle, decimal=3)
     assert_array_almost_equal(sun.apparent_rightascension("2512/04/09"), 1.134 * u.hourangle, decimal=3)
 
+@pytest.mark.thisone
+def test_longitude_ascending_node():
+    # Example 29.a from Astronomical Algorithms 2nd Ed. - Jean Meeus 2005
+    dateinput = "1992-10-13T00:00:00"
+    kvalue = 75.6597 * u.deg
+    assert_array_almost_equal(sun.longitude_ascending_node(dateinput), kvalue , decimal=4)
+
 def test_solar_north():
     assert_array_almost_equal(sun.solar_north("2012/11/11"), 15.149 * u.deg, decimal=3)
     assert_array_almost_equal(sun.solar_north("2019/10/10"), -1.693 * u.deg, decimal=3)
