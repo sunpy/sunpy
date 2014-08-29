@@ -202,26 +202,34 @@ class Cube(astropy.nddata.NDData):
         return arr
 
     def slice_to_map(self, chunk, snd_dim=None, *args, **kwargs):
-        # TODO: make this take quantities
         """
         Converts a given frequency chunk to a SunPy Map. Extra parameters are
         passed on to Map.
 
         Parameters
         ----------
-        chunk: int or float or (int, int) or (float, float)
+        chunk: int or astropy quantity or tuple
             The piece of the cube to convert to a map. If it's a single number,
             then it will return that single-slice map, otherwise it will
-            aggregate the given range.
+            aggregate the given range. Depending on the cube, this may
+            correspond to a time or an energy dimension
+        snd_dim: int or astropy quantity or tuple, optional
+            Only used for hypercubes, the wavelength to choose from; works in
+            the same way as chunk.
         """
         if self.axes_wcs.wcs.ctype[-2] == 'WAVE' and self.data.ndim == 3:
             error = "Cannot construct a map with only one spatial dimension"
             raise cu.CubeError(3, error)
 
+        def pixelize(coord, axis):
+            '''shorthand for convert_point'''
+            unit = coord.unit if isinstance(coord, u.Quantity) else None
+            return cu.convert_point(coord, unit, self.axes_wcs, axis)
         if isinstance(chunk, tuple):
-            maparray = self.data[chunk[0]:chunk[1]].sum(0)
+            item = slice(pixelize(chunk[0], 0), pixelize(chunk[1], 0), None)
+            maparray = self.data[item].sum(0)
         else:
-            maparray = self.data[chunk]
+            maparray = self.data[pixelize(chunk, 0)]
 
         if self.data.ndim == 4:
             if snd_dim is None:
@@ -229,16 +237,17 @@ class Cube(astropy.nddata.NDData):
                 raise cu.CubeError(4, error)
 
             if isinstance(snd_dim, tuple):
-                maparray = maparray[snd_dim[0]:snd_dim[1]].sum(0)
+                item = slice(pixelize(snd_dim[0], 1),
+                             pixelize(snd_dim[1], 1), None)
+                maparray = maparray[item].sum(0)
             else:
-                maparray = maparray[snd_dim]
+                maparray = maparray[pixelize(snd_dim, 1)]
 
         mapheader = MapMeta(self.meta)
         gmap = GenericMap(data=maparray, header=mapheader, *args, **kwargs)
         return gmap
 
     def slice_to_lightcurve(self, wavelength, y_coord=None, x_coord=None):
-        # TODO: make this take quantities
         """
         For a time-lambda-y cube, returns a lightcurve with curves at the
         specified wavelength and given y-coordinate. If no y is given, all of
@@ -246,11 +255,11 @@ class Cube(astropy.nddata.NDData):
         than one timecurve.)
         Parameters
         ----------
-        wavelength: int or float
+        wavelength: int or astropy quantity
             The wavelength to take the y-coordinates from
-        y_coord: int, optional
+        y_coord: int or astropy quantity, optional
             The y-coordinate to take the lightcurve from.
-        x_coord: int, optional
+        x_coord: int or astropy quantity, optional
             In the case of hypercubes, specify an extra celestial coordinate.
         """
         if self.axes_wcs.wcs.ctype[-1] not in ['TIME', 'UTC']:
@@ -259,17 +268,26 @@ class Cube(astropy.nddata.NDData):
         if self.axes_wcs.wcs.ctype[-2] != 'WAVE':
             raise cu.CubeError(2, 'A spectral axis is needed in a lightcurve')
 
+        def pixelize(coord, axis):
+            '''shorthand for convert_point'''
+            unit = coord.unit if isinstance(coord, u.Quantity) else None
+            return cu.convert_point(coord, unit, self.axes_wcs, axis)
+
         if self.data.ndim == 3:
             data = self._choose_wavelength_slice(wavelength)
             if y_coord is not None:
-                data = data[:, y_coord]
+                data = data[:, pixelize(y_coord, 1)]
         else:
             if y_coord is None and x_coord is None:
                 raise cu.CubeError(4, "At least one coordinate must be given")
             if y_coord is None:
                 y_coord = slice(None, None, None)
+            else:
+                y_coord = pixelize(y_coord, 2)
             if x_coord is None:
                 x_coord = slice(None, None, None)
+            else:
+                x_coord = pixelize(x_coord, 3)
             item = (slice(None, None, None), wavelength, y_coord, x_coord)
             data = self.data[item]
 
@@ -298,7 +316,7 @@ class Cube(astropy.nddata.NDData):
         def pixelize(coord):
             '''shorthand for convert_point'''
             unit = coord.unit if isinstance(coord, u.Quantity) else None
-            cu.convert_point(coord, unit, self.axes_wcs, axis)
+            return cu.convert_point(coord, unit, self.axes_wcs, axis)
         pixels = [pixelize(coord) for coord in coords]
         item = range(len(pixels))
         if axis == 0:
@@ -324,7 +342,6 @@ class Cube(astropy.nddata.NDData):
         return Spectrum(np.array(data), np.array(freq_axis))
 
     def slice_to_spectrogram(self, y_coord, x_coord=None, **kwargs):
-        # TODO: make this take quantities
         """
         For a time-lambda-y cube, given a y-coordinate, returns a sunpy
         spectrogram. Keyword arguments are passed on to Spectrogram's __init__.
@@ -341,12 +358,17 @@ class Cube(astropy.nddata.NDData):
                                'Cannot create a spectrogram with no time axis')
         if self.axes_wcs.wcs.ctype[-2] != 'WAVE':
             raise cu.CubeError(2, 'A spectral axis is needed in a spectrogram')
+
+        def pixelize(coord, axis):
+            '''shorthand for convert_point'''
+            unit = coord.unit if isinstance(coord, u.Quantity) else None
+            return cu.convert_point(coord, unit, self.axes_wcs, axis)
         if self.data.ndim == 3:
-            data = self.data[:, :, y_coord]
+            data = self.data[:, :, pixelize(y_coord, 2)]
         else:
             if x_coord is None:
                 raise cu.CubeError(4, 'An x-coordinate is needed for 4D cubes')
-            data = self.data[:, :, y_coord, x_coord]
+            data = self.data[:, :, pixelize(y_coord, 2), pixelize(x_coord, 3)]
         time_axis = self.time_axis()
         freq_axis = self.freq_axis()
 
