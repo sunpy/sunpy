@@ -9,8 +9,8 @@ from sunpy.net.attr import Attr, AttrOr, AttrAnd
    (attrs.Protocol('a1'), attrs.Protocol('a2')),
    (attrs.Notify('email@somemail.com'), attrs.Notify('someemail@somemail.com')),
    (attrs.Compression('rice'), attrs.Compression('rice'))])
-def test_and(attr1,attr2):
-   pytest.raises(TypeError, lambda: attr1 & attr2)
+def test_and(attr1, attr2):
+    pytest.raises(TypeError, lambda: attr1 & attr2)
 
 
 def test_basicquery():
@@ -27,7 +27,7 @@ def test_mediumquery():
     t1 = attrs.Time('2012/01/01', '2013/1/2')
     ans1 = jsoc.jsoc.and_(a1 | a2, t1)
     assert isinstance(ans1, AttrOr)
-    assert isinstance(ans1.attrs[0], AttrAnd) 
+    assert isinstance(ans1.attrs[0], AttrAnd)
     assert isinstance(ans1.attrs[1], AttrAnd)
 
 
@@ -40,5 +40,3 @@ def test_complexquery():
     assert isinstance(ans1.attrs[0], AttrOr)
     assert isinstance(ans1.attrs[0].attrs[0], AttrAnd)
     assert isinstance(ans1.attrs[0].attrs[1], AttrAnd)
-
-

@@ -103,11 +103,11 @@ class JSOCClient(object):
         return_reqid = []
         query = and_(*query)
         for block in walker.create(query):
-	    iargs = kwargs.copy()
-	    iargs.update(block)
-	    
-	    # Do a multi-request for each query block
-	    responses = self._multi_request(**iargs)
+            iargs = kwargs.copy()
+            iargs.update(block)
+
+            # Do a multi-request for each query block
+            responses = self._multi_request(**iargs)
             for i, response in enumerate(responses):
                 #TODD: catch non 200 return
                 if response.json()['status'] != 2:
@@ -117,11 +117,11 @@ class JSOCClient(object):
                                                      response.json()['error'])))
                     responses.pop(i)
             #Extract the IDs from the JSON
-	    requestIDs = [response.json()['requestid'] for response in responses]
-	    return_reqid.extend(requestIDs)
-	    return_response.extend(responses)
-	
-	if return_resp:
+            requestIDs = [response.json()['requestid'] for response in responses]
+            return_reqid.extend(requestIDs)
+            return_response.extend(responses)
+
+        if return_resp:
             return return_response
 
         return return_reqid
@@ -346,16 +346,16 @@ class JSOCClient(object):
                    'filenamefmt':'{0}.{{T_REC:A}}.{{CAMERA}}.{{segment}}'.format(series)}
 
         if kwargs.has_key('wavelength'):
-	    if series[0:3] != 'aia':
-	        raise TypeError("This series does not support the wavelength attribute.")
-	    else:
-	       if isinstance(kwargs['wavelength'],list):
-	           tmp = str(kwargs['wavelength'])
-	       else:
-	           tmp = '[{0}]'.format(kwargs['wavelength'])
-	       payload['ds'] += tmp
+            if series[0:3] != 'aia':
+                raise TypeError("This series does not support the wavelength attribute.")
+            else:
+                if isinstance(kwargs['wavelength'], list):
+                    tmp = str(kwargs['wavelength'])
+                else:
+                    tmp = '[{0}]'.format(kwargs['wavelength'])
+                payload['ds'] += tmp
             kwargs.pop('wavelength')
-	
+
         payload.update(kwargs)
         return payload
 
@@ -381,9 +381,9 @@ class JSOCClient(object):
         """
         Make a series of requests to avoid the 100GB limit
         """
-        start_time = kwargs.pop('start_time',None)
-        end_time = kwargs.pop('end_time',None)
-        series = kwargs.pop('series',None)
+        start_time = kwargs.pop('start_time', None)
+        end_time = kwargs.pop('end_time', None)
+        series = kwargs.pop('series', None)
         if any(x is None for x in (start_time, end_time, series)):
             return []
         start_time = self._process_time(start_time)
@@ -408,4 +408,3 @@ class JSOCClient(object):
         u = requests.get(JSOC_URL, params=payload)
 
         return u
-	
