@@ -54,36 +54,6 @@ git_description = '%(git_description)s'
 
 def install(setup): #pylint: disable=W0621
     from setuptools import find_packages
-    #Crotate Module
-    from distutils.core import Extension
-    from os.path import dirname, join
-
-    try:
-        import numpy as np
-    except ImportError:
-        print("SunPy WARNING: NumPy must be installed first to build the C extension")
-
-    if 'np' in locals():
-        libs = ['m']
-        gcc_args = ['-std=c99', '-O3']
-
-        module_ana = 'sunpy.io._pyana'
-        sourcefiles_ana = [join('.', 'sunpy', 'io', 'src', 'ana', 'anacompress.c'),
-                           join('.', 'sunpy', 'io', 'src', 'ana', 'anadecompress.c'),
-                           join('.', 'sunpy', 'io', 'src', 'ana', 'anarw.c'),
-                           join('.', 'sunpy', 'io', 'src', 'ana', 'testrw.c'),
-                           join('.', 'sunpy', 'io', 'src', 'ana', '_pyana.c')]
-
-        ana = Extension(module_ana,
-                            sources = sourcefiles_ana,
-                            libraries = libs,
-                            extra_compile_args = gcc_args,
-                            include_dirs =
-                            [np.get_include(), join('.', 'sunpy', 'io', 'src')]
-                            )
-    ext_modules = []
-    if 'ana' in locals():
-        ext_modules.append(ana)
 
     write_version_py()
 
@@ -122,7 +92,6 @@ def install(setup): #pylint: disable=W0621
         include_package_data=True,
         zip_safe=False,
         version=VERSION,
-        ext_modules = ext_modules
     )
 
 if __name__ == '__main__':
