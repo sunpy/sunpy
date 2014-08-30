@@ -167,7 +167,7 @@ def _detect_filetype(filepath):
     _, ext2 = os.path.splitext(filepath_rest_ext1)
 
     gzip_extensions = [".gz"]
-    fits_extensions = [".fts", ".fits"]
+    fits_extensions = [".fts", ".fit", ".fits"]
     if (ext1 in gzip_extensions and ext2 in fits_extensions):
         return 'fits'
     if match is not None:
