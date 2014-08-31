@@ -390,13 +390,11 @@ def apply_shifts(mc, yshift, xshift, clip=True):
         # Shift the data and construct the mapcube
         for i, m in enumerate(mc.maps):
             shifted_data = shift(m.data, [yshift[i].value, xshift[i].value])
-            print 'before clipping ', shifted_data.shape
             # Clip if required
             if clip:
                 yclips, xclips = calculate_clipping(-yshift, -xshift)
                 shifted_data = clip_edges(shifted_data, yclips, xclips)
-                print 'after clipping ', shifted_data.shape
-                print yclips, xclips
+
             # New header
             new_meta = deepcopy(m.meta)
     
