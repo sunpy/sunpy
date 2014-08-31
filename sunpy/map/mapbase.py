@@ -396,7 +396,7 @@ Dimension:\t [%d, %d]
         conversion.
         """
         lam = self.scale['y'] / self.scale['x']
-        p = np.deg2rad(self.meta['CROTA2'])
+        p = np.deg2rad(self.meta.get('CROTA2', 0))
 
         return np.matrix([[np.cos(p), -1 * lam * np.sin(p)],
                           [1/lam * np.sin(p), np.cos(p)]])
