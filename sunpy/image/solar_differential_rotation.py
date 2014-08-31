@@ -97,12 +97,16 @@ def mapcube_solar_derotate(mc, layer_index=0, clip=True,
                              m.center['y'] * u.arcsec,
                              m.date,
                              mc.maps[layer_index].date, **kwargs)
+
         # Calculate the shift in arcseconds
         xshift_arcseconds[i] = newx - mc.maps[layer_index].center['x'] * u.arcsec
         yshift_arcseconds[i] = newy - mc.maps[layer_index].center['y'] * u.arcsec
+
         # Calculate the shift in pixels.
         xshift_keep[i] = xshift_arcseconds[i].value / mc.maps[i].scale['x']
         yshift_keep[i] = yshift_arcseconds[i].value / mc.maps[i].scale['y']
+
+        # 
 
     # Return only the displacements
     if return_displacements_only:
