@@ -28,6 +28,7 @@ from skimage.feature import match_template
 
 # SunPy imports
 from sunpy.map.mapbase import GenericMap
+import sunpy.map
 from sunpy.physics.transforms.differential_rotation import rot_hpc
 
 __author__ = 'J. Ireland'
@@ -381,24 +382,31 @@ def apply_shifts(mc, yshift, xshift, clip=True):
         A mapcube of the same shape as the input.  All layers in the mapcube
         have been shifted according the input shifts.
     """
-    newmc = deepcopy(mc)
 
-    if _is_pixel_unit(yshift) and _is_pixel_unit(xshift):
+    # new mapcube will be constructed from this list
+    newmc_list = []
+
+    if _is_pixel_unit(yshift) and _is_pixel_unit(xshift):    
         # Shift the data and construct the mapcube
-        for i, m in enumerate(newmc.maps):
-            shifted_data = shift(m.data, [yshift_keep[i], xshift_keep[i]])
+        for i, m in enumerate(mc.maps):
+            shifted_data = shift(m.data, [yshift[i].value, xshift[i].value])
+
+            # Clip if required
             if clip:
-                yclips, xclips = calculate_clipping(yshift_keep*u.pix, xshift_keep*u.pix)
+                yclips, xclips = calculate_clipping(yshift, xshift)
                 shifted_data = clip_edges(shifted_data, yclips, xclips)
-    
-            # Update the mapcube image data
-            newmc.maps[i].data = shifted_data
+
+            # New header
+            new_meta = deepcopy(m.meta)
     
             # Adjust the positioning information accordingly.
-            newmc.maps[i].meta['crpix1'] = newmc.maps[i].meta['crpix1'] + xshift_arcseconds[i]
-            newmc.maps[i].meta['crpix2'] = newmc.maps[i].meta['crpix2'] + yshift_arcseconds[i]
+            new_meta['crpix1'] = new_meta['crpix1'] + xshift[i].value * m.scale['x']
+            new_meta['crpix2'] = new_meta['crpix2'] + yshift[i].value * m.scale['y']
 
-        return newmc
+            # Append to the list
+            newmc_list.append(sunpy.map.Map(shifted_data, new_meta))
+
+        return sunpy.map.Map(newmc_list, cube=True)
     else:
         raise ValueError("Both x and y shifts must be astropy Quantities with pixel unit")
 

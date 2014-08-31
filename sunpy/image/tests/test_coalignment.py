@@ -201,6 +201,44 @@ def test_is_arcsec_unit():
     not(_is_arcsec_unit(1.0))
 
 
-# TODO: finish this test!
 def test_apply_shifts():
-    pass
+    # take two copies of the AIA image and create a test mapcube.
+    mc = map.Map([testmap, testmap], cube=True)
+
+    # Pixel displacements have the y-displacement as the first entry
+    numerical_displacements = {"x": np.asarray([0.0, -2.7]), "y": np.asarray([0.0, -10.4])}
+    astropy_displacements = {"x": numerical_displacements["x"] * u.pix,
+                             "y": numerical_displacements["y"] * u.pix}
+
+    # Test to see if the code can detect the fact that the input shifts are not
+    # astropy quantities
+    try:
+        tested = apply_shifts(mc, numerical_displacements["y"], astropy_displacements["x"])
+    except ValueError:
+        pass
+    try:
+        tested = apply_shifts(mc, astropy_displacements["y"], numerical_displacements["x"])
+    except ValueError:
+        pass
+    try:
+        tested = apply_shifts(mc, numerical_displacements["y"], numerical_displacements["x"])
+    except ValueError:
+        pass
+
+    # Test returning with no extra options - the code returns a mapcube only
+    test_output = apply_shifts(mc, astropy_displacements["y"], astropy_displacements["x"])
+    assert(isinstance(test_output, map.MapCube))
+
+    # Test returning with no clipping.  Output layers should have the same size
+    # as the original input layer.
+    test_mc = apply_shifts(mc, astropy_displacements["y"], astropy_displacements["x"], clip=False)
+    assert(test_mc[0].data.shape == testmap.data.shape)
+    assert(test_mc[1].data.shape == testmap.data.shape)
+
+    # Test returning with clipping.  Output layers should be smaller than the
+    # original layer
+    test_mc = apply_shifts(mc, astropy_displacements["y"], astropy_displacements["x"],  clip=True)
+    for i in range(0, len(test_mc)):
+        clipped = calculate_clipping(astropy_displacements["y"], astropy_displacements["x"])
+        assert(test_mc[i].data.shape[0] == mc[i].data.shape[0] - np.max(clipped[0].value))
+        assert(test_mc[i].data.shape[1] == mc[i].data.shape[1] - np.max(clipped[1].value))
