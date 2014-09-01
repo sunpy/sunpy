@@ -463,9 +463,16 @@ class Cube(astropy.nddata.NDData):
         stop = start + self.data.shape[axis] * delta
         return np.arange(start, stop, delta)
 
+    def _array_is_aligned(self):
+        rot_matrix = self.axes_wcs.wcs.pc
+        return np.allclose(rot_matrix, np.eye(self.axes_wcs.wcs.naxis))
+
     def __getitem__(self, item):
         if item is None or (isinstance(item, tuple) and None in item):
             raise IndexError("None indices not supported")
+        if not self._array_is_aligned():
+            raise cu.CubeError(6, "Slicing on unaligned wcs-array systems " +
+                               "not supported at the moment")
         pixels = cu.pixelize_slice(item, self.axes_wcs)
         if self.data.ndim == 3:
             return cu.getitem_3d(self, pixels)

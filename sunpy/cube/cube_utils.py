@@ -474,7 +474,8 @@ class CubeError(Exception):
               2: 'Spectral dimension not present',
               3: 'Insufficient spatial dimensions',
               4: 'Dimension error',
-              5: 'Slicing unit error'}
+              5: 'Slicing unit error',
+              6: 'Unaligned array error'}
 
     def __init__(self, value, msg):
         Exception.__init__(self, msg)
