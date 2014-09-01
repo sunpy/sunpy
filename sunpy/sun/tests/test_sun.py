@@ -7,6 +7,7 @@ import datetime
 
 from astropy.coordinates import Longitude
 from astropy import units as u
+from astropy.time import Time
 
 from sunpy.sun import sun
 from sunpy.time import parse_time
@@ -54,14 +55,22 @@ dates = ['{}-01-01T12:00:00', '{}-05-31T13:00:00', '{}-07-31T13:00:00', '{}-08-2
 
 @pytest.mark.parametrize("year, date", product(almanaque_mean_anomaly.keys(), dates))
 def test_mean_anomaly(year, date):
-    d0 = datetime.datetime(int(year) - 1, 12, 31)
-    date = date.format(year)
+    #d0 is defined as YYYY January 0, 0h TT.
+    d0 = Time(datetime.datetime(int(year) - 1, 12, 31), scale = 'tt')
+    
+    # The input date - in UT - has to be converted to TT
+    dateut = date.format(year)
+    date = Time(dateut, scale = 'utc', format = 'isot').tt
+    
+    # extract and define the function to calculate the mean anomaly
     parameters = almanaque_mean_anomaly[year]
+    almanaque_eq = lambda d: Longitude((parameters[0] + parameters[1] * d) * u.deg)
 
-    number_of_days = lambda d: (parse_time(d) - d0).total_seconds()/3600./24.
-    almanaque_eq = lambda d: Longitude((parameters[0] + parameters[1] * d)* u.deg)
-    almanaque = almanaque_eq(number_of_days(date))
-    assert_array_almost_equal(sun.mean_anomaly(date), almanaque, decimal=parameters[2])
+    number_of_days = date - d0
+    almanaque = almanaque_eq(number_of_days.value)
+
+    # compare the values with the more precise function within sunpy.sun
+    assert_array_almost_equal(sun.mean_anomaly(dateut), almanaque, decimal=parameters[2])
 
 #These values are tested from the functions after the integration of astropy.units
 
@@ -131,7 +140,6 @@ def test_apparent_rightascension():
     assert_array_almost_equal(sun.apparent_rightascension("2013/12/13"), 17.282 * u.hourangle, decimal=3)
     assert_array_almost_equal(sun.apparent_rightascension("2512/04/09"), 1.134 * u.hourangle, decimal=3)
 
-@pytest.mark.thisone
 def test_longitude_ascending_node():
     # Example 29.a from Astronomical Algorithms 2nd Ed. - Jean Meeus 2005
     dateinput = "1992-10-13T00:00:00"
