@@ -35,13 +35,14 @@ class TestFiletools(object):
 
     def test_read_file_fits_gzip(self):
         # Test read gzipped fits file
-        pair = sunpy.io.read_file(os.path.join(sunpy.data.test.rootdir, "gzip_test.fits.gz"))
-        assert isinstance(pair, list)
-        assert len(pair) == 1
-        assert len(pair[0]) == 2
-        assert isinstance(pair[0][0], np.ndarray)
-        assert isinstance(pair[0][1], sunpy.io.header.FileHeader)
-        assert np.all(pair[0][0] == np.tile(np.arange(32), (32, 1)).transpose())
+        for fits_extension in [".fts", ".fit", ".fits"]:
+            pair = sunpy.io.read_file(os.path.join(sunpy.data.test.rootdir, "gzip_test%s.gz" % fits_extension))
+            assert isinstance(pair, list)
+            assert len(pair) == 1
+            assert len(pair[0]) == 2
+            assert isinstance(pair[0][0], np.ndarray)
+            assert isinstance(pair[0][1], sunpy.io.header.FileHeader)
+            assert np.all(pair[0][0] == np.tile(np.arange(32), (32, 1)).transpose())
 
     @skip_glymur
     def test_read_file_jp2(self):
