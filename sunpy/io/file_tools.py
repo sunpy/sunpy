@@ -160,9 +160,7 @@ def _detect_filetype(filepath):
 
     # FITS
     #
-    # Checks for "KEY_WORD  =" at beginning of file
-    match = re.match(r"[A-Z0-9_]{0,8} *=", first80)
-    
+    # Check the extensions to see if it is a gzipped FITS file
     filepath_rest_ext1, ext1 = os.path.splitext(filepath)
     _, ext2 = os.path.splitext(filepath_rest_ext1)
 
@@ -170,6 +168,9 @@ def _detect_filetype(filepath):
     fits_extensions = [".fts", ".fit", ".fits"]
     if (ext1 in gzip_extensions and ext2 in fits_extensions):
         return 'fits'
+    
+    # Check for "KEY_WORD  =" at beginning of file
+    match = re.match(r"[A-Z0-9_]{0,8} *=", first80)
     if match is not None:
         return 'fits'
 
