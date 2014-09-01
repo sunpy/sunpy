@@ -36,7 +36,7 @@ class TestFiletools(object):
     def test_read_file_fits_gzip(self):
         # Test read gzipped fits file
         for fits_extension in [".fts", ".fit", ".fits"]:
-            pair = sunpy.io.read_file(os.path.join(sunpy.data.test.rootdir, "gzip_test%s.gz" % fits_extension))
+            pair = sunpy.io.read_file(os.path.join(sunpy.data.test.rootdir, "gzip_test{ext}.gz".format(ext=fits_extension)))
             assert isinstance(pair, list)
             assert len(pair) == 1
             assert len(pair[0]) == 2
