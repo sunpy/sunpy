@@ -316,7 +316,7 @@ class JSOCClient(object):
         if isinstance(time, basestring):
             time = parse_time(time)
         time = astropy.time.Time(time, scale='utc')
-        time = astropy.time.Time(time, scale='tai')
+        time = time.tai #change the scale to TAI
 
         return time.datetime
 

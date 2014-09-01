@@ -2,6 +2,8 @@ Latest
 ------
 
 * Added vso like querying feature to JSOC Client.
+ * Added ability to download level3 data for lyra Light Curve along with corresponding tests.
+ * Added support for gzipped FITS files.
 
 0.5.0
 -----

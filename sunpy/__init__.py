@@ -13,7 +13,7 @@ from __future__ import absolute_import
 
 import warnings
 
-__version__ = '0.3.3'
+__version__ = '0.5.1'
 
 try:
     from sunpy.version import version as __version__
