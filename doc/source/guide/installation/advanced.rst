@@ -1,10 +1,18 @@
+Advanced Installation Instructions
+----------------------------------
 
-Requirements
-============
+This document provides details on things you need to know to install and 
+manage your own scientific Python + SunPy installation.
+If you have never installed or used scientific Python we recommend that you 
+follow the <ANACONDA> Anaconda installation instructions.
 
-SunPy consists of many submodules that each have their own requirements. You do not need 
-to fufill all the requirements if you only intend on using parts of SunPy.
-It is however *strongly* recommended to have all the dependancies installed (with the potential exception of `glymur`).
+SunPy's Requirements
+====================
+
+SunPy consists of many submodules that each have their own requirements. 
+You do not need to fufill all the requirements if you only intend on using 
+parts of SunPy. It is however *strongly* recommended to have all the 
+dependancies installed (with the potential exception of `glymur`).
 
 SunPy has the following strict requirements:
 
@@ -20,7 +28,8 @@ SunPy also depends on other packages for optional features.
 However, note that these only need to be installed if those particular features
 are needed. SunPy will import even if these dependencies are not installed.
 
-- `Matplotlib <http://matplotlib.org/>`_ [*Highly Recommended*] 1.3.0 or later: For `lightcurve`, `map`, `spectra`, `instr` and `vizualisation`.
+- `Matplotlib <http://matplotlib.org/>`_ [*Highly Recommended*] 1.3.0 or later:
+  For `lightcurve`, `map`, `spectra`, `instr` and `vizualisation`.
 
 - `pandas <http://pandas.pydata.org/>`_ 0.10 or later: For `lightcurve`.
 
@@ -45,19 +54,38 @@ The packages that will be installed as dependencies by default are the ones requ
 Installing SunPy
 ================
 
-These instructions assume you have a scientific Python distribution installed. If you are new to Python then you will need to install such a distribution before continuing with these instructions.
+These instructions assume you have a scientific Python distribution with access
+to the `pip` command installed.
 
-The simplest method of obtaining a scientific Python distribution is to install the cross platform :ref:`anaconda_install`. Alternatively, can follow the various platform specific instructions below:
+Prerequisites
+-------------
 
-.. toctree::
-   :maxdepth: 1
-   
-   win
-   mac
-   linux
+You will need a compiler suite and the development headers for Python and
+Numpy in order to build SunPy. On Linux, using the package manager for your
+distribution will usually be the easiest route, while on MacOS X you will
+need the XCode command line tools.
+
+The `instructions for building Numpy from source
+<http://docs.scipy.org/doc/numpy/user/install.html>`_ are also a good
+resource for setting up your environment to build Python packages.
+
+.. note:: If you are using MacOS X, you will need to the XCode command line
+          tools.  One way to get them is to install `XCode
+          <https://developer.apple.com/xcode/>`_. If you are using OS X 10.7
+          (Lion) or later, you must also explicitly install the command line
+          tools. You can do this by opening the XCode application, going to
+          **Preferences**, then **Downloads**, and then under **Components**,
+          click on the Install button to the right of **Command Line Tools**.
+          Alternatively, on 10.7 (Lion) or later, you do not need to install
+          XCode, you can download just the command line tools from
+          https://developer.apple.com/downloads/index.action (requires an Apple
+          developer account).
 
 Using `pip`
 -----------
+
+There are multiple options depending on how many optional dependancies you 
+want to install:
 
 To install SunPy with `pip` including optional dependencies (recommended), simply run::
 
@@ -114,41 +142,7 @@ correctly is to use the :func:`sunpy.tests` function::
 The tests should run and print out any failures, which you can report at
 the `SunPy issue tracker <http://github.com/sunpy/sunpy/issues>`_.
 
-Building from source
-====================
 
-Prerequisites
--------------
-
-You will need a compiler suite and the development headers for Python and
-Numpy in order to build SunPy. On Linux, using the package manager for your
-distribution will usually be the easiest route, while on MacOS X you will
-need the XCode command line tools.
-
-The `instructions for building Numpy from source
-<http://docs.scipy.org/doc/numpy/user/install.html>`_ are also a good
-resource for setting up your environment to build Python packages.
-
-.. note:: If you are using MacOS X, you will need to the XCode command line
-          tools.  One way to get them is to install `XCode
-          <https://developer.apple.com/xcode/>`_. If you are using OS X 10.7
-          (Lion) or later, you must also explicitly install the command line
-          tools. You can do this by opening the XCode application, going to
-          **Preferences**, then **Downloads**, and then under **Components**,
-          click on the Install button to the right of **Command Line Tools**.
-          Alternatively, on 10.7 (Lion) or later, you do not need to install
-          XCode, you can download just the command line tools from
-          https://developer.apple.com/downloads/index.action (requires an Apple
-          developer account).
-
-Obtaining the source packages
------------------------------
-
-Source packages
-^^^^^^^^^^^^^^^
-
-The latest stable source package for SunPy can be `downloaded here
-<https://pypi.python.org/pypi/sunpy>`_.
 
 Development repository
 ^^^^^^^^^^^^^^^^^^^^^^
