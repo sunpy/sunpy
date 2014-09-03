@@ -22,7 +22,6 @@ import numpy as np
 from scipy.ndimage.interpolation import shift
 from copy import deepcopy
 from astropy import units as u
-import matplotlib.pyplot as plt
 # Image co-registration by matching templates
 from skimage.feature import match_template
 
