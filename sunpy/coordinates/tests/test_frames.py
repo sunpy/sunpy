@@ -280,6 +280,7 @@ def test_transform_accuracy():
     
     # Cadair's analytical test
     # See: http://nbviewer.ipython.org/gist/Cadair/63d405b956c3478bfa64
+    # Also, see: http://nbviewer.ipython.org/gist/Cadair/d795984b877f16c8eeb2
     # Params: lon=45deg, lat=45deg, rad=RSun, L0=0deg, B0=0deg
     
     sc_hgs = SkyCoord(45*u.deg, 45*u.deg, RSun, L0=0*u.deg, B0=0*u.deg,
