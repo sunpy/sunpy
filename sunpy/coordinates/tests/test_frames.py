@@ -247,7 +247,7 @@ def test_transform_accuracy():
     """
     from sunpy import sun as s
     from sunpy.coordinates.representation import Longitude180
-    from numpy import sqrt
+    from numpy import sqrt, arcsin, arctan
     import numpy
     
     RSun = s.constants.constant('radius').si.to(u.km)
@@ -301,9 +301,9 @@ def test_transform_accuracy():
     # Now in HPC, we have a complex bunch of equations. 
     # TODO: Fix the Ty problem in this HGS-HPC test.
     
-    expect_Ty = numpy.arcsin(1/(sqrt((DSun**2/RSun**2)*(1-(RSun/DSun))))).to(u.deg)
-    expect_Tx = numpy.arctan(1/(2*(DSun/RSun)-1)).to(u.deg)
-    expect_d = RSun * (sqrt(1 + ((DSun**2/RSun**2)*(1-(RSun/DSun)))))
+    expect_Ty = arcsin((RSun/sqrt(2))/(np.sqrt(((3*RSun**2)/4) + (DSun - (RSun/2))**2))).to(u.deg)
+    expect_Tx = arctan(1/(2*(DSun/RSun)-1)).to(u.deg)
+    expect_d = np.sqrt(((3*RSun**2)/4) + (DSun - (RSun/2))**2).to(u.km)
     
     sc_hpc1 = sc_hgs.transform_to('helioprojective')
     sc_hpc2 = sc_hcc.transform_to('helioprojective')
@@ -311,4 +311,4 @@ def test_transform_accuracy():
     for coord in [sc_hpc1, sc_hpc2]:
         npt.assert_allclose(coord.Tx.to(u.deg), expect_Tx)
         npt.assert_allclose(coord.distance, expect_d)
-        #npt.assert_allclose(coord.Ty.to(u.deg), expect_Ty)
+        npt.assert_allclose(coord.Ty.to(u.deg), expect_Ty)
