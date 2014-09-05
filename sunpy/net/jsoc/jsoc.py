@@ -23,38 +23,46 @@ JSOC_INFO_URL = 'http://jsoc.stanford.edu/cgi-bin/ajax/jsoc_info'
 JSOC_EXPORT_URL = 'http://jsoc.stanford.edu/cgi-bin/ajax/jsoc_fetch'
 BASE_DL_URL = 'http://jsoc.stanford.edu'
 
+
 class JSOCResponse(object):
     def __init__(self, table=None):
         """
         table : astropy.table.Table
         """
-                
+
         self.table = table
         self.query_args = None
         self.requestIDs = None
-    
+
     def __str__(self):
         return self.table.__str__()
-    
+
+    def __repr__(self):
+        return self.table.__repr__()
+
     def __len__(self):
-        return self.table.__len__()
-        
+        if self.table is None:
+            return 0
+        else:
+            return self.table.__len__()
+
     def append(self, table):
         if self.table is None:
             self.table = table
         else:
             self.table = astropy.table.vstack([self.table, table])
 
+
 class JSOCClient(object):
     """
     This is a Client to the JSOC Data Export service.
 
-    It exposes a similar API to the VSO client, although the underlying model 
+    It exposes a similar API to the VSO client, although the underlying model
     is more complex. The JSOC stages data before you can download it, so a JSOC
     query is a three stage process, first you query the JSOC for records,
     a table of these records is returned. Then you can request these records to
     be staged for download and then you can download them.
-    The last two stages of this process are bundled together into the `get()` 
+    The last two stages of this process are bundled together into the `get()`
     method, but they can be seperated if you are performing a large or complex
     query.
 
@@ -69,9 +77,9 @@ class JSOCClient(object):
 
     Examples
     --------
-    
+
     *Example 1*
-    
+
     Query JSOC for some HMI data at 45 second cadence:
 
     >>> from sunpy.net import jsoc
@@ -80,30 +88,30 @@ class JSOCClient(object):
     ...                         jsoc.Series('hmi.m_45s'))
 
     the response object holds the records that your query will return:
-    
+
     >>> print response
-            DATE         TELESCOP  INSTRUME  ... WAVELNTH     WAVEUNIT   
+            DATE         TELESCOP  INSTRUME  ... WAVELNTH     WAVEUNIT
     -------------------- -------- ---------- ... -------- ---------------
     2012-09-05T08:27:19Z  SDO/HMI HMI_FRONT2 ...   6173.0 Invalid KeyLink
     2012-09-05T08:27:20Z  SDO/HMI HMI_FRONT2 ...   6173.0 Invalid KeyLink
 
     You can then make the request and download the data:
-    
+
     >>> res = client.get(response)
     Request JSOC_20140724_947 was submitted 6 seconds ago, it is not ready to download.
     Request JSOC_20140724_947 was exported at 2014.07.24_22:08:09_UT and is ready to download.
     2 URLs found for Download. Totalling 30MB
-    
+
     This returns a Results instance which can be used to watch the progress
     of the download.
 
     >>> res.wait(progress=True)
-    
+
     *Example 2*
-    
-    Query the JSOC for some AIA 171 data, and seperate out the staging and the 
+
+    Query the JSOC for some AIA 171 data, and seperate out the staging and the
     download steps:
-    
+
     >>> from sunpy.net import jsoc
     >>> client = jsoc.JSOCClient()
     >>> response = client.query(jsoc.Time('2014/1/1T00:00:00', '2014/1/1T00:00:36'),
@@ -111,7 +119,7 @@ class JSOCClient(object):
                                 jsoc.Wave(171))
 
     the response object holds the records that your query will return:
-    
+
     >>> print response
             DATE         TELESCOP INSTRUME          T_OBS          WAVELNTH WAVEUNIT
     -------------------- -------- -------- ----------------------- -------- --------
@@ -121,26 +129,26 @@ class JSOCClient(object):
     2014-01-07T15:05:10Z  SDO/AIA    AIA_3 2014-01-01T00:00:12.34Z      171 angstrom
 
     You can then make the request:
-    
+
     >>> requestIDs = client.request_data(response)
     [u'JSOC_20140724_952']
-    
+
     This returns a list of all the request identifiers for your query.
-    
+
     You can then check the status of the request, which will print out a status
-    message and return you the status code, a code of 1 means it is not ready 
+    message and return you the status code, a code of 1 means it is not ready
     to download and a code of 0 means the request is staged and ready. A code
-    of 6 means an error, which is commonly that the request has not had time to 
+    of 6 means an error, which is commonly that the request has not had time to
     get into the que.
-    
+
     >>> status = client.check_request(requestIDs)
     Request JSOC_20140724_955 was submitted 10 seconds ago, it is not ready to download.
-    
+
     Once the status code is 0 you can download the data using the `get_request`
     method:
-    
+
     >>> res = client.get_request(requestIDs)
-    
+
     This returns a Results instance which can be used to watch the progress
     of the download.
 
@@ -177,52 +185,49 @@ class JSOCClient(object):
         for block in walker.create(query):
             iargs = kwargs.copy()
             iargs.update(block)
-        
+
             return_results.append(self._lookup_records(iargs))
 
         return_results.query_args = iargs
 
         return return_results
 
-
     def request_data(self, jsoc_response, **kwargs):
         """
         Request that JSOC stages the data for download.
-        
+
         Parameters
         ----------
         jsoc_response : JSOCResponse object
             The results of a query
-        
+
         Returns
         -------
         requestIDs : list of strings
             List of the JSOC request identifiers
-        
+
         """
         # A little (hidden) debug feature
         return_responses = kwargs.pop('return_resp', False)
-        
+
         # Do a multi-request for each query block
         responses = self._multi_request(**jsoc_response.query_args)
         for i, response in enumerate(responses):
-            #TODD: catch non 200 return
+            # TODD: catch non 200 return
             if response.json()['status'] != 2:
                 warnings.warn(
                 Warning("Query {0} retuned status {1} with error {2}".format(i,
-                                                 response.json()['status'],
-                                                 response.json()['error'])))
+                                                     response.json()['status'],
+                                                    response.json()['error'])))
                 responses.pop(i)
 
-        #Extract the IDs from the JSON
+        # Extract the IDs from the JSON
         requestIDs = [response.json()['requestid'] for response in responses]
 
         if return_responses:
             return responses
-        
+
         return requestIDs
-
-
 
     def check_request(self, requestIDs):
         """
@@ -247,7 +252,7 @@ class JSOCClient(object):
             u = self._request_status(request_id)
             status = int(u.json()['status'])
 
-            if status == 0: #Data ready to download
+            if status == 0:  # Data ready to download
                 print(
 "Request {0} was exported at {1} and is ready to download.".format(
                                    u.json()['requestid'], u.json()['exptime']))
@@ -263,11 +268,10 @@ class JSOCClient(object):
 
         return allstatus
 
-
     def get(self, jsoc_response, path=None, overwrite=False, progress=True,
             max_conn=5, sleep=10):
         """
-        Make the request for the data in jsoc_response and wait for it to be 
+        Make the request for the data in jsoc_response and wait for it to be
         staged and then download the data.
 
         Parameters
@@ -299,7 +303,7 @@ class JSOCClient(object):
         results: a :class:`sunpy.net.vso.Results instance`
             A Results object
         """
-        
+
         # Make staging request to JSOC
         requestIDs = self.request_data(jsoc_response)
         # Add them to the response for good measure
@@ -383,7 +387,7 @@ class JSOCClient(object):
             if u.status_code == 200 and u.json()['status'] == '0':
                 for ar in u.json()['data']:
                     if overwrite or not os.path.isfile(os.path.join(path, ar['filename'])):
-                        urls.append(urlparse.urljoin(BASE_DL_URL + u.json()['dir'] + 
+                        urls.append(urlparse.urljoin(BASE_DL_URL + u.json()['dir'] +
                                                      '/', ar['filename']))
                 if progress:
                     print("{0} URLs found for Download. Totalling {1}MB".format(
@@ -467,28 +471,29 @@ class JSOCClient(object):
 
         # Build full POST payload
         payload = {'ds': dataset,
-                   'format':'json',
-                   'method':'url',
-                   'notify':notify,
-                   'op':'exp_request',
-                   'process':'n=0|no_op',
-                   'protocol':jprotocol,
-                   'requestor':'none',
-                   'filenamefmt':'{0}.{{T_REC:A}}.{{CAMERA}}.{{segment}}'.format(series)}
+                   'format': 'json',
+                   'method': 'url',
+                   'notify': notify,
+                   'op': 'exp_request',
+                   'process': 'n=0|no_op',
+                   'protocol': jprotocol,
+                   'requestor': 'none',
+                   'filenamefmt': '{0}.{{T_REC:A}}.{{CAMERA}}.{{segment}}'.format(series)}
 
         payload.update(kwargs)
         return payload
 
     def _send_jsoc_request(self, start_time, end_time, series, notify='',
-                          protocol='FITS', compression='rice', **kwargs):
+                           protocol='FITS', compression='rice', **kwargs):
         """
         Request that JSOC stages data for download
 
         This routine puts in a POST request to JSOC
         """
 
-        payload = self._make_query_payload(start_time, end_time, series, notify=notify,
-                          protocol=protocol, compression=compression, **kwargs)
+        payload = self._make_query_payload(start_time, end_time, series,
+                                           notify=notify, protocol=protocol,
+                                           compression=compression, **kwargs)
 
         r = requests.post(JSOC_EXPORT_URL, data=payload)
 
@@ -497,15 +502,14 @@ class JSOCClient(object):
 
         return r, r.json()
 
-
     def _lookup_records(self, iargs):
         """
         Do a LookData request to JSOC to workout what results the query returns
         """
         keywords = ['DATE', 'TELESCOP', 'INSTRUME', 'T_OBS', 'WAVELNTH',
                     'WAVEUNIT']
-        
-        
+
+
         postthis = {'ds': self._make_recordset(**iargs),
                     'op': 'rs_list',
                     'key': str(keywords)[1:-1].replace(' ', '').replace("'", ''),
@@ -513,16 +517,15 @@ class JSOCClient(object):
                     'link': '**NONE**'}
 
         r = requests.get(JSOC_INFO_URL, params=postthis)
-        
+
         result = r.json()
 
         out_table = {}
         for col in result['keywords']:
             out_table.update({col['name']:col['values']})
-        
+
         # sort the table before returning
         return astropy.table.Table(out_table)[keywords]
-
 
     def _multi_request(self, **kwargs):
         """

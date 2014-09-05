@@ -9,10 +9,12 @@ from sunpy.net.vso.attrs import Time, _VSOSimpleAttr
 __all__ = ['Series', 'Protocol', 'Notify', 'Compression', 'Wavelength', 'Time',
            'Segment', 'walker']
 
+
 class Time(Time):
     """
     Time range to download
     """
+
 
 class Series(_VSOSimpleAttr):
     """
@@ -34,7 +36,8 @@ class Segment(_VSOSimpleAttr):
 
 class Protocol(_VSOSimpleAttr):
     """
-    The type of download to request one of ("FITS", "JPEG", "MPG", "MP4", or "as-is").
+    The type of download to request one of
+    ("FITS", "JPEG", "MPG", "MP4", or "as-is").
     Only FITS is supported, the others will require extra keywords.
     """
     pass
@@ -44,7 +47,7 @@ class Notify(_VSOSimpleAttr):
     """
     An email address to get a notification to when JSOC has staged your request
     """
-    pass 
+    pass
 
 
 class Compression(_VSOSimpleAttr):
@@ -65,16 +68,15 @@ class Wavelength(_VSOSimpleAttr):
         if not isinstance(value, u.Quantity):
             raise TypeError("Wave inputs must be astropy Quantities")
         Attr.__init__(self)
-        
+
         self.value = int(np.ceil(value.to(u.AA).value))
 
     def __or__(self, other):
-        
-	if isinstance(other,self.__class__):
-	     return self.__class__([self.value ,other.value])
-	if self == other:
-	     return self
-	return AttrOr([self, other])
+        if isinstance(other, self.__class__):
+            return self.__class__([self.value, other.value])
+        if self == other:
+            return self
+        return AttrOr([self, other])
     __ror__ = __or__
 
 
@@ -83,7 +85,7 @@ walker = AttrWalker()
 
 @walker.add_creator(AttrAnd, _VSOSimpleAttr, Time)
 def _create(wlk, query):
-    
+
     map_ = {}
     wlk.apply(query, map_)
     return [map_]
@@ -91,7 +93,7 @@ def _create(wlk, query):
 
 @walker.add_applier(AttrAnd)
 def _apply(wlk, query, imap):
-    
+
     for iattr in query.attrs:
         wlk.apply(iattr, imap)
 
@@ -108,7 +110,7 @@ def _apply(wlk, query, imap):
     imap['start_time'] = query.start
     imap['end_time'] = query.end
 
-     
+
 @walker.add_creator(AttrOr)
 def _create(wlk, query):
 
@@ -117,4 +119,3 @@ def _create(wlk, query):
         qblocks.extend(wlk.create(iattr))
 
     return qblocks
-
