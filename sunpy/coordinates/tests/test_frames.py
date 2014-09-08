@@ -275,8 +275,6 @@ def test_transform_accuracy():
     npt.assert_allclose(sc_zero.hlon, sc_zero_hgc.hlon - Longitude180(dateobs_calc[0]))
     npt.assert_allclose(sc_zero.hlat, sc_zero_hgc.hlat)
     npt.assert_allclose(sc_zero.rad, sc_zero_hgc.rad)
-
-    # TODO: WCS Tests
     
     # Cadair's analytical test
     # See: http://nbviewer.ipython.org/gist/Cadair/63d405b956c3478bfa64
@@ -300,7 +298,6 @@ def test_transform_accuracy():
     npt.assert_allclose(sc_hcc.z, expect_z)
     
     # Now in HPC, we have a complex bunch of equations. 
-    # TODO: Fix the Ty problem in this HGS-HPC test.
     
     expect_Ty = arcsin((RSun/sqrt(2))/(np.sqrt(((3*RSun**2)/4) + (DSun - (RSun/2))**2))).to(u.deg)
     expect_Tx = arctan(1/(2*(DSun/RSun)-1)).to(u.deg)
@@ -313,3 +310,29 @@ def test_transform_accuracy():
         npt.assert_allclose(coord.Tx.to(u.deg), expect_Tx)
         npt.assert_allclose(coord.distance, expect_d)
         npt.assert_allclose(coord.Ty.to(u.deg), expect_Ty)
+
+@pytest.mark.parametrize("input, expected, extras, to",
+                         [([40.0, 32.0] * u.arcsec, [28748691, 22998953] * u.m, 
+                           {'frame': 'helioprojective'}, 'heliocentric'),
+                          ([40.0, 32.0] * u.arcsec, [28748691, 22998953] * u.m,
+                           {'distance': 0.5 * u.au, 'frame': 'helioprojective'},
+                            'heliocentric'),
+                          ([28748691, 22998953, 0] * u.m, [40.0, 32.0] * u.arcsec,
+                           {'frame': 'heliocentric'}, 'helioprojective')])
+def test_wcs_numbers(input, expected, extras, to):
+    dateobs = '2011/01/01T00:00:45'
+    extras['dateobs'] = dateobs
+    sc = SkyCoord(*input, **extras)
+    
+    sc_trans = sc.transform_to(to)
+    
+    if isinstance(sc_trans.representation, SphericalWrap180Representation):
+        npt.assert_allclose(sc_trans.spherical.lon, expected[0].to(u.deg))
+        npt.assert_allclose(sc_trans.spherical.lat, expected[1].to(u.deg))
+        if expected[2] is not None:
+            npt.assert_allclose(sc_trans.spherical.distance, expected[2].to(u.km))
+    elif isinstance(sc_trans.representation, CartesianRepresentation):
+        npt.assert_allclose(sc_trans.cartesian.x, expected[0].to(u.km))
+        npt.assert_allclose(sc_trans.cartesian.y, expected[1].to(u.km))
+        if expected[2] is not None:
+            npt.assert_allclose(sc_trans.cartesian.z, expected[2].to(u.km))
