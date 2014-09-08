@@ -7,6 +7,7 @@
 import numpy as np
 from astropy import units as u
 from numpy.testing import assert_allclose, assert_array_almost_equal
+import pytest
 from scipy.ndimage.interpolation import shift
 from sunpy import AIA_171_IMAGE
 from sunpy import map
@@ -160,10 +161,8 @@ def test_mapcube_coalign_by_match_template():
 
     # Test setting the template as something other than a ndarray and a
     # GenericMap.  This should throw a ValueError.
-    try:
+    with pytest.raises(ValueError):
         test_displacements = mapcube_coalign_by_match_template(mc, template='broken')
-    except ValueError:
-        pass
 
     # Test passing in displacements
     test_apply_displacements = {'x':-test_displacements['x'], 'y':-test_displacements['y']}
@@ -212,18 +211,12 @@ def test_apply_shifts():
 
     # Test to see if the code can detect the fact that the input shifts are not
     # astropy quantities
-    try:
+    with pytest.raises(ValueError):
         tested = apply_shifts(mc, numerical_displacements["y"], astropy_displacements["x"])
-    except ValueError:
-        pass
-    try:
+    with pytest.raises(ValueError):
         tested = apply_shifts(mc, astropy_displacements["y"], numerical_displacements["x"])
-    except ValueError:
-        pass
-    try:
+    with pytest.raises(ValueError):
         tested = apply_shifts(mc, numerical_displacements["y"], numerical_displacements["x"])
-    except ValueError:
-        pass
 
     # Test returning with no extra options - the code returns a mapcube only
     test_output = apply_shifts(mc, astropy_displacements["y"], astropy_displacements["x"])
@@ -238,7 +231,7 @@ def test_apply_shifts():
     # Test returning with clipping.  Output layers should be smaller than the
     # original layer
     test_mc = apply_shifts(mc, astropy_displacements["y"], astropy_displacements["x"],  clip=True)
-    for i in range(0, len(test_mc)):
+    for i in range(0, len(test_mc.maps)):
         clipped = calculate_clipping(astropy_displacements["y"], astropy_displacements["x"])
         assert(test_mc[i].data.shape[0] == mc[i].data.shape[0] - np.max(clipped[0].value))
         assert(test_mc[i].data.shape[1] == mc[i].data.shape[1] - np.max(clipped[1].value))
