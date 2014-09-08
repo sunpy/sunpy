@@ -39,6 +39,10 @@ time_format = %%Y-%%m-%%d %%H:%%M:%%S
 ;download_dir = /tmp
 download_dir = data
 
+; Location where the sample data will be downloaded. Path should be specified
+; relative to the SunPy working directory.
+sample_dir = data/sample_dir
+
 ;;;;;;;;;;;;
 ; Database ;
 ;;;;;;;;;;;;

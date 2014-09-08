@@ -1,6 +1,6 @@
 """SunPy sample data files"""
 from __future__ import absolute_import
-import sunpy
+
 import os
 from os.path import join, splitext
 from os import rename, remove
@@ -11,8 +11,8 @@ import urllib2
 __author__ = "Steven Christe"
 __email__ = "steven.christe@nasa.gov"
 
-
-rootdir = os.path.join(os.path.dirname(sunpy.__file__), "data", "sample")
+from sunpy import config
+default_dir = config.get("downloads", "sample_dir")
 
 _base_urls = ('http://data.sunpy.org/sample-data/', 'http://hesperia.gsfc.nasa.gov/~schriste/sunpy-sample-data/')
 
@@ -50,11 +50,11 @@ def download(progress=True):
                 if ext == '.zip':
                     print("Unpacking: %s" % real_name)
                     with ZipFile(f, 'r') as zip_file:
-                        zip_file.extract(real_name, rootdir)
+                        zip_file.extract(real_name, default_dir)
                     remove(f)
                 else:
                     # move files to the data directory
-                    rename(f, join(rootdir, file_name))
+                    rename(f, join(default_dir, file_name))
                     
 def url_exists(url, timeout=2):
     """
@@ -94,35 +94,35 @@ def url_exists(url, timeout=2):
 # AIA20110319_105400_0171.fits
 #
 AIA_171_IMAGE = os.path.abspath(
-    os.path.join(rootdir, "AIA20110319_105400_0171.fits")
+    join(default_dir, "AIA20110319_105400_0171.fits")
 )
 
 #
 # hsi_image_20101016_191218.fits
 #
 RHESSI_IMAGE = os.path.abspath(
-    os.path.join(rootdir, "hsi_image_20101016_191218.fits")
+    join(default_dir, "hsi_image_20101016_191218.fits")
 )
 
 #
 # eit_l1_20020625_100011.fits
 #
 EIT_195_IMAGE = os.path.abspath(
-    os.path.join(rootdir, "eit_l1_20020625_100011.fits")
+    join(default_dir, "eit_l1_20020625_100011.fits")
 )
 
 CALLISTO_IMAGE = os.path.abspath(
-    os.path.join(rootdir, "BIR_20110922_103000_01.fit")
+    join(default_dir, "BIR_20110922_103000_01.fit")
 )
 
 # A stacked calibrated event list from RHESSI
 # hsi_calib_ev_20020220_1106_20020220_1106_25_40.fits
 #
 RHESSI_EVENT_LIST = os.path.abspath(
-    os.path.join(rootdir, "hsi_calib_ev_20020220_1106_20020220_1106_25_40.fits")
+    join(default_dir, "hsi_calib_ev_20020220_1106_20020220_1106_25_40.fits")
 )
 
 #
 # swap_lv1_20120101_001607.fits
 #
-SWAP_LEVEL1_IMAGE = os.path.join(rootdir, "swap_lv1_20120101_001607.fits")
+SWAP_LEVEL1_IMAGE = join(default_dir, "swap_lv1_20120101_001607.fits")
