@@ -1,12 +1,11 @@
 """SunPy sample data files"""
 from __future__ import absolute_import
 
-import os
-from os.path import join, splitext
+import os.path
+from sunpy.util.net import url_exists
 from os import rename, remove
 from astropy.utils.data import download_file
 from zipfile import ZipFile
-import urllib2
 
 __author__ = "Steven Christe"
 __email__ = "steven.christe@nasa.gov"
@@ -42,10 +41,10 @@ def download(progress=True):
     
     for base_url in _base_urls:
         for file_name in _files:
-            if url_exists(join(base_url, file_name)):
-                f = download_file(join(base_url, file_name))
+            if url_exists(os.path.join(base_url, file_name)):
+                f = download_file(os.path.join(base_url, file_name))
                 
-                real_name, ext = splitext(file_name)
+                real_name, ext = os.path.splitext(file_name)
                 
                 if ext == '.zip':
                     print("Unpacking: %s" % real_name)
@@ -54,75 +53,41 @@ def download(progress=True):
                     remove(f)
                 else:
                     # move files to the data directory
-                    rename(f, join(default_dir, file_name))
-                    
-def url_exists(url, timeout=2):
-    """
-    Checks whether a url is online.
-
-    Parameters
-    ----------
-    url: str
-        A string containing a URL
-
-    Returns
-    -------
-    value: bool
-
-    Examples
-    --------
-    >>> from sunpy.net.helio import parser
-    >>> url_exists('http://www.google.com')
-    True
-    >>> url_exists('http://aslkfjasdlfkjwerf.com')
-    False
-    """
-    try:
-        urllib2.urlopen(url, timeout=timeout)
-    except urllib2.HTTPError, e:
-        #print(url)
-        #print(e.reason)
-        return False
-    except urllib2.URLError, e:
-        #print(url)
-        #print(e.reason)
-        return False
-    else:
-        return True
+                    rename(f, os.path.join(default_dir, file_name))
 
 #
 # AIA20110319_105400_0171.fits
 #
 AIA_171_IMAGE = os.path.abspath(
-    join(default_dir, "AIA20110319_105400_0171.fits")
+    os.path.join(default_dir, "AIA20110319_105400_0171.fits")
 )
 
 #
 # hsi_image_20101016_191218.fits
 #
 RHESSI_IMAGE = os.path.abspath(
-    join(default_dir, "hsi_image_20101016_191218.fits")
+    os.path.join(default_dir, "hsi_image_20101016_191218.fits")
 )
 
 #
 # eit_l1_20020625_100011.fits
 #
 EIT_195_IMAGE = os.path.abspath(
-    join(default_dir, "eit_l1_20020625_100011.fits")
+    os.path.join(default_dir, "eit_l1_20020625_100011.fits")
 )
 
 CALLISTO_IMAGE = os.path.abspath(
-    join(default_dir, "BIR_20110922_103000_01.fit")
+    os.path.join(default_dir, "BIR_20110922_103000_01.fit")
 )
 
 # A stacked calibrated event list from RHESSI
 # hsi_calib_ev_20020220_1106_20020220_1106_25_40.fits
 #
 RHESSI_EVENT_LIST = os.path.abspath(
-    join(default_dir, "hsi_calib_ev_20020220_1106_20020220_1106_25_40.fits")
+    os.path.join(default_dir, "hsi_calib_ev_20020220_1106_20020220_1106_25_40.fits")
 )
 
 #
 # swap_lv1_20120101_001607.fits
 #
-SWAP_LEVEL1_IMAGE = join(default_dir, "swap_lv1_20120101_001607.fits")
+SWAP_LEVEL1_IMAGE = os.path.join(default_dir, "swap_lv1_20120101_001607.fits")
