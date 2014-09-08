@@ -381,15 +381,6 @@ run: ::
 
 This will generate HTML documentation for SunPy.
 
-Additionally, there is a `paver <http://paver.github.com/paver/>`_ command that
-can be used to accomplish the same thing: ::
-
-    paver prepare_docs
-    
-Which is a shortcut for the sphinx command: ::
-
-    sphinx-build source/ html/
-
 For more information on how to use Sphinx, consult the `Sphinx documentation 
 <http://sphinx.pocoo.org/contents.html>`_.
 
