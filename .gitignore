@@ -28,6 +28,8 @@ sunpy/version.py
 sunpy/cython_version.py
 sunpy/data/sample/*.fits
 sunpy/data/sample/*.csv
+sunpy/data/sample/*.fit
+
 
 ### https://raw.github.com/github/gitignore/master/Global/OSX.gitignore
 
