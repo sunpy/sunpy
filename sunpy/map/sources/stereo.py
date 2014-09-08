@@ -21,7 +21,7 @@ class EUVIMap(GenericMap):
 
         self.cmap = cm.get_cmap('sohoeit%d' % self.wavelength)
 
-        # Try to identify when the FITS meta data ddes not have the correct
+        # Try to identify when the FITS meta data does not have the correct
         # date FITS keyword
         if ('date_obs' in self.meta) and not('date-obs' in self.meta):
             self.meta['date-obs'] = self.meta['date_obs']
@@ -54,7 +54,7 @@ class CORMap(GenericMap):
 
         self.cmap = cm.get_cmap('stereocor%s' % self.detector[-1])
 
-        # Try to identify when the FITS meta data ddes not have the correct
+        # Try to identify when the FITS meta data does not have the correct
         # date FITS keyword
         if ('date_obs' in self.meta) and not('date-obs' in self.meta):
             self.meta['date-obs'] = self.meta['date_obs']
@@ -81,7 +81,7 @@ class HIMap(GenericMap):
 
         self.cmap = cm.get_cmap('stereohi%s' % self.detector[-1])
 
-        # Try to identify when the FITS meta data ddes not have the correct
+        # Try to identify when the FITS meta data does not have the correct
         # date FITS keyword
         if ('date_obs' in self.meta) and not('date-obs' in self.meta):
             self.meta['date-obs'] = self.meta['date_obs']
