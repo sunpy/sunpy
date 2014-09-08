@@ -310,6 +310,9 @@ def test_transform_accuracy():
         npt.assert_allclose(coord.Tx.to(u.deg), expect_Tx)
         npt.assert_allclose(coord.distance, expect_d)
         npt.assert_allclose(coord.Ty.to(u.deg), expect_Ty)
+        
+from sunpy import sun as s
+RSun = s.constants.radius.si.to(u.km)   
 
 @pytest.mark.parametrize("input, expected, extras, to",
                          [([40.0, 32.0] * u.arcsec, [28748691, 22998953] * u.m, 
@@ -318,20 +321,24 @@ def test_transform_accuracy():
                            {'distance': 0.5 * u.au, 'frame': 'helioprojective'},
                             'heliocentric'),
                           ([28748691, 22998953, 0] * u.m, [40.0, 32.0] * u.arcsec,
-                           {'frame': 'heliocentric'}, 'helioprojective')])
+                           {'frame': 'heliocentric'}, 'helioprojective'),
+                          ([13.0, 58.0, 0] * u.m, [1.0791282e-06*u.deg, -7.0640732*u.deg,
+                           RSun],
+                           {'frame': 'heliocentric'}, 'heliographicstonyhurst')])
 def test_wcs_numbers(input, expected, extras, to):
     dateobs = '2011/01/01T00:00:45'
     extras['dateobs'] = dateobs
+    rtol = 1e-10
     sc = SkyCoord(*input, **extras)
     
     sc_trans = sc.transform_to(to)
     
-    if isinstance(sc_trans.representation, SphericalWrap180Representation):
+    if sc_trans.representation is SphericalWrap180Representation:
         npt.assert_allclose(sc_trans.spherical.lon, expected[0].to(u.deg))
         npt.assert_allclose(sc_trans.spherical.lat, expected[1].to(u.deg))
         if expected[2] is not None:
             npt.assert_allclose(sc_trans.spherical.distance, expected[2].to(u.km))
-    elif isinstance(sc_trans.representation, CartesianRepresentation):
+    elif sc_trans.representation is CartesianRepresentation:
         npt.assert_allclose(sc_trans.cartesian.x, expected[0].to(u.km))
         npt.assert_allclose(sc_trans.cartesian.y, expected[1].to(u.km))
         if expected[2] is not None:
