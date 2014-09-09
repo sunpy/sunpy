@@ -4,6 +4,7 @@ Latest
  * Added 3D/4D Cubes module
  * Added astropy.wcs.WCS subclass that supports unmatched celestial axes
  * Added support for gzipped FITS files.
+ * Add STEREO HI Map subclass and color maps.
 
 0.5.0
 -----
