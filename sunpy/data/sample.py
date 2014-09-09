@@ -13,6 +13,7 @@ __email__ = "steven.christe@nasa.gov"
 from sunpy import config
 default_dir = config.get("downloads", "sample_dir")
 
+# urls to search for the sample data
 _base_urls = ('http://data.sunpy.org/sample-data/', 'http://hesperia.gsfc.nasa.gov/~schriste/sunpy-sample-data/')
 
 _files = {"AIA_171_IMAGE": "AIA20110319_105400_0171.fits",
