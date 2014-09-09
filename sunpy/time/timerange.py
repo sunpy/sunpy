@@ -125,6 +125,17 @@ class TimeRange(object):
         return self.start + self.dt / 2
 
     @property
+    def hours(self):
+        """
+        Get the number of hours elapsed.
+
+        Returns
+        -------
+        value : `astropy.units.Quantity`
+        """
+        return self._duration.to('hour')
+
+    @property
     def days(self):
         """
         Gets the number of days elapsed.
@@ -139,7 +150,7 @@ class TimeRange(object):
     def seconds(self):
         """
         Gets the number of seconds elapsed.
-        
+
         Returns
         -------
         value : `astropy.units.Quantity`
@@ -147,21 +158,10 @@ class TimeRange(object):
         return self._duration.to('s')
 
     @property
-    def hours(self):
-        """
-        Get the number of hours elapsed.
-
-        Returns
-        -------
-        value : `astropy.units.Quantity`
-        """
-        return self._duration.to('hour')
-
-    @property
     def minutes(self):
         """
         Gets the number of minutes elapsed.
-        
+
         Returns
         -------
         value : `astropy.units.Quantity`
@@ -177,7 +177,7 @@ class TimeRange(object):
         -------
         value : `astropy.units.Quantity`
         """
-        result = self.dt.microseconds * Unit('us') + self.dt.seconds * Unit('s') + self.dt.days * Unit('day') 
+        result = self.dt.microseconds * Unit('us') + self.dt.seconds * Unit('s') + self.dt.days * Unit('day')
         return result
 
     def __repr__(self):
@@ -253,9 +253,9 @@ class TimeRange(object):
         >>> TimeRange.window(60*60*u('s'), window=12*u('s'))
         """
         if not isinstance(window, timedelta):
-            window = timedelta(seconds=cadence.to('s'))
+            window = timedelta(seconds=window.to('s').value)
         if not isinstance(cadence, timedelta):
-            cadence = timedelta(seconds=cadence.to('s'))
+            cadence = timedelta(seconds=cadence.to('s').value)
 
         n = 1
         times = [TimeRange(self.start, self.start + window)]
@@ -316,5 +316,5 @@ class TimeRange(object):
         >>> time_range = TimeRange('2014/05/04 13:54', '2018/02/03 12:12')
         >>> time in time_range
         """
-        t = parse_time(time)
-        return t >= self.start and t <= self.end
+        this_time = parse_time(time)
+        return this_time >= self.start and this_time <= self.end

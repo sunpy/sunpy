@@ -86,7 +86,7 @@ class TestTimeRange(object):
     
     def test_window(self, timerange_a):
         timerange = sunpy.time.TimeRange(tbegin_str, tfin_str)
-        window = timerange.window(12 * 60 * 60, 10)
+        window = timerange.window(Quantity(12 * 60 * 60, 's'), Quantity(10, 's'))
         expect = [sunpy.time.TimeRange('2012/1/1T00:00:00', '2012/1/1T00:00:10'),
                   sunpy.time.TimeRange('2012/1/1T12:00:00', '2012/1/1T12:00:10'),
                   sunpy.time.TimeRange('2012/1/2T00:00:00', '2012/1/2T00:00:10')]
