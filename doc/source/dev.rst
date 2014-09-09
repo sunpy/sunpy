@@ -359,7 +359,7 @@ Sphinx
 
 **Overview**
 
-`Sphinx <http://sphinx.pocoo.org/>`_ is tool for generating high-quality 
+`Sphinx <http://sphinx.pocoo.org/>`_ is a tool for generating high-quality 
 documentation in various formats (HTML, pdf, etc) and is especially well-suited
 for documenting Python projects. Sphinx works by parsing files written using a 
 `a Mediawiki-like syntax 
@@ -373,13 +373,16 @@ Sphinx.
 **Usage**
 
 All of the SunPy documentation is contained in the ``doc/source`` folder and code
-comments. To generate the documentation you must have Sphinx (as well as Numpydoc) installed
-on your computer. Enter the ``doc/source`` folder and
-run: ::
+comments. To generate the documentation you must have Sphinx 
+(as well as Numpydoc and astropy-helpers) installed on your computer. 
+Enter the ``doc/source`` folder and run: ::
 
     make html
 
-This will generate HTML documentation for SunPy.
+This will generate HTML documentation for SunPy. To clean up and delete the 
+generated documentation run: ::
+
+    make clean
 
 For more information on how to use Sphinx, consult the `Sphinx documentation 
 <http://sphinx.pocoo.org/contents.html>`_.
