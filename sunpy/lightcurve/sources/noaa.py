@@ -89,7 +89,7 @@ class NOAAIndicesLightCurve(LightCurve):
         axes.xaxis.grid(True, 'major')
         axes.set_xlabel('Start time: ' + self.data['sunspot SWO'].index[0].strftime(TIME_FORMAT))
 
-        axes.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+        axes.legend(bbox_to_anchor=(1.02, 1), loc=2, borderaxespad=0.)
         plt.gcf().autofmt_xdate()
         
         return axes
@@ -186,7 +186,7 @@ class NOAAPredictIndicesLightCurve(LightCurve):
         axes.yaxis.grid(True, 'major')
         axes.xaxis.grid(True, 'major')
 
-        axes.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+        axes.legend(bbox_to_anchor=(1.02, 1), loc=2, borderaxespad=0.)
         plt.gcf().autofmt_xdate()        
 
         return axes

@@ -42,11 +42,9 @@ class GOESLightCurve(LightCurve):
         if axes is None:
             axes = plt.gca()
 
-        dates = matplotlib.dates.date2num(self.data.index)
-
-        axes.plot_date(dates, self.data['xrsa'], '-',
+        axes.plot_date(self.data.index, self.data['xrsa'], '-',
                      label='0.5--4.0 $\AA$', color='blue', lw=2, **plot_args)
-        axes.plot_date(dates, self.data['xrsb'], '-',
+        axes.plot_date(self.data.index, self.data['xrsb'], '-',
                      label='1.0--8.0 $\AA$', color='red', lw=2, **plot_args)
 
         axes.set_yscale("log")
@@ -63,7 +61,7 @@ class GOESLightCurve(LightCurve):
 
         axes.yaxis.grid(True, 'major')
         axes.xaxis.grid(True, 'major')
-        axes.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+        axes.legend(bbox_to_anchor=(1.02, 1), loc=2, borderaxespad=0.)
         plt.gcf().autofmt_xdate()
         
         return axes

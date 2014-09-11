@@ -54,7 +54,7 @@ class NoRHLightCurve(LightCurve):
         axes.set_ylabel('Correlation')
         axes.yaxis.grid(True, 'major')
         axes.xaxis.grid(True, 'major')
-        axes.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+        axes.legend(bbox_to_anchor=(1.02, 1), loc=2, borderaxespad=0.)
         plt.gcf().autofmt_xdate()
         
         return axes

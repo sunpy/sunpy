@@ -1008,7 +1008,7 @@ Dimension:\t [%d, %d]
         else:
             axes = figure.gca()
 
-        im = self.plot(axes=axes,**matplot_args)
+        im = self.plot(axes=axes, gamma=gamma, **matplot_args)
 
         if colorbar and not basic_plot:
             figure.colorbar(im)

@@ -49,10 +49,8 @@ class RHESSISummaryLightCurve(LightCurve):
         if axes is None:
             axes = plt.gca()
 
-        dates = matplotlib.dates.date2num(self.data.index)
-
         for item, frame in self.data.iteritems():
-            axes.plot_date(dates, frame.values, '-', label=item, **plot_args)
+            axes.plot_date(self.data.index, frame.values, '-', label=item, **plot_args)
 
         axes.set_yscale("log")
         axes.set_xlabel('Start time: ' + self.data.index[0].strftime(TIME_FORMAT))
@@ -62,7 +60,7 @@ class RHESSISummaryLightCurve(LightCurve):
 
         axes.yaxis.grid(True, 'major')
         axes.xaxis.grid(True, 'major')
-        axes.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+        axes.legend(bbox_to_anchor=(1.02, 1), loc=2, borderaxespad=0.)
         plt.gcf().autofmt_xdate()
         
         return axes
