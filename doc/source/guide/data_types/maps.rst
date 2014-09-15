@@ -232,3 +232,35 @@ the coalignment of mapcubes; type::
     help(mapcube_coalign_by_match_template)
 
 for a full list of options and functionality.
+
+10. Compensating for solar rotation in Mapcubes
+-----------------------------------------------
+Often a set of solar image data consists of fixing the pointing of a
+field of view for some time and observing.  Features on the Sun will
+rotate according to the Sun's differential rotation.
+
+A typical data preparation step when dealing with time series of these
+types of images is to shift the images so that features do not appear
+to move across the field of view.  This requires taking in to account
+the rotation of the Sun.  The Sun rotates differentially, depending on
+latitude, with features at the equator moving faster than features at
+the poles.
+
+SunPy provides a function to shift images in mapcubes following solar
+rotation.  This function shifts an image according to the solar
+differential rotation calculated at the latitude of the center of the
+field of view.  The image is not *differentially* rotated.  This
+function is useful for de-rotating images when the effects of
+differential rotation in the mapcube can be ignored (for example, if
+the spatial extent of the image is small, or when the duration of the
+mapcube is small; deciding on what 'small' means depends on your
+application).
+
+To apply this form of solar derotation to a mapcube, simply import the
+function and apply it to your mapcube::
+
+    from sunpy.image.coalignment import mapcube_solar_derotate
+    derotated = mapcube_solar_derotate(mc)
+
+Please consult the docstring of the function in order to learn about
+the features of this function.
