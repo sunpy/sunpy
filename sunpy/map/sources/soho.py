@@ -50,6 +50,7 @@ class EITMap(GenericMap):
         self._nickname = self.detector
 
         self.cmap = cm.get_cmap('sohoeit%d' % self.wavelength)
+        self.cmap.set_gamma(0.25)
 
     @property
     def rsun_arcseconds(self):
@@ -81,13 +82,10 @@ class EITMap(GenericMap):
         if self.data.dtype == np.float32:
             return None
 
-        mean = self.mean()
-        std = self.std()
+        vmin = self.min()
+        vmax = self.max()
 
-        vmin = 1
-        vmax = min(self.max(), mean + 5 * std)
-
-        return colors.LogNorm(vmin, vmax)
+        return colors.Normalize(vmin, vmax)
 
 class LASCOMap(GenericMap):
     """LASCO Image Map definition"""
@@ -108,6 +106,7 @@ class LASCOMap(GenericMap):
         self._name = self.instrument + " " + self.detector + " " + self.measurement
         self._nickname = self.instrument + "-" + self.detector
         self.cmap = cm.get_cmap('soholasco%s' % self.detector[1])
+        self.cmap.set_gamma(0.6)
 
     @property
     def measurement(self):

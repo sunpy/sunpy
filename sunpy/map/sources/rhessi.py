@@ -4,6 +4,8 @@
 __author__ = "Steven Christe"
 __email__ = "steven.d.christe@nasa.gov"
 
+from sunpy.cm import cm
+
 from sunpy.map import GenericMap
 
 __all__ = ['RHESSIMap']
@@ -34,6 +36,8 @@ class RHESSIMap(GenericMap):
         if self.meta['ctype2'] == 'arcsec':
             self.meta['cunit2'] = 'arcsec'
             self.meta['ctype2'] = 'HPLT-TAN'
+        
+        self.cmap = cm.get_cmap('rhessi')
 
     @property
     def measurement(self):
