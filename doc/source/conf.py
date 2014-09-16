@@ -43,7 +43,7 @@ sys.modules.update(modules)
 # -- General configuration ----------------------------------------------------
 
 # Load all of the global Astropy configuration
-from astropy_helpers.sphinx.conf import *
+from astropy.sphinx.conf import *
 
 # If your documentation needs a minimal Sphinx version, state it here.
 needs_sphinx = '1.1'
@@ -137,7 +137,7 @@ man_pages = [('index', project.lower(), project + u' Documentation',
 
 ## -- Options for the edit_on_github extension ----------------------------------------
 #
-extensions += ['astropy_helpers.sphinx.ext.edit_on_github', 'sphinx.ext.doctest']
+extensions += ['astropy.sphinx.ext.edit_on_github', 'sphinx.ext.doctest']
 
 ## Don't import the module as "version" or it will override the
 ## "version" configuration parameter
