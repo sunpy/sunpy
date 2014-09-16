@@ -8,6 +8,21 @@ and trying out some of the examples demonstrated. Once you've completed the
 tutorial check out the rest of the :doc:`User Guide </guide/index>` for a more
 thorough look at the functionality available.
 
+Sample Data
+-----------
+This tour makes use of a number of sample data files which you will need to
+download. To download the sample files simply run the following command::
+
+    import sunpy.data
+    sunpy.data.download()
+
+After running this you can then import the sample data files shortcuts which
+are used below (e.g. sunpy.data.sample) by simply importing the module like so::
+
+    import sunpy.data.sample
+    
+If the sample files are not available for some reason that you will get an error
+on import.
 
 Maps
 ----
