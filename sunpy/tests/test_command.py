@@ -2,12 +2,12 @@
 """
 Created on Sat Jun  7 19:36:08 2014
 
-@author: stuart
-"""
-import os
-import sys
+@author: Stuart Mumford
 
-sys.path.insert(1, os.path.abspath('astropy_helpers'))
+This file is designed to be imported and ran only via setup.py, hence it's 
+dependancy on astropy_helpers which will be availible in that context.
+"""
+
 from astropy_helpers.test_helpers import AstropyTest
 from astropy_helpers.compat import _fix_user_options
 
@@ -20,12 +20,6 @@ class SunPyTest(AstropyTest):
         ('package=', 'P',
          "The name of a specific package to test, e.g. 'io' or 'utils'.  "
          "If nothing is specified, all default tests are run."),
-        # Path to test
-        #('test-path=', 't',
-        # 'Specify a test location by path.  If a relative path to a '
-        # '.py file, it is relative to the built package.  If a relative '
-        # 'path to a .rst file, it is relative to the docs directory '
-        # '(see --docs-path).  May also be an absolute path.'),
         # Print all the things
         ('verbose-results', 'V',
          'Turn on verbose output from pytest.'),
@@ -33,7 +27,7 @@ class SunPyTest(AstropyTest):
         ('plugins=', 'p',
          'Plugins to enable when running pytest.'),
         # Run only offline tests?
-        ('no-online', None,
+        ('offline-only', None,
          'Only run test that do not require a internet connection.'),
         # Calculate test coverage
         ('coverage', 'c',
@@ -60,16 +54,16 @@ class SunPyTest(AstropyTest):
         self.verbose_results = False
         self.plugins = None
         self.args = None
-        self.no_online = False
+        self.offline_only = False
         self.coverage = False
-        self.cov_report = 'term'
+        self.cov_report = 'term' if self.coverage else None
         self.docs_path = None
         self.parallel = 0
 
     def _validate_required_deps(self):
         pass
 
-    def construct_testing_command(self):
+    def generate_testing_command(self):
         """
         Build a Python script to run the tests.
         """
@@ -77,11 +71,8 @@ class SunPyTest(AstropyTest):
         cmd_pre = ''  # Commands to run before the test function
         cmd_post = ''  # Commands to run after the test function
 
-        print self.no_online
-        print self.coverage
-        online = not self.no_online
-        print online
-
+        online = not self.offline_only
+        
         cmd = ('{cmd_pre}{0}; import {1.package_name}, sys; result = ('
                '{1.package_name}.self_test('
                'modulename={1.package!r}, '

@@ -7,7 +7,6 @@ import glob
 import os
 import sys
 
-import test_helper
 import ah_bootstrap
 from setuptools import setup
 
@@ -22,6 +21,7 @@ from astropy_helpers.setup_helpers import (
     register_commands, adjust_compiler, get_debug_option, get_package_info)
 from astropy_helpers.git_helpers import get_git_devstr
 from astropy_helpers.version_helpers import generate_version_py
+from sunpy.tests.test_command import SunPyTest
 
 # Get some values from the setup.cfg
 from distutils import config
@@ -57,7 +57,7 @@ if not RELEASE:
 cmdclassd = register_commands(PACKAGENAME, VERSION, RELEASE)
 
 # Overwrite the Astropy Testing framework
-cmdclassd['test'] = type('SunPyTest', (test_helper.SunPyTest,),
+cmdclassd['test'] = type('SunPyTest', (SunPyTest,),
                         {'package_name': 'sunpy'})
 
 # Adjust the compiler in case the default on this platform is to use a
@@ -103,6 +103,7 @@ setup(name=PACKAGENAME,
       version=VERSION,
       description=DESCRIPTION,
       scripts=scripts,
+      setup_requires=['numpy>1.7.1'],
       install_requires=['numpy>1.7.1',
                         'astropy>=0.4.0',
                         'scipy',
