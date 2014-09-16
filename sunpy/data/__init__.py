@@ -1,6 +1,8 @@
+# -*- coding: utf-8 -*-
 from __future__ import absolute_import
 
-from sunpy.data import sample
+from sunpy.data._sample import download
 
-for key in sample.sample_files:
-    setattr(sample, key, sample.sample_files[key])
+__author__ = "Steven Christe"
+__email__ = "steven.christe@nasa.gov"
+
