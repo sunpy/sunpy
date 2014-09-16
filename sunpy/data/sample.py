@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
 """SunPy sample data files"""
 
-import sys
-from _sample import sample_files
-from os.path import isfile, join
+import sys as _sys
+from _sample import sample_files as _sample_files
+from os.path import isfile as _isfile
+from os.path import join as _join
 
-from sunpy import config
-sampledata_dir = config.get("downloads", "sample_dir")
+from sunpy import config as _config
+_sampledata_dir = _config.get("downloads", "sample_dir")
 
-for key in sample_files:
-    print(join(sampledata_dir, sample_files[key]))
-    if isfile(join(sampledata_dir, sample_files[key])):
-        setattr(sys.modules[__name__], key, join(sampledata_dir, sample_files[key]))
+for key in _sample_files:
+    if _isfile(_join(_sampledata_dir, _sample_files[key])):
+        setattr(_sys.modules[__name__], key, _join(_sampledata_dir, _sample_files[key]))
     else:
-        raise ImportError("Sample data file(s) missing. Use download() to get them.")
+        raise ImportError("Sample data file(s) missing. Use sunpy.data.download() to get them.")
