@@ -49,6 +49,7 @@ def download(progress=True):
     None
     """
     number_of_files_fetched = 0
+    print("Downloading sample files to " + sampledata_dir)
     for base_url in _base_urls:
         for file_name in _files.itervalues():
             full_file_name = file_name[0] + file_name[1]
