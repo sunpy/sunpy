@@ -16,6 +16,11 @@ class TimeRange(object):
     """
     An object to handle time ranges.
 
+    .. note::
+
+       Regardless of how a TimeRange is constructed it will always provide a 
+       positive time range where the start time is before the end time.
+
     Parameters
     ----------
     a : str, number, `datetime.datetime`
@@ -34,7 +39,7 @@ class TimeRange(object):
     >>> time_range = TimeRange(('2010/03/04 00:10', '2010/03/04 00:20'))
     >>> from astropy.units import Unit
     >>> time_range = TimeRange('2010/03/04 00:10', 400 * Unit('s'))
-    >>> time_range = TimeRange('2010/03/04 00:10', -400 * Unit('day'))
+    >>> time_range = TimeRange('2010/03/04 00:10', 400 * Unit('day'))
     """
     def __init__(self, a, b=None):
         """Creates a new TimeRange instance"""
