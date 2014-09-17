@@ -3,21 +3,22 @@ Installation
 ============
 
 SunPy is a Python package for solar physics, it relies on and enables the use
-of the wider ecosystem of scientific Python packages. Therefore getting a 
-working SunPy installation is more about installing the whole scientific Python
-ecosystem than SunPy itself.
+of the wider ecosystem of scientific Python packages for solar physics.
+Therefore getting a working SunPy installation is more about installing the 
+whole scientific Python ecosystem than SunPy itself.
 
 If you are new to Python and scientific Python then continue to follow this 
 guide to get setup with the whole environment. If you already have a working
-Python / Scientific Python environment then you can skip to the <REQUIREMENTS>
-section.
+Python / Scientific Python environment then you can skip to the 
+:ref:`advanced-install` section.
 
-Installing Scientific Python
-----------------------------
+Installing Scientific Python and SunPy
+--------------------------------------
 
 If you do not currently have a working scientific Python distribution this 
 guide will set you up with the Anaconda Python distribution. Alternative options
-exist for different operating systems and can be found later in this guide.
+exist for different operating systems and can be found later in the
+:ref:`advanced-install` section.
 
 Anaconda is a free distribution of Python and a large amount of common 
 scientific packages, it is very powerful and easy to use. Installing Anaconda 
@@ -49,18 +50,12 @@ To install SunPy's extra dependancies run::
     conda update astropy
     pip install suds
 
-To install run::
+To install SunPy run::
  
  	pip install sunpy
 
-You now have a working SunPy installation, you can now skip to 
-<TESTING YOUR SUNPY INSTALL>.
-
-If a new version of SunPy is released you can update to the latest version 
-by running::
-
-    conda update anaconda
-    pip install --upgrade --no-deps sunpy suds
+You now have a working SunPy installation. You can check your SunPy install 
+by following the instructions in :ref:`testing-sunpy`. 
 
 .. note::
 
@@ -68,3 +63,24 @@ by running::
     platforms. If you require JPEG2000 support either use a different install 
     method, or contact the SunPy mailing list.
 
+Updating SunPy to a New Version
+###############################
+
+If a new version of SunPy is released you can update to the latest version 
+by running::
+
+    conda update anaconda
+    pip install --upgrade --no-deps sunpy suds
+
+
+Advanced SunPy Installation
+---------------------------
+
+If you do not whish to use Anaconda to install Scientific Python or you already 
+have a scientific Python installation there are other options for installing
+SunPy. 
+
+.. toctree::
+  :maxdepth: 2
+
+  advanced.rst

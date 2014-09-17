@@ -1,3 +1,5 @@
+.. _advanced-install:
+
 Advanced Installation Instructions
 ----------------------------------
 
@@ -6,8 +8,54 @@ manage your own scientific Python + SunPy installation.
 If you have never installed or used scientific Python we recommend that you 
 follow the <ANACONDA> Anaconda installation instructions.
 
+
+Alternative Scientific Python Installation Instructions
+=======================================================
+
+There are many alternatives to Anaconda as a way of installing a scientific 
+Python environment, there are various other platform specific ways to install 
+scientific Python:
+
+.. toctree::
+    :maxdepth: 1
+
+    linux.rst
+    win.rst
+    mac.rst
+
+
+Installing SunPy on top of an existing Scientific Python Environment
+====================================================================
+
+These instructions assume you have a scientific Python distribution with access
+to the `pip` command installed.
+
+Prerequisites
+#############
+
+You will need a compiler suite and the development headers for Python and
+Numpy in order to build SunPy. On Linux, using the package manager for your
+distribution will usually be the easiest route, while on MacOS X you will
+need the XCode command line tools.
+
+The `instructions for building Numpy from source
+<http://docs.scipy.org/doc/numpy/user/install.html>`_ are also a good
+resource for setting up your environment to build Python packages.
+
+.. note:: If you are using MacOS X, you will need to the XCode command line
+          tools.  One way to get them is to install `XCode
+          <https://developer.apple.com/xcode/>`_. If you are using OS X 10.7
+          (Lion) or later, you must also explicitly install the command line
+          tools. You can do this by opening the XCode application, going to
+          **Preferences**, then **Downloads**, and then under **Components**,
+          click on the Install button to the right of **Command Line Tools**.
+          Alternatively, on 10.7 (Lion) or later, you do not need to install
+          XCode, you can download just the command line tools from
+          https://developer.apple.com/downloads/index.action (requires an Apple
+          developer account).
+
 SunPy's Requirements
-====================
+####################
 
 SunPy consists of many submodules that each have their own requirements. 
 You do not need to fufill all the requirements if you only intend on using 
@@ -51,38 +99,8 @@ The packages that will be installed as dependencies by default are the ones requ
 - `matplotlib`
 - `pandas`
 
-Installing SunPy
-================
-
-These instructions assume you have a scientific Python distribution with access
-to the `pip` command installed.
-
-Prerequisites
--------------
-
-You will need a compiler suite and the development headers for Python and
-Numpy in order to build SunPy. On Linux, using the package manager for your
-distribution will usually be the easiest route, while on MacOS X you will
-need the XCode command line tools.
-
-The `instructions for building Numpy from source
-<http://docs.scipy.org/doc/numpy/user/install.html>`_ are also a good
-resource for setting up your environment to build Python packages.
-
-.. note:: If you are using MacOS X, you will need to the XCode command line
-          tools.  One way to get them is to install `XCode
-          <https://developer.apple.com/xcode/>`_. If you are using OS X 10.7
-          (Lion) or later, you must also explicitly install the command line
-          tools. You can do this by opening the XCode application, going to
-          **Preferences**, then **Downloads**, and then under **Components**,
-          click on the Install button to the right of **Command Line Tools**.
-          Alternatively, on 10.7 (Lion) or later, you do not need to install
-          XCode, you can download just the command line tools from
-          https://developer.apple.com/downloads/index.action (requires an Apple
-          developer account).
-
 Using `pip`
------------
+###########
 
 There are multiple options depending on how many optional dependancies you 
 want to install:
@@ -109,8 +127,7 @@ To install SunPy with database dependencies (sqlalchemy)::
 
 .. note::
 
-    You will need a C compiler (e.g. ``gcc`` or ``clang``) to be installed (see
-    `Building from source`_ below) for the installation to succeed.
+    You will need a C compiler (e.g. ``gcc`` or ``clang``) to be installed.
 
 .. note::
 
@@ -118,7 +135,8 @@ To install SunPy with database dependencies (sqlalchemy)::
     required administrative access to install new packages to your Python
     installation.  In this case you may consider using the ``--user`` option
     to install the package into your home directory.  You can read more about
-    how to do this in the `pip documentation <http://www.pip-installer.org/en/1.2.1/other-tools.html#using-pip-with-the-user-scheme>`_.
+    how to do this in the `pip documentation 
+    <http://www.pip-installer.org/en/1.2.1/other-tools.html#using-pip-with-the-user-scheme>`_.
 
     Alternatively, if you intend to do development on other software that uses
     SunPy, such as an affiliated package, consider installing SunPy into a
@@ -127,25 +145,26 @@ To install SunPy with database dependencies (sqlalchemy)::
     Do **not** install SunPy or other third-party packages using ``sudo``
     unless you are fully aware of the risks.
 
-.. _anaconda_install:
+.. _testing-sunpy:
 
-
-Testing an installed SunPy
---------------------------
+Testing SunPy
+-------------
 
 The easiest way to test your installed version of SunPy is running
-correctly is to use the :func:`sunpy.tests` function::
+correctly is to use the :func:`sunpy.self_test()` function::
 
-    import sunpy.tests
-    sunpy.tests.main()
+    import sunpy
+    sunpy.self_test(online=False)
+
+Which will run all the SunPy tests that don't require an active internet 
+connection (and can therefore be quite slow).
 
 The tests should run and print out any failures, which you can report at
 the `SunPy issue tracker <http://github.com/sunpy/sunpy/issues>`_.
 
 
-
-Development repository
-^^^^^^^^^^^^^^^^^^^^^^
+Installing the Development Version of SunPy
+-------------------------------------------
 
 The latest development version of SunPy can be cloned from github
 using this command::
@@ -158,27 +177,14 @@ using this command::
    :ref:`developer-docs`.  This document covers only the basics
    necessary to install SunPy.
 
-Building and Installing
------------------------
-
-SunPy uses the Python `distutils framework
-<http://docs.python.org/install/index.html>`_ for building and
-installing and requires the
-`distribute <http://pypi.python.org/pypi/distribute>`_ extension--the later is
-automatically downloaded when running ``python setup.py`` if it is not already
-provided by your system.
-
-If Numpy is not already installed in your Python environment, the
-SunPy setup process will try to download and install it before
-continuing to install SunPy.
-
-To build SunPy (from the root of the source tree)::
-
-    python setup.py build
-
-To install SunPy (from the root of the source tree)::
+Once inside the source directory that has been clone from GitHub you can install
+SunPy using::
 
     python setup.py install
+
+.. note::
+    This command will need access to system folders append `--user` to install 
+    SunPy into your home directory.
 
 Troubleshooting
 ---------------
@@ -241,7 +247,7 @@ directory, and can be compiled using ``pdflatex``.
 The above method builds the API documentation from the source code.
 Alternatively, you can do::
 
-    cd docs/source
+    cd doc/source
     make html
 
 And the documentation will be generated in the same location, but using the
