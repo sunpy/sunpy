@@ -94,9 +94,12 @@ class SunPyTest(AstropyTest):
                'verbose={1.verbose_results!r}, '
                'parallel={1.parallel!r}, '
                'online={online!r}, '
+               'offline={offline!r}, '
                'coverage={1.coverage!r}, '
                'cov_report={1.cov_report!r})); '
                '{cmd_post}'
                'sys.exit(result)')
-        return cmd.format('pass', self, online=online, offline=offline, 
+        x = cmd.format('pass', self, online=online, offline=offline, 
                           cmd_pre=cmd_pre, cmd_post=cmd_post)
+        print x
+        return x

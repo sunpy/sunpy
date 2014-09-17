@@ -10,7 +10,7 @@ import sys
 import ah_bootstrap
 from setuptools import setup
 
-#A dirty hack to get around some early import/configurations ambiguities
+# A dirty hack to get around some early import/configurations ambiguities
 if sys.version_info[0] >= 3:
     import builtins
 else:
@@ -21,7 +21,7 @@ from astropy_helpers.setup_helpers import (
     register_commands, adjust_compiler, get_debug_option, get_package_info)
 from astropy_helpers.git_helpers import get_git_devstr
 from astropy_helpers.version_helpers import generate_version_py
-from sunpy.tests.test_command import SunPyTest
+from sunpy.tests.setup_command import SunPyTest
 
 # Get some values from the setup.cfg
 from distutils import config
@@ -58,7 +58,7 @@ cmdclassd = register_commands(PACKAGENAME, VERSION, RELEASE)
 
 # Overwrite the Astropy Testing framework
 cmdclassd['test'] = type('SunPyTest', (SunPyTest,),
-                        {'package_name': 'sunpy'})
+                         {'package_name': 'sunpy'})
 
 # Adjust the compiler in case the default on this platform is to use a
 # broken one.
@@ -97,7 +97,8 @@ extras_require = {'database': ["sqlalchemy"],
                   'image': ["scikit-image"],
                   'jpeg2000': ["glymur"],
                   'net': ["suds", "beautifulsoup4", "requests"]}
-extras_require['all'] = extras_require['database'] + extras_require['image'] + extras_require['net']
+extras_require['all'] = extras_require['database'] + extras_require['image'] + \
+                        extras_require['net']
 
 setup(name=PACKAGENAME,
       version=VERSION,
@@ -121,4 +122,4 @@ setup(name=PACKAGENAME,
       use_2to3=False,
       include_package_data=True,
       **package_info
-)
+      )
