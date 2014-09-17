@@ -29,6 +29,9 @@ class SunPyTest(AstropyTest):
         # Run only offline tests?
         ('offline-only', None,
          'Only run test that do not require a internet connection.'),
+        # Run only offline tests?
+        ('online-only', None,
+         'Only run test that do require a internet connection.'),
         # Calculate test coverage
         ('coverage', 'c',
          'Create a coverage report. Requires the coverage package.'),
@@ -54,6 +57,7 @@ class SunPyTest(AstropyTest):
         self.verbose_results = False
         self.plugins = None
         self.args = None
+        self.online_only = False
         self.offline_only = False
         self.coverage = False
         self.cov_report = 'term' if self.coverage else None
@@ -61,7 +65,16 @@ class SunPyTest(AstropyTest):
         self.parallel = 0
 
     def _validate_required_deps(self):
-        pass
+        """
+        This method checks that any required modules are installed before
+        running the tests.
+        """
+        try:
+            import sunpy
+        except ImportError:
+            raise ImportError(
+                "The 'test' command requires the sunpy package to be "
+                "installed and importable.")
 
     def generate_testing_command(self):
         """
@@ -72,6 +85,7 @@ class SunPyTest(AstropyTest):
         cmd_post = ''  # Commands to run after the test function
 
         online = not self.offline_only
+        offline = not self.online_only
         
         cmd = ('{cmd_pre}{0}; import {1.package_name}, sys; result = ('
                '{1.package_name}.self_test('
@@ -84,5 +98,5 @@ class SunPyTest(AstropyTest):
                'cov_report={1.cov_report!r})); '
                '{cmd_post}'
                'sys.exit(result)')
-        return cmd.format('pass', self, online=online, cmd_pre=cmd_pre,
-                          cmd_post=cmd_post)
+        return cmd.format('pass', self, online=online, offline=offline, 
+                          cmd_pre=cmd_pre, cmd_post=cmd_post)
