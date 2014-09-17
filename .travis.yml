@@ -60,7 +60,7 @@ install:
 # Install SunPy and run tests.
 script:
    - if [[ $TEST_MODE == 'sphinx' ]]; then python setup.py build_sphinx -w; fi
-   - if [[ $TEST_MODE == 'tests' ]]; then python setup.py test --coverage --cov-report=html --parallel=8 --offline-only; fi
+   - if [[ $TEST_MODE == 'tests' ]]; then python setup.py test --coverage --cov-report=html --offline-only; fi
    - if [[ $TEST_MODE == 'online' ]]; then python setup.py test --coverage --cov-report=term-missing --parallel=8; fi
 
 after_success:
