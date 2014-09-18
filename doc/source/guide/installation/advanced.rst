@@ -6,7 +6,7 @@ Advanced Installation Instructions
 This document provides details on things you need to know to install and 
 manage your own scientific Python + SunPy installation.
 If you have never installed or used scientific Python we recommend that you 
-follow the <ANACONDA> Anaconda installation instructions.
+follow the :ref:`Anaconda installation instructions <main-install>`.
 
 
 Alternative Scientific Python Installation Instructions
@@ -50,9 +50,9 @@ resource for setting up your environment to build Python packages.
           **Preferences**, then **Downloads**, and then under **Components**,
           click on the Install button to the right of **Command Line Tools**.
           Alternatively, on 10.7 (Lion) or later, you do not need to install
-          XCode, you can download just the command line tools from
-          https://developer.apple.com/downloads/index.action (requires an Apple
-          developer account).
+          XCode, you can download just the command line tools from 
+          `the Apple developer site <https://developer.apple.com/downloads/index.action>`_
+          (requires an Apple developer account).
 
 SunPy's Requirements
 ####################
@@ -77,7 +77,7 @@ However, note that these only need to be installed if those particular features
 are needed. SunPy will import even if these dependencies are not installed.
 
 - `Matplotlib <http://matplotlib.org/>`_ [*Highly Recommended*] 1.3.0 or later:
-  For `lightcurve`, `map`, `spectra`, `instr` and `vizualisation`.
+  For `lightcurve`, `map`, `spectra`, `instr` and `visualization`.
 
 - `pandas <http://pandas.pydata.org/>`_ 0.10 or later: For `lightcurve`.
 

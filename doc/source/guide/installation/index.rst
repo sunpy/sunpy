@@ -12,6 +12,8 @@ guide to get setup with the whole environment. If you already have a working
 Python / Scientific Python environment then you can skip to the 
 :ref:`advanced-install` section.
 
+.. _main-install:
+
 Installing Scientific Python and SunPy
 --------------------------------------
 
