@@ -2,22 +2,6 @@
 Windows
 =======
 
-Overview
---------
-
-There are many ways to get the necessary environment up and running for SunPy on Windows, 
-and we describe three methods below.  
-
-Anaconda
-^^^^^^^^
-
-Anaconda is an alternative cross platform Python distribution.
-
-Anaconda is avalible from `Continuum Analytics <http://continuum.io/downloads>`_.
-Download the windows installer sutible for your platform and follow the install wizard.
-
-Once complete follow the install instructions for the :ref:`anaconda_install`.
-
 Python(x,y)
 ^^^^^^^^^^^
 
@@ -54,8 +38,8 @@ contains the following lines: ::
 You are now ready to continue with
 :doc:`the rest of the installation <index>`.
 
-Alternate method
-^^^^^^^^^^^^^^^^
+Manual Install
+^^^^^^^^^^^^^^
 
 If Python(x,y) is unavailable, or if it is critical for you to have the most
 up-to-date version of modules, then this alternate method eschews installers
