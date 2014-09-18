@@ -48,11 +48,11 @@ To install SunPy launch a system command prompt or the
 To install SunPy's extra dependancies run::
 
     conda update astropy
-    pip install suds
+    pip install suds-jurko
 
 To install SunPy run::
  
- 	pip install sunpy
+ 	pip install --no-deps sunpy 
 
 You now have a working SunPy installation. You can check your SunPy install 
 by following the instructions in :ref:`testing-sunpy`. 
@@ -70,7 +70,7 @@ If a new version of SunPy is released you can update to the latest version
 by running::
 
     conda update anaconda
-    pip install --upgrade --no-deps sunpy suds
+    pip install --upgrade --no-deps sunpy suds-jurko
 
 
 Advanced SunPy Installation
