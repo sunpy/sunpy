@@ -77,13 +77,14 @@ However, note that these only need to be installed if those particular features
 are needed. SunPy will import even if these dependencies are not installed.
 
 - `Matplotlib <http://matplotlib.org/>`_ [*Highly Recommended*] 1.3.0 or later:
-  For `lightcurve`, `map`, `spectra`, `instr` and `visualization`.
+  For `~sunpy.lightcurve`, `~sunpy.map`, `~sunpy.spectra`, `~sunpy.instr` 
+  and `~sunpy.visualization`.
 
-- `pandas <http://pandas.pydata.org/>`_ 0.10 or later: For `lightcurve`.
+- `pandas <http://pandas.pydata.org/>`_ 0.10 or later: For `~sunpy.lightcurve`.
 
-- `sqlalchemy <http://www.sqlalchemy.org>`_: For the `database` package.
+- `sqlalchemy <http://www.sqlalchemy.org>`_: For the `~sunpy.database` package.
 
-- `suds <https://bitbucket.org/jurko/suds>`_: For `net`.
+- `suds <https://bitbucket.org/jurko/suds>`_: For `~sunpy.net`.
 
 - `beautifulsoup4 <http://www.crummy.com/software/BeautifulSoup/>`_: For `Callisto` Spectrograms and `net.helio`
 
