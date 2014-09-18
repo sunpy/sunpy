@@ -42,8 +42,8 @@ install them from the source distribution using the Python `pip` command.
 Installing SunPy on top of Anaconda
 ###################################
 
-To install SunPy launch the Anaconda command prompt or a system prompt and 
-run the following commands:
+To install SunPy launch a system command prompt or the 
+'Anaconda Command Prompt' (under Windows) and follow these steps:
 
 To install SunPy's extra dependancies run::
 
