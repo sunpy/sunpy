@@ -26,6 +26,8 @@
 # be accessible, and the documentation will not build correctly.
 
 # -- Mock Modules -------------------------------------------------------------
+# scikit-image will not install on RTD, so if it is no present we
+# use Mock instead so the docs will still build correctly.
 
 import sys
 
