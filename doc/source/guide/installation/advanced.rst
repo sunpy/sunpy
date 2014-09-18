@@ -196,7 +196,7 @@ If you get an error mentioning that you do not have the correct permissions to
 install SunPy into the default ``site-packages`` directory, you can try
 installing with::
 
-    python setup.py install --user
+    pip install sunpy --user
 
 which will install into a default directory in your home directory.
 
