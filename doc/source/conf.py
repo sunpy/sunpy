@@ -28,14 +28,14 @@
 # -- Mock Modules -------------------------------------------------------------
 
 import sys
-from mock import Mock
-mock = Mock()
 
 modules = {}
 
 try:
-    import skimage 
+    import skimage
 except ImportError:
+    from mock import Mock
+    mock = Mock()
     modules.update({'skimage':mock, 'skimage.feature':mock.module})
 
 sys.modules.update(modules)
@@ -96,7 +96,13 @@ intersphinx_mapping['skimage'] = ('http://scikit-image.org/docs/stable/', None)
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes. To override the custom theme, set this to the
 # name of a builtin theme or the name of a custom theme in html_theme_path.
-html_theme = 'default'
+
+try:
+    import sphinx_rtd_theme
+    html_theme = 'sphinx_rtd_theme'
+    html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+except ImportError:
+    html_theme = 'default'
 
 # Custom sidebar templates, maps document names to template names.
 #html_sidebars = {}
