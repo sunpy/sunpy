@@ -325,8 +325,8 @@ class CompositeMap(object):
             params = {
                 "origin": "lower",
                 "extent": m.xrange + m.yrange,
-                "cmap": m.cmap,
-                "norm": m.mpl_color_normalizer,
+                "cmap": m.plot_settings['cmap'],
+                "norm": m.plot_settings['norm'],
                 "alpha": m.alpha,
                 "zorder": m.zorder,
             }

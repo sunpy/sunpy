@@ -51,7 +51,7 @@ class XRTMap(GenericMap):
         self._name = "{0} {1}-{2}".format(self.detector, fw1, fw2)
         self._nickname = self.detector
 
-        self.cmap = cm.get_cmap(name='hinodexrt')
+        self.plot_settings['cmap'] = cm.get_cmap(name='hinodexrt')
 
     def _get_mpl_normalizer(self):
         """Returns a Normalize object to be used with XRT data"""
@@ -59,13 +59,7 @@ class XRTMap(GenericMap):
         if self.dtype == np.uint8:
             return None
 
-        mean = self.mean()
-        std = self.std()
-
-        vmin = max(0, mean - 3 * std)
-        vmax = min(self.max(), mean + 3 * std)
-
-        return colors.Normalize(vmin, vmax)
+        return colors.Normalize(self.min(), self.max())
 
 
     @classmethod
@@ -117,7 +111,7 @@ class SOTMap(GenericMap):
                  'SOT/SP': 'intensity', # For the 1st 2 dimmensions
                  }
 
-        self.cmap = cm.get_cmap('hinodesot' + color[self.instrument])
+        self.plot_settings['cmap'] = cm.get_cmap('hinodesot' + color[self.instrument])
 
 
     @classmethod

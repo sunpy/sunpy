@@ -48,9 +48,7 @@ class EITMap(GenericMap):
 
         self._name = self.detector + " " + str(self.measurement)
         self._nickname = self.detector
-
-        self.cmap = cm.get_cmap('sohoeit%d' % self.wavelength)
-        self.cmap.set_gamma(0.25)
+        self.plot_settings['cmap'] = cm.get_cmap('sohoeit%d' % self.wavelength)
 
     @property
     def rsun_arcseconds(self):
@@ -105,8 +103,8 @@ class LASCOMap(GenericMap):
 
         self._name = self.instrument + " " + self.detector + " " + self.measurement
         self._nickname = self.instrument + "-" + self.detector
-        self.cmap = cm.get_cmap('soholasco%s' % self.detector[1])
-        self.cmap.set_gamma(0.6)
+        self.plot_settings['cmap'] = cm.get_cmap('soholasco%s' % self.detector[1])
+        #self.cmap.set_gamma(0.6)
 
     @property
     def measurement(self):
@@ -131,6 +129,7 @@ class MDIMap(GenericMap):
 
         self._name = self.detector + " " + self.measurement
         self._nickname = self.detector + " " + self.measurement
+        self.plot_settings['cmap'] = cm.get_cmap('Greys')
 
     @property
     def measurement(self):
