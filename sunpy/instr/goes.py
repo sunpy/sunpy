@@ -49,8 +49,8 @@ def get_goes_event_list(timerange, goes_class_filter=None):
     # use HEK module to search for GOES events
     client = hek.HEKClient()
     event_type = 'FL'
-    tstart = timerange.start()
-    tend = timerange.end()
+    tstart = timerange.start
+    tend = timerange.end
 
     # query the HEK for a list of events detected by the GOES instrument
     # between tstart and tend (using a GOES-class filter)

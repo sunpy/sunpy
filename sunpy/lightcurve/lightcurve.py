@@ -121,7 +121,7 @@ for compatability with map, please use meta instead""", Warning)
             err = "Unable to download data for specified date range"
         )
         result = cls.from_file(filepath)
-        result.data = result.data.truncate(timerange.start(), timerange.end())
+        result.data = result.data.truncate(timerange.start, timerange.end)
         return result
 
     @classmethod
@@ -301,7 +301,7 @@ for compatability with map, please use meta instead""", Warning)
         else:
             time_range = TimeRange(a,b)
 
-        truncated = self.data.truncate(time_range.start(), time_range.end())
+        truncated = self.data.truncate(time_range.start, time_range.end)
         return self.__class__.create(truncated, self.meta.copy())
 
     def extract(self, a):
