@@ -47,4 +47,3 @@ def test_mapcube_solar_derotate():
     assert_allclose(test_output[1]['y'], known_displacements['y'], rtol=5e-2, atol=0 )
     assert(isinstance(test_output[1]['x'], u.Quantity) and test_output[1]['x'].unit == 'arcsec')
     assert(isinstance(test_output[1]['y'], u.Quantity) and test_output[1]['y'].unit == 'arcsec')
-
