@@ -17,8 +17,8 @@ from sunpy.time import parse_time
 def test_lyra_level(date, level,start, end):
     lyra = sunpy.lightcurve.LYRALightCurve.create(date, level=level)
     assert isinstance(lyra, sunpy.lightcurve.LYRALightCurve)
-    assert lyra.time_range().start() == parse_time(start)
-    assert lyra.time_range().end() == parse_time(end)
+    assert lyra.time_range().start == parse_time(start)
+    assert lyra.time_range().end == parse_time(end)
 
 
 
@@ -32,8 +32,8 @@ def test_lyra_date(date, start, end):
    
     lyra = sunpy.lightcurve.LYRALightCurve.create(date)
     assert isinstance(lyra, sunpy.lightcurve.LYRALightCurve)
-    assert lyra.time_range().start() == parse_time(start)
-    assert lyra.time_range().end() == parse_time(end)
+    assert lyra.time_range().start == parse_time(start)
+    assert lyra.time_range().end == parse_time(end)
 
 @pytest.mark.online
 @pytest.mark.parametrize(("url, start, end"),
@@ -44,8 +44,8 @@ def test_online(url, start, end):
    
     lyra = sunpy.lightcurve.LYRALightCurve.create(url)
     assert isinstance(lyra, sunpy.lightcurve.LYRALightCurve)
-    assert lyra.time_range().start() == parse_time(start)
-    assert lyra.time_range().end() == parse_time(end)
+    assert lyra.time_range().start == parse_time(start)
+    assert lyra.time_range().end == parse_time(end)
 
  
 

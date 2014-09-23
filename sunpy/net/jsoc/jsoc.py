@@ -393,8 +393,8 @@ class JSOCClient(object):
         response, json_response = self._send_jsoc_request(start_time, end_time, series, **kwargs)
 
         if json_response['status'] == 3 and json_response['error'] == 'Request exceeds max byte limit of 100000MB':
-            returns.append(self._multi_request(tr.start(), tr.center(), series, **kwargs)[0])
-            returns.append(self._multi_request(tr.center(), tr.end(), series, **kwargs)[0])
+            returns.append(self._multi_request(tr.start, tr.center, series, **kwargs)[0])
+            returns.append(self._multi_request(tr.center, tr.end, series, **kwargs)[0])
         else:
             returns.append(response)
 
