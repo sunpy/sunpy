@@ -566,7 +566,7 @@ Dimension:\t [%d, %d]
         return new_map
 
     def rotate(self, angle=None, rmatrix=None, order=3, scale=1.0,
-               image_center=(0,0), recenter=False, missing=0.0, use_scipy=False):
+               rotation_center=(0,0), recenter=False, missing=0.0, use_scipy=False):
         """
         Returns a new rotated and rescaled map.  Specify either a rotation
         angle or a rotation matrix, but not both.  If neither an angle or a
@@ -592,7 +592,7 @@ Dimension:\t [%d, %d]
             higher values.
         scale : float
             A scale factor for the image, default is no scaling
-        image_center : tuple
+        rotation_center : tuple
             The axis of rotation in data coordinates
             Default: the origin in the data coordinate system
         recenter : bool
@@ -668,20 +668,20 @@ Dimension:\t [%d, %d]
         # map_center is swapped compared to the x-y convention
         array_center = (np.array(new_map.data.shape)-1)/2.0
 
-        # rotation_center is swapped compared to the x-y convention
+        # pixel_center is swapped compared to the x-y convention
         if recenter:
             # Convert the axis of rotation from data coordinates to pixel coordinates
-            x = new_map.data_to_pixel(image_center[0], 'x')
-            y = new_map.data_to_pixel(image_center[1], 'y')
-            rotation_center = (y, x)
+            x = new_map.data_to_pixel(rotation_center[0], 'x')
+            y = new_map.data_to_pixel(rotation_center[1], 'y')
+            pixel_center = (y, x)
         else:
-            rotation_center = array_center
+            pixel_center = array_center
 
         # Apply the rotation to the image data
         new_map.data = affine_transform(new_map.data.T,
                                         np.asarray(rmatrix),
                                         order=order, scale=scale,
-                                        image_center=rotation_center,
+                                        image_center=pixel_center,
                                         recenter=recenter, missing=missing,
                                         use_scipy=use_scipy).T
 
@@ -689,13 +689,13 @@ Dimension:\t [%d, %d]
         # Calculate new reference pixel and coordinate at the center of the
         # image.
         if recenter:
-            new_center = image_center
+            new_center = rotation_center
         else:
             # Retrieve old coordinates for the center of the array
             old_center = np.asarray(new_map.pixel_to_data(array_center[1], array_center[0]))
 
             # Calculate new coordinates for the center of the array
-            new_center = image_center - np.dot(rmatrix, image_center - old_center)
+            new_center = rotation_center - np.dot(rmatrix, rotation_center - old_center)
             new_center = np.asarray(new_center)[0]
 
         # Define a new reference pixel in the rotated space
