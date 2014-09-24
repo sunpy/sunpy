@@ -646,27 +646,38 @@ Dimension:\t [%d, %d]
         new_map = deepcopy(self)
 
         if angle is not None:
-            #Calulate the parameters for the affine_transform
+            # Calulate the parameters for the affine_transform
             c = np.cos(np.deg2rad(angle))
             s = np.sin(np.deg2rad(angle))
             rmatrix = np.matrix([[c, -s], [s, c]])
 
+        # Calculate the shape in pixels to contain all of the image data
+        extent = np.max(np.abs(np.vstack((new_map.shape * rmatrix, new_map.shape * rmatrix.T))), axis=0)
+        # Calculate the needed padding or unpadding
+        diff = np.asarray(np.ceil((extent - new_map.shape) / 2)).ravel()
+        # Pad the image array
+        pad_x = np.max((diff[1], 0))
+        pad_y = np.max((diff[0], 0))
+        new_map.data = np.pad(new_map.data,
+                              ((pad_y, pad_y), (pad_x, pad_x)),
+                              mode='constant',
+                              constant_values=(missing, missing))
+        new_map.meta['crpix1'] += pad_x
+        new_map.meta['crpix2'] += pad_y
+
         # map_center is swapped compared to the x-y convention
-        array_center = (np.array(self.data.shape)-1)/2.0
+        array_center = (np.array(new_map.data.shape)-1)/2.0
 
         # rotation_center is swapped compared to the x-y convention
         if recenter:
             # Convert the axis of rotation from data coordinates to pixel coordinates
-            x = self.data_to_pixel(image_center[0], 'x')
-            y = self.data_to_pixel(image_center[1], 'y')
+            x = new_map.data_to_pixel(image_center[0], 'x')
+            y = new_map.data_to_pixel(image_center[1], 'y')
             rotation_center = (y, x)
         else:
             rotation_center = array_center
 
-        #Return a new map
-        #Copy Header
-        new_map = deepcopy(self)
-
+        # Apply the rotation to the image data
         new_map.data = affine_transform(new_map.data.T,
                                         np.asarray(rmatrix),
                                         order=order, scale=scale,
@@ -681,7 +692,7 @@ Dimension:\t [%d, %d]
             new_center = image_center
         else:
             # Retrieve old coordinates for the center of the array
-            old_center = np.asarray(self.pixel_to_data(array_center[1], array_center[0]))
+            old_center = np.asarray(new_map.pixel_to_data(array_center[1], array_center[0]))
 
             # Calculate new coordinates for the center of the array
             new_center = image_center - np.dot(rmatrix, image_center - old_center)
@@ -693,11 +704,21 @@ Dimension:\t [%d, %d]
         new_map.meta['crpix1'] = array_center[1] + 1 # FITS counts pixels from 1
         new_map.meta['crpix2'] = array_center[0] + 1 # FITS counts pixels from 1
 
+        # Unpad the array if necessary
+        unpad_x = -np.min((diff[1], 0))
+        if unpad_x > 0:
+            new_map.data = new_map.data[:, unpad_x:-unpad_x]
+            new_map.meta['crpix1'] -= unpad_x
+        unpad_y = -np.min((diff[0], 0))
+        if unpad_y > 0:
+            new_map.data = new_map.data[unpad_y:-unpad_y, :]
+            new_map.meta['crpix2'] -= unpad_y
+
         # Calculate the new rotation matrix to store in the header by
         # "subtracting" the rotation matrix used in the rotate from the old one
         # That being calculate the dot product of the old header data with the
         # inverse of the rotation matrix.
-        pc_C = np.dot(self.rotation_matrix, rmatrix.I)
+        pc_C = np.dot(new_map.rotation_matrix, rmatrix.I)
         new_map.meta['PC1_1'] = pc_C[0,0]
         new_map.meta['PC1_2'] = pc_C[0,1]
         new_map.meta['PC2_1'] = pc_C[1,0]
@@ -705,8 +726,8 @@ Dimension:\t [%d, %d]
 
         # Update pixel size if image has been scaled.
         if scale != 1.0:
-            new_map.meta['cdelt1'] = self.scale['x'] / scale
-            new_map.meta['cdelt2'] = self.scale['y'] / scale
+            new_map.meta['cdelt1'] = new_map.scale['x'] / scale
+            new_map.meta['cdelt2'] = new_map.scale['y'] / scale
 
         # Remove old CROTA kwargs because we have saved a new PCi_j matrix.
         new_map.meta.pop('CROTA1', None)
@@ -1062,9 +1083,9 @@ Dimension:\t [%d, %d]
         aia.draw_limb()
         aia.draw_grid()
         """
-        # Check that the image is properly aligned
+        # Check that the image is properly oriented
         if not np.array_equal(self.rotation_matrix, np.matrix(np.identity(2))):
-            warnings.warn("This map is not aligned. Plot axes may be incorrect",
+            warnings.warn("This map is not properly oriented. Plot axes may be incorrect",
                           Warning)
         #Get current axes
         if not axes:
