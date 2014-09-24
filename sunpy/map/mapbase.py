@@ -565,7 +565,7 @@ Dimension:\t [%d, %d]
         new_map.meta = new_meta
         return new_map
 
-    def rotate(self, angle=None, rmatrix=None, order=3, scale=1.0,
+    def rotate(self, angle=None, rmatrix=None, order=4, scale=1.0,
                rotation_center=(0,0), recenter=False, missing=0.0, use_scipy=False):
         """
         Returns a new rotated and rescaled map.  Specify either a rotation
