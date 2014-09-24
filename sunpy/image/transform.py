@@ -124,8 +124,9 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
         adjusted_image -= im_min
         im_max = np.nanmax(adjusted_image)
         adjusted_image /= im_max
+        adjusted_missing = (missing - im_min) / im_max
         rotated_image = skimage.transform.warp(adjusted_image, tform, order=order,
-                                               mode='constant', cval=missing)
+                                               mode='constant', cval=adjusted_missing)
 
 
         rotated_image *= im_max
