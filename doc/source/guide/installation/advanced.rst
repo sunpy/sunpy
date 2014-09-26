@@ -20,7 +20,6 @@ scientific Python:
     :maxdepth: 1
 
     linux.rst
-    win.rst
     mac.rst
 
 
