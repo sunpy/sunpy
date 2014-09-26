@@ -78,7 +78,7 @@ by running::
 Advanced SunPy Installation
 ---------------------------
 
-If you do not whish to use Anaconda to install Scientific Python or you already 
+If you do not wish to use Anaconda to install Scientific Python or you already 
 have a scientific Python installation there are other options for installing
 SunPy. 
 
