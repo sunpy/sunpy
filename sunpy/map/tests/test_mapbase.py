@@ -144,7 +144,6 @@ def test_coordinate_system(generic_map):
     assert generic_map.coordinate_system == {'x':'HPLN-TAN', 'y': 'HPLT-TAN'}
 
 
-@pytest.mark.online
 def test_carrington_longitude(generic_map):
     assert generic_map.carrington_longitude == (sunpy.sun.heliographic_solar_center(generic_map.date))[0]
 
