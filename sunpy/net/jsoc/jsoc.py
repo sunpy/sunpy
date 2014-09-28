@@ -521,11 +521,15 @@ class JSOCClient(object):
         result = r.json()
 
         out_table = {}
-        for col in result['keywords']:
-            out_table.update({col['name']:col['values']})
+        if 'keywords' in result:
+            for col in result['keywords']:
+                out_table.update({col['name']:col['values']})
 
-        # sort the table before returning
-        return astropy.table.Table(out_table)[keywords]
+            # sort the table before returning
+            return astropy.table.Table(out_table)[keywords]
+        
+        else:
+            return astropy.table.Table()
 
     def _multi_request(self, **kwargs):
         """
@@ -542,10 +546,11 @@ class JSOCClient(object):
         returns = []
         response, json_response = self._send_jsoc_request(start_time, end_time, series, **kwargs)
 
+        # We skip these lines because a massive request is not a pratical test.
         if (json_response['status'] == 3 and
-            json_response['error'] == 'Request exceeds max byte limit of 100000MB'):
-            returns.append(self._multi_request(tr.start(), tr.center(), series, **kwargs)[0])
-            returns.append(self._multi_request(tr.center(), tr.end(), series, **kwargs)[0])
+            json_response['error'] == 'Request exceeds max byte limit of 100000MB'): #pragma: no cover
+            returns.append(self._multi_request(tr.start(), tr.center(), series, **kwargs)[0]) #pragma: no cover
+            returns.append(self._multi_request(tr.center(), tr.end(), series, **kwargs)[0]) #pragma: no cover
         else:
             returns.append(response)
 
