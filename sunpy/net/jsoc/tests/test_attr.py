@@ -55,3 +55,14 @@ def test_wavelength_error():
 def test_wave_self():
     w1 = attrs.Wavelength(193*u.AA)
     assert jsoc.jsoc.and_(w1 | w1) is w1
+
+def test_duplicate():
+    w1 = attrs.Wavelength(193*u.AA)
+    w2 = attrs.Wavelength(193*u.AA)
+    assert jsoc.jsoc.and_(w1 | w2).value is w1.value
+
+def test_random():
+    w1 = attrs.Wavelength(193*u.AA)
+    w2 = attrs.Series('spam')
+    assert jsoc.jsoc.and_(w1 | w2) == AttrOr([w1, w2])
+    
