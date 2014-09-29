@@ -69,7 +69,7 @@ class Wavelength(_VSOSimpleAttr):
             raise TypeError("Wave inputs must be astropy Quantities")
         Attr.__init__(self)
 
-        self.value = int(np.ceil(value.to(u.AA).value))
+        self.value = value
 
     def __or__(self, other):
         if isinstance(other, self.__class__):

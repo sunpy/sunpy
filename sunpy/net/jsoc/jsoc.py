@@ -7,6 +7,8 @@ import urlparse
 import warnings
 
 import requests
+import numpy as np
+import astropy.units as u
 import astropy.time
 import astropy.table
 
@@ -439,9 +441,10 @@ class JSOCClient(object):
                 raise TypeError("This series does not support the wavelength attribute.")
             else:
                if isinstance(wavelength, list):
+                   wavelength = [int(np.ceil(wave.to(u.AA).value)) for wave in wavelength]
                    wavelength = str(wavelength)
                else:
-                   wavelength = '[{0}]'.format(wavelength)
+                   wavelength = '[{0}]'.format(int(np.ceil(wavelength.to(u.AA).value)))
 
         # Extract and format segment
         if segment != '':
@@ -451,7 +454,7 @@ class JSOCClient(object):
                    series=series, start=start_time.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
                    end=end_time.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
                    wavelength=wavelength, segment=segment)
-
+        print(dataset)
         return dataset
 
     def _make_query_payload(self, start_time, end_time, series, notify='',
@@ -527,7 +530,7 @@ class JSOCClient(object):
 
             # sort the table before returning
             return astropy.table.Table(out_table)[keywords]
-        
+
         else:
             return astropy.table.Table()
 
