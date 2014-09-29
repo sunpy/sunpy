@@ -1,4 +1,7 @@
 import pytest
+
+import astropy.units as u
+
 import sunpy.net.jsoc as jsoc
 import sunpy.net.jsoc.attrs as attrs
 from sunpy.net.attr import Attr, AttrOr, AttrAnd
@@ -40,3 +43,15 @@ def test_complexquery():
     assert isinstance(ans1.attrs[0], AttrOr)
     assert isinstance(ans1.attrs[0].attrs[0], AttrAnd)
     assert isinstance(ans1.attrs[0].attrs[1], AttrAnd)
+
+def test_wavelength_error():
+    with pytest.raises(TypeError):
+        w1 = attrs.Wavelength('wobble')
+    with pytest.raises(TypeError):
+        w1 = attrs.Wavelength(3.24)
+    with pytest.raises(TypeError):
+        w1 = attrs.Wavelength((3,3))
+        
+def test_wave_self():
+    w1 = attrs.Wavelength(193*u.AA)
+    assert jsoc.jsoc.and_(w1 | w1) is w1

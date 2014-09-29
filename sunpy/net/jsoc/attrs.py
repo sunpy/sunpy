@@ -65,17 +65,17 @@ class Wavelength(_VSOSimpleAttr):
     units for the series.
     """
     def __init__(self, value):
-        if not isinstance(value, u.Quantity):
+        if not (isinstance(value, u.Quantity) or isinstance(value, list)):
             raise TypeError("Wave inputs must be astropy Quantities")
         Attr.__init__(self)
 
         self.value = value
 
     def __or__(self, other):
-        if isinstance(other, self.__class__):
-            return self.__class__([self.value, other.value])
         if self == other:
             return self
+        if isinstance(other, self.__class__):
+            return self.__class__([self.value, other.value])
         return AttrOr([self, other])
     __ror__ = __or__
 

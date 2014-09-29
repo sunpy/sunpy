@@ -454,11 +454,11 @@ class JSOCClient(object):
                    series=series, start=start_time.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
                    end=end_time.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
                    wavelength=wavelength, segment=segment)
-        print(dataset)
+
         return dataset
 
     def _make_query_payload(self, start_time, end_time, series, notify='',
-                          protocol='FITS', compression='rice', **kwargs):
+                            protocol='FITS', compression='rice', **kwargs):
         """
         Build the POST payload for the query parameters
         """
@@ -471,6 +471,7 @@ class JSOCClient(object):
             jprotocol = protocol
 
         dataset = self._make_recordset(start_time, end_time, series, **kwargs)
+        kwargs.pop('wavelength', None)
 
         # Build full POST payload
         payload = {'ds': dataset,
@@ -543,6 +544,8 @@ class JSOCClient(object):
         series = kwargs.pop('series', None)
         if any(x is None for x in (start_time, end_time, series)):
             return []
+#        if 'wavelength' in kwargs:
+#            kwargs['wavelength'] = int(np.ceil(kwargs['wavelength'].to(u.AA).value))
         start_time = self._process_time(start_time)
         end_time = self._process_time(end_time)
         tr = TimeRange(start_time, end_time)

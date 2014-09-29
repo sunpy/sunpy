@@ -132,7 +132,7 @@ def test_post_pass():
 @pytest.mark.online
 def test_post_wavelength():
     responses = client.query(attrs.Time('2010/07/30T13:30:00','2010/07/30T14:00:00'),attrs.Series('aia.lev1_euv_12s'),
-                             attrs.Wavelength(193*u.AA))
+                             attrs.Wavelength(193*u.AA)|attrs.Wavelength(335*u.AA))
     aa = client.request_data(responses, return_resp=True)
     tmpresp = aa[0].json()
     assert tmpresp['status'] == 2
