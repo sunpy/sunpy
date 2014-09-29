@@ -584,12 +584,13 @@ Dimension:\t [%d, %d]
             Linear transformation rotation matrix.
         order : int 0-5
             Interpolation order to be used. When using scikit-image this parameter
-            is passed into :func:`skimage.transform.warp`.
+            is passed into :func:`skimage.transform.warp` (e.g., 4 corresponds to
+            bi-quartic interpolation).
             When using scipy it is passed into
             :func:`scipy.ndimage.interpolation.affine_transform` where it controls
             the order of the spline.
-            Higher accuracy may be obtained at the cost of performance by using
-            higher values.
+            Faster performance may be obtained at the cost of accuracy by using lower values.
+            Default: 4
         scale : float
             A scale factor for the image, default is no scaling
         rotation_center : tuple
