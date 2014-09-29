@@ -1,5 +1,7 @@
 Latest
 ------
+
+* Added vso like querying feature to JSOC Client.
  * Update to TimeRange API, removed t1 and t0, start and end are now read-only attributes
  * Added ability to download level3 data for lyra Light Curve along with corresponding tests.
  * Added support for gzipped FITS files.
@@ -40,6 +42,7 @@ Bug Fixes:
     * Fix EIT test data and sunpy FITS saving
     * Some documentation fixes
     * fix file paths to use os.path.join for platform independance.
+
 
 0.4.0
 -----
