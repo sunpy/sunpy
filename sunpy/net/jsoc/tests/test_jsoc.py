@@ -11,7 +11,7 @@ import pytest
 from sunpy.time import parse_time
 from sunpy.net.jsoc import JSOCClient
 from sunpy.net.vso.vso import Results
-
+import sunpy.net.jsoc.attrs as attrs
 client = JSOCClient()
 
 def test_payload():
@@ -100,20 +100,41 @@ def test_status_request():
 
 @pytest.mark.online
 def test_post():
-    responses = client.jsoc_query('2012/1/1T00:00:00', '2012/1/1T00:00:45', 'hmi.M_45s')
+    responses = client.jsoc_query(attrs.Time('2012/1/1T00:00:00', '2012/1/1T00:00:45'), attrs.Series('hmi.M_45s'))
     assert isinstance(responses, list)
     assert responses[0][:4] == 'JSOC'
 
 @pytest.mark.online
 def test_post_pass():
-    responses = client.jsoc_query('2012/1/1T00:00:00', '2012/1/1T00:00:45', 'hmi.M_45s', return_resp=True)
-    responses[0].json()['status'] == 2
-    responses[0].json()['protocol'] == 'FITS,compress Rice'
-    responses[0].json()['method'] == 'url'
+    responses = client.jsoc_query(attrs.Time('2012/1/1T00:00:00', '2012/1/1T00:00:45'),
+                                  attrs.Series('hmi.M_45s'), return_resp=True)
+    tmpresp = responses[0].json()
+    assert tmpresp['status'] == 2
+    assert tmpresp['protocol'] == 'FITS,compress Rice'
+    assert tmpresp['method'] == 'url'
+
+
+@pytest.mark.online
+def test_post_wavelength():
+    responses = client.jsoc_query(attrs.Time('2010/07/30T13:30:00', '2010/07/30T14:00:00'), attrs.Series('aia.lev1_euv_12s'),
+                                  attrs.WaveLength(193) | attrs.WaveLength(335), return_resp=True)
+    tmpresp = responses[0].json()
+    assert tmpresp['status'] == 2
+    assert tmpresp['protocol'] == 'FITS,compress Rice'
+    assert tmpresp['method'] == 'url'
+    assert tmpresp['rcount'] == 302
+
+@pytest.mark.online()
+def test_post_wave_series():
+    with pytest.raises(TypeError):
+        client.jsoc_query(attrs.Time('2012/1/1T00:00:00', '2012/1/1T00:00:45'),
+                          attrs.Series('hmi.M_45s')|attrs.Series('aia.lev1_euv_12s'),
+                          attrs.WaveLength(193)|attrs.WaveLength(335), return_resp=True)
+
 
 @pytest.mark.online
 def test_post_fail(recwarn):
-    client.jsoc_query('2012/1/1T00:00:00', '2012/1/1T00:00:45', 'none', return_resp=True)
+    client.jsoc_query(attrs.Time('2012/1/1T00:00:00', '2012/1/1T00:00:45'), attrs.Series('none'), return_resp=True)
     w = recwarn.pop(Warning)
     assert issubclass(w.category, Warning)
     assert "Query 0 retuned status 4 with error Cannot export series 'none' - it does not exist." in str(w.message)
@@ -127,7 +148,7 @@ def test_request_status_fail():
 
 @pytest.mark.online
 def test_wait_get():
-    responses = client.jsoc_query('2012/1/3T00:00:00', '2012/1/3T00:00:45', 'hmi.M_45s')
-    res = client.wait_get(responses[0])
+    responses = client.jsoc_query(attrs.Time('2012/1/3T00:00:00', '2012/1/3T00:00:45'), attrs.Series('hmi.M_45s'))
+    res = client.wait_get(responses)
     assert isinstance(res, Results)
     assert res.total == 2
