@@ -210,7 +210,7 @@ def test_rotation_matrix_cd_cdelt_square():
 
 def test_swap_cd():
     amap = sunpy.map.Map(os.path.join(testpath, 'swap_lv1_20140606_000113.fits'))
-    np.testing.assert_allclose(amap.rotation_matrix, np.matrix([[0., -1], [1., 0]]))
+    np.testing.assert_allclose(amap.rotation_matrix, np.matrix([[1., 0], [0, 1.]]))
     
 
 def test_data_range(generic_map):
