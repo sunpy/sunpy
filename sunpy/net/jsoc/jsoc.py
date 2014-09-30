@@ -544,8 +544,6 @@ class JSOCClient(object):
         series = kwargs.pop('series', None)
         if any(x is None for x in (start_time, end_time, series)):
             return []
-#        if 'wavelength' in kwargs:
-#            kwargs['wavelength'] = int(np.ceil(kwargs['wavelength'].to(u.AA).value))
         start_time = self._process_time(start_time)
         end_time = self._process_time(end_time)
         tr = TimeRange(start_time, end_time)

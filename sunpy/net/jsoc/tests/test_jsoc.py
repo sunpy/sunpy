@@ -4,7 +4,9 @@ Created on Wed Mar 26 20:17:06 2014
 
 @author: stuart
 """
+import time
 import datetime
+import astropy.table
 import astropy.time
 import astropy.units as u
 import pytest
@@ -15,6 +17,19 @@ from sunpy.net.vso.vso import Results
 import sunpy.net.jsoc.attrs as attrs
 client = JSOCClient()
 
+def test_jsocresponse_double():
+    j1 = JSOCResponse(table=astropy.table.Table(data=[[1,2,3,4]]))
+    j1.append(astropy.table.Table(data=[[1,2,3,4]]))
+    assert isinstance(j1, JSOCResponse)
+    assert all(j1.table == astropy.table.vstack([astropy.table.Table(data=[[1,2,3,4]]),
+                                                 astropy.table.Table(data=[[1,2,3,4]])]))
+
+def test_jsocresponse_single():
+    j1 = JSOCResponse(table=None)
+    assert len(j1) == 0
+    j1.append(astropy.table.Table(data=[[1,2,3,4]]))
+    assert all(j1.table == astropy.table.Table(data=[[1,2,3,4]]))
+    assert len(j1) == 4
 
 def test_payload():
     start = parse_time('2012/1/1T00:00:00')
@@ -162,6 +177,8 @@ def test_post_fail(recwarn):
 def test_request_status_fail():
     resp = client._request_status('none')
     assert resp.json() == {u'status': 4, u'error': u"Bad RequestID 'none' provided."}
+    resp = client._request_status(['none'])
+    assert resp.json() == {u'status': 4, u'error': u"Bad RequestID 'none' provided."}
 
 @pytest.mark.online
 def test_wait_get():
@@ -169,3 +186,15 @@ def test_wait_get():
     res = client.get(responses)
     assert isinstance(res, Results)
     assert res.total == 1
+
+@pytest.mark.online
+def test_check_request():
+    responses = client.query(attrs.Time('2012/1/1T01:00:00', '2012/1/1T01:00:45'),
+                             attrs.Series('hmi.M_45s'))
+
+    bb = client.request_data(responses)
+    aa = client.check_request(bb)
+    assert aa == [6]
+    time.sleep(1)
+    aa = client.check_request(bb)
+    assert aa == [1]
