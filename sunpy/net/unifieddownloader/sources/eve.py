@@ -52,9 +52,15 @@ class EVEClient(GenericClient):
     def _can_handle_query(cls, *query):
         """Boolean Function:Answers whether client can service the query.
         """
-        chkattr =  ['Time', 'Instrument']
+        chkattr =  ['Time', 'Instrument','Level']
         chklist =  [x.__class__.__name__ in chkattr for x in query]
+        chk_var = 0
         for x in query:
             if x.__class__.__name__ == 'Instrument' and x.value == 'eve':
-                return all(chklist)
+                chk_var +=1
+            elif x.__class__.__name__ == 'Level' and x.value == 0:
+                chk_var +=1
+
+        if(chk_var == 2):
+            return all(chklist)
         return False

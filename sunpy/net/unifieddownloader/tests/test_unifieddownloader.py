@@ -8,7 +8,7 @@ from sunpy.net.unifieddownloader.downloader_factory import UnifiedDownloader
 
 @pytest.mark.parametrize("time,instrument,client",
 [
-(attrs.Time('2012/8/8','2012/8/9'),attrs.Instrument('eve'),"EVEClient"),
+(attrs.Time('2012/8/8','2012/8/9'),attrs.Instrument('eve'),"VSOClient"),
 (attrs.Time('2012/3/5','2012/3/7'),attrs.Instrument('lyra'),"LYRAClient"),
 (attrs.Time('2012/1/8','2012/1/9'),attrs.Instrument('norh'),"NoRHClient"),
 (attrs.Time('2012/4/22','2012/4/25'),attrs.Instrument('rhessi'),"RHESSIClient"),
