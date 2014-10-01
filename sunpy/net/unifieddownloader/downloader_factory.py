@@ -165,7 +165,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
                 raise NoMatchError("Query {0} can not be handled in its current form".format(args))
             else:
                 return  [self.default_widget_type]
-        elif n_matches > 1:
+        else:
             for candidate_client in candidate_widget_types:
                 if issubclass(candidate_client, GenericClient):
                     return [candidate_client]
