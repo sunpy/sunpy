@@ -4,28 +4,41 @@ from __future__ import absolute_import
 
 import datetime
 
-import matplotlib
 from matplotlib import pyplot as plt
 from pandas.io.parsers import read_csv
 import numpy as np
 
+from sunpy import config
+TIME_FORMAT = config.get("general", "time_format")
+
 from sunpy.lightcurve import LightCurve
-from sunpy.time import parse_time, TimeRange
 
 __all__ = ['NOAAIndicesLightCurve', 'NOAAPredictIndicesLightCurve']
+
 
 class NOAAIndicesLightCurve(LightCurve):
     """NOAA Solar Cycle monthly indices.
 
-    Solar activity is measured by a number of different values. The NOAA Solar Weather
-    Prediction Center (SWPC) publishes the following indices. All of these indices are
-    also provided as a 13-month running smoothed value.
+    Solar activity is measured by a number of different values. The NOAA Solar
+    Weather Prediction Center (SWPC) publishes the following indices. All of
+    these indices are also provided as a 13-month running smoothed value. The 
+    data columns in this object are
 
-    * The SWO sunspot number is issued by the NOAA Space Weather Prediction Center (SWPC)
-    * The RI sunspot number is the official International Sunspot Number and is issued by the `Solar Influence Data Analysis Center (SDIC) <http://sidc.oma.be>`_ in Brussels, Belgium.
-    * The ratio between the SWO and RI indices.
-    * Radio flux at 10.7 cm is produced by `Penticon/Ottawa <http://www.ngdc.noaa.gov/stp/solar/flux.html>`_ and the units are in sfu.
-    * The Ap Geomagnetic Index is produced by the United States Air Force (USAF).
+    * **sunspot SWO** - The SWO sunspot number is issued by the NOAA Space
+    Weather Prediction Center (SWPC).
+    * **sunspot SWO smooth** - Smoothed SWO sunspot number.
+    * **sunspot RI** - The RI sunspot number is the official International
+      Sunspot Number and is issued by the `Solar Influence Data Analysis Center (SDIC)
+      <http://sidc.oma.be>`_ in Brussels, Belgium.
+    * **sunspot SWO smooth** - Smoothed RI sunspot number.
+    * **radio flux** - Radio flux at 10.7 cm is produced by
+      `Penticon/Ottawa <http://www.ngdc.noaa.gov/stp/solar/flux.html>`_
+      and the units are in sfu.
+    * **radio flux smooth** - Smoothed radio flux at 10.7 cm.
+    * **geomagnetic ap** - The Ap Geomagnetic Index is produced by the United
+    States Air Force (USAF).
+    * **geomagnetic smooth** - Smoothed geomagnetic index.
+    * **sunspot ratio** - The ratio between the RI and SWO sunspot number.
 
     Examples
     --------
@@ -41,46 +54,54 @@ class NOAAIndicesLightCurve(LightCurve):
     | http://www.swpc.noaa.gov/SolarCycle/
     """
 
-    def peek(self, axes=None, type='sunspot SWO', **plot_args):
-        """Plots NOAA Indices as a function of time"""
-        figure = plt.figure()
-        axes = plt.gca()
+    def plot(self, title='Solar Cycle Progression', type='sunspot SWO', axes=None, **plot_args):
+        """Plots GOES light curve is the usual manner"""
+
+        if axes is None:
+            axes = plt.gca()
 
         if type == 'sunspot SWO':
             axes = self.data['sunspot SWO'].plot()
             self.data['sunspot SWO smooth'].plot()
-            axes.set_ylabel('Sunspot Number')
+            ylabel = 'Sunspot Number'
         if type == 'sunspot RI':
             axes = self.data['sunspot RI'].plot()
             self.data['sunspot RI smooth'].plot()
-            axes.set_ylabel('Sunspot Number')
+            ylabel = 'Sunspot Number'
         if type == 'sunspot compare':
             axes = self.data['sunspot RI'].plot()
             self.data['sunspot SWO'].plot()
-            axes.set_ylabel('Sunspot Number')
+            ylabel = 'Sunspot Number'
         if type == 'radio':
             axes = self.data['radio flux'].plot()
             self.data['radio flux smooth'].plot()
-            axes.set_ylabel('Radio Flux [sfu]')
-        if type == 'geo':
+            ylabel = 'Radio Flux [sfu]'
+        if type == 'ap index':
             axes = self.data['geomagnetic ap'].plot()
-            self.data['geomagnetic ap smooth'].plot()
-            axes.set_ylabel('Geomagnetic AP Index')
+            self.data['geomagnetic smooth'].plot()
+            ylabel = 'Geomagnetic AP Index'
 
         axes.set_ylim(0)
-        axes.set_title('Solar Cycle Progression')
+        axes.set_title(title)
+        axes.set_ylabel(ylabel)
 
         axes.yaxis.grid(True, 'major')
         axes.xaxis.grid(True, 'major')
-        axes.legend()
+        axes.set_xlabel('Start time: ' + self.data['sunspot SWO'].index[0].strftime(TIME_FORMAT))
 
-        figure.show()
-        return figure
+        axes.legend(bbox_to_anchor=(1.02, 1), loc=2, borderaxespad=0.)
+        plt.gcf().autofmt_xdate()
+        
+        return axes
 
     @classmethod
     def _get_default_uri(cls):
         """Return the url to download indices"""
         return "http://www.swpc.noaa.gov/ftpdir/weekly/RecentIndices.txt"
+
+    @classmethod
+    def _get_plot_types(cls):
+        return ['sunspot SWO', 'sunspot RI', 'sunspot compare', 'radio', 'ap index']
 
     @staticmethod
     def _get_url_for_date_range(*args, **kwargs):
@@ -107,17 +128,24 @@ class NOAAIndicesLightCurve(LightCurve):
             data = data.drop('yyyy',1)
             return {'comments': header}, data
 
+
 class NOAAPredictIndicesLightCurve(LightCurve):
     """NOAA Solar Cycle Predicted Progression
 
-    The predictions are updated monthly and are produced by ISES. Observed values are
-    initially the preliminary values which are replaced with the final values as they
-    become available.
-
-    The following predicted values are available.
-
-    * The predicted RI sunspot number is the official International Sunspot Number and is issued by the `Solar Influence Data Analysis Center (SDIC) <http://sidc.oma.be>`_ in Brussels, Belgium.
-    * The predicted radio flux at 10.7 cm is produced by `Penticon/Ottawa <http://www.ngdc.noaa.gov/stp/solar/flux.html>`_ and the units are in sfu.
+    The predictions are updated monthly and are produced by ISES. Observed
+    values are initially the preliminary values which are replaced with the
+    final values as they become available. The following data columns are provided.
+    
+    * **sunspot** - The predicted RI sunspot number is the official International Sunspot
+      Number and is issued by the `Solar Influence Data Analysis Center (SDIC)
+      <http://sidc.oma.be>`_ in Brussels, Belgium.
+    * **sunspot low** - The low bound on the prediction.
+    * **sunspot high** - The high bound on the prediction.
+    * **radio flux** - The predicted radio flux at 10.7 cm is produced by
+      `Penticon/Ottawa <http://www.ngdc.noaa.gov/stp/solar/flux.html>`_ and
+      the units are in sfu.
+    * **radio flux low** - The low bound on the radio predict.
+    * **radio flux high** - The high bound on the radio predict.
 
     Examples
     --------
@@ -132,26 +160,40 @@ class NOAAPredictIndicesLightCurve(LightCurve):
     | http://www.swpc.noaa.gov/SolarCycle/
     """
 
-    def peek(self, axes=None, **plot_args):
+    def plot(self, axes=None, title='Solar Cycle Prediction', type='sunspot', **plot_args):
         """Plots NOAA Indices as a function of time"""
-        figure = plt.figure()
-        axes = plt.gca()
+        if axes is None:
+            axes = plt.gca()
 
-        axes = self.data['sunspot'].plot(color='b')
-        self.data['sunspot low'].plot(linestyle='--', color='b')
-        self.data['sunspot high'].plot(linestyle='--', color='b')
+        if type == 'sunspot':
+            ylabel = 'Sunspot Number'
+            axes = self.data['sunspot'].plot(**plot_args)
+            plt.fill_between(self.data.index, self.data['sunspot high'],
+                         y2=self.data['sunspot low'], interpolate=True,
+                         alpha=0.5)
+        if type == 'radio':
+            ylabel = 'Radio flux'
+            axes = self.data['radio flux'].plot(**plot_args)
+            plt.fill_between(self.data.index, self.data['radio flux high'],
+                         y2=self.data['radio flux low'], interpolate=True,
+                         alpha=0.5)
 
         axes.set_ylim(0)
-        axes.set_title('Solar Cycle Sunspot Number Prediction')
-        axes.set_ylabel('Sunspot Number')
+        axes.set_title(title)
+        axes.set_ylabel(ylabel)
         #axes.set_xlabel(datetime.datetime.isoformat(self.data.index[0])[0:10])
 
         axes.yaxis.grid(True, 'major')
         axes.xaxis.grid(True, 'major')
-        axes.legend()
 
-        figure.show()
-        return figure
+        axes.legend(bbox_to_anchor=(1.02, 1), loc=2, borderaxespad=0.)
+        plt.gcf().autofmt_xdate()        
+
+        return axes
+
+    @classmethod
+    def _get_plot_types(cls):
+        return ['sunspot', 'radio']
 
     @classmethod
     def _get_default_uri(cls):

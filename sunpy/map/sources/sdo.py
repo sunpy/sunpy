@@ -31,8 +31,7 @@ class AIAMap(GenericMap):
 
         self._nickname = self.detector
         self._name = self.detector + " " + str(self.measurement)
-
-        self.cmap = cm.get_cmap('sdoaia%d' % self.wavelength)
+        self.plot_settings['cmap'] = cm.get_cmap('sdoaia%d' % self.wavelength)
 
     @property
     def observatory(self):
@@ -48,11 +47,8 @@ class AIAMap(GenericMap):
         if self.data.dtype == np.uint8:
             return None
 
-        mean = self.mean()
-        std = self.std()
-
-        vmin = max(0, mean - 3 * std)
-        vmax = min(self.max(), mean + 3 * std)
+        vmin = self.min()
+        vmax = self.max()
 
         return colors.Normalize(vmin, vmax)
 

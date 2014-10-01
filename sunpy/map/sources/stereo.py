@@ -19,7 +19,7 @@ class EUVIMap(GenericMap):
         self._name = self.observatory + " " + self.detector + " " + str(self.measurement)
         self._nickname = "{0}-{1}".format(self.detector, self.observatory[-1])
 
-        self.cmap = cm.get_cmap('sohoeit%d' % self.wavelength)
+        self.plot_settings['cmap'] = cm.get_cmap('sohoeit%d' % self.wavelength)
 
         # Try to identify when the FITS meta data does not have the correct
         # date FITS keyword
@@ -52,7 +52,7 @@ class CORMap(GenericMap):
         self._name = self.observatory + " " + self.detector + " " + str(self.measurement)
         self._nickname = "{0}-{1}".format(self.detector, self.observatory[-1])
 
-        self.cmap = cm.get_cmap('stereocor%s' % self.detector[-1])
+        self.plot_settings['cmap'] = cm.get_cmap('stereocor%s' % self.detector[-1])
 
         # Try to identify when the FITS meta data does not have the correct
         # date FITS keyword

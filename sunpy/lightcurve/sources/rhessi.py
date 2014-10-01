@@ -11,12 +11,25 @@ from sunpy.lightcurve import LightCurve
 from sunpy.time import TimeRange, parse_time
 from sunpy.instr import rhessi
 
+from sunpy import config
+TIME_FORMAT = config.get("general", "time_format")
+
 __all__ = ['RHESSISummaryLightCurve']
 
 
 class RHESSISummaryLightCurve(LightCurve):
     """
-    RHESSI X-ray Summary LightCurve.
+    RHESSI X-ray Summary LightCurve. The columns of data in this object are
+    
+    * **3 - 6 keV**
+    * **6 - 12 keV**
+    * **12 - 25 keV**
+    * **25 - 50 keV**'
+    * **50 - 100 keV**
+    * **100 - 300 keV**
+    * **300 - 800 keV**
+    * **800 - 7000 keV**
+    * **7000 - 20000 keV**
 
     Examples
     --------
@@ -30,37 +43,32 @@ class RHESSISummaryLightCurve(LightCurve):
     | http://sprg.ssl.berkeley.edu/~jimm/hessi/hsi_obs_summ_soc.html#hsi_obs_summ_rate
     """
 
-    def peek(self, title="RHESSI Observing Summary Count Rate", **kwargs):
+    def plot(self, title="RHESSI Observing Summary Count Rate", axes=None, type='rhessi', **plot_args):
         """Plots RHESSI Count Rate light curve"""
-        figure = plt.figure()
-        axes = plt.gca()
 
-        dates = matplotlib.dates.date2num(self.data.index)
-
-        lc_linecolors = ('black', 'pink', 'green', 'blue', 'brown', 'red',
-                         'navy', 'orange', 'green')
+        if axes is None:
+            axes = plt.gca()
 
         for item, frame in self.data.iteritems():
-            axes.plot_date(dates, frame.values, '-', label=item, lw=2)
+            axes.plot_date(self.data.index, frame.values, '-', label=item, **plot_args)
 
         axes.set_yscale("log")
-        axes.set_xlabel(datetime.datetime.isoformat(self.data.index[0])[0:10])
+        axes.set_xlabel('Start time: ' + self.data.index[0].strftime(TIME_FORMAT))
 
-        axes.set_title('RHESSI Observing Summary Count Rates, Corrected')
-        axes.set_ylabel('Corrected Count Rates s$^{-1}$ detector$^{-1}$')
+        axes.set_title(title)
+        axes.set_ylabel('Count Rates s$^{-1}$ detector$^{-1}$')
 
         axes.yaxis.grid(True, 'major')
-        axes.xaxis.grid(False, 'major')
-        axes.legend()
+        axes.xaxis.grid(True, 'major')
+        axes.legend(bbox_to_anchor=(1.02, 1), loc=2, borderaxespad=0.)
+        plt.gcf().autofmt_xdate()
+        
+        return axes
 
-        # @todo: display better tick labels for date range (e.g. 06/01 - 06/05)
-        formatter = matplotlib.dates.DateFormatter('%H:%M')
-        axes.xaxis.set_major_formatter(formatter)
-
-        axes.fmt_xdata = matplotlib.dates.DateFormatter('%H:%M')
-        figure.autofmt_xdate()
-        figure.show()
-
+    @classmethod
+    def _get_plot_types(cls):
+        return ['rhessi']
+      
     @classmethod
     def _get_default_uri(cls):
         """Retrieve the latest RHESSI data."""

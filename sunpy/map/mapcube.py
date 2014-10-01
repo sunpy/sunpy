@@ -139,9 +139,9 @@ class MapCube(object):
 
         # Normal plot
         def annotate_frame(i):
-            axes.set_title("%s %s" % (self[i].name, self[i].date))
+            axes.set_title("%s %s" % (self[i].name, parse_time(self[i].date).strftime(TIME_FORMAT)))
 
-            # x-axis label
+            # x-axis labelf
             if self[0].coordinate_system['x'] == 'HG':
                 xlabel = 'Longitude [%s]' % self[i].units['x']
             else:
@@ -251,8 +251,6 @@ class MapCube(object):
                     amap.resample(resample)
             else:
                 raise ValueError('Maps in mapcube do not all have the same shape.')
-
-        return MapCubeAnimator(self, **kwargs)
 
     def all_maps_same_shape(self):
         """

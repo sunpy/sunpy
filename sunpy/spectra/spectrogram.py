@@ -33,6 +33,9 @@ from sunpy.util.cond_dispatch import ConditionalDispatch
 from sunpy.util.create import Parent
 from sunpy.spectra.spectrum import Spectrum
 
+from sunpy import config
+TIME_FORMAT = config.get("general", "time_format")
+
 __all__ = ['Spectrogram', 'LinearTimeSpectrogram']
 
 # 1080 because that usually is the maximum vertical pixel count on modern
@@ -215,7 +218,7 @@ class TimeFreq(object):
             )
         )
 
-        axes.set_xlabel("Time [UT]")
+        axes.set_xlabel('Start time: ' + self.start.strftime(TIME_FORMAT))
         axes.set_ylabel("Frequency [MHz]")
 
         xa = axes.get_xaxis()
@@ -230,9 +233,8 @@ class TimeFreq(object):
 
     def peek(self, *args, **kwargs):
         plt.figure()
-        ret = self.plot(*args, **kwargs)
+        self.plot(*args, **kwargs)
         plt.show()
-        return ret
 
 
 class Spectrogram(Parent):
@@ -258,8 +260,6 @@ class Spectrogram(Parent):
     t_init : int
         offset from the start of the day the measurement began. If None
         gets automatically set from start.
-    t_label : str
-        label for the time axis
     f_label : str
         label for the frequency axis
     content : str
@@ -279,7 +279,6 @@ class Spectrogram(Parent):
         ('instruments', COPY),
         ('start', REFERENCE),
         ('end', REFERENCE),
-        ('t_label', REFERENCE),
         ('f_label', REFERENCE),
         ('content', REFERENCE),
         ('t_init', REFERENCE),
@@ -333,7 +332,7 @@ class Spectrogram(Parent):
         return new
 
     def __init__(self, data, time_axis, freq_axis, start, end, t_init=None,
-        t_label="Time", f_label="Frequency", content="", instruments=None):
+        f_label="Frequency", content="", instruments=None):
         # Because of how object creation works, there is no avoiding
         # unused arguments in this case.
         self.data = data
@@ -347,7 +346,6 @@ class Spectrogram(Parent):
         self.start = start
         self.end = end
 
-        self.t_label = t_label
         self.f_label = f_label
 
         self.t_init = t_init
@@ -384,9 +382,8 @@ class Spectrogram(Parent):
 
     def peek(self, *args, **kwargs):
         figure()
-        ret = self.plot(*args, **kwargs)
+        self.plot(*args, **kwargs)
         plt.show()
-        return ret
 
     def plot(self, figure=None, overlays=[], colorbar=True, vmin=None, vmax=None,
              linear=True, showz=True, yres=DEFAULT_YRES,
@@ -503,7 +500,7 @@ class Spectrogram(Parent):
             FuncFormatter(freq_fmt)
         )
 
-        axes.set_xlabel(self.t_label)
+        axes.set_xlabel('Start time: ' + self.start.strftime(TIME_FORMAT))
         axes.set_ylabel(self.f_label)
         # figure.suptitle(self.content)
 
@@ -839,13 +836,13 @@ class LinearTimeSpectrogram(Spectrogram):
     ]
 
     def __init__(self, data, time_axis, freq_axis, start, end,
-        t_init=None, t_delt=None, t_label="Time", f_label="Frequency",
+        t_init=None, t_delt=None, f_label="Frequency",
         content="", instruments=None):
         if t_delt is None:
             t_delt = _min_delt(freq_axis)
 
         super(LinearTimeSpectrogram, self).__init__(
-            data, time_axis, freq_axis, start, end, t_init, t_label, f_label,
+            data, time_axis, freq_axis, start, end, t_init, f_label,
             content, instruments
         )
         self.t_delt = t_delt
@@ -1038,7 +1035,6 @@ class LinearTimeSpectrogram(Spectrogram):
             'end': specs[-1].end,
             't_delt': data.t_delt,
             't_init': data.t_init,
-            't_label': data.t_label,
             'f_label': data.f_label,
             'content': data.content,
             'instruments': _union(spec.instruments for spec in specs),
@@ -1130,7 +1126,6 @@ class LinearTimeSpectrogram(Spectrogram):
             'end': one.end,
             't_delt': one.t_delt,
             't_init': one.t_init,
-            't_label': one.t_label,
             'f_label': one.f_label,
             'content': one.content,
             'instruments': _union(spec.instruments for spec in specs)

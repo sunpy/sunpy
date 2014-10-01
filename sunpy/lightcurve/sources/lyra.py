@@ -19,6 +19,7 @@ TIME_FORMAT = config.get("general", "time_format")
 
 __all__ = ['LYRALightCurve']
 
+
 class LYRALightCurve(LightCurve):
     """
     Proba-2 LYRA LightCurve.
@@ -38,50 +39,45 @@ class LYRALightCurve(LightCurve):
     | http://proba2.sidc.be/data/LYRA
     """
 
-    def peek(self, names=3, **kwargs):
-        """Plots the LYRA data
-
-        See: http://pandas.sourceforge.net/visualization.html
+    def plot(self, title="LYRA", axes=None, type='channel 1', **plot_args):
+        """Plots the LYRA data. Available plot types are
+        
         """
-        lyranames = (('Lyman alpha','Herzberg cont.','Al filter','Zr filter'),
-                 ('120-123nm','190-222nm','17-80nm + <5nm','6-20nm + <2nm'))
-
-        # Choose title if none was specified
-        #if not kwargs.has_key("title"):
-        #    if len(self.data.columns) > 1:
-        #        kwargs['title'] = 'LYRA data'
-        #    else:
-        #        if self._filename is not None:
-        #            base = self._filename
-        #            kwargs['title'] = os.path.splitext(base)[0]
-        #        else:
-        #            kwargs['title'] = 'LYRA data'
+        lyranames = (('Lyman alpha', 'Herzberg cont.', 'Al filter', 'Zr filter'),
+                 ('120-123nm', '190-222nm', '17-80nm + <5nm', '6-20nm + <2nm'))
 
         """Shows a plot of all four light curves"""
-        figure = plt.figure()
-        plt.subplots_adjust(left=0.17,top=0.94,right=0.94,bottom=0.15)
-        axes = plt.gca()
+        if axes is None:
+            axes = plt.gca()
 
-        axes = self.data.plot(ax=axes, subplots=True, sharex=True, **kwargs)
-        #plt.legend(loc='best')
+        if type == 'channel 1':
+            axes = self.data['CHANNEL1'].plot(ax=axes, **plot_args)
+            ylabel = lyranames[0][0] + ' \n (' + lyranames[1][0] + ')'
+        if type == 'channel 2':
+            axes = self.data['CHANNEL2'].plot(ax=axes, **plot_args)
+            ylabel = lyranames[0][1] + ' \n (' + lyranames[1][1] + ')'
+        if type == 'channel 3':
+            axes = self.data['CHANNEL3'].plot(ax=axes, **plot_args)
+            ylabel = lyranames[0][2] + ' \n (' + lyranames[1][2] + ')'
+        if type == 'channel 4':
+            axes = self.data['CHANNEL4'].plot(ax=axes, **plot_args)
+            ylabel = lyranames[0][3] + ' \n (' + lyranames[1][3] + ')'
+            
+        ylabel+= "\n (W/m**2)"
 
-        for i, name in enumerate(self.data.columns):
-            if names < 3:
-                name = lyranames[names][i]
-            else:
-                name = lyranames[0][i] + ' \n (' + lyranames[1][i] + ')'
-            axes[i].set_ylabel( "%s %s" % (name, "\n (W/m**2)"),fontsize=9.5)
+        axes.set_xlabel('Start time: ' + self.data['CHANNEL1'].index[0].strftime(TIME_FORMAT))
+        axes.set_ylabel(ylabel)
+        axes.yaxis.grid(True, 'major')
+        axes.xaxis.grid(True, 'major')
+        axes.legend(bbox_to_anchor=(1.02, 1), loc=2, borderaxespad=0.)
+        plt.gcf().autofmt_xdate()
+        
+        return axes
 
-        axes[0].set_title("LYRA ("+ self.data.index[0].strftime(TIME_FORMAT) +")")
-        axes[-1].set_xlabel("Time")
-        for axe in axes:
-            axe.locator_params(axis='y',nbins=6)
-
-        figure.show()
-
-        return figure
-
-
+    @classmethod
+    def _get_plot_types(cls):
+        return ['channel 1', 'channel 2', 'channel 3', 'channel 4']
+        
     @staticmethod
     def _get_url_for_date(date,**kwargs):
         """Returns a URL to the LYRA data for the specified date
