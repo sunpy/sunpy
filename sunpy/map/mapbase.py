@@ -28,6 +28,8 @@ from sunpy.time import parse_time, is_time
 from sunpy.image.rescale import reshape_image_to_4d_superpixel
 from sunpy.image.rescale import resample as sunpy_image_resample
 
+import astropy.units as u
+
 __all__ = ['GenericMap']
 
 from sunpy import config
@@ -231,7 +233,7 @@ Dimension:\t [%d, %d]
         if dsun is None:
             warnings.warn_explicit("Missing metadata for Sun-spacecraft separation: assuming Sun-Earth distance",
                                    Warning, __file__, inspect.currentframe().f_back.f_lineno)
-            dsun = sun.sunearth_distance(self.date) * constants.au.si.value
+            dsun = sun.sunearth_distance(self.date).to(u.m)
 
         return dsun
 
