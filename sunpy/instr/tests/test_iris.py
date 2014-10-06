@@ -25,7 +25,6 @@ def test_iris_rot():
     irismap_rot = irismap.iris_rot()
 
     assert isinstance(irismap_rot, sunpy.map.sources.IRISMap)
-    assert not np.allclose(irismap_rot.data, irismap.data)
 
     assert irismap_rot.meta['pc1_1'] == 1
     assert irismap_rot.meta['pc1_2'] == 0
