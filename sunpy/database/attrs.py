@@ -6,7 +6,6 @@
 from __future__ import absolute_import
 
 from sqlalchemy import or_, and_, not_
-from astropy.units import Unit, nm, equivalencies
 
 from sunpy.time import parse_time
 from sunpy.net.vso import attrs as vso_attrs
