@@ -6,6 +6,7 @@ Latest
  * Added ability to download level3 data for lyra Light Curve along with corresponding tests.
  * Added support for gzipped FITS files.
  * Add STEREO HI Map subclass and color maps.
+ * CD matrix now updated, if present, when Map pixel size is changed.
 
 0.5.0
 -----
