@@ -557,6 +557,11 @@ Dimension:\t [%d, %d]
         # Update metadata
         new_meta['cdelt1'] *= scale_factor_x
         new_meta['cdelt2'] *= scale_factor_y
+        if new_meta.get('CD1_1') is not None:
+            new_meta['CD1_1'] *= scale_factor_x
+            new_meta['CD2_1'] *= scale_factor_x
+            new_meta['CD1_2'] *= scale_factor_y
+            new_meta['CD2_2'] *= scale_factor_y
         new_meta['crpix1'] = (dimensions[0] + 1) / 2.
         new_meta['crpix2'] = (dimensions[1] + 1) / 2.
         new_meta['crval1'] = self.center['x']
@@ -860,6 +865,11 @@ Dimension:\t [%d, %d]
         # Update metadata
         new_meta['cdelt1'] = dimensions[0] * self.scale['x']
         new_meta['cdelt2'] = dimensions[1] * self.scale['y']
+        if new_meta.get('CD1_1') is not None:
+            new_meta['CD1_1'] *= dimensions[0]
+            new_meta['CD2_1'] *= dimensions[0]
+            new_meta['CD1_2'] *= dimensions[1]
+            new_meta['CD2_2'] *= dimensions[1]
         new_meta['crpix1'] = (new_nx + 1) / 2.
         new_meta['crpix2'] = (new_ny + 1) / 2.
         new_meta['crval1'] = self.center['x']
