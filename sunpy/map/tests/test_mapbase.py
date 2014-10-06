@@ -313,7 +313,6 @@ def test_rotate():
     rotated_map_1 = aia_map.rotate(20)
     rotated_map_2 = rotated_map_1.rotate(20)
     assert rotated_map_2.center == rotated_map_1.center == aia_map.center
-    assert rotated_map_2.shape == rotated_map_1.shape == aia_map.shape
     np.testing.assert_allclose(rotated_map_1.rotation_matrix,
                                np.dot(aia_map.rotation_matrix,
                                       calc_new_matrix(20).T))
@@ -321,11 +320,13 @@ def test_rotate():
                                np.dot(aia_map.rotation_matrix,
                                       calc_new_matrix(40).T))
 
-    # Rotation of a square map by non-integral multiple of 90 degrees cuts off the corners
-    # and assigns the value of 0 to corner pixels. This results in reduction
-    # of the mean and an increase in standard deviation.
+    # Rotation of a map by a non-integral multiple of 90 degrees expands the map
+    # and assigns the value of 0 to corner pixels. This results in a reduction
+    # of the mean for a map of all non-negative values.
+    assert rotated_map_2.shape > rotated_map_1.shape > aia_map.shape
+    np.testing.assert_allclose(rotated_map_1.data[0, 0], 0., atol=1e-7)
+    np.testing.assert_allclose(rotated_map_2.data[0, 0], 0., atol=1e-7)
     assert rotated_map_2.mean() < rotated_map_1.mean() < aia_map.mean()
-    assert rotated_map_2.std() > rotated_map_1.std() > aia_map.std()
 
     rotated_map_3 = aia_map.rotate(0, scale=1.5)
     assert rotated_map_3.mean() > aia_map.mean()
@@ -333,9 +334,11 @@ def test_rotate():
     # Mean and std should be equal when angle of rotation is integral multiple
     # of 90 degrees for a square map
     rotated_map_4 = aia_map.rotate(90, scale=1.5)
+    np.testing.assert_allclose(rotated_map_3.mean(), rotated_map_4.mean(), rtol=1e-3)
+    np.testing.assert_allclose(rotated_map_3.std(), rotated_map_4.std(), rtol=1e-3)
     rotated_map_5 = aia_map.rotate(180, scale=1.5)
-    assert int(rotated_map_3.mean()) == int(rotated_map_4.mean()) == int(rotated_map_5.mean())
-    assert int(rotated_map_3.std()) == int(rotated_map_4.std()) == int(rotated_map_5.std())
+    np.testing.assert_allclose(rotated_map_3.mean(), rotated_map_5.mean(), rtol=1e-3)
+    np.testing.assert_allclose(rotated_map_3.std(), rotated_map_5.std(), rtol=1e-3)
 
 
 def test_rotate_recenter(aia_map):
@@ -344,14 +347,15 @@ def test_rotate_recenter(aia_map):
     # New image center in data coordinates
     new_center = np.asarray((200, 100))
 
-    rotated_map = aia_map.rotate(20, image_center=new_center, recenter=True)
+    rotated_map = aia_map.rotate(20, rotation_center=new_center, recenter=True)
 
     # Retrieve pixel coordinates for the centers from the new map
     new_x = rotated_map.data_to_pixel(new_center[0], 'x')
     new_y = rotated_map.data_to_pixel(new_center[1], 'y')
 
     # The new desired image center should be in the map center
-    np.testing.assert_allclose((new_y, new_x), array_center)
+    new_array_center = (np.array(rotated_map.data.shape)-1)/2.0
+    np.testing.assert_allclose((new_y, new_x), new_array_center)
 
 
 def test_rotate_crota_remove(aia_map):
