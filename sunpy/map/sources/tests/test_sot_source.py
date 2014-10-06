@@ -6,8 +6,6 @@ This particular test file pertains to SOTMap.
 import os
 import glob
 
-import pytest
-
 from sunpy.map.sources.hinode import SOTMap
 from sunpy.map import Map
 import sunpy.data.test

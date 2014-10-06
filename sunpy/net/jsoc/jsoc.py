@@ -18,7 +18,8 @@ from sunpy import config
 from sunpy.time import parse_time, TimeRange
 from sunpy.net.download import Downloader
 from sunpy.net.vso.vso import Results
-
+from sunpy.net.attr import and_
+from sunpy.net.jsoc.attrs import walker
 __all__ = ['JSOCClient']
 
 JSOC_URL = 'http://jsoc.stanford.edu/cgi-bin/ajax/jsoc_fetch'
@@ -62,7 +63,7 @@ class JSOCClient(object):
     of the download.
     """
 
-    def jsoc_query(self, start_time, end_time, series, **kwargs):
+    def jsoc_query(self, *query, **kwargs):
         """
         Build a JSOC query and submit it to JSOC for processing.
 
@@ -98,28 +99,32 @@ class JSOCClient(object):
 
         # A little (hidden) debug feature
         return_resp = kwargs.pop('return_resp', False)
+        return_response = []
+        return_reqid = []
+        query = and_(*query)
+        for block in walker.create(query):
+            iargs = kwargs.copy()
+            iargs.update(block)
 
-        start_time = self._process_time(start_time)
-        end_time = self._process_time(end_time)
-
-        # Do a multi-request
-        responses = self._multi_request(start_time, end_time, series, **kwargs)
-
-        for i, response in enumerate(responses):
-            #TODD: catch non 200 return
-            if response.json()['status'] != 2:
-                warnings.warn(
-                Warning("Query {0} retuned status {1} with error {2}".format(i,
+            # Do a multi-request for each query block
+            responses = self._multi_request(**iargs)
+            for i, response in enumerate(responses):
+                #TODD: catch non 200 return
+                if response.json()['status'] != 2:
+                    warnings.warn(
+                    Warning("Query {0} retuned status {1} with error {2}".format(i,
                                                      response.json()['status'],
                                                      response.json()['error'])))
-                responses.pop(i)
-        #Extract the IDs from the JSON
-        requestIDs = [response.json()['requestid'] for response in responses]
+                    responses.pop(i)
+            #Extract the IDs from the JSON
+            requestIDs = [response.json()['requestid'] for response in responses]
+            return_reqid.extend(requestIDs)
+            return_response.extend(responses)
 
         if return_resp:
-            return responses
+            return return_response
 
-        return requestIDs
+        return return_reqid
 
     def check_request(self, requestIDs):
         """
@@ -340,8 +345,18 @@ class JSOCClient(object):
                    'requestor':'none',
                    'filenamefmt':'{0}.{{T_REC:A}}.{{CAMERA}}.{{segment}}'.format(series)}
 
-        payload.update(kwargs)
+        if kwargs.has_key('wavelength'):
+            if series[0:3] != 'aia':
+                raise TypeError("This series does not support the wavelength attribute.")
+            else:
+                if isinstance(kwargs['wavelength'], list):
+                    tmp = str(kwargs['wavelength'])
+                else:
+                    tmp = '[{0}]'.format(kwargs['wavelength'])
+                payload['ds'] += tmp
+            kwargs.pop('wavelength')
 
+        payload.update(kwargs)
         return payload
 
     def _send_jsoc_request(self, start_time, end_time, series, notify='',
@@ -362,13 +377,19 @@ class JSOCClient(object):
 
         return r, r.json()
 
-    def _multi_request(self, start_time, end_time, series, **kwargs):
+    def _multi_request(self, **kwargs):
         """
         Make a series of requests to avoid the 100GB limit
         """
+        start_time = kwargs.pop('start_time', None)
+        end_time = kwargs.pop('end_time', None)
+        series = kwargs.pop('series', None)
+        if any(x is None for x in (start_time, end_time, series)):
+            return []
+        start_time = self._process_time(start_time)
+        end_time = self._process_time(end_time)
         tr = TimeRange(start_time, end_time)
         returns = []
-
         response, json_response = self._send_jsoc_request(start_time, end_time, series, **kwargs)
 
         if json_response['status'] == 3 and json_response['error'] == 'Request exceeds max byte limit of 100000MB':

@@ -34,7 +34,6 @@ from sunpy.net.vso.attrs import walker, TIMEFORMAT
 from sunpy.util import print_table, replacement_filename
 from sunpy.time import parse_time
 
-from sunpy import config
 TIME_FORMAT = config.get("general", "time_format")
 
 DEFAULT_URL = 'http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl'

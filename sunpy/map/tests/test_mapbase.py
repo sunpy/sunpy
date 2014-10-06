@@ -5,13 +5,13 @@ Test Generic Map
 from __future__ import absolute_import
 
 import os
-from itertools import izip
 
 import numpy as np
 
 import pytest
 
 from astropy.io import fits
+import astropy.units as u
 
 import sunpy
 import sunpy.sun
@@ -128,8 +128,7 @@ def test_detector(generic_map):
 
 
 def test_dsun(generic_map):
-    assert generic_map.dsun == (sunpy.sun.sunearth_distance(generic_map.date) *
-                                sunpy.sun.constants.au.si.value)
+    assert generic_map.dsun == sunpy.sun.sunearth_distance(generic_map.date).to(u.m)
 
 
 def test_rsun_meters(generic_map):

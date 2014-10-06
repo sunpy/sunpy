@@ -6,8 +6,6 @@ This particular test file pertains to CORMap.
 import os
 import glob
 
-import pytest
-
 from sunpy.map.sources.stereo import CORMap
 from sunpy.map import Map
 import sunpy.data.test
