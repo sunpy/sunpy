@@ -68,7 +68,7 @@ script:
    - if [[ $TEST_MODE == 'online' ]]; then py.test -n 8 --cov-report html --cov sunpy; fi
 
 after_success:
-   - if [[ $TEST_MODE == 'tests' ]]; then coveralls; fi
+   - if [[ $TEST_MODE == 'online' ]]; then coveralls; fi
 
 # Notify the IRC channel of build status
 notifications:
