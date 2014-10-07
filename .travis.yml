@@ -24,7 +24,7 @@ matrix:
         - python: 2.7
           env: TEST_MODE='sphinx' NUMPY_VERSION=1.8.1 PANDAS_VERSION=0.14.1
         - python: 2.7
-          env: TEST_MODE='offline' NUMPY_VERSION=1.8.1 PANDAS_VERSION=0.14.1
+          env: TEST_MODE='online' NUMPY_VERSION=1.8.1 PANDAS_VERSION=0.14.1
 
 before_install:
 # Pick the suds version based on the python version
@@ -64,8 +64,8 @@ install:
 script:
    - python setup.py develop
    - if [[ $TEST_MODE == 'sphinx' ]]; then cd doc/source && sphinx-build -W -b html -d _build/doctrees   . _build/html; fi
-   - if [[ $TEST_MODE == 'tests' ]]; then py.test -n 8 --cov-report html --cov sunpy; fi
-   - if [[ $TEST_MODE == 'offline' ]]; then py.test -n 8 --cov-report html --cov sunpy -k-online; fi
+   - if [[ $TEST_MODE == 'tests' ]]; then py.test -n 8 --cov-report html --cov sunpy -k-online; fi
+   - if [[ $TEST_MODE == 'online' ]]; then py.test -n 8 --cov-report html --cov sunpy; fi
 
 after_success:
    - if [[ $TEST_MODE == 'tests' ]]; then coveralls; fi
