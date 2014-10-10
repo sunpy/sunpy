@@ -372,20 +372,17 @@ Dimension:\t [%d, %d]
     def rotation_matrix(self):
         """Matrix describing the rotation required to align solar North with
         the top of the image."""
-        if self.meta.get('PC1_1', None) is not None:
+        if 'PC1_1' in self.meta:
             return np.matrix([[self.meta['PC1_1'], self.meta['PC1_2']],
                               [self.meta['PC2_1'], self.meta['PC2_2']]])
 
-        elif self.meta.get('CD1_1', None) is not None:
-            div = 1. / (self.scale['x'] - self.scale['y'])
-
-            deltm = np.matrix([[self.scale['y']/div, 0],
-                               [0, self.scale['x']/ div]])
-
+        elif 'CD1_1' in self.meta:
             cd = np.matrix([[self.meta['CD1_1'], self.meta['CD1_2']],
                             [self.meta['CD2_1'], self.meta['CD2_2']]])
 
-            return deltm * cd
+            cdelt = np.array(self.scale.values())
+
+            return cd / cdelt
         else:
             return self._rotation_matrix_from_crota()
 
@@ -476,6 +473,7 @@ Dimension:\t [%d, %d]
         scale = np.array([self.scale['x'], self.scale['y']])
         crpix = np.array([self.reference_pixel['x'], self.reference_pixel['y']])
         crval = np.array([self.reference_coordinate['x'], self.reference_coordinate['y']])
+        # FIXME: not used?!
         coordinate_system = [self.coordinate_system['x'], self.coordinate_system['y']]
         x,y = wcs.convert_pixel_to_data(self.shape, scale, crpix, crval, x = x, y = y)
 
@@ -557,6 +555,11 @@ Dimension:\t [%d, %d]
         # Update metadata
         new_meta['cdelt1'] *= scale_factor_x
         new_meta['cdelt2'] *= scale_factor_y
+        if 'CD1_1' in new_meta:
+            new_meta['CD1_1'] *= scale_factor_x
+            new_meta['CD2_1'] *= scale_factor_x
+            new_meta['CD1_2'] *= scale_factor_y
+            new_meta['CD2_2'] *= scale_factor_y
         new_meta['crpix1'] = (dimensions[0] + 1) / 2.
         new_meta['crpix2'] = (dimensions[1] + 1) / 2.
         new_meta['crval1'] = self.center['x']
@@ -860,6 +863,11 @@ Dimension:\t [%d, %d]
         # Update metadata
         new_meta['cdelt1'] = dimensions[0] * self.scale['x']
         new_meta['cdelt2'] = dimensions[1] * self.scale['y']
+        if 'CD1_1' in new_meta:
+            new_meta['CD1_1'] *= dimensions[0]
+            new_meta['CD2_1'] *= dimensions[0]
+            new_meta['CD1_2'] *= dimensions[1]
+            new_meta['CD2_2'] *= dimensions[1]
         new_meta['crpix1'] = (new_nx + 1) / 2.
         new_meta['crpix2'] = (new_ny + 1) / 2.
         new_meta['crval1'] = self.center['x']

@@ -37,6 +37,7 @@ class RHESSISummaryLightCurve(LightCurve):
 
         dates = matplotlib.dates.date2num(self.data.index)
 
+        # FIXME: not used?!
         lc_linecolors = ('black', 'pink', 'green', 'blue', 'brown', 'red',
                          'navy', 'orange', 'green')
 
