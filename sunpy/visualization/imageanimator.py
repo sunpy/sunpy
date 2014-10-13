@@ -374,7 +374,7 @@ class BaseFuncAnimator(object):
                 nx1 = -3
             locator = self.divider.new_locator(nx=0, ny=x, nx1=nx1)
             self.sliders[-1].set_axes_locator(locator)
-            sframe = SliderPB(self.sliders[-1], "%i"%i,
+            sframe = SliderPB(self.sliders[-1], "{slide:d}".format(slide=i),
                                     self.slider_ranges[i][0],
                                     self.slider_ranges[i][-1]-1,
                                     valinit=self.slider_ranges[i][0],

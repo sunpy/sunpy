@@ -144,22 +144,23 @@ class GenericMap(astropy.nddata.NDData):
         if not self.observatory:
             return self.data.__repr__()
         return (
-"""SunPy %s
+"""SunPy {dtype!s}
 ---------
-Observatory:\t %s
-Instrument:\t %s
-Detector:\t %s
-Measurement:\t %s
-Obs Date:\t %s
-dt:\t\t %f
-Dimension:\t [%d, %d]
-[dx, dy] =\t [%f, %f]
+Observatory:\t {obs}
+Instrument:\t {inst}
+Detector:\t {det}
+Measurement:\t {meas:0.0f}
+Obs Date:\t {date}
+dt:\t\t {dt:f}
+Dimension:\t [{xdim:d}, {ydim:d}]
+[dx, dy] =\t [{dx:f}, {dy:f}]
 
-""" % (self.__class__.__name__,
-       self.observatory, self.instrument, self.detector, self.measurement,
-       self.date, self.exposure_time,
-       self.data.shape[1], self.data.shape[0], self.scale['x'], self.scale['y'])
-     + self.data.__repr__())
+""".format(dtype=self.__class__.__name__,
+           obs=self.observatory, inst=self.instrument, det=self.detector, 
+           meas=self.measurement, date=self.date, dt=self.exposure_time,
+           xdim=self.data.shape[1], ydim=self.data.shape[0], 
+           dx=self.scale['x'], dy=self.scale['y'])
++ self.data.__repr__())
 
 
     #Some numpy extraction
@@ -462,9 +463,9 @@ Dimension:\t [%d, %d]
         height = self.shape[0]
 
         if (x is not None) & (x > width-1):
-            raise ValueError("X pixel value larger than image width (%s)." % width)
+            raise ValueError("X pixel value larger than image width ({width!s}).".format(width=width))
         if (x is not None) & (y > height-1):
-            raise ValueError("Y pixel value larger than image height (%s)." % height)
+            raise ValueError("Y pixel value larger than image height ({height!s}).".format(height=height))
         if (x is not None) & (x < 0):
             raise ValueError("X pixel value cannot be less than 0.")
         if (x is not None) & (y < 0):
@@ -1082,19 +1083,20 @@ Dimension:\t [%d, %d]
 
         # Normal plot
         if annotate:
-            axes.set_title("%s %s" % (self.name, parse_time(self.date).strftime(TIME_FORMAT)))
+            axes.set_title("{s.name} {s.date:{tmf}}".format(s=self, 
+                                                            tmf=TIME_FORMAT))
 
             # x-axis label
             if self.coordinate_system['x'] == 'HG':
-                xlabel = 'Longitude [%s]' % self.units['x']
+                xlabel = 'Longitude [{lon}]'.format(lon=self.units['x'])
             else:
-                xlabel = 'X-position [%s]' % self.units['x']
+                xlabel = 'X-position [{xpos}]'.format(xpos=self.units['x'])
 
             # y-axis label
             if self.coordinate_system['y'] == 'HG':
-                ylabel = 'Latitude [%s]' % self.units['y']
+                ylabel = 'Latitude [{lat}]'.format(lat=self.units['y'])
             else:
-                ylabel = 'Y-position [%s]' % self.units['y']
+                ylabel = 'Y-position [{ypos}]'.format(ypos=self.units['y'])
 
             axes.set_xlabel(xlabel)
             axes.set_ylabel(ylabel)
