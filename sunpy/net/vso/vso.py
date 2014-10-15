@@ -23,6 +23,10 @@ from functools import partial
 from collections import defaultdict
 from suds import client, TypeNotFound
 
+import astropy
+from astropy.table import Table, Column
+import astropy.units as u
+
 from sunpy import config
 from sunpy.net import download
 from sunpy.net.proxyfix import WellBehavedHttpTransport
@@ -167,10 +171,11 @@ def iter_errors(response):
 
 
 class QueryResponse(list):
-    def __init__(self, lst, queryresult=None):
+    def __init__(self, lst, queryresult=None, table=None):
         super(QueryResponse, self).__init__(lst)
         self.queryresult = queryresult
         self.errors = []
+        self.table = None
 
     def query(self, *query):
         """ Furtherly reduce the query response by matching it against
@@ -223,16 +228,60 @@ class QueryResponse(list):
         table.insert(0, ['Start time','End time','Source','Instrument','Type'])
 
         print(print_table(table, colsep = '  ', linesep='\n'))
+    
+    def build_table(self):
+        self.table = Table(names = ('Start time','End time','Source','Instrument','Type'))
+
+        ALT_TIME_FORMAT = '%Y%m%d%H%M%S'
+        
+        for record in self:
+            record_items = {
+                'Start time': 
+                    str(datetime.strptime(record.time.start, ALT_TIME_FORMAT))
+                        if record.time.start is not None else 'N/A',
+                'End time':
+                    str(datetime.strptime(record.time.end, ALT_TIME_FORMAT))
+                        if record.time.end is not None else 'N/A',
+                'Source':
+                    str(record.source),
+                'Instrument':
+                    str(record.instrument),
+                'Type':
+                    str(record.extent.type)
+                        if record.extent.type is not None else 'N/A'
+            }
+            
+            # record_items = [
+            #     str(datetime.strptime(record.time.start, ALT_TIME_FORMAT))
+            #         if record.time.start is not None else 'N/A',
+            #     str(datetime.strptime(record.time.end, ALT_TIME_FORMAT))
+            #         if record.time.end is not None else 'N/A',
+            #     str(record.source),
+            #     str(record.instrument),
+            #     str(record.extent.type)
+            #         if record.extent.type is not None else 'N/A'
+            # ]
+
+            self.table.add_row(record_items)
+
+            # record_table = Table([record_items])
+            # self.table = astropy.table.vstack([self.table, record_table])
 
     def add_error(self, exception):
         self.errors.append(exception)
+
+    def __str__(self):
+        """Print out human-readable summary of records retrieved"""
+
+        self.build_table()
+        return self.table.__str__()
 
 class DownloadFailed(Exception):
     pass
 
 class MissingInformation(Exception):
     pass
-
+    
 class UnknownMethod(Exception):
     pass
 
