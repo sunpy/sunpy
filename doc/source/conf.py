@@ -41,6 +41,14 @@ except ImportError:
     mock = Mock()
     modules.update({'skimage':mock, 'skimage.feature':mock.module})
 
+try:
+    import glymur
+    _, OJP2 = glymur.lib.config.glymur_config()
+except ImportError:
+    from mock import Mock
+    mock = Mock()
+    modules.update({'glymur':mock})
+
 sys.modules.update(modules)
 
 # -- Load astropy_helpers -----------------------------------------------------
