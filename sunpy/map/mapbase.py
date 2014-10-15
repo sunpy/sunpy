@@ -377,15 +377,12 @@ Dimension:\t [%d, %d]
                               [self.meta['PC2_1'], self.meta['PC2_2']]])
 
         elif 'CD1_1' in self.meta:
-            div = 1. / (self.scale['x'] - self.scale['y'])
-
-            deltm = np.matrix([[self.scale['y']/div, 0],
-                               [0, self.scale['x']/ div]])
-
             cd = np.matrix([[self.meta['CD1_1'], self.meta['CD1_2']],
                             [self.meta['CD2_1'], self.meta['CD2_2']]])
 
-            return deltm * cd
+            cdelt = np.array(self.scale.values())
+
+            return cd / cdelt
         else:
             return self._rotation_matrix_from_crota()
 
