@@ -1,7 +1,6 @@
 language: python
 
 python:
-  - 2.6
   - 2.7
 
 virtualenv:
@@ -24,11 +23,9 @@ matrix:
         - python: 2.7
           env: TEST_MODE='sphinx' NUMPY_VERSION=1.8.1 PANDAS_VERSION=0.14.1
         - python: 2.7
-          env: TEST_MODE='offline' NUMPY_VERSION=1.8.1 PANDAS_VERSION=0.14.1
+          env: TEST_MODE='online' NUMPY_VERSION=1.8.1 PANDAS_VERSION=0.14.1
 
 before_install:
-# Pick the suds version based on the python version
-   - if [[ $TRAVIS_PYTHON_VERSION == '2.6' ]]; then SUDS_PKG='suds' ;fi
 # Make sure the system is upto date and install scipy requirements
    - sudo apt-get update -qq
    - sudo apt-get install -qq libatlas-dev liblapack-dev gfortran
@@ -64,12 +61,18 @@ install:
 script:
    - python setup.py develop
    - if [[ $TEST_MODE == 'sphinx' ]]; then cd doc/source && sphinx-build -W -b html -d _build/doctrees   . _build/html; fi
-   - if [[ $TEST_MODE == 'tests' ]]; then py.test -n 8 --cov-report html --cov sunpy; fi
-   - if [[ $TEST_MODE == 'offline' ]]; then py.test -n 8 --cov-report html --cov sunpy -k-online; fi
+   - if [[ $TEST_MODE == 'tests' ]]; then py.test -n 8 --cov-report html --cov sunpy -k-online; fi
+   - if [[ $TEST_MODE == 'online' ]]; then py.test -n 8 --cov-report html --cov sunpy; fi
 
 after_success:
-   - if [[ $TEST_MODE == 'tests' ]]; then coveralls; fi
+   - if [[ $TEST_MODE == 'online' ]]; then coveralls; fi
 
 # Notify the IRC channel of build status
 notifications:
   irc: "chat.freenode.net#SunPy"
+  webhooks:
+    urls:
+      - https://webhooks.gitter.im/e/d1bf84e1bc1293e4dbc5
+    on_success: always  # options: [always|never|change] default: always
+    on_failure: always  # options: [always|never|change] default: always
+    on_start: false     # default: false
