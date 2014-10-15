@@ -182,14 +182,35 @@ def test_rotation_matrix_cd_cdelt():
               'CDELT1': 10,
               'CDELT2': 9,
               'CD1_1': 0,
-              'CD1_2': -1,
-              'CD2_1': 1,
+              'CD1_2': -10,
+              'CD2_1': 9,
               'CD2_2': 0,
               'NAXIS1': 6,
               'NAXIS2': 6}
     cd_map = sunpy.map.Map((data, header))
-    np.testing.assert_allclose(cd_map.rotation_matrix, np.matrix([[0., -9], [10., 0]]))
+    np.testing.assert_allclose(cd_map.rotation_matrix, np.matrix([[0., -1.], [1., 0]]))
 
+def test_rotation_matrix_cd_cdelt_square():
+    data = np.ones([6,6], dtype=np.float64)
+    header = {'CRVAL1': 0,
+              'CRVAL2': 0,
+              'CRPIX1': 5,
+              'CRPIX2': 5,
+              'CDELT1': 10,
+              'CDELT2': 10,
+              'CD1_1': 0,
+              'CD1_2': -10,
+              'CD2_1': 10,
+              'CD2_2': 0,
+              'NAXIS1': 6,
+              'NAXIS2': 6}
+    cd_map = sunpy.map.Map((data, header))
+    np.testing.assert_allclose(cd_map.rotation_matrix, np.matrix([[0., -1], [1., 0]]))
+
+def test_swap_cd():
+    amap = sunpy.map.Map(os.path.join(testpath, 'swap_lv1_20140606_000113.fits'))
+    np.testing.assert_allclose(amap.rotation_matrix, np.matrix([[1., 0], [0, 1.]]))
+    
 
 def test_data_range(generic_map):
     """Make sure xrange and yrange work"""
