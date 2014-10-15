@@ -228,44 +228,26 @@ class QueryResponse(list):
         table.insert(0, ['Start time','End time','Source','Instrument','Type'])
 
         print(print_table(table, colsep = '  ', linesep='\n'))
-    
+
     def build_table(self):
-        self.table = Table(names = ('Start time','End time','Source','Instrument','Type'))
+        keywords = ['Start Time', 'End Time', 'Source', 'Instrument', 'Type']
+        record_items = {}
+        for key in keywords:
+            record_items[key] = []
 
-        ALT_TIME_FORMAT = '%Y%m%d%H%M%S'
-        
         for record in self:
-            record_items = {
-                'Start time': 
-                    str(datetime.strptime(record.time.start, ALT_TIME_FORMAT))
-                        if record.time.start is not None else 'N/A',
-                'End time':
-                    str(datetime.strptime(record.time.end, ALT_TIME_FORMAT))
-                        if record.time.end is not None else 'N/A',
-                'Source':
-                    str(record.source),
-                'Instrument':
-                    str(record.instrument),
-                'Type':
-                    str(record.extent.type)
-                        if record.extent.type is not None else 'N/A'
-            }
-            
-            # record_items = [
-            #     str(datetime.strptime(record.time.start, ALT_TIME_FORMAT))
-            #         if record.time.start is not None else 'N/A',
-            #     str(datetime.strptime(record.time.end, ALT_TIME_FORMAT))
-            #         if record.time.end is not None else 'N/A',
-            #     str(record.source),
-            #     str(record.instrument),
-            #     str(record.extent.type)
-            #         if record.extent.type is not None else 'N/A'
-            # ]
+            record_items['Start Time'].append(
+                    [datetime.strftime(parse_time(record.time.start), TIME_FORMAT)]
+                    if record.time.start is not None else ['N/A'])
+            record_items['End Time'].append(
+                    [datetime.strftime(parse_time(record.time.end), TIME_FORMAT)]
+                    if record.time.end is not None else ['N/A'])
+            record_items['Source'].append(str(record.source))
+            record_items['Instrument'].append(str(record.instrument))
+            record_items['Type'].append(str(record.extent.type)
+                                if record.extent.type is not None else ['N/A'])
 
-            self.table.add_row(record_items)
-
-            # record_table = Table([record_items])
-            # self.table = astropy.table.vstack([self.table, record_table])
+        self.table = Table(record_items)[keywords]
 
     def add_error(self, exception):
         self.errors.append(exception)
@@ -274,14 +256,18 @@ class QueryResponse(list):
         """Print out human-readable summary of records retrieved"""
 
         self.build_table()
-        return self.table.__str__()
+        return str(self.table)
+
+    def _repr_html_(self):
+        return self.table._repr_html_()
+
 
 class DownloadFailed(Exception):
     pass
 
 class MissingInformation(Exception):
     pass
-    
+
 class UnknownMethod(Exception):
     pass
 
