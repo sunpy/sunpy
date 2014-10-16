@@ -15,7 +15,10 @@ from sunpy.time import parse_time
 from sunpy.net.jsoc import JSOCClient, JSOCResponse
 from sunpy.net.vso.vso import Results
 import sunpy.net.jsoc.attrs as attrs
+
+
 client = JSOCClient()
+
 
 def test_jsocresponse_double():
     j1 = JSOCResponse(table=astropy.table.Table(data=[[1,2,3,4]]))
@@ -194,7 +197,16 @@ def test_check_request():
 
     bb = client.request_data(responses)
     aa = client.check_request(bb)
-    assert aa == [6]
-    time.sleep(1)
+    assert aa == [6] or aa == [1] #Incase JSOC is being very efficient
+    time.sleep(2)
     aa = client.check_request(bb)
     assert aa == [1]
+
+@pytest.mark.online
+def test_get_request():
+    responses = client.query(attrs.Time('2012/1/1T01:00:00', '2012/1/1T01:00:45'),
+                             attrs.Series('hmi.M_45s'))
+
+    bb = client.request_data(responses)
+    aa = client.get_request(bb)
+    assert isinstance(aa, Results)
