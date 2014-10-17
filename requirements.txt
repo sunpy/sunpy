@@ -1,4 +1,8 @@
+# Install external dependencies.
 beautifulsoup4==4.1.1
 numpy
 scipy
 sqlalchemy
+
+# Install this module and all its dependencies.
+.
