@@ -23,9 +23,9 @@ def get_lytaf_events(timerange,lytaf_dir=''):
     """returns a list of LYRA pointing events that occured during a timerange"""
     #timerange is a TimeRange object
     #start_ts and end_ts need to be unix timestamps
-    st_timerange = timerange.start()
+    st_timerange = timerange.start
     start_ts=calendar.timegm(st_timerange.timetuple())
-    en_timerange=timerange.end()
+    en_timerange=timerange.end
     end_ts=calendar.timegm(en_timerange.timetuple())
 
     #involves executing SQLite commands from within python.

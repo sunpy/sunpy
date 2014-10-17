@@ -13,7 +13,7 @@ import pytest
 
 from sunpy.database.commands import AddEntry, RemoveEntry, EditEntry,\
     AddTag, RemoveTag, NoSuchEntryError, NonRemovableTagError,\
-    EmptyCommandStackError, CommandManager
+    EmptyCommandStackError, CommandManager, CompositeOperation
 from sunpy.database.tables import DatabaseEntry, Tag
 
 
@@ -280,10 +280,10 @@ def test_cmd_manager_redo(session, command_manager):
 
 def test_undo_redo_multiple_cmds_at_once(session, command_manager):
     assert command_manager.undo_commands == []
-    command_manager.do([
+    command_manager.do(CompositeOperation([
         AddEntry(session, DatabaseEntry()),
         AddEntry(session, DatabaseEntry()),
-        AddEntry(session, DatabaseEntry())])
+        AddEntry(session, DatabaseEntry())]))
     assert len(command_manager.undo_commands) == 1
     assert session.query(DatabaseEntry).count() == 3
     command_manager.undo()

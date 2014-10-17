@@ -23,7 +23,7 @@ from astropy import units as u
 
 from sunpy.time import TimeRange
 from sunpy.net.attr import (
-    Attr, ValueAttr, AttrWalker, AttrAnd, AttrOr, DummyAttr, ValueAttr
+    Attr, AttrWalker, AttrAnd, AttrOr, DummyAttr, ValueAttr
 )
 from sunpy.util.multimethod import MultiMethod
 from sunpy.time import parse_time
@@ -92,8 +92,8 @@ class Time(Attr, _Range):
         if end is None and not isinstance(start, TimeRange):
             raise ValueError("Specify start and end or start has to be a TimeRange")
         if isinstance(start, TimeRange):
-            self.start = start.t1
-            self.end = start.t2
+            self.start = start.start
+            self.end = start.end
         else:
             self.start = parse_time(start)
             self.end = parse_time(end)
