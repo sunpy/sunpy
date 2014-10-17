@@ -86,7 +86,7 @@ def test_highlevel_api():
     # accessed in a call to `repr`, is printed in the following
     # way - '<HelioGraphicStonyhurst Coordinate: lon=10*u.deg, lat=10*u.deg>'
     string = repr(sc.frame)
-    assert '<HelioGraphicStonyhurst Coordinate: B0=' in string
+    assert '<HelioGraphicStonyhurst Coordinate: ' in string
     assert 'hlon=' in string
     assert 'deg, hlat=' in string
     assert 'rad=' in string
@@ -96,7 +96,7 @@ def test_highlevel_api():
     # Similarly, `repr(sc)` should look like -:
     # '<SkyCoord (HelioGraphicStonyhurst): lon=10*u.deg, lat=10*u.deg>'
     string = repr(sc)
-    assert '<SkyCoord (HelioGraphicStonyhurst): B0=' in string
+    assert '<SkyCoord (HelioGraphicStonyhurst): ' in string
     assert 'hlon=' in string
     assert 'deg, hlat=' in string
     assert 'rad=' in string
