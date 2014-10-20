@@ -244,6 +244,12 @@ class QueryResponse(list):
         self.build_table()
         return str(self.table)
 
+    def __repr__(self):
+        """Print out human-readable summary of records retrieved"""
+
+        self.build_table()
+        return repr(self.table)
+
     def _repr_html_(self):
         return self.table._repr_html_()
 
