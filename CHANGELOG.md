@@ -10,6 +10,7 @@ Latest
  * Remove old style string formatting and other 2.6 compatibility lines.
  * CD matrix now updated, if present, when Map pixel size is changed.
  * Removed now-redundant method for rotating IRIS maps since the functionality exists in Map.rotate()
+ * Provide `__str__` and `__repr__` methods on vso `QueryResponse` deprecate `.show()`
 
 0.5.0
 -----
