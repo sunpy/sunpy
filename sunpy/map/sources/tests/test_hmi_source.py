@@ -6,8 +6,6 @@ This particular test file pertains to HMIMap.
 import os
 import glob
 
-import pytest
-
 from sunpy.map.sources.sdo import HMIMap
 from sunpy.map import Map
 import sunpy.data.test

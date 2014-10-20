@@ -16,6 +16,7 @@ from sqlalchemy.orm import sessionmaker
 import sunpy
 from sunpy.database import commands, tables, serialize
 from sunpy.database.caching import LRUCache
+from sunpy.database.commands import CompositeOperation
 from sunpy.database.attrs import walker
 from sunpy.net.hek2vso import H2VClient
 from sunpy.net.attr import and_
@@ -263,7 +264,7 @@ class Database(object):
         :class:`sunpy.database.caching.LFUCache`).
 
         """
-        cmds = []
+        cmds = CompositeOperation()
         # remove items from the cache if the given argument is lower than the
         # current cache size
         while cache_size < self.cache_size:
@@ -272,7 +273,7 @@ class Database(object):
             entry_id, entry = self._cache.to_be_removed
             cmd = commands.RemoveEntry(self.session, entry)
             if self._enable_history:
-                cmds.append(cmd)
+                cmds.add(cmd)
             else:
                 cmd()
             del self._cache[entry_id]
@@ -503,7 +504,7 @@ class Database(object):
             raise TypeError('at least one tag must be given')
         # avoid duplicates
         tag_names = set(tags)
-        cmds = []
+        cmds = CompositeOperation()
         for tag_name in tag_names:
             try:
                 tag = self.get_tag(tag_name)
@@ -514,7 +515,7 @@ class Database(object):
                 tag = tables.Tag(tag_name)
             cmd = commands.AddTag(self.session, database_entry, tag)
             if self._enable_history:
-                cmds.append(cmd)
+                cmds.add(cmd)
             else:
                 cmd()
         if cmds:
@@ -532,16 +533,16 @@ class Database(object):
 
         """
         tag = self.get_tag(tag_name)
-        cmds = []
+        cmds = CompositeOperation()
         remove_tag_cmd = commands.RemoveTag(self.session, database_entry, tag)
         remove_tag_cmd()
         if self._enable_history:
-            cmds.append(remove_tag_cmd)
+            cmds.add(remove_tag_cmd)
         if not tag.data:
             remove_entry_cmd = commands.RemoveEntry(self.session, tag)
             remove_entry_cmd()
             if self._enable_history:
-                cmds.append(remove_entry_cmd)
+                cmds.add(remove_entry_cmd)
         if self._enable_history:
             self._command_manager.push_undo_command(cmds)
 
@@ -582,7 +583,7 @@ class Database(object):
             See Database.add
 
         """
-        cmds = []
+        cmds = CompositeOperation()
         for database_entry in database_entries:
             # use list(self) instead of simply self because __contains__ checks
             # for existence in the database and not only all attributes except
@@ -591,7 +592,7 @@ class Database(object):
                 raise EntryAlreadyAddedError(database_entry)
             cmd = commands.AddEntry(self.session, database_entry)
             if self._enable_history:
-                cmds.append(cmd)
+                cmds.add(cmd)
             else:
                 cmd()
             if database_entry.id is None:
@@ -721,7 +722,7 @@ class Database(object):
             See :meth:`sunpy.database.Database.add`.
 
         """
-        cmds = []
+        cmds = CompositeOperation()
         entries = tables.entries_from_dir(
             path, recursive, pattern, self.default_waveunit)
         for database_entry, filepath in entries:
@@ -729,7 +730,7 @@ class Database(object):
                 raise EntryAlreadyAddedError(database_entry)
             cmd = commands.AddEntry(self.session, database_entry)
             if self._enable_history:
-                cmds.append(cmd)
+                cmds.add(cmd)
             else:
                 cmd()
             self._cache.append(database_entry)
@@ -778,11 +779,11 @@ class Database(object):
         database_entries : iterable of sunpy.database.tables.DatabaseEntry
             The database entries that will be removed from the database.
         """
-        cmds = []
+        cmds = CompositeOperation()
         for database_entry in database_entries:
             cmd = commands.RemoveEntry(self.session, database_entry)
             if self._enable_history:
-                cmds.append(cmd)
+                cmds.add(cmd)
             else:
                 cmd()
             try:
@@ -813,10 +814,10 @@ class Database(object):
         using the :meth:`undo` method.
 
         """
-        cmds = []
+        cmds = CompositeOperation()
         for entry in self:
             for tag in entry.tags:
-                cmds.append(commands.RemoveTag(self.session, entry, tag))
+                cmds.add(commands.RemoveTag(self.session, entry, tag))
             # TODO: also remove all FITS header entries and all FITS header
             # comments from each entry before removing the entry itself!
         # remove all entries from all helper tables
@@ -825,15 +826,14 @@ class Database(object):
             tables.FitsKeyComment]
         for table in database_tables:
             for entry in self.session.query(table):
-                cmds.append(commands.RemoveEntry(self.session, entry))
+                cmds.add(commands.RemoveEntry(self.session, entry))
         for entry in self:
-            cmds.append(commands.RemoveEntry(self.session, entry))
+            cmds.add(commands.RemoveEntry(self.session, entry))
             del self._cache[entry.id]
         if self._enable_history:
             self._command_manager.do(cmds)
         else:
-            for cmd in cmds:
-                cmd()
+            cmds()
 
     def clear_histories(self):
         """Clears all entries from the undo and redo history.
