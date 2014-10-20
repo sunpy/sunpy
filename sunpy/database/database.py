@@ -301,13 +301,12 @@ class Database(object):
             path=None, progress=False):
         if client is None:
             client = VSOClient()
+        paths = client.get(query_result, path).wait(progress=progress)
         for block in query_result:
-            paths = client.get([block], path).wait(progress=progress)
             for path in paths:
+                dir_entries = tables.entries_from_dir(path, self.default_waveunit)
                 qr_entry = tables.DatabaseEntry._from_query_result_block(block)
-                file_entries = list(
-                    tables.entries_from_file(path, self.default_waveunit))
-                for entry in file_entries:
+                for entry in dir_entries:
                     entry.source = qr_entry.source
                     entry.provider = qr_entry.provider
                     entry.physobs = qr_entry.physobs
