@@ -513,6 +513,8 @@ class JSOCClient(object):
         keywords = ['DATE', 'TELESCOP', 'INSTRUME', 'T_OBS', 'WAVELNTH',
                     'WAVEUNIT']
 
+        if not all([k in iargs for k in ('start_time', 'end_time', 'series')]):
+            raise ValueError("Both Time and Series must be specified for a JSOC Query")
 
         postthis = {'ds': self._make_recordset(**iargs),
                     'op': 'rs_list',

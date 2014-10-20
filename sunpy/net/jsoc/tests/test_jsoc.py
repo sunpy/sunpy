@@ -198,7 +198,7 @@ def test_check_request():
     bb = client.request_data(responses)
     aa = client.check_request(bb)
     assert aa == [6] or aa == [1] #Incase JSOC is being very efficient
-    time.sleep(2)
+    time.sleep(5)
     aa = client.check_request(bb)
     assert aa == [1]
 
@@ -210,3 +210,8 @@ def test_get_request():
     bb = client.request_data(responses)
     aa = client.get_request(bb)
     assert isinstance(aa, Results)
+
+@pytest.mark.online
+def test_invalid_query():
+    with pytest.raises(ValueError):
+        resp = client.query(attrs.Time('2012/1/1T01:00:00', '2012/1/1T01:00:45'))
