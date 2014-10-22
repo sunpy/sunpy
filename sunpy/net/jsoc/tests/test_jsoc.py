@@ -188,7 +188,7 @@ def test_wait_get():
     responses = client.query(attrs.Time('2012/1/3T00:00:00', '2012/1/3T00:00:45'), attrs.Series( 'hmi.M_45s'))
     res = client.get(responses)
     assert isinstance(res, Results)
-    assert res.total == 1
+    assert res.total == 2
 
 @pytest.mark.online
 def test_check_request():
