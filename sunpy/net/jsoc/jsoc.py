@@ -212,7 +212,7 @@ class JSOCClient(object):
         # A little (hidden) debug feature
         return_responses = kwargs.pop('return_resp', False)
         if len(kwargs):
-            raise TypeError("request_data got unexpected keyword arguments {0}".format(kwargs.keys())
+            raise TypeError("request_data got unexpected keyword arguments {0}".format(kwargs.keys()))
 
         # Do a multi-request for each query block
         responses = self._multi_request(**jsoc_response.query_args)
