@@ -37,16 +37,16 @@ class JSOCResponse(object):
         self.requestIDs = None
 
     def __str__(self):
-        return self.table.__str__()
+        return str(self.table)
 
     def __repr__(self):
-        return self.table.__repr__()
+        return repr(self.table)
 
     def __len__(self):
         if self.table is None:
             return 0
         else:
-            return self.table.__len__()
+            return len(self.table)
 
     def append(self, table):
         if self.table is None:
@@ -211,12 +211,17 @@ class JSOCClient(object):
         """
         # A little (hidden) debug feature
         return_responses = kwargs.pop('return_resp', False)
+        if len(kwargs):
+            raise TypeError("request_data got unexpected keyword arguments {0}".format(kwargs.keys())
 
         # Do a multi-request for each query block
         responses = self._multi_request(**jsoc_response.query_args)
         for i, response in enumerate(responses):
-            # TODD: catch non 200 return
-            if response.json()['status'] != 2:
+            if response.status_code != 200:
+                warnings.warn(
+                Warning("Query {0} retuned code {1}".format(i, response.status_code)))
+                responses.pop(i)
+            elif response.json()['status'] != 2:
                 warnings.warn(
                 Warning("Query {0} retuned status {1} with error {2}".format(i,
                                                      response.json()['status'],
@@ -437,7 +442,7 @@ class JSOCClient(object):
         # Build the dataset string
         # Extract and format Wavelength
         if wavelength:
-            if series[0:3] != 'aia':
+            if seriesstartswith('aia'):
                 raise TypeError("This series does not support the wavelength attribute.")
             else:
                if isinstance(wavelength, list):
@@ -447,7 +452,7 @@ class JSOCClient(object):
                    wavelength = '[{0}]'.format(int(np.ceil(wavelength.to(u.AA).value)))
 
         # Extract and format segment
-        if segment != '':
+        if not segment:
             segment = '{{{segment}}}'.format(segment=segment)
 
         dataset = '{series}[{start}-{end}]{wavelength}{segment}'.format(
