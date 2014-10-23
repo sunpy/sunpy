@@ -70,3 +70,9 @@ after_success:
 # Notify the IRC channel of build status
 notifications:
   irc: "chat.freenode.net#SunPy"
+  webhooks:
+    urls:
+      - https://webhooks.gitter.im/e/d1bf84e1bc1293e4dbc5
+    on_success: always  # options: [always|never|change] default: always
+    on_failure: always  # options: [always|never|change] default: always
+    on_start: false     # default: false
