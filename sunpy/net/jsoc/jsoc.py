@@ -442,7 +442,7 @@ class JSOCClient(object):
         # Build the dataset string
         # Extract and format Wavelength
         if wavelength:
-            if seriesstartswith('aia'):
+            if not series.startswith('aia'):
                 raise TypeError("This series does not support the wavelength attribute.")
             else:
                if isinstance(wavelength, list):
@@ -452,7 +452,7 @@ class JSOCClient(object):
                    wavelength = '[{0}]'.format(int(np.ceil(wavelength.to(u.AA).value)))
 
         # Extract and format segment
-        if not segment:
+        if segment != '':
             segment = '{{{segment}}}'.format(segment=segment)
 
         dataset = '{series}[{start}-{end}]{wavelength}{segment}'.format(
