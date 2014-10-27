@@ -381,7 +381,7 @@ class Spectrogram(Parent):
     @staticmethod
     def format_freq(freq):
         """ Override to configure default plotting """
-        return "%.1f" % freq
+        return "{freq:0.1f}".format(freq=freq)
 
     def peek(self, *args, **kwargs):
         figure()
@@ -819,10 +819,8 @@ class Spectrogram(Parent):
             else:
                 pixel = ""
 
-            return '%s z=%s' % (
-                fmt_coord(x, y),
-                pixel
-            )
+            return '{0!s} z={1!s}'.format(fmt_coord(x, y), pixel)
+
         return format_coord
 
 

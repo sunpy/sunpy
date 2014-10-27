@@ -127,7 +127,7 @@ def get_cmap(name='sdoaia94'):
     if name in cmlist:
         return cmlist.get(name)
     else:
-        raise ValueError("Colormap %s is not recognized" % name)
+        raise ValueError("Colormap {name!s} is not recognized".format(name=name))
 
 
 def show_colormaps():

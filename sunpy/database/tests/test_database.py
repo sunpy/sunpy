@@ -410,9 +410,6 @@ def test_add_entry_from_hek_qr(database):
 
 
 @pytest.mark.online
-@pytest.mark.skipif(
-        sys.version_info[:2] == (2,6),
-        reason='for some unknown reason, this test fails on Python 2.6')
 def test_download_from_qr(database, download_qr, tmpdir):
     assert len(database) == 0
     database.download_from_vso_query_result(
@@ -731,9 +728,6 @@ def test_download_empty_query_result(database, empty_query):
 
 
 @pytest.mark.online
-@pytest.mark.skipif(
-        sys.version_info[:2] == (2,6),
-        reason='for some unknown reason, this test fails on Python 2.6')
 def test_download(database, download_query, tmpdir):
     assert len(database) == 0
     database.default_waveunit = 'angstrom'
@@ -752,9 +746,6 @@ def test_download(database, download_query, tmpdir):
 
 
 @pytest.mark.online
-@pytest.mark.skipif(
-        sys.version_info[:2] == (2,6),
-        reason='for some unknown reason, this test fails on Python 2.6')
 def test_download_duplicates(database, download_query, tmpdir):
     assert len(database) == 0
     database.default_waveunit = 'angstrom'
@@ -778,9 +769,6 @@ def test_fetch_unexpected_kwarg(database):
 
 
 @pytest.mark.online
-@pytest.mark.skipif(
-        sys.version_info[:2] == (2,6),
-        reason='for some unknown reason, this test fails on Python 2.6')
 def test_fetch(database, download_query, tmpdir):
     assert len(database) == 0
     database.default_waveunit = 'angstrom'
@@ -793,9 +781,6 @@ def test_fetch(database, download_query, tmpdir):
 
 
 @pytest.mark.online
-@pytest.mark.skipif(
-        sys.version_info[:2] == (2,6),
-        reason='for some unknown reason, this test fails on Python 2.6')
 def test_disable_undo(database, download_query, tmpdir):
     entry = DatabaseEntry()
     with disable_undo(database) as db:

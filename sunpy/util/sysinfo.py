@@ -112,18 +112,18 @@ def system_info():
     # OS and architecture information
 
     for sys_info in ['Time', 'System', 'Processor', 'Arch', 'SunPy', 'SunPy_git']:
-        print '%s : %s' % (sys_info, sys_prop[sys_info])
+        print('{0} : {1}'.format(sys_info, sys_prop[sys_info]))
 
     if sys_prop['System'] == "Linux":
         distro = " ".join(platform.linux_distribution())
-        print("OS: %s (Linux %s %s)" %  (distro, platform.release(), sys_prop['Processor']))
+        print("OS: {0} (Linux {1} {2})".format(distro, platform.release(), sys_prop['Processor']))
     elif sys_prop['System'] == "Darwin":
-        print("OS: Mac OS X %s (%s)" %  (platform.mac_ver()[0], sys_prop['Processor']))
+        print("OS: Mac OS X {0} ({1})".format(platform.mac_ver()[0], sys_prop['Processor']))
     elif sys_prop['System'] == "Windows":
-        print("OS: Windows %s %s (%s)" %  (platform.release(),
-                                        platform.version(), sys_prop['Processor']))
+        print("OS: Windows {0} {1} ({2})".format(platform.release(),
+                                                 platform.version(), sys_prop['Processor']))
     else:
-        print ("Unknown OS (%s)" % sys_prop['Processor'])
+        print("Unknown OS ({0})".format(sys_prop['Processor']))
 
 
     print "\n"
@@ -134,7 +134,7 @@ def system_info():
 
     for sys_info in ['Python', 'NumPy', 'SciPy',
               'matplotlib', 'Astropy', 'Pandas']:
-        print '%s: %s' % (sys_info, sys_prop[sys_info])
+        print('{0}: {1}'.format(sys_info, sys_prop[sys_info]))
 
     print "\n"
 
@@ -145,4 +145,4 @@ def system_info():
 
     for sys_info in ['beautifulsoup', 'PyQt', 'SUDS',
                      'Sqlalchemy', 'Requests']:
-        print '%s: %s' % (sys_info, sys_prop[sys_info])
+        print('{0}: {1}'.format(sys_info, sys_prop[sys_info]))

@@ -85,8 +85,8 @@ class MultiMethod(object):
         elif overriden and override == WARN:
             # pylint: disable=W0631
             warn(
-                'Definition (%s) overrides prior definition (%s).' %
-                (_fmt_t(types), _fmt_t(signature)),
+                'Definition ({0}) overrides prior definition ({1}).'.format(
+                _fmt_t(types), _fmt_t(signature)),
                 TypeWarning,
                 stacklevel=3
             )
@@ -120,7 +120,7 @@ class MultiMethod(object):
             if all(issubclass(ty, sig) for ty, sig in zip(types, signature)):
                 self.cache[types] = fun
                 return fun(*args, **kwargs)
-        raise TypeError('%r' % types)
+        raise TypeError('{0!r}'.format(types))
 
     # XXX: Other Python implementations.
     def super(self, *args, **kwargs):
