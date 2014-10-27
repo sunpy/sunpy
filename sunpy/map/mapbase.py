@@ -1083,8 +1083,9 @@ Dimension:\t [{xdim:d}, {ydim:d}]
 
         # Normal plot
         if annotate:
-            axes.set_title("{s.name} {s.date:{tmf}}".format(s=self, 
-                                                            tmf=TIME_FORMAT))
+            axes.set_title("{name} {date:{tmf}}".format(name=self.name,
+                                                        date=parse_time(self.date),
+                                                        tmf=TIME_FORMAT))
 
             # x-axis label
             if self.coordinate_system['x'] == 'HG':
