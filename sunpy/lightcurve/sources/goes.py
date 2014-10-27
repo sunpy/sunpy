@@ -143,11 +143,11 @@ class GOESLightCurve(LightCurve):
         base_url = 'http://umbra.nascom.nasa.gov/goes/fits/'
 
         if start < parse_time('1999/01/15'):
-            url = (base_url + "%s/go%02d%s.fits") % (start.strftime("%Y"),
-                sat_num[0], start.strftime("%y%m%d"))
+            url = base_url + "{date:%Y}/go{sat:02d}{date:%y%m%d}.fits".format(
+                date=start, sat=sat_num[0])
         else:
-            url = (base_url + "%s/go%02d%s.fits") % (start.strftime("%Y"),
-                sat_num[0], start.strftime("%Y%m%d"))
+            url = base_url + "{date:%Y}/go{sat:02d}{date:%Y%m%d}.fits".format(
+                date=start, sat=sat_num[0])
         return url
 
     @staticmethod
