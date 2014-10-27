@@ -243,7 +243,7 @@ class ConditionalDispatch(object):
 
     def generate_docs(self):
         fns = (item[0] for item in chain(self.funcs, self.nones))
-        return '\n\n'.join("%s -> :py:meth:`%s`" % (sig, fun.__name__)
+        return '\n\n'.join("{0} -> :py:meth:`{1}`".format(sig, fun.__name__)
             for sig, fun in
             # The 1 prevents the cls from incorrectly being shown in the
             # documentation.
@@ -265,11 +265,11 @@ def fmt_argspec_types(fun, types, start=0):
     spec = []
     for key, value, type_ in izip(args, defs, types):
         if value is NULL:
-            spec.append("%s: %s" % (key, type_.__name__))
+            spec.append("{0}: {1}".format(key, type_.__name__))
         else:
-            spec.append("%s: %s = %s" % (key, type_.__name__, value))
+            spec.append("{0}: {1} = {2}".format(key, type_.__name__, value))
     if varargs is not None:
-        spec.append('*%s' % varargs)
+        spec.append('*{!s}'.format(varargs))
     if keywords is not None:
-        spec.append('**%s' % keywords)
+        spec.append('**{!s}'.format(keywords))
     return '(' + ', '.join(spec) + ')'

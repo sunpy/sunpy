@@ -3,7 +3,6 @@ from __future__ import absolute_import
 import tempfile
 
 import numpy as np
-import matplotlib.pyplot as plt
 
 import sunpy
 import sunpy.data.test as test

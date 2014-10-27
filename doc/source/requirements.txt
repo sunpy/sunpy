@@ -10,3 +10,4 @@ astropy>=0.4.0
 pytest
 mock
 sqlalchemy
+sphinx_rtd_theme

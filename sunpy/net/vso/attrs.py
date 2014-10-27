@@ -23,7 +23,7 @@ from astropy import units as u
 
 from sunpy.time import TimeRange
 from sunpy.net.attr import (
-    Attr, ValueAttr, AttrWalker, AttrAnd, AttrOr, DummyAttr, ValueAttr
+    Attr, AttrWalker, AttrAnd, AttrOr, DummyAttr, ValueAttr
 )
 from sunpy.util.multimethod import MultiMethod
 from sunpy.time import parse_time
@@ -82,9 +82,9 @@ class Wave(Attr, _Range):
         return isinstance(other, self.__class__)
 
     def __repr__(self):
-	return '<Wave({0!r}, {1!r}, {2!r})>'.format(self.min.value,
+	return "<Wave({0!r}, {1!r}, '{2!s}')>".format(self.min.value,
                                                 self.max.value,
-                                                str(self.unit))
+                                                self.unit)
 
 
 class Time(Attr, _Range):
@@ -116,8 +116,7 @@ class Time(Attr, _Range):
         return Time(self.start - timedelta, self.start + timedelta)
 
     def __repr__(self):
-        return '<Time(%r, %r, %r)>' % (self.start, self.end, self.near)
-
+        return '<Time({s.start!r}, {s.end!r}, {s.near!r})>'.format(s=self)
 
 class Extent(Attr):
     # pylint: disable=R0913
@@ -153,7 +152,8 @@ class _VSOSimpleAttr(Attr):
         return isinstance(other, self.__class__)
 
     def __repr__(self):
-        return "<%s(%r)>" % (self.__class__.__name__, self.value)
+        return "<{cname!s}({val!r})>".format(
+            cname=self.__class__.__name__, val=self.value)
 
 
 class Provider(_VSOSimpleAttr):
