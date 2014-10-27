@@ -6,6 +6,8 @@ Latest
  * Added ability to download level3 data for lyra Light Curve along with corresponding tests.
  * Added support for gzipped FITS files.
  * Add STEREO HI Map subclass and color maps.
+ * Refactor the JSOC client so that it follows the .query() .get() interface of VSOClient and UnifedDownloader
+ * Remove old style string formatting and other 2.6 compatibility lines.
  * CD matrix now updated, if present, when Map pixel size is changed.
  * Removed now-redundant method for rotating IRIS maps since the functionality exists in Map.rotate()
 
