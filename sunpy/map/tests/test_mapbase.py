@@ -361,6 +361,12 @@ def test_rotate():
     np.testing.assert_allclose(rotated_map_3.mean(), rotated_map_5.mean(), rtol=1e-3)
     np.testing.assert_allclose(rotated_map_3.std(), rotated_map_5.std(), rtol=1e-3)
 
+    # Rotation of a rectangular map by a large enough angle will change which dimension is larger
+    aia_map_crop = aia_map.submap([0, 1000], [0, 400])
+    aia_map_crop_rot = aia_map_crop.rotate(60)
+    assert aia_map_crop.shape[0] < aia_map_crop.shape[1]
+    assert aia_map_crop_rot.shape[0] > aia_map_crop_rot.shape[1]
+
 
 def test_rotate_recenter(aia_map):
     array_center = (np.array(aia_map.data.shape)-1)/2.0
