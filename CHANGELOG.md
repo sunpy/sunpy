@@ -7,6 +7,7 @@ Latest
  * Added support for gzipped FITS files.
  * Add STEREO HI Map subclass and color maps.
  * CD matrix now updated, if present, when Map pixel size is changed.
+ * Removed now-redundant method for rotating IRIS maps since the functionality exists in Map.rotate()
 
 0.5.0
 -----
