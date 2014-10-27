@@ -193,7 +193,7 @@ def parse_time(time_string, time_format=''):
                 return datetime.strptime(ts, time_format) + time_delta
             except ValueError:
                 pass
-        raise ValueError("%s is not a valid time string!" % time_string)
+        raise ValueError("{tstr!s} is not a valid time string!".format(tstr=time_string))
 
 
 def is_time(time_string, time_format=''):
