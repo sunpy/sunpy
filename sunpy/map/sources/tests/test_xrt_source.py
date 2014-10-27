@@ -8,8 +8,6 @@ import glob
 import numpy as np
 from matplotlib import colors
 
-import pytest
-
 from sunpy.map.sources.hinode import XRTMap
 from sunpy.map import Map
 import sunpy.data.test

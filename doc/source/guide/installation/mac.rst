@@ -10,21 +10,6 @@ Mac OS X, users have a number of options with how to install SunPy and its
 dependencies. We have a number of solutions listed below. Choose the solution which best
 suits you.
 
-Install Anaconda
-----------------
-
-To install the Anaconda Python distribution follow the instructions `here <http://docs.continuum.io/anaconda/install.html>`_.
-
-.. warning::
-    
-    You must have the XCode developer package installed to be able to compile SunPy.
-    see :ref:`xcode`.
-
-Once complete follow the install instructions for the :ref:`anaconda_install`.
-
-Other installation methods
---------------------------
-
 For users who wish to have more control over the installation of Python, several
 alternative installation methods are provided below, including instructions for
 `Macports <http://www.macports.org/>`_ and `Homebrew <http://mxcl.github.com/homebrew/>`_.
