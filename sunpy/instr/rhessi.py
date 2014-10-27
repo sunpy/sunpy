@@ -181,7 +181,7 @@ def get_obssum_filename(time_range):
     result = parse_obssumm_dbase_file(f[0])
     _time_range = TimeRange(time_range)
 
-    index_number = int(_time_range.start.strftime('%d')) - 1
+    index_number = _time_range.start.day - 1
 
     return data_servers[0] + data_location + result.get('filename')[index_number] + 's'
 

@@ -120,7 +120,6 @@ def test_wave_inputQuantity():
         va.Wave(10 * u.AA, 23)
     assert excinfo.value.message == wrong_type_mesage
 
-
 def test_wave_toangstrom():
     # TODO: this test shoul test that inputs are in any of spectral units
     # more than just converted to Angstoms.
@@ -153,8 +152,7 @@ def test_wave_toangstrom():
 
     with pytest.raises(ValueError) as excinfo:
         va.Wave(10 * u.g, 23 * u.g)
-    # Python2.6 does not like excinfo.value.message
-    assert str(excinfo.value) == "'g' is not a spectral supported unit"
+    assert excinfo.value.message == "'g' is not a spectral supported unit"
 
 
 def test_time_xor():

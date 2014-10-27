@@ -49,7 +49,7 @@ class EITMap(GenericMap):
         self._name = self.detector + " " + str(self.measurement)
         self._nickname = self.detector
 
-        self.cmap = cm.get_cmap('sohoeit%d' % self.wavelength)
+        self.cmap = cm.get_cmap('sohoeit{wl:d}'.format(wl=self.wavelength))
 
     @property
     def rsun_arcseconds(self):
@@ -97,8 +97,13 @@ class LASCOMap(GenericMap):
         GenericMap.__init__(self, data, header, **kwargs)
 
         # Fill in some missing or broken info
-        datestr = "%sT%s" % (self.meta.get('date-obs',self.meta.get('date_obs')),
-                     self.meta.get('time-obs',self.meta.get('time_obs')))
+        datestr = "{date}T{time}".format(date=self.meta.get('date-obs',
+                                                            self.meta.get('date_obs')
+                                                            ),
+                                         time=self.meta.get('time-obs',
+                                                            self.meta.get('time_obs')
+                                                            )
+                                         )
         self.meta['date-obs'] = datestr
 
         # If non-standard Keyword is present, correct it too, for compatibility.
@@ -107,7 +112,7 @@ class LASCOMap(GenericMap):
 
         self._name = self.instrument + " " + self.detector + " " + self.measurement
         self._nickname = self.instrument + "-" + self.detector
-        self.cmap = cm.get_cmap('soholasco%s' % self.detector[1])
+        self.cmap = cm.get_cmap('soholasco{det!s}'.format(det=self.detector[1]))
 
     @property
     def measurement(self):
