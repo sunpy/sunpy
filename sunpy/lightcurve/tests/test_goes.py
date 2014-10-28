@@ -53,6 +53,7 @@ class TestGOESLightCurve():
         assert lc1.header['TELESCOP'] == 'GOES 7'
         assert lc2.header['TELESCOP'] == 'GOES 10'
 
+    @pytest.mark.online
     def test_goes_url(self):
         """Test creation with url"""
         url = 'http://umbra.nascom.nasa.gov/goes/fits/1995/go07950603.fits'
