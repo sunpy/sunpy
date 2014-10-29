@@ -4,7 +4,7 @@ Created on Sat Jun  7 19:36:08 2014
 
 @author: Stuart Mumford
 
-This file is designed to be imported and ran only via setup.py, hence it's 
+This file is designed to be imported and ran only via setup.py, hence it's
 dependancy on astropy_helpers which will be availible in that context.
 """
 
@@ -80,13 +80,13 @@ class SunPyTest(AstropyTest):
         """
         Build a Python script to run the tests.
         """
-        
+
         cmd_pre = ''  # Commands to run before the test function
         cmd_post = ''  # Commands to run after the test function
 
         online = not self.offline_only
         offline = not self.online_only
-        
+
         cmd = ('{cmd_pre}{0}; import {1.package_name}, sys; result = ('
                '{1.package_name}.self_test('
                'modulename={1.package!r}, '
@@ -99,7 +99,6 @@ class SunPyTest(AstropyTest):
                'cov_report={1.cov_report!r})); '
                '{cmd_post}'
                'sys.exit(result)')
-        x = cmd.format('pass', self, online=online, offline=offline, 
+        x = cmd.format('pass', self, online=online, offline=offline,
                           cmd_pre=cmd_pre, cmd_post=cmd_post)
-        print x
         return x
