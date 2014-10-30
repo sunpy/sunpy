@@ -78,8 +78,6 @@ class HelioGraphicStonyhurst(BaseCoordinateFrame):
         }
 
     dateobs = TimeFrameAttributeSunPy()
-    L0 = FrameAttribute(default=0*u.deg)
-    B0 = FrameAttribute(default=0*u.deg)
 
     def __init__(self, *args, **kwargs):
         """
@@ -164,8 +162,6 @@ class HelioGraphicCarrington(HelioGraphicStonyhurst):
 
     #rad = FrameAttribute(default=((RSUN_METERS/1000)*u.km))
     dateobs = TimeFrameAttributeSunPy()
-    L0 = FrameAttribute(default=0*u.deg)
-    B0 = FrameAttribute(default=0*u.deg)
 
 class HelioCentric(BaseCoordinateFrame):
     """
@@ -503,7 +499,7 @@ def hgs_to_hcc(heliogcoord, heliocframe):
     hglat = heliogcoord.hlat
     r = heliogcoord.rad.to(u.m)
     
-    l0b0_pair = [heliogcoord.L0, heliogcoord.B0]
+    l0b0_pair = [heliocframe.L0, heliocframe.B0]
 
     l0_rad = l0b0_pair[0].to(u.rad)
     b0_deg = l0b0_pair[1]
