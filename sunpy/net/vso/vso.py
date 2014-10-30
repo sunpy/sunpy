@@ -233,26 +233,21 @@ class QueryResponse(list):
             record_items['Type'].append(str(record.extent.type)
                                 if record.extent.type is not None else ['N/A'])
 
-        self.table = Table(record_items)[keywords]
+         return Table(record_items)[keywords]
 
     def add_error(self, exception):
         self.errors.append(exception)
 
     def __str__(self):
         """Print out human-readable summary of records retrieved"""
-
-        self.build_table()
-        return str(self.table)
+        return str(self.build_table())
 
     def __repr__(self):
         """Print out human-readable summary of records retrieved"""
-
-        self.build_table()
-        return repr(self.table)
+        return repr(self.build_table())
 
     def _repr_html_(self):
-        self.build_table()
-        return self.table._repr_html_()
+        return self.build_table()._repr_html_()
 
 
 class DownloadFailed(Exception):
