@@ -179,7 +179,7 @@ def test_entries_from_dir():
     for entry, filename in entries:
         if filename.endswith('na120701.091058.fits'):
             break
-    assert entry.path == os.path.join(waveunitdir, filename)
+    assert entry.path in (os.path.join(waveunitdir, filename), filename)
     assert filename.startswith(waveunitdir)
     assert len(entry.fits_header_entries) == 42
     assert entry.fits_header_entries == [
