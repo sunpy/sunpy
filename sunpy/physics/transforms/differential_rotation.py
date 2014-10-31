@@ -303,7 +303,6 @@ def _calc_P_B0_SD(date, spacecraft=None, arcsec=False):
     if spacecraft == 'soho':
         raise ValueError("SOHO correction (on the order of 1% " + \
                         "since SOHO sets at L1) not yet supported.")
-
     return {"p": Angle(p, u.deg),
             "b0": Angle(b, u.deg),
             "sd": Angle(sd.value, u.arcmin),
