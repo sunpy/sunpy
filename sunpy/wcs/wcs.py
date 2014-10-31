@@ -169,7 +169,10 @@ def convert_hpc_hcc(x, y, dsun_meters=None, angle_units='arcsec', z=False):
     (28876152.176423457, 23100922.071266972, 694524220.8157959)
 
     """
-
+    # Having rsun_meters defined here ensures that the rot_hpc code passes
+    # running the sunpy testing.
+    #rsun_meters = sun.constants.radius.si.value
+    print '!!!!!!', rsun_meters
     c = np.array([_convert_angle_units(unit=angle_units),
                   _convert_angle_units(unit=angle_units)])
 
@@ -191,6 +194,7 @@ def convert_hpc_hcc(x, y, dsun_meters=None, angle_units='arcsec', z=False):
     rx = distance * cosy * sinx
     ry = distance * siny
     rz = dsun_meters - distance * cosy * cosx
+
 
     if np.all(z == True):
         return rx, ry, rz
@@ -227,6 +231,9 @@ def convert_hcc_hpc(x, y, dsun_meters=None, angle_units='arcsec'):
     """
 
     # Calculate the z coordinate by assuming that it is on the surface of the Sun
+    # Having rsun_meters defined here ensures that the rot_hpc code passes
+    # running the sunpy testing.
+    rsun_meters = sun.constants.radius.si.value
     z = np.sqrt(rsun_meters ** 2 - x ** 2 - y ** 2)
 
     if dsun_meters is None:
@@ -288,6 +295,9 @@ def convert_hcc_hg(x, y, z=None, b0_deg=0, l0_deg=0, radius=False):
     z=695508000.0 + 8000000.0, radius=True)
     (0.01873188196651189, 3.6599471896203317, 704945784.41465974)
     """
+    # Having rsun_meters defined here ensures that the rot_hpc code passes
+    # running the sunpy testing.
+    rsun_meters = sun.constants.radius.si.value
     if z is None:
         z = np.sqrt(rsun_meters**2 - x**2 - y**2)
 
@@ -443,7 +453,6 @@ def convert_hpc_hg(x, y, b0_deg=0, l0_deg=0, dsun_meters=None, angle_units='arcs
     >>> sunpy.wcs.convert_hg_hpc(382, 748, b0_deg=-7.064078, l0_deg=0.0)
     (34.504653439914669, 45.443143275518182)
     """
-
     tempx, tempy = convert_hpc_hcc(x, y, dsun_meters=dsun_meters, angle_units=angle_units)
     lon, lat = convert_hcc_hg(tempx, tempy, b0_deg=b0_deg, l0_deg=l0_deg)
     return lon, lat
