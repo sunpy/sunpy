@@ -10,7 +10,7 @@ import tempfile
 import datetime
 import os
 import matplotlib.pyplot as plt
-from bs4 import BeautifulSoup
+from BeautifulSoup import BeautifulSoup
 from sunpy.time import parse_time, TimeRange
 from sunpy import sun
 from astropy.io import fits
@@ -164,8 +164,8 @@ def get_scx_scz_in_timerange(timerange, file):
     for tim in hdulist[1].data['START']:
         timesinutc.append(met_to_utc(tim))
 
-    startind = np.searchsorted(timesinutc, timerange.start())
-    endind = np.searchsorted(timesinutc, timerange.end())
+    startind = np.searchsorted(timesinutc, timerange.start)
+    endind = np.searchsorted(timesinutc, timerange.end)
 
     scx_radec = []
     scz_radec = []

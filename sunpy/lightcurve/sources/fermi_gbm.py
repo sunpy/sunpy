@@ -76,10 +76,14 @@ class GBMSummaryLightCurve(LightCurve):
     def _get_closest_detector_for_date(cls,date,**kwargs):
         '''This method returns the GBM detector with the smallest mean angle to the Sun for the given date'''
         pointing_file = fermi.download_weekly_pointing_file(date)
-        det_angles = fermi.get_detector_sun_angles_for_date(date,pointing_file,plot=False)
+        det_angles = fermi.get_detector_sun_angles_for_date(date,pointing_file)
         det_angle_means=[]
-        for d in det_angles:
-            det_angle_means.append(np.mean(d))
+        for n in det_angles.keys():
+            if not n == 'time':
+               det_angle_means.append(np.mean(det_angles[n])) 
+        
+       # for d in det_angles:
+        #    det_angle_means.append(np.mean(d))
         best_det = 'n' +str(np.argmin(det_angle_means))
         return best_det
      
