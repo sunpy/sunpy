@@ -233,7 +233,7 @@ class QueryResponse(list):
             record_items['Type'].append(str(record.extent.type)
                                 if record.extent.type is not None else ['N/A'])
 
-         return Table(record_items)[keywords]
+        return Table(record_items)[keywords]
 
     def add_error(self, exception):
         self.errors.append(exception)
