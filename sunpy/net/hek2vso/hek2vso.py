@@ -18,7 +18,6 @@ from astropy import units
 
 from sunpy.net import hek
 from sunpy.net import vso
-from sunpy.net.vso.attrs import Wave
 from sunpy.util.progressbar import TTYProgressBar
 
 __author__ = 'Michael Malocha'
@@ -101,7 +100,7 @@ def vso_attribute_parse(phrase):
         avg_wave_len = phrase['obs_meanwavel'] * units.Unit(phrase['obs_wavelunit'])
         query.append(vso.attrs.Wave(avg_wave_len, avg_wave_len))
     except KeyError, TypeError:
-        raise TypeError("'%s' is an improper data type" % type(phrase))
+        raise TypeError("'{dtype!s}' is an improper data type".format(dtype=type(phrase)))
     return query
 
 

@@ -28,6 +28,8 @@ from sunpy.time import parse_time, is_time
 from sunpy.image.rescale import reshape_image_to_4d_superpixel
 from sunpy.image.rescale import resample as sunpy_image_resample
 
+import astropy.units as u
+
 __all__ = ['GenericMap']
 
 from sunpy import config
@@ -142,22 +144,23 @@ class GenericMap(astropy.nddata.NDData):
         if not self.observatory:
             return self.data.__repr__()
         return (
-"""SunPy %s
+"""SunPy {dtype!s}
 ---------
-Observatory:\t %s
-Instrument:\t %s
-Detector:\t %s
-Measurement:\t %s
-Obs Date:\t %s
-dt:\t\t %f
-Dimension:\t [%d, %d]
-[dx, dy] =\t [%f, %f]
+Observatory:\t {obs}
+Instrument:\t {inst}
+Detector:\t {det}
+Measurement:\t {meas:0.0f}
+Obs Date:\t {date}
+dt:\t\t {dt:f}
+Dimension:\t [{xdim:d}, {ydim:d}]
+[dx, dy] =\t [{dx:f}, {dy:f}]
 
-""" % (self.__class__.__name__,
-       self.observatory, self.instrument, self.detector, self.measurement,
-       self.date, self.exposure_time,
-       self.data.shape[1], self.data.shape[0], self.scale['x'], self.scale['y'])
-     + self.data.__repr__())
+""".format(dtype=self.__class__.__name__,
+           obs=self.observatory, inst=self.instrument, det=self.detector, 
+           meas=self.measurement, date=self.date, dt=self.exposure_time,
+           xdim=self.data.shape[1], ydim=self.data.shape[0], 
+           dx=self.scale['x'], dy=self.scale['y'])
++ self.data.__repr__())
 
 
     #Some numpy extraction
@@ -231,7 +234,7 @@ Dimension:\t [%d, %d]
         if dsun is None:
             warnings.warn_explicit("Missing metadata for Sun-spacecraft separation: assuming Sun-Earth distance",
                                    Warning, __file__, inspect.currentframe().f_back.f_lineno)
-            dsun = sun.sunearth_distance(self.date) * constants.au.si.value
+            dsun = sun.sunearth_distance(self.date).to(u.m)
 
         return dsun
 
@@ -370,20 +373,17 @@ Dimension:\t [%d, %d]
     def rotation_matrix(self):
         """Matrix describing the rotation required to align solar North with
         the top of the image."""
-        if self.meta.get('PC1_1', None) is not None:
+        if 'PC1_1' in self.meta:
             return np.matrix([[self.meta['PC1_1'], self.meta['PC1_2']],
                               [self.meta['PC2_1'], self.meta['PC2_2']]])
 
-        elif self.meta.get('CD1_1', None) is not None:
-            div = 1. / (self.scale['x'] - self.scale['y'])
-
-            deltm = np.matrix([[self.scale['y']/div, 0],
-                               [0, self.scale['x']/ div]])
-
+        elif 'CD1_1' in self.meta:
             cd = np.matrix([[self.meta['CD1_1'], self.meta['CD1_2']],
                             [self.meta['CD2_1'], self.meta['CD2_2']]])
 
-            return deltm * cd
+            cdelt = np.array(self.scale.values())
+
+            return cd / cdelt
         else:
             return self._rotation_matrix_from_crota()
 
@@ -396,7 +396,7 @@ Dimension:\t [%d, %d]
         conversion.
         """
         lam = self.scale['y'] / self.scale['x']
-        p = np.deg2rad(self.meta['CROTA2'])
+        p = np.deg2rad(self.meta.get('CROTA2', 0))
 
         return np.matrix([[np.cos(p), -1 * lam * np.sin(p)],
                           [1/lam * np.sin(p), np.cos(p)]])
@@ -463,9 +463,9 @@ Dimension:\t [%d, %d]
         height = self.shape[0]
 
         if (x is not None) & (x > width-1):
-            raise ValueError("X pixel value larger than image width (%s)." % width)
+            raise ValueError("X pixel value larger than image width ({width!s}).".format(width=width))
         if (x is not None) & (y > height-1):
-            raise ValueError("Y pixel value larger than image height (%s)." % height)
+            raise ValueError("Y pixel value larger than image height ({height!s}).".format(height=height))
         if (x is not None) & (x < 0):
             raise ValueError("X pixel value cannot be less than 0.")
         if (x is not None) & (y < 0):
@@ -474,6 +474,7 @@ Dimension:\t [%d, %d]
         scale = np.array([self.scale['x'], self.scale['y']])
         crpix = np.array([self.reference_pixel['x'], self.reference_pixel['y']])
         crval = np.array([self.reference_coordinate['x'], self.reference_coordinate['y']])
+        # FIXME: not used?!
         coordinate_system = [self.coordinate_system['x'], self.coordinate_system['y']]
         x,y = wcs.convert_pixel_to_data(self.shape, scale, crpix, crval, x = x, y = y)
 
@@ -555,6 +556,11 @@ Dimension:\t [%d, %d]
         # Update metadata
         new_meta['cdelt1'] *= scale_factor_x
         new_meta['cdelt2'] *= scale_factor_y
+        if 'CD1_1' in new_meta:
+            new_meta['CD1_1'] *= scale_factor_x
+            new_meta['CD2_1'] *= scale_factor_x
+            new_meta['CD1_2'] *= scale_factor_y
+            new_meta['CD2_2'] *= scale_factor_y
         new_meta['crpix1'] = (dimensions[0] + 1) / 2.
         new_meta['crpix2'] = (dimensions[1] + 1) / 2.
         new_meta['crval1'] = self.center['x']
@@ -858,6 +864,11 @@ Dimension:\t [%d, %d]
         # Update metadata
         new_meta['cdelt1'] = dimensions[0] * self.scale['x']
         new_meta['cdelt2'] = dimensions[1] * self.scale['y']
+        if 'CD1_1' in new_meta:
+            new_meta['CD1_1'] *= dimensions[0]
+            new_meta['CD2_1'] *= dimensions[0]
+            new_meta['CD1_2'] *= dimensions[1]
+            new_meta['CD2_2'] *= dimensions[1]
         new_meta['crpix1'] = (new_nx + 1) / 2.
         new_meta['crpix2'] = (new_ny + 1) / 2.
         new_meta['crval1'] = self.center['x']
@@ -1072,19 +1083,20 @@ Dimension:\t [%d, %d]
 
         # Normal plot
         if annotate:
-            axes.set_title("%s %s" % (self.name, parse_time(self.date).strftime(TIME_FORMAT)))
+            axes.set_title("{s.name} {s.date:{tmf}}".format(s=self, 
+                                                            tmf=TIME_FORMAT))
 
             # x-axis label
             if self.coordinate_system['x'] == 'HG':
-                xlabel = 'Longitude [%s]' % self.units['x']
+                xlabel = 'Longitude [{lon}]'.format(lon=self.units['x'])
             else:
-                xlabel = 'X-position [%s]' % self.units['x']
+                xlabel = 'X-position [{xpos}]'.format(xpos=self.units['x'])
 
             # y-axis label
             if self.coordinate_system['y'] == 'HG':
-                ylabel = 'Latitude [%s]' % self.units['y']
+                ylabel = 'Latitude [{lat}]'.format(lat=self.units['y'])
             else:
-                ylabel = 'Y-position [%s]' % self.units['y']
+                ylabel = 'Y-position [{ypos}]'.format(ypos=self.units['y'])
 
             axes.set_xlabel(xlabel)
             axes.set_ylabel(ylabel)
