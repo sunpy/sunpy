@@ -24,7 +24,7 @@ class RHESSIMap(GenericMap):
 
         GenericMap.__init__(self, data, header, **kwargs)
 
-        self._name = "RHESSI %d - %d keV" % (self.measurement[0], self.measurement[1])
+        self._name = "RHESSI {measure[0]:.0f} - {measure[1]:.0f} keV".format(measure=self.measurement)
         self._nickname = self.detector
 
         # Fix some broken/misapplied keywords

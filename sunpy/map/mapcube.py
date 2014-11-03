@@ -139,19 +139,19 @@ class MapCube(object):
 
         # Normal plot
         def annotate_frame(i):
-            axes.set_title("%s %s" % (self[i].name, self[i].date))
+            axes.set_title("{s.name} {s.date!s}".format(s=self[i]))
 
             # x-axis label
             if self[0].coordinate_system['x'] == 'HG':
-                xlabel = 'Longitude [%s]' % self[i].units['x']
+                xlabel = 'Longitude [{lon}'.format(lon=self[i].units['x'])
             else:
-                xlabel = 'X-position [%s]' % self[i].units['x']
+                xlabel = 'X-position [{xpos}]'.format(xpos=self[i].units['x'])
 
             # y-axis label
             if self[0].coordinate_system['y'] == 'HG':
-                ylabel = 'Latitude [%s]' % self[i].units['y']
+                ylabel = 'Latitude [{lat}]'.format(lat=self[i].units['y'])
             else:
-                ylabel = 'Y-position [%s]' % self[i].units['y']
+                ylabel = 'Y-position [{ypos}]'.format(ypos=self[i].units['y'])
 
             axes.set_xlabel(xlabel)
             axes.set_ylabel(ylabel)
@@ -160,29 +160,29 @@ class MapCube(object):
             self[0].cmap.set_gamma(gamma)
 
         if resample:
-            #This assumes that the maps a homogenous!
+            #This assumes that the maps are homogenous!
             #TODO: Update this!
             resample = np.array(len(self.maps)-1) * np.array(resample)
-            ani_data = [x.resample(resample) for x in self]
+            ani_data = [x.resample(resample) for x in self.maps]
         else:
-            ani_data = self
+            ani_data = self.maps
 
         im = ani_data[0].plot(**kwargs)
 
         def updatefig(i, im, annotate, ani_data):
 
             im.set_array(ani_data[i].data)
-            im.set_cmap(self[i].cmap)
-            im.set_mpl_color_normalizer(self[i].mpl_color_normalizer)
-            im.set_extent(self.xrange + self.yrange)
+            im.set_cmap(self.maps[i].cmap)
+            im.set_norm(self.maps[i].mpl_color_normalizer)
+            im.set_extent(self.maps[i].xrange + self.maps[i].yrange)
             if annotate:
                 annotate_frame(i)
 
         ani = matplotlib.animation.FuncAnimation(fig, updatefig,
-                                            frames=range(0,len(self.maps)),
-                                            fargs=[im,annotate,ani_data],
-                                            interval=interval,
-                                            blit=False)
+                                                frames=range(0,len(self.maps)),
+                                                fargs=[im,annotate,ani_data],
+                                                interval=interval,
+                                                blit=False)
 
         return ani
 

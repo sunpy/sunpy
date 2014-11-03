@@ -22,7 +22,7 @@ class TestGOESLightCurve(object):
     @pytest.mark.online
     def test_goes_range(self, timerange_a):
         """Test creation with two times"""
-        lc1 = sunpy.lightcurve.GOESLightCurve.create(timerange_a.start(), timerange_a.end())
+        lc1 = sunpy.lightcurve.GOESLightCurve.create(timerange_a.start, timerange_a.end)
         assert isinstance(lc1, sunpy.lightcurve.GOESLightCurve)
 
     @pytest.mark.online
@@ -53,6 +53,7 @@ class TestGOESLightCurve(object):
         assert lc1.header['TELESCOP'] == 'GOES 7'
         assert lc2.header['TELESCOP'] == 'GOES 10'
 
+    @pytest.mark.online
     def test_goes_url(self):
         """Test creation with url"""
         url = 'http://umbra.nascom.nasa.gov/goes/fits/1995/go07950603.fits'
@@ -80,8 +81,8 @@ class TestGOESLightCurve(object):
     def test_goes_sat_numbers(self, timerange_a, timerange_b):
         """Test the ability to return GOES satellite availability"""
         g = sunpy.lightcurve.GOESLightCurve
-        assert g._get_goes_sat_num(timerange_a.start(), timerange_a.end()) == [10]
-        assert g._get_goes_sat_num(timerange_b.start(), timerange_b.end()) == [7]
+        assert g._get_goes_sat_num(timerange_a.start, timerange_a.end) == [10]
+        assert g._get_goes_sat_num(timerange_b.start, timerange_b.end) == [7]
 
     def test_get_url(self, timerange_a, timerange_b):
         """Test the getting of urls"""

@@ -9,4 +9,5 @@ include CHANGELOG.md
 include LICENSE.txt
 include sunpy/data/sunpyrc
 include setup.py
-include distribute_setup.py
+include ah_bootstrap.py
+include ez_setup.py
