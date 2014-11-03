@@ -85,8 +85,8 @@ class LYRALightCurve(LightCurve):
         dt = parse_time(date or datetime.datetime.utcnow())
 
         # Filename
-        filename = "lyra_%s000000_lev%d_%s.fits" % (dt.strftime('%Y%m%d-'),
-                                                    kwargs.get('level',2), 'std')
+        filename = "lyra_{0:%Y%m%d-}000000_lev{1:d}_std.fits".format(
+            dt, kwargs.get('level',2))
         # URL
         base_url = "http://proba2.oma.be/lyra/data/bsd/"
         url_path = urlparse.urljoin(dt.strftime('%Y/%m/%d/'), filename)

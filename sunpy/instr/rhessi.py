@@ -14,8 +14,6 @@ from datetime import datetime
 from datetime import timedelta
 
 import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib.dates
 
 from astropy.io import fits
 from astropy import units as u
@@ -25,7 +23,6 @@ import sunpy.map
 import sunpy.sun.constants
 
 from sunpy.time import TimeRange, parse_time
-import sunpy.sun.constants as sun
 from sunpy.sun.sun import solar_semidiameter_angular_size
 from sunpy.sun.sun import sunearth_distance
 
@@ -81,7 +78,7 @@ def get_obssumm_dbase_file(time_range):
     data_location = 'dbase/'
 
     url_root = data_servers[0] + data_location
-    url = url_root + _time_range.t1.strftime("hsi_obssumm_filedb_%Y%m.txt")
+    url = url_root + _time_range.start.strftime("hsi_obssumm_filedb_%Y%m.txt")
 
     f = urllib.urlretrieve(url)
 
@@ -184,7 +181,7 @@ def get_obssum_filename(time_range):
     result = parse_obssumm_dbase_file(f[0])
     _time_range = TimeRange(time_range)
 
-    index_number = int(_time_range.t1.strftime('%d')) - 1
+    index_number = _time_range.start.day - 1
 
     return data_servers[0] + data_location + result.get('filename')[index_number] + 's'
 

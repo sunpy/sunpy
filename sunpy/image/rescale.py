@@ -126,6 +126,7 @@ def _resample_spline(orig, dimensions, offset, m1):
     """Resample Map using spline-based interpolation"""
 
     oslices = [slice(0, j) for j in orig.shape]
+    # FIXME: not used?!
     old_coords = np.ogrid[oslices] #pylint: disable=W0612
     nslices = [slice(0, j) for j in list(dimensions)]
     newcoords = np.mgrid[nslices]

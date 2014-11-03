@@ -337,6 +337,7 @@ def test_join_over_midnight():
     z = LinearTimeSpectrogram.join_many(
         [one, other], nonlinear=False, maxgap=0
     )
+    # FIXME: not used?!
     oz = other.resample_time(0.5)
 
     # The - 1 is because resampling other procuces an image of size

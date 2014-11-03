@@ -93,8 +93,13 @@ class LASCOMap(GenericMap):
         GenericMap.__init__(self, data, header, **kwargs)
 
         # Fill in some missing or broken info
-        datestr = "%sT%s" % (self.meta.get('date-obs',self.meta.get('date_obs')),
-                     self.meta.get('time-obs',self.meta.get('time_obs')))
+        datestr = "{date}T{time}".format(date=self.meta.get('date-obs',
+                                                            self.meta.get('date_obs')
+                                                            ),
+                                         time=self.meta.get('time-obs',
+                                                            self.meta.get('time_obs')
+                                                            )
+                                         )
         self.meta['date-obs'] = datestr
 
         # If non-standard Keyword is present, correct it too, for compatibility.
