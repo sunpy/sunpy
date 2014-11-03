@@ -124,12 +124,18 @@ class MDIMap(GenericMap):
         GenericMap.__init__(self, data, header, **kwargs)
 
         # Fill in some missing or broken info
-        self.meta['detector'] = "MDI"
+        self.meta['detector'] = self.meta['camera']
         self._fix_dsun()
 
         self._name = self.detector + " " + self.measurement
         self._nickname = self.detector + " " + self.measurement
         self.plot_settings['cmap'] = cm.get_cmap('Greys')
+    def _get_mpl_normalizer(self):
+
+        vmin = np.nanmin(self.data)
+        vmax = np.nanmax(self.data)
+        vmax = np.max(np.abs(np.array([vmin, vmax])))
+        return colors.Normalize(-vmax, vmax)
 
     @property
     def measurement(self):

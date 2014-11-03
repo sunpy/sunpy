@@ -6,6 +6,8 @@ __email__ = "keith.hughitt@nasa.gov"
 
 from sunpy.map import GenericMap
 from sunpy.cm import cm
+from matplotlib import colors
+
 
 __all__ = ['EUVIMap', 'CORMap']
 
@@ -25,6 +27,12 @@ class EUVIMap(GenericMap):
         # date FITS keyword
         if ('date_obs' in self.meta) and not('date-obs' in self.meta):
             self.meta['date-obs'] = self.meta['date_obs']
+
+    def _get_mpl_normalizer(self):
+        """Returns a Normalize object to be used with XRT data"""
+        # byte-scaled images have most likely already been scaled
+
+        return colors.PowerNorm(0.5, self.min(), self.max())
 
     @property
     def rsun_arcseconds(self):

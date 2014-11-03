@@ -50,6 +50,23 @@ class AIAMap(GenericMap):
         vmin = self.min()
         vmax = self.max()
 
+        if self.wavelength == 304:
+            return colors.PowerNorm(0.35, vmin, vmax)
+        if self.wavelength == 211:
+            return colors.PowerNorm(0.5, vmin, vmax)
+        if self.wavelength == 193:
+            return colors.PowerNorm(0.5, vmin, vmax)
+        if self.wavelength == 171:
+            return colors.PowerNorm(0.5, vmin, vmax)
+        if self.wavelength == 131:
+            return colors.PowerNorm(0.5, 0, vmax)
+        if self.wavelength == 335:
+            return colors.PowerNorm(0.4, 0, vmax)
+        if self.wavelength == 94:
+            return colors.PowerNorm(0.35, 0, vmax)
+
+
+
         return colors.Normalize(vmin, vmax)
 
     @classmethod
