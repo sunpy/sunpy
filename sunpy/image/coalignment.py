@@ -46,18 +46,6 @@ def _default_fmap_function(data):
     return np.float64(data)
 
 
-def _is_pixel_unit(a):
-    """Tests the input to see if it is an astropy Quantity with units in
-    pixels."""
-    return (isinstance(a, u.Quantity) and a.unit == 'pix')
-
-
-def _is_arcsec_unit(a):
-    """Tests the input to see if it is an astropy Quantity with units in
-    arcseconds."""
-    return (isinstance(a, u.Quantity) and a.unit == 'arcsec')
-
-
 def calculate_shift(this_layer, template):
     """Calculates the pixel shift required to put the template in the "best"
     position on a layer.
@@ -114,13 +102,10 @@ def clip_edges(data, yclips, xclips):
         A 2d image with edges clipped off according to the positive and
         negative ceiling values in the yclips and xclips arrays.
     """
-    if _is_pixel_unit(yclips) and _is_pixel_unit(xclips):
-        # Datacube shape
-        ny = data.shape[0]
-        nx = data.shape[1]
-        return data[yclips[0].value: ny - yclips[1].value, xclips[0].value: nx - xclips[1].value]
-    else:
-        raise ValueError("Both x and y clip arrays must be astropy Quantities with pixel unit.")
+    ny = data.shape[0]
+    nx = data.shape[1]
+    return data[yclips[0].to('pix').value: ny - yclips[1].to('pix').value,
+                xclips[0].to('pix').value: nx - xclips[1].to('pix').value]
 
 
 #
@@ -153,11 +138,8 @@ def calculate_clipping(y, x):
         the "clipping" tuple applies similarly to the x-direction (image
         columns).
     """
-    if _is_pixel_unit(y) and _is_pixel_unit(x):
-        return ([_lower_clip(y.value), _upper_clip(y.value)] * u.pix,
-                [_lower_clip(x.value), _upper_clip(x.value)] * u.pix)
-    else:
-        raise ValueError("Both inputs must be astropy Quantities with pixel unit")
+    return ([_lower_clip(y.to('pix').value), _upper_clip(y.to('pix').value)] * u.pix,
+            [_lower_clip(x.to('pix').value), _upper_clip(x.to('pix').value)] * u.pix)
 
 
 #
@@ -385,28 +367,25 @@ def apply_shifts(mc, yshift, xshift, clip=True):
     # new mapcube will be constructed from this list
     newmc_list = []
 
-    if _is_pixel_unit(yshift) and _is_pixel_unit(xshift):    
-        # Shift the data and construct the mapcube
-        for i, m in enumerate(mc.maps):
-            shifted_data = shift(m.data, [yshift[i].value, xshift[i].value])
-            # Clip if required
-            if clip:
-                yclips, xclips = calculate_clipping(-yshift, -xshift)
-                shifted_data = clip_edges(shifted_data, yclips, xclips)
+    for i, m in enumerate(mc.maps):
+        shifted_data = shift(m.data, [yshift[i].to('pix').value,
+                                      xshift[i].to('pix').value])
+        # Clip if required
+        if clip:
+            yclips, xclips = calculate_clipping(-yshift, -xshift)
+            shifted_data = clip_edges(shifted_data, yclips, xclips)
 
-            # New header
-            new_meta = deepcopy(m.meta)
-    
-            # Adjust the positioning information accordingly.
-            new_meta['crpix1'] = new_meta['crpix1'] + xshift[i].value * m.scale['x']
-            new_meta['crpix2'] = new_meta['crpix2'] + yshift[i].value * m.scale['y']
+        # New header
+        new_meta = deepcopy(m.meta)
 
-            # Append to the list
-            newmc_list.append(sunpy.map.Map(shifted_data, new_meta))
+        # Adjust the positioning information accordingly.
+        new_meta['crpix1'] = new_meta['crpix1'] + xshift[i].value * m.scale['x']
+        new_meta['crpix2'] = new_meta['crpix2'] + yshift[i].value * m.scale['y']
 
-        return sunpy.map.Map(newmc_list, cube=True)
-    else:
-        raise ValueError("Both x and y shifts must be astropy Quantities with pixel unit")
+        # Append to the list
+        newmc_list.append(sunpy.map.Map(shifted_data, new_meta))
+
+    return sunpy.map.Map(newmc_list, cube=True)
 
 
 # Coalignment by matching a template
@@ -502,14 +481,11 @@ def mapcube_coalign_by_match_template(mc, template=None, layer_index=0,
 
     # Use the displacements supplied
     if apply_displacements is not None:
-        if _is_arcsec_unit(apply_displacements["x"]) and _is_arcsec_unit(apply_displacements["y"]):
-            xshift_arcseconds = apply_displacements["x"].value
-            yshift_arcseconds = apply_displacements["y"].value
-            for i, m in enumerate(mc.maps):
-                xshift_keep[i] = xshift_arcseconds[i] / m.scale['x']
-                yshift_keep[i] = yshift_arcseconds[i] / m.scale['y']
-        else:
-            raise ValueError("Both displacements must be astropy Quantities with units of arcsec.")
+        xshift_arcseconds = apply_displacements["x"].to('arcsec').value
+        yshift_arcseconds = apply_displacements["y"].to('arcsec').value
+        for i, m in enumerate(mc.maps):
+            xshift_keep[i] = xshift_arcseconds[i] / m.scale['x']
+            yshift_keep[i] = yshift_arcseconds[i] / m.scale['y']
     else:
         xshift_arcseconds = np.zeros_like(xshift_keep)
         yshift_arcseconds = np.zeros_like(xshift_keep)
