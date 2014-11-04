@@ -1,3 +1,12 @@
+0.5.2
+-----
+Bug Fixes:
+
+    * If no CROTA keyword is specified in Map meta data, it will now default to 0 as specified by the FITS WCS standard.
+    * Map now correctly parses and converts the CD matrix, as long as CDELT is specified as well. (Fixes SWAP files)
+    * Fix of HELIO webservice URLs
+    * MapCube.plot() is now fixed and returns a matplotlib.animation.FuncAnimation object.
+
 0.5.1
 -----
 Bug Fixes:
