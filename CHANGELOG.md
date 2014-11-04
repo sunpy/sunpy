@@ -2,22 +2,22 @@
 -----
 Bug Fixes:
 
-    * If no CROTA keyword is specified in Map meta data, it will now default to 0 as specified by the FITS WCS standard.
-    * Map now correctly parses and converts the CD matrix, as long as CDELT is specified as well. (Fixes SWAP files)
-    * Fix of HELIO webservice URLs
-    * MapCube.plot() is now fixed and returns a matplotlib.animation.FuncAnimation object.
+ * If no CROTA keyword is specified in Map meta data, it will now default to 0 as specified by the FITS WCS standard.
+ * Map now correctly parses and converts the CD matrix, as long as CDELT is specified as well. (Fixes SWAP files)
+ * Fix of HELIO webservice URLs
+ * MapCube.plot() is now fixed and returns a matplotlib.animation.FuncAnimation object.
 
 0.5.1
 -----
 Bug Fixes:
 
-    * MAJOR FIX: map.rotate() now works correctly for all submaps and off center rotations.
-    * HELIO URL updated, querys should now work as expected.
-    * All tabs removed from the code base.
-    * All tests now use tempfile rather than creating files in the current directory.
-    * Documentation builds under newer sphinx versions.
-    * ANA and JP2 tests are skipped if dependancies are missing.
-    * ANA tests are skipped on windows.
+ * MAJOR FIX: map.rotate() now works correctly for all submaps and off center rotations.
+ * HELIO URL updated, querys should now work as expected.
+ * All tabs removed from the code base.
+ * All tests now use tempfile rather than creating files in the current directory.
+ * Documentation builds under newer sphinx versions.
+ * ANA and JP2 tests are skipped if dependancies are missing.
+ * ANA tests are skipped on windows.
 
 0.5.0
 -----
