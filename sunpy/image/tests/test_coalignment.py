@@ -51,15 +51,20 @@ def test_match_template_to_layer():
 
 
 def test_get_correlation_shifts():
+    # Case 1
     # Input array is 3 by 3, the most common case
     test_array = np.zeros((3, 3))
     test_array[1, 1] = 1
     test_array[2, 1] = 0.6
     test_array[1, 2] = 0.2
     y_test, x_test = get_correlation_shifts(test_array)
-    assert_allclose(y_test, 0.214285714286, rtol=1e-2, atol=0)
-    assert_allclose(x_test, 0.0555555555556, rtol=1e-2, atol=0)
+    # Test that Quantities are returned
+    assert(isinstance(y_test, u.Quantity))
+    assert(isinstance(x_test, u.Quantity))
+    assert_allclose(y_test.to('pix').value, 0.214285714286, rtol=1e-2, atol=0)
+    assert_allclose(x_test.to('pix').value, 0.0555555555556, rtol=1e-2, atol=0)
 
+    # Case 2
     # Input array is smaller in one direction than the other.
     test_array = np.zeros((2, 2))
     test_array[0, 0] = 0.1
@@ -67,9 +72,15 @@ def test_get_correlation_shifts():
     test_array[1, 0] = 0.4
     test_array[1, 1] = 0.3
     y_test, x_test = get_correlation_shifts(test_array)
-    assert_allclose(y_test, 1.0, rtol=1e-2, atol=0)
-    assert_allclose(x_test, 0.0, rtol=1e-2, atol=0)
+    # Test that Quantities are returned
+    assert(isinstance(y_test, u.Quantity))
+    assert(isinstance(x_test, u.Quantity))
+    # Test that the quantities can be converted to pixels and have the correct
+    # value
+    assert_allclose(y_test.to('pix').value, 1.0, rtol=1e-2, atol=0)
+    assert_allclose(x_test.to('pix').value, 0.0, rtol=1e-2, atol=0)
 
+    # Case 3
     # Input array is too big in either direction
     test_array = np.zeros((4, 3))
     y_test, x_test = get_correlation_shifts(test_array)
@@ -84,6 +95,11 @@ def test_get_correlation_shifts():
 def test_find_best_match_location():
     result = match_template_to_layer(test_layer, test_template)
     y_test, x_test = find_best_match_location(result)
+    # Test that Quantities are returned
+    assert(isinstance(y_test, u.Quantity))
+    assert(isinstance(x_test, u.Quantity))
+    # Test that the quantities can be converted to pixels and have the correct
+    # value
     assert_allclose(y_test.to('pix').value, 257.0, rtol=1e-3, atol=0)
     assert_allclose(x_test.to('pix').value, 258.0, rtol=1e-3, atol=0)
 
@@ -118,8 +134,13 @@ def test_clip_edges():
 
 def test_calculate_shift():
     result = calculate_shift(test_layer, test_template)
-    assert_allclose(result[0], 257.0,  rtol=1e-3, atol=0)
-    assert_allclose(result[1], 258.0,  rtol=1e-3, atol=0)
+    # Test that Quantities are returned
+    assert(isinstance(result[0], u.Quantity))
+    assert(isinstance(result[1], u.Quantity))
+    # Test that the quantities can be converted to pixels and have the correct
+    # value
+    assert_allclose(result[0].to('pix').value, 257.0,  rtol=1e-3, atol=0)
+    assert_allclose(result[1].to('pix').value, 258.0,  rtol=1e-3, atol=0)
 
 
 def test__default_fmap_function():
