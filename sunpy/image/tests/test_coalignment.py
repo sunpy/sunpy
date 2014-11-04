@@ -80,11 +80,13 @@ def test_get_correlation_shifts():
     assert(y_test == None)
     assert(x_test == None)
 
+
 def test_find_best_match_location():
     result = match_template_to_layer(test_layer, test_template)
     y_test, x_test = find_best_match_location(result)
-    assert_allclose(y_test, 257.0, rtol=1e-3, atol=0)
-    assert_allclose(x_test, 258.0, rtol=1e-3, atol=0)
+    assert_allclose(y_test.to('pix').value, 257.0, rtol=1e-3, atol=0)
+    assert_allclose(x_test.to('pix').value, 258.0, rtol=1e-3, atol=0)
+
 
 def test_lower_clip():
     assert(_lower_clip(clip_test_array) == 2.0)
@@ -101,8 +103,8 @@ def test_upper_clip():
 
 
 def test_calculate_clipping():
-    answer = calculate_clipping(clip_test_array *u.pix, clip_test_array *u.pix)
-    assert_array_almost_equal(answer, ([2.0, 1.0]*u.pix, [2.0, 1.0]*u.pix))
+    answer = calculate_clipping(clip_test_array * u.pix, clip_test_array * u.pix)
+    assert_array_almost_equal(answer, ([2.0, 1.0] * u.pix, [2.0, 1.0] * u.pix))
 
 
 def test_clip_edges():
