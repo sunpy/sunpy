@@ -28,9 +28,10 @@ Map.register(EITMap, EITMap.is_datasource_for)
 Map.register(LASCOMap, LASCOMap.is_datasource_for)
 Map.register(MDIMap, MDIMap.is_datasource_for)
 
-from stereo import EUVIMap, CORMap
+from stereo import EUVIMap, CORMap, HIMap
 Map.register(EUVIMap, EUVIMap.is_datasource_for)
 Map.register(CORMap, CORMap.is_datasource_for)
+Map.register(HIMap, HIMap.is_datasource_for)
 
 from yohkoh import SXTMap
 Map.register(SXTMap, SXTMap.is_datasource_for)

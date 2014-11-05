@@ -38,7 +38,7 @@ class Parent(object):
         """
         matches = glob.glob(os.path.expanduser(singlepattern))
         if len(matches) != 1:
-            raise ValueError("Invalid number of matches: %d" % len(matches))
+            raise ValueError("Invalid number of matches: {0:d}".format(len(matches)))
         return cls.read(matches[0])
 
     @classmethod

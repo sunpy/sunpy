@@ -24,7 +24,7 @@ def to_signed(dtype):
     if dtype.kind == "u":
         if dtype.itemsize == 8:
             raise ValueError("Cannot losslessy convert uint64 to int.")
-        dtype = "int%d" % (min(dtype.itemsize * 2 * 8, 64))
+        dtype = "int{0:d}".format(min(dtype.itemsize * 2 * 8, 64))
     return np.dtype(dtype)
 
 def goes_flare_class(gcls):
@@ -208,7 +208,7 @@ class Deprecated(object):
 
     def __call__(self, func):
         def newFunc(*args, **kwargs):
-            warnings.warn("Call to deprecated function %s. \n %s" %(
+            warnings.warn("Call to deprecated function {0}. \n {1}".format(
                                                                 func.__name__,
                                                                 self.message),
                           category=Warning, stacklevel=2)

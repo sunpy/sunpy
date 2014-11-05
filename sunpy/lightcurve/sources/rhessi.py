@@ -37,6 +37,7 @@ class RHESSISummaryLightCurve(LightCurve):
 
         dates = matplotlib.dates.date2num(self.data.index)
 
+        # FIXME: not used?!
         lc_linecolors = ('black', 'pink', 'green', 'blue', 'brown', 'red',
                          'navy', 'orange', 'green')
 
@@ -84,8 +85,6 @@ class RHESSISummaryLightCurve(LightCurve):
             time_range = args[0]
         elif len(args) == 2:
             time_range = TimeRange(parse_time(args[0]), parse_time(args[1]))
-            if time_range.end() < time_range.start():
-                raise ValueError('start time > end time')
         url = rhessi.get_obssum_filename(time_range)
         return url
 

@@ -10,10 +10,11 @@ import tempfile
 import datetime
 import os
 import matplotlib.pyplot as plt
-from bs4 import BeautifulSoup
+from BeautifulSoup import BeautifulSoup
 from sunpy.time import parse_time, TimeRange
 from sunpy import sun
 from astropy.io import fits
+from astropy.utils.compat.odict import OrderedDict
 
 
 def download_weekly_pointing_file(date):
@@ -21,7 +22,6 @@ def download_weekly_pointing_file(date):
     contains 1 minute cadence data on the spacecraft pointing, useful for calculating detector angles.'''
     #use a temp directory to hold the file
     tmp_dir=tempfile.mkdtemp()
-    #tmp_dir=''
     #use Fermi data server to access weekly LAT pointing file.
     base_url = 'http://fermi.gsfc.nasa.gov/ssc/observations/timeline/ft2/files/'
     fbasename='FERMI_POINTING_FINAL_'
@@ -39,20 +39,11 @@ def download_weekly_pointing_file(date):
     #find out the rest of the file name. Need the year and the day-in-year for start and end of file
     start_date = weekly_file_start + datetime.timedelta(weekdiff*7)
     start_year_str=str(start_date.year) + '-01-01'
-    day_in_year_start=(start_date - parse_time(start_year_str)).days + 1
-
-    #make sure the day string is always of length 3
-    day_in_year_start_string = "%03d" % day_in_year_start 
-    start_str = str(start_date.year) + day_in_year_start_string 
+    start_str = start_date.strftime('%Y%j')
 
     #now end string
     end_date = weekly_file_start + datetime.timedelta((weekdiff+1)*7)
-    end_year_str=str(end_date.year) + '-01-01'
-    day_in_year_end=(end_date - parse_time(end_year_str)).days + 1
-
-    #make sure the day string is always of length 3
-    day_in_year_end_string = "%03d" % day_in_year_end 
-    end_str = str(end_date.year) + day_in_year_end_string 
+    end_str = end_date.strftime('%Y%j')
 
     #construct the full url for the weekly pointing file
     full_fname_start=fbasename + str(week) + '_' + start_str + '_' + end_str + '_'
@@ -69,16 +60,12 @@ def download_weekly_pointing_file(date):
     #find all the links in the html
     links=parsed_html.body.findAll('a')
 
-    #print full_fname_start
-    #print full_fname_extension
-    #print links
     #find all files matching the desired week
     matching_files = [l.text for l in links if (l.text.startswith(full_fname_start) and l.text.endswith(full_fname_extension))]
     if not matching_files:
         raise ValueError('No Fermi pointing files found for given date!')
     #find the file with the highest version number
     matching_files.sort()
-    print matching_files
     #this is the correct pointing file
     full_fname=matching_files[-1]
     
@@ -99,19 +86,20 @@ def get_detector_sun_angles_for_time(time, file):
     detectors = nai_detector_angles()
 
     # get the detector pointings in RA/DEC given the input spacecraft x and z axes
-    detector_radecs = nai_detector_radecs(detectors, scx, scz)
+    detector_radecs = nai_detector_radecs(detectors, scx, scz, tt)
 
     # this gets the sun position with RA in hours in decimal format (e.g. 4.3). DEC is already in degrees
     sunpos_ra_not_in_deg = [sun.sun.apparent_rightascension(time), sun.sun.apparent_declination(time)]
     # now Sun position with RA in degrees
-    sun_pos = [(sunpos_ra_not_in_deg[0] / 24) * 360., sunpos_ra_not_in_deg[1]]
+    sun_pos = [sunpos_ra_not_in_deg[0].to('deg').value, sunpos_ra_not_in_deg[1].value]
+    #sun_pos = [(sunpos_ra_not_in_deg[0] / 24) * 360., sunpos_ra_not_in_deg[1]]
     # now get the angle between each detector and the Sun
     detector_to_sun_angles = (get_detector_separation_angles(detector_radecs, sun_pos))
 
     return detector_to_sun_angles
 
 
-def get_detector_sun_angles_for_date(date, file, plot=True):
+def get_detector_sun_angles_for_date(date, file):
     '''get the GBM detector angles vs the sun as a function of time for a given date'''
     tran = TimeRange(date, date + datetime.timedelta(1))
     scx, scz, times = get_scx_scz_in_timerange(tran, file)
@@ -122,55 +110,38 @@ def get_detector_sun_angles_for_date(date, file, plot=True):
     detector_to_sun_angles = []
     # get the detector vs Sun angles for each t and store in a list of dictionaries
     for i in range(0, len(scx)):
-        detector_radecs = nai_detector_radecs(detectors, scx[i], scz[i])
+        detector_radecs = nai_detector_radecs(detectors, scx[i], scz[i], times[i])
 
         # this gets the sun position with RA in hours in decimal format (e.g. 4.3). DEC is already in degrees
         sunpos_ra_not_in_deg = [sun.sun.apparent_rightascension(times[i]), sun.sun.apparent_declination(times[i])]
         # now Sun position with RA in degrees
-        sun_pos = [(sunpos_ra_not_in_deg[0] / 24) * 360., sunpos_ra_not_in_deg[1]]
+        sun_pos = [sunpos_ra_not_in_deg[0].to('deg').value, sunpos_ra_not_in_deg[1].value]
         # now get the angle between each detector and the Sun
         detector_to_sun_angles.append(get_detector_separation_angles(detector_radecs, sun_pos))
 
     # slice the list of dictionaries to get the angles for each detector in a list form
-    n0 = [item['n0'] for item in detector_to_sun_angles]
-    n1 = [item['n1'] for item in detector_to_sun_angles]
-    n2 = [item['n2'] for item in detector_to_sun_angles]
-    n3 = [item['n3'] for item in detector_to_sun_angles]
-    n4 = [item['n4'] for item in detector_to_sun_angles]
-    n5 = [item['n5'] for item in detector_to_sun_angles]
-    n6 = [item['n6'] for item in detector_to_sun_angles]
-    n7 = [item['n7'] for item in detector_to_sun_angles]
-    n8 = [item['n8'] for item in detector_to_sun_angles]
-    n9 = [item['n9'] for item in detector_to_sun_angles]
-    n10 = [item['n10'] for item in detector_to_sun_angles]
-    n11 = [item['n11'] for item in detector_to_sun_angles]
+    angles = OrderedDict()
+    key_list = ['n0','n1','n2','n3','n4','n5','n6','n7','n8','n9','n10','n11','time']
+    for i in range(13):
+        angles[key_list[i]] = [item[key_list[i]] for item in detector_to_sun_angles]
 
-    if plot: 
-        # now make a plot showing the angles vs time
-        figure = plt.figure(1)
-        plt.plot(times, n0, label='n0 (' + str(np.mean(n0))[0:5] + ')')
-        plt.plot(times, n1, label='n1 (' + str(np.mean(n1))[0:5] + ')')
-        plt.plot(times, n2, label='n2 (' + str(np.mean(n2))[0:5] + ')')
-        plt.plot(times, n3, label='n3 (' + str(np.mean(n3))[0:5] + ')')
-        plt.plot(times, n4, label='n4 (' + str(np.mean(n4))[0:5] + ')')
-        plt.plot(times, n5, label='n5 (' + str(np.mean(n5))[0:5] + ')')
-        plt.plot(times, n6, label='n6 (' + str(np.mean(n6))[0:5] + ')')
-        plt.plot(times, n7, label='n7 (' + str(np.mean(n7))[0:5] + ')')
-        plt.plot(times, n8, label='n8 (' + str(np.mean(n8))[0:5] + ')')
-        plt.plot(times, n9, label='n9 (' + str(np.mean(n9))[0:5] + ')')
-        plt.plot(times, n10, label='n10 (' + str(np.mean(n10))[0:5] + ')')
-        plt.plot(times, n11, label='n11 (' + str(np.mean(n11))[0:5] + ')')
+    return angles  
 
-        plt.ylim(180,0)
-        plt.ylabel('angle (degrees)')
-        plt.title('Detector pointing angle from Sun')
-        plt.legend(fontsize=10)
-        figure.autofmt_xdate()
-        plt.show()
 
-        
-    return {'n0':n0, 'n1':n1, 'n2':n2, 'n3':n3, 'n4':n4,
-            'n5':n5, 'n6':n6, 'n7':n7, 'n8':n8, 'n9':n9, 'n10':n10, 'n11':n11}
+def plot_detector_sun_angles(angles):
+
+    #make a plot showing the angles vs time
+    figure = plt.figure(1)
+    for n in angles.keys():
+        if not n == 'time':
+            plt.plot(angles['time'],angles[n], label = '{lab} ({val})' .format(lab=n, val = str(np.mean(angles[n]))[0:5]))
+    plt.ylim(180,0)
+    plt.ylabel('angle (degrees)')
+    plt.xlabel('Start time: ' + angles['time'][0].isoformat())
+    plt.title('Detector pointing angle from Sun')
+    plt.legend(fontsize=10)
+    figure.autofmt_xdate()
+    plt.show()
 
 
 def get_scx_scz_at_time(time, file):
@@ -193,8 +164,8 @@ def get_scx_scz_in_timerange(timerange, file):
     for tim in hdulist[1].data['START']:
         timesinutc.append(met_to_utc(tim))
 
-    startind = np.searchsorted(timesinutc, timerange.start())
-    endind = np.searchsorted(timesinutc, timerange.end())
+    startind = np.searchsorted(timesinutc, timerange.start)
+    endind = np.searchsorted(timesinutc, timerange.end)
 
     scx_radec = []
     scz_radec = []
@@ -210,24 +181,24 @@ def nai_detector_angles():
     see Meegan et al. (2009) for details and detector angles.'''
 
     # angles listed as [azimuth, zenith]
-    detectors = {}
-    detectors['n0'] = [45.89, 20.58]
-    detectors['n1'] = [45.11, 45.31]
-    detectors['n2'] = [58.44, 90.21]
-    detectors['n3'] = [314.87, 45.24]
-    detectors['n4'] = [303.15, 90.27]
-    detectors['n5'] = [3.35, 89.79]
-    detectors['n6'] = [224.93, 20.43]
-    detectors['n7'] = [224.62, 46.18]
-    detectors['n8'] = [236.61, 89.97]
-    detectors['n9'] = [135.19, 45.55]
-    detectors['n10'] = [123.73, 90.42]
-    detectors['n11'] = [183.74, 90.32]
+    detectors = {'n0': [45.89, 20.58],
+                 'n1': [45.11, 45.31],
+                 'n2': [58.44, 90.21],
+                 'n3': [314.87, 45.24],
+                 'n4': [303.15, 90.27],
+                 'n5': [3.35, 89.79],
+                 'n6': [224.93, 20.43],
+                 'n7': [224.62, 46.18],
+                 'n8': [236.61, 89.97],
+                 'n9': [135.19, 45.55],
+                 'n10': [123.73, 90.42],
+                 'n11': [183.74, 90.32]
+                 }
 
     return detectors
 
 
-def nai_detector_radecs(detectors, scx, scz):
+def nai_detector_radecs(detectors, scx, scz, time):
     '''calculates the RA/DEC for each NaI detector given spacecraft z and x RA/DEC positions.
     NB: This routine is based on code found in GTBURST, originally written by Dr Giacamo Vianello for the Fermi Science Tools.'''
 
@@ -263,6 +234,7 @@ def nai_detector_radecs(detectors, scx, scz):
         # save the RA/DEC in a dictionary
         detector_radecs[l] = [ra, dec]
 
+    detector_radecs['time'] = time
     return detector_radecs
 
 
@@ -287,8 +259,9 @@ def get_detector_separation_angles(detector_radecs, sunpos):
     # record the separation angle in degrees between the sun and each NaI detector
     angles = copy.deepcopy(detector_radecs)
     for l, d in detector_radecs.items():
-        angle = separation_angle(d, sunpos)
-        angles[l] = angle
+        if not l == 'time':
+            angle = separation_angle(d, sunpos)
+            angles[l] = angle
     return angles
 
 
@@ -305,7 +278,8 @@ def met_to_utc(timeinsec):
     '''Converts Fermi Mission Elapsed Time (MET) in seconds to a datetime object.'''
     # times for GBM are in Mission Elapsed Time (MET). The reference time for this is 2001-Jan-01 00:00.
     met_ref_time = parse_time('2001-01-01 00:00')
-    offset_from_utc = (met_ref_time - parse_time('1979-01-01 00:00')).total_seconds()    
-    time_in_utc=parse_time(timeinsec + offset_from_utc)
+    offset_from_utc = (met_ref_time - parse_time('1979-01-01 00:00')) #.total_seconds() #have to do this the long way for python 2.6 compatibility
+    total_offset_secs = (offset_from_utc.microseconds + (offset_from_utc.seconds + offset_from_utc.days * 24 * 3600) * 10**6) / 10**6     
+    time_in_utc=parse_time(timeinsec + total_offset_secs)# offset_from_utc)
 
     return time_in_utc

@@ -26,8 +26,8 @@ def test_parse_time_tuple():
 
 
 def test_parse_time_int():
-    assert parse_time(765548612.0) == datetime(2003, 4, 5, 12, 23, 32)
-    assert parse_time(1009685652.0) == datetime(2010, 12, 30, 4, 14, 12)
+    assert parse_time(765548612.0,'utime') == datetime(2003, 4, 5, 12, 23, 32)
+    assert parse_time(1009685652.0,'utime') == datetime(2010, 12, 30, 4, 14, 12)
 
 
 def test_parse_time_ISO():
