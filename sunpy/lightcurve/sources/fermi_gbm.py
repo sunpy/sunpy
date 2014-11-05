@@ -76,10 +76,14 @@ class GBMSummaryLightCurve(LightCurve):
     def _get_closest_detector_for_date(cls,date,**kwargs):
         '''This method returns the GBM detector with the smallest mean angle to the Sun for the given date'''
         pointing_file = fermi.download_weekly_pointing_file(date)
-        det_angles = fermi.get_detector_sun_angles_for_date(date,pointing_file,plot=False)
+        det_angles = fermi.get_detector_sun_angles_for_date(date,pointing_file)
         det_angle_means=[]
-        for d in det_angles:
-            det_angle_means.append(np.mean(d))
+        for n in det_angles.keys():
+            if not n == 'time':
+               det_angle_means.append(np.mean(det_angles[n])) 
+        
+       # for d in det_angles:
+        #    det_angle_means.append(np.mean(d))
         best_det = 'n' +str(np.argmin(det_angle_means))
         return best_det
      
@@ -140,8 +144,8 @@ def _bin_data_for_summary(energy_bins,count_data):
 
    
 def _parse_detector(detector):
-    oklist=['n0','n1','n2','n3','n4','n5','n6','n7','n8','n9']
-    altlist=['0','1','2','3','4','5','6','7','8','9']
+    oklist=['n0','n1','n2','n3','n4','n5','n6','n7','n8','n9','n10','n11']
+    altlist = [str(i) for i in range(12)]
     if detector in oklist:
         return detector
     elif detector in altlist:

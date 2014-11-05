@@ -64,7 +64,7 @@ def query(start, end, instruments=None, url=DEFAULT_URL):
     """
     day = datetime.datetime(start.year, start.month, start.day)
     while day <= end:
-        directory = url + '%d/%02d/%02d/' % (day.year, day.month, day.day)
+        directory = url + day.strftime('%Y/%m/%d/')
         opn = urllib2.urlopen(directory)
         try:
             soup = BeautifulSoup(opn)

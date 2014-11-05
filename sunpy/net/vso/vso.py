@@ -34,7 +34,6 @@ from sunpy.net.vso.attrs import walker, TIMEFORMAT
 from sunpy.util import print_table, replacement_filename
 from sunpy.time import parse_time
 
-from sunpy import config
 TIME_FORMAT = config.get("general", "time_format")
 
 DEFAULT_URL = 'http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl'
@@ -501,11 +500,11 @@ class VSOClient(object):
                     try:
                         item = item[elem]
                     except KeyError:
-                        raise ValueError("Unexpected argument %s." % key)
+                        raise ValueError("Unexpected argument {key!s}.".format(key=key))
                 if lst not in item:
-                    raise ValueError("Unexpected argument %s." % key)
+                    raise ValueError("Unexpected argument {key!s}.".format(key=key))
                 if item[lst]:
-                    raise ValueError("Got multiple values for %s." % k)
+                    raise ValueError("Got multiple values for {k!s}.".format(k=k))
                 item[lst] = v
         try:
             return QueryResponse.create(self.api.service.Query(queryreq))
@@ -764,7 +763,7 @@ class InteractiveVSOClient(VSOClient):
     def multiple_choices(self, choices, response):
         while True:
             for n, elem in enumerate(choices):
-                print "(%d) %s" % (n + 1, elem)
+                print "({num:d}) {choice!s}".format(num=n + 1, choice=elem)
             try:
                 choice = raw_input("Method number: ")
             except KeyboardInterrupt:

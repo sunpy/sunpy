@@ -179,7 +179,7 @@ def test_entries_from_dir():
     for entry, filename in entries:
         if filename.endswith('na120701.091058.fits'):
             break
-    assert entry.path == os.path.join(waveunitdir, filename)
+    assert entry.path in (os.path.join(waveunitdir, filename), filename)
     assert filename.startswith(waveunitdir)
     assert len(entry.fits_header_entries) == 42
     assert entry.fits_header_entries == [
@@ -247,14 +247,14 @@ def test_entries_from_dir():
 def test_entries_from_dir_recursively_true():
     entries = list(
         entries_from_dir(testdir, True, default_waveunit='angstrom'))
-    assert len(entries) == 36
+    assert len(entries) == 44
     # Older val = 31.
 
 
 def test_entries_from_dir_recursively_false():
     entries = list(
         entries_from_dir(testdir, False, default_waveunit='angstrom'))
-    assert len(entries) == 15
+    assert len(entries) == 23
 
 
 @pytest.mark.online

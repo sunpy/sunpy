@@ -38,7 +38,7 @@ class MapCube(object):
 
     Examples
     --------
-    >>> mapcube = sunpy.map.Map('images/*.fits', mapcube=True)
+    >>> mapcube = sunpy.map.Map('images/*.fits', cube=True)
 
     Mapcubes can be co-aligned using the routines in sunpy.image.coalignment.
     """
@@ -70,6 +70,10 @@ class MapCube(object):
     def __getitem__(self, key):
         """Overiding indexing operation"""
         return self.maps[key]
+
+    def __len__(self):
+        """Return the number of maps in a mapcube."""
+        return len(self.maps)
 
     # Sorting methods
     @classmethod
@@ -135,19 +139,19 @@ class MapCube(object):
 
         # Normal plot
         def annotate_frame(i):
-            axes.set_title("%s %s" % (self[i].name, self[i].date))
+            axes.set_title("{s.name} {s.date!s}".format(s=self[i]))
 
             # x-axis label
             if self[0].coordinate_system['x'] == 'HG':
-                xlabel = 'Longitude [%s]' % self[i].units['x']
+                xlabel = 'Longitude [{lon}'.format(lon=self[i].units['x'])
             else:
-                xlabel = 'X-position [%s]' % self[i].units['x']
+                xlabel = 'X-position [{xpos}]'.format(xpos=self[i].units['x'])
 
             # y-axis label
             if self[0].coordinate_system['y'] == 'HG':
-                ylabel = 'Latitude [%s]' % self[i].units['y']
+                ylabel = 'Latitude [{lat}]'.format(lat=self[i].units['y'])
             else:
-                ylabel = 'Y-position [%s]' % self[i].units['y']
+                ylabel = 'Y-position [{ypos}]'.format(ypos=self[i].units['y'])
 
             axes.set_xlabel(xlabel)
             axes.set_ylabel(ylabel)
@@ -156,29 +160,29 @@ class MapCube(object):
             self[0].cmap.set_gamma(gamma)
 
         if resample:
-            #This assumes that the maps a homogenous!
+            #This assumes that the maps are homogenous!
             #TODO: Update this!
             resample = np.array(len(self.maps)-1) * np.array(resample)
-            ani_data = [x.resample(resample) for x in self]
+            ani_data = [x.resample(resample) for x in self.maps]
         else:
-            ani_data = self
+            ani_data = self.maps
 
         im = ani_data[0].plot(**kwargs)
 
         def updatefig(i, im, annotate, ani_data):
 
             im.set_array(ani_data[i].data)
-            im.set_cmap(self[i].cmap)
-            im.set_mpl_color_normalizer(self[i].mpl_color_normalizer)
-            im.set_extent(self.xrange + self.yrange)
+            im.set_cmap(self.maps[i].cmap)
+            im.set_norm(self.maps[i].mpl_color_normalizer)
+            im.set_extent(self.maps[i].xrange + self.maps[i].yrange)
             if annotate:
                 annotate_frame(i)
 
         ani = matplotlib.animation.FuncAnimation(fig, updatefig,
-                                            frames=range(0,len(self.maps)),
-                                            fargs=[im,annotate,ani_data],
-                                            interval=interval,
-                                            blit=False)
+                                                frames=range(0,len(self.maps)),
+                                                fargs=[im,annotate,ani_data],
+                                                interval=interval,
+                                                blit=False)
 
         return ani
 
@@ -241,10 +245,35 @@ class MapCube(object):
             self[0].cmap.set_gamma(gamma)
 
         if resample:
-            #This assumes that the maps a homogenous!
-            #TODO: Update this!
-            resample = np.array(len(self.maps)-1) * np.array(resample)
-            for amap in self.maps:
-                amap.resample(resample)
+            if self.all_maps_same_shape():
+                resample = np.array(len(self.maps) - 1) * np.array(resample)
+                for amap in self.maps:
+                    amap.resample(resample)
+            else:
+                raise ValueError('Maps in mapcube do not all have the same shape.')
 
         return MapCubeAnimator(self, **kwargs)
+
+    def all_maps_same_shape(self):
+        """
+        Tests if all the maps have the same number pixels in the x and y
+        directions.
+        """
+        return np.all([m.data.shape == self.maps[0].data.shape for m in self.maps])
+
+    def as_array(self):
+        """
+        If all the map shapes are the same, their image data is copied
+        into a single single ndarray. The ndarray is ordered as (ny, nx, nt).
+        Otherwise, a ValueError is thrown.
+        """
+        if self.all_maps_same_shape():
+            return np.swapaxes(np.swapaxes(np.asarray([m.data for m in self.maps]), 0, 1).copy(), 1, 2).copy()
+        else:
+            raise ValueError('Not all maps have the same shape.')
+
+    def all_meta(self):
+        """
+        Return all the meta objects as a list.
+        """
+        return [m.meta for m in self.maps]
