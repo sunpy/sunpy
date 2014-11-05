@@ -98,7 +98,7 @@ class NOAAIndicesLightCurve(LightCurve):
             fields = ('yyyy', 'mm', 'sunspot SWO', 'sunspot RI', 'sunspot ratio', 'sunspot SWO smooth', 'sunspot RI smooth', 'radio flux', 'radio flux smooth', 'geomagnetic ap', 'geomagnetic smooth')
             data = read_csv(fp, delim_whitespace=True, names = fields, comment='#', dtype={'yyyy':np.str, 'mm':np.str})
             data = data.dropna(how='any')
-            timeindex = [datetime.datetime.strptime(x + '/' + y, '%Y/%m') for x,y in zip(data['yyyy'], data['mm'])]
+            timeindex = [datetime.datetime.strptime(x + y, '%Y%m') for x,y in zip(data['yyyy'], data['mm'])]
             data['time']=timeindex
             data = data.set_index('time')
             data = data.drop('mm',1)
@@ -174,7 +174,7 @@ class NOAAPredictIndicesLightCurve(LightCurve):
             fields = ('yyyy', 'mm', 'sunspot', 'sunspot low', 'sunspot high', 'radio flux', 'radio flux low', 'radio flux high')
             data = read_csv(filepath, delim_whitespace=True, names = fields, comment='#', skiprows=2, dtype={'yyyy':np.str, 'mm':np.str})
             data = data.dropna(how='any')
-            timeindex = [datetime.datetime.strptime(x + '/' + y, '%Y/%m') for x,y in zip(data['yyyy'], data['mm'])]
+            timeindex = [datetime.datetime.strptime(x + y, '%Y%m') for x,y in zip(data['yyyy'], data['mm'])]
             data['time']=timeindex
             data = data.set_index('time')
             data = data.drop('mm',1)

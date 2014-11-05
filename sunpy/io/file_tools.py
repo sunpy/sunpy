@@ -35,7 +35,8 @@ class Readers(dict):
     def __getitem__(self, key):
         val = dict.__getitem__(self, key)
         if val is None:
-            raise ReaderError("The Reader sunpy.io.%s is not avalible, please check that you have the required dependancies installed."%key)
+            raise ReaderError("The Reader sunpy.io.{key!s} is not avalible, ".format(key=key) +
+                              "please check that you have the required dependancies installed.")
         return val
 
 #Map the readers

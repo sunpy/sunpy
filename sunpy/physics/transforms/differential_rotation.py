@@ -10,7 +10,7 @@ __author__ = ["Jose Ivan Campos Rozo","Stuart Mumford"]
 __all__ = ['diff_rot']
 
 
-def diff_rot(ddays,latitude,rot_type='howard',frame_time='sidereal'):
+def diff_rot(ddays, latitude, rot_type='howard', frame_time='sidereal'):
     """
     This function computes the change in longitude over days in degrees.
 
@@ -63,8 +63,7 @@ def diff_rot(ddays,latitude,rot_type='howard',frame_time='sidereal'):
 	raise TypeError("Expecting astropy Quantity")
 
     latitude = latitude.to(u.deg)
-    delta_seconds = (delta.microseconds + (delta.seconds + delta.days * 24 * 3600) *
-                    10**6) / 10**6
+    delta_seconds = delta.total_seconds()
     delta_days = delta_seconds / 24 / 3600
     
     sin2l = (np.sin(latitude))**2

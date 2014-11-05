@@ -193,7 +193,7 @@ def parse_time(time_string, time_format=''):
                 return datetime.strptime(ts, time_format) + time_delta
             except ValueError:
                 pass
-        raise ValueError("%s is not a valid time string!" % time_string)
+        raise ValueError("{tstr!s} is not a valid time string!".format(tstr=time_string))
 
 
 def is_time(time_string, time_format=''):
@@ -206,14 +206,17 @@ def is_time(time_string, time_format=''):
         Date to parse which can be either time_string, int, datetime object.
     time_format : [ basestring, utime, datetime ]
 	Specifies the format user has provided the time_string in.
-   
+
     Returns
     -------
     out : bool
         True if can be parsed by parse_time
 
-    Note:
-    If time_string is an instance of float, then it is assumed to be in unix time format.
+    Notes
+    -----
+        If time_string is an instance of float, then it is assumed to be in
+        unix time format.
+
     Examples
     --------
     >>> sunpy.time.parse_time('2012/08/01')

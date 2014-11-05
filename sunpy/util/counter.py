@@ -114,9 +114,9 @@ except ImportError:
 
         def __repr__(self):
             if not self:
-                return '%s()' % self.__class__.__name__
-            items = ', '.join(map('%r: %r'.__mod__, self.most_common()))
-            return '%s({%s})' % (self.__class__.__name__, items)
+                return '{0}()'.format(self.__class__.__name__)
+            items = ', '.join(map('{0!r}: {1!r}'.format, self.most_common()))
+            return '{0}({1})'.format(self.__class__.__name__, items)
 
         # Multiset-style mathematical operations discussed in:
         #       Knuth TAOCP Volume II section 4.6.3 exercise 19
