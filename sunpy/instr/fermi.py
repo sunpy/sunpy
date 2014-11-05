@@ -10,12 +10,14 @@ import tempfile
 import datetime
 import os
 import matplotlib.pyplot as plt
-from BeautifulSoup import BeautifulSoup
+from bs4 import BeautifulSoup
 from sunpy.time import parse_time, TimeRange
 from sunpy import sun
 from astropy.io import fits
 from astropy.utils.compat.odict import OrderedDict
 
+import astropy.units as u
+from astropy.coordinates import Angle, Longitude, Latitude
 
 def download_weekly_pointing_file(date):
     '''Downloads the FERMI/LAT weekly pointing file corresponding to the specified date. This file
@@ -56,7 +58,7 @@ def download_weekly_pointing_file(date):
     #get the returned html as a string
     html_string=resp.read().decode('utf-8')
     #parse the html string using BeautifulSoup 
-    parsed_html = BeautifulSoup(html_string)
+    parsed_html = BeautifulSoup(html_string,'html5lib')
     #find all the links in the html
     links=parsed_html.body.findAll('a')
 
@@ -91,7 +93,7 @@ def get_detector_sun_angles_for_time(time, file):
     # this gets the sun position with RA in hours in decimal format (e.g. 4.3). DEC is already in degrees
     sunpos_ra_not_in_deg = [sun.sun.apparent_rightascension(time), sun.sun.apparent_declination(time)]
     # now Sun position with RA in degrees
-    sun_pos = [sunpos_ra_not_in_deg[0].to('deg').value, sunpos_ra_not_in_deg[1].value]
+    sun_pos = [sunpos_ra_not_in_deg[0].to('deg'), sunpos_ra_not_in_deg[1]]
     #sun_pos = [(sunpos_ra_not_in_deg[0] / 24) * 360., sunpos_ra_not_in_deg[1]]
     # now get the angle between each detector and the Sun
     detector_to_sun_angles = (get_detector_separation_angles(detector_radecs, sun_pos))
@@ -115,7 +117,7 @@ def get_detector_sun_angles_for_date(date, file):
         # this gets the sun position with RA in hours in decimal format (e.g. 4.3). DEC is already in degrees
         sunpos_ra_not_in_deg = [sun.sun.apparent_rightascension(times[i]), sun.sun.apparent_declination(times[i])]
         # now Sun position with RA in degrees
-        sun_pos = [sunpos_ra_not_in_deg[0].to('deg').value, sunpos_ra_not_in_deg[1].value]
+        sun_pos = [sunpos_ra_not_in_deg[0].to('deg'), sunpos_ra_not_in_deg[1]]
         # now get the angle between each detector and the Sun
         detector_to_sun_angles.append(get_detector_separation_angles(detector_radecs, sun_pos))
 
@@ -152,8 +154,10 @@ def get_scx_scz_at_time(time, file):
         timesinutc.append(met_to_utc(tim))
     ind = np.searchsorted(timesinutc, time)
 
-    scx_radec = (hdulist[1].data['RA_SCX'][ind], hdulist[1].data['DEC_SCX'][ind])
-    scz_radec = (hdulist[1].data['RA_SCZ'][ind], hdulist[1].data['DEC_SCZ'][ind])
+    scx_radec = (Longitude(hdulist[1].data['RA_SCX'][ind]*u.deg), Latitude(hdulist[1].data['DEC_SCX'][ind]*u.deg))
+    scz_radec = (Longitude(hdulist[1].data['RA_SCZ'][ind]*u.deg), Latitude(hdulist[1].data['DEC_SCZ'][ind]*u.deg))
+    
+    
     return scx_radec, scz_radec, timesinutc[ind]
 
 
@@ -170,8 +174,8 @@ def get_scx_scz_in_timerange(timerange, file):
     scx_radec = []
     scz_radec = []
     for i in range(startind, endind):
-        scx_radec.append((hdulist[1].data['RA_SCX'][i], hdulist[1].data['DEC_SCX'][i]))
-        scz_radec.append((hdulist[1].data['RA_SCZ'][i], hdulist[1].data['DEC_SCZ'][i]))
+        scx_radec.append((Longitude(hdulist[1].data['RA_SCX'][i]*u.deg), Latitude(hdulist[1].data['DEC_SCX'][i]*u.deg)))
+        scz_radec.append((Longitude(hdulist[1].data['RA_SCZ'][i]*u.deg), Latitude(hdulist[1].data['DEC_SCZ'][i]*u.deg)))
     return scx_radec, scz_radec, timesinutc[startind:endind]
 
 
@@ -181,18 +185,18 @@ def nai_detector_angles():
     see Meegan et al. (2009) for details and detector angles.'''
 
     # angles listed as [azimuth, zenith]
-    detectors = {'n0': [45.89, 20.58],
-                 'n1': [45.11, 45.31],
-                 'n2': [58.44, 90.21],
-                 'n3': [314.87, 45.24],
-                 'n4': [303.15, 90.27],
-                 'n5': [3.35, 89.79],
-                 'n6': [224.93, 20.43],
-                 'n7': [224.62, 46.18],
-                 'n8': [236.61, 89.97],
-                 'n9': [135.19, 45.55],
-                 'n10': [123.73, 90.42],
-                 'n11': [183.74, 90.32]
+    detectors = {'n0': [45.89*u.deg, 20.58*u.deg],
+                 'n1': [45.11*u.deg, 45.31*u.deg],
+                 'n2': [58.44*u.deg, 90.21*u.deg],
+                 'n3': [314.87*u.deg, 45.24*u.deg],
+                 'n4': [303.15*u.deg, 90.27*u.deg],
+                 'n5': [3.35*u.deg, 89.79*u.deg],
+                 'n6': [224.93*u.deg, 20.43*u.deg],
+                 'n7': [224.62*u.deg, 46.18*u.deg],
+                 'n8': [236.61*u.deg, 89.97*u.deg],
+                 'n9': [135.19*u.deg, 45.55*u.deg],
+                 'n10': [123.73*u.deg, 90.42*u.deg],
+                 'n11': [183.74*u.deg, 90.32*u.deg]
                  }
 
     return detectors
@@ -202,19 +206,27 @@ def nai_detector_radecs(detectors, scx, scz, time):
     '''calculates the RA/DEC for each NaI detector given spacecraft z and x RA/DEC positions.
     NB: This routine is based on code found in GTBURST, originally written by Dr Giacamo Vianello for the Fermi Science Tools.'''
 
-    scx_vector = (np.array([np.cos(np.deg2rad(scx[0]))*np.cos(np.deg2rad(scx[1])), 
-                        np.sin(np.deg2rad(scx[0]))*np.cos(np.deg2rad(scx[1])),
-                        np.sin(np.deg2rad(scx[1]))]))
+    #scx_vector = (np.array([np.cos(np.deg2rad(scx[0]))*np.cos(np.deg2rad(scx[1])), 
+    #                    np.sin(np.deg2rad(scx[0]))*np.cos(np.deg2rad(scx[1])),
+     #                   np.sin(np.deg2rad(scx[1]))]))
 
-    scz_vector = (np.array([np.cos(np.deg2rad(scz[0]))*np.cos(np.deg2rad(scz[1])), 
-                        np.sin(np.deg2rad(scz[0]))*np.cos(np.deg2rad(scz[1])),
-                        np.sin(np.deg2rad(scz[1]))]))
+    #scz_vector = (np.array([np.cos(np.deg2rad(scz[0]))*np.cos(np.deg2rad(scz[1])), 
+    #                    np.sin(np.deg2rad(scz[0]))*np.cos(np.deg2rad(scz[1])),
+    #                    np.sin(np.deg2rad(scz[1]))]))
+
+    scx_vector = (np.array([np.cos(scx[0].to('rad').value)*np.cos(scx[1].to('rad').value), 
+                        np.sin(scx[0].to('rad').value)*np.cos(scx[1].to('rad').value),
+                        np.sin(scx[1].to('rad').value)]))
+
+    scz_vector = (np.array([np.cos(scz[0].to('rad').value)*np.cos(scz[1].to('rad').value), 
+                        np.sin(scz[0].to('rad').value)*np.cos(scz[1].to('rad').value),
+                        np.sin(scz[1].to('rad').value)]))
 
     # for each detector, do the rotation depending on the detector zenith and azimuth angles
     detector_radecs = copy.deepcopy(detectors)
     for l, d in detectors.items():
-        phi = d[0]
-        theta = d[1]
+        phi = d[0].value
+        theta = d[1].value
 
         # rotate about spacecraft z-axis first
         vx_primed = rotate_vector(scx_vector, scz_vector, np.deg2rad(phi))
@@ -226,10 +238,10 @@ def nai_detector_radecs(detectors, scx, scz, time):
         vz_primed = rotate_vector(scz_vector, vy_primed, np.deg2rad(theta))
 
         # now we should be pointing at the new RA/DEC.
-        ra = np.degrees(math.atan2(vz_primed[1], vz_primed[0]))
-        if ra < 0:
-            ra = ra + 360.0
-        dec = np.degrees(math.asin(vz_primed[2]))
+        ra = Longitude(np.degrees(math.atan2(vz_primed[1], vz_primed[0])) * u.deg)
+        #if ra < 0:
+         #   ra = ra + 360.0
+        dec = Latitude(np.degrees(math.asin(vz_primed[2])) * u.deg)
 
         # save the RA/DEC in a dictionary
         detector_radecs[l] = [ra, dec]
@@ -266,10 +278,14 @@ def get_detector_separation_angles(detector_radecs, sunpos):
 
 
 def separation_angle(radec1, radec2):
+    '''radec1 and radec 2 are quantities'''
     '''use the law of spherical cosines to calculate the separation angle between two RA/DEC positions.'''
-    cosine_of_angle = ( np.cos(np.deg2rad(90 - radec1[1])) * np.cos(np.deg2rad(90 - radec2[1])) ) + ( np.sin(np.deg2rad(90 - radec1[1])) * np.sin(np.deg2rad(90 - radec2[1])) * np.cos(np.deg2rad(radec1[0] - radec2[0])) )
+    #cosine_of_angle = ( np.cos(np.deg2rad(90 - radec1[1])) * np.cos(np.deg2rad(90 - radec2[1])) ) + ( np.sin(np.deg2rad(90 - radec1[1])) * np.sin(np.deg2rad(90 - radec2[1])) * np.cos(np.deg2rad(radec1[0] - radec2[0])) )
+    
+    cosine_of_angle = ( np.cos( ((90*u.deg) - radec1[1].to('degree')).to('rad')) * np.cos( (90*u.deg - radec2[1].to('degree')).to('rad')) ) + ( np.sin( ((90*u.deg) - radec1[1].to('degree')).to('rad') ) * np.sin( ((90*u.deg) - radec2[1].to('degree')).to('rad') ) * np.cos( (radec1[0].to('degree') - radec2[0].to('degree')).to('rad')   ) )
 
-    angle=np.rad2deg(np.arccos(cosine_of_angle))
+
+    angle=(np.arccos(cosine_of_angle)).to('degree')
 
     return angle
 

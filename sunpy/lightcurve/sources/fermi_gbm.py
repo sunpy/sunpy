@@ -80,7 +80,11 @@ class GBMSummaryLightCurve(LightCurve):
         det_angle_means=[]
         for n in det_angles.keys():
             if not n == 'time':
-               det_angle_means.append(np.mean(det_angles[n])) 
+                det_angle_values=[]
+                for angle in det_angles[n]:
+                    det_angle_values.append(angle.value)
+                    
+                det_angle_means.append(np.mean(det_angle_values)) 
         
        # for d in det_angles:
         #    det_angle_means.append(np.mean(d))
