@@ -4,10 +4,10 @@ import astropy.units as u
 
 def quantity_input(*f_args, **f_kwargs):
     """
-    A decorator for a function that accepts some inputs a Quantity objects.
+    A decorator for a function that accepts some inputs as Quantity objects.
     
     This decorator attempts to convert the given Quantites to the units specified
-    to the decortator, and fails nicely if the a non-Quantity or a incompatible 
+    to the decorator, and fails nicely if a non-Quantity or a incompatible 
     unit was passed.
     
     Examples
@@ -15,8 +15,7 @@ def quantity_input(*f_args, **f_kwargs):
     
     @quantity_input(u.arcsec, u.arcsec, None)
     def myfunc(solarx, solary, someflag):
-        solarx.value # this is now in arcsec
-        solary.value # now in arcsec
+        pass
     """
     equivalencies = f_kwargs.pop('equivalencies', [])
     def check_quantities(f):

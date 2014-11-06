@@ -110,7 +110,6 @@ def test_unused_kwargs():
     assert myk.unit == u.deg
     assert myk2 == 10
 
-
 def test_kwarg_equivalencies():
     @quantity_input(u.arcsec, energy=u.eV, equivalencies=u.mass_energy())
     def myfunc_args(solarx, energy=10*u.eV):
