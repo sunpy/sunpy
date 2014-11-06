@@ -19,7 +19,7 @@ def test_args():
     assert solarx.unit == u.arcsec
     assert solary.unit == u.arcsec
 
-def test_args_convert():
+def test_args_noconvert():
     @quantity_input(u.arcsec, u.arcsec)
     def myfunc_args(solarx, solary):
         return solarx, solary
@@ -29,8 +29,8 @@ def test_args_convert():
     assert isinstance(solarx, u.Quantity)
     assert isinstance(solary, u.Quantity)
 
-    assert solarx.unit == u.arcsec
-    assert solary.unit == u.arcsec
+    assert solarx.unit == u.deg
+    assert solary.unit == u.arcmin
 
 
 def test_args_nonquantity():

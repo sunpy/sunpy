@@ -34,7 +34,7 @@ def quantity_input(*f_args, **f_kwargs):
             for i, (arg, f_arg) in enumerate(zip(args, f_args)):
                 if f_arg is not None:
                     try:
-                        args[i] = args[i].to(f_arg)
+                        arg.to(f_arg)
                     except u.UnitsError:
                         raise TypeError("Argument '{}' to function '{}' must be in units convertable to '{}'.".format(
                                         f.func_code.co_varnames[i], f.func_code.co_name, f_arg.to_string()))
@@ -46,7 +46,7 @@ def quantity_input(*f_args, **f_kwargs):
             for kwarg, value in f_kwargs.items():
                 if kwarg in kwds:
                     try:
-                        kwds[kwarg] = kwds[kwarg].to(value)
+                        kwds[kwarg].to(value)
                     except u.UnitsError:
                         raise TypeError("Keyword argument '{}' to function '{}' must be an astropy Quantity object in units convertable to '{}'.".format(
                                         kwarg, f.func_code.co_name, value.to_string()))
