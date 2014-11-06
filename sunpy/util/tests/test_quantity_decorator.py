@@ -10,7 +10,7 @@ def test_wrong_num_args():
         @quantity_input(u.arcsec)
         def myfunc_args(solarx, solary):
             return solarx, solary
-    assert e.value.message == "Number of decorator arguments does not equal number of function arguments"
+    assert "Number of decorator arguments does not equal number of function arguments" == str(e.value)
 
 def test_args():
     @quantity_input(u.arcsec, u.arcsec)
@@ -71,7 +71,7 @@ def test_wrong_unit():
    
     with pytest.raises(TypeError) as e:
         solarx, solary = myfunc_args(1*u.arcsec, 100*u.km)
-    assert e.value.message == "Argument 'solary' to function 'myfunc_args' must be in units convertable to 'deg'."
+    assert str(e.value) == "Argument 'solary' to function 'myfunc_args' must be in units convertable to 'deg'."
 
 def test_not_quantity():
     @quantity_input(u.arcsec, u.deg)
@@ -80,7 +80,7 @@ def test_not_quantity():
    
     with pytest.raises(TypeError) as e:
         solarx, solary = myfunc_args(1*u.arcsec, 100)
-    assert e.value.message == "Argument 'solary' to function 'myfunc_args' must be an astropy Quantity object"
+    assert str(e.value) == "Argument 'solary' to function 'myfunc_args' must be an astropy Quantity object"
 
 def test_kwargs():
     @quantity_input(u.arcsec, None, myk=u.deg)
@@ -130,7 +130,7 @@ def test_kwarg_wrong_unit():
    
     with pytest.raises(TypeError) as e:
         solarx, solary = myfunc_args(1*u.arcsec, solary=100*u.km)
-    assert e.value.message == "Keyword argument 'solary' to function 'myfunc_args' must be in units convertable to 'deg'."
+    assert str(e.value) == "Keyword argument 'solary' to function 'myfunc_args' must be in units convertable to 'deg'."
 
 def test_kwarg_not_quantity():
     @quantity_input(u.arcsec, solary=u.deg)
@@ -139,4 +139,4 @@ def test_kwarg_not_quantity():
    
     with pytest.raises(TypeError) as e:
         solarx, solary = myfunc_args(1*u.arcsec, solary=100)
-    assert e.value.message == "Argument 'solary' to function 'myfunc_args' must be an astropy Quantity object"
+    assert str(e.value) == "Argument 'solary' to function 'myfunc_args' must be an astropy Quantity object"

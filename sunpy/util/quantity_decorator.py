@@ -36,10 +36,12 @@ def quantity_input(*f_args, **f_kwargs):
                     try:
                         arg.to(f_arg, equivalencies=equivalencies)
                     except u.UnitsError:
-                        raise TypeError("Argument '{}' to function '{}' must be in units convertable to '{}'.".format(
-                                        f.func_code.co_varnames[i], f.func_code.co_name, f_arg.to_string()))
+                        raise TypeError(
+"Argument '{0}' to function '{1}' must be in units convertable to '{2}'.".format(
+            f.func_code.co_varnames[i], f.func_code.co_name, f_arg.to_string()))
                     except AttributeError:
-                        raise TypeError("Argument '{}' to function '{}' must be an astropy Quantity object".format(
+                        raise TypeError(
+"Argument '{0}' to function '{1}' must be an astropy Quantity object".format(
                                         f.func_code.co_varnames[i], f.func_code.co_name))
 
             # Check kwargs, only kwargs specified in the decorator are modified
@@ -48,11 +50,13 @@ def quantity_input(*f_args, **f_kwargs):
                     try:
                         kwds[kwarg].to(value, equivalencies=equivalencies)
                     except u.UnitsError:
-                        raise TypeError("Keyword argument '{}' to function '{}' must be in units convertable to '{}'.".format(
-                                        kwarg, f.func_code.co_name, value.to_string()))
+                        raise TypeError(
+"Keyword argument '{0}' to function '{1}' must be in units convertable to '{2}'.".format(
+                                kwarg, f.func_code.co_name, value.to_string()))
                     except AttributeError:
-                        raise TypeError("Argument '{}' to function '{}' must be an astropy Quantity object".format(
-                                        f.func_code.co_varnames[j+num_args], f.func_code.co_name))
+                        raise TypeError(
+"Argument '{0}' to function '{1}' must be an astropy Quantity object".format(
+                    f.func_code.co_varnames[j+num_args], f.func_code.co_name))
 
             return f(*args, **kwds)
 
