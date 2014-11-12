@@ -34,9 +34,14 @@ mock = Mock()
 modules = {}
 
 try:
-    import skimage 
+    import skimage
 except ImportError:
     modules.update({'skimage':mock, 'skimage.feature':mock.module})
+try:
+    import glymur
+    _, OJP2 = glymur.lib.config.glymur_config()
+except (ImportError, IOError):
+    modules.update({'glymur':mock})
 
 sys.modules.update(modules)
 
