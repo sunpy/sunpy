@@ -29,6 +29,7 @@
 # scikit-image will not install on RTD, so if it is no present we
 # use Mock instead so the docs will still build correctly.
 
+import os
 import sys
 
 modules = {}
@@ -40,12 +41,32 @@ except ImportError:
     mock = Mock()
     modules.update({'skimage':mock, 'skimage.feature':mock.module})
 
+try:
+    import glymur
+    _, OJP2 = glymur.lib.config.glymur_config()
+except (ImportError, IOError):
+    from mock import Mock
+    mock = Mock()
+    modules.update({'glymur':mock})
+
 sys.modules.update(modules)
+
+# -- Load astropy_helpers -----------------------------------------------------
+
+try:
+    # Has astropy_helpers been installed via pip or similar?
+    import astropy_helpers
+except ImportError:
+    # Building from the doc/source directory?
+    if os.path.basename(os.getcwd()) == 'source':
+        a_h_path = os.path.abspath(os.path.join('..', '..', 'astropy_helpers'))
+        if os.path.isdir(a_h_path):
+            sys.path.insert(1, a_h_path)
 
 # -- General configuration ----------------------------------------------------
 
 # Load all of the global Astropy configuration
-from astropy.sphinx.conf import *
+from astropy_helpers.sphinx.conf import *
 
 # If your documentation needs a minimal Sphinx version, state it here.
 needs_sphinx = '1.1'
@@ -145,7 +166,7 @@ man_pages = [('index', project.lower(), project + u' Documentation',
 
 ## -- Options for the edit_on_github extension ----------------------------------------
 #
-extensions += ['astropy.sphinx.ext.edit_on_github', 'sphinx.ext.doctest']
+extensions += ['astropy_helpers.sphinx.ext.edit_on_github', 'sphinx.ext.doctest']
 
 ## Don't import the module as "version" or it will override the
 ## "version" configuration parameter
