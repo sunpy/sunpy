@@ -367,6 +367,12 @@ def test_rotate():
     assert aia_map_crop.shape[0] < aia_map_crop.shape[1]
     assert aia_map_crop_rot.shape[0] > aia_map_crop_rot.shape[1]
 
+    # Same test as above, to test the other direction
+    aia_map_crop = aia_map.submap([0, 400], [0, 1000])
+    aia_map_crop_rot = aia_map_crop.rotate(60)
+    assert aia_map_crop.shape[0] > aia_map_crop.shape[1]
+    assert aia_map_crop_rot.shape[0] < aia_map_crop_rot.shape[1]
+
 
 def test_rotate_recenter(aia_map):
     array_center = (np.array(aia_map.data.shape)-1)/2.0
