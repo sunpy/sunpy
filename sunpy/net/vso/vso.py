@@ -221,13 +221,15 @@ class QueryResponse(list):
         for key in keywords:
             record_items[key] = []
 
+        def validate_time(time):
+            if record.time.start is not None:
+                return [datetime.strftime(parse_time(time), TIME_FORMAT)]
+            else:
+                return ['N/A']
+
         for record in self:
-            record_items['Start Time'].append(
-                    [datetime.strftime(parse_time(record.time.start), TIME_FORMAT)]
-                    if record.time.start is not None else ['N/A'])
-            record_items['End Time'].append(
-                    [datetime.strftime(parse_time(record.time.end), TIME_FORMAT)]
-                    if record.time.end is not None else ['N/A'])
+            record_items['Start Time'].appennd(validate_time(record.time.start))
+            record_items['End Time'].append(validate_time(record.time.end))
             record_items['Source'].append(str(record.source))
             record_items['Instrument'].append(str(record.instrument))
             record_items['Type'].append(str(record.extent.type)
