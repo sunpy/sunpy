@@ -90,7 +90,6 @@ def test_highlevel_api():
     assert 'hlon=' in string
     assert 'deg, hlat=' in string
     assert 'rad=' in string
-    assert 'L0=' in string
     assert 'km>' in string
 
     # Similarly, `repr(sc)` should look like -:
@@ -100,7 +99,6 @@ def test_highlevel_api():
     assert 'hlon=' in string
     assert 'deg, hlat=' in string
     assert 'rad=' in string
-    assert 'L0=' in string
     assert 'km>' in string
 
     # Transformation between frames is delegated by SkyCoord
