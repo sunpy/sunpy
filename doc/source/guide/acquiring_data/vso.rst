@@ -56,12 +56,12 @@ The variable ``qr`` is a Python list of
 response objects, each one of which is a record found by the VSO. You can find how many
 records were found by typing
 
-    >>> qr.num_records()
+    >>> len(qr)
     122
 
 To get a little bit more information about the records found, try
 
-    >>> qr.show() # doctest:+SKIP
+    >>> print(qr) # doctest:+SKIP
     ...
 
 
@@ -108,9 +108,9 @@ in complex ways that are not possible with the legacy query style.
 So, let's look for the EIT and MDI data on the same day:
 
     >>> qr=client.query(vso.attrs.Time('2001/1/1', '2001/1/2'), vso.attrs.Instrument('eit') | vso.attrs.Instrument('mdi'))
-    >>> qr.num_records()
+    >>> len(qr)
     144
-    >>> qr.show() # doctest:+SKIP
+    >>> print(qr) # doctest:+SKIP
     ...
 
 The two instrument types are joined together by the operator "|".
@@ -159,7 +159,7 @@ many records have been found?  You can find that out be typing
 
 To get a little bit more information, try
 
-    >>> qr.show() # doctest:+SKIP
+    >>> print(qr) # doctest:+SKIP
     ...
 
 The Solarsoft legacy query has more keywords available: to find out

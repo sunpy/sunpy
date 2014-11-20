@@ -40,6 +40,7 @@ TIME_FORMAT_LIST = [
     "%Y%m%d_%H%M%S",           # Example 20070504_210812
     "%Y:%j:%H:%M:%S",          # Example 2012:124:21:08:12
     "%Y:%j:%H:%M:%S.%f",       # Example 2012:124:21:08:12.999999
+    "%Y%m%d%H%M%S",            # Example 20140101000001 (JSOC / VSO)
 ]
 
 
