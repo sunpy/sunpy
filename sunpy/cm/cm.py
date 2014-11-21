@@ -33,6 +33,9 @@ soholasco3 = ct.lasco_color_table(3)
 stereocor1 = ct.cor_color_table(1)
 stereocor2 = ct.cor_color_table(2)
 
+stereohi1 = ct.stereo_hi_color_table(1)
+stereohi2 = ct.stereo_hi_color_table(2)
+
 yohkohsxtal = ct.sxt_color_table('al')
 yohkohsxtwh = ct.sxt_color_table('wh')
 
@@ -73,6 +76,8 @@ cmlist = {
           'soholasco3': soholasco3,
           'stereocor1': stereocor1,
           'stereocor2': stereocor2,
+          'stereohi1': stereohi1,
+          'stereohi2': stereohi2,
           'rhessi': cm.jet,  # pylint: disable=E1101
           'yohkohsxtal': yohkohsxtal,
           'yohkohsxtwh': yohkohsxtwh,
@@ -122,7 +127,7 @@ def get_cmap(name='sdoaia94'):
     if name in cmlist:
         return cmlist.get(name)
     else:
-        raise ValueError("Colormap %s is not recognized" % name)
+        raise ValueError("Colormap {name!s} is not recognized".format(name=name))
 
 
 def show_colormaps():

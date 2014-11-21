@@ -121,7 +121,7 @@ for compatability with map, please use meta instead""", Warning)
             err = "Unable to download data for specified date range"
         )
         result = cls.from_file(filepath)
-        result.data = result.data.truncate(timerange.start(), timerange.end())
+        result.data = result.data.truncate(timerange.start, timerange.end)
         return result
 
     @classmethod
@@ -156,7 +156,7 @@ for compatability with map, please use meta instead""", Warning)
         try:
             filepath = cls._download(url, kwargs)
         except (urllib2.HTTPError, urllib2.URLError, ValueError):
-            err = ("Unable to read location %s.") % url
+            err = "Unable to read location {!s}.".format(url)
             raise ValueError(err)
         return cls.from_file(filepath)
 
@@ -257,20 +257,20 @@ for compatability with map, please use meta instead""", Warning)
     @classmethod
     def _get_default_uri(cls):
         """Default data to load when none is specified"""
-        msg = "No default action set for %s"
-        raise NotImplementedError(msg % cls.__name__)
+        msg = "No default action set for {}"
+        raise NotImplementedError(msg.format(cls.__name__))
 
     @classmethod
     def _get_url_for_date(cls, date, **kwargs):
         """Returns a URL to the data for the specified date"""
-        msg = "Date-based downloads not supported for for %s"
-        raise NotImplementedError(msg % cls.__name__)
+        msg = "Date-based downloads not supported for for {}"
+        raise NotImplementedError(msg.format(cls.__name__))
 
     @classmethod
     def _get_url_for_date_range(cls, *args, **kwargs):
         """Returns a URL to the data for the specified date range"""
-        msg = "Date-range based downloads not supported for for %s"
-        raise NotImplementedError(msg % cls.__name__)
+        msg = "Date-range based downloads not supported for for {}"
+        raise NotImplementedError(msg.format(cls.__name__))
 
     @staticmethod
     def _parse_csv(filepath):
@@ -301,7 +301,7 @@ for compatability with map, please use meta instead""", Warning)
         else:
             time_range = TimeRange(a,b)
 
-        truncated = self.data.truncate(time_range.start(), time_range.end())
+        truncated = self.data.truncate(time_range.start, time_range.end)
         return self.__class__.create(truncated, self.meta.copy())
 
     def extract(self, a):

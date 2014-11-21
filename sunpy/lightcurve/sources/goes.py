@@ -100,10 +100,10 @@ class GOESLightCurve(LightCurve):
 
         sat_list = []
         for sat_num in goes_operational:
-            if ((start > goes_operational[sat_num].start() and
-                 start < goes_operational[sat_num].end()) and
-                (end > goes_operational[sat_num].start() and
-                 end < goes_operational[sat_num].end())):
+            if ((start > goes_operational[sat_num].start and
+                 start < goes_operational[sat_num].end and
+                (end > goes_operational[sat_num].start and
+                 end < goes_operational[sat_num].end))):
                 # if true then the satellite with sat_num is available
                 sat_list.append(sat_num)
 
@@ -130,8 +130,8 @@ class GOESLightCurve(LightCurve):
         """
         # TimeRange
         if len(args) == 1 and isinstance(args[0], TimeRange):
-            start = args[0].start()
-            end = args[0].end()
+            start = args[0].start
+            end = args[0].end
         elif len(args) == 2:
             start = parse_time(args[0])
             end = parse_time(args[1])
@@ -143,11 +143,11 @@ class GOESLightCurve(LightCurve):
         base_url = 'http://umbra.nascom.nasa.gov/goes/fits/'
 
         if start < parse_time('1999/01/15'):
-            url = (base_url + "%s/go%02d%s.fits") % (start.strftime("%Y"),
-                sat_num[0], start.strftime("%y%m%d"))
+            url = base_url + "{date:%Y}/go{sat:02d}{date:%y%m%d}.fits".format(
+                date=start, sat=sat_num[0])
         else:
-            url = (base_url + "%s/go%02d%s.fits") % (start.strftime("%Y"),
-                sat_num[0], start.strftime("%Y%m%d"))
+            url = base_url + "{date:%Y}/go{sat:02d}{date:%Y%m%d}.fits".format(
+                date=start, sat=sat_num[0])
         return url
 
     @staticmethod

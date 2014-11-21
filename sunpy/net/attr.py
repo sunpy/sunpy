@@ -102,7 +102,7 @@ class AttrAnd(Attr):
     __rand__ = __and__
 
     def __repr__(self):
-        return "<AttrAnd(%r)>" % self.attrs
+        return "<AttrAnd({att!r})>".format(att=self.attrs)
 
     def __eq__(self, other):
         if not isinstance(other, AttrAnd):
@@ -153,7 +153,7 @@ class AttrOr(Attr):
         return False
 
     def __repr__(self):
-        return "<AttrOr(%r)>" % self.attrs
+        return "<AttrOr({att!r})>".format(att=self.attrs)
 
     def __eq__(self, other):
         if not isinstance(other, AttrOr):
@@ -173,7 +173,7 @@ class ValueAttr(Attr):
         self.attrs = attrs
 
     def __repr__(self):
-        return "<ValueAttr(%r)>" % (self.attrs)
+        return "<ValueAttr({att!r})>".format(att=self.attrs)
 
     def __hash__(self):
         return hash(frozenset(self.attrs.iteritems()))

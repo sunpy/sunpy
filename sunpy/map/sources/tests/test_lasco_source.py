@@ -6,8 +6,6 @@ This particular test file pertains to LASCOMap.
 import os
 import glob
 
-import pytest
-
 from sunpy.map.sources.soho import LASCOMap
 from sunpy.map import Map
 import sunpy.data.test
