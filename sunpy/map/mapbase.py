@@ -28,6 +28,8 @@ from sunpy.time import parse_time, is_time
 from sunpy.image.rescale import reshape_image_to_4d_superpixel
 from sunpy.image.rescale import resample as sunpy_image_resample
 
+import astropy.units as u
+
 __all__ = ['GenericMap']
 
 from sunpy import config
@@ -142,22 +144,23 @@ class GenericMap(astropy.nddata.NDData):
         if not self.observatory:
             return self.data.__repr__()
         return (
-"""SunPy %s
+"""SunPy {dtype!s}
 ---------
-Observatory:\t %s
-Instrument:\t %s
-Detector:\t %s
-Measurement:\t %s
-Obs Date:\t %s
-dt:\t\t %f
-Dimension:\t [%d, %d]
-[dx, dy] =\t [%f, %f]
+Observatory:\t {obs}
+Instrument:\t {inst}
+Detector:\t {det}
+Measurement:\t {meas:0.0f}
+Obs Date:\t {date}
+dt:\t\t {dt:f}
+Dimension:\t [{xdim:d}, {ydim:d}]
+[dx, dy] =\t [{dx:f}, {dy:f}]
 
-""" % (self.__class__.__name__,
-       self.observatory, self.instrument, self.detector, self.measurement,
-       self.date, self.exposure_time,
-       self.data.shape[1], self.data.shape[0], self.scale['x'], self.scale['y'])
-     + self.data.__repr__())
+""".format(dtype=self.__class__.__name__,
+           obs=self.observatory, inst=self.instrument, det=self.detector, 
+           meas=self.measurement, date=self.date, dt=self.exposure_time,
+           xdim=self.data.shape[1], ydim=self.data.shape[0], 
+           dx=self.scale['x'], dy=self.scale['y'])
++ self.data.__repr__())
 
 
     #Some numpy extraction
@@ -231,7 +234,7 @@ Dimension:\t [%d, %d]
         if dsun is None:
             warnings.warn_explicit("Missing metadata for Sun-spacecraft separation: assuming Sun-Earth distance",
                                    Warning, __file__, inspect.currentframe().f_back.f_lineno)
-            dsun = sun.sunearth_distance(self.date) * constants.au.si.value
+            dsun = sun.sunearth_distance(self.date).to(u.m)
 
         return dsun
 
@@ -370,20 +373,17 @@ Dimension:\t [%d, %d]
     def rotation_matrix(self):
         """Matrix describing the rotation required to align solar North with
         the top of the image."""
-        if self.meta.get('PC1_1', None) is not None:
+        if 'PC1_1' in self.meta:
             return np.matrix([[self.meta['PC1_1'], self.meta['PC1_2']],
                               [self.meta['PC2_1'], self.meta['PC2_2']]])
 
-        elif self.meta.get('CD1_1', None) is not None:
-            div = 1. / (self.scale['x'] - self.scale['y'])
-
-            deltm = np.matrix([[self.scale['y']/div, 0],
-                               [0, self.scale['x']/ div]])
-
+        elif 'CD1_1' in self.meta:
             cd = np.matrix([[self.meta['CD1_1'], self.meta['CD1_2']],
                             [self.meta['CD2_1'], self.meta['CD2_2']]])
 
-            return deltm * cd
+            cdelt = np.array(self.scale.values())
+
+            return cd / cdelt
         else:
             return self._rotation_matrix_from_crota()
 
@@ -396,7 +396,7 @@ Dimension:\t [%d, %d]
         conversion.
         """
         lam = self.scale['y'] / self.scale['x']
-        p = np.deg2rad(self.meta['CROTA2'])
+        p = np.deg2rad(self.meta.get('CROTA2', 0))
 
         return np.matrix([[np.cos(p), -1 * lam * np.sin(p)],
                           [1/lam * np.sin(p), np.cos(p)]])
@@ -463,9 +463,9 @@ Dimension:\t [%d, %d]
         height = self.shape[0]
 
         if (x is not None) & (x > width-1):
-            raise ValueError("X pixel value larger than image width (%s)." % width)
+            raise ValueError("X pixel value larger than image width ({width!s}).".format(width=width))
         if (x is not None) & (y > height-1):
-            raise ValueError("Y pixel value larger than image height (%s)." % height)
+            raise ValueError("Y pixel value larger than image height ({height!s}).".format(height=height))
         if (x is not None) & (x < 0):
             raise ValueError("X pixel value cannot be less than 0.")
         if (x is not None) & (y < 0):
@@ -474,6 +474,7 @@ Dimension:\t [%d, %d]
         scale = np.array([self.scale['x'], self.scale['y']])
         crpix = np.array([self.reference_pixel['x'], self.reference_pixel['y']])
         crval = np.array([self.reference_coordinate['x'], self.reference_coordinate['y']])
+        # FIXME: not used?!
         coordinate_system = [self.coordinate_system['x'], self.coordinate_system['y']]
         x,y = wcs.convert_pixel_to_data(self.shape, scale, crpix, crval, x = x, y = y)
 
@@ -555,6 +556,11 @@ Dimension:\t [%d, %d]
         # Update metadata
         new_meta['cdelt1'] *= scale_factor_x
         new_meta['cdelt2'] *= scale_factor_y
+        if 'CD1_1' in new_meta:
+            new_meta['CD1_1'] *= scale_factor_x
+            new_meta['CD2_1'] *= scale_factor_x
+            new_meta['CD1_2'] *= scale_factor_y
+            new_meta['CD2_2'] *= scale_factor_y
         new_meta['crpix1'] = (dimensions[0] + 1) / 2.
         new_meta['crpix2'] = (dimensions[1] + 1) / 2.
         new_meta['crval1'] = self.center['x']
@@ -565,8 +571,8 @@ Dimension:\t [%d, %d]
         new_map.meta = new_meta
         return new_map
 
-    def rotate(self, angle=None, rmatrix=None, order=3, scale=1.0,
-               image_center=(0,0), recenter=False, missing=0.0, use_scipy=False):
+    def rotate(self, angle=None, rmatrix=None, order=4, scale=1.0,
+               rotation_center=(0,0), recenter=False, missing=0.0, use_scipy=False):
         """
         Returns a new rotated and rescaled map.  Specify either a rotation
         angle or a rotation matrix, but not both.  If neither an angle or a
@@ -584,15 +590,16 @@ Dimension:\t [%d, %d]
             Linear transformation rotation matrix.
         order : int 0-5
             Interpolation order to be used. When using scikit-image this parameter
-            is passed into :func:`skimage.transform.warp`.
+            is passed into :func:`skimage.transform.warp` (e.g., 4 corresponds to
+            bi-quartic interpolation).
             When using scipy it is passed into
             :func:`scipy.ndimage.interpolation.affine_transform` where it controls
             the order of the spline.
-            Higher accuracy may be obtained at the cost of performance by using
-            higher values.
+            Faster performance may be obtained at the cost of accuracy by using lower values.
+            Default: 4
         scale : float
             A scale factor for the image, default is no scaling
-        image_center : tuple
+        rotation_center : tuple
             The axis of rotation in data coordinates
             Default: the origin in the data coordinate system
         recenter : bool
@@ -646,31 +653,42 @@ Dimension:\t [%d, %d]
         new_map = deepcopy(self)
 
         if angle is not None:
-            #Calulate the parameters for the affine_transform
+            # Calulate the parameters for the affine_transform
             c = np.cos(np.deg2rad(angle))
             s = np.sin(np.deg2rad(angle))
             rmatrix = np.matrix([[c, -s], [s, c]])
 
-        # map_center is swapped compared to the x-y convention
-        array_center = (np.array(self.data.shape)-1)/2.0
+        # Calculate the shape in pixels to contain all of the image data
+        extent = np.max(np.abs(np.vstack((new_map.shape * rmatrix, new_map.shape * rmatrix.T))), axis=0)
+        # Calculate the needed padding or unpadding
+        diff = np.asarray(np.ceil((extent - new_map.shape) / 2)).ravel()
+        # Pad the image array
+        pad_x = np.max((diff[1], 0))
+        pad_y = np.max((diff[0], 0))
+        new_map.data = np.pad(new_map.data,
+                              ((pad_y, pad_y), (pad_x, pad_x)),
+                              mode='constant',
+                              constant_values=(missing, missing))
+        new_map.meta['crpix1'] += pad_x
+        new_map.meta['crpix2'] += pad_y
 
-        # rotation_center is swapped compared to the x-y convention
+        # map_center is swapped compared to the x-y convention
+        array_center = (np.array(new_map.data.shape)-1)/2.0
+
+        # pixel_center is swapped compared to the x-y convention
         if recenter:
             # Convert the axis of rotation from data coordinates to pixel coordinates
-            x = self.data_to_pixel(image_center[0], 'x')
-            y = self.data_to_pixel(image_center[1], 'y')
-            rotation_center = (y, x)
+            x = new_map.data_to_pixel(rotation_center[0], 'x')
+            y = new_map.data_to_pixel(rotation_center[1], 'y')
+            pixel_center = (y, x)
         else:
-            rotation_center = array_center
+            pixel_center = array_center
 
-        #Return a new map
-        #Copy Header
-        new_map = deepcopy(self)
-
+        # Apply the rotation to the image data
         new_map.data = affine_transform(new_map.data.T,
                                         np.asarray(rmatrix),
                                         order=order, scale=scale,
-                                        image_center=rotation_center,
+                                        image_center=pixel_center,
                                         recenter=recenter, missing=missing,
                                         use_scipy=use_scipy).T
 
@@ -678,13 +696,13 @@ Dimension:\t [%d, %d]
         # Calculate new reference pixel and coordinate at the center of the
         # image.
         if recenter:
-            new_center = image_center
+            new_center = rotation_center
         else:
             # Retrieve old coordinates for the center of the array
-            old_center = np.asarray(self.pixel_to_data(array_center[1], array_center[0]))
+            old_center = np.asarray(new_map.pixel_to_data(array_center[1], array_center[0]))
 
             # Calculate new coordinates for the center of the array
-            new_center = image_center - np.dot(rmatrix, image_center - old_center)
+            new_center = rotation_center - np.dot(rmatrix, rotation_center - old_center)
             new_center = np.asarray(new_center)[0]
 
         # Define a new reference pixel in the rotated space
@@ -693,11 +711,21 @@ Dimension:\t [%d, %d]
         new_map.meta['crpix1'] = array_center[1] + 1 # FITS counts pixels from 1
         new_map.meta['crpix2'] = array_center[0] + 1 # FITS counts pixels from 1
 
+        # Unpad the array if necessary
+        unpad_x = -np.min((diff[1], 0))
+        if unpad_x > 0:
+            new_map.data = new_map.data[:, unpad_x:-unpad_x]
+            new_map.meta['crpix1'] -= unpad_x
+        unpad_y = -np.min((diff[0], 0))
+        if unpad_y > 0:
+            new_map.data = new_map.data[unpad_y:-unpad_y, :]
+            new_map.meta['crpix2'] -= unpad_y
+
         # Calculate the new rotation matrix to store in the header by
         # "subtracting" the rotation matrix used in the rotate from the old one
         # That being calculate the dot product of the old header data with the
         # inverse of the rotation matrix.
-        pc_C = np.dot(self.rotation_matrix, rmatrix.I)
+        pc_C = np.dot(new_map.rotation_matrix, rmatrix.I)
         new_map.meta['PC1_1'] = pc_C[0,0]
         new_map.meta['PC1_2'] = pc_C[0,1]
         new_map.meta['PC2_1'] = pc_C[1,0]
@@ -705,8 +733,8 @@ Dimension:\t [%d, %d]
 
         # Update pixel size if image has been scaled.
         if scale != 1.0:
-            new_map.meta['cdelt1'] = self.scale['x'] / scale
-            new_map.meta['cdelt2'] = self.scale['y'] / scale
+            new_map.meta['cdelt1'] = new_map.scale['x'] / scale
+            new_map.meta['cdelt2'] = new_map.scale['y'] / scale
 
         # Remove old CROTA kwargs because we have saved a new PCi_j matrix.
         new_map.meta.pop('CROTA1', None)
@@ -858,6 +886,11 @@ Dimension:\t [%d, %d]
         # Update metadata
         new_meta['cdelt1'] = dimensions[0] * self.scale['x']
         new_meta['cdelt2'] = dimensions[1] * self.scale['y']
+        if 'CD1_1' in new_meta:
+            new_meta['CD1_1'] *= dimensions[0]
+            new_meta['CD2_1'] *= dimensions[0]
+            new_meta['CD1_2'] *= dimensions[1]
+            new_meta['CD2_2'] *= dimensions[1]
         new_meta['crpix1'] = (new_nx + 1) / 2.
         new_meta['crpix2'] = (new_ny + 1) / 2.
         new_meta['crval1'] = self.center['x']
@@ -1062,9 +1095,9 @@ Dimension:\t [%d, %d]
         aia.draw_limb()
         aia.draw_grid()
         """
-        # Check that the image is properly aligned
+        # Check that the image is properly oriented
         if not np.array_equal(self.rotation_matrix, np.matrix(np.identity(2))):
-            warnings.warn("This map is not aligned. Plot axes may be incorrect",
+            warnings.warn("This map is not properly oriented. Plot axes may be incorrect",
                           Warning)
         #Get current axes
         if not axes:
@@ -1072,19 +1105,21 @@ Dimension:\t [%d, %d]
 
         # Normal plot
         if annotate:
-            axes.set_title("%s %s" % (self.name, parse_time(self.date).strftime(TIME_FORMAT)))
+            axes.set_title("{name} {date:{tmf}}".format(name=self.name,
+                                                        date=parse_time(self.date),
+                                                        tmf=TIME_FORMAT))
 
             # x-axis label
             if self.coordinate_system['x'] == 'HG':
-                xlabel = 'Longitude [%s]' % self.units['x']
+                xlabel = 'Longitude [{lon}]'.format(lon=self.units['x'])
             else:
-                xlabel = 'X-position [%s]' % self.units['x']
+                xlabel = 'X-position [{xpos}]'.format(xpos=self.units['x'])
 
             # y-axis label
             if self.coordinate_system['y'] == 'HG':
-                ylabel = 'Latitude [%s]' % self.units['y']
+                ylabel = 'Latitude [{lat}]'.format(lat=self.units['y'])
             else:
-                ylabel = 'Y-position [%s]' % self.units['y']
+                ylabel = 'Y-position [{ypos}]'.format(ypos=self.units['y'])
 
             axes.set_xlabel(xlabel)
             axes.set_ylabel(ylabel)

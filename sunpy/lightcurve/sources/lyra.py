@@ -70,9 +70,9 @@ class LYRALightCurve(LightCurve):
                 name = lyranames[names][i]
             else:
                 name = lyranames[0][i] + ' \n (' + lyranames[1][i] + ')'
-            axes[i].set_ylabel( "%s %s" % (name, "\n (W/m**2)"),fontsize=9.5)
+            axes[i].set_ylabel( "{name} \n (W/m**2)".format(name=name), fontsize=9.5)
 
-        axes[0].set_title("LYRA ("+ self.data.index[0].strftime(TIME_FORMAT) +")")
+        axes[0].set_title("LYRA ({0:{1}})".format(self.data.index[0],TIME_FORMAT))
         axes[-1].set_xlabel("Time")
         for axe in axes:
             axe.locator_params(axis='y',nbins=6)
@@ -89,8 +89,8 @@ class LYRALightCurve(LightCurve):
         dt = parse_time(date or datetime.datetime.utcnow())
 
         # Filename
-        filename = "lyra_%s000000_lev%d_%s.fits" % (dt.strftime('%Y%m%d-'),
-                                                    kwargs.get('level',2), 'std')
+        filename = "lyra_{0:%Y%m%d-}000000_lev{1:d}_std.fits".format(
+            dt, kwargs.get('level',2))
         # URL
         base_url = "http://proba2.oma.be/lyra/data/bsd/"
         url_path = urlparse.urljoin(dt.strftime('%Y/%m/%d/'), filename)

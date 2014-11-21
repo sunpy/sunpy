@@ -204,7 +204,7 @@ def _a(wlk, root, state, dct):
     nid = state[Contains]
     n = 0
     for n, type_ in enumerate(root.types):
-        dct['event_type%d' % (nid + n)] = type_
+        dct['event_type{num:d}'.format(num=(nid + n))] = type_
     state[Contains] += n
     return dct
 
@@ -248,9 +248,9 @@ def _a(wlk, root, state, dct):
         state[_ParamAttr] = 0
 
     nid = state[_ParamAttr]
-    dct['param%d' % nid] = root.name
-    dct['op%d' % nid] = root.op
-    dct['value%d' % nid] = root.value
+    dct['param{num:d}'.format(num=nid)] = root.name
+    dct['op{num:d}'.format(num=nid)] = root.op
+    dct['value{num:d}'.format(num=nid)] = root.value
     state[_ParamAttr] += 1
     return dct
 

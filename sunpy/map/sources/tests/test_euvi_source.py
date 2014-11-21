@@ -6,8 +6,6 @@ This particular test file pertains to EUVIMap.
 import os
 import glob
 
-import pytest
-
 from sunpy.map.sources.stereo import EUVIMap
 from sunpy.map import Map
 import sunpy.data.test

@@ -70,19 +70,19 @@ class MapCubeAnimator(imageanimator.BaseFuncAnimator):
         This may overwrite some stuff in `GenericMap.plot()`
         """
         # Normal plot
-        self.axes.set_title("%s %s" % (self.data[ind].name, self.data[ind].date))
+        self.axes.set_title("{s.name} {s.date!s}".format(s=self.data[ind]))
 
         # x-axis label
         if self.data[ind].coordinate_system['x'] == 'HG':
-            xlabel = 'Longitude [%s]' % self.data[ind].units['x']
+            xlabel = 'Longitude [{lon}]'.format(lon=self.data[ind].units['x'])
         else:
-            xlabel = 'X-position [%s]' % self.data[ind].units['x']
+            xlabel = 'X-position [{xpos}]'.format(xpos=self.data[ind].units['x'])
 
         # y-axis label
         if self.data[ind].coordinate_system['y'] == 'HG':
-            ylabel = 'Latitude [%s]' % self.data[ind].units['y']
+            ylabel = 'Latitude [{lat}]'.format(lat=self.data[ind].units['y'])
         else:
-            ylabel = 'Y-position [%s]' % self.data[ind].units['y']
+            ylabel = 'Y-position [{ypos}]'.format(ypos=self.data[ind].units['y'])
 
         self.axes.set_xlabel(xlabel)
         self.axes.set_ylabel(ylabel)
