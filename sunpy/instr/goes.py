@@ -61,8 +61,8 @@ def get_goes_event_list(timerange, goes_class_filter=None):
     # use HEK module to search for GOES events
     client = hek.HEKClient()
     event_type = 'FL'
-    tstart = timerange.start
-    tend = timerange.end
+    tstart = timerange.start()
+    tend = timerange.end()
 
     # query the HEK for a list of events detected by the GOES instrument
     # between tstart and tend (using a GOES-class filter)
@@ -274,10 +274,8 @@ def goes_chianti_tem(longflux, shortflux, satellite=8,
 
     """
     # ENSURE INPUTS ARE OF CORRECT TYPE AND VALID VALUES
-    if type(longflux) != astropy.units.quantity.Quantity:
-        longflux = Quantity(longflux, unit='W/m**2')
-    if type(shortflux) != astropy.units.quantity.Quantity:
-        shortflux = Quantity(shortflux, unit='W/m**2')
+    _check_quantity(longflux, units.Watt/units.m/units.m)
+    _check_quantity(shortflux, units.Watt/units.m/units.m)
     int(satellite)
     if satellite < 1:
         raise ValueError("satellite must be the number of a "
@@ -305,10 +303,10 @@ def goes_chianti_tem(longflux, shortflux, satellite=8,
     # Calculate short to long channel ratio.
     # Data which is not good have their ratio value set to 0.003.
     # See Notes section in docstring above.
-    index = np.logical_or(shortflux_corrected.value < 1e-10,
-                          longflux_corrected.value < 3e-8)
+    index = np.logical_or(shortflux_corrected < Quantity(1e-10, unit="W/m**2"),
+                          longflux_corrected < Quantity(3e-8, unit="W/m**2"))
     fluxratio = shortflux_corrected / longflux_corrected
-    fluxratio.value[index] = 0.003
+    fluxratio.value[index] = Quantity(0.003, unit="W/m**2")
 
     # FIND TEMPERATURE AND EMISSION MEASURE FROM FUNCTIONS BELOW
     temp = _goes_get_chianti_temp(fluxratio, satellite=satellite,
@@ -412,8 +410,8 @@ def _goes_get_chianti_temp(fluxratio, satellite=8, abundances="coronal",
                         replace=download)
 
     # check inputs are correct
-    if type(fluxratio) != astropy.units.quantity.Quantity:
-        fluxratio = Quantity(fluxratio)
+    _check_quantity(fluxratio, units.dimensionless_unscaled)
+    fluxratio = fluxratio.decompose()
     int(satellite)
     if satellite < 1:
         raise ValueError("satellite must be the number of a "
@@ -563,14 +561,10 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal",
                         replace=download)
 
     # Check inputs are of correct type
-    if type(longflux) != astropy.units.quantity.Quantity:
-        longflux = Quantity(longflux, unit='W/m**2')
-    else:
-        longflux.to(units.W/units.m**2)
-    if type(temp) != astropy.units.quantity.Quantity:
-        temp = Quantity(temp, unit='MK')
-    else:
-        temp = temp.to(units.MK)
+    _check_quantity(longflux, units.Watt/units.m/units.m)
+    longflux = longflux.to(units.W/units.m**2)
+    _check_quantity(temp, units.MK)
+    temp = temp.to(units.MK)
     int(satellite)
     if satellite < 1:
         raise ValueError("satellite must be the number of a "
@@ -783,13 +777,10 @@ def calc_rad_loss(temp, em, obstime=None, cumulative=False,
     array([  3.01851392e+26,   3.01851392e+26])
     """
     # Check inputs are correct
-    if type(temp) != astropy.units.quantity.Quantity:
-        temp = Quantity(temp, unit='MK')
+    _check_quantity(temp, units.MK)
     temp = temp.to(units.K)
-    if type(em) != astropy.units.quantity.Quantity:
-        em = Quantity(em, unit='cm**(-3)')
-    else:
-        em = em.to(1/units.cm**3)
+    _check_quantity(em, units.cm**(-3))
+    em = em.to(1/units.cm**3)
     if len(temp) != len(em):
         raise ValueError("temp and em must all have same number of elements.")
     # If force_download kwarg is True, or required data files cannot be
@@ -1117,14 +1108,18 @@ def _calc_xraylum(flux, date=None):
 
     """
     # Ensure input is of correct type
-    if type(flux) != astropy.units.quantity.Quantity:
-        flux = Quantity(flux, unit='W/m**2')
-    else:
-        flux = flux.to(units.W/units.m**2)
+    _check_quantity(flux, units.Watt/units.m/units.m)
     if date is not None:
         date = parse_time(date)
         xraylum = 4 * np.pi * (sun.sunearth_distance(t=date))**2 * flux
     else:
         xraylum = 4 * np.pi * (sun.sunearth_distance())**2 * flux
-    xraylum = xraylum.si
     return xraylum
+
+def _check_quantity(q, unit):
+    """Checks if input is an astropy quantity with correct unit type."""
+    if not (isinstance(q, Quantity) and q.unit.is_equivalent(unit)):
+        raise ValueError(
+            "Must be a Quantity object with units equivalent to {0}".format(
+                unit)
+        )
