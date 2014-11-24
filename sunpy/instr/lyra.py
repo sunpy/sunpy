@@ -3,275 +3,19 @@ from __future__ import division
 
 import os.path
 from datetime import datetime
-from datetime import timedelta
 from warnings import warn
 import copy
 import csv
-import urllib
 
 import numpy as np
 import pandas.tseries.index
 import sqlite3
-from itertools import chain
-from astropy.io import fits
 
 from sunpy.time import parse_time
 from sunpy import config
-from sunpy.lightcurve import LYRALightCurve
-from sunpy.util.net import check_download_file
-
-RISE_FACTOR = 1.01
-FALL_FACTOR = 0.5
-NORM = 0.001  # mean daily minimum in LYRA Zr channel, Jan 2010 to mid 2014.
 
 LYTAF_REMOTE_PATH = "http://proba2.oma.be/lyra/data/lytaf/"
 LYTAF_PATH = config.get("downloads", "download_dir")
-
-def make_lyra_flare_list(lyralightcurve, lytaf_path=LYTAF_PATH):
-    """
-    Returns a LYRA flare list based on an input LYRALightCurve.
-
-    Parameters
-    ----------
-    lyralightcurve : LYRALightCurve object
-        LYRALightCurve of time period during which flares should be found.
-
-    lytaf_path : string
-        directory path where LYRA annotation files are stored.
-        Default: sunpy download directory obtained from
-        sunpy.config("downloads", download_dir").
-
-    Returns
-    -------
-    lyra_events : numpy recarray
-        Contains following tags giving information on flares found.
-        lyra_events["start_time"] : datetime object
-            Flare start time.
-        lyra_events["peak_time"] : datetime object
-            Flare peak time.
-        lyra_events["end_time"] : datetime object
-            Flare end time.
-        lyra_events["start_irrad"] : float
-            Irradiance at flare start time.  Unit=[W/m**2]
-        lyra_events["peak_irrad"] : float
-            Irradiance at flare peak time.  Unit=[W/m**2]
-        lyra_events["end_irrad"] : float
-            Irradiance at flare end time.  Unit=[W/m**2]
-
-    Examples
-    --------
-    >>> lyra_events = make_lyra_flare_list('2014-08-01', '2014-08-02')
-
-    """
-    # Convert to lightcurve time to datetime objects
-    time = lyralc.data.index.to_pydatetime()
-    irradiance = np.asanyarray(lyralc.data["CHANNEL4"])
-    # Create LYRA event list
-    lyra_events = find_lyra_flares(time, irradiance, lytaf_path=lytaf_path)
-    # Return result
-    return lyra_events
-
-def find_lyra_flares(time, irradiance, lytaf_path=LYTAF_PATH):
-    """
-    Finds events in a times series satisfying LYRA event definitions.
-
-    This function finds events/flares in an input time series which satisfy
-    the LYRA event definitions and returns the start, peak and end times
-    and channels.  The LYRA event definitions have been devised for the
-    Zirconium channel (channel 4).  For more info, see Notes section of this
-    docstring.
-
-    Parameters
-    ----------
-    irradiance : ndarray/array-like convertible to float64, e.g. np.array, list
-        Contains irradiance measurements
-    time : ndarray/array-like of of datetime objects, e.g. np.array, list
-        Contains measurement times corresponding to each element in
-        irradiance.  Must be same length as irradiance.
-    lytaf_path : string
-        directory path where the LYRA annotation files are stored.
-
-    Returns
-    -------
-    lyra_events : numpy recarray
-        Contains the start, peak and end times and irradiance values for each
-        event found.  The fields of the recarray are: 'start_time',
-        'peak_time', 'end_time', 'start_irrad', 'peak_irrad', 'end_irrad'.
-
-    Notes
-    -----
-    The LYRA event definitions have been devised for the Zirconium channel
-    (channel 4).
-
-    Start time definition:
-    1) There must be 4 consecutive minutes when the gradient of the
-    1-minute-averaged irradiance is positive.
-    2) The irradiance in the 4th minute must be at least 1% greater than that
-    in the first minute.
-    3) The start time is then the earliest consecutive positive gradient
-    before the time identified by crieteria 1) and 2).
-    N.B. The time series is additively scaled so that the median is
-    0.001 W/m^2 (The mean irradiance for LYRA channel 4 from the start of the
-    mission to mid 2014).  Criteria 2) is applied to this scaled data, not the
-    observed.  This helps reduce the bias of detections due to variability in
-    the solar background irradiance.
-
-    End time definition:
-    1) The irradiance must fall to half-way between the peak and initial
-    irradiances.
-    2) The end time is  then the latest consecutive negative gradient after
-    the time identifie by criterion 1).
-
-    Artifacts:
-    The following artifacts, as defined in the LYRA time annotation file,
-    (see reference [1]) are removed from the time series:
-    "UV occ.", "Offpoint", "LAR", "Calibration", "SAA", "Vis occ.",
-    "Operational Anomaly", "Glitch", "ASIC reload", "Moon in LYRA", "Recovery".
-    In some cases this may cause a flare start or end times to be recorded
-    slightly differently to what the eye would intuitively identify in the
-    full data.  It may also cause some flares not be detected at all.
-    However, it also drastically cuts down on false detections.
-
-    References
-    ---------
-    [1] http://proba2.oma.be/data/TARDIS
-
-    Examples
-    --------
-
-    """
-    # Ensure inputs are of correct type
-    irradiance = np.asanyarray(irradiance, dtype="float64")
-    time = _check_datetime(time)
-    # Define recarray to store results
-    lyra_events = np.empty((0,), dtype=[("start_time", object),
-                                        ("peak_time", object),
-                                        ("end_time", object),
-                                        ("start_irrad", float),
-                                        ("peak_irrad", float),
-                                        ("end_irrad", float)])
-    # object LYRA artifacts from timeseries
-    clean_time, irradiance_list, artifact_status = remove_lyra_artifacts(
-        time, [irradiance], artifacts=["UV occ.", "Offpoint", "LAR", "SAA",
-                                       "Calibration", "Vis occ.", "Glitch",
-                                       "ASIC reload", "Operational Anomaly",
-                                       "Moon in LYRA", "Recovery"],
-        return_artifacts=True, lytaf_path=lytaf_path)
-    clean_irradiance = irradiance_list[0]
-    artifacts_removed = artifact_status["removed"]
-    # Perform subtraction so median irradiance of time series is at
-    # average daily minimum from first 4 years of mission.
-    clean_irradiance_scaled = \
-      clean_irradiance - (np.median(clean_irradiance)-NORM)
-    # Get derivative of irradiance wrt time
-    time_timedelta = clean_time[1:-1]-clean_time[0:-2]
-    dt = np.zeros(len(time_timedelta), dtype="float64")
-    for i, t, in enumerate(time_timedelta):
-        dt[i] = t.total_seconds()
-    dfdt = np.gradient(clean_irradiance_scaled[0:-2], dt)
-    # Get locations where derivative is positive
-    pos_deriv = np.where(dfdt > 0)[0]
-    neg_deriv = np.where(dfdt < 0)[0]
-    pos_deriv0 = np.where(dfdt >= 0)[0]
-    neg_deriv0 = np.where(dfdt <= 0)[0]
-    # Find difference between each time point and the one 4
-    # observations ahead.
-    time_timedelta4 = clean_time[4:-1]-clean_time[0:-5]
-    dt4 = np.zeros(len(time_timedelta4))
-    for i, t, in enumerate(time_timedelta4):
-        dt4[i] = t.total_seconds()
-    # Find all possible flare start times.
-    end_series = len(clean_irradiance_scaled)-1
-    i = 0
-    while i < len(pos_deriv)-4:
-        # Start time criteria
-        if (pos_deriv[i:i+4]-pos_deriv[i] == np.arange(4)).all() and \
-          dt4[pos_deriv[i]] > 210 and dt4[pos_deriv[i]] < 270 and \
-          clean_irradiance_scaled[pos_deriv[i+4]]/ \
-          clean_irradiance_scaled[pos_deriv[i]] >= RISE_FACTOR:
-            # Find start time which is defined as earliest continuous
-            # increase in irradiance before the point found by the above
-            # criteria.
-            try:
-                k = np.where(neg_deriv0 < pos_deriv[i])[0][-1]
-                kk = np.where(pos_deriv > neg_deriv0[k])[0][0]
-            except IndexError:
-                kk = i
-            start_index = pos_deriv[kk]
-            # If artifact is at start of flare, set start time to
-            # directly afterwards.
-            artifact_check = np.logical_and(
-                artifacts_removed["end_time"] > clean_time[start_index],
-                artifacts_removed["end_time"] < clean_time[pos_deriv[kk+2]])
-            if artifact_check.any() == True:
-                artifact_at_start = artifacts_removed[artifact_check][-1]
-                new_index = np.where(
-                    clean_time[pos_deriv] > artifact_at_start["end_time"])
-                start_index = pos_deriv[new_index[0][0]]
-            # Next, find index of flare end time.
-            # If flare has not ended, do not record it.
-            try:
-                jj = np.where(neg_deriv > start_index)[0][0]
-            except IndexError:
-                i = i+1
-            else:
-                j = neg_deriv[jj]
-                end_condition = False
-                while end_condition == False and j < end_series:
-                    j = j+1
-                    max_irradiance = max(clean_irradiance_scaled[start_index:j])
-                    end_condition = clean_irradiance_scaled[j] <= max_irradiance - \
-                      (max_irradiance-clean_irradiance_scaled[start_index])*FALL_FACTOR
-                if j >= end_series:
-                    i = i+1
-                else:
-                    try:
-                        m = np.where(pos_deriv0 > j)[0][0]
-                    except IndexError:
-                        i = i+1
-                    else:
-                        end_index = pos_deriv0[m]-1
-                        # If artifact is at end of flare, set end time
-                        # to directly beforehand.
-                        artifact_check = np.logical_and(
-                            artifacts_removed["begin_time"] < clean_time[end_index],
-                            artifacts_removed["begin_time"] > clean_time[end_index-2])
-                        if artifact_check.any() == True:
-                            artifact_at_end = artifacts_removed[artifact_check][0]
-                            new_index = np.where(
-                                clean_time < artifact_at_end["begin_time"])
-                            end_index = new_index[0][-1]
-                        # find index of peak time
-                        peak_index = np.where(clean_irradiance_scaled == \
-                            max(clean_irradiance_scaled[start_index:end_index]))
-                        peak_index = peak_index[0][0]
-                        # Record flare start, peak and end times
-                        lyra_events = np.append(
-                            lyra_events, np.empty(1, dtype=lyra_events.dtype))
-                        lyra_events[-1]["start_time"] = clean_time[start_index]
-                        lyra_events[-1]["peak_time"] = clean_time[peak_index]
-                        lyra_events[-1]["end_time"] = clean_time[end_index]
-                        lyra_events[-1]["start_irrad"] = clean_irradiance[start_index]
-                        lyra_events[-1]["peak_irrad"] = clean_irradiance[peak_index]
-                        lyra_events[-1]["end_irrad"] = clean_irradiance[end_index]
-                        # If the most recently found flare is during the
-                        # decay phase of another reset end time of
-                        # previous flare to start time of this flare.
-                        if len(lyra_events) > 1 and \
-                          lyra_events[-2]["end_time"] > lyra_events[-1]["start_time"]:
-                            lyra_events[-2]["end_time"] = lyra_events[-1]["start_time"]
-                            lyra_events[-2]["end_irrad"] = lyra_events[-1]["start_irrad"]
-                        # Finally, set principle iterator, i, to the
-                        # peak of the flare just found so that algorithm
-                        # will start looking for flares during the decay
-                        # phase of this flare and beyond.  This ensures
-                        # that flares during the decay phase are also
-                        # located.
-                        i = np.where(pos_deriv > peak_index)[0][0]
-        else:
-            i = i+1
-
-    return lyra_events
 
 def remove_lyra_artifacts(time, channels=None, artifacts="All",
                           return_artifacts=False, fitsfile=None,
@@ -651,75 +395,6 @@ def get_lytaf_events(start_time, end_time, lytaf_path=LYTAF_PATH,
     #return event_rows, eventType_rows
     return lytaf
 
-def _check_datetime(time):
-    """
-    Checks or tries to convert input array to array of datetime objects.
-
-    Returns input time array with elements as datetime objects or raises a
-    TypeError if time not of valid format.  Input format can be anything
-    convertible to datetime by datetime() function or any time string valid as
-    an input to sunpy.time.parse_time().
-
-    """
-    if not all(isinstance(t, datetime) for t in time):
-        if type(time) == pandas.tseries.index.DatetimeIndex:
-            time = time.to_pydatetime()
-        elif all(isinstance(t, str) for t in time):
-            time = np.array([parse_time(t) for t in time])
-        else:
-            try:
-                time = np.array([datetime(t) for t in time])
-            except TypeError:
-                raise TypeError("time must be an array-like of datetime "
-                                "objects, valid time strings, or pandas "
-                                "DatetimeIndexes.")
-    return time
-
-def _prep_columns(time, channels, filecolumns):
-    """
-    Checks and prepares data to be written out to a file.
-
-    Firstly, this function converts the elements of time, whose entries are
-    assumed to be datetime objects, to time strings.  Secondly, it checks
-    whether the number of elements in an input list of column names,
-    filecolumns, is equal to the number of arrays in the list, channels.
-    If not, a ValueError is raised.  If however filecolumns equals None, a
-    filenames list is generated equal to ["time", "channel0", "channel1",...,
-    "channelN"] where N is the number of arrays in the list, channels
-    (assuming 0-indexed counting).
-
-    """
-    # Convert time which contains datetime objects to time strings.
-    string_time = np.array([t.strftime("%Y-%m-%dT%H:%M:%S.%f") for t in time])
-    # If filenames is given...
-    if filecolumns != None:
-        # ...check all the elements are strings...
-        if all(isinstance(column, str) for column in filecolumns) is False:
-            raise TypeError("All elements in filecolumns must by strings.")
-        # ...and that there are the same number of elements as there
-        # are arrays in fluxes, plus 1 for a time array.  Otherwise
-        # raise a ValueError.
-        if fluxes != None:
-            ncol = 1 + len(fluxes)
-        else:
-            ncol = 1
-        if len(filecolumns) != ncol:
-            raise ValueError("Number of elements in filecolumns must be "
-                             "equal to the number of input data arrays, "
-                             "i.e. time + elements in fluxes.")
-    # If filenames not given, create a list of columns names of the
-    # form: ["time", "property0", "property1",...,"propertyN"] where N
-    # is the number of arrays in fluxes (assuming 0-indexed counting).
-    else:
-        if fluxes != None:
-            filecolumns = ["property{0}".format(fluxnum)
-                           for fluxnum in range(len(fluxes))]
-            filecolumns.insert(0, "time")
-        else:
-            filecolumns = ["time"]
-
-    return string_time, filecolumns
-
 def split_series_using_lytaf(timearray, data, lar):
     """
     Proba-2 analysis code for splitting up LYRA timeseries around locations
@@ -842,3 +517,72 @@ def _lytaf_event2string(integers):
             out.append('Venus in SWAP')
 
     return out
+
+def _check_datetime(time):
+    """
+    Checks or tries to convert input array to array of datetime objects.
+
+    Returns input time array with elements as datetime objects or raises a
+    TypeError if time not of valid format.  Input format can be anything
+    convertible to datetime by datetime() function or any time string valid as
+    an input to sunpy.time.parse_time().
+
+    """
+    if not all(isinstance(t, datetime) for t in time):
+        if type(time) == pandas.tseries.index.DatetimeIndex:
+            time = time.to_pydatetime()
+        elif all(isinstance(t, str) for t in time):
+            time = np.array([parse_time(t) for t in time])
+        else:
+            try:
+                time = np.array([datetime(t) for t in time])
+            except TypeError:
+                raise TypeError("time must be an array-like of datetime "
+                                "objects, valid time strings, or pandas "
+                                "DatetimeIndexes.")
+    return time
+
+def _prep_columns(time, channels, filecolumns):
+    """
+    Checks and prepares data to be written out to a file.
+
+    Firstly, this function converts the elements of time, whose entries are
+    assumed to be datetime objects, to time strings.  Secondly, it checks
+    whether the number of elements in an input list of column names,
+    filecolumns, is equal to the number of arrays in the list, channels.
+    If not, a ValueError is raised.  If however filecolumns equals None, a
+    filenames list is generated equal to ["time", "channel0", "channel1",...,
+    "channelN"] where N is the number of arrays in the list, channels
+    (assuming 0-indexed counting).
+
+    """
+    # Convert time which contains datetime objects to time strings.
+    string_time = np.array([t.strftime("%Y-%m-%dT%H:%M:%S.%f") for t in time])
+    # If filenames is given...
+    if filecolumns != None:
+        # ...check all the elements are strings...
+        if all(isinstance(column, str) for column in filecolumns) is False:
+            raise TypeError("All elements in filecolumns must by strings.")
+        # ...and that there are the same number of elements as there
+        # are arrays in fluxes, plus 1 for a time array.  Otherwise
+        # raise a ValueError.
+        if fluxes != None:
+            ncol = 1 + len(fluxes)
+        else:
+            ncol = 1
+        if len(filecolumns) != ncol:
+            raise ValueError("Number of elements in filecolumns must be "
+                             "equal to the number of input data arrays, "
+                             "i.e. time + elements in fluxes.")
+    # If filenames not given, create a list of columns names of the
+    # form: ["time", "property0", "property1",...,"propertyN"] where N
+    # is the number of arrays in fluxes (assuming 0-indexed counting).
+    else:
+        if fluxes != None:
+            filecolumns = ["property{0}".format(fluxnum)
+                           for fluxnum in range(len(fluxes))]
+            filecolumns.insert(0, "time")
+        else:
+            filecolumns = ["time"]
+
+    return string_time, filecolumns
