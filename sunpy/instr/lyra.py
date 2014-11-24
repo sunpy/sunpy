@@ -19,7 +19,6 @@ from sunpy.time import parse_time
 from sunpy import config
 from sunpy.lightcurve import LYRALightCurve
 from sunpy.util.net import check_download_file
-from sunpy.time.timerange import TimeRange
 
 RISE_FACTOR = 1.01
 FALL_FACTOR = 0.5
@@ -325,7 +324,7 @@ def remove_lyra_artifacts(time, channels=None, artifacts="All",
     filecolumns : (optional) list of strings
         Gives names of columns of any output files produced.  Although
         initially set to None above, the default is in fact
-        ["time", "flux0", "flux1",..."fluxN"]
+        ["time", "channel0", "channel1",..."channelN"]
         where N is the number of irradiance arrays in the channels input
         (assuming 0-indexed counting).
 
@@ -656,7 +655,7 @@ def _check_datetime(time):
     """
     Checks or tries to convert input array to array of datetime objects.
 
-    Returns input time array with elements as datetime objects or raises an
+    Returns input time array with elements as datetime objects or raises a
     TypeError if time not of valid format.  Input format can be anything
     convertible to datetime by datetime() function or any time string valid as
     an input to sunpy.time.parse_time().
@@ -682,27 +681,42 @@ def _prep_columns(time, channels, filecolumns):
 
     Firstly, this function converts the elements of time, whose entries are
     assumed to be datetime objects, to time strings.  Secondly, it checks
-    whether the number of elements in an input list of columns names,
+    whether the number of elements in an input list of column names,
     filecolumns, is equal to the number of arrays in the list, channels.
-    If not, a Value Error is raised.
+    If not, a ValueError is raised.  If however filecolumns equals None, a
+    filenames list is generated equal to ["time", "channel0", "channel1",...,
+    "channelN"] where N is the number of arrays in the list, channels
+    (assuming 0-indexed counting).
 
     """
     # Convert time which contains datetime objects to time strings.
     string_time = np.array([t.strftime("%Y-%m-%dT%H:%M:%S.%f") for t in time])
-    # Check all the elements of filenames are strings...
-    if all(isinstance(column, str) for column in filecolumns) is False:
-        raise TypeError("All elements in filecolumns must by strings.")
-    # Check filecolumns have the same number of elements as there are
-    # arrays in channels, plus 1 for a time array.  Otherwise raise a
-    # ValueError.
-    if channels != None:
-        ncol = 1 + len(channels)
+    # If filenames is given...
+    if filecolumns != None:
+        # ...check all the elements are strings...
+        if all(isinstance(column, str) for column in filecolumns) is False:
+            raise TypeError("All elements in filecolumns must by strings.")
+        # ...and that there are the same number of elements as there
+        # are arrays in fluxes, plus 1 for a time array.  Otherwise
+        # raise a ValueError.
+        if fluxes != None:
+            ncol = 1 + len(fluxes)
+        else:
+            ncol = 1
+        if len(filecolumns) != ncol:
+            raise ValueError("Number of elements in filecolumns must be "
+                             "equal to the number of input data arrays, "
+                             "i.e. time + elements in fluxes.")
+    # If filenames not given, create a list of columns names of the
+    # form: ["time", "property0", "property1",...,"propertyN"] where N
+    # is the number of arrays in fluxes (assuming 0-indexed counting).
     else:
-        ncol = 1
-    if len(filecolumns) != ncol:
-        raise ValueError("Number of elements in filecolumns must be equal to "
-                         "the number of input data arrays, "
-                         "i.e. time + channels.")
+        if fluxes != None:
+            filecolumns = ["property{0}".format(fluxnum)
+                           for fluxnum in range(len(fluxes))]
+            filecolumns.insert(0, "time")
+        else:
+            filecolumns = ["time"]
 
     return string_time, filecolumns
 
