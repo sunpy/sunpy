@@ -276,16 +276,9 @@ def get_lytaf_events(start_time, end_time, lytaf_path=LYTAF_PATH,
 
     """
     # Check inputs
-    # Check start_time is a date string or datetime object
-    if type(start_time) is str:
-        start_time = parse_time(start_time)
-    if type(start_time) is not datetime:
-        raise TypeError("start_time must be a date string or datetime object")
-    # Check start_time is a date string or datetime object
-    if type(end_time) is str:
-        end_time = parse_time(end_time)
-    if type(end_time) is not datetime:
-        raise TypeError("end_time must be a date string or datetime object")
+    # Check start_time and end_time is a date string or datetime object
+    start_time = _check_datetime(start_time)
+    end_time = _check_datetime(end_time)
     # Check combine_files contains correct inputs
     if not all(suffix in ["lyra", "manual", "ppt", "science"]
                for suffix in combine_files):
