@@ -282,7 +282,7 @@ def get_lytaf_events(start_time, end_time, lytaf_path=LYTAF_PATH,
     # Check combine_files contains correct inputs
     if not all(suffix in ["lyra", "manual", "ppt", "science"]
                for suffix in combine_files):
-        raise TypeError("Elements in combine_files must be strings equalling "
+        raise ValueError("Elements in combine_files must be strings equalling "
                         "'lyra', 'manual', 'ppt', or 'science'.")
     # Remove any duplicates from combine_files input
     combine_files = list(set(combine_files))
