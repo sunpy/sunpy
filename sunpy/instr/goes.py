@@ -1035,17 +1035,16 @@ def goes_lx(longflux, shortflux, obstime=None, date=None, cumulative=False):
         # Finally, integrate using trapezoid rule
         longlum_int = trapz(longlum.value, obstime_seconds)
         longlum_int = Quantity(longlum_int, unit=longlum.unit*units.s)
-        longlum_int = longlum_int.to(units.J)
         shortlum_int = trapz(shortlum.value, obstime_seconds)
         shortlum_int = Quantity(shortlum_int, unit=shortlum.unit*units.s)
-        shortlum_int = shortlum_int.to(units.J)
         # If cumulative kwarg True, calculate cumulative radiated energy
         # in each GOES channel as a function of time.
         if cumulative is True:
             longlum_cumul = cumtrapz(longlum.value, obstime_seconds)
-            longlum_cumul = Quantity(longlum_cumul, unit='J/s')
+            longlum_cumul = Quantity(longlum_cumul, unit=longlum.unit/units.s)
             shortlum_cumul = cumtrapz(shortlum.value, obstime_seconds)
-            shortlum_cumul = Quantity(shortlum_cumul, unit='J/s')
+            shortlum_cumul = Quantity(shortlum_cumul,
+                                      unit=shortlum.unit/units.s)
             lx_out = {"longlum":longlum, "shortlum":shortlum,
                       "longlum_cumul":longlum_cumul,
                       "shortlum_cumul":shortlum_cumul,
