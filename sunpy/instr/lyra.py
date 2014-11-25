@@ -108,14 +108,13 @@ def remove_lyra_artifacts(time, channels=None, artifacts="All",
 
     """
     # Check inputs
-    time = _check_datetime(time)
     if not all(isinstance(artifact_type, str) for artifact_type in artifacts):
         raise TypeError("All elements in artifacts must in strings.")
     if type(channels) is not None and type(channels) is not list:
         raise TypeError("channels must be None or a list of numpy arrays of "
                         "dtype 'float64'.")
     # Define outputs
-    clean_time = copy.deepcopy(time)
+    clean_time = np.array([parse_time(t) for t in time])
     clean_channels = copy.deepcopy(channels)
     artifacts_not_found = []
     # Get LYTAF file for given time range
@@ -277,8 +276,8 @@ def get_lytaf_events(start_time, end_time, lytaf_path=LYTAF_PATH,
     """
     # Check inputs
     # Check start_time and end_time is a date string or datetime object
-    start_time = _check_datetime(start_time)
-    end_time = _check_datetime(end_time)
+    start_time = parse_time(start_time)
+    end_time = parse_time(end_time)
     # Check combine_files contains correct inputs
     if not all(suffix in ["lyra", "manual", "ppt", "science"]
                for suffix in combine_files):
@@ -510,30 +509,6 @@ def _lytaf_event2string(integers):
             out.append('Venus in SWAP')
 
     return out
-
-def _check_datetime(time):
-    """
-    Checks or tries to convert input array to array of datetime objects.
-
-    Returns input time array with elements as datetime objects or raises a
-    TypeError if time not of valid format.  Input format can be anything
-    convertible to datetime by datetime() function or any time string valid as
-    an input to sunpy.time.parse_time().
-
-    """
-    if not all(isinstance(t, datetime) for t in time):
-        if type(time) == pandas.tseries.index.DatetimeIndex:
-            time = time.to_pydatetime()
-        elif all(isinstance(t, str) for t in time):
-            time = np.array([parse_time(t) for t in time])
-        else:
-            try:
-                time = np.array([datetime(t) for t in time])
-            except TypeError:
-                raise TypeError("time must be an array-like of datetime "
-                                "objects, valid time strings, or pandas "
-                                "DatetimeIndexes.")
-    return time
 
 def _prep_columns(time, channels, filecolumns):
     """
