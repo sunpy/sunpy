@@ -532,23 +532,23 @@ def _prep_columns(time, channels, filecolumns):
         if all(isinstance(column, str) for column in filecolumns) is False:
             raise TypeError("All elements in filecolumns must by strings.")
         # ...and that there are the same number of elements as there
-        # are arrays in fluxes, plus 1 for a time array.  Otherwise
+        # are arrays in channels, plus 1 for a time array.  Otherwise
         # raise a ValueError.
-        if fluxes != None:
-            ncol = 1 + len(fluxes)
+        if channels != None:
+            ncol = 1 + len(channels)
         else:
             ncol = 1
         if len(filecolumns) != ncol:
             raise ValueError("Number of elements in filecolumns must be "
                              "equal to the number of input data arrays, "
-                             "i.e. time + elements in fluxes.")
+                             "i.e. time + elements in channels.")
     # If filenames not given, create a list of columns names of the
-    # form: ["time", "property0", "property1",...,"propertyN"] where N
-    # is the number of arrays in fluxes (assuming 0-indexed counting).
+    # form: ["time", "channel0", "channel1",...,"channelN"] where N
+    # is the number of arrays in channels (assuming 0-indexed counting).
     else:
-        if fluxes != None:
-            filecolumns = ["property{0}".format(fluxnum)
-                           for fluxnum in range(len(fluxes))]
+        if channels != None:
+            filecolumns = ["channel{0}".format(fluxnum)
+                           for fluxnum in range(len(channels))]
             filecolumns.insert(0, "time")
         else:
             filecolumns = ["time"]
