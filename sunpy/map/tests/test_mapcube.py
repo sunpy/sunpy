@@ -11,7 +11,10 @@ from sunpy.map.header import MapMeta
 import pytest
 
 # Test maps and mapcubes
-aia_map = sunpy.map.Map(sunpy.AIA_171_IMAGE)
+path = sunpy.data.test.rootdir
+aia_file = glob.glob(os.path.join(path, "aia_171_level1.fits"))
+
+aia_map = sunpy.map.Map(aia_file)
 mapcube_all_the_same = sunpy.map.Map([aia_map.superpixel((2, 1)),
                                       aia_map.superpixel((2, 1))], cube=True)
 mapcube_different = sunpy.map.Map([aia_map,
