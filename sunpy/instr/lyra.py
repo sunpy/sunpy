@@ -6,6 +6,7 @@ from datetime import datetime
 from warnings import warn
 import copy
 import csv
+import urllib
 
 import numpy as np
 import pandas.tseries.index
@@ -17,6 +18,16 @@ from sunpy.util.net import check_download_file
 
 LYTAF_REMOTE_PATH = "http://proba2.oma.be/lyra/data/lytaf/"
 LYTAF_PATH = config.get("downloads", "download_dir")
+
+def download_lytaf_database(lytaf_dir=''):
+    """download the latest version of the Proba-2 pointing database from the Proba2 Science Center"""
+    #dl=sunpy.net.download.Downloader()
+    #dl.download('http://proba2.oma.be/lyra/data/lytaf/annotation_ppt.db',path=lytaf_dir)
+    url='http://proba2.oma.be/lyra/data/lytaf/annotation_ppt.db'
+    destination=os.path.join(lytaf_dir,'annotation_ppt.db')
+    urllib.urlretrieve(url,destination)
+
+    return
 
 def remove_lyra_artifacts(time, channels=None, artifacts="All",
                           return_artifacts=False, fitsfile=None,
