@@ -27,6 +27,8 @@ from sunpy.data.sample import RHESSI_EVENT_LIST
 from sunpy.data.test.waveunit import waveunitdir
 from sunpy.io import fits
 
+path = sunpy.data.test.rootdir
+RHESSI_EVENT_LIST = glob.glob(os.path.join(path, "hsi_calib_ev_20020220_1106_20020220_1106_25_40.fits"))
 
 @pytest.fixture
 def database_using_lrucache():
