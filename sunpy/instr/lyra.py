@@ -13,6 +13,7 @@ import sqlite3
 
 from sunpy.time import parse_time
 from sunpy import config
+from sunpy.util.net import check_download_file
 
 LYTAF_REMOTE_PATH = "http://proba2.oma.be/lyra/data/lytaf/"
 LYTAF_PATH = config.get("downloads", "download_dir")
@@ -20,7 +21,7 @@ LYTAF_PATH = config.get("downloads", "download_dir")
 def remove_lyra_artifacts(time, channels=None, artifacts="All",
                           return_artifacts=False, fitsfile=None,
                           csvfile=None, filecolumns=None,
-                          lytaf_path=LYTAF_PATH):
+                          lytaf_path=LYTAF_PATH, force_use_local_lytaf=False):
     """
     Removes periods of LYRA artifacts from a time series.
 
@@ -75,6 +76,12 @@ def remove_lyra_artifacts(time, channels=None, artifacts="All",
     lytaf_path : string
         directory path where the LYRA annotation files are stored.
 
+    force_use_local_lytaf : bool
+        Ensures current local version of lytaf files are not replaced by
+        up-to-date online versions even if current local lytaf files do not
+        cover entire input time range etc.
+        Default=False
+
     Returns
     -------
     clean_time : ndarray/array-like of datetime objects
@@ -110,7 +117,7 @@ def remove_lyra_artifacts(time, channels=None, artifacts="All",
     # Check inputs
     if not all(isinstance(artifact_type, str) for artifact_type in artifacts):
         raise TypeError("All elements in artifacts must in strings.")
-    if type(channels) is not None and type(channels) is not list:
+    if channels is not None and type(channels) is not list:
         raise TypeError("channels must be None or a list of numpy arrays of "
                         "dtype 'float64'.")
     # Define outputs
@@ -118,7 +125,8 @@ def remove_lyra_artifacts(time, channels=None, artifacts="All",
     clean_channels = copy.deepcopy(channels)
     artifacts_not_found = []
     # Get LYTAF file for given time range
-    lytaf = get_lytaf_events(time[0], time[-1], lytaf_path=lytaf_path)
+    lytaf = get_lytaf_events(time[0], time[-1], lytaf_path=lytaf_path,
+                             force_use_local_lytaf=force_use_local_lytaf)
 
     # Find events in lytaf which are to be removed from time series.
     if artifacts == "All":
@@ -161,13 +169,14 @@ def remove_lyra_artifacts(time, channels=None, artifacts="All",
         if artifacts_not_found == artifacts:
             artifact_status = {"lytaf": lytaf,
                                "removed": lytaf[artifact_indices],
-                               "not_removed": None,
+                               "not_removed": np.delete(lytaf,
+                                                        np.arange(len(lytaf))),
                                "not_found": artifacts_not_found}
         else:
             artifacts_removed = lytaf[artifact_indices]
             artifacts_not_removed = np.delete(lytaf, artifact_indices)
             if artifacts == "All":
-                artifacts_not_found = None
+                artifacts_not_found = []
             artifact_status = {"lytaf": lytaf, "removed": artifacts_removed,
                                "not_removed": artifacts_not_removed,
                                "not_found": artifacts_not_found}
@@ -227,7 +236,7 @@ def remove_lyra_artifacts(time, channels=None, artifacts="All",
 
 def get_lytaf_events(start_time, end_time, lytaf_path=LYTAF_PATH,
                      combine_files=["lyra", "manual", "ppt", "science"],
-                     csvfile=None):
+                     csvfile=None, force_use_local_lytaf=False):
     """
     Extracts combined lytaf file for given time range.
 
@@ -238,14 +247,23 @@ def get_lytaf_events(start_time, end_time, lytaf_path=LYTAF_PATH,
     ----------
     start_time : datetime object or string
         Start time of period for which annotation file is required.
+        
     end_time : datetime object or string
         End time of period for which annotation file is required.
+        
     lytaf_path : string
         directory path where the LYRA annotation files are stored.
+        
     combine_files : (optional) list of strings
         States which LYRA annotation files are to be combined.
         Default is all four, i.e. lyra, manual, ppt, science.
         See Notes section for an explanation of each.
+        
+    force_use_local_lytaf : bool
+        Ensures current local version of lytaf files are not replaced by
+        up-to-date online versions even if current local lytaf files do not
+        cover entire input time range etc.
+        Default=False
 
     Returns
     -------
@@ -321,16 +339,17 @@ def get_lytaf_events(start_time, end_time, lytaf_path=LYTAF_PATH,
         db_last_end_time = cursor.fetchone()[0]
         db_last_end_time = datetime.fromtimestamp(db_last_end_time)
         # If lytaf does not include entire input time range...
-        if end_time > db_last_end_time or start_time < db_first_begin_time:
-            # ...close lytaf file...
-            cursor.close()
-            connection.close()
-            # ...Download latest lytaf file...
-            check_download_file(dbname, LYTAF_REMOTE_PATH, lytaf_path,
-                                replace=True)
-            # ...and open new version of lytaf database.
-            connection = sqlite3.connect(os.path.join(lytaf_path, dbname))
-            cursor = connection.cursor()
+        if not force_use_local_lytaf:
+            if end_time > db_last_end_time or start_time < db_first_begin_time:
+                # ...close lytaf file...
+                cursor.close()
+                connection.close()
+                # ...Download latest lytaf file...
+                check_download_file(dbname, LYTAF_REMOTE_PATH, lytaf_path,
+                                    replace=True)
+                # ...and open new version of lytaf database.
+                connection = sqlite3.connect(os.path.join(lytaf_path, dbname))
+                cursor = connection.cursor()
         # Select and extract the data from event table within file within
         # given time range
         cursor.execute("select insertion_time, begin_time, reference_time, "
