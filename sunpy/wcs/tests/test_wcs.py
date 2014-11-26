@@ -9,7 +9,10 @@ import sunpy.map
 import sunpy.wcs as wcs
 import sunpy.sun as sun
 
-img = sunpy.map.Map(sunpy.AIA_171_IMAGE)
+path = sunpy.data.test.rootdir
+aiaimg = glob.glob(os.path.join(path, "aia_171_level1.fits"))
+
+img = sunpy.map.Map(aiaimg)
 
 # the following known_answers come from equivalent queries to IDL
 # WCS implementation (http://hesperia.gsfc.nasa.gov/ssw/gen/idl/wcs/)
