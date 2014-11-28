@@ -19,10 +19,13 @@ from sunpy.util.net import check_download_file
 
 __all__ = ['get_goes_event_list', 'temp_em', 'goes_chianti_tem']
 
-# Check required data files are present in user's default download dir
-# Define location where GOES data files are stored.
-# Manually resolve the hostname
-HOST = socket.gethostbyname_ex('hesperia.gsfc.nasa.gov')[-1][0]
+try:
+    # Check required data files are present in user's default download dir
+    # Define location where GOES data files are stored.
+    # Manually resolve the hostname
+    HOST = socket.gethostbyname_ex('hesperia.gsfc.nasa.gov')[-1][0]
+except socket.gaierror:
+    HOST = ''
 GOES_REMOTE_PATH = "http://{0}/ssw/gen/idl/synoptic/goes/".format(HOST)
 # Define location where data files should be downloaded to.
 DATA_PATH = config.get("downloads", "download_dir")
@@ -49,8 +52,8 @@ def get_goes_event_list(timerange, goes_class_filter=None):
     # use HEK module to search for GOES events
     client = hek.HEKClient()
     event_type = 'FL'
-    tstart = timerange.start()
-    tend = timerange.end()
+    tstart = timerange.start
+    tend = timerange.end
 
     # query the HEK for a list of events detected by the GOES instrument
     # between tstart and tend (using a GOES-class filter)

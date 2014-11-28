@@ -45,9 +45,9 @@ def print_config():
 
     print ("\nCONFIGURATION:")
     for section in spy.config.sections():
-        print("  [%s]" % section)
+        print("  [{0}]".format(section))
         for option in spy.config.options(section):
-            print("  %s = %s" % (option, spy.config.get(section, option)))
+            print("  {0} = {1}".format(option, spy.config.get(section, option)))
         print("")
 
 def _is_writable_dir(p):
@@ -103,8 +103,8 @@ def _get_user_configdir():
 
     if configdir is not None:
         if not _is_writable_dir(configdir):
-            raise RuntimeError('Could not write to SUNPY_CONFIGDIR="%s"' %
-                               configdir)
+            raise RuntimeError('Could not write to SUNPY_CONFIGDIR="{0}"'.format(
+                               configdir))
         return configdir
 
     h = _get_home()
@@ -112,16 +112,16 @@ def _get_user_configdir():
 
     if os.path.exists(p):
         if not _is_writable_dir(p):
-            raise RuntimeError("'%s' is not a writable dir; you must set %s/."
+            raise RuntimeError("'{0}' is not a writable dir; you must set {1}/."
                                "sunpy to be a writable dir.  You can also set "
                                "environment variable SUNPY_CONFIGDIR to any "
                                "writable directory where you want matplotlib "
-                               "data stored " % (h, h))
+                               "data stored ".format(h, h))
     else:
         if not _is_writable_dir(h):
-            raise RuntimeError("Failed to create %s/.sunpy; consider setting "
+            raise RuntimeError("Failed to create {0}/.sunpy; consider setting "
                                "SUNPY_CONFIGDIR to a writable directory for "
-                               "sunpy configuration data" % h)
+                               "sunpy configuration data".format(h))
 
         os.mkdir(p)
 

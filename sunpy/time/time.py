@@ -40,6 +40,7 @@ TIME_FORMAT_LIST = [
     "%Y%m%d_%H%M%S",           # Example 20070504_210812
     "%Y:%j:%H:%M:%S",          # Example 2012:124:21:08:12
     "%Y:%j:%H:%M:%S.%f",       # Example 2012:124:21:08:12.999999
+    "%Y%m%d%H%M%S",            # Example 20140101000001 (JSOC / VSO)
 ]
 
 
@@ -139,19 +140,25 @@ def extract_time(string):
     return bestmatch
 
 
-def parse_time(time_string):
+def parse_time(time_string, time_format=''):
     """Given a time string will parse and return a datetime object.
     Similar to the anytim function in IDL.
+    utime -- Time since epoch 1 Jan 1979
 
     Parameters
     ----------
-    time_string : string
-        Datestring to parse
+    time_string : [ int, float, time_string, datetime ]
+        Date to parse which can be either time_string, int, datetime object.
+    time_format : [ basestring, utime, datetime ]
+        Specifies the format user has provided the time_string in.
 
     Returns
     -------
     out : datetime
         DateTime corresponding to input date string
+
+    Note:
+    If time_string is an instance of float, then it is assumed to be in utime format.
 
     Examples
     --------
@@ -162,11 +169,11 @@ def parse_time(time_string):
     Add ability to parse tai (International Atomic Time seconds since
     Jan 1, 1958)
     """
-    if isinstance(time_string, datetime):
+    if isinstance(time_string, datetime) or time_format == 'datetime':
         return time_string
     elif isinstance(time_string, tuple):
         return datetime(*time_string)
-    elif isinstance(time_string, int) or isinstance(time_string, float):
+    elif time_format == 'utime' or  isinstance(time_string, (int, float))  :
         return datetime(1979, 1, 1) + timedelta(0, time_string)
     elif time_string is 'now':
         return datetime.utcnow()
@@ -187,22 +194,29 @@ def parse_time(time_string):
                 return datetime.strptime(ts, time_format) + time_delta
             except ValueError:
                 pass
-        raise ValueError("%s is not a valid time string!" % time_string)
+        raise ValueError("{tstr!s} is not a valid time string!".format(tstr=time_string))
 
 
-def is_time(time_string):
+def is_time(time_string, time_format=''):
     """
     Returns true if the input is a valid date/time representation
 
     Parameters
     ----------
-    time_string : string
-        Datestring to parse
+    time_string : [ int, float, time_string, datetime ]
+        Date to parse which can be either time_string, int, datetime object.
+    time_format : [ basestring, utime, datetime ]
+	Specifies the format user has provided the time_string in.
 
     Returns
     -------
     out : bool
         True if can be parsed by parse_time
+
+    Notes
+    -----
+        If time_string is an instance of float, then it is assumed to be in
+        unix time format.
 
     Examples
     --------
@@ -221,7 +235,7 @@ def is_time(time_string):
         return True
 
     try:
-        parse_time(time_string)
+        parse_time(time_string,time_format)
     except ValueError:
         return False
     else:
@@ -256,17 +270,14 @@ def day_of_year(time_string):
     time_diff = time - datetime(time.year, 1, 1, 0, 0, 0)
     return time_diff.days + time_diff.seconds / SECONDS_IN_DAY + 1
 
-
-def break_time(t='now'):
+def break_time(t='now', time_format=''):
     """Given a time returns a string. Useful for naming files."""
-    # TODO: should be able to handle a time range
-    return parse_time(t).strftime("%Y%m%d_%H%M%S")
-
+    #TODO: should be able to handle a time range
+    return parse_time(t, time_format).strftime("%Y%m%d_%H%M%S")
 
 def get_day(dt):
     """ Return datetime for the beginning of the day of given datetime. """
     return datetime(dt.year, dt.month, dt.day)
-
 
 def is_time_in_given_format(time_string, time_format):
     """Tests whether a time string is formatted according to the given time

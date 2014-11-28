@@ -11,14 +11,15 @@ Documentation: http://sunpy.readthedocs.org/en/latest/index.html
 """
 from __future__ import absolute_import
 
-import warnings
-
-__version__ = '0.5.1'
+try:
+    from .version import version as __version__
+except ImportError:
+    __version__ = ''
 
 try:
-    from sunpy.version import version as __version__
+    from .version import githash as __githash__
 except ImportError:
-    warnings.warn('Missing version.py; you need to run setup.py', Warning)
+    __githash__ = ''
 
 from sunpy.util.config import load_config, print_config
 from sunpy.util import system_info

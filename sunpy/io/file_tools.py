@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 
 import re
+import os
 
 try:
     from . import fits
@@ -34,7 +35,8 @@ class Readers(dict):
     def __getitem__(self, key):
         val = dict.__getitem__(self, key)
         if val is None:
-            raise ReaderError("The Reader sunpy.io.%s is not avalible, please check that you have the required dependancies installed."%key)
+            raise ReaderError("The Reader sunpy.io.{key!s} is not avalible, ".format(key=key) +
+                              "please check that you have the required dependancies installed.")
         return val
 
 #Map the readers
@@ -159,9 +161,17 @@ def _detect_filetype(filepath):
 
     # FITS
     #
-    # Checks for "KEY_WORD  =" at beginning of file
-    match = re.match(r"[A-Z0-9_]{0,8} *=", first80)
+    # Check the extensions to see if it is a gzipped FITS file
+    filepath_rest_ext1, ext1 = os.path.splitext(filepath)
+    _, ext2 = os.path.splitext(filepath_rest_ext1)
 
+    gzip_extensions = [".gz"]
+    fits_extensions = [".fts", ".fit", ".fits"]
+    if (ext1 in gzip_extensions and ext2 in fits_extensions):
+        return 'fits'
+    
+    # Check for "KEY_WORD  =" at beginning of file
+    match = re.match(r"[A-Z0-9_]{0,8} *=", first80)
     if match is not None:
         return 'fits'
 
