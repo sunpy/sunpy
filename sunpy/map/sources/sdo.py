@@ -32,7 +32,7 @@ class AIAMap(GenericMap):
         self._nickname = self.detector
         self._name = self.detector + " " + str(self.measurement)
 
-        self.cmap = cm.get_cmap('sdoaia%d' % self.wavelength)
+        self.cmap = cm.get_cmap('sdoaia{wl:d}'.format(wl=self.wavelength))
 
     @property
     def observatory(self):

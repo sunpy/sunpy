@@ -13,7 +13,7 @@ from sunpy import map
 from sunpy.image.coalignment import parabolic_turning_point, \
 repair_image_nonfinite, _default_fmap_function, _lower_clip, _upper_clip, \
 calculate_clipping, get_correlation_shifts, find_best_match_location, \
-match_template_to_layer, clip_edges, calculate_shift, \
+match_template_to_layer, calculate_shift, \
 mapcube_coalign_by_match_template
 
 # Map and template we will use in testing
@@ -108,7 +108,6 @@ def test_clip_edges():
     a = np.zeros(shape=(341, 156))
     yclip = [4, 0] * u.pix
     xclip = [1, 2] * u.pix
-    new_a = clip_edges(a, yclip, xclip)
     assert(a.shape[0] - (yclip[0].value + yclip[1].value) == 337)
     assert(a.shape[1] - (xclip[0].value + xclip[1].value) == 153)
 

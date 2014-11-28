@@ -31,13 +31,12 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
         Linear transformation rotation matrix.
     order : int 0-5
         Interpolation order to be used. When using scikit-image this parameter
-        is passed into :func:`skimage.transform.warp`.
-        The default value of order 3 is a bicubic interpolation when using
-        :func:`skimage.transform.warp` and a cubic spline interpolation
-        when using :func:`scipy.ndimage.interpolation.affine_transform`.
+        is passed into :func:`skimage.transform.warp` (e.g., 3 corresponds to
+        bi-cubic interpolation).
         When using scipy it is passed into
         :func:`scipy.ndimage.interpolation.affine_transform` where it controls
         the order of the spline.
+        Default: 3
     scale : float
         A scale factor for the image. Default is no scaling.
     image_center : tuple
@@ -124,8 +123,9 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
         adjusted_image -= im_min
         im_max = np.nanmax(adjusted_image)
         adjusted_image /= im_max
+        adjusted_missing = (missing - im_min) / im_max
         rotated_image = skimage.transform.warp(adjusted_image, tform, order=order,
-                                               mode='constant', cval=missing)
+                                               mode='constant', cval=adjusted_missing)
 
 
         rotated_image *= im_max

@@ -2,8 +2,6 @@ from __future__ import absolute_import
 
 from sunpy.image.transform import affine_transform
 import numpy as np
-import matplotlib.cm as cm
-import matplotlib.pyplot as plt
 from skimage import transform as tf
 import skimage.data as images
 import pytest
