@@ -44,7 +44,7 @@ except ImportError:
 try:
     import glymur
     _, OJP2 = glymur.lib.config.glymur_config()
-except ImportError:
+except (ImportError, IOError):
     from mock import Mock
     mock = Mock()
     modules.update({'glymur':mock})
