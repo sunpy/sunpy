@@ -70,154 +70,26 @@ class MapCube(object):
 
     def __getitem__(self, key):
         """Overiding indexing operation"""
-<<<<<<< HEAD
-        return self._maps[key]
-    
-    def coalign(self, method="diff"):
-        """ Fine coalign the data"""
-        if method == 'diff':
-            return self._coalign_diff()
-    
-    # Coalignment methods
-    def _coalign_diff(self):
-        """Difference-based coalignment
-        
-        Coaligns data by minimizing the difference between subsequent images
-        before and after shifting the images one to several pixels in each
-        direction.
-        
-        pseudo-code:
-        
-        for i len(self):
-            min_diff = {'value': (), 'offset': (0, 0)} # () is pos infinity
-            
-            # try shifting 1 pixel in each direction
-            for x in (-1, 0, 1):
-                for y in (-1, 0, 1):
-                    # calculate differenand hasattr(self, '_coalign_%s' % coalign):
-            getattr(self, '_coalign_%s' % coalign)()ce for intersecting pixels
-                    # if < min_diff['value'], store new value/offset
-                    
-            # shift image
-            if min_diff['offset'] != (0, 0):
-                # shift and clip image
-=======
+
         return self.maps[key]
 
     def __len__(self):
         """Return the number of maps in a mapcube."""
         return len(self.maps)
->>>>>>> 39e7e2bf8d71f8d34816accfbad37f2903702f08
 
     # Sorting methods
     @classmethod
     def _sort_by_date(cls):
         return lambda m: m.date # maps.sort(key=attrgetter('date'))
-<<<<<<< HEAD
-    
-    def _derotate(self, layer_index=0, clip=True):
-        """Derotates the layers in the MapCube relative to a given layer
-        
-        Inputs
-        ------
-        layer_index : an integer indicating which layer to calculate the
-                      solar derotation offsets against.
 
-        clip : {True, False}
-               clip the y,x edges of the each map in the macpube according to
-               the maximum solar derotation offsets.
-        """
-    
-        # reference values
-        ref_center = self.maps[layer_index].center
-        ref_time = self.maps[layer_index].date
-
-        # Number of maps
-        nt = len(self.maps)
-
-        # Values of the displacements
-        ydiff = np.zeros(nt)
-        xdiff = np.zeros(nt)
-    
-        # Assume all the maps have the same pointing and the Sun rotates in the
-        # field of view.  The center of the field of view at the start time gives
-        # the initial field of view that then moves at later times.  This initial
-        # location has to be rotated forward to get the correct center of the FOV
-        # for the next maps.
-        for i, m in enumerate(maps):
-    
-            # Find the center of the field of view
-            newx, newy = rot_hpc(ref_center['x'], ref_center['y'],
-                                 ref_time, m.date)
-    
-            # Calculate the displacements in terms of pixels
-            if newx is None:
-                xdiff[i] = 0.0
-            else:
-                xdiff[i] = (newx - ref_center['x']) / m.scale['x']
-            if newy is None:
-                ydiff[i] = 0.0
-            else:
-                ydiff[i] = (newy - ref_center['y']) / m.scale['y']
-    
-        # Apply the shifts and mapcube clipping (if requested)
-        return _shift_clip(ydiff, xdiff, clip)
-
-
-    def _shift_clip(self, ydisp, xdisp, clip):
-        """
-        Helper function that shifts all the maps according to the passed in
-        displacements.  Optionally clips the datacube.
-        
-        Inputs
-        ------
-        ydisp : array of displacements in the y-direction for the datacube, of
-                length nt, where nt is the number of maps in the datacube.
-        
-        xdisp : array of displacements in the x-direction for the datacube, of
-                length nt, where nt is the number of maps in the datacube.
-        
-        clip : {True, False}
-               clip the y,x edges of the datacube according to the maximum
-               values in ydisp and xdisp.
-        """
-        # get the dimensions of the datacube
-        # Size of the data
-        ny = self.maps[layer_index].shape[0]
-        nx = self.maps[layer_index].shape[1]
-        nt = len(self.maps)
-    
-        # Output datacube
-        shifted_datacube = np.zeros((ny, nx, nt))
-        
-        # shift the data cube according to the calculated displacements
-        for i, m in enumerate(self.maps):
-            shifted_datacube[:, :, i] = shift(m.data, [-ydisp[i], -xdisp[i]])
-
-         # Clip the data if requested
-        if clip:
-            shifted_datacube = clip_edges(shifted_datacube, ydisp, xdisp)
-
-        # Adjust the mapcube. Adjust the positioning information accordingly.
-        for i, m in enumerate(self.maps):
-            self.maps[i].meta['xcen'] = self.maps[i].meta['xcen'] + xdisp[i] * m.scale['x']
-            self.maps[i].meta['ycen'] = self.maps[i].meta['ycen'] + ydisp[i] * m.scale['y']
-            self.maps[i].data = shifted_datacube[:, :, i]
-        return self
-
-
-    def plot(self, gamma=None, annotate=True, axes=None, controls=False,
-             interval=200, resample=False, colorbar=False, ani_args={},
-             **imshow_args):
-=======
 
     def _derotate(self):
         """Derotates the layers in the MapCube"""
         pass
 
+
     def plot(self, gamma=None, axes=None, resample=None, annotate=True,
              interval=200, **kwargs):
->>>>>>> 39e7e2bf8d71f8d34816accfbad37f2903702f08
         """
         A animation plotting routine that animates each element in the
         MapCube
