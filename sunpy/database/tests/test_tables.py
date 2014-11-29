@@ -7,6 +7,8 @@ from collections import Hashable
 from datetime import datetime
 import os.path
 
+from astropy import units as u
+
 from sunpy.database import Database
 from sunpy.database.tables import FitsHeaderEntry, FitsKeyComment, Tag,\
     DatabaseEntry, entries_from_query_result, entries_from_dir,\
@@ -37,7 +39,7 @@ def qr_block_with_missing_physobs():
     return vso.VSOClient().query(
         vso.attrs.Time('20130805T120000', '20130805T121000'),
         vso.attrs.Instrument('SWAVES'), vso.attrs.Source('STEREO_A'),
-        vso.attrs.Provider('SSC'), vso.attrs.Wave(10, 160, 'kHz'))[0]
+        vso.attrs.Provider('SSC'), vso.attrs.Wave(10 * u.kHz, 160 * u.kHz))[0]
 
 
 @pytest.fixture
@@ -177,7 +179,7 @@ def test_entries_from_dir():
     for entry, filename in entries:
         if filename.endswith('na120701.091058.fits'):
             break
-    assert entry.path == os.path.join(waveunitdir, filename)
+    assert entry.path in (os.path.join(waveunitdir, filename), filename)
     assert filename.startswith(waveunitdir)
     assert len(entry.fits_header_entries) == 42
     assert entry.fits_header_entries == [
@@ -245,13 +247,14 @@ def test_entries_from_dir():
 def test_entries_from_dir_recursively_true():
     entries = list(
         entries_from_dir(testdir, True, default_waveunit='angstrom'))
-    assert len(entries) == 25
+    assert len(entries) == 44
+    # Older val = 31.
 
 
 def test_entries_from_dir_recursively_false():
     entries = list(
         entries_from_dir(testdir, False, default_waveunit='angstrom'))
-    assert len(entries) == 8
+    assert len(entries) == 23
 
 
 @pytest.mark.online

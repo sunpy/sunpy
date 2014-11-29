@@ -6,7 +6,6 @@
 from __future__ import absolute_import
 
 from sqlalchemy import or_, and_, not_
-from astropy.units import Unit, nm, equivalencies
 
 from sunpy.time import parse_time
 from sunpy.net.vso import attrs as vso_attrs
@@ -17,6 +16,9 @@ from sunpy.database.tables import DatabaseEntry, Tag as TableTag,\
 __all__ = [
     'Starred', 'Tag', 'Path', 'DownloadTime', 'FitsHeaderEntry', 'walker']
 
+# This frozenset has been hardcoded to denote VSO attributes that are currently supported, on derdon's request.
+SUPPORTED_SIMPLE_VSO_ATTRS = frozenset(['source', 'provider', 'physobs', 'instrument'])
+SUPPORTED_NONVSO_ATTRS = frozenset(['starred'])
 
 class _BooleanAttr(object):
     def __init__(self, value, make):
@@ -198,20 +200,18 @@ def _create(wlk, root, session):
             else:
                 query = query.filter(DatabaseEntry.path == path)
         elif typ == 'wave':
-            min_, max_, unit = value
-            waveunit = Unit(unit)
-            # convert min_ and max_ to nm from the unit `waveunit`
-            wavemin = waveunit.to(nm, min_, equivalencies.spectral())
-            wavemax = waveunit.to(nm, max_, equivalencies.spectral())
+            wavemin, wavemax, waveunit = value
             query = query.filter(and_(
                 DatabaseEntry.wavemin >= wavemin,
                 DatabaseEntry.wavemax <= wavemax))
         elif typ == 'time':
             start, end, near = value
             query = query.filter(and_(
-                DatabaseEntry.observation_time_start >= start,
-                DatabaseEntry.observation_time_end <= end))
+                DatabaseEntry.observation_time_start < end,
+                DatabaseEntry.observation_time_end > start))
         else:
+            if typ.lower() not in SUPPORTED_SIMPLE_VSO_ATTRS.union(SUPPORTED_NONVSO_ATTRS):
+                raise NotImplementedError("The attribute {0!r} is not yet supported to query a database.".format(typ))
             query = query.filter_by(**{typ: value})
     return query.all()
 
@@ -250,7 +250,7 @@ def _convert(attr):
 
 @walker.add_converter(vso_attrs.Wave)
 def _convert(attr):
-    return ValueAttr({('wave', ): (attr.min, attr.max, attr.unit)})
+    return ValueAttr({('wave', ): (attr.min.value, attr.max.value, str(attr.unit))})
 
 
 @walker.add_converter(vso_attrs.Time)

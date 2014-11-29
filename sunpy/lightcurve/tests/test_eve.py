@@ -9,7 +9,6 @@ import pytest
 import sunpy
 import sunpy.lightcurve
 from sunpy.data.test import (EVE_AVERAGES_CSV)
-import matplotlib
 
 @pytest.mark.online
 def test_eve():
@@ -20,8 +19,8 @@ def test_eve():
 def test_txt():
     """Check support for parsing EVE TXT files """
     eve = sunpy.lightcurve.EVELightCurve.create(
-    "http://lasp.colorado.edu/eve/data_access/quicklook/quicklook_data/L0CS/LATEST_EVE_L0CS_DIODES_1m.txt") 
-    assert isinstance(eve, sunpy.lightcurve.EVELightCurve)        
+    "http://lasp.colorado.edu/eve/data_access/quicklook/quicklook_data/L0CS/LATEST_EVE_L0CS_DIODES_1m.txt")
+    assert isinstance(eve, sunpy.lightcurve.EVELightCurve)
 
 def test_csv_parsing():
     """Check support for parsing EVE CSV files"""

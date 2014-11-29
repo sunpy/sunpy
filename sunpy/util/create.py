@@ -5,13 +5,9 @@ from __future__ import absolute_import
 
 import os
 import glob
-import shutil
-
-import urllib2
 
 from sunpy import config
 from sunpy.util.net import download_file
-from sunpy.util import replacement_filename
 
 from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
 
@@ -42,7 +38,7 @@ class Parent(object):
         """
         matches = glob.glob(os.path.expanduser(singlepattern))
         if len(matches) != 1:
-            raise ValueError("Invalid number of matches: %d" % len(matches))
+            raise ValueError("Invalid number of matches: {0:d}".format(len(matches)))
         return cls.read(matches[0])
 
     @classmethod

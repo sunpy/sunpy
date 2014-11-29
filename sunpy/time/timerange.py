@@ -2,163 +2,324 @@ from __future__ import absolute_import
 
 from datetime import timedelta
 from datetime import datetime
+from astropy.units import Quantity
+from astropy.units import Unit
 
 from sunpy.time import parse_time
+from sunpy import config
+TIME_FORMAT = config.get('general', 'time_format')
 
 __all__ = ['TimeRange']
 
-class TimeRange:
-    """
-    Timerange(a, b) or Timerange((a, b))
 
+class TimeRange(object):
+    """
     An object to handle time ranges.
-    
+
+    .. note::
+
+       Regardless of how a TimeRange is constructed it will always provide a 
+       positive time range where the start time is before the end time.
+
     Parameters
     ----------
-    a : the start time specified as a time string, or datetime object
-        A 2d list or ndarray containing the map data
-    b : the end time specified as a time string or datetime object
-        or the length of the time range specified as a timedelta object, or 
-        number of seconds
+    a : str, number, `datetime.datetime`
+        A time (usually the start time) specified as a parse_time-compatible
+        time string or number, or a datetime object.
+    b : str, `datetime.timedelta`, `astropy.units.Quantity` (time)
+        Another time (usually the end time) specified as a
+        parse_time-compatible time string, or a datetime object.
+        May also be the size of the time range specified as a timedelta object,
+        or a `astropy.units.Quantity`.
 
-    Attributes
-    ----------
-    t1 : datetime
-        The start time of the time range
-    t2 : datetime
-        The end time of the time range
-    dt : timediff
-        The difference in time between the start time and end time
-   
     Examples
     --------
+    >>> from sunpy.time import TimeRange
     >>> time_range = TimeRange('2010/03/04 00:10', '2010/03/04 00:20')
-    
-    >>> time_range = TimeRange('2010/03/04 00:10', 400)
-
-    References
-    ----------
-    | http://docs.scipy.org/doc/numpy/reference/arrays.classes.html
-
+    >>> time_range = TimeRange(('2010/03/04 00:10', '2010/03/04 00:20'))
+    >>> import astropy.units as u
+    >>> time_range = TimeRange('2010/03/04 00:10', 400 * u('s'))
+    >>> time_range = TimeRange('2010/03/04 00:10', 400 * u('day'))
     """
-    def __init__(self, a, b=None, julian_date=False):
+    def __init__(self, a, b=None):
         """Creates a new TimeRange instance"""
         # If a is a TimeRange object, copy attributes to new instance.
+        self._t1 = None
+        self._t2 = None
+
         if isinstance(a, TimeRange):
             self.__dict__ = a.__dict__.copy()
             return
-        
+
         # Normalize different input types
         if b is None:
-            x = a[0]
-            y = a[1]
+            x = parse_time(a[0])
+            if len(a) != 2:
+                raise ValueError('If b is None a must have two elements')
+            else:
+                y = a[1]
         else:
-            x = a
+            x = parse_time(a)
             y = b
 
-        # Start time
-        self.t1 = parse_time(x)
-
-        # End date
         if isinstance(y, str):
-            self.t2 = parse_time(y)
-        
-        # Datetime
-        if isinstance(y,datetime):
-            self.t2 = y
-            
+            y = parse_time(y)
+
+        if isinstance(y, datetime):
+            if x < y:
+                self._t1 = x
+                self._t2 = y
+            else:
+                self._t1 = y
+                self._t2 = x
+
+        if isinstance(y, Quantity):
+            y = timedelta(seconds=y.to('s').value)
+
         # Timedelta
         if isinstance(y, timedelta):
-            self.t2 = self.t1 + y
-            
-        # Seconds offset
-        if isinstance(y, (float, int)):
-            if julian_date:
-                self.t2 = parse_time(y)
+            if y.days >= 0:
+                self._t1 = x
+                self._t2 = x + y
             else:
-                self.t2 = self.t1 + timedelta(0, y) 
-            
-        self.dt = self.t2 - self.t1
-    
+                self._t1 = x + y
+                self._t2 = x
+
+    @property
+    def start(self):
+        """
+        Get the start time
+
+        Returns
+        -------
+        start : `datetime.datetime`
+        """
+        return self._t1
+
+    @property
+    def end(self):
+        """
+        Get the end time
+
+        Returns
+        -------
+        end : `datetime.datetime`
+        """
+        return self._t2
+
+    @property
+    def dt(self):
+        """
+        Get the length of the time range. Always a positive value.
+
+        Returns
+        -------
+        dt : `datetime.timedelta`
+        """
+        return self._t2 - self._t1
+
+    @property
+    def center(self):
+        """
+        Gets the center of the TimeRange instance.
+
+        Returns
+        -------
+        value : `datetime.datetime`
+        """
+        return self.start + self.dt / 2
+
+    @property
+    def hours(self):
+        """
+        Get the number of hours elapsed.
+
+        Returns
+        -------
+        value : `astropy.units.Quantity`
+        """
+        return self._duration.to('hour')
+
+    @property
+    def days(self):
+        """
+        Gets the number of days elapsed.
+
+        Returns
+        -------
+        value : `astropy.units.Quantity`
+        """
+        return self._duration.to('d')
+
+    @property
+    def seconds(self):
+        """
+        Gets the number of seconds elapsed.
+
+        Returns
+        -------
+        value : `astropy.units.Quantity`
+        """
+        return self._duration.to('s')
+
+    @property
+    def minutes(self):
+        """
+        Gets the number of minutes elapsed.
+
+        Returns
+        -------
+        value : `astropy.units.Quantity`
+        """
+        return self._duration.to('min')
+
+    @property
+    def _duration(self):
+        """
+        The duration of the time range.
+
+        Returns
+        -------
+        value : `astropy.units.Quantity`
+        """
+        result = self.dt.microseconds * Unit('us') + self.dt.seconds * Unit('s') + self.dt.days * Unit('day')
+        return result
+
     def __repr__(self):
-        """Returns a human-readable representation of the TimeRange instance."""
-        TIME_FORMAT = "%Y/%m/%d %H:%M:%S"
-        
-        t1 = self.t1.strftime(TIME_FORMAT)
-        t2 = self.t2.strftime(TIME_FORMAT)
-        center = self.center().strftime(TIME_FORMAT)
-       
-        return ('\tStart:'.ljust(11) + t1 + 
-                '\n\tEnd:'.ljust(12) + t2 + 
-                '\n\tCenter:'.ljust(12) + center + 
-                '\n\tDuration:'.ljust(12) + str(self.days()) + ' days or' + 
-                '\n\t'.ljust(12) +  str(self.minutes()) + ' minutes or' + 
-                '\n\t'.ljust(12) +  str(self.seconds()) + ' seconds' + 
+        """
+        Returns a human-readable representation of the TimeRange instance."""
+
+        t1 = self.start.strftime(TIME_FORMAT)
+        t2 = self.end.strftime(TIME_FORMAT)
+        center = self.center.strftime(TIME_FORMAT)
+
+        return ('    Start:'.ljust(11) + t1 +
+                '\n    End:'.ljust(12) + t2 +
+                '\n    Center:'.ljust(12) + center +
+                '\n    Duration:'.ljust(12) + str(self.days.value) + ' days or' +
+                '\n    '.ljust(12) + str(self.hours.value) + ' hours or' +
+                '\n    '.ljust(12) + str(self.minutes.value) + ' minutes or' +
+                '\n    '.ljust(12) + str(self.seconds.value) + ' seconds' +
                 '\n')
 
-    def center(self):
-        """Gets the center of the TimeRange instance"""
-        return self.t1 + self.dt / 2
-    
-    def split(self,n=2):
-        """Splits the TimeRange into multiple equally sized parts
-        
-        Accepts a value greater than or equal to 1 as input, and
-        returns an array of equally sized TimeRange objects between
-        t1 and t2.
-        
-        Raises a ValueError if requested amount is less than 1
-        
+    def split(self, n=2):
         """
+        Splits the TimeRange into multiple equally sized parts.
 
+        Parameters
+        ----------
+        n : int
+            The number of times to split the time range (must > 1)
+
+        Returns
+        -------
+        time ranges: list
+            An list of equally sized TimeRange objects between
+            the start and end times.
+
+        Raises
+        ------
+        ValueError
+            If requested amount is less than 1
+        """
         if n <= 0:
             raise ValueError('n must be greater than or equal to 1')
         subsections = []
-        previous_time = self.start()
+        previous_time = self.start
         next_time = None
         for _ in range(n):
-            next_time = previous_time + self.dt/n
-            next_range = TimeRange(previous_time,next_time)
+            next_time = previous_time + self.dt / n
+            next_range = TimeRange(previous_time, next_time)
             subsections.append(next_range)
             previous_time = next_time
         return subsections
-    
-    def days(self):
-        """Gets the number of days elapsed."""
-        return self.dt.days
-    
-    def start(self):
-        """Gets the start date"""
-        return self.t1
-    
-    def end(self):
-        """Gets the start date"""
-        return self.t2
-    
-    def seconds(self):
-        """Gets the number of seconds elapsed."""
-        return self.dt.total_seconds()
-    
-    def minutes(self):
-        """Gets the number of minutes elapsed."""
-        return self.dt.total_seconds() / 60.0
-    
+
+    def window(self, cadence, window):
+        """
+        Split the TimeRange up into a series of TimeRange windows,
+        'window' long, between the start and end with a cadence of 'cadence'.
+
+        Parameters
+        ----------
+        cadence : `astropy.units.Quantity`, `datetime.timedelta`
+            Cadence in seconds or a timedelta instance
+        window : `astropy.units.quantity`, `datetime.timedelta`
+            The length of the Time's, assumed to be seconds if int.
+
+        Returns
+        -------
+        time ranges : list
+            A list of TimeRange objects, that are window long and seperated by
+            cadence.
+
+        Examples
+        --------
+        >>> import astropy.units as u
+        >>> TimeRange.window(60*60*u('s'), window=12*u('s'))
+        """
+        if not isinstance(window, timedelta):
+            window = timedelta(seconds=window.to('s').value)
+        if not isinstance(cadence, timedelta):
+            cadence = timedelta(seconds=cadence.to('s').value)
+
+        n = 1
+        times = [TimeRange(self.start, self.start + window)]
+        while times[-1].end < self.end:
+            times.append(TimeRange(self.start + cadence * n,
+                                   self.start + cadence * n + window))
+            n += 1
+        return times
+
     def next(self):
         """Shift the time range forward by the amount of time elapsed"""
-        self.t1 = self.t1 + self.dt
-        self.t2 = self.t2 + self.dt
-        
+        dt = self.dt
+        self._t1 = self._t1 + dt
+        self._t2 = self._t2 + dt
+
         return self
-    
+
     def previous(self):
         """Shift the time range backward by the amount of time elapsed"""
-        self.t1 = self.t1 - self.dt
-        self.t2 = self.t2 - self.dt
-        
+        dt = self.dt
+        self._t1 = self._t1 - dt
+        self._t2 = self._t2 - dt
+
         return self
-    
-    def extend(self, t_backwards, t_forwards):
-        """Extend the time range forwards and backwards by arbitrary amounts"""
+
+    def extend(self, dt_start, dt_end):
+        """Extend the time range forwards and backwards
+
+        Parameters
+        ----------
+        dt_start : `datetime.timedelta`
+            The amount to shift the start time
+        dt_end : `datetime.timedelta`
+            The amount to shift the end time
+        """
         # Only a timedelta object is acceptable here
-        self.t1 = self.t1 + t_backwards
-        self.t2 = self.t2 + t_forwards
+        self._t1 = self._t1 + dt_start
+        self._t2 = self._t2 + dt_end
+
+    def __contains__(self, time):
+        """
+        Checks whether the given time lies within this range.
+        Both limits are inclusive (i.e. __contains__(t1) and __contains__(t2)
+        always return true)
+
+        Parameters
+        ----------
+        time : `datetime.datetime`, str
+            A parse_time-compatible time to be checked.
+
+        Returns
+        -------
+        value : bool
+            True if time lies between start and end, False otherwise.
+
+        Examples
+        --------
+        >>> time_range = TimeRange('2014/05/04 13:54', '2018/02/03 12:12')
+        >>> time in time_range
+        """
+        this_time = parse_time(time)
+        return this_time >= self.start and this_time <= self.end

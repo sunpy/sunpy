@@ -8,14 +8,11 @@ from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
-import os
-import glob
-import urllib2
 import datetime
 
 from random import randint
 from itertools import izip
-from copy import copy, deepcopy
+from copy import copy
 from math import floor
 
 import numpy as np
@@ -31,10 +28,9 @@ from matplotlib.colorbar import Colorbar
 #import sunpy
 
 from sunpy.time import parse_time, get_day
-from sunpy.util import to_signed, common_base, merge, replacement_filename
-from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
+from sunpy.util import to_signed, common_base, merge
+from sunpy.util.cond_dispatch import ConditionalDispatch
 from sunpy.util.create import Parent
-from sunpy.util.net import get_system_filename
 from sunpy.spectra.spectrum import Spectrum
 
 __all__ = ['Spectrogram', 'LinearTimeSpectrogram']
@@ -314,6 +310,7 @@ class Spectrogram(Parent):
         eoffset = self.shape[1] if x_range.stop is None else x_range.stop # pylint: disable=E1101
         eoffset -= 1
 
+        # FIXME: `fsoffset` and `feoffset` are not used?!
         fsoffset = 0 if y_range.start is None else y_range.start
         feoffset = self.shape[0] if y_range.stop is None else y_range.stop # pylint: disable=E1101
 
@@ -384,7 +381,7 @@ class Spectrogram(Parent):
     @staticmethod
     def format_freq(freq):
         """ Override to configure default plotting """
-        return "%.1f" % freq
+        return "{freq:0.1f}".format(freq=freq)
 
     def peek(self, *args, **kwargs):
         figure()
@@ -822,10 +819,8 @@ class Spectrogram(Parent):
             else:
                 pixel = ""
 
-            return '%s z=%s' % (
-                fmt_coord(x, y),
-                pixel
-            )
+            return '{0!s} z={1!s}'.format(fmt_coord(x, y), pixel)
+
         return format_coord
 
 
@@ -959,7 +954,6 @@ class LinearTimeSpectrogram(Spectrogram):
         size = sum(sp.shape[1] for sp in specs)
 
         data = specs[0]
-        init = data.t_init
         start_day = data.start
 
         xs = []
@@ -1207,4 +1201,3 @@ class LinearTimeSpectrogram(Spectrogram):
                 )
             end = self.time_to_x(end)
         return self[:, start:end]
-

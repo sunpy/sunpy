@@ -5,18 +5,20 @@
 
 from __future__ import absolute_import
 
+import itertools
 import operator
 from datetime import datetime
 from contextlib import contextmanager
 
 from sqlalchemy import create_engine, exists
-from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import sessionmaker
 
 import sunpy
 from sunpy.database import commands, tables, serialize
 from sunpy.database.caching import LRUCache
+from sunpy.database.commands import CompositeOperation
 from sunpy.database.attrs import walker
+from sunpy.net.hek2vso import H2VClient
 from sunpy.net.attr import and_
 from sunpy.net.vso import VSOClient
 
@@ -262,7 +264,7 @@ class Database(object):
         :class:`sunpy.database.caching.LFUCache`).
 
         """
-        cmds = []
+        cmds = CompositeOperation()
         # remove items from the cache if the given argument is lower than the
         # current cache size
         while cache_size < self.cache_size:
@@ -271,7 +273,7 @@ class Database(object):
             entry_id, entry = self._cache.to_be_removed
             cmd = commands.RemoveEntry(self.session, entry)
             if self._enable_history:
-                cmds.append(cmd)
+                cmds.add(cmd)
             else:
                 cmd()
             del self._cache[entry_id]
@@ -294,6 +296,32 @@ class Database(object):
 
         """
         self.session.commit()
+
+    def _download_and_collect_entries(self, query_result, client=None,
+            path=None, progress=False):
+        if client is None:
+            client = VSOClient()
+        for block in query_result:
+            paths = client.get([block], path).wait(progress=progress)
+            for path in paths:
+                qr_entry = tables.DatabaseEntry._from_query_result_block(block)
+                file_entries = list(
+                    tables.entries_from_file(path, self.default_waveunit))
+                for entry in file_entries:
+                    entry.source = qr_entry.source
+                    entry.provider = qr_entry.provider
+                    entry.physobs = qr_entry.physobs
+                    entry.fileid = qr_entry.fileid
+                    entry.observation_time_start =\
+                        qr_entry.observation_time_start
+                    entry.observation_time_end = qr_entry.observation_time_end
+                    entry.instrument = qr_entry.instrument
+                    entry.size = qr_entry.size
+                    entry.wavemin = qr_entry.wavemin
+                    entry.wavemax = qr_entry.wavemax
+                    entry.path = path
+                    entry.download_time = datetime.utcnow()
+                    yield entry
 
     def download(self, *query, **kwargs):
         """download(*query, client=sunpy.net.vso.VSOClient(), path=None, progress=False)
@@ -322,28 +350,8 @@ class Database(object):
         # don't do anything if querying the VSO results in no data
         if not qr:
             return
-        entries = []
-        for block in qr:
-            paths = client.get([block], path).wait(progress=progress)
-            for path in paths:
-                qr_entry = tables.DatabaseEntry._from_query_result_block(block)
-                file_entries = list(
-                    tables.entries_from_file(path, self.default_waveunit))
-                for entry in file_entries:
-                    entry.source = qr_entry.source
-                    entry.provider = qr_entry.provider
-                    entry.physobs = qr_entry.physobs
-                    entry.fileid = qr_entry.fileid
-                    entry.observation_time_start =\
-                        qr_entry.observation_time_start
-                    entry.observation_time_end = qr_entry.observation_time_end
-                    entry.instrument = qr_entry.instrument
-                    entry.size = qr_entry.size
-                    entry.wavemin = qr_entry.wavemin
-                    entry.wavemax = qr_entry.wavemax
-                    entry.path = path
-                    entry.download_time = datetime.utcnow()
-                entries.extend(file_entries)
+        entries = list(self._download_and_collect_entries(
+            qr, client, path, progress))
         dump = serialize.dump_query(and_(*query))
         (dump_exists,), = self.session.query(
             exists().where(tables.JSONDump.dump == tables.JSONDump(dump).dump))
@@ -497,7 +505,7 @@ class Database(object):
             raise TypeError('at least one tag must be given')
         # avoid duplicates
         tag_names = set(tags)
-        cmds = []
+        cmds = CompositeOperation()
         for tag_name in tag_names:
             try:
                 tag = self.get_tag(tag_name)
@@ -508,7 +516,7 @@ class Database(object):
                 tag = tables.Tag(tag_name)
             cmd = commands.AddTag(self.session, database_entry, tag)
             if self._enable_history:
-                cmds.append(cmd)
+                cmds.add(cmd)
             else:
                 cmd()
         if cmds:
@@ -526,16 +534,16 @@ class Database(object):
 
         """
         tag = self.get_tag(tag_name)
-        cmds = []
+        cmds = CompositeOperation()
         remove_tag_cmd = commands.RemoveTag(self.session, database_entry, tag)
         remove_tag_cmd()
         if self._enable_history:
-            cmds.append(remove_tag_cmd)
+            cmds.add(remove_tag_cmd)
         if not tag.data:
             remove_entry_cmd = commands.RemoveEntry(self.session, tag)
             remove_entry_cmd()
             if self._enable_history:
-                cmds.append(remove_entry_cmd)
+                cmds.add(remove_entry_cmd)
         if self._enable_history:
             self._command_manager.push_undo_command(cmds)
 
@@ -576,7 +584,7 @@ class Database(object):
             See Database.add
 
         """
-        cmds = []
+        cmds = CompositeOperation()
         for database_entry in database_entries:
             # use list(self) instead of simply self because __contains__ checks
             # for existence in the database and not only all attributes except
@@ -585,7 +593,7 @@ class Database(object):
                 raise EntryAlreadyAddedError(database_entry)
             cmd = commands.AddEntry(self.session, database_entry)
             if self._enable_history:
-                cmds.append(cmd)
+                cmds.add(cmd)
             else:
                 cmd()
             if database_entry.id is None:
@@ -621,6 +629,47 @@ class Database(object):
             self._cache.append(database_entry)
         else:
             self._cache[database_entry.id] = database_entry
+
+    def add_from_hek_query_result(self, query_result,
+            ignore_already_added=False):
+        """Add database entries from a HEK query result.
+
+        Parameters
+        ----------
+        query_result : list
+            The value returned by :meth:`sunpy.net.hek.HEKClient().query`
+
+        ignore_already_added : bool
+            See :meth:`sunpy.database.Database.add`.
+
+        """
+        vso_qr = itertools.chain.from_iterable(
+            H2VClient().translate_and_query(query_result))
+        self.add_from_vso_query_result(vso_qr, ignore_already_added)
+
+    def download_from_vso_query_result(self, query_result, client=None,
+            path=None, progress=False, ignore_already_added=False):
+        """download(query_result, client=sunpy.net.vso.VSOClient(),
+        path=None, progress=False, ignore_already_added=False)
+
+        Add new database entries from a VSO query result and download the
+        corresponding data files. See :meth:`sunpy.database.Database.download`
+        for information about the parameters `client`, `path`, `progress`.
+
+        Parameters
+        ----------
+        query_result : sunpy.net.vso.vso.QueryResponse
+            A VSO query response that was returned by the ``query`` method of a
+            :class:`sunpy.net.vso.VSOClient` object.
+
+        ignore_already_added : bool
+            See :meth:`sunpy.database.Database.add`.
+
+        """
+        if not query_result:
+            return
+        self.add_many(self._download_and_collect_entries(
+            query_result, client, path, progress))
 
     def add_from_vso_query_result(self, query_result,
             ignore_already_added=False):
@@ -674,7 +723,7 @@ class Database(object):
             See :meth:`sunpy.database.Database.add`.
 
         """
-        cmds = []
+        cmds = CompositeOperation()
         entries = tables.entries_from_dir(
             path, recursive, pattern, self.default_waveunit)
         for database_entry, filepath in entries:
@@ -682,7 +731,7 @@ class Database(object):
                 raise EntryAlreadyAddedError(database_entry)
             cmd = commands.AddEntry(self.session, database_entry)
             if self._enable_history:
-                cmds.append(cmd)
+                cmds.add(cmd)
             else:
                 cmd()
             self._cache.append(database_entry)
@@ -722,6 +771,30 @@ class Database(object):
             cmd()
         self._cache[database_entry.id] = database_entry
 
+    def remove_many(self, database_entries):
+        """Remove a row of database entries "at once". If this method is used,
+        only one entry is saved in the undo history.
+
+        Parameters
+        ----------
+        database_entries : iterable of sunpy.database.tables.DatabaseEntry
+            The database entries that will be removed from the database.
+        """
+        cmds = CompositeOperation()
+        for database_entry in database_entries:
+            cmd = commands.RemoveEntry(self.session, database_entry)
+            if self._enable_history:
+                cmds.add(cmd)
+            else:
+                cmd()
+            try:
+                del self._cache[database_entry.id]
+            except KeyError:
+                pass
+
+        if cmds:
+            self._command_manager.do(cmds)
+
     def remove(self, database_entry):
         """Remove the given database entry from the database table."""
         remove_entry_cmd = commands.RemoveEntry(self.session, database_entry)
@@ -742,10 +815,10 @@ class Database(object):
         using the :meth:`undo` method.
 
         """
-        cmds = []
+        cmds = CompositeOperation()
         for entry in self:
             for tag in entry.tags:
-                cmds.append(commands.RemoveTag(self.session, entry, tag))
+                cmds.add(commands.RemoveTag(self.session, entry, tag))
             # TODO: also remove all FITS header entries and all FITS header
             # comments from each entry before removing the entry itself!
         # remove all entries from all helper tables
@@ -754,15 +827,23 @@ class Database(object):
             tables.FitsKeyComment]
         for table in database_tables:
             for entry in self.session.query(table):
-                cmds.append(commands.RemoveEntry(self.session, entry))
+                cmds.add(commands.RemoveEntry(self.session, entry))
         for entry in self:
-            cmds.append(commands.RemoveEntry(self.session, entry))
+            cmds.add(commands.RemoveEntry(self.session, entry))
             del self._cache[entry.id]
         if self._enable_history:
             self._command_manager.do(cmds)
         else:
-            for cmd in cmds:
-                cmd()
+            cmds()
+
+    def clear_histories(self):
+        """Clears all entries from the undo and redo history.
+
+        See Also
+        --------
+        :meth:`sunpy.database.commands.CommandManager.clear_histories`
+        """
+        self._command_manager.clear_histories()  # pragma: no cover
 
     def undo(self, n=1):
         """undo the last n commands.

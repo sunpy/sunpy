@@ -7,14 +7,15 @@
 #pylint: disable=W0142
 
 """
-This module is to interface the results from a HEK query into a VSO query
-and return the results from the VSO query to the user.
+This module translates the results of a HEK query into a VSO query
+and returns the results from the VSO query to the user.
 """
 
 from __future__ import absolute_import
 
 import sys
 from astropy import units
+
 from sunpy.net import hek
 from sunpy.net import vso
 from sunpy.util.progressbar import TTYProgressBar
@@ -22,39 +23,7 @@ from sunpy.util.progressbar import TTYProgressBar
 __author__ = 'Michael Malocha'
 __version__ = 'Aug 10th, 2013'
 
-__all__ = ['wave_unit_catcher', 'translate_results_to_query', 'vso_attribute_parse', 'H2VClient']
-
-def wave_unit_catcher(wavelength, wave_units):
-    """
-    Catch and convert wavelength to angstroms.
-
-    Designed to discover the units of the wavelength passed in and convert
-    it into angstroms. Returns an integer or None.
-
-    Parameters
-    ----------
-    wavelength : int
-        Wavelength value.
-    units : str
-        Units of the wavelength.
-
-    Examples
-    --------
-    >>> wave_unit_catcher(2.11e-06, 'cm')
-    210.99999999999997
-
-    >>> wave_unit_catcher(9.4e-07, 'cm')
-    93.99999999999999
-
-    >>> wave_unit_catcher(5e-08, 'mm')
-    0.4999999999999999
-    """
-    try:
-        converted_value = getattr(units, wave_units).to(units.angstrom,
-                                                        wavelength)
-    except AttributeError:
-        raise AttributeError("'%s' is not a supported unit" % wave_units)
-    return converted_value
+__all__ = ['translate_results_to_query', 'vso_attribute_parse', 'H2VClient']
 
 
 def translate_results_to_query(results):
@@ -128,11 +97,10 @@ def vso_attribute_parse(phrase):
                                 phrase['event_endtime']),
                  vso.attrs.Source(phrase['obs_observatory']),
                  vso.attrs.Instrument(phrase['obs_instrument'])]
-        avg_wave_len = wave_unit_catcher(phrase['obs_meanwavel'],
-                                         phrase['obs_wavelunit'])
+        avg_wave_len = phrase['obs_meanwavel'] * units.Unit(phrase['obs_wavelunit'])
         query.append(vso.attrs.Wave(avg_wave_len, avg_wave_len))
     except KeyError, TypeError:
-        raise TypeError("'%s' is an improper data type" % type(phrase))
+        raise TypeError("'{dtype!s}' is an improper data type".format(dtype=type(phrase)))
     return query
 
 
@@ -150,10 +118,6 @@ class H2VClient(object):
     >>> from sunpy.net import hek2vso
     >>> h2v = hek2vso.H2VClient()
     """
-    # Here is some test data
-    t_start = '2011/08/09 07:23:56'
-    t_end = '2011/08/09 12:40:29'
-    t_event = 'FL'
 
     def __init__(self):
         self.hek_client = hek.HEKClient()
@@ -162,7 +126,7 @@ class H2VClient(object):
         self.vso_results = []
         self.num_of_records = 0
 
-    def full_query(self, client_query, limit=None):
+    def full_query(self, client_query, limit=None, progress=False):
         """
         An encompassing method that takes a HEK query and returns a VSO result
 
@@ -180,18 +144,19 @@ class H2VClient(object):
         Examples
         --------
         >>> from sunpy.net import hek, hek2vso
-        >>> h2v = H2VClient()
+        >>> h2v = hek2vso.H2VClient()
         >>> q = h2v.full_query((hek.attrs.Time('2011/08/09 07:23:56', '2011/08/09 12:40:29'), hek.attrs.EventType('FL')))
         """
-        self.quick_clean()
-        sys.stdout.write('\rQuerying HEK webservice...')
-        sys.stdout.flush()
+        self._quick_clean()
+        if progress:
+            sys.stdout.write('\rQuerying HEK webservice...')
+            sys.stdout.flush()
         self.hek_results = self.hek_client.query(*client_query)
+        self._quick_clean()
         return self.translate_and_query(self.hek_results,
-                                        limit=limit, full_query=True)
+                                        limit=limit, progress=progress)
 
-    def translate_and_query(self, hek_results, limit=None,
-                            full_query=False, use_progress_bar=True):
+    def translate_and_query(self, hek_results, limit=None, progress=False):
         """
         Translates HEK results, makes a VSO query, then returns the results.
 
@@ -201,48 +166,47 @@ class H2VClient(object):
 
         Parameters
         ----------
-        hek_results: sunpy.net.hek.hek.Response or list of sunpy.-.-.-.Response
+        hek_results: sunpy.net.hek.hek.Response or list of Responses
             The results from a HEK query in the form of a list.
         limit: int
             An approximate limit to the desired number of VSO results.
-        full_query: Boolean
-            A simple flag that determines if the method is being
-            called from the full_query() method.
-        use_progress_bar: Boolean
-            A flag to turn off the progress bar, defaults to "on"
+        progress: Boolean
+            A flag to turn off the progress bar, defaults to "off"
 
         Examples
         --------
         >>> from sunpy.net import hek, hek2vso
         >>> h = hek.HEKClient()
         >>> tstart = '2011/08/09 07:23:56'
-        >>> t_end = '2011/08/09 12:40:29'
-        >>> t_event = 'FL'
-        >>> q = h.query(hek.attrs.Time(tstart, tend), hek.attts.EventType(event_type))
+        >>> tend = '2011/08/09 12:40:29'
+        >>> event_type = 'FL'
+        >>> q = h.query(hek.attrs.Time(tstart, tend), hek.attrs.EventType(event_type))
         >>> h2v = hek2vso.H2VClient()
         >>> res = h2v.translate_and_query(q)
         """
-        if full_query is False:
-            self.quick_clean()
-            self.hek_results = hek_results
         vso_query = translate_results_to_query(hek_results)
         result_size = len(vso_query)
+        if progress:
+            sys.stdout.write('\rQuerying VSO webservice')
+            sys.stdout.flush()
+            pbar = TTYProgressBar(result_size)
+
         for query in vso_query:
-            if use_progress_bar:
-                pbar = TTYProgressBar('Querying VSO webservice', result_size)
             temp = self.vso_client.query(*query)
             self.vso_results.append(temp)
             self.num_of_records += len(temp)
             if limit is not None:
                 if self.num_of_records >= limit:
                     break
-            pbar.poke()
-        if use_progress_bar:
+            if progress:
+                pbar.poke()
+
+        if progress:
             pbar.finish()
-        
+
         return self.vso_results
 
-    def quick_clean(self):
+    def _quick_clean(self):
         """
         A simple method to quickly sterilize the instance variables.
 

@@ -7,6 +7,7 @@ __email__ = "jack.ireland@nasa.gov"
 from sunpy.map import GenericMap
 from sunpy.cm import cm
 import numpy as np
+from matplotlib import colors
 
 __all__ = ['TRACEMap']
 
@@ -28,9 +29,9 @@ understood and parsed to obtain the science data. The ability to do this
 is not yet in SunPy, but is available in SSWIDL. Please refer to the links
 above concerning how to read "tri" files in SSWIDL.
 """
-    
+
     def __init__(self, data, header, **kwargs):
-        
+
         GenericMap.__init__(self, data, header, **kwargs)
 
         # It needs to be verified that these must actually be set and are not
@@ -49,20 +50,20 @@ above concerning how to read "tri" files in SSWIDL.
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an TRACE image"""
         return header.get('instrume') == 'TRACE'
-    
+
     @property
     def measurement(self):
         return str(self.meta['wave_len'])
 
-    def _get_norm(self):
+    def _get_mpl_normalizer(self):
         """Returns a Normalize object to be used with TRACE data"""
         # byte-scaled images have most likely already been scaled
         if self.dtype == np.uint8:
             return None
-        
+
         mean = self.mean()
         std = self.std()
-        
+
         vmin = 1
         vmax = min(self.max(), mean + 5 * std)
 

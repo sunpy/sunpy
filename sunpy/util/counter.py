@@ -35,7 +35,7 @@ except ImportError:
             >>> c = Counter({'a': 4, 'b': 2})           # a new counter from a mapping
             >>> c = Counter(a=4, b=2)                   # a new counter from keyword args
 
-            '''        
+            '''
             self.update(iterable, **kwds)
 
         def __missing__(self, key):
@@ -48,7 +48,7 @@ except ImportError:
             >>> Counter('abracadabra').most_common(3)
             [('a', 5), ('r', 2), ('b', 2)]
 
-            '''        
+            '''
             if n is None:
                 return sorted(self.iteritems(), key=itemgetter(1), reverse=True)
             return nlargest(n, self.iteritems(), key=itemgetter(1))
@@ -87,7 +87,7 @@ except ImportError:
             >>> c['h']                      # four 'h' in which, witch, and watch
             4
 
-            '''        
+            '''
             if iterable is not None:
                 if hasattr(iterable, 'iteritems'):
                     if self:
@@ -114,9 +114,9 @@ except ImportError:
 
         def __repr__(self):
             if not self:
-                return '%s()' % self.__class__.__name__
-            items = ', '.join(map('%r: %r'.__mod__, self.most_common()))
-            return '%s({%s})' % (self.__class__.__name__, items)
+                return '{0}()'.format(self.__class__.__name__)
+            items = ', '.join(map('{0!r}: {1!r}'.format, self.most_common()))
+            return '{0}({1})'.format(self.__class__.__name__, items)
 
         # Multiset-style mathematical operations discussed in:
         #       Knuth TAOCP Volume II section 4.6.3 exercise 19

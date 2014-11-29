@@ -82,10 +82,10 @@ def test_download_http():
     path_fun = partial(default_name, tmp)
 
     dw = Downloader(1, 1)
-    _stop = lambda _: dw.stop()
 
-    timeout = CalledProxy(_stop)
-    threading.Timer(60, timeout).start()
+    timeout = CalledProxy(dw.stop)
+    timer = threading.Timer(60, timeout)
+    timer.start()
 
     on_finish = wait_for(3, lambda _: dw.stop())
     dw.download('http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js', path_fun, on_finish)
@@ -94,6 +94,7 @@ def test_download_http():
     # dw.download('ftp://speedtest.inode.at/speedtest-100mb', path_fun, on_finish)
 
     dw.wait()
+    timer.cancel()
 
     assert len(items) == 3
     assert not timeout.fired
@@ -116,7 +117,7 @@ def test_download_default_dir():
         dw = Downloader(1, 1)
         _stop = lambda _: dw.stop()
 
-        timeout = CalledProxy(_stop)
+        timeout = CalledProxy(dw.stop)
         errback = CalledProxy(_stop)
         dw.download(
             'http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js',
@@ -124,8 +125,10 @@ def test_download_default_dir():
             errback=errback
         )
 
-        threading.Timer(10, timeout).start()
+        timer = threading.Timer(10, timeout)
+        timer.start()
         dw.wait()
+        timer.cancel()
 
         assert not timeout.fired
         assert not errback.fired
@@ -139,7 +142,7 @@ def test_download_dir():
 
     dw = Downloader(1, 1)
     _stop = lambda _: dw.stop()
-    timeout = CalledProxy(_stop)
+    timeout = CalledProxy(dw.stop)
     errback = CalledProxy(_stop)
 
     dw.download(
@@ -149,8 +152,10 @@ def test_download_dir():
         errback=errback
     )
 
-    threading.Timer(10, timeout).start()
+    timer = threading.Timer(10, timeout)
+    timer.start()
     dw.wait()
+    timer.cancel()
     assert not timeout.fired
     assert not errback.fired
     assert os.path.exists(os.path.join(tmpdir, 'jquery.min.js'))
