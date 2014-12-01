@@ -50,6 +50,7 @@ def test_lytaf_utils():
 
 def test_remove_lyra_artifacts():
     """Test if times during LYTAF events are removed from LYRA timeseries."""
+    assert 1 == 0
 
 def test_get_lytaf_events():
     """Test if LYTAF events are correctly downloaded and read in."""
