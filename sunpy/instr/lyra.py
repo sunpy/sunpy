@@ -2,15 +2,15 @@ from __future__ import absolute_import
 from __future__ import division
 
 import os.path
-from datetime import datetime
+import datetime
 from warnings import warn
 import copy
 import csv
 import urllib
 import calendar
+import sqlite3
 
 import numpy as np
-import sqlite3
 from astropy.io import fits
 
 from sunpy.time import parse_time
@@ -157,7 +157,7 @@ def remove_lyra_artifacts(time, channels=None, artifacts="All",
     # Remove relevant artifacts from timeseries. If none of the
     # artifacts the user wanted removed were found, raise a warning and
     # continue with code.
-    if len(artifact_indices) == 0:
+    if not len(artifact_indices):
         warn("None of user supplied artifacts were found.")
         artifacts_not_found = artifacts
     else:
@@ -169,7 +169,7 @@ def remove_lyra_artifacts(time, channels=None, artifacts="All",
             bad_period = np.logical_and(time >= lytaf["begin_time"][index],
                                         time <= lytaf["end_time"][index])
             bad_indices = np.append(bad_indices, all_indices[bad_period])
-        clean_time = np.delete(time, bad_indices)
+        clean_time = np.delete(clean_time, bad_indices)
         if channels is not None:
             for i, f in enumerate(clean_channels):
                 clean_channels[i] = np.delete(f, bad_indices)
@@ -308,8 +308,8 @@ def extract_lytaf_events(start_time, end_time, lytaf_path=LYTAF_PATH,
     combine_files.sort()
     # Convert input times to UNIX timestamp format since this is the
     # time format in the annotation files
-    start_time_uts = (start_time - datetime(1970, 1, 1)).total_seconds()
-    end_time_uts = (end_time - datetime(1970, 1, 1)).total_seconds()
+    start_time_uts = (start_time - datetime.datetime(1970, 1, 1)).total_seconds()
+    end_time_uts = (end_time - datetime.datetime(1970, 1, 1)).total_seconds()
 
     # Define numpy record array which will hold the information from
     # the annotation file.
@@ -335,11 +335,11 @@ def extract_lytaf_events(start_time, end_time, lytaf_path=LYTAF_PATH,
         cursor.execute("select begin_time from event order by begin_time asc "
                        "limit 1;")
         db_first_begin_time = cursor.fetchone()[0]
-        db_first_begin_time = datetime.fromtimestamp(db_first_begin_time)
+        db_first_begin_time = datetime.datetime.fromtimestamp(db_first_begin_time)
         cursor.execute("select end_time from event order by end_time desc "
                        "limit 1;")
         db_last_end_time = cursor.fetchone()[0]
-        db_last_end_time = datetime.fromtimestamp(db_last_end_time)
+        db_last_end_time = datetime.datetime.fromtimestamp(db_last_end_time)
         # If lytaf does not include entire input time range...
         if not force_use_local_lytaf:
             if end_time > db_last_end_time or start_time < db_first_begin_time:
@@ -373,14 +373,13 @@ def extract_lytaf_events(start_time, end_time, lytaf_path=LYTAF_PATH,
         # Enter desired information into the lytaf numpy record array
         for event_row in event_rows:
             id_index = eventType_id.index(event_row[4])
-            lytaf = np.append(
-                lytaf, np.array((datetime.utcfromtimestamp(event_row[0]),
-                                 datetime.utcfromtimestamp(event_row[1]),
-                                 datetime.utcfromtimestamp(event_row[2]),
-                                 datetime.utcfromtimestamp(event_row[3]),
-                                 eventType_type[id_index],
-                                 eventType_definition[id_index]),
-                                dtype=lytaf.dtype))
+            lytaf = np.append(lytaf, np.array((datetime.datetime.utcfromtimestamp(event_row[0]),
+                                               datetime.datetime.utcfromtimestamp(event_row[1]),
+                                               datetime.datetime.utcfromtimestamp(event_row[2]),
+                                               datetime.datetime.utcfromtimestamp(event_row[3]),
+                                               eventType_type[id_index],
+                                               eventType_definition[id_index]),
+                                              dtype=lytaf.dtype))
         # Close file
         cursor.close()
         connection.close()
@@ -451,9 +450,9 @@ def get_lytaf_events(timerange, lytaf_dir=''):
     for l in dblist:
         #create a dictionary for each entry of interest
         lar_entry = {'roi_description':'LYRA LYTAF event',
-                     'start_time':datetime.utcfromtimestamp(l[1]),
-                     'ref_time':datetime.utcfromtimestamp(l[2]),
-                     'end_time':datetime.utcfromtimestamp(l[3]),
+                     'start_time':datetime.datetime.utcfromtimestamp(l[1]),
+                     'ref_time':datetime.datetime.utcfromtimestamp(l[2]),
+                     'end_time':datetime.datetime.utcfromtimestamp(l[3]),
                      'event_type_id':l[4],
                      'event_type_description':_lytaf_event2string(l[4])[0]}
 
