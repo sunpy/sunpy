@@ -86,17 +86,20 @@ def filled_database():
     return database
 
 def test_config_url(monkeypatch):
-    monkeypatch.setattr("sunpy.config", ConfigParser.SafeConfigParser())
+    def mockreturn(section, option):
+		return 'sqlite:///'
+    monkeypatch.setattr(sunpy.config, 'get', mockreturn)
     url = 'sqlite:///'
-    sunpy.config.add_section('database')
-    sunpy.config.set('database', 'url', url)
     database = Database()
     assert database.url == url
 
 def test_config_url_none(monkeypatch):
-    monkeypatch.setattr("sunpy.config", ConfigParser.SafeConfigParser())
-    with pytest.raises(ConfigParser.NoSectionError):
-        Database()
+	driver = 'sqlite'
+	location = sunpy.config.get('general', 'working_dir')
+	name = 'sunpydb.sqlite'
+	url =  '%s:///%s/%s'%(driver, location, name)
+	database = Database()
+	assert database.url == url
 
 def test_tags_unique(database):
     entry = DatabaseEntry()
