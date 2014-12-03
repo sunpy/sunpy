@@ -4,6 +4,7 @@ from __future__ import division
 import os.path
 from datetime import datetime
 from warnings import warn
+from sunpy.util.util import Deprecated
 import copy
 import csv
 import urllib
@@ -227,8 +228,8 @@ def remove_lyra_artifacts(time, channels=None, artifacts="All",
             return clean_time, clean_channels
 
 def extract_lytaf_events(start_time, end_time, lytaf_path=LYTAF_PATH,
-                     combine_files=["lyra", "manual", "ppt", "science"],
-                     csvfile=None, force_use_local_lytaf=False):
+                         combine_files=["lyra", "manual", "ppt", "science"],
+                         csvfile=None, force_use_local_lytaf=False):
     """
     Extracts combined lytaf file for given time range.
 
@@ -407,6 +408,7 @@ def download_lytaf_database(lytaf_dir=''):
 
     return
 
+@Deprecated
 def get_lytaf_events(timerange,lytaf_dir=''):
     """returns a list of LYRA pointing events that occured during a timerange"""
     #timerange is a TimeRange object
@@ -456,18 +458,18 @@ def get_lytaf_events(timerange,lytaf_dir=''):
 
     return output
 
-def split_series_using_lytaf(timearray, data, lar):
+def split_series_using_lytaf(timearray, data, lytaf):
     """
     Proba-2 analysis code for splitting up LYRA timeseries around locations
     where LARs (and other data events) are observed.
 
     Inputs
     ------
-    timearray - array of times understandable by SunPy parse_time function.
+    timearray - array of times understood by SunPy parse_time function.
     data - data array corresponding to the given time array
-    lar - list
+    lar - numpy recarray
         Events obtained from querying LYTAF database using
-        lyra.get_lytaf_events().
+        lyra.extract_lytaf_events().
 
     Output
     ------
@@ -475,17 +477,9 @@ def split_series_using_lytaf(timearray, data, lar):
         Each dictionary contains a sub-series corresponding to an interval of
         'good data'.
     """
-    #lar is a dictionary with tags:
-    #'start_time'
-    #'end_time'
-    #'ref_time'
-    #'roi_description'
-    #'event_type_description'
-    #'event_type_id'
-
     n = len(timearray)
     mask = np.ones(n)
-    el = len(lar)
+    el = len(lytaf)
 
     #make the input time array a list of datetime objects
     datetime_array = []
@@ -496,8 +490,8 @@ def split_series_using_lytaf(timearray, data, lar):
     #scan through each entry retrieved from the LYTAF database
     for j in range(0, el):
         #want to mark all times with events as bad in the mask, i.e. = 0
-        start_dt = lar[j]['start_time']
-        end_dt = lar[j]['end_time']
+        start_dt = lytaf['begin_time'][j]
+        end_dt = lytaf['end_time'][j]
 
         #find the start and end indices for each event
         start_ind = np.searchsorted(datetime_array, start_dt)
