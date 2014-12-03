@@ -1,4 +1,5 @@
 from __future__ import absolute_import
+from __future__ import division
 
 import tempfile
 import os.path
@@ -7,21 +8,16 @@ import datetime
 
 import numpy as np
 
-from sunpy.time import TimeRange, parse_time
+from sunpy.time import parse_time
 from sunpy import config
-#from sunpy.instr import lyra
-import imp
-lyra = imp.load_source("lyra", "/Users/danielr/git/sunpy/sunpy/instr/lyra.py")
+from sunpy.instr import lyra
 
-#TEST_DATA_PATH = os.path.join(config.get("downloads", "download_dir"), "test")
-TEST_DATA_PATH = "/Users/danielr/git/sunpy/sunpy/data/test/"
-
-# Define some test data for remove_lyra_artifacts()
+# Define location for test LYTAF database files
+TEST_DATA_PATH = os.path.join(config.get("downloads", "download_dir"), "test")
+# Define some test data for test_remove_lyra_artifacts()
 TIME = np.array([datetime.datetime(2013, 2, 1)+datetime.timedelta(minutes=i)
-        for i in range(120)])
-channel0 = np.zeros(len(TIME))+0.4
-channel1 = np.array(len(TIME))+0.1
-CHANNELS = [channel0, channel1]
+                 for i in range(120)])
+CHANNELS = [np.zeros(len(TIME))+0.4, np.array(len(TIME))+0.1]
 EMPTY_LYTAF = np.empty((0,), dtype=[("insertion_time", object),
                                     ("begin_time", object),
                                     ("reference_time", object),
@@ -34,21 +30,21 @@ LYTAF = np.append(EMPTY_LYTAF,
                              datetime.datetime.utcfromtimestamp(1359677250),
                              datetime.datetime.utcfromtimestamp(1359677400),
                              "LAR", "Large Angle Rotation.")],
-                             dtype=EMPTY_LYTAF.dtype))
+                           dtype=EMPTY_LYTAF.dtype))
 LYTAF = np.append(LYTAF,
                   np.array([(datetime.datetime.utcfromtimestamp(1371460063),
                              datetime.datetime.utcfromtimestamp(1359681764),
                              datetime.datetime.utcfromtimestamp(1359682450),
-                            datetime.datetime.utcfromtimestamp(1359683136),
-                            "UV occ.", "Occultation in the UV spectrum.")],
-                            dtype=LYTAF.dtype))
+                             datetime.datetime.utcfromtimestamp(1359683136),
+                             "UV occ.", "Occultation in the UV spectrum.")],
+                           dtype=LYTAF.dtype))
 
 @pytest.mark.online
 def test_split_series_using_lytaf():
     '''test the downloading of the LYTAF file and subsequent queries'''
     tmp_dir = tempfile.mkdtemp()
     lyra.download_lytaf_database(lytaf_dir=tmp_dir)
-    assert os.path.exists(os.path.join(tmp_dir,'annotation_ppt.db'))
+    assert os.path.exists(os.path.join(tmp_dir, 'annotation_ppt.db'))
 
     #test split_series_using_lytaf
     #construct a dummy signal for testing purposes
@@ -149,7 +145,7 @@ def test_remove_lyra_artifacts_3():
     assert artifacts_status_test["not_found"] == \
       artifacts_status_expected["not_found"]
 
-def test_remove_lyra_artifacts_errors():
+def test_remove_lyra_artifacts_4():
     """Test if correct errors are raised by remove_lyra_artifacts()."""
     with pytest.raises(TypeError):
         lyra.remove_lyra_artifacts(TIME, artifacts=[6],
@@ -210,11 +206,11 @@ def test_extract_lytaf_events():
                          u"Off-limb event in SWAP.",
                          u"Unexplained feature."]
     lytaf_expected = np.empty((8,), dtype=[("insertion_time", object),
-                                          ("begin_time", object),
-                                          ("reference_time", object),
-                                          ("end_time", object),
-                                          ("event_type", object),
-                                          ("event_definition", object)])
+                                           ("begin_time", object),
+                                           ("reference_time", object),
+                                           ("end_time", object),
+                                           ("event_type", object),
+                                           ("event_definition", object)])
     lytaf_expected["insertion_time"] = insertion_time
     lytaf_expected["begin_time"] = begin_time
     lytaf_expected["reference_time"] = reference_time

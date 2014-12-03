@@ -4,19 +4,19 @@ from __future__ import division
 import os.path
 from datetime import datetime
 from warnings import warn
-from sunpy.util.util import Deprecated
 import copy
 import csv
 import urllib
 import calendar
 
 import numpy as np
-import pandas.tseries.index
 import sqlite3
+from astropy.io import fits
 
 from sunpy.time import parse_time
 from sunpy import config
 from sunpy.util.net import check_download_file
+from sunpy.util.util import Deprecated
 
 LYTAF_REMOTE_PATH = "http://proba2.oma.be/lyra/data/lytaf/"
 LYTAF_PATH = config.get("downloads", "download_dir")
@@ -115,7 +115,14 @@ def remove_lyra_artifacts(time, channels=None, artifacts="All",
 
     Example
     -------
-
+    # Sample data for example
+    >>> time = np.array([datetime(2013, 2, 1)+timedelta(minutes=i)
+                         for i in range(120)])
+    >>> channel_1 = np.zeros(len(TIME))+0.4
+    >>> channel_2 = np.zeros(len(TIME))+0.1
+    # Remove LARs (Large Angle Rotations) from time series.
+    >>> time_clean, channels_clean = remove_lyra_artifacts(
+          time, channels=[channel_1, channel2], artifacts=['LAR'])
     """
     # Check inputs
     if not all(isinstance(artifact_type, str) for artifact_type in artifacts):
@@ -129,7 +136,7 @@ def remove_lyra_artifacts(time, channels=None, artifacts="All",
     artifacts_not_found = []
     # Get LYTAF file for given time range
     lytaf = extract_lytaf_events(time[0], time[-1], lytaf_path=lytaf_path,
-                             force_use_local_lytaf=force_use_local_lytaf)
+                                 force_use_local_lytaf=force_use_local_lytaf)
 
     # Find events in lytaf which are to be removed from time series.
     if artifacts == "All":
@@ -283,7 +290,9 @@ def extract_lytaf_events(start_time, end_time, lytaf_path=LYTAF_PATH,
 
     Examples
     --------
-
+    # Get all events in the LYTAF files for January 2014
+    >>> lytaf = extract_lytaf_events('2014-01-01', '2014-02-01')
+    
     """
     # Check inputs
     # Check start_time and end_time is a date string or datetime object
@@ -293,7 +302,7 @@ def extract_lytaf_events(start_time, end_time, lytaf_path=LYTAF_PATH,
     if not all(suffix in ["lyra", "manual", "ppt", "science"]
                for suffix in combine_files):
         raise ValueError("Elements in combine_files must be strings equalling "
-                        "'lyra', 'manual', 'ppt', or 'science'.")
+                         "'lyra', 'manual', 'ppt', or 'science'.")
     # Remove any duplicates from combine_files input
     combine_files = list(set(combine_files))
     combine_files.sort()
@@ -311,7 +320,7 @@ def extract_lytaf_events(start_time, end_time, lytaf_path=LYTAF_PATH,
                                   ("event_type", object),
                                   ("event_definition", object)])
     # Access annotation files
-    for i, suffix in enumerate(combine_files):
+    for suffix in combine_files:
         # Check database files are present
         dbname = "annotation_{0}.db".format(suffix)
         check_download_file(dbname, LYTAF_REMOTE_PATH, lytaf_path)
@@ -371,7 +380,7 @@ def extract_lytaf_events(start_time, end_time, lytaf_path=LYTAF_PATH,
                                  datetime.utcfromtimestamp(event_row[3]),
                                  eventType_type[id_index],
                                  eventType_definition[id_index]),
-                                 dtype=lytaf.dtype))
+                                dtype=lytaf.dtype))
         # Close file
         cursor.close()
         connection.close()
@@ -399,60 +408,55 @@ def extract_lytaf_events(start_time, end_time, lytaf_path=LYTAF_PATH,
     return lytaf
 
 def download_lytaf_database(lytaf_dir=''):
-    """download the latest version of the Proba-2 pointing database from the Proba2 Science Center"""
-    #dl=sunpy.net.download.Downloader()
-    #dl.download('http://proba2.oma.be/lyra/data/lytaf/annotation_ppt.db',path=lytaf_dir)
-    url='http://proba2.oma.be/lyra/data/lytaf/annotation_ppt.db'
-    destination=os.path.join(lytaf_dir,'annotation_ppt.db')
-    urllib.urlretrieve(url,destination)
+    """download latest Proba2 pointing database from Proba2 Science Center"""
+    url = 'http://proba2.oma.be/lyra/data/lytaf/annotation_ppt.db'
+    destination = os.path.join(lytaf_dir, 'annotation_ppt.db')
+    urllib.urlretrieve(url, destination)
 
     return
 
 @Deprecated
-def get_lytaf_events(timerange,lytaf_dir=''):
+def get_lytaf_events(timerange, lytaf_dir=''):
     """returns a list of LYRA pointing events that occured during a timerange"""
     #timerange is a TimeRange object
     #start_ts and end_ts need to be unix timestamps
     st_timerange = timerange.start()
-    start_ts=calendar.timegm(st_timerange.timetuple())
-    en_timerange=timerange.end()
-    end_ts=calendar.timegm(en_timerange.timetuple())
+    start_ts = calendar.timegm(st_timerange.timetuple())
+    en_timerange = timerange.end()
+    end_ts = calendar.timegm(en_timerange.timetuple())
 
     #involves executing SQLite commands from within python.
     #connect to the SQlite database
-    #conn=sqlite3.connect(lytaf_dir + 'annotation_ppt.db')
-    conn=sqlite3.connect(os.path.join(lytaf_dir,'annotation_ppt.db'))
-    cursor=conn.cursor()
+    conn = sqlite3.connect(os.path.join(lytaf_dir, 'annotation_ppt.db'))
+    cursor = conn.cursor()
 
     #create a substitute tuple out of the start and end times for using
     #in the database query
-    query_tup=(start_ts,end_ts,start_ts,end_ts,start_ts,end_ts)
+    query_tup = (start_ts, end_ts, start_ts, end_ts, start_ts, end_ts)
 
     #search only for events within the time range of interest
     # (the lightcurve start/end). Return records ordered by start time
-    result=(cursor.execute('select * from event ' +
-                           'WHERE((begin_time > ? AND begin_time < ?) OR ' +
-                           '(end_time > ? AND end_time < ?) OR ' +
-                           '(begin_time < ? AND end_time > ?)) ' +
-                           'ORDER BY begin_time ASC', query_tup))
+    result = (cursor.execute('select * from event ' +
+                             'WHERE((begin_time > ? AND begin_time < ?) OR ' +
+                             '(end_time > ? AND end_time < ?) OR ' +
+                             '(begin_time < ? AND end_time > ?)) ' +
+                             'ORDER BY begin_time ASC', query_tup))
 
     #get all records from the query in python list format.
-    list=result.fetchall()
+    dblist = result.fetchall()
 
     #times are in unix time - want to use datetime instead
-    output=[]
+    output = []
 
-    for l in list:
+    for l in dblist:
         #create a dictionary for each entry of interest
-        lar_entry={'roi_description':'LYRA LYTAF event',
-                   'start_time':datetime.utcfromtimestamp(l[1]),
-                   'ref_time':datetime.utcfromtimestamp(l[2]),
-                   'end_time':datetime.utcfromtimestamp(l[3]),
-                   'event_type_id':l[4],
-                   'event_type_description':_lytaf_event2string(l[4])[0]}
+        lar_entry = {'roi_description':'LYRA LYTAF event',
+                     'start_time':datetime.utcfromtimestamp(l[1]),
+                     'ref_time':datetime.utcfromtimestamp(l[2]),
+                     'end_time':datetime.utcfromtimestamp(l[3]),
+                     'event_type_id':l[4],
+                     'event_type_description':_lytaf_event2string(l[4])[0]}
 
-        #create output tuple for each entry in list
-        #entry=(insertion_time,start_time,ref_time,end_time,event_type,event_type_info[0])
         #output a list of dictionaries
         output.append(lar_entry)
 
