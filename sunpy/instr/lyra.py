@@ -177,20 +177,10 @@ def remove_lyra_artifacts(time, channels=None, artifacts="All",
     # If return_artifacts kwarg is True, return a list containing
     # information on what artifacts found, removed, etc.  See docstring.
     if return_artifacts is True:
-        if artifacts_not_found == artifacts:
-            artifact_status = {"lytaf": lytaf,
-                               "removed": lytaf[artifact_indices],
-                               "not_removed": np.delete(lytaf,
-                                                        np.arange(len(lytaf))),
-                               "not_found": artifacts_not_found}
-        else:
-            artifacts_removed = lytaf[artifact_indices]
-            artifacts_not_removed = np.delete(lytaf, artifact_indices)
-            if artifacts == "All":
-                artifacts_not_found = []
-            artifact_status = {"lytaf": lytaf, "removed": artifacts_removed,
-                               "not_removed": artifacts_not_removed,
-                               "not_found": artifacts_not_found}
+        artifact_status = {"lytaf": lytaf,
+                           "removed": lytaf[artifact_indices],
+                           "not_removed": np.delete(lytaf, artifact_indices),
+                           "not_found": artifacts_not_found}
     # Output FITS file if fits kwarg is set
     if fitsfile != None:
         # Create time array of time strings rather than datetime objects
@@ -215,7 +205,7 @@ def remove_lyra_artifacts(time, channels=None, artifacts="All",
     if csvfile != None:
         # Create time array of time strings rather than datetime objects
         # and verify filecolumns have been correctly input.  If None,
-        # generate generic filecolumns (see docstring og function called
+        # generate generic filecolumns (see docstring of function called
         # below.
         string_time, filecolumns = _prep_columns(time, channels, filecolumns)
         # Open and write data to csv file.
