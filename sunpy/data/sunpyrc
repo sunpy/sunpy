@@ -38,3 +38,12 @@ time_format = %%Y-%%m-%%d %%H:%%M:%%S
 ; Default value: data/
 ;download_dir = /tmp
 download_dir = data
+
+;;;;;;;;;;;;
+; Database ;
+;;;;;;;;;;;;
+[database]
+
+; Location to create and store default database. 
+; Default value: sqlite:////home/$USER/sunpy/sunpydb.sqlite
+url = sqlite:////home/$USER/sunpy/sunpydb.sqlite
