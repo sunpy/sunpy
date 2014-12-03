@@ -7,6 +7,7 @@ from warnings import warn
 import copy
 import csv
 import urllib
+import calendar
 
 import numpy as np
 import pandas.tseries.index
@@ -18,16 +19,6 @@ from sunpy.util.net import check_download_file
 
 LYTAF_REMOTE_PATH = "http://proba2.oma.be/lyra/data/lytaf/"
 LYTAF_PATH = config.get("downloads", "download_dir")
-
-def download_lytaf_database(lytaf_dir=''):
-    """download the latest version of the Proba-2 pointing database from the Proba2 Science Center"""
-    #dl=sunpy.net.download.Downloader()
-    #dl.download('http://proba2.oma.be/lyra/data/lytaf/annotation_ppt.db',path=lytaf_dir)
-    url='http://proba2.oma.be/lyra/data/lytaf/annotation_ppt.db'
-    destination=os.path.join(lytaf_dir,'annotation_ppt.db')
-    urllib.urlretrieve(url,destination)
-
-    return
 
 def remove_lyra_artifacts(time, channels=None, artifacts="All",
                           return_artifacts=False, fitsfile=None,
@@ -106,7 +97,7 @@ def remove_lyra_artifacts(time, channels=None, artifacts="All",
         found, removed, etc. from the time series.
         artifact_status["lytaf"] = artifacts found : numpy recarray
             The full LYRA annotation file for the time series time range
-            output by get_lytaf_events().
+            output by extract_lytaf_events().
         artifact_status["removed"] = artifacts removed : numpy recarray
             Artifacts which were found and removed from from time series.
         artifact_status["not_removed"] = artifacts found but not removed :
@@ -136,7 +127,7 @@ def remove_lyra_artifacts(time, channels=None, artifacts="All",
     clean_channels = copy.deepcopy(channels)
     artifacts_not_found = []
     # Get LYTAF file for given time range
-    lytaf = get_lytaf_events(time[0], time[-1], lytaf_path=lytaf_path,
+    lytaf = extract_lytaf_events(time[0], time[-1], lytaf_path=lytaf_path,
                              force_use_local_lytaf=force_use_local_lytaf)
 
     # Find events in lytaf which are to be removed from time series.
@@ -235,7 +226,7 @@ def remove_lyra_artifacts(time, channels=None, artifacts="All",
         else:
             return clean_time, clean_channels
 
-def get_lytaf_events(start_time, end_time, lytaf_path=LYTAF_PATH,
+def extract_lytaf_events(start_time, end_time, lytaf_path=LYTAF_PATH,
                      combine_files=["lyra", "manual", "ppt", "science"],
                      csvfile=None, force_use_local_lytaf=False):
     """
@@ -248,18 +239,18 @@ def get_lytaf_events(start_time, end_time, lytaf_path=LYTAF_PATH,
     ----------
     start_time : datetime object or string
         Start time of period for which annotation file is required.
-        
+
     end_time : datetime object or string
         End time of period for which annotation file is required.
-        
+
     lytaf_path : string
         directory path where the LYRA annotation files are stored.
-        
+
     combine_files : (optional) list of strings
         States which LYRA annotation files are to be combined.
         Default is all four, i.e. lyra, manual, ppt, science.
         See Notes section for an explanation of each.
-        
+
     force_use_local_lytaf : bool
         Ensures current local version of lytaf files are not replaced by
         up-to-date online versions even if current local lytaf files do not
@@ -404,8 +395,66 @@ def get_lytaf_events(start_time, end_time, lytaf_path=LYTAF_PATH,
                 new_row.append(row[5])
                 csvwriter.writerow(new_row)
 
-    #return event_rows, eventType_rows
     return lytaf
+
+def download_lytaf_database(lytaf_dir=''):
+    """download the latest version of the Proba-2 pointing database from the Proba2 Science Center"""
+    #dl=sunpy.net.download.Downloader()
+    #dl.download('http://proba2.oma.be/lyra/data/lytaf/annotation_ppt.db',path=lytaf_dir)
+    url='http://proba2.oma.be/lyra/data/lytaf/annotation_ppt.db'
+    destination=os.path.join(lytaf_dir,'annotation_ppt.db')
+    urllib.urlretrieve(url,destination)
+
+    return
+
+def get_lytaf_events(timerange,lytaf_dir=''):
+    """returns a list of LYRA pointing events that occured during a timerange"""
+    #timerange is a TimeRange object
+    #start_ts and end_ts need to be unix timestamps
+    st_timerange = timerange.start()
+    start_ts=calendar.timegm(st_timerange.timetuple())
+    en_timerange=timerange.end()
+    end_ts=calendar.timegm(en_timerange.timetuple())
+
+    #involves executing SQLite commands from within python.
+    #connect to the SQlite database
+    #conn=sqlite3.connect(lytaf_dir + 'annotation_ppt.db')
+    conn=sqlite3.connect(os.path.join(lytaf_dir,'annotation_ppt.db'))
+    cursor=conn.cursor()
+
+    #create a substitute tuple out of the start and end times for using
+    #in the database query
+    query_tup=(start_ts,end_ts,start_ts,end_ts,start_ts,end_ts)
+
+    #search only for events within the time range of interest
+    # (the lightcurve start/end). Return records ordered by start time
+    result=(cursor.execute('select * from event ' +
+                           'WHERE((begin_time > ? AND begin_time < ?) OR ' +
+                           '(end_time > ? AND end_time < ?) OR ' +
+                           '(begin_time < ? AND end_time > ?)) ' +
+                           'ORDER BY begin_time ASC', query_tup))
+
+    #get all records from the query in python list format.
+    list=result.fetchall()
+
+    #times are in unix time - want to use datetime instead
+    output=[]
+
+    for l in list:
+        #create a dictionary for each entry of interest
+        lar_entry={'roi_description':'LYRA LYTAF event',
+                   'start_time':datetime.utcfromtimestamp(l[1]),
+                   'ref_time':datetime.utcfromtimestamp(l[2]),
+                   'end_time':datetime.utcfromtimestamp(l[3]),
+                   'event_type_id':l[4],
+                   'event_type_description':_lytaf_event2string(l[4])[0]}
+
+        #create output tuple for each entry in list
+        #entry=(insertion_time,start_time,ref_time,end_time,event_type,event_type_info[0])
+        #output a list of dictionaries
+        output.append(lar_entry)
+
+    return output
 
 def split_series_using_lytaf(timearray, data, lar):
     """
