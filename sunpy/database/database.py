@@ -13,6 +13,8 @@ from contextlib import contextmanager
 from sqlalchemy import create_engine, exists
 from sqlalchemy.orm import sessionmaker
 
+from ConfigParser import NoSectionError, NoOptionError
+
 import sunpy
 from sunpy.database import commands, tables, serialize
 from sunpy.database.caching import LRUCache
@@ -221,7 +223,21 @@ class Database(object):
     def __init__(self, url=None, CacheClass=LRUCache, cache_size=float('inf'),
             default_waveunit=None):
         if url is None:
-            url = sunpy.config.get('database', 'url')
+            try:
+                url = sunpy.config.get('database', 'url')
+            except (NoSectionError, NoOptionError):
+                # Fallback when database url is not specified 
+                # in the sunpy configuration
+                default_db_parameters = {
+                    'driver' : 'sqlite',
+                    'location' : sunpy.config.get('general', 'working_dir'),
+                    'name' : 'sunpydb.sqlite'
+                }
+                url = '%s:///%s/%s'%(
+                            default_db_parameters['driver'], 
+                            default_db_parameters['location'],
+                            default_db_parameters['name']
+                        )
         self._engine = create_engine(url)
         self._session_cls = sessionmaker(bind=self._engine)
         self.session = self._session_cls()
