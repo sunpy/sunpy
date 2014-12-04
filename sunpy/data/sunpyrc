@@ -44,6 +44,5 @@ download_dir = data
 ;;;;;;;;;;;;
 [database]
 
-; Location to create and store default database. 
+; Location to specify sunpy database url. 
 ; Default value: sqlite:////home/$USER/sunpy/sunpydb.sqlite
-url = sqlite:////home/$USER/sunpy/sunpydb.sqlite
