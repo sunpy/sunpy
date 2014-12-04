@@ -7,9 +7,11 @@ import pytest
 import datetime
 
 import numpy as np
+import pandas
 
 from sunpy.time import parse_time
 from sunpy import config
+from sunpy import lightcurve
 from sunpy.instr import lyra
 
 # Define location for test LYTAF database files
@@ -64,10 +66,51 @@ def test_split_series_using_lytaf():
     assert split[3]['subtimes'][0] == datetime.datetime(2010, 6, 13, 2, 59, 41)
     assert split[3]['subtimes'][-1] == datetime.datetime(2010, 6, 13, 2, 59, 58)
 
+def remove_artifacts_from_lyralightcurve():
+    """Test if artifacts are correctly removed from a LYRAlightCurve."""
+    # Create sample LYRALightCurve
+    lyralc_test = lightcurve.LYRALightCurve.create("2014-01-01")
+    lyralc_test.data = pandas.DataFrame(index=TIME,
+                                        data={"CHANNEL1": CHANNELS[0],
+                                              "CHANNEL2": CHANNELS[1],
+                                              "CHANNEL3": CHANNELS[0],
+                                              "CHANNEL4": CHANNELS[1]})
+    # Run remove_artifacts_from_lyralightcurve
+    lyralc_test, artifact_status_test = \
+      lyra.remove_artifacts_from_lyralightcurve(lyralc_test,
+                                                return_artifacts=True,
+                                                lytaf_path=TEST_DATA_PATH,
+                                                force_use_local_lytaf=True)
+    # Generate expected data by calling _remove_lyra_artifacts and
+    # constructing expected dataframe manually.
+    time, channels, artifact_status_expected = lyra._remove_lyra_artifacts(
+        lyralc.data.index, channels=[np.asanyarray(lyralc.data["CHANNEL1"]),
+                                     np.asanyarray(lyralc.data["CHANNEL2"]),
+                                     np.asanyarray(lyralc.data["CHANNEL3"]),
+                                     np.asanyarray(lyralc.data["CHANNEL4"])],
+        return_artifacts=True, lytaf_path=TEST_DATA_PATH,
+        force_use_local_lytaf=True)
+    dataframe_expected = pandas.DataFrame(index=time,
+                                          data={"CHANNEL1": channels[0],
+                                                "CHANNEL2": channels[1],
+                                                "CHANNEL3": channels[2],
+                                                "CHANNEL4": channels[3]})
+    # Assert expected result is returned
+    pandas.util.testing.assert_frame_equal(lyralc_test.data, dataframe_expected)
+    assert artifacts_status_test.keys() == artifacts_status_expected.keys()
+    np.testing.assert_array_equal(artifacts_status_test["lytaf"],
+                                  artifacts_status_expected["lytaf"])
+    np.testing.assert_array_equal(artifacts_status_test["removed"],
+                                  artifacts_status_expected["removed"])
+    np.testing.assert_array_equal(artifacts_status_test["not_removed"],
+                                  artifacts_status_expected["not_removed"])
+    assert artifacts_status_test["not_found"] == \
+      artifacts_status_expected["not_found"]
+
 def test_remove_lyra_artifacts_1():
-    """Test remove_lyra_artifacts() with default values."""
-    # Run remove_lyra_artifacts
-    time_test, channels_test = lyra.remove_lyra_artifacts(
+    """Test _remove_lyra_artifacts() with default values."""
+    # Run _remove_lyra_artifacts
+    time_test, channels_test = lyra._remove_lyra_artifacts(
         TIME, channels=CHANNELS, lytaf_path=TEST_DATA_PATH,
         force_use_local_lytaf=True)
     # Generated expected result
@@ -86,10 +129,10 @@ def test_remove_lyra_artifacts_1():
     assert (channels_test[1]).all() == (channels_expected[1]).all()
 
 def test_remove_lyra_artifacts_2():
-    """Test remove_lyra_artifacts() with user artifacts found and not found."""
-    # Run remove_lyra_artifacts
+    """Test _remove_lyra_artifacts() with user artifacts found and not found."""
+    # Run _remove_lyra_artifacts
     time_test, channels_test, artifacts_status_test = \
-      lyra.remove_lyra_artifacts(
+      lyra._remove_lyra_artifacts(
           TIME, channels=CHANNELS, artifacts=["LAR", "Offpoint"],
           return_artifacts=True, lytaf_path=TEST_DATA_PATH,
           force_use_local_lytaf=True)
@@ -118,10 +161,10 @@ def test_remove_lyra_artifacts_2():
       artifacts_status_expected["not_found"]
 
 def test_remove_lyra_artifacts_3():
-    """Test remove_lyra_artifacts() with no user artifacts found."""
-    # Run remove_lyra_artifacts
+    """Test _remove_lyra_artifacts() with no user artifacts found."""
+    # Run _remove_lyra_artifacts
     time_test, channels_test, artifacts_status_test = \
-      lyra.remove_lyra_artifacts(
+      lyra._remove_lyra_artifacts(
           TIME, channels=CHANNELS, artifacts=["Offpoint"],
           return_artifacts=True, lytaf_path=TEST_DATA_PATH,
           force_use_local_lytaf=True)
@@ -146,13 +189,13 @@ def test_remove_lyra_artifacts_3():
       artifacts_status_expected["not_found"]
 
 def test_remove_lyra_artifacts_4():
-    """Test if correct errors are raised by remove_lyra_artifacts()."""
+    """Test if correct errors are raised by _remove_lyra_artifacts()."""
     with pytest.raises(TypeError):
-        lyra.remove_lyra_artifacts(TIME, artifacts=[6],
+        lyra._remove_lyra_artifacts(TIME, artifacts=[6],
                                    lytaf_path=TEST_DATA_PATH,
                                    force_use_local_lytaf=True)
     with pytest.raises(TypeError):
-        lyra.remove_lyra_artifacts(TIME, channels=6,
+        lyra._remove_lyra_artifacts(TIME, channels=6,
                                    lytaf_path=TEST_DATA_PATH,
                                    force_use_local_lytaf=True)
 

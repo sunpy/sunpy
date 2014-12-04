@@ -12,19 +12,110 @@ import sqlite3
 
 import numpy as np
 from astropy.io import fits
+import pandas
 
 from sunpy.time import parse_time
 from sunpy import config
 from sunpy.util.net import check_download_file
 from sunpy.util.util import Deprecated
+from sunpy import lightcurve
 
 LYTAF_REMOTE_PATH = "http://proba2.oma.be/lyra/data/lytaf/"
 LYTAF_PATH = config.get("downloads", "download_dir")
 
-def remove_lyra_artifacts(time, channels=None, artifacts="All",
-                          return_artifacts=False, fitsfile=None,
-                          csvfile=None, filecolumns=None,
-                          lytaf_path=LYTAF_PATH, force_use_local_lytaf=False):
+def remove_artifacts_from_lyralightcurve(lyralc, artifacts="All",
+                                         return_artifacts=False,
+                                         lytaf_path=LYTAF_PATH,
+                                         force_use_local_lytaf=False):
+    """
+    Removes periods of LYRA artifacts defined in LYTAF from a LYRALightCurve.
+
+    Parameters
+    ----------
+    lyralc : LYRALightCurve object
+
+     artifacts : list of strings
+        Contain the artifact types to be removed.  For list of artifact types
+        see reference [1].  For example, if user wants to remove only large
+        angle rotations, listed at reference [1] as LAR, let artifacts=["LAR"].
+        Default='All', i.e. all artifacts will be removed.
+
+    return_artifacts : (optional) bool
+        Set to True to return a numpy recarray containing the start time, end
+        time and type of all artifacts removed.
+        Default=False
+
+    lytaf_path : string
+        directory path where the LYRA annotation files are stored.
+
+    force_use_local_lytaf : bool
+        Ensures current local version of lytaf files are not replaced by
+        up-to-date online versions even if current local lytaf files do not
+        cover entire input time range etc.
+        Default=False
+
+    Returns
+    -------
+    lyralc_new : LYRALightCurve
+        copy of input LYRALightCurve with periods corresponding to artifacts
+        removed.
+
+    artifact_status : (optional) dictionary
+        List of 4 variables containing information on what artifacts were
+        found, removed, etc. from the time series.
+        artifact_status["lytaf"] = artifacts found : numpy recarray
+            The full LYRA annotation file for the time series time range
+            output by extract_lytaf_events().
+        artifact_status["removed"] = artifacts removed : numpy recarray
+            Artifacts which were found and removed from from time series.
+        artifact_status["not_removed"] = artifacts found but not removed :
+              numpy recarray
+            Artifacts which were found but not removed as they were not
+            included when user defined artifacts kwarg.
+        artifact_status["not_found"] = artifacts not found : list of strings
+            Artifacts listed to be removed by user when defining artifacts
+            kwarg which were not found in time series time range.
+
+    References
+    ----------
+    [1] http://proba2.oma.be/data/TARDIS
+
+    Examples
+    --------
+    # Remove LARs (Large Angle Rotations) from LYRALightCurve for 4-Dec-2014.
+    >>> lyralc = sunpy.lightcurve.LYRALightCurve.create("2014-12-02")
+    >>> lyralc_nolars = remove_artifacts_from_lyralightcurve(lyralc,
+                                                             artifacts=["LAR"])
+
+    # To also retrieve information on the artifacts during that day...
+    >>> lyralc_nolars, artifact_status = remove_artifacts_from_lyralightcurve(
+            lyralc, artifacts=["LAR"], return_artifacts=True)
+    """
+    # Check that input argument is of correct type
+    if not isinstance(lyralc, lightcurve.LYRALightCurve):
+        raise TypeError("goeslc must be a GOESLightCurve object.")
+    # Remove artifacts from time series
+    time, channels, artifact_status = _remove_lyra_artifacts(
+        lyralc.data.index, channels=[np.asanyarray(lyralc.data["CHANNEL1"]),
+                                     np.asanyarray(lyralc.data["CHANNEL2"]),
+                                     np.asanyarray(lyralc.data["CHANNEL3"]),
+                                     np.asanyarray(lyralc.data["CHANNEL4"])],
+        artifacts=artifacts, return_artifacts=True, lytaf_path=LYTAF_PATH,
+        force_use_local_lytaf=force_use_local_lytaf)
+    # Create new copy copy of lightcurve and replace data with
+    # artifact-free time series.
+    lyralc_new = copy.deepcopy(lyralc)
+    lyralc_new.data = pandas.DataFrame(index=time,
+                                       data={"CHANNEL1": channels[0],
+                                             "CHANNEL2": channels[1],
+                                             "CHANNEL3": channels[2],
+                                             "CHANNEL4": channels[3]})
+    return lyralc_new
+
+def _remove_lyra_artifacts(time, channels=None, artifacts="All",
+                           return_artifacts=False, fitsfile=None,
+                           csvfile=None, filecolumns=None,
+                           lytaf_path=LYTAF_PATH, force_use_local_lytaf=False):
     """
     Removes periods of LYRA artifacts from a time series.
 
