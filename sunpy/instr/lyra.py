@@ -497,6 +497,26 @@ def extract_lytaf_events(start_time, end_time, lytaf_path=LYTAF_PATH,
 
     return lytaf
 
+def print_lytaf_event_types(lytaf_path=LYTAF_PATH):
+    """Prints the different event types in the each of the LYTAF databases."""
+    suffixes = ["lyra", "manual", "ppt", "science"]
+    # For each database file extract the event types and print them.
+    print "\nLYTAF Event Types\n-----------------\n"
+    for suffix in suffixes:
+        dbname = "annotation_{0}.db".format(suffix)
+        # Check database file exists, else download it.
+        check_download_file(dbname, LYTAF_REMOTE_PATH, lytaf_path)
+        # Open SQLITE3 LYTAF files
+        connection = sqlite3.connect(os.path.join(lytaf_path, dbname))
+        # Create cursor to manipulate data in annotation file
+        cursor = connection.cursor()
+        cursor.execute("select type from eventType;")
+        event_types = cursor.fetchall()
+        print "----------------\n{0} database\n----------------".format(suffix)
+        for event_type in event_types:
+            print str(event_type[0])
+        print " "
+
 def download_lytaf_database(lytaf_dir=''):
     """download latest Proba2 pointing database from Proba2 Science Center"""
     url = 'http://proba2.oma.be/lyra/data/lytaf/annotation_ppt.db'
