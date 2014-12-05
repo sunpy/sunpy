@@ -23,7 +23,7 @@ from sunpy import lightcurve
 LYTAF_REMOTE_PATH = "http://proba2.oma.be/lyra/data/lytaf/"
 LYTAF_PATH = config.get("downloads", "download_dir")
 
-def remove_artifacts_from_lyralightcurve(lyralc, artifacts="All",
+def remove_artifacts_from_lyralightcurve(lyralc, artifacts=[],
                                          return_artifacts=False,
                                          lytaf_path=LYTAF_PATH,
                                          force_use_local_lytaf=False):
@@ -38,7 +38,7 @@ def remove_artifacts_from_lyralightcurve(lyralc, artifacts="All",
         Contain the artifact types to be removed.  For list of artifact types
         see reference [1].  For example, if user wants to remove only large
         angle rotations, listed at reference [1] as LAR, let artifacts=["LAR"].
-        Default='All', i.e. all artifacts will be removed.
+        Default=[], i.e. no artifacts will be removed.
 
     return_artifacts : (optional) bool
         Set to True to return a numpy recarray containing the start time, end
@@ -112,7 +112,7 @@ def remove_artifacts_from_lyralightcurve(lyralc, artifacts="All",
                                              "CHANNEL4": channels[3]})
     return lyralc_new
 
-def _remove_lyra_artifacts(time, channels=None, artifacts="All",
+def _remove_lyra_artifacts(time, channels=None, artifacts=[],
                            return_artifacts=False, fitsfile=None,
                            csvfile=None, filecolumns=None,
                            lytaf_path=LYTAF_PATH, force_use_local_lytaf=False):
@@ -143,7 +143,7 @@ def _remove_lyra_artifacts(time, channels=None, artifacts="All",
         Contain the artifact types to be removed.  For list of artifact types
         see reference [1].  For example, if user wants to remove only large
         angle rotations, listed at reference [1] as LAR, let artifacts=["LAR"].
-        Default='All', i.e. all artifacts will be removed.
+        Default=[], i.e. no artifacts will be removed.
 
     return_artifacts : (optional) bool
         Set to True to return a numpy recarray containing the start time, end
@@ -230,20 +230,17 @@ def _remove_lyra_artifacts(time, channels=None, artifacts="All",
                                  force_use_local_lytaf=force_use_local_lytaf)
 
     # Find events in lytaf which are to be removed from time series.
-    if artifacts == "All":
-        artifact_indices = np.arange(len(lytaf["begin_time"]))
-    else:
-        artifact_indices = np.empty(0, dtype="int64")
-        for artifact_type in artifacts:
-            indices = np.where(lytaf["event_type"] == artifact_type)[0]
-            # If none of a given type of artifact is found, record this
-            # type in artifact_not_found list.
-            if len(indices) == 0:
-                artifacts_not_found.append(artifact_type)
-            else:
-                # Else, record the indices of the artifacts of this type
-                artifact_indices = np.concatenate((artifact_indices, indices))
-        artifact_indices.sort()
+    artifact_indices = np.empty(0, dtype="int64")
+    for artifact_type in artifacts:
+        indices = np.where(lytaf["event_type"] == artifact_type)[0]
+        # If none of a given type of artifact is found, record this
+        # type in artifact_not_found list.
+        if len(indices) == 0:
+            artifacts_not_found.append(artifact_type)
+        else:
+            # Else, record the indices of the artifacts of this type
+            artifact_indices = np.concatenate((artifact_indices, indices))
+    artifact_indices.sort()
 
     # Remove relevant artifacts from timeseries. If none of the
     # artifacts the user wanted removed were found, raise a warning and
