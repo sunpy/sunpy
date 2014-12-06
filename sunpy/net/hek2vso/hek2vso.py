@@ -169,7 +169,7 @@ class H2VClient(object):
         hek_results: sunpy.net.hek.hek.Response or list of Responses
             The results from a HEK query in the form of a list.
         limit: int
-            An approximate limit to the desired number of VSO results.
+            An approximate limit to the desired number of VSO result records.
         progress: Boolean
             A flag to turn off the progress bar, defaults to "off"
 

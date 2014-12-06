@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-# Author: Michael Malocha
+# Author: Michael Malocha, Rajul
 # e-mail: mmalocha13@gmail.com
-# Version: June 11th, 2013
+# Version: December 6th, 2014
 #
 
 """
@@ -52,6 +52,9 @@ def test_translate_results_to_query_list(hek_client):
     # Asserting length and types of two lists
     assert len(hek_query) == len(vso_query)
     assert type(hek_query) == type(vso_query)
+    assert len(vso_query) == 19
+    assert isinstance(vso_query, list)
+
     # Asserting the type and length of individual results
     assert isinstance(vso_query[0], list)
     assert len(vso_query[0]) == 4
@@ -95,6 +98,7 @@ def test_vso_attribute_parse(hek_client):
     assert vso_query[3].max.round() == 211.0
     assert vso_query[3].unit == u.Unit('Angstrom')
 
+@pytest.mark.online
 def test_H2VClient_instance(h2v_client):
     assert h2v_client.hek_results == ''
     assert h2v_client.vso_results == []
@@ -102,3 +106,44 @@ def test_H2VClient_instance(h2v_client):
     assert isinstance(h2v_client.hek_client, hek.HEKClient)
     assert isinstance(h2v_client.vso_client, vso.VSOClient)
 
+@pytest.mark.online
+def test_H2VClient_full_query(h2v_client):
+    vso_results = h2v_client.full_query((hekTime, hekEvent))
+
+    assert len(h2v_client.vso_results) == len(h2v_client.hek_results)
+    assert len(h2v_client.vso_results) == 19
+    assert len(vso_results) == len(h2v_client.hek_results)
+    assert len(vso_results) == 19
+
+@pytest.mark.online
+def test_H2VClient_translate_and_query(h2v_client):
+    hek_results = h2v_client.hek_client.query(hekTime, hekEvent)
+    vso_results = h2v_client.translate_and_query(hek_results)
+
+    assert len(h2v_client.vso_results) == len(hek_results)
+    assert len(h2v_client.vso_results) == 19
+    assert len(vso_results) == len(hek_results)
+    assert len(vso_results) == 19
+
+@pytest.mark.online
+def test_H2VClient_full_query_limit(h2v_client):
+    vso_results = h2v_client.full_query((hekTime, hekEvent), limit=100)
+    total_records = sum([len(vso_result) for vso_result in vso_results])
+    total_records_n_minus_1 = total_records - len(vso_results[-1])
+    expected_limit = 100
+
+    assert len(vso_results) == 1
+    assert total_records >= expected_limit 
+    assert total_records_n_minus_1 <= expected_limit
+
+@pytest.mark.online
+def test_H2VClient_translate_and_query_limit(h2v_client):
+    hek_results = h2v_client.hek_client.query(hekTime, hekEvent)
+    vso_results = h2v_client.translate_and_query(hek_results, limit=100)
+    total_records = sum([len(vso_result) for vso_result in vso_results])
+    total_records_n_minus_1 = total_records - len(vso_results[-1])
+    expected_limit = 100
+
+    assert len(vso_results) == 1
+    assert total_records >= expected_limit
+    assert total_records_n_minus_1 <= expected_limit
