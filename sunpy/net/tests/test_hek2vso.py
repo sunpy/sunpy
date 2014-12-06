@@ -8,16 +8,19 @@
 This module was built to test the HEK2VSO class.
 """
 
-__author__ = 'Michael Malocha'
-__version__ = 'June 11th, 2013'
+__author__ = ['Michael Malocha', 'Rajul']
+__version__ = 'December 6th, 2014'
 
 import pytest
+import datetime
 
 from astropy import units as u
 
 from sunpy.net import hek
 from sunpy.net import vso
 from sunpy.net import hek2vso
+
+from sunpy.time import parse_time
 
 
 startTime = '2011/08/09 07:23:56'
@@ -41,39 +44,61 @@ def vso_client():
     vso.VSOClient()
 
 @pytest.mark.online
-def test_translate_results_to_query():
+def test_translate_results_to_query_list(hek_client):
     """Make sure that conversion of HEK results to VSO queries is accurate"""
-    h = hek.HEKClient()
-    hek_query = h.query(hekTime, hekEvent)
+    hek_query = hek_client.query(hekTime, hekEvent)
     vso_query = hek2vso.translate_results_to_query(hek_query)
 
-    if isinstance(hek_query, list):
-        # Comparing length of two lists
-        assert len(hek_query) == len(vso_query)
-        #Comparing types of both queries
-        assert type(hek_query) == type(vso_query)
+    # Asserting length and types of two lists
+    assert len(hek_query) == len(vso_query)
+    assert type(hek_query) == type(vso_query)
+    # Asserting the type and length of individual results
+    assert isinstance(vso_query[0], list)
+    assert len(vso_query[0]) == 4
 
 @pytest.mark.online
-def test_vso_attribute_parse():
+def test_translate_result_to_query_single(hek_client):
+    hek_query = hek_client.query(hekTime, hekEvent)[0]
+    vso_query = hek2vso.translate_results_to_query(hek_query)
+    
+    # Asserting result to be list and have four elements
+    # For Time, Source, Instrument, Wave objects
+    assert isinstance(vso_query, list)
+    assert isinstance(vso_query[0], list)
+    assert len(vso_query) == 1
+    assert len(vso_query[0]) == 4
+
+@pytest.mark.online
+def test_vso_attribute_parse(hek_client):
     """Make sure that Parsing of VSO attributes from HEK queries is accurate"""
-    h = hek.HEKClient()
-    hek_query = h.query(hekTime, hekEvent)
+    hek_query = hek_client.query(hekTime, hekEvent)
     vso_query = hek2vso.vso_attribute_parse(hek_query[0])
 
     # Cheking Time
-    # TODO
+    assert vso_query[0].start == parse_time(hek_query[0]['event_starttime'])
+    assert vso_query[0].end == parse_time(hek_query[0]['event_endtime'])
+    assert vso_query[0].start == datetime.datetime(2011, 8, 8, 1, 30, 4)
+    assert vso_query[0].end == datetime.datetime(2011, 8, 10, 0, 0, 4)
 
     # Checking Observatory
     assert vso_query[1].value == hek_query[0]['obs_observatory']
+    assert vso_query[1].value == 'SDO'
 
     # Checking Instrument
     assert vso_query[2].value == hek_query[0]['obs_instrument']
+    assert vso_query[2].value == 'AIA'
 
     # Checking Wavelength
     assert vso_query[3].min == hek_query[0]['obs_meanwavel'] * u.Unit(hek_query[0]['obs_wavelunit'])
     assert vso_query[3].max == hek_query[0]['obs_meanwavel'] * u.Unit( hek_query[0]['obs_wavelunit'])
+    assert vso_query[3].min.round() == 211.0
+    assert vso_query[3].max.round() == 211.0
     assert vso_query[3].unit == u.Unit('Angstrom')
 
-class TestH2VClient(object):
-    """Tests the H2V class"""
-    # TODO
+def test_H2VClient_instance(h2v_client):
+    assert h2v_client.hek_results == ''
+    assert h2v_client.vso_results == []
+    assert h2v_client.num_of_records == 0
+    assert isinstance(h2v_client.hek_client, hek.HEKClient)
+    assert isinstance(h2v_client.vso_client, vso.VSOClient)
+
