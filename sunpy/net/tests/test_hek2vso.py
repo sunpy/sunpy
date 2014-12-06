@@ -147,3 +147,13 @@ def test_H2VClient_translate_and_query_limit(h2v_client):
     assert len(vso_results) == 1
     assert total_records >= expected_limit
     assert total_records_n_minus_1 <= expected_limit
+
+def test_H2VClient_quick_clean(h2v_client):
+    h2v_client.num_of_records = 100
+    h2v_client.vso_results = ['DummyValue', 'DummyValue']
+    assert h2v_client.num_of_records != 0
+    assert h2v_client.vso_results != []
+
+    h2v_client._quick_clean()
+    assert h2v_client.num_of_records == 0
+    assert h2v_client.vso_results == []
