@@ -91,7 +91,7 @@ def test_Time_input_error():
 def test_Time_collides():
     t1 = va.Time(TimeRange('2012/1/1','2012/1/2'))
     t2 = va.Time(TimeRange('2013/1/1','2013/1/2'))
-    t3 = 1      # dummy int value, not of type Time
+    t3 = 'test_value'      # dummy str value, not of type Time
     
     assert t1.collides(t2)
     assert t1.collides(t3) == False
@@ -148,7 +148,7 @@ def test_Extent_instance():
 def test_Extent_collides():
     t1 = va.Extent(1, 2, 3, 4, 'foo')
     t2 = va.Extent(5, 6, 7, 8, 'bar')
-    t3 = 1      # dummy int value, not of type Extent
+    t3 = 'test_value'      # dummy str value, not of type Extent
     
     assert t1.collides(t2)
     assert t1.collides(t3) == False
@@ -161,6 +161,25 @@ def test_Field_instance():
     assert isinstance(t.attrs, dict)
     assert len(t.attrs.items()) == 1
     assert t.attrs[('field', 'fielditem')] == 'foo'
+
+
+# Tests for the sunpy.net.vso.attrs._VSOSimpleAttr class
+def test_VSOSimpleAttr_instance():
+    t = va._VSOSimpleAttr('foo')
+
+    assert t.value == 'foo'
+
+def test_VSOSimpleAttr_collides():
+    t1 = va._VSOSimpleAttr('foo')
+    t2 = va._VSOSimpleAttr('bar')
+    t3 = 'test_value'      # dummy str value, not of type _VSOSimpleAttr
+    
+    assert t1.collides(t2)
+    assert t1.collides(t3) == False
+
+def test_VSOSimpleAttr_repr():
+    t = va._VSOSimpleAttr('foo')
+    assert t.__repr__() == "<_VSOSimpleAttr('foo')>"
 
 
 @pytest.mark.online
