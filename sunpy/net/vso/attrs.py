@@ -17,7 +17,7 @@ Instrument('aia') & Instrument('eit').
 """
 from __future__ import absolute_import
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from astropy import units as u
 
@@ -112,8 +112,10 @@ class Time(Attr, _Range):
             raise TypeError
         return _Range.__xor__(self, other)
 
-    def pad(self, timedelta):
-        return Time(self.start - timedelta, self.start + timedelta)
+    def pad(self, time_delta):
+        if not isinstance(time_delta, timedelta):
+            raise TypeError("{0!r} must be a {1!r} object".format('timedelta', 'datetime.timedelta'))
+        return Time(self.start - time_delta, self.start + time_delta)
 
     def __repr__(self):
         return '<Time({s.start!r}, {s.end!r}, {s.near!r})>'.format(s=self)

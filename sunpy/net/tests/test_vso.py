@@ -27,21 +27,105 @@ def pytest_funcarg__iclient(request):
     return vso.InteractiveVSOClient()
 
 
+# Tests for the sunpy.net.attrs.ValueAttr class
 def test_simpleattr_apply():
     a = attr.ValueAttr({('test', ): 1})
     dct = {}
     va.walker.apply(a, None, dct)
     assert dct['test'] == 1
 
+
+# Tests for the sunpy.net.vso.attrs.Time class
 def test_Time_timerange():
     t = va.Time(TimeRange('2012/1/1','2012/1/2'))
+    
     assert isinstance(t, va.Time)
     assert t.min == datetime.datetime(2012, 1, 1)
     assert t.max == datetime.datetime(2012, 1, 2)
+    assert t.start == datetime.datetime(2012, 1, 1)
+    assert t.end == datetime.datetime(2012, 1, 2)
+    assert t.near == None
 
-def test_input_error():
+def test_Time_str():
+    t = va.Time('2012/1/1','2012/1/2')
+    
+    assert isinstance(t, va.Time)
+    assert t.min == datetime.datetime(2012, 1, 1)
+    assert t.max == datetime.datetime(2012, 1, 2)
+    assert t.start == datetime.datetime(2012, 1, 1)
+    assert t.end == datetime.datetime(2012, 1, 2)
+    assert t.near == None
+
+    t = va.Time(datetime.datetime(2012, 1, 1), datetime.datetime(2012, 1, 2))
+    
+    assert isinstance(t, va.Time)
+    assert t.min == datetime.datetime(2012, 1, 1)
+    assert t.max == datetime.datetime(2012, 1, 2)
+    assert t.start == datetime.datetime(2012, 1, 1)
+    assert t.end == datetime.datetime(2012, 1, 2)
+    assert t.near == None
+
+def test_Time_str_near():
+    t = va.Time('2012/1/1','2012/1/3', near='2012/1/2')
+    assert isinstance(t, va.Time)
+    assert t.min == datetime.datetime(2012, 1, 1)
+    assert t.max == datetime.datetime(2012, 1, 3)
+    assert t.near == datetime.datetime(2012, 1, 2)
+
+    t = va.Time('2012/1/1','2012/1/3', near=datetime.datetime(2012, 1, 2))
+    assert isinstance(t, va.Time)
+    assert t.min == datetime.datetime(2012, 1, 1)
+    assert t.max == datetime.datetime(2012, 1, 3)
+    assert t.near == datetime.datetime(2012, 1, 2)
+
+def test_Time_input_error():
     with pytest.raises(ValueError):
         va.Time('2012/1/1')
+
+def test_Time_collides():
+    t1 = va.Time(TimeRange('2012/1/1','2012/1/2'))
+    t2 = va.Time(TimeRange('2013/1/1','2013/1/2'))
+    
+    assert t1.collides(t2)
+
+def test_Time_xor():
+    one = va.Time((2010, 1, 1), (2010, 1, 2))
+    a = one ^ va.Time((2010, 1, 1, 1), (2010, 1, 1, 2))
+
+    assert a == attr.AttrOr(
+        [va.Time((2010, 1, 1), (2010, 1, 1, 1)),
+         va.Time((2010, 1, 1, 2), (2010, 1, 2))]
+    )
+
+    a ^= va.Time((2010, 1, 1, 4), (2010, 1, 1, 5))
+    assert a == attr.AttrOr(
+        [va.Time((2010, 1, 1), (2010, 1, 1, 1)),
+         va.Time((2010, 1, 1, 2), (2010, 1, 1, 4)),
+         va.Time((2010, 1, 1, 5), (2010, 1, 2))]
+    )
+
+def test_Time_pad():
+    t = va.Time(TimeRange('2012/1/1','2012/1/2'))
+    delta = datetime.timedelta(1)
+    u = t.pad(delta)
+
+    assert isinstance(u, t.__class__)
+    assert u.min == datetime.datetime(2011, 12, 31)
+    assert u.max == datetime.datetime(2012, 1, 2)
+
+def test_Time_pad_error():
+    t = va.Time(TimeRange('2012/1/1','2012/1/2'))
+    delta = 1
+    
+    with pytest.raises(TypeError):
+        u = t.pad(delta)
+
+def test_Time_repr():
+    t = va.Time(TimeRange('2012/1/1','2012/1/2'))
+    expected_repr = '<Time(datetime.datetime(2012, 1, 1, 0, 0), datetime.datetime(2012, 1, 2, 0, 0), None)>'
+    
+    assert t.__repr__() == expected_repr
+
 
 @pytest.mark.online
 def test_simpleattr_create(client):
@@ -154,23 +238,6 @@ def test_wave_toangstrom():
     with pytest.raises(ValueError) as excinfo:
         va.Wave(10 * u.g, 23 * u.g)
     assert excinfo.value.message == "'g' is not a spectral supported unit"
-
-
-def test_time_xor():
-    one = va.Time((2010, 1, 1), (2010, 1, 2))
-    a = one ^ va.Time((2010, 1, 1, 1), (2010, 1, 1, 2))
-
-    assert a == attr.AttrOr(
-        [va.Time((2010, 1, 1), (2010, 1, 1, 1)),
-         va.Time((2010, 1, 1, 2), (2010, 1, 2))]
-    )
-
-    a ^= va.Time((2010, 1, 1, 4), (2010, 1, 1, 5))
-    assert a == attr.AttrOr(
-        [va.Time((2010, 1, 1), (2010, 1, 1, 1)),
-         va.Time((2010, 1, 1, 2), (2010, 1, 1, 4)),
-         va.Time((2010, 1, 1, 5), (2010, 1, 2))]
-    )
 
 
 def test_wave_xor():
