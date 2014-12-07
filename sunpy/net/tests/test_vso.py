@@ -154,6 +154,15 @@ def test_Extent_collides():
     assert t1.collides(t3) == False
 
 
+# Tests for the sunpy.net.vso.attrs.Field class
+def test_Field_instance():
+    t = va.Field('foo')
+
+    assert isinstance(t.attrs, dict)
+    assert len(t.attrs.items()) == 1
+    assert t.attrs[('field', 'fielditem')] == 'foo'
+
+
 @pytest.mark.online
 def test_simpleattr_create(client):
     a = attr.ValueAttr({('instrument', ): 'eit'})
