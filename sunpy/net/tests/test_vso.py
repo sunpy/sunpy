@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-# Author: Florian Mayer <florian.mayer@bitsrc.org>
+# Author: Florian Mayer <florian.mayer@bitsrc.org>, 
+#         Rajul <rajul09@gmail.com>
 
 #pylint: disable=W0613
 
@@ -15,6 +16,11 @@ from sunpy.net.vso import attrs as va
 from sunpy.net.vso.vso import QueryResponse
 from sunpy.net import attr
 
+
+__authors__ = ["Florian Meyer", "Rajul"]
+__email__ = "florian.mayer@bitsrc.org"
+
+
 def pytest_funcarg__eit(request):
     return va.Instrument('eit')
 
@@ -27,7 +33,7 @@ def pytest_funcarg__iclient(request):
     return vso.InteractiveVSOClient()
 
 
-# Tests for the sunpy.net.attrs.ValueAttr class
+# Tests for the sunpy.net.attr.ValueAttr class
 def test_simpleattr_apply():
     a = attr.ValueAttr({('test', ): 1})
     dct = {}
@@ -85,8 +91,10 @@ def test_Time_input_error():
 def test_Time_collides():
     t1 = va.Time(TimeRange('2012/1/1','2012/1/2'))
     t2 = va.Time(TimeRange('2013/1/1','2013/1/2'))
+    t3 = 1      # dummy int value, not of type Time
     
     assert t1.collides(t2)
+    assert t1.collides(t3) == False
 
 def test_Time_xor():
     one = va.Time((2010, 1, 1), (2010, 1, 2))
@@ -125,6 +133,25 @@ def test_Time_repr():
     expected_repr = '<Time(datetime.datetime(2012, 1, 1, 0, 0), datetime.datetime(2012, 1, 2, 0, 0), None)>'
     
     assert t.__repr__() == expected_repr
+
+
+# Tests for the sunpy.net.vso.attrs.Extent class
+def test_Extent_instance():
+    t = va.Extent(1, 2, 3, 4, 'foo')
+
+    assert t.x == 1
+    assert t.y == 2
+    assert t.width == 3
+    assert t.length == 4
+    assert t.type == 'foo'
+
+def test_Extent_collides():
+    t1 = va.Extent(1, 2, 3, 4, 'foo')
+    t2 = va.Extent(5, 6, 7, 8, 'bar')
+    t3 = 1      # dummy int value, not of type Extent
+    
+    assert t1.collides(t2)
+    assert t1.collides(t3) == False
 
 
 @pytest.mark.online

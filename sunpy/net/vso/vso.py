@@ -38,6 +38,11 @@ from sunpy.net.vso.attrs import walker, TIMEFORMAT
 from sunpy.util import print_table, replacement_filename, Deprecated
 from sunpy.time import parse_time
 
+
+__authors__ = ["Florian Meyer",]
+__email__ = "florian.mayer@bitsrc.org"
+
+
 TIME_FORMAT = config.get("general", "time_format")
 
 DEFAULT_URL = 'http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl'
