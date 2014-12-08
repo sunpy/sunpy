@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Author: Rajul <rajul@gmail.com>
+# Author: Rajul Srivastava<rajul@gmail.com>
 
 #pylint: disable=W0613
 
@@ -10,8 +10,8 @@ from matplotlib import pyplot
 from sunpy.visualization import visualization
 
 
-__authors__ = ["Rajul"]
-__email__ = "rajul09@gmail.com"
+__authors__ = ["Rajul Srivastava",]
+__email__ = ["rajul09@gmail.com",]
 
 
 def test_toggle_pylab():
