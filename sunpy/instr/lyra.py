@@ -93,7 +93,7 @@ def remove_artifacts_from_lyralightcurve(lyralc, artifacts=[],
     """
     # Check that input argument is of correct type
     if not isinstance(lyralc, lightcurve.LYRALightCurve):
-        raise TypeError("goeslc must be a GOESLightCurve object.")
+        raise TypeError("goeslc must be a LYRALightCurve object.")
     # Remove artifacts from time series
     time, channels, artifact_status = _remove_lyra_artifacts(
         lyralc.data.index, channels=[np.asanyarray(lyralc.data["CHANNEL1"]),
