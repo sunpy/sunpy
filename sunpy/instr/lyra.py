@@ -24,9 +24,9 @@ LYTAF_REMOTE_PATH = "http://proba2.oma.be/lyra/data/lytaf/"
 LYTAF_PATH = config.get("downloads", "download_dir")
 
 def remove_lytaf_events_from_lightcurve(lc, artifacts=[],
-                                          return_artifacts=False,
-                                          lytaf_path=LYTAF_PATH,
-                                          force_use_local_lytaf=False):
+                                        return_artifacts=False,
+                                        lytaf_path=LYTAF_PATH,
+                                        force_use_local_lytaf=False):
     """
     Removes periods of LYRA artifacts defined in LYTAF from a LYRALightCurve.
 
@@ -98,7 +98,7 @@ def remove_lytaf_events_from_lightcurve(lc, artifacts=[],
     time, channels, artifact_status = _remove_lytaf_events(
         lc.data.index,
         channels=[np.asanyarray(lc.data[col]) for col in data_columns],
-        artifacts=artifacts, return_artifacts=True, lytaf_path=LYTAF_PATH,
+        artifacts=artifacts, return_artifacts=True, lytaf_path=lytaf_path,
         force_use_local_lytaf=force_use_local_lytaf)
     # Create new copy copy of lightcurve and replace data with
     # artifact-free time series.
@@ -106,7 +106,10 @@ def remove_lytaf_events_from_lightcurve(lc, artifacts=[],
     lc_new.data = pandas.DataFrame(
         index=time, data=dict((col, channels[i])
                               for i, col in enumerate(data_columns)))
-    return lc_new
+    if return_artifacts:
+        return lc_new, artifact_status
+    else:
+        return lc_new
 
 def _remove_lytaf_events(time, channels=None, artifacts=[],
                          return_artifacts=False, fitsfile=None,

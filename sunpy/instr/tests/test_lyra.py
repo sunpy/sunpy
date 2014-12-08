@@ -9,20 +9,19 @@ import datetime
 import numpy as np
 import pandas
 
+from sunpy.data.test import rootdir
 from sunpy.time import parse_time
 from sunpy import config
 from sunpy import lightcurve
-#from sunpy.instr import lyra
-import imp
-lyra = imp.load_source("lyra", "/Users/danielr/git/sunpy/sunpy/instr/lyra.py")
+from sunpy.instr import lyra
 
 # Define location for test LYTAF database files
-#TEST_DATA_PATH = os.path.join(config.get("downloads", "download_dir"), "test")
-TEST_DATA_PATH = "/Users/danielr/git/sunpy/sunpy/data/test/"
+TEST_DATA_PATH = rootdir
+
 # Define some test data for test_remove_lytaf_events()
 TIME = np.array([datetime.datetime(2013, 2, 1)+datetime.timedelta(minutes=i)
                  for i in range(120)])
-CHANNELS = [np.zeros(len(TIME))+0.4, np.array(len(TIME))+0.1]
+CHANNELS = [np.zeros(len(TIME))+0.4, np.zeros(len(TIME))+0.1]
 EMPTY_LYTAF = np.empty((0,), dtype=[("insertion_time", object),
                                     ("begin_time", object),
                                     ("reference_time", object),
@@ -90,8 +89,8 @@ def test_remove_lytaf_events_from_lightcurve():
                                      np.asanyarray(lyralc.data["CHANNEL2"]),
                                      np.asanyarray(lyralc.data["CHANNEL3"]),
                                      np.asanyarray(lyralc.data["CHANNEL4"])],
-        return_artifacts=True, lytaf_path=TEST_DATA_PATH,
-        force_use_local_lytaf=True)
+        artifacts=["LAR", "Offpoint"], return_artifacts=True,
+        lytaf_path=TEST_DATA_PATH, force_use_local_lytaf=True)
     dataframe_expected = pandas.DataFrame(index=time,
                                           data={"CHANNEL1": channels[0],
                                                 "CHANNEL2": channels[1],
@@ -99,15 +98,15 @@ def test_remove_lytaf_events_from_lightcurve():
                                                 "CHANNEL4": channels[3]})
     # Assert expected result is returned
     pandas.util.testing.assert_frame_equal(lyralc_test.data, dataframe_expected)
-    assert artifacts_status_test.keys() == artifacts_status_expected.keys()
-    np.testing.assert_array_equal(artifacts_status_test["lytaf"],
-                                  artifacts_status_expected["lytaf"])
-    np.testing.assert_array_equal(artifacts_status_test["removed"],
-                                  artifacts_status_expected["removed"])
-    np.testing.assert_array_equal(artifacts_status_test["not_removed"],
-                                  artifacts_status_expected["not_removed"])
-    assert artifacts_status_test["not_found"] == \
-      artifacts_status_expected["not_found"]
+    assert artifact_status_test.keys() == artifact_status_expected.keys()
+    np.testing.assert_array_equal(artifact_status_test["lytaf"],
+                                  artifact_status_expected["lytaf"])
+    np.testing.assert_array_equal(artifact_status_test["removed"],
+                                  artifact_status_expected["removed"])
+    np.testing.assert_array_equal(artifact_status_test["not_removed"],
+                                  artifact_status_expected["not_removed"])
+    assert artifact_status_test["not_found"] == \
+      artifact_status_expected["not_found"]
 
 def test_remove_lytaf_events_1():
     """Test _remove_lytaf_events() with user artifacts found and not found."""
