@@ -23,7 +23,7 @@ from sunpy import lightcurve
 LYTAF_REMOTE_PATH = "http://proba2.oma.be/lyra/data/lytaf/"
 LYTAF_PATH = config.get("downloads", "download_dir")
 
-def remove_lyra_artifacts_from_lightcurve(lc, artifacts=[],
+def remove_lytaf_events_from_lightcurve(lc, artifacts=[],
                                           return_artifacts=False,
                                           lytaf_path=LYTAF_PATH,
                                           force_use_local_lytaf=False):
@@ -95,23 +95,23 @@ def remove_lyra_artifacts_from_lightcurve(lc, artifacts=[],
         raise TypeError("lc must be a LightCurve object.")
     # Remove artifacts from time series
     data_columns = lc.data.columns
-    time, channels, artifact_status = _remove_lyra_artifacts(
-        lyralc.data.index,
+    time, channels, artifact_status = _remove_lytaf_events(
+        lc.data.index,
         channels=[np.asanyarray(lc.data[col]) for col in data_columns],
         artifacts=artifacts, return_artifacts=True, lytaf_path=LYTAF_PATH,
         force_use_local_lytaf=force_use_local_lytaf)
     # Create new copy copy of lightcurve and replace data with
     # artifact-free time series.
-    lyralc_new = copy.deepcopy(lyralc)
-    lyralc_new.data = pandas.DataFrame(
-        index=time, data = dict((col, channels[i])
-                                for i, col in enumerate(data_columns)))
-    return lyralc_new
+    lc_new = copy.deepcopy(lc)
+    lc_new.data = pandas.DataFrame(
+        index=time, data=dict((col, channels[i])
+                              for i, col in enumerate(data_columns)))
+    return lc_new
 
-def _remove_lyra_artifacts(time, channels=None, artifacts=[],
-                           return_artifacts=False, fitsfile=None,
-                           csvfile=None, filecolumns=None,
-                           lytaf_path=LYTAF_PATH, force_use_local_lytaf=False):
+def _remove_lytaf_events(time, channels=None, artifacts=[],
+                         return_artifacts=False, fitsfile=None,
+                         csvfile=None, filecolumns=None,
+                         lytaf_path=LYTAF_PATH, force_use_local_lytaf=False):
     """
     Removes periods of LYRA artifacts from a time series.
 
