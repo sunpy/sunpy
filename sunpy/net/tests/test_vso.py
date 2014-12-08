@@ -8,6 +8,9 @@ from __future__ import absolute_import
 
 import datetime
 import pytest
+import threading
+import functools
+
 from astropy import units as u
 
 from sunpy.time import TimeRange
@@ -340,3 +343,109 @@ def test_repr():
     qr = QueryResponse([])
     assert repr(qr) == "<Table rows=0 names=('Start Time','End Time','Source','Instrument','Type')>\narray([], \n      dtype=[('Start Time', '<f8'), ('End Time', '<f8'), ('Source', '<f8'), ('Instrument', '<f8'), ('Type', '<f8')])"
 
+
+# Tests for the sunpy.net.vso.vso.Results class
+def test_Results_instance():
+    # Passing a dummy string in place of a callback function
+    # simply to test correct initialisation behaviour 
+    t = vso.vso.Results(callback='foo') 
+
+    assert isinstance(t, vso.vso.Results)
+    assert t.callback == 'foo'
+    assert t.n == 0
+    assert t.total == 0
+    assert t.map_ == {}
+    assert t.done == None
+    assert isinstance(t.evt, threading._Event)
+    assert t.errors == []
+    assert isinstance(t.lock, threading._RLock)
+    assert t.progress == None
+
+    u = vso.vso.Results(callback='foo', n=1)
+    assert u.n == 1
+    assert u.total == 1
+
+    v = vso.vso.Results(callback='foo', n=1, done='bar')
+    assert v.done == 'bar'
+
+def test_Results_submit():
+    def dummy_callback_function(map):
+        pass
+
+    t = vso.vso.Results(callback=dummy_callback_function)
+    t.submit(keys=['foo', 'bar'], value='baz')
+
+    assert t.map_['foo'] == 'baz'
+    assert t.map_['bar'] == 'baz'
+
+    u = vso.vso.Results(callback=dummy_callback_function)
+
+    with pytest.raises(TypeError):
+        u.submit(keys='foo', value='baz')
+
+def test_Results_poke():
+    # The dummy callback function simply assigns
+    # a dummy attribute to the object
+    def dummy_callback_function(d):
+        t.dummy = "dummy_value"
+        
+    # The dummy done function returns a dummy str value which 
+    # gets assigned to map_ attribute of object inside poke
+    def dummy_done_function(d):
+        return "dummy_done_value"
+
+    t = vso.vso.Results(callback=dummy_callback_function, n=5)
+    t.poke()
+
+    assert t.n == 4
+    assert t.map_ == {}
+
+
+    t = vso.vso.Results(callback=dummy_callback_function, n=1, done=dummy_done_function)
+    t.poke()
+
+    assert t.n == 0
+    assert t.map_ == "dummy_done_value"
+    assert t.dummy == "dummy_value"
+
+def test_Results_require():
+    def dummy_callback_function(d):
+        t.dummy = "dummy_value"
+
+    t = vso.vso.Results(callback=dummy_callback_function)
+    dummy_keys = ['foo', 'bar']
+    r = t.require(dummy_keys)
+
+    assert t.n == 1
+    assert t.total == 1
+    assert isinstance(r, functools.partial)
+    assert r.func == t.submit
+    assert r.args == (dummy_keys,)
+    assert r.keywords == None
+
+def test_Results_add_errors():
+    t = vso.vso.Results(callback='foo') 
+    dummy_exception = "Dummy Exception raised when submitting a result"
+
+    t.add_error(dummy_exception)
+
+    assert t.errors.pop() == dummy_exception
+
+def test_Results_wait():
+    def dummy_callback_function(d):
+        t.dummy = "dummy_value"
+
+    t = vso.vso.Results(callback=dummy_callback_function)
+    t.map_['dummy_key'] = "dummy_value"
+    
+    t.evt.set()
+    w1 = t.wait()
+
+    assert w1 == {'dummy_key': 'dummy_value'}
+    assert t.evt.wait() == True
+
+    t.evt.clear()
+    assert t.evt.wait(1) == False
+
+    w2 = t.wait(2)
+    assert w2 == {'dummy_key': 'dummy_value'}
