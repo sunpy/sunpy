@@ -41,6 +41,75 @@ def test_simpleattr_apply():
     assert dct['test'] == 1
 
 
+# Tests for the sunpy.net.vso.attrs.Wave class
+def test_wave_inputQuantity():
+    wrong_type_mesage = "Wave inputs must be astropy Quantities"
+    with pytest.raises(TypeError) as excinfo:
+        va.Wave(10, 23)
+    assert excinfo.value.message == wrong_type_mesage
+    with pytest.raises(TypeError) as excinfo:
+        va.Wave(10 * u.AA, 23)
+    assert excinfo.value.message == wrong_type_mesage
+
+def test_wave_toangstrom():
+    # TODO: this test shoul test that inputs are in any of spectral units
+    # more than just converted to Angstoms.
+    frequency = [(1, 1 * u.Hz),
+                 (1e3, 1 * u.kHz),
+                 (1e6, 1 * u.MHz),
+                 (1e9, 1 * u.GHz)]
+
+    energy = [(1, 1 * u.eV),
+              (1e3, 1 * u.keV),
+              (1e6, 1 * u.MeV)]
+
+    for factor, unit in energy:
+        w = va.Wave((62 / factor) * unit, (62 / factor) * unit)
+        assert int(w.min.to(u.AA, u.equivalencies.spectral()).value) == 199
+
+    w = va.Wave(62 * u.eV, 62 * u.eV)
+    assert int(w.min.to(u.AA, u.equivalencies.spectral()).value) == 199
+    w = va.Wave(62e-3 * u.keV, 62e-3 * u.keV)
+    assert int(w.min.to(u.AA, u.equivalencies.spectral()).value) == 199
+
+    for factor, unit in frequency:
+        w = va.Wave((1.506e16 / factor) * unit, (1.506e16 / factor) * unit)
+        assert int(w.min.to(u.AA, u.equivalencies.spectral()).value) == 199
+
+    w = va.Wave(1.506e16 * u.Hz, 1.506e16 * u.Hz)
+    assert int(w.min.to(u.AA, u.equivalencies.spectral()).value) == 199
+    w = va.Wave(1.506e7 * u.GHz, 1.506e7 * u.GHz)
+    assert int(w.min.to(u.AA, u.equivalencies.spectral()).value) == 199
+
+    with pytest.raises(ValueError) as excinfo:
+        va.Wave(10 * u.g, 23 * u.g)
+    assert excinfo.value.message == "'g' is not a spectral supported unit"
+
+def test_wave_collides():
+    one = va.Wave(0 * u.AA, 1000 * u.AA)
+    two = va.Wave(1 * u.AA, 900 * u.AA)
+
+    assert one.collides(two)
+
+def test_wave_xor():
+    one = va.Wave(0 * u.AA, 1000 * u.AA)
+    a = one ^ va.Wave(200 * u.AA, 400 * u.AA)
+
+    assert a == attr.AttrOr([va.Wave(0 * u.AA, 200 * u.AA), va.Wave(400 * u.AA, 1000 * u.AA)])
+
+    a ^= va.Wave(600 * u.AA, 800 * u.AA)
+
+    assert a == attr.AttrOr(
+        [va.Wave(0 * u.AA, 200 * u.AA), va.Wave(400 * u.AA, 600 * u.AA), va.Wave(800 * u.AA, 1000 * u.AA)])
+
+def test_wave_repr():
+    """Tests the __repr__ method of class vso.attrs.Wave"""
+    wav = vso.attrs.Wave(12 * u.AA, 16 * u.AA)
+    moarwav = vso.attrs.Wave(15 * u.AA, 12 * u.AA)
+    assert repr(wav) == "<Wave(12.0, 16.0, 'Angstrom')>"
+    assert repr(moarwav) == "<Wave(12.0, 15.0, 'Angstrom')>"
+
+
 # Tests for the sunpy.net.vso.attrs.Time class
 def test_Time_timerange():
     t = va.Time(TimeRange('2012/1/1','2012/1/2'))
@@ -251,60 +320,6 @@ def test_attror_and():
     assert one == other
 
 
-def test_wave_inputQuantity():
-    wrong_type_mesage = "Wave inputs must be astropy Quantities"
-    with pytest.raises(TypeError) as excinfo:
-        va.Wave(10, 23)
-    assert excinfo.value.message == wrong_type_mesage
-    with pytest.raises(TypeError) as excinfo:
-        va.Wave(10 * u.AA, 23)
-    assert excinfo.value.message == wrong_type_mesage
-
-def test_wave_toangstrom():
-    # TODO: this test shoul test that inputs are in any of spectral units
-    # more than just converted to Angstoms.
-    frequency = [(1, 1 * u.Hz),
-                 (1e3, 1 * u.kHz),
-                 (1e6, 1 * u.MHz),
-                 (1e9, 1 * u.GHz)]
-
-    energy = [(1, 1 * u.eV),
-              (1e3, 1 * u.keV),
-              (1e6, 1 * u.MeV)]
-
-    for factor, unit in energy:
-        w = va.Wave((62 / factor) * unit, (62 / factor) * unit)
-        assert int(w.min.to(u.AA, u.equivalencies.spectral()).value) == 199
-
-    w = va.Wave(62 * u.eV, 62 * u.eV)
-    assert int(w.min.to(u.AA, u.equivalencies.spectral()).value) == 199
-    w = va.Wave(62e-3 * u.keV, 62e-3 * u.keV)
-    assert int(w.min.to(u.AA, u.equivalencies.spectral()).value) == 199
-
-    for factor, unit in frequency:
-        w = va.Wave((1.506e16 / factor) * unit, (1.506e16 / factor) * unit)
-        assert int(w.min.to(u.AA, u.equivalencies.spectral()).value) == 199
-
-    w = va.Wave(1.506e16 * u.Hz, 1.506e16 * u.Hz)
-    assert int(w.min.to(u.AA, u.equivalencies.spectral()).value) == 199
-    w = va.Wave(1.506e7 * u.GHz, 1.506e7 * u.GHz)
-    assert int(w.min.to(u.AA, u.equivalencies.spectral()).value) == 199
-
-    with pytest.raises(ValueError) as excinfo:
-        va.Wave(10 * u.g, 23 * u.g)
-    assert excinfo.value.message == "'g' is not a spectral supported unit"
-
-
-def test_wave_xor():
-    one = va.Wave(0 * u.AA, 1000 * u.AA)
-    a = one ^ va.Wave(200 * u.AA, 400 * u.AA)
-
-    assert a == attr.AttrOr([va.Wave(0 * u.AA, 200 * u.AA), va.Wave(400 * u.AA, 1000 * u.AA)])
-
-    a ^= va.Wave(600 * u.AA, 800 * u.AA)
-
-    assert a == attr.AttrOr(
-        [va.Wave(0 * u.AA, 200 * u.AA), va.Wave(400 * u.AA, 600 * u.AA), va.Wave(800 * u.AA, 1000 * u.AA)])
 
 
 def test_err_dummyattr_create():
@@ -316,12 +331,6 @@ def test_err_dummyattr_apply():
     with pytest.raises(TypeError):
         va.walker.apply(attr.DummyAttr(), None, {})
 
-def test_wave_repr():
-    """Tests the __repr__ method of class vso.attrs.Wave"""
-    wav = vso.attrs.Wave(12 * u.AA, 16 * u.AA)
-    moarwav = vso.attrs.Wave(15 * u.AA, 12 * u.AA)
-    assert repr(wav) == "<Wave(12.0, 16.0, 'Angstrom')>"
-    assert repr(moarwav) == "<Wave(12.0, 15.0, 'Angstrom')>"
 
 def test_str():
     qr = QueryResponse([])
