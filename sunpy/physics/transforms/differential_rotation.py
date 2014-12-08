@@ -6,7 +6,7 @@ import datetime
 from astropy import units as u
 from astropy.coordinates import Longitude
 
-__author__ = ["Jose Ivan Campos Rozo","Stuart Mumford", "Rajul"]
+__author__ = ["Jose Ivan Campos Rozo","Stuart Mumford", "Rajul Srivastava"]
 __all__ = ['diff_rot']
 
 
