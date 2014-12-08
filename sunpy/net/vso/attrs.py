@@ -126,6 +126,7 @@ class Time(Attr, _Range):
     def __repr__(self):
         return '<Time({s.start!r}, {s.end!r}, {s.near!r})>'.format(s=self)
 
+
 class Extent(Attr):
     # pylint: disable=R0913
     def __init__(self, x, y, width, length, atype):
