@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # Author: Florian Mayer <florian.mayer@bitsrc.org>, 
-#         Rajul <rajul09@gmail.com>
+#         Rajul Srivastava <rajul09@gmail.com>
 
 #pylint: disable=W0613
 
@@ -20,8 +20,8 @@ from sunpy.net.vso.vso import QueryResponse
 from sunpy.net import attr
 
 
-__authors__ = ["Florian Meyer", "Rajul"]
-__email__ = "florian.mayer@bitsrc.org"
+__authors__ = ["Florian Meyer", "Rajul Srivastava"]
+__email__ = ["florian.mayer@bitsrc.org", "rajul09@gmail.com"]
 
 
 def pytest_funcarg__eit(request):
