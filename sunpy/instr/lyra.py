@@ -265,7 +265,7 @@ def _remove_lyra_artifacts(time, channels=None, artifacts=[],
                            "not_removed": np.delete(lytaf, artifact_indices),
                            "not_found": artifacts_not_found}
     # Output FITS file if fits kwarg is set
-    if fitsfile != None:
+    if fitsfile is not None:
         # Create time array of time strings rather than datetime objects
         # and verify filecolumns have been correctly input.  If None,
         # generate generic filecolumns (see docstring og function called
@@ -274,7 +274,7 @@ def _remove_lyra_artifacts(time, channels=None, artifacts=[],
         # Prepare column objects.
         cols = [fits.Column(name=filecolumns[0], format="26A",
                             array=string_time)]
-        if channels != None:
+        if channels is not None:
             for i, f in enumerate(channels):
                 cols.append(fits.Column(name=filecolumns[i+1], format="D",
                                         array=f))
@@ -285,7 +285,7 @@ def _remove_lyra_artifacts(time, channels=None, artifacts=[],
         # Write data to fits file.
         tbhdulist.writeto(fitsfile)
     # Output csv file if fits kwarg is set.
-    if csvfile != None:
+    if csvfile is not None:
         # Create time array of time strings rather than datetime objects
         # and verify filecolumns have been correctly input.  If None,
         # generate generic filecolumns (see docstring of function called
@@ -471,7 +471,7 @@ def extract_lytaf_events(start_time, end_time, lytaf_path=LYTAF_PATH,
     np.recarray.sort(lytaf, order="begin_time")
 
     # If csvfile kwarg is set, write out lytaf to csv file
-    if csvfile != None:
+    if csvfile is not None:
         # Open and write data to csv file.
         with open(csvfile, 'w') as openfile:
             csvwriter = csv.writer(openfile, delimiter=';')
@@ -697,14 +697,14 @@ def _prep_columns(time, channels, filecolumns):
     # Convert time which contains datetime objects to time strings.
     string_time = np.array([t.strftime("%Y-%m-%dT%H:%M:%S.%f") for t in time])
     # If filenames is given...
-    if filecolumns != None:
+    if filecolumns is not None:
         # ...check all the elements are strings...
         if all(isinstance(column, str) for column in filecolumns) is False:
             raise TypeError("All elements in filecolumns must by strings.")
         # ...and that there are the same number of elements as there
         # are arrays in channels, plus 1 for a time array.  Otherwise
         # raise a ValueError.
-        if channels != None:
+        if channels is not None:
             ncol = 1 + len(channels)
         else:
             ncol = 1
@@ -716,7 +716,7 @@ def _prep_columns(time, channels, filecolumns):
     # form: ["time", "channel0", "channel1",...,"channelN"] where N
     # is the number of arrays in channels (assuming 0-indexed counting).
     else:
-        if channels != None:
+        if channels is not None:
             filecolumns = ["channel{0}".format(fluxnum)
                            for fluxnum in range(len(channels))]
             filecolumns.insert(0, "time")
