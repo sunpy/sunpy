@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Author: Michael Malocha, Rajul
+# Author: Michael Malocha, Rajul Srivastava
 # e-mail: mmalocha13@gmail.com
 # Version: December 6th, 2014
 #
@@ -8,8 +8,8 @@
 This module was built to test the HEK2VSO class.
 """
 
-__author__ = ['Michael Malocha', 'Rajul']
-__version__ = 'December 6th, 2014'
+__author__ = ['Michael Malocha', 'Rajul Srivastava']
+__emails__ = ['mmalocha13@gmail.com', 'rajul09@gmail.com']
 
 import pytest
 import datetime

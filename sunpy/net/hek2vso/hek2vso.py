@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 # Author:   Michael Malocha <mjm159@humboldt.edu>
-# Last Edit:  August 10th, 2013
 #
 # This module was developed with funding from the GSOC 2013 summer of code
 #
@@ -20,8 +19,8 @@ from sunpy.net import hek
 from sunpy.net import vso
 from sunpy.util.progressbar import TTYProgressBar
 
-__author__ = 'Michael Malocha'
-__version__ = 'Aug 10th, 2013'
+__author__ = ['Michael Malocha',]
+__emails__ = ['<mjm159@humboldt.edu>',]
 
 __all__ = ['translate_results_to_query', 'vso_attribute_parse', 'H2VClient']
 
