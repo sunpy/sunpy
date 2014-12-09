@@ -39,8 +39,20 @@ def test_SliderPB_instance(slider_pb):
 
 	assert slider_pb.changed_args == {}
 
+	assert slider_pb.cnt == 0
+
 def test_SliderPB_set_val(slider_pb):
 	pass
 
 def test_SliderPB_on_changed(slider_pb):
-	pass
+	def dummy_function():
+		pass
+
+	t = slider_pb.on_changed(dummy_function)
+
+	assert t == 0
+	assert slider_pb.cnt == 1
+	assert len(slider_pb.observers) == 1
+	assert slider_pb.observers[t] == dummy_function
+	assert len(slider_pb.changed_args) == 1
+	assert slider_pb.changed_args[t] == ()
