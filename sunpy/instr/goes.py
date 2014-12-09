@@ -164,16 +164,16 @@ def temp_em(goeslc, abundances="coronal",
         raise TypeError("goeslc must be a GOESLightCurve object.")
 
     # Find temperature and emission measure with goes_chianti_tem
-    temp, em = goes_chianti_tem(goeslc.data.xrsb, goeslc.data.xrsa,
-                                satellite=goeslc.meta["TELESCOP"].split()[1],
-                                date=goeslc.data.index[0],
-                                abundances=abundances, download=download,
-                                download_dir=download_dir)
+    temp, em = goes_chianti_tem(
+        Quantity(goeslc.data.xrsb, unit=units.W/(units.m)**2),
+        Quantity(goeslc.data.xrsa, unit=units.W/(units.m)**2),
+        satellite=goeslc.meta["TELESCOP"].split()[1],
+        date=goeslc.data.index[0], abundances=abundances, download=download,                   download_dir=download_dir)
 
     # Enter results into new version of GOES LightCurve Object
     goeslc_new = copy.deepcopy(goeslc)
-    goeslc_new.data["temperature"] = temp
-    goeslc_new.data["em"] = em
+    goeslc_new.data["temperature"] = temp.value
+    goeslc_new.data["em"] = em.value
 
     return goeslc_new
 
@@ -692,8 +692,8 @@ def radiative_loss_rate(goeslc, force_download=False, download_dir=DATA_PATH):
         goeslc_new = copy.deepcopy(goeslc)
     else:
         goeslc_new = temp_em(goeslc)
-    temp = np.asarray(goeslc_new.data.temperature, dtype=np.float64)
-    em = np.asarray(goeslc_new.data.em, dtype=np.float64)
+    temp = Quantity(np.asarray(goeslc_new.data.temperature, dtype=np.float64), unit=units.MK)
+    em = Quantity(np.asarray(goeslc_new.data.em, dtype=np.float64), unit=units.cm**(-3))
 
     # Find radiative loss rate with calc_rad_loss()
     rad_loss_out = calc_rad_loss(temp, em, force_download=force_download,
@@ -704,8 +704,8 @@ def radiative_loss_rate(goeslc, force_download=False, download_dir=DATA_PATH):
 
     return goeslc_new
 
-def calc_rad_loss(temp, em, obstime=None, cumulative=False,
-                  force_download=False, download_dir=DATA_PATH):
+def calc_rad_loss(temp, em, obstime=None, force_download=False,
+                  download_dir=DATA_PATH):
     """
     Finds radiative loss rate of coronal plasma over all wavelengths.
 
@@ -833,6 +833,11 @@ def calc_rad_loss(temp, em, obstime=None, cumulative=False,
         if not all(type(obst) == datetime.datetime for obst in obstime):
             raise TypeError("obstime must be an array-like whose elements are"
                             " convertible to datetime objects.")
+        # Check elements in obstime in chronological order
+        chrono_check = obstime-np.roll(obstime, 1)
+        chrono_check = chrono_check[1:]
+        if not all(chrono_check > datetime.timedelta(0)):
+            raise ValueError("Elements of obstime must be in chronological order.")
         # Next, get measurement times in seconds from time of first
         # measurement.
         obstime_seconds = np.array([(ot-obstime[0]).total_seconds()
@@ -840,28 +845,15 @@ def calc_rad_loss(temp, em, obstime=None, cumulative=False,
         # Finally, integrate using trapezoid rule
         rad_loss_int = trapz(rad_loss.value, obstime_seconds)
         rad_loss_int = Quantity(rad_loss_int, unit='J')
-        # If cumulative kwarg True, calculate cumulative radiated energy
-        # in each GOES channel as a function of time.
-        if cumulative:
-            rad_loss_cumul = cumtrapz(rad_loss, obstime_seconds)
-            rad_loss_cumul = Quantity(rad_loss_cumul, unit='J')
-            # Enter results into output dictionary.
-            rad_loss_out = {"rad_loss_rate":rad_loss,
-                            "rad_loss_cumul" : rad_loss_cumul,
-                            "rad_loss_int":rad_loss_int}
-        else:
-            rad_loss_out = {"rad_loss_rate":rad_loss,
-                            "rad_loss_int":rad_loss_int}
+        # Calculate cumulative radiated energy in each GOES channel as
+        # a function of time.
+        rad_loss_cumul = cumtrapz(rad_loss, obstime_seconds)
+        rad_loss_cumul = Quantity(rad_loss_cumul, unit='J')
+        # Enter results into output dictionary.
+        rad_loss_out = {"rad_loss_rate":rad_loss,
+                        "rad_loss_cumul" : rad_loss_cumul,
+                        "rad_loss_int":rad_loss_int}
     else:
-        # Ensure cumulative kwarg wasn't set without setting obstime.
-        if cumulative:
-            raise ValueError("cumulative keyword is True but obstime keyword "
-                             "is None.  In order to calculate cumulative "
-                             "radiated losses, cumulative must be True and "
-                             "measurement times must be given via the "
-                             "obstime kwarg.")
-        # If keyword assignments are OK, enter results into output
-        # dictionary.
         rad_loss_out = {"rad_loss_rate":rad_loss}
 
     return rad_loss_out
@@ -929,7 +921,7 @@ def xray_luminosity(goeslc):
 
     return goeslc_new
 
-def goes_lx(longflux, shortflux, obstime=None, date=None, cumulative=False):
+def goes_lx(longflux, shortflux, obstime=None, date=None):
     """
     Calculates solar X-ray luminosity in GOES wavelength ranges.
 
@@ -957,12 +949,6 @@ def goes_lx(longflux, shortflux, obstime=None, date=None, cumulative=False):
 
     date : (optional) datetime object or valid date string.
         Date at which measurements were taken.
-
-    cumulative : (optional) bool
-        If True and obstime is set, the cumulative radiated energy in
-        each of the GOES wavelength bands is calculated as a function
-        of time.
-        Default=False
 
     Returns
     -------
@@ -1028,6 +1014,11 @@ def goes_lx(longflux, shortflux, obstime=None, date=None, cumulative=False):
         if not all(type(obst) == datetime.datetime for obst in obstime):
             raise TypeError("obstime must be an array-like whose elements are"
                             " convertible to datetime objects.")
+        # Check elements in obstime in chronological order
+        chrono_check = obstime-np.roll(obstime, 1)
+        chrono_check = chrono_check[1:]
+        if not all(chrono_check > datetime.timedelta(0)):
+            raise ValueError("Elements of obstime must be in chronological order.")
         # Next, get measurement times in seconds from time of first
         # measurement.
         obstime_seconds = np.array([(ot-obstime[0]).total_seconds()
@@ -1037,31 +1028,18 @@ def goes_lx(longflux, shortflux, obstime=None, date=None, cumulative=False):
         longlum_int = Quantity(longlum_int, unit=longlum.unit*units.s)
         shortlum_int = trapz(shortlum.value, obstime_seconds)
         shortlum_int = Quantity(shortlum_int, unit=shortlum.unit*units.s)
-        # If cumulative kwarg True, calculate cumulative radiated energy
-        # in each GOES channel as a function of time.
-        if cumulative is True:
-            longlum_cumul = cumtrapz(longlum.value, obstime_seconds)
-            longlum_cumul = Quantity(longlum_cumul, unit=longlum.unit/units.s)
-            shortlum_cumul = cumtrapz(shortlum.value, obstime_seconds)
-            shortlum_cumul = Quantity(shortlum_cumul,
-                                      unit=shortlum.unit/units.s)
-            lx_out = {"longlum":longlum, "shortlum":shortlum,
-                      "longlum_cumul":longlum_cumul,
-                      "shortlum_cumul":shortlum_cumul,
-                      "longlum_int":longlum_int, "shortlum_int":shortlum_int}
-        else:
-            lx_out = {"longlum":longlum, "shortlum":shortlum,
-                      "longlum_int":longlum_int, "shortlum_int":shortlum_int}
+        # Calculate cumulative radiated energy in each GOES channel as
+        # a function of time.
+        longlum_cumul = cumtrapz(longlum.value, obstime_seconds)
+        longlum_cumul = Quantity(longlum_cumul, unit=longlum.unit/units.s)
+        shortlum_cumul = cumtrapz(shortlum.value, obstime_seconds)
+        shortlum_cumul = Quantity(shortlum_cumul,
+                                  unit=shortlum.unit/units.s)
+        lx_out = {"longlum":longlum, "shortlum":shortlum,
+                  "longlum_cumul":longlum_cumul,
+                  "shortlum_cumul":shortlum_cumul,
+                  "longlum_int":longlum_int, "shortlum_int":shortlum_int}
     else:
-        # Ensure cumulative kwarg wasn't set without setting obstime.
-        if cumulative is True:
-            raise IOError("cumulative keyword is True but obstime keyword is "
-                          "None.  In order to calculate cumulative X-ray "
-                          "radiated energies, cumulative must be True and "
-                          "measurement times must be given via the obstime "
-                          "keyword.")
-        # If keyword assignments are OK, enter results into output
-        # dictionary.
         lx_out = {"longlum":longlum, "shortlum":shortlum}
 
     return lx_out
@@ -1110,9 +1088,9 @@ def _calc_xraylum(flux, date=None):
     _check_quantity(flux, units.Watt/units.m/units.m)
     if date is not None:
         date = parse_time(date)
-        xraylum = 4 * np.pi * (sun.sunearth_distance(t=date))**2 * flux
+        xraylum = 4 * np.pi * (sun.sunearth_distance(t=date)*sun.constants.au)**2 * flux
     else:
-        xraylum = 4 * np.pi * (sun.sunearth_distance())**2 * flux
+        xraylum = 4 * np.pi * (sun.sunearth_distance()*sun.constants.au)**2 * flux
     return xraylum
 
 def _check_quantity(q, unit):

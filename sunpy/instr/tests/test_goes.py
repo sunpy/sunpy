@@ -3,15 +3,15 @@ from __future__ import absolute_import
 import copy
 import datetime
 import pytest
-from datetime import datetime
+import datetime
 
 import numpy as np
 from astropy.units.quantity import Quantity
+from pandas.util.testing import assert_frame_equal
 
 from sunpy.time import TimeRange
+from sunpy import lightcurve
 from sunpy.instr import goes
-import sunpy.lightcurve as lc
-from pandas.util.testing import assert_frame_equal
 
 # Define input variables to be used in test functions for
 # goes_chianti_tem.
@@ -29,9 +29,9 @@ def test_goes_event_list():
     assert type(result[0]) == dict
     assert type(result[0]['event_date'] == str)
     assert type(result[0]['goes_location'] == tuple)
-    assert type(result[0]['peak_time'] == datetime)
-    assert type(result[0]['start_time'] == datetime)
-    assert type(result[0]['end_time'] == datetime)
+    assert type(result[0]['peak_time'] == datetime.datetime)
+    assert type(result[0]['start_time'] == datetime.datetime)
+    assert type(result[0]['end_time'] == datetime.datetime)
     assert type(result[0]['goes_class'] == str)
     assert type(result[0]['noaa_active_region'] == int)
     assert result[0]['event_date'] == '2011-06-07'
@@ -47,9 +47,9 @@ def test_goes_event_list():
     assert type(result[0]) == dict
     assert type(result[0]['event_date'] == str)
     assert type(result[0]['goes_location'] == tuple)
-    assert type(result[0]['peak_time'] == datetime)
-    assert type(result[0]['start_time'] == datetime)
-    assert type(result[0]['end_time'] == datetime)
+    assert type(result[0]['peak_time'] == datetime.datetime)
+    assert type(result[0]['start_time'] == datetime.datetime)
+    assert type(result[0]['end_time'] == datetime.datetime)
     assert type(result[0]['goes_class'] == str)
     assert type(result[0]['noaa_active_region'] == int)
     assert result[0]['event_date'] == '2011-06-07'
@@ -65,7 +65,7 @@ def test_goes_event_list():
 def test_temp_em():
     # Create GOESLightcurve object, then create new one with
     # temperature & EM using with temp_em().
-    goeslc = lc.GOESLightCurve.create("2014-01-01 00:00", "2014-01-01 01:00")
+    goeslc = lightcurve.GOESLightCurve.create("2014-01-01 00:00", "2014-01-01 01:00")
     goeslc_new = goes.temp_em(goeslc)
     # Test correct exception is raised if a GOESLightCurve object is
     # not inputted.
@@ -98,7 +98,7 @@ def test_goes_chianti_tem_errors():
     shortflux_toobig = copy.deepcopy(SHORTFLUX)
     shortflux_toobig.value[0] = 1
     temp_test = Quantity(np.zeros(len(LONGFLUX))+10, unit="MK")
-    temp_test_toomany = Quantity(np.append(temp_test, 0), unit="MK")
+    temp_test_toomany = Quantity(np.append(temp_test.value, 0), unit="MK")
     temp_test_toosmall = copy.deepcopy(temp_test)
     temp_test_toosmall.value[0] = -1
     temp_test_toobig = copy.deepcopy(temp_test)
@@ -210,7 +210,7 @@ def test_goes_chianti_tem_case8():
 
 def test_radiative_loss_rate():
     # Define input variables.
-    goeslc_input = lc.GOESLightCurve.create("2014-01-01 00:00:00",
+    goeslc_input = lightcurve.GOESLightCurve.create("2014-01-01 00:00:00",
                                             "2014-01-01 00:00:10")
     not_goeslc = []
     goeslc_no_em = goes.temp_em(goeslc_input)
@@ -239,22 +239,25 @@ def test_calc_rad_loss_errors():
     temp = Quantity([11.0, 11.0, 11.0, 11.0, 11.0, 11.0], unit="MK")
     em = Quantity([4.0e+48, 4.0e+48, 4.0e+48, 4.0e+48, 4.0e+48, 4.0e+48],
                   unit="1/cm**3")
-    obstime = np.array([datetime(2014, 1, 1, 0, 0, 0),
-                        datetime(2014, 1, 1, 0, 0, 2),
-                        datetime(2014, 1, 1, 0, 0, 4),
-                        datetime(2014, 1, 1, 0, 0, 6),
-                        datetime(2014, 1, 1, 0, 0, 8),
-                        datetime(2014, 1, 1, 0, 0, 10)], dtype=object)
-    temp_toolong = Quantity(np.append(temp, 0), unit="MK")
-    obstime_toolong =  np.array([datetime(2014, 1, 1, 0, 0, 0),
-                        datetime(2014, 1, 1, 0, 0, 2),
-                        datetime(2014, 1, 1, 0, 0, 4),
-                        datetime(2014, 1, 1, 0, 0, 6),
-                        datetime(2014, 1, 1, 0, 0, 8),
-                        datetime(2014, 1, 1, 0, 0, 10),
-                        datetime(2014, 1, 1, 0, 0, 12)], dtype=object))
+    obstime = np.array([datetime.datetime(2014, 1, 1, 0, 0, 0),
+                        datetime.datetime(2014, 1, 1, 0, 0, 2),
+                        datetime.datetime(2014, 1, 1, 0, 0, 4),
+                        datetime.datetime(2014, 1, 1, 0, 0, 6),
+                        datetime.datetime(2014, 1, 1, 0, 0, 8),
+                        datetime.datetime(2014, 1, 1, 0, 0, 10)], dtype=object)
+    temp_toolong = Quantity(np.append(temp.value, 0), unit="MK")
+    obstime_toolong =  np.array([datetime.datetime(2014, 1, 1, 0, 0, 0),
+                        datetime.datetime(2014, 1, 1, 0, 0, 2),
+                        datetime.datetime(2014, 1, 1, 0, 0, 4),
+                        datetime.datetime(2014, 1, 1, 0, 0, 6),
+                        datetime.datetime(2014, 1, 1, 0, 0, 8),
+                        datetime.datetime(2014, 1, 1, 0, 0, 10),
+                        datetime.datetime(2014, 1, 1, 0, 0, 12)], dtype=object)
     obstime_nonchrono = copy.deepcopy(obstime)
     obstime_nonchrono[1] = obstime[-1]
+    obstime_nonchrono[-1] = obstime[1]
+    obstime_notdatetime = copy.deepcopy(obstime)
+    obstime_notdatetime[0] = 1
     temp_outofrange = Quantity([101, 11.0, 11.0, 11.0, 11.0, 11.0], unit="MK")
     # Ensure correct exceptions are raised.
     with pytest.raises(ValueError):
@@ -263,22 +266,22 @@ def test_calc_rad_loss_errors():
         rad_loss_test = goes.calc_rad_loss(temp_outofrange, em, obstime)
     with pytest.raises(IOError):
         rad_loss_test = goes.calc_rad_loss(temp, em, obstime_toolong)
+    with pytest.raises(TypeError):
+        lx_test = goes.calc_rad_loss(temp, em, obstime_notdatetime)
     with pytest.raises(ValueError):
         rad_loss_test = goes.calc_rad_loss(temp, em, obstime_nonchrono)
-    with pytest.raises(IOError):
-        rad_loss_test = goes.calc_rad_loss(temp, em, cumulative=True)
 
 def test_calc_rad_loss_nokwags():
     # Define input variables
     temp = Quantity([11.0, 11.0, 11.0, 11.0, 11.0, 11.0], unit="MK")
     em = Quantity([4.0e+48, 4.0e+48, 4.0e+48, 4.0e+48, 4.0e+48, 4.0e+48],
                   unit="1/cm**3")
-    obstime = np.array([datetime(2014, 1, 1, 0, 0, 0),
-                        datetime(2014, 1, 1, 0, 0, 2),
-                        datetime(2014, 1, 1, 0, 0, 4),
-                        datetime(2014, 1, 1, 0, 0, 6),
-                        datetime(2014, 1, 1, 0, 0, 8),
-                        datetime(2014, 1, 1, 0, 0, 10)], dtype=object)
+    obstime = np.array([datetime.datetime(2014, 1, 1, 0, 0, 0),
+                        datetime.datetime(2014, 1, 1, 0, 0, 2),
+                        datetime.datetime(2014, 1, 1, 0, 0, 4),
+                        datetime.datetime(2014, 1, 1, 0, 0, 6),
+                        datetime.datetime(2014, 1, 1, 0, 0, 8),
+                        datetime.datetime(2014, 1, 1, 0, 0, 10)], dtype=object)
     # Test output is correct when no kwags are set.
     rad_loss_test = goes.calc_rad_loss(temp[:2], em[:2])
     rad_loss_expected = {"rad_loss_rate": Quantity(
@@ -292,35 +295,14 @@ def test_calc_rad_loss_obstime():
     temp = Quantity([11.0, 11.0, 11.0, 11.0, 11.0, 11.0], unit="MK")
     em = Quantity([4.0e+48, 4.0e+48, 4.0e+48, 4.0e+48, 4.0e+48, 4.0e+48],
                   unit="1/cm**3")
-    # Test output is correct when obstime kwag is set.
-    rad_loss_test = goes.calc_rad_loss(temp, em, obstime)
-    rad_loss_expected = {
-        "rad_loss_rate": Quantity([3.01851392e+19, 3.01851392e+19,
-                                   3.01851392e+19, 3.01851392e+19,
-                                   3.01851392e+19, 3.01851392e+19],
-                                   unit='J/s'),
-        "rad_loss_int": Quantity([3.01851392e+20], unit='J')
-        }
-    assert sorted(rad_loss_test.keys()) == sorted(rad_loss_expected.keys())
-    assert np.allclose(rad_loss_test["rad_loss_rate"],
-                       rad_loss_expected["rad_loss_rate"],
-                       rtol=0.01)
-    assert np.allclose(rad_loss_test["rad_loss_int"],
-                       rad_loss_expected["rad_loss_int"], rtol=0.01)
-
-def test_calc_rad_loss_cumulative():
-    # Define input variables
-    temp = Quantity([11.0, 11.0, 11.0, 11.0, 11.0, 11.0], unit="MK")
-    em = Quantity([4.0e+48, 4.0e+48, 4.0e+48, 4.0e+48, 4.0e+48, 4.0e+48],
-                  unit="1/cm**3")
-    obstime = np.array([datetime(2014, 1, 1, 0, 0, 0),
-                        datetime(2014, 1, 1, 0, 0, 2),
-                        datetime(2014, 1, 1, 0, 0, 4),
-                        datetime(2014, 1, 1, 0, 0, 6),
-                        datetime(2014, 1, 1, 0, 0, 8),
-                        datetime(2014, 1, 1, 0, 0, 10)], dtype=object)
+    obstime = np.array([datetime.datetime(2014, 1, 1, 0, 0, 0),
+                        datetime.datetime(2014, 1, 1, 0, 0, 2),
+                        datetime.datetime(2014, 1, 1, 0, 0, 4),
+                        datetime.datetime(2014, 1, 1, 0, 0, 6),
+                        datetime.datetime(2014, 1, 1, 0, 0, 8),
+                        datetime.datetime(2014, 1, 1, 0, 0, 10)], dtype=object)
     # Test output is correct when obstime and cumulative kwargs are set.
-    rad_loss_test = goes.calc_rad_loss(temp, em, obstime, cumulative=True)
+    rad_loss_test = goes.calc_rad_loss(temp, em, obstime)
     rad_loss_expected = {
         "rad_loss_rate": Quantity([3.01851392e+19, 3.01851392e+19,
                                    3.01851392e+19, 3.01851392e+19,
@@ -345,7 +327,7 @@ def test_xray_luminosity():
     with pytest.raises(TypeError):
         goes_test = goes.xray_luminosity(not_goeslc)
     # Check function gives correct results.
-    goeslc_input = lc.GOESLightCurve.create("2014-01-01 00:00:00",
+    goeslc_input = lightcurve.GOESLightCurve.create("2014-01-01 00:00:00",
                                             "2014-01-01 00:00:10")
     goeslc_test = goes.xray_luminosity(goeslc_input)
     goeslc_expected = copy.deepcopy(goeslc_input)
@@ -363,22 +345,24 @@ def test_goes_lx_errors():
     # Define input values of flux and time.
     longflux = Quantity([7e-6, 7e-6, 7e-6, 7e-6, 7e-6, 7e-6], unit="W/m**2")
     shortflux = Quantity([7e-7, 7e-7, 7e-7, 7e-7, 7e-7, 7e-7], unit="W/m**2")
-    obstime = np.array([datetime(2014, 1, 1, 0, 0, 0),
-                        datetime(2014, 1, 1, 0, 0, 2),
-                        datetime(2014, 1, 1, 0, 0, 4),
-                        datetime(2014, 1, 1, 0, 0, 6),
-                        datetime(2014, 1, 1, 0, 0, 8),
-                        datetime(2014, 1, 1, 0, 0, 10)], dtype=object)
-    longflux_toolong = np.append(longflux, 0)
+    obstime = np.array([datetime.datetime(2014, 1, 1, 0, 0, 0),
+                        datetime.datetime(2014, 1, 1, 0, 0, 2),
+                        datetime.datetime(2014, 1, 1, 0, 0, 4),
+                        datetime.datetime(2014, 1, 1, 0, 0, 6),
+                        datetime.datetime(2014, 1, 1, 0, 0, 8),
+                        datetime.datetime(2014, 1, 1, 0, 0, 10)], dtype=object)
+    longflux_toolong = Quantity(np.append(longflux.value, 0), unit=longflux.unit)
     obstime_nonchrono = copy.deepcopy(obstime)
     obstime_nonchrono[1] = obstime[-1]
+    obstime_notdatetime = copy.deepcopy(obstime)
+    obstime_notdatetime[0] = 1
     # Ensure correct exceptions are raised.
     with pytest.raises(ValueError):
         lx_test = goes.goes_lx(longflux_toolong, shortflux, obstime)
+    with pytest.raises(TypeError):
+        lx_test = goes.goes_lx(longflux, shortflux, obstime_notdatetime)
     with pytest.raises(ValueError):
         lx_test = goes.goes_lx(longflux, shortflux, obstime_nonchrono)
-    with pytest.raises(IOError):
-        lx_test = goes.goes_lx(longflux, shortflux, cumulative=True)
 
 def test_goes_lx_nokwargs():
     # Define input values of flux and time.
@@ -386,9 +370,9 @@ def test_goes_lx_nokwargs():
     shortflux = Quantity([7e-7, 7e-7, 7e-7, 7e-7, 7e-7, 7e-7], unit="W/m**2")
     # Test output when no kwargs are set.
     lx_test = goes.goes_lx(longflux[:2], shortflux[:2])
-    lx_expected = {"longlum": Quantity([2.02063844e+18, 2.02063844e+18],
+    lx_expected = {"longlum": Quantity([1.91013779e+18, 1.91013779e+18],
                                        unit="W"),
-                   "shortlum": Quantity([2.02063844e+17, 2.02063844e+17],
+                   "shortlum": Quantity([1.91013779e+17, 1.91013779e+17],
                                        unit="W")}
     assert sorted(lx_test.keys()) == sorted(lx_expected.keys())
     assert np.allclose(lx_test["longlum"], lx_expected["longlum"], rtol=0.0001)
@@ -406,76 +390,46 @@ def test_goes_lx_date():
                    "shortlum": Quantity([1.98649103e+17, 1.98649103e+17],
                                         unit="W")}
     assert sorted(lx_test.keys()) == sorted(lx_expected.keys())
-    assert np.allclose(lx_test["longlum"], lx_expected["longlum"], rtol=0.0001)
+    assert np.allclose(lx_test["longlum"], lx_expected["longlum"], rtol=0.001)
     assert np.allclose(lx_test["shortlum"], lx_expected["shortlum"],
-                       rtol=0.0001)
+                       rtol=0.001)
 
 def test_goes_lx_obstime():
     # Define input values of flux and time.
     longflux = Quantity([7e-6, 7e-6, 7e-6, 7e-6, 7e-6, 7e-6], unit="W/m**2")
     shortflux = Quantity([7e-7, 7e-7, 7e-7, 7e-7, 7e-7, 7e-7], unit="W/m**2")
-    obstime = np.array([datetime(2014, 1, 1, 0, 0, 0),
-                        datetime(2014, 1, 1, 0, 0, 2),
-                        datetime(2014, 1, 1, 0, 0, 4),
-                        datetime(2014, 1, 1, 0, 0, 6),
-                        datetime(2014, 1, 1, 0, 0, 8),
-                        datetime(2014, 1, 1, 0, 0, 10)], dtype=object)
-    # Test output when obstime kwarg is set.
+    obstime = np.array([datetime.datetime(2014, 1, 1, 0, 0, 0),
+                        datetime.datetime(2014, 1, 1, 0, 0, 2),
+                        datetime.datetime(2014, 1, 1, 0, 0, 4),
+                        datetime.datetime(2014, 1, 1, 0, 0, 6),
+                        datetime.datetime(2014, 1, 1, 0, 0, 8),
+                        datetime.datetime(2014, 1, 1, 0, 0, 10)], dtype=object)
+    # Test output when obstime and cumulative kwargs are set.
     lx_test = goes.goes_lx(longflux, shortflux, obstime)
     lx_expected = {
-        "longlum": Quantity([2.02061956e+18, 2.02061956e+18, 2.02061956e+18,
-                             2.02061956e+18, 2.02061956e+18, 2.02061956e+18],
+        "longlum": Quantity([1.91013779e+18, 1.91013779e+18, 1.91013779e+18,
+                             1.91013779e+18, 1.91013779e+18, 1.91013779e+18],
                              unit="W"),
-        "shortlum": np.array([2.02061956e+17, 2.02061956e+17, 2.02061956e+17,
-                              2.02061956e+17, 2.02061956e+17, 2.02061956e+17]),
-        "longlum_int": Quantity([2.0206195564361613e+19], unit="J"),
-        "shortlum_int": Quantity([2.0206195564361613e+18], unit="J"),
-        }
-    assert sorted(lx_test.keys()) == sorted(lx_expected.keys())
-    assert np.allclose(lx_test["longlum"], lx_expected["longlum"], rtol=0.0001)
-    assert np.allclose(lx_test["shortlum"], lx_expected["shortlum"],
-                       rtol=0.0001)
-    assert np.allclose(lx_test["longlum_int"], lx_expected["longlum_int"],
-                       rtol=0.0001)
-    assert np.allclose(lx_test["shortlum_int"], lx_expected["shortlum_int"],
-                       rtol=0.0001)
-
-def test_goes_lx_cumulative():
-    # Define input values of flux and time.
-    longflux = Quantity([7e-6, 7e-6, 7e-6, 7e-6, 7e-6, 7e-6], unit="W/m**2")
-    shortflux = Quantity([7e-7, 7e-7, 7e-7, 7e-7, 7e-7, 7e-7], unit="W/m**2")
-    obstime = np.array([datetime(2014, 1, 1, 0, 0, 0),
-                        datetime(2014, 1, 1, 0, 0, 2),
-                        datetime(2014, 1, 1, 0, 0, 4),
-                        datetime(2014, 1, 1, 0, 0, 6),
-                        datetime(2014, 1, 1, 0, 0, 8),
-                        datetime(2014, 1, 1, 0, 0, 10)], dtype=object)
-    # Test output when obstime and cumulative kwargs are set.
-    lx_test = goes.goes_lx(longflux, shortflux, obstime, cumulative=True)
-    lx_expected = {
-        "longlum": Quantity([2.02061108e+18, 2.02061108e+18, 2.02061108e+18,
-                             2.02061108e+18, 2.02061108e+18, 2.02061108e+18],
-                             unit="W"),
-        "shortlum": Quantity([2.02061108e+17, 2.02061108e+17, 2.02061108e+17,
-                              2.02061108e+17, 2.02061108e+17, 2.02061108e+17],
+        "shortlum": Quantity([1.91013779e+17, 1.91013779e+17, 1.91013779e+17,
+                              1.91013779e+17, 1.91013779e+17, 1.91013779e+17],
                               unit="W"),
-        "longlum_int": Quantity([2.020611084165002e+19], unit="J"),
-        "shortlum_int": Quantity([2.020611084165002e+18], unit="J"),
-        "longlum_cumul": Quantity([4.04119000e+18, 8.08238000e+18,
-                                   1.21235700e+19, 1.61647600e+19,
-                                   2.02059500e+19], unit="J"),
-        "shortlum_cumul": Quantity([4.04119000e+17, 8.08238000e+17,
-                                   1.21235700e+18, 1.61647600e+18,
-                                   2.02059500e+18], unit="J")}
+        "longlum_int": Quantity([1.9101360630079373e+19], unit="J"),
+        "shortlum_int": Quantity([1.9101360630079373e+18], unit="J"),
+        "longlum_cumul": Quantity([3.82027213e+18, 7.64054425e+18,
+                                  1.14608164e+19, 1.52810885e+19,
+                                  1.91013606e+19], unit="J"),
+        "shortlum_cumul": Quantity([3.82027213e+17, 7.64054425e+17,
+                                    1.14608164e+18, 1.52810885e+18,
+                                    1.91013606e+18], unit="J")}
     assert sorted(lx_test.keys()) == sorted(lx_expected.keys())
-    assert np.allclose(lx_test["longlum"], lx_expected["longlum"], rtol=0.0001)
+    assert np.allclose(lx_test["longlum"], lx_expected["longlum"], rtol=0.001)
     assert np.allclose(lx_test["shortlum"], lx_expected["shortlum"],
-                       rtol=0.0001)
+                       rtol=0.001)
     assert np.allclose(lx_test["longlum_int"], lx_expected["longlum_int"],
-                       rtol=0.0001)
+                       rtol=0.001)
     assert np.allclose(lx_test["shortlum_int"], lx_expected["shortlum_int"],
-                       rtol=0.0001)
+                       rtol=0.001)
     assert np.allclose(lx_test["longlum_cumul"], lx_expected["longlum_cumul"],
-                       rtol=0.0001)
+                       rtol=0.001)
     assert np.allclose(lx_test["shortlum_cumul"],
-                       lx_expected["shortlum_cumul"], rtol=0.0001)
+                       lx_expected["shortlum_cumul"], rtol=0.001)
