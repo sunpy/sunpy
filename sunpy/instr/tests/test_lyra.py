@@ -57,9 +57,8 @@ def test_split_series_using_lytaf():
     dummy_time = [basetime + datetime.timedelta(0, s) for s in range(seconds)]
     dummy_data = np.random.random(seconds)
 
-    lytaf = lyra.extract_lytaf_events('2010-06-13 02:00', '2010-06-13 06:00',
-                                      lytaf_path=tmp_dir,
-                                      combine_files=["ppt"])
+    lytaf = lyra.get_lytaf_events('2010-06-13 02:00', '2010-06-13 06:00',
+                                  lytaf_path=tmp_dir, combine_files=["ppt"])
     split = lyra.split_series_using_lytaf(dummy_time, dummy_data, lytaf)
     assert type(split) == list
     assert len(split) == 4
@@ -179,12 +178,12 @@ def test_remove_lytaf_events_3():
                                   lytaf_path=TEST_DATA_PATH,
                                   force_use_local_lytaf=True)
 
-def test_extract_lytaf_events():
+def test_get_lytaf_events():
     """Test if LYTAF events are correctly downloaded and read in."""
-    # Run extract_combined_lytaf
-    lytaf_test = lyra.extract_lytaf_events("2008-01-01", "2014-01-01",
-                                           lytaf_path=TEST_DATA_PATH,
-                                           force_use_local_lytaf=True)
+    # Run get_lytaf_events
+    lytaf_test = lyra.get_lytaf_events("2008-01-01", "2014-01-01",
+                                       lytaf_path=TEST_DATA_PATH,
+                                       force_use_local_lytaf=True)
     # Form expected result of extract_combined_lytaf
     insertion_time = [datetime.datetime.utcfromtimestamp(1371459961),
                       datetime.datetime.utcfromtimestamp(1371460063),
@@ -246,7 +245,7 @@ def test_extract_lytaf_events():
     # Check correct error is raised if names of different lytaf files
     # are incorrectly input.
     with pytest.raises(ValueError):
-        lytaf_test = lyra.extract_lytaf_events("2008-01-01", "2014-01-01",
+        lytaf_test = lyra.get_lytaf_events("2008-01-01", "2014-01-01",
                                                lytaf_path="test_data",
                                                combine_files=["gigo"],
                                                force_use_local_lytaf=True)
