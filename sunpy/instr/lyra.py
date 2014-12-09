@@ -7,7 +7,6 @@ from warnings import warn
 import copy
 import csv
 import urllib
-import calendar
 import sqlite3
 
 import numpy as np
@@ -17,7 +16,6 @@ import pandas
 from sunpy.time import parse_time
 from sunpy import config
 from sunpy.util.net import check_download_file
-from sunpy.util.util import Deprecated
 from sunpy import lightcurve
 
 LYTAF_REMOTE_PATH = "http://proba2.oma.be/lyra/data/lytaf/"
@@ -65,7 +63,7 @@ def remove_lytaf_events_from_lightcurve(lc, artifacts=[],
         found, removed, etc. from the time series.
         artifact_status["lytaf"] = artifacts found : numpy recarray
             The full LYRA annotation file for the time series time range
-            output by extract_lytaf_events().
+            output by get_lytaf_events().
         artifact_status["removed"] = artifacts removed : numpy recarray
             Artifacts which were found and removed from from time series.
         artifact_status["not_removed"] = artifacts found but not removed :
@@ -82,13 +80,14 @@ def remove_lytaf_events_from_lightcurve(lc, artifacts=[],
 
     Examples
     --------
-    # Remove LARs (Large Angle Rotations) from LYRALightCurve for 4-Dec-2014.
-    >>> lc = sunpy.lightcurve.LYRALightCurve.create("2014-12-02")
-    >>> lc_nolars = remove_artifacts_from_lyralightcurve(lc, artifacts=["LAR"])
+    Remove LARs (Large Angle Rotations) from LYRALightCurve for 4-Dec-2014.
+        >>> lc = sunpy.lightcurve.LYRALightCurve.create("2014-12-02")
+        >>> lc_nolars = remove_artifacts_from_lyralightcurve(lc, artifacts=["LAR"])
 
-    # To also retrieve information on the artifacts during that day...
-    >>> lc_nolars, artifact_status = remove_artifacts_from_lyralightcurve(
-            lc, artifacts=["LAR"], return_artifacts=True)
+    To also retrieve information on the artifacts during that day...
+        >>> lc_nolars, artifact_status = remove_artifacts_from_lyralightcurve(
+                lc, artifacts=["LAR"], return_artifacts=True)
+
     """
     # Check that input argument is of correct type
     if not isinstance(lc, lightcurve.LightCurve):
@@ -188,7 +187,7 @@ def _remove_lytaf_events(time, channels=None, artifacts=[],
         found, removed, etc. from the time series.
         artifact_status["lytaf"] = artifacts found : numpy recarray
             The full LYRA annotation file for the time series time range
-            output by extract_lytaf_events().
+            output by get_lytaf_events().
         artifact_status["removed"] = artifacts removed : numpy recarray
             Artifacts which were found and removed from from time series.
         artifact_status["not_removed"] = artifacts found but not removed :
@@ -205,14 +204,15 @@ def _remove_lytaf_events(time, channels=None, artifacts=[],
 
     Example
     -------
-    # Sample data for example
-    >>> time = np.array([datetime(2013, 2, 1)+timedelta(minutes=i)
-                         for i in range(120)])
-    >>> channel_1 = np.zeros(len(TIME))+0.4
-    >>> channel_2 = np.zeros(len(TIME))+0.1
-    # Remove LARs (Large Angle Rotations) from time series.
-    >>> time_clean, channels_clean = remove_lyra_artifacts(
-          time, channels=[channel_1, channel2], artifacts=['LAR'])
+    Sample data for example
+        >>> time = np.array([datetime(2013, 2, 1)+timedelta(minutes=i)
+                             for i in range(120)])
+        >>> channel_1 = np.zeros(len(TIME))+0.4
+        >>> channel_2 = np.zeros(len(TIME))+0.1
+    Remove LARs (Large Angle Rotations) from time series.
+        >>> time_clean, channels_clean = remove_lyra_artifacts(
+              time, channels=[channel_1, channel2], artifacts=['LAR'])
+
     """
     # Check inputs
     if not all(isinstance(artifact_type, str) for artifact_type in artifacts):
@@ -225,8 +225,8 @@ def _remove_lytaf_events(time, channels=None, artifacts=[],
     clean_channels = copy.deepcopy(channels)
     artifacts_not_found = []
     # Get LYTAF file for given time range
-    lytaf = extract_lytaf_events(time[0], time[-1], lytaf_path=lytaf_path,
-                                 force_use_local_lytaf=force_use_local_lytaf)
+    lytaf = get_lytaf_events(time[0], time[-1], lytaf_path=lytaf_path,
+                             force_use_local_lytaf=force_use_local_lytaf)
 
     # Find events in lytaf which are to be removed from time series.
     artifact_indices = np.empty(0, dtype="int64")
@@ -321,9 +321,9 @@ def _remove_lytaf_events(time, channels=None, artifacts=[],
         else:
             return clean_time, clean_channels
 
-def extract_lytaf_events(start_time, end_time, lytaf_path=LYTAF_PATH,
-                         combine_files=["lyra", "manual", "ppt", "science"],
-                         csvfile=None, force_use_local_lytaf=False):
+def get_lytaf_events(start_time, end_time, lytaf_path=LYTAF_PATH,
+                     combine_files=["lyra", "manual", "ppt", "science"],
+                     csvfile=None, force_use_local_lytaf=False):
     """
     Extracts combined lytaf file for given time range.
 
@@ -377,9 +377,9 @@ def extract_lytaf_events(start_time, end_time, lytaf_path=LYTAF_PATH,
 
     Examples
     --------
-    # Get all events in the LYTAF files for January 2014
-    >>> lytaf = extract_lytaf_events('2014-01-01', '2014-02-01')
-    
+    Get all events in the LYTAF files for January 2014
+        >>> lytaf = get_lytaf_events('2014-01-01', '2014-02-01')
+
     """
     # Check inputs
     # Check start_time and end_time is a date string or datetime object
@@ -521,53 +521,6 @@ def download_lytaf_database(lytaf_dir=''):
 
     return
 
-@Deprecated
-def get_lytaf_events(timerange, lytaf_dir=''):
-    """returns a list of LYRA pointing events that occured during a timerange"""
-    #timerange is a TimeRange object
-    #start_ts and end_ts need to be unix timestamps
-    st_timerange = timerange.start()
-    start_ts = calendar.timegm(st_timerange.timetuple())
-    en_timerange = timerange.end()
-    end_ts = calendar.timegm(en_timerange.timetuple())
-
-    #involves executing SQLite commands from within python.
-    #connect to the SQlite database
-    conn = sqlite3.connect(os.path.join(lytaf_dir, 'annotation_ppt.db'))
-    cursor = conn.cursor()
-
-    #create a substitute tuple out of the start and end times for using
-    #in the database query
-    query_tup = (start_ts, end_ts, start_ts, end_ts, start_ts, end_ts)
-
-    #search only for events within the time range of interest
-    # (the lightcurve start/end). Return records ordered by start time
-    result = (cursor.execute('select * from event ' +
-                             'WHERE((begin_time > ? AND begin_time < ?) OR ' +
-                             '(end_time > ? AND end_time < ?) OR ' +
-                             '(begin_time < ? AND end_time > ?)) ' +
-                             'ORDER BY begin_time ASC', query_tup))
-
-    #get all records from the query in python list format.
-    dblist = result.fetchall()
-
-    #times are in unix time - want to use datetime instead
-    output = []
-
-    for l in dblist:
-        #create a dictionary for each entry of interest
-        lar_entry = {'roi_description':'LYRA LYTAF event',
-                     'start_time':datetime.datetime.utcfromtimestamp(l[1]),
-                     'ref_time':datetime.datetime.utcfromtimestamp(l[2]),
-                     'end_time':datetime.datetime.utcfromtimestamp(l[3]),
-                     'event_type_id':l[4],
-                     'event_type_description':_lytaf_event2string(l[4])[0]}
-
-        #output a list of dictionaries
-        output.append(lar_entry)
-
-    return output
-
 def split_series_using_lytaf(timearray, data, lytaf):
     """
     Proba-2 analysis code for splitting up LYRA timeseries around locations
@@ -579,7 +532,7 @@ def split_series_using_lytaf(timearray, data, lytaf):
     data - data array corresponding to the given time array
     lar - numpy recarray
         Events obtained from querying LYTAF database using
-        lyra.extract_lytaf_events().
+        lyra.get_lytaf_events().
 
     Output
     ------
