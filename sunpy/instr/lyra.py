@@ -379,7 +379,7 @@ def get_lytaf_events(start_time, end_time, lytaf_path=LYTAF_PATH,
     --------
     Get all events in the LYTAF files for January 2014
         >>> lytaf = get_lytaf_events('2014-01-01', '2014-02-01')
-
+        
     """
     # Check inputs
     # Check start_time and end_time is a date string or datetime object
@@ -460,13 +460,13 @@ def get_lytaf_events(start_time, end_time, lytaf_path=LYTAF_PATH,
         # Enter desired information into the lytaf numpy record array
         for event_row in event_rows:
             id_index = eventType_id.index(event_row[4])
-            lytaf = np.append(lytaf, np.array((datetime.datetime.utcfromtimestamp(event_row[0]),
-                                               datetime.datetime.utcfromtimestamp(event_row[1]),
-                                               datetime.datetime.utcfromtimestamp(event_row[2]),
-                                               datetime.datetime.utcfromtimestamp(event_row[3]),
-                                               eventType_type[id_index],
-                                               eventType_definition[id_index]),
-                                              dtype=lytaf.dtype))
+            lytaf = np.append(lytaf,
+                              np.array((datetime.datetime.utcfromtimestamp(event_row[0]),
+                                        datetime.datetime.utcfromtimestamp(event_row[1]),
+                                        datetime.datetime.utcfromtimestamp(event_row[2]),
+                                        datetime.datetime.utcfromtimestamp(event_row[3]),
+                                        eventType_type[id_index],
+                                        eventType_definition[id_index]), dtype=lytaf.dtype))
         # Close file
         cursor.close()
         connection.close()

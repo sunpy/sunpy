@@ -11,7 +11,6 @@ import pandas
 
 from sunpy.data.test import rootdir
 from sunpy.time import parse_time
-from sunpy import config
 from sunpy import lightcurve
 from sunpy.instr import lyra
 
