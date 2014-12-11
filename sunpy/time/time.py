@@ -169,6 +169,7 @@ def parse_time(time_string, time_format=''):
     Add ability to parse tai (International Atomic Time seconds since
     Jan 1, 1958)
     """
+    time_string = str(time_string)
     if isinstance(time_string, datetime) or time_format == 'datetime':
         return time_string
     elif isinstance(time_string, tuple):
