@@ -169,12 +169,16 @@ def parse_time(time_string, time_format=''):
     Add ability to parse tai (International Atomic Time seconds since
     Jan 1, 1958)
     """
-    if isinstance(time_string, datetime) or time_format == 'datetime':
+    if isinstance(time_string, pandas.tslib.Timestamp):
+    	return time_string.to_datetime()
+    elif isinstance(time_string, datetime) or time_format == 'datetime':
         return time_string
     elif isinstance(time_string, tuple):
         return datetime(*time_string)
     elif time_format == 'utime' or  isinstance(time_string, (int, float))  :
         return datetime(1979, 1, 1) + timedelta(0, time_string)
+    elif isinstance(time_string, pandas.tseries.index.DatetimeIndex):
+    	return time_string._mpl_repr()
     elif time_string is 'now':
         return datetime.utcnow()
     else:
