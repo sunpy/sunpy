@@ -98,6 +98,9 @@ cmlist = {
           'hmimag': hmimag
           }
 
+# Register the colormaps with matplotlib so plt.get_cmap('sdoaia171') works
+for name, cmap in cmlist.items():
+    cm.register_cmap(name=name, cmap=cmap)
 
 def get_cmap(name='sdoaia94'):
     """Get a colormap.
