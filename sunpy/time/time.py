@@ -2,6 +2,7 @@ import re
 from datetime import datetime
 from datetime import timedelta
 
+import numpy as np
 import pandas
 
 __all__ = ['find_time', 'extract_time', 'parse_time', 'is_time', 'day_of_year', 'break_time', 'get_day', 'is_time_in_given_format']
@@ -181,6 +182,8 @@ def parse_time(time_string, time_format=''):
         return datetime(1979, 1, 1) + timedelta(0, time_string)
     elif isinstance(time_string, pandas.tseries.index.DatetimeIndex):
     	return time_string._mpl_repr()
+    elif isinstance(time_string, np.ndarray) and 'datetime64' in str(time_string.dtype):
+        return np.array([ss.astype(datetime) for ss in time_string])
     elif time_string is 'now':
         return datetime.utcnow()
     else:
