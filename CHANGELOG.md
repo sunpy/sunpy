@@ -13,6 +13,8 @@ Latest
  * CD matrix now updated, if present, when Map pixel size is changed.
  * Removed now-redundant method for rotating IRIS maps since the functionality exists in Map.rotate()
  * Provide `__str__` and `__repr__` methods on vso `QueryResponse` deprecate `.show()`
+ * SunPy colormaps are now registered with matplotlib on import of `sunpy.cm`
+ * `sunpy.cm.get_cmap` no longer defaults to 'sdoaia171'
 
 0.5.0
 -----
