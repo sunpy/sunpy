@@ -5,11 +5,12 @@ from distutils.core import Extension
 from glob import glob
 
 from astropy_helpers import setup_helpers
+from astropy.extern import six
 
 
 def get_extensions():
     
-    if platform.system() == 'Windows':
+    if platform.system() == 'Windows' or six.PY3:
         return list()
     else:
         # 'numpy' will be replaced with the proper path to the numpy includes
