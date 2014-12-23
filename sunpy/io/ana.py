@@ -2,7 +2,8 @@
 ANA File Reader
 
 .. warning::
-    The reading and writing of ana file is not supported under Windows.
+    The reading and writing of ana file is not supported under Windows or Python 3.
+    The C extensions will not be built in either case.
 
 Notes
 -----
