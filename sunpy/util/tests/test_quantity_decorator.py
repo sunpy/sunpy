@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Lovingly borrowed from Astropy 
-# Licensed under a 3-clause BSD style license - see LICENSE.rst
+# Lovingly borrowed from Astropy
+# Licensed under a 3-clause BSD style license - see licences/ASTROPY.rst
 
 from astropy import units as u
 from sunpy.util import quantity_input
