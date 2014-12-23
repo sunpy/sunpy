@@ -168,9 +168,6 @@ def parse_time(time_string, time_format=''):
     >>> sunpy.time.parse_time('2012/08/01')
     >>> sunpy.time.parse_time('2005-08-04T00:01:02.000Z')
 
-    Todo:
-    Add ability to parse tai (International Atomic Time seconds since
-    Jan 1, 1958)
     """
     if isinstance(time_string, pandas.tslib.Timestamp):
     	return time_string.to_datetime()
@@ -183,7 +180,9 @@ def parse_time(time_string, time_format=''):
     elif isinstance(time_string, pandas.tseries.index.DatetimeIndex):
     	return time_string._mpl_repr()
     elif isinstance(time_string, np.ndarray) and 'datetime64' in str(time_string.dtype):
-        return np.array([ss.astype(datetime) for ss in time_string])
+        ii = [ss.astype(datetime) for ss in time_string]
+        # Validate (in an agnostic way) that we are getting a datetime rather than a date
+        return np.array([datetime(*(dt.timetuple()[:6])) for dt in ii])
     elif time_string is 'now':
         return datetime.utcnow()
     else:
