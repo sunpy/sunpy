@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # Lovingly borrowed from Astropy
-# Licensed under a 3-clause BSD style license - see licences/ASTROPY.txt
+# Licensed under a 3-clause BSD style license - see licences/ASTROPY.rst
 
 __all__ = ['quantity_input']
 
