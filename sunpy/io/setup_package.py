@@ -1,4 +1,5 @@
 import os
+import platform
 
 from distutils.core import Extension
 from glob import glob
@@ -8,7 +9,7 @@ from astropy_helpers import setup_helpers
 
 def get_extensions():
     
-    if setup_helpers.get_compiler_option() == 'msvc':
+    if platform.system() == 'Windows':
         return list()
     else:
         # 'numpy' will be replaced with the proper path to the numpy includes
