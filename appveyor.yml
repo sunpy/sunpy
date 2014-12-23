@@ -2,16 +2,18 @@
 # Windows
 
 environment:
-  PYTHON: "C:\\conda"
-  MINICONDA_VERSION: "3.5.5"
-  PYTHON_ARCH: "64"
+
+  global:
+      PYTHON: "C:\\conda"
+      MINICONDA_VERSION: "3.5.5"
+      CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\.appveyor_windows_sdk.cmd"
+      PYTHON_ARCH: "64" # needs to be set for CMD_IN_ENV to succeed. If a mix
+                        # of 32 bit and 64 bit builds are needed, move this
+                        # to the matrix section.
 
   matrix:
       - PYTHON_VERSION: "2.7"
-        NUMPY_VERSION: "1.8.1"
-
-      - PYTHON_VERSION: "2.7"
-        NUMPY_VERSION: "1.7.1"
+        NUMPY_VERSION: "1.9.1"
 
 platform:
     - x64
@@ -30,13 +32,9 @@ install:
     - "conda create -q --yes -n test -c astropy-ci-extras python=%PYTHON_VERSION%"
     - "activate test"
 
-    # Install all of SunPy's dependancies that are conda packages
-    # Install build deps for SunPy's ANA
-    - "conda install -q --yes pip mingw libpython"
-    # Install specified version of numpy
-    - "conda install -q --yes numpy=%NUMPY_VERSION%"
-    # Install everything else.
-    - "conda install -q --yes scipy astropy matplotlib pandas requests beautiful-soup sqlalchemy scikit-image pytest"
+    # Install specified version of numpy and dependencies
+    - "conda install -q --yes pip"
+    - "conda install -q --yes numpy=%NUMPY_VERSION% scipy astropy matplotlib pandas requests beautiful-soup sqlalchemy scikit-image pytest"
 
     # Install non-conda packages
     - "pip install suds"
@@ -45,7 +43,5 @@ install:
 build: false
 
 test_script:
-  - "python setup.py develop"
-  # Build env has 1 Virtual core, so double thread for a small boost.
-  - "py.test"
+  - "%CMD_IN_ENV% python setup.py test"
 

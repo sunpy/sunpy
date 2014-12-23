@@ -11,7 +11,11 @@ def get_extensions():
     cfg = setup_helpers.DistutilsExtensionArgs()
     cfg['include_dirs'].append('numpy')
     cfg['sources'].extend(glob(os.path.join(os.path.dirname(__file__), 'src', 'ana', '*.c')))
-    cfg['extra_compile_args'].extend(['-std=c99', '-O3'])
+    
+    if setup_helpers.get_compiler_option() == 'msvc':
+        pass
+    else:
+        cfg['extra_compile_args'].extend(['-std=c99', '-O3'])
 
     e = Extension('sunpy.io._pyana', **cfg)
     return [e]
