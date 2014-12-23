@@ -11,15 +11,14 @@ virtualenv:
 # above.
 env:
     global:
-        - PIP_WHEEL_COMMAND="--find-links http://sunpy.cadair.com/wheelhouse/index.html --use-wheel --upgrade"
+        - PIP_WHEEL_COMMAND="--find-links http://sunpy.cadair.com/wheelhouse/index.html --use-wheel --upgrade --trusted-host sunpy.cadair.com"
         - TEST_MODE='offline'
         - LATEST_NUMPY=1.9.1
         - LATEST_PANDAS=0.15.2
-        - NUMPY_VERSION=LATEST_NUMPY
-        - PANDAS_VERSION=LATEST_PANDAS
+        - NUMPY_VERSION=$LATEST_NUMPY
+        - PANDAS_VERSION=$LATEST_PANDAS
 matrix:
      include:
-        - python: 2.7
         - python: 2.7
           env: NUMPY_VERSION=1.8.1
         - python: 2.7
@@ -27,9 +26,9 @@ matrix:
         - python: 2.7
           env: TEST_MODE='astropy-dev'
         - python: 2.7
-          env: TEST_MODE='sphinx' NUMPY_VERSION=1.9.1 PANDAS_VERSION=0.15.2
+          env: TEST_MODE='sphinx'
         - python: 2.7
-          env: TEST_MODE='online' NUMPY_VERSION=1.9.1 PANDAS_VERSION=0.15.2
+          env: TEST_MODE='online'
 
 before_install:
 # Make sure the system is upto date and install scipy requirements
@@ -67,7 +66,7 @@ install:
 # Install SunPy and run tests.
 script:
    - if [[ $TEST_MODE == 'sphinx' ]]; then python setup.py build_sphinx -w; fi
-   - if [[ $TEST_MODE == 'offline' ]]; then python setup.py test --coverage --cov-report=html --offline-only; fi
+   - if [[ $TEST_MODE == 'offline' || $TEST_MODE == 'astropy-dev' ]]; then python setup.py test --coverage --cov-report=html --offline-only; fi
    - if [[ $TEST_MODE == 'online' ]]; then python setup.py test --coverage --cov-report=term-missing --parallel=8; fi
 
 after_success:
