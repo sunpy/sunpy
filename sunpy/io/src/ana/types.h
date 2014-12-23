@@ -1,11 +1,7 @@
 #ifndef __TYPES_H__  // __TYPES_H__
 #define __TYPES_H__
 
-#ifdef _MSC_VER
-#include stdint_w.h
-#else
 #include <stdint.h>
-#endif
 
 //! @todo fix include guards to legal versions
 
