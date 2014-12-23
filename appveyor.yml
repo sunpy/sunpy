@@ -6,10 +6,6 @@ environment:
   global:
       PYTHON: "C:\\conda"
       MINICONDA_VERSION: "3.5.5"
-      CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\.appveyor_windows_sdk.cmd"
-      PYTHON_ARCH: "64" # needs to be set for CMD_IN_ENV to succeed. If a mix
-                        # of 32 bit and 64 bit builds are needed, move this
-                        # to the matrix section.
 
   matrix:
       - PYTHON_VERSION: "2.7"
@@ -33,7 +29,7 @@ install:
     - "activate test"
 
     # Install specified version of numpy and dependencies
-    - "conda install -q --yes pip"
+    - "conda install -q --yes pip mingw libpython"
     - "conda install -q --yes numpy=%NUMPY_VERSION% scipy astropy matplotlib pandas requests beautiful-soup sqlalchemy scikit-image pytest"
 
     # Install non-conda packages
@@ -43,5 +39,5 @@ install:
 build: false
 
 test_script:
-  - "%CMD_IN_ENV% python setup.py test"
+  - "python setup.py test"
 
