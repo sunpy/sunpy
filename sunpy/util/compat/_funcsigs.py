@@ -1,4 +1,6 @@
 # Copyright 2001-2013 Python Software Foundation; All Rights Reserved
+# https://github.com/aliles/funcsigs - Licenced under the Apache 2.0
+# Licence - see: licences/FUNCSIGS.txt
 """Function signature objects for callables
 
 Back port of Python 3.3's function signature tools from the inspect module,
