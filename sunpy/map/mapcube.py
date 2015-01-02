@@ -4,6 +4,7 @@ from __future__ import absolute_import
 
 import numpy as np
 import matplotlib.animation
+from sunpy.visualization import wcsaxes_compat
 import matplotlib.pyplot as plt
 
 from sunpy.map import GenericMap
@@ -15,7 +16,7 @@ __all__ = ['MapCube']
 
 class MapCube(object):
     """
-    MapCube(input)
+    MapCube
 
     A series of spatially aligned Maps.
 
@@ -173,7 +174,7 @@ class MapCube(object):
         else:
             ani_data = self.maps
 
-        im = ani_data[0].plot(**kwargs)
+        im = ani_data[0].plot(axes=axes, **kwargs)
 
         def updatefig(i, im, annotate, ani_data):
 

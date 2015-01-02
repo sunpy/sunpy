@@ -23,6 +23,7 @@ from sunpy.image.transform import affine_transform
 import sunpy.io as io
 import sunpy.wcs as wcs
 from sunpy.visualization import toggle_pylab
+from sunpy.visualization import wcsaxes_compat
 from sunpy.sun import constants
 from sunpy.sun import sun
 from sunpy.time import parse_time, is_time
@@ -30,6 +31,7 @@ from sunpy.image.rescale import reshape_image_to_4d_superpixel
 from sunpy.image.rescale import resample as sunpy_image_resample
 
 import astropy.units as u
+import astropy.wcs
 
 __all__ = ['GenericMap']
 
@@ -180,6 +182,21 @@ Dimension:\t [{xdim:d}, {ydim:d}]
     @property
     def ndim(self):
         return self.data.ndim
+
+    @property
+    def wcs(self):
+        if self._wcs:
+            return self._wcs
+        else:
+            w2 = astropy.wcs.WCS(naxis=2)
+            w2.wcs.crpix = [self.reference_pixel['x'], self.reference_pixel['y']]
+            w2.wcs.cdelt = [self.scale['x'], self.scale['y']]
+            w2.wcs.crval = [self.reference_coordinate['x'], self.reference_coordinate['y']]
+            w2.wcs.ctype = [self.coordinate_system['x'], self.coordinate_system['y']]
+            w2.wcs.pc = self.rotation_matrix
+            w2.wcs.cunit = [self.units['x'], self.units['y']]
+
+            return w2
 
     def std(self, *args, **kwargs):
         return self.data.std(*args, **kwargs)
@@ -917,51 +934,55 @@ Dimension:\t [{xdim:d}, {ydim:d}]
         """
 
         if not axes:
-            axes = plt.gca()
+            axes = wcsaxes_compat.gca_wcs(self.wcs)
 
-        x, y = self.pixel_to_data()
-        dsun = self.dsun
+        if wcsaxes_compat.is_wcsaxes(axes):
+            return wcsaxes_compat.wcsaxes_heliographic_overlay(axes)
 
-        b0 = self.heliographic_latitude
-        l0 = self.heliographic_longitude
-        units = [self.units['x'], self.units['y']]
+        else:
+            x, y = self.pixel_to_data()
+            dsun = self.dsun
 
-        #Prep the plot kwargs
-        plot_kw = {'color':'white',
-                   'linestyle':'dotted',
-                   'zorder':100}
-        plot_kw.update(kwargs)
+            b0 = self.heliographic_latitude
+            l0 = self.heliographic_longitude
+            units = [self.units['x'], self.units['y']]
 
-        hg_longitude_deg = np.linspace(-180, 180, num=361) + self.heliographic_longitude
-        hg_latitude_deg = np.arange(-90, 90, grid_spacing)
+            #Prep the plot kwargs
+            plot_kw = {'color':'white',
+                       'linestyle':'dotted',
+                       'zorder':100}
+            plot_kw.update(kwargs)
 
-        # draw the latitude lines
-        for lat in hg_latitude_deg:
-            x, y = wcs.convert_hg_hpc(hg_longitude_deg, lat * np.ones(361),
-                                      b0_deg=b0, l0_deg=l0, dsun_meters=dsun,
-                                      angle_units=units[0], occultation=True)
-            valid = np.logical_and(np.isfinite(x), np.isfinite(y))
-            x = x[valid]
-            y = y[valid]
-            axes.plot(x, y, **plot_kw)
+            hg_longitude_deg = np.linspace(-180, 180, num=361) + self.heliographic_longitude
+            hg_latitude_deg = np.arange(-90, 90, grid_spacing)
 
-        hg_longitude_deg = np.arange(-180, 180, grid_spacing) + self.heliographic_longitude
-        hg_latitude_deg = np.linspace(-90, 90, num=181)
+            # draw the latitude lines
+            for lat in hg_latitude_deg:
+                x, y = wcs.convert_hg_hpc(hg_longitude_deg, lat * np.ones(361),
+                                          b0_deg=b0, l0_deg=l0, dsun_meters=dsun,
+                                          angle_units=units[0], occultation=True)
+                valid = np.logical_and(np.isfinite(x), np.isfinite(y))
+                x = x[valid]
+                y = y[valid]
+                axes.plot(x, y, **plot_kw)
 
-        # draw the longitude lines
-        for lon in hg_longitude_deg:
-            x, y = wcs.convert_hg_hpc(lon * np.ones(181), hg_latitude_deg,
-                                      b0_deg=b0, l0_deg=l0, dsun_meters=dsun,
-                                      angle_units=units[0], occultation=True)
-            valid = np.logical_and(np.isfinite(x), np.isfinite(y))
-            x = x[valid]
-            y = y[valid]
-            axes.plot(x, y, **plot_kw)
+            hg_longitude_deg = np.arange(-180, 180, grid_spacing) + self.heliographic_longitude
+            hg_latitude_deg = np.linspace(-90, 90, num=181)
 
-        axes.set_ylim(self.yrange)
-        axes.set_xlim(self.xrange)
+            # draw the longitude lines
+            for lon in hg_longitude_deg:
+                x, y = wcs.convert_hg_hpc(lon * np.ones(181), hg_latitude_deg,
+                                          b0_deg=b0, l0_deg=l0, dsun_meters=dsun,
+                                          angle_units=units[0], occultation=True)
+                valid = np.logical_and(np.isfinite(x), np.isfinite(y))
+                x = x[valid]
+                y = y[valid]
+                axes.plot(x, y, **plot_kw)
 
-        return axes
+            axes.set_ylim(self.yrange)
+            axes.set_xlim(self.xrange)
+
+            return axes
 
     def draw_limb(self, axes=None, **kwargs):
         """Draws a circle representing the solar limb
@@ -983,7 +1004,7 @@ Dimension:\t [{xdim:d}, {ydim:d}]
         """
 
         if not axes:
-            axes = plt.gca()
+            axes = wcsaxes_compat.gca_wcs(self.wcs)
 
         c_kw = {'radius':self.rsun_arcseconds,
                 'fill':False,
@@ -1033,7 +1054,7 @@ Dimension:\t [{xdim:d}, {ydim:d}]
 
         # Normal plot
         else:
-            axes = figure.gca()
+            axes = wcsaxes_compat.gca_wcs(self.wcs, fig=figure)
 
         im = self.plot(axes=axes,**matplot_args)
 
@@ -1089,19 +1110,22 @@ Dimension:\t [{xdim:d}, {ydim:d}]
         aia.draw_limb()
         aia.draw_grid()
         """
-        # Check that the image is properly oriented
-        if not np.array_equal(self.rotation_matrix, np.matrix(np.identity(2))):
-            warnings.warn("This map is not properly oriented. Plot axes may be incorrect",
-                          Warning)
+
         #Get current axes
         if not axes:
-            axes = plt.gca()
+            axes = wcsaxes_compat.gca_wcs(self.wcs)
+
+        # Check that the image is properly oriented
+        if (not wcsaxes_compat.is_wcsaxes(axes) and
+            not np.array_equal(self.rotation_matrix, np.matrix(np.identity(2)))):
+            warnings.warn("This map is not properly oriented. Plot axes may be incorrect",
+                          Warning)
 
         # Normal plot
         if annotate:
             axes.set_title("{name} {date:{tmf}}".format(name=self.name,
                                                         date=parse_time(self.date),
-                                                        tmf=TIME_FORMAT))
+                                                        tmf=TIME_FORMAT), y=1.05)
 
             # x-axis label
             if self.coordinate_system['x'] == 'HG':
@@ -1118,26 +1142,41 @@ Dimension:\t [{xdim:d}, {ydim:d}]
             axes.set_xlabel(xlabel)
             axes.set_ylabel(ylabel)
 
-        # Determine extent
-        extent = self.xrange + self.yrange
 
         cmap = deepcopy(self.cmap)
         if gamma is not None:
             cmap.set_gamma(gamma)
 
-        # make imshow kwargs a dict
-        kwargs = {'origin':'lower',
-                  'cmap':cmap,
-                  'norm':self.mpl_color_normalizer,
-                  'extent':extent,
-                  'interpolation':'nearest'}
+        kwargs = self._mpl_imshow_kwargs(axes, cmap)
         kwargs.update(imshow_args)
 
         ret = axes.imshow(self.data, **kwargs)
 
+        if wcsaxes_compat.is_wcsaxes(axes):
+            wcsaxes_compat.default_wcs_grid(axes)
+
         #Set current image (makes colorbar work)
         plt.sci(ret)
         return ret
+
+    def _mpl_imshow_kwargs(self, axes, cmap):
+        """
+        Return the keyword arguments for imshow to display this map
+        """
+        if wcsaxes_compat.is_wcsaxes(axes):
+            kwargs = {'cmap':cmap,
+                      'norm':self.mpl_color_normalizer,
+                      'interpolation':'nearest'}
+        else:
+            # make imshow kwargs a dict
+            kwargs = {'origin':'lower',
+                      'cmap':cmap,
+                      'norm':self.mpl_color_normalizer,
+                      'extent':self.xrange + self.yrange,
+                      'interpolation':'nearest'}
+
+        return kwargs
+
 
     def _get_mpl_normalizer(self):
         """
