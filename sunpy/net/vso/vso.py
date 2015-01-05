@@ -23,6 +23,10 @@ from functools import partial
 from collections import defaultdict
 from suds import client, TypeNotFound
 
+import astropy
+from astropy.table import Table, Column
+import astropy.units as u
+
 from sunpy import config
 from sunpy.net import download
 from sunpy.net.proxyfix import WellBehavedHttpTransport
@@ -31,7 +35,7 @@ from sunpy.util.net import get_filename, slugify
 from sunpy.net.attr import and_, Attr
 from sunpy.net.vso import attrs
 from sunpy.net.vso.attrs import walker, TIMEFORMAT
-from sunpy.util import print_table, replacement_filename
+from sunpy.util import print_table, replacement_filename, Deprecated
 from sunpy.time import parse_time
 
 TIME_FORMAT = config.get("general", "time_format")
@@ -167,10 +171,11 @@ def iter_errors(response):
 
 
 class QueryResponse(list):
-    def __init__(self, lst, queryresult=None):
+    def __init__(self, lst, queryresult=None, table=None):
         super(QueryResponse, self).__init__(lst)
         self.queryresult = queryresult
         self.errors = []
+        self.table = None
 
     def query(self, *query):
         """ Furtherly reduce the query response by matching it against
@@ -205,27 +210,47 @@ class QueryResponse(list):
                   if record.time.end is not None), TIMEFORMAT)
         )
 
+    @Deprecated("Use `print qr` to view the contents of the response")
     def show(self):
         """Print out human-readable summary of records retrieved"""
+        print(str(self))
 
-        table = [
-          [
-            str(datetime.strptime(record.time.start, TIME_FORMAT))
-              if record.time.start is not None else 'N/A',
-            str(datetime.strptime(record.time.end, TIME_FORMAT))
-              if record.time.end is not None else 'N/A',
-            record.source,
-            record.instrument,
-            record.extent.type
-              if record.extent.type is not None else 'N/A'
-          ] for record in self]
-        table.insert(0, ['----------','--------','------','----------','----'])
-        table.insert(0, ['Start time','End time','Source','Instrument','Type'])
+    def build_table(self):
+        keywords = ['Start Time', 'End Time', 'Source', 'Instrument', 'Type']
+        record_items = {}
+        for key in keywords:
+            record_items[key] = []
 
-        print(print_table(table, colsep = '  ', linesep='\n'))
+        def validate_time(time):
+            if record.time.start is not None:
+                return [datetime.strftime(parse_time(time), TIME_FORMAT)]
+            else:
+                return ['N/A']
+
+        for record in self:
+            record_items['Start Time'].appennd(validate_time(record.time.start))
+            record_items['End Time'].append(validate_time(record.time.end))
+            record_items['Source'].append(str(record.source))
+            record_items['Instrument'].append(str(record.instrument))
+            record_items['Type'].append(str(record.extent.type)
+                                if record.extent.type is not None else ['N/A'])
+
+        return Table(record_items)[keywords]
 
     def add_error(self, exception):
         self.errors.append(exception)
+
+    def __str__(self):
+        """Print out human-readable summary of records retrieved"""
+        return str(self.build_table())
+
+    def __repr__(self):
+        """Print out human-readable summary of records retrieved"""
+        return repr(self.build_table())
+
+    def _repr_html_(self):
+        return self.build_table()._repr_html_()
+
 
 class DownloadFailed(Exception):
     pass
