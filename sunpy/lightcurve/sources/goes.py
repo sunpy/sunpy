@@ -38,7 +38,7 @@ class GOESLightCurve(LightCurve):
         figure = plt.figure()
         axes = plt.gca()
 
-        dates = matplotlib.dates.date2num(self.data.index)
+        dates = matplotlib.dates.date2num(self.data.index._mpl_repr())
 
         axes.plot_date(dates, self.data['xrsa'], '-',
                      label='0.5--4.0 $\AA$', color='blue', lw=2)
