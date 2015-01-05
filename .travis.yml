@@ -50,7 +50,7 @@ install:
 # Install Numpy first so we force the version we are using
    - pip install $PIP_WHEEL_COMMAND numpy==$NUMPY_VERSION
    - pip install $PIP_WHEEL_COMMAND matplotlib
-   - pip install $PIP_WHEEL_COMMAND scipy
+   - pip install $PIP_WHEEL_COMMAND -vvv scipy
    - pip install $PIP_WHEEL_COMMAND pandas==$PANDAS_VERSION
    - pip install $PIP_WHEEL_COMMAND suds-jurko beautifulsoup4 requests
    - pip install $PIP_WHEEL_COMMAND pytest pytest-xdist 
