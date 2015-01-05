@@ -25,6 +25,11 @@ def load_config():
     if not config.has_option('general', 'working_dir'):
         config.set('general', 'working_dir', os.path.join(_get_home(), "sunpy"))
 
+    # Specify the database url as a default so that the user's home
+    # directory can be located in an OS-independent manner
+    if not config.has_option('database', 'url'):
+        config.set('database', 'url', "sqlite:///" + os.path.join(_get_home(), "sunpy/sunpydb.sqlite"))
+
     # Use absolute filepaths and adjust OS-dependent paths as needed
     filepaths = [
         ('downloads', 'download_dir')

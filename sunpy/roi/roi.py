@@ -56,7 +56,6 @@ class roi(object):
             else:
                 self.start_time = None
                 self.end_time = None
-
         elif type(times) == str:
             self.start_time = parse_time(times)
             self.end_time = parse_time(times)
