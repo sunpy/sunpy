@@ -378,8 +378,8 @@ def get_lytaf_events(start_time, end_time, lytaf_path=LYTAF_PATH,
     Examples
     --------
     Get all events in the LYTAF files for January 2014
-        >>> lytaf = get_lytaf_events('2014-01-01', '2014-02-01')
-        
+        lytaf = get_lytaf_events('2014-01-01', '2014-02-01')
+
     """
     # Check inputs
     # Check start_time and end_time is a date string or datetime object
