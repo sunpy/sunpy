@@ -375,9 +375,9 @@ def test_goes_lx_nokwargs():
                    "shortlum": Quantity([1.91013779e+17, 1.91013779e+17],
                                        unit="W")}
     assert sorted(lx_test.keys()) == sorted(lx_expected.keys())
-    assert np.allclose(lx_test["longlum"], lx_expected["longlum"], rtol=0.0001)
+    assert np.allclose(lx_test["longlum"], lx_expected["longlum"], rtol=0.01)
     assert np.allclose(lx_test["shortlum"], lx_expected["shortlum"],
-                       rtol=0.0001)
+                       rtol=0.001)
 
 def test_goes_lx_date():
     # Define input values of flux and time.
@@ -422,14 +422,14 @@ def test_goes_lx_obstime():
                                     1.14608164e+18, 1.52810885e+18,
                                     1.91013606e+18], unit="J")}
     assert sorted(lx_test.keys()) == sorted(lx_expected.keys())
-    assert np.allclose(lx_test["longlum"], lx_expected["longlum"], rtol=0.001)
+    assert np.allclose(lx_test["longlum"], lx_expected["longlum"], rtol=0.01)
     assert np.allclose(lx_test["shortlum"], lx_expected["shortlum"],
-                       rtol=0.001)
+                       rtol=0.01)
     assert np.allclose(lx_test["longlum_int"], lx_expected["longlum_int"],
-                       rtol=0.001)
+                       rtol=0.01)
     assert np.allclose(lx_test["shortlum_int"], lx_expected["shortlum_int"],
-                       rtol=0.001)
+                       rtol=0.01)
     assert np.allclose(lx_test["longlum_cumul"], lx_expected["longlum_cumul"],
-                       rtol=0.001)
+                       rtol=0.01)
     assert np.allclose(lx_test["shortlum_cumul"],
-                       lx_expected["shortlum_cumul"], rtol=0.001)
+                       lx_expected["shortlum_cumul"], rtol=0.01)

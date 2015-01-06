@@ -13,10 +13,9 @@ from scipy import interpolate
 from scipy.integrate import trapz
 from scipy.integrate import cumtrapz
 import astropy
-from astropy import units
+import astropy.units as u
 from astropy.units.quantity import Quantity
 import pandas
-
 
 from sunpy.net import hek
 from sunpy.time import parse_time
@@ -50,7 +49,7 @@ def get_goes_event_list(timerange, goes_class_filter=None):
 
     Parameters
     ----------
-    timerange: sunpy.time.TimeRange
+    timerange: `sunpy.time.TimeRange`
         The time range to download the event list for.
 
     goes_class_filter: (optional) string
@@ -61,8 +60,8 @@ def get_goes_event_list(timerange, goes_class_filter=None):
     # use HEK module to search for GOES events
     client = hek.HEKClient()
     event_type = 'FL'
-    tstart = timerange.start()
-    tend = timerange.end()
+    tstart = timerange.start
+    tend = timerange.end
 
     # query the HEK for a list of events detected by the GOES instrument
     # between tstart and tend (using a GOES-class filter)
@@ -113,7 +112,7 @@ def temp_em(goeslc, abundances="coronal",
 
     Parameters
     ----------
-    goeslc : GOESLightCurve object
+    goeslc : `sunpy.lightcurve.GOESLightCurve`
 
     abundances : (optional) string equalling 'coronal' or 'photospheric'
         States whether photospheric or coronal abundances should be
@@ -134,10 +133,10 @@ def temp_em(goeslc, abundances="coronal",
 
     Returns
     -------
-    goeslc.data.temperature : pandas.core.series.Series
+    goeslc.data.temperature : `pandas.core.series.Series`
         Array of temperature values [MK]
 
-    goeslc.data.em : pandas.core.series.Series
+    goeslc.data.em : `pandas.core.series.Series`
         Array of volume emission measure values [10**49 cm**-3]
 
     Examples
@@ -164,11 +163,12 @@ def temp_em(goeslc, abundances="coronal",
         raise TypeError("goeslc must be a GOESLightCurve object.")
 
     # Find temperature and emission measure with goes_chianti_tem
-    temp, em = goes_chianti_tem(
-        Quantity(goeslc.data.xrsb, unit=units.W/(units.m)**2),
-        Quantity(goeslc.data.xrsa, unit=units.W/(units.m)**2),
-        satellite=goeslc.meta["TELESCOP"].split()[1],
-        date=goeslc.data.index[0], abundances=abundances, download=download,                   download_dir=download_dir)
+    temp, em = goes_chianti_tem(Quantity(goeslc.data.xrsb, unit=u.W/(u.m)**2),
+                                Quantity(goeslc.data.xrsa, unit=u.W/(u.m)**2),
+                                satellite=goeslc.meta["TELESCOP"].split()[1],
+                                date=goeslc.data.index[0],
+                                abundances=abundances, download=download,
+                                download_dir=download_dir)
 
     # Enter results into new version of GOES LightCurve Object
     goeslc_new = copy.deepcopy(goeslc)
@@ -190,7 +190,7 @@ def goes_chianti_tem(longflux, shortflux, satellite=8,
 
     Parameters
     ----------
-    longflux, shortflux :astropy Quantity
+    longflux, shortflux : `astropy.units.Quantity`
         Arrays containing the long and short GOES/XRS flux measurements
         respectively as a function of time.  Must be of same length. [W/m**2].
 
@@ -199,7 +199,7 @@ def goes_chianti_tem(longflux, shortflux, satellite=8,
         correct calibration of data.
         Default=8
 
-    date : datetime object or str
+    date : `datetime.datetime` or str
         Date when observations made.  Important for correctcalibration.
         Default=today
 
@@ -222,11 +222,11 @@ def goes_chianti_tem(longflux, shortflux, satellite=8,
 
     Returns
     -------
-    temp : astropy Quantity
+    temp : `astropy.units.Quantity`
         Array of temperature values of same length as longflux and
         shortflux. Units=[MK]
 
-    em : astropy Quantity
+    em : `astropy.units.Quantity`
         Array of volume emission measure values of same length as longflux
         and shortflux.  Units=[10**49 cm**-3]
 
@@ -274,8 +274,8 @@ def goes_chianti_tem(longflux, shortflux, satellite=8,
 
     """
     # ENSURE INPUTS ARE OF CORRECT TYPE AND VALID VALUES
-    _check_quantity(longflux, units.Watt/units.m/units.m)
-    _check_quantity(shortflux, units.Watt/units.m/units.m)
+    _check_quantity(longflux, u.Watt/u.m/u.m)
+    _check_quantity(shortflux, u.Watt/u.m/u.m)
     int(satellite)
     if satellite < 1:
         raise ValueError("satellite must be the number of a "
@@ -333,7 +333,7 @@ def _goes_get_chianti_temp(fluxratio, satellite=8, abundances="coronal",
 
     Parameters
     ----------
-    fluxratio : astropy Quantity
+    fluxratio : `astropy.units.Quantity`
         Array containing the ratio of short channel to long channel
         GOES/XRS flux measurements.
 
@@ -410,7 +410,7 @@ def _goes_get_chianti_temp(fluxratio, satellite=8, abundances="coronal",
                         replace=download)
 
     # check inputs are correct
-    _check_quantity(fluxratio, units.dimensionless_unscaled)
+    _check_quantity(fluxratio, u.dimensionless_unscaled)
     fluxratio = fluxratio.decompose()
     int(satellite)
     if satellite < 1:
@@ -477,11 +477,11 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal",
 
     Parameters
     ----------
-    longflux : astropy Quantity
+    longflux : `astropy.units.Quantity`
         Array containing the observed GOES/XRS long channel flux.
         Units=[W/m**2]
 
-    temp : astropy Quantity
+    temp : `astropy.units.Quantity`
         Array containing the GOES temperature.  Units=[MK]
 
     satellite : int (optional)
@@ -561,10 +561,10 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal",
                         replace=download)
 
     # Check inputs are of correct type
-    _check_quantity(longflux, units.Watt/units.m/units.m)
-    longflux = longflux.to(units.W/units.m**2)
-    _check_quantity(temp, units.MK)
-    temp = temp.to(units.MK)
+    _check_quantity(longflux, u.Watt/u.m/u.m)
+    longflux = longflux.to(u.W/u.m**2)
+    _check_quantity(temp, u.MK)
+    temp = temp.to(u.MK)
     int(satellite)
     if satellite < 1:
         raise ValueError("satellite must be the number of a "
@@ -633,7 +633,7 @@ def radiative_loss_rate(goeslc, force_download=False, download_dir=DATA_PATH):
 
     Parameters
     ----------
-    goeslc : GOESLightCurve object
+    goeslc : `sunpy.lightcurve.GOESLightCurve`
 
     force_download : (optional) bool
         If True, the GOES radiative loss data file is downloaded.
@@ -648,7 +648,7 @@ def radiative_loss_rate(goeslc, force_download=False, download_dir=DATA_PATH):
 
     Returns
     -------
-    goeslc_new : GOESLightCurve object
+    goeslc_new : `sunpy.lightcurve.GOESLightCurve`
         a copy of the input GOESLightCurve object with an additional
         field, goeslc_new.data.rad_loss_rate
         (type=pandas.core.series.Series), which contains the radiative
@@ -692,8 +692,8 @@ def radiative_loss_rate(goeslc, force_download=False, download_dir=DATA_PATH):
         goeslc_new = copy.deepcopy(goeslc)
     else:
         goeslc_new = temp_em(goeslc)
-    temp = Quantity(np.asarray(goeslc_new.data.temperature, dtype=np.float64), unit=units.MK)
-    em = Quantity(np.asarray(goeslc_new.data.em, dtype=np.float64), unit=units.cm**(-3))
+    temp = Quantity(np.asarray(goeslc_new.data.temperature, dtype=np.float64), unit=u.MK)
+    em = Quantity(np.asarray(goeslc_new.data.em, dtype=np.float64), unit=u.cm**(-3))
 
     # Find radiative loss rate with calc_rad_loss()
     rad_loss_out = calc_rad_loss(temp, em, force_download=force_download,
@@ -719,11 +719,11 @@ def calc_rad_loss(temp, em, obstime=None, force_download=False,
 
     Parameters
     ----------
-    temp : astropy Quantity
+    temp : `astropy.units.Quantity`
         Array containing the temperature of the coronal plasma at
         different times.  Units=[MK]
 
-    em : astropy Quantity
+    em : `astropy.units.Quantity`
         Array containing the emission measure of the coronal plasma
         at the same times corresponding to the temperatures in temp.
         Must be same length as temp.  Units=[cm**-3]
@@ -777,10 +777,10 @@ def calc_rad_loss(temp, em, obstime=None, force_download=False,
     array([  3.01851392e+26,   3.01851392e+26])
     """
     # Check inputs are correct
-    _check_quantity(temp, units.MK)
-    temp = temp.to(units.K)
-    _check_quantity(em, units.cm**(-3))
-    em = em.to(1/units.cm**3)
+    _check_quantity(temp, u.MK)
+    temp = temp.to(u.K)
+    _check_quantity(em, u.cm**(-3))
+    em = em.to(1/u.cm**3)
     if len(temp) != len(em):
         raise ValueError("temp and em must all have same number of elements.")
     # If force_download kwarg is True, or required data files cannot be
@@ -815,7 +815,7 @@ def calc_rad_loss(temp, em, obstime=None, force_download=False,
     spline = interpolate.splrep(modeltemp, model_loss_rate, s=0)
     rad_loss = em.value * interpolate.splev(temp.value, spline, der=0)
     rad_loss = Quantity(rad_loss, unit='erg/s')
-    rad_loss = rad_loss.to(units.J/units.s)
+    rad_loss = rad_loss.to(u.J/u.s)
 
     # If obstime keyword giving measurement times is set, calculate
     # radiative losses intergrated over time.
@@ -876,11 +876,11 @@ def xray_luminosity(goeslc):
 
     Parameters
     ----------
-    goeslc : GOESLightCurve object
+    goeslc : `sunpy.lightcurve.GOESLightCurve`
 
     Returns
     -------
-    goeslc_new : GOESLightCurve object
+    goeslc_new : `sunpy.lightcurve.GOESLightCurve`
         A copy of the input GOESLightCurve object with two additional
         fields, goeslc_new.data.luminosity_xrsa and
         goeslc_new.data.luminosity_xrsb (each of type
@@ -934,11 +934,11 @@ def goes_lx(longflux, shortflux, obstime=None, date=None):
 
     Parameters
     ----------
-    longflux : astropy Quantity
+    longflux : `astropy.units.Quantity`
         Array containing the observed GOES/XRS long channel flux.
         Units=[W/m**2]
 
-    shortflux : astropy Quantity
+    shortflux : `astropy.units.Quantity`
         Array containing the observed GOES/XRS short channel flux.
         Units=[W/m**2]
 
@@ -954,10 +954,10 @@ def goes_lx(longflux, shortflux, obstime=None, date=None):
     -------
     lx_out : dictionary
         dictionary containing the following fields.
-        longlum : astropy Quantity
+        longlum : astropy.units.Quantity
             Array of luminosity in the 1-8 angstroms range.
 
-        shortlum : astropy Quantity
+        shortlum : astropy.units.Quantity
             Array of luminosity in the 0.5-4 angstroms range.
 
         longlum_int : (only present if obstime kwarg is set)
@@ -1025,16 +1025,16 @@ def goes_lx(longflux, shortflux, obstime=None, date=None):
                                     for ot in obstime], dtype="float64")
         # Finally, integrate using trapezoid rule
         longlum_int = trapz(longlum.value, obstime_seconds)
-        longlum_int = Quantity(longlum_int, unit=longlum.unit*units.s)
+        longlum_int = Quantity(longlum_int, unit=longlum.unit*u.s)
         shortlum_int = trapz(shortlum.value, obstime_seconds)
-        shortlum_int = Quantity(shortlum_int, unit=shortlum.unit*units.s)
+        shortlum_int = Quantity(shortlum_int, unit=shortlum.unit*u.s)
         # Calculate cumulative radiated energy in each GOES channel as
         # a function of time.
         longlum_cumul = cumtrapz(longlum.value, obstime_seconds)
-        longlum_cumul = Quantity(longlum_cumul, unit=longlum.unit/units.s)
+        longlum_cumul = Quantity(longlum_cumul, unit=longlum.unit/u.s)
         shortlum_cumul = cumtrapz(shortlum.value, obstime_seconds)
         shortlum_cumul = Quantity(shortlum_cumul,
-                                  unit=shortlum.unit/units.s)
+                                  unit=shortlum.unit/u.s)
         lx_out = {"longlum":longlum, "shortlum":shortlum,
                   "longlum_cumul":longlum_cumul,
                   "shortlum_cumul":shortlum_cumul,
@@ -1056,7 +1056,7 @@ def _calc_xraylum(flux, date=None):
 
     Parameters
     ----------
-    flux : astropy Quantity
+    flux : `astropy.units.Quantity`
        Containing the observed solar flux.  Units=[W/m**2]
 
     date : (optional) datetime object or valid date string
@@ -1085,7 +1085,7 @@ def _calc_xraylum(flux, date=None):
 
     """
     # Ensure input is of correct type
-    _check_quantity(flux, units.Watt/units.m/units.m)
+    _check_quantity(flux, u.Watt/u.m/u.m)
     if date is not None:
         date = parse_time(date)
         xraylum = 4 * np.pi * (sun.sunearth_distance(t=date)*sun.constants.au)**2 * flux
