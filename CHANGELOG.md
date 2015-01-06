@@ -1,7 +1,7 @@
 Latest
 ------
 
-* Added vso like querying feature to JSOC Client.
+ * Added vso like querying feature to JSOC Client.
  * Update to TimeRange API, removed t1 and t0, start and end are now read-only attributes
  * Added ability to download level3 data for lyra Light Curve along with corresponding tests.
  * Added support for gzipped FITS files.
@@ -13,6 +13,11 @@ Latest
  * CD matrix now updated, if present, when Map pixel size is changed.
  * Removed now-redundant method for rotating IRIS maps since the functionality exists in Map.rotate()
  * Provide `__str__` and `__repr__` methods on vso `QueryResponse` deprecate `.show()`
+ * SunPy colormaps are now registered with matplotlib on import of `sunpy.cm`
+ * `sunpy.cm.get_cmap` no longer defaults to 'sdoaia94'
+* Added database url config setting to be setup by default as a sqlite database in the sunpy working directory
+* Added a few tests for the sunpy.roi module
+ * Added a few tests for the sunpy.roi module
 
 0.5.0
 -----
