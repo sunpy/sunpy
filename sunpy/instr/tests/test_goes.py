@@ -3,7 +3,6 @@ from __future__ import absolute_import
 import copy
 import datetime
 import pytest
-import datetime
 
 import numpy as np
 from astropy.units.quantity import Quantity
@@ -377,7 +376,7 @@ def test_goes_lx_nokwargs():
     assert sorted(lx_test.keys()) == sorted(lx_expected.keys())
     assert np.allclose(lx_test["longlum"], lx_expected["longlum"], rtol=0.01)
     assert np.allclose(lx_test["shortlum"], lx_expected["shortlum"],
-                       rtol=0.001)
+                       rtol=0.01)
 
 def test_goes_lx_date():
     # Define input values of flux and time.
