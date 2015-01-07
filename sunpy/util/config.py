@@ -1,5 +1,6 @@
 """SunPy configuration file functionality"""
 import os
+import platform
 import tempfile
 import ConfigParser
 
@@ -25,10 +26,12 @@ def load_config():
     if not config.has_option('general', 'working_dir'):
         config.set('general', 'working_dir', os.path.join(_get_home(), "sunpy"))
 
-    # Specify the database url as a default so that the user's home
-    # directory can be located in an OS-independent manner
+    # Specify a default database url (which must use forward slashes as path separators)
     if not config.has_option('database', 'url'):
-        config.set('database', 'url', "sqlite:///" + os.path.join(_get_home(), "sunpy/sunpydb.sqlite"))
+        database_url = "sqlite:///" + os.path.join(_get_home(), "sunpy/sunpydb.sqlite")
+        if platform.system() == 'Windows':
+            database_url = database_url.replace(os.sep, "/")
+        config.set('database', 'url', database_url)
 
     # Use absolute filepaths and adjust OS-dependent paths as needed
     filepaths = [
