@@ -12,7 +12,7 @@ import functools
 import re
 import types
 
-from astropy.utils.compat.odict import OrderedDict
+from collections import OrderedDict
 
 __all__ = ['BoundArguments', 'Parameter', 'Signature', 'signature']
 
