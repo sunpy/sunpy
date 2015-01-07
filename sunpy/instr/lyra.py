@@ -362,12 +362,16 @@ def get_lytaf_events(start_time, end_time, lytaf_path=LYTAF_PATH,
     There are four LYRA annotation files which mark different types of events
     or artifacts in the data.  They are named annotation_suffix.db where
     suffix is a variable equalling either lyra, manual, ppt, or science.
+
     annotation_lyra.db : contains entries regarding possible effects to
         the data due to normal operation of LYRA instrument.
+
     annotation_manual.db : contains entries regarding possible effects
         to the data due to unusual or manually logged events.
+
     annotation_ppt.db : contains entries regarding possible effects to
         the data due to pointing or positioning of PROBA2.
+
     annotation_science.db : contains events in the data scientifically
         interesting, e.g. GOES flares.
 
