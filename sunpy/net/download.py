@@ -23,7 +23,7 @@ def default_name(path, sock, url):
     return os.path.join(path, name)
 
 
-class FileDownloader(object):
+class Downloader(object):
     def __init__(self, max_conn=5, max_total=20):
         self.max_conn = max_conn
         self.max_total = max_total
