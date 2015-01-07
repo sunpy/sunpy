@@ -17,7 +17,7 @@ class QuantityInput(object):
 
         Unit specifications can be provided as keyword arguments to the decorator,
         or by using Python 3's function annotation syntax. Arguments to the decorator
-        take precidence over any function annotations present.
+        take precedence over any function annotations present.
 
         A `~astropy.units.UnitsError` will be raised if the unit attribute of
         the argument is not equivalent to the unit specified to the decorator
@@ -34,21 +34,24 @@ class QuantityInput(object):
         Python 2 and 3::
 
             import astropy.units as u
-            @u.quantity_input(myangle=u.arcsec)
+            from sunpy.util.unit_decorators import quantity_input
+            @quantity_input(myangle=u.arcsec)
             def myfunction(myangle):
                 return myangle**2
 
         Python 3 only::
 
             import astropy.units as u
-            @u.quantity_input
+            from sunpy.util.unit_decorators import quantity_input
+            @quantity_input
             def myfunction(myangle: u.arcsec):
                 return myangle**2
 
         Using equivalencies::
 
             import astropy.units as u
-            @u.quantity_input(myenergy=u.eV, equivalencies=u.mass_energy())
+            from sunpy.util.unit_decorators import quantity_input
+            @quantity_input(myenergy=u.eV, equivalencies=u.mass_energy())
             def myfunction(myenergy):
                 return myenergy**2
 

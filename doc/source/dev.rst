@@ -566,6 +566,41 @@ functions
 <https://github.com/numpy/numpy/blob/master/doc/HOWTO_DOCUMENT.rst.txt>`_ in the
 NumPy/SciPy style guide.
 
+Use of quantities and units
+"""""""""""""""""""""""""""
+
+Much code perform calculations using physical quantities.  SunPy uses astropy's
+`quantities and units <http://docs.astropy.org/en/stable/units/index.html>`__ implementation
+to store, express and convert physical quantities. New classes and functions should adhere
+to SunPy's `quantity and unit usage guidelines
+<https://github.com/sunpy/sunpy-SEP/blob/master/SEP-0003.md>`__.  This document sets
+out SunPy's requirements for the usage of quantities and units.  Developers should
+consult the `Astropy Quantities and Units page <http://docs.astropy.org/en/stable/units/index.html>`__
+for the latest updates on using quantities and units.
+
+SunPy provides a useful decorator that checks the units of the input arguments to a function
+against the expected units of the argument.  This decorator should be used to perform
+function argument unit checks.  The decorator ensures that the units of the input to the function
+are convertible to that specified by the decorator, for example ::
+
+    import astropy.units as u
+    @quantity_input(myangle=u.arcsec)
+    def myfunction(myangle):
+        return myangle**2
+
+This function only accepts arguments that are convertible to arcseconds.  Therefore, ::
+
+    >>> myangle(20 * u.degree)
+    <Quantity 400.0 deg2>
+
+returns the expected answer but ::
+
+    >>> myangle(20 * u.km)
+
+raises an error.
+
+
+
 Trouble-shooting
 ^^^^^^^^^^^^^^^^
 Sphinx can be very particular about formatting, and the warnings and errors
@@ -714,8 +749,8 @@ When to write unit tests
 A rule of thumb for unit testing is to have at least one unit test per public
 function.
 
-Testing Your Code Before Commiting
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Testing Your Code Before Committing
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 When you commit your changes and make a Pull Request to the main SunPy repo on
 GitHub, your code will be tested by Travis CI to make sure that all the tests
 pass and the documentation builds without any warnings. Before you commit your
@@ -725,8 +760,8 @@ everytime you run `git commit` to install it copy the file from
 `sunpy/tools/pre-commit.sh` to `sunpy/.git/hooks/pre-commit`, you should also
 check the script to make sure that it is configured properly for your system.
 
-Continuous Intergration
-^^^^^^^^^^^^^^^^^^^^^^^
+Continuous Integration
+^^^^^^^^^^^^^^^^^^^^^^
 
 SunPy makes use of the `Travis CI service <https://travis-ci.org/sunpy/sunpy>`_.
 This service builds a version of SunPy and runs all the tests. It also integrates 
