@@ -782,6 +782,14 @@ class VSOClient(object):
     def unknown_method(self, response):
         """ Override to pick a new method if the current one is unknown. """
         raise NoData
+    
+     @classmethod
+     def _can_handle_query(cls,*query):
+        chkattr = ['Wave', 'Time', 'Extent', 'Field', 'Provider', 'Source',
+        'Instrument', 'Physobs', 'Pixels', 'Level', 'Resolution',
+        'Detector', 'Filter', 'Sample', 'Quicklook', 'PScale']
+        return all([x.__class__.__name__ in chkattr for x in query])
+
 
 
 class InteractiveVSOClient(VSOClient):
