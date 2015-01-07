@@ -414,11 +414,13 @@ consult the `Astropy Quantities and Units page <http://docs.astropy.org/en/stabl
 for the latest updates on using quantities and units.
 
 SunPy provides a useful decorator that checks the units of the input arguments to a function
-against the expected units of the argument.  This decorator should be used to perform
+against the expected units of the argument (at time of writing, the decorator is a backport
+of functionality present in a future release of astropy).  This decorator should be used to perform
 function argument unit checks.  The decorator ensures that the units of the input to the function
 are convertible to that specified by the decorator, for example ::
 
     import astropy.units as u
+    from sunpy.util.unit_decorators import quantity_input
     @quantity_input(myangle=u.arcsec)
     def myfunction(myangle):
         return myangle**2
