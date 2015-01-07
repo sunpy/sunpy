@@ -8,6 +8,14 @@ import sunpy.data.test
 
 from sunpy.tests.helpers import skip_ana, skip_glymur
 
+import sunpy.data.test
+import os
+testpath = sunpy.data.test.rootdir
+
+RHESSI_IMAGE = os.path.join(testpath, 'hsi_image_20101016_191218.fits')
+EIT_195_IMAGE = os.path.join(testpath, 'EIT/efz20040301.000010_s.fits')
+AIA_171_IMAGE = os.path.join(testpath, 'aia_171_level1.fits')
+
 #==============================================================================
 # Test, read, get_header and write through the file independant layer
 #==============================================================================
@@ -15,7 +23,7 @@ class TestFiletools(object):
 
     def test_read_file_fits(self):
         #Test read FITS
-        aiapair = sunpy.io.read_file(sunpy.AIA_171_IMAGE)
+        aiapair = sunpy.io.read_file(AIA_171_IMAGE)
         assert isinstance(aiapair, list)
         assert len(aiapair) == 1
         assert len(aiapair[0]) == 2
@@ -23,7 +31,7 @@ class TestFiletools(object):
         assert isinstance(aiapair[0][1], sunpy.io.header.FileHeader)
 
         #Test read multi HDU list
-        pairs = sunpy.io.read_file(sunpy.RHESSI_IMAGE)
+        pairs = sunpy.io.read_file(RHESSI_IMAGE)
         assert isinstance(pairs, list)
         assert len(pairs) == 4
         assert all([len(p) == 2 for p in pairs])
@@ -56,7 +64,7 @@ class TestFiletools(object):
 
     def test_read_file_header_fits(self):
         #Test FITS
-        hlist = sunpy.io.read_file_header(sunpy.AIA_171_IMAGE)
+        hlist = sunpy.io.read_file_header(AIA_171_IMAGE)
         assert isinstance(hlist, list)
         assert len(hlist) == 1
         assert isinstance(hlist[0], sunpy.io.header.FileHeader)
@@ -73,11 +81,11 @@ class TestFiletools(object):
 
     def test_write_file_fits(self):
         #Test write FITS
-        aiapair = sunpy.io.read_file(sunpy.AIA_171_IMAGE)[0]
+        aiapair = sunpy.io.read_file(AIA_171_IMAGE)[0]
         sunpy.io.write_file("aia_171_image.fits", aiapair[0], aiapair[1],
                             clobber=True)
         assert os.path.exists("aia_171_image.fits")
-        outpair = sunpy.io.read_file(sunpy.AIA_171_IMAGE)[0]
+        outpair = sunpy.io.read_file(AIA_171_IMAGE)[0]
         assert np.all(np.equal(outpair[0], aiapair[0]))
         assert outpair[1] == aiapair[1]
         os.remove("aia_171_image.fits")
