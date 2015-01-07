@@ -3,7 +3,7 @@ import pytest
 
 import sunpy
 from sunpy.time.timerange import TimeRange
-from sunpy.net.vso.attrs import Time,Instrument,Source 
+from sunpy.net.vso.attrs import Time,Instrument,Source,Level
 from sunpy.net.unifieddownloader.client import QueryResponse
 import sunpy.net.unifieddownloader.sources.eve as eve
 
@@ -37,7 +37,7 @@ def test_get_url_for_date():
 
 
 def test_can_handle_query():
-    ans1 = eve.EVEClient._can_handle_query(Time('2012/8/9','2012/8/10'),Instrument('eve'))
+    ans1 = eve.EVEClient._can_handle_query(Time('2012/8/9','2012/8/10'),Instrument('eve'),Level(0))
     assert ans1 == True
     ans2 = eve.EVEClient._can_handle_query(Time('2012/7/7','2012/7/7'))
     assert ans2 == False
