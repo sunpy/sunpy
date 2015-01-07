@@ -6,7 +6,7 @@ recursive-include sunpy *.txt
 include README.md
 include RELEASE.md
 include CHANGELOG.md
-include LICENSE.txt
+include licenses/*.rst
 include sunpy/data/sunpyrc
 include setup.py
 include ah_bootstrap.py
