@@ -378,6 +378,7 @@ class JSOCClient(object):
 
         if path is None:
             path = config.get('downloads','download_dir')
+        path = os.path.expanduser(path)
 
         if downloader is None:
             downloader = Downloader(max_conn=max_conn, max_total=max_conn)
