@@ -23,8 +23,11 @@ from sunpy import config
 from sunpy import lightcurve
 from sunpy.util.net import check_download_file
 from sunpy.sun import sun
+from sunpy.util.unit_decorators import quantity_input
 
-__all__ = ['get_goes_event_list', 'temp_em', 'goes_chianti_tem']
+__all__ = ['get_goes_event_list', 'temp_em', 'goes_chianti_tem',
+           'radiative_loss_rate', 'calc_rad_loss',
+           'xray_luminosity', 'goes_lx']
 
 try:
     # Check required data files are present in user's default download dir
@@ -177,6 +180,7 @@ def temp_em(goeslc, abundances="coronal",
 
     return goeslc_new
 
+@quantity_input(longflux=u.W/u.m/u.m, shortflux=u.W/u.m/u.m)
 def goes_chianti_tem(longflux, shortflux, satellite=8,
                      date=datetime.datetime.today(), abundances="coronal",
                      download=False, download_dir=DATA_PATH):
@@ -274,8 +278,8 @@ def goes_chianti_tem(longflux, shortflux, satellite=8,
 
     """
     # ENSURE INPUTS ARE OF CORRECT TYPE AND VALID VALUES
-    _check_quantity(longflux, u.Watt/u.m/u.m)
-    _check_quantity(shortflux, u.Watt/u.m/u.m)
+    longflux.to(u.W/u.m/u.m)
+    shortflux.to(u.W/u.m/u.m)
     int(satellite)
     if satellite < 1:
         raise ValueError("satellite must be the number of a "
@@ -317,6 +321,7 @@ def goes_chianti_tem(longflux, shortflux, satellite=8,
                               download_dir=download_dir)
     return temp, em
 
+@quantity_input(fluxratio=u.dimensionless_unscaled)
 def _goes_get_chianti_temp(fluxratio, satellite=8, abundances="coronal",
                            download=False, download_dir=DATA_PATH):
     """
@@ -360,7 +365,7 @@ def _goes_get_chianti_temp(fluxratio, satellite=8, abundances="coronal",
 
     Returns
     -------
-    temp : numpy array
+    temp : `astropy.units.Quantity`
         Array of temperature values of same length as longflux and
         shortflux. Units=[MK]
 
@@ -410,7 +415,6 @@ def _goes_get_chianti_temp(fluxratio, satellite=8, abundances="coronal",
                         replace=download)
 
     # check inputs are correct
-    _check_quantity(fluxratio, u.dimensionless_unscaled)
     fluxratio = fluxratio.decompose()
     int(satellite)
     if satellite < 1:
@@ -460,6 +464,7 @@ def _goes_get_chianti_temp(fluxratio, satellite=8, abundances="coronal",
 
     return temp
 
+@quantity_input(longflux=u.W/u.m/u.m, temp=u.MK)
 def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal",
                          download=False, download_dir=DATA_PATH):
     """
@@ -507,7 +512,7 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal",
 
     Returns
     -------
-    em : numpy array
+    em : `astropy.units.Quantity`
          Array of emission measure values of same length as longflux
          and temp.  [cm**-3]
 
@@ -561,9 +566,7 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal",
                         replace=download)
 
     # Check inputs are of correct type
-    _check_quantity(longflux, u.Watt/u.m/u.m)
     longflux = longflux.to(u.W/u.m**2)
-    _check_quantity(temp, u.MK)
     temp = temp.to(u.MK)
     int(satellite)
     if satellite < 1:
@@ -704,6 +707,7 @@ def radiative_loss_rate(goeslc, force_download=False, download_dir=DATA_PATH):
 
     return goeslc_new
 
+@quantity_input(temp=u.MK, em=u.cm**(-3))
 def calc_rad_loss(temp, em, obstime=None, force_download=False,
                   download_dir=DATA_PATH):
     """
@@ -777,9 +781,7 @@ def calc_rad_loss(temp, em, obstime=None, force_download=False,
     array([  3.01851392e+26,   3.01851392e+26])
     """
     # Check inputs are correct
-    _check_quantity(temp, u.MK)
     temp = temp.to(u.K)
-    _check_quantity(em, u.cm**(-3))
     em = em.to(1/u.cm**3)
     if len(temp) != len(em):
         raise ValueError("temp and em must all have same number of elements.")
@@ -1044,6 +1046,7 @@ def goes_lx(longflux, shortflux, obstime=None, date=None):
 
     return lx_out
 
+@quantity_input(flux=u.W/u.m/u.m)
 def _calc_xraylum(flux, date=None):
     """
     Calculates solar luminosity based on observed flux observed at 1AU.
@@ -1084,19 +1087,9 @@ def _calc_xraylum(flux, date=None):
     array([  1.98649103e+25,   1.98649103e+25])
 
     """
-    # Ensure input is of correct type
-    _check_quantity(flux, u.Watt/u.m/u.m)
     if date is not None:
         date = parse_time(date)
         xraylum = 4 * np.pi * (sun.sunearth_distance(t=date)*sun.constants.au)**2 * flux
     else:
         xraylum = 4 * np.pi * (sun.sunearth_distance()*sun.constants.au)**2 * flux
     return xraylum
-
-def _check_quantity(q, unit):
-    """Checks if input is an astropy quantity with correct unit type."""
-    if not (isinstance(q, Quantity) and q.unit.is_equivalent(unit)):
-        raise ValueError(
-            "Must be a Quantity object with units equivalent to {0}".format(
-                unit)
-        )
