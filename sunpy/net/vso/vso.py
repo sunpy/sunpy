@@ -38,6 +38,7 @@ from sunpy.net.vso.attrs import walker, TIMEFORMAT
 from sunpy.util import print_table, replacement_filename, Deprecated
 from sunpy.time import parse_time
 
+from sunpy import config
 TIME_FORMAT = config.get("general", "time_format")
 
 DEFAULT_URL = 'http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl'
@@ -127,10 +128,12 @@ class Results(object):
                 self.progress = ProgressBar(self.total, self.total - self.n)
                 self.progress.start()
                 self.progress.draw()
+
         while not self.evt.wait(timeout):
             pass
         if progress:
             self.progress.finish()
+
         return self.map_
 
     def add_error(self, exception):
@@ -558,7 +561,7 @@ class VSOClient(object):
             "{source}/{instrument}/{time.start}/{file}".
         methods : {list of str}
             Methods acceptable to user.
-        downloader : sunpy.net.downloader.FileDownloader
+        downloader : sunpy.net.downloader.Downloader
             Downloader used to download the data.
         site: str
             There are a number of caching mirrors for SDO and other
@@ -585,7 +588,7 @@ class VSOClient(object):
         >>> res = get(qr).wait() # doctest:+SKIP
         """
         if downloader is None:
-            downloader = download.FileDownloader()
+            downloader = download.Downloader()
             downloader.init()
             res = Results(
                 lambda _: downloader.stop(), 1,
@@ -779,14 +782,6 @@ class VSOClient(object):
     def unknown_method(self, response):
         """ Override to pick a new method if the current one is unknown. """
         raise NoData
-    
-    @classmethod
-    def _can_handle_query(cls,*query):
-
-        chkattr = ['Wave', 'Time', 'Extent', 'Field', 'Provider', 'Source',
-            'Instrument', 'Physobs', 'Pixels', 'Level', 'Resolution',
-            'Detector', 'Filter', 'Sample', 'Quicklook', 'PScale']
-        return all([x.__class__.__name__ in chkattr for x in query])
 
 
 class InteractiveVSOClient(VSOClient):
