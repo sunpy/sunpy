@@ -90,5 +90,4 @@ def diff_rot(ddays, latitude, rot_type='howard', frame_time='sidereal'):
     if frame_time == 'synodic':
         rotation_deg -= 0.9856 * delta_days
 
-#    import pdb; pdb.set_trace()
     return Longitude((np.round(rotation_deg.value,4)),u.deg)
