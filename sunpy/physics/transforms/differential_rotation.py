@@ -32,7 +32,7 @@ def diff_rot(ddays, latitude, rot_type='howard', frame_time='sidereal'):
 
     Returns
     -------
-    longditude_delta: astropy.units.Quantity     
+    longditude_delta: astropy.units.Quantity
         The change in longitude over days (units=degrees)
 
     Notes
@@ -44,15 +44,15 @@ def diff_rot(ddays, latitude, rot_type='howard', frame_time='sidereal'):
     Examples
     --------
     Default rotation calculation over two days at 30 degrees latitude:
-    
+
     >>> rotation = diff_rot(2, 30 * u.deg)
-    
+
     Default rotation over two days for a number of latitudes:
-    
+
     >>> rotation = diff_rot(2, np.linspace(-70, 70, 20) * u.deg)
-    
+
     With rotation type 'allen':
-    
+
     >>> rotation = diff_rot(2, np.linspace(-70, 70, 20) * u.deg, 'allen')
     """
 
@@ -60,12 +60,12 @@ def diff_rot(ddays, latitude, rot_type='howard', frame_time='sidereal'):
         delta = datetime.timedelta(days=ddays)
 
     if not isinstance(latitude, u.Quantity):
-	raise TypeError("Expecting astropy Quantity")
+        raise TypeError("Expecting astropy Quantity")
 
     latitude = latitude.to(u.deg)
     delta_seconds = delta.total_seconds()
     delta_days = delta_seconds / 24 / 3600
-    
+
     sin2l = (np.sin(latitude))**2
     sin4l = sin2l**2
 
@@ -89,5 +89,6 @@ def diff_rot(ddays, latitude, rot_type='howard', frame_time='sidereal'):
 
     if frame_time == 'synodic':
         rotation_deg -= 0.9856 * delta_days
-    
-    return Longitude((np.round(rotation_deg,4)),u.deg)
+
+#    import pdb; pdb.set_trace()
+    return Longitude((np.round(rotation_deg.value,4)),u.deg)
