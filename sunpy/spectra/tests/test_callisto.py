@@ -76,7 +76,7 @@ def test_query_number():
     # Should be sorted anyway, but better to assume as little as possible.
     result.sort()
 
-    assert len(results) == len(RESULTS)
+    assert len(result) == len(RESULTS)
 
 
 @pytest.mark.online
