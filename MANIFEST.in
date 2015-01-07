@@ -11,3 +11,6 @@ include sunpy/data/sunpyrc
 include setup.py
 include ah_bootstrap.py
 include ez_setup.py
+
+recursive-include astropy_helpers *
+exclude astropy_helpers/.*
