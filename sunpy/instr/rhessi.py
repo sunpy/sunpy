@@ -78,7 +78,7 @@ def get_obssumm_dbase_file(time_range):
     data_location = 'dbase/'
 
     url_root = data_servers[0] + data_location
-    url = url_root + _time_range.start.strftime("hsi_obssumm_filedb_%Y%m.txt")
+    url = url_root + _time_range.start().strftime("hsi_obssumm_filedb_%Y%m.txt")
 
     f = urllib.urlretrieve(url)
 
@@ -181,7 +181,7 @@ def get_obssum_filename(time_range):
     result = parse_obssumm_dbase_file(f[0])
     _time_range = TimeRange(time_range)
 
-    index_number = _time_range.start.day - 1
+    index_number = _time_range.start().day - 1
 
     return data_servers[0] + data_location + result.get('filename')[index_number] + 's'
 

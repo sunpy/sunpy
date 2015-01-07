@@ -783,8 +783,8 @@ class VSOClient(object):
         """ Override to pick a new method if the current one is unknown. """
         raise NoData
     
-     @classmethod
-     def _can_handle_query(cls,*query):
+    @classmethod
+    def _can_handle_query(cls,*query):
         chkattr = ['Wave', 'Time', 'Extent', 'Field', 'Provider', 'Source',
         'Instrument', 'Physobs', 'Pixels', 'Level', 'Resolution',
         'Detector', 'Filter', 'Sample', 'Quicklook', 'PScale']

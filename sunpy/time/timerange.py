@@ -200,6 +200,14 @@ class TimeRange(object):
         # Only a timedelta object is acceptable here
         self.t1 = self.t1 + t_backwards
         self.t2 = self.t2 + t_forwards
+    
+    def get_dates(self):
+        """
+        Return all partial days contained within the timerange
+        """
+        dates = []
+        dates =[ self.t1.date() + timedelta(days=i) for i in range( self.days() + 1) ]
+	return dates
 
     def __contains__(self, time):
         """
