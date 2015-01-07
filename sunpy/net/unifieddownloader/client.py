@@ -8,7 +8,7 @@ from datetime import timedelta
 from sunpy.time import TimeRange
 from sunpy.util import print_table
 
-from sunpy.net.download  import FileDownloader
+from sunpy.net.download  import Downloader
 from sunpy.net.vso.vso import Results
 from sunpy.net.vso.attrs import Time
 
@@ -133,7 +133,7 @@ class GenericClient(object):
 
         res = Results(lambda x: None, 0, lambda map_:self.link(map_))
 
-        dobj = FileDownloader(max_conn=len(urls), max_total=len(urls))
+        dobj = Downloader(max_conn=len(urls), max_total=len(urls))
         for aurl, ncall in list(zip(urls, map(lambda x:res.require([x]), urls))):
             dobj.download(aurl, kwargs.get('Path',None), ncall, kwargs.get('ErrorBack', None))
 
@@ -167,6 +167,6 @@ class GenericClient(object):
 
         """
         urls = self._get_url_for_timerange(timerange)
-        dobj = FileDownloader(max_conn=len(urls), max_total=len(urls))
+        dobj = Downloader(max_conn=len(urls), max_total=len(urls))
         for url in urls:
             dobj.download(url, path, callback, errback)
