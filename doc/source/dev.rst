@@ -401,6 +401,40 @@ using: ::
 
 from inside the ``doc/source`` folder.
 
+Use of quantities and units
+"""""""""""""""""""""""""""
+
+Much code perform calculations using physical quantities.  SunPy uses astropy's
+`quantities and units <http://docs.astropy.org/en/stable/units/index.html>`__ implementation
+to store, express and convert physical quantities. New classes and functions should adhere
+to SunPy's `quantity and unit usage guidelines
+<https://github.com/sunpy/sunpy-SEP/blob/master/SEP-0003.md>`__.  This document sets
+out SunPy's requirements for the usage of quantities and units.  Developers should
+consult the `Astropy Quantities and Units page <http://docs.astropy.org/en/stable/units/index.html>`__
+for the latest updates on using quantities and units.
+
+SunPy provides a useful decorator that checks the units of the input arguments to a function
+against the expected units of the argument.  This decorator should be used to perform
+function argument unit checks.  The decorator ensures that the units of the input to the function
+are convertible to that specified by the decorator, for example ::
+
+    import astropy.units as u
+    @quantity_input(myangle=u.arcsec)
+    def myfunction(myangle):
+        return myangle**2
+
+This function only accepts arguments that are convertible to arcseconds.  Therefore, ::
+
+    >>> myangle(20 * u.degree)
+    <Quantity 400.0 deg2>
+
+returns the expected answer but ::
+
+    >>> myangle(20 * u.km)
+
+raises an error.
+
+
 Examples
 ^^^^^^^^
 

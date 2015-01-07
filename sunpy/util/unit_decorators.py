@@ -34,21 +34,24 @@ class QuantityInput(object):
         Python 2 and 3::
 
             import astropy.units as u
-            @u.quantity_input(myangle=u.arcsec)
+            from sunpy.util.unit_decorators import quantity_input
+            @quantity_input(myangle=u.arcsec)
             def myfunction(myangle):
                 return myangle**2
 
         Python 3 only::
 
             import astropy.units as u
-            @u.quantity_input
+            from sunpy.util.unit_decorators import quantity_input
+            @quantity_input
             def myfunction(myangle: u.arcsec):
                 return myangle**2
 
         Using equivalencies::
 
             import astropy.units as u
-            @u.quantity_input(myenergy=u.eV, equivalencies=u.mass_energy())
+            from sunpy.util.unit_decorators import quantity_input
+            @quantity_input(myenergy=u.eV, equivalencies=u.mass_energy())
             def myfunction(myenergy):
                 return myenergy**2
 

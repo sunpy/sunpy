@@ -142,6 +142,32 @@ available. ::
 These constants are provided as a convenience so that everyone is using the same 
 (accepted values). More will be added over time.
 
+Quantities and Units
+--------------------
+
+Many capabilities in SunPy make use of physical quantities that are specified
+in units. SunPy uses `astropy's units and quantities code <http://docs.astropy.org/en/stable/units/index.html>`__ to
+implement this functionality. For example, the solar radius above is a physical quantity
+that can be expressed in length units.  In the example above ::
+
+    >>> from sunpy.sun import constants as con
+    >>> con.radius
+    <Constant name=u'Solar radius' value=695508000.0 error=26000.0 units='m' reference=u"Allen's Astrophysical Quantities 4th Ed.">
+
+shows the solar radius in units of meters.  It is simple to express the same physical quantity in different units::
+
+    >>> con.radius.to('km')
+    <Quantity 695508.0 km>
+
+To get the numerical value of the solar radius in kilometers - without the unit information - use ::
+
+    >>> con.radius.to('km').value
+    695508.0
+
+Quantities and units are simple and powerful tools for keeping track of the units you're working in, and make it
+easy to convert the same physical quantity into different units.  SunPy's adoption of quantities and units is
+described `here <https://github.com/sunpy/sunpy-SEP/blob/master/SEP-0003.md>`__.
+
 Working with Times
 ------------------
 
