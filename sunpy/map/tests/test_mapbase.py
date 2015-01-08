@@ -329,9 +329,8 @@ def calc_new_matrix(angle):
     return np.matrix([[c, -s], [s, c]])
 
 
-def test_rotate():
-    aia171_test_map = sunpy.map.Map(sunpy.AIA_171_IMAGE)
-    rotated_map_1 = aia171_test_map.rotate(20)
+def test_rotate(aia171_test_map):
+        rotated_map_1 = aia171_test_map.rotate(20)
     rotated_map_2 = rotated_map_1.rotate(20)
     assert rotated_map_2.center == rotated_map_1.center == aia171_test_map.center
     np.testing.assert_allclose(rotated_map_1.rotation_matrix,
