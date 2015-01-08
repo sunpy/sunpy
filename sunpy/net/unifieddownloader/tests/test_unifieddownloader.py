@@ -25,9 +25,9 @@ def test_query(time,instrument,client):
 @pytest.mark.online
 @pytest.mark.parametrize("time,instrument",
 [
-(attrs.Time('2013/1/8','2013/1/9'),attrs.Instrument('eve')),
+#(attrs.Time('2013/1/8','2013/1/9'),attrs.Instrument('eve')),
 (attrs.Time('2011/5/5','2011/5/6'),attrs.Instrument('lyra')),
-#(attrs.Time('2012/7/8','2012/7/9'),attrs.Instrument('norh')),
+(attrs.Time('2012/7/8','2012/7/9'),attrs.Instrument('norh')),
 (attrs.Time('2011/1/22','2011/4/25'),attrs.Instrument('rhessi')),
 (attrs.Time('2012/1/8','2012/3/9'),attrs.Instrument('noaa-indices')),
 (attrs.Time('2012/12/8','2012/12/9'),attrs.Instrument('noaa-predict')),
@@ -37,16 +37,16 @@ def test_get(time,instrument):
     unifiedresp = UnifiedDownloader.query(time,instrument)
     res = UnifiedDownloader.get(unifiedresp)
     download_list = res.wait()
-    assert len(download_list) == len(unifiedresp[0])
+    assert len(download_list) == unifiedresp.file_num
 
 
 @pytest.mark.online
 @pytest.mark.parametrize("time1,time2,instrument",
 [
-#(attrs.Time('2012/4/5','2012/4/5'),attrs.Time('2011/8/7','2011/8/7'),attrs.Instrument('norh')),
+(attrs.Time('2012/4/5','2012/4/5'),attrs.Time('2011/8/7','2011/8/7'),attrs.Instrument('norh')),
 (attrs.Time('2012/3/3','2012/3/3'),attrs.Time('2013/1/1','2013/1/1'),attrs.Instrument('rhessi')),
 (attrs.Time('2012/7/7','2012/7/8'),attrs.Time('2011/7/7','2011/7/8'),attrs.Instrument('lyra')),
-(attrs.Time('2012/5/7','2012/5/8'),attrs.Time('2012/5/7','2012/5/8'),attrs.Instrument('eve')),
+#(attrs.Time('2012/3/2','2012/3/3'),attrs.Time('2012/1/27','2012/1/27'),attrs.Instrument('eve')),
 ])
 def test_multiple_time(time1,time2,instrument):
 
