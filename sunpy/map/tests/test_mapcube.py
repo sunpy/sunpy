@@ -9,6 +9,7 @@ import sunpy
 import sunpy.map
 from sunpy.map.header import MapMeta
 import pytest
+import os
 
 # Test maps and mapcubes
 testpath = sunpy.data.test.rootdir
@@ -35,8 +36,8 @@ def test_as_array():
     assert isinstance(returned_array, np.ndarray)
     assert returned_array.ndim == 3
     assert len(returned_array.shape) == 3
-    assert returned_array.shape[0] == 1024
-    assert returned_array.shape[1] == 512
+    assert returned_array.shape[0] == 128
+    assert returned_array.shape[1] == 128
     assert returned_array.shape[2] == 2
     # Should raise a ValueError if the mapcube has differently shaped maps in
     # it.
