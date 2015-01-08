@@ -8,9 +8,10 @@ import sunpy
 import sunpy.map
 import sunpy.wcs as wcs
 import sunpy.sun as sun
+import os
 
 path = sunpy.data.test.rootdir
-aiaimg = glob.glob(os.path.join(path, "aia_171_level1.fits"))
+aiaimg = os.path.join(path, "aia_171_level1.fits")
 
 img = sunpy.map.Map(aiaimg)
 
