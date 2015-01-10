@@ -27,8 +27,9 @@ matrix:
           env: TEST_MODE='astropy-dev'
         - python: 2.7
           env: TEST_MODE='sphinx'
-        - python: 2.7
-          env: TEST_MODE='online'
+        - allow_failures:
+          - python: 2.7
+            env: TEST_MODE='online'
 
 before_install:
 # Make sure the system is upto date and install scipy requirements
