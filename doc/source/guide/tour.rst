@@ -165,8 +165,10 @@ To get the numerical value of the solar radius in kilometers - without the unit 
     695508.0
 
 Quantities and units are simple and powerful tools for keeping track of the units you're working in, and make it
-easy to convert the same physical quantity into different units.  SunPy's adoption of quantities and units is
-described `here <https://github.com/sunpy/sunpy-SEP/blob/master/SEP-0003.md>`__.
+easy to convert the same physical quantity into different units.  To learn more about the capabilities of quantities
+and units, please consult `the astropy tutorial <http://www.astropy.org/astropy-tutorials/Quantities.html>`__.
+SunPy's approach to the adoption of quantities and units in the codebase is described
+`here <https://github.com/sunpy/sunpy-SEP/blob/master/SEP-0003.md>`__.
 
 Working with Times
 ------------------

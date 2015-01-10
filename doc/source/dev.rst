@@ -409,9 +409,16 @@ Much code perform calculations using physical quantities.  SunPy uses astropy's
 to store, express and convert physical quantities. New classes and functions should adhere
 to SunPy's `quantity and unit usage guidelines
 <https://github.com/sunpy/sunpy-SEP/blob/master/SEP-0003.md>`__.  This document sets
-out SunPy's requirements for the usage of quantities and units.  Developers should
-consult the `Astropy Quantities and Units page <http://docs.astropy.org/en/stable/units/index.html>`__
-for the latest updates on using quantities and units.
+out SunPy's reasons and requirements for the usage of quantities and units.  Briefly,
+SunPy's `policy <https://github.com/sunpy/sunpy-SEP/blob/master/SEP-0003.md>`__ is that *all user-facing
+function/object arguments which accept physical quantities as input **MUST** accept astropy quantities*.
+
+Developers should consult the
+`Astropy Quantities and Units page <http://docs.astropy.org/en/stable/units/index.html>`__
+for the latest updates on using quantities and units.  The `astropy tutorial on quantities and units
+<http://www.astropy.org/astropy-tutorials/Quantities.html>`__ also provides useful examples on their
+capabilities.
+
 
 SunPy provides a useful decorator that checks the units of the input arguments to a function
 against the expected units of the argument (at time of writing, the decorator is a backport
@@ -435,6 +442,59 @@ returns the expected answer but ::
     >>> myangle(20 * u.km)
 
 raises an error.
+
+The following is an example of a use-facing function that returns the area of a square, in units that are the square
+of the input length unit::
+
+    @quantity_input(side_length=u.m)
+    def get_area_of_square(side_length):
+        """Compute the area of a square.
+
+        Parameters
+        ----------
+        side_length : `~astropy.units.quantity.Quantity`
+            Side length of the square
+
+        Returns
+        -------
+        area : `~astropy.units.quantity.Quantity`
+            Area of the square.
+        """
+
+        return (side_length ** 2)
+
+This more advanced example shows how a private function that does not accept quantities can be wrapped by a function
+that does ::
+
+    @quantity_input(side_length=u.m)
+    def some_function(length):
+        """Does something useful.
+
+        Parameters
+        ----------
+        length : `~astropy.units.quantity.Quantity`
+            A length.
+
+        Returns
+        -------
+        length : `~astropy.units.quantity.Quantity`
+            Another length
+        """
+
+        # the following function either
+        # a] does not accept Quantities
+        # b] is slow if using Quantities
+        result = _private_wrapper_function(length.convert('meters').value)
+
+        # now convert back to a quantity
+        result = Quantity(result_meters, units_of_the_private_wrapper_function)
+
+        return result
+
+In this example, the non-user facing function *_private_wrapper_function* requires a numerical input in units of
+meters, and returns a numerical output.  The developer knows that the result of *_private_wrapper_function* is in the
+units *units_of_the_private_wrapper_function*, and sets the result of *some_function* to return the answer in those
+units.
 
 
 Examples
