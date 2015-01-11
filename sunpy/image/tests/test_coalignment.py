@@ -223,11 +223,11 @@ def test_apply_shifts():
 
     # Test to see if the code can detect the fact that the input shifts are not
     # astropy quantities
-    with pytest.raises(AttributeError):
+    with pytest.raises(TypeError):
         tested = apply_shifts(mc, numerical_displacements["y"], astropy_displacements["x"])
-    with pytest.raises(AttributeError):
+    with pytest.raises(TypeError):
         tested = apply_shifts(mc, astropy_displacements["y"], numerical_displacements["x"])
-    with pytest.raises(AttributeError):
+    with pytest.raises(TypeError):
         tested = apply_shifts(mc, numerical_displacements["y"], numerical_displacements["x"])
 
     # Test returning with no extra options - the code returns a mapcube only
