@@ -11,6 +11,7 @@ from sunpy.map import GenericMap
 from sunpy.visualization.mapcubeanimator import MapCubeAnimator
 from sunpy.util import expand_list
 
+
 __all__ = ['MapCube']
 
 class MapCube(object):
@@ -69,6 +70,7 @@ class MapCube(object):
 
     def __getitem__(self, key):
         """Overiding indexing operation"""
+
         return self.maps[key]
 
     def __len__(self):
@@ -80,9 +82,11 @@ class MapCube(object):
     def _sort_by_date(cls):
         return lambda m: m.date # maps.sort(key=attrgetter('date'))
 
+
     def _derotate(self):
         """Derotates the layers in the MapCube"""
         pass
+
 
     def plot(self, gamma=None, axes=None, resample=None, annotate=True,
              interval=200, **kwargs):

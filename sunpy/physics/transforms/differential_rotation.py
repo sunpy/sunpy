@@ -8,11 +8,12 @@ from sunpy.time import parse_time, julian_day
 
 from sunpy.wcs import convert_hpc_hg, convert_hg_hpc
 from sunpy.sun import constants, sun
+from sunpy.util.unit_decorators import quantity_input
 
 __author__ = ["Jose Ivan Campos Rozo", "Stuart Mumford", "Jack Ireland"]
 __all__ = ['diff_rot', '_sun_pos', '_calc_P_B0_SD', 'rot_hpc']
 
-
+@quantity_input(latitude=u.deg)
 def diff_rot(ddays, latitude, rot_type='howard', frame_time='sidereal'):
     """
     This function computes the change in longitude over days in degrees.
@@ -99,6 +100,7 @@ def diff_rot(ddays, latitude, rot_type='howard', frame_time='sidereal'):
     return Longitude((np.round(rotation_deg,4)),u.deg)
 
 
+@quantity_input(x=u.arcsec, y=u.arcsec)
 def rot_hpc(x, y, tstart, tend, spacecraft=None, frame_time='synodic',
             rot_type='howard', **kwargs):
     """Given a location on the Sun referred to using the Helioprojective
@@ -108,11 +110,11 @@ def rot_hpc(x, y, tstart, tend, spacecraft=None, frame_time='synodic',
 
     Parameters
     -----------
-    x : helio-projective x-co-ordinate in arcseconds using astropy units (can
-        be an array)
+    x : helio-projective x-co-ordinate convertible to arcseconds using astropy
+        units (can be an array)
 
-    y : helio-projective y-co-ordinate in arcseconds using astropy units (can
-        be an array)
+    y : helio-projective y-co-ordinate convertible to arcseconds using astropy
+        units (can be an array)
 
     tstart : date/time to which x and y are referred; can be in any acceptable
             time format.
@@ -168,9 +170,6 @@ def rot_hpc(x, y, tstart, tend, spacecraft=None, frame_time='synodic',
     if np.array(x).shape != np.array(y).shape:
         raise ValueError('Input co-ordinates must have the same shape.')
 
-    # Ensure that both x and y are both astropy
-    if not isinstance(x, u.Quantity) or not isinstance(y, u.Quantity):
-        raise TypeError("At least one of the input co-ordinates is not an astropy Quantity.")
     # Make sure we have enough time information to perform a solar differential
     # rotation
     # Start time
@@ -180,6 +179,7 @@ def rot_hpc(x, y, tstart, tend, spacecraft=None, frame_time='synodic',
 
     # Get the Sun's position from the vantage point at the start time
     vstart = kwargs.get("vstart", _calc_P_B0_SD(dstart, spacecraft=spacecraft))
+
     # Compute heliographic co-ordinates - returns (longitude, latitude). Points
     # off the limb are returned as nan
     longitude, latitude = convert_hpc_hg(x.to(u.arcsec).value,
