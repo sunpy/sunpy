@@ -13,13 +13,14 @@ import matplotlib.pyplot as plt
 from bs4 import BeautifulSoup
 from sunpy.time import parse_time, TimeRange
 from sunpy import sun
-from astropy.io import fits
+from sunpy.io.fits import fits
 from astropy.utils.compat.odict import OrderedDict
 
 import astropy.units as u
 from astropy.coordinates import Angle, Longitude, Latitude
 
 def download_weekly_pointing_file(date):
+    date = parse_time(date)
     '''Downloads the FERMI/LAT weekly pointing file corresponding to the specified date. This file
     contains 1 minute cadence data on the spacecraft pointing, useful for calculating detector angles.'''
     #use a temp directory to hold the file
@@ -81,8 +82,8 @@ def download_weekly_pointing_file(date):
 
 
 def get_detector_sun_angles_for_time(time, file):
+    time = parse_time(time)
     '''get the GBM detector angles vs the sun for a single time.'''
-    # scx, scz, tt = fermi.get_scx_scz_at_time(tran,file)
     scx, scz, tt = get_scx_scz_at_time(time, file)
     # retrieve the detector angle information in spacecraft coordinates
     detectors = nai_detector_angles()
@@ -102,16 +103,17 @@ def get_detector_sun_angles_for_time(time, file):
 
 
 def get_detector_sun_angles_for_date(date, file):
+    date = parse_time(date)
     '''get the GBM detector angles vs the sun as a function of time for a given date'''
-    tran = TimeRange(date, date + datetime.timedelta(1))
+    tran = TimeRange(date, date + datetime.timedelta(days=1))
     scx, scz, times = get_scx_scz_in_timerange(tran, file)
 
-    # retrive the detector angle information in spacecraft coordinates
+    # retrieve the detector angle information in spacecraft coordinates
     detectors = nai_detector_angles()
 
     detector_to_sun_angles = []
     # get the detector vs Sun angles for each t and store in a list of dictionaries
-    for i in range(0, len(scx)):
+    for i in range(len(scx)):
         detector_radecs = nai_detector_radecs(detectors, scx[i], scz[i], times[i])
 
         # this gets the sun position with RA in hours in decimal format (e.g. 4.3). DEC is already in degrees
@@ -206,14 +208,6 @@ def nai_detector_radecs(detectors, scx, scz, time):
     '''calculates the RA/DEC for each NaI detector given spacecraft z and x RA/DEC positions.
     NB: This routine is based on code found in GTBURST, originally written by Dr Giacamo Vianello for the Fermi Science Tools.'''
 
-    #scx_vector = (np.array([np.cos(np.deg2rad(scx[0]))*np.cos(np.deg2rad(scx[1])), 
-    #                    np.sin(np.deg2rad(scx[0]))*np.cos(np.deg2rad(scx[1])),
-     #                   np.sin(np.deg2rad(scx[1]))]))
-
-    #scz_vector = (np.array([np.cos(np.deg2rad(scz[0]))*np.cos(np.deg2rad(scz[1])), 
-    #                    np.sin(np.deg2rad(scz[0]))*np.cos(np.deg2rad(scz[1])),
-    #                    np.sin(np.deg2rad(scz[1]))]))
-
     scx_vector = (np.array([np.cos(scx[0].to('rad').value)*np.cos(scx[1].to('rad').value), 
                         np.sin(scx[0].to('rad').value)*np.cos(scx[1].to('rad').value),
                         np.sin(scx[1].to('rad').value)]))
@@ -239,8 +233,6 @@ def nai_detector_radecs(detectors, scx, scz, time):
 
         # now we should be pointing at the new RA/DEC.
         ra = Longitude(np.degrees(math.atan2(vz_primed[1], vz_primed[0])) * u.deg)
-        #if ra < 0:
-         #   ra = ra + 360.0
         dec = Latitude(np.degrees(math.asin(vz_primed[2])) * u.deg)
 
         # save the RA/DEC in a dictionary
