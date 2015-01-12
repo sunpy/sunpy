@@ -35,7 +35,7 @@ sample_files = {}
 for key in _files:
     sample_files[key] = os.path.abspath(os.path.join(sampledata_dir, _files[key][0]))
 
-def download(progress=True):
+def download_sample_data(progress=True):
     """
     Download the sample data.
     

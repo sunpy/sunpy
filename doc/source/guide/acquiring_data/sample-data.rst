@@ -8,7 +8,7 @@ local machine so that you can try out the code in the documentation. To
 download the sample data simply run the following command::
 
     import sunpy.data
-    sunpy.data.download()
+    sunpy.data.download_sample_data()
 
 This will download the data to your sample-data directory which can be 
 customized by editing the sunpyrc file (see :doc:`../customization`). 

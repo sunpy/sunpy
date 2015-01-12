@@ -13,4 +13,4 @@ for key in _sample_files:
     if _isfile(_join(_sampledata_dir, _sample_files[key])):
         setattr(_sys.modules[__name__], key, _join(_sampledata_dir, _sample_files[key]))
     else:
-        raise ImportError("Sample data file(s) missing. Use sunpy.data.download() to get them.")
+        raise ImportError("Sample data file(s) missing. Use sunpy.data.download_sample_data() to get them.")
