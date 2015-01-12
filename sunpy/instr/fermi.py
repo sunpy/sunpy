@@ -149,6 +149,7 @@ def plot_detector_sun_angles(angles):
 
 
 def get_scx_scz_at_time(time, file):
+    time = parse_time(time)
     '''read a downloaded FERMI weekly pointing file and extract scx, scz for a single time.'''
     hdulist = fits.open(file)
     timesinutc = []
