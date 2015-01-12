@@ -27,8 +27,3 @@ from sunpy.tests import main as self_test
 
 # Load user configuration
 config = load_config()
-
-# Create shortcuts to sample data
-import sunpy.data.sample
-for key in sunpy.data.sample.sample_files:
-    setattr(sunpy.data.sample, key, sunpy.data.sample.sample_files[key])

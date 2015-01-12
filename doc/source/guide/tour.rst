@@ -14,7 +14,7 @@ This tour makes use of a number of sample data files which you will need to
 download. To download the sample files simply run the following command::
 
     import sunpy.data
-    sunpy.data.download()
+    sunpy.data.download_sample_data()
 
 After running this you can then import the sample data files shortcuts which
 are used below (e.g. sunpy.data.sample) by simply importing the module like so::
