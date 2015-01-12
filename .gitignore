@@ -33,10 +33,6 @@ sunpy/data/sample/*.fit
 
 ### https://raw.github.com/github/gitignore/master/Global/OSX.gitignore
 
-### ignore IDE files
-### PyCharm
-.idea/
-
 .DS_Store
 .AppleDouble
 .LSOverride
