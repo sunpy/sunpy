@@ -765,7 +765,7 @@ the module on the command line, e.g.::
 for the tests for `sunpy.util.xml`.
 
 To run only tests that been marked with a specific pytest mark using the
-deocrator ``@pytest.mark`` (the the section *Writing a unit test*), use the
+decorator ``@pytest.mark`` (the the section *Writing a unit test*), use the
 following command (where ``MARK`` is the name of the mark)::
 
   py.test -k MARK
@@ -821,8 +821,8 @@ everytime you run `git commit` to install it copy the file from
 `sunpy/tools/pre-commit.sh` to `sunpy/.git/hooks/pre-commit`, you should also
 check the script to make sure that it is configured properly for your system.
 
-Continuous Intergration
-^^^^^^^^^^^^^^^^^^^^^^^
+Continuous Integration
+^^^^^^^^^^^^^^^^^^^^^^
 
 SunPy makes use of the `Travis CI service <https://travis-ci.org/sunpy/sunpy>`_.
 This service builds a version of SunPy and runs all the tests. It also integrates 
@@ -830,7 +830,7 @@ with GitHub and will report the test results on any Pull Request when they are
 submitted and when they are updated.
 
 The Travis CI server not only builds SunPy from source, but currently it builds all 
-of SunPy's dependancies from source as well using pip, all of this behaviour is 
+of SunPy's dependencies from source as well using pip, all of this behaviour is
 specified in the .travis.yml file in the root of the SunPy repo.
 
 New Functionality
