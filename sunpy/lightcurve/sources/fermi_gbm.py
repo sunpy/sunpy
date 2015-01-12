@@ -7,10 +7,10 @@ import urlparse
 import numpy as np
 import matplotlib.pyplot as plt
 
-from astropy.io import fits
 import pandas
 import warnings
 
+from sunpy.io.fits import fits
 from sunpy.instr import fermi
 from sunpy.lightcurve import LightCurve
 from sunpy.time import parse_time
@@ -86,8 +86,6 @@ class GBMSummaryLightCurve(LightCurve):
                     
                 det_angle_means.append(np.mean(det_angle_values)) 
         
-       # for d in det_angles:
-        #    det_angle_means.append(np.mean(d))
         best_det = 'n' +str(np.argmin(det_angle_means))
         return best_det
      
