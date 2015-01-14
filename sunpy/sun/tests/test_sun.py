@@ -1,8 +1,16 @@
 from __future__ import absolute_import
 
-from sunpy.sun import sun
+import pytest
 from numpy.testing import assert_array_almost_equal
+from itertools import product
+import datetime
+
+from astropy.coordinates import Longitude
 from astropy import units as u
+from astropy.time import Time
+
+from sunpy.sun import sun
+from sunpy.time import parse_time
 
 def test_sunearth_distance():
     # Source for these values
@@ -34,23 +42,53 @@ def test_apparent_declination():
     assert_array_almost_equal(sun.apparent_declination("2013/02/26"), -8.547 * u.deg, decimal=0)
     assert_array_almost_equal(sun.apparent_declination("2014/05/1"), 15.141 * u.deg, decimal=0)
 
-def test_mean_anomaly():
-    assert_array_almost_equal(sun.mean_anomaly("2002/12/12"), 337.538 * u.deg, decimal=0)
-    assert_array_almost_equal(sun.mean_anomaly("2003/03/25"), 79.055 * u.deg, decimal=0)
-    assert_array_almost_equal(sun.mean_anomaly("2005/06/05"), 150.492 * u.deg, decimal=0)
-    assert_array_almost_equal(sun.mean_anomaly("2006/11/17"), 312.860 * u.deg, decimal=0)
-    assert_array_almost_equal(sun.mean_anomaly("2008/07/29"), 203.933 * u.deg, decimal=0)
-    assert_array_almost_equal(sun.mean_anomaly("2011/01/31"), 26.742 * u.deg, decimal=0)
+# From Astronomical Almanac for the Year YYYY (U.s. Nautical Almanac Office) http://asa.usno.navy.mil
+# (a0 + a1 * d) * u.deg
+# Last parameter is the precission expected
+# where d is the interval in days from YYYY January 0, 0h TT.
+almanaque_mean_anomaly = {'2009': [357.528,    0.9856003,  0],
+                          '2011': [357.528,    0.9856003 , 0],
+                          '2013': [356.666444, 0.98560028, 6],
+                          '2014': [356.410547, 0.98560028, 6],
+                          '2015': [356.154649, 0.98560028, 6]}
+dates = ['{}-01-01T12:00:00', '{}-05-31T13:00:00', '{}-07-31T13:00:00', '{}-08-23T00:25:00']
+
+@pytest.mark.parametrize("year, date", product(almanaque_mean_anomaly.keys(), dates))
+def test_mean_anomaly(year, date):
+    #d0 is defined as YYYY January 0, 0h TT.
+    d0 = Time(datetime.datetime(int(year) - 1, 12, 31), scale = 'tt')
+    
+    # The input date - in UT - has to be converted to TT
+    dateut = date.format(year)
+    date = Time(dateut, scale = 'utc', format = 'isot').tt
+    
+    # extract and define the function to calculate the mean anomaly
+    parameters = almanaque_mean_anomaly[year]
+    almanaque_eq = lambda d: Longitude((parameters[0] + parameters[1] * d) * u.deg)
+
+    number_of_days = date - d0
+    almanaque = almanaque_eq(number_of_days.value)
+
+    # compare the values with the more precise function within sunpy.sun
+    assert_array_almost_equal(sun.mean_anomaly(dateut), almanaque, decimal=parameters[2])
 
 #These values are tested from the functions after the integration of astropy.units
 
-def test_solar_cycle_number():
-    assert_array_almost_equal(sun.solar_cycle_number("2012/11/11"), 5, decimal=0)
-    #76
-    assert_array_almost_equal(sun.solar_cycle_number("2011/2/22"), 4, decimal=0)
-    #23
-    assert_array_almost_equal(sun.solar_cycle_number("2034/1/15"), 27, decimal=0)
-    
+# Peak solar cycle dates for each solar cycle from solar cycle 1.
+scdates = ['1761-06', '1769-10', '1778-05', '1787-11', '1804-12',
+           '1816-03', '1829-06', '1837-02', '1847-11', '1860-07',
+           '1884-01', '1893-08', '1905-10', '1917-08', '1928-06',
+           '1937-05', '1947-07', '1957-11', '1989-02', '1979-11',
+           '1989-10', '2000-01']
+
+@pytest.mark.parametrize('date, cycle', zip(scdates, range(1, len(scdates)+1))) 
+def test_solar_cycle_number(date, cycle):
+    """
+    Function to test the solar cycle number extracting the peaks from
+    http://users.telenet.be/j.janssens/Engzonnecyclus.html#Overzicht
+    """
+    assert_array_almost_equal(sun.solar_cycle_number(date+'-01'), cycle, decimal=0)
+
 
 def test_solar_semidiameter_angular_size():
     assert_array_almost_equal(sun.solar_semidiameter_angular_size("2012/11/11"), 968.383 * u.arcsec, decimal=3)
@@ -101,6 +139,12 @@ def test_apparent_rightascension():
     assert_array_almost_equal(sun.apparent_rightascension("2012/11/11"), 15.035 * u.hourangle, decimal=3)
     assert_array_almost_equal(sun.apparent_rightascension("2013/12/13"), 17.282 * u.hourangle, decimal=3)
     assert_array_almost_equal(sun.apparent_rightascension("2512/04/09"), 1.134 * u.hourangle, decimal=3)
+
+def test_longitude_ascending_node():
+    # Example 29.a from Astronomical Algorithms 2nd Ed. - Jean Meeus 2005
+    dateinput = "1992-10-13T00:00:00"
+    kvalue = 75.6597 * u.deg
+    assert_array_almost_equal(sun.longitude_ascending_node(dateinput), kvalue , decimal=4)
 
 def test_solar_north():
     assert_array_almost_equal(sun.solar_north("2012/11/11"), 15.149 * u.deg, decimal=3)

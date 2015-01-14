@@ -25,6 +25,7 @@ from __future__ import absolute_import
 import numpy as np
 
 import astropy.units as u
+import astropy.time
 from astropy.coordinates import Angle, Longitude, Latitude
 
 from sunpy.time import parse_time, julian_day, julian_centuries
@@ -60,8 +61,16 @@ __authors__ = ["Steven Christe"]
 __email__ = "steven.d.christe@nasa.gov"
 
 def solar_cycle_number(t='now'):
+    """
+    Returns approximately the solar cycle number from 1755 assuming an average
+    of 10.66 years per cycle. The average has been obtained having into account
+    Usoskin et al. (2009) results about the total number of cycles between
+    1699 till 2008.
+
+    Usoskin et al. (2009) -  doi:10.1088/0004-637X/700/2/L154
+    """
     time = parse_time(t)
-    result = (time.year + 8) % 28 + 1
+    result = int((time.year - 1755) * u.yr / constants.constant('sunspot cycle'))
     return result
 
 def solar_semidiameter_angular_size(t='now'):
@@ -111,10 +120,19 @@ def longitude_Sun_perigee(t='now'): # pylint: disable=W0613
     
 def mean_anomaly(t='now'):
     """Returns the mean anomaly (the angle through which the Sun has moved
-    assuming a circular orbit) as a function of time."""
+    assuming a circular orbit) as a function of time referred to the mean
+    equinox of the date.
+    The mean anomaly of the Sun is the same as the mean anomaly of the Earth
+    (Meeus, 2005)
+    """
     T = julian_centuries(t)
-    result = 358.475830 + 35999.049750 * T - 0.0001500 * T ** 2 - 0.00000330 * T ** 3
-    result = result * u.deg
+    mean_longitude_earth = np.array([100.466457, 36000.7698278, 3.0322e-4,
+                                     2.0e-8]) * u.deg
+    lon_perihelium_earth = np.array([102.937348,     1.7195366, 4.5688e-4,
+                                    -1.8e-8]) * u.deg
+    polinomial_order = np.array([[1, T, T**2, T**3]])
+    mean_anomaly = (mean_longitude_earth - lon_perihelium_earth) * polinomial_order
+    result = mean_anomaly.sum()      
     return Longitude(result)
 
 def carrington_rotation_number(t='now'):
@@ -212,12 +230,23 @@ def apparent_declination(t='now'):
     result = np.degrees(np.arcsin(np.sin(ob)) * np.sin(app_long))
     return Latitude(result)
 
+def longitude_ascending_node(t='now'):
+    """Returns the longitude of the ascending node of the solar equator on
+    the ecliptic.
+
+    Astronomical Algorithms 2nd Ed. - Jean Meeus 2005  - ISBN: 0-943396-61-1
+    """
+    ut = astropy.time.Time(parse_time(t), scale = 'utc')
+    jd_ephem = ut.tt.jd
+    k = 73.6667 * u.deg + 1.3958333 * u.deg * (jd_ephem - 2396758)/36525
+    return Longitude(k)
+    
 def solar_north(t='now'):
     """Returns the position of the Solar north pole in degrees."""
     T = julian_centuries(t)
     ob1 = true_obliquity_of_ecliptic(t)
     # in degrees
-    i = 7.25 * u.deg 
+    i = constants.constant('inclination solar equator')
     k = (74.3646 + 1.395833 * T) * u.deg
     lamda = true_longitude(t) - (0.00569 * u.deg)
     omega = apparent_longitude(t)
@@ -234,7 +263,7 @@ def heliographic_solar_center(t='now'):
     T = julian_centuries(t)
     # Heliographic coordinates in degrees
     theta = ((jd - 2398220)*360/25.38) * u.deg
-    i = 7.25 * u.deg
+    i = constants.constant('inclination solar equator')
     k = (74.3646 + 1.395833 * T) * u.deg
     lamda = true_longitude(t) - 0.00569 * u.deg
     diff = lamda - k
