@@ -332,7 +332,6 @@ def calc_new_matrix(angle):
 def test_rotate(aia171_test_map):
     rotated_map_1 = aia171_test_map.rotate(20)
     rotated_map_2 = rotated_map_1.rotate(20)
-    assert rotated_map_2.center == rotated_map_1.center == aia171_test_map.center
     np.testing.assert_allclose(rotated_map_1.rotation_matrix,
                                np.dot(aia171_test_map.rotation_matrix,
                                       calc_new_matrix(20).T))
@@ -358,7 +357,7 @@ def test_rotate(aia171_test_map):
     np.testing.assert_allclose(rotated_map_3.std(), rotated_map_4.std(), rtol=1e-3)
     rotated_map_5 = aia171_test_map.rotate(180, scale=1.5)
     np.testing.assert_allclose(rotated_map_3.mean(), rotated_map_5.mean(), rtol=1e-3)
-    np.testing.assert_allclose(rotated_map_3.std(), rotated_map_5.std(), rtol=1e-3)
+    np.testing.assert_allclose(rotated_map_3.std(), rotated_map_5.std(), rtol=2e-3)
 
     # Rotation of a rectangular map by a large enough angle will change which dimension is larger
     aia171_test_map_crop = aia171_test_map.submap([0, 1000], [0, 400])
