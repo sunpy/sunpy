@@ -277,7 +277,7 @@ def _remove_lytaf_events(time, channels=None, artifacts=None,
     if fitsfile:
         # Create time array of time strings rather than datetime objects
         # and verify filecolumns have been correctly input.  If None,
-        # generate generic filecolumns (see docstring og function called
+        # generate generic filecolumns (see docstring of function called
         # below.
         string_time, filecolumns = _prep_columns(time, channels, filecolumns)
         # Prepare column objects.
@@ -661,7 +661,7 @@ def _lytaf_event2string(integers):
 
     return out
 
-def _prep_columns(time, channels, filecolumns):
+def _prep_columns(time, channels=None, filecolumns=None):
     """
     Checks and prepares data to be written out to a file.
 
