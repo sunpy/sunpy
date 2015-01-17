@@ -6,7 +6,7 @@ import datetime
 from astropy import units as u
 from astropy.coordinates import Longitude
 
-__author__ = ["Jose Ivan Campos Rozo","Stuart Mumford"]
+__author__ = ["Jose Ivan Campos Rozo","Stuart Mumford", "Rajul Srivastava"]
 __all__ = ['diff_rot']
 
 
@@ -58,9 +58,11 @@ def diff_rot(ddays, latitude, rot_type='howard', frame_time='sidereal'):
 
     if not isinstance(ddays,datetime.timedelta):
         delta = datetime.timedelta(days=ddays)
+    else:
+        delta = ddays
 
     if not isinstance(latitude, u.Quantity):
-	raise TypeError("Expecting astropy Quantity")
+        raise TypeError("Expecting astropy Quantity")
 
     latitude = latitude.to(u.deg)
     delta_seconds = delta.total_seconds()

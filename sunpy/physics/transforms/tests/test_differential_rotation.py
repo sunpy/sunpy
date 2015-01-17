@@ -1,5 +1,6 @@
 from __future__ import absolute_import
 import unittest
+import datetime
 import numpy as np
 from astropy import units as u
 from astropy.coordinates import Longitude
@@ -10,7 +11,20 @@ class DiffRotTest(unittest.TestCase):
     """ Please note the numbers in these tests are not checked for physical
     accuracy, only that they are the values the function was outputting upon
     implementation. """
+
+    def test_ddays_int(self):
+        rot = diff_rot(10, 30 * u.deg)
+        self.failUnless(rot == 136.8216 * u.deg)
     
+    def test_ddays_timedelta_instance(self):
+        delta = datetime.timedelta(10)
+        rot = diff_rot(delta, 30 * u.deg)
+        self.failUnless(rot == 136.8216 * u.deg)
+        
+    def test_latitude_instance(self):
+        self.assertRaises(TypeError, diff_rot, 10, 10)
+        self.assertRaises(TypeError, diff_rot, 10, 'foo')
+
     def test_single(self):
         rot = diff_rot(10, 30 * u.deg)
         self.failUnless(rot == 136.8216 * u.deg)
@@ -39,6 +53,6 @@ class DiffRotTest(unittest.TestCase):
         rot = diff_rot(10, 30 * u.deg, rot_type='snodgrass')
         self.failUnless(rot == 135.4232 * u.deg)
     
-    def test_fail(self):
+    def test_rot_type_does_not_exist(self):
         self.assertRaises(ValueError, diff_rot, 10, 30 * u.deg, rot_type='garbage')
 
