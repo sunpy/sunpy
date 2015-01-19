@@ -188,7 +188,7 @@ def test_remove_lytaf_events_2():
     # Run _remove_lytaf_events
     time_test, channels_test, artifacts_status_test = \
       lyra._remove_lytaf_events(
-          TIME, channels=CHANNELS, artifacts=["Offpoint"],
+          TIME, channels=CHANNELS, artifacts="Offpoint",
           return_artifacts=True, lytaf_path=TEST_DATA_PATH,
           force_use_local_lytaf=True)
     # Generated expected result
@@ -230,12 +230,16 @@ def test_remove_lytaf_events_2():
 
 def test_remove_lytaf_events_3():
     """Test if correct errors are raised by _remove_lytaf_events()."""
+    with pytest.raises(ValueError):
+        lyra._remove_lytaf_events(TIME,
+                                  lytaf_path=TEST_DATA_PATH,
+                                  force_use_local_lytaf=True)
     with pytest.raises(TypeError):
         lyra._remove_lytaf_events(TIME, artifacts=[6],
                                   lytaf_path=TEST_DATA_PATH,
                                   force_use_local_lytaf=True)
     with pytest.raises(TypeError):
-        lyra._remove_lytaf_events(TIME, channels=6,
+        lyra._remove_lytaf_events(TIME, channels=6, artifacts=["LAR"],
                                   lytaf_path=TEST_DATA_PATH,
                                   force_use_local_lytaf=True)
 
