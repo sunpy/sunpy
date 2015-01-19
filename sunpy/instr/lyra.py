@@ -20,7 +20,7 @@ from sunpy import lightcurve
 LYTAF_REMOTE_PATH = "http://proba2.oma.be/lyra/data/lytaf/"
 LYTAF_PATH = config.get("downloads", "download_dir")
 
-def remove_lytaf_events_from_lightcurve(lc, artifacts=[],
+def remove_lytaf_events_from_lightcurve(lc, artifacts=None,
                                         return_artifacts=False,
                                         lytaf_path=None,
                                         force_use_local_lytaf=False):
@@ -219,13 +219,14 @@ def _remove_lytaf_events(time, channels=None, artifacts=None,
     if not lytaf_path:
         lytaf_path = LYTAF_PATH
     if not artifacts:
-        artifacts = []
-    else:
-        if not all(isinstance(artifact_type, str) for artifact_type in artifacts):
+        raise ValueError("User has supplied no artifacts to remove.")
+    elif type(artifacts) is str:
+        artifacts = [artifacts]
+    elif not all(isinstance(artifact_type, str) for artifact_type in artifacts):
             raise TypeError("All elements in artifacts must in strings.")
     if channels and type(channels) is not list:
-        raise TypeError("channels must be None or a list of numpy arrays of "
-                        "dtype 'float64'.")
+        raise TypeError("channels must be None or a list of numpy arrays "
+                        "of dtype 'float64'.")
     # Define outputs
     clean_time = np.array([parse_time(t) for t in time])
     clean_channels = copy.deepcopy(channels)
