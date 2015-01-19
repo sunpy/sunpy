@@ -218,15 +218,21 @@ def _remove_lytaf_events(time, channels=None, artifacts=None,
     # Check inputs
     if not lytaf_path:
         lytaf_path = LYTAF_PATH
-    if not artifacts:
-        raise ValueError("User has supplied no artifacts to remove.")
-    elif type(artifacts) is str:
-        artifacts = [artifacts]
-    elif not all(isinstance(artifact_type, str) for artifact_type in artifacts):
-            raise TypeError("All elements in artifacts must in strings.")
     if channels and type(channels) is not list:
         raise TypeError("channels must be None or a list of numpy arrays "
                         "of dtype 'float64'.")
+    if not artifacts:
+        raise ValueError("User has supplied no artifacts to remove.")
+    if type(artifacts) is str:
+      artifacts = [artifacts]
+    if not all(isinstance(artifact_type, str) for artifact_type in artifacts):
+        raise TypeError("All elements in artifacts must in strings.")
+    all_lytaf_event_types = get_lytaf_event_types(lytaf_path=lytaf_path,
+                                                  print_event_types=False)
+    for artifact in artifacts:
+        if not artifact in all_lytaf_event_types:
+            print all_lytaf_event_types
+            raise ValueError("{0} is not a valid artifact type. See above.".format(artifact))
     # Define outputs
     clean_time = np.array([parse_time(t) for t in time])
     clean_channels = copy.deepcopy(channels)
@@ -507,7 +513,7 @@ def get_lytaf_events(start_time, end_time, lytaf_path=None,
 
     return lytaf
 
-def print_lytaf_event_types(lytaf_path=None):
+def get_lytaf_event_types(lytaf_path=None, print_event_types=True):
     """Prints the different event types in the each of the LYTAF databases.
 
     Parameters
@@ -516,13 +522,23 @@ def print_lytaf_event_types(lytaf_path=None):
         Path location where LYTAF files are stored.
         Default = LYTAF_PATH defined above.
 
+    print_event_types : `bool`
+        If True, prints the artifacts in each lytaf database to screen.
+
+    Returns
+    -------
+    all_event_types : `list`
+        List of all events types in all lytaf databases.
+
     """
     # Set lytaf_path is not done by user
     if not lytaf_path:
         lytaf_path = LYTAF_PATH
     suffixes = ["lyra", "manual", "ppt", "science"]
+    all_event_types = []
     # For each database file extract the event types and print them.
-    print "\nLYTAF Event Types\n-----------------\n"
+    if print_event_types:
+        print "\nLYTAF Event Types\n-----------------\n"
     for suffix in suffixes:
         dbname = "annotation_{0}.db".format(suffix)
         # Check database file exists, else download it.
@@ -533,10 +549,16 @@ def print_lytaf_event_types(lytaf_path=None):
         cursor = connection.cursor()
         cursor.execute("select type from eventType;")
         event_types = cursor.fetchall()
-        print "----------------\n{0} database\n----------------".format(suffix)
-        for event_type in event_types:
-            print str(event_type[0])
-        print " "
+        all_event_types.append(event_types)
+        if print_event_types:
+            print "----------------\n{0} database\n----------------".format(suffix)
+            for event_type in event_types:
+                print str(event_type[0])
+            print " "
+    # Unpack event types in all_event_types into single list
+    all_event_types = [event_type[0] for event_types in all_event_types
+                       for event_type in event_types]
+    return all_event_types
 
 def download_lytaf_database(lytaf_dir=''):
     """download latest Proba2 pointing database from Proba2 Science Center"""
