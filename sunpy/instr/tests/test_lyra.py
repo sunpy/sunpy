@@ -230,6 +230,10 @@ def test_remove_lytaf_events_2():
 
 def test_remove_lytaf_events_3():
     """Test if correct errors are raised by _remove_lytaf_events()."""
+    with pytest.raises(TypeError):
+        lyra._remove_lytaf_events(TIME, channels=6, artifacts=["LAR"],
+                                  lytaf_path=TEST_DATA_PATH,
+                                  force_use_local_lytaf=True)
     with pytest.raises(ValueError):
         lyra._remove_lytaf_events(TIME,
                                   lytaf_path=TEST_DATA_PATH,
@@ -238,8 +242,9 @@ def test_remove_lytaf_events_3():
         lyra._remove_lytaf_events(TIME, artifacts=[6],
                                   lytaf_path=TEST_DATA_PATH,
                                   force_use_local_lytaf=True)
-    with pytest.raises(TypeError):
-        lyra._remove_lytaf_events(TIME, channels=6, artifacts=["LAR"],
+    with pytest.raises(ValueError):
+        lyra._remove_lytaf_events(TIME,
+                                  artifacts=["LAR","incorrect artifact type"],
                                   lytaf_path=TEST_DATA_PATH,
                                   force_use_local_lytaf=True)
 
@@ -315,9 +320,9 @@ def test_get_lytaf_events():
                                                combine_files=["gigo"],
                                                force_use_local_lytaf=True)
 
-def test_print_lytaf_event_types():
+def test_get_lytaf_event_types():
     """Test that LYTAF event types are printed."""
-    lyra.print_lytaf_event_types(lytaf_path=TEST_DATA_PATH)
+    lyra.get_lytaf_event_types(lytaf_path=TEST_DATA_PATH)
 
 def test_lytaf_event2string():
     """Test _lytaf_event2string() associates correct numbers and events."""
