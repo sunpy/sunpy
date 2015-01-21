@@ -17,8 +17,7 @@ def mapcube_all_the_same():
     testpath = sunpy.data.test.rootdir
     aia_file = os.path.join(testpath, "aia_171_level1.fits")
     aia_map = sunpy.map.Map(aia_file)
-    return sunpy.map.Map([aia_map.superpixel((2, 1)),
-                                      aia_map.superpixel((2, 1))], cube=True)
+    return sunpy.map.Map([aia_map, aia_map], cube=True)
 
 @pytest.fixture()
 def mapcube_different():
