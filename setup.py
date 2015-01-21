@@ -4,6 +4,8 @@ SunPy: Python for Solar Physics
 The SunPy project is an effort to create an open-source software library for
 solar physics using the Python programming language.
 """
+import platform
+
 DOCLINES = __doc__.split("\n")
 
 CLASSIFIERS = [
@@ -82,7 +84,7 @@ def install(setup): #pylint: disable=W0621
                             [np.get_include(), join('.', 'sunpy', 'io', 'src')]
                             )
     ext_modules = []
-    if 'ana' in locals():
+    if 'ana' in locals() and platform.system() != 'Windows' :
         ext_modules.append(ana)
 
     write_version_py()
