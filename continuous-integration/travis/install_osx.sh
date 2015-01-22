@@ -6,3 +6,4 @@ bash $MINICONDA_FILE -b
 export PATH=/Users/travis/miniconda3/bin:$PATH
 
 conda update --yes conda
+conda install -q --yes binstar conda-build jinja2
