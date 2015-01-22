@@ -46,12 +46,12 @@ install:
     - conda install -q --yes numpy scipy astropy matplotlib pandas requests beautiful-soup sqlalchemy scikit-image pytest
     - pip install pytest-cov pytest-xdist coveralls
     # Install sunpy conda packages
-    - conda install suds-jurko glymur
+    - conda install -q --yes suds-jurko glymur
     # Install the correct version of astropy
-    - if [[ $TEST_MODE != 'astropy-dev' ]]; then conda install astropy>=0.4.0; fi 
+    - if [[ $TEST_MODE != 'astropy-dev' ]]; then conda -q --yes install astropy>=0.4.0; fi 
     - if [[ $TEST_MODE == 'astropy-dev' ]]; then pip install git+git://github.com/astropy/astropy.git; fi 
     # Install sphinx if needed
-    - if [[ $TEST_MODE == 'sphinx' ]]; then conda install sphinx; fi 
+    - if [[ $TEST_MODE == 'sphinx' ]]; then conda -q --yes install sphinx; fi 
 
 script:
     - if [[ $TEST_MODE == 'sphinx' ]]; then python setup.py build_sphinx -w; fi
