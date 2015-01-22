@@ -1,7 +1,13 @@
 # -*- coding: utf-8 -*-
+# Lovingly borrowed from Astropy
+# Licensed under a 3-clause BSD style license - see licences/ASTROPY.rst
+
 import warnings
 
 import pytest
+
+import astropy.units as u
+import numpy as np
 
 __all__ = ['skip_glymur', 'skip_ana', 'warnings_as_errors']
 
@@ -37,3 +43,37 @@ def warnings_as_errors(request):
     warnings.simplefilter('error')
 
     request.addfinalizer(lambda *args: warnings.resetwarnings())
+
+
+def assert_quantity_allclose(actual, desired, rtol=1.e-7, atol=0, err_msg='', verbose=True):
+    """
+    Raise an assertion if two objects are not equal up to desired tolerance.
+
+    This is a :class:`~astropy.units.Quantity`-aware version of
+    :func:`numpy.testing.assert_allclose`.
+    """
+
+    if isinstance(actual, u.Quantity) and isinstance(desired, u.Quantity):
+
+        if atol != 0:
+            if not isinstance(atol, u.Quantity):
+                raise TypeError("If `actual` and `desired` are Quantities, `atol` parameter should also be a Quantity")
+            else:
+                atol = atol.to(actual.unit).value
+
+        np.testing.assert_allclose(actual.value, desired.to(actual.unit).value,
+                                   rtol=rtol, atol=atol, err_msg=err_msg, verbose=verbose)
+
+    elif isinstance(actual, u.Quantity):
+        raise TypeError("If `actual` is a Quantity, `desired` should also be a Quantity")
+
+    elif isinstance(desired, u.Quantity):
+        raise TypeError("If `desired` is a Quantity, `actual` should also be a Quantity")
+
+    else:
+
+        if isinstance(atol, u.Quantity):
+            raise TypeError("If `actual` and `desired` are not Quantities, `atol` parameter should also not be a Quantity")
+
+        np.testing.assert_allclose(actual, desired,
+                                   rtol=rtol, atol=atol, err_msg=err_msg, verbose=verbose)
