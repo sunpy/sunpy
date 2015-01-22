@@ -1,10 +1,4 @@
-language: python
-
-python:
-  - 2.7
-
-virtualenv:
-    system_site_packages: false
+language: c
 
 os:
     - linux
@@ -15,6 +9,7 @@ os:
 # above.
 env:
     global:
+        - PYTHON_VERSION=2.7
         - TEST_MODE='offline'
         - LATEST_NUMPY=1.9.1
         - LATEST_PANDAS=0.15.2
@@ -23,19 +18,14 @@ env:
 matrix:
     include:
          - os: linux
-           python: 2.7
            env: NUMPY_VERSION=1.8.1
          - os: linux
-           python: 2.7
            env: PANDAS_VERSION=0.14.1
          - os: linux
-           python: 2.7
            env: TEST_MODE='astropy-dev'
          - os: linux
-           python: 2.7
            env: TEST_MODE='sphinx'
          - os: linux
-           python: 2.7
            env: TEST_MODE='online'
 
     allow_failures:
@@ -51,7 +41,7 @@ before_install:
 # Install all SunPy dependacies using wheels.
 install:
     # Add a conda env and set up extra binstar channels
-    - conda create --yes -n test python=$TRAVIS_PYTHON_VERSION
+    - conda create --yes -n test python=$PYTHON_VERSION
     - conda config --add channels sunpy astropy-ci-extras
     - source activate test
     # Install default dependancies
