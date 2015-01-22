@@ -5,6 +5,7 @@ from __future__ import absolute_import
 import datetime
 import urlparse
 import sys
+from collections import OrderedDict
 
 from matplotlib import pyplot as plt
 from astropy.io import fits
@@ -12,7 +13,6 @@ import pandas
 
 from sunpy.lightcurve import LightCurve
 from sunpy.time import parse_time
-from sunpy.util.odict import OrderedDict
 
 from sunpy import config
 TIME_FORMAT = config.get("general", "time_format")
