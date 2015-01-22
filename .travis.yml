@@ -3,15 +3,11 @@ language: python
 python:
   - 2.7
 
-virtualenv:
-     system_site_packages: false
-
 # Configure the build environment. Global varibles are defined for all
 # configurations. Each configuration in the matrix is run for each python version
 # above.
 env:
     global:
-        - PIP_WHEEL_COMMAND="--find-links http://sunpy.cadair.com/wheelhouse/index.html --use-wheel --upgrade --trusted-host sunpy.cadair.com"
         - TEST_MODE='offline'
         - LATEST_NUMPY=1.9.1
         - LATEST_PANDAS=0.15.2
@@ -19,55 +15,50 @@ env:
         - PANDAS_VERSION=$LATEST_PANDAS
 matrix:
      include:
-        - python: 2.7
-          env: NUMPY_VERSION=1.8.1
-        - python: 2.7
-          env: PANDAS_VERSION=0.14.1
-        - python: 2.7
-          env: TEST_MODE='astropy-dev'
-        - python: 2.7
-          env: TEST_MODE='sphinx'
-        - python: 2.7
-          env: TEST_MODE='online'
+         - os: linux
+           python: 2.7
+           env: NUMPY_VERSION=1.8.1
+         - os: linux
+           python: 2.7
+           env: PANDAS_VERSION=0.14.1
+         - os: linux
+           python: 2.7
+           env: TEST_MODE='astropy-dev'
+         - os: linux
+           python: 2.7
+           env: TEST_MODE='sphinx'
+         - os: linux
+           python: 2.7
+           env: TEST_MODE='online'
 
 before_install:
-# Make sure the system is upto date and install scipy requirements
-   - sudo apt-get update -qq
-   - sudo apt-get install -qq libatlas-dev liblapack-dev gfortran
-   - if [[ $TEST_MODE == 'sphinx' ]]; then sudo apt-get install graphviz texlive-latex-extra dvipng; fi
-# Make sure pip is at the latest version (>1.4 for wheels)
-   - pip install pip --upgrade
-# Wheels also need a recent version of setuptools
-   - pip install setuptools>=0.8 --upgrade
+    - if [[ $TRAVIS_OS_NAME == 'linux' ]] ;then source continuous-integration/travis/install_linux.sh; fi
+    - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then source continuous-integration/travis/install_osx.sh; fi
 # Install more upto date openjpeg library.
-   - wget http://openjpeg.googlecode.com/files/openjpeg-1.5.0-Linux-x86_64.tar.gz
-   - sudo tar -xvf openjpeg-1.5.0-Linux-x86_64.tar.gz --strip-components=1 -C /
-# Install coveralls
-   - pip install $PIP_WHEEL_COMMAND coveralls pytest-cov pytest-xdist
+    - wget http://openjpeg.googlecode.com/files/openjpeg-1.5.0-Linux-x86_64.tar.gz
+    - sudo tar -xvf openjpeg-1.5.0-Linux-x86_64.tar.gz --strip-components=1 -C /
 
 # Install all SunPy dependacies using wheels.
 install:
-# Install Numpy first so we force the version we are using
-   - pip install $PIP_WHEEL_COMMAND numpy==$NUMPY_VERSION
-   - pip install $PIP_WHEEL_COMMAND matplotlib
-   - pip install $PIP_WHEEL_COMMAND -vvv scipy
-   - pip install $PIP_WHEEL_COMMAND pandas==$PANDAS_VERSION
-   - pip install $PIP_WHEEL_COMMAND suds-jurko beautifulsoup4 requests
-   - pip install $PIP_WHEEL_COMMAND pytest pytest-xdist 
-   - pip install $PIP_WHEEL_COMMAND glymur
-   - pip install $PIP_WHEEL_COMMAND cython jinja2
-   - pip install $PIP_WHEEL_COMMAND scikit-image
-   - pip install $PIP_WHEEL_COMMAND sqlalchemy
-   - if [[ $TEST_MODE != 'astropy-dev' ]]; then pip install $PIP_WHEEL_COMMAND astropy>=0.4.0; fi 
-   - if [[ $TEST_MODE == 'astropy-dev' ]]; then pip install git+git://github.com/astropy/astropy.git; fi 
-# Install sphinx if needed
-   - if [[ $TEST_MODE == 'sphinx' ]]; then pip install $PIP_WHEEL_COMMAND sphinx==1.2.2; fi 
+    # Add a conda env and set up extra binstar channels
+    - conda create --yes -n test python=$TRAVIS_PYTHON_VERSION
+    - conda config --add channels sunpy astropy-ci-extras
+    - source activate test
+    # Install default dependancies
+    - conda install -q --yes numpy scipy astropy matplotlib pandas requests beautiful-soup sqlalchemy scikit-image pytest
+    - pip install pytest-cov pytest-xdist coveralls
+    # Install sunpy conda packages
+    - conda install suds-jurko glymur
+    # Install the correct version of astropy
+    - if [[ $TEST_MODE != 'astropy-dev' ]]; then conda install astropy>=0.4.0; fi 
+    - if [[ $TEST_MODE == 'astropy-dev' ]]; then pip install git+git://github.com/astropy/astropy.git; fi 
+    # Install sphinx if needed
+    - if [[ $TEST_MODE == 'sphinx' ]]; then conda install sphinx; fi 
 
-# Install SunPy and run tests.
 script:
-   - if [[ $TEST_MODE == 'sphinx' ]]; then python setup.py build_sphinx -w; fi
-   - if [[ $TEST_MODE == 'offline' || $TEST_MODE == 'astropy-dev' ]]; then python setup.py test --coverage --cov-report=html --offline-only; fi
-   - if [[ $TEST_MODE == 'online' ]]; then python setup.py test --coverage --cov-report=term-missing --parallel=8; fi
+    - if [[ $TEST_MODE == 'sphinx' ]]; then python setup.py build_sphinx -w; fi
+    - if [[ $TEST_MODE == 'offline' || $TEST_MODE == 'astropy-dev' ]]; then python setup.py test --coverage --cov-report=html --offline-only; fi
+    - if [[ $TEST_MODE == 'online' ]]; then python setup.py test --coverage --cov-report=term-missing --parallel=8; fi
 
 after_success:
    - if [[ $TEST_MODE == 'online' ]]; then coveralls; fi
@@ -78,6 +69,3 @@ notifications:
   webhooks:
     urls:
       - https://webhooks.gitter.im/e/d1bf84e1bc1293e4dbc5
-    on_success: always  # options: [always|never|change] default: always
-    on_failure: always  # options: [always|never|change] default: always
-    on_start: false     # default: false
