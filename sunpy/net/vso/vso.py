@@ -38,6 +38,7 @@ from sunpy.net.vso.attrs import walker, TIMEFORMAT
 from sunpy.util import print_table, replacement_filename, Deprecated
 from sunpy.time import parse_time
 
+from sunpy import config
 TIME_FORMAT = config.get("general", "time_format")
 
 DEFAULT_URL = 'http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl'
@@ -228,7 +229,7 @@ class QueryResponse(list):
                 return ['N/A']
 
         for record in self:
-            record_items['Start Time'].appennd(validate_time(record.time.start))
+            record_items['Start Time'].append(validate_time(record.time.start))
             record_items['End Time'].append(validate_time(record.time.end))
             record_items['Source'].append(str(record.source))
             record_items['Instrument'].append(str(record.instrument))
@@ -781,6 +782,14 @@ class VSOClient(object):
     def unknown_method(self, response):
         """ Override to pick a new method if the current one is unknown. """
         raise NoData
+    
+    @classmethod
+    def _can_handle_query(cls,*query):
+        chkattr = ['Wave', 'Time', 'Extent', 'Field', 'Provider', 'Source',
+        'Instrument', 'Physobs', 'Pixels', 'Level', 'Resolution',
+        'Detector', 'Filter', 'Sample', 'Quicklook', 'PScale']
+        return all([x.__class__.__name__ in chkattr for x in query])
+
 
 
 class InteractiveVSOClient(VSOClient):
