@@ -32,8 +32,7 @@ matrix:
         - env: TEST_MODE='online'
 
 before_install:
-    - if [[ $TRAVIS_OS_NAME == 'linux' ]]; then source continuous-integration/travis/install_linux.sh; fi
-    - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then source continuous-integration/travis/install_osx.sh; fi
+    - source continuous-integration/travis/install_$TRAVIS_OS_NAME.sh
 
 # Install all SunPy dependacies using wheels.
 install:
@@ -42,8 +41,8 @@ install:
     - conda config --add channels sunpy --add channels astropy-ci-extras
     - source activate test
     # Install default dependancies
-    - conda install --yes pip 
-    - conda install -q --yes numpy scipy astropy matplotlib pandas requests beautiful-soup sqlalchemy scikit-image pytest
+    - conda install --yes pip
+    - conda install -q --yes numpy scipy astropy matplotlib pandas requests beautiful-soup sqlalchemy scikit-image pytest jinja2
     - pip install pytest-cov pytest-xdist coveralls
     # Install sunpy conda packages
     - conda install -q --yes suds-jurko glymur
