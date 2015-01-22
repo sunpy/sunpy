@@ -5,14 +5,17 @@ This particular test file pertains to EUVIMap.
 
 import os
 import glob
-
-from sunpy.map.sources.stereo import EUVIMap
-from sunpy.map import Map
 import sunpy.data.test
+
+from sunpy.map import Map
+from sunpy.map.sources.stereo import EUVIMap
+from sunpy.map.sources.stereo import CORMap
 
 path = sunpy.data.test.rootdir
 fitspath = glob.glob(os.path.join(path, "euvi_20090615_000900_n4euA_s.fts"))
 euvi = Map(fitspath)
+CORFITSPATH = glob.glob(os.path.join(path, "cor1_20090615_000500_s4c1A.fts"))
+CORMAP = Map(CORFITSPATH)
 
 # EUVI Tests
 def test_fitstoEIT():
@@ -36,3 +39,8 @@ def test_observatory():
 def test_rsun_arcseconds():
     """ Tests the rsun_arcseconds property. """
     assert euvi.rsun_arcseconds == euvi.meta['rsun']
+
+#CORMap Tests
+def test_CORMap_measurement():
+    """Tests the measurement property of the CORMap object."""
+    assert CORMAP.measurement == "white-light"
