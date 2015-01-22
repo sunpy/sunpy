@@ -48,10 +48,10 @@ install:
     # Install sunpy conda packages
     - conda install -q --yes suds-jurko glymur
     # Install the correct version of astropy
-    - if [[ $TEST_MODE != 'astropy-dev' ]]; then conda -q --yes install astropy>=0.4.0; fi 
+    - if [[ $TEST_MODE != 'astropy-dev' ]]; then conda install -q --yes astropy>=0.4.0; fi 
     - if [[ $TEST_MODE == 'astropy-dev' ]]; then pip install git+git://github.com/astropy/astropy.git; fi 
     # Install sphinx if needed
-    - if [[ $TEST_MODE == 'sphinx' ]]; then conda -q --yes install sphinx; fi 
+    - if [[ $TEST_MODE == 'sphinx' ]]; then conda install -q --yes sphinx; fi 
 
 script:
     - if [[ $TEST_MODE == 'sphinx' ]]; then python setup.py build_sphinx -w; fi
