@@ -36,7 +36,7 @@ install:
     - "conda install -q --yes numpy scipy astropy matplotlib pandas requests beautiful-soup sqlalchemy scikit-image pytest"
 
     # Install sunpy conda packages
-    - "conda install suds-jurko glymur"
+    - "conda install -q --yes suds-jurko glymur"
 
 # Not a .NET project, we build SunPy in the install step instead
 build: false
