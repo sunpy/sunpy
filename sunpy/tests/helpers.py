@@ -19,7 +19,7 @@ except ImportError:
     SKIP_GLYMUR = True
 else:
     # See if we have a C backend
-    if any((glymur.lib.openjp2.OPENJP2, glymur.lib.openjp2.OPENJPEG)):
+    if any((glymur.lib.openjp2.OPENJP2, glymur.lib.openjpeg.OPENJPEG)):
         SKIP_GLYMUR = False
     else:
         SKIP_GLYMUR = True
