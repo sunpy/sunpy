@@ -42,7 +42,7 @@ install:
     - conda config --add channels sunpy --add channels astropy-ci-extras
     - source activate test
     # Install default dependancies
-    - conda install --yes pip conda-build jinja2 binstar
+    - conda install --yes pip 
     - conda install -q --yes numpy scipy astropy matplotlib pandas requests beautiful-soup sqlalchemy scikit-image pytest
     - pip install pytest-cov pytest-xdist coveralls
     # Install sunpy conda packages
