@@ -32,3 +32,7 @@ def test_measurement():
 def test_observatory():
     """Tests the observatory property of the EUVIMap object."""
     assert euvi.observatory == "STEREO_A"
+
+def test_rsun_arcseconds():
+    """ Tests the rsun_arcseconds property. """
+    assert euvi.rsun_arcseconds == euvi.meta['rsun']
