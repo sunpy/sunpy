@@ -18,7 +18,11 @@ try:
 except ImportError:
     SKIP_GLYMUR = True
 else:
-    SKIP_GLYMUR = False
+    # See if we have a C backend
+    if any((glymur.lib.openjp2.OPENJP2, glymur.lib.openjp2.OPENJPEG)):
+        SKIP_GLYMUR = False
+    else:
+        SKIP_GLYMUR = True
 
 # Skip ana tests if we are on Windows or we can't import the c extension.
 import platform
