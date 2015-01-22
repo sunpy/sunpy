@@ -14,7 +14,7 @@ env:
         - NUMPY_VERSION=$LATEST_NUMPY
         - PANDAS_VERSION=$LATEST_PANDAS
 matrix:
-     include:
+    include:
          - os: linux
            python: 2.7
            env: NUMPY_VERSION=1.8.1
@@ -30,6 +30,9 @@ matrix:
          - os: linux
            python: 2.7
            env: TEST_MODE='online'
+
+    allow_failures:
+        - env: TEST_MODE='online'
 
 before_install:
     - if [[ $TRAVIS_OS_NAME == 'linux' ]] ;then source continuous-integration/travis/install_linux.sh; fi
