@@ -42,7 +42,7 @@ before_install:
 install:
     # Add a conda env and set up extra binstar channels
     - conda create --yes -n test python=$PYTHON_VERSION
-    - conda config --add channels sunpy astropy-ci-extras
+    - conda config --add channels sunpy --add channels astropy-ci-extras
     - source activate test
     # Install default dependancies
     - conda install -q --yes numpy scipy astropy matplotlib pandas requests beautiful-soup sqlalchemy scikit-image pytest
