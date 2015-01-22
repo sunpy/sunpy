@@ -3,6 +3,10 @@ language: python
 python:
   - 2.7
 
+os:
+    - linux
+    - osx
+
 # Configure the build environment. Global varibles are defined for all
 # configurations. Each configuration in the matrix is run for each python version
 # above.
