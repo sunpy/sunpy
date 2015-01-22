@@ -32,11 +32,8 @@ matrix:
         - env: TEST_MODE='online'
 
 before_install:
-    - if [[ $TRAVIS_OS_NAME == 'linux' ]] ;then source continuous-integration/travis/install_linux.sh; fi
+    - if [[ $TRAVIS_OS_NAME == 'linux' ]]; then source continuous-integration/travis/install_linux.sh; fi
     - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then source continuous-integration/travis/install_osx.sh; fi
-# Install more upto date openjpeg library.
-    - wget http://openjpeg.googlecode.com/files/openjpeg-1.5.0-Linux-x86_64.tar.gz
-    - sudo tar -xvf openjpeg-1.5.0-Linux-x86_64.tar.gz --strip-components=1 -C /
 
 # Install all SunPy dependacies using wheels.
 install:
@@ -45,6 +42,7 @@ install:
     - conda config --add channels sunpy --add channels astropy-ci-extras
     - source activate test
     # Install default dependancies
+    - conda install --yes pip conda-build jinja2 binstar
     - conda install -q --yes numpy scipy astropy matplotlib pandas requests beautiful-soup sqlalchemy scikit-image pytest
     - pip install pytest-cov pytest-xdist coveralls
     # Install sunpy conda packages
