@@ -24,7 +24,7 @@ class TestNOAAIndicesLightCurve():
     @pytest.mark.online
     def test_url(self):
         """Test creation with url"""
-        url = 'http://www.swpc.noaa.gov/ftpdir/weekly/RecentIndices.txt'
+        url = 'ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt'
         lc1 = sunpy.lightcurve.NOAAIndicesLightCurve.create(url)
         assert isinstance(lc1, sunpy.lightcurve.NOAAIndicesLightCurve)
 
@@ -37,7 +37,7 @@ class TestNOAAIndicesLightCurve():
     def test_get_url(self):
         """Test the getting of url"""
         g = sunpy.lightcurve.NOAAIndicesLightCurve
-        assert g._get_url_for_date_range(timerange_a) == 'http://www.swpc.noaa.gov/ftpdir/weekly/RecentIndices.txt'
+        assert g._get_url_for_date_range(timerange_a) == 'ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt'
 
     @pytest.mark.online
     def test_header(self):
@@ -69,14 +69,14 @@ class TestNOAAPredictIndicesLightCurve():
     @pytest.mark.online
     def test_url(self):
         """Test creation with url"""
-        url = 'http://www.swpc.noaa.gov/ftpdir/weekly/Predict.txt'
+        url = 'http://services.swpc.noaa.gov/text/predicted-sunspot-radio-flux.txt'
         lc1 = sunpy.lightcurve.NOAAPredictIndicesLightCurve.create(url)
         assert isinstance(lc1, sunpy.lightcurve.NOAAPredictIndicesLightCurve)
 
     def test_get_url(self):
         """Test the getting of url"""
         g = sunpy.lightcurve.NOAAPredictIndicesLightCurve
-        assert g._get_url_for_date_range(timerange_a) == 'http://www.swpc.noaa.gov/ftpdir/weekly/Predict.txt'
+        assert g._get_url_for_date_range(timerange_a) == 'http://services.swpc.noaa.gov/text/predicted-sunspot-radio-flux.txt'
 
     @pytest.mark.online
     def test_header(self):
