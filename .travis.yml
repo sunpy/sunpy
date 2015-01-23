@@ -18,6 +18,7 @@ env:
         - LATEST_PANDAS=0.15.2
         - NUMPY_VERSION=$LATEST_NUMPY
         - PANDAS_VERSION=$LATEST_PANDAS
+        - COVERALLS='true'
 matrix:
     include:
 #         - os: linux
@@ -29,7 +30,7 @@ matrix:
          - os: linux
            env: TEST_MODE='sphinx'
          - os: linux
-           env: TEST_MODE='online'
+           env: TEST_MODE='online' COVERALLS='true'
 
     allow_failures:
         - env: TEST_MODE='online'
@@ -60,7 +61,7 @@ script:
     - if [[ $TEST_MODE == 'sphinx' ]]; then python setup.py build_sphinx -w; fi
     - if [[ $TEST_MODE == 'offline' || $TEST_MODE == 'astropy-dev' ]]; then python setup.py test --offline-only; fi
     - if [[ $TEST_MODE == 'online' ]]; then python setup.py test --coverage --cov-report=html; fi
-    - if [[ $TEST_MODE == 'online' ]]; then coveralls --rcfile='./sunpy/tests/coveragerc'; fi
+    - if [[ $COVERALLS == 'true' ]]; then coveralls --rcfile='./sunpy/tests/coveragerc'; fi
 
 # Notify the IRC channel of build status
 notifications:
