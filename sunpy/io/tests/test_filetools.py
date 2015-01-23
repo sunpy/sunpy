@@ -31,7 +31,6 @@ class TestFiletools(object):
         assert all([isinstance(p[1],
                                sunpy.io.header.FileHeader) for p in pairs])
 
-    @skip_windows
     def test_read_file_fits_gzip(self):
         # Test read gzipped fits file
         for fits_extension in [".fts", ".fit", ".fits"]:
