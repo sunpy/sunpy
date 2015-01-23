@@ -24,6 +24,7 @@ env:
         - TEST_MODE='offline'
         - NUMPY_VERSION=$LATEST_NUMPY
         - PANDAS_VERSION=$LATEST_PANDAS
+
 matrix:
     include:
          - os: linux
@@ -54,7 +55,7 @@ install:
     - conda install --yes pip
     - conda install -q --yes numpy=$NUMPY_VERSION pandas=$PANDAS_VERSION
     - conda install -q --yes scipy matplotlib requests beautiful-soup sqlalchemy scikit-image pytest jinja2 cython
-    - pip install coverage coveralls
+    - pip install pytest-cov coverage coveralls
     # Install sunpy conda packages
     - conda install -q --yes suds-jurko glymur
     # Install the correct version of astropy
