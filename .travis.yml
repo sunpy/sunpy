@@ -1,9 +1,13 @@
+# We use C because conda manages our Python vesion
+# and running on OS/X dosen't work with Python.
 language: c
 
 os:
     - linux
     - osx
 
+# These are currently not used, but we want to cache the packages dir
+# to reduce the number of packages to download.
 cache:
     directories:
         $HOME/miniconda/pkgs
@@ -12,13 +16,14 @@ cache:
 # Configure the build environment. Global varibles are defined for all configurations.
 env:
     global:
-        - PYTHON_VERSION=2.7
-        - TEST_MODE='offline'
+        # Modify these to represent the newest versions
         - LATEST_NUMPY=1.9.1
         - LATEST_PANDAS=0.15.2
+        # Fixed global vars
+        - PYTHON_VERSION=2.7
+        - TEST_MODE='offline'
         - NUMPY_VERSION=$LATEST_NUMPY
         - PANDAS_VERSION=$LATEST_PANDAS
-        - COVERALLS='true'
 matrix:
     include:
          - os: linux
@@ -30,15 +35,16 @@ matrix:
          - os: linux
            env: TEST_MODE='sphinx'
          - os: linux
-           env: TEST_MODE='online' COVERALLS='true'
+           env: TEST_MODE='online'
 
+# If the online build fails, we don't want it to report the whole build broken.
     allow_failures:
         - env: TEST_MODE='online'
 
+# Install miniconda
 before_install:
     - source continuous-integration/travis/install_$TRAVIS_OS_NAME.sh
 
-# Install all SunPy dependacies using wheels.
 install:
     # Add a conda env and set up extra binstar channels
     - conda create --yes -n test python=$PYTHON_VERSION
@@ -48,7 +54,7 @@ install:
     - conda install --yes pip
     - conda install -q --yes numpy=$NUMPY_VERSION pandas=$PANDAS_VERSION
     - conda install -q --yes scipy matplotlib requests beautiful-soup sqlalchemy scikit-image pytest jinja2 cython
-    - pip install pytest-cov pytest-xdist coveralls
+    - pip install coverage coveralls
     # Install sunpy conda packages
     - conda install -q --yes suds-jurko glymur
     # Install the correct version of astropy
