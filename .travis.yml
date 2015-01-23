@@ -59,7 +59,7 @@ install:
 script:
     - if [[ $TEST_MODE == 'sphinx' ]]; then python setup.py build_sphinx -w; fi
     - if [[ $TEST_MODE == 'offline' || $TEST_MODE == 'astropy-dev' ]]; then python setup.py test --offline-only; fi
-    - if [[ $TEST_MODE == 'online' ]]; then python setup.py test --coverage; fi
+    - if [[ $TEST_MODE == 'online' ]]; then python setup.py test --coverage --cov-report=html; fi
     - if [[ $TEST_MODE == 'online' ]]; then coveralls --rcfile='./sunpy/tests/coveragerc'; fi
 
 # Notify the IRC channel of build status
