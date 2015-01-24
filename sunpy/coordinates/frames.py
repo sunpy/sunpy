@@ -80,7 +80,7 @@ class HelioGraphicStonyhurst(BaseCoordinateFrame):
 
     def __init__(self, *args, **kwargs):
         """
-        This custom constructor is used to default certain attributes.
+        This custom constructor is used to default RSun to the photospheric radius.
         It takes the usual arguments, such as a ~astropy.coordinates.BaseRepres
         entation object or representation arguments and other keyword arguments.
 
@@ -229,16 +229,11 @@ class HelioProjective(BaseCoordinateFrame):
         A representation object. If specified, other parameters must
         be in keyword form.
     Tx: `Angle` object.
-        X-axis coordinate, specified in degrees.
+        X-axis coordinate.
     Ty: `Angle` object.
-        Y-axis coordinate, specified in degrees.
+        Y-axis coordinate.
     distance: Z-axis coordinate.
-        Represents the radial distance between the solar center
-        and the observer.
-        Defaults to 1AU.
-    zeta: `Quantity` object.
-        Represents the distance between observer and feature/point.
-        Defaults to 0.
+        The radial distance from the observer to the coordinate point.
     D0: `Quantity` object.
         Represents the distance between observer and solar center.
         Defaults to 1AU.
@@ -255,15 +250,6 @@ class HelioProjective(BaseCoordinateFrame):
     >>> sc
     <SkyCoord (HelioProjective): dateobs=2010-01-01 00:00:00, D0=149597870.7 km
     , Tx=0.0 arcsec, Ty=0.0 arcsec, distance=149597870.7 km>
-    >>> hp = HelioProjective(0*u.deg, 0*u.deg, zeta=1*u.km,
-    dateobs="2010/01/01T00:00:00")
-    >>> hp
-    <HelioProjective Coordinate: dateobs=2010-01-01 00:00:00, D0=149597870.7 km
-    , Tx=0.0 arcsec, Ty=0.0 arcsec, distance=149597869.7 km>
-    >>> sc = SkyCoord(hp)
-    >>> sc
-    <SkyCoord (HelioProjective): dateobs=2010-01-01 00:00:00, D0=149597870.7 km
-    , Tx=0.0 arcsec, Ty=0.0 arcsec, distance=149597869.7 km>
     """
 
     default_representation = SphericalWrap180Representation
@@ -282,7 +268,7 @@ class HelioProjective(BaseCoordinateFrame):
     dateobs = TimeFrameAttributeSunPy()
     L0 = FrameAttribute(default=0*u.deg)
     B0 = FrameAttribute(default=0*u.deg)
-    RSun = FrameAttribute(default=RSUN_METERS)
+    RSun = FrameAttribute(default=RSUN_METERS.to(u.km))
 
     def __init__(self, *args, **kwargs):
         BaseCoordinateFrame.__init__(self, *args, **kwargs)
@@ -312,6 +298,10 @@ class HelioProjective(BaseCoordinateFrame):
             A new frame instance with all the attributes of the original but now
             with a third coordinate.
         """
+        # Skip if we already are 3D
+        if isinstance(self._data, SphericalRepresentation):
+            return self
+
         rep = self.represent_as(UnitSphericalWrap180Representation)
         lat, lon = rep.lat, rep.lon
         alpha = np.arccos(np.cos(lat) * np.cos(lon))\
@@ -347,7 +337,7 @@ def hgc_to_hgs(hgccoord, hgsframe):
     return hgsframe.realize_frame(representation)
 
 @frame_transform_graph.transform(FunctionTransform, HelioCentric, HelioProjective)
-def helioc_to_heliop(helioccoord, heliopframe):
+def hcc_to_hpc(helioccoord, heliopframe):
     x = helioccoord.x.to(u.m)
     y = helioccoord.y.to(u.m)
     z = helioccoord.z.to(u.m)
@@ -363,7 +353,8 @@ def helioc_to_heliop(helioccoord, heliopframe):
     return heliopframe.realize_frame(representation)
 
 @frame_transform_graph.transform(FunctionTransform, HelioProjective, HelioCentric)
-def heliop_to_helioc(heliopcoord, heliocframe):
+def hpc_to_hcc(heliopcoord, heliocframe):
+    heliopcoord = heliopcoord.calculate_distance()
     x = np.deg2rad(heliopcoord.Tx)
     y = np.deg2rad(heliopcoord.Ty)
 
