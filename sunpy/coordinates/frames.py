@@ -11,7 +11,8 @@ import numpy as np
 from astropy import units as u
 from astropy.coordinates.representation import (BaseRepresentation,
                                                 CartesianRepresentation,
-                                                UnitSphericalRepresentation)
+                                                UnitSphericalRepresentation,
+                                                SphericalRepresentation)
 from astropy.coordinates.baseframe import (BaseCoordinateFrame, frame_transform_graph,
                                            RepresentationMapping)
 from astropy.coordinates.transformations import FunctionTransform
@@ -19,14 +20,12 @@ from astropy.coordinates import FrameAttribute
 
 # SunPy imports
 from sunpy import sun as s # For Carrington rotation number
-from representation import SphericalWrap180Representation
-
-from datetime import datetime
+from representation import SphericalWrap180Representation, UnitSphericalWrap180Representation
 
 from .frameattributes import TimeFrameAttributeSunPy
 
-RSUN_METERS = s.constants.constant('radius').si
-DSUN_METERS = s.constants.constant('mean distance').si
+RSUN_METERS = s.constants.constant('radius').si.to(u.m)
+DSUN_METERS = s.constants.constant('mean distance').si.to(u.m)
 
 __all__ = ['HelioGraphicStonyhurst', 'HelioGraphicCarrington',
            'HelioCentric', 'HelioProjective']
@@ -52,20 +51,20 @@ class HelioGraphicStonyhurst(BaseCoordinateFrame):
     rad: `astropy.units.Quantity` object.
         This quantity holds the radial distance. If not specified, it is, by default,
         the solar radius. Optional, must be keyword
-        
+
     Examples
     --------
     >>> sc = SkyCoord(1*u.deg, 1*u.deg, 2*u.km, frame="heliographicstonyhurst",
     dateobs="2010/01/01T00:00:45")
     >>> sc
-    <SkyCoord (HelioGraphicStonyhurst): dateobs=2010-01-01 00:00:45, 
+    <SkyCoord (HelioGraphicStonyhurst): dateobs=2010-01-01 00:00:45,
     hlon=1.0 deg, hlat=1.0 deg, rad=2.0 km>
     >>> sc.frame
-    <HelioGraphicStonyhurst Coordinate: dateobs=2010-01-01 00:00:45, 
+    <HelioGraphicStonyhurst Coordinate: dateobs=2010-01-01 00:00:45,
     hlon=1.0 deg, hlat=1.0 deg, rad=2.0 km>
     >>> sc = SkyCoord(HelioGraphicStonyhurst(-10*u.deg, 2*u.deg))
     >>> sc
-    <SkyCoord (HelioGraphicStonyhurst): dateobs=None, hlon=-10.0 deg, 
+    <SkyCoord (HelioGraphicStonyhurst): dateobs=None, hlon=-10.0 deg,
     hlat=2.0 deg, rad=695508.0 km>
     """
 
@@ -84,7 +83,7 @@ class HelioGraphicStonyhurst(BaseCoordinateFrame):
         This custom constructor is used to default certain attributes.
         It takes the usual arguments, such as a ~astropy.coordinates.BaseRepres
         entation object or representation arguments and other keyword arguments.
-        
+
         Returns
         -------
         A ~sunpy.coordinates.HelioGraphicStonyhurst object with the requisite
@@ -121,7 +120,7 @@ class HelioGraphicCarrington(HelioGraphicStonyhurst):
     This frame differs from the Stonyhurst version in the
     definition of the longitude, which is defined using
     an offset which is a time-dependent scalar value.
-    
+
     Parameters
     ----------
     representation: `~astropy.coordinates.BaseRepresentation` or None.
@@ -136,18 +135,18 @@ class HelioGraphicCarrington(HelioGraphicStonyhurst):
     rad: `astropy.units.Quantity` object, optional, must be keyword.
         This quantity holds the radial distance. If not specified, it is, by default,
         the solar radius. Optional, must be keyword.
-        
+
     Examples
     --------
     >>> sc = SkyCoord(1*u.deg, 2*u.deg, 3*u.km, frame="heliographiccarrington",
     dateobs="2010/01/01T00:00:30")
     >>> sc
-    <SkyCoord (HelioGraphicCarrington): dateobs=2010-01-01 00:00:30, 
+    <SkyCoord (HelioGraphicCarrington): dateobs=2010-01-01 00:00:30,
     hlon=1.0 deg, hlat=2.0 deg, rad=3.0 km>
-    >>> sc = SkyCoord([1,2,3]*u.deg, [4,5,6]*u.deg, [5,6,7]*u.km, 
+    >>> sc = SkyCoord([1,2,3]*u.deg, [4,5,6]*u.deg, [5,6,7]*u.km,
     dateobs="2010/01/01T00:00:45", frame="heliographiccarrington")
     >>> sc
-    <SkyCoord (HelioGraphicCarrington): dateobs=2010-01-01 00:00:45, 
+    <SkyCoord (HelioGraphicCarrington): dateobs=2010-01-01 00:00:45,
     (hlon, hlat, rad) in (deg, deg, km)
         [(1.0, 4.0, 5.0), (2.0, 5.0, 6.0), (3.0, 6.0, 7.0)]>
     """
@@ -187,18 +186,18 @@ class HelioCentric(BaseCoordinateFrame):
     D0: `Quantity` object.
         Represents the distance between the observer and the Sun center.
         Defaults to 1AU.
-    
+
     Examples
-    --------   
-    >>> sc = SkyCoord(CartesianRepresentation(10*u.km, 1*u.km, 2*u.km), 
+    --------
+    >>> sc = SkyCoord(CartesianRepresentation(10*u.km, 1*u.km, 2*u.km),
     dateobs="2011/01/05T00:00:50", frame="heliocentric")
     >>> sc
-    <SkyCoord (HelioCentric): dateobs=2011-01-05 00:00:50, D0=149597870.7 km, 
+    <SkyCoord (HelioCentric): dateobs=2011-01-05 00:00:50, D0=149597870.7 km,
     x=10.0 km, y=1.0 km, z=2.0 km>
-    >>> sc = SkyCoord([1,2]*u.km, [3,4]*u.m, [5,6]*u.cm, frame="heliocentric", 
+    >>> sc = SkyCoord([1,2]*u.km, [3,4]*u.m, [5,6]*u.cm, frame="heliocentric",
     dateobs="2011/01/01T00:00:54")
     >>> sc
-    <SkyCoord (HelioCentric): dateobs=2011-01-01 00:00:54, D0=149597870.7 km, 
+    <SkyCoord (HelioCentric): dateobs=2011-01-01 00:00:54, D0=149597870.7 km,
     (x, y, z) in (km, m, cm)
         [(1.0, 3.0, 5.0), (2.0, 4.0, 6.0)]>
     """
@@ -243,20 +242,20 @@ class HelioProjective(BaseCoordinateFrame):
     D0: `Quantity` object.
         Represents the distance between observer and solar center.
         Defaults to 1AU.
-        
+
     Examples
     --------
-    >>> sc = SkyCoord(0*u.deg, 0*u.deg, 5*u.km, dateobs="2010/01/01T00:00:00", 
+    >>> sc = SkyCoord(0*u.deg, 0*u.deg, 5*u.km, dateobs="2010/01/01T00:00:00",
     frame="helioprojective")
     >>> sc
     <SkyCoord (HelioProjective): dateobs=2010-01-01 00:00:00, D0=149597870.7 km
     , Tx=0.0 arcsec, Ty=0.0 arcsec, distance=5.0 km>
-    >>> sc = SkyCoord(0*u.deg, 0*u.deg, dateobs="2010/01/01T00:00:00", 
+    >>> sc = SkyCoord(0*u.deg, 0*u.deg, dateobs="2010/01/01T00:00:00",
     frame="helioprojective")
     >>> sc
     <SkyCoord (HelioProjective): dateobs=2010-01-01 00:00:00, D0=149597870.7 km
     , Tx=0.0 arcsec, Ty=0.0 arcsec, distance=149597870.7 km>
-    >>> hp = HelioProjective(0*u.deg, 0*u.deg, zeta=1*u.km, 
+    >>> hp = HelioProjective(0*u.deg, 0*u.deg, zeta=1*u.km,
     dateobs="2010/01/01T00:00:00")
     >>> hp
     <HelioProjective Coordinate: dateobs=2010-01-01 00:00:00, D0=149597870.7 km
@@ -264,7 +263,7 @@ class HelioProjective(BaseCoordinateFrame):
     >>> sc = SkyCoord(hp)
     >>> sc
     <SkyCoord (HelioProjective): dateobs=2010-01-01 00:00:00, D0=149597870.7 km
-    , Tx=0.0 arcsec, Ty=0.0 arcsec, distance=149597869.7 km>  
+    , Tx=0.0 arcsec, Ty=0.0 arcsec, distance=149597869.7 km>
     """
 
     default_representation = SphericalWrap180Representation
@@ -273,6 +272,8 @@ class HelioProjective(BaseCoordinateFrame):
         'sphericalwrap180': [RepresentationMapping('lon', 'Tx', u.arcsec),
                              RepresentationMapping('lat', 'Ty', u.arcsec),
                              RepresentationMapping('distance', 'distance', u.km)],
+        'unitsphericalwrap180': [RepresentationMapping('lon', 'Tx', u.arcsec),
+                             RepresentationMapping('lat', 'Ty', u.arcsec)],
         'cylindrical': [RepresentationMapping('rho', 'Trho', u.arcsec),
                         RepresentationMapping('phi', 'psi', u.arcsec),
                         RepresentationMapping('distance', 'distance', u.km)]}
@@ -281,139 +282,47 @@ class HelioProjective(BaseCoordinateFrame):
     dateobs = TimeFrameAttributeSunPy()
     L0 = FrameAttribute(default=0*u.deg)
     B0 = FrameAttribute(default=0*u.deg)
+    RSun = FrameAttribute(default=RSUN_METERS)
+
+    def __init__(self, *args, **kwargs):
+        BaseCoordinateFrame.__init__(self, *args, **kwargs)
+        # The base __init__ will make this a UnitSphericalRepresentation
+        # This makes it Wrap180 instead
+        if isinstance(self._data, UnitSphericalRepresentation):
+            self._data = UnitSphericalWrap180Representation(lat=self._data.lat,
+                                                            lon=self._data.lon)
 
     @property
     def zeta(self):
         """zeta is defined as a property."""
         return self.D0 - self.distance
 
-    def __init__(self, *args, **kwargs):
-        """
-        This is the custom constructor method for HelioProjective frames.
-        It is required as we wish to default 'distance' to D0 - zeta when it
-        itself is not present and there are no supporting arguments.
-        'zeta' is a supporting argument that must be specified as a kwarg.
-        If 'zeta' is present, 'distance' can be calculated as given.
-        Both 'zeta' and 'distance' cannot be present at the same time.
-        
-        Returns
-        -------
-        A ~sunpy.coordinates.HelioProjective object with the requisite properties.
-        """
-        if args or (kwargs and len(kwargs) != 1):
-            if args and isinstance(args[0], UnitSphericalRepresentation):
-                args = (args[0].lon, args[0].lat)
-            # Non-empty frame use case.
-            if args and kwargs:
-                # If we have both args and kwargs.
-                if isinstance(args[0], BaseRepresentation):
-                    # The case when first arg is a representation.
-                    if 'zeta' in kwargs:
-                        # zeta cannot be provided as SphericalRep takes three arguments.
-                        raise TypeError("zeta cannot be specified with a representation "
-                                        "for the {0} frame.".format(self.__class__))
-                elif len(args) < 3:
-                    # If we have either args(Tx) and rest kwargs, or args(Tx, Ty) and rest kwargs.
-                    if 'distance' not in kwargs and 'zeta' in kwargs:
-                        kwargs['distance'] = kwargs.get('D0', self.D0) - kwargs['zeta']
-                        kwargs.pop('zeta')
-                    elif 'distance' not in kwargs and 'zeta' not in kwargs:
-                        kwargs['distance'] = self.get_distance_hpc(*args, **kwargs)
-                    elif 'distance' in kwargs and 'zeta' in kwargs:
-                        raise TypeError("zeta and distance cannot both be "
-                                        "specified in the {0} frame.".format(self.__class__.name))
-                elif len(args) == 3:
-                    # If we have args(Tx, Ty, distance).
-                    if 'zeta' in kwargs:
-                        raise TypeError("zeta and distance cannot both "
-                                        "be specified here for the {0} frame.".format(self.__class__.name))
-            elif not kwargs:
-                # The case when kwargs are not present.
-                if len(args) == 2:
-                    # args(Tx, Ty) provided.
-                    args = list(args)
-                    args.append(self.get_distance_hpc(*tuple(args)))
-                    args = tuple(args)
-            elif not args:
-                # The case when args are not present.
-                if 'distance' not in kwargs and 'zeta' in kwargs:
-                    kwargs['distance'] = kwargs.get('D0', self.D0) - kwargs['zeta']
-                    kwargs.pop('zeta')
-                elif 'distance' not in kwargs and 'zeta' not in kwargs:
-                    if 'Tx' in kwargs and 'Ty' in kwargs or 'lon' in kwargs and 'lat' in kwargs:
-                        # This if clause was added to deal with a frame
-                        # which does not have Tx, Ty, distance but may
-                        # have other kwargs (FrameAttributes).
-                        kwargs['distance'] = self.get_distance_hpc(**kwargs)
-                elif 'distance' in kwargs and 'zeta' in kwargs:
-                    raise TypeError("zeta and distance cannot both be "
-                                    "specified here for the {0} frame.".format(self.__class__))
-                elif isinstance(kwargs.get('distance', None), u.Quantity) and kwargs['distance'].unit.is_unity():
-                    kwargs['distance'] = self.get_distance_hpc(**kwargs)
-                    
-
-        # Finally, make a call to the super constructor.
-        super(HelioProjective, self).__init__(*args, **kwargs)
-           
     # Note that Trho = Drho + 90, and Drho is the declination parameter.
     # According to Thompson, we use Trho internally and Drho as part of
     # the (Drho, psi) pair when defining a coordinate in this system.
-           
-    def get_distance_hpc(self, *args, **kwargs):
+    def calculate_distance(self):
         """
-        This method calculates the 'distance' parameter if it is not specifed.
-        It takes Tx, Ty and possibly D0 as its input.
-        It returns distance in kilometers.
-        
+        This method calculates the third coordnate of the Helioprojective frame.
+        It assumes that the coordinate point is on the disk of the Sun at the
+        Rsun radius.
+
         Returns
         -------
-        A ~astropy.units.Quantity object which contains the value of the HPC-
-        distance.
+        new_frame : `~sunpy.coordinates.frames.HelioProjective`
+            A new frame instance with all the attributes of the original but now
+            with a third coordinate.
         """
-        c, b = None, None
-        list_params = self._get_input_params(*args, **kwargs)        
-        
-        alpha = np.arccos(np.cos(list_params[0]) * np.cos(list_params[1]))\
-                .to(list_params[0].unit)
-        if len(list_params) == 3:
-            c = (list_params[2].to(u.m))**2 - RSUN_METERS**2
-            b = -2 * list_params[2].to(u.m) * np.cos(alpha)
-        else:
-            c = (self.D0.to(u.m))**2 - RSUN_METERS**2
-            b = -2 * self.D0.to(u.m) * np.cos(alpha)
+        rep = self.represent_as(UnitSphericalWrap180Representation)
+        lat, lon = rep.lat, rep.lon
+        alpha = np.arccos(np.cos(lat) * np.cos(lon))\
+                .to(lat.unit)
+        c = self.D0**2 - self.RSun**2
+        b = -2 * self.D0.to(u.m) * np.cos(alpha)
         d = ((-1*b) - np.sqrt(b**2 - 4*c)) / 2
+        return self.realize_frame(SphericalWrap180Representation(lon=lon,
+                                                                 lat=lat,
+                                                                 distance=d))
 
-        return d.to(u.km)
-
-    def _get_input_params(self, *args, **kwargs):
-        """
-        This method prunes the args and kwargs to find Tx, Ty and D0.
-        It is used by get_distance_hpc(). It returns a list of these values
-        in the order [Tx, Ty, D0] or [Tx, Ty].
-        If D0 is not specified, get_distance_hpc() uses the default D0 instead.
-        
-        Returns
-        -------
-        A list object containing ~astropy.coordinates.SphericalRepresentation
-        compatible values, for the ~sunpy.coordinates.HelioProjective class.
-        """
-        list_params = []
-        if len(args) == 2:
-            list_params = list(args)
-        elif len(args) == 1:
-            if 'Tx' in kwargs:
-                list_params.append(kwargs['Tx'])
-                list_params.append(args[0])
-            elif 'Ty' in kwargs:
-                list_params = list(args)
-                list_params.append(kwargs['Ty'])
-        elif not args:
-            list_params.append(kwargs['Tx'])
-            list_params.append(kwargs['Ty'])
-        if 'D0' in kwargs:
-            list_params.append(kwargs['D0'])
-        return list_params
-        
 def _carrington_offset(dateobs):
     if dateobs is None:
         raise ValueError("To perform this transformation the coordinate Frame needs a dateobs Attribute")
@@ -498,7 +407,7 @@ def hgs_to_hcc(heliogcoord, heliocframe):
     hglon = heliogcoord.hlon
     hglat = heliogcoord.hlat
     r = heliogcoord.rad.to(u.m)
-    
+
     l0b0_pair = [heliocframe.L0, heliocframe.B0]
 
     l0_rad = l0b0_pair[0].to(u.rad)
