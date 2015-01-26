@@ -25,9 +25,8 @@ from sunpy.util.net import check_download_file
 from sunpy.sun import sun
 from sunpy.util.unit_decorators import quantity_input
 
-__all__ = ['get_goes_event_list', 'temp_em', 'goes_chianti_tem',
-           'radiative_loss_rate', 'calc_rad_loss',
-           'xray_luminosity', 'goes_lx']
+__all__ = ['get_goes_event_list', 'temp_em', 'radiative_loss_rate',
+           'xray_luminosity']
 
 try:
     # Check required data files are present in user's default download dir
