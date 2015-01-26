@@ -60,6 +60,7 @@ def test_query():
         assert URL + item in result
 
 @pytest.mark.online
+@pytest.xfail
 def test_query_number():
     URL = 'http://soleil.i4ds.ch/solarradio/data/2002-20yy_Callisto/2011/09/22/'
 
