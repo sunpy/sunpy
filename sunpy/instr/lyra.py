@@ -53,7 +53,7 @@ def remove_lytaf_events_from_lightcurve(lc, artifacts=None,
 
     Returns
     -------
-    lc_new : `~sunpy.lightcurve.LightCurve`
+    lc_new : `sunpy.lightcurve.LightCurve`
         copy of input LYRALightCurve with periods corresponding to artifacts
         removed.
 
@@ -130,7 +130,7 @@ def _remove_lytaf_events(time, channels=None, artifacts=None,
 
     Parameters
     ----------
-    time : `numpy.array` of `datetime.datetime`
+    time : `numpy.ndarray` of `datetime.datetime`
         Gives the times of the timeseries.
 
     channels : `list` of `numpy.array` convertible to float64.
@@ -177,10 +177,10 @@ def _remove_lytaf_events(time, channels=None, artifacts=None,
 
     Returns
     -------
-    clean_time : `numpy.array` of `datetime.datetime`
+    clean_time : `numpy.ndarray` of `datetime.datetime`
         time array with artifact periods removed.
 
-    clean_channels : list ndarrays/array-likes convertible to float64
+    clean_channels : `list` ndarrays/array-likes convertible to float64
         list of irradiance arrays with artifact periods removed.
 
     artifact_status : `dict`
@@ -300,7 +300,7 @@ def _remove_lytaf_events(time, channels=None, artifacts=None,
         tbhdulist = fits.HDUList([hdu, tbhdu])
         # Write data to fits file.
         tbhdulist.writeto(fitsfile)
-    # Output csv file if fits kwarg is set.
+    # Output csv file if csv kwarg is set.
     if csvfile:
         # Create time array of time strings rather than datetime objects
         # and verify filecolumns have been correctly input.  If None,
@@ -335,7 +335,7 @@ def _remove_lytaf_events(time, channels=None, artifacts=None,
             return clean_time, clean_channels
 
 def get_lytaf_events(start_time, end_time, lytaf_path=None,
-                     combine_files=["lyra", "manual", "ppt", "science"],
+                     combine_files=("lyra", "manual", "ppt", "science"),
                      csvfile=None, force_use_local_lytaf=False):
     """
     Extracts combined lytaf file for given time range.
@@ -354,7 +354,7 @@ def get_lytaf_events(start_time, end_time, lytaf_path=None,
     lytaf_path : `str`
         directory path where the LYRA annotation files are stored.
 
-    combine_files : `list` of strings
+    combine_files : `tuple` of strings
         States which LYRA annotation files are to be combined.
         Default is all four, i.e. lyra, manual, ppt, science.
         See Notes section for an explanation of each.
@@ -575,7 +575,7 @@ def split_series_using_lytaf(timearray, data, lytaf):
 
     Parameters
     ----------
-    timearray : `numpy.array` of times understood by `sunpy.time.parse_time`
+    timearray : `numpy.ndarray` of times understood by `sunpy.time.parse_time`
         function.
     data : `numpy.array` corresponding to the given time array
     lytaf : `numpy.recarray`
