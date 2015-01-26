@@ -60,7 +60,7 @@ def test_frame_api():
 def test_highlevel_api():
     from astropy.coordinates import SkyCoord
     from ..frames import HelioGraphicStonyhurst, HelioCentric
-    
+
     # This method tests the high-level API as is done in Astropy.
     # SkyCoord should be SunPy-ready by the time the coordinates
     # API is in the codebase.
@@ -86,7 +86,7 @@ def test_highlevel_api():
     # accessed in a call to `repr`, is printed in the following
     # way - '<HelioGraphicStonyhurst Coordinate: lon=10*u.deg, lat=10*u.deg>'
     string = repr(sc.frame)
-    assert '<HelioGraphicStonyhurst Coordinate: ' in string
+    assert '<HelioGraphicStonyhurst Coordinate ' in string
     assert 'hlon=' in string
     assert 'deg, hlat=' in string
     assert 'rad=' in string
@@ -95,7 +95,7 @@ def test_highlevel_api():
     # Similarly, `repr(sc)` should look like -:
     # '<SkyCoord (HelioGraphicStonyhurst): lon=10*u.deg, lat=10*u.deg>'
     string = repr(sc)
-    assert '<SkyCoord (HelioGraphicStonyhurst): ' in string
+    assert '<SkyCoord (HelioGraphicStonyhurst' in string
     assert 'hlon=' in string
     assert 'deg, hlat=' in string
     assert 'rad=' in string
@@ -112,4 +112,4 @@ def test_highlevel_api():
     sc = SkyCoord(hlon=8*u.deg, hlat=10*u.deg, frame="heliographicstonyhurst",
                   dateobs="2011/01/01T00:00:45")
     sc_helioprojective = sc.helioprojective
-    assert repr(sc_helioprojective).startswith('<SkyCoord (HelioProjective):')
+    assert repr(sc_helioprojective).startswith('<SkyCoord (HelioProjective')
