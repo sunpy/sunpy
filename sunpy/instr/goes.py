@@ -17,6 +17,8 @@ from sunpy import config
 from sunpy import lightcurve
 from sunpy.util.net import check_download_file
 
+from astropy import units
+
 __all__ = ['get_goes_event_list', 'temp_em', 'goes_chianti_tem']
 
 try:
@@ -596,3 +598,84 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal",
     em = longflux/denom * 1e55
 
     return em
+
+
+def flareclass_to_flux(flareclass):
+    """
+    Converts a GOES flare class into the corresponding X-ray flux.
+    
+    Parameters
+    ----------
+    flareclass : string
+        The flare class to convert into X-ray flux, as a string. 
+        E.g.: 'X3.2', 'm1.5', 'A9.6'.
+    
+    Returns
+    -------
+    flux : astropy.units.Quantity
+        X-ray flux between 1 and 8 Angstroms as measured near Earth in W/m^2
+    
+    Examples
+    --------
+    >>> flareclass_to_flux('A1.0')
+    1e-08
+    >>> flareclass_to_flux('c4.7')
+    4.7e-06
+    >>> flareclass_to_flux('X2.4')
+    0.00024
+
+    """
+    assert isinstance(flareclass, str)
+    flareclass = flareclass.upper()
+    conversions = {'A': 1.0e-8, 'B': 1.0e-7, 'C': 1.0e-6, 'M': 1.0e-5,
+                   'X': 1.0e-4}
+    fluxval = float(flareclass[1:]) * conversions[flareclass[0]]
+    flux = units.Quantity(fluxval, "W/m^2")
+    
+    return flux
+
+def flux_to_flareclass(goesflux):
+    """
+    Converts X-ray flux into the corresponding GOES flare class.
+    
+    Parameters
+    ----------
+    flux : float or astropy.units.Quantity
+        X-ray flux between 1 and 8 Angstroms as measured near Earth in W/m^2
+    
+    Returns
+    -------
+    flareclass : string
+        The flare class to convert into X-ray flux, as a string. 
+        E.g.: 'X3.2', 'M1.5', 'A9.6'.
+    
+    Examples
+    --------
+    >>> flux_to_flareclass(1e-08)
+    'A1.0'
+    >>> flux_to_flareclass(4.7e-06)
+    'C4.7'
+    >>> flux_to_flareclass(0.00024)
+    'X2.4'
+
+    """
+    assert isinstance(goesflux, float) or isinstance(goesflux, units.Quantity)
+    
+    if isinstance(goesflux, units.Quantity):
+        goesflux = goesflux.value
+    
+    check = False
+    # It has been tried using 1e-x instead of 10**-x
+    # However, it produces C1 and B1 to be B10 and A10.
+    expo = -3
+    while not check:
+        expo -= 1
+        factor = int(goesflux/10**(expo))
+        check = (factor != 0)
+    levels = {'X': 1.0e-4, 'M': 1.0e-5, 'C': 1.0e-6, 
+              'B': 1.0e-7, 'A': 1.0e-8}
+    for elem in levels:
+        if abs(levels[elem]-10**(expo)) < 1e-21 :
+            return '%s%2.1f'%(elem, goesflux/10**(expo))
+
+    return None #What do we return when smaller than A?
