@@ -260,9 +260,9 @@ class HelioProjective(BaseCoordinateFrame):
                              RepresentationMapping('distance', 'distance', u.km)],
         'unitsphericalwrap180': [RepresentationMapping('lon', 'Tx', u.arcsec),
                              RepresentationMapping('lat', 'Ty', u.arcsec)],
-        'cylindrical': [RepresentationMapping('rho', 'Trho', u.arcsec),
+        'cylindrical': [RepresentationMapping('rho', 'Trho', u.km),
                         RepresentationMapping('phi', 'psi', u.arcsec),
-                        RepresentationMapping('distance', 'distance', u.km)]}
+                        RepresentationMapping('z', 'distance', u.km)]}
 
     D0 = FrameAttribute(default=(1*u.au).to(u.km))
     dateobs = TimeFrameAttributeSunPy()
@@ -277,11 +277,7 @@ class HelioProjective(BaseCoordinateFrame):
         if isinstance(self._data, UnitSphericalRepresentation):
             self._data = UnitSphericalWrap180Representation(lat=self._data.lat,
                                                             lon=self._data.lon)
-
-    @property
-    def zeta(self):
-        """zeta is defined as a property."""
-        return self.D0 - self.distance
+            self.representation = UnitSphericalWrap180Representation
 
     # Note that Trho = Drho + 90, and Drho is the declination parameter.
     # According to Thompson, we use Trho internally and Drho as part of
