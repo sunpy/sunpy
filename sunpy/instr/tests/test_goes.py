@@ -235,9 +235,8 @@ def test_radiative_loss_rate():
 
 def test_calc_rad_loss_errors():
     # Define input variables
-    temp = Quantity([11.0, 11.0, 11.0, 11.0, 11.0, 11.0], unit="MK")
-    em = Quantity([4.0e+48, 4.0e+48, 4.0e+48, 4.0e+48, 4.0e+48, 4.0e+48],
-                  unit="1/cm**3")
+    temp = 11.0 * Quantity(np.ones(6), unit="MK")
+    em = 4.0e+48 * Quantity(np.ones(6), unit="1/cm**3")
     obstime = np.array([datetime.datetime(2014, 1, 1, 0, 0, 0),
                         datetime.datetime(2014, 1, 1, 0, 0, 2),
                         datetime.datetime(2014, 1, 1, 0, 0, 4),
@@ -283,8 +282,8 @@ def test_calc_rad_loss_nokwags():
                         datetime.datetime(2014, 1, 1, 0, 0, 10)], dtype=object)
     # Test output is correct when no kwags are set.
     rad_loss_test = goes.calc_rad_loss(temp[:2], em[:2])
-    rad_loss_expected = {"rad_loss_rate": Quantity(
-        [3.01851392e+19, 3.01851392e+19], unit="J/s")}
+    rad_loss_expected = {"rad_loss_rate":
+                         3.01851392e+19 * Quantity(np.ones(2), unit="J/s")}
     assert sorted(rad_loss_test.keys()) == sorted(rad_loss_expected.keys())
     assert np.allclose(rad_loss_test["rad_loss_rate"],
                        rad_loss_expected["rad_loss_rate"], rtol=0.01)
@@ -303,10 +302,7 @@ def test_calc_rad_loss_obstime():
     # Test output is correct when obstime and cumulative kwargs are set.
     rad_loss_test = goes.calc_rad_loss(temp, em, obstime)
     rad_loss_expected = {
-        "rad_loss_rate": Quantity([3.01851392e+19, 3.01851392e+19,
-                                   3.01851392e+19, 3.01851392e+19,
-                                   3.01851392e+19, 3.01851392e+19],
-                                   unit="J/s"),
+        "rad_loss_rate": 3.01851392e+19 * Quantity(np.ones(6), unit="J/s"),
         "rad_loss_int": Quantity(3.01851392e+20, unit="J"),
         "rad_loss_cumul": Quantity([6.03702783e+19, 1.20740557e+20,
                                     1.81110835e+20, 2.41481113e+20,
@@ -342,8 +338,8 @@ def test_xray_luminosity():
 
 def test_goes_lx_errors():
     # Define input values of flux and time.
-    longflux = Quantity([7e-6, 7e-6, 7e-6, 7e-6, 7e-6, 7e-6], unit="W/m**2")
-    shortflux = Quantity([7e-7, 7e-7, 7e-7, 7e-7, 7e-7, 7e-7], unit="W/m**2")
+    longflux = 7e-6 * Quantity(np.ones(6), unit="W/m**2")
+    shortflux = 7e-7 * Quantity(np.ones(6), unit="W/m**2")
     obstime = np.array([datetime.datetime(2014, 1, 1, 0, 0, 0),
                         datetime.datetime(2014, 1, 1, 0, 0, 2),
                         datetime.datetime(2014, 1, 1, 0, 0, 4),
@@ -406,12 +402,8 @@ def test_goes_lx_obstime():
     # Test output when obstime and cumulative kwargs are set.
     lx_test = goes.goes_lx(longflux, shortflux, obstime)
     lx_expected = {
-        "longlum": Quantity([1.91013779e+18, 1.91013779e+18, 1.91013779e+18,
-                             1.91013779e+18, 1.91013779e+18, 1.91013779e+18],
-                             unit="W"),
-        "shortlum": Quantity([1.91013779e+17, 1.91013779e+17, 1.91013779e+17,
-                              1.91013779e+17, 1.91013779e+17, 1.91013779e+17],
-                              unit="W"),
+        "longlum": 1.91013779e+18 * Quantity(np.ones(6), unit='W')),
+        "shortlum": 1.91013779e+17 * Quantity(np.ones(6), unit='W')),
         "longlum_int": Quantity([1.9101360630079373e+19], unit="J"),
         "shortlum_int": Quantity([1.9101360630079373e+18], unit="J"),
         "longlum_cumul": Quantity([3.82027213e+18, 7.64054425e+18,

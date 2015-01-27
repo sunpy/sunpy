@@ -277,8 +277,8 @@ def goes_chianti_tem(longflux, shortflux, satellite=8,
 
     """
     # ENSURE INPUTS ARE OF CORRECT TYPE AND VALID VALUES
-    longflux.to(u.W/u.m/u.m)
-    shortflux.to(u.W/u.m/u.m)
+    longflux = longflux.to(u.W/u.m/u.m)
+    shortflux = shortflux.to(u.W/u.m/u.m)
     int(satellite)
     if satellite < 1:
         raise ValueError("satellite must be the number of a "
@@ -567,6 +567,7 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal",
     # Check inputs are of correct type
     longflux = longflux.to(u.W/u.m**2)
     temp = temp.to(u.MK)
+    log10_temp = np.log10(temp.value)
     int(satellite)
     if satellite < 1:
         raise ValueError("satellite must be the number of a "
@@ -605,9 +606,9 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal",
     modelflux = np.asarray(modelflux)
 
     # Ensure input values of flux ratio are within limits of model table
-    if np.min(np.log10(temp.value)) < np.min(modeltemp) or \
-      np.max(np.log10(temp.value)) > np.max(modeltemp) or \
-      np.isnan(np.min(np.log10(temp.value))):
+    if np.min(log10_temp) < np.min(modeltemp) or \
+      np.max(log10_temp)) > np.max(modeltemp) or \
+      np.isnan(np.min(log10_temp)):
         raise ValueError("All values in temp must be within the range "
                          "{0} - {1} MK.".format(np.min(10**modeltemp),
                                                 np.max(10**modeltemp)))
