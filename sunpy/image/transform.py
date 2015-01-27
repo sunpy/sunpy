@@ -122,12 +122,15 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
             adjusted_image = image.astype(np.float64)
         else:
             adjusted_image = image.copy()
+        if np.any(np.isnan(adjusted_image)) and order >= 4:
+            warnings.warn("Setting NaNs to 0 for higher-order scikit-image rotation", Warning)
+            adjusted_image = np.nan_to_num(adjusted_image)
+
         im_min = np.nanmin(adjusted_image)
         adjusted_image -= im_min
         im_max = np.nanmax(adjusted_image)
         adjusted_image /= im_max
         adjusted_missing = (missing - im_min) / im_max
-
         rotated_image = skimage.transform.warp(adjusted_image, tform, order=order,
                                                mode='constant', cval=adjusted_missing)
 
