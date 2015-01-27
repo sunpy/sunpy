@@ -13,7 +13,7 @@ from sunpy import lightcurve
 from sunpy.instr import goes
 
 # Define input variables to be used in test functions for
-# goes_chianti_tem.
+# _goes_chianti_tem.
 LONGFLUX = Quantity([7e-6], unit="W/m**2")
 SHORTFLUX = Quantity([7e-7], unit="W/m**2")
 DATE = "2014-04-16"
@@ -61,21 +61,21 @@ def test_goes_event_list():
 
 
 @pytest.mark.online
-def test_temp_em():
+def test_calculate_temperature_em():
     # Create GOESLightcurve object, then create new one with
-    # temperature & EM using with temp_em().
+    # temperature & EM using with calculate_temperature_em().
     goeslc = lightcurve.GOESLightCurve.create("2014-01-01 00:00", "2014-01-01 01:00")
-    goeslc_new = goes.temp_em(goeslc)
+    goeslc_new = goes.calculate_temperature_em(goeslc)
     # Test correct exception is raised if a GOESLightCurve object is
     # not inputted.
     with pytest.raises(TypeError):
-        goes.temp_em([])
-    # Find temperature and EM manually with goes_chianti_tem()
-    temp, em = goes.goes_chianti_tem(
+        goes.calculate_temperature_em([])
+    # Find temperature and EM manually with _goes_chianti_tem()
+    temp, em = goes._goes_chianti_tem(
         Quantity(goeslc.data.xrsb, unit='W/m**2'),
         Quantity(goeslc.data.xrsa, unit='W/m**2'),
         satellite=int(goeslc.meta["TELESCOP"].split()[1]), date="2014-01-01")
-    # Check that temperature and EM arrays from goes_chianti_tem()
+    # Check that temperature and EM arrays from _goes_chianti_tem()
     # are same as those in new GOESLightcurve object.
     assert goeslc_new.data.temperature.all() == temp.value.all()
     assert goeslc_new.data.em.all() == em.value.all()
@@ -105,18 +105,18 @@ def test_goes_chianti_tem_errors():
     # First test correct exceptions are raised if incorrect inputs are
     # entered.
     with pytest.raises(ValueError):
-        temp, em = goes.goes_chianti_tem(LONGFLUX, SHORTFLUX, satellite=-1)
+        temp, em = goes._goes_chianti_tem(LONGFLUX, SHORTFLUX, satellite=-1)
     with pytest.raises(ValueError):
-        temp, em = goes.goes_chianti_tem(LONGFLUX, shortflux_toomany)
+        temp, em = goes._goes_chianti_tem(LONGFLUX, shortflux_toomany)
     with pytest.raises(ValueError):
         temp = goes._goes_get_chianti_temp(ratio, satellite=-1)
     with pytest.raises(ValueError):
-        temp, em = goes.goes_chianti_tem(LONGFLUX, SHORTFLUX,
+        temp, em = goes._goes_chianti_tem(LONGFLUX, SHORTFLUX,
                                          abundances="Neither")
     with pytest.raises(ValueError):
         temp = goes._goes_get_chianti_temp(ratio, abundances="Neither")
     with pytest.raises(ValueError):
-        temp, em = goes.goes_chianti_tem(LONGFLUX, shortflux_toobig)
+        temp, em = goes._goes_chianti_tem(LONGFLUX, shortflux_toobig)
     with pytest.raises(ValueError):
         em = goes._goes_get_chianti_em(LONGFLUX, temp_test, satellite=-1)
     with pytest.raises(ValueError):
@@ -132,7 +132,7 @@ def test_goes_chianti_tem_errors():
 
 def test_goes_chianti_tem_case1():
     # test case 1: satellite > 7, abundances = coronal
-    temp1, em1 = goes.goes_chianti_tem(LONGFLUX, SHORTFLUX, satellite=15,
+    temp1, em1 = goes._goes_chianti_tem(LONGFLUX, SHORTFLUX, satellite=15,
                                        date=DATE)
     np.testing.assert_allclose(temp1, Quantity([11.28], unit="MK"), rtol=0.01)
     assert all(em1 < Quantity([4.79e+48], unit="1/cm**3")) and \
@@ -140,7 +140,7 @@ def test_goes_chianti_tem_case1():
 
 def test_goes_chianti_tem_case2():
     # test case 2: satellite > 7, abundances = photospheric
-    temp2, em2 = goes.goes_chianti_tem(LONGFLUX, SHORTFLUX, satellite=15,
+    temp2, em2 = goes._goes_chianti_tem(LONGFLUX, SHORTFLUX, satellite=15,
                                        date=DATE, abundances="photospheric")
     assert all(temp2 < Quantity([10.25], unit="MK")) and \
       all(temp2 > Quantity([10.24], unit="MK"))
@@ -149,7 +149,7 @@ def test_goes_chianti_tem_case2():
 
 def test_goes_chianti_tem_case3():
     # test case 3: satellite < 8 and != 6, abundances = coronal
-    temp3, em3 = goes.goes_chianti_tem(LONGFLUX, SHORTFLUX, satellite=5,
+    temp3, em3 = goes._goes_chianti_tem(LONGFLUX, SHORTFLUX, satellite=5,
                                        date=DATE,
                                        abundances="coronal")
     assert all(temp3 < Quantity([11.43], unit="MK")) and \
@@ -159,7 +159,7 @@ def test_goes_chianti_tem_case3():
 
 def test_goes_chianti_tem_case4():
     # test case 4: satellite < 8 and != 6, abundances = photospheric
-    temp4, em4 = goes.goes_chianti_tem(LONGFLUX, SHORTFLUX, satellite=5,
+    temp4, em4 = goes._goes_chianti_tem(LONGFLUX, SHORTFLUX, satellite=5,
                                        date=DATE,
                                        abundances="photospheric")
     assert all(temp4 < Quantity([10.42], unit="MK")) and \
@@ -169,7 +169,7 @@ def test_goes_chianti_tem_case4():
 
 def test_goes_chianti_tem_case5():
     # test case 5: satellite = 6, date < 1983-06-28, abundances = coronal
-    temp5, em5 = goes.goes_chianti_tem(LONGFLUX, SHORTFLUX, satellite=6,
+    temp5, em5 = goes._goes_chianti_tem(LONGFLUX, SHORTFLUX, satellite=6,
                                        date="1983-06-27",
                                        abundances="coronal")
     assert all(temp5 < Quantity(12.30, unit="MK")) and \
@@ -179,7 +179,7 @@ def test_goes_chianti_tem_case5():
 
 def test_goes_chianti_tem_case6():
     # test case 6: satellite = 6, date < 1983-06-28, abundances = photospheric
-    temp6, em6 = goes.goes_chianti_tem(LONGFLUX, SHORTFLUX, satellite=6,
+    temp6, em6 = goes._goes_chianti_tem(LONGFLUX, SHORTFLUX, satellite=6,
                                        date="1983-06-27",
                                        abundances="photospheric")
     assert all(temp6 < Quantity(11.44, unit="MK")) and \
@@ -189,7 +189,7 @@ def test_goes_chianti_tem_case6():
 
 def test_goes_chianti_tem_case7():
     # test case 7: satellite = 6, date > 1983-06-28, abundances = coronal
-    temp7, em7 = goes.goes_chianti_tem(LONGFLUX, SHORTFLUX, satellite=6,
+    temp7, em7 = goes._goes_chianti_tem(LONGFLUX, SHORTFLUX, satellite=6,
                                        date=DATE,
                                        abundances="coronal")
     assert all(temp7 < Quantity(11.34, unit="MK")) and \
@@ -199,7 +199,7 @@ def test_goes_chianti_tem_case7():
 
 def test_goes_chianti_tem_case8():
     # test case 8: satellite = 6, date > 1983-06-28, abundances = photospheric
-    temp8, em8 = goes.goes_chianti_tem(LONGFLUX, SHORTFLUX, satellite=6,
+    temp8, em8 = goes._goes_chianti_tem(LONGFLUX, SHORTFLUX, satellite=6,
                                        date=DATE,
                                        abundances="photospheric")
     assert all(temp8 < Quantity(10.36, unit="MK")) and \
@@ -207,22 +207,22 @@ def test_goes_chianti_tem_case8():
     assert all(em8 < Quantity(9.39e+48, unit="1/cm**3")) and \
       all(em8 > Quantity(9.38e+48, unit="1/cm**3"))
 
-def test_radiative_loss_rate():
+def test_calculate_radiative_loss_rate():
     # Define input variables.
     goeslc_input = lightcurve.GOESLightCurve.create("2014-01-01 00:00:00",
                                             "2014-01-01 00:00:10")
     not_goeslc = []
-    goeslc_no_em = goes.temp_em(goeslc_input)
+    goeslc_no_em = goes.calculate_temperature_em(goeslc_input)
     del goeslc_no_em.data["em"]
     
     # Check correct exceptions are raised to incorrect inputs
     with pytest.raises(TypeError):
-        goes_test = goes.radiative_loss_rate(not_goeslc)
+        goes_test = goes.calculate_radiative_loss_rate(not_goeslc)
 
     # Check function gives correct results.
     # Test case 1: GOESLightCurve object with only flux data
-    goeslc_test = goes.radiative_loss_rate(goeslc_input)
-    goeslc_expected = goes.temp_em(goeslc_input)
+    goeslc_test = goes.calculate_radiative_loss_rate(goeslc_input)
+    goeslc_expected = goes.calculate_temperature_em(goeslc_input)
     goeslc_expected.data["rad_loss_rate"] = \
       np.array([5.44914366e+19, 5.44914366e+19, 5.43465905e+19,
                 5.38282295e+19, 5.42019309e+19])
@@ -230,7 +230,7 @@ def test_radiative_loss_rate():
 
     # Test case 2: GOESLightCurve object with flux and temperature
     # data, but no EM data.
-    goes_test = goes.radiative_loss_rate(goeslc_no_em)
+    goes_test = goes.calculate_radiative_loss_rate(goeslc_no_em)
     assert_frame_equal(goeslc_test.data, goeslc_expected.data)
 
 def test_calc_rad_loss_errors():
@@ -259,15 +259,15 @@ def test_calc_rad_loss_errors():
     temp_outofrange = Quantity([101, 11.0, 11.0, 11.0, 11.0, 11.0], unit="MK")
     # Ensure correct exceptions are raised.
     with pytest.raises(ValueError):
-        rad_loss_test = goes.calc_rad_loss(temp_toolong, em, obstime)
+        rad_loss_test = goes._calc_rad_loss(temp_toolong, em, obstime)
     with pytest.raises(ValueError):
-        rad_loss_test = goes.calc_rad_loss(temp_outofrange, em, obstime)
+        rad_loss_test = goes._calc_rad_loss(temp_outofrange, em, obstime)
     with pytest.raises(IOError):
-        rad_loss_test = goes.calc_rad_loss(temp, em, obstime_toolong)
+        rad_loss_test = goes._calc_rad_loss(temp, em, obstime_toolong)
     with pytest.raises(TypeError):
-        lx_test = goes.calc_rad_loss(temp, em, obstime_notdatetime)
+        lx_test = goes._calc_rad_loss(temp, em, obstime_notdatetime)
     with pytest.raises(ValueError):
-        rad_loss_test = goes.calc_rad_loss(temp, em, obstime_nonchrono)
+        rad_loss_test = goes._calc_rad_loss(temp, em, obstime_nonchrono)
 
 def test_calc_rad_loss_nokwags():
     # Define input variables
@@ -281,7 +281,7 @@ def test_calc_rad_loss_nokwags():
                         datetime.datetime(2014, 1, 1, 0, 0, 8),
                         datetime.datetime(2014, 1, 1, 0, 0, 10)], dtype=object)
     # Test output is correct when no kwags are set.
-    rad_loss_test = goes.calc_rad_loss(temp[:2], em[:2])
+    rad_loss_test = goes._calc_rad_loss(temp[:2], em[:2])
     rad_loss_expected = {"rad_loss_rate":
                          3.01851392e+19 * Quantity(np.ones(2), unit="J/s")}
     assert sorted(rad_loss_test.keys()) == sorted(rad_loss_expected.keys())
@@ -300,7 +300,7 @@ def test_calc_rad_loss_obstime():
                         datetime.datetime(2014, 1, 1, 0, 0, 8),
                         datetime.datetime(2014, 1, 1, 0, 0, 10)], dtype=object)
     # Test output is correct when obstime and cumulative kwargs are set.
-    rad_loss_test = goes.calc_rad_loss(temp, em, obstime)
+    rad_loss_test = goes._calc_rad_loss(temp, em, obstime)
     rad_loss_expected = {
         "rad_loss_rate": 3.01851392e+19 * Quantity(np.ones(6), unit="J/s"),
         "rad_loss_int": Quantity(3.01851392e+20, unit="J"),
@@ -316,15 +316,15 @@ def test_calc_rad_loss_obstime():
     assert np.allclose(rad_loss_test["rad_loss_cumul"],
                        rad_loss_expected["rad_loss_cumul"], rtol=0.0001)
 
-def test_xray_luminosity():
+def test_calculate_xray_luminosity():
     # Check correct exceptions are raised to incorrect inputs
     not_goeslc = []
     with pytest.raises(TypeError):
-        goes_test = goes.xray_luminosity(not_goeslc)
+        goes_test = goes.calculate_xray_luminosity(not_goeslc)
     # Check function gives correct results.
     goeslc_input = lightcurve.GOESLightCurve.create("2014-01-01 00:00:00",
                                             "2014-01-01 00:00:10")
-    goeslc_test = goes.xray_luminosity(goeslc_input)
+    goeslc_test = goes.calculate_xray_luminosity(goeslc_input)
     goeslc_expected = copy.deepcopy(goeslc_input)
     goeslc_expected.data["luminosity_xrsa"] = \
       Quantity(np.array([2.49831950e+16, 2.49831950e+16, 2.49831950e+16,
@@ -353,18 +353,18 @@ def test_goes_lx_errors():
     obstime_notdatetime[0] = 1
     # Ensure correct exceptions are raised.
     with pytest.raises(ValueError):
-        lx_test = goes.goes_lx(longflux_toolong, shortflux, obstime)
+        lx_test = goes._goes_lx(longflux_toolong, shortflux, obstime)
     with pytest.raises(TypeError):
-        lx_test = goes.goes_lx(longflux, shortflux, obstime_notdatetime)
+        lx_test = goes._goes_lx(longflux, shortflux, obstime_notdatetime)
     with pytest.raises(ValueError):
-        lx_test = goes.goes_lx(longflux, shortflux, obstime_nonchrono)
+        lx_test = goes._goes_lx(longflux, shortflux, obstime_nonchrono)
 
 def test_goes_lx_nokwargs():
     # Define input values of flux and time.
     longflux = Quantity([7e-6, 7e-6, 7e-6, 7e-6, 7e-6, 7e-6], unit="W/m**2")
     shortflux = Quantity([7e-7, 7e-7, 7e-7, 7e-7, 7e-7, 7e-7], unit="W/m**2")
     # Test output when no kwargs are set.
-    lx_test = goes.goes_lx(longflux[:2], shortflux[:2])
+    lx_test = goes._goes_lx(longflux[:2], shortflux[:2])
     lx_expected = {"longlum": Quantity([1.91013779e+18, 1.91013779e+18],
                                        unit="W"),
                    "shortlum": Quantity([1.91013779e+17, 1.91013779e+17],
@@ -379,7 +379,7 @@ def test_goes_lx_date():
     longflux = Quantity([7e-6, 7e-6, 7e-6, 7e-6, 7e-6, 7e-6], unit="W/m**2")
     shortflux = Quantity([7e-7, 7e-7, 7e-7, 7e-7, 7e-7, 7e-7], unit="W/m**2")
     # Test output when date kwarg is set.
-    lx_test = goes.goes_lx(longflux[:2], shortflux[:2], date="2014-04-21")
+    lx_test = goes._goes_lx(longflux[:2], shortflux[:2], date="2014-04-21")
     lx_expected = {"longlum": Quantity([1.98649103e+18, 1.98649103e+18],
                                        unit="W"),
                    "shortlum": Quantity([1.98649103e+17, 1.98649103e+17],
@@ -400,10 +400,10 @@ def test_goes_lx_obstime():
                         datetime.datetime(2014, 1, 1, 0, 0, 8),
                         datetime.datetime(2014, 1, 1, 0, 0, 10)], dtype=object)
     # Test output when obstime and cumulative kwargs are set.
-    lx_test = goes.goes_lx(longflux, shortflux, obstime)
+    lx_test = goes._goes_lx(longflux, shortflux, obstime)
     lx_expected = {
-        "longlum": 1.91013779e+18 * Quantity(np.ones(6), unit='W')),
-        "shortlum": 1.91013779e+17 * Quantity(np.ones(6), unit='W')),
+        "longlum": 1.91013779e+18 * Quantity(np.ones(6), unit='W'),
+        "shortlum": 1.91013779e+17 * Quantity(np.ones(6), unit='W'),
         "longlum_int": Quantity([1.9101360630079373e+19], unit="J"),
         "shortlum_int": Quantity([1.9101360630079373e+18], unit="J"),
         "longlum_cumul": Quantity([3.82027213e+18, 7.64054425e+18,
