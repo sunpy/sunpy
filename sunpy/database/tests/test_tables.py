@@ -17,7 +17,6 @@ from sunpy.database.tables import FitsHeaderEntry, FitsKeyComment, Tag,\
 from sunpy.net import vso
 from sunpy.data.test import rootdir as testdir
 from sunpy.data.test.waveunit import waveunitdir, MQ_IMAGE
-from sunpy.data.sample import RHESSI_IMAGE, EIT_195_IMAGE
 from sunpy.tests.helpers import skip_windows
 import pytest
 import os
