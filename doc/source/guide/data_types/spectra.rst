@@ -14,6 +14,7 @@ can be found in sunpy.data.sample.CALLISTO_IMAGE: ::
 
     from matplotlib import pyplot as plt
     import sunpy
+    import sunpy.data.sample
     from sunpy.spectra.sources.callisto import CallistoSpectrogram
     image = CallistoSpectrogram.read(sunpy.data.sample.CALLISTO_IMAGE)
 

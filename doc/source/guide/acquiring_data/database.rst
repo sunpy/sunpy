@@ -172,6 +172,7 @@ the database had been empty, this expression would have raised an
 syntax are introduced.
 
     >>> import sunpy
+    >>> import sunpy.data.sample
     >>> database.add_from_file(sunpy.data.sample.AIA_171_IMAGE)
     >>> len(database)
     1
