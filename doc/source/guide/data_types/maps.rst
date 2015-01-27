@@ -28,6 +28,7 @@ To create the sample AIA map type the following into your interactive Python she
 
     import sunpy
     import sunpy.map
+    import sunpy.data.sample
     my_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
 
 The variable my_map is a SunPy Map object. To create a SunPy Map object from a local FITS file try something like the following ::
@@ -59,6 +60,7 @@ The format of the header follows the FITS standard.
 A map contains a number of data-associated attributes. To get a quick look at your map simply
 type::
 
+    import sunpy.data.sample
     my_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
     my_map
     
