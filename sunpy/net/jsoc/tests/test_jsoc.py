@@ -185,15 +185,15 @@ def test_request_status_fail():
 
 
 @pytest.mark.online
-@pytest.xfail
+@pytest.mark.xfail
 def test_wait_get():
     responses = client.query(attrs.Time('2012/1/3T00:00:00', '2012/1/3T00:00:45'), attrs.Series( 'hmi.M_45s'))
     res = client.get(responses)
     assert isinstance(res, Results)
     assert res.total == 2
 
-@pytest.xfail
 @pytest.mark.online
+@pytest.mark.xfail
 def test_check_request():
     responses = client.query(attrs.Time('2012/1/1T01:00:00', '2012/1/1T01:00:45'),
                              attrs.Series('hmi.M_45s'))
