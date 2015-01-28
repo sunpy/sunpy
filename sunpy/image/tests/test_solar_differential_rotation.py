@@ -5,7 +5,6 @@
 import numpy as np
 from astropy import units as u
 from numpy.testing import assert_allclose
-from scipy.ndimage.interpolation import shift
 from sunpy import AIA_171_IMAGE
 from sunpy import map
 from sunpy.image.solar_differential_rotation import mapcube_solar_derotate
