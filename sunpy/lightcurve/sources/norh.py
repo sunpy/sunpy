@@ -4,6 +4,8 @@ from __future__ import absolute_import
 
 import datetime
 import urlparse
+from collections import OrderedDict
+
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -12,7 +14,6 @@ import pandas
 
 from sunpy.lightcurve import LightCurve
 from sunpy.time import parse_time
-from sunpy.util.odict import OrderedDict
 
 from sunpy import config
 TIME_FORMAT = config.get("general", "time_format")

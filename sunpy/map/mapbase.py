@@ -16,7 +16,8 @@ import matplotlib.pyplot as plt
 from matplotlib import patches
 from matplotlib import cm
 
-import astropy.nddata
+from .nddata_compat import NDDataCompat as NDData
+
 from sunpy.image.transform import affine_transform
 
 import sunpy.io as io
@@ -43,7 +44,7 @@ or something else?)
 * Should 'center' be renamed to 'offset' and crpix1 & 2 be used for 'center'?
 """
 
-class GenericMap(astropy.nddata.NDData):
+class GenericMap(NDData):
     """
     A Generic spatially-aware 2D data array
 
@@ -115,7 +116,7 @@ class GenericMap(astropy.nddata.NDData):
 
     def __init__(self, data, header, **kwargs):
 
-        astropy.nddata.NDData.__init__(self, data, meta=header, **kwargs)
+        super(GenericMap, self).__init__(data, meta=header, **kwargs)
 
         # Correct possibly missing meta keywords
         self._fix_date()
@@ -156,9 +157,9 @@ Dimension:\t [{xdim:d}, {ydim:d}]
 [dx, dy] =\t [{dx:f}, {dy:f}]
 
 """.format(dtype=self.__class__.__name__,
-           obs=self.observatory, inst=self.instrument, det=self.detector, 
+           obs=self.observatory, inst=self.instrument, det=self.detector,
            meas=self.measurement, date=self.date, dt=self.exposure_time,
-           xdim=self.data.shape[1], ydim=self.data.shape[0], 
+           xdim=self.data.shape[1], ydim=self.data.shape[0],
            dx=self.scale['x'], dy=self.scale['y'])
 + self.data.__repr__())
 
