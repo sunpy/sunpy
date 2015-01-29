@@ -155,7 +155,7 @@ class NOAAPredictIndicesLightCurve(LightCurve):
     @classmethod
     def _get_default_uri(cls):
         """Return the url to download indices"""
-        return "http://services.swpc.noaa.gov/text/predicted-sunspot-radio-flux.txt"
+        return "ftp://ftp.swpc.noaa.gov/pub/weekly/Predict.txt"
 
     @staticmethod
     def _get_url_for_date_range(*args, **kwargs):
