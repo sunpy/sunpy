@@ -4,7 +4,6 @@ import hashlib
 import json
 
 import matplotlib.pyplot as plt
-import pytest
 
 HASH_LIBRARY_NAME = 'figure_hashes.json'
 
@@ -65,19 +64,3 @@ def verify_figure_hash(name, figure=None):
         hash_library[name] = hash_figure(figure)
         return True
     return hash_library[name] == hash_figure(figure)
-
-def assert_figure_hash(test_function):
-    """
-    A decorator for a test that verifies the hash of the current figure or the returned figure,
-    with the name of the test function as the hash identifier in the library.
-    """
-    @pytest.mark.figure
-    def wrapper(*args, **kwargs):
-        name = test_function.func_name
-        hash = hash_figure(test_function(*args, **kwargs))
-        if name not in hash_library:
-            hash_library[name] = hash
-            pytest.fail("Hash not present: {0}".format(name))
-        else:
-            assert hash_library[name] == hash
-    return wrapper

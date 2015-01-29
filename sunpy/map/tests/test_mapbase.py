@@ -17,7 +17,7 @@ import sunpy
 import sunpy.sun
 import sunpy.map
 import sunpy.data.test
-from sunpy.tests.hash import assert_figure_hash
+from sunpy.tests.helpers import figure_test
 
 testpath = sunpy.data.test.rootdir
 
@@ -375,7 +375,7 @@ def test_rotate():
     assert aia_map_crop_rot.shape[0] < aia_map_crop_rot.shape[1]
 
 
-@assert_figure_hash
+@figure_test
 def test_rotate_by_20():
     aia_map = sunpy.map.Map(sunpy.AIA_171_IMAGE)
     aia_map.rotate(20).plot()
