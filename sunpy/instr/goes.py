@@ -1,3 +1,50 @@
+"""
+Contains functions useful for analysing GOES/XRS data.
+
+Each of the Geostationary Operational Environmental Satellite (GOES) series
+since the mid-1970s has carried an X-Ray Sensor (XRS) which observes
+full-disk-integrated solar flux in two broadband channels:
+1--8 angstrom (long); and 0.5--4 angstrom (short).  For more information on
+the GOES/XRS instrument, see Hanser & Sellers (1996).  GOES/XRS has become
+the "standard candle" for solar coronal observations due its longevity and
+consistency.  The GOES event list, based on GOES/XRS observations, has
+become the standard solar flare catalogue.
+See http://www.ngdc.noaa.gov/stp/solar/solarflares.html for information
+on the GOES event list definitions and data.
+
+The functions in this module provide useful software to analyse GOES/XRS
+observations.  First they allow the GOES event list to be imported into a
+python session (get_goes_event_list()).
+
+They also allow the thermodynamic properties of the emitting solar plasma to
+be determined.  Temperature and emission measure are obtained using
+calculate_temperature_em(), which calls _goes_chianti_tem(), which in turn
+calls _goes_get_chianti_temp() and _goes_get_chianti_em().  These two
+functions currently rely on lookup tables relating the GOES fluxes to the
+isothermal temperature and volume emission measure.  These tables were
+calculated by functions in SolarSoftWare (SSW) using the CHIANTI atomic
+physics database (Dere et al. 2009). For more detail, see the docstring of
+calculate_temperature_em() and references therein.
+
+The radiative loss rate of the soft X-ray-emitting plasma across all
+wavelengths can be found with calculate_radiative_loss_rate().  This function
+calls _calc_rad_loss() which, like _goes_get_chianti_temp() and
+_goes_get_chianti_em(), makes use of a look up table calculated by fuctions
+in SSW using CHIANTI.  This table relates the temperature and emission 
+measure of the emitting solar plasma to the thermal energy radiative over 
+all wavelengths.  For more information on how this is done, see
+the docstring of _calc_rad_loss() and reference therein.
+
+Meanwhile, the X-ray luminosity in the two GOES passbands can be
+obtained by calculate_xray_luminosity().  To do so, this function calls
+_goes_lx() and calc_xraylum().
+
+References
+----------
+Hanser, F.A., & Sellers, F.B. 1996, Proc. SPIE, 2812, 344
+Dere, K.P., et al. 2009 A&A, 498, 915
+"""
+
 from __future__ import absolute_import
 from __future__ import division
 
