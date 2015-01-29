@@ -14,7 +14,6 @@ from scipy.integrate import trapz
 from scipy.integrate import cumtrapz
 import astropy
 import astropy.units as u
-from astropy.units.quantity import Quantity
 import pandas
 
 from sunpy.net import hek
@@ -101,22 +100,23 @@ def get_goes_event_list(timerange, goes_class_filter=None):
     return goes_event_list
 
 def calculate_temperature_em(goeslc, abundances="coronal",
-                             download=False, download_dir=DATA_PATH):
+                             download=False, download_dir=None):
     """
-    Calculates and adds temperature and EM to a GOESLightCurve.
+    Calculates temperature and emission measure from a GOESLightCurve.
 
-    This function calculates the isothermal temperature and volume
-    emission measure of the solar soft X-ray emitting plasma observed by
-    the GOES/XRS.  This is done using the function goes_chianti_tem().
-    See that function for more details.  Once the temperature and
-    emission measure are found, they are added to a copy of the
-    original GOESLightCurve object as goeslc.data.temperature and
-    goeslc.data.em where goeslc is the GOESLightCurve object.
+    This function calculates the isothermal temperature and
+    corresponding volume emission measure of the solar soft X-ray
+    emitting plasma observed by the GOES/XRS.  This is done using the
+    observed flux ratio of the short (0.5-4 angstrom) to long (1-8 angstrom)
+    channels.  The results are returned in a new LightCurve object which
+    contains metadata and flux data of the input LightCurve object in
+    addition to the newly found temperature and emission measure values.
 
     Parameters
     ----------
     goeslc : `sunpy.lightcurve.LightCurve`
-        LightCurve object containing GOES flux data.
+        LightCurve object containing GOES flux data which MUST
+        be in units of W/m^2.
 
     abundances : (optional) string equalling 'coronal' or 'photospheric'
         States whether photospheric or coronal abundances should be
@@ -140,8 +140,39 @@ def calculate_temperature_em(goeslc, abundances="coronal",
     lc_new : `sunpy.lightcurve.LightCurve`
         Contains same metadata and data as input GOESLightCurve with the
         following two additional data columns:
-        lc_new.data.temperature - Array of temperature values [MK]
-        lc_new.data.em - Array of volume emission measure values [cm**-3]
+
+        | lc_new.data.temperature - Array of temperatures [MK]
+        | lc_new.data.em - Array of volume emission measures [cm**-3]
+
+    Notes
+    -----
+    The temperature and volume emission measure are calculated here
+    using the methods of White et al. (2005) who used the
+    CHIANTI atomic physics database to model the response of the ratio
+    of the short (0.5-4 angstrom) to long (1-8 angstrom) channels of the
+    XRSs onboard various GOES satellites.  This method assumes an
+    isothermal plasma, the ionisation equilibria of
+    Mazzotta et al. (1998), and a constant density of 10**10 cm**-3.
+    (See White et al. 2005 for justification of this last assumption.)
+    This function is based on goes_chianti_tem.pro in SolarSoftWare
+    written in IDL by Stephen White.
+
+    Recent fluxes released to the public are scaled to be consistent
+    with GOES-7.  In fact these recent fluxes are correct and so this
+    correction must be removed before proceeding to use transfer
+    functions.
+    Email Rodney Viereck (NOAA) for more information.
+
+    Measurements of short channel flux of less than 1e-10 W/m**2 or
+    long channel flux less than 3e-8 W/m**2 are not considered good.
+    Ratio values corresponding to suxh fluxes are set to 0.003.
+
+    References
+    ----------
+    .. [1] White, S. M., Thomas, R. J., & Schwartz, R. A. 2005,
+        Sol. Phys., 227, 231
+    .. [2] Mazzotta, P., Mazzitelli, G., Colafrancesco, S., &
+        Vittorio, N. 1998, A&AS, 133, 339
 
     Examples
     --------
@@ -165,14 +196,16 @@ def calculate_temperature_em(goeslc, abundances="coronal",
     # Check that input argument is of correct type
     if not isinstance(goeslc, lightcurve.LightCurve):
         raise TypeError("goeslc must be a LightCurve object.")
+    if not download_dir:
+        download_dir = DATA_PATH
 
     # Find temperature and emission measure with _goes_chianti_tem
-    temp, em = _goes_chianti_tem(Quantity(goeslc.data.xrsb, unit=u.W/(u.m)**2),
-                                 Quantity(goeslc.data.xrsa, unit=u.W/(u.m)**2),
-                                 satellite=goeslc.meta["TELESCOP"].split()[1],
-                                 date=goeslc.data.index[0],
-                                 abundances=abundances, download=download,
-                                 download_dir=download_dir)
+    temp, em = _goes_chianti_tem(
+        u.Quantity(goeslc.data.xrsb, unit=u.W/(u.m)**2),
+        u.Quantity(goeslc.data.xrsa, unit=u.W/(u.m)**2),
+        satellite=goeslc.meta["TELESCOP"].split()[1],
+        date=goeslc.data.index[0],
+        abundances=abundances, download=download, download_dir=download_dir)
 
     # Enter results into new version of GOES LightCurve Object
     # Use copy.deepcopy for replicating meta and data so that input
@@ -187,7 +220,7 @@ def calculate_temperature_em(goeslc, abundances="coronal",
 @quantity_input(longflux=u.W/u.m/u.m, shortflux=u.W/u.m/u.m)
 def _goes_chianti_tem(longflux, shortflux, satellite=8,
                       date=datetime.datetime.today(), abundances="coronal",
-                      download=False, download_dir=DATA_PATH):
+                      download=False, download_dir=None):
     """
     Calculates temperature and emission measure from GOES/XRS data.
 
@@ -282,6 +315,8 @@ def _goes_chianti_tem(longflux, shortflux, satellite=8,
     Quantity< [  4.78577516e+48,   4.78577516e+48] 1 / cm**3>
 
     """
+    if not download_dir:
+        download_dir = DATA_PATH
     # ENSURE INPUTS ARE OF CORRECT TYPE AND VALID VALUES
     longflux = longflux.to(u.W/u.m/u.m)
     shortflux = shortflux.to(u.W/u.m/u.m)
@@ -312,10 +347,11 @@ def _goes_chianti_tem(longflux, shortflux, satellite=8,
     # Calculate short to long channel ratio.
     # Data which is not good have their ratio value set to 0.003.
     # See Notes section in docstring above.
-    index = np.logical_or(shortflux_corrected < Quantity(1e-10, unit="W/m**2"),
-                          longflux_corrected < Quantity(3e-8, unit="W/m**2"))
+    index = np.logical_or(
+        shortflux_corrected < u.Quantity(1e-10, unit="W/m**2"),
+        longflux_corrected < u.Quantity(3e-8, unit="W/m**2"))
     fluxratio = shortflux_corrected / longflux_corrected
-    fluxratio.value[index] = Quantity(0.003, unit="W/m**2")
+    fluxratio.value[index] = u.Quantity(0.003, unit="W/m**2")
 
     # FIND TEMPERATURE AND EMISSION MEASURE FROM FUNCTIONS BELOW
     temp = _goes_get_chianti_temp(fluxratio, satellite=satellite,
@@ -328,7 +364,7 @@ def _goes_chianti_tem(longflux, shortflux, satellite=8,
 
 @quantity_input(fluxratio=u.dimensionless_unscaled)
 def _goes_get_chianti_temp(fluxratio, satellite=8, abundances="coronal",
-                           download=False, download_dir=DATA_PATH):
+                           download=False, download_dir=None):
     """
     Calculates temperature from GOES flux ratio.
 
@@ -412,6 +448,8 @@ def _goes_get_chianti_temp(fluxratio, satellite=8, abundances="coronal",
     array([11.28295376, 11.28295376])
 
     """
+    if not download_dir:
+        download_dir = DATA_PATH
     # If download kwarg is True, or required data files cannot be
     # found locally, download required data files.
     check_download_file(FILE_TEMP_COR, GOES_REMOTE_PATH, download_dir,
@@ -465,13 +503,13 @@ def _goes_get_chianti_temp(fluxratio, satellite=8, abundances="coronal",
     # values of flux ratio
     spline = interpolate.splrep(modelratio, modeltemp, s=0)
     temp = 10.**interpolate.splev(fluxratio.value, spline, der=0)
-    temp = Quantity(temp, unit='MK')
+    temp = u.Quantity(temp, unit='MK')
 
     return temp
 
 @quantity_input(longflux=u.W/u.m/u.m, temp=u.MK)
 def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal",
-                         download=False, download_dir=DATA_PATH):
+                         download=False, download_dir=None):
     """
     Calculates emission measure from GOES 1-8A flux and temperature.
 
@@ -563,6 +601,8 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal",
     array([  3.45200672e+48,   3.45200672e+48])
 
     """
+    if not download_dir:
+        download_dir = DATA_PATH
     # If download kwarg is True, or required data files cannot be
     # found locally, download required data files.
     check_download_file(FILE_EM_COR, GOES_REMOTE_PATH, download_dir,
@@ -623,34 +663,44 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal",
     spline = interpolate.splrep(modeltemp, modelflux, s=0)
     denom = interpolate.splev(np.log10(temp.value), spline, der=0)
     em = longflux.value/denom * 1e55
-    em = Quantity(em, unit='cm**(-3)')
+    em = u.Quantity(em, unit='cm**(-3)')
 
     return em
 
 def calculate_radiative_loss_rate(goeslc, force_download=False,
-                                  download_dir=DATA_PATH):
+                                  download_dir=None):
     """
-    Calculates flare radiative loss rate and adds it to GOESLightCurve.
+    Calculates radiative loss rate from GOES observations.
 
     This function calculates the radiative loss rate as a function of
-    time of solar coronal soft X-ray-emitting plasma across all
-    wavelengths given a GOESLightCurve object.  The units of the
-    results are watts. This is done by calling _calc_rad_loss().
-    For more information see documentation in that function.  Once
-    the radiative loss rates have been found, it is added to a copy of
-    the original GOESLightCurve object as goeslc_new.data.rad_loss_rate",
-    where goeslc_new is the new GOESLightCurve object which is returned.
+    time of solar soft X-ray-emitting plasma across all wavelengths given a
+    LightCurve object containing GOES data.  The radiative loss rate is
+    determined from the GOES isothermal temperature and volume emission
+    measure as a function of time, as calculated by
+    calculate_temperature_em().  See docstring of that function for more 
+    details.  If the LightCurve object does not contain the temperatures and
+    emission measures, but only contain the GOES fluxes, then the temperature
+    and emission measures are calculated using calculate_temperature_em().
+    The unit of the resulting radiative loss rates is W.  Once
+    the radiative loss rates have been found, they are returned as part of a
+    new LightCurve object also containing the metdata, GOES fluxes and
+    corresponding temperatures and emission measures of the input LightCurve
+    object.
 
     Parameters
     ----------
     goeslc : `sunpy.lightcurve.LightCurve`
-        LightCurve object containing GOES data.
+        LightCurve object containing GOES data.  The units of these
+        data MUST be W/m^2 (flux), MK (temperature) and cm^-3
+        (emission measure).  If LightCurve object does not contain
+        temperature and emission measure values, they are calculated from
+        the flux values using calculate_temperature_em().
 
     force_download : (optional) bool
-        If True, the GOES radiative loss data file is downloaded.
-        It is important to do this if a new version of the files has
-        been generated due to a new CHIANTI version being released or
-        the launch of new GOES satellites.
+        If True, the GOES radiative loss data file is downloaded even if
+        already locally stored. It is important to do this if a new version
+        of the file has been generated due to a new CHIANTI version being
+        released or the launch of new GOES satellites.
         Default=False
 
     download_dir : (optional) string
@@ -660,12 +710,29 @@ def calculate_radiative_loss_rate(goeslc, force_download=False,
     Returns
     -------
     lc_new : `sunpy.lightcurve.LightCurve`
-        Contains same metadata and data as input GOESLightCurve with the
-        following additional data columns;
-        lc_new.data.temperature - Array of temperature values [MK]
-        lc_new.data.em - Array of volume emission measure values [cm**-3]
-        lc_new.data.rad_loss_rate - radiative loss rate of the coronal soft
+        Contains same metadata and data as input LightCurve with the
+        following additional data columns:
+
+        | lc_new.data.temperature - Array of temperature values [MK]
+        | lc_new.data.em - Array of volume emission measure values [cm**-3]
+        | lc_new.data.rad_loss_rate - radiative loss rate of the coronal soft
         X-ray-emitting plasma across all wavelengths [W]
+
+    Notes
+    -----
+    The GOES radiative loss rates are calculated using a csv file containing
+    a table of radiative loss rate per unit emission measure at various
+    temperatures.  The appropriate values are then found via interpolation.
+    This table was generated using CHIANTI atomic physics database employing
+    the methods of Cox & Tucker (1969).  Coronal abundances, a default
+    density of 10**10 cm**-3, and ionization equilibrium of
+    Mazzotta et al. (1998) were used.
+
+    References
+    ----------
+    .. [1] Cox, D. P., Tucker, W. H. 1969, ApJ, 157, 1157
+    .. [2] Mazzotta, P., Mazzitelli, G., Colafrancesco, S., & Vittorio, N.
+       1998, A&AS, 133, 339
 
     Examples
     --------
@@ -688,6 +755,8 @@ def calculate_radiative_loss_rate(goeslc, force_download=False,
     2014-01-01 00:00:08  ...  ...    6.277604  6.403795e+48 5.44914366e+26
 
     """
+    if not download_dir:
+        download_dir = DATA_PATH
     # Check that input argument is of correct type
     if not isinstance(goeslc, lightcurve.LightCurve):
         raise TypeError("goeslc must be a LightCurve object.")
@@ -703,8 +772,10 @@ def calculate_radiative_loss_rate(goeslc, force_download=False,
                                              data=copy.deepcopy(goeslc.data))
     else:
         lc_new = calculate_temperature_em(goeslc)
-    temp = Quantity(np.asarray(lc_new.data.temperature, dtype=np.float64), unit=u.MK)
-    em = Quantity(np.asarray(lc_new.data.em, dtype=np.float64), unit=u.cm**(-3))
+    temp = u.Quantity(np.asarray(lc_new.data.temperature, dtype=np.float64),
+                      unit=u.MK)
+    em = u.Quantity(np.asarray(lc_new.data.em, dtype=np.float64),
+                    unit=u.cm**(-3))
 
     # Find radiative loss rate with _calc_rad_loss()
     rad_loss_out = _calc_rad_loss(temp, em, force_download=force_download,
@@ -717,14 +788,14 @@ def calculate_radiative_loss_rate(goeslc, force_download=False,
 
 @quantity_input(temp=u.MK, em=u.cm**(-3))
 def _calc_rad_loss(temp, em, obstime=None, force_download=False,
-                   download_dir=DATA_PATH):
+                   download_dir=None):
     """
     Finds radiative loss rate of coronal plasma over all wavelengths.
 
     This function calculates the radiative loss rate of solar coronal
     soft X-ray-emitting plasma across all wavelengths given an isothermal
     temperature and emission measure.  The units of the results are
-    erg/s.  This function is based on calc_rad_loss.pro in SSW IDL.
+    W.  This function is based on calc_rad_loss.pro in SSW IDL.
     In addition, if obstime keyword is set, giving the times to which
     the temperature and emission measure values correspond, the
     radiated losses integrated over time are also calculated.
@@ -759,7 +830,15 @@ def _calc_rad_loss(temp, em, obstime=None, force_download=False,
 
     Returns
     -------
-    radlossrate : numpy ndarray, dtype=float, units=[erg]
+    rad_loss_out : `dict` of `astropy.units.quantity.Quantity` objects
+        Contains the following keys
+        "rad_loss_rate" - radiative loss rate of the soft X-ray-emitting
+        plasma across all wavelengths corresponding to temperatures and
+        emission measures in temp and em Quantity inputs.
+        "rad_loss_cumul" - cumulative radiative losses as a function of
+        time.  (Only if obstime kwarg is not None.)
+        "rad_loss_int" - total radiative losses as a function of time.
+        (Only if obstime kwarg is not None.)
         Array containing radiative loss rates of the coronal plasma
         corresponding to temperatures and emission measures in temp and
         em arrays.
@@ -789,6 +868,8 @@ def _calc_rad_loss(temp, em, obstime=None, force_download=False,
     >>> rad_loss["rad_loss_rate"]
     <Quantity [  3.01851392e+19,   3.01851392e+19] J / s>
     """
+    if not download_dir:
+        download_dir = DATA_PATH
     # Check inputs are correct
     temp = temp.to(u.K)
     em = em.to(1/u.cm**3)
@@ -825,7 +906,7 @@ def _calc_rad_loss(temp, em, obstime=None, force_download=False,
     # values of flux ratio
     spline = interpolate.splrep(modeltemp, model_loss_rate, s=0)
     rad_loss = em.value * interpolate.splev(temp.value, spline, der=0)
-    rad_loss = Quantity(rad_loss, unit='erg/s')
+    rad_loss = u.Quantity(rad_loss, unit='erg/s')
     rad_loss = rad_loss.to(u.J/u.s)
 
     # If obstime keyword giving measurement times is set, calculate
@@ -848,18 +929,19 @@ def _calc_rad_loss(temp, em, obstime=None, force_download=False,
         chrono_check = obstime-np.roll(obstime, 1)
         chrono_check = chrono_check[1:]
         if not all(chrono_check > datetime.timedelta(0)):
-            raise ValueError("Elements of obstime must be in chronological order.")
+            raise ValueError(
+                "Elements of obstime must be in chronological order.")
         # Next, get measurement times in seconds from time of first
         # measurement.
         obstime_seconds = np.array([(ot-obstime[0]).total_seconds()
                                     for ot in obstime], dtype="float64")
         # Finally, integrate using trapezoid rule
         rad_loss_int = trapz(rad_loss.value, obstime_seconds)
-        rad_loss_int = Quantity(rad_loss_int, unit=rad_loss.unit*u.s)
+        rad_loss_int = u.Quantity(rad_loss_int, unit=rad_loss.unit*u.s)
         # Calculate cumulative radiated energy in each GOES channel as
         # a function of time.
         rad_loss_cumul = cumtrapz(rad_loss, obstime_seconds)
-        rad_loss_cumul = Quantity(rad_loss_cumul, unit=rad_loss.unit*u.s)
+        rad_loss_cumul = u.Quantity(rad_loss_cumul, unit=rad_loss.unit*u.s)
         # Enter results into output dictionary.
         rad_loss_out = {"rad_loss_rate":rad_loss,
                         "rad_loss_cumul" : rad_loss_cumul,
@@ -871,32 +953,33 @@ def _calc_rad_loss(temp, em, obstime=None, force_download=False,
 
 def calculate_xray_luminosity(goeslc):
     """
-    Calculates and adds GOES solar X-ray luminosity to a GOESLightCurve.
+    Calculates GOES solar X-ray luminosity.
 
     This function calculates the solar X-ray luminosity in the GOES
     wavelength ranges (1-8 angstroms and 0.5-4 angstroms) based on the
-    observed GOES fluxes.  The units of the results are erg/s. This is
-    done by calling _goes_lx().  This function assumes that the
-    radiation is emitted isotropically, i.e. is distributed over a
-    spherical surface area with a radius equal to the Sun-Earth
-    distance.  Once the luminosity in each GOES passband is found, they
-    are added to a copy of the original GOESLightCurve object as
-    goeslc_new.data.luminosity_xrsa (for the 0.5-4 angstrom channel) and
-    goeslc_new.data.luminosity_xrsb (for the 1-8 angstrom channel),
-    where goeslc_new is the new GOESLightCurve object which is returned.
+    observed GOES fluxes.  The units of the results are W.  The calculation
+    is made by simply assuming that the radiation is emitted isotropically,
+    i.e. is distributed over a spherical surface area with a radius equal to
+    the Sun-Earth distance.  Once the luminosity in each GOES passband is
+    found, they are returned in a new LightCurve object also containing the
+    metadata and data of the input LightCurve object.
 
     Parameters
     ----------
     goeslc : `sunpy.lightcurve.LightCurve`
-        LightCurve object containing GOES flux data.
+        LightCurve object containing GOES flux data which MUST
+        be in units of W/m^2.
 
     Returns
     -------
     lc_new : `sunpy.lightcurve.LightCurve`
         Contains same metadata and data as input LightCurve with the
         following additional data columns;
-        goeslc_new.data.luminosity_xrsa - Xray luminosity in 0.5-4A channel [W]
-        goeslc_new.data.luminosity_xrsb - Xray luminosity in 1-8A channel [W]
+
+        | goeslc_new.data.luminosity_xrsa - Xray luminosity in 0.5-4A channel
+        unit=[W]
+        | goeslc_new.data.luminosity_xrsb - Xray luminosity in 1-8A channel
+        unit=[W]
 
     Examples
     --------
@@ -921,8 +1004,8 @@ def calculate_xray_luminosity(goeslc):
     if not isinstance(goeslc, lightcurve.GOESLightCurve):
         raise TypeError("goeslc must be a GOESLightCurve object.")
     # Find temperature and emission measure with _goes_chianti_tem
-    lx_out = _goes_lx(Quantity(goeslc.data.xrsb, unit="W/m**2"),
-                     Quantity(goeslc.data.xrsa, unit="W/m**2"),
+    lx_out = _goes_lx(u.Quantity(goeslc.data.xrsb, unit="W/m**2"),
+                      u.Quantity(goeslc.data.xrsa, unit="W/m**2"),
                      date=str(goeslc.data.index[0]))
     # Enter results into new version of GOES LightCurve Object
     # Use copy.deepcopy for replicating meta and data so that input
@@ -1031,22 +1114,23 @@ def _goes_lx(longflux, shortflux, obstime=None, date=None):
         chrono_check = obstime-np.roll(obstime, 1)
         chrono_check = chrono_check[1:]
         if not all(chrono_check > datetime.timedelta(0)):
-            raise ValueError("Elements of obstime must be in chronological order.")
+            raise ValueError(
+                "Elements of obstime must be in chronological order.")
         # Next, get measurement times in seconds from time of first
         # measurement.
         obstime_seconds = np.array([(ot-obstime[0]).total_seconds()
                                     for ot in obstime], dtype="float64")
         # Finally, integrate using trapezoid rule
         longlum_int = trapz(longlum.value, obstime_seconds)
-        longlum_int = Quantity(longlum_int, unit=longlum.unit*u.s)
+        longlum_int = u.Quantity(longlum_int, unit=longlum.unit*u.s)
         shortlum_int = trapz(shortlum.value, obstime_seconds)
-        shortlum_int = Quantity(shortlum_int, unit=shortlum.unit*u.s)
+        shortlum_int = u.Quantity(shortlum_int, unit=shortlum.unit*u.s)
         # Calculate cumulative radiated energy in each GOES channel as
         # a function of time.
         longlum_cumul = cumtrapz(longlum.value, obstime_seconds)
-        longlum_cumul = Quantity(longlum_cumul, unit=longlum.unit*u.s)
+        longlum_cumul = u.Quantity(longlum_cumul, unit=longlum.unit*u.s)
         shortlum_cumul = cumtrapz(shortlum.value, obstime_seconds)
-        shortlum_cumul = Quantity(shortlum_cumul,
+        shortlum_cumul = u.Quantity(shortlum_cumul,
                                   unit=shortlum.unit*u.s)
         lx_out = {"longlum":longlum, "shortlum":shortlum,
                   "longlum_cumul":longlum_cumul,
