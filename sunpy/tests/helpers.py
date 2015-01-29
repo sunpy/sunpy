@@ -95,7 +95,7 @@ def figure_test(test_function):
     """
     @pytest.mark.figure
     def wrapper(*args, **kwargs):
-        name = test_function.func_name
+        name = "{0}.{1}".format(test_function.__module__, test_function.__name__)
         figure_hash = hash.hash_figure(test_function(*args, **kwargs))
         if name not in hash.hash_library:
             hash.hash_library[name] = figure_hash
