@@ -52,5 +52,5 @@ def pytest_unconfigure(config):
         hashfile = os.path.join(tempdir, hash.HASH_LIBRARY_NAME)
         with open(hashfile, 'wb') as outfile:
             json.dump(hash.hash_library, outfile, sort_keys=True, indent=4, separators=(',', ': '))
-        print "The hash library has expanded and should be copied to sunpy/tests/ if all tests pass"
+        print "The hash library has expanded and should be copied to sunpy/tests/"
         print "  " + hashfile

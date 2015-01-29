@@ -17,7 +17,7 @@ import sunpy
 import sunpy.sun
 import sunpy.map
 import sunpy.data.test
-from sunpy.tests import hash
+from sunpy.tests.hash import assert_figure_hash
 
 testpath = sunpy.data.test.rootdir
 
@@ -332,17 +332,8 @@ def calc_new_matrix(angle):
 
 def test_rotate():
     aia_map = sunpy.map.Map(sunpy.AIA_171_IMAGE)
-    aia_map.plot()
-    assert hash.verify_figure_hash("rotate_0")
-
     rotated_map_1 = aia_map.rotate(20)
-    rotated_map_1.plot()
-    assert hash.verify_figure_hash("rotate_1")
-
     rotated_map_2 = rotated_map_1.rotate(20)
-    rotated_map_2.plot()
-    assert hash.verify_figure_hash("rotate_2")
-
     assert rotated_map_2.center == rotated_map_1.center == aia_map.center
     np.testing.assert_allclose(rotated_map_1.rotation_matrix,
                                np.dot(aia_map.rotation_matrix,
@@ -382,6 +373,12 @@ def test_rotate():
     aia_map_crop_rot = aia_map_crop.rotate(60)
     assert aia_map_crop.shape[0] > aia_map_crop.shape[1]
     assert aia_map_crop_rot.shape[0] < aia_map_crop_rot.shape[1]
+
+
+@assert_figure_hash
+def test_rotate_by_20():
+    aia_map = sunpy.map.Map(sunpy.AIA_171_IMAGE)
+    aia_map.rotate(20).plot()
 
 
 def test_rotate_recenter(aia_map):
