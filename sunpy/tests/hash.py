@@ -5,8 +5,14 @@ import json
 
 import matplotlib.pyplot as plt
 
-with open(os.path.join(os.path.dirname(__file__), 'hashes.json')) as infile:
-    hash_library = json.load(infile)
+HASH_LIBRARY_NAME = 'figure_hashes.json'
+
+# Load the hash library if it exists
+try:
+    with open(os.path.join(os.path.dirname(__file__), HASH_LIBRARY_NAME)) as infile:
+        hash_library = json.load(infile)
+except IOError:
+    hash_library = {}
 
 def hash_figure(figure=None):
     """
