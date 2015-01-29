@@ -8,6 +8,7 @@ import pytest
 
 import astropy.units as u
 import numpy as np
+from sunpy.tests import hash
 
 __all__ = ['skip_windows', 'skip_glymur', 'skip_ana', 'warnings_as_errors']
 
@@ -83,3 +84,22 @@ def assert_quantity_allclose(actual, desired, rtol=1.e-7, atol=0, err_msg='', ve
 
         np.testing.assert_allclose(actual, desired,
                                    rtol=rtol, atol=atol, err_msg=err_msg, verbose=verbose)
+
+
+def figure_test(test_function):
+    """
+    A decorator for a test that verifies the hash of the current figure or the returned figure,
+    with the name of the test function as the hash identifier in the library.
+
+    All such decorated tests are marked with pytest.mark.figure
+    """
+    @pytest.mark.figure
+    def wrapper(*args, **kwargs):
+        name = test_function.func_name
+        figure_hash = hash.hash_figure(test_function(*args, **kwargs))
+        if name not in hash.hash_library:
+            hash.hash_library[name] = figure_hash
+            pytest.fail("Hash not present: {0}".format(name))
+        else:
+            assert hash.hash_library[name] == figure_hash
+    return wrapper
