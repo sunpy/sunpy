@@ -14,9 +14,9 @@ except ImportError:
 else:
     matplotlib.use('Agg')
 
-from sunpy.tests.hash import hash_library
+from sunpy.tests import hash
 
-hash_library_original_len = len(hash_library)
+hash_library_original_len = len(hash.hash_library)
 
 GOOGLE_URL = 'http://www.google.com'
 
@@ -46,11 +46,11 @@ def pytest_runtest_setup(item):
 
 def pytest_unconfigure(config):
     #Check if additions have been made to the hash library
-    if len(hash_library) > hash_library_original_len:
+    if len(hash.hash_library) > hash_library_original_len:
         #Write the new hash library in JSON
         tempdir = tempfile.mkdtemp()
-        hashfile = os.path.join(tempdir, 'hashes.json')
+        hashfile = os.path.join(tempdir, hash.HASH_LIBRARY_NAME)
         with open(hashfile, 'wb') as outfile:
-            json.dump(hash_library, outfile, sort_keys=True, indent=4, separators=(',', ': '))
+            json.dump(hash.hash_library, outfile, sort_keys=True, indent=4, separators=(',', ': '))
         print "The hash library has expanded and should be copied to sunpy/tests/ if all tests pass"
         print "  " + hashfile
