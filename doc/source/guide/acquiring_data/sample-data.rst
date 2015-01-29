@@ -14,4 +14,4 @@ This will download the data to your sample-data directory which can be
 customized by editing the sunpyrc file (see :doc:`../customization`). 
 After the files have downloaded SunPy provides custom 
 shortcuts to these files in the `sunpy.data.sample` module which you 
-can access by simply import this module.
+can access by simply importing this module.
