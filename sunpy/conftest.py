@@ -6,9 +6,6 @@ import json
 
 import pytest
 
-from sunpy.tests.hash import hash_library
-hash_library_original_len = len(hash_library)
-
 # Force MPL to use non-gui backends for testing.
 try:
     import matplotlib
@@ -16,6 +13,10 @@ except ImportError:
     pass
 else:
     matplotlib.use('Agg')
+
+from sunpy.tests.hash import hash_library
+
+hash_library_original_len = len(hash_library)
 
 GOOGLE_URL = 'http://www.google.com'
 
