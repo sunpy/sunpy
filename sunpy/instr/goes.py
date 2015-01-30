@@ -30,8 +30,8 @@ The radiative loss rate of the soft X-ray-emitting plasma across all
 wavelengths can be found with calculate_radiative_loss_rate().  This function
 calls _calc_rad_loss() which, like _goes_get_chianti_temp() and
 _goes_get_chianti_em(), makes use of a look up table calculated by fuctions
-in SSW using CHIANTI.  This table relates the temperature and emission 
-measure of the emitting solar plasma to the thermal energy radiative over 
+in SSW using CHIANTI.  This table relates the temperature and emission
+measure of the emitting solar plasma to the thermal energy radiative over
 all wavelengths.  For more information on how this is done, see
 the docstring of _calc_rad_loss() and reference therein.
 
@@ -43,6 +43,7 @@ References
 ----------
 Hanser, F.A., & Sellers, F.B. 1996, Proc. SPIE, 2812, 344
 Dere, K.P., et al. 2009 A&A, 498, 915
+
 """
 
 from __future__ import absolute_import
@@ -59,7 +60,6 @@ import numpy as np
 from scipy import interpolate
 from scipy.integrate import trapz
 from scipy.integrate import cumtrapz
-import astropy
 import astropy.units as u
 import pandas
 
@@ -70,7 +70,6 @@ from sunpy import lightcurve
 from sunpy.util.net import check_download_file
 from sunpy.sun import sun
 from sunpy.util.unit_decorators import quantity_input
-import sunpy.lightcurve
 
 __all__ = ['get_goes_event_list', 'calculate_temperature_em',
            'calculate_radiative_loss_rate', 'calculate_xray_luminosity']
@@ -257,8 +256,8 @@ def calculate_temperature_em(goeslc, abundances="coronal",
     # Enter results into new version of GOES LightCurve Object
     # Use copy.deepcopy for replicating meta and data so that input
     # lightcurve is not altered.
-    lc_new = sunpy.lightcurve.LightCurve(meta=copy.deepcopy(goeslc.meta),
-                                         data=copy.deepcopy(goeslc.data))
+    lc_new = lightcurve.LightCurve(meta=copy.deepcopy(goeslc.meta),
+                                   data=copy.deepcopy(goeslc.data))
     lc_new.data["temperature"] = temp.value
     lc_new.data["em"] = em.value
 
@@ -724,7 +723,7 @@ def calculate_radiative_loss_rate(goeslc, force_download=False,
     LightCurve object containing GOES data.  The radiative loss rate is
     determined from the GOES isothermal temperature and volume emission
     measure as a function of time, as calculated by
-    calculate_temperature_em().  See docstring of that function for more 
+    calculate_temperature_em().  See docstring of that function for more
     details.  If the LightCurve object does not contain the temperatures and
     emission measures, but only contain the GOES fluxes, then the temperature
     and emission measures are calculated using calculate_temperature_em().
@@ -763,7 +762,7 @@ def calculate_radiative_loss_rate(goeslc, force_download=False,
         | lc_new.data.temperature - Array of temperature values [MK]
         | lc_new.data.em - Array of volume emission measure values [cm**-3]
         | lc_new.data.rad_loss_rate - radiative loss rate of the coronal soft
-        X-ray-emitting plasma across all wavelengths [W]
+          X-ray-emitting plasma across all wavelengths [W]
 
     Notes
     -----
@@ -815,8 +814,8 @@ def calculate_radiative_loss_rate(goeslc, force_download=False,
     if 'temperature' in goeslc.data and 'em' in goeslc.data:
         # Use copy.deepcopy for replicating meta and data so that input
         # lightcurve is not altered.
-        lc_new = sunpy.lightcurve.LightCurve(meta=copy.deepcopy(goeslc.meta),
-                                             data=copy.deepcopy(goeslc.data))
+        lc_new = lightcurve.LightCurve(meta=copy.deepcopy(goeslc.meta),
+                                       data=copy.deepcopy(goeslc.data))
     else:
         lc_new = calculate_temperature_em(goeslc)
     temp = u.Quantity(np.asarray(lc_new.data.temperature, dtype=np.float64),
@@ -1024,9 +1023,9 @@ def calculate_xray_luminosity(goeslc):
         following additional data columns;
 
         | goeslc_new.data.luminosity_xrsa - Xray luminosity in 0.5-4A channel
-        unit=[W]
+          unit=[W]
         | goeslc_new.data.luminosity_xrsb - Xray luminosity in 1-8A channel
-        unit=[W]
+          unit=[W]
 
     Examples
     --------
@@ -1053,12 +1052,12 @@ def calculate_xray_luminosity(goeslc):
     # Find temperature and emission measure with _goes_chianti_tem
     lx_out = _goes_lx(u.Quantity(goeslc.data.xrsb, unit="W/m**2"),
                       u.Quantity(goeslc.data.xrsa, unit="W/m**2"),
-                     date=str(goeslc.data.index[0]))
+                      date=str(goeslc.data.index[0]))
     # Enter results into new version of GOES LightCurve Object
     # Use copy.deepcopy for replicating meta and data so that input
     # lightcurve is not altered.
-    lc_new = sunpy.lightcurve.LightCurve(meta=copy.deepcopy(goeslc.meta),
-                                         data=copy.deepcopy(goeslc.data))
+    lc_new = lightcurve.LightCurve(meta=copy.deepcopy(goeslc.meta),
+                                   data=copy.deepcopy(goeslc.data))
     lc_new.data["luminosity_xrsa"] = lx_out["shortlum"].to("W").value
     lc_new.data["luminosity_xrsb"] = lx_out["longlum"].to("W").value
 
@@ -1178,7 +1177,7 @@ def _goes_lx(longflux, shortflux, obstime=None, date=None):
         longlum_cumul = u.Quantity(longlum_cumul, unit=longlum.unit*u.s)
         shortlum_cumul = cumtrapz(shortlum.value, obstime_seconds)
         shortlum_cumul = u.Quantity(shortlum_cumul,
-                                  unit=shortlum.unit*u.s)
+                                    unit=shortlum.unit*u.s)
         lx_out = {"longlum":longlum, "shortlum":shortlum,
                   "longlum_cumul":longlum_cumul,
                   "shortlum_cumul":shortlum_cumul,
