@@ -160,7 +160,7 @@ def calculate_temperature_em(goeslc, abundances="coronal",
 
     Parameters
     ----------
-    goeslc : `sunpy.lightcurve.LightCurve`
+    goeslc : `~sunpy.lightcurve.LightCurve`
         LightCurve object containing GOES flux data which MUST
         be in units of W/m^2.
 
@@ -183,7 +183,7 @@ def calculate_temperature_em(goeslc, abundances="coronal",
 
     Returns
     -------
-    lc_new : `sunpy.lightcurve.LightCurve`
+    lc_new : `~sunpy.lightcurve.LightCurve`
         Contains same metadata and data as input GOESLightCurve with the
         following two additional data columns:
 
@@ -277,7 +277,7 @@ def _goes_chianti_tem(longflux, shortflux, satellite=8,
 
     Parameters
     ----------
-    longflux, shortflux : `astropy.units.Quantity`
+    longflux, shortflux : `~astropy.units.Quantity`
         Arrays containing the long and short GOES/XRS flux measurements
         respectively as a function of time.  Must be of same length. [W/m**2].
 
@@ -309,11 +309,11 @@ def _goes_chianti_tem(longflux, shortflux, satellite=8,
 
     Returns
     -------
-    temp : `astropy.units.Quantity`
+    temp : `~astropy.units.Quantity`
         Array of temperature values of same length as longflux and
         shortflux. Units=[MK]
 
-    em : `astropy.units.Quantity`
+    em : `~astropy.units.Quantity`
         Array of volume emission measure values of same length as longflux
         and shortflux.  Units=[10**49 cm**-3]
 
@@ -425,7 +425,7 @@ def _goes_get_chianti_temp(fluxratio, satellite=8, abundances="coronal",
 
     Parameters
     ----------
-    fluxratio : `astropy.units.Quantity`
+    fluxratio : `~astropy.units.Quantity`
         Array containing the ratio of short channel to long channel
         GOES/XRS flux measurements.
 
@@ -452,7 +452,7 @@ def _goes_get_chianti_temp(fluxratio, satellite=8, abundances="coronal",
 
     Returns
     -------
-    temp : `astropy.units.Quantity`
+    temp : `~astropy.units.Quantity`
         Array of temperature values of same length as longflux and
         shortflux. Units=[MK]
 
@@ -571,11 +571,11 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal",
 
     Parameters
     ----------
-    longflux : `astropy.units.Quantity`
+    longflux : `~astropy.units.Quantity`
         Array containing the observed GOES/XRS long channel flux.
         Units=[W/m**2]
 
-    temp : `astropy.units.Quantity`
+    temp : `~astropy.units.Quantity`
         Array containing the GOES temperature.  Units=[MK]
 
     satellite : int (optional)
@@ -601,7 +601,7 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal",
 
     Returns
     -------
-    em : `astropy.units.Quantity`
+    em : `~astropy.units.Quantity`
          Array of emission measure values of same length as longflux
          and temp.  [cm**-3]
 
@@ -723,7 +723,7 @@ def calculate_radiative_loss_rate(goeslc, force_download=False,
     LightCurve object containing GOES data.  The radiative loss rate is
     determined from the GOES isothermal temperature and volume emission
     measure as a function of time, as calculated by
-    calculate_temperature_em().  See docstring of that function for more
+    `~calculate_temperature_em()`.  See docstring of that function for more
     details.  If the LightCurve object does not contain the temperatures and
     emission measures, but only contain the GOES fluxes, then the temperature
     and emission measures are calculated using calculate_temperature_em().
@@ -735,7 +735,7 @@ def calculate_radiative_loss_rate(goeslc, force_download=False,
 
     Parameters
     ----------
-    goeslc : `sunpy.lightcurve.LightCurve`
+    goeslc : `~sunpy.lightcurve.LightCurve`
         LightCurve object containing GOES data.  The units of these
         data MUST be W/m^2 (flux), MK (temperature) and cm^-3
         (emission measure).  If LightCurve object does not contain
@@ -755,7 +755,7 @@ def calculate_radiative_loss_rate(goeslc, force_download=False,
 
     Returns
     -------
-    lc_new : `sunpy.lightcurve.LightCurve`
+    lc_new : `~sunpy.lightcurve.LightCurve`
         Contains same metadata and data as input LightCurve with the
         following additional data columns:
 
@@ -848,11 +848,11 @@ def _calc_rad_loss(temp, em, obstime=None, force_download=False,
 
     Parameters
     ----------
-    temp : `astropy.units.Quantity`
+    temp : `~astropy.units.Quantity`
         Array containing the temperature of the coronal plasma at
         different times.  Units=[MK]
 
-    em : `astropy.units.Quantity`
+    em : `~astropy.units.Quantity`
         Array containing the emission measure of the coronal plasma
         at the same times corresponding to the temperatures in temp.
         Must be same length as temp.  Units=[cm**-3]
@@ -876,18 +876,18 @@ def _calc_rad_loss(temp, em, obstime=None, force_download=False,
 
     Returns
     -------
-    rad_loss_out : `dict` of `astropy.units.quantity.Quantity` objects
-        Contains the following keys
-        "rad_loss_rate" - radiative loss rate of the soft X-ray-emitting
-        plasma across all wavelengths corresponding to temperatures and
-        emission measures in temp and em Quantity inputs.
-        "rad_loss_cumul" - cumulative radiative losses as a function of
-        time.  (Only if obstime kwarg is not None.)
-        "rad_loss_int" - total radiative losses as a function of time.
-        (Only if obstime kwarg is not None.)
-        Array containing radiative loss rates of the coronal plasma
-        corresponding to temperatures and emission measures in temp and
-        em arrays.
+    rad_loss_out : `dict` of `~astropy.units.quantity.Quantity` objects
+        Contains the following keys.
+
+        | "rad_loss_rate" - radiative loss rate of the soft X-ray-emitting
+           plasma across all wavelengths corresponding to temperatures and
+           emission measures in temp and em Quantity inputs.
+        | "rad_loss_cumul" - cumulative radiative losses as a function of
+          time.  (Only if obstime kwarg is NOT None.)
+        | "rad_loss_int" - total radiative losses as a function of time.
+          (Only if obstime kwarg is not None.)  Array containing radiative
+          loss rates of the coronal plasma corresponding to temperatures and
+          emission measures in temp and em arrays.
 
     Notes
     -----
@@ -1012,13 +1012,13 @@ def calculate_xray_luminosity(goeslc):
 
     Parameters
     ----------
-    goeslc : `sunpy.lightcurve.LightCurve`
+    goeslc : `~sunpy.lightcurve.LightCurve`
         LightCurve object containing GOES flux data which MUST
         be in units of W/m^2.
 
     Returns
     -------
-    lc_new : `sunpy.lightcurve.LightCurve`
+    lc_new : `~sunpy.lightcurve.LightCurve`
         Contains same metadata and data as input LightCurve with the
         following additional data columns;
 
@@ -1076,11 +1076,11 @@ def _goes_lx(longflux, shortflux, obstime=None, date=None):
 
     Parameters
     ----------
-    longflux : `astropy.units.Quantity`
+    longflux : `~astropy.units.Quantity`
         Array containing the observed GOES/XRS long channel flux.
         Units=[W/m**2]
 
-    shortflux : `astropy.units.Quantity`
+    shortflux : `~astropy.units.Quantity`
         Array containing the observed GOES/XRS short channel flux.
         Units=[W/m**2]
 
@@ -1200,7 +1200,7 @@ def _calc_xraylum(flux, date=None):
 
     Parameters
     ----------
-    flux : `astropy.units.Quantity`
+    flux : `~astropy.units.Quantity`
        Containing the observed solar flux.  Units=[W/m**2]
 
     date : (optional) datetime object or valid date string
