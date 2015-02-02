@@ -111,17 +111,17 @@ def rot_hpc(x, y, tstart, tend, spacecraft=None, frame_time='synodic',
 
     Parameters
     -----------
-    x : helio-projective x-co-ordinate in arcseconds using astropy units (can
-        be an array)
+    x : `~astropy.units.Quantity`
+        helio-projective x-co-ordinate in arcseconds (can be an array)
 
-    y : helio-projective y-co-ordinate in arcseconds using astropy units (can
-        be an array)
+    y : `~astropy.units.Quantity`
+        helio-projective y-co-ordinate in arcseconds (can be an array)
 
-    tstart : date/time to which x and y are referred; can be in any acceptable
-            time format.
+    tstart : any acceptable time format
+        date/time to which x and y are referred.
 
-    tend : date/time at which x and y will be rotated to; can be
-          in any acceptable time format.
+    tend : any acceptable time format
+        date/time at which x and y will be rotated to.
 
     spacecraft : { None | "soho" | "stereo_a" | "stereo_b" }
                  calculate the rotation from the point of view of the SOHO,
@@ -220,7 +220,9 @@ def _calc_P_B0_SD(date, spacecraft=None, arcsec=False):
 
     Parameters
     -----------
-    date: a date/time object
+    date: any acceptable time format
+        the time at which to calculate the solar P, B0 angles and the
+        semi-diameter.
 
     spacecraft: { None | "soho" | "stereo_a" | "stereo_b" }
         calculate the solar P, B0 angles and the semi-diameter from the point
@@ -246,12 +248,12 @@ def _calc_P_B0_SD(date, spacecraft=None, arcsec=False):
         http://hesperia.gsfc.nasa.gov/ssw/gen/idl/solar/pb0r.pro
     """
     if (spacecraft is not None):
-        raise ValueError("Solar P, B0 and semi-diameter calcution" + \
-                         " is not supported for STEREO spacecraft or SOHO" + \
+        raise ValueError("Solar P, B0 and semi-diameter calcution" +
+                         " is not supported for STEREO spacecraft or SOHO" +
                          " simultaneously.")
 
     # number of Julian days since 2415020.0
-    de = julian_day(date) - 2415020.0
+    de = julian_day(parse_time(date)) - 2415020.0
 
     # get the longitude of the sun etc.
     sun_position = _sun_pos(date)
@@ -321,13 +323,15 @@ def _sun_pos(date, is_julian=False, since_2415020=False):
 
     Parameters
     -----------
-    date: a date/time object or a fractional number of days since JD 2415020.0
+    date : any acceptable time format or a fractional number of days since
+        JD 2415020.0
+        the time at which the solar ephemeris parameters are calculated
 
-    is_julian: { False | True }
+    is_julian : { False | True }
         notify this routine that the variable "date" is a Julian date
         (a floating point number)
 
-    since_2415020: { False | True }
+    since_2415020 : { False | True }
         notify this routine that the variable "date" has been corrected for
         the required time offset
 
@@ -361,9 +365,9 @@ def _sun_pos(date, is_julian=False, since_2415020=False):
     else:
         # parse the input time as a julian day
         if since_2415020:
-            dd = julian_day(date)
+            dd = julian_day(parse_time(date))
         else:
-            dd = julian_day(date) - 2415020.0
+            dd = julian_day(parse_time(date)) - 2415020.0
 
     # form time in Julian centuries from 1900.0
     t = dd / 36525.0

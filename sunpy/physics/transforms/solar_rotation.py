@@ -38,7 +38,7 @@ def mapcube_solar_derotate(mc, layer_index=0, clip=True,
 
     Parameters
     ----------
-    mc : sunpy.map.MapCube
+    mc : `~sunpy.map.MapCube`
         A mapcube of shape (ny, nx, nt), where nt is the number of layers in
         the mapcube.
 
