@@ -2,6 +2,9 @@ import re
 from datetime import datetime
 from datetime import timedelta
 
+import numpy as np
+import pandas
+
 __all__ = ['find_time', 'extract_time', 'parse_time', 'is_time', 'day_of_year', 'break_time', 'get_day', 'is_time_in_given_format']
 
 # Mapping of time format codes to regular expressions.
@@ -40,6 +43,7 @@ TIME_FORMAT_LIST = [
     "%Y%m%d_%H%M%S",           # Example 20070504_210812
     "%Y:%j:%H:%M:%S",          # Example 2012:124:21:08:12
     "%Y:%j:%H:%M:%S.%f",       # Example 2012:124:21:08:12.999999
+    "%Y%m%d%H%M%S",            # Example 20140101000001 (JSOC / VSO)
 ]
 
 
@@ -164,16 +168,21 @@ def parse_time(time_string, time_format=''):
     >>> sunpy.time.parse_time('2012/08/01')
     >>> sunpy.time.parse_time('2005-08-04T00:01:02.000Z')
 
-    Todo:
-    Add ability to parse tai (International Atomic Time seconds since
-    Jan 1, 1958)
     """
-    if isinstance(time_string, datetime) or time_format == 'datetime':
+    if isinstance(time_string, pandas.tslib.Timestamp):
+    	return time_string.to_datetime()
+    elif isinstance(time_string, datetime) or time_format == 'datetime':
         return time_string
     elif isinstance(time_string, tuple):
         return datetime(*time_string)
     elif time_format == 'utime' or  isinstance(time_string, (int, float))  :
         return datetime(1979, 1, 1) + timedelta(0, time_string)
+    elif isinstance(time_string, pandas.tseries.index.DatetimeIndex):
+    	return time_string._mpl_repr()
+    elif isinstance(time_string, np.ndarray) and 'datetime64' in str(time_string.dtype):
+        ii = [ss.astype(datetime) for ss in time_string]
+        # Validate (in an agnostic way) that we are getting a datetime rather than a date
+        return np.array([datetime(*(dt.timetuple()[:6])) for dt in ii])
     elif time_string is 'now':
         return datetime.utcnow()
     else:

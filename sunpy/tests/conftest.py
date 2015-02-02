@@ -3,6 +3,14 @@ import urllib2
 
 import pytest
 
+# Force MPL to use non-gui backends for testing.
+try:
+    import matplotlib
+except ImportError:
+    pass
+else:
+    matplotlib.use('Agg')
+
 GOOGLE_URL = 'http://www.google.com'
 
 
