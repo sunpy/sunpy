@@ -8,6 +8,8 @@ import pytest
 
 import astropy.units as u
 import numpy as np
+import matplotlib.pyplot as plt
+
 from sunpy.tests import hash
 
 __all__ = ['skip_windows', 'skip_glymur', 'skip_ana', 'warnings_as_errors']
@@ -95,6 +97,7 @@ def figure_test(test_function):
     """
     @pytest.mark.figure
     def wrapper(*args, **kwargs):
+        plt.figure()
         name = "{0}.{1}".format(test_function.__module__, test_function.__name__)
         figure_hash = hash.hash_figure(test_function(*args, **kwargs))
         if name not in hash.hash_library:
