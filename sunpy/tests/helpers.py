@@ -93,7 +93,13 @@ def figure_test(test_function):
     A decorator for a test that verifies the hash of the current figure or the returned figure,
     with the name of the test function as the hash identifier in the library.
 
-    All such decorated tests are marked with pytest.mark.figure
+    All such decorated tests are marked with `pytest.mark.figure` for convenient filtering.
+
+    Examples
+    --------
+    @figure_test
+    def test_simple_plot():
+        plt.plot([0,1])
     """
     @pytest.mark.figure
     def wrapper(*args, **kwargs):
