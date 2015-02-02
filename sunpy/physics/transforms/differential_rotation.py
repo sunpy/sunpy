@@ -117,10 +117,10 @@ def rot_hpc(x, y, tstart, tend, spacecraft=None, frame_time='synodic',
     y : `~astropy.units.Quantity`
         helio-projective y-co-ordinate in arcseconds (can be an array)
 
-    tstart : any acceptable time format
+    tstart : `sunpy.time.time`
         date/time to which x and y are referred.
 
-    tend : any acceptable time format
+    tend : `sunpy.time.time`
         date/time at which x and y will be rotated to.
 
     spacecraft : { None | "soho" | "stereo_a" | "stereo_b" }
@@ -220,7 +220,7 @@ def _calc_P_B0_SD(date, spacecraft=None, arcsec=False):
 
     Parameters
     -----------
-    date: any acceptable time format
+    date: `sunpy.time.time`
         the time at which to calculate the solar P, B0 angles and the
         semi-diameter.
 
@@ -323,13 +323,13 @@ def _sun_pos(date, is_julian=False, since_2415020=False):
 
     Parameters
     -----------
-    date : any acceptable time format or a fractional number of days since
+    date : { `sunpy.time.time` | float }
+        Time at which the solar ephemeris parameters are calculated in any
+        acceptable time format or a fractional number of days since
         JD 2415020.0
-        the time at which the solar ephemeris parameters are calculated
 
     is_julian : { False | True }
         notify this routine that the variable "date" is a Julian date
-        (a floating point number)
 
     since_2415020 : { False | True }
         notify this routine that the variable "date" has been corrected for
