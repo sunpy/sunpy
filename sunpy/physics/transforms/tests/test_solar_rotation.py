@@ -7,7 +7,7 @@ from astropy import units as u
 from numpy.testing import assert_allclose
 from sunpy import AIA_171_IMAGE
 from sunpy import map
-from sunpy.image.solar_differential_rotation import mapcube_solar_derotate
+from sunpy.physics.transforms.solar_rotation import mapcube_solar_derotate
 from copy import deepcopy
 
 def test_mapcube_solar_derotate():
