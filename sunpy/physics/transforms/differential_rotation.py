@@ -14,15 +14,15 @@ __author__ = ["Jose Ivan Campos Rozo", "Stuart Mumford", "Jack Ireland"]
 __all__ = ['diff_rot', '_sun_pos', '_calc_P_B0_SD', 'rot_hpc']
 
 
-@quantity_input(latitude=u.degree)
-def diff_rot(ddays, latitude, rot_type='howard', frame_time='sidereal'):
+@quantity_input(duration=u.s, latitude=u.degree)
+def diff_rot(duration, latitude, rot_type='howard', frame_time='sidereal'):
     """
     This function computes the change in longitude over days in degrees.
 
     Parameters
     -----------
-    ddays: float or timedelta
-        Number of days to rotate over, or timedelta object.
+    duration: '~astropy.units.Quantity`
+        Number of seconds to rotate over.
 
     latitude: '~astropy.units.Quantity` instance
         heliographic coordinate latitude in Degrees.
@@ -61,18 +61,9 @@ def diff_rot(ddays, latitude, rot_type='howard', frame_time='sidereal'):
     >>> rotation = diff_rot(2, np.linspace(-70, 70, 20) * u.deg, 'allen')
     """
 
-    if not isinstance(ddays,datetime.timedelta):
-        delta = datetime.timedelta(days=ddays)
-    else:
-        delta = ddays
-
-    if not isinstance(latitude, u.Quantity):
-        raise TypeError("Expecting astropy Quantity")
-
     latitude = latitude.to(u.deg)
-    delta_seconds = (delta.microseconds + (delta.seconds + delta.days * 24 * 3600) *
-                    10**6) / 10**6
-    delta_days = delta_seconds / 24 / 3600
+    delta_seconds = duration.to(u.s).value
+    delta_days = delta_seconds / 24.0 / 3600.0
 
     sin2l = (np.sin(latitude))**2
     sin4l = sin2l**2
@@ -93,7 +84,7 @@ def diff_rot(ddays, latitude, rot_type='howard', frame_time='sidereal'):
 
         #This is in micro-radians / sec
         rotation_rate = A + B * sin2l + C * sin4l
-        rotation_deg = rotation_rate * 1e-6  * delta_seconds / np.deg2rad(1)
+        rotation_deg = rotation_rate * 1e-6 * delta_seconds / np.deg2rad(1)
 
     if frame_time == 'synodic':
         rotation_deg -= 0.9856 * delta_days
@@ -176,7 +167,7 @@ def rot_hpc(x, y, tstart, tend, spacecraft=None, frame_time='synodic',
     # Start time
     dstart = parse_time(tstart)
     dend = parse_time(tend)
-    interval = dend - dstart
+    interval = (dend - dstart).total_seconds() * u.s
 
     # Get the Sun's position from the vantage point at the start time
     vstart = kwargs.get("vstart", _calc_P_B0_SD(dstart, spacecraft=spacecraft))
