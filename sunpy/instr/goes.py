@@ -42,7 +42,7 @@ _goes_lx() and calc_xraylum().
 References
 ----------
 Hanser, F.A., & Sellers, F.B. 1996, Proc. SPIE, 2812, 344
-Dere, K.P., et al. 2009 A&A, 498, 915
+Dere, K.P., et al. 2009 A&A, 498, 915 DOI: 10.1051/0004-6361/200911712
 
 """
 
@@ -58,8 +58,7 @@ from itertools import dropwhile
 
 import numpy as np
 from scipy import interpolate
-from scipy.integrate import trapz
-from scipy.integrate import cumtrapz
+from scipy.integrate import trapz, cumtrapz
 import astropy.units as u
 import pandas
 
@@ -216,12 +215,13 @@ def calculate_temperature_em(goeslc, abundances="coronal",
     References
     ----------
     .. [1] White, S. M., Thomas, R. J., & Schwartz, R. A. 2005,
-        Sol. Phys., 227, 231
+        Sol. Phys., 227, 231, DOI: 10.1007/s11207-005-2445-z
     .. [2] Mazzotta, P., Mazzitelli, G., Colafrancesco, S., &
-        Vittorio, N. 1998, A&AS, 133, 339
+        Vittorio, N. 1998, A&AS, 133, 339, DOI: 10.1051/aas:1998330
 
     Examples
     --------
+    >>> from sunpy.instr.goes import calculate_temperature_em
     >>> import sunpy.lightcurve as lc
     >>> goeslc = lc.GOESLightCurve.create(time1, time2)
     >>> goeslc.data
@@ -343,12 +343,13 @@ def _goes_chianti_tem(longflux, shortflux, satellite=8,
     References
     ----------
     .. [1] White, S. M., Thomas, R. J., & Schwartz, R. A. 2005,
-        Sol. Phys., 227, 231
+        Sol. Phys., 227, 231, DOI: 10.1007/s11207-005-2445-z
     .. [2] Mazzotta, P., Mazzitelli, G., Colafrancesco, S., &
-        Vittorio, N. 1998, A&AS, 133, 339
+        Vittorio, N. 1998, A&AS, 133, 339, DOI: 10.1051/aas:1998330
 
     Examples
     --------
+    >>> from sunpy.instr.goes import _goes_chianti_tem
     >>> from astropy.units.quantity import Quantity
     >>> longflux = Quantity([7e-6, 7e-6], unit="MK")
     >>> shortflux = Quantity([7e-7, 7e-7], unit="cm**(-3)")
@@ -481,12 +482,13 @@ def _goes_get_chianti_temp(fluxratio, satellite=8, abundances="coronal",
     References
     ----------
     .. [1] White, S. M., Thomas, R. J., & Schwartz, R. A. 2005,
-        Sol. Phys., 227, 231
+        Sol. Phys., 227, 231, DOI: 10.1007/s11207-005-2445-z
     .. [2] Mazzotta, P., Mazzitelli, G., Colafrancesco, S., &
-        Vittorio, N. 1998, A&AS, 133, 339
+        Vittorio, N. 1998, A&AS, 133, 339, DOI: 10.1051/aas:1998330
 
     Examples
     --------
+    >>> from sunpy.instr.goes import _goes_get_chianti_temp
     >>> fluxratio = np.array([0.1,0.1])
     >>> temp = _goes_get_chianti_temp(fluxratio, satellite=15,
                                     abundances="coronal")
@@ -633,12 +635,13 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal",
     References
     ----------
     .. [1] White, S. M., Thomas, R. J., & Schwartz, R. A. 2005,
-        Sol. Phys., 227, 231
+        Sol. Phys., 227, 231, DOI: 10.1007/s11207-005-2445-z
     .. [2] Mazzotta, P., Mazzitelli, G., Colafrancesco, S., &
-        Vittorio, N. 1998, A&AS, 133, 339
+        Vittorio, N. 1998, A&AS, 133, 339, DOI: 10.1051/aas:1998330
 
     Examples
     --------
+    >>> from sunpy.instr.goes import _goes_get_chianti_em
     >>> longflux = np.array([7e-6,7e-6])
     >>> temp = np.array([11,11])
     >>> em = _goes_get_chianti_em(longflux, temp, satellite=15,
@@ -707,7 +710,7 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal",
 
     # Perform spline fit to model data
     spline = interpolate.splrep(modeltemp, modelflux, s=0)
-    denom = interpolate.splev(np.log10(temp.value), spline, der=0)
+    denom = interpolate.splev(log10_temp, spline, der=0)
     em = longflux.value/denom * 1e55
     em = u.Quantity(em, unit='cm**(-3)')
 
@@ -776,12 +779,13 @@ def calculate_radiative_loss_rate(goeslc, force_download=False,
 
     References
     ----------
-    .. [1] Cox, D. P., Tucker, W. H. 1969, ApJ, 157, 1157
+    .. [1] Cox, D.P., Tucker, W.H. 1969, ApJ, 157, 1157, DOI: 10.1086/150144
     .. [2] Mazzotta, P., Mazzitelli, G., Colafrancesco, S., & Vittorio, N.
-       1998, A&AS, 133, 339
+       1998, A&AS, 133, 339, DOI: 10.1051/aas:1998330
 
     Examples
     --------
+    >>> from sunpy.instr.goes import calculate_radiative_loss_rate
     >>> from sunpy.lightcurve as lc
     >>> goeslc = lc.GOESLightCurve.create(time1, time2)
     >>> goeslc.data
@@ -901,12 +905,13 @@ def _calc_rad_loss(temp, em, obstime=None, force_download=False,
 
     References
     ----------
-    .. [1] Cox, D. P., Tucker, W. H. 1969, ApJ, 157, 1157
+    .. [1] Cox, D.P., Tucker, W.H. 1969, ApJ, 157, 1157, DOI: 10.1086/150144
     .. [2] Mazzotta, P., Mazzitelli, G., Colafrancesco, S., & Vittorio, N.
-       1998, A&AS, 133, 339
+       1998, A&AS, 133, 339, DOI: 10.1051/aas:1998330
 
     Examples
     --------
+    >>> from sunpy.instr.goes import _calc_rad_loss
     >>> from astropy.units.quantity import Quantity
     >>> temp = Quantity([11.0, 11.0], unit="MK")
     >>> em = Quantity([4.0e+48, 4.0e+48], unit="cm**(-3)")
@@ -1029,6 +1034,7 @@ def calculate_xray_luminosity(goeslc):
 
     Examples
     --------
+    >>> from sunpy.instr.goes import calculate_xray_luminosity
     >>> from sunpy.lightcurve as lc
     >>> goeslc = lc.GOESLightCurve.create(time1, time2)
     >>> goeslc.data
@@ -1114,6 +1120,7 @@ def _goes_lx(longflux, shortflux, obstime=None, date=None):
 
     Examples
     --------
+    >>> from sunpy.instr.goes import _goes_lx
     >>> from datetime import datetime
     >>> from astropy.units.quantity import Quantity
     >>> longflux = Quantity([7e-6,7e-6,7e-6,7e-6,7e-6,7e-6], unit='W/m**2')
@@ -1215,6 +1222,7 @@ def _calc_xraylum(flux, date=None):
 
     Examples
     --------
+    >>> from sunpy.instr.goes import _calc_xraylum
     >>> from astropy.units.quantity import Quantity
     >>> flux = Quantity([7e-6,7e-6], unit="W/m**2")
     >>> xraylum = _calc_xraylum(flux, date="2014-04-21")
