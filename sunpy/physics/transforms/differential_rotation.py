@@ -271,8 +271,8 @@ def _calc_P_B0_SD(date, spacecraft=None, arcsec=False):
     arg = Lambda - node
 
     # calculate P, the position angle of the pole
-    p = np.rad2deg(\
-        np.arctan(-np.tan(np.deg2rad(oblt)) * np.cos(np.deg2rad(appl))) + \
+    p = np.rad2deg(
+        np.arctan(-np.tan(np.deg2rad(oblt)) * np.cos(np.deg2rad(appl))) +
         np.arctan(-0.127220 * np.cos(np.deg2rad(arg))))
 
     # B0 the tilt of the axis...
@@ -303,7 +303,7 @@ def _calc_P_B0_SD(date, spacecraft=None, arcsec=False):
 
     # place holder for SOHO correction
     if spacecraft == 'soho':
-        raise ValueError("SOHO correction (on the order of 1% " + \
+        raise ValueError("SOHO correction (on the order of 1% " +
                         "since SOHO sets at L1) not yet supported.")
     return {"p": Angle(p, u.deg),
             "b0": Angle(b, u.deg),
