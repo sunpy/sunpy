@@ -37,7 +37,7 @@ def diff_rot(ddays, latitude, rot_type='howard', frame_time='sidereal'):
 
     Returns
     -------
-    longditude_delta: astropy.units.Quantity     
+    longditude_delta: astropy.units.Quantity
         The change in longitude over days (units=degrees)
 
     Notes
@@ -49,15 +49,15 @@ def diff_rot(ddays, latitude, rot_type='howard', frame_time='sidereal'):
     Examples
     --------
     Default rotation calculation over two days at 30 degrees latitude:
-    
+
     >>> rotation = diff_rot(2, 30 * u.deg)
-    
+
     Default rotation over two days for a number of latitudes:
-    
+
     >>> rotation = diff_rot(2, np.linspace(-70, 70, 20) * u.deg)
-    
+
     With rotation type 'allen':
-    
+
     >>> rotation = diff_rot(2, np.linspace(-70, 70, 20) * u.deg, 'allen')
     """
 
@@ -446,3 +446,4 @@ def _sun_pos(date, is_julian=False, since_2415020=False):
             "dec": Latitude(dec, u.deg),
             "app_long": Longitude(l, u.deg),
             "obliq": Angle(oblt, u.deg)}
+

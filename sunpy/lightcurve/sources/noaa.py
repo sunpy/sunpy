@@ -33,10 +33,10 @@ class NOAAIndicesLightCurve(LightCurve):
 
     References
     ----------
-    | http://www.swpc.noaa.gov/Data/index.html#indices
-    | http://www.swpc.noaa.gov/ftpdir/weekly/README3
-    | http://www.swpc.noaa.gov/ftpdir/weekly/RecentIndices.txt
-    | http://www.swpc.noaa.gov/SolarCycle/
+    | http://legacy-www.swpc.noaa.gov/Data/index.html#indices
+    | ftp://ftp.swpc.noaa.gov/pub/weekly/README3
+    | ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt
+    | http://www.swpc.noaa.gov/products/solar-cycle-progression
     """
 
     def peek(self, axes=None, type='sunspot SWO', **plot_args):
@@ -78,7 +78,7 @@ class NOAAIndicesLightCurve(LightCurve):
     @classmethod
     def _get_default_uri(cls):
         """Return the url to download indices"""
-        return "http://www.swpc.noaa.gov/ftpdir/weekly/RecentIndices.txt"
+        return "ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt"
 
     @staticmethod
     def _get_url_for_date_range(*args, **kwargs):
@@ -125,9 +125,10 @@ class NOAAPredictIndicesLightCurve(LightCurve):
 
     References
     ----------
-    | http://www.swpc.noaa.gov/Data/index.html#indices
-    | http://www.swpc.noaa.gov/ftpdir/weekly/Predict.txt
-    | http://www.swpc.noaa.gov/SolarCycle/
+    | http://legacy-www.swpc.noaa.gov/Data/index.html#indices
+    | http://services.swpc.noaa.gov/text/predicted-sunspot-radio-flux.txt
+    | http://www.swpc.noaa.gov/products/solar-cycle-progression
+    | http://www.swpc.noaa.gov/products-and-data
     """
 
     def peek(self, axes=None, **plot_args):
@@ -154,7 +155,7 @@ class NOAAPredictIndicesLightCurve(LightCurve):
     @classmethod
     def _get_default_uri(cls):
         """Return the url to download indices"""
-        return "http://www.swpc.noaa.gov/ftpdir/weekly/Predict.txt"
+        return "http://services.swpc.noaa.gov/text/predicted-sunspot-radio-flux.txt"
 
     @staticmethod
     def _get_url_for_date_range(*args, **kwargs):
