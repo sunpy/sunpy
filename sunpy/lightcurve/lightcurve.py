@@ -13,6 +13,7 @@ import shutil
 import urllib2
 import warnings
 from datetime import datetime
+from collections import OrderedDict
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -21,7 +22,6 @@ import pandas
 from sunpy import config
 from sunpy.time import is_time, TimeRange, parse_time
 from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
-from sunpy.util.odict import OrderedDict
 
 __all__ = ['LightCurve']
 

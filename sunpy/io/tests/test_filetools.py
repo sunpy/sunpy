@@ -6,7 +6,7 @@ import sunpy
 import sunpy.io
 import sunpy.data.test
 
-from sunpy.tests.helpers import skip_ana, skip_glymur
+from sunpy.tests.helpers import skip_ana, skip_glymur, skip_windows
 
 #==============================================================================
 # Test, read, get_header and write through the file independant layer
