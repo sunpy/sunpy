@@ -51,14 +51,4 @@ def test_detector_angles():
     assert_almost_equal(det2['n7'], 129.49283,decimal=1)
     assert_almost_equal(det2['n8'], 121.91083,decimal=1)
     assert_almost_equal(det2['n9'], 130.04144,decimal=1)
-    
-
-    
-    
-    
-    
-    
-    
-    
-
-    
+        
