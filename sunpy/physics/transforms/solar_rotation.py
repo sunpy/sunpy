@@ -1,5 +1,5 @@
 """
-This module provides routines for applying solar differential functions to
+This module provides routines for applying solar rotation functions to
 mapcubes.
 """
 
@@ -70,7 +70,7 @@ def mapcube_solar_derotate(mc, layer_index=0, clip=True,
 
     Examples
     --------
-    >>> from sunpy.image.solar_differential_rotation import mapcube_solar_derotate
+    >>> from sunpy.physics.transforms.solar_rotation import mapcube_solar_derotate
     >>> derotated_mc = mapcube_solar_derotate(mc)
     >>> derotated_mc = mapcube_solar_derotate(mc, layer_index=-1)
     >>> derotated_mc = mapcube_solar_derotate(mc, clip=False)
