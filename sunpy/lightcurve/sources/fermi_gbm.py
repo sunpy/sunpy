@@ -6,7 +6,7 @@ import datetime
 import urlparse
 import numpy as np
 import matplotlib.pyplot as plt
-
+from collections import OrderedDict
 import pandas
 import warnings
 
@@ -14,7 +14,7 @@ from sunpy.io.fits import fits
 from sunpy.instr import fermi
 from sunpy.lightcurve import LightCurve
 from sunpy.time import parse_time
-from collections import OrderedDict
+
 
 
 __all__ = ['GBMSummaryLightCurve']
