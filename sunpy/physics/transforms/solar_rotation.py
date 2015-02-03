@@ -18,7 +18,8 @@ __all__ = ['mapcube_solar_derotate']
 def mapcube_solar_derotate(mc, layer_index=0, clip=True,
                                return_displacements_only=False,
                                with_displacements=False, **kwargs):
-    """Move the layers in a mapcube according to solar rotation.  The center
+    """
+    Move the layers in a mapcube according to solar rotation.  The center
     of the map is used to calculate the position of each mapcube layer.
     Shifts are calculated relative to a specified layer in the mapcube.
     When using this functionality, it is a good idea to check that the
@@ -76,7 +77,7 @@ def mapcube_solar_derotate(mc, layer_index=0, clip=True,
     >>> derotated_mc = mapcube_solar_derotate(mc, clip=False)
     >>> displacements = mapcube_solar_derotate(mc, return_displacements_only=True)
     >>> derotated_mc, displacements = mapcube_solar_derotate(mc, with_displacements=True)
-"""
+    """
     # Size of the data
     ny = mc.maps[layer_index].shape[0]
     nx = mc.maps[layer_index].shape[1]
