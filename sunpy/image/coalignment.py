@@ -40,7 +40,8 @@ __all__ = ['calculate_shift', 'clip_edges', 'calculate_clipping',
 
 
 def _default_fmap_function(data):
-    """This function ensures that the data are floats.  It is the default data
+    """
+    This function ensures that the data are floats.  It is the default data
     manipulation function for the coalignment method.
     """
     return np.float64(data)
@@ -55,7 +56,6 @@ def calculate_shift(this_layer, template):
     this_layer : ndarray
         A numpy array of size (ny, nx), where the first two dimensions are
         spatial dimensions.
-
     template : ndarray
         A numpy array of size (N, M) where N < ny and M < nx.
 
@@ -81,7 +81,8 @@ def calculate_shift(this_layer, template):
 #
 @quantity_input(yclips=u.pix, xclips=u.pix)
 def clip_edges(data, yclips, xclips):
-    """Clips off the y and x edges of a 2d array according to a list of pixel
+    """
+    Clips off the y and x edges of a 2d array according to a list of pixel
     values.  This function is useful for removing data at the edge of
     2d images that may be affected by shifts from solar de-rotation and
     layer co-registration, leaving an image unaffected by edge effects.
@@ -90,11 +91,9 @@ def clip_edges(data, yclips, xclips):
     ----------
     data : ndarray
         A numpy array of shape (ny, nx).
-
-    yclips : `~astropy.units.Quantity` instance
+    yclips : `~astropy.units.Quantity`
         The amount to clip in the y-direction of the data.
-
-    xclips : `~astropy.units.Quantity` instance
+    xclips : `~astropy.units.Quantity`
         The amount to clip in the x-direction of the data.
 
     Returns
@@ -114,19 +113,20 @@ def clip_edges(data, yclips, xclips):
 #
 @quantity_input(y=u.pix, x=u.pix)
 def calculate_clipping(y, x):
-    """Return the upper and lower clipping values for the y and x directions.
+    """
+    Return the upper and lower clipping values for the y and x directions.
 
     Parameters
     ----------
-    y : `~astropy.units.Quantity` instance
+    y : `~astropy.units.Quantity`
         An array of pixel shifts in the y-direction for an image.
-
-    x : `~astropy.units.Quantity` instance
+    x : `~astropy.units.Quantity`
         An array of pixel shifts in the x-direction for an image.
 
     Returns
     -------
-    clipping : ([int, int], [int, int]) of type astropy.Quantity
+    clipping : tuple
+        The tuple is of the form ([y0, y1], [x0, x1]).
         The number of (integer) pixels that need to be clipped off at each
         edge in an image. The first element in the tuple is a list that gives
         the number of pixels to clip in the y-direction.  The first element in
@@ -137,7 +137,8 @@ def calculate_clipping(y, x):
         in y.  The clipped image has "clipping[0][1]" rows removed from its
         upper edge when compared to the original image.  The second element in
         the "clipping" tuple applies similarly to the x-direction (image
-        columns).
+        columns).  The parameters y0, y1, x0, x1 have the type
+        `~astropy.unit.Quantity`.
     """
     return ([_lower_clip(y.value), _upper_clip(y.value)] * u.pix,
             [_lower_clip(x.value), _upper_clip(x.value)] * u.pix)
@@ -147,7 +148,8 @@ def calculate_clipping(y, x):
 # Helper functions for clipping edges
 #
 def _upper_clip(z):
-    """Find smallest integer bigger than all the positive entries in the input
+    """
+    Find smallest integer bigger than all the positive entries in the input
     array.
     """
     zupper = 0
@@ -158,7 +160,8 @@ def _upper_clip(z):
 
 
 def _lower_clip(z):
-    """Find smallest positive integer bigger than the absolute values of the
+    """
+    Find smallest positive integer bigger than the absolute values of the
     negative entries in the input array.
     """
     zlower = 0
@@ -169,7 +172,8 @@ def _lower_clip(z):
 
 
 def match_template_to_layer(layer, template):
-    """Calculate the correlation array that describes how well the template
+    """
+    Calculate the correlation array that describes how well the template
     matches the layer. All inputs are assumed to be numpy arrays.  This
     function requires the "match_template" function in scikit image.
 
@@ -191,7 +195,8 @@ def match_template_to_layer(layer, template):
 
 
 def find_best_match_location(corr):
-    """Calculate an estimate of the location of the peak of the correlation
+    """
+    Calculate an estimate of the location of the peak of the correlation
     result in image pixels.
 
     Parameters
@@ -201,7 +206,7 @@ def find_best_match_location(corr):
 
     Returns
     -------
-    shift : `~astropy.units.Quantity` instance
+    shift : `~astropy.units.Quantity`
         The shift amounts (y, x) in image pixels.  Subpixel values are
         possible.
     """
@@ -223,7 +228,8 @@ def find_best_match_location(corr):
 
 
 def get_correlation_shifts(array):
-    """Estimate the location of the maximum of a fit to the input array.  The
+    """
+    Estimate the location of the maximum of a fit to the input array.  The
     estimation in the x and y directions are done separately. The location
     estimates can be used to implement subpixel shifts between two different
     images.
@@ -237,7 +243,7 @@ def get_correlation_shifts(array):
 
     Returns
     -------
-    peakloc : `~astropy.units.Quantity` instance
+    peakloc : `~astropy.units.Quantity`
         The (y, x) location of the peak of a parabolic fit, in image pixels.
     """
     # Check input shape
@@ -268,7 +274,8 @@ def get_correlation_shifts(array):
 
 
 def parabolic_turning_point(y):
-    """Find the location of the turning point for a parabola
+    """
+    Find the location of the turning point for a parabola
     y(x) = ax^2 + bx + c, given input values y(-1), y(0), y(1).
     The maximum is located at x0 = -b / 2a .  Assumes
     that the input array represents an equally spaced sampling at the
@@ -291,7 +298,8 @@ def parabolic_turning_point(y):
 
 
 def repair_image_nonfinite(image):
-    """Return a new image in which all the nonfinite entries of the original
+    """
+    Return a new image in which all the nonfinite entries of the original
     image have been replaced by the local mean.
 
     Parameters
@@ -340,7 +348,8 @@ def repair_image_nonfinite(image):
 
 @quantity_input(yshift=u.pix, xshift=u.pix)
 def apply_shifts(mc, yshift, xshift, clip=True):
-    """Apply a set of pixel shifts to a mapcube, and return a new mapcube.
+    """
+    Apply a set of pixel shifts to a mapcube, and return a new mapcube.
 
     Parameters
     ----------
@@ -396,7 +405,8 @@ def mapcube_coalign_by_match_template(mc, template=None, layer_index=0,
                                return_displacements_only=False,
                                apply_displacements=None,
                                with_displacements=False):
-    """Co-register the layers in a mapcube according to a template taken from
+    """
+    Co-register the layers in a mapcube according to a template taken from
     that mapcube.  This method REQUIRES that scikit-image be installed.
     When using this functionality, it is a good idea to check that the
     shifts that were applied to were reasonable and expected.  One way of

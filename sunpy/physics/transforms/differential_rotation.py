@@ -96,7 +96,8 @@ def diff_rot(duration, latitude, rot_type='howard', frame_time='sidereal'):
 @quantity_input(x=u.arcsec, y=u.arcsec)
 def rot_hpc(x, y, tstart, tend, spacecraft=None, frame_time='synodic',
             rot_type='howard', **kwargs):
-    """Given a location on the Sun referred to using the Helioprojective
+    """
+    Given a location on the Sun referred to using the Helioprojective
     Cartesian co-ordinate system (typically quaoted in the units of arcseconds)
     use the solar rotation profile to find that location at some later or
     earlier time.
@@ -158,7 +159,7 @@ def rot_hpc(x, y, tstart, tend, spacecraft=None, frame_time='synodic',
 
     TODO: the ability to do this rotation for data from the SOHO
     point of view and the STEREO A, B point of views.
-"""
+    """
     # must have pairs of co-ordinates
     if np.array(x).shape != np.array(y).shape:
         raise ValueError('Input co-ordinates must have the same shape.')
@@ -205,7 +206,8 @@ def rot_hpc(x, y, tstart, tend, spacecraft=None, frame_time='synodic',
 
 
 def _calc_P_B0_SD(date, spacecraft=None, arcsec=False):
-    """To calculate the solar P, B0 angles and the semi-diameter.  This
+    """
+    To calculate the solar P, B0 angles and the semi-diameter.  This
     function is assigned as being internal as these quantities should be
     calculated in a part of SunPy that can calculate these quantities
     accurately.
@@ -304,7 +306,8 @@ def _calc_P_B0_SD(date, spacecraft=None, arcsec=False):
 
 
 def _sun_pos(date, is_julian=False, since_2415020=False):
-    """ Calculate solar ephemeris parameters.  Allows for planetary and lunar
+    """
+    Calculate solar ephemeris parameters.  Allows for planetary and lunar
     perturbations in the calculation of solar longitude at date and various
     other solar positional parameters. This routine is a truncated version of
     Newcomb's Sun and is designed to give apparent angular coordinates (T.E.D)
@@ -339,7 +342,7 @@ def _sun_pos(date, is_julian=False, since_2415020=False):
 
     See Also
     --------
-    IDL code equavalent:
+    IDL code equivalent:
         http://hesperia.gsfc.nasa.gov/ssw/gen/idl/solar/sun_pos.pro
 
     Examples
