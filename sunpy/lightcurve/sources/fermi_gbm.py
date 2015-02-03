@@ -14,7 +14,7 @@ from sunpy.io.fits import fits
 from sunpy.instr import fermi
 from sunpy.lightcurve import LightCurve
 from sunpy.time import parse_time
-from sunpy.util.odict import OrderedDict
+from collections import OrderedDict
 
 
 __all__ = ['GBMSummaryLightCurve']
