@@ -89,7 +89,8 @@ def diff_rot(duration, latitude, rot_type='howard', frame_time='sidereal'):
     if frame_time == 'synodic':
         rotation_deg -= 0.9856 * delta_days
 
-    return Longitude((np.round(rotation_deg, 4)), u.deg)
+    #return Longitude((np.round(rotation_deg, 4)), u.deg)
+    return np.round(rotation_deg, 4) * u.deg
 
 
 @quantity_input(x=u.arcsec, y=u.arcsec)
