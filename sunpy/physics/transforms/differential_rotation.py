@@ -21,23 +21,20 @@ def diff_rot(duration, latitude, rot_type='howard', frame_time='sidereal'):
 
     Parameters
     -----------
-    duration: '~astropy.units.Quantity`
+    duration: `~astropy.units.Quantity`
         Number of seconds to rotate over.
-
-    latitude: '~astropy.units.Quantity` instance
+    latitude: `~astropy.units.Quantity`
         heliographic coordinate latitude in Degrees.
-
     rot_type: {'howard' | 'snodgrass' | 'allen'}
         howard: Use values for small magnetic features from Howard et al.
         snodgrass: Use Values from Snodgrass et. al
         allen: Use values from Allen, Astrophysical Quantities, and simplier equation.
-
     frame_time: {'sidereal' | 'synodic'}
         Choose 'type of day' time reference frame.
 
     Returns
     -------
-    longditude_delta: astropy.units.Quantity
+    longitude_delta: `~astropy.units.Quantity`
         The change in longitude over days (units=degrees)
 
     Notes
@@ -106,34 +103,29 @@ def rot_hpc(x, y, tstart, tend, spacecraft=None, frame_time='synodic',
     -----------
     x : `~astropy.units.Quantity`
         helio-projective x-co-ordinate in arcseconds (can be an array)
-
     y : `~astropy.units.Quantity`
         helio-projective y-co-ordinate in arcseconds (can be an array)
 
     tstart : `sunpy.time.time`
         date/time to which x and y are referred.
-
     tend : `sunpy.time.time`
         date/time at which x and y will be rotated to.
-
     spacecraft : { None | "soho" | "stereo_a" | "stereo_b" }
                  calculate the rotation from the point of view of the SOHO,
                  STEREO A, or STEREO B spacecraft.
-                
     rot_type : {'howard' | 'snodgrass' | 'allen'}
         howard: Use values for small magnetic features from Howard et al.
         snodgrass: Use Values from Snodgrass et. al
-        allen: Use values from Allen, Astrophysical Quantities, and simplier
+        allen: Use values from Allen, Astrophysical Quantities, and simpler
                 equation.
-
     frame_time: {'sidereal' | 'synodic'}
         Choose 'type of day' time reference frame.
     
     Returns
     -------
-    x, y : the rotated helio-projective co-ordinates (in astropy Angle
-           Quantities in units of arcseconds), with the same shape as the input
-           co-ordinates.
+    x, y : `~astropy.units.Quantity`, `~astropy.units.Quantity`
+        The rotated helio-projective co-ordinates (in astropy Angle Quantities
+        in units of arcseconds), with the same shape as the input co-ordinates.
 
     Examples
     --------
