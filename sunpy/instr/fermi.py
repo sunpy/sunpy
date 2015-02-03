@@ -10,19 +10,29 @@ import tempfile
 import datetime
 import os
 import matplotlib.pyplot as plt
+
 from bs4 import BeautifulSoup
+import astropy.units as u
+from astropy.utils.compat.odict import OrderedDict
+from astropy.coordinates import Angle, Longitude, Latitude
+
 from sunpy.time import parse_time, TimeRange
 from sunpy import sun
 from sunpy.io.fits import fits
-from astropy.utils.compat.odict import OrderedDict
 
-import astropy.units as u
-from astropy.coordinates import Angle, Longitude, Latitude
 
 def download_weekly_pointing_file(date):
-    date = parse_time(date)
     '''Downloads the FERMI/LAT weekly pointing file corresponding to the specified date. This file
-    contains 1 minute cadence data on the spacecraft pointing, useful for calculating detector angles.'''
+    contains 1 minute cadence data on the spacecraft pointing, useful for calculating detector angles.
+
+    Parameters
+    ----------
+
+    date : datetime object
+        A datetime object or other date format understood by the parse_time function.
+    '''
+
+    date = parse_time(date)
     #use a temp directory to hold the file
     tmp_dir=tempfile.mkdtemp()
     #use Fermi data server to access weekly LAT pointing file.
@@ -82,8 +92,18 @@ def download_weekly_pointing_file(date):
 
 
 def get_detector_sun_angles_for_time(time, file):
+    '''get the GBM detector angles vs the sun for a single time.
+
+    Parameters
+    ----------
+
+    time : datetime object
+        A datetime object or other time format understood by the parse_time function.
+    file : str
+        A filepath to a Fermi/LAT weekly pointing file (e.g. as obtained by the download_weekly_pointing_file function).
+    '''
+    
     time = parse_time(time)
-    '''get the GBM detector angles vs the sun for a single time.'''
     scx, scz, tt = get_scx_scz_at_time(time, file)
     # retrieve the detector angle information in spacecraft coordinates
     detectors = nai_detector_angles()
@@ -103,8 +123,18 @@ def get_detector_sun_angles_for_time(time, file):
 
 
 def get_detector_sun_angles_for_date(date, file):
+    '''get the GBM detector angles vs the sun as a function of time for a given date
+
+    Parameters
+    ----------
+
+    date : datetime object
+        A datetime object or other date format understood by the parse_time function.
+    file : str
+        A filepath to a Fermi/LAT weekly pointing file (e.g. as obtained by the download_weekly_pointing_file function).
+    '''
+    
     date = parse_time(date)
-    '''get the GBM detector angles vs the sun as a function of time for a given date'''
     tran = TimeRange(date, date + datetime.timedelta(days=1))
     scx, scz, times = get_scx_scz_in_timerange(tran, file)
 
@@ -133,6 +163,15 @@ def get_detector_sun_angles_for_date(date, file):
 
 
 def plot_detector_sun_angles(angles):
+    '''Plots the Fermi/GBM detector angles as a function of time.
+
+    Parameters
+    ----------
+
+    angles : dict
+        A dictionary containing the Fermi/GBM detector angle information as a function of time.
+        Obtained from the get_detector_separation_angles function.
+    '''
 
     #make a plot showing the angles vs time
     figure = plt.figure(1)
@@ -149,8 +188,18 @@ def plot_detector_sun_angles(angles):
 
 
 def get_scx_scz_at_time(time, file):
+    '''read a downloaded FERMI weekly pointing file and extract scx, scz for a single time.
+
+    Parameters
+    ----------
+
+    time : datetime object
+        A datetime object or other time format understood by the parse_time function.
+    file : str
+        A filepath to a Fermi/LAT weekly pointing file (e.g. as obtained by the download_weekly_pointing_file function).
+    '''
+    
     time = parse_time(time)
-    '''read a downloaded FERMI weekly pointing file and extract scx, scz for a single time.'''
     hdulist = fits.open(file)
     timesinutc = []
     for tim in hdulist[1].data['START']:
@@ -165,7 +214,17 @@ def get_scx_scz_at_time(time, file):
 
 
 def get_scx_scz_in_timerange(timerange, file):
-    '''read a downloaded FERMI weekly pointing file and extract scx, scz for a timerange.'''
+    '''read a downloaded FERMI weekly pointing file and extract scx, scz for a timerange.
+
+    Parameters
+    ----------
+
+    date : datetime object
+        A datetime object or other date format understood by the parse_time function.
+    file : str
+        A filepath to a Fermi/LAT weekly pointing file (e.g. as obtained by the download_weekly_pointing_file function).
+    '''
+    
     hdulist = fits.open(file)
     timesinutc = []
     for tim in hdulist[1].data['START']:
@@ -207,7 +266,27 @@ def nai_detector_angles():
 
 def nai_detector_radecs(detectors, scx, scz, time):
     '''calculates the RA/DEC for each NaI detector given spacecraft z and x RA/DEC positions.
-    NB: This routine is based on code found in GTBURST, originally written by Dr Giacamo Vianello for the Fermi Science Tools.'''
+    
+    NB: This routine is based on code found in GTBURST, originally written by Dr Giacamo Vianello for the Fermi Science Tools.
+
+    Parameters
+    ----------
+
+    detectors : dict
+        A dictionary containing the Fermi/GBM detector pointing angles relative to the spacecraft axes.
+        Obtained from the nai_detector_angles function.
+    scx : array
+        Two-element array containing the RA/DEC information of the Fermi spacecraft X-axis
+    scz : array
+        Two-element array containing the RA/DEC information of the Fermi spacecraft Z-axis
+    time : datetime object
+        The time corresponding to the input scx and scz values, in a format understandable by parse_time.
+
+    Returns
+    -------
+    dict
+        A dictionary containing the RA/DEC for each Fermi/GBM NaI detector at the given input time.
+    '''
 
     scx_vector = (np.array([np.cos(scx[0].to('rad').value)*np.cos(scx[1].to('rad').value), 
                         np.sin(scx[0].to('rad').value)*np.cos(scx[1].to('rad').value),
@@ -261,7 +340,7 @@ def rotate_vector(vector, axis, theta):
 
 
 def get_detector_separation_angles(detector_radecs, sunpos):
-    # record the separation angle in degrees between the sun and each NaI detector
+    '''Finds the separation angle between the Sun and each NaI detector, given a dictonary of detector RA/DECs.'''
     angles = copy.deepcopy(detector_radecs)
     for l, d in detector_radecs.items():
         if not l == 'time':
@@ -271,8 +350,8 @@ def get_detector_separation_angles(detector_radecs, sunpos):
 
 
 def separation_angle(radec1, radec2):
-    '''radec1 and radec 2 are quantities'''
-    '''use the law of spherical cosines to calculate the separation angle between two RA/DEC positions.'''
+    '''use the law of spherical cosines to calculate the separation angle between two RA/DEC positions.
+     radec1 and radec2 are quantities'''
     #cosine_of_angle = ( np.cos(np.deg2rad(90 - radec1[1])) * np.cos(np.deg2rad(90 - radec2[1])) ) + ( np.sin(np.deg2rad(90 - radec1[1])) * np.sin(np.deg2rad(90 - radec2[1])) * np.cos(np.deg2rad(radec1[0] - radec2[0])) )
     
     cosine_of_angle = ( np.cos( ((90*u.deg) - radec1[1].to('degree')).to('rad')) * np.cos( (90*u.deg - radec2[1].to('degree')).to('rad')) ) + ( np.sin( ((90*u.deg) - radec1[1].to('degree')).to('rad') ) * np.sin( ((90*u.deg) - radec2[1].to('degree')).to('rad') ) * np.cos( (radec1[0].to('degree') - radec2[0].to('degree')).to('rad')   ) )
