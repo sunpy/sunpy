@@ -181,7 +181,6 @@ def match_template_to_layer(layer, template):
     ----------
     layer : ndarray
         A numpy array of size (ny, nx).
-
     template : ndarray
         A numpy array of size (N, M) where N < ny and M < nx.
 
@@ -353,24 +352,21 @@ def apply_shifts(mc, yshift, xshift, clip=True):
 
     Parameters
     ----------
-    mc : sunpy.map.MapCube
+    mc : `sunpy.map.MapCube`
         A mapcube of shape (ny, nx, nt), where nt is the number of layers in
         the mapcube.  'ny' is the number of pixels in the y direction, 'nx'
         is the number of pixels in the 'x' direction.
-
     yshift : `~astropy.units.Quantity` instance
         An array of pixel shifts in the y-direction for an image.
-
     xshift : `~astropy.units.Quantity` instance
         An array of pixel shifts in the x-direction for an image.
-
     clip : bool
         If True, then clip off x, y edges in the datacube that are potentially
         affected by edges effects.
 
     Returns
     -------
-    sunpy.map.MapCube
+    newmapcube : `sunpy.map.MapCube`
         A mapcube of the same shape as the input.  All layers in the mapcube
         have been shifted according the input shifts.
     """
@@ -416,20 +412,17 @@ def mapcube_coalign_by_match_template(mc, template=None, layer_index=0,
 
     Parameters
     ----------
-    mc : sunpy.map.MapCube
+    mc : `sunpy.map.MapCube`
         A mapcube of shape (ny, nx, nt), where nt is the number of layers in
         the mapcube.
-
     template : {None | sunpy.map.Map | ndarray}
         The template used in the matching.  If an ndarray is passed, the
         ndarray has to have two dimensions.
-
     layer_index : int
         The template is assumed to refer to the map in the mapcube indexed by
         the value of "layer_index".  Displacements of all maps in the mapcube
         are assumed to be relative to this layer.  The displacements of the
         template relative to this layer are therefore (0, 0).
-
     func : function
         A function which is applied to the data values before the coalignment
         method is applied.  This can be useful in coalignment, because it is
@@ -439,22 +432,18 @@ def mapcube_coalign_by_match_template(mc, template=None, layer_index=0,
         logarithm or the square root.  The function is of the form
         func = F(data).  The default function ensures that the data are
         floats.
-
     clip : bool
         If True, thenclip off x, y edges in the datacube that are potentially
         affected by edges effects.
-
     return_displacements_only : bool
         If True return ONLY the x and y displacements applied to the input
         data in units of arcseconds.  The return value is a dictionary of the
         form {"x": xdisplacement, "y": ydisplacement}.
-
     apply_displacements : {None | dict}
         If not None, then use the displacements supplied by the user.  Must be
         in the same format as that returned using the
         return_displacements_only option.  Can be used when you want to appl
         the same displacements to multiple mapcubes.
-
     with_displacements : bool
         If True, return the x and y displacements applied to the input data in
         the same format as that returned using the return_displacements_only
@@ -463,7 +452,7 @@ def mapcube_coalign_by_match_template(mc, template=None, layer_index=0,
 
     Returns
     -------
-    output : {sunpy.map.MapCube | dict | tuple}
+    output : {`sunpy.map.MapCube` | dict | tuple}
         The results of the mapcube coalignment.  The output depends on the
         value of the parameters "return_displacements_only" and
         "with_displacements".
