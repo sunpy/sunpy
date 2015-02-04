@@ -217,7 +217,7 @@ def _calc_P_B0_SD(date, spacecraft=None):
         Earth.  Implementation of this seems to require the ability to read
         SOHO orbit files.
 
-    Returns:
+    Returns
     -------
     A dictionary with the following keys with the following meanings:
 
@@ -294,7 +294,7 @@ def _calc_P_B0_SD(date, spacecraft=None):
             "l0": Angle(0.0, u.deg)}
 
 
-def _sun_pos(date, is_julian=False, since_2415020=False):
+def _sun_pos(date):
     """
     Calculate solar ephemeris parameters.  Allows for planetary and lunar
     perturbations in the calculation of solar longitude at date and various
@@ -307,19 +307,11 @@ def _sun_pos(date, is_julian=False, since_2415020=False):
 
     Parameters
     -----------
-    date : { `sunpy.time.time` | float }
+    date : `sunpy.time.time`
         Time at which the solar ephemeris parameters are calculated in any
-        acceptable time format or a fractional number of days since
-        JD 2415020.0
+        acceptable time format.
 
-    is_julian : { False | True }
-        notify this routine that the variable "date" is a Julian date
-
-    since_2415020 : { False | True }
-        notify this routine that the variable "date" has been corrected for
-        the required time offset
-
-    Returns:
+    Returns
     -------
     A dictionary with the following keys with the following meanings:
 
@@ -337,21 +329,9 @@ def _sun_pos(date, is_julian=False, since_2415020=False):
     Examples
     --------
     >>> sp = _sun_pos('2013-03-27')
-
     """
-    # check the time input
-    if is_julian:
-        # if a Julian date is being passed in
-        if since_2415020:
-            dd = date
-        else:
-            dd = date - 2415020.0
-    else:
-        # parse the input time as a julian day
-        if since_2415020:
-            dd = julian_day(parse_time(date))
-        else:
-            dd = julian_day(parse_time(date)) - 2415020.0
+    # Fractional Julian day with correct offset
+    dd = julian_day(date) - 2415020.0
 
     # form time in Julian centuries from 1900.0
     t = dd / 36525.0
