@@ -4,9 +4,12 @@
 
 __all__ = ['quantity_input']
 
-from ..util.compat import funcsigs
+from functools import wraps
 
 from astropy.units import UnitsError, add_enabled_equivalencies
+
+from ..util.compat import funcsigs
+
 
 class QuantityInput(object):
 
@@ -69,6 +72,7 @@ class QuantityInput(object):
         wrapped_signature = funcsigs.signature(wrapped_function)
 
         # Define a new function to return in place of the wrapped one
+        @wraps(wrapped_function)
         def wrapper(*func_args, **func_kwargs):
             # Bind the arguments to our new function to the signature of the original.
             bound_args = wrapped_signature.bind(*func_args, **func_kwargs)
