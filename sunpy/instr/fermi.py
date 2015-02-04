@@ -373,8 +373,7 @@ def met_to_utc(timeinsec):
     '''Converts Fermi Mission Elapsed Time (MET) in seconds to a datetime object.'''
     # times for GBM are in Mission Elapsed Time (MET). The reference time for this is 2001-Jan-01 00:00.
     met_ref_time = parse_time('2001-01-01 00:00')
-    offset_from_utc = (met_ref_time - parse_time('1979-01-01 00:00')) #.total_seconds() #have to do this the long way for python 2.6 compatibility
-    total_offset_secs = (offset_from_utc.microseconds + (offset_from_utc.seconds + offset_from_utc.days * 24 * 3600) * 10**6) / 10**6     
-    time_in_utc=parse_time(timeinsec + total_offset_secs)# offset_from_utc)
+    offset_from_utc = (met_ref_time - parse_time('1979-01-01 00:00')).total_seconds() 
+    time_in_utc=parse_time(timeinsec + offset_from_utc) 
 
     return time_in_utc
