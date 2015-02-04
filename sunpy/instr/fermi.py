@@ -40,7 +40,8 @@ def download_weekly_pointing_file(date):
     fbasename='FERMI_POINTING_FINAL_'
     
     #find out which file to get based on date
-    #earliest file in the FERMI server is for mission week 23, beginning 2008 November 6.
+    #earliest file in the FERMI server is for mission week 23,
+    #beginning 2008 November 6.
     weekly_file_start=parse_time('2008-11-06')
     base_week=23
 
@@ -49,7 +50,8 @@ def download_weekly_pointing_file(date):
     weekdiff = time_diff.days//7
     week = weekdiff + base_week
 
-    #find out the rest of the file name. Need the year and the day-in-year for start and end of file
+    #find out the rest of the file name. Need the year and the day-in-year for
+    #start and end of file
     start_date = weekly_file_start + datetime.timedelta(weekdiff*7)
     start_year_str=str(start_date.year) + '-01-01'
     start_str = start_date.strftime('%Y%j')
@@ -157,7 +159,10 @@ def get_detector_sun_angles_for_date(date, file):
     angles = OrderedDict()
     key_list = ['n0','n1','n2','n3','n4','n5','n6','n7','n8','n9','n10','n11','time']
     for i in range(13):
-        angles[key_list[i]] = [item[key_list[i]] for item in detector_to_sun_angles]
+        if not key_list[i] == 'time':
+            angles[key_list[i]] = [item[key_list[i]].value for item in detector_to_sun_angles] * u.deg
+        else:
+            angles[key_list[i]] = [item[key_list[i]] for item in detector_to_sun_angles]
 
     return angles  
 
@@ -177,7 +182,7 @@ def plot_detector_sun_angles(angles):
     figure = plt.figure(1)
     for n in angles.keys():
         if not n == 'time':
-            plt.plot(angles['time'],angles[n], label = '{lab} ({val})' .format(lab=n, val = str(np.mean(angles[n]))[0:5]))
+            plt.plot(angles['time'],angles[n].value, label = '{lab} ({val})' .format(lab=n, val = str(np.mean(angles[n].value))[0:5]))
     plt.ylim(180,0)
     plt.ylabel('angle (degrees)')
     plt.xlabel('Start time: ' + angles['time'][0].isoformat())
@@ -342,10 +347,12 @@ def rotate_vector(vector, axis, theta):
 def get_detector_separation_angles(detector_radecs, sunpos):
     '''Finds the separation angle between the Sun and each NaI detector, given a dictonary of detector RA/DECs.'''
     angles = copy.deepcopy(detector_radecs)
+    angles2 = {}
     for l, d in detector_radecs.items():
         if not l == 'time':
             angle = separation_angle(d, sunpos)
             angles[l] = angle
+
     return angles
 
 
