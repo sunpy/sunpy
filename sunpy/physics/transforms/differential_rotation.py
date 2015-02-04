@@ -308,8 +308,8 @@ def _sun_pos(date):
     Parameters
     -----------
     date : `sunpy.time.time`
-        Time at which the solar ephemeris parameters are calculated in any
-        acceptable time format.
+        Time at which the solar ephemeris parameters are calculated.  The
+        input time can be in any acceptable time format.
 
     Returns
     -------
