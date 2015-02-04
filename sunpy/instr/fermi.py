@@ -385,11 +385,11 @@ def separation_angle(radec1, radec2):
     '''use the law of spherical cosines to calculate the separation angle
     between two RA/DEC positions. radec1 and radec2 are quantities'''
     
-    cosine_of_angle = ( np.cos( ((90*u.deg) - radec1[1].to('degree')).to('rad')) *
-                        np.cos( (90*u.deg - radec2[1].to('degree')).to('rad')) ) +
-                      ( np.sin( ((90*u.deg) - radec1[1].to('degree')).to('rad') ) *
+    cosine_of_angle = (( np.cos( ((90*u.deg) - radec1[1].to('degree')).to('rad')) *
+                        np.cos( (90*u.deg - radec2[1].to('degree')).to('rad')) )
+                        + ( np.sin( ((90*u.deg) - radec1[1].to('degree')).to('rad') ) *
                         np.sin( ((90*u.deg) - radec2[1].to('degree')).to('rad') ) *
-                      np.cos( (radec1[0].to('degree') - radec2[0].to('degree')).to('rad')   ) )
+                      np.cos( (radec1[0].to('degree') - radec2[0].to('degree')).to('rad')   ) ) )
 
 
     angle=(np.arccos(cosine_of_angle)).to('degree')
