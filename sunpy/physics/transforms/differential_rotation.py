@@ -47,15 +47,15 @@ def diff_rot(duration, latitude, rot_type='howard', frame_time='sidereal'):
     --------
     Default rotation calculation over two days at 30 degrees latitude:
 
-    >>> rotation = diff_rot(2, 30 * u.deg)
+    >>> rotation = diff_rot(2 * u.day, 30 * u.deg)
 
     Default rotation over two days for a number of latitudes:
 
-    >>> rotation = diff_rot(2, np.linspace(-70, 70, 20) * u.deg)
+    >>> rotation = diff_rot(2 * u.day, np.linspace(-70, 70, 20) * u.deg)
 
     With rotation type 'allen':
 
-    >>> rotation = diff_rot(2, np.linspace(-70, 70, 20) * u.deg, 'allen')
+    >>> rotation = diff_rot(2 * u.day, np.linspace(-70, 70, 20) * u.deg, 'allen')
     """
 
     latitude = latitude.to(u.deg)
