@@ -197,7 +197,7 @@ def rot_hpc(x, y, tstart, tend, spacecraft=None, frame_time='synodic',
     return newx.to(u.arcsec), newy.to(u.arcsec)
 
 
-def _calc_P_B0_SD(date, spacecraft=None, arcsec=False):
+def _calc_P_B0_SD(date, spacecraft=None):
     """
     To calculate the solar P, B0 angles and the semi-diameter.  This
     function is assigned as being internal as these quantities should be
@@ -217,9 +217,6 @@ def _calc_P_B0_SD(date, spacecraft=None, arcsec=False):
         Earth.  Implementation of this seems to require the ability to read
         SOHO orbit files.
 
-    arcsec: { False | True }
-        return the semi-diameter in arcseconds.
-
     Returns:
     -------
     A dictionary with the following keys with the following meanings:
@@ -233,7 +230,7 @@ def _calc_P_B0_SD(date, spacecraft=None, arcsec=False):
     IDL code equavalent:
         http://hesperia.gsfc.nasa.gov/ssw/gen/idl/solar/pb0r.pro
     """
-    if (spacecraft is not None):
+    if spacecraft is not None:
         raise ValueError("Solar P, B0 and semi-diameter calcution" +
                          " is not supported for STEREO spacecraft or SOHO" +
                          " simultaneously.")
@@ -290,7 +287,7 @@ def _calc_P_B0_SD(date, spacecraft=None, arcsec=False):
     # place holder for SOHO correction
     if spacecraft == 'soho':
         raise ValueError("SOHO correction (on the order of 1% " +
-                        "since SOHO sets at L1) not yet supported.")
+                        "since SOHO sits at L1) not yet supported.")
     return {"p": Angle(p, u.deg),
             "b0": Angle(b, u.deg),
             "sd": Angle(sd.value, u.arcmin),
