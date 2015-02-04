@@ -60,7 +60,8 @@ class GBMSummaryLightCurve(LightCurve):
         #date is a datetime object
         if 'detector' in kwargs:
             det=_parse_detector(kwargs['detector'])
-            final_url=urlparse.urljoin(baseurl, date.strftime('%Y/%m/%d/' + 'current/' + 'glg_cspec_'+det+'_%y%m%d_v00.pha'))
+            final_url=urlparse.urljoin(baseurl, date.strftime('%Y/%m/%d/' + 'current/' +
+                                                              'glg_cspec_'+det+'_%y%m%d_v00.pha'))
         else:
             #if user doesn't specify a detector, find the one pointing closest to the Sun.'
             #OR: maybe user should have to specify detector or fail.
@@ -68,13 +69,15 @@ class GBMSummaryLightCurve(LightCurve):
             print 'No detector specified. Detector with smallest mean angle to Sun is ' + str(det)
             print 'Using Detector ' + str(det)
             print 'For Fermi detector pointing information, use tools in sunpy/instr/fermi' 
-            final_url=urlparse.urljoin(baseurl, date.strftime('%Y/%m/%d/' + 'current/' + 'glg_cspec_'+det+'_%y%m%d_v00.pha'))
+            final_url=urlparse.urljoin(baseurl, date.strftime('%Y/%m/%d/' + 'current/' +
+                                                              'glg_cspec_'+det+'_%y%m%d_v00.pha'))
         
         return final_url
 
     @classmethod
     def _get_closest_detector_for_date(cls,date,**kwargs):
-        '''This method returns the GBM detector with the smallest mean angle to the Sun for the given date'''
+        '''This method returns the GBM detector with the smallest mean angle
+        to the Sun for the given date'''
         pointing_file = fermi.download_weekly_pointing_file(date)
         det_angles = fermi.get_detector_sun_angles_for_date(date,pointing_file)
         det_angle_means=[]
@@ -108,17 +111,13 @@ class GBMSummaryLightCurve(LightCurve):
         #4-15 keV, 15 - 25 keV, 25-50 keV, 50-100 keV, 100-300 keV, 300-800 keV, 800 - 2000 keV
         #put the data in the units of counts/s/keV
         summary_counts=_bin_data_for_summary(energy_bins,count_data)
-       
-        #times for GBM are in Mission Elapsed Time (MET). The reference time for this is 2001-Jan-01 00:00.
-        #met_ref_time = parse_time('2001-01-01 00:00')
-        #offset_from_utc = (met_ref_time - parse_time('1979-01-01 00:00')).total_seconds()
 
         gbm_times=[]
         #get the time information in datetime format with the correct MET adjustment
         for t in count_data['time']:
-            #gbm_times.append(parse_time(t + offset_from_utc))
             gbm_times.append(fermi.met_to_utc(t))
-        column_labels=['4-15 keV','15-25 keV','25-50 keV','50-100 keV','100-300 keV','300-800 keV','800-2000 keV']
+        column_labels=['4-15 keV','15-25 keV','25-50 keV','50-100 keV','100-300 keV',
+                       '300-800 keV','800-2000 keV']
         return header, pandas.DataFrame(summary_counts, columns=column_labels, index=gbm_times)
 
 
@@ -138,7 +137,8 @@ def _bin_data_for_summary(energy_bins,count_data):
         counts_in_bands=[]
         for j in range(1,len(ebands)):
             counts_in_bands.append(np.sum(count_data['counts'][i][indices[j-1]:indices[j]]) /
-                                (count_data['exposure'][i] * (energy_bins['e_max'][indices[j]] - energy_bins['e_min'][indices[j-1]])))
+                                (count_data['exposure'][i] * (energy_bins['e_max'][indices[j]] -
+                                                              energy_bins['e_min'][indices[j-1]])))
             
         summary_counts.append(counts_in_bands)
 
