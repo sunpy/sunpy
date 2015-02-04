@@ -154,7 +154,3 @@ def _parse_detector(detector):
         return 'n'+detector
     else:
         raise ValueError('Detector string could not be interpreted')
-    
-        
-        
-
