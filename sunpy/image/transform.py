@@ -16,6 +16,7 @@ except ImportError:  # pragma: no cover
 
 __all__ = ['affine_transform']
 
+
 def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
                      recenter=False, missing=0.0, use_scipy=False):
     """
@@ -119,7 +120,14 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
         # Transform the image using the skimage function
         # Image data is normalised because warp() requires an array of values
         # between -1 and 1.
-        adjusted_image = np.copy(image)
+        if np.issubdtype(image.dtype, np.integer):
+            adjusted_image = image.astype(np.float64)
+        else:
+            adjusted_image = image.copy()
+        if np.any(np.isnan(adjusted_image)) and order >= 4:
+            warnings.warn("Setting NaNs to 0 for higher-order scikit-image rotation", Warning)
+            adjusted_image = np.nan_to_num(adjusted_image)
+
         im_min = np.nanmin(adjusted_image)
         adjusted_image -= im_min
         im_max = np.nanmax(adjusted_image)
@@ -127,7 +135,10 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
         rotated_image = skimage.transform.warp(adjusted_image, tform, order=order,
                                                mode='constant', cval=missing)
 
-
         rotated_image *= im_max
         rotated_image += im_min
+
+        if rotated_image.dtype != image.dtype:
+            rotated_image = rotated_image.astype(image.dtype)
+
     return rotated_image
