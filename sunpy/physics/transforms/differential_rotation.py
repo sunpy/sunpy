@@ -90,7 +90,7 @@ def diff_rot(duration, latitude, rot_type='howard', frame_time='sidereal'):
     return np.round(rotation_deg, 4) * u.deg
 
 
-@quantity_input(x=u.arcsec, y=u.arcsec)
+#@quantity_input(x=u.arcsec, y=u.arcsec)
 def rot_hpc(x, y, tstart, tend, spacecraft=None, frame_time='synodic', rot_type='howard', **kwargs):
     """Given a location on the Sun referred to using the Helioprojective
     Cartesian co-ordinate system (typically quoted in the units of arcseconds)
