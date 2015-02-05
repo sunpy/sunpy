@@ -91,11 +91,9 @@ def diff_rot(duration, latitude, rot_type='howard', frame_time='sidereal'):
 
 
 @quantity_input(x=u.arcsec, y=u.arcsec)
-def rot_hpc(x, y, tstart, tend, spacecraft=None, frame_time='synodic',
-            rot_type='howard', **kwargs):
-    """
-    Given a location on the Sun referred to using the Helioprojective
-    Cartesian co-ordinate system (typically quaoted in the units of arcseconds)
+def rot_hpc(x, y, tstart, tend, spacecraft=None, frame_time='synodic', rot_type='howard', **kwargs):
+    """Given a location on the Sun referred to using the Helioprojective
+    Cartesian co-ordinate system (typically quoted in the units of arcseconds)
     use the solar rotation profile to find that location at some later or
     earlier time.
 
@@ -120,7 +118,7 @@ def rot_hpc(x, y, tstart, tend, spacecraft=None, frame_time='synodic',
                 equation.
     frame_time: {'sidereal' | 'synodic'}
         Choose 'type of day' time reference frame.
-    
+
     Returns
     -------
     x, y : `~astropy.units.Quantity`, `~astropy.units.Quantity`
