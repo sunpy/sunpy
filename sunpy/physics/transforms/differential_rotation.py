@@ -39,7 +39,7 @@ def diff_rot(duration, latitude, rot_type='howard', frame_time='sidereal'):
 
     Notes
     -----
-    * IDL code equavalent: http://hesperia.gsfc.nasa.gov/ssw/gen/idl/solar/diff_rot.pro
+    * IDL code equivalent: http://hesperia.gsfc.nasa.gov/ssw/gen/idl/solar/diff_rot.pro
     * Howard rotation: http://adsabs.harvard.edu/abs/1990SoPh..130..295H
     * A review of rotation parameters (including Snodgrass values): http://link.springer.com/article/10.1023%2FA%3A1005226402796
 
@@ -90,32 +90,37 @@ def diff_rot(duration, latitude, rot_type='howard', frame_time='sidereal'):
     return np.round(rotation_deg, 4) * u.deg
 
 
-#@quantity_input(x=u.arcsec, y=u.arcsec)
-def rot_hpc(x, y, tstart, tend, spacecraft=None, frame_time='synodic', rot_type='howard', **kwargs):
+@quantity_input(x=u.arcsec, y=u.arcsec)
+def rot_hpc(x, y, tstart, tend, frame_time='synodic', rot_type='howard', **kwargs):
     """Given a location on the Sun referred to using the Helioprojective
     Cartesian co-ordinate system (typically quoted in the units of arcseconds)
     use the solar rotation profile to find that location at some later or
-    earlier time.
+    earlier time.  Note that this function assumes that the data was observed
+    from the Earth or near Earth vicinity.  Specifically, data from SOHO and
+    STEREO observatories are not supported.  Note also that the function does
+    NOT use solar B0 and L0 values provided in source FITS files - these
+    quantities are calculated.
 
     Parameters
-    -----------
+    ----------
     x : `~astropy.units.Quantity`
         helio-projective x-co-ordinate in arcseconds (can be an array)
+
     y : `~astropy.units.Quantity`
         helio-projective y-co-ordinate in arcseconds (can be an array)
 
     tstart : `sunpy.time.time`
         date/time to which x and y are referred.
+
     tend : `sunpy.time.time`
-        date/time at which x and y will be rotated to.
-    spacecraft : { None | "soho" | "stereo_a" | "stereo_b" }
-                 calculate the rotation from the point of view of the SOHO,
-                 STEREO A, or STEREO B spacecraft.
+    date/time at which x and y will be rotated to.
+
     rot_type : {'howard' | 'snodgrass' | 'allen'}
-        howard: Use values for small magnetic features from Howard et al.
-        snodgrass: Use Values from Snodgrass et. al
-        allen: Use values from Allen, Astrophysical Quantities, and simpler
-                equation.
+        | howard: Use values for small magnetic features from Howard et al.
+        | snodgrass: Use Values from Snodgrass et. al
+        | allen: Use values from Allen, Astrophysical Quantities, and simpler
+        equation.
+
     frame_time: {'sidereal' | 'synodic'}
         Choose 'type of day' time reference frame.
 
@@ -132,12 +137,12 @@ def rot_hpc(x, y, tstart, tend, spacecraft=None, frame_time='synodic', rot_type=
     >>> rot_hpc( -570 * u.arcsec, 120 * u.arcsec, '2010-09-10 12:34:56', '2010-09-10 13:34:56')
     (<Angle -562.9105822671319 arcsec>, <Angle 119.31920621992195 arcsec>)
 
-    See Also
-    --------
-    IDL code equavalent:
+    Notes
+    -----
+    SSWIDL code equivalent:
         http://hesperia.gsfc.nasa.gov/ssw/gen/idl/solar/rot_xy.pro
 
-    Note: rot_xy uses arcmin2hel.pro and hel2arcmin.pro to implement the
+    The function rot_xy uses arcmin2hel.pro and hel2arcmin.pro to implement the
     same functionality as this function.  These two functions seem to perform
     inverse operations of each other to a high accuracy.  The corresponding
     equivalent functions here are convert_hpc_hg and convert_hg_hpc
@@ -146,9 +151,6 @@ def rot_hpc(x, y, tstart, tend, spacecraft=None, frame_time='synodic', rot_type=
     returned by arcmin2hel.pro are slightly different from those provided
     by convert_hpc_hg.  This leads to very slightly different results from
     rot_hpc compared to rot_xy.
-
-    TODO: the ability to do this rotation for data from the SOHO
-    point of view and the STEREO A, B point of views.
     """
     # must have pairs of co-ordinates
     if np.array(x).shape != np.array(y).shape:
@@ -162,7 +164,7 @@ def rot_hpc(x, y, tstart, tend, spacecraft=None, frame_time='synodic', rot_type=
     interval = (dend - dstart).total_seconds() * u.s
 
     # Get the Sun's position from the vantage point at the start time
-    vstart = kwargs.get("vstart", _calc_P_B0_SD(dstart, spacecraft=spacecraft))
+    vstart = kwargs.get("vstart", _calc_P_B0_SD(dstart))
     # Compute heliographic co-ordinates - returns (longitude, latitude). Points
     # off the limb are returned as nan
     longitude, latitude = convert_hpc_hg(x.to(u.arcsec).value,
@@ -178,12 +180,11 @@ def rot_hpc(x, y, tstart, tend, spacecraft=None, frame_time='synodic', rot_type=
                     rot_type=rot_type)
 
     # Convert back to heliocentric cartesian in units of arcseconds
-    vend = kwargs.get("vend", _calc_P_B0_SD(dend, spacecraft=spacecraft))
+    vend = kwargs.get("vend", _calc_P_B0_SD(dend))
 
     # It appears that there is a difference in how the SSWIDL function
     # hel2arcmin and the sunpy function below performs this co-ordinate
     # transform.
-
     newx, newy = convert_hg_hpc(longitude.to(u.deg).value + drot.to(u.deg).value,
                                 latitude.to(u.deg).value,
                                 b0_deg=vend["b0"].to(u.deg).value,
@@ -195,11 +196,11 @@ def rot_hpc(x, y, tstart, tend, spacecraft=None, frame_time='synodic', rot_type=
     return newx.to(u.arcsec), newy.to(u.arcsec)
 
 
-def _calc_P_B0_SD(date, spacecraft=None):
+def _calc_P_B0_SD(date):
     """
-    To calculate the solar P, B0 angles and the semi-diameter.  This
-    function is assigned as being internal as these quantities should be
-    calculated in a part of SunPy that can calculate these quantities
+    To calculate the solar P, B0 angles and the semi-diameter as seen from
+    Earth.  This function is assigned as being internal as these quantities
+    should be calculated in a part of SunPy that can calculate these quantities
     accurately.
 
     Parameters
@@ -207,13 +208,6 @@ def _calc_P_B0_SD(date, spacecraft=None):
     date: `sunpy.time.time`
         the time at which to calculate the solar P, B0 angles and the
         semi-diameter.
-
-    spacecraft: { None | "soho" | "stereo_a" | "stereo_b" }
-        calculate the solar P, B0 angles and the semi-diameter from the point
-        of view of either SOHO or either of the STEREO spacecraft.  SOHO sits
-        at the Lagrange L1 point which is about 1% closer to the Sun than the
-        Earth.  Implementation of this seems to require the ability to read
-        SOHO orbit files.
 
     Returns
     -------
@@ -223,16 +217,11 @@ def _calc_P_B0_SD(date, spacecraft=None):
     b0 -  latitude of point at disk centre (degrees)
     sd -  semi-diameter of the solar disk in arcminutes
 
-    See Also
-    --------
-    IDL code equavalent:
+    Notes
+    -----
+    SSWIDL code equavalent:
         http://hesperia.gsfc.nasa.gov/ssw/gen/idl/solar/pb0r.pro
     """
-    if spacecraft is not None:
-        raise ValueError("Solar P, B0 and semi-diameter calcution" +
-                         " is not supported for STEREO spacecraft or SOHO" +
-                         " simultaneously.")
-
     # number of Julian days since 2415020.0
     de = julian_day(parse_time(date)) - 2415020.0
 
@@ -282,10 +271,6 @@ def _calc_P_B0_SD(date, spacecraft=None):
     sd_const = constants.radius / constants.au
     sd = np.arcsin(sd_const / r) * 10800.0 / np.pi
 
-    # place holder for SOHO correction
-    if spacecraft == 'soho':
-        raise ValueError("SOHO correction (on the order of 1% " +
-                        "since SOHO sits at L1) not yet supported.")
     return {"p": Angle(p, u.deg),
             "b0": Angle(b, u.deg),
             "sd": Angle(sd.value, u.arcmin),
@@ -319,9 +304,9 @@ def _sun_pos(date):
     app_long   -  Apparent longitude (degs)
     obliq      -  True obliquity (degs)
 
-    See Also
-    --------
-    IDL code equivalent:
+    Notes
+    -----
+    SSWIDL code equivalent:
         http://hesperia.gsfc.nasa.gov/ssw/gen/idl/solar/sun_pos.pro
 
     Examples
