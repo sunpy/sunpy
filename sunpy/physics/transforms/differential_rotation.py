@@ -126,9 +126,13 @@ def rot_hpc(x, y, tstart, tend, frame_time='synodic', rot_type='howard', **kwarg
 
     Returns
     -------
-    x, y : `~astropy.units.Quantity`, `~astropy.units.Quantity`
-        The rotated helio-projective co-ordinates (in astropy Angle Quantities
-        in units of arcseconds), with the same shape as the input co-ordinates.
+    x : `~astropy.units.Quantity`
+        The x position of the rotated helio-projective co-ordinates (in astropy
+        Angle Quantities in units of arcseconds).
+
+    y : `~astropy.units.Quantity`
+        The y position of the rotated helio-projective co-ordinates (in astropy
+        Angle Quantities in units of arcseconds).
 
     Examples
     --------
@@ -139,9 +143,7 @@ def rot_hpc(x, y, tstart, tend, frame_time='synodic', rot_type='howard', **kwarg
 
     Notes
     -----
-    SSWIDL code equivalent:
-        http://hesperia.gsfc.nasa.gov/ssw/gen/idl/solar/rot_xy.pro
-
+    SSWIDL code equivalent: http://hesperia.gsfc.nasa.gov/ssw/gen/idl/solar/rot_xy.pro .
     The function rot_xy uses arcmin2hel.pro and hel2arcmin.pro to implement the
     same functionality as this function.  These two functions seem to perform
     inverse operations of each other to a high accuracy.  The corresponding
@@ -151,6 +153,7 @@ def rot_hpc(x, y, tstart, tend, frame_time='synodic', rot_type='howard', **kwarg
     returned by arcmin2hel.pro are slightly different from those provided
     by convert_hpc_hg.  This leads to very slightly different results from
     rot_hpc compared to rot_xy.
+
     """
     # must have pairs of co-ordinates
     if np.array(x).shape != np.array(y).shape:
