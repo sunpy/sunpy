@@ -7,42 +7,45 @@ from astropy import units as u
 from numpy.testing import assert_allclose
 from sunpy import AIA_171_IMAGE
 from sunpy import map
-from sunpy.physics.transforms.solar_rotation import mapcube_solar_derotate
+from sunpy.physics.transforms.solar_rotation import calculate_solar_rotate_shift, mapcube_solar_derotate
 from copy import deepcopy
 
+# fake a mapcube
+m = map.Map(AIA_171_IMAGE)
+m1 = m.submap((0, 400), (0, 500))
+m2header = deepcopy(m1.meta)
+m2header['date-obs'] = '2011-03-19T11:54:00.34'
+m2 = map.Map((m1.data, m2header))
+m3header = deepcopy(m1.meta)
+m3header['date-obs'] = '2011-03-19T12:54:00.34'
+m3 = map.Map((m1.data, m3header))
+
+mc = map.MapCube([m1, m2, m3])
+
+# Known displacements for these mapcube layers when the layer index is set to 0
+known_displacements_layer_index0 = {'x': np.asarray([-4.51905180e-12, -9.06805914e+00, -1.81541844e+01]),
+                                    'y': np.asarray([-5.57065505e-12, 2.56807726e-01, 5.02761067e-01])}
+
+# Known displacements for these mapcube layers when the layer index is set to 1
+known_displacements_layer_index1 = {'x': np.asarray([9.04899290e+00, 2.67164069e-12, -9.06791780e+00]),
+                                    'y': np.asarray([-2.67659143e-01, 3.21165317e-12, 2.56829202e-01])}
+
+
+def test_calculate_solar_rotate_shift():
+    # Test that the default works
+    test_output = calculate_solar_rotate_shift(mc)
+    assert_allclose(test_output['x'].to('arcsec'), known_displacements_layer_index0['x'] * u.arcsec, rtol=5e-2, atol=0)
+    assert_allclose(test_output['y'].to('arcsec'), known_displacements_layer_index0['y'] * u.arcsec, rtol=5e-2, atol=0)
+
+    # Test that the rotation relative to a nonzero layer_index works
+    test_output = calculate_solar_rotate_shift(mc, layer_index=1)
+    assert_allclose(test_output['x'].to('arcsec'), known_displacements_layer_index1['x'] * u.arcsec, rtol=5e-2, atol=0)
+    assert_allclose(test_output['y'].to('arcsec'), known_displacements_layer_index1['y'] * u.arcsec, rtol=5e-2, atol=0)
+
+
 def test_mapcube_solar_derotate():
-    # fake a mapcube
-    m = map.Map(AIA_171_IMAGE)
-    m1 = m.submap((0, 400), (0, 500))
-    m2header = deepcopy(m1.meta)
-    m2header['date-obs'] = '2011-03-19T11:54:00.34'
-    m2 = map.Map((m1.data, m2header))
-    mc = map.MapCube([m1, m2])
-
-    # Known displacements for these mapcube layers
-    known_displacements = {'x': np.asarray([ -4.51905180e-12,  -9.06805914e+00]),
-                           'y': np.asarray([ -5.57065505e-12,   2.56807726e-01])}
-
     # Test that a mapcube is returned
     test_output = mapcube_solar_derotate(mc)
-    # Assert
     assert(isinstance(test_output, map.MapCube))
 
-    # Test the return of the only the displacements.
-    test_output = mapcube_solar_derotate(mc, return_displacements_only=True)
-    # Assert
-    assert(isinstance(test_output, dict))
-    assert_allclose(test_output['x'].value, known_displacements['x'], rtol=5e-2, atol=0)
-    assert_allclose(test_output['y'].value, known_displacements['y'], rtol=5e-2, atol=0 )
-    assert(isinstance(test_output['x'], u.Quantity) and test_output['x'].unit == 'arcsec')
-    assert(isinstance(test_output['y'], u.Quantity) and test_output['y'].unit == 'arcsec')
-
-    # Test returning using the "with_displacements" option
-    test_output = mapcube_solar_derotate(mc, with_displacements=True)
-    # Assert
-    assert(isinstance(test_output[0], map.MapCube))
-    assert(isinstance(test_output[1], dict))
-    assert_allclose(test_output[1]['x'], known_displacements['x'], rtol=5e-2, atol=0)
-    assert_allclose(test_output[1]['y'], known_displacements['y'], rtol=5e-2, atol=0 )
-    assert(isinstance(test_output[1]['x'], u.Quantity) and test_output[1]['x'].unit == 'arcsec')
-    assert(isinstance(test_output[1]['y'], u.Quantity) and test_output[1]['y'].unit == 'arcsec')
+    #TODO - check that the returned centers are correctly displaced.

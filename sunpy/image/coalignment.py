@@ -386,8 +386,8 @@ def apply_shifts(mc, yshift, xshift, clip=True):
         new_meta = deepcopy(m.meta)
 
         # Adjust the positioning information accordingly.
-        new_meta['crpix1'] = new_meta['crpix1'] + xshift[i].value * m.scale['x']
-        new_meta['crpix2'] = new_meta['crpix2'] + yshift[i].value * m.scale['y']
+        new_meta['crval1'] = new_meta['crval1'] + xshift[i].value * m.scale['x']
+        new_meta['crval2'] = new_meta['crval2'] + yshift[i].value * m.scale['y']
 
         # Append to the list
         newmc_list.append(sunpy.map.Map(shifted_data, new_meta))

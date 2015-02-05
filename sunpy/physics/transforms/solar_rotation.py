@@ -15,7 +15,6 @@ __author__ = 'J. Ireland'
 __all__ = ['calculate_solar_rotate_shift', 'mapcube_solar_derotate']
 
 
-
 def calculate_solar_rotate_shift(mc, layer_index=0, **kwargs):
     """
     Calculate the shift that must be applied to each layer
@@ -56,7 +55,7 @@ def calculate_solar_rotate_shift(mc, layer_index=0, **kwargs):
 
     # Storage for the shifts in arcseconds
     xshift_arcseconds = np.zeros((nt)) * u.arcsec
-    yshift_arcseconds = np.zeros_like(xshift_arcseconds) * u.arcsec
+    yshift_arcseconds = np.zeros_like(xshift_arcseconds)
 
     # Calculate the rotations and the shifts
     for i, m in enumerate(mc):
@@ -72,7 +71,7 @@ def calculate_solar_rotate_shift(mc, layer_index=0, **kwargs):
         xshift_arcseconds[i] = newx - mc.maps[layer_index].center['x'] * u.arcsec
         yshift_arcseconds[i] = newy - mc.maps[layer_index].center['y'] * u.arcsec
 
-    return xshift_arcseconds, yshift_arcseconds
+    return {"x": xshift_arcseconds, "y": yshift_arcseconds}
 
 
 def mapcube_solar_derotate(mc, layer_index=0, clip=True, shift=None, **kwargs):
@@ -119,24 +118,24 @@ def mapcube_solar_derotate(mc, layer_index=0, clip=True, shift=None, **kwargs):
     nt = len(mc.maps)
 
     # Storage for the pixel shifts and the shifts in arcseconds
-    xshift_keep = np.zeros((nt))
+    xshift_keep = np.zeros((nt)) * u.pix
     yshift_keep = np.zeros_like(xshift_keep)
-    xshift_arcseconds = np.zeros_like(xshift_keep) * u.arcsec
-    yshift_arcseconds = np.zeros_like(xshift_keep) * u.arcsec
 
     # If no shifts are passed in, calculate them.  Otherwise,
     # use the shifts passed in.
     if shift is None:
-        xshift_arcseconds, yshift_arcseconds = calculate_solar_rotate_shift(mc, layer_index=layer_index, **kwargs)
+        shifts = calculate_solar_rotate_shift(mc, layer_index=layer_index, **kwargs)
+        xshift_arcseconds = shifts['x']
+        yshift_arcseconds = shifts['y']
     else:
         xshift_arcseconds = shift[0]
         yshift_arcseconds = shift[1]
 
     # Calculate the pixel shifts
     for i, m in enumerate(mc):
-        xshift_keep[i] = xshift_arcseconds[i].value / mc.maps[i].scale['x']
-        yshift_keep[i] = yshift_arcseconds[i].value / mc.maps[i].scale['y']
+        xshift_keep[i] = u.pix * xshift_arcseconds[i].value / mc.maps[i].scale['x']
+        yshift_keep[i] = u.pix * yshift_arcseconds[i].value / mc.maps[i].scale['y']
 
     # Apply the pixel shifts and return the mapcube
-    return apply_shifts(mc, yshift_keep * u.pix, xshift_keep * u.pix, clip=clip)
+    return apply_shifts(mc, yshift_keep, xshift_keep , clip=clip)
 
