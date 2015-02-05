@@ -222,7 +222,7 @@ def _calc_P_B0_SD(date):
 
     Notes
     -----
-    SSWIDL code equavalent:
+    SSWIDL code equivalent:
         http://hesperia.gsfc.nasa.gov/ssw/gen/idl/solar/pb0r.pro
     """
     # number of Julian days since 2415020.0
