@@ -138,4 +138,3 @@ def mapcube_solar_derotate(mc, layer_index=0, clip=True, shift=None, **kwargs):
 
     # Apply the pixel shifts and return the mapcube
     return apply_shifts(mc, yshift_keep, xshift_keep , clip=clip)
-
