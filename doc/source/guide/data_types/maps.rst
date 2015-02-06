@@ -259,8 +259,17 @@ application).
 To apply this form of solar derotation to a mapcube, simply import the
 function and apply it to your mapcube::
 
-    from sunpy.image.coalignment import mapcube_solar_derotate
+    from sunpy.physics.transforms.solar_rotation import mapcube_solar_derotate
     derotated = mapcube_solar_derotate(mc)
+
+Please consult the docstring of the function in order to learn about
+the features of this function.
+
+If you just want to calculate the shifts required to compensate for solar
+rotation relative to the first map in the mapcube without applying them, use::
+
+    from sunpy.physics.transforms.solar_rotation import calculate_solar_rotate_shift
+    shifts = calculate_solar_rotate_shift(mc)
 
 Please consult the docstring of the function in order to learn about
 the features of this function.
