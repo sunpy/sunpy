@@ -561,8 +561,8 @@ class JSOCClient(object):
         # We skip these lines because a massive request is not a pratical test.
         if (json_response['status'] == 3 and
             json_response['error'] == 'Request exceeds max byte limit of 100000MB'): #pragma: no cover
-            returns.append(self._multi_request(tr.start(), tr.center(), series, **kwargs)[0]) #pragma: no cover
-            returns.append(self._multi_request(tr.center(), tr.end(), series, **kwargs)[0]) #pragma: no cover
+            returns.append(self._multi_request(tr.start, tr.center, series, **kwargs)[0]) #pragma: no cover
+            returns.append(self._multi_request(tr.center, tr.end, series, **kwargs)[0]) #pragma: no cover
         else:
             returns.append(response)
 

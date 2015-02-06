@@ -371,23 +371,23 @@ def backprojection(calibrated_event_list, pixel_size=(1.,1.) * u.arcsec, image_d
     info_parameters = afits[2]
     xyoffset = info_parameters.data.field('USED_XYOFFSET')[0]
     time_range = TimeRange(info_parameters.data.field('ABSOLUTE_TIME_RANGE')[0])
-    
+
     image = np.zeros(image_dim.value)
-    
+
     #find out what detectors were used
     det_index_mask = afits[1].data.field('det_index_mask')[0]
     detector_list = (np.arange(9)+1) * np.array(det_index_mask)
     for detector in detector_list:
         if detector > 0:
             image = image + _backproject(calibrated_event_list, detector=detector, pixel_size=pixel_size.value
-										 , image_dim=image_dim.value)
-    
+                                         , image_dim=image_dim.value)
+
     dict_header = {
         "DATE-OBS": time_range.center().strftime("%Y-%m-%d %H:%M:%S"),
         "CDELT1": pixel_size[0],
         "NAXIS1": image_dim[0],
         "CRVAL1": xyoffset[0],
-        "CRPIX1": image_dim[0].value/2 + 0.5, 
+        "CRPIX1": image_dim[0].value/2 + 0.5,
         "CUNIT1": "arcsec",
         "CTYPE1": "HPLN-TAN",
         "CDELT2": pixel_size[1],
