@@ -153,8 +153,8 @@ def rot_hpc(x, y, tstart, tend, frame_time='synodic', rot_type='howard', **kwarg
     returned by arcmin2hel.pro are slightly different from those provided
     by convert_hpc_hg.  This leads to very slightly different results from
     rot_hpc compared to rot_xy.
-
     """
+
     # must have pairs of co-ordinates
     if np.array(x).shape != np.array(y).shape:
         raise ValueError('Input co-ordinates must have the same shape.')
