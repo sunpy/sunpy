@@ -1,8 +1,8 @@
 ###############################################################################
 # Install Linux Packages
 ###############################################################################
-sudo apt-get upgrade
-sudo apt-get install -qq libatlas-dev liblapack-dev gfortran
+sudo apt-get -y upgrade
+sudo apt-get -yqq install libatlas-dev liblapack-dev gfortran
 if [[ $TEST_MODE == 'sphinx' ]]; then sudo apt-get install graphviz texlive-latex-extra dvipng; fi
 
 # Install more upto date openjpeg library.
