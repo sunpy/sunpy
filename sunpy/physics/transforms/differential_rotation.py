@@ -119,16 +119,18 @@ def rot_hpc(x, y, tstart, tend, frame_time='synodic', rot_type='howard', **kwarg
         | howard: Use values for small magnetic features from Howard et al.
         | snodgrass: Use Values from Snodgrass et. al
         | allen: Use values from Allen, Astrophysical Quantities, and simpler
-        equation.
+          equation.
 
     frame_time: {'sidereal' | 'synodic'}
         Choose type of day time reference frame.
 
-
     Returns
     -------
-    x : int
-        An integer.
+    x : `~astropy.units.Quantity`
+        rotated helio-projective x-co-ordinate in arcseconds (can be an array)
+
+    y : `~astropy.units.Quantity`
+        rotated helio-projective y-co-ordinate in arcseconds (can be an array)
 
     Examples
     --------
