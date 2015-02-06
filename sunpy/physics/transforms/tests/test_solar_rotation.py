@@ -20,7 +20,7 @@ m3header = deepcopy(m1.meta)
 m3header['date-obs'] = '2011-03-19T12:54:00.34'
 m3 = map.Map((m1.data, m3header))
 
-mc = map.MapCube([m1, m2, m3])
+mc = map.Map([m1, m2, m3], cube=True)
 
 # Known displacements for these mapcube layers when the layer index is set to 0
 known_displacements_layer_index0 = {'x': np.asarray([-4.51905180e-12, -9.06805914e+00, -1.81541844e+01]),
@@ -44,8 +44,32 @@ def test_calculate_solar_rotate_shift():
 
 
 def test_mapcube_solar_derotate():
-    # Test that a mapcube is returned
-    test_output = mapcube_solar_derotate(mc)
-    assert(isinstance(test_output, map.MapCube))
+    # Test that a mapcube is returned when the clipping is False
+    tmc = mapcube_solar_derotate(mc, clip=False)
+    assert(isinstance(tmc, map.MapCube))
 
-    #TODO - check that the returned centers are correctly displaced.
+    # Test that all entries have the same shape - nothing clipped
+    for m in tmc:
+        assert(m.data.shape == m1.data.shape)
+
+    # Test that the returned centers are correctly displaced.
+    tshift = calculate_solar_rotate_shift(mc)
+    for im, m in enumerate(tmc):
+        for s in ['x', 'y']:
+            assert_allclose(m.center[s], m1.center[s] -
+                            tshift[s][im].to('arcsec').value, rtol=5e-2, atol=0)
+
+    # Test that a mapcube is returned on default clipping (clipping is True)
+    tmc = mapcube_solar_derotate(mc)
+    assert(isinstance(tmc, map.MapCube))
+
+    # Test that the shape of data is correct when clipped
+    clipped_shape = (206, 159)
+    for m in tmc:
+        assert(m.data.shape == clipped_shape)
+
+
+
+
+
+
