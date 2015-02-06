@@ -1,4 +1,3 @@
-doc-warnings: true
 ignore-paths: 
     - astropy_helpers
     - ah_bootstrap.py
