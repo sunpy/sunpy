@@ -114,6 +114,7 @@ def mapcube_solar_derotate(mc, layer_index=0, clip=True, shift=None, **kwargs):
     >>> derotated_mc = mapcube_solar_derotate(mc, layer_index=-1)
     >>> derotated_mc = mapcube_solar_derotate(mc, clip=False)
     """
+
     # Size of the data
     nt = len(mc.maps)
 
