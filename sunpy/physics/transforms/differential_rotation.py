@@ -122,17 +122,13 @@ def rot_hpc(x, y, tstart, tend, frame_time='synodic', rot_type='howard', **kwarg
         equation.
 
     frame_time: {'sidereal' | 'synodic'}
-        Choose 'type of day' time reference frame.
+        Choose type of day time reference frame.
+
 
     Returns
     -------
-    x : `~astropy.units.Quantity`
-        The x position of the rotated helio-projective co-ordinates (in astropy
-        Angle Quantities in units of arcseconds).
-
-    y : `~astropy.units.Quantity`
-        The y position of the rotated helio-projective co-ordinates (in astropy
-        Angle Quantities in units of arcseconds).
+    x : int
+        An integer.
 
     Examples
     --------
