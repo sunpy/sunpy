@@ -1,7 +1,7 @@
 ###############################################################################
 # Install Linux Packages
 ###############################################################################
-sudo apt-get -y upgrade
+sudo apt-get -y update
 sudo apt-get -yqq install libatlas-dev liblapack-dev gfortran
 if [[ $TEST_MODE == 'sphinx' ]]; then sudo apt-get install graphviz texlive-latex-extra dvipng; fi
 
