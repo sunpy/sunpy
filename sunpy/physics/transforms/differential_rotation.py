@@ -103,10 +103,10 @@ def rot_hpc(x, y, tstart, tend, frame_time='synodic', rot_type='howard', **kwarg
     Parameters
     ----------
     x : `~astropy.units.Quantity`
-        helio-projective x-co-ordinate in arcseconds (can be an array)
+        Helio-projective x-co-ordinate in arcseconds (can be an array).
 
     y : `~astropy.units.Quantity`
-        helio-projective y-co-ordinate in arcseconds (can be an array)
+        Helio-projective y-co-ordinate in arcseconds (can be an array).
 
     tstart : `sunpy.time.time`
         date/time to which x and y are referred.
