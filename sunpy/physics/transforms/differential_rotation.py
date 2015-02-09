@@ -126,10 +126,10 @@ def rot_hpc(x, y, tstart, tend, frame_time='synodic', rot_type='howard', **kwarg
     Returns
     -------
     x : `~astropy.units.Quantity`
-        rotated helio-projective x-co-ordinate in arcseconds (can be an array)
+        Rotated helio-projective x-co-ordinate in arcseconds (can be an array).
 
     y : `~astropy.units.Quantity`
-        rotated helio-projective y-co-ordinate in arcseconds (can be an array)
+        Rotated helio-projective y-co-ordinate in arcseconds (can be an array).
 
     Examples
     --------
