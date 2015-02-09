@@ -1,7 +1,6 @@
 from __future__ import division
 
 import numpy as np
-import datetime
 from astropy import units as u
 from astropy.coordinates import Longitude, Latitude, Angle
 from sunpy.time import parse_time, julian_day
