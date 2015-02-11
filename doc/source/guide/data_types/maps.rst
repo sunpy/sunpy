@@ -219,7 +219,7 @@ features in your representative template.
 SunPy provides a function to coalign mapcubes.  The implementation of this
 functionality requires the installation of the scikit-image library, a
 commonly used image processing library.  To coalign a mapcube, simply import
-the function and apply it to yout mapcube::
+the function and apply it to your mapcube::
 
     from sunpy.image.coalignment import mapcube_coalign_by_match_template
     coaligned = mapcube_coalign_by_match_template(mc)
