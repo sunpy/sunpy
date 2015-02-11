@@ -405,25 +405,26 @@ Use of quantities and units
 """""""""""""""""""""""""""
 
 Much code perform calculations using physical quantities.  SunPy uses astropy's
-`quantities and units <http://docs.astropy.org/en/stable/units/index.html>`__ implementation
-to store, express and convert physical quantities. New classes and functions should adhere
-to SunPy's `quantity and unit usage guidelines
-<https://github.com/sunpy/sunpy-SEP/blob/master/SEP-0003.md>`__.  This document sets
-out SunPy's reasons and requirements for the usage of quantities and units.  Briefly,
-SunPy's `policy <https://github.com/sunpy/sunpy-SEP/blob/master/SEP-0003.md>`__ is that *all user-facing
-function/object arguments which accept physical quantities as input **MUST** accept astropy quantities*.
+`quantities and units <http://docs.astropy.org/en/stable/units/index.html>`__
+implementation to store, express and convert physical quantities. New classes
+and functions should adhere to SunPy's `quantity and unit usage guidelines
+<https://github.com/sunpy/sunpy-SEP/blob/master/SEP-0003.md>`__.  This document
+sets out SunPy's reasons and requirements for the usage of quantities and
+units.  Briefly, SunPy's `policy <https://github.com/sunpy/sunpy-SEP/blob/master/SEP-0003.md>`__
+is that *all user-facing function/object arguments which accept physical
+quantities as input **MUST** accept astropy quantities*.
 
 Developers should consult the
 `Astropy Quantities and Units page <http://docs.astropy.org/en/stable/units/index.html>`__
 for the latest updates on using quantities and units.  The `astropy tutorial on quantities and units
-<http://www.astropy.org/astropy-tutorials/Quantities.html>`__ also provides useful examples on their
-capabilities.
+<http://www.astropy.org/astropy-tutorials/Quantities.html>`__ also provides
+useful examples on their capabilities.
 
-
-SunPy provides a useful decorator that checks the units of the input arguments to a function
-against the expected units of the argument (at time of writing, the decorator is a backport
-of functionality present in a future release of astropy).  This decorator should be used to perform
-function argument unit checks.  The decorator ensures that the units of the input to the function
+SunPy provides a useful decorator that checks the units of the input arguments
+to a function against the expected units of the argument (at time of writing,
+the decorator is a backport of functionality present in a future release of
+astropy).  This decorator should be used to perform function argument unit
+checks.  The decorator ensures that the units of the input to the function
 are convertible to that specified by the decorator, for example ::
 
     import astropy.units as u
@@ -432,7 +433,8 @@ are convertible to that specified by the decorator, for example ::
     def myfunction(myangle):
         return myangle**2
 
-This function only accepts arguments that are convertible to arcseconds.  Therefore, ::
+This function only accepts arguments that are convertible to arcseconds.
+Therefore, ::
 
     >>> myangle(20 * u.degree)
     <Quantity 400.0 deg2>
@@ -443,8 +445,8 @@ returns the expected answer but ::
 
 raises an error.
 
-The following is an example of a use-facing function that returns the area of a square, in units that are the square
-of the input length unit::
+The following is an example of a use-facing function that returns the area of a
+square, in units that are the square of the input length unit::
 
     @quantity_input(side_length=u.m)
     def get_area_of_square(side_length):
@@ -463,8 +465,8 @@ of the input length unit::
 
         return (side_length ** 2)
 
-This more advanced example shows how a private function that does not accept quantities can be wrapped by a function
-that does ::
+This more advanced example shows how a private function that does not accept
+quantities can be wrapped by a function that does::
 
     @quantity_input(side_length=u.m)
     def some_function(length):
