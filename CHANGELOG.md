@@ -18,6 +18,7 @@ Latest
 * Added database url config setting to be setup by default as a sqlite database in the sunpy working directory
 * Added a few tests for the sunpy.roi module
  * Added a few tests for the sunpy.roi module
+ * Removed sample data from distribution and added ability to download sample files
 
 0.5.0
 -----
