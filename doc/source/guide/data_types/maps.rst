@@ -243,4 +243,6 @@ rotation relative to the first map in the mapcube without applying them, use::
 
 This is the function used to calculate the shifts in mapcube coalignment
 function above.  Please consult its docstring to learn more about its features.
+Shifts calculated using calculate_match_template_shift can be passed directly
+to mapcube coalignment function.
 
