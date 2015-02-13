@@ -68,8 +68,14 @@ class MapCube(object):
             self._derotate()
 
     def __getitem__(self, key):
-        """Overriding indexing operation.  Returns a mapcube."""
-        return MapCube(self.maps[key])
+        """Overriding indexing operation.  If the key results in a single map,
+        then a map object is returned.  This allows functions like enumerate to
+        work.  Otherwise, a mapcube is returned."""
+
+        if isinstance(self.maps[key], GenericMap):
+            return self.maps[key]
+        else:
+            return MapCube(self.maps[key])
 
     def __len__(self):
         """Return the number of maps in a mapcube."""
