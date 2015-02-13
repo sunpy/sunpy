@@ -68,8 +68,8 @@ class MapCube(object):
             self._derotate()
 
     def __getitem__(self, key):
-        """Overiding indexing operation"""
-        return self.maps[key]
+        """Overiding indexing operation.  Returns a mapcube."""
+        return MapCube(self.maps[key])
 
     def __len__(self):
         """Return the number of maps in a mapcube."""
