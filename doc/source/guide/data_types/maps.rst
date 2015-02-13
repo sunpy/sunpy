@@ -229,7 +229,7 @@ the function and apply it to your mapcube::
 This will return a new mapcube, coaligned to a template extracted from the
 center of the first map in the mapcube, with the map dimensions clipped as
 required.  The coalignment algorithm provides many more options for handling
-the coalignment of mapcubes; type::
+the coalignment of mapcubes type::
 
     help(mapcube_coalign_by_match_template)
 
