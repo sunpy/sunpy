@@ -61,6 +61,11 @@ c1 = (np.sqrt(c0) * np.sqrt(255.0)).astype('f')
 c2 = (np.arange(256) ** 2 / 255.0).astype('f')
 c3 = ((c1 + c2 / 2.0) * 255.0 / (c1.max() + c2.max() / 2.0)).astype('f')
 
+aia_wave_dict = {1600: (c3, c3, c2), 1700: (c1, c0, c0), 4500: (c0, c0, b0 / 2.0),
+                 94: (c2, c3, c0), 131: (g0, r0, r0), 171: (r0, c0, b0),
+                 193: (c1, c0, c2), 211: (c1, c0, c3), 304: (r0, g0, b0),
+                 335: (c2, c0, c1)
+                }
 
 def aia_color_table(wavelength):
     '''Returns one of the fundamental color tables for SDO AIA images.
@@ -68,12 +73,7 @@ def aia_color_table(wavelength):
        Karel Schriver (2010/04/12).
     '''
     try:
-        r, g, b = {
-            1600: (c3, c3, c2), 1700: (c1, c0, c0), 4500: (c0, c0, b0 / 2.0),
-            94: (c2, c3, c0), 131: (g0, r0, r0), 171: (r0, c0, b0),
-            193: (c1, c0, c2), 211: (c1, c0, c3), 304: (r0, g0, b0),
-            335: (c2, c0, c1)
-        }[wavelength]
+        r, g, b = aia_wave_dict[wavelength]
     except KeyError:
         raise ValueError(
             "Invalid AIA wavelength. Valid values are "
