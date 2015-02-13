@@ -523,6 +523,18 @@ def mapcube_coalign_by_match_template(mc, template=None, layer_index=0,
     clip : bool
         If True, then clip off x, y edges in the datacube that are potentially
         affected by edges effects.
+    shift : dict
+        A dictionary with two keys, 'x' and 'y'.  Key 'x' is an astropy
+        quantities array of corresponding to the amount of shift in the
+        x-direction (in arcseconds, assuming the helio-projective
+        Cartesian co-ordinate system) that is applied to the input
+        mapcube.  Key 'y' is an astropy quantities array of corresponding
+        to the amount of shift in the y-direction (in arcseconds, assuming
+        the helio-projective Cartesian co-ordinate system) that is
+        applied to the input mapcube. The number of elements in each array
+        must be the same as the number of maps in the mapcube.  If a shift
+        is passed in to the function, that shift is applied to the input
+        mapcube and the template matching algorithm is not used.
 
     Returns
     -------
