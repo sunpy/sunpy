@@ -17,6 +17,7 @@ Latest
  * `sunpy.cm.get_cmap` no longer defaults to 'sdoaia94'
  * Added database url config setting to be setup by default as a sqlite database in the sunpy working directory
  * Added a few tests for the sunpy.roi module
+ * Refactored mapcube co-alignment functionality.
 
 0.5.0
 -----
