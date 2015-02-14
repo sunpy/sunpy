@@ -572,8 +572,8 @@ def mapcube_coalign_by_match_template(mc, template=None, layer_index=0,
 
     # Calculate the pixel shifts
     for i, m in enumerate(mc):
-        xshift_keep[i] = (xshift_arcseconds[i].to('arcsec').value / mc.maps[i].scale['x']) * u.pix
-        yshift_keep[i] = (yshift_arcseconds[i].to('arcsec').value / mc.maps[i].scale['y']) * u.pix
+        xshift_keep[i] = (xshift_arcseconds[i].to('arcsec').value / m.scale['x']) * u.pix
+        yshift_keep[i] = (yshift_arcseconds[i].to('arcsec').value / m.scale['y']) * u.pix
 
     # Apply the shifts and return the coaligned mapcube
     return apply_shifts(mc, -yshift_keep, -xshift_keep, clip=clip)
