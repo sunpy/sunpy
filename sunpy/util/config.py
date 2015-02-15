@@ -32,13 +32,17 @@ def load_config():
 
     # Use absolute filepaths and adjust OS-dependent paths as needed
     filepaths = [
-        ('downloads', 'download_dir')
+        ('downloads', 'download_dir'),
+        ('downloads', 'sample_dir')
     ]
     _fix_filepaths(config, filepaths)
 
     # check for sunpy working directory and create it if it doesn't exist
     if not os.path.isdir(config.get('downloads', 'download_dir')):
         os.mkdir(config.get('downloads', 'download_dir'))
+
+    if not os.path.isdir(config.get('downloads', 'sample_dir')):
+        os.mkdir(config.get('downloads', 'sample_dir'))
 
     return config
 

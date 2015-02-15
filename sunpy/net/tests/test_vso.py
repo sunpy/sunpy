@@ -401,6 +401,7 @@ def test_Results_poke():
     assert t.map_ == {}
 
 
+<<<<<<< HEAD
     t = vso.vso.Results(callback=dummy_callback_function, n=1, done=dummy_done_function)
     t.poke()
 
@@ -449,3 +450,9 @@ def test_Results_wait():
 
     w2 = t.wait(2)
     assert w2 == {'dummy_key': 'dummy_value'}
+=======
+def test_repr():
+    qr = QueryResponse([])
+    assert repr(qr) in ('<Table masked=False length=0>\nStart Time End Time  Source Instrument   Type \n float64   float64  float64  float64   float64\n---------- -------- ------- ---------- -------', # astropy >1.0
+                        "<Table rows=0 names=('Start Time','End Time','Source','Instrument','Type')>\narray([], \n      dtype=[('Start Time', '<f8'), ('End Time', '<f8'), ('Source', '<f8'), ('Instrument', '<f8'), ('Type', '<f8')])") # astropy 0.4.x
+>>>>>>> master

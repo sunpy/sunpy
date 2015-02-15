@@ -239,7 +239,7 @@ class QueryResponse(list):
                 return ['N/A']
 
         for record in self:
-            record_items['Start Time'].appennd(validate_time(record.time.start))
+            record_items['Start Time'].append(validate_time(record.time.start))
             record_items['End Time'].append(validate_time(record.time.end))
             record_items['Source'].append(str(record.source))
             record_items['Instrument'].append(str(record.instrument))
