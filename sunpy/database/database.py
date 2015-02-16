@@ -22,6 +22,7 @@ from sunpy.net.hek2vso import H2VClient
 from sunpy.net.attr import and_
 from sunpy.net.vso import VSOClient
 
+from astropy import units
 
 class EntryNotFoundError(Exception):
     """This exception is raised if a database entry cannot be found by its
@@ -226,7 +227,17 @@ class Database(object):
         self._session_cls = sessionmaker(bind=self._engine)
         self.session = self._session_cls()
         self._command_manager = commands.CommandManager()
-        self.default_waveunit = default_waveunit
+
+        if isinstance(default_waveunit, units.Unit):
+            self.default_waveunit = default_waveunit    
+        elif isinstance(default_waveunit, str):
+            try:
+                self.default_waveunit = getattr(units, default_waveunit)
+            except AttributeError:
+                raise ValueError("Invalid unit passed")
+        else:
+            raise TypeError("Wave unit should be of type string or astropy.units.Unit")
+
         self._enable_history = True
 
         class Cache(CacheClass):
