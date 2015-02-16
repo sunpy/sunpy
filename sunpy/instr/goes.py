@@ -77,7 +77,7 @@ try:
     # Check required data files are present in user's default download dir
     # Define location where GOES data files are stored.
     # Manually resolve the hostname
-    HOST = socket.gethostbyname_ex('hesperia.gsfc.nasa.gov')[-1][0]
+    HOST = socket.gethostbyname_ex('hesperia.gsfc.nasa.gov')[0]
 except socket.gaierror:
     HOST = ''
 GOES_REMOTE_PATH = "http://{0}/ssw/gen/idl/synoptic/goes/".format(HOST)
