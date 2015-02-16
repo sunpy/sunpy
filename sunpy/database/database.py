@@ -228,16 +228,16 @@ class Database(object):
         self.session = self._session_cls()
         self._command_manager = commands.CommandManager()
 
-        if isinstance(default_waveunit, units.Unit):
-            self.default_waveunit = default_waveunit    
-        elif isinstance(default_waveunit, str):
-            try:
-                self.default_waveunit = getattr(units, default_waveunit)
-            except AttributeError:
-                raise ValueError("Invalid unit passed")
+        if default_waveunit:
+            if isinstance(default_waveunit, units.Unit):
+                self.default_waveunit = default_waveunit    
+            elif isinstance(default_waveunit, str):
+                self.default_waveunit = units.Unit(default_waveunit)
+            else:
+                raise TypeError("Wave unit should be of type string or astropy.units.Unit")
         else:
-            raise TypeError("Wave unit should be of type string or astropy.units.Unit")
-
+            self.default_waveunit = default_waveunit
+        
         self._enable_history = True
 
         class Cache(CacheClass):
