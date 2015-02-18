@@ -12,7 +12,7 @@ from sunpy.io.header import FileHeader
 
 __all__ = ['read', 'get_header', 'write']
 
-def read(filepath):
+def read(filepath, **kwargs):
     """
     Reads a JPEG2000 file
 
