@@ -119,6 +119,7 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
         # Image data is normalised because warp() requires an array of values
         # between -1 and 1.
         if np.issubdtype(image.dtype, np.integer):
+            warnings.warn("Input integer data has been cast to float64", RuntimeWarning)
             adjusted_image = image.astype(np.float64)
         else:
             adjusted_image = image.copy()
@@ -136,8 +137,5 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
 
         rotated_image *= im_max
         rotated_image += im_min
-
-        if rotated_image.dtype != image.dtype:
-            rotated_image = rotated_image.astype(image.dtype)
 
     return rotated_image
