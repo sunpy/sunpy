@@ -50,7 +50,7 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
     use_scipy : bool
         Force use of :func:`scipy.ndimage.interpolation.affine_transform`.
         Will set all NaNs in image to zero before doing the transform.
-        Default: False unless sckit-image is not installed.
+        Default: False, unless scikit-image can't be imported
 
     Returns
     -------
@@ -58,28 +58,27 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
 
     Notes
     -----
-    This function is used throughout the SunPy code base as an equivalent to
-    the IDL's rot() function. However, this function does not use the same
-    algorithm as the IDL rot() function.
+    This algorithm uses an affine transformation as opposed to a polynomial
+    geometrical transformation, which by default is :func:`skimage.transform.warp`.
+    One can specify using :func:`scipy.ndimage.interpolation.affine_transform` as
+    an alternative affine transformation.  The two transformations use different
+    alogrithms and thus do not give identical output.
+
+    When using for :func:`skimage.transform.warp` with order >= 4 or using
+    :func:`scipy.ndimage.interpolation.affine_transform` at all, NaN values will
+    replaced with zero prior to rotation.  No attempt is made to retain the NaN
+    values.
+
+    Input arrays with integer data are cast to float64 and can be re-cast using
+    :func:`numpy.ndarray.astype` if desired.
+
+    Although this function is analogous to the IDL's rot() function, it does not
+    use the same algorithm as the IDL rot() function.
     IDL's rot() calls the `POLY_2D <http://www.exelisvis.com/docs/poly_2d.html>`_
     method to calculate the inverse mapping of original to target pixel
     coordinates. This is a polynominal geometrical transformation.
     Then optionally it uses a bicubic convolution interpolation
     algorithm to map the original to target pixel values.
-
-    This algorithm uses an affine transformation as opposed to a polynomial
-    geometrical transformation. It then defaults to a bicubic convolution
-    interpolation.
-
-    The two affine transform routines this method,
-    :func:`scipy.ndimage.interpolation.affine_transform` and
-    :func:`skimage.transform.warp` do not use the same interpolation
-    algorithm and therefore should not be expected to give identical output,
-    the scikit-image routines are preferred.
-
-    No direct comparision between this function and the IDL rot() function has
-    been performed as it is a different transformation, however both are
-    assumed to be mathamatically vaild.
     """
 
     rmatrix = rmatrix / scale
@@ -102,7 +101,7 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
 
     if use_scipy or scikit_image_not_found:
         if np.any(np.isnan(image)):
-            warnings.warn("Setting NaNs to 0 for SciPy rotation", Warning)
+            warnings.warn("Setting NaNs to 0 for SciPy rotation", RuntimeWarning)
         # Transform the image using the scipy affine transform
         rotated_image = scipy.ndimage.interpolation.affine_transform(
                 np.nan_to_num(image).T, rmatrix, offset=shift, order=order,
@@ -124,7 +123,8 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
         else:
             adjusted_image = image.copy()
         if np.any(np.isnan(adjusted_image)) and order >= 4:
-            warnings.warn("Setting NaNs to 0 for higher-order scikit-image rotation", Warning)
+            warnings.warn("Setting NaNs to 0 for higher-order scikit-image rotation",
+                          RuntimeWarning)
             adjusted_image = np.nan_to_num(adjusted_image)
 
         im_min = np.nanmin(adjusted_image)
