@@ -86,7 +86,7 @@ class TestMap:
     @pytest.mark.online
     def test_url_pattern(self):
         # A URL
-        amap = sunpy.map.Map("https://raw.github.com/sunpy/sunpy/master/sunpy/data/sample/AIA20110319_105400_0171.fits")
+        amap = sunpy.map.Map("http://data.sunpy.org/sample-data/AIA20110319_105400_0171.fits")
         assert isinstance(amap, sunpy.map.GenericMap)
 
     def test_save(self):

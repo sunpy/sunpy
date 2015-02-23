@@ -50,7 +50,8 @@ install:
    - pip install $PIP_WHEEL_COMMAND matplotlib
    - pip install $PIP_WHEEL_COMMAND scipy
    - pip install $PIP_WHEEL_COMMAND openpyxl==1.8.6 pandas==$PANDAS_VERSION
-   - pip install $PIP_WHEEL_COMMAND astropy>=0.3.1
+   - if [[ $TEST_MODE != 'sphinx' ]]; then pip install $PIP_WHEEL_COMMAND astropy>=0.3.1; fi
+   - if [[ $TEST_MODE == 'sphinx' ]]; then pip install $PIP_WHEEL_COMMAND astropy==0.4.5; fi
    - pip install $PIP_WHEEL_COMMAND $SUDS_PKG beautifulsoup4 requests
    - pip install $PIP_WHEEL_COMMAND pytest 
    - pip install $PIP_WHEEL_COMMAND glymur
