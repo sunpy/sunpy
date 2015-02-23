@@ -9,8 +9,7 @@ import numpy as np
 
 # Astropy imports
 from astropy import units as u
-from astropy.coordinates.representation import (BaseRepresentation,
-                                                CartesianRepresentation,
+from astropy.coordinates.representation import (CartesianRepresentation,
                                                 UnitSphericalRepresentation,
                                                 SphericalRepresentation)
 from astropy.coordinates.baseframe import (BaseCoordinateFrame, frame_transform_graph,
@@ -19,13 +18,13 @@ from astropy.coordinates.transformations import FunctionTransform
 from astropy.coordinates import FrameAttribute
 
 # SunPy imports
-from sunpy import sun as s # For Carrington rotation number
+from sunpy import sun # For Carrington rotation number
 from representation import SphericalWrap180Representation, UnitSphericalWrap180Representation
 
 from .frameattributes import TimeFrameAttributeSunPy
 
-RSUN_METERS = s.constants.constant('radius').si.to(u.m)
-DSUN_METERS = s.constants.constant('mean distance').si.to(u.m)
+RSUN_METERS = sun.constants.constant('radius').si.to(u.m)
+DSUN_METERS = sun.constants.constant('mean distance').si.to(u.m)
 
 __all__ = ['HelioGraphicStonyhurst', 'HelioGraphicCarrington',
            'HelioCentric', 'HelioProjective']
@@ -42,10 +41,10 @@ class HelioGraphicStonyhurst(BaseCoordinateFrame):
     ----------
     representation: `~astropy.coordinates.BaseRepresentation` or None
         A representation object or None to have no data.
-    hlon: `Angle` object.
+    lon: `Angle` object.
         The longitude for this object (``lat`` must also be given and ``representation``
         must be None).
-    hlat: `Angle` object.
+    lat: `Angle` object.
         The latitude for this object (``lon`` must also be given and ``representation``
         must be None).
     rad: `astropy.units.Quantity` object.
@@ -58,60 +57,44 @@ class HelioGraphicStonyhurst(BaseCoordinateFrame):
     dateobs="2010/01/01T00:00:45")
     >>> sc
     <SkyCoord (HelioGraphicStonyhurst): dateobs=2010-01-01 00:00:45,
-    hlon=1.0 deg, hlat=1.0 deg, rad=2.0 km>
+    lon=1.0 deg, lat=1.0 deg, rad=2.0 km>
     >>> sc.frame
     <HelioGraphicStonyhurst Coordinate: dateobs=2010-01-01 00:00:45,
-    hlon=1.0 deg, hlat=1.0 deg, rad=2.0 km>
+    lon=1.0 deg, lat=1.0 deg, rad=2.0 km>
     >>> sc = SkyCoord(HelioGraphicStonyhurst(-10*u.deg, 2*u.deg))
     >>> sc
-    <SkyCoord (HelioGraphicStonyhurst): dateobs=None, hlon=-10.0 deg,
-    hlat=2.0 deg, rad=695508.0 km>
+    <SkyCoord (HelioGraphicStonyhurst): dateobs=None, lon=-10.0 deg,
+    lat=2.0 deg, rad=695508.0 km>
+    
+    Notes
+    -----
+    This frame will always be converted a 3D frame where the radius defaults to
+    RSun.
     """
 
     default_representation = SphericalWrap180Representation
 
     _frame_specific_representation_info = {
-        'sphericalwrap180': [RepresentationMapping('lon', 'hlon', 'recommended'),
-                             RepresentationMapping('lat', 'hlat', 'recommended'),
+        'sphericalwrap180': [RepresentationMapping('lon', 'lon', 'recommended'),
+                             RepresentationMapping('lat', 'lat', 'recommended'),
                              RepresentationMapping('distance', 'rad', 'recommended')],
         }
 
     dateobs = TimeFrameAttributeSunPy()
+    RSun = FrameAttribute(default=RSUN_METERS.to(u.km))
 
     def __init__(self, *args, **kwargs):
-        """
-        This custom constructor is used to default RSun to the photospheric radius.
-        It takes the usual arguments, such as a ~astropy.coordinates.BaseRepres
-        entation object or representation arguments and other keyword arguments.
-
-        Returns
-        -------
-        A ~sunpy.coordinates.HelioGraphicStonyhurst object with the requisite
-        properties.
-        """
-        if args or kwargs: # Non-empty frame use case.
-            # Default where radius is dimensionless unscaled.
-            if isinstance(kwargs.get('rad', None), u.Quantity) and kwargs['rad'].unit.is_unity():
-                kwargs['rad'] = RSUN_METERS.to(u.km)
-            if args and isinstance(args[0], UnitSphericalRepresentation):
-                args = (args[0].lon, args[0].lat)
-            if args and kwargs: # Mixed use case.
-                if args and not isinstance(args[0], BaseRepresentation):
-                    if len(args) > 0 and len(args) <= 2 and 'rad' not in kwargs:
-                    # If one of hlon/hlat are in args
-                        kwargs['rad'] = kwargs.get('rad', RSUN_METERS.to(u.km))
-            elif not args: # kwargs-only use case
-                if 'representation' not in kwargs:
-                    #if 'rad' not in kwargs: # This default is required by definition.
-                    if 'hlon' in kwargs and 'hlat' in kwargs:
-                        kwargs['rad'] = kwargs.get('rad', RSUN_METERS.to(u.km))
-            elif not kwargs: # args-only use case.
-                if len(args) == 2:
-                    args = list(args)
-                    args.append(RSUN_METERS.to(u.km))
-                    args = tuple(args)
-
+        
         super(HelioGraphicStonyhurst, self).__init__(*args, **kwargs)
+        # The base __init__ will make this a UnitSphericalRepresentation
+        # This makes it Wrap180 instead
+        if isinstance(self._data, UnitSphericalRepresentation):
+            self._data = SphericalWrap180Representation(lat=self._data.lat,
+                                                        lon=self._data.lon,
+                                                        distance=self.RSun)
+            self.representation = SphericalWrap180Representation
+
+
 
 class HelioGraphicCarrington(HelioGraphicStonyhurst):
     """
@@ -126,10 +109,10 @@ class HelioGraphicCarrington(HelioGraphicStonyhurst):
     representation: `~astropy.coordinates.BaseRepresentation` or None.
         A representation object. If specified, other parameters must
         be in keyword form.
-    hlon: `Angle` object.
+    lon: `Angle` object.
         The longitude for this object (``lat`` must also be given and ``representation``
         must be None).
-    hlat: `Angle` object.
+    lat: `Angle` object.
         The latitude for this object (``lon`` must also be given and ``representation``
         must be None).
     rad: `astropy.units.Quantity` object, optional, must be keyword.
@@ -142,25 +125,25 @@ class HelioGraphicCarrington(HelioGraphicStonyhurst):
     dateobs="2010/01/01T00:00:30")
     >>> sc
     <SkyCoord (HelioGraphicCarrington): dateobs=2010-01-01 00:00:30,
-    hlon=1.0 deg, hlat=2.0 deg, rad=3.0 km>
+    lon=1.0 deg, lat=2.0 deg, rad=3.0 km>
     >>> sc = SkyCoord([1,2,3]*u.deg, [4,5,6]*u.deg, [5,6,7]*u.km,
     dateobs="2010/01/01T00:00:45", frame="heliographiccarrington")
     >>> sc
     <SkyCoord (HelioGraphicCarrington): dateobs=2010-01-01 00:00:45,
-    (hlon, hlat, rad) in (deg, deg, km)
+    (lon, lat, rad) in (deg, deg, km)
         [(1.0, 4.0, 5.0), (2.0, 5.0, 6.0), (3.0, 6.0, 7.0)]>
     """
 
     default_representation = SphericalWrap180Representation
 
     _frame_specific_representation_info = {
-        'sphericalwrap180': [RepresentationMapping('lon', 'hlon', 'recommended'),
-                             RepresentationMapping('lat', 'hlat', 'recommended'),
+        'sphericalwrap180': [RepresentationMapping('lon', 'lon', 'recommended'),
+                             RepresentationMapping('lat', 'lat', 'recommended'),
                              RepresentationMapping('distance', 'rad', 'recommended')]
         }
 
-    #rad = FrameAttribute(default=((RSUN_METERS/1000)*u.km))
     dateobs = TimeFrameAttributeSunPy()
+    RSun = FrameAttribute(default=RSUN_METERS.to(u.km))
 
 class HelioCentric(BaseCoordinateFrame):
     """
@@ -259,7 +242,7 @@ class HelioProjective(BaseCoordinateFrame):
                              RepresentationMapping('lat', 'Ty', u.arcsec),
                              RepresentationMapping('distance', 'distance', u.km)],
         'unitsphericalwrap180': [RepresentationMapping('lon', 'Tx', u.arcsec),
-                             RepresentationMapping('lat', 'Ty', u.arcsec)],
+                                 RepresentationMapping('lat', 'Ty', u.arcsec)],
         'cylindrical': [RepresentationMapping('rho', 'Trho', u.km),
                         RepresentationMapping('phi', 'psi', u.arcsec),
                         RepresentationMapping('z', 'distance', u.km)]}
@@ -313,7 +296,7 @@ def _carrington_offset(dateobs):
     if dateobs is None:
         raise ValueError("To perform this transformation the coordinate Frame needs a dateobs Attribute")
     # This method is to return the Carrington offset.
-    return s.heliographic_solar_center(dateobs)[0]
+    return sun.heliographic_solar_center(dateobs)[0]
 
 
 # ------------------ Transformation Framework -------------------------
@@ -323,13 +306,13 @@ def _carrington_offset(dateobs):
 @frame_transform_graph.transform(FunctionTransform, HelioGraphicStonyhurst, HelioGraphicCarrington)
 def hgs_to_hgc(hgscoord, hgcframe):
     c_lon = hgscoord.spherical.lon + _carrington_offset(hgscoord.dateobs).to(u.deg)
-    representation = SphericalWrap180Representation(c_lon, hgscoord.hlat, hgscoord.rad)
+    representation = SphericalWrap180Representation(c_lon, hgscoord.lat, hgscoord.rad)
     return hgcframe.realize_frame(representation)
 
 @frame_transform_graph.transform(FunctionTransform, HelioGraphicCarrington, HelioGraphicStonyhurst)
 def hgc_to_hgs(hgccoord, hgsframe):
     s_lon = hgccoord.spherical.lon - _carrington_offset(hgccoord.dateobs).to(u.deg)
-    representation = SphericalWrap180Representation(s_lon, hgccoord.hlat, hgccoord.rad)
+    representation = SphericalWrap180Representation(s_lon, hgccoord.lat, hgccoord.rad)
     return hgsframe.realize_frame(representation)
 
 @frame_transform_graph.transform(FunctionTransform, HelioCentric, HelioProjective)
@@ -391,8 +374,8 @@ def hcc_to_hgs(helioccoord, heliogframe):
 
 @frame_transform_graph.transform(FunctionTransform, HelioGraphicStonyhurst, HelioCentric)
 def hgs_to_hcc(heliogcoord, heliocframe):
-    hglon = heliogcoord.hlon
-    hglat = heliogcoord.hlat
+    hglon = heliogcoord.lon
+    hglat = heliogcoord.lat
     r = heliogcoord.rad.to(u.m)
 
     l0b0_pair = [heliocframe.L0, heliocframe.B0]
