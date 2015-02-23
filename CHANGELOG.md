@@ -1,3 +1,11 @@
+0.5.4
+-----
+Bug Fixes:
+
+ * Updated SWPC/NOAA links due to their new website.
+ * arrays with dtype int now rotate correctly.
+ * images with nans in them now rotate correctly with order >= 4.
+
 0.5.3
 -----
 Bug Fixes:
