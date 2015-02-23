@@ -15,7 +15,7 @@ from astropy.nddata.nduncertainty import NDUncertainty
 
 __all__ = ['NDDataCompat']
 
-if LooseVersion(astropy.__version__) > LooseVersion('1.0.0'):
+if LooseVersion(astropy.__version__) >= LooseVersion('1.0.0'):
 
     class NDDataCompat(NDData):
         """
