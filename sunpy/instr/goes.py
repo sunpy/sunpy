@@ -68,7 +68,6 @@ from sunpy import config
 from sunpy import lightcurve
 from sunpy.util.net import check_download_file
 from sunpy.sun import sun
-from sunpy.util.unit_decorators import quantity_input
 
 __all__ = ['get_goes_event_list', 'calculate_temperature_em',
            'calculate_radiative_loss_rate', 'calculate_xray_luminosity']
@@ -263,7 +262,7 @@ def calculate_temperature_em(goeslc, abundances="coronal",
 
     return lc_new
 
-@quantity_input(longflux=u.W/u.m/u.m, shortflux=u.W/u.m/u.m)
+@u.quantity_input(longflux=u.W/u.m/u.m, shortflux=u.W/u.m/u.m)
 def _goes_chianti_tem(longflux, shortflux, satellite=8,
                       date=datetime.datetime.today(), abundances="coronal",
                       download=False, download_dir=None):
@@ -409,7 +408,7 @@ def _goes_chianti_tem(longflux, shortflux, satellite=8,
                               download_dir=download_dir)
     return temp, em
 
-@quantity_input(fluxratio=u.dimensionless_unscaled)
+@u.quantity_input(fluxratio=u.dimensionless_unscaled)
 def _goes_get_chianti_temp(fluxratio, satellite=8, abundances="coronal",
                            download=False, download_dir=None):
     """
@@ -555,7 +554,7 @@ def _goes_get_chianti_temp(fluxratio, satellite=8, abundances="coronal",
 
     return temp
 
-@quantity_input(longflux=u.W/u.m/u.m, temp=u.MK)
+@u.quantity_input(longflux=u.W/u.m/u.m, temp=u.MK)
 def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal",
                          download=False, download_dir=None):
     """
@@ -836,7 +835,7 @@ def calculate_radiative_loss_rate(goeslc, force_download=False,
 
     return lc_new
 
-@quantity_input(temp=u.MK, em=u.cm**(-3))
+@u.quantity_input(temp=u.MK, em=u.cm**(-3))
 def _calc_rad_loss(temp, em, obstime=None, force_download=False,
                    download_dir=None):
     """
@@ -1194,7 +1193,7 @@ def _goes_lx(longflux, shortflux, obstime=None, date=None):
 
     return lx_out
 
-@quantity_input(flux=u.W/u.m/u.m)
+@u.quantity_input(flux=u.W/u.m/u.m)
 def _calc_xraylum(flux, date=None):
     """
     Calculates solar luminosity based on observed flux observed at 1AU.
