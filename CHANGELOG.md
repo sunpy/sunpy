@@ -1,3 +1,12 @@
+0.5.3
+-----
+Bug Fixes:
+
+ * Goes peek() plot now works with matplotlib 1.4.x
+ * The ANA file reading C extensions will no longer compile under
+   windows. Windows was not a supported platform for these C
+   extensions previously.
+
 0.5.2
 -----
 Bug Fixes:
