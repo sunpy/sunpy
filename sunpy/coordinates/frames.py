@@ -12,9 +12,8 @@ from astropy import units as u
 from astropy.coordinates.representation import (CartesianRepresentation,
                                                 UnitSphericalRepresentation,
                                                 SphericalRepresentation)
-from astropy.coordinates.baseframe import (BaseCoordinateFrame, frame_transform_graph,
+from astropy.coordinates.baseframe import (BaseCoordinateFrame,
                                            RepresentationMapping)
-from astropy.coordinates.transformations import FunctionTransform
 from astropy.coordinates import FrameAttribute
 
 # SunPy imports
@@ -65,7 +64,7 @@ class HelioGraphicStonyhurst(BaseCoordinateFrame):
     >>> sc
     <SkyCoord (HelioGraphicStonyhurst): dateobs=None, lon=-10.0 deg,
     lat=2.0 deg, rad=695508.0 km>
-    
+
     Notes
     -----
     This frame will always be converted a 3D frame where the radius defaults to
@@ -75,24 +74,40 @@ class HelioGraphicStonyhurst(BaseCoordinateFrame):
     default_representation = SphericalWrap180Representation
 
     _frame_specific_representation_info = {
+        'spherical': [RepresentationMapping('lon', 'lon', 'recommended'),
+                      RepresentationMapping('lat', 'lat', 'recommended'),
+                      RepresentationMapping('distance', 'rad', 'recommended')],
+
         'sphericalwrap180': [RepresentationMapping('lon', 'lon', 'recommended'),
                              RepresentationMapping('lat', 'lat', 'recommended'),
-                             RepresentationMapping('distance', 'rad', 'recommended')],
+                             RepresentationMapping('distance', 'rad', 'recommended')]
         }
 
     dateobs = TimeFrameAttributeSunPy()
     RSun = FrameAttribute(default=RSUN_METERS.to(u.km))
 
     def __init__(self, *args, **kwargs):
-        
+        _rep_kwarg = kwargs.get('representation', None)
+
         super(HelioGraphicStonyhurst, self).__init__(*args, **kwargs)
-        # The base __init__ will make this a UnitSphericalRepresentation
-        # This makes it Wrap180 instead
-        if isinstance(self._data, UnitSphericalRepresentation):
-            self._data = SphericalWrap180Representation(lat=self._data.lat,
-                                                        lon=self._data.lon,
-                                                        distance=self.RSun)
-            self.representation = SphericalWrap180Representation
+
+        # If representation was explicitly passed, do not change the rep.
+        if not _rep_kwarg:
+            # The base __init__ will make this a UnitSphericalRepresentation
+            # This makes it Wrap180 instead
+            if isinstance(self._data, UnitSphericalRepresentation):
+                self._data = SphericalWrap180Representation(lat=self._data.lat,
+                                                            lon=self._data.lon,
+                                                            distance=self.RSun)
+                self.representation = SphericalWrap180Representation
+
+            # Make a Spherical Wrap180 instead
+            elif isinstance(self._data, SphericalRepresentation):
+                self._data = SphericalWrap180Representation(lat=self._data.lat,
+                                                            lon=self._data.lon,
+                                                            distance=self._data.distance)
+                self.representation = SphericalWrap180Representation
+
 
 
 
@@ -137,6 +152,10 @@ class HelioGraphicCarrington(HelioGraphicStonyhurst):
     default_representation = SphericalWrap180Representation
 
     _frame_specific_representation_info = {
+        'spherical': [RepresentationMapping('lon', 'lon', 'recommended'),
+                      RepresentationMapping('lat', 'lat', 'recommended'),
+                      RepresentationMapping('distance', 'rad', 'recommended')],
+
         'sphericalwrap180': [RepresentationMapping('lon', 'lon', 'recommended'),
                              RepresentationMapping('lat', 'lat', 'recommended'),
                              RepresentationMapping('distance', 'rad', 'recommended')]
@@ -238,12 +257,21 @@ class HelioProjective(BaseCoordinateFrame):
     default_representation = SphericalWrap180Representation
 
     _frame_specific_representation_info = {
+        'spherical': [RepresentationMapping('lon', 'Tx', u.arcsec),
+                      RepresentationMapping('lat', 'Ty', u.arcsec),
+                      RepresentationMapping('distance', 'distance', u.km)],
+
         'sphericalwrap180': [RepresentationMapping('lon', 'Tx', u.arcsec),
                              RepresentationMapping('lat', 'Ty', u.arcsec),
                              RepresentationMapping('distance', 'distance', u.km)],
+
+        'unitspherical': [RepresentationMapping('lon', 'Tx', u.arcsec),
+                          RepresentationMapping('lat', 'Ty', u.arcsec)],
+
         'unitsphericalwrap180': [RepresentationMapping('lon', 'Tx', u.arcsec),
                                  RepresentationMapping('lat', 'Ty', u.arcsec)],
-        'cylindrical': [RepresentationMapping('rho', 'Trho', u.km),
+
+        'cylindrical': [RepresentationMapping('rho', 'rho', u.km),
                         RepresentationMapping('phi', 'psi', u.arcsec),
                         RepresentationMapping('z', 'distance', u.km)]}
 
@@ -254,13 +282,24 @@ class HelioProjective(BaseCoordinateFrame):
     RSun = FrameAttribute(default=RSUN_METERS.to(u.km))
 
     def __init__(self, *args, **kwargs):
+        _rep_kwarg = kwargs.get('representation', None)
+
         BaseCoordinateFrame.__init__(self, *args, **kwargs)
-        # The base __init__ will make this a UnitSphericalRepresentation
-        # This makes it Wrap180 instead
-        if isinstance(self._data, UnitSphericalRepresentation):
-            self._data = UnitSphericalWrap180Representation(lat=self._data.lat,
-                                                            lon=self._data.lon)
-            self.representation = UnitSphericalWrap180Representation
+
+        # If representation was explicitly passed, do not change the rep.
+        if not _rep_kwarg:
+            # The base __init__ will make this a UnitSphericalRepresentation
+            # This makes it Wrap180 instead
+            if isinstance(self._data, UnitSphericalRepresentation):
+                self._data = UnitSphericalWrap180Representation(lat=self._data.lat,
+                                                                lon=self._data.lon)
+                self.representation = UnitSphericalWrap180Representation
+            # Make a Spherical Wrap180 instead
+            elif isinstance(self._data, SphericalRepresentation):
+                self._data = SphericalWrap180Representation(lat=self._data.lat,
+                                                            lon=self._data.lon,
+                                                            distance=self._data.distance)
+                self.representation = SphericalWrap180Representation
 
     # Note that Trho = Drho + 90, and Drho is the declination parameter.
     # According to Thompson, we use Trho internally and Drho as part of
@@ -291,114 +330,3 @@ class HelioProjective(BaseCoordinateFrame):
         return self.realize_frame(SphericalWrap180Representation(lon=lon,
                                                                  lat=lat,
                                                                  distance=d))
-
-def _carrington_offset(dateobs):
-    if dateobs is None:
-        raise ValueError("To perform this transformation the coordinate Frame needs a dateobs Attribute")
-    # This method is to return the Carrington offset.
-    return sun.heliographic_solar_center(dateobs)[0]
-
-
-# ------------------ Transformation Framework -------------------------
-# This portion is reserved for the implementation of transformations
-# as defined by Thompson.
-
-@frame_transform_graph.transform(FunctionTransform, HelioGraphicStonyhurst, HelioGraphicCarrington)
-def hgs_to_hgc(hgscoord, hgcframe):
-    c_lon = hgscoord.spherical.lon + _carrington_offset(hgscoord.dateobs).to(u.deg)
-    representation = SphericalWrap180Representation(c_lon, hgscoord.lat, hgscoord.rad)
-    return hgcframe.realize_frame(representation)
-
-@frame_transform_graph.transform(FunctionTransform, HelioGraphicCarrington, HelioGraphicStonyhurst)
-def hgc_to_hgs(hgccoord, hgsframe):
-    s_lon = hgccoord.spherical.lon - _carrington_offset(hgccoord.dateobs).to(u.deg)
-    representation = SphericalWrap180Representation(s_lon, hgccoord.lat, hgccoord.rad)
-    return hgsframe.realize_frame(representation)
-
-@frame_transform_graph.transform(FunctionTransform, HelioCentric, HelioProjective)
-def hcc_to_hpc(helioccoord, heliopframe):
-    x = helioccoord.x.to(u.m)
-    y = helioccoord.y.to(u.m)
-    z = helioccoord.z.to(u.m)
-
-    # d is calculated as the distance between the points
-    # (x,y,z) and (0,0,D0).
-    distance = np.sqrt(x**2 + y**2 + (helioccoord.D0.to(u.m) - z)**2)
-
-    hpcx = np.rad2deg(np.arctan2(x, helioccoord.D0 - z))
-    hpcy = np.rad2deg(np.arcsin(y / distance))
-
-    representation = SphericalWrap180Representation(hpcx, hpcy, distance.to(u.km))
-    return heliopframe.realize_frame(representation)
-
-@frame_transform_graph.transform(FunctionTransform, HelioProjective, HelioCentric)
-def hpc_to_hcc(heliopcoord, heliocframe):
-    heliopcoord = heliopcoord.calculate_distance()
-    x = np.deg2rad(heliopcoord.Tx)
-    y = np.deg2rad(heliopcoord.Ty)
-
-    cosx = np.cos(x)
-    sinx = np.sin(x)
-    cosy = np.cos(y)
-    siny = np.sin(y)
-
-    rx = (heliopcoord.distance.to(u.m)) * cosy * sinx
-    ry = (heliopcoord.distance.to(u.m)) * siny
-    rz = (heliopcoord.D0.to(u.m)) - (heliopcoord.distance.to(u.m)) * cosy * cosx
-
-    representation = CartesianRepresentation(rx.to(u.km), ry.to(u.km), rz.to(u.km))
-    return heliocframe.realize_frame(representation)
-
-@frame_transform_graph.transform(FunctionTransform, HelioCentric, HelioGraphicStonyhurst)
-def hcc_to_hgs(helioccoord, heliogframe):
-    x = helioccoord.x.to(u.m)
-    y = helioccoord.y.to(u.m)
-    z = helioccoord.z.to(u.m)
-
-    l0b0_pair = [helioccoord.L0, helioccoord.B0]
-
-    l0_rad = l0b0_pair[0].to(u.rad)
-    b0_deg = l0b0_pair[1]
-
-    cosb = np.cos(np.deg2rad(b0_deg))
-    sinb = np.sin(np.deg2rad(b0_deg))
-
-    hecr = np.sqrt(x**2 + y**2 + z**2)
-    hgln = np.arctan2(x, z * cosb - y * sinb) + l0_rad
-    hglt = np.arcsin((y * cosb + z * sinb) / hecr)
-
-    representation = SphericalWrap180Representation(np.rad2deg(hgln),
-                                             np.rad2deg(hglt),
-                                             hecr.to(u.km))
-    return heliogframe.realize_frame(representation)
-
-@frame_transform_graph.transform(FunctionTransform, HelioGraphicStonyhurst, HelioCentric)
-def hgs_to_hcc(heliogcoord, heliocframe):
-    hglon = heliogcoord.lon
-    hglat = heliogcoord.lat
-    r = heliogcoord.rad.to(u.m)
-
-    l0b0_pair = [heliocframe.L0, heliocframe.B0]
-
-    l0_rad = l0b0_pair[0].to(u.rad)
-    b0_deg = l0b0_pair[1]
-
-    lon = np.deg2rad(hglon)
-    lat = np.deg2rad(hglat)
-
-    cosb = np.cos(b0_deg.to(u.rad))
-    sinb = np.sin(b0_deg.to(u.rad))
-
-    lon = lon - l0_rad
-
-    cosx = np.cos(lon)
-    sinx = np.sin(lon)
-    cosy = np.cos(lat)
-    siny = np.sin(lat)
-
-    x = r * cosy * sinx
-    y = r * (siny * cosb - cosy * cosx * sinb)
-    zz = r * (siny * sinb + cosy * cosx * cosb)
-
-    representation = CartesianRepresentation(x.to(u.km), y.to(u.km), zz.to(u.km))
-    return heliocframe.realize_frame(representation)
