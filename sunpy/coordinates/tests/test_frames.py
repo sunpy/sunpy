@@ -155,7 +155,7 @@ def test_hpc_distance():
     assert_quantity_allclose(hpc2.distance, DSUN_METERS - RSUN_METERS)
 
 
-def test_hpc_distance_2():
+def test_hpc_distance_off_limb():
     hpc1 = HelioProjective(1500*u.arcsec, 0*u.arcsec)
 
     assert isinstance(hpc1, HelioProjective)
@@ -176,7 +176,7 @@ def test_hpc_distance_2():
     assert_quantity_allclose(hpc2.distance, u.Quantity(np.nan, u.km))
 
 
-def test_hpc_distance_3():
+def test_hpc_distance_3D():
     hpc1 = HelioProjective(1500*u.arcsec, 0*u.arcsec, 100*u.Mm)
 
     assert isinstance(hpc1, HelioProjective)
@@ -193,7 +193,7 @@ def test_hpc_distance_3():
 
 
 #==============================================================================
-### Heliographic Stonyhurst Tests
+### Heliographic Tests
 #==============================================================================
 
 @pytest.mark.parametrize('frame', [HelioGraphicStonyhurst, HelioGraphicCarrington])
