@@ -110,7 +110,7 @@ class GenericMap(NDData):
 
     def __init__(self, data, header, **kwargs):
 
-        super(NDData, self).__init__(data, meta=header, **kwargs)
+        super(GenericMap, self).__init__(data, meta=header, **kwargs)
 
         # Correct possibly missing meta keywords
         self._fix_date()
