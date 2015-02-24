@@ -322,8 +322,7 @@ class HelioProjective(BaseCoordinateFrame):
 
         rep = self.represent_as(UnitSphericalWrap180Representation)
         lat, lon = rep.lat, rep.lon
-        alpha = np.arccos(np.cos(lat) * np.cos(lon))\
-                .to(lat.unit)
+        alpha = np.arccos(np.cos(lat) * np.cos(lon)).to(lat.unit)
         c = self.D0**2 - self.RSun**2
         b = -2 * self.D0.to(u.m) * np.cos(alpha)
         d = ((-1*b) - np.sqrt(b**2 - 4*c)) / 2
