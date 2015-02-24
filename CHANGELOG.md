@@ -1,3 +1,9 @@
+0.5.4
+-----
+Bug Fixes:
+`
+ * `sunpy.image.transform.affine_transform` now casts integer data to float64 and sets NaN values to 0 for all transformations except scikit-image rotation with order <= 3.
+
 0.5.3
 -----
 Bug Fixes:

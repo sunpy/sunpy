@@ -14,6 +14,12 @@ original = images.camera().astype('float')
 # Tolerance for tests
 rtol = 1.0e-15
 
+
+@pytest.fixture
+def identity():
+    return np.array([[1, 0], [0, 1]])
+
+
 def compare_results(expect, result, allclose=True):
     """
     Function to check that the obtained results are what was expected, to
@@ -181,3 +187,38 @@ def test_all(angle, dx, dy, scale_factor):
     ymin, ymax = max([0, -dy]), min([original.shape[1], original.shape[1]-dy])
     xmin, xmax = max([0, -dx]), min([original.shape[0], original.shape[0]-dx])
     compare_results(original[ymin:ymax, xmin:xmax], inverse[ymin:ymax, xmin:xmax])
+
+
+def test_flat(identity):
+    # Test that a flat array can be rotated using scikit-image
+    in_arr = np.array([[100]])
+    out_arr = affine_transform(in_arr, rmatrix=identity)
+    assert np.allclose(in_arr, out_arr, rtol=rtol)
+
+
+def test_nan_skimage_low(identity):
+    # Test non-replacement of NaN values for scikit-image rotation with order <= 3
+    in_arr = np.array([[np.nan]])
+    out_arr = affine_transform(in_arr, rmatrix=identity, order=3)
+    assert np.all(np.isnan(out_arr))
+
+
+def test_nan_skimage_high(identity):
+    # Test replacement of NaN values for scikit-image rotation with order >=4
+    in_arr = np.array([[np.nan]])
+    out_arr = affine_transform(in_arr, rmatrix=identity, order=4)
+    assert not np.all(np.isnan(out_arr))
+
+
+def test_nan_scipy(identity):
+    # Test replacement of NaN values for scipy rotation
+    in_arr = np.array([[np.nan]])
+    out_arr = affine_transform(in_arr, rmatrix=identity, use_scipy=True)
+    assert not np.all(np.isnan(out_arr))
+
+
+def test_int(identity):
+    # Test casting of integer array to float array
+    in_arr = np.array([[100]], dtype=int)
+    out_arr = affine_transform(in_arr, rmatrix=identity)
+    assert np.issubdtype(out_arr.dtype, np.float)
