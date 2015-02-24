@@ -1,14 +1,22 @@
 # -*- coding: utf-8 -*-
 
+import numpy as np
+
 import pytest
 
 import astropy.units as u
 
-from astropy.coordinates import CylindricalRepresentation, UnitSphericalRepresentation, SphericalRepresentation
+from astropy.tests.helper import assert_quantity_allclose
 
+from astropy.coordinates import (CylindricalRepresentation, UnitSphericalRepresentation,
+                                 SphericalRepresentation, CartesianRepresentation)
+
+from ... import sun
 from .. frames import HelioProjective, HelioGraphicStonyhurst, HelioCentric, HelioGraphicCarrington
 from .. representation import UnitSphericalWrap180Representation, SphericalWrap180Representation
 
+RSUN_METERS = sun.constants.constant('radius').si.to(u.m)
+DSUN_METERS = sun.constants.constant('mean distance').si.to(u.m)
 
 def init_frame(frame, args, kwargs):
     if args and kwargs:
@@ -125,6 +133,65 @@ def test_create_cylindrical(args, kwargs):
     assert hpc1.distance.unit is u.km
 
 
+# Test HPC Calculate Distance
+def test_hpc_distance():
+    hpc1 = HelioProjective(0*u.deg, 0*u.arcsec)
+
+    assert isinstance(hpc1, HelioProjective)
+    # Check that we have a 2D wrap180 representation
+    assert isinstance(hpc1._data, UnitSphericalWrap180Representation)
+
+    # Check the attrs are correct
+    assert hpc1.Tx == 0*u.arcsec
+    assert hpc1.Ty == 0*u.arcsec
+
+    hpc2 = hpc1.calculate_distance()
+
+    assert isinstance(hpc2._data, SphericalWrap180Representation)
+
+    # Check the attrs are correct
+    assert hpc2.Tx == 0*u.arcsec
+    assert hpc2.Ty == 0*u.arcsec
+    assert_quantity_allclose(hpc2.distance, DSUN_METERS - RSUN_METERS)
+
+
+def test_hpc_distance_2():
+    hpc1 = HelioProjective(1500*u.arcsec, 0*u.arcsec)
+
+    assert isinstance(hpc1, HelioProjective)
+    # Check that we have a 2D wrap180 representation
+    assert isinstance(hpc1._data, UnitSphericalWrap180Representation)
+
+    # Check the attrs are correct
+    assert hpc1.Tx == 1500*u.arcsec
+    assert hpc1.Ty == 0*u.arcsec
+
+    hpc2 = hpc1.calculate_distance()
+
+    assert isinstance(hpc2._data, SphericalWrap180Representation)
+
+    # Check the attrs are correct
+    assert hpc2.Tx == 1500*u.arcsec
+    assert hpc2.Ty == 0*u.arcsec
+    assert_quantity_allclose(hpc2.distance, u.Quantity(np.nan, u.km))
+
+
+def test_hpc_distance_3():
+    hpc1 = HelioProjective(1500*u.arcsec, 0*u.arcsec, 100*u.Mm)
+
+    assert isinstance(hpc1, HelioProjective)
+    # Check that we have a 2D wrap180 representation
+    assert isinstance(hpc1._data, SphericalWrap180Representation)
+
+    # Check the attrs are correct
+    assert hpc1.Tx == 1500*u.arcsec
+    assert hpc1.Ty == 0*u.arcsec
+
+    hpc2 = hpc1.calculate_distance()
+
+    assert hpc2 is hpc1
+
+
 #==============================================================================
 ### Heliographic Stonyhurst Tests
 #==============================================================================
@@ -199,3 +266,26 @@ def test_create_hgs_3d(frame, args, kwargs):
     assert hgs1.lon.unit is u.deg
     assert hgs1.lat.unit is u.deg
     assert hgs1.rad.unit is u.Mm
+
+#==============================================================================
+### Heliocentric Tests
+#==============================================================================
+@pytest.mark.parametrize('args, kwargs', [((10*u.km, 10*u.km, 10*u.km), None),
+                                          (None, {'x':10*u.km, 'y':10*u.km, 'z':10*u.km}),
+                                          ([CartesianRepresentation(10*u.km, 10*u.km, 10*u.km)], None),
+                                          ([CartesianRepresentation(10*u.km, 10*u.km, 10*u.km)], {'dateobs':'2011/01/01T00:00:00'})])
+def test_create_hcc_3d(args, kwargs):
+    hcc = init_frame(HelioCentric, args, kwargs)
+
+    assert isinstance(hcc, HelioCentric)
+
+    assert isinstance(hcc._data, CartesianRepresentation)
+
+    assert hcc.x == 10*u.km
+    assert hcc.y == 10*u.km
+    assert hcc.z == 10*u.km
+
+    # Check the attrs are in the correct default units
+    assert hcc.x.unit is u.km
+    assert hcc.y.unit is u.km
+    assert hcc.z.unit is u.km
