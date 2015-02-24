@@ -18,7 +18,8 @@ from astropy.coordinates import FrameAttribute
 
 # SunPy imports
 from sunpy import sun # For Carrington rotation number
-from representation import SphericalWrap180Representation, UnitSphericalWrap180Representation
+from representation import (SphericalWrap180Representation,
+                            UnitSphericalWrap180Representation)
 
 from .frameattributes import TimeFrameAttributeSunPy
 
@@ -308,7 +309,9 @@ class HelioProjective(BaseCoordinateFrame):
         """
         This method calculates the third coordnate of the Helioprojective frame.
         It assumes that the coordinate point is on the disk of the Sun at the
-        Rsun radius.
+        RSun radius.
+
+        If a point in the frame is off limb then NaN will be returned.
 
         Returns
         -------
