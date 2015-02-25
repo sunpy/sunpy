@@ -7,6 +7,7 @@ import warnings
 import pytest
 
 import astropy.units as u
+from astropy.utils.decorators import wraps
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -102,6 +103,7 @@ def figure_test(test_function):
         plt.plot([0,1])
     """
     @pytest.mark.figure
+    @wraps(test_function)
     def wrapper(*args, **kwargs):
         plt.figure()
         name = "{0}.{1}".format(test_function.__module__, test_function.__name__)
