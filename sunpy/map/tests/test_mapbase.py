@@ -374,9 +374,8 @@ def test_rotate(aia171_test_map):
 
 
 @figure_test
-def test_rotate_by_20():
-    aia_map = sunpy.map.Map(os.path.join(testpath, 'aia_171_level1.fits'))
-    aia_map.rotate(20).plot()
+def test_rotate_by_20(aia171_test_map):
+    aia171_test_map.rotate(20).plot()
 
 
 def test_rotate_recenter(aia171_test_map):
