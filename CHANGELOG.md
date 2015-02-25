@@ -1,8 +1,11 @@
 0.5.4
 -----
 Bug Fixes:
-`
+
  * `sunpy.image.transform.affine_transform` now casts integer data to float64 and sets NaN values to 0 for all transformations except scikit-image rotation with order <= 3.
+ * Updated SWPC/NOAA links due to their new website.
+ * Exposed the raw AIA color tables in `sunpy.cm.color_tables`.
+ * Fixes `map` compatibility with Astropy 1.0.x.
 
 0.5.3
 -----
