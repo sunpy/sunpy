@@ -22,7 +22,7 @@ from sunpy.tests.helpers import figure_test
 testpath = sunpy.data.test.rootdir
 
 @pytest.fixture
-def aia_map():
+def aia171_test_map():
     return sunpy.map.Map(os.path.join(testpath, 'aia_171_level1.fits'))
 
 
@@ -44,15 +44,15 @@ def generic_map():
     return sunpy.map.Map((data, header))
 
 
-@pytest.fixture
-def aia_map_large():
-    return sunpy.map.Map(sunpy.AIA_171_IMAGE)
+#@pytest.fixture
+#def aia171_test_map_large():
+#    return sunpy.map.Map(sunpy.AIA_171_IMAGE)
 
 
-def test_fits_data_comparison(aia_map_large):
+def test_fits_data_comparison(aia171_test_map):
     """Make sure the data is the same in pyfits and SunPy"""
-    fit = fits.open(sunpy.AIA_171_IMAGE)[0].data
-    np.testing.assert_allclose(aia_map_large.data, fit)
+    data = fits.open(os.path.join(testpath, 'aia_171_level1.fits'))[0].data
+    np.testing.assert_allclose(aia171_test_map.data, data)
 
 
 def test_get_item(generic_map):
@@ -64,8 +64,8 @@ def test_repr_no_obs(generic_map):
     assert generic_map.__repr__() == 'array([[ 1.,  1.,  1.,  1.,  1.,  1.],\n       [ 1.,  1.,  1.,  1.,  1.,  1.],\n       [ 1.,  1.,  1.,  1.,  1.,  1.],\n       [ 1.,  1.,  1.,  1.,  1.,  1.],\n       [ 1.,  1.,  1.,  1.,  1.,  1.],\n       [ 1.,  1.,  1.,  1.,  1.,  1.]])'
 
 
-def test_repr_obs(aia_map):
-    assert aia_map.__repr__() == 'SunPy AIAMap\n---------\nObservatory:\t SDO\nInstrument:\t AIA_3\nDetector:\t AIA\nMeasurement:\t 171\nObs Date:\t 2011-02-15T00:00:00.34\ndt:\t\t 2.000191\nDimension:\t [128, 128]\n[dx, dy] =\t [19.183648, 19.183648]\n\narray([[-1.25,  0.  ,  1.  , ...,  0.  ,  0.5 , -0.75],\n       [ 0.75, -0.25, -0.5 , ...,  0.25,  0.  , -0.25],\n       [ 0.  ,  0.5 ,  1.75, ...,  0.  ,  0.5 ,  0.  ],\n       ..., \n       [ 1.  ,  0.25, -0.25, ...,  0.  ,  0.  ,  0.  ],\n       [-0.25,  0.  , -0.5 , ...,  0.75, -0.75,  0.  ],\n       [ 0.75,  1.5 , -0.75, ...,  0.  , -0.5 ,  0.5 ]])'
+def test_repr_obs(aia171_test_map):
+    assert aia171_test_map.__repr__() == 'SunPy AIAMap\n---------\nObservatory:\t SDO\nInstrument:\t AIA_3\nDetector:\t AIA\nMeasurement:\t 171\nObs Date:\t 2011-02-15T00:00:00.34\ndt:\t\t 2.000191\nDimension:\t [128, 128]\n[dx, dy] =\t [19.183648, 19.183648]\n\narray([[-1.25,  0.  ,  1.  , ...,  0.  ,  0.5 , -0.75],\n       [ 0.75, -0.25, -0.5 , ...,  0.25,  0.  , -0.25],\n       [ 0.  ,  0.5 ,  1.75, ...,  0.  ,  0.5 ,  0.  ],\n       ..., \n       [ 1.  ,  0.25, -0.25, ...,  0.  ,  0.  ,  0.  ],\n       [-0.25,  0.  , -0.5 , ...,  0.75, -0.75,  0.  ],\n       [ 0.75,  1.5 , -0.75, ...,  0.  , -0.5 ,  0.5 ]])'
 
 
 def test_dtype(generic_map):
@@ -120,8 +120,8 @@ def test_date(generic_map):
     assert generic_map.date is 'now'
 
 
-def test_date_aia(aia_map):
-    assert aia_map.date == '2011-02-15T00:00:00.34'
+def test_date_aia(aia171_test_map):
+    assert aia171_test_map.date == '2011-02-15T00:00:00.34'
 
 
 def test_detector(generic_map):
@@ -168,8 +168,8 @@ def test_rotation_matrix_pci_j(generic_map):
                                 np.matrix([[0., -1.], [1., 0.]]))
 
 
-def test_rotation_matrix_crota(aia_map):
-    np.testing.assert_allclose (aia_map.rotation_matrix,
+def test_rotation_matrix_crota(aia171_test_map):
+    np.testing.assert_allclose (aia171_test_map.rotation_matrix,
                                 np.matrix([[9.99999943e-01, -3.38820761e-04],
                                            [3.38820761e-04, 9.99999943e-01]]))
 
@@ -304,24 +304,24 @@ def test_resample_metadata(generic_map, sample_method, new_dimensions):
             assert resampled_map.meta[key] == generic_map.meta[key]
 
 
-def test_superpixel(aia_map_large):
+def test_superpixel(aia171_test_map):
     dimensions = (2, 2)
-    superpixel_map_sum = aia_map_large.superpixel(dimensions)
-    assert superpixel_map_sum.shape[0] == aia_map_large.shape[0]/dimensions[1]
-    assert superpixel_map_sum.shape[1] == aia_map_large.shape[1]/dimensions[0]
-    assert superpixel_map_sum.data[0][0] == (aia_map_large.data[0][0] +
-                                             aia_map_large.data[0][1] +
-                                             aia_map_large.data[1][0] +
-                                             aia_map_large.data[1][1])
+    superpixel_map_sum = aia171_test_map.superpixel(dimensions)
+    assert superpixel_map_sum.shape[0] == aia171_test_map.shape[0]/dimensions[1]
+    assert superpixel_map_sum.shape[1] == aia171_test_map.shape[1]/dimensions[0]
+    assert superpixel_map_sum.data[0][0] == (aia171_test_map.data[0][0] +
+                                             aia171_test_map.data[0][1] +
+                                             aia171_test_map.data[1][0] +
+                                             aia171_test_map.data[1][1])
 
     dimensions = (2, 2)
-    superpixel_map_avg = aia_map_large.superpixel(dimensions, 'average')
-    assert superpixel_map_avg.shape[0] == aia_map_large.shape[0]/dimensions[1]
-    assert superpixel_map_avg.shape[1] == aia_map_large.shape[1]/dimensions[0]
-    assert superpixel_map_avg.data[0][0] == (aia_map_large.data[0][0] +
-                                             aia_map_large.data[0][1] +
-                                             aia_map_large.data[1][0] +
-                                             aia_map_large.data[1][1])/4.0
+    superpixel_map_avg = aia171_test_map.superpixel(dimensions, 'average')
+    assert superpixel_map_avg.shape[0] == aia171_test_map.shape[0]/dimensions[1]
+    assert superpixel_map_avg.shape[1] == aia171_test_map.shape[1]/dimensions[0]
+    assert superpixel_map_avg.data[0][0] == (aia171_test_map.data[0][0] +
+                                             aia171_test_map.data[0][1] +
+                                             aia171_test_map.data[1][0] +
+                                             aia171_test_map.data[1][1])/4.0
 
 
 def calc_new_matrix(angle):
@@ -330,64 +330,62 @@ def calc_new_matrix(angle):
     return np.matrix([[c, -s], [s, c]])
 
 
-def test_rotate():
-    aia_map = sunpy.map.Map(sunpy.AIA_171_IMAGE)
-    rotated_map_1 = aia_map.rotate(20)
+def test_rotate(aia171_test_map):
+    rotated_map_1 = aia171_test_map.rotate(20)
     rotated_map_2 = rotated_map_1.rotate(20)
-    assert rotated_map_2.center == rotated_map_1.center == aia_map.center
     np.testing.assert_allclose(rotated_map_1.rotation_matrix,
-                               np.dot(aia_map.rotation_matrix,
+                               np.dot(aia171_test_map.rotation_matrix,
                                       calc_new_matrix(20).T))
     np.testing.assert_allclose(rotated_map_2.rotation_matrix,
-                               np.dot(aia_map.rotation_matrix,
+                               np.dot(aia171_test_map.rotation_matrix,
                                       calc_new_matrix(40).T))
 
     # Rotation of a map by a non-integral multiple of 90 degrees expands the map
     # and assigns the value of 0 to corner pixels. This results in a reduction
     # of the mean for a map of all non-negative values.
-    assert rotated_map_2.shape > rotated_map_1.shape > aia_map.shape
+    assert rotated_map_2.shape > rotated_map_1.shape > aia171_test_map.shape
     np.testing.assert_allclose(rotated_map_1.data[0, 0], 0., atol=1e-7)
     np.testing.assert_allclose(rotated_map_2.data[0, 0], 0., atol=1e-7)
-    assert rotated_map_2.mean() < rotated_map_1.mean() < aia_map.mean()
+    assert rotated_map_2.mean() < rotated_map_1.mean() < aia171_test_map.mean()
 
-    rotated_map_3 = aia_map.rotate(0, scale=1.5)
-    assert rotated_map_3.mean() > aia_map.mean()
+    rotated_map_3 = aia171_test_map.rotate(0, scale=1.5)
+    assert rotated_map_3.mean() > aia171_test_map.mean()
 
     # Mean and std should be equal when angle of rotation is integral multiple
     # of 90 degrees for a square map
-    rotated_map_4 = aia_map.rotate(90, scale=1.5)
+    rotated_map_4 = aia171_test_map.rotate(90, scale=1.5)
     np.testing.assert_allclose(rotated_map_3.mean(), rotated_map_4.mean(), rtol=1e-3)
     np.testing.assert_allclose(rotated_map_3.std(), rotated_map_4.std(), rtol=1e-3)
-    rotated_map_5 = aia_map.rotate(180, scale=1.5)
+    rotated_map_5 = aia171_test_map.rotate(180, scale=1.5)
     np.testing.assert_allclose(rotated_map_3.mean(), rotated_map_5.mean(), rtol=1e-3)
-    np.testing.assert_allclose(rotated_map_3.std(), rotated_map_5.std(), rtol=1e-3)
+    np.testing.assert_allclose(rotated_map_3.std(), rotated_map_5.std(), rtol=2e-3)
 
     # Rotation of a rectangular map by a large enough angle will change which dimension is larger
-    aia_map_crop = aia_map.submap([0, 1000], [0, 400])
-    aia_map_crop_rot = aia_map_crop.rotate(60)
-    assert aia_map_crop.shape[0] < aia_map_crop.shape[1]
-    assert aia_map_crop_rot.shape[0] > aia_map_crop_rot.shape[1]
+    aia171_test_map_crop = aia171_test_map.submap([0, 1000], [0, 400])
+    aia171_test_map_crop_rot = aia171_test_map_crop.rotate(60)
+    assert aia171_test_map_crop.shape[0] < aia171_test_map_crop.shape[1]
+    assert aia171_test_map_crop_rot.shape[0] > aia171_test_map_crop_rot.shape[1]
 
     # Same test as above, to test the other direction
-    aia_map_crop = aia_map.submap([0, 400], [0, 1000])
-    aia_map_crop_rot = aia_map_crop.rotate(60)
-    assert aia_map_crop.shape[0] > aia_map_crop.shape[1]
-    assert aia_map_crop_rot.shape[0] < aia_map_crop_rot.shape[1]
+    aia171_test_map_crop = aia171_test_map.submap([0, 400], [0, 1000])
+    aia171_test_map_crop_rot = aia171_test_map_crop.rotate(60)
+    assert aia171_test_map_crop.shape[0] > aia171_test_map_crop.shape[1]
+    assert aia171_test_map_crop_rot.shape[0] < aia171_test_map_crop_rot.shape[1]
 
 
 @figure_test
 def test_rotate_by_20():
-    aia_map = sunpy.map.Map(sunpy.AIA_171_IMAGE)
+    aia_map = sunpy.map.Map(os.path.join(testpath, 'aia_171_level1.fits'))
     aia_map.rotate(20).plot()
 
 
-def test_rotate_recenter(aia_map):
-    array_center = (np.array(aia_map.data.shape)-1)/2.0
+def test_rotate_recenter(aia171_test_map):
+    array_center = (np.array(aia171_test_map.data.shape)-1)/2.0
 
     # New image center in data coordinates
     new_center = np.asarray((200, 100))
 
-    rotated_map = aia_map.rotate(20, rotation_center=new_center, recenter=True)
+    rotated_map = aia171_test_map.rotate(20, rotation_center=new_center, recenter=True)
 
     # Retrieve pixel coordinates for the centers from the new map
     new_x = rotated_map.data_to_pixel(new_center[0], 'x')
@@ -398,8 +396,8 @@ def test_rotate_recenter(aia_map):
     np.testing.assert_allclose((new_y, new_x), new_array_center)
 
 
-def test_rotate_crota_remove(aia_map):
-    rot_map = aia_map.rotate()
+def test_rotate_crota_remove(aia171_test_map):
+    rot_map = aia171_test_map.rotate()
     assert rot_map.meta.get('CROTA1', None) is None
     assert rot_map.meta.get('CROTA2', None) is None
 
