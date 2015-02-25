@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import astropy.wcs.utils
+
 from .frames import *
 
 def solar_wcs_frame_mapping(wcs):
@@ -17,10 +19,4 @@ def solar_wcs_frame_mapping(wcs):
     if xcoord == 'SOLX' and ycoord == 'SOLY':
         return HelioCentric
 
-try:
-    import astropy.wcs.utils
-
-    astropy.wcs.utils.WCS_FRAME_MAPPINGS.append([solar_wcs_frame_mapping])
-
-except ImportError:
-    pass
+astropy.wcs.utils.WCS_FRAME_MAPPINGS.append([solar_wcs_frame_mapping])
