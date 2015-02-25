@@ -7,22 +7,36 @@
 import numpy as np
 from astropy import units as u
 from numpy.testing import assert_allclose, assert_array_almost_equal
-from scipy.ndimage.interpolation import shift
-from sunpy import AIA_171_IMAGE
+from scipy.ndimage.interpolation import shift as sp_shift
 from sunpy import map
+import pytest
+import os
+import sunpy.data.test
 from sunpy.image.coalignment import parabolic_turning_point, \
 repair_image_nonfinite, _default_fmap_function, _lower_clip, _upper_clip, \
 calculate_clipping, get_correlation_shifts, find_best_match_location, \
 match_template_to_layer, calculate_shift, \
 mapcube_coalign_by_match_template
 
+
+@pytest.fixture
+def aia171_test_map():
+    testpath = sunpy.data.test.rootdir
+    return sunpy.map.Map(os.path.join(testpath, 'aia_171_level1.fits'))
+
+
 # Map and template we will use in testing
-testmap = map.Map(AIA_171_IMAGE)
+testmap = aia171_test_map()
+# the image to test again is test_layer
 test_layer = testmap.data
-ny = test_layer.shape[0]
-nx = test_layer.shape[1]
-test_template = test_layer[1 + ny / 4 : 1 + 3 * ny / 4,
-                            2 + nx / 4 : 2 + 3 * nx / 4]
+layer_shape = np.array(test_layer.shape)
+# the test_template is the image we are looking for
+# it is just the center of the original image i.e. test_layer
+# with a small and differing shift in x and y
+shift = np.array([3, 5])
+test_template = test_layer[shift[0] + layer_shape[0] / 4 : shift[0] + 3 * layer_shape[0] / 4,
+                            shift[1] + layer_shape[1] / 4 : shift[1] + 3 * layer_shape[1] / 4]
+template_shape = np.array(test_template.shape)
 
 # Used in testing the clipping
 clip_test_array = np.asarray([0.2, -0.3, -1.0001])
@@ -44,8 +58,7 @@ def test_repair_image_nonfinite():
 
 def test_match_template_to_layer():
     result = match_template_to_layer(test_layer, test_template)
-    assert(result.shape[0] == 513)
-    assert(result.shape[1] == 513)
+    assert_allclose(result.shape, layer_shape - template_shape + 1, )
     assert_allclose(np.max(result), 1.00, rtol=1e-2, atol=0)
 
 
@@ -81,9 +94,8 @@ def test_get_correlation_shifts():
 
 def test_find_best_match_location():
     result = match_template_to_layer(test_layer, test_template)
-    y_test, x_test = find_best_match_location(result)
-    assert_allclose(y_test, 257.0, rtol=1e-3, atol=0)
-    assert_allclose(x_test, 258.0, rtol=1e-3, atol=0)
+    match_location = u.Quantity(find_best_match_location(result))
+    assert_allclose(match_location.value, np.array(result.shape)/2. - 0.5 + shift, rtol=1e-3, atol=0)
 
 def test_lower_clip():
     assert(_lower_clip(clip_test_array) == 2.0)
@@ -112,12 +124,6 @@ def test_clip_edges():
     assert(a.shape[1] - (xclip[0].value + xclip[1].value) == 153)
 
 
-def test_calculate_shift():
-    result = calculate_shift(test_layer, test_template)
-    assert_allclose(result[0], 257.0,  rtol=1e-3, atol=0)
-    assert_allclose(result[1], 258.0,  rtol=1e-3, atol=0)
-
-
 def test__default_fmap_function():
     assert(_default_fmap_function([1,2,3]).dtype == np.float64(1).dtype)
 
@@ -125,11 +131,13 @@ def test__default_fmap_function():
 def test_mapcube_coalign_by_match_template():
     # take the AIA image and shift it
     # Pixel displacements have the y-displacement as the first entry
+    nx = layer_shape[1]
+    ny = layer_shape[0]
     pixel_displacements = np.asarray([1.6, 10.1])
     known_displacements = {'x':np.asarray([0.0, pixel_displacements[1] * testmap.scale['x']]), 'y':np.asarray([0.0, pixel_displacements[0] * testmap.scale['y']])}
 
     # Create a map that has been shifted a known amount.
-    d1 = shift(testmap.data, pixel_displacements)
+    d1 = sp_shift(testmap.data, pixel_displacements)
     m1 = map.Map((d1, testmap.meta))
 
     # Create the mapcube
