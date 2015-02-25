@@ -7,7 +7,7 @@ from astropy.coordinates.baseframe import TimeFrameAttribute
 
 from sunpy.time import parse_time
 
-__all__ = ['TimeFrameAttributeSunpy']
+__all__ = ['TimeFrameAttributeSunPy']
 
 class TimeFrameAttributeSunPy(TimeFrameAttribute):
     """
@@ -51,16 +51,20 @@ class TimeFrameAttributeSunPy(TimeFrameAttribute):
         """
         if value is None:
             return None, False
-        
-        if value == 'now':
-            return datetime.datetime.now(), True
 
-        if isinstance(value, Time):
+        elif value == 'now':
+            return Time(datetime.datetime.now()), True
+
+        elif isinstance(value, Time):
             out = value
             converted = False
-        
-        if isinstance(value, basestring):
-            out = Time(parse_time(value))
+
+        elif isinstance(value, basestring):
+            try:
+                out = Time(parse_time(value))
+            except Exception as err:
+                raise ValueError('Invalid time input {0}={1!r}\n{2}'
+                                 .format(self.name, value, err))
             converted = True
         else:
             try:
