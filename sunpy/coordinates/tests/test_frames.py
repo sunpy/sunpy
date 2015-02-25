@@ -106,8 +106,8 @@ def test_create_3d(args, kwargs):
 cylindrical_parameters = [([100*u.km, 25*u.deg, 1*u.Mm], {'representation':'cylindrical'}),
                           ([100*u.km, 25*u.deg, 1*u.Mm], {'dateobs':'2011/01/01T00:00:00',
                                                          'representation':'cylindrical'}),
-#                         ([100*u.km, 25*u.deg], {'z':1*u.Mm, 'representation':'cylindrical'}),
-#                         (None, {'rho':100*u.km, 'phi':25*u.deg, 'z':1*u.Mm, 'representation':'cylindrical'}),
+                         ([100*u.km, 25*u.deg], {'distance':1*u.Mm, 'representation':'cylindrical'}),
+                         (None, {'rho':100*u.km, 'psi':25*u.deg, 'distance':1*u.Mm, 'representation':'cylindrical'}),
                          ([CylindricalRepresentation(100*u.km, 25*u.deg, 1*u.Mm)], {'representation':'cylindrical'}),
                          ([CylindricalRepresentation(100*u.km, 25*u.deg, 1*u.Mm)], {'dateobs':'2011/01/01T00:00:00',
                                                                                    'representation':'cylindrical'})
