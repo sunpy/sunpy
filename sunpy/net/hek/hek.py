@@ -54,11 +54,12 @@ class HEKClient(object):
     def __init__(self, url=DEFAULT_URL):
         self.url = url
 
-    def _download(self, data):
+    def _download(self, data, select=None):
         """ Download all data, even if pagiated. """
         page = 1
         results = []
-
+        if select is not None and type(select) is list:
+            data['return'] = ",".join(select)
         while True:
             data['page'] = page
             fd = urlopen(self.url, urlencode(data))
@@ -72,12 +73,14 @@ class HEKClient(object):
                 return map(Response, results)
             page += 1
 
-    def query(self, *query):
+    def query(self, *query, **select):
         """ Retrieves information about HEK records matching the criteria
         given in the query expression. If multiple arguments are passed,
         they are connected with AND. The result of a query is a list of
         unique HEK Response objects that fulfill the criteria."""
         query = attr.and_(*query)
+        if select:
+            select = select['select']
 
         data = attrs.walker.create(query, {})
         ndata = []
@@ -87,9 +90,9 @@ class HEKClient(object):
             ndata.append(new)
 
         if len(ndata) == 1:
-            return self._download(ndata[0])
+            return self._download(ndata[0], select)
         else:
-            return self._merge(self._download(data) for data in ndata)
+            return self._merge(self._download(data, select) for data in ndata)
 
     def _merge(self, responses):
         """ Merge responses, removing duplicates. """
