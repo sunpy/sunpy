@@ -820,7 +820,7 @@ Dimension:\t [{xdim:d}, {ydim:d}]
         new_map.meta['crpix2'] = self.reference_pixel['y'] - y_pixels[0]
         new_map.meta['naxis1'] = new_data.shape[1]
         new_map.meta['naxis2'] = new_data.shape[0]
-        print isinstance(new_data, np.ndarray)
+
         # Create new map instance
         new_map.data = new_data
         return new_map
